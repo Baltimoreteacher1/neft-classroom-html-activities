@@ -4,7 +4,7 @@ function styles() {
   const link = document.createElement("link");
   link.id = "reading-flow-styles";
   link.rel = "stylesheet";
-  link.href = "/assets/reading-flow.css?v=20261002";
+  link.href = "/assets/reading-flow.css?v=20261014";
   document.head.append(link);
   const opened = new Set();
   window.addEventListener("beforeprint", () => {

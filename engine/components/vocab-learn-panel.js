@@ -685,6 +685,78 @@ function injectVocabLearnStyles() {
     /* ── Sequential Learn It stepper ─────────────────────────────────────── */
     .vl-hero-compact { padding: 22px 28px; margin-bottom: 18px; }
     .vl-hero-compact .vl-hero-title { font-size: 1.7rem; margin: 8px 0 10px; }
+    /* LEARN IT, ALL STEPS ON ONE PAGE (.vl-all). A slim title bar, then each step as a
+       headed block in taught order. Worked-solution steps sit beside their picture. */
+    .vl-container.vl-all { max-width: none; padding: 0 0 12px; }
+    .vl-all .vl-hero-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; padding: 8px 14px; margin-bottom: 10px; border-radius: 14px; }
+    .vl-all .vl-hero-bar .vl-hero-badge { margin: 0; padding: 3px 10px; font-size: 0.74rem; }
+    .vl-all .vl-hero-bar .vl-hero-title { flex: 1 1 220px; margin: 0; font-size: 1.1rem; }
+    .vl-all .vl-hero-bar .vl-hero-speak-btn { margin: 0; padding: 5px 12px; font-size: 0.8rem; }
+    .vl-all .vl-step { display: block; margin: 0 0 10px; }
+    .vl-all .vl-step-title { display: flex; align-items: center; gap: 8px; margin: 0 0 5px; font-size: 1.02rem; }
+    .vl-all .vl-step-badge { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #14223a; color: #fff; font-size: 0.78rem; font-weight: 800; }
+    .vl-all .vl-step-body { padding: 10px 14px; border-radius: 12px; box-shadow: none; }
+    .vl-all .vl-step-question { margin: 0 0 5px; font-size: 1.08rem; }
+    .vl-all .vl-bigidea-text { margin: 0 0 8px; font-size: 0.98rem; line-height: 1.45; }
+    .vl-all .vl-key-idea-card { padding: 8px 12px; margin: 0; }
+    .vl-all .vl-lead { margin: 0 0 6px; font-size: 0.98rem; }
+    .vl-all .vl-demo-box { padding: 10px; margin-bottom: 8px; border-width: 1.5px; border-radius: 12px; }
+    .vl-all .vl-demo-title { margin-bottom: 8px; font-size: 1rem; }
+    .vl-all .vl-demo-steps, .vl-all .vl-solve-steps { gap: 6px; }
+    .vl-all .vl-demo-step, .vl-all .vl-solve-step { padding: 6px 10px; gap: 8px; border-radius: 10px; box-shadow: none; }
+    .vl-all .vl-step-text, .vl-all .vl-solve-body .vl-step-text { font-size: 0.96rem; line-height: 1.4; }
+    .vl-all .vl-step-num { padding: 2px 8px; font-size: 0.76rem; }
+    .vl-all .vl-step-speak-btn { padding: 2px 8px; font-size: 0.78rem; }
+    .vl-all .vl-stepfig { margin: 6px 0 0; padding: 6px 8px; }
+    .vl-all .vl-stepfig .li-fig-svg { max-width: 240px; }
+    /* A step's "Try this move" workspace sits beside its sentence, not under it. */
+    .vl-all .vl-solve-body:has(> .vl-stepwork) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(200px, 250px); gap: 4px 12px; align-items: start; }
+    .vl-all .vl-solve-body:has(> .vl-stepwork) > .vl-stepwork { grid-column: 2; grid-row: 1 / span 4; margin: 0; }
+    .vl-all .vl-solve-body:has(> .vl-stepwork) > :not(.vl-stepwork) { grid-column: 1; }
+    .vl-all .vl-stepwork { margin-top: 6px; }
+    .vl-all .vl-step-move { justify-self: start; width: fit-content; }
+    .vl-all .sw-board { gap: 4px; }
+    .vl-all .sw-board input { max-width: 56px; }
+    .vl-all .vl-tool-block { margin-top: 8px; padding: 10px 12px; }
+    .vl-all .vl-solve-stage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(190px, 290px); gap: 10px; align-items: start; }
+    .vl-all .vl-solve-stage .vl-stage-visual { grid-column: 2; grid-row: 1; position: sticky; top: 8px; margin: 0; padding: 8px; }
+    .vl-all .vl-solve-stage .vl-solve-steps { grid-column: 1; grid-row: 1; }
+    .vl-all .vl-tryit-card, .vl-all .vl-turntalk-card, .vl-all .vl-confidence-widget { margin-top: 10px; padding: 12px 14px; border-radius: 14px; }
+    /* Steps on the left; the practice tool (Watch Me) or the live problem (Try It) on the right. */
+    .vl-all .vl-step-body:has(> .vl-solve-steps) {
+      display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, 340px); gap: 8px 12px; align-items: start;
+    }
+    .vl-all .vl-step-body > .vl-lead { grid-column: 1 / -1; }
+    .vl-all .vl-step-body > .vl-solve-steps { grid-column: 1; grid-row: 2; }
+    .vl-all .vl-step-body > .vl-tool-block { margin-top: 8px; }
+    .vl-all .vl-step-body:has(> .vl-solve-steps) > .vl-tool-block { grid-column: 2; grid-row: 2; position: sticky; top: 8px; margin: 0; }
+    .vl-all .vl-step-body > .vl-solve-stage:not(:has(.vl-solve-steps)) { display: block; grid-column: 2; grid-row: 2; position: sticky; top: 8px; }
+    .vl-all .vl-step-body > .vl-solve-stage:not(:has(.vl-solve-steps)) ~ .vl-misconception-card { grid-column: 1 / -1; }
+    .vl-all .vl-tool-block { min-width: 0; overflow-x: auto; }
+    .vl-all .vl-tool-head { margin-bottom: 6px; font-size: 0.88rem; }
+    .vl-all .pgl-grid { max-width: 210px; margin-inline: auto; }
+    .vl-all .vl-mathline { margin: 2px 0 0; font-size: 1.1rem; }
+    .vl-all .sw-shell { padding: 6px 10px; border-width: 1.5px; border-radius: 10px; }
+    .vl-all .sw-head { margin: 0 0 2px; font-size: 0.8rem; }
+    .vl-all .sw-lead { display: none; }
+    .vl-all .sw-num { min-width: 0; padding: 2px 6px; font-size: 1.05rem; }
+    .vl-all .sw-controls { margin-top: 6px; gap: 6px; }
+    .vl-all .sw-btn { padding: 4px 10px; min-height: 32px; font-size: 0.82rem; }
+    .vl-all .vl-check-reveal summary { padding: 4px 10px; font-size: 0.88rem; }
+    .vl-all .vl-misconception-card { margin-top: 8px; padding: 8px 12px; }
+    .vl-all .vl-tryit-opts, .vl-all .vl-starters-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px; }
+    .vl-all .vl-tryit-opt, .vl-all .vl-starter-chip, .vl-all .vl-conf-btn { padding: 6px 10px; min-height: 0; font-size: 0.92rem; }
+    .vl-all .vl-tryit-head, .vl-all .vl-turntalk-head { margin-bottom: 6px; }
+    .vl-all .vl-turntalk-question { padding: 8px 12px; margin: 6px 0; font-size: 0.95rem; }
+    .vl-all .vl-turntalk-context { margin: 0; font-size: 0.9rem; }
+    .vl-all .vl-conf-options { gap: 6px; }
+    .vl-all .vl-actions { margin: 8px 0 0; }
+    @media (max-width: 900px) {
+      .vl-all .vl-step-body:has(> .vl-solve-steps) { display: block; }
+      .vl-all .vl-step-body:has(> .vl-solve-steps) > .vl-tool-block, .vl-all .vl-step-body > .vl-solve-stage:not(:has(.vl-solve-steps)) { position: static; margin-top: 8px; }
+      .vl-all .vl-solve-stage { display: block; }
+      .vl-all .vl-solve-stage .vl-stage-visual { position: static; margin-bottom: 8px; }
+    }
     .vl-rail {
       display: flex;
       flex-wrap: wrap;
@@ -1774,9 +1846,9 @@ export function renderLearnItPanel(container, config, options = {}) {
 
   // ── Header: what this is + read-aloud ─────────────────────────────────────
   const hero = document.createElement("div");
-  hero.className = "vl-hero vl-hero-compact";
+  hero.className = "vl-hero vl-hero-compact vl-hero-bar";
   hero.innerHTML = `
-    <div class="vl-hero-badge">${isEs ? "📖 Aprende — un paso a la vez" : "📖 Learn It — one step at a time"}</div>
+    <div class="vl-hero-badge">${isEs ? "📖 Aprende" : "📖 Learn It"}</div>
     <h2 class="vl-hero-title">${escHtml(config.title)}</h2>
     <button type="button" class="vl-hero-speak-btn" id="vlHeroSpeakBtn">
       🔊 ${isEs ? "Escuchar la idea principal" : "Listen to the big idea"}
@@ -2519,43 +2591,24 @@ export function renderLearnItPanel(container, config, options = {}) {
     });
   }
 
-  // ── Stepper shell: rail + one visible step + back/next ────────────────────
+  // ── Every step on one page ────────────────────────────────────────────────
+  // Learn It used to be a stepper: a rail, a kicker, a subtitle and Back/Next
+  // around ONE visible step, so seeing the idea, the worked solution and the
+  // check meant four screens and a lot of chrome (Joel, 2026-10-14: "I want all
+  // steps shown and significantly compacted — just show the steps and
+  // information, with visuals"). Now each step is a slim headed block, all on
+  // screen in taught order; the last block carries the one forward button.
   const stepper = document.createElement("div");
   stepper.className = "vl-stepper";
+  wrap.classList.add("vl-all");
 
-  const rail = document.createElement("nav");
-  rail.className = "vl-rail no-print";
-  rail.setAttribute("aria-label", isEs ? "Pasos de Aprende" : "Learn It steps");
-  rail.innerHTML = steps
-    .map(
-      (s, i) => `
-    <button type="button" class="vl-rail-btn" data-step="${i}">
-      <span class="vl-rail-num" aria-hidden="true">${i + 1}</span>
-      <span class="vl-rail-label">${s.icon} ${escHtml(s.label)}</span>
-    </button>`,
-    )
-    .join("");
-  stepper.append(rail);
-
-  const sections = steps.map((s, i) => {
+  steps.forEach((s, i) => {
     const section = document.createElement("section");
-    section.className = "vl-step";
+    section.className = "vl-step vl-step-active";
     section.setAttribute("aria-labelledby", `vl-step-h-${i}`);
     section.innerHTML = `
-      <header class="vl-step-head">
-        <p class="vl-step-kicker">${isEs ? "Paso" : "Step"} ${i + 1} ${isEs ? "de" : "of"} ${steps.length}</p>
-        <h3 class="vl-step-title" id="vl-step-h-${i}" tabindex="-1">${s.icon} ${escHtml(s.label)}</h3>
-        <p class="vl-step-sub">${escHtml(s.sub)}</p>
-      </header>
-      <div class="vl-step-body"></div>
-      <div class="vl-stepnav no-print">
-        <button type="button" class="vl-back-btn"${i === 0 ? " hidden" : ""}>‹ ${isEs ? "Atrás" : "Back"}</button>
-        ${
-          i < steps.length - 1
-            ? `<button type="button" class="vl-next-btn">${isEs ? "Siguiente" : "Next"}: ${steps[i + 1].icon} ${escHtml(steps[i + 1].label)} ›</button>`
-            : ""
-        }
-      </div>`;
+      <h3 class="vl-step-title" id="vl-step-h-${i}"><span class="vl-step-badge" aria-hidden="true">${i + 1}</span>${s.icon} ${escHtml(s.label)}</h3>
+      <div class="vl-step-body"></div>`;
     const body = /** @type {HTMLElement} */ (section.querySelector(".vl-step-body"));
     s.build(body);
     if (vocabList.length) {
@@ -2564,53 +2617,12 @@ export function renderLearnItPanel(container, config, options = {}) {
       } catch (_) {}
     }
     stepper.append(section);
-    return section;
-  });
-
-  const railBtns = /** @type {NodeListOf<HTMLButtonElement>} */ (
-    rail.querySelectorAll(".vl-rail-btn")
-  );
-  const firstShown = new Set();
-  let activeIndex = -1;
-  const activate = (index, { focus = true } = {}) => {
-    const next = Math.max(0, Math.min(steps.length - 1, index));
-    if (next === activeIndex) return;
-    activeIndex = next;
-    sections.forEach((sec, i) => sec.classList.toggle("vl-step-active", i === next));
-    railBtns.forEach((b, i) => {
-      if (i === next) b.setAttribute("aria-current", "step");
-      else b.removeAttribute("aria-current");
-      b.classList.toggle("vl-rail-active", i === next);
-      b.classList.toggle("vl-rail-done", i < next);
-    });
-    if (!firstShown.has(next)) {
-      firstShown.add(next);
-      const body = /** @type {HTMLElement} */ (sections[next].querySelector(".vl-step-body"));
-      steps[next].onFirstShow?.(body);
-    }
-    if (focus) {
-      wrap.scrollIntoView({
-        behavior: prefersReducedMotion ? "auto" : "smooth",
-        block: "start",
-      });
-      const title = /** @type {HTMLElement|null} */ (
-        sections[next].querySelector(".vl-step-title")
-      );
-      title?.focus?.({ preventScroll: true });
-    }
-  };
-
-  railBtns.forEach((b) => {
-    b.addEventListener("click", () => activate(Number(b.dataset.step)));
-  });
-  sections.forEach((sec, i) => {
-    sec.querySelector(".vl-back-btn")?.addEventListener("click", () => activate(i - 1));
-    sec.querySelector(".vl-next-btn")?.addEventListener("click", () => activate(i + 1));
+    // Lazy pieces (Apply It) are no longer behind a click, so they build now.
+    s.onFirstShow?.(body);
   });
 
   wrap.append(stepper);
   container.append(wrap);
-  activate(0, { focus: false });
 }
 
 // ─── 3. COMBINED PANEL FOR BACKWARD COMPATIBILITY ───────────────────────────

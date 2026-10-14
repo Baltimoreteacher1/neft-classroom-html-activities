@@ -77,3 +77,21 @@ body:has(.reading-guide) .reading-guide { margin-block: 4px 12px; }
 /* Explicitly remove a closed outline from layout, including geometry probes. */
 .reading-outline:not([open]) > .act-step-strip,
 .reading-outline:not([open]) > .sg-substeps { display: none; }
+
+/* ACT STEP STRIP, ALWAYS OPEN AND SLIM. The step chips are the way through the act, so they stay in
+   view; the "Step N of M" sentence stays for screen readers only, since the current chip says it. */
+.reading-guide:has(> .act-step-strip) { margin: 6px 0 10px; padding: 4px 0; border-block: 0; background: transparent; }
+.reading-guide:has(> .act-step-strip) .reading-current { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.reading-guide .act-step-strip { padding: 6px 8px; margin: 0; gap: 6px; border-radius: 12px; }
+.reading-guide .act-step-chip { min-height: 34px; padding: 0 12px; font-size: 0.86rem; }
+body:has(.reading-guide) .section-header { padding: 4px 4px; margin: 6px 0; gap: 10px; }
+body:has(.reading-guide) .section-icon { width: 32px; height: 32px; font-size: 1.1rem; }
+body:has(.reading-guide) .section-title { font-size: 1.15rem; }
+body:has(.reading-guide) .section-desc { display: none; }
+body:has(.reading-guide) .phase-subcards-ribbon { margin: 4px 0 8px; padding: 4px 10px; border-radius: 10px; box-shadow: none; }
+body:has(.reading-guide) .phase-subcards-label { display: none; }
+body:has(.reading-guide) .lesson-hero { padding: 8px 16px; margin-block: 6px 8px; }
+body:has(.reading-guide) .lesson-hero-title { font-size: 1.25rem; }
+.reading-guide .act-step-arrow { display: none; }
+.reading-guide .act-step-strip { flex-wrap: nowrap; overflow-x: auto; }
+.reading-guide .act-step-chip { flex: 0 0 auto; padding: 0 10px; font-size: 0.82rem; }

@@ -6547,9 +6547,13 @@ export function renderActSteps(el, state, phaseIdx, steps) {
   const panels = document.createElement("div");
   wrap.append(strip, panels);
   el.append(wrap);
+  // Every step of the act stays on screen as a strip of chips. The default is a
+  // collapsed "All steps" disclosure, which hid the way through the act behind a
+  // click (Joel, 2026-10-14: "I want all steps shown").
   const updateGuide = mountStepGuide(
     strip,
     steps.map((step) => step.label),
+    { collapsed: false },
   );
 
   /** @type {HTMLElement[]} */
