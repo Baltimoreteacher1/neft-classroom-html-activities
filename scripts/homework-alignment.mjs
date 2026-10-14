@@ -534,6 +534,19 @@ export function selectTieredQuickCheckProblems(practice = {}, config = {}) {
   const optional = tier("optional");
   const extending = tier("extending");
 
+  // Family pages for selected lessons can opt into the teacher-authored order:
+  // start with scaffolded approaching problems, then move to on-level problems.
+  // Topic-alignment sorting is useful for broad practice pools, but it can put
+  // an on-topic stretch question ahead of a prerequisite when families need a
+  // predictable step-by-step ramp.
+  if (config.familyNotes?.practiceSequence === "approaching-to-on-level") {
+    const warmup = approaching.slice(0, WARMUP_TARGET);
+    const challenge = onLevel
+      .filter((problem) => !warmup.includes(problem))
+      .slice(0, CHALLENGE_TARGET);
+    return { warmup, challenge };
+  }
+
   // Best-aligned first within a pool, de-duplicated.
   const byAlign = (arr) => {
     const seen = new Set();

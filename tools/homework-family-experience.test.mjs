@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import test from "node:test";
 import { renderStatsDataLab } from "@eduwonderlab/engine/components/stats-data-lab.js";
 import { JSDOM } from "jsdom";
+import { selectTieredQuickCheckProblems } from "../scripts/homework-alignment.mjs";
 import { familyGuidance } from "../scripts/homework-family-guidance.mjs";
 import { exactFamilyMission, exactFamilySupport } from "../scripts/homework-family-support.mjs";
 import { buildHomeworkGame } from "../scripts/homework-games.mjs";
@@ -234,6 +235,73 @@ test("family homework offers three real practice paths without a Together stop",
   }
 });
 
+test("Unit 4 family practice follows a bilingual step-by-step difficulty ramp", () => {
+  const printable = (item) =>
+    [
+      "multiple-choice",
+      "fill-table",
+      "matching-game",
+      "drag-sort",
+      "error-analysis",
+      "open-response",
+    ].includes(item.type);
+
+  for (const id of ["4-1", "4-2", "4-3", "4-4", "4-5"]) {
+    const lesson = config(id);
+    const notes = JSON.parse(
+      readFileSync(new URL(`../data/family-homework-notes/${id}.json`, import.meta.url), "utf8"),
+    );
+    lesson.familyNotes = { ...notes, ...(lesson.familyNotes || {}) };
+
+    assert.equal(lesson.familyNotes.practiceSequence, "approaching-to-on-level", id);
+    const selected = selectTieredQuickCheckProblems(lesson.practice, lesson);
+    assert.deepEqual(
+      selected.warmup,
+      lesson.practice.approaching.filter(printable).slice(0, 3),
+      `${id} warm-up order`,
+    );
+    assert.deepEqual(
+      selected.challenge,
+      lesson.practice.onLevel.filter(printable).slice(0, 3),
+      `${id} level-up order`,
+    );
+
+    assert.ok(lesson.familyNotes.conceptSteps.length >= 3, `${id} has a worked example`);
+    for (const step of lesson.familyNotes.conceptSteps) {
+      assert.ok(step.en && step.es, `${id} worked steps are bilingual`);
+    }
+    assert.ok(lesson.familyNotes.tryTogether.steps.length >= 3, `${id} has guided practice`);
+    for (const step of lesson.familyNotes.tryTogether.steps) {
+      assert.ok(
+        step.en && step.es && step.hint && step.hintEs,
+        `${id} guided prompt has bilingual hints`,
+      );
+      assert.ok(step.helpEn && step.helpEs, `${id} guided prompt has a bilingual worked answer`);
+    }
+  }
+
+  const lesson44 = config("4-4");
+  lesson44.familyNotes = JSON.parse(
+    readFileSync(new URL("../data/family-homework-notes/4-4.json", import.meta.url), "utf8"),
+  );
+  const lesson44Check = selectTieredQuickCheckProblems(lesson44.practice, lesson44);
+  const lesson44Stems = [...lesson44Check.warmup, ...lesson44Check.challenge].map(
+    (item) => item.stem || item.prompt || item.instructions || "",
+  );
+  assert.ok(
+    lesson44Stems.some((stem) => stem.includes("15% off") && stem.includes("240 tickets")),
+    "4-4 builds to a less-familiar percent",
+  );
+  assert.ok(
+    lesson44Stems.some((stem) => stem.includes("35%") && stem.includes("120 points")),
+    "4-4 finishes with a scaffolded stretch",
+  );
+  assert.ok(
+    !lesson44Stems.some((stem) => stem.includes("What percent of 50 is 15")),
+    "4-4 does not jump to finding a percent from a part",
+  );
+});
+
 test("all Unit 2–6 Part 1 and Part 2 pages have bilingual titles and a useful pair link", () => {
   let checked = 0;
   for (let unit = 2; unit <= 6; unit++) {
@@ -443,6 +511,23 @@ test("Unit 4 family pages keep the tab route while rotating their visual experie
     assert.ok(d.querySelector('[data-tab-panel="learn"]'), `${id} lost the family learning panel`);
     dom.window.close();
   }
+
+  const styles = readFileSync(
+    new URL("../scripts/generate-homework-html.mjs", import.meta.url),
+    "utf8",
+  );
+  assert.match(styles, /#25364a 0%,#405b78 64%,#687d8a 100%/, "arcade uses a muted slate palette");
+  assert.match(styles, /#293b34 0%,#496456 64%,#788477 100%/, "unlock uses a muted green palette");
+  assert.doesNotMatch(styles, /#7c3aed|#5b21b6|#ede9fe|#312e81|#4c3d7e|#7653b7|#f0eafd/);
+  assert.match(
+    styles,
+    /body\[data-family-style\] \.powerup-tag \{ color:#405b78 !important; background:#e8eef2 !important; \}/,
+  );
+  assert.match(styles, /body\[data-family-style\] \.tile-6 \{ background:#64748b !important; \}/);
+  assert.match(
+    styles,
+    /body\[data-family-style\] \.frame-stars \.pb-frame-header \{ background:#8091a2 !important; \}/,
+  );
 });
 
 test("exact skills replace broad standard matches, keep one visible mission, and preserve later sessions", () => {

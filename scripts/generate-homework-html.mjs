@@ -1185,7 +1185,17 @@ function generateHtml(lessonId, config) {
 
   const unitNum = parseInt(config.unit || String(lessonId).split("-")[0] || 1, 10);
   const theme = getUnitTheme(unitNum);
-  const themeCss = renderUnitThemeCss(theme);
+  const unit4NoPurpleCss =
+    unitNum === 4
+      ? `
+body[data-family-style] .powerup-tag { color:#405b78 !important; background:#e8eef2 !important; }
+body[data-family-style] .powerup-choice-btn:hover:not(:disabled) { border-color:#66859b !important; background:#f3f6f7 !important; }
+body[data-family-style] .tile-6 { background:#64748b !important; }
+body[data-family-style] .frame-stars { border-color:#8091a2 !important; }
+body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !important; }
+`
+      : "";
+  const themeCss = `${renderUnitThemeCss(theme)}\n${unit4NoPurpleCss}`;
   const familyStyle = ["arcade", "case-file", "unlock"].includes(
     config.familyNotes?.experience?.style,
   )
@@ -1205,11 +1215,11 @@ function generateHtml(lessonId, config) {
 ` +
         ({
           arcade: `
-body[data-family-style="arcade"] { --navy:#3b3078; --navy-light:#5b21b6; --teal:#7c3aed; --teal-ink:#5b21b6; --teal-light:#ede9fe; --amber:#f59e0b; --amber-light:#fff7e6; }
-body[data-family-style="arcade"] .hw-hero { background:linear-gradient(135deg,#312e81 0%,#5b21b6 58%,#0f766e 100%) !important; border:2px solid #a78bfa; }
-body[data-family-style="arcade"] .hw-hero-glow { background:radial-gradient(circle,rgba(196,181,253,.28) 0%,transparent 70%); }
-body[data-family-style="arcade"] .card, body[data-family-style="arcade"] .practice-tier { border-color:#ddd6fe; border-radius:20px; }
-body[data-family-style="arcade"] .homework-tab-btn.is-active { box-shadow:inset 0 -3px #7c3aed; }
+body[data-family-style="arcade"] { --navy:#24364b; --navy-light:#405b78; --teal:#66859b; --teal-ink:#3e5d73; --teal-light:#e8eef2; --amber:#8c7442; --amber-light:#f5f1e8; }
+body[data-family-style="arcade"] .hw-hero { background:linear-gradient(135deg,#25364a 0%,#405b78 64%,#687d8a 100%) !important; border:1px solid #c6d0d5; }
+body[data-family-style="arcade"] .hw-hero-glow { background:radial-gradient(circle,rgba(226,233,237,.18) 0%,transparent 70%); }
+body[data-family-style="arcade"] .card, body[data-family-style="arcade"] .practice-tier { border-color:#cbd6dc; border-radius:20px; }
+body[data-family-style="arcade"] .homework-tab-btn.is-active { box-shadow:inset 0 -3px #8c7442; }
 body[data-family-style="arcade"] .hw-experience-banner { border-style:dashed; border-width:2px; }
 `,
           "case-file": `
@@ -1222,12 +1232,12 @@ body[data-family-style="case-file"] .homework-tab-btn.is-active { box-shadow:ins
 body[data-family-style="case-file"] .hw-experience-banner { border-left:5px solid #e5c75a; }
 `,
           unlock: `
-body[data-family-style="unlock"] { --navy:#3b315f; --navy-light:#4c3d7e; --teal:#7653b7; --teal-ink:#58408d; --teal-light:#f0eafd; --amber:#d39a29; --amber-light:#fff7df; }
-body[data-family-style="unlock"] .hw-hero { background:linear-gradient(135deg,#29335e 0%,#4c3d7e 56%,#876522 100%) !important; border:2px solid #e0b44f; }
-body[data-family-style="unlock"] .hw-hero-glow { background:radial-gradient(circle,rgba(245,211,112,.25) 0%,transparent 70%); }
-body[data-family-style="unlock"] .card, body[data-family-style="unlock"] .practice-tier { border-top:3px solid #d39a29; border-radius:16px; }
-body[data-family-style="unlock"] .homework-tab-btn.is-active { box-shadow:inset 0 -3px #e0b44f; }
-body[data-family-style="unlock"] .hw-experience-banner { border:2px solid #e0b44f; background:rgba(255,255,255,.14); }
+body[data-family-style="unlock"] { --navy:#293b34; --navy-light:#496456; --teal:#718c78; --teal-ink:#496653; --teal-light:#e8eee8; --amber:#927d55; --amber-light:#f4f0e7; }
+body[data-family-style="unlock"] .hw-hero { background:linear-gradient(135deg,#293b34 0%,#496456 64%,#788477 100%) !important; border:1px solid #ccd4ca; }
+body[data-family-style="unlock"] .hw-hero-glow { background:radial-gradient(circle,rgba(230,234,221,.18) 0%,transparent 70%); }
+body[data-family-style="unlock"] .card, body[data-family-style="unlock"] .practice-tier { border-top:3px solid #a6b4a5; border-radius:16px; }
+body[data-family-style="unlock"] .homework-tab-btn.is-active { box-shadow:inset 0 -3px #927d55; }
+body[data-family-style="unlock"] .hw-experience-banner { border:1px solid #ccd4ca; background:rgba(255,255,255,.14); }
 `,
         }[familyStyle] || "");
 
