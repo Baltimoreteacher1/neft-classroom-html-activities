@@ -43,6 +43,26 @@ assert.equal(new Set(language.map((doc) => doc.sourceLesson)).size, 54);
 assert.equal(language.filter((doc) => doc.filename.endsWith(".docx")).length, 55);
 assert.equal(language.filter((doc) => doc.filename.endsWith(".pdf")).length, 54);
 assert.ok(language.every((doc) => !doc.teacherOnly && doc.targetLesson));
+// Prerequisite practice: sheets A and B, two sessions, as Word and PDF, are student-facing.
+// Each lesson's answer key stays teacher-only.
+const prerequisite = manifest.documents.filter((doc) => doc.category === "prerequisite");
+assert.equal(prerequisite.length, 432);
+assert.ok(
+  prerequisite.every(
+    (doc) =>
+      !doc.teacherOnly &&
+      doc.targetLesson &&
+      /Prerequisite Practice [AB]\.(?:docx|pdf)$/.test(doc.filename),
+  ),
+);
+assert.equal(new Set(prerequisite.map((doc) => doc.sourceLesson)).size, 54);
+for (const lesson of new Set(prerequisite.map((doc) => doc.sourceLesson)))
+  assert.equal(prerequisite.filter((doc) => doc.sourceLesson === lesson).length, 8, lesson);
+const prerequisiteKeys = manifest.documents.filter((doc) =>
+  /Prerequisite Practice Answer Key\.(?:docx|pdf)$/.test(doc.filename),
+);
+assert.equal(prerequisiteKeys.length, 108);
+assert.ok(prerequisiteKeys.every((doc) => doc.teacherOnly && doc.category === "answer-key"));
 for (const doc of manifest.documents) {
   const bytes = readFileSync(
     join(root, process.argv.includes("--dist") ? "dist" : "", doc.url.slice(1)),
@@ -58,6 +78,13 @@ for (const doc of manifest.documents) {
       assert.match(
         link.closest("details").querySelector("summary").textContent,
         /Language support/,
+      );
+      assert.equal(link.closest(".hub-teacher-only"), null);
+    }
+    if (doc.category === "prerequisite") {
+      assert.match(
+        link.closest("details").querySelector("summary").textContent,
+        /Prerequisite practice/,
       );
       assert.equal(link.closest(".hub-teacher-only"), null);
     }
@@ -112,6 +139,21 @@ assert.match(
 );
 assert.equal(languageLink.closest(".hub-teacher-only"), null);
 assert.equal(languageLink.download, "3.4 Explain Your Thinking.docx");
+const prerequisiteGroup = [...preview.querySelectorAll("[data-reveal-documents] summary")].find(
+  (summary) => summary.textContent.startsWith("Prerequisite practice"),
+);
+assert.equal(prerequisiteGroup?.textContent, "Prerequisite practice · Word & PDF (8)");
+assert.ok(
+  prerequisiteGroup.parentElement.querySelector(
+    'a[href$="3.4-session-1-prerequisite-practice-a.docx"]',
+  ),
+);
+assert.equal(
+  preview
+    .querySelector('a[href$="3.4-prerequisite-practice-answer-key.docx"]')
+    .closest(".hub-teacher-only")?.tagName,
+  "DETAILS",
+);
 const teacher = preview.querySelector('a[href*="/teacher/"]');
 assert.ok(teacher.closest(".hub-teacher-only"));
 assert.ok(preview.querySelector('a[href$="3.4-homework-packet.pdf"]').hasAttribute("download"));

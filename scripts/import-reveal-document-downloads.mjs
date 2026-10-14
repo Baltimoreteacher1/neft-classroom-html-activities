@@ -2,6 +2,7 @@
 // Preserve the original Reveal Word/PDF files and attach them to their lessons.
 // Usage: node scripts/import-reveal-document-downloads.mjs [source-directory] [--language-support]
 // --language-support imports only that folder and preserves every other download.
+// --prerequisite does the same for each lesson's Prerequisite Practice folder.
 import { createHash } from "node:crypto";
 import {
   copyFileSync,
@@ -19,6 +20,10 @@ import { UNMAPPED_REVEAL_LESSONS } from "./lib/worksheet-reveal.mjs";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const desktop = join(homedir(), "Desktop");
 const languageOnly = process.argv.includes("--language-support");
+const prerequisiteOnly = process.argv.includes("--prerequisite");
+// A partial run keeps every other manifest entry and re-imports only its own folder.
+const partial = languageOnly || prerequisiteOnly;
+const partialFolder = languageOnly ? "/Language Support/" : "/Prerequisite Practice/";
 const source =
   process.argv.slice(2).find((arg) => !arg.startsWith("--")) ||
   join(
@@ -56,17 +61,17 @@ function walk(dir) {
     });
 }
 const manifestPath = join(root, "data/reveal-document-downloads.json");
-const documents = languageOnly
+const documents = partial
   ? JSON.parse(readFileSync(manifestPath, "utf8")).documents.filter(
-      (doc) => !doc.sources.some((path) => path.includes("/Language Support/")),
+      (doc) => !doc.sources.some((path) => path.includes(partialFolder)),
     )
   : [];
 const byIdentity = new Map(documents.map((doc) => [`${doc.filename}|${doc.sha256}`, doc]));
 const destinations = new Set(documents.map((doc) => doc.url.slice(1)));
 const files = walk(source).filter(
-  (file) => !languageOnly || relative(source, file).includes("/Language Support/"),
+  (file) => !partial || relative(source, file).includes(partialFolder),
 );
-if (languageOnly && !files.length) throw new Error("No language-support files found");
+if (partial && !files.length) throw new Error(`No files found in ${partialFolder}`);
 for (const file of files) {
   const rel = relative(source, file);
   const filename = basename(file);
@@ -92,13 +97,15 @@ for (const file of files) {
       ? "answer-key"
       : /test\.pdf$/i.test(filename)
         ? "assessment"
-        : /Homework Packets|\/HW\/|HW_Packet/.test(rel)
-          ? "homework"
-          : /\/Warm-Up\//.test(rel)
-            ? "warm-up"
-            : /\/Practice\//.test(rel)
-              ? "practice"
-              : "guide";
+        : /(?:^|\/)Prerequisite Practice\//.test(rel)
+          ? "prerequisite"
+          : /Homework Packets|\/HW\/|HW_Packet/.test(rel)
+            ? "homework"
+            : /\/Warm-Up\//.test(rel)
+              ? "warm-up"
+              : /\/Practice\//.test(rel)
+                ? "practice"
+                : "guide";
   const teacherOnly = ["answer-key", "assessment", "guide"].includes(category);
   const folder = targetLesson
     ? `lessons/${targetLesson}/downloads/reveal`
@@ -127,6 +134,19 @@ for (const file of files) {
   documents.push(doc);
   byIdentity.set(identity, doc);
 }
+// A partial run appends its files last; restore the walk order so the manifest stays stable.
+if (partial) {
+  const byPath = (a, b) => {
+    const x = a.sources[0].split("/");
+    const y = b.sources[0].split("/");
+    for (let i = 0; i < Math.min(x.length, y.length); i++) {
+      const order = x[i].localeCompare(y[i], "en", { numeric: true });
+      if (order) return order;
+    }
+    return x.length - y.length;
+  };
+  documents.sort(byPath);
+}
 const manifest = {
   version: 1,
   sourceFileCount: documents.reduce((sum, doc) => sum + doc.sources.length, 0),
@@ -148,7 +168,7 @@ function links(docs) {
 }
 let html = readFileSync(join(root, "curriculum/units/index.html"), "utf8");
 html = html.replace(
-  languageOnly
+  partial
     ? /\n[ \t]*<!-- REVEAL-DOCUMENTS:lesson-[^>]+ -->[\s\S]*?<!-- \/REVEAL-DOCUMENTS -->/g
     : /\n[ \t]*<!-- REVEAL-DOCUMENTS:[^>]+ -->[\s\S]*?<!-- \/REVEAL-DOCUMENTS -->/g,
   "",
@@ -160,12 +180,20 @@ for (const id of new Set(documents.map((doc) => doc.targetLesson).filter(Boolean
   );
   if (!anchor.test(html)) throw new Error(`Units browser has no row for ${id}`);
   const languageDocs = docs.filter((doc) => doc.category === "language-support");
-  const publicDocs = docs.filter((doc) => !doc.teacherOnly && doc.category !== "language-support");
+  // Prerequisite practice gets its own group so it is not buried among the lesson sheets.
+  const prerequisiteDocs = docs.filter((doc) => doc.category === "prerequisite");
+  const publicDocs = docs.filter(
+    (doc) =>
+      !doc.teacherOnly && doc.category !== "language-support" && doc.category !== "prerequisite",
+  );
   const teacherDocs = docs.filter((doc) => doc.teacherOnly);
-  const markup = `\n              <!-- REVEAL-DOCUMENTS:lesson-${id} -->\n              <details class="reveal-document-downloads">\n                <summary>Reveal documents · Word &amp; PDF (${publicDocs.length})</summary>\n                <div class="res-row">\n${links(publicDocs)}\n                </div>\n              </details>${languageDocs.length ? `\n              <details class="reveal-document-downloads">\n                <summary>Language support · Word &amp; PDF (${languageDocs.length})</summary>\n                <div class="res-row">\n${links(languageDocs)}\n                </div>\n              </details>` : ""}${teacherDocs.length ? `\n              <details class="reveal-document-downloads hub-teacher-only">\n                <summary>Teacher answer keys (${teacherDocs.length})</summary>\n                <div class="res-row">\n${links(teacherDocs)}\n                </div>\n              </details>` : ""}\n              <!-- /REVEAL-DOCUMENTS -->`;
+  const prerequisiteMarkup = prerequisiteDocs.length
+    ? `\n              <details class="reveal-document-downloads prerequisite-practice-downloads">\n                <summary>Prerequisite practice · Word &amp; PDF (${prerequisiteDocs.length})</summary>\n                <div class="res-row">\n${links(prerequisiteDocs)}\n                </div>\n              </details>`
+    : "";
+  const markup = `\n              <!-- REVEAL-DOCUMENTS:lesson-${id} -->${prerequisiteMarkup}\n              <details class="reveal-document-downloads">\n                <summary>Reveal documents · Word &amp; PDF (${publicDocs.length})</summary>\n                <div class="res-row">\n${links(publicDocs)}\n                </div>\n              </details>${languageDocs.length ? `\n              <details class="reveal-document-downloads">\n                <summary>Language support · Word &amp; PDF (${languageDocs.length})</summary>\n                <div class="res-row">\n${links(languageDocs)}\n                </div>\n              </details>` : ""}${teacherDocs.length ? `\n              <details class="reveal-document-downloads hub-teacher-only">\n                <summary>Teacher answer keys (${teacherDocs.length})</summary>\n                <div class="res-row">\n${links(teacherDocs)}\n                </div>\n              </details>` : ""}\n              <!-- /REVEAL-DOCUMENTS -->`;
   html = html.replace(anchor, (match) => match + markup);
 }
-for (const unit of languageOnly
+for (const unit of partial
   ? []
   : new Set([1, ...documents.map((doc) => doc.unit).filter(Boolean)])) {
   const docs = documents.filter(

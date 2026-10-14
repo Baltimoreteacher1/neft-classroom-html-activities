@@ -35,14 +35,17 @@
       fallback.textContent = "Browse the lesson’s original documents in the unit directory";
       group.appendChild(fallback);
     } else {
-      for (const [teacher, label, language] of [
-        [false, "Language support · Word & PDF", true],
-        [false, "Practice, warm-ups & homework", false],
-        [true, "Teacher keys & guides", false],
+      for (const [teacher, label, category] of [
+        [false, "Language support · Word & PDF", "language-support"],
+        [false, "Prerequisite practice · Word & PDF", "prerequisite"],
+        [false, "Practice, warm-ups & homework", null],
+        [true, "Teacher keys & guides", null],
       ]) {
+        const own = ["language-support", "prerequisite"];
         const selection = docs.filter(
           (doc) =>
-            doc.teacherOnly === teacher && (doc.category === "language-support") === language,
+            doc.teacherOnly === teacher &&
+            (category ? doc.category === category : !own.includes(doc.category)),
         );
         if (!selection.length) continue;
         const details = document.createElement("details");
