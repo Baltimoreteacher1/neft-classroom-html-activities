@@ -11,7 +11,7 @@
 #      sessions, so main must be assembled by cherry-pick, not merge).
 #   3. Cherry-picks the requested SHAs; rewrites any private (non-noreply)
 #      author email so GitHub's GH007 push protection cannot reject the push.
-#   4. Pushes HEAD:main — the pre-push hook runs the full QA loop first, and
+#   4. Pushes HEAD:main — the pre-push hook runs change-scoped QA first, and
 #      Cloudflare builds + promotes automatically (~1-3 min).
 #   5. Verifies the deploy actually went live by polling the public build
 #      stamp (/access-practice-lab/config.json) until it reports the pushed
@@ -45,6 +45,7 @@ SMOKE_PORT=41847
 GENERATED_MANIFEST="data/curriculum-download-manifest.json"
 VERIFY_TIMEOUT_SECS=720
 VERIFY_INTERVAL_SECS=5
+NETWORK_FAILURE_LIMIT=3
 
 MODE="ship" # ship | rebuild | verify
 DRY_RUN=0
@@ -85,7 +86,7 @@ MAIN_SHA="$(git rev-parse origin/main)"
 # poll_stamp <expected-sha> — succeeds once the public build stamp reports the
 # expected commit. Cache-busted per request; CF asset TTL does not apply to it.
 poll_stamp() {
-  local expect="$1" waited=0 body live reached=0 err_file
+  local expect="$1" waited=0 body live reached=0 err_file transport_failures=0 network_lost=0 curl_status
   err_file="$(mktemp)"
   say "Verifying live deploy — polling build stamp for ${expect:0:9} (up to $((VERIFY_TIMEOUT_SECS / 60)) min)..."
   while [ "$waited" -le "$VERIFY_TIMEOUT_SECS" ]; do
@@ -95,10 +96,26 @@ poll_stamp() {
     # curl exit code away. That is not hypothetical — shipping b8c3086 from a
     # sandboxed agent burned 12 minutes on a proxy answering 403 to CONNECT and
     # then reported a healthy deploy as a stuck build.
-    if body="$(curl -fsS --max-time 15 "${STAMP_URL}?cb=$(date +%s)$$" 2>"$err_file")"; then
+    if body="$(curl -fsS --connect-timeout 5 --max-time 10 "${STAMP_URL}?cb=$(date +%s)$$" 2>"$err_file")"; then
       reached=1
+      transport_failures=0
     else
+      curl_status=$?
       body=""
+      if [ "$curl_status" -eq 22 ]; then
+        # An HTTP error means the host answered. Keep waiting for a build or
+        # access issue; the network-failure shortcut applies only to transport.
+        reached=1
+        transport_failures=0
+      else
+        transport_failures=$((transport_failures + 1))
+        # A blocked proxy or broken connection cannot verify production.
+        # Three short attempts distinguish it from a transient failure.
+        if [ "$transport_failures" -ge "$NETWORK_FAILURE_LIMIT" ]; then
+          network_lost=1
+          break
+        fi
+      fi
     fi
     live="$(printf '%s' "$body" | node -e '
 let d="";process.stdin.on("data",c=>d+=c).on("end",()=>{
@@ -115,16 +132,21 @@ let d="";process.stdin.on("data",c=>d+=c).on("end",()=>{
     waited=$((waited + VERIFY_INTERVAL_SECS))
   done
   say "" >&2
-  if [ "$reached" -eq 0 ]; then
-    # Never got a single answer — say so, instead of blaming the build.
+  if [ "$network_lost" -eq 1 ] || [ "$reached" -eq 0 ]; then
+    # Consecutive transport failures say nothing about the Pages build.
     say "✗ Deploy NOT VERIFIED — the build stamp was unreachable from this machine" >&2
-    say "  for the whole $((VERIFY_TIMEOUT_SECS / 60)) min. Every request to ${STAMP_URL}" >&2
-    say "  failed, so this is a NETWORK result, not a build result." >&2
+    say "  after $transport_failures transport failures to ${STAMP_URL}." >&2
+    say "  This is a NETWORK result, not a build result; stopped early instead of" >&2
+    say "  waiting the full $((VERIFY_TIMEOUT_SECS / 60)) min." >&2
     say "  Last curl error: $(tr -d '\r' <"$err_file" | tail -n 1)" >&2
     rm -f "$err_file"
     say "" >&2
-    say "  The push itself SUCCEEDED. Cloudflare may have promoted normally —" >&2
-    say "  nothing here can tell. Verify from somewhere with public egress:" >&2
+    if [ "$MODE" = "verify" ]; then
+      say "  No push was attempted by --verify. Check from a machine with public egress:" >&2
+    else
+      say "  The push itself SUCCEEDED. Cloudflare may have promoted normally —" >&2
+      say "  nothing here can tell. Verify from somewhere with public egress:" >&2
+    fi
     say "    1. GitHub → Actions → 'Verify Deploy' → Run workflow (asserts the" >&2
     say "       commit and FAILS on a stale stamp), or" >&2
     say "    2. npm run ship:verify   from an unrestricted machine." >&2

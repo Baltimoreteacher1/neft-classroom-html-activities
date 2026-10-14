@@ -22,7 +22,7 @@ ALLOW_DEPLOY=1 npm run ship -- HEAD             # current commit
 | Cherry-pick the named SHAs                 | `main` takes reviewed commits only                                      | Shipping half-finished concurrent work                  |
 | GH007 author rewrite                       | Non-noreply author emails get `--reset-author`                          | GitHub rejecting the push (GH007)                       |
 | Orphan-port cleanup (41847)                | Kills stale smoke servers first                                         | `validate:lesson-boot` 0/16 "-1 content" false failures |
-| Push `HEAD:main`                           | Pre-push hook runs the full QA loop (build + validate + audit)          | Broken builds going live                                |
+| Push `HEAD:main`                           | Pre-push hook runs change-scoped QA; unmapped paths run the full gate   | Broken builds going live                                |
 | Live-stamp verification                    | Polls `/access-practice-lab/config.json` until it serves the pushed SHA | Silent CF build failures; frozen production             |
 
 Useful variants:
@@ -45,6 +45,8 @@ ALLOW_DEPLOY=1 npm run ship:rebuild   # empty commit: unfreeze a stuck CF build
 - **Never hand-push the working branch to `main`.** The repo auto-commits
   during sessions; `main` is assembled only from cherry-picked SHAs, which
   `ship` does for you.
+- The pre-push hook runs `npm run qa:fast -- --push`, using the shipped commit
+  diff against `origin/main`. Use `QA_FULL=1` when a full sweep is needed.
 - **Anything imported by a build step must be in `dependencies`** (not
   `devDependencies`) — CF's production install omits dev deps, and a crashed
   build silently leaves production serving the last successful one.
@@ -55,10 +57,11 @@ ALLOW_DEPLOY=1 npm run ship:rebuild   # empty commit: unfreeze a stuck CF build
 | Symptom                                                   | Likely cause                                                   | Fix                                                                                                                                               |
 | --------------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ship` says "NOT confirmed live" after 12 min             | CF build failed or production frozen                           | Check the Pages build log; if code is fine, `ALLOW_DEPLOY=1 npm run ship:rebuild`                                                                 |
+| Build stamp has three consecutive transport failures     | Local network or proxy cannot verify the site                  | Check connectivity, then run `npm run ship:verify` from a machine with access; the push may already have succeeded                               |
 | Stamp commit ≠ `origin/main` HEAD long after a push       | Silent CF build failure (Pages serves last _successful_ build) | Read the build log; check for dev-dep imports in build scripts                                                                                    |
 | QA loop fails on `validate:lesson-boot` with `-1 content` | Historically: concurrent runs fighting over fixed port 41847   | Fixed 2026-07-10 — the smoke test now uses an ephemeral port per run (pin with `SMOKE_PORT=<n>` if needed); a repeat failure is a real render bug |
 | Cherry-pick conflict during `ship`                        | Your commit predates newer `main` work                         | Rebase your branch on `origin/main`, re-commit, ship the new SHA                                                                                  |
-| Shipped an `assets/` change but the site serves old bytes | CF zone rule caches `/assets/*` for 4 h despite `_headers`     | Wait, or reference the asset with `?v=...`; verify with `?cb=`                                                                                    |
+| Shipped an `assets/` change but the site serves old bytes | Cache policy may have regressed                                 | Check response headers with `curl -I`; the zone should respect `_headers` and revalidate stable assets                                           |
 | Push rejected with GH007                                  | Private author email on a commit                               | `ship` rewrites these automatically; hand-pushes must use the noreply identity                                                                    |
 
 ## Verifying what production is actually serving
