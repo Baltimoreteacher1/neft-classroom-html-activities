@@ -510,6 +510,11 @@ body.theme-challenge .brand-icon { background: #D9822B; box-shadow: 0 4px 0 #A86
 .step-box-desc { font-size: 0.92rem; color: var(--ink-muted); margin: 4px 0 0 0; }
 .step-box-eq { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; color: var(--brand); }
 
+/* ---- Save / Resume widget: the site-wide launcher is a vivid #1d4ed8 that reads purple beside this
+   palette. Retint it here only; the shared widget stays as it is on every other page. ---- */
+body #nsr-root { --nsr-accent: var(--brand); }
+@media (prefers-color-scheme: dark) { body #nsr-root { --nsr-accent: var(--frac); } }
+
 /* ---- Print: every section on paper, no interface chrome ---------------- */
 @media print {
   .app-header, .tab-bar, .stepper-bar, .app-footer, .top-btn, .btn, .speak-btn, .u4-toast, #u4-fx, dialog.u4-dialog { display: none !important; }
