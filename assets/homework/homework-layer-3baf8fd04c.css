@@ -5413,6 +5413,69 @@ button.fam-dom-tile:focus-visible { outline: 3px solid var(--teal); outline-offs
 @media (prefers-reduced-motion: reduce) { .hw-route-chooser.route-just-changed { box-shadow: none; } }
 @media print { .hw-route-chooser, .hw-pair-note { display: none !important; } }
 
+/* Family Conversation Card */
+.family-talk {
+  position: relative;
+  margin: 20px 0 8px;
+  padding: 16px 18px 14px;
+  background: #fffdf5;
+  border: 2px solid #b45309;
+  border-radius: 14px;
+  color: #3b2a12;
+}
+.family-talk-lang {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 4px;
+}
+.family-talk-lang button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 2px solid #b45309;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #7c2d12;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.family-talk-lang button[aria-pressed="true"] {
+  background: #7c2d12;
+  color: #ffffff;
+}
+.family-talk-lang button:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 2px;
+}
+/* The page hides every [lang="es"] in English mode; the card's own toggle must still be able to show it. */
+body.lang-mode-en .family-talk .family-talk-pane[lang="es"]:not([hidden]) { display: block !important; }
+body.lang-mode-en .family-talk .family-talk-lang button[lang="es"] { display: inline-block !important; }
+.family-talk-pane { padding-right: 104px; }
+.family-talk-pane h3 { margin: 0 0 8px; font-size: 1.15rem; }
+.family-talk-pane .ft-label {
+  margin: 10px 0 2px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #7c2d12;
+}
+.family-talk-pane p { margin: 2px 0; font-size: 1rem; line-height: 1.5; }
+.family-talk-pane .ft-question { font-size: 1.15rem; font-weight: 700; }
+.family-talk-pane .ft-frame { font-style: italic; }
+@media (max-width: 520px) {
+  .family-talk-pane { padding-right: 0; padding-top: 52px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .family-talk-lang button { transition: none; }
+}
+@media print {
+  .family-talk-lang { display: none; }
+  .family-talk-pane[hidden] { display: block; }
+  .family-talk-pane { padding-right: 0; }
+}
+
 
 .question-model-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}
 .question-model-card{padding:16px;background:#fff;border:2px solid #cbd5e1;border-radius:14px;min-width:0;color:#12355b}
@@ -7915,3 +7978,20 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
   .hw-stepper-bar { display: none !important; }
   .problems-container.hw-stepped .problem-section:not(.is-step-current) { display: block; }
 }
+
+
+.hw-experience-banner { display:flex; align-items:center; gap:12px; margin:14px 0 0; padding:12px 14px; color:#fff; background:rgba(255,255,255,.11); border:1px solid rgba(255,255,255,.45); border-radius:14px; }
+.hw-experience-icon { flex:0 0 auto; font-size:26px; line-height:1; }
+.hw-experience-copy { min-width:0; }
+.hw-experience-title { margin:0; font-weight:800; letter-spacing:.02em; }
+.hw-experience-description { margin:2px 0 0; color:#f2f6fb; font-size:14px; line-height:1.4; }
+.hw-experience-banner .lang-es { color:inherit; }
+@media (max-width:550px) { .hw-experience-banner { align-items:flex-start; padding:10px 12px; } .hw-experience-description { font-size:13px; } }
+
+body[data-family-style="case-file"] { --navy:#174338; --navy-light:#245b4e; --teal:#26866f; --teal-ink:#16634f; --teal-light:#e4f3eb; --amber:#a16207; --amber-light:#fff8dc; }
+body[data-family-style="case-file"] .hw-hero { background:linear-gradient(135deg,#173c3a 0%,#245b4e 60%,#765b24 100%) !important; border:2px solid #d6b85a; }
+body[data-family-style="case-file"] .hw-hero-glow { background:radial-gradient(circle,rgba(245,217,125,.24) 0%,transparent 70%); }
+body[data-family-style="case-file"] .family-guide, body[data-family-style="case-file"] .try-at-home { border-left:5px solid #6c8c58; }
+body[data-family-style="case-file"] .problem-section { border-left:4px solid #d6b85a; }
+body[data-family-style="case-file"] .homework-tab-btn.is-active { box-shadow:inset 0 -3px #d6b85a; }
+body[data-family-style="case-file"] .hw-experience-banner { border-left:5px solid #e5c75a; }

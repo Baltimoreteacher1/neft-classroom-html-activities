@@ -11,11 +11,16 @@
  *
  * WHAT
  *   Injects, immediately before the final </body>, a tiny classic <script> that
- *   removes #teacherBtn unless the URL has `?teacher=1`. It runs AFTER the inline
+ *   removes #teacherBtn unless the URL has `?teacher=1` AND this device has unlocked
+ *   Teacher Mode with the password (localStorage `nt-teacher-mode`, the same sticky
+ *   key engine/core/teacher-mode.js sets). A URL alone is not a way in: the engine
+ *   documents "no URL backdoor INTO teacher mode", and this now agrees with it.
+ *   Blocked storage fails closed (the button is removed). It runs AFTER the inline
  *   engine has wired the button's click handler (the engine scripts are classic
  *   and appear earlier in the document), so removal never nulls the listener.
  *   The Teacher Guide modal is only ever opened by that button, so removing it
- *   fully gates the teacher content. Teachers append `?teacher=1` to see it.
+ *   fully gates the teacher content. To re-point existing pages at a changed gate:
+ *   run --revert, then run it again with no flag.
  *
  * USAGE
  *   node tools/gate-graphic-novel-teacher.mjs            # inject (writes)
@@ -36,7 +41,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const NOVELS_DIR = join(ROOT, "graphic-novels");
 const MARK = "nt-gn-teacher-gate";
 const BLOCK = `<!-- ${MARK}:begin (hide Teacher button from students — tools/gate-graphic-novel-teacher.mjs) -->
-<script>(function(){try{if(new URLSearchParams(location.search).get("teacher")!=="1"){var b=document.getElementById("teacherBtn");if(b&&b.parentNode){b.parentNode.removeChild(b);}}}catch(e){}})();</script>
+<script>(function(){function hide(){var b=document.getElementById("teacherBtn");if(b&&b.parentNode){b.parentNode.removeChild(b);}}try{var asked=new URLSearchParams(location.search).get("teacher")==="1";var unlocked=localStorage.getItem("nt-teacher-mode")==="1";if(!(asked&&unlocked)){hide();}}catch(e){hide();}})();</script>
 <!-- ${MARK}:end -->
 `;
 const BLOCK_RE = new RegExp(`\\n?<!-- ${MARK}:begin[\\s\\S]*?${MARK}:end -->\\n?`, "g");

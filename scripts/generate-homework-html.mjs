@@ -63,6 +63,7 @@ import {
   staleSharedFiles,
   writeSharedFiles,
 } from "./lib/homework-shared-assets.mjs";
+import { workedExampleFor } from "./lib/homework-worked-example.mjs";
 import { compareFamilyHomeworkIds, generatesFamilyHomework } from "./lib/lesson-scope.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 import { toHomeworkShape } from "./lib/review-lesson-shape.mjs";
@@ -4142,6 +4143,7 @@ window.LESSON_TITLE = "${escAttr(title)}";
 window.HW_CORE_COUNT = ${coreSelected.length};
 window.__HW_VOCAB__ = ${vocabGlossary ? jsonForScript(vocabGlossary.entries) : "[]"};
 window.__HW_VOCAB_MATCH__ = ${vocabGlossary ? jsonForScript(vocabGlossary.match) : "null"};
+window.__HW_WORKED__ = ${jsonForScript(workedExampleFor(config, coreSelected))};
 /*hw-shared-js:begin*/
 ${HOMEWORK_TABS_JS}
 ${STUDIO_SKIN_JS}
@@ -4173,6 +4175,85 @@ function revealIsDue(idx) {
 function forceReveal(idx) {
   revealForced[idx] = true;
   checkProblem(idx);
+}
+
+/* The lesson's own worked example, added to Hint 2. Built with textContent, never
+   innerHTML, because it is authored lesson text. */
+function appendWorkedExample(host) {
+  const w = window.__HW_WORKED__;
+  if (!w || !w.lines || !w.lines.length) return;
+  const box = document.createElement("div");
+  box.className = "exp-worked";
+  const head = document.createElement("strong");
+  head.textContent = "📘 " + pickLangText("Worked example from tonight's lesson", "Ejemplo resuelto de la lección de esta noche") +
+    (w.title ? " — " + pickLangText(w.title, w.titleEs) : "");
+  box.appendChild(head);
+  const list = document.createElement("ol");
+  const spanish = document.body.classList.contains("lang-mode-es") && w.linesEs;
+  (spanish ? w.linesEs : w.lines).forEach((line) => {
+    const li = document.createElement("li");
+    li.textContent = line;
+    list.appendChild(li);
+  });
+  box.appendChild(list);
+  const note = document.createElement("p");
+  note.className = "exp-worked-note";
+  note.textContent = pickLangText("This is a different problem. Use the same steps on yours.", "Este es otro problema. Usa los mismos pasos en el tuyo.");
+  box.appendChild(note);
+  host.appendChild(box);
+}
+
+/* Matching, sorting and table problems used to answer a wrong try with red marks and nothing
+   else, which is a dead end at a kitchen table. Same three-step ladder as multiple choice:
+   1 look again, 2 see the lesson's worked example, 3 open the answer key to compare. Only a
+   real try counts: an empty problem is not an attempt. */
+function hasRealAttempt(section, type) {
+  if (type === "fill-table") return Array.from(section.querySelectorAll(".table-input")).some((i) => i.value.trim() !== "");
+  if (type === "matching-game") return Array.from(section.querySelectorAll(".matching-select")).some((s) => s.value !== "");
+  if (type === "drag-sort") return section.dataset.problemSubtype === "drag-order" || !!section.querySelector(".drag-column .drag-card");
+  return false;
+}
+
+function escalateHint(section, idx, type) {
+  const items = section.querySelectorAll(".table-input, .matching-select, .drag-card, .drag-order-row");
+  const right = section.querySelectorAll(".table-input.is-correct, .matching-select.is-correct, .drag-card.is-correct, .drag-order-row.is-correct").length;
+  const attempts = problemAttempts[idx] || 1;
+  const tier = revealForced[idx] ? 3 : Math.min(3, attempts);
+  const card = document.createElement("div");
+  card.className = "visual-explanation-card explanation-box";
+  if (tier < 3) card.classList.add("is-nudge");
+  card.setAttribute("role", "status");
+  const count = right + " / " + items.length + " " + pickLangText("are right.", "están bien.");
+  let html = "";
+  if (tier === 1) {
+    html = '<div class="exp-header"><span>🤔 ' + pickLangText("Hint 1 of 3 — Look again", "Pista 1 de 3 — Mira otra vez") + '</span></div>' +
+      '<div class="exp-why">' + count + " " + pickLangText("Look at the ones marked red. What is each one asking for?", "Mira las marcadas en rojo. ¿Qué pide cada una?") + '</div>' +
+      '<div class="exp-coach"><strong>💬 ' + pickLangText("Parent Coach Tip:", "Consejo para el tutor:") + '</strong> ' +
+      pickLangText("Ask: <em>“How did you decide on this one?”</em> Then change it and check again. The coach ladder below has more help.", "Pregunta: <em>“¿Cómo decidiste esta?”</em> Luego cámbiala y revisa otra vez. La escalera de ayuda de abajo tiene más pistas.") + '</div>';
+    section.querySelector(".problem-coach-ladder")?.setAttribute("open", "");
+  } else if (tier === 2) {
+    html = '<div class="exp-header"><span>💡 ' + pickLangText("Hint 2 of 3 — See it worked", "Pista 2 de 3 — Míralo resuelto") + '</span></div>' +
+      '<div class="exp-why">' + count + " " + pickLangText("Read the worked example, then fix the red ones.", "Lee el ejemplo resuelto y corrige las rojas.") + '</div>';
+    section.querySelector(".problem-coach-ladder")?.setAttribute("open", "");
+  } else {
+    html = '<div class="exp-header"><span>🔍 ' + pickLangText("Hint 3 of 3 — Step by step", "Pista 3 de 3 — Paso a paso") + '</span></div>' +
+      '<div class="exp-why">' + count + " " + pickLangText("The answer key is open below. Compare it with your work one step at a time, fix what is red, and check again.", "La clave de respuestas está abierta abajo. Compárenla con su trabajo paso a paso, corrijan lo rojo y revisen otra vez.") + '</div>';
+    const key = section.querySelector(".hw-answer-key");
+    if (key) key.open = true;
+  }
+  card.innerHTML = html;
+  if (tier === 2) appendWorkedExample(card);
+  if (tier < 3) {
+    const retry = document.createElement("div");
+    retry.className = "exp-retry";
+    retry.style.cssText = "display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;";
+    retry.innerHTML = '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" onclick="forceReveal(' + idx + ')">' +
+      '<span class="lang-en">Show me how</span><span class="lang-es" lang="es">Muéstrame cómo</span></button>';
+    card.appendChild(retry);
+  }
+  const resultEl = document.getElementById("problem_result_" + idx);
+  if (resultEl) resultEl.insertAdjacentElement("afterend", card);
+  else section.appendChild(card);
 }
 
 function initAudio() {
@@ -5817,6 +5898,7 @@ function checkProblem(idx, options) {
               '<span class="lang-en">Show me how</span><span class="lang-es" lang="es">Muéstrame cómo</span></button>' +
               workbenchActionButton("Open tonight's tool", "Abrir la herramienta de hoy") + '</div>';
             expDiv.innerHTML = html;
+            appendWorkedExample(expDiv);
           } else {
             // Tier 3: Full Step-by-Step Walkthrough
             let html = '<div class="exp-header"><span>🔍 ' + pickLangText("Hint 3 of 3 — Step-by-Step Walkthrough", "Pista 3 de 3 — Repaso visual paso a paso") + '</span></div>';
@@ -6088,6 +6170,11 @@ function checkProblem(idx, options) {
         ? pickLangText("Response recorded. Read it back and check that it explains your reasoning.", "Respuesta guardada. Léela y comprueba que explique tu razonamiento.")
         : pickLangText(feedbackMessage || "Add more detail or key vocabulary, then check again.", "Agrega más detalles o vocabulario y revisa otra vez.");
     }
+  }
+
+  if (!isProblemCorrect && !reviewOnly && !silent && type !== "multiple-choice" && hasRealAttempt(section, type)) {
+    problemAttempts[idx] = (problemAttempts[idx] || 0) + 1;
+    escalateHint(section, idx, type);
   }
 
   if (reviewOnly) {

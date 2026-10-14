@@ -8836,11 +8836,43 @@ export function renderProblemHintButton(_problem, _visual = "", coach = {}) {
     </details>`;
 }
 
+/**
+ * A one-card prompt for the kitchen table, English or Spanish, one click to switch.
+ * Every word comes from the lesson's authored family guidance (the question to ask, the
+ * household mission, the sentence starter); nothing here is invented, and it never prints
+ * the exit ticket (validate:family-exit-ticket).
+ */
+export function renderFamilyConversationCard(config = null) {
+  if (!config) return "";
+  const { question, frame, mission } = familyGuidance(config);
+  const pane = (lang) => {
+    const es = lang === "es";
+    const pick = (pair) => (es ? pair.es : pair.en);
+    return `<div class="family-talk-pane" data-pane="${lang}" lang="${lang}"${es ? " hidden" : ""}>
+        <h3 id="family_talk_title_${lang}">💬 ${es ? "Tarjeta de conversación familiar" : "Family Conversation Card"}</h3>
+        <p class="ft-label">${es ? "Pregunten en la mesa" : "Ask at the table"}</p>
+        <p class="ft-question">${esc(pick(question))}</p>
+        <p class="ft-label">${es ? "Prueben juntos" : "Try it together"}</p>
+        <p>${esc(pick(mission))}</p>
+        <p class="ft-label">${es ? "Para empezar a hablar" : "To start talking"}</p>
+        <p class="ft-frame">${esc(pick(frame))}</p>
+      </div>`;
+  };
+  return `<section class="family-talk" data-family-talk aria-label="Family Conversation Card / Tarjeta de conversación familiar">
+      <div class="family-talk-lang" role="group" aria-label="Language / Idioma">
+        <button type="button" data-ft-lang="en" aria-pressed="true">EN</button>
+        <button type="button" data-ft-lang="es" aria-pressed="false" lang="es">ES</button>
+      </div>
+      ${pane("en")}
+      ${pane("es")}
+    </section>`;
+}
+
 export function renderDoneTab(config = null, lessonId = "") {
   const inner = renderCelebration(config, lessonId)
     .replace(/^\s*<section[^>]*>/, "")
     .replace(/<\/section>\s*$/, "");
-  return `<div ${tabPanelAttrs("done", true)}>${inner}</div>`;
+  return `<div ${tabPanelAttrs("done", true)}>${inner}${renderFamilyConversationCard(config)}</div>`;
 }
 
 export function renderPhotoboothTab(config = null, lessonId = "") {
@@ -11690,6 +11722,30 @@ window.addEventListener('pagehide', function() { stopPhotoboothStream({ keepStag
 document.addEventListener('visibilitychange', function() {
   if (document.hidden) stopPhotoboothStream({ keepStage: true });
 });
+
+/* ── Family Conversation Card: EN / ES, follows the page language until the family picks ── */
+(function () {
+  function initFamilyTalk() {
+    var card = document.querySelector('[data-family-talk]');
+    if (!card) return;
+    var picked = false;
+    function show(lang) {
+      card.querySelectorAll('[data-pane]').forEach(function (pane) { pane.hidden = pane.dataset.pane !== lang; });
+      card.querySelectorAll('[data-ft-lang]').forEach(function (btn) {
+        btn.setAttribute('aria-pressed', String(btn.dataset.ftLang === lang));
+      });
+    }
+    function pageLang() { return document.body.classList.contains('lang-mode-es') ? 'es' : 'en'; }
+    card.querySelectorAll('[data-ft-lang]').forEach(function (btn) {
+      btn.addEventListener('click', function () { picked = true; show(btn.dataset.ftLang); });
+    });
+    new MutationObserver(function () { if (!picked) show(pageLang()); })
+      .observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    show(pageLang());
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initFamilyTalk);
+  else initFamilyTalk();
+})();
 `;
 
 export const GUIDED_NOTES_CSS = `
@@ -15015,6 +15071,69 @@ button.fam-dom-tile:focus-visible { outline: 3px solid var(--teal); outline-offs
 }
 @media (prefers-reduced-motion: reduce) { .hw-route-chooser.route-just-changed { box-shadow: none; } }
 @media print { .hw-route-chooser, .hw-pair-note { display: none !important; } }
+
+/* Family Conversation Card */
+.family-talk {
+  position: relative;
+  margin: 20px 0 8px;
+  padding: 16px 18px 14px;
+  background: #fffdf5;
+  border: 2px solid #b45309;
+  border-radius: 14px;
+  color: #3b2a12;
+}
+.family-talk-lang {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 4px;
+}
+.family-talk-lang button {
+  min-width: 44px;
+  min-height: 44px;
+  border: 2px solid #b45309;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #7c2d12;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.family-talk-lang button[aria-pressed="true"] {
+  background: #7c2d12;
+  color: #ffffff;
+}
+.family-talk-lang button:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 2px;
+}
+/* The page hides every [lang="es"] in English mode; the card's own toggle must still be able to show it. */
+body.lang-mode-en .family-talk .family-talk-pane[lang="es"]:not([hidden]) { display: block !important; }
+body.lang-mode-en .family-talk .family-talk-lang button[lang="es"] { display: inline-block !important; }
+.family-talk-pane { padding-right: 104px; }
+.family-talk-pane h3 { margin: 0 0 8px; font-size: 1.15rem; }
+.family-talk-pane .ft-label {
+  margin: 10px 0 2px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #7c2d12;
+}
+.family-talk-pane p { margin: 2px 0; font-size: 1rem; line-height: 1.5; }
+.family-talk-pane .ft-question { font-size: 1.15rem; font-weight: 700; }
+.family-talk-pane .ft-frame { font-style: italic; }
+@media (max-width: 520px) {
+  .family-talk-pane { padding-right: 0; padding-top: 52px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .family-talk-lang button { transition: none; }
+}
+@media print {
+  .family-talk-lang { display: none; }
+  .family-talk-pane[hidden] { display: block; }
+  .family-talk-pane { padding-right: 0; }
+}
 `;
 
 export const BIG_IDEA_CSS = `

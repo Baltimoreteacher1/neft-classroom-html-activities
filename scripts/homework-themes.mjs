@@ -389,6 +389,25 @@ header.homework-header,
 .visual-explanation-card .hw-reveal-btn {
   min-height: 44px;
 }
+.visual-explanation-card .exp-worked {
+  margin: 8px 0;
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+}
+.visual-explanation-card .exp-worked ol {
+  margin: 6px 0 4px;
+  padding-left: 1.3em;
+}
+.visual-explanation-card .exp-worked li {
+  margin: 3px 0;
+}
+.visual-explanation-card .exp-worked-note {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #92400e;
+}
 
 /* Visual Parent Step Guide in problem cards */
 .hw-step-guide {

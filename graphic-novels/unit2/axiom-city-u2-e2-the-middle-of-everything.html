@@ -935,9 +935,6 @@ if(reducedMQ.matches){prefs.motion=false}
 document.body.classList.toggle("reduced",reducedMQ.matches);
 buildBadges();syncToggles();buildProgress();
 </script>
-<!-- nt-gn-teacher-gate:begin (hide Teacher button from students — tools/gate-graphic-novel-teacher.mjs) -->
-<script>(function(){try{if(new URLSearchParams(location.search).get("teacher")!=="1"){var b=document.getElementById("teacherBtn");if(b&&b.parentNode){b.parentNode.removeChild(b);}}}catch(e){}})();</script>
-<!-- nt-gn-teacher-gate:end -->
   <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
   
   <!-- mwb-injected:end -->
@@ -946,5 +943,8 @@ buildBadges();syncToggles();buildProgress();
   <!-- nsr-injected:end -->
     <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
+<!-- nt-gn-teacher-gate:begin (hide Teacher button from students — tools/gate-graphic-novel-teacher.mjs) -->
+<script>(function(){function hide(){var b=document.getElementById("teacherBtn");if(b&&b.parentNode){b.parentNode.removeChild(b);}}try{var asked=new URLSearchParams(location.search).get("teacher")==="1";var unlocked=localStorage.getItem("nt-teacher-mode")==="1";if(!(asked&&unlocked)){hide();}}catch(e){hide();}})();</script>
+<!-- nt-gn-teacher-gate:end -->
 </body>
 </html>

@@ -9,7 +9,8 @@
  *   • Copy student link      (copies the absolute student URL to share)
  *
  * The novel pages themselves default to the STUDENT view (the Teacher button is
- * hidden unless ?teacher=1, via tools/gate-graphic-novel-teacher.mjs), so the
+ * hidden unless ?teacher=1 AND Teacher Mode is unlocked on the device,
+ * via tools/gate-graphic-novel-teacher.mjs), so the
  * link a teacher copies here is safe to hand to students.
  *
  * Re-run after adding/removing novels:  node tools/build-graphic-novel-teacher-launcher.mjs
@@ -165,7 +166,7 @@ const page = `<!doctype html>
   <p>Bookmark this page. It is for teachers only — don't share this link with students.</p>
 </div></header>
 <main>
-  <p class="gn-note"><strong>How to use:</strong> Open the <strong>Teacher</strong> version to see the Teaching Guide. Use <strong>Copy student link</strong> to grab a clean link to give your students — the student version never shows teacher content.</p>
+  <p class="gn-note"><strong>How to use:</strong> Open the <strong>Teacher</strong> version to see the Teaching Guide. Use <strong>Copy student link</strong> to grab a clean link to give your students — the student version never shows teacher content. The Teaching Guide button also needs Teacher Mode unlocked on this device first: open any lesson or the curriculum hub, choose Teacher, and enter the password once.</p>
 ${sections}
 </main>
 <script>
