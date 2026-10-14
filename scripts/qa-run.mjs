@@ -229,6 +229,14 @@ const COVERAGE = [
     ],
   ],
 
+  // Generated per-lesson practice studios for Units 2-9 (/math/practice-studio/). The pages and the
+  // hub links are written by scripts/generate-practice-studios.mjs from the lesson configs; the test
+  // proves they are current and that every answer is the lesson's own.
+  [
+    /^(math\/practice-studio\/|assets\/studio-items\.js$|scripts\/generate-practice-studios\.mjs$|tools\/practice-studios\.test\.mjs$)/,
+    ["test", "validate:save-resume", "validate:js-syntax", "validate:static", "typecheck", "check"],
+  ],
+
   // PRODUCT DECISIONS — the registry of choices a human made that a gate now
   // enforces, and the provenance test that keeps an agent's own default out of
   // it. Editing either is editing what the gates are ALLOWED to insist on.
