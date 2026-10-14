@@ -73,6 +73,8 @@ export function investigate(ctx, host) {
     initial: state.models.investigate || lab.model.values,
     onChange: (values, result) => { latest = { values, result }; state.models.investigate = values; save(); },
     level: state.level,
+    lens: true,
+    lang: () => state.lang,
   });
   bindNotes(host);
   host.querySelectorAll('[data-capture]').forEach((button) => (button.onclick = () => {

@@ -1,4 +1,5 @@
 import { controls, evaluate, fmt } from './math.mjs';
+import { mountLens } from './lens.mjs';
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const line = (x1, y1, x2, y2, cls = '') => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${cls}"/>`;
 const text = (x, y, t, anchor = 'middle') => `<text x="${x}" y="${y}" text-anchor="${anchor}">${esc(t)}</text>`;
@@ -139,14 +140,16 @@ export function visual(model, values, result) {
   return svg(body, `${result.equation}. ${result.note}`, k === 'coordinates' ? '135 -8 330 305' : '0 0 600 300');
 }
 
-export function mountModel(host, model, { initial = model.values, free = null, onChange = () => {}, prefix = 'model', compact = false, level = 'core' } = {}) {
+export function mountModel(host, model, { initial = model.values, free = null, onChange = () => {}, prefix = 'model', compact = false, level = 'core', lens = false, lang = () => 'en' } = {}) {
   let values = [...initial], symbol = model.mode === 'entry' ? '>=' : '<=', valid = true, shape = 'prism';
   const fields = controls(model);
   host.innerHTML = `<div class="model-workspace"><div class="model-picture"></div><div class="model-controls">${fields.map((field, i) => field.label === 'Unused' ? '' : `<label for="${prefix}-${i}">${esc(field.label)}<input id="${prefix}-${i}" data-control="${i}" type="number" min="${field.min}" max="${field.max}" step="${field.step}" value="${values[i]}" ${field.min === field.max || free !== null && free !== i ? 'readonly' : ''}></label>`).join('')}${model.kind === 'inequality' ? `<label>Rule<select data-symbol><option value=">=">At least (≥)</option><option value=">">More than (&gt;)</option><option value="<=">At most (≤)</option><option value="<">Less than (&lt;)</option></select></label>` : ''}<button type="button" class="quiet" data-reset>Reset model</button></div></div><p class="model-error" role="status"></p><div class="model-readout" aria-live="polite" aria-atomic="true"></div>`;
+  const lensView = lens ? mountLens(host, model, { lang, prefix: `${prefix}-lens` }) : null;
   const update = () => {
     const r = evaluate(model, values, { symbol, shape });
     host.querySelector('.model-picture').innerHTML = visual(model, values, r);
     host.querySelector('.model-readout').innerHTML = `<strong>${esc(r.equation)}</strong><p>${esc(r.note)}</p>`;
+    lensView?.update([...values], r);
     onChange([...values], r); return r;
   };
   host.querySelectorAll('[data-control]').forEach(input => input.addEventListener('input', () => {
@@ -178,7 +181,7 @@ export function mountModel(host, model, { initial = model.values, free = null, o
     });
   }
   host.querySelector('[data-reset]').addEventListener('click', () => {
-    values = [...initial]; valid = true; host.querySelectorAll('[data-control]').forEach(el => { el.value = values[Number(el.dataset.control)]; }); host.querySelector('.model-error').textContent = ''; update();
+    values = [...initial]; valid = true; lensView?.reset(); host.querySelectorAll('[data-control]').forEach(el => { el.value = values[Number(el.dataset.control)]; }); host.querySelector('.model-error').textContent = ''; update();
   });
   update();
   return { get values() { return [...values]; }, get valid() { return valid; }, result: () => evaluate(model, values, { symbol, shape }) };

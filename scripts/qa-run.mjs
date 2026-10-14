@@ -578,7 +578,7 @@ const COVERAGE = [
   // Learning Labs (77 labs in Chromium, ~35s) — runs when learning lab pages,
   // data, generator, or verifier change. Must precede /^curriculum\// and /^data\//.
   [
-    /^(curriculum\/learning-labs\/|data\/learning-labs\.json$|tools\/(learning-labs\/|generate-learning-labs\.mjs$|learning-labs\.test\.mjs$|verify-learning-labs-browser\.mjs$))/,
+    /^(curriculum\/learning-labs\/|data\/learning-labs\.json$|tools\/(learning-labs\/|generate-learning-labs\.mjs$|learning-labs(-lens)?\.test\.mjs$|verify-learning-labs-browser\.mjs$))/,
     [
       "validate:learning-labs",
       "validate:learning-labs-browser",
