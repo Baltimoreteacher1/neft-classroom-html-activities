@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Relate Fractions, Decimals, &amp; Percents · Interactive Practice Studio (Grade 6)</title>
   <meta name="description" content="Clean, student-friendly Grade 6 interactive practice converting flexibly between fractions, decimals, and percents with visual models, equivalence tables, and real-world problems.">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231E1B6E'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='28' fill='%23FFC933'%3E%C2%BD%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231B2C3F'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='28' fill='%23F0BD4F'%3E%C2%BD%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="/assets/u4-studio.css">
   <script src="/assets/u4-studio.js"></script>
   <script src="/assets/u4-studio-bonus.js"></script>
@@ -1025,33 +1025,50 @@
           <p style="font-size: 1.15rem; font-weight: 700; color: var(--brand); margin: 0 0 6px 0;">${p.stem}</p>
           <p class="es-text">${p.stemEs}</p>
 
-          <div class="trio-container">
-            <div class="trio-pill">
-              <span class="trio-label">Given Fraction</span>
-              <span class="trio-val">${p.num}/${p.den}</span>
-            </div>
-            <span class="trio-arrow">&rarr;</span>
-            <div class="trio-pill" style="border-color: var(--brand);">
-              <span class="trio-label">Fraction out of 100</span>
-              <span class="trio-val" id="t2-live-f100" style="color: var(--brand);">${isDone ? targetPct + '/100' : '?/100'}</span>
-            </div>
-            <span class="trio-arrow">&rarr;</span>
-            <div class="trio-pill" style="border-color: var(--warn);">
-              <span class="trio-label">Decimal</span>
-              <span class="trio-val" id="t2-live-dec" style="color: var(--warn);">${isDone ? decVal : '0.__'}</span>
-            </div>
-            <span class="trio-arrow">&rarr;</span>
-            <div class="trio-pill" style="background: var(--brand); border-color: var(--brand);">
-              <span class="trio-label" style="color: var(--border);">Percent</span>
-              <span class="trio-val" id="t2-live-pct" style="color: #FFFFFF;">${isDone ? targetPct + '%' : '?%'}</span>
+          <!-- Equivalent ratios, set up so every step is visible: part/whole = ?/100 -->
+          <div class="scaling-visual-card">
+            <p class="ratio-setup">${p.num}/${p.den} = <span class="q">?</span>/100</p>
+            <div class="ratio-machine">
+              <div class="big-fraction">
+                <span class="role-tag">Part</span>
+                <span class="num">${p.num}</span>
+                <span class="f-bar"></span>
+                <span class="den">${p.den}</span>
+                <span class="role-tag">Whole</span>
+              </div>
+
+              <div class="arrow-stack">
+                <div class="scale-arrow-pill"><span>× <strong id="t2-live-top-f">${isDone ? factor : '?'}</strong> &rarr;</span></div>
+                <div class="scale-arrow-pill"><span>× <strong id="t2-live-bot-f">${isDone ? factor : '?'}</strong> &rarr;</span></div>
+              </div>
+
+              <div class="big-fraction" style="border-color: var(--brand);">
+                <span class="role-tag">Out of 100</span>
+                <span class="num" id="t2-live-num" style="color: var(--brand);">${isDone ? targetPct : '?'}</span>
+                <span class="f-bar" style="background: var(--brand);"></span>
+                <span class="den" style="color: var(--brand);">100</span>
+                <span class="role-tag">Whole = 100</span>
+              </div>
+
+              <div style="font-size: 1.8rem; font-weight: 800; color: var(--brand);">=</div>
+
+              <div class="big-fraction" style="background: var(--brand); border-color: var(--brand);">
+                <span class="role-tag" style="color: var(--border);">Percent</span>
+                <span class="num" id="t2-live-pct" style="color: #FFFFFF; font-size: 1.9rem;">${isDone ? targetPct + '%' : '?%'}</span>
+              </div>
+
+              <div class="big-fraction">
+                <span class="role-tag">Decimal</span>
+                <span class="num" id="t2-live-dec" style="color: var(--dec);">${isDone ? decVal : '0.__'}</span>
+              </div>
             </div>
           </div>
 
           <div class="guided-steps-grid">
             <div class="step-box">
               <div>
-                <div class="step-box-label">Step 1 · Scale Factor to 100</div>
-                <p class="step-box-desc">What number multiplies <strong>${p.den}</strong> to make <strong>100</strong>?</p>
+                <div class="step-box-label">Step 1 · Scale the Bottom to 100</div>
+                <p class="step-box-desc">What number multiplies the whole (<strong>${p.den}</strong>) to make <strong>100</strong>? That is your scale factor.</p>
               </div>
               <div class="step-box-eq">
                 <span>${p.den} &times;</span>
@@ -1062,8 +1079,8 @@
 
             <div class="step-box step-2">
               <div>
-                <div class="step-box-label" style="color: var(--brand);">Step 2 · Scale the Numerator</div>
-                <p class="step-box-desc">Multiply numerator <strong>${p.num}</strong> by that scale factor:</p>
+                <div class="step-box-label" style="color: var(--brand);">Step 2 · Do the Same to the Top</div>
+                <p class="step-box-desc">Equal ratios multiply the top by the same factor: <strong>${p.num}</strong> &times; scale factor.</p>
               </div>
               <div class="step-box-eq">
                 <span>${p.num} &times; factor =</span>
@@ -1089,6 +1106,20 @@ ${step3Html}
         const dInp = document.getElementById('t2-inp-dec');
         const pInp = document.getElementById('t2-inp-pct');
         const fb = document.getElementById('t2-fb');
+
+        // The picture follows the boxes, so each step shows up in the equal ratios as it is typed.
+        const setText = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+        fInp.addEventListener('input', () => {
+          const v = fInp.value.trim() || '?';
+          setText('t2-live-top-f', v);
+          setText('t2-live-bot-f', v);
+        });
+        nInp.addEventListener('input', () => {
+          const v = nInp.value.trim();
+          setText('t2-live-num', v || '?');
+          setText('t2-live-pct', v ? `${v}%` : '?%');
+        });
+        dInp.addEventListener('input', () => setText('t2-live-dec', dInp.value.trim() || '0.__'));
 
         function checkT2() {
           const fVal = parseNum(fInp.value);
@@ -1168,21 +1199,77 @@ ${step3Html}
          TAB 3: EQUIVALENCE TRIOS (8 PROBLEMS + RANDOMIZER)
          ---------------------------------------------------------------------- */
       const T3_PROBLEMS = [
-        { id: 't3_1', givenType: 'dec', givenVal: '0.35', num: 7, den: 20, pct: 35, stem: 'Given decimal 0.35, write it as a fraction in simplest form and as a percent.', stemEs: 'Dado el decimal 0.35, escríbelo como fracción simplificada y como porcentaje.' },
-        { id: 't3_2', givenType: 'pct', givenVal: '65%', num: 13, den: 20, dec: '0.65', stem: 'Given 65%, write it as a fraction in simplest form and as a decimal.', stemEs: 'Dado 65%, escríbelo como fracción simplificada y como decimal.' },
+        { id: 't3_1', givenType: 'dec', givenVal: '0.35', num: 7, den: 20, pct: 35, stem: 'Given decimal 0.35, write it as a fraction and as a percent.', stemEs: 'Dado el decimal 0.35, escríbelo como fracción y como porcentaje.' },
+        { id: 't3_2', givenType: 'pct', givenVal: '65%', num: 13, den: 20, dec: '0.65', stem: 'Given 65%, write it as a fraction and as a decimal.', stemEs: 'Dado 65%, escríbelo como fracción y como decimal.' },
         { id: 't3_3', givenType: 'frac', givenVal: '3/8', dec: '0.375', pct: 37.5, stem: 'Given fraction 3/8, divide 3 &divide; 8 to find the decimal, then write the percent.', stemEs: 'Dada la fracción 3/8, divide 3 &divide; 8 para hallar el decimal y el porcentaje.' },
-        { id: 't3_4', givenType: 'dec', givenVal: '0.08', num: 2, den: 25, pct: 8, stem: 'In Reveal Lesson 4-2, a giraffe sleeps 0.08 of the day. Write 0.08 as a simplified fraction and as a percent.', stemEs: 'En la lección 4-2, una jirafa duerme 0.08 del día. Escribe 0.08 como fracción simplificada y porcentaje.' },
-        { id: 't3_5', givenType: 'pct', givenVal: '44%', num: 11, den: 25, dec: '0.44', stem: 'Given 44%, write it as a simplified fraction and as a decimal.', stemEs: 'Dado 44%, escríbelo como fracción simplificada y decimal.' },
-        { id: 't3_6', givenType: 'dec', givenVal: '0.125', num: 1, den: 8, pct: 12.5, stem: 'Given decimal 0.125 (125 thousandths), write it as a simplified fraction and as a percent.', stemEs: 'Dado 0.125, escríbelo como fracción simplificada y porcentaje.' },
-        { id: 't3_7', givenType: 'pct', givenVal: '85%', num: 17, den: 20, dec: '0.85', stem: 'Given 85%, write it as a fraction in simplest form and as a decimal.', stemEs: 'Dado 85%, escríbelo como fracción simplificada y decimal.' },
+        { id: 't3_4', givenType: 'dec', givenVal: '0.08', num: 2, den: 25, pct: 8, stem: 'In Reveal Lesson 4-2, a giraffe sleeps 0.08 of the day. Write 0.08 as a fraction and as a percent.', stemEs: 'En la lección 4-2, una jirafa duerme 0.08 del día. Escribe 0.08 como fracción y porcentaje.' },
+        { id: 't3_5', givenType: 'pct', givenVal: '44%', num: 11, den: 25, dec: '0.44', stem: 'Given 44%, write it as a fraction and as a decimal.', stemEs: 'Dado 44%, escríbelo como fracción y decimal.' },
+        { id: 't3_6', givenType: 'dec', givenVal: '0.125', num: 1, den: 8, pct: 12.5, stem: 'Given decimal 0.125 (125 thousandths), write it as a fraction and as a percent.', stemEs: 'Dado 0.125, escríbelo como fracción y porcentaje.' },
+        { id: 't3_7', givenType: 'pct', givenVal: '85%', num: 17, den: 20, dec: '0.85', stem: 'Given 85%, write it as a fraction and as a decimal.', stemEs: 'Dado 85%, escríbelo como fracción y decimal.' },
         { id: 't3_8', givenType: 'frac', givenVal: '18/25', dec: '0.72', pct: 72, stem: 'Given fraction 18/25, write it as a decimal and as a percent.', stemEs: 'Dada la fracción 18/25, escríbela como decimal y porcentaje.' }
       ];
 
       let currentT3 = T3_PROBLEMS[0];
 
+      /**
+       * What a trio problem expects, worked out from the given value alone.
+       * decimal -> digits over a power of ten (0.35 = 35/100); percent -> over 100; a given fraction
+       * stays as it is. The simplified form is the same fraction in lowest terms.
+       */
+      function trioModel(p) {
+        const gcd = (x, y) => (y ? gcd(y, x % y) : x);
+        let rawNum;
+        let rawDen;
+        let dec;
+        let pct;
+        if (p.givenType === 'frac') {
+          [rawNum, rawDen] = p.givenVal.split('/').map(Number);
+          dec = rawNum / rawDen;
+          pct = dec * 100;
+        } else if (p.givenType === 'dec') {
+          const places = (p.givenVal.split('.')[1] || '').length;
+          rawNum = Number(p.givenVal.replace('.', ''));
+          rawDen = 10 ** places;
+          dec = Number(p.givenVal);
+          pct = dec * 100;
+        } else {
+          pct = parseFloat(p.givenVal);
+          rawNum = pct;
+          rawDen = 100;
+          dec = pct / 100;
+        }
+        const g = gcd(rawNum, rawDen);
+        return { rawNum, rawDen, simpNum: rawNum / g, simpDen: rawDen / g, dec, pct: Math.round(pct * 1e4) / 1e4, fracGiven: p.givenType === 'frac' };
+      }
+
       function renderT3Problem() {
         const p = currentT3;
+        const m = trioModel(p);
         const isDone = !!state.solved3[p.id];
+        // the given form is never asked for again: a given decimal has no decimal box, a given percent no percent box
+        const showDec = p.givenType !== 'dec';
+        const showPct = p.givenType !== 'pct';
+        const fractionPill = m.fracGiven ? '' : `
+            <span class="trio-arrow">&harr;</span>
+            <div class="trio-pill">
+              <span class="trio-label">Fraction</span>
+              <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <input type="text" id="t3-inp-num" class="num-input ${isDone ? 'ok' : ''}" style="width: 72px; font-size: 1.2rem; padding: 4px;" value="${isDone ? m.rawNum : ''}" aria-label="Fraction numerator" placeholder="?">
+                <span>/</span>
+                <input type="text" id="t3-inp-den" class="num-input ${isDone ? 'ok' : ''}" style="width: 72px; font-size: 1.2rem; padding: 4px;" value="${isDone ? m.rawDen : ''}" aria-label="Fraction denominator" placeholder="?">
+              </div>
+            </div>`;
+        const simplifyRow = m.fracGiven ? '' : `
+          <div class="optional-step">
+            <div class="step-box-label">Simplify it <span class="v2-badge">optional</span></div>
+            <p class="step-box-desc">Want to go further? Write your fraction in lowest terms.</p>
+            <p class="es-text">¿Quieres ir más lejos? Escribe tu fracción en su mínima expresión.</p>
+            <div class="step-box-eq">
+              <input type="text" id="t3-inp-snum" class="num-input ${isDone ? 'ok' : ''}" style="width: 72px; font-size: 1.2rem; padding: 4px;" value="${isDone ? m.simpNum : ''}" aria-label="Simplified numerator" placeholder="?">
+              <span>/</span>
+              <input type="text" id="t3-inp-sden" class="num-input ${isDone ? 'ok' : ''}" style="width: 72px; font-size: 1.2rem; padding: 4px;" value="${isDone ? m.simpDen : ''}" aria-label="Simplified denominator" placeholder="?">
+            </div>
+          </div>`;
 
         renderDots('t3-dots', T3_PROBLEMS, p.id.startsWith('rand') ? -1 : state.idx3, state.solved3, (ni) => {
           state.idx3 = ni;
@@ -1203,30 +1290,24 @@ ${step3Html}
             <div class="trio-pill">
               <span class="trio-label">Given Value</span>
               <span class="trio-val" style="color: var(--brand);">${p.givenVal}</span>
-            </div>
-            <span class="trio-arrow">&harr;</span>
-            <div class="trio-pill">
-              <span class="trio-label">Simplified Fraction</span>
-              <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
-                <input type="text" id="t3-inp-num" class="num-input ${isDone ? 'ok' : ''}" style="width: 50px; font-size: 1.2rem; padding: 4px;" value="${isDone ? (p.num || '3') : ''}" placeholder="num">
-                <span>/</span>
-                <input type="text" id="t3-inp-den" class="num-input ${isDone ? 'ok' : ''}" style="width: 50px; font-size: 1.2rem; padding: 4px;" value="${isDone ? (p.den || '8') : ''}" placeholder="den">
-              </div>
-            </div>
-            <span class="trio-arrow">&harr;</span>
+            </div>${fractionPill}
+${showDec ? `            <span class="trio-arrow">&harr;</span>
             <div class="trio-pill">
               <span class="trio-label">Decimal</span>
-              <input type="text" id="t3-inp-dec" class="num-input ${isDone ? 'ok' : ''}" style="width: 80px; font-size: 1.2rem; padding: 4px;" value="${isDone ? (p.dec || (p.pct/100).toFixed(2)) : ''}" placeholder="0.__">
+              <input type="text" id="t3-inp-dec" class="num-input ${isDone ? 'ok' : ''}" style="width: 96px; font-size: 1.2rem; padding: 4px;" value="${isDone ? m.dec : ''}" aria-label="Decimal" placeholder="0.__">
             </div>
+` : ''}
+${showPct ? `` : ''}
             <span class="trio-arrow">&harr;</span>
             <div class="trio-pill">
               <span class="trio-label">Percent</span>
               <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
-                <input type="text" id="t3-inp-pct" class="num-input ${isDone ? 'ok' : ''}" style="width: 70px; font-size: 1.2rem; padding: 4px;" value="${isDone ? (p.pct || '37.5') : ''}" placeholder="?">
+                <input type="text" id="t3-inp-pct" class="num-input ${isDone ? 'ok' : ''}" style="width: 84px; font-size: 1.2rem; padding: 4px;" value="${isDone ? m.pct : ''}" aria-label="Percent" placeholder="?">
                 <span style="font-weight: 800;">%</span>
               </div>
             </div>
           </div>
+          ${simplifyRow}
 
           <div style="display: flex; gap: 10px; margin-top: 18px; align-items: center; flex-wrap: wrap;">
             <button type="button" class="btn btn-primary" id="t3-check-btn">Check Trio</button>
@@ -1238,41 +1319,55 @@ ${step3Html}
           </div>
         `;
 
+        const val = (id) => {
+          const el = document.getElementById(id);
+          return el ? el.value.trim() : '';
+        };
+        const mark = (id, ok) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.classList.toggle('ok', ok);
+          el.classList.toggle('err', !ok);
+        };
+        const placeName = { 10: 'tenths', 100: 'hundredths', 1000: 'thousandths' }[m.rawDen];
+        const writeOut = p.givenType === 'dec'
+          ? `${p.givenVal} is ${m.rawNum} ${placeName}, so write ${m.rawNum}/${m.rawDen}.`
+          : `${p.givenVal} means ${m.rawNum} out of 100, so write ${m.rawNum}/100.`;
+
         function checkT3() {
-          const num = parseNum(document.getElementById('t3-inp-num').value);
-          const den = parseNum(document.getElementById('t3-inp-den').value);
-          const dec = parseNum(document.getElementById('t3-inp-dec').value);
-          const pct = parseNum(document.getElementById('t3-inp-pct').value);
+          const okF = m.fracGiven || (parseNum(val('t3-inp-num')) === m.rawNum && parseNum(val('t3-inp-den')) === m.rawDen);
+          const okD = !showDec || Math.abs(parseNum(val('t3-inp-dec')) - m.dec) < 0.001;
+          const okP = !showPct || Math.abs(parseNum(val('t3-inp-pct')) - m.pct) < 0.01;
+          // the simplified fraction is optional: empty is fine, but if it is filled in it must be right
+          const simpFilled = !!(val('t3-inp-snum') || val('t3-inp-sden'));
+          const okS = !simpFilled || (parseNum(val('t3-inp-snum')) === m.simpNum && parseNum(val('t3-inp-sden')) === m.simpDen);
 
-          const targetNum = p.num || 3;
-          const targetDen = p.den || 8;
-          const targetDec = p.dec ? Number(p.dec) : (p.pct / 100);
-          const targetPct = p.pct ? Number(p.pct) : (p.num / p.den * 100);
-
-          const okF = num === targetNum && den === targetDen;
-          const okD = Math.abs(dec - targetDec) < 0.001;
-          const okP = Math.abs(pct - targetPct) < 0.01;
-
-          document.getElementById('t3-inp-num').classList.toggle('ok', okF);
-          document.getElementById('t3-inp-num').classList.toggle('err', !okF);
-          document.getElementById('t3-inp-den').classList.toggle('ok', okF);
-          document.getElementById('t3-inp-den').classList.toggle('err', !okF);
-          document.getElementById('t3-inp-dec').classList.toggle('ok', okD);
-          document.getElementById('t3-inp-dec').classList.toggle('err', !okD);
-          document.getElementById('t3-inp-pct').classList.toggle('ok', okP);
-          document.getElementById('t3-inp-pct').classList.toggle('err', !okP);
+          mark('t3-inp-num', okF);
+          mark('t3-inp-den', okF);
+          mark('t3-inp-dec', okD);
+          mark('t3-inp-pct', okP);
+          if (simpFilled) {
+            mark('t3-inp-snum', okS);
+            mark('t3-inp-sden', okS);
+          }
 
           const fb = document.getElementById('t3-fb');
-          if (okF && okD && okP) {
+          if (okF && okD && okP && okS) {
             fb.className = 'feedback-box show ok';
-            fb.innerHTML = `Perfect! Simplified fraction is ${targetNum}/${targetDen}, decimal is ${targetDec}, and percent is ${targetPct}%.`;
+            fb.innerHTML = m.fracGiven
+              ? `Perfect! ${p.givenVal} = ${m.dec} = ${m.pct}%.`
+              : `Perfect! ${m.rawNum}/${m.rawDen}${simpFilled ? ` simplifies to ${m.simpNum}/${m.simpDen}` : ''}, the decimal is ${m.dec}, and the percent is ${m.pct}%.`;
             markSolved(state.solved3, p.id);
             renderDots('t3-dots', T3_PROBLEMS, state.idx3, state.solved3, (ni) => { state.idx3 = ni; currentT3 = T3_PROBLEMS[ni]; renderT3Problem(); });
             updateProgressHeader();
             appendNext(document.getElementById('t3-fb'), 3, T3_PROBLEMS.length, renderT3Problem);
           } else {
             fb.className = 'feedback-box show err';
-            fb.innerHTML = 'Check the red boxes. Make sure your fraction is simplified to lowest terms.';
+            fb.innerHTML = !okF
+              ? `Write the fraction first, straight from the given value. ${writeOut}`
+              : !okS
+                ? 'The simplified fraction is optional. Fix it so it is in lowest terms, or clear both boxes.'
+                : 'Check the red boxes.';
           }
         }
 
@@ -1280,7 +1375,9 @@ ${step3Html}
         document.getElementById('t3-hint-btn').addEventListener('click', () => {
           const fb = document.getElementById('t3-fb');
           fb.className = 'feedback-box show warn';
-          fb.innerHTML = '💡 Hint: To find the decimal from a fraction, divide numerator &divide; denominator. To find percent, multiply decimal &times; 100.';
+          fb.innerHTML = m.fracGiven
+            ? '💡 Hint: To find the decimal from a fraction, divide numerator &divide; denominator. To find percent, multiply decimal &times; 100.'
+            : `💡 Hint: ${writeOut} Then the decimal and the percent follow from it.`;
         });
       }
 
@@ -1311,8 +1408,8 @@ ${step3Html}
           den: pick.den,
           pct: pick.pct,
           dec: (pick.pct / 100).toFixed(2),
-          stem: `Convert ${pick.pct}% into a simplified fraction and a decimal.`,
-          stemEs: `Convierte ${pick.pct}% a fracción simplificada y decimal.`
+          stem: `Convert ${pick.pct}% into a fraction and a decimal.`,
+          stemEs: `Convierte ${pick.pct}% a fracción y decimal.`
         };
         renderT3Problem();
       });

@@ -23,7 +23,13 @@ const UNIT = join(ROOT, "math/unit-4");
 
 /** page -> "tab#problem" -> why a repeat is intended */
 const ALLOWED = {
-  "4-2-practice-studio": { "2#1": "worked model: the first conversion keeps the typed percent" },
+  "4-2-practice-studio": {
+    "2#1": "worked model: the first conversion keeps the typed percent",
+    "3#1":
+      "a decimal written as hundredths: 0.35 = 35/100 = 35%, and writing the fraction out first was the request",
+    "3#4":
+      "a decimal written as hundredths: 0.08 = 8/100 = 8%, and writing the fraction out first was the request",
+  },
   "percent-practice-studio": {
     "1#5": "notation task: 23 out of 100 is written as a fraction, a decimal and a percent",
     "2#1": "worked model: the first scaling problem keeps the typed percent",
