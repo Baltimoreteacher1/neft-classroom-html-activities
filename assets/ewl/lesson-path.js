@@ -41,6 +41,53 @@
       /* ignore */
     }
   }
+  // Track switcher (Core / Group 1 / Enrichment): switches in place, remembered, and shared by ?track=.
+  const trackBtns = [...page.querySelectorAll(".lp-track")];
+  if (trackBtns.length) {
+    const names = trackBtns.map((b) => b.dataset.track);
+    const setTrack = (name, save) => {
+      if (!names.includes(name)) name = "core";
+      for (const b of trackBtns) b.setAttribute("aria-pressed", String(b.dataset.track === name));
+      for (const sec of page.querySelectorAll(".lp-step")) sec.hidden = name !== "core";
+      for (const p of page.querySelectorAll("[data-track-panel]"))
+        p.hidden = p.dataset.trackPanel !== name;
+      if (!save) return;
+      try {
+        localStorage.setItem("lp_track", name);
+      } catch {
+        /* private mode */
+      }
+      const u = new URL(location.href);
+      if (name === "core") u.searchParams.delete("track");
+      else u.searchParams.set("track", name);
+      history.replaceState(null, "", u);
+    };
+    trackBtns.forEach((b) => b.addEventListener("click", () => setTrack(b.dataset.track, true)));
+    let want = new URLSearchParams(location.search).get("track");
+    if (!want) {
+      try {
+        want = localStorage.getItem("lp_track");
+      } catch {
+        /* private mode */
+      }
+    }
+    if (want && want !== "core") setTrack(want, false);
+  }
+  // Teacher layer: only lesson metadata (standards, pacing). Answer keys never ship in this page.
+  const teacher = page.querySelector(".lp-teacher");
+  if (teacher) {
+    const toggle = () => {
+      teacher.hidden = !teacher.hidden;
+    };
+    if (new URLSearchParams(location.search).get("teacher") === "1") teacher.hidden = false;
+    document.addEventListener("keydown", (e) => {
+      if (e.shiftKey && e.key.toLowerCase() === "t" && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        const t = e.target;
+        if (t?.closest?.("input, textarea, select, [contenteditable]")) return;
+        toggle();
+      }
+    });
+  }
   for (const b of page.querySelectorAll(".lp-mark")) {
     const stage = STAGE[b.dataset.stage];
     if (store?.stagesDone(id).includes(stage)) b.setAttribute("aria-pressed", "true");

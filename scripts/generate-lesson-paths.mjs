@@ -52,6 +52,32 @@ export function studioLessonIds() {
   ].sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
 }
 
+/** Alternate routes through one lesson: the same lesson at another level, each a page that already exists. */
+function trackPanels(id) {
+  const one = (href, en, es) => (exists(href) ? { href, en, es } : null);
+  const tracks = {
+    scaffold: [
+      one(
+        `/lessons/${id}-group1/`,
+        "Group 1 lesson (extra support)",
+        "Lección del Grupo 1 (más apoyo)",
+      ),
+      one(`/lessons/${id}-catchup/`, "Catch-up lesson", "Lección de repaso"),
+    ],
+    enrichment: [
+      one(
+        `/lessons/${id}-group2/`,
+        "Group 2 lesson (enrichment)",
+        "Lección del Grupo 2 (enriquecimiento)",
+      ),
+      ...studioUrls(id)
+        .slice(1)
+        .map((h) => one(h, "Challenge studio", "Estudio de desafío")),
+    ],
+  };
+  return Object.fromEntries(Object.entries(tracks).map(([k, v]) => [k, v.filter(Boolean)]));
+}
+
 function link(href, en, es, note) {
   return exists(href) ? { href, en, es, note: note || "" } : null;
 }
@@ -224,6 +250,35 @@ export function pageFor(lesson, map, stamp) {
       ${body}
       <p class="lp-done"><button type="button" class="lp-mark" data-stage="${key}" aria-pressed="false">${bi("I finished this step", "Terminé este paso")}</button></p>
     </section>`;
+
+  const tp = trackPanels(id);
+  const trackKeys = [
+    ["core", "Core", "Principal"],
+    ...(tp.scaffold.length ? [["scaffold", "Group 1 (Scaffold)", "Grupo 1 (apoyo)"]] : []),
+    ...(tp.enrichment.length ? [["enrichment", "Enrichment", "Enriquecimiento"]] : []),
+  ];
+  const trackBar =
+    trackKeys.length > 1
+      ? `<div class="lp-tracks" role="group" aria-label="${esc("Lesson track")}">${trackKeys
+          .map(
+            ([k, en, es]) =>
+              `<button type="button" class="lp-track" data-track="${k}" aria-pressed="${k === "core"}">${bi(en, es)}</button>`,
+          )
+          .join("")}</div>${["scaffold", "enrichment"]
+          .filter((k) => tp[k].length)
+          .map(
+            (k) =>
+              `<section class="lp-track-panel" id="lp-track-${k}" data-track-panel="${k}" hidden aria-label="${k}"><ul class="lp-list">${tp[
+                k
+              ]
+                .map((x) => `<li><a class="lp-link" href="${x.href}">${bi(x.en, x.es)}</a></li>`)
+                .join("")}</ul></section>`,
+          )
+          .join("")}`
+      : "";
+  const teacherLayer = `<aside class="lp-teacher" hidden aria-label="Teacher details"><p><strong>Standards:</strong> ${esc(
+    lesson.standard || "—",
+  )} · <strong>Pacing:</strong> ${esc(String(Number((String(lesson.timeEstimate || "").match(/\d+/) || [])[0]) || 45))} min · <a href="/curriculum/matrix/?lesson=${id}">Open in matrix</a></p><p class="lp-note">Press Shift+T to hide. Answer keys and teaching guidance stay on signed-in teacher pages.</p></aside>`;
   const body = `<main id="curriculum-content" class="lp-page" data-lesson="${id}">
     <header class="lp-head">
       <p class="lp-eyebrow">${bi(`Unit ${lesson.unit} · Lesson ${id}`, `Unidad ${lesson.unit} · Lección ${id}`)}${lesson.standard ? ` · ${esc(lesson.standard)}` : ""}</p>
@@ -231,6 +286,8 @@ export function pageFor(lesson, map, stamp) {
       <p class="lp-goal">${esc(lesson.objective || "")}</p>
       <p class="lp-note">${bi("Four steps. Work in order, or jump to the one you need.", "Cuatro pasos. Trabaja en orden o ve al que necesites.")}</p>
     </header>
+    ${teacherLayer}
+    ${trackBar}
     ${step(1, "curious", "Be Curious", "Sé curioso", `<p>${bi("Warm up your thinking and meet the words.", "Calienta tu pensamiento y conoce las palabras.")}</p>${list(p.curious)}`)}
     ${step(2, "build", "Build the Idea", "Construye la idea", `<p class="lp-actions">${a(p.build.main, "lp-primary")}</p>${p.build.more.length ? `<details class="lp-more"><summary>${bi("Notes and handouts", "Notas y folletos")}</summary>${list(p.build.more)}</details>` : ""}`)}
     ${step(
