@@ -1,0 +1,816 @@
+{
+  "v": 1,
+  "lesson": "5-2",
+  "story": "Harbor Works is busy. Sails, signal flags and warning pennants are all triangles, and the crew must know the area of each one to order cloth. Use the base and the perpendicular height to keep the port running.",
+  "storyEs": "Las Obras del Puerto están muy ocupadas. Las velas, las banderas de señales y las banderolas de aviso son triángulos, y el equipo debe conocer el área de cada uno para pedir tela. Usa la base y la altura perpendicular para que el puerto siga funcionando.",
+  "challengeStory": "Night shift at the harbor: fog rolls in, and the lighthouse crew needs new triangular signal sails by sunrise. Find every area carefully, because a wrong cut wastes cloth you cannot replace.",
+  "challengeStoryEs": "Turno de noche en el puerto: llega la niebla y el equipo del faro necesita nuevas velas de señales triangulares al amanecer. Halla cada área con cuidado, porque un corte equivocado desperdicia tela que no se puede reponer.",
+  "getReady": null,
+  "noAct": false,
+  "fresh": [
+    {
+      "k": "gen",
+      "g": "areaTriangle",
+      "level": 1
+    },
+    {
+      "k": "gen",
+      "g": "areaTriangle",
+      "level": 1
+    },
+    {
+      "k": "gen",
+      "g": "areaTriangle",
+      "level": 2
+    },
+    {
+      "k": "gen",
+      "g": "areaTriangle",
+      "level": 2
+    },
+    {
+      "k": "gen",
+      "g": "areaTriangle",
+      "level": 3
+    },
+    {
+      "k": "gen",
+      "g": "areaTriangle",
+      "level": 3
+    },
+    {
+      "k": "act",
+      "kind": "sizer",
+      "level": 2,
+      "p": {
+        "shape": "tri",
+        "goal": "area"
+      }
+    }
+  ],
+  "challenge": {
+    "climb": [
+      {
+        "k": "gen",
+        "g": "areaTriangle",
+        "level": 2
+      },
+      {
+        "k": "gen",
+        "g": "areaTriangle",
+        "level": 2
+      },
+      {
+        "k": "gen",
+        "g": "areaTriangle",
+        "level": 3
+      },
+      {
+        "k": "gen",
+        "g": "areaTriangle",
+        "level": 3
+      },
+      {
+        "k": "gen",
+        "g": "areaTriangle",
+        "level": 4
+      },
+      {
+        "k": "gen",
+        "g": "areaTriangle",
+        "level": 4
+      }
+    ],
+    "missions": [
+      {
+        "k": "num",
+        "q": "A harbor tug flies a triangular sail with a base of 6 m and a height of 9 m. Sailcloth costs $12 per square meter. How many dollars does the cloth for one sail cost?",
+        "qEs": "Un remolcador del puerto usa una vela triangular con una base de 6 m y una altura de 9 m. La tela para velas cuesta $12 por metro cuadrado. ¿Cuántos dólares cuesta la tela de una vela?",
+        "a": "324",
+        "fw": [
+          {
+            "v": "648",
+            "f": "You forgot the half. 6 × 9 is the area of a rectangle, and a triangle is half of it.",
+            "fEs": "Olvidaste la mitad. 6 × 9 es el área de un rectángulo, y un triángulo es la mitad."
+          },
+          {
+            "v": "27",
+            "f": "That is the sail's area in m². The cloth costs $12 for each m², so multiply by 12.",
+            "fEs": "Esa es el área de la vela en m². La tela cuesta $12 por cada m², así que multiplica por 12."
+          },
+          {
+            "v": "180",
+            "f": "You added 6 and 9 and multiplied by 12. Area multiplies the base and height, then halves.",
+            "fEs": "Sumaste 6 y 9 y multiplicaste por 12. El área multiplica la base y la altura y luego toma la mitad."
+          }
+        ],
+        "x": "Area = ½ × base × height = ½ × 6 × 9 = 27 m². At $12 per m², the cloth costs 27 × 12 = $324.",
+        "xEs": "Área = ½ × base × altura = ½ × 6 × 9 = 27 m². A $12 por m², la tela cuesta 27 × 12 = $324.",
+        "h": [
+          "Find the sail's area first.",
+          "A triangle is half of the rectangle with the same base and height.",
+          "Then multiply the area by the price for each square meter."
+        ],
+        "hEs": [
+          "Halla primero el área de la vela.",
+          "Un triángulo es la mitad del rectángulo con la misma base y altura.",
+          "Luego multiplica el área por el precio de cada metro cuadrado."
+        ],
+        "viz": {
+          "t": "shape",
+          "s": "tri",
+          "dims": {
+            "b": 6,
+            "h": 9
+          },
+          "labels": true,
+          "unit": "m"
+        }
+      },
+      {
+        "k": "mc",
+        "q": "A triangular signal flag has an area of 54 cm² and a base of 12 cm. What is its height?",
+        "qEs": "Una bandera de señales triangular tiene un área de 54 cm² y una base de 12 cm. ¿Cuál es su altura?",
+        "c": [
+          "4.5 cm",
+          "9 cm",
+          "42 cm",
+          "108 cm"
+        ],
+        "a": 1,
+        "f": [
+          "You divided 54 by 12 and skipped the half in the formula. Double the area first, then divide by the base.",
+          "",
+          "You subtracted 12 from 54. Undo a multiplication with division.",
+          "You doubled the area but did not divide by the base."
+        ],
+        "fEs": [
+          "Dividiste 54 entre 12 y te saltaste la mitad de la fórmula. Primero duplica el área y luego divide entre la base.",
+          "",
+          "Restaste 12 de 54. Deshaz una multiplicación con una división.",
+          "Duplicaste el área pero no dividiste entre la base."
+        ],
+        "tag": [
+          "forgot-double",
+          null,
+          "subtracted-instead",
+          "doubled-only"
+        ],
+        "x": "A = ½ × b × h, so 54 = ½ × 12 × h = 6 × h. Then h = 54 ÷ 6 = 9 cm. Check: ½ × 12 × 9 = 54.",
+        "xEs": "A = ½ × b × h, así que 54 = ½ × 12 × h = 6 × h. Entonces h = 54 ÷ 6 = 9 cm. Comprueba: ½ × 12 × 9 = 54.",
+        "h": [
+          "Write the formula with the numbers you know.",
+          "Half of the base is a number you can find. Then 54 = that number × h.",
+          "Divide 54 by half of the base."
+        ],
+        "hEs": [
+          "Escribe la fórmula con los números que conoces.",
+          "La mitad de la base es un número que puedes hallar. Entonces 54 = ese número × h.",
+          "Divide 54 entre la mitad de la base."
+        ]
+      },
+      {
+        "k": "tbl",
+        "t": "Three warning pennants are triangles. Find each missing value, then add the three areas in the Total row.",
+        "tEs": "Tres banderolas de aviso son triángulos. Halla cada valor que falta y luego suma las tres áreas en la fila Total.",
+        "hd": [
+          "Pennant",
+          "Base (cm)",
+          "Height (cm)",
+          "Area (cm²)"
+        ],
+        "hdEs": [
+          "Banderola",
+          "Base (cm)",
+          "Altura (cm)",
+          "Área (cm²)"
+        ],
+        "rows": [
+          [
+            "A",
+            "10",
+            "8",
+            ""
+          ],
+          [
+            "B",
+            "14",
+            "",
+            "63"
+          ],
+          [
+            "C",
+            "",
+            "6",
+            "45"
+          ],
+          [
+            "Total",
+            "—",
+            "—",
+            ""
+          ]
+        ],
+        "cells": [
+          {
+            "r": 0,
+            "c": 3,
+            "a": "40"
+          },
+          {
+            "r": 1,
+            "c": 2,
+            "a": "9"
+          },
+          {
+            "r": 2,
+            "c": 1,
+            "a": "15"
+          },
+          {
+            "r": 3,
+            "c": 3,
+            "a": "148"
+          }
+        ],
+        "x": "A: ½ × 10 × 8 = 40. B: double 63 to get 126, then 126 ÷ 14 = 9. C: double 45 to get 90, then 90 ÷ 6 = 15. Total: 40 + 63 + 45 = 148 cm².",
+        "xEs": "A: ½ × 10 × 8 = 40. B: duplica 63 para obtener 126 y luego 126 ÷ 14 = 9. C: duplica 45 para obtener 90 y luego 90 ÷ 6 = 15. Total: 40 + 63 + 45 = 148 cm².",
+        "h": [
+          "Each row uses area = ½ × base × height.",
+          "When the area is given, double it first, then divide by the known measurement.",
+          "Do Pennant A first, then use all three areas for the Total."
+        ],
+        "hEs": [
+          "Cada fila usa área = ½ × base × altura.",
+          "Cuando te dan el área, duplícala primero y luego divide entre la medida conocida.",
+          "Haz primero la banderola A y luego usa las tres áreas para el Total."
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "Triangle P has a base of 10 m and a height of 8 m. Triangle Q has the same area as P and a base of 16 m. What is the height of Triangle Q?",
+        "qEs": "El triángulo P tiene una base de 10 m y una altura de 8 m. El triángulo Q tiene la misma área que P y una base de 16 m. ¿Cuál es la altura del triángulo Q?",
+        "c": [
+          "2.5 m",
+          "8 m",
+          "5 m",
+          "80 m"
+        ],
+        "a": 2,
+        "f": [
+          "You divided the area 40 by 16 and skipped the half in the formula. Double the area first.",
+          "A longer base with the same height would give a bigger area. To keep the same area, the height must change.",
+          "",
+          "You doubled the area but did not divide by the base."
+        ],
+        "fEs": [
+          "Dividiste el área 40 entre 16 y te saltaste la mitad de la fórmula. Duplica primero el área.",
+          "Una base más larga con la misma altura daría un área mayor. Para mantener la misma área, la altura debe cambiar.",
+          "",
+          "Duplicaste el área pero no dividiste entre la base."
+        ],
+        "tag": [
+          "forgot-double",
+          "same-height",
+          null,
+          "doubled-only"
+        ],
+        "x": "Triangle P has area ½ × 10 × 8 = 40 m². For Q, 40 = ½ × 16 × h = 8 × h, so h = 40 ÷ 8 = 5 m. A longer base needs a shorter height to keep the same area.",
+        "xEs": "El triángulo P tiene un área de ½ × 10 × 8 = 40 m². Para Q, 40 = ½ × 16 × h = 8 × h, así que h = 40 ÷ 8 = 5 m. Una base más larga necesita una altura más corta para mantener la misma área.",
+        "h": [
+          "Find the area of Triangle P first.",
+          "Triangle Q must have this same area. Write ½ × 16 × h = that area.",
+          "Half of 16 is 8. Divide the area by 8."
+        ],
+        "hEs": [
+          "Halla primero el área del triángulo P.",
+          "El triángulo Q debe tener esta misma área. Escribe ½ × 16 × h = esa área.",
+          "La mitad de 16 es 8. Divide el área entre 8."
+        ]
+      }
+    ],
+    "lab": [
+      {
+        "k": "act",
+        "kind": "sizer",
+        "level": 3,
+        "p": {
+          "shape": "tri",
+          "goal": "area"
+        }
+      },
+      {
+        "k": "act",
+        "kind": "sizer",
+        "level": 4,
+        "p": {
+          "shape": "tri",
+          "goal": "area"
+        }
+      },
+      {
+        "k": "sort",
+        "q": "The harbor inspector reads out claims about triangles. Sort each claim as true or false.",
+        "qEs": "El inspector del puerto lee afirmaciones sobre triángulos. Clasifica cada afirmación como verdadera o falsa.",
+        "bins": [
+          {
+            "l": "True",
+            "lEs": "Verdadera"
+          },
+          {
+            "l": "False",
+            "lEs": "Falsa"
+          }
+        ],
+        "cards": [
+          {
+            "t": "A triangle is half of a parallelogram with the same base and height",
+            "tEs": "Un triángulo es la mitad de un paralelogramo con la misma base y altura",
+            "b": 0
+          },
+          {
+            "t": "Doubling the base doubles the area",
+            "tEs": "Duplicar la base duplica el área",
+            "b": 0
+          },
+          {
+            "t": "Two triangles with the same base and height have equal areas",
+            "tEs": "Dos triángulos con la misma base y altura tienen áreas iguales",
+            "b": 0
+          },
+          {
+            "t": "A triangle with base 8 and height 5 has area 40",
+            "tEs": "Un triángulo con base 8 y altura 5 tiene área 40",
+            "b": 1
+          },
+          {
+            "t": "The slanted side is always the height",
+            "tEs": "El lado inclinado siempre es la altura",
+            "b": 1
+          },
+          {
+            "t": "You find the area by adding the base and the height",
+            "tEs": "El área se halla sumando la base y la altura",
+            "b": 1
+          }
+        ],
+        "x": "True: a triangle is half of a matching parallelogram, so doubling the base doubles the area, and equal bases and heights give equal areas. False: 8 × 5 = 40 is the rectangle, and the triangle is ½ × 8 × 5 = 20. The slanted side is not the height, and area multiplies instead of adding.",
+        "xEs": "Verdadero: un triángulo es la mitad de un paralelogramo igual, así que duplicar la base duplica el área, y bases y alturas iguales dan áreas iguales. Falso: 8 × 5 = 40 es el rectángulo, y el triángulo es ½ × 8 × 5 = 20. El lado inclinado no es la altura, y el área multiplica en vez de sumar.",
+        "h": [
+          "Test a claim with the formula A = ½ × b × h.",
+          "Use small numbers to try a claim, such as base 4 and height 2.",
+          "Remember the height is perpendicular to the base."
+        ],
+        "hEs": [
+          "Prueba una afirmación con la fórmula A = ½ × b × h.",
+          "Usa números pequeños para probar una afirmación, como base 4 y altura 2.",
+          "Recuerda que la altura es perpendicular a la base."
+        ]
+      }
+    ],
+    "detective": [
+      {
+        "k": "err",
+        "t": "A harbor sail has a base of 16 ft and a height of 9 ft. Yara finds its area. Tap the first step where her work goes wrong.",
+        "tEs": "Una vela del puerto tiene una base de 16 ft y una altura de 9 ft. Yara halla su área. Toca el primer paso donde su trabajo se equivoca.",
+        "s": [
+          {
+            "l": "Step 1",
+            "lEs": "Paso 1",
+            "w": "The base is 16 ft and the height is 9 ft.",
+            "wEs": "La base es 16 ft y la altura es 9 ft."
+          },
+          {
+            "l": "Step 2",
+            "lEs": "Paso 2",
+            "w": "A = 16 × 9 = 144.",
+            "wEs": "A = 16 × 9 = 144."
+          },
+          {
+            "l": "Step 3",
+            "lEs": "Paso 3",
+            "w": "The sail has an area of 144 ft².",
+            "wEs": "La vela tiene un área de 144 ft²."
+          }
+        ],
+        "e": 1,
+        "fix": "16 × 9 = 144 is the area of the rectangle around the triangle. A triangle is half of it: ½ × 144 = 72 ft².",
+        "fixEs": "16 × 9 = 144 es el área del rectángulo alrededor del triángulo. Un triángulo es la mitad: ½ × 144 = 72 ft².",
+        "x": "The formula for a triangle is A = ½ × b × h. Without the half, the answer is double the true area.",
+        "xEs": "La fórmula de un triángulo es A = ½ × b × h. Sin la mitad, la respuesta es el doble del área real.",
+        "h": [
+          "Does the area formula for a triangle have a half?",
+          "Is 144 the triangle or the rectangle around it?",
+          "What is half of 144?"
+        ],
+        "hEs": [
+          "¿La fórmula del área de un triángulo tiene una mitad?",
+          "¿144 es el triángulo o el rectángulo que lo rodea?",
+          "¿Cuánto es la mitad de 144?"
+        ]
+      },
+      {
+        "k": "err",
+        "t": "A sail is a right triangle. Its base is 8 m, its height is 6 m, and its sloping edge is 10 m. Teo finds its area. Tap the first step where his work goes wrong.",
+        "tEs": "Una vela es un triángulo rectángulo. Su base mide 8 m, su altura mide 6 m y su borde inclinado mide 10 m. Teo halla su área. Toca el primer paso donde su trabajo se equivoca.",
+        "s": [
+          {
+            "l": "Step 1",
+            "lEs": "Paso 1",
+            "w": "Area = ½ × base × height.",
+            "wEs": "Área = ½ × base × altura."
+          },
+          {
+            "l": "Step 2",
+            "lEs": "Paso 2",
+            "w": "The longest edge is the height, so A = ½ × 8 × 10 = 40.",
+            "wEs": "El borde más largo es la altura, así que A = ½ × 8 × 10 = 40."
+          },
+          {
+            "l": "Step 3",
+            "lEs": "Paso 3",
+            "w": "The sail has an area of 40 m².",
+            "wEs": "La vela tiene un área de 40 m²."
+          }
+        ],
+        "e": 1,
+        "fix": "The sloping edge is not the height. The height is 6 m, perpendicular to the base. A = ½ × 8 × 6 = 24 m².",
+        "fixEs": "El borde inclinado no es la altura. La altura es 6 m, perpendicular a la base. A = ½ × 8 × 6 = 24 m².",
+        "x": "The sloping edge is longer than the perpendicular height, so using it makes the area too big (40 instead of 24).",
+        "xEs": "El borde inclinado es más largo que la altura perpendicular, así que usarlo hace el área demasiado grande (40 en vez de 24).",
+        "h": [
+          "Which measurement makes a 90° angle with the base?",
+          "Is the sloping edge perpendicular to the base?",
+          "Which number did Teo use as the height?"
+        ],
+        "hEs": [
+          "¿Cuál medida forma un ángulo de 90° con la base?",
+          "¿El borde inclinado es perpendicular a la base?",
+          "¿Qué número usó Teo como altura?"
+        ]
+      },
+      {
+        "k": "err",
+        "t": "A triangular tarp has an area of 30 ft² and a base of 10 ft. Mina finds its height. Tap the first step where her work goes wrong.",
+        "tEs": "Una lona triangular tiene un área de 30 ft² y una base de 10 ft. Mina halla su altura. Toca el primer paso donde su trabajo se equivoca.",
+        "s": [
+          {
+            "l": "Step 1",
+            "lEs": "Paso 1",
+            "w": "Area = ½ × base × height, so 30 = ½ × 10 × h.",
+            "wEs": "Área = ½ × base × altura, así que 30 = ½ × 10 × h."
+          },
+          {
+            "l": "Step 2",
+            "lEs": "Paso 2",
+            "w": "Divide the area by the base: 30 ÷ 10 = 3.",
+            "wEs": "Divido el área entre la base: 30 ÷ 10 = 3."
+          },
+          {
+            "l": "Step 3",
+            "lEs": "Paso 3",
+            "w": "The height is 3 ft.",
+            "wEs": "La altura es 3 ft."
+          }
+        ],
+        "e": 1,
+        "fix": "30 = ½ × 10 × h is 30 = 5 × h, so h = 30 ÷ 5 = 6 ft. Double the area first (60), then divide by the base.",
+        "fixEs": "30 = ½ × 10 × h es 30 = 5 × h, así que h = 30 ÷ 5 = 6 ft. Primero duplica el área (60) y luego divide entre la base.",
+        "x": "Check: ½ × 10 × 3 = 15, not 30. Checking the answer in the formula catches the missing half.",
+        "xEs": "Comprueba: ½ × 10 × 3 = 15, no 30. Comprobar la respuesta en la fórmula detecta la mitad que falta.",
+        "h": [
+          "What is half of the base?",
+          "Rewrite the equation as 30 = (half of the base) × h.",
+          "Check your answer in the formula."
+        ],
+        "hEs": [
+          "¿Cuánto es la mitad de la base?",
+          "Reescribe la ecuación como 30 = (mitad de la base) × h.",
+          "Comprueba tu respuesta en la fórmula."
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "A right triangle has legs of 6 m and 8 m. Sana says its area changes depending on which side you pick as the base. Joon says the area stays the same if you use the matching height. Who is right?",
+        "qEs": "Un triángulo rectángulo tiene catetos de 6 m y 8 m. Sana dice que su área cambia según el lado que elijas como base. Joon dice que el área sigue igual si usas la altura que le corresponde. ¿Quién tiene razón?",
+        "c": [
+          "Joon. With base 8 and height 6, or base 6 and height 8, the area is 24 m².",
+          "Sana. A different base gives a different area.",
+          "Neither. Only the longest side can be the base.",
+          "Both. The area is 24 m² with one base and 48 m² with the other."
+        ],
+        "cEs": [
+          "Joon. Con base 8 y altura 6, o base 6 y altura 8, el área es 24 m².",
+          "Sana. Una base distinta da un área distinta.",
+          "Ninguno. Solo el lado más largo puede ser la base.",
+          "Los dos. El área es 24 m² con una base y 48 m² con la otra."
+        ],
+        "a": 0,
+        "f": [
+          "",
+          "The triangle does not change when you choose another base, so its area cannot change.",
+          "Any side of a triangle can be the base, as long as the height is perpendicular to it.",
+          "48 is 6 × 8 without the half. Both bases give ½ × 6 × 8."
+        ],
+        "fEs": [
+          "",
+          "El triángulo no cambia cuando eliges otra base, así que su área no puede cambiar.",
+          "Cualquier lado de un triángulo puede ser la base, siempre que la altura sea perpendicular a él.",
+          "48 es 6 × 8 sin la mitad. Las dos bases dan ½ × 6 × 8."
+        ],
+        "tag": [
+          null,
+          "area-depends-on-base",
+          "base-must-be-longest",
+          "forgot-half"
+        ],
+        "x": "½ × 8 × 6 = 24 and ½ × 6 × 8 = 24. The triangle covers the same space whichever side is the base.",
+        "xEs": "½ × 8 × 6 = 24 y ½ × 6 × 8 = 24. El triángulo cubre el mismo espacio sin importar qué lado sea la base.",
+        "h": [
+          "Find the area using base 8 and height 6.",
+          "Now use base 6 and height 8.",
+          "Compare the two areas."
+        ],
+        "hEs": [
+          "Halla el área con base 8 y altura 6.",
+          "Ahora usa base 6 y altura 8.",
+          "Compara las dos áreas."
+        ]
+      }
+    ],
+    "boss": [
+      {
+        "k": "num",
+        "q": "A signal flag at Harbor Works is a triangle with a base of 14 ft and a height of 9 ft. What is its area, in square feet?",
+        "qEs": "Una bandera de señales de las Obras del Puerto es un triángulo con una base de 14 ft y una altura de 9 ft. ¿Cuál es su área, en pies cuadrados?",
+        "a": "63",
+        "unit": "ft²",
+        "fw": [
+          {
+            "v": "126",
+            "f": "You forgot the half. 14 × 9 is the rectangle around the triangle.",
+            "fEs": "Olvidaste la mitad. 14 × 9 es el rectángulo alrededor del triángulo."
+          },
+          {
+            "v": "23",
+            "f": "You added 14 and 9. Area multiplies, then halves.",
+            "fEs": "Sumaste 14 y 9. El área multiplica y luego toma la mitad."
+          },
+          {
+            "v": "31.5",
+            "f": "You took half of the base and half of the product. Take half only once.",
+            "fEs": "Tomaste la mitad de la base y la mitad del producto. Toma la mitad solo una vez."
+          }
+        ],
+        "x": "A = ½ × 14 × 9 = ½ × 126 = 63 ft².",
+        "xEs": "A = ½ × 14 × 9 = ½ × 126 = 63 ft².",
+        "h": [
+          "Multiply the base by the height.",
+          "A triangle is half of that product.",
+          "Try 14 × 9 as 10 × 9 plus 4 × 9."
+        ],
+        "hEs": [
+          "Multiplica la base por la altura.",
+          "Un triángulo es la mitad de ese producto.",
+          "Prueba 14 × 9 como 10 × 9 más 4 × 9."
+        ],
+        "viz": {
+          "t": "shape",
+          "s": "tri",
+          "dims": {
+            "b": 14,
+            "h": 9
+          },
+          "labels": true,
+          "unit": "ft"
+        }
+      },
+      {
+        "k": "mc",
+        "q": "A rectangular tarp is 12 m long and 8 m wide. The crew cuts it along one diagonal into two equal triangles. What is the area of one triangle?",
+        "qEs": "Una lona rectangular mide 12 m de largo y 8 m de ancho. El equipo la corta por una diagonal en dos triángulos iguales. ¿Cuál es el área de un triángulo?",
+        "c": [
+          "20 m²",
+          "24 m²",
+          "96 m²",
+          "48 m²"
+        ],
+        "a": 3,
+        "f": [
+          "You added 12 and 8. Find the area of the whole tarp first.",
+          "You took half twice. The tarp is cut once into two equal triangles.",
+          "96 m² is the whole tarp. One triangle is only half of it.",
+          ""
+        ],
+        "fEs": [
+          "Sumaste 12 y 8. Halla primero el área de toda la lona.",
+          "Tomaste la mitad dos veces. La lona se corta una vez en dos triángulos iguales.",
+          "96 m² es toda la lona. Un triángulo es solo la mitad.",
+          ""
+        ],
+        "tag": [
+          "added-instead",
+          "halved-twice",
+          "forgot-half",
+          null
+        ],
+        "x": "The tarp has area 12 × 8 = 96 m². The diagonal cuts it into two equal triangles, so one triangle is 96 ÷ 2 = 48 m². The formula agrees: ½ × 12 × 8 = 48.",
+        "xEs": "La lona tiene un área de 12 × 8 = 96 m². La diagonal la corta en dos triángulos iguales, así que un triángulo es 96 ÷ 2 = 48 m². La fórmula coincide: ½ × 12 × 8 = 48.",
+        "h": [
+          "Find the area of the whole rectangle first.",
+          "The diagonal makes two triangles that are exactly alike.",
+          "Share the rectangle's area between the two triangles."
+        ],
+        "hEs": [
+          "Halla primero el área de todo el rectángulo.",
+          "La diagonal forma dos triángulos exactamente iguales.",
+          "Reparte el área del rectángulo entre los dos triángulos."
+        ]
+      },
+      {
+        "k": "num",
+        "q": "A triangular sail has an area of 70 cm² on a scale model. Its height is 10 cm. What is the length of its base, in centimeters?",
+        "qEs": "Una vela triangular tiene un área de 70 cm² en un modelo a escala. Su altura es 10 cm. ¿Cuánto mide su base, en centímetros?",
+        "a": "14",
+        "unit": "cm",
+        "fw": [
+          {
+            "v": "7",
+            "f": "You divided 70 by 10 and skipped the half. Double the area first.",
+            "fEs": "Dividiste 70 entre 10 y te saltaste la mitad. Duplica primero el área."
+          },
+          {
+            "v": "60",
+            "f": "You subtracted. Undo the multiplication with division.",
+            "fEs": "Restaste. Deshaz la multiplicación con una división."
+          },
+          {
+            "v": "1400",
+            "f": "You multiplied 140 by 10. The base is smaller than the doubled area, so divide.",
+            "fEs": "Multiplicaste 140 por 10. La base es menor que el área duplicada, así que divide."
+          }
+        ],
+        "x": "70 = ½ × b × 10 = 5 × b, so b = 70 ÷ 5 = 14 cm. Check: ½ × 14 × 10 = 70.",
+        "xEs": "70 = ½ × b × 10 = 5 × b, así que b = 70 ÷ 5 = 14 cm. Comprueba: ½ × 14 × 10 = 70.",
+        "h": [
+          "Write 70 = ½ × b × 10.",
+          "Half of 10 is 5, so 70 = 5 × b.",
+          "Divide 70 by 5."
+        ],
+        "hEs": [
+          "Escribe 70 = ½ × b × 10.",
+          "La mitad de 10 es 5, así que 70 = 5 × b.",
+          "Divide 70 entre 5."
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "Flag A has a base of 9 ft and a height of 8 ft. Flag B has a base of 12 ft and a height of 5 ft. Which flag has the greater area, and by how much?",
+        "qEs": "La bandera A tiene una base de 9 ft y una altura de 8 ft. La bandera B tiene una base de 12 ft y una altura de 5 ft. ¿Cuál bandera tiene mayor área y por cuánto?",
+        "c": [
+          "Flag B, because its base is longer",
+          "Flag A, by 6 ft²",
+          "Flag A, by 12 ft²",
+          "They have equal areas"
+        ],
+        "cEs": [
+          "La bandera B, porque su base es más larga",
+          "La bandera A, por 6 ft²",
+          "La bandera A, por 12 ft²",
+          "Tienen áreas iguales"
+        ],
+        "a": 1,
+        "f": [
+          "Area depends on the base AND the height. Find both areas before you compare.",
+          "",
+          "12 is the difference between the products 72 and 60. Each triangle takes half of its product first.",
+          "Calculate each area. The two products are not equal."
+        ],
+        "fEs": [
+          "El área depende de la base Y de la altura. Halla las dos áreas antes de comparar.",
+          "",
+          "12 es la diferencia entre los productos 72 y 60. Cada triángulo toma primero la mitad de su producto.",
+          "Calcula cada área. Los dos productos no son iguales."
+        ],
+        "tag": [
+          "base-only",
+          null,
+          "forgot-half",
+          "guessed-equal"
+        ],
+        "x": "Flag A: ½ × 9 × 8 = 36 ft². Flag B: ½ × 12 × 5 = 30 ft². Flag A is greater by 36 − 30 = 6 ft².",
+        "xEs": "Bandera A: ½ × 9 × 8 = 36 ft². Bandera B: ½ × 12 × 5 = 30 ft². La bandera A es mayor por 36 − 30 = 6 ft².",
+        "h": [
+          "Find the area of each flag with A = ½ × b × h.",
+          "Compare the two areas.",
+          "Subtract the smaller area from the larger."
+        ],
+        "hEs": [
+          "Halla el área de cada bandera con A = ½ × b × h.",
+          "Compara las dos áreas.",
+          "Resta el área menor del área mayor."
+        ]
+      },
+      {
+        "k": "num",
+        "q": "A triangular warning sign has a base of 18 ft and a height of 10 ft. One can of paint covers 40 ft². How many cans must the crew buy to paint one side of the sign?",
+        "qEs": "Un letrero de advertencia triangular tiene una base de 18 ft y una altura de 10 ft. Una lata de pintura cubre 40 ft². ¿Cuántas latas debe comprar el equipo para pintar un lado del letrero?",
+        "a": "3",
+        "fw": [
+          {
+            "v": "2.25",
+            "f": "That is the exact number of cans, but paint comes in whole cans. You need enough to cover everything.",
+            "fEs": "Ese es el número exacto de latas, pero la pintura viene en latas enteras. Necesitas suficiente para cubrir todo."
+          },
+          {
+            "v": "2",
+            "f": "You rounded down. Two cans would leave part of the sign unpainted.",
+            "fEs": "Redondeaste hacia abajo. Dos latas dejarían parte del letrero sin pintar."
+          },
+          {
+            "v": "5",
+            "f": "You forgot the half, so the area came out twice as big.",
+            "fEs": "Olvidaste la mitad, así que el área salió el doble de grande."
+          }
+        ],
+        "x": "Area = ½ × 18 × 10 = 90 ft². 90 ÷ 40 = 2.25 cans. You cannot buy part of a can, so round up to 3 cans.",
+        "xEs": "Área = ½ × 18 × 10 = 90 ft². 90 ÷ 40 = 2.25 latas. No puedes comprar parte de una lata, así que redondea hacia arriba a 3 latas.",
+        "h": [
+          "Find the area of the sign.",
+          "Divide by what one can covers.",
+          "Think about whether the crew can buy part of a can."
+        ],
+        "hEs": [
+          "Halla el área del letrero.",
+          "Divide entre lo que cubre una lata.",
+          "Piensa si el equipo puede comprar parte de una lata."
+        ]
+      },
+      {
+        "k": "wr",
+        "p": "Create your own Harbor Works problem about the area of a triangle. Give a base and a height, find the area, and explain why the formula has a one-half.",
+        "pEs": "Crea tu propio problema de las Obras del Puerto sobre el área de un triángulo. Da una base y una altura, halla el área y explica por qué la fórmula tiene un medio.",
+        "fr": "My triangle has a base of ___ and a height of ___. The area is ½ × ___ × ___ = ___. The formula has a half because ___.",
+        "frEs": "Mi triángulo tiene una base de ___ y una altura de ___. El área es ½ × ___ × ___ = ___. La fórmula tiene un medio porque ___.",
+        "min": 90,
+        "kw": [
+          "base",
+          "height",
+          "half",
+          "rectangle",
+          "area"
+        ],
+        "rubric": [
+          "I gave a base and a perpendicular height.",
+          "I multiplied the base by the height and took half.",
+          "I wrote the answer in square units.",
+          "I explained that a triangle is half of a rectangle with the same base and height."
+        ],
+        "rubricEs": [
+          "Di una base y una altura perpendicular.",
+          "Multipliqué la base por la altura y tomé la mitad.",
+          "Escribí la respuesta en unidades cuadradas.",
+          "Expliqué que un triángulo es la mitad de un rectángulo con la misma base y altura."
+        ],
+        "x": "My triangle has a base of 12 m and a height of 5 m. The area is ½ × 12 × 5 = 30 m². The formula has a half because a triangle is half of a rectangle with the same base and height. The rectangle is 12 × 5 = 60 m², and the triangle is half of it.",
+        "xEs": "Mi triángulo tiene una base de 12 m y una altura de 5 m. El área es ½ × 12 × 5 = 30 m². La fórmula tiene un medio porque un triángulo es la mitad de un rectángulo con la misma base y altura. El rectángulo es 12 × 5 = 60 m², y el triángulo es la mitad.",
+        "h": [
+          "Pick an easy base and height, such as 12 and 5.",
+          "Multiply them, then take half.",
+          "Draw a rectangle around your triangle to explain the half."
+        ],
+        "hEs": [
+          "Elige una base y una altura fáciles, como 12 y 5.",
+          "Multiplícalas y luego toma la mitad.",
+          "Dibuja un rectángulo alrededor de tu triángulo para explicar la mitad."
+        ]
+      }
+    ]
+  },
+  "glossary": [
+    {
+      "t": "triangle",
+      "tEs": "triángulo",
+      "d": "A shape with three sides. Its area is half of a rectangle with the same base and height.",
+      "dEs": "Una figura con tres lados. Su área es la mitad de un rectángulo con la misma base y altura."
+    },
+    {
+      "t": "base",
+      "tEs": "base",
+      "d": "Any side of a triangle. The height is measured perpendicular to it.",
+      "dEs": "Cualquier lado de un triángulo. La altura se mide perpendicular a ella."
+    },
+    {
+      "t": "height",
+      "tEs": "altura",
+      "d": "The straight distance from the base to the opposite corner, at a right angle to the base.",
+      "dEs": "La distancia recta desde la base hasta la esquina opuesta, en ángulo recto con la base."
+    },
+    {
+      "t": "perpendicular",
+      "tEs": "perpendicular",
+      "d": "Meeting to make a square corner of 90 degrees.",
+      "dEs": "Que se cruza formando una esquina cuadrada de 90 grados."
+    }
+  ]
+}

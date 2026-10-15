@@ -1,0 +1,1254 @@
+{
+ "v": 1,
+ "lesson": "7-7",
+ "story": "Orbit Station is adding a ring of solar panels. Each panel is a polygon on the engineers' grid map, and its corners are ordered pairs. Use the coordinates to find side lengths, perimeter and area before anyone cuts metal.",
+ "storyEs": "La Estación Órbita está añadiendo un anillo de paneles solares. Cada panel es un polígono en el mapa de cuadrícula de los ingenieros, y sus esquinas son pares ordenados. Usa las coordenadas para hallar las longitudes de los lados, el perímetro y el área antes de cortar el metal.",
+ "challengeStory": "Night shift on Orbit Station: a meteor shower knocked three panels loose. Mission control sends new corner coordinates, a scale in meters and a tight material budget. Every length has to be right on the first try.",
+ "challengeStoryEs": "Turno de noche en la Estación Órbita: una lluvia de meteoros soltó tres paneles. El control de la misión envía nuevas coordenadas de las esquinas, una escala en metros y un presupuesto de material muy justo. Cada longitud tiene que salir bien al primer intento.",
+ "getReady": null,
+ "noAct": false,
+ "fresh": [
+  {
+   "k": "gen",
+   "g": "polygonCoordinates",
+   "level": 1
+  },
+  {
+   "k": "gen",
+   "g": "coordDistance",
+   "level": 1
+  },
+  {
+   "k": "gen",
+   "g": "polygonCoordinates",
+   "level": 2
+  },
+  {
+   "k": "gen",
+   "g": "polygonCoordinates",
+   "level": 2
+  },
+  {
+   "k": "gen",
+   "g": "polygonCoordinates",
+   "level": 3
+  },
+  {
+   "k": "gen",
+   "g": "polygonCoordinates",
+   "level": 3
+  },
+  {
+   "k": "act",
+   "kind": "plot",
+   "level": 2,
+   "p": {
+    "mode": "polygon"
+   }
+  }
+ ],
+ "challenge": {
+  "climb": [
+   {
+    "k": "gen",
+    "g": "polygonCoordinates",
+    "level": 2
+   },
+   {
+    "k": "gen",
+    "g": "polygonCoordinates",
+    "level": 2
+   },
+   {
+    "k": "gen",
+    "g": "polygonCoordinates",
+    "level": 3
+   },
+   {
+    "k": "gen",
+    "g": "coordDistance",
+    "level": 3
+   },
+   {
+    "k": "gen",
+    "g": "polygonCoordinates",
+    "level": 4
+   },
+   {
+    "k": "gen",
+    "g": "polygonCoordinates",
+    "level": 4
+   }
+  ],
+  "missions": [
+   {
+    "k": "num",
+    "q": "Solar panel P on Orbit Station has corners at (−7, 4), (2, 4), (2, −3) and (−7, −3). Each grid unit is 2 meters. A technician runs a border strip all the way around the panel. How many meters of strip does she need?",
+    "qEs": "El panel solar P de la Estación Órbita tiene esquinas en (−7, 4), (2, 4), (2, −3) y (−7, −3). Cada unidad de la cuadrícula mide 2 metros. Una técnica coloca una tira de borde alrededor de todo el panel. ¿Cuántos metros de tira necesita?",
+    "viz": {
+     "t": "coord",
+     "xmin": -9,
+     "xmax": 4,
+     "ymin": -5,
+     "ymax": 6,
+     "points": [
+      {
+       "x": -7,
+       "y": 4,
+       "l": "A"
+      },
+      {
+       "x": 2,
+       "y": 4,
+       "l": "B"
+      },
+      {
+       "x": 2,
+       "y": -3,
+       "l": "C"
+      },
+      {
+       "x": -7,
+       "y": -3,
+       "l": "D"
+      }
+     ],
+     "grid": true,
+     "polygon": [
+      0,
+      1,
+      2,
+      3
+     ]
+    },
+    "a": "64",
+    "unit": "m",
+    "fw": [
+     {
+      "v": "32",
+      "f": "That is the distance around counted in grid units. The strip is measured in meters, and one grid unit is not one meter here.",
+      "fEs": "Esa es la distancia alrededor contada en unidades de la cuadrícula. La tira se mide en metros, y aquí una unidad de la cuadrícula no es un metro."
+     },
+     {
+      "v": "16",
+      "f": "That adds only one length and one width. The strip goes around all four sides.",
+      "fEs": "Eso suma solo un largo y un ancho. La tira rodea los cuatro lados."
+     },
+     {
+      "v": "63",
+      "f": "That multiplies the two side lengths, which finds area. A border strip follows the edge, so it needs the distance around.",
+      "fEs": "Eso multiplica las dos longitudes, que da el área. Una tira de borde sigue el contorno, así que necesita la distancia alrededor."
+     }
+    ],
+    "x": "Top side: |2 − (−7)| = 9 units. Right side: |4 − (−3)| = 7 units. Around the panel: 2(9) + 2(7) = 32 units. One unit is 2 meters, so 32 × 2 = 64 meters of strip.",
+    "xEs": "Lado de arriba: |2 − (−7)| = 9 unidades. Lado derecho: |4 − (−3)| = 7 unidades. Alrededor del panel: 2(9) + 2(7) = 32 unidades. Cada unidad mide 2 metros, así que 32 × 2 = 64 metros de tira.",
+    "h": [
+     "Two vertices that share a y-coordinate are joined by a horizontal side. Its length comes from the x-coordinates.",
+     "Find the width and the height in grid units first. When a side crosses zero, add the two distances from zero.",
+     "Add all four sides in grid units. Then use the scale: every grid unit is 2 meters."
+    ],
+    "hEs": [
+     "Dos vértices que comparten la coordenada y están unidos por un lado horizontal. Su longitud sale de las coordenadas x.",
+     "Primero halla el ancho y el alto en unidades de la cuadrícula. Si un lado cruza el cero, suma las dos distancias desde el cero.",
+     "Suma los cuatro lados en unidades de la cuadrícula. Luego usa la escala: cada unidad mide 2 metros."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "Three corners of a rectangular docking pad are at (−5, 6), (4, 6) and (4, −2). Each grid unit is 3 meters. What is the area of the pad?",
+    "qEs": "Tres esquinas de una plataforma de acoplamiento rectangular están en (−5, 6), (4, 6) y (4, −2). Cada unidad de la cuadrícula mide 3 metros. ¿Cuál es el área de la plataforma?",
+    "viz": {
+     "t": "coord",
+     "xmin": -7,
+     "xmax": 6,
+     "ymin": -4,
+     "ymax": 8,
+     "points": [
+      {
+       "x": -5,
+       "y": 6,
+       "l": "A"
+      },
+      {
+       "x": 4,
+       "y": 6,
+       "l": "B"
+      },
+      {
+       "x": 4,
+       "y": -2,
+       "l": "C"
+      }
+     ],
+     "grid": true,
+     "segments": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ]
+    },
+    "c": [
+     "72 m²",
+     "216 m²",
+     "648 m²",
+     "102 m²"
+    ],
+    "a": 2,
+    "f": [
+     "72 is the area counted in grid squares. Each grid unit is 3 meters long, so the real area is not measured in grid squares.",
+     "You multiplied the area in grid squares by 3 just once. The scale stretches the length AND the width, so it affects the area twice.",
+     "",
+     "That is the distance around the pad in meters. The question asks for the area, the space inside."
+    ],
+    "fEs": [
+     "72 es el área contada en cuadros de la cuadrícula. Cada unidad mide 3 metros, así que el área real no se mide en cuadros de la cuadrícula.",
+     "Multiplicaste el área en cuadros por 3 una sola vez. La escala estira el largo Y el ancho, así que afecta el área dos veces.",
+     "",
+     "Esa es la distancia alrededor de la plataforma en metros. La pregunta pide el área, el espacio adentro."
+    ],
+    "tag": [
+     "forgot-scale",
+     "scaled-area-once",
+     null,
+     "perimeter-for-area"
+    ],
+    "x": "The fourth corner is (−5, −2). The pad is |4 − (−5)| = 9 units wide and |6 − (−2)| = 8 units tall. In meters that is 9 × 3 = 27 m by 8 × 3 = 24 m, so the area is 27 × 24 = 648 square meters.",
+    "xEs": "La cuarta esquina es (−5, −2). La plataforma mide |4 − (−5)| = 9 unidades de ancho y |6 − (−2)| = 8 unidades de alto. En metros son 9 × 3 = 27 m por 8 × 3 = 24 m, así que el área es 27 × 24 = 648 metros cuadrados.",
+    "h": [
+     "Opposite sides of a rectangle are equal, so the missing corner shares an x-value with one known corner and a y-value with another.",
+     "Find the width and the height in grid units, then change each one to meters with the scale.",
+     "Multiply the two lengths in meters. Apply the scale to each side before you multiply."
+    ],
+    "hEs": [
+     "Los lados opuestos de un rectángulo son iguales, así que la esquina que falta comparte el valor de x con una esquina conocida y el valor de y con otra.",
+     "Halla el ancho y el alto en unidades de la cuadrícula y luego convierte cada uno a metros con la escala.",
+     "Multiplica las dos longitudes en metros. Aplica la escala a cada lado antes de multiplicar."
+    ]
+   },
+   {
+    "k": "tbl",
+    "t": "Solar array S has corners A(−6, 5), B(1, 5), C(1, 1), D(5, 1), E(5, −3) and F(−6, −3), joined in that order and back to A. Find each side length in units, then the perimeter.",
+    "tEs": "El arreglo solar S tiene esquinas A(−6, 5), B(1, 5), C(1, 1), D(5, 1), E(5, −3) y F(−6, −3), unidas en ese orden y de regreso a A. Halla la longitud de cada lado en unidades y luego el perímetro.",
+    "viz": {
+     "t": "coord",
+     "xmin": -8,
+     "xmax": 7,
+     "ymin": -5,
+     "ymax": 7,
+     "points": [
+      {
+       "x": -6,
+       "y": 5,
+       "l": "A"
+      },
+      {
+       "x": 1,
+       "y": 5,
+       "l": "B"
+      },
+      {
+       "x": 1,
+       "y": 1,
+       "l": "C"
+      },
+      {
+       "x": 5,
+       "y": 1,
+       "l": "D"
+      },
+      {
+       "x": 5,
+       "y": -3,
+       "l": "E"
+      },
+      {
+       "x": -6,
+       "y": -3,
+       "l": "F"
+      }
+     ],
+     "grid": true,
+     "polygon": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ]
+    },
+    "hd": [
+     "Side",
+     "Endpoints",
+     "Length (units)"
+    ],
+    "hdEs": [
+     "Lado",
+     "Extremos",
+     "Longitud (unidades)"
+    ],
+    "rows": [
+     [
+      "AB",
+      "A(−6, 5) to B(1, 5)",
+      ""
+     ],
+     [
+      "BC",
+      "B(1, 5) to C(1, 1)",
+      ""
+     ],
+     [
+      "CD",
+      "C(1, 1) to D(5, 1)",
+      ""
+     ],
+     [
+      "DE",
+      "D(5, 1) to E(5, −3)",
+      ""
+     ],
+     [
+      "EF",
+      "E(5, −3) to F(−6, −3)",
+      ""
+     ],
+     [
+      "FA",
+      "F(−6, −3) to A(−6, 5)",
+      ""
+     ],
+     [
+      "Perimeter",
+      "all six sides added",
+      ""
+     ]
+    ],
+    "rowsEs": [
+     [
+      "AB",
+      "A(−6, 5) a B(1, 5)",
+      ""
+     ],
+     [
+      "BC",
+      "B(1, 5) a C(1, 1)",
+      ""
+     ],
+     [
+      "CD",
+      "C(1, 1) a D(5, 1)",
+      ""
+     ],
+     [
+      "DE",
+      "D(5, 1) a E(5, −3)",
+      ""
+     ],
+     [
+      "EF",
+      "E(5, −3) a F(−6, −3)",
+      ""
+     ],
+     [
+      "FA",
+      "F(−6, −3) a A(−6, 5)",
+      ""
+     ],
+     [
+      "Perímetro",
+      "los seis lados sumados",
+      ""
+     ]
+    ],
+    "cells": [
+     {
+      "r": 0,
+      "c": 2,
+      "a": "7"
+     },
+     {
+      "r": 1,
+      "c": 2,
+      "a": "4"
+     },
+     {
+      "r": 2,
+      "c": 2,
+      "a": "4"
+     },
+     {
+      "r": 3,
+      "c": 2,
+      "a": "4"
+     },
+     {
+      "r": 4,
+      "c": 2,
+      "a": "11"
+     },
+     {
+      "r": 5,
+      "c": 2,
+      "a": "8"
+     },
+     {
+      "r": 6,
+      "c": 2,
+      "a": "38"
+     }
+    ],
+    "x": "AB = |1 − (−6)| = 7, BC = |5 − 1| = 4, CD = |5 − 1| = 4, DE = |1 − (−3)| = 4, EF = |5 − (−6)| = 11 and FA = |5 − (−3)| = 8. The perimeter is 7 + 4 + 4 + 4 + 11 + 8 = 38 units. Check: AB + CD = 7 + 4 = 11 matches EF, and BC + DE = 4 + 4 = 8 matches FA.",
+    "xEs": "AB = |1 − (−6)| = 7, BC = |5 − 1| = 4, CD = |5 − 1| = 4, DE = |1 − (−3)| = 4, EF = |5 − (−6)| = 11 y FA = |5 − (−3)| = 8. El perímetro es 7 + 4 + 4 + 4 + 11 + 8 = 38 unidades. Comprobación: AB + CD = 7 + 4 = 11 coincide con EF, y BC + DE = 4 + 4 = 8 coincide con FA.",
+    "h": [
+     "In each pair of endpoints, one coordinate is the same. The coordinate that is different gives the length.",
+     "Sides EF and FA cross an axis, so add the two distances from zero instead of subtracting.",
+     "Fill in the six sides first. Then add all six lengths for the perimeter."
+    ],
+    "hEs": [
+     "En cada par de extremos hay una coordenada igual. La coordenada distinta da la longitud.",
+     "Los lados EF y FA cruzan un eje, así que suma las dos distancias desde el cero en lugar de restar.",
+     "Completa primero los seis lados. Luego suma las seis longitudes para el perímetro."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "Orbit Station's cargo bay is a rectangle with a perimeter of 34 units. Two of its corners are at (−2, 3) and (6, 3), and the bay extends below that edge. Where are the other two corners?",
+    "qEs": "La bodega de carga de la Estación Órbita es un rectángulo con perímetro de 34 unidades. Dos de sus esquinas están en (−2, 3) y (6, 3), y la bodega se extiende debajo de ese borde. ¿Dónde están las otras dos esquinas?",
+    "viz": {
+     "t": "coord",
+     "xmin": -4,
+     "xmax": 8,
+     "ymin": -8,
+     "ymax": 5,
+     "points": [
+      {
+       "x": -2,
+       "y": 3,
+       "l": "P"
+      },
+      {
+       "x": 6,
+       "y": 3,
+       "l": "Q"
+      }
+     ],
+     "grid": true,
+     "segments": [
+      [
+       0,
+       1
+      ]
+     ]
+    },
+    "c": [
+     "(−2, −6) and (6, −6)",
+     "(−2, −14) and (6, −14)",
+     "(−2, 12) and (6, 12)",
+     "(−2, −23) and (6, −23)"
+    ],
+    "cEs": [
+     "(−2, −6) y (6, −6)",
+     "(−2, −14) y (6, −14)",
+     "(−2, 12) y (6, 12)",
+     "(−2, −23) y (6, −23)"
+    ],
+    "a": 0,
+    "f": [
+     "",
+     "You used half of the perimeter as the height. Half of the perimeter is the width PLUS the height, so the width has to come out first.",
+     "You moved up from y = 3. The bay extends below the known edge, so the y-values get smaller.",
+     "You subtracted the width from the whole perimeter. The perimeter counts two widths and two heights, so the leftover is two heights, not one."
+    ],
+    "fEs": [
+     "",
+     "Usaste la mitad del perímetro como alto. La mitad del perímetro es el ancho MÁS el alto, así que primero hay que quitar el ancho.",
+     "Te moviste hacia arriba desde y = 3. La bodega se extiende debajo del borde conocido, así que los valores de y se hacen menores.",
+     "Restaste el ancho del perímetro completo. El perímetro cuenta dos anchos y dos altos, así que lo que queda son dos altos, no uno."
+    ],
+    "tag": [
+     null,
+     "half-perimeter-as-height",
+     "wrong-direction",
+     "forgot-to-halve"
+    ],
+    "x": "The width is |6 − (−2)| = 8 units. Half the perimeter is 34 ÷ 2 = 17, which is width + height, so the height is 17 − 8 = 9 units. Move 9 units down from y = 3: 3 − 9 = −6. The corners are (−2, −6) and (6, −6). Check: 2(8) + 2(9) = 34.",
+    "xEs": "El ancho es |6 − (−2)| = 8 unidades. La mitad del perímetro es 34 ÷ 2 = 17, que es ancho + alto, así que el alto es 17 − 8 = 9 unidades. Baja 9 unidades desde y = 3: 3 − 9 = −6. Las esquinas son (−2, −6) y (6, −6). Comprobación: 2(8) + 2(9) = 34.",
+    "h": [
+     "Perimeter = 2(width) + 2(height), so half the perimeter is width + height.",
+     "Find the width from the two known x-values. Then take it away from half the perimeter.",
+     "That leaves the height. Move that many units down from y = 3 and keep the same x-values."
+    ],
+    "hEs": [
+     "Perímetro = 2(ancho) + 2(alto), así que la mitad del perímetro es ancho + alto.",
+     "Halla el ancho con los dos valores de x conocidos. Luego réstalo de la mitad del perímetro.",
+     "Eso te da el alto. Baja esa cantidad de unidades desde y = 3 y conserva los mismos valores de x."
+    ]
+   }
+  ],
+  "lab": [
+   {
+    "k": "act",
+    "kind": "plot",
+    "level": 3,
+    "p": {
+     "mode": "polygon"
+    }
+   },
+   {
+    "k": "act",
+    "kind": "plot",
+    "level": 4,
+    "p": {
+     "mode": "distance"
+    }
+   },
+   {
+    "k": "sort",
+    "q": "Sort each job: does it need a side length, a perimeter or an area?",
+    "qEs": "Clasifica cada tarea: ¿necesita una longitud de lado, un perímetro o un área?",
+    "bins": [
+     {
+      "l": "Side length (units)",
+      "lEs": "Longitud de lado (unidades)"
+     },
+     {
+      "l": "Perimeter (units)",
+      "lEs": "Perímetro (unidades)"
+     },
+     {
+      "l": "Area (square units)",
+      "lEs": "Área (unidades cuadradas)"
+     }
+    ],
+    "cards": [
+     {
+      "t": "How far apart are (−4, 6) and (5, 6)?",
+      "tEs": "¿Qué tan separados están (−4, 6) y (5, 6)?",
+      "b": 0
+     },
+     {
+      "t": "Border tape around the edge of a hatch",
+      "tEs": "Cinta de borde alrededor de una compuerta",
+      "b": 1
+     },
+     {
+      "t": "Coating that covers the whole face of a panel",
+      "tEs": "Recubrimiento que cubre toda la cara de un panel",
+      "b": 2
+     },
+     {
+      "t": "Length of the edge from (3, −8) to (3, 2)",
+      "tEs": "Longitud del borde de (3, −8) a (3, 2)",
+      "b": 0
+     },
+     {
+      "t": "A fence that runs around a rooftop garden",
+      "tEs": "Una cerca que rodea un jardín en la azotea",
+      "b": 1
+     },
+     {
+      "t": "Number of 1-by-1 floor tiles that fill a room",
+      "tEs": "Cantidad de losetas de 1 por 1 que llenan un cuarto",
+      "b": 2
+     }
+    ],
+    "x": "A side length is one distance between two vertices. Perimeter is the distance around, so it adds sides and uses plain units. Area is the space inside, so it counts squares and uses square units.",
+    "xEs": "La longitud de un lado es una distancia entre dos vértices. El perímetro es la distancia alrededor, así que suma lados y usa unidades simples. El área es el espacio adentro, así que cuenta cuadros y usa unidades cuadradas.",
+    "h": [
+     "Ask yourself: is the job about one edge, the whole way around, or the space inside?",
+     "Tape, fences and borders follow the edge. Coating and floor tiles cover a surface."
+    ],
+    "hEs": [
+     "Pregúntate: ¿la tarea trata de un borde, de todo el contorno o del espacio adentro?",
+     "La cinta, las cercas y los bordes siguen el contorno. El recubrimiento y las losetas cubren una superficie."
+    ]
+   }
+  ],
+  "detective": [
+   {
+    "k": "err",
+    "t": "Imani finds the perimeter of rectangle RSTU with vertices R(−6, 2), S(3, 2), T(3, −4) and U(−6, −4).",
+    "tEs": "Imani halla el perímetro del rectángulo RSTU con vértices R(−6, 2), S(3, 2), T(3, −4) y U(−6, −4).",
+    "s": [
+     {
+      "l": "Step 1",
+      "lEs": "Paso 1",
+      "w": "R and S share y = 2, so side RS is horizontal.",
+      "wEs": "R y S comparten y = 2, así que el lado RS es horizontal."
+     },
+     {
+      "l": "Step 2",
+      "lEs": "Paso 2",
+      "w": "Its length is 6 − 3 = 3 units.",
+      "wEs": "Su longitud es 6 − 3 = 3 unidades."
+     },
+     {
+      "l": "Step 3",
+      "lEs": "Paso 3",
+      "w": "S and T share x = 3, so side ST is vertical: |2 − (−4)| = 6 units.",
+      "wEs": "S y T comparten x = 3, así que el lado ST es vertical: |2 − (−4)| = 6 unidades."
+     },
+     {
+      "l": "Step 4",
+      "lEs": "Paso 4",
+      "w": "Perimeter = 2(3) + 2(6) = 18 units.",
+      "wEs": "Perímetro = 2(3) + 2(6) = 18 unidades."
+     }
+    ],
+    "e": 1,
+    "fix": "The x-values −6 and 3 are on opposite sides of zero, so their distances from zero add: |3 − (−6)| = 9 units, not 3. The perimeter is 2(9) + 2(6) = 30 units.",
+    "fixEs": "Los valores x −6 y 3 están en lados opuestos del cero, así que sus distancias desde el cero se suman: |3 − (−6)| = 9 unidades, no 3. El perímetro es 2(9) + 2(6) = 30 unidades.",
+    "x": "Subtracting 6 − 3 treats both numbers as if they were on the same side of zero. When a side crosses zero, add the two distances from zero.",
+    "xEs": "Restar 6 − 3 trata los dos números como si estuvieran del mismo lado del cero. Cuando un lado cruza el cero, suma las dos distancias desde el cero.",
+    "h": [
+     "Check each length against the grid. Does the number of units match how far apart the points really are?",
+     "Look at the step that uses the two x-values. Are −6 and 3 on the same side of zero?",
+     "Count the units from −6 to 0, then from 0 to 3. Compare that total with the length in the work."
+    ],
+    "hEs": [
+     "Compara cada longitud con la cuadrícula. ¿El número de unidades coincide con la distancia real entre los puntos?",
+     "Fíjate en el paso que usa los dos valores de x. ¿−6 y 3 están del mismo lado del cero?",
+     "Cuenta las unidades de −6 a 0 y luego de 0 a 3. Compara ese total con la longitud del trabajo."
+    ]
+   },
+   {
+    "k": "err",
+    "t": "Luca tapes the edge of panel JKLM, a rectangle with vertices J(1, −2), K(8, −2), L(8, 4) and M(1, 4). He wants to know how many units of tape go all the way around.",
+    "tEs": "Luca pone cinta en el borde del panel JKLM, un rectángulo con vértices J(1, −2), K(8, −2), L(8, 4) y M(1, 4). Quiere saber cuántas unidades de cinta rodean todo el panel.",
+    "s": [
+     {
+      "l": "Step 1",
+      "lEs": "Paso 1",
+      "w": "J and K share y = −2, so JK = |8 − 1| = 7 units.",
+      "wEs": "J y K comparten y = −2, así que JK = |8 − 1| = 7 unidades."
+     },
+     {
+      "l": "Step 2",
+      "lEs": "Paso 2",
+      "w": "K and L share x = 8, so KL = |4 − (−2)| = 6 units.",
+      "wEs": "K y L comparten x = 8, así que KL = |4 − (−2)| = 6 unidades."
+     },
+     {
+      "l": "Step 3",
+      "lEs": "Paso 3",
+      "w": "The distance around is the length plus the width: 7 + 6 = 13 units.",
+      "wEs": "La distancia alrededor es el largo más el ancho: 7 + 6 = 13 unidades."
+     },
+     {
+      "l": "Step 4",
+      "lEs": "Paso 4",
+      "w": "So 13 units of tape go around panel JKLM.",
+      "wEs": "Entonces 13 unidades de cinta rodean el panel JKLM."
+     }
+    ],
+    "e": 2,
+    "fix": "A rectangle has four sides: two of 7 units and two of 6 units. The distance around is 2(7) + 2(6) = 26 units.",
+    "fixEs": "Un rectángulo tiene cuatro lados: dos de 7 unidades y dos de 6 unidades. La distancia alrededor es 2(7) + 2(6) = 26 unidades.",
+    "x": "Adding one length and one width only walks halfway around the rectangle. The tape has to cover all four sides, so each length is counted twice.",
+    "xEs": "Sumar un largo y un ancho solo recorre la mitad del rectángulo. La cinta tiene que cubrir los cuatro lados, así que cada longitud se cuenta dos veces.",
+    "h": [
+     "Picture walking around the edge of the rectangle. How many sides do you pass?",
+     "Check how many sides each sum in the work actually covers.",
+     "List the four sides in order as you walk around, then compare your list with the sum in the work."
+    ],
+    "hEs": [
+     "Imagina que caminas por el borde del rectángulo. ¿Por cuántos lados pasas?",
+     "Revisa cuántos lados cubre en realidad cada suma del trabajo.",
+     "Haz una lista de los cuatro lados en orden mientras das la vuelta y compárala con la suma del trabajo."
+    ]
+   },
+   {
+    "k": "err",
+    "t": "Kenji needs the real length of side AB. Vertices A(−4, 1) and B(3, 1) are on a map where each grid unit is 5 meters.",
+    "tEs": "Kenji necesita la longitud real del lado AB. Los vértices A(−4, 1) y B(3, 1) están en un mapa donde cada unidad de la cuadrícula mide 5 metros.",
+    "s": [
+     {
+      "l": "Step 1",
+      "lEs": "Paso 1",
+      "w": "A and B share y = 1, so AB is horizontal.",
+      "wEs": "A y B comparten y = 1, así que AB es horizontal."
+     },
+     {
+      "l": "Step 2",
+      "lEs": "Paso 2",
+      "w": "On the grid, AB = |3 − (−4)| = 7 units.",
+      "wEs": "En la cuadrícula, AB = |3 − (−4)| = 7 unidades."
+     },
+     {
+      "l": "Step 3",
+      "lEs": "Paso 3",
+      "w": "Each unit is 5 meters, so I divide: 7 ÷ 5 = 1.4 meters.",
+      "wEs": "Cada unidad mide 5 metros, así que divido: 7 ÷ 5 = 1.4 metros."
+     },
+     {
+      "l": "Step 4",
+      "lEs": "Paso 4",
+      "w": "Side AB is 1.4 meters long.",
+      "wEs": "El lado AB mide 1.4 metros."
+     }
+    ],
+    "e": 2,
+    "fix": "Each grid unit stands for 5 meters, so 7 units is 7 groups of 5 meters: 7 × 5 = 35 meters.",
+    "fixEs": "Cada unidad de la cuadrícula representa 5 metros, así que 7 unidades son 7 grupos de 5 metros: 7 × 5 = 35 metros.",
+    "x": "A scale tells how much real length ONE unit stands for, so you multiply the number of units by it. Dividing gave a length shorter than the grid distance, which cannot be right when each unit is longer than a meter.",
+    "xEs": "Una escala dice cuánta longitud real representa UNA unidad, así que se multiplica el número de unidades por ella. Al dividir salió una longitud menor que la distancia en la cuadrícula, lo cual no puede ser cuando cada unidad mide más de un metro.",
+    "h": [
+     "Think about size: if one grid unit is 5 meters long, should the real side be longer or shorter than 7 meters?",
+     "A scale tells how much real length ONE unit stands for. How do you find the length of 7 of them?",
+     "Look at the step that changes grid units into meters and test it with that idea."
+    ],
+    "hEs": [
+     "Piensa en el tamaño: si una unidad de la cuadrícula mide 5 metros, ¿el lado real debe ser más largo o más corto que 7 metros?",
+     "Una escala dice cuánta longitud real representa UNA unidad. ¿Cómo hallas la longitud de 7 de ellas?",
+     "Mira el paso que convierte unidades de la cuadrícula en metros y pruébalo con esa idea."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "Amara and Dmitri each find the perimeter of the rectangle with vertices (−4, 1), (5, 1), (5, −6) and (−4, −6). Amara says it is 32 units. Dmitri says it is 16 units, because perimeter is the length plus the width. Who is right?",
+    "qEs": "Amara y Dmitri hallan el perímetro del rectángulo con vértices (−4, 1), (5, 1), (5, −6) y (−4, −6). Amara dice que es 32 unidades. Dmitri dice que es 16 unidades, porque el perímetro es el largo más el ancho. ¿Quién tiene razón?",
+    "c": [
+     "Dmitri: the distance around is one length plus one width.",
+     "Amara: every side counts, so the perimeter is 2 lengths and 2 widths.",
+     "Both: 16 is just half of 32, so the two answers agree.",
+     "Neither: the perimeter is 63 units."
+    ],
+    "cEs": [
+     "Dmitri: la distancia alrededor es un largo más un ancho.",
+     "Amara: cuentan todos los lados, así que el perímetro es 2 largos y 2 anchos.",
+     "Los dos: 16 es solo la mitad de 32, así que las respuestas coinciden.",
+     "Ninguno: el perímetro es 63 unidades."
+    ],
+    "a": 1,
+    "f": [
+     "Dmitri added one length and one width. That is only half of the way around the rectangle.",
+     "",
+     "Two different numbers cannot both be the full distance around. Only one of them counts all four sides.",
+     "63 comes from multiplying the two side lengths. That is the area, not the distance around."
+    ],
+    "fEs": [
+     "Dmitri sumó un largo y un ancho. Eso es solo la mitad del recorrido alrededor del rectángulo.",
+     "",
+     "Dos números distintos no pueden ser ambos la distancia completa alrededor. Solo uno cuenta los cuatro lados.",
+     "63 sale de multiplicar las dos longitudes de los lados. Eso es el área, no la distancia alrededor."
+    ],
+    "tag": [
+     "half-perimeter",
+     null,
+     "both-answers-accepted",
+     "area-for-perimeter"
+    ],
+    "x": "The sides are |5 − (−4)| = 9 and |1 − (−6)| = 7. A rectangle has two of each, so the perimeter is 2(9) + 2(7) = 32 units. Dmitri's 16 is only halfway around.",
+    "xEs": "Los lados miden |5 − (−4)| = 9 y |1 − (−6)| = 7. Un rectángulo tiene dos de cada uno, así que el perímetro es 2(9) + 2(7) = 32 unidades. El 16 de Dmitri es solo la mitad del recorrido.",
+    "h": [
+     "Find both side lengths from the vertices.",
+     "A rectangle has four sides. How many of each length are there?",
+     "Test each claim: does it add up all four sides?"
+    ],
+    "hEs": [
+     "Halla las dos longitudes de los lados con los vértices.",
+     "Un rectángulo tiene cuatro lados. ¿Cuántos hay de cada longitud?",
+     "Prueba cada afirmación: ¿suma los cuatro lados?"
+    ]
+   }
+  ],
+  "boss": [
+   {
+    "k": "mc",
+    "q": "A crew plots four vertices on the grid: A(1, 1), B(5, 1), C(1, 4) and D(5, 4). In which order should they join the points to draw a rectangle without any sides crossing?",
+    "qEs": "Una cuadrilla marca cuatro vértices en la cuadrícula: A(1, 1), B(5, 1), C(1, 4) y D(5, 4). ¿En qué orden deben unir los puntos para dibujar un rectángulo sin que se crucen los lados?",
+    "viz": {
+     "t": "coord",
+     "xmin": 0,
+     "xmax": 6,
+     "ymin": 0,
+     "ymax": 5,
+     "points": [
+      {
+       "x": 1,
+       "y": 1,
+       "l": "A"
+      },
+      {
+       "x": 5,
+       "y": 1,
+       "l": "B"
+      },
+      {
+       "x": 1,
+       "y": 4,
+       "l": "C"
+      },
+      {
+       "x": 5,
+       "y": 4,
+       "l": "D"
+      }
+     ],
+     "grid": true
+    },
+    "c": [
+     "A, B, C, D, and back to A",
+     "A, C, B, D, and back to A",
+     "A, D, B, C, and back to A",
+     "A, B, D, C, and back to A"
+    ],
+    "cEs": [
+     "A, B, C, D y de regreso a A",
+     "A, C, B, D y de regreso a A",
+     "A, D, B, C y de regreso a A",
+     "A, B, D, C y de regreso a A"
+    ],
+    "a": 3,
+    "f": [
+     "Going through the letters in alphabetical order sends the path across the middle. Letter order does not always trace the outside of a shape.",
+     "That path jumps from C to B and from D back to A, cutting diagonally across the shape.",
+     "Two of those segments are diagonals, so they cross inside the figure instead of tracing its outside.",
+     ""
+    ],
+    "fEs": [
+     "Seguir las letras en orden alfabético manda el camino por el centro. El orden de las letras no siempre recorre el contorno de una figura.",
+     "Ese camino salta de C a B y de D de regreso a A, cortando en diagonal la figura.",
+     "Dos de esos segmentos son diagonales, así que se cruzan adentro de la figura en lugar de recorrer su contorno.",
+     ""
+    ],
+    "tag": [
+     "joined-in-letter-order",
+     "diagonal-jumps",
+     "diagonal-jumps",
+     null
+    ],
+    "x": "Each side of a rectangle joins two corners that share an x or a y. A and B share y = 1, B and D share x = 5, D and C share y = 4, and C and A share x = 1. So the path A, B, D, C closes the rectangle.",
+    "xEs": "Cada lado de un rectángulo une dos esquinas que comparten una x o una y. A y B comparten y = 1, B y D comparten x = 5, D y C comparten y = 4, y C y A comparten x = 1. Así que el camino A, B, D, C cierra el rectángulo.",
+    "h": [
+     "A rectangle's sides join corners that share an x-value or a y-value.",
+     "Start at A. Which point shares a coordinate with A and sits next to it?",
+     "Keep moving to a point that shares a coordinate with the one you are on, so no segment cuts across the middle."
+    ],
+    "hEs": [
+     "Los lados de un rectángulo unen esquinas que comparten un valor de x o un valor de y.",
+     "Empieza en A. ¿Qué punto comparte una coordenada con A y está a su lado?",
+     "Sigue hacia un punto que comparta una coordenada con el que estás, para que ningún segmento cruce por el centro."
+    ]
+   },
+   {
+    "k": "num",
+    "q": "A support beam runs from (−3.5, 6) to (4.25, 6) on the station map. How long is the beam in units?",
+    "qEs": "Una viga de soporte va de (−3.5, 6) a (4.25, 6) en el mapa de la estación. ¿Cuánto mide la viga en unidades?",
+    "a": "7.75",
+    "fw": [
+     {
+      "v": "0.75",
+      "f": "That subtracts 4.25 − 3.5 as if both numbers were on the same side of zero. They are on opposite sides.",
+      "fEs": "Eso resta 4.25 − 3.5 como si los dos números estuvieran del mismo lado del cero. Están en lados opuestos."
+     },
+     {
+      "v": "6",
+      "f": "6 is the y-coordinate both points share. It tells you the beam is horizontal, but it is not the length.",
+      "fEs": "6 es la coordenada y que comparten los dos puntos. Dice que la viga es horizontal, pero no es la longitud."
+     }
+    ],
+    "x": "Both points have y = 6, so the beam is horizontal. The x-values are on opposite sides of zero, so add their distances from zero: 3.5 + 4.25 = 7.75 units.",
+    "xEs": "Los dos puntos tienen y = 6, así que la viga es horizontal. Los valores de x están en lados opuestos del cero, así que suma sus distancias desde el cero: 3.5 + 4.25 = 7.75 unidades.",
+    "h": [
+     "Points with the same y-coordinate are joined by a horizontal segment. Use their x-values.",
+     "−3.5 is left of zero and 4.25 is right of zero.",
+     "Add the distance from −3.5 to 0 and the distance from 0 to 4.25."
+    ],
+    "hEs": [
+     "Los puntos con la misma coordenada y están unidos por un segmento horizontal. Usa sus valores de x.",
+     "−3.5 está a la izquierda del cero y 4.25 está a la derecha del cero.",
+     "Suma la distancia de −3.5 a 0 y la distancia de 0 a 4.25."
+    ]
+   },
+   {
+    "k": "num",
+    "q": "A rectangular lab module has its top edge from (−8, 3) to (1, 3). Its area is 45 square units, and the module extends below the top edge. What is the y-coordinate of its bottom edge?",
+    "qEs": "Un módulo de laboratorio rectangular tiene su borde de arriba de (−8, 3) a (1, 3). Su área es 45 unidades cuadradas y el módulo se extiende debajo del borde de arriba. ¿Cuál es la coordenada y de su borde de abajo?",
+    "a": "-2",
+    "fw": [
+     {
+      "v": "5",
+      "f": "5 is how tall the module is. The question asks where the bottom edge sits on the y-axis.",
+      "fEs": "5 es la altura del módulo. La pregunta pide dónde queda el borde de abajo en el eje y."
+     },
+     {
+      "v": "8",
+      "f": "That moves up from y = 3. The module extends downward, so the y-value gets smaller.",
+      "fEs": "Eso sube desde y = 3. El módulo se extiende hacia abajo, así que el valor de y se hace menor."
+     },
+     {
+      "v": "-5",
+      "f": "That is the height with a minus sign, not a position. Start at y = 3 and move down by the height.",
+      "fEs": "Eso es la altura con signo menos, no una posición. Empieza en y = 3 y baja la altura."
+     }
+    ],
+    "x": "The top edge is |1 − (−8)| = 9 units long. Area = width × height, so the height is 45 ÷ 9 = 5 units. The bottom edge is 5 units below y = 3, so its y-coordinate is 3 − 5 = −2.",
+    "xEs": "El borde de arriba mide |1 − (−8)| = 9 unidades. Área = ancho × alto, así que el alto es 45 ÷ 9 = 5 unidades. El borde de abajo está 5 unidades debajo de y = 3, así que su coordenada y es 3 − 5 = −2.",
+    "h": [
+     "Area = width × height. The top edge gives you the width.",
+     "Find the width from the x-values, then divide the area by it to get the height.",
+     "Start at y = 3 and move down by the height."
+    ],
+    "hEs": [
+     "Área = ancho × alto. El borde de arriba te da el ancho.",
+     "Halla el ancho con los valores de x y luego divide el área entre él para obtener el alto.",
+     "Empieza en y = 3 y baja la altura."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "Three vertices of a rectangle are P(−4, −1), Q(5, −1) and R(5, 6). What are the coordinates of the fourth vertex, S?",
+    "qEs": "Tres vértices de un rectángulo son P(−4, −1), Q(5, −1) y R(5, 6). ¿Cuáles son las coordenadas del cuarto vértice, S?",
+    "viz": {
+     "t": "coord",
+     "xmin": -6,
+     "xmax": 7,
+     "ymin": -3,
+     "ymax": 8,
+     "points": [
+      {
+       "x": -4,
+       "y": -1,
+       "l": "P"
+      },
+      {
+       "x": 5,
+       "y": -1,
+       "l": "Q"
+      },
+      {
+       "x": 5,
+       "y": 6,
+       "l": "R"
+      }
+     ],
+     "grid": true,
+     "segments": [
+      [
+       0,
+       1
+      ],
+      [
+       1,
+       2
+      ]
+     ]
+    },
+    "c": [
+     "(6, −4)",
+     "(−4, 6)",
+     "(−4, −6)",
+     "(4, 6)"
+    ],
+    "a": 1,
+    "f": [
+     "That reverses the order of the numbers in an ordered pair, so it names a different point.",
+     "",
+     "The x-value is right, but the sign of the y-value was flipped. Copy the y-value from the correct vertex exactly.",
+     "The negative sign on the x-value was dropped. A copied coordinate keeps its sign."
+    ],
+    "fEs": [
+     "Eso invierte el orden de los números en un par ordenado, así que nombra otro punto.",
+     "",
+     "El valor de x está bien, pero se cambió el signo del valor de y. Copia exactamente el valor de y del vértice correcto.",
+     "Se perdió el signo negativo del valor de x. Una coordenada copiada conserva su signo."
+    ],
+    "tag": [
+     "swapped-x-and-y",
+     null,
+     "flipped-sign",
+     "dropped-negative"
+    ],
+    "x": "Opposite sides of a rectangle share a coordinate. S is on the same vertical side as P, so its x is −4, and on the same horizontal side as R, so its y is 6. S = (−4, 6).",
+    "xEs": "Los lados opuestos de un rectángulo comparten una coordenada. S está en el mismo lado vertical que P, así que su x es −4, y en el mismo lado horizontal que R, así que su y es 6. S = (−4, 6).",
+    "h": [
+     "Opposite sides of a rectangle line up: they share an x-value or a y-value.",
+     "P and Q share a y. Q and R share an x. Which known vertex does S share an x with, and which does it share a y with?",
+     "Copy the x-value from one vertex and the y-value from the other, keeping their signs."
+    ],
+    "hEs": [
+     "Los lados opuestos de un rectángulo se alinean: comparten un valor de x o un valor de y.",
+     "P y Q comparten una y. Q y R comparten una x. ¿Con qué vértice conocido comparte S la x y con cuál comparte la y?",
+     "Copia el valor de x de un vértice y el valor de y del otro, conservando sus signos."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "Two panels are drawn on the grid. Panel X has vertices (−6, 4), (6, 4), (6, 1) and (−6, 1). Panel Y has vertices (−3, −1), (3, −1), (3, −7) and (−3, −7). Which statement is true?",
+    "qEs": "Dos paneles están dibujados en la cuadrícula. El panel X tiene vértices (−6, 4), (6, 4), (6, 1) y (−6, 1). El panel Y tiene vértices (−3, −1), (3, −1), (3, −7) y (−3, −7). ¿Cuál afirmación es verdadera?",
+    "viz": {
+     "t": "coord",
+     "xmin": -8,
+     "xmax": 8,
+     "ymin": -8,
+     "ymax": 6,
+     "points": [
+      {
+       "x": -6,
+       "y": 4,
+       "l": "X"
+      },
+      {
+       "x": 6,
+       "y": 4
+      },
+      {
+       "x": 6,
+       "y": 1
+      },
+      {
+       "x": -6,
+       "y": 1
+      },
+      {
+       "x": -3,
+       "y": -1,
+       "l": "Y"
+      },
+      {
+       "x": 3,
+       "y": -1
+      },
+      {
+       "x": 3,
+       "y": -7
+      },
+      {
+       "x": -3,
+       "y": -7
+      }
+     ],
+     "grid": true,
+     "polygon": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "segments": [
+      [
+       4,
+       5
+      ],
+      [
+       5,
+       6
+      ],
+      [
+       6,
+       7
+      ],
+      [
+       7,
+       4
+      ]
+     ]
+    },
+    "c": [
+     "The perimeters are the same, but X has the greater area.",
+     "X has the greater area and the longer perimeter.",
+     "The areas are the same, but X has the longer perimeter.",
+     "The areas and the perimeters are both the same."
+    ],
+    "cEs": [
+     "Los perímetros son iguales, pero X tiene el área mayor.",
+     "X tiene el área mayor y el perímetro más largo.",
+     "Las áreas son iguales, pero X tiene el perímetro más largo.",
+     "Las áreas y los perímetros son iguales."
+    ],
+    "a": 2,
+    "f": [
+     "You may have used an area number where a perimeter number belongs. Add the four sides of each panel to find its perimeter.",
+     "X looks bigger because it is wide, but a long thin shape can have the same area as a squarer one. Compute both measures for both panels.",
+     "",
+     "Equal areas do not force equal perimeters. Add the four sides of each panel and compare."
+    ],
+    "fEs": [
+     "Quizás usaste un número de área donde va un perímetro. Suma los cuatro lados de cada panel para hallar su perímetro.",
+     "X parece más grande porque es ancho, pero una figura larga y delgada puede tener la misma área que una más cuadrada. Calcula las dos medidas de los dos paneles.",
+     "",
+     "Áreas iguales no obligan a perímetros iguales. Suma los cuatro lados de cada panel y compara."
+    ],
+    "tag": [
+     "area-perimeter-swapped",
+     "judged-by-looks",
+     null,
+     "same-area-means-same-perimeter"
+    ],
+    "x": "Panel X is 12 units by 3 units: area 12 × 3 = 36 and perimeter 2(12) + 2(3) = 30. Panel Y is 6 by 6: area 36 and perimeter 2(6) + 2(6) = 24. Same area, different perimeters.",
+    "xEs": "El panel X mide 12 unidades por 3 unidades: área 12 × 3 = 36 y perímetro 2(12) + 2(3) = 30. El panel Y mide 6 por 6: área 36 y perímetro 2(6) + 2(6) = 24. Misma área, perímetros distintos.",
+    "h": [
+     "Find the width and the height of each panel from its vertices.",
+     "Work out the area (width × height) and the perimeter (2 widths + 2 heights) for BOTH panels.",
+     "Compare the two areas first, then compare the two perimeters."
+    ],
+    "hEs": [
+     "Halla el ancho y el alto de cada panel con sus vértices.",
+     "Calcula el área (ancho × alto) y el perímetro (2 anchos + 2 altos) de LOS DOS paneles.",
+     "Compara primero las dos áreas y luego los dos perímetros."
+    ]
+   },
+   {
+    "k": "wr",
+    "p": "Create your own rectangle on the coordinate plane. Give its four vertices, and make sure at least one coordinate is negative. Find the length of each side and the perimeter, and explain how you know which coordinates to use.",
+    "pEs": "Crea tu propio rectángulo en el plano de coordenadas. Da sus cuatro vértices y asegúrate de que al menos una coordenada sea negativa. Halla la longitud de cada lado y el perímetro, y explica cómo sabes cuáles coordenadas usar.",
+    "fr": "My vertices are ___. Two vertices share ___, so the side between them is ___. I used absolute value because ___. The perimeter is ___.",
+    "frEs": "Mis vértices son ___. Dos vértices comparten ___, así que el lado entre ellos es ___. Usé valor absoluto porque ___. El perímetro es ___.",
+    "min": 90,
+    "kw": [
+     "vertices",
+     "share",
+     "absolute value",
+     "perimeter"
+    ],
+    "kwEs": [
+     "vértices",
+     "comparten",
+     "valor absoluto",
+     "perímetro"
+    ],
+    "rubric": [
+     "I gave four vertices that make a rectangle (opposite sides share an x or a y).",
+     "I found both side lengths and showed which coordinates I used.",
+     "I explained why a side that crosses zero adds the distances from zero.",
+     "I added all four sides for the perimeter and wrote the units."
+    ],
+    "rubricEs": [
+     "Di cuatro vértices que forman un rectángulo (los lados opuestos comparten una x o una y).",
+     "Hallé las dos longitudes de los lados y mostré cuáles coordenadas usé.",
+     "Expliqué por qué un lado que cruza el cero suma las distancias desde el cero.",
+     "Sumé los cuatro lados para el perímetro y escribí las unidades."
+    ],
+    "x": "My vertices are (−4, 3), (2, 3), (2, −1) and (−4, −1). The top two vertices share y = 3, so that side is horizontal and its length is |2 − (−4)| = 6 units. I used absolute value because −4 and 2 are on opposite sides of zero. The right side shares x = 2, so its length is |3 − (−1)| = 4 units. The perimeter is 2(6) + 2(4) = 20 units.",
+    "xEs": "Mis vértices son (−4, 3), (2, 3), (2, −1) y (−4, −1). Los dos vértices de arriba comparten y = 3, así que ese lado es horizontal y mide |2 − (−4)| = 6 unidades. Usé valor absoluto porque −4 y 2 están en lados opuestos del cero. El lado derecho comparte x = 2, así que mide |3 − (−1)| = 4 unidades. El perímetro es 2(6) + 2(4) = 20 unidades.",
+    "h": [
+     "Pick two x-values and two y-values. Every vertex uses one of each.",
+     "Sides join vertices that share an x or a y, so line your four vertices up that way.",
+     "Use at least one negative value so you can show how absolute value helps."
+    ],
+    "hEs": [
+     "Escoge dos valores de x y dos valores de y. Cada vértice usa uno de cada uno.",
+     "Los lados unen vértices que comparten una x o una y, así que alinea tus cuatro vértices de esa manera.",
+     "Usa al menos un valor negativo para poder mostrar cómo ayuda el valor absoluto."
+    ]
+   }
+  ]
+ },
+ "mastery": [
+  {
+   "k": "num",
+   "q": "A rectangle has vertices (−4, 5), (6, 5), (6, 1) and (−4, 1). What is its perimeter in units?",
+   "qEs": "Un rectángulo tiene vértices (−4, 5), (6, 5), (6, 1) y (−4, 1). ¿Cuál es su perímetro en unidades?",
+   "a": "28",
+   "fw": [
+    {
+     "v": "14",
+     "f": "That adds one length and one width. The perimeter goes around all four sides.",
+     "fEs": "Eso suma un largo y un ancho. El perímetro rodea los cuatro lados."
+    },
+    {
+     "v": "40",
+     "f": "That multiplies the side lengths, which finds area. Perimeter adds the sides around the edge.",
+     "fEs": "Eso multiplica las longitudes de los lados, que da el área. El perímetro suma los lados del contorno."
+    }
+   ],
+   "x": "The top side is |6 − (−4)| = 10 units and the right side is |5 − 1| = 4 units. The perimeter is 2(10) + 2(4) = 28 units.",
+   "xEs": "El lado de arriba mide |6 − (−4)| = 10 unidades y el lado derecho mide |5 − 1| = 4 unidades. El perímetro es 2(10) + 2(4) = 28 unidades.",
+   "h": [
+    "Find the horizontal side from the x-values and the vertical side from the y-values.",
+    "One of the sides crosses zero, so add the two distances from zero for that side.",
+    "A rectangle has two sides of each length. Add all four."
+   ],
+   "hEs": [
+    "Halla el lado horizontal con los valores de x y el lado vertical con los valores de y.",
+    "Uno de los lados cruza el cero, así que para ese lado suma las dos distancias desde el cero.",
+    "Un rectángulo tiene dos lados de cada longitud. Suma los cuatro."
+   ]
+  },
+  {
+   "k": "mc",
+   "q": "A rectangle on the grid is 6 units wide and 5 units tall. Which sentence gives its measures with the correct units?",
+   "qEs": "Un rectángulo en la cuadrícula mide 6 unidades de ancho y 5 unidades de alto. ¿Cuál oración da sus medidas con las unidades correctas?",
+   "c": [
+    "Perimeter 22 square units; area 30 units",
+    "Perimeter 30 units; area 22 square units",
+    "Perimeter 11 units; area 30 square units",
+    "Perimeter 22 units; area 30 square units"
+   ],
+   "cEs": [
+    "Perímetro 22 unidades cuadradas; área 30 unidades",
+    "Perímetro 30 unidades; área 22 unidades cuadradas",
+    "Perímetro 11 unidades; área 30 unidades cuadradas",
+    "Perímetro 22 unidades; área 30 unidades cuadradas"
+   ],
+   "a": 3,
+   "f": [
+    "The numbers are matched to the right measures, but the units are swapped. Area covers squares, and perimeter is a plain distance.",
+    "The two measures are swapped. Area multiplies the sides, and perimeter adds all four around the edge.",
+    "The perimeter counted only one width and one height. It goes around all four sides.",
+    ""
+   ],
+   "fEs": [
+    "Los números corresponden a las medidas correctas, pero las unidades están cambiadas. El área cubre cuadros y el perímetro es una distancia simple.",
+    "Las dos medidas están cambiadas. El área multiplica los lados y el perímetro suma los cuatro lados del contorno.",
+    "El perímetro contó solo un ancho y un alto. Rodea los cuatro lados.",
+    ""
+   ],
+   "tag": [
+    "swapped-units",
+    "area-perimeter-swapped",
+    "half-perimeter",
+    null
+   ],
+   "x": "Perimeter is the distance around: 2(6) + 2(5) = 22 plain units. Area is the space inside: 6 × 5 = 30 square units.",
+   "xEs": "El perímetro es la distancia alrededor: 2(6) + 2(5) = 22 unidades simples. El área es el espacio adentro: 6 × 5 = 30 unidades cuadradas.",
+   "h": [
+    "Perimeter adds the sides around the edge. Area multiplies width by height.",
+    "A distance is measured in plain units. Squares that fill a space are measured in square units."
+   ],
+   "hEs": [
+    "El perímetro suma los lados del contorno. El área multiplica el ancho por el alto.",
+    "Una distancia se mide en unidades simples. Los cuadros que llenan un espacio se miden en unidades cuadradas."
+   ]
+  }
+ ],
+ "glossary": [
+  {
+   "t": "vertex",
+   "tEs": "vértice",
+   "d": "A corner of a polygon. On the grid you name it with an ordered pair, like (4, −2).",
+   "dEs": "Una esquina de un polígono. En la cuadrícula se nombra con un par ordenado, como (4, −2)."
+  },
+  {
+   "t": "polygon",
+   "tEs": "polígono",
+   "d": "A closed shape made of straight sides. You draw it by plotting the vertices and joining them in order.",
+   "dEs": "Una figura cerrada hecha de lados rectos. Se dibuja marcando los vértices y uniéndolos en orden."
+  },
+  {
+   "t": "perimeter",
+   "tEs": "perímetro",
+   "d": "The distance around a polygon. Add all of its side lengths.",
+   "dEs": "La distancia alrededor de un polígono. Suma las longitudes de todos sus lados."
+  },
+  {
+   "t": "side length",
+   "tEs": "longitud del lado",
+   "d": "The distance between two vertices joined by a side. If they share an x or a y, subtract the other coordinates and use absolute value.",
+   "dEs": "La distancia entre dos vértices unidos por un lado. Si comparten una x o una y, resta las otras coordenadas y usa el valor absoluto."
+  },
+  {
+   "t": "scale",
+   "tEs": "escala",
+   "d": "What one grid unit stands for in real life, like 1 unit = 2 meters.",
+   "dEs": "Lo que representa una unidad de la cuadrícula en la vida real, como 1 unidad = 2 metros."
+  }
+ ]
+}

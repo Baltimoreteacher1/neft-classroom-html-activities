@@ -1,0 +1,963 @@
+{
+ "v": 1,
+ "lesson": "6-6",
+ "story": "At the Pixel Arcade, two game designers wrote different score formulas for the same level. Your job is to find out which formulas always give the same score, so no player is cheated. Test, simplify, and catch the fakes.",
+ "storyEs": "En el Pixel Arcade, dos diseñadores de juegos escribieron fórmulas de puntaje diferentes para el mismo nivel. Tu trabajo es descubrir qué fórmulas siempre dan el mismo puntaje, para que ningún jugador salga perjudicado. Prueba, simplifica y atrapa las falsas.",
+ "challengeStory": "After closing, the arcade unlocks a secret Bonus Round full of formulas that look alike but score differently. Find the counterexample that exposes each fake, and prove the real matches by simplifying.",
+ "challengeStoryEs": "Después del cierre, el arcade abre una Ronda Bonus secreta llena de fórmulas que se parecen pero puntúan distinto. Encuentra el contraejemplo que delata cada falsa y demuestra con una simplificación las que sí son equivalentes.",
+ "getReady": null,
+ "fresh": [
+  {
+   "k": "gen",
+   "g": "equivalentExpr",
+   "level": 1
+  },
+  {
+   "k": "gen",
+   "g": "equivalentExpr",
+   "level": 1
+  },
+  {
+   "k": "gen",
+   "g": "equivalentExpr",
+   "level": 2
+  },
+  {
+   "k": "gen",
+   "g": "equivalentExpr",
+   "level": 2
+  },
+  {
+   "k": "gen",
+   "g": "equivalentExpr",
+   "level": 3
+  },
+  {
+   "k": "gen",
+   "g": "equivalentExpr",
+   "level": 3
+  },
+  {
+   "k": "act",
+   "kind": "tiles",
+   "level": 2,
+   "p": {
+    "mode": "equivalent"
+   }
+  }
+ ],
+ "challenge": {
+  "climb": [
+   {
+    "k": "gen",
+    "g": "equivalentExpr",
+    "level": 2
+   },
+   {
+    "k": "gen",
+    "g": "combineLikeTerms",
+    "level": 2
+   },
+   {
+    "k": "gen",
+    "g": "equivalentExpr",
+    "level": 3
+   },
+   {
+    "k": "gen",
+    "g": "combineLikeTerms",
+    "level": 3
+   },
+   {
+    "k": "gen",
+    "g": "equivalentExpr",
+    "level": 4
+   },
+   {
+    "k": "gen",
+    "g": "combineLikeTerms",
+    "level": 4
+   }
+  ],
+  "missions": [
+   {
+    "k": "mc",
+    "q": "Game designers claim that 4n and n + 6 give the same score. The table shows what each formula gives for four values of n. Which statement is correct?",
+    "qEs": "Los diseñadores dicen que 4n y n + 6 dan el mismo puntaje. La tabla muestra lo que da cada fórmula para cuatro valores de n. ¿Qué enunciado es correcto?",
+    "c": [
+     "They are equivalent, because both formulas give 8 when n = 2.",
+     "They are not equivalent, because n = 3 gives 12 for 4n but 9 for n + 6.",
+     "They are not equivalent, because 4n and n + 6 look different.",
+     "You cannot tell unless every value of n is tested."
+    ],
+    "cEs": [
+     "Son equivalentes, porque las dos fórmulas dan 8 cuando n = 2.",
+     "No son equivalentes, porque n = 3 da 12 con 4n pero 9 con n + 6.",
+     "No son equivalentes, porque 4n y n + 6 se ven diferentes.",
+     "No se puede saber a menos que se pruebe cada valor de n."
+    ],
+    "a": 1,
+    "f": [
+     "A match at one value does not prove the formulas always agree. Look at the other rows too.",
+     "",
+     "Equivalent expressions can look different. A good reason has to use what the expressions are worth.",
+     "Testing every value is needed to show expressions ARE equivalent, but one value where they differ is enough to show they are not."
+    ],
+    "fEs": [
+     "Que coincidan en un solo valor no demuestra que siempre coincidan. Mira también las otras filas.",
+     "",
+     "Las expresiones equivalentes pueden verse diferentes. Una buena razón debe usar el valor de las expresiones.",
+     "Probar cada valor hace falta para mostrar que SÍ son equivalentes, pero basta un valor donde difieran para mostrar que no lo son."
+    ],
+    "tag": [
+     "one-match-proves-equivalence",
+     null,
+     "looks-different-not-equivalent",
+     "needs-every-value"
+    ],
+    "x": "Equivalent expressions must give the same value for every n. At n = 2 both formulas give 8, but at n = 3 they give 12 and 9. One value where they differ is a counterexample, and it is enough to show the formulas are not equivalent.",
+    "xEs": "Las expresiones equivalentes deben dar el mismo valor para cada n. Con n = 2 las dos fórmulas dan 8, pero con n = 3 dan 12 y 9. Un valor donde difieren es un contraejemplo y basta para mostrar que las fórmulas no son equivalentes.",
+    "h": [
+     "Equivalent expressions give the same value for EVERY number you substitute.",
+     "Look down the table for a row where the two columns are different.",
+     "How many rows with different values do you need to show the formulas are not equivalent?"
+    ],
+    "hEs": [
+     "Las expresiones equivalentes dan el mismo valor para CADA número que sustituyas.",
+     "Busca en la tabla una fila donde las dos columnas sean diferentes.",
+     "¿Cuántas filas con valores diferentes necesitas para mostrar que las fórmulas no son equivalentes?"
+    ],
+    "viz": {
+     "t": "table",
+     "hd": [
+      "n",
+      "4n",
+      "n + 6"
+     ],
+     "rows": [
+      [
+       "1",
+       "4",
+       "7"
+      ],
+      [
+       "2",
+       "8",
+       "8"
+      ],
+      [
+       "3",
+       "12",
+       "9"
+      ],
+      [
+       "5",
+       "20",
+       "11"
+      ]
+     ]
+    }
+   },
+   {
+    "k": "num",
+    "q": "In the Pixel Arcade, Game A scores 5n + 2 + 3n − 1 points when you collect n coins. Game B scores ?n + 1 points. For the two games to always give the same score, what number belongs in the blank?",
+    "qEs": "En el Pixel Arcade, el juego A da 5n + 2 + 3n − 1 puntos cuando juntas n monedas. El juego B da ?n + 1 puntos. Para que los dos juegos siempre den el mismo puntaje, ¿qué número va en el espacio en blanco?",
+    "a": "8",
+    "fw": [
+     {
+      "v": "5",
+      "f": "5 is the coefficient of only the first n term. Combine the coefficients of all the n terms.",
+      "fEs": "5 es el coeficiente de solo el primer término con n. Combina los coeficientes de todos los términos con n."
+     },
+     {
+      "v": "15",
+      "f": "15 multiplies 5 × 3. Like terms are combined by adding their coefficients.",
+      "fEs": "15 multiplica 5 × 3. Los términos semejantes se combinan sumando sus coeficientes."
+     },
+     {
+      "v": "7",
+      "f": "7 mixes the −1 into the n terms. The −1 has no n, so it cannot be combined with them.",
+      "fEs": "7 mezcla el −1 con los términos con n. El −1 no tiene n, así que no se puede combinar con ellos."
+     }
+    ],
+    "x": "Combine like terms in Game A. The n terms are 5n and 3n, which make 8n. The plain numbers are 2 and −1, which make 1. So Game A is 8n + 1, and the blank must be 8.",
+    "xEs": "Combina los términos semejantes del juego A. Los términos con n son 5n y 3n, que forman 8n. Los números solos son 2 y −1, que forman 1. Entonces el juego A es 8n + 1 y el espacio en blanco debe ser 8.",
+    "h": [
+     "Sort the terms into two families: terms with n, and plain numbers.",
+     "Add the coefficients of the n terms. Then combine the plain numbers, keeping their signs.",
+     "Find 5 + 3 for the n terms. The plain numbers 2 and −1 already give the 1 in Game B."
+    ],
+    "hEs": [
+     "Separa los términos en dos familias: los términos con n y los números solos.",
+     "Suma los coeficientes de los términos con n. Luego combina los números solos, conservando sus signos.",
+     "Halla 5 + 3 para los términos con n. Los números solos 2 y −1 ya dan el 1 del juego B."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "Four players compared their score formulas in pairs. Exactly one pair is equivalent. Which pair is it?",
+    "qEs": "Cuatro jugadores compararon sus fórmulas de puntaje en parejas. Exactamente una pareja es equivalente. ¿Cuál es?",
+    "c": [
+     "7n − 3 and 3 − 7n",
+     "4(n + 2) and 4n + 2",
+     "9n + 1 and 10n",
+     "5 + 2n + 6 and 2n + 11"
+    ],
+    "cEs": [
+     "7n − 3 y 3 − 7n",
+     "4(n + 2) y 4n + 2",
+     "9n + 1 y 10n",
+     "5 + 2n + 6 y 2n + 11"
+    ],
+    "a": 3,
+    "f": [
+     "Subtraction cannot be reordered. Try n = 1 in both formulas and compare.",
+     "The 4 has to multiply both terms inside the parentheses. Try n = 1 in both formulas.",
+     "9n and 1 are not like terms, so they cannot be combined into one n term. These two only match for one special value, so test two different values.",
+     ""
+    ],
+    "fEs": [
+     "La resta no se puede reordenar. Prueba n = 1 en las dos fórmulas y compara.",
+     "El 4 tiene que multiplicar los dos términos dentro del paréntesis. Prueba n = 1 en las dos fórmulas.",
+     "9n y 1 no son términos semejantes, así que no se pueden combinar en un solo término con n. Estas dos solo coinciden en un valor especial, así que prueba dos valores diferentes.",
+     ""
+    ],
+    "tag": [
+     "subtraction-commutes",
+     "algebra-distributive-partial",
+     "combined-unlike-terms",
+     null
+    ],
+    "x": "Move the plain numbers together with the commutative property and add them: 5 + 2n + 6 = 2n + 5 + 6 = 2n + 11. Test n = 2: 5 + 4 + 6 = 15 and 4 + 11 = 15. The other pairs fail a test: n = 1 separates the first two pairs, and n = 2 separates the last pair (19 and 20).",
+    "xEs": "Junta los números solos con la propiedad conmutativa y súmalos: 5 + 2n + 6 = 2n + 5 + 6 = 2n + 11. Prueba n = 2: 5 + 4 + 6 = 15 y 4 + 11 = 15. Las otras parejas fallan una prueba: n = 1 separa las dos primeras parejas y n = 2 separa la última (19 y 20).",
+    "h": [
+     "Two expressions are equivalent only if they give the same value for every n. Test each pair with two different values.",
+     "Look for a pair that only reorders terms or combines like terms the correct way.",
+     "In 5 + 2n + 6, move the two plain numbers next to each other, then add them."
+    ],
+    "hEs": [
+     "Dos expresiones son equivalentes solo si dan el mismo valor para cada n. Prueba cada pareja con dos valores diferentes.",
+     "Busca una pareja que solo reordene términos o que combine bien los términos semejantes.",
+     "En 5 + 2n + 6, junta los dos números solos y luego súmalos."
+    ]
+   },
+   {
+    "k": "tbl",
+    "t": "Two bonus formulas are 2(n + 3) + n and 3n + 6. Find the score each formula gives for the value of n in each row.",
+    "tEs": "Dos fórmulas de bonus son 2(n + 3) + n y 3n + 6. Halla el puntaje que da cada fórmula para el valor de n de cada fila.",
+    "hd": [
+     "n",
+     "2(n + 3) + n",
+     "3n + 6"
+    ],
+    "hdEs": [
+     "n",
+     "2(n + 3) + n",
+     "3n + 6"
+    ],
+    "rows": [
+     [
+      "4",
+      "",
+      ""
+     ],
+     [
+      "7",
+      "",
+      ""
+     ],
+     [
+      "10",
+      "",
+      ""
+     ]
+    ],
+    "cells": [
+     {
+      "r": 0,
+      "c": 1,
+      "a": "18"
+     },
+     {
+      "r": 0,
+      "c": 2,
+      "a": "18"
+     },
+     {
+      "r": 1,
+      "c": 1,
+      "a": "27"
+     },
+     {
+      "r": 1,
+      "c": 2,
+      "a": "27"
+     },
+     {
+      "r": 2,
+      "c": 1,
+      "a": "36"
+     },
+     {
+      "r": 2,
+      "c": 2,
+      "a": "36"
+     }
+    ],
+    "x": "Every row gives the same score for both formulas. That is no accident: 2(n + 3) + n = 2n + 6 + n = 3n + 6. Testing values is good evidence, and simplifying proves it works for every n.",
+    "xEs": "Cada fila da el mismo puntaje con las dos fórmulas. No es casualidad: 2(n + 3) + n = 2n + 6 + n = 3n + 6. Probar valores es buena evidencia y simplificar demuestra que funciona para cada n.",
+    "h": [
+     "Substitute the value of n into each formula. Work inside the parentheses first.",
+     "For 2(n + 3) + n, do the parentheses, then multiply by 2, then add n.",
+     "In the first row, the first formula is 2 × 7 + 4 and the second is 3 × 4 + 6. Use the same steps in the other rows."
+    ],
+    "hEs": [
+     "Sustituye el valor de n en cada fórmula. Trabaja primero dentro de los paréntesis.",
+     "En 2(n + 3) + n, resuelve los paréntesis, luego multiplica por 2 y luego suma n.",
+     "En la primera fila, la primera fórmula es 2 × 7 + 4 y la segunda es 3 × 4 + 6. Usa los mismos pasos en las otras filas."
+    ]
+   }
+  ],
+  "lab": [
+   {
+    "k": "act",
+    "kind": "tiles",
+    "level": 3,
+    "p": {
+     "mode": "equivalent"
+    }
+   },
+   {
+    "k": "act",
+    "kind": "tiles",
+    "level": 4,
+    "p": {
+     "mode": "combine"
+    }
+   },
+   {
+    "k": "sort",
+    "q": "Sort each expression: is it equivalent to 3n + 12, or not?",
+    "qEs": "Clasifica cada expresión: ¿es equivalente a 3n + 12 o no?",
+    "bins": [
+     {
+      "l": "Equivalent to 3n + 12",
+      "lEs": "Equivalente a 3n + 12"
+     },
+     {
+      "l": "NOT equivalent to 3n + 12",
+      "lEs": "NO equivalente a 3n + 12"
+     }
+    ],
+    "cards": [
+     {
+      "t": "3(n + 4)",
+      "tEs": "3(n + 4)",
+      "b": 0
+     },
+     {
+      "t": "12 + 3n",
+      "tEs": "12 + 3n",
+      "b": 0
+     },
+     {
+      "t": "n + n + n + 12",
+      "tEs": "n + n + n + 12",
+      "b": 0
+     },
+     {
+      "t": "3n + 4",
+      "tEs": "3n + 4",
+      "b": 1
+     },
+     {
+      "t": "15n",
+      "tEs": "15n",
+      "b": 1
+     },
+     {
+      "t": "3(n + 12)",
+      "tEs": "3(n + 12)",
+      "b": 1
+     }
+    ],
+    "x": "Equivalent expressions have the same value for every n. 3(n + 4) = 3n + 12 by the distributive property, 12 + 3n only changes the order, and n + n + n + 12 combines to 3n + 12. The others break the rule: 3n + 4 loses 8, 15n combines unlike terms, and 3(n + 12) = 3n + 36. At n = 2 the target is 18, and these three give 10, 30, and 42.",
+    "xEs": "Las expresiones equivalentes tienen el mismo valor para cada n. 3(n + 4) = 3n + 12 por la propiedad distributiva, 12 + 3n solo cambia el orden y n + n + n + 12 se combina en 3n + 12. Las demás rompen la regla: 3n + 4 pierde 8, 15n combina términos no semejantes y 3(n + 12) = 3n + 36. Con n = 2 el objetivo es 18 y estas tres dan 10, 30 y 42.",
+    "h": [
+     "Test each expression with n = 2. The target 3n + 12 gives 18 there.",
+     "An expression that gives a different value at n = 2 cannot be equivalent.",
+     "If an expression also gives 18, test one more value, such as n = 5, before you sort it as equivalent."
+    ],
+    "hEs": [
+     "Prueba cada expresión con n = 2. El objetivo 3n + 12 da 18 ahí.",
+     "Una expresión que da un valor diferente con n = 2 no puede ser equivalente.",
+     "Si una expresión también da 18, prueba un valor más, como n = 5, antes de clasificarla como equivalente."
+    ]
+   }
+  ],
+  "detective": [
+   {
+    "k": "err",
+    "t": "Zara simplified 7m + 4 − 3m − 1 and got 4m + 5. Tap the step where her work goes wrong.",
+    "tEs": "Zara simplificó 7m + 4 − 3m − 1 y obtuvo 4m + 5. Toca el paso donde su trabajo falla.",
+    "s": [
+     {
+      "l": "Problem",
+      "lEs": "Problema",
+      "w": "Simplify 7m + 4 − 3m − 1.",
+      "wEs": "Simplifica 7m + 4 − 3m − 1."
+     },
+     {
+      "l": "Step 1",
+      "lEs": "Paso 1",
+      "w": "Group like terms: the m terms are 7m and −3m, and the plain numbers are 4 and −1.",
+      "wEs": "Agrupo los términos semejantes: los términos con m son 7m y −3m, y los números solos son 4 y −1."
+     },
+     {
+      "l": "Step 2",
+      "lEs": "Paso 2",
+      "w": "7m − 3m = 4m.",
+      "wEs": "7m − 3m = 4m."
+     },
+     {
+      "l": "Step 3",
+      "lEs": "Paso 3",
+      "w": "The plain numbers: 4 + 1 = 5.",
+      "wEs": "Los números solos: 4 + 1 = 5."
+     },
+     {
+      "l": "Step 4",
+      "lEs": "Paso 4",
+      "w": "So 7m + 4 − 3m − 1 = 4m + 5.",
+      "wEs": "Entonces 7m + 4 − 3m − 1 = 4m + 5."
+     }
+    ],
+    "e": 3,
+    "fix": "The plain numbers are 4 and −1, because the 1 is subtracted. 4 − 1 = 3, so the simplified expression is 4m + 3.",
+    "fixEs": "Los números solos son 4 y −1, porque el 1 se resta. 4 − 1 = 3, así que la expresión simplificada es 4m + 3.",
+    "x": "A term keeps the sign in front of it. The −1 is a negative term, so combining 4 and −1 gives 3, not 5. Test m = 2: 7(2) + 4 − 3(2) − 1 = 11, and 4(2) + 3 = 11, but 4(2) + 5 = 13.",
+    "xEs": "Un término conserva el signo que tiene delante. El −1 es un término negativo, así que combinar 4 y −1 da 3, no 5. Prueba m = 2: 7(2) + 4 − 3(2) − 1 = 11 y 4(2) + 3 = 11, pero 4(2) + 5 = 13.",
+    "h": [
+     "Each term keeps the sign in front of it.",
+     "Look at the plain numbers in Step 1: 4 and −1. What happens when you combine them?",
+     "Step 3 turned the −1 into a +1. Did the problem say to add or to subtract the 1?"
+    ],
+    "hEs": [
+     "Cada término conserva el signo que tiene delante.",
+     "Mira los números solos en el Paso 1: 4 y −1. ¿Qué pasa cuando los combinas?",
+     "El Paso 3 convirtió el −1 en +1. ¿El problema decía sumar o restar el 1?"
+    ]
+   },
+   {
+    "k": "err",
+    "t": "Ravi rewrote 5(2n + 3) as 10n + 3. Tap the step where his work goes wrong.",
+    "tEs": "Ravi reescribió 5(2n + 3) como 10n + 3. Toca el paso donde su trabajo falla.",
+    "s": [
+     {
+      "l": "Problem",
+      "lEs": "Problema",
+      "w": "Write an expression equivalent to 5(2n + 3).",
+      "wEs": "Escribe una expresión equivalente a 5(2n + 3)."
+     },
+     {
+      "l": "Step 1",
+      "lEs": "Paso 1",
+      "w": "The 5 multiplies the first term: 5 × 2n = 10n.",
+      "wEs": "El 5 multiplica al primer término: 5 × 2n = 10n."
+     },
+     {
+      "l": "Step 2",
+      "lEs": "Paso 2",
+      "w": "The second term stays the same: 3.",
+      "wEs": "El segundo término se queda igual: 3."
+     },
+     {
+      "l": "Step 3",
+      "lEs": "Paso 3",
+      "w": "Put the terms together: 10n + 3.",
+      "wEs": "Junto los términos: 10n + 3."
+     },
+     {
+      "l": "Step 4",
+      "lEs": "Paso 4",
+      "w": "So 5(2n + 3) is equivalent to 10n + 3.",
+      "wEs": "Entonces 5(2n + 3) es equivalente a 10n + 3."
+     }
+    ],
+    "e": 2,
+    "fix": "The 5 multiplies both terms inside the parentheses, so 5 × 3 = 15. The equivalent expression is 10n + 15.",
+    "fixEs": "El 5 multiplica los dos términos dentro del paréntesis, así que 5 × 3 = 15. La expresión equivalente es 10n + 15.",
+    "x": "The distributive property says the number outside multiplies every term inside the parentheses. Test n = 1: 5(2 + 3) = 25 and 10 + 15 = 25, but 10 + 3 = 13.",
+    "xEs": "La propiedad distributiva dice que el número de afuera multiplica cada término dentro del paréntesis. Prueba n = 1: 5(2 + 3) = 25 y 10 + 15 = 25, pero 10 + 3 = 13.",
+    "h": [
+     "The number outside the parentheses multiplies every term inside.",
+     "How many terms are inside 5(2n + 3)? Did the 5 reach all of them?",
+     "Test n = 1 in the original and in Ravi's answer. Do the values match?"
+    ],
+    "hEs": [
+     "El número de afuera del paréntesis multiplica cada término de adentro.",
+     "¿Cuántos términos hay dentro de 5(2n + 3)? ¿El 5 llegó a todos?",
+     "Prueba n = 1 en el original y en la respuesta de Ravi. ¿Coinciden los valores?"
+    ]
+   },
+   {
+    "k": "err",
+    "t": "Lena wants to know whether 7n + 4 and 3n + 4 are equivalent. She tested one easy number. Tap the step where her reasoning goes wrong.",
+    "tEs": "Lena quiere saber si 7n + 4 y 3n + 4 son equivalentes. Probó un solo número fácil. Toca el paso donde su razonamiento falla.",
+    "s": [
+     {
+      "l": "Problem",
+      "lEs": "Problema",
+      "w": "Are 7n + 4 and 3n + 4 equivalent?",
+      "wEs": "¿Son equivalentes 7n + 4 y 3n + 4?"
+     },
+     {
+      "l": "Step 1",
+      "lEs": "Paso 1",
+      "w": "I will test an easy number: n = 0.",
+      "wEs": "Voy a probar un número fácil: n = 0."
+     },
+     {
+      "l": "Step 2",
+      "lEs": "Paso 2",
+      "w": "7(0) + 4 = 4 and 3(0) + 4 = 4.",
+      "wEs": "7(0) + 4 = 4 y 3(0) + 4 = 4."
+     },
+     {
+      "l": "Step 3",
+      "lEs": "Paso 3",
+      "w": "Both give 4, so the expressions are equivalent.",
+      "wEs": "Las dos dan 4, así que las expresiones son equivalentes."
+     },
+     {
+      "l": "Step 4",
+      "lEs": "Paso 4",
+      "w": "I can use either one for the arcade score.",
+      "wEs": "Puedo usar cualquiera de las dos para el puntaje del arcade."
+     }
+    ],
+    "e": 3,
+    "fix": "One matching value is not enough. Try n = 2: 7(2) + 4 = 18 but 3(2) + 4 = 10, so the expressions are not equivalent.",
+    "fixEs": "Un valor que coincide no basta. Prueba n = 2: 7(2) + 4 = 18 pero 3(2) + 4 = 10, así que las expresiones no son equivalentes.",
+    "x": "Equivalent means the same value for EVERY n. When n = 0, the terms with n disappear, so many different expressions match there. A single value where they differ, like n = 2, is a counterexample.",
+    "xEs": "Equivalente significa el mismo valor para CADA n. Cuando n = 0, los términos con n desaparecen, así que muchas expresiones diferentes coinciden ahí. Un solo valor donde difieran, como n = 2, es un contraejemplo.",
+    "h": [
+     "Equivalent expressions must match for every value of n, not just one.",
+     "What happens to 7n and 3n when n is 0?",
+     "Try a second value, such as n = 2, in both expressions."
+    ],
+    "hEs": [
+     "Las expresiones equivalentes deben coincidir para todos los valores de n, no solo uno.",
+     "¿Qué pasa con 7n y 3n cuando n es 0?",
+     "Prueba un segundo valor, como n = 2, en las dos expresiones."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "Dara says 4n + 3n = 7n². Emil says 4n + 3n = 7n. Who is right?",
+    "qEs": "Dara dice que 4n + 3n = 7n². Emil dice que 4n + 3n = 7n. ¿Quién tiene razón?",
+    "c": [
+     "Emil is right: adding like terms adds the coefficients and keeps the variable the same.",
+     "Dara is right: when you combine like terms, the powers add up too.",
+     "Both are right: 7n and 7n² are two ways to write the same value.",
+     "Neither is right: 4n and 3n are not like terms, so they cannot be combined."
+    ],
+    "cEs": [
+     "Emil tiene razón: al sumar términos semejantes se suman los coeficientes y la variable se queda igual.",
+     "Dara tiene razón: al combinar términos semejantes, las potencias también se suman.",
+     "Las dos tienen razón: 7n y 7n² son dos formas de escribir el mismo valor.",
+     "Ninguno tiene razón: 4n y 3n no son términos semejantes, así que no se pueden combinar."
+    ],
+    "a": 0,
+    "f": [
+     "",
+     "Combining like terms adds only the coefficients. Test n = 2 in 4n + 3n and in 7n² and compare.",
+     "7n and 7n² are worth different amounts for most values of n. Try n = 2 in each one.",
+     "4n and 3n have the same letter to the same power, so they are like terms and can be combined."
+    ],
+    "fEs": [
+     "",
+     "Combinar términos semejantes suma solo los coeficientes. Prueba n = 2 en 4n + 3n y en 7n² y compara.",
+     "7n y 7n² valen cantidades diferentes para la mayoría de los valores de n. Prueba n = 2 en cada una.",
+     "4n y 3n tienen la misma letra elevada a la misma potencia, así que son términos semejantes y se pueden combinar."
+    ],
+    "tag": [
+     null,
+     "exponent-added-for-like-terms",
+     "exponent-ignored",
+     "like-terms-not-recognized"
+    ],
+    "x": "4n means 4 groups of n and 3n means 3 groups of n, so together there are 7 groups of n: 7n. Test n = 2: 4(2) + 3(2) = 14 and 7(2) = 14, but 7(2²) = 28.",
+    "xEs": "4n significa 4 grupos de n y 3n significa 3 grupos de n, así que en total hay 7 grupos de n: 7n. Prueba n = 2: 4(2) + 3(2) = 14 y 7(2) = 14, pero 7(2²) = 28.",
+    "h": [
+     "4n means 4 groups of n, and 3n means 3 groups of n.",
+     "How many groups of n are there altogether?",
+     "Test n = 2: evaluate 4n + 3n, then evaluate each student's answer."
+    ],
+    "hEs": [
+     "4n significa 4 grupos de n y 3n significa 3 grupos de n.",
+     "¿Cuántos grupos de n hay en total?",
+     "Prueba n = 2: evalúa 4n + 3n y luego evalúa la respuesta de cada estudiante."
+    ]
+   }
+  ],
+  "boss": [
+   {
+    "k": "mc",
+    "q": "Which expression is equivalent to 9 + 5n + 2 + n?",
+    "qEs": "¿Qué expresión es equivalente a 9 + 5n + 2 + n?",
+    "c": [
+     "5n + 11",
+     "14n",
+     "6n + 11",
+     "11n + 6"
+    ],
+    "a": 2,
+    "f": [
+     "The lone n in the expression has a coefficient of 1. It still counts when you combine the n terms.",
+     "This combines every number as if they were all n terms. The plain numbers 9 and 2 cannot join the n terms.",
+     "",
+     "The coefficient and the constant have swapped places. The n terms make the coefficient, and the plain numbers make the constant."
+    ],
+    "fEs": [
+     "La n sola de la expresión tiene coeficiente 1. También cuenta cuando combinas los términos con n.",
+     "Esto combina todos los números como si fueran términos con n. Los números solos 9 y 2 no pueden unirse a los términos con n.",
+     "",
+     "El coeficiente y la constante cambiaron de lugar. Los términos con n forman el coeficiente y los números solos forman la constante."
+    ],
+    "tag": [
+     "lone-variable-ignored",
+     "combined-unlike-terms",
+     null,
+     "coefficient-constant-swapped"
+    ],
+    "x": "Combine the n terms: 5n + n = 6n, because n means 1n. Combine the plain numbers: 9 + 2 = 11. The expression is 6n + 11.",
+    "xEs": "Combina los términos con n: 5n + n = 6n, porque n significa 1n. Combina los números solos: 9 + 2 = 11. La expresión es 6n + 11.",
+    "h": [
+     "Sort the terms into two families: terms with n, and plain numbers.",
+     "A lone n means 1n. Include it when you add the coefficients.",
+     "Add the n coefficients, then add the plain numbers, and write the two results together."
+    ],
+    "hEs": [
+     "Separa los términos en dos familias: términos con n y números solos.",
+     "Una n sola significa 1n. Inclúyela cuando sumes los coeficientes.",
+     "Suma los coeficientes de n, suma los números solos y escribe los dos resultados juntos."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "Which expression is NOT equivalent to 4 + n + 9?",
+    "qEs": "¿Cuál expresión NO es equivalente a 4 + n + 9?",
+    "c": [
+     "n + 13",
+     "13 + n",
+     "9 + n + 4",
+     "13n"
+    ],
+    "a": 3,
+    "f": [
+     "This one IS equivalent. The plain numbers 4 and 9 can be added to make 13.",
+     "This one IS equivalent. Adding in a different order gives the same value.",
+     "This one IS equivalent. It uses the same three terms in a different order.",
+     ""
+    ],
+    "fEs": [
+     "Esta SÍ es equivalente. Los números solos 4 y 9 se pueden sumar para formar 13.",
+     "Esta SÍ es equivalente. Sumar en otro orden da el mismo valor.",
+     "Esta SÍ es equivalente. Usa los mismos tres términos en otro orden.",
+     ""
+    ],
+    "tag": [
+     "constants-cannot-be-added-across-n",
+     "reordering-changes-value",
+     "reordering-changes-value",
+     null
+    ],
+    "x": "The plain numbers 4 and 9 make 13, and n stays separate, so the expression equals n + 13. The 13n version joins a plain number to a variable term. Test n = 1: 4 + 1 + 9 = 14, but 13n = 13.",
+    "xEs": "Los números solos 4 y 9 forman 13 y n queda aparte, así que la expresión equivale a n + 13. La versión 13n une un número solo con un término con variable. Prueba n = 1: 4 + 1 + 9 = 14, pero 13n = 13.",
+    "h": [
+     "Addition can be done in any order, so reordered terms keep the same value.",
+     "Which choice merges a plain number into the term with the variable?",
+     "Test n = 1 in 4 + n + 9, then test it in each choice."
+    ],
+    "hEs": [
+     "La suma se puede hacer en cualquier orden, así que los términos reordenados conservan el mismo valor.",
+     "¿Qué opción mezcla un número solo con el término que tiene la variable?",
+     "Prueba n = 1 en 4 + n + 9 y luego pruébalo en cada opción."
+    ]
+   },
+   {
+    "k": "num",
+    "q": "Rewrite 4(3n + 5) in the form 12n + c. What number is c?",
+    "qEs": "Reescribe 4(3n + 5) en la forma 12n + c. ¿Qué número es c?",
+    "a": "20",
+    "fw": [
+     {
+      "v": "5",
+      "f": "5 is the number inside the parentheses before the 4 reaches it. The 4 multiplies every term inside.",
+      "fEs": "5 es el número dentro del paréntesis antes de que el 4 lo alcance. El 4 multiplica cada término de adentro."
+     },
+     {
+      "v": "9",
+      "f": "9 adds 4 and 5. A number outside parentheses multiplies the terms inside; it does not add to them.",
+      "fEs": "9 suma 4 y 5. Un número afuera del paréntesis multiplica los términos de adentro; no se suma a ellos."
+     }
+    ],
+    "x": "The distributive property multiplies 4 by each term: 4 × 3n = 12n and 4 × 5 = 20. So 4(3n + 5) = 12n + 20, and c = 20.",
+    "xEs": "La propiedad distributiva multiplica 4 por cada término: 4 × 3n = 12n y 4 × 5 = 20. Entonces 4(3n + 5) = 12n + 20 y c = 20.",
+    "h": [
+     "The 4 outside the parentheses multiplies every term inside.",
+     "The first term works out to 12n. Now do the same for the second term.",
+     "Multiply 4 by the plain number inside the parentheses to find c."
+    ],
+    "hEs": [
+     "El 4 de afuera del paréntesis multiplica cada término de adentro.",
+     "El primer término da 12n. Ahora haz lo mismo con el segundo término.",
+     "Multiplica 4 por el número solo que está dentro del paréntesis para hallar c."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "Which expression is equivalent to 2(n + 5) + 3n?",
+    "qEs": "¿Qué expresión es equivalente a 2(n + 5) + 3n?",
+    "c": [
+     "5n + 10",
+     "5n + 5",
+     "8n + 10",
+     "10n"
+    ],
+    "a": 0,
+    "f": [
+     "",
+     "The 2 reached the n but not the 5 inside the parentheses. It has to multiply every term inside.",
+     "The 2 was also multiplied into the 3n, which sits outside the parentheses. Only what is inside gets multiplied.",
+     "This adds every number together as if they were all n terms. The 5 is a plain number, so it cannot join the n terms."
+    ],
+    "fEs": [
+     "",
+     "El 2 llegó a la n pero no al 5 dentro del paréntesis. Tiene que multiplicar cada término de adentro.",
+     "El 2 también se multiplicó por el 3n, que está afuera del paréntesis. Solo se multiplica lo que está adentro.",
+     "Esto suma todos los números como si todos fueran términos con n. El 5 es un número solo, así que no puede unirse a los términos con n."
+    ],
+    "tag": [
+     null,
+     "algebra-distributive-partial",
+     "outside-term-pulled-inside",
+     "combined-unlike-terms"
+    ],
+    "x": "Distribute the 2: 2(n + 5) = 2n + 10. Now the expression is 2n + 10 + 3n. Combine the n terms: 2n + 3n = 5n. The result is 5n + 10.",
+    "xEs": "Distribuye el 2: 2(n + 5) = 2n + 10. Ahora la expresión es 2n + 10 + 3n. Combina los términos con n: 2n + 3n = 5n. El resultado es 5n + 10.",
+    "h": [
+     "Do the distributive property first. Which terms does the 2 multiply?",
+     "After you distribute, look for like terms and combine them.",
+     "Write 2n + 10 + 3n, then add the two n terms and keep the plain number."
+    ],
+    "hEs": [
+     "Haz primero la propiedad distributiva. ¿Qué términos multiplica el 2?",
+     "Después de distribuir, busca términos semejantes y combínalos.",
+     "Escribe 2n + 10 + 3n, suma los dos términos con n y conserva el número solo."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "Marcus rewrote 6 + (2n + 5) as (6 + 2n) + 5. Which property did he use?",
+    "qEs": "Marcus reescribió 6 + (2n + 5) como (6 + 2n) + 5. ¿Qué propiedad usó?",
+    "c": [
+     "Commutative property",
+     "Associative property",
+     "Distributive property",
+     "Identity property"
+    ],
+    "cEs": [
+     "Propiedad conmutativa",
+     "Propiedad asociativa",
+     "Propiedad distributiva",
+     "Propiedad de identidad"
+    ],
+    "a": 1,
+    "f": [
+     "Look at the order of 6, 2n, and 5. It is the same on both sides, so something else changed.",
+     "",
+     "The distributive property needs a number multiplying a sum. There is no multiplication in this equation.",
+     "The identity property adds 0 or multiplies by 1. No 0 or 1 appears in this equation."
+    ],
+    "fEs": [
+     "Mira el orden de 6, 2n y 5. Es el mismo en ambos lados, así que cambió otra cosa.",
+     "",
+     "La propiedad distributiva necesita un número que multiplique una suma. En esta ecuación no hay multiplicación.",
+     "La propiedad de identidad suma 0 o multiplica por 1. En esta ecuación no aparece ningún 0 ni 1."
+    ],
+    "tag": [
+     "property-order-vs-grouping",
+     null,
+     "property-confused",
+     "property-confused"
+    ],
+    "x": "The terms stay in the order 6, 2n, 5, but the parentheses move from around 2n + 5 to around 6 + 2n. Changing the grouping without changing the order is the associative property.",
+    "xEs": "Los términos se quedan en el orden 6, 2n, 5, pero los paréntesis pasan de rodear 2n + 5 a rodear 6 + 2n. Cambiar la agrupación sin cambiar el orden es la propiedad asociativa.",
+    "h": [
+     "Compare the two sides. Did the order of the terms change, or only the parentheses?",
+     "One property is about order, and another is about grouping. Which one matches what moved?",
+     "Both sides read 6, 2n, 5 from left to right. What moved?"
+    ],
+    "hEs": [
+     "Compara los dos lados. ¿Cambió el orden de los términos o solo los paréntesis?",
+     "Una propiedad trata del orden y otra de la agrupación. ¿Cuál corresponde a lo que se movió?",
+     "Los dos lados se leen 6, 2n, 5 de izquierda a derecha. ¿Qué se movió?"
+    ]
+   },
+   {
+    "k": "wr",
+    "p": "Create your own pair of equivalent expressions. At least one of them must have parentheses or three or more terms. Show they are equivalent in TWO ways: by simplifying and by testing a value. Then write a pair that only LOOKS equivalent and give a counterexample.",
+    "pEs": "Crea tu propia pareja de expresiones equivalentes. Al menos una debe tener paréntesis o tres o más términos. Muestra que son equivalentes de DOS maneras: simplificando y probando un valor. Luego escribe una pareja que solo PARECE equivalente y da un contraejemplo.",
+    "fr": "My pair is ___ and ___. I simplified ___ to get ___. I tested n = ___ and both gave ___. A pair that only looks equivalent is ___ and ___. The counterexample n = ___ gives ___ and ___.",
+    "frEs": "Mi pareja es ___ y ___. Simplifiqué ___ y obtuve ___. Probé n = ___ y las dos dieron ___. Una pareja que solo parece equivalente es ___ y ___. El contraejemplo n = ___ da ___ y ___.",
+    "min": 80,
+    "kw": [
+     "equivalent",
+     "simplify",
+     "substitute",
+     "counterexample",
+     "like terms"
+    ],
+    "kwEs": [
+     "equivalente",
+     "simplificar",
+     "sustituir",
+     "contraejemplo",
+     "términos semejantes"
+    ],
+    "rubric": [
+     "I wrote two expressions that look different but are equivalent.",
+     "I simplified to show they are equivalent, using like terms or a property.",
+     "I tested a value in both expressions and got the same result.",
+     "I gave a counterexample for a pair that is not equivalent."
+    ],
+    "rubricEs": [
+     "Escribí dos expresiones que se ven diferentes pero son equivalentes.",
+     "Simplifiqué para mostrar que son equivalentes, usando términos semejantes o una propiedad.",
+     "Probé un valor en las dos expresiones y obtuve el mismo resultado.",
+     "Di un contraejemplo para una pareja que no es equivalente."
+    ],
+    "x": "My pair is 3(n + 2) and 3n + 6. By the distributive property, 3(n + 2) = 3n + 6. I tested n = 4: 3(4 + 2) = 18 and 3(4) + 6 = 18. A pair that only looks equivalent is 2n + 6 and 8n. They both give 8 when n = 1, but when n = 2 they give 10 and 16, so n = 2 is a counterexample.",
+    "xEs": "Mi pareja es 3(n + 2) y 3n + 6. Por la propiedad distributiva, 3(n + 2) = 3n + 6. Probé n = 4: 3(4 + 2) = 18 y 3(4) + 6 = 18. Una pareja que solo parece equivalente es 2n + 6 y 8n. Las dos dan 8 cuando n = 1, pero cuando n = 2 dan 10 y 16, así que n = 2 es un contraejemplo.",
+    "h": [
+     "Start with something you can simplify, like a number times a sum, or three terms with a repeated letter.",
+     "Test your pair with a number and write both results. Then simplify to explain why they match.",
+     "For the pair that only looks equivalent, find a value where the two expressions give different results."
+    ],
+    "hEs": [
+     "Empieza con algo que puedas simplificar, como un número por una suma, o tres términos con una letra repetida.",
+     "Prueba tu pareja con un número y escribe los dos resultados. Luego simplifica para explicar por qué coinciden.",
+     "Para la pareja que solo parece equivalente, busca un valor donde las dos expresiones den resultados diferentes."
+    ]
+   }
+  ]
+ },
+ "mastery": [
+  {
+   "k": "mc",
+   "q": "Which expression is equivalent to 8y − 3y + 2?",
+   "qEs": "¿Qué expresión es equivalente a 8y − 3y + 2?",
+   "c": [
+    "5y + 2",
+    "11y + 2",
+    "7y",
+    "5y"
+   ],
+   "a": 0,
+   "f": [
+    "",
+    "The subtraction sign was ignored, so 3y was added instead of taken away.",
+    "This pulls the plain number 2 into the y term. Only terms with y can be combined with each other.",
+    "The y terms are combined correctly, but the + 2 has disappeared. A plain number stays in the expression."
+   ],
+   "fEs": [
+    "",
+    "Se ignoró el signo de resta, así que se sumó 3y en lugar de quitarlo.",
+    "Esto mete el número solo 2 en el término con y. Solo se pueden combinar entre sí los términos con y.",
+    "Los términos con y se combinaron bien, pero el + 2 desapareció. Un número solo se queda en la expresión."
+   ],
+   "tag": [
+    null,
+    "sign-dropped",
+    "combined-unlike-terms",
+    "constant-dropped"
+   ],
+   "x": "The y terms are 8y and −3y, which make 5y. The 2 is a plain number and stays as it is. So the expression is 5y + 2.",
+   "xEs": "Los términos con y son 8y y −3y, que forman 5y. El 2 es un número solo y se queda como está. Entonces la expresión es 5y + 2.",
+   "h": [
+    "Find the terms that have y.",
+    "Subtract their coefficients: 8 − 3.",
+    "The plain number 2 cannot be combined with the y terms, so write it at the end."
+   ],
+   "hEs": [
+    "Encuentra los términos que tienen y.",
+    "Resta sus coeficientes: 8 − 3.",
+    "El número solo 2 no se puede combinar con los términos con y, así que escríbelo al final."
+   ]
+  },
+  {
+   "k": "num",
+   "q": "What number goes in the blank to make 6n + ? equivalent to 2(3n + 7)?",
+   "qEs": "¿Qué número va en el espacio en blanco para que 6n + ? sea equivalente a 2(3n + 7)?",
+   "a": "14",
+   "fw": [
+    {
+     "v": "7",
+     "f": "7 is the number inside the parentheses. The 2 outside has to multiply it too.",
+     "fEs": "7 es el número dentro del paréntesis. El 2 de afuera también tiene que multiplicarlo."
+    },
+    {
+     "v": "9",
+     "f": "9 adds 2 and 7. A number outside parentheses multiplies the terms inside; it does not add to them.",
+     "fEs": "9 suma 2 y 7. Un número afuera del paréntesis multiplica los términos de adentro; no se suma a ellos."
+    }
+   ],
+   "x": "Distribute the 2: 2 × 3n = 6n and 2 × 7 = 14. So 2(3n + 7) = 6n + 14, and the blank is 14.",
+   "xEs": "Distribuye el 2: 2 × 3n = 6n y 2 × 7 = 14. Entonces 2(3n + 7) = 6n + 14 y el espacio en blanco es 14.",
+   "h": [
+    "Use the distributive property on 2(3n + 7).",
+    "The 2 multiplies both terms inside the parentheses.",
+    "The first product is already 6n. Find the second product to fill the blank."
+   ],
+   "hEs": [
+    "Usa la propiedad distributiva en 2(3n + 7).",
+    "El 2 multiplica los dos términos dentro del paréntesis.",
+    "El primer producto ya es 6n. Halla el segundo producto para llenar el espacio en blanco."
+   ]
+  }
+ ],
+ "glossary": [
+  {
+   "t": "equivalent expressions",
+   "tEs": "expresiones equivalentes",
+   "d": "Expressions that have the same value for every value of the variable, even if they look different.",
+   "dEs": "Expresiones que tienen el mismo valor para todo valor de la variable, aunque se vean diferentes."
+  },
+  {
+   "t": "like terms",
+   "tEs": "términos semejantes",
+   "d": "Terms with the same letter to the same power, like 2n and 5n.",
+   "dEs": "Términos con la misma letra elevada a la misma potencia, como 2n y 5n."
+  },
+  {
+   "t": "simplify",
+   "tEs": "simplificar",
+   "d": "To rewrite an expression in a shorter form that has the same value.",
+   "dEs": "Reescribir una expresión en una forma más corta que tiene el mismo valor."
+  },
+  {
+   "t": "combine",
+   "tEs": "combinar",
+   "d": "To add or subtract like terms to make one term.",
+   "dEs": "Sumar o restar términos semejantes para formar un solo término."
+  },
+  {
+   "t": "counterexample",
+   "tEs": "contraejemplo",
+   "d": "One test value that shows two expressions are not equivalent.",
+   "dEs": "Un valor de prueba que muestra que dos expresiones no son equivalentes."
+  }
+ ]
+}

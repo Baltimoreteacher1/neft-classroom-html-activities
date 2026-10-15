@@ -1,0 +1,841 @@
+{
+  "v": 1,
+  "lesson": "5-4",
+  "story": "Pixel Arcade is expanding! Floors, game boards and prize walls are made of rectangles, triangles and cutouts. Break each figure into simple shapes, then add or subtract to clear every level.",
+  "storyEs": "¡Pixel Arcade se está ampliando! Los pisos, los tableros de juego y las paredes de premios están hechos de rectángulos, triángulos y recortes. Divide cada figura en figuras simples y luego suma o resta para superar todos los niveles.",
+  "challengeStory": "Bonus round after closing: the arcade owner left rough sketches of new rooms, with pits, notches and slanted roofs. Decompose each one carefully, because the carpet order is final.",
+  "challengeStoryEs": "Ronda extra después del cierre: el dueño del arcade dejó bocetos de salas nuevas, con huecos, muescas y techos inclinados. Descompón cada una con cuidado, porque el pedido de alfombra es definitivo.",
+  "getReady": null,
+  "noAct": false,
+  "fresh": [
+    {
+      "k": "gen",
+      "g": "areaComposite",
+      "level": 1
+    },
+    {
+      "k": "gen",
+      "g": "areaComposite",
+      "level": 1
+    },
+    {
+      "k": "gen",
+      "g": "areaComposite",
+      "level": 2
+    },
+    {
+      "k": "gen",
+      "g": "areaComposite",
+      "level": 2
+    },
+    {
+      "k": "gen",
+      "g": "areaComposite",
+      "level": 3
+    },
+    {
+      "k": "gen",
+      "g": "areaComposite",
+      "level": 3
+    },
+    {
+      "k": "act",
+      "kind": "sizer",
+      "level": 2,
+      "p": {
+        "shape": "lshape",
+        "goal": "area"
+      }
+    }
+  ],
+  "challenge": {
+    "climb": [
+      {
+        "k": "gen",
+        "g": "areaComposite",
+        "level": 2
+      },
+      {
+        "k": "gen",
+        "g": "areaComposite",
+        "level": 2
+      },
+      {
+        "k": "gen",
+        "g": "areaComposite",
+        "level": 3
+      },
+      {
+        "k": "gen",
+        "g": "areaComposite",
+        "level": 3
+      },
+      {
+        "k": "gen",
+        "g": "areaComposite",
+        "level": 4
+      },
+      {
+        "k": "gen",
+        "g": "areaComposite",
+        "level": 4
+      }
+    ],
+    "missions": [
+      {
+        "k": "num",
+        "q": "The new arcade floor is an L-shape drawn on a grid where each square is 1 ft. It is a 12 ft by 5 ft rectangle with a 5 ft by 4 ft rectangle added on top at the left end. Carpet costs $6 per square foot. How many dollars does the carpet cost?",
+        "qEs": "El nuevo piso del arcade tiene forma de L dibujada en una cuadrícula donde cada cuadro mide 1 ft. Es un rectángulo de 12 ft por 5 ft con un rectángulo de 5 ft por 4 ft añadido arriba en el extremo izquierdo. La alfombra cuesta $6 por pie cuadrado. ¿Cuántos dólares cuesta la alfombra?",
+        "a": "480",
+        "fw": [
+          {
+            "v": "648",
+            "f": "You used the whole 12 ft by 9 ft rectangle around the L. The empty corner is not part of the floor.",
+            "fEs": "Usaste todo el rectángulo de 12 ft por 9 ft alrededor de la L. La esquina vacía no es parte del piso."
+          },
+          {
+            "v": "80",
+            "f": "That is the floor's area in square feet. The carpet costs $6 for each square foot.",
+            "fEs": "Esa es el área del piso en pies cuadrados. La alfombra cuesta $6 por cada pie cuadrado."
+          },
+          {
+            "v": "360",
+            "f": "You counted only the big rectangle (12 × 5). Add the second rectangle too.",
+            "fEs": "Contaste solo el rectángulo grande (12 × 5). Suma también el segundo rectángulo."
+          }
+        ],
+        "x": "Split the L into 12 × 5 = 60 ft² and 5 × 4 = 20 ft². The pieces are joined, so add: 60 + 20 = 80 ft². The carpet costs 80 × $6 = $480.",
+        "xEs": "Divide la L en 12 × 5 = 60 ft² y 5 × 4 = 20 ft². Las piezas están unidas, así que suma: 60 + 20 = 80 ft². La alfombra cuesta 80 × $6 = $480.",
+        "h": [
+          "Cut the L into two rectangles.",
+          "Find each area, then add because the pieces are joined.",
+          "Multiply the total area by the price per square foot."
+        ],
+        "hEs": [
+          "Corta la L en dos rectángulos.",
+          "Halla cada área y luego suma porque las piezas están unidas.",
+          "Multiplica el área total por el precio por pie cuadrado."
+        ],
+        "viz": {
+          "t": "coord",
+          "xmin": 0,
+          "xmax": 13,
+          "ymin": 0,
+          "ymax": 10,
+          "grid": true,
+          "points": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 12,
+              "y": 0
+            },
+            {
+              "x": 12,
+              "y": 5
+            },
+            {
+              "x": 5,
+              "y": 5
+            },
+            {
+              "x": 5,
+              "y": 9
+            },
+            {
+              "x": 0,
+              "y": 9
+            }
+          ],
+          "polygon": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      },
+      {
+        "k": "mc",
+        "q": "A prize wall is 14 ft wide and 9 ft tall. It has a 4 ft by 3 ft window and a 3 ft by 7 ft door cut out of it. How many square feet of the wall can be painted?",
+        "qEs": "Una pared de premios mide 14 ft de ancho y 9 ft de alto. Tiene una ventana de 4 ft por 3 ft y una puerta de 3 ft por 7 ft recortadas. ¿Cuántos pies cuadrados de la pared se pueden pintar?",
+        "c": [
+          "93 ft²",
+          "105 ft²",
+          "114 ft²",
+          "159 ft²"
+        ],
+        "a": 0,
+        "f": [
+          "",
+          "You subtracted the door but not the window. Both are cut out.",
+          "You subtracted the window but not the door. Both are cut out.",
+          "You added the window and the door. Pieces that are cut out are subtracted."
+        ],
+        "fEs": [
+          "",
+          "Restaste la puerta pero no la ventana. Las dos están recortadas.",
+          "Restaste la ventana pero no la puerta. Las dos están recortadas.",
+          "Sumaste la ventana y la puerta. Las piezas recortadas se restan."
+        ],
+        "tag": [
+          null,
+          "forgot-window",
+          "forgot-door",
+          "added-cutouts"
+        ],
+        "x": "Whole wall: 14 × 9 = 126 ft². Window: 4 × 3 = 12 ft². Door: 3 × 7 = 21 ft². Cutouts are removed, so 126 − 12 − 21 = 93 ft².",
+        "xEs": "Pared completa: 14 × 9 = 126 ft². Ventana: 4 × 3 = 12 ft². Puerta: 3 × 7 = 21 ft². Los recortes se quitan, así que 126 − 12 − 21 = 93 ft².",
+        "h": [
+          "Start with the whole wall as one rectangle.",
+          "Find the area of each cutout.",
+          "Subtract every cutout from the whole wall."
+        ],
+        "hEs": [
+          "Empieza con toda la pared como un rectángulo.",
+          "Halla el área de cada recorte.",
+          "Resta cada recorte de la pared completa."
+        ]
+      },
+      {
+        "k": "tbl",
+        "t": "A game cabinet side panel is made of A, a 9 ft by 6 ft rectangle; B, a triangle on top with base 9 ft and height 4 ft; and C, a 4 ft by 3 ft rectangular screen cut out. Find each area, then the panel area A + B − C.",
+        "tEs": "El panel lateral de una máquina de juegos está hecho de A, un rectángulo de 9 ft por 6 ft; B, un triángulo arriba con base 9 ft y altura 4 ft; y C, una pantalla rectangular de 4 ft por 3 ft recortada. Halla cada área y luego el área del panel A + B − C.",
+        "hd": [
+          "Part",
+          "Area (ft²)"
+        ],
+        "hdEs": [
+          "Parte",
+          "Área (ft²)"
+        ],
+        "rows": [
+          [
+            "A",
+            ""
+          ],
+          [
+            "B",
+            ""
+          ],
+          [
+            "C",
+            ""
+          ],
+          [
+            "A + B − C",
+            ""
+          ]
+        ],
+        "cells": [
+          {
+            "r": 0,
+            "c": 1,
+            "a": "54"
+          },
+          {
+            "r": 1,
+            "c": 1,
+            "a": "18"
+          },
+          {
+            "r": 2,
+            "c": 1,
+            "a": "12"
+          },
+          {
+            "r": 3,
+            "c": 1,
+            "a": "60"
+          }
+        ],
+        "x": "A: 9 × 6 = 54. B: ½ × 9 × 4 = 18. C: 4 × 3 = 12. The panel adds A and B and subtracts the screen: 54 + 18 − 12 = 60 ft².",
+        "xEs": "A: 9 × 6 = 54. B: ½ × 9 × 4 = 18. C: 4 × 3 = 12. El panel suma A y B y resta la pantalla: 54 + 18 − 12 = 60 ft².",
+        "h": [
+          "A is a rectangle: length × width.",
+          "B is a triangle, so take half of base × height.",
+          "Add the joined pieces and subtract the cutout."
+        ],
+        "hEs": [
+          "A es un rectángulo: largo × ancho.",
+          "B es un triángulo, así que toma la mitad de base × altura.",
+          "Suma las piezas unidas y resta el recorte."
+        ]
+      },
+      {
+        "k": "num",
+        "q": "A sign above the arcade door is a regular octagon. It splits into 8 identical triangles that meet at the center. Each triangle has a base of 6 in and a height of 7 in. What is the area of the whole sign, in square inches?",
+        "qEs": "Un letrero sobre la puerta del arcade es un octágono regular. Se divide en 8 triángulos idénticos que se juntan en el centro. Cada triángulo tiene una base de 6 pulg y una altura de 7 pulg. ¿Cuál es el área de todo el letrero, en pulgadas cuadradas?",
+        "a": "168",
+        "unit": "in²",
+        "fw": [
+          {
+            "v": "21",
+            "f": "That is the area of ONE triangle. The sign has 8 of them.",
+            "fEs": "Esa es el área de UN triángulo. El letrero tiene 8."
+          },
+          {
+            "v": "336",
+            "f": "You forgot the half for each triangle. Triangle area is ½ × base × height.",
+            "fEs": "Olvidaste la mitad de cada triángulo. El área de un triángulo es ½ × base × altura."
+          },
+          {
+            "v": "42",
+            "f": "You found base × height for one triangle and did not take half or count 8.",
+            "fEs": "Hallaste base × altura de un triángulo y no tomaste la mitad ni contaste 8."
+          }
+        ],
+        "x": "One triangle: ½ × 6 × 7 = 21 in². The 8 triangles are identical, so the sign is 8 × 21 = 168 in².",
+        "xEs": "Un triángulo: ½ × 6 × 7 = 21 pulg². Los 8 triángulos son idénticos, así que el letrero mide 8 × 21 = 168 pulg².",
+        "h": [
+          "Find the area of one triangle.",
+          "The triangles are identical, so multiply instead of adding eight times.",
+          "Multiply the area of one triangle by 8."
+        ],
+        "hEs": [
+          "Halla el área de un triángulo.",
+          "Los triángulos son idénticos, así que multiplica en vez de sumar ocho veces.",
+          "Multiplica el área de un triángulo por 8."
+        ]
+      }
+    ],
+    "lab": [
+      {
+        "k": "act",
+        "kind": "sizer",
+        "level": 3,
+        "p": {
+          "shape": "lshape",
+          "goal": "area"
+        }
+      },
+      {
+        "k": "act",
+        "kind": "sizer",
+        "level": 4,
+        "p": {
+          "shape": "lshape",
+          "goal": "area"
+        }
+      },
+      {
+        "k": "match",
+        "q": "Match each arcade floor plan to its total area.",
+        "qEs": "Une cada plano del piso del arcade con su área total.",
+        "pairs": [
+          {
+            "l": "L-shape: 8 × 5 and 4 × 3",
+            "r": "52 ft²",
+            "lEs": "Forma de L: 8 × 5 y 4 × 3",
+            "rEs": "52 ft²"
+          },
+          {
+            "l": "T-shape: 10 × 3 and 4 × 6",
+            "r": "54 ft²",
+            "lEs": "Forma de T: 10 × 3 y 4 × 6",
+            "rEs": "54 ft²"
+          },
+          {
+            "l": "12 × 9 room minus a 4 × 4 pit",
+            "r": "92 ft²",
+            "lEs": "Sala de 12 × 9 menos un hueco de 4 × 4",
+            "rEs": "92 ft²"
+          },
+          {
+            "l": "10 × 6 room plus a triangle with base 10 and height 4",
+            "r": "80 ft²",
+            "lEs": "Sala de 10 × 6 más un triángulo con base 10 y altura 4",
+            "rEs": "80 ft²"
+          }
+        ],
+        "x": "Joined pieces add and cutouts subtract: 40 + 12 = 52, 30 + 24 = 54, 108 − 16 = 92, and 60 + ½ × 10 × 4 = 60 + 20 = 80.",
+        "xEs": "Las piezas unidas se suman y los recortes se restan: 40 + 12 = 52, 30 + 24 = 54, 108 − 16 = 92 y 60 + ½ × 10 × 4 = 60 + 20 = 80.",
+        "h": [
+          "Find each piece's area first.",
+          "Add pieces that are joined and subtract pieces that are cut out.",
+          "Remember the half for the triangle."
+        ],
+        "hEs": [
+          "Halla primero el área de cada pieza.",
+          "Suma las piezas unidas y resta las piezas recortadas.",
+          "Recuerda la mitad para el triángulo."
+        ]
+      }
+    ],
+    "detective": [
+      {
+        "k": "err",
+        "t": "A clubhouse wall is an 18 ft by 11 ft rectangle with a triangle on top that has a base of 18 ft and a height of 6 ft. Dana finds the total area. Tap the first step where her work goes wrong.",
+        "tEs": "La pared de un club es un rectángulo de 18 ft por 11 ft con un triángulo encima que tiene una base de 18 ft y una altura de 6 ft. Dana halla el área total. Toca el primer paso donde su trabajo se equivoca.",
+        "s": [
+          {
+            "l": "Step 1",
+            "lEs": "Paso 1",
+            "w": "Rectangle: 18 × 11 = 198 ft².",
+            "wEs": "Rectángulo: 18 × 11 = 198 ft²."
+          },
+          {
+            "l": "Step 2",
+            "lEs": "Paso 2",
+            "w": "Triangle: 18 × 6 = 108 ft².",
+            "wEs": "Triángulo: 18 × 6 = 108 ft²."
+          },
+          {
+            "l": "Step 3",
+            "lEs": "Paso 3",
+            "w": "Total: 198 + 108 = 306 ft².",
+            "wEs": "Total: 198 + 108 = 306 ft²."
+          }
+        ],
+        "e": 1,
+        "fix": "A triangle is half of base × height: ½ × 18 × 6 = 54 ft². The total is 198 + 54 = 252 ft².",
+        "fixEs": "Un triángulo es la mitad de base × altura: ½ × 18 × 6 = 54 ft². El total es 198 + 54 = 252 ft².",
+        "x": "In a composite figure each piece uses its own area formula. Forgetting the half in the triangle makes the whole answer too big.",
+        "xEs": "En una figura compuesta cada pieza usa su propia fórmula de área. Olvidar la mitad en el triángulo hace que toda la respuesta sea demasiado grande.",
+        "h": [
+          "Check each piece with its own formula.",
+          "Does the triangle's area have a half?",
+          "Fix Step 2, then add again."
+        ],
+        "hEs": [
+          "Revisa cada pieza con su propia fórmula.",
+          "¿El área del triángulo lleva una mitad?",
+          "Corrige el Paso 2 y suma de nuevo."
+        ]
+      },
+      {
+        "k": "err",
+        "t": "A 16 ft by 9 ft game room has a 4 ft by 5 ft supply closet cut out of one corner. Eli finds the usable floor area. Tap the first step where his work goes wrong.",
+        "tEs": "Una sala de juegos de 16 ft por 9 ft tiene un armario de suministros de 4 ft por 5 ft recortado en una esquina. Eli halla el área útil del piso. Toca el primer paso donde su trabajo se equivoca.",
+        "s": [
+          {
+            "l": "Step 1",
+            "lEs": "Paso 1",
+            "w": "Whole room: 16 × 9 = 144 ft².",
+            "wEs": "Sala completa: 16 × 9 = 144 ft²."
+          },
+          {
+            "l": "Step 2",
+            "lEs": "Paso 2",
+            "w": "Closet: 4 × 5 = 20 ft². The closet is part of the figure, so add it.",
+            "wEs": "Armario: 4 × 5 = 20 ft². El armario es parte de la figura, así que lo sumo."
+          },
+          {
+            "l": "Step 3",
+            "lEs": "Paso 3",
+            "w": "Usable area: 144 + 20 = 164 ft².",
+            "wEs": "Área útil: 144 + 20 = 164 ft²."
+          }
+        ],
+        "e": 1,
+        "fix": "The closet is cut out of the room, so its area is not usable floor. Subtract: 144 − 20 = 124 ft².",
+        "fixEs": "El armario está recortado de la sala, así que su área no es piso útil. Resta: 144 − 20 = 124 ft².",
+        "x": "Usable floor can never be bigger than the whole room. An answer of 164 ft² is larger than 144 ft², which signals the wrong operation.",
+        "xEs": "El piso útil nunca puede ser mayor que toda la sala. Una respuesta de 164 ft² es mayor que 144 ft², lo que indica la operación equivocada.",
+        "h": [
+          "Is the closet part of the usable floor?",
+          "When a piece is cut out, do you add or subtract?",
+          "Should the answer be bigger or smaller than 144?"
+        ],
+        "hEs": [
+          "¿El armario es parte del piso útil?",
+          "Cuando una pieza se recorta, ¿se suma o se resta?",
+          "¿La respuesta debe ser mayor o menor que 144?"
+        ]
+      },
+      {
+        "k": "err",
+        "t": "An arcade stage is a 10 ft by 8 ft rectangle with a triangle on its 10 ft side. The triangle has a base of 10 ft and a height of 4 ft. Fay finds the area. Tap the first step where her work goes wrong.",
+        "tEs": "Un escenario del arcade es un rectángulo de 10 ft por 8 ft con un triángulo sobre su lado de 10 ft. El triángulo tiene una base de 10 ft y una altura de 4 ft. Fay halla el área. Toca el primer paso donde su trabajo se equivoca.",
+        "s": [
+          {
+            "l": "Step 1",
+            "lEs": "Paso 1",
+            "w": "Rectangle: 10 × 8 = 80 ft².",
+            "wEs": "Rectángulo: 10 × 8 = 80 ft²."
+          },
+          {
+            "l": "Step 2",
+            "lEs": "Paso 2",
+            "w": "Triangle: ½ × 10 × 4 = 20 ft².",
+            "wEs": "Triángulo: ½ × 10 × 4 = 20 ft²."
+          },
+          {
+            "l": "Step 3",
+            "lEs": "Paso 3",
+            "w": "Combine them: 80 × 20 = 1,600 ft².",
+            "wEs": "Los combino: 80 × 20 = 1,600 ft²."
+          }
+        ],
+        "e": 2,
+        "fix": "The pieces are joined, so add the areas: 80 + 20 = 100 ft².",
+        "fixEs": "Las piezas están unidas, así que suma las áreas: 80 + 20 = 100 ft².",
+        "x": "Multiplying areas gives square feet times square feet, which is not an area. Joined pieces are added.",
+        "xEs": "Multiplicar áreas da pies cuadrados por pies cuadrados, que no es un área. Las piezas unidas se suman.",
+        "h": [
+          "Both piece areas are correct. Look at the last step.",
+          "How do you combine pieces that are joined?",
+          "Would 1,600 ft² make sense for a stage this small?"
+        ],
+        "hEs": [
+          "Las dos áreas de las piezas son correctas. Mira el último paso.",
+          "¿Cómo se combinan las piezas que están unidas?",
+          "¿Tendría sentido 1,600 ft² para un escenario tan pequeño?"
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "A floor is an L-shape drawn on a grid where each square is 1 ft. Mo cuts it into a 10 by 4 rectangle and a 4 by 6 rectangle. Ana cuts it into a 4 by 10 rectangle and a 6 by 4 rectangle. Who gets the correct area?",
+        "qEs": "Un piso tiene forma de L dibujada en una cuadrícula donde cada cuadro mide 1 ft. Mo la corta en un rectángulo de 10 por 4 y uno de 4 por 6. Ana la corta en un rectángulo de 4 por 10 y uno de 6 por 4. ¿Quién obtiene el área correcta?",
+        "c": [
+          "Only Mo, because he cut the bottom first",
+          "Only Ana, because her rectangles are taller",
+          "Both. Each way gives 64 ft².",
+          "Neither, because their areas are different"
+        ],
+        "cEs": [
+          "Solo Mo, porque cortó primero la parte de abajo",
+          "Solo Ana, porque sus rectángulos son más altos",
+          "Los dos. Cada forma da 64 ft².",
+          "Ninguno, porque sus áreas son distintas"
+        ],
+        "a": 2,
+        "f": [
+          "There is more than one correct way to decompose a figure. Add up Ana's pieces too.",
+          "Taller pieces do not make a more correct answer. Add up Mo's pieces too.",
+          "",
+          "Check both sums. The same floor has the same area however you cut it."
+        ],
+        "fEs": [
+          "Hay más de una forma correcta de descomponer una figura. Suma también las piezas de Ana.",
+          "Las piezas más altas no hacen una respuesta más correcta. Suma también las piezas de Mo.",
+          "",
+          "Revisa las dos sumas. El mismo piso tiene la misma área sin importar cómo lo cortes."
+        ],
+        "tag": [
+          "one-way-only",
+          "one-way-only",
+          null,
+          "areas-must-differ"
+        ],
+        "x": "Mo: 10 × 4 + 4 × 6 = 40 + 24 = 64 ft². Ana: 4 × 10 + 6 × 4 = 40 + 24 = 64 ft². The floor is the same region, so every correct decomposition gives the same area.",
+        "xEs": "Mo: 10 × 4 + 4 × 6 = 40 + 24 = 64 ft². Ana: 4 × 10 + 6 × 4 = 40 + 24 = 64 ft². El piso es la misma región, así que toda descomposición correcta da la misma área.",
+        "h": [
+          "Find the total of Mo's two rectangles.",
+          "Find the total of Ana's two rectangles.",
+          "Compare the totals."
+        ],
+        "hEs": [
+          "Halla el total de los dos rectángulos de Mo.",
+          "Halla el total de los dos rectángulos de Ana.",
+          "Compara los totales."
+        ],
+        "viz": {
+          "t": "coord",
+          "xmin": 0,
+          "xmax": 13,
+          "ymin": 0,
+          "ymax": 10,
+          "grid": true,
+          "points": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 10,
+              "y": 0
+            },
+            {
+              "x": 10,
+              "y": 4
+            },
+            {
+              "x": 4,
+              "y": 4
+            },
+            {
+              "x": 4,
+              "y": 10
+            },
+            {
+              "x": 0,
+              "y": 10
+            }
+          ],
+          "polygon": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        }
+      }
+    ],
+    "boss": [
+      {
+        "k": "num",
+        "q": "An L-shaped arcade lounge is made of a 14 ft by 6 ft rectangle and a 5 ft by 4 ft rectangle joined to it. What is the total area, in square feet?",
+        "qEs": "Una sala de descanso del arcade con forma de L está hecha de un rectángulo de 14 ft por 6 ft y un rectángulo de 5 ft por 4 ft unido a él. ¿Cuál es el área total, en pies cuadrados?",
+        "a": "104",
+        "unit": "ft²",
+        "fw": [
+          {
+            "v": "84",
+            "f": "That is only the large rectangle. Add the second rectangle too.",
+            "fEs": "Eso es solo el rectángulo grande. Suma también el segundo rectángulo."
+          },
+          {
+            "v": "20",
+            "f": "That is only the small rectangle. Add the large one too.",
+            "fEs": "Eso es solo el rectángulo pequeño. Suma también el grande."
+          },
+          {
+            "v": "1680",
+            "f": "You multiplied the two areas. Joined pieces are added.",
+            "fEs": "Multiplicaste las dos áreas. Las piezas unidas se suman."
+          }
+        ],
+        "x": "14 × 6 = 84 ft² and 5 × 4 = 20 ft². The pieces are joined, so 84 + 20 = 104 ft².",
+        "xEs": "14 × 6 = 84 ft² y 5 × 4 = 20 ft². Las piezas están unidas, así que 84 + 20 = 104 ft².",
+        "h": [
+          "Find the area of each rectangle.",
+          "The pieces are joined.",
+          "Add the two areas."
+        ],
+        "hEs": [
+          "Halla el área de cada rectángulo.",
+          "Las piezas están unidas.",
+          "Suma las dos áreas."
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "A 16 m by 12 m courtyard has a square fountain, 4 m on each side, cut out of it. What is the area left for visitors?",
+        "qEs": "Un patio de 16 m por 12 m tiene una fuente cuadrada, de 4 m por lado, recortada. ¿Cuál es el área que queda para los visitantes?",
+        "c": [
+          "16 m²",
+          "192 m²",
+          "208 m²",
+          "176 m²"
+        ],
+        "a": 3,
+        "f": [
+          "16 m² is the fountain only. The question asks for what is left.",
+          "192 m² is the whole courtyard. The fountain is cut out.",
+          "You added the fountain. A cutout is subtracted.",
+          ""
+        ],
+        "fEs": [
+          "16 m² es solo la fuente. La pregunta es por lo que queda.",
+          "192 m² es todo el patio. La fuente está recortada.",
+          "Sumaste la fuente. Un recorte se resta.",
+          ""
+        ],
+        "tag": [
+          "answered-cutout",
+          "forgot-cutout",
+          "added-cutouts",
+          null
+        ],
+        "x": "Courtyard: 16 × 12 = 192 m². Fountain: 4 × 4 = 16 m². Cutout, so subtract: 192 − 16 = 176 m².",
+        "xEs": "Patio: 16 × 12 = 192 m². Fuente: 4 × 4 = 16 m². Es un recorte, así que resta: 192 − 16 = 176 m².",
+        "h": [
+          "Find the area of the whole courtyard.",
+          "Find the area of the fountain.",
+          "Is the fountain part of what is left, or taken away?"
+        ],
+        "hEs": [
+          "Halla el área de todo el patio.",
+          "Halla el área de la fuente.",
+          "¿La fuente es parte de lo que queda o se quita?"
+        ]
+      },
+      {
+        "k": "num",
+        "q": "A hexagon-shaped prize table is a regular hexagon. It splits into 6 identical triangles. Each triangle has a base of 10 cm and a height of 9 cm. What is the area of its top surface, in square centimeters?",
+        "qEs": "Una mesa de premios en forma de hexágono es un hexágono regular. Se divide en 6 triángulos idénticos. Cada triángulo tiene una base de 10 cm y una altura de 9 cm. ¿Cuál es el área de su superficie superior, en centímetros cuadrados?",
+        "a": "270",
+        "unit": "cm²",
+        "fw": [
+          {
+            "v": "45",
+            "f": "That is ONE triangle. The top surface has 6.",
+            "fEs": "Ese es UN triángulo. La superficie tiene 6."
+          },
+          {
+            "v": "540",
+            "f": "You forgot the half for each triangle.",
+            "fEs": "Olvidaste la mitad de cada triángulo."
+          },
+          {
+            "v": "90",
+            "f": "That is base × height for one triangle. Take half, then count all 6.",
+            "fEs": "Eso es base × altura de un triángulo. Toma la mitad y luego cuenta los 6."
+          }
+        ],
+        "x": "One triangle: ½ × 10 × 9 = 45 cm². Six identical triangles: 6 × 45 = 270 cm².",
+        "xEs": "Un triángulo: ½ × 10 × 9 = 45 cm². Seis triángulos idénticos: 6 × 45 = 270 cm².",
+        "h": [
+          "Find the area of one triangle.",
+          "The triangles are congruent.",
+          "Multiply by 6."
+        ],
+        "hEs": [
+          "Halla el área de un triángulo.",
+          "Los triángulos son congruentes.",
+          "Multiplica por 6."
+        ]
+      },
+      {
+        "k": "num",
+        "q": "A game booth front is a 10 ft by 8 ft rectangle with a triangular roof on top. The triangle's base is 10 ft. The whole front has an area of 140 ft². What is the height of the triangular roof, in feet?",
+        "qEs": "El frente de una caseta de juegos es un rectángulo de 10 ft por 8 ft con un techo triangular encima. La base del triángulo mide 10 ft. Todo el frente tiene un área de 140 ft². ¿Cuál es la altura del techo triangular, en pies?",
+        "a": "12",
+        "unit": "ft",
+        "fw": [
+          {
+            "v": "6",
+            "f": "You divided the roof area by 10 and skipped the half. Double the roof area first.",
+            "fEs": "Dividiste el área del techo entre 10 y te saltaste la mitad. Primero duplica el área del techo."
+          },
+          {
+            "v": "60",
+            "f": "That is the roof's area. The question asks for its height.",
+            "fEs": "Esa es el área del techo. La pregunta es por su altura."
+          },
+          {
+            "v": "14",
+            "f": "You divided the whole area by 10. First subtract the rectangle to get the roof's area.",
+            "fEs": "Dividiste toda el área entre 10. Primero resta el rectángulo para obtener el área del techo."
+          }
+        ],
+        "x": "Rectangle: 10 × 8 = 80 ft². Roof area: 140 − 80 = 60 ft². Then 60 = ½ × 10 × h = 5 × h, so h = 12 ft.",
+        "xEs": "Rectángulo: 10 × 8 = 80 ft². Área del techo: 140 − 80 = 60 ft². Luego 60 = ½ × 10 × h = 5 × h, así que h = 12 ft.",
+        "h": [
+          "Find the rectangle's area and subtract it from 140.",
+          "That leaves the roof's area.",
+          "Use roof area = ½ × base × height to find the height."
+        ],
+        "hEs": [
+          "Halla el área del rectángulo y réstala de 140.",
+          "Eso deja el área del techo.",
+          "Usa área del techo = ½ × base × altura para hallar la altura."
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "A 12 ft by 8 ft arcade room has a 4 ft by 3 ft notch cut out of one corner. Which expression gives the floor area?",
+        "qEs": "Una sala de arcade de 12 ft por 8 ft tiene una muesca de 4 ft por 3 ft recortada en una esquina. ¿Cuál expresión da el área del piso?",
+        "c": [
+          "12 × 8 + 4 × 3",
+          "12 × 8 − 4 × 3",
+          "(12 − 4) × (8 − 3)",
+          "12 × 8 × 4 × 3"
+        ],
+        "a": 1,
+        "f": [
+          "A notch is cut out, so its area is subtracted.",
+          "",
+          "That is a smaller rectangle, not the room with a notch. Subtract the notch's AREA.",
+          "Multiplying areas does not combine pieces. Use subtraction for a cutout."
+        ],
+        "fEs": [
+          "Una muesca está recortada, así que su área se resta.",
+          "",
+          "Ese es un rectángulo más pequeño, no la sala con una muesca. Resta el ÁREA de la muesca.",
+          "Multiplicar áreas no combina piezas. Usa la resta para un recorte."
+        ],
+        "tag": [
+          "added-cutouts",
+          null,
+          "shrunk-both-sides",
+          "multiplied-areas"
+        ],
+        "x": "The whole room is 12 × 8 = 96 ft² and the notch is 4 × 3 = 12 ft². Cutting out the notch means subtracting: 12 × 8 − 4 × 3 = 84 ft².",
+        "xEs": "La sala completa es 12 × 8 = 96 ft² y la muesca es 4 × 3 = 12 ft². Recortar la muesca significa restar: 12 × 8 − 4 × 3 = 84 ft².",
+        "h": [
+          "Start with the whole 12 by 8 room.",
+          "The notch is taken away.",
+          "Which expression subtracts the notch's area?"
+        ],
+        "hEs": [
+          "Empieza con toda la sala de 12 por 8.",
+          "La muesca se quita.",
+          "¿Cuál expresión resta el área de la muesca?"
+        ]
+      },
+      {
+        "k": "wr",
+        "p": "Create your own Pixel Arcade composite figure. Describe a floor or wall made of two or three simple shapes, find its area, and explain whether you add or subtract each piece.",
+        "pEs": "Crea tu propia figura compuesta de Pixel Arcade. Describe un piso o una pared hecha de dos o tres figuras simples, halla su área y explica si sumas o restas cada pieza.",
+        "fr": "My figure is made of ___ and ___. The area of the first piece is ___ and the second is ___. I ___ because ___. The total area is ___.",
+        "frEs": "Mi figura está hecha de ___ y ___. El área de la primera pieza es ___ y la de la segunda es ___. ___ porque ___. El área total es ___.",
+        "min": 90,
+        "kw": [
+          "decompose",
+          "add",
+          "subtract",
+          "rectangle",
+          "total"
+        ],
+        "rubric": [
+          "I named the simple shapes my figure is made of.",
+          "I found the area of each piece with the right formula.",
+          "I said whether each piece is added or subtracted, and why.",
+          "I gave the total area with square units."
+        ],
+        "rubricEs": [
+          "Nombré las figuras simples de las que está hecha mi figura.",
+          "Hallé el área de cada pieza con la fórmula correcta.",
+          "Dije si cada pieza se suma o se resta, y por qué.",
+          "Di el área total con unidades cuadradas."
+        ],
+        "x": "My figure is a 10 ft by 6 ft rectangle with a triangle on top and a 2 ft by 2 ft square cut out. The rectangle is 60 ft² and the triangle with base 10 ft and height 4 ft is 20 ft². I add the triangle because it is joined to the rectangle, and I subtract the square because it is cut out (4 ft²). The total area is 60 + 20 − 4 = 76 ft².",
+        "xEs": "Mi figura es un rectángulo de 10 ft por 6 ft con un triángulo encima y un cuadrado de 2 ft por 2 ft recortado. El rectángulo es 60 ft² y el triángulo con base 10 ft y altura 4 ft es 20 ft². Sumo el triángulo porque está unido al rectángulo y resto el cuadrado porque está recortado (4 ft²). El área total es 60 + 20 − 4 = 76 ft².",
+        "h": [
+          "Start with two or three easy shapes, like a rectangle and a triangle.",
+          "Find each area before you combine them.",
+          "Say 'joined' or 'cut out' for each piece to decide add or subtract."
+        ],
+        "hEs": [
+          "Empieza con dos o tres figuras fáciles, como un rectángulo y un triángulo.",
+          "Halla cada área antes de combinarlas.",
+          "Di 'unida' o 'recortada' para cada pieza y decide si sumas o restas."
+        ]
+      }
+    ]
+  },
+  "glossary": [
+    {
+      "t": "composite figure",
+      "tEs": "figura compuesta",
+      "d": "A shape made by putting two or more simple shapes together.",
+      "dEs": "Una figura formada al juntar dos o más figuras simples."
+    },
+    {
+      "t": "decompose",
+      "tEs": "descomponer",
+      "d": "To break a shape into smaller, simpler shapes.",
+      "dEs": "Separar una figura en figuras más pequeñas y simples."
+    },
+    {
+      "t": "congruent",
+      "tEs": "congruente",
+      "d": "Exactly the same size and shape.",
+      "dEs": "Exactamente del mismo tamaño y forma."
+    },
+    {
+      "t": "regular polygon",
+      "tEs": "polígono regular",
+      "d": "A shape whose sides are all the same length and whose angles are all the same size.",
+      "dEs": "Una figura cuyos lados tienen la misma longitud y cuyos ángulos tienen la misma medida."
+    }
+  ]
+}

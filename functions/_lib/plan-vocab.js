@@ -3194,8 +3194,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/2-1/challenge/",
+    title: "Understand Statistical Questions · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/2-10/",
     title: "Choose Appropriate Measures · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/2-10/challenge/",
+    title: "Choose Appropriate Measures · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3206,8 +3218,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/2-11/challenge/",
+    title: "Add and Subtract Decimals · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/2-12/",
     title: "Multiply Decimals · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/2-12/challenge/",
+    title: "Multiply Decimals · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3218,8 +3242,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/2-2/challenge/",
+    title: "Represent and Describe Data in a Histogram · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/2-3/",
     title: "Describe the Data Using the Median · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/2-3/challenge/",
+    title: "Describe the Data Using the Median · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3230,8 +3266,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/2-4/challenge/",
+    title: "Represent and Describe Data in a Box Plot · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/2-5/",
     title: "Describe Data by Range and Interquartile Range · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/2-5/challenge/",
+    title: "Describe Data by Range and Interquartile Range · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3242,8 +3290,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/2-6/challenge/",
+    title: "Divide Multi-Digit Numbers Using an Algorithm · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/2-7/",
     title: "Divide Decimals Using an Algorithm · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/2-7/challenge/",
+    title: "Divide Decimals Using an Algorithm · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3254,8 +3314,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/2-8/challenge/",
+    title: "Describe Data Using the Mean · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/2-9/",
     title: "Describe Data by Mean Absolute Deviation · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/2-9/challenge/",
+    title: "Describe Data by Mean Absolute Deviation · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3266,8 +3338,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/3-1/challenge/",
+    title: "Understand Ratios · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/3-10/",
     title: "Convert Measurement Units · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/3-10/challenge/",
+    title: "Convert Measurement Units · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3278,8 +3362,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/3-2/challenge/",
+    title: "Understand Rates and Unit Rates · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/3-3/",
     title: "Determine Equivalent Ratios Using Tables · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/3-3/challenge/",
+    title: "Determine Equivalent Ratios Using Tables · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3290,8 +3386,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/3-4/challenge/",
+    title: "Determine Equivalent Ratios Using Graphs · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/3-5/",
     title: "Compare Ratio Relationships · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/3-5/challenge/",
+    title: "Compare Ratio Relationships · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3303,9 +3411,22 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/3-6/challenge/",
+    title:
+      "Ratio Reasoning: Convert Measurements within the Same System · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/3-7/",
     title:
       "Ratio Reasoning: Convert Measurements Between Systems · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/3-7/challenge/",
+    title: "Ratio Reasoning: Convert Measurements Between Systems · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3316,8 +3437,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/3-8/challenge/",
+    title: "Solve Problems with Unit Rates · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/3-9/",
     title: "Equivalent Ratios · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/3-9/challenge/",
+    title: "Equivalent Ratios · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3329,8 +3462,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/5-1/challenge/",
+    title: "Determine the Area of Parallelograms and Rhombuses · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/5-10/",
     title: "Volume of Rectangular Prisms · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/5-10/challenge/",
+    title: "Volume of Rectangular Prisms · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3341,8 +3486,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/5-2/challenge/",
+    title: "Determine the Area of Triangles · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/5-3/",
     title: "Determine the Area of Trapezoids · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/5-3/challenge/",
+    title: "Determine the Area of Trapezoids · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3353,8 +3510,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/5-4/challenge/",
+    title: "Apply Area Concepts to Solve Problems · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/5-5/",
     title: "Determine the Volume of Rectangular Prisms · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/5-5/challenge/",
+    title: "Determine the Volume of Rectangular Prisms · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3366,8 +3535,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/5-6/challenge/",
+    title: "Represent Three-Dimensional Figures in Two Dimensions · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/5-7/",
     title: "Determine Surface Area of Prisms · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/5-7/challenge/",
+    title: "Determine Surface Area of Prisms · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3378,8 +3559,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/5-8/challenge/",
+    title: "Determine Surface Area of Pyramids · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/5-9/",
     title: "Area of Regular Polygons · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/5-9/challenge/",
+    title: "Area of Regular Polygons · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3391,8 +3584,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/6-1/challenge/",
+    title: "Division Expressions with Fractions and Whole Numbers · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/6-10/",
     title: "Divide Mixed Numbers · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/6-10/challenge/",
+    title: "Divide Mixed Numbers · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3403,8 +3608,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/6-11/challenge/",
+    title: "Fraction Division Problem Solving · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/6-12/",
     title: "Least Common Multiple · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/6-12/challenge/",
+    title: "Least Common Multiple · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3415,14 +3632,32 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/6-13/challenge/",
+    title: "Prime Factorization · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/6-14/",
     title: "The Distributive Property · Interactive Practice Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
   {
+    path: "/math/practice-studio/6-14/challenge/",
+    title: "The Distributive Property · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/6-15/",
     title: "Simplify Algebraic Expressions · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/6-15/challenge/",
+    title: "Simplify Algebraic Expressions · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3434,8 +3669,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/6-2/challenge/",
+    title: "Division Expressions with Fractions and Mixed Numbers · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/6-3/",
     title: "Explore Numerical Expressions with Exponents · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/6-3/challenge/",
+    title: "Explore Numerical Expressions with Exponents · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3447,8 +3694,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/6-4/challenge/",
+    title: "Write and Evaluate Numerical Expressions with Exponents · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/6-5/",
     title: "Write and Evaluate Algebraic Expressions · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/6-5/challenge/",
+    title: "Write and Evaluate Algebraic Expressions · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3459,8 +3718,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/6-6/challenge/",
+    title: "Identify Equivalent Algebraic Expressions · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/6-7/",
     title: "Find Factors and Multiples · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/6-7/challenge/",
+    title: "Find Factors and Multiples · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3471,14 +3742,32 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/6-8/challenge/",
+    title: "Generate Equivalent Expressions · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/6-9/",
     title: "Divide Whole Numbers by Fractions · Interactive Practice Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
   {
+    path: "/math/practice-studio/6-9/challenge/",
+    title: "Divide Whole Numbers by Fractions · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/7-1/",
     title: "Explore Integers and Their Opposites · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/7-1/challenge/",
+    title: "Explore Integers and Their Opposites · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3490,8 +3779,21 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/7-2/challenge/",
+    title:
+      "Represent Rational Numbers and Their Opposites on the Number Line · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/7-3/",
     title: "Understand Absolute Value of Rational Numbers · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/7-3/challenge/",
+    title: "Understand Absolute Value of Rational Numbers · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3503,9 +3805,21 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/7-4/challenge/",
+    title: "Compare and Order Integers and Rational Numbers · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/7-5/",
     title:
       "Represent Rational Numbers on the Coordinate Plane · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/7-5/challenge/",
+    title: "Represent Rational Numbers on the Coordinate Plane · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3516,8 +3830,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/7-6/challenge/",
+    title: "Determine Distance on the Coordinate Plane · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/7-7/",
     title: "Represent Polygons on the Coordinate Plane · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/7-7/challenge/",
+    title: "Represent Polygons on the Coordinate Plane · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3528,14 +3854,32 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/7-8/challenge/",
+    title: "Ordered Pairs in All Four Quadrants · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/7-9/",
     title: "Reflect Points Across Axes · Interactive Practice Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
   {
+    path: "/math/practice-studio/7-9/challenge/",
+    title: "Reflect Points Across Axes · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/8-1/",
     title: "Understand Equations and Their Solutions · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/8-1/challenge/",
+    title: "Understand Equations and Their Solutions · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3547,9 +3891,22 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/8-2/challenge/",
+    title: "Write and Solve Equations Using Addition or Subtraction · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/8-3/",
     title:
       "Write and Solve Equations Using Multiplication or Division · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/8-3/challenge/",
+    title:
+      "Write and Solve Equations Using Multiplication or Division · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3560,8 +3917,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/8-4/challenge/",
+    title: "Write and Represent Inequalities · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/8-5/",
     title: "Understand Inequalities and Their Solutions · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/8-5/challenge/",
+    title: "Understand Inequalities and Their Solutions · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3572,14 +3941,32 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/8-6/challenge/",
+    title: "Solve and Graph Inequalities · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/8-7/",
     title: "Equations and Inequalities Problem Solving · Interactive Practice Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
   {
+    path: "/math/practice-studio/8-7/challenge/",
+    title: "Equations and Inequalities Problem Solving · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/9-1/",
     title: "Explore Relationships Between Two Variables · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/9-1/challenge/",
+    title: "Explore Relationships Between Two Variables · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },
@@ -3591,6 +3978,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/9-2/challenge/",
+    title: "Analyze Graphs of Relationships Between Two Variables · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/9-3/",
     title:
       "Write Equations to Represent Relationships Between Two Variables · Interactive Practice Studio (Grade 6)",
@@ -3598,9 +3991,22 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/9-3/challenge/",
+    title:
+      "Write Equations to Represent Relationships Between Two Variables · Challenge Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/practice-studio/9-4/",
     title:
       "Apply Two-Variable Relationships to Solve Problems · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/practice-studio/9-4/challenge/",
+    title: "Apply Two-Variable Relationships to Solve Problems · Challenge Studio (Grade 6)",
     category: "Math Tool",
     unit: null,
   },

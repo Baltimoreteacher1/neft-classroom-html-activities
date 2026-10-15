@@ -1,0 +1,851 @@
+{
+  "v": 1,
+  "lesson": "2-7",
+  "story": "The Robot Lab runs on tiny amounts of oil, wire and power. Slide the decimal points, divide, and tell the robots exactly how many steps they can take.",
+  "storyEs": "El Laboratorio de Robots funciona con cantidades pequeñas de aceite, alambre y energía. Mueve los puntos decimales, divide y dile a los robots exactamente cuántos pasos pueden dar.",
+  "challengeStory": "The lab lights drop low and the robots idle. A power surge has jumbled the decimal points on the logs, and only a careful engineer can set each division right again.",
+  "challengeStoryEs": "Las luces del laboratorio bajan y los robots descansan. Una subida de energía revolvió los puntos decimales de los registros, y solo un ingeniero cuidadoso puede arreglar cada división.",
+  "getReady": null,
+  "fresh": [
+    {
+      "k": "gen",
+      "g": "decimalDivision",
+      "level": 1
+    },
+    {
+      "k": "gen",
+      "g": "decimalDivision",
+      "level": 1
+    },
+    {
+      "k": "gen",
+      "g": "decimalDivision",
+      "level": 2
+    },
+    {
+      "k": "gen",
+      "g": "decimalDivision",
+      "level": 2
+    },
+    {
+      "k": "gen",
+      "g": "decimalDivision",
+      "level": 3
+    },
+    {
+      "k": "gen",
+      "g": "decimalDivision",
+      "level": 3
+    },
+    {
+      "k": "act",
+      "kind": "ldiv",
+      "level": 2,
+      "p": {
+        "decimal": true
+      }
+    }
+  ],
+  "challenge": {
+    "climb": [
+      {
+        "k": "gen",
+        "g": "decimalDivision",
+        "level": 2
+      },
+      {
+        "k": "gen",
+        "g": "decimalDivision",
+        "level": 2
+      },
+      {
+        "k": "gen",
+        "g": "decimalDivision",
+        "level": 3
+      },
+      {
+        "k": "gen",
+        "g": "decimalDivision",
+        "level": 3
+      },
+      {
+        "k": "gen",
+        "g": "decimalDivision",
+        "level": 4
+      },
+      {
+        "k": "gen",
+        "g": "decimalDivision",
+        "level": 4
+      }
+    ],
+    "missions": [
+      {
+        "k": "num",
+        "q": "A robot welder has 9.6 meters of wire. Each weld uses 0.12 meter. How many welds can it make?",
+        "qEs": "Un robot soldador tiene 9.6 metros de alambre. Cada soldadura usa 0.12 metros. ¿Cuántas soldaduras puede hacer?",
+        "a": "80",
+        "unit": "welds",
+        "fw": [
+          {
+            "v": "0.8",
+            "f": "You slid the point in the divisor but not in the dividend. Slide both points the same number of places.",
+            "fEs": "Moviste el punto del divisor pero no el del dividendo. Mueve los dos puntos la misma cantidad de lugares.",
+            "tag": "moved-only-the-divisor"
+          },
+          {
+            "v": "8",
+            "f": "Sliding one place leaves 1.2, which is not a whole number yet. Slide both points two places.",
+            "fEs": "Mover un lugar deja 1.2, que todavía no es un número entero. Mueve los dos puntos dos lugares.",
+            "tag": "moved-too-few-places"
+          },
+          {
+            "v": "800",
+            "f": "Slid one place too far in the dividend. Both numbers slide the same number of places.",
+            "fEs": "Moviste un lugar de más en el dividendo. Los dos números se mueven la misma cantidad de lugares.",
+            "tag": "place-value-off-by-ten"
+          }
+        ],
+        "x": "0.12 needs 2 places to become 12, so 9.6 becomes 960. 960 ÷ 12 = 80. Check: 0.12 × 80 = 9.6.",
+        "xEs": "0.12 necesita 2 lugares para ser 12, así que 9.6 pasa a 960. 960 ÷ 12 = 80. Comprueba: 0.12 × 80 = 9.6.",
+        "h": [
+          "Count the decimal places in the divisor.",
+          "Slide the decimal point in both numbers that many places, writing a zero if you need one.",
+          "Divide the two whole numbers and check by multiplying."
+        ],
+        "hEs": [
+          "Cuenta los lugares decimales del divisor.",
+          "Mueve el punto decimal en los dos números esa cantidad de lugares, escribiendo un cero si hace falta.",
+          "Divide los dos números enteros y comprueba multiplicando."
+        ]
+      },
+      {
+        "k": "num",
+        "q": "A robot’s battery holds 14.7 kilowatt-hours. The robot uses 0.6 kilowatt-hour each hour. For how many hours can it run?",
+        "qEs": "La batería de un robot guarda 14.7 kilovatios-hora. El robot usa 0.6 kilovatios-hora cada hora. ¿Durante cuántas horas puede funcionar?",
+        "a": "24.5",
+        "unit": "hours",
+        "fw": [
+          {
+            "v": "24",
+            "f": "You stopped at a remainder. After 147 ÷ 6 = 24 with 3 left, write a zero after the dividend and keep dividing.",
+            "fEs": "Te detuviste en un residuo. Después de 147 ÷ 6 = 24 y sobran 3, escribe un cero después del dividendo y sigue dividiendo.",
+            "tag": "stopped-at-remainder"
+          },
+          {
+            "v": "2.45",
+            "f": "The decimal point is one place too far left. Check: 0.6 × 2.45 is about 1.5, not 14.7.",
+            "fEs": "El punto decimal está un lugar de más a la izquierda. Comprueba: 0.6 × 2.45 es cerca de 1.5, no 14.7.",
+            "tag": "quotient-point-misplaced"
+          },
+          {
+            "v": "245",
+            "f": "The decimal point is missing. Check: 0.6 × 245 is far more than 14.7.",
+            "fEs": "Falta el punto decimal. Comprueba: 0.6 × 245 es mucho más que 14.7.",
+            "tag": "quotient-point-misplaced"
+          }
+        ],
+        "x": "Slide both points 1 place: 14.7 ÷ 0.6 becomes 147 ÷ 6. 147 ÷ 6 = 24 R3. Annex a zero: 30 ÷ 6 = 5, so the quotient is 24.5. Check: 0.6 × 24.5 = 14.7.",
+        "xEs": "Mueve los dos puntos 1 lugar: 14.7 ÷ 0.6 pasa a 147 ÷ 6. 147 ÷ 6 = 24 R3. Agrega un cero: 30 ÷ 6 = 5, así que el cociente es 24.5. Comprueba: 0.6 × 24.5 = 14.7.",
+        "h": [
+          "Make the divisor a whole number by sliding both points.",
+          "If a remainder is left, you can write a zero after the last decimal digit and keep dividing.",
+          "Place the quotient’s decimal point above the dividend’s decimal point."
+        ],
+        "hEs": [
+          "Haz del divisor un número entero moviendo los dos puntos.",
+          "Si queda un residuo, puedes escribir un cero después del último dígito decimal y seguir dividiendo.",
+          "Pon el punto decimal del cociente sobre el punto decimal del dividendo."
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "Which division has the same quotient as 4.5 ÷ 0.15?",
+        "qEs": "¿Cuál división tiene el mismo cociente que 4.5 ÷ 0.15?",
+        "c": [
+          "45 ÷ 15",
+          "450 ÷ 15",
+          "4.5 ÷ 15",
+          "450 ÷ 1.5"
+        ],
+        "a": 1,
+        "f": [
+          "The dividend slid one place but the divisor slid two. Both must slide the same number of places.",
+          "",
+          "Only the divisor changed. Multiply the dividend by the same power of 10.",
+          "The dividend slid two places but the divisor slid one. They must match."
+        ],
+        "fEs": [
+          "El dividendo se movió un lugar pero el divisor dos. Los dos deben moverse la misma cantidad de lugares.",
+          "",
+          "Solo cambió el divisor. Multiplica el dividendo por la misma potencia de 10.",
+          "El dividendo se movió dos lugares pero el divisor uno. Deben coincidir."
+        ],
+        "tag": [
+          "moved-too-few-places",
+          null,
+          "moved-only-the-divisor",
+          "moved-too-few-places"
+        ],
+        "x": "Multiplying both numbers by 100 keeps the quotient: 4.5 × 100 = 450 and 0.15 × 100 = 15. Both 4.5 ÷ 0.15 and 450 ÷ 15 equal 30.",
+        "xEs": "Multiplicar los dos números por 100 mantiene el cociente: 4.5 × 100 = 450 y 0.15 × 100 = 15. Tanto 4.5 ÷ 0.15 como 450 ÷ 15 son iguales a 30.",
+        "h": [
+          "An equivalent division multiplies the dividend and the divisor by the same number.",
+          "How many places does 0.15 slide to become a whole number?",
+          "Slide 4.5 the same number of places."
+        ],
+        "hEs": [
+          "Una división equivalente multiplica el dividendo y el divisor por el mismo número.",
+          "¿Cuántos lugares se mueve 0.15 para ser un número entero?",
+          "Mueve 4.5 la misma cantidad de lugares."
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "A lab pours 2.4 liters of cleaning fluid into bottles that hold 0.08 liter each. About how many bottles can it fill?",
+        "qEs": "Un laboratorio vierte 2.4 litros de líquido de limpieza en botellas que guardan 0.08 litros cada una. ¿Aproximadamente cuántas botellas puede llenar?",
+        "c": [
+          "30 bottles",
+          "3 bottles",
+          "300 bottles",
+          "0.3 bottles"
+        ],
+        "cEs": [
+          "30 botellas",
+          "3 botellas",
+          "300 botellas",
+          "0.3 botellas"
+        ],
+        "a": 0,
+        "f": [
+          "",
+          "Check: 3 bottles of 0.08 liter hold only 0.24 liter, far less than 2.4.",
+          "Check: 300 bottles of 0.08 liter hold 24 liters, far more than 2.4.",
+          "The bottle is much smaller than the amount, so the quotient is greater than 1, not less."
+        ],
+        "fEs": [
+          "",
+          "Comprueba: 3 botellas de 0.08 litros guardan solo 0.24 litros, mucho menos que 2.4.",
+          "Comprueba: 300 botellas de 0.08 litros guardan 24 litros, mucho más que 2.4.",
+          "La botella es mucho menor que la cantidad, así que el cociente es mayor que 1, no menor."
+        ],
+        "tag": [
+          null,
+          "place-value-off-by-ten",
+          "place-value-off-by-ten",
+          "quotient-must-be-smaller"
+        ],
+        "x": "240 ÷ 8 = 30 after sliding both points 2 places. Check: 30 × 0.08 = 2.4. A small divisor gives a bigger quotient.",
+        "xEs": "240 ÷ 8 = 30 después de mover los dos puntos 2 lugares. Comprueba: 30 × 0.08 = 2.4. Un divisor pequeño da un cociente mayor.",
+        "h": [
+          "0.08 is a very small amount, so about how many fit into 2.4?",
+          "Test each choice: multiply the number of bottles by 0.08.",
+          "Which product is close to 2.4?"
+        ],
+        "hEs": [
+          "0.08 es una cantidad muy pequeña, ¿aproximadamente cuántas caben en 2.4?",
+          "Prueba cada opción: multiplica el número de botellas por 0.08.",
+          "¿Qué producto se acerca a 2.4?"
+        ]
+      }
+    ],
+    "lab": [
+      {
+        "k": "act",
+        "kind": "ldiv",
+        "level": 3,
+        "p": {
+          "decimal": true
+        }
+      },
+      {
+        "k": "act",
+        "kind": "ldiv",
+        "level": 4,
+        "p": {
+          "decimal": true
+        }
+      },
+      {
+        "k": "sort",
+        "q": "Sort each division by how many places you slide both decimal points to make the divisor a whole number.",
+        "qEs": "Clasifica cada división según cuántos lugares mueves los dos puntos decimales para que el divisor sea un número entero.",
+        "bins": [
+          {
+            "l": "1 place",
+            "lEs": "1 lugar"
+          },
+          {
+            "l": "2 places",
+            "lEs": "2 lugares"
+          },
+          {
+            "l": "3 places",
+            "lEs": "3 lugares"
+          }
+        ],
+        "cards": [
+          {
+            "t": "7.2 ÷ 0.6",
+            "tEs": "7.2 ÷ 0.6",
+            "b": 0
+          },
+          {
+            "t": "13 ÷ 0.5",
+            "tEs": "13 ÷ 0.5",
+            "b": 0
+          },
+          {
+            "t": "5.4 ÷ 0.09",
+            "tEs": "5.4 ÷ 0.09",
+            "b": 1
+          },
+          {
+            "t": "6.5 ÷ 0.25",
+            "tEs": "6.5 ÷ 0.25",
+            "b": 1
+          },
+          {
+            "t": "0.84 ÷ 0.012",
+            "tEs": "0.84 ÷ 0.012",
+            "b": 2
+          },
+          {
+            "t": "9 ÷ 0.125",
+            "tEs": "9 ÷ 0.125",
+            "b": 2
+          }
+        ],
+        "x": "Count the decimal places in the divisor: 0.6 and 0.5 have 1, 0.09 and 0.25 have 2, and 0.012 and 0.125 have 3. Slide both points that many places.",
+        "xEs": "Cuenta los lugares decimales del divisor: 0.6 y 0.5 tienen 1, 0.09 y 0.25 tienen 2, y 0.012 y 0.125 tienen 3. Mueve los dos puntos esa cantidad de lugares.",
+        "h": [
+          "Look only at the divisor, the number after ÷.",
+          "Count the digits after its decimal point.",
+          "Start with 13 ÷ 0.5."
+        ],
+        "hEs": [
+          "Mira solo el divisor, el número después de ÷.",
+          "Cuenta los dígitos después de su punto decimal.",
+          "Empieza con 13 ÷ 0.5."
+        ]
+      }
+    ],
+    "detective": [
+      {
+        "k": "err",
+        "t": "Hassan solves 7.2 ÷ 0.9.",
+        "tEs": "Hassan resuelve 7.2 ÷ 0.9.",
+        "s": [
+          {
+            "l": "Step 1",
+            "w": "I slide the decimal point in 0.9 one place to make 9.",
+            "lEs": "Paso 1",
+            "wEs": "Muevo el punto decimal de 0.9 un lugar para formar 9."
+          },
+          {
+            "l": "Step 2",
+            "w": "The dividend stays 7.2, so the problem is 7.2 ÷ 9.",
+            "lEs": "Paso 2",
+            "wEs": "El dividendo sigue siendo 7.2, así que el problema es 7.2 ÷ 9."
+          },
+          {
+            "l": "Step 3",
+            "w": "7.2 ÷ 9 = 0.8.",
+            "lEs": "Paso 3",
+            "wEs": "7.2 ÷ 9 = 0.8."
+          }
+        ],
+        "e": 1,
+        "fix": "The dividend must slide the same number of places: 7.2 becomes 72. The problem is 72 ÷ 9 = 8. Check: 0.9 × 8 = 7.2.",
+        "fixEs": "El dividendo debe moverse la misma cantidad de lugares: 7.2 pasa a 72. El problema es 72 ÷ 9 = 8. Comprueba: 0.9 × 8 = 7.2.",
+        "x": "Multiplying only the divisor by 10 changes the problem. Both numbers must be multiplied by the same power of 10 to keep the quotient the same.",
+        "xEs": "Multiplicar solo el divisor por 10 cambia el problema. Los dos números deben multiplicarse por la misma potencia de 10 para que el cociente no cambie.",
+        "h": [
+          "Check the answer by multiplying 0.8 × 0.9.",
+          "Find the step that changes only one of the two numbers.",
+          "What must happen to the dividend when the divisor slides?"
+        ],
+        "hEs": [
+          "Comprueba la respuesta multiplicando 0.8 × 0.9.",
+          "Busca el paso que cambia solo uno de los dos números.",
+          "¿Qué debe pasar con el dividendo cuando el divisor se mueve?"
+        ]
+      },
+      {
+        "k": "err",
+        "t": "Wanjiru solves 4.2 ÷ 0.07.",
+        "tEs": "Wanjiru resuelve 4.2 ÷ 0.07.",
+        "s": [
+          {
+            "l": "Step 1",
+            "w": "I slide both decimal points one place: 4.2 becomes 42 and 0.07 becomes 0.7.",
+            "lEs": "Paso 1",
+            "wEs": "Muevo los dos puntos decimales un lugar: 4.2 pasa a 42 y 0.07 pasa a 0.7."
+          },
+          {
+            "l": "Step 2",
+            "w": "I ignore the decimal in 0.7 and treat it as 7, so I divide 42 ÷ 7.",
+            "lEs": "Paso 2",
+            "wEs": "Ignoro el decimal de 0.7 y lo trato como 7, así que divido 42 ÷ 7."
+          },
+          {
+            "l": "Step 3",
+            "w": "42 ÷ 7 = 6.",
+            "lEs": "Paso 3",
+            "wEs": "42 ÷ 7 = 6."
+          }
+        ],
+        "e": 1,
+        "fix": "0.7 is not a whole number yet. Slide both points two places: 4.2 becomes 420 and 0.07 becomes 7. Then 420 ÷ 7 = 60. Check: 0.07 × 60 = 4.2.",
+        "fixEs": "0.7 todavía no es un número entero. Mueve los dos puntos dos lugares: 4.2 pasa a 420 y 0.07 pasa a 7. Entonces 420 ÷ 7 = 60. Comprueba: 0.07 × 60 = 4.2.",
+        "x": "The divisor must become a whole number. Dropping a decimal point without sliding the dividend too makes the answer ten times too small.",
+        "xEs": "El divisor debe convertirse en un número entero. Quitar un punto decimal sin mover también el dividendo hace que la respuesta sea diez veces menor.",
+        "h": [
+          "After step 1, is the divisor a whole number?",
+          "Count the decimal places in 0.07.",
+          "Check the answer by multiplying 6 × 0.07."
+        ],
+        "hEs": [
+          "Después del paso 1, ¿el divisor es un número entero?",
+          "Cuenta los lugares decimales de 0.07.",
+          "Comprueba la respuesta multiplicando 6 × 0.07."
+        ]
+      },
+      {
+        "k": "err",
+        "t": "Tomás solves 3.64 ÷ 1.4.",
+        "tEs": "Tomás resuelve 3.64 ÷ 1.4.",
+        "s": [
+          {
+            "l": "Step 1",
+            "w": "I slide both points one place: 3.64 becomes 36.4 and 1.4 becomes 14.",
+            "lEs": "Paso 1",
+            "wEs": "Muevo los dos puntos un lugar: 3.64 pasa a 36.4 y 1.4 pasa a 14."
+          },
+          {
+            "l": "Step 2",
+            "w": "I divide 364 by 14 and the digits of the answer are 2 and 6.",
+            "lEs": "Paso 2",
+            "wEs": "Divido 364 entre 14 y los dígitos de la respuesta son 2 y 6."
+          },
+          {
+            "l": "Step 3",
+            "w": "So 3.64 ÷ 1.4 = 26.",
+            "lEs": "Paso 3",
+            "wEs": "Entonces 3.64 ÷ 1.4 = 26."
+          }
+        ],
+        "e": 2,
+        "fix": "The decimal point in the quotient goes directly above the decimal point in the dividend 36.4. So the quotient is 2.6. Check: 1.4 × 2.6 = 3.64.",
+        "fixEs": "El punto decimal del cociente va justo sobre el punto decimal del dividendo 36.4. Así que el cociente es 2.6. Comprueba: 1.4 × 2.6 = 3.64.",
+        "x": "After the points slide, the dividend 36.4 still has a decimal point, and the quotient’s point goes above it. A quick estimate also helps: 3.64 ÷ 1.4 is close to 3 ÷ 1.",
+        "xEs": "Después de mover los puntos, el dividendo 36.4 todavía tiene un punto decimal, y el punto del cociente va sobre él. Una estimación rápida también ayuda: 3.64 ÷ 1.4 está cerca de 3 ÷ 1.",
+        "h": [
+          "Estimate first: about how big should the answer be?",
+          "Where does the decimal point of the quotient go?",
+          "Compare 26 with your estimate."
+        ],
+        "hEs": [
+          "Estima primero: ¿qué tan grande debe ser la respuesta?",
+          "¿Dónde va el punto decimal del cociente?",
+          "Compara 26 con tu estimación."
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "Kiran says 0.5 ÷ 0.25 = 2. Elena says it is 0.2 because dividing makes a number smaller. Who is right?",
+        "qEs": "Kiran dice que 0.5 ÷ 0.25 = 2. Elena dice que es 0.2 porque dividir hace más pequeño un número. ¿Quién tiene razón?",
+        "c": [
+          "Kiran, because 50 ÷ 25 = 2 and 0.25 × 2 = 0.5",
+          "Elena, because the quotient is always less than the dividend",
+          "Neither, because the answer is 20",
+          "Both, because 2 and 0.2 are equal"
+        ],
+        "cEs": [
+          "Kiran, porque 50 ÷ 25 = 2 y 0.25 × 2 = 0.5",
+          "Elena, porque el cociente siempre es menor que el dividendo",
+          "Ninguno, porque la respuesta es 20",
+          "Los dos, porque 2 y 0.2 son iguales"
+        ],
+        "a": 0,
+        "f": [
+          "",
+          "Dividing by a number less than 1 makes the quotient larger.",
+          "Check by multiplying: 0.25 × 20 = 5, not 0.5.",
+          "2 is ten times 0.2, so they are not equal."
+        ],
+        "fEs": [
+          "",
+          "Dividir entre un número menor que 1 hace el cociente mayor.",
+          "Comprueba multiplicando: 0.25 × 20 = 5, no 0.5.",
+          "2 es diez veces 0.2, así que no son iguales."
+        ],
+        "tag": [
+          null,
+          "quotient-must-be-smaller",
+          "place-value-off-by-ten",
+          "place-value-off-by-ten"
+        ],
+        "x": "Slide both points two places: 50 ÷ 25 = 2. Check: 0.25 × 2 = 0.5. Dividing by a number between 0 and 1 gives a quotient that is greater than the dividend.",
+        "xEs": "Mueve los dos puntos dos lugares: 50 ÷ 25 = 2. Comprueba: 0.25 × 2 = 0.5. Dividir entre un número entre 0 y 1 da un cociente mayor que el dividendo.",
+        "h": [
+          "How many 0.25s fit into 0.5?",
+          "Check each answer by multiplying it by 0.25.",
+          "Which product equals 0.5?"
+        ],
+        "hEs": [
+          "¿Cuántos 0.25 caben en 0.5?",
+          "Comprueba cada respuesta multiplicándola por 0.25.",
+          "¿Qué producto es igual a 0.5?"
+        ]
+      }
+    ],
+    "boss": [
+      {
+        "k": "num",
+        "q": "What is 25.2 ÷ 4.2?",
+        "qEs": "¿Cuánto es 25.2 ÷ 4.2?",
+        "a": "6",
+        "fw": [
+          {
+            "v": "0.6",
+            "f": "The dividend’s point did not slide. Slide both points one place: 252 ÷ 42.",
+            "fEs": "El punto del dividendo no se movió. Mueve los dos puntos un lugar: 252 ÷ 42.",
+            "tag": "moved-only-the-divisor"
+          },
+          {
+            "v": "60",
+            "f": "That is ten times too big. Check: 4.2 × 60 is far more than 25.2.",
+            "fEs": "Eso es diez veces mayor. Comprueba: 4.2 × 60 es mucho más que 25.2.",
+            "tag": "place-value-off-by-ten"
+          }
+        ],
+        "x": "Slide both points 1 place: 252 ÷ 42 = 6. Check: 4.2 × 6 = 25.2.",
+        "xEs": "Mueve los dos puntos 1 lugar: 252 ÷ 42 = 6. Comprueba: 4.2 × 6 = 25.2.",
+        "h": [
+          "Count the decimal places in the divisor.",
+          "Slide both points that many places.",
+          "Divide the whole numbers, then check by multiplying."
+        ],
+        "hEs": [
+          "Cuenta los lugares decimales del divisor.",
+          "Mueve los dos puntos esa cantidad de lugares.",
+          "Divide los números enteros y comprueba multiplicando."
+        ]
+      },
+      {
+        "k": "num",
+        "q": "What is 7 ÷ 0.28?",
+        "qEs": "¿Cuánto es 7 ÷ 0.28?",
+        "a": "25",
+        "fw": [
+          {
+            "v": "0.25",
+            "f": "The dividend 7 did not slide. Write 7 as 7.00 and slide both points two places.",
+            "fEs": "El dividendo 7 no se movió. Escribe 7 como 7.00 y mueve los dos puntos dos lugares.",
+            "tag": "moved-only-the-divisor"
+          },
+          {
+            "v": "2.5",
+            "f": "That is ten times too small. Check: 0.28 × 2.5 = 0.7, not 7.",
+            "fEs": "Eso es diez veces menos. Comprueba: 0.28 × 2.5 = 0.7, no 7.",
+            "tag": "place-value-off-by-ten"
+          }
+        ],
+        "x": "Write 7 as 7.00 and slide both points 2 places: 700 ÷ 28 = 25. Check: 0.28 × 25 = 7.",
+        "xEs": "Escribe 7 como 7.00 y mueve los dos puntos 2 lugares: 700 ÷ 28 = 25. Comprueba: 0.28 × 25 = 7.",
+        "h": [
+          "A whole number can be written with a decimal point and zeros.",
+          "Slide both points two places.",
+          "Divide the whole numbers."
+        ],
+        "hEs": [
+          "Un número entero se puede escribir con punto decimal y ceros.",
+          "Mueve los dos puntos dos lugares.",
+          "Divide los números enteros."
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "What is 0.756 ÷ 0.9?",
+        "qEs": "¿Cuánto es 0.756 ÷ 0.9?",
+        "c": [
+          "8.4",
+          "0.084",
+          "84",
+          "0.84"
+        ],
+        "a": 3,
+        "f": [
+          "The quotient point is one place too far right. Check: 0.9 × 8.4 is about 7.6, not 0.756.",
+          "The quotient point is one place too far left. Check: 0.9 × 0.084 is about 0.076.",
+          "That is a hundred times too big. 0.756 divided by almost 1 is a little less than 1.",
+          ""
+        ],
+        "fEs": [
+          "El punto del cociente está un lugar de más a la derecha. Comprueba: 0.9 × 8.4 es cerca de 7.6, no 0.756.",
+          "El punto del cociente está un lugar de más a la izquierda. Comprueba: 0.9 × 0.084 es cerca de 0.076.",
+          "Eso es cien veces mayor. 0.756 dividido entre casi 1 es un poco menos que 1.",
+          ""
+        ],
+        "tag": [
+          "quotient-point-misplaced",
+          "quotient-point-misplaced",
+          "place-value-off-by-ten",
+          null
+        ],
+        "x": "Slide both points 1 place: 7.56 ÷ 9 = 0.84. Check: 0.9 × 0.84 = 0.756.",
+        "xEs": "Mueve los dos puntos 1 lugar: 7.56 ÷ 9 = 0.84. Comprueba: 0.9 × 0.84 = 0.756.",
+        "h": [
+          "Estimate: 0.756 is a little less than 1, and 0.9 is a little less than 1.",
+          "Slide both points one place and divide.",
+          "Put the quotient point above the dividend point."
+        ],
+        "hEs": [
+          "Estima: 0.756 es un poco menos que 1, y 0.9 es un poco menos que 1.",
+          "Mueve los dos puntos un lugar y divide.",
+          "Pon el punto del cociente sobre el punto del dividendo."
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "Which is the best estimate of 6.1 ÷ 0.2?",
+        "qEs": "¿Cuál es la mejor estimación de 6.1 ÷ 0.2?",
+        "c": [
+          "About 3",
+          "About 30",
+          "About 300",
+          "About 0.3"
+        ],
+        "cEs": [
+          "Alrededor de 3",
+          "Alrededor de 30",
+          "Alrededor de 300",
+          "Alrededor de 0.3"
+        ],
+        "a": 1,
+        "f": [
+          "Check: 3 × 0.2 = 0.6, far less than 6.1.",
+          "",
+          "Check: 300 × 0.2 = 60, far more than 6.1.",
+          "Dividing by 0.2 makes a number bigger, not smaller."
+        ],
+        "fEs": [
+          "Comprueba: 3 × 0.2 = 0.6, mucho menos que 6.1.",
+          "",
+          "Comprueba: 300 × 0.2 = 60, mucho más que 6.1.",
+          "Dividir entre 0.2 hace un número mayor, no menor."
+        ],
+        "tag": [
+          "place-value-off-by-ten",
+          null,
+          "place-value-off-by-ten",
+          "quotient-must-be-smaller"
+        ],
+        "x": "6.1 is about 6, and 6 ÷ 0.2 = 60 ÷ 2 = 30. Check: 30 × 0.2 = 6.",
+        "xEs": "6.1 es casi 6, y 6 ÷ 0.2 = 60 ÷ 2 = 30. Comprueba: 30 × 0.2 = 6.",
+        "h": [
+          "Round 6.1 to a friendly number.",
+          "Slide both points one place to divide by a whole number.",
+          "Check each choice by multiplying by 0.2."
+        ],
+        "hEs": [
+          "Redondea 6.1 a un número fácil.",
+          "Mueve los dos puntos un lugar para dividir entre un número entero.",
+          "Comprueba cada opción multiplicando por 0.2."
+        ]
+      },
+      {
+        "k": "num",
+        "q": "A robot arm moves 0.45 meter with each step. How many steps does it take to cover 12.6 meters?",
+        "qEs": "El brazo de un robot avanza 0.45 metros en cada paso. ¿Cuántos pasos necesita para cubrir 12.6 metros?",
+        "a": "28",
+        "unit": "steps",
+        "fw": [
+          {
+            "v": "0.28",
+            "f": "The dividend’s point did not slide. Slide both points two places: 1,260 ÷ 45.",
+            "fEs": "El punto del dividendo no se movió. Mueve los dos puntos dos lugares: 1,260 ÷ 45.",
+            "tag": "moved-only-the-divisor"
+          },
+          {
+            "v": "5.67",
+            "f": "That multiplies. The question asks how many 0.45s fit into 12.6.",
+            "fEs": "Eso multiplica. La pregunta es cuántos 0.45 caben en 12.6.",
+            "tag": "divided-by-wrong-whole"
+          }
+        ],
+        "x": "Slide both points 2 places: 1,260 ÷ 45 = 28. Check: 0.45 × 28 = 12.6.",
+        "xEs": "Mueve los dos puntos 2 lugares: 1,260 ÷ 45 = 28. Comprueba: 0.45 × 28 = 12.6.",
+        "h": [
+          "How many 0.45-meter steps fit into 12.6 meters? That is a division.",
+          "Slide both points two places.",
+          "Divide 1,260 by 45."
+        ],
+        "hEs": [
+          "¿Cuántos pasos de 0.45 metros caben en 12.6 metros? Eso es una división.",
+          "Mueve los dos puntos dos lugares.",
+          "Divide 1,260 entre 45."
+        ]
+      },
+      {
+        "k": "wr",
+        "p": "Create your own problem. Write a Robot Lab story that needs you to divide a decimal by a decimal. Show how you slide both decimal points, solve it, and check it by multiplying. Use the words dividend, divisor, quotient and equivalent division.",
+        "pEs": "Crea tu propio problema. Escribe una historia del Laboratorio de Robots que necesite dividir un decimal entre un decimal. Muestra cómo mueves los dos puntos decimales, resuélvelo y compruébalo multiplicando. Usa las palabras dividendo, divisor, cociente y división equivalente.",
+        "fr": "A robot has ___ and uses ___ each time. The dividend is ___ and the divisor is ___. I slide both points ___ places to get ___ ÷ ___ = ___. Check: ___ × ___ = ___.",
+        "frEs": "Un robot tiene ___ y usa ___ cada vez. El dividendo es ___ y el divisor es ___. Muevo los dos puntos ___ lugares para obtener ___ ÷ ___ = ___. Comprobación: ___ × ___ = ___.",
+        "min": 100,
+        "kw": [
+          "dividend",
+          "divisor",
+          "quotient",
+          "equivalent division"
+        ],
+        "kwEs": [
+          "dividendo",
+          "divisor",
+          "cociente",
+          "división equivalente"
+        ],
+        "rubric": [
+          "My story uses a decimal dividend and a decimal divisor.",
+          "I slid both decimal points the same number of places.",
+          "I divided the whole numbers and placed the quotient’s point correctly.",
+          "I checked by multiplying the quotient by the divisor."
+        ],
+        "rubricEs": [
+          "Mi historia usa un dividendo decimal y un divisor decimal.",
+          "Moví los dos puntos decimales la misma cantidad de lugares.",
+          "Dividí los números enteros y puse bien el punto del cociente.",
+          "Comprobé multiplicando el cociente por el divisor."
+        ],
+        "x": "A robot has 8.4 liters of oil and uses 0.35 liter each time. The dividend is 8.4 and the divisor is 0.35. I slide both points 2 places to get 840 ÷ 35 = 24. Check: 0.35 × 24 = 8.4. This is an equivalent division with the same quotient.",
+        "xEs": "Un robot tiene 8.4 litros de aceite y usa 0.35 litros cada vez. El dividendo es 8.4 y el divisor es 0.35. Muevo los dos puntos 2 lugares para obtener 840 ÷ 35 = 24. Comprobación: 0.35 × 24 = 8.4. Es una división equivalente con el mismo cociente.",
+        "h": [
+          "Choose a total amount and a smaller decimal amount used each time.",
+          "Count the decimal places in the divisor, then slide both points.",
+          "Multiply the quotient by the divisor to check."
+        ],
+        "hEs": [
+          "Elige una cantidad total y una cantidad decimal menor que se usa cada vez.",
+          "Cuenta los lugares decimales del divisor y luego mueve los dos puntos.",
+          "Multiplica el cociente por el divisor para comprobar."
+        ]
+      }
+    ]
+  },
+  "mastery": [
+    {
+      "k": "num",
+      "q": "What is 0.364 ÷ 0.4?",
+      "qEs": "¿Cuánto es 0.364 ÷ 0.4?",
+      "a": "0.91",
+      "fw": [
+        {
+          "v": "9.1",
+          "f": "The quotient’s point is one place too far right. Check: 0.4 × 9.1 is 3.64.",
+          "fEs": "El punto del cociente está un lugar de más a la derecha. Comprueba: 0.4 × 9.1 es 3.64.",
+          "tag": "quotient-point-misplaced"
+        },
+        {
+          "v": "0.091",
+          "f": "The dividend’s point did not slide. Slide both points one place.",
+          "fEs": "El punto del dividendo no se movió. Mueve los dos puntos un lugar.",
+          "tag": "moved-only-the-divisor"
+        }
+      ],
+      "x": "Slide both points 1 place: 3.64 ÷ 4 = 0.91. Check: 0.4 × 0.91 = 0.364.",
+      "xEs": "Mueve los dos puntos 1 lugar: 3.64 ÷ 4 = 0.91. Comprueba: 0.4 × 0.91 = 0.364.",
+      "h": [
+        "Make the divisor a whole number.",
+        "Slide the dividend’s point the same number of places.",
+        "Place the quotient’s point above the dividend’s point."
+      ],
+      "hEs": [
+        "Haz del divisor un número entero.",
+        "Mueve el punto del dividendo la misma cantidad de lugares.",
+        "Pon el punto del cociente sobre el punto del dividendo."
+      ]
+    },
+    {
+      "k": "mc",
+      "q": "To divide 8.1 ÷ 0.03, how should you change the problem?",
+      "qEs": "Para dividir 8.1 ÷ 0.03, ¿cómo debes cambiar el problema?",
+      "c": [
+        "Slide both points 1 place to get 81 ÷ 0.3",
+        "Slide only the divisor 2 places to get 8.1 ÷ 3",
+        "Slide both points 2 places to get 810 ÷ 3",
+        "Slide the divisor 2 places and the dividend 1 place to get 81 ÷ 3"
+      ],
+      "cEs": [
+        "Mover los dos puntos 1 lugar para obtener 81 ÷ 0.3",
+        "Mover solo el divisor 2 lugares para obtener 8.1 ÷ 3",
+        "Mover los dos puntos 2 lugares para obtener 810 ÷ 3",
+        "Mover el divisor 2 lugares y el dividendo 1 lugar para obtener 81 ÷ 3"
+      ],
+      "a": 2,
+      "f": [
+        "The divisor 0.3 is still not a whole number.",
+        "The dividend must slide the same number of places.",
+        "",
+        "Both numbers must slide the same number of places. Here the dividend slid fewer places than the divisor."
+      ],
+      "fEs": [
+        "El divisor 0.3 todavía no es un número entero.",
+        "El dividendo debe moverse la misma cantidad de lugares.",
+        "",
+        "Los dos números deben moverse la misma cantidad de lugares. Aquí el dividendo se movió menos lugares que el divisor."
+      ],
+      "tag": [
+        "moved-too-few-places",
+        "moved-only-the-divisor",
+        null,
+        "moved-too-few-places"
+      ],
+      "x": "0.03 has 2 decimal places, so slide both points 2 places: 8.1 becomes 810 and 0.03 becomes 3. Then 810 ÷ 3 = 270.",
+      "xEs": "0.03 tiene 2 lugares decimales, así que mueve los dos puntos 2 lugares: 8.1 pasa a 810 y 0.03 pasa a 3. Entonces 810 ÷ 3 = 270.",
+      "h": [
+        "Count the decimal places in the divisor.",
+        "Slide both points that many places.",
+        "Check that the new divisor is a whole number."
+      ],
+      "hEs": [
+        "Cuenta los lugares decimales del divisor.",
+        "Mueve los dos puntos esa cantidad de lugares.",
+        "Comprueba que el nuevo divisor sea un número entero."
+      ]
+    }
+  ],
+  "glossary": [
+    {
+      "t": "dividend",
+      "tEs": "dividendo",
+      "d": "The number being divided, inside the division bracket.",
+      "dEs": "El número que se divide, dentro de la galera de división."
+    },
+    {
+      "t": "divisor",
+      "tEs": "divisor",
+      "d": "The number you divide by.",
+      "dEs": "El número entre el que divides."
+    },
+    {
+      "t": "quotient",
+      "tEs": "cociente",
+      "d": "The answer to a division problem.",
+      "dEs": "La respuesta de un problema de división."
+    },
+    {
+      "t": "equivalent division",
+      "tEs": "división equivalente",
+      "d": "A division with both numbers multiplied by 10 or 100, which keeps the same quotient.",
+      "dEs": "Una división con los dos números multiplicados por 10 o 100, que mantiene el mismo cociente."
+    },
+    {
+      "t": "annex a zero",
+      "tEs": "agregar un cero",
+      "d": "Write a zero after the last decimal digit without changing the value.",
+      "dEs": "Escribir un cero después del último dígito decimal sin cambiar el valor."
+    }
+  ]
+}

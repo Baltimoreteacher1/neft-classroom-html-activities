@@ -1,0 +1,921 @@
+{
+ "v": 1,
+ "lesson": "9-3",
+ "story": "Orbit Station runs on steady rates: kilometers per minute, liters per day, energy per hour. Turn each pattern from a table into an equation, so mission control can find any value without building a new table.",
+ "storyEs": "La Estación Órbita funciona con tasas constantes: kilómetros por minuto, litros por día, energía por hora. Convierte cada patrón de una tabla en una ecuación, para que el control de la misión pueda hallar cualquier valor sin armar una tabla nueva.",
+ "challengeStory": "Alarm on Orbit Station: a data glitch has scrambled the mission log. Rebuild each equation from tables and clues, define every variable, and check each one against more than one row.",
+ "challengeStoryEs": "Alarma en la Estación Órbita: una falla de datos revolvió el registro de la misión. Reconstruye cada ecuación con tablas y pistas, define cada variable y comprueba cada una con más de una fila.",
+ "getReady": null,
+ "noAct": false,
+ "fresh": [
+  {
+   "k": "gen",
+   "g": "twoVarTable",
+   "level": 1
+  },
+  {
+   "k": "gen",
+   "g": "twoVarTable",
+   "level": 1
+  },
+  {
+   "k": "gen",
+   "g": "twoVarTable",
+   "level": 2
+  },
+  {
+   "k": "gen",
+   "g": "twoVarTable",
+   "level": 2
+  },
+  {
+   "k": "gen",
+   "g": "twoVarTable",
+   "level": 3
+  },
+  {
+   "k": "gen",
+   "g": "twoVarTable",
+   "level": 3
+  },
+  {
+   "k": "act",
+   "kind": "plot",
+   "level": 2,
+   "p": {
+    "mode": "table"
+   }
+  }
+ ],
+ "challenge": {
+  "climb": [
+   {
+    "k": "gen",
+    "g": "twoVarTable",
+    "level": 2
+   },
+   {
+    "k": "gen",
+    "g": "twoVarTable",
+    "level": 2
+   },
+   {
+    "k": "gen",
+    "g": "twoVarTable",
+    "level": 3
+   },
+   {
+    "k": "gen",
+    "g": "twoVarTable",
+    "level": 3
+   },
+   {
+    "k": "gen",
+    "g": "twoVarTable",
+    "level": 4
+   },
+   {
+    "k": "gen",
+    "g": "twoVarTable",
+    "level": 4
+   }
+  ],
+  "missions": [
+   {
+    "k": "mc",
+    "q": "A supply drone leaves Orbit Station and flies at a steady speed. The table shows how far it has flown. Which equation matches, with m = minutes and d = kilometers flown?",
+    "qEs": "Un dron de suministros sale de la Estación Órbita y vuela a una velocidad constante. La tabla muestra qué tan lejos ha volado. ¿Cuál ecuación corresponde, con m = minutos y d = kilómetros recorridos?",
+    "viz": {
+     "t": "table",
+     "hd": [
+      "Minutes (m)",
+      "Kilometers (d)"
+     ],
+     "rows": [
+      [
+       "1",
+       "9"
+      ],
+      [
+       "2",
+       "18"
+      ],
+      [
+       "3",
+       "27"
+      ],
+      [
+       "4",
+       "36"
+      ]
+     ]
+    },
+    "c": [
+     "d = m + 8",
+     "d = 9m",
+     "m = 9d",
+     "d = 36m"
+    ],
+    "a": 1,
+    "f": [
+     "That fits only the first row (1 + 8 = 9). Test it on the second row: it does not give 18.",
+     "",
+     "That says the minutes are 9 times the kilometers. The distance depends on the time, so the distance is the variable alone on the left.",
+     "36 is the distance after 4 minutes. The rate is the distance for ONE minute."
+    ],
+    "fEs": [
+     "Eso solo cumple la primera fila (1 + 8 = 9). Pruébalo en la segunda fila: no da 18.",
+     "",
+     "Eso dice que los minutos son 9 veces los kilómetros. La distancia depende del tiempo, así que la distancia es la variable sola a la izquierda.",
+     "36 es la distancia después de 4 minutos. La tasa es la distancia de UN minuto."
+    ],
+    "tag": [
+     "additive-from-first-row",
+     null,
+     "variables-switched",
+     "used-the-last-total"
+    ],
+    "x": "Each minute adds 9 kilometers (9, 18, 27, 36), so the distance is 9 times the minutes: d = 9m. It works in every row, and the dependent variable, d, stands alone.",
+    "xEs": "Cada minuto agrega 9 kilómetros (9, 18, 27, 36), así que la distancia es 9 veces los minutos: d = 9m. Funciona en todas las filas, y la variable dependiente, d, está sola.",
+    "h": [
+     "Find the distance for one minute. That is the rate.",
+     "Say the pattern in words: distance = rate × minutes.",
+     "Test your equation on a row other than the first."
+    ],
+    "hEs": [
+     "Halla la distancia de un minuto. Esa es la tasa.",
+     "Di el patrón con palabras: distancia = tasa × minutos.",
+     "Prueba tu ecuación en una fila que no sea la primera."
+    ]
+   },
+   {
+    "k": "num",
+    "q": "The station's water recycler makes 2.5 liters of clean water each day, so w = 2.5d, where d is the number of days and w is the liters made. A supply pod needs 40 liters before it can launch. How many days must the recycler run?",
+    "qEs": "El reciclador de agua de la estación produce 2.5 litros de agua limpia cada día, así que w = 2.5d, donde d es el número de días y w son los litros producidos. Una cápsula de suministros necesita 40 litros antes de poder despegar. ¿Cuántos días debe funcionar el reciclador?",
+    "a": "16",
+    "fw": [
+     {
+      "v": "100",
+      "f": "That multiplies 40 by 2.5. The 40 liters are already the total, so the days are what multiplies 2.5 to make it.",
+      "fEs": "Eso multiplica 40 por 2.5. Los 40 litros ya son el total, así que los días son lo que multiplica 2.5 para formarlo."
+     },
+     {
+      "v": "37.5",
+      "f": "That subtracts 2.5 from 40. The recycler adds 2.5 liters every day, so ask how many groups of 2.5 make 40.",
+      "fEs": "Eso resta 2.5 de 40. El reciclador agrega 2.5 litros cada día, así que pregunta cuántos grupos de 2.5 forman 40."
+     }
+    ],
+    "x": "Substitute w = 40: 2.5d = 40. Divide both sides by 2.5, because d is multiplied by 2.5: d = 40 ÷ 2.5 = 16 days. Check: 2.5 × 16 = 40.",
+    "xEs": "Sustituye w = 40: 2.5d = 40. Divide los dos lados entre 2.5, porque d está multiplicada por 2.5: d = 40 ÷ 2.5 = 16 días. Comprueba: 2.5 × 16 = 40.",
+    "h": [
+     "Replace w with 40 in the equation.",
+     "d is multiplied by 2.5. Which operation undoes that?",
+     "Divide 40 by 2.5, then check by multiplying."
+    ],
+    "hEs": [
+     "Reemplaza w por 40 en la ecuación.",
+     "d está multiplicada por 2.5. ¿Cuál operación lo deshace?",
+     "Divide 40 entre 2.5 y luego comprueba multiplicando."
+    ]
+   },
+   {
+    "k": "tbl",
+    "t": "A solar panel makes energy by the equation e = 18h, where h is the hours of sunlight and e is the energy units made. Fill in each missing number.",
+    "tEs": "Un panel solar produce energía con la ecuación e = 18h, donde h son las horas de sol y e son las unidades de energía producidas. Escribe cada número que falta.",
+    "hd": [
+     "Hours (h)",
+     "Energy (e)"
+    ],
+    "hdEs": [
+     "Horas (h)",
+     "Energía (e)"
+    ],
+    "rows": [
+     [
+      "2",
+      ""
+     ],
+     [
+      "5",
+      ""
+     ],
+     [
+      "",
+      "162"
+     ]
+    ],
+    "rowsEs": [
+     [
+      "2",
+      ""
+     ],
+     [
+      "5",
+      ""
+     ],
+     [
+      "",
+      "162"
+     ]
+    ],
+    "cells": [
+     {
+      "r": 0,
+      "c": 1,
+      "a": "36"
+     },
+     {
+      "r": 1,
+      "c": 1,
+      "a": "90"
+     },
+     {
+      "r": 2,
+      "c": 0,
+      "a": "9"
+     }
+    ],
+    "x": "Substitute each hour into e = 18h: 18 × 2 = 36 and 18 × 5 = 90. For 162 units, solve 18h = 162 by dividing: h = 162 ÷ 18 = 9 hours.",
+    "xEs": "Sustituye cada hora en e = 18h: 18 × 2 = 36 y 18 × 5 = 90. Para 162 unidades, resuelve 18h = 162 dividiendo: h = 162 ÷ 18 = 9 horas.",
+    "h": [
+     "To find e, replace h with the number of hours and multiply.",
+     "To find h, you know e. Which operation undoes multiplying by 18?",
+     "Check each answer by putting it back in the equation."
+    ],
+    "hEs": [
+     "Para hallar e, reemplaza h por el número de horas y multiplica.",
+     "Para hallar h, ya conoces e. ¿Cuál operación deshace multiplicar por 18?",
+     "Comprueba cada respuesta poniéndola de nuevo en la ecuación."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "An empty cargo pod always adds the same extra mass to whatever it carries. The table shows the cargo and the total pod mass. Which equation matches?",
+    "qEs": "Una cápsula de carga vacía siempre agrega la misma masa extra a lo que lleva. La tabla muestra la carga y la masa total de la cápsula. ¿Cuál ecuación corresponde?",
+    "viz": {
+     "t": "table",
+     "hd": [
+      "Cargo c (tonnes)",
+      "Pod mass m (tonnes)"
+     ],
+     "rows": [
+      [
+       "1",
+       "5"
+      ],
+      [
+       "2",
+       "6"
+      ],
+      [
+       "3",
+       "7"
+      ],
+      [
+       "4",
+       "8"
+      ]
+     ]
+    },
+    "c": [
+     "m = 4c",
+     "m = 5c",
+     "c = m + 4",
+     "m = c + 4"
+    ],
+    "a": 3,
+    "f": [
+     "Test it: 1 tonne of cargo would give 4, but the table shows 5. The pod mass goes up by 1 when the cargo goes up by 1.",
+     "That fits the first row (5 × 1 = 5), but not the second row, where 5 × 2 = 10.",
+     "That makes the cargo bigger than the pod mass. The pod mass is the total, and it depends on the cargo.",
+     ""
+    ],
+    "fEs": [
+     "Pruébalo: 1 tonelada de carga daría 4, pero la tabla muestra 5. La masa de la cápsula sube 1 cuando la carga sube 1.",
+     "Eso cumple la primera fila (5 × 1 = 5), pero no la segunda, donde 5 × 2 = 10.",
+     "Eso hace la carga mayor que la masa de la cápsula. La masa de la cápsula es el total y depende de la carga.",
+     ""
+    ],
+    "tag": [
+     "multiplied-instead-of-added",
+     "rate-from-first-row",
+     "variables-switched",
+     null
+    ],
+    "x": "The difference between m and c is always 4 (5 − 1, 6 − 2, 7 − 3, 8 − 4), not a repeated rate. So the pod mass is the cargo plus 4: m = c + 4.",
+    "xEs": "La diferencia entre m y c siempre es 4 (5 − 1, 6 − 2, 7 − 3, 8 − 4), no una tasa que se repite. Así que la masa de la cápsula es la carga más 4: m = c + 4.",
+    "h": [
+     "Compare m and c in each row. Do they differ by the same amount, or does m grow faster?",
+     "If the difference is always the same, the rule adds that number.",
+     "Test your equation on two rows."
+    ],
+    "hEs": [
+     "Compara m y c en cada fila. ¿Difieren siempre la misma cantidad o m crece más rápido?",
+     "Si la diferencia es siempre la misma, la regla suma ese número.",
+     "Prueba tu ecuación en dos filas."
+    ]
+   }
+  ],
+  "lab": [
+   {
+    "k": "act",
+    "kind": "plot",
+    "level": 3,
+    "p": {
+     "mode": "ratio"
+    }
+   },
+   {
+    "k": "act",
+    "kind": "plot",
+    "level": 4,
+    "p": {
+     "mode": "table"
+    }
+   },
+   {
+    "k": "match",
+    "q": "Match each situation to the equation that models it.",
+    "qEs": "Une cada situación con la ecuación que la modela.",
+    "pairs": [
+     {
+      "l": "A drone flies 9 km every minute",
+      "r": "d = 9m",
+      "lEs": "Un dron vuela 9 km cada minuto",
+      "rEs": "d = 9m"
+     },
+     {
+      "l": "A pod's mass is 4 tonnes more than its cargo",
+      "r": "m = c + 4",
+      "lEs": "La masa de una cápsula es 4 toneladas más que su carga",
+      "rEs": "m = c + 4"
+     },
+     {
+      "l": "A recycler makes 2.5 liters each day",
+      "r": "w = 2.5d",
+      "lEs": "Un reciclador produce 2.5 litros cada día",
+      "rEs": "w = 2.5d"
+     },
+     {
+      "l": "A panel makes 18 energy units each hour",
+      "r": "e = 18h",
+      "lEs": "Un panel produce 18 unidades de energía cada hora",
+      "rEs": "e = 18h"
+     }
+    ],
+    "x": "A rate that repeats every minute, day or hour is multiplied by the variable. A fixed extra amount that is the same for every value is added.",
+    "xEs": "Una tasa que se repite cada minuto, día u hora se multiplica por la variable. Una cantidad extra fija que es igual para todos los valores se suma.",
+    "h": [
+     "Words like 'every' or 'each' point to multiplying.",
+     "Words like 'more than' point to adding."
+    ],
+    "hEs": [
+     "Palabras como «cada» indican multiplicar.",
+     "Palabras como «más que» indican sumar."
+    ]
+   }
+  ],
+  "detective": [
+   {
+    "k": "err",
+    "t": "A fuel pump on the station uses 6 liters every minute. Zainab writes an equation, with m = minutes and f = liters of fuel used.",
+    "tEs": "Una bomba de combustible de la estación usa 6 litros cada minuto. Zainab escribe una ecuación, con m = minutos y f = litros de combustible usados.",
+    "s": [
+     {
+      "l": "Step 1",
+      "lEs": "Paso 1",
+      "w": "Let m = minutes and f = liters of fuel used.",
+      "wEs": "Sea m = minutos y f = litros de combustible usados."
+     },
+     {
+      "l": "Step 2",
+      "lEs": "Paso 2",
+      "w": "Each minute uses 6 liters, so I add 6 to the minutes: f = m + 6.",
+      "wEs": "Cada minuto usa 6 litros, así que sumo 6 a los minutos: f = m + 6."
+     },
+     {
+      "l": "Step 3",
+      "lEs": "Paso 3",
+      "w": "For 2 minutes: f = 2 + 6 = 8 liters.",
+      "wEs": "Para 2 minutos: f = 2 + 6 = 8 litros."
+     },
+     {
+      "l": "Step 4",
+      "lEs": "Paso 4",
+      "w": "So the pump uses 8 liters in 2 minutes.",
+      "wEs": "Entonces la bomba usa 8 litros en 2 minutos."
+     }
+    ],
+    "e": 1,
+    "fix": "The pump uses 6 liters EVERY minute, so the rate multiplies the minutes: f = 6m. For 2 minutes, f = 6 × 2 = 12 liters.",
+    "fixEs": "La bomba usa 6 litros CADA minuto, así que la tasa multiplica los minutos: f = 6m. Para 2 minutos, f = 6 × 2 = 12 litros.",
+    "x": "A rate that repeats for every unit is multiplied. Adding 6 once counts the 6 liters only one time.",
+    "xEs": "Una tasa que se repite por cada unidad se multiplica. Sumar 6 una vez cuenta los 6 litros solo una vez.",
+    "h": [
+     "Check what 2 minutes at 6 liters each minute should use.",
+     "Compare that with the result in the work.",
+     "Is the 6 liters used once or every minute?"
+    ],
+    "hEs": [
+     "Revisa cuánto deberían usar 2 minutos a 6 litros cada minuto.",
+     "Compáralo con el resultado del trabajo.",
+     "¿Los 6 litros se usan una vez o cada minuto?"
+    ]
+   },
+   {
+    "k": "err",
+    "t": "The station uses 3 oxygen canisters every day. Luca writes an equation, with d = days and c = canisters used.",
+    "tEs": "La estación usa 3 cilindros de oxígeno cada día. Luca escribe una ecuación, con d = días y c = cilindros usados.",
+    "s": [
+     {
+      "l": "Step 1",
+      "lEs": "Paso 1",
+      "w": "Let d = days and c = canisters used.",
+      "wEs": "Sea d = días y c = cilindros usados."
+     },
+     {
+      "l": "Step 2",
+      "lEs": "Paso 2",
+      "w": "The canisters used depend on the number of days.",
+      "wEs": "Los cilindros usados dependen del número de días."
+     },
+     {
+      "l": "Step 3",
+      "lEs": "Paso 3",
+      "w": "I put the days alone on the left: d = 3c.",
+      "wEs": "Pongo los días solos a la izquierda: d = 3c."
+     },
+     {
+      "l": "Step 4",
+      "lEs": "Paso 4",
+      "w": "So the equation is d = 3c.",
+      "wEs": "Entonces la ecuación es d = 3c."
+     }
+    ],
+    "e": 2,
+    "fix": "The dependent variable goes alone on the left. The canisters depend on the days, so the equation is c = 3d. For 4 days, c = 3 × 4 = 12 canisters.",
+    "fixEs": "La variable dependiente va sola a la izquierda. Los cilindros dependen de los días, así que la ecuación es c = 3d. Para 4 días, c = 3 × 4 = 12 cilindros.",
+    "x": "d = 3c would say that the days are 3 times the canisters. Step 2 found the right dependency, but step 3 did not follow it.",
+    "xEs": "d = 3c diría que los días son 3 veces los cilindros. El paso 2 halló la dependencia correcta, pero el paso 3 no la siguió.",
+    "h": [
+     "Compare the dependency in the second step with the letter on the left in the third step.",
+     "Which variable depends on the other?",
+     "Test the equation with 1 day: how many canisters should it give?"
+    ],
+    "hEs": [
+     "Compara la dependencia del segundo paso con la letra de la izquierda en el tercer paso.",
+     "¿Cuál variable depende de la otra?",
+     "Prueba la ecuación con 1 día: ¿cuántos cilindros debería dar?"
+    ]
+   },
+   {
+    "k": "err",
+    "t": "A table shows a solar panel: 2 hours, 30 energy units; 4 hours, 60 units. Imani finds the rate, with h = hours and e = energy units.",
+    "tEs": "Una tabla muestra un panel solar: 2 horas, 30 unidades de energía; 4 horas, 60 unidades. Imani halla la tasa, con h = horas y e = unidades de energía.",
+    "s": [
+     {
+      "l": "Step 1",
+      "lEs": "Paso 1",
+      "w": "The table pairs 2 hours with 30 units and 4 hours with 60 units.",
+      "wEs": "La tabla empareja 2 horas con 30 unidades y 4 horas con 60 unidades."
+     },
+     {
+      "l": "Step 2",
+      "lEs": "Paso 2",
+      "w": "The rate is the difference in energy: 60 − 30 = 30.",
+      "wEs": "La tasa es la diferencia de energía: 60 − 30 = 30."
+     },
+     {
+      "l": "Step 3",
+      "lEs": "Paso 3",
+      "w": "So the equation is e = 30h.",
+      "wEs": "Entonces la ecuación es e = 30h."
+     },
+     {
+      "l": "Step 4",
+      "lEs": "Paso 4",
+      "w": "The panel makes 30 units every hour.",
+      "wEs": "El panel produce 30 unidades cada hora."
+     }
+    ],
+    "e": 1,
+    "fix": "The rate is the energy for ONE hour: 30 ÷ 2 = 15 (and 60 ÷ 4 = 15). The equation is e = 15h. Test it: 2 hours gives 15 × 2 = 30.",
+    "fixEs": "La tasa es la energía de UNA hora: 30 ÷ 2 = 15 (y 60 ÷ 4 = 15). La ecuación es e = 15h. Pruébala: 2 horas dan 15 × 2 = 30.",
+    "x": "The difference between two outputs covers 2 hours, not 1. Divide an output by its input to get the rate per hour.",
+    "xEs": "La diferencia entre dos salidas abarca 2 horas, no 1. Divide una salida entre su entrada para obtener la tasa por hora.",
+    "h": [
+     "The rate is the amount for exactly ONE hour.",
+     "Test e = 30h on the first row. Does 2 hours give 30 units?",
+     "How can you get one hour's energy from the 2-hour row?"
+    ],
+    "hEs": [
+     "La tasa es la cantidad de exactamente UNA hora.",
+     "Prueba e = 30h en la primera fila. ¿2 horas dan 30 unidades?",
+     "¿Cómo obtienes la energía de una hora con la fila de 2 horas?"
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "A table pairs x and y like this: (1, 3), (2, 6), (3, 9), (4, 12). Lena says y = x + 2, because 1 + 2 = 3. Omar says y = 3x. Who is right?",
+    "qEs": "Una tabla empareja x y y así: (1, 3), (2, 6), (3, 9), (4, 12). Lena dice que y = x + 2, porque 1 + 2 = 3. Omar dice que y = 3x. ¿Quién tiene razón?",
+    "c": [
+     "Omar: y = 3x works in every row.",
+     "Lena: y = x + 2 matches the first row.",
+     "Both: both equations give 3 when x = 1.",
+     "Neither: the equation should be y = 12x."
+    ],
+    "cEs": [
+     "Omar: y = 3x funciona en todas las filas.",
+     "Lena: y = x + 2 coincide con la primera fila.",
+     "Los dos: las dos ecuaciones dan 3 cuando x = 1.",
+     "Ninguno: la ecuación debería ser y = 12x."
+    ],
+    "a": 0,
+    "f": [
+     "",
+     "Matching one row is not enough. Test y = x + 2 on the second row: 2 + 2 is not 6.",
+     "An equation has to work for every row. Two equations that agree on one row can disagree on the others.",
+     "12 is the last y-value, not the rate. The rate is the y-value for x = 1."
+    ],
+    "fEs": [
+     "",
+     "Coincidir con una fila no basta. Prueba y = x + 2 en la segunda fila: 2 + 2 no es 6.",
+     "Una ecuación tiene que funcionar en todas las filas. Dos ecuaciones que coinciden en una fila pueden diferir en las demás.",
+     "12 es el último valor de y, no la tasa. La tasa es el valor de y para x = 1."
+    ],
+    "tag": [
+     null,
+     "additive-from-first-row",
+     "one-row-test",
+     "used-the-last-total"
+    ],
+    "x": "y = 3x gives 3, 6, 9, 12 for x = 1, 2, 3, 4, so it fits every row. y = x + 2 gives 3, 4, 5, 6, so it fits only the first row.",
+    "xEs": "y = 3x da 3, 6, 9, 12 para x = 1, 2, 3, 4, así que cumple todas las filas. y = x + 2 da 3, 4, 5, 6, así que solo cumple la primera.",
+    "h": [
+     "Test each equation on more than one row.",
+     "Try x = 2 and x = 4 in both equations.",
+     "Only one equation matches all of the rows."
+    ],
+    "hEs": [
+     "Prueba cada ecuación en más de una fila.",
+     "Prueba x = 2 y x = 4 en las dos ecuaciones.",
+     "Solo una ecuación coincide con todas las filas."
+    ]
+   }
+  ],
+  "boss": [
+   {
+    "k": "mc",
+    "q": "A rover drives 15 meters each minute. Which choice defines the variables correctly?",
+    "qEs": "Un rover avanza 15 metros cada minuto. ¿Cuál opción define bien las variables?",
+    "c": [
+     "Let m = minutes and d = 15 meters.",
+     "Let m = a number and d = another number.",
+     "Let m = minutes and d = total meters driven.",
+     "Let r = the rover and m = minutes."
+    ],
+    "cEs": [
+     "Sea m = minutos y d = 15 metros.",
+     "Sea m = un número y d = otro número.",
+     "Sea m = minutos y d = metros totales recorridos.",
+     "Sea r = el rover y m = minutos."
+    ],
+    "a": 2,
+    "f": [
+     "15 meters is the rate and it never changes. A variable has to be a quantity that changes, like the total distance.",
+     "A definition must say what each letter counts or measures, such as minutes or meters.",
+     "",
+     "The rover is an object, not a quantity. The variable has to be something you can count or measure."
+    ],
+    "fEs": [
+     "15 metros es la tasa y nunca cambia. Una variable tiene que ser una cantidad que cambia, como la distancia total.",
+     "Una definición debe decir qué cuenta o mide cada letra, como minutos o metros.",
+     "",
+     "El rover es un objeto, no una cantidad. La variable tiene que ser algo que se pueda contar o medir."
+    ],
+    "tag": [
+     "fixed-as-variable",
+     "vague-variables",
+     null,
+     "named-a-thing-not-a-quantity"
+    ],
+    "x": "Each variable must name a quantity that changes: m is the minutes and d is the total meters driven. The 15 is the rate, a constant in the equation d = 15m.",
+    "xEs": "Cada variable debe nombrar una cantidad que cambia: m son los minutos y d son los metros totales recorridos. El 15 es la tasa, una constante en la ecuación d = 15m.",
+    "h": [
+     "A variable names a quantity that changes.",
+     "Which numbers in the story change, and which stay fixed?"
+    ],
+    "hEs": [
+     "Una variable nombra una cantidad que cambia.",
+     "¿Cuáles números del cuento cambian y cuáles se quedan fijos?"
+    ]
+   },
+   {
+    "k": "num",
+    "q": "A crew meal costs $3.25 per person, so c = 3.25n, where n is the number of people and c is the cost in dollars. What is c when n is 12?",
+    "qEs": "Una comida para la tripulación cuesta $3.25 por persona, así que c = 3.25n, donde n es el número de personas y c es el costo en dólares. ¿Cuál es c cuando n es 12?",
+    "a": "39",
+    "fw": [
+     {
+      "v": "15.25",
+      "f": "That adds 3.25 + 12. The cost of each person is added, so the equation multiplies.",
+      "fEs": "Eso suma 3.25 + 12. Se suma el costo de cada persona, así que la ecuación multiplica."
+     },
+     {
+      "v": "390",
+      "f": "The decimal point is in the wrong place. 3.25 × 12 is a little more than 3 × 12.",
+      "fEs": "El punto decimal está en el lugar equivocado. 3.25 × 12 es un poco más que 3 × 12."
+     }
+    ],
+    "x": "Substitute n = 12: c = 3.25 × 12 = 39. Twelve people cost $39.",
+    "xEs": "Sustituye n = 12: c = 3.25 × 12 = 39. Doce personas cuestan $39.",
+    "h": [
+     "Replace n with 12 in the equation.",
+     "Multiply 3.25 by 12. Estimate first: 3 × 12 is 36."
+    ],
+    "hEs": [
+     "Reemplaza n por 12 en la ecuación.",
+     "Multiplica 3.25 por 12. Estima primero: 3 × 12 es 36."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "The table shows how y depends on x. Which equation matches?",
+    "qEs": "La tabla muestra cómo y depende de x. ¿Cuál ecuación corresponde?",
+    "viz": {
+     "t": "table",
+     "hd": [
+      "x",
+      "y"
+     ],
+     "rows": [
+      [
+       "2",
+       "7"
+      ],
+      [
+       "4",
+       "9"
+      ],
+      [
+       "6",
+       "11"
+      ]
+     ]
+    },
+    "c": [
+     "y = x + 5",
+     "y = 3.5x",
+     "y = x + 7",
+     "y = 5x"
+    ],
+    "a": 0,
+    "f": [
+     "",
+     "7 ÷ 2 = 3.5 fits the first row only. Test it on x = 4: it gives 14, not 9.",
+     "7 is the first y-value, not the amount added. Test it on x = 2: it gives 9, not 7.",
+     "Test it on x = 2: it gives 10, not 7. The y-values go up by the same amount as the x-values."
+    ],
+    "fEs": [
+     "",
+     "7 ÷ 2 = 3.5 solo cumple la primera fila. Pruébalo con x = 4: da 14, no 9.",
+     "7 es el primer valor de y, no la cantidad que se suma. Pruébalo con x = 2: da 9, no 7.",
+     "Pruébalo con x = 2: da 10, no 7. Los valores de y suben lo mismo que los valores de x."
+    ],
+    "tag": [
+     null,
+     "rate-from-first-row",
+     "copied-a-y-value",
+     "multiplied-instead-of-added"
+    ],
+    "x": "Each y is 5 more than its x (7 − 2, 9 − 4, 11 − 6), and y goes up by 2 when x goes up by 2. So y = x + 5.",
+    "xEs": "Cada y es 5 más que su x (7 − 2, 9 − 4, 11 − 6), y y sube 2 cuando x sube 2. Así que y = x + 5.",
+    "h": [
+     "Find the difference y − x in each row.",
+     "If y goes up by the same amount as x, the rule adds a number.",
+     "Test on all three rows."
+    ],
+    "hEs": [
+     "Halla la diferencia y − x en cada fila.",
+     "Si y sube lo mismo que x, la regla suma un número.",
+     "Prueba en las tres filas."
+    ]
+   },
+   {
+    "k": "num",
+    "q": "A drone's battery charges by p = 12h, where h is the hours charging and p is the percent of charge. For how many hours must it charge to reach 96 percent?",
+    "qEs": "La batería de un dron se carga con p = 12h, donde h son las horas de carga y p es el porcentaje de carga. ¿Cuántas horas debe cargarse para llegar a 96 por ciento?",
+    "a": "8",
+    "fw": [
+     {
+      "v": "108",
+      "f": "That adds 96 + 12. The hours are multiplied by 12 in the equation, so undo that multiplication.",
+      "fEs": "Eso suma 96 + 12. Las horas se multiplican por 12 en la ecuación, así que deshaz esa multiplicación."
+     },
+     {
+      "v": "84",
+      "f": "That subtracts 12 from 96. Undo a multiplication with its inverse operation, not with subtraction.",
+      "fEs": "Eso resta 12 de 96. Una multiplicación se deshace con su operación inversa, no con una resta."
+     }
+    ],
+    "x": "Substitute p = 96: 12h = 96. Divide both sides by 12: h = 96 ÷ 12 = 8 hours. Check: 12 × 8 = 96.",
+    "xEs": "Sustituye p = 96: 12h = 96. Divide los dos lados entre 12: h = 96 ÷ 12 = 8 horas. Comprueba: 12 × 8 = 96.",
+    "h": [
+     "Put 96 in for p.",
+     "h is multiplied by 12. Which operation undoes that?"
+    ],
+    "hEs": [
+     "Pon 96 en lugar de p.",
+     "h está multiplicada por 12. ¿Cuál operación lo deshace?"
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "Which situation matches the equation y = x + 6?",
+    "qEs": "¿Cuál situación corresponde a la ecuación y = x + 6?",
+    "c": [
+     "A pod's mass is 6 times its cargo.",
+     "A pod's mass is always 6 tonnes more than its cargo.",
+     "A pod's cargo is 6 tonnes more than its mass.",
+     "A pod costs $6 for each tonne of cargo."
+    ],
+    "cEs": [
+     "La masa de una cápsula es 6 veces su carga.",
+     "La masa de una cápsula siempre es 6 toneladas más que su carga.",
+     "La carga de una cápsula es 6 toneladas más que su masa.",
+     "Una cápsula cuesta $6 por cada tonelada de carga."
+    ],
+    "a": 1,
+    "f": [
+     "'6 times' would give y = 6x. The equation y = x + 6 adds 6 once.",
+     "",
+     "In y = x + 6, y is the bigger one. This choice makes the other quantity bigger.",
+     "'For each' describes a repeated rate, which is multiplied: y = 6x."
+    ],
+    "fEs": [
+     "«6 veces» daría y = 6x. La ecuación y = x + 6 suma 6 una vez.",
+     "",
+     "En y = x + 6, y es la mayor. Esta opción hace mayor a la otra cantidad.",
+     "«Por cada» describe una tasa que se repite, que se multiplica: y = 6x."
+    ],
+    "tag": [
+     "added-instead-of-multiplied-mixup",
+     null,
+     "variables-switched",
+     "rate-instead-of-fixed-amount"
+    ],
+    "x": "In y = x + 6, y is always 6 more than x, no matter what x is. That matches a pod mass that is always 6 tonnes more than its cargo.",
+    "xEs": "En y = x + 6, y siempre es 6 más que x, sin importar cuánto valga x. Eso corresponde a una masa de cápsula que siempre es 6 toneladas más que su carga.",
+    "h": [
+     "Read y = x + 6 in words: y is 6 more than x.",
+     "'Times' and 'for each' point to multiplying, not adding."
+    ],
+    "hEs": [
+     "Lee y = x + 6 con palabras: y es 6 más que x.",
+     "«Veces» y «por cada» indican multiplicar, no sumar."
+    ]
+   },
+   {
+    "k": "wr",
+    "p": "Write a situation about life on a space station that has a steady rate. Define the variables, write an equation, and use it to find one value. Explain what each part of your equation means using the words variable and rate.",
+    "pEs": "Escribe una situación de la vida en una estación espacial que tenga una tasa constante. Define las variables, escribe una ecuación y úsala para hallar un valor. Explica qué significa cada parte de tu ecuación usando las palabras variable y tasa.",
+    "fr": "Let ___ = ___ and ___ = ___. The rate is ___, so my equation is ___. When ___ is ___, the equation gives ___ because ___.",
+    "frEs": "Sea ___ = ___ y ___ = ___. La tasa es ___, así que mi ecuación es ___. Cuando ___ es ___, la ecuación da ___ porque ___.",
+    "min": 90,
+    "kw": [
+     "equation",
+     "variable",
+     "rate",
+     "define"
+    ],
+    "kwEs": [
+     "ecuación",
+     "variable",
+     "tasa",
+     "definir"
+    ],
+    "rubric": [
+     "I defined both variables and said what each one counts or measures.",
+     "I wrote an equation with the dependent variable alone on the left.",
+     "I used the equation to find one value and showed the substitution.",
+     "I explained what the rate and each variable mean."
+    ],
+    "rubricEs": [
+     "Definí las dos variables y dije qué cuenta o mide cada una.",
+     "Escribí una ecuación con la variable dependiente sola a la izquierda.",
+     "Usé la ecuación para hallar un valor y mostré la sustitución.",
+     "Expliqué qué significan la tasa y cada variable."
+    ],
+    "x": "Let m = minutes of exercise and k = calories burned. An astronaut burns 7 calories each minute, so my equation is k = 7m. When m is 30, the equation gives k = 7 × 30 = 210 calories. The 7 is the rate, the number of calories for one minute, and m and k are the variables because they change.",
+    "xEs": "Sea m = minutos de ejercicio y k = calorías quemadas. Un astronauta quema 7 calorías cada minuto, así que mi ecuación es k = 7m. Cuando m es 30, la ecuación da k = 7 × 30 = 210 calorías. El 7 es la tasa, el número de calorías de un minuto, y m y k son las variables porque cambian.",
+    "h": [
+     "Pick a rate like 'per minute' or 'per day'.",
+     "Name the two variables and write the equation, with the dependent variable alone.",
+     "Substitute a value and say what the answer means."
+    ],
+    "hEs": [
+     "Escoge una tasa como «por minuto» o «por día».",
+     "Nombra las dos variables y escribe la ecuación, con la variable dependiente sola.",
+     "Sustituye un valor y di qué significa la respuesta."
+    ]
+   }
+  ]
+ },
+ "mastery": [
+  {
+   "k": "mc",
+   "q": "Each ration pack weighs 0.5 kilograms. Let p = the number of packs and w = the total weight in kilograms. Which equation matches?",
+   "qEs": "Cada paquete de ración pesa 0.5 kilogramos. Sea p = el número de paquetes y w = el peso total en kilogramos. ¿Cuál ecuación corresponde?",
+   "c": [
+    "w = p + 0.5",
+    "p = 0.5w",
+    "w = p ÷ 0.5",
+    "w = 0.5p"
+   ],
+   "a": 3,
+   "f": [
+    "That adds 0.5 only once. Every pack weighs 0.5 kilograms.",
+    "The total weight depends on the number of packs, so the weight is alone on the left.",
+    "Dividing by 0.5 would double the packs. Test 4 packs: they should weigh 2 kilograms.",
+    ""
+   ],
+   "fEs": [
+    "Eso suma 0.5 solo una vez. Cada paquete pesa 0.5 kilogramos.",
+    "El peso total depende del número de paquetes, así que el peso va solo a la izquierda.",
+    "Dividir entre 0.5 duplicaría los paquetes. Prueba 4 paquetes: deberían pesar 2 kilogramos.",
+    ""
+   ],
+   "tag": [
+    "added-instead-of-multiplied",
+    "variables-switched",
+    "divided-instead-of-multiplied",
+    null
+   ],
+   "x": "Every pack adds 0.5 kilograms, so the weight is the rate times the number of packs: w = 0.5p.",
+   "xEs": "Cada paquete agrega 0.5 kilogramos, así que el peso es la tasa por el número de paquetes: w = 0.5p.",
+   "h": [
+    "Say it in words: weight = rate × packs.",
+    "Test with 4 packs."
+   ],
+   "hEs": [
+    "Dilo con palabras: peso = tasa × paquetes.",
+    "Prueba con 4 paquetes."
+   ]
+  },
+  {
+   "k": "num",
+   "q": "A crew water bottle costs $2.50 each, so c = 2.5n. What is c when n is 6?",
+   "qEs": "Una botella de agua para la tripulación cuesta $2.50 cada una, así que c = 2.5n. ¿Cuál es c cuando n es 6?",
+   "a": "15",
+   "fw": [
+    {
+     "v": "8.5",
+     "f": "That adds 2.5 + 6. Each bottle costs $2.50, so the cost grows by 2.5 for every bottle.",
+     "fEs": "Eso suma 2.5 + 6. Cada botella cuesta $2.50, así que el costo crece 2.5 por cada botella."
+    }
+   ],
+   "x": "Substitute n = 6: c = 2.5 × 6 = 15. Six bottles cost $15.",
+   "xEs": "Sustituye n = 6: c = 2.5 × 6 = 15. Seis botellas cuestan $15.",
+   "h": [
+    "Replace n with 6.",
+    "Multiply 2.5 by 6."
+   ],
+   "hEs": [
+    "Reemplaza n por 6.",
+    "Multiplica 2.5 por 6."
+   ]
+  }
+ ],
+ "glossary": [
+  {
+   "t": "equation",
+   "tEs": "ecuación",
+   "d": "A math sentence with an equals sign, like d = 9m, that shows how two quantities are related.",
+   "dEs": "Una oración matemática con un signo igual, como d = 9m, que muestra cómo se relacionan dos cantidades."
+  },
+  {
+   "t": "variable",
+   "tEs": "variable",
+   "d": "A letter for a quantity that can change.",
+   "dEs": "Una letra para una cantidad que puede cambiar."
+  },
+  {
+   "t": "rate",
+   "tEs": "tasa",
+   "d": "A fixed amount for every one unit, like 9 kilometers per minute.",
+   "dEs": "Una cantidad fija por cada una unidad, como 9 kilómetros por minuto."
+  },
+  {
+   "t": "define the variables",
+   "tEs": "definir las variables",
+   "d": "Say exactly what each letter stands for, like 'Let m = minutes'.",
+   "dEs": "Decir exactamente qué representa cada letra, como «Sea m = minutos»."
+  },
+  {
+   "t": "constant",
+   "tEs": "constante",
+   "d": "A number in an equation that never changes, like the 9 in d = 9m.",
+   "dEs": "Un número en una ecuación que nunca cambia, como el 9 en d = 9m."
+  }
+ ]
+}

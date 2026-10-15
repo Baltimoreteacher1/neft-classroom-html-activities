@@ -1,0 +1,850 @@
+{
+ "v": 1,
+ "lesson": "2-3",
+ "story": "Agent, the Case Files desk is buried in witness numbers, and they are all out of order! Line them up, find the middle, and name the typical value to crack the case.",
+ "storyEs": "Agente, el escritorio de Expedientes está lleno de números de testigos, ¡y están todos desordenados! Aliníalos, halla el medio y nombra el valor típico para resolver el caso.",
+ "challengeStory": "A midnight tip arrives with a stack of new evidence. One number is wildly out of place, and only a sharp detective can find the median that still tells the truth.",
+ "challengeStoryEs": "A medianoche llega una pista con una pila de nuevas evidencias. Un número está muy fuera de lugar, y solo un detective atento puede hallar la mediana que aun así dice la verdad.",
+ "getReady": null,
+ "fresh": [
+  {
+   "k": "gen",
+   "g": "medianFind",
+   "level": 1
+  },
+  {
+   "k": "gen",
+   "g": "medianFind",
+   "level": 1
+  },
+  {
+   "k": "gen",
+   "g": "medianFind",
+   "level": 2
+  },
+  {
+   "k": "gen",
+   "g": "medianFind",
+   "level": 2
+  },
+  {
+   "k": "gen",
+   "g": "medianFind",
+   "level": 3
+  },
+  {
+   "k": "gen",
+   "g": "medianFind",
+   "level": 3
+  },
+  {
+   "k": "act",
+   "kind": "chartbuild",
+   "level": 2,
+   "p": {
+    "mode": "dot"
+   }
+  }
+ ],
+ "challenge": {
+  "climb": [
+   {
+    "k": "gen",
+    "g": "medianFind",
+    "level": 2
+   },
+   {
+    "k": "gen",
+    "g": "medianFind",
+    "level": 2
+   },
+   {
+    "k": "gen",
+    "g": "medianFind",
+    "level": 3
+   },
+   {
+    "k": "gen",
+    "g": "medianFind",
+    "level": 3
+   },
+   {
+    "k": "gen",
+    "g": "medianFind",
+    "level": 4
+   },
+   {
+    "k": "gen",
+    "g": "medianFind",
+    "level": 4
+   }
+  ],
+  "missions": [
+   {
+    "k": "num",
+    "q": "Case 14: detectives timed 9 witnesses walking to the scene. Their times in minutes were 12, 7, 15, 9, 21, 8, 11, 14, 10. What is the median time?",
+    "qEs": "Caso 14: los detectives midieron cuánto tardaron 9 testigos en caminar a la escena. Sus tiempos en minutos fueron 12, 7, 15, 9, 21, 8, 11, 14, 10. ¿Cuál es la mediana del tiempo?",
+    "a": "11",
+    "unit": "minutes",
+    "fw": [
+     {
+      "v": "21",
+      "f": "That is the middle of the list as written. The median is the middle after the times are put in order.",
+      "fEs": "Ese es el centro de la lista tal como está escrita. La mediana es el centro después de ordenar los tiempos.",
+      "tag": "median-of-unordered-list"
+     },
+     {
+      "v": "21",
+      "f": "That is the longest time, not the middle one.",
+      "fEs": "Ese es el tiempo más largo, no el del medio.",
+      "tag": "used-largest-value"
+     }
+    ],
+    "x": "In order: 7, 8, 9, 10, 11, 12, 14, 15, 21. With 9 values the middle is the 5th, which is 11.",
+    "xEs": "En orden: 7, 8, 9, 10, 11, 12, 14, 15, 21. Con 9 valores el del medio es el 5.º, que es 11.",
+    "h": [
+     "Put the times in order from least to greatest first.",
+     "Count how many times there are. With an odd count, one value sits exactly in the middle.",
+     "Count in from both ends of your ordered list until you meet."
+    ],
+    "hEs": [
+     "Primero ordena los tiempos de menor a mayor.",
+     "Cuenta cuántos tiempos hay. Con una cantidad impar, un valor queda justo en el medio.",
+     "Cuenta desde ambos extremos de tu lista ordenada hasta encontrarte."
+    ]
+   },
+   {
+    "k": "num",
+    "q": "The lab measured 6 footprints at the scene. Their lengths in centimeters were 24, 27, 22, 30, 25, 26. What is the median length?",
+    "qEs": "El laboratorio midió 6 huellas en la escena. Sus longitudes en centímetros fueron 24, 27, 22, 30, 25, 26. ¿Cuál es la mediana de la longitud?",
+    "a": "25.5",
+    "unit": "cm",
+    "fw": [
+     {
+      "v": "25",
+      "f": "That is only the lower of the two middle values. With an even count the median sits halfway between them.",
+      "fEs": "Ese es solo el menor de los dos valores del medio. Con una cantidad par, la mediana está a mitad de camino entre ellos.",
+      "tag": "took-lower-middle"
+     },
+     {
+      "v": "26",
+      "f": "That is only the upper of the two middle values. Find the number halfway between both.",
+      "fEs": "Ese es solo el mayor de los dos valores del medio. Halla el número que está a mitad de camino entre ambos.",
+      "tag": "took-lower-middle"
+     },
+     {
+      "v": "25.67",
+      "f": "That adds every length and divides, which is a different measure. The median uses only the middle of the ordered list.",
+      "fEs": "Eso suma todas las longitudes y divide, que es otra medida. La mediana usa solo el centro de la lista ordenada.",
+      "tag": "used-mean-instead"
+     }
+    ],
+    "x": "In order: 22, 24, 25, 26, 27, 30. The two middle values are 25 and 26, and the number halfway between them is (25 + 26) ÷ 2 = 25.5.",
+    "xEs": "En orden: 22, 24, 25, 26, 27, 30. Los dos valores del medio son 25 y 26, y el número a mitad de camino es (25 + 26) ÷ 2 = 25.5.",
+    "h": [
+     "Order the lengths first.",
+     "With 6 values there are two middle values, the 3rd and the 4th.",
+     "Find the number exactly halfway between those two values."
+    ],
+    "hEs": [
+     "Primero ordena las longitudes.",
+     "Con 6 valores hay dos valores del medio, el 3.º y el 4.º.",
+     "Halla el número que está justo a mitad de camino entre esos dos valores."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "A suspect’s six alibi checks took 31, 28, 33, 30, 29, 95 minutes. One check, 95, was far longer than the rest. Which statement best describes a typical check time?",
+    "qEs": "Las seis verificaciones de la coartada de un sospechoso tomaron 31, 28, 33, 30, 29, 95 minutos. Una, la de 95, fue mucho más larga que las demás. ¿Qué afirmación describe mejor un tiempo típico?",
+    "c": [
+     "The median, 30.5 minutes, because the long check barely moves the middle",
+     "The mean, 41 minutes, because it uses every time",
+     "The largest time, 95 minutes, because it stands out",
+     "The median, 30 minutes, the lower middle value"
+    ],
+    "cEs": [
+     "La mediana, 30.5 minutos, porque la verificación larga casi no mueve el centro",
+     "La media, 41 minutos, porque usa todos los tiempos",
+     "El tiempo mayor, 95 minutos, porque destaca",
+     "La mediana, 30 minutos, el valor del medio menor"
+    ],
+    "a": 0,
+    "f": [
+     "",
+     "That number is pulled up by the one long check, so it is higher than five of the six times.",
+     "The largest value is the one that is not typical. It is far from the rest.",
+     "With six values there are two middle values. The median sits halfway between them."
+    ],
+    "fEs": [
+     "",
+     "Ese número lo sube la verificación larga, así que es mayor que cinco de los seis tiempos.",
+     "El valor mayor es justo el que no es típico. Está lejos de los demás.",
+     "Con seis valores hay dos valores del medio. La mediana está a mitad de camino entre ellos."
+    ],
+    "tag": [
+     null,
+     "used-mean-instead",
+     "used-largest-value",
+     "took-lower-middle"
+    ],
+    "x": "In order: 28, 29, 30, 31, 33, 95. The middle values 30 and 31 give a median of 30.5. The mean is 41 because 95 pulls it up, so the median describes a typical check better.",
+    "xEs": "En orden: 28, 29, 30, 31, 33, 95. Los valores del medio 30 y 31 dan una mediana de 30.5. La media es 41 porque 95 la sube, así que la mediana describe mejor una verificación típica.",
+    "h": [
+     "A typical value should look like most of the data.",
+     "Find the median first: order the times and use the two middle values.",
+     "Then decide which number is closest to most of the six times."
+    ],
+    "hEs": [
+     "Un valor típico debe parecerse a la mayoría de los datos.",
+     "Halla primero la mediana: ordena los tiempos y usa los dos valores del medio.",
+     "Luego decide qué número está más cerca de la mayoría de los seis tiempos."
+    ]
+   },
+   {
+    "k": "num",
+    "q": "The team has five clue scores: 8, 14, 5, 11, 20. A sixth clue arrives with a score of 17. What is the median of all six scores?",
+    "qEs": "El equipo tiene cinco puntajes de pistas: 8, 14, 5, 11, 20. Llega una sexta pista con puntaje 17. ¿Cuál es la mediana de los seis puntajes?",
+    "a": "12.5",
+    "fw": [
+     {
+      "v": "11",
+      "f": "That is the median of the first five scores. The new clue changes the middle.",
+      "fEs": "Esa es la mediana de los primeros cinco puntajes. La pista nueva cambia el centro.",
+      "tag": "median-of-unordered-list"
+     },
+     {
+      "v": "11",
+      "f": "With six scores there are two middle values. The median is halfway between them.",
+      "fEs": "Con seis puntajes hay dos valores del medio. La mediana está a mitad de camino entre ellos.",
+      "tag": "took-lower-middle"
+     }
+    ],
+    "x": "In order: 5, 8, 11, 14, 17, 20. The middle values are 11 and 14, so the median is 12.5.",
+    "xEs": "En orden: 5, 8, 11, 14, 17, 20. Los valores del medio son 11 y 14, así que la mediana es 12.5.",
+    "h": [
+     "Add the new score to the list, then order all six.",
+     "Six scores is an even count, so there are two middle values.",
+     "Find the number halfway between the 3rd and 4th scores."
+    ],
+    "hEs": [
+     "Agrega el puntaje nuevo a la lista y luego ordena los seis.",
+     "Seis puntajes es una cantidad par, así que hay dos valores del medio.",
+     "Halla el número a mitad de camino entre el 3.º y el 4.º puntajes."
+    ]
+   }
+  ],
+  "lab": [
+   {
+    "k": "act",
+    "kind": "dotbalance",
+    "level": 3,
+    "p": {
+     "goal": "median"
+    }
+   },
+   {
+    "k": "act",
+    "kind": "dotbalance",
+    "level": 4,
+    "p": {
+     "goal": "outlier"
+    }
+   },
+   {
+    "k": "sort",
+    "q": "Find the median of each data set in your head. Then sort the sets: is the median one of the numbers in the set, or a number between two of them?",
+    "qEs": "Halla mentalmente la mediana de cada conjunto de datos. Luego clasifícalos: ¿la mediana es uno de los números del conjunto o un número entre dos de ellos?",
+    "bins": [
+     {
+      "l": "Median is one of the numbers",
+      "lEs": "La mediana es uno de los números"
+     },
+     {
+      "l": "Median is between two numbers",
+      "lEs": "La mediana está entre dos números"
+     }
+    ],
+    "cards": [
+     {
+      "t": "3, 9, 4, 12, 7",
+      "tEs": "3, 9, 4, 12, 7",
+      "b": 0
+     },
+     {
+      "t": "20, 14, 18",
+      "tEs": "20, 14, 18",
+      "b": 0
+     },
+     {
+      "t": "5, 1, 9, 3, 2, 8, 6",
+      "tEs": "5, 1, 9, 3, 2, 8, 6",
+      "b": 0
+     },
+     {
+      "t": "10, 4, 8, 6",
+      "tEs": "10, 4, 8, 6",
+      "b": 1
+     },
+     {
+      "t": "15, 11, 13, 19, 17, 21",
+      "tEs": "15, 11, 13, 19, 17, 21",
+      "b": 1
+     },
+     {
+      "t": "2, 5",
+      "tEs": "2, 5",
+      "b": 1
+     }
+    ],
+    "x": "A set with an odd count has one middle value, so the median is in the set. A set with an even count has two middle values, and the median sits halfway between them.",
+    "xEs": "Un conjunto con cantidad impar tiene un valor del medio, así que la mediana está en el conjunto. Un conjunto con cantidad par tiene dos valores del medio, y la mediana queda a mitad de camino entre ellos.",
+    "h": [
+     "Count the numbers in each set. Odd or even?",
+     "Remember to order the numbers before you look for the middle.",
+     "Start with the set that has only two numbers."
+    ],
+    "hEs": [
+     "Cuenta los números de cada conjunto. ¿Impar o par?",
+     "Recuerda ordenar los números antes de buscar el medio.",
+     "Empieza con el conjunto que tiene solo dos números."
+    ]
+   }
+  ],
+  "detective": [
+   {
+    "k": "err",
+    "t": "Hiro finds the median of the clue counts 18, 5, 9, 20, 12 collected from five rooms.",
+    "tEs": "Hiro halla la mediana de los conteos de pistas 18, 5, 9, 20, 12 reunidos en cinco cuartos.",
+    "s": [
+     {
+      "l": "Step 1",
+      "w": "There are 5 numbers, an odd count.",
+      "lEs": "Paso 1",
+      "wEs": "Hay 5 números, una cantidad impar."
+     },
+     {
+      "l": "Step 2",
+      "w": "The middle number of the list as written is 9, so the median is 9.",
+      "lEs": "Paso 2",
+      "wEs": "El número del medio de la lista tal como está escrita es 9, así que la mediana es 9."
+     },
+     {
+      "l": "Step 3",
+      "w": "So a typical room has about 9 clues.",
+      "lEs": "Paso 3",
+      "wEs": "Así que un cuarto típico tiene unas 9 pistas."
+     }
+    ],
+    "e": 1,
+    "fix": "The list must be put in order first: 5, 9, 12, 18, 20. The middle value is 12, so the median is 12, not 9.",
+    "fixEs": "Primero hay que ordenar la lista: 5, 9, 12, 18, 20. El valor del medio es 12, así que la mediana es 12, no 9.",
+    "x": "The median is the middle of the ordered data. The middle of an unordered list is just a number that happens to sit there.",
+    "xEs": "La mediana es el centro de los datos ordenados. El centro de una lista sin ordenar es solo un número que cayó ahí.",
+    "h": [
+     "Check whether the data were ordered before the middle was picked.",
+     "Put the five numbers in order yourself and compare.",
+     "Which step picks the middle? Was the list ready?"
+    ],
+    "hEs": [
+     "Revisa si los datos estaban ordenados antes de elegir el medio.",
+     "Ordena tú los cinco números y compara.",
+     "¿Qué paso elige el medio? ¿Estaba lista la lista?"
+    ]
+   },
+   {
+    "k": "err",
+    "t": "Rosa finds the median of the fingerprint counts 6, 11, 15, 22, 28, 30, already in order.",
+    "tEs": "Rosa halla la mediana de los conteos de huellas 6, 11, 15, 22, 28, 30, que ya están en orden.",
+    "s": [
+     {
+      "l": "Step 1",
+      "w": "The numbers are in order and there are 6 of them.",
+      "lEs": "Paso 1",
+      "wEs": "Los números están en orden y hay 6."
+     },
+     {
+      "l": "Step 2",
+      "w": "I pick the 3rd number, 15, as the middle, so the median is 15.",
+      "lEs": "Paso 2",
+      "wEs": "Elijo el 3.er número, 15, como el medio, así que la mediana es 15."
+     },
+     {
+      "l": "Step 3",
+      "w": "So half the counts are at or below 15.",
+      "lEs": "Paso 3",
+      "wEs": "Así que la mitad de los conteos es 15 o menos."
+     }
+    ],
+    "e": 1,
+    "fix": "With 6 values there are two middle values, 15 and 22. The median is halfway between them: (15 + 22) ÷ 2 = 18.5.",
+    "fixEs": "Con 6 valores hay dos valores del medio, 15 y 22. La mediana está a mitad de camino: (15 + 22) ÷ 2 = 18.5.",
+    "x": "An even count has no single middle value, so the median is the number halfway between the two middle values.",
+    "xEs": "Una cantidad par no tiene un solo valor del medio, así que la mediana es el número a mitad de camino entre los dos valores del medio.",
+    "h": [
+     "Is the count of numbers odd or even?",
+     "Count how many values are on each side of the number Rosa picked.",
+     "Would one number split 6 values evenly?"
+    ],
+    "hEs": [
+     "¿La cantidad de números es impar o par?",
+     "Cuenta cuántos valores hay a cada lado del número que eligió Rosa.",
+     "¿Un solo número dividiría 6 valores en partes iguales?"
+    ]
+   },
+   {
+    "k": "err",
+    "t": "Sven finds the median of the tip counts 4, 6, 7, 9, 12, 13, 20, already in order.",
+    "tEs": "Sven halla la mediana de los conteos de pistas anónimas 4, 6, 7, 9, 12, 13, 20, que ya están en orden.",
+    "s": [
+     {
+      "l": "Step 1",
+      "w": "There are 7 numbers in order.",
+      "lEs": "Paso 1",
+      "wEs": "Hay 7 números en orden."
+     },
+     {
+      "l": "Step 2",
+      "w": "7 ÷ 2 = 3.5, so the median is halfway between the 3rd and 4th numbers: (7 + 9) ÷ 2 = 8.",
+      "lEs": "Paso 2",
+      "wEs": "7 ÷ 2 = 3.5, así que la mediana está a mitad de camino entre el 3.er y el 4.º números: (7 + 9) ÷ 2 = 8."
+     },
+     {
+      "l": "Step 3",
+      "w": "So the median is 8.",
+      "lEs": "Paso 3",
+      "wEs": "Así que la mediana es 8."
+     }
+    ],
+    "e": 1,
+    "fix": "With 7 values there is one middle value, the 4th, which is 9. Three values are below it and three are above it, so the median is 9.",
+    "fixEs": "Con 7 valores hay un solo valor del medio, el 4.º, que es 9. Tres valores están debajo y tres arriba, así que la mediana es 9.",
+    "x": "An odd count has one middle value, so no averaging is needed. Averaging two middle values is only for an even count.",
+    "xEs": "Una cantidad impar tiene un solo valor del medio, así que no hace falta promediar. Promediar dos valores del medio es solo para una cantidad par.",
+    "h": [
+     "Is 7 an odd or an even count?",
+     "Count how many values are on each side of the number Sven used.",
+     "Is there a single value with the same number of values on each side?"
+    ],
+    "hEs": [
+     "¿7 es una cantidad impar o par?",
+     "Cuenta cuántos valores hay a cada lado del número que usó Sven.",
+     "¿Hay un solo valor con la misma cantidad de valores a cada lado?"
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "The clue scores are 3, 8, 11, 20, 40. Andre says that if 40 is changed to 400, the median changes to 400. Wen says the median stays the same. Who is right?",
+    "qEs": "Los puntajes de las pistas son 3, 8, 11, 20, 40. Andre dice que si 40 cambia a 400, la mediana cambia a 400. Wen dice que la mediana queda igual. ¿Quién tiene razón?",
+    "c": [
+     "Wen, because the middle value is still 11",
+     "Andre, because the largest value is in the median",
+     "Both, because the median depends on every value",
+     "Neither, because the median becomes 20"
+    ],
+    "cEs": [
+     "Wen, porque el valor del medio sigue siendo 11",
+     "Andre, porque el valor mayor está en la mediana",
+     "Los dos, porque la mediana depende de todos los valores",
+     "Ninguno, porque la mediana pasa a ser 20"
+    ],
+    "a": 0,
+    "f": [
+     "",
+     "The median is the middle value, not the largest. Changing the largest value does not change which value is in the middle.",
+     "The median depends on the order and the middle position, not on how large the end values are.",
+     "The order does not change, so the middle value is the same one as before."
+    ],
+    "fEs": [
+     "",
+     "La mediana es el valor del medio, no el mayor. Cambiar el valor mayor no cambia cuál valor está en el medio.",
+     "La mediana depende del orden y de la posición central, no de qué tan grandes son los extremos.",
+     "El orden no cambia, así que el valor del medio es el mismo de antes."
+    ],
+    "tag": [
+     null,
+     "outlier-moves-median",
+     "outlier-moves-median",
+     "took-lower-middle"
+    ],
+    "x": "In order the values are still 3, 8, 11, 20 and then a bigger last value. The middle (3rd) value stays 11. A far-out value does not move the median.",
+    "xEs": "En orden, los valores siguen siendo 3, 8, 11, 20 y luego un último valor más grande. El valor del medio (el 3.º) sigue siendo 11. Un valor muy lejano no mueve la mediana.",
+    "h": [
+     "Find the median of the original scores first.",
+     "Change 40 to 400 and put the scores in order again.",
+     "Is the same value still in the middle?"
+    ],
+    "hEs": [
+     "Halla primero la mediana de los puntajes originales.",
+     "Cambia 40 por 400 y vuelve a ordenar los puntajes.",
+     "¿Sigue en el medio el mismo valor?"
+    ]
+   }
+  ],
+  "boss": [
+   {
+    "k": "num",
+    "q": "Seven witnesses gave their ages: 23, 31, 18, 35, 27, 20, 29. What is the median age?",
+    "qEs": "Siete testigos dieron sus edades: 23, 31, 18, 35, 27, 20, 29. ¿Cuál es la mediana de las edades?",
+    "a": "27",
+    "unit": "years",
+    "fw": [
+     {
+      "v": "35",
+      "f": "That is the middle of the list as written. Order the ages first.",
+      "fEs": "Ese es el centro de la lista tal como está escrita. Ordena primero las edades.",
+      "tag": "median-of-unordered-list"
+     },
+     {
+      "v": "26.14",
+      "f": "That is the total divided by 7, a different measure. The median is the middle value of the ordered list.",
+      "fEs": "Eso es el total dividido entre 7, otra medida. La mediana es el valor del medio de la lista ordenada.",
+      "tag": "used-mean-instead"
+     }
+    ],
+    "x": "In order: 18, 20, 23, 27, 29, 31, 35. The 4th of 7 values is 27.",
+    "xEs": "En orden: 18, 20, 23, 27, 29, 31, 35. El 4.º de 7 valores es 27.",
+    "h": [
+     "Order the ages from least to greatest.",
+     "With 7 values, three are below the middle and three are above.",
+     "Count to the 4th age in your ordered list."
+    ],
+    "hEs": [
+     "Ordena las edades de menor a mayor.",
+     "Con 7 valores, tres están debajo del medio y tres arriba.",
+     "Cuenta hasta la 4.ª edad de tu lista ordenada."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "In an ordered list of 10 evidence weights, the 5th weight is 18 grams and the 6th weight is 25 grams. What is the median?",
+    "qEs": "En una lista ordenada de 10 pesos de evidencias, el 5.º peso es 18 gramos y el 6.º peso es 25 gramos. ¿Cuál es la mediana?",
+    "c": [
+     "18 grams",
+     "21.5 grams",
+     "25 grams",
+     "43 grams"
+    ],
+    "cEs": [
+     "18 gramos",
+     "21.5 gramos",
+     "25 gramos",
+     "43 gramos"
+    ],
+    "a": 1,
+    "f": [
+     "That is only one of the two middle values. The median is halfway between them.",
+     "",
+     "That is only one of the two middle values. The median is halfway between them.",
+     "That adds the two middle values but does not split the sum in two."
+    ],
+    "fEs": [
+     "Ese es solo uno de los dos valores del medio. La mediana está a mitad de camino entre ellos.",
+     "",
+     "Ese es solo uno de los dos valores del medio. La mediana está a mitad de camino entre ellos.",
+     "Eso suma los dos valores del medio pero no divide la suma entre dos."
+    ],
+    "tag": [
+     "took-lower-middle",
+     null,
+     "took-lower-middle",
+     "added-middle-values"
+    ],
+    "x": "With 10 values the two middle values are the 5th and 6th. The median is halfway between them: (18 + 25) ÷ 2 = 21.5.",
+    "xEs": "Con 10 valores, los dos valores del medio son el 5.º y el 6.º. La mediana está a mitad de camino: (18 + 25) ÷ 2 = 21.5.",
+    "h": [
+     "With 10 values, which positions are in the middle?",
+     "The median of an even set is not one of the two middle values; it sits between them.",
+     "Add the two middle values and cut the sum in two equal parts."
+    ],
+    "hEs": [
+     "Con 10 valores, ¿qué posiciones están en el medio?",
+     "La mediana de un conjunto par no es uno de los dos valores del medio; está entre ellos.",
+     "Suma los dos valores del medio y parte la suma en dos partes iguales."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "Each dot is one tip the hotline received per hour. What is the median number of tips?",
+    "qEs": "Cada punto es la cantidad de llamadas con pistas que recibió la línea en una hora. ¿Cuál es la mediana de la cantidad de llamadas?",
+    "viz": {
+     "t": "dots",
+     "data": [
+      2,
+      3,
+      3,
+      4,
+      5,
+      5,
+      6,
+      8,
+      15
+     ],
+     "min": 0,
+     "max": 16,
+     "step": 1,
+     "label": "Tips in one hour",
+     "labelEs": "Llamadas en una hora"
+    },
+    "c": [
+     "3",
+     "15",
+     "8",
+     "5"
+    ],
+    "a": 3,
+    "f": [
+     "That is a value with a tall stack of dots, but the median is the middle dot in order.",
+     "That is the last dot on the right, not the middle one.",
+     "That is the middle of the number line, not the middle dot. Count the dots.",
+     ""
+    ],
+    "fEs": [
+     "Ese es un valor con una pila alta de puntos, pero la mediana es el punto del medio en orden.",
+     "Ese es el último punto a la derecha, no el del medio.",
+     "Ese es el centro de la recta numérica, no el punto del medio. Cuenta los puntos.",
+     ""
+    ],
+    "tag": [
+     "used-mode-instead",
+     "used-largest-value",
+     "median-of-unordered-list",
+     null
+    ],
+    "x": "There are 9 dots. Counting in from either end, the 5th dot is at 5, so the median is 5.",
+    "xEs": "Hay 9 puntos. Contando desde cualquier extremo, el 5.º punto está en 5, así que la mediana es 5.",
+    "h": [
+     "Count all the dots first.",
+     "The dots are already in order from left to right.",
+     "Count in from the left until you reach the middle dot."
+    ],
+    "hEs": [
+     "Cuenta primero todos los puntos.",
+     "Los puntos ya están en orden de izquierda a derecha.",
+     "Cuenta desde la izquierda hasta llegar al punto del medio."
+    ]
+   },
+   {
+    "k": "num",
+    "q": "Four numbers in order are 10, 14, x and 30. Their median is 17. What is x?",
+    "qEs": "Cuatro números en orden son 10, 14, x y 30. Su mediana es 17. ¿Cuánto vale x?",
+    "a": "20",
+    "fw": [
+     {
+      "v": "17",
+      "f": "That is the median, not x. The median is halfway between 14 and x.",
+      "fEs": "Esa es la mediana, no x. La mediana está a mitad de camino entre 14 y x.",
+      "tag": "median-of-unordered-list"
+     },
+     {
+      "v": "3",
+      "f": "That is the distance from 14 to 17. The same distance continues past 17.",
+      "fEs": "Esa es la distancia de 14 a 17. La misma distancia continúa después de 17.",
+      "tag": "added-middle-values"
+     }
+    ],
+    "x": "The median is halfway between 14 and x. 17 is 3 more than 14, so x is 3 more than 17: x = 20. Check: (14 + 20) ÷ 2 = 17.",
+    "xEs": "La mediana está a mitad de camino entre 14 y x. 17 es 3 más que 14, así que x es 3 más que 17: x = 20. Comprueba: (14 + 20) ÷ 2 = 17.",
+    "h": [
+     "With 4 numbers, the median is halfway between the 2nd and 3rd numbers.",
+     "How far is the median from the 2nd number, 14?",
+     "The 3rd number is the same distance on the other side of the median."
+    ],
+    "hEs": [
+     "Con 4 números, la mediana está a mitad de camino entre el 2.º y el 3.er número.",
+     "¿A qué distancia está la mediana del 2.º número, 14?",
+     "El 3.er número está a la misma distancia al otro lado de la mediana."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "The median time to solve a puzzle in a group of detectives is 12 minutes. Which statement must be true?",
+    "qEs": "La mediana del tiempo para resolver un acertijo en un grupo de detectives es 12 minutos. ¿Qué afirmación debe ser verdadera?",
+    "c": [
+     "Most detectives took exactly 12 minutes",
+     "All the times add up to 12 times the number of detectives",
+     "At least half of the times are 12 or less, and at least half are 12 or more",
+     "No detective took more than 12 minutes"
+    ],
+    "cEs": [
+     "La mayoría de los detectives tardó exactamente 12 minutos",
+     "Todos los tiempos suman 12 veces la cantidad de detectives",
+     "Al menos la mitad de los tiempos es 12 o menos, y al menos la mitad es 12 o más",
+     "Ningún detective tardó más de 12 minutos"
+    ],
+    "a": 2,
+    "f": [
+     "That describes the mode. A median can be a time nobody took.",
+     "That describes the mean, which uses every time. The median uses only the middle.",
+     "",
+     "Half of the times can be above the median. Only the middle is 12."
+    ],
+    "fEs": [
+     "Eso describe la moda. Una mediana puede ser un tiempo que nadie tardó.",
+     "Eso describe la media, que usa todos los tiempos. La mediana usa solo el centro.",
+     "",
+     "La mitad de los tiempos puede estar por encima de la mediana. Solo el centro es 12."
+    ],
+    "tag": [
+     "used-mode-instead",
+     "used-mean-instead",
+     null,
+     "used-largest-value"
+    ],
+    "x": "The median splits the ordered data into two halves, so at least half the values are at or below it and at least half are at or above it.",
+    "xEs": "La mediana divide los datos ordenados en dos mitades, así que al menos la mitad de los valores está en ella o por debajo, y al menos la mitad en ella o por encima.",
+    "h": [
+     "The median is the middle of the ordered data.",
+     "Think about how many values are on each side of the middle.",
+     "Decide which statement is about halves, not totals or the most common value."
+    ],
+    "hEs": [
+     "La mediana es el centro de los datos ordenados.",
+     "Piensa cuántos valores hay a cada lado del centro.",
+     "Decide qué afirmación habla de mitades, no de totales ni del valor más común."
+    ]
+   },
+   {
+    "k": "wr",
+    "p": "Create your own problem. Write a data set of 7 or 8 numbers about a case, for example witness ages or clue counts. Find the median and explain what it tells you about a typical value. Use the words order, middle, typical and half.",
+    "pEs": "Crea tu propio problema. Escribe un conjunto de 7 u 8 números sobre un caso, por ejemplo edades de testigos o conteos de pistas. Halla la mediana y explica qué dice de un valor típico. Usa las palabras orden, medio, típico y mitad.",
+    "fr": "My data are ___. In order they are ___. There are ___ numbers, so the median is ___. A typical value is about ___ because half of the data are ___.",
+    "frEs": "Mis datos son ___. En orden son ___. Hay ___ números, así que la mediana es ___. Un valor típico es cerca de ___ porque la mitad de los datos son ___.",
+    "min": 90,
+    "kw": [
+     "order",
+     "middle",
+     "typical",
+     "half",
+     "median"
+    ],
+    "kwEs": [
+     "orden",
+     "medio",
+     "típico",
+     "mitad",
+     "mediana"
+    ],
+    "rubric": [
+     "I wrote my data and put them in order.",
+     "I said if the count is odd or even and found the median the right way.",
+     "I explained what the median tells about a typical value.",
+     "I used the words order, middle, typical and half."
+    ],
+    "rubricEs": [
+     "Escribí mis datos y los puse en orden.",
+     "Dije si la cantidad es impar o par y hallé la mediana de la forma correcta.",
+     "Expliqué qué dice la mediana sobre un valor típico.",
+     "Usé las palabras orden, medio, típico y mitad."
+    ],
+    "x": "My data are 9, 4, 12, 7, 15, 6, 8. In order they are 4, 6, 7, 8, 9, 12, 15. There are 7 numbers, so the median is the 4th, which is 8. A typical value is about 8 because half of the data are 8 or less and half are 8 or more.",
+    "xEs": "Mis datos son 9, 4, 12, 7, 15, 6, 8. En orden son 4, 6, 7, 8, 9, 12, 15. Hay 7 números, así que la mediana es el 4.º, que es 8. Un valor típico es cerca de 8 porque la mitad de los datos es 8 o menos y la mitad es 8 o más.",
+    "h": [
+     "Choose numbers that make sense for your case, and write them on a line.",
+     "Put them in order and count them. Odd or even?",
+     "Find the middle, then say what half of the data look like."
+    ],
+    "hEs": [
+     "Elige números que tengan sentido para tu caso y escríbelos en una línea.",
+     "Ordénalos y cuéntalos. ¿Impar o par?",
+     "Halla el medio y luego di cómo se ven la mitad de los datos."
+    ]
+   }
+  ]
+ },
+ "mastery": [
+  {
+   "k": "mc",
+   "q": "Six fingerprint scans scored 41, 37, 52, 45, 39, 60. What is the median score?",
+   "qEs": "Seis escaneos de huellas obtuvieron 41, 37, 52, 45, 39, 60. ¿Cuál es la mediana del puntaje?",
+   "c": [
+    "52",
+    "41",
+    "45",
+    "43"
+   ],
+   "a": 3,
+   "f": [
+    "That is the middle of the list as written. Order the scores first.",
+    "That is only the lower of the two middle values.",
+    "That is only the upper of the two middle values.",
+    ""
+   ],
+   "fEs": [
+    "Ese es el centro de la lista tal como está escrita. Ordena primero los puntajes.",
+    "Ese es solo el menor de los dos valores del medio.",
+    "Ese es solo el mayor de los dos valores del medio.",
+    ""
+   ],
+   "tag": [
+    "median-of-unordered-list",
+    "took-lower-middle",
+    "took-lower-middle",
+    null
+   ],
+   "x": "In order: 37, 39, 41, 45, 52, 60. The middle values 41 and 45 give a median of 43.",
+   "xEs": "En orden: 37, 39, 41, 45, 52, 60. Los valores del medio 41 y 45 dan una mediana de 43.",
+   "h": [
+    "Order the scores first.",
+    "Six scores means two middle values.",
+    "Find the number halfway between them."
+   ],
+   "hEs": [
+    "Ordena primero los puntajes.",
+    "Seis puntajes significa dos valores del medio.",
+    "Halla el número a mitad de camino entre ellos."
+   ]
+  },
+  {
+   "k": "num",
+   "q": "The median of five clue scores is 14. Four of the scores are 9, 11, 19 and 25. What is the fifth score if it lies between 11 and 19?",
+   "qEs": "La mediana de cinco puntajes de pistas es 14. Cuatro de los puntajes son 9, 11, 19 y 25. ¿Cuál es el quinto puntaje si está entre 11 y 19?",
+   "a": "14",
+   "fw": [
+    {
+     "v": "15",
+     "f": "Check where the fifth score must sit so that it is the middle one of five.",
+     "fEs": "Revisa dónde debe quedar el quinto puntaje para ser el del medio de cinco.",
+     "tag": "median-of-unordered-list"
+    }
+   ],
+   "x": "With five scores the median is the 3rd in order. The known scores in order are 9, 11, 19, 25, so the new score must be the 3rd one, and it equals the median, 14.",
+   "xEs": "Con cinco puntajes la mediana es el 3.º en orden. Los puntajes conocidos en orden son 9, 11, 19, 25, así que el nuevo puntaje debe ser el 3.º, y es igual a la mediana, 14.",
+   "h": [
+    "With five scores, the median is the 3rd score in order.",
+    "Where must the unknown score sit between 11 and 19?",
+    "The unknown score is the middle one, so it is the median."
+   ],
+   "hEs": [
+    "Con cinco puntajes, la mediana es el 3.er puntaje en orden.",
+    "¿Dónde debe quedar el puntaje desconocido entre 11 y 19?",
+    "El puntaje desconocido es el del medio, así que es la mediana."
+   ]
+  }
+ ],
+ "glossary": [
+  {
+   "t": "median",
+   "tEs": "mediana",
+   "d": "The middle value when the data are in order. With two middle values, it is halfway between them.",
+   "dEs": "El valor del medio cuando los datos están en orden. Con dos valores del medio, está a mitad de camino entre ellos."
+  },
+  {
+   "t": "outlier",
+   "tEs": "valor atípico",
+   "d": "A value that is much bigger or smaller than the rest of the data.",
+   "dEs": "Un valor mucho mayor o menor que el resto de los datos."
+  },
+  {
+   "t": "typical value",
+   "tEs": "valor típico",
+   "d": "A number that stands for the whole set, such as the median.",
+   "dEs": "Un número que representa a todo el conjunto, como la mediana."
+  },
+  {
+   "t": "measure of center",
+   "tEs": "medida de tendencia central",
+   "d": "One number that describes a typical value in a data set.",
+   "dEs": "Un número que describe un valor típico de un conjunto de datos."
+  }
+ ]
+}

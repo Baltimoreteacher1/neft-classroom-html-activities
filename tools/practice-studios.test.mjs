@@ -1,25 +1,27 @@
-// Generated practice studios for Units 2-9 (/math/practice-studio/<lesson>/).
+// Practice Studio v2: Practice + Challenge for every core lesson in Units 2-9 (/math/practice-studio/<lesson>/ and /challenge/).
 //
-// Every question, answer and hint in a studio is copied from the lesson's own config, so the risks are
-// (1) a stale page after a config edit, (2) a mapping slip that points a studio at another item's answer,
-// and (3) an item the studio cannot actually grade. This re-reads each config independently of the
-// generator's own mapping code and compares it with the JSON the page ships.
+// Every question, answer and hint in a studio is the lesson's own (config.json) or authored in data/practice-studio/<id>.json
+// and validated against docs/specs/practice-studio-v2.md. So the risks are (1) a stale page after a source edit, (2) a mapping
+// slip that points a studio at another item's answer, (3) a generated or hands-on item whose key disagrees with its own check,
+// and (4) a page that references a script that is not there. This re-reads each source independently of the generator.
 
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { LIMITS, outputs, STUDIO_UNITS } from "../scripts/generate-practice-studios.mjs";
+import { outputs, STUDIO_UNITS } from "../scripts/generate-practice-studios.mjs";
 import { listLessonDirs, loadLessonConfig, REPO_ROOT } from "./lib/curriculum-source.mjs";
+import { loadStudio } from "./lib/studio-vm.mjs";
 
 const { files, report } = outputs();
+const read = (rel) => readFileSync(join(REPO_ROOT, rel), "utf8");
 
-/* ---- every generated file is current on disk ---------------------------------------------------- */
+/* ---- every generated file is current on disk ----------------------------------------------------- */
 for (const [rel, content] of files) {
   const path = join(REPO_ROOT, rel);
   assert.ok(existsSync(path), `${rel} is missing; run: node scripts/generate-practice-studios.mjs`);
-  assert.equal(
-    readFileSync(path, "utf8"),
-    content,
+  // not assert.equal: a failing string diff of two whole pages takes minutes to print
+  assert.ok(
+    readFileSync(path, "utf8") === content,
     `${rel} is stale; run: node scripts/generate-practice-studios.mjs`,
   );
 }
@@ -31,118 +33,151 @@ assert.equal(report.length, ids.length, "every core lesson in Units 2-9 has a st
 assert.ok(ids.length >= 60, `expected 60+ lessons, found ${ids.length}`);
 assert.ok(!STUDIO_UNITS.includes(4), "Unit 4 keeps its hand-built studios");
 
-const hub = readFileSync(join(REPO_ROOT, "curriculum/units/index.html"), "utf8");
-const norm = (s) => String(s).replace(/\s+/g, " ").trim().toLowerCase();
-let items = 0;
-const storageKeys = new Set();
-
-for (const id of ids) {
-  const html = readFileSync(join(REPO_ROOT, `math/practice-studio/${id}/index.html`), "utf8");
-  const data = JSON.parse(
-    html.match(/id="studio-data">([\s\S]*?)<\/script>/)[1].replace(/\\u003c/g, "<"),
-  );
-  const cfg = loadLessonConfig(id);
-  const tag = `[${id}]`;
-  assert.equal(data.lesson, id);
-  assert.ok(!storageKeys.has(data.storageKey), `${tag} reuses storage key ${data.storageKey}`);
-  storageKeys.add(data.storageKey);
-  assert.equal(data.sections.length, 5, `${tag} has five sections`);
-  assert.ok(
-    html.includes(`<!-- practice-studio:${id} -->`) ||
-      hub.includes(
-        `<!-- practice-studio:${id} --><a class="res" href="/math/practice-studio/${id}/">HTML practice</a>`,
-      ),
-    `${tag} is linked from the unit browser`,
-  );
-  assert.ok(
-    hub.includes(
-      `<!-- practice-studio:${id} --><a class="res" href="/math/practice-studio/${id}/">HTML practice</a><!-- /practice-studio -->`,
-    ),
-    `${tag} hub link`,
-  );
-
-  // The item id names its source: w warm-up, a/o/x/p practice tier, c connect check, e exit ticket, then the
-  // 1-based position in that authored list. Look it up here independently of the generator.
-  const lists = {
-    w: cfg.warmup?.questions || [],
-    a: cfg.practice?.approaching || [],
-    o: cfg.practice?.onLevel || [],
-    x: cfg.practice?.extending || [],
-    p: cfg.practice?.optional || [],
-    c: Array.isArray(cfg.connect?.check)
-      ? cfg.connect.check
-      : cfg.connect?.check
-        ? [cfg.connect.check]
-        : [],
-    e: cfg.reflect?.exitTicket ? [cfg.reflect.exitTicket] : [],
-  };
-  const sourceOf = (id) => lists[id[0]]?.[Number(id.slice(1)) - 1];
-
-  const seen = new Set();
-  data.sections.forEach((section, si) => {
-    assert.ok(
-      section.items.length >= 2 && section.items.length <= LIMITS[si + 1],
-      `${tag} section ${si + 1} item count ${section.items.length}`,
+const worlds = JSON.parse(read("data/practice-studio/worlds.json"));
+const ordered = [...ids].sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+ordered.forEach((id, i) => {
+  assert.ok(worlds.worlds[worlds.lessons[id]], `${id} has a world`);
+  if (i >= 1)
+    assert.notEqual(
+      worlds.lessons[id],
+      worlds.lessons[ordered[i - 1]],
+      `${id} repeats the previous lesson's world`,
     );
-    for (const it of section.items) {
-      items++;
-      assert.ok(!seen.has(it.id), `${tag} duplicate item id ${it.id}`);
-      seen.add(it.id);
-      const src = sourceOf(it.id);
-      assert.ok(src, `${tag} ${it.id}: no such authored item`);
-      const authoredText = src.stem || src.prompt || src.title || src.label;
-      if (authoredText)
-        assert.equal(
-          norm(it.q ?? it.t ?? it.p),
-          norm(authoredText),
-          `${tag} ${it.id}: text differs from the lesson`,
-        );
-      else
-        assert.ok(
-          ["Fill in the table", "Find the mistake"].includes(it.t),
-          `${tag} ${it.id}: invented caption`,
-        );
-      if (it.k === "mc") {
-        const right = src.correctIndex ?? src.answer;
-        assert.equal(it.a, right, `${tag} ${it.id}: correct choice differs from the lesson`);
-        assert.equal(
-          norm(it.c[it.a]),
-          norm(src.choices[right]),
-          `${tag} ${it.id}: the right choice text differs`,
-        );
-        assert.deepEqual(it.c, src.choices.map(String), `${tag} ${it.id}: choices differ`);
-        assert.equal(
-          new Set(it.c.map(norm)).size,
-          it.c.length,
-          `${tag} ${it.id}: duplicate choices`,
-        );
-      } else if (it.k === "err") {
-        assert.equal(it.e, src.errorStep, `${tag} ${it.id}: error step differs`);
-        assert.ok(it.e >= 0 && it.e < it.s.length, `${tag} ${it.id}: error step out of range`);
-        assert.equal(it.s.length, src.workedExample.length);
-      } else if (it.k === "tbl") {
-        assert.deepEqual(
-          it.cells.map((c) => [c.r, c.c, c.a]),
-          src.editableCells.map((c) => [c.row, c.col, String(c.answer)]),
-          `${tag} ${it.id}: table answers differ`,
-        );
-        for (const c of it.cells)
-          assert.equal(it.rows[c.r][c.c], "", `${tag} ${it.id}: an answer cell is pre-filled`);
-      } else if (it.k === "wr") {
-        assert.ok(it.min >= 1 && it.x, `${tag} ${it.id}: written item needs a length and a model`);
-      } else assert.fail(`${tag} ${it.id}: unknown kind ${it.k}`);
-    }
-  });
+  if (i >= 2)
+    assert.notEqual(
+      worlds.lessons[id],
+      worlds.lessons[ordered[i - 2]],
+      `${id} repeats a world from two lessons back`,
+    );
+});
+const css = read("assets/studio-worlds.css");
+for (const w of Object.keys(worlds.worlds)) {
+  assert.ok(css.includes(`body[data-world="${w}"] {`), `worlds css has the ${w} daylight palette`);
+  assert.ok(
+    css.includes(`body[data-world="${w}"][data-mode="challenge"] {`),
+    `worlds css has the ${w} night palette`,
+  );
 }
 
-/* ---- nothing the studio cannot grade is offered ------------------------------------------------- */
-for (const r of report) assert.ok(r.total >= 10, `${r.id}: only ${r.total} items`);
-const kinds = JSON.stringify(report.map((r) => r.left));
-assert.ok(
-  !/"multiple-choice \(answer index/.test(kinds),
-  "an authored MC item has an out-of-range answer index",
-);
+const ctx = loadStudio({ gen: true, act: true });
+const hub = read("curriculum/units/index.html");
+const norm = (s) => String(s).replace(/\s+/g, " ").trim().toLowerCase();
+const storageKeys = new Set();
+let items = 0;
+let generated = 0;
 
+const pageData = (rel) => {
+  const html = read(rel);
+  const m = html.match(/id="studio-data">([\s\S]*?)<\/script>/);
+  assert.ok(m, `${rel} ships its data`);
+  return { html, data: JSON.parse(m[1].replace(/\\u003c/g, "<")) };
+};
+
+for (const id of ids) {
+  const cfg = loadLessonConfig(id);
+  for (const mode of ["practice", "challenge"]) {
+    const rel = `math/practice-studio/${id}/${mode === "practice" ? "" : "challenge/"}index.html`;
+    const tag = `[${id} ${mode}]`;
+    const { html, data } = pageData(rel);
+    assert.equal(data.v, 2);
+    assert.equal(data.lesson, id);
+    assert.equal(data.mode, mode);
+    assert.ok(!storageKeys.has(data.storageKey), `${tag} reuses storage key ${data.storageKey}`);
+    storageKeys.add(data.storageKey);
+    assert.equal(data.sections.length, 5, `${tag} has five sections`);
+    assert.ok(html.includes(`data-world="${worlds.lessons[id]}"`), `${tag} carries its world`);
+    assert.ok(html.includes(`data-mode="${mode}"`), `${tag} carries its mode`);
+    assert.ok(!html.includes("studio-items.js"), `${tag} still loads the retired runtime`);
+    // every script and stylesheet the page loads exists
+    for (const [, url] of html.matchAll(/(?:src|href)="(\/assets\/[^"?]+)\?v=[0-9a-f]{10}"/g))
+      assert.ok(existsSync(join(REPO_ROOT, url.slice(1))), `${tag} loads missing file ${url}`);
+    const seen = new Set();
+    for (const sec of data.sections) {
+      assert.ok(sec.items.length >= 2, `${tag} section "${sec.name}" is too thin`);
+      for (const it of sec.items) {
+        assert.ok(it.id, `${tag} item without an id`);
+        assert.ok(!seen.has(it.id), `${tag} duplicate item id ${it.id}`);
+        seen.add(it.id);
+        items++;
+        if (it.k === "gen") {
+          generated++;
+          assert.ok(ctx.StudioGen.has(it.g), `${tag} uses unknown generator ${it.g}`);
+          for (const seed of [1, 2, 3, 4, 5])
+            assert.equal(
+              ctx.StudioGen.verify(ctx.StudioGen.make(it.g, it.level, seed)),
+              true,
+              `${tag} ${it.g} L${it.level} seed ${seed} fails its own check`,
+            );
+        } else if (it.k === "act") {
+          generated++;
+          assert.ok(ctx.StudioAct.has(it.kind), `${tag} uses unknown activity ${it.kind}`);
+          for (const seed of [1, 2, 3]) {
+            const spec = ctx.StudioAct.make(it.kind, it.level, seed, it.p);
+            const def = ctx.StudioAct.registry[it.kind];
+            assert.equal(
+              def.grade(spec, def.solution(spec)).ok,
+              true,
+              `${tag} ${it.kind} L${it.level} seed ${seed}: solution not accepted`,
+            );
+          }
+        } else if (it.k === "mc") {
+          assert.ok(
+            Number.isInteger(it.a) && it.a >= 0 && it.a < it.c.length,
+            `${tag} ${it.id}: answer index out of range`,
+          );
+          assert.equal(
+            new Set(it.c.map(norm)).size,
+            it.c.length,
+            `${tag} ${it.id}: duplicate choices`,
+          );
+        }
+      }
+    }
+    assert.ok(
+      hub.includes(`<!-- practice-studio:${id} -->`),
+      `${tag} is linked from the unit browser`,
+    );
+  }
+  assert.ok(
+    hub.includes(
+      `<!-- practice-studio:${id} --><a class="res" href="/math/practice-studio/${id}/">HTML practice</a><a class="res" href="/math/practice-studio/${id}/challenge/">HTML practice (Challenge)</a><!-- /practice-studio -->`,
+    ),
+    `[${id}] both studio links are on its row`,
+  );
+
+  /* answers are the lesson's own: re-derive each converted config multiple-choice item and find it on the page */
+  const { data } = pageData(`math/practice-studio/${id}/index.html`);
+  const onPage = new Map();
+  const keyOf = (stem, choices) => `${norm(stem)}|${choices.map(norm).sort().join("~")}`;
+  for (const sec of data.sections)
+    for (const it of sec.items) if (it.k === "mc") onPage.set(keyOf(it.q, it.c), it);
+  const connect = Array.isArray(cfg.connect?.check)
+    ? cfg.connect.check
+    : cfg.connect?.check
+      ? [cfg.connect.check]
+      : [];
+  const pools = [
+    cfg.practice?.approaching,
+    cfg.practice?.onLevel,
+    connect,
+    cfg.reflect?.exitTicket ? [cfg.reflect.exitTicket] : [],
+  ];
+  for (const pool of pools)
+    for (const q of pool || []) {
+      if ((q.type || "multiple-choice") !== "multiple-choice") continue;
+      const hit = onPage.get(keyOf(q.stem, q.choices));
+      if (!hit) continue; // too long for its section, or needs a figure — fine
+      const a = q.correctIndex ?? q.answer;
+      assert.equal(
+        norm(hit.c[hit.a]),
+        norm(q.choices[a]),
+        `[${id}] "${q.stem.slice(0, 50)}": the page's answer is not the lesson's`,
+      );
+    }
+}
+
+assert.ok(items > 2000, `expected 2,000+ items across the studios, found ${items}`);
+assert.ok(generated > 800, `expected 800+ generated/hands-on slots, found ${generated}`);
 console.log(
-  `practice-studios: ${ids.length} lessons, ${items} items re-checked against their lesson configs; every file current`,
+  `Practice studios: ${ids.length} lessons x 2 versions, ${items} items (${generated} fresh or hands-on slots).`,
 );

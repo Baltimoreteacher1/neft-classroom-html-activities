@@ -1,0 +1,912 @@
+{
+  "v": 1,
+  "lesson": "3-3",
+  "story": "Case File 3-3: the lab at Case Files mixes the same formula in bigger and smaller batches. Build ratio tables so every batch matches the original clue.",
+  "storyEs": "Expediente 3-3: el laboratorio de Case Files mezcla la misma fórmula en tandas más grandes y más pequeñas. Construye tablas de razones para que cada tanda coincida con la pista original.",
+  "challengeStory": "A midnight break-in has scrambled the evidence tables, and some rows are fake. Spot which rows keep the ratio and fix the ones that do not before sunrise.",
+  "challengeStoryEs": "Un robo a medianoche revolvió las tablas de evidencia, y algunas filas son falsas. Detecta qué filas mantienen la razón y corrige las que no, antes del amanecer.",
+  "getReady": null,
+  "noAct": false,
+  "fresh": [
+    {
+      "k": "gen",
+      "g": "eqRatioTable",
+      "level": 1
+    },
+    {
+      "k": "gen",
+      "g": "eqRatioTable",
+      "level": 1
+    },
+    {
+      "k": "gen",
+      "g": "eqRatioTable",
+      "level": 2
+    },
+    {
+      "k": "gen",
+      "g": "eqRatioTable",
+      "level": 2
+    },
+    {
+      "k": "gen",
+      "g": "eqRatioTable",
+      "level": 3
+    },
+    {
+      "k": "gen",
+      "g": "eqRatioTable",
+      "level": 3
+    },
+    {
+      "k": "act",
+      "kind": "ratiomix",
+      "level": 2,
+      "p": {
+        "mode": "equivalent"
+      }
+    }
+  ],
+  "challenge": {
+    "climb": [
+      {
+        "k": "gen",
+        "g": "eqRatioTable",
+        "level": 2
+      },
+      {
+        "k": "gen",
+        "g": "eqRatioTable",
+        "level": 2
+      },
+      {
+        "k": "gen",
+        "g": "eqRatioTable",
+        "level": 3
+      },
+      {
+        "k": "gen",
+        "g": "eqRatioTable",
+        "level": 3
+      },
+      {
+        "k": "gen",
+        "g": "eqRatioTable",
+        "level": 4
+      },
+      {
+        "k": "gen",
+        "g": "eqRatioTable",
+        "level": 4
+      }
+    ],
+    "missions": [
+      {
+        "k": "tbl",
+        "t": "The lab's invisible-ink formula uses 3 drops of reagent with 4 mL of water in one batch. Fill in the missing numbers so every row keeps the same ratio.",
+        "tEs": "La fórmula de tinta invisible del laboratorio usa 3 gotas de reactivo con 4 mL de agua en una tanda. Escribe los números que faltan para que cada fila mantenga la misma razón.",
+        "hd": [
+          "Batches",
+          "Reagent (drops)",
+          "Water (mL)"
+        ],
+        "hdEs": [
+          "Tandas",
+          "Reactivo (gotas)",
+          "Agua (mL)"
+        ],
+        "rows": [
+          [
+            "1",
+            "3",
+            "4"
+          ],
+          [
+            "2",
+            "",
+            ""
+          ],
+          [
+            "4",
+            "",
+            ""
+          ],
+          [
+            "",
+            "15",
+            ""
+          ]
+        ],
+        "cells": [
+          {
+            "r": 1,
+            "c": 1,
+            "a": "6"
+          },
+          {
+            "r": 1,
+            "c": 2,
+            "a": "8"
+          },
+          {
+            "r": 2,
+            "c": 1,
+            "a": "12"
+          },
+          {
+            "r": 2,
+            "c": 2,
+            "a": "16"
+          },
+          {
+            "r": 3,
+            "c": 0,
+            "a": "5"
+          },
+          {
+            "r": 3,
+            "c": 2,
+            "a": "20"
+          }
+        ],
+        "x": "Each row is the first row times the number of batches. 2 batches: 3 × 2 = 6 and 4 × 2 = 8. 4 batches: 3 × 4 = 12 and 4 × 4 = 16. The last row has 15 drops, and 15 ÷ 3 = 5, so it is 5 batches and 4 × 5 = 20 mL.",
+        "xEs": "Cada fila es la primera fila por el número de tandas. 2 tandas: 3 × 2 = 6 y 4 × 2 = 8. 4 tandas: 3 × 4 = 12 y 4 × 4 = 16. La última fila tiene 15 gotas, y 15 ÷ 3 = 5, así que son 5 tandas y 4 × 5 = 20 mL.",
+        "h": [
+          "Every row is the first row, 3:4, scaled by the number of batches.",
+          "Multiply both numbers in the first row by the batch number.",
+          "For the last row, find how many groups of 3 drops make 15, then scale the water the same way."
+        ],
+        "hEs": [
+          "Cada fila es la primera, 3:4, escalada por el número de tandas.",
+          "Multiplica los dos números de la primera fila por el número de tandas.",
+          "Para la última fila, halla cuántos grupos de 3 gotas forman 15 y escala el agua de la misma manera."
+        ]
+      },
+      {
+        "k": "num",
+        "q": "A footprint photo is enlarged. The ratio table shows real length to photo length. What real length, in centimeters, matches a 35 cm photo?",
+        "qEs": "Se amplía la foto de una huella. La tabla de razones muestra la longitud real y la longitud en la foto. ¿Qué longitud real, en centímetros, corresponde a una foto de 35 cm?",
+        "viz": {
+          "t": "table",
+          "hd": [
+            "Real (cm)",
+            "Photo (cm)"
+          ],
+          "rows": [
+            [
+              "2",
+              "5"
+            ],
+            [
+              "4",
+              "10"
+            ],
+            [
+              "6",
+              "15"
+            ],
+            [
+              "",
+              "35"
+            ]
+          ],
+          "blank": [
+            [
+              3,
+              0
+            ]
+          ]
+        },
+        "a": "14",
+        "unit": "cm",
+        "fw": [
+          {
+            "v": "32",
+            "f": "That subtracts 3 from 35. Rows of a ratio table are connected by multiplying, not by subtracting.",
+            "fEs": "Eso resta 3 a 35. Las filas de una tabla de razones se conectan multiplicando, no restando."
+          },
+          {
+            "v": "7",
+            "f": "7 is the scale factor from 5 to 35. The real length is the first row's 2 cm times that factor.",
+            "fEs": "7 es el factor de escala de 5 a 35. La longitud real es los 2 cm de la primera fila por ese factor."
+          }
+        ],
+        "x": "From 5 to 35 the photo length is multiplied by 7, so the real length is multiplied by 7 too: 2 × 7 = 14 cm. Check: 14:35 simplifies to 2:5.",
+        "xEs": "De 5 a 35 la longitud de la foto se multiplica por 7, así que la longitud real también: 2 × 7 = 14 cm. Comprueba: 14:35 se simplifica a 2:5.",
+        "h": [
+          "Find how many times bigger 35 is than a photo length in the table.",
+          "Divide 35 by 5 to find the scale factor. Apply it to the real length that goes with 5.",
+          "Use the first row, 2 cm real for 5 cm photo, and multiply 2 by your factor."
+        ],
+        "hEs": [
+          "Halla cuántas veces mayor es 35 que una longitud de foto de la tabla.",
+          "Divide 35 entre 5 para hallar el factor de escala. Aplícalo a la longitud real que va con 5.",
+          "Usa la primera fila, 2 cm reales para 5 cm en la foto, y multiplica 2 por tu factor."
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "Detective Lee built this ratio table for the code ratio 2:3, but one row is wrong. Which row is wrong, and what should it be?",
+        "qEs": "La detective Lee armó esta tabla de razones para la razón de código 2:3, pero una fila está mal. ¿Cuál fila está mal y cómo debe ser?",
+        "viz": {
+          "t": "table",
+          "hd": [
+            "Clues",
+            "Fingerprints"
+          ],
+          "rows": [
+            [
+              "2",
+              "3"
+            ],
+            [
+              "4",
+              "6"
+            ],
+            [
+              "6",
+              "9"
+            ],
+            [
+              "8",
+              "11"
+            ],
+            [
+              "10",
+              "15"
+            ]
+          ]
+        },
+        "c": [
+          "Row 4 should be 8:12.",
+          "Row 2 should be 4:5.",
+          "Row 3 should be 6:8.",
+          "Row 5 should be 10:13."
+        ],
+        "cEs": [
+          "La fila 4 debe ser 8:12.",
+          "La fila 2 debe ser 4:5.",
+          "La fila 3 debe ser 6:8.",
+          "La fila 5 debe ser 10:13."
+        ],
+        "a": 0,
+        "f": [
+          "",
+          "Row 2 is 2:3 doubled, and both numbers doubled. Check the row whose second number does not match.",
+          "Row 3 is 2:3 tripled: 2 × 3 = 6 and 3 × 3 = 9. It is correct.",
+          "Row 5 is 2:3 times 5: 10:15. Adding 3 to 10 is not how rows are built."
+        ],
+        "fEs": [
+          "",
+          "La fila 2 es 2:3 duplicado, y ambos números se duplicaron. Revisa la fila cuyo segundo número no coincide.",
+          "La fila 3 es 2:3 triplicado: 2 × 3 = 6 y 3 × 3 = 9. Es correcta.",
+          "La fila 5 es 2:3 por 5: 10:15. Sumar 3 a 10 no es como se construyen las filas."
+        ],
+        "tag": [
+          "",
+          "added-not-multiplied",
+          "added-not-multiplied",
+          "added-not-multiplied"
+        ],
+        "x": "Each row should be 2:3 times a whole number. Row 4 is 4 times: 2 × 4 = 8 and 3 × 4 = 12, so 8:11 is wrong and should be 8:12.",
+        "xEs": "Cada fila debe ser 2:3 por un número entero. La fila 4 es 4 veces: 2 × 4 = 8 y 3 × 4 = 12, así que 8:11 está mal y debe ser 8:12.",
+        "h": [
+          "Check each row: does one number times a whole number give the other?",
+          "Find the scale factor from the first column, then see if the second column used the same factor.",
+          "Row 4 has 8 clues, which is 2 × 4. What should 3 × 4 be?"
+        ],
+        "hEs": [
+          "Revisa cada fila: ¿un número por un entero da el otro?",
+          "Halla el factor de escala de la primera columna y mira si la segunda columna usó el mismo factor.",
+          "La fila 4 tiene 8 pistas, que es 2 × 4. ¿Cuánto debe ser 3 × 4?"
+        ]
+      },
+      {
+        "k": "num",
+        "q": "A lab mixes 5 mL of dye with 8 mL of solvent in the smallest batch. A big case needs 35 mL of dye. How many milliliters of solvent keep the same ratio?",
+        "qEs": "Un laboratorio mezcla 5 mL de tinte con 8 mL de solvente en la tanda más pequeña. Un caso grande necesita 35 mL de tinte. ¿Cuántos mililitros de solvente mantienen la misma razón?",
+        "a": "56",
+        "unit": "mL",
+        "fw": [
+          {
+            "v": "38",
+            "f": "That adds 30 to the solvent because 30 was added to the dye. Scale by multiplying both.",
+            "fEs": "Eso suma 30 al solvente porque se sumó 30 al tinte. Escala multiplicando ambos."
+          },
+          {
+            "v": "7",
+            "f": "7 is the scale factor, not the solvent amount.",
+            "fEs": "7 es el factor de escala, no la cantidad de solvente."
+          }
+        ],
+        "x": "35 ÷ 5 = 7, so the case is 7 times the smallest batch. Solvent: 8 × 7 = 56 mL. The ratio 35:56 simplifies to 5:8.",
+        "xEs": "35 ÷ 5 = 7, así que el caso es 7 veces la tanda más pequeña. Solvente: 8 × 7 = 56 mL. La razón 35:56 se simplifica a 5:8.",
+        "h": [
+          "Find how many smallest batches the 35 mL of dye makes.",
+          "Divide 35 by 5 to get the scale factor.",
+          "Multiply the solvent amount, 8, by that same factor."
+        ],
+        "hEs": [
+          "Halla cuántas tandas pequeñas forman los 35 mL de tinte.",
+          "Divide 35 entre 5 para obtener el factor de escala.",
+          "Multiplica la cantidad de solvente, 8, por ese mismo factor."
+        ]
+      }
+    ],
+    "lab": [
+      {
+        "k": "act",
+        "kind": "ratiomix",
+        "level": 3,
+        "p": {
+          "mode": "equivalent"
+        }
+      },
+      {
+        "k": "act",
+        "kind": "ratiomix",
+        "level": 4,
+        "p": {
+          "mode": "equivalent"
+        }
+      },
+      {
+        "k": "sort",
+        "q": "The crime lab's table is for the ratio 3:5. Sort each row by whether it keeps the ratio.",
+        "qEs": "La tabla del laboratorio criminal es para la razón 3:5. Clasifica cada fila según si mantiene la razón.",
+        "bins": [
+          {
+            "l": "Keeps 3:5",
+            "lEs": "Mantiene 3:5"
+          },
+          {
+            "l": "Breaks 3:5",
+            "lEs": "Rompe 3:5"
+          }
+        ],
+        "cards": [
+          {
+            "t": "6:10",
+            "tEs": "6:10",
+            "b": 0
+          },
+          {
+            "t": "5:7",
+            "tEs": "5:7",
+            "b": 1
+          },
+          {
+            "t": "9:15",
+            "tEs": "9:15",
+            "b": 0
+          },
+          {
+            "t": "15:20",
+            "tEs": "15:20",
+            "b": 1
+          },
+          {
+            "t": "21:35",
+            "tEs": "21:35",
+            "b": 0
+          },
+          {
+            "t": "12:18",
+            "tEs": "12:18",
+            "b": 1
+          }
+        ],
+        "x": "A row keeps 3:5 when both numbers use the same factor: 6:10 is × 2, 9:15 is × 3, and 21:35 is × 7. 5:7 adds 2 to each, 15:20 is 3:4, and 12:18 is 2:3, so they break the ratio.",
+        "xEs": "Una fila mantiene 3:5 cuando ambos números usan el mismo factor: 6:10 es × 2, 9:15 es × 3 y 21:35 es × 7. 5:7 suma 2 a cada uno, 15:20 es 3:4 y 12:18 es 2:3, así que rompen la razón.",
+        "h": [
+          "Divide the first number by 3 and the second by 5.",
+          "If both divisions give the same whole number, the row belongs.",
+          "Test 6:10 first: is 6 ÷ 3 the same as 10 ÷ 5?"
+        ],
+        "hEs": [
+          "Divide el primer número entre 3 y el segundo entre 5.",
+          "Si las dos divisiones dan el mismo número entero, la fila pertenece.",
+          "Prueba primero 6:10: ¿6 ÷ 3 es igual que 10 ÷ 5?"
+        ]
+      }
+    ],
+    "detective": [
+      {
+        "k": "err",
+        "t": "A technician scaled an ink formula. One step goes wrong. Tap the first step that is wrong.",
+        "tEs": "Un técnico escaló una fórmula de tinta. Un paso sale mal. Toca el primer paso que está mal.",
+        "s": [
+          {
+            "l": "Problem",
+            "lEs": "Problema",
+            "w": "The ink uses 2 drops of reagent for every 7 mL of water. How many drops go with 28 mL of water?",
+            "wEs": "La tinta usa 2 gotas de reactivo por cada 7 mL de agua. ¿Cuántas gotas van con 28 mL de agua?"
+          },
+          {
+            "l": "Compare the water",
+            "lEs": "Compara el agua",
+            "w": "28 is 21 more than 7.",
+            "wEs": "28 es 21 más que 7."
+          },
+          {
+            "l": "Change the drops",
+            "lEs": "Cambia las gotas",
+            "w": "So I add 21 to the drops: 2 + 21 = 23 drops.",
+            "wEs": "Entonces sumo 21 a las gotas: 2 + 21 = 23 gotas."
+          },
+          {
+            "l": "Answer",
+            "lEs": "Respuesta",
+            "w": "23 drops.",
+            "wEs": "23 gotas."
+          }
+        ],
+        "e": 2,
+        "fix": "Scale by multiplying. 28 ÷ 7 = 4, so multiply the drops by 4 as well: 2 × 4 = 8 drops.",
+        "fixEs": "Escala multiplicando. 28 ÷ 7 = 4, así que multiplica también las gotas por 4: 2 × 4 = 8 gotas.",
+        "x": "Adding 21 to both parts changes the ratio. 23 drops for 28 mL is almost as many drops as mL, but the formula uses far fewer drops than water.",
+        "xEs": "Sumar 21 a ambas partes cambia la razón. 23 gotas para 28 mL es casi tantas gotas como mL, pero la fórmula usa muchas menos gotas que agua.",
+        "h": [
+          "Does the original formula use about as many drops as mL of water?",
+          "Find how many groups of 7 mL are in 28 mL."
+        ],
+        "hEs": [
+          "¿La fórmula original usa casi tantas gotas como mL de agua?",
+          "Halla cuántos grupos de 7 mL hay en 28 mL."
+        ]
+      },
+      {
+        "k": "err",
+        "t": "A detective scaled an evidence ratio. One step goes wrong. Tap the first step that is wrong.",
+        "tEs": "Una detective escaló una razón de evidencia. Un paso sale mal. Toca el primer paso que está mal.",
+        "s": [
+          {
+            "l": "Problem",
+            "lEs": "Problema",
+            "w": "3 gloves go with every 4 evidence bags. Scale 3:4 by a factor of 5.",
+            "wEs": "3 guantes van con cada 4 bolsas de evidencia. Escala 3:4 con un factor de 5."
+          },
+          {
+            "l": "Gloves",
+            "lEs": "Guantes",
+            "w": "3 × 5 = 15 gloves.",
+            "wEs": "3 × 5 = 15 guantes."
+          },
+          {
+            "l": "Bags",
+            "lEs": "Bolsas",
+            "w": "The bags stay at 4, because 4 is already the right number of bags.",
+            "wEs": "Las bolsas se quedan en 4, porque 4 ya es la cantidad correcta de bolsas."
+          },
+          {
+            "l": "Answer",
+            "lEs": "Respuesta",
+            "w": "The new ratio is 15:4.",
+            "wEs": "La nueva razón es 15:4."
+          }
+        ],
+        "e": 2,
+        "fix": "Multiply both numbers by the same factor: 4 × 5 = 20 bags, so the new ratio is 15:20.",
+        "fixEs": "Multiplica ambos números por el mismo factor: 4 × 5 = 20 bolsas, así que la nueva razón es 15:20.",
+        "x": "Scaling only one part changes the ratio: 15:4 means about 4 gloves per bag, but the original is under 1 glove per bag.",
+        "xEs": "Escalar solo una parte cambia la razón: 15:4 significa casi 4 guantes por bolsa, pero el original es menos de 1 guante por bolsa.",
+        "h": [
+          "Both numbers of a ratio must change when you scale it.",
+          "Apply the factor of 5 to the bags too."
+        ],
+        "hEs": [
+          "Los dos números de una razón deben cambiar cuando la escalas.",
+          "Aplica el factor de 5 también a las bolsas."
+        ]
+      },
+      {
+        "k": "err",
+        "t": "A lab tech shrank a formula. One step goes wrong. Tap the first step that is wrong.",
+        "tEs": "Un técnico de laboratorio redujo una fórmula. Un paso sale mal. Toca el primer paso que está mal.",
+        "s": [
+          {
+            "l": "Problem",
+            "lEs": "Problema",
+            "w": "12 g of powder go with 20 mL of oil. A small test uses 3 g of powder. How much oil?",
+            "wEs": "12 g de polvo van con 20 mL de aceite. Una prueba pequeña usa 3 g de polvo. ¿Cuánto aceite?"
+          },
+          {
+            "l": "Find the factor",
+            "lEs": "Halla el factor",
+            "w": "12 and 3 are connected by a factor of 4.",
+            "wEs": "12 y 3 se conectan con un factor de 4."
+          },
+          {
+            "l": "Scale the oil",
+            "lEs": "Escala el aceite",
+            "w": "I multiply the oil by 4: 20 × 4 = 80 mL.",
+            "wEs": "Multiplico el aceite por 4: 20 × 4 = 80 mL."
+          },
+          {
+            "l": "Answer",
+            "lEs": "Respuesta",
+            "w": "80 mL of oil.",
+            "wEs": "80 mL de aceite."
+          }
+        ],
+        "e": 2,
+        "fix": "The test is smaller, so divide: 20 ÷ 4 = 5 mL of oil.",
+        "fixEs": "La prueba es menor, así que divide: 20 ÷ 4 = 5 mL de aceite.",
+        "x": "Going from 12 g down to 3 g divides by 4. The oil must go down by the same factor, not up.",
+        "xEs": "Pasar de 12 g a 3 g divide entre 4. El aceite debe bajar por el mismo factor, no subir.",
+        "h": [
+          "Is a 3 g test bigger or smaller than the 12 g formula?",
+          "The oil should change in the same direction as the powder."
+        ],
+        "hEs": [
+          "¿Una prueba de 3 g es mayor o menor que la fórmula de 12 g?",
+          "El aceite debe cambiar en la misma dirección que el polvo."
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "A ratio table for 2:3 has rows 2:3, 4:6, and 6:9. Ana says the next row is 8:12 because she adds 2 and 3. Dev says it is 8:11 because he adds 2 to both. Eli says it is 8:12 because 2:3 times 4 is 8:12. Who finds the next row correctly?",
+        "qEs": "Una tabla de razones de 2:3 tiene las filas 2:3, 4:6 y 6:9. Ana dice que la siguiente fila es 8:12 porque suma 2 y 3. Dev dice que es 8:11 porque suma 2 a ambos. Eli dice que es 8:12 porque 2:3 por 4 es 8:12. ¿Quién halla correctamente la siguiente fila?",
+        "c": [
+          "Ana and Eli",
+          "Dev only",
+          "Eli only",
+          "All three"
+        ],
+        "cEs": [
+          "Ana y Eli",
+          "Solo Dev",
+          "Solo Eli",
+          "Los tres"
+        ],
+        "a": 0,
+        "f": [
+          "",
+          "Adding the same amount to both numbers changes the ratio. 8:11 is not 2:3.",
+          "Eli is right, but Ana is too. Adding 2 and 3 each time adds one more copy of 2:3.",
+          "Check Dev's row: does 8:11 simplify to 2:3?"
+        ],
+        "fEs": [
+          "",
+          "Sumar la misma cantidad a ambos números cambia la razón. 8:11 no es 2:3.",
+          "Eli tiene razón, pero Ana también. Sumar 2 y 3 cada vez agrega una copia más de 2:3.",
+          "Revisa la fila de Dev: ¿8:11 se simplifica a 2:3?"
+        ],
+        "tag": [
+          "",
+          "added-same-amount",
+          "missed-additive-pattern",
+          "added-same-amount"
+        ],
+        "x": "Ana adds the original amounts, 2 and 3, which adds one more batch each time: 6:9 becomes 8:12. Eli multiplies 2:3 by 4 to get 8:12. Dev adds 2 to both, which breaks the ratio: 8:11 is not 2:3.",
+        "xEs": "Ana suma las cantidades originales, 2 y 3, lo que agrega una tanda más cada vez: 6:9 pasa a 8:12. Eli multiplica 2:3 por 4 para obtener 8:12. Dev suma 2 a ambos, lo que rompe la razón: 8:11 no es 2:3.",
+        "h": [
+          "Check each answer by asking whether it simplifies back to 2:3.",
+          "Adding the ratio's own amounts is different from adding the same number to both."
+        ],
+        "hEs": [
+          "Revisa cada respuesta preguntando si se simplifica de vuelta a 2:3.",
+          "Sumar las cantidades propias de la razón es distinto de sumar el mismo número a ambos."
+        ]
+      }
+    ],
+    "boss": [
+      {
+        "k": "num",
+        "q": "A case ratio is 7 clues to 3 suspects. A bigger file has 35 clues. How many suspects keep the same ratio?",
+        "qEs": "Una razón de un caso es 7 pistas por 3 sospechosos. Un expediente mayor tiene 35 pistas. ¿Cuántos sospechosos mantienen la misma razón?",
+        "a": "15",
+        "fw": [
+          {
+            "v": "31",
+            "f": "That adds 28 to the suspects because 28 was added to the clues. Scale by multiplying.",
+            "fEs": "Eso suma 28 a los sospechosos porque se sumó 28 a las pistas. Escala multiplicando."
+          },
+          {
+            "v": "5",
+            "f": "5 is the scale factor. The suspects are 3 times that factor.",
+            "fEs": "5 es el factor de escala. Los sospechosos son 3 por ese factor."
+          }
+        ],
+        "x": "35 ÷ 7 = 5, so scale by 5. Suspects: 3 × 5 = 15.",
+        "xEs": "35 ÷ 7 = 5, así que escala por 5. Sospechosos: 3 × 5 = 15.",
+        "h": [
+          "How many groups of 7 clues are in 35?",
+          "Multiply the 3 suspects by that same number."
+        ],
+        "hEs": [
+          "¿Cuántos grupos de 7 pistas hay en 35?",
+          "Multiplica los 3 sospechosos por ese mismo número."
+        ]
+      },
+      {
+        "k": "num",
+        "q": "A table shows 4:9 and 20:45. What scale factor takes the first row to the second row?",
+        "qEs": "Una tabla muestra 4:9 y 20:45. ¿Qué factor de escala lleva la primera fila a la segunda?",
+        "a": "5",
+        "fw": [
+          {
+            "v": "16",
+            "f": "20 − 4 is a difference. A scale factor is what you multiply by.",
+            "fEs": "20 − 4 es una diferencia. Un factor de escala es por lo que multiplicas."
+          }
+        ],
+        "x": "4 × 5 = 20 and 9 × 5 = 45, so the scale factor is 5. Check with division: 20 ÷ 4 = 5 and 45 ÷ 9 = 5.",
+        "xEs": "4 × 5 = 20 y 9 × 5 = 45, así que el factor de escala es 5. Comprueba con división: 20 ÷ 4 = 5 y 45 ÷ 9 = 5.",
+        "h": [
+          "Ask: 4 times what number is 20?",
+          "Check that the same number works for 9 and 45."
+        ],
+        "hEs": [
+          "Pregunta: ¿4 por qué número es 20?",
+          "Comprueba que el mismo número funciona para 9 y 45."
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "A lab table has the row 18:24. Which ratio could also be a row in the same table?",
+        "qEs": "Una tabla del laboratorio tiene la fila 18:24. ¿Qué razón también podría ser una fila de la misma tabla?",
+        "c": [
+          "6:9",
+          "9:16",
+          "3:4",
+          "13:19"
+        ],
+        "cEs": [
+          "6:9",
+          "9:16",
+          "3:4",
+          "13:19"
+        ],
+        "a": 2,
+        "f": [
+          "18 ÷ 3 = 6, but 24 ÷ 3 = 8, not 9. Both terms need the same factor.",
+          "18 ÷ 2 = 9, but 24 ÷ 2 = 12, not 16. Both terms need the same factor.",
+          "",
+          "That subtracts 5 from each term. Rows of a ratio table are made by multiplying or dividing."
+        ],
+        "fEs": [
+          "18 ÷ 3 = 6, pero 24 ÷ 3 = 8, no 9. Ambos términos necesitan el mismo factor.",
+          "18 ÷ 2 = 9, pero 24 ÷ 2 = 12, no 16. Ambos términos necesitan el mismo factor.",
+          "",
+          "Eso resta 5 a cada término. Las filas de una tabla de razones se hacen multiplicando o dividiendo."
+        ],
+        "tag": [
+          "scaled-one-part",
+          "scaled-one-part",
+          "",
+          "added-not-multiplied"
+        ],
+        "x": "Divide both terms of 18:24 by 6: 18 ÷ 6 = 3 and 24 ÷ 6 = 4, so 3:4 is in the table.",
+        "xEs": "Divide ambos términos de 18:24 entre 6: 18 ÷ 6 = 3 y 24 ÷ 6 = 4, así que 3:4 está en la tabla.",
+        "h": [
+          "Rows can also go down by dividing both terms.",
+          "Find a number that divides both 18 and 24."
+        ],
+        "hEs": [
+          "Las filas también pueden bajar dividiendo ambos términos.",
+          "Halla un número que divida tanto 18 como 24."
+        ]
+      },
+      {
+        "k": "num",
+        "q": "A case file needs 3 evidence stickers for every 2 bags. There are 18 bags, and 10 stickers are already on them. How many more stickers are needed?",
+        "qEs": "Un expediente necesita 3 etiquetas de evidencia por cada 2 bolsas. Hay 18 bolsas, y ya hay 10 etiquetas en ellas. ¿Cuántas etiquetas más se necesitan?",
+        "a": "17",
+        "fw": [
+          {
+            "v": "27",
+            "f": "27 is how many stickers 18 bags need in all. Some are already on, so subtract.",
+            "fEs": "27 es cuántas etiquetas necesitan 18 bolsas en total. Algunas ya están puestas, así que resta."
+          },
+          {
+            "v": "9",
+            "f": "That adds 16 to the 3 stickers because 16 was added to the 2 bags. Scale by multiplying instead.",
+            "fEs": "Eso suma 16 a las 3 etiquetas porque se sumó 16 a las 2 bolsas. Mejor escala multiplicando."
+          }
+        ],
+        "x": "18 bags is 9 groups of 2 bags (18 ÷ 2 = 9). Stickers needed: 3 × 9 = 27. Already on: 10, so 27 − 10 = 17 more stickers.",
+        "xEs": "18 bolsas son 9 grupos de 2 bolsas (18 ÷ 2 = 9). Etiquetas necesarias: 3 × 9 = 27. Ya hay 10, así que 27 − 10 = 17 etiquetas más.",
+        "h": [
+          "First find how many stickers 18 bags need in all.",
+          "How many groups of 2 bags are in 18? Multiply that by 3 stickers.",
+          "Then take away the stickers already on the bags."
+        ],
+        "hEs": [
+          "Primero halla cuántas etiquetas necesitan 18 bolsas en total.",
+          "¿Cuántos grupos de 2 bolsas hay en 18? Multiplica eso por 3 etiquetas.",
+          "Luego resta las etiquetas que ya están en las bolsas."
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "Which reason proves that 12:16 and 15:20 are equivalent ratios?",
+        "qEs": "¿Qué razón prueba que 12:16 y 15:20 son razones equivalentes?",
+        "c": [
+          "15 − 12 = 3 and 20 − 16 = 4.",
+          "Both simplify to 3:4.",
+          "Both rows have a first number that is a multiple of 3.",
+          "The second number is bigger in both."
+        ],
+        "cEs": [
+          "15 − 12 = 3 y 20 − 16 = 4.",
+          "Ambas se simplifican a 3:4.",
+          "Las dos filas tienen un primer número múltiplo de 3.",
+          "El segundo número es mayor en ambas."
+        ],
+        "a": 1,
+        "f": [
+          "Differences do not decide equivalence. Look for a common simplest form or a common factor.",
+          "",
+          "Many unrelated ratios have a first number that is a multiple of 3. You must check both terms.",
+          "That is true of most ratios, so it proves nothing about equivalence."
+        ],
+        "fEs": [
+          "Las diferencias no deciden la equivalencia. Busca una forma más simple común o un factor común.",
+          "",
+          "Muchas razones sin relación tienen un primer número múltiplo de 3. Debes revisar ambos términos.",
+          "Eso es cierto de casi todas las razones, así que no prueba nada sobre la equivalencia."
+        ],
+        "tag": [
+          "difference-as-test",
+          "",
+          "checked-one-part",
+          "vague-reason"
+        ],
+        "x": "12 ÷ 4 = 3 and 16 ÷ 4 = 4, so 12:16 simplifies to 3:4. 15 ÷ 5 = 3 and 20 ÷ 5 = 4, so 15:20 simplifies to 3:4. Equal simplest forms mean equivalent ratios.",
+        "xEs": "12 ÷ 4 = 3 y 16 ÷ 4 = 4, así que 12:16 se simplifica a 3:4. 15 ÷ 5 = 3 y 20 ÷ 5 = 4, así que 15:20 se simplifica a 3:4. Formas más simples iguales significan razones equivalentes.",
+        "h": [
+          "Equivalent ratios make the same comparison.",
+          "Divide both terms of each ratio by their greatest common factor and compare."
+        ],
+        "hEs": [
+          "Las razones equivalentes hacen la misma comparación.",
+          "Divide ambos términos de cada razón entre su máximo común divisor y compara."
+        ]
+      },
+      {
+        "k": "wr",
+        "p": "Invent a mystery-lab formula with two ingredients. Build a ratio table with at least four rows, explain how you found each new row, and say why adding the same number to both columns does not work.",
+        "pEs": "Inventa una fórmula de laboratorio de misterio con dos ingredientes. Arma una tabla de razones con al menos cuatro filas, explica cómo hallaste cada fila nueva y di por qué sumar el mismo número a ambas columnas no funciona.",
+        "fr": "My formula uses ___ to ___. To get a new row I multiply both numbers by ___. Adding the same number does not work because ___.",
+        "frEs": "Mi fórmula usa ___ a ___. Para obtener una fila nueva multiplico ambos números por ___. Sumar el mismo número no funciona porque ___.",
+        "min": 90,
+        "kw": [
+          "ratio table",
+          "equivalent ratio",
+          "scale factor",
+          "multiply",
+          "pattern"
+        ],
+        "kwEs": [
+          "tabla de razones",
+          "razón equivalente",
+          "factor de escala",
+          "multiplicar",
+          "patrón"
+        ],
+        "rubric": [
+          "I wrote a formula and a ratio table with at least four rows.",
+          "Every row is equivalent to the first row.",
+          "I explained how I used a scale factor to find new rows.",
+          "I explained why adding the same number to both columns breaks the ratio."
+        ],
+        "rubricEs": [
+          "Escribí una fórmula y una tabla de razones con al menos cuatro filas.",
+          "Cada fila es equivalente a la primera.",
+          "Expliqué cómo usé un factor de escala para hallar filas nuevas.",
+          "Expliqué por qué sumar el mismo número a ambas columnas rompe la razón."
+        ],
+        "x": "Fingerprint powder uses 2 g of powder for 5 mL of oil: 2:5, 4:10, 6:15, 8:20. I multiplied both numbers by 2, 3, and 4. If I add 1 to both, 2:5 becomes 3:6, which is 1:2, a different mixture.",
+        "xEs": "El polvo de huellas usa 2 g de polvo por 5 mL de aceite: 2:5, 4:10, 6:15, 8:20. Multipliqué ambos números por 2, 3 y 4. Si sumo 1 a ambos, 2:5 se convierte en 3:6, que es 1:2, una mezcla distinta.",
+        "h": [
+          "Choose a first row, like 2 of one thing for 5 of another.",
+          "Multiply both numbers by 2, 3, 4 to make new rows.",
+          "Test adding the same number to both and check whether it simplifies back to your first row."
+        ],
+        "hEs": [
+          "Elige una primera fila, como 2 de una cosa por 5 de otra.",
+          "Multiplica ambos números por 2, 3, 4 para hacer filas nuevas.",
+          "Prueba sumar el mismo número a ambos y comprueba si se simplifica de vuelta a tu primera fila."
+        ]
+      }
+    ]
+  },
+  "mastery": [
+    {
+      "k": "num",
+      "q": "A formula uses 2 parts of A for every 5 parts of B. How many parts of B go with 14 parts of A?",
+      "qEs": "Una fórmula usa 2 partes de A por cada 5 partes de B. ¿Cuántas partes de B van con 14 partes de A?",
+      "a": "35",
+      "fw": [
+        {
+          "v": "17",
+          "f": "That adds 12 to the 5 because 12 was added to the 2. Scale by multiplying.",
+          "fEs": "Eso suma 12 al 5 porque se sumó 12 al 2. Escala multiplicando."
+        }
+      ],
+      "x": "14 ÷ 2 = 7, so multiply 5 by 7: 5 × 7 = 35.",
+      "xEs": "14 ÷ 2 = 7, así que multiplica 5 por 7: 5 × 7 = 35.",
+      "h": [
+        "How many groups of 2 are in 14?",
+        "Multiply 5 by that number of groups."
+      ],
+      "hEs": [
+        "¿Cuántos grupos de 2 hay en 14?",
+        "Multiplica 5 por esa cantidad de grupos."
+      ]
+    },
+    {
+      "k": "mc",
+      "q": "What is a scale factor in a ratio table?",
+      "qEs": "¿Qué es un factor de escala en una tabla de razones?",
+      "c": [
+        "The number you add to both terms of a ratio.",
+        "The difference between the two terms.",
+        "The number you multiply only the first term by.",
+        "The number you multiply both terms of a ratio by."
+      ],
+      "cEs": [
+        "El número que sumas a ambos términos de una razón.",
+        "La diferencia entre los dos términos.",
+        "El número por el que multiplicas solo el primer término.",
+        "El número por el que multiplicas ambos términos de una razón."
+      ],
+      "a": 3,
+      "f": [
+        "Adding the same number to both terms changes the ratio.",
+        "A difference compares by subtraction. A scale factor is for multiplying.",
+        "Both terms must use the factor, or the ratio changes.",
+        ""
+      ],
+      "fEs": [
+        "Sumar el mismo número a ambos términos cambia la razón.",
+        "Una diferencia compara restando. Un factor de escala es para multiplicar.",
+        "Ambos términos deben usar el factor, o la razón cambia.",
+        ""
+      ],
+      "tag": [
+        "added-not-multiplied",
+        "difference-as-test",
+        "scaled-one-part",
+        ""
+      ],
+      "x": "A scale factor multiplies both terms of a ratio by the same number to make an equivalent ratio.",
+      "xEs": "Un factor de escala multiplica ambos términos de una razón por el mismo número para hacer una razón equivalente.",
+      "h": [
+        "Think about how rows of a ratio table are made.",
+        "Does the same number apply to both terms?"
+      ],
+      "hEs": [
+        "Piensa en cómo se hacen las filas de una tabla de razones.",
+        "¿El mismo número se aplica a ambos términos?"
+      ]
+    }
+  ],
+  "glossary": [
+    {
+      "t": "ratio table",
+      "tEs": "tabla de razones",
+      "d": "A table of equal ratios that shows a pattern.",
+      "dEs": "Una tabla de razones iguales que muestra un patrón."
+    },
+    {
+      "t": "equivalent ratio",
+      "tEs": "razón equivalente",
+      "d": "Two ratios that mean the same thing, like 1:2 and 2:4.",
+      "dEs": "Dos razones que significan lo mismo, como 1:2 y 2:4."
+    },
+    {
+      "t": "scale factor",
+      "tEs": "factor de escala",
+      "d": "The number you multiply both parts of a ratio by to get an equal ratio.",
+      "dEs": "El número por el que multiplicas ambas partes de una razón para obtener una razón igual."
+    },
+    {
+      "t": "pattern",
+      "tEs": "patrón",
+      "d": "A rule that numbers follow again and again.",
+      "dEs": "Una regla que los números siguen una y otra vez."
+    }
+  ]
+}

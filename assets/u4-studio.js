@@ -249,6 +249,39 @@
     return { stars, rank };
   }
 
+  /** Stamp the cross-lesson passport (assets/studio/store.js), the same one the generated studios write. */
+  function passportStamp() {
+    const m = location.pathname.match(/\/math\/unit-4\/([^/]+)\//);
+    if (!m) return;
+    const slug = m[1];
+    const lesson = slug.startsWith("percent-practice-studio")
+      ? "4-1"
+      : (slug.match(/^(4-\d+)-practice-studio/) || [])[1];
+    if (!lesson) return;
+    const mode = /-challenging$/.test(slug) ? "challenge" : "practice";
+    let done = 0;
+    let total = 0;
+    for (const t of TABS) {
+      done += Math.min(need(t), solvedIds(t).length);
+      total += need(t);
+    }
+    const write = () =>
+      W.StudioStore.passport.update(
+        lesson,
+        mode,
+        done,
+        total,
+        mode === "challenge" && solvedIds(5).length >= need(5),
+      );
+    if (W.StudioStore) return write();
+    if (S.storeLoading) return;
+    S.storeLoading = true;
+    const tag = document.createElement("script");
+    tag.src = "/assets/studio/store.js";
+    tag.onload = write;
+    document.head.append(tag);
+  }
+
   /** Award stars for newly solved items and announce finished sections. */
   function sync() {
     if (!S.ready) return;
@@ -286,6 +319,7 @@
       );
     }
     S.lastRank = rank.idx;
+    passportStamp();
     announceSections();
   }
 

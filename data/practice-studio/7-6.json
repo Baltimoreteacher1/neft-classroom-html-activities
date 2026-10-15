@@ -1,0 +1,950 @@
+{
+ "v": 1,
+ "lesson": "7-6",
+ "story": "Welcome to Rooftop Garden! The gardener mapped every bed on a grid, with the water spigot at the origin. Hoses, fences and paths all need the exact distance between two spots, so measure carefully before you cut.",
+ "storyEs": "¡Bienvenidos al Jardín en la azotea! La jardinera dibujó todas las parcelas en una cuadrícula, con la llave de agua en el origen. Las mangueras, las cercas y los senderos necesitan la distancia exacta entre dos lugares, así que mide con cuidado antes de cortar.",
+ "challengeStory": "The garden has overgrown, and the old plan is hidden under the vines. Work out the distances between the beds from their coordinates before the next planting season.",
+ "challengeStoryEs": "El jardín creció sin control y el plano viejo quedó escondido entre las enredaderas. Calcula las distancias entre las parcelas a partir de sus coordenadas antes de la próxima temporada de siembra.",
+ "getReady": null,
+ "fresh": [
+  {
+   "k": "gen",
+   "g": "coordDistance",
+   "level": 1
+  },
+  {
+   "k": "gen",
+   "g": "coordDistance",
+   "level": 1
+  },
+  {
+   "k": "gen",
+   "g": "coordDistance",
+   "level": 2
+  },
+  {
+   "k": "gen",
+   "g": "coordDistance",
+   "level": 2
+  },
+  {
+   "k": "gen",
+   "g": "coordDistance",
+   "level": 3
+  },
+  {
+   "k": "gen",
+   "g": "coordDistance",
+   "level": 3
+  },
+  {
+   "k": "act",
+   "kind": "plot",
+   "level": 2,
+   "p": {
+    "mode": "distance"
+   }
+  }
+ ],
+ "challenge": {
+  "climb": [
+   {
+    "k": "gen",
+    "g": "coordDistance",
+    "level": 2
+   },
+   {
+    "k": "gen",
+    "g": "coordDistance",
+    "level": 2
+   },
+   {
+    "k": "gen",
+    "g": "coordDistance",
+    "level": 3
+   },
+   {
+    "k": "gen",
+    "g": "coordDistance",
+    "level": 3
+   },
+   {
+    "k": "gen",
+    "g": "coordDistance",
+    "level": 4
+   },
+   {
+    "k": "gen",
+    "g": "coordDistance",
+    "level": 4
+   }
+  ],
+  "missions": [
+   {
+    "k": "num",
+    "q": "On the garden grid, each unit is 1 foot. A hose runs from the tomato bed straight across to the herb bed, then straight down to the pepper bed. How many feet of hose are needed in all?",
+    "qEs": "En la cuadrícula del jardín, cada unidad mide 1 pie. Una manguera va desde la parcela de tomates en línea recta hasta la parcela de hierbas y luego en línea recta hacia abajo hasta la parcela de pimientos. ¿Cuántos pies de manguera se necesitan en total?",
+    "a": "14",
+    "unit": "feet",
+    "unitEs": "pies",
+    "fw": [
+     {
+      "v": "9",
+      "f": "9 is only the first part of the hose, from the tomato bed to the herb bed. The hose also runs down to the pepper bed.",
+      "fEs": "9 es solo la primera parte de la manguera, de la parcela de tomates a la de hierbas. La manguera también baja hasta la parcela de pimientos."
+     },
+     {
+      "v": "10",
+      "f": "10 drops the minus sign of the pepper bed's y-coordinate, so the second part comes out too short. The herb and pepper beds are on opposite sides of the x-axis.",
+      "fEs": "10 omite el signo menos de la coordenada y de la parcela de pimientos, así que la segunda parte sale demasiado corta. Las parcelas de hierbas y de pimientos están en lados opuestos del eje x."
+     }
+    ],
+    "x": "Tomato (−4, 3) to herb (5, 3) share y = 3 and are on opposite sides of the y-axis: |−4| + |5| = 9 feet. Herb (5, 3) to pepper (5, −2) share x = 5 and are on opposite sides of the x-axis: |3| + |−2| = 5 feet. Total: 9 + 5 = 14 feet.",
+    "xEs": "Tomate (−4, 3) a hierbas (5, 3) comparten y = 3 y están en lados opuestos del eje y: |−4| + |5| = 9 pies. Hierbas (5, 3) a pimiento (5, −2) comparten x = 5 y están en lados opuestos del eje x: |3| + |−2| = 5 pies. Total: 9 + 5 = 14 pies.",
+    "h": [
+     "Split the hose into two straight parts and find each distance separately.",
+     "For each part, find the coordinate the two points share. The other coordinate gives the distance.",
+     "Check whether the two changing coordinates are on opposite sides of 0 (add the absolute values) or the same side (subtract)."
+    ],
+    "hEs": [
+     "Divide la manguera en dos partes rectas y halla cada distancia por separado.",
+     "En cada parte, busca la coordenada que comparten los dos puntos. La otra coordenada da la distancia.",
+     "Revisa si las dos coordenadas que cambian están en lados opuestos del 0 (suma los valores absolutos) o del mismo lado (resta)."
+    ],
+    "viz": {
+     "t": "coord",
+     "xmin": -8,
+     "xmax": 8,
+     "ymin": -8,
+     "ymax": 8,
+     "points": [
+      {
+       "x": -4,
+       "y": 3,
+       "l": "Tomato"
+      },
+      {
+       "x": 5,
+       "y": 3,
+       "l": "Herb"
+      },
+      {
+       "x": 5,
+       "y": -2,
+       "l": "Pepper"
+      }
+     ],
+     "grid": true
+    }
+   },
+   {
+    "k": "tbl",
+    "t": "The gardener measures between pairs of beds that share a row or a column. Write the distance between each pair, and write 1 if the changing coordinates are on the same side of 0 or 2 if they are on opposite sides. Fill in every empty cell.",
+    "tEs": "La jardinera mide entre parejas de parcelas que comparten una fila o una columna. Escribe la distancia entre cada pareja y escribe 1 si las coordenadas que cambian están del mismo lado del 0 o 2 si están en lados opuestos. Llena cada celda vacía.",
+    "hd": [
+     "Bed A",
+     "Bed B",
+     "Distance (units)",
+     "Sides of 0 (1 = same, 2 = opposite)"
+    ],
+    "hdEs": [
+     "Parcela A",
+     "Parcela B",
+     "Distancia (unidades)",
+     "Lados del 0 (1 = mismo, 2 = opuestos)"
+    ],
+    "rows": [
+     [
+      "(−6, 2)",
+      "(3, 2)",
+      "",
+      ""
+     ],
+     [
+      "(4, −5)",
+      "(4, −1)",
+      "",
+      ""
+     ],
+     [
+      "(−3, 8)",
+      "(−3, −2)",
+      "",
+      ""
+     ]
+    ],
+    "cells": [
+     {
+      "r": 0,
+      "c": 2,
+      "a": "9"
+     },
+     {
+      "r": 0,
+      "c": 3,
+      "a": "2"
+     },
+     {
+      "r": 1,
+      "c": 2,
+      "a": "4"
+     },
+     {
+      "r": 1,
+      "c": 3,
+      "a": "1"
+     },
+     {
+      "r": 2,
+      "c": 2,
+      "a": "10"
+     },
+     {
+      "r": 2,
+      "c": 3,
+      "a": "2"
+     }
+    ],
+    "x": "(−6, 2) to (3, 2): the x-values are on opposite sides of 0, so add 6 + 3 = 9. (4, −5) to (4, −1): the y-values are both negative, so subtract 5 − 1 = 4. (−3, 8) to (−3, −2): the y-values are on opposite sides, so add 8 + 2 = 10.",
+    "xEs": "(−6, 2) a (3, 2): los valores x están en lados opuestos del 0, así que suma 6 + 3 = 9. (4, −5) a (4, −1): los valores y son ambos negativos, así que resta 5 − 1 = 4. (−3, 8) a (−3, −2): los valores y están en lados opuestos, así que suma 8 + 2 = 10.",
+    "h": [
+     "First find which coordinate is the same in both points. Ignore it.",
+     "Look at the two coordinates that change. If one is negative and one positive, they are on opposite sides of 0.",
+     "Opposite sides: add the absolute values. Same side: subtract the smaller absolute value from the larger one."
+    ],
+    "hEs": [
+     "Primero halla cuál coordenada es igual en los dos puntos. Ignórala.",
+     "Mira las dos coordenadas que cambian. Si una es negativa y otra positiva, están en lados opuestos del 0.",
+     "Lados opuestos: suma los valores absolutos. Mismo lado: resta el valor absoluto menor del mayor."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "A rectangular garden bed has corners at (−3, −2), (4, −2), (4, 3) and (−3, 3), as shown on the grid. Each unit is 1 foot. How many feet of fence go around the bed?",
+    "qEs": "Una parcela rectangular tiene esquinas en (−3, −2), (4, −2), (4, 3) y (−3, 3), como se muestra en la cuadrícula. Cada unidad mide 1 pie. ¿Cuántos pies de cerca rodean la parcela?",
+    "c": [
+     "24 feet",
+     "12 feet",
+     "35 feet",
+     "4 feet"
+    ],
+    "a": 0,
+    "f": [
+     "",
+     "12 is one length plus one width. A fence goes around all four sides, so each side length is used twice.",
+     "35 multiplies the length by the width, which gives the area. A fence is the distance around the bed, the perimeter.",
+     "4 comes from ignoring the minus signs, so each side comes out far too short. The corners are on opposite sides of the axes."
+    ],
+    "fEs": [
+     "",
+     "12 es un largo más un ancho. Una cerca rodea los cuatro lados, así que cada medida se usa dos veces.",
+     "35 multiplica el largo por el ancho, lo que da el área. Una cerca es la distancia alrededor de la parcela, el perímetro.",
+     "4 sale de ignorar los signos menos, así que cada lado queda demasiado corto. Las esquinas están en lados opuestos de los ejes."
+    ],
+    "tag": [
+     "",
+     "forgot-two-sides",
+     "area-for-perimeter",
+     "dropped-the-negative-signs"
+    ],
+    "x": "Side AB runs along y = −2 from x = −3 to x = 4: |−3| + |4| = 7 feet. Side BC runs along x = 4 from y = −2 to y = 3: |−2| + |3| = 5 feet. The perimeter is 2 × (7 + 5) = 24 feet.",
+    "xEs": "El lado AB va por y = −2 desde x = −3 hasta x = 4: |−3| + |4| = 7 pies. El lado BC va por x = 4 desde y = −2 hasta y = 3: |−2| + |3| = 5 pies. El perímetro es 2 × (7 + 5) = 24 pies.",
+    "h": [
+     "Find the length of one horizontal side and one vertical side using absolute value.",
+     "Corners on opposite sides of an axis mean you add the absolute values.",
+     "A rectangle has two sides of each length. Add all four sides."
+    ],
+    "hEs": [
+     "Halla el largo de un lado horizontal y de un lado vertical usando el valor absoluto.",
+     "Esquinas en lados opuestos de un eje significan que sumas los valores absolutos.",
+     "Un rectángulo tiene dos lados de cada medida. Suma los cuatro lados."
+    ],
+    "viz": {
+     "t": "coord",
+     "xmin": -6,
+     "xmax": 6,
+     "ymin": -6,
+     "ymax": 6,
+     "points": [
+      {
+       "x": -3,
+       "y": -2,
+       "l": "A"
+      },
+      {
+       "x": 4,
+       "y": -2,
+       "l": "B"
+      },
+      {
+       "x": 4,
+       "y": 3,
+       "l": "C"
+      },
+      {
+       "x": -3,
+       "y": 3,
+       "l": "D"
+      }
+     ],
+     "grid": true,
+     "polygon": [
+      0,
+      1,
+      2,
+      3
+     ]
+    }
+   },
+   {
+    "k": "num",
+    "q": "A garden path runs along the row y = 2 from x = −7 to x = 4. The gardener plants one bush at every whole-number x-value on the path, including both end points. How many bushes does she plant?",
+    "qEs": "Un sendero del jardín va por la fila y = 2 desde x = −7 hasta x = 4. La jardinera planta un arbusto en cada valor entero de x del sendero, incluyendo los dos extremos. ¿Cuántos arbustos planta?",
+    "a": "12",
+    "fw": [
+     {
+      "v": "11",
+      "f": "11 is the length of the path. Planting a bush at both end points gives one more bush than the number of units.",
+      "fEs": "11 es la longitud del sendero. Plantar un arbusto en los dos extremos da un arbusto más que el número de unidades."
+     },
+     {
+      "v": "3",
+      "f": "3 subtracts 7 − 4 as if both x-values were on the same side of 0. They are on opposite sides.",
+      "fEs": "3 resta 7 − 4 como si los dos valores de x estuvieran del mismo lado del 0. Están en lados opuestos."
+     }
+    ],
+    "x": "The path length is |−7| + |4| = 11 units. With a bush at every whole x-value from −7 to 4 there is one more bush than units, because both end points get one: 11 + 1 = 12 bushes.",
+    "xEs": "La longitud del sendero es |−7| + |4| = 11 unidades. Con un arbusto en cada valor entero de x de −7 a 4 hay un arbusto más que unidades, porque los dos extremos tienen uno: 11 + 1 = 12 arbustos.",
+    "h": [
+     "First find the length of the path between x = −7 and x = 4.",
+     "Picture a short path, like from x = 1 to x = 3: how many bushes, and how long is the path?",
+     "Compare the number of bushes with the length. How do they differ when both ends get a bush?"
+    ],
+    "hEs": [
+     "Primero halla la longitud del sendero entre x = −7 y x = 4.",
+     "Imagina un sendero corto, como de x = 1 a x = 3: ¿cuántos arbustos hay y cuánto mide el sendero?",
+     "Compara el número de arbustos con la longitud. ¿En qué se diferencian cuando los dos extremos llevan arbusto?"
+    ]
+   }
+  ],
+  "lab": [
+   {
+    "k": "act",
+    "kind": "plot",
+    "level": 3,
+    "p": {
+     "mode": "distance"
+    }
+   },
+   {
+    "k": "act",
+    "kind": "plot",
+    "level": 4,
+    "p": {
+     "mode": "distance"
+    }
+   },
+   {
+    "k": "sort",
+    "q": "Each pair of garden stakes shares a row or a column. Sort the pairs by how you find the distance.",
+    "qEs": "Cada pareja de estacas del jardín comparte una fila o una columna. Clasifica las parejas según cómo se halla la distancia.",
+    "bins": [
+     {
+      "l": "Add the absolute values (opposite sides of 0)",
+      "lEs": "Sumar los valores absolutos (lados opuestos del 0)"
+     },
+     {
+      "l": "Subtract (same side of 0)",
+      "lEs": "Restar (mismo lado del 0)"
+     }
+    ],
+    "cards": [
+     {
+      "t": "(−4, 2) and (5, 2)",
+      "b": 0
+     },
+     {
+      "t": "(−2, 8) and (−2, −5)",
+      "b": 0
+     },
+     {
+      "t": "(6, −3) and (−1, −3)",
+      "b": 0
+     },
+     {
+      "t": "(3, 1) and (3, 9)",
+      "b": 1
+     },
+     {
+      "t": "(−7, −1) and (−7, −6)",
+      "b": 1
+     },
+     {
+      "t": "(2, 5) and (8, 5)",
+      "b": 1
+     }
+    ],
+    "x": "Look at the two coordinates that change. (−4, 2) and (5, 2) have x-values −4 and 5, on opposite sides of 0, so add: 9. (−2, 8) and (−2, −5): add, 13. (6, −3) and (−1, −3): add, 7. (3, 1) and (3, 9): same side, subtract, 8. (−7, −1) and (−7, −6): same side, subtract, 5. (2, 5) and (8, 5): same side, subtract, 6.",
+    "xEs": "Mira las dos coordenadas que cambian. (−4, 2) y (5, 2) tienen valores x de −4 y 5, en lados opuestos del 0, así que se suma: 9. (−2, 8) y (−2, −5): se suma, 13. (6, −3) y (−1, −3): se suma, 7. (3, 1) y (3, 9): mismo lado, se resta, 8. (−7, −1) y (−7, −6): mismo lado, se resta, 5. (2, 5) y (8, 5): mismo lado, se resta, 6.",
+    "h": [
+     "First find the coordinate that is the same in both points. Cover it up.",
+     "Look at the two remaining numbers. Does one have a minus sign and the other not?",
+     "Opposite signs mean opposite sides of 0."
+    ],
+    "hEs": [
+     "Primero halla la coordenada que es igual en los dos puntos. Tápala.",
+     "Mira los dos números que quedan. ¿Uno tiene signo menos y el otro no?",
+     "Signos opuestos significan lados opuestos del 0."
+    ]
+   }
+  ],
+  "detective": [
+   {
+    "k": "err",
+    "t": "Pablo finds the distance between (−8, 1) and (5, 1). Find the step where his work goes wrong.",
+    "tEs": "Pablo halla la distancia entre (−8, 1) y (5, 1). Encuentra el paso donde su trabajo se equivoca.",
+    "s": [
+     {
+      "l": "Step 1",
+      "lEs": "Paso 1",
+      "w": "Both points have y = 1, so they are on the same row and the distance comes from the x-values.",
+      "wEs": "Los dos puntos tienen y = 1, así que están en la misma fila y la distancia sale de los valores x."
+     },
+     {
+      "l": "Step 2",
+      "lEs": "Paso 2",
+      "w": "I subtract the absolute values: |−8| − |5| = 8 − 5 = 3.",
+      "wEs": "Resto los valores absolutos: |−8| − |5| = 8 − 5 = 3."
+     },
+     {
+      "l": "Step 3",
+      "lEs": "Paso 3",
+      "w": "The distance is 3 units.",
+      "wEs": "La distancia es 3 unidades."
+     }
+    ],
+    "e": 1,
+    "fix": "−8 and 5 are on opposite sides of the y-axis, so add the absolute values: |−8| + |5| = 8 + 5 = 13 units.",
+    "fixEs": "−8 y 5 están en lados opuestos del eje y, así que se suman los valores absolutos: |−8| + |5| = 8 + 5 = 13 unidades.",
+    "x": "Subtracting finds how far apart two numbers are on the same side of 0. When the points are on opposite sides, the trip goes to 0 and then past it, so the distances add.",
+    "xEs": "Restar halla qué tan separados están dos números del mismo lado del 0. Cuando los puntos están en lados opuestos, el recorrido va hasta el 0 y luego más allá, así que las distancias se suman.",
+    "h": [
+     "Which side of the y-axis is each point on?",
+     "How far is each point from 0? The path goes through 0.",
+     "If a path crosses 0, do the two parts add or subtract?"
+    ],
+    "hEs": [
+     "¿De qué lado del eje y está cada punto?",
+     "¿Qué tan lejos del 0 está cada punto? El recorrido pasa por el 0.",
+     "Si un recorrido cruza el 0, ¿las dos partes se suman o se restan?"
+    ]
+   },
+   {
+    "k": "err",
+    "t": "Sofía finds the distance between (−4, −2) and (−4, −8). Find the step where her work goes wrong.",
+    "tEs": "Sofía halla la distancia entre (−4, −2) y (−4, −8). Encuentra el paso donde su trabajo se equivoca.",
+    "s": [
+     {
+      "l": "Step 1",
+      "lEs": "Paso 1",
+      "w": "Both points have x = −4, so they are in the same column and the distance comes from the y-values.",
+      "wEs": "Los dos puntos tienen x = −4, así que están en la misma columna y la distancia sale de los valores y."
+     },
+     {
+      "l": "Step 2",
+      "lEs": "Paso 2",
+      "w": "I add the absolute values: |−2| + |−8| = 2 + 8 = 10.",
+      "wEs": "Sumo los valores absolutos: |−2| + |−8| = 2 + 8 = 10."
+     },
+     {
+      "l": "Step 3",
+      "lEs": "Paso 3",
+      "w": "The distance is 10 units.",
+      "wEs": "La distancia es 10 unidades."
+     }
+    ],
+    "e": 1,
+    "fix": "−2 and −8 are both below the x-axis, on the same side of 0, so subtract the absolute values: |−8| − |−2| = 8 − 2 = 6 units.",
+    "fixEs": "−2 y −8 están los dos debajo del eje x, del mismo lado del 0, así que se restan los valores absolutos: |−8| − |−2| = 8 − 2 = 6 unidades.",
+    "x": "Adding absolute values only works when the points are on opposite sides of 0. On the same side, one point is between the other point and 0, so the distance is the difference.",
+    "xEs": "Sumar valores absolutos solo funciona cuando los puntos están en lados opuestos del 0. Del mismo lado, un punto queda entre el otro punto y el 0, así que la distancia es la diferencia.",
+    "h": [
+     "Are both y-values on the same side of 0?",
+     "Picture both points below the x-axis. Is one of them between the other and 0?",
+     "If so, the distance is only the extra stretch, not the whole way from 0."
+    ],
+    "hEs": [
+     "¿Los dos valores y están del mismo lado del 0?",
+     "Imagina los dos puntos debajo del eje x. ¿Uno de ellos está entre el otro y el 0?",
+     "Si es así, la distancia es solo el tramo extra, no todo el camino desde el 0."
+    ]
+   },
+   {
+    "k": "err",
+    "t": "Teo finds the distance between (3, −2) and (3, 5). Find the step where his work goes wrong.",
+    "tEs": "Teo halla la distancia entre (3, −2) y (3, 5). Encuentra el paso donde su trabajo se equivoca.",
+    "s": [
+     {
+      "l": "Step 1",
+      "lEs": "Paso 1",
+      "w": "The points are (3, −2) and (3, 5).",
+      "wEs": "Los puntos son (3, −2) y (3, 5)."
+     },
+     {
+      "l": "Step 2",
+      "lEs": "Paso 2",
+      "w": "I use the x-coordinates: |3 − 3| = 0.",
+      "wEs": "Uso las coordenadas x: |3 − 3| = 0."
+     },
+     {
+      "l": "Step 3",
+      "lEs": "Paso 3",
+      "w": "The distance is 0 units.",
+      "wEs": "La distancia es 0 unidades."
+     }
+    ],
+    "e": 1,
+    "fix": "The x-coordinates are the same, so they do not show the distance. The points are in the same column, and the distance comes from the y-values: |−2| + |5| = 7 units.",
+    "fixEs": "Las coordenadas x son iguales, así que no muestran la distancia. Los puntos están en la misma columna y la distancia sale de los valores y: |−2| + |5| = 7 unidades.",
+    "x": "Use the coordinate that is different. The shared coordinate just tells which row or column the segment is on.",
+    "xEs": "Usa la coordenada que es diferente. La coordenada compartida solo dice en qué fila o columna está el segmento.",
+    "h": [
+     "Which coordinate is the same in both points? Which one changes?",
+     "Distance measures how far apart the points are, so use the coordinate that changes.",
+     "Picture the segment going up and down at x = 3."
+    ],
+    "hEs": [
+     "¿Cuál coordenada es igual en los dos puntos? ¿Cuál cambia?",
+     "La distancia mide qué tan separados están los puntos, así que usa la coordenada que cambia.",
+     "Imagina el segmento subiendo y bajando en x = 3."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "Three gardeners find the distance from (−3, 4) to (−3, −6). Ula says 10 units, because |4| + |−6| = 10. Van says 2 units, because 6 − 4 = 2. Wes says −10 units, because the point is below the other. Who is right?",
+    "qEs": "Tres jardineros hallan la distancia de (−3, 4) a (−3, −6). Ula dice 10 unidades, porque |4| + |−6| = 10. Van dice 2 unidades, porque 6 − 4 = 2. Wes dice −10 unidades, porque el punto está debajo del otro. ¿Quién tiene razón?",
+    "c": [
+     "Van",
+     "Wes",
+     "Ula and Wes",
+     "Ula"
+    ],
+    "cEs": [
+     "Van",
+     "Wes",
+     "Ula y Wes",
+     "Ula"
+    ],
+    "a": 3,
+    "f": [
+     "Van subtracted 6 − 4, but 4 and −6 are on opposite sides of the x-axis, so the distances to 0 add.",
+     "Wes has the right size but not the right sign. A distance is never negative, no matter which point is lower.",
+     "Wes's answer is negative, and distance is never negative. Only one gardener is right.",
+     ""
+    ],
+    "fEs": [
+     "Van restó 6 − 4, pero 4 y −6 están en lados opuestos del eje x, así que las distancias al 0 se suman.",
+     "Wes tiene el tamaño correcto pero no el signo correcto. Una distancia nunca es negativa, sin importar cuál punto está más abajo.",
+     "La respuesta de Wes es negativa, y la distancia nunca es negativa. Solo un jardinero tiene razón.",
+     ""
+    ],
+    "tag": [
+     "subtracted-across-zero",
+     "negative-distance",
+     "negative-distance",
+     ""
+    ],
+    "x": "The points share x = −3, and their y-values 4 and −6 are on opposite sides of 0. The distance is |4| + |−6| = 10 units, a positive number. Only Ula is right.",
+    "xEs": "Los puntos comparten x = −3, y sus valores y, 4 y −6, están en lados opuestos del 0. La distancia es |4| + |−6| = 10 unidades, un número positivo. Solo Ula tiene razón.",
+    "h": [
+     "Which coordinate changes between the two points?",
+     "Are 4 and −6 on the same side of 0 or on opposite sides?",
+     "Distance is never negative."
+    ],
+    "hEs": [
+     "¿Cuál coordenada cambia entre los dos puntos?",
+     "¿4 y −6 están del mismo lado del 0 o en lados opuestos?",
+     "La distancia nunca es negativa."
+    ]
+   }
+  ],
+  "boss": [
+   {
+    "k": "mc",
+    "q": "What is the distance between (−9, 5) and (4, 5)?",
+    "qEs": "¿Cuál es la distancia entre (−9, 5) y (4, 5)?",
+    "c": [
+     "5 units",
+     "13 units",
+     "9 units",
+     "4 units"
+    ],
+    "a": 1,
+    "f": [
+     "5 comes from 9 − 4. The points are on opposite sides of the y-axis, so the distances to 0 add.",
+     "",
+     "9 is only the distance from (−9, 5) to the y-axis. The path continues to the other point.",
+     "4 is only the distance from (4, 5) to the y-axis. The path starts at the other point."
+    ],
+    "fEs": [
+     "5 sale de 9 − 4. Los puntos están en lados opuestos del eje y, así que las distancias al 0 se suman.",
+     "",
+     "9 es solo la distancia de (−9, 5) al eje y. El recorrido sigue hasta el otro punto.",
+     "4 es solo la distancia de (4, 5) al eje y. El recorrido empieza en el otro punto."
+    ],
+    "tag": [
+     "subtracted-across-zero",
+     "",
+     "used-one-coordinate-only",
+     "used-one-coordinate-only"
+    ],
+    "x": "Both points have y = 5, so they share a row. Their x-values are on opposite sides of 0, so the distance is |−9| + |4| = 13 units.",
+    "xEs": "Los dos puntos tienen y = 5, así que comparten una fila. Sus valores x están en lados opuestos del 0, así que la distancia es |−9| + |4| = 13 unidades.",
+    "h": [
+     "Which coordinate is the same in the two points?",
+     "The other coordinate gives the distance. Are the two numbers on the same side of 0?",
+     "If they are on opposite sides, add their absolute values."
+    ],
+    "hEs": [
+     "¿Cuál coordenada es igual en los dos puntos?",
+     "La otra coordenada da la distancia. ¿Los dos números están del mismo lado del 0?",
+     "Si están en lados opuestos, suma sus valores absolutos."
+    ]
+   },
+   {
+    "k": "num",
+    "q": "How many units apart are (7, −12) and (7, −4)?",
+    "qEs": "¿Cuántas unidades separan a (7, −12) y (7, −4)?",
+    "a": "8",
+    "fw": [
+     {
+      "v": "16",
+      "f": "16 adds the absolute values, but −12 and −4 are on the same side of 0. When the points are on the same side, subtract.",
+      "fEs": "16 suma los valores absolutos, pero −12 y −4 están del mismo lado del 0. Cuando los puntos están del mismo lado, se resta."
+     },
+     {
+      "v": "-8",
+      "f": "A distance is never negative. Subtract the smaller absolute value from the larger one.",
+      "fEs": "Una distancia nunca es negativa. Resta el valor absoluto menor del mayor."
+     }
+    ],
+    "x": "The points share x = 7, and the y-values −12 and −4 are both below 0. Subtract the absolute values: |−12| − |−4| = 12 − 4 = 8 units.",
+    "xEs": "Los puntos comparten x = 7, y los valores y, −12 y −4, están los dos debajo del 0. Resta los valores absolutos: |−12| − |−4| = 12 − 4 = 8 unidades.",
+    "h": [
+     "Which coordinate changes between the points?",
+     "Are −12 and −4 on the same side of 0?",
+     "On the same side, subtract the smaller absolute value from the larger one."
+    ],
+    "hEs": [
+     "¿Cuál coordenada cambia entre los puntos?",
+     "¿−12 y −4 están del mismo lado del 0?",
+     "Del mismo lado, resta el valor absoluto menor del mayor."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "Four plant stakes are on the grid: P at (−3, 4), Q at (5, 4), R at (−3, −5) and S at (2, −5). Which pair of stakes is exactly 8 units apart?",
+    "qEs": "Cuatro estacas de plantas están en la cuadrícula: P en (−3, 4), Q en (5, 4), R en (−3, −5) y S en (2, −5). ¿Cuál pareja de estacas está exactamente a 8 unidades?",
+    "c": [
+     "P and R",
+     "R and S",
+     "P and Q",
+     "Q and S"
+    ],
+    "cEs": [
+     "P y R",
+     "R y S",
+     "P and Q",
+     "Q y S"
+    ],
+    "a": 2,
+    "f": [
+     "P and R share x = −3, and their y-values 4 and −5 are on opposite sides of 0, which makes 9 units, not 8.",
+     "R and S share y = −5, and their x-values −3 and 2 make 5 units, not 8.",
+     "",
+     "Q and S are not in the same row or column, so their distance is not found by adding or subtracting one pair of coordinates."
+    ],
+    "fEs": [
+     "P y R comparten x = −3, y sus valores y, 4 y −5, están en lados opuestos del 0, lo que da 9 unidades, no 8.",
+     "R y S comparten y = −5, y sus valores x, −3 y 2, dan 5 unidades, no 8.",
+     "",
+     "Q y S no están en la misma fila ni en la misma columna, así que su distancia no se halla sumando o restando un solo par de coordenadas."
+    ],
+    "tag": [
+     "wrong-pair-distance",
+     "wrong-pair-distance",
+     "",
+     "not-in-same-row-or-column"
+    ],
+    "x": "P (−3, 4) and Q (5, 4) share y = 4, and their x-values are on opposite sides of 0: |−3| + |5| = 8 units. P and R are 9 apart, R and S are 5 apart, and Q and S do not share a row or column.",
+    "xEs": "P (−3, 4) y Q (5, 4) comparten y = 4, y sus valores x están en lados opuestos del 0: |−3| + |5| = 8 unidades. P y R están a 9, R y S están a 5, y Q y S no comparten fila ni columna.",
+    "h": [
+     "Only pairs that share a row or a column can be measured this way.",
+     "For each pair, find the shared coordinate and then the distance from the other coordinate.",
+     "Check each pair until you find one that equals 8."
+    ],
+    "hEs": [
+     "Solo las parejas que comparten una fila o una columna se pueden medir así.",
+     "En cada pareja, halla la coordenada compartida y luego la distancia con la otra coordenada.",
+     "Revisa cada pareja hasta que encuentres una que sea igual a 8."
+    ],
+    "viz": {
+     "t": "coord",
+     "xmin": -6,
+     "xmax": 6,
+     "ymin": -6,
+     "ymax": 6,
+     "points": [
+      {
+       "x": -3,
+       "y": 4,
+       "l": "P"
+      },
+      {
+       "x": 5,
+       "y": 4,
+       "l": "Q"
+      },
+      {
+       "x": -3,
+       "y": -5,
+       "l": "R"
+      },
+      {
+       "x": 2,
+       "y": -5,
+       "l": "S"
+      }
+     ],
+     "grid": true
+    }
+   },
+   {
+    "k": "num",
+    "q": "A rectangular herb bed has corners at (−6, −3), (2, −3), (2, 4) and (−6, 4). Each unit is 1 foot. What is the area of the bed in square feet?",
+    "qEs": "Una parcela rectangular de hierbas tiene esquinas en (−6, −3), (2, −3), (2, 4) y (−6, 4). Cada unidad mide 1 pie. ¿Cuál es el área de la parcela en pies cuadrados?",
+    "a": "56",
+    "unit": "square feet",
+    "unitEs": "pies cuadrados",
+    "fw": [
+     {
+      "v": "30",
+      "f": "30 is the perimeter. Area multiplies the length by the width.",
+      "fEs": "30 es el perímetro. El área multiplica el largo por el ancho."
+     },
+     {
+      "v": "15",
+      "f": "15 adds the sides without using the signs correctly. The corners are on opposite sides of both axes, so the distances add.",
+      "fEs": "15 suma los lados sin usar bien los signos. Las esquinas están en lados opuestos de los dos ejes, así que las distancias se suman."
+     }
+    ],
+    "x": "The width runs from x = −6 to x = 2: |−6| + |2| = 8 feet. The height runs from y = −3 to y = 4: |−3| + |4| = 7 feet. The area is 8 × 7 = 56 square feet.",
+    "xEs": "El ancho va de x = −6 a x = 2: |−6| + |2| = 8 pies. El alto va de y = −3 a y = 4: |−3| + |4| = 7 pies. El área es 8 × 7 = 56 pies cuadrados.",
+    "h": [
+     "Find the length of one horizontal side and one vertical side first.",
+     "The corners are on opposite sides of the axes, so add the absolute values for each side.",
+     "Area of a rectangle is length times width."
+    ],
+    "hEs": [
+     "Primero halla el largo de un lado horizontal y de un lado vertical.",
+     "Las esquinas están en lados opuestos de los ejes, así que suma los valores absolutos para cada lado.",
+     "El área de un rectángulo es largo por ancho."
+    ]
+   },
+   {
+    "k": "mc",
+    "q": "Two scarecrows stand on the same vertical line, 11 units apart. One scarecrow is at (5, −4). Which point could be the other scarecrow?",
+    "qEs": "Dos espantapájaros están en la misma línea vertical, a 11 unidades de distancia. Uno está en (5, −4). ¿Cuál punto podría ser el otro espantapájaros?",
+    "c": [
+     "(5, 7)",
+     "(5, 11)",
+     "(16, −4)",
+     "(5, −7)"
+    ],
+    "a": 0,
+    "f": [
+     "",
+     "(5, 11) is 11 units from the x-axis, but from (5, −4) it is 15 units, because the points are on opposite sides of 0.",
+     "(16, −4) is 11 units away, but to the right, in the same row. The scarecrows are on the same vertical line.",
+     "(5, −7) is on the same vertical line, but it is only 3 units from (5, −4)."
+    ],
+    "fEs": [
+     "",
+     "(5, 11) está a 11 unidades del eje x, pero de (5, −4) está a 15 unidades, porque los puntos están en lados opuestos del 0.",
+     "(16, −4) está a 11 unidades, pero a la derecha, en la misma fila. Los espantapájaros están en la misma línea vertical.",
+     "(5, −7) está en la misma línea vertical, pero está a solo 3 unidades de (5, −4)."
+    ],
+    "tag": [
+     "",
+     "ignored-the-sign",
+     "moved-along-wrong-axis",
+     "used-same-sign"
+    ],
+    "x": "Points on the same vertical line share x = 5. From y = −4, going 11 units up reaches y = 7, because 4 units reach 0 and 7 more reach 7. The distance |7 − (−4)| = 11 checks out.",
+    "xEs": "Los puntos en la misma línea vertical comparten x = 5. Desde y = −4, subir 11 unidades llega a y = 7, porque 4 unidades llegan a 0 y 7 más llegan a 7. La distancia |7 − (−4)| = 11 se comprueba.",
+    "h": [
+     "The same vertical line means the same x-coordinate.",
+     "Move 11 units up or down from y = −4. Count the units to 0 first.",
+     "Check your choice by finding its distance from (5, −4)."
+    ],
+    "hEs": [
+     "La misma línea vertical significa la misma coordenada x.",
+     "Muévete 11 unidades hacia arriba o hacia abajo desde y = −4. Primero cuenta las unidades hasta el 0.",
+     "Comprueba tu opción hallando su distancia a (5, −4)."
+    ]
+   },
+   {
+    "k": "wr",
+    "p": "Create your own garden bed. Choose four corners of a rectangle that cross at least one axis. Use absolute value to find the length of each side, then find the perimeter, and explain when you add and when you subtract.",
+    "pEs": "Crea tu propia parcela de jardín. Elige las cuatro esquinas de un rectángulo que cruce al menos un eje. Usa el valor absoluto para hallar la longitud de cada lado, luego halla el perímetro y explica cuándo sumas y cuándo restas.",
+    "fr": "My corners are ___, ___, ___ and ___. One side goes from ___ to ___, so its length is ___ because ___. The perimeter is ___. I add absolute values when ___, and I subtract when ___.",
+    "frEs": "Mis esquinas son ___, ___, ___ y ___. Un lado va de ___ a ___, así que su longitud es ___ porque ___. El perímetro es ___. Sumo valores absolutos cuando ___, y resto cuando ___.",
+    "min": 140,
+    "kw": [
+     "absolute value",
+     "distance",
+     "perimeter",
+     "opposite sides",
+     "same side"
+    ],
+    "kwEs": [
+     "valor absoluto",
+     "distancia",
+     "perímetro",
+     "lados opuestos",
+     "mismo lado"
+    ],
+    "rubric": [
+     "My four corners make a rectangle that crosses at least one axis.",
+     "I used absolute value to find the length of each side.",
+     "I found the perimeter correctly.",
+     "I explained when to add absolute values and when to subtract."
+    ],
+    "rubricEs": [
+     "Mis cuatro esquinas forman un rectángulo que cruza al menos un eje.",
+     "Usé el valor absoluto para hallar la longitud de cada lado.",
+     "Hallé bien el perímetro.",
+     "Expliqué cuándo sumar valores absolutos y cuándo restar."
+    ],
+    "x": "My corners are (−5, 1), (3, 1), (3, 6) and (−5, 6). The bottom side goes from x = −5 to x = 3, so its length is |−5| + |3| = 8 because the points are on opposite sides of the y-axis. The side from y = 1 to y = 6 is |6| − |1| = 5 because both numbers are on the same side of 0. The perimeter is 2 × (8 + 5) = 26. I add absolute values when the points are on opposite sides of 0, and I subtract when they are on the same side.",
+    "xEs": "Mis esquinas son (−5, 1), (3, 1), (3, 6) y (−5, 6). El lado de abajo va de x = −5 a x = 3, así que su longitud es |−5| + |3| = 8 porque los puntos están en lados opuestos del eje y. El lado de y = 1 a y = 6 mide |6| − |1| = 5 porque los dos números están del mismo lado del 0. El perímetro es 2 × (8 + 5) = 26. Sumo valores absolutos cuando los puntos están en lados opuestos del 0, y resto cuando están del mismo lado.",
+    "h": [
+     "Make a rectangle by choosing two x-values and two y-values, then use every pairing as a corner.",
+     "For each side, find which coordinate is the same and which one changes.",
+     "Opposite sides of 0: add. Same side of 0: subtract."
+    ],
+    "hEs": [
+     "Forma un rectángulo eligiendo dos valores x y dos valores y, y usa cada combinación como esquina.",
+     "En cada lado, halla cuál coordenada es igual y cuál cambia.",
+     "Lados opuestos del 0: suma. Mismo lado del 0: resta."
+    ]
+   }
+  ]
+ },
+ "mastery": [
+  {
+   "k": "num",
+   "q": "How far apart are (0, −8) and (0, 5)?",
+   "qEs": "¿Qué tan separados están (0, −8) y (0, 5)?",
+   "a": "13",
+   "fw": [
+    {
+     "v": "3",
+     "f": "3 subtracts the digits 8 − 5. The points are on opposite sides of the x-axis, so add the distances to 0.",
+     "fEs": "3 resta los dígitos 8 − 5. Los puntos están en lados opuestos del eje x, así que se suman las distancias al 0."
+    },
+    {
+     "v": "-13",
+     "f": "A distance is never negative.",
+     "fEs": "Una distancia nunca es negativa."
+    }
+   ],
+   "x": "Both points have x = 0, so they are on the y-axis. The y-values are on opposite sides of 0, so the distance is |−8| + |5| = 13 units.",
+   "xEs": "Los dos puntos tienen x = 0, así que están en el eje y. Los valores y están en lados opuestos del 0, así que la distancia es |−8| + |5| = 13 unidades.",
+   "h": [
+    "Find the coordinate that is the same. The other one gives the distance.",
+    "Are −8 and 5 on the same side of 0?",
+    "Opposite sides: add the absolute values."
+   ],
+   "hEs": [
+    "Halla la coordenada que es igual. La otra da la distancia.",
+    "¿−8 y 5 están del mismo lado del 0?",
+    "Lados opuestos: suma los valores absolutos."
+   ]
+  },
+  {
+   "k": "mc",
+   "q": "Which pair of points is exactly 6 units apart?",
+   "qEs": "¿Cuál pareja de puntos está exactamente a 6 unidades?",
+   "c": [
+    "(3, 2) and (3, 9)",
+    "(−2, 5) and (4, 5)",
+    "(−5, 1) and (−5, 4)",
+    "(1, −4) and (8, −4)"
+   ],
+   "a": 1,
+   "f": [
+    "These are on the same vertical line, but 9 − 2 = 7 units apart, not 6.",
+    "",
+    "These are on the same vertical line, but 4 − 1 = 3 units apart, not 6.",
+    "These are on the same horizontal line, but 8 − 1 = 7 units apart, not 6."
+   ],
+   "fEs": [
+    "Están en la misma línea vertical, pero están a 9 − 2 = 7 unidades, no a 6.",
+    "",
+    "Están en la misma línea vertical, pero están a 4 − 1 = 3 unidades, no a 6.",
+    "Están en la misma línea horizontal, pero están a 8 − 1 = 7 unidades, no a 6."
+   ],
+   "tag": [
+    "wrong-pair-distance",
+    "",
+    "wrong-pair-distance",
+    "wrong-pair-distance"
+   ],
+   "x": "(−2, 5) and (4, 5) share y = 5, and their x-values are on opposite sides of 0: |−2| + |4| = 6 units. The other pairs are 7, 3 and 7 units apart.",
+   "xEs": "(−2, 5) y (4, 5) comparten y = 5, y sus valores x están en lados opuestos del 0: |−2| + |4| = 6 unidades. Las otras parejas están a 7, 3 y 7 unidades.",
+   "h": [
+    "For each pair, find the coordinate they share.",
+    "Then find the distance with the coordinate that changes.",
+    "Check each pair until you find 6."
+   ],
+   "hEs": [
+    "En cada pareja, halla la coordenada que comparten.",
+    "Luego halla la distancia con la coordenada que cambia.",
+    "Revisa cada pareja hasta que encuentres 6."
+   ]
+  }
+ ],
+ "glossary": [
+  {
+   "t": "distance",
+   "tEs": "distancia",
+   "d": "How far apart two points are. It is never negative.",
+   "dEs": "Qué tan separados están dos puntos. Nunca es negativa."
+  },
+  {
+   "t": "absolute value",
+   "tEs": "valor absoluto",
+   "d": "How far a number is from 0. It is never negative.",
+   "dEs": "Qué tan lejos está un número del 0. Nunca es negativo."
+  },
+  {
+   "t": "horizontal distance",
+   "tEs": "distancia horizontal",
+   "d": "How far apart two points are going left or right.",
+   "dEs": "Qué tan separados están dos puntos yendo a la izquierda o a la derecha."
+  },
+  {
+   "t": "vertical distance",
+   "tEs": "distancia vertical",
+   "d": "How far apart two points are going up or down.",
+   "dEs": "Qué tan separados están dos puntos yendo hacia arriba o hacia abajo."
+  },
+  {
+   "t": "coordinate plane",
+   "tEs": "plano cartesiano",
+   "d": "A grid with a horizontal line and a vertical line that cross, used to plot points.",
+   "dEs": "Una cuadrícula con una línea horizontal y una vertical que se cruzan, para ubicar puntos."
+  }
+ ]
+}

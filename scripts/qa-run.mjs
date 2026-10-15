@@ -233,8 +233,17 @@ const COVERAGE = [
   // hub links are written by scripts/generate-practice-studios.mjs from the lesson configs; the test
   // proves they are current and that every answer is the lesson's own.
   [
-    /^(math\/practice-studio\/|assets\/studio-items\.js$|scripts\/generate-practice-studios\.mjs$|tools\/practice-studios\.test\.mjs$)/,
-    ["test", "validate:save-resume", "validate:js-syntax", "validate:static", "typecheck", "check"],
+    /^(math\/practice-studio\/|assets\/studio\/|assets\/studio-(gen|act)\/|assets\/studio-(viz[\w-]*\.js|v2\.css|worlds\.css)$|data\/practice-studio\/|scripts\/generate-practice-studios\.mjs$|scripts\/lib\/practice-studio-[\w-]+\.mjs$|tools\/(practice-studios|studio-[\w-]+)\.test\.mjs$|tools\/validate-practice-studio-data\.mjs$|tools\/lib\/studio-vm\.mjs$)/,
+    [
+      "test",
+      "validate:practice-studio-data",
+      "validate:save-resume",
+      "validate:js-syntax",
+      "validate:css-integrity",
+      "validate:static",
+      "typecheck",
+      "check",
+    ],
   ],
 
   // PRODUCT DECISIONS — the registry of choices a human made that a gate now

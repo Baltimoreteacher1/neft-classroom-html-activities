@@ -1,0 +1,832 @@
+{
+  "v": 1,
+  "lesson": "3-7",
+  "story": "Robot Lab just got a shipment from a partner lab overseas. The parts are labeled in kilograms and liters, but our scales and tanks read pounds and quarts. Convert each measurement so the build can start.",
+  "storyEs": "El Laboratorio de Robots recibió un envío de un laboratorio asociado en el extranjero. Las piezas están marcadas en kilogramos y litros, pero nuestras básculas y tanques leen libras y cuartos de galón. Convierte cada medida para que la construcción pueda empezar.",
+  "challengeStory": "Night shift at Robot Lab: one wall of the test track is marked in miles, the other in kilometers, and the scoreboard flashes both. Compare the robots fairly before the morning demo.",
+  "challengeStoryEs": "Turno de noche en el Laboratorio de Robots: una pared de la pista de pruebas está marcada en millas, la otra en kilómetros, y el marcador muestra las dos. Compara los robots de forma justa antes de la demostración de la mañana.",
+  "getReady": null,
+  "noAct": false,
+  "fresh": [
+    {
+      "k": "gen",
+      "g": "convertBetween",
+      "level": 1
+    },
+    {
+      "k": "gen",
+      "g": "convertBetween",
+      "level": 1
+    },
+    {
+      "k": "gen",
+      "g": "convertBetween",
+      "level": 2
+    },
+    {
+      "k": "gen",
+      "g": "convertBetween",
+      "level": 2
+    },
+    {
+      "k": "gen",
+      "g": "convertBetween",
+      "level": 3
+    },
+    {
+      "k": "gen",
+      "g": "convertBetween",
+      "level": 3
+    },
+    {
+      "k": "act",
+      "kind": "convchain",
+      "level": 2,
+      "p": {
+        "system": "between"
+      }
+    }
+  ],
+  "challenge": {
+    "climb": [
+      {
+        "k": "gen",
+        "g": "convertBetween",
+        "level": 2
+      },
+      {
+        "k": "gen",
+        "g": "convertBetween",
+        "level": 2
+      },
+      {
+        "k": "gen",
+        "g": "convertBetween",
+        "level": 3
+      },
+      {
+        "k": "gen",
+        "g": "convertBetween",
+        "level": 3
+      },
+      {
+        "k": "gen",
+        "g": "convertBetween",
+        "level": 4
+      },
+      {
+        "k": "gen",
+        "g": "convertBetween",
+        "level": 4
+      }
+    ],
+    "missions": [
+      {
+        "k": "mc",
+        "q": "Priya packs a robot kit for air shipping. The sensor pack is 3.5 kg, the motor set is 6 kg, and the frame is 9.5 kg. The airline limit is 40 lb. Use 1 kg ≈ 2.2 lb. How does the kit compare with the limit?",
+        "qEs": "Priya empaca un kit de robot para enviarlo por avión. El paquete de sensores pesa 3.5 kg, el juego de motores pesa 6 kg y el chasis pesa 9.5 kg. El límite de la aerolínea es 40 lb. Usa 1 kg ≈ 2.2 lb. ¿Cómo se compara el kit con el límite?",
+        "c": [
+          "Under the limit, because 19 is less than 40",
+          "Over the limit by about 1.8 lb",
+          "Under the limit by about 31 lb",
+          "Under the limit by about 69 kg"
+        ],
+        "cEs": [
+          "Está bajo el límite, porque 19 es menor que 40",
+          "Se pasa del límite por unas 1.8 lb",
+          "Está bajo el límite por unas 31 lb",
+          "Está bajo el límite por unos 69 kg"
+        ],
+        "a": 1,
+        "f": [
+          "You compared 19 kg with 40 lb as if they were the same unit. Kilograms and pounds are different sizes, so convert first.",
+          "",
+          "This divides 19 kg by 2.2. A kilogram is heavier than a pound, so the same mass is MORE pounds, not fewer.",
+          "This multiplies the 40-lb limit by 2.2. A pound is lighter than a kilogram, so 40 lb is FEWER than 40 kg."
+        ],
+        "fEs": [
+          "Comparaste 19 kg con 40 lb como si fueran la misma unidad. Los kilogramos y las libras son de tamaños distintos, así que convierte primero.",
+          "",
+          "Esto divide 19 kg entre 2.2. Un kilogramo pesa más que una libra, así que la misma masa son MÁS libras, no menos.",
+          "Esto multiplica el límite de 40 lb por 2.2. Una libra pesa menos que un kilogramo, así que 40 lb son MENOS que 40 kg."
+        ],
+        "tag": [
+          "compared-raw-numbers",
+          null,
+          "divided-instead",
+          "multiplied-instead"
+        ],
+        "x": "The kit has 3.5 + 6 + 9.5 = 19 kg. Each kilogram is about 2.2 lb, so 19 kg ≈ 19 × 2.2 = 41.8 lb. That is about 1.8 lb over the 40-lb limit. Check: pounds are lighter than kilograms, so the pound number should be bigger than 19.",
+        "xEs": "El kit tiene 3.5 + 6 + 9.5 = 19 kg. Cada kilogramo son unas 2.2 lb, así que 19 kg ≈ 19 × 2.2 = 41.8 lb. Eso es unas 1.8 lb por encima del límite de 40 lb. Revisa: las libras pesan menos que los kilogramos, así que el número de libras debe ser mayor que 19.",
+        "h": [
+          "The kit is in kilograms but the limit is in pounds. Put both in the same unit.",
+          "Add the three masses first. Then use the ratio 1 kg : 2.2 lb on the total.",
+          "The three masses add up to 19 kg. Multiply 19 by 2.2, then compare with the limit."
+        ],
+        "hEs": [
+          "El kit está en kilogramos pero el límite está en libras. Pon las dos cantidades en la misma unidad.",
+          "Suma primero las tres masas. Luego usa la razón 1 kg : 2.2 lb con el total.",
+          "Las tres masas suman 19 kg. Multiplica 19 por 2.2 y luego compara con el límite."
+        ]
+      },
+      {
+        "k": "num",
+        "q": "Sofía's delivery cart drives a 90-kilometer test route in 2 hours at a steady speed. The track limit is 25 mi/h. Use 1 km ≈ 0.6 mi. By about how many mi/h is the cart faster than the limit?",
+        "qEs": "El carrito de reparto de Sofía recorre una ruta de prueba de 90 kilómetros en 2 horas a una velocidad constante. El límite de la pista es 25 mi/h. Usa 1 km ≈ 0.6 mi. ¿Por cuántas mi/h aproximadamente supera el carrito el límite?",
+        "a": "2",
+        "unit": "mi/h",
+        "fw": [
+          {
+            "v": "20",
+            "f": "You subtracted 25 from 45. But 45 is in km/h and 25 is in mi/h, so those numbers cannot be compared yet.",
+            "fEs": "Restaste 25 de 45. Pero 45 está en km/h y 25 está en mi/h, así que todavía no se pueden comparar."
+          },
+          {
+            "v": "29",
+            "f": "You converted the whole route but skipped the speed. Speed is the distance for ONE hour, and the trip took more than one hour.",
+            "fEs": "Convertiste toda la ruta pero te saltaste la velocidad. La velocidad es la distancia de UNA hora, y el viaje duró más de una hora."
+          },
+          {
+            "v": "50",
+            "f": "You divided 45 by 0.6. A mile is longer than a kilometer, so the speed in mi/h should be smaller than the speed in km/h.",
+            "fEs": "Dividiste 45 entre 0.6. Una milla es más larga que un kilómetro, así que la velocidad en mi/h debe ser menor que la velocidad en km/h."
+          }
+        ],
+        "x": "In 1 hour the cart drives 90 ÷ 2 = 45 km. Scale 1 km : 0.6 mi by 45: 45 × 0.6 = 27 mi, so the cart goes 27 mi/h. That is 27 − 25 = 2 mi/h faster than the limit.",
+        "xEs": "En 1 hora el carrito recorre 90 ÷ 2 = 45 km. Escala 1 km : 0.6 mi por 45: 45 × 0.6 = 27 mi, así que el carrito va a 27 mi/h. Eso es 27 − 25 = 2 mi/h más rápido que el límite.",
+        "h": [
+          "Speed is a rate. Find the distance the cart drives in 1 hour first.",
+          "Change that speed from km/h to mi/h with the ratio 1 km : 0.6 mi.",
+          "When both speeds are in mi/h, subtract the limit from the cart's speed."
+        ],
+        "hEs": [
+          "La velocidad es una tasa. Primero halla la distancia que recorre el carrito en 1 hora.",
+          "Cambia esa velocidad de km/h a mi/h con la razón 1 km : 0.6 mi.",
+          "Cuando las dos velocidades estén en mi/h, resta el límite de la velocidad del carrito."
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "Imani fills 16 robots with 1.25 L of coolant each. The lab buys coolant in 1-quart bottles, and 1 L ≈ 1.06 qt. How many bottles must Imani buy so every robot gets its full amount?",
+        "qEs": "Imani llena 16 robots con 1.25 L de refrigerante cada uno. El laboratorio compra el refrigerante en botellas de 1 cuarto de galón, y 1 L ≈ 1.06 qt. ¿Cuántas botellas debe comprar Imani para que cada robot reciba toda su cantidad?",
+        "c": [
+          "19 bottles",
+          "20 bottles",
+          "21 bottles",
+          "22 bottles"
+        ],
+        "cEs": [
+          "19 botellas",
+          "20 botellas",
+          "21 botellas",
+          "22 botellas"
+        ],
+        "a": 3,
+        "f": [
+          "You divided the liters by 1.06. A quart is smaller than a liter, so the same coolant is MORE quarts than liters.",
+          "20 is the number of LITERS. The bottles hold quarts, so change the total to quarts first.",
+          "You rounded the quarts down. With that many bottles, the last robots would not get their full amount of coolant.",
+          ""
+        ],
+        "fEs": [
+          "Dividiste los litros entre 1.06. Un cuarto es más pequeño que un litro, así que el mismo refrigerante son MÁS cuartos que litros.",
+          "20 es el número de LITROS. Las botellas tienen cuartos, así que primero cambia el total a cuartos.",
+          "Redondeaste los cuartos hacia abajo. Con esa cantidad de botellas, los últimos robots no recibirían toda su cantidad de refrigerante.",
+          ""
+        ],
+        "tag": [
+          "divided-instead",
+          "skipped-conversion",
+          "rounded-down",
+          null
+        ],
+        "x": "All the robots need 16 × 1.25 = 20 L. Convert with 1 L ≈ 1.06 qt: 20 × 1.06 = 21.2 qt. Bottles are sold whole, and 21 bottles would be 0.2 qt short, so Imani buys 22 bottles.",
+        "xEs": "Todos los robots necesitan 16 × 1.25 = 20 L. Convierte con 1 L ≈ 1.06 qt: 20 × 1.06 = 21.2 qt. Las botellas se venden enteras, y 21 botellas quedarían 0.2 qt cortas, así que Imani compra 22 botellas.",
+        "h": [
+          "First find how much coolant all the robots need, in liters.",
+          "Then change liters to quarts. One liter is about 1.06 quarts.",
+          "16 × 1.25 = 20 liters. Now convert those liters to quarts, then think about whole bottles."
+        ],
+        "hEs": [
+          "Primero halla cuánto refrigerante necesitan todos los robots, en litros.",
+          "Luego cambia los litros a cuartos. Un litro son unos 1.06 cuartos.",
+          "16 × 1.25 = 20 litros. Ahora convierte esos litros a cuartos y piensa en botellas enteras."
+        ]
+      },
+      {
+        "k": "tbl",
+        "t": "Robot Lab inventory sheet. Change each part's mass to the OTHER system with 1 kg ≈ 2.2 lb. Type the number only.",
+        "tEs": "Hoja de inventario del Laboratorio de Robots. Cambia la masa de cada pieza al OTRO sistema con 1 kg ≈ 2.2 lb. Escribe solo el número.",
+        "hd": [
+          "Part",
+          "Given",
+          "Convert to",
+          "Result"
+        ],
+        "hdEs": [
+          "Pieza",
+          "Dato",
+          "Convertir a",
+          "Resultado"
+        ],
+        "rows": [
+          [
+            "Motor",
+            "4 kg",
+            "lb",
+            ""
+          ],
+          [
+            "Servo",
+            "11 lb",
+            "kg",
+            ""
+          ],
+          [
+            "Sensor",
+            "0.5 kg",
+            "lb",
+            ""
+          ],
+          [
+            "Radio",
+            "33 lb",
+            "kg",
+            ""
+          ]
+        ],
+        "cells": [
+          {
+            "r": 0,
+            "c": 3,
+            "a": "8.8"
+          },
+          {
+            "r": 1,
+            "c": 3,
+            "a": "5"
+          },
+          {
+            "r": 2,
+            "c": 3,
+            "a": "1.1"
+          },
+          {
+            "r": 3,
+            "c": 3,
+            "a": "15"
+          }
+        ],
+        "x": "From kg to lb you multiply by 2.2: 4 kg ≈ 8.8 lb and 0.5 kg ≈ 1.1 lb. From lb to kg you divide by 2.2: 11 lb ≈ 5 kg and 33 lb ≈ 15 kg. Each result passes the size check: the same mass is more pounds than kilograms.",
+        "xEs": "De kg a lb se multiplica por 2.2: 4 kg ≈ 8.8 lb y 0.5 kg ≈ 1.1 lb. De lb a kg se divide entre 2.2: 11 lb ≈ 5 kg y 33 lb ≈ 15 kg. Cada resultado pasa la revisión de tamaño: la misma masa son más libras que kilogramos.",
+        "h": [
+          "Look at the unit you are given and the unit you need in each row.",
+          "A kilogram is heavier than a pound. Going to pounds makes the number bigger. Going to kilograms makes it smaller.",
+          "Use the ratio 1 kg : 2.2 lb. To get pounds, scale up. To get kilograms, ask how many groups of 2.2 fit."
+        ],
+        "hEs": [
+          "Mira la unidad que te dan y la unidad que necesitas en cada fila.",
+          "Un kilogramo pesa más que una libra. Al pasar a libras el número crece. Al pasar a kilogramos el número disminuye.",
+          "Usa la razón 1 kg : 2.2 lb. Para obtener libras, escala hacia arriba. Para obtener kilogramos, pregunta cuántos grupos de 2.2 caben."
+        ]
+      }
+    ],
+    "lab": [
+      {
+        "k": "act",
+        "kind": "convchain",
+        "level": 3,
+        "p": {
+          "system": "between"
+        }
+      },
+      {
+        "k": "act",
+        "kind": "convchain",
+        "level": 4,
+        "p": {
+          "system": "between"
+        }
+      },
+      {
+        "k": "sort",
+        "q": "Robot Lab checks every conversion before it goes on a label. Use 1 mi ≈ 1.6 km, 1 kg ≈ 2.2 lb, 1 L ≈ 1.06 qt and 1 in = 2.54 cm. Sort each claim.",
+        "qEs": "El Laboratorio de Robots revisa cada conversión antes de ponerla en una etiqueta. Usa 1 mi ≈ 1.6 km, 1 kg ≈ 2.2 lb, 1 L ≈ 1.06 qt y 1 pulg = 2.54 cm. Clasifica cada afirmación.",
+        "bins": [
+          {
+            "l": "Reasonable",
+            "lEs": "Razonable"
+          },
+          {
+            "l": "Not reasonable",
+            "lEs": "No razonable"
+          }
+        ],
+        "cards": [
+          {
+            "t": "10 km is about 6 mi",
+            "tEs": "10 km son unas 6 mi",
+            "b": 0
+          },
+          {
+            "t": "4 kg is about 1.8 lb",
+            "tEs": "4 kg son unas 1.8 lb",
+            "b": 1
+          },
+          {
+            "t": "20 in is about 51 cm",
+            "tEs": "20 pulg son unas 51 cm",
+            "b": 0
+          },
+          {
+            "t": "3 L is about 0.3 qt",
+            "tEs": "3 L son unos 0.3 qt",
+            "b": 1
+          },
+          {
+            "t": "100 lb is about 45 kg",
+            "tEs": "100 lb son unos 45 kg",
+            "b": 0
+          },
+          {
+            "t": "5 mi is about 3 km",
+            "tEs": "5 mi son unos 3 km",
+            "b": 1
+          }
+        ],
+        "x": "Check the direction first. A mile is longer than a kilometer, so 10 km is fewer miles, but 5 mi is MORE kilometers. A kilogram is heavier than a pound, so 4 kg must be MORE pounds. A liter is a little more than a quart, so 3 L is a little more than 3 qt. The three reasonable claims all pass a quick calculation.",
+        "xEs": "Revisa primero la dirección. Una milla es más larga que un kilómetro, así que 10 km son menos millas, pero 5 mi son MÁS kilómetros. Un kilogramo pesa más que una libra, así que 4 kg deben ser MÁS libras. Un litro es un poco más que un cuarto, así que 3 L son un poco más que 3 qt. Las tres afirmaciones razonables pasan un cálculo rápido.",
+        "h": [
+          "For each claim, ask which unit is bigger.",
+          "A bigger unit needs a smaller number. A smaller unit needs a bigger number.",
+          "When a claim looks odd, test it with one multiplication or division."
+        ],
+        "hEs": [
+          "En cada afirmación, pregunta cuál unidad es más grande.",
+          "Una unidad más grande necesita un número menor. Una unidad más pequeña necesita un número mayor.",
+          "Cuando una afirmación se vea rara, pruébala con una multiplicación o una división."
+        ]
+      }
+    ],
+    "detective": [
+      {
+        "k": "err",
+        "t": "Aisha changes a 33-pound battery to kilograms. She uses 1 kg ≈ 2.2 lb. Tap the first step where her work goes wrong.",
+        "tEs": "Aisha convierte una batería de 33 libras a kilogramos. Usa 1 kg ≈ 2.2 lb. Toca el primer paso donde su trabajo se equivoca.",
+        "s": [
+          {
+            "l": "Step 1",
+            "lEs": "Paso 1",
+            "w": "The ratio is 1 kg : 2.2 lb.",
+            "wEs": "La razón es 1 kg : 2.2 lb."
+          },
+          {
+            "l": "Step 2",
+            "lEs": "Paso 2",
+            "w": "I have 33 lb, so I multiply: 33 × 2.2 = 72.6.",
+            "wEs": "Tengo 33 lb, así que multiplico: 33 × 2.2 = 72.6."
+          },
+          {
+            "l": "Step 3",
+            "lEs": "Paso 3",
+            "w": "The battery weighs about 72.6 kg.",
+            "wEs": "La batería pesa unos 72.6 kg."
+          }
+        ],
+        "e": 1,
+        "fix": "A kilogram is heavier than a pound, so 33 lb is fewer kilograms. Divide: 33 ÷ 2.2 = 15, so the battery is about 15 kg.",
+        "fixEs": "Un kilogramo pesa más que una libra, así que 33 lb son menos kilogramos. Divide: 33 ÷ 2.2 = 15, así que la batería pesa unos 15 kg.",
+        "x": "Check the size of the answer. The same mass is a smaller number in kilograms than in pounds. An answer of 72.6 kg is more than twice the pounds, which tells you the operation was flipped.",
+        "xEs": "Revisa el tamaño de la respuesta. La misma masa es un número menor en kilogramos que en libras. Una respuesta de 72.6 kg es más del doble de las libras, lo que indica que se invirtió la operación.",
+        "h": [
+          "Which unit is heavier, a kilogram or a pound?",
+          "Should the number of kilograms be bigger or smaller than 33?",
+          "Look at Step 2. Does multiplying by 2.2 make 33 bigger or smaller?"
+        ],
+        "hEs": [
+          "¿Qué unidad pesa más, un kilogramo o una libra?",
+          "¿El número de kilogramos debe ser mayor o menor que 33?",
+          "Mira el Paso 2. ¿Multiplicar por 2.2 hace que 33 sea mayor o menor?"
+        ]
+      },
+      {
+        "k": "err",
+        "t": "Mateo needs a cable at least 30 cm long. The only cable in the bin is labeled 12 in. Use 1 in = 2.54 cm. Tap the first step that goes wrong.",
+        "tEs": "Mateo necesita un cable de al menos 30 cm de largo. El único cable del cajón está marcado 12 pulg. Usa 1 pulg = 2.54 cm. Toca el primer paso que se equivoca.",
+        "s": [
+          {
+            "l": "Step 1",
+            "lEs": "Paso 1",
+            "w": "The cable is 12 in. The job needs 30 cm.",
+            "wEs": "El cable mide 12 pulg. El trabajo necesita 30 cm."
+          },
+          {
+            "l": "Step 2",
+            "lEs": "Paso 2",
+            "w": "12 is less than 30, so the cable is too short.",
+            "wEs": "12 es menor que 30, así que el cable es demasiado corto."
+          },
+          {
+            "l": "Step 3",
+            "lEs": "Paso 3",
+            "w": "Mateo orders a new cable.",
+            "wEs": "Mateo pide un cable nuevo."
+          }
+        ],
+        "e": 1,
+        "fix": "Inches and centimeters are different sizes, so 12 and 30 cannot be compared yet. Convert: 12 in = 12 × 2.54 = 30.48 cm, which is at least 30 cm. The cable is long enough.",
+        "fixEs": "Las pulgadas y los centímetros son de tamaños distintos, así que 12 y 30 todavía no se pueden comparar. Convierte: 12 pulg = 12 × 2.54 = 30.48 cm, que es al menos 30 cm. El cable es suficientemente largo.",
+        "x": "Numbers only compare fairly when they use the same unit. After converting, both lengths are in centimeters: 30.48 cm and 30 cm. An inch is longer than a centimeter, so a small number of inches can still be a long length.",
+        "xEs": "Los números solo se comparan de forma justa cuando usan la misma unidad. Después de convertir, las dos longitudes están en centímetros: 30.48 cm y 30 cm. Una pulgada es más larga que un centímetro, así que pocas pulgadas pueden ser una longitud grande.",
+        "h": [
+          "Are inches and centimeters the same unit?",
+          "Before you decide which number is bigger, put both lengths in the same unit.",
+          "Use the ratio 1 in : 2.54 cm to change the cable's length into centimeters."
+        ],
+        "hEs": [
+          "¿Son las pulgadas y los centímetros la misma unidad?",
+          "Antes de decidir cuál número es mayor, pon las dos longitudes en la misma unidad.",
+          "Usa la razón 1 pulg : 2.54 cm para cambiar la longitud del cable a centímetros."
+        ]
+      },
+      {
+        "k": "err",
+        "t": "Ravi changes 8 liters of paint to quarts with the label 1 L ≈ 1.06 qt. Tap the first step that goes wrong.",
+        "tEs": "Ravi cambia 8 litros de pintura a cuartos con la etiqueta 1 L ≈ 1.06 qt. Toca el primer paso que se equivoca.",
+        "s": [
+          {
+            "l": "Step 1",
+            "lEs": "Paso 1",
+            "w": "The ratio is 1 L : 1.06 qt.",
+            "wEs": "La razón es 1 L : 1.06 qt."
+          },
+          {
+            "l": "Step 2",
+            "lEs": "Paso 2",
+            "w": "Scale by 8: 8 × 1.06 = 8.48.",
+            "wEs": "Escala por 8: 8 × 1.06 = 8.48."
+          },
+          {
+            "l": "Step 3",
+            "lEs": "Paso 3",
+            "w": "So 8 L = 8.48 qt exactly.",
+            "wEs": "Entonces 8 L = 8.48 qt exactamente."
+          }
+        ],
+        "e": 2,
+        "fix": "The factor 1.06 is rounded, so the result is only close. Write 8 L ≈ 8.48 qt.",
+        "fixEs": "El factor 1.06 está redondeado, así que el resultado es solo cercano. Escribe 8 L ≈ 8.48 qt.",
+        "x": "An equals sign says two amounts are exactly the same. A rounded factor gives an approximate result, so use ≈. Only exact factors, such as 1 in = 2.54 cm, can use =.",
+        "xEs": "El signo igual dice que dos cantidades son exactamente iguales. Un factor redondeado da un resultado aproximado, así que usa ≈. Solo los factores exactos, como 1 pulg = 2.54 cm, pueden usar =.",
+        "h": [
+          "Look at the label. Does it use = or ≈?",
+          "A rounded factor gives a rounded result.",
+          "Which symbol means 'close to, but not exactly equal'?"
+        ],
+        "hEs": [
+          "Mira la etiqueta. ¿Usa = o ≈?",
+          "Un factor redondeado da un resultado redondeado.",
+          "¿Qué símbolo significa 'cercano, pero no exactamente igual'?"
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "A test rig weighs 150 lb. Kofi changes it to kilograms. He multiplies by 0.45 (1 lb ≈ 0.45 kg) and gets 67.5 kg. Lena divides by 2.2 (1 kg ≈ 2.2 lb) and gets about 68.2 kg. Who is right?",
+        "qEs": "Un banco de pruebas pesa 150 lb. Kofi lo cambia a kilogramos. Multiplica por 0.45 (1 lb ≈ 0.45 kg) y obtiene 67.5 kg. Lena divide entre 2.2 (1 kg ≈ 2.2 lb) y obtiene unos 68.2 kg. ¿Quién tiene razón?",
+        "c": [
+          "Only Kofi. Multiplying is the only correct way.",
+          "Only Lena. Dividing is the only correct way.",
+          "Both. Each uses a rounded factor, so the answers are close but not identical.",
+          "Neither. The answers are different, so one of them must be a mistake."
+        ],
+        "cEs": [
+          "Solo Kofi. Multiplicar es la única forma correcta.",
+          "Solo Lena. Dividir es la única forma correcta.",
+          "Los dos. Cada uno usa un factor redondeado, así que las respuestas son cercanas pero no idénticas.",
+          "Ninguno. Las respuestas son distintas, así que una debe ser un error."
+        ],
+        "a": 2,
+        "f": [
+          "Kofi's multiplication is correct, but this choice says Lena's work is wrong. Does dividing by 2.2 also fit 1 kg ≈ 2.2 lb?",
+          "Lena's division is correct, but this choice says Kofi's work is wrong. Does multiplying by 0.45 also fit 1 lb ≈ 0.45 kg?",
+          "",
+          "Two correct methods can still give slightly different numbers when each factor is rounded. Check each method on its own."
+        ],
+        "fEs": [
+          "La multiplicación de Kofi es correcta, pero esta opción dice que el trabajo de Lena está mal. ¿Dividir entre 2.2 también concuerda con 1 kg ≈ 2.2 lb?",
+          "La división de Lena es correcta, pero esta opción dice que el trabajo de Kofi está mal. ¿Multiplicar por 0.45 también concuerda con 1 lb ≈ 0.45 kg?",
+          "",
+          "Dos métodos correctos pueden dar números un poco distintos cuando cada factor está redondeado. Revisa cada método por separado."
+        ],
+        "tag": [
+          "one-method-only",
+          "one-method-only",
+          null,
+          "expects-exact"
+        ],
+        "x": "Both methods come from the same relationship. 150 × 0.45 = 67.5 and 150 ÷ 2.2 ≈ 68.2. The two factors are rounded in different ways, so the results differ a little. Both are about 68 kg, so both are right.",
+        "xEs": "Los dos métodos vienen de la misma relación. 150 × 0.45 = 67.5 y 150 ÷ 2.2 ≈ 68.2. Los dos factores están redondeados de forma distinta, así que los resultados difieren un poco. Los dos son unos 68 kg, así que los dos tienen razón.",
+        "h": [
+          "Check Kofi's factor. How many kilograms is 1 lb?",
+          "Check Lena's factor. How many pounds is 1 kg, and does dividing change pounds into kilograms?",
+          "Round each answer to the nearest whole kilogram and compare."
+        ],
+        "hEs": [
+          "Revisa el factor de Kofi. ¿Cuántos kilogramos es 1 lb?",
+          "Revisa el factor de Lena. ¿Cuántas libras es 1 kg, y dividir cambia libras a kilogramos?",
+          "Redondea cada respuesta al kilogramo entero más cercano y compáralas."
+        ]
+      }
+    ],
+    "boss": [
+      {
+        "k": "mc",
+        "q": "A courier robot must drive 12 km to a partner lab in Canada. Use 1 km ≈ 0.6 mi. About how far is that in miles?",
+        "qEs": "Un robot mensajero debe recorrer 12 km hasta un laboratorio asociado en Canadá. Usa 1 km ≈ 0.6 mi. ¿Aproximadamente cuántas millas son?",
+        "c": [
+          "7.2 mi",
+          "12.6 mi",
+          "20 mi",
+          "72 mi"
+        ],
+        "cEs": [
+          "7.2 mi",
+          "12.6 mi",
+          "20 mi",
+          "72 mi"
+        ],
+        "a": 0,
+        "f": [
+          "",
+          "You added 0.6 to 12. A conversion factor scales the amount, so multiply instead of adding.",
+          "You divided 12 by 0.6. A mile is longer than a kilometer, so 12 km is fewer miles, not more.",
+          "Check the decimal point. Multiplying 12 by 0.6 gives a number smaller than 12, not six times as big."
+        ],
+        "fEs": [
+          "",
+          "Sumaste 0.6 a 12. Un factor de conversión escala la cantidad, así que multiplica en vez de sumar.",
+          "Dividiste 12 entre 0.6. Una milla es más larga que un kilómetro, así que 12 km son menos millas, no más.",
+          "Revisa el punto decimal. Multiplicar 12 por 0.6 da un número menor que 12, no seis veces mayor."
+        ],
+        "tag": [
+          null,
+          "added-instead",
+          "divided-instead",
+          "decimal-slip"
+        ],
+        "x": "Scale the ratio 1 km : 0.6 mi by 12: 12 × 0.6 = 7.2. A mile is longer than a kilometer, so the number of miles is smaller than the number of kilometers.",
+        "xEs": "Escala la razón 1 km : 0.6 mi por 12: 12 × 0.6 = 7.2. Una milla es más larga que un kilómetro, así que el número de millas es menor que el número de kilómetros.",
+        "h": [
+          "Write the conversion factor as a ratio: 1 km : 0.6 mi.",
+          "To go from 1 km to 12 km, what do you do to both parts of the ratio?",
+          "Is a mile longer or shorter than a kilometer? Should the number of miles be smaller or larger than 12?"
+        ],
+        "hEs": [
+          "Escribe el factor de conversión como una razón: 1 km : 0.6 mi.",
+          "Para pasar de 1 km a 12 km, ¿qué le haces a las dos partes de la razón?",
+          "¿Una milla es más larga o más corta que un kilómetro? ¿El número de millas debe ser menor o mayor que 12?"
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "Robot Lab's chart says 1 in = 2.54 cm is exact. The factors 1 mi ≈ 1.6 km, 1 kg ≈ 2.2 lb and 1 L ≈ 1.06 qt are rounded. Which sentence may use an equals sign?",
+        "qEs": "La tabla del Laboratorio de Robots dice que 1 pulg = 2.54 cm es exacto. Los factores 1 mi ≈ 1.6 km, 1 kg ≈ 2.2 lb y 1 L ≈ 1.06 qt están redondeados. ¿Cuál oración puede usar un signo igual?",
+        "c": [
+          "5 mi = 8 km",
+          "5 kg = 11 lb",
+          "5 in = 12.7 cm",
+          "5 L = 5.3 qt"
+        ],
+        "cEs": [
+          "5 mi = 8 km",
+          "5 kg = 11 lb",
+          "5 pulg = 12.7 cm",
+          "5 L = 5.3 qt"
+        ],
+        "a": 2,
+        "f": [
+          "The mile factor is rounded, so 5 mi is only about 8 km. A rounded factor needs ≈.",
+          "The kilogram factor is rounded, so the result is approximate. A rounded factor needs ≈.",
+          "",
+          "The liter factor is rounded, so 5.3 is only close. A rounded factor needs ≈."
+        ],
+        "fEs": [
+          "El factor de las millas está redondeado, así que 5 mi son solo unos 8 km. Un factor redondeado necesita ≈.",
+          "El factor de los kilogramos está redondeado, así que el resultado es aproximado. Un factor redondeado necesita ≈.",
+          "",
+          "El factor de los litros está redondeado, así que 5.3 es solo cercano. Un factor redondeado necesita ≈."
+        ],
+        "tag": [
+          "equals-for-rounded",
+          "equals-for-rounded",
+          null,
+          "equals-for-rounded"
+        ],
+        "x": "An equals sign needs an exact factor. Only 1 in = 2.54 cm is exact, and 5 × 2.54 = 12.7. The other three factors are rounded, so their results need ≈.",
+        "xEs": "El signo igual necesita un factor exacto. Solo 1 pulg = 2.54 cm es exacto, y 5 × 2.54 = 12.7. Los otros tres factores están redondeados, así que sus resultados necesitan ≈.",
+        "h": [
+          "An equals sign means exactly the same amount.",
+          "Read the chart. Which factor is written with = and not ≈?",
+          "Find the sentence that uses that exact factor."
+        ],
+        "hEs": [
+          "Un signo igual significa exactamente la misma cantidad.",
+          "Lee la tabla. ¿Cuál factor está escrito con = y no con ≈?",
+          "Busca la oración que usa ese factor exacto."
+        ]
+      },
+      {
+        "k": "mc",
+        "q": "Camila can run either test course at the lab. One course is 5 mi long and the other is 8 km long. Use 1 mi ≈ 1.6 km. Which course is longer?",
+        "qEs": "Camila puede correr cualquiera de los dos circuitos de prueba del laboratorio. Un circuito mide 5 mi y el otro mide 8 km. Usa 1 mi ≈ 1.6 km. ¿Cuál circuito es más largo?",
+        "c": [
+          "The 8 km course, because 8 is greater than 5.",
+          "They are about the same length.",
+          "The 5 mi course, because a mile is a longer unit.",
+          "They cannot be compared because the units are different."
+        ],
+        "cEs": [
+          "El circuito de 8 km, porque 8 es mayor que 5.",
+          "Tienen aproximadamente la misma longitud.",
+          "El circuito de 5 mi, porque la milla es una unidad más larga.",
+          "No se pueden comparar porque las unidades son distintas."
+        ],
+        "a": 1,
+        "f": [
+          "You compared 8 with 5 without converting. A mile is longer than a kilometer, so the numbers alone do not decide it.",
+          "",
+          "A mile is longer, but you also have to count how many of each. Convert one length and compare.",
+          "Different units can be compared after you change one of them with a conversion factor."
+        ],
+        "fEs": [
+          "Comparaste 8 con 5 sin convertir. Una milla es más larga que un kilómetro, así que los números solos no deciden.",
+          "",
+          "La milla es más larga, pero también tienes que contar cuántas hay de cada una. Convierte una longitud y compara.",
+          "Las unidades distintas se pueden comparar después de cambiar una de ellas con un factor de conversión."
+        ],
+        "tag": [
+          "compared-raw-numbers",
+          null,
+          "unit-size-only",
+          "no-conversion"
+        ],
+        "x": "Change 5 mi to kilometers: 5 × 1.6 = 8, so 5 mi ≈ 8 km. The courses are about the same length, even though the numbers 5 and 8 look different.",
+        "xEs": "Cambia 5 mi a kilómetros: 5 × 1.6 = 8, así que 5 mi ≈ 8 km. Los circuitos tienen aproximadamente la misma longitud, aunque los números 5 y 8 se vean distintos.",
+        "h": [
+          "The two lengths use different units. Change one so both use the same unit.",
+          "Use the ratio 1 mi : 1.6 km to change 5 miles into kilometers.",
+          "Multiply both parts of the ratio by 5, then compare the kilometers."
+        ],
+        "hEs": [
+          "Las dos longitudes usan unidades distintas. Cambia una para que las dos usen la misma unidad.",
+          "Usa la razón 1 mi : 1.6 km para cambiar 5 millas a kilómetros.",
+          "Multiplica las dos partes de la razón por 5 y luego compara los kilómetros."
+        ]
+      },
+      {
+        "k": "num",
+        "q": "A water tank at the lab holds 53 qt. Each robot test uses 2 L. Use 1 L ≈ 1.06 qt. How many full tests can the tank supply?",
+        "qEs": "Un tanque de agua del laboratorio contiene 53 qt. Cada prueba de robot usa 2 L. Usa 1 L ≈ 1.06 qt. ¿Cuántas pruebas completas puede surtir el tanque?",
+        "a": "25",
+        "fw": [
+          {
+            "v": "50",
+            "f": "That is the tank's size in liters. Each test uses 2 L, so find how many 2-liter tests fit in it.",
+            "fEs": "Ese es el tamaño del tanque en litros. Cada prueba usa 2 L, así que halla cuántas pruebas de 2 litros caben."
+          },
+          {
+            "v": "26",
+            "f": "You divided quarts by liters. Those units are different, so change the tank to liters first.",
+            "fEs": "Dividiste cuartos entre litros. Esas unidades son distintas, así que primero cambia el tanque a litros."
+          },
+          {
+            "v": "28",
+            "f": "You multiplied 53 by 1.06. A liter is bigger than a quart, so 53 qt is fewer liters, not more.",
+            "fEs": "Multiplicaste 53 por 1.06. Un litro es más grande que un cuarto, así que 53 qt son menos litros, no más."
+          }
+        ],
+        "x": "Change the tank to liters: 53 ÷ 1.06 = 50 L. Each test uses 2 L, so 50 ÷ 2 = 25 full tests.",
+        "xEs": "Cambia el tanque a litros: 53 ÷ 1.06 = 50 L. Cada prueba usa 2 L, así que 50 ÷ 2 = 25 pruebas completas.",
+        "h": [
+          "The tank is measured in quarts, but each test is measured in liters. Choose one unit.",
+          "Change 53 qt to liters. A liter is a little more than a quart, so expect fewer than 53 liters.",
+          "After the tank is in liters, ask how many groups of 2 L fit in it."
+        ],
+        "hEs": [
+          "El tanque se mide en cuartos, pero cada prueba se mide en litros. Elige una sola unidad.",
+          "Cambia 53 qt a litros. Un litro es un poco más que un cuarto, así que espera menos de 53 litros.",
+          "Cuando el tanque esté en litros, pregunta cuántos grupos de 2 L caben."
+        ]
+      },
+      {
+        "k": "num",
+        "q": "A robot arm can lift at most 10 kg. In a lab test, a scale reads 24.2 lb for the load on the arm. Use 1 kg ≈ 2.2 lb. By how many kilograms is the load over the arm's limit?",
+        "qEs": "Un brazo de robot puede levantar como máximo 10 kg. En una prueba del laboratorio, una báscula marca 24.2 lb para la carga del brazo. Usa 1 kg ≈ 2.2 lb. ¿Por cuántos kilogramos se pasa la carga del límite del brazo?",
+        "a": "1",
+        "unit": "kg",
+        "fw": [
+          {
+            "v": "14.2",
+            "f": "You subtracted 10 from 24.2, comparing pounds with kilograms. Change the load to kilograms first.",
+            "fEs": "Restaste 10 de 24.2, comparando libras con kilogramos. Primero cambia la carga a kilogramos."
+          },
+          {
+            "v": "43.24",
+            "f": "You multiplied 24.2 by 2.2. A kilogram is heavier than a pound, so the load is fewer kilograms than pounds.",
+            "fEs": "Multiplicaste 24.2 por 2.2. Un kilogramo pesa más que una libra, así que la carga son menos kilogramos que libras."
+          },
+          {
+            "v": "11",
+            "f": "That is the load in kilograms. The question asks how far over the limit it is.",
+            "fEs": "Esa es la carga en kilogramos. La pregunta es cuánto se pasa del límite."
+          }
+        ],
+        "x": "Change the load to kilograms: 24.2 ÷ 2.2 = 11 kg. The limit is 10 kg, so the load is 11 − 10 = 1 kg over.",
+        "xEs": "Cambia la carga a kilogramos: 24.2 ÷ 2.2 = 11 kg. El límite es 10 kg, así que la carga se pasa por 11 − 10 = 1 kg.",
+        "h": [
+          "The scale reads pounds but the arm's limit is in kilograms.",
+          "Change the load to kilograms. A kilogram is heavier, so expect a smaller number.",
+          "Divide 24.2 by 2.2, then compare the result with the 10-kg limit."
+        ],
+        "hEs": [
+          "La báscula marca libras pero el límite del brazo está en kilogramos.",
+          "Cambia la carga a kilogramos. Un kilogramo pesa más, así que espera un número menor.",
+          "Divide 24.2 entre 2.2 y luego compara el resultado con el límite de 10 kg."
+        ]
+      },
+      {
+        "k": "wr",
+        "p": "Create your own Robot Lab conversion problem. Pick a measurement in one system and a conversion factor, then change it to the other system. Show your work, write = or ≈ correctly, and explain why your answer is reasonable.",
+        "pEs": "Crea tu propio problema de conversión para el Laboratorio de Robots. Elige una medida en un sistema y un factor de conversión, y cámbiala al otro sistema. Muestra tu trabajo, escribe = o ≈ correctamente y explica por qué tu respuesta es razonable.",
+        "fr": "My problem: ___. I used the conversion factor ___. My answer is ___. I wrote ___ because ___. My answer is reasonable because ___.",
+        "frEs": "Mi problema: ___. Usé el factor de conversión ___. Mi respuesta es ___. Escribí ___ porque ___. Mi respuesta es razonable porque ___.",
+        "min": 80,
+        "kw": [
+          "conversion factor",
+          "multiply",
+          "divide",
+          "≈",
+          "reasonable",
+          "bigger",
+          "smaller"
+        ],
+        "rubric": [
+          "I wrote a measurement and a conversion factor that links the two systems.",
+          "I multiplied or divided and showed my steps.",
+          "I used = or ≈ correctly and said why.",
+          "I explained why my answer is reasonable by comparing the sizes of the units."
+        ],
+        "rubricEs": [
+          "Escribí una medida y un factor de conversión que une los dos sistemas.",
+          "Multipliqué o dividí y mostré mis pasos.",
+          "Usé = o ≈ correctamente y dije por qué.",
+          "Expliqué por qué mi respuesta es razonable comparando los tamaños de las unidades."
+        ],
+        "x": "My problem: A robot arm is 30 inches long. How long is it in centimeters? I used the conversion factor 1 in = 2.54 cm. 30 × 2.54 = 76.2, so the arm is 76.2 cm long. I wrote = because the inch factor is exact. My answer is reasonable because a centimeter is smaller than an inch, so the number gets bigger.",
+        "xEs": "Mi problema: Un brazo de robot mide 30 pulgadas de largo. ¿Cuánto mide en centímetros? Usé el factor de conversión 1 pulg = 2.54 cm. 30 × 2.54 = 76.2, así que el brazo mide 76.2 cm. Escribí = porque el factor de las pulgadas es exacto. Mi respuesta es razonable porque un centímetro es más pequeño que una pulgada, así que el número crece.",
+        "h": [
+          "Pick numbers that are easy to multiply, like 10, 20 or 50.",
+          "Write the conversion factor as a ratio and scale it up to your measurement.",
+          "Ask: is the new unit bigger or smaller? Should the number grow or shrink?"
+        ],
+        "hEs": [
+          "Elige números fáciles de multiplicar, como 10, 20 o 50.",
+          "Escribe el factor de conversión como una razón y escálalo hasta tu medida.",
+          "Pregunta: ¿la unidad nueva es más grande o más pequeña? ¿El número debe crecer o disminuir?"
+        ]
+      }
+    ]
+  },
+  "glossary": [
+    {
+      "t": "conversion factor",
+      "tEs": "factor de conversión",
+      "d": "The ratio that links a unit in one system to a unit in the other, such as 1 kg to about 2.2 lb.",
+      "dEs": "La razón que une una unidad de un sistema con una unidad del otro, como 1 kg con unas 2.2 lb."
+    },
+    {
+      "t": "customary system",
+      "tEs": "sistema usual",
+      "d": "The measurement system used in the United States: inches, miles, pounds and quarts.",
+      "dEs": "El sistema de medidas que se usa en Estados Unidos: pulgadas, millas, libras y cuartos de galón."
+    },
+    {
+      "t": "metric system",
+      "tEs": "sistema métrico",
+      "d": "The measurement system used in most of the world, built on tens: centimeters, kilometers, kilograms and liters.",
+      "dEs": "El sistema de medidas que se usa en casi todo el mundo, basado en decenas: centímetros, kilómetros, kilogramos y litros."
+    },
+    {
+      "t": "approximately (≈)",
+      "tEs": "aproximadamente (≈)",
+      "d": "Close to, but not exactly equal. A result from a rounded factor is written with ≈.",
+      "dEs": "Cercano, pero no exactamente igual. Un resultado con un factor redondeado se escribe con ≈."
+    },
+    {
+      "t": "reasonableness",
+      "tEs": "sentido lógico",
+      "d": "Checking that the size of an answer makes sense for the situation.",
+      "dEs": "Revisar que el tamaño de una respuesta tenga sentido en la situación."
+    }
+  ]
+}
