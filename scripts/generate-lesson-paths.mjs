@@ -29,11 +29,27 @@ const exists = (url) => {
   );
 };
 
+/** Unit 4's studios are hand-built pages (assets/u4-studio.js), not generated from data/practice-studio. */
+const UNIT4 = {
+  "4-1": [
+    "/math/unit-4/percent-practice-studio/",
+    "/math/unit-4/percent-practice-studio-challenging/",
+  ],
+  "4-2": ["/math/unit-4/4-2-practice-studio/", "/math/unit-4/4-2-practice-studio-challenging/"],
+  "4-3": ["/math/unit-4/4-3-practice-studio/", "/math/unit-4/4-3-practice-studio-challenging/"],
+  "4-4": ["/math/unit-4/4-4-practice-studio/", "/math/unit-4/4-4-practice-studio-challenging/"],
+  "4-5": ["/math/unit-4/4-5-practice-studio/", "/math/unit-4/4-5-practice-studio-challenging/"],
+};
+export function studioUrls(id) {
+  return UNIT4[id] || [`/math/practice-studio/${id}/`, `/math/practice-studio/${id}/challenge/`];
+}
 export function studioLessonIds() {
-  return readdirSync(join(ROOT, "data/practice-studio"))
-    .filter((f) => /^\d+-\d+\.json$/.test(f))
-    .map((f) => f.replace(".json", ""))
-    .sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+  return [
+    ...readdirSync(join(ROOT, "data/practice-studio"))
+      .filter((f) => /^\d+-\d+\.json$/.test(f))
+      .map((f) => f.replace(".json", "")),
+    ...Object.keys(UNIT4),
+  ].sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
 }
 
 function link(href, en, es, note) {
@@ -46,7 +62,7 @@ export function pathFor(lesson, map) {
   const r = lesson.resources || {};
   const L = (p) => `/lessons/${id}/${p}`;
   const m = map?.lessons?.[id] || {};
-  const studio = `/math/practice-studio/${id}/`;
+  const [studio, challengeStudio] = studioUrls(id);
   const levels = {
     support: {
       title: ["Support", "Apoyo"],
@@ -70,7 +86,7 @@ export function pathFor(lesson, map) {
         "Harder problems, missions and a boss.",
         "Problemas más difíciles, misiones y un jefe.",
       ],
-      main: link(`${studio}challenge/`, "Open the challenge studio", "Abrir el estudio de reto"),
+      main: link(challengeStudio, "Open the challenge studio", "Abrir el estudio de reto"),
       print: link(L("worksheet-2.html"), "Print worksheet 2", "Imprimir la hoja 2"),
     },
   };

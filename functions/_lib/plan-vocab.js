@@ -3260,6 +3260,36 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/lesson-path/4-1/",
+    title: "Understand Percent — Lesson 4-1",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/lesson-path/4-2/",
+    title: "Relate Fractions, Decimals, and Percentages — Lesson 4-2",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/lesson-path/4-3/",
+    title: "Estimate the Percent of a Number — Lesson 4-3",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/lesson-path/4-4/",
+    title: "Find and Compare with Percentages — Lesson 4-4",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/lesson-path/4-5/",
+    title: "Determine the Whole Given the Part and Percent — Lesson 4-5",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/lesson-path/5-1/",
     title: "Determine the Area of Parallelograms and Rhombuses — Lesson 5-1",
     category: "Math Tool",

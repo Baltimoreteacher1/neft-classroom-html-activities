@@ -140,7 +140,7 @@ for (const id of ids) {
   }
   assert.ok(
     hub.includes(
-      `<!-- practice-studio:${id} --><a class="res" href="/math/practice-studio/${id}/">HTML practice</a><a class="res" href="/math/practice-studio/${id}/challenge/">HTML practice (Challenge)</a><!-- /practice-studio -->`,
+      `<!-- practice-studio:${id} --><a class="res" href="/math/lesson-path/${id}/">Lesson path (one page)</a><a class="res" href="/math/practice-studio/${id}/">HTML practice</a><a class="res" href="/math/practice-studio/${id}/challenge/">HTML practice (Challenge)</a><!-- /practice-studio -->`,
     ),
     `[${id}] both studio links are on its row`,
   );

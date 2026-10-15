@@ -396,7 +396,7 @@
           h(
             "p",
             { class: "ewlc-foot" },
-            e.unit >= 2 && e.unit <= 9 && e.unit !== 4
+            e.unit >= 2 && e.unit <= 9
               ? a(
                   "/math/lesson-path/" + encodeURIComponent(e.id) + "/",
                   "",
@@ -406,7 +406,7 @@
                   ),
                 )
               : null,
-            e.unit >= 2 && e.unit <= 9 && e.unit !== 4 ? " · " : null,
+            e.unit >= 2 && e.unit <= 9 ? " · " : null,
             a(
               "/curriculum/student-launch/?lesson=" + encodeURIComponent(e.id),
               "",

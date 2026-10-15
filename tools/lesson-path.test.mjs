@@ -9,9 +9,14 @@ import { outputs, studioLessonIds } from "../scripts/generate-lesson-paths.mjs";
 import { REPO_ROOT } from "./lib/curriculum-source.mjs";
 
 const files = outputs();
+const units = readFileSync(join(REPO_ROOT, "curriculum/units/index.html"), "utf8");
 const ids = studioLessonIds();
-assert.equal(ids.length, 67, "67 core lessons have a Practice Studio");
-assert.equal(files.size, 67, "one path page per studio lesson");
+assert.equal(
+  ids.length,
+  72,
+  "all 72 Units 2-9 core lessons have a Practice Studio (67 generated + 5 hand-built in Unit 4)",
+);
+assert.equal(files.size, 72, "one path page per studio lesson");
 let links = 0;
 for (const [rel, html] of files) {
   const id = rel.split("/")[2];
@@ -21,6 +26,10 @@ for (const [rel, html] of files) {
   );
   const disk = existsSync(join(REPO_ROOT, rel)) ? readFileSync(join(REPO_ROOT, rel), "utf8") : null;
   assert.ok(disk === html, `${rel} is stale; run: node scripts/generate-lesson-paths.mjs`);
+  assert.ok(
+    units.includes(`href="/math/lesson-path/${id}/"`),
+    `${id}: the lessons page links to its path`,
+  );
   const doc = new JSDOM(html).window.document;
   assert.equal(doc.querySelectorAll("h1").length, 1, `${id}: one h1`);
   assert.equal(doc.querySelectorAll(".lp-step").length, 4, `${id}: four activities`);

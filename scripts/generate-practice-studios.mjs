@@ -79,6 +79,10 @@ function assetPlan(/** @type {string} */ worlds) {
 
 const HUB = "curriculum/units/index.html";
 const MARK = /\s*<!-- practice-studio:[\w-]+ -->[\s\S]*?<!-- \/practice-studio -->/g;
+/** Unit 4 has hand-built studios, so only the Lesson Path link is spliced for its rows. */
+const MARK_PATH = /\s*<!-- lesson-path:[\w-]+ -->[\s\S]*?<!-- \/lesson-path -->/g;
+const PATH_LINK = (/** @type {string} */ id) =>
+  `<a class="res" href="/math/lesson-path/${id}/">Lesson path (one page)</a>`;
 
 /** Every file this generator owns, as path → content. */
 /** @param {{only?: string[]}} [opts] `only` builds a subset of lessons (smoke tests); the real build never passes it. */
@@ -140,7 +144,16 @@ export function outputs(opts = {}) {
     if (!pattern.test(hub)) throw new Error(`Missing curriculum lesson anchor: ${id}`);
     hub = hub.replace(
       pattern,
-      `$1\n                <!-- practice-studio:${id} --><a class="res" href="/math/practice-studio/${id}/">HTML practice</a><a class="res" href="/math/practice-studio/${id}/challenge/">HTML practice (Challenge)</a><!-- /practice-studio -->`,
+      `$1\n                <!-- practice-studio:${id} -->${PATH_LINK(id)}<a class="res" href="/math/practice-studio/${id}/">HTML practice</a><a class="res" href="/math/practice-studio/${id}/challenge/">HTML practice (Challenge)</a><!-- /practice-studio -->`,
+    );
+  }
+  hub = hub.replace(MARK_PATH, "");
+  for (const { id } of unit4) {
+    const pattern = new RegExp(`(<a\\b[^>]*href="/lessons/${id}/"[^>]*>[\\s\\S]*?</a\\s*>)`);
+    if (!pattern.test(hub)) throw new Error(`Missing curriculum lesson anchor: ${id}`);
+    hub = hub.replace(
+      pattern,
+      `$1\n                <!-- lesson-path:${id} -->${PATH_LINK(id)}<!-- /lesson-path -->`,
     );
   }
   files.set(HUB, hub);
