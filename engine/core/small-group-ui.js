@@ -455,6 +455,16 @@ export function injectSmallGroupStyles(accent) {
     } else if (ds.parentNode === document.head) {
       document.head.appendChild(ds);
     }
+    // The publisher finish goes last of all: canvas, masthead, stepper, sheets, buttons.
+    let pub = document.getElementById("sg-publisher-styles");
+    if (!pub) {
+      pub = document.createElement("link");
+      pub.id = "sg-publisher-styles";
+      /** @type {HTMLLinkElement} */ (pub).rel = "stylesheet";
+      /** @type {HTMLLinkElement} */ (pub).href =
+        "/assets/small-group-publisher.css?v=20261015-pub5";
+    }
+    document.head.appendChild(pub);
   };
   if (document.getElementById("sg-styles")) {
     ensureDesignSystem();
