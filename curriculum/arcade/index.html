@@ -298,16 +298,23 @@
       .unit-filter[aria-pressed="true"] { background: #15487f; color: #fff; }
       .unit-filter:focus-visible { outline: 3px solid #147967; outline-offset: 3px; }
       .finder-status { min-height: 1.6em; margin: 8px 0 0; color: var(--muted); }
-      .unit-block { margin: 22px 0 6px; }
-      .unit-head {
-        font-family: "Nunito", system-ui, sans-serif;
-        font-size: 1.3rem;
-        margin: 0 0 10px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
+      .unit-block { margin: 12px 0 6px; }
+      .unit-head { margin: 0; }
+      .unit-toggle {
+        width: 100%; min-height: 56px; display: flex; align-items: center; gap: 12px; text-align: left;
+        font: inherit; color: inherit; background: #fff; border: 1px solid #c3d4dc; border-radius: 12px;
+        padding: 10px 16px; cursor: pointer;
       }
+      .unit-toggle:hover { border-color: #15487f; }
+      .unit-toggle:focus-visible { outline: 3px solid #147967; outline-offset: 3px; }
+      .unit-count { margin-left: auto; font-size: 0.9rem; font-weight: 700; color: var(--muted); }
+      .unit-caret { transition: transform 0.15s; font-size: 1rem; }
+      .unit-toggle[aria-expanded="true"] .unit-caret { transform: rotate(180deg); }
+      .unit-toggle[aria-expanded="true"] { border-radius: 12px 12px 0 0; border-color: #15487f; }
+      .unit-block > .grid { padding: 14px; border: 1px solid #15487f; border-top: 0; border-radius: 0 0 12px 12px; background: #f6fafb; }
+      .unit-tools { display: flex; gap: 10px; margin: 12px 0 0; }
+      .unit-tools button { min-height: 44px; padding: 6px 16px; border: 2px solid #15487f; border-radius: 999px; background: #fff; color: #15487f; font: inherit; font-weight: 700; cursor: pointer; }
+      .unit-tools button:focus-visible { outline: 3px solid #147967; outline-offset: 3px; }
       .unit-chip { background: #15487f; color: #fff; border-radius: 8px; padding: 2px 10px; font-size: 0.95rem; }
       .card h4 { font-family: "Nunito", system-ui, sans-serif; font-size: 1.1rem; font-weight: 800; margin: 0; }
       [hidden] { display: none !important; }
@@ -388,6 +395,10 @@
           <button type="button" class="unit-filter" data-unit="all" aria-pressed="true">All units</button><button type="button" class="unit-filter" data-unit="1" aria-pressed="false">Unit 1</button><button type="button" class="unit-filter" data-unit="2" aria-pressed="false">Unit 2</button><button type="button" class="unit-filter" data-unit="3" aria-pressed="false">Unit 3</button><button type="button" class="unit-filter" data-unit="4" aria-pressed="false">Unit 4</button><button type="button" class="unit-filter" data-unit="5" aria-pressed="false">Unit 5</button><button type="button" class="unit-filter" data-unit="6" aria-pressed="false">Unit 6</button><button type="button" class="unit-filter" data-unit="7" aria-pressed="false">Unit 7</button><button type="button" class="unit-filter" data-unit="8" aria-pressed="false">Unit 8</button><button type="button" class="unit-filter" data-unit="9" aria-pressed="false">Unit 9</button><button type="button" class="unit-filter" data-unit="10" aria-pressed="false">Unit 10</button>
         </div>
         <p id="arcade-find-status" class="finder-status" role="status" aria-live="polite"></p>
+        <div class="unit-tools" id="unit-tools" hidden>
+          <button type="button" id="units-expand">Open all units</button>
+          <button type="button" id="units-collapse">Close all units</button>
+        </div>
       </div>
       <section class="unit-block" id="unit-1" data-unit="1" aria-labelledby="unit-1-title">
         <h3 class="unit-head" id="unit-1-title"><span class="unit-chip">Unit 1</span> Math Is Discovery</h3>
@@ -582,6 +593,49 @@
         var status = document.getElementById("arcade-find-status");
         var unit = "all";
         try { var saved = localStorage.getItem("arcade-unit"); if (saved) unit = saved; } catch (e) {}
+        var openState = {};
+        try { openState = JSON.parse(localStorage.getItem("arcade-open") || "{}"); } catch (e) {}
+        function saveOpen() { try { localStorage.setItem("arcade-open", JSON.stringify(openState)); } catch (e) {} }
+        blocks.forEach(function (b) {
+          var head = b.querySelector(".unit-head");
+          var grid = b.querySelector(".grid");
+          if (!head || !grid) return;
+          var n = grid.querySelectorAll(".card").length;
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "unit-toggle";
+          btn.setAttribute("aria-controls", b.id + "-games");
+          btn.innerHTML = head.innerHTML + '<span class="unit-count">' + n + (n === 1 ? " game" : " games") + '</span><span class="unit-caret" aria-hidden="true">\u25BE</span>';
+          grid.id = b.id + "-games";
+          head.textContent = "";
+          head.append(btn);
+          btn.addEventListener("click", function () {
+            openState[b.id] = !isOpen(b);
+            saveOpen();
+            apply();
+          });
+        });
+        function forced() { return !!input.value.trim() || unit !== "all"; }
+        function isOpen(b) { return forced() || !!openState[b.id] || location.hash === "#" + b.id; }
+        function syncOpen() {
+          blocks.forEach(function (b) {
+            var btn = b.querySelector(".unit-toggle");
+            var grid = b.querySelector(".grid");
+            if (!btn || !grid) return;
+            var open = isOpen(b);
+            btn.setAttribute("aria-expanded", String(open));
+            grid.hidden = !open;
+          });
+          document.getElementById("unit-tools").hidden = forced();
+        }
+        document.getElementById("units-expand").addEventListener("click", function () {
+          blocks.forEach(function (b) { openState[b.id] = true; });
+          saveOpen(); apply();
+        });
+        document.getElementById("units-collapse").addEventListener("click", function () {
+          openState = {}; saveOpen(); apply();
+        });
+        window.addEventListener("hashchange", syncOpen);
         function apply() {
           var q = input.value.trim().toLowerCase();
           var shown = 0;
@@ -596,6 +650,7 @@
             b.hidden = !any; shown += any;
           });
           buttons.forEach(function (btn) { btn.setAttribute("aria-pressed", String(btn.getAttribute("data-unit") === unit)); });
+          syncOpen();
           status.textContent = q || unit !== "all" ? (shown ? shown + (shown === 1 ? " game shown." : " games shown.") : "No games match. Try another word, or choose All units.") : "";
         }
         buttons.forEach(function (btn) {

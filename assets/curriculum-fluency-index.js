@@ -69,6 +69,98 @@
     if (searchClear) {
       searchClear.style.display = q ? "inline-block" : "none";
     }
+    syncUnits();
+  }
+
+  // Unit dropdowns: each unit's lesson cards fold behind its banner. Filters and search open what they match.
+  const openUnits = new Set();
+  try {
+    JSON.parse(localStorage.getItem("fluency-open-units") || "[]").forEach((u) =>
+      openUnits.add(String(u)),
+    );
+  } catch {
+    /* storage blocked */
+  }
+  function saveOpenUnits() {
+    try {
+      localStorage.setItem("fluency-open-units", JSON.stringify([...openUnits]));
+    } catch {
+      /* storage blocked */
+    }
+  }
+  function filtersActive() {
+    return !!(
+      searchQuery.trim() ||
+      activeDomain !== "all" ||
+      activeUnit !== "all" ||
+      activeOrigin !== "all"
+    );
+  }
+  function syncUnits() {
+    const forced = filtersActive();
+    getUnits().forEach((unit) => {
+      const btn = unit.querySelector(".unit-toggle-btn");
+      const grid = unit.querySelector(".unit-lessons-grid");
+      if (!btn || !grid) return;
+      const open = forced || openUnits.has(unit.dataset.unit) || unit.dataset.forceOpen === "1";
+      btn.setAttribute("aria-expanded", String(open));
+      btn.firstChild.textContent = open ? "Hide lessons" : "Show lessons";
+      grid.hidden = !open;
+      unit.classList.toggle("unit-collapsed", !open);
+    });
+    const tools = document.getElementById("unitTools");
+    if (tools) tools.hidden = forced;
+  }
+  function initUnitDropdowns() {
+    const host = document.getElementById("fluencyLessonsContainer");
+    if (!host || host.dataset.dropdowns) return;
+    host.dataset.dropdowns = "1";
+    getUnits().forEach((unit) => {
+      const meta = unit.querySelector(".unit-banner-meta");
+      const grid = unit.querySelector(".unit-lessons-grid");
+      if (!meta || !grid) return;
+      grid.id = `${unit.id}-lessons`;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "unit-toggle-btn";
+      btn.setAttribute("aria-controls", grid.id);
+      btn.append(document.createTextNode("Show lessons"));
+      const caret = document.createElement("span");
+      caret.setAttribute("aria-hidden", "true");
+      caret.textContent = " \u25BE";
+      btn.append(caret);
+      btn.addEventListener("click", () => {
+        const id = unit.dataset.unit;
+        if (openUnits.has(id)) openUnits.delete(id);
+        else openUnits.add(id);
+        unit.dataset.forceOpen = "";
+        saveOpenUnits();
+        syncUnits();
+      });
+      meta.append(btn);
+    });
+    const tools = document.createElement("div");
+    tools.className = "unit-tools";
+    tools.id = "unitTools";
+    [
+      ["Open all units", () => getUnits().forEach((u) => openUnits.add(u.dataset.unit))],
+      ["Close all units", () => openUnits.clear()],
+    ].forEach(([label, fn]) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      b.addEventListener("click", () => {
+        fn();
+        getUnits().forEach((u) => {
+          u.dataset.forceOpen = "";
+        });
+        saveOpenUnits();
+        syncUnits();
+      });
+      tools.append(b);
+    });
+    host.before(tools);
+    syncUnits();
   }
 
   // Routing between Lessons Index and Practice Studio
@@ -127,6 +219,11 @@
       if (hash && hash !== "#view=lessons") {
         const target = document.querySelector(hash);
         if (target) {
+          const owner = target.closest(".unit-block");
+          if (owner) {
+            owner.dataset.forceOpen = "1";
+            syncUnits();
+          }
           setTimeout(() => target.scrollIntoView({ behavior: "smooth" }), 50);
         }
       }
@@ -204,12 +301,14 @@
 
   window.addEventListener("hashchange", routeView);
   window.addEventListener("DOMContentLoaded", () => {
+    initUnitDropdowns();
     routeView();
     applyFilters();
   });
 
   // Run on script load in case DOM is already ready
   if (document.readyState === "interactive" || document.readyState === "complete") {
+    initUnitDropdowns();
     routeView();
     applyFilters();
   }
