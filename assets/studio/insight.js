@@ -129,7 +129,12 @@
       `EduWonderLab · Lesson ${data.lesson} · ${data.mode === "practice" ? "Practice" : "Challenge"}`,
       `${done} of ${total} problems solved · first-try accuracy ${acc}% · best streak ${st.stats.best} · hints used ${st.stats.hints}`,
       top.length ? `Still working on: ${top.join("; ")}` : "No tricky patterns yet",
-    ].join("\n");
+      st.quest
+        ? `Skill Quest: best ${"★".repeat(st.quest.best)}${"☆".repeat(3 - st.quest.best)} in ${st.quest.runs} run${st.quest.runs === 1 ? "" : "s"}`
+        : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
   }
   function copy(/** @type {string} */ text, /** @type {HTMLElement} */ btn) {
     const ok = () => {

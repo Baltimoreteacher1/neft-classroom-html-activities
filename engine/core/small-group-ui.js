@@ -462,7 +462,7 @@ export function injectSmallGroupStyles(accent) {
       pub.id = "sg-publisher-styles";
       /** @type {HTMLLinkElement} */ (pub).rel = "stylesheet";
       /** @type {HTMLLinkElement} */ (pub).href =
-        "/assets/small-group-publisher.css?v=20261015-pub5";
+        "/assets/small-group-publisher.css?v=20261015-pub6";
     }
     document.head.appendChild(pub);
   };

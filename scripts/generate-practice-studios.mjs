@@ -20,7 +20,7 @@ import { listLessonDirs, loadLessonConfig, REPO_ROOT } from "../tools/lib/curric
 import { typographizeItems } from "./lib/math-typography.mjs";
 import { buildSections } from "./lib/practice-studio-config.mjs";
 import { validateLessonData } from "./lib/practice-studio-data.mjs";
-import { indexPage, pageFor } from "./lib/practice-studio-pages.mjs";
+import { boostPage, indexPage, pageFor } from "./lib/practice-studio-pages.mjs";
 import { worldsCss } from "./lib/practice-studio-worlds.mjs";
 
 /** Units that get a generated studio. Unit 4's studios are hand-built; Units 1 and 10 are not in scope. */
@@ -61,14 +61,24 @@ function assetPlan(/** @type {string} */ worlds) {
   );
   const scripts = [
     "assets/u4-studio.js",
+    "assets/studio-comfort.js",
     "assets/studio/store.js",
     ...viz,
     ...gen,
     ...act,
+    "assets/studio/boost-core.js",
+    "assets/studio/boost.js",
     "assets/studio/chrome.js",
     ...runtime.slice(1),
+    "assets/studio/quest-model.js",
+    "assets/studio/quest.js",
   ];
-  const styles = ["assets/u4-studio.css", "assets/studio-v2.css", "assets/studio-worlds.css"];
+  const styles = [
+    "assets/u4-studio.css",
+    "assets/studio-v2.css",
+    "assets/studio-worlds.css",
+    "assets/studio-comfort.css",
+  ];
   const h = createHash("sha1");
   for (const f of [...styles, ...scripts, "assets/studio/finder.js"])
     h.update(
@@ -100,6 +110,8 @@ export function outputs(opts = {}) {
   files.set("assets/studio-worlds.css", css);
   const entries = [];
   const report = [];
+  /** every generated skill, with the first lesson that uses it: what the Daily Boost draws from */
+  const boostCatalog = new Map();
   for (const id of ids) {
     const cfg = loadLessonConfig(id);
     const dataFile = `data/practice-studio/${id}.json`;
@@ -124,6 +136,15 @@ export function outputs(opts = {}) {
       );
     }
     entries.push({ id, title: cfg.title || id, emoji: world.emoji, world: worldId });
+    for (const sec of built.sections.practice)
+      for (const spec of sec.items)
+        if (spec.k === "gen" && !boostCatalog.has(spec.g))
+          boostCatalog.set(spec.g, {
+            g: spec.g,
+            lesson: id,
+            unit: Number(id.split("-")[0]),
+            title: spec.lab || "",
+          });
     report.push({
       id,
       left: built.left,
@@ -139,6 +160,15 @@ export function outputs(opts = {}) {
     challenge: `/math/unit-4/${c}/`,
   }));
   files.set("math/practice-studio/index.html", indexPage(entries, unit4, assets));
+  if (!opts.only)
+    files.set(
+      "math/practice-studio/boost/index.html",
+      boostPage({
+        world: { id: "arcade", ...worlds.worlds.arcade },
+        catalog: [...boostCatalog.values()].sort((a, b) => a.g.localeCompare(b.g)),
+        assets,
+      }),
+    );
 
   let hub = read(HUB).replace(MARK, "");
   for (const { id } of entries) {

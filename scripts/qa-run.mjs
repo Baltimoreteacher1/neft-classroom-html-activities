@@ -163,6 +163,7 @@ const EXCLUSIVE = new Set([
   "validate:fluency-workshops-browser",
   "validate:lesson-boot",
   "validate:learning-labs-browser",
+  "validate:studio-enhancements-browser",
   "validate:math-workbench-browser",
   "smoke:injection",
   "validate:visibility",
@@ -221,6 +222,7 @@ const COVERAGE = [
     /^(assets\/u4-studio[^/]*\.(js|css)|math\/unit-4\/[^/]*practice-studio[^/]*\/index\.html|tools\/unit4-studio\.test\.mjs)$/,
     [
       "test",
+      "validate:studio-enhancements-browser",
       "validate:save-resume",
       "validate:js-syntax",
       "validate:css-integrity",
@@ -240,10 +242,11 @@ const COVERAGE = [
   // hub links are written by scripts/generate-practice-studios.mjs from the lesson configs; the test
   // proves they are current and that every answer is the lesson's own.
   [
-    /^(math\/practice-studio\/|assets\/studio\/|assets\/studio-(gen|act)\/|assets\/studio-(viz[\w-]*\.js|v2\.css|worlds\.css)$|data\/practice-studio\/|scripts\/generate-practice-studios\.mjs$|scripts\/lib\/practice-studio-[\w-]+\.mjs$|tools\/(practice-studios|studio-[\w-]+)\.test\.mjs$|tools\/validate-practice-studio-data\.mjs$|tools\/lib\/studio-vm\.mjs$)/,
+    /^(math\/practice-studio\/|assets\/studio\/|assets\/studio-(gen|act)\/|assets\/studio-(viz[\w-]*\.js|v2\.css|worlds\.css|comfort\.(js|css))$|data\/practice-studio\/|scripts\/generate-practice-studios\.mjs$|scripts\/lib\/practice-studio-[\w-]+\.mjs$|tools\/(practice-studios|studio-[\w-]+)\.test\.mjs$|tools\/validate-practice-studio-data\.mjs$|tools\/verify-studio-enhancements-browser\.mjs$|tools\/lib\/studio-vm\.mjs$)/,
     [
       "test",
       "validate:practice-studio-data",
+      "validate:studio-enhancements-browser",
       "validate:save-resume",
       "validate:js-syntax",
       "validate:css-integrity",

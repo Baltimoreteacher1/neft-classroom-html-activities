@@ -210,7 +210,7 @@
         (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[/** @type {"&"} */ (c)],
       );
     bar.innerHTML = `
-      <span class="ewl-hud-id"><strong>Lesson ${esc(data.lesson)}</strong><span class="ewl-hud-title"> · ${esc(title)}</span></span>
+      <span class="ewl-hud-id"><strong>${data.lesson === "0-0" ? "Daily Boost" : `Lesson ${esc(data.lesson)}`}</strong><span class="ewl-hud-title"> · ${esc(title)}</span></span>
       <div class="ewl-hud-path" role="radiogroup" aria-label="Pathway">${PATHS.map(
         (p) =>
           `<button type="button" role="radio" class="ewl-hud-opt" data-path="${p.id}" aria-checked="${p.id === pathway.id}" tabindex="${p.id === pathway.id ? 0 : -1}">${p.name}<span class="es-text" lang="es">${p.es}</span></button>`,

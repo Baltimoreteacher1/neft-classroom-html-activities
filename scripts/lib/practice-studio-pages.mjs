@@ -178,6 +178,71 @@ ${NSR_BODY}
 `;
 }
 
+/**
+ * The Daily Boost: a studio page whose ten problems are chosen in the browser from what this student has practised
+ * (assets/studio/boost.js rewrites #studio-data before the runtime reads it). The server only lays out the shell
+ * and ships the catalogue of skills the Boost may draw from.
+ */
+export function boostPage(
+  /** @type {{world: any, catalog: any[], assets: any}} */ { world, catalog, assets },
+) {
+  const rounds = [
+    ["Warm-up", "Calentamiento", "Due for a second look"],
+    ["Mix it up", "Mezcla", "Different skills side by side"],
+    ["Dig in", "A fondo", "A little more thinking"],
+    ["Stretch", "Reto", "Skills you are still building"],
+    ["Finish strong", "Cierre", "The last two"],
+  ];
+  const sections = rounds.map(([en, es, desc], i) => ({
+    name: en,
+    nameEs: es,
+    desc,
+    descEs: "Repaso mezclado",
+    h: en,
+    p: "Two questions from skills across the grade. The skills you know best come back less often; the ones you miss come back sooner.",
+    pEs: "Dos preguntas de habilidades de todo el año. Las que dominas vuelven menos; las que fallas vuelven antes.",
+    items: [0, 1].map((k) => ({ k: "gen", g: "medianFind", level: 2, id: `b_${i}_${k}` })),
+  }));
+  const html = pageFor({
+    id: "0-0",
+    mode: "practice",
+    cfg: {
+      title: "Daily Boost",
+      standard: "",
+      contentObjective: "Mixed review of skills from every unit",
+    },
+    ld: {
+      story:
+        "Skills fade unless you meet them again. Today's Boost brings back what is due and mixes in something new, so what you learn stays learned.",
+      storyEs:
+        "Las habilidades se olvidan si no las vuelves a ver. El refuerzo de hoy trae lo que toca repasar y mezcla algo nuevo.",
+      glossary: [],
+    },
+    world,
+    sections,
+    assets,
+  });
+  return html
+    .replace(
+      /<div class="brand-sub">[^<]*<\/div>/,
+      '<div class="brand-sub">Grade 6 Math · Mixed review from every unit · New set each day</div>',
+    )
+    .replace(
+      /<strong>Grade 6 Mathematics · Lesson 0-0: Daily Boost<\/strong>/,
+      "<strong>Grade 6 Mathematics · Daily Boost</strong>",
+    )
+    .replace(
+      / · <a href="\/lessons\/0-0\/">Open the full lesson<\/a> · <a href="[^"]*">(?:Practice|Challenge) version<\/a>/,
+      ' · <a href="/math/practice-studio/">All practice studios</a>',
+    )
+    .replaceAll("/math/practice-studio/0-0/challenge/", "/math/practice-studio/")
+    .replace("Try the Challenge →", "All practice studios")
+    .replace(
+      "</body>",
+      `  <script type="application/json" id="boost-catalog">${json(catalog)}</script>\n</body>`,
+    );
+}
+
 /** The finder at /math/practice-studio/: every lesson, both versions, and the student's own passport stamps. */
 export function indexPage(
   /** @type {Array<{id: string, title: string, emoji: string, world: string}>} */ entries,
@@ -222,6 +287,7 @@ ${NSR_HEAD}
 <body data-world="lab" data-mode="practice">
   <header class="app-header"><div class="header-wrap"><div class="brand"><div class="brand-icon" aria-hidden="true">★</div><div><h1 class="brand-title">Interactive Practice Studios</h1><div class="brand-sub">Grade 6 Math · pick a lesson, then Practice or take the Challenge</div></div></div></div></header>
   <main class="main-container">
+    <section class="stage-card finder-boost"><h2>⚡ Daily Boost</h2><p>Ten mixed questions from across the grade: what is due for review plus something new. A fresh set every day.</p><p><a class="btn btn-go" href="/math/practice-studio/boost/">Start today's Boost</a></p></section>
     <section class="stage-card finder-passport"><h2>My passport</h2><p id="passport-summary">Finish a studio to earn a stamp. A gold stamp means you cleared the Challenge boss.</p><p class="item-sub">Stamps are saved on this device only.</p></section>
 ${all.join("\n")}
   </main>

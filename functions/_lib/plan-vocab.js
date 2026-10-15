@@ -4443,6 +4443,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/practice-studio/boost/",
+    title: "Daily Boost · Interactive Practice Studio (Grade 6)",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/pre-unit/projects/",
     title: "Pre-Unit Culminating Project",
     category: "Math Tool",
