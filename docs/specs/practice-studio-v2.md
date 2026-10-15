@@ -141,6 +141,7 @@ Never put backticks inside a comment (the CSS-integrity gate reads them as a tem
 - `ftree` []: build a prime factor tree by choosing factor pairs.
 - `hops` [`goal: "multiples"|"lcm"|"factors"`]: two hoppers on a number line; find where they meet.
 - `tiles` [`mode: "combine"|"equivalent"|"simplify"`]: algebra tiles; combine like terms and build equivalent expressions.
+- `powers` [`mode: "expand"|"value"|"write"`]: build repeated factors of a base, work out the value, or set a base and exponent (several answers can be right).
 
 **Lesson → suggested generators and activity** (authors may swap within the catalogue when the lesson's own content says so;
 a lesson with no activity listed uses `sort`/`match`/`nline` items and `pool`s instead):
@@ -165,7 +166,7 @@ a lesson with no activity listed uses `sort`/`match`/`nline` items and `pool`s i
 6-1  fracDivWhole                   act barcut        6-9  wholeDivFrac             act barcut
 6-2  fracDivMixed                   act barcut        6-10 mixedDivide              act barcut
 6-3  exponentEval                   act none          6-11 fracDivWord              act barcut
-6-4  orderOfOps exponentEval        act none          6-12 lcmFind                  act hops
+6-4  orderOfOps exponentEval        act powers          6-12 lcmFind                  act hops
 6-5  evalExpression                 act none          6-13 primeFactorization       act ftree
 6-6  equivalentExpr                 act tiles         6-14 distribute               act areabox
 6-7  factorsMultiples gcfFind       act hops          6-15 simplifyExpr             act tiles

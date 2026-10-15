@@ -14,7 +14,7 @@ integerOpposites rationalNumberLine absoluteValue compareOrder quadrantId coordD
   ),
 );
 export const ACT_KINDS = new Set(
-  "plot nline ineq sizer areabox barcut ldiv dotbalance chartbuild ratiomix convchain balance ftree hops tiles".split(
+  "plot nline ineq sizer areabox barcut ldiv dotbalance chartbuild ratiomix convchain balance ftree hops tiles powers".split(
     " ",
   ),
 );
