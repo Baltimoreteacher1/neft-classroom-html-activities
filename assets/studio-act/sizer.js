@@ -176,16 +176,18 @@
   function make(/** @type {any} */ rng, /** @type {number} */ level, /** @type {any} */ p) {
     let shape = SHAPES.includes(p.shape) ? p.shape : "";
     let goal = p.goal;
+    // p.whole: whole-number edges at every level (lesson 5-5). p.frac: half-unit edges from level 2 (lesson 5-10).
+    const sl = p.whole ? 2 : p.frac ? Math.max(level, 3) : level;
     if (!shape) shape = goal === "volume" || goal === "surface" ? "prism" : rng.pick(SHAPES);
     if (shape === "prism")
       goal = goal === "surface" || goal === "volume" ? goal : rng.pick(["volume", "surface"]);
     else goal = "area";
     const R = RANGE[shape];
     const keys = Object.keys(DIMS[shape]);
-    const gap = level <= 2 ? 1 : 0.5;
-    const vlo = level <= 2 ? 2 : 2.5;
+    const gap = sl <= 2 ? 1 : 0.5;
+    const vlo = sl <= 2 ? 2 : 2.5;
     const pool = (/** @type {string} */ k, /** @type {boolean} */ free) => {
-      const st = level <= 2 ? 1 : level === 3 || free ? 0.5 : 0.25;
+      const st = sl <= 2 ? 1 : sl === 3 || free ? 0.5 : 0.25;
       const lo =
         shape === "lshape" && (k === "w" || k === "h")
           ? R[k][0] + 1
@@ -238,16 +240,17 @@
         conds = [{ k: sol[x] > sol[y] ? "gt" : "lt", a: x, c: y }];
       }
       if (keys.some((k) => sol[k] < R[k][0] || sol[k] > R[k][1] + 1e-9)) continue;
+      if (p.frac && !keys.some((k) => sol[k] % 1 !== 0)) continue; // 5-10: the answer needs a fractional edge
       if (shape === "lshape" && (sol.a > sol.w - gap || sol.c > sol.h - gap)) continue;
       const model = { shape, goal };
       const target = measure(model, sol);
-      const unit = level <= 2 ? 1 : level === 3 ? 2 : 4;
+      const unit = sl <= 2 ? 1 : sl === 3 ? 2 : 4;
       if (Math.abs(target * unit - Math.round(target * unit)) > 1e-9 || target > 300) continue;
       if (conds.some((c) => !holds(c, sol))) continue;
       /** @type {Record<string, any>} */
       const dim = {};
-      const lo = (/** @type {string} */ k) => (level <= 2 ? R[k][0] : Math.min(R[k][0], 0.5));
-      const step = level <= 2 ? 1 : level === 3 ? 0.5 : 0.25;
+      const lo = (/** @type {string} */ k) => (sl <= 2 ? R[k][0] : Math.min(R[k][0], 0.5));
+      const step = sl <= 2 ? 1 : sl === 3 ? 0.5 : 0.25;
       let roomy = true;
       for (const k of keys) {
         if (!free.includes(k)) {

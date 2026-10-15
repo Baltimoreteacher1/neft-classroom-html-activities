@@ -13,6 +13,9 @@
  *                 rhombus side h (or d1 d2) | hex side a n(3..12) | lshape l w l1 w1 l2 w2
  *          lshape l = bottom, w = left, l1 = top, w2 = inner vertical, l2 = inner horizontal, w1 = lower right
  *   prism  {l,w,h, unit?, labels?, cubes?, net?}  oblique box, unit-cube grid on the faces, or the unfolded net
+ *          {tri:{b,h,s?}, len, unit?, labels?, net?}  a triangular prism: end triangle, length, or the folding net
+ *   pyramid {n:3|4, base, slant, vh?, unit?, labels?, cube?, net?}  slant height dashed (not the vertical height); cube puts the
+ *          pyramid on a cube; net draws the faces flat
  */
 (() => {
   const W = /** @type {any} */ (window);
@@ -269,7 +272,7 @@
     const SHAPES = {
       para(d) {
         const [b, h, sd] = [dim(d.b), dim(d.h), dim(d.side)];
-        const B = ratio(b, h, 1.7, 0.9, 3.4) * U;
+        const B = ratio(b, h, 1.7, 0.3, 6) * U;
         let o = 0.34 * B;
         if (sd?.v != null && h?.v > 0 && sd.v > h.v)
           o = (Math.sqrt(sd.v ** 2 - h.v ** 2) / h.v) * U;
@@ -289,7 +292,7 @@
       },
       tri(d) {
         const [b, h] = [dim(d.b), dim(d.h)];
-        const B = ratio(b, h, 1.5, 0.8, 3) * U;
+        const B = ratio(b, h, 1.5, 0.2, 5) * U;
         const ap = clamp(opt(d.apex, 0.36), 0, 1);
         const ax = ap * B;
         const right = ap === 0 || ap === 1; // a right triangle: the height is one of its sides
@@ -316,7 +319,7 @@
         const swap = b1?.v != null && b2?.v != null && b1.v > b2.v; // the longer base sits at the bottom
         const [top, bot] = swap ? [b2, b1] : [b1, b2];
         const r = top?.v != null && bot?.v > 0 ? clamp(top.v / bot.v, 0.2, 0.92) : 0.56;
-        const B = (bot?.v != null && h?.v > 0 ? clamp(bot.v / h.v, 1.1, 3.4) : 1.9) * U;
+        const B = (bot?.v != null && h?.v > 0 ? clamp(bot.v / h.v, 0.9, 8) : 1.9) * U;
         const t = B * r;
         const o = (B - t) / 2;
         return {
@@ -339,7 +342,7 @@
         const l = dim(d.l ?? d.base) || sq;
         const w = dim(d.w ?? d.height) || sq;
         const square1 = !!sq && !d.l && !d.w; // one side given: a square
-        const B = (square1 ? 1 : ratio(l, w, 1.6, 0.6, 3.2)) * U;
+        const B = (square1 ? 1 : ratio(l, w, 1.6, 0.25, 6)) * U;
         return {
           w: B,
           h: U,
@@ -372,8 +375,10 @@
             ],
           };
         }
+        // drawn to the given numbers: the dashed height is h/side of the slanted side, never a fixed look
+        const fit = sd?.v > 0 && h?.v > 0 && h.v < sd.v ? h.v / sd.v : 0.78;
         const B = 1.15 * U;
-        const H = 0.78 * B;
+        const H = clamp(fit, 0.12, 0.96) * B;
         const o = Math.sqrt(B * B - H * H);
         return {
           w: B + o,
@@ -474,6 +479,36 @@
       for (const [a, b] of g.extra || []) body += L(...P(a), ...P(b), g.xcls || "sx");
       for (const [a, b] of g.hash || []) body += tick(P(a), P(b));
       if (g.ht) body += L(...P(g.ht[0]), ...P(g.ht[1]), "sd");
+      if (s.ghost === "rect" && kind === "tri") {
+        // the b x h rectangle the triangle is half of
+        for (const [a, b] of [
+          [
+            [0, 0],
+            [g.w, 0],
+          ],
+          [
+            [g.w, 0],
+            [g.w, U],
+          ],
+          [
+            [0, 0],
+            [0, U],
+          ],
+        ])
+          body += L(...P(a), ...P(b), "sd");
+      }
+      if (s.cuts && kind === "trap") {
+        // the two perpendiculars that cut the trapezoid into a rectangle and two triangles
+        const [tl, tr] = g.poly;
+        body += L(...P(tr), ...P([tr[0], U]), "sd");
+        g.ra = [...(g.ra || []), corner(tr[0], U, -1, -1)];
+        const run = Math.abs((dim(dims.b1)?.v ?? NaN) - (dim(dims.b2)?.v ?? NaN)) / 2;
+        if (Number.isFinite(run) && run > 0 && tl[0] > 0)
+          g.lab = [
+            ...g.lab,
+            lb(dim(Math.round(run * 100) / 100), tl[0] / 2, U, 0, 24, "middle", "triangle base"),
+          ];
+      }
       if (g.dot) body += Ci(...P(g.dot), 3.5, "fi");
       const rs = kind === "rect" || kind === "lshape" ? 8 : 9;
       for (const [v, u1, u2] of g.ra || []) body += square(P(v), u1, u2, rs);
@@ -565,7 +600,348 @@
       ];
       return { body, marks };
     };
+    /* ---- triangular prism: oblique solid, or the net that folds into it ------------------------- */
+    const triPrism = (s) => {
+      const t = s.tri || {};
+      const [db, dh, ds, dl] = [dim(t.b), dim(t.h), dim(t.s), dim(s.len)];
+      const unit = s.unit ? String(s.unit) : "";
+      const bv = db?.v > 0 ? db.v : 6;
+      const hv = dh?.v > 0 ? dh.v : 4;
+      const lv = dl?.v > 0 ? dl.v : 8;
+      const sv = ds?.v > 0 ? ds.v : Math.hypot(bv / 2, hv);
+      const printed = [];
+      let body = "";
+      const label = (dm, x, y, a, name, extra = "") => {
+        if (s.labels === false || !dm) return "";
+        printed.push(`${name} ${say(dm, unit)}`);
+        return T(x, y, `${extra}${say(dm, unit)}`, { a, z: 15, c: "bd hl" });
+      };
+      if (s.net) {
+        const S = Math.min(370 / (2 * sv + bv), 190 / (lv + 2 * hv), 40);
+        const [Sp, Bp, Lp, Hp] = [sv * S, bv * S, lv * S, hv * S];
+        const ox = (480 - (2 * Sp + Bp)) / 2;
+        const oy = 36 + (200 - (Lp + 2 * Hp)) / 2;
+        const top = oy + Hp;
+        body +=
+          Rc(ox, top, Sp, Lp, "fw sb") +
+          Rc(ox + Sp, top, Bp, Lp, "ft sb") +
+          Rc(ox + Sp + Bp, top, Sp, Lp, "fw sb");
+        const mid = ox + Sp + Bp / 2;
+        body += Pg(
+          [
+            [ox + Sp, top],
+            [ox + Sp + Bp, top],
+            [mid, oy],
+          ],
+          "fa sb",
+        );
+        body += Pg(
+          [
+            [ox + Sp, top + Lp],
+            [ox + Sp + Bp, top + Lp],
+            [mid, top + Lp + Hp],
+          ],
+          "fa sb",
+        );
+        body += L(mid, oy, mid, top, "sd") + square([mid, top], [-1, 0], [0, -1], 8);
+        body += label(dh, mid + 6, oy + Hp / 2 + 5, "start", "triangle height");
+        body += label(db, mid, top + Lp / 2 + 5, "middle", "base rectangle width");
+        body += label(ds, ox + Sp / 2, top + Lp / 2 + 5, "middle", "side rectangle width");
+        body += label(dl, ox - 8, top + Lp / 2 + 5, "end", "length");
+      } else {
+        const top = Math.max(bv, hv, lv);
+        const [rb, rh, rl] = [
+          clamp(bv / top, 0.1, 1),
+          clamp(hv / top, 0.1, 1),
+          clamp(lv / top, 0.1, 1),
+        ];
+        const S = Math.min(300 / (rb + 0.383 * rl), 150 / (rh + 0.321 * rl), 200);
+        const [Bp, Hp] = [rb * S, rh * S];
+        const [ex, ey] = [0.383 * rl * S, 0.321 * rl * S];
+        const ox = (480 - (Bp + ex)) / 2;
+        const oy = 42 + (158 - (Hp + ey)) / 2;
+        const p = (x, y) => [ox + x, oy + y];
+        const [A, B, C] = [p(0, ey + Hp), p(Bp, ey + Hp), p(Bp / 2, ey)];
+        const [A2, B2, C2] = [p(ex, Hp), p(Bp + ex, Hp), p(Bp / 2 + ex, 0)];
+        const leftSeen = -hv * 0.383 + (bv / 2) * 0.321 > 0; // the left slanted face faces the viewer only for wide, low ends
+        body += Pg([B, C, C2, B2], "fa sb");
+        if (leftSeen) body += Pg([A, C, C2, A2], "fw sb");
+        body += Pg([A, B, C], "ft sb");
+        body += L(...A2, ...B2, "sh");
+        if (!leftSeen) body += L(...A, ...A2, "sh") + L(...A2, ...C2, "sh");
+        const M = [(A[0] + B[0]) / 2, A[1]];
+        body += L(...C, ...M, "sd") + square(M, [-1, 0], [0, -1], 8);
+        body += tick(A, C) + tick(C, B);
+        body += label(db, M[0], M[1] + 24, "middle", "end triangle base");
+        body += label(dh, M[0] + 6, (C[1] + M[1]) / 2 + 5, "start", "end triangle height");
+        body += label(ds, (A[0] + C[0]) / 2 - 16, (A[1] + C[1]) / 2 - 2, "end", "equal sides");
+        body += label(dl, (B[0] + B2[0]) / 2 + 12, (B[1] + B2[1]) / 2 + 8, "start", "length");
+      }
+      const kind = s.net
+        ? "Net of a triangular prism (three rectangles in a row, a triangle above and below the middle one)"
+        : "Triangular prism";
+      const bare = s.labels === false ? ", no measurements shown" : "";
+      const note = s.net
+        ? ""
+        : " The height is the dashed line at a right angle to the end triangle's base.";
+      const title = `${kind}${printed.length ? ` with ${list(printed)}` : bare}.${note}`;
+      return { w: 480, h: 264, body, title, alt: title };
+    };
+
+    /* ---- pyramid: oblique solid (slant height marked), a cube under it, or the net -------------- */
+    const pyramid = (s) => {
+      const n = Number(s.n) === 3 ? 3 : 4;
+      const [db, dsl, dvh] = [dim(s.base), dim(s.slant), dim(s.vh)];
+      const unit = s.unit ? String(s.unit) : "";
+      const bv = db?.v > 0 ? db.v : 6;
+      const sl = dsl?.v > 0 ? dsl.v : bv;
+      const printed = [];
+      let body = "";
+      const name = n === 3 ? "triangular pyramid" : "square pyramid";
+      const label = (dm, x, y, a, what, pre = "") => {
+        if (s.labels === false || !dm) return "";
+        printed.push(`${what} ${say(dm, unit)}`);
+        return T(x, y, `${pre}${say(dm, unit)}`, { a, z: 15, c: "bd hl" });
+      };
+      if (s.net && Array.isArray(s.sides) && s.sides.length === 3) {
+        // a triangular base with the given side lengths, a lateral face on each edge, all with the same slant height
+        const [ea, eb, ec] = s.sides.map((v) => (Number(v) > 0 ? Number(v) : 1));
+        const px = (eb * eb + ec * ec - ea * ea) / (2 * ec);
+        const py = Math.sqrt(Math.max(0.01, eb * eb - px * px));
+        const V0 = [0, 0],
+          V1 = [ec, 0],
+          V2 = [px, -py];
+        const ctr = [(V0[0] + V1[0] + V2[0]) / 3, (V0[1] + V1[1] + V2[1]) / 3];
+        const tips = [
+          [V0, V1],
+          [V1, V2],
+          [V2, V0],
+        ].map(([u, v]) => {
+          const mx = (u[0] + v[0]) / 2,
+            my = (u[1] + v[1]) / 2;
+          const len = Math.hypot(v[0] - u[0], v[1] - u[1]);
+          let nx = (v[1] - u[1]) / len,
+            ny = -(v[0] - u[0]) / len;
+          if ((mx - ctr[0]) * nx + (my - ctr[1]) * ny < 0) [nx, ny] = [-nx, -ny];
+          return { u, v, m: [mx, my], tip: [mx + nx * sl, my + ny * sl], n: [nx, ny] };
+        });
+        const pts = [V0, V1, V2, ...tips.map((q) => q.tip)];
+        const [x0, x1] = [Math.min(...pts.map((q) => q[0])), Math.max(...pts.map((q) => q[0]))];
+        const [y0, y1] = [Math.min(...pts.map((q) => q[1])), Math.max(...pts.map((q) => q[1]))];
+        const S = Math.min(400 / (x1 - x0), 205 / (y1 - y0), 36);
+        const q = (pt) => [
+          (480 - (x1 - x0) * S) / 2 + (pt[0] - x0) * S,
+          40 + (210 - (y1 - y0) * S) / 2 + (pt[1] - y0) * S,
+        ];
+        body += Pg([q(V0), q(V1), q(V2)], "fw sb");
+        for (const t of tips) body += Pg([q(t.u), q(t.v), q(t.tip)], "ft sb");
+        const f = tips[0];
+        body += L(...q(f.m), ...q(f.tip), "sd") + square(q(f.m), [1, 0], [f.n[0], f.n[1]], 7);
+        const names = ["base edge", "base edge", "base edge"];
+        tips.forEach((t, i) => {
+          const o = q([t.m[0] - t.n[0] * 0.0, t.m[1]]);
+          const inside = q([t.m[0] - t.n[0] * 0.35, t.m[1] - t.n[1] * 0.35]);
+          body += label(dim(s.sides[i]), inside[0], inside[1] + 4, "middle", names[i]);
+          void o;
+        });
+        body += label(
+          dsl,
+          q(f.tip)[0] + 8,
+          (q(f.m)[1] + q(f.tip)[1]) / 2,
+          "start",
+          "slant height",
+          "slant ",
+        );
+      } else if (s.net) {
+        const baseH = n === 3 ? bv * 0.866 : bv;
+        const span = n === 3 ? Math.max(bv + 2 * sl * 0.5, baseH + 2 * sl) : bv + 2 * sl;
+        const S = Math.min(
+          300 / (n === 3 ? bv + sl : bv + 2 * sl),
+          215 / (n === 3 ? baseH + 2 * sl : span),
+          36,
+        );
+        const cx = 240;
+        const cy = 40 + 107;
+        const q = (x, y) => [cx + x * S, cy + y * S];
+        if (n === 4) {
+          const h2 = bv / 2;
+          body += Rc(...q(-h2, -h2), bv * S, bv * S, "fw sb");
+          for (const [a, b, c] of [
+            [
+              [-h2, -h2],
+              [h2, -h2],
+              [0, -h2 - sl],
+            ],
+            [
+              [h2, -h2],
+              [h2, h2],
+              [h2 + sl, 0],
+            ],
+            [
+              [h2, h2],
+              [-h2, h2],
+              [0, h2 + sl],
+            ],
+            [
+              [-h2, h2],
+              [-h2, -h2],
+              [-h2 - sl, 0],
+            ],
+          ])
+            body += Pg([q(...a), q(...b), q(...c)], "ft sb");
+          body += L(...q(0, -h2), ...q(0, -h2 - sl), "sd") + square(q(0, -h2), [1, 0], [0, -1], 8);
+          body += label(db, cx, cy + 5, "middle", "base edge");
+          body += label(dsl, cx + 6, cy - (h2 + sl / 2) * S + 5, "start", "slant height", "slant ");
+        } else {
+          const h = baseH;
+          const a = [-bv / 2, h / 3],
+            b = [bv / 2, h / 3],
+            c = [0, (-2 * h) / 3];
+          body += Pg([q(...a), q(...b), q(...c)], "fw sb");
+          const out = (u, v) => {
+            const mx = (u[0] + v[0]) / 2,
+              my = (u[1] + v[1]) / 2;
+            const dx = v[0] - u[0],
+              dy = v[1] - u[1];
+            const len = Math.hypot(dx, dy);
+            let nx = dy / len,
+              ny = -dx / len;
+            if (mx * nx + (my - 0) * ny < 0) [nx, ny] = [-nx, -ny];
+            return [
+              [mx, my],
+              [mx + nx * sl, my + ny * sl],
+            ];
+          };
+          for (const [u, v] of [
+            [a, b],
+            [b, c],
+            [c, a],
+          ]) {
+            const [m, tip] = out(u, v);
+            body += Pg([q(...u), q(...v), q(...tip)], "ft sb");
+            void m;
+          }
+          const [m0, t0] = out(a, b);
+          body += L(...q(...m0), ...q(...t0), "sd");
+          body += label(db, cx, cy + 4, "middle", "base edge");
+          body += label(dsl, cx + 8, cy + (h / 3 + sl / 2) * S, "start", "slant height", "slant ");
+        }
+      } else {
+        const hr = Math.sqrt(Math.max(0.01, sl * sl - (bv * (n === 3 ? 0.289 : 0.5)) ** 2));
+        const cube = !!s.cube;
+        const depth = n === 3 ? 1.3 : 1;
+        const S = Math.min(
+          300 / (bv + 0.383 * bv * depth),
+          (150 - (cube ? 0 : 0)) / (hr + 0.321 * bv * depth + (cube ? bv : 0)),
+          40,
+        );
+        const [Bp, Hp] = [bv * S, hr * S];
+        const [ex, ey] = [0.383 * bv * depth * S, 0.321 * bv * depth * S];
+        const Cp = cube ? bv * S : 0;
+        const ox = (480 - (Bp + ex)) / 2;
+        const oy = 40 + (172 - (Hp + ey + Cp)) / 2 + Math.max(0, Hp - ey / 2) * 0;
+        const topPad = Math.max(0, Hp - ey / 2);
+        const p = (x, y) => [ox + x, oy + topPad + y];
+        const base =
+          n === 3
+            ? [
+                [0, ey],
+                [Bp, ey],
+                [Bp / 2 + ex, 0],
+              ]
+            : [
+                [0, ey],
+                [Bp, ey],
+                [Bp + ex, 0],
+                [ex, 0],
+              ];
+        const cen = [
+          base.reduce((t, v) => t + v[0], 0) / base.length,
+          base.reduce((t, v) => t + v[1], 0) / base.length,
+        ];
+        const apex = [cen[0], cen[1] - Hp];
+        if (cube) {
+          body += Pg(
+            [
+              p(...base[0]),
+              p(...base[1]),
+              p(base[1][0], base[1][1] + Cp),
+              p(base[0][0], base[0][1] + Cp),
+            ],
+            "ft sb",
+          );
+          body += Pg(
+            [
+              p(...base[1]),
+              p(...base[2]),
+              p(base[2][0], base[2][1] + Cp),
+              p(base[1][0], base[1][1] + Cp),
+            ],
+            "fa sb",
+          );
+          if (n === 4)
+            body += Pg(
+              base.map((v) => p(...v)),
+              "fw sb",
+            );
+        }
+        // lateral faces: a face is seen when its projected winding matches the front face's
+        const faces = base.map((v, i) => [v, base[(i + 1) % base.length], apex]);
+        const area = ([a, b, c]) => (b[0] - a[0]) * (c[1] - a[1]) - (c[0] - a[0]) * (b[1] - a[1]);
+        const front = Math.sign(area(faces[0]));
+        const seen = faces.map((f) => Math.sign(area(f)) === front);
+        faces.forEach((f, i) => {
+          if (seen[i])
+            body += Pg(
+              f.map((v) => p(...v)),
+              i === 0 ? "ft sb" : "fa sb",
+            );
+        });
+        const hiddenCorners = base.filter(
+          (_, i) => !seen[i] && !seen[(i + base.length - 1) % base.length],
+        );
+        for (const v of hiddenCorners) body += L(...p(...v), ...p(...apex), "sh");
+        const M = [(base[0][0] + base[1][0]) / 2, base[0][1]];
+        const dx = apex[0] - M[0],
+          dy = apex[1] - M[1];
+        const len = Math.hypot(dx, dy) || 1;
+        body +=
+          L(...p(...M), ...p(...apex), "sd") + square(p(...M), [1, 0], [dx / len, dy / len], 8);
+        if (dvh && dvh.v != null) {
+          body += L(...p(...cen), ...p(...apex), "sx");
+          body += label(
+            dvh,
+            p(...cen)[0] - 8,
+            (p(...cen)[1] + p(...apex)[1]) / 2,
+            "end",
+            "vertical height",
+            "height ",
+          );
+        }
+        body += label(db, p(...M)[0], p(...M)[1] + (cube ? Cp : 0) + 24, "middle", "base edge");
+        body += label(
+          dsl,
+          (p(...M)[0] + p(...apex)[0]) / 2 + 10,
+          (p(...M)[1] + p(...apex)[1]) / 2 + 6,
+          "start",
+          "slant height",
+          "slant ",
+        );
+      }
+      const kind = s.net
+        ? `Net of a ${name}`
+        : `${s.cube ? "Cube with a " : ""}${name[0].toUpperCase()}${name.slice(1)}`;
+      const bare = s.labels === false ? ", no measurements shown" : "";
+      const note = s.net
+        ? ""
+        : " The slant height is the dashed line from the apex to the middle of a base edge, along a face.";
+      const title = `${kind}${printed.length ? ` with ${list(printed)}` : bare}.${note}`;
+      return { w: 480, h: 264, body, title, alt: title };
+    };
+    register("pyramid", pyramid);
+
     register("prism", (s) => {
+      if (s.tri) return triPrism(s);
       const dms = [dim(s.l), dim(s.w), dim(s.h)];
       const unit = s.unit ? String(s.unit) : "";
       const val = dms.map((q) => (q?.v > 0 ? q.v : 3));

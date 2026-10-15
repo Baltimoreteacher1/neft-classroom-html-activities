@@ -922,60 +922,6 @@
     });
   };
 
-  /** Which expression has the same value? Dividing by 1/d is × d; dividing by k is × 1/k. */
-  const equiv = (rng, A, B) => {
-    const unit = B[0] === 1 && B[1] > 1;
-    const Bi = unit ? [B[1], 1] : [1, B[0]];
-    const x = (a, op, b) => `${S(a)} ${op} ${S(b)}`;
-    const wrong = unit
-      ? [
-          [
-            x(A, "×", B),
-            "forgot-to-flip",
-            `Multiplying by ${S(B)} finds ${S(B)} of ${S(A)}. Dividing by ${S(B)} is the same as multiplying by its reciprocal, ${FR(Bi)}. | Multiplicar por ${S(B)} halla ${S(B)} de ${S(A)}. Dividir entre ${S(B)} es lo mismo que multiplicar por su recíproco, ${FR(Bi)}.`,
-          ],
-          [
-            x(A, "÷", Bi),
-            "denominator-as-divisor",
-            `Dividing by ${B[1]} is not the same as dividing by ${S(B)}. | Dividir entre ${B[1]} no es lo mismo que dividir entre ${S(B)}.`,
-          ],
-          [
-            x(inv(A), "×", Bi),
-            "inverted-wrong-fraction",
-            `You flipped ${S(A)}. Only the divisor gets flipped. | Invertiste ${S(A)}. Solo se invierte el divisor.`,
-          ],
-        ]
-      : [
-          [
-            x(A, "×", [B[0], 1]),
-            "forgot-to-flip",
-            `Multiplying by ${B[0]} makes MORE. Dividing by ${B[0]} is the same as multiplying by its reciprocal, 1/${B[0]}. | Multiplicar por ${B[0]} da MÁS. Dividir entre ${B[0]} es lo mismo que multiplicar por su recíproco, 1/${B[0]}.`,
-          ],
-          [
-            x(inv(A), "×", Bi),
-            "inverted-wrong-fraction",
-            `You flipped ${S(A)}. Only the divisor gets flipped. | Invertiste ${S(A)}. Solo se invierte el divisor.`,
-          ],
-          [
-            x(A, "÷", Bi),
-            "shares-as-unit-fraction",
-            `Dividing by 1/${B[0]} asks how many 1/${B[0]}s fit. It is not the same as dividing by ${B[0]}. | Dividir entre 1/${B[0]} pregunta cuántos 1/${B[0]} caben. No es lo mismo que dividir entre ${B[0]}.`,
-          ],
-        ];
-    return mcq(rng, {
-      q: `Which expression has the same value as ${ask(A, B)}? | ¿Qué expresión tiene el mismo valor que ${ask(A, B)}?`,
-      right: x(A, "×", Bi),
-      wrong,
-      x: `Dividing by a number is the same as multiplying by its reciprocal. The reciprocal of ${S(B)} is ${FR(Bi)}, so ${ask(A, B)} = ${x(A, "×", Bi)}. | Dividir entre un número es lo mismo que multiplicar por su recíproco. El recíproco de ${S(B)} es ${FR(Bi)}, así que ${ask(A, B)} = ${x(A, "×", Bi)}.`,
-      h: [
-        "Dividing by a number is the same as multiplying by its reciprocal. | Dividir entre un número es lo mismo que multiplicar por su recíproco.",
-        `The reciprocal of ${S(B)} is ${S(B)} turned upside down. | El recíproco de ${S(B)} es ${S(B)} puesto al revés.`,
-        `Keep ${S(A)}, change ÷ to ×, and flip only ${S(B)}. | Conserva ${S(A)}, cambia ÷ por × e invierte solo ${S(B)}.`,
-      ],
-      meta: { kind: "equiv", A, B },
-    });
-  };
-
   /** One value of A ÷ B = Q is hidden. hole "A" hides the dividend, "B" the divisor. */
   const reverse = (rng, A, B, hole, useStory) => {
     const Q = div(A, B);
@@ -1413,17 +1359,6 @@
             const g = rng.chance(0.5);
             const [A, B] = g ? unitGroup(rng, 5, [2, 3, 4, 5, 6], 24) : shareSet(rng, D6, 6, 30);
             return storyMatch(rng, A, B, g ? "G" : "S");
-          },
-        ],
-        [
-          3,
-          (rng) => {
-            const [A, B] = either(
-              rng,
-              () => unitGroup(rng, 8, D6, 40),
-              () => shareSet(rng, D6, 6, 30),
-            );
-            return equiv(rng, A, B);
           },
         ],
       ],

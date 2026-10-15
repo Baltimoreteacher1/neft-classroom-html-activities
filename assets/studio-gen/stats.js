@@ -244,14 +244,6 @@
       "The tallest bar shows where the most values are, not where the greatest values are.",
       "La barra más alta muestra dónde hay más valores, no dónde están los valores mayores.",
     ),
-    "stat-peak-not-median": pair(
-      "The tallest bar has the most values. The median is the middle value, so count up from the least.",
-      "La barra más alta tiene más valores. La mediana es el valor del medio, así que cuenta desde el menor.",
-    ),
-    "stat-middle-bar-not-median": pair(
-      "That is the middle bar by position. The median depends on how many values are in each bar.",
-      "Esa es la barra del medio por posición. La mediana depende de cuántos valores hay en cada barra.",
-    ),
     "stat-shortest-not-tallest": pair(
       "That is the shortest bar. The tallest bar has the most values.",
       "Esa es la barra más baja. La barra más alta tiene más valores.",
@@ -523,6 +515,14 @@
     "stat-box-for-range": pair(
       "The box shows only the middle half. The range runs from the end of one whisker to the end of the other.",
       "La caja muestra solo la mitad central. El rango va desde el extremo de un bigote hasta el extremo del otro.",
+    ),
+    "stat-reach-for-box": pair(
+      "How far the whiskers reach does not tell you how long the box is. The box runs only from Q1 to Q3.",
+      "Qué tan lejos llegan los bigotes no dice qué tan larga es la caja. La caja va solo de Q1 a Q3.",
+    ),
+    "stat-box-for-reach": pair(
+      "The box shows only the middle half. How far the plot stretches from end to end is measured from one whisker to the other.",
+      "La caja muestra solo la mitad central. Cuánto se extiende el diagrama de un extremo al otro se mide de un bigote al otro.",
     ),
     "stat-median-for-quartile": pair(
       "A higher median does not mean more of the data is above a given value. Look at Q1 to see where the lowest quarter ends.",
@@ -1920,22 +1920,12 @@
     levels: 4,
     make(rng, level) {
       const kind4 = level === 4 ? rng.pick(["claim", "tie", "complement"]) : "";
-      const kind3 = level === 3 ? rng.pick(["percent", "diff", "medbin", "medbin"]) : "";
+      const kind3 = level === 3 ? rng.pick(["percent", "diff"]) : "";
       const total =
-        kind3 === "percent" || kind4 === "complement"
-          ? rng.pick([20, 25, 50])
-          : kind3 === "medbin"
-            ? rng.pick([21, 23, 25, 27, 29, 31, 33])
-            : rng.int(20, 36);
+        kind3 === "percent" || kind4 === "complement" ? rng.pick([20, 25, 50]) : rng.int(20, 36);
       const s = until(
         () => histSetup(rng, total, false),
-        (x) => {
-          if (x.N !== total) return false;
-          if (kind3 !== "medbin") return true;
-          let run = 0;
-          const mi = x.counts.findIndex((c) => (run += c) >= (x.N + 1) / 2);
-          return mi !== x.peak && mi !== x.k >> 1;
-        },
+        (x) => x.N === total,
       );
       const { h, k, counts, bins, N, top, peak, lab, viz } = s;
       const lead = histLead(h, N);
@@ -2160,55 +2150,9 @@
         });
       }
 
-      /* L3: multi-step -- median interval, percent of the data, difference of two bars */
+      /* L3: multi-step -- percent of the data, difference of two bars (the median is lesson 2-3) */
       if (level === 3) {
-        const mid = k >> 1;
-        const medIdx = (() => {
-          let run = 0;
-          const target = (N + 1) / 2;
-          return counts.findIndex((c) => (run += c) >= target);
-        })();
         const kind = kind3;
-        if (kind === "medbin") {
-          return MC(rng, {
-            q: cat(
-              lead,
-              pair(
-                `Imagine all ${N} values in order from least to greatest. In which interval is the median?`,
-                `Imagina los ${N} valores en orden de menor a mayor. ¿En qué intervalo está la mediana?`,
-              ),
-            ),
-            right: lab[medIdx],
-            wrong: [
-              bad(lab[peak], "stat-peak-not-median"),
-              bad(lab[mid], "stat-middle-bar-not-median"),
-              ...[lab[medIdx - 1], lab[medIdx + 1]]
-                .filter(Boolean)
-                .map((x) => bad(x, "stat-wrong-column")),
-              ...lab.map((x) => bad(x, "stat-wrong-column")),
-            ],
-            x: pair(
-              `The median is value number ${(N + 1) / 2} of ${N}. Count up from the least: ${counts.slice(0, medIdx + 1).join(" + ")} = ${span(counts, 0, medIdx)} reaches it in the ${lab[medIdx]} bar.`,
-              `La mediana es el valor número ${(N + 1) / 2} de ${N}. Cuenta desde el menor: ${counts.slice(0, medIdx + 1).join(" + ")} = ${span(counts, 0, medIdx)} llega a ella en la barra ${lab[medIdx]}.`,
-            ),
-            h: [
-              pair(
-                "The median is the middle value when all the values are in order.",
-                "La mediana es el valor del medio cuando todos los valores están en orden.",
-              ),
-              pair(
-                `With ${N} values, the middle one is number ${(N + 1) / 2}. The bars are already in order from least to greatest.`,
-                `Con ${N} valores, el del medio es el número ${(N + 1) / 2}. Las barras ya están en orden de menor a mayor.`,
-              ),
-              pair(
-                "Add the bars from the left, one at a time, until your running total reaches the middle place.",
-                "Suma las barras desde la izquierda, una por una, hasta que tu total llegue al lugar del medio.",
-              ),
-            ],
-            viz,
-            meta: metaOf("medbin", {}),
-          });
-        }
         if (kind === "diff") {
           const lo = counts.indexOf(Math.min(...counts));
           const d = top - counts[lo];
@@ -2507,16 +2451,6 @@
             inBins((b) => b.from >= m.a && b.to <= m.b),
             "span of bars",
           );
-        case "medbin": {
-          // spread the bars out as one value per member (the interval start) and find the middle by rank
-          const pseudo = bins.flatMap((b) => Array(b.n).fill(b.from));
-          const mv = medC(pseudo);
-          return verdictText(
-            it,
-            label(bins.find((b) => mv >= b.from && mv <= b.to)),
-            "median interval",
-          );
-        }
         case "diff": {
           const ns = bins.map((b) => b.n);
           return verdict(it, Math.max(...ns) - Math.min(...ns), "tallest minus shortest");
@@ -4261,69 +4195,8 @@
         });
       }
 
-      /* L2: range, IQR, or what share of the data is in a section */
+      /* L2: what share of the data is in a section (the range and IQR are lesson 2-5) */
       if (level === 2) {
-        if (rng.chance(0.5)) {
-          const iqr = rng.chance(0.5);
-          const a = iqr ? q.q3 - q.q1 : q.max - q.min;
-          return NUM({
-            q: cat(
-              lead,
-              pair(
-                iqr ? "What is the interquartile range (IQR)?" : "What is the range?",
-                iqr ? "¿Cuál es el rango intercuartílico (RIC)?" : "¿Cuál es el rango?",
-              ),
-            ),
-            a,
-            fw: iqr
-              ? [
-                  bad(q.max - q.min, "stat-range-for-iqr"),
-                  bad(q.q3, "stat-q3-as-iqr"),
-                  bad(q.q3 + q.q1, "stat-quartile-sum"),
-                  bad(
-                    q.med - q.q1,
-                    "stat-half-box",
-                    "That is only the left half of the box. The IQR is the whole box, from Q1 to Q3.",
-                    "Esa es solo la mitad izquierda de la caja. El RIC es la caja completa, de Q1 a Q3.",
-                  ),
-                ]
-              : [
-                  bad(q.q3 - q.q1, "stat-iqr-for-range"),
-                  bad(q.max, "stat-greatest-as-range"),
-                  bad(q.max + q.min, "stat-least-plus-greatest"),
-                  bad(
-                    q.max - q.q3,
-                    "stat-one-whisker",
-                    "That is only the right whisker. The range runs from the least to the greatest value.",
-                    "Ese es solo el bigote derecho. El rango va del valor menor al mayor.",
-                  ),
-                ],
-            x: iqr
-              ? pair(
-                  `IQR = Q3 − Q1 = ${q.q3} − ${q.q1} = ${a}.`,
-                  `RIC = Q3 − Q1 = ${q.q3} − ${q.q1} = ${a}.`,
-                )
-              : pair(
-                  `Range = greatest − least = ${q.max} − ${q.min} = ${a}.`,
-                  `Rango = mayor − menor = ${q.max} − ${q.min} = ${a}.`,
-                ),
-            h: [
-              iqr
-                ? pair("The IQR is the length of the box.", "El RIC es la longitud de la caja.")
-                : pair(
-                    "The range is the length from one end of the whiskers to the other.",
-                    "El rango es la longitud de un extremo de los bigotes al otro.",
-                  ),
-              pair(
-                "Read the two numbers you need from the scale.",
-                "Lee en la escala los dos números que necesitas.",
-              ),
-              pair("Subtract the smaller from the larger.", "Resta el menor del mayor."),
-            ],
-            viz,
-            meta: meta("spread", { plot, iqr }),
-          });
-        }
         const key = rng.pick(Object.keys(SECTION));
         const pct = SECTION[key].pct;
         const lenPct = Math.round((secLen[key] * 100) / 5) * 5;
@@ -4453,20 +4326,20 @@
       const vk = wFirst ? "B" : "A";
       const sentences = {
         T: pair(
-          `${V[0]} has the higher median and the greater IQR, but ${W[0]} has the greater range.`,
-          `${V[1]} tiene la mediana más alta y el mayor RIC, pero ${W[1]} tiene el mayor rango.`,
+          `${V[0]} has the higher median and the longer box, but ${W[0]} stretches farther from one end of its whiskers to the other.`,
+          `${V[1]} tiene la mediana más alta y la caja más larga, pero ${W[1]} se extiende más de un extremo de sus bigotes al otro.`,
         ),
         F1: pair(
           `${W[0]} has the higher median, because its whisker reaches farther.`,
           `${W[1]} tiene la mediana más alta, porque su bigote llega más lejos.`,
         ),
         F2: pair(
-          `${W[0]} has the greater IQR, because its range is greater.`,
-          `${W[1]} tiene el mayor RIC, porque su rango es mayor.`,
+          `${W[0]} has the longer box, because its whiskers stretch farther.`,
+          `${W[1]} tiene la caja más larga, porque sus bigotes se extienden más.`,
         ),
         F3: pair(
-          `${V[0]} has the greater range, because its box is longer.`,
-          `${V[1]} tiene el mayor rango, porque su caja es más larga.`,
+          `${V[0]} stretches farther from end to end, because its box is longer.`,
+          `${V[1]} se extiende más de un extremo al otro, porque su caja es más larga.`,
         ),
       };
       for (const k of Object.keys(sentences)) sentences[k] = upP(sentences[k]);
@@ -4488,25 +4361,25 @@
         right: sentences.T,
         wrong: [
           bad(sentences.F1, "stat-higher-reach-higher-center"),
-          bad(sentences.F2, "stat-compared-by-range"),
-          bad(sentences.F3, "stat-box-for-range"),
+          bad(sentences.F2, "stat-reach-for-box"),
+          bad(sentences.F3, "stat-box-for-reach"),
         ],
         x: pair(
-          `Median: the line inside the box. IQR: the length of the box. Range: whisker end to whisker end. ${V[0]} is higher in the middle and has the longer box; ${W[0]} stretches farther from end to end.`,
-          `Mediana: la línea dentro de la caja. RIC: la longitud de la caja. Rango: de un extremo del bigote al otro. ${V[1]} está más alta en el medio y tiene la caja más larga; ${W[1]} se extiende más de un extremo al otro.`,
+          `Median: the line inside the box. Length of the box: from Q1 to Q3. Whole length: whisker end to whisker end. ${V[0]} is higher in the middle and has the longer box; ${W[0]} stretches farther from end to end.`,
+          `Mediana: la línea dentro de la caja. Longitud de la caja: de Q1 a Q3. Longitud total: de un extremo del bigote al otro. ${V[1]} está más alta en el medio y tiene la caja más larga; ${W[1]} se extiende más de un extremo al otro.`,
         ),
         h: [
           pair(
-            "Compare one measure at a time: the median line, the length of the box, and the length from end to end.",
-            "Compara una medida a la vez: la línea de la mediana, la longitud de la caja y la longitud de un extremo al otro.",
+            "Compare one thing at a time: the median line, the length of the box, and the length from end to end.",
+            "Compara una cosa a la vez: la línea de la mediana, la longitud de la caja y la longitud de un extremo al otro.",
           ),
           pair(
             "The median is the line inside the box, not the end of a whisker.",
             "La mediana es la línea dentro de la caja, no el extremo de un bigote.",
           ),
           pair(
-            "The IQR is the length of the box. The range is the whole length including the whiskers.",
-            "El RIC es la longitud de la caja. El rango es la longitud total con los bigotes.",
+            "The box runs from Q1 to Q3. The whole length includes the whiskers.",
+            "La caja va de Q1 a Q3. La longitud total incluye los bigotes.",
           ),
         ],
         viz: boxViz(bc, plots, names),

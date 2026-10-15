@@ -1111,7 +1111,9 @@
           ])
         : triX(g, ar, u, o.plain ? undefined : triTail(kind, g, u)),
       h: triHints(kind, g, u, undefined, o.plain),
-      viz: tri(u, triDims(g, { plain: o.plain })),
+      viz: o.half
+        ? shape("tri", triDims(g, { plain: o.plain }), u.l, { ghost: "rect" })
+        : tri(u, triDims(g, { plain: o.plain })),
       p: { what: "area", shape: "tri" },
     };
     const cand = [
@@ -1645,8 +1647,8 @@
     }[ask];
     return numI({
       q: [
-        `${d0} It is cut into a rectangle and two triangles. ${what[0]}`,
-        `${d1} Se corta en un rectángulo y dos triángulos. ${what[1]}`,
+        `${d0} It is cut into a rectangle and two identical triangles, as shown by the dashed lines. ${what[0]}`,
+        `${d1} Se corta en un rectángulo y dos triángulos idénticos, como muestran las líneas de trazos. ${what[1]}`,
       ],
       a: ans,
       unit,
@@ -1654,7 +1656,7 @@
       x,
       h: hint,
       p: { what: "area" },
-      viz: trapViz(g, u),
+      viz: { ...trapViz(g, u), cuts: true },
       meta: { kind: "piece", ask, b1: g.b1, b2: g.b2, h: g.h },
     });
   };
@@ -2742,6 +2744,44 @@
     });
   };
 
+  const volCheck = (item) => {
+    const m = item.meta;
+    switch (m.kind) {
+      case "cubes":
+      case "vol":
+        return wantNum(item, vol(m.l, m.w, m.h), "volume");
+      case "volMC":
+        return wantChoice(item, vol(m.l, m.w, m.h), m.uv, "volume");
+      case "miss": {
+        const t = G.value(item.a);
+        return (
+          near(vol(...[m.known[0], m.known[1], t]), m.V) ||
+          `edge ${item.a} does not give volume ${m.V}`
+        );
+      }
+      case "half":
+        return wantNum(item, m.l * 2 * m.w * 2 * m.h * 2, "half-unit cubes");
+      case "pack":
+        return wantNum(
+          item,
+          Math.floor(m.crate.l / m.box[0]) *
+            Math.floor(m.crate.w / m.box[1]) *
+            Math.floor(m.crate.h / m.box[2]),
+          "boxes",
+        );
+      case "compare":
+        return wantNum(
+          item,
+          Math.abs(vol(m.a1.l, m.a1.w, m.a1.h) - vol(m.a2.l, m.a2.w, m.a2.h)),
+          "difference",
+        );
+      case "tank":
+        return wantNum(item, vol(m.l, m.w, m.d), "water volume");
+      default:
+        return `unknown kind ${m.kind}`;
+    }
+  };
+  // 5-5 and 5-10 draw from different tables: 5-5 teaches whole-number edges, 5-10 introduces fractional edges.
   reg(
     "volumePrism",
     "Volume of rectangular prisms",
@@ -2752,43 +2792,40 @@
       3: [vMiss({}), vHalf, vMiss({ frac: true }), vFind({ frac: true, mc: true })],
       4: [vPack, vCompare, vTank, vMiss({ frac: true })],
     },
-    (item) => {
-      const m = item.meta;
-      switch (m.kind) {
-        case "cubes":
-        case "vol":
-          return wantNum(item, vol(m.l, m.w, m.h), "volume");
-        case "volMC":
-          return wantChoice(item, vol(m.l, m.w, m.h), m.uv, "volume");
-        case "miss": {
-          const t = G.value(item.a);
-          return (
-            near(vol(...[m.known[0], m.known[1], t]), m.V) ||
-            `edge ${item.a} does not give volume ${m.V}`
-          );
-        }
-        case "half":
-          return wantNum(item, m.l * 2 * m.w * 2 * m.h * 2, "half-unit cubes");
-        case "pack":
-          return wantNum(
-            item,
-            Math.floor(m.crate.l / m.box[0]) *
-              Math.floor(m.crate.w / m.box[1]) *
-              Math.floor(m.crate.h / m.box[2]),
-            "boxes",
-          );
-        case "compare":
-          return wantNum(
-            item,
-            Math.abs(vol(m.a1.l, m.a1.w, m.a1.h) - vol(m.a2.l, m.a2.w, m.a2.h)),
-            "difference",
-          );
-        case "tank":
-          return wantNum(item, vol(m.l, m.w, m.d), "water volume");
-        default:
-          return `unknown kind ${m.kind}`;
-      }
+    volCheck,
+  );
+  reg(
+    "volumePrismWhole",
+    "Volume of rectangular prisms (whole-number edges)",
+    "Volumen de prismas rectangulares (aristas enteras)",
+    {
+      1: [vCubes, vFind({ small: true }), vFind({ small: true, mc: true })],
+      2: [vFind({}), vFind({ mc: true }), vFind({}), vFind({ mc: true })],
+      3: [vMiss({}), vMiss({}), vFind({ mc: true }), vFind({})],
+      4: [vPack, vCompare, vMiss({}), vFind({})],
     },
+    volCheck,
+  );
+  reg(
+    "volumePrismFrac",
+    "Volume of rectangular prisms (fractional edges)",
+    "Volumen de prismas rectangulares (aristas fraccionarias)",
+    {
+      1: [
+        vFind({ small: true, frac: true }),
+        vFind({ small: true, frac: true, mc: true }),
+        vFind({ small: true, frac: true }),
+      ],
+      2: [
+        vFind({ frac: true }),
+        vFind({ frac: true, mc: true }),
+        vFind({ frac: true }),
+        vFind({ frac: true, mc: true }),
+      ],
+      3: [vMiss({ frac: true }), vHalf, vMiss({ frac: true }), vFind({ frac: true, mc: true })],
+      4: [vHalf, vMiss({ frac: true }), vFind({ frac: true, mc: true }), vMiss({ frac: true })],
+    },
+    volCheck,
   );
 
   /* ====================================================================================== */
@@ -3050,7 +3087,13 @@
         ],
       ],
       p: { what: "surface" },
-      viz: shape("tri", { b: 2 * g.p, h: g.q, s1: g.c, s2: g.c, apex: 0.5 }, u.l),
+      viz: clean({
+        t: "prism",
+        tri: { b: 2 * g.p, h: g.q, s: g.c },
+        len: g.L,
+        unit: u.l,
+        labels: true,
+      }),
       meta: { kind: "tri", ...g, k },
     });
   };
@@ -3295,7 +3338,9 @@
     { n: "gift box", e: "caja de regalo", g: "f", u: ["in", "cm"] },
     { n: "souvenir", e: "souvenir", g: "m", u: ["in", "cm"] },
   ];
-  const faceViz = (s, l, u) => shape("tri", { b: s, h: l }, u.l);
+  /** The pyramid itself, with its slant height dashed (never the vertical height); `cube` sits it on a cube. */
+  const faceViz = (s, l, u, extra = {}) =>
+    clean({ t: "pyramid", n: 4, base: s, slant: l, unit: u.l, labels: true, ...extra });
   function yGeom(rng) {
     for (;;) {
       const s = rng.pick([6, 8, 10, 12]);
@@ -3483,7 +3528,15 @@
         ],
       ],
       p: { what: "surface", shape: "tri" },
-      viz: shape("tri", { b: 4 * k, h: 3 * k, s2: 5 * k, apex: 0 }, u.l),
+      viz: clean({
+        t: "pyramid",
+        n: 3,
+        sides: [3 * k, 4 * k, 5 * k],
+        slant: l,
+        unit: u.l,
+        labels: true,
+        net: true,
+      }),
       meta: { kind: "triPyr", k, l },
     });
   };
@@ -3596,7 +3649,7 @@
         ],
       ],
       p: { what: "surface", shape: "tri" },
-      viz: faceViz(a1, g.l, u),
+      viz: faceViz(a1, g.l, u, { cube: true }),
       meta: { kind: "comp", a: a1, l: g.l },
     });
   };
