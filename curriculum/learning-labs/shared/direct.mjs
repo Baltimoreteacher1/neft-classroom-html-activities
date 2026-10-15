@@ -11,6 +11,13 @@ const set = (values, fields, i, v) => {
   next[i] = snap(fields[i], v);
   return next;
 };
+/** A position f (0 to 1) along a control's whole range; optionally a second control from g. */
+const slide = (values, fields, i, f, _fields2, j, g) => {
+  const at = (k, t) => fields[k].min + Math.min(1, Math.max(0, t)) * (fields[k].max - fields[k].min);
+  let next = set(values, fields, i, at(i, f));
+  if (j !== undefined) next = set(next, fields, j, at(j, g));
+  return next;
+};
 const nearest = (list, x) => list.reduce((best, v, i) => (Math.abs(v - x) < Math.abs(list[best] - x) ? i : best), 0);
 
 const ratioX = (x) => Math.floor((x - 40) / 43) + 1;
@@ -25,11 +32,22 @@ const growthGeometry = ([a, b, c]) => {
 };
 const areaScale = ([a, b]) => 360 / Math.max(a, b, 12);
 
+/** The one-line instruction shown under a touchable picture. */
+export function directHint(model) {
+  if (['decimal', 'division', 'rate', 'conversion'].includes(model.kind))
+    return 'Slide across each box in the picture to change its number.';
+  if (['factors', 'power'].includes(model.kind)) return 'Slide across each row of the picture to change its number.';
+  if (model.kind === 'balance') return 'Slide across the picture to try different values of x.';
+  if (model.kind === 'expression') return 'Drag across the rectangle to move the split.';
+  if (model.kind === 'area' && model.mode === 'polygon') return 'Drag right for more sides and up for longer sides.';
+  return 'Touch the picture: tap or drag it to change the model.';
+}
+
 /** Which models can be handled directly. */
 export function isDirect(model) {
   if (model.kind === 'data') return model.mode !== 'histogram';
-  if (model.kind === 'area') return model.mode !== 'polygon';
-  return ['percent', 'array', 'ratio', 'fraction', 'line', 'inequality', 'coordinates', 'growth', 'balance', 'expression'].includes(model.kind);
+  if (model.kind === 'area') return true;
+  return ['percent', 'array', 'ratio', 'fraction', 'line', 'inequality', 'coordinates', 'growth', 'balance', 'expression', 'decimal', 'division', 'rate', 'conversion', 'factors', 'power'].includes(model.kind);
 }
 
 /** The pointer went down at p (viewBox units). Returns a handle for move(), or null if nothing is held. */
@@ -40,6 +58,9 @@ export function grab(model, values, p) {
     case 'ratio': return { row: p.y < 160 ? 0 : 1 };
     case 'fraction': return {};
     case 'balance': return {};
+    case 'decimal': case 'division': case 'rate': case 'conversion': return { i: p.x < 300 ? 0 : 1 };
+    case 'factors': return { i: p.y < 84 ? 0 : 1 };
+    case 'power': return { i: p.y < 116 ? 1 : p.y < 190 ? 0 : 2 };
     case 'expression': return {};
     case 'line': return { i: nearest([45 + (values[0] + 10) / 20 * 510, 45 + (values[1] + 10) / 20 * 510], p.x) };
     case 'inequality': return { i: p.y > 190 ? 1 : 0 };
@@ -59,6 +80,7 @@ export function grab(model, values, p) {
       return { ...g, which };
     }
     case 'area': {
+      if (model.mode === 'polygon') return {};
       const bs = areaScale(values);
       if (model.mode === 'trapezoid') return { bs, which: p.y < 235 - values[2] * 8 ? 'top' : 'bottom' };
       return { bs, which: p.x > 100 + values[0] * bs * 0.75 ? 'base' : 'apex' };
@@ -85,6 +107,9 @@ export function move(model, values, p, h, fields) {
       return set(values, fields, 1, Math.ceil((p.x - 50) / (500 / c)));
     }
     case 'balance': return set(values, fields, 2, (p.x - 60) / 480 * 30);
+    case 'decimal': case 'division': case 'rate': case 'conversion': return slide(values, fields, h.i, (p.x - (h.i ? 345 : 45)) / 210);
+    case 'factors': return slide(values, fields, h.i, (p.x - 40) / 520);
+    case 'power': return slide(values, fields, h.i, (p.x - 70) / 460);
     case 'expression': {
       // the split follows the pointer: x is the share of the rectangle left of it
       const f = Math.min(0.92, Math.max(0.04, (p.x - 70) / 460));
@@ -105,6 +130,10 @@ export function move(model, values, p, h, fields) {
       return set(values, fields, 2, (p.x - 65) / 470 * h.maxX);
     }
     case 'area': {
+      if (model.mode === 'polygon') {
+        // right = more sides, up = longer sides
+        return slide(values, fields, 0, (p.x - 150) / 300, null, 1, (270 - p.y) / 240);
+      }
       if (model.mode === 'trapezoid') {
         const half = Math.abs(p.x - 300) * 2 / h.bs;
         if (h.which === 'bottom') return set(values, fields, 0, half);

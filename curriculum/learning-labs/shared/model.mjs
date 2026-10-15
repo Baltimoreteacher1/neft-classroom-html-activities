@@ -1,6 +1,6 @@
 import { controls, evaluate, fmt } from './math.mjs';
 import { mountLens } from './lens.mjs';
-import { attachDirect, isDirect } from './direct.mjs';
+import { attachDirect, directHint, isDirect } from './direct.mjs';
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const line = (x1, y1, x2, y2, cls = '') => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${cls}"/>`;
 const text = (x, y, t, anchor = 'middle') => `<text x="${x}" y="${y}" text-anchor="${anchor}">${esc(t)}</text>`;
@@ -179,7 +179,7 @@ export function mountModel(host, model, { initial = model.values, free = null, o
     });
     const hint = document.createElement('p');
     hint.className = 'direct-hint';
-    hint.textContent = 'Touch the picture: tap or drag it to change the model.';
+    hint.textContent = directHint(model);
     picture.after(hint);
   }
   if (model.kind === 'solid' && model.mode === 'surface' && free === null) {

@@ -89,6 +89,27 @@ assert.equal(
   "split at the middle makes x equal b",
 );
 
+const dec = { kind: "decimal", mode: "receipt", values: [2, 3] };
+assert.deepEqual(
+  drag(dec, [2, 3], { x: 45 + 210 * 0.5, y: 100 }),
+  [5.25, 3],
+  "left box slides the price (quarter-dollar steps)",
+);
+assert.deepEqual(
+  drag(dec, [2, 3], { x: 345 + 210, y: 100 }),
+  [2, 12],
+  "right box slides the count to its max",
+);
+const pow = { kind: "power", mode: "order", values: [2, 3, 4] };
+assert.equal(drag(pow, [2, 3, 4], { x: 70 + 460, y: 60 })[1], 5, "top row sets the exponent");
+assert.equal(drag(pow, [2, 3, 4], { x: 70, y: 220 })[2], 0, "bottom row sets the added amount");
+const poly = { kind: "area", mode: "polygon", values: [6, 4, 3] };
+assert.deepEqual(
+  drag(poly, [6, 4, 3], { x: 450, y: 30 }).slice(0, 2),
+  [8, 12],
+  "right and up: most sides, longest side",
+);
+
 // every direct lab: sweep the whole picture
 let direct = 0;
 for (const id of labs) {
@@ -113,7 +134,7 @@ for (const id of labs) {
       assert.ok(Number.isFinite(r.value), `${id}: evaluates to a number at (${x},${y})`);
     }
 }
-assert.ok(direct >= 33, `at least 25 labs are directly manipulable (${direct})`);
+assert.ok(direct >= 43, `at least 25 labs are directly manipulable (${direct})`);
 console.log(
   `learning-labs-direct: ${direct} of ${labs.length} labs respond to touch; all pointer positions stay in range.`,
 );
