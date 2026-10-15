@@ -64,6 +64,7 @@ function assetPlan(/** @type {string} */ worlds) {
     ...viz,
     ...gen,
     ...act,
+    "assets/studio/chrome.js",
     ...runtime.slice(1),
   ];
   const styles = ["assets/u4-studio.css", "assets/studio-v2.css", "assets/studio-worlds.css"];

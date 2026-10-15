@@ -24,6 +24,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 import { _internals, workedFigure, workedStepFigures } from "./lib/learn-figures.mjs";
+import { workedVizProblems } from "./lib/worked-viz.mjs";
 
 let failures = 0;
 const fail = (msg) => {
@@ -238,6 +239,14 @@ for (const id of ids) {
   const intro = (cfg.launch && cfg.launch.conceptIntro) || {};
   const text = ((intro.iDo && intro.iDo.lines) || []).join(" ");
   const textNums = new Set(numbersIn(text));
+
+  // An authored figure (iDo.viz) is checked by its own rule: it must draw, describe itself, and print only numbers the
+  // worked example states. Its labels are not "read from the text", so the reader checks below do not apply.
+  if (fig.kind.startsWith("authored:")) {
+    for (const m of workedVizProblems(id, (intro.iDo && intro.iDo.lines) || [], intro.iDo.viz))
+      fail(m);
+    continue;
+  }
 
   // 1. every claimed measurement is in the worked example.
   for (const v of fig.values) {

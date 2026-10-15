@@ -2,7 +2,7 @@
    PRACTICE STUDIO v2 — components layered on assets/u4-studio.css.
    The design tokens (--brand, --sun, --surface …) are re-pointed per lesson by assets/studio-worlds.css
    (generated from data/practice-studio/worlds.json), so everything here uses tokens only and recolours with the world.
-   Night = Challenge pages (body[data-mode="challenge"]).
+   Night = body[data-theme="dark"] (the Challenge pages by default; any studio when a student picks Dark).
    ========================================================================== */
 
 /* ---- mission briefing, glossary, HUD ------------------------------------ */
@@ -502,55 +502,55 @@ body[data-chrome="cards"] .tab-badge {
 }
 
 /* ---- night: Challenge pages ----------------------------------------------- */
-body[data-mode="challenge"] .num-input,
-body[data-mode="challenge"] .write-box,
-body[data-mode="challenge"] .data-table,
-body[data-mode="challenge"] .big-fraction {
+body[data-theme="dark"] .num-input,
+body[data-theme="dark"] .write-box,
+body[data-theme="dark"] .data-table,
+body[data-theme="dark"] .big-fraction {
   background: var(--surface-soft);
   color: var(--ink);
 }
-body[data-mode="challenge"] .num-input {
+body[data-theme="dark"] .num-input {
   color: var(--ink);
 }
-body[data-mode="challenge"] .num-input.ok {
+body[data-theme="dark"] .num-input.ok {
   background: var(--ok-tint);
   color: var(--ink);
 }
-body[data-mode="challenge"] .num-input.err {
+body[data-theme="dark"] .num-input.err {
   background: var(--bad-tint);
   color: var(--ink);
 }
-body[data-mode="challenge"] .btn-primary {
+body[data-theme="dark"] .btn-primary {
   color: var(--brand-dark);
 }
-body[data-mode="challenge"] .feedback-box.ok {
+body[data-theme="dark"] .feedback-box.ok {
   color: #cff5e0;
 }
-body[data-mode="challenge"] .feedback-box.err {
+body[data-theme="dark"] .feedback-box.err {
   color: #ffd0cb;
 }
-body[data-mode="challenge"] .feedback-box.warn {
+body[data-theme="dark"] .feedback-box.warn {
   color: #ffe2a0;
 }
-body[data-mode="challenge"] .choice-btn.correct {
+body[data-theme="dark"] .choice-btn.correct {
   color: #cff5e0;
 }
-body[data-mode="challenge"] .choice-btn.wrong {
+body[data-theme="dark"] .choice-btn.wrong {
   color: #ffd0cb;
 }
-body[data-mode="challenge"] .tab-btn[aria-selected="true"] .tab-badge {
+body[data-theme="dark"] .tab-btn[aria-selected="true"] .tab-badge {
   color: var(--brand-dark);
 }
-body[data-mode="challenge"] .tab-btn.tab-complete .tab-badge {
+body[data-theme="dark"] .tab-btn.tab-complete .tab-badge {
   color: #06281a;
 }
-body[data-mode="challenge"] .step-dot.active {
+body[data-theme="dark"] .step-dot.active {
   color: var(--brand-dark);
 }
-body[data-mode="challenge"] .data-table th {
+body[data-theme="dark"] .data-table th {
   color: var(--brand-dark);
 }
-body[data-mode="challenge"] .app-footer a {
+body[data-theme="dark"] .app-footer a {
   color: var(--sun);
 }
 
@@ -588,3 +588,112 @@ body.show-es .t-en { display: none; }
 .tab-list { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .tab-btn, .tab-text { min-width: 0; }
 .tab-name, .tab-desc { overflow-wrap: anywhere; }
+
+/* ---- status bar (assets/studio/chrome.js): lesson, pathway, accuracy, streak, theme ---------------------------- */
+.ewl-hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 8px 16px;
+  background: var(--surface-soft, var(--surface));
+  border-bottom: 1px solid var(--border);
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+.ewl-hud-id {
+  flex: 1 1 220px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.ewl-hud-title {
+  color: var(--ink-muted);
+}
+.ewl-hud-path {
+  display: inline-flex;
+  gap: 4px;
+}
+.ewl-hud-opt,
+.ewl-hud-btn {
+  min-height: 44px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 2px solid var(--brand);
+  background: var(--surface);
+  color: var(--brand);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.ewl-hud-opt[aria-checked="true"] {
+  background: var(--brand);
+  color: var(--surface);
+}
+.ewl-hud-opt .es-text {
+  display: none;
+}
+.show-es .ewl-hud-opt .es-text {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.ewl-hud-stat {
+  white-space: nowrap;
+}
+.ewl-hud-stat strong {
+  font-variant-numeric: tabular-nums;
+}
+.ewl-hud-on #hud-pill {
+  display: none;
+}
+.ewl-brand {
+  margin-left: auto;
+  opacity: 0.75;
+  font-size: 0.85rem;
+}
+.ewl-notice {
+  margin: 12px 0;
+  padding: 12px 16px;
+  border-left: 6px solid var(--bad, #a32222);
+  background: var(--bad-tint, #fbe9e9);
+  color: var(--ink);
+  border-radius: 8px;
+}
+.ewl-debug {
+  position: fixed;
+  right: 8px;
+  bottom: 8px;
+  z-index: 9999;
+  max-width: min(92vw, 560px);
+  max-height: 60vh;
+  overflow: auto;
+  padding: 8px 12px;
+  border: 2px solid var(--brand);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 12px/1.4 ui-monospace, Menlo, Consolas, monospace;
+}
+.ewl-debug pre {
+  margin: 0;
+  white-space: pre-wrap;
+}
+.ewl-debug[hidden] {
+  display: none;
+}
+body[data-ewl-state="LESSON_MASTERED"] .complete-banner {
+  box-shadow: 0 0 0 3px var(--ok-line, #17683f), 0 0 18px var(--ok-line, #17683f);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ewl-hud-opt,
+  .ewl-hud-btn {
+    transition: none;
+  }
+}
+@media print {
+  .ewl-hud,
+  .ewl-debug {
+    display: none !important;
+  }
+}

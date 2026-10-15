@@ -109,20 +109,25 @@ test("tap sorting keeps its selection, moves to the chosen column, and accepts t
   const { dom, w, d } = await homework();
   try {
     w.switchHomeworkTab("check");
-    const cards = [...d.querySelectorAll("#problem_0 .drag-card")];
+    // The sorting problem's position depends on how many basic-practice items come before it, so find it.
+    const n = [...d.querySelectorAll(".problem-section")].findIndex((p) =>
+      p.querySelector(".drag-card"),
+    );
+    assert.ok(n >= 0, "the lesson has a sorting problem");
+    const cards = [...d.querySelectorAll(`#problem_${n} .drag-card`)];
     assert.ok(cards.length);
     for (const card of cards) {
       card.click();
       const zone = d.querySelector(
-        '#problem_0 .drag-column[data-category-id="' + card.dataset.correctCategory + '"]',
+        `#problem_${n} .drag-column[data-category-id="` + card.dataset.correctCategory + '"]',
       );
       zone.click();
       assert.equal(card.parentElement, zone.querySelector(".drag-column-slots"));
     }
-    w.checkProblem(0);
-    assert.ok(d.getElementById("problem_0").classList.contains("correct"));
-    w.resetDragSort(0);
-    assert.equal(d.querySelectorAll("#pile_0 .drag-card").length, cards.length);
+    w.checkProblem(n);
+    assert.ok(d.getElementById(`problem_${n}`).classList.contains("correct"));
+    w.resetDragSort(n);
+    assert.equal(d.querySelectorAll(`#pile_${n} .drag-card`).length, cards.length);
   } finally {
     dom.window.close();
   }
@@ -330,24 +335,39 @@ test("photobooth initializes independently of drawing-grid setup", () => {
 });
 
 test("saved answers survive reload and a state save", async () => {
+  // Which problem number holds the open response and the table depends on the basic-practice items before them.
+  const probe = await homework("3-4");
+  const openId = probe.d.querySelector('[id^="open_response_"]')?.id;
+  const tableProblem = probe.d
+    .querySelector('[data-problem-type="fill-table"]')
+    ?.id.replace("problem_", "");
+  const tableId = tableProblem ? `table_${tableProblem}_1_1` : undefined;
+
+  probe.dom.window.close();
+  assert.ok(openId && tableId, "3-4 has an open response and a table");
   const { dom, w, d } = await homework("3-4", {
     inputs: {
       q_0: "0",
-      table_1_1_1: "2000",
-      open_response_3: "I converted the measurements to the same unit.",
+      [tableId]: "2000",
+      [openId]: "I converted the measurements to the same unit.",
     },
   });
   try {
     assert.equal(d.querySelector('input[name="q_0"]:checked')?.value, "0");
-    assert.match(d.getElementById("open_response_3").value, /same unit/);
+    assert.match(d.getElementById(openId).value, /same unit/);
     w.switchHomeworkTab("check");
-    assert.equal(w.activeCoreProblems().length, 6);
+    assert.equal(
+      w.activeCoreProblems().length,
+      [...d.querySelectorAll(".practice-tier .problem-section")].filter(
+        (p) => !p.closest(".more-practice"),
+      ).length,
+    );
     w.saveState();
     assert.match(
-      JSON.parse(w.localStorage.getItem("hw_state_lesson_3-4")).inputs.open_response_3,
+      JSON.parse(w.localStorage.getItem("hw_state_lesson_3-4")).inputs[openId],
       /same unit/,
     );
-    assert.match(d.getElementById("open_response_3").value, /same unit/);
+    assert.match(d.getElementById(openId).value, /same unit/);
   } finally {
     dom.window.close();
   }

@@ -57,7 +57,7 @@ body[data-world="${id}"] .app-header { background-image: var(--motif); backgroun
 
 function night(/** @type {string} */ id, /** @type {any} */ w) {
   const { hue: h, sat: s, accent: a } = w;
-  return `body[data-world="${id}"][data-mode="challenge"] {
+  return `body[data-world="${id}"][data-theme="dark"] {
   --brand: ${hsl(h, Math.min(80, s + 10), 72)}; --brand-dark: ${hsl(h, s * 0.6, 10)}; --brand-tint: ${hsl(h, s * 0.5, 21)}; --brand-line: ${hsl(h, s * 0.4, 36)};
   --sun: ${hsl(a, 92, 62)}; --sun-deep: ${hsl(a, 88, 68)}; --sun-tint: ${hsl(a, 45, 17)}; --sun-ink: ${hsl(a, 90, 82)};
   --paper: ${hsl(h, 40, 8)}; --well: ${hsl(h, 30, 17)}; --surface: ${hsl(h, 32, 13)}; --surface-soft: ${hsl(h, 30, 16)};
@@ -69,9 +69,9 @@ function night(/** @type {string} */ id, /** @type {any} */ w) {
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.35);
   color-scheme: dark;
 }
-body[data-world="${id}"][data-mode="challenge"] .feedback-box::before { color: #06150E; }
-body[data-world="${id}"][data-mode="challenge"] .choice-btn.correct:not(:has(.choice-letter))::before { color: #06281A; }
-body[data-world="${id}"][data-mode="challenge"] .choice-btn.wrong:not(:has(.choice-letter))::before { color: #2A0905; }`;
+body[data-world="${id}"][data-theme="dark"] .feedback-box::before { color: #06150E; }
+body[data-world="${id}"][data-theme="dark"] .choice-btn.correct:not(:has(.choice-letter))::before { color: #06281A; }
+body[data-world="${id}"][data-theme="dark"] .choice-btn.wrong:not(:has(.choice-letter))::before { color: #2A0905; }`;
 }
 
 export function worldsCss(/** @type {any} */ worlds) {

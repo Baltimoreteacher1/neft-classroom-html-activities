@@ -16,7 +16,10 @@
   const RT = (W.StudioRT = W.StudioRT || {});
   /** @type {any} */
   const data = JSON.parse(dataNode.textContent || "{}");
-  const KEY = String(data.storageKey);
+  /** Pathway 1 (Foundational) is a different run of the same studio: easier generated levels, a hint showing, its own save. */
+  const PATH = W.EWLChrome?.pathway || { id: data.mode === "challenge" ? 3 : 2, scaffold: false };
+  const KEY = String(data.storageKey) + (PATH.scaffold ? "_p1" : "");
+  const lvl = (/** @type {number} */ n) => (PATH.scaffold ? Math.max(1, n - 1) : n);
   const SECTIONS = /** @type {any[]} */ (data.sections);
   const TABS = [1, 2, 3, 4, 5];
   const { esc, es } = RT.util;
@@ -63,7 +66,7 @@
       let it;
       if (spec.k === "gen") {
         const s = seed ?? baseSeed(id);
-        it = W.StudioGen.make(spec.g, spec.level, s);
+        it = W.StudioGen.make(spec.g, lvl(spec.level), s);
         it.reroll = true;
         it.seed = s;
         it.skill = spec.lab || W.StudioGen.registry[spec.g].title;
@@ -71,7 +74,7 @@
         it.lvl = it.gen.level;
       } else if (spec.k === "act") {
         const s = seed ?? baseSeed(id);
-        it = W.StudioAct.make(spec.kind, spec.level, s, spec.p);
+        it = W.StudioAct.make(spec.kind, lvl(spec.level), s, spec.p);
         it.k = "act";
         it.reroll = true;
         it.seed = s;
@@ -110,7 +113,7 @@
   function hintHtml(/** @type {any} */ it) {
     const hs = it.h || [];
     if (!hs.length) return "";
-    const shown = state.hints[it.id] || 0;
+    const shown = Math.min(hs.length, (state.hints[it.id] || 0) + (PATH.scaffold ? 1 : 0));
     const list = hs
       .slice(0, shown)
       .map(

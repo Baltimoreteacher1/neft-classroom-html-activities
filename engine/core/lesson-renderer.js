@@ -1996,6 +1996,39 @@ function renderShowYourWork(host, config, state) {
   );
   card.append(steps);
 
+  // One step in view at a time: the three fields used to sit open together, which read as a form to fill in. Step 2
+  // appears when step 1 has words (or is already saved), step 3 when step 2 does. "Next" reveals the following step.
+  const stepFields = [...steps.querySelectorAll(".syw-field")];
+  const stepKeys = ["know", "work", "answer"];
+  stepFields.forEach((wrap, i) => {
+    if (i === 0) return;
+    wrap.hidden = !get(stepKeys[i - 1]) && !get(stepKeys[i]);
+  });
+  stepFields.forEach((wrap, i) => {
+    const following = stepFields[i + 1];
+    if (!following) return;
+    const next = document.createElement("button");
+    next.type = "button";
+    next.className = "btn btn-sm btn-secondary syw-next-step";
+    next.innerHTML = stack("nextStepBtn", { html: true });
+    next.hidden = !following.hidden;
+    next.addEventListener("click", () => {
+      following.hidden = false;
+      next.hidden = true;
+      const input = following.querySelector("textarea, input");
+      if (input) input.focus();
+    });
+    wrap.append(next);
+    const input = wrap.querySelector("textarea, input");
+    if (input)
+      input.addEventListener("input", () => {
+        if (input.value.trim() && following.hidden) {
+          following.hidden = false;
+          next.hidden = true;
+        }
+      });
+  });
+
   // TEACH 4 (L4): self-check feedback that prompts students to revise their work.
   const checkBtn = document.createElement("button");
   checkBtn.type = "button";
@@ -3768,7 +3801,14 @@ export function renderLearnItExtrasInto(learnHost, config, state) {
 
   // Tap-to-reveal story beats: the same narrative chunked into labeled parts
   // for readers who lose the thread in the full paragraph.
-  renderLaunchStoryBeats(learnHost, config);
+  // Collapsed by default: the beats repeat the scenario card printed just above, so three open "Tap to reveal" bars
+  // stacked a second copy of the same paragraph on the Launch screen. A student who wants it in parts opens it.
+  const beatsDisclosure = document.createElement("details");
+  beatsDisclosure.className = "launch-beats-disclosure";
+  const beatsSummary = document.createElement("summary");
+  beatsSummary.innerHTML = stack("readStoryInParts", { html: true });
+  beatsDisclosure.append(beatsSummary);
+  if (renderLaunchStoryBeats(beatsDisclosure, config)) learnHost.append(beatsDisclosure);
 
   // 2) Inline Reveal Math slides for the launch + instruction sections.
   renderRevealSlides(learnHost, config, ["launch", "instruction"]);

@@ -415,8 +415,8 @@ function initFamilyGames() {
    never timers; the student and family can pause or stop at any point. */
 var HOMEWORK_ROUTES = {
   quick: { tabs: ['learn', 'check', 'done'], problemLimit: 2 },
-  core: { tabs: ['learn', 'words', 'check', 'done'], problemLimit: 6 },
-  full: { tabs: ['learn', 'words', 'check', 'play', 'done'], problemLimit: 6 }
+  core: { tabs: ['learn', 'words', 'check', 'done'], problemLimit: 0 },
+  full: { tabs: ['learn', 'words', 'check', 'play', 'done'], problemLimit: 0 }
 };
 
 function routeStorageKey() {
@@ -468,21 +468,33 @@ function setHomeworkRoute(mode, options) {
     if (el) el.textContent = String(route.tabs.length);
   });
 
-  var warmups = document.querySelectorAll('.practice-tier-warmup .problem-section');
-  warmups.forEach(function (problem, index) { problem.hidden = index >= route.problemLimit; });
-  var challenge = document.querySelector('.practice-tier-challenge');
-  if (challenge) challenge.hidden = mode === 'quick';
+  /* Every core problem, in page order (basic practice, then warm-up, then level up). Quick practice is the first two;
+     the other paths show them all. problemLimit 0 means "all of them", so the count follows the page instead of a number
+     written into this script. */
+  var coreProblems = Array.prototype.filter.call(
+    document.querySelectorAll(
+      '.practice-tier .problem-section, .practice-tier-basic .problem-section, .practice-tier-warmup .problem-section, .practice-tier-challenge .problem-section'
+    ),
+    function (problem) { return !problem.closest('.more-practice'); }
+  );
+  var limit = route.problemLimit > 0 ? Math.min(route.problemLimit, coreProblems.length) : coreProblems.length;
+  coreProblems.forEach(function (problem, index) { problem.hidden = index >= limit; });
+  document.querySelectorAll('.practice-tier, .practice-tier-basic, .practice-tier-warmup, .practice-tier-challenge').forEach(function (tier) {
+    if (tier.closest('.more-practice')) return;
+    tier.hidden = !tier.querySelector('.problem-section:not([hidden])');
+  });
   var more = document.querySelector('.more-practice');
   if (more) more.hidden = mode === 'quick';
+  document.querySelectorAll('[data-hw-core-count]').forEach(function (el) { el.textContent = String(coreProblems.length); });
   ['hw_goal_count', 'hw_goal_count_es', 'hw_check_problem_count', 'hw_check_problem_count_es'].forEach(function (id) {
     var el = document.getElementById(id);
-    if (el) el.textContent = String(route.problemLimit);
+    if (el) el.textContent = String(limit);
   });
   var progress = document.getElementById('progress_text');
   if (progress) {
     var completed = Array.from(document.querySelectorAll('.problem-section.correct, .problem-section.reviewed'))
       .filter(function (problem) { return !problem.hidden && !problem.closest('[hidden]') && !problem.closest('.more-practice'); }).length;
-    progress.textContent = completed + ' / ' + route.problemLimit;
+    progress.textContent = completed + ' / ' + limit;
   }
   if (typeof updateProgress === 'function') updateProgress();
 
@@ -490,7 +502,7 @@ function setHomeworkRoute(mode, options) {
   if (note) {
     var copy = {
       quick: ['Quick practice selected: one example, 2 problems, and one explanation. Pause or stop whenever you need.', 'Práctica breve seleccionada: un ejemplo, 2 problemas y una explicación. Pueden pausar o terminar cuando lo necesiten.'],
-      core: ['Learn & practice selected: 6 problems, key words, and an explanation. Pause or stop whenever you need.', 'Ruta de aprendizaje seleccionada: 6 problemas, palabras clave y una explicación. Pueden pausar o terminar cuando lo necesiten.'],
+      core: ['Learn & practice selected: ' + limit + ' problems, key words, and an explanation. Pause or stop whenever you need.', 'Ruta de aprendizaje seleccionada: ' + limit + ' problemas, palabras clave y una explicación. Pueden pausar o terminar cuando lo necesiten.'],
       full: ['Family Math Studio selected: add one home mission and one math game. Everything is optional.', 'Estudio familiar seleccionado: agrega una misión en casa y un juego de matemáticas. Todo es opcional.']
     }[mode];
     setBiText(note, copy[0], copy[1]);

@@ -84,7 +84,11 @@ test("share links retain the selected route and language without sharing local p
   w.setHomeworkRoute("full");
   assert.equal(w.document.getElementById("hw_tab_words").hidden, false);
   assert.equal(w.document.getElementById("hw_tab_play").hidden, false);
-  assert.equal(w.activeHomeworkRoute().problemLimit, 6);
+  // "full" shows every core problem on the page (a limit of 0 means all of them), so the count follows the page.
+  assert.equal(
+    w.document.querySelectorAll(".problem-section:not([hidden])").length,
+    w.document.querySelectorAll(".problem-section").length,
+  );
   w.setHomeworkRoute("core");
   assert.equal(w.document.getElementById("hw_tab_words").hidden, false);
   assert.equal(w.document.getElementById("hw_tab_play").hidden, true);
@@ -302,13 +306,15 @@ test("Unit 4 family practice follows a bilingual step-by-step difficulty ramp", 
   );
 });
 
-test("all Unit 2–6 Part 1 and Part 2 pages have bilingual titles and a useful pair link", () => {
+test("all Unit 2–6 Part 1 and Part 2 pages have bilingual titles and a useful pair link", async () => {
   let checked = 0;
   for (let unit = 2; unit <= 6; unit++) {
     for (let lesson = 1; lesson <= 15; lesson++) {
       for (const id of [`${unit}-${lesson}`, `${unit}-${lesson}-part2`]) {
         const file = lessonPath(id, "homework.html");
         if (!existsSync(file)) continue;
+        // JSDOM windows stay reachable until the current job ends, so 104 full pages in one sync loop exhaust the heap.
+        await new Promise((resolve) => setImmediate(resolve));
         const d = new JSDOM(readFileSync(file, "utf8")).window.document;
         const titleEn = d.querySelector(".hw-hero-lesson-title .lang-en")?.textContent.trim();
         const titleEs = d.querySelector(".hw-hero-lesson-title .lang-es")?.textContent.trim();
@@ -437,7 +443,12 @@ test("the optional table activity uses the lesson's own math", () => {
     ),
   });
   const compare = resolveKitchenTableActivity(withNotes("3-5"));
-  assert.match(compare.steps.join(" "), /Compare two drink recipes/);
+  assert.match(compare.steps.join(" "), /Compare two (drink recipes|snack mixes)/);
+  assert.match(
+    compare.steps.join(" "),
+    /cups|recipe|ratio/i,
+    "the 3-5 activity is a ratio comparison",
+  );
   const polygon = resolveKitchenTableActivity(withNotes("7-7"));
   assert.match(polygon.steps.join(" "), /coordinate|polygon|vertex|rectangle/i);
 });

@@ -129,7 +129,7 @@ ${assets.styles.map((u) => `  <link rel="stylesheet" href="${u}">`).join("\n")}
 ${NSR_HEAD}
 ${assets.scripts.map((u) => `  <script src="${u}" defer></script>`).join("\n")}
 </head>
-<body data-world="${esc(world.id)}" data-mode="${mode}" data-chrome="${esc(world.chrome)}" data-features="insight readaloud passport calibration share">
+<body data-world="${esc(world.id)}" data-mode="${mode}" data-theme="${challenge ? "dark" : "light"}" data-chrome="${esc(world.chrome)}" data-features="insight readaloud passport calibration share">
   <header class="app-header">
     <div class="header-wrap">
       <div class="brand">

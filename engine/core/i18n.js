@@ -193,6 +193,11 @@ const STRINGS = {
   printPacingSheet: { en: "Print pacing sheet", es: "Imprimir hoja de ritmo" },
   commonMistake: { en: "Watch out!", es: "¡Cuidado!" },
   tapToReveal: { en: "Tap to reveal →", es: "Toca para revelar →" },
+  readStoryInParts: {
+    en: "Read the story one part at a time",
+    es: "Lee la historia una parte a la vez",
+  },
+  nextStepBtn: { en: "Next step ➔", es: "Siguiente paso ➔" },
   storyBeats: {
     en: "Story beats — tap to reveal",
     es: "Partes de la historia — toca para revelar",

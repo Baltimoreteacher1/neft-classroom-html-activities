@@ -347,6 +347,14 @@ export function familyGuidance(config = {}) {
       "Design a rectangular garden on a coordinate grid using (−2, −1), (4, −1), (4, 3), and (−2, 3). Label the vertices, find the side lengths, and explain its perimeter.",
       "Diseña un jardín rectangular en una cuadrícula con (−2, −1), (4, −1), (4, 3) y (−2, 3). Nombra los vértices, halla los lados y explica su perímetro.",
     );
+  /* A lesson's own authored corner (data/family-homework-notes/<id>.json -> "corner") wins over every unit-wide default
+     above. A unit is too broad to choose a lesson's task: Unit 4's default asked a "percents greater than 100%" lesson to
+     draw a 25% discount. */
+  const own = config.familyNotes?.corner;
+  const has = (x) => x && typeof x.en === "string" && typeof x.es === "string" && x.en && x.es;
+  if (has(own?.question)) question = own.question;
+  if (has(own?.frame)) frame = own.frame;
+  if (has(own?.mission)) mission = own.mission;
   return { question, frame, mission };
 }
 export function householdMission(config) {

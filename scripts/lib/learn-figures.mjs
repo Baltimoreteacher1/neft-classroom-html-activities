@@ -21,6 +21,8 @@
 // numbers the picture claims; scripts/validate-learn-figures.mjs checks them
 // back against the lesson text on every build.
 
+import { renderWorkedViz } from "./worked-viz.mjs";
+
 const NAVY = "#12355b";
 const TEAL = "#1fa6a2";
 const TEAL_INK = "#0c6f6b";
@@ -1155,6 +1157,17 @@ export function workedFigure(cfg = {}) {
   const intro = (cfg.launch && cfg.launch.conceptIntro) || cfg.conceptIntro;
   const lines = intro && intro.iDo && Array.isArray(intro.iDo.lines) ? intro.iDo.lines : [];
   if (!lines.length) return null;
+  // A figure authored for this exact worked example (iDo.viz, drawn with the Practice Studio figure library) wins over the
+  // readers below: the readers only draw what they can parse out of the sentences, and 48 lessons' sentences are not drawable
+  // that way. scripts/validate-learn-figures.mjs holds every authored figure to the numbers the lines state.
+  const authored = intro.iDo.viz;
+  if (authored && typeof authored === "object") {
+    const svg = renderWorkedViz(authored);
+    if (svg) {
+      const alt = (svg.match(/<title>([^<]*)<\/title>/) || [, "Worked example figure"])[1];
+      return { kind: `authored:${authored.t}`, values: [], alt, svg };
+    }
+  }
   const text = lines.join(" ").replace(/\s+/g, " ");
   for (const read of READERS) {
     let fig = null;

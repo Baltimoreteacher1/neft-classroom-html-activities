@@ -38,7 +38,8 @@ for (const dir of canonicalDirs) {
       const fig = workedFigure(cfg);
       if (fig) {
         withWorkedFigures++;
-        if (!fig.svg.includes('style="background:white"')) {
+        // The figure may carry other style properties after the white background (the authored studio figures also set their width).
+        if (!/style="[^"]*background:white/.test(fig.svg)) {
           console.error(
             `  ❌ FAIL: Lesson ${dir} workedFigure SVG missing style="background:white"`,
           );

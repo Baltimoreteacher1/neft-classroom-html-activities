@@ -2973,7 +2973,7 @@ export function renderQuickPlan() {
           </button>
           <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
             <span class="hw-route-time">15–20 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Learn, explore key words, practice 6 problems, and explain.</span><span class="lang-es" lang="es">Aprende, explora palabras clave, practica 6 problemas y explica.</span></small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Learn, explore key words, practice <span data-hw-core-count>6</span> problems, and explain.</span><span class="lang-es" lang="es">Aprende, explora palabras clave, practica <span data-hw-core-count>6</span> problemas y explica.</span></small></span>
           </button>
           <button type="button" class="hw-route-option is-active" data-route-mode="full" aria-pressed="true" onclick="setHomeworkRoute('full')">
             <span class="hw-route-time">20–30 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
@@ -2981,8 +2981,8 @@ export function renderQuickPlan() {
           </button>
         </div>
         <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Family Math Studio selected: 6 problems, key words, one home mission, and one math game. Go at your own pace.</span>
-          <span class="lang-es" lang="es">Estudio familiar seleccionado: 6 problemas, palabras clave, una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span>
+          <span class="lang-en">Family Math Studio selected: <span data-hw-core-count>6</span> problems, key words, one home mission, and one math game. Go at your own pace.</span>
+          <span class="lang-es" lang="es">Estudio familiar seleccionado: <span data-hw-core-count>6</span> problemas, palabras clave, una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span>
         </p>
         <p id="hw_resume_note" role="status" aria-live="polite"></p>
         <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start this path</span><span class="lang-es" lang="es">Empezar esta ruta</span></button>
@@ -3667,6 +3667,14 @@ export function getRealWorldSpotlight(topic) {
 }
 
 export function getTopicMisconception(topic, config) {
+  const own = config?.familyNotes?.corner;
+  if (own?.watchOut?.en && own?.question?.en)
+    return {
+      trapEn: own.watchOut.en,
+      trapEs: own.watchOut.es,
+      coachEn: own.question.en,
+      coachEs: own.question.es,
+    };
   const exact = exactFamilySupport(config || {});
   if (exact)
     return {
@@ -7602,6 +7610,8 @@ const RATIO_STRAND_MISCONCEPTIONS = {
 };
 
 export function getTopicPowerUp(topic, config) {
+  const own = config?.familyNotes?.corner?.powerUp;
+  if (own?.qEn && Array.isArray(own.choices) && own.choices.length >= 3) return own;
   const exact = exactFamilyPowerUp(config || {});
   if (exact) return exact;
   const title = config?.title || "Tonight's Math";
@@ -8173,15 +8183,18 @@ export function renderLearnTab(config, visualLabHtml = "", workbenchHtml = "") {
   const workbench = workbenchSpec(config);
   const powerUpHtml = renderSkillPowerUp(config, topic);
   const support = exactFamilySupport(config);
-  const spotlight = support
-    ? {
-        titleEn: support.titleEn,
-        titleEs: support.titleEs,
-        factEn: support.steps[0].en,
-        factEs: support.steps[0].es,
-        icon: "🏡",
-      }
-    : getRealWorldSpotlight(topic);
+  const corner = config?.familyNotes?.corner;
+  const spotlight = corner?.spotlight?.titleEn
+    ? { icon: "🌎", ...corner.spotlight }
+    : support
+      ? {
+          titleEn: support.titleEn,
+          titleEs: support.titleEs,
+          factEn: support.steps[0].en,
+          factEs: support.steps[0].es,
+          icon: "🏡",
+        }
+      : getRealWorldSpotlight(topic);
   const mis = getTopicMisconception(topic, config);
 
   // Add Listen button to the Big Idea title
@@ -8298,6 +8311,7 @@ export function renderCheckTab(
   challengeHtml = "",
   moreHtml = "",
   coreCount = 6,
+  basicHtml = "",
 ) {
   const intro = quickCheckIntro.replace(/<section[^>]*>|<\/section>/g, "");
 
@@ -8315,6 +8329,7 @@ export function renderCheckTab(
         </div>
       </div>
       <div class="stars-milestone-chips" aria-hidden="true">
+        ${basicHtml ? '<span class="star-chip">🧱 Basics</span>' : ""}
         <span class="star-chip">🌱 Warm-Up ★</span>
         <span class="star-chip">🚀 Level-Up ★★</span>
         <span class="star-chip">🏆 Victory ★★★</span>
@@ -8353,11 +8368,32 @@ export function renderCheckTab(
       </button>
     </div>`;
 
+  const tierNo = (n) => (basicHtml ? n + 1 : n);
+  const basicBlock = basicHtml
+    ? `
+      <section class="practice-tier practice-tier-basic" aria-label="Basic practice">
+        <div class="practice-tier-head">
+          <span class="practice-tier-badge tier-basic">1</span>
+          <div class="practice-tier-titles">
+            <h3 class="practice-tier-title">
+              <span class="lang-en">🧱 Basic practice — build the skill</span>
+              <span class="lang-es" lang="es">🧱 Práctica básica — construyan la destreza</span>
+            </h3>
+            <p class="practice-tier-sub bilingual-block">
+              <span class="lang-en">Short, straightforward problems about tonight's skill. Do these first: quick reps make the harder ones easier.</span>
+              <span class="lang-es" lang="es">Problemas cortos y directos sobre la destreza de hoy. Háganlos primero: repetir lo básico facilita los más difíciles.</span>
+            </p>
+          </div>
+        </div>
+        <section class="problems-container" aria-label="Basic practice problems">${basicHtml}</section>
+      </section>`
+    : "";
+
   const warmupBlock = warmupHtml
     ? `
       <section class="practice-tier practice-tier-warmup" aria-label="Warm-up practice">
         <div class="practice-tier-head">
-          <span class="practice-tier-badge tier-warmup">1</span>
+          <span class="practice-tier-badge tier-warmup">${tierNo(1)}</span>
           <div class="practice-tier-titles">
             <h3 class="practice-tier-title">
               <span class="lang-en">🌱 Warm-up — start here</span>
@@ -8382,7 +8418,7 @@ export function renderCheckTab(
     ? `
       <section class="practice-tier practice-tier-challenge" aria-label="Challenge practice">
         <div class="practice-tier-head">
-          <span class="practice-tier-badge tier-challenge">2</span>
+          <span class="practice-tier-badge tier-challenge">${tierNo(2)}</span>
           <div class="practice-tier-titles">
             <h3 class="practice-tier-title">
               <span class="lang-en">🚀 Level up — a little harder</span>
@@ -8428,6 +8464,7 @@ export function renderCheckTab(
       ${streakBanner}
       ${scratchpadToggle}
       ${goalReachedBanner}
+      ${basicBlock}
       ${warmupBlock}
       ${challengeBlock}
       ${more}
@@ -9715,8 +9752,8 @@ function initFamilyGames() {
    never timers; the student and family can pause or stop at any point. */
 var HOMEWORK_ROUTES = {
   quick: { tabs: ['learn', 'check', 'done'], problemLimit: 2 },
-  core: { tabs: ['learn', 'words', 'check', 'done'], problemLimit: 6 },
-  full: { tabs: ['learn', 'words', 'check', 'play', 'done'], problemLimit: 6 }
+  core: { tabs: ['learn', 'words', 'check', 'done'], problemLimit: 0 },
+  full: { tabs: ['learn', 'words', 'check', 'play', 'done'], problemLimit: 0 }
 };
 
 function routeStorageKey() {
@@ -9768,21 +9805,33 @@ function setHomeworkRoute(mode, options) {
     if (el) el.textContent = String(route.tabs.length);
   });
 
-  var warmups = document.querySelectorAll('.practice-tier-warmup .problem-section');
-  warmups.forEach(function (problem, index) { problem.hidden = index >= route.problemLimit; });
-  var challenge = document.querySelector('.practice-tier-challenge');
-  if (challenge) challenge.hidden = mode === 'quick';
+  /* Every core problem, in page order (basic practice, then warm-up, then level up). Quick practice is the first two;
+     the other paths show them all. problemLimit 0 means "all of them", so the count follows the page instead of a number
+     written into this script. */
+  var coreProblems = Array.prototype.filter.call(
+    document.querySelectorAll(
+      '.practice-tier .problem-section, .practice-tier-basic .problem-section, .practice-tier-warmup .problem-section, .practice-tier-challenge .problem-section'
+    ),
+    function (problem) { return !problem.closest('.more-practice'); }
+  );
+  var limit = route.problemLimit > 0 ? Math.min(route.problemLimit, coreProblems.length) : coreProblems.length;
+  coreProblems.forEach(function (problem, index) { problem.hidden = index >= limit; });
+  document.querySelectorAll('.practice-tier, .practice-tier-basic, .practice-tier-warmup, .practice-tier-challenge').forEach(function (tier) {
+    if (tier.closest('.more-practice')) return;
+    tier.hidden = !tier.querySelector('.problem-section:not([hidden])');
+  });
   var more = document.querySelector('.more-practice');
   if (more) more.hidden = mode === 'quick';
+  document.querySelectorAll('[data-hw-core-count]').forEach(function (el) { el.textContent = String(coreProblems.length); });
   ['hw_goal_count', 'hw_goal_count_es', 'hw_check_problem_count', 'hw_check_problem_count_es'].forEach(function (id) {
     var el = document.getElementById(id);
-    if (el) el.textContent = String(route.problemLimit);
+    if (el) el.textContent = String(limit);
   });
   var progress = document.getElementById('progress_text');
   if (progress) {
     var completed = Array.from(document.querySelectorAll('.problem-section.correct, .problem-section.reviewed'))
       .filter(function (problem) { return !problem.hidden && !problem.closest('[hidden]') && !problem.closest('.more-practice'); }).length;
-    progress.textContent = completed + ' / ' + route.problemLimit;
+    progress.textContent = completed + ' / ' + limit;
   }
   if (typeof updateProgress === 'function') updateProgress();
 
@@ -9790,7 +9839,7 @@ function setHomeworkRoute(mode, options) {
   if (note) {
     var copy = {
       quick: ['Quick practice selected: one example, 2 problems, and one explanation. Pause or stop whenever you need.', 'Práctica breve seleccionada: un ejemplo, 2 problemas y una explicación. Pueden pausar o terminar cuando lo necesiten.'],
-      core: ['Learn & practice selected: 6 problems, key words, and an explanation. Pause or stop whenever you need.', 'Ruta de aprendizaje seleccionada: 6 problemas, palabras clave y una explicación. Pueden pausar o terminar cuando lo necesiten.'],
+      core: ['Learn & practice selected: ' + limit + ' problems, key words, and an explanation. Pause or stop whenever you need.', 'Ruta de aprendizaje seleccionada: ' + limit + ' problemas, palabras clave y una explicación. Pueden pausar o terminar cuando lo necesiten.'],
       full: ['Family Math Studio selected: add one home mission and one math game. Everything is optional.', 'Estudio familiar seleccionado: agrega una misión en casa y un juego de matemáticas. Todo es opcional.']
     }[mode];
     setBiText(note, copy[0], copy[1]);
@@ -12474,6 +12523,8 @@ body.help-modal-open { overflow: hidden; }
   display: flex; align-items: center; gap: 12px; margin: 0 0 10px;
   padding: 12px 16px; border-radius: var(--radius-md);
 }
+.practice-tier-basic .practice-tier-head { background: var(--amber-light, #fef7e0); }
+.practice-tier-basic .practice-tier-badge { background: var(--amber, #f2c15b); color: #3b2a00; }
 .practice-tier-warmup .practice-tier-head { background: var(--teal-light); }
 .practice-tier-challenge .practice-tier-head { background: var(--amber-light, #fdf3dd); }
 .practice-tier-badge {

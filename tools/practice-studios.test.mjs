@@ -54,7 +54,7 @@ const css = read("assets/studio-worlds.css");
 for (const w of Object.keys(worlds.worlds)) {
   assert.ok(css.includes(`body[data-world="${w}"] {`), `worlds css has the ${w} daylight palette`);
   assert.ok(
-    css.includes(`body[data-world="${w}"][data-mode="challenge"] {`),
+    css.includes(`body[data-world="${w}"][data-theme="dark"] {`),
     `worlds css has the ${w} night palette`,
   );
 }

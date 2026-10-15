@@ -12,6 +12,7 @@ import {
 import { buildVocabMatcher } from "@eduwonderlab/engine/core/vocab-match.js";
 import {
   detectVisualTopic,
+  isPrintableProblem,
   selectMorePracticeProblems,
   selectTieredQuickCheckProblems,
 } from "./homework-alignment.mjs";
@@ -1179,7 +1180,13 @@ function generateHtml(lessonId, config) {
   // then a harder "level up" set — clearly sectioned. Indices stay contiguous so
   // per-problem checking/scoring keeps working across all sections.
   const { warmup, challenge } = selectTieredQuickCheckProblems(config.practice || {}, config);
-  const coreSelected = [...warmup, ...challenge];
+  /* Basic practice: a short run of plain skill reps authored for THIS lesson (sidecar "basicPractice"), shown before the
+     warm-up. The warm-ups ask students to reason about the idea; a student who cannot yet do the basic move needs reps
+     first. Kept in the same problem shape as config.practice, so scoring, coaching and the answer sheet are unchanged. */
+  const basic = (
+    Array.isArray(config.familyNotes?.basicPractice) ? config.familyNotes.basicPractice : []
+  ).filter(isPrintableProblem);
+  const coreSelected = [...basic, ...warmup, ...challenge];
   const moreSelected = selectMorePracticeProblems(config.practice || {}, config, coreSelected);
   const topic = detectVisualTopic(config);
   const lessonModel = selectLessonInteractiveModel(config);
@@ -1280,14 +1287,27 @@ body[data-family-style="unlock"] .hw-experience-banner { border:1px solid #ccd4c
 
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
   const quickCheckIntroHtml = renderQuickCheckIntro(coreSelected.length, moreSelected.length > 0);
+  const basicHtml = basic
+    .map((p, idx) =>
+      renderProblem(p, idx, topic, {
+        badgeEn: "Basic practice",
+        badgeEs: "Práctica básica",
+        num: idx + 1,
+      }),
+    )
+    .join("\n");
   const warmupHtml = warmup
     .map((p, idx) =>
-      renderProblem(p, idx, topic, { badgeEn: "Warm-up", badgeEs: "Calentamiento", num: idx + 1 }),
+      renderProblem(p, basic.length + idx, topic, {
+        badgeEn: "Warm-up",
+        badgeEs: "Calentamiento",
+        num: idx + 1,
+      }),
     )
     .join("\n");
   const challengeHtml = challenge
     .map((p, idx) =>
-      renderProblem(p, warmup.length + idx, topic, {
+      renderProblem(p, basic.length + warmup.length + idx, topic, {
         badgeEn: "Level up",
         badgeEs: "Reto",
         num: idx + 1,
@@ -1322,6 +1342,7 @@ body[data-family-style="unlock"] .hw-experience-banner { border:1px solid #ccd4c
       challengeHtml,
       morePracticeHtml,
       coreSelected.length,
+      basicHtml,
     ),
     renderPlayTabPanel(config, lessonId),
     renderDoneTab(config, lessonId),
@@ -1336,6 +1357,11 @@ body[data-family-style="unlock"] .hw-experience-banner { border:1px solid #ccd4c
   const refrigeratorSheetHtml = renderRefrigeratorSheet(config, lessonId);
   const answerSheetHtml = renderAnswerSheet(
     [
+      ...basic.map((it, i) => ({
+        it,
+        labelEn: `Basic practice ${i + 1}`,
+        labelEs: `Práctica básica ${i + 1}`,
+      })),
       ...warmup.map((it, i) => ({
         it,
         labelEn: `Warm-up ${i + 1}`,
