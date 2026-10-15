@@ -14,7 +14,7 @@ integerOpposites rationalNumberLine absoluteValue compareOrder quadrantId coordD
   ),
 );
 export const ACT_KINDS = new Set(
-  "plot nline ineq sizer areabox barcut ldiv dotbalance chartbuild ratiomix convchain balance ftree hops tiles powers".split(
+  "plot nline ineq sizer areabox barcut ldiv dotbalance chartbuild ratiomix convchain balance ftree hops tiles powers plug faces".split(
     " ",
   ),
 );
@@ -237,7 +237,7 @@ export function validateLessonData(id, data, worlds = null) {
     if (v.slots !== n) p.push(`${where}: slots must be ${n}`);
     if (v.pool.length < n * 2) p.push(`${where}: pool needs ${n * 2}+ items`);
     v.pool.forEach((it, i) => {
-      if (!["mc", "num", "sort", "match", "nline", "err", "tbl"].includes(it?.k))
+      if (!["mc", "num", "sort", "match", "nline", "err", "tbl", "act"].includes(it?.k))
         p.push(`${where}.pool[${i}]: kind ${it?.k} not allowed in a pool`);
       else p.push(...itemProblems(it, `${where}.pool[${i}]`));
     });

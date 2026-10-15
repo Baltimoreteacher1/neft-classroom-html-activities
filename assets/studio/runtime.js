@@ -89,6 +89,18 @@
         it = { ...sec.pool[order[(i + r * sec.items.length) % sec.pool.length]] };
         it.reroll = true;
         it.seed = r;
+        if (it.k === "act") {
+          const act = W.StudioAct.make(it.kind, lvl(it.level), baseSeed(id) + r, it.p);
+          it = {
+            ...act,
+            k: "act",
+            reroll: true,
+            seed: r,
+            skill: it.lab || W.StudioAct.registry[it.kind].title,
+          };
+          it.skillEs = W.StudioAct.registry[act.kind].titleEs;
+          it.lvl = act.level;
+        }
       } else it = { ...spec };
       it.id = id;
       return it;
