@@ -104,6 +104,26 @@ export function practice(ctx, host) {
   const nextLevel = state.level === 'support' ? 'core' : state.level === 'core' ? 'stretch' : null;
   host.innerHTML = `<div class="section-intro"><h2>${levels[state.level].label} practice</h2><p>${bank.length} activities from Lessons ${lab.lessons.map((l) => lessonNumber(l.id)).join(' and ')} and the lab model. Hints never cost progress. Written explanations are saved for a teacher or partner to review.</p></div><div class="practice-progress"><div class="progress-bar" role="progressbar" aria-label="Practice progress" aria-valuemin="0" aria-valuemax="${s.scored}" aria-valuenow="${s.solved}"><span style="width:${s.scored ? (100 * s.solved) / s.scored : 0}%"></span></div><p class="progress-text">${esc(s.summary)}</p></div>${s.status === 'done' ? `<div class="practice-complete"><strong>All ${levels[state.level].label} activities complete.</strong> ${nextLevel ? `Ready for more? Choose ${levels[nextLevel].label} from the level menu.` : 'Try the Create challenge or the games next.'}</div>` : ''}<div class="question-nav" role="group" aria-label="Choose practice activity">${bank.map((p, i) => { const r = state.practice[p.id]; const done = r?.correct || (p.type === 'explain' && r?.reviewed); const tried = r?.attempts > 0 && !done; return `<button type="button" data-question="${i}" class="${done ? 'is-done' : tried ? 'is-tried' : ''}" aria-pressed="${i === index}" aria-label="Activity ${i + 1}${done ? ', complete' : tried ? ', in progress' : ''}">${done ? '✓' : i + 1}</button>`; }).join('')}</div><form class="question"><div class="question-meta"><span class="lesson-chip">Activity ${index + 1} of ${bank.length}</span><span class="lesson-chip quiet-chip">${q.lesson ? `Lesson ${lessonNumber(q.lesson)}` : 'Lab model'}</span><span class="lesson-chip quiet-chip">${titles[q.type]}</span></div><p class="question-prompt">${esc(q.prompt)}</p>${q.parameters ? `<ul class="parameter-list">${q.parameters.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}${choices ? `<fieldset><legend>${q.type === 'repair' ? 'Select the first incorrect step.' : 'Choose one answer.'}</legend>${choices.map((choice, i) => `<label class="choice"><input type="radio" name="answer" value="${i}" ${String(record.input) === String(i) ? 'checked' : ''}><span>${q.type === 'repair' ? `<strong>Step ${i + 1}.</strong> ` : ''}${esc(choice)}</span></label>`).join('')}</fieldset>` : q.type === 'number' ? `<label class="number-answer">Your answer<input name="answer" type="text" inputmode="text" autocomplete="off" value="${esc(record.input)}"><span class="field-hint">Decimals, fractions (3/4), and mixed numbers (1 1/2) are accepted.</span></label>` : `<label class="writing">Your reasoning${q.frame ? `<span class="field-hint">${esc(q.frame)}</span>` : ''}<textarea name="answer" rows="5">${esc(record.input)}</textarea></label>`}<div class="actions"><button type="submit">${q.type === 'explain' ? 'Save and compare reasoning' : 'Check my answer'}</button><button type="button" class="quiet" data-hint></button><button type="button" class="quiet" data-explain ${record.attempts || record.reviewed ? '' : 'hidden'}>Study the explanation</button></div><div class="practice-feedback" role="status"></div><div class="hint-area" aria-live="polite"></div><div class="explanation" hidden></div></form><div class="practice-pagination"><button type="button" class="quiet" data-back ${index === 0 ? 'disabled' : ''}>Previous problem</button><button type="button" data-next ${index === bank.length - 1 ? 'disabled' : ''}>Next problem</button></div>`;
   const form = host.querySelector('form'), status = host.querySelector('.practice-feedback'), explanation = host.querySelector('.explanation');
+  // The lab's own model, one tap away: students can test an idea on it while they work the problem.
+  const tool = document.createElement('details');
+  tool.className = 'practice-model';
+  tool.open = !!state.practiceModelOpen;
+  tool.innerHTML = '<summary>Open the lab model to work this out</summary><div class="practice-model-host"></div>';
+  form.before(tool);
+  const mountTool = () => {
+    const slot = tool.querySelector('.practice-model-host');
+    if (slot.dataset.mounted) return;
+    slot.dataset.mounted = '1';
+    mountModel(slot, lab.model, {
+      initial: state.models.practice || lab.model.values,
+      onChange: (values) => { state.models.practice = values; save(); },
+      prefix: 'practice-model',
+      level: state.level,
+      lang: () => state.lang,
+    });
+  };
+  tool.addEventListener('toggle', () => { state.practiceModelOpen = tool.open; if (tool.open) mountTool(); save(); });
+  if (tool.open) mountTool();
   const explain = () => { explanation.hidden = false; explanation.innerHTML = `<h4>${q.type === 'explain' ? 'Compare your reasoning' : 'Why it works'}</h4><p>${esc(q.explanation)}</p>${q.type === 'explain' ? '<p>This is a model response, not an automatic grade. Does your response name the quantities, show evidence, and explain why the result makes sense?</p>' : ''}`; };
   const getInput = () => (choices ? (form.querySelector('input:checked')?.value ?? '') : form.elements.answer.value);
   form.addEventListener('input', () => { record.input = getInput(); save(); });
