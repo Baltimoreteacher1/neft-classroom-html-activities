@@ -219,6 +219,22 @@ try {
     await page.locator("#tab-brief").focus();
     await page.keyboard.press("ArrowRight");
     assert.equal(await page.locator("#tab-learn").getAttribute("aria-selected"), "true");
+    // Learn step: "Watch the model move" sweeps the controls and always restores the student's own values.
+    await page.locator("#panel-learn .practice-model summary").first().click();
+    const ctl = () =>
+      page.evaluate(() =>
+        [...document.querySelectorAll("#panel-learn [data-control]")].map((e) => e.value),
+      );
+    await page.locator("#panel-learn [data-watch]").waitFor();
+    const watchBefore = await ctl();
+    await page.locator("#panel-learn [data-watch]").click();
+    await page.waitForFunction(
+      () =>
+        /Done|Stopped/.test(document.querySelector("#panel-learn .watch-note")?.textContent || ""),
+      null,
+      { timeout: 40000 },
+    );
+    assert.deepEqual(await ctl(), watchBefore, "watch restores the student's values");
     await page.locator("#tab-create").click();
     await page
       .locator("#creation")

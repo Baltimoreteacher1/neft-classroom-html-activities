@@ -2738,7 +2738,7 @@
       // prettier-ignore
       // biome-ignore format: bilingual spec
       return numMc(rng, V, {
-        q: [ph[0] + " {b}^? = {v}", ph[1] + " {b}^? = {v}"], a: e,
+        q: [ph[0] + " {b} to the power ? = {v}", ph[1] + " {b} elevado a la potencia ? = {v}"], a: e,
         w: [[ipow(b, e) / b, "divided-for-exponent"], [b, "base-for-exponent"], [e + 1, "one-factor-too-many"], [e - 1, "one-factor-too-few"]],
         x: ["Multiply {b} by itself: " + facStr(b, e) + " = {v}. That is " + e + " factors, so the exponent is " + e + ".", "Multiplica {b} por sí mismo: " + facStr(b, e) + " = {v}. Son " + e + " factores, así que el exponente es " + e + "."],
         h: [["The exponent is the number of times {b} is a factor.", "El exponente es el número de veces que {b} es factor."], ["Multiply {b} × {b}, then × {b} again, and keep going.", "Multiplica {b} × {b}, luego × {b} otra vez, y sigue."], ["Count the factors when you reach {v}.", "Cuenta los factores cuando llegues a {v}."]],

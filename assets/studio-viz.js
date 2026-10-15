@@ -45,8 +45,19 @@
     return Math.round(v * 100) / 100;
   };
   /** A number for people: float noise stripped, true minus sign. */
+  let mixed = false;
   const fmt = (v) => {
     const r = Math.round(v * 1e6) / 1e6;
+    if (mixed && r > 0 && !Number.isInteger(r) && Number.isInteger(r * 8)) {
+      const whole = Math.floor(r);
+      let num = Math.round((r - whole) * 8);
+      let den = 8;
+      while (num % 2 === 0) {
+        num /= 2;
+        den /= 2;
+      }
+      return `${whole ? `${whole} ` : ""}${num}/${den}`;
+    }
     return (Object.is(r, -0) ? "0" : String(r)).replace("-", "−");
   };
   const req = (v, what) => {
@@ -271,7 +282,9 @@
       if (!spec || typeof spec !== "object") return fail("the figure spec is missing");
       const fn = draw[spec.t];
       if (!fn) return fail(`unknown figure type "${spec.t}"`);
+      mixed = spec.frac === true;
       const f = fn(spec);
+      mixed = false;
       const own = typeof spec.alt === "string" && spec.alt.trim() ? spec.alt.trim() : "";
       const frame = Rc(0.5, 0.5, n(f.w) - 1, n(f.h) - 1, "fw sg", 14);
       return shell("", f.w, f.h, own || f.title, own || f.alt || f.title, frame + f.body);

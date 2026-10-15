@@ -180,6 +180,43 @@
   G.ids = () => Object.keys(G.registry).sort();
 
   /** One fresh problem: same (id, level, seed) -> same problem. */
+  const SUPER = "⁰¹²³⁴⁵⁶⁷⁸⁹";
+  /** Display typography for every generated string: true minus sign, plural-aware "place(s)", real superscripts. */
+  const tidyText = (/** @type {string} */ t) =>
+    t
+      .replace(/(^|[\s(,=<>:|±×÷+−])-(?=\.?\d)/g, "$1−")
+      .replace(/\b1 ((?:decimal )?(?:place|time))\(s\)/g, "1 $1")
+      .replace(/(\d[\d,.]*) ((?:decimal )?(?:place|time))\(s\)/g, "$1 $2s")
+      .replace(/\b1 lugar\(es\)/g, "1 lugar")
+      .replace(/(\d[\d,.]*) lugar\(es\)/g, "$1 lugares")
+      .replace(/\b1 cifra\(s\) decimal\(es\)/g, "1 cifra decimal")
+      .replace(/(\d[\d,.]*) cifra\(s\) decimal\(es\)/g, "$1 cifras decimales")
+      .replace(/\^(\d{1,2})\b/g, (_m, d) => [...d].map((c) => SUPER[Number(c)]).join(""));
+  const TIDY_SKIP = new Set([
+    "a",
+    "v",
+    "viz",
+    "gen",
+    "tag",
+    "k",
+    "id",
+    "model",
+    "seed",
+    "tol",
+    "cells",
+    "b",
+  ]);
+  const tidy = (/** @type {any} */ o) => {
+    if (typeof o === "string") return tidyText(o);
+    if (Array.isArray(o)) return o.map(tidy);
+    if (o && typeof o === "object") {
+      const out = /** @type {any} */ ({});
+      for (const [k, v] of Object.entries(o)) out[k] = TIDY_SKIP.has(k) ? v : tidy(v);
+      return out;
+    }
+    return o;
+  };
+
   G.make = (
     /** @type {string} */ id,
     /** @type {number} */ level,
@@ -189,7 +226,7 @@
     if (!def) throw new Error(`StudioGen: unknown generator "${id}"`);
     const lv = Math.max(1, Math.min(def.levels, Number(level) || 1));
     const rng = G.rng(`${id}|${lv}|${seed}`);
-    const item = def.make(rng, lv);
+    const item = tidy(def.make(rng, lv));
     item.k = item.k || (item.c ? "mc" : "num");
     item.gen = { id, level: lv, seed };
     return item;

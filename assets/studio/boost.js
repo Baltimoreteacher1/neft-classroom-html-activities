@@ -98,7 +98,7 @@
   const picks = store.today.items;
   let k = 0;
   for (const s of data.sections)
-    s.items = s.items.map((/** @type {any} */ spec) => {
+    s.items = s.items.map((/** @type {any} */ _spec) => {
       const p = picks[k % picks.length];
       k++;
       return {

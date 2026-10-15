@@ -4,7 +4,8 @@ import { makeChallenges, reached } from './challenge.mjs';
 import { judge } from './predict.mjs';
 import { toPng } from './snapshot.mjs';
 import { play } from './sound.mjs';
-import { numericAnswer } from './math.mjs';
+import { mountWatch } from './watch.mjs';
+import { controls, numericAnswer } from './math.mjs';
 import { activityStatus, levels, parseKeyIdea } from './progress.mjs';
 
 const lessonNumber = (id) => id.replace('-', '.');
@@ -40,6 +41,7 @@ function modelPanel(ctx, key, summary) {
       level: state.level,
       lang: () => state.lang,
     });
+    if (key.startsWith('learn-')) slot.prepend(mountWatch(slot, controls(lab.model)));
   };
   tool.addEventListener('toggle', () => { state.modelOpen[key] = tool.open; if (tool.open) mount(); save(); });
   if (tool.open) mount();
