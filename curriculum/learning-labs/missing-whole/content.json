@@ -26,7 +26,27 @@
             "Ahora cuento hasta el entero: el 100% son diez de esos pasos de 10%, así que 10 × $7 = $70.",
             "La ecuación dice lo mismo en un solo paso: 0.6 × v = 42, así que v = 42 ÷ 0.6 = 70. El precio original era $70 — mayor que el precio de oferta, que es exactamente lo que debe significar un descuento."
           ],
-          "titleEs": "Mírame hallar el precio original del suéter"
+          "titleEs": "Mírame hallar el precio original del suéter",
+          "viz": {
+            "t": "dnl",
+            "top": {
+              "label": "Percent",
+              "vals": [
+                "10%",
+                "60%",
+                "100%"
+              ]
+            },
+            "bottom": {
+              "label": "Price",
+              "vals": [
+                "$7",
+                "$42",
+                "$70"
+              ]
+            },
+            "alt": "Double number line: 60% is $42, 10% is $7, and 100% is $70."
+          }
         },
         "together": {
           "title": "Let's do one together",
@@ -231,7 +251,7 @@
           "1,125 minutes"
         ],
         "answer": 2,
-        "explanation": "Divide the part by the decimal: 75 ÷ 0.15 = 500 minutes.",
+        "explanation": "15% is three groups of 5%. Since 75 ÷ 3 = 25, 5% is 25 minutes. There are 20 groups of 5% in 100%, so 25 × 20 = 500 minutes. Check: 10% of 500 is 50, 5% is 25, and 50 + 25 = 75.",
         "feedback": [
           "That computes 15% OF 75 — but 75 is already the part.",
           "That adds 75 + 15 instead of using the percent.",
@@ -239,9 +259,9 @@
           "That multiplies by 15 instead of dividing by 0.15."
         ],
         "hints": [
-          "Write the equation: 0.15d = 75.",
-          "Solve by dividing both sides by 0.15.",
-          "75 ÷ 0.15 = ?"
+          "15% is three groups of 5%. Split 75 minutes into 3 equal groups to find 5%.",
+          "75 ÷ 3 = 25, so 5% of the day is 25 minutes. How many 5% groups make 100%?",
+          "100 ÷ 5 = 20 groups. Then 25 × 20 = 500 minutes. Check: 10% of 500 is 50 and 5% is 25; 50 + 25 = 75."
         ]
       },
       {
@@ -309,31 +329,6 @@
         "id": "core-4-5-choice-0",
         "lesson": "4-5",
         "type": "choice",
-        "prompt": "A car is now worth $26,600, which is 70% of its purchase price. What was the purchase price?",
-        "choices": [
-          "$18,620",
-          "$26,670",
-          "$38,000",
-          "$45,200"
-        ],
-        "answer": 2,
-        "explanation": "Write 0.7v = 26,600 and divide: v = 26,600 ÷ 0.7 = $38,000.",
-        "feedback": [
-          "That computes 70% of $26,600 — but $26,600 is already the part.",
-          "That adds 70 to the part.",
-          "",
-          "That is not the result of any of the three methods; check your division."
-        ],
-        "hints": [
-          "Which amount is the part, and which is the unknown whole?",
-          "0.7 × v = 26,600.",
-          "26,600 ÷ 0.7 = ?"
-        ]
-      },
-      {
-        "id": "core-4-5-choice-1",
-        "lesson": "4-5",
-        "type": "choice",
         "prompt": "Which statement correctly names the pieces of \"18 students is 30% of the class\"?",
         "choices": [
           "18 is the whole, 30% is the part",
@@ -353,6 +348,56 @@
           "Which number counts actual students?",
           "Which number carries a % sign?",
           "Which amount is missing?"
+        ]
+      },
+      {
+        "id": "core-4-5-choice-1",
+        "lesson": "4-5",
+        "type": "choice",
+        "prompt": "18 students are 30% of an after-school group. How many students are in the whole group?",
+        "choices": [
+          "6",
+          "30",
+          "60",
+          "180"
+        ],
+        "answer": 2,
+        "explanation": "18 is three groups of 10%. Divide 18 by 3 to find 10%: 6. Ten groups of 6 make 100%: 60 students.",
+        "feedback": [
+          "This is the 10% amount, not the full group.",
+          "This uses 30 as the total instead of 30%.",
+          "",
+          "This multiplies 18 by 10 without first finding how many 10% groups are in 30%."
+        ],
+        "hints": [
+          "18 students are 30% of the group. The whole group is 100%.",
+          "30% has three 10% groups. Divide 18 by 3: 10% is 6 students.",
+          "100% has ten 10% groups. Multiply 6 by 10: the whole group has 60 students."
+        ]
+      },
+      {
+        "id": "core-4-5-choice-2",
+        "lesson": "4-5",
+        "type": "choice",
+        "prompt": "A car is now worth $26,600, which is 70% of its purchase price. What was the purchase price?",
+        "choices": [
+          "$18,620",
+          "$26,670",
+          "$38,000",
+          "$45,200"
+        ],
+        "answer": 2,
+        "explanation": "Write 0.7v = 26,600 and divide: v = 26,600 ÷ 0.7 = $38,000.",
+        "feedback": [
+          "That computes 70% of $26,600 — but $26,600 is already the part.",
+          "That adds 70 to the part.",
+          "",
+          "That is not the result of any of the three methods; check your division."
+        ],
+        "hints": [
+          "Which amount is the part, and which is the unknown whole?",
+          "0.7 × v = 26,600.",
+          "26,600 ÷ 0.7 = ?"
         ]
       },
       {
@@ -379,12 +424,12 @@
         "type": "number",
         "prompt": "Predict the recovered whole for these settings.  Round to four decimal places if needed.",
         "parameters": [
-          "Percent: 35",
+          "Percent: 31",
           "Known part: 18"
         ],
-        "answer": 51.42857142857143,
+        "answer": 58.064516129032256,
         "tolerance": 0.000051,
-        "explanation": "18 ÷ (35 ÷ 100) = 51.4286. 35% = 0.35 = 7/20. Check the part by multiplying the whole by the decimal percent.",
+        "explanation": "18 ÷ (31 ÷ 100) = 58.0645. 31% = 0.31 = 31/100. Check the part by multiplying the whole by the decimal percent.",
         "hints": [
           "Identify which quantities the requested measure uses.",
           "Use the relationship you explored in Investigate. Check with a second method."
@@ -453,12 +498,12 @@
         "type": "number",
         "prompt": "Predict the recovered whole for these settings.  Round to four decimal places if needed.",
         "parameters": [
-          "Percent: 40",
+          "Percent: 32",
           "Known part: 18"
         ],
-        "answer": 45,
+        "answer": 56.25,
         "tolerance": 0.000051,
-        "explanation": "18 ÷ (40 ÷ 100) = 45. 40% = 0.4 = 2/5. Check the part by multiplying the whole by the decimal percent.",
+        "explanation": "18 ÷ (32 ÷ 100) = 56.25. 32% = 0.32 = 8/25. Check the part by multiplying the whole by the decimal percent.",
         "hints": [
           "Identify which quantities the requested measure uses.",
           "Use the relationship you explored in Investigate. Check with a second method."

@@ -214,3 +214,34 @@ button.small{min-height:40px;padding:6px 12px;font-size:.88rem}
 .lens-svg .point{fill:var(--accent);stroke:#fff;stroke-width:2}.lens-svg .point-alt{fill:#a84820;stroke:#fff;stroke-width:2}
 .lens-svg text{fill:var(--ink);font-weight:700;font-size:15px}.lens-svg polygon{stroke:#47728c;stroke-width:2}
 .lens-svg polygon.shape{fill:#f9cf55;stroke:#84640c}.lens-svg polygon.shape-alt{fill:#82c7df;stroke:#266580}.lens-svg polygon.shape-light{fill:#d6e9f2}
+
+.model-picture.direct{cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+.model-picture.direct.dragging{cursor:grabbing}
+.model-picture.direct svg{outline:2px dashed transparent;outline-offset:4px;border-radius:12px;transition:outline-color .15s}
+.model-picture.direct:hover svg{outline-color:var(--accent)}
+.direct-hint{margin:6px 0 0;font-size:.92rem;font-weight:700;color:var(--accent)}
+
+/* Rewards: star messages, the finished-lab stamp, and the passport on the index */
+.cheer-toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,24px);max-width:min(560px,calc(100vw - 28px));padding:12px 18px;border-radius:14px;background:#17324d;color:#fff;font-weight:700;box-shadow:0 8px 24px #0004;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:60}
+.cheer-toast.show{opacity:1;transform:translate(-50%,0)}
+.lab-stamp{position:relative;overflow:hidden;display:flex;gap:22px;align-items:center;margin:18px 0;padding:22px 24px;border:3px solid var(--accent);border-radius:18px;background:#fff;box-shadow:0 10px 30px #0002}
+.stamp-art{flex:none;display:grid;place-items:center;width:112px;height:112px;border-radius:50%;border:5px double var(--accent);background:color-mix(in srgb,var(--accent) 12%,#fff);transform:rotate(-8deg);animation:stampIn .55s cubic-bezier(.2,1.4,.4,1) both}
+.stamp-art span{font-size:3rem}
+.stamp-kicker{margin:0;font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:.85rem;color:var(--accent)}
+.stamp-copy h2{margin:.1em 0 .2em}
+.stamp-link{font-weight:800;margin-right:14px;color:var(--accent)}
+.stamp-close{min-height:44px;padding:6px 18px;border:2px solid var(--accent);border-radius:999px;background:#fff;color:var(--accent);font:inherit;font-weight:800;cursor:pointer}
+.stamp-link:focus-visible,.stamp-close:focus-visible{outline:3px solid #f5a623;outline-offset:3px}
+.stamp-confetti i{position:absolute;top:-12px;left:calc(var(--i)*5.5%);width:9px;height:14px;border-radius:2px;background:hsl(calc(var(--i)*43),80%,55%);animation:confetti 1.8s ease-in calc(var(--i)*60ms) both}
+@keyframes stampIn{from{transform:scale(2.4) rotate(-30deg);opacity:0}to{transform:scale(1) rotate(-8deg);opacity:1}}
+@keyframes confetti{to{transform:translateY(240px) rotate(540deg);opacity:0}}
+@media(prefers-reduced-motion:reduce){.stamp-art,.stamp-confetti i{animation:none}.stamp-confetti{display:none}.cheer-toast{transition:none}}
+@media(max-width:600px){.lab-stamp{flex-direction:column;text-align:center}}
+@media print{.cheer-toast,.lab-stamp{display:none}}
+.passport{margin:18px 0;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.passport h2{margin:0 0 4px;font-size:1.2rem}
+.passport-count{margin:0 0 12px;color:var(--muted)}
+.passport-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:8px}
+.stamp-slot{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;border:2px dashed #9aa9b5;color:#9aa9b5;filter:grayscale(1);opacity:.55;font-size:1.4rem;text-decoration:none}
+.stamp-slot.earned{border:3px double var(--accent);filter:none;opacity:1;background:color-mix(in srgb,var(--accent) 12%,#fff);transform:rotate(-6deg)}
+.stamp-slot:focus-visible{outline:3px solid #f5a623;outline-offset:3px}

@@ -25,7 +25,7 @@ export function controls(model) {
     case 'rate': return [control('Pack price ($)', 1, 30), control('Items in pack', 1, 15)];
     case 'conversion': return [control(model.mode === 'scale' ? 'Length (feet)' : 'Length (inches)', 1, 12), control(model.mode === 'scale' ? 'Inches per foot (fixed)' : 'Centimeters per inch (fixed)', model.values[1], model.values[1])];
     case 'growth': return [control(model.mode === 'ratio-graph' ? 'Passengers per carriage' : 'Increase per step', 1, 8), control('Starting amount', 0, model.mode === 'ratio-graph' ? 0 : 12), control(model.mode === 'ratio-graph' ? 'Carriages' : 'Input / step', 1, 12)];
-    case 'percent': return [control('Percent', 5, 100, 5), control(model.mode === 'whole' ? 'Known part' : 'Whole amount', 1, 120)];
+    case 'percent': return [control('Percent', 1, 100), control(model.mode === 'whole' ? 'Known part' : 'Whole amount', 1, 120)];
     case 'area': return model.mode === 'polygon' ? [control('Number of equal sides', 3, 8), control('Length of each side', 1, 12), control('Unused', 3, 3)] : [control(model.mode === 'trapezoid' ? 'First parallel base' : 'Base', 1, 12), control(model.mode === 'trapezoid' ? 'Second parallel base' : 'Perpendicular height', 1, 12), control(model.mode === 'trapezoid' ? 'Perpendicular height' : 'Unused', model.mode === 'trapezoid' ? 1 : 4, model.mode === 'trapezoid' ? 12 : 4)];
     case 'solid': return [control('Length', 1, 10), control('Width', 1, 10), control('Height', 1, 10)];
     case 'fraction': return [control('Supply (whole units)', 0.5, 8, 0.5), control('Serving-size numerator', 1, 5), control('Serving-size denominator', 2, 8)];

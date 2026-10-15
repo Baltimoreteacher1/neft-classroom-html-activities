@@ -3,14 +3,15 @@ import { mountGames } from './games.mjs?v=20261007';
 import { create, investigate, learn, practice } from './activities.mjs';
 import { levels, noteLabels, overview, tabs, timing } from './progress.mjs';
 import { connect } from './ewl-bridge.mjs?v=20261015';
+import { createCelebrator } from './celebrate.mjs';
 
 const root = document.getElementById('lab-root');
-let lab, state, storeKey, memoryOnly = false, bridge = null;
-const fresh = () => ({ version: 1, level: 'core', tab: 'brief', practice: {}, notes: {}, steps: {}, games: {}, models: {}, created: '', checklist: [], investigated: [], lang: 'en' });
+let lab, state, storeKey, memoryOnly = false, bridge = null, celebrator = null;
+const fresh = () => ({ version: 1, level: 'core', tab: 'brief', practice: {}, notes: {}, steps: {}, games: {}, models: {}, created: '', checklist: [], investigated: [], lang: 'en', stamped: 0 });
 function save() {
   // The catalog cannot load every lab's content, so each save carries a small progress summary it can read.
   const o = overview(lab, state);
-  state.summary = { done: o.done, total: o.total, started: o.done > 0 || o.items.some((i) => i.status === 'started'), next: o.next, savedAt: Date.now() };
+  state.summary = { done: o.done, total: o.total, started: o.done > 0 || o.items.some((i) => i.status === 'started'), next: o.next, savedAt: Date.now(), stamped: !!state.stamped };
   try { localStorage.setItem(storeKey, JSON.stringify(state)); memoryOnly = false; }
   catch { memoryOnly = true; }
   const el = document.getElementById('save-status');
@@ -36,6 +37,7 @@ function refreshProgress() {
   const summary = document.getElementById('progress-summary');
   if (summary) summary.textContent = `${o.done} of ${o.total} activities complete`;
   bridge?.progress(o);
+  celebrator?.update(o);
   const route = document.querySelector('.route-list');
   if (route) route.querySelectorAll('li').forEach((li, i) => { const item = o.items[i]; li.dataset.status = item.status; li.querySelector('.route-status').textContent = item.summary; });
 }
@@ -43,6 +45,7 @@ function refreshProgress() {
 function shell() {
   document.documentElement.style.setProperty('--accent', lab.accent);
   root.innerHTML = `<div class="page-shell"><nav class="crumbs" aria-label="Breadcrumb"><a href="/curriculum/">Curriculum</a><a href="/curriculum/learning-labs/#unit-${lab.unit}">Learning labs</a><span>Unit ${lab.unit}: ${esc(lab.unitName)}</span></nav><header class="lab-header"><div class="lab-emblem" aria-hidden="true">${lab.icon}</div><div><p class="lesson-label">Unit ${lab.unit} · Lessons ${lab.lessons.map((l) => lessonNumber(l.id)).join(' & ')}</p><h1>${esc(lab.title)}</h1><p class="mission-lead">${esc(lab.mission)}</p><ul class="lesson-chips" aria-label="Connected lessons">${lab.lessons.map((l) => `<li><a class="lesson-chip" href="/lessons/${l.id}/">${lessonNumber(l.id)} ${esc(l.title)}</a></li>`).join('')}<li><span class="lesson-chip quiet-chip">About 45 minutes</span></li></ul></div></header><div class="toolbar"><label for="level">Choose your level<select id="level">${Object.entries(levels).map(([id, l]) => `<option value="${id}">${l.label}</option>`).join('')}</select></label><p id="level-detail">${levels[state.level].detail}</p><div class="save-tools"><span id="progress-summary" class="progress-pill"></span><span id="save-status" role="status"></span><div><button type="button" class="quiet" id="download">Download work</button><button type="button" class="quiet" id="print">Print work</button></div></div></div><nav class="tabs" role="tablist" aria-label="Lab activities">${tabs.map(([id, title], i) => `<button type="button" id="tab-${id}" role="tab" aria-controls="panel-${id}" aria-selected="${state.tab === id}" tabindex="${state.tab === id ? 0 : -1}" data-tab="${id}"><span class="tab-step">${i + 1}</span><span class="tab-title">${title}</span><span class="tab-mark" aria-hidden="true"></span></button>`).join('')}</nav><main id="workspace">${tabs.map(([id]) => `<section id="panel-${id}" role="tabpanel" aria-labelledby="tab-${id}" tabindex="0" ${state.tab === id ? '' : 'hidden'}></section>`).join('')}</main><div class="bottom-nav"><button type="button" class="quiet" id="previous">Previous activity</button><p id="activity-position"></p><button type="button" id="next">Next activity</button></div><footer><p>Progress is saved in this browser on this device. No name or account is needed. Use Download work to keep a copy.</p><details><summary>For teachers: connected lessons and timing</summary><div class="lesson-links">${lab.lessons.map((l) => `<a href="/lessons/${l.id}/">${lessonNumber(l.id)}: ${esc(l.title)}${l.standard ? ` (${esc(l.standard)})` : ''}</a>`).join('')}</div><p>Suggested timing: ${tabs.map(([id, title]) => `${title} ${timing[id]}`).join('; ')}. Split across two sessions when useful. Levels are choices students make, not labels.</p><p>${esc(lab.source)}</p><button type="button" class="quiet" id="reset">Start fresh</button><span id="reset-area"></span></details></footer><section id="print-report" class="print-only"></section></div>`;
+  celebrator = createCelebrator(root.querySelector('.page-shell'), lab, state, save);
   document.getElementById('level').value = state.level;
   document.getElementById('level').addEventListener('change', (event) => { state.level = event.target.value; document.getElementById('level-detail').textContent = levels[state.level].detail; save(); showTab(state.tab); });
   root.querySelectorAll('[data-tab]').forEach((button) => {

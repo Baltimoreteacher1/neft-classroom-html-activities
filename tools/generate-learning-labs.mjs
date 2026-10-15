@@ -50,6 +50,8 @@ const version = createHash("sha256")
       "expedition.mjs",
       "expedition-worlds.mjs",
       "catalog.mjs",
+      "direct.mjs",
+      "celebrate.mjs",
       "lab.css",
     ]
       .map((f) => readFileSync(join(destination, "shared", f)))

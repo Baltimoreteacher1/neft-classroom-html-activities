@@ -44,6 +44,31 @@ for (const unit of units) {
   unit.querySelector('[data-unit-progress]').textContent = parts.join(' · ');
 }
 
+// ---- Lab passport: one stamp per finished lab, shown above the unit list ----
+const earned = cards.filter((c) => progress.get(c).status === 'done' || progress.get(c).stamped);
+const passportHost = document.getElementById('labs-spotlight');
+if (passportHost) {
+  const section = document.createElement('section');
+  section.className = 'passport'; section.setAttribute('aria-labelledby', 'passport-title');
+  section.innerHTML = '<h2 id="passport-title">Your lab passport</h2><p class="passport-count"></p><ul class="passport-grid"></ul>';
+  section.querySelector('.passport-count').textContent = earned.length
+    ? `${earned.length} of ${cards.length} stamps collected. Finish all six parts of a lab to earn its stamp.`
+    : `0 of ${cards.length} stamps. Finish all six parts of a lab to earn its stamp.`;
+  const grid = section.querySelector('.passport-grid');
+  for (const card of cards) {
+    const got = earned.includes(card), name = card.querySelector('.card-link').textContent;
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = card.querySelector('.card-link').href; a.className = got ? 'stamp-slot earned' : 'stamp-slot';
+    a.style.setProperty('--accent', card.style.getPropertyValue('--accent'));
+    a.setAttribute('aria-label', `${name}: ${got ? 'stamp earned' : 'stamp not yet earned'}`);
+    a.title = name;
+    a.textContent = card.querySelector('.lab-card-icon').textContent;
+    li.append(a); grid.append(li);
+  }
+  passportHost.before(section);
+}
+
 // ---- This week in class, from the published pacing plan ----
 const isoLocal = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }

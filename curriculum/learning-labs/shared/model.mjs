@@ -1,5 +1,6 @@
 import { controls, evaluate, fmt } from './math.mjs';
 import { mountLens } from './lens.mjs';
+import { attachDirect, isDirect } from './direct.mjs';
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const line = (x1, y1, x2, y2, cls = '') => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${cls}"/>`;
 const text = (x, y, t, anchor = 'middle') => `<text x="${x}" y="${y}" text-anchor="${anchor}">${esc(t)}</text>`;
@@ -164,6 +165,23 @@ export function mountModel(host, model, { initial = model.values, free = null, o
   const select = host.querySelector('[data-symbol]');
   if (select) { select.value = symbol; select.disabled = free !== null; select.addEventListener('change', () => { symbol = select.value; update(); }); }
   host.querySelector('.model-workspace').dataset.kind = model.kind;
+  if (isDirect(model)) {
+    const picture = host.querySelector('.model-picture');
+    attachDirect(picture, model, {
+      fields,
+      getValues: () => values,
+      apply: (next) => {
+        values = next; valid = true;
+        host.querySelectorAll('[data-control]').forEach(el => { el.value = values[Number(el.dataset.control)]; });
+        host.querySelector('.model-error').textContent = '';
+        update();
+      },
+    });
+    const hint = document.createElement('p');
+    hint.className = 'direct-hint';
+    hint.textContent = 'Touch the picture: tap or drag it to change the model.';
+    picture.after(hint);
+  }
   if (model.kind === 'solid' && model.mode === 'surface' && free === null) {
     const switcher = document.createElement('div'); switcher.className = 'lesson-switch';
     switcher.setAttribute('role', 'group'); switcher.setAttribute('aria-label', 'Choose solid');
