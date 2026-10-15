@@ -80,7 +80,10 @@
       "aria-label": `Lesson ${l.id}: ${l.title}`,
       title: l.title,
     });
-    b.append(el("span", { class: "mx-id", text: l.id }));
+    b.append(
+      el("span", { class: "mx-id", text: l.id }),
+      el("span", { class: "mx-title", text: l.title }),
+    );
     const marks = el("span", { class: "mx-marks", "aria-hidden": "true" });
     if (l.tracks.scaffold) marks.append(el("i", { class: "mx-m-s", title: "Scaffold" }));
     if (l.tracks.enrichment) marks.append(el("i", { class: "mx-m-e", title: "Enrichment" }));
