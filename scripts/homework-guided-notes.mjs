@@ -8021,7 +8021,7 @@ export function renderVocabQuiz(vocabList, resolveVocabImage, vocabImageAlt) {
       <div id="vocab_quiz_play">
         <p class="vq-ask"><span class="lang-en">Which word fits?</span><span class="lang-es" lang="es">¿Qué palabra encaja?</span></p>
         <div class="vq-card">
-          <img class="vq-img" id="vocab_quiz_img" alt="" width="96" height="96" hidden />
+          <img class="vq-img" id="vocab_quiz_img" alt="" width="200" height="150" hidden />
           <p class="vq-prompt" id="vocab_quiz_prompt"></p>
         </div>
         <div class="vq-choices" id="vocab_quiz_choices"></div>
@@ -8069,7 +8069,7 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(${escAttr(JSON.stringify(term))}, ${escAttr(JSON.stringify(termEs))})" title="Listen / Escuchar" aria-label="Pronounce ${esc(term)}">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="${esc(imgSrc)}" alt="${esc(imgAlt)}" loading="lazy" width="76" height="76" />
+                    <img class="vocab-thumb" src="${esc(imgSrc)}" alt="${esc(imgAlt)}" loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -13083,7 +13083,7 @@ body.lang-mode-es .bilingual-grid {
 .vq-star.is-earned { color: #f59e0b; transform: scale(1.15); }
 .vq-ask { margin: 0 0 8px; font-weight: 800; font-size: 17px; color: var(--navy); }
 .vq-card { display: flex; align-items: center; gap: 14px; background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
-.vq-img { width: 96px; height: 96px; object-fit: contain; flex: none; }
+.vq-img { width: min(46%, 220px); height: auto; aspect-ratio: 4 / 3; object-fit: contain; flex: none; }
 .vq-prompt { margin: 0; font-size: 18px; line-height: 1.45; color: var(--ink, #1e293b); }
 .vq-choices { display: grid; gap: 10px; margin: 12px 0 8px; }
 .vq-choice {
@@ -13101,7 +13101,7 @@ body.lang-mode-es .bilingual-grid {
 .vq-done-score { font-size: 18px; margin: 0 0 12px; }
 @media (max-width: 640px) {
   .vq-card { flex-direction: column; text-align: center; }
-  .vq-img { width: 80px; height: 80px; }
+  .vq-img { width: min(100%, 240px); }
 }
 .vocab-match-board {
   display: grid;

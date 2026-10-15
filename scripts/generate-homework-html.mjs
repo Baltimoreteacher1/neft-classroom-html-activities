@@ -1928,18 +1928,26 @@ header.homework-header h1 {
   justify-content: center;
   align-items: center;
   margin: 6px 0;
-  min-height: 84px;
 }
 
+/* The pictures are 160x120 drawings with 9-11px labels inside them. At 76px those labels were about 5px tall, so the
+   picture could not be read. Shown at up to 260px the labels are 14-17px, which a child can read without zooming. */
 .vocab-thumb {
-  width: 76px;
-  height: 76px;
+  width: min(100%, 260px);
+  height: auto;
+  aspect-ratio: 4 / 3;
   object-fit: contain;
   border-radius: 12px;
   background: var(--cream, #faf8f5);
   border: 1px solid #e2e8f0;
-  padding: 6px;
+  padding: 0;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.family-specific-model svg {
+  display: block;
+  width: 100%;
+  max-height: min(60vh, 380px);
 }
 
 .vocab-front-body {
@@ -5482,6 +5490,33 @@ function translateProblemOptions() {
 }
 new MutationObserver(translateProblemOptions).observe(document.body, { attributes: true, attributeFilter: ["class"] });
 document.addEventListener("DOMContentLoaded", translateProblemOptions);
+
+// Tighten each lesson diagram's viewBox to its drawing, so the figure fills its card instead of a third of it.
+function tightenDiagrams() {
+  const fit = (svg) => {
+    if (svg.dataset.tight) return;
+    let box;
+    try {
+      box = svg.getBBox();
+    } catch (e) {
+      return;
+    }
+    if (!box.width || !box.height) return;
+    const pad = Math.max(box.width, box.height) * 0.06;
+    svg.setAttribute("viewBox", [box.x - pad, box.y - pad, box.width + 2 * pad, box.height + 2 * pad].join(" "));
+    svg.dataset.tight = "1";
+  };
+  document.querySelectorAll(".family-specific-model svg").forEach((svg) => {
+    if (!("ResizeObserver" in window)) return fit(svg);
+    new ResizeObserver((_, ro) => {
+      if (svg.getBoundingClientRect().width > 0) {
+        fit(svg);
+        ro.disconnect();
+      }
+    }).observe(svg);
+  });
+}
+document.addEventListener("DOMContentLoaded", tightenDiagrams);
 
 // Speech Rate & Big Idea Narration
 let vocabSpeechRate = 0.9;
