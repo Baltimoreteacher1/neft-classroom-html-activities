@@ -1,0 +1,773 @@
+/* Living Math Canvas + Isomorphic Lens. Uses the tokens in ewl.css. Calm, large figures; meaning is never colour alone
+ * (every filled thing also has a hatch, dots or cross pattern, a dashed outline when pointed at, and a text label). */
+.cv-page {
+  --cv-a-tint: #d9eaf7;
+  --cv-b-tint: #fbe6cb;
+  --cv-c-tint: #e8dff4;
+  --cv-gap: 20px;
+  margin: 0;
+}
+.cv-page .cv-wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+.cv-hero {
+  background: var(--ewl-brand);
+  color: var(--ewl-brand-ink);
+  padding: 26px 0 22px;
+}
+.cv-hero h1 {
+  margin: 0 0 6px;
+  font-size: 1.9rem;
+  line-height: 1.2;
+}
+.cv-hero p {
+  margin: 0;
+  max-width: 62ch;
+  opacity: 0.95;
+}
+.cv-hero .cv-es {
+  font-style: italic;
+  font-size: 0.95em;
+}
+.cv-main {
+  padding: 22px 0 64px;
+}
+.cv-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.cv-lessonline {
+  margin: 0;
+  color: var(--ewl-muted);
+}
+
+/* ---- scene header and the six stages ---- */
+.cv-head h2 {
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+  line-height: 1.25;
+}
+.cv-head h2:focus {
+  outline: none;
+}
+.cv-blurb {
+  margin: 0 0 12px;
+  color: var(--ewl-muted);
+  max-width: 70ch;
+}
+.cv-chips-row {
+  margin-bottom: 14px;
+}
+.cv-chip {
+  display: inline-block;
+  padding: 3px 12px;
+  border: 1px solid var(--ewl-line);
+  border-radius: 999px;
+  background: var(--ewl-card);
+  font-size: 0.9rem;
+  color: var(--ewl-muted);
+}
+.cv-chip-done {
+  border-color: var(--ewl-ok);
+  color: var(--ewl-ok);
+  font-weight: 700;
+}
+.cv-steps {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  list-style: none;
+  margin: 0 0 var(--cv-gap);
+  padding: 0;
+}
+.cv-stepbtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 6px 8px;
+  border: 2px solid var(--ewl-line);
+  border-radius: 12px;
+  background: var(--ewl-card);
+  color: var(--ewl-ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.cv-stepbtn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.cv-stepnum {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  font-size: 0.85rem;
+  flex: none;
+}
+.cv-steps [data-state="current"] .cv-stepbtn {
+  background: var(--ewl-brand);
+  border-color: var(--ewl-brand);
+  color: var(--ewl-brand-ink);
+}
+.cv-steps [data-state="done"] .cv-stepbtn {
+  border-color: var(--ewl-ok);
+  color: var(--ewl-ok);
+}
+.cv-steps [data-state="done"] .cv-stepnum {
+  background: var(--ewl-ok);
+  border-color: var(--ewl-ok);
+  color: #fff;
+}
+.cv-layout {
+  display: grid;
+  gap: var(--cv-gap);
+  align-items: start;
+}
+@media (min-width: 1100px) {
+  .cv-layout {
+    grid-template-columns: minmax(340px, 400px) minmax(0, 1fr);
+  }
+  .cv-panel {
+    position: sticky;
+    top: 12px;
+  }
+}
+.cv-panel {
+  padding: 20px 22px;
+}
+.cv-prompt {
+  margin: 0 0 14px;
+  font-size: 1.15rem;
+  line-height: 1.5;
+}
+.cv-facts {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-left: 6px solid var(--ewl-brand);
+  background: var(--cv-a-tint);
+  border-radius: 8px;
+  font-weight: 700;
+}
+.cv-note,
+.cv-hint,
+.cv-status {
+  color: var(--ewl-muted);
+  font-size: 0.95rem;
+  margin: 6px 0 0;
+}
+.cv-status {
+  margin: 14px 0 8px;
+  font-weight: 700;
+  color: var(--ewl-ink);
+}
+.cv-actions {
+  margin-top: 12px;
+}
+.cv-fb {
+  margin-top: 12px;
+}
+.cv-msg {
+  font-size: 1.05rem;
+}
+.cv-answer {
+  display: grid;
+  gap: 6px;
+}
+.cv-answer label,
+.cv-ctl label {
+  font-weight: 700;
+}
+.cv-input,
+.cv-text {
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 2px solid var(--ewl-muted);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 1.1rem;
+  background: #fff;
+  color: var(--ewl-ink);
+}
+.cv-text {
+  min-height: 120px;
+  margin: 10px 0;
+  resize: vertical;
+}
+.cv-fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.cv-fieldset legend {
+  font-weight: 700;
+  margin-bottom: 8px;
+  font-size: 1.05rem;
+}
+.cv-radio {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 2px solid var(--ewl-line);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+}
+.cv-radio:has(input:checked) {
+  border-color: var(--ewl-brand);
+  background: var(--cv-a-tint);
+}
+.cv-radio input {
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  flex: none;
+  accent-color: var(--ewl-brand);
+}
+.cv-ctl {
+  margin: 12px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.cv-ctl-label {
+  flex: 0 0 100%;
+  font-weight: 700;
+}
+.cv-text.cv-ctl {
+  display: block;
+}
+.cv-text .ewl-row {
+  flex-wrap: nowrap;
+}
+.cv-text .cv-input {
+  min-width: 0;
+}
+.cv-step {
+  min-width: 48px;
+  font-size: 1.3rem;
+  line-height: 1;
+  padding: 6px 14px;
+}
+.cv-value {
+  min-width: 4.5ch;
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.cv-rubric {
+  list-style: none;
+  margin: 12px 0 8px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.cv-rubric li[data-ok="1"] {
+  font-weight: 700;
+  color: var(--ewl-ok);
+}
+.cv-finish {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+}
+.cv-placeholder {
+  text-align: center;
+  padding: 40px 24px;
+  color: var(--ewl-muted);
+  border-style: dashed;
+}
+.cv-figcard {
+  padding: 14px 16px 18px;
+}
+
+/* ---- scene chooser ---- */
+.cv-chooser h2 {
+  margin: 24px 0 10px;
+  font-size: 1.25rem;
+}
+.cv-unit {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+  color: var(--ewl-muted);
+}
+.cv-cards {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+}
+.cv-card {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  min-height: 96px;
+  padding: 14px 16px;
+  text-align: left;
+  border: 2px solid var(--ewl-line);
+  border-radius: 14px;
+  background: var(--ewl-card);
+  color: var(--ewl-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.cv-card:hover {
+  border-color: var(--ewl-brand);
+}
+.cv-card strong {
+  font-size: 1.1rem;
+}
+.cv-card span {
+  color: var(--ewl-muted);
+  font-size: 0.92rem;
+}
+.cv-card[data-here="1"] {
+  border-color: var(--ewl-brand);
+  background: var(--cv-a-tint);
+}
+.cv-card[data-done="1"] strong::after {
+  content: " ✓";
+  color: var(--ewl-ok);
+}
+
+/* ---- teacher evidence ---- */
+.cv-teacher {
+  margin-top: 28px;
+}
+.cv-teacher table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.cv-teacher th,
+.cv-teacher td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--ewl-line);
+  text-align: left;
+  vertical-align: top;
+}
+.cv-teacher .cv-arg {
+  max-width: 46ch;
+  color: var(--ewl-muted);
+}
+
+/* ---- the Isomorphic Lens ---- */
+.lens-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 720px) {
+  .lens-grid[data-count="2"],
+  .lens-grid[data-count="3"],
+  .lens-grid[data-count="4"],
+  .lens-grid[data-count="5"],
+  .lens-grid[data-count="6"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .lens-rep[data-wide="1"] {
+    grid-column: 1 / -1;
+  }
+}
+.lens-rep {
+  margin: 0;
+  padding: 10px 12px 12px;
+  border: 1px solid var(--ewl-line);
+  border-radius: 12px;
+  background: #fff;
+  min-width: 0;
+}
+.lens-name {
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--ewl-brand);
+}
+.lens-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 460px;
+  overflow: visible;
+}
+.lens-caption {
+  margin: 14px 0 0;
+  padding: 10px 14px;
+  border-left: 6px solid var(--ewl-line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ewl-muted);
+  min-height: 3.4em;
+}
+.lens-caption[data-on="1"] {
+  border-left-color: var(--ewl-accent);
+  color: var(--ewl-ink);
+  font-weight: 700;
+}
+.lens-t {
+  font: 14px/1 var(--ewl-font);
+  fill: var(--ewl-ink);
+}
+.lens-tiny {
+  font-size: 14px;
+}
+.lens-tick {
+  font-size: 17px;
+  font-weight: 700;
+}
+.lens-big {
+  font-size: 22px;
+  font-weight: 700;
+  fill: var(--ewl-brand);
+}
+.lens-digit {
+  font-size: 44px;
+  font-weight: 700;
+}
+.lens-tiny.on {
+  font-weight: 700;
+}
+.lens-a {
+  fill: var(--ewl-a);
+  font-weight: 700;
+}
+.lens-b {
+  fill: var(--ewl-b);
+  font-weight: 700;
+}
+.lens-pa {
+  fill: var(--cv-a-tint);
+}
+.lens-pa-s {
+  stroke: var(--ewl-a);
+  stroke-width: 1.6;
+  fill: none;
+}
+.lens-pb {
+  fill: var(--cv-b-tint);
+}
+.lens-pb-s {
+  fill: var(--ewl-b);
+}
+.lens-pc {
+  fill: var(--cv-c-tint);
+}
+.lens-pc-s {
+  stroke: var(--ewl-c);
+  stroke-width: 1.4;
+  fill: none;
+}
+.lens-cell,
+.lens-mini {
+  stroke: var(--ewl-ink);
+  stroke-opacity: 0.55;
+  stroke-width: 1.2;
+}
+.lens-quiet,
+.lens-over {
+  fill-opacity: 0;
+}
+.lens-over {
+  stroke: none;
+}
+.lens-fillbar {
+  stroke: none;
+  pointer-events: none;
+}
+.lens-col {
+  fill: #fff;
+}
+.lens-part {
+  cursor: pointer;
+}
+.lens-part:focus {
+  outline: none;
+}
+.lens-part[data-hl="1"] {
+  stroke: var(--ewl-accent);
+  stroke-width: 4;
+  stroke-opacity: 1;
+  stroke-dasharray: 6 3;
+}
+.lens-part[data-hl="1"] .lens-cell,
+.lens-part[data-hl="1"] path,
+.lens-part[data-hl="1"] line {
+  stroke: var(--ewl-accent);
+  stroke-opacity: 1;
+}
+.lens-part[data-focus="1"] {
+  stroke: var(--ewl-focus);
+  stroke-width: 5;
+  stroke-opacity: 1;
+  stroke-dasharray: none;
+}
+.lens-axis {
+  stroke: var(--ewl-ink);
+  stroke-width: 2;
+}
+.lens-a-line {
+  stroke: var(--ewl-a);
+  stroke-width: 4;
+}
+.lens-b-line {
+  stroke: var(--ewl-b);
+  stroke-width: 4;
+}
+.lens-link {
+  stroke: var(--ewl-muted);
+  stroke-width: 2;
+  stroke-dasharray: 3 4;
+}
+.lens-sq-a {
+  fill: var(--ewl-a);
+}
+.lens-dot-b {
+  fill: var(--ewl-b);
+}
+.lens-sep,
+.lens-grid-line {
+  stroke: var(--ewl-ink);
+  stroke-opacity: 0.35;
+  stroke-width: 1;
+}
+.lens-grid-line {
+  stroke-opacity: 0.15;
+}
+.lens-dot {
+  fill: var(--ewl-brand);
+  stroke: #fff;
+  stroke-width: 3;
+}
+.lens-arrow {
+  fill: var(--ewl-brand);
+}
+.lens-brace {
+  fill: none;
+  stroke: var(--ewl-brand);
+  stroke-width: 3;
+}
+.lens-rule {
+  stroke: var(--ewl-brand);
+  stroke-width: 3;
+}
+.lens-diamond {
+  fill: var(--ewl-b);
+  stroke: var(--ewl-ink);
+  stroke-width: 2;
+}
+.lens-ghost {
+  stroke: var(--ewl-bad);
+  stroke-width: 3;
+  stroke-dasharray: 6 5;
+}
+.lens-ghosttxt {
+  fill: var(--ewl-bad);
+  font-weight: 700;
+  font-size: 15px;
+}
+.lens-beam {
+  stroke: var(--ewl-ink);
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+.lens-rope {
+  stroke: var(--ewl-muted);
+  stroke-width: 3;
+}
+.lens-pivot {
+  fill: var(--ewl-muted);
+}
+.lens-bag,
+.lens-unit {
+  stroke: var(--ewl-ink);
+  stroke-width: 2;
+}
+.lens-face {
+  stroke: var(--ewl-ink);
+  stroke-width: 1.2;
+}
+.lens-face-t {
+  fill-opacity: 0.55;
+}
+.lens-face-r {
+  fill-opacity: 0.8;
+}
+.lens-xs {
+  fill: var(--ewl-ink);
+  font-size: 22px;
+}
+.lens-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+}
+.lens-chiplabel {
+  font-weight: 700;
+}
+.lens-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.05rem;
+}
+.lens-table caption {
+  text-align: left;
+  font-weight: 700;
+  padding-bottom: 6px;
+}
+.lens-table th,
+.lens-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--ewl-line);
+  text-align: left;
+}
+.lens-table thead th {
+  font-size: 0.92rem;
+  color: var(--ewl-muted);
+}
+.lens-table tfoot td {
+  color: var(--ewl-muted);
+  font-size: 0.95rem;
+}
+.lens-mult {
+  color: var(--ewl-muted);
+}
+.lens-rowbtn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 4px 14px;
+  border: 2px solid var(--ewl-line);
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+  font-weight: 700;
+  color: var(--ewl-ink);
+  cursor: pointer;
+}
+.lens-table tr[data-hl="1"] {
+  background: var(--cv-b-tint);
+  outline: 3px dashed var(--ewl-accent);
+  outline-offset: -3px;
+}
+.lens-table tr[data-hl="1"] .lens-rowbtn {
+  border-color: var(--ewl-accent);
+}
+.ewl-chip[data-hl="1"] {
+  box-shadow: 0 0 0 3px var(--ewl-accent);
+}
+.lens-compare {
+  display: grid;
+  gap: 16px;
+}
+@media (min-width: 900px) {
+  .lens-compare {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* narrow screens: the figures scale down, so the labels inside them scale up */
+@media (max-width: 640px) {
+  .cv-hero h1 {
+    font-size: 1.55rem;
+  }
+  .cv-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .cv-panel {
+    padding: 16px;
+  }
+  .lens-tiny,
+  .lens-t {
+    font-size: 19px;
+  }
+  .lens-tick {
+    font-size: 22px;
+  }
+  .lens-big {
+    font-size: 28px;
+  }
+  .lens-digit {
+    font-size: 54px;
+  }
+  .lens-ghosttxt {
+    font-size: 20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cv-page * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+@media (forced-colors: active) {
+  .lens-part[data-hl="1"] {
+    stroke: Highlight;
+  }
+  .cv-stepbtn {
+    border-color: ButtonText;
+  }
+}
+@media print {
+  .cv-hero,
+  .cv-topbar,
+  .cv-steps,
+  .cv-panel,
+  .cv-layout,
+  .cv-chooser,
+  .cv-noprint {
+    display: none !important;
+  }
+  .cv-teacher {
+    margin: 0;
+  }
+}
+.cv-hero h1,
+.cv-hero p {
+  color: var(--ewl-brand-ink);
+}
+.cv-page .cv-hero h1,
+.cv-page .cv-hero p,
+.cv-page .cv-hero span {
+  color: var(--ewl-brand-ink);
+}
+.lens-tiny.on {
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+@media (max-width: 640px) {
+  .cv-stepbtn {
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px 2px;
+    min-height: 56px;
+  }
+  .cv-stepname {
+    font-size: 0.78rem;
+  }
+}
+.cv-teacher {
+  overflow-x: auto;
+}
+.cv-teacher table {
+  min-width: 560px;
+}

@@ -112,7 +112,7 @@ ${renderCognateStrip()}
 <noscript><p>Browse the complete index below, or use the unit links to jump to your lesson.</p></noscript>
 ${units}
 <footer class="eh-footer"><p>Lesson names and order: Reveal Math Grade 6, Volumes 1–2, table of contents. Help and practice resources: EduWonderLab.</p><a href="/curriculum/">Back to curriculum</a></footer>
-</main></body></html>`,
+</main><script src="/assets/ewl/reference-loader.js" defer></script></body></html>`,
     "help",
   );
 }

@@ -1,0 +1,268 @@
+/* Today's Mission cockpit (Curriculum hub, student view). Uses the shared EWL tokens from ewl.css.
+ * Calm on purpose: one white card, one accent, 44px targets, no motion. */
+#ewl-cockpit {
+  margin: 0 0 20px;
+}
+.ewlc {
+  --c-ink: var(--ewl-ink);
+  --c-line: var(--ewl-line);
+  --c-brand: var(--ewl-brand);
+  font-family: inherit;
+  color: var(--c-ink);
+  background: var(--ewl-card);
+  border: 1px solid var(--c-line);
+  border-radius: 16px;
+  padding: 20px clamp(14px, 3vw, 28px) 22px;
+  box-shadow: 0 1px 2px rgba(23, 35, 58, 0.06);
+  line-height: 1.5;
+}
+.ewlc *,
+.ewlc *::before,
+.ewlc *::after {
+  box-sizing: border-box;
+}
+.ewlc :focus-visible {
+  outline: 3px solid var(--ewl-focus);
+  outline-offset: 2px;
+}
+.ewlc-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+.ewlc-head h2 {
+  margin: 0;
+  font-size: 1.45rem;
+  line-height: 1.2;
+  flex: 1 1 auto;
+}
+.ewlc-count {
+  margin: 0;
+  color: var(--ewl-muted);
+  font-size: 0.95rem;
+}
+.ewlc-pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  align-items: end;
+  margin: 14px 0 10px;
+}
+.ewlc-pick label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ewl-muted);
+  margin-bottom: 2px;
+}
+.ewlc-select {
+  min-height: 44px;
+  max-width: 100%;
+  padding: 6px 12px;
+  font: inherit;
+  color: var(--c-ink);
+  background: var(--ewl-card);
+  border: 2px solid var(--c-line);
+  border-radius: 10px;
+}
+.ewlc-select--wide {
+  width: min(440px, 100%);
+}
+.ewlc-obj {
+  margin: 6px 0 4px;
+  max-width: 62ch;
+}
+.ewlc-hud:empty {
+  display: none;
+}
+.ewlc-hud {
+  margin: 4px 0 0;
+}
+.ewlc-note {
+  margin: 4px 0;
+  color: var(--ewl-muted);
+  font-size: 0.92rem;
+}
+.ewlc-strong {
+  font-weight: 700;
+}
+.ewlc-steps {
+  list-style: none;
+  margin: 16px 0 12px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.ewlc-step {
+  width: 100%;
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 12px;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  color: var(--c-ink);
+  background: var(--ewl-bg);
+  border: 2px solid var(--c-line);
+  border-radius: 12px;
+  cursor: pointer;
+}
+.ewlc-step[aria-current="step"] {
+  background: var(--c-brand);
+  border-color: var(--c-brand);
+  color: var(--ewl-brand-ink);
+}
+.ewlc-state {
+  font-size: 0.82rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+.ewlc-step .ewlc-state::before {
+  content: "\25CB  ";
+}
+.ewlc-step[aria-current="step"] .ewlc-state::before {
+  content: "\25B6  ";
+}
+.ewlc-panel {
+  border: 1px solid var(--c-line);
+  border-radius: 12px;
+  padding: 14px clamp(12px, 2.5vw, 20px);
+  background: var(--ewl-card);
+}
+.ewlc-panel > p:first-child {
+  margin-top: 0;
+}
+.ewlc-nav {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--c-line);
+}
+.ewlc-done {
+  color: var(--ewl-ok);
+  font-weight: 700;
+}
+.ewlc-done::before {
+  content: "\2713  ";
+}
+.ewlc-foot {
+  margin: 14px 0 0;
+  font-size: 0.95rem;
+}
+.ewlc a.ewl-btn,
+.ewlc a.ewl-chip,
+.ewlc-refbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+/* the Check Yourself screen */
+.ewlc-check {
+  margin: 10px 0 14px;
+  padding: 12px 14px;
+  background: var(--ewl-bg);
+  border-radius: 12px;
+}
+.ewlc-qn {
+  margin: 0 0 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--ewl-muted);
+}
+.ewlc-stem {
+  font-size: 1.08rem;
+  font-weight: 700;
+  padding: 0;
+  max-width: 62ch;
+}
+.ewlc-choices {
+  border: 0;
+  margin: 0 0 10px;
+  padding: 0;
+  min-width: 0;
+}
+.ewlc-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin: 6px 0;
+  padding: 8px 12px;
+  background: var(--ewl-card);
+  border: 2px solid var(--c-line);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.ewlc-choice input {
+  width: 22px;
+  height: 22px;
+  flex: none;
+}
+.ewlc-tried {
+  color: var(--ewl-muted);
+  font-size: 0.85rem;
+}
+.ewlc-code {
+  min-height: 44px;
+  width: 9ch;
+  padding: 6px 10px;
+  font: inherit;
+  color: var(--c-ink);
+  background: var(--ewl-card);
+  border: 2px solid var(--c-line);
+  border-radius: 10px;
+}
+.ewlc-coderow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--c-line);
+  font-size: 0.92rem;
+}
+.ewlc-viz {
+  max-width: 340px;
+  margin: 6px 0 10px;
+}
+.ewlc-fb:empty {
+  display: none;
+}
+.ewlc-fb,
+.ewlc-result,
+.ewlc-repair {
+  margin: 10px 0;
+}
+.ewlc-fb .ewl-msg p,
+.ewlc-result .ewl-msg p {
+  margin: 4px 0;
+}
+.ewlc-chip {
+  text-decoration: none;
+}
+@media (max-width: 640px) {
+  .ewlc-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ewlc-head h2 {
+    font-size: 1.25rem;
+  }
+}
+@media (forced-colors: active) {
+  .ewlc-step[aria-current="step"] {
+    border-color: Highlight;
+    outline: 2px solid Highlight;
+  }
+}
+@media print {
+  #ewl-cockpit {
+    display: none;
+  }
+}

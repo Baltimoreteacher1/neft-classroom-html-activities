@@ -1,0 +1,213 @@
+/* Pocket Reference drawer. Right-hand panel on wide screens, full-width sheet at phone width. */
+.ewlr-lock {
+  overflow: hidden;
+}
+.ewlr-fab {
+  position: fixed;
+  right: max(14px, env(safe-area-inset-right));
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 2147483000;
+  min-height: 44px;
+  padding: 8px 16px;
+  font: 700 15px/1.2 var(--ewl-font, system-ui, sans-serif);
+  color: var(--ewl-brand-ink, #fff);
+  background: var(--ewl-brand, #15487f);
+  border: 2px solid var(--ewl-brand-ink, #fff);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(23, 35, 58, 0.3);
+  cursor: pointer;
+}
+.ewlr-fab:focus-visible,
+.ewlr :focus-visible {
+  outline: 3px solid var(--ewl-focus, #0b57d0);
+  outline-offset: 2px;
+}
+.ewlr {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483600;
+  font: 16px/1.5 var(--ewl-font, system-ui, sans-serif);
+  color: var(--ewl-ink, #17233a);
+}
+.ewlr[hidden] {
+  display: none;
+}
+.ewlr *,
+.ewlr *::before,
+.ewlr *::after {
+  box-sizing: border-box;
+}
+.ewlr-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 24, 38, 0.5);
+}
+.ewlr-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(460px, 100%);
+  display: flex;
+  flex-direction: column;
+  background: var(--ewl-card, #fff);
+  box-shadow: -4px 0 24px rgba(15, 24, 38, 0.25);
+}
+.ewlr-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--ewl-line, #cfd9e4);
+}
+.ewlr-bar h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+.ewlr-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 16px 24px;
+  overscroll-behavior: contain;
+}
+.ewlr-label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.ewlr-q {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  font: inherit;
+  color: inherit;
+  background: var(--ewl-card, #fff);
+  border: 2px solid var(--ewl-line, #cfd9e4);
+  border-radius: 10px;
+}
+.ewlr-status {
+  margin: 8px 0;
+  font-size: 0.9rem;
+  color: var(--ewl-muted, #4a5a6e);
+}
+.ewlr-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.ewlr-item {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  background: var(--ewl-bg, #f4f7fb);
+  border: 1px solid var(--ewl-line, #cfd9e4);
+  border-radius: 12px;
+  cursor: pointer;
+}
+.ewlr-item > span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.ewlr-item .ewlr-icon {
+  flex: none;
+  width: 44px;
+  height: 44px;
+}
+.ewlr-def {
+  font-size: 0.9rem;
+  color: var(--ewl-muted, #4a5a6e);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ewlr-sub {
+  font-size: 0.9rem;
+  color: var(--ewl-muted, #4a5a6e);
+  font-style: italic;
+}
+.ewlr-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 14px 0 6px;
+}
+.ewlr-head .ewlr-icon {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  color: var(--ewl-ink, #17233a);
+}
+.ewlr-head h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+.ewlr-head p {
+  margin: 0;
+}
+.ewlr-field {
+  margin: 14px 0;
+}
+.ewlr-field h4 {
+  margin: 0 0 2px;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ewl-muted, #4a5a6e);
+}
+.ewlr-field p {
+  margin: 0;
+}
+.ewlr-other {
+  margin: 0;
+  color: var(--ewl-muted, #4a5a6e);
+}
+.ewlr-frame {
+  padding: 10px 12px;
+  background: var(--ewl-bg, #f4f7fb);
+  border-left: 5px solid var(--ewl-brand, #15487f);
+  border-radius: 6px;
+}
+.ewlr-actions {
+  margin-top: 18px;
+}
+.ewlr a.ewl-btn,
+.ewlr-fab {
+  text-decoration: none;
+}
+.ewlr a.ewl-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 520px) {
+  .ewlr-panel {
+    width: 100%;
+  }
+  .ewlr-fab {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}
+@media (forced-colors: active) {
+  .ewlr-panel {
+    border-left: 2px solid CanvasText;
+  }
+}
+@media print {
+  .ewlr,
+  .ewlr-fab {
+    display: none !important;
+  }
+}

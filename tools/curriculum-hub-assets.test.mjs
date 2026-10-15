@@ -43,6 +43,17 @@ const ASSETS = [
   "curriculum-home.css",
   "curriculum-resources.js",
   "curriculum-resources.css",
+  "ewl/ewl.css",
+  "ewl/cockpit.css",
+  "ewl/reference.css",
+  "ewl/state-store.js",
+  "ewl/ui.js",
+  "ewl/cockpit-core.js",
+  "ewl/cockpit-check.js",
+  "ewl/cockpit.js",
+  "ewl/reference-core.js",
+  "ewl/reference-icons.js",
+  "ewl/reference.js",
 ];
 
 const hub = readFileSync(HUB_PATH, "utf8");

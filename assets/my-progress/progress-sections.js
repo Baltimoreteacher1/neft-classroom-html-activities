@@ -603,6 +603,7 @@
     esc: esc,
     t: t,
     humanize: humanize,
+    section: section,
     summaryHtml: summaryHtml,
     nextHtml: nextHtml,
     skillsHtml: skillsHtml,

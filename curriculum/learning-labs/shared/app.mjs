@@ -2,9 +2,10 @@ import { esc } from './model.mjs';
 import { mountGames } from './games.mjs?v=20261007';
 import { create, investigate, learn, practice } from './activities.mjs';
 import { levels, noteLabels, overview, tabs, timing } from './progress.mjs';
+import { connect } from './ewl-bridge.mjs?v=20261015';
 
 const root = document.getElementById('lab-root');
-let lab, state, storeKey, memoryOnly = false;
+let lab, state, storeKey, memoryOnly = false, bridge = null;
 const fresh = () => ({ version: 1, level: 'core', tab: 'brief', practice: {}, notes: {}, steps: {}, games: {}, models: {}, created: '', checklist: [], investigated: [], lang: 'en' });
 function save() {
   // The catalog cannot load every lab's content, so each save carries a small progress summary it can read.
@@ -34,6 +35,7 @@ function refreshProgress() {
   }
   const summary = document.getElementById('progress-summary');
   if (summary) summary.textContent = `${o.done} of ${o.total} activities complete`;
+  bridge?.progress(o);
   const route = document.querySelector('.route-list');
   if (route) route.querySelectorAll('li').forEach((li, i) => { const item = o.items[i]; li.dataset.status = item.status; li.querySelector('.route-status').textContent = item.summary; });
 }
@@ -88,7 +90,7 @@ function showTab(id) {
 function brief(host) {
   const o = overview(lab, state), started = o.done > 0 || o.items.some((i) => i.status === 'started');
   host.innerHTML = `<div class="brief-layout"><div><h2>Your mission</h2><p class="large-copy">${esc(lab.mission)}</p><h3>What you will be able to do</h3><ul class="objectives">${lab.lessons.map((l) => `<li><strong>Lesson ${lessonNumber(l.id)}.</strong> ${esc(l.objective)}</li>`).join('')}</ul><div class="ready-note"><h3>Before you begin</h3><p>Have paper and a pencil nearby. Use the model to test an idea, but write down a prediction before changing it. Mistakes are a reason to investigate.</p><p>Every activity is open. If you get stuck, choose Support, open a hint, or return to a worked example.</p></div></div><aside class="route-card"><h3>${started ? 'Your progress' : 'Your route through the lab'}</h3><ol class="route-list">${o.items.map((item) => `<li data-status="${item.status}"><span class="route-title">${item.title}<span class="route-time">${timing[item.id]}</span></span><span class="route-status">${esc(item.summary)}</span></li>`).join('')}</ol><button type="button" data-start>${started && o.next !== 'brief' ? `Continue with ${tabs.find((t) => t[0] === o.next)[1]}` : 'Start with Learn'}</button></aside></div>${textArea('prediction', 'What do you already know that might help?', 'A word, sketch description, example, or question is a useful start.')}`;
-  host.querySelector('[data-start]').onclick = () => showTab(started && o.next !== 'brief' ? o.next : 'learn'); bindNotes(host);
+  host.querySelector('[data-start]').onclick = () => showTab(started && o.next !== 'brief' ? o.next : 'learn'); bindNotes(host); bridge?.deeper(host);
 }
 function games(host) {
   host.innerHTML = `<div class="section-intro"><h2>Finish with a game</h2><p>Choose your expedition route, restore three locations with mathematical constructions, then decode the field guide. Your world and discoveries stay saved on this device.</p></div><details class="how-to-play"><summary>How to play</summary><ol><li>Choose a level, then select ${esc(lab.finale)} or Connection Quest.</li><li>In ${esc(lab.finale)}, choose a destination, read its target, adjust the unlocked model control, and restore the location. Each destination has a different construction.</li><li>In Connection Quest, match each term with its meaning. Arrow keys move between cards; Enter selects. Completed puzzles and pairs are saved on this device.</li></ol></details><div class="games-root"></div>`;
@@ -126,6 +128,7 @@ try {
   for (const key of ['checklist', 'investigated']) if (!Array.isArray(state[key])) state[key] = [];
   if (!['en', 'es'].includes(state.lang)) state.lang = 'en';
   const hash = location.hash.slice(1); if (tabs.some((t) => t[0] === hash)) state.tab = hash;
+  try { bridge = await connect(lab, () => state.lang); } catch { bridge = null; }
   shell(); window.addEventListener('beforeprint', makeReport);
 } catch (error) {
   root.innerHTML = `<main class="load-error"><h1>This lab could not finish loading</h1><p>Your saved work has not been cleared. Check your connection, then reload.</p><button type="button" id="reload">Reload lab</button><p><a href="/curriculum/learning-labs/">Return to learning labs</a></p></main>`;

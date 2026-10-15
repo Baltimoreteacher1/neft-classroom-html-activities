@@ -144,8 +144,10 @@
     function render() {
       var snap = S.collect(window.localStorage);
       var body = el.querySelector("[data-up=body]");
+      var RS = window.NTProgressReasoning;
+      var ewl = RS ? RS.read(window.localStorage) : null;
       if (S.isEmpty(snap)) {
-        body.innerHTML = V.emptyHtml();
+        body.innerHTML = ewl && !ewl.empty ? RS.html(ewl) : V.emptyHtml();
         return;
       }
       var rows = S.skillRows(snap);
@@ -156,6 +158,7 @@
         V.lessonsHtml(snap) +
         V.fluencyHtml(snap, fluencyTitle) +
         V.resultsHtml(snap) +
+        (ewl && !ewl.empty ? RS.html(ewl) : "") +
         V.recentHtml(snap);
     }
     el.classList.add("up-root");

@@ -1,0 +1,1045 @@
+{
+  "version": 1,
+  "hunts": [
+    {
+      "id": "ratio-scale",
+      "unit": 3,
+      "lessons": [
+        "3-3"
+      ],
+      "standard": "6.AT.3a",
+      "title": "Scaling a recipe",
+      "titleEs": "Escalar una receta",
+      "story": "A drink uses juice and sparkling water in a ratio. You may only multiply or divide BOTH amounts by the same number. What never changes?",
+      "storyEs": "Una bebida usa jugo y agua con gas en una razón. Solo puedes multiplicar o dividir AMBAS cantidades por el mismo número. ¿Qué nunca cambia?",
+      "vars": [
+        {
+          "id": "j",
+          "label": "cups of juice",
+          "labelEs": "tazas de jugo"
+        },
+        {
+          "id": "w",
+          "label": "cups of water",
+          "labelEs": "tazas de agua"
+        }
+      ],
+      "start": {
+        "j": [
+          "2",
+          "3",
+          "4",
+          "5",
+          "6"
+        ],
+        "w": [
+          "3",
+          "4",
+          "5",
+          "7",
+          "8"
+        ]
+      },
+      "stateText": "{j} cups of juice : {w} cups of water",
+      "stateTextEs": "{j} tazas de jugo : {w} tazas de agua",
+      "moves": [
+        {
+          "id": "times",
+          "label": "Multiply both amounts by",
+          "labelEs": "Multiplicar ambas cantidades por",
+          "params": [
+            {
+              "id": "k",
+              "label": "the number",
+              "labelEs": "el número",
+              "pool": [
+                "2",
+                "3",
+                "4",
+                "5",
+                "10"
+              ]
+            }
+          ],
+          "set": {
+            "j": [
+              "mul",
+              "j",
+              "k"
+            ],
+            "w": [
+              "mul",
+              "w",
+              "k"
+            ]
+          }
+        },
+        {
+          "id": "divide",
+          "label": "Divide both amounts by",
+          "labelEs": "Dividir ambas cantidades entre",
+          "params": [
+            {
+              "id": "k",
+              "label": "the number",
+              "labelEs": "el número",
+              "pool": [
+                "2",
+                "4",
+                "5"
+              ]
+            }
+          ],
+          "set": {
+            "j": [
+              "div",
+              "j",
+              "k"
+            ],
+            "w": [
+              "div",
+              "w",
+              "k"
+            ]
+          }
+        }
+      ],
+      "candidates": [
+        {
+          "id": "diff",
+          "expr": "j - w",
+          "label": "juice minus water",
+          "labelEs": "jugo menos agua"
+        },
+        {
+          "id": "sum",
+          "expr": "j + w",
+          "label": "juice plus water",
+          "labelEs": "jugo más agua"
+        },
+        {
+          "id": "prod",
+          "expr": "j * w",
+          "label": "juice times water",
+          "labelEs": "jugo por agua"
+        },
+        {
+          "id": "ratio",
+          "expr": "j / w",
+          "label": "juice divided by water",
+          "labelEs": "jugo entre agua"
+        },
+        {
+          "id": "ratio-inv",
+          "expr": "w / j",
+          "label": "water divided by juice",
+          "labelEs": "agua entre jugo"
+        }
+      ],
+      "why": {
+        "vocab": [
+          "ratio",
+          "equivalent",
+          "multiply",
+          "divide",
+          "same",
+          "razón",
+          "equivalente",
+          "multiplicar",
+          "dividir",
+          "mismo"
+        ],
+        "limit": true
+      }
+    },
+    {
+      "id": "ratio-shift",
+      "unit": 3,
+      "lessons": [
+        "3-9"
+      ],
+      "standard": "6.AT.3",
+      "title": "Adding the same to both parts",
+      "titleEs": "Sumar lo mismo a ambas partes",
+      "story": "Two amounts are in a ratio. This time the only move is ADDING the same number to both. Does the ratio stay the same? What does?",
+      "storyEs": "Dos cantidades están en una razón. Esta vez el único movimiento es SUMAR el mismo número a ambas. ¿La razón se mantiene? ¿Qué sí se mantiene?",
+      "vars": [
+        {
+          "id": "j",
+          "label": "scoops of red",
+          "labelEs": "cucharadas de rojo"
+        },
+        {
+          "id": "w",
+          "label": "scoops of blue",
+          "labelEs": "cucharadas de azul"
+        }
+      ],
+      "start": {
+        "j": [
+          "2",
+          "3",
+          "4",
+          "6",
+          "8"
+        ],
+        "w": [
+          "5",
+          "6",
+          "7",
+          "9",
+          "12"
+        ]
+      },
+      "stateText": "{j} red : {w} blue",
+      "stateTextEs": "{j} rojo : {w} azul",
+      "moves": [
+        {
+          "id": "plus",
+          "label": "Add the same number to both",
+          "labelEs": "Sumar el mismo número a ambas",
+          "params": [
+            {
+              "id": "c",
+              "label": "the number",
+              "labelEs": "el número",
+              "pool": [
+                "1",
+                "2",
+                "3",
+                "5",
+                "10"
+              ]
+            }
+          ],
+          "set": {
+            "j": [
+              "add",
+              "j",
+              "c"
+            ],
+            "w": [
+              "add",
+              "w",
+              "c"
+            ]
+          }
+        }
+      ],
+      "candidates": [
+        {
+          "id": "ratio",
+          "expr": "j / w",
+          "label": "red divided by blue",
+          "labelEs": "rojo entre azul"
+        },
+        {
+          "id": "sum",
+          "expr": "j + w",
+          "label": "red plus blue",
+          "labelEs": "rojo más azul"
+        },
+        {
+          "id": "prod",
+          "expr": "j * w",
+          "label": "red times blue",
+          "labelEs": "rojo por azul"
+        },
+        {
+          "id": "diff",
+          "expr": "w - j",
+          "label": "blue minus red",
+          "labelEs": "azul menos rojo"
+        },
+        {
+          "id": "diff-inv",
+          "expr": "j - w",
+          "label": "red minus blue",
+          "labelEs": "rojo menos azul"
+        }
+      ],
+      "why": {
+        "vocab": [
+          "difference",
+          "ratio",
+          "add",
+          "subtract",
+          "same",
+          "diferencia",
+          "razón",
+          "sumar",
+          "restar",
+          "mismo"
+        ],
+        "limit": true
+      }
+    },
+    {
+      "id": "balance-solution",
+      "unit": 8,
+      "lessons": [
+        "8-2",
+        "8-3"
+      ],
+      "standard": "6.AT.8",
+      "title": "Keeping an equation balanced",
+      "titleEs": "Mantener una ecuación en equilibrio",
+      "story": "The equation is a balance. You may add to or subtract from both sides, or multiply both sides by the same number. What never changes?",
+      "storyEs": "La ecuación es una balanza. Puedes sumar o restar en ambos lados, o multiplicar ambos lados por el mismo número. ¿Qué nunca cambia?",
+      "vars": [
+        {
+          "id": "a",
+          "label": "the number in front of x",
+          "labelEs": "el número delante de x"
+        },
+        {
+          "id": "b",
+          "label": "the added number",
+          "labelEs": "el número que se suma"
+        },
+        {
+          "id": "c",
+          "label": "the right side",
+          "labelEs": "el lado derecho"
+        }
+      ],
+      "start": {
+        "a": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "b": [
+          "1",
+          "2",
+          "3",
+          "5",
+          "7"
+        ],
+        "c": [
+          "12",
+          "15",
+          "20",
+          "25"
+        ]
+      },
+      "stateText": "{a}x {b±} = {c}",
+      "stateTextEs": "{a}x {b±} = {c}",
+      "moves": [
+        {
+          "id": "add",
+          "label": "Add to both sides",
+          "labelEs": "Sumar en ambos lados",
+          "params": [
+            {
+              "id": "d",
+              "label": "the number",
+              "labelEs": "el número",
+              "pool": [
+                "1",
+                "2",
+                "3",
+                "5",
+                "10"
+              ]
+            }
+          ],
+          "set": {
+            "b": [
+              "add",
+              "b",
+              "d"
+            ],
+            "c": [
+              "add",
+              "c",
+              "d"
+            ]
+          }
+        },
+        {
+          "id": "sub",
+          "label": "Subtract from both sides",
+          "labelEs": "Restar en ambos lados",
+          "params": [
+            {
+              "id": "d",
+              "label": "the number",
+              "labelEs": "el número",
+              "pool": [
+                "1",
+                "2",
+                "3",
+                "5"
+              ]
+            }
+          ],
+          "set": {
+            "b": [
+              "sub",
+              "b",
+              "d"
+            ],
+            "c": [
+              "sub",
+              "c",
+              "d"
+            ]
+          }
+        },
+        {
+          "id": "times",
+          "label": "Multiply both sides by",
+          "labelEs": "Multiplicar ambos lados por",
+          "params": [
+            {
+              "id": "k",
+              "label": "the number",
+              "labelEs": "el número",
+              "pool": [
+                "2",
+                "3",
+                "4",
+                "5"
+              ]
+            }
+          ],
+          "set": {
+            "a": [
+              "mul",
+              "a",
+              "k"
+            ],
+            "b": [
+              "mul",
+              "b",
+              "k"
+            ],
+            "c": [
+              "mul",
+              "c",
+              "k"
+            ]
+          }
+        }
+      ],
+      "candidates": [
+        {
+          "id": "solution",
+          "expr": "(c - b) / a",
+          "label": "the value of x that makes it true",
+          "labelEs": "el valor de x que la hace verdadera"
+        },
+        {
+          "id": "neg-solution",
+          "expr": "(b - c) / a",
+          "label": "the opposite of that value of x",
+          "labelEs": "el opuesto de ese valor de x"
+        },
+        {
+          "id": "a",
+          "expr": "a",
+          "label": "the number in front of x",
+          "labelEs": "el número delante de x"
+        },
+        {
+          "id": "b",
+          "expr": "b",
+          "label": "the added number",
+          "labelEs": "el número que se suma"
+        },
+        {
+          "id": "c",
+          "expr": "c",
+          "label": "the right side",
+          "labelEs": "el lado derecho"
+        },
+        {
+          "id": "cb",
+          "expr": "c - b",
+          "label": "right side minus the added number",
+          "labelEs": "lado derecho menos el número sumado"
+        }
+      ],
+      "why": {
+        "vocab": [
+          "solution",
+          "equation",
+          "balance",
+          "both sides",
+          "inverse",
+          "solución",
+          "ecuación",
+          "equilibrio",
+          "ambos lados",
+          "inverso"
+        ],
+        "limit": true
+      }
+    },
+    {
+      "id": "regroup-sum",
+      "unit": 2,
+      "lessons": [
+        "2-11"
+      ],
+      "standard": "6.NOS.3",
+      "title": "Regrouping an addition",
+      "titleEs": "Reagrupar una suma",
+      "story": "Two numbers are added. You may move an amount from one number to the other, like turning 47 + 38 into 50 + 35. What never changes?",
+      "storyEs": "Se suman dos números. Puedes pasar una cantidad de un número al otro, como convertir 47 + 38 en 50 + 35. ¿Qué nunca cambia?",
+      "vars": [
+        {
+          "id": "a",
+          "label": "the first number",
+          "labelEs": "el primer número"
+        },
+        {
+          "id": "b",
+          "label": "the second number",
+          "labelEs": "el segundo número"
+        }
+      ],
+      "start": {
+        "a": [
+          "24",
+          "37",
+          "47",
+          "52"
+        ],
+        "b": [
+          "28",
+          "38",
+          "56",
+          "99"
+        ]
+      },
+      "stateText": "{a} + {b}",
+      "stateTextEs": "{a} + {b}",
+      "moves": [
+        {
+          "id": "to-first",
+          "label": "Move to the first number from the second:",
+          "labelEs": "Pasar al primer número desde el segundo:",
+          "params": [
+            {
+              "id": "c",
+              "label": "the amount",
+              "labelEs": "la cantidad",
+              "pool": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "0.5"
+              ]
+            }
+          ],
+          "set": {
+            "a": [
+              "add",
+              "a",
+              "c"
+            ],
+            "b": [
+              "sub",
+              "b",
+              "c"
+            ]
+          }
+        },
+        {
+          "id": "to-second",
+          "label": "Move to the second number from the first:",
+          "labelEs": "Pasar al segundo número desde el primero:",
+          "params": [
+            {
+              "id": "c",
+              "label": "the amount",
+              "labelEs": "la cantidad",
+              "pool": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "0.5"
+              ]
+            }
+          ],
+          "set": {
+            "a": [
+              "sub",
+              "a",
+              "c"
+            ],
+            "b": [
+              "add",
+              "b",
+              "c"
+            ]
+          }
+        }
+      ],
+      "candidates": [
+        {
+          "id": "sum",
+          "expr": "a + b",
+          "label": "the total of the two numbers",
+          "labelEs": "el total de los dos números"
+        },
+        {
+          "id": "diff",
+          "expr": "a - b",
+          "label": "the first minus the second",
+          "labelEs": "el primero menos el segundo"
+        },
+        {
+          "id": "prod",
+          "expr": "a * b",
+          "label": "the two numbers multiplied",
+          "labelEs": "los dos números multiplicados"
+        },
+        {
+          "id": "a",
+          "expr": "a",
+          "label": "the first number",
+          "labelEs": "el primer número"
+        },
+        {
+          "id": "b",
+          "expr": "b",
+          "label": "the second number",
+          "labelEs": "el segundo número"
+        }
+      ],
+      "why": {
+        "vocab": [
+          "sum",
+          "total",
+          "regroup",
+          "add",
+          "same",
+          "suma",
+          "total",
+          "reagrupar",
+          "sumar",
+          "mismo"
+        ],
+        "limit": true
+      }
+    },
+    {
+      "id": "rect-scale",
+      "unit": 5,
+      "lessons": [
+        "5-4"
+      ],
+      "standard": "6.GR.1",
+      "title": "Scaling a rectangle",
+      "titleEs": "Escalar un rectángulo",
+      "story": "A rectangle is stretched or shrunk. Both sides are multiplied by the same number. What never changes, and what does?",
+      "storyEs": "Un rectángulo se agranda o se reduce. Ambos lados se multiplican por el mismo número. ¿Qué nunca cambia y qué sí cambia?",
+      "vars": [
+        {
+          "id": "w",
+          "label": "width",
+          "labelEs": "ancho"
+        },
+        {
+          "id": "h",
+          "label": "height",
+          "labelEs": "alto"
+        },
+        {
+          "id": "corner",
+          "label": "corner angle in degrees",
+          "labelEs": "ángulo de la esquina en grados"
+        }
+      ],
+      "start": {
+        "w": [
+          "2",
+          "3",
+          "4",
+          "6"
+        ],
+        "h": [
+          "3",
+          "5",
+          "8",
+          "9"
+        ],
+        "corner": [
+          "90"
+        ]
+      },
+      "stateText": "{w} wide, {h} tall, corner {corner} degrees",
+      "stateTextEs": "{w} de ancho, {h} de alto, esquina de {corner} grados",
+      "moves": [
+        {
+          "id": "scale",
+          "label": "Multiply width and height by",
+          "labelEs": "Multiplicar el ancho y el alto por",
+          "params": [
+            {
+              "id": "k",
+              "label": "the number",
+              "labelEs": "el número",
+              "pool": [
+                "2",
+                "3",
+                "4",
+                "1/2",
+                "3/2"
+              ]
+            }
+          ],
+          "set": {
+            "w": [
+              "mul",
+              "w",
+              "k"
+            ],
+            "h": [
+              "mul",
+              "h",
+              "k"
+            ]
+          }
+        }
+      ],
+      "candidates": [
+        {
+          "id": "ratio",
+          "expr": "w / h",
+          "label": "width divided by height",
+          "labelEs": "ancho entre alto"
+        },
+        {
+          "id": "ratio-inv",
+          "expr": "h / w",
+          "label": "height divided by width",
+          "labelEs": "alto entre ancho"
+        },
+        {
+          "id": "corner",
+          "expr": "corner",
+          "label": "the corner angle",
+          "labelEs": "el ángulo de la esquina"
+        },
+        {
+          "id": "area",
+          "expr": "w * h",
+          "label": "the area",
+          "labelEs": "el área"
+        },
+        {
+          "id": "perimeter",
+          "expr": "2 * (w + h)",
+          "label": "the perimeter",
+          "labelEs": "el perímetro"
+        },
+        {
+          "id": "diff",
+          "expr": "h - w",
+          "label": "height minus width",
+          "labelEs": "alto menos ancho"
+        }
+      ],
+      "why": {
+        "vocab": [
+          "ratio",
+          "area",
+          "scale",
+          "proportional",
+          "angle",
+          "razón",
+          "área",
+          "escala",
+          "proporcional",
+          "ángulo"
+        ],
+        "limit": true
+      }
+    },
+    {
+      "id": "reflect-axes",
+      "unit": 7,
+      "lessons": [
+        "7-9"
+      ],
+      "standard": "6.NOS.7",
+      "title": "Reflecting a point",
+      "titleEs": "Reflejar un punto",
+      "story": "A point is reflected across the y-axis or across the x-axis. What never changes, even after many reflections?",
+      "storyEs": "Un punto se refleja sobre el eje y o sobre el eje x. ¿Qué nunca cambia, incluso después de muchos reflejos?",
+      "vars": [
+        {
+          "id": "x",
+          "label": "x-coordinate",
+          "labelEs": "coordenada x"
+        },
+        {
+          "id": "y",
+          "label": "y-coordinate",
+          "labelEs": "coordenada y"
+        }
+      ],
+      "start": {
+        "x": [
+          "-5",
+          "-3",
+          "-2",
+          "1",
+          "2",
+          "4",
+          "6"
+        ],
+        "y": [
+          "-4",
+          "-3",
+          "-1",
+          "2",
+          "3",
+          "5",
+          "7"
+        ]
+      },
+      "stateText": "point ({x}, {y})",
+      "stateTextEs": "punto ({x}, {y})",
+      "moves": [
+        {
+          "id": "across-y",
+          "label": "Reflect across the y-axis",
+          "labelEs": "Reflejar sobre el eje y",
+          "set": {
+            "x": [
+              "sub",
+              0,
+              "x"
+            ]
+          }
+        },
+        {
+          "id": "across-x",
+          "label": "Reflect across the x-axis",
+          "labelEs": "Reflejar sobre el eje x",
+          "set": {
+            "y": [
+              "sub",
+              0,
+              "y"
+            ]
+          }
+        }
+      ],
+      "candidates": [
+        {
+          "id": "absx",
+          "expr": "abs(x)",
+          "label": "the distance from the y-axis, |x|",
+          "labelEs": "la distancia al eje y, |x|"
+        },
+        {
+          "id": "absy",
+          "expr": "abs(y)",
+          "label": "the distance from the x-axis, |y|",
+          "labelEs": "la distancia al eje x, |y|"
+        },
+        {
+          "id": "dist",
+          "expr": "x*x + y*y",
+          "label": "x times x plus y times y",
+          "labelEs": "x por x más y por y"
+        },
+        {
+          "id": "x",
+          "expr": "x",
+          "label": "the x-coordinate",
+          "labelEs": "la coordenada x"
+        },
+        {
+          "id": "y",
+          "expr": "y",
+          "label": "the y-coordinate",
+          "labelEs": "la coordenada y"
+        },
+        {
+          "id": "xy",
+          "expr": "x * y",
+          "label": "x times y",
+          "labelEs": "x por y"
+        }
+      ],
+      "why": {
+        "vocab": [
+          "reflection",
+          "distance",
+          "absolute value",
+          "opposite",
+          "axis",
+          "reflejo",
+          "distancia",
+          "valor absoluto",
+          "opuesto",
+          "eje"
+        ],
+        "limit": true
+      }
+    },
+    {
+      "id": "slide-distance",
+      "unit": 7,
+      "lessons": [
+        "7-6"
+      ],
+      "standard": "6.NOS.9",
+      "title": "Sliding two points on a number line",
+      "titleEs": "Deslizar dos puntos en una recta numérica",
+      "story": "Two points sit on a number line. You may slide BOTH right or left by the same amount. What never changes?",
+      "storyEs": "Dos puntos están en una recta numérica. Puedes deslizar AMBOS a la derecha o a la izquierda la misma cantidad. ¿Qué nunca cambia?",
+      "vars": [
+        {
+          "id": "p",
+          "label": "point P",
+          "labelEs": "punto P"
+        },
+        {
+          "id": "q",
+          "label": "point Q",
+          "labelEs": "punto Q"
+        }
+      ],
+      "start": {
+        "p": [
+          "-6",
+          "-4",
+          "-2",
+          "1",
+          "3"
+        ],
+        "q": [
+          "-1",
+          "2",
+          "4",
+          "5",
+          "7"
+        ]
+      },
+      "stateText": "P is at {p}, Q is at {q}",
+      "stateTextEs": "P está en {p}, Q está en {q}",
+      "moves": [
+        {
+          "id": "right",
+          "label": "Slide both right by",
+          "labelEs": "Deslizar ambos a la derecha",
+          "params": [
+            {
+              "id": "c",
+              "label": "the amount",
+              "labelEs": "la cantidad",
+              "pool": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "0.5"
+              ]
+            }
+          ],
+          "set": {
+            "p": [
+              "add",
+              "p",
+              "c"
+            ],
+            "q": [
+              "add",
+              "q",
+              "c"
+            ]
+          }
+        },
+        {
+          "id": "left",
+          "label": "Slide both left by",
+          "labelEs": "Deslizar ambos a la izquierda",
+          "params": [
+            {
+              "id": "c",
+              "label": "the amount",
+              "labelEs": "la cantidad",
+              "pool": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "0.5"
+              ]
+            }
+          ],
+          "set": {
+            "p": [
+              "sub",
+              "p",
+              "c"
+            ],
+            "q": [
+              "sub",
+              "q",
+              "c"
+            ]
+          }
+        }
+      ],
+      "candidates": [
+        {
+          "id": "gap",
+          "expr": "q - p",
+          "label": "how far Q is to the right of P",
+          "labelEs": "cuánto está Q a la derecha de P"
+        },
+        {
+          "id": "dist",
+          "expr": "abs(q - p)",
+          "label": "the distance between P and Q",
+          "labelEs": "la distancia entre P y Q"
+        },
+        {
+          "id": "sum",
+          "expr": "p + q",
+          "label": "P plus Q",
+          "labelEs": "P más Q"
+        },
+        {
+          "id": "p",
+          "expr": "p",
+          "label": "where P is",
+          "labelEs": "dónde está P"
+        },
+        {
+          "id": "mid",
+          "expr": "(p + q) / 2",
+          "label": "the middle point between them",
+          "labelEs": "el punto medio entre ellos"
+        }
+      ],
+      "why": {
+        "vocab": [
+          "distance",
+          "absolute value",
+          "slide",
+          "number line",
+          "same",
+          "distancia",
+          "valor absoluto",
+          "deslizar",
+          "recta numérica",
+          "mismo"
+        ],
+        "limit": true
+      }
+    }
+  ]
+}

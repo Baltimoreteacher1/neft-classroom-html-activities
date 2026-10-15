@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
-const FIRST = ["rational.js", "state-store.js", "reasoning.js"];
+const FIRST = ["rational.js", "state-store.js", "reasoning.js", "ui.js", "lab-registry.js"];
 
 /** @param {{only?: string[], extra?: Record<string, unknown>}} [opts] */
 export function loadEwl({ only, extra = {} } = {}) {

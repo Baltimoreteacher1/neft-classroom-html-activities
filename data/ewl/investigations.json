@@ -1,0 +1,4559 @@
+{
+ "version": 1,
+ "note": "Math Reality Lab investigations. Computations are declarative (EWL.LabExpr); validated by EWLLabValidate.",
+ "investigations": [
+  {
+   "id": "discount-stack",
+   "title": "Two Discounts in a Row",
+   "titleEs": "Dos descuentos seguidos",
+   "blurb": "Does 20% off and then 10% off equal 30% off?",
+   "blurbEs": "¿20% de descuento y luego 10% de descuento es igual a 30% de descuento?",
+   "unit": 4,
+   "lessons": [
+    "4-4"
+   ],
+   "standard": "6.AT.4",
+   "vocab": [
+    "discount",
+    "percent",
+    "original price"
+   ],
+   "vocabEs": [
+    "descuento",
+    "porcentaje",
+    "precio original"
+   ],
+   "relates": {
+    "labs": [
+     "sale-signals"
+    ],
+    "misconception": "percent-used-as-whole-number",
+    "reasonKind": "percent-stack"
+   },
+   "claim": {
+    "text": "Two discounts in a row add up. 20% off and then 10% off is the same as 30% off.",
+    "textEs": "Dos descuentos seguidos se suman. 20% de descuento y luego 10% de descuento es igual a 30% de descuento.",
+    "test": [
+     "eq",
+     "savedPct",
+     "naive"
+    ]
+   },
+   "params": [
+    {
+     "id": "price",
+     "kind": "number",
+     "label": "Original price",
+     "labelEs": "Precio original",
+     "unit": "$",
+     "min": 10,
+     "max": 500,
+     "step": 10,
+     "value": 100
+    },
+    {
+     "id": "p1",
+     "kind": "number",
+     "label": "First discount",
+     "labelEs": "Primer descuento",
+     "unit": "%",
+     "min": 0,
+     "max": 90,
+     "step": 5,
+     "value": 20
+    },
+    {
+     "id": "p2",
+     "kind": "number",
+     "label": "Second discount",
+     "labelEs": "Segundo descuento",
+     "unit": "%",
+     "min": 0,
+     "max": 90,
+     "step": 5,
+     "value": 10
+    }
+   ],
+   "steps": [
+    {
+     "id": "after1",
+     "label": "Price after the first discount",
+     "labelEs": "Precio después del primer descuento",
+     "expr": [
+      "mul",
+      "price",
+      [
+       "sub",
+       1,
+       "p1"
+      ]
+     ],
+     "fmt": "money"
+    },
+    {
+     "id": "after2",
+     "label": "Price you pay",
+     "labelEs": "Precio que pagas",
+     "expr": [
+      "mul",
+      "after1",
+      [
+       "sub",
+       1,
+       "p2"
+      ]
+     ],
+     "fmt": "money"
+    },
+    {
+     "id": "savedPct",
+     "label": "Total discount",
+     "labelEs": "Descuento total",
+     "expr": [
+      "sub",
+      1,
+      [
+       "div",
+       "after2",
+       "price"
+      ]
+     ],
+     "fmt": "pct"
+    },
+    {
+     "id": "naive",
+     "label": "Adding the two percents",
+     "labelEs": "Sumar los dos porcentajes",
+     "expr": [
+      "add",
+      "p1",
+      "p2"
+     ],
+     "fmt": "pct"
+    }
+   ],
+   "table": [
+    "price",
+    "p1",
+    "p2",
+    "after2",
+    "savedPct",
+    "naive"
+   ],
+   "results": [
+    "after2",
+    "savedPct"
+   ],
+   "model": {
+    "kind": "bars",
+    "max": "price",
+    "bars": [
+     {
+      "label": "Original price",
+      "labelEs": "Precio original",
+      "value": "price",
+      "fmt": "money"
+     },
+     {
+      "label": "After the first discount",
+      "labelEs": "Después del primer descuento",
+      "value": "after1",
+      "fmt": "money"
+     },
+     {
+      "label": "You pay",
+      "labelEs": "Pagas",
+      "value": "after2",
+      "fmt": "money"
+     }
+    ]
+   },
+   "prediction": {
+    "prompt": "A $100 jacket is 20% off. Then a coupon takes 10% off the new price. Compared with 30% off, the total discount is...",
+    "promptEs": "Una chaqueta de $100 tiene 20% de descuento. Luego un cupón quita 10% del nuevo precio. Comparado con 30% de descuento, el descuento total es...",
+    "setup": {
+     "price": 100,
+     "p1": 20,
+     "p2": 10
+    },
+    "options": [
+     {
+      "id": "more",
+      "label": "more than 30% off",
+      "labelEs": "más de 30% de descuento",
+      "test": [
+       "gt",
+       "savedPct",
+       "naive"
+      ]
+     },
+     {
+      "id": "same",
+      "label": "exactly 30% off",
+      "labelEs": "exactamente 30% de descuento",
+      "test": [
+       "eq",
+       "savedPct",
+       "naive"
+      ]
+     },
+     {
+      "id": "less",
+      "label": "less than 30% off",
+      "labelEs": "menos de 30% de descuento",
+      "test": [
+       "lt",
+       "savedPct",
+       "naive"
+      ]
+     }
+    ]
+   },
+   "sweep": {
+    "axes": {
+     "p1": [
+      0,
+      10,
+      20,
+      30,
+      50
+     ],
+     "p2": [
+      0,
+      10,
+      25,
+      40
+     ]
+    }
+   },
+   "challenge": {
+    "mode": "find",
+    "free": [
+     "p1",
+     "p2"
+    ],
+    "fixed": {
+     "price": 100
+    },
+    "prompt": "Find two discounts where the claim fails. Set the numbers, then press Check.",
+    "promptEs": "Encuentra dos descuentos donde la afirmación falle. Elige los números y presiona Comprobar.",
+    "hint": "Try two discounts that are both more than 0%.",
+    "hintEs": "Prueba dos descuentos que sean los dos mayores que 0%."
+   },
+   "revision": {
+    "frame": "Two discounts in a row are worth ___ because ___.",
+    "frameEs": "Dos descuentos seguidos valen ___ porque ___."
+   },
+   "transfer": {
+    "task": "percentStack",
+    "answerKind": "number",
+    "answerFmt": "pct",
+    "args": [
+     {
+      "pick": [
+       "10%",
+       "20%",
+       "25%",
+       "30%",
+       "40%"
+      ]
+     },
+     {
+      "pick": [
+       "10%",
+       "15%",
+       "20%",
+       "25%",
+       "50%"
+      ]
+     }
+    ],
+    "prompt": "A store takes {0} off a game. Then it takes {1} off the new price. What single discount, in percent off, is the same as both?",
+    "promptEs": "Una tienda quita {0} a un juego. Luego quita {1} del nuevo precio. ¿Qué descuento único, en porcentaje, equivale a los dos?"
+   },
+   "discourse": "discount-stack",
+   "truth": {
+    "text": "The second discount comes off a smaller price, so two discounts are worth less than their sum. 20% off then 10% off is 28% off, not 30%.",
+    "textEs": "El segundo descuento se quita de un precio más pequeño, así que dos descuentos valen menos que su suma. 20% de descuento y luego 10% es 28% de descuento, no 30%."
+   },
+   "print": {
+    "text": "Pick a price and two discounts. Work out the price after each discount. Compare the total discount with the two percents added.",
+    "textEs": "Elige un precio y dos descuentos. Calcula el precio después de cada descuento. Compara el descuento total con la suma de los dos porcentajes."
+   }
+  },
+  {
+   "id": "equivalent-ratios",
+   "title": "Adding to Both Parts",
+   "titleEs": "Sumar a las dos partes",
+   "blurb": "If you add the same number to both parts of a ratio, is it still the same ratio?",
+   "blurbEs": "Si sumas el mismo número a las dos partes de una razón, ¿sigue siendo la misma razón?",
+   "unit": 3,
+   "lessons": [
+    "3-3",
+    "3-9"
+   ],
+   "standard": "6.AT.3a",
+   "vocab": [
+    "ratio",
+    "equivalent ratios",
+    "multiply"
+   ],
+   "vocabEs": [
+    "razón",
+    "razones equivalentes",
+    "multiplicar"
+   ],
+   "relates": {
+    "labs": [
+     "ratio-railway",
+     "mixture-matchup"
+    ],
+    "misconception": "ratio-scaled-additively",
+    "reasonKind": "ratio-equiv"
+   },
+   "claim": {
+    "text": "If you add the same number to both parts of a ratio, you get an equivalent ratio.",
+    "textEs": "Si sumas el mismo número a las dos partes de una razón, obtienes una razón equivalente.",
+    "test": [
+     "eq",
+     "ratio1",
+     "ratio0"
+    ]
+   },
+   "params": [
+    {
+     "id": "a",
+     "kind": "number",
+     "label": "First part",
+     "labelEs": "Primera parte",
+     "unit": "",
+     "min": 1,
+     "max": 20,
+     "step": 1,
+     "value": 2
+    },
+    {
+     "id": "b",
+     "kind": "number",
+     "label": "Second part",
+     "labelEs": "Segunda parte",
+     "unit": "",
+     "min": 1,
+     "max": 20,
+     "step": 1,
+     "value": 3
+    },
+    {
+     "id": "k",
+     "kind": "number",
+     "label": "The number",
+     "labelEs": "El número",
+     "unit": "",
+     "min": 1,
+     "max": 12,
+     "step": 1,
+     "value": 1
+    },
+    {
+     "id": "how",
+     "kind": "choice",
+     "label": "What I do to both parts",
+     "labelEs": "Lo que hago a las dos partes",
+     "options": [
+      {
+       "id": "add",
+       "label": "Add the number",
+       "labelEs": "Sumar el número",
+       "set": {
+        "na": [
+         "add",
+         "a",
+         "k"
+        ],
+        "nb": [
+         "add",
+         "b",
+         "k"
+        ]
+       }
+      },
+      {
+       "id": "mult",
+       "label": "Multiply by the number",
+       "labelEs": "Multiplicar por el número",
+       "set": {
+        "na": [
+         "mul",
+         "a",
+         "k"
+        ],
+        "nb": [
+         "mul",
+         "b",
+         "k"
+        ]
+       }
+      }
+     ],
+     "value": "add"
+    }
+   ],
+   "steps": [
+    {
+     "id": "ratio0",
+     "label": "Original ratio as a fraction",
+     "labelEs": "Razón original como fracción",
+     "expr": [
+      "div",
+      "a",
+      "b"
+     ],
+     "fmt": "frac"
+    },
+    {
+     "id": "ratio1",
+     "label": "New ratio as a fraction",
+     "labelEs": "Nueva razón como fracción",
+     "expr": [
+      "div",
+      "na",
+      "nb"
+     ],
+     "fmt": "frac"
+    },
+    {
+     "id": "same",
+     "label": "Same ratio?",
+     "labelEs": "¿Misma razón?",
+     "expr": [
+      "eq",
+      "ratio1",
+      "ratio0"
+     ],
+     "fmt": "yn"
+    }
+   ],
+   "table": [
+    "how",
+    "a",
+    "b",
+    "k",
+    "na",
+    "nb",
+    "same"
+   ],
+   "extra": [
+    {
+     "id": "na",
+     "label": "New first part",
+     "labelEs": "Nueva primera parte",
+     "fmt": "num"
+    },
+    {
+     "id": "nb",
+     "label": "New second part",
+     "labelEs": "Nueva segunda parte",
+     "fmt": "num"
+    }
+   ],
+   "results": [
+    "na",
+    "nb"
+   ],
+   "model": {
+    "kind": "ratio-bars",
+    "before": [
+     "a",
+     "b"
+    ],
+    "after": [
+     "na",
+     "nb"
+    ]
+   },
+   "prediction": {
+    "prompt": "A drink mix uses 2 cups of juice and 3 cups of water. You add 1 cup to each part to make 3 : 4. Does it taste the same?",
+    "promptEs": "Una mezcla usa 2 tazas de jugo y 3 tazas de agua. Sumas 1 taza a cada parte para hacer 3 : 4. ¿Sabe igual?",
+    "setup": {
+     "a": 2,
+     "b": 3,
+     "k": 1,
+     "how": "add"
+    },
+    "options": [
+     {
+      "id": "yes",
+      "label": "Yes, it tastes the same",
+      "labelEs": "Sí, sabe igual",
+      "test": [
+       "eq",
+       "ratio1",
+       "ratio0"
+      ]
+     },
+     {
+      "id": "no",
+      "label": "No, it tastes different",
+      "labelEs": "No, sabe diferente",
+      "test": [
+       "ne",
+       "ratio1",
+       "ratio0"
+      ]
+     }
+    ]
+   },
+   "sweep": {
+    "axes": {
+     "how": [
+      "add"
+     ],
+     "a": [
+      2,
+      3,
+      4
+     ],
+     "b": [
+      3,
+      4,
+      6
+     ],
+     "k": [
+      1,
+      2,
+      3,
+      5
+     ]
+    }
+   },
+   "challenge": {
+    "mode": "hold",
+    "ask": "What if both parts are equal, like 4 : 4, and you add 3 to each? Does the claim still hold?",
+    "askEs": "¿Y si las dos partes son iguales, como 4 : 4, y sumas 3 a cada una? ¿La afirmación sigue siendo cierta?",
+    "case": {
+     "a": 4,
+     "b": 4,
+     "k": 3,
+     "how": "add"
+    },
+    "holdsText": "It holds here, because 4 : 4 and 7 : 7 are both 1 : 1. One special case does not make the claim true for every ratio.",
+    "holdsTextEs": "Aquí se cumple, porque 4 : 4 y 7 : 7 son 1 : 1. Un caso especial no hace que la afirmación sea cierta para toda razón.",
+    "failsText": "The claim breaks here.",
+    "failsTextEs": "La afirmación se rompe aquí."
+   },
+   "revision": {
+    "frame": "To get an equivalent ratio, ___ both parts by the same number, because ___.",
+    "frameEs": "Para obtener una razón equivalente, ___ las dos partes por el mismo número, porque ___."
+   },
+   "transfer": {
+    "task": "ratioEquiv",
+    "answerKind": "number",
+    "answerFmt": "num",
+    "args": [
+     {
+      "group": [
+       [
+        2,
+        3,
+        8
+       ],
+       [
+        3,
+        5,
+        12
+       ],
+       [
+        4,
+        7,
+        12
+       ],
+       [
+        2,
+        5,
+        10
+       ],
+       [
+        5,
+        6,
+        20
+       ],
+       [
+        3,
+        4,
+        15
+       ],
+       [
+        4,
+        5,
+        16
+       ]
+      ]
+     }
+    ],
+    "prompt": "A recipe uses {0} cups of juice for every {1} cups of water. Maria uses {2} cups of juice. How many cups of water does she need so the taste stays the same?",
+    "promptEs": "Una receta usa {0} tazas de jugo por cada {1} tazas de agua. María usa {2} tazas de jugo. ¿Cuántas tazas de agua necesita para que el sabor sea igual?"
+   },
+   "discourse": "equivalent-ratios",
+   "truth": {
+    "text": "Equivalent ratios come from multiplying both parts by the same number, like copies of one batch. Adding the same number to both parts changes the mix, except in the special case where both parts are already equal.",
+    "textEs": "Las razones equivalentes se obtienen multiplicando las dos partes por el mismo número, como copias de un mismo lote. Sumar el mismo número a las dos partes cambia la mezcla, salvo en el caso especial en que las dos partes ya son iguales."
+   },
+   "print": {
+    "text": "Choose a ratio. Add the same number to both parts, then multiply both parts by the same number. Compare each new ratio with the first one.",
+    "textEs": "Elige una razón. Suma el mismo número a las dos partes y luego multiplica las dos partes por el mismo número. Compara cada nueva razón con la primera."
+   }
+  },
+  {
+   "id": "unit-price",
+   "title": "The Cheaper Tag",
+   "titleEs": "La etiqueta más barata",
+   "blurb": "Is the pack with the lower price tag always the better buy?",
+   "blurbEs": "¿El paquete con la etiqueta de precio más baja es siempre la mejor compra?",
+   "unit": 3,
+   "lessons": [
+    "3-8"
+   ],
+   "standard": "6.AT.2",
+   "vocab": [
+    "unit rate",
+    "unit price",
+    "per item"
+   ],
+   "vocabEs": [
+    "tasa unitaria",
+    "precio unitario",
+    "por unidad"
+   ],
+   "relates": {
+    "labs": [
+     "best-buy-boulevard"
+    ],
+    "misconception": "rate-not-per-one",
+    "reasonKind": "unit-price"
+   },
+   "claim": {
+    "text": "The pack with the cheaper price tag is always the better buy.",
+    "textEs": "El paquete con la etiqueta de precio más baja es siempre la mejor compra.",
+    "test": [
+     "eq",
+     "tagWinner",
+     "bestBuy"
+    ]
+   },
+   "params": [
+    {
+     "id": "qa",
+     "kind": "number",
+     "label": "Items in pack A",
+     "labelEs": "Artículos en el paquete A",
+     "unit": "",
+     "min": 1,
+     "max": 24,
+     "step": 1,
+     "value": 3
+    },
+    {
+     "id": "pa",
+     "kind": "number",
+     "label": "Price of pack A",
+     "labelEs": "Precio del paquete A",
+     "unit": "$",
+     "min": 0.25,
+     "max": 60,
+     "step": 0.25,
+     "value": 3
+    },
+    {
+     "id": "qb",
+     "kind": "number",
+     "label": "Items in pack B",
+     "labelEs": "Artículos en el paquete B",
+     "unit": "",
+     "min": 1,
+     "max": 24,
+     "step": 1,
+     "value": 8
+    },
+    {
+     "id": "pb",
+     "kind": "number",
+     "label": "Price of pack B",
+     "labelEs": "Precio del paquete B",
+     "unit": "$",
+     "min": 0.25,
+     "max": 60,
+     "step": 0.25,
+     "value": 4
+    }
+   ],
+   "steps": [
+    {
+     "id": "ua",
+     "label": "Pack A: price for 1 item",
+     "labelEs": "Paquete A: precio de 1 artículo",
+     "expr": [
+      "div",
+      "pa",
+      "qa"
+     ],
+     "fmt": "money"
+    },
+    {
+     "id": "ub",
+     "label": "Pack B: price for 1 item",
+     "labelEs": "Paquete B: precio de 1 artículo",
+     "expr": [
+      "div",
+      "pb",
+      "qb"
+     ],
+     "fmt": "money"
+    },
+    {
+     "id": "tagWinner",
+     "label": "Cheaper price tag",
+     "labelEs": "Etiqueta más barata",
+     "expr": [
+      "if",
+      [
+       "lt",
+       "pa",
+       "pb"
+      ],
+      1,
+      [
+       "if",
+       [
+        "gt",
+        "pa",
+        "pb"
+       ],
+       2,
+       0
+      ]
+     ],
+     "fmt": "ab"
+    },
+    {
+     "id": "bestBuy",
+     "label": "Better buy (cheaper per item)",
+     "labelEs": "Mejor compra (más barato por artículo)",
+     "expr": [
+      "if",
+      [
+       "lt",
+       "ua",
+       "ub"
+      ],
+      1,
+      [
+       "if",
+       [
+        "gt",
+        "ua",
+        "ub"
+       ],
+       2,
+       0
+      ]
+     ],
+     "fmt": "ab"
+    }
+   ],
+   "table": [
+    "qa",
+    "pa",
+    "qb",
+    "pb",
+    "ua",
+    "ub",
+    "tagWinner",
+    "bestBuy"
+   ],
+   "results": [
+    "ua",
+    "ub"
+   ],
+   "model": {
+    "kind": "bars",
+    "max": [
+     "max",
+     "ua",
+     "ub"
+    ],
+    "bars": [
+     {
+      "label": "Pack A: price for 1 item",
+      "labelEs": "Paquete A: precio de 1 artículo",
+      "value": "ua",
+      "fmt": "money"
+     },
+     {
+      "label": "Pack B: price for 1 item",
+      "labelEs": "Paquete B: precio de 1 artículo",
+      "value": "ub",
+      "fmt": "money"
+     }
+    ]
+   },
+   "prediction": {
+    "prompt": "Pack A has 3 pens for $3. Pack B has 8 pens for $4. Which pack is the better buy, the one that costs less for each pen?",
+    "promptEs": "El paquete A tiene 3 plumas por $3. El paquete B tiene 8 plumas por $4. ¿Qué paquete es la mejor compra, el que cuesta menos por cada pluma?",
+    "setup": {
+     "qa": 3,
+     "pa": 3,
+     "qb": 8,
+     "pb": 4
+    },
+    "options": [
+     {
+      "id": "a",
+      "label": "Pack A",
+      "labelEs": "Paquete A",
+      "test": [
+       "eq",
+       "bestBuy",
+       1
+      ]
+     },
+     {
+      "id": "b",
+      "label": "Pack B",
+      "labelEs": "Paquete B",
+      "test": [
+       "eq",
+       "bestBuy",
+       2
+      ]
+     },
+     {
+      "id": "same",
+      "label": "They cost the same per pen",
+      "labelEs": "Cuestan lo mismo por pluma",
+      "test": [
+       "eq",
+       "bestBuy",
+       0
+      ]
+     }
+    ]
+   },
+   "sweep": {
+    "axes": {
+     "qa": [
+      3,
+      6
+     ],
+     "pa": [
+      3,
+      5
+     ],
+     "qb": [
+      8,
+      10
+     ],
+     "pb": [
+      4,
+      6
+     ]
+    }
+   },
+   "challenge": {
+    "mode": "find",
+    "free": [
+     "qa",
+     "pa",
+     "qb",
+     "pb"
+    ],
+    "fixed": {},
+    "prompt": "Find two packs where the cheaper price tag is NOT the better buy. Set the numbers, then press Check.",
+    "promptEs": "Encuentra dos paquetes donde la etiqueta más barata NO sea la mejor compra. Elige los números y presiona Comprobar.",
+    "hint": "Make the cheaper pack hold very few items and the other pack hold many.",
+    "hintEs": "Haz que el paquete más barato tenga muy pocos artículos y el otro tenga muchos."
+   },
+   "revision": {
+    "frame": "The better buy is the pack with the lower ___, because ___.",
+    "frameEs": "La mejor compra es el paquete con el ___ más bajo, porque ___."
+   },
+   "transfer": {
+    "task": "unitPrice",
+    "answerKind": "choice",
+    "answerFmt": "num",
+    "args": [
+     {
+      "group": [
+       [
+        3,
+        "$3",
+        8,
+        "$4"
+       ],
+       [
+        4,
+        "$6",
+        10,
+        "$9"
+       ],
+       [
+        5,
+        "$4",
+        12,
+        "$6"
+       ],
+       [
+        6,
+        "$9",
+        15,
+        "$12"
+       ],
+       [
+        2,
+        "$3",
+        5,
+        "$4"
+       ]
+      ]
+     }
+    ],
+    "prompt": "Pack A has {0} items for {1}. Pack B has {2} items for {3}. Which pack is the better buy?",
+    "promptEs": "El paquete A tiene {0} artículos por {1}. El paquete B tiene {2} artículos por {3}. ¿Qué paquete es la mejor compra?",
+    "choices": [
+     {
+      "value": "1",
+      "label": "Pack A",
+      "labelEs": "Paquete A"
+     },
+     {
+      "value": "2",
+      "label": "Pack B",
+      "labelEs": "Paquete B"
+     }
+    ]
+   },
+   "discourse": "unit-price",
+   "truth": {
+    "text": "The tag shows the price of the whole pack. To compare packs of different sizes, find the price for one item. The cheaper tag is only the better buy when it is also cheaper per item.",
+    "textEs": "La etiqueta muestra el precio de todo el paquete. Para comparar paquetes de distinto tamaño, halla el precio de un artículo. La etiqueta más barata solo es la mejor compra si también es más barata por artículo."
+   },
+   "print": {
+    "text": "Pick two packs. Find the price for one item in each pack. Which tag is cheaper? Which pack is cheaper per item?",
+    "textEs": "Elige dos paquetes. Halla el precio de un artículo en cada paquete. ¿Qué etiqueta es más barata? ¿Qué paquete es más barato por artículo?"
+   }
+  },
+  {
+   "id": "percent-trap",
+   "title": "Up 50%, Down 50%",
+   "titleEs": "Sube 50%, baja 50%",
+   "blurb": "A price goes up 50% and then down 50%. Is it back where it started?",
+   "blurbEs": "Un precio sube 50% y luego baja 50%. ¿Vuelve al punto de partida?",
+   "unit": 4,
+   "lessons": [
+    "4-5"
+   ],
+   "standard": "6.AT.4",
+   "vocab": [
+    "percent",
+    "increase",
+    "decrease",
+    "whole"
+   ],
+   "vocabEs": [
+    "porcentaje",
+    "aumento",
+    "disminución",
+    "entero"
+   ],
+   "relates": {
+    "labs": [
+     "missing-whole",
+     "sale-signals"
+    ],
+    "misconception": "percent-used-as-whole-number",
+    "reasonKind": "percent-updown"
+   },
+   "claim": {
+    "text": "If a price goes up by a percent and then down by the same percent, it ends where it started.",
+    "textEs": "Si un precio sube un porcentaje y luego baja el mismo porcentaje, termina donde empezó.",
+    "test": [
+     "eq",
+     "down",
+     "start"
+    ]
+   },
+   "params": [
+    {
+     "id": "start",
+     "kind": "number",
+     "label": "Starting price",
+     "labelEs": "Precio inicial",
+     "unit": "$",
+     "min": 10,
+     "max": 500,
+     "step": 10,
+     "value": 80
+    },
+    {
+     "id": "p",
+     "kind": "number",
+     "label": "Percent up, then the same percent down",
+     "labelEs": "Porcentaje que sube y luego baja",
+     "unit": "%",
+     "min": 0,
+     "max": 100,
+     "step": 5,
+     "value": 50
+    }
+   ],
+   "steps": [
+    {
+     "id": "up",
+     "label": "Price after going up",
+     "labelEs": "Precio después de subir",
+     "expr": [
+      "mul",
+      "start",
+      [
+       "add",
+       1,
+       "p"
+      ]
+     ],
+     "fmt": "money"
+    },
+    {
+     "id": "down",
+     "label": "Price after going back down",
+     "labelEs": "Precio después de volver a bajar",
+     "expr": [
+      "mul",
+      "up",
+      [
+       "sub",
+       1,
+       "p"
+      ]
+     ],
+     "fmt": "money"
+    },
+    {
+     "id": "change",
+     "label": "Change from the start",
+     "labelEs": "Cambio desde el inicio",
+     "expr": [
+      "sub",
+      "down",
+      "start"
+     ],
+     "fmt": "money"
+    },
+    {
+     "id": "finalPct",
+     "label": "Final price as a percent of the start",
+     "labelEs": "Precio final como porcentaje del inicial",
+     "expr": [
+      "div",
+      "down",
+      "start"
+     ],
+     "fmt": "pct"
+    }
+   ],
+   "table": [
+    "start",
+    "p",
+    "up",
+    "down",
+    "change",
+    "finalPct"
+   ],
+   "results": [
+    "up",
+    "down",
+    "finalPct"
+   ],
+   "model": {
+    "kind": "bars",
+    "max": [
+     "max",
+     "start",
+     "up"
+    ],
+    "bars": [
+     {
+      "label": "Starting price",
+      "labelEs": "Precio inicial",
+      "value": "start",
+      "fmt": "money"
+     },
+     {
+      "label": "After going up",
+      "labelEs": "Después de subir",
+      "value": "up",
+      "fmt": "money"
+     },
+     {
+      "label": "After going down",
+      "labelEs": "Después de bajar",
+      "value": "down",
+      "fmt": "money"
+     }
+    ]
+   },
+   "prediction": {
+    "prompt": "An $80 jacket goes up 50%. Then the new price goes down 50%. The final price is...",
+    "promptEs": "Una chaqueta de $80 sube 50%. Luego el nuevo precio baja 50%. El precio final es...",
+    "setup": {
+     "start": 80,
+     "p": 50
+    },
+    "options": [
+     {
+      "id": "more",
+      "label": "more than $80",
+      "labelEs": "más de $80",
+      "test": [
+       "gt",
+       "down",
+       "start"
+      ]
+     },
+     {
+      "id": "same",
+      "label": "exactly $80",
+      "labelEs": "exactamente $80",
+      "test": [
+       "eq",
+       "down",
+       "start"
+      ]
+     },
+     {
+      "id": "less",
+      "label": "less than $80",
+      "labelEs": "menos de $80",
+      "test": [
+       "lt",
+       "down",
+       "start"
+      ]
+     }
+    ]
+   },
+   "sweep": {
+    "axes": {
+     "p": [
+      0,
+      10,
+      20,
+      25,
+      50,
+      75
+     ]
+    }
+   },
+   "challenge": {
+    "mode": "hold",
+    "ask": "What about a small change, 10% up and then 10% down? Does the price end where it started?",
+    "askEs": "¿Y con un cambio pequeño, 10% hacia arriba y luego 10% hacia abajo? ¿El precio termina donde empezó?",
+    "case": {
+     "start": 80,
+     "p": 10
+    },
+    "holdsText": "It ends where it started here.",
+    "holdsTextEs": "Aquí termina donde empezó.",
+    "failsText": "It does not end where it started, even for a small change.",
+    "failsTextEs": "No termina donde empezó, ni siquiera con un cambio pequeño."
+   },
+   "revision": {
+    "frame": "Going up by a percent and down by the same percent ends ___ the start because ___.",
+    "frameEs": "Subir un porcentaje y bajar el mismo porcentaje termina ___ del inicio porque ___."
+   },
+   "transfer": {
+    "task": "percentUpDown",
+    "answerKind": "number",
+    "answerFmt": "pct",
+    "args": [
+     {
+      "pick": [
+       "10%",
+       "20%",
+       "25%",
+       "40%",
+       "50%"
+      ]
+     }
+    ],
+    "prompt": "A price goes up {0}. Then the new price goes down {0}. The final price is what percent of the starting price?",
+    "promptEs": "Un precio sube {0}. Luego el nuevo precio baja {0}. El precio final es qué porcentaje del precio inicial?"
+   },
+   "discourse": "percent-trap",
+   "truth": {
+    "text": "The percent going down is taken from a bigger amount than the percent going up, so you lose more than you gained. Up 50% then down 50% leaves you at 75% of the start.",
+    "textEs": "El porcentaje que baja se toma de una cantidad mayor que el que subió, así que pierdes más de lo que ganaste. Subir 50% y bajar 50% te deja en 75% del inicio."
+   },
+   "print": {
+    "text": "Pick a starting price and a percent. Raise the price by that percent, then lower the new price by the same percent. Compare the final price with the start.",
+    "textEs": "Elige un precio inicial y un porcentaje. Sube el precio ese porcentaje y luego baja el nuevo precio el mismo porcentaje. Compara el precio final con el inicial."
+   }
+  },
+  {
+   "id": "fraction-bottom",
+   "title": "The Bigger Bottom Number",
+   "titleEs": "El número de abajo más grande",
+   "blurb": "Is a fraction with a bigger bottom number a bigger fraction?",
+   "blurbEs": "¿Una fracción con el denominador más grande es una fracción más grande?",
+   "unit": 4,
+   "lessons": [
+    "4-2"
+   ],
+   "standard": "6.AT.4",
+   "vocab": [
+    "fraction",
+    "numerator",
+    "denominator"
+   ],
+   "vocabEs": [
+    "fracción",
+    "numerador",
+    "denominador"
+   ],
+   "relates": {
+    "labs": [
+     "hundred-square-studio"
+    ],
+    "misconception": "decimal-place-value",
+    "reasonKind": "frac-compare"
+   },
+   "claim": {
+    "text": "A fraction with a bigger bottom number is a bigger fraction. For example, 1/8 is bigger than 1/2 because 8 is bigger than 2.",
+    "textEs": "Una fracción con el denominador más grande es una fracción más grande. Por ejemplo, 1/8 es mayor que 1/2 porque 8 es mayor que 2.",
+    "test": [
+     "and",
+     [
+      "implies",
+      [
+       "gt",
+       "d1",
+       "d2"
+      ],
+      [
+       "gt",
+       "f1",
+       "f2"
+      ]
+     ],
+     [
+      "implies",
+      [
+       "lt",
+       "d1",
+       "d2"
+      ],
+      [
+       "lt",
+       "f1",
+       "f2"
+      ]
+     ]
+    ]
+   },
+   "params": [
+    {
+     "id": "n1",
+     "kind": "number",
+     "label": "Top number of fraction A",
+     "labelEs": "Numerador de la fracción A",
+     "unit": "",
+     "min": 1,
+     "max": 9,
+     "step": 1,
+     "value": 1
+    },
+    {
+     "id": "d1",
+     "kind": "number",
+     "label": "Bottom number of fraction A",
+     "labelEs": "Denominador de la fracción A",
+     "unit": "",
+     "min": 2,
+     "max": 12,
+     "step": 1,
+     "value": 8
+    },
+    {
+     "id": "n2",
+     "kind": "number",
+     "label": "Top number of fraction B",
+     "labelEs": "Numerador de la fracción B",
+     "unit": "",
+     "min": 1,
+     "max": 9,
+     "step": 1,
+     "value": 1
+    },
+    {
+     "id": "d2",
+     "kind": "number",
+     "label": "Bottom number of fraction B",
+     "labelEs": "Denominador de la fracción B",
+     "unit": "",
+     "min": 2,
+     "max": 12,
+     "step": 1,
+     "value": 2
+    }
+   ],
+   "steps": [
+    {
+     "id": "f1",
+     "label": "Fraction A as a decimal",
+     "labelEs": "Fracción A como decimal",
+     "expr": [
+      "div",
+      "n1",
+      "d1"
+     ],
+     "fmt": "num"
+    },
+    {
+     "id": "f2",
+     "label": "Fraction B as a decimal",
+     "labelEs": "Fracción B como decimal",
+     "expr": [
+      "div",
+      "n2",
+      "d2"
+     ],
+     "fmt": "num"
+    },
+    {
+     "id": "bigger",
+     "label": "Bigger fraction",
+     "labelEs": "Fracción mayor",
+     "expr": [
+      "if",
+      [
+       "gt",
+       "f1",
+       "f2"
+      ],
+      1,
+      [
+       "if",
+       [
+        "lt",
+        "f1",
+        "f2"
+       ],
+       2,
+       0
+      ]
+     ],
+     "fmt": "ab"
+    },
+    {
+     "id": "biggerBottom",
+     "label": "Bigger bottom number",
+     "labelEs": "Denominador mayor",
+     "expr": [
+      "if",
+      [
+       "gt",
+       "d1",
+       "d2"
+      ],
+      1,
+      [
+       "if",
+       [
+        "lt",
+        "d1",
+        "d2"
+       ],
+       2,
+       0
+      ]
+     ],
+     "fmt": "ab"
+    }
+   ],
+   "table": [
+    "n1",
+    "d1",
+    "n2",
+    "d2",
+    "f1",
+    "f2",
+    "bigger",
+    "biggerBottom"
+   ],
+   "results": [
+    "f1",
+    "f2"
+   ],
+   "model": {
+    "kind": "fraction-bars",
+    "a": [
+     "n1",
+     "d1"
+    ],
+    "b": [
+     "n2",
+     "d2"
+    ]
+   },
+   "prediction": {
+    "prompt": "Fraction A is 1/8. Fraction B is 1/2. Which fraction is bigger?",
+    "promptEs": "La fracción A es 1/8. La fracción B es 1/2. ¿Cuál fracción es mayor?",
+    "setup": {
+     "n1": 1,
+     "d1": 8,
+     "n2": 1,
+     "d2": 2
+    },
+    "options": [
+     {
+      "id": "a",
+      "label": "1/8 is bigger",
+      "labelEs": "1/8 es mayor",
+      "test": [
+       "gt",
+       "f1",
+       "f2"
+      ]
+     },
+     {
+      "id": "b",
+      "label": "1/2 is bigger",
+      "labelEs": "1/2 es mayor",
+      "test": [
+       "lt",
+       "f1",
+       "f2"
+      ]
+     },
+     {
+      "id": "same",
+      "label": "They are equal",
+      "labelEs": "Son iguales",
+      "test": [
+       "eq",
+       "f1",
+       "f2"
+      ]
+     }
+    ]
+   },
+   "sweep": {
+    "axes": {
+     "n1": [
+      1,
+      3
+     ],
+     "d1": [
+      2,
+      4,
+      8
+     ],
+     "n2": [
+      1,
+      3
+     ],
+     "d2": [
+      2,
+      3,
+      6
+     ]
+    }
+   },
+   "challenge": {
+    "mode": "find",
+    "free": [
+     "n1",
+     "d1",
+     "n2",
+     "d2"
+    ],
+    "fixed": {},
+    "prompt": "Find two fractions where the claim fails. Set the numbers, then press Check.",
+    "promptEs": "Encuentra dos fracciones donde la afirmación falle. Elige los números y presiona Comprobar.",
+    "hint": "Give both fractions the same top number, such as 1, and make one bottom number much bigger.",
+    "hintEs": "Dale a las dos fracciones el mismo numerador, como 1, y haz un denominador mucho mayor."
+   },
+   "revision": {
+    "frame": "When the top numbers are the same, the fraction with the bigger bottom number is ___ because ___.",
+    "frameEs": "Cuando los numeradores son iguales, la fracción con el denominador más grande es ___ porque ___."
+   },
+   "transfer": {
+    "task": "fracCompare",
+    "answerKind": "choice",
+    "answerFmt": "frac",
+    "args": [
+     {
+      "group": [
+       [
+        "1/6",
+        "1/3"
+       ],
+       [
+        "1/10",
+        "1/5"
+       ],
+       [
+        "2/9",
+        "1/2"
+       ],
+       [
+        "3/8",
+        "3/4"
+       ],
+       [
+        "1/12",
+        "1/4"
+       ],
+       [
+        "2/7",
+        "2/3"
+       ],
+       [
+        "1/3",
+        "1/6"
+       ],
+       [
+        "3/4",
+        "3/8"
+       ]
+      ]
+     }
+    ],
+    "prompt": "Which fraction is greater, {0} or {1}?",
+    "promptEs": "¿Qué fracción es mayor, {0} o {1}?",
+    "choices": [
+     {
+      "value": "{0}",
+      "label": "{0}",
+      "labelEs": "{0}"
+     },
+     {
+      "value": "{1}",
+      "label": "{1}",
+      "labelEs": "{1}"
+     }
+    ]
+   },
+   "discourse": "fraction-bottom",
+   "truth": {
+    "text": "The bottom number tells how many equal pieces the whole is cut into. More pieces means each piece is smaller. With the same top number, the fraction with the bigger bottom number is the smaller fraction.",
+    "textEs": "El denominador dice en cuántas partes iguales se corta el entero. Más partes significa que cada parte es más pequeña. Con el mismo numerador, la fracción con el denominador más grande es la fracción más pequeña."
+   },
+   "print": {
+    "text": "Pick two fractions and shade them on two bars of the same length. Which shaded part is longer? Compare with the bottom numbers.",
+    "textEs": "Elige dos fracciones y sombréalas en dos barras de la misma longitud. ¿Qué parte sombreada es más larga? Compara con los denominadores."
+   }
+  },
+  {
+   "id": "division-smaller",
+   "title": "Does Dividing Make It Smaller?",
+   "titleEs": "¿Dividir hace el número más pequeño?",
+   "blurb": "When you divide a number, is the answer always smaller?",
+   "blurbEs": "Cuando divides un número, ¿la respuesta siempre es más pequeña?",
+   "unit": 6,
+   "lessons": [
+    "6-9",
+    "6-1"
+   ],
+   "standard": "6.NOS.1",
+   "vocab": [
+    "divide",
+    "quotient",
+    "fraction"
+   ],
+   "vocabEs": [
+    "dividir",
+    "cociente",
+    "fracción"
+   ],
+   "relates": {
+    "labs": [
+     "ribbon-rescue",
+     "fraction-food-truck"
+    ],
+    "misconception": "fraction-no-reciprocal",
+    "reasonKind": "frac-divide"
+   },
+   "claim": {
+    "text": "Dividing always makes a number smaller. The answer is always less than the number you started with.",
+    "textEs": "Dividir siempre hace más pequeño un número. La respuesta siempre es menor que el número con el que empezaste.",
+    "test": [
+     "lt",
+     "q",
+     "a"
+    ]
+   },
+   "params": [
+    {
+     "id": "a",
+     "kind": "number",
+     "label": "Number to divide",
+     "labelEs": "Número que se divide",
+     "unit": "",
+     "min": 1,
+     "max": 12,
+     "step": 1,
+     "value": 3
+    },
+    {
+     "id": "bn",
+     "kind": "number",
+     "label": "Divisor, top number",
+     "labelEs": "Divisor, numerador",
+     "unit": "",
+     "min": 1,
+     "max": 9,
+     "step": 1,
+     "value": 1
+    },
+    {
+     "id": "bd",
+     "kind": "number",
+     "label": "Divisor, bottom number",
+     "labelEs": "Divisor, denominador",
+     "unit": "",
+     "min": 1,
+     "max": 9,
+     "step": 1,
+     "value": 2
+    }
+   ],
+   "steps": [
+    {
+     "id": "b",
+     "label": "The divisor",
+     "labelEs": "El divisor",
+     "expr": [
+      "div",
+      "bn",
+      "bd"
+     ],
+     "fmt": "frac"
+    },
+    {
+     "id": "q",
+     "label": "Answer (number ÷ divisor)",
+     "labelEs": "Respuesta (número ÷ divisor)",
+     "expr": [
+      "div",
+      "a",
+      "b"
+     ],
+     "fmt": "mixed"
+    },
+    {
+     "id": "smaller",
+     "label": "Is the answer smaller?",
+     "labelEs": "¿La respuesta es más pequeña?",
+     "expr": [
+      "lt",
+      "q",
+      "a"
+     ],
+     "fmt": "yn"
+    }
+   ],
+   "table": [
+    "a",
+    "bn",
+    "bd",
+    "b",
+    "q",
+    "smaller"
+   ],
+   "results": [
+    "a",
+    "q"
+   ],
+   "model": {
+    "kind": "bars",
+    "max": [
+     "max",
+     "a",
+     "q"
+    ],
+    "bars": [
+     {
+      "label": "Number you start with",
+      "labelEs": "Número con el que empiezas",
+      "value": "a",
+      "fmt": "num"
+     },
+     {
+      "label": "Answer",
+      "labelEs": "Respuesta",
+      "value": "q",
+      "fmt": "num"
+     }
+    ]
+   },
+   "prediction": {
+    "prompt": "You divide 3 by 1/2. How many halves fit in 3? Compared with 3, the answer is...",
+    "promptEs": "Divides 3 entre 1/2. ¿Cuántas mitades caben en 3? Comparada con 3, la respuesta es...",
+    "setup": {
+     "a": 3,
+     "bn": 1,
+     "bd": 2
+    },
+    "options": [
+     {
+      "id": "smaller",
+      "label": "smaller than 3",
+      "labelEs": "menor que 3",
+      "test": [
+       "lt",
+       "q",
+       "a"
+      ]
+     },
+     {
+      "id": "equal",
+      "label": "equal to 3",
+      "labelEs": "igual a 3",
+      "test": [
+       "eq",
+       "q",
+       "a"
+      ]
+     },
+     {
+      "id": "bigger",
+      "label": "bigger than 3",
+      "labelEs": "mayor que 3",
+      "test": [
+       "gt",
+       "q",
+       "a"
+      ]
+     }
+    ]
+   },
+   "sweep": {
+    "axes": {
+     "a": [
+      3,
+      6
+     ],
+     "bn": [
+      1,
+      2,
+      3
+     ],
+     "bd": [
+      2,
+      3,
+      4
+     ]
+    }
+   },
+   "challenge": {
+    "mode": "hold",
+    "ask": "What about dividing 6 by 2? Is the answer smaller than 6?",
+    "askEs": "¿Y si divides 6 entre 2? ¿La respuesta es menor que 6?",
+    "case": {
+     "a": 6,
+     "bn": 2,
+     "bd": 1
+    },
+    "holdsText": "It holds here. One case that works does not prove the claim for every divisor, so keep testing.",
+    "holdsTextEs": "Aquí se cumple. Un caso que funciona no prueba la afirmación para todos los divisores, así que sigue probando.",
+    "failsText": "The claim breaks here.",
+    "failsTextEs": "La afirmación se rompe aquí."
+   },
+   "revision": {
+    "frame": "Dividing by a number ___ than 1 makes the answer smaller because ___.",
+    "frameEs": "Dividir entre un número ___ que 1 hace la respuesta más pequeña porque ___."
+   },
+   "transfer": {
+    "task": "divideFractions",
+    "answerKind": "number",
+    "answerFmt": "num",
+    "args": [
+     {
+      "pick": [
+       "3",
+       "4",
+       "5",
+       "6",
+       "2"
+      ]
+     },
+     {
+      "pick": [
+       "1/2",
+       "1/3",
+       "1/4",
+       "2/3",
+       "3/4",
+       "1/5"
+      ]
+     }
+    ],
+    "prompt": "How many groups of {1} fit in {0}? Find {0} ÷ {1}.",
+    "promptEs": "¿Cuántos grupos de {1} caben en {0}? Halla {0} ÷ {1}."
+   },
+   "discourse": "fraction-division",
+   "truth": {
+    "text": "Dividing asks how many of the divisor fit in the number. When the divisor is less than 1, more than one fit, so the answer is bigger than the number you started with.",
+    "textEs": "Dividir pregunta cuántos del divisor caben en el número. Cuando el divisor es menor que 1, caben más de uno, así que la respuesta es mayor que el número con el que empezaste."
+   },
+   "print": {
+    "text": "Pick a number and a fraction divisor. Draw how many of the divisor fit in the number. Is the answer smaller or bigger than the number?",
+    "textEs": "Elige un número y un divisor fraccionario. Dibuja cuántos del divisor caben en el número. ¿La respuesta es menor o mayor que el número?"
+   }
+  },
+  {
+   "id": "volume-doubling",
+   "title": "Double the Edges",
+   "titleEs": "Duplica las aristas",
+   "blurb": "If every edge of a box is twice as long, is the volume twice as big?",
+   "blurbEs": "Si cada arista de una caja es el doble de larga, ¿el volumen es el doble de grande?",
+   "unit": 5,
+   "lessons": [
+    "5-5",
+    "5-10"
+   ],
+   "standard": "6.GR.2",
+   "vocab": [
+    "volume",
+    "edge",
+    "rectangular prism"
+   ],
+   "vocabEs": [
+    "volumen",
+    "arista",
+    "prisma rectangular"
+   ],
+   "relates": {
+    "labs": [
+     "packaging-workshop",
+     "polygon-pavilion"
+    ],
+    "misconception": "geom-volume-added-dimensions",
+    "reasonKind": "scale-volume"
+   },
+   "claim": {
+    "text": "If you double every edge of a box, the volume doubles too.",
+    "textEs": "Si duplicas todas las aristas de una caja, el volumen también se duplica.",
+    "test": [
+     "eq",
+     "times",
+     "k"
+    ]
+   },
+   "params": [
+    {
+     "id": "l",
+     "kind": "number",
+     "label": "Length",
+     "labelEs": "Largo",
+     "unit": "",
+     "min": 1,
+     "max": 10,
+     "step": 1,
+     "value": 2
+    },
+    {
+     "id": "w",
+     "kind": "number",
+     "label": "Width",
+     "labelEs": "Ancho",
+     "unit": "",
+     "min": 1,
+     "max": 10,
+     "step": 1,
+     "value": 3
+    },
+    {
+     "id": "h",
+     "kind": "number",
+     "label": "Height",
+     "labelEs": "Alto",
+     "unit": "",
+     "min": 1,
+     "max": 10,
+     "step": 1,
+     "value": 4
+    },
+    {
+     "id": "k",
+     "kind": "number",
+     "label": "Every edge is this many times as long",
+     "labelEs": "Cada arista es esta cantidad de veces más larga",
+     "unit": "",
+     "min": 0.5,
+     "max": 5,
+     "step": 0.5,
+     "value": 2
+    }
+   ],
+   "steps": [
+    {
+     "id": "v0",
+     "label": "Volume of the first box",
+     "labelEs": "Volumen de la primera caja",
+     "expr": [
+      "mul",
+      "l",
+      "w",
+      "h"
+     ],
+     "fmt": "num"
+    },
+    {
+     "id": "l2",
+     "label": "New length",
+     "labelEs": "Nuevo largo",
+     "expr": [
+      "mul",
+      "l",
+      "k"
+     ],
+     "fmt": "num"
+    },
+    {
+     "id": "w2",
+     "label": "New width",
+     "labelEs": "Nuevo ancho",
+     "expr": [
+      "mul",
+      "w",
+      "k"
+     ],
+     "fmt": "num"
+    },
+    {
+     "id": "h2",
+     "label": "New height",
+     "labelEs": "Nuevo alto",
+     "expr": [
+      "mul",
+      "h",
+      "k"
+     ],
+     "fmt": "num"
+    },
+    {
+     "id": "v1",
+     "label": "Volume of the new box",
+     "labelEs": "Volumen de la nueva caja",
+     "expr": [
+      "mul",
+      "l2",
+      "w2",
+      "h2"
+     ],
+     "fmt": "num"
+    },
+    {
+     "id": "times",
+     "label": "New volume is this many times the first",
+     "labelEs": "El nuevo volumen es esta cantidad de veces el primero",
+     "expr": [
+      "div",
+      "v1",
+      "v0"
+     ],
+     "fmt": "num"
+    }
+   ],
+   "table": [
+    "l",
+    "w",
+    "h",
+    "k",
+    "v0",
+    "v1",
+    "times"
+   ],
+   "results": [
+    "v0",
+    "v1",
+    "times"
+   ],
+   "model": {
+    "kind": "box",
+    "dims": [
+     "l",
+     "w",
+     "h"
+    ],
+    "scaled": [
+     "l2",
+     "w2",
+     "h2"
+    ]
+   },
+   "prediction": {
+    "prompt": "A box is 2 by 3 by 4. Every edge is made twice as long. The new volume is how many times the old volume?",
+    "promptEs": "Una caja mide 2 por 3 por 4. Cada arista se hace el doble de larga. ¿Cuántas veces es el nuevo volumen el volumen anterior?",
+    "setup": {
+     "l": 2,
+     "w": 3,
+     "h": 4,
+     "k": 2
+    },
+    "options": [
+     {
+      "id": "x2",
+      "label": "2 times",
+      "labelEs": "2 veces",
+      "test": [
+       "eq",
+       "times",
+       2
+      ]
+     },
+     {
+      "id": "x4",
+      "label": "4 times",
+      "labelEs": "4 veces",
+      "test": [
+       "eq",
+       "times",
+       4
+      ]
+     },
+     {
+      "id": "x6",
+      "label": "6 times",
+      "labelEs": "6 veces",
+      "test": [
+       "eq",
+       "times",
+       6
+      ]
+     },
+     {
+      "id": "x8",
+      "label": "8 times",
+      "labelEs": "8 veces",
+      "test": [
+       "eq",
+       "times",
+       8
+      ]
+     }
+    ]
+   },
+   "sweep": {
+    "axes": {
+     "l": [
+      1,
+      2,
+      3
+     ],
+     "w": [
+      2,
+      4
+     ],
+     "h": [
+      3,
+      5
+     ],
+     "k": [
+      1,
+      2,
+      3,
+      4
+     ]
+    }
+   },
+   "challenge": {
+    "mode": "hold",
+    "ask": "What if every edge is made 3 times as long? Is the volume 3 times as big?",
+    "askEs": "¿Y si cada arista se hace 3 veces más larga? ¿El volumen es 3 veces mayor?",
+    "case": {
+     "l": 2,
+     "w": 3,
+     "h": 4,
+     "k": 3
+    },
+    "holdsText": "It holds here.",
+    "holdsTextEs": "Aquí se cumple.",
+    "failsText": "The claim breaks here, and the volume grows even faster.",
+    "failsTextEs": "La afirmación se rompe aquí, y el volumen crece aún más rápido."
+   },
+   "revision": {
+    "frame": "When every edge is k times as long, the volume is ___ times as big because ___.",
+    "frameEs": "Cuando cada arista es k veces más larga, el volumen es ___ veces mayor porque ___."
+   },
+   "transfer": {
+    "task": "scaleVolume",
+    "answerKind": "number",
+    "answerFmt": "num",
+    "args": [
+     {
+      "pick": [
+       2,
+       3,
+       4,
+       5
+      ]
+     },
+     {
+      "pick": [
+       2,
+       3,
+       4
+      ]
+     },
+     {
+      "pick": [
+       1,
+       2,
+       3,
+       5
+      ]
+     },
+     {
+      "pick": [
+       2,
+       3,
+       4
+      ]
+     }
+    ],
+    "prompt": "A box is {0} by {1} by {2}. Every edge is made {3} times as long. The new volume is how many times the old volume?",
+    "promptEs": "Una caja mide {0} por {1} por {2}. Cada arista se hace {3} veces más larga. ¿Cuántas veces es el nuevo volumen el volumen anterior?"
+   },
+   "discourse": "volume-scaling",
+   "truth": {
+    "text": "Volume has three directions: length, width and height. Each one grows by the same factor, so the volume grows by that factor three times. Doubling every edge makes the volume 2 x 2 x 2 = 8 times as big.",
+    "textEs": "El volumen tiene tres direcciones: largo, ancho y alto. Cada una crece por el mismo factor, así que el volumen crece por ese factor tres veces. Duplicar todas las aristas hace el volumen 2 x 2 x 2 = 8 veces mayor."
+   },
+   "print": {
+    "text": "Pick the size of a box. Find its volume. Make every edge 2 times as long and find the new volume. How many times as big is it?",
+    "textEs": "Elige el tamaño de una caja. Halla su volumen. Haz cada arista 2 veces más larga y halla el nuevo volumen. ¿Cuántas veces mayor es?"
+   }
+  },
+  {
+   "id": "balance",
+   "title": "Keep the Scale Balanced",
+   "titleEs": "Mantén la balanza equilibrada",
+   "blurb": "Can you change just one side of a balanced equation and keep it true?",
+   "blurbEs": "¿Puedes cambiar solo un lado de una ecuación equilibrada y mantenerla verdadera?",
+   "unit": 8,
+   "lessons": [
+    "8-2",
+    "8-1"
+   ],
+   "standard": "6.AT.8",
+   "vocab": [
+    "equation",
+    "balance",
+    "solution",
+    "inverse operation"
+   ],
+   "vocabEs": [
+    "ecuación",
+    "balanza",
+    "solución",
+    "operación inversa"
+   ],
+   "relates": {
+    "labs": [
+     "balance-bureau",
+     "vault-division"
+    ],
+    "misconception": "equation-not-inverse-operation",
+    "reasonKind": "equation-add"
+   },
+   "claim": {
+    "text": "You can change just one side of a balanced equation, and it will still be true.",
+    "textEs": "Puedes cambiar solo un lado de una ecuación equilibrada y seguirá siendo verdadera.",
+    "test": [
+     "eq",
+     "L1",
+     "R1"
+    ]
+   },
+   "params": [
+    {
+     "id": "x",
+     "kind": "number",
+     "label": "The solution x",
+     "labelEs": "La solución x",
+     "unit": "",
+     "min": 1,
+     "max": 20,
+     "step": 1,
+     "value": 7
+    },
+    {
+     "id": "a",
+     "kind": "number",
+     "label": "The number added to x",
+     "labelEs": "El número sumado a x",
+     "unit": "",
+     "min": 1,
+     "max": 20,
+     "step": 1,
+     "value": 5
+    },
+    {
+     "id": "k",
+     "kind": "number",
+     "label": "The amount in your move",
+     "labelEs": "La cantidad en tu jugada",
+     "unit": "",
+     "min": 2,
+     "max": 10,
+     "step": 1,
+     "value": 3
+    },
+    {
+     "id": "move",
+     "kind": "choice",
+     "label": "My move",
+     "labelEs": "Mi jugada",
+     "options": [
+      {
+       "id": "sub-both",
+       "label": "Subtract the amount from both sides",
+       "labelEs": "Restar la cantidad en los dos lados",
+       "set": {
+        "mL": 1,
+        "aL": [
+         "neg",
+         "k"
+        ],
+        "mR": 1,
+        "aR": [
+         "neg",
+         "k"
+        ]
+       }
+      },
+      {
+       "id": "sub-left",
+       "label": "Subtract the amount from the left side only",
+       "labelEs": "Restar la cantidad solo en el lado izquierdo",
+       "set": {
+        "mL": 1,
+        "aL": [
+         "neg",
+         "k"
+        ],
+        "mR": 1,
+        "aR": 0
+       }
+      },
+      {
+       "id": "add-right",
+       "label": "Add the amount to the right side only",
+       "labelEs": "Sumar la cantidad solo en el lado derecho",
+       "set": {
+        "mL": 1,
+        "aL": 0,
+        "mR": 1,
+        "aR": "k"
+       }
+      },
+      {
+       "id": "mult-both",
+       "label": "Multiply both sides by the amount",
+       "labelEs": "Multiplicar los dos lados por la cantidad",
+       "set": {
+        "mL": "k",
+        "aL": 0,
+        "mR": "k",
+        "aR": 0
+       }
+      },
+      {
+       "id": "mult-left",
+       "label": "Multiply the left side by the amount only",
+       "labelEs": "Multiplicar solo el lado izquierdo por la cantidad",
+       "set": {
+        "mL": "k",
+        "aL": 0,
+        "mR": 1,
+        "aR": 0
+       }
+      }
+     ],
+     "value": "sub-left"
+    }
+   ],
+   "steps": [
+    {
+     "id": "b",
+     "label": "Both sides start at (x + a)",
+     "labelEs": "Los dos lados empiezan en (x + a)",
+     "expr": [
+      "add",
+      "x",
+      "a"
+     ],
+     "fmt": "num"
+    },
+    {
+     "id": "L1",
+     "label": "Left side after my move",
+     "labelEs": "Lado izquierdo después de mi jugada",
+     "expr": [
+      "add",
+      [
+       "mul",
+       "b",
+       "mL"
+      ],
+      "aL"
+     ],
+     "fmt": "num"
+    },
+    {
+     "id": "R1",
+     "label": "Right side after my move",
+     "labelEs": "Lado derecho después de mi jugada",
+     "expr": [
+      "add",
+      [
+       "mul",
+       "b",
+       "mR"
+      ],
+      "aR"
+     ],
+     "fmt": "num"
+    },
+    {
+     "id": "balanced",
+     "label": "Still balanced?",
+     "labelEs": "¿Sigue equilibrada?",
+     "expr": [
+      "eq",
+      "L1",
+      "R1"
+     ],
+     "fmt": "yn"
+    }
+   ],
+   "table": [
+    "x",
+    "a",
+    "k",
+    "move",
+    "b",
+    "L1",
+    "R1",
+    "balanced"
+   ],
+   "results": [
+    "b",
+    "L1",
+    "R1"
+   ],
+   "model": {
+    "kind": "balance-beam",
+    "left": "L1",
+    "right": "R1",
+    "start": "b"
+   },
+   "prediction": {
+    "prompt": "A scale is balanced with 12 on each side. You take 3 off the left side only. The scale will...",
+    "promptEs": "Una balanza está equilibrada con 12 en cada lado. Quitas 3 solo del lado izquierdo. La balanza...",
+    "setup": {
+     "x": 7,
+     "a": 5,
+     "k": 3,
+     "move": "sub-left"
+    },
+    "options": [
+     {
+      "id": "stay",
+      "label": "stay balanced",
+      "labelEs": "seguirá equilibrada",
+      "test": [
+       "eq",
+       "L1",
+       "R1"
+      ]
+     },
+     {
+      "id": "right",
+      "label": "tip down on the right",
+      "labelEs": "se inclinará hacia la derecha",
+      "test": [
+       "lt",
+       "L1",
+       "R1"
+      ]
+     },
+     {
+      "id": "left",
+      "label": "tip down on the left",
+      "labelEs": "se inclinará hacia la izquierda",
+      "test": [
+       "gt",
+       "L1",
+       "R1"
+      ]
+     }
+    ]
+   },
+   "sweep": {
+    "axes": {
+     "x": [
+      3,
+      7
+     ],
+     "a": [
+      2,
+      5
+     ],
+     "k": [
+      2,
+      3,
+      5
+     ],
+     "move": [
+      "sub-both",
+      "sub-left",
+      "add-right",
+      "mult-both",
+      "mult-left"
+     ]
+    }
+   },
+   "challenge": {
+    "mode": "hold",
+    "ask": "What if you subtract the same amount from both sides? Does the equation stay true?",
+    "askEs": "¿Y si restas la misma cantidad en los dos lados? ¿La ecuación sigue siendo verdadera?",
+    "case": {
+     "x": 7,
+     "a": 5,
+     "k": 3,
+     "move": "sub-both"
+    },
+    "holdsText": "It holds here, because both sides lost the same amount. That is the rule for solving equations.",
+    "holdsTextEs": "Aquí se cumple, porque los dos lados perdieron la misma cantidad. Esa es la regla para resolver ecuaciones.",
+    "failsText": "The claim breaks here.",
+    "failsTextEs": "La afirmación se rompe aquí."
+   },
+   "revision": {
+    "frame": "An equation stays true when you ___ both sides because ___.",
+    "frameEs": "Una ecuación sigue siendo verdadera cuando ___ los dos lados porque ___."
+   },
+   "transfer": {
+    "task": "equationAdd",
+    "answerKind": "number",
+    "answerFmt": "num",
+    "args": [
+     {
+      "pick": [
+       3,
+       4,
+       6,
+       7,
+       8,
+       9
+      ]
+     },
+     {
+      "pick": [
+       15,
+       17,
+       19,
+       20,
+       23
+      ]
+     }
+    ],
+    "where": [
+     "gt",
+     "a1",
+     "a0"
+    ],
+    "prompt": "Solve x + {0} = {1}. What is x?",
+    "promptEs": "Resuelve x + {0} = {1}. ¿Cuánto vale x?"
+   },
+   "discourse": "solving-equations",
+   "truth": {
+    "text": "An equation is a balanced scale. Doing the same thing to both sides keeps it balanced. Doing something to only one side tips it.",
+    "textEs": "Una ecuación es una balanza equilibrada. Hacer lo mismo en los dos lados la mantiene equilibrada. Hacer algo solo en un lado la inclina."
+   },
+   "print": {
+    "text": "Pick x and a number a. Both sides start at x + a. Try a move on one side only, then the same move on both sides. Is each result balanced?",
+    "textEs": "Elige x y un número a. Los dos lados empiezan en x + a. Prueba una jugada solo en un lado y luego la misma jugada en los dos lados. ¿Cada resultado queda equilibrado?"
+   }
+  },
+  {
+   "id": "mean-vs-median",
+   "title": "The Far-Away Student",
+   "titleEs": "El estudiante que vive lejos",
+   "blurb": "Does one far-out value move the mean and the median the same amount?",
+   "blurbEs": "¿Un valor muy alejado mueve la media y la mediana la misma cantidad?",
+   "unit": 2,
+   "lessons": [
+    "2-10",
+    "2-3",
+    "2-8"
+   ],
+   "standard": "6.DS.6d",
+   "vocab": [
+    "mean",
+    "median",
+    "outlier"
+   ],
+   "vocabEs": [
+    "media",
+    "mediana",
+    "valor atípico"
+   ],
+   "relates": {
+    "labs": [
+     "outlier-investigation",
+     "middle-ground"
+    ],
+    "misconception": "stat-mean-skewed-by-outlier",
+    "reasonKind": "median-of"
+   },
+   "claim": {
+    "text": "One far-out value changes the mean and the median by the same amount.",
+    "textEs": "Un valor muy alejado cambia la media y la mediana en la misma cantidad.",
+    "test": [
+     "eq",
+     "dMean",
+     "dMedian"
+    ]
+   },
+   "params": [
+    {
+     "id": "o",
+     "kind": "number",
+     "label": "The sixth student's minutes",
+     "labelEs": "Minutos del sexto estudiante",
+     "unit": "",
+     "min": 0,
+     "max": 120,
+     "step": 1,
+     "value": 60
+    }
+   ],
+   "steps": [
+    {
+     "id": "mean1",
+     "label": "Mean of all six",
+     "labelEs": "Media de los seis",
+     "expr": [
+      "mean",
+      8,
+      9,
+      10,
+      11,
+      12,
+      "o"
+     ],
+     "fmt": "dec2"
+    },
+    {
+     "id": "median1",
+     "label": "Median of all six",
+     "labelEs": "Mediana de los seis",
+     "expr": [
+      "median",
+      8,
+      9,
+      10,
+      11,
+      12,
+      "o"
+     ],
+     "fmt": "dec2"
+    },
+    {
+     "id": "dMean",
+     "label": "Mean moved by",
+     "labelEs": "La media se movió",
+     "expr": [
+      "abs",
+      [
+       "sub",
+       [
+        "mean",
+        8,
+        9,
+        10,
+        11,
+        12,
+        "o"
+       ],
+       10
+      ]
+     ],
+     "fmt": "dec2"
+    },
+    {
+     "id": "dMedian",
+     "label": "Median moved by",
+     "labelEs": "La mediana se movió",
+     "expr": [
+      "abs",
+      [
+       "sub",
+       [
+        "median",
+        8,
+        9,
+        10,
+        11,
+        12,
+        "o"
+       ],
+       10
+      ]
+     ],
+     "fmt": "dec2"
+    }
+   ],
+   "table": [
+    "o",
+    "mean1",
+    "median1",
+    "dMean",
+    "dMedian"
+   ],
+   "results": [
+    "mean1",
+    "median1"
+   ],
+   "model": {
+    "kind": "dots",
+    "values": [
+     8,
+     9,
+     10,
+     11,
+     12
+    ],
+    "extra": "o",
+    "mean": "mean1",
+    "median": "median1"
+   },
+   "prediction": {
+    "prompt": "Five students take 8, 9, 10, 11 and 12 minutes to get to school. Their mean and median are both 10. A sixth student takes 60 minutes. Which one moves more?",
+    "promptEs": "Cinco estudiantes tardan 8, 9, 10, 11 y 12 minutos en llegar a la escuela. Su media y su mediana son 10. Un sexto estudiante tarda 60 minutos. ¿Cuál se mueve más?",
+    "setup": {
+     "o": 60
+    },
+    "options": [
+     {
+      "id": "mean",
+      "label": "the mean moves more",
+      "labelEs": "la media se mueve más",
+      "test": [
+       "gt",
+       "dMean",
+       "dMedian"
+      ]
+     },
+     {
+      "id": "median",
+      "label": "the median moves more",
+      "labelEs": "la mediana se mueve más",
+      "test": [
+       "lt",
+       "dMean",
+       "dMedian"
+      ]
+     },
+     {
+      "id": "same",
+      "label": "they move the same amount",
+      "labelEs": "se mueven lo mismo",
+      "test": [
+       "eq",
+       "dMean",
+       "dMedian"
+      ]
+     }
+    ]
+   },
+   "sweep": {
+    "axes": {
+     "o": [
+      7,
+      10,
+      11,
+      12,
+      13,
+      20,
+      40,
+      60,
+      90
+     ]
+    }
+   },
+   "challenge": {
+    "mode": "find",
+    "free": [
+     "o"
+    ],
+    "fixed": {},
+    "prompt": "Find a sixth value where the mean and the median do NOT move the same amount. Set the number, then press Check.",
+    "promptEs": "Encuentra un sexto valor donde la media y la mediana NO se muevan lo mismo. Elige el número y presiona Comprobar.",
+    "hint": "Try a value much bigger than the other five.",
+    "hintEs": "Prueba un valor mucho mayor que los otros cinco."
+   },
+   "revision": {
+    "frame": "A far-out value moves the ___ more than the ___ because ___.",
+    "frameEs": "Un valor muy alejado mueve más la ___ que la ___ porque ___."
+   },
+   "transfer": {
+    "task": "medianOf",
+    "answerKind": "number",
+    "answerFmt": "num",
+    "args": [
+     {
+      "int": [
+       2,
+       6
+      ]
+     },
+     {
+      "int": [
+       7,
+       9
+      ]
+     },
+     {
+      "int": [
+       10,
+       12
+      ]
+     },
+     {
+      "int": [
+       13,
+       15
+      ]
+     },
+     {
+      "int": [
+       16,
+       18
+      ]
+     },
+     {
+      "int": [
+       60,
+       90
+      ]
+     }
+    ],
+    "prompt": "Six students scored {0}, {1}, {2}, {3}, {4} and {5} points. What is the median score?",
+    "promptEs": "Seis estudiantes sacaron {0}, {1}, {2}, {3}, {4} y {5} puntos. ¿Cuál es la mediana?"
+   },
+   "discourse": "mean-vs-median",
+   "truth": {
+    "text": "The mean uses every value, so one far-out value drags it a long way. The median only looks at the middle of the ordered list, so it hardly moves.",
+    "textEs": "La media usa todos los valores, así que un valor muy alejado la arrastra mucho. La mediana solo mira el centro de la lista ordenada, así que casi no se mueve."
+   },
+   "print": {
+    "text": "Write the five times 8, 9, 10, 11, 12. Add a sixth value. Find the new mean and the new median. Which one moved more from 10?",
+    "textEs": "Escribe los cinco tiempos 8, 9, 10, 11, 12. Agrega un sexto valor. Halla la nueva media y la nueva mediana. ¿Cuál se movió más desde 10?"
+   }
+  },
+  {
+   "id": "slant-height",
+   "title": "Height or Slant Height?",
+   "titleEs": "¿Altura o altura inclinada?",
+   "blurb": "On a pyramid, is the slant height the same as the height?",
+   "blurbEs": "En una pirámide, ¿la altura inclinada es igual a la altura?",
+   "unit": 5,
+   "lessons": [
+    "5-8"
+   ],
+   "standard": "6.GR.4",
+   "vocab": [
+    "slant height",
+    "height",
+    "pyramid",
+    "right triangle"
+   ],
+   "vocabEs": [
+    "altura inclinada",
+    "altura",
+    "pirámide",
+    "triángulo rectángulo"
+   ],
+   "relates": {
+    "labs": [
+     "wrap-lab"
+    ],
+    "misconception": "geom-surface-area-as-volume",
+    "reasonKind": "slant-height"
+   },
+   "claim": {
+    "text": "The slant height of a pyramid is the same as its height.",
+    "textEs": "La altura inclinada de una pirámide es igual a su altura.",
+    "test": [
+     "eq",
+     "s",
+     "h"
+    ]
+   },
+   "params": [
+    {
+     "id": "pyr",
+     "kind": "choice",
+     "label": "Pyramid",
+     "labelEs": "Pirámide",
+     "options": [
+      {
+       "id": "pt345",
+       "label": "Half the base is 3, the height is 4",
+       "labelEs": "La mitad de la base es 3, la altura es 4",
+       "set": {
+        "b": 3,
+        "h": 4
+       }
+      },
+      {
+       "id": "pt51213",
+       "label": "Half the base is 5, the height is 12",
+       "labelEs": "La mitad de la base es 5, la altura es 12",
+       "set": {
+        "b": 5,
+        "h": 12
+       }
+      },
+      {
+       "id": "pt68",
+       "label": "Half the base is 6, the height is 8",
+       "labelEs": "La mitad de la base es 6, la altura es 8",
+       "set": {
+        "b": 6,
+        "h": 8
+       }
+      },
+      {
+       "id": "pt81517",
+       "label": "Half the base is 8, the height is 15",
+       "labelEs": "La mitad de la base es 8, la altura es 15",
+       "set": {
+        "b": 8,
+        "h": 15
+       }
+      },
+      {
+       "id": "pt912",
+       "label": "Half the base is 9, the height is 12",
+       "labelEs": "La mitad de la base es 9, la altura es 12",
+       "set": {
+        "b": 9,
+        "h": 12
+       }
+      },
+      {
+       "id": "pt724",
+       "label": "Half the base is 7, the height is 24",
+       "labelEs": "La mitad de la base es 7, la altura es 24",
+       "set": {
+        "b": 7,
+        "h": 24
+       }
+      }
+     ],
+     "value": "pt345"
+    }
+   ],
+   "steps": [
+    {
+     "id": "s",
+     "label": "Slant height",
+     "labelEs": "Altura inclinada",
+     "expr": [
+      "sqrt",
+      [
+       "add",
+       [
+        "pow",
+        "b",
+        2
+       ],
+       [
+        "pow",
+        "h",
+        2
+       ]
+      ]
+     ],
+     "fmt": "num"
+    },
+    {
+     "id": "gap",
+     "label": "Slant height minus height",
+     "labelEs": "Altura inclinada menos altura",
+     "expr": [
+      "sub",
+      [
+       "sqrt",
+       [
+        "add",
+        [
+         "pow",
+         "b",
+         2
+        ],
+        [
+         "pow",
+         "h",
+         2
+        ]
+       ]
+      ],
+      "h"
+     ],
+     "fmt": "num"
+    },
+    {
+     "id": "same",
+     "label": "Same as the height?",
+     "labelEs": "¿Igual que la altura?",
+     "expr": [
+      "eq",
+      [
+       "sqrt",
+       [
+        "add",
+        [
+         "pow",
+         "b",
+         2
+        ],
+        [
+         "pow",
+         "h",
+         2
+        ]
+       ]
+      ],
+      "h"
+     ],
+     "fmt": "yn"
+    }
+   ],
+   "table": [
+    "pyr",
+    "b",
+    "h",
+    "s",
+    "gap",
+    "same"
+   ],
+   "extra": [
+    {
+     "id": "b",
+     "label": "Half the base",
+     "labelEs": "Mitad de la base",
+     "fmt": "num"
+    },
+    {
+     "id": "h",
+     "label": "Height",
+     "labelEs": "Altura",
+     "fmt": "num"
+    }
+   ],
+   "results": [
+    "b",
+    "h",
+    "s"
+   ],
+   "model": {
+    "kind": "triangle",
+    "legs": [
+     "b",
+     "h"
+    ],
+    "hyp": "s"
+   },
+   "prediction": {
+    "prompt": "A pyramid is 4 cm tall. Half of one base side is 3 cm. The slant height runs up the middle of a face. Compared with 4 cm, the slant height is...",
+    "promptEs": "Una pirámide mide 4 cm de alto. La mitad de un lado de la base mide 3 cm. La altura inclinada sube por el centro de una cara. Comparada con 4 cm, la altura inclinada es...",
+    "setup": {
+     "pyr": "pt345"
+    },
+    "options": [
+     {
+      "id": "shorter",
+      "label": "shorter than 4 cm",
+      "labelEs": "menor que 4 cm",
+      "test": [
+       "lt",
+       "s",
+       "h"
+      ]
+     },
+     {
+      "id": "same",
+      "label": "exactly 4 cm",
+      "labelEs": "exactamente 4 cm",
+      "test": [
+       "eq",
+       "s",
+       "h"
+      ]
+     },
+     {
+      "id": "longer",
+      "label": "longer than 4 cm",
+      "labelEs": "mayor que 4 cm",
+      "test": [
+       "gt",
+       "s",
+       "h"
+      ]
+     }
+    ]
+   },
+   "sweep": {
+    "axes": {
+     "pyr": [
+      "pt345",
+      "pt51213",
+      "pt68",
+      "pt81517",
+      "pt912",
+      "pt724"
+     ]
+    }
+   },
+   "challenge": {
+    "mode": "hold",
+    "ask": "What about a tall, thin pyramid, half the base 7 and height 24? Could its slant height equal its height?",
+    "askEs": "¿Y una pirámide alta y delgada, con la mitad de la base 7 y altura 24? ¿Podría su altura inclinada ser igual a su altura?",
+    "case": {
+     "pyr": "pt724"
+    },
+    "holdsText": "It holds here.",
+    "holdsTextEs": "Aquí se cumple.",
+    "failsText": "The claim breaks here. Even a thin pyramid has a slant height longer than its height.",
+    "failsTextEs": "La afirmación se rompe aquí. Hasta una pirámide delgada tiene una altura inclinada mayor que su altura."
+   },
+   "revision": {
+    "frame": "The slant height is ___ than the height because ___.",
+    "frameEs": "La altura inclinada es ___ que la altura porque ___."
+   },
+   "transfer": {
+    "task": "slantHeight",
+    "answerKind": "number",
+    "answerFmt": "num",
+    "args": [
+     {
+      "group": [
+       [
+        12,
+        16
+       ],
+       [
+        10,
+        24
+       ],
+       [
+        15,
+        20
+       ],
+       [
+        9,
+        40
+       ],
+       [
+        12,
+        35
+       ],
+       [
+        15,
+        36
+       ],
+       [
+        16,
+        30
+       ]
+      ]
+     }
+    ],
+    "prompt": "A square pyramid is {1} cm tall. Half of one base side is {0} cm. How long is the slant height, in cm?",
+    "promptEs": "Una pirámide cuadrada mide {1} cm de alto. La mitad de un lado de la base mide {0} cm. ¿Cuánto mide la altura inclinada, en cm?"
+   },
+   "discourse": "slant-height",
+   "truth": {
+    "text": "The height goes straight up from the middle of the base. The slant height goes up the face from the middle of a base edge. They are the two sides of a right triangle with half the base, and the slant height is the longest side.",
+    "textEs": "La altura sube recta desde el centro de la base. La altura inclinada sube por la cara desde el centro de una arista de la base. Son lados de un triángulo rectángulo con la mitad de la base, y la altura inclinada es el lado más largo."
+   },
+   "print": {
+    "text": "Draw a right triangle with legs 3 and 4. Measure the long side. Is the slant height the same as the height of the pyramid?",
+    "textEs": "Dibuja un triángulo rectángulo con catetos 3 y 4. Mide el lado largo. ¿La altura inclinada es igual a la altura de la pirámide?"
+   }
+  },
+  {
+   "id": "distributive",
+   "title": "Multiply Everything Inside",
+   "titleEs": "Multiplica todo lo de adentro",
+   "blurb": "Is 3(x + 4) the same as 3x + 4?",
+   "blurbEs": "¿3(x + 4) es igual a 3x + 4?",
+   "unit": 6,
+   "lessons": [
+    "6-14"
+   ],
+   "standard": "6.AT.7",
+   "vocab": [
+    "distributive property",
+    "expression",
+    "equivalent expressions"
+   ],
+   "vocabEs": [
+    "propiedad distributiva",
+    "expresión",
+    "expresiones equivalentes"
+   ],
+   "relates": {
+    "labs": [
+     "algebra-workshop",
+     "expression-remix"
+    ],
+    "misconception": "algebra-distributive-partial",
+    "reasonKind": "distribute"
+   },
+   "claim": {
+    "text": "k(x + c) is the same as kx + c. The number outside the parentheses only multiplies the first term.",
+    "textEs": "k(x + c) es igual a kx + c. El número de afuera de los paréntesis solo multiplica el primer término.",
+    "test": [
+     "eq",
+     "whole",
+     "tempt"
+    ]
+   },
+   "params": [
+    {
+     "id": "k",
+     "kind": "number",
+     "label": "The number outside, k",
+     "labelEs": "El número de afuera, k",
+     "unit": "",
+     "min": 1,
+     "max": 9,
+     "step": 1,
+     "value": 3
+    },
+    {
+     "id": "x",
+     "kind": "number",
+     "label": "The value of x",
+     "labelEs": "El valor de x",
+     "unit": "",
+     "min": 1,
+     "max": 12,
+     "step": 1,
+     "value": 2
+    },
+    {
+     "id": "c",
+     "kind": "number",
+     "label": "The number inside, c",
+     "labelEs": "El número de adentro, c",
+     "unit": "",
+     "min": 1,
+     "max": 12,
+     "step": 1,
+     "value": 4
+    }
+   ],
+   "steps": [
+    {
+     "id": "whole",
+     "label": "k(x + c)",
+     "labelEs": "k(x + c)",
+     "expr": [
+      "mul",
+      "k",
+      [
+       "add",
+       "x",
+       "c"
+      ]
+     ],
+     "fmt": "num"
+    },
+    {
+     "id": "tempt",
+     "label": "kx + c",
+     "labelEs": "kx + c",
+     "expr": [
+      "add",
+      [
+       "mul",
+       "k",
+       "x"
+      ],
+      "c"
+     ],
+     "fmt": "num"
+    },
+    {
+     "id": "dist",
+     "label": "kx + kc",
+     "labelEs": "kx + kc",
+     "expr": [
+      "add",
+      [
+       "mul",
+       "k",
+       "x"
+      ],
+      [
+       "mul",
+       "k",
+       "c"
+      ]
+     ],
+     "fmt": "num"
+    },
+    {
+     "id": "same",
+     "label": "k(x + c) equals kx + c?",
+     "labelEs": "¿k(x + c) es igual a kx + c?",
+     "expr": [
+      "eq",
+      [
+       "mul",
+       "k",
+       [
+        "add",
+        "x",
+        "c"
+       ]
+      ],
+      [
+       "add",
+       [
+        "mul",
+        "k",
+        "x"
+       ],
+       "c"
+      ]
+     ],
+     "fmt": "yn"
+    }
+   ],
+   "table": [
+    "k",
+    "x",
+    "c",
+    "whole",
+    "tempt",
+    "dist",
+    "same"
+   ],
+   "results": [
+    "whole",
+    "tempt",
+    "dist"
+   ],
+   "model": {
+    "kind": "rect-split",
+    "height": "k",
+    "parts": [
+     "x",
+     "c"
+    ]
+   },
+   "prediction": {
+    "prompt": "Let k = 3, x = 2 and c = 4. Compare 3(x + 4) with 3x + 4.",
+    "promptEs": "Sea k = 3, x = 2 y c = 4. Compara 3(x + 4) con 3x + 4.",
+    "setup": {
+     "k": 3,
+     "x": 2,
+     "c": 4
+    },
+    "options": [
+     {
+      "id": "same",
+      "label": "they have the same value",
+      "labelEs": "tienen el mismo valor",
+      "test": [
+       "eq",
+       "whole",
+       "tempt"
+      ]
+     },
+     {
+      "id": "whole",
+      "label": "3(x + 4) is bigger",
+      "labelEs": "3(x + 4) es mayor",
+      "test": [
+       "gt",
+       "whole",
+       "tempt"
+      ]
+     },
+     {
+      "id": "tempt",
+      "label": "3x + 4 is bigger",
+      "labelEs": "3x + 4 es mayor",
+      "test": [
+       "lt",
+       "whole",
+       "tempt"
+      ]
+     }
+    ]
+   },
+   "sweep": {
+    "axes": {
+     "k": [
+      1,
+      2,
+      3,
+      5
+     ],
+     "x": [
+      1,
+      2,
+      4
+     ],
+     "c": [
+      1,
+      3,
+      4
+     ]
+    }
+   },
+   "challenge": {
+    "mode": "find",
+    "free": [
+     "k",
+     "x",
+     "c"
+    ],
+    "fixed": {},
+    "prompt": "Find numbers where the claim fails. Set the numbers, then press Check.",
+    "promptEs": "Encuentra números donde la afirmación falle. Elige los números y presiona Comprobar.",
+    "hint": "Try a number outside the parentheses that is bigger than 1.",
+    "hintEs": "Prueba un número de afuera de los paréntesis mayor que 1."
+   },
+   "revision": {
+    "frame": "k(x + c) is the same as ___ because ___.",
+    "frameEs": "k(x + c) es igual a ___ porque ___."
+   },
+   "transfer": {
+    "task": "distribute",
+    "answerKind": "number",
+    "answerFmt": "num",
+    "args": [
+     {
+      "pick": [
+       2,
+       3,
+       4,
+       5
+      ]
+     },
+     {
+      "pick": [
+       2,
+       3,
+       5,
+       6
+      ]
+     },
+     {
+      "pick": [
+       2,
+       3,
+       4,
+       5
+      ]
+     }
+    ],
+    "prompt": "Find the value of {0}(x + {2}) when x = {1}.",
+    "promptEs": "Halla el valor de {0}(x + {2}) cuando x = {1}."
+   },
+   "discourse": "distributive",
+   "truth": {
+    "text": "The number outside the parentheses multiplies every term inside, so k(x + c) = kx + kc. The area model shows it: a rectangle k tall and x + c wide is made of two rectangles.",
+    "textEs": "El número de afuera de los paréntesis multiplica cada término de adentro, así que k(x + c) = kx + kc. El modelo de área lo muestra: un rectángulo de alto k y ancho x + c se forma con dos rectángulos."
+   },
+   "print": {
+    "text": "Pick k, x and c. Work out k(x + c), then kx + c, then kx + kc. Which two always match?",
+    "textEs": "Elige k, x y c. Calcula k(x + c), luego kx + c, luego kx + kc. ¿Cuáles dos siempre coinciden?"
+   }
+  }
+ ],
+ "discourseTemplates": [
+  {
+   "id": "discount-stack",
+   "title": "Two discounts",
+   "titleEs": "Dos descuentos",
+   "intro": "Two discounts in a row: is the total the two percents added?",
+   "introEs": "Dos descuentos seguidos: ¿el total es la suma de los dos porcentajes?",
+   "vars": {
+    "p1": {
+     "label": "first discount",
+     "labelEs": "primer descuento",
+     "values": [
+      "10%",
+      "20%",
+      "30%",
+      "50%"
+     ]
+    },
+    "p2": {
+     "label": "second discount",
+     "labelEs": "segundo descuento",
+     "values": [
+      "10%",
+      "25%",
+      "40%"
+     ]
+    }
+   },
+   "quantities": [
+    {
+     "id": "total",
+     "label": "total discount",
+     "labelEs": "descuento total",
+     "expr": [
+      "sub",
+      1,
+      [
+       "mul",
+       [
+        "sub",
+        1,
+        "p1"
+       ],
+       [
+        "sub",
+        1,
+        "p2"
+       ]
+      ]
+     ],
+     "fmt": "pct"
+    },
+    {
+     "id": "sum",
+     "label": "the two percents added",
+     "labelEs": "los dos porcentajes sumados",
+     "expr": [
+      "add",
+      "p1",
+      "p2"
+     ],
+     "fmt": "pct"
+    }
+   ],
+   "reasons": [
+    {
+     "text": "the second discount comes off a smaller price",
+     "textEs": "el segundo descuento se quita de un precio más pequeño"
+    },
+    {
+     "text": "the first discount comes off the full price",
+     "textEs": "el primer descuento se quita del precio completo"
+    },
+    {
+     "text": "percents of different amounts cannot just be added",
+     "textEs": "los porcentajes de cantidades distintas no se pueden sumar sin más"
+    }
+   ],
+   "limits": [
+    {
+     "text": "the two are only equal when one discount is 0%",
+     "textEs": "los dos solo son iguales cuando un descuento es 0%"
+    },
+    {
+     "text": "the total is a little less than the sum because the second discount is smaller in dollars",
+     "textEs": "el total es un poco menor que la suma porque el segundo descuento es menor en dólares"
+    }
+   ],
+   "vocab": [
+    "discount",
+    "percent"
+   ]
+  },
+  {
+   "id": "equivalent-ratios",
+   "title": "Adding to both parts",
+   "titleEs": "Sumar a las dos partes",
+   "intro": "Add or multiply both parts of a ratio. Which one keeps the ratio?",
+   "introEs": "Suma o multiplica las dos partes de una razón. ¿Cuál mantiene la razón?",
+   "vars": {
+    "a": {
+     "label": "first part",
+     "labelEs": "primera parte",
+     "values": [
+      "2",
+      "3",
+      "4"
+     ]
+    },
+    "b": {
+     "label": "second part",
+     "labelEs": "segunda parte",
+     "values": [
+      "3",
+      "4",
+      "6"
+     ]
+    },
+    "k": {
+     "label": "the number",
+     "labelEs": "el número",
+     "values": [
+      "1",
+      "2",
+      "3"
+     ]
+    }
+   },
+   "quantities": [
+    {
+     "id": "r0",
+     "label": "original ratio (a ÷ b)",
+     "labelEs": "razón original (a ÷ b)",
+     "expr": [
+      "div",
+      "a",
+      "b"
+     ],
+     "fmt": "frac",
+     "short": "the original ratio",
+     "shortEs": "la razón original"
+    },
+    {
+     "id": "radd",
+     "label": "ratio after adding k to both parts",
+     "labelEs": "razón después de sumar k a las dos partes",
+     "expr": [
+      "div",
+      [
+       "add",
+       "a",
+       "k"
+      ],
+      [
+       "add",
+       "b",
+       "k"
+      ]
+     ],
+     "fmt": "frac",
+     "short": "the ratio after adding",
+     "shortEs": "la razón después de sumar"
+    },
+    {
+     "id": "rmul",
+     "label": "ratio after multiplying both parts by k",
+     "labelEs": "razón después de multiplicar las dos partes por k",
+     "expr": [
+      "div",
+      [
+       "mul",
+       "a",
+       "k"
+      ],
+      [
+       "mul",
+       "b",
+       "k"
+      ]
+     ],
+     "fmt": "frac",
+     "short": "the ratio after multiplying",
+     "shortEs": "la razón después de multiplicar"
+    }
+   ],
+   "reasons": [
+    {
+     "text": "multiplying both parts by the same number makes copies of the same batch",
+     "textEs": "multiplicar las dos partes por el mismo número hace copias del mismo lote"
+    },
+    {
+     "text": "adding the same amount to both parts changes how big one part is compared with the other",
+     "textEs": "sumar la misma cantidad a las dos partes cambia cuánto mayor es una parte que la otra"
+    }
+   ],
+   "limits": [
+    {
+     "text": "adding only keeps the ratio when both parts are equal",
+     "textEs": "sumar solo mantiene la razón cuando las dos partes son iguales"
+    },
+    {
+     "text": "the difference between the parts stays the same, but the ratio does not",
+     "textEs": "la diferencia entre las partes se queda igual, pero la razón no"
+    }
+   ],
+   "vocab": [
+    "ratio",
+    "equivalent"
+   ]
+  },
+  {
+   "id": "unit-price",
+   "title": "The cheaper tag",
+   "titleEs": "La etiqueta más barata",
+   "intro": "Compare two packs. Does the cheaper tag mean the cheaper price per item?",
+   "introEs": "Compara dos paquetes. ¿La etiqueta más barata significa un precio por artículo más barato?",
+   "vars": {
+    "qa": {
+     "label": "items in pack A",
+     "labelEs": "artículos en el paquete A",
+     "values": [
+      "3",
+      "6"
+     ],
+     "short": "the items in A",
+     "shortEs": "los artículos en A"
+    },
+    "pa": {
+     "label": "price of pack A",
+     "labelEs": "precio del paquete A",
+     "values": [
+      "3",
+      "5"
+     ],
+     "short": "the price of A",
+     "shortEs": "el precio de A"
+    },
+    "qb": {
+     "label": "items in pack B",
+     "labelEs": "artículos en el paquete B",
+     "values": [
+      "8",
+      "10"
+     ],
+     "short": "the items in B",
+     "shortEs": "los artículos en B"
+    },
+    "pb": {
+     "label": "price of pack B",
+     "labelEs": "precio del paquete B",
+     "values": [
+      "4",
+      "6"
+     ],
+     "short": "the price of B",
+     "shortEs": "el precio de B"
+    }
+   },
+   "quantities": [
+    {
+     "id": "ua",
+     "label": "pack A, price for 1 item",
+     "labelEs": "paquete A, precio de 1 artículo",
+     "expr": [
+      "div",
+      "pa",
+      "qa"
+     ],
+     "fmt": "dec2",
+     "short": "A's price per item",
+     "shortEs": "el precio por artículo de A"
+    },
+    {
+     "id": "ub",
+     "label": "pack B, price for 1 item",
+     "labelEs": "paquete B, precio de 1 artículo",
+     "expr": [
+      "div",
+      "pb",
+      "qb"
+     ],
+     "fmt": "dec2",
+     "short": "B's price per item",
+     "shortEs": "el precio por artículo de B"
+    }
+   ],
+   "reasons": [
+    {
+     "text": "the price per item tells how much one item costs in each pack",
+     "textEs": "el precio por artículo dice cuánto cuesta un artículo en cada paquete"
+    },
+    {
+     "text": "the packs hold different numbers of items",
+     "textEs": "los paquetes tienen distinta cantidad de artículos"
+    }
+   ],
+   "limits": [
+    {
+     "text": "a cheaper tag can be a smaller pack, so each item can cost more",
+     "textEs": "una etiqueta más barata puede ser un paquete más pequeño, así que cada artículo puede costar más"
+    },
+    {
+     "text": "it only works when the cheaper pack also has at least as many items",
+     "textEs": "solo funciona cuando el paquete más barato también tiene al menos tantos artículos"
+    }
+   ],
+   "vocab": [
+    "unit price",
+    "per item"
+   ]
+  },
+  {
+   "id": "percent-trap",
+   "title": "Up then down",
+   "titleEs": "Sube y luego baja",
+   "intro": "A price goes up a percent and then down the same percent. Where does it end?",
+   "introEs": "Un precio sube un porcentaje y luego baja el mismo porcentaje. ¿Dónde termina?",
+   "vars": {
+    "s": {
+     "label": "starting price",
+     "labelEs": "precio inicial",
+     "values": [
+      "80",
+      "200"
+     ]
+    },
+    "p": {
+     "label": "the percent",
+     "labelEs": "el porcentaje",
+     "values": [
+      "10%",
+      "20%",
+      "25%",
+      "50%"
+     ]
+    }
+   },
+   "quantities": [
+    {
+     "id": "up",
+     "label": "price after going up",
+     "labelEs": "precio después de subir",
+     "expr": [
+      "mul",
+      "s",
+      [
+       "add",
+       1,
+       "p"
+      ]
+     ],
+     "fmt": "num",
+     "short": "the price after going up",
+     "shortEs": "el precio después de subir"
+    },
+    {
+     "id": "down",
+     "label": "price after going back down",
+     "labelEs": "precio después de volver a bajar",
+     "expr": [
+      "mul",
+      [
+       "mul",
+       "s",
+       [
+        "add",
+        1,
+        "p"
+       ]
+      ],
+      [
+       "sub",
+       1,
+       "p"
+      ]
+     ],
+     "fmt": "num",
+     "short": "the final price",
+     "shortEs": "el precio final"
+    }
+   ],
+   "reasons": [
+    {
+     "text": "the percent going down comes off a bigger amount than the percent going up",
+     "textEs": "el porcentaje que baja se quita de una cantidad mayor que el que subió"
+    },
+    {
+     "text": "a percent always depends on which amount it is a percent of",
+     "textEs": "un porcentaje siempre depende de la cantidad de la que es porcentaje"
+    }
+   ],
+   "limits": [
+    {
+     "text": "the final price is always less than the start, unless the percent is 0%",
+     "textEs": "el precio final siempre es menor que el inicial, a menos que el porcentaje sea 0%"
+    },
+    {
+     "text": "the bigger the percent, the more you lose",
+     "textEs": "mientras mayor es el porcentaje, más pierdes"
+    }
+   ],
+   "vocab": [
+    "percent",
+    "whole"
+   ]
+  },
+  {
+   "id": "fraction-bottom",
+   "title": "The bigger bottom number",
+   "titleEs": "El denominador más grande",
+   "intro": "Two fractions with the same top number. What does the bottom number tell you?",
+   "introEs": "Dos fracciones con el mismo numerador. ¿Qué te dice el denominador?",
+   "vars": {
+    "n": {
+     "label": "top number",
+     "labelEs": "numerador",
+     "values": [
+      "1",
+      "2",
+      "3"
+     ]
+    },
+    "d1": {
+     "label": "bottom number of A",
+     "labelEs": "denominador de A",
+     "values": [
+      "2",
+      "4",
+      "8"
+     ],
+     "short": "A's bottom number",
+     "shortEs": "el denominador de A"
+    },
+    "d2": {
+     "label": "bottom number of B",
+     "labelEs": "denominador de B",
+     "values": [
+      "3",
+      "6",
+      "10"
+     ],
+     "short": "B's bottom number",
+     "shortEs": "el denominador de B"
+    }
+   },
+   "quantities": [
+    {
+     "id": "fa",
+     "label": "fraction A (n ÷ d1)",
+     "labelEs": "fracción A (n ÷ d1)",
+     "expr": [
+      "div",
+      "n",
+      "d1"
+     ],
+     "fmt": "num",
+     "short": "fraction A",
+     "shortEs": "la fracción A"
+    },
+    {
+     "id": "fb",
+     "label": "fraction B (n ÷ d2)",
+     "labelEs": "fracción B (n ÷ d2)",
+     "expr": [
+      "div",
+      "n",
+      "d2"
+     ],
+     "fmt": "num",
+     "short": "fraction B",
+     "shortEs": "la fracción B"
+    }
+   ],
+   "reasons": [
+    {
+     "text": "more equal pieces means each piece is smaller",
+     "textEs": "más partes iguales significa que cada parte es más pequeña"
+    },
+    {
+     "text": "the bottom number tells how many equal pieces the whole is cut into",
+     "textEs": "el denominador dice en cuántas partes iguales se corta el entero"
+    }
+   ],
+   "limits": [
+    {
+     "text": "this only compares fractions with the same top number",
+     "textEs": "esto solo compara fracciones con el mismo numerador"
+    },
+    {
+     "text": "with different top numbers the bottom number alone does not decide",
+     "textEs": "con numeradores distintos el denominador solo no decide"
+    }
+   ],
+   "vocab": [
+    "fraction",
+    "denominator"
+   ]
+  },
+  {
+   "id": "fraction-division",
+   "title": "Dividing by a fraction",
+   "titleEs": "Dividir entre una fracción",
+   "intro": "Divide a number by another number. Is the answer smaller than the number you started with?",
+   "introEs": "Divide un número entre otro. ¿La respuesta es menor que el número con el que empezaste?",
+   "vars": {
+    "a": {
+     "label": "number you divide",
+     "labelEs": "número que divides",
+     "values": [
+      "3",
+      "2",
+      "1/2",
+      "3/4",
+      "5"
+     ],
+     "short": "the number you divide",
+     "shortEs": "el número que divides"
+    },
+    "b": {
+     "label": "divisor",
+     "labelEs": "divisor",
+     "values": [
+      "1/2",
+      "1/4",
+      "2/3",
+      "1",
+      "3/2",
+      "2",
+      "4"
+     ],
+     "short": "the divisor",
+     "shortEs": "el divisor"
+    }
+   },
+   "quantities": [
+    {
+     "id": "q",
+     "label": "answer (a ÷ b)",
+     "labelEs": "respuesta (a ÷ b)",
+     "expr": [
+      "div",
+      "a",
+      "b"
+     ],
+     "fmt": "mixed",
+     "short": "the answer",
+     "shortEs": "la respuesta"
+    }
+   ],
+   "reasons": [
+    {
+     "text": "dividing asks how many of the divisor fit in the number",
+     "textEs": "dividir pregunta cuántos del divisor caben en el número"
+    },
+    {
+     "text": "a whole number cut into pieces gives more pieces than the whole number",
+     "textEs": "un número entero cortado en partes da más partes que el número entero"
+    }
+   ],
+   "limits": [
+    {
+     "text": "when the divisor is less than 1, more than one fits, so the answer is bigger",
+     "textEs": "cuando el divisor es menor que 1, cabe más de uno, así que la respuesta es mayor"
+    },
+    {
+     "text": "when the divisor is exactly 1, the answer stays the same",
+     "textEs": "cuando el divisor es exactamente 1, la respuesta se queda igual"
+    }
+   ],
+   "vocab": [
+    "divide",
+    "quotient"
+   ]
+  },
+  {
+   "id": "volume-scaling",
+   "title": "Scaling a box",
+   "titleEs": "Escalar una caja",
+   "intro": "Every edge of a box gets k times as long. How does the volume change?",
+   "introEs": "Cada arista de una caja se hace k veces más larga. ¿Cómo cambia el volumen?",
+   "vars": {
+    "l": {
+     "label": "length",
+     "labelEs": "largo",
+     "values": [
+      "2",
+      "3"
+     ]
+    },
+    "w": {
+     "label": "width",
+     "labelEs": "ancho",
+     "values": [
+      "2",
+      "5"
+     ]
+    },
+    "h": {
+     "label": "height",
+     "labelEs": "alto",
+     "values": [
+      "3",
+      "4"
+     ]
+    },
+    "k": {
+     "label": "scale factor k",
+     "labelEs": "factor de escala k",
+     "values": [
+      "2",
+      "3",
+      "4"
+     ]
+    }
+   },
+   "quantities": [
+    {
+     "id": "times",
+     "label": "new volume ÷ old volume",
+     "labelEs": "nuevo volumen ÷ volumen anterior",
+     "expr": [
+      "div",
+      [
+       "mul",
+       [
+        "mul",
+        "l",
+        "k"
+       ],
+       [
+        "mul",
+        "w",
+        "k"
+       ],
+       [
+        "mul",
+        "h",
+        "k"
+       ]
+      ],
+      [
+       "mul",
+       "l",
+       "w",
+       "h"
+      ]
+     ],
+     "fmt": "num",
+     "short": "the volume ratio",
+     "shortEs": "la razón de volúmenes"
+    },
+    {
+     "id": "k3",
+     "label": "k × k × k",
+     "labelEs": "k × k × k",
+     "expr": [
+      "mul",
+      "k",
+      "k",
+      "k"
+     ],
+     "fmt": "num",
+     "short": "k × k × k",
+     "shortEs": "k × k × k"
+    }
+   ],
+   "reasons": [
+    {
+     "text": "volume uses length, width and height, so all three edges are stretched",
+     "textEs": "el volumen usa largo, ancho y alto, así que se estiran las tres aristas"
+    },
+    {
+     "text": "each edge grows by k, so the volume grows by k three times",
+     "textEs": "cada arista crece k veces, así que el volumen crece k tres veces"
+    }
+   ],
+   "limits": [
+    {
+     "text": "it would only equal k if just one edge were stretched",
+     "textEs": "solo sería igual a k si se estirara una sola arista"
+    },
+    {
+     "text": "with k = 1 nothing changes, so every claim about k looks true there",
+     "textEs": "con k = 1 nada cambia, así que cualquier afirmación sobre k parece cierta ahí"
+    }
+   ],
+   "vocab": [
+    "volume",
+    "edge"
+   ]
+  },
+  {
+   "id": "solving-equations",
+   "title": "Solving equations",
+   "titleEs": "Resolver ecuaciones",
+   "intro": "Solve x + a = b by undoing the addition. Check your answer by putting it back.",
+   "introEs": "Resuelve x + a = b deshaciendo la suma. Comprueba tu respuesta volviéndola a poner.",
+   "vars": {
+    "a": {
+     "label": "the number added to x",
+     "labelEs": "el número sumado a x",
+     "values": [
+      "2",
+      "5",
+      "7"
+     ]
+    },
+    "b": {
+     "label": "the number on the right",
+     "labelEs": "el número de la derecha",
+     "values": [
+      "10",
+      "13",
+      "20"
+     ]
+    }
+   },
+   "quantities": [
+    {
+     "id": "x",
+     "label": "x found by subtracting a from b",
+     "labelEs": "x hallada restando a de b",
+     "expr": [
+      "sub",
+      "b",
+      "a"
+     ],
+     "fmt": "num",
+     "short": "x when you subtract",
+     "shortEs": "x cuando restas"
+    },
+    {
+     "id": "xadd",
+     "label": "the number found by adding a and b",
+     "labelEs": "el número hallado sumando a y b",
+     "expr": [
+      "add",
+      "b",
+      "a"
+     ],
+     "fmt": "num",
+     "short": "the sum of a and b",
+     "shortEs": "la suma de a y b"
+    },
+    {
+     "id": "check",
+     "label": "x + a (should equal b)",
+     "labelEs": "x + a (debe ser igual a b)",
+     "expr": [
+      "add",
+      [
+       "sub",
+       "b",
+       "a"
+      ],
+      "a"
+     ],
+     "fmt": "num",
+     "short": "x + a",
+     "shortEs": "x + a"
+    }
+   ],
+   "reasons": [
+    {
+     "text": "subtracting a from both sides keeps the equation balanced and leaves x alone",
+     "textEs": "restar a en los dos lados mantiene la ecuación equilibrada y deja x sola"
+    },
+    {
+     "text": "subtraction undoes the addition",
+     "textEs": "la resta deshace la suma"
+    }
+   ],
+   "limits": [
+    {
+     "text": "adding a to both sides makes the left side bigger, not x alone",
+     "textEs": "sumar a en los dos lados hace mayor el lado izquierdo, no deja x sola"
+    },
+    {
+     "text": "you must put the answer back into the equation to check it",
+     "textEs": "debes poner la respuesta en la ecuación para comprobarla"
+    }
+   ],
+   "vocab": [
+    "equation",
+    "solution",
+    "inverse operation"
+   ]
+  },
+  {
+   "id": "mean-vs-median",
+   "title": "Mean and median",
+   "titleEs": "Media y mediana",
+   "intro": "Five times: 8, 9, 10, 11 and 12 minutes. Add a sixth time. How do the mean and median move?",
+   "introEs": "Cinco tiempos: 8, 9, 10, 11 y 12 minutos. Agrega un sexto tiempo. ¿Cómo se mueven la media y la mediana?",
+   "vars": {
+    "o": {
+     "label": "the sixth time",
+     "labelEs": "el sexto tiempo",
+     "values": [
+      "10",
+      "12",
+      "20",
+      "50",
+      "100"
+     ],
+     "short": "the sixth time",
+     "shortEs": "el sexto tiempo"
+    }
+   },
+   "quantities": [
+    {
+     "id": "dMean",
+     "label": "how far the mean moves from 10",
+     "labelEs": "cuánto se mueve la media desde 10",
+     "expr": [
+      "abs",
+      [
+       "sub",
+       [
+        "mean",
+        8,
+        9,
+        10,
+        11,
+        12,
+        "o"
+       ],
+       10
+      ]
+     ],
+     "fmt": "dec2",
+     "short": "the mean's move",
+     "shortEs": "el movimiento de la media"
+    },
+    {
+     "id": "dMedian",
+     "label": "how far the median moves from 10",
+     "labelEs": "cuánto se mueve la mediana desde 10",
+     "expr": [
+      "abs",
+      [
+       "sub",
+       [
+        "median",
+        8,
+        9,
+        10,
+        11,
+        12,
+        "o"
+       ],
+       10
+      ]
+     ],
+     "fmt": "dec2",
+     "short": "the median's move",
+     "shortEs": "el movimiento de la mediana"
+    },
+    {
+     "id": "mean1",
+     "label": "mean of all six",
+     "labelEs": "media de los seis",
+     "expr": [
+      "mean",
+      8,
+      9,
+      10,
+      11,
+      12,
+      "o"
+     ],
+     "fmt": "dec2",
+     "short": "the mean",
+     "shortEs": "la media"
+    },
+    {
+     "id": "median1",
+     "label": "median of all six",
+     "labelEs": "mediana de los seis",
+     "expr": [
+      "median",
+      8,
+      9,
+      10,
+      11,
+      12,
+      "o"
+     ],
+     "fmt": "dec2",
+     "short": "the median",
+     "shortEs": "la mediana"
+    }
+   ],
+   "reasons": [
+    {
+     "text": "the mean adds every value, so a far-out value pulls it",
+     "textEs": "la media suma todos los valores, así que un valor muy alejado la jala"
+    },
+    {
+     "text": "the median only depends on the middle of the ordered list",
+     "textEs": "la mediana solo depende del centro de la lista ordenada"
+    }
+   ],
+   "limits": [
+    {
+     "text": "a value only a little different from the others may move both about the same",
+     "textEs": "un valor solo un poco distinto de los otros puede mover las dos casi igual"
+    },
+    {
+     "text": "the mean moves more only when the sixth time is far from the others",
+     "textEs": "la media se mueve más solo cuando el sexto tiempo está lejos de los otros"
+    }
+   ],
+   "vocab": [
+    "mean",
+    "median",
+    "outlier"
+   ]
+  },
+  {
+   "id": "slant-height",
+   "title": "Slant height of a pyramid",
+   "titleEs": "Altura inclinada de una pirámide",
+   "intro": "A pyramid has a height and a slant height. How are they related?",
+   "introEs": "Una pirámide tiene una altura y una altura inclinada. ¿Cómo se relacionan?",
+   "vars": {
+    "b": {
+     "label": "half of a base side",
+     "labelEs": "la mitad de un lado de la base",
+     "values": [
+      "3",
+      "5",
+      "6",
+      "8",
+      "9",
+      "7"
+     ],
+     "short": "half the base",
+     "shortEs": "la mitad de la base"
+    },
+    "h": {
+     "label": "height",
+     "labelEs": "altura",
+     "values": [
+      "4",
+      "12",
+      "8",
+      "15",
+      "12",
+      "24"
+     ],
+     "short": "the height",
+     "shortEs": "la altura"
+    }
+   },
+   "cases": [
+    {
+     "b": "3",
+     "h": "4"
+    },
+    {
+     "b": "5",
+     "h": "12"
+    },
+    {
+     "b": "6",
+     "h": "8"
+    },
+    {
+     "b": "8",
+     "h": "15"
+    },
+    {
+     "b": "9",
+     "h": "12"
+    },
+    {
+     "b": "7",
+     "h": "24"
+    }
+   ],
+   "quantities": [
+    {
+     "id": "s",
+     "label": "slant height",
+     "labelEs": "altura inclinada",
+     "expr": [
+      "sqrt",
+      [
+       "add",
+       [
+        "pow",
+        "b",
+        2
+       ],
+       [
+        "pow",
+        "h",
+        2
+       ]
+      ]
+     ],
+     "fmt": "num",
+     "short": "the slant height",
+     "shortEs": "la altura inclinada"
+    },
+    {
+     "id": "legs",
+     "label": "half the base plus the height",
+     "labelEs": "la mitad de la base más la altura",
+     "expr": [
+      "add",
+      "b",
+      "h"
+     ],
+     "fmt": "num",
+     "short": "half the base plus the height",
+     "shortEs": "la mitad de la base más la altura"
+    }
+   ],
+   "reasons": [
+    {
+     "text": "the height, half the base and the slant height make a right triangle",
+     "textEs": "la altura, la mitad de la base y la altura inclinada forman un triángulo rectángulo"
+    },
+    {
+     "text": "the slant height is the longest side of that right triangle",
+     "textEs": "la altura inclinada es el lado más largo de ese triángulo rectángulo"
+    }
+   ],
+   "limits": [
+    {
+     "text": "the two would only match if half the base were 0, and then there is no pyramid",
+     "textEs": "las dos solo coincidirían si la mitad de la base fuera 0, y entonces no hay pirámide"
+    },
+    {
+     "text": "the slant height is always longer than the height, but shorter than half the base plus the height",
+     "textEs": "la altura inclinada siempre es mayor que la altura, pero menor que la mitad de la base más la altura"
+    }
+   ],
+   "vocab": [
+    "slant height",
+    "height",
+    "right triangle"
+   ]
+  },
+  {
+   "id": "distributive",
+   "title": "The distributive property",
+   "titleEs": "La propiedad distributiva",
+   "intro": "Compare k(x + c) with other ways to write it.",
+   "introEs": "Compara k(x + c) con otras maneras de escribirlo.",
+   "vars": {
+    "k": {
+     "label": "k",
+     "labelEs": "k",
+     "values": [
+      "2",
+      "3",
+      "5"
+     ]
+    },
+    "x": {
+     "label": "x",
+     "labelEs": "x",
+     "values": [
+      "1",
+      "2",
+      "4"
+     ]
+    },
+    "c": {
+     "label": "c",
+     "labelEs": "c",
+     "values": [
+      "1",
+      "3",
+      "4"
+     ]
+    }
+   },
+   "quantities": [
+    {
+     "id": "whole",
+     "label": "k(x + c)",
+     "labelEs": "k(x + c)",
+     "expr": [
+      "mul",
+      "k",
+      [
+       "add",
+       "x",
+       "c"
+      ]
+     ],
+     "fmt": "num",
+     "short": "k(x + c)",
+     "shortEs": "k(x + c)"
+    },
+    {
+     "id": "tempt",
+     "label": "kx + c",
+     "labelEs": "kx + c",
+     "expr": [
+      "add",
+      [
+       "mul",
+       "k",
+       "x"
+      ],
+      "c"
+     ],
+     "fmt": "num",
+     "short": "kx + c",
+     "shortEs": "kx + c"
+    },
+    {
+     "id": "dist",
+     "label": "kx + kc",
+     "labelEs": "kx + kc",
+     "expr": [
+      "add",
+      [
+       "mul",
+       "k",
+       "x"
+      ],
+      [
+       "mul",
+       "k",
+       "c"
+      ]
+     ],
+     "fmt": "num",
+     "short": "kx + kc",
+     "shortEs": "kx + kc"
+    }
+   ],
+   "reasons": [
+    {
+     "text": "the number outside the parentheses multiplies every term inside",
+     "textEs": "el número de afuera de los paréntesis multiplica cada término de adentro"
+    },
+    {
+     "text": "a rectangle k tall and x + c wide is made of a k by x rectangle and a k by c rectangle",
+     "textEs": "un rectángulo de alto k y ancho x + c se forma con un rectángulo de k por x y otro de k por c"
+    }
+   ],
+   "limits": [
+    {
+     "text": "kx + c only matches when k is 1",
+     "textEs": "kx + c solo coincide cuando k es 1"
+    },
+    {
+     "text": "leaving out k from the second term makes the total too small",
+     "textEs": "dejar fuera k del segundo término hace el total demasiado pequeño"
+    }
+   ],
+   "vocab": [
+    "distributive property",
+    "expression"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,605 @@
+/* Math Reality Lab modes: Counterexample Forge (.fx), Invariant Hunter (.iv), Sketch compiler (.sk).
+ * Uses the shared EWL tokens from ewl.css. Meaning is never carried by color alone: every state has a symbol and a word. */
+.ewl-mode {
+  color: var(--ewl-ink);
+  font: 17px/1.55 var(--ewl-font);
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.ewl-mode *,
+.ewl-mode *::before,
+.ewl-mode *::after {
+  box-sizing: border-box;
+}
+.ewl-mode h3,
+.ewl-mode h4,
+.ewl-mode p,
+.ewl-mode dl,
+.ewl-mode ol,
+.ewl-mode ul {
+  margin: 0;
+}
+.ewl-mode h3 {
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+.ewl-mode h4 {
+  font-size: 1.15rem;
+  line-height: 1.3;
+}
+.ewl-mode .ewl-card {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.ewl-mode label,
+.ewl-mode legend {
+  font-weight: 700;
+}
+.ewl-mode input[type="text"],
+.ewl-mode textarea,
+.ewl-mode select {
+  min-height: 44px;
+  width: 100%;
+  max-width: 100%;
+  padding: 8px 12px;
+  font: inherit;
+  color: var(--ewl-ink);
+  background: var(--ewl-card);
+  border: 2px solid var(--ewl-line);
+  border-radius: 8px;
+}
+.ewl-mode textarea {
+  resize: vertical;
+}
+.ewl-mode input:focus-visible,
+.ewl-mode textarea:focus-visible,
+.ewl-mode select:focus-visible,
+.ewl-mode [tabindex]:focus-visible {
+  outline: 3px solid var(--ewl-focus);
+  outline-offset: 2px;
+}
+.ewl-mode .ewl-msg[data-kind="info"]::before {
+  content: "i  ";
+  font-weight: 700;
+}
+.ewl-mode .ewl-msg[data-kind="warn"][data-hint]::before {
+  content: "? ";
+}
+.ewl-mode .ewl-btn:disabled {
+  opacity: 0.55;
+}
+.ewl-mode .ewl-btn[data-primary]:hover {
+  filter: brightness(1.08);
+}
+.ewl-mode .ewl-btn:not([data-primary]):hover {
+  background: var(--ewl-bg);
+}
+.ewl-mode .ewl-btn:active {
+  transform: translateY(1px);
+}
+.ewl-mode .ewl-row {
+  gap: 10px;
+}
+.ewl-mode .ewl-lead,
+.ewl-mode .fx-lead,
+.ewl-mode .iv-lead,
+.ewl-mode .sk-lead {
+  color: var(--ewl-muted);
+}
+.ewl-mode .fx-hint,
+.ewl-mode .iv-hint,
+.ewl-mode .sk-hint {
+  color: var(--ewl-muted);
+  font-size: 0.92rem;
+}
+.ewl-mode .ewl-sr {
+  position: absolute;
+}
+
+/* ---------- shared: step list ---------- */
+.fx-steps,
+.iv-steps {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.fx-steps li,
+.iv-steps li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 8px;
+  border: 2px solid var(--ewl-line);
+  border-radius: 999px;
+  color: var(--ewl-muted);
+  background: var(--ewl-card);
+  font-size: 0.95rem;
+}
+.fx-steps li[data-state="now"],
+.iv-steps li[data-state="now"] {
+  border-color: var(--ewl-brand);
+  color: var(--ewl-brand);
+  font-weight: 700;
+}
+.fx-steps li[data-state="done"],
+.iv-steps li[data-state="done"] {
+  border-color: var(--ewl-ok);
+  color: var(--ewl-ok);
+}
+.fx-num {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.fx-steps li[data-state="now"] .fx-num,
+.iv-steps li[data-state="now"] .fx-num {
+  background: var(--ewl-brand);
+  color: var(--ewl-brand-ink);
+  border-color: var(--ewl-brand);
+}
+
+/* ---------- Forge ---------- */
+.fx-intro {
+  color: var(--ewl-muted);
+  max-width: 62ch;
+}
+.fx-picker {
+  gap: 8px;
+}
+.fx-picker .ewl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.fx-botbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 10px;
+}
+.fx-botbtn .fx-avatar {
+  flex: none;
+}
+.fx-tick {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--ewl-ok-bg);
+  color: var(--ewl-ok);
+  border: 1px solid var(--ewl-ok);
+}
+.fx-botbtn[aria-pressed="true"] .fx-tick {
+  background: var(--ewl-card);
+}
+.fx-avatar {
+  fill: var(--ewl-card);
+  stroke: var(--ewl-brand);
+  stroke-width: 2.5;
+}
+.fx-botbtn[aria-pressed="true"] .fx-avatar {
+  fill: #fff;
+}
+.fx-avatar .fx-eye {
+  fill: var(--ewl-brand);
+  stroke: none;
+}
+.fx-avatar .fx-mouth {
+  fill: none;
+  stroke: var(--ewl-brand);
+  stroke-linecap: round;
+}
+.fx-main {
+  display: grid;
+  gap: 14px;
+}
+.fx-bot {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.fx-bot .fx-avatar {
+  flex: none;
+}
+.fx-botwords {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.fx-persona {
+  color: var(--ewl-muted);
+  font-size: 0.95rem;
+}
+.fx-bubble {
+  position: relative;
+  padding: 10px 14px;
+  border: 2px solid var(--ewl-line);
+  border-radius: 14px;
+  background: var(--ewl-card);
+  font-style: italic;
+  max-width: 56ch;
+}
+.fx-rule {
+  margin: 0;
+  padding: 12px 16px;
+  border-left: 6px solid var(--ewl-accent);
+  background: var(--ewl-warn-bg);
+  border-radius: 8px;
+  display: grid;
+  gap: 2px;
+}
+.fx-rule strong {
+  font-size: 1.1rem;
+}
+.fx-cap {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ewl-warn);
+  font-weight: 700;
+}
+.fx-form {
+  display: grid;
+  gap: 6px 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  align-items: start;
+}
+.fx-form > .ewl-btn {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+.fx-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  align-content: start;
+}
+.fx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.fx-chip {
+  padding: 2px 12px;
+  font-weight: 400;
+}
+.fx-out:empty,
+.fx-err:empty,
+.fx-hints:empty {
+  display: none;
+}
+.fx-out,
+.fx-err,
+.fx-hints {
+  display: grid;
+  gap: 8px;
+}
+.fx-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.fx-table caption {
+  text-align: left;
+  font-weight: 700;
+  padding-bottom: 6px;
+}
+.fx-table th,
+.fx-table td {
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--ewl-line);
+  vertical-align: top;
+}
+.fx-table tr[data-breaks="yes"] td:last-child {
+  font-weight: 700;
+  color: var(--ewl-ok);
+}
+.fx-opts {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.ewl-mode .fx-opt {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 14px;
+  border: 2px solid var(--ewl-line);
+  border-radius: 10px;
+  background: var(--ewl-card);
+  font-weight: 400;
+  cursor: pointer;
+  min-height: 44px;
+}
+.fx-opt:has(input:checked) {
+  border-color: var(--ewl-brand);
+  background: var(--ewl-bg);
+}
+.fx-opt input {
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  flex: none;
+}
+.fx-rubric {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+.fx-rubric li[data-ok="yes"] {
+  color: var(--ewl-ok);
+  font-weight: 700;
+}
+.fx-sum {
+  display: grid;
+  gap: 4px 16px;
+  grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
+}
+.fx-sum dt {
+  font-weight: 700;
+  color: var(--ewl-muted);
+}
+.fx-sum dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 560px) {
+  .fx-sum {
+    grid-template-columns: 1fr;
+  }
+  .fx-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .fx-table tr {
+    display: block;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--ewl-line);
+  }
+  .fx-table td {
+    display: block;
+    border: 0;
+    padding: 2px 8px;
+  }
+  .fx-table td::before {
+    content: attr(data-label) ": ";
+    font-weight: 700;
+    color: var(--ewl-muted);
+  }
+}
+
+/* ---------- Invariant Hunter ---------- */
+.iv-card {
+  gap: 14px;
+}
+.iv-state {
+  font-size: 1.35rem;
+  font-weight: 700;
+  padding: 12px 16px;
+  border: 2px solid var(--ewl-brand);
+  border-radius: 12px;
+  background: var(--ewl-bg);
+  overflow-wrap: anywhere;
+}
+.iv-moves {
+  display: grid;
+  gap: 10px;
+}
+.iv-move {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 10px 14px;
+  border: 2px solid var(--ewl-line);
+  border-radius: 12px;
+}
+.iv-movelabel {
+  font-weight: 700;
+  min-width: 12rem;
+}
+.iv-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.iv-chip {
+  padding: 2px 12px;
+  min-width: 44px;
+}
+.iv-builder {
+  display: grid;
+  gap: 8px;
+}
+.iv-badge {
+  margin-left: auto;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+.iv-badge[data-held="yes"] {
+  color: var(--ewl-ok);
+  background: var(--ewl-ok-bg);
+}
+.iv-badge[data-held="no"] {
+  color: var(--ewl-bad);
+  background: var(--ewl-bad-bg);
+}
+.iv-count {
+  color: var(--ewl-muted);
+}
+.iv-table {
+  font-size: 0.95rem;
+}
+
+/* ---------- Sketch compiler ---------- */
+.sk-story {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.sk-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sk-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.sk-sym {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  font-size: 1.1rem;
+}
+.sk-gridwrap {
+  overflow-x: auto;
+  max-width: 100%;
+  border: 2px solid var(--ewl-line);
+  border-radius: 12px;
+  background: var(--ewl-card);
+  padding: 4px;
+}
+.sk-svg {
+  display: block;
+  max-width: none;
+  touch-action: manipulation;
+  user-select: none;
+}
+.sk-svg:focus-visible {
+  outline: 3px solid var(--ewl-focus);
+  outline-offset: 2px;
+}
+.sk-cell {
+  fill: transparent;
+  stroke: var(--ewl-line);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+.sk-cursor {
+  fill: none;
+  stroke: var(--ewl-focus);
+  stroke-width: 3;
+  rx: 6;
+  pointer-events: none;
+}
+.sk-block {
+  fill: var(--ewl-card);
+  stroke: var(--ewl-a);
+  stroke-width: 2.5;
+  rx: 4;
+}
+.sk-block[data-shade="yes"] {
+  stroke-width: 3.5;
+}
+.sk-hatch-bg {
+  fill: var(--ewl-card);
+}
+.sk-hatch-line {
+  stroke: var(--ewl-a);
+  stroke-width: 3;
+}
+.sk-bracket {
+  stroke: var(--ewl-ink);
+  stroke-width: 2.5;
+}
+.sk-label,
+.sk-blocklabel {
+  fill: var(--ewl-ink);
+  font: 700 15px var(--ewl-font);
+}
+.sk-axisnum {
+  fill: var(--ewl-muted);
+  font: 13px var(--ewl-font);
+  text-anchor: middle;
+}
+.sk-rowname {
+  fill: var(--ewl-ink);
+  font: 700 14px var(--ewl-font);
+}
+.sk-axis {
+  stroke: var(--ewl-ink);
+  stroke-width: 2;
+}
+.sk-minor {
+  stroke: var(--ewl-muted);
+  stroke-width: 1.5;
+}
+.sk-tick {
+  stroke: var(--ewl-b);
+  stroke-width: 3.5;
+}
+.sk-dot {
+  fill: var(--ewl-card);
+  stroke: var(--ewl-b);
+  stroke-width: 3.5;
+}
+.sk-prompt {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: end;
+  padding: 12px;
+  border: 2px solid var(--ewl-brand);
+  border-radius: 12px;
+}
+.sk-prompt label {
+  flex: 1 1 100%;
+}
+.sk-prompt input {
+  flex: 1 1 10rem;
+  width: auto;
+}
+.sk-results {
+  display: grid;
+  gap: 10px;
+}
+.sk-results h5 {
+  margin: 4px 0 0;
+  font-size: 1rem;
+}
+.sk-issues {
+  margin: 6px 0 0;
+  padding-left: 1.2rem;
+}
+.sk-steps {
+  display: grid;
+  gap: 6px;
+  padding-left: 1.4rem;
+}
+.sk-eq {
+  display: grid;
+  gap: 2px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  padding: 10px 14px;
+  border-left: 6px solid var(--ewl-brand);
+  background: var(--ewl-bg);
+  border-radius: 8px;
+}
+.sk-eq .fx-cap {
+  color: var(--ewl-muted);
+}

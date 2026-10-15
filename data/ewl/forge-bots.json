@@ -1,0 +1,1597 @@
+{
+  "version": 1,
+  "bots": [
+    {
+      "id": "kofi",
+      "name": "Kofi",
+      "unit": 2,
+      "lessons": [
+        "2-12"
+      ],
+      "standard": "6.NOS.3",
+      "reasonRule": null,
+      "persona": "Kofi is quick and cheerful. He likes a rule he can say in one breath.",
+      "personaEs": "Kofi es rápido y alegre. Le gusta una regla que se pueda decir de un tirón.",
+      "ruleWords": "Multiplying always makes a number bigger.",
+      "ruleWordsEs": "Multiplicar siempre hace más grande a un número.",
+      "task": "Multiply a by b. Is the product bigger than a, smaller than a, or the same size as a?",
+      "taskEs": "Multiplica a por b. ¿El producto es mayor que a, menor que a o del mismo tamaño que a?",
+      "lines": {
+        "hello": "Hi! I multiply, and the answer always grows. Watch me go.",
+        "helloEs": "¡Hola! Yo multiplico y la respuesta siempre crece. Mira.",
+        "found": "Oh. It got smaller. I did not expect that. Thank you for showing me.",
+        "foundEs": "Ah. Quedó más pequeño. No lo esperaba. Gracias por mostrármelo.",
+        "tryAgain": "Hmm, that still breaks somewhere. Let us look again.",
+        "tryAgainEs": "Mmm, eso todavía falla en algún lugar. Miremos otra vez.",
+        "patched": "That works on every test I can think of. I feel steadier now.",
+        "patchedEs": "Eso funciona en todas las pruebas que se me ocurren. Ahora me siento más seguro.",
+        "bye": "Now I can tell a friend the real rule.",
+        "byeEs": "Ahora puedo decirle a un amigo la regla de verdad."
+      },
+      "inputs": [
+        {
+          "id": "a",
+          "label": "the starting number a",
+          "labelEs": "el número inicial a",
+          "example": "6",
+          "min": "0",
+          "minOpen": true,
+          "max": "1000",
+          "rangeNote": "Use a positive number up to 1000.",
+          "rangeNoteEs": "Usa un número positivo de hasta 1000.",
+          "pool": [
+            "1/2",
+            "3/4",
+            "2",
+            "3",
+            "5",
+            "10",
+            "1.5",
+            "2.5",
+            "7",
+            "0.2",
+            "8/3",
+            "12"
+          ]
+        },
+        {
+          "id": "b",
+          "label": "the number you multiply by, b",
+          "labelEs": "el número por el que multiplicas, b",
+          "example": "1/2",
+          "min": "0",
+          "max": "1000",
+          "rangeNote": "Use zero or a positive number up to 1000.",
+          "rangeNoteEs": "Usa cero o un número positivo de hasta 1000.",
+          "pool": [
+            "0",
+            "1/4",
+            "1/2",
+            "3/4",
+            "1",
+            "3/2",
+            "2",
+            "4",
+            "0.5",
+            "0.1",
+            "1.5",
+            "10",
+            "5/2",
+            "9/10"
+          ]
+        }
+      ],
+      "out": {
+        "format": "choice",
+        "choices": [
+          {
+            "en": "the same size as {a}",
+            "es": "del mismo tamaño que {a}"
+          },
+          {
+            "en": "bigger than {a}",
+            "es": "mayor que {a}"
+          },
+          {
+            "en": "smaller than {a}",
+            "es": "menor que {a}"
+          }
+        ]
+      },
+      "truth": [
+        "if",
+        [
+          "gt",
+          [
+            "mul",
+            "a",
+            "b"
+          ],
+          "a"
+        ],
+        1,
+        [
+          "if",
+          [
+            "gt",
+            "a",
+            [
+              "mul",
+              "a",
+              "b"
+            ]
+          ],
+          2,
+          0
+        ]
+      ],
+      "rule": [
+        "k",
+        "1"
+      ],
+      "starter": {
+        "a": "6",
+        "b": "4"
+      },
+      "showMe": {
+        "a": "8",
+        "b": "1/2"
+      },
+      "hints": {
+        "question": "Does multiplying always make a number grow? Think about taking a part of something.",
+        "questionEs": "¿Multiplicar siempre hace crecer un número? Piensa en tomar una parte de algo.",
+        "picture": "Picture a bar that stands for the starting number. Multiplying by b keeps b copies of the bar. How long is that if b is not a whole number?",
+        "pictureEs": "Imagina una barra que representa el número inicial. Multiplicar por b guarda b copias de la barra. ¿Cuánto mide eso si b no es un número entero?",
+        "range": "Try a second number that is between 0 and 1, or exactly 1.",
+        "rangeEs": "Prueba un segundo número entre 0 y 1, o exactamente 1."
+      },
+      "repairs": [
+        {
+          "id": "gt-one",
+          "text": "Multiplying by a number bigger than 1 makes it bigger. By exactly 1 it stays the same. By a number less than 1 it gets smaller.",
+          "textEs": "Multiplicar por un número mayor que 1 lo hace mayor. Por exactamente 1 queda igual. Por un número menor que 1 se hace menor.",
+          "rule": [
+            "if",
+            [
+              "gt",
+              "b",
+              1
+            ],
+            1,
+            [
+              "if",
+              [
+                "gt",
+                1,
+                "b"
+              ],
+              2,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "whole-only",
+          "text": "Multiplying by a whole number makes it bigger. Multiplying by a fraction or decimal makes it smaller.",
+          "textEs": "Multiplicar por un número entero lo hace mayor. Multiplicar por una fracción o un decimal lo hace menor.",
+          "rule": [
+            "if",
+            [
+              "sub",
+              "b",
+              [
+                "floor",
+                "b"
+              ]
+            ],
+            2,
+            1
+          ]
+        },
+        {
+          "id": "above-zero",
+          "text": "Multiplying by any number above 0 makes it bigger.",
+          "textEs": "Multiplicar por cualquier número mayor que 0 lo hace mayor.",
+          "rule": [
+            "if",
+            [
+              "gt",
+              "b",
+              0
+            ],
+            1,
+            0
+          ]
+        },
+        {
+          "id": "half-cut",
+          "text": "Multiplying makes it bigger unless you multiply by less than 1/2.",
+          "textEs": "Multiplicar lo hace mayor, salvo que multipliques por menos de 1/2.",
+          "rule": [
+            "if",
+            [
+              "gt",
+              "b",
+              [
+                "k",
+                "1/2"
+              ]
+            ],
+            1,
+            2
+          ]
+        },
+        {
+          "id": "second-bigger",
+          "text": "The product is bigger when the second number is bigger than the first.",
+          "textEs": "El producto es mayor cuando el segundo número es mayor que el primero.",
+          "rule": [
+            "if",
+            [
+              "gt",
+              "b",
+              "a"
+            ],
+            1,
+            2
+          ]
+        }
+      ],
+      "argument": {
+        "vocab": [
+          "multiply",
+          "product",
+          "factor",
+          "fraction",
+          "decimal",
+          "less than 1",
+          "multiplicar",
+          "producto",
+          "factor",
+          "fracción",
+          "decimal",
+          "menos de 1"
+        ]
+      }
+    },
+    {
+      "id": "sasha",
+      "name": "Sasha",
+      "unit": 4,
+      "lessons": [
+        "4-2"
+      ],
+      "standard": "6.AT.4",
+      "reasonRule": "add-denominators",
+      "persona": "Sasha is neat and careful. She checks her steps twice and trusts a clear method.",
+      "personaEs": "Sasha es ordenada y cuidadosa. Revisa sus pasos dos veces y confía en un método claro.",
+      "ruleWords": "To add fractions, add the tops and add the bottoms.",
+      "ruleWordsEs": "Para sumar fracciones, suma los numeradores y suma los denominadores.",
+      "task": "Add the fractions a and b.",
+      "taskEs": "Suma las fracciones a y b.",
+      "lines": {
+        "hello": "I add the tops, then I add the bottoms. Tidy and quick.",
+        "helloEs": "Sumo los numeradores y luego los denominadores. Ordenado y rápido.",
+        "found": "Wait. That cannot be right. Thank you for finding it.",
+        "foundEs": "Un momento. Eso no puede ser. Gracias por encontrarlo.",
+        "tryAgain": "Still not quite. Let me check my steps again.",
+        "tryAgainEs": "Todavía no del todo. Revisaré mis pasos otra vez.",
+        "patched": "Now my pieces are the same size before I count them. That feels right.",
+        "patchedEs": "Ahora mis partes tienen el mismo tamaño antes de contarlas. Eso se siente bien.",
+        "bye": "I will write my new rule where I can see it.",
+        "byeEs": "Escribiré mi nueva regla donde pueda verla."
+      },
+      "inputs": [
+        {
+          "id": "a",
+          "label": "the fraction a",
+          "labelEs": "la fracción a",
+          "example": "1/2",
+          "min": "0",
+          "minOpen": true,
+          "max": "10",
+          "rangeNote": "Use a fraction or decimal greater than 0, up to 10.",
+          "rangeNoteEs": "Usa una fracción o un decimal mayor que 0, hasta 10.",
+          "pool": [
+            "1/2",
+            "1/3",
+            "1/4",
+            "2/3",
+            "3/4",
+            "1/5",
+            "2/5",
+            "3/5",
+            "1/6",
+            "5/6",
+            "3/8",
+            "1/8",
+            "7/10",
+            "1/10"
+          ]
+        },
+        {
+          "id": "b",
+          "label": "the fraction b",
+          "labelEs": "la fracción b",
+          "example": "1/2",
+          "min": "0",
+          "minOpen": true,
+          "max": "10",
+          "rangeNote": "Use a fraction or decimal greater than 0, up to 10.",
+          "rangeNoteEs": "Usa una fracción o un decimal mayor que 0, hasta 10.",
+          "pool": [
+            "1/2",
+            "1/3",
+            "1/4",
+            "2/3",
+            "3/4",
+            "1/5",
+            "2/5",
+            "3/5",
+            "1/6",
+            "5/6",
+            "3/8",
+            "1/8",
+            "7/10",
+            "1/10"
+          ]
+        }
+      ],
+      "out": {
+        "format": "frac"
+      },
+      "truth": [
+        "add",
+        "a",
+        "b"
+      ],
+      "rule": [
+        "div",
+        [
+          "add",
+          [
+            "num",
+            "a"
+          ],
+          [
+            "num",
+            "b"
+          ]
+        ],
+        [
+          "add",
+          [
+            "den",
+            "a"
+          ],
+          [
+            "den",
+            "b"
+          ]
+        ]
+      ],
+      "starter": {
+        "a": "1/3",
+        "b": "1/4"
+      },
+      "showMe": {
+        "a": "1/2",
+        "b": "1/2"
+      },
+      "hints": {
+        "question": "Fractions count equal-sized pieces. Do the pieces stay the same size when you add the bottoms?",
+        "questionEs": "Las fracciones cuentan partes del mismo tamaño. ¿Las partes siguen siendo del mismo tamaño al sumar los denominadores?",
+        "picture": "Draw two bars of the same length. Shade a on one and b on the other, then picture putting the shaded parts together. Is the answer more than either part?",
+        "pictureEs": "Dibuja dos barras del mismo largo. Sombrea a en una y b en la otra, y luego imagina juntar las partes sombreadas. ¿La respuesta es mayor que cada parte?",
+        "range": "Pick fractions with small bottoms, like 2, 3 or 4, that you can picture on a bar.",
+        "rangeEs": "Elige fracciones con denominadores pequeños, como 2, 3 o 4, que puedas imaginar en una barra."
+      },
+      "repairs": [
+        {
+          "id": "common-bottom",
+          "text": "Rename both fractions with the same bottom, then add the tops and keep that bottom.",
+          "textEs": "Reescribe las dos fracciones con el mismo denominador, suma los numeradores y conserva ese denominador.",
+          "rule": [
+            "div",
+            [
+              "add",
+              [
+                "mul",
+                [
+                  "num",
+                  "a"
+                ],
+                [
+                  "den",
+                  "b"
+                ]
+              ],
+              [
+                "mul",
+                [
+                  "num",
+                  "b"
+                ],
+                [
+                  "den",
+                  "a"
+                ]
+              ]
+            ],
+            [
+              "mul",
+              [
+                "den",
+                "a"
+              ],
+              [
+                "den",
+                "b"
+              ]
+            ]
+          ]
+        },
+        {
+          "id": "multiply-bottoms",
+          "text": "Add the tops and multiply the bottoms.",
+          "textEs": "Suma los numeradores y multiplica los denominadores.",
+          "rule": [
+            "div",
+            [
+              "add",
+              [
+                "num",
+                "a"
+              ],
+              [
+                "num",
+                "b"
+              ]
+            ],
+            [
+              "mul",
+              [
+                "den",
+                "a"
+              ],
+              [
+                "den",
+                "b"
+              ]
+            ]
+          ]
+        },
+        {
+          "id": "keep-first-bottom",
+          "text": "Add the tops and keep the bottom of the first fraction.",
+          "textEs": "Suma los numeradores y conserva el denominador de la primera fracción.",
+          "rule": [
+            "div",
+            [
+              "add",
+              [
+                "num",
+                "a"
+              ],
+              [
+                "num",
+                "b"
+              ]
+            ],
+            [
+              "den",
+              "a"
+            ]
+          ]
+        },
+        {
+          "id": "bigger-bottom",
+          "text": "Add the tops and use the bigger of the two bottoms.",
+          "textEs": "Suma los numeradores y usa el mayor de los dos denominadores.",
+          "rule": [
+            "div",
+            [
+              "add",
+              [
+                "num",
+                "a"
+              ],
+              [
+                "num",
+                "b"
+              ]
+            ],
+            [
+              "if",
+              [
+                "gt",
+                [
+                  "den",
+                  "a"
+                ],
+                [
+                  "den",
+                  "b"
+                ]
+              ],
+              [
+                "den",
+                "a"
+              ],
+              [
+                "den",
+                "b"
+              ]
+            ]
+          ]
+        },
+        {
+          "id": "multiply-all",
+          "text": "Multiply the tops and multiply the bottoms.",
+          "textEs": "Multiplica los numeradores y multiplica los denominadores.",
+          "rule": [
+            "div",
+            [
+              "mul",
+              [
+                "num",
+                "a"
+              ],
+              [
+                "num",
+                "b"
+              ]
+            ],
+            [
+              "mul",
+              [
+                "den",
+                "a"
+              ],
+              [
+                "den",
+                "b"
+              ]
+            ]
+          ]
+        }
+      ],
+      "argument": {
+        "vocab": [
+          "denominator",
+          "numerator",
+          "common",
+          "equal",
+          "fraction",
+          "denominador",
+          "numerador",
+          "común",
+          "igual",
+          "fracción"
+        ]
+      }
+    },
+    {
+      "id": "milo",
+      "name": "Milo",
+      "unit": 7,
+      "lessons": [
+        "7-4"
+      ],
+      "standard": "6.NOS.8",
+      "reasonRule": "longer-decimal-bigger",
+      "persona": "Milo is laid back and friendly. He likes to go by what a number looks like.",
+      "personaEs": "Milo es tranquilo y amistoso. Le gusta guiarse por cómo se ve un número.",
+      "ruleWords": "The decimal with more digits is the bigger number.",
+      "ruleWordsEs": "El decimal con más dígitos es el número mayor.",
+      "task": "Which decimal is bigger, a or b?",
+      "taskEs": "¿Qué decimal es mayor, a o b?",
+      "lines": {
+        "hello": "Longer number, bigger number. Easy to spot.",
+        "helloEs": "Número más largo, número mayor. Fácil de ver.",
+        "found": "Huh. The short one won. I never thought about that. Thanks.",
+        "foundEs": "Vaya. Ganó el corto. Nunca lo pensé. Gracias.",
+        "tryAgain": "Mm, that one still slips. Let us look at the places again.",
+        "tryAgainEs": "Mm, ese todavía se escapa. Miremos los lugares otra vez.",
+        "patched": "Lining up the places first. That makes the comparison fair.",
+        "patchedEs": "Alinear los lugares primero. Así la comparación es justa.",
+        "bye": "I will say it in my own words so I remember.",
+        "byeEs": "Lo diré con mis propias palabras para recordarlo."
+      },
+      "inputs": [
+        {
+          "id": "a",
+          "label": "the decimal a",
+          "labelEs": "el decimal a",
+          "example": "0.3",
+          "min": "0",
+          "max": "100",
+          "rangeNote": "Use a decimal from 0 to 100.",
+          "rangeNoteEs": "Usa un decimal de 0 a 100.",
+          "pool": [
+            "0.3",
+            "0.25",
+            "0.5",
+            "0.45",
+            "0.7",
+            "0.75",
+            "0.125",
+            "0.09",
+            "0.9",
+            "0.05",
+            "0.62",
+            "0.6",
+            "0.618",
+            "1.2",
+            "1.05",
+            "0.8"
+          ]
+        },
+        {
+          "id": "b",
+          "label": "the decimal b",
+          "labelEs": "el decimal b",
+          "example": "0.3",
+          "min": "0",
+          "max": "100",
+          "rangeNote": "Use a decimal from 0 to 100.",
+          "rangeNoteEs": "Usa un decimal de 0 a 100.",
+          "pool": [
+            "0.3",
+            "0.25",
+            "0.5",
+            "0.45",
+            "0.7",
+            "0.75",
+            "0.125",
+            "0.09",
+            "0.9",
+            "0.05",
+            "0.62",
+            "0.6",
+            "0.618",
+            "1.2",
+            "1.05",
+            "0.8"
+          ]
+        }
+      ],
+      "out": {
+        "format": "choice",
+        "choices": [
+          {
+            "en": "they are equal",
+            "es": "son iguales"
+          },
+          {
+            "en": "{a} is bigger",
+            "es": "{a} es mayor"
+          },
+          {
+            "en": "{b} is bigger",
+            "es": "{b} es mayor"
+          }
+        ]
+      },
+      "truth": [
+        "if",
+        [
+          "gt",
+          "a",
+          "b"
+        ],
+        1,
+        [
+          "if",
+          [
+            "gt",
+            "b",
+            "a"
+          ],
+          2,
+          0
+        ]
+      ],
+      "rule": [
+        "if",
+        [
+          "gt",
+          [
+            "places",
+            "a"
+          ],
+          [
+            "places",
+            "b"
+          ]
+        ],
+        1,
+        [
+          "if",
+          [
+            "gt",
+            [
+              "places",
+              "b"
+            ],
+            [
+              "places",
+              "a"
+            ]
+          ],
+          2,
+          [
+            "if",
+            [
+              "gt",
+              "a",
+              "b"
+            ],
+            1,
+            [
+              "if",
+              [
+                "gt",
+                "b",
+                "a"
+              ],
+              2,
+              0
+            ]
+          ]
+        ]
+      ],
+      "starter": {
+        "a": "0.4",
+        "b": "0.7"
+      },
+      "showMe": {
+        "a": "0.3",
+        "b": "0.25"
+      },
+      "hints": {
+        "question": "Write both numbers with the same number of places, like tenths and hundredths. Does the longer one still look bigger?",
+        "questionEs": "Escribe los dos números con la misma cantidad de lugares, como décimas y centésimas. ¿El más largo todavía se ve mayor?",
+        "picture": "Picture a grid of 100 squares. A column of 10 squares is one tenth, and a single square is one hundredth. Does a number written with more digits always cover more of the grid?",
+        "pictureEs": "Imagina una cuadrícula de 100 cuadrados. Una columna de 10 cuadrados es una décima y un solo cuadrado es una centésima. ¿Un número escrito con más dígitos siempre cubre más de la cuadrícula?",
+        "range": "Try two decimals where one has more digits after the point than the other.",
+        "rangeEs": "Prueba dos decimales en los que uno tenga más dígitos después del punto que el otro."
+      },
+      "repairs": [
+        {
+          "id": "same-places",
+          "text": "Write both with the same number of places by adding zeros, then compare them as whole numbers.",
+          "textEs": "Escribe los dos con la misma cantidad de lugares agregando ceros y compáralos como números enteros.",
+          "rule": [
+            "if",
+            [
+              "gt",
+              [
+                "mul",
+                "a",
+                [
+                  "pow",
+                  10,
+                  [
+                    "if",
+                    [
+                      "gt",
+                      [
+                        "places",
+                        "a"
+                      ],
+                      [
+                        "places",
+                        "b"
+                      ]
+                    ],
+                    [
+                      "places",
+                      "a"
+                    ],
+                    [
+                      "places",
+                      "b"
+                    ]
+                  ]
+                ]
+              ],
+              [
+                "mul",
+                "b",
+                [
+                  "pow",
+                  10,
+                  [
+                    "if",
+                    [
+                      "gt",
+                      [
+                        "places",
+                        "a"
+                      ],
+                      [
+                        "places",
+                        "b"
+                      ]
+                    ],
+                    [
+                      "places",
+                      "a"
+                    ],
+                    [
+                      "places",
+                      "b"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            1,
+            [
+              "if",
+              [
+                "gt",
+                [
+                  "mul",
+                  "b",
+                  [
+                    "pow",
+                    10,
+                    [
+                      "if",
+                      [
+                        "gt",
+                        [
+                          "places",
+                          "a"
+                        ],
+                        [
+                          "places",
+                          "b"
+                        ]
+                      ],
+                      [
+                        "places",
+                        "a"
+                      ],
+                      [
+                        "places",
+                        "b"
+                      ]
+                    ]
+                  ]
+                ],
+                [
+                  "mul",
+                  "a",
+                  [
+                    "pow",
+                    10,
+                    [
+                      "if",
+                      [
+                        "gt",
+                        [
+                          "places",
+                          "a"
+                        ],
+                        [
+                          "places",
+                          "b"
+                        ]
+                      ],
+                      [
+                        "places",
+                        "a"
+                      ],
+                      [
+                        "places",
+                        "b"
+                      ]
+                    ]
+                  ]
+                ]
+              ],
+              2,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "fewer-digits",
+          "text": "The decimal with fewer digits is the bigger number.",
+          "textEs": "El decimal con menos dígitos es el número mayor.",
+          "rule": [
+            "if",
+            [
+              "gt",
+              [
+                "places",
+                "b"
+              ],
+              [
+                "places",
+                "a"
+              ]
+            ],
+            1,
+            [
+              "if",
+              [
+                "gt",
+                [
+                  "places",
+                  "a"
+                ],
+                [
+                  "places",
+                  "b"
+                ]
+              ],
+              2,
+              [
+                "if",
+                [
+                  "gt",
+                  "a",
+                  "b"
+                ],
+                1,
+                [
+                  "if",
+                  [
+                    "gt",
+                    "b",
+                    "a"
+                  ],
+                  2,
+                  0
+                ]
+              ]
+            ]
+          ]
+        },
+        {
+          "id": "ignore-point",
+          "text": "Ignore the decimal point and compare the digits as whole numbers.",
+          "textEs": "Ignora el punto decimal y compara los dígitos como números enteros.",
+          "rule": [
+            "if",
+            [
+              "gt",
+              [
+                "mul",
+                "a",
+                [
+                  "pow",
+                  10,
+                  [
+                    "places",
+                    "a"
+                  ]
+                ]
+              ],
+              [
+                "mul",
+                "b",
+                [
+                  "pow",
+                  10,
+                  [
+                    "places",
+                    "b"
+                  ]
+                ]
+              ]
+            ],
+            1,
+            [
+              "if",
+              [
+                "gt",
+                [
+                  "mul",
+                  "b",
+                  [
+                    "pow",
+                    10,
+                    [
+                      "places",
+                      "b"
+                    ]
+                  ]
+                ],
+                [
+                  "mul",
+                  "a",
+                  [
+                    "pow",
+                    10,
+                    [
+                      "places",
+                      "a"
+                    ]
+                  ]
+                ]
+              ],
+              2,
+              0
+            ]
+          ]
+        },
+        {
+          "id": "tenths-then-length",
+          "text": "Compare the tenths digit. If they match, the decimal with more digits is bigger.",
+          "textEs": "Compara el dígito de las décimas. Si coinciden, el decimal con más dígitos es mayor.",
+          "rule": [
+            "if",
+            [
+              "gt",
+              [
+                "tenths",
+                "a"
+              ],
+              [
+                "tenths",
+                "b"
+              ]
+            ],
+            1,
+            [
+              "if",
+              [
+                "gt",
+                [
+                  "tenths",
+                  "b"
+                ],
+                [
+                  "tenths",
+                  "a"
+                ]
+              ],
+              2,
+              [
+                "if",
+                [
+                  "gt",
+                  [
+                    "places",
+                    "a"
+                  ],
+                  [
+                    "places",
+                    "b"
+                  ]
+                ],
+                1,
+                [
+                  "if",
+                  [
+                    "gt",
+                    [
+                      "places",
+                      "b"
+                    ],
+                    [
+                      "places",
+                      "a"
+                    ]
+                  ],
+                  2,
+                  0
+                ]
+              ]
+            ]
+          ]
+        }
+      ],
+      "argument": {
+        "vocab": [
+          "place value",
+          "tenths",
+          "hundredths",
+          "decimal",
+          "digits",
+          "valor posicional",
+          "décimas",
+          "centésimas",
+          "decimal",
+          "dígitos"
+        ]
+      }
+    },
+    {
+      "id": "zara",
+      "name": "Zara",
+      "unit": 4,
+      "lessons": [
+        "4-4"
+      ],
+      "standard": "6.AT.4",
+      "reasonRule": "percent-stack",
+      "persona": "Zara is thrifty and quick with a coupon. She likes answers she can do in her head.",
+      "personaEs": "Zara es ahorradora y rápida con los cupones. Le gustan las respuestas que puede hacer mentalmente.",
+      "ruleWords": "When two percents come one after the other, the percents just add.",
+      "ruleWordsEs": "Cuando dos porcentajes vienen uno después del otro, los porcentajes simplemente se suman.",
+      "task": "A store takes p1 off a price. Then it takes p2 off the new price. What single percent off is that altogether?",
+      "taskEs": "Una tienda descuenta p1 de un precio. Luego descuenta p2 del precio nuevo. ¿Qué porcentaje de descuento único es eso en total?",
+      "lines": {
+        "hello": "Two sales? Just add them. Done before the cashier blinks.",
+        "helloEs": "¿Dos descuentos? Solo súmalos. Listo antes de que el cajero parpadee.",
+        "found": "Oh no, I was saving more than the store gave. Good catch.",
+        "foundEs": "Ay, yo ahorraba más de lo que daba la tienda. Buena observación.",
+        "tryAgain": "Not yet. The second sale is on a different price. Let me think.",
+        "tryAgainEs": "Todavía no. El segundo descuento es sobre otro precio. Déjame pensar.",
+        "patched": "The second percent comes off the new price. That is what a cashier does.",
+        "patchedEs": "El segundo porcentaje se quita del precio nuevo. Eso hace un cajero.",
+        "bye": "I will tell my family the real rule before the next sale.",
+        "byeEs": "Le diré a mi familia la regla de verdad antes de la próxima oferta."
+      },
+      "inputs": [
+        {
+          "id": "p1",
+          "label": "the first percent off, p1",
+          "labelEs": "el primer porcentaje de descuento, p1",
+          "example": "20%",
+          "min": "0",
+          "max": "1",
+          "rangeNote": "Use a percent from 0% to 100%, like 20%.",
+          "rangeNoteEs": "Usa un porcentaje de 0% a 100%, como 20%.",
+          "pool": [
+            "5%",
+            "10%",
+            "15%",
+            "20%",
+            "25%",
+            "30%",
+            "40%",
+            "50%",
+            "60%",
+            "75%"
+          ]
+        },
+        {
+          "id": "p2",
+          "label": "the second percent off, p2",
+          "labelEs": "el segundo porcentaje de descuento, p2",
+          "example": "20%",
+          "min": "0",
+          "max": "1",
+          "rangeNote": "Use a percent from 0% to 100%, like 20%.",
+          "rangeNoteEs": "Usa un porcentaje de 0% a 100%, como 20%.",
+          "pool": [
+            "5%",
+            "10%",
+            "15%",
+            "20%",
+            "25%",
+            "30%",
+            "40%",
+            "50%",
+            "60%",
+            "75%"
+          ]
+        }
+      ],
+      "out": {
+        "format": "percent"
+      },
+      "truth": [
+        "sub",
+        1,
+        [
+          "mul",
+          [
+            "sub",
+            1,
+            "p1"
+          ],
+          [
+            "sub",
+            1,
+            "p2"
+          ]
+        ]
+      ],
+      "rule": [
+        "add",
+        "p1",
+        "p2"
+      ],
+      "starter": {
+        "p1": "10%",
+        "p2": "5%"
+      },
+      "showMe": {
+        "p1": "20%",
+        "p2": "10%"
+      },
+      "hints": {
+        "question": "The second percent is taken off a different amount than the first. What is the price after the first discount?",
+        "questionEs": "El segundo porcentaje se quita de una cantidad distinta a la primera. ¿Cuál es el precio después del primer descuento?",
+        "picture": "Start with a $100 price tag. Cross out the first discount, then work out what is left. Now take the second percent off what is left, not off $100.",
+        "pictureEs": "Empieza con una etiqueta de $100. Tacha el primer descuento y calcula lo que queda. Ahora quita el segundo porcentaje de lo que queda, no de $100.",
+        "range": "Try two sale percents that are both 10% or more.",
+        "rangeEs": "Prueba dos porcentajes de descuento que sean ambos de 10% o más."
+      },
+      "repairs": [
+        {
+          "id": "new-price",
+          "text": "Take the second percent off the new price: the total percent off is 1 minus (1 minus the first) times (1 minus the second).",
+          "textEs": "Quita el segundo porcentaje del precio nuevo: el descuento total es 1 menos (1 menos el primero) por (1 menos el segundo).",
+          "rule": [
+            "sub",
+            1,
+            [
+              "mul",
+              [
+                "sub",
+                1,
+                "p1"
+              ],
+              [
+                "sub",
+                1,
+                "p2"
+              ]
+            ]
+          ]
+        },
+        {
+          "id": "add-minus-overlap",
+          "text": "Add the percents, then subtract the first percent times the second percent.",
+          "textEs": "Suma los porcentajes y luego resta el primer porcentaje multiplicado por el segundo.",
+          "rule": [
+            "sub",
+            [
+              "add",
+              "p1",
+              "p2"
+            ],
+            [
+              "mul",
+              "p1",
+              "p2"
+            ]
+          ]
+        },
+        {
+          "id": "multiply-percents",
+          "text": "Multiply the two percents.",
+          "textEs": "Multiplica los dos porcentajes.",
+          "rule": [
+            "mul",
+            "p1",
+            "p2"
+          ]
+        },
+        {
+          "id": "average",
+          "text": "Add the percents and divide by 2.",
+          "textEs": "Suma los porcentajes y divide entre 2.",
+          "rule": [
+            "div",
+            [
+              "add",
+              "p1",
+              "p2"
+            ],
+            2
+          ]
+        },
+        {
+          "id": "minus-one",
+          "text": "Add the percents, then take away 1 percent.",
+          "textEs": "Suma los porcentajes y luego quita 1 por ciento.",
+          "rule": [
+            "sub",
+            [
+              "add",
+              "p1",
+              "p2"
+            ],
+            [
+              "k",
+              "1%"
+            ]
+          ]
+        }
+      ],
+      "argument": {
+        "vocab": [
+          "percent",
+          "discount",
+          "whole",
+          "original",
+          "new price",
+          "porcentaje",
+          "descuento",
+          "entero",
+          "original",
+          "precio nuevo"
+        ]
+      }
+    },
+    {
+      "id": "devon",
+      "name": "Devon",
+      "unit": 5,
+      "lessons": [
+        "5-5"
+      ],
+      "standard": "6.GR.2",
+      "reasonRule": "scale-volume-linear",
+      "persona": "Devon builds things. He measures twice and likes a rule that scales up easily.",
+      "personaEs": "Devon construye cosas. Mide dos veces y le gusta una regla que escale fácilmente.",
+      "ruleWords": "If you multiply every edge of a box by k, the volume is multiplied by k too.",
+      "ruleWordsEs": "Si multiplicas cada arista de una caja por k, el volumen también se multiplica por k.",
+      "task": "A box is l long, w wide and h tall. Every edge is multiplied by k. What is the volume of the new box?",
+      "taskEs": "Una caja mide l de largo, w de ancho y h de alto. Cada arista se multiplica por k. ¿Cuál es el volumen de la caja nueva?",
+      "lines": {
+        "hello": "Double the edges, double the volume. Simple to plan with.",
+        "helloEs": "Si duplicas las aristas, se duplica el volumen. Fácil para planear.",
+        "found": "I would have ordered far too little sand. Thanks for stopping me.",
+        "foundEs": "Habría pedido muy poca arena. Gracias por detenerme.",
+        "tryAgain": "That is closer, but a box has three directions. Let me recount.",
+        "tryAgainEs": "Eso se acerca, pero una caja tiene tres direcciones. Cuento de nuevo.",
+        "patched": "Length, width and height all stretch. Now the numbers fit.",
+        "patchedEs": "El largo, el ancho y el alto se estiran. Ahora los números cuadran.",
+        "bye": "I will keep this rule in my toolbox.",
+        "byeEs": "Guardaré esta regla en mi caja de herramientas."
+      },
+      "inputs": [
+        {
+          "id": "l",
+          "label": "the length l",
+          "labelEs": "el largo l",
+          "example": "2",
+          "min": "0",
+          "minOpen": true,
+          "max": "20",
+          "rangeNote": "Use a length greater than 0, up to 20.",
+          "rangeNoteEs": "Usa una longitud mayor que 0, hasta 20.",
+          "pool": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "3/2"
+          ]
+        },
+        {
+          "id": "w",
+          "label": "the width w",
+          "labelEs": "el ancho w",
+          "example": "2",
+          "min": "0",
+          "minOpen": true,
+          "max": "20",
+          "rangeNote": "Use a length greater than 0, up to 20.",
+          "rangeNoteEs": "Usa una longitud mayor que 0, hasta 20.",
+          "pool": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "3/2"
+          ]
+        },
+        {
+          "id": "h",
+          "label": "the height h",
+          "labelEs": "el alto h",
+          "example": "2",
+          "min": "0",
+          "minOpen": true,
+          "max": "20",
+          "rangeNote": "Use a length greater than 0, up to 20.",
+          "rangeNoteEs": "Usa una longitud mayor que 0, hasta 20.",
+          "pool": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "3/2"
+          ]
+        },
+        {
+          "id": "k",
+          "label": "the factor k",
+          "labelEs": "el factor k",
+          "example": "2",
+          "min": "0",
+          "minOpen": true,
+          "max": "10",
+          "rangeNote": "Use a factor greater than 0, up to 10.",
+          "rangeNoteEs": "Usa un factor mayor que 0, hasta 10.",
+          "pool": [
+            "1/2",
+            "1",
+            "2",
+            "3",
+            "4",
+            "3/2",
+            "5"
+          ]
+        }
+      ],
+      "out": {
+        "format": "num",
+        "unit": "cubic units",
+        "unitEs": "unidades cúbicas"
+      },
+      "truth": [
+        "mul",
+        [
+          "mul",
+          [
+            "mul",
+            "l",
+            "w"
+          ],
+          "h"
+        ],
+        [
+          "pow",
+          "k",
+          3
+        ]
+      ],
+      "rule": [
+        "mul",
+        [
+          "mul",
+          [
+            "mul",
+            "l",
+            "w"
+          ],
+          "h"
+        ],
+        "k"
+      ],
+      "starter": {
+        "l": "2",
+        "w": "3",
+        "h": "4",
+        "k": "2"
+      },
+      "showMe": {
+        "l": "2",
+        "w": "2",
+        "h": "2",
+        "k": "2"
+      },
+      "hints": {
+        "question": "Volume has three directions: length, width and height. How many of them did you stretch?",
+        "questionEs": "El volumen tiene tres direcciones: largo, ancho y alto. ¿Cuántas estiraste?",
+        "picture": "Build a 2 by 2 by 2 cube out of 1 by 1 by 1 cubes. How many small cubes fit inside? Compare with the one small cube you started with.",
+        "pictureEs": "Arma un cubo de 2 por 2 por 2 con cubos de 1 por 1 por 1. ¿Cuántos cubos pequeños caben? Compáralo con el único cubo pequeño del principio.",
+        "range": "Try a factor k that is 2 or more, and a small starting box.",
+        "rangeEs": "Prueba un factor k de 2 o más y una caja inicial pequeña."
+      },
+      "repairs": [
+        {
+          "id": "stretch-each-edge",
+          "text": "Multiply the length, the width and the height by k, then multiply the three new edges together.",
+          "textEs": "Multiplica el largo, el ancho y el alto por k y luego multiplica las tres aristas nuevas entre sí.",
+          "rule": [
+            "mul",
+            [
+              "mul",
+              [
+                "mul",
+                "l",
+                "k"
+              ],
+              [
+                "mul",
+                "w",
+                "k"
+              ]
+            ],
+            [
+              "mul",
+              "h",
+              "k"
+            ]
+          ]
+        },
+        {
+          "id": "k-squared",
+          "text": "Multiply the old volume by k times k.",
+          "textEs": "Multiplica el volumen anterior por k por k.",
+          "rule": [
+            "mul",
+            [
+              "mul",
+              [
+                "mul",
+                "l",
+                "w"
+              ],
+              "h"
+            ],
+            [
+              "pow",
+              "k",
+              2
+            ]
+          ]
+        },
+        {
+          "id": "three-k",
+          "text": "Multiply the old volume by 3 times k.",
+          "textEs": "Multiplica el volumen anterior por 3 por k.",
+          "rule": [
+            "mul",
+            [
+              "mul",
+              [
+                "mul",
+                "l",
+                "w"
+              ],
+              "h"
+            ],
+            [
+              "mul",
+              3,
+              "k"
+            ]
+          ]
+        },
+        {
+          "id": "add-k",
+          "text": "Add k to the length, the width and the height, then multiply them.",
+          "textEs": "Suma k al largo, al ancho y al alto y luego multiplícalos.",
+          "rule": [
+            "mul",
+            [
+              "mul",
+              [
+                "add",
+                "l",
+                "k"
+              ],
+              [
+                "add",
+                "w",
+                "k"
+              ]
+            ],
+            [
+              "add",
+              "h",
+              "k"
+            ]
+          ]
+        }
+      ],
+      "argument": {
+        "vocab": [
+          "volume",
+          "edge",
+          "cubic",
+          "length",
+          "width",
+          "height",
+          "volumen",
+          "arista",
+          "cúbico",
+          "largo",
+          "ancho",
+          "alto"
+        ]
+      }
+    }
+  ]
+}

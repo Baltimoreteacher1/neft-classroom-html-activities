@@ -22,6 +22,8 @@ export const shellPages = new Map([
   ["curriculum/practice-workbooks/index.html", "practice"],
   ["curriculum/manipulatives/index.html", "practice"],
   ["curriculum/my-progress/index.html", ""],
+  ["curriculum/reality-lab/index.html", "labs"],
+  ["curriculum/math-canvas/index.html", "labs"],
   ["curriculum/family-connections/index.html", "families"],
 ]);
 /* On a phone the bar shows the first destinations inline and the rest behind a
