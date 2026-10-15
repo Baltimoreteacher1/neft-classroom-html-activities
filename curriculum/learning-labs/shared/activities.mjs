@@ -1,5 +1,6 @@
 // Learn, Investigate, Practice, and Create activities. Each receives the shared lab context.
 import { esc, guidance, mountModel } from './model.mjs';
+import { makeChallenges, reached } from './challenge.mjs';
 import { numericAnswer } from './math.mjs';
 import { activityStatus, levels, parseKeyIdea } from './progress.mjs';
 
@@ -69,9 +70,33 @@ export function investigate(ctx, host) {
   state.investigated ||= [];
   host.innerHTML = `<div class="section-intro"><h2>Investigate: ${esc(lab.title)}</h2><p>Predict, change one thing, and explain what happens. Type a number or use the arrow keys inside any control.</p></div><ol class="method-strip" aria-label="How to investigate"><li><strong>Predict</strong> what will change before you touch a control.</li><li><strong>Change one thing</strong> and read the picture and readout.</li><li><strong>Explain</strong> with evidence, then record it below.</li></ol><div class="watch-card"><p><strong>What the picture shows.</strong> ${esc(tips.show)}</p><p><strong>Try this first.</strong> ${esc(tips.tip)}</p></div><div id="investigation-model"></div><div class="investigation-prompts">${lab.investigate.map((p, i) => `<article class="${state.investigated.includes(i) ? 'is-done' : ''}" data-investigation="${i}"><div class="investigation-head"><h3>Investigation ${i + 1} of ${lab.investigate.length}</h3><label class="check-item done-check"><input type="checkbox" data-done="${i}" ${state.investigated.includes(i) ? 'checked' : ''}><span>Done</span></label></div><p class="question-prompt">${esc(p)}</p>${textArea(`investigate-${i}`, 'My prediction, test, and evidence', frames[state.level])}<button type="button" class="quiet small" data-capture="${i}">Add what the model shows now</button></article>`).join('')}</div>${state.level === 'stretch' ? '<div class="stretch-task"><h3>Push the idea further</h3><p>Find two different settings that produce the same result. Explain what the settings have in common, or show why that cannot happen when only one quantity changes.</p></div>' : ''}`;
   let latest = null;
+  // Model challenge: reach a target by touching the model; checked against the model's own math.
+  const goals = makeChallenges(lab.id, lab.model);
+  state.challenge ||= { index: 0, solved: [] };
+  const card = document.createElement('section');
+  card.className = 'model-challenge'; card.setAttribute('aria-labelledby', 'mc-title');
+  host.querySelector('#investigation-model').before(card);
+  const drawChallenge = (message = '') => {
+    const c = state.challenge, i = Math.min(c.index, goals.length - 1), goal = goals[i], solved = c.solved.includes(i);
+    const all = c.solved.length >= goals.length;
+    card.innerHTML = all
+      ? `<h3 id="mc-title">Model challenge <span class="mc-count">complete</span></h3><p class="mc-goal">★★★ You reached all ${goals.length} targets. Add what you noticed to your notes below.</p><p class="mc-status" role="status" aria-live="polite">${esc(message)}</p><button type="button" class="quiet" data-mc-again>Try them again</button>`
+      : `<h3 id="mc-title">Model challenge <span class="mc-count">${i + 1} of ${goals.length}</span></h3><p class="mc-goal">Make <strong>${esc(goal.label)}</strong> equal <strong class="mc-target">${esc(String(goal.target))}${goal.unit ? ` ${esc(goal.unit)}` : ''}</strong>. There can be more than one way.</p><p class="mc-status" role="status" aria-live="polite">${esc(message)}</p>${solved ? '<button type="button" data-mc-next>Next target</button>' : ''}`;
+    card.dataset.state = all ? 'complete' : solved ? 'solved' : 'open';
+    card.querySelector('[data-mc-next]')?.addEventListener('click', () => { c.index = Math.min(goals.length - 1, i + 1); save(); drawChallenge(); });
+    card.querySelector('[data-mc-again]')?.addEventListener('click', () => { state.challenge = { index: 0, solved: [] }; save(); drawChallenge(); });
+  };
+  const checkChallenge = (result) => {
+    const c = state.challenge, i = Math.min(c.index, goals.length - 1);
+    if (c.solved.length >= goals.length || c.solved.includes(i) || !reached(result.value, goals[i].target)) return;
+    c.solved.push(i); save();
+    drawChallenge(`★ You made it: ${result.equation}`);
+    card.querySelector('[data-mc-next], [data-mc-again]')?.focus({ preventScroll: true });
+  };
+  drawChallenge();
   mountModel(host.querySelector('#investigation-model'), lab.model, {
     initial: state.models.investigate || lab.model.values,
-    onChange: (values, result) => { latest = { values, result }; state.models.investigate = values; save(); },
+    onChange: (values, result) => { latest = { values, result }; state.models.investigate = values; save(); checkChallenge(result); },
     level: state.level,
     lens: true,
     lang: () => state.lang,
