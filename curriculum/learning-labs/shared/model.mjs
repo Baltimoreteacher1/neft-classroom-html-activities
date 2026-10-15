@@ -1,6 +1,7 @@
 import { controls, evaluate, fmt } from './math.mjs';
 import { mountLens } from './lens.mjs';
 import { attachDirect, directHint, isDirect } from './direct.mjs';
+import { play } from './sound.mjs';
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const line = (x1, y1, x2, y2, cls = '') => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${cls}"/>`;
 const text = (x, y, t, anchor = 'middle') => `<text x="${x}" y="${y}" text-anchor="${anchor}">${esc(t)}</text>`;
@@ -170,10 +171,12 @@ export function mountModel(host, model, { initial = model.values, free = null, o
     attachDirect(picture, model, {
       fields,
       getValues: () => values,
+      getShape: () => shape,
       apply: (next) => {
         values = next; valid = true;
         host.querySelectorAll('[data-control]').forEach(el => { el.value = values[Number(el.dataset.control)]; });
         host.querySelector('.model-error').textContent = '';
+        play('tick', (values[0] - fields[0].min) / Math.max(1, fields[0].max - fields[0].min) * 12);
         update();
       },
     });

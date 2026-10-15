@@ -1,6 +1,9 @@
 // Learn, Investigate, Practice, and Create activities. Each receives the shared lab context.
 import { esc, guidance, mountModel } from './model.mjs';
 import { makeChallenges, reached } from './challenge.mjs';
+import { judge } from './predict.mjs';
+import { toPng } from './snapshot.mjs';
+import { play } from './sound.mjs';
 import { numericAnswer } from './math.mjs';
 import { activityStatus, levels, parseKeyIdea } from './progress.mjs';
 
@@ -15,6 +18,32 @@ function stepper(host, lines, count, { onReveal, onAll, label = 'step', lang = '
   host.innerHTML = `<ol>${lines.slice(0, count).map((line, i) => `<li ${i === count - 1 && count > 1 ? 'class="just-revealed"' : ''}>${esc(line)}</li>`).join('')}</ol><div class="step-row"><p class="step-count">${count === lines.length ? t.all(lines.length, plural) : `${Title} ${count} ${t.of} ${lines.length}`}</p><button type="button" data-reveal ${count === lines.length ? 'disabled' : ''}>${t.reveal(single)}</button><button type="button" class="quiet" data-all ${count === lines.length ? 'disabled' : ''}>${t.showAll}</button></div>`;
   host.querySelector('[data-reveal]').onclick = onReveal;
   host.querySelector('[data-all]').onclick = onAll;
+}
+
+
+/** A collapsible copy of the lab's live model. Its settings and open/closed state are remembered per place. */
+function modelPanel(ctx, key, summary) {
+  const { lab, state, save } = ctx;
+  state.modelOpen ||= {};
+  const tool = document.createElement('details');
+  tool.className = 'practice-model';
+  tool.open = !!(state.modelOpen[key] ?? (key === 'practice' && state.practiceModelOpen));
+  tool.innerHTML = `<summary>${esc(summary)}</summary><div class="practice-model-host"></div>`;
+  const mount = () => {
+    const slot = tool.querySelector('.practice-model-host');
+    if (slot.dataset.mounted) return;
+    slot.dataset.mounted = '1';
+    mountModel(slot, lab.model, {
+      initial: state.models[key] || lab.model.values,
+      onChange: (values) => { state.models[key] = values; save(); },
+      prefix: `${key}-model`,
+      level: state.level,
+      lang: () => state.lang,
+    });
+  };
+  tool.addEventListener('toggle', () => { state.modelOpen[key] = tool.open; if (tool.open) mount(); save(); });
+  if (tool.open) mount();
+  return tool;
 }
 
 export function learn(ctx, host) {
@@ -41,6 +70,7 @@ export function learn(ctx, host) {
       });
     };
     drawWorked();
+    stage.querySelector('[data-worked]').after(modelPanel(ctx, `learn-${lesson.id}`, 'Try this idea on the lab model'));
     if (togetherLines.length) {
       const drawTogether = () => {
         const count = Math.min(togetherLines.length, state.steps[`${lesson.id}-together`]);
@@ -89,14 +119,39 @@ export function investigate(ctx, host) {
   const checkChallenge = (result) => {
     const c = state.challenge, i = Math.min(c.index, goals.length - 1);
     if (c.solved.length >= goals.length || c.solved.includes(i) || !reached(result.value, goals[i].target)) return;
-    c.solved.push(i); save();
+    c.solved.push(i); save(); play('hit');
     drawChallenge(`★ You made it: ${result.equation}`);
     card.querySelector('[data-mc-next], [data-mc-again]')?.focus({ preventScroll: true });
   };
   drawChallenge();
+  // Predict first: choose up / down / same, change the model, and the model's own math answers.
+  state.predict ||= { right: 0, total: 0 };
+  const bar = document.createElement('section');
+  bar.className = 'predict-bar'; bar.setAttribute('aria-labelledby', 'predict-title');
+  const label = () => latest?.result.label || 'the readout';
+  const drawPredict = (message = '', ok = null) => {
+    const score = state.predict.total ? `Predictions: ${state.predict.right} of ${state.predict.total} correct.` : '';
+    bar.innerHTML = `<h3 id="predict-title">Predict first</h3><p>After your next change, will <strong>${esc(label())}</strong> go up, go down, or stay the same?</p>
+      <div class="predict-choices" role="group" aria-label="Your prediction">${[['up', 'Go up ▲'], ['down', 'Go down ▼'], ['same', 'Stay the same ＝']].map(([v, t]) => `<button type="button" data-predict="${v}" aria-pressed="${pending?.choice === v}">${t}</button>`).join('')}</div>
+      <p class="predict-result" role="status" aria-live="polite"${ok === null ? '' : ` data-ok="${ok}"`}>${esc(message || (pending ? 'Now change the model. I will check your prediction when you stop.' : ''))}</p><p class="predict-score">${esc(score)}</p>`;
+    bar.querySelectorAll('[data-predict]').forEach((b) => b.addEventListener('click', () => { pending = { choice: b.dataset.predict, base: latest?.result.value }; drawPredict(); }));
+  };
+  let pending = null, settle = 0;
+  host.querySelector('#investigation-model').before(bar);
+  const judgePrediction = (result) => {
+    if (!pending || pending.base === undefined) return;
+    clearTimeout(settle);
+    settle = setTimeout(() => {
+      const verdict = judge(pending.choice, pending.base, result.value, result.label);
+      if (verdict.actual === 'same' && pending.choice !== 'same') return; // nothing moved yet: keep waiting
+      state.predict.total++; if (verdict.ok) state.predict.right++;
+      pending = null; save(); if (verdict.ok) play('star'); drawPredict(verdict.message, verdict.ok);
+    }, 700);
+  };
+  drawPredict();
   mountModel(host.querySelector('#investigation-model'), lab.model, {
     initial: state.models.investigate || lab.model.values,
-    onChange: (values, result) => { latest = { values, result }; state.models.investigate = values; save(); checkChallenge(result); },
+    onChange: (values, result) => { const first = !latest; latest = { values, result }; state.models.investigate = values; save(); checkChallenge(result); if (first) drawPredict(); else judgePrediction(result); },
     level: state.level,
     lens: true,
     lang: () => state.lang,
@@ -130,25 +185,7 @@ export function practice(ctx, host) {
   host.innerHTML = `<div class="section-intro"><h2>${levels[state.level].label} practice</h2><p>${bank.length} activities from Lessons ${lab.lessons.map((l) => lessonNumber(l.id)).join(' and ')} and the lab model. Hints never cost progress. Written explanations are saved for a teacher or partner to review.</p></div><div class="practice-progress"><div class="progress-bar" role="progressbar" aria-label="Practice progress" aria-valuemin="0" aria-valuemax="${s.scored}" aria-valuenow="${s.solved}"><span style="width:${s.scored ? (100 * s.solved) / s.scored : 0}%"></span></div><p class="progress-text">${esc(s.summary)}</p></div>${s.status === 'done' ? `<div class="practice-complete"><strong>All ${levels[state.level].label} activities complete.</strong> ${nextLevel ? `Ready for more? Choose ${levels[nextLevel].label} from the level menu.` : 'Try the Create challenge or the games next.'}</div>` : ''}<div class="question-nav" role="group" aria-label="Choose practice activity">${bank.map((p, i) => { const r = state.practice[p.id]; const done = r?.correct || (p.type === 'explain' && r?.reviewed); const tried = r?.attempts > 0 && !done; return `<button type="button" data-question="${i}" class="${done ? 'is-done' : tried ? 'is-tried' : ''}" aria-pressed="${i === index}" aria-label="Activity ${i + 1}${done ? ', complete' : tried ? ', in progress' : ''}">${done ? '✓' : i + 1}</button>`; }).join('')}</div><form class="question"><div class="question-meta"><span class="lesson-chip">Activity ${index + 1} of ${bank.length}</span><span class="lesson-chip quiet-chip">${q.lesson ? `Lesson ${lessonNumber(q.lesson)}` : 'Lab model'}</span><span class="lesson-chip quiet-chip">${titles[q.type]}</span></div><p class="question-prompt">${esc(q.prompt)}</p>${q.parameters ? `<ul class="parameter-list">${q.parameters.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}${choices ? `<fieldset><legend>${q.type === 'repair' ? 'Select the first incorrect step.' : 'Choose one answer.'}</legend>${choices.map((choice, i) => `<label class="choice"><input type="radio" name="answer" value="${i}" ${String(record.input) === String(i) ? 'checked' : ''}><span>${q.type === 'repair' ? `<strong>Step ${i + 1}.</strong> ` : ''}${esc(choice)}</span></label>`).join('')}</fieldset>` : q.type === 'number' ? `<label class="number-answer">Your answer<input name="answer" type="text" inputmode="text" autocomplete="off" value="${esc(record.input)}"><span class="field-hint">Decimals, fractions (3/4), and mixed numbers (1 1/2) are accepted.</span></label>` : `<label class="writing">Your reasoning${q.frame ? `<span class="field-hint">${esc(q.frame)}</span>` : ''}<textarea name="answer" rows="5">${esc(record.input)}</textarea></label>`}<div class="actions"><button type="submit">${q.type === 'explain' ? 'Save and compare reasoning' : 'Check my answer'}</button><button type="button" class="quiet" data-hint></button><button type="button" class="quiet" data-explain ${record.attempts || record.reviewed ? '' : 'hidden'}>Study the explanation</button></div><div class="practice-feedback" role="status"></div><div class="hint-area" aria-live="polite"></div><div class="explanation" hidden></div></form><div class="practice-pagination"><button type="button" class="quiet" data-back ${index === 0 ? 'disabled' : ''}>Previous problem</button><button type="button" data-next ${index === bank.length - 1 ? 'disabled' : ''}>Next problem</button></div>`;
   const form = host.querySelector('form'), status = host.querySelector('.practice-feedback'), explanation = host.querySelector('.explanation');
   // The lab's own model, one tap away: students can test an idea on it while they work the problem.
-  const tool = document.createElement('details');
-  tool.className = 'practice-model';
-  tool.open = !!state.practiceModelOpen;
-  tool.innerHTML = '<summary>Open the lab model to work this out</summary><div class="practice-model-host"></div>';
-  form.before(tool);
-  const mountTool = () => {
-    const slot = tool.querySelector('.practice-model-host');
-    if (slot.dataset.mounted) return;
-    slot.dataset.mounted = '1';
-    mountModel(slot, lab.model, {
-      initial: state.models.practice || lab.model.values,
-      onChange: (values) => { state.models.practice = values; save(); },
-      prefix: 'practice-model',
-      level: state.level,
-      lang: () => state.lang,
-    });
-  };
-  tool.addEventListener('toggle', () => { state.practiceModelOpen = tool.open; if (tool.open) mountTool(); save(); });
-  if (tool.open) mountTool();
+  form.before(modelPanel(ctx, 'practice', 'Open the lab model to work this out'));
   const explain = () => { explanation.hidden = false; explanation.innerHTML = `<h4>${q.type === 'explain' ? 'Compare your reasoning' : 'Why it works'}</h4><p>${esc(q.explanation)}</p>${q.type === 'explain' ? '<p>This is a model response, not an automatic grade. Does your response name the quantities, show evidence, and explain why the result makes sense?</p>' : ''}`; };
   const getInput = () => (choices ? (form.querySelector('input:checked')?.value ?? '') : form.elements.answer.value);
   form.addEventListener('input', () => { record.input = getInput(); save(); });
@@ -178,7 +215,7 @@ export function practice(ctx, host) {
     host.querySelector('[data-explain]').hidden = false;
     status.className = `practice-feedback ${ok ? 'correct' : 'retry'}`;
     status.textContent = ok ? 'That works. Read the explanation and check it against your strategy.' : q.feedback?.[number] || 'That response needs another look. Use a hint, check the quantities, and try again.';
-    if (ok) explain(); save();
+    if (ok) { play('hit'); explain(); } save();
     const button = host.querySelector(`[data-question="${index}"]`);
     if (ok) { button.textContent = '✓'; button.className = 'is-done'; button.setAttribute('aria-label', `Activity ${index + 1}, complete`); }
     else if (!record.correct) { button.className = 'is-tried'; }
@@ -200,6 +237,36 @@ export function create(ctx, host) {
   const starters = ['My design is', 'The quantities are', 'My model shows', 'I calculated', 'I checked by', 'This makes sense because'];
   const level = state.level;
   host.innerHTML = `<div class="section-intro"><h2>Create something worth explaining</h2><p class="large-copy">${esc(lab.create)}</p></div><div class="create-layout"><div><div class="starter-row" role="group" aria-label="Sentence starters"><span>Add a starter:</span>${starters.map((s) => `<button type="button" class="quiet small" data-starter="${esc(s)}">${esc(s)}…</button>`).join('')}</div><label class="writing" for="creation">My design and explanation<textarea id="creation" rows="12">${esc(state.created)}</textarea></label><p class="progress-text" data-words></p><p>Use paper for a drawing, then describe its labels and reasoning here. Include enough detail for someone else to reconstruct your idea.</p></div><aside class="review-card"><h3>Check your work</h3>${criteria.map((c, i) => `<label class="check-item"><input type="checkbox" data-criterion="${i}" ${state.checklist.includes(i) ? 'checked' : ''}><span>${esc(c)}</span></label>`).join('')}<p class="share-status" data-share></p><h3>${level === 'support' ? 'A useful starting frame' : level === 'stretch' ? 'Stretch your explanation' : 'Partner check'}</h3><p>${level === 'support' ? 'My plan is ___. The quantities are ___. My model shows ___. I checked by ___.' : level === 'stretch' ? 'Create a second valid solution, or a convincing counterexample to an incorrect claim. Explain the condition that makes your argument work.' : 'Ask a partner to follow your reasoning without your help. Which step needs another label, example, or explanation?'}</p></aside></div>${textArea('revision', 'One thing I revised, or one question I still have')}<p>Use Download work or Print work to keep your design and reflections.</p>`;
+  // Build on the live model, then keep a picture of it.
+  const studio = document.createElement('section');
+  studio.className = 'create-studio'; studio.setAttribute('aria-labelledby', 'create-studio-title');
+  studio.innerHTML = `<h3 id="create-studio-title">Build it on the model</h3><p>Set the model to show your design. Touch the picture to change it, then add it to your write-up or save a picture to keep.</p><div class="create-model"></div>
+    <p class="create-actions"><button type="button" data-add-model>Add this model to my write-up</button><button type="button" data-save-picture>Save my model picture (PNG)</button></p><p class="create-note" role="status" aria-live="polite"></p>`;
+  host.querySelector('.create-layout').before(studio);
+  let shown = null;
+  mountModel(studio.querySelector('.create-model'), lab.model, {
+    initial: state.models.create || lab.model.values,
+    onChange: (values, result) => { shown = result; state.models.create = values; save(); },
+    prefix: 'create-model', level: state.level, lang: () => state.lang,
+  });
+  const note = studio.querySelector('.create-note');
+  studio.querySelector('[data-add-model]').onclick = () => {
+    if (!shown) return;
+    const line = `My model: ${shown.equation}`;
+    state.created = `${state.created.trim()}${state.created.trim() ? '\n' : ''}${line}\n`;
+    host.querySelector('#creation').value = state.created; save(); refresh();
+    note.textContent = 'Added to your write-up.';
+  };
+  studio.querySelector('[data-save-picture]').onclick = async () => {
+    const svg = studio.querySelector('.model-picture svg');
+    if (!svg || !shown) return;
+    try {
+      const blob = await toPng(svg, `${lab.title}: ${shown.equation}`);
+      const url = URL.createObjectURL(blob), link = document.createElement('a');
+      link.href = url; link.download = `${lab.id}-my-model.png`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1500);
+      note.textContent = 'Picture saved to your downloads.';
+    } catch { note.textContent = 'Could not save the picture in this browser. Try Print work instead.'; }
+  };
   const area = host.querySelector('#creation');
   const refresh = () => {
     const s = activityStatus(lab, state, 'create');

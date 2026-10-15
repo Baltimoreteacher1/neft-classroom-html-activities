@@ -234,10 +234,10 @@ try {
     assert.match(await page.locator("#print-report").textContent(), /QA sample/);
     await page.locator("#tab-investigate").click();
     await page.locator("#model-0").fill("");
-    assert.match(await page.locator(".model-error").innerText(), /Use/);
+    assert.match(await page.locator("#panel-investigate .model-error").innerText(), /Use/);
     await page.locator("#model-1").fill("4");
-    assert.match(await page.locator(".model-error").innerText(), /Use/);
-    await page.locator("[data-reset]").click();
+    assert.match(await page.locator("#panel-investigate .model-error").innerText(), /Use/);
+    await page.locator("#panel-investigate [data-reset]").click();
     await page.locator("#tab-practice").click();
     const recipe = JSON.parse(
       readFileSync(join(REPO_ROOT, "curriculum/learning-labs/recipe-remix/content.json")),
@@ -248,12 +248,18 @@ try {
     await page.locator('.question button[type="submit"]').click();
     assert.match(await page.locator(".practice-feedback").innerText(), /another look/);
     await page.goto(origin + "/curriculum/learning-labs/wrap-lab/#investigate");
-    await page.locator('[data-shape="pyramid"]').click();
+    await page.locator('#panel-investigate [data-shape="pyramid"]').click();
     await page.locator("#model-0").fill("6");
     await page.locator("#model-2").fill("5");
-    assert.match(await page.locator(".model-readout").innerText(), /96 square units/);
+    assert.match(
+      await page.locator("#panel-investigate .model-readout").innerText(),
+      /96 square units/,
+    );
     await page.locator("#model-2").fill("2");
-    assert.match(await page.locator(".model-readout").innerText(), /do not form/);
+    assert.match(
+      await page.locator("#panel-investigate .model-readout").innerText(),
+      /do not form/,
+    );
     const offlineSave = await context.newPage();
     await offlineSave.addInitScript(() => {
       Storage.prototype.setItem = function () {

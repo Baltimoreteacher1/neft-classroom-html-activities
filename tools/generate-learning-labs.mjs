@@ -52,6 +52,9 @@ const version = createHash("sha256")
       "catalog.mjs",
       "direct.mjs",
       "challenge.mjs",
+      "predict.mjs",
+      "snapshot.mjs",
+      "sound.mjs",
       "celebrate.mjs",
       "lab.css",
     ]

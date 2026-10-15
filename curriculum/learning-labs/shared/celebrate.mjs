@@ -1,5 +1,6 @@
 // Small, honest rewards: a star message as each activity is finished, and a collectible stamp when a lab is
 // complete. Nothing here grades anyone; it only notices progress the student made and says so.
+import { play } from './sound.mjs';
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const CHEER = {
   brief: 'Mission set. You wrote down what you already know.',
@@ -52,7 +53,8 @@ export function createCelebrator(host, lab, state, onStamp) {
       }
       const { finished, complete } = diff(before, o);
       before = snapshot;
-      if (complete && !state.stamped) { state.stamped = Date.now(); onStamp?.(); stamp(o); return; }
+      if (complete && !state.stamped) { state.stamped = Date.now(); onStamp?.(); play('stamp'); stamp(o); return; }
+      if (finished.length) play('star');
       if (finished.length) say(`★ ${CHEER[finished[0]] || 'Activity complete.'} ${o.done} of ${o.total} stars.`);
     },
   };

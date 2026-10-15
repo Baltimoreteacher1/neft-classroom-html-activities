@@ -4,6 +4,9 @@ import { create, investigate, learn, practice } from './activities.mjs';
 import { levels, noteLabels, overview, tabs, timing } from './progress.mjs';
 import { connect } from './ewl-bridge.mjs?v=20261015';
 import { createCelebrator } from './celebrate.mjs';
+import * as sound from './sound.mjs';
+import { worldArt } from './expedition.mjs';
+import { expeditionWorlds } from './expedition-worlds.mjs';
 
 const root = document.getElementById('lab-root');
 let lab, state, storeKey, memoryOnly = false, bridge = null, celebrator = null;
@@ -62,6 +65,11 @@ function shell() {
   });
   document.getElementById('previous').onclick = () => move(-1);
   document.getElementById('next').onclick = () => move(1);
+  const soundButton = document.createElement('button');
+  soundButton.type = 'button'; soundButton.id = 'sound-toggle'; soundButton.className = document.getElementById('print').className;
+  const paintSound = () => { soundButton.textContent = sound.enabled() ? 'Sound: on' : 'Sound: off'; soundButton.setAttribute('aria-pressed', String(sound.enabled())); };
+  soundButton.onclick = () => { sound.set(!sound.enabled()); paintSound(); sound.play('star'); };
+  paintSound(); document.getElementById('print').after(soundButton);
   document.getElementById('download').onclick = download;
   document.getElementById('print').onclick = () => { makeReport(); window.print(); };
   document.getElementById('reset').onclick = () => {
@@ -94,6 +102,15 @@ function brief(host) {
   const o = overview(lab, state), started = o.done > 0 || o.items.some((i) => i.status === 'started');
   host.innerHTML = `<div class="brief-layout"><div><h2>Your mission</h2><p class="large-copy">${esc(lab.mission)}</p><h3>What you will be able to do</h3><ul class="objectives">${lab.lessons.map((l) => `<li><strong>Lesson ${lessonNumber(l.id)}.</strong> ${esc(l.objective)}</li>`).join('')}</ul><div class="ready-note"><h3>Before you begin</h3><p>Have paper and a pencil nearby. Use the model to test an idea, but write down a prediction before changing it. Mistakes are a reason to investigate.</p><p>Every activity is open. If you get stuck, choose Support, open a hint, or return to a worked example.</p></div></div><aside class="route-card"><h3>${started ? 'Your progress' : 'Your route through the lab'}</h3><ol class="route-list">${o.items.map((item) => `<li data-status="${item.status}"><span class="route-title">${item.title}<span class="route-time">${timing[item.id]}</span></span><span class="route-status">${esc(item.summary)}</span></li>`).join('')}</ol><button type="button" data-start>${started && o.next !== 'brief' ? `Continue with ${tabs.find((t) => t[0] === o.next)[1]}` : 'Start with Learn'}</button></aside></div>${textArea('prediction', 'What do you already know that might help?', 'A word, sketch description, example, or question is a useful start.')}`;
   host.querySelector('[data-start]').onclick = () => showTab(started && o.next !== 'brief' ? o.next : 'learn'); bindNotes(host);
+  // The lab's story: the same world as the Games step. Each pair of finished activities lights one location.
+  const world = expeditionWorlds[lab.id];
+  if (world) {
+    const lit = Array.from({ length: Math.min(3, Math.floor(o.done / 2)) }, (_, i) => i);
+    const scene = document.createElement('figure');
+    scene.className = 'mission-scene';
+    scene.innerHTML = `${worldArt(world.theme, lit)}<figcaption><strong>${esc(world.goal)}.</strong> ${esc(world.brief)} Your route: ${world.locations.map((l, i) => `<span class="${lit.includes(i) ? 'is-lit' : ''}">${esc(l)}</span>`).join(' → ')}. Finish two activities to light each stop.</figcaption>`;
+    host.prepend(scene);
+  }
 }
 function games(host) {
   host.innerHTML = `<div class="section-intro"><h2>Finish with a game</h2><p>Choose your expedition route, restore three locations with mathematical constructions, then decode the field guide. Your world and discoveries stay saved on this device.</p></div><details class="how-to-play"><summary>How to play</summary><ol><li>Choose a level, then select ${esc(lab.finale)} or Connection Quest.</li><li>In ${esc(lab.finale)}, choose a destination, read its target, adjust the unlocked model control, and restore the location. Each destination has a different construction.</li><li>In Connection Quest, match each term with its meaning. Arrow keys move between cards; Enter selects. Completed puzzles and pairs are saved on this device.</li></ol></details><div class="games-root"></div>`;

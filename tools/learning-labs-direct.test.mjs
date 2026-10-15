@@ -110,6 +110,48 @@ assert.deepEqual(
   "right and up: most sides, longest side",
 );
 
+// histogram: dragging a bar up pulls observations in from other bins, total unchanged; down pushes them out
+{
+  const hist = { kind: "data", mode: "histogram", values: [2, 4, 7, 8, 12, 13, 17, 22] };
+  const f = controls(hist);
+  const binsOf = (v) => {
+    const b = Array(5).fill(0);
+    v.forEach((n) => b[Math.min(4, Math.floor(n / 5))]++);
+    return b;
+  };
+  const start = binsOf(hist.values);
+  const up = drag(hist, hist.values, { x: 50 + (500 / 5) * 4 + 10, y: 240 - 25 * 3 });
+  assert.equal(up.length, 8, "histogram keeps every observation");
+  assert.equal(binsOf(up)[4], 3, "bin 4 grew to three observations");
+  assert.equal(
+    binsOf(up).reduce((x, y) => x + y),
+    8,
+  );
+  const down = drag(hist, hist.values, { x: 50 + (500 / 5) * 1 + 10, y: 240 });
+  assert.equal(binsOf(down)[1], 0, "bin 1 emptied");
+  assert.ok(start[1] > 0);
+  void f;
+}
+// solid net: the middle row sets height from y and the face width from x
+{
+  const net = { kind: "solid", mode: "net", values: [4, 3, 2] };
+  const g = Math.min(500 / (2 * 4 + 2 * 3), 225 / (2 + 2 * 3)),
+    top = 24 + 3 * g,
+    left = (600 - (2 * 4 + 2 * 3) * g) / 2;
+  const h = grab(net, net.values, { x: left + 2 * g, y: top + 1 * g }); // press inside the middle row
+  const next = move(net, net.values, { x: left + 2 * g, y: top + 5 * g }, h, controls(net)); // then drag down
+  assert.deepEqual(
+    [next[0], next[2]],
+    [2, 5],
+    "face 1 width and the net height follow the pointer",
+  );
+  assert.equal(
+    grab(net, net.values, { x: 100, y: 100 }, "pyramid"),
+    null,
+    "pyramid nets are not draggable",
+  );
+}
+
 // every direct lab: sweep the whole picture
 let direct = 0;
 for (const id of labs) {
@@ -134,7 +176,7 @@ for (const id of labs) {
       assert.ok(Number.isFinite(r.value), `${id}: evaluates to a number at (${x},${y})`);
     }
 }
-assert.ok(direct >= 43, `at least 25 labs are directly manipulable (${direct})`);
+assert.equal(direct, labs.length, `at least 25 labs are directly manipulable (${direct})`);
 console.log(
   `learning-labs-direct: ${direct} of ${labs.length} labs respond to touch; all pointer positions stay in range.`,
 );
