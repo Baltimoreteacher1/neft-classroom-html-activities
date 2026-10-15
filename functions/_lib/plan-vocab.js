@@ -5169,6 +5169,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/matrix/",
+    title: "Curriculum Matrix",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/monster-math-academy/",
     title: "Monster Math Academy",
     category: "Hub",
