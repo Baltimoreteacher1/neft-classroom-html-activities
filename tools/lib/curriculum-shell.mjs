@@ -22,8 +22,8 @@ export const shellPages = new Map([
   ["curriculum/practice-workbooks/index.html", "practice"],
   ["curriculum/manipulatives/index.html", "practice"],
   ["curriculum/my-progress/index.html", ""],
-  ["curriculum/reality-lab/index.html", "labs"],
-  ["curriculum/math-canvas/index.html", "labs"],
+  ["curriculum/reality-lab/index.html", "practice"],
+  ["curriculum/math-canvas/index.html", "practice"],
   ["curriculum/matrix/index.html", "units"],
   ["curriculum/family-connections/index.html", "families"],
 ]);

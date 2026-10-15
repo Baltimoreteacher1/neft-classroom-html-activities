@@ -230,8 +230,8 @@ const SECTION_META = [
   {
     id: "labs",
     lane: "learn",
-    label: "Labs & Projects",
-    blurb: "Missions, simulations, and project-based extras.",
+    label: "Learning Labs",
+    blurb: "Hands-on math missions: one lab for every lesson.",
   },
 
   {
@@ -878,7 +878,7 @@ const TOP_META = {
   "cartesian-odyssey": { s: "arcade", c: "Game", a: "student" },
   "class-manip": { s: "math-tools", c: "Math Tool", a: "student" },
   "correlation-playground": { s: "math-tools", c: "Math Tool", a: "student" },
-  "cosmic-gravity-lab": { s: "labs", c: "Game", a: "student" },
+  "cosmic-gravity-lab": { s: "arcade", c: "Game", a: "student" },
   dashboard: { s: "data", c: "Tool", a: "teacher" },
   directory: { s: "about", c: "Hub", a: "teacher" },
   "double-line-racer": { s: "arcade", c: "Game", a: "student" },
@@ -890,34 +890,34 @@ const TOP_META = {
   "esol-vocab-scrambler": { s: "reading", c: "Game", a: "student" },
   evidence: { s: "data", c: "Tool", a: "teacher" },
   "expressions-equations": { s: "unit-resources", c: "Practice", a: "student" },
-  "fix-it-design-challenge": { s: "labs", c: "Game", a: "student" },
+  "fix-it-design-challenge": { s: "arcade", c: "Game", a: "student" },
   "focus-school": { s: "personal", c: "Tool", a: "family" },
   "forecast-engine": { s: "data", c: "Tool", a: "teacher" },
   "fractions-soccer": { s: "arcade", c: "Game", a: "student" },
-  futures: { s: "labs", c: "Tool", a: "student" },
+  futures: { s: "math-tools", c: "Tool", a: "student" },
   games: { s: "arcade", c: "Hub", a: "student" },
   "games-live": { s: "arcade", c: "Game", a: "student" },
   "geometry-prep": { s: "unit-resources", c: "Practice", a: "student" },
   "graphic-novels": { s: "reading", c: "Reading", a: "student" },
   hyperdocs: { s: "activities", c: "Practice", a: "student" },
   "infinite-practice": { s: "activities", c: "Practice", a: "student" },
-  "living-school": { s: "labs", c: "Tool", a: "student" },
+  "living-school": { s: "math-tools", c: "Tool", a: "student" },
   "mad-balance-sandbox": { s: "math-tools", c: "Math Tool", a: "student" },
-  "math-lab-missions": { s: "labs", c: "Practice", a: "student" },
+  "math-lab-missions": { s: "activities", c: "Practice", a: "student" },
   "math-rpg": { s: "arcade", c: "Game", a: "student" },
   "math-sims": { s: "math-tools", c: "Math Tool", a: "student" },
   "mcap-review": { s: "test-prep", c: "Practice", a: "student" },
-  "mentor-lab": { s: "labs", c: "Tool", a: "student" },
+  "mentor-lab": { s: "math-tools", c: "Tool", a: "student" },
   "misconception-lab": { s: "teacher-tools", c: "Tool", a: "teacher" },
-  "misconception-museum": { s: "labs", c: "Tool", a: "student" },
+  "misconception-museum": { s: "math-tools", c: "Tool", a: "student" },
   "mstar-practice": { s: "test-prep", c: "Practice", a: "student" },
   "neft-data-studio": { s: "data", c: "Tool", a: "teacher" },
   "neft-school-hub": { s: "about", c: "Hub", a: "teacher" },
-  "netfold-3d": { s: "labs", c: "Game", a: "student" },
-  "netfold-pro": { s: "labs", c: "Game", a: "student" },
+  "netfold-3d": { s: "arcade", c: "Game", a: "student" },
+  "netfold-pro": { s: "arcade", c: "Game", a: "student" },
   "noam-bar-mitzvah": { s: "personal", c: "Tool", a: "family" },
   "number-system": { s: "unit-resources", c: "Practice", a: "student" },
-  "osamr-case-clinic": { s: "labs", c: "Tool", a: "student" },
+  "osamr-case-clinic": { s: "math-tools", c: "Tool", a: "student" },
   personal: { s: "personal", c: "Hub", a: "family" },
   "post-test": { s: "test-prep", c: "Practice", a: "student" },
   practice: { s: "activities", c: "Practice", a: "student" },
@@ -931,9 +931,9 @@ const TOP_META = {
   "reveal-math": { s: "curriculum", c: "Hub", a: "teacher" },
   "shai-school": { s: "personal", c: "Tool", a: "family" },
   "small-group-level-3": { s: "curriculum", c: "Hub", a: "teacher" },
-  "spectral-waves-lab": { s: "labs", c: "Game", a: "student" },
+  "spectral-waves-lab": { s: "arcade", c: "Game", a: "student" },
   "spiral-review": { s: "activities", c: "Practice", a: "student" },
-  "sports-analytics": { s: "labs", c: "Tool", a: "student" },
+  "sports-analytics": { s: "math-tools", c: "Tool", a: "student" },
   "starfield-coordinate-defender": { s: "arcade", c: "Game", a: "student" },
   "statistics-data": { s: "unit-resources", c: "Practice", a: "student" },
   "summer-bridge": { s: "test-prep", c: "Practice", a: "student" },
@@ -944,8 +944,8 @@ const TOP_META = {
   webquests: { s: "activities", c: "Practice", a: "student" },
   "wida-access": { s: "test-prep", c: "Practice", a: "student" },
   "word-to-equations": { s: "math-tools", c: "Math Tool", a: "student" },
-  "work-coach": { s: "labs", c: "Tool", a: "student" },
-  "world-architect-math-project": { s: "labs", c: "Tool", a: "student" },
+  "work-coach": { s: "math-tools", c: "Tool", a: "student" },
+  "world-architect-math-project": { s: "math-tools", c: "Tool", a: "student" },
   "write-math": { s: "math-tools", c: "Math Tool", a: "student" },
 };
 
@@ -954,7 +954,7 @@ for (const d of readdirSync(ROOT, { withFileTypes: true })) {
   const name = d.name;
   if (name.startsWith(".") || TOP_SKIP.has(name)) continue;
   const idx = resolve(ROOT, name, "index.html");
-  const meta = TOP_META[name] || { s: "labs", c: "Tool", a: "student" };
+  const meta = TOP_META[name] || { s: "math-tools", c: "Tool", a: "student" };
 
   // /games/, /activities/ and /practice/ have no index page of their own — they
   // 301 to /directory/ (data/routes.json). Their contents still have to be in
