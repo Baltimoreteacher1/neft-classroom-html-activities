@@ -304,7 +304,7 @@ rejects(
   (s) => s.observe.statements.forEach((x) => (x.true = true)),
   /some true and some false/,
 );
-rejects("fewer than 9 scenes", (s, d) => (d.scenes = d.scenes.slice(0, 4)), /at least 9 scenes/);
+rejects("fewer than 9 scenes", (_s, d) => (d.scenes = d.scenes.slice(0, 4)), /at least 9 scenes/);
 // a preset whose pictures disagree: corrupt one picture's read() and the round trip must say so
 {
   const strip = Lens.reg.rational.reps.strip;

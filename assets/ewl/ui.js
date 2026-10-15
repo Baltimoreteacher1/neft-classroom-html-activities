@@ -58,7 +58,7 @@
       if (q === "es" || q === "en") return q;
       var s = root.localStorage.getItem("ewl_lang");
       if (s === "es" || s === "en") return s;
-    } catch (e) {
+    } catch (_e) {
       /* fall through */
     }
     var l = (root.document && root.document.documentElement.lang) || "en";
@@ -151,7 +151,7 @@
     var q;
     try {
       q = new URLSearchParams(root.location.search);
-    } catch (e) {
+    } catch (_e) {
       q = new URLSearchParams("");
     }
     return {

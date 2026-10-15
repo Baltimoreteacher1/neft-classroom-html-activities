@@ -9,7 +9,7 @@
 (function (root) {
   "use strict";
   var EWL = (root.EWL = root.EWL || {});
-  var S = function (tag, attrs) {
+  var S = function (_tag, _attrs) {
     return EWL.svg.apply(null, arguments);
   };
   var W = 360;

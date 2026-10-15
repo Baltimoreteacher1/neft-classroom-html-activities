@@ -215,7 +215,7 @@
     } else if (ch.mode === "hold") {
       try {
         S.run(inv, fullCase(inv, ch.case));
-      } catch (e) {
+      } catch (_e) {
         out.push(id + ".challenge.case does not run");
       }
     } else out.push(id + ".challenge.mode must be find or hold");
@@ -294,7 +294,7 @@
       try {
         D.env(tpl, c);
         ok++;
-      } catch (e) {
+      } catch (_e) {
         /* an undefined case is allowed, it is skipped when running */
       }
     });
@@ -321,7 +321,7 @@
       try {
         if (!SLUG.test(id) || !EWL.ID_RE.test(EWL.id("lab", id)))
           out.push(id + ": not a valid activity id");
-      } catch (e) {
+      } catch (_e) {
         out.push(id + ": not a valid activity id");
       }
       bilingual(inv, id, out);

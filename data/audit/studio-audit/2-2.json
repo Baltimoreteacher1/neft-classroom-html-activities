@@ -1,0 +1,135 @@
+{
+  "lesson": "2-2",
+  "unit": 2,
+  "title": "Represent and Describe Data in a Histogram",
+  "objective": "I can make and read a histogram to display data in intervals.",
+  "position": "2 of 12",
+  "model": "histogram: equal-width intervals on the horizontal axis, touching bars whose heights are the frequencies, built from a tally of the raw values",
+  "widgets": [
+    {
+      "where": "Practice §1 (3 mc)",
+      "component": "Warm-up on statistical questions (lesson 2-1)",
+      "class": "ALIGNED",
+      "root": "Matches the lesson's warm-up (statistical question, fixed answer, pets data). Keys verified.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §2 items 2-5 (mc)",
+      "component": "Bar height = frequency, histogram vs bar graph, interval width",
+      "class": "ALIGNED",
+      "root": "Conceptual items match the key idea (equal intervals, no gaps, height = frequency). Keys verified.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §2 item 1, §3 items 2 and 4, §5 item 4 (mc)",
+      "component": "Histograms described in a sentence of frequencies ('0–4: 3 players, 5–9: 8 players...')",
+      "class": "REDUNDANT",
+      "root": "The lesson's idea is reading a drawn histogram, but these four items hand the student the numbers as text, so the answer is arithmetic or a lookup on a sentence and no histogram is ever shown; the studio's `hist` viz exists and is unused here.",
+      "replacement": "Render each as a `hist` figure with the same bins and frequencies (after the bar fix below) and ask from the picture: 2.1 'How many players are shown in all?' (28), 3.2 'Which interval holds the most students?' (70–79), 3.4 'Describe the shape' (skewed right: 9, 6, 3, 1), 5.4 'Which interval holds the most players?' (68–71). Keep the distractors that trap 'tallest bar = highest value' and 'bar height = interval width'."
+    },
+    {
+      "where": "Practice §2 item 6, §3 item 3 (match); §2 item 7, §3 item 6 (err)",
+      "component": "Vocabulary match and counting / interval-choice error analysis",
+      "class": "ALIGNED",
+      "root": "Re-derived both err items: 3,7,11,13,16,22 gives 2,3,1 (missed 16); intervals 0–5, 6–10, 12–18 are unequal with 11 uncovered. Fixes are right and name the lesson's boundary and equal-width rules.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §3 items 1 and 5 (tbl)",
+      "component": "Tally raw values into equal intervals and total the frequencies",
+      "class": "ALIGNED",
+      "root": "Student does the tally from the 12 listed values; checked 2/3/3/2/2 (yards) and 3/4/4/1 (rebounds), totals equal n.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §4 items 1-6 (gen:histogramRead L1-L3, figure, mc/num)",
+      "component": "Generated histogram-reading items with a `hist` figure",
+      "class": "BROKEN-MODEL",
+      "root": "Rendered the figure: the generator gives bins as inclusive pairs (20–24, 25–29) and `hist` draws each bar from `from` to `to`, so every neighbouring pair of bars has a visible gap (13.7 px at seed 3, 5.4 px at seed 29) and the bars do not touch, contradicting the lesson's 'adjacent bars, no gaps'. The axis also prints only some edges (0 and 44 on a 0–74 axis), so a stem that says '45 to 59 minutes' cannot be matched to a bar.",
+      "replacement": "Fix the shared figure, not each item. In assets/studio-viz.js `hist`, draw every bin half-open so neighbouring bars share an edge (a 20–24 bin over whole-number scores spans x=20 to x=25) and have the studio-gen histogramRead generator emit bins in that form. Print an edge label under every bar boundary (every second one only above 8 bars) and centre the interval name ('20–24') under each bar so a stem that says '45 to 59 minutes' can be matched to a bar. Add a studio-viz test asserting rect[i].x + rect[i].width equals rect[i+1].x for every histogram the generators produce, and that each interval named in a stem is printed on the axis."
+    },
+    {
+      "where": "Practice §4 items 5-6 (gen:histogramRead L3, 'In which interval is the median?' variant, about half of all L3 draws)",
+      "component": "Median of the data read from a histogram",
+      "class": "MISALIGNED",
+      "root": "The median is taught in lesson 2-3; the generator asks for it in 2-2 ('Imagine all 21 values in order... In which interval is the median?').",
+      "replacement": "Replace the median-interval variant with a lesson-2-2 task on the same figure: 'How many more values are in the 70–79 interval than in the 50–59 interval?', 'Which two intervals together hold exactly half of the values?', or 'In which interval does the largest value lie?'. Keep the percent and difference variants."
+    },
+    {
+      "where": "Practice §4 item 7 (act:chartbuild mode hist, L2)",
+      "component": "Build the chart: pick a bin size, raise bars to match a frequency table",
+      "class": "BROKEN-MODEL",
+      "root": "Two defects in assets/studio-act/chartbuild.js: bars are `.cb-bar{width:70%}` inside separate columns, so the bars never touch (the hint two lines above says 'no gaps'); and the raw data is never shown, only the finished frequency table, so the student chooses a bin width and copies numbers with +/- buttons without ever tallying a value.",
+      "replacement": "Rebuild chartbuild mode 'hist' as a tally-then-build task: show the N raw values as tappable chips, let the student pick the bin width, then tap each chip into the interval it belongs to; draw the histogram as ONE touching SVG (adjacent rects, edge labels) whose bar heights are the student's own tallies, with no free +/- stepper and no pre-printed frequency table. grade() must trap: a boundary value counted in two bins (20 in both 10–19 and 20–29), a value skipped (tally total not N), a bin width that makes unequal or gapped intervals, and bars not matching the tallies."
+    },
+    {
+      "where": "Practice §5 items 1-3 (mc)",
+      "component": "Mastery questions about 'the histogram' and 'the coach's claim'",
+      "class": "BROKEN-MODEL",
+      "root": "The items carry no figure and no data: 'Which interval has the most players?' (0–2 / 3–5 / 6–8 / 9–11 shots), 'How many take between 3 and 8 shots?', 'Does the histogram support the coach's claim?'. The shots-per-game histogram and the coach's quote live in the lesson's Connect scenario and were dropped when the studio was generated, so these cannot be answered.",
+      "replacement": "Attach the lesson's Connect figure to all three: viz hist bins {0–2:1, 3–5:8, 6–8:10, 9–11:3, 12–14:1}, xlabel 'Shots per game', ylabel 'Number of players', and state the claim in 5.3's stem ('The coach says, \"Most of my players take a good number of shots.\"'). Keep the keys (6–8 shots; 8 + 10 = 18; yes, 18 of 23 cluster in the middle intervals)."
+    },
+    {
+      "where": "Practice §5 items 5-6 (mc with hist figure, num tally)",
+      "component": "Read the tallest bar; count values in 20–29",
+      "class": "ALIGNED",
+      "root": "5.5 has a real figure with touching bars (10 in 200–299); 5.6 tally 20,22,23,25,27,29 = 6 checked.",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge §1 items 1-6 (gen:histogramRead L2-L4)",
+      "component": "Harder generated histogram items with the same figure",
+      "class": "BROKEN-MODEL",
+      "root": "Same `hist` defect as Practice §4 (gapped bars, partial axis labels). L3 also carries the median-interval variant (taught in 2-3).",
+      "replacement": "Fix the shared figure, not each item. In assets/studio-viz.js `hist`, draw every bin half-open so neighbouring bars share an edge (a 20–24 bin over whole-number scores spans x=20 to x=25) and have the studio-gen histogramRead generator emit bins in that form. Print an edge label under every bar boundary (every second one only above 8 bars) and centre the interval name ('20–24') under each bar so a stem that says '45 to 59 minutes' can be matched to a bar. Add a studio-viz test asserting rect[i].x + rect[i].width equals rect[i+1].x for every histogram the generators produce, and that each interval named in a stem is printed on the axis. Drop the L3 median-interval variant as specified for Practice §4."
+    },
+    {
+      "where": "Challenge §2 item 1 (err)",
+      "component": "Find the Histogram Error",
+      "class": "BROKEN-MODEL",
+      "root": "The scores 55–95 use intervals 50–59, 60–69, 70–79, 80–89, 90–100, and the last interval is 11 wide, so the intervals the item asks students to trust are unequal; it then says 'the frequencies are correct' and blames only the symmetry claim, whose 'skewed left' verdict for bars 1, 2, 4, 4, 2 is also overstated.",
+      "replacement": "Change the last interval to 90–99 (same counts, 1, 2, 4, 4, 2) and make the injected error the shape claim only: a student says 'symmetric' for bars 1, 2, 4, 2, 1 drawn as a figure, or 'skewed right' for 1, 2, 4, 6, 9 — pick data where one answer is unambiguous. Show the histogram as a `hist` figure."
+    },
+    {
+      "where": "Challenge §2 items 2-7 (wr, mc, tbl, num with hist, mc with hist, mc)",
+      "component": "Interval size and detail, skew from a description, 24-value tally, count from figure, claim check, interval set",
+      "class": "ALIGNED",
+      "root": "Re-derived every number: 24-value tally 2,4,5,5,4,3,1 = 24; 3+7+12+9+4+1 = 36 and 9+4+1 = 14; 4+11+9 = 24 > 17.5; interval set 10–19...80–89 covers 12 to 87. Figures here use contiguous bins.",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge §3 items 1-2 (act:chartbuild mode hist, L3-L4)",
+      "component": "Build the chart (harder)",
+      "class": "BROKEN-MODEL",
+      "root": "Same chartbuild hist defects as Practice §4 item 7: gapped bars and a copied frequency table.",
+      "replacement": "Rebuild chartbuild mode 'hist' as a tally-then-build task: show the N raw values as tappable chips, let the student pick the bin width, then tap each chip into the interval it belongs to; draw the histogram as ONE touching SVG (adjacent rects, edge labels) whose bar heights are the student's own tallies, with no free +/- stepper and no pre-printed frequency table. grade() must trap: a boundary value counted in two bins (20 in both 10–19 and 20–29), a value skipped (tally total not N), a bin width that makes unequal or gapped intervals, and bars not matching the tallies."
+    },
+    {
+      "where": "Challenge §3 item 3 (sort)",
+      "component": "Sort scores into 0–19 / 20–39 / 40–59",
+      "class": "ALIGNED",
+      "root": "Boundary cards (19, 20, 39, 40) put in the right bins; targets the double-count misconception.",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge §4 items 1-4, §5 items 1-6",
+      "component": "Detective items, claim checks, skew, categorical vs numerical data, missing bar, write-your-own",
+      "class": "ALIGNED",
+      "root": "Noor's table (7 values, 1,2,3,1), unequal-width Dmitri, 'tallest bar = best score' Kai, skew-names-the-tail, 37-player skewed-left figure, 30 − 22 = 8 all verified.",
+      "replacement": ""
+    }
+  ],
+  "formulaOrder": [
+    {
+      "formula": "median of the data (interval containing the median)",
+      "taughtIn": "2-3",
+      "earliestUseInStudio": "2-2"
+    }
+  ],
+  "typography": [
+    "Practice §4 / Challenge §1 `hist` figures label only some bin edges, and gen intervals are written '45–59' in stems while the axis shows edge values, so figure and stem use different notation",
+    "Practice §5 item 5 prints choices '100–199' while its axis prints edges 100, 200, 300, 400"
+  ],
+  "missingModel": false,
+  "lessonClass": "BROKEN-MODEL"
+}

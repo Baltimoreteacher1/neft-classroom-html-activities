@@ -38,7 +38,7 @@
     );
   }
 
-  function chips(name, legend, options, value, onPick) {
+  function chips(_name, legend, options, value, onPick) {
     var current = value;
     var group = "lab-chips-" + ++uid;
     var fs = h("fieldset", { class: "lab-chips" }, h("legend", { class: "lab-legend" }, legend));

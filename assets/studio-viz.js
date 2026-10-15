@@ -370,8 +370,14 @@
     }));
     if (bins.some((b) => !(b.b > b.a) || b.c < 0))
       throw new RangeError("hist: each bin needs to > from and n >= 0");
+    // Bins written as inclusive whole-number pairs (20–24, 25–29) are one interval wide each, so the bars must touch:
+    // a histogram has no gaps. `d` is the edge drawn; the printed ranges (and the text alternative) keep the authored pair.
+    const byA = [...bins].sort((p, q) => p.a - q.a);
+    const inclusive = byA.length > 1 && byA.slice(1).every((b, i) => b.a - byA[i].b === 1);
+    for (const b of bins) b.d = b.b;
+    if (inclusive) byA.forEach((b, i) => (b.d = i + 1 < byA.length ? byA[i + 1].a : b.b + 1));
     const lo = bins.length ? Math.min(...bins.map((b) => b.a)) : 0;
-    const hi = bins.length ? Math.max(...bins.map((b) => b.b)) : 1;
+    const hi = bins.length ? Math.max(...bins.map((b) => b.d)) : 1;
     const ys = niceStep(Math.max(1, ...bins.map((b) => b.c)), 8);
     const yTop = Math.max(ys, Math.ceil(Math.max(...bins.map((b) => b.c), 0) / ys - 1e-9) * ys);
     const xl = s.xlabel ? String(s.xlabel) : "";
@@ -389,8 +395,8 @@
       body += T(L0 - 9, Y(t), fmt(t), { a: "end", m: 1 });
     }
     for (const b of bins)
-      if (b.c > 0) body += Rc(X(b.a), Y(b.c), X(b.b) - X(b.a), (b.c / yTop) * PH, "fb sw");
-    const edges = [...new Set(bins.flatMap((b) => [b.a, b.b]))].sort((a, b) => a - b);
+      if (b.c > 0) body += Rc(X(b.a), Y(b.c), X(b.d) - X(b.a), (b.c / yTop) * PH, "fb sw");
+    const edges = [...new Set(bins.flatMap((b) => [b.a, b.d]))].sort((a, b) => a - b);
     const tk =
       edges.length > 1
         ? sparse(edges, X, 14)

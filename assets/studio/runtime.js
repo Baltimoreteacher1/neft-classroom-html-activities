@@ -33,7 +33,7 @@
   const $ = (/** @type {string} */ sel, /** @type {ParentNode} */ root = document) =>
     /** @type {any} */ (root.querySelector(sel));
   const solvedMap = (/** @type {number} */ tab) => state[`solved${tab}`];
-  const stg = (/** @type {number} */ tab) => /** @type {HTMLElement} */ ($(`#stage-${tab}`));
+  const _stg = (/** @type {number} */ tab) => /** @type {HTMLElement} */ ($(`#stage-${tab}`));
   const save = () => W.StudioStore.save(KEY, state);
   const say = (/** @type {string} */ msg) => {
     const live = $("#sr-live");

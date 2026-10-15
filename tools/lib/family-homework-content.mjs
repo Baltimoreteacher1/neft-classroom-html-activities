@@ -135,6 +135,44 @@ export function validateSidecar(id, side) {
       if (TIMER.test(JSON.stringify(c))) t("corner: no timer language");
     }
   }
+  if (/-part\d+$/.test(id)) {
+    const v = side.vocabulary;
+    if (!Array.isArray(v) || v.length < 4 || v.length > 8)
+      t("a Part 2 page must state its own vocabulary: 4 to 8 terms");
+    else {
+      if (new Set(v.map((x) => String(x.term).toLowerCase())).size !== v.length)
+        t("vocabulary repeats a term");
+      v.forEach((x, i) => {
+        for (const k of ["term", "termEs", "definition", "definitionEs", "visual", "cloze"])
+          if (!String(x[k] || "").trim()) t(`vocabulary[${i}] needs ${k}`);
+        if (
+          !Array.isArray(x.examples) ||
+          x.examples.length < 2 ||
+          !x.examples.some((e) => e.isExample === false)
+        )
+          t(`vocabulary[${i}] "${x.term}" needs 2+ examples including a non-example`);
+        if (
+          !/^\/assets\/vocab-images\/[\w-]+\.svg$/.test(String(x.image || "")) ||
+          !existsSync(join(REPO_ROOT, String(x.image).slice(1)))
+        )
+          t(
+            `vocabulary[${i}] "${x.term}" needs the path of an existing image in assets/vocab-images/`,
+          );
+      });
+      const words = stems(
+        [
+          side.sessionTitle,
+          side.learningTonight?.en,
+          side.bigIdea?.en,
+          ...(side.conceptSteps || []).map((c) => c.en),
+        ].join(" "),
+      );
+      const hit = v.filter((x) =>
+        [...stems(`${x.term} ${x.definition}`)].some((w) => words.has(w)),
+      ).length;
+      if (hit < 2) t("vocabulary shares too little with what this session teaches");
+    }
+  }
   const b = side.basicPractice;
   if (!Array.isArray(b) || b.length !== 6) t("basicPractice must hold exactly 6 items");
   else {

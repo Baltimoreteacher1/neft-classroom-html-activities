@@ -91,7 +91,7 @@
         dateStyle: "medium",
         timeStyle: "short",
       });
-    } catch (e) {
+    } catch (_e) {
       return new Date(at).toISOString().slice(0, 16).replace("T", " ");
     }
   }

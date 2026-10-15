@@ -29,7 +29,7 @@
         inv.results.concat(inv.table).forEach(function (id) {
           if (vals[id] && typeof vals[id].frac === "function") nums.push(vals[id].frac());
         });
-      } catch (e) {
+      } catch (_e) {
         /* a row that no longer runs adds no numbers */
       }
     });

@@ -85,7 +85,7 @@
           return nameOf(tpl, q.id) + " = " + EWL.LabExpr.fmt(e[q.id], q.fmt || "num");
         })
         .join(", ");
-    } catch (err) {
+    } catch (_err) {
       return "";
     }
   }

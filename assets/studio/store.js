@@ -17,7 +17,7 @@
   /* ---- bus ------------------------------------------------------------------------------------ */
   /** @type {Record<string, Array<(d: any) => void>>} */
   const listeners = {};
-  const bus = (W.StudioBus = W.StudioBus || {
+  const _bus = (W.StudioBus = W.StudioBus || {
     on(/** @type {string} */ type, /** @type {(d: any) => void} */ fn) {
       (listeners[type] ||= []).push(fn);
     },

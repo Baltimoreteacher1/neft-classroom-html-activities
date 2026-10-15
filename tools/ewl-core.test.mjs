@@ -153,7 +153,7 @@ for (const r of Reason.rules()) {
       const w = r.wrong(task);
       assert.ok(
         !w.eq(task.answer),
-        `${r.id}: the flawed answer equals the right one on ${kind} ${JSON.stringify(task.facts, (k, v) => (typeof v === "bigint" ? String(v) : v))}`,
+        `${r.id}: the flawed answer equals the right one on ${kind} ${JSON.stringify(task.facts, (_k, v) => (typeof v === "bigint" ? String(v) : v))}`,
       );
       const d = Reason.diagnose(task, { value: w });
       assert.equal(d.rule?.id, r.id, `${r.id} should be matched by its own wrong answer`);

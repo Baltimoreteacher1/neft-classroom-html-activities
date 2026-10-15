@@ -203,7 +203,7 @@
         res.applicable++;
         if (r.holds) res.holds++;
         else res.fails.push({ case: cv, env: e });
-      } catch (err) {
+      } catch (_err) {
         res.undef++;
       }
     });
@@ -243,7 +243,7 @@
           ok: good,
           status: good ? "supports" : !r.applies && !rs.applies ? "outside" : "breaks",
         };
-      } catch (e) {
+      } catch (_e) {
         return { type: "evidence", ok: false, status: "undefined" };
       }
     });
@@ -252,7 +252,7 @@
       try {
         var r = evalClaim(ast.claim, env(tpl, n.case));
         genuine = r.applies && !r.holds;
-      } catch (e) {
+      } catch (_e) {
         genuine = false;
       }
       return { genuine: genuine, answered: words(n.text) >= 3, ok: genuine && words(n.text) >= 3 };
@@ -363,7 +363,7 @@
       var ast;
       try {
         ast = JSON.parse(json);
-      } catch (e) {
+      } catch (_e) {
         return { ast: null, problems: ["not valid JSON"] };
       }
       var p = validate(ast, tpl);

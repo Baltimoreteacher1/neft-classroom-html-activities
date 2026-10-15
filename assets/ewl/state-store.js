@@ -72,7 +72,7 @@
       s.setItem(probe, "1");
       s.removeItem(probe);
       return s;
-    } catch (e) {
+    } catch (_e) {
       return memoryStorage();
     }
   }
@@ -137,7 +137,7 @@
         if (!raw) return fresh();
         var o = JSON.parse(raw);
         return validateConfig(o).length ? fresh() : merge(fresh(), o);
-      } catch (e) {
+      } catch (_e) {
         return fresh();
       }
     }
@@ -151,13 +151,13 @@
       state.updated = now();
       try {
         storage.setItem(KEY, JSON.stringify(state));
-      } catch (e) {
+      } catch (_e) {
         /* storage full or blocked: state stays in memory for this page */
       }
       subs.slice().forEach(function (fn) {
         try {
           fn(state);
-        } catch (e) {
+        } catch (_e) {
           /* a bad subscriber must not break the others */
         }
       });
@@ -271,7 +271,7 @@
         var q;
         try {
           q = new URLSearchParams(search || "");
-        } catch (e) {
+        } catch (_e) {
           return { applied: {}, ignored: ["search"] };
         }
         var applied = {};
@@ -337,7 +337,7 @@
         var body;
         try {
           body = unb64(parts[0]);
-        } catch (e) {
+        } catch (_e) {
           return { ok: false, error: "That code has characters it should not have." };
         }
         if (checksum(body) !== parts[1])
@@ -348,7 +348,7 @@
         var o;
         try {
           o = JSON.parse(body);
-        } catch (e) {
+        } catch (_e) {
           return { ok: false, error: "That code could not be read." };
         }
         var problems = validateConfig(o);
@@ -390,7 +390,7 @@
           try {
             s.setLesson("../x");
             return "accepted";
-          } catch (e) {
+          } catch (_e) {
             return true;
           }
         });

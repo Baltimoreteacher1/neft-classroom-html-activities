@@ -1,0 +1,97 @@
+{
+  "lesson": "5-5",
+  "unit": 5,
+  "title": "Determine the Volume of Rectangular Prisms",
+  "objective": "I can find the volume of a rectangular prism with whole-number edges using length × width × height.",
+  "position": "5 of 10",
+  "model": "rectangular prism built from unit cubes in layers, with length, width and height edges resized with sliders",
+  "widgets": [
+    {
+      "where": "Practice §1 items 1-4 (mc, num ×2, mc)",
+      "component": "prerequisite warm-up: rectangle area, 6 rows of 4 unit cubes in a base layer, missing side from an area, which measurement needs square units",
+      "class": "ALIGNED",
+      "root": "Recomputed 40, 24, 5; item 1.2 builds the base-layer idea that volume = layer × height. All earlier-lesson mathematics.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §2 items 1-5 and §3 items 1-5 (mc, tbl, err ×2, mc)",
+      "component": "whole-number volume: l × w × h, missing height, cubic unit, tables, two bin comparison, 'forgot the height' and 'added the last edge' errors",
+      "class": "ALIGNED",
+      "root": "Recomputed 84, 3 (120 ÷ 40), 60/72/90, 90/7/6, Bin B 252 vs Bin A 240 (by 12), 160, 72 ÷ 24 = 3. Every edge is a whole number, matching 'whole-number edges' in the objective; the two errors are the real misconceptions (stopping at the base, adding an edge).",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §4 items 1-6 (gen:volumePrism L1-L3)",
+      "component": "generated rectangular-prism volume problems with a drawn prism (unit-cube grid at L1)",
+      "class": "MISALIGNED",
+      "root": "The objective says 'whole-number edges' and 5-10 (position 10) is the lesson that introduces fractional edges, but assets/studio-gen/geometry.js §5 volumePrism: over 400 seeds, fractional edges or a mixed-number volume appear in 0% of L1, 44% of L2, 74% of L3 and 26% of L4 draws (e.g. 'a sandbox 5 m long, 7 m wide and 7 1/2 m tall'). Roughly two of the six practice items therefore teach fractional-edge volume five lessons early. The figure labels also print 7.5 m while the stem says 7 1/2 m.",
+      "replacement": "Add an optional item parameter to the generator: in data/practice-studio/5-5.json write {\"k\":\"gen\",\"g\":\"volumePrism\",\"level\":2,\"p\":{\"whole\":true}} for every volumePrism item (fresh and challenge.climb), and in assets/studio-gen/geometry.js §5 make `whole:true` draw all three edges and the volume as whole numbers (L2 direct volume, L3 missing edge from the volume, L4 two-prism comparison and the packed-boxes variant that already exists). Keep the fractional draws for 5-10 only. Extend tools/studio-gen.test.mjs: for p.whole every dims value and the answer must satisfy Number.isInteger over 300 seeds."
+    },
+    {
+      "where": "Practice §4.7 act:sizer L2 (prism, goal volume)",
+      "component": "sizer: three sliders set length, width and height of a box; readout shows layer cubes and layers",
+      "class": "ALIGNED",
+      "root": "L2 uses whole-number steps (range 1-8) and the readout 'l × w × h = V, one layer has l × w cubes', graded on the volume; feedback names the 'added the edges' error. A manipulable model of the lesson.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §5 items 1-3 (mc)",
+      "component": "Connect check: 'What is the volume of the large box?', 'What is the volume of the medium box?', 'How many more cubic inches does the large box hold?' (now carried with the Connect scenario text and the Connect diagram)",
+      "class": "QUESTIONABLE",
+      "root": "The scenario is now shown, but the figure is the Connect bar chart (bars Large 24×18×18 = 7776 and Medium 18×14×12 = 3024 with show:true): the bars print 7,776 and 3,024, the answers to items 1 and 2, and their gap is item 3. A bar chart is also not a picture of the solid or figure the questions are about. The item is answered by reading the chart.",
+      "replacement": "Do not carry a bar-chart diagram into the Mastery section (diagramToViz should return null for kind 'bar-chart', or set show:false until after the answer is checked). Attach instead two prism figures: {\"t\":\"prism\",\"l\":24,\"w\":18,\"h\":18,\"unit\":\"in\",\"labels\":true} and {\"t\":\"prism\",\"l\":18,\"w\":14,\"h\":12,\"unit\":\"in\",\"labels\":true}, and show the bars only in the explanation after the student answers."
+    },
+    {
+      "where": "Practice §5 item 4 (mc exit ticket)",
+      "component": "volume l = 11 in, w = 5 in, h = 4 in with a square-inch distractor",
+      "class": "ALIGNED",
+      "root": "220 in³ recomputed; 220 in² traps the unit.",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge §1 items 1-6 (gen:volumePrism L2-L4)",
+      "component": "generated volume problems with a drawn prism, including a mixed-number volume solved for a height of 7.5 cm",
+      "class": "MISALIGNED",
+      "root": "Same generator as Practice §4: assets/studio-gen/geometry.js §5 volumePrism: over 400 seeds, fractional edges or a mixed-number volume appear in 0% of L1, 44% of L2, 74% of L3 and 26% of L4 draws (e.g. 'a sandbox 5 m long, 7 m wide and 7 1/2 m tall'). Challenge 1.5-1.6 (L4) ask the student to divide 472 1/2 cm³ by 9 × 7 and answer 7.5 cm, which is the 5-10 skill, and the figure prints decimals while the stem prints mixed numbers.",
+      "replacement": "Same fix as Practice §4: set p:{\"whole\":true} on all six items. For L4 keep the whole-number challenges that already exist (compare two aquariums, pack 2 × 4 × 2 in boxes into an 8 × 8 × 4 in chest) and drop the 'volume of 472 1/2' form for 5-5. Fractional-edge versions move to data/practice-studio/5-10.json."
+    },
+    {
+      "where": "Challenge §3.1-3.2 act:sizer L3, L4 (prism, goal volume)",
+      "component": "sizer with half-unit (L3) and quarter-unit (L4) steps",
+      "class": "MISALIGNED",
+      "root": "assets/studio-act/sizer.js uses step 0.5 at level 3 and 0.25 at level 4, so the student sets edges such as 3.5 or 2.25 to hit a volume. That is fractional-edge volume, the objective of 5-10, in a lesson about whole-number edges.",
+      "replacement": "In data/practice-studio/5-5.json give the two sizer items p:{\"shape\":\"prism\",\"goal\":\"volume\",\"whole\":true}; in sizer.js make make() use step 1, pool values with whole numbers, and keep the L3/L4 difficulty by adding rules ('the length is twice the height', 'two edges are equal') and a larger target (volume up to 300) instead of finer steps."
+    },
+    {
+      "where": "Challenge §2 items 1-7 and §3.3 (err, wr, tbl, num with figure, mc, tbl, mc; sort)",
+      "component": "volume error, three whole-number boxes for 60 in³, doubling one edge, short-by-cubes, locker comparison, four-crate table, doubling every edge → 8 times, sort units by what they measure",
+      "class": "ALIGNED",
+      "root": "Recomputed 216, 120 for each doubled edge, 240 − 200 = 40 more cubes, Locker A 300, B 336, C 324, table 5/7/6/240, 8 times. The unit sort (m, in | cm², ft² | m³, in³) is the lesson's length/area/volume distinction.",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge §4 items 1-4 and §5 items 1-6",
+      "component": "detective items (added the edges, stopped at the base, square inches), same volume different shape, boss items",
+      "class": "ALIGNED",
+      "root": "Recomputed 60, 60, 220 in³, 72 both, 198, 140 cm³, 150 ÷ 50 = 3, least volume 27, 120 ÷ 24 = 5 bags.",
+      "replacement": ""
+    }
+  ],
+  "formulaOrder": [
+    {
+      "formula": "V = l × w × h = B × h (whole-number edges)",
+      "taughtIn": "5-5",
+      "earliestUseInStudio": "5-5"
+    },
+    {
+      "formula": "volume with fractional edge lengths (V = B × h with fractions)",
+      "taughtIn": "5-10",
+      "earliestUseInStudio": "5-5"
+    }
+  ],
+  "typography": [
+    "gen:volumePrism L2-L3 figures print decimal labels (7.5 m, 4.5 ft) while the stems print mixed numbers (7 1/2 m, 4 1/2 ft); the two notations disagree on the same item (also applies to Practice §4 and Challenge §1)."
+  ],
+  "missingModel": "false",
+  "lessonClass": "MISALIGNED"
+}

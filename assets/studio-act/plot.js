@@ -63,12 +63,12 @@
   /* ---- modes: point ------------------------------------------------------------------------- */
   const SCENES = [
     (l, c) => `Plot point ${l} at ${c}. ¦ Marca el punto ${l} en ${c}.`,
-    (l, c) =>
+    (_l, c) =>
       `The treasure chest is at ${c}. Tap that spot. ¦ El cofre del tesoro está en ${c}. Toca ese lugar.`,
-    (l, c) =>
+    (_l, c) =>
       `A drone hovers at ${c}. Plot its position. ¦ Un dron vuela en ${c}. Marca su posición.`,
-    (l, c) => `Put a flag at ${c}. ¦ Pon una bandera en ${c}.`,
-    (l, c) =>
+    (_l, c) => `Put a flag at ${c}. ¦ Pon una bandera en ${c}.`,
+    (_l, c) =>
       `Your camp is at ${c}. Plot it on the map. ¦ Tu campamento está en ${c}. Márcalo en el mapa.`,
     (l, c) =>
       `Point ${l} has coordinates ${c}. Plot it. ¦ El punto ${l} tiene coordenadas ${c}. Márcalo.`,
@@ -525,7 +525,7 @@
   function rowOf(h, hEs, cells) {
     return { h, hEs, cells };
   }
-  function mkRatio(rng, lv, p) {
+  function mkRatio(rng, lv, _p) {
     const c = rng.pick(RATIO_CTX);
     const bases =
       lv === 1
@@ -746,7 +746,7 @@
       "Total (m)",
     ],
   ];
-  function mkTable(rng, lv, p) {
+  function mkTable(rng, lv, _p) {
     const add = lv === 1 ? rng.chance(0.4) : rng.chance(0.5);
     const rev = lv === 4 && rng.chance(0.6);
     let k;

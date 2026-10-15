@@ -310,7 +310,7 @@
       let m;
       try {
         m = Lens.model(next, lang);
-      } catch (e) {
+      } catch (_e) {
         return false;
       }
       spec = next;

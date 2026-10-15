@@ -26,8 +26,7 @@ const MODULES = [
   "canvas-kinds.js",
   "canvas-validate.js",
 ];
-const { EWL } = loadEwl({ only: MODULES });
-const { Rat } = EWL;
+loadEwl({ only: MODULES });
 let checks = 0;
 const ok = (c, m) => {
   checks += 1;

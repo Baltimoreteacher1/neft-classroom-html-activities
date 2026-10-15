@@ -86,7 +86,7 @@
             var r;
             try {
               r = EWL.LabSim.run(inv, cv);
-            } catch (e) {
+            } catch (_e) {
               return show(
                 t(
                   "Those numbers cannot be used together.",

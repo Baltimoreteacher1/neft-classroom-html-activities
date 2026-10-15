@@ -104,7 +104,7 @@
       "Fractions count equal-sized pieces. When you add the bottoms, did the size of the pieces stay the same?",
     nudgeEs:
       "Las fracciones cuentan partes del mismo tamaño. Al sumar los denominadores, ¿el tamaño de las partes se mantuvo igual?",
-    counter: function (t) {
+    counter: function (_t) {
       return "Try 1/2 + 1/2 with your method. Your method gives 2/4. Is half a pizza plus half a pizza only half a pizza?";
     },
   });

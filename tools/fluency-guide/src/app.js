@@ -2149,7 +2149,7 @@
         render();
         renderAnalyticsDashboard();
         toast("Classroom data imported successfully");
-      } catch (err) {
+      } catch (_err) {
         toast("Error reading JSON file");
       }
     };
@@ -3137,13 +3137,13 @@
 
   // Keyboard navigation & modal focus trapping
   document.addEventListener("keydown", (event) => {
-    const modalOpen = $("#backdrop").classList.contains("open");
-    const helpOpen = $("#helpBackdrop").classList.contains("open");
-    const printOpen = $("#printBackdrop").classList.contains("open");
-    const toolsOpen = $("#toolsBackdrop") && $("#toolsBackdrop").classList.contains("open");
-    const analyticsOpen =
+    const _modalOpen = $("#backdrop").classList.contains("open");
+    const _helpOpen = $("#helpBackdrop").classList.contains("open");
+    const _printOpen = $("#printBackdrop").classList.contains("open");
+    const _toolsOpen = $("#toolsBackdrop") && $("#toolsBackdrop").classList.contains("open");
+    const _analyticsOpen =
       $("#analyticsBackdrop") && $("#analyticsBackdrop").classList.contains("open");
-    const coldCallOpen =
+    const _coldCallOpen =
       $("#coldCallBackdrop") && $("#coldCallBackdrop").classList.contains("open");
 
     const openBackdrops = $$(".backdrop.open");

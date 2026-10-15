@@ -124,7 +124,7 @@
     );
   }
 
-  function blank(inv, tpl) {
+  function blank(inv, _tpl) {
     var h = EWL.h;
     var t = EWL.t;
     var cols = inv.table.map(function (id) {

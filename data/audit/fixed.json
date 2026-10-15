@@ -1,0 +1,35 @@
+{
+  "note": "Findings from the audit that have been fixed in code, with the proof. Everything else in the lesson-by-lesson table is still open.",
+  "fixed": [
+    {
+      "finding": "Mastery questions lost their scenario and picture when generated from a lesson's Connect section (2-2 to 2-5, 2-9 to 2-12, 3-2, 3-4, 3-5, 3-8, 3-9, 5-x, 6-1 to 6-6, 6-9 to 6-15, 7-2 to 7-8, 8-x, 9-x)",
+      "fix": "The converter now carries the Connect scenario onto each Connect question, and attaches the Connect figure when it shows what the problem GIVES (histogram, dot plot, box plot, coordinate points). Bar charts, tapes and number lines are not attached because they show the worked result.",
+      "proof": "scripts/lib/practice-studio-config.mjs (diagramToViz, GIVEN); tools/studio-viz.test.mjs now renders every figure on every generated page (2,026)."
+    },
+    {
+      "finding": "7-1 integerOpposites: the stem printed the tick count while the figure plotted tick x unit (17% of level-3 draws)",
+      "fix": "oppLetters prints the plotted number for integer lines.",
+      "proof": "tools/studio-gen-figures.test.mjs checks 82 stems against their figures; it fails on the old code."
+    },
+    {
+      "finding": "7-7 polygonCoordinates: the missing-vertex figure drew a diagonal and left out a side (135 of 291 draws); the opposite-corner variant labelled all four corners",
+      "fix": "Segments join only vertices that are neighbours around the rectangle; the opposite-corner figure labels only P and Q.",
+      "proof": "tools/studio-gen-figures.test.mjs checks 582 drawn segments are sides."
+    },
+    {
+      "finding": "2-2 histograms drew gapped bars for bins written as inclusive pairs (20-24, 25-29)",
+      "fix": "The hist figure draws such bins touching; the printed ranges and the text alternative keep the authored pairs.",
+      "proof": "tools/studio-viz.test.mjs asserts adjacent bars touch."
+    },
+    {
+      "finding": "Typed table cells were graded by an exact string or only the leading number: 'Median' failed against a sentence key, '9' passed for '9 to 15', '5n' failed",
+      "fix": "RT.util.cellOk: normalizes spacing, case, minus and multiplication signs and 'to' vs ':'; accepts 'a or b' alternatives; a key with a second number must match whole; the converter adds the short answer to long sentence keys.",
+      "proof": "tools/studio-table-cells.test.mjs (37 cases)."
+    },
+    {
+      "finding": "ASCII hyphen printed as the minus sign and 'x' as multiplication in authored and converted text (Units 6-8)",
+      "fix": "Display text is typographized at build time (U+2212, ×); answers, ids and figure specs are untouched.",
+      "proof": "scripts/lib/math-typography.mjs; 7-1 now prints 95 true minus signs and no hyphen negatives."
+    }
+  ]
+}

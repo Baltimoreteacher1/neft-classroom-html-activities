@@ -17,6 +17,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { listLessonDirs, loadLessonConfig, REPO_ROOT } from "../tools/lib/curriculum-source.mjs";
+import { typographizeItems } from "./lib/math-typography.mjs";
 import { buildSections } from "./lib/practice-studio-config.mjs";
 import { validateLessonData } from "./lib/practice-studio-data.mjs";
 import { indexPage, pageFor } from "./lib/practice-studio-pages.mjs";
@@ -119,7 +120,7 @@ export function outputs(opts = {}) {
           );
       files.set(
         `math/practice-studio/${id}/${mode === "practice" ? "" : "challenge/"}index.html`,
-        pageFor({ id, mode, cfg, ld, world, sections, assets }),
+        pageFor({ id, mode, cfg, ld, world, sections: typographizeItems(sections), assets }),
       );
     }
     entries.push({ id, title: cfg.title || id, emoji: world.emoji, world: worldId });

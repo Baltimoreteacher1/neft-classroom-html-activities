@@ -1,0 +1,88 @@
+{
+  "lesson": "5-7",
+  "unit": 5,
+  "title": "Determine Surface Area of Prisms",
+  "objective": "I can find the surface area of rectangular and triangular prisms.",
+  "position": "7 of 10",
+  "model": "net or oblique drawing of a rectangular or triangular prism, faces added (two triangles plus three rectangles)",
+  "widgets": [
+    {
+      "where": "Practice §1 items 1-4 (mc)",
+      "component": "prerequisite warm-up: surface area unit, faces of a rectangular prism, surface area from six face areas on a net, faces of a triangular prism",
+      "class": "ALIGNED",
+      "root": "Recomputed 108 (12 + 12 + 18 + 18 + 24 + 24) and 2 triangles + 3 rectangles.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §2 items 1-5 and §3 items 1-3 (mc, match, err, tbl, mc, err)",
+      "component": "rectangular and triangular prism surface area: 5 × 4 × 3, faces of a triangular prism, 24 + 110 = 134, concept match, forgotten pair/face, surface area vs volume",
+      "class": "ALIGNED",
+      "root": "Recomputed 94, 5 faces, 134, 62 (un-doubled pair), table 392/288/234, wedge prism 24 + (6 + 5 + 5) × 10 = 184 (end triangle 6, 4, 5 is consistent: 3² + 4² = 5²), 122 (volume 84 was not surface area).",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §4 items 1-6 and Challenge §1 items 1-4, rectangular-prism variants (gen:surfaceAreaPrism L1-L4)",
+      "component": "generated box problems with a drawn prism: same-size faces, surface area, no-lid sandbox, two cubes glued, net view",
+      "class": "ALIGNED",
+      "root": "Prism views checked: oblique view draws the hidden back edges dashed and labels length, width, height on three distinct edges; the net view is a valid cross net (top above the front face, left/right/back in one row, bottom below) built from one set of Lp, Wp, Hp so shared edges match. Keys come from the independent check().",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §4.3-4.4 and Challenge §1.1-1.2, §1.5-1.6 (triangular variants of gen:surfaceAreaPrism L2, L4) and Challenge 2.5",
+      "component": "generated and hand-authored triangular-prism problems drawn as a flat triangle with its base, height and two equal sides",
+      "class": "BROKEN-MODEL",
+      "root": "Triangular-prism items (about 31% of gen:surfaceAreaPrism L2 draws and 29% of L4, so Practice 4.3-4.4 and Challenge 1.1-1.6, plus the hand-authored Challenge 2.5) are drawn with viz shape 'tri', which is only the end triangle: no prism, no length, none of the three lateral rectangles and no net, although the answer is the two triangles plus three rectangles whose width is the prism's length. The triangle's aspect is also clamped to 0.8-3 (a 24 : 5 end is drawn 3 : 1, 2.3 times too tall; 17 of 86 L4 draws are more than 1.5 times off). Sides and heights are consistent (every isosceles end satisfies (b ÷ 2)² + h² = side²).",
+      "replacement": "Add triangular prisms to the viz kind 'prism': {\"t\":\"prism\",\"tri\":{\"b\":24,\"h\":5,\"s\":13},\"len\":8,\"unit\":\"in\",\"labels\":true,\"net\":false}. Oblique view: the end triangle in front, depth edge up and right, hidden edges dashed, the triangle's perpendicular height dashed with a right-angle mark, the equal sides ticked, and the length labelled on the long edge. With \"net\":true draw the net that folds: three rectangles of widths s, b, s and height len in one row, the two triangles attached above and below the middle rectangle, each face labelled with its dimensions. Remove the 0.8-3 clamp for the triangle (scale to fit). Use it for gen:surfaceAreaPrism L2 and L4 triangular variants and for Challenge 2.5, 4.3, 4.4, 5.2 and 5.5, and add a test that the drawn end triangle's b : h equals the given b : h within 2%."
+    },
+    {
+      "where": "Practice §4.7 act:sizer L2, Challenge §3.1-3.2 act:sizer L3, L4 (prism, goal surface)",
+      "component": "sizer: length, width and height of a box set with sliders; readout 2(l × w) + 2(l × h) + 2(w × h) as three pairs",
+      "class": "ALIGNED",
+      "root": "A manipulable model for the rectangular prism: the three pairs update live, the cube rule at L4 makes all six faces match, and the hints (2 × top/bottom pair first) follow the lesson's pair method.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §5 items 1-3 (mc)",
+      "component": "Connect check: 'What is the chest's surface area?', 'How many cans of stain are needed for one chest?', 'The carpenter builds a second identical chest. Now how many cans?' (now carried with the Connect scenario text and the Connect diagram)",
+      "class": "QUESTIONABLE",
+      "root": "The scenario is now shown, but the figure is the Connect bar chart (bars Top & Bottom 12, Front & Back 12, Left & Right 8 with show:true): the bars print the three doubled face-pair areas (12, 12, 8) whose sum is the answer to item 1 (the labels also use the letter x). A bar chart is also not a picture of the solid or figure the questions are about. The item is answered by reading the chart.",
+      "replacement": "Do not carry a bar-chart diagram into the Mastery section (diagramToViz should return null for kind 'bar-chart', or set show:false until after the answer is checked). Attach instead the chest: {\"t\":\"prism\",\"l\":3,\"w\":2,\"h\":2,\"unit\":\"ft\",\"labels\":true}, and show the bars only in the explanation after the student answers."
+    },
+    {
+      "where": "Practice §5 items 4-5 (mc)",
+      "component": "surface area l = 8, w = 6, h = 3; which expression is the area of a triangular end (½ × 10 × 12)",
+      "class": "ALIGNED",
+      "root": "180 ft² recomputed; 5.5 gives the isosceles end 10, 12, 13 and keys ½ × 10 × 12, trapping the sloping side as the height.",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge §2 items 1-4, 6-7 and §3.3 (err, wr, tbl, mc with prism figure, num, mc; sort)",
+      "component": "forgot-a-pair error, rectangular versus triangular container, side-by-side table of faces/SA/volume, open planter boxes, missing height from a surface area, two boxes pushed together, sort of changes",
+      "class": "ALIGNED",
+      "root": "Recomputed 358, table 108/72 and 72/36 (end triangle 6, 4, 5), 44 × 4 = 176 → 4 cans, 57 = 9 + 12h → h = 4, 72 ft² (two 4 × 2 × 2 boxes make 8 × 2 × 2: 72). The sort puts 'taller, same base', 'every edge 1 ft longer' and 'add a lid' as increases and 'take the lid off', 'shorter' as decreases.",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge §4 items 1-4 and §5 items 1-6",
+      "component": "detective items (volume instead of surface area, un-doubled pair, triangle without ½ and wrong rectangles, 'the ground face is not a face'), boss items",
+      "class": "ALIGNED",
+      "root": "Recomputed 102, 174, 180 (60 + 120), Ana is right (72 + 12 for a closed prism), 206, expression 2 × (½ × 6 × 8) + (6 + 8 + 10) × 5, 45, 4 × 4 × 4 needs least paint, 468 (2 × 54 + 36 × 10).",
+      "replacement": ""
+    }
+  ],
+  "formulaOrder": [
+    {
+      "formula": "SA = 2lw + 2lh + 2wh (rectangular prism)",
+      "taughtIn": "5-6",
+      "earliestUseInStudio": "5-7"
+    },
+    {
+      "formula": "A = ½ × b × h for the triangular ends",
+      "taughtIn": "5-2",
+      "earliestUseInStudio": "5-7"
+    }
+  ],
+  "typography": [],
+  "missingModel": "true: the rectangular prism has a sizer, but the triangular prism and every net are static pictures, so the half of the objective that is new (triangular prisms) cannot be manipulated",
+  "lessonClass": "BROKEN-MODEL"
+}

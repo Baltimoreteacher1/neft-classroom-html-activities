@@ -4818,7 +4818,7 @@
 
   /** L4: which measure is greater? */
   const cuCompare = (/** @type {any} */ rng) => {
-    const [big, small, k, sys] = rng.pick(FACTS.filter((f) => f[2] <= 100));
+    const [big, small, k, _sys] = rng.pick(FACTS.filter((f) => f[2] <= 100));
     const n1 = rng.int(2, 9);
     const n2 = n1 * k + rng.pick([-1, 1, 2, -2]) * rng.int(1, Math.max(1, Math.min(9, k - 1)));
     if (n2 <= 0 || n2 === n1 * k) redo();

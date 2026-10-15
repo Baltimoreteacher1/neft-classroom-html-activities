@@ -89,7 +89,7 @@
           Object.keys(e).forEach(function (k) {
             out.push(e[k].frac());
           });
-        } catch (err) {
+        } catch (_err) {
           /* undefined case: no numbers to add */
         }
       });
@@ -291,7 +291,7 @@
           var e = D.env(tpl, cv);
           var one = oneCase(c.claim, e);
           rows.push({ cv: cv, one: one });
-        } catch (err) {
+        } catch (_err) {
           /* undefined case */
         }
       });

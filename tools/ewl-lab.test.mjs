@@ -22,8 +22,7 @@ const ctx = loadEwl({
   ],
 });
 const { EWL } = ctx;
-const { Rat, Reason, LabExpr, LabSim, LabTasks, LabValidate, Discourse, DiscourseText, Notebook } =
-  EWL;
+const { Reason, LabExpr, LabSim, LabTasks, LabValidate, Discourse, DiscourseText, Notebook } = EWL;
 const read = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url), "utf8"));
 const doc = read("data/ewl/investigations.json");
 const manifest = read("data/curriculum-launch-manifest.json").lessons;
@@ -129,7 +128,7 @@ const eq = (a, b) => a.n === b.n && a.d === b.d;
 const cmp = (a, b) => (a.n * b.d < b.n * a.d ? -1 : a.n * b.d > b.n * a.d ? 1 : 0);
 const num = (x) => Q(x);
 const pct = (x) => Q(x, 100n);
-const frac = (q) => (q.d === 1n ? String(q.n) : `${q.n}/${q.d}`);
+const _frac = (q) => (q.d === 1n ? String(q.n) : `${q.n}/${q.d}`);
 
 const runCase = (id, c) => LabSim.run(inv(id), c);
 const val = (id, c, key) => runCase(id, c).values[key].frac();

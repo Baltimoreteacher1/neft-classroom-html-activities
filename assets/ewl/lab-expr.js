@@ -283,7 +283,7 @@
       try {
         Expr.eval(["exec", "x"], {});
         return "unknown operator accepted";
-      } catch (e) {
+      } catch (_e) {
         return Expr.validate(["exec", "x"]).length === 1 ? true : "validate missed it";
       }
     },

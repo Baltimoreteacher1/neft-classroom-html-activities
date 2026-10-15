@@ -254,7 +254,7 @@
       "neg",
     ],
   ];
-  function mkWrite(rng, lv, p) {
+  function mkWrite(rng, lv, _p) {
     const pool = STORIES.filter((s) =>
       lv === 1
         ? !s[8] && s[0].length === 1
@@ -287,7 +287,7 @@
       ...pack({
         q: `${txt.replace("{n}", nT)} Build the inequality that matches. ¦ ${bi(txt)[1].replace("{n}", nT)} Construye la desigualdad que corresponde.`.replace(
           /^[^¦]*¦/,
-          (a) => `${bi(txt)[0].replace("{n}", nT)} Build the inequality that matches. ¦`,
+          (_a) => `${bi(txt)[0].replace("{n}", nT)} Build the inequality that matches. ¦`,
         ),
         x: `"${kwEn}" means ${v} is ${o.en} ${money ? "$" : ""}${nT}. So the inequality is ${v} ${o.sym} ${nT}. ¦ "${kwEs}" significa que ${v} es ${o.es} ${money ? "$" : ""}${nT}. Entonces la desigualdad es ${v} ${o.sym} ${nT}.`,
         h: [
@@ -358,7 +358,7 @@
 
   /* ---- graph -------------------------------------------------------------------------------- */
   const LETTERS = ["x", "n", "p", "k", "w", "t"];
-  function mkGraph(rng, lv, p) {
+  function mkGraph(rng, lv, _p) {
     const vr = rng.pick(LETTERS);
     const op = rng.pick(Object.keys(OPS));
     const o = OPS[op];
@@ -520,7 +520,7 @@
   }
 
   /* ---- test --------------------------------------------------------------------------------- */
-  function mkTest(rng, lv, p) {
+  function mkTest(rng, lv, _p) {
     const vr = rng.pick(LETTERS);
     const op = lv === 1 ? rng.pick([">", "<"]) : rng.pick(Object.keys(OPS));
     const o = OPS[op];

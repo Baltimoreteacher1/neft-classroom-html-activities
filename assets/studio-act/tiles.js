@@ -9,7 +9,7 @@
   const W = /** @type {any} */ (window);
   const A = W.StudioAct;
   const MINUS = "−";
-  const TIMES = "×";
+  const _TIMES = "×";
   const clone = (/** @type {any} */ o) => JSON.parse(JSON.stringify(o));
   const esc = (/** @type {any} */ s) =>
     String(s).replace(
@@ -516,7 +516,7 @@ body.show-es .sa-es,.sa-root[data-es="1"] .sa-es{display:block}
         root.append(cp);
       }
       root.append(read, mat);
-      var paintGroups = () => {
+      var _paintGroups = () => {
         mat.replaceChildren();
         st.g.forEach((/** @type {any} */ g, /** @type {number} */ i) => {
           const label = `${g.q < 0 ? MINUS : ""}${g.k === "x" ? (Math.abs(g.q) === 1 ? "x" : `${Math.abs(g.q)}x`) : Math.abs(g.q)}`;

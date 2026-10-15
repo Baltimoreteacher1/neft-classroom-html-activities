@@ -15,7 +15,7 @@
   function qs() {
     try {
       return new URLSearchParams(root.location.search);
-    } catch (e) {
+    } catch (_e) {
       return new URLSearchParams("");
     }
   }
@@ -29,7 +29,7 @@
       var q = qs();
       q.set(key, val);
       root.history.replaceState(null, "", "?" + q.toString());
-    } catch (e) {
+    } catch (_e) {
       /* file:// or sandboxed: the address bar simply does not update */
     }
   }
@@ -88,7 +88,7 @@
             onclick: function () {
               try {
                 root.localStorage.setItem("ewl_lang", other);
-              } catch (e) {
+              } catch (_e) {
                 /* ignore */
               }
             },
@@ -119,7 +119,7 @@
       if (live && live.destroy) {
         try {
           live.destroy();
-        } catch (e) {
+        } catch (_e) {
           /* a mode that fails to clean up must not block the next one */
         }
       }
@@ -319,7 +319,7 @@
     document.documentElement.lang = EWL.lang();
     try {
       EWL.state.hydrateFromUrl(root.location.search);
-    } catch (e) {
+    } catch (_e) {
       /* a bad link never stops the page */
     }
     var flags = EWL.flags();

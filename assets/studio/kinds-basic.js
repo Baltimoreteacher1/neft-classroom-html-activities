@@ -23,8 +23,11 @@
     );
   const es = (/** @type {any} */ text) =>
     text ? `<span class="es-text" lang="es">${esc(text)}</span>` : "";
+  /** The situation an item belongs to (a lesson's Connect scenario) and its figure, shown above the question. */
   const viz = (/** @type {any} */ it) =>
-    it.viz && W.StudioViz ? `<div class="viz-host">${W.StudioViz.render(it.viz)}</div>` : "";
+    `${it.ctx ? `<p class="item-ctx">${esc(it.ctx)}${es(it.ctxEs)}</p>` : ""}${
+      it.viz && W.StudioViz ? `<div class="viz-host">${W.StudioViz.render(it.viz)}</div>` : ""
+    }`;
   /** Number from "12", "$3.50", "3/4", "2 1/3", "−5", or "12 cm" (a trailing unit is ignored). */
   const value = (/** @type {any} */ raw) => {
     const lead = String(raw).match(/^\s*([−-]?\s*\$?[\d.,]+(?:\s+\d+\/\d+|\s*\/\s*\d+)?)/);
@@ -35,7 +38,40 @@
     const b = value(right);
     return Number.isFinite(a) && Number.isFinite(b) && Math.abs(a - b) <= tol;
   };
-  RT.util = { esc, es, viz, value, same };
+  /**
+   * Is a typed table cell right? Spacing, case, minus signs, × / · / *, thousands commas and "9 to 15" vs "9:15" do not matter.
+   * A key written "a or b" accepts either. A key that is one number plus a unit ("12 cm²") accepts the number alone or with the
+   * unit. A key with a SECOND number ("9 to 15", "(2, 6)", "1, 2, 3") must match whole: typing only "9" is not "9 to 15".
+   */
+  const canon = (/** @type {any} */ x) =>
+    String(x ?? "")
+      .toLowerCase()
+      .replace(/[−–—]/g, "-")
+      .replace(/[·*]/g, "×")
+      .replace(/(\d),(?=\d{3}(?!\d))/g, "$1")
+      .replace(/\s+/g, "")
+      .replace(/(\d)to(\d)/g, "$1:$2")
+      .replace(/\.$/, "");
+  const LEAD = /^([-−]?\$?\d[\d,]*(?:\.\d+)?(?:\s*\/\s*\d+)?)(.*)$/;
+  const cellOk = (
+    /** @type {any} */ typed,
+    /** @type {any} */ want,
+    /** @type {number} */ tol = 0.005,
+  ) => {
+    const t = String(typed ?? "").trim();
+    if (!t) return false;
+    for (const alt of String(want ?? "").split(/\s+or\s+/i)) {
+      if (canon(t) === canon(alt)) return true;
+      const a = LEAD.exec(alt.trim());
+      const b = LEAD.exec(t);
+      if (a && !/\d/.test(a[2]) && b) {
+        const rest = canon(b[2]);
+        if ((!rest || rest === canon(a[2])) && same(b[1], a[1], tol)) return true;
+      }
+    }
+    return false;
+  };
+  RT.util = { esc, es, viz, value, same, canon, cellOk };
 
   const done = (/** @type {any} */ it) =>
     `<strong>${esc(it.x ? "" : "")}</strong>${esc(it.x)}${es(it.xEs)}`;
@@ -227,10 +263,7 @@
           if (!inp.value.trim()) {
             empty++;
             inp.classList.remove("ok", "err");
-          } else if (
-            same(inp.value, want, 0.005) ||
-            inp.value.trim().toLowerCase() === String(want).trim().toLowerCase()
-          ) {
+          } else if (cellOk(inp.value, want, 0.005)) {
             right++;
             inp.classList.add("ok");
             inp.classList.remove("err");

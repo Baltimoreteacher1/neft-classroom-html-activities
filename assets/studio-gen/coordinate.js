@@ -439,6 +439,8 @@
     let t;
     do t = rng.pick([-1, 1]) * rng.int(2, o.kmax - 1);
     while (o.den > 1 && t % o.den === 0);
+    // `k` counts ticks; the figure plots k * unit. Integer lines print the plotted number, fraction lines print k as a fraction.
+    const sh = (k) => o.show(o.den > 1 ? k : k * o.unit);
     const nearK = -t + rng.pick([-1, 1]);
     let x;
     do x = rng.pick([-1, 1]) * rng.int(1, o.kmax);
@@ -452,8 +454,8 @@
     return mcq(rng, {
       ...(o.given
         ? Q(
-            `${lead[0]}Point ${T} shows ${o.show(t)}. Which point shows its opposite?`,
-            `${lead[1]}El punto ${T} muestra ${o.show(t)}. ¿Qué punto muestra su opuesto?`,
+            `${lead[0]}Point ${T} shows ${sh(t)}. Which point shows its opposite?`,
+            `${lead[1]}El punto ${T} muestra ${sh(t)}. ¿Qué punto muestra su opuesto?`,
           )
         : Q(
             `${lead[0]}Which point is the opposite of point ${T}?`,
@@ -467,8 +469,8 @@
         bad(L("X"), "wrong-distance-or-side", T),
       ],
       ...X(
-        `Point ${T} is at ${o.show(t)}. Its opposite is ${o.show(-t)}, the same distance from 0 on the other side of 0. That is point ${L("O")}.`,
-        `El punto ${T} está en ${o.show(t)}. Su opuesto es ${o.show(-t)}, a la misma distancia de 0 pero del otro lado. Ese es el punto ${L("O")}.`,
+        `Point ${T} is at ${sh(t)}. Its opposite is ${sh(-t)}, the same distance from 0 on the other side of 0. That is point ${L("O")}.`,
+        `El punto ${T} está en ${sh(t)}. Su opuesto es ${sh(-t)}, a la misma distancia de 0 pero del otro lado. Ese es el punto ${L("O")}.`,
       ),
       ...H(
         o.given
@@ -3368,6 +3370,14 @@
     { x: x2, y: y2, l: labels[2] },
     { x: x1, y: y2, l: labels[3] },
   ];
+  /** Segments between shown vertices that are neighbours around the rectangle; `idx` are the shown vertices' positions in A-B-C-D. */
+  const sidesOf = (idx) => {
+    const out = [];
+    for (let a = 0; a < idx.length; a++)
+      for (let b = a + 1; b < idx.length; b++)
+        if ((idx[a] + 1) % 4 === idx[b] || (idx[b] + 1) % 4 === idx[a]) out.push([a, b]);
+    return out;
+  };
   const vlist = (pts) => pts.map((p) => `${p.l}${P(p.x, p.y)}`).join(", ");
   const polyViz = (pts) =>
     plane(Math.max(...pts.flatMap((p) => [Math.abs(p.x), Math.abs(p.y)])), pts, {
@@ -3503,10 +3513,9 @@
               Math.max(...shown.flatMap((p) => [Math.abs(p.x), Math.abs(p.y)]), 1),
               shown,
               {
-                segments: [
-                  [0, 1],
-                  [1, 2],
-                ],
+                // Draw only the sides of the rectangle: two shown vertices are joined when they are neighbours in A-B-C-D.
+                // (The shown points skip the missing one, so joining them in array order drew a diagonal for B and C.)
+                segments: sidesOf([0, 1, 2, 3].filter((i) => i !== gap)),
               },
             ),
             meta: { label },
@@ -3571,7 +3580,7 @@
           const sub = Math.abs(Math.abs(x1) - Math.abs(x2));
           const subH = Math.abs(Math.abs(y1) - Math.abs(y2));
           const opp = level === 3;
-          const pts = rectPts(x1, y1, x2, y2, opp ? ["P", "B", "Q", "D"] : undefined);
+          const pts = rectPts(x1, y1, x2, y2, opp ? ["P", "", "Q", ""] : undefined);
           const t = rng.pick(THINGS);
           const what = wantArea ? ["area", "área"] : ["perimeter", "perímetro"];
           const given = opp

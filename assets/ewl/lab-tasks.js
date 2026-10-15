@@ -334,7 +334,7 @@
             };
           }),
         };
-      } catch (e) {
+      } catch (_e) {
         /* an undefined draw (divide by zero, inexact root): draw again */
       }
     }

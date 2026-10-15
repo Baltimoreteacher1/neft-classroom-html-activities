@@ -78,7 +78,7 @@
     });
     return [r4(v + ln.step), r4(v - ln.step)].filter((x) => x >= ln.min && x <= ln.max).map(mk);
   }
-  function mkPlace(rng, lv, p) {
+  function mkPlace(rng, lv, _p) {
     const ln = lineFor(rng, lv);
     const v = pickVal(rng, ln);
     const t = show(v, ln);
@@ -155,7 +155,7 @@
       if (f) out.push(rng.chance(0.5) ? fr(f, 5) : mk(f / 5, mn(f / 5)));
     return { items: out, min: -3, max: 3, k: rng.pick([5, 6]), gap: 0.15 };
   }
-  function mkOrder(rng, lv, p) {
+  function mkOrder(rng, lv, _p) {
     const pool = itemPool(rng, lv);
     let items = [];
     for (let i = 0; i < 300; i++) {
@@ -204,7 +204,7 @@
   }
 
   /* ---- opposite ----------------------------------------------------------------------------- */
-  function mkOpposite(rng, lv, p) {
+  function mkOpposite(rng, lv, _p) {
     const ln = lineFor(rng, lv);
     const g = pickVal(rng, ln, { lim: ln.max - ln.step });
     const a = -g;

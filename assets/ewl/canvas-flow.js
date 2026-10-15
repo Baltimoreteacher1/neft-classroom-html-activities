@@ -73,7 +73,7 @@
         try {
           lens = EWL.Lens.mount(figHost, specNow(), { lang: EWL.lang() });
           if (hl) lens.highlight(hl);
-        } catch (e) {
+        } catch (_e) {
           figHost.appendChild(
             h(
               "p",
@@ -325,7 +325,7 @@
 
       /* ---- frame ---- */
       let panelHost = null;
-      let headHost = null;
+      let _headHost = null;
       let figCol = null;
       function headerNode() {
         const lessons = scene.lessons.join(", ");

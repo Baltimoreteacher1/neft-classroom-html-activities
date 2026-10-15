@@ -47,7 +47,7 @@ const dom = new JSDOM(read("curriculum/units/index.html"));
 const units = [...dom.window.document.querySelectorAll("details.unit")].map((el) => {
   const res = [...el.querySelectorAll("a.res")];
   const game = res.find((a) => a.textContent.includes("Unit Game"));
-  const summaryEl = el.querySelector("summary");
+  const _summaryEl = el.querySelector("summary");
   return {
     num: Number(el.querySelector(".unit-num")?.textContent.replace(/\D+/g, "")),
     blurb: el.querySelector(".unit-blurb")?.textContent.trim() ?? "",

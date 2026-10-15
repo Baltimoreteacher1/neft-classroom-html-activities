@@ -113,7 +113,7 @@
         res.evaluated++;
         if (r.holds) res.holds++;
         else res.fails.push({ case: c, values: r.values });
-      } catch (e) {
+      } catch (_e) {
         res.undef++;
       }
     });

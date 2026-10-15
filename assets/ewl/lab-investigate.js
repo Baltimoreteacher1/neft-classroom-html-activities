@@ -72,14 +72,14 @@
   function readDrafts() {
     try {
       return JSON.parse(root.localStorage.getItem(DRAFT_KEY) || "{}") || {};
-    } catch (e) {
+    } catch (_e) {
       return {};
     }
   }
   function writeDrafts(d) {
     try {
       root.localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
-    } catch (e) {
+    } catch (_e) {
       /* private mode or full storage: the work stays on this page only */
     }
   }
@@ -311,7 +311,7 @@
         record: function (entry) {
           try {
             ctx.evidence(EWL.id("lab", inv.id), entry);
-          } catch (e) {
+          } catch (_e) {
             /* storage unavailable: the work is still on screen */
           }
         },
@@ -337,7 +337,7 @@
         (cur.inv.lessons || []).forEach(function (id) {
           try {
             EWL.state.markStage(id, "lab");
-          } catch (e) {
+          } catch (_e) {
             /* lesson id not in the mission list: nothing to mark */
           }
         });

@@ -1,0 +1,99 @@
+{
+  "lesson": "7-7",
+  "unit": 7,
+  "title": "Represent Polygons on the Coordinate Plane",
+  "objective": "I can draw polygons from their vertex coordinates on the coordinate plane, and use coordinates to find side lengths and solve perimeter and area problems.",
+  "position": "7 of 9",
+  "model": "polygon (mostly rectangles) drawn from vertex coordinates; side length from the shared coordinate, perimeter and area from the side lengths, scale applied last",
+  "widgets": [
+    {
+      "where": "Practice §1 items 1.1-1.4 (mc)",
+      "component": "warm-up: horizontal, vertical and (0, −4)-(0, 6) distances",
+      "class": "ALIGNED",
+      "root": "Identical to the lesson's warm-up (7-6 distance rule); keys 8 units, 6, 8 and 'add |−4| and |6|' verified.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice 2.1-2.3, 2.6 (wr), 2.7 (sort)",
+      "component": "distance (−4.5, 3)-(5, 3) and (5, 3)-(5, −3.75), perimeter 9.5 and 6.75, square side and perimeter, horizontal/vertical pairs",
+      "class": "ALIGNED",
+      "root": "9.5, 6.75 and 2(9.5 + 6.75) = 32.5 recomputed; sort bins by shared x or y are right; square (1, 2)-(6, −3) has side 5 and perimeter 20.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice 2.4, 2.5, 3.6 (mc, mc, wr); Challenge 2.3 (wr)",
+      "component": "'why are two terms multiplied by 2', 'to draw a polygon you...', generic zoo-route prose, 'the park design used...'",
+      "class": "QUESTIONABLE",
+      "root": "2.4 refers to 'the perimeter calculation' that is not on the page; 2.5's correct choice is the only complete method sentence; 3.6 asks Sheng's 'shortest route vs total distance' with no coordinates; Challenge 2.3 refers to 'the park design' the challenge page never shows. None needs coordinate reasoning, and none has a figure although the lesson is about drawing from vertices.",
+      "replacement": "2.4: put the worked line in the stem (|5 − (−4.5)| = 9.5, |3 − (−3.75)| = 6.75, 2 × 9.5 + 2 × 6.75) and ask which term is doubled and why. 2.5: replace with an act:plot {mode:'polygon'} item or an ordering item over the three steps (plot every pair, join in order, read each side from the shared coordinate). 3.6: give coordinates, e.g. exhibits at (−6, 2), (3, 2), (3, −4) on a drawn plane, and ask the along-the-grid route and the total of both legs. Challenge 2.3: draw the two known vertices on a coord viz and ask for the other two from area ÷ side and the scale, as the prompt describes."
+    },
+    {
+      "where": "Practice 3.1-3.3 and 5.1-5.3 (mc)",
+      "component": "park width from 3 units at 100 ft/unit, length from 240,000 sq ft, units below the vertices",
+      "class": "QUESTIONABLE",
+      "root": "Six of the lesson's 13 mc items are one three-step problem asked twice: 3.1-3.3 and 5.1-5.3 differ only in wording and share every answer choice. The 'park' comes from the Notice-and-Wonder context (config noticeAndWonder) that the page does not show, and there is no figure although the problem is a rectangle with two plotted vertices.",
+      "replacement": "Keep one copy as a set with a figure: viz {t:'coord', points:[{x:2,y:4,l:'A'},{x:5,y:4,l:'B'}], segments:[[0,1]]} and 'Two corners of a rectangular park are A(2, 4) and B(5, 4); 1 unit = 100 ft'. Ask width (300 ft), then length from area 240,000 sq ft (800 ft), then the scale back to units and the other two corners (2, −4), (5, −4). Use a different park (new numbers and unit scale) in §5 so mastery is not a repeat."
+    },
+    {
+      "where": "Practice 3.4, 3.5, 3.7, 5.4-5.6 (mc, num)",
+      "component": "missing park vertices, perimeters of rectangles from vertices, (−2, 6)-(−2, −6), correct units for perimeter and area",
+      "class": "ALIGNED",
+      "root": "Keys (2, −4)/(5, −4), 20, 12, 18, 28 and 'perimeter 22 units; area 30 square units' recomputed; the unit-sentence item traps square vs linear units.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §4 items 4.1, 4.5, 4.6; Challenge §1 item 1.3 (gen:polygonCoordinates L1 and L3)",
+      "component": "generated 'three vertices of rectangle ABCD are shown, which point is vertex C' and 'opposite corners P and Q' with a drawn plane",
+      "class": "BROKEN-MODEL",
+      "root": "Two figure defects, measured over 300 seeds per level. (1) 'missing vertex' (L1 and L3, ~47% of draws): the generator joins the three shown points as segments [[0,1],[1,2]] in array order, but when the missing vertex is B or C the shown vertices are not consecutive, so one side is omitted and a diagonal is drawn (135 of 291 figures; e.g. A(4,5), B(6,5), D(4,8) joined B-to-D). (2) 'opposite corners P and Q' (L3, about half of L3 draws): the figure draws the whole rectangle and labels the plotted corners P, B, Q, D, so the two corners the student is asked to infer are given away and the labels (P, B, Q, D) do not match the stem or the A-B-C-D naming used everywhere else.",
+      "replacement": "In assets/studio-gen/coordinate.js polygonCoordinates 'missing' (lv 1, 3): build the segments by vertex order (all[] neighbours i, i+1 mod 4) restricted to the shown vertices, so the figure shows two real sides at the right angle and never a diagonal; add a check to tools/studio-gen.test.mjs that every segment joins two points sharing x or y. In the L3 'opposite corners' item plot and label only P and Q (no outline, no B and D) or label all four A-D consistently with the stem."
+    },
+    {
+      "where": "Practice 4.2 (gen:coordDistance L1), 4.3-4.4 (gen:polygonCoordinates L2); Challenge 1.1-1.2 (polygonCoordinates L2), 1.4 (coordDistance L3), 1.5-1.6 (polygonCoordinates L4)",
+      "component": "distance on a drawn plane; rectangle area/perimeter from vertices; solve for the missing y from area or perimeter; two-leg trip",
+      "class": "ALIGNED",
+      "root": "Ran 250 seeds x 4 levels: drawn rectangles plot the stated vertices and the keyed area/perimeter/side equals the plotted width and height every time; L4 reverse items recomputed (A(−8, −3), B(−1, −3), perimeter 24 gives D at y = −8; area 20 above A(−3, 1) gives y = 5).",
+      "replacement": ""
+    },
+    {
+      "where": "Practice 4.7; Challenge 3.1-3.2 (act:plot polygon L2, polygon L3, distance L4)",
+      "component": "plot the missing corners of a rectangle or right triangle; plot points d units from A",
+      "class": "ALIGNED",
+      "root": "Real manipulable model of the lesson's idea (missing corners from shared x- and y-values, rectangle from area or perimeter plus one side); wrong-side, swapped-leg and wrong-direction answers are named.",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge 2.1 (mc)",
+      "component": "Maria compares Space A 25 ft by 40 ft with Space B 30 ft by 30 ft",
+      "class": "BROKEN-MODEL",
+      "root": "The stem says 'a grid where each unit is 1 foot and each grid line is 5 feet apart', which contradicts itself; no grid or coordinates are shown or used, so it is a rectangle-area comparison with no coordinate plane; and the second choice's '900 sq ft vs 850 sq ft' is not derived from anything in the stem.",
+      "replacement": "Rebuild on a figure: viz {t:'coord'} with Space A the rectangle (0, 0), (5, 0), (5, 8), (0, 8) and Space B the square (7, 0), (13, 0), (13, 6), (7, 6), stem 'each grid unit is 5 feet'. Side lengths come from the coordinates (5, 8 and 6), area scales by 25: A = 1,000 sq ft, B = 900 sq ft. Choices trap: comparing perimeters instead of area, reporting grid-unit areas (40 and 36) as square feet, 'a square always beats a rectangle'. Delete the contradictory sentence and the 850 option."
+    },
+    {
+      "where": "Challenge 2.2, 2.4-2.7 (mc, num, tbl)",
+      "component": "side of a square from (a, b), (a, b + s); border strip on a drawn panel at 2 m/unit; docking pad from three corners at 3 m/unit; six-sided array side table; cargo bay from perimeter 34",
+      "class": "ALIGNED",
+      "root": "Recomputed: strip (9 + 7) x 2 x 2 = 64 m, pad 9 x 8 units x 9 m² = 648 m², table 7, 4, 4, 4, 11, 8 and perimeter 38, other corners at y = −6 (17 − 8 = 9 below y = 3); the drawn polygons plot exactly those vertices and close.",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge 3.3 (sort), §4 items 4.1-4.4, §5 items 5.1-5.6",
+      "component": "sort jobs into side length, perimeter or area; three error analyses (6 − 3, length + width, divide instead of multiply by the scale); Amara/Dmitri; join order; 7.75; area 45; fourth vertex; two panels",
+      "class": "ALIGNED",
+      "root": "Error steps (e=1, 2, 2) are the first wrong steps; keys join order A, B, D, C, 7.75, y = −2, S(−4, 6) and 'same area, X has the longer perimeter' (36 = 36; 30 vs 24) verified; the drawn panels match the stems.",
+      "replacement": ""
+    }
+  ],
+  "formulaOrder": [
+    {
+      "formula": "distance between two points = |x1 − x2| or |y1 − y2|",
+      "taughtIn": "7-6",
+      "earliestUseInStudio": "7-6"
+    }
+  ],
+  "typography": [
+    "Practice 2.1, 2.2, 2.6 (stems), 3.4, 3.5 and 5.4 print negative coordinates with an ASCII hyphen-minus ((-4.5, 3), (5, -3.75), (1, 2)...(6, -3), (2, -4), (-3, 2), (-1, 4)); Challenge and the generated items use U+2212."
+  ],
+  "missingModel": false,
+  "lessonClass": "BROKEN-MODEL"
+}

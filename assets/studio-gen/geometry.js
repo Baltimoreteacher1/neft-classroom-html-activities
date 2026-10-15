@@ -1549,7 +1549,7 @@
     `Cut the trapezoid into a rectangle and two triangles. Rectangle: ${g.b2} × ${g.h} = ${g.b2 * g.h} ${u.a}. Each triangle has a base of (${g.b1} − ${g.b2}) ÷ 2 = ${g.e} ${u.l}, so the two triangles add up to ${g.e} × ${g.h} = ${g.e * g.h} ${u.a}. Total: ${g.b2 * g.h} + ${g.e * g.h} = ${ar} ${u.a}. The formula agrees: ½ × (${g.b1} + ${g.b2}) × ${g.h} = ${ar} ${u.a}.`,
     `Corta el trapecio en un rectángulo y dos triángulos. Rectángulo: ${g.b2} × ${g.h} = ${g.b2 * g.h} ${u.a}. Cada triángulo tiene una base de (${g.b1} − ${g.b2}) ÷ 2 = ${g.e} ${u.l}, así que los dos triángulos suman ${g.e} × ${g.h} = ${g.e * g.h} ${u.a}. Total: ${g.b2 * g.h} + ${g.e * g.h} = ${ar} ${u.a}. La fórmula coincide: ½ × (${g.b1} + ${g.b2}) × ${g.h} = ${ar} ${u.a}.`,
   ];
-  const zHints = (g, u) => [
+  const zHints = (g, _u) => [
     RC.trap,
     [
       `Each triangle's base is half of the difference between the bases: (${g.b1} − ${g.b2}) ÷ 2. The rectangle is as wide as the short base.`,
@@ -2092,7 +2092,7 @@
   }
   const lWords = (c, g, u) => {
     const [Ae, As] = An(c);
-    const [Oe, Os] = ofThe(c);
+    const [_Oe, Os] = ofThe(c);
     return [
       `${Ae} is a rectangle ${g.l} ${u.l} long and ${g.w} ${u.l} wide, but a ${g.l2} ${u.l} by ${g.w2} ${u.l} corner is cut out. That corner is not part of the ${c.n}.`,
       `${As} es un rectángulo de ${g.l} ${u.l} de largo y ${g.w} ${u.l} de ancho, pero se recorta una esquina de ${g.l2} ${u.l} por ${g.w2} ${u.l}. Esa esquina no es parte ${Os.replace(/^(del|de la) .*/, (m) => (m.split(" ")[0] === "del" ? "del" : "de la"))} ${c.e}.`,
@@ -2102,7 +2102,7 @@
     `Whole rectangle: ${g.l} × ${g.w} = ${g.l * g.w} ${u.a}. Cut-out: ${g.l2} × ${g.w2} = ${g.l2 * g.w2} ${u.a}. Figure: ${g.l * g.w} − ${g.l2 * g.w2} = ${ar} ${u.a}. Splitting into two rectangles gives the same: ${g.l} × ${g.w - g.w2} + ${g.l - g.l2} × ${g.w2} = ${ar} ${u.a}.`,
     `Rectángulo completo: ${g.l} × ${g.w} = ${g.l * g.w} ${u.a}. Parte recortada: ${g.l2} × ${g.w2} = ${g.l2 * g.w2} ${u.a}. Figura: ${g.l * g.w} − ${g.l2 * g.w2} = ${ar} ${u.a}. Dividir en dos rectángulos da lo mismo: ${g.l} × ${g.w - g.w2} + ${g.l - g.l2} × ${g.w2} = ${ar} ${u.a}.`,
   ];
-  const cHints = (g, u) => [
+  const cHints = (g, _u) => [
     RC.comp,
     [
       `Cut-out: ${g.l2} × ${g.w2}. Whole rectangle: ${g.l} × ${g.w}.`,
@@ -2873,7 +2873,7 @@
     `Three pairs of faces: top and bottom ${g.l} × ${g.w} = ${g.l * g.w}, front and back ${g.l} × ${g.h} = ${g.l * g.h}, sides ${g.w} × ${g.h} = ${g.w * g.h}. Surface area = 2 × (${g.l * g.w} + ${g.l * g.h} + ${g.w * g.h}) = ${sa} ${u.a}. Surface area is in square units.`,
     `Tres pares de caras: arriba y abajo ${g.l} × ${g.w} = ${g.l * g.w}, frente y atrás ${g.l} × ${g.h} = ${g.l * g.h}, lados ${g.w} × ${g.h} = ${g.w * g.h}. Área de superficie = 2 × (${g.l * g.w} + ${g.l * g.h} + ${g.w * g.h}) = ${sa} ${u.a}. El área de superficie se mide en unidades cuadradas.`,
   ];
-  const sHints = (g, u) => [
+  const sHints = (g, _u) => [
     RC.sa,
     [
       `The three different faces have areas ${g.l} × ${g.w}, ${g.l} × ${g.h} and ${g.w} × ${g.h}.`,
@@ -3173,7 +3173,7 @@
     const c = rng.pick(CS);
     const u = unitOf(rng, c);
     const a1 = rng.int(2, 9);
-    const [Ae, As] = An(c);
+    const [_Ae, _As] = An(c);
     return numI({
       q: [
         `Two cubes, each with edges of ${a1} ${u.l}, are glued face to face to make one ${c.n} that is ${2 * a1} ${u.l} long, ${a1} ${u.l} wide, and ${a1} ${u.l} tall. What is the surface area of the new shape?`,
@@ -3304,7 +3304,7 @@
       if (new Set([s, l, (s * l) / 2, s * s, sa, 2 * s * l]).size === 6) return { s, l };
     }
   }
-  const yDesc = (c, g, u, what = "pyramid") => {
+  const yDesc = (c, g, u, _what = "pyramid") => {
     const [Ae, As] = An(c);
     return [
       `${Ae} is shaped like a square pyramid. The base is a square with edges of ${g.s} ${u.l}. Each triangular face has a base of ${g.s} ${u.l} and a slant height of ${g.l} ${u.l}.`,
@@ -3316,7 +3316,7 @@
     `Base: ${g.s} × ${g.s} = ${g.s * g.s} ${u.a}. One triangle: ½ × ${g.s} × ${g.l} = ${(g.s * g.l) / 2} ${u.a}; four triangles: ${2 * g.s * g.l} ${u.a}. Surface area = ${g.s * g.s} + ${2 * g.s * g.l} = ${ySA(g)} ${u.a}.`,
     `Base: ${g.s} × ${g.s} = ${g.s * g.s} ${u.a}. Un triángulo: ½ × ${g.s} × ${g.l} = ${(g.s * g.l) / 2} ${u.a}; cuatro triángulos: ${2 * g.s * g.l} ${u.a}. Área de superficie = ${g.s * g.s} + ${2 * g.s * g.l} = ${ySA(g)} ${u.a}.`,
   ];
-  const yH = (g, u) => [
+  const yH = (g, _u) => [
     [
       "A pyramid has one base and triangular faces. Surface area = base area + the area of every triangle.",
       "Una pirámide tiene una base y caras triangulares. Área de superficie = área de la base + el área de cada triángulo.",
@@ -3884,7 +3884,7 @@
   const gMore = (kind) => (rng) => {
     const c = rng.pick(kind === "cost" ? CG.filter((k) => k.pay) : CG);
     const u = unitOf(rng, c, kind === "cost" ? ["ft", "m"] : undefined);
-    const [Ae, As] = An(c);
+    const [_Ae, _As] = An(c);
     if (kind === "compare") {
       const [n1, n2] = rng.pick([
         [6, 5],
@@ -3896,7 +3896,7 @@
       const T = intNot(rng, 6, 24, [n1, n2]);
       const diff = T * Math.abs(n1 - n2);
       if ([n1, n2, T].includes(diff)) return gMore(kind)(rng);
-      const g = { n: n1, s: 8, a: Math.round(8 * APO[n1] * 10) / 10 };
+      const _g = { n: n1, s: 8, a: Math.round(8 * APO[n1] * 10) / 10 };
       return numI({
         q: [
           `A regular ${NAME[n1][0]} and a regular ${NAME[n2][0]} are each cut into equal triangles from the center. Every triangle in both polygons has an area of ${T} ${u.a}. How much greater is the area of the larger polygon?`,

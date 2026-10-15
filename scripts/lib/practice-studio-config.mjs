@@ -302,6 +302,121 @@ const CONVERT = /** @type {Record<string, (q: any) => any[]>} */ ({
   "number-line": numberLine,
 });
 
+const num = (/** @type {any} */ x) => Number(x);
+const niceStep = (/** @type {number} */ span) =>
+  [1, 2, 5, 10, 20, 25, 50, 100, 200, 500, 1000].find((s) => span / s <= 12) || 1000;
+
+/**
+ * A lesson's Connect diagram as a Practice Studio figure, or null when no figure type draws it faithfully.
+ * The Connect check questions refer to this picture ("the histogram", "Team B's box"); converting only the questions
+ * left students looking for data that was not on the screen.
+ */
+export function diagramToViz(/** @type {any} */ d) {
+  if (!d || typeof d !== "object") return null;
+  const label = (/** @type {any} */ s) => (typeof s === "string" ? s : undefined);
+  try {
+    if (d.kind === "histogram" && Array.isArray(d.bars)) {
+      const m = d.bars.map((/** @type {any} */ b) =>
+        /^\s*(-?\d+(?:\.\d+)?)\s*[–-]\s*(-?\d+(?:\.\d+)?)\s*$/.exec(String(b.label)),
+      );
+      if (m.some((x) => !x)) return null;
+      const from = m.map((x) => num(x?.[1]));
+      // intervals like 0–2, 3–5 cover whole numbers; draw the bars touching, as a histogram must
+      const width = from.length > 1 ? from[1] - from[0] : num(m[0]?.[2]) - from[0] + 1;
+      return {
+        t: "hist",
+        bins: d.bars.map((/** @type {any} */ b, /** @type {number} */ i) => ({
+          from: from[i],
+          to: i + 1 < from.length ? from[i + 1] : from[i] + width,
+          n: num(b.value),
+        })),
+        ...(label(d.xLabel) ? { xlabel: d.xLabel } : {}),
+        ...(label(d.yLabel) ? { ylabel: d.yLabel } : {}),
+      };
+    }
+    if (d.kind === "dot-plot" && Array.isArray(d.values) && d.values.length) {
+      const lo = Math.min(...d.values.map(num));
+      const hi = Math.max(...d.values.map(num));
+      const step = niceStep(hi - lo);
+      return {
+        t: "dots",
+        data: d.values.map(num),
+        min: Math.floor(lo / step) * step,
+        max: Math.max(Math.ceil(hi / step) * step, Math.floor(lo / step) * step + step),
+        step,
+        ...(label(d.xLabel) ? { label: d.xLabel } : {}),
+      };
+    }
+    if (
+      d.kind === "box-plot" &&
+      [d.min, d.q1, d.median, d.q3, d.max].every((x) => Number.isFinite(num(x)))
+    ) {
+      const lo = Number.isFinite(num(d.axisMin)) ? num(d.axisMin) : num(d.min);
+      const hi = Number.isFinite(num(d.axisMax)) ? num(d.axisMax) : num(d.max);
+      return {
+        t: "box",
+        min: num(d.min),
+        q1: num(d.q1),
+        med: num(d.median),
+        q3: num(d.q3),
+        max: num(d.max),
+        scale: { min: lo, max: hi, step: niceStep(hi - lo) },
+      };
+    }
+    if (d.kind === "bar-chart" && Array.isArray(d.bars) && d.bars.length) {
+      return {
+        t: "bars",
+        labels: d.bars.map((/** @type {any} */ b) => String(b.label)),
+        values: d.bars.map((/** @type {any} */ b) => num(b.value)),
+        show: true,
+        ...(label(d.yLabel) ? { ylabel: d.yLabel } : {}),
+      };
+    }
+    if (d.kind === "tape-diagram" && Array.isArray(d.rows) && d.rows.length) {
+      return {
+        t: "tape",
+        rows: d.rows.map((/** @type {any} */ r) => ({
+          ...(label(r.label) ? { label: r.label } : {}),
+          parts: (r.parts || []).map((/** @type {any} */ p) => ({
+            v: num(p.value),
+            l: String(p.label ?? p.value),
+          })),
+        })),
+      };
+    }
+    if (d.kind === "number-line" && Array.isArray(d.points) && Number.isFinite(num(d.max))) {
+      return {
+        t: "nline",
+        min: num(d.min),
+        max: num(d.max),
+        step: num(d.step) || niceStep(num(d.max) - num(d.min)),
+        marks: d.points.map((/** @type {any} */ p) => ({
+          v: num(p.value),
+          l: String(p.label ?? p.value),
+        })),
+      };
+    }
+    if (d.kind === "coordinate-plane" && Array.isArray(d.points) && Number.isFinite(num(d.max))) {
+      return {
+        t: "coord",
+        xmin: 0,
+        xmax: num(d.max),
+        ymin: 0,
+        ymax: num(d.max),
+        grid: true,
+        points: d.points.map((/** @type {any} */ p) => ({
+          x: num(p.x),
+          y: num(p.y),
+          l: label(p.label),
+        })),
+      };
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
 /** Convert authored config items; report what stays in the lesson, and why. */
 export function convert(/** @type {any[]} */ list, /** @type {Record<string, number>} */ left) {
   const out = [];
@@ -364,7 +479,20 @@ export function buildSections(
   const l2 = convert(p.onLevel, left);
   while (l2.length < 3 && spare.length) l2.push(spare.shift());
   const getReady = ld.getReady ?? convert(cfg.warmup?.questions, left);
-  const mastery = [...convert(connect, left), ...convert(exit, left), ...(ld.mastery || [])];
+  // The Connect questions refer to the Connect scenario and picture; carry both with them.
+  const scenario = cfg.connect?.scenario;
+  // Only figures that show what the problem GIVES. A bar chart, tape or number line in a Connect section usually shows the
+  // worked result (the 7,776 and 3,024 in 5-5 are the answers), so attaching it to the question would hand over the answer.
+  const GIVEN = new Set(["histogram", "dot-plot", "box-plot", "coordinate-plane"]);
+  const picture = GIVEN.has(cfg.connect?.diagram?.kind) ? diagramToViz(cfg.connect.diagram) : null;
+  const connected = convert(connect, left).map((it) => ({
+    ...it,
+    ...(scenario && !it.ctx
+      ? { ctx: scenario, ...(cfg.connect.scenarioEs ? { ctxEs: cfg.connect.scenarioEs } : {}) }
+      : {}),
+    ...(picture && !it.viz ? { viz: picture } : {}),
+  }));
+  const mastery = [...connected, ...convert(exit, left), ...(ld.mastery || [])];
 
   const fresh = Array.isArray(ld.fresh)
     ? { items: ld.fresh }

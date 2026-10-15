@@ -230,7 +230,7 @@
       var res;
       try {
         res = sim().run(inv, c);
-      } catch (e) {
+      } catch (_e) {
         EWL.clear(note);
         note.appendChild(
           U().msg(

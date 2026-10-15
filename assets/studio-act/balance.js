@@ -413,7 +413,7 @@
   function wordBits(
     /** @type {any} */ rng,
     /** @type {any} */ m,
-    /** @type {number[]} */ s,
+    /** @type {number[]} */ _s,
     /** @type {string} */ kind,
   ) {
     const f = (/** @type {number[]} */ r) => fmtR(r, m.mode);
@@ -976,7 +976,7 @@ body.show-es .sa-es,.sa-root[data-es="1"] .sa-es{display:block}
       },
     ];
   };
-  let uid = 0;
+  let _uid = 0;
   function makeScale(/** @type {any} */ d, /** @type {boolean} */ mini) {
     const svg = document.createElementNS(NS, "svg");
     svg.setAttribute("viewBox", `0 0 ${d.vw} ${d.vh}`);
@@ -986,7 +986,7 @@ body.show-es .sa-es,.sa-root[data-es="1"] .sa-es{display:block}
       `<path class="sa-tray" d="M${-d.tw} ${d.str} h${2 * d.tw} q0 ${s} ${-s} ${s} h${-(2 * d.tw - 2 * s)} q${-s} 0 ${-s} ${-s} z"/>`;
     const pan = (/** @type {string} */ side) =>
       `<g class="sa-pan ${side}"><path class="sa-str" d="M0 0 L${-d.tw + 6} ${d.str} M0 0 L${d.tw - 6} ${d.str}"/>${tray(mini ? 10 : 16)}<g class="sa-ct" transform="translate(0 ${d.str})"></g></g>`;
-    uid++;
+    _uid++;
     svg.innerHTML = `<path class="sa-basep" d="M${d.px - 55} ${d.vh - 14} h110 l8 14 h-126 z"/><rect class="sa-pillar" x="${d.px - 6}" y="${d.py}" width="12" height="${d.vh - d.py - 8}" rx="3"/><g class="sa-beam" style="transform-origin:${d.px}px ${d.py}px"><rect class="sa-bar" x="${d.px - d.half - 8}" y="${d.py - 5}" width="${2 * d.half + 16}" height="10" rx="5"/></g><circle class="sa-pivot" cx="${d.px}" cy="${d.py}" r="9"/>${pan("sa-pl")}${pan("sa-pr")}<text class="sa-q" x="${d.px}" y="${d.py - 14}"></text>`;
     const beam = /** @type {SVGElement} */ (svg.querySelector(".sa-beam"));
     const pl = /** @type {SVGElement} */ (svg.querySelector(".sa-pl"));
@@ -1150,7 +1150,7 @@ body.show-es .sa-es,.sa-root[data-es="1"] .sa-es{display:block}
         role: "group",
         "aria-label": L("Do the same to both pans", "Haz lo mismo en los dos platillos"),
       });
-      const tileBtns = spec.tiles.map((/** @type {any} */ op, /** @type {number} */ i) => {
+      const tileBtns = spec.tiles.map((/** @type {any} */ op, /** @type {number} */ _i) => {
         const val = fmtR(op.v, m.mode);
         const name = {
           "+": [`Add ${val} to both pans`, `Suma ${val} a los dos platillos`],
@@ -1231,7 +1231,7 @@ body.show-es .sa-es,.sa-root[data-es="1"] .sa-es{display:block}
         eqEl.textContent = eqText(eq, m.mode);
         let prev = { c: m.c, k: m.k, e: m.e };
         log.innerHTML = "";
-        st.ops.forEach((/** @type {any} */ op, /** @type {number} */ i) => {
+        st.ops.forEach((/** @type {any} */ op, /** @type {number} */ _i) => {
           const nx = applyOp(prev, op) || prev;
           const v = fmtR(op.v, m.mode);
           const lt =

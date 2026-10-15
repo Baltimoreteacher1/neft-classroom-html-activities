@@ -61,7 +61,7 @@
           });
           try {
             D.env(tpl, cv);
-          } catch (e) {
+          } catch (_e) {
             note.textContent = EWL.t(
               "Those numbers cannot be used together here.",
               "Esos números no se pueden usar juntos aquí.",
@@ -227,7 +227,7 @@
             var o = c ? oneCase(c, e) : { applies: false };
             return o.applies && o.holds;
           });
-        } catch (err) {
+        } catch (_err) {
           return false;
         }
       });

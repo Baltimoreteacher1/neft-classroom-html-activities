@@ -1742,7 +1742,7 @@ window.FluencyStudio = (() => {
     flState.active = id;
     return true;
   }
-  function resetLabs() {
+  function _resetLabs() {
     flState.active = "statistics";
     flBank.forEach((lab) => {
       flState.items[lab.id] = {

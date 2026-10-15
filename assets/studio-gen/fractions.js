@@ -513,13 +513,13 @@
       `That adds ${S(A)} and ${S(B)}. This problem asks you to divide. | Eso suma ${S(A)} y ${S(B)}. Este problema pide dividir.`,
     "shared-one-whole": (A) =>
       `That shares ONE whole. You only have ${S(A)} to share. | Eso reparte UN entero. Solo tienes ${S(A)} para repartir.`,
-    "forgot-to-flip": (A, B) =>
+    "forgot-to-flip": (_A, B) =>
       `You multiplied by ${S(B)} itself. Dividing by ${S(B)} means multiplying by its reciprocal, ${FR(inv(B))}. | Multiplicaste por ${S(B)}. Dividir entre ${S(B)} es multiplicar por su recíproco, ${FR(inv(B))}.`,
     "inverted-wrong-fraction": (A, B) =>
       `You flipped ${S(A)}, the first number. Keep ${S(A)} as it is and flip only the divisor, ${S(B)}. | Invertiste ${S(A)}, el primer número. Deja ${S(A)} como está e invierte solo el divisor, ${S(B)}.`,
-    "flipped-both": (A, B) =>
+    "flipped-both": (_A, B) =>
       `You flipped both numbers. Only the divisor, ${S(B)}, gets flipped. | Invertiste los dos números. Solo se invierte el divisor, ${S(B)}.`,
-    "ignored-numerator": (A, B) =>
+    "ignored-numerator": (_A, B) =>
       `You used 1/${B[1]} instead of ${S(B)}. The numerator counts: each group is ${B[0]} of those small pieces, so fewer groups fit. | Usaste 1/${B[1]} en lugar de ${S(B)}. El numerador cuenta: cada grupo tiene ${B[0]} de esas partes pequeñas, así que caben menos grupos.`,
     "dropped-whole-part": (A) =>
       `You left out the whole number. ${S(A)} is the whole number AND the fraction together. | Dejaste fuera el número entero. ${S(A)} es el número entero Y la fracción juntos.`,
@@ -1629,7 +1629,7 @@
     });
   };
   /** (A ÷ B) ÷ C, two divisions in a row. */
-  const chain = (rng, A, B, C) => {
+  const chain = (_rng, A, B, C) => {
     const Q1 = div(A, B);
     const Q2 = div(Q1, C);
     return numq({
@@ -2035,7 +2035,7 @@
           : [rng.int(2, 9), 1];
         return [mul(Q, P), P];
       },
-      ([T, P]) => T[1] <= 12 && T[0] <= 40,
+      ([T, _P]) => T[1] <= 12 && T[0] <= 40,
     );
     return v;
   };

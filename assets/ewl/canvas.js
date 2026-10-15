@@ -70,7 +70,7 @@
       function setLang(l) {
         try {
           root.localStorage.setItem("ewl_lang", l);
-        } catch (e) {
+        } catch (_e) {
           /* a blocked store only means the choice is not remembered */
         }
         setUrl({ lang: l });

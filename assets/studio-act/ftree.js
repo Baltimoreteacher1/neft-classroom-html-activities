@@ -26,7 +26,7 @@
   };
   const expText = (/** @type {{b: number, e: number}[]} */ f) =>
     f.map((r) => `${r.b}${sup(r.e)}`).join(` ${TIMES} `);
-  const POOL = [[], [], [], [], []].map((_, i) => /** @type {number[]} */ ([]));
+  const POOL = [[], [], [], [], []].map((_, _i) => /** @type {number[]} */ ([]));
   for (let n = 4; n <= 360; n++) {
     const w = fac(n).length;
     if (w === 2 && n <= 169) POOL[1].push(n);

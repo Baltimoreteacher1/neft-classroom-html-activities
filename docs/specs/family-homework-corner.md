@@ -62,3 +62,17 @@ Worked model: `data/family-homework-notes/4-1-part2.json` (read its `corner` and
   (`python3 -m http.server <your port>` from the repo root), tap the "Check" step and confirm the six basic items and the corner read well.
   Do NOT run `qa:fast`, `npm test`, other generators, or commit.
 - Report: the ids done, anything you could not do, and any lesson whose existing sidecar/config content looked wrong (report, don't fix).
+
+## Part 2 vocabulary (added 2026-10-15)
+
+A `-part2` homework page is the lesson's SECOND session, but it showed the core lesson's vocabulary. Each Part 2 sidecar now states its own word list in
+`"vocabulary"` (the generator already lets a sidecar replace the list: `scripts/generate-homework-html.mjs`, "A sidecar may therefore state the session's own word list").
+
+- 4 to 8 terms: the words a family needs for THIS session's idea (read `sessionTitle`, `learningTonight`, `bigIdea`, `conceptSteps`, `tryTogether`, the Apply-Day config's
+  `groupLevels`), starting from the core lesson's own `vocabulary[]` entries where they are still the right words (copy them whole) and adding the session's new words.
+- Entry shape (same as `lessons/<id>/config.json` vocabulary): `term`, `termEs`, `definition`, `definitionEs` (child-friendly, one sentence), `visual` (a short worked picture
+  in text, e.g. "2:3 = 4:6 because both parts were multiplied by 2."), `cloze` (the definition with the term blanked: "___ ___"), `examples` (2-3 `{text, isExample, why}` with at least one
+  non-example), and `image`: the path of an EXISTING file in `assets/vocab-images/` that truly depicts the term (browse the folder: `ls assets/vocab-images`; a lesson's own
+  entry for the same term already names one). Never leave `image` out for a new term: a missing image falls back to an unrelated generic picture.
+- Spanish is natural and simple; math symbols may match across languages.
+- Do not use words from a later unit's topic. Do not repeat a term twice on a page.

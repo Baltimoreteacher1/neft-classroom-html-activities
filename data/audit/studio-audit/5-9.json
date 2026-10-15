@@ -1,0 +1,90 @@
+{
+  "lesson": "5-9",
+  "unit": 5,
+  "title": "Area of Regular Polygons",
+  "objective": "I can find the area of a regular polygon by decomposing it into triangles.",
+  "position": "9 of 10",
+  "model": "regular polygon cut from its center into n congruent triangles whose height is the apothem",
+  "widgets": [
+    {
+      "where": "Practice §1 items 1-4 (mc, mc, num, mc)",
+      "component": "prerequisite warm-up: triangle area, which shape is a regular polygon, 8 identical sectors of 6.3 m², rectangle cut along a diagonal",
+      "class": "ALIGNED",
+      "root": "Recomputed 42, square, 50.4, 20. The sector item previews 'n identical pieces times one piece'.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §2 items 1-5 and §3 items 1-4 (mc, err, tbl, match, nline, err)",
+      "component": "regular polygon area from n center triangles with rounded heights: hexagon 93.6, pentagon triangle count, table of four polygons, match of six polygons, square split into four, wrong triangle count",
+      "class": "ALIGNED",
+      "root": "Recomputed 15.6, 93.6, 42, 5 triangles; table 15.6/93.6, 22/110, 6.25/25, 9.6/76.8; match includes decagon 69 and an equilateral triangle 7.2 (apothem of side 4 is 1.15, shown as 1.2). Every printed height is within rounding of the real apothem (pentagon side 8 → 5.5, octagon side 4 → 4.8) and the stems say they are rounded.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §4 items 1-6 and Challenge §1 items 1-6 (gen:areaRegularPolygon L1-L4)",
+      "component": "generated regular-polygon problems with a drawn polygon cut into center triangles with the apothem dashed",
+      "class": "REDUNDANT",
+      "root": "The figure itself is right (swept 300 seeds × 4 levels: the apothem is perpendicular to the bottom side with a right-angle mark and every printed apothem is within 6% of side ÷ (2 tan(180° ÷ n))), but the lesson's idea is decomposition, 'n sides makes n triangles', and the studio never lets the student change n or the side or watch the polygon be cut. There is no act in §4 (unlike 5-1 to 5-5, 5-7 and 5-10, which put a sizer in slot 7); all 12 items are read-and-compute.",
+      "replacement": "Build act kind 'polyslice' (assets/studio-act/polyslice.js): a stepper for the number of sides n (3-12) and a slider for the side length; the figure is the existing 'hex' viz with a Cut button that fans the polygon into n center triangles, one of them highlighted with its base (the side) and its dashed perpendicular height (the apothem, from side ÷ (2 tan(180° ÷ n)) rounded to 0.1). The readout lists 'triangles: n', 'one triangle ½ × side × height' and 'total n × one triangle' with the student's own numbers. Tasks: L2 'make a polygon with an area close to 100 sq ft' (graded on the displayed rounded numbers), L3 'which n gives the larger area with triangles of 12 sq ft each', L4 'the side doubles: what happens to the area'. Traps: using the side as the height (Challenge 4.4), counting n − 1 or n + 1 triangles (Practice 2.5, Challenge 4.2-4.3), forgetting the ½. Put it in Practice §4.7 (L2) and Challenge §3.1-3.2 (L3, L4)."
+    },
+    {
+      "where": "Practice §5 items 1-3 (mc)",
+      "component": "Connect check: 'What is the area of one center triangle?', 'What is the total floor area of the octagon?', 'What will the flooring cost?' (now carried with the Connect scenario text and the Connect diagram)",
+      "class": "ALIGNED",
+      "root": "The scenario text carries every number the three items need (checked against the answer keys: regular octagon of 8 triangles, base 5 ft, height 6 ft (rounded), $3 per sq ft), so the items are answerable. There is no figure, which is a missed chance to show the shape but not a defect.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §5 item 4 (mc exit ticket)",
+      "component": "regular pentagon from 5 triangles of base 7 in and height 4.8 in",
+      "class": "ALIGNED",
+      "root": "5 × ½ × 7 × 4.8 = 84 recomputed; the real apothem of a 7 in pentagon is 4.82. See typography for the 'x' and '1/2'.",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge §2.4 (mc with figure)",
+      "component": "film for four hexagonal plates, side 20 cm, triangle height 17.3 cm, figure drawn with viz hex dims {side: 20, h: 17.3}",
+      "class": "BROKEN-MODEL",
+      "root": "The hex renderer reads dims.a or dims.apothem; the hand-authored spec uses dims.h, which is silently ignored, so the figure prints only 'side 20 cm' and the 17.3 cm height that the answer depends on is not on the drawing (checked by rendering the spec). The stem still carries the number, so the item is answerable, but the figure no longer supports it.",
+      "replacement": "Change the spec to {\"t\":\"shape\",\"s\":\"hex\",\"dims\":{\"n\":6,\"side\":20,\"a\":17.3},\"labels\":true,\"unit\":\"cm\"}; and make the renderer accept dims.h as an alias for a, so a silently ignored key becomes a thrown error."
+    },
+    {
+      "where": "Challenge §2 items 1-3, 5-7 (err, wr, tbl, tbl, num, mc)",
+      "component": "added-instead-of-multiplied error, hexagon vs pentagon with equal triangles, missing-value tables, hexagon film, missing height from the area, perimeter 48 → side 8",
+      "class": "ALIGNED",
+      "root": "Recomputed 64.5, hexagon 90 vs pentagon 75 for 15 sq ft triangles, table 8/12/8/4.6, 49.8 → 249, 60.5 → 484, 84.7 → 508.2, pentagon 172.5 ÷ 5 ÷ 5 = 6.9, perimeter 48 → side 8 → 6 × ½ × 8 × 6.9 = 165.6. Printed apothems match the real polygons (pentagon side 10 → 6.9, hexagon side 8 → 6.9).",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge §3 items 1-3 (sort, match, nline)",
+      "component": "the 'Build it, move it, test it' lab: true/false claims about decomposing a regular polygon, match of four polygons, tap the area of one triangle from a hexagon of 54 cm²",
+      "class": "REDUNDANT",
+      "root": "The lab has nothing to build or move; the claims in the sort are the same facts the lesson states, and 3.3 is 54 ÷ 6.",
+      "replacement": "Same 'polyslice' act at L3 and L4 as specified for Practice §4; keep the match (3.2) as the closing check."
+    },
+    {
+      "where": "Challenge §4 items 1-4 and §5 items 1-6",
+      "component": "detective items (forgot to multiply by the number of triangles, added 8, used 5 instead of 6 triangles), 'side is not the height', boss items",
+      "class": "ALIGNED",
+      "root": "Recomputed 374.4, 310.4, 210.6, Omar is right (distance from the center to a side), 336, octagon (144 ÷ 18 = 8), 620, plate B by 1 (85 vs 84), 6 × (½ × 6 × 5.2). Printed apothems are the real values (hexagon side 6 → 5.2, side 12 → 10.4, side 9 → 7.8; pentagon side 14 → 9.6).",
+      "replacement": ""
+    }
+  ],
+  "formulaOrder": [
+    {
+      "formula": "A = n × (½ × side × apothem)",
+      "taughtIn": "5-4",
+      "earliestUseInStudio": "5-9"
+    },
+    {
+      "formula": "A = ½ × b × h (center triangle)",
+      "taughtIn": "5-2",
+      "earliestUseInStudio": "5-9"
+    }
+  ],
+  "typography": [
+    "Practice §5.4 explanation prints 'One triangle: A = 1/2 x 7 x 4.8 = 16.8 sq in' with the letter x and 1/2 (lesson: × and ½)."
+  ],
+  "missingModel": "true",
+  "lessonClass": "BROKEN-MODEL"
+}

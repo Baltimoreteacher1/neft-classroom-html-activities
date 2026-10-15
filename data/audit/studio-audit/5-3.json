@@ -1,0 +1,98 @@
+{
+  "lesson": "5-3",
+  "unit": 5,
+  "title": "Determine the Area of Trapezoids",
+  "objective": "I can find the area of a trapezoid using the formula A = ½(b1 + b2) × h.",
+  "position": "3 of 10",
+  "model": "trapezoid with its two parallel bases and a perpendicular height; two copies make a parallelogram; resized with sliders",
+  "widgets": [
+    {
+      "where": "Practice §1 items 1-4 (mc)",
+      "component": "prerequisite warm-up: triangle area twice, height from the area, why a triangle has a ½",
+      "class": "ALIGNED",
+      "root": "Recomputed ½ × 7 × 4 = 14, ½ × 12 × 5 = 30, 36 × 2 ÷ 9 = 8; 1.4 asks for the half-of-a-parallelogram reason the trapezoid derivation reuses. All 5-2 content, which precedes.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §2 items 1-6 (mc ×4, tbl, err)",
+      "component": "supported trapezoid area: ½(b1 + b2) × h, missing height, 'first step', two-row table, forgot-½ error",
+      "class": "ALIGNED",
+      "root": "Recomputed 32, 5 ft (45 ÷ 9), 42; table 15 and 50; err 72 → 36. Trapezoid formula is taught in this lesson; 2.3 asks for the first step (add the bases).",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §3.1 (tbl), §3.2 (match), §3.4 (err)",
+      "component": "four-row table with two divide-back rows, shape-to-area match, error that uses the slanted side as the height",
+      "class": "ALIGNED",
+      "root": "Keys 30, 36, 8, 11; match 32, 30, 40, 42, 45, 21. 3.4 gives bases 7 and 13, height 6 and a slanted side of 10, which is a valid non-isosceles trapezoid, and the fix uses 6.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §3.3 (nline)",
+      "component": "number-line placement of the height of a trapezoid with bases 6 and 10 and area 48",
+      "class": "QUESTIONABLE",
+      "root": "The stem prints the solution: '(Hint: 48 = ½ × 16 × h → h = 6)'. The answer 6 is on the screen before the student does anything.",
+      "replacement": "Remove the worked hint from the stem ('A trapezoid has bases of 6 ft and 10 ft and an area of 48 sq ft. Place a point at its height.'); put '(6 + 10) × h ÷ 2 = 48, so (6 + 10) × h = 96' in hint 2 of the ladder only. Widen the line to min 0, max 12 and add wrong-answer rules for 3 ('you divided by 16 and forgot to double the area first') and 12 ('you forgot the ½ and divided 48 by 4')."
+    },
+    {
+      "where": "Practice §4 items 1-6 and Challenge §1 items 1-6 (gen:areaTrapezoid L1-L4)",
+      "component": "generated trapezoid word problems with a drawn trapezoid (bases, perpendicular height, optional equal slanted sides, 'cut into a rectangle and two triangles')",
+      "class": "BROKEN-MODEL",
+      "root": "Two flaws in the generated trapezoid. (1) About a third of the L1 draws (101 of 300) say 'It is cut into a rectangle and two triangles' and ask for the base or area of 'each' triangle or of the rectangle, but the figure draws no cut lines and the stem never says the triangles are identical; the answer ((b2 − b1) ÷ 2) is only valid for an isosceles trapezoid that the figure silently assumes. (2) SHAPES.trap clamps bottom/height to 1.1-3.4, so about 10% of draws are 1.5-2.25 times too squat (bases 11 and 23 over a height of 3 are drawn as 3.4 : 1 instead of 7.7 : 1). Heights are perpendicular, the dashed height starts at a vertex of the top base, and the equal-leg ticks appear when a slanted side is given.",
+      "replacement": "In SHAPES.trap add an option {\"cuts\":true} that dashes the two perpendiculars from the ends of the top base and labels the triangle base (b2 − b1) ÷ 2 and the rectangle, and set it on every 'cut into a rectangle and two triangles' item; change those stems to 'cut into a rectangle and two identical triangles'. Widen the clamp to 1.1-8 and let sc shrink the drawing. Add a studio-gen test that the drawn bottom/height equals dims within 2%."
+    },
+    {
+      "where": "Practice §4.7 act:sizer L2, Challenge §3.1-3.2 act:sizer L3, L4 (shape trap, goal area)",
+      "component": "sizer: sliders for the two bases and the height of a trapezoid on a unit grid with a ghost copy, readout ½ × (b1 + b2) × h",
+      "class": "ALIGNED",
+      "root": "Manipulable model with the ghost trapezoid that completes the parallelogram; graded on the area; the 'forgot-half' feedback and the 'only the sum of the bases matters' hint match the lesson's derivation.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §5 items 1-3 (mc)",
+      "component": "Connect check: 'What is the area of the trapezoidal driveway?', 'How many bags of concrete does the builder need?', 'Why add the two parallel edges and then take half?' (now carried with the Connect scenario text and the Connect diagram)",
+      "class": "QUESTIONABLE",
+      "root": "The generator now prepends the Connect scenario to each item (ctx), so the givens are on screen, but the figure it attaches is the Connect coordinate plane with only the corner dots plotted: no polygon is drawn, there is no dashed perpendicular height and no right-angle mark (checked by rendering the spec). The student must infer the shape and the height from four unconnected points, which is the representation this lesson exists to teach.",
+      "replacement": "Extend diagramToViz (scripts/lib/practice-studio-config.mjs) so a coordinate-plane diagram whose points form a polygon emits \"polygon\" (point indexes in order) and, for the area lessons, a foot-of-the-height point plus \"segments\" for the dashed perpendicular. Exact spec for this lesson: {\"t\":\"coord\",\"xmin\":0,\"xmax\":20,\"ymin\":0,\"ymax\":20,\"grid\":true,\"points\":[{\"x\":0,\"y\":0,\"l\":\"A (0,0)\"},{\"x\":20,\"y\":0,\"l\":\"B (20,0)\"},{\"x\":16,\"y\":15,\"l\":\"C (16,15)\"},{\"x\":4,\"y\":15,\"l\":\"D (4,15)\"},{\"x\":4,\"y\":0,\"l\":\"E (4,0)\"}],\"polygon\":[0,1,2,3],\"segments\":[[3,4]]}. Keep the scenario text and the three items."
+    },
+    {
+      "where": "Practice §5 item 4 (mc exit ticket)",
+      "component": "trapezoid area from bases 9 and 5 and height 6",
+      "class": "ALIGNED",
+      "root": "42 sq in recomputed; distractors 84 (no ½), 27 (one base), 42 in (unit).",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge §2 items 1-6 and §3.3 (err, wr, num, mc, mc, tbl; sort)",
+      "component": "forgot-½ error, trapezoid vs parallelogram comparison, net cost, missing base, three-tray table, two trapezoids make a parallelogram; sort of calculations",
+      "class": "ALIGNED",
+      "root": "Recomputed: 56; 14 + 6 → 10 × 5 ÷ 2 = 50 × $8 = $400; 150 ÷ 5 − 11 = 19; 32 + 50 + 42 = 124; 28 m² for one panel (56 for two). 2.6 states the derivation the lesson teaches (two copies make a parallelogram). The sort separates (6 + 10) ÷ 2 × 4 and 16 × 4 ÷ 2 (correct) from missing-½ forms.",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge §4 items 1-4 and §5 items 1-6",
+      "component": "detective (slanted side as height, forgot ½, answered the sum of the bases, averages), boss items",
+      "class": "ALIGNED",
+      "root": "Recomputed: 48, 70, 12, 35 (average 7 × 5), 70, 90 × 2 ÷ 30 = 6, 52 ÷ 8 → 7 cans, doubling both bases doubles the area (15 → 30). 4.1 gives a genuine 3-4-5 leg; 4.3 solves for the missing base by subtraction.",
+      "replacement": ""
+    }
+  ],
+  "formulaOrder": [
+    {
+      "formula": "A = ½ × (b1 + b2) × h (trapezoid)",
+      "taughtIn": "5-3",
+      "earliestUseInStudio": "5-3"
+    },
+    {
+      "formula": "A = ½ × b × h (triangle) used in the derivation and the warm-up",
+      "taughtIn": "5-2",
+      "earliestUseInStudio": "5-3"
+    }
+  ],
+  "typography": [
+    "Practice §5.4 explanation prints 'A = 1/2 x (b1 + b2) x h = 1/2 x (9 + 5) x 6' with the letter x and 1/2 (lesson: ½ and ×).",
+    "Subscripts are inconsistent inside the studio: Practice §2.6 and §3.4 print b1 and b2, while Practice §1 / Challenge print b₁ and b₂ (the 5-3 vocabulary uses 'Base 1 (b1)')."
+  ],
+  "missingModel": "false",
+  "lessonClass": "BROKEN-MODEL"
+}

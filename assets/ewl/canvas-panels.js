@@ -221,7 +221,7 @@
     },
     generalize: function (scene, env) {
       const g = scene.generalize;
-      const order = EWL.rng(EWL.hash(scene.id)).shuffle(g.choices.map((c, i) => i));
+      const order = EWL.rng(EWL.hash(scene.id)).shuffle(g.choices.map((_c, i) => i));
       const options = order.map((i) => ({ value: String(i), label: tr(g.choices[i], "text") }));
       const ask = C.W.ask({
         input: "radios",

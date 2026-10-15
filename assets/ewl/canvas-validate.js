@@ -172,7 +172,7 @@
         let model = null;
         try {
           model = EWL.Lens.model(spec, "en");
-        } catch (e) {
+        } catch (_e) {
           return;
         }
         if (p.id === s.defaultPreset && model.unavailable.length) {
@@ -198,7 +198,7 @@
                 task: {
                   kind: s.transfer.task.kind,
                   args: s.transfer.task.args.map((a) =>
-                    String(a).replace(/\{(\w+)\}/g, (m, k) => set[k]),
+                    String(a).replace(/\{(\w+)\}/g, (_m, k) => set[k]),
                   ),
                 },
                 answer: s.transfer.answer,

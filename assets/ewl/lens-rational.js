@@ -146,7 +146,7 @@
       svg.appendChild(Lens.U.text(H.X0 + H.AW, 14 + (W - 1) * 66 + 58, String(W), "lens-tick"));
       return svg;
     },
-    controls(rep, ctx) {
+    controls(_rep, ctx) {
       const m = ctx.model;
       if (m.dens.length < 2) return null;
       const chip = (D) =>

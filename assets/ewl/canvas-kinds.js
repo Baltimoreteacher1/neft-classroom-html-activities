@@ -213,7 +213,7 @@
     return `${fr.join(" = ")}${fr.length ? " = " : ""}${n.decimal} = ${n.percent}`;
   };
   const wrap = (reps, extra) => Object.assign({ reps }, extra);
-  const cur = (labels, lang) => ({
+  const cur = (labels, _lang) => ({
     xLabel: labels && labels.x,
     xLabelEs: labels && labels.xEs,
     yLabel: labels && labels.y,
@@ -225,14 +225,14 @@
       family: "rational",
       init: (p) => ({ value: p.value }),
       spec: (p, s) => wrap(s.reps, { family: "rational", value: p.value }),
-      facts: (p, s, lang) => [eqs(num(p.value))],
+      facts: (p, _s, _lang) => [eqs(num(p.value))],
       key: (p) => num(p.value).frac(),
     },
     "percent-of": {
       family: "rational",
       init: (p) => ({ pct: String(p.pct), whole: String(p.whole) }),
       spec: (p, s) => wrap(s.reps, { family: "rational", value: pct(p.pct), whole: p.whole }),
-      facts(p, s, lang) {
+      facts(p, _s, lang) {
         const part = num(pct(p.pct)).mul(num(p.whole));
         const f = num(pct(p.pct));
         return [
@@ -256,7 +256,7 @@
             .div(num(pct(p.pct)))
             .frac(),
         }),
-      facts(p, s, lang) {
+      facts(p, _s, lang) {
         const f = num(pct(p.pct));
         const whole = num(p.part).div(f);
         const ten = num(p.part).div(num(p.pct).div(10));
@@ -286,7 +286,7 @@
           den: 100,
         });
       },
-      facts(p, s, lang) {
+      facts(p, _s, lang) {
         const a = R()
           .of(100)
           .mul(R().ONE.sub(num(pct(p.p1))));
@@ -306,7 +306,7 @@
       family: "ratio",
       init: (p) => ({ a: String(p.a), b: String(p.b), n: String(p.n || 4) }),
       spec(p, s) {
-        const steps = Array.from({ length: Number(p.n) }, (x, i) => i + 1);
+        const steps = Array.from({ length: Number(p.n) }, (_x, i) => i + 1);
         return wrap(
           s.reps,
           Object.assign({ family: "ratio", a: p.a, b: p.b, steps }, cur(s.labels)),
@@ -317,10 +317,10 @@
         const m = /^\s*(\d+)\s*(?::|to)\s*(\d+)\s*$/i.exec(String(raw));
         return m ? Object.assign({}, p, { a: m[1], b: m[2] }) : null;
       },
-      facts(p, s, lang) {
+      facts(p, _s, _lang) {
         const rows = Array.from(
           { length: Number(p.n) },
-          (x, i) => `${Number(p.a) * (i + 1)}:${Number(p.b) * (i + 1)}`,
+          (_x, i) => `${Number(p.a) * (i + 1)}:${Number(p.b) * (i + 1)}`,
         );
         return [rows.join(" = ")];
       },
@@ -379,7 +379,7 @@
           s.reps,
           Object.assign({ family: "ratio", a: "1", b: p.k, steps: [1, 2, 3, 4, 5] }, cur(s.labels)),
         ),
-      facts(p, s, lang) {
+      facts(p, _s, lang) {
         const k = num(p.k);
         return [
           t(
@@ -420,7 +420,7 @@
         }
         return out;
       },
-      facts(p, s, lang) {
+      facts(p, _s, lang) {
         const x = num(p.r).sub(num(p.q)).div(num(p.p));
         return [
           t(
@@ -436,7 +436,7 @@
       family: "scale",
       init: (p) => ({ k: String(p.k) }),
       spec: (p, s) => wrap(s.reps, { family: "scale", k: p.k }),
-      facts(p, s, lang) {
+      facts(p, _s, lang) {
         const k = Number(p.k);
         return [
           t(
@@ -452,7 +452,7 @@
       family: "rational",
       init: (p) => ({ a: String(p.a), b: String(p.b) }),
       spec: (p, s) => wrap(s.reps, { family: "rational", value: p.a, per: p.b }),
-      facts(p, s, lang) {
+      facts(p, _s, lang) {
         const q = num(p.a).div(num(p.b));
         return [
           t(
@@ -475,7 +475,7 @@
     if (!next) return null;
     try {
       EWL.Lens.model(kind.spec(next, scene), "en");
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
     return next;

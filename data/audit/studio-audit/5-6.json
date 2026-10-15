@@ -1,0 +1,90 @@
+{
+  "lesson": "5-6",
+  "unit": 5,
+  "title": "Represent Three-Dimensional Figures in Two Dimensions",
+  "objective": "I can find the surface area of a solid by using its net.",
+  "position": "6 of 10",
+  "model": "net of a prism or pyramid that folds without overlap, faces read off the net and added",
+  "widgets": [
+    {
+      "where": "Practice §1 items 1-4 (mc ×3, num)",
+      "component": "prerequisite warm-up: lid area 12 × 7, one cube face, which face matches the top, total of four side faces",
+      "class": "ALIGNED",
+      "root": "Recomputed 84, 25, bottom, 15 + 15 + 9 + 9 = 48. Items 1.3-1.4 prepare the 'matching pairs of faces on a net' idea.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §2 items 1-5 and §3 items 1-3 (mc, match, err, tbl, mc, err)",
+      "component": "surface area of boxes: 6 × 4 × 2, six faces, square units, concept match, skipped-face and un-doubled-pair errors, three-box table",
+      "class": "ALIGNED",
+      "root": "Recomputed 88, 6 faces, 150, 76 → 88 (skipped one front/back), 166 (un-doubled left/right), table 248/182/188. The SA = 2lw + 2lh + 2wh form appears in this lesson's own config, so it is not early.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §4 items 1-7 (pool of 17: mc, num, tbl, sort, match, err, with net pictures in 4 of them)",
+      "component": "fresh problems drawn from a pool: surface area of boxes, cubes, no-lid trays, wrapping-paper sheets, 'which solid folds from 2 triangles and 3 rectangles', faces of a pyramid net, picture of a net",
+      "class": "REDUNDANT",
+      "root": "The lesson's idea is the net: a flat pattern that folds into a solid, whose faces are measured. The studio (noAct: true in data/practice-studio/5-6.json) has no widget in which a net is unfolded, folded or built; seven of the seven §4 slots are static multiple-choice, number, table, sort and match items, and the net appears only as a picture (valid cross-shaped nets, checked in studio-viz-geo.js netView). The question 'does this flat pattern fold into a box?' is asked once, in Challenge 4.4, as multiple choice.",
+      "replacement": "Build act kind 'netfold' (assets/studio-act/netfold.js, registered in the catalogue, params {solid:'rect-prism'|'cube'|'tri-prism'|'sq-pyramid', dims, goal:'surface'}), reusing the geometry of engine/components/net-folder.js. The student gets three candidate flat patterns (a 1 × 6 strip, a cross, an offset 'T') drawn from the same viz netView with every rectangle labelled by its dimensions; a Fold button animates each flap through 90° and stops at the first overlap, naming the two faces that collide; the student keeps the pattern that folds, then taps each face to read its area off the net and enters the total. Traps to build in: a strip of six rectangles overlapping (Challenge 4.4), counting only the three visible faces, not doubling a pair (Practice 3.3), a missing lid on a tray (pool 11-12). Levels: 1 closed box, 2 cube and no-lid tray, 3 triangular prism (2 triangles + 3 rectangles), 4 square pyramid (1 square + 4 triangles). Use it in Practice §4.7 (L2) and Challenge §3.1-3.2 (L3, L4); keep five of the pool items for the other §4 slots."
+    },
+    {
+      "where": "Practice §5 items 1 and 3 (mc)",
+      "component": "Connect check: 'What is the surface area of the box?' and 'How many sheets of wrapping paper do you need?' (now carried with the Connect scenario text and the Connect diagram)",
+      "class": "QUESTIONABLE",
+      "root": "The scenario is now shown, but the figure is the Connect bar chart (bars Top & Bottom 280, Front & Back 168, Left & Right 120 with show:true): the bars print the three doubled face-pair areas, whose sum is the answer to item 1, so the work is done on screen. A bar chart is also not a picture of the solid or figure the questions are about. The item is answered by reading the chart.",
+      "replacement": "Do not carry a bar-chart diagram into the Mastery section (diagramToViz should return null for kind 'bar-chart', or set show:false until after the answer is checked). Attach instead the net of the box: {\"t\":\"prism\",\"l\":14,\"w\":10,\"h\":6,\"unit\":\"in\",\"labels\":true,\"net\":true}, and show the bars only in the explanation after the student answers."
+    },
+    {
+      "where": "Practice §5 items 2, 4-6 (mc ×3, num)",
+      "component": "pair-doubling reason, surface area 9 × 5 × 3, which expression is the closed-box surface area, cube bread box",
+      "class": "ALIGNED",
+      "root": "Recomputed 174 in², 2 × (7 × 3) + 2 × (7 × 2) + 2 × (3 × 2), 6 × 11 × 11 = 726 cm²; distractors are the un-doubled sum and 2 × (7 + 3 + 2).",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge §1 items 1-6 (pool of 13)",
+      "component": "surface-area reasoning: half-width height, solve for the height from the surface area, two cubes taped, ten boxes, same volume different surface area, doubling the edge, torn face, open sleeve, sort over 200 cm², foil cost, cube from surface area, equal surface area",
+      "class": "ALIGNED",
+      "root": "Recomputed 304, 2 cm (92 − 48 = 44 = 22h), 160, 7000, Box A 128 vs Box B 152, edge doubling → 4 times (54, 216, 864), 142, 2800, 216/220/210 over 200 and 178/160/180 not, $30, 9 cm, 22 in² for 1 × 1 × 5. A genuine step up in reasoning, not a worksheet.",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge §2.3 (tbl)",
+      "component": "table of 2 × 2 × 2, 5 × 5 × 5 and 10 × 10 × 10 cubes with columns volume, surface area and 'Which is numerically larger?'",
+      "class": "QUESTIONABLE",
+      "root": "The last column compares a number of cubic units with a number of square units. 'Numerically larger' has no mathematical meaning across different units, no reasoning is required beyond reading two numbers, and it does not use a net.",
+      "replacement": "Replace column 4 with 'Surface area of the cube whose edges are twice as long' and ask for 24 → 96, 150 → 600, 600 → 2400; add a closing mc 'By what factor did the surface area grow when every edge doubled?' (key 4; distractors 2, 6, 8) so the table teaches scaling, the real idea of that row."
+    },
+    {
+      "where": "Challenge §2 items 1, 2, 4-7 (err, wr, mc with prism figure, tbl, mc, num with net figure)",
+      "component": "forgot-to-double error, two boxes of volume 60, pizza-box sheets, foil-lined tray table, torn-off face, lunch boxes cut from a sheet",
+      "class": "ALIGNED",
+      "root": "Recomputed 164, A = 94 vs B = 152 for the volume-60 pair, 11 400 ÷ 1000 → 12 sheets, tray 864 + 360 + 240 = 1464, 108 cm², 6000 ÷ 950 → 6 boxes. The net figure for 2.7 is a valid cross net with consistent shared edges.",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge §3 items 1-3 (sort, match, nline)",
+      "component": "the 'Build it, move it, test it' lab: sort containers by the number of faces on their nets, match cubes to surface areas, tap the edge of a cube with surface area 96",
+      "class": "REDUNDANT",
+      "root": "The lab slot (where other lessons have a sizer) contains no object to build or move: sort, match and a number line, all answerable from arithmetic or a memorised count.",
+      "replacement": "Use the same 'netfold' act at L3 (triangular prism: the student must reject the pattern that puts both triangles on the same side) and L4 (square pyramid net: reject the pattern with three triangles on one edge), each graded by 'does it fold' plus the surface area read off the labelled faces. Keep the cube match (3.2) as the closing check."
+    },
+    {
+      "where": "Challenge §4 items 1-4 and §5 items 1-6",
+      "component": "detective items (single count of each face, volume instead of surface area, wrong face for the front/back), 'can six rectangles in a row fold into a box', boss items",
+      "class": "ALIGNED",
+      "root": "Recomputed 188, 150, 256, 54 cm², 378 (net figure 15 × 8 × 3), 220 for the tray, 136 as the largest, 288 for three boxes. 4.4 correctly says the fifth and sixth rectangles land on the first two.",
+      "replacement": ""
+    }
+  ],
+  "formulaOrder": [
+    {
+      "formula": "SA = 2lw + 2lh + 2wh (three pairs of faces from the net)",
+      "taughtIn": "5-6",
+      "earliestUseInStudio": "5-6"
+    }
+  ],
+  "typography": [],
+  "missingModel": "true",
+  "lessonClass": "REDUNDANT"
+}

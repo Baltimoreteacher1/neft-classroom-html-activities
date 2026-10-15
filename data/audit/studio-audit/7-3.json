@@ -1,0 +1,99 @@
+{
+  "lesson": "7-3",
+  "unit": 7,
+  "title": "Understand Absolute Value of Rational Numbers",
+  "objective": "I can find the absolute value of a rational number — an integer, fraction, or decimal — as its distance from zero.",
+  "position": "3 of 9",
+  "model": "number line with the number marked and its distance from 0 counted (|a| = distance, never direction; opposites mirror about 0)",
+  "widgets": [
+    {
+      "where": "Practice §1 items 1.1-1.4 (mc)",
+      "component": "warm-up: number between 2 and 3, opposite of 3/4, −1/2 between which integers, opposites on the far side of 0",
+      "class": "ALIGNED",
+      "root": "Identical to the lesson's warm-up and uses 7-1/7-2 ideas only; keys 2.4, −3/4, −1 and 0, other side of 0 checked.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §2 items 2.1-2.4, 2.7 (mc) and 2.5 (match)",
+      "component": "|−9|, greatest |x| of −3,7,−5,2, |0|, |−2.5|, |−3/4|; match integers to absolute values",
+      "class": "ALIGNED",
+      "root": "Absolute value as distance from 0 for integer, decimal and fraction; keys 9, 7, 0, 2.5, 3/4 and all six match pairs recomputed.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice 2.6 and 3.3 (err)",
+      "component": "error analysis: 'keep the negative sign' and 'absolute value and opposite are the same'",
+      "class": "ALIGNED",
+      "root": "Both flagged steps (e=1, the student's reasoning) are the first wrong step; corrections |−9| = 9 and opposite of 9 = −9 are right.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §3 items 3.1 (table), 3.2, 3.4 (mc)",
+      "component": "fill the table of absolute value and opposite; true statement about |−4|; least |x| of −1.5, 0.75, −1/4, 2",
+      "class": "ALIGNED",
+      "root": "Table cells checked (7/7, 4/−4, 12/12, 0/0, 9/−9): it separates the two ideas the lesson separates; 3.4 key −1/4 is right.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice §4 items 4.1-4.6 (gen:absoluteValue L1-L3)",
+      "component": "generated: |−n|, distance of a marked point on a number line, greatest/least |x|, compare |−5| and |3| with a reason",
+      "class": "ALIGNED",
+      "root": "Ran 300 seeds x 4 levels: in all 262 drawn number lines the marked point equals the answer's absolute value and lies inside the frame; L3 reason-choices separate distance from sign.",
+      "replacement": ""
+    },
+    {
+      "where": "Practice 4.7; Challenge 3.1-3.2 (act:nline mode abs L2, L3, L4)",
+      "component": "tap the line to mark numbers for 'distance from' prompts",
+      "class": "MISALIGNED",
+      "root": "mkAbs in assets/studio-act/nline.js draws three kinds: |x| = d (kind 'zero'), 'the number d units right/left of a' (kind 'one': signed addition) and 'both numbers d units from a' (kind 'both': |x − a| = d, the distance between two points that 7-6 teaches). L1-L2 pick zero/one/zero, L3 picks both/one/both, L4 is always 'both', so Challenge 3.1 and 3.2 never ask |x| = d at all and Practice 4.7 is off-objective one draw in three.",
+      "replacement": "Add a lesson parameter and pin 7-3 to distance from 0. In nline.js mkAbs honour p.from === 'zero' and force kind 'zero' at every level; pass {mode:'abs', from:'zero'} in data/practice-studio/7-3.json items t4i7, t3i1, t3i2. Task: 'Mark every number x where |x| = d' on the level's own line (L1 integers on −10..10, L2 halves, L3 quarters shown as fractions or decimals, L4 thirds, fifths or hundredths), two points required, mirror line at 0 drawn, graded as a set. Traps to keep or add: only +d placed ('distance can go left or right'), only −d placed, and a point measured from some other number. Keep the 'd units from a' variants for 7-6 where they belong."
+    },
+    {
+      "where": "Practice §5 items 5.1-5.3 (mc)",
+      "component": "|−150|, 'which craft is farther from sea level', 'which craft is at the lower position'",
+      "class": "QUESTIONABLE",
+      "root": "The three items are the lesson's Connect checks without their scenario (config connect.scenario: submarine at −150 m, helicopter at +200 m). The stems say 'the submarine' and 'which craft' with no craft introduced and no figure; the givens survive only inside the answer choices, and the correct 5.2 choice states its own reasoning ('200 > 150').",
+      "replacement": "Restore the scenario: state 'A submarine is at −150 m and a helicopter at +200 m' in each stem and add viz {t:'nline', min:-250, max:250, step:50, marks:[{v:-150,l:'Submarine'},{v:200,l:'Helicopter'}]}. Keep three separate questions (|−150|; which is farther = compare absolute values; which is lower = compare signed values) so the distance-versus-position trap stays, and rewrite the 5.2/5.3 choices as bare results ('helicopter', 'submarine', 'same') so the reason is not handed over."
+    },
+    {
+      "where": "Practice 5.4-5.6 (mc, num)",
+      "component": "integer with |x| = 8 left of 0; |−9.4|; which integers have |x| = 6",
+      "class": "ALIGNED",
+      "root": "Keys −8, 9.4 and −6 and 6 verified; 5.6 traps 'only positive' and 'only negative'.",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge §1 items 1.1-1.6 (gen:absoluteValue L2-L4)",
+      "component": "generated distance-from-0 reading, |a| − |b|, how many numbers are n units from 0",
+      "class": "ALIGNED",
+      "root": "Same generator as Practice §4; L4 'exactly 16 units from 0' answers 2 and the signed |s| = 24 item answers −24 correctly.",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge §2 items 2.1-2.6",
+      "component": "error analysis |−6|; written submarine/bird argument; Rio vs Sky; score table with opposites; Nova/Zed/Kit on a drawn line; power-meter sum",
+      "class": "ALIGNED",
+      "root": "Every key recomputed: Rio is 3 farther, table rows 12/12, 7.5/−7.5, 3/4/−3/4, 0/0, Nova farthest (8 > 5 > 2), total 3.6 + 2.4 = 6; the drawn line puts Nova, Zed and Kit at −8, 5 and −2.",
+      "replacement": ""
+    },
+    {
+      "where": "Challenge 3.3 (sort), §4 items 4.1-4.4, §5 items 5.1-5.6",
+      "component": "sort |x| against 5; three error analyses; true-claims item; farthest from 0; |−18| − |7|; same-|x| points on a line; count of integers with |x| < 3; debt meaning; write-your-own",
+      "class": "ALIGNED",
+      "root": "Sort bins checked (|−4|, |−1/2| below 5; |−5|, |5| equal; |−7|, |−5.5| above); error steps e=1/2/1 are the first wrong steps; keys −4.5, 11, P and Q, 5 and the debt reading are right.",
+      "replacement": ""
+    }
+  ],
+  "formulaOrder": [
+    {
+      "formula": "|x − a| = d (numbers d units from a number other than 0, i.e. distance between two points)",
+      "taughtIn": "7-6",
+      "earliestUseInStudio": "7-3"
+    }
+  ],
+  "typography": [
+    "Practice 2.1, 2.2, 2.3, 2.5 (match pairs), 2.6 (steps), 3.1 (table), 3.2, 3.3, 5.4 and Challenge 2.1 (steps), 2.2 (stem) print negatives and |-9|, |-6|, -150 with an ASCII hyphen-minus; §1, 5.1, 5.5-5.6 and the generated items use U+2212, so one lesson mixes both."
+  ],
+  "missingModel": false,
+  "lessonClass": "MISALIGNED"
+}

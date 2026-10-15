@@ -325,7 +325,7 @@
       const next = Object.assign({}, spec, { p, q, r: parts[1] });
       try {
         normalize(next);
-      } catch (e) {
+      } catch (_e) {
         return null;
       }
       return next;

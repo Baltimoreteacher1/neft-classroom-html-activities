@@ -58,6 +58,14 @@ export function report(rows) {
     `Generated from \`data/audit/studio-audit/<lesson>.json\` by \`scripts/audit/build-audit-report.mjs\`. Method and class definitions: \`docs/specs/studio-audit.md\`.`,
     "",
   );
+  const fixedPath = join(ROOT, "data/audit/fixed.json");
+  if (existsSync(fixedPath)) {
+    const f = JSON.parse(readFileSync(fixedPath, "utf8"));
+    out.push("## Fixed since this audit", "", f.note, "");
+    for (const x of f.fixed)
+      out.push(`- **${cell(x.finding)}**  \n  Fix: ${cell(x.fix)}  \n  Proof: ${cell(x.proof)}`);
+    out.push("");
+  }
   out.push("## Summary", "");
   out.push(`${total.lessons} lessons (Units 2-9), ${total.widgets} widgets classified.`, "");
   out.push(
