@@ -1,0 +1,163 @@
+/* Curriculum 2.0 shared styles. Surfaces add their own file for layout; everything reusable lives here.
+ * Rules: 44px targets, visible focus, no motion unless allowed, meaning never carried by color alone. */
+:root {
+  --ewl-ink: #17233a;
+  --ewl-muted: #4a5a6e;
+  --ewl-line: #cfd9e4;
+  --ewl-bg: #f4f7fb;
+  --ewl-card: #fff;
+  --ewl-brand: #15487f;
+  --ewl-brand-ink: #fff;
+  --ewl-accent: #b45309;
+  --ewl-ok: #17683f;
+  --ewl-ok-bg: #e6f4ec;
+  --ewl-warn: #8a4b00;
+  --ewl-warn-bg: #fdf1dc;
+  --ewl-bad: #a32222;
+  --ewl-bad-bg: #fbe9e9;
+  --ewl-focus: #0b57d0;
+  --ewl-a: #1e6fa8; /* representation colors: each also has a shape/pattern in the figures */
+  --ewl-b: #b45309;
+  --ewl-c: #6a3fa0;
+  --ewl-radius: 12px;
+  --ewl-font: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-ewl-theme="auto"] {
+    --ewl-ink: #e8eef6;
+    --ewl-muted: #b3c0d0;
+    --ewl-line: #34455c;
+    --ewl-bg: #0f1826;
+    --ewl-card: #172338;
+    --ewl-brand: #8cc0ff;
+    --ewl-brand-ink: #0b1626;
+    --ewl-ok: #6ee7a8;
+    --ewl-ok-bg: #11301f;
+    --ewl-warn: #ffcf7a;
+    --ewl-warn-bg: #3a2a0c;
+    --ewl-bad: #ff9c9c;
+    --ewl-bad-bg: #3b1616;
+    --ewl-focus: #8cb8ff;
+    --ewl-a: #6fb4ee;
+    --ewl-b: #f0a94d;
+    --ewl-c: #b79af0;
+  }
+}
+.ewl-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.ewl-page {
+  font: 17px/1.55 var(--ewl-font);
+  color: var(--ewl-ink);
+  background: var(--ewl-bg);
+}
+.ewl-page *,
+.ewl-page *::before,
+.ewl-page *::after {
+  box-sizing: border-box;
+}
+.ewl-card {
+  background: var(--ewl-card);
+  border: 1px solid var(--ewl-line);
+  border-radius: var(--ewl-radius);
+  padding: 16px 18px;
+}
+.ewl-btn,
+.ewl-chip {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 2px solid var(--ewl-brand);
+  background: var(--ewl-card);
+  color: var(--ewl-brand);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ewl-btn[data-primary],
+.ewl-btn[aria-pressed="true"],
+.ewl-chip[aria-pressed="true"] {
+  background: var(--ewl-brand);
+  color: var(--ewl-brand-ink);
+}
+.ewl-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.ewl-page :focus-visible {
+  outline: 3px solid var(--ewl-focus);
+  outline-offset: 2px;
+}
+.ewl-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.ewl-msg {
+  border-left: 6px solid var(--ewl-brand);
+  background: var(--ewl-card);
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+.ewl-msg[data-kind="ok"] {
+  border-color: var(--ewl-ok);
+  background: var(--ewl-ok-bg);
+}
+.ewl-msg[data-kind="warn"] {
+  border-color: var(--ewl-warn);
+  background: var(--ewl-warn-bg);
+}
+.ewl-msg[data-kind="bad"] {
+  border-color: var(--ewl-bad);
+  background: var(--ewl-bad-bg);
+}
+.ewl-msg[data-kind="ok"]::before {
+  content: "✓ ";
+  font-weight: 700;
+}
+.ewl-msg[data-kind="warn"]::before {
+  content: "→ ";
+  font-weight: 700;
+}
+.ewl-msg[data-kind="bad"]::before {
+  content: "✗ ";
+  font-weight: 700;
+}
+.ewl-fig {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+.ewl-hl {
+  /* synchronized highlighting: the same quantity glows in every representation */
+  stroke: var(--ewl-accent);
+  stroke-width: 3;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ewl-anim {
+    transition: all 0.25s ease;
+  }
+}
+@media (forced-colors: active) {
+  .ewl-btn,
+  .ewl-chip {
+    border: 2px solid ButtonText;
+  }
+}
+@media print {
+  .ewl-noprint {
+    display: none !important;
+  }
+  .ewl-page {
+    background: #fff;
+    color: #000;
+  }
+}
