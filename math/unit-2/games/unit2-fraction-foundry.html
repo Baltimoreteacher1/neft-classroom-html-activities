@@ -7,7 +7,7 @@
     <title>Fraction Foundry — Divide Fractions | Unit 2</title>
     <meta
       name="description"
-      content="A visual 2D game for Grade 6 Unit 2 (6.NOS.1): divide whole numbers by unit fractions, fractions by fractions, and mixed numbers — using bar / area models, with word problems like 'how many 1/3-cup scoops fit in 2 cups?'"
+      content="A visual 2D game for Grade 6 Unit 6 (6.NOS.1): divide whole numbers by unit fractions, fractions by fractions, and mixed numbers — using bar / area models, with word problems like 'how many 1/3-cup scoops fit in 2 cups?'"
     />
     <style>
       * {
@@ -335,6 +335,17 @@
         return dividend.d > 1 && val > 1;
       }
 
+      // Spanish follows the site-wide language key; read at call time so a switch applies on the next screen.
+      function isEs() {
+        try {
+          return localStorage.getItem("nt-lang") === "es";
+        } catch (_e) {
+          return false;
+        }
+      }
+      const L = (en, es) => (isEs() ? es : en);
+      const plural = (n, one, many) => (n === 1 ? one : many);
+
       function makeQuestion(level) {
         if (level <= 2) {
           // ── partition mode: slice each whole into 1/d, count the pieces ──
@@ -345,15 +356,21 @@
           const answer = whole * d;
           let prompt;
           if (level === 1) {
-            prompt = `How many 1/${d}-size pieces fit in ${whole} whole${whole > 1 ? "s" : ""}?   ${whole} ÷ 1/${d} = ?`;
+            prompt = L(
+              `How many 1/${d}-size pieces fit in ${whole} whole${whole > 1 ? "s" : ""}?   ${whole} ÷ 1/${d} = ?`,
+              `¿Cuántas piezas de tamaño 1/${d} caben en ${whole} ${whole > 1 ? "enteros" : "entero"}?   ${whole} ÷ 1/${d} = ?`,
+            );
           } else {
             const ctx = choice([
-              { v: "cups", s: "scoops" },
-              { v: "meters", s: "ribbons" },
-              { v: "pizzas", s: "slices" },
-              { v: "liters", s: "bottles" },
+              { v: "cups", s: "scoops", q: "Cuántos cucharones", u: "taza", up: "tazas" },
+              { v: "meters", s: "ribbons", q: "Cuántas cintas", u: "metro", up: "metros" },
+              { v: "pizzas", s: "slices", q: "Cuántas porciones", u: "pizza", up: "pizzas" },
+              { v: "liters", s: "bottles", q: "Cuántas botellas", u: "litro", up: "litros" },
             ]);
-            prompt = `How many 1/${d}-${ctx.v.slice(0, -1)} ${ctx.s} fit in ${whole} ${ctx.v}?   ${whole} ÷ 1/${d} = ?`;
+            prompt = L(
+              `How many 1/${d}-${ctx.v.slice(0, -1)} ${ctx.s} fit in ${whole} ${ctx.v}?   ${whole} ÷ 1/${d} = ?`,
+              `¿${ctx.q} de 1/${d} de ${ctx.u} caben en ${whole} ${ctx.up}?   ${whole} ÷ 1/${d} = ?`,
+            );
           }
           return {
             level,
@@ -365,7 +382,10 @@
             wholes: whole,
             answer,
             prompt,
-            explain: `${whole} ÷ 1/${d} = ${whole} × ${d} = ${answer}. Each whole holds ${d} pieces of size 1/${d}.`,
+            explain: L(
+            `${whole} ÷ 1/${d} = ${whole} × ${d} = ${answer}. Each whole holds ${d} pieces of size 1/${d}.`,
+            `${whole} ÷ 1/${d} = ${whole} × ${d} = ${answer}. Cada entero tiene ${d} piezas de tamaño 1/${d}.`,
+          ),
           };
         }
 
@@ -402,21 +422,29 @@
         const answer = k;
         let prompt;
         if (level === 3) {
-          prompt = `How many groups of ${frStr(divisor)} fit in ${frStr(dividend)}?   ${frStr(dividend)} ÷ ${frStr(divisor)} = ?`;
+          prompt = L(
+            `How many groups of ${frStr(divisor)} fit in ${frStr(dividend)}?   ${frStr(dividend)} ÷ ${frStr(divisor)} = ?`,
+            `¿Cuántos grupos de ${frStr(divisor)} caben en ${frStr(dividend)}?   ${frStr(dividend)} ÷ ${frStr(divisor)} = ?`,
+          );
         } else if (level === 4) {
           const ctx = choice([
-            { one: "cup of flour", many: "cups of flour" },
-            { one: "yard of rope", many: "yards of rope" },
-            { one: "pan of brownies", many: "pans of brownies" },
-            { one: "bottle of paint", many: "bottles of paint" },
+            { one: "cup of flour", many: "cups of flour", eOne: "una taza de harina", eMany: "tazas de harina" },
+            { one: "yard of rope", many: "yards of rope", eOne: "una yarda de cuerda", eMany: "yardas de cuerda" },
+            { one: "pan of brownies", many: "pans of brownies", eOne: "un molde de brownies", eMany: "moldes de brownies" },
+            { one: "bottle of paint", many: "bottles of paint", eOne: "un frasco de pintura", eMany: "frascos de pintura" },
           ]);
-          const amount =
-            frVal(dividend) > 1
-              ? `${frStr(dividend)} ${ctx.many}`
-              : `${frStr(dividend)} of a ${ctx.one}`;
-          prompt = `A batch uses ${frStr(divisor)} of a ${ctx.one}. With ${amount}, how many full batches?   ${frStr(dividend)} ÷ ${frStr(divisor)} = ?`;
+          const big = frVal(dividend) > 1;
+          const amount = big ? `${frStr(dividend)} ${ctx.many}` : `${frStr(dividend)} of a ${ctx.one}`;
+          const eAmount = big ? `${frStr(dividend)} ${ctx.eMany}` : `${frStr(dividend)} de ${ctx.eOne}`;
+          prompt = L(
+            `A batch uses ${frStr(divisor)} of a ${ctx.one}. With ${amount}, how many full batches?   ${frStr(dividend)} ÷ ${frStr(divisor)} = ?`,
+            `Una tanda usa ${frStr(divisor)} de ${ctx.eOne}. Con ${eAmount}, ¿cuántas tandas completas?   ${frStr(dividend)} ÷ ${frStr(divisor)} = ?`,
+          );
         } else {
-          prompt = `Divide: ${frStr(dividend)} ÷ ${frStr(divisor)} = ?  (How many ${frStr(divisor)}-groups fit in ${frStr(dividend)}?)`;
+          prompt = L(
+            `Divide: ${frStr(dividend)} ÷ ${frStr(divisor)} = ?  (How many ${frStr(divisor)}-groups fit in ${frStr(dividend)}?)`,
+            `Divide: ${frStr(dividend)} ÷ ${frStr(divisor)} = ?  (¿Cuántos grupos de ${frStr(divisor)} caben en ${frStr(dividend)}?)`,
+          );
         }
         return {
           level,
@@ -426,7 +454,10 @@
           wholes: Math.max(1, Math.ceil(frVal(dividend) - 1e-9)),
           answer,
           prompt,
-          explain: `${frStr(dividend)} ÷ ${frStr(divisor)} = ${answer}. The bar shows ${frStr(dividend)} split into ${answer} full groups of ${frStr(divisor)}.`,
+          explain: L(
+          `${frStr(dividend)} ÷ ${frStr(divisor)} = ${answer}. The bar shows ${frStr(dividend)} split into ${answer} full groups of ${frStr(divisor)}.`,
+          `${frStr(dividend)} ÷ ${frStr(divisor)} = ${answer}. La barra muestra ${frStr(dividend)} dividido en ${answer} grupos completos de ${frStr(divisor)}.`,
+        ),
         };
       }
 
@@ -557,7 +588,7 @@
             })
             .setOrigin(0.5);
           this.add
-            .text(cx, 296, "Forge answers by dividing fractions", {
+            .text(cx, 296, L("Forge answers by dividing fractions", "Forja respuestas dividiendo fracciones"), {
               fontFamily: "Arial, sans-serif",
               fontSize: "22px",
               fontStyle: "bold",
@@ -568,7 +599,10 @@
             .text(
               cx,
               348,
-              "YOU slice the bar models, then count pieces or bundle groups\nto forge each quotient. Five rising levels, no timer — take your time.",
+              L(
+                "YOU slice the bar models, then count pieces or bundle groups\nto forge each quotient. Five rising levels, no timer — take your time.",
+                "TÚ divides los modelos de barra y luego cuentas piezas o agrupas\npara forjar cada cociente. Cinco niveles, sin reloj: tómate tu tiempo.",
+              ),
               {
                 fontFamily: "Arial, sans-serif",
                 fontSize: "17px",
@@ -579,7 +613,7 @@
             )
             .setOrigin(0.5);
           this.add
-            .text(cx, 402, "Grade 6 · Unit 2 · Standard 6.NOS.1", {
+            .text(cx, 402, L("Grade 6 · Unit 6 · Standard 6.NOS.1", "Grado 6 · Unidad 6 · Estándar 6.NOS.1"), {
               fontFamily: "Arial, sans-serif",
               fontSize: "15px",
               fontStyle: "bold",
@@ -590,7 +624,7 @@
           const hs = localStorage.getItem(LS_KEY);
           if (hs) {
             this.add
-              .text(cx, 430, `HIGH SCORE: ${hs}`, {
+              .text(cx, 430, L(`HIGH SCORE: ${hs}`, `PUNTAJE MÁS ALTO: ${hs}`), {
                 fontFamily: "Arial, sans-serif",
                 fontSize: "14px",
                 fontStyle: "bold",
@@ -599,7 +633,7 @@
               .setOrigin(0.5);
           }
 
-          this.makeButton(cx, 478, "▶  START FORGING", 0xc4661a, () => {
+          this.makeButton(cx, 478, L("▶  START FORGING", "▶  EMPEZAR A FORJAR"), 0xc4661a, () => {
             SFX.init();
             SFX.tick();
             this.scene.start("Game", {
@@ -613,7 +647,10 @@
             .text(
               cx,
               542,
-              "Slice with + / − (or tap the buttons), tap the bar or use ← → to count, Enter to forge.",
+              L(
+                "Slice with + / − (or tap the buttons), tap the bar or use ← → to count, Enter to forge.",
+                "Divide con + / − (o toca los botones), toca la barra o usa ← → para contar, Enter para forjar.",
+              ),
               {
                 fontFamily: "Arial, sans-serif",
                 fontSize: "14px",
@@ -622,7 +659,10 @@
             )
             .setOrigin(0.5);
           this.setSR(
-            "Fraction Foundry. Slice bar models yourself to divide fractions, standard 6.NOS.1. Press start to play.",
+            L(
+              "Fraction Foundry. Slice bar models yourself to divide fractions, standard 6.NOS.1. Press start to play.",
+              "Fundición de Fracciones. Divide modelos de barra tú mismo para dividir fracciones, estándar 6.NOS.1. Presiona empezar para jugar.",
+            ),
           );
           this.input.keyboard.on("keydown-SPACE", () => {
             SFX.init();
@@ -757,10 +797,10 @@
               .setOrigin(1, 0)
               .setDepth(2);
           };
-          this.scoreT = mk(W - 20, "SCORE");
-          this.levelT = mk(W - 150, "LEVEL");
-          this.streakT = mk(W - 290, "STREAK");
-          this.livesT = mk(W - 420, "LIVES");
+          this.scoreT = mk(W - 20, L("SCORE", "PUNTOS"));
+          this.levelT = mk(W - 150, L("LEVEL", "NIVEL"));
+          this.streakT = mk(W - 290, L("STREAK", "RACHA"));
+          this.livesT = mk(W - 420, L("LIVES", "VIDAS"));
           this.refreshHUD();
 
           const menu = this.add
@@ -788,7 +828,7 @@
         buildModelArea() {
           this.add.rectangle(250, 350, 460, 480, C.panel).setStrokeStyle(2, C.panelEdge);
           this.add
-            .text(250, 132, "YOUR BAR MODEL — TAP IT", {
+            .text(250, 132, L("YOUR BAR MODEL — TAP IT", "TU MODELO DE BARRA — TÓCALO"), {
               fontFamily: "Arial, sans-serif",
               fontSize: "13px",
               fontStyle: "bold",
@@ -815,6 +855,9 @@
               fontSize: (size || 13) + "px",
               fontStyle: "bold",
               color: color || "#fdeede",
+              align: "center",
+              // Longer (Spanish) captions wrap inside the bar-model panel instead of spilling out of it.
+              wordWrap: { width: 390 },
             })
             .setOrigin(origin == null ? 0.5 : origin, 0.5);
           this.modelLabels.push(t);
@@ -857,7 +900,10 @@
             const info = this.sliceInfo();
             if (!info.valid) {
               this.say(
+                L(
                 `Slice first: use + / − until ${frStr(q.divisor)} lines up with whole pieces.`,
+                `Primero divide: usa + / − hasta que ${frStr(q.divisor)} coincida con piezas enteras.`,
+              ),
               );
               return;
             }
@@ -883,7 +929,10 @@
             const info = this.sliceInfo();
             if (!info.valid) {
               this.say(
+                L(
                 `Slice first: use + / − until ${frStr(q.divisor)} lines up with whole pieces.`,
+                `Primero divide: usa + / − hasta que ${frStr(q.divisor)} coincida con piezas enteras.`,
+              ),
               );
               return;
             }
@@ -967,13 +1016,19 @@
             250,
             452,
             this.cuts === 1
-              ? "Press + to slice every whole into equal pieces."
-              : `Each whole = ${this.cuts} pieces of 1/${this.cuts}. Tap pieces to count them.`,
+              ? L("Press + to slice every whole into equal pieces.", "Presiona + para dividir cada entero en piezas iguales.")
+              : L(
+                  `Each whole = ${this.cuts} pieces of 1/${this.cuts}. Tap pieces to count them.`,
+                  `Cada entero = ${this.cuts} piezas de 1/${this.cuts}. Toca las piezas para contarlas.`,
+                ),
             "#e0b487",
             13,
           );
           this.readout.setText(
+            L(
             `${q.whole} whole${q.whole > 1 ? "s" : ""} ÷ 1/${q.d} → ${this.sel} piece${this.sel === 1 ? "" : "s"} picked`,
+            `${q.whole} ${q.whole > 1 ? "enteros" : "entero"} ÷ 1/${q.d} → ${this.sel} ${this.sel === 1 ? "pieza elegida" : "piezas elegidas"}`,
+          ),
           );
         }
 
@@ -1061,17 +1116,29 @@
             250,
             452,
             info.valid
-              ? `Shaded bar = ${frStr(q.dividend)}. Tap pieces to bundle groups of ${frStr(q.divisor)}.`
-              : `Shaded bar = ${frStr(q.dividend)}. Slice with + until ${frStr(q.divisor)} lines up with whole pieces.`,
+              ? L(
+                  `Shaded bar = ${frStr(q.dividend)}. Tap pieces to bundle groups of ${frStr(q.divisor)}.`,
+                  `Barra sombreada = ${frStr(q.dividend)}. Toca las piezas para formar grupos de ${frStr(q.divisor)}.`,
+                )
+              : L(
+                  `Shaded bar = ${frStr(q.dividend)}. Slice with + until ${frStr(q.divisor)} lines up with whole pieces.`,
+                  `Barra sombreada = ${frStr(q.dividend)}. Divide con + hasta que ${frStr(q.divisor)} coincida con piezas enteras.`,
+                ),
             "#e0b487",
             13,
           );
           this.readout.setText(
             info.valid
-              ? `${frStr(q.dividend)} ÷ ${frStr(q.divisor)} → ${this.groups} full group${this.groups === 1 ? "" : "s"}`
+              ? L(
+                  `${frStr(q.dividend)} ÷ ${frStr(q.divisor)} → ${this.groups} full group${this.groups === 1 ? "" : "s"}`,
+                  `${frStr(q.dividend)} ÷ ${frStr(q.divisor)} → ${this.groups} ${this.groups === 1 ? "grupo completo" : "grupos completos"}`,
+                )
               : this.cuts === 1
-                ? `Press + to slice the bar into equal pieces.`
-                : `Pieces of 1/${this.cuts} don't line up with ${frStr(q.divisor)} yet — keep slicing.`,
+                ? L(`Press + to slice the bar into equal pieces.`, `Presiona + para dividir la barra en piezas iguales.`)
+                : L(
+                    `Pieces of 1/${this.cuts} don't line up with ${frStr(q.divisor)} yet — keep slicing.`,
+                    `Las piezas de 1/${this.cuts} aún no coinciden con ${frStr(q.divisor)}: sigue dividiendo.`,
+                  ),
           );
         }
 
@@ -1109,7 +1176,7 @@
             })
             .setOrigin(0.5);
           this.add
-            .text(700, 306, "PIECE SIZE — keys + / −", {
+            .text(700, 306, L("PIECE SIZE — keys + / −", "TAMAÑO DE PIEZA — teclas + / −"), {
               fontFamily: "Arial, sans-serif",
               fontSize: "12px",
               fontStyle: "bold",
@@ -1149,7 +1216,7 @@
             .setStrokeStyle(3, 0xffcd4d, 0.9)
             .setInteractive({ useHandCursor: true });
           this.add
-            .text(700, 490, "🔨 FORGE — Enter", {
+            .text(700, 490, L("🔨 FORGE — Enter", "🔨 FORJAR — Enter"), {
               fontFamily: "Arial, sans-serif",
               fontSize: "20px",
               fontStyle: "bold",
@@ -1193,10 +1260,10 @@
         }
 
         kindLabel(q) {
-          if (q.mode === "partition") return "WHOLE ÷ UNIT FRACTION · SLICE & COUNT";
-          if (q.level === 3) return "WHOLE ÷ FRACTION · SLICE & GROUP";
-          if (q.level === 4) return "FRACTION ÷ FRACTION · SLICE & GROUP";
-          return "MIXED NUMBER ÷ FRACTION · SLICE & GROUP";
+          if (q.mode === "partition") return L("WHOLE ÷ UNIT FRACTION · SLICE & COUNT", "ENTERO ÷ FRACCIÓN UNITARIA · DIVIDIR Y CONTAR");
+          if (q.level === 3) return L("WHOLE ÷ FRACTION · SLICE & GROUP", "ENTERO ÷ FRACCIÓN · DIVIDIR Y AGRUPAR");
+          if (q.level === 4) return L("FRACTION ÷ FRACTION · SLICE & GROUP", "FRACCIÓN ÷ FRACCIÓN · DIVIDIR Y AGRUPAR");
+          return L("MIXED NUMBER ÷ FRACTION · SLICE & GROUP", "NÚMERO MIXTO ÷ FRACCIÓN · DIVIDIR Y AGRUPAR");
         }
 
         // ── round lifecycle ──
@@ -1213,17 +1280,30 @@
           this.groups = 0;
           this.kindChip.setText(this.kindLabel(q));
           this.qText.setText(q.prompt);
+          // Keep the prompt clear of the readout below it, whichever language is showing.
+          let promptSize = 19;
+          this.qText.setFontSize(promptSize + "px");
+          while (this.qText.height > 84 && promptSize > 14) this.qText.setFontSize(--promptSize + "px");
           this.fbText.setText("");
           this.caption2.setText(
-            q.mode === "partition" ? "PIECES PICKED — keys ← →" : "FULL GROUPS — keys ← →",
+            q.mode === "partition"
+              ? L("PIECES PICKED — keys ← →", "PIEZAS ELEGIDAS — teclas ← →")
+              : L("FULL GROUPS — keys ← →", "GRUPOS COMPLETOS — teclas ← →"),
           );
           this.renderModel();
           this.setSR(
-            `Level ${this.levelIndex + 1}. ${q.prompt} Slice the bar with plus and minus. ` +
-              (q.mode === "partition"
-                ? "Tap the bar or use left and right arrows to pick pieces. "
-                : "Tap the bar or use left and right arrows to bundle full groups. ") +
-              "Press Enter to forge your answer.",
+            L(
+              `Level ${this.levelIndex + 1}. ${q.prompt} Slice the bar with plus and minus. ` +
+                (q.mode === "partition"
+                  ? "Tap the bar or use left and right arrows to pick pieces. "
+                  : "Tap the bar or use left and right arrows to bundle full groups. ") +
+                "Press Enter to forge your answer.",
+              `Nivel ${this.levelIndex + 1}. ${q.prompt} Divide la barra con más y menos. ` +
+                (q.mode === "partition"
+                  ? "Toca la barra o usa las flechas izquierda y derecha para elegir piezas. "
+                  : "Toca la barra o usa las flechas izquierda y derecha para formar grupos completos. ") +
+                "Presiona Enter para forjar tu respuesta.",
+            ),
           );
         }
 
@@ -1237,13 +1317,22 @@
                 correct: false,
                 why:
                   this.cuts === 1
-                    ? `The wholes aren't sliced yet. Use + to slice each whole into ${q.d} equal pieces of 1/${q.d}.`
-                    : `Your pieces are 1/${this.cuts} each, but the problem asks about 1/${q.d}-size pieces. Re-slice each whole into ${q.d} equal pieces.`,
+                    ? L(
+                        `The wholes aren't sliced yet. Use + to slice each whole into ${q.d} equal pieces of 1/${q.d}.`,
+                        `Los enteros aún no están divididos. Usa + para dividir cada entero en ${q.d} piezas iguales de 1/${q.d}.`,
+                      )
+                    : L(
+                        `Your pieces are 1/${this.cuts} each, but the problem asks about 1/${q.d}-size pieces. Re-slice each whole into ${q.d} equal pieces.`,
+                        `Tus piezas son de 1/${this.cuts}, pero el problema pregunta por piezas de tamaño 1/${q.d}. Vuelve a dividir cada entero en ${q.d} piezas iguales.`,
+                      ),
               };
             if (this.sel !== q.answer)
               return {
                 correct: false,
-                why: `Right piece size (1/${q.d}), but you picked ${this.sel}. Each whole holds ${q.d} pieces of 1/${q.d} — count every piece in all ${q.whole} wholes.`,
+                why: L(
+                  `Right piece size (1/${q.d}), but you picked ${this.sel}. Each whole holds ${q.d} pieces of 1/${q.d} — count every piece in all ${q.whole} wholes.`,
+                  `El tamaño de pieza es correcto (1/${q.d}), pero elegiste ${this.sel}. Cada entero tiene ${q.d} piezas de 1/${q.d}: cuenta todas las piezas de los ${q.whole} enteros.`,
+                ),
               };
             return { correct: true };
           }
@@ -1253,23 +1342,38 @@
               correct: false,
               why:
                 this.cuts === 1
-                  ? `The bar isn't sliced yet. Use + to slice until ${frStr(q.divisor)} lines up with whole pieces.`
-                  : `Pieces of 1/${this.cuts} don't line up with ${frStr(q.divisor)}. Slice so ${frStr(q.divisor)} is a whole number of pieces.`,
+                  ? L(
+                      `The bar isn't sliced yet. Use + to slice until ${frStr(q.divisor)} lines up with whole pieces.`,
+                      `La barra aún no está dividida. Usa + hasta que ${frStr(q.divisor)} coincida con piezas enteras.`,
+                    )
+                  : L(
+                      `Pieces of 1/${this.cuts} don't line up with ${frStr(q.divisor)}. Slice so ${frStr(q.divisor)} is a whole number of pieces.`,
+                      `Las piezas de 1/${this.cuts} no coinciden con ${frStr(q.divisor)}. Divide para que ${frStr(q.divisor)} sea un número entero de piezas.`,
+                    ),
             };
           if (this.groups !== q.answer) {
             if (info.bUnits > 1 && this.groups === info.aUnits)
               return {
                 correct: false,
-                why: `You made groups of 1/${this.cuts}, but we need groups of ${frStr(q.divisor)} — each group takes ${info.bUnits} pieces of 1/${this.cuts}.`,
+                why: L(
+                  `You made groups of 1/${this.cuts}, but we need groups of ${frStr(q.divisor)} — each group takes ${info.bUnits} pieces of 1/${this.cuts}.`,
+                  `Formaste grupos de 1/${this.cuts}, pero necesitamos grupos de ${frStr(q.divisor)}: cada grupo toma ${info.bUnits} piezas de 1/${this.cuts}.`,
+                ),
               };
             if (this.groups > q.answer)
               return {
                 correct: false,
-                why: `Group ${this.groups} reaches past the shaded ${frStr(q.dividend)} — it has empty pieces, so it is not a full group of ${frStr(q.divisor)}.`,
+                why: L(
+                  `Group ${this.groups} reaches past the shaded ${frStr(q.dividend)} — it has empty pieces, so it is not a full group of ${frStr(q.divisor)}.`,
+                  `El grupo ${this.groups} pasa del ${frStr(q.dividend)} sombreado: tiene piezas vacías, así que no es un grupo completo de ${frStr(q.divisor)}.`,
+                ),
               };
             return {
               correct: false,
-              why: `You bundled ${this.groups} group${this.groups === 1 ? "" : "s"} of ${frStr(q.divisor)}, but shaded pieces are still left over — more full groups fit.`,
+              why: L(
+                `You bundled ${this.groups} group${this.groups === 1 ? "" : "s"} of ${frStr(q.divisor)}, but shaded pieces are still left over — more full groups fit.`,
+                `Formaste ${this.groups} ${this.groups === 1 ? "grupo" : "grupos"} de ${frStr(q.divisor)}, pero aún sobran piezas sombreadas: caben más grupos completos.`,
+              ),
             };
           }
           return { correct: true };
@@ -1300,7 +1404,7 @@
             this.fbText.setColor("#6bd18b").setText(`✓ +${gain}   ${q.explain}`);
             SFX.correct();
             this.burst(700, 490, C.good);
-            this.setSR(`Correct. ${q.explain}`);
+            this.setSR(L(`Correct. ${q.explain}`, `Correcto. ${q.explain}`));
             this.refreshHUD();
             this.time.delayedCall(1500, () => {
               if (this.qInLevel >= this.qPerLevel) return this.completeLevel();
@@ -1316,15 +1420,20 @@
           this.lives--;
           this.missesThisRound++;
           if (this.missesThisRound === 1) ffMisses.push(JSON.parse(JSON.stringify(q)));
-          this.fbText.setColor("#ff9b9b").setText(`✗ Not yet — ${res.why}`);
+          this.fbText.setColor("#ff9b9b").setText(L(`✗ Not yet — ${res.why}`, `✗ Todavía no — ${res.why}`));
           SFX.wrong();
           if (!reducedMotion()) this.cameras.main.shake(170, 0.006);
-          this.setSR(`Not yet. ${res.why} Adjust the model and forge again.`);
+          this.setSR(
+            L(
+              `Not yet. ${res.why} Adjust the model and forge again.`,
+              `Todavía no. ${res.why} Ajusta el modelo y forja de nuevo.`,
+            ),
+          );
           if (this.lives <= 0) {
             // No-fail: refill hearts and keep the run going.
             this.lives = START_LIVES;
             const refill = this.add
-              .text(W / 2, H / 2, "❤ Refilled — keep going!", {
+              .text(W / 2, H / 2, L("❤ Refilled — keep going!", "❤ ¡Recargadas! Sigue adelante."), {
                 fontFamily: "Arial, sans-serif",
                 fontSize: "26px",
                 fontStyle: "bold",
@@ -1340,7 +1449,10 @@
               onComplete: () => refill.destroy(),
             });
             this.setSR(
-              `Not yet. ${res.why} Hearts refilled — keep going, adjust the model and forge again.`,
+              L(
+                `Not yet. ${res.why} Hearts refilled — keep going, adjust the model and forge again.`,
+                `Todavía no. ${res.why} Vidas recargadas: sigue, ajusta el modelo y forja de nuevo.`,
+              ),
             );
           }
           this.refreshHUD();
@@ -1367,7 +1479,7 @@
           ov.add(this.add.rectangle(W / 2, H / 2, W, H, 0x140a03, 0.82));
           ov.add(
             this.add
-              .text(W / 2, 215, "LEVEL FORGED!", {
+              .text(W / 2, 215, L("LEVEL FORGED!", "¡NIVEL FORJADO!"), {
                 fontFamily: "Arial, sans-serif",
                 fontSize: "44px",
                 fontStyle: "900",
@@ -1380,7 +1492,10 @@
               .text(
                 W / 2,
                 284,
-                `${this.correctInLevel} / ${this.qPerLevel} correct this level\n+150 bonus`,
+                L(
+                  `${this.correctInLevel} / ${this.qPerLevel} correct this level\n+150 bonus`,
+                  `${this.correctInLevel} / ${this.qPerLevel} correctas en este nivel\n+150 de bonificación`,
+                ),
                 {
                   fontFamily: "Arial, sans-serif",
                   fontSize: "20px",
@@ -1398,7 +1513,9 @@
             .setDepth(21)
             .setInteractive({ useHandCursor: true });
           this.add
-            .text(W / 2, 380, last || this.replayOnly ? "🏆  SEE RESULTS" : "▶  NEXT LEVEL", {
+            .text(W / 2, 380, last || this.replayOnly
+                ? L("🏆  SEE RESULTS", "🏆  VER RESULTADOS")
+                : L("▶  NEXT LEVEL", "▶  SIGUIENTE NIVEL"), {
               fontFamily: "Arial, sans-serif",
               fontSize: "22px",
               fontStyle: "bold",
@@ -1424,7 +1541,10 @@
             }
           });
           this.setSR(
-            `Level ${this.levelIndex + 1} complete. ${this.correctInLevel} of ${this.qPerLevel} correct. Score ${this.score}.`,
+            L(
+              `Level ${this.levelIndex + 1} complete. ${this.correctInLevel} of ${this.qPerLevel} correct. Score ${this.score}.`,
+              `Nivel ${this.levelIndex + 1} completo. ${this.correctInLevel} de ${this.qPerLevel} correctas. Puntos ${this.score}.`,
+            ),
           );
         }
 
@@ -1487,7 +1607,7 @@
           SFX.win();
 
           this.add
-            .text(cx, 150, "FOUNDRY MASTERED!", {
+            .text(cx, 150, L("FOUNDRY MASTERED!", "¡FUNDICIÓN DOMINADA!"), {
               fontFamily: "Arial, sans-serif",
               fontSize: "46px",
               fontStyle: "900",
@@ -1516,7 +1636,7 @@
           }
 
           this.add
-            .text(cx, 326, `Final Score: ${this.score}`, {
+            .text(cx, 326, L(`Final Score: ${this.score}`, `Puntaje final: ${this.score}`), {
               fontFamily: "Arial, sans-serif",
               fontSize: "30px",
               fontStyle: "bold",
@@ -1527,7 +1647,10 @@
             .text(
               cx,
               372,
-              "You divided whole numbers, fractions, and mixed numbers — by slicing, counting, and grouping every bar model yourself.",
+              L(
+                "You divided whole numbers, fractions, and mixed numbers — by slicing, counting, and grouping every bar model yourself.",
+                "Dividiste números enteros, fracciones y números mixtos: dividiendo, contando y agrupando cada modelo de barra tú mismo.",
+              ),
               {
                 fontFamily: "Arial, sans-serif",
                 fontSize: "16px",
@@ -1539,7 +1662,7 @@
             )
             .setOrigin(0.5);
 
-          this.btn(cx, 462, "↻  PLAY AGAIN", 0xc4661a, () =>
+          this.btn(cx, 462, L("↻  PLAY AGAIN", "↻  JUGAR DE NUEVO"), 0xc4661a, () =>
             this.scene.start("Game", {
               level: 0,
               score: 0,
@@ -1548,7 +1671,7 @@
             }),
           );
           if (this.misses.length) {
-            this.btn(cx, 530, "PRACTICE THE MISSES", 0x3a2410, () =>
+            this.btn(cx, 530, L("PRACTICE THE MISSES", "PRACTICAR LOS ERRORES"), 0x3a2410, () =>
               this.scene.start("Game", {
                 level: 0,
                 score: 0,
@@ -1559,7 +1682,7 @@
           }
 
           const el = document.getElementById("ff-sr");
-          if (el) el.textContent = `Foundry mastered. Final score ${this.score}, ${stars} stars.`;
+          if (el) el.textContent = L(`Foundry mastered. Final score ${this.score}, ${stars} stars.`, `Fundición dominada. Puntaje final ${this.score}, ${stars} estrellas.`);
         }
         btn(x, y, label, color, cb) {
           const b = this.add
@@ -1600,9 +1723,14 @@
           cv.setAttribute("role", "application");
           cv.setAttribute(
             "aria-label",
-            "Fraction Foundry math game. Divide fractions by slicing bar models " +
-              "yourself. Use plus and minus keys to slice, left and right arrow " +
-              "keys to count pieces or groups, and Enter to forge your answer.",
+            L(
+              "Fraction Foundry math game. Divide fractions by slicing bar models " +
+                "yourself. Use plus and minus keys to slice, left and right arrow " +
+                "keys to count pieces or groups, and Enter to forge your answer.",
+              "Juego de matemáticas Fundición de Fracciones. Divide fracciones " +
+                "dividiendo modelos de barra tú mismo. Usa las teclas más y menos para dividir, " +
+                "las flechas izquierda y derecha para contar piezas o grupos, y Enter para forjar tu respuesta.",
+            ),
           );
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
