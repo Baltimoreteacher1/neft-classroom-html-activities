@@ -45,6 +45,117 @@
     "Give the most concrete hint: walk me through SETTING UP the next step, but STOP before the final calculation and never state the final answer.",
   ];
 
+  // Spanish follows the site-wide language key; read at call time so a switch applies live.
+  function isEs() {
+    try {
+      return localStorage.getItem("nt-lang") === "es";
+    } catch (_e) {
+      return false;
+    }
+  }
+  function T(en, es) {
+    return isEs() ? es : en;
+  }
+  // The tutor endpoint replies in this language when replyLang is set (empty = English).
+  function replyLang() {
+    return isEs() ? "Spanish" : "";
+  }
+
+  // Spanish for the authored static hints, keyed by the exact English text the games pass in.
+  // Unlisted (generated) hints fall back to a general Spanish nudge in staticHint().
+  var HINT_ES = {
+    "Read the problem again slowly. What is it giving you, and what is it asking you to find?":
+      "Lee el problema otra vez, despacio. ¿Qué datos te da y qué te pide encontrar?",
+    "What one idea or rule from this lesson connects what you have to what you need?":
+      "¿Qué idea o regla de esta lección conecta lo que tienes con lo que necesitas?",
+    "Set it up: write the first step using that rule, then work it through — you finish the last part.":
+      "Plantéalo: escribe el primer paso con esa regla y sigue resolviendo; la última parte la terminas tú.",
+    "Look at the place values. Which two whole numbers does this decimal sit between?":
+      "Mira los valores posicionales. ¿Entre qué dos números enteros está este decimal?",
+    "Line up the decimal points, then compare digit by digit from the left (tenths, then hundredths).":
+      "Alinea los puntos decimales y compara dígito por dígito desde la izquierda (primero décimas, luego centésimas).",
+    "Set it up: count how many tenths/hundredths past the smaller whole number, then place your marker there.":
+      "Plantéalo: cuenta cuántas décimas o centésimas hay después del entero menor y coloca ahí tu marcador.",
+    "Is this number prime, or can it be split? Try dividing by 2, 3, or 5.":
+      "¿Este número es primo o se puede dividir? Prueba dividiendo entre 2, 3 o 5.",
+    "Pick a factor pair whose product equals the number. Keep splitting until every branch is prime.":
+      "Elige un par de factores cuyo producto sea el número. Sigue dividiendo hasta que cada rama sea prima.",
+    "Count how many times each prime appears — that count is its exponent.":
+      "Cuenta cuántas veces aparece cada primo: esa cantidad es su exponente.",
+    "What three measurements build a volume? Picture filling the solid with unit cubes.":
+      "¿Qué tres medidas forman un volumen? Imagina llenar el sólido con cubos unitarios.",
+    "Volume = length × width × height (for fractional edges, multiply the fractions).":
+      "Volumen = largo × ancho × alto (con aristas fraccionarias, multiplica las fracciones).",
+    "Set it up: write length × width × height with the numbers, then do the multiplying.":
+      "Plantéalo: escribe largo × ancho × alto con los números y luego multiplica.",
+    "Dividing by a fraction asks: how many of that fraction fit inside the other number?":
+      "Dividir entre una fracción pregunta: ¿cuántas veces cabe esa fracción dentro del otro número?",
+    "On the bar: cut every whole into the denominator's parts, shade the starting amount, then count equal groups the size of the divisor.":
+      "En la barra: divide cada entero en las partes del denominador, sombrea la cantidad inicial y cuenta grupos iguales del tamaño del divisor.",
+    "Use keep–change–flip: keep the first fraction, change ÷ to ×, flip the second.":
+      "Usa conservar–cambiar–invertir: conserva la primera fracción, cambia ÷ por × e invierte la segunda.",
+    "Set it up: rewrite it as a multiplication problem, then you do the multiplying.":
+      "Plantéalo: reescríbelo como una multiplicación y luego multiplica tú.",
+    "Percent means 'per 100'. What is the whole (the 100%) in this problem?":
+      "Porcentaje significa «por cada 100». ¿Cuál es el total (el 100%) en este problema?",
+    "Set up part/whole = percent/100, and see which piece is missing.":
+      "Plantea parte/total = porcentaje/100 y mira cuál de los datos falta.",
+    "Set it up: write the proportion (or find 1% first), then solve for the missing part.":
+      "Plantéalo: escribe la proporción (o halla primero el 1%) y luego despeja el dato que falta.",
+    "Can you break this shape into rectangles or triangles you already know how to measure?":
+      "¿Puedes dividir esta figura en rectángulos o triángulos que ya sabes medir?",
+    "Recall the area rules: rectangle = base × height; triangle = ½ × base × height.":
+      "Recuerda las reglas del área: rectángulo = base × altura; triángulo = ½ × base × altura.",
+    "Set it up: find each piece's area with the formula, then add (or subtract) — you finish the arithmetic.":
+      "Plantéalo: halla el área de cada parte con la fórmula y luego suma (o resta); la aritmética la terminas tú.",
+    "Compare the live readout to the target: do you need a bigger or a smaller value?":
+      "Compara la lectura actual con la meta: ¿necesitas un valor mayor o menor?",
+    "Order of operations: × happens before + and −, so multiply first when you check a build.":
+      "Orden de las operaciones: × va antes que + y −, así que multiplica primero cuando revises tu armado.",
+    "Fill every slot, read the value your build makes, then adjust one tile at a time.":
+      "Llena todos los espacios, lee el valor que forma tu armado y ajusta una ficha a la vez.",
+    "What is being done to the variable — is it added to, or multiplied?":
+      "¿Qué se le está haciendo a la variable: se le suma algo o se multiplica?",
+    "Do the inverse operation to BOTH sides to get the variable alone.":
+      "Haz la operación inversa en AMBOS lados para dejar sola la variable.",
+    "Set it up: apply the inverse step to both sides, then you finish the last calculation.":
+      "Plantéalo: aplica el paso inverso en ambos lados y luego terminas tú el último cálculo.",
+    "Is the target about the center of the data (mean/median), the spread (range), or the typical distance from the mean (MAD)?":
+      "¿La meta trata del centro de los datos (media/mediana), de la dispersión (rango) o de la distancia típica a la media (DAM)?",
+    "Recall the measure: mean = add then divide; median = middle of the ordered list; range = max − min; MAD = the mean of each dot's distance from the mean.":
+      "Recuerda cada medida: media = sumar y dividir; mediana = el valor del medio de la lista ordenada; rango = máximo − mínimo; DAM = el promedio de la distancia de cada punto a la media.",
+    "Start from the locked gold given dots: decide whether your added dots must pull the statistic up or down, then check the live readout.":
+      "Empieza con los puntos dorados fijos: decide si tus puntos nuevos deben subir o bajar la estadística y luego revisa la lectura actual.",
+    "Which number is the x (across) and which is the y (up/down)? Check the signs too.":
+      "¿Cuál número es la x (horizontal) y cuál es la y (vertical)? Revisa también los signos.",
+    "Move along the x-axis first, then up or down for y; negatives go left/down.":
+      "Muévete primero por el eje x y luego sube o baja para la y; los negativos van a la izquierda o hacia abajo.",
+    "Distance on a straight line: count the unit steps, or subtract and take the absolute value. Across zero, add the two distances to the axis.":
+      "Distancia en una línea recta: cuenta los pasos unitarios, o resta y toma el valor absoluto. Si cruzas el cero, suma las dos distancias hasta el eje.",
+    "A rectangle's missing corner shares its x with one shown corner and its y with another.":
+      "La esquina que falta de un rectángulo comparte su x con una esquina que ves y su y con otra.",
+    "Set it up: find the tick mark for each coordinate, then place the point yourself.":
+      "Plantéalo: busca la marca de cada coordenada y luego coloca tú el punto.",
+    "Look at one piece after you slice: what fraction of a whole is it? The divisor names the piece size you need.":
+      "Mira una pieza después de dividir: ¿qué fracción de un entero es? El divisor indica el tamaño de pieza que necesitas.",
+    "Division asks 'how many of this size fit?' Slice each whole so the divisor lines up with whole pieces, then count pieces or bundle equal groups.":
+      "Dividir pregunta «¿cuántas de este tamaño caben?». Divide cada entero para que el divisor coincida con piezas enteras y luego cuenta piezas o forma grupos iguales.",
+    "Set it up: slice using the divisor's denominator, shade or spot the dividend on the bar, then count how many divisor-size pieces or full groups fill it.":
+      "Plantéalo: divide usando el denominador del divisor, sombrea o ubica el dividendo en la barra y cuenta cuántas piezas del tamaño del divisor o grupos completos lo llenan.",
+    "Look at the jug: how many equal parts do the lines split it into? Each line marks one unit fraction of the whole jug.":
+      "Mira la jarra: ¿en cuántas partes iguales la dividen las líneas? Cada línea marca una fracción unitaria de toda la jarra.",
+    "If the order's fraction uses a different denominator than the jug's lines, find an equivalent fraction that matches the jug's parts.":
+      "Si la fracción del pedido tiene un denominador distinto al de las líneas de la jarra, busca una fracción equivalente que coincida con las partes de la jarra.",
+    "Set it up: decide how many jug lines up from the bottom the order needs, then pour one mark per line and serve.":
+      "Plantéalo: decide cuántas líneas desde el fondo necesita el pedido, vierte una marca por línea y sirve.",
+    "What two quantities does this ratio compare? Say the relationship in words before touching the numbers.":
+      "¿Qué dos cantidades compara esta razón? Di la relación con palabras antes de tocar los números.",
+    "Equivalent ratios scale BOTH parts by the same number — try building a ratio table and stepping to the value you need.":
+      "Las razones equivalentes escalan AMBAS partes por el mismo número: prueba armar una tabla de razones y avanzar hasta el valor que necesitas.",
+    "For a price per item or other rate, set it up as an amount for ONE: divide first, then scale up to what the question asks.":
+      "Para un precio por artículo u otra tasa, plantéalo como la cantidad para 1: primero divide y luego escala hasta lo que pide la pregunta.",
+  };
+
   var state = {
     problem: null, // { itemText, standard, staticHints }
     rung: 0, // rungs revealed so far (0..MAX_RUNGS)
@@ -54,6 +165,13 @@
   };
 
   var els = {}; // cached DOM nodes
+
+  function BIG_IDEA() {
+    return T(
+      "Think about the big idea: this kind of problem is about a relationship you can scale up or down. Re-read the numbers and ask what stays the same.",
+      "Piensa en la idea principal: este tipo de problema trata de una relación que puedes aumentar o reducir. Vuelve a leer los números y pregunta qué se mantiene igual.",
+    );
+  }
 
   /* ---------------------------------------------------------------- helpers */
   function clamp(s, n) {
@@ -109,6 +227,7 @@
       studentWork: framing,
       history: state.history.slice(-6),
     };
+    if (replyLang()) body.replyLang = replyLang();
     var to = withTimeout(null, FETCH_TIMEOUT_MS);
     return fetch(ENDPOINT, {
       method: "POST",
@@ -136,14 +255,39 @@
 
   function staticHint(rungIndex) {
     var hints = (state.problem && state.problem.staticHints) || [];
-    if (!hints.length) {
-      return "Look at what the problem gives you and what it asks for. What is the one relationship that connects them?";
-    }
+    var general = T(
+      "Look at what the problem gives you and what it asks for. What is the one relationship that connects them?",
+      "Mira qué te da el problema y qué te pide. ¿Cuál es la única relación que los conecta?",
+    );
+    if (!hints.length) return general;
     // Clamp to the last authored hint if fewer than MAX_RUNGS were supplied.
-    return hints[Math.min(rungIndex, hints.length - 1)];
+    var en = hints[Math.min(rungIndex, hints.length - 1)];
+    if (!isEs()) return en;
+    return HINT_ES[en] || general;
   }
 
   /* ------------------------------------------------------------------- view */
+  // Static labels in the current language; called on build and whenever the language changes.
+  function relabel() {
+    if (!els.root) return;
+    els.fab.querySelector("span").textContent = T("Need a hint?", "¿Necesitas una pista?");
+    els.panel.setAttribute("aria-label", T("Hints", "Pistas"));
+    els.root.querySelector(".nt-hl-title").textContent = T("Hints", "Pistas");
+    els.close.setAttribute("aria-label", T("Close hints", "Cerrar las pistas"));
+    els.root.querySelector(".nt-hl-foot").textContent = T(
+      "Hints guide your thinking — they never give the final answer.",
+      "Las pistas guían tu pensamiento: nunca dan la respuesta final.",
+    );
+    if (!state.busy && els.more) {
+      els.more.textContent =
+        state.rung === 0
+          ? T("Show me a hint", "Muéstrame una pista")
+          : state.rung >= MAX_RUNGS
+            ? T("Explain the idea", "Explica la idea")
+            : T("Show me another hint", "Muéstrame otra pista");
+    }
+    if (!state.problem && !els.panel.hidden) showEmptyState();
+  }
   function ensureUi() {
     if (els.root) return;
     var root = doc.createElement("div");
@@ -171,6 +315,7 @@
     els.badge = root.querySelector(".nt-hl-badge");
     els.close = root.querySelector(".nt-hl-close");
 
+    relabel();
     els.fab.addEventListener("click", togglePanel);
     els.close.addEventListener("click", function () {
       openPanel(false);
@@ -187,11 +332,14 @@
 
   function showEmptyState() {
     if (!els.steps) return;
-    els.steps.innerHTML =
-      '<p class="nt-hl-step-text nt-hl-empty">Start a problem, then tap here and I\'ll help you think it through — one hint at a time.</p>';
+    els.steps.innerHTML = '<p class="nt-hl-step-text nt-hl-empty"></p>';
+    els.steps.firstChild.textContent = T(
+      "Start a problem, then tap here and I'll help you think it through — one hint at a time.",
+      "Empieza un problema, toca aquí y te ayudaré a pensarlo, una pista a la vez.",
+    );
     if (els.more) {
       els.more.disabled = true;
-      els.more.textContent = "Show me a hint";
+      els.more.textContent = T("Show me a hint", "Muéstrame una pista");
     }
     if (els.badge) els.badge.hidden = true;
   }
@@ -219,7 +367,7 @@
   function setBadge(isAi) {
     if (!els.badge) return;
     els.badge.hidden = false;
-    els.badge.textContent = isAi ? "AI coach" : "coach";
+    els.badge.textContent = isAi ? T("AI coach", "Entrenador IA") : T("coach", "entrenador");
     els.badge.classList.toggle("nt-hl-badge-ai", !!isAi);
   }
 
@@ -245,10 +393,10 @@
     if (!els.more) return;
     els.more.disabled = on;
     els.more.textContent = on
-      ? "Thinking…"
+      ? T("Thinking…", "Pensando…")
       : state.rung >= MAX_RUNGS
-        ? "Explain the idea"
-        : "Show me another hint";
+        ? T("Explain the idea", "Explica la idea")
+        : T("Show me another hint", "Muéstrame otra pista");
   }
 
   function nextRung() {
@@ -283,6 +431,7 @@
         standard: clamp(p.standard, 40),
         itemText: clamp(p.itemText, 1800),
         history: state.history.slice(-6),
+        replyLang: replyLang() || undefined,
       }),
       signal: to.signal,
     })
@@ -291,10 +440,7 @@
         return r.ok ? r.json() : null;
       })
       .then(function (d) {
-        var text =
-          d && d.ok && d.reply && d.reply.trim()
-            ? d.reply.trim()
-            : "Think about the big idea: this kind of problem is about a relationship you can scale up or down. Re-read the numbers and ask what stays the same.";
+        var text = d && d.ok && d.reply && d.reply.trim() ? d.reply.trim() : BIG_IDEA();
         var step = doc.createElement("div");
         step.className = "nt-hl-step nt-hl-step-explain";
         var body = doc.createElement("p");
@@ -314,8 +460,7 @@
         step.className = "nt-hl-step nt-hl-step-explain";
         var body = doc.createElement("p");
         body.className = "nt-hl-step-text";
-        body.textContent =
-          "Think about the big idea: this kind of problem is about a relationship you can scale up or down. Re-read the numbers and ask what stays the same.";
+        body.textContent = BIG_IDEA();
         step.appendChild(body);
         els.steps.appendChild(step);
         setBadge(false);
@@ -345,7 +490,7 @@
     if (els.badge) els.badge.hidden = true;
     setBusy(false);
     // Reset the "more" label; collapse the panel so a new problem starts fresh.
-    if (els.more) els.more.textContent = "Show me a hint";
+    if (els.more) els.more.textContent = T("Show me a hint", "Muéstrame una pista");
     openPanel(false);
   }
 
@@ -380,6 +525,12 @@
       if (!t || t.length < 14) return false;
       if (
         /\b(correct|nice|great job|well done|try again|not quite|oops|incorrect|marker at|placed|equivalent|you got|you win|game over|score|level up)\b/i.test(
+          t,
+        )
+      )
+        return false;
+      if (
+        /\b(correcto|correcta|bien hecho|muy bien|excelente|inténtalo|intenta de nuevo|no del todo|incorrecto|incorrecta|todavía no|aún no|puntos|puntaje|ganaste|fin del juego|marcador en|colocado)\b/i.test(
           t,
         )
       )
@@ -421,6 +572,11 @@
       });
     }
   }
+
+  window.addEventListener("storage", function (event) {
+    if (event.key === "nt-lang") relabel();
+  });
+  doc.addEventListener("ewl:lang", relabel);
 
   window.NeftHintLadder = {
     setProblem: setProblem,
