@@ -199,7 +199,9 @@
         border-radius: 18px;
         background: #0f172a;
         color: #f8fafc;
-        font: 16px/1.5 system-ui, sans-serif;
+        font:
+          16px/1.5 system-ui,
+          sans-serif;
         box-shadow: 0 24px 80px rgba(0, 0, 0, 0.75);
       }
       #pa-topic-dialog::backdrop {
@@ -235,7 +237,9 @@
         border: 1px solid #475569;
         background: #1e293b;
         color: #fff;
-        font: 600 15px system-ui, sans-serif;
+        font:
+          600 15px system-ui,
+          sans-serif;
       }
       .pa-topic-dialog-actions {
         display: flex;
@@ -250,7 +254,9 @@
         border: 1px solid #475569;
         background: #1e293b;
         color: #f8fafc;
-        font: 700 15px system-ui, sans-serif;
+        font:
+          700 15px system-ui,
+          sans-serif;
         cursor: pointer;
       }
       .pa-topic-dialog-actions button.primary {
@@ -312,7 +318,13 @@
         <div class="practice-console-actions">
           <button id="practice-resume" type="button" hidden>Resume saved adventure</button
           ><button id="practice-retry" type="button" hidden>Practice questions to revisit</button
-          ><button id="pa-open-topics" type="button" onclick="window.paOpenTopicPicker && window.paOpenTopicPicker()">🧭 Choose Topic</button>
+          ><button
+            id="pa-open-topics"
+            type="button"
+            onclick="window.paOpenTopicPicker && window.paOpenTopicPicker()"
+          >
+            🧭 Choose Topic
+          </button>
         </div>
       </section>
     </header>
@@ -326,7 +338,14 @@
       <label for="pa-phone-tier">Practice level</label>
       <select id="pa-phone-tier"></select>
       <button id="pa-phone-start" type="button">Start practice</button>
-      <button id="pa-phone-topics" type="button" class="pa-phone-link" onclick="window.paOpenTopicPicker && window.paOpenTopicPicker()">Choose another unit or lesson →</button>
+      <button
+        id="pa-phone-topics"
+        type="button"
+        class="pa-phone-link"
+        onclick="window.paOpenTopicPicker && window.paOpenTopicPicker()"
+      >
+        Choose another unit or lesson →
+      </button>
     </section>
     <dialog id="pa-topic-dialog" aria-labelledby="pa-topic-dialog-title">
       <h2 id="pa-topic-dialog-title">🧭 Choose Your Curriculum Unit or Lesson</h2>
@@ -567,6 +586,21 @@
           9: "Two-Variable Relationships",
           10: "Math Is Synthesis",
         };
+        const UNIT_TITLES_ES = {
+          1: "Las matemáticas son descubrimiento",
+          2: "Estadística",
+          3: "Razones y tasas",
+          4: "Porcentajes",
+          5: "Área, área de superficie y volumen",
+          6: "Expresiones",
+          7: "Enteros y el plano de coordenadas",
+          8: "Ecuaciones y desigualdades",
+          9: "Relaciones entre dos variables",
+          10: "Las matemáticas son síntesis",
+        };
+        function unitTitle(n) {
+          return (lang === "es" && UNIT_TITLES_ES[n]) || UNIT_TITLES[n] || "";
+        }
         let worldUnit = 0; // 0 = default (mixed / unknown) → keep base indigo
         let worldName = "Practice Arcade";
         let worldGlyphs = "÷×+−";
@@ -591,7 +625,7 @@
           const wb = document.getElementById("ewl-world-badge");
           if (wb) {
             // Curriculum unit title first (what the class calls it), world second.
-            wb.textContent = `${w.boss} Unit ${worldUnit} · ${UNIT_TITLES[worldUnit] || ""} — ${w.name}`;
+            wb.textContent = `${w.boss} ${lang === "es" ? "Unidad" : "Unit"} ${worldUnit} · ${unitTitle(worldUnit)} — ${w.name}`;
             wb.style.color = "#" + w.accent.toString(16).padStart(6, "0");
           }
         }
@@ -638,7 +672,8 @@
         // English until a config supplies `_es` fields (then they localize too).
         let lang = "en";
         try {
-          const sv = localStorage.getItem("pa-lang");
+          // Site-wide language key first (nt-lang), then this game's older key.
+          const sv = localStorage.getItem("nt-lang") || localStorage.getItem("pa-lang");
           if (sv === "es" || sv === "en") lang = sv;
         } catch (e) {}
 
@@ -780,14 +815,16 @@
               view.progress +
               " · " +
               view.goal +
-              " Score " +
+              (lang === "es" ? " Puntos " : " Score ") +
               scene.score +
-              ". Streak " +
+              (lang === "es" ? ". Racha " : ". Streak ") +
               (scene.streak || 0) +
-              ". No timer.";
+              (lang === "es" ? ". Sin reloj." : ". No timer.");
           else
             note.textContent =
-              "Choose your practice level. Solve 5 to open the next band. Use number keys for choices, arrows for markers, and Enter to check. Progress saves after every challenge. No timer.";
+              lang === "es"
+                ? "Elige tu nivel. Resuelve 5 para abrir el siguiente grupo. Usa los números para las opciones, las flechas para los marcadores y Enter para revisar. El progreso se guarda en cada reto. Sin reloj."
+                : "Choose your practice level. Solve 5 to open the next band. Use number keys for choices, arrows for markers, and Enter to check. Progress saves after every challenge. No timer.";
           document.getElementById("practice-resume").hidden = !!scene || !storedRun();
           document.getElementById("practice-retry").hidden = true;
         }
@@ -865,6 +902,7 @@
           balance: { en: "BALANCE THE SCALE", es: "EQUILIBRA LA BALANZA" },
           plotPoint: { en: "PLOT THE POINT", es: "UBICA EL PUNTO" },
           multiStep: { en: "STEP BY STEP", es: "PASO A PASO" },
+          typeIt: { en: "WORK IT OUT · TYPE IT", es: "RESUÉLVELO · ESCRÍBELO" },
           coachPower: {
             en: "⚡ Solve on the first try to charge this — fill it for DOUBLE POINTS!",
             es: "⚡ ¡Acierta al primer intento para cargarla y llénala para PUNTOS DOBLES!",
@@ -918,6 +956,38 @@
         function loc(round, base) {
           if (lang === "es" && round[base + "Es"]) return round[base + "Es"];
           return round[base];
+        }
+
+        // Localized display text for tiles and choices (the stored English value
+        // stays the identity used for checking).
+        function tileText(it) {
+          return (lang === "es" && it && it.textEs) || (it && it.text) || "";
+        }
+        function catLabel(c) {
+          return (lang === "es" && c && c.labelEs) || (c && c.label) || "";
+        }
+        function choiceTexts(r) {
+          const base = (r && r.choices) || [];
+          return lang === "es" && Array.isArray(r.choicesEs) && r.choicesEs.length === base.length
+            ? r.choicesEs.map((c, i) => c || base[i])
+            : base;
+        }
+
+        // Numeric forms of a round's answer, for keeping it out of hints.
+        function answerTokens(r) {
+          const out = [];
+          const add = (v) => {
+            if (v == null || v === "") return;
+            const n = Number(String(v).replace(/[$,%]/g, "").replace(/[−–]/g, "-"));
+            if (Number.isFinite(n) && Math.abs(n) >= 2) out.push(String(Math.round(n * 1000) / 1000));
+          };
+          if (r.kind === "choose") {
+            const p = parseNumeric(r.choices && r.choices[r.correctIndex]);
+            if (p) add(p.value);
+          } else if (r.kind === "plot") {
+            /* coordinates are printed in the task itself */
+          } else if (r.target != null) add(r.target);
+          return out;
         }
 
         function shuffle(a) {
@@ -1034,7 +1104,41 @@
         //   ?lessons=4-1,4-2   → cumulative review across the listed lessons
         //   ?unit=4            → cumulative review across every lesson in unit 4
         //   ?lesson=4-3        → single-lesson review (default)
+        // The page's own static labels (outside the canvas), in the chosen language.
+        function localizeChrome() {
+          const es = lang === "es";
+          document.documentElement.lang = es ? "es" : "en";
+          const set = (id, en, sp) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = es ? sp : en;
+          };
+          set("practice-session-title", "Your next math adventure", "Tu próxima aventura de matemáticas");
+          set("practice-resume", "Resume saved adventure", "Continuar aventura guardada");
+          set("practice-retry", "Practice questions to revisit", "Practicar preguntas para repasar");
+          set("pa-open-topics", "🧭 Choose Topic", "🧭 Elegir tema");
+          set("pa-phone-topics", "Choose another unit or lesson →", "Elegir otra unidad o lección →");
+          set("pa-topic-dialog-title", "🧭 Choose Your Unit or Lesson", "🧭 Elige tu unidad o lección");
+          set("pa-picker-cancel", "Cancel", "Cancelar");
+          set("pa-picker-go", "Launch Topic ▶", "Abrir tema ▶");
+          set("loader-text", "Loading Practice Arcade…", "Cargando el Arcade de Práctica…");
+          const dlgP = document.querySelector("#pa-topic-dialog > p");
+          if (dlgP)
+            dlgP.textContent = es
+              ? "Practica cualquier unidad o lección de Matemáticas de 6.º grado."
+              : "Practice any Grade 6 math unit or lesson.";
+          const spans = document.querySelectorAll(".pa-topic-grid label > span");
+          if (spans[0]) spans[0].textContent = es ? "Unidad" : "Unit";
+          if (spans[1]) spans[1].textContent = es ? "Lección o repaso de unidad" : "Lesson or unit review";
+          const note = document.getElementById("practice-session-note");
+          if (note)
+            note.textContent = es
+              ? "Sin reloj. Las pistas y los reintentos te ayudan a aprender. El progreso se guarda en este navegador."
+              : "No timer. Hints and retries help you learn. Progress stays on this browser.";
+          syncObjective(null);
+        }
+
         async function loadLessonConfig() {
+          localizeChrome();
           const params = new URLSearchParams(window.location.search);
           const unit = params.get("unit");
           const lessonsParam = params.get("lessons");
@@ -1102,9 +1206,9 @@
               unitOpt.value = "unit:" + selectedUnitNum;
               const uObj = units.find((u) => String(u.number) === String(selectedUnitNum));
               unitOpt.textContent =
-                "★ Full Unit " +
-                selectedUnitNum +
-                " Cumulative Review" +
+                (lang === "es"
+                  ? "★ Repaso completo de la Unidad " + selectedUnitNum
+                  : "★ Full Unit " + selectedUnitNum + " Cumulative Review") +
                 (uObj ? " (" + uObj.title + ")" : "");
               lessonSel.appendChild(unitOpt);
 
@@ -1114,8 +1218,9 @@
                   const opt = document.createElement("option");
                   opt.value = "lesson:" + l.id;
                   const code = l.code || l.id.toUpperCase();
+                  const ttl = (lang === "es" && l.titleEs) || l.title || l.id;
                   opt.textContent =
-                    code + " — " + (l.title || l.id) + (l.standard ? " (" + l.standard + ")" : "");
+                    code + " — " + ttl + (l.standard ? " (" + l.standard + ")" : "");
                   if (!unit && String(l.id) === String(ids[0])) {
                     opt.selected = true;
                   }
@@ -1126,18 +1231,16 @@
             async function openPicker() {
               if (!dlg) return;
               const m = await ensureManifest();
-              const units = (m && Array.isArray(m.units) && m.units) || [
-                { number: 1, title: "Math Is... Discovery" },
-                { number: 2, title: "Statistics & Data" },
-                { number: 3, title: "Ratios & Rates" },
-                { number: 4, title: "Percents" },
-                { number: 5, title: "Area, Surface Area & Volume" },
-                { number: 6, title: "Expressions, Factors & Fractions" },
-                { number: 7, title: "Integers & Coordinate Plane" },
-                { number: 8, title: "Equations & Inequalities" },
-                { number: 9, title: "Two-Variable Relationships" },
-                { number: 10, title: "Math Is... Synthesis" },
-              ];
+              // The manifest lists units as bare numbers ([1, 2, …]); titles come
+              // from UNIT_TITLES (the curriculum hub's own unit names). Reading
+              // `u.number` / `u.title` off a number printed "Unit undefined".
+              const unitNums =
+                m && Array.isArray(m.units) && m.units.length
+                  ? m.units.map((u) => (u && typeof u === "object" ? u.number : u))
+                  : Object.keys(UNIT_TITLES).map(Number);
+              const units = unitNums
+                .filter((n) => Number.isFinite(Number(n)))
+                .map((n) => ({ number: Number(n), title: unitTitle(Number(n)) }));
               const lessons = (m && Array.isArray(m.lessons) && m.lessons) || [];
               const activeUnitNum =
                 unit ||
@@ -1149,7 +1252,8 @@
                 units.forEach((u) => {
                   const opt = document.createElement("option");
                   opt.value = String(u.number);
-                  opt.textContent = "Unit " + u.number + ": " + u.title;
+                  opt.textContent =
+                    (lang === "es" ? "Unidad " : "Unit ") + u.number + ": " + u.title;
                   if (String(u.number) === String(activeUnitNum)) opt.selected = true;
                   unitSel.appendChild(opt);
                 });
@@ -1194,7 +1298,7 @@
               const res = await fetch(`/lessons/${encodeURIComponent(id)}/config.json`);
               if (!res.ok) continue;
               const data = await res.json();
-              if (data.title) firstTitles.push(data.title);
+              if (data.title) firstTitles.push((lang === "es" && data.titleEs) || data.title);
               // Use the first lesson's theme as the visual identity for the run.
               if (!gotTheme) {
                 if (data.theme) themeId = data.theme;
@@ -1278,11 +1382,27 @@
 
           isReviewMode = isGroup;
           if (isGroup) {
-            lessonTitle = unit ? "Unit " + unit + " Review" : "Mixed Review";
+            lessonTitle = unit
+              ? lang === "es"
+                ? "Repaso de la Unidad " + unit
+                : "Unit " + unit + " Review"
+              : lang === "es"
+                ? "Repaso mixto"
+                : "Mixed Review";
             activeLesson = unit ? "unit-" + unit : ids.join(",");
           } else {
             lessonTitle = firstTitles[0] || "Lesson";
             activeLesson = ids[0];
+            // Lesson configs carry no Spanish title; the curriculum manifest does.
+            if (lang === "es") {
+              try {
+                const man = await fetch("/data/curriculum-manifest.json").then((x) =>
+                  x.ok ? x.json() : null,
+                );
+                const hit = man && (man.lessons || []).find((l) => l.id === ids[0]);
+                if (hit && hit.titleEs) lessonTitle = hit.titleEs;
+              } catch (_) {}
+            }
           }
           document.title = `${lessonTitle} — Practice Arcade`;
 
@@ -1352,15 +1472,23 @@
               // native phone launch screen reveals the game container.
               window.paGame.scale.getParentBounds();
               window.paGame.scale.refresh();
-              try { window.paGame.scale.updateBounds?.(); } catch (_) {}
+              try {
+                window.paGame.scale.updateBounds?.();
+              } catch (_) {}
             }
           }
           window.paFitStage = fitStage;
           fitStage();
           window.addEventListener("resize", fitStage);
-          window.addEventListener("scroll", () => {
-            try { window.paGame?.scale?.updateBounds?.(); } catch (_) {}
-          }, { passive: true });
+          window.addEventListener(
+            "scroll",
+            () => {
+              try {
+                window.paGame?.scale?.updateBounds?.();
+              } catch (_) {}
+            },
+            { passive: true },
+          );
           const layoutObserver = new ResizeObserver(fitStage);
           layoutObserver.observe(document.querySelector(".ewl-arcade-header-bar"));
           const toolsObserver = new MutationObserver(() => {
@@ -1387,7 +1515,11 @@
           window.paGame.events.once("ready", () => {
             const cv = window.paGame.canvas;
             if (cv) {
-              const sync = () => { try { window.paGame?.scale?.updateBounds?.(); } catch (_) {} };
+              const sync = () => {
+                try {
+                  window.paGame?.scale?.updateBounds?.();
+                } catch (_) {}
+              };
               cv.addEventListener("pointerdown", sync, true);
               cv.addEventListener("pointermove", sync, { passive: true, capture: true });
             }
@@ -1500,9 +1632,11 @@
               items = [];
               cats.forEach((c) => {
                 const id = c.id || c.label;
-                (c.items || []).forEach((x) => {
+                const es = Array.isArray(c.itemsEs) ? c.itemsEs : [];
+                (c.items || []).forEach((x, xi) => {
                   const text = typeof x === "string" ? x : x && x.text;
-                  if (text != null) items.push({ text: String(text), category: id });
+                  const textEs = typeof es[xi] === "string" ? es[xi] : (x && x.textEs) || "";
+                  if (text != null) items.push({ text: String(text), textEs, category: id });
                 });
               });
             }
@@ -1512,10 +1646,15 @@
               prompt: it.instructions || "Sort each tile into the right bin.",
               items: items
                 .filter((x) => x && x.text != null && x.category != null)
-                .map((x) => ({ text: String(x.text), category: x.category })),
+                .map((x) => ({
+                  text: String(x.text),
+                  textEs: x.textEs ? String(x.textEs) : "",
+                  category: x.category,
+                })),
               categories: cats.map((c) => ({
                 id: c.id || c.label,
                 label: c.label || c.id,
+                labelEs: c.labelEs || "",
               })),
               why: "",
             };
@@ -1532,7 +1671,12 @@
               pairs: it.pairs
                 .filter((p) => p && p.term != null && p.match != null)
                 .slice(0, 5)
-                .map((p) => ({ term: String(p.term), match: String(p.match) })),
+                .map((p) => ({
+                  term: String(p.term),
+                  match: String(p.match),
+                  termEs: p.termEs ? String(p.termEs) : "",
+                  matchEs: p.matchEs ? String(p.matchEs) : "",
+                })),
               why: "",
             };
           }
@@ -1547,6 +1691,8 @@
               steps: it.workedExample.map((s) => ({
                 label: s.label || "",
                 work: s.work || "",
+                labelEs: s.labelEs || "",
+                workEs: s.workEs || "",
               })),
               errorStep: it.errorStep,
               why: it.correctWork || "",
@@ -1608,6 +1754,63 @@
             };
           }
           if (it.type === "balance-scale") {
+            // Schema 1 — an equation to solve ({equation, variable, answer}; Unit 8).
+            // The scale is driven by the real expression: the student sets the
+            // variable and each pan shows the value of its own side.
+            if (typeof it.equation === "string" && it.answer != null) {
+              const m = it.equation.match(/^(.*?)(=|≥|≤|>|<)(.*)$/);
+              const v = String(it.variable || "x").trim();
+              const answer = Number(it.answer);
+              if (!m || !/^[a-z]$/i.test(v) || !Number.isFinite(answer)) return null;
+              const lhs = parseExpr(m[1], v);
+              const rhs = parseExpr(m[3], v);
+              if (!lhs || !rhs) return null;
+              // The authored answer must really balance the scale, or the round
+              // could never be solved — skip rather than mis-grade.
+              if (Math.abs(lhs(answer) - rhs(answer)) > 1e-9) return null;
+              const consts = (it.equation.match(/\d+(?:\.\d+)?/g) || []).map(Number);
+              const big = Math.max(10, ...consts);
+              const tick = niceStep(big / 4, true);
+              let max = Math.ceil((big * 2) / tick) * tick;
+              if (answer > max) max = Math.ceil((answer * 1.5) / tick) * tick;
+              const step = precisionStep(answer);
+              return {
+                kind: "balance",
+                prompt: it.label || it.stem || "Set " + v + " so the scale balances.",
+                promptEs: it.labelEs || it.stemEs || "",
+                variable: v,
+                lhsText: m[1].trim(),
+                rhsText: m[3].trim(),
+                relation: m[2],
+                target: answer,
+                min: answer < 0 ? -max : 0,
+                max,
+                step,
+                bigStep: step < 1 ? 1 : Math.max(1, tick / 2),
+                why: it.explanation || "",
+              };
+            }
+            // Schema 2 — a set of checks ({items:[{left, right, balanced}]}): judge
+            // each scale as balanced or not. That is a sort with two boxes.
+            if (Array.isArray(it.items) && it.items.length >= 2) {
+              const rows = it.items.filter((x) => x && x.left && x.right && typeof x.balanced === "boolean");
+              if (rows.length < 2) return null;
+              return {
+                kind: "sort",
+                prompt: it.instructions || "Is each scale balanced?",
+                promptEs: it.instructionsEs || "",
+                items: rows.map((x) => ({
+                  text: x.left + "  ⟷  " + x.right,
+                  category: x.balanced ? "yes" : "no",
+                })),
+                categories: [
+                  { id: "yes", label: "Balanced ⚖️", labelEs: "Equilibrada ⚖️" },
+                  { id: "no", label: "Not balanced", labelEs: "No equilibrada" },
+                ],
+                why: it.explanation || "",
+              };
+            }
+            // Schema 3 — the original arcade shape ({expr, equals, target, min, max}).
             const equals = Number(it.equals);
             const target = Number(it.target);
             const min = Number(it.min),
@@ -1622,6 +1825,95 @@
               min,
               max,
               step: Number(it.step) || 1,
+              why: it.explanation || "",
+            };
+          }
+          // Coordinate grid with several labelled targets → one PLOT round where
+          // each point is placed and checked in turn. Only when every target is
+          // determined by the text (its coordinates are printed, or its label is a
+          // reflection step); "draw any parallelogram" has many right answers and
+          // would be mis-graded, so it is skipped.
+          if (it.type === "coordinate-grid" && Array.isArray(it.targets) && it.targets.length) {
+            const text = String(it.label || "") + " " + String(it.instructions || "");
+            const norm = (q) => String(q).replace(/[−–]/g, "-").replace(/\s+/g, "");
+            const hay = norm(text);
+            const pts = it.targets
+              .map((tg) => ({ x: Number(tg && tg.x), y: Number(tg && tg.y), label: String((tg && tg.label) || "") }))
+              .filter((tg) => Number.isFinite(tg.x) && Number.isFinite(tg.y));
+            if (!pts.length || pts.length > 6) return null;
+            const determined = pts.every(
+              (tg) =>
+                hay.includes(norm("(" + tg.x + "," + tg.y + ")")) ||
+                norm(tg.label).includes(norm("(" + tg.x + "," + tg.y + ")")) ||
+                /axis|original|start/i.test(tg.label),
+            );
+            if (!determined) return null;
+            const xMin = Number(it.xMin),
+              xMax = Number(it.xMax),
+              yMin = Number(it.yMin),
+              yMax = Number(it.yMax);
+            if (![xMin, xMax, yMin, yMax].every(Number.isFinite) || xMin >= xMax || yMin >= yMax)
+              return null;
+            const sx = Number(it.xStep) > 0 ? Number(it.xStep) : 1;
+            const sy = Number(it.yStep) > 0 ? Number(it.yStep) : 1;
+            if (pts.some((tg) => tg.x < xMin || tg.x > xMax || tg.y < yMin || tg.y > yMax)) return null;
+            return {
+              kind: "plot",
+              prompt: it.label || it.instructions || "Plot each point.",
+              promptEs: it.labelEs || it.instructionsEs || "",
+              xMin,
+              xMax,
+              yMin,
+              yMax,
+              sx,
+              sy,
+              step: sx,
+              xLabel: it.xLabel || "",
+              yLabel: it.yLabel || "",
+              showLine: !!it.showLine,
+              points: pts,
+              tx: pts[0].x,
+              ty: pts[0].y,
+              tol: 0,
+              why: it.explanation || "",
+            };
+          }
+          // "matching" ({pairs:[{left, right}]}). One-to-one pairs play as a
+          // match; when several lefts share a right ("Statistical") it is a sort.
+          if (it.type === "matching" && Array.isArray(it.pairs) && it.pairs.length >= 2) {
+            const pairs = it.pairs.filter((q) => q && q.left != null && q.right != null);
+            if (pairs.length < 2) return null;
+            const rights = [...new Set(pairs.map((q) => String(q.right)))];
+            const prompt = it.stem || it.label || "Match each card to its partner.";
+            const promptEs = it.stemEs || it.labelEs || "";
+            if (rights.length === pairs.length)
+              return {
+                kind: "match",
+                prompt,
+                promptEs,
+                pairs: pairs.slice(0, 5).map((q) => ({
+                  term: String(q.left),
+                  match: String(q.right),
+                  termEs: q.leftEs ? String(q.leftEs) : "",
+                  matchEs: q.rightEs ? String(q.rightEs) : "",
+                })),
+                why: it.explanation || "",
+              };
+            if (rights.length < 2 || rights.length > 4) return null;
+            const esOf = {};
+            pairs.forEach((q) => {
+              if (q.rightEs) esOf[String(q.right)] = String(q.rightEs);
+            });
+            return {
+              kind: "sort",
+              prompt,
+              promptEs,
+              items: pairs.map((q) => ({
+                text: String(q.left),
+                textEs: q.leftEs ? String(q.leftEs) : "",
+                category: String(q.right),
+              })),
+              categories: rights.map((rt) => ({ id: rt, label: rt, labelEs: esOf[rt] || "" })),
               why: it.explanation || "",
             };
           }
@@ -1699,11 +1991,18 @@
                 const tagged = s.choices.map((text, idx) => ({ text, idx }));
                 const shuffled = shuffle(tagged);
                 const newIndex = shuffled.findIndex((x) => x.idx === ci);
+                const esChoices =
+                  Array.isArray(s.choicesEs) && s.choicesEs.length === s.choices.length
+                    ? shuffled.map((x) => String(s.choicesEs[x.idx] || x.text))
+                    : null;
                 return {
                   prompt: s.stem,
+                  promptEs: s.stemEs || s.stem_es || "",
                   choices: shuffled.map((x) => x.text),
+                  choicesEs: esChoices,
                   correctIndex: newIndex < 0 ? 0 : newIndex,
                   why: s.explanation || "",
+                  whyEs: s.explanationEs || "",
                 };
               });
             if (steps.length < 2) return null;
@@ -1715,6 +2014,81 @@
             };
           }
           return null;
+        }
+
+        // Compile a one-variable arithmetic expression ("2n + 3", "3(x − 1)",
+        // "x/4", "0.5 × y") into a function of that variable, or null. Numbers,
+        // the variable, + − × · * ÷ /, parentheses and implicit multiplication
+        // ("2n", "3(x+1)") only — nothing is ever eval'd.
+        function parseExpr(src, v) {
+          const text = String(src || "")
+            .replace(/[−–]/g, "-")
+            .replace(/[×·*]/g, "*")
+            .replace(/÷/g, "/")
+            .replace(/\s+/g, "");
+          if (!text || /[^0-9.+\-*/()a-z]/i.test(text)) return null;
+          const toks = text.match(/\d+(?:\.\d+)?|\.\d+|[a-z]|[+\-*/()]/gi) || [];
+          if (toks.join("") !== text) return null;
+          let i = 0;
+          const peek = () => toks[i];
+          const isAtomStart = (t) => t != null && (/^[\d.]/.test(t) || /^[a-z]$/i.test(t) || t === "(");
+          function atom() {
+            const t = toks[i++];
+            if (t == null) throw 0;
+            if (t === "(") {
+              const e = sum();
+              if (toks[i++] !== ")") throw 0;
+              return e;
+            }
+            if (t === "-") {
+              const a = factor();
+              return (x) => -a(x);
+            }
+            if (/^[a-z]$/i.test(t)) {
+              if (t.toLowerCase() !== v.toLowerCase()) throw 0;
+              return (x) => x;
+            }
+            const n = Number(t);
+            if (!Number.isFinite(n)) throw 0;
+            return () => n;
+          }
+          // A factor is an atom followed by any implicitly multiplied atoms.
+          function factor() {
+            let a = atom();
+            while (isAtomStart(peek())) {
+              const l = a,
+                r = atom();
+              a = (x) => l(x) * r(x);
+            }
+            return a;
+          }
+          function product() {
+            let a = factor();
+            while (peek() === "*" || peek() === "/") {
+              const op = toks[i++],
+                l = a,
+                r = factor();
+              a = op === "*" ? (x) => l(x) * r(x) : (x) => l(x) / r(x);
+            }
+            return a;
+          }
+          function sum() {
+            let a = product();
+            while (peek() === "+" || peek() === "-") {
+              const op = toks[i++],
+                l = a,
+                r = product();
+              a = op === "+" ? (x) => l(x) + r(x) : (x) => l(x) - r(x);
+            }
+            return a;
+          }
+          try {
+            const f = sum();
+            if (i !== toks.length) return null;
+            return (x) => Math.round(f(x) * 1e9) / 1e9;
+          } catch (_) {
+            return null;
+          }
         }
 
         // Split an expression answer ("2 × 3 × 3 × 5" or ["2","3","3","5"]) into a
@@ -1823,11 +2197,36 @@
               answer: prod,
             };
           }
-          // (B) one plain number + computational stem → PLACE IT ON THE LINE.
-          if (!computes || salt % 2 !== 0) return round;
+          // (B) one plain number + computational stem → the student produces the
+          // number: PLACE IT ON THE LINE, or TYPE IT (alternating by salt). The
+          // authored wrong choices become known misconceptions: landing on or
+          // typing one of those values answers with that choice's own note.
+          if (!computes) return round;
           const parsed = choices.map(parseNumeric);
           if (parsed.some((p) => !p) || new Set(parsed.map((p) => p.unit)).size !== 1) return round;
           const target = parsed[round.correctIndex].value;
+          const distractors = [];
+          parsed.forEach((p, i) => {
+            if (i === round.correctIndex || p.value === target) return;
+            distractors.push({
+              value: p.value,
+              fb: (round.choiceFeedback && round.choiceFeedback[i]) || "",
+              fbEs: (round.choiceFeedbackEs && round.choiceFeedbackEs[i]) || "",
+              tag: (round.misconceptionTags && round.misconceptionTags[i]) || null,
+            });
+          });
+          carry.distractors = distractors;
+          const unitWordB = parsed[0].unit.split("|")[1];
+          if (salt % 2 !== 0) {
+            return {
+              ...carry,
+              kind: "entry",
+              target,
+              prefix: parsed[0].unit.startsWith("$") ? "$" : "",
+              suffix: unitWordB === "%" ? "%" : unitWordB ? " " + unitWordB : "",
+              decimals: precisionStep(target) < 1,
+            };
+          }
           const values = parsed.map((p) => p.value);
           const lo = Math.min(...values);
           const hi = Math.max(...values);
@@ -1888,8 +2287,8 @@
             document.getElementById("pa-phone-title").textContent = lessonTitle;
             document.getElementById("pa-phone-directions").textContent =
               lang === "es"
-                ? "Trabaja a tu ritmo. Elige, clasifica o une tus respuestas. Usa las pistas cuando necesites ayuda."
-                : "Explore new sectors, recover lost artifacts, and restore each beacon with math. Choose your own route; hints and retries stay available.";
+                ? "Trabaja a tu ritmo. Coloca, arma, escribe, clasifica y une tus respuestas. Las pistas y los reintentos siguen disponibles."
+                : "Work at your own pace. Place, build, type, sort, and match your answers. Hints and retries stay available.";
             document.getElementById("pa-phone-start").textContent =
               lang === "es" ? "Empezar práctica" : "Start practice";
             phoneLaunch.querySelector("label").textContent =
@@ -1990,23 +2389,9 @@
             // "How to play" chips — one per game type, plain words, localized.
             const chips =
               lang === "es"
-                ? [
-                    "✅ Elige",
-                    "🧩 Clasifica",
-                    "🔗 Une",
-                    "🔍 Encuentra el error",
-                    "📏 Coloca",
-                    "🧱 Arma",
-                  ]
-                : [
-                    "✅ Choose",
-                    "🧩 Sort",
-                    "🔗 Match",
-                    "🔍 Find the mistake",
-                    "📏 Place",
-                    "🧱 Build",
-                  ];
-            let cx = W / 2 - ((chips.length - 1) * 152) / 2;
+                ? ["⌨️ Escribe", "📏 Coloca", "⚖️ Equilibra", "📍 Ubica", "🧩 Clasifica", "🔗 Une", "🔍 Error"]
+                : ["⌨️ Type", "📏 Place", "⚖️ Balance", "📍 Plot", "🧩 Sort", "🔗 Match", "🔍 Mistake"];
+            let cx = W / 2 - ((chips.length - 1) * 118) / 2;
             chips.forEach((txt) => {
               this.add
                 .text(cx, 352, txt, {
@@ -2018,7 +2403,7 @@
                   padding: { x: 9, y: 6 },
                 })
                 .setOrigin(0.5);
-              cx += 152;
+              cx += 118;
             });
 
             // ── Level (tier) selector ── Level 1 support / Level 2 enrichment.
@@ -2138,6 +2523,7 @@
               lang = lang === "es" ? "en" : "es";
               try {
                 localStorage.setItem("pa-lang", lang);
+                localStorage.setItem("nt-lang", lang);
               } catch (e) {}
               this.scene.restart();
             });
@@ -2256,13 +2642,17 @@
             // One row, three zones that never overlap: score + power meter on
             // the left, the band objective in the middle, streak and stars on the right.
             this.scoreText = this.add
-              .text(112, 31, "Score: 0", { ...hud, color: "#ffffff" })
+              .text(112, 31, t("score") + ": 0", { ...hud, color: "#ffffff" })
               .setOrigin(0, 0.5);
             this.progressText = this.add
               .text(W / 2, 31, "", { ...hud, fontSize: "20px", color: "#ffffff" })
               .setOrigin(0.5, 0.5);
             this.streakText = this.add
-              .text(W - 168, 31, "Streak ready", { ...hud, fontSize: "16px", color: "#facc15" })
+              .text(W - 168, 31, lang === "es" ? "Racha lista" : "Streak ready", {
+                ...hud,
+                fontSize: "16px",
+                color: "#facc15",
+              })
               .setOrigin(1, 0.5);
             this.livesText = this.add
               .text(W - 24, 31, "☆☆☆", {
@@ -2502,41 +2892,72 @@
           // — deliberately no literal answer / `why` text (scaffold, not giveaway).
           guidedSteps(r) {
             const isL2 = tier === "l2" || r.tier === 2;
+            const es = lang === "es";
+            const L = (en, sp) => (es ? sp : en);
             const s = [];
             if (r.kind === "sort") {
-              const labels = (r.categories || []).map((c) => c.label).join("   vs   ");
-              s.push("Read what each tile says.");
-              s.push("Ask: which group does it fit? Boxes: " + labels + ".");
+              const labels = (r.categories || []).map(catLabel).join("   vs   ");
+              const n = (r.categories || []).length;
+              s.push(L("Read what each tile says.", "Lee lo que dice cada tarjeta."));
+              s.push(L("Ask: which group does it fit? Boxes: ", "Pregunta: ¿en qué grupo va? Cajas: ") + labels + ".");
               s.push(
-                "Tap a tile, then tap its box — or drag it in. (Keys 1–" +
-                  (r.categories || []).length +
-                  " work too.)",
+                L(
+                  "Tap a tile, then tap its box — or drag it in. (Keys 1–" + n + " work too.)",
+                  "Toca una tarjeta y luego su caja, o arrástrala. (También sirven las teclas 1–" + n + ".)",
+                ),
               );
-              s.push("When every tile is placed, press CHECK ✓.");
+              s.push(L("When every tile is placed, press CHECK ✓.", "Cuando todas estén en su caja, pulsa REVISAR ✓."));
             } else if (r.kind === "fixit") {
-              s.push("Work the problem yourself, one step at a time.");
-              s.push("Compare each step to your own work.");
-              s.push("Tap the FIRST step where the numbers stop matching.");
+              s.push(L("Work the problem yourself, one step at a time.", "Resuelve el problema tú mismo, paso a paso."));
+              s.push(L("Compare each step to your own work.", "Compara cada paso con tu trabajo."));
+              s.push(L("Tap the FIRST step where the numbers stop matching.", "Toca el PRIMER paso donde los números ya no coinciden."));
             } else if (r.kind === "build") {
-              s.push("Look closely at the answer you must make.");
-              s.push("Tap the pieces in order to build it; tap a placed piece to take it back.");
-              s.push("Check every piece is used, then submit.");
+              s.push(L("Look closely at the number you must make.", "Mira bien el número que debes formar."));
+              s.push(
+                L(
+                  "Tap the pieces to build it; tap a placed piece to take it back.",
+                  "Toca las piezas para formarlo; toca una pieza puesta para quitarla.",
+                ),
+              );
+              s.push(L("Multiply your pieces to check, then submit.", "Multiplica tus piezas para comprobar y luego revisa."));
             } else if (r.kind === "numline") {
-              s.push("Find the two labels your value sits between.");
-              s.push("Count the tick marks to land exactly on it.");
-              s.push("Drag the marker there, then check.");
+              s.push(L("Work out the value first.", "Primero calcula el valor."));
+              s.push(L("Find the two labels your value sits between.", "Busca las dos marcas con número entre las que está tu valor."));
+              s.push(L("Count the tick marks to land exactly on it, then check.", "Cuenta las marcas pequeñas para llegar justo ahí y revisa."));
             } else if (r.kind === "balance") {
-              s.push("Both sides of the scale must be equal.");
-              s.push("Change your side a little at a time until it is level.");
+              s.push(L("Each pan shows what its side is worth.", "Cada platillo muestra cuánto vale su lado."));
+              s.push(L("The heavier side goes down.", "El lado que pesa más baja."));
+              s.push(
+                L(
+                  "Change the value with − and + until both pans show the same number.",
+                  "Cambia el valor con − y + hasta que los dos platillos muestren el mismo número.",
+                ),
+              );
+            } else if (r.kind === "plot") {
+              s.push(L("Start at the origin (0, 0).", "Empieza en el origen (0, 0)."));
+              s.push(L("Move along x first: right for positive, left for negative.", "Muévete primero en x: a la derecha si es positivo, a la izquierda si es negativo."));
+              s.push(L("Then move along y: up for positive, down for negative.", "Luego muévete en y: arriba si es positivo, abajo si es negativo."));
+              s.push(L("Check the axis labels — a grid line may count by more than 1.", "Revisa los números de los ejes: una línea puede valer más de 1."));
+            } else if (r.kind === "entry") {
+              s.push(L("Read the question. What is it asking you to find?", "Lee la pregunta. ¿Qué te pide encontrar?"));
+              s.push(L("Choose the operation, then work it out on paper.", "Elige la operación y resuélvela en tu cuaderno."));
+              s.push(L("Estimate: is your answer about the right size?", "Estima: ¿tu respuesta tiene un tamaño razonable?"));
+              s.push(L("Type the number and press CHECK.", "Escribe el número y pulsa REVISAR."));
             } else {
-              s.push("Read the question slowly — say it in your own words.");
-              s.push("Rule out the choices you know are wrong first.");
-              s.push("Pick the choice that must be true, then tap it.");
+              s.push(L("Read the question slowly — say it in your own words.", "Lee la pregunta despacio y dila con tus palabras."));
+              s.push(L("Rule out the choices you know are wrong first.", "Primero descarta las opciones que sabes que están mal."));
+              s.push(L("Pick the choice that must be true, then tap it.", "Elige la opción que tiene que ser verdad y tócala."));
             }
             s.push(
               isL2
-                ? "🚀 Stretch: once you solve it, explain WHY it works — could you prove it another way?"
-                : "🧩 Take your time — no timer. Tap 🔊 to hear the prompt, or use the hint if stuck.",
+                ? L(
+                    "🚀 Stretch: once you solve it, explain WHY it works — could you prove it another way?",
+                    "🚀 Reto: cuando lo resuelvas, explica POR QUÉ funciona. ¿Podrías probarlo de otra forma?",
+                  )
+                : L(
+                    "🧩 Take your time — no timer. Tap 🔊 to hear the prompt, or use the hint if stuck.",
+                    "🧩 Tómate tu tiempo, no hay reloj. Toca 🔊 para escuchar la pregunta o usa la pista.",
+                  ),
             );
             return s;
           }
@@ -2847,6 +3268,7 @@
               balance: { icon: "⚖️", key: "balance" },
               plot: { icon: "📍", key: "plotPoint" },
               chain: { icon: "🪜", key: "multiStep" },
+              entry: { icon: "⌨️", key: "typeIt" },
             }[r.kind] || { icon: "✅", key: "chooseAns" };
             const accentHex = "#" + PALETTE.accent.toString(16).padStart(6, "0");
             const badge = this.add
@@ -2919,6 +3341,7 @@
             else if (kind === "balance") this.renderBalance(r);
             else if (kind === "plot") this.renderPlot(r);
             else if (kind === "chain") this.renderChain(r);
+            else if (kind === "entry") this.renderEntry(r);
             else this.renderChoose(r);
             if (r.kind !== "chain") this.renderAccessibleControls(r);
             this.coachNext = () => this.coachSay(this.coachLine(r));
@@ -2930,9 +3353,13 @@
           }
 
           renderAccessibleControls(r) {
+            const es = lang === "es";
             const panel = document.getElementById("practice-text-controls");
             panel.hidden = false;
             if (innerWidth <= 900) panel.open = true;
+            panel.querySelector("summary").textContent = es
+              ? "Controles de texto y táctiles"
+              : "Text and touch controls";
             const area = document.getElementById("practice-native-round");
             area.replaceChildren();
             const prompt = document.createElement("p");
@@ -2959,11 +3386,11 @@
             if (r.kind === "sort") {
               this.sortTiles.forEach((tile) => {
                 const label = document.createElement("label");
-                label.textContent = tile.data.text + " ";
+                label.textContent = tileText(tile.data) + " ";
                 const select = document.createElement("select");
-                select.add(new Option("Choose a group", ""));
+                select.add(new Option(es ? "Elige un grupo" : "Choose a group", ""));
                 r.categories.forEach((category, i) =>
-                  select.add(new Option(category.label, String(i))),
+                  select.add(new Option(catLabel(category), String(i))),
                 );
                 select.onchange = () => {
                   if (
@@ -2980,7 +3407,7 @@
                 label.appendChild(select);
                 controls.appendChild(label);
               });
-              button("Check groups", () => key("ENTER"));
+              button(es ? "Revisar grupos" : "Check groups", () => key("ENTER"));
             } else if (r.kind === "match") {
               this.matchLeft.concat(this.matchRight).forEach((tile) =>
                 button(tile.label.text, (b) => {
@@ -3000,41 +3427,95 @@
                 });
                 b.setAttribute("aria-pressed", "false");
               });
-              button("Check pieces", () => key("ENTER"));
-            } else if (r.kind === "numline" || r.kind === "balance" || r.kind === "plot") {
-              button("← Left / decrease", () => key("LEFT"));
-              button("Right / increase →", () => key("RIGHT"));
-              if (r.kind === "plot") {
-                button("↑ Up", () => key("UP"));
-                button("↓ Down", () => key("DOWN"));
+              button(es ? "Revisar piezas" : "Check pieces", () => key("ENTER"));
+            } else if (r.kind === "entry") {
+              const label = document.createElement("label");
+              label.htmlFor = "practice-entry-input";
+              label.textContent = es ? "Tu respuesta" : "Your answer";
+              const input = document.createElement("input");
+              input.id = "practice-entry-input";
+              input.type = "text";
+              input.inputMode = "decimal";
+              input.autocomplete = "off";
+              input.className = "practice-entry-input";
+              input.oninput = () => this.entrySet?.(input.value);
+              input.onkeydown = (e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  this.entryCheck?.();
+                }
+              };
+              label.appendChild(input);
+              if (r.prefix || r.suffix) {
+                const unit = document.createElement("span");
+                unit.textContent = (r.prefix ? r.prefix + " " : "") + (r.suffix || "").trim();
+                label.appendChild(unit);
               }
-              button("Check marker", () => key("ENTER"));
+              controls.appendChild(label);
+              button(es ? "Revisar respuesta" : "Check answer", () => this.entryCheck?.());
+            } else if (r.kind === "numline" || r.kind === "balance" || r.kind === "plot") {
+              button(es ? "← Izquierda / menos" : "← Left / decrease", () => key("LEFT"));
+              button(es ? "Derecha / más →" : "Right / increase →", () => key("RIGHT"));
+              if (r.kind === "plot") {
+                button(es ? "↑ Arriba" : "↑ Up", () => key("UP"));
+                button(es ? "↓ Abajo" : "↓ Down", () => key("DOWN"));
+              } else {
+                button(es ? "« Salto grande" : "« Big jump", () => key("DOWN"));
+                button(es ? "Salto grande »" : "Big jump »", () => key("UP"));
+              }
+              button(es ? "Revisar" : "Check", () => key("ENTER"));
               const value = document.createElement("p");
               value.id = "practice-marker-value";
+              value.setAttribute("aria-live", "polite");
               area.appendChild(value);
               this.updateAccessibleMarker();
             } else {
               const options =
                 r.kind === "fixit"
-                  ? r.steps.map((step) => (step.label || "") + " " + step.work)
+                  ? r.steps.map(
+                      (step) =>
+                        ((es && step.labelEs) || step.label || "") +
+                        " " +
+                        ((es && step.workEs) || step.work),
+                    )
                   : r.kind === "chain"
-                    ? r.steps[this.chainIdx || 0].choices
-                    : r.choices;
+                    ? choiceTexts(r.steps[this.chainIdx || 0])
+                    : choiceTexts(r);
               (options || []).forEach((choice, i) =>
                 button(i + 1 + ". " + choice, () => key(keyName(i + 1))),
               );
             }
-            document.getElementById("practice-native-feedback").textContent =
-              "Read the prompt, then use these controls or the game board.";
+            document.getElementById("practice-native-feedback").textContent = es
+              ? "Lee la pregunta y usa estos controles o el tablero del juego."
+              : "Read the prompt, then use these controls or the game board.";
           }
           updateAccessibleMarker() {
             const value = document.getElementById("practice-marker-value");
             if (!value) return;
             const r = rounds[this.idx];
-            value.textContent =
-              r.kind === "plot"
-                ? "Marker: (" + this.fmt(this.plotX) + ", " + this.fmt(this.plotY) + ")"
-                : "Current value: " + this.fmt(r.kind === "balance" ? this.balVal : this.nlVal);
+            const es = lang === "es";
+            if (r.kind === "plot")
+              value.textContent =
+                (this.plotWhich ? this.plotWhich() + " · " : "") +
+                (es ? "Marcador: (" : "Marker: (") +
+                this.fmt(this.plotX) +
+                ", " +
+                this.fmt(this.plotY) +
+                ")";
+            else if (r.kind === "balance" && this.balanceSides) {
+              const { L, R } = this.balanceSides();
+              value.textContent =
+                (r.variable || "x") +
+                " = " +
+                this.fmt(this.balVal) +
+                (es ? " · izquierda " : " · left side ") +
+                this.fmt(L) +
+                (es ? ", derecha " : ", right side ") +
+                this.fmt(R);
+            } else
+              value.textContent =
+                (es ? "Valor actual: " : "Current value: ") +
+                this.fmt(r.kind === "balance" ? this.balVal : this.nlVal);
           }
 
           // True once the brief input-settle window after a round render has
@@ -3053,8 +3534,29 @@
           // with the answer still hidden. Authored lesson hints come first.
           helpText(r, tries) {
             const es = lang === "es";
-            const authored = es && r.hintsEs && r.hintsEs.length ? r.hintsEs : r.hints || [];
+            // Authored hint ladders often end on the worked answer ("x = 40 ÷ 5 = 8").
+            // A miss must never show it, so any rung that states the answer is
+            // skipped here (the retry round keeps the answer hidden too).
+            const answerBits = answerTokens(r);
+            const states = (h) =>
+              answerBits.some((a) =>
+                new RegExp("(^|[^\\d.])" + a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?![\\d.])").test(
+                  String(h).replace(/,(?=\d{3})/g, ""),
+                ),
+              );
+            const authored = (es && r.hintsEs && r.hintsEs.length ? r.hintsEs : r.hints || []).filter(
+              (h) => !states(h),
+            );
             const generic = {
+              entry: es
+                ? [
+                    "Vuelve a leer la pregunta. ¿Qué operación necesitas?",
+                    "Escribe cada paso en tu cuaderno y revisa la cuenta antes de escribir el número.",
+                  ]
+                : [
+                    "Read the question again. Which operation do you need?",
+                    "Write each step on paper and check the arithmetic before you type the number.",
+                  ],
               choose: es
                 ? [
                     "Vuelve a leer la pregunta. ¿Qué te pide encontrar?",
@@ -3239,7 +3741,19 @@
               );
               if (doubling || this.streak >= 2) JUICE.confetti(this, 1);
               this.mascotReact(true);
-              this.mascotSay(unaided ? (this.streak >= 3 ? "🔥 On fire!" : "Nice!") : "Got it! 🎉");
+              this.mascotSay(
+                unaided
+                  ? this.streak >= 3
+                    ? es
+                      ? "🔥 ¡Imparable!"
+                      : "🔥 On fire!"
+                    : es
+                      ? "¡Bien!"
+                      : "Nice!"
+                  : es
+                    ? "¡Lo lograste! 🎉"
+                    : "Got it! 🎉",
+              );
               JUICE.award(10 + Math.min(this.streak, 5) * 2, "practice-arcade");
               this.flashEdge(PALETTE.good);
               const head = unaided ? t("correct") : t("yes");
@@ -3378,7 +3892,14 @@
 
           updateHUD() {
             this.scoreText.setText(t("score") + ": " + this.score);
-            this.streakText.setText(this.streak > 0 ? "Streak " + this.streak : "Streak ready");
+            const esH = lang === "es";
+            this.streakText.setText(
+              this.streak > 0
+                ? (esH ? "Racha " : "Streak ") + this.streak
+                : esH
+                  ? "Racha lista"
+                  : "Streak ready",
+            );
             const earned = rateStars(
               this.solvedCount,
               this.bestStreak,
@@ -3474,9 +3995,9 @@
             // Screen-reader: read out the options after the prompt.
             srSay(
               loc(r, "prompt") +
-                ". Options: " +
+                (lang === "es" ? ". Opciones: " : ". Options: ") +
                 texts.map((c, i) => i + 1 + ", " + c).join("; ") +
-                ". Press a number to choose.",
+                (lang === "es" ? ". Pulsa un número para elegir." : ". Press a number to choose."),
             );
           }
           pickChoice(r, i, t) {
@@ -3521,7 +4042,7 @@
               g.fillRoundedRect(bx - binW / 2, binY - binH / 2, binW, binH, 12);
               g.strokeRoundedRect(bx - binW / 2, binY - binH / 2, binW, binH, 12);
               const lbl = this.add
-                .text(bx, binY - binH / 2 + 18, c.label, {
+                .text(bx, binY - binH / 2 + 18, catLabel(c), {
                   fontFamily: "Nunito, Segoe UI, sans-serif",
                   fontSize: "16px",
                   fontStyle: "bold",
@@ -3591,7 +4112,7 @@
             // overflows. Uniform per set (items in one sort are similar length).
             const items = shuffle(r.items);
             const rowY = 92 + Math.max(70, this.promptText.height + 30) + 34 + this.coachShift;
-            const maxLen = Math.max(...items.map((it) => String(it.text).length));
+            const maxLen = Math.max(...items.map((it) => String(tileText(it)).length));
             const tileW = Math.round(Math.min(240, Math.max(66, maxLen * 10 + 24)));
             // Height follows the wrapped text so long expressions don't overflow
             // the tile (short numbers stay compact).
@@ -3617,7 +4138,7 @@
               const row = Math.floor(i / perRow);
               const x = ix + col * spacing;
               const y = rowY + row * rowGap;
-              const t = this.makeTile(x, y, tileW, tileH, it.text, "15px");
+              const t = this.makeTile(x, y, tileW, tileH, tileText(it), "15px");
               t.homeX = x;
               t.homeY = y;
               t.data = it;
@@ -3674,7 +4195,12 @@
               tt.bg.setStrokeStyle(j === i && !tt.assigned ? 4 : 0, 0xfacc15),
             );
             if (typeof srSay === "function")
-              srSay(t.data.text + " selected. Tap a box to place it.");
+              srSay(
+                tileText(t.data) +
+                  (lang === "es"
+                    ? " seleccionada. Toca una caja para colocarla."
+                    : " selected. Tap a box to place it."),
+              );
             if (this.coachNext) this.coachNext();
           }
           // Place the currently highlighted tile into bin index bi. Shared by the
@@ -3875,7 +4401,13 @@
 
             terms.forEach((p, row) => {
               const y = topY + row * gap;
-              const t = this.makeTile(leftX, y, 280, 48, row + 1 + ".  " + p.term);
+              const t = this.makeTile(
+                leftX,
+                y,
+                280,
+                48,
+                row + 1 + ".  " + ((lang === "es" && p.termEs) || p.term),
+              );
               t.pairId = p.i;
               t.side = "L";
               t.expect = p.match; // value-based comparison (duplicate-text safe)
@@ -3888,7 +4420,13 @@
             });
             matches.forEach((p, row) => {
               const y = topY + row * gap;
-              const t = this.makeTile(rightX, y, 280, 48, LETTERS[row] + ".  " + p.match);
+              const t = this.makeTile(
+                rightX,
+                y,
+                280,
+                48,
+                LETTERS[row] + ".  " + ((lang === "es" && p.matchEs) || p.match),
+              );
               t.pairId = p.i;
               t.side = "R";
               t.val = p.match;
@@ -3901,13 +4439,16 @@
                 });
             });
             // Screen-reader roster + instructions for keyboard users.
+            const esM = lang === "es";
             srSay(
-              rounds[this.idx].prompt +
-                ". Left cards: " +
-                terms.map((p, i) => i + 1 + " " + p.term).join("; ") +
-                ". Right cards: " +
-                matches.map((p, i) => LETTERS[i] + " " + p.match).join("; ") +
-                ". Press a number to pick a left card, then a letter to pick its match.",
+              loc(rounds[this.idx], "prompt") +
+                (esM ? ". Tarjetas de la izquierda: " : ". Left cards: ") +
+                terms.map((p, i) => i + 1 + " " + ((esM && p.termEs) || p.term)).join("; ") +
+                (esM ? ". Tarjetas de la derecha: " : ". Right cards: ") +
+                matches.map((p, i) => LETTERS[i] + " " + ((esM && p.matchEs) || p.match)).join("; ") +
+                (esM
+                  ? ". Pulsa un número para elegir una tarjeta de la izquierda y luego una letra para su pareja."
+                  : ". Press a number to pick a left card, then a letter to pick its match."),
             );
           }
           matchTap(t) {
@@ -3946,7 +4487,8 @@
               this.score += 20;
               JUICE.audio.pop();
               this.updateHUD();
-              if (this.matchRemaining <= 0) this.resolve(true, "All pairs matched!");
+              if (this.matchRemaining <= 0)
+                this.resolve(true, lang === "es" ? "¡Todas las parejas unidas!" : "All pairs matched!");
               else if (this.coachNext) this.coachNext();
             } else {
               a.bg.setFillStyle(PALETTE.bad);
@@ -4026,13 +4568,19 @@
                 ct.bg.setStrokeStyle(4, PALETTE.gold, 1);
               }
             };
+            const esF = lang === "es";
             srSay(
-              rounds[this.idx].prompt +
-                ". Steps: " +
+              loc(rounds[this.idx], "prompt") +
+                (esF ? ". Pasos: " : ". Steps: ") +
                 r.steps
-                  .map((s, i) => i + 1 + ", " + ((s.label ? s.label + " " : "") + s.work))
+                  .map((s, i) => {
+                    const sl = (esF && s.labelEs) || s.label;
+                    return i + 1 + ", " + ((sl ? sl + " " : "") + ((esF && s.workEs) || s.work));
+                  })
                   .join("; ") +
-                ". Press the number of the step with the mistake.",
+                (esF
+                  ? ". Pulsa el número del paso con el error."
+                  : ". Press the number of the step with the mistake."),
             );
           }
           pickFix(r, i, t) {
@@ -4169,11 +4717,19 @@
               if (this.locked || !this.settled()) return;
               const ok = Math.abs(this.nlVal - r.target) <= (r.tol || 0);
               dot.setFillStyle(ok ? PALETTE.good : PALETTE.bad);
+              // Landing on an authored wrong choice's value names that mistake.
+              const hit = ok
+                ? null
+                : (r.distractors || []).find((d) => Math.abs(this.nlVal - d.value) <= (r.tol || 0));
+              if (hit) this.lastWrongTag = hit.tag || null;
+              const hitNote = hit ? (lang === "es" && hit.fbEs) || hit.fb : "";
               // A miss says which WAY to move — never where the answer is.
               this.resolve(
                 ok,
                 ok
                   ? r.why
+                  : hitNote
+                    ? hitNote
                   : this.nlVal > r.target
                     ? lang === "es"
                       ? "Tu punto está demasiado a la derecha: el valor es menor."
@@ -4211,7 +4767,7 @@
           renderBuild(r) {
             this.buildSel = [];
             const tray = this.add
-              .text(W / 2, 300, "( tap the pieces )", {
+              .text(W / 2, 300, lang === "es" ? "( toca las piezas )" : "( tap the pieces )", {
                 fontFamily: "Nunito, Segoe UI, sans-serif",
                 fontSize: "24px",
                 fontStyle: "bold",
@@ -4227,7 +4783,9 @@
               tray.setText(
                 this.buildSel.length
                   ? this.buildSel.map((s) => s.text).join("  ×  ")
-                  : "( tap the pieces )",
+                  : lang === "es"
+                    ? "( toca las piezas )"
+                    : "( tap the pieces )",
               );
             };
             const toks = r.tokens;
@@ -4267,16 +4825,38 @@
                 .sort();
               const b = r.answer.slice().sort();
               const ok = a.length === b.length && a.every((v, i) => v === b[i]);
+              // Numeric pieces: say what the student's pieces actually multiply
+              // to, and name a non-prime piece — feedback from their own work.
+              const es = lang === "es";
+              let miss = es
+                ? "Esas piezas todavía no forman la respuesta."
+                : "Those pieces do not make the answer yet.";
+              const allNum = (xs) => xs.length && xs.every((x) => /^\d+$/.test(x));
+              if (!ok && allNum(a) && allNum(b)) {
+                const prod = (xs) => xs.reduce((m, x) => m * Number(x), 1);
+                const pa = prod(a),
+                  pb = prod(b);
+                const isPrime = (n) => {
+                  if (n < 2) return false;
+                  for (let d = 2; d * d <= n; d++) if (n % d === 0) return false;
+                  return true;
+                };
+                const needPrimes = b.every((x) => isPrime(Number(x)));
+                const comp = a.find((x) => !isPrime(Number(x)));
+                if (pa === pb && needPrimes && comp)
+                  miss = es
+                    ? "Tus piezas dan el número correcto, pero " + comp + " no es primo. Descomponlo."
+                    : "Your pieces make the right number, but " + comp + " is not prime. Break it down.";
+                else
+                  miss = es
+                    ? "Tus piezas multiplicadas dan " + pa + ". " + (pa > pb ? "Es demasiado grande." : "Es demasiado pequeño.")
+                    : "Your pieces multiply to " + pa + ". " + (pa > pb ? "That is too big." : "That is too small.");
+              }
               this.resolve(
                 ok,
                 ok
-                  ? r.why ||
-                      (lang === "es" ? "La respuesta es " : "The answer is ") +
-                        r.answer.join(" × ") +
-                        "."
-                  : lang === "es"
-                    ? "Esas piezas todavía no forman la respuesta."
-                    : "Those pieces do not make the answer yet.",
+                  ? r.why || (es ? "La respuesta es " : "The answer is ") + r.answer.join(" × ") + "."
+                  : miss,
               );
               if (!ok)
                 this.time.delayedCall(560, () => {
@@ -4304,15 +4884,156 @@
             this.layer.add(cb.t);
           }
 
-          // ── Renderer: BALANCE (adjust x until the scale is level) ─────────────
-          renderBalance(r) {
-            this.balVal = r.min;
-            const cx = W / 2,
-              cy = 360;
-            const eq = this.add
-              .text(cx, 250, r.expr + " = " + this.fmt(r.equals), {
+          // ── Renderer: ENTRY (work it out, then type the number) ─────────────
+          // No choices to scan: the student computes and enters the value with
+          // the on-screen keypad or the keyboard. A typed value that matches one
+          // of the authored wrong choices is answered with that choice's own
+          // misconception note, so feedback follows the student's actual work.
+          renderEntry(r) {
+            const es = lang === "es";
+            this.entryStr = "";
+            const top = 92 + Math.max(70, this.promptText.height + 30) + 40 + this.coachShift;
+            const box = this.add.graphics();
+            this.layer.add(box);
+            const disp = this.add
+              .text(W / 2, top + 24, "", {
                 fontFamily: "Nunito, Segoe UI, sans-serif",
-                fontSize: "26px",
+                fontSize: "32px",
+                fontStyle: "bold",
+                color: "#ffffff",
+              })
+              .setOrigin(0.5);
+            this.layer.add(disp);
+            const paint = () => {
+              const body = this.entryStr || "?";
+              disp.setText((r.prefix || "") + body + (r.suffix || ""));
+              disp.setColor(this.entryStr ? "#ffffff" : "#94a3b8");
+              const bw = Math.max(220, disp.width + 60);
+              box.clear();
+              box.fillStyle(0x0b1020, 0.7);
+              box.lineStyle(3, PALETTE.gold, 0.9);
+              box.fillRoundedRect(W / 2 - bw / 2, top, bw, 50, 12);
+              box.strokeRoundedRect(W / 2 - bw / 2, top, bw, 50, 12);
+              const input = document.getElementById("practice-entry-input");
+              if (input && input.value !== this.entryStr) input.value = this.entryStr;
+            };
+            const type = (k) => {
+              if (this.locked || !this.settled()) return;
+              let v = this.entryStr;
+              if (k === "⌫") v = v.slice(0, -1);
+              else if (k === "−") v = v.startsWith("-") ? v.slice(1) : "-" + v;
+              else if (k === ".") {
+                if (!v.includes(".")) v = (v === "" || v === "-" ? v + "0" : v) + ".";
+              } else if (/^\d$/.test(k) && v.replace(/[^\d]/g, "").length < 9) v += k;
+              this.entryStr = v;
+              paint();
+            };
+            this.entryType = type;
+            this.entrySet = (raw) => {
+              this.entryStr = String(raw || "")
+                .replace(/[−–]/g, "-")
+                .replace(/[^0-9.\-/,]/g, "")
+                .slice(0, 12);
+              paint();
+            };
+            paint();
+            const keys = [
+              ["7", "8", "9", "⌫"],
+              ["4", "5", "6", "−"],
+              ["1", "2", "3", "."],
+            ];
+            const kw = 66,
+              kh = 48,
+              gap = 10;
+            const x0 = W / 2 - (kw * 4 + gap * 3) / 2 + kw / 2;
+            const ky = top + 86;
+            keys.forEach((row, ri) =>
+              row.forEach((k, ci) => {
+                const tile = this.makeTile(x0 + ci * (kw + gap), ky + ri * (kh + gap), kw, kh, k, "22px");
+                this.layer.add(tile.parts);
+                tile.bg.on("pointerdown", () => type(k));
+              }),
+            );
+            const zero = this.makeTile(x0 + (kw + gap) / 2, ky + 3 * (kh + gap), kw * 2 + gap, kh, "0", "22px");
+            this.layer.add(zero.parts);
+            zero.bg.on("pointerdown", () => type("0"));
+            const check = () => {
+              if (this.locked || !this.settled()) return;
+              const raw = this.entryStr.replace(/,/g, "");
+              if (!raw || raw === "-" || raw === ".") {
+                const msg = es ? "Primero escribe tu respuesta." : "Type your answer first.";
+                this.showFeedback(msg, "#fde68a");
+                srSay(msg);
+                return;
+              }
+              const fr = raw.match(/^(-?\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/);
+              const val = fr ? Number(fr[1]) / Number(fr[2]) : Number(raw);
+              const same = (a, b) => Math.abs(a - b) < 1e-6;
+              const ok = Number.isFinite(val) && same(val, r.target);
+              let note = "";
+              if (!ok) {
+                const hit = (r.distractors || []).find((d) => Number.isFinite(val) && same(val, d.value));
+                if (hit) {
+                  this.lastWrongTag = hit.tag || null;
+                  note = (es && hit.fbEs) || hit.fb || "";
+                }
+                if (!note)
+                  note = es
+                    ? "Ese número todavía no es. Revisa tu trabajo paso a paso."
+                    : "That number is not it yet. Check your work one step at a time.";
+              }
+              this.resolve(ok, ok ? "" : note);
+              if (!ok)
+                this.time.delayedCall(700, () => {
+                  if (this.locked) return;
+                  this.entryStr = "";
+                  paint();
+                });
+            };
+            this.entryCheck = check;
+            const cb = makeButton(this, x0 + 2.5 * (kw + gap), ky + 3 * (kh + gap), kw * 2 + gap, kh, t("check"), check);
+            this.layer.add(cb.bg);
+            this.layer.add(cb.t);
+            this.input.keyboard.on("keydown", (e) => {
+              if (e.target && e.target.closest && e.target.closest("input,select,textarea,button,summary")) return;
+              const k = e.key;
+              if (/^\d$/.test(k)) type(k);
+              else if (k === "." || k === ",") type(".");
+              else if (k === "-" || k === "Subtract") type("−");
+              else if (k === "Backspace") type("⌫");
+              else if (k === "Enter") check();
+            });
+            srSay(
+              loc(r, "prompt") +
+                ". " +
+                (es
+                  ? "Escribe el número con las teclas o el teclado de la pantalla, y pulsa Enter."
+                  : "Type the number with your keys or the on-screen keypad, then press Enter."),
+            );
+          }
+
+          // ── Renderer: BALANCE (set the variable until both pans weigh the same) ─
+          // Each pan shows the value of its own side for the current setting, so
+          // the tilt is the mathematics: the heavier side goes down.
+          renderBalance(r) {
+            const es = lang === "es";
+            const v = r.variable || "x";
+            const lhsF = r.lhsText
+              ? parseExpr(r.lhsText, v)
+              : parseExpr(r.expr || "x", "x") || ((x) => x - r.target + r.equals);
+            const rhsF = r.rhsText ? parseExpr(r.rhsText, v) : () => r.equals;
+            const lhsText = r.lhsText || r.expr || "x";
+            const rhsText = r.rhsText || this.fmt(r.equals);
+            const rel = r.relation && r.relation !== "=" ? r.relation : "=";
+            const big = r.bigStep || r.step * 10;
+            // Never start on the answer.
+            this.balVal = Math.abs(r.min - r.target) < 1e-9 ? r.min + r.step : r.min;
+            const cx = W / 2,
+              cy = 340;
+            const eq = this.add
+              .text(cx, 236, lhsText + " " + rel + " " + rhsText, {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "28px",
                 fontStyle: "bold",
                 color: "#fde047",
               })
@@ -4320,8 +5041,21 @@
             this.layer.add(eq);
             const beam = this.add.graphics();
             this.layer.add(beam);
+            const panStyle = {
+              fontFamily: "Nunito, Segoe UI, sans-serif",
+              fontSize: "17px",
+              fontStyle: "bold",
+              color: "#ffffff",
+              align: "center",
+              backgroundColor: "rgba(11,16,32,0.72)",
+              padding: { x: 8, y: 4 },
+            };
+            const leftTxt = this.add.text(0, 0, "", panStyle).setOrigin(0.5, 0);
+            const rightTxt = this.add.text(0, 0, "", panStyle).setOrigin(0.5, 0);
+            this.layer.add(leftTxt);
+            this.layer.add(rightTxt);
             const valTxt = this.add
-              .text(cx, cy + 120, "x = " + this.fmt(this.balVal), {
+              .text(cx, cy + 128, "", {
                 fontFamily: "Nunito, Segoe UI, sans-serif",
                 fontSize: "30px",
                 fontStyle: "bold",
@@ -4329,86 +5063,146 @@
               })
               .setOrigin(0.5);
             this.layer.add(valTxt);
-            const drawBeam = () => {
+            const sides = () => {
+              const L = lhsF(this.balVal),
+                R = rhsF(this.balVal);
+              return { L, R, diff: Math.round((L - R) * 1e9) / 1e9 };
+            };
+            this.balanceSides = sides;
+            const draw = () => {
+              const { L, R, diff } = sides();
               beam.clear();
-              const diff = this.balVal - r.target;
-              const tilt = Math.max(-0.32, Math.min(0.32, diff * 0.14));
+              const scale = Math.max(1, Math.abs(R), Math.abs(L));
+              const tilt = Math.max(-0.3, Math.min(0.3, (diff / scale) * 0.9));
               const len = 210;
               const dx = Math.cos(tilt) * len,
                 dy = Math.sin(tilt) * len;
-              // stand + fulcrum
+              const lx = cx - dx,
+                ly = cy + dy,
+                rx = cx + dx,
+                ry = cy - dy;
               beam.fillStyle(0xffffff, 0.9);
               beam.fillTriangle(cx - 18, cy + 74, cx + 18, cy + 74, cx, cy);
-              // beam
               beam.lineStyle(12, diff === 0 ? PALETTE.good : PALETTE.gold, 1);
-              beam.lineBetween(cx - dx, cy - dy, cx + dx, cy + dy);
-              // pans
+              beam.lineBetween(lx, ly, rx, ry);
               beam.fillStyle(PALETTE.panelLine, 1);
-              beam.fillCircle(cx - dx, cy - dy + 22, 16);
-              beam.fillCircle(cx + dx, cy + dy + 22, 16);
+              beam.fillCircle(lx, ly + 20, 16);
+              beam.fillCircle(rx, ry + 20, 16);
+              leftTxt.setText(lhsText + "\n= " + this.fmt(L)).setPosition(lx, ly + 40);
+              rightTxt.setText(rhsText + "\n= " + this.fmt(R)).setPosition(rx, ry + 40);
+              valTxt.setText(v + " = " + this.fmt(this.balVal));
             };
-            drawBeam();
-            const nudge = (d) => {
-              this.balVal = Math.min(r.max, Math.max(r.min, this.balVal + d * r.step));
-              valTxt.setText("x = " + this.fmt(this.balVal));
-              drawBeam();
-              srSay("x equals " + this.fmt(this.balVal));
+            draw();
+            const nudge = (d, jump) => {
+              const by = jump ? big : r.step;
+              const nv = Math.round((this.balVal + d * by) / r.step) * r.step;
+              this.balVal = Math.round(Math.min(r.max, Math.max(r.min, nv)) * 1e9) / 1e9;
+              draw();
+              const { L, R } = sides();
+              srSay(
+                v +
+                  (es ? " es " : " equals ") +
+                  this.fmt(this.balVal) +
+                  (es ? ". Izquierda " : ". Left side ") +
+                  this.fmt(L) +
+                  (es ? ", derecha " : ", right side ") +
+                  this.fmt(R) +
+                  ".",
+              );
               this.updateAccessibleMarker();
             };
-            const minus = makeButton(this, cx - 150, cy + 120, 62, 56, "−", () => nudge(-1));
-            const plus = makeButton(this, cx + 150, cy + 120, 62, 56, "+", () => nudge(1));
-            this.layer.add(minus.bg);
-            this.layer.add(minus.t);
-            this.layer.add(plus.bg);
-            this.layer.add(plus.t);
+            this.balNudge = nudge;
+            const minus = makeButton(this, cx - 112, cy + 128, 62, 56, "−", () => nudge(-1));
+            const plus = makeButton(this, cx + 112, cy + 128, 62, 56, "+", () => nudge(1));
+            [minus, plus].forEach((btn) => {
+              this.layer.add(btn.bg);
+              this.layer.add(btn.t);
+            });
             this.input.keyboard.on("keydown-LEFT", () => nudge(-1));
             this.input.keyboard.on("keydown-RIGHT", () => nudge(1));
+            this.input.keyboard.on("keydown-DOWN", () => nudge(-1, true));
+            this.input.keyboard.on("keydown-UP", () => nudge(1, true));
             const check = () => {
               if (this.locked || !this.settled()) return;
-              const ok = Math.abs(this.balVal - r.target) < 1e-9;
-              // A miss says which way the scale tips — not the balancing value.
+              const { L, R, diff } = sides();
+              const ok = Math.abs(diff) < 1e-9;
+              const heavy =
+                diff > 0
+                  ? es
+                    ? "El lado izquierdo pesa más"
+                    : "The left side is heavier"
+                  : es
+                    ? "El lado derecho pesa más"
+                    : "The right side is heavier";
               this.resolve(
                 ok,
                 ok
-                  ? r.why || "x = " + this.fmt(r.target) + "."
-                  : this.balVal > r.target
-                    ? lang === "es"
-                      ? "La balanza no está nivelada: x es demasiado grande."
-                      : "The scale is not level — x is too big."
-                    : lang === "es"
-                      ? "La balanza no está nivelada: x es demasiado pequeño."
-                      : "The scale is not level — x is too small.",
+                  ? r.why || v + " = " + this.fmt(r.target) + "."
+                  : (es ? "Izquierda = " : "Left side = ") +
+                      this.fmt(L) +
+                      (es ? ", derecha = " : ", right side = ") +
+                      this.fmt(R) +
+                      ". " +
+                      heavy +
+                      (es
+                        ? ". Cambia " + v + " para igualarlos."
+                        : ". Change " + v + " to make them equal."),
               );
             };
             this.input.keyboard.on("keydown-ENTER", check);
-            const cb = makeButton(this, cx, cy + 190, 170, 46, t("check"), check);
+            const cb = makeButton(this, cx, cy + 196, 170, 46, t("check"), check);
             this.layer.add(cb.bg);
             this.layer.add(cb.t);
+            const cue = this.add
+              .text(
+                cx,
+                272,
+                es
+                  ? "Usa − y + (o ← →; ↑ ↓ saltan más) hasta que la balanza quede nivelada."
+                  : "Use − and + (or ← →; ↑ ↓ jump further) until the scale is level.",
+                { fontFamily: "Nunito, Segoe UI, sans-serif", fontSize: "14px", color: "#e0e7ff" },
+              )
+              .setOrigin(0.5);
+            this.layer.add(cue);
           }
 
           // ── Renderer: PLOT (drag / arrow a marker to an (x, y) target) ────────
           // The 2D sibling of renderNumberLine: same reliable scene-pointer drag
-          // (via this.nlOnMove) plus arrow-key nudging, snapping to the grid so the
-          // target is always exactly reachable. Built only for plot-point config
-          // items — never auto-synthesized.
+          // (via this.nlOnMove) plus arrow-key nudging, snapping to each axis's
+          // own grid step so every target is exactly reachable. A round may carry
+          // several labelled points (coordinate-grid items): each is placed and
+          // checked in turn, stays on the board, and — when the item draws a
+          // shape — is joined to the one before it.
           renderPlot(r) {
-            const size = 340;
+            const es = lang === "es";
+            const sx = r.sx || r.step || 1,
+              sy = r.sy || r.step || 1;
+            const pts = Array.isArray(r.points) && r.points.length ? r.points : [{ x: r.tx, y: r.ty, label: "" }];
+            this.plotIdx = 0;
+            // The grid starts below the prompt panel (and coach line), and stays
+            // above the feedback strip, so a long prompt never covers it.
+            const top = Math.max(
+              208,
+              92 + Math.max(70, this.promptText.height + 30) + 44 + this.coachShift,
+            );
+            const size = Math.max(240, Math.min(340, FEED_TOP - 52 - top));
             const bx0 = W / 2 - size / 2,
               bx1 = W / 2 + size / 2,
-              by0 = 208,
-              by1 = 208 + size;
+              by0 = top,
+              by1 = top + size;
             const spanX = r.xMax - r.xMin,
               spanY = r.yMax - r.yMin;
             const xToPx = (vx) => bx0 + (bx1 - bx0) * ((vx - r.xMin) / spanX);
             const yToPx = (vy) => by1 - (by1 - by0) * ((vy - r.yMin) / spanY);
             const pxToXv = (px) => r.xMin + spanX * ((px - bx0) / (bx1 - bx0));
             const pxToYv = (py) => r.yMin + spanY * ((by1 - py) / (by1 - by0));
-            const snap = (v, lo, hi) => Math.min(hi, Math.max(lo, Math.round(v / r.step) * r.step));
+            const snapTo = (v, st, lo, hi) =>
+              Math.round(Math.min(hi, Math.max(lo, Math.round(v / st) * st)) * 1e9) / 1e9;
             const lbl = (v) => this.fmt(Math.round(v * 1000) / 1000);
             // Grid + axes (gridline stride capped so a wide range stays legible).
             const g = this.add.graphics();
-            const strideX = Math.max(1, Math.ceil(spanX / r.step / 20)) * r.step;
-            const strideY = Math.max(1, Math.ceil(spanY / r.step / 20)) * r.step;
+            const strideX = Math.max(1, Math.ceil(spanX / sx / 20)) * sx;
+            const strideY = Math.max(1, Math.ceil(spanY / sy / 20)) * sy;
             g.lineStyle(1, PALETTE.panelLine, 0.28);
             for (let vx = Math.ceil(r.xMin / strideX) * strideX; vx <= r.xMax + 1e-9; vx += strideX)
               g.lineBetween(xToPx(vx), by0, xToPx(vx), by1);
@@ -4425,41 +5219,55 @@
               fontSize: "12px",
               color: "#c7d2fe",
             };
-            for (
-              let vx = Math.ceil(r.xMin / strideX) * strideX;
-              vx <= r.xMax + 1e-9;
-              vx += strideX
-            ) {
+            for (let vx = Math.ceil(r.xMin / strideX) * strideX; vx <= r.xMax + 1e-9; vx += strideX) {
               if (Math.abs(vx) < 1e-9) continue;
-              this.layer.add(
-                this.add.text(xToPx(vx), axY + 10, lbl(vx), lblStyle).setOrigin(0.5, 0),
-              );
+              this.layer.add(this.add.text(xToPx(vx), axY + 10, lbl(vx), lblStyle).setOrigin(0.5, 0));
             }
-            for (
-              let vy = Math.ceil(r.yMin / strideY) * strideY;
-              vy <= r.yMax + 1e-9;
-              vy += strideY
-            ) {
+            for (let vy = Math.ceil(r.yMin / strideY) * strideY; vy <= r.yMax + 1e-9; vy += strideY) {
               if (Math.abs(vy) < 1e-9) continue;
-              this.layer.add(
-                this.add.text(axX - 8, yToPx(vy), lbl(vy), lblStyle).setOrigin(1, 0.5),
-              );
+              this.layer.add(this.add.text(axX - 8, yToPx(vy), lbl(vy), lblStyle).setOrigin(1, 0.5));
             }
+            const axisStyle = { ...lblStyle, fontSize: "13px", fontStyle: "bold", color: "#e0e7ff" };
+            if (r.xLabel && r.xLabel !== "x")
+              this.layer.add(this.add.text(bx1, by1 + 8, r.xLabel + " →", axisStyle).setOrigin(1, 0));
+            if (r.yLabel && r.yLabel !== "y")
+              this.layer.add(this.add.text(bx0 - 10, by0 - 6, "↑ " + r.yLabel, axisStyle).setOrigin(1, 1));
+            // Points already placed stay on the board (and join up for shapes).
+            const placed = this.add.graphics();
+            this.layer.add(placed);
+            const placedPts = [];
+            const drawPlaced = () => {
+              placed.clear();
+              if (r.showLine && placedPts.length > 1) {
+                placed.lineStyle(3, PALETTE.good, 0.9);
+                for (let k = 1; k < placedPts.length; k++)
+                  placed.lineBetween(
+                    xToPx(placedPts[k - 1].x),
+                    yToPx(placedPts[k - 1].y),
+                    xToPx(placedPts[k].x),
+                    yToPx(placedPts[k].y),
+                  );
+                if (placedPts.length === pts.length && pts.length > 2)
+                  placed.lineBetween(
+                    xToPx(placedPts[placedPts.length - 1].x),
+                    yToPx(placedPts[placedPts.length - 1].y),
+                    xToPx(placedPts[0].x),
+                    yToPx(placedPts[0].y),
+                  );
+              }
+              placed.fillStyle(PALETTE.good, 1);
+              placedPts.forEach((q) => placed.fillCircle(xToPx(q.x), yToPx(q.y), 9));
+            };
             // Marker starts at the origin when it's on the grid, else grid center.
-            this.plotX = snap(
-              r.xMin <= 0 && r.xMax >= 0 ? 0 : (r.xMin + r.xMax) / 2,
-              r.xMin,
-              r.xMax,
-            );
-            this.plotY = snap(
-              r.yMin <= 0 && r.yMax >= 0 ? 0 : (r.yMin + r.yMax) / 2,
-              r.yMin,
-              r.yMax,
-            );
+            const home = () => {
+              this.plotX = snapTo(r.xMin <= 0 && r.xMax >= 0 ? 0 : (r.xMin + r.xMax) / 2, sx, r.xMin, r.xMax);
+              this.plotY = snapTo(r.yMin <= 0 && r.yMax >= 0 ? 0 : (r.yMin + r.yMax) / 2, sy, r.yMin, r.yMax);
+            };
+            home();
             const marker = this.add.container(xToPx(this.plotX), yToPx(this.plotY));
             const dot = this.add.circle(0, 0, 13, PALETTE.gold).setStrokeStyle(3, 0xffffff);
             const bubble = this.add
-              .text(0, -32, "(" + this.fmt(this.plotX) + ", " + this.fmt(this.plotY) + ")", {
+              .text(0, -32, "", {
                 fontFamily: "Nunito, Segoe UI, sans-serif",
                 fontSize: "16px",
                 fontStyle: "bold",
@@ -4468,9 +5276,7 @@
                 padding: { x: 7, y: 3 },
               })
               .setOrigin(0.5);
-            const hit = this.add
-              .rectangle(0, 0, 54, 54, 0xffffff, 0.001)
-              .setInteractive({ useHandCursor: true });
+            const hit = this.add.rectangle(0, 0, 54, 54, 0xffffff, 0.001).setInteractive({ useHandCursor: true });
             marker.add([hit, dot, bubble]);
             this.layer.add(marker);
             const refresh = () => {
@@ -4478,22 +5284,52 @@
               marker.y = yToPx(this.plotY);
               bubble.setText("(" + this.fmt(this.plotX) + ", " + this.fmt(this.plotY) + ")");
             };
+            refresh();
+            // Which point is being placed now (multi-point rounds only).
+            const which = this.add
+              .text(W / 2, by0 - 22, "", {
+                fontFamily: "Nunito, Segoe UI, sans-serif",
+                fontSize: "17px",
+                fontStyle: "bold",
+                color: "#0b1020",
+                backgroundColor: "#a7f3d0",
+                padding: { x: 10, y: 3 },
+              })
+              .setOrigin(0.5)
+              .setVisible(pts.length > 1);
+            this.layer.add(which);
+            const showWhich = () => {
+              const cur = pts[this.plotIdx];
+              if (pts.length < 2 || !cur) return;
+              which.setText(
+                (es ? "Punto " : "Point ") +
+                  (this.plotIdx + 1) +
+                  (es ? " de " : " of ") +
+                  pts.length +
+                  (cur.label ? " · " + (es ? "Ubica: " : "Plot: ") + cur.label : ""),
+              );
+            };
+            showWhich();
+            this.plotWhich = () => {
+              const cur = pts[this.plotIdx];
+              return pts.length > 1 && cur ? (es ? "Ubica: " : "Plot: ") + (cur.label || "") : "";
+            };
             // Reliable drag: hold the dot, a scene-level pointermove tracks it (same
             // fix as the number line — Phaser's nested-container drag is flaky).
             hit.on("pointerdown", () => {
               this.nlOnMove = (p) => {
                 const cxp = Math.max(bx0, Math.min(bx1, p.worldX));
                 const cyp = Math.max(by0, Math.min(by1, p.worldY));
-                this.plotX = snap(pxToXv(cxp), r.xMin, r.xMax);
-                this.plotY = snap(pxToYv(cyp), r.yMin, r.yMax);
+                this.plotX = snapTo(pxToXv(cxp), sx, r.xMin, r.xMax);
+                this.plotY = snapTo(pxToYv(cyp), sy, r.yMin, r.yMax);
                 refresh();
               };
             });
             const nudge = (dx, dy) => {
-              this.plotX = Math.min(r.xMax, Math.max(r.xMin, this.plotX + dx * r.step));
-              this.plotY = Math.min(r.yMax, Math.max(r.yMin, this.plotY + dy * r.step));
+              this.plotX = snapTo(this.plotX + dx * sx, sx, r.xMin, r.xMax);
+              this.plotY = snapTo(this.plotY + dy * sy, sy, r.yMin, r.yMax);
               refresh();
-              srSay("Point at " + this.fmt(this.plotX) + ", " + this.fmt(this.plotY));
+              srSay((es ? "Punto en " : "Point at ") + this.fmt(this.plotX) + ", " + this.fmt(this.plotY));
               this.updateAccessibleMarker();
             };
             this.input.keyboard.on("keydown-LEFT", () => nudge(-1, 0));
@@ -4502,39 +5338,88 @@
             this.input.keyboard.on("keydown-DOWN", () => nudge(0, -1));
             const check = () => {
               if (this.locked || !this.settled()) return;
-              const ok =
-                Math.abs(this.plotX - r.tx) <= (r.tol || 0) &&
-                Math.abs(this.plotY - r.ty) <= (r.tol || 0);
+              const cur = pts[this.plotIdx];
+              const tol = r.tol || 0;
+              const xOff = Math.abs(this.plotX - cur.x) > tol + 1e-9;
+              const yOff = Math.abs(this.plotY - cur.y) > tol + 1e-9;
+              const ok = !xOff && !yOff;
               dot.setFillStyle(ok ? PALETTE.good : PALETTE.bad);
-              // A miss names the coordinate to fix, not the point.
-              const xOff = Math.abs(this.plotX - r.tx) > (r.tol || 0);
-              const yOff = Math.abs(this.plotY - r.ty) > (r.tol || 0);
-              const es = lang === "es";
+              if (ok && this.plotIdx < pts.length - 1) {
+                // One point down — keep it on the board and move to the next.
+                placedPts.push({ x: cur.x, y: cur.y });
+                drawPlaced();
+                const tag = this.add
+                  .text(xToPx(cur.x) + 12, yToPx(cur.y) - 4, cur.label.length <= 3 ? cur.label : "", {
+                    fontFamily: "Nunito, Segoe UI, sans-serif",
+                    fontSize: "14px",
+                    fontStyle: "bold",
+                    color: "#a7f3d0",
+                  })
+                  .setOrigin(0, 1);
+                this.layer.add(tag);
+                this.plotIdx++;
+                JUICE.audio.pop();
+                this.showFeedback((es ? "¡Bien! Ahora el siguiente punto." : "Yes! Now the next point."), "#86efac");
+                srSay((es ? "Correcto. " : "Correct. ") + this.plotWhich());
+                this.time.delayedCall(260, () => {
+                  if (this.locked) return;
+                  dot.setFillStyle(PALETTE.gold);
+                  home();
+                  refresh();
+                  showWhich();
+                  this.updateAccessibleMarker();
+                  this.coachNext?.();
+                });
+                return;
+              }
+              if (ok) {
+                placedPts.push({ x: cur.x, y: cur.y });
+                drawPlaced();
+              }
+              // A miss names the coordinate to fix, not the point. A swapped pair
+              // ((y, x) instead of (x, y)) is the classic mix-up — name it.
+              const swapped =
+                xOff &&
+                yOff &&
+                Math.abs(this.plotX - cur.y) <= tol + 1e-9 &&
+                Math.abs(this.plotY - cur.x) <= tol + 1e-9;
+              const signFlip =
+                !swapped &&
+                (xOff || yOff) &&
+                Math.abs(Math.abs(this.plotX) - Math.abs(cur.x)) <= tol + 1e-9 &&
+                Math.abs(Math.abs(this.plotY) - Math.abs(cur.y)) <= tol + 1e-9;
               this.resolve(
                 ok,
                 ok
-                  ? r.why || "(" + this.fmt(r.tx) + ", " + this.fmt(r.ty) + ")"
-                  : xOff && yOff
+                  ? r.why || "(" + this.fmt(cur.x) + ", " + this.fmt(cur.y) + ")"
+                  : swapped
                     ? es
-                      ? "Revisa las dos coordenadas: x (izquierda/derecha) y y (arriba/abajo)."
-                      : "Check both numbers: x (left/right) and y (up/down)."
-                    : xOff
+                      ? "Cambiaste el orden. El primer número es x (izquierda/derecha); el segundo es y (arriba/abajo)."
+                      : "You switched the order. The first number is x (left/right); the second is y (up/down)."
+                    : signFlip
                       ? es
-                        ? "Tu y está bien. Revisa x (izquierda/derecha)."
-                        : "Your y is right. Check x (left/right)."
-                      : es
-                        ? "Tu x está bien. Revisa y (arriba/abajo)."
-                        : "Your x is right. Check y (up/down).",
+                        ? "Las distancias están bien, pero revisa los signos: negativo va a la izquierda o hacia abajo."
+                        : "The distances are right — check the signs: negative goes left or down."
+                      : xOff && yOff
+                        ? es
+                          ? "Revisa las dos coordenadas: x (izquierda/derecha) y y (arriba/abajo)."
+                          : "Check both numbers: x (left/right) and y (up/down)."
+                        : xOff
+                          ? es
+                            ? "Tu y está bien. Revisa x (izquierda/derecha)."
+                            : "Your y is right. Check x (left/right)."
+                          : es
+                            ? "Tu x está bien. Revisa y (arriba/abajo)."
+                            : "Your x is right. Check y (up/down).",
               );
-              if (!ok)
-                this.time.delayedCall(560, () => !this.locked && dot.setFillStyle(PALETTE.gold));
+              if (!ok) this.time.delayedCall(560, () => !this.locked && dot.setFillStyle(PALETTE.gold));
             };
             this.input.keyboard.on("keydown-ENTER", check);
-            const cb = makeButton(this, W / 2, by1 + 66, 170, 46, t("check"), check);
+            const cb = makeButton(this, W / 2 + 250, by1 - 30, 150, 46, t("check"), check);
             this.layer.add(cb.bg);
             this.layer.add(cb.t);
             const cue = this.add
-              .text(W / 2, by1 + 26, t("plotCue"), {
+              .text(W / 2, by1 + 30, t("plotCue"), {
                 fontFamily: "Nunito, Segoe UI, sans-serif",
                 fontSize: "14px",
                 color: "#e0e7ff",
@@ -4543,10 +5428,11 @@
               .setOrigin(0.5);
             this.layer.add(cue);
             srSay(
-              r.prompt +
+              loc(r, "prompt") +
                 ". " +
+                (this.plotWhich() ? this.plotWhich() + ". " : "") +
                 t("plotCue") +
-                " Point at " +
+                (es ? " Punto en " : " Point at ") +
                 this.fmt(this.plotX) +
                 ", " +
                 this.fmt(this.plotY) +
@@ -4572,9 +5458,9 @@
                 tile.bg.setFillStyle(PALETTE.good);
                 if (i < total - 1) {
                   this.chainStepLocked = true;
-                  this.mascotSay("Nice! ✔");
-                  this.showFeedback(t("yes") + (s.why ? s.why : ""), "#86efac");
-                  srSay("Correct. Next step.");
+                  this.mascotSay(lang === "es" ? "¡Bien! ✔" : "Nice! ✔");
+                  this.showFeedback(t("yes") + (loc(s, "why") || ""), "#86efac");
+                  srSay(lang === "es" ? "Correcto. Siguiente paso." : "Correct. Next step.");
                   this.time.delayedCall(420, () => {
                     if (!this.locked) showStep(i + 1);
                   });
@@ -4625,7 +5511,9 @@
                 ...r,
                 kind: "choose",
                 prompt: s.prompt,
+                promptEs: s.promptEs,
                 choices: s.choices,
+                choicesEs: s.choicesEs,
               });
               const prog = this.add
                 .text(W / 2, top, t("stepOf") + " " + (i + 1) + " / " + total, {
@@ -4637,7 +5525,7 @@
                 .setOrigin(0.5);
               stepLayer.add(prog);
               const q = this.add
-                .text(W / 2, top + 38, s.prompt, {
+                .text(W / 2, top + 38, loc(s, "prompt"), {
                   fontFamily: "Nunito, Segoe UI, sans-serif",
                   fontSize: "19px",
                   fontStyle: "bold",
@@ -4650,7 +5538,9 @@
               const startY = top + 38 + Math.max(30, q.height) / 2 + 40;
               const tileW = Math.min(560, W - 220);
               const gap = Math.min(62, (FEED_TOP - startY + 25) / s.choices.length);
-              s.choices.forEach((c, ci) => {
+              const shownChoices = choiceTexts(s);
+              s.choices.forEach((_, ci) => {
+                const c = shownChoices[ci];
                 const y = startY + ci * gap;
                 const tile = this.makeTile(
                   W / 2,
@@ -4677,10 +5567,10 @@
                   " " +
                   (i + 1) +
                   ". " +
-                  s.prompt +
-                  ". Options: " +
-                  s.choices.map((c, ci) => ci + 1 + ", " + c).join("; ") +
-                  ". Press a number to choose.",
+                  loc(s, "prompt") +
+                  (lang === "es" ? ". Opciones: " : ". Options: ") +
+                  shownChoices.map((c, ci) => ci + 1 + ", " + c).join("; ") +
+                  (lang === "es" ? ". Pulsa un número para elegir." : ". Press a number to choose."),
               );
             };
             showStep(0);
@@ -4730,9 +5620,9 @@
                     ? this.sortTiles[this.sortHi]
                     : left[0];
                 return es
-                  ? "Lee " + q(cur.data.text) + ". Toca la caja donde va (o pulsa su número)."
+                  ? "Lee " + q(tileText(cur.data)) + ". Toca la caja donde va (o pulsa su número)."
                   : "Read " +
-                      q(cur.data.text) +
+                      q(tileText(cur.data)) +
                       ". Tap the box where it belongs (or press its number).";
               }
               case "match":
@@ -4755,18 +5645,29 @@
                 return es
                   ? "Halla el valor. Mueve el punto con ← → (↑ ↓ salta más). Luego pulsa REVISAR."
                   : "Work out the value. Move the dot with ← → (↑ ↓ jump further). Then press CHECK.";
-              case "plot":
-                return es
-                  ? "Mueve el punto: primero x (← →), luego y (↑ ↓). Luego pulsa REVISAR."
-                  : "Move the dot: x first (← →), then y (↑ ↓). Then press CHECK.";
+              case "plot": {
+                const w = this.plotWhich ? this.plotWhich() : "";
+                return (
+                  (w ? w + " · " : "") +
+                  (es
+                    ? "Mueve el punto: primero x (← →), luego y (↑ ↓). Luego pulsa REVISAR."
+                    : "Move the dot: x first (← →), then y (↑ ↓). Then press CHECK.")
+                );
+              }
               case "build":
                 return es
                   ? "Toca las piezas que multiplicadas dan la respuesta. Luego pulsa REVISAR."
                   : "Tap the pieces that multiply to make the answer. Then press CHECK.";
-              case "balance":
+              case "balance": {
+                const v = r.variable || "x";
                 return es
-                  ? "Cambia x con ← → hasta que los dos lados sean iguales. Luego pulsa REVISAR."
-                  : "Change x with ← → until both sides are equal. Then press CHECK.";
+                  ? "Cambia " + v + " con − y + hasta que los dos platillos valgan lo mismo. Luego pulsa REVISAR."
+                  : "Change " + v + " with − and + until both pans are worth the same. Then press CHECK.";
+              }
+              case "entry":
+                return es
+                  ? "Resuélvelo en tu cuaderno. Escribe el número con las teclas. Luego pulsa REVISAR."
+                  : "Work it out on paper. Type the number with your keys. Then press CHECK.";
               case "chain":
                 return es
                   ? "Responde este paso. Cada respuesta abre el siguiente paso."
@@ -4915,7 +5816,8 @@
                 const journal = document.createElement("div");
                 journal.className = "voyage-journal";
                 journal.textContent =
-                  "Expedition journal · " + window.ExpeditionVoyage.summary(d.voyage);
+                  (lang === "es" ? "Diario de expedición · " : "Expedition journal · ") +
+                  window.ExpeditionVoyage.summary(d.voyage);
                 voyageHost.append(journal);
               }
             }
@@ -4946,6 +5848,7 @@
               balance: es ? "Equilibrar la balanza" : "Balance the scale",
               plot: es ? "Ubicar el punto" : "Plot the point",
               chain: es ? "Paso a paso" : "Step by step",
+              entry: es ? "Resolver y escribir" : "Work it out and type it",
             };
             const needCounts = {};
             items.forEach((it, i) => {
@@ -4978,18 +5881,20 @@
                 : "Round complete. " + stars + " stars. " + pct + "% accuracy.";
             try {
               const key = "pa-summary-" + activeLesson;
-              const previous = JSON.parse(localStorage.getItem(key) || "null");
-              if (!previous || stars > previous.stars || d.score > previous.score)
-                localStorage.setItem(
-                  key,
-                  JSON.stringify({
-                    score: d.score,
-                    stars,
-                    firstTry: d.correct,
-                    total: d.total,
-                    playedAt: Date.now(),
-                  }),
-                );
+              // Keep the best of each measure: a higher score on a lower-star run
+              // used to overwrite (and lose) the stars shown on the World Map.
+              const previous = JSON.parse(localStorage.getItem(key) || "null") || {};
+              localStorage.setItem(
+                key,
+                JSON.stringify({
+                  score: Math.max(d.score, previous.score || 0),
+                  stars: Math.max(stars, previous.stars || 0),
+                  firstTry: Math.max(d.correct, previous.firstTry || 0),
+                  total: d.total,
+                  runs: (previous.runs || 0) + 1,
+                  playedAt: Date.now(),
+                }),
+              );
             } catch (_) {}
             document.getElementById("practice-session-title").textContent =
               (es ? "Aventura completa · " : "Adventure complete · ") +
@@ -5233,9 +6138,15 @@
             } else {
               makeButton(this, W / 2, 530, 264, 56, t("playAgain"), again);
             }
-            makeLink(this, W / 2, 592, "🗺️ " + (es ? "Elegir Tema / Lección" : "Choose Topic / Lesson"), () => {
-              if (window.paOpenTopicPicker) window.paOpenTopicPicker();
-            });
+            makeLink(
+              this,
+              W / 2,
+              592,
+              "🗺️ " + (es ? "Elegir Tema / Lección" : "Choose Topic / Lesson"),
+              () => {
+                if (window.paOpenTopicPicker) window.paOpenTopicPicker();
+              },
+            );
             // Keyboard: Enter = play again, M = topic picker, U = unit review.
             this.input.keyboard.on("keydown-ENTER", (ev) => {
               if (

@@ -48,8 +48,8 @@
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
     <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet" />
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002" />
-    <link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007" />
-    <link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261015" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261015" />
   </head>
   <body>
     <!-- EWL Universal Arcade Enhancements Header -->
@@ -110,7 +110,7 @@
     <!-- nt-game-topbar-injected:end -->
     <script>
       // Equation Escape — Dungeon Escape
-      // Grade 6: 6.AT.8, 6.AT.8, 6.AT.9
+      // Grade 6 · Unit 8 · Lessons 8-1 to 8-7: 6.AT.8 (one-step equations), 6.AT.9 (inequalities)
       // Neft Teacher
 
       const W = 1024,
@@ -119,14 +119,12 @@
 
       // --- ACCESSIBILITY: prefers-reduced-motion (additive, gates new motion only) ---
       const RM_QUERY = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)");
-      let REDUCE_MOTION = !!(RM_QUERY && RM_QUERY.matches);
-      if (RM_QUERY) {
-        const onRMChange = (e) => {
-          REDUCE_MOTION = e.matches;
-        };
-        if (RM_QUERY.addEventListener) RM_QUERY.addEventListener("change", onRMChange);
-        else if (RM_QUERY.addListener) RM_QUERY.addListener(onRMChange);
-      }
+      // Live check: the shared Player settings "Calm motion" toggle wins,
+      // otherwise the OS preference.
+      const RM = () =>
+        typeof window.__flagshipReduced === "boolean"
+          ? window.__flagshipReduced
+          : !!(RM_QUERY && RM_QUERY.matches);
       // Off-screen ARIA live region so screen-reader users hear questions/feedback
       // (the game itself is canvas-only and otherwise opaque to assistive tech).
       function announce(msg) {
@@ -287,37 +285,61 @@
       }
       const sfx = new SFX();
 
-      // --- QUESTION GENERATION ---
-      // ── Help ladder (calm, earned): Tier 1 = method hint that never states the
-      // answer; Tier 2 = the worked step with the last value left for the
-      // student; after that the full solution. Wrong answers never auto-advance.
-      function methodHint(q) {
-        const t = q.text;
-        if (/^Solve: x \+ /.test(t))
-          return "x has a number ADDED to it. Undo adding by subtracting that number from BOTH sides.";
-        if (/^Solve: x - /.test(t))
-          return "x has a number SUBTRACTED from it. Undo subtracting by adding that number to BOTH sides.";
-        if (/^Solve: \d+x = /.test(t))
-          return "x is MULTIPLIED by a number. Undo multiplying by dividing BOTH sides by that number.";
-        if (/^Solve: x \/ /.test(t))
-          return "x is DIVIDED by a number. Undo dividing by multiplying BOTH sides by that number.";
-        if (/Which value of x solves/.test(t))
-          return "Solve it like an equation to find the boundary number. With >, the boundary itself does NOT work — pick a value bigger than it.";
-        if (/open circle/i.test(t))
-          return "An open circle means the number itself is NOT included. Then look at which way the arrow points.";
-        if (/earns/.test(t))
-          return "Money earned = rate × hours. 'At least' means greater than or equal to (>=).";
-        return "Read the question again and undo one step at a time.";
+      // --- LANGUAGE (site-wide key: localStorage["nt-lang"] === "es") ---
+      const LANG = (() => {
+        try {
+          return localStorage.getItem("nt-lang") === "es" ? "es" : "en";
+        } catch (e) {
+          return "en";
+        }
+      })();
+      const ES = LANG === "es";
+      const tr = (en, es) => (ES ? es : en);
+      if (ES) document.documentElement.lang = "es";
+      function toggleLang() {
+        try {
+          localStorage.setItem("nt-lang", ES ? "en" : "es");
+        } catch (e) {}
+        location.reload();
       }
-      function workedStep(q) {
-        const parts = q.explain.split(/(?<=\.)\s+(?=[A-Z$])/);
-        if (parts.length > 1) return parts.slice(0, -1).join(" ") + " Now finish the last step.";
-        const cut = q.explain.replace(/\s*[=≈]\s*[^=≈]+$/, "");
-        return cut !== q.explain ? cut + " = ?" : q.explain;
+      window.ewlToggleLang = toggleLang;
+
+      // --- QUESTION GENERATION ---
+      // Every door is a real equation. Solve doors have two locks: first the
+      // KEY (the inverse move that keeps both sides balanced), then the LOCK
+      // (the value of x). Each wrong option names its own misconception, and
+      // a wrong x is checked by substitution ("12 + 5 = 17, not 15") — that
+      // tells the student WHY without giving the answer away.
+      // Help ladder (calm, earned): miss 1 = method, miss 2 = concrete step
+      // with the last value left blank, miss 3 = the full solution.
+      const M = "−"; // true minus for display
+      const eqText = (kind, a, b) =>
+        kind === "add"
+          ? `x + ${a} = ${b}`
+          : kind === "sub"
+            ? `x ${M} ${a} = ${b}`
+            : kind === "mul"
+              ? `${a}x = ${b}`
+              : `x ÷ ${a} = ${b}`;
+      // What the left side becomes when x = v (substitution check).
+      function substCheck(kind, a, b, v) {
+        if (kind === "add") return `${v} + ${a} = ${v + a}`;
+        if (kind === "sub") return `${v} ${M} ${a} = ${v - a}`;
+        if (kind === "mul") return `${a} × ${v} = ${a * v}`;
+        return v % a === 0 ? `${v} ÷ ${a} = ${v / a}` : `${v} ÷ ${a} ${tr("is not a whole number", "no es un número entero")}`;
+      }
+      function checkLine(q, v) {
+        if (!q.eq) return "";
+        const left = substCheck(q.eq.kind, q.eq.a, q.eq.b, v);
+        return tr(
+          `Check it: if x = ${v}, then ${left} — not ${q.eq.b}.`,
+          `Compruébalo: si x = ${v}, entonces ${left}, no ${q.eq.b}.`,
+        );
       }
 
       function genQuestions() {
         const qs = [];
+        const R = (a, b) => Phaser.Math.Between(a, b);
         function shuffle(a) {
           const b = [...a];
           for (let i = b.length - 1; i > 0; i--) {
@@ -326,142 +348,344 @@
           }
           return b;
         }
-        function mkQ(text, correct, wrongs, explain, tier, room) {
-          // Guarantee every option is distinct. Procedurally generated
-          // distractors can collide with the correct answer or each other
-          // (e.g. "x = c" when c happens to equal the answer), which would make
-          // the item ambiguous — two identical choices, one of them "right".
-          // For numeric "x = N" options we nudge any duplicate to a nearby
-          // unused integer; otherwise we fall back to a simple suffix.
+        // wrongs: [optionText, why] pairs. Options stay distinct: a numeric
+        // "x = N" collision is nudged to a nearby unused value (its feedback
+        // then falls back to the substitution check).
+        function mkQ(text, correct, wrongs, explain, tier, room, extra) {
           const seen = new Set([correct]);
-          const uniqueWrongs = wrongs.map((wOrig) => {
+          const why = {};
+          const uniqueWrongs = wrongs.map(([wOrig, reason]) => {
             let w = wOrig;
             const m = /^x = (-?\d+)$/.exec(w);
             if (m) {
               const base = parseInt(m[1], 10);
               let n = base,
                 k = 1;
-              // Search outward (+1,-1,+2,-2,...) for an unused value.
-              while (seen.has("x = " + n)) {
+              while (seen.has("x = " + n) || n < 0) {
                 n = base + (k % 2 === 1 ? Math.ceil(k / 2) : -(k / 2));
                 k++;
               }
               w = "x = " + n;
+              if (n === base) why[w] = reason;
             } else {
               let suffix = 0;
               while (seen.has(w)) {
                 suffix++;
                 w = wOrig + " ".repeat(suffix);
               }
+              why[w] = reason;
             }
             seen.add(w);
             return w;
           });
           const opts = shuffle([correct, ...uniqueWrongs]);
-          return { text, correct, options: opts, explain, tier, room };
+          return Object.assign(
+            { text, correct, options: opts, explain, tier, room, why },
+            extra || {},
+          );
         }
-        // Tier 1: One-step add/sub
-        const rooms1 = ["Lab", "Lab", "Lab", "Lab", "Lab"];
-        for (let i = 0; i < 5; i++) {
-          const b = Phaser.Math.Between(2, 12),
-            x = b + Phaser.Math.Between(1, 12); // answer x - b is always positive
-          const ans = x - b;
-          if (Phaser.Math.Between(0, 1)) {
-            qs.push(
-              mkQ(
-                `Solve: x + ${b} = ${x}`,
-                `x = ${ans}`,
-                [`x = ${x + b}`, `x = ${b}`, `x = ${ans + 1}`],
-                `Subtract ${b} from both sides: x = ${x} - ${b} = ${ans}`,
-                1,
-                rooms1[i],
-              ),
-            );
+        // One-step equation with its KEY stage. kind: add | sub | mul | div.
+        function solveDoor(kind, a, b, tier, room) {
+          const eq = eqText(kind, a, b);
+          let ans, wrongs, method, step, explain, key, keyWrongs, after;
+          if (kind === "add") {
+            ans = b - a;
+            wrongs = [
+              [`x = ${b + a}`, tr(`you added ${a}. To undo + ${a}, subtract ${a}.`, `sumaste ${a}. Para deshacer + ${a}, resta ${a}.`)],
+              [`x = ${a}`, tr(`${a} is the number added to x, not x itself.`, `${a} es el número que se suma a x, no es x.`)],
+              [`x = ${ans + 1}`, ""],
+            ];
+            method = tr(`x has ${a} ADDED to it. Undo adding by subtracting ${a} from BOTH sides.`, `A x se le SUMA ${a}. Deshaz la suma restando ${a} en AMBOS lados.`);
+            step = `x = ${b} ${M} ${a} = ?`;
+            explain = tr(`Subtract ${a} from both sides: x = ${b} ${M} ${a} = ${ans}.`, `Resta ${a} en ambos lados: x = ${b} ${M} ${a} = ${ans}.`);
+            key = tr(`Subtract ${a} from both sides`, `Resta ${a} en ambos lados`);
+            keyWrongs = [
+              [tr(`Add ${a} to both sides`, `Suma ${a} en ambos lados`), tr(`adding ${a} makes x + ${2 * a}. Do the OPPOSITE of + ${a}.`, `sumar ${a} da x + ${2 * a}. Haz lo CONTRARIO de + ${a}.`)],
+              [tr(`Subtract ${a} from the left side only`, `Resta ${a} solo en el lado izquierdo`), tr("changing only one side breaks the balance. Do the same to BOTH sides.", "cambiar un solo lado rompe el equilibrio. Haz lo mismo en AMBOS lados.")],
+              [tr(`Divide both sides by ${a}`, `Divide ambos lados entre ${a}`), tr(`x is not multiplied by ${a} — ${a} is added to it.`, `x no está multiplicada por ${a}; se le suma ${a}.`)],
+            ];
+            after = `x + ${a} ${M} ${a} = ${b} ${M} ${a}`;
+          } else if (kind === "sub") {
+            ans = b + a;
+            wrongs = [
+              [`x = ${Math.abs(b - a)}`, tr(`you subtracted ${a} again. To undo ${M} ${a}, add ${a}.`, `restaste ${a} otra vez. Para deshacer ${M} ${a}, suma ${a}.`)],
+              [`x = ${a}`, tr(`${a} is the number taken away from x, not x itself.`, `${a} es el número que se le resta a x, no es x.`)],
+              [`x = ${ans + 1}`, ""],
+            ];
+            method = tr(`x has ${a} SUBTRACTED from it. Undo subtracting by adding ${a} to BOTH sides.`, `A x se le RESTA ${a}. Deshaz la resta sumando ${a} en AMBOS lados.`);
+            step = `x = ${b} + ${a} = ?`;
+            explain = tr(`Add ${a} to both sides: x = ${b} + ${a} = ${ans}.`, `Suma ${a} en ambos lados: x = ${b} + ${a} = ${ans}.`);
+            key = tr(`Add ${a} to both sides`, `Suma ${a} en ambos lados`);
+            keyWrongs = [
+              [tr(`Subtract ${a} from both sides`, `Resta ${a} en ambos lados`), tr(`that makes x ${M} ${2 * a}. Do the OPPOSITE of ${M} ${a}.`, `eso da x ${M} ${2 * a}. Haz lo CONTRARIO de ${M} ${a}.`)],
+              [tr(`Add ${a} to the left side only`, `Suma ${a} solo en el lado izquierdo`), tr("changing only one side breaks the balance. Do the same to BOTH sides.", "cambiar un solo lado rompe el equilibrio. Haz lo mismo en AMBOS lados.")],
+              [tr(`Multiply both sides by ${a}`, `Multiplica ambos lados por ${a}`), tr(`x is not divided by ${a} — ${a} is subtracted from it.`, `x no está dividida entre ${a}; se le resta ${a}.`)],
+            ];
+            after = `x ${M} ${a} + ${a} = ${b} + ${a}`;
+          } else if (kind === "mul") {
+            ans = b / a;
+            wrongs = [
+              [`x = ${b - a}`, tr(`you subtracted ${a}. ${a}x means ${a} TIMES x, so divide.`, `restaste ${a}. ${a}x significa ${a} POR x, así que divide.`)],
+              [`x = ${b * a}`, tr(`you multiplied. Undo × ${a} with ÷ ${a}.`, `multiplicaste. Deshaz × ${a} con ÷ ${a}.`)],
+              [`x = ${a}`, tr(`${a} is the number multiplying x, not x itself.`, `${a} es el número que multiplica a x, no es x.`)],
+            ];
+            method = tr(`x is MULTIPLIED by ${a}. Undo multiplying by dividing BOTH sides by ${a}.`, `x está MULTIPLICADA por ${a}. Deshaz la multiplicación dividiendo AMBOS lados entre ${a}.`);
+            step = `x = ${b} ÷ ${a} = ?`;
+            explain = tr(`Divide both sides by ${a}: x = ${b} ÷ ${a} = ${ans}.`, `Divide ambos lados entre ${a}: x = ${b} ÷ ${a} = ${ans}.`);
+            key = tr(`Divide both sides by ${a}`, `Divide ambos lados entre ${a}`);
+            keyWrongs = [
+              [tr(`Multiply both sides by ${a}`, `Multiplica ambos lados por ${a}`), tr(`that makes ${a * a}x. Do the OPPOSITE of × ${a}.`, `eso da ${a * a}x. Haz lo CONTRARIO de × ${a}.`)],
+              [tr(`Subtract ${a} from both sides`, `Resta ${a} en ambos lados`), tr(`${a}x means ${a} TIMES x. Undo multiplication, not addition.`, `${a}x significa ${a} POR x. Deshaz la multiplicación, no una suma.`)],
+              [tr(`Divide the left side only by ${a}`, `Divide solo el lado izquierdo entre ${a}`), tr("changing only one side breaks the balance. Do the same to BOTH sides.", "cambiar un solo lado rompe el equilibrio. Haz lo mismo en AMBOS lados.")],
+            ];
+            after = `${a}x ÷ ${a} = ${b} ÷ ${a}`;
           } else {
-            const s = Phaser.Math.Between(2, 10),
-              r = s + Phaser.Math.Between(3, 12);
-            qs.push(
-              mkQ(
-                `Solve: x - ${s} = ${r - s}`,
-                `x = ${r}`,
-                [`x = ${r - 2 * s}`, `x = ${s}`, `x = ${r + 1}`],
-                `Add ${s} to both sides: x = ${r - s} + ${s} = ${r}`,
-                1,
-                rooms1[i],
-              ),
-            );
+            ans = a * b;
+            wrongs = [
+              [`x = ${b + a}`, tr(`you added ${a}. Undo ÷ ${a} by multiplying by ${a}.`, `sumaste ${a}. Deshaz ÷ ${a} multiplicando por ${a}.`)],
+              [`x = ${b}`, tr(`${b} is x AFTER it was divided by ${a}. Find x before dividing.`, `${b} es x DESPUÉS de dividir entre ${a}. Busca x antes de dividir.`)],
+              [`x = ${ans + a}`, ""],
+            ];
+            method = tr(`x is DIVIDED by ${a}. Undo dividing by multiplying BOTH sides by ${a}.`, `x está DIVIDIDA entre ${a}. Deshaz la división multiplicando AMBOS lados por ${a}.`);
+            step = `x = ${b} × ${a} = ?`;
+            explain = tr(`Multiply both sides by ${a}: x = ${b} × ${a} = ${ans}.`, `Multiplica ambos lados por ${a}: x = ${b} × ${a} = ${ans}.`);
+            key = tr(`Multiply both sides by ${a}`, `Multiplica ambos lados por ${a}`);
+            keyWrongs = [
+              [tr(`Divide both sides by ${a}`, `Divide ambos lados entre ${a}`), tr(`that divides x again. Do the OPPOSITE of ÷ ${a}.`, `eso vuelve a dividir x. Haz lo CONTRARIO de ÷ ${a}.`)],
+              [tr(`Subtract ${a} from both sides`, `Resta ${a} en ambos lados`), tr(`x is DIVIDED by ${a}. Undo division, not addition.`, `x está DIVIDIDA entre ${a}. Deshaz la división, no una suma.`)],
+              [tr(`Multiply the left side only by ${a}`, `Multiplica solo el lado izquierdo por ${a}`), tr("changing only one side breaks the balance. Do the same to BOTH sides.", "cambiar un solo lado rompe el equilibrio. Haz lo mismo en AMBOS lados.")],
+            ];
+            after = `x ÷ ${a} × ${a} = ${b} × ${a}`;
+          }
+          const lock = mkQ(
+            tr(`Now open the lock:  ${eq}\n${after}  →  x = ?`, `Ahora abre el candado:  ${eq}\n${after}  →  x = ?`),
+            `x = ${ans}`,
+            wrongs,
+            explain,
+            tier,
+            room,
+          );
+          const keyQ = mkQ(
+            tr(`Choose the key for  ${eq}:  which move gets x alone?`, `Elige la llave para  ${eq}:  ¿qué paso deja sola a la x?`),
+            key,
+            keyWrongs,
+            tr(`${key}: both sides change the same way, so the scale stays balanced.`, `${key}: los dos lados cambian igual, así que la balanza sigue equilibrada.`),
+            tier,
+            room,
+          );
+          keyQ.method = tr("Look at what is done to x. Pick the OPPOSITE operation, and do it to BOTH sides.", "Mira qué se le hace a x. Elige la operación CONTRARIA y hazla en AMBOS lados.");
+          keyQ.step = method;
+          lock.method = method;
+          lock.step = step;
+          // The door starts on the key stage; applyStage() swaps in the lock.
+          const door = Object.assign({}, keyQ, {
+            kind: "solve",
+            eq: { kind, a, b },
+            balance: { left: eq.split(" = ")[0], right: String(b) },
+            stages: [keyQ, lock],
+            stage: 0,
+          });
+          return door;
+        }
+        // Tier 1: one-step add/sub (lessons 8-1, 8-2)
+        for (let i = 0; i < 4; i++) {
+          if (i % 2 === 0) {
+            const a = R(2, 12);
+            qs.push(solveDoor("add", a, a + R(1, 12), 1, "Lab"));
+          } else {
+            const a = R(2, 10);
+            qs.push(solveDoor("sub", a, R(3, 14), 1, "Lab"));
           }
         }
-        // Tier 2: Multiply/divide
-        const rooms2 = ["Castle", "Castle", "Castle", "Castle", "Castle"];
-        for (let i = 0; i < 5; i++) {
-          const c = Phaser.Math.Between(2, 9),
-            ans = Phaser.Math.Between(2, 12);
-          const prod = c * ans;
-          if (Phaser.Math.Between(0, 1)) {
-            qs.push(
-              mkQ(
-                `Solve: ${c}x = ${prod}`,
-                `x = ${ans}`,
-                [`x = ${prod + c}`, `x = ${c}`, `x = ${ans + 2}`],
-                `Divide both sides by ${c}: x = ${prod} / ${c} = ${ans}`,
-                2,
-                rooms2[i],
-              ),
-            );
-          } else {
-            const d = Phaser.Math.Between(2, 6),
-              q2 = Phaser.Math.Between(3, 10);
-            qs.push(
-              mkQ(
-                `Solve: x / ${d} = ${q2}`,
-                `x = ${d * q2}`,
-                [`x = ${q2 + d}`, `x = ${q2 - d > 0 ? q2 - d : q2}`, `x = ${d * q2 + d}`],
-                `Multiply both sides by ${d}: x = ${q2} × ${d} = ${d * q2}`,
-                2,
-                rooms2[i],
-              ),
-            );
-          }
-        }
-        // Tier 3: Inequalities + word problems
-        for (let i = 0; i < 3; i++) {
-          const b2 = Phaser.Math.Between(3, 8),
-            target = b2 + Phaser.Math.Between(2, 6);
-          const boundary = target - b2;
-          const correct_val = boundary + Phaser.Math.Between(1, 5);
+        // Tier 1: test values by substitution (lesson 8-1)
+        for (let i = 0; i < 2; i++) {
+          const kind = i === 0 ? "add" : "mul";
+          const a = kind === "add" ? R(3, 9) : R(2, 6);
+          const x = R(3, 9);
+          const b = kind === "add" ? x + a : a * x;
+          const eq = eqText(kind, a, b);
+          const near = kind === "add" ? [b + a, a, x + 2] : [b - a, a, x + 1];
           qs.push(
             mkQ(
-              `Which value of x solves x + ${b2} > ${target}?`,
-              `x = ${correct_val}`,
-              [`x = ${boundary}`, `x = ${boundary - 1}`, `x = ${b2}`],
-              `x + ${b2} > ${target} means x > ${boundary}. Only x = ${correct_val} works.`,
-              3,
-              "Spaceship",
+              tr(`Test each value. Which one is a solution of  ${eq}?`, `Prueba cada valor. ¿Cuál es una solución de  ${eq}?`),
+              `x = ${x}`,
+              near.map((v) => [`x = ${v}`, ""]),
+              tr(`Put x = ${x} into the equation: ${substCheck(kind, a, b, x)}. Both sides match.`, `Pon x = ${x} en la ecuación: ${substCheck(kind, a, b, x)}. Los dos lados son iguales.`),
+              1,
+              "Lab",
+              {
+                kind: "test",
+                eq: { kind, a, b },
+                method: tr("A solution makes the equation TRUE. Put each value in for x and see if both sides match.", "Una solución hace VERDADERA la ecuación. Pon cada valor en lugar de x y mira si los dos lados son iguales."),
+                step: tr(`Try one: put the value in for x in  ${eq}  and compare with ${b}.`, `Prueba uno: pon el valor en lugar de x en  ${eq}  y compara con ${b}.`),
+              },
             ),
           );
         }
-        qs.push(
-          mkQ(
-            "A number line shows an open circle at 5 with arrow pointing right. Which inequality?",
-            "x > 5",
-            ["x < 5", "x >= 5", "x <= 5"],
-            "Open circle = not included. Arrow right = greater than. So x > 5.",
-            3,
-            "Spaceship",
-          ),
-        );
-        qs.push(
-          mkQ(
-            "Sam earns $7/hour. He needs at least $49. Which inequality for hours (h)?",
-            "7h >= 49",
-            ["7 + h >= 49", "7h < 49", "h / 7 >= 49"],
-            "$7 per hour × h hours ≥ $49 needed. So 7h >= 49, which means h ≥ 7.",
-            3,
-            "Spaceship",
-          ),
-        );
-        return shuffle(qs).slice(0, 15);
+        // Tier 2: one-step multiply/divide (lesson 8-3)
+        for (let i = 0; i < 5; i++) {
+          if (i % 2 === 0) {
+            const a = R(2, 9);
+            qs.push(solveDoor("mul", a, a * R(2, 12), 2, "Castle"));
+          } else {
+            qs.push(solveDoor("div", R(2, 6), R(3, 10), 2, "Castle"));
+          }
+        }
+        // Tier 3: inequalities (lessons 8-4 to 8-6)
+        for (let i = 0; i < 2; i++) {
+          const a = R(3, 8),
+            target = a + R(2, 6);
+          const boundary = target - a;
+          const good = boundary + R(1, 5);
+          qs.push(
+            mkQ(
+              tr(`Which value of x makes  x + ${a} > ${target}  true?`, `¿Qué valor de x hace verdadera  x + ${a} > ${target}?`),
+              `x = ${good}`,
+              [
+                [`x = ${boundary}`, tr(`${boundary} + ${a} = ${target}, which is EQUAL to ${target}, not greater.`, `${boundary} + ${a} = ${target}, que es IGUAL a ${target}, no mayor.`)],
+                [`x = ${boundary - 1}`, tr(`${boundary - 1} + ${a} = ${target - 1}, which is LESS than ${target}.`, `${boundary - 1} + ${a} = ${target - 1}, que es MENOR que ${target}.`)],
+                [`x = ${boundary - 2}`, tr(`${boundary - 2} + ${a} = ${target - 2}, which is LESS than ${target}.`, `${boundary - 2} + ${a} = ${target - 2}, que es MENOR que ${target}.`)],
+              ],
+              tr(`x + ${a} > ${target} means x > ${boundary}. x = ${good} works: ${good} + ${a} = ${good + a} > ${target}.`, `x + ${a} > ${target} significa x > ${boundary}. x = ${good} funciona: ${good} + ${a} = ${good + a} > ${target}.`),
+              3,
+              "Spaceship",
+              {
+                kind: "ineq",
+                ineq: { a, target },
+                method: tr("Solve it like an equation to find the boundary number. With >, the boundary itself does NOT work.", "Resuélvela como una ecuación para hallar el número límite. Con >, el límite NO funciona."),
+                step: tr(`Boundary: x = ${target} ${M} ${a} = ?  Then pick a value GREATER than it.`, `Límite: x = ${target} ${M} ${a} = ?  Luego elige un valor MAYOR.`),
+              },
+            ),
+          );
+        }
+        {
+          const n = R(2, 9);
+          const closed = Math.random() < 0.5;
+          const right = Math.random() < 0.5;
+          const sym = right ? (closed ? "≥" : ">") : closed ? "≤" : "<";
+          const all = [">", "<", "≥", "≤"];
+          const circleEn = closed ? "a closed (filled) circle" : "an open circle";
+          const circleEs = closed ? "un círculo cerrado (relleno)" : "un círculo abierto";
+          const whyFor = (s) => {
+            const sClosed = s === "≥" || s === "≤";
+            const sRight = s === ">" || s === "≥";
+            if (sRight !== right)
+              return tr(`check the arrow: it points ${right ? "RIGHT (greater)" : "LEFT (less)"}.`, `mira la flecha: apunta a la ${right ? "DERECHA (mayor)" : "IZQUIERDA (menor)"}.`);
+            return sClosed
+              ? tr(`a closed circle INCLUDES ${n}; this one is open.`, `un círculo cerrado INCLUYE el ${n}; este es abierto.`)
+              : tr(`an open circle leaves ${n} OUT; this one is closed.`, `un círculo abierto deja FUERA el ${n}; este es cerrado.`);
+          };
+          qs.push(
+            mkQ(
+              tr(`A number line shows ${circleEn} at ${n} with the arrow pointing ${right ? "right" : "left"}. Which inequality?`, `Una recta numérica muestra ${circleEs} en ${n} con la flecha hacia la ${right ? "derecha" : "izquierda"}. ¿Qué desigualdad es?`),
+              `x ${sym} ${n}`,
+              all.filter((s) => s !== sym).map((s) => [`x ${s} ${n}`, whyFor(s)]),
+              tr(`${closed ? "Closed circle = included" : "Open circle = not included"}; arrow ${right ? "right = greater" : "left = less"}. So x ${sym} ${n}.`, `${closed ? "Círculo cerrado = incluido" : "Círculo abierto = no incluido"}; flecha a la ${right ? "derecha = mayor" : "izquierda = menor"}. Entonces x ${sym} ${n}.`),
+              3,
+              "Spaceship",
+              {
+                kind: "line",
+                method: tr("Open circle: the number is NOT included. Closed circle: it IS included. Then read which way the arrow points.", "Círculo abierto: el número NO se incluye. Círculo cerrado: SÍ se incluye. Luego mira hacia dónde apunta la flecha."),
+                step: tr(`The circle is ${closed ? "closed, so use ≥ or ≤" : "open, so use > or <"}. Which one matches the arrow?`, `El círculo es ${closed ? "cerrado, así que usa ≥ o ≤" : "abierto, así que usa > o <"}. ¿Cuál va con la flecha?`),
+              },
+            ),
+          );
+        }
+        {
+          const rate = R(6, 12),
+            hrs = R(4, 9),
+            need = rate * hrs;
+          qs.push(
+            mkQ(
+              tr(`Sam earns $${rate} each hour. He needs at least $${need}. Which inequality shows the hours (h) he must work?`, `Sam gana $${rate} por hora. Necesita por lo menos $${need}. ¿Qué desigualdad muestra las horas (h) que debe trabajar?`),
+              `${rate}h ≥ ${need}`,
+              [
+                [`${rate} + h ≥ ${need}`, tr(`he earns $${rate} EACH hour, so multiply rate × hours.`, `gana $${rate} CADA hora, así que multiplica tarifa × horas.`)],
+                [`${rate}h < ${need}`, tr(`"at least" means the same or more: ≥, not <.`, `"por lo menos" significa igual o más: ≥, no <.`)],
+                [`h ÷ ${rate} ≥ ${need}`, tr("money earned = rate × hours, not hours ÷ rate.", "dinero ganado = tarifa × horas, no horas ÷ tarifa.")],
+              ],
+              tr(`$${rate} per hour × h hours must be at least $${need}: ${rate}h ≥ ${need}, so h ≥ ${hrs}.`, `$${rate} por hora × h horas debe ser por lo menos $${need}: ${rate}h ≥ ${need}, así que h ≥ ${hrs}.`),
+              3,
+              "Spaceship",
+              {
+                kind: "write",
+                method: tr("Money earned = rate × hours. \"At least\" means greater than or equal to (≥).", "Dinero ganado = tarifa × horas. \"Por lo menos\" significa mayor o igual que (≥)."),
+                step: tr(`Earned: ${rate} × h = ${rate}h. Now compare it with ${need} using "at least".`, `Ganado: ${rate} × h = ${rate}h. Ahora compáralo con ${need} usando "por lo menos".`),
+              },
+            ),
+          );
+        }
+        // Tier 3: word problems — write the equation, then solve (lesson 8-7)
+        {
+          const a = R(5, 15),
+            b = a + R(6, 20);
+          qs.push(
+            mkQ(
+              tr(`Maya had some stickers. She got ${a} more and now has ${b}. Use x + ${a} = ${b}. How many did she have at first?`, `Maya tenía algunas calcomanías. Recibió ${a} más y ahora tiene ${b}. Usa x + ${a} = ${b}. ¿Cuántas tenía al principio?`),
+              `x = ${b - a}`,
+              [
+                [`x = ${a + b}`, tr(`she ENDED with ${b}, so she started with fewer. Subtract ${a}.`, `TERMINÓ con ${b}, así que empezó con menos. Resta ${a}.`)],
+                [`x = ${a}`, tr(`${a} is how many she GOT, not how many she had.`, `${a} es cuántas RECIBIÓ, no cuántas tenía.`)],
+                [`x = ${b}`, tr(`${b} is how many she has NOW.`, `${b} es cuántas tiene AHORA.`)],
+              ],
+              tr(`x + ${a} = ${b}, so x = ${b} ${M} ${a} = ${b - a} stickers.`, `x + ${a} = ${b}, así que x = ${b} ${M} ${a} = ${b - a} calcomanías.`),
+              3,
+              "Spaceship",
+              { kind: "word", eq: { kind: "add", a, b }, method: tr("Undo the + by subtracting from both sides.", "Deshaz la suma restando en ambos lados."), step: `x = ${b} ${M} ${a} = ?` },
+            ),
+          );
+        }
+        {
+          const c = R(3, 8),
+            each = R(4, 12),
+            total = c * each;
+          qs.push(
+            mkQ(
+              tr(`${c} friends share ${total} game tokens equally. Use ${c}x = ${total}. How many tokens does each friend get?`, `${c} amigos se reparten ${total} fichas por igual. Usa ${c}x = ${total}. ¿Cuántas fichas recibe cada amigo?`),
+              `x = ${each}`,
+              [
+                [`x = ${total - c}`, tr(`sharing equally means dividing, not subtracting ${c}.`, `repartir por igual significa dividir, no restar ${c}.`)],
+                [`x = ${total * c}`, tr("each friend gets LESS than the total. Divide.", "cada amigo recibe MENOS que el total. Divide.")],
+                [`x = ${c}`, tr(`${c} is the number of friends.`, `${c} es el número de amigos.`)],
+              ],
+              tr(`${c}x = ${total}, so x = ${total} ÷ ${c} = ${each} tokens each.`, `${c}x = ${total}, así que x = ${total} ÷ ${c} = ${each} fichas cada uno.`),
+              3,
+              "Spaceship",
+              { kind: "word", eq: { kind: "mul", a: c, b: total }, method: tr("Undo × by dividing both sides.", "Deshaz × dividiendo ambos lados."), step: `x = ${total} ÷ ${c} = ?` },
+            ),
+          );
+        }
+        {
+          const d = R(3, 6),
+            piece = R(2, 9);
+          qs.push(
+            mkQ(
+              tr(`Leo cut a rope into ${d} equal pieces. Each piece is ${piece} m long. Use x ÷ ${d} = ${piece}. How long was the rope?`, `Leo cortó una cuerda en ${d} partes iguales. Cada parte mide ${piece} m. Usa x ÷ ${d} = ${piece}. ¿Cuánto medía la cuerda?`),
+              `x = ${d * piece}`,
+              [
+                [`x = ${d + piece}`, tr(`the rope is ${d} pieces of ${piece} m: multiply, do not add.`, `la cuerda son ${d} partes de ${piece} m: multiplica, no sumes.`)],
+                [`x = ${piece}`, tr(`${piece} m is ONE piece. The whole rope is longer.`, `${piece} m es UNA parte. La cuerda entera es más larga.`)],
+                [`x = ${d * piece + d}`, ""],
+              ],
+              tr(`x ÷ ${d} = ${piece}, so x = ${piece} × ${d} = ${d * piece} m.`, `x ÷ ${d} = ${piece}, así que x = ${piece} × ${d} = ${d * piece} m.`),
+              3,
+              "Spaceship",
+              { kind: "word", eq: { kind: "div", a: d, b: piece }, method: tr("Undo ÷ by multiplying both sides.", "Deshaz ÷ multiplicando ambos lados."), step: `x = ${piece} × ${d} = ?` },
+            ),
+          );
+        }
+        // Progression: ramp by tier so the rooms read Lab → Castle → Space.
+        const byTier = (t) => shuffle(qs.filter((q) => q.tier === t));
+        return { 1: byTier(1), 2: byTier(2), 3: byTier(3) };
+      }
+      // Copy a stage's prompt/options/answer into the live door object (the
+      // shared mission panel reads these fields to mirror the choices).
+      function applyStage(q, n) {
+        const s = q.stages[n];
+        q.stage = n;
+        ["text", "correct", "options", "explain", "why", "method", "step"].forEach((k) => {
+          q[k] = s[k];
+        });
       }
 
       // --- ROOM THEMES ---
@@ -472,7 +696,7 @@
           floor: 0x0f3460,
           door: 0x533483,
           accent: 0xe94560,
-          name: "Science Lab",
+          name: tr("Science Lab", "Laboratorio"),
           particleColor: [0x00ff88, 0x00ffcc, 0x88ff00],
           ambientColor: 0x00ff88,
         },
@@ -482,7 +706,7 @@
           floor: 0x3d2914,
           door: 0x8b6914,
           accent: 0xd4a017,
-          name: "Medieval Castle",
+          name: tr("Medieval Castle", "Castillo medieval"),
           particleColor: [0xffd700, 0xff8c00, 0xffaa00],
           ambientColor: 0xffd700,
         },
@@ -492,7 +716,7 @@
           floor: 0x12163a,
           door: 0x4361ee,
           accent: 0x00d4ff,
-          name: "Space Station",
+          name: tr("Space Station", "Estación espacial"),
           particleColor: [0x00d4ff, 0x4361ee, 0x8b5cf6],
           ambientColor: 0x00d4ff,
         },
@@ -519,8 +743,8 @@
             cy = H / 2;
           this.cameras.main.setBackgroundColor("#0a0a0a");
 
-          // Ambient floating dust particles
-          this.add.particles(W / 2, H / 2, "__WHITE", {
+          // Ambient floating dust particles (decorative; off under reduced motion)
+          if (!RM()) this.add.particles(W / 2, H / 2, "__WHITE", {
             x: { min: 0, max: W },
             y: { min: 0, max: H },
             speed: { min: 3, max: 12 },
@@ -539,6 +763,7 @@
             const tx = 150 + i * 250,
               ty = 200;
             this.add.rectangle(tx, ty + 30, 8, 40, 0x4a2c0a).setDepth(1);
+            if (RM()) continue;
             this.add
               .particles(tx, ty, "__WHITE", {
                 speed: { min: 10, max: 40 },
@@ -580,8 +805,8 @@
             })
             .setOrigin(0.5);
 
-          // Title pulse animation
-          this.tweens.add({
+          // Title pulse animation (decorative; off under reduced motion)
+          if (!RM()) this.tweens.add({
             targets: titleEq,
             scaleX: 1.05,
             scaleY: 1.05,
@@ -590,7 +815,7 @@
             repeat: -1,
             ease: "Sine.easeInOut",
           });
-          this.tweens.add({
+          if (!RM()) this.tweens.add({
             targets: titleEsc,
             scaleX: 1.03,
             scaleY: 1.03,
@@ -602,15 +827,17 @@
           });
 
           this.add
-            .text(cx, 220, "Dungeon Escape", {
+            .text(cx, 220, tr("Dungeon Escape", "Escape del calabozo"), {
               fontSize: "24px",
               color: "#94a3b8",
             })
             .setOrigin(0.5);
           this.add
-            .text(cx, 250, "6.AT.8 / 6.AT.8 / 6.AT.9 | Neft Teacher", {
-              fontSize: "13px",
-              color: "#64748b",
+            .text(cx, 250, tr("Unit 8 · Lessons 8-1 to 8-7 · 6.AT.8 / 6.AT.9 | Neft Teacher", "Unidad 8 · Lecciones 8-1 a 8-7 · 6.AT.8 / 6.AT.9 | Neft Teacher"), {
+              fontSize: "14px",
+              color: "#cbd5e1",
+              backgroundColor: "#0a0a0acc",
+              padding: { x: 6, y: 2 },
             })
             .setOrigin(0.5);
 
@@ -618,7 +845,7 @@
           const highScore = parseInt(localStorage.getItem(LS_KEY) || "0");
           if (highScore > 0) {
             this.add
-              .text(cx, 275, `HIGH SCORE: ${highScore}`, {
+              .text(cx, 275, `${tr("HIGH SCORE", "MEJOR PUNTAJE")}: ${highScore}`, {
                 fontSize: "14px",
                 color: "#fbbf24",
                 fontStyle: "bold",
@@ -638,7 +865,7 @@
           hero.fillStyle(0x475569);
           hero.fillRect(-15, 15, 12, 25);
           hero.fillRect(3, 15, 12, 25);
-          this.tweens.add({
+          if (!RM()) this.tweens.add({
             targets: hero,
             y: hero.y - 8,
             duration: 1000,
@@ -654,7 +881,7 @@
           keyG.fillRect(8, -3, 20, 6);
           keyG.fillRect(22, -6, 4, 12);
           keyG.fillRect(28, -6, 4, 12);
-          this.tweens.add({
+          if (!RM()) this.tweens.add({
             targets: keyG,
             angle: 15,
             duration: 600,
@@ -665,9 +892,9 @@
 
           // Room previews with hover animation
           const rooms = [
-            { name: "Science Lab", color: 0xe94560, icon: "🔬" },
-            { name: "Castle", color: 0xd4a017, icon: "🏰" },
-            { name: "Space Station", color: 0x4361ee, icon: "🚀" },
+            { name: tr("Science Lab", "Laboratorio"), color: 0xe94560, icon: "🔬" },
+            { name: tr("Castle", "Castillo"), color: 0xd4a017, icon: "🏰" },
+            { name: tr("Space Station", "Estación espacial"), color: 0x4361ee, icon: "🚀" },
           ];
           rooms.forEach((r, i) => {
             const rx = cx - 280 + i * 280,
@@ -683,7 +910,7 @@
               })
               .setOrigin(0.5);
             // Gentle float
-            this.tweens.add({
+            if (!RM()) this.tweens.add({
               targets: roomBox,
               y: ry - 3,
               duration: 1500 + i * 300,
@@ -693,15 +920,27 @@
             });
           });
           this.add
-            .text(cx, 545, "Navigate 3 themed rooms — solve equations to unlock doors!", {
-              fontSize: "14px",
-              color: "#64748b",
-            })
+            .text(
+              cx,
+              562,
+              tr(
+                "Each door has two locks: choose the KEY (the move that keeps both sides balanced), then find x.",
+                "Cada puerta tiene dos candados: elige la LLAVE (el paso que mantiene la balanza equilibrada) y luego halla x.",
+              ),
+              {
+                fontSize: "15px",
+                color: "#e2e8f0",
+                align: "center",
+                wordWrap: { width: 760 },
+                backgroundColor: "#0a0a0acc",
+                padding: { x: 6, y: 3 },
+              },
+            )
             .setOrigin(0.5);
 
           // Start button with glow
           const btnGlow = this.add.rectangle(cx, 620, 270, 68, 0xe94560, 0.3).setDepth(0);
-          this.tweens.add({
+          if (!RM()) this.tweens.add({
             targets: btnGlow,
             scaleX: 1.1,
             scaleY: 1.15,
@@ -716,7 +955,7 @@
             .setStrokeStyle(2, 0xff6b81)
             .setInteractive({ useHandCursor: true });
           const btnText = this.add
-            .text(cx, 620, "BEGIN ESCAPE", {
+            .text(cx, 620, tr("BEGIN ESCAPE", "EMPEZAR"), {
               fontSize: "24px",
               color: "#fff",
               fontStyle: "bold",
@@ -753,23 +992,51 @@
               duration: 100,
             });
           });
-          btn.on("pointerdown", () => {
+          let starting = false;
+          const begin = () => {
+            if (starting || !this.sys.isActive()) return;
+            starting = true;
             sfx.click();
             this.cameras.main.fade(400, 0, 0, 0);
             this.time.delayedCall(400, () => this.scene.start("Game"));
-          });
+          };
+          btn.on("pointerdown", begin);
           this.add
-            .text(cx, 680, "Keys 1-4 or click to answer | Enter to confirm", {
-              fontSize: "12px",
-              color: "#475569",
+            .text(
+              cx,
+              680,
+              tr(
+                "No clock — take your time. Keys 1-4 answer · ← → then Enter · L = Español",
+                "Sin reloj: ve a tu ritmo. Teclas 1-4 responden · ← → y Enter · L = English",
+              ),
+              { fontSize: "14px", color: "#94a3b8" },
+            )
+            .setOrigin(0.5);
+          // Language switch (site-wide nt-lang key).
+          const langBtn = this.add
+            .rectangle(W - 90, 40, 150, 46, 0x1e293b)
+            .setStrokeStyle(2, 0x94a3b8)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W - 90, 40, ES ? "English" : "Español", {
+              fontSize: "18px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
             })
             .setOrigin(0.5);
+          langBtn.on("pointerdown", toggleLang);
+          // Only this scene's keys: a stopped title must never restart a run.
           this.input.keyboard.on("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              this.cameras.main.fade(400, 0, 0, 0);
-              this.time.delayedCall(400, () => this.scene.start("Game"));
-            }
+            if (!this.sys.isActive()) return;
+            if (e.key === "Enter" || e.key === " ") begin();
+            if (e.key === "l" || e.key === "L") toggleLang();
           });
+          announce(
+            tr(
+              "Equation Escape. Each door has two locks: choose the key move, then find x. Press Enter to begin.",
+              "Escape de ecuaciones. Cada puerta tiene dos candados: elige el paso llave y luego halla x. Presiona Enter para empezar.",
+            ),
+          );
         }
       }
 
@@ -780,22 +1047,31 @@
         }
         create() {
           sfx.init();
-          this.questions = genQuestions();
+          const pools = genQuestions();
           const studioTier = this.sys.settings.data?.studioTier || 2;
-          if (studioTier !== 2) {
-            const chosenTier =
-              studioTier === 1 ? 1 : Math.max(...this.questions.map((q) => q.tier));
-            this.questions = this.questions.filter((q) => q.tier === chosenTier);
-          }
+          // Support = one-step add/sub rooms; Challenge = inequality and word
+          // rooms; Standard = 5 of each tier, ramping Lab → Castle → Space.
+          if (studioTier === 1) this.questions = pools[1];
+          else if (studioTier === 3) this.questions = pools[3];
+          else
+            this.questions = [
+              ...pools[1].slice(0, 5),
+              ...pools[2].slice(0, 5),
+              ...pools[3].slice(0, 5),
+            ];
+          this.questions.forEach((q) => {
+            if (q.stages) applyStage(q, 0);
+          });
           this.qIndex = 0;
           this.correctAnswers = 0;
           this.score = 0;
-          this.lives = 3;
+          this.solved = 0;
+          this.missedQs = [];
+          this.doorMisses = 0;
           this.streak = 0;
           this.bestStreak = 0;
           this.comboMultiplier = 1;
           this.totalQ = Math.min(15, this.questions.length);
-          if (!this.spare) this.spare = this.questions.slice(this.totalQ, this.totalQ + 2);
           this.questions = this.questions.slice(0, this.totalQ);
           this.answered = false;
           this.startTime = Date.now();
@@ -819,6 +1095,15 @@
           this.buildHUD();
           this.loadQuestion();
           this.input.keyboard.on("keydown", this.handleKey, this);
+          // After "Launch mission" the focus is still on that button, so the
+          // first Enter would relaunch the run. Hand focus to the game canvas.
+          try {
+            const ae = document.activeElement;
+            if (ae && (ae.id === "fm-start" || ae === document.body) && this.game.canvas) {
+              this.game.canvas.setAttribute("tabindex", "0");
+              this.game.canvas.focus({ preventScroll: true });
+            }
+          } catch (e) {}
         }
 
         getTheme() {
@@ -881,7 +1166,7 @@
           if (!this.hintObj || !this.hintObj.active) return;
           this.hintObj.setColor("#94a3b8");
 
-          if (REDUCE_MOTION) {
+          if (RM()) {
             // Show the full hint immediately — no animated reveal.
             this.hintObj.setText("→ " + explain);
             return;
@@ -918,7 +1203,7 @@
         }
 
         streakShake() {
-          if (REDUCE_MOTION) return;
+          if (RM()) return;
           const intensity = Math.min(0.003 + this.streak * 0.002, 0.015);
           const dur = Math.min(100 + this.streak * 30, 300);
           this.cameras.main.shake(dur, intensity);
@@ -1079,7 +1364,7 @@
           if (!this.parallaxLayers) return;
           let nx = 0,
             ny = 0;
-          if (!REDUCE_MOTION) {
+          if (!RM()) {
             const p = this.input.activePointer;
             // Range -1..1 from screen centre.
             const rx = Phaser.Math.Clamp((p.x / W - 0.5) * 2, -1, 1) || 0;
@@ -1129,7 +1414,7 @@
             })
             .setDepth(11);
           this.hudLives = this.add
-            .text(350, 10, "", { fontSize: "15px", color: "#ef4444" })
+            .text(350, 10, "", { fontSize: "15px", color: "#86efac" })
             .setDepth(11);
           this.hudStreak = this.add
             .text(520, 10, "", { fontSize: "15px", color: "#f59e0b" })
@@ -1157,38 +1442,40 @@
             .setDepth(11);
         }
 
-        loadQuestion() {
+        loadQuestion(sameDoor) {
           if (this.qIndex >= this.totalQ) {
             this.endGame();
             return;
           }
           this.answered = false;
           this.attempts = 0;
-          this.doorOpen = false;
           this.selectedIdx = -1;
           this.questionStartTime = Date.now();
-          this.doublePointsActive = false;
           // Cancel any pending step-by-step hint reveal from the prior question.
           if (this._hintTimers) {
             this._hintTimers.forEach((ev) => ev.remove(false));
             this._hintTimers = [];
           }
 
-          // Rebuild room if theme changed
           const q = this.questions[this.qIndex];
-          const prevRoom = this.lastRoom;
-          if (q.room !== prevRoom || this.qIndex === 0) {
-            this.playerX = 100;
-            // Phase transition animation
-            if (this.qIndex > 0 && q.room !== prevRoom) {
-              this.showPhaseTransition(q.room);
+          if (!sameDoor) {
+            this.doorOpen = false;
+            this.doublePointsActive = false;
+            this.doorMisses = 0;
+            // Rebuild room if theme changed
+            const prevRoom = this.lastRoom;
+            if (q.room !== prevRoom || this.qIndex === 0) {
+              this.playerX = 100;
+              if (this.qIndex > 0 && q.room !== prevRoom) this.showPhaseTransition(q.room);
+              this.buildRoom();
             }
-            this.buildRoom();
+            this.lastRoom = q.room;
+            this.doorLabel.setText(tr("LOCKED", "CERRADA")).setColor("#ef4444");
+            this.doorLock.setFillStyle(0x333333);
+          } else {
+            this.doorLabel.setText(tr("1 LOCK LEFT", "FALTA 1")).setColor("#fbbf24");
+            this.doorLock.setFillStyle(0xfbbf24);
           }
-          this.lastRoom = q.room;
-
-          this.doorLabel.setText("LOCKED").setColor("#ef4444");
-          this.doorLock.setFillStyle(0x333333);
           this.updateHUD();
 
           // Animated progress bar
@@ -1208,16 +1495,25 @@
           if (this.hintObj) this.hintObj.destroy();
           if (this.powerUpGroup) this.powerUpGroup.destroy(true);
 
-          // Equation on door
           const t = this.getTheme();
+          const twoLine = q.text.includes("\n") || q.text.length > 60;
           this.qPanel = this.add
-            .rectangle(W / 2, 330, 650, 60, 0x000000, 0.85)
+            .rectangle(W / 2, 318, 760, twoLine ? 92 : 60, 0x000000, 0.85)
             .setStrokeStyle(2, t.accent)
             .setDepth(6);
           const tierColors = ["#22c55e", "#f59e0b", "#ef4444"];
-          const tierNames = ["Patrol", "Detective", "Chief"];
+          const tierNames = [
+            tr("Patrol", "Patrulla"),
+            tr("Detective", "Detective"),
+            tr("Chief", "Jefe"),
+          ];
+          const stageName = q.stages
+            ? q.stage === 0
+              ? tr(" · KEY", " · LLAVE")
+              : tr(" · LOCK", " · CANDADO")
+            : "";
           this.tierLabel = this.add
-            .text(W / 2 - 290, 318, tierNames[q.tier - 1], {
+            .text(W / 2 - 372, twoLine ? 278 : 292, tierNames[q.tier - 1] + stageName, {
               fontSize: "12px",
               color: tierColors[q.tier - 1],
               backgroundColor: "#1e293b",
@@ -1225,19 +1521,24 @@
             })
             .setDepth(7);
           this.qTextObj = this.add
-            .text(W / 2, 330, q.text, {
-              fontSize: "20px",
+            .text(W / 2, 318, q.text, {
+              fontSize: twoLine ? "18px" : "20px",
               color: "#e2e8f0",
               fontStyle: "bold",
               align: "center",
-              wordWrap: { width: 620 },
+              wordWrap: { width: 700 },
+              lineSpacing: 6,
             })
             .setOrigin(0.5)
             .setDepth(7);
 
+          this.drawBalance(q);
+
           // Announce the new question + its options for screen-reader users.
           announce(
-            `Room ${this.qIndex + 1} of ${this.totalQ}. ${q.text}. Options: ${q.options.join(", ")}.`,
+            `${tr("Room", "Sala")} ${this.qIndex + 1} ${tr("of", "de")} ${this.totalQ}. ${q.text.replace("\n", ". ")}. ${tr("Options", "Opciones")}: ${q.options
+              .map((o, i) => `${i + 1}, ${o.trim()}`)
+              .join("; ")}.`,
           );
 
           // Question enter animation
@@ -1257,28 +1558,33 @@
             ease: "Power2",
           });
 
-          // Answer options (as buttons below)
+          // Answer options (as buttons below). Key-stage moves are phrases, so
+          // those buttons grow taller and wrap instead of overflowing.
+          const longOpts = q.options.some((o) => o.length > 12);
+          const bh = longOpts ? 78 : 50;
           this.ansGroup = this.add.group();
           this.answerBtns = [];
           q.options.forEach((opt, i) => {
             const bx = 130 + i * 220,
               by = H - 140;
             const bg = this.add
-              .rectangle(bx, by, 190, 50, 0x1e293b, 0.9)
+              .rectangle(bx, by, 204, bh, 0x1e293b, 0.92)
               .setStrokeStyle(2, t.accent)
               .setInteractive({ useHandCursor: true })
               .setDepth(7);
             const num = this.add
-              .text(bx - 80, by - 8, String(i + 1), {
-                fontSize: "11px",
-                color: "#64748b",
+              .text(bx - 96, by - bh / 2 + 4, String(i + 1), {
+                fontSize: "12px",
+                color: "#94a3b8",
               })
               .setDepth(8);
             const txt = this.add
-              .text(bx, by, opt, {
-                fontSize: "17px",
+              .text(bx, by, opt.trim(), {
+                fontSize: longOpts ? "15px" : "17px",
                 color: "#e2e8f0",
                 fontStyle: "bold",
+                align: "center",
+                wordWrap: { width: 180 },
               })
               .setOrigin(0.5)
               .setDepth(8);
@@ -1304,39 +1610,14 @@
             });
 
             bg.on("pointerover", () => {
-              if (!this.answered) {
+              if (!this.answered && !this.answerBtns[i].eliminated) {
                 bg.setStrokeStyle(3, 0xfbbf24);
-                this.tweens.add({
-                  targets: bg,
-                  scaleX: 1.05,
-                  scaleY: 1.05,
-                  duration: 80,
-                });
-                this.tweens.add({
-                  targets: txt,
-                  scaleX: 1.05,
-                  scaleY: 1.05,
-                  duration: 80,
-                });
                 sfx.hover();
               }
             });
             bg.on("pointerout", () => {
-              if (!this.answered && this.selectedIdx !== i) {
+              if (!this.answered && this.selectedIdx !== i && !this.answerBtns[i].eliminated)
                 bg.setStrokeStyle(2, t.accent);
-                this.tweens.add({
-                  targets: bg,
-                  scaleX: 1,
-                  scaleY: 1,
-                  duration: 80,
-                });
-                this.tweens.add({
-                  targets: txt,
-                  scaleX: 1,
-                  scaleY: 1,
-                  duration: 80,
-                });
-              }
             });
             bg.on("pointerdown", () => {
               if (!this.answered) this.submitAnswer(i);
@@ -1351,28 +1632,80 @@
           this.powerUpGroup = this.add.group();
           this.buildPowerUpButtons();
 
-          // Feedback area
+          // Feedback area (readable size; wraps above the floor)
           this.fbObj = this.add
-            .text(W / 2, H - 60, "", {
-              fontSize: "15px",
-              color: "#94a3b8",
+            .text(W / 2, 222, "", {
+              fontSize: "16px",
+              color: "#e2e8f0",
               align: "center",
-              wordWrap: { width: 700 },
+              wordWrap: { width: 900 },
+              backgroundColor: "#000000aa",
+              padding: { x: 8, y: 4 },
             })
             .setOrigin(0.5)
-            .setDepth(8);
+            .setDepth(12);
           this.hintObj = this.add
-            .text(W / 2, H - 35, "", {
-              fontSize: "12px",
-              color: "#64748b",
+            .text(W / 2, H - 20, "", {
+              fontSize: "13px",
+              color: "#94a3b8",
               align: "center",
-              wordWrap: { width: 700 },
+              wordWrap: { width: 900 },
             })
             .setOrigin(0.5)
             .setDepth(8);
           // Trap sprites (hidden)
           if (this.trapGroup) this.trapGroup.destroy(true);
           this.trapGroup = this.add.group();
+        }
+
+        // A balance scale under the equation: both pans show the two sides,
+        // and the beam stays level because the equation is balanced. After
+        // the right KEY, both pans show the same move being applied.
+        drawBalance(q) {
+          if (this.balanceGroup) this.balanceGroup.destroy(true);
+          this.balanceGroup = this.add.group();
+          if (!q.balance) return;
+          const cx = W / 2,
+            y = 430;
+          const g = this.add.graphics().setDepth(4);
+          g.fillStyle(0x94a3b8, 0.9);
+          g.fillTriangle(cx - 22, y + 70, cx + 22, y + 70, cx, y + 8);
+          g.fillRect(cx - 190, y, 380, 7);
+          g.lineStyle(2, 0xcbd5e1, 0.8);
+          [cx - 170, cx + 170].forEach((px) => {
+            g.lineBetween(px, y + 4, px - 46, y + 46);
+            g.lineBetween(px, y + 4, px + 46, y + 46);
+          });
+          g.fillStyle(0x334155, 0.95);
+          g.fillRoundedRect(cx - 230, y + 44, 120, 30, 8);
+          g.fillRoundedRect(cx + 110, y + 44, 120, 30, 8);
+          this.balanceGroup.add(g);
+          const keyDone = q.stage === 1;
+          const op = keyDone ? q.stages[0].correct : "";
+          const sideStyle = { fontSize: "18px", color: "#fde68a", fontStyle: "bold" };
+          const left = this.add
+            .text(cx - 170, y + 59, q.balance.left, sideStyle)
+            .setOrigin(0.5)
+            .setDepth(5);
+          const right = this.add
+            .text(cx + 170, y + 59, q.balance.right, sideStyle)
+            .setOrigin(0.5)
+            .setDepth(5);
+          this.balanceGroup.add(left);
+          this.balanceGroup.add(right);
+          if (keyDone) {
+            const move = this.add
+              .text(cx, y - 22, "⚖ " + op, {
+                fontSize: "15px",
+                color: "#86efac",
+                fontStyle: "bold",
+                backgroundColor: "#052e16cc",
+                padding: { x: 8, y: 3 },
+              })
+              .setOrigin(0.5)
+              .setDepth(5);
+            this.balanceGroup.add(move);
+          }
         }
 
         buildPowerUpButtons() {
@@ -1395,7 +1728,7 @@
               .setInteractive({ useHandCursor: true })
               .setDepth(9);
             const txt = this.add
-              .text(px + 35, py, `${pu.label} (${pu.hotkey})`, {
+              .text(px + 35, py, `${pu.label === "2x PTS" ? tr("2x PTS", "2x PTS") : pu.label} (${pu.hotkey})`, {
                 fontSize: "11px",
                 color: "#fff",
                 fontStyle: "bold",
@@ -1424,6 +1757,7 @@
           const q = this.questions[this.qIndex];
           if (key === "fiftyFifty") {
             this.powerUps.fiftyFifty--;
+            this.doorMisses++; // help used: no longer an unaided first try
             sfx.powerup();
             // Remove 2 wrong answers
             let removed = 0;
@@ -1436,12 +1770,12 @@
                 removed++;
               }
             });
-            this.showFloatingText(W / 2, H - 200, "50/50!", "#3b82f6", "18px");
+            this.showFloatingText(W / 2, H - 220, "50/50!", "#3b82f6", "18px");
           } else if (key === "doublePoints") {
             this.powerUps.doublePoints--;
             this.doublePointsActive = true;
             sfx.powerup();
-            this.showFloatingText(W / 2, H - 200, "DOUBLE POINTS!", "#a78bfa", "18px");
+            this.showFloatingText(W / 2, H - 220, tr("DOUBLE POINTS!", "¡PUNTOS DOBLES!"), "#a78bfa", "18px");
           }
           // Rebuild power-up buttons
           if (this.powerUpGroup) this.powerUpGroup.destroy(true);
@@ -1468,7 +1802,7 @@
             .setAlpha(0)
             .setScale(0.5);
           const subText = this.add
-            .text(W / 2, H / 2 + 30, "ENTERING NEW AREA", {
+            .text(W / 2, H / 2 + 30, tr("ENTERING NEW AREA", "ENTRANDO A UNA NUEVA ZONA"), {
               fontSize: "16px",
               color: "#94a3b8",
             })
@@ -1506,108 +1840,108 @@
 
         submitAnswer(idx) {
           if (this.answered) return;
-          if (this.answerBtns[idx].eliminated) return;
+          if (!this.answerBtns[idx] || this.answerBtns[idx].eliminated) return;
           this.answered = true;
           const q = this.questions[this.qIndex];
           const chosen = this.answerBtns[idx].optText;
           const correct = chosen === q.correct;
-          const t = this.getTheme();
           const tries = this.attempts || 0;
-          const fastAnswer = false; // calm: no speed bonus
+
+          if (correct && q.stages && q.stage === 0) {
+            // The KEY fits: the balance shows the move, then the lock appears.
+            this.answerBtns[idx].bg.setFillStyle(0x22c55e).setStrokeStyle(3, 0x22c55e);
+            sfx.key();
+            const msg = tr("The key fits! ", "¡La llave sirve! ") + q.explain;
+            this.fbObj.setText(msg).setColor("#86efac");
+            announce(msg);
+            this.showFloatingText(130 + idx * 220, H - 190, tr("KEY!", "¡LLAVE!"), "#fbbf24", "20px");
+            this.time.delayedCall(RM() ? 700 : 1100, () => {
+              applyStage(q, 1);
+              this.loadQuestion(true);
+            });
+            return;
+          }
 
           if (correct) {
-            // Full points for an unaided first try; fewer after help.
-            if (tries === 0) this.correctAnswers++;
-            const helpFactor = [1, 0.5, 0.25, 0][Math.min(tries, 3)];
-            let basePoints = q.tier * 15;
-            let streakBonus = tries === 0 ? Math.min(this.streak, 5) * 5 : 0;
+            // Full points only for an unaided first try at every lock.
+            const misses = this.doorMisses + tries;
+            if (misses === 0) this.correctAnswers++;
+            const helpFactor = [1, 0.5, 0.25, 0.25][Math.min(misses, 3)];
+            const basePoints = q.tier * 15;
+            const streakBonus = misses === 0 ? Math.min(this.streak, 5) * 5 : 0;
             let subtotal = Math.round((basePoints + streakBonus) * helpFactor);
             if (this.doublePointsActive) subtotal *= 2;
 
             this.score += subtotal;
-            window.FlagshipAdventure?.record({ firstTry: tries === 0, kind: q.room });
+            window.FlagshipAdventure?.record({ firstTry: misses === 0, kind: q.room });
             this.solved++;
-            if (tries === 0) this.streak++;
-            else if (!this.missedQs.includes(q)) this.missedQs.push(q);
+            if (misses === 0) this.streak++;
+            else {
+              this.streak = 0;
+              if (!this.missedQs.includes(q)) this.missedQs.push(q);
+            }
             if (this.streak > this.bestStreak) this.bestStreak = this.streak;
             this.comboMultiplier = Math.min(1 + Math.floor(this.streak / 2) * 0.5, 4);
 
-            // Update progress dots
             if (this.progDots[this.qIndex]) {
-              this.progDots[this.qIndex].setFillStyle(tries === 0 ? 0x22c55e : 0xf59e0b);
+              this.progDots[this.qIndex].setFillStyle(misses === 0 ? 0x22c55e : 0xf59e0b);
             }
 
             // Door opens!
             this.doorOpen = true;
-            announce("Correct! Door unlocked. Plus " + subtotal + " points.");
-            this.doorLabel.setText("UNLOCKED!").setColor("#22c55e");
+            this.doorLabel.setText(tr("UNLOCKED!", "¡ABIERTA!")).setColor("#22c55e");
             this.doorLock.setFillStyle(0x22c55e);
             this.answerBtns[idx].bg.setFillStyle(0x22c55e);
             this.answerBtns[idx].bg.setStrokeStyle(3, 0x22c55e);
             sfx.unlock();
-
-            // Floating score text
-            this.showFloatingText(130 + idx * 220, H - 170, `+${subtotal}`, "#22c55e");
-            if (fastAnswer) {
-              sfx.timeBonus();
-              this.showFloatingText(W / 2, H - 200, "SPEED BONUS!", "#00d4ff", "16px");
-            }
+            this.showFloatingText(130 + idx * 220, H - 190, `+${subtotal}`, "#22c55e");
             if (this.doublePointsActive) {
-              this.showFloatingText(W / 2, H - 220, "DOUBLE!", "#a78bfa", "16px");
+              this.showFloatingText(W / 2, H - 220, tr("DOUBLE!", "¡DOBLE!"), "#a78bfa", "16px");
             }
 
             // Streak milestone effects
             if (this.streak === 3) {
               sfx.streak3();
-              this.showFloatingText(W / 2, 280, "STREAK x3!", "#f59e0b", "28px");
+              this.showFloatingText(W / 2, 250, tr("STREAK x3!", "¡RACHA x3!"), "#f59e0b", "28px");
               this.spawnConfetti(W / 2, 300, 30);
             } else if (this.streak === 5) {
               sfx.streak5();
-              this.showFloatingText(W / 2, 280, "STREAK x5!", "#ff6600", "32px");
+              this.showFloatingText(W / 2, 250, tr("STREAK x5!", "¡RACHA x5!"), "#ff6600", "32px");
               this.spawnConfetti(W / 2, 300, 50);
             } else if (this.streak === 7) {
               sfx.streak7();
-              this.showFloatingText(W / 2, 280, "UNSTOPPABLE x7!", "#ef4444", "36px");
+              this.showFloatingText(W / 2, 250, tr("UNSTOPPABLE x7!", "¡IMPARABLE x7!"), "#ef4444", "36px");
               this.spawnConfetti(W / 2, 300, 80);
-              // Award extra power-up at streak 7
               this.powerUps.fiftyFifty++;
             }
 
-            this.fbObj.setText(
-              "DOOR UNLOCKED! +" +
-                subtotal +
-                " pts" +
-                (tries > 0 ? " (with help — try the next one on your own!)" : "") +
-                (tries === 0 && this.streak >= 3 ? " STREAK x" + this.streak + "!" : "") +
-                "  ✔ " +
-                q.explain,
-            );
-            this.fbObj.setColor("#22c55e");
+            const msg =
+              tr("DOOR UNLOCKED! +", "¡PUERTA ABIERTA! +") +
+              subtotal +
+              tr(" pts", " pts") +
+              (misses > 0
+                ? tr(" (with help — try the next one on your own!)", " (con ayuda: ¡intenta la próxima solo!)")
+                : "") +
+              (misses === 0 && this.streak >= 3 ? tr(" STREAK x", " RACHA x") + this.streak + "!" : "") +
+              "  ✔ " +
+              q.explain;
+            this.fbObj.setText(msg).setColor("#86efac");
+            announce(msg);
 
-            // Door open animation
-            this.tweens.add({
-              targets: this.doorBg,
-              scaleX: 0.1,
-              duration: 500,
-              ease: "Power2",
-            });
-
-            // Confetti burst at door
-            this.spawnConfetti(W - 80, 430, 15 + this.streak * 3);
-
-            // Screen shake scaled to streak
+            this.tweens.add({ targets: this.doorBg, scaleX: 0.1, duration: 500, ease: "Power2" });
+            if (!RM()) this.spawnConfetti(W - 80, 430, 15 + this.streak * 3);
             this.streakShake();
 
-            // Move player through door
+            // Walk through the door; students read the worked step meanwhile.
             this.tweens.add({
               targets: this.player,
               x: W - 80,
-              duration: 1200,
+              duration: RM() ? 300 : 1600,
               ease: "Power2",
-              delay: 400,
+              delay: 700,
               onComplete: () => {
-                this.cameras.main.flash(300, 0, 0, 0);
-                this.time.delayedCall(500, () => {
+                if (!RM()) this.cameras.main.flash(300, 0, 0, 0);
+                this.time.delayedCall(900, () => {
                   this.qIndex++;
                   this.playerX = 100;
                   this.player.setPosition(100, this.playerY);
@@ -1616,8 +1950,8 @@
               },
             });
           } else {
-            // Not yet: rule this door out, give the next rung of help, and let
-            // the student try again. Nothing advances on its own.
+            // Not yet: rule this option out, name the mistake, climb one rung
+            // of help, and let the student try again. Nothing advances.
             this.attempts = tries + 1;
             this.streak = 0;
             this.comboMultiplier = 1;
@@ -1627,36 +1961,43 @@
             btn.bg.setStrokeStyle(3, 0xef4444);
             btn.txt.setAlpha(0.5);
             btn.bg.disableInteractive();
-            if (this.progDots[this.qIndex]) {
-              this.progDots[this.qIndex].setFillStyle(0xf59e0b);
-            }
+            if (this.progDots[this.qIndex]) this.progDots[this.qIndex].setFillStyle(0xf59e0b);
             sfx.trap();
-            this.showFloatingText(130 + idx * 220, H - 170, "Not yet", "#f59e0b", "20px");
+            this.showFloatingText(130 + idx * 220, H - 190, tr("Not yet", "Todavía no"), "#f59e0b", "20px");
             const left = this.answerBtns.filter((b) => !b.eliminated).length;
+            const m = /^x = (-?\d+)$/.exec(chosen.trim());
+            const why =
+              (q.why && q.why[chosen]) ||
+              (m && q.stage !== 0 ? checkLine(q, parseInt(m[1], 10)) : "") ||
+              tr("that does not make it true.", "eso no la hace verdadera.");
+            const lead = tr("Not yet — ", "Todavía no: ") + why;
             let msg;
-            if (this.attempts === 1) {
-              msg = "Not yet — " + chosen + " does not make it true. Hint: " + methodHint(q);
+            if (this.attempts === 1 && left > 1) {
+              msg = lead + tr("  Hint: ", "  Pista: ") + q.method;
             } else if (this.attempts === 2 && left > 1) {
-              msg = "Try this step: " + workedStep(q);
+              msg = lead + tr("  Try this step: ", "  Prueba este paso: ") + q.step;
             } else {
-              msg = "Here is the full solution: " + q.explain + " Tap the matching door to go on.";
+              msg =
+                tr("Here is the full solution: ", "Esta es la solución completa: ") +
+                q.explain +
+                tr(" Tap the matching choice to go on.", " Toca la opción que coincide para seguir.");
             }
-            this.fbObj.setText(msg);
-            this.fbObj.setColor("#fbbf24");
-            // The shared Mission Control panel prints the full explanation on
-            // any wrong pick; replace it with this rung of the help ladder.
+            this.fbObj.setText(msg).setColor("#fde68a");
+            // The shared mission panel prints a generic line on a wrong pick;
+            // replace it with this rung of the help ladder.
             try {
               const fm = document.querySelector(".fm-feedback");
               if (fm) fm.textContent = msg;
             } catch (e) {}
             if (this.hintObj && this.hintObj.active) this.hintObj.setText("");
             announce(msg);
-            if (REDUCE_MOTION) {
+            if (RM()) {
               const tint = this.add.rectangle(W / 2, H / 2, W, H, 0xff0000, 0.08).setDepth(15);
               this.time.delayedCall(350, () => tint.destroy());
             } else {
               this.cameras.main.shake(150, 0.004);
             }
+            if (q.stages && q.stage === 0) this.doorMisses++;
             this.answered = false;
           }
           this.updateHUD();
@@ -1708,13 +2049,14 @@
         }
 
         updateHUD() {
-          this.hudQ.setText(`ROOM ${this.qIndex + 1}/${this.totalQ}`);
-          this.hudScore.setText(`SCORE: ${this.score}`);
-          this.hudLives.setText("LIVES: " + "❤".repeat(this.lives) + "♡".repeat(3 - this.lives));
+          this.hudQ.setText(`${tr("ROOM", "SALA")} ${Math.min(this.qIndex + 1, this.totalQ)}/${this.totalQ}`);
+          this.hudScore.setText(`${tr("SCORE", "PUNTOS")}: ${this.score}`);
+          // Calm play: no lives to lose — count unaided first tries instead.
+          this.hudLives.setText(`${tr("FIRST TRY", "1.er INTENTO")}: ${this.correctAnswers}`);
 
           // Streak display with pulse
           if (this.streak >= 2) {
-            this.hudStreak.setText(`STREAK: ${this.streak}x`);
+            this.hudStreak.setText(`${tr("STREAK", "RACHA")}: ${this.streak}x`);
             if (this.streak >= 5) this.hudStreak.setColor("#ef4444");
             else if (this.streak >= 3) this.hudStreak.setColor("#ff6600");
             else this.hudStreak.setColor("#f59e0b");
@@ -1756,7 +2098,7 @@
             localStorage.setItem(LS_KEY, String(this.score));
           }
 
-          const epCorrect = Math.max(0, correct);
+          const epCorrect = Math.max(0, this.solved);
           try {
             window.EduPulse &&
               EduPulse.record({
@@ -1779,6 +2121,8 @@
               time: elapsed,
               isNewHighScore: isNewHighScore,
               prevBest: prevBest,
+              solved: this.solved,
+              missed: this.missedQs.length,
             });
           });
         }
@@ -1839,7 +2183,12 @@
             }
           } else sfx.fail();
 
-          const titles = ["Keep Trying!", "Good Effort!", "Great Escape!", "MASTER ESCAPIST!"];
+          const titles = [
+            tr("Keep Trying!", "¡Sigue intentando!"),
+            tr("Good Effort!", "¡Buen esfuerzo!"),
+            tr("Great Escape!", "¡Gran escape!"),
+            tr("MASTER ESCAPIST!", "¡MAESTRO DEL ESCAPE!"),
+          ];
           const titleText = this.add
             .text(cx, 70, titles[stars], {
               fontSize: "42px",
@@ -1902,7 +2251,7 @@
           // New high score
           if (d.isNewHighScore) {
             const hsText = this.add
-              .text(cx, 175, "NEW HIGH SCORE!", {
+              .text(cx, 175, tr("NEW HIGH SCORE!", "¡NUEVO MEJOR PUNTAJE!"), {
                 fontSize: "24px",
                 color: "#ff6600",
                 fontStyle: "bold",
@@ -1938,7 +2287,9 @@
               fontStyle: "bold",
             })
             .setOrigin(0.5);
-          this.add.text(cx, 260, "Accuracy", { fontSize: "13px", color: "#64748b" }).setOrigin(0.5);
+          this.add
+            .text(cx, 260, tr("First try", "Al primer intento"), { fontSize: "13px", color: "#94a3b8" })
+            .setOrigin(0.5);
 
           // Animated counter
           let counter = { val: 0 };
@@ -1954,10 +2305,10 @@
           });
 
           const stats = [
-            { l: "Score", v: d.score, c: "#fbbf24" },
-            { l: "First Try", v: `${d.correct}/${d.total}`, c: "#22c55e" },
-            { l: "Best Streak", v: d.bestStreak, c: "#f59e0b" },
-            { l: "Doors", v: `${d.total}/${d.total}`, c: "#94a3b8" },
+            { l: tr("Score", "Puntos"), v: d.score, c: "#fbbf24" },
+            { l: tr("First Try", "1.er intento"), v: `${d.correct}/${d.total}`, c: "#22c55e" },
+            { l: tr("Best Streak", "Mejor racha"), v: d.bestStreak, c: "#f59e0b" },
+            { l: tr("Doors", "Puertas"), v: `${d.solved ?? d.total}/${d.total}`, c: "#94a3b8" },
           ];
           stats.forEach((s, i) => {
             const x = cx - 240 + i * 165,
@@ -1975,7 +2326,7 @@
               .setOrigin(0.5)
               .setAlpha(0);
             const label = this.add
-              .text(x, y + 14, s.l, { fontSize: "11px", color: "#64748b" })
+              .text(x, y + 14, s.l, { fontSize: "13px", color: "#94a3b8" })
               .setOrigin(0.5)
               .setAlpha(0);
             this.tweens.add({
@@ -1987,18 +2338,27 @@
           });
 
           // Rooms cleared
-          const roomsCleared = Math.min(d.correct, 15);
           this.add
-            .text(cx, 430, `Rooms Escaped: ${roomsCleared} of ${d.total}`, {
-              fontSize: "16px",
-              color: "#94a3b8",
-            })
+            .text(
+              cx,
+              430,
+              d.missed
+                ? tr(
+                    `Doors opened with help: ${d.missed}. Next time, choose the KEY first: what is done to x, and what undoes it?`,
+                    `Puertas abiertas con ayuda: ${d.missed}. La próxima vez, elige primero la LLAVE: ¿qué se le hace a x y qué lo deshace?`,
+                  )
+                : tr(
+                    "Every door opened on the first try. Try Challenge rooms next!",
+                    "Abriste todas las puertas al primer intento. ¡Prueba las salas de desafío!",
+                  ),
+              { fontSize: "16px", color: "#fde68a", align: "center", wordWrap: { width: 800 } },
+            )
             .setOrigin(0.5);
 
           // Previous best
           if (d.prevBest > 0 && !d.isNewHighScore) {
             this.add
-              .text(cx, 455, `Personal Best: ${d.prevBest}`, {
+              .text(cx, 465, `${tr("Personal Best", "Mejor marca")}: ${d.prevBest}`, {
                 fontSize: "13px",
                 color: "#64748b",
               })
@@ -2011,7 +2371,7 @@
             .setStrokeStyle(2, 0xff6b81)
             .setInteractive({ useHandCursor: true });
           const btn1Text = this.add
-            .text(cx - 110, 510, "ESCAPE AGAIN", {
+            .text(cx - 110, 510, tr("ESCAPE AGAIN", "OTRA VEZ"), {
               fontSize: "17px",
               color: "#fff",
               fontStyle: "bold",
@@ -2046,7 +2406,7 @@
             .setStrokeStyle(2, 0x475569)
             .setInteractive({ useHandCursor: true });
           const btn2Text = this.add
-            .text(cx + 110, 510, "MAIN MENU", {
+            .text(cx + 110, 510, tr("MAIN MENU", "MENÚ"), {
               fontSize: "17px",
               color: "#94a3b8",
               fontStyle: "bold",
@@ -2077,12 +2437,18 @@
           });
 
           this.add
-            .text(cx, H - 25, "Equation Escape — Neft Teacher — 6.AT.8 / 6.AT.8 / 6.AT.9", {
-              fontSize: "11px",
-              color: "#475569",
-            })
+            .text(
+              cx,
+              H - 25,
+              tr(
+                "Equation Escape — Neft Teacher — Unit 8 · 6.AT.8 / 6.AT.9 · Enter = play again · Esc = menu",
+                "Escape de ecuaciones — Neft Teacher — Unidad 8 · 6.AT.8 / 6.AT.9 · Enter = otra vez · Esc = menú",
+              ),
+              { fontSize: "13px", color: "#94a3b8" },
+            )
             .setOrigin(0.5);
           this.input.keyboard.on("keydown", (e) => {
+            if (!this.sys.isActive()) return;
             if (e.key === "Enter" || e.key === " ") {
               this.cameras.main.fade(400, 0, 0, 0);
               this.time.delayedCall(400, () => this.scene.start("Game"));
@@ -2147,24 +2513,24 @@
         const wrap = document.createElement("div");
         wrap.id = "ee-touch-controls";
         wrap.setAttribute("role", "group");
-        wrap.setAttribute("aria-label", "On-screen game controls");
+        wrap.setAttribute("aria-label", tr("On-screen game controls", "Controles del juego en pantalla"));
 
         // Left cluster: D-pad for selecting/confirming answers.
         const dpad = document.createElement("div");
         dpad.className = "ee-dpad";
-        dpad.appendChild(mkBtn("◀", "Move selection left", "ArrowLeft", "ee-pad-left"));
-        dpad.appendChild(mkBtn("OK", "Confirm selected answer", "Enter", "ee-pad-ok"));
-        dpad.appendChild(mkBtn("▶", "Move selection right", "ArrowRight", "ee-pad-right"));
+        dpad.appendChild(mkBtn("◀", tr("Move selection left", "Mover la selección a la izquierda"), "ArrowLeft", "ee-pad-left"));
+        dpad.appendChild(mkBtn("OK", tr("Confirm selected answer", "Confirmar la respuesta elegida"), "Enter", "ee-pad-ok"));
+        dpad.appendChild(mkBtn("▶", tr("Move selection right", "Mover la selección a la derecha"), "ArrowRight", "ee-pad-right"));
         wrap.appendChild(dpad);
 
         // Right cluster: numbered answer keys 1-4 + power-ups.
         const keys = document.createElement("div");
         keys.className = "ee-keys";
         for (let i = 1; i <= 4; i++) {
-          keys.appendChild(mkBtn(String(i), "Answer choice " + i, String(i), "ee-num"));
+          keys.appendChild(mkBtn(String(i), tr("Answer choice ", "Opción ") + i, String(i), "ee-num"));
         }
-        keys.appendChild(mkBtn("50/50", "Use fifty-fifty power-up", "f", "ee-pu"));
-        keys.appendChild(mkBtn("2×", "Use double points power-up", "d", "ee-pu"));
+        keys.appendChild(mkBtn("50/50", tr("Use fifty-fifty power-up", "Usar el comodín 50/50"), "f", "ee-pu"));
+        keys.appendChild(mkBtn("2×", tr("Use double points power-up", "Usar el comodín de puntos dobles"), "d", "ee-pu"));
         wrap.appendChild(keys);
 
         function attach() {
@@ -2184,10 +2550,14 @@
       (function labelCanvas() {
         const c = document.querySelector("canvas");
         if (c) {
-          c.setAttribute("role", "img");
+          c.setAttribute("role", "application");
+          if (!c.hasAttribute("tabindex")) c.setAttribute("tabindex", "0");
           c.setAttribute(
             "aria-label",
-            "Equation Escape dungeon game. Solve one-step equations to unlock each door. Use number keys 1 to 4 or the arrow keys and Enter to choose an answer. Questions and results are also announced as text.",
+            tr(
+              "Equation Escape dungeon game. Choose the key move, then solve the one-step equation to unlock each door. Use number keys 1 to 4, or the arrow keys and Enter. Questions and results are also announced as text.",
+              "Juego Escape de ecuaciones. Elige el paso llave y luego resuelve la ecuación de un paso para abrir cada puerta. Usa las teclas 1 a 4, o las flechas y Enter. Las preguntas y los resultados también se anuncian como texto.",
+            ),
           );
         } else {
           requestAnimationFrame(labelCanvas);
@@ -2293,18 +2663,18 @@
         <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
         <p
           id="ewl-coach-text"
-          data-en="The median is the middle value."
-          data-es="La mediana es el valor central."
+          data-en="Do the same thing to BOTH sides to keep the equation balanced."
+          data-es="Haz lo mismo en AMBOS lados para mantener la ecuación equilibrada."
         >
-          The median is the middle value.
+          Do the same thing to BOTH sides to keep the equation balanced.
         </p>
       </div>
     </div>
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <script src="/assets/formula-popup.js" defer></script>
     <script src="/assets/game-studio.js?v=20261003" defer></script>
-    <script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
-    <script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
-    <script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
+    <script src="/math/games/shared/flagship-studio.js?v=20261015" defer></script>
+    <script src="/math/games/shared/flagship-puzzles.js?v=20261015" defer></script>
+    <script src="/math/games/shared/flagship-adventures.js?v=20261015" defer></script>
   </body>
 </html>

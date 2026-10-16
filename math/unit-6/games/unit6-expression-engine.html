@@ -71,8 +71,8 @@
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
     <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet" />
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002" />
-    <link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007" />
-    <link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261015" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261015" />
   </head>
   <body>
     <!-- EWL Universal Arcade Enhancements Header -->
@@ -136,7 +136,8 @@
     <div id="ee-live" class="ee-sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
     <script>
       // Expression Engine — Factory Assembly Line
-      // Grade 6: 6.AT.5–6.AT.7 (Write & evaluate expressions)
+      // Grade 6 · Unit 6 · Lessons 6-3 to 6-6, 6-8, 6-14, 6-15: 6.AT.5–6.AT.7
+      // (exponents, order of operations, write & evaluate expressions)
       // Neft Teacher — Enhanced with juice, particles, streaks, star rating, high scores, power-ups
 
       const W = 1024,
@@ -177,9 +178,35 @@
         } catch (e) {}
       }
 
-      // --- QUESTION BANK (procedurally generated + curated) ---
+      // --- LANGUAGE (site-wide key: localStorage["nt-lang"] === "es") ---
+      const LANG = (() => {
+        try {
+          return localStorage.getItem("nt-lang") === "es" ? "es" : "en";
+        } catch (e) {
+          return "en";
+        }
+      })();
+      const ES = LANG === "es";
+      const tr = (en, es) => (ES ? es : en);
+      if (ES) document.documentElement.lang = "es";
+      function toggleLang() {
+        try {
+          localStorage.setItem("nt-lang", ES ? "en" : "es");
+        } catch (e) {}
+        location.reload();
+      }
+      window.ewlToggleLang = toggleLang;
+      const SUP = { 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹" };
+      const M = "−"; // true minus for display
+
+      // --- QUESTION BANK (procedurally generated, every distractor named) ---
+      // Unit 6: 6-3 numerical expressions with exponents (6.AT.5), 6-4 order
+      // of operations with exponents (6.AT.6c), 6-5 write and evaluate
+      // algebraic expressions (6.AT.6a), and 6-6/6-8/6-14/6-15 equivalent
+      // expressions (6.AT.7).
       function generateQuestions() {
         const qs = [];
+        const R = (a, b) => Phaser.Math.Between(a, b);
         function shuffle(a) {
           const b = [...a];
           for (let i = b.length - 1; i > 0; i--) {
@@ -198,7 +225,9 @@
           const why = {};
           wrongs.forEach(([w, reason]) => {
             const s = String(w);
-            if (!seen.has(s)) {
+            // Wrongs are listed most-common-misconception first; keep three
+            // so every part fits the belt and the 1-4 keys.
+            if (!seen.has(s) && cleanWrongs.length < 3) {
               seen.add(s);
               cleanWrongs.push(s);
               why[s] = reason;
@@ -207,7 +236,7 @@
           const opts = shuffle([String(correct), ...cleanWrongs]);
           // method = Tier-1 hint (no answer); nudge = Tier-2 concrete first
           // step (still not the final answer); step = full worked solution,
-          // shown only after the part is solved or every wrong part is used.
+          // shown only after the part is solved.
           return {
             text,
             correct: String(correct),
@@ -222,186 +251,346 @@
           };
         }
         const coef = (n, v) => (n === 1 ? v : `${n}${v}`);
-        // TIER 1: Simple evaluation
-        for (let i = 0; i < 6; i++) {
-          const c = Phaser.Math.Between(2, 9),
-            x = Phaser.Math.Between(2, 10);
+        const SK = {
+          sub: tr("substitute and multiply", "sustituir y multiplicar"),
+          ooo: tr("order of operations", "orden de las operaciones"),
+          pow: tr("exponents", "exponentes"),
+          write: tr("writing expressions", "escribir expresiones"),
+          dist: tr("distributive property", "propiedad distributiva"),
+          like: tr("combining like terms", "combinar términos semejantes"),
+          paren: tr("parentheses and order of operations", "paréntesis y orden de las operaciones"),
+        };
+        // ── TIER 1 ──────────────────────────────────────────────────────
+        // Evaluate cx (6-5)
+        for (let i = 0; i < 3; i++) {
+          const c = R(2, 9),
+            x = R(2, 10);
           const ans = c * x;
           qs.push(
             makeQ(
-              `Evaluate ${c}x when x = ${x}`,
+              tr(`Evaluate ${c}x when x = ${x}`, `Evalúa ${c}x cuando x = ${x}`),
               ans,
               [
-                [
-                  ans + c,
-                  `that is one group of ${c} too many. ${c}x means exactly ${x} groups of ${c}.`,
-                ],
-                [ans - x, "check your multiplication fact again."],
-                [c + x, `${c}x means ${c} TIMES x, not ${c} plus x.`],
+                [ans + c, tr(`that is one group of ${c} too many. ${c}x means exactly ${x} groups of ${c}.`, `es un grupo de ${c} de más. ${c}x significa exactamente ${x} grupos de ${c}.`)],
+                [ans - x, tr("check your multiplication fact again.", "revisa otra vez tu multiplicación.")],
+                [c + x, tr(`${c}x means ${c} TIMES x, not ${c} plus x.`, `${c}x significa ${c} POR x, no ${c} más x.`)],
               ],
               {
-                method: `A number next to a letter means multiply. Put ${x} in for x.`,
-                nudge: `${c}x = ${c} × ${x}. Find that product.`,
+                method: tr(`A number next to a letter means multiply. Put ${x} in for x.`, `Un número junto a una letra significa multiplicar. Pon ${x} en lugar de x.`),
+                nudge: tr(`${c}x = ${c} × ${x}. Find that product.`, `${c}x = ${c} × ${x}. Halla ese producto.`),
                 step: `${c}x = ${c} × ${x} = ${ans}`,
               },
               1,
-              "substitute and multiply",
+              SK.sub,
             ),
           );
         }
-        // TIER 1: Two-term expressions
-        for (let i = 0; i < 4; i++) {
-          const a = Phaser.Math.Between(1, 5),
-            b = Phaser.Math.Between(2, 7),
-            n = Phaser.Math.Between(2, 8);
+        // Evaluate a + bn (6-5)
+        for (let i = 0; i < 2; i++) {
+          const a = R(1, 5),
+            b = R(2, 7),
+            n = R(2, 8);
           const ans = a + b * n;
           qs.push(
             makeQ(
-              `Evaluate ${a} + ${b}n when n = ${n}`,
+              tr(`Evaluate ${a} + ${b}n when n = ${n}`, `Evalúa ${a} + ${b}n cuando n = ${n}`),
               ans,
               [
-                [
-                  a * b + n,
-                  `you multiplied ${a} × ${b}. The ${b} belongs to n: multiply ${b} × n first.`,
-                ],
-                [b * n, `you found ${b}n but forgot to add the ${a}.`],
-                [a + b + n, `${b}n means ${b} × n, so multiply before you add.`],
+                [a * b + n, tr(`you multiplied ${a} × ${b}. The ${b} belongs to n: multiply ${b} × n first.`, `multiplicaste ${a} × ${b}. El ${b} va con n: multiplica ${b} × n primero.`)],
+                [b * n, tr(`you found ${b}n but forgot to add the ${a}.`, `hallaste ${b}n pero olvidaste sumar el ${a}.`)],
+                [a + b + n, tr(`${b}n means ${b} × n, so multiply before you add.`, `${b}n significa ${b} × n, así que multiplica antes de sumar.`)],
               ],
               {
-                method: "Order of operations: multiply before you add.",
-                nudge: `First find ${b}n = ${b} × ${n}. Then add ${a}.`,
-                step: `${b} × ${n} = ${b * n}, then ${a} + ${b * n} = ${ans}`,
+                method: tr("Order of operations: multiply before you add.", "Orden de las operaciones: multiplica antes de sumar."),
+                nudge: tr(`First find ${b}n = ${b} × ${n}. Then add ${a}.`, `Primero halla ${b}n = ${b} × ${n}. Luego suma ${a}.`),
+                step: `${b} × ${n} = ${b * n}, ${tr("then", "luego")} ${a} + ${b * n} = ${ans}`,
               },
               1,
-              "order of operations",
+              SK.ooo,
             ),
           );
         }
-        // TIER 2: Distributive property
-        for (let i = 0; i < 5; i++) {
-          const a = Phaser.Math.Between(2, 6),
-            c = Phaser.Math.Between(1, 9);
+        // Evaluate a power (6-3)
+        for (let i = 0; i < 3; i++) {
+          const b = R(2, 5),
+            e = b === 5 ? R(2, 3) : b === 2 ? R(3, 4) : R(2, 4);
+          const ans = b ** e;
+          const factors = Array(e).fill(b).join(" × ");
           qs.push(
             makeQ(
-              `Which is equivalent to ${a}(x + ${c})?`,
-              `${a}x + ${a * c}`,
+              tr(`Evaluate ${b}${SUP[e]}`, `Evalúa ${b}${SUP[e]}`),
+              ans,
               [
-                [
-                  `${a}x + ${c}`,
-                  `the ${a} multiplies BOTH terms inside. You multiplied x but not ${c}.`,
-                ],
-                [
-                  `x + ${a * c}`,
-                  `the ${a} multiplies BOTH terms inside. You multiplied ${c} but not x.`,
-                ],
-                [`${a}x + ${a + c}`, `${a} × ${c} is multiplication, not ${a} + ${c}.`],
+                [b * e, tr(`${b}${SUP[e]} is not ${b} × ${e}. The exponent tells how many times ${b} is a FACTOR.`, `${b}${SUP[e]} no es ${b} × ${e}. El exponente dice cuántas veces ${b} es FACTOR.`)],
+                [b ** (e - 1), tr(`one factor is missing. Write ${e} factors of ${b}.`, `falta un factor. Escribe ${e} factores de ${b}.`)],
+                [e ** b, tr(`you swapped them: the base ${b} is multiplied, the exponent ${e} counts the factors.`, `los intercambiaste: la base ${b} se multiplica y el exponente ${e} cuenta los factores.`)],
+                [b + e, tr("an exponent means repeated multiplication, not adding.", "un exponente significa multiplicar repetidamente, no sumar.")],
               ],
               {
-                method:
-                  "Distributive property: multiply the outside number by EACH term inside the parentheses.",
-                nudge: `${a} × x = ${a}x. Now multiply ${a} × ${c}.`,
+                method: tr(`The exponent ${e} tells how many times to use ${b} as a factor.`, `El exponente ${e} dice cuántas veces usar ${b} como factor.`),
+                nudge: tr(`Write it out: ${factors}. Multiply two at a time.`, `Escríbelo: ${factors}. Multiplica de dos en dos.`),
+                step: `${b}${SUP[e]} = ${factors} = ${ans}`,
+              },
+              1,
+              SK.pow,
+            ),
+          );
+        }
+        // Write repeated multiplication as a power (6-3)
+        for (let i = 0; i < 2; i++) {
+          const b = R(3, 9),
+            e = R(3, 5);
+          const factors = Array(e).fill(b).join(" × ");
+          qs.push(
+            makeQ(
+              tr(`Write ${factors} as a power.`, `Escribe ${factors} como potencia.`),
+              `${b}${SUP[e]}`,
+              [
+                [`${e}${SUP[b]}`, tr(`the base is the number being multiplied (${b}); the exponent counts the factors.`, `la base es el número que se multiplica (${b}); el exponente cuenta los factores.`)],
+                [`${b} × ${e}`, tr(`${b} × ${e} adds ${b} ${e} times. A power MULTIPLIES ${b} by itself.`, `${b} × ${e} suma ${b} ${e} veces. Una potencia MULTIPLICA ${b} por sí mismo.`)],
+                [`${b}${SUP[e - 1]}`, tr(`count the factors again: there are ${e} of them.`, `cuenta otra vez los factores: hay ${e}.`)],
+              ],
+              {
+                method: tr("Power = base with an exponent. The base is the repeated factor; the exponent counts how many.", "Potencia = base con exponente. La base es el factor que se repite; el exponente cuenta cuántas veces."),
+                nudge: tr(`The repeated factor is ${b}. How many ${b}s do you see?`, `El factor que se repite es ${b}. ¿Cuántos ${b} ves?`),
+                step: tr(`${e} factors of ${b}: ${b}${SUP[e]}`, `${e} factores de ${b}: ${b}${SUP[e]}`),
+              },
+              1,
+              SK.pow,
+            ),
+          );
+        }
+        // ── TIER 2 ──────────────────────────────────────────────────────
+        // Distributive property (6-6, 6-14)
+        for (let i = 0; i < 3; i++) {
+          const a = R(2, 6),
+            c = R(1, 9);
+          qs.push(
+            makeQ(
+              tr(`Which is equivalent to ${a}(x + ${c})?`, `¿Cuál es equivalente a ${a}(x + ${c})?`),
+              `${a}x + ${a * c}`,
+              [
+                [`${a}x + ${c}`, tr(`the ${a} multiplies BOTH terms inside. You multiplied x but not ${c}.`, `el ${a} multiplica AMBOS términos de adentro. Multiplicaste x pero no ${c}.`)],
+                [`x + ${a * c}`, tr(`the ${a} multiplies BOTH terms inside. You multiplied ${c} but not x.`, `el ${a} multiplica AMBOS términos de adentro. Multiplicaste ${c} pero no x.`)],
+                [`${a}x + ${a + c}`, tr(`${a} × ${c} is multiplication, not ${a} + ${c}.`, `${a} × ${c} es multiplicación, no ${a} + ${c}.`)],
+              ],
+              {
+                method: tr("Distributive property: multiply the outside number by EACH term inside the parentheses.", "Propiedad distributiva: multiplica el número de afuera por CADA término dentro del paréntesis."),
+                nudge: tr(`${a} × x = ${a}x. Now multiply ${a} × ${c}.`, `${a} × x = ${a}x. Ahora multiplica ${a} × ${c}.`),
                 step: `${a}(x + ${c}) = ${a} × x + ${a} × ${c} = ${a}x + ${a * c}`,
               },
               2,
-              "distributive property",
+              SK.dist,
             ),
           );
         }
-        // TIER 2: Evaluate with exponents
-        for (let i = 0; i < 3; i++) {
-          const co = Phaser.Math.Between(1, 3),
-            a = Phaser.Math.Between(2, 5);
+        // Evaluate with an exponent (6-5)
+        for (let i = 0; i < 2; i++) {
+          const co = R(2, 3),
+            a = R(2, 5);
           const ans = co * a * a + 1;
           qs.push(
             makeQ(
-              `Evaluate ${coef(co, "a²")} + 1 when a = ${a}`,
+              tr(`Evaluate ${coef(co, "a²")} + 1 when a = ${a}`, `Evalúa ${coef(co, "a²")} + 1 cuando a = ${a}`),
               ans,
               [
-                [co * a + 1, `a² means a × a = ${a} × ${a}, not just ${a}.`],
-                [co * a * a, "you skipped the + 1 at the end."],
-                [
-                  co + a * a + 1,
-                  `${coef(co, "a²")} means ${co} × a², so multiply — do not add the ${co}.`,
-                ],
+                [co * a + 1, tr(`a² means a × a = ${a} × ${a}, not just ${a}.`, `a² significa a × a = ${a} × ${a}, no solo ${a}.`)],
+                [co * a * a, tr("you skipped the + 1 at the end.", "olvidaste el + 1 del final.")],
+                [(co * a) ** 2 + 1, tr(`only a is squared. Square ${a} first, THEN multiply by ${co}.`, `solo a está al cuadrado. Eleva ${a} al cuadrado primero y LUEGO multiplica por ${co}.`)],
+                [co + a * a + 1, tr(`${coef(co, "a²")} means ${co} × a², so multiply — do not add the ${co}.`, `${coef(co, "a²")} significa ${co} × a², así que multiplica; no sumes el ${co}.`)],
               ],
               {
-                method: "Exponents first: a² means a × a. Then multiply, then add.",
-                nudge: `${a}² = ${a} × ${a} = ${a * a}. Now finish: ${co} × ${a * a} + 1.`,
-                step: `${a}² = ${a * a}, ${co} × ${a * a} = ${co * a * a}, then + 1 = ${ans}`,
+                method: tr("Exponents first: a² means a × a. Then multiply, then add.", "Primero los exponentes: a² significa a × a. Luego multiplica y luego suma."),
+                nudge: tr(`${a}² = ${a} × ${a} = ${a * a}. Now finish: ${co} × ${a * a} + 1.`, `${a}² = ${a} × ${a} = ${a * a}. Ahora termina: ${co} × ${a * a} + 1.`),
+                step: `${a}² = ${a * a}, ${co} × ${a * a} = ${co * a * a}, ${tr("then", "luego")} + 1 = ${ans}`,
               },
               2,
-              "exponents",
+              SK.pow,
             ),
           );
         }
-        // TIER 3: Combine like terms
-        for (let i = 0; i < 4; i++) {
-          const a = Phaser.Math.Between(2, 7),
-            b = Phaser.Math.Between(3, 9),
-            c = Phaser.Math.Between(1, 5),
-            d = Phaser.Math.Between(1, b - 1);
+        // Order of operations with exponents, numbers only (6-4)
+        for (let i = 0; i < 2; i++) {
+          const a = R(2, 9),
+            b = R(2, 5),
+            c = R(2, 4);
+          const ans = a + b * c * c;
+          qs.push(
+            makeQ(
+              tr(`Evaluate ${a} + ${b} × ${c}²`, `Evalúa ${a} + ${b} × ${c}²`),
+              ans,
+              [
+                [(a + b) * c * c, tr(`you added ${a} + ${b} first. Exponents, then multiply, THEN add.`, `sumaste ${a} + ${b} primero. Exponentes, luego multiplica y LUEGO suma.`)],
+                [a + (b * c) ** 2, tr(`only ${c} is squared, not ${b} × ${c}. Do the exponent before multiplying.`, `solo ${c} está al cuadrado, no ${b} × ${c}. Haz el exponente antes de multiplicar.`)],
+                [a + b * c * 2, tr(`${c}² means ${c} × ${c}, not ${c} × 2.`, `${c}² significa ${c} × ${c}, no ${c} × 2.`)],
+              ],
+              {
+                method: tr("Order: parentheses, exponents, multiply/divide, then add/subtract.", "Orden: paréntesis, exponentes, multiplicar/dividir y luego sumar/restar."),
+                nudge: tr(`Exponent first: ${c}² = ${c * c}. Next: ${b} × ${c * c}.`, `Primero el exponente: ${c}² = ${c * c}. Después: ${b} × ${c * c}.`),
+                step: `${c}² = ${c * c}, ${b} × ${c * c} = ${b * c * c}, ${a} + ${b * c * c} = ${ans}`,
+              },
+              2,
+              SK.ooo,
+            ),
+          );
+        }
+        {
+          // ÷ and × go left to right (6-4)
+          const q = R(2, 4),
+            r = R(2, 4),
+            m = R(2, 5);
+          const p = q * r * m,
+            ans = (p / q) * r;
+          qs.push(
+            makeQ(
+              tr(`Evaluate ${p} ÷ ${q} × ${r}`, `Evalúa ${p} ÷ ${q} × ${r}`),
+              ans,
+              [
+                [m, tr(`you multiplied ${q} × ${r} first. Multiply and divide go LEFT to RIGHT.`, `multiplicaste ${q} × ${r} primero. Multiplicar y dividir van de IZQUIERDA a DERECHA.`)],
+                [p / q + r, tr(`after ${p} ÷ ${q}, the next step is × ${r}, not + ${r}.`, `después de ${p} ÷ ${q}, el siguiente paso es × ${r}, no + ${r}.`)],
+                [ans + r, tr("check the multiplication at the end again.", "revisa otra vez la multiplicación final.")],
+              ],
+              {
+                method: tr("Multiply and divide have the same rank: work them from left to right.", "Multiplicar y dividir tienen el mismo nivel: hazlas de izquierda a derecha."),
+                nudge: tr(`Leftmost first: ${p} ÷ ${q} = ${p / q}. Then × ${r}.`, `Primero la de la izquierda: ${p} ÷ ${q} = ${p / q}. Luego × ${r}.`),
+                step: `${p} ÷ ${q} = ${p / q}, ${p / q} × ${r} = ${ans}`,
+              },
+              2,
+              SK.ooo,
+            ),
+          );
+        }
+        {
+          // Write an algebraic expression from words (6-5)
+          const k = R(2, 9),
+            m = R(2, 9);
+          const words = tr(`${m} more than ${k} times a number n`, `${m} más que ${k} veces un número n`);
+          qs.push(
+            makeQ(
+              tr(`Which expression means "${words}"?`, `¿Qué expresión significa "${words}"?`),
+              `${k}n + ${m}`,
+              [
+                [`${m}n + ${k}`, tr(`"${k} times a number" is ${k}n; "${m} more" adds ${m}.`, `"${k} veces un número" es ${k}n; "${m} más" suma ${m}.`)],
+                [`${k}(n + ${m})`, tr(`that adds ${m} BEFORE multiplying. Only n is multiplied by ${k}.`, `eso suma ${m} ANTES de multiplicar. Solo n se multiplica por ${k}.`)],
+                [`${k} + ${m}n`, tr(`"${k} times n" is ${k}n, not ${k} + ...`, `"${k} veces n" es ${k}n, no ${k} + ...`)],
+              ],
+              {
+                method: tr('Translate piece by piece: "times a number" is multiplication by n; "more than" means add.', 'Traduce por partes: "veces un número" es multiplicar por n; "más que" significa sumar.'),
+                nudge: tr(`"${k} times a number n" = ${k}n. Now show "${m} more than" that.`, `"${k} veces un número n" = ${k}n. Ahora muestra "${m} más que" eso.`),
+                step: `${k} × n + ${m} = ${k}n + ${m}`,
+              },
+              2,
+              SK.write,
+            ),
+          );
+        }
+        // ── TIER 3 ──────────────────────────────────────────────────────
+        // Combine like terms (6-8, 6-15)
+        for (let i = 0; i < 2; i++) {
+          const a = R(2, 7),
+            b = R(3, 9),
+            c = R(1, 5),
+            d = R(1, b - 1);
           const xc = a + c,
             nc = b - d;
           qs.push(
             makeQ(
-              `Simplify: ${a}x + ${b} + ${coef(c, "x")} − ${d}`,
+              tr(`Simplify: ${a}x + ${b} + ${coef(c, "x")} ${M} ${d}`, `Simplifica: ${a}x + ${b} + ${coef(c, "x")} ${M} ${d}`),
               `${xc}x + ${nc}`,
               [
-                [`${xc}x + ${b + d}`, `it is MINUS ${d}, so subtract: ${b} − ${d}.`],
-                [
-                  `${a + c + b}x − ${d}`,
-                  `${b} has no x, so it is not a like term with the x-terms.`,
-                ],
-                [
-                  `${a * c}x + ${nc}`,
-                  "to combine like terms, ADD the x-coefficients — do not multiply them.",
-                ],
+                [`${xc}x + ${b + d}`, tr(`it is MINUS ${d}, so subtract: ${b} ${M} ${d}.`, `es MENOS ${d}, así que resta: ${b} ${M} ${d}.`)],
+                [`${a + c + b}x ${M} ${d}`, tr(`${b} has no x, so it is not a like term with the x-terms.`, `${b} no tiene x, así que no es semejante a los términos con x.`)],
+                [`${a * c}x + ${nc}`, tr("to combine like terms, ADD the x-coefficients — do not multiply them.", "para combinar términos semejantes, SUMA los coeficientes de x; no los multipliques.")],
               ],
               {
-                method:
-                  "Like terms have the same variable part. Combine x-terms together and numbers together.",
-                nudge: `x-terms: ${a}x + ${coef(c, "x")}. Numbers: ${b} − ${d}. Do each one.`,
-                step: `${a}x + ${coef(c, "x")} = ${xc}x and ${b} − ${d} = ${nc}, so ${xc}x + ${nc}`,
+                method: tr("Like terms have the same variable part. Combine x-terms together and numbers together.", "Los términos semejantes tienen la misma parte variable. Junta los términos con x y junta los números."),
+                nudge: tr(`x-terms: ${a}x + ${coef(c, "x")}. Numbers: ${b} ${M} ${d}. Do each one.`, `Términos con x: ${a}x + ${coef(c, "x")}. Números: ${b} ${M} ${d}. Haz cada uno.`),
+                step: `${a}x + ${coef(c, "x")} = ${xc}x ${tr("and", "y")} ${b} ${M} ${d} = ${nc}: ${xc}x + ${nc}`,
               },
               3,
-              "combining like terms",
+              SK.like,
             ),
           );
         }
-        // TIER 3: Multi-step evaluation
-        for (let i = 0; i < 3; i++) {
-          const a = Phaser.Math.Between(2, 5),
-            b = Phaser.Math.Between(1, 4),
-            c = Phaser.Math.Between(2, 5),
-            y = Phaser.Math.Between(2, 6);
+        // c(ay − b) — parentheses first (6-5)
+        for (let i = 0; i < 2; i++) {
+          const a = R(2, 5),
+            b = R(1, 4),
+            c = R(2, 5),
+            y = R(2, 6);
           const inner = a * y - b,
             ans = c * inner;
-          if (inner > 0) {
-            qs.push(
-              makeQ(
-                `Evaluate ${c}(${a}y − ${b}) when y = ${y}`,
-                ans,
-                [
-                  [
-                    c * a * y - b,
-                    `the ${c} multiplies the WHOLE group (${a}y − ${b}), including the ${b}.`,
-                  ],
-                  [ans + c, "check the multiplication of the outside number again."],
-                  [ans - b, `work inside the parentheses first, then multiply by ${c}.`],
-                ],
-                {
-                  method:
-                    "Parentheses first: find the value inside, then multiply by the outside number.",
-                  nudge: `Inside: ${a} × ${y} − ${b} = ${inner}. Now multiply by ${c}.`,
-                  step: `${a} × ${y} − ${b} = ${inner}, then ${c} × ${inner} = ${ans}`,
-                },
-                3,
-                "parentheses and order of operations",
-              ),
-            );
-          }
+          qs.push(
+            makeQ(
+              tr(`Evaluate ${c}(${a}y ${M} ${b}) when y = ${y}`, `Evalúa ${c}(${a}y ${M} ${b}) cuando y = ${y}`),
+              ans,
+              [
+                [c * a * y - b, tr(`the ${c} multiplies the WHOLE group (${a}y ${M} ${b}), including the ${b}.`, `el ${c} multiplica TODO el grupo (${a}y ${M} ${b}), incluido el ${b}.`)],
+                [ans + c, tr("check the multiplication of the outside number again.", "revisa otra vez la multiplicación del número de afuera.")],
+                [ans - b, tr(`work inside the parentheses first, then multiply by ${c}.`, `resuelve primero dentro del paréntesis y luego multiplica por ${c}.`)],
+              ],
+              {
+                method: tr("Parentheses first: find the value inside, then multiply by the outside number.", "Primero el paréntesis: halla el valor de adentro y luego multiplica por el número de afuera."),
+                nudge: tr(`Inside: ${a} × ${y} ${M} ${b} = ${inner}. Now multiply by ${c}.`, `Adentro: ${a} × ${y} ${M} ${b} = ${inner}. Ahora multiplica por ${c}.`),
+                step: `${a} × ${y} ${M} ${b} = ${inner}, ${tr("then", "luego")} ${c} × ${inner} = ${ans}`,
+              },
+              3,
+              SK.paren,
+            ),
+          );
         }
-        return shuffle(qs).slice(0, 20);
+        // Two variables with an exponent (6-5)
+        for (let i = 0; i < 2; i++) {
+          const p = R(2, 6),
+            m = R(2, 6),
+            n = R(2, 5);
+          const ans = p * m + n * n;
+          qs.push(
+            makeQ(
+              tr(`Evaluate ${p}m + n² when m = ${m} and n = ${n}`, `Evalúa ${p}m + n² cuando m = ${m} y n = ${n}`),
+              ans,
+              [
+                [p * m + 2 * n, tr(`n² means n × n = ${n} × ${n}, not ${n} × 2.`, `n² significa n × n = ${n} × ${n}, no ${n} × 2.`)],
+                [p + m + n * n, tr(`${p}m means ${p} × m. Multiply, do not add.`, `${p}m significa ${p} × m. Multiplica, no sumes.`)],
+                [(p * m + n) ** 2, tr("only n is squared, not the whole sum.", "solo n está al cuadrado, no toda la suma.")],
+              ],
+              {
+                method: tr("Replace EACH letter with its value. Then exponents, multiply, add.", "Cambia CADA letra por su valor. Luego exponentes, multiplica y suma."),
+                nudge: tr(`${p}m = ${p} × ${m} and n² = ${n} × ${n}. Find each part.`, `${p}m = ${p} × ${m} y n² = ${n} × ${n}. Halla cada parte.`),
+                step: `${p} × ${m} = ${p * m}, ${n}² = ${n * n}, ${p * m} + ${n * n} = ${ans}`,
+              },
+              3,
+              SK.sub,
+            ),
+          );
+        }
+        // Grouping with an exponent (6-4)
+        for (let i = 0; i < 2; i++) {
+          const a = R(1, 5),
+            b = R(1, 4),
+            c = R(1, 9);
+          const s = a + b;
+          const ans = s * s - c;
+          qs.push(
+            makeQ(
+              tr(`Evaluate (${a} + ${b})² ${M} ${c}`, `Evalúa (${a} + ${b})² ${M} ${c}`),
+              ans,
+              [
+                [a * a + b * b - c, tr(`square the WHOLE group: (${a} + ${b}) = ${s} first, then square ${s}.`, `eleva TODO el grupo: primero (${a} + ${b}) = ${s} y luego ${s} al cuadrado.`)],
+                [s * 2 - c, tr(`${s}² means ${s} × ${s}, not ${s} × 2.`, `${s}² significa ${s} × ${s}, no ${s} × 2.`)],
+                [s * s + c, tr(`it is MINUS ${c} at the end.`, `al final es MENOS ${c}.`)],
+              ],
+              {
+                method: tr("Parentheses first, then the exponent, then subtract.", "Primero el paréntesis, luego el exponente y después resta."),
+                nudge: tr(`(${a} + ${b}) = ${s}. Now find ${s}².`, `(${a} + ${b}) = ${s}. Ahora halla ${s}².`),
+                step: `${a} + ${b} = ${s}, ${s}² = ${s * s}, ${s * s} ${M} ${c} = ${ans}`,
+              },
+              3,
+              SK.paren,
+            ),
+          );
+        }
+        return shuffle(qs);
       }
 
       // --- SOUND SYSTEM (Web Audio API) ---
@@ -672,7 +861,7 @@
           }
 
           const subtitle = this.add
-            .text(cx, 270, "Factory Assembly Line", {
+            .text(cx, 270, tr("Factory Assembly Line", "Línea de ensamblaje"), {
               fontSize: "22px",
               color: "#94a3b8",
             })
@@ -687,10 +876,15 @@
           });
 
           this.add
-            .text(cx, 305, "6.AT.5 – 6.AT.7 | Neft Teacher", {
-              fontSize: "14px",
-              color: "#64748b",
-            })
+            .text(
+              cx,
+              305,
+              tr(
+                "Unit 6 · Lessons 6-3 to 6-6, 6-8, 6-14, 6-15 · 6.AT.5 – 6.AT.7 | Neft Teacher",
+                "Unidad 6 · Lecciones 6-3 a 6-6, 6-8, 6-14, 6-15 · 6.AT.5 – 6.AT.7 | Neft Teacher",
+              ),
+              { fontSize: "15px", color: "#cbd5e1" },
+            )
             .setOrigin(0.5);
 
           // Robot mascot
@@ -724,7 +918,7 @@
           const hs = localStorage.getItem(LS_KEY);
           if (hs) {
             this.add
-              .text(cx, 480, `HIGH SCORE: ${hs}`, {
+              .text(cx, 480, `${tr("HIGH SCORE", "MEJOR PUNTAJE")}: ${hs}`, {
                 fontSize: "14px",
                 color: "#fbbf24",
                 fontStyle: "bold",
@@ -733,16 +927,36 @@
           }
 
           // Difficulty buttons
+          let starting = false;
+          const startRun = (i) => {
+            if (starting || !this.sys.isActive()) return;
+            starting = true;
+            sfx.click();
+            this.cameras.main.fadeOut(400);
+            this.time.delayedCall(400, () => this.scene.start("Game", { difficulty: i }));
+          };
           const diffs = [
-            { label: "EASY", color: 0x22c55e, sub: "Tier 1 only" },
-            { label: "STANDARD", color: 0xf59e0b, sub: "All tiers" },
-            { label: "LEVEL 3", color: 0xef4444, sub: "Expert" },
+            {
+              label: tr("1 · EASY", "1 · FÁCIL"),
+              color: 0x22c55e,
+              sub: tr("Exponents & substitution", "Exponentes y sustitución"),
+            },
+            {
+              label: tr("2 · STANDARD", "2 · NORMAL"),
+              color: 0xf59e0b,
+              sub: tr("All tiers, step by step", "Todos los niveles, paso a paso"),
+            },
+            {
+              label: tr("3 · EXPERT", "3 · EXPERTO"),
+              color: 0xef4444,
+              sub: tr("Tiers 2 and 3", "Niveles 2 y 3"),
+            },
           ];
           diffs.forEach((d, i) => {
             const bx = cx - 200 + i * 200,
               by = 560;
             const bg = this.add
-              .rectangle(bx, by, 170, 70, d.color, 0.15)
+              .rectangle(bx, by, 186, 74, d.color, 0.15)
               .setStrokeStyle(2, d.color)
               .setInteractive({ useHandCursor: true })
               .setScale(0)
@@ -757,7 +971,7 @@
               delay: 1000 + i * 150,
             });
             const lbl = this.add
-              .text(bx, by - 10, d.label, {
+              .text(bx, by - 18, d.label, {
                 fontSize: "22px",
                 color: "#" + d.color.toString(16).padStart(6, "0"),
                 fontStyle: "bold",
@@ -765,7 +979,12 @@
               .setOrigin(0.5)
               .setAlpha(0);
             const sub = this.add
-              .text(bx, by + 14, d.sub, { fontSize: "12px", color: "#94a3b8" })
+              .text(bx, by + 17, d.sub, {
+                fontSize: "12px",
+                color: "#e2e8f0",
+                align: "center",
+                wordWrap: { width: 172 },
+              })
               .setOrigin(0.5)
               .setAlpha(0);
             this.tweens.add({
@@ -793,32 +1012,51 @@
                 duration: 120,
               });
             });
-            bg.on("pointerdown", () => {
-              sfx.click();
-              this.cameras.main.fadeOut(400);
-              this.time.delayedCall(400, () => this.scene.start("Game", { difficulty: i }));
-            });
+            bg.on("pointerdown", () => startRun(i));
           });
           // Controls info
           this.add
             .text(
               cx,
               660,
-              "No clock — take your time. Tap a part, then pull the lever. Wrong part? Get a hint and try again.",
-              { fontSize: "16px", color: "#cbd5e1" },
+              tr(
+                "No clock — take your time. Tap a part, then pull the lever. Wrong part? Get a hint and try again.",
+                "Sin reloj: ve a tu ritmo. Toca una pieza y jala la palanca. ¿Pieza equivocada? Recibe una pista y vuelve a intentar.",
+              ),
+              { fontSize: "16px", color: "#cbd5e1", align: "center", wordWrap: { width: 940 } },
             )
             .setOrigin(0.5);
           this.add
             .text(
               cx,
-              685,
-              "Keys: 1-4 or ← → to choose • Enter to lock it in or go on • Enter here starts STANDARD",
-              { fontSize: "15px", color: "#94a3b8" },
+              700,
+              tr(
+                "Keys: 1-4 or ← → to choose • Enter to lock it in • Here: 1 / 2 / 3 picks a mode, Enter = STANDARD, L = Español",
+                "Teclas: 1-4 o ← → para elegir • Enter para confirmar • Aquí: 1 / 2 / 3 elige el modo, Enter = NORMAL, L = English",
+              ),
+              { fontSize: "15px", color: "#94a3b8", align: "center", wordWrap: { width: 940 } },
             )
             .setOrigin(0.5);
-          this.input.keyboard.once("keydown-ENTER", () =>
-            this.scene.start("Game", { difficulty: 1 }),
-          );
+          // Only this scene's keys: a stopped title must never restart a run.
+          this.input.keyboard.on("keydown", (e) => {
+            if (!this.sys.isActive()) return;
+            if (e.key === "Enter") startRun(1);
+            if (e.key >= "1" && e.key <= "3") startRun(Number(e.key) - 1);
+            if (e.key === "l" || e.key === "L") toggleLang();
+          });
+          // Language switch (site-wide nt-lang key).
+          const langBtn = this.add
+            .rectangle(W - 90, 40, 150, 46, 0x1e293b)
+            .setStrokeStyle(2, 0x94a3b8)
+            .setInteractive({ useHandCursor: true });
+          this.add
+            .text(W - 90, 40, ES ? "English" : "Español", {
+              fontSize: "18px",
+              color: "#e2e8f0",
+              fontStyle: "bold",
+            })
+            .setOrigin(0.5);
+          langBtn.on("pointerdown", toggleLang);
 
           this.cameras.main.fadeIn(500);
         }
@@ -842,19 +1080,29 @@
             this.questions = this.presetQueue.slice();
             this.spare = [];
           } else {
-            this.questions = generateQuestions();
-            if (this.difficulty === 0) this.questions = this.questions.filter((q) => q.tier === 1);
-            if (this.questions.length < 15) {
-              while (this.questions.length < 15) {
-                this.questions.push(
-                  ...generateQuestions().filter((q) =>
-                    this.difficulty === 0 ? q.tier === 1 : true,
-                  ),
-                );
-              }
+            // Easy = tier 1 (exponents, substitution); Standard = 5 per tier;
+            // Expert = tiers 2-3. Parts ramp by tier, so the phase banners at
+            // parts 6 and 11 mark a real step up. One spare per tier feeds
+            // "Sharpen misses".
+            const want =
+              this.difficulty === 0
+                ? { 1: 15 }
+                : this.difficulty === 2
+                  ? { 2: 7, 3: 8 }
+                  : { 1: 5, 2: 5, 3: 5 };
+            const picked = { 1: [], 2: [], 3: [] };
+            const seenText = new Set();
+            for (let guard = 0; guard < 12; guard++) {
+              generateQuestions().forEach((q) => {
+                const t = q.tier;
+                if (!want[t] || picked[t].length > want[t] || seenText.has(q.text)) return;
+                seenText.add(q.text);
+                picked[t].push(q);
+              });
+              if (Object.keys(want).every((t) => picked[t].length > want[t])) break;
             }
-            this.spare = this.questions.slice(15, 17);
-            this.questions = this.questions.slice(0, 15);
+            this.questions = [1, 2, 3].flatMap((t) => picked[t].slice(0, want[t] || 0));
+            this.spare = [1, 2, 3].flatMap((t) => picked[t].slice(want[t] || 0));
           }
           this.qIndex = 0;
           this.score = 0;
@@ -988,7 +1236,7 @@
             { key: "fiftyFifty", label: "50/50 [Q]", color: 0x3b82f6, x: 80 },
             {
               key: "doublePoints",
-              label: "2x PTS [W]",
+              label: tr("2x PTS [W]", "2x PTS [W]"),
               color: 0xfbbf24,
               x: 220,
             },
@@ -1082,7 +1330,7 @@
             .setDepth(6)
             .setInteractive({ useHandCursor: true });
           this.leverLabel = this.add
-            .text(W - 80, 470, "LOCK IT IN", {
+            .text(W - 80, 470, tr("LOCK IT IN", "CONFIRMAR"), {
               fontSize: "12px",
               color: "#fbbf24",
               fontStyle: "bold",
@@ -1164,6 +1412,14 @@
 
           // Start first question
           this.loadQuestion();
+          // After "Launch mission" the focus is still on that button, so the
+          // first Enter would relaunch the run. Hand focus to the game canvas.
+          try {
+            const ae = document.activeElement;
+            if (ae && (ae.id === "fm-start" || ae === document.body) && this.game.canvas) {
+              this.game.canvas.focus({ preventScroll: true });
+            }
+          } catch (e) {}
           // Timer
           this.timerEvent = this.time.addEvent({
             delay: 1000,
@@ -1319,7 +1575,7 @@
             this.powerUps.doublePoints--;
             this.doublePointsActive = true;
             sfx.powerUp();
-            this.showFloatingText(W / 2, 350, "DOUBLE POINTS!", "#fbbf24");
+            this.showFloatingText(W / 2, 350, tr("DOUBLE POINTS!", "¡PUNTOS DOBLES!"), "#fbbf24");
           }
           this.updatePowerUpHUD();
         }
@@ -1392,9 +1648,9 @@
 
           // Phase transition at question 6 and 11
           if (this.qIndex === 5) {
-            this.showPhaseTransition("PHASE 2: NEW CHALLENGES!");
+            this.showPhaseTransition(tr("PHASE 2: NEW CHALLENGES!", "FASE 2: ¡NUEVOS RETOS!"));
           } else if (this.qIndex === 10) {
-            this.showPhaseTransition("PHASE 3: FINAL STRETCH!");
+            this.showPhaseTransition(tr("PHASE 3: FINAL STRETCH!", "FASE 3: ¡ÚLTIMO TRAMO!"));
           }
 
           // Update HUD
@@ -1403,7 +1659,7 @@
           // Progress
           this.progFill.width = (this.qIndex / this.totalQ) * (W - 40);
           // Tier badge
-          const tierLabels = ["TIER 1", "TIER 2", "TIER 3"];
+          const tierLabels = [1, 2, 3].map((n) => tr("TIER ", "NIVEL ") + n);
           const tierColors = ["#22c55e", "#f59e0b", "#ef4444"];
           this.tierBadge.setText(tierLabels[q.tier - 1]);
           this.tierBadge.setStyle({
@@ -1414,7 +1670,11 @@
           });
           // Question text with entrance animation
           this.qText.setText(q.text).setAlpha(0).setScale(0.8);
-          eeAnnounce(`Part ${this.qIndex + 1} of ${this.totalQ}. ${q.text}`);
+          eeAnnounce(
+            `${tr("Part", "Parte")} ${this.qIndex + 1} ${tr("of", "de")} ${this.totalQ}. ${q.text}. ${tr("Parts", "Piezas")}: ${q.options
+              .map((o, i) => `${i + 1}, ${o}`)
+              .join("; ")}.`,
+          );
           this.tweens.add({
             targets: this.qText,
             alpha: 1,
@@ -1497,6 +1757,11 @@
           // Animate boxes sliding in
           this.answerBoxes.forEach((box, i) => {
             const targetX = 150 + i * 220;
+            if (this.reduceMotion) {
+              [box.bg, box.txt, box.highlight].forEach((o) => (o.x = targetX));
+              box.numLabel.x = targetX - 70;
+              return;
+            }
             this.tweens.add({
               targets: [box.bg, box.txt, box.highlight, box.numLabel],
               x: targetX,
@@ -1571,7 +1836,7 @@
             // Double points
             if (this.doublePointsActive) {
               pts *= 2;
-              this.showFloatingText(W / 2, 300, "DOUBLED!", "#fbbf24", "18px");
+              this.showFloatingText(W / 2, 300, tr("DOUBLED!", "¡DOBLE!"), "#fbbf24", "18px");
             }
 
             this.score += pts;
@@ -1594,35 +1859,37 @@
                 duration: 200,
               });
 
-            const streakText = this.streak >= 3 ? ` STREAK x${this.streak}!` : "";
+            const streakText = this.streak >= 3 ? tr(` STREAK x${this.streak}!`, ` ¡RACHA x${this.streak}!`) : "";
             const lead =
-              tries === 0 ? `CORRECT! +${pts} pts${streakText}` : `CORRECT with help! +${pts} pts`;
+              tries === 0 && !this.usedFifty
+                ? tr(`CORRECT! +${pts} pts`, `¡CORRECTO! +${pts} pts`) + streakText
+                : tr(`CORRECT with help! +${pts} pts`, `¡CORRECTO con ayuda! +${pts} pts`);
             this.fbText.setText(lead);
             this.fbText.setColor("#4ade80");
             // Reinforce the method with the full worked step.
-            this.hintText.setText("How it works: " + q.step);
+            this.hintText.setText(tr("How it works: ", "Así funciona: ") + q.step);
             eeAnnounce(`${lead}. ${q.step}`);
             sfx.correct();
             this.showFloatingText(box.bg.x, box.bg.y - 40, `+${pts}`, "#22c55e", "28px");
 
             if (this.streak === 3) {
               sfx.streak3();
-              this.showFloatingText(W / 2, H / 2 - 50, "STREAK x3!", "#f59e0b", "32px");
+              this.showFloatingText(W / 2, H / 2 - 50, tr("STREAK x3!", "¡RACHA x3!"), "#f59e0b", "32px");
             } else if (this.streak === 5) {
               sfx.streak5();
-              this.showFloatingText(W / 2, H / 2 - 50, "STREAK x5! AMAZING!", "#ef4444", "34px");
+              this.showFloatingText(W / 2, H / 2 - 50, tr("STREAK x5! AMAZING!", "¡RACHA x5! ¡INCREÍBLE!"), "#ef4444", "34px");
             } else if (this.streak === 7) {
               sfx.streak7();
               this.showFloatingText(
                 W / 2,
                 H / 2 - 50,
-                "STREAK x7! UNSTOPPABLE!",
+                tr("STREAK x7! UNSTOPPABLE!", "¡RACHA x7! ¡IMPARABLE!"),
                 "#a78bfa",
                 "36px",
               );
             }
             if (this.streak >= 2) {
-              this.hudStreak.setText(`STREAK: ${this.streak}x`);
+              this.hudStreak.setText(`${tr("STREAK", "RACHA")}: ${this.streak}x`);
               this.streakBg.setSize(130, 28).setFillStyle(0xf59e0b, 0.15);
               if (!this.reduceMotion)
                 this.tweens.add({
@@ -1664,7 +1931,7 @@
             box.eliminated = true;
             this.removedChoices.push(idx);
             this.missTally[q.skill] = (this.missTally[q.skill] || 0) + 1;
-            const why = (q.why && q.why[chosen]) || "That part does not match.";
+            const why = (q.why && q.why[chosen]) || tr("that part does not match.", "esa pieza no coincide.");
             const left = this.answerBoxes.filter((b, i) => !this.removedChoices.includes(i));
             sfx.wrong();
             this.redFlash.setAlpha(0.12);
@@ -1679,18 +1946,24 @@
                 this.answerBoxes[ci].bg.setFillStyle(0x166534).setStrokeStyle(3, 0x22c55e);
               }
               this.noteMiss(q);
-              this.fbText.setText(`Not quite — ${why}`);
+              // Last rung of the ladder: the worked solution, shown only now.
+              const shown = tr("Here is how it works: ", "Así se resuelve: ") + q.step;
+              this.fbText.setText(tr("Not quite — ", "Todavía no: ") + why);
               this.fbText.setColor("#fca5a5");
-              this.hintText.setText("Not yet. One part is still open — check it yourself.");
-              eeAnnounce(`Not quite. ${why} One part is still open.`);
+              this.hintText.setText(shown);
+              eeAnnounce(`${tr("Not quite.", "Todavía no.")} ${why} ${shown}`);
               this.showNextButton();
             } else {
               const hint =
-                this.wrongTries === 1 ? "Hint: " + q.method : "Try this step: " + q.nudge;
-              this.fbText.setText(`Not quite — ${why}`);
+                this.wrongTries === 1
+                  ? tr("Hint: ", "Pista: ") + q.method
+                  : tr("Try this step: ", "Prueba este paso: ") + q.nudge;
+              this.fbText.setText(tr("Not quite — ", "Todavía no: ") + why);
               this.fbText.setColor("#fca5a5");
               this.hintText.setText(hint);
-              eeAnnounce(`Not quite. ${why} ${hint} Pick another part.`);
+              eeAnnounce(
+                `${tr("Not quite.", "Todavía no.")} ${why} ${hint} ${tr("Pick another part.", "Elige otra pieza.")}`,
+              );
             }
           }
           this.updateHUD();
@@ -1703,7 +1976,7 @@
         // Self-paced: the student moves on when ready (button, Enter or Space).
         showNextButton() {
           const last = this.qIndex + 1 >= this.totalQ;
-          const label = last ? "SEE RESULTS ▶" : "NEXT PART ▶";
+          const label = last ? tr("SEE RESULTS ▶", "VER RESULTADOS ▶") : tr("NEXT PART ▶", "SIGUIENTE ▶");
           const bg = this.add
             .rectangle(W - 140, 640, 230, 56, 0x22c55e)
             .setStrokeStyle(2, 0xbbf7d0)
@@ -1785,14 +2058,14 @@
         }
 
         updateHUD() {
-          this.hudQ.setText(`PART ${this.qIndex + 1}/${this.totalQ}`);
-          this.hudScore.setText(`SCORE: ${this.score}`);
-          this.hudLives.setText(`FIRST TRY: ${this.firstTry}`);
+          this.hudQ.setText(`${tr("PART", "PIEZA")} ${Math.min(this.qIndex + 1, this.totalQ)}/${this.totalQ}`);
+          this.hudScore.setText(`${tr("SCORE", "PUNTOS")}: ${this.score}`);
+          this.hudLives.setText(`${tr("FIRST TRY", "1.er INTENTO")}: ${this.firstTry}`);
           if (this.streak < 2) {
             this.hudStreak.setText("");
             this.streakBg.setFillStyle(0x000000, 0);
           }
-          this.hudCombo.setText(this.combo > 1 ? `COMBO x${this.combo}` : "");
+          this.hudCombo.setText(this.combo > 1 ? `${tr("COMBO", "COMBO")} x${this.combo}` : "");
           // Calm play: no on-screen clock (elapsed time still logged at results).
           this.hudTimer.setText("");
         }
@@ -1859,7 +2132,12 @@
           const reduceMotion = eeReduceMotion();
           this.cameras.main.setBackgroundColor("#0f172a");
           // Announce the final result for screen-reader students.
-          eeAnnounce(`Round complete. Score ${d.score}. ${d.correct} of ${d.total} correct.`);
+          eeAnnounce(
+            tr(
+              `Round complete. Score ${d.score}. ${d.correct} of ${d.total} correct, ${d.firstTry || 0} on the first try.`,
+              `Ronda terminada. Puntos ${d.score}. ${d.correct} de ${d.total} correctas, ${d.firstTry || 0} al primer intento.`,
+            ),
+          );
           const pct = d.total > 0 ? Math.round((d.correct / d.total) * 100) : 0;
           const stars = selfPacedStars(d.correct, d.total, d.bestStreak);
 
@@ -1902,7 +2180,12 @@
           }
 
           // Title
-          const titles = ["Keep Practicing!", "Good Effort!", "Great Work!", "FACTORY MASTER!"];
+          const titles = [
+            tr("Keep Practicing!", "¡Sigue practicando!"),
+            tr("Good Effort!", "¡Buen esfuerzo!"),
+            tr("Great Work!", "¡Gran trabajo!"),
+            tr("FACTORY MASTER!", "¡MAESTRO DE LA FÁBRICA!"),
+          ];
           const titleText = this.add
             .text(cx, 50, titles[stars], {
               fontSize: "42px",
@@ -1956,7 +2239,7 @@
           if (isNewHigh && d.score > 0) {
             sfx.highScore();
             const hsText = this.add
-              .text(cx, 155, "NEW HIGH SCORE!", {
+              .text(cx, 155, tr("NEW HIGH SCORE!", "¡NUEVO MEJOR PUNTAJE!"), {
                 fontSize: "24px",
                 fontStyle: "bold",
                 color: "#fbbf24",
@@ -1987,24 +2270,24 @@
             })
             .setOrigin(0.5);
           this.add
-            .text(cx, circleY + 22, "Accuracy", {
+            .text(cx, circleY + 22, tr("Accuracy", "Precisión"), {
               fontSize: "13px",
-              color: "#64748b",
+              color: "#94a3b8",
             })
             .setOrigin(0.5);
 
           // Stats grid
           const statsY = isNewHigh ? 320 : 310;
           const stats = [
-            { label: "Score", val: d.score, color: "#fbbf24" },
+            { label: tr("Score", "Puntos"), val: d.score, color: "#fbbf24" },
             {
-              label: "Correct",
+              label: tr("Correct", "Correctas"),
               val: `${d.correct}/${d.total}`,
               color: "#22c55e",
             },
-            { label: "Best Streak", val: d.bestStreak, color: "#f59e0b" },
+            { label: tr("Best Streak", "Mejor racha"), val: d.bestStreak, color: "#f59e0b" },
             {
-              label: "First Try",
+              label: tr("First Try", "1.er intento"),
               val: `${d.firstTry || 0}/${d.total}`,
               color: "#93c5fd",
             },
@@ -2029,16 +2312,20 @@
               delay: 300 + i * 150,
             });
             this.add
-              .text(x, y + 16, s.label, { fontSize: "12px", color: "#64748b" })
+              .text(x, y + 16, s.label, { fontSize: "13px", color: "#94a3b8" })
               .setOrigin(0.5);
           });
 
           // Difficulty label
-          const diffLabels = ["Easy", "Standard", "Level 3 — Expert"];
+          const diffLabels = [
+            tr("Easy", "Fácil"),
+            tr("Standard", "Normal"),
+            tr("Expert", "Experto"),
+          ];
           this.add
-            .text(cx, statsY + 55, `Mode: ${diffLabels[d.difficulty]}`, {
+            .text(cx, statsY + 55, `${tr("Mode", "Modo")}: ${diffLabels[d.difficulty]}`, {
               fontSize: "14px",
-              color: "#475569",
+              color: "#94a3b8",
             })
             .setOrigin(0.5);
 
@@ -2046,9 +2333,9 @@
           const bestScore = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
           if (bestScore > 0 && !isNewHigh) {
             this.add
-              .text(cx, statsY + 78, `Personal Best: ${bestScore}`, {
+              .text(cx, statsY + 78, `${tr("Personal Best", "Mejor marca")}: ${bestScore}`, {
                 fontSize: "13px",
-                color: "#64748b",
+                color: "#94a3b8",
               })
               .setOrigin(0.5);
           }
@@ -2060,7 +2347,7 @@
             .setStrokeStyle(2, 0x60a5fa)
             .setInteractive({ useHandCursor: true });
           this.add
-            .text(cx - 120, btnY, "PLAY AGAIN", {
+            .text(cx - 120, btnY, tr("PLAY AGAIN", "JUGAR OTRA VEZ"), {
               fontSize: "18px",
               color: "#fff",
               fontStyle: "bold",
@@ -2101,7 +2388,7 @@
               .setStrokeStyle(2, 0xfde68a)
               .setInteractive({ useHandCursor: true });
             this.add
-              .text(cx, btnY + 148, "SHARPEN MISSES", {
+              .text(cx, btnY + 148, tr("SHARPEN MISSES", "REPASAR ERRORES"), {
                 fontSize: "18px",
                 color: "#1c1403",
                 fontStyle: "bold",
@@ -2118,7 +2405,7 @@
             .setStrokeStyle(2, 0x475569)
             .setInteractive({ useHandCursor: true });
           this.add
-            .text(cx + 120, btnY, "MAIN MENU", {
+            .text(cx + 120, btnY, tr("MAIN MENU", "MENÚ"), {
               fontSize: "18px",
               color: "#94a3b8",
               fontStyle: "bold",
@@ -2151,8 +2438,14 @@
           // Skills practiced + what to practice next (from the most-missed skill).
           const miss = Object.entries(d.missTally || {}).sort((a, b) => b[1] - a[1]);
           const nextTip = miss.length
-            ? `Practice next: ${miss[0][0]} — you had ${miss[0][1]} retr${miss[0][1] === 1 ? "y" : "ies"} there.`
-            : "Practice next: try a harder mode — every part was right on the first try!";
+            ? tr(
+                `Practice next: ${miss[0][0]} — you had ${miss[0][1]} retr${miss[0][1] === 1 ? "y" : "ies"} there.`,
+                `Practica después: ${miss[0][0]} (${miss[0][1]} ${miss[0][1] === 1 ? "intento extra" : "intentos extra"}).`,
+              )
+            : tr(
+                "Practice next: try a harder mode — every part was right on the first try!",
+                "Practica después: prueba un modo más difícil. ¡Todas las piezas al primer intento!",
+              );
           this.add
             .text(cx, btnY + 62, nextTip, {
               fontSize: "18px",
@@ -2166,20 +2459,31 @@
             .text(
               cx,
               btnY + 100,
-              "Skills: substitute and evaluate • order of operations • exponents • distributive property • combining like terms",
+              tr(
+                "Skills: exponents • order of operations • write and evaluate expressions • distributive property • combining like terms",
+                "Destrezas: exponentes • orden de las operaciones • escribir y evaluar expresiones • propiedad distributiva • combinar términos semejantes",
+              ),
               { fontSize: "15px", color: "#cbd5e1", align: "center", wordWrap: { width: 860 } },
             )
             .setOrigin(0.5);
           // Footer
           this.add
-            .text(cx, H - 30, "Expression Engine — Neft Teacher — 6.AT.5–6.AT.7", {
-              fontSize: "12px",
-              color: "#475569",
+            .text(
+              cx,
+              H - 30,
+              tr(
+                "Expression Engine — Neft Teacher — Unit 6 · 6.AT.5–6.AT.7 · Enter = play again · Esc = menu",
+                "Expression Engine — Neft Teacher — Unidad 6 · 6.AT.5–6.AT.7 · Enter = otra vez · Esc = menú",
+              ),
+              {
+              fontSize: "13px",
+              color: "#94a3b8",
             })
             .setOrigin(0.5);
 
           // Keyboard
           this.input.keyboard.on("keydown", (e) => {
+            if (!this.sys.isActive()) return;
             if (e.key === "Enter" || e.key === " ") {
               this.cameras.main.fadeOut(300);
               this.time.delayedCall(300, () =>
@@ -2227,7 +2531,10 @@
           canvas.setAttribute("role", "application");
           canvas.setAttribute(
             "aria-label",
-            "Expression Engine math game. Use arrow keys to move between answer boxes, Enter to choose, or number keys 1 to 4 for quick pick.",
+            tr(
+              "Expression Engine math game. Use arrow keys to move between answer boxes, Enter to lock in, or number keys 1 to 4 then Enter. Questions and feedback are announced as text.",
+              "Juego Expression Engine. Usa las flechas para moverte entre las piezas, Enter para confirmar, o las teclas 1 a 4 y luego Enter. Las preguntas y la retroalimentación se anuncian como texto.",
+            ),
           );
           // Focus the game when a student clicks/taps into it.
           canvas.addEventListener("pointerdown", function () {
@@ -2256,12 +2563,19 @@
           window.NeftHintLadder.watch({
             sourceSelector: "#ee-live",
             standard: "6.AT.5-2",
-            accept: "^Part \\d",
-            staticHints: [
-              "Read the expression piece by piece: which operations do you see, and which one must happen first (parentheses, exponents, multiply/divide, add/subtract)?",
-              "Substituting a value for a variable? Replace the variable EVERYWHERE it appears before you compute anything.",
-              "Combine only like terms — terms with the exact same variable part — then work the order of operations one small step at a time.",
-            ],
+            accept: "^Parte? \\d",
+            staticHints:
+              typeof tr === "function" && ES
+                ? [
+                    "Lee la expresión por partes: ¿qué operaciones ves y cuál va primero (paréntesis, exponentes, multiplicar/dividir, sumar/restar)?",
+                    "¿Vas a sustituir una variable? Cambia la variable en TODOS los lugares donde aparece antes de calcular.",
+                    "Combina solo términos semejantes (con la misma parte variable) y sigue el orden de las operaciones paso a paso.",
+                  ]
+                : [
+                    "Read the expression piece by piece: which operations do you see, and which one must happen first (parentheses, exponents, multiply/divide, add/subtract)?",
+                    "Substituting a value for a variable? Replace the variable EVERYWHERE it appears before you compute anything.",
+                    "Combine only like terms — terms with the exact same variable part — then work the order of operations one small step at a time.",
+                  ],
           });
       });
     </script>
@@ -2281,18 +2595,18 @@
         <h4 id="ewl-coach-title">Math Coach Tip / Consejos del Profesor</h4>
         <p
           id="ewl-coach-text"
-          data-en="Only combine LIKE terms (same variable and exponent)!"
-          data-es="¡Solo combina términos SEMEJANTES!"
+          data-en="Exponents first, then multiply or divide left to right, then add or subtract."
+          data-es="Primero los exponentes, luego multiplica o divide de izquierda a derecha, y después suma o resta."
         >
-          Only combine LIKE terms (same variable and exponent)!
+          Exponents first, then multiply or divide left to right, then add or subtract.
         </p>
       </div>
     </div>
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <script src="/assets/formula-popup.js" defer></script>
     <script src="/assets/game-studio.js?v=20261003" defer></script>
-    <script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
-    <script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
-    <script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
+    <script src="/math/games/shared/flagship-studio.js?v=20261015" defer></script>
+    <script src="/math/games/shared/flagship-puzzles.js?v=20261015" defer></script>
+    <script src="/math/games/shared/flagship-adventures.js?v=20261015" defer></script>
   </body>
 </html>

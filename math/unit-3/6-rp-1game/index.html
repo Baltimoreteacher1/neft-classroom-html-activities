@@ -59,8 +59,8 @@
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
 <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007">
-<link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261015">
+<link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261015">
 </head>
   <body>
 
@@ -96,14 +96,690 @@
     <script>
       (() => {
         // ════════════════════════════════════════════════════════════════
-        //  RATIO KITCHEN — a real smoothie-bar game for 6.AT.A.1
-        //  The MATH IS THE MECHANIC: you BUILD each drink by adding scoops
-        //  into two side-by-side tubes. The order is a ratio (e.g. 2:3) and
-        //  you serve it only when the tube heights are EQUIVALENT to that
+        //  RATIO KITCHEN — a real smoothie-bar game for Unit 3 (Lessons 3-1, 3-3;
+        //  6.AT.1, 6.AT.3a). The MATH IS THE MECHANIC: you BUILD each drink by
+        //  adding scoops into two side-by-side tubes. The order is a ratio (e.g.
+        //  2:3) and you serve it only when the tube heights are EQUIVALENT to that
         //  ratio — so 4:6 also serves a 2:3 order (equivalence, felt).
-        //  Round types: make a ratio, scale a batch to a fill line, and
-        //  finish a partly-poured drink (missing value). No A/B/C/D.
+        //  Round types: make a ratio, scale a batch to a fill line, finish a
+        //  partly-poured drink (missing value), and pour the missing column of a
+        //  ratio table. No A/B/C/D. Help is earned in three tiers after a try.
         // ════════════════════════════════════════════════════════════════
+
+        // ─── LANGUAGE (site-wide key; the mission panel toggle fires ewl:lang) ───
+        const lang = () => {
+          try {
+            return localStorage.getItem("nt-lang") === "es" ? "es" : "en";
+          } catch (e) {
+            return "en";
+          }
+        };
+        const TX = {
+          title: { en: "RATIO KITCHEN", es: "COCINA DE RAZONES" },
+          tagline: {
+            en: "Build drinks that match the ratio",
+            es: "Prepara bebidas que cumplan la razón",
+          },
+          intro: {
+            en: "Customers order by RATIO. Pour scoops into the two tubes until the\nheights match the order — then serve. 4:6 works for a 2:3 order!",
+            es: "Los clientes piden por RAZÓN. Agrega cucharadas a los dos tubos hasta que\nlas alturas cumplan el pedido — y sirve. ¡4:6 sirve para un pedido de 2:3!",
+          },
+          level: { en: (n) => "Level " + n, es: (n) => "Nivel " + n },
+          support: { en: "Support", es: "Apoyo" },
+          challenge: { en: "Challenge", es: "Reto" },
+          supportDesc: {
+            en: "Make a ratio, finish a drink & ratio tables · help after a try · no timer",
+            es: "Forma razones, termina bebidas y tablas · ayuda después de intentar · sin tiempo",
+          },
+          challengeDesc: {
+            en: "Big batches, missing values & ratio tables · no timer",
+            es: "Lotes grandes, valores que faltan y tablas de razones · sin tiempo",
+          },
+          titleKeys: {
+            en: "Press 1 or 2 to pick a level  ·  In the kitchen: keys 1 & 2 add, Backspace removes, Enter serves, H for a hint",
+            es: "Presiona 1 o 2 para elegir nivel  ·  En la cocina: 1 y 2 agregan, Retroceso quita, Enter sirve, H da una pista",
+          },
+          points: { en: "POINTS", es: "PUNTOS" },
+          served: { en: (n) => "Served " + n, es: (n) => "Servidas " + n },
+          order: { en: "\u{1F9FE} ORDER", es: "\u{1F9FE} PEDIDO" },
+          key: { en: (n) => "key " + n, es: (n) => "tecla " + n },
+          add: { en: "+ ADD", es: "+ AGREGAR" },
+          serve: { en: "\u{1F379} SERVE", es: "\u{1F379} SERVIR" },
+          undo: { en: "↶ Undo all", es: "↶ Deshacer" },
+          hint: { en: "\u{1F4A1} Hint", es: "\u{1F4A1} Pista" },
+          you: {
+            en: (a, b) => "You: " + a + " : " + b,
+            es: (a, b) => "Tú: " + a + " : " + b,
+          },
+          fillLine: {
+            en: (n) => "Fill line: " + n + " scoops total",
+            es: (n) => "Línea de llenado: " + n + " cucharadas en total",
+          },
+          taskMake: {
+            en: (a, ia, b, ib) =>
+              "Pour a drink that is\n" + a + " " + ia + " to " + b + " " + ib + ".",
+            es: (a, ia, b, ib) =>
+              "Sirve una bebida de\n" +
+              a +
+              " de " +
+              ia +
+              " por cada " +
+              b +
+              " de " +
+              ib +
+              ".",
+          },
+          taskBatch: {
+            en: (cap, a, b) =>
+              "BIG BATCH: fill to " +
+              cap +
+              " scoops total,\nkeeping the ratio " +
+              a +
+              " : " +
+              b +
+              ".",
+            es: (cap, a, b) =>
+              "LOTE GRANDE: llena hasta " +
+              cap +
+              " cucharadas en total\ny mantén la razón " +
+              a +
+              " : " +
+              b +
+              ".",
+          },
+          taskMissing: {
+            en: (n, ia, ib, a, b) =>
+              n +
+              " " +
+              ia +
+              " are already poured.\nAdd " +
+              ib +
+              " to keep " +
+              a +
+              " : " +
+              b +
+              ".",
+            es: (n, ia, ib, a, b) =>
+              "Ya hay " +
+              n +
+              " de " +
+              ia +
+              ".\nAgrega " +
+              ib +
+              " para mantener " +
+              a +
+              " : " +
+              b +
+              ".",
+          },
+          taskTable: {
+            en: "Pour the LAST column of\nthe ratio table.",
+            es: "Sirve la ÚLTIMA columna de\nla tabla de razones.",
+          },
+          srOrder: {
+            en: (a, b, ia, ib, task) =>
+              "New order: ratio " +
+              a +
+              " to " +
+              b +
+              ", " +
+              ia +
+              " to " +
+              ib +
+              ". " +
+              task,
+            es: (a, b, ia, ib, task) =>
+              "Nuevo pedido: razón " +
+              a +
+              " a " +
+              b +
+              ", " +
+              ia +
+              " a " +
+              ib +
+              ". " +
+              task,
+          },
+          srTable: {
+            en: (rows) => " Ratio table: " + rows + ".",
+            es: (rows) => " Tabla de razones: " + rows + ".",
+          },
+          lockedIngredient: {
+            en: "That ingredient is already poured — add the other one.",
+            es: "Ese ingrediente ya está servido — agrega el otro.",
+          },
+          overflowing: {
+            en: "Tube is overflowing — remove some scoops.",
+            es: "El tubo se desborda — quita algunas cucharadas.",
+          },
+          tubeFull: { en: "That tube is full.", es: "Ese tubo está lleno." },
+          overLine: {
+            en: (t, c) =>
+              "Over the fill line (" + t + " > " + c + "). Remove " + (t - c) + ".",
+            es: (t, c) =>
+              "Pasaste la línea (" + t + " > " + c + "). Quita " + (t - c) + ".",
+          },
+          addBoth: {
+            en: "Add some of BOTH ingredients first.",
+            es: "Primero agrega un poco de LOS DOS ingredientes.",
+          },
+          switched: {
+            en: (a, ia, b, ib) =>
+              "Check the order: the drink needs " +
+              a +
+              " " +
+              ia +
+              " for every " +
+              b +
+              " " +
+              ib +
+              ". Your tubes are switched.",
+            es: (a, ia, b, ib) =>
+              "Revisa el pedido: la bebida lleva " +
+              a +
+              " de " +
+              ia +
+              " por cada " +
+              b +
+              " de " +
+              ib +
+              ". Tus tubos están al revés.",
+          },
+          sameDiff: {
+            en: (ca, cb, a, b) =>
+              ca +
+              ":" +
+              cb +
+              " keeps the same DIFFERENCE as " +
+              a +
+              ":" +
+              b +
+              ", but ratios grow by MULTIPLYING both parts by the same number.",
+            es: (ca, cb, a, b) =>
+              ca +
+              ":" +
+              cb +
+              " tiene la misma DIFERENCIA que " +
+              a +
+              ":" +
+              b +
+              ", pero las razones crecen al MULTIPLICAR las dos partes por el mismo número.",
+          },
+          notEquivalent: {
+            en: (ca, cb, a, b) =>
+              "That's " +
+              ca +
+              ":" +
+              cb +
+              ". Is " +
+              ca +
+              ":" +
+              cb +
+              " equivalent to " +
+              a +
+              ":" +
+              b +
+              "? Check by multiplying.",
+            es: (ca, cb, a, b) =>
+              "Eso es " +
+              ca +
+              ":" +
+              cb +
+              ". ¿" +
+              ca +
+              ":" +
+              cb +
+              " es equivalente a " +
+              a +
+              ":" +
+              b +
+              "? Compruébalo multiplicando.",
+          },
+          reachLine: {
+            en: (c, t) =>
+              "Ratio is right! Now reach the fill line — " +
+              c +
+              " scoops total (you have " +
+              t +
+              ").",
+            es: (c, t) =>
+              "¡La razón es correcta! Ahora llega a la línea — " +
+              c +
+              " cucharadas en total (tienes " +
+              t +
+              ").",
+          },
+          overRight: {
+            en: (n) => "Right ratio, but over the fill line. Remove " + n + ".",
+            es: (n) => "Razón correcta, pero pasaste la línea. Quita " + n + ".",
+          },
+          tableColumn: {
+            en: (g, name) =>
+              "Right ratio, but not the table's last column. That column has " +
+              g +
+              " " +
+              name +
+              ".",
+            es: (g, name) =>
+              "La razón es correcta, pero no es la última columna de la tabla. Esa columna tiene " +
+              g +
+              " de " +
+              name +
+              ".",
+          },
+          compare: {
+            en: "Not quite — compare your tubes to the order.",
+            es: "Todavía no — compara tus tubos con el pedido.",
+          },
+          hintReady: {
+            en: " Tap \u{1F4A1} Hint (H) for help.",
+            es: " Toca \u{1F4A1} Pista (H) si necesitas ayuda.",
+          },
+          hintReadySay: {
+            en: " Hint (H) is ready if you need it.",
+            es: " La pista (H) está lista si la necesitas.",
+          },
+          refilled: {
+            en: "\u{1F49B} Lives refilled — keep cooking!",
+            es: "\u{1F49B} Vidas recargadas — ¡sigue cocinando!",
+          },
+          servedOk: {
+            en: (ca, cb, a, b, k, pts, combo) =>
+              "✅ " +
+              ca +
+              ":" +
+              cb +
+              " = " +
+              a +
+              ":" +
+              b +
+              (k > 1 ? " (both parts × " + k + ")" : "") +
+              "  +" +
+              pts +
+              (combo > 1 ? " x" + combo : ""),
+            es: (ca, cb, a, b, k, pts, combo) =>
+              "✅ " +
+              ca +
+              ":" +
+              cb +
+              " = " +
+              a +
+              ":" +
+              b +
+              (k > 1 ? " (las dos partes × " + k + ")" : "") +
+              "  +" +
+              pts +
+              (combo > 1 ? " x" + combo : ""),
+          },
+          servedSay: {
+            en: (ca, cb, a, b, k, pts) =>
+              "Served! " +
+              ca +
+              ":" +
+              cb +
+              " = " +
+              a +
+              ":" +
+              b +
+              (k > 1 ? " because both parts were multiplied by " + k + "." : ".") +
+              " +" +
+              pts +
+              " points.",
+            es: (ca, cb, a, b, k, pts) =>
+              "¡Servida! " +
+              ca +
+              ":" +
+              cb +
+              " = " +
+              a +
+              ":" +
+              b +
+              (k > 1
+                ? " porque las dos partes se multiplicaron por " + k + "."
+                : ".") +
+              " +" +
+              pts +
+              " puntos.",
+          },
+          tryFirst: {
+            en: "\u{1F4A1} Give it a try first — pour, then press SERVE. Hints unlock after a try.",
+            es: "\u{1F4A1} Primero inténtalo — sirve y presiona SERVIR. Las pistas se abren después de intentar.",
+          },
+          hintPrefix: { en: "Hint: ", es: "Pista: " },
+          h1Missing: {
+            en: (a, ia, b, ib) =>
+              "Think in groups: one group is " +
+              a +
+              " " +
+              ia +
+              " with " +
+              b +
+              " " +
+              ib +
+              ". How many groups of " +
+              ia +
+              " are already poured?",
+            es: (a, ia, b, ib) =>
+              "Piensa en grupos: un grupo es " +
+              a +
+              " de " +
+              ia +
+              " con " +
+              b +
+              " de " +
+              ib +
+              ". ¿Cuántos grupos de " +
+              ia +
+              " ya están servidos?",
+          },
+          h1Batch: {
+            en: (a, b) =>
+              "One group is " +
+              a +
+              " + " +
+              b +
+              " scoops. Find how many groups fill the line, then use that many groups of each.",
+            es: (a, b) =>
+              "Un grupo es " +
+              a +
+              " + " +
+              b +
+              " cucharadas. Halla cuántos grupos llenan la línea y usa esa cantidad de grupos de cada uno.",
+          },
+          h1Table: {
+            en: (given, name, base) =>
+              "Each column of a ratio table multiplies BOTH rows by the same number. What number turns " +
+              base +
+              " " +
+              name +
+              " into " +
+              given +
+              "?",
+            es: (given, name, base) =>
+              "Cada columna de una tabla de razones multiplica LAS DOS filas por el mismo número. ¿Qué número convierte " +
+              base +
+              " de " +
+              name +
+              " en " +
+              given +
+              "?",
+          },
+          h1Make: {
+            en: (a, ia, b, ib) =>
+              "For every " +
+              a +
+              " " +
+              ia +
+              ", add " +
+              b +
+              " " +
+              ib +
+              ". Both tubes need the same number of groups.",
+            es: (a, ia, b, ib) =>
+              "Por cada " +
+              a +
+              " de " +
+              ia +
+              ", agrega " +
+              b +
+              " de " +
+              ib +
+              ". Los dos tubos necesitan el mismo número de grupos.",
+          },
+          h2Missing: {
+            en: (n, ia, a, g, b, ib) =>
+              n +
+              " " +
+              ia +
+              " ÷ " +
+              a +
+              " = " +
+              g +
+              " groups. Now pour " +
+              g +
+              " groups of " +
+              b +
+              " " +
+              ib +
+              ": " +
+              g +
+              " × " +
+              b +
+              ".",
+            es: (n, ia, a, g, b, ib) =>
+              n +
+              " de " +
+              ia +
+              " ÷ " +
+              a +
+              " = " +
+              g +
+              " grupos. Ahora sirve " +
+              g +
+              " grupos de " +
+              b +
+              " de " +
+              ib +
+              ": " +
+              g +
+              " × " +
+              b +
+              ".",
+          },
+          h2Batch: {
+            en: (c, s, g, a, ia, b, ib) =>
+              c +
+              " ÷ " +
+              s +
+              " = " +
+              g +
+              " groups. Pour " +
+              g +
+              " × " +
+              a +
+              " " +
+              ia +
+              " and " +
+              g +
+              " × " +
+              b +
+              " " +
+              ib +
+              ".",
+            es: (c, s, g, a, ia, b, ib) =>
+              c +
+              " ÷ " +
+              s +
+              " = " +
+              g +
+              " grupos. Sirve " +
+              g +
+              " × " +
+              a +
+              " de " +
+              ia +
+              " y " +
+              g +
+              " × " +
+              b +
+              " de " +
+              ib +
+              ".",
+          },
+          h2Table: {
+            en: (given, base, k, other, ob) =>
+              given +
+              " ÷ " +
+              base +
+              " = " +
+              k +
+              ", so the other row is " +
+              k +
+              " × " +
+              other +
+              " " +
+              ob +
+              ".",
+            es: (given, base, k, other, ob) =>
+              given +
+              " ÷ " +
+              base +
+              " = " +
+              k +
+              ", así que la otra fila es " +
+              k +
+              " × " +
+              other +
+              " de " +
+              ob +
+              ".",
+          },
+          h2Make: {
+            en: (a, ia, b, ib) =>
+              "Start with exactly one group: " +
+              a +
+              " " +
+              ia +
+              " and " +
+              b +
+              " " +
+              ib +
+              ". Then serve.",
+            es: (a, ia, b, ib) =>
+              "Empieza con un solo grupo: " +
+              a +
+              " de " +
+              ia +
+              " y " +
+              b +
+              " de " +
+              ib +
+              ". Luego sirve.",
+          },
+          h3: {
+            en: (x, ia, y, ib) =>
+              "Worked example: pour " +
+              x +
+              " " +
+              ia +
+              " and " +
+              y +
+              " " +
+              ib +
+              ", then serve. (Help earns fewer points — try the next order on your own.)",
+            es: (x, ia, y, ib) =>
+              "Ejemplo resuelto: sirve " +
+              x +
+              " de " +
+              ia +
+              " y " +
+              y +
+              " de " +
+              ib +
+              ". (Con ayuda ganas menos puntos — intenta el próximo pedido por tu cuenta.)",
+          },
+          closed: { en: "KITCHEN CLOSED", es: "COCINA CERRADA" },
+          rank: {
+            en: ["KEEP PRACTICING!", "LINE COOK", "HEAD CHEF!", "MASTER MIXOLOGIST!"],
+            es: [
+              "¡SIGUE PRACTICANDO!",
+              "AYUDANTE DE COCINA",
+              "¡JEFE DE COCINA!",
+              "¡MAESTRO DE MEZCLAS!",
+            ],
+          },
+          newBest: {
+            en: "POINTS  ·  NEW PERSONAL BEST!",
+            es: "PUNTOS  ·  ¡NUEVA MEJOR MARCA!",
+          },
+          personalBest: {
+            en: (n) => "POINTS  ·  Personal best " + n,
+            es: (n) => "PUNTOS  ·  Mejor marca " + n,
+          },
+          drinksServed: { en: "Drinks served", es: "Bebidas servidas" },
+          firstTryNoHint: {
+            en: "First-try, no hint",
+            es: "Al primer intento, sin pista",
+          },
+          bestStreak: { en: "Best streak", es: "Mejor racha" },
+          skill: {
+            en: {
+              make: "Make an equivalent ratio",
+              batch: "Scale a batch to a total",
+              missing: "Find a missing value",
+              table: "Complete a ratio table",
+            },
+            es: {
+              make: "Formar una razón equivalente",
+              batch: "Escalar un lote a un total",
+              missing: "Hallar un valor que falta",
+              table: "Completar una tabla de razones",
+            },
+          },
+          nextWorst: {
+            en: (skill, n) =>
+              "Practice next: " +
+              skill +
+              " — use the groups idea (" +
+              n +
+              " retr" +
+              (n === 1 ? "y" : "ies") +
+              ").",
+            es: (skill, n) =>
+              "Para practicar: " +
+              skill +
+              " — usa la idea de grupos (" +
+              n +
+              " " +
+              (n === 1 ? "intento extra" : "intentos extra") +
+              ").",
+          },
+          nextTier1: {
+            en: "Practice next: try Level 2 for big batches and missing values.",
+            es: "Para practicar: prueba el Nivel 2 con lotes grandes y valores que faltan.",
+          },
+          nextTier2: {
+            en: "Practice next: you are ready for unit rates!",
+            es: "Para practicar: ¡ya estás listo para las tasas unitarias!",
+          },
+          skillsPracticed: { en: "Skills practiced: ", es: "Practicaste: " },
+          resultsSr: {
+            en: (s, f, g, next) =>
+              "Kitchen closed. " +
+              s +
+              " points. " +
+              f +
+              " of " +
+              g +
+              " served on the first try. " +
+              next,
+            es: (s, f, g, next) =>
+              "Cocina cerrada. " +
+              s +
+              " puntos. " +
+              f +
+              " de " +
+              g +
+              " servidas al primer intento. " +
+              next,
+          },
+          cookAgain: { en: "COOK AGAIN (Enter)", es: "COCINAR OTRA VEZ (Enter)" },
+          changeLevel: { en: "CHANGE LEVEL (L)", es: "CAMBIAR NIVEL (L)" },
+          canvas: {
+            en: "Ratio Kitchen: press 1 or 2 to add a scoop, Backspace to remove, Enter to serve, H for a hint. The order and feedback are read aloud.",
+            es: "Cocina de razones: presiona 1 o 2 para agregar una cucharada, Retroceso para quitar, Enter para servir, H para una pista. El pedido y la retroalimentación se leen en voz alta.",
+          },
+        };
+        const t = (key, ...args) => {
+          const v = TX[key][lang()];
+          return typeof v === "function" ? v(...args) : v;
+        };
+        // Keys pressed on a focused page control (mission panel, dialog, toolbar)
+        // belong to that control, not to the kitchen underneath.
+        const pageControlFocused = () => {
+          const a = document.activeElement;
+          return !!a && /^(BUTTON|INPUT|SELECT|TEXTAREA|SUMMARY|A)$/.test(a.tagName);
+        };
 
         // ─── SOUND ENGINE ───
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -126,8 +802,7 @@
           o.start();
           o.stop(actx.currentTime + dur);
         }
-        const sfxScoop = () =>
-          beep(420 + Math.random() * 60, 0.07, "sine", 0.12);
+        const sfxScoop = () => beep(420 + Math.random() * 60, 0.07, "sine", 0.12);
         const sfxRemove = () => beep(240, 0.08, "sine", 0.1);
         const sfxServe = () => {
           beep(523, 0.08);
@@ -158,38 +833,24 @@
         };
         // Ingredients: colour + label + emoji. Colour is never the only cue —
         // every tube is labelled with the fruit name + emoji (colourblind-safe).
+        // `name` follows the current language (the mission panel reads it too).
+        const ingredient = (en, es, emoji, color, css) => ({
+          en,
+          es,
+          emoji,
+          color,
+          css,
+          get name() {
+            return lang() === "es" ? this.es : this.en;
+          },
+        });
         const INGREDIENTS = [
-          {
-            name: "Strawberry",
-            emoji: "\u{1F353}",
-            color: 0xf5476c,
-            css: "#f5476c",
-          },
-          {
-            name: "Banana",
-            emoji: "\u{1F34C}",
-            color: 0xf1c40f,
-            css: "#f1c40f",
-          },
-          {
-            name: "Blueberry",
-            emoji: "\u{1FAD0}",
-            color: 0x4a7cf0,
-            css: "#4a7cf0",
-          },
-          { name: "Lime", emoji: "\u{1F33F}", color: 0x42c96a, css: "#42c96a" },
-          {
-            name: "Mango",
-            emoji: "\u{1F96D}",
-            color: 0xe6892b,
-            css: "#e6892b",
-          },
-          {
-            name: "Grape",
-            emoji: "\u{1F347}",
-            color: 0xa569d6,
-            css: "#a569d6",
-          },
+          ingredient("Strawberry", "Fresa", "\u{1F353}", 0xf5476c, "#f5476c"),
+          ingredient("Banana", "Plátano", "\u{1F34C}", 0xf1c40f, "#f1c40f"),
+          ingredient("Blueberry", "Arándano", "\u{1FAD0}", 0x4a7cf0, "#4a7cf0"),
+          ingredient("Lime", "Lima", "\u{1F33F}", 0x42c96a, "#42c96a"),
+          ingredient("Mango", "Mango", "\u{1F96D}", 0xe6892b, "#e6892b"),
+          ingredient("Grape", "Uva", "\u{1F347}", 0xa569d6, "#a569d6"),
         ];
 
         // ─── MATH HELPERS ───
@@ -205,8 +866,10 @@
           return a;
         }
         // current counts [ca,cb] equivalent to target [a,b] via cross-multiply
-        const crossMatch = (ca, cb, a, b) =>
-          ca > 0 && cb > 0 && ca * b === cb * a;
+        const crossMatch = (ca, cb, a, b) => ca > 0 && cb > 0 && ca * b === cb * a;
+
+        // capacity ceiling for the visual tubes (keeps art clean)
+        const TUBE_MAX = 12;
 
         // ─── ROUND GENERATOR ───
         // level 1 = support (small ratios, more help); level 2 = challenge.
@@ -230,11 +893,9 @@
           const g = gcd(a, b);
           a /= g;
           b /= g; // ensure lowest terms
-
           let type;
-          if (tier === 1) type = index % 2 === 0 ? "make" : "missing";
-          else type = pick(["make", "batch", "missing", "make", "batch"]);
-
+          if (tier === 1) type = ["make", "missing", "table"][index % 3];
+          else type = pick(["make", "batch", "missing", "table", "batch", "table"]);
           const r = {
             ia,
             ib,
@@ -245,13 +906,14 @@
             capacity: null,
             locked: false,
           };
-
           // largest scale factor whose solution still fits the visual tubes
           const maxK = Math.floor(TUBE_MAX / Math.max(a, b));
-          if ((type === "batch" || type === "missing") && maxK < 2)
+          if (
+            (type === "batch" || type === "missing" || type === "table") &&
+            maxK < 2
+          )
             type = "make";
           r.type = type;
-
           if (type === "batch") {
             // scale the base ratio by k so total fills a fill-line (solution fits tubes)
             const sum = a + b;
@@ -264,15 +926,21 @@
             r.preseed = [a * k, 0];
             r.locked = true;
             r.need = [a * k, b * k];
+          } else if (type === "table") {
+            // Ratio table (Lesson 3-3): 1 group, 2 groups, then the
+            // target column with ONE entry given. The student pours that column.
+            const k = 2 + rnd(Math.min(maxK, tier === 1 ? 3 : 5) - 1);
+            r.capacity = (a + b) * k; // checked, but never shown as a fill line
+            r.hideTotal = true;
+            r.need = [a * k, b * k];
+            r.given = rnd(2); // which row of the last column is printed
+            r.columns = k === 2 ? [1, 2] : [1, 2, k];
           } else {
             // make: build any equivalent of a:b (smallest is a:b)
             r.need = [a, b];
           }
           return r;
         }
-
-        // capacity ceiling for the visual tubes (keeps art clean)
-        const TUBE_MAX = 12;
 
         // ════════════════════════════════════════════════════════════════
         //  TITLE SCENE — real choice: Level 1 (support) vs Level 2 (challenge)
@@ -284,8 +952,8 @@
           create() {
             this.cameras.main.setBackgroundColor(C.bg);
             this.add
-              .text(W / 2, 120, "RATIO KITCHEN", {
-                fontSize: "66px",
+              .text(W / 2, 120, t("title"), {
+                fontSize: "62px",
                 fontFamily: "Arial Black, sans-serif",
                 color: "#f6c343",
                 stroke: "#000",
@@ -293,26 +961,20 @@
               })
               .setOrigin(0.5);
             this.add
-              .text(W / 2, 178, "6.AT.A.1 — Build drinks to match the ratio", {
+              .text(W / 2, 178, "6.AT.1 · 6.AT.3a — " + t("tagline"), {
                 fontSize: "20px",
                 fontFamily: "Arial",
                 color: "#c9b6ff",
               })
               .setOrigin(0.5);
             this.add
-              .text(
-                W / 2,
-                230,
-                "Customers order by RATIO. Pour scoops into the two tubes until the\n" +
-                  "heights match the order — then serve. 4:6 works for a 2:3 order!",
-                {
-                  fontSize: "16px",
-                  fontFamily: "Arial",
-                  color: "#9b86c9",
-                  align: "center",
-                  lineSpacing: 6,
-                },
-              )
+              .text(W / 2, 230, t("intro"), {
+                fontSize: "16px",
+                fontFamily: "Arial",
+                color: "#9b86c9",
+                align: "center",
+                lineSpacing: 6,
+              })
               .setOrigin(0.5);
 
             // little demo of two tubes 2:3
@@ -322,16 +984,16 @@
             const tiers = [
               {
                 t: 1,
-                label: "Level 1",
-                sub: "Support",
-                desc: "Make a ratio & finish a drink · coaching after a try · no timer",
+                label: t("level", 1),
+                sub: t("support"),
+                desc: t("supportDesc"),
                 col: C.green,
               },
               {
                 t: 2,
-                label: "Level 2",
-                sub: "Challenge",
-                desc: "Scale big batches & missing values · no timer",
+                label: t("level", 2),
+                sub: t("challenge"),
+                desc: t("challengeDesc"),
                 col: C.gold,
               },
             ];
@@ -358,7 +1020,7 @@
                 .setOrigin(0.5);
               this.add
                 .text(x, y + 30, d.desc, {
-                  fontSize: "12.5px",
+                  fontSize: "13px",
                   fontFamily: "Arial",
                   color: "#c9b6ff",
                   align: "center",
@@ -374,6 +1036,8 @@
                 card.setScale(1);
               });
               const go = () => {
+                if (this.leaving) return;
+                this.leaving = true;
                 ensureAudio();
                 sfxClick();
                 this.cameras.main.fadeOut(350, 0, 0, 0);
@@ -382,25 +1046,23 @@
                 );
               };
               card.on("pointerdown", go);
-              this.input.keyboard.once("keydown-" + ["ONE", "TWO"][i], go);
+              this.input.keyboard.on("keydown-" + ["ONE", "TWO"][i], () => {
+                if (!pageControlFocused()) go();
+              });
             });
 
             this.add
-              .text(
-                W / 2,
-                712,
-                "Press 1 or 2 to pick a level  ·  In the kitchen: keys 1 & 2 add, Backspace removes, Enter serves, H for a hint",
-                { fontSize: "15px", color: "#b9a6e8" },
-              )
+              .text(W / 2, 712, t("titleKeys"), {
+                fontSize: "15px",
+                color: "#b9a6e8",
+              })
               .setOrigin(0.5);
             this.cameras.main.fadeIn(400);
           }
           drawDemo(cx, cy) {
             // 🍓 2 : 🍌 3 mini tubes to teach the read
             const draw = (x, color, n) => {
-              this.add
-                .rectangle(x, cy, 46, 130, C.glass)
-                .setStrokeStyle(2, C.stroke);
+              this.add.rectangle(x, cy, 46, 130, C.glass).setStrokeStyle(2, C.stroke);
               for (let s = 0; s < n; s++)
                 this.add
                   .rectangle(x, cy + 55 - s * 22 - 11, 38, 18, color)
@@ -447,6 +1109,7 @@
             this.firstTry = 0; // served correctly on the first serve, no hint
             this.missByType = {};
             this.typesSeen = {};
+            this.feedbackFn = null; // rebuilds the persistent feedback line in the current language
 
             // backdrop
             this.add.rectangle(W / 2, H / 2, W, H, 0x1a0d35);
@@ -459,19 +1122,19 @@
               fontFamily: "Arial Black",
               color: "#f6c343",
             });
-            this.add.text(26, 42, "POINTS", {
+            this.hPoints = this.add.text(26, 42, "", {
               fontSize: "10px",
               color: "#8a76bf",
             });
             this.hLevel = this.add
-              .text(W / 2, 12, "Level 1", {
+              .text(W / 2, 12, "", {
                 fontSize: "16px",
                 fontFamily: "Arial Black",
                 color: "#fff",
               })
               .setOrigin(0.5, 0);
             this.hServed = this.add
-              .text(W / 2, 36, "Served 0", {
+              .text(W / 2, 36, "", {
                 fontSize: "12px",
                 color: "#9b86c9",
               })
@@ -487,8 +1150,8 @@
             this.add
               .rectangle(176, 250, 300, 320, C.panel)
               .setStrokeStyle(3, C.stroke);
-            this.add
-              .text(176, 118, "\u{1F9FE} ORDER", {
+            this.orderHead = this.add
+              .text(176, 118, "", {
                 fontSize: "18px",
                 fontFamily: "Arial Black",
                 color: "#f6c343",
@@ -545,8 +1208,9 @@
                 })
                 .setOrigin(0.5, 0),
             );
+            // Live ratio sits beside the tubes so feedback below never covers it.
             this.liveRatio = this.add
-              .text(512, 632, "", {
+              .text(830, 480, "", {
                 fontSize: "26px",
                 fontFamily: "Arial Black",
                 color: "#9b86c9",
@@ -561,45 +1225,45 @@
               })
               .setOrigin(0.5);
 
-            // ── Dispenser buttons (right) ──
+            // ── Dispenser buttons (right) ── name and key hint sit LEFT of the
+            // ADD button so long ingredient names are never covered.
             this.dispenser = [];
             [0, 1].forEach((i) => {
               const x = 830,
                 y = 200 + i * 150;
-              this.add
-                .rectangle(x, y, 320, 128, C.panel)
-                .setStrokeStyle(3, C.stroke);
+              this.add.rectangle(x, y, 320, 128, C.panel).setStrokeStyle(3, C.stroke);
               const emoji = this.add
                 .text(x - 128, y, "", { fontSize: "44px" })
                 .setOrigin(0.5);
               const name = this.add
-                .text(x - 92, y - 30, "", {
+                .text(x - 96, y - 40, "", {
                   fontSize: "16px",
                   fontFamily: "Arial Black",
                   color: "#fff",
                 })
                 .setOrigin(0, 0.5);
               const keyhint = this.add
-                .text(x - 92, y - 6, "", { fontSize: "11px", color: "#9b86c9" })
+                .text(x - 96, y + 8, "", { fontSize: "12px", color: "#b9a6e8" })
                 .setOrigin(0, 0.5);
               const addBtn = this.makeBtn(
-                x + 36,
-                y + 4,
-                150,
-                72,
-                "+ ADD",
+                x + 66,
+                y + 24,
+                132,
+                60,
+                "",
                 0x2e7d46,
                 () => this.addScoop(i),
+                "17px",
               );
               const remBtn = this.makeBtn(
                 x + 122,
-                y - 40,
+                y - 36,
                 48,
                 48,
                 "−",
                 0x6a3a52,
                 () => this.removeScoop(i),
-                "18px",
+                "20px",
               );
               this.dispenser.push({ emoji, name, keyhint, addBtn, remBtn });
             });
@@ -610,7 +1274,7 @@
               700,
               240,
               60,
-              "\u{1F379} SERVE",
+              "",
               0xf6c343,
               () => this.serve(),
               "24px",
@@ -619,9 +1283,9 @@
             this.undoBtn = this.makeBtn(
               300,
               700,
-              150,
+              160,
               50,
-              "↶ Undo all",
+              "",
               0x4a2d70,
               () => this.clearTubes(),
               "16px",
@@ -629,21 +1293,21 @@
             this.hintBtn = this.makeBtn(
               724,
               700,
-              150,
+              160,
               50,
-              "\u{1F4A1} Hint",
+              "",
               0x4a2d70,
               () => this.showHint(),
               "16px",
             );
             this.feedback = this.add
-              .text(512, 656, "", {
+              .text(512, 640, "", {
                 fontSize: "16px",
                 fontFamily: "Arial",
                 fontStyle: "bold",
                 color: "#fff",
                 align: "center",
-                wordWrap: { width: 520 },
+                wordWrap: { width: 660 },
               })
               .setOrigin(0.5);
 
@@ -654,16 +1318,14 @@
             if (cv) {
               cv.setAttribute("tabindex", "0");
               cv.setAttribute("role", "application");
-              cv.setAttribute(
-                "aria-label",
-                "Ratio Kitchen: press 1 or 2 to add a scoop, Backspace to remove, Enter to serve, H for a hint. The order and feedback are read aloud.",
-              );
+              cv.setAttribute("aria-label", t("canvas"));
               const ae = document.activeElement;
               if (ae && ae.id === "fm-start") cv.focus({ preventScroll: true });
             }
 
             // keyboard
             this.input.keyboard.on("keydown", (e) => {
+              if (pageControlFocused()) return;
               if (e.key === "1") this.addScoop(0);
               else if (e.key === "2") this.addScoop(1);
               else if (e.key === "Backspace") {
@@ -673,25 +1335,22 @@
               else if (e.key.toLowerCase() === "h") this.showHint();
             });
 
+            const relabel = () => this.relabel();
+            document.addEventListener("ewl:lang", relabel);
+            this.events.once("shutdown", () =>
+              document.removeEventListener("ewl:lang", relabel),
+            );
+
+            this.labelStatic();
             this.loadRound();
           }
 
-          makeBtn(
-            x,
-            y,
-            w,
-            h,
-            label,
-            color,
-            cb,
-            fs = "18px",
-            txtColor = 0xffffff,
-          ) {
+          makeBtn(x, y, w, h, label, color, cb, fs = "18px", txtColor = 0xffffff) {
             const r = this.add
               .rectangle(x, y, w, h, color)
               .setStrokeStyle(2, 0x000000, 0.25)
               .setInteractive({ useHandCursor: true });
-            const t = this.add
+            const label_ = this.add
               .text(x, y, label, {
                 fontSize: fs,
                 fontFamily: "Arial Black",
@@ -704,8 +1363,38 @@
               ensureAudio();
               cb();
             });
-            r._t = t;
+            r._t = label_;
             return r;
+          }
+
+          // Fixed labels in the current language.
+          labelStatic() {
+            this.hPoints.setText(t("points"));
+            this.orderHead.setText(t("order"));
+            this.serveBtn._t.setText(t("serve"));
+            this.undoBtn._t.setText(t("undo"));
+            this.hintBtn._t.setText(t("hint"));
+            this.dispenser.forEach((d, i) => {
+              d.addBtn._t.setText(t("add"));
+              d.keyhint.setText(t("key", i + 1));
+            });
+          }
+
+          relabel() {
+            if (!this.sys.isActive() && !this.sys.isPaused()) return;
+            this.labelStatic();
+            this.renderOrder();
+            this.redrawTubes();
+            if (this.feedbackFn)
+              this.flash(
+                this.feedback,
+                this.feedbackFn,
+                this.feedbackColor,
+                Infinity,
+              );
+            this.updateHUD();
+            const cv = this.game.canvas;
+            if (cv) cv.setAttribute("aria-label", t("canvas"));
           }
 
           loadRound() {
@@ -714,8 +1403,10 @@
             const r = this.round;
             this.counts = [r.preseed[0], r.preseed[1]];
             this.attempts = 0;
+            this.lifeMisses = 0;
             this.hintTier = 0;
             this.typesSeen[r.type] = true;
+            this.feedbackFn = null;
             this.feedback.setText("");
 
             // customer + order
@@ -731,42 +1422,12 @@
                 "\u{1F471}",
               ]),
             );
-            this.orderRatio.setText(`${r.a} : ${r.b}`);
             this.orderRatio.setColor("#fff");
-            this.orderLegend.setText(
-              `${r.ia.emoji} ${r.ia.name}  ${r.a}\n${r.ib.emoji} ${r.ib.name}  ${r.b}`,
-            );
-
-            // task text per type
-            let task = "";
-            if (r.type === "make")
-              task = `Pour a drink that is\n${r.a} ${r.ia.name} to ${r.b} ${r.ib.name}.`;
-            else if (r.type === "batch")
-              task = `BIG BATCH: fill to ${r.capacity} scoops total,\nkeeping the ratio ${r.a} : ${r.b}.`;
-            else if (r.type === "missing")
-              task = `${r.preseed[0]} ${r.ia.name} are already poured.\nAdd ${r.ib.name} to keep ${r.a} : ${r.b}.`;
-            this.orderTask.setText(task);
-
-            // Mirror the order into the hidden live region (assistive tech +
-            // shared hint ladder). Additive: never touches gameplay/scoring.
-            const rkSr = document.getElementById("rk-sr");
-            if (rkSr)
-              rkSr.textContent =
-                `New order: ratio ${r.a} to ${r.b}, ${r.ia.name} to ${r.ib.name}. ` +
-                task.replace(/\n/g, " ");
-
-            // fill-line note
-            this.fillNote.setText(
-              r.capacity ? `Fill line: ${r.capacity} scoops total` : "",
-            );
+            this.renderOrder();
 
             // dispensers
             [0, 1].forEach((i) => {
-              const ing = i === 0 ? r.ia : r.ib;
               const d = this.dispenser[i];
-              d.emoji.setText(ing.emoji);
-              d.name.setText(ing.name);
-              d.keyhint.setText(`key ${i + 1}`);
               const locked = r.locked && i === 0;
               d.addBtn.setAlpha(locked ? 0.35 : 1).setData("locked", locked);
               d.remBtn.setAlpha(locked ? 0.35 : 1).setData("locked", locked);
@@ -775,6 +1436,86 @@
 
             this.updateHUD();
             this.redrawTubes(true);
+          }
+
+          taskText() {
+            const r = this.round;
+            if (r.type === "make")
+              return t("taskMake", r.a, r.ia.name, r.b, r.ib.name);
+            if (r.type === "batch") return t("taskBatch", r.capacity, r.a, r.b);
+            if (r.type === "missing")
+              return t("taskMissing", r.preseed[0], r.ia.name, r.ib.name, r.a, r.b);
+            return t("taskTable");
+          }
+          // The ratio table for "table" rounds; the target column hides one entry.
+          tableRows() {
+            const r = this.round;
+            const cell = (row, k, last) => {
+              if (last && row !== r.given) return "?";
+              return String((row === 0 ? r.a : r.b) * k);
+            };
+            return [0, 1].map((row) =>
+              r.columns
+                .map((k, ci) =>
+                  cell(row, k, ci === r.columns.length - 1).padStart(3, " "),
+                )
+                .join(" |"),
+            );
+          }
+          renderOrder() {
+            const r = this.round;
+            this.orderRatio.setText(`${r.a} : ${r.b}`);
+            if (r.type === "table") {
+              const rows = this.tableRows();
+              this.orderLegend
+                .setFontFamily("Courier New, monospace")
+                .setFontSize("22px")
+                .setText(`${r.ia.emoji} ${rows[0]}\n${r.ib.emoji} ${rows[1]}`);
+            } else {
+              this.orderLegend
+                .setFontFamily("Arial")
+                .setFontSize("15px")
+                .setText(
+                  `${r.ia.emoji} ${r.ia.name}  ${r.a}\n${r.ib.emoji} ${r.ib.name}  ${r.b}`,
+                );
+            }
+            const task = this.taskText();
+            this.orderTask.setText(task);
+
+            // Mirror the order into the hidden live region (assistive tech +
+            // shared hint ladder). Additive: never touches gameplay/scoring.
+            const rkSr = document.getElementById("rk-sr");
+            if (rkSr) {
+              let text = t(
+                "srOrder",
+                r.a,
+                r.b,
+                r.ia.name,
+                r.ib.name,
+                task.replace(/\n/g, " "),
+              );
+              if (r.type === "table") {
+                const rows = this.tableRows();
+                text += t(
+                  "srTable",
+                  `${r.ia.name}: ${rows[0].replace(/\s+/g, " ")}; ${r.ib.name}: ${rows[1].replace(/\s+/g, " ")}`,
+                );
+              }
+              rkSr.textContent = text;
+            }
+
+            // fill-line note (hidden on table rounds: the table carries the target)
+            this.fillNote.setText(
+              r.capacity && !r.hideTotal ? t("fillLine", r.capacity) : "",
+            );
+
+            // dispensers
+            [0, 1].forEach((i) => {
+              const ing = i === 0 ? r.ia : r.ib;
+              const d = this.dispenser[i];
+              d.emoji.setText(ing.emoji);
+              d.name.setText(ing.name);
+            });
           }
 
           ingColor(i) {
@@ -786,23 +1527,17 @@
             const r = this.round;
             if (r.locked && i === 0) {
               sfxWrong();
-              this.flash(
-                this.feedback,
-                "That ingredient is already poured — add the other one.",
-              );
+              this.flash(this.feedback, () => t("lockedIngredient"));
               return;
             }
             const total = this.counts[0] + this.counts[1];
             if (
               this.counts[i] >= TUBE_MAX ||
-              (r.capacity && total >= r.capacity + 2)
+              (r.capacity && !r.hideTotal && total >= r.capacity + 2)
             ) {
               sfxWrong();
-              this.flash(
-                this.feedback,
-                r.capacity
-                  ? "Tube is overflowing — remove some scoops."
-                  : "That tube is full.",
+              this.flash(this.feedback, () =>
+                r.capacity && !r.hideTotal ? t("overflowing") : t("tubeFull"),
               );
               return;
             }
@@ -825,12 +1560,14 @@
             this.counts[i]--;
             sfxRemove();
             this.redrawTubes();
+            this.feedbackFn = null;
             this.feedback.setText("");
           }
           clearTubes() {
             if (this.roundLocked || window.GameStudio?.paused) return;
             sfxClick();
             this.counts = [this.round.preseed[0], this.round.preseed[1]];
+            this.feedbackFn = null;
             this.feedback.setText("");
             this.redrawTubes();
           }
@@ -838,10 +1575,10 @@
           checkOverfill() {
             const r = this.round,
               total = this.counts[0] + this.counts[1];
-            if (r.capacity && total > r.capacity)
+            if (r.capacity && !r.hideTotal && total > r.capacity)
               this.flash(
                 this.feedback,
-                `Over the fill line (${total} > ${r.capacity}). Remove ${total - r.capacity}.`,
+                () => t("overLine", total, r.capacity),
                 "#ffb4b4",
               );
           }
@@ -875,8 +1612,7 @@
                 color = this.ingColor(i);
               const preset = this.round.preseed[i] || 0;
               for (let s = 0; s < this.counts[i]; s++) {
-                const y =
-                  this.tubeBottom - s * this.scoopH - this.scoopH / 2 - 3;
+                const y = this.tubeBottom - s * this.scoopH - this.scoopH / 2 - 3;
                 const rect = this.add
                   .rectangle(x, y, this.tubeW - 12, this.scoopH - 4, color)
                   .setStrokeStyle(1, 0x000000, 0.28);
@@ -886,7 +1622,7 @@
             });
             // fill line
             this.fillLine.clear();
-            if (this.round.capacity) {
+            if (this.round.capacity && !this.round.hideTotal) {
               // a "total scoops" gauge to the right of the tubes
               const need = this.round.capacity;
               const gx = 612,
@@ -920,14 +1656,10 @@
               this.fillLine.strokePath();
             }
             // labels
-            this.tubeLabel[0].setText(
-              `${this.round.ia.emoji}\n${this.counts[0]}`,
-            );
-            this.tubeLabel[1].setText(
-              `${this.round.ib.emoji}\n${this.counts[1]}`,
-            );
+            this.tubeLabel[0].setText(`${this.round.ia.emoji}\n${this.counts[0]}`);
+            this.tubeLabel[1].setText(`${this.round.ib.emoji}\n${this.counts[1]}`);
             const [ca, cb] = this.counts;
-            this.liveRatio.setText(`You: ${ca} : ${cb}`);
+            this.liveRatio.setText(t("you", ca, cb));
             const match = crossMatch(ca, cb, this.round.a, this.round.b);
             this.liveRatio.setColor(match ? "#2ec26b" : "#9b86c9");
           }
@@ -950,43 +1682,44 @@
             this.attempts++;
             this.streak = 0;
             this.missByType[r.type] = (this.missByType[r.type] || 0) + 1;
-            let msg;
-            if (ca === 0 || cb === 0)
-              msg = "Add some of BOTH ingredients first.";
-            else if (!ratioOk && crossMatch(ca, cb, r.b, r.a))
-              msg = `Check the order: the drink needs ${r.a} ${r.ia.name} for every ${r.b} ${r.ib.name}. Your tubes are switched.`;
-            else if (!ratioOk && ca - cb === r.a - r.b)
-              msg = `${ca}:${cb} keeps the same DIFFERENCE as ${r.a}:${r.b}, but ratios grow by MULTIPLYING both parts by the same number.`;
-            else if (!ratioOk)
-              msg = `That's ${ca}:${cb}. Is ${ca}:${cb} equivalent to ${r.a}:${r.b}? Check by multiplying.`;
-            else if (r.capacity && total < r.capacity)
-              msg = `Ratio is right! Now reach the fill line — ${r.capacity} scoops total (you have ${total}).`;
-            else if (r.capacity && total > r.capacity)
-              msg = `Right ratio, but over the fill line. Remove ${total - r.capacity}.`;
-            else msg = "Not quite — compare your tubes to the order.";
+            const msg = () => {
+              if (ca === 0 || cb === 0) return t("addBoth");
+              if (!ratioOk && crossMatch(ca, cb, r.b, r.a))
+                return t("switched", r.a, r.ia.name, r.b, r.ib.name);
+              if (!ratioOk && ca - cb === r.a - r.b)
+                return t("sameDiff", ca, cb, r.a, r.b);
+              if (!ratioOk) return t("notEquivalent", ca, cb, r.a, r.b);
+              if (r.type === "table") {
+                const row = r.given;
+                return t("tableColumn", r.need[row], (row === 0 ? r.ia : r.ib).name);
+              }
+              if (r.capacity && total < r.capacity)
+                return t("reachLine", r.capacity, total);
+              if (r.capacity && total > r.capacity)
+                return t("overRight", total - r.capacity);
+              return t("compare");
+            };
             this.flash(
               this.feedback,
-              "❌ " + msg + " Tap 💡 Hint (H) for help.",
+              () => "❌ " + msg() + t("hintReady"),
               "#ffb4b4",
               Infinity,
             );
-            this.say(msg + " Hint (H) is ready if you need it.");
+            this.say(msg() + t("hintReadySay"));
             this.orderRatio.setColor("#ffd34d");
 
             // a wrong serve costs a life only after a nudge, so support tier stays gentle
-            if (this.attempts >= (this.tier === 1 ? 3 : 2)) {
+            // (counted apart from `attempts`, which also gates first-try credit and hints)
+            this.lifeMisses = (this.lifeMisses || 0) + 1;
+            if (this.lifeMisses >= (this.tier === 1 ? 3 : 2)) {
               this.lives--;
-              this.attempts = 0;
+              this.lifeMisses = 0;
               if (this.lives <= 0) {
                 // No-fail: refill lives instead of closing the kitchen early.
                 // The run always continues to its normal round count.
                 this.lives = this.tier === 1 ? 5 : 3;
                 this.time.delayedCall(1400, () => {
-                  this.flash(
-                    this.feedback,
-                    "💛 Lives refilled — keep cooking!",
-                    "#bff7cf",
-                  );
+                  this.flash(this.feedback, () => t("refilled"), "#bff7cf");
                 });
               }
             }
@@ -998,7 +1731,10 @@
             this.roundLocked = true;
             sfxServe();
             this.correct++;
-            window.FlagshipAdventure?.record({ firstTry: this.attempts === 0 && this.hintTier === 0, kind: this.round.type });
+            window.FlagshipAdventure?.record({
+              firstTry: this.attempts === 0 && this.hintTier === 0,
+              kind: this.round.type,
+            });
             this.served++;
             this.streak++;
             if (this.streak > this.bestStreak) this.bestStreak = this.streak;
@@ -1010,18 +1746,14 @@
             const pts = (100 + firstTry + this.streak * 8) * combo;
             this.score += pts;
             this.orderRatio.setColor("#2ec26b");
+            const [ca, cb] = this.counts,
+              { a, b } = this.round;
             this.flash(
               this.feedback,
-              `✅ ${this.counts[0]}:${this.counts[1]} = ${this.round.a}:${this.round.b}` +
-                (k > 1 ? ` (both parts × ${k})` : "") +
-                `  +${pts}${combo > 1 ? " x" + combo : ""}`,
+              () => t("servedOk", ca, cb, a, b, k, pts, combo),
               "#bff7cf",
             );
-            this.say(
-              `Served! ${this.counts[0]}:${this.counts[1]} = ${this.round.a}:${this.round.b}` +
-                (k > 1 ? ` because both parts were multiplied by ${k}.` : ".") +
-                ` +${pts} points.`,
-            );
+            this.say(t("servedSay", ca, cb, a, b, k, pts));
             this.popServe();
 
             if (this.correct % 4 === 0) {
@@ -1041,6 +1773,8 @@
           }
 
           popServe() {
+            const calm = window.__flagshipReduced;
+            if (calm) return;
             const cup = this.add
               .text(512, 560, "\u{1F379}", { fontSize: "54px" })
               .setOrigin(0.5);
@@ -1059,9 +1793,7 @@
                 512,
                 520,
                 3 + Math.random() * 3,
-                [C.gold, C.green, INGREDIENTS[0].color, INGREDIENTS[1].color][
-                  rnd(4)
-                ],
+                [C.gold, C.green, INGREDIENTS[0].color, INGREDIENTS[1].color][rnd(4)],
               );
               this.tweens.add({
                 targets: p,
@@ -1075,56 +1807,104 @@
             }
           }
 
+          hintText(tier) {
+            const r = this.round,
+              ia = r.ia.name,
+              ib = r.ib.name;
+            if (tier === 3) return t("h3", r.need[0], ia, r.need[1], ib);
+            if (tier === 1) {
+              if (r.type === "missing") return t("h1Missing", r.a, ia, r.b, ib);
+              if (r.type === "batch") return t("h1Batch", r.a, r.b);
+              if (r.type === "table") {
+                const row = r.given;
+                return t(
+                  "h1Table",
+                  r.need[row],
+                  (row === 0 ? r.ia : r.ib).name,
+                  row === 0 ? r.a : r.b,
+                );
+              }
+              return t("h1Make", r.a, ia, r.b, ib);
+            }
+            const g = r.preseed[0] / r.a;
+            if (r.type === "missing")
+              return t("h2Missing", r.preseed[0], ia, r.a, g, r.b, ib);
+            if (r.type === "batch")
+              return t(
+                "h2Batch",
+                r.capacity,
+                r.a + r.b,
+                r.capacity / (r.a + r.b),
+                r.a,
+                ia,
+                r.b,
+                ib,
+              );
+            if (r.type === "table") {
+              const row = r.given,
+                base = row === 0 ? r.a : r.b,
+                k = r.need[row] / base;
+              return t(
+                "h2Table",
+                r.need[row],
+                base,
+                k,
+                row === 0 ? r.b : r.a,
+                (row === 0 ? r.ib : r.ia).name,
+              );
+            }
+            return t("h2Make", r.a, ia, r.b, ib);
+          }
+
           showHint() {
             if (this.roundLocked || window.GameStudio?.paused) return;
             sfxClick();
-            const r = this.round;
             // Help is earned: try a serve first. Tier 1 = method (no answer),
-            // Tier 2 (after a second wrong serve, or a second tap) = a concrete step.
+            // Tier 2 (after a second wrong serve, or a second tap) = a concrete step,
+            // Tier 3 (only after two wrong serves and the step) = a worked example.
             if (this.attempts === 0) {
-              this.flash(
-                this.feedback,
-                "\u{1F4A1} Give it a try first — pour, then press SERVE. Hints unlock after a try.",
-                "#ffe9a8",
-                Infinity,
-              );
-              this.say("Give it a try first: pour, then press Serve. Hints unlock after a try.");
+              this.flash(this.feedback, () => t("tryFirst"), "#ffe9a8", Infinity);
+              this.say(t("tryFirst").replace("\u{1F4A1} ", ""));
               return;
             }
-            this.hintTier = Math.min(2, Math.max(this.hintTier + 1, this.attempts >= 2 ? 2 : 1));
-            let h;
-            if (this.hintTier === 1) {
-              if (r.type === "missing")
-                h = `\u{1F4A1} Think in groups: one group is ${r.a} ${r.ia.name} with ${r.b} ${r.ib.name}. How many groups of ${r.ia.name} are already poured?`;
-              else if (r.type === "batch")
-                h = `\u{1F4A1} One group is ${r.a} + ${r.b} scoops. Find how many groups fill the line, then use that many groups of each.`;
-              else
-                h = `\u{1F4A1} For every ${r.a} ${r.ia.name}, add ${r.b} ${r.ib.name}. Both tubes need the same number of groups.`;
-            } else {
-              const g = r.preseed[0] / r.a;
-              if (r.type === "missing")
-                h = `\u{1F4A1} ${r.preseed[0]} ${r.ia.name} ÷ ${r.a} = ${g} groups. Now pour ${g} groups of ${r.b} ${r.ib.name}: ${g} × ${r.b}.`;
-              else if (r.type === "batch")
-                h = `\u{1F4A1} ${r.capacity} ÷ ${r.a + r.b} = ${r.capacity / (r.a + r.b)} groups. Pour ${r.capacity / (r.a + r.b)} × ${r.a} ${r.ia.name} and ${r.capacity / (r.a + r.b)} × ${r.b} ${r.ib.name}.`;
-              else
-                h = `\u{1F4A1} Start with exactly one group: ${r.a} ${r.ia.name} and ${r.b} ${r.ib.name}. Then serve.`;
-            }
-            this.say("Hint: " + h.replace("\u{1F4A1} ", ""));
-            this.flash(this.feedback, h, "#ffe9a8", Infinity);
+            const cap = this.attempts >= 2 ? 3 : 2;
+            this.hintTier = Math.min(
+              cap,
+              Math.max(
+                this.hintTier + 1,
+                this.attempts >= 2 && this.hintTier < 2 ? 2 : 1,
+              ),
+            );
+            const tier = this.hintTier;
+            this.say(t("hintPrefix") + this.hintText(tier));
+            this.flash(
+              this.feedback,
+              () => "\u{1F4A1} " + this.hintText(tier),
+              "#ffe9a8",
+              Infinity,
+            );
           }
 
           // Mirror coaching to the screen-reader live region and to the
           // readable mission panel above the canvas (visible without scrolling).
           say(msg) {
             const plain = String(msg).replace(/^[\u{1F4A1}❌✅]\s*/u, "");
+            this.feedbackText = plain;
             const rk = document.getElementById("rk-sr");
             if (rk) rk.textContent = plain;
             const fm = document.querySelector(".flagship-mission .fm-feedback");
             if (fm) fm.textContent = plain;
           }
 
+          // msg may be a function that rebuilds the text in the current language.
           flash(obj, msg, color = "#ffffff", hold = 2400) {
-            obj.setText(msg).setColor(color).setAlpha(1);
+            const text = typeof msg === "function" ? msg() : msg;
+            if (obj === this.feedback) {
+              this.feedbackFn =
+                hold === Infinity && typeof msg === "function" ? msg : null;
+              this.feedbackColor = color;
+            }
+            obj.setText(text).setColor(color).setAlpha(1);
             this.tweens.killTweensOf(obj);
             if (hold === Infinity) return; // stays until the next action
             this.tweens.add({
@@ -1133,7 +1913,7 @@
               duration: 10,
               onComplete: () => {
                 this.time.delayedCall(hold, () => {
-                  if (obj.text === msg)
+                  if (obj.text === text)
                     this.tweens.add({
                       targets: obj,
                       alpha: 0.0,
@@ -1146,12 +1926,10 @@
 
           updateHUD() {
             this.hScore.setText(this.score.toLocaleString());
-            this.hLevel.setText("Level " + this.level);
-            this.hServed.setText("Served " + this.served);
+            this.hLevel.setText(t("level", this.level));
+            this.hServed.setText(t("served", this.served));
             this.hLives.setText("❤️".repeat(Math.max(0, this.lives)));
-            this.hStreak.setText(
-              this.streak >= 3 ? "\u{1F525} streak " + this.streak : "",
-            );
+            this.hStreak.setText(this.streak >= 3 ? "\u{1F525} " + this.streak : "");
           }
 
           endGame() {
@@ -1180,6 +1958,7 @@
             super("ResultScene");
           }
           init(d) {
+            this.data_ = d;
             Object.assign(this, d);
           }
           create() {
@@ -1192,43 +1971,33 @@
             let best = 0;
             try {
               best = Number(localStorage.getItem("ratio_kitchen_best")) || 0;
-              if (this.score > best)
+              if (this.score > best && !this.recorded)
                 localStorage.setItem("ratio_kitchen_best", String(this.score));
             } catch (e) {}
-            const newBest = this.score > best;
-
-            try {
-              window.EduPulse &&
-                EduPulse.record({
-                  activityTitle: document.title,
-                  score: this.correct,
-                  maxScore: goal,
-                  problemsCorrect: firstTry,
-                  problemsAttempted: this.served,
-                  standard: "6.AT.A.1",
-                });
-            } catch (e) {}
-
-            let rank, emoji;
-            if (pct >= 90) {
-              rank = "MASTER MIXOLOGIST!";
-              emoji = "\u{1F451}";
-            } else if (pct >= 75) {
-              rank = "HEAD CHEF!";
-              emoji = "\u{1F3C6}";
-            } else if (pct >= 50) {
-              rank = "LINE COOK";
-              emoji = "⭐";
-            } else {
-              rank = "KEEP PRACTICING!";
-              emoji = "\u{1F4DA}";
+            const newBest = this.score > best || this.wasNewBest;
+            if (!this.recorded) {
+              this.recorded = true;
+              this.wasNewBest = newBest;
+              try {
+                window.EduPulse &&
+                  EduPulse.record({
+                    activityTitle: document.title,
+                    score: this.correct,
+                    maxScore: goal,
+                    problemsCorrect: firstTry,
+                    problemsAttempted: this.served,
+                    standard: "6.AT.1",
+                  });
+              } catch (e) {}
             }
 
+            const rankIndex = pct >= 90 ? 3 : pct >= 75 ? 2 : pct >= 50 ? 1 : 0;
+            const emoji = ["\u{1F4DA}", "⭐", "\u{1F3C6}", "\u{1F451}"][rankIndex];
+            const rank = TX.rank[lang()][rankIndex];
+
+            this.add.text(W / 2, 80, emoji, { fontSize: "64px" }).setOrigin(0.5);
             this.add
-              .text(W / 2, 80, emoji, { fontSize: "64px" })
-              .setOrigin(0.5);
-            this.add
-              .text(W / 2, 150, "KITCHEN CLOSED", {
+              .text(W / 2, 150, t("closed"), {
                 fontSize: "46px",
                 fontFamily: "Arial Black",
                 color: "#f6c343",
@@ -1256,23 +2025,24 @@
                 W / 2,
                 290,
                 newBest
-                  ? "POINTS  ·  NEW PERSONAL BEST!"
-                  : `POINTS  ·  Personal best ${Math.max(best, this.score).toLocaleString()}`,
-                { fontSize: "16px", color: "#c9b6ff" },
+                  ? t("newBest")
+                  : t("personalBest", Math.max(best, this.score).toLocaleString()),
+                {
+                  fontSize: "16px",
+                  color: "#c9b6ff",
+                },
               )
               .setOrigin(0.5);
 
             const stats = [
-              { l: "Drinks served", v: `${this.correct}/${goal}` },
-              { l: "First-try, no hint", v: `${firstTry} (${pct}%)` },
-              { l: "Best streak", v: this.bestStreak },
+              { l: t("drinksServed"), v: `${this.correct}/${goal}` },
+              { l: t("firstTryNoHint"), v: `${firstTry} (${pct}%)` },
+              { l: t("bestStreak"), v: this.bestStreak },
             ];
             stats.forEach((s, i) => {
               const x = 282 + i * 230,
                 y = 370;
-              this.add
-                .rectangle(x, y, 200, 96, C.panel)
-                .setStrokeStyle(2, C.stroke);
+              this.add.rectangle(x, y, 210, 96, C.panel).setStrokeStyle(2, C.stroke);
               this.add
                 .text(x, y - 12, String(s.v), {
                   fontSize: "30px",
@@ -1286,21 +2056,17 @@
             });
 
             // Skills practiced + what to practice next
-            const SKILL = {
-              make: "Make an equivalent ratio",
-              batch: "Scale a batch to a total",
-              missing: "Find a missing value",
-            };
-            const seen = (this.typesSeen || []).map((t) => SKILL[t]).filter(Boolean);
+            const SKILL = TX.skill[lang()];
+            const seen = (this.typesSeen || []).map((k) => SKILL[k]).filter(Boolean);
             const miss = this.missByType || {};
             const worst = Object.keys(miss).sort((a, b) => miss[b] - miss[a])[0];
             const next = worst
-              ? `Practice next: ${SKILL[worst]} — use the groups idea (${miss[worst]} retr${miss[worst] === 1 ? "y" : "ies"}).`
+              ? t("nextWorst", SKILL[worst], miss[worst])
               : this.tier === 1
-                ? "Practice next: try Level 2 for big batches and missing values."
-                : "Practice next: you are ready for ratio tables and unit rates!";
+                ? t("nextTier1")
+                : t("nextTier2");
             this.add
-              .text(W / 2, 448, "Skills practiced: " + seen.join(" · "), {
+              .text(W / 2, 448, t("skillsPracticed") + seen.join(" · "), {
                 fontSize: "16px",
                 color: "#e6dcff",
                 align: "center",
@@ -1317,15 +2083,14 @@
               })
               .setOrigin(0.5, 0);
             const rk = document.getElementById("rk-sr");
-            if (rk)
-              rk.textContent = `Kitchen closed. ${this.score} points. ${firstTry} of ${goal} served on the first try. ${next}`;
+            if (rk) rk.textContent = t("resultsSr", this.score, firstTry, goal, next);
 
             const again = this.add
-              .rectangle(W / 2 - 130, 580, 240, 58, C.gold)
+              .rectangle(W / 2 - 140, 580, 260, 58, C.gold)
               .setInteractive({ useHandCursor: true });
             this.add
-              .text(W / 2 - 130, 580, "COOK AGAIN (Enter)", {
-                fontSize: "18px",
+              .text(W / 2 - 140, 580, t("cookAgain"), {
+                fontSize: "17px",
                 fontFamily: "Arial Black",
                 color: "#1a0d35",
               })
@@ -1336,17 +2101,19 @@
               this.scene.start("GameScene", { tier: this.tier });
             };
             again.on("pointerdown", cookAgain);
-            this.input.keyboard.once("keydown-ENTER", cookAgain);
+            this.input.keyboard.on("keydown-ENTER", () => {
+              if (!pageControlFocused()) cookAgain();
+            });
             again.on("pointerover", () => again.setScale(1.05));
             again.on("pointerout", () => again.setScale(1));
 
             const menu = this.add
-              .rectangle(W / 2 + 130, 580, 240, 58, C.panel)
+              .rectangle(W / 2 + 140, 580, 260, 58, C.panel)
               .setStrokeStyle(2, C.stroke)
               .setInteractive({ useHandCursor: true });
             this.add
-              .text(W / 2 + 130, 580, "CHANGE LEVEL (L)", {
-                fontSize: "18px",
+              .text(W / 2 + 140, 580, t("changeLevel"), {
+                fontSize: "17px",
                 fontFamily: "Arial Black",
                 color: "#fff",
               })
@@ -1357,7 +2124,9 @@
               this.scene.start("TitleScene");
             };
             menu.on("pointerdown", changeLevel);
-            this.input.keyboard.once("keydown-L", changeLevel);
+            this.input.keyboard.on("keydown-L", () => {
+              if (!pageControlFocused()) changeLevel();
+            });
             menu.on("pointerover", () => menu.setScale(1.05));
             menu.on("pointerout", () => menu.setScale(1));
 
@@ -1386,11 +2155,21 @@
                 ease: "Power1",
               });
             }
+            const relabel = () =>
+              this.scene.restart({
+                ...this.data_,
+                recorded: true,
+                wasNewBest: newBest,
+              });
+            document.addEventListener("ewl:lang", relabel);
+            this.events.once("shutdown", () =>
+              document.removeEventListener("ewl:lang", relabel),
+            );
           }
         }
 
         // ─── BOOT ───
-        window.__flagshipGame = new Phaser.Game({
+        const rkGame = (window.__flagshipGame = new Phaser.Game({
           type: Phaser.AUTO,
           parent: "game-container",
           width: W,
@@ -1401,6 +2180,11 @@
             autoCenter: Phaser.Scale.CENTER_BOTH,
           },
           scene: [TitleScene, GameScene, ResultScene],
+        }));
+        // The level-pick screen follows a language switch immediately.
+        document.addEventListener("ewl:lang", () => {
+          const title = rkGame.scene.getScene("TitleScene");
+          if (title && title.sys.isActive()) title.scene.restart();
         });
       })();
     </script>
@@ -1420,12 +2204,19 @@
           window.NeftHintLadder.watch({
             sourceSelector: "#rk-sr",
             standard: "6.AT.1",
-            accept: "^New order",
-            staticHints: [
-              "A ratio compares two amounts: for every so-many of the first ingredient, there are so-many of the second. Say the order out loud that way.",
-              "You don't have to match the exact numbers — scale BOTH tubes by the same amount and the ratio stays true (4:6 still serves a 2:3 order).",
-              "Check a pour with cross products: your first count × the order's second number should equal your second count × the order's first number.",
-            ],
+            accept: "^(New order|Nuevo pedido)",
+            staticHints:
+              localStorage.getItem("nt-lang") === "es"
+                ? [
+                    "Una razón compara dos cantidades: por cada tantas del primer ingrediente hay tantas del segundo. Di el pedido en voz alta de esa forma.",
+                    "No tienes que copiar los números exactos — multiplica LOS DOS tubos por el mismo número y la razón se mantiene (4:6 sirve para un pedido de 2:3).",
+                    "Revisa con productos cruzados: tu primera cantidad × el segundo número del pedido debe ser igual a tu segunda cantidad × el primer número del pedido.",
+                  ]
+                : [
+                    "A ratio compares two amounts: for every so-many of the first ingredient, there are so-many of the second. Say the order out loud that way.",
+                    "You don't have to match the exact numbers — scale BOTH tubes by the same amount and the ratio stays true (4:6 still serves a 2:3 order).",
+                    "Check a pour with cross products: your first count × the order's second number should equal your second count × the order's first number.",
+                  ],
           });
       });
     </script>
@@ -1449,8 +2240,8 @@
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
 <script src="/assets/game-studio.js?v=20261003" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
-<script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
-<script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261015" defer></script>
+<script src="/math/games/shared/flagship-puzzles.js?v=20261015" defer></script>
+<script src="/math/games/shared/flagship-adventures.js?v=20261015" defer></script>
 </body>
 </html>

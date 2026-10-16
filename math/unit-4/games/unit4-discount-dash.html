@@ -52,8 +52,8 @@
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
     <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet" />
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002" />
-    <link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007" />
-    <link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261015" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261015" />
   </head>
   <body>
     <!-- EWL Universal Arcade Enhancements Header -->
@@ -144,17 +144,20 @@
     ></div>
     <script>
       // ───────────────────────────────────────────────────────────
-      // DISCOUNT DASH — SALE RUNNER  (Neft Teacher)
-      // Grade 6: 6.AT.A.3c — percent of a quantity (discounts, sale price).
+      // DISCOUNT DASH — BEST DEAL SHOPPER  (Neft Teacher)
+      // Grade 6 · Unit 4 · Lessons 4-4 and 4-5 · 6.AT.4 (percent of a quantity;
+      // find the whole given a part and the percent).
       //
-      // REAL GAME: A calm, TURN-BASED 3-lane shopping aisle. One deal row sits
-      // on the shelf and waits — nothing moves until the student picks. Each
-      // lane shows the SAME item at its own price and "% off"; the student
-      // picks the lane with the BEST DEAL — the lowest sale price =
-      // original × (1 − pct/100). A wrong pick earns a method hint (Tier 1),
-      // a second wrong pick earns worked sale prices (Tier 2); the student
-      // always finishes the deal (no-fail). Full points for an unaided first
-      // pick, fewer when helped. No clock, no speed, no lives.
+      // A calm, TURN-BASED 3-lane shopping aisle. One deal row sits on the
+      // shelf and waits — nothing moves until the student picks.
+      //  • Best-deal rows (4-4): each lane shows an item at its own price and
+      //    "% off"; pick the LOWEST sale price = price × (100 − %) ÷ 100.
+      //  • Mystery-receipt rows (4-5): the receipt shows what was paid (or saved)
+      //    and the percent off; each lane is a possible ORIGINAL tag. Wrong tags
+      //    come from real misconceptions and each gets its own feedback.
+      // Help is earned: a wrong pick earns a method hint (Tier 1), a second
+      // wrong pick earns worked checks for the ruled-out lanes (Tier 2). Full
+      // points only for an unaided first pick. No clock, no speed, no lives.
       // ───────────────────────────────────────────────────────────
       const W = 1024,
         H = 768;
@@ -162,6 +165,7 @@
       const LANES = [W / 2 - 240, W / 2, W / 2 + 240];
       // Turn-based run: fixed number of deal rows; layout rows (canvas px).
       const TOTAL_ROUNDS = 12;
+      const RECEIPT_Y = 74; // mystery-receipt banner above the shelf
       const ROW_Y = 200; // deal cards sit here and never move
       const COACH_Y = 352; // persistent coach / feedback line
       const CART_Y = 560; // the shopper's cart under the chosen lane
@@ -171,6 +175,571 @@
         { length: TOTAL_ROUNDS },
         (_, i) => 100 + Math.min(i, 5) * 10,
       ).reduce((a, b) => a + b, 0);
+
+      // ── Language (site-wide key; the mission panel's toggle fires ewl:lang) ──
+      const lang = () => {
+        try {
+          return localStorage.getItem("nt-lang") === "es" ? "es" : "en";
+        } catch (e) {
+          return "en";
+        }
+      };
+      const money = (n) => "$" + n.toFixed(2);
+      const TX = {
+        title: { en: "DISCOUNT DASH", es: "DISCOUNT DASH" },
+        subtitle: { en: "BEST DEAL SHOPPER", es: "COMPRADOR EXPERTO" },
+        intro: {
+          en: "12 deals. Compare sale prices to find the best deal,\nand solve mystery receipts to find the ORIGINAL price.\nNothing moves until you choose — take your time.",
+          es: "12 ofertas. Compara precios con descuento para hallar la mejor oferta\ny resuelve recibos misteriosos para hallar el precio ORIGINAL.\nNada se mueve hasta que eliges — tómate tu tiempo.",
+        },
+        controls: {
+          en: "Tap a card, or ← → / 1 2 3 + Enter    •    sale price = price × (100 − % off) ÷ 100",
+          es: "Toca una tarjeta, o ← → / 1 2 3 + Enter    •    precio de oferta = precio × (100 − % desc.) ÷ 100",
+        },
+        best: { en: (n) => "Best score: " + n, es: (n) => "Mejor puntaje: " + n },
+        start: { en: "START SHOPPING", es: "EMPEZAR" },
+        score: { en: (n) => "SCORE " + n, es: (n) => "PUNTOS " + n },
+        saved: { en: (m) => "SAVED  " + m, es: (m) => "AHORRO  " + m },
+        dealOf: {
+          en: (r, m, s) =>
+            "Deal " + r + " of " + m + (s > 1 ? "   streak x" + s : ""),
+          es: (r, m, s) =>
+            "Oferta " + r + " de " + m + (s > 1 ? "   racha x" + s : ""),
+        },
+        lane: { en: (i) => "LANE " + i, es: (i) => "CARRIL " + i },
+        price: { en: (m) => "Price " + m, es: (m) => "Precio " + m },
+        off: { en: (p) => p + "% OFF", es: (p) => p + "% MENOS" },
+        tag: { en: "ORIGINAL TAG?", es: "¿ETIQUETA ORIGINAL?" },
+        sale: { en: (m) => "Sale " + m, es: (m) => "Oferta " + m },
+        firstCompare: {
+          en: "Each lane has its own price and % off. Find each SALE price, then pick the lowest.",
+          es: "Cada carril tiene su precio y su % de descuento. Halla cada precio de OFERTA y elige el más bajo.",
+        },
+        nextCompare: {
+          en: "New deal! Work out each sale price, then pick the lowest.",
+          es: "¡Nueva oferta! Calcula cada precio con descuento y elige el más bajo.",
+        },
+        wholeIntro: {
+          en: "Mystery receipt! Which tag was the ORIGINAL price? Test a tag: does the discount match the receipt?",
+          es: "¡Recibo misterioso! ¿Qué etiqueta era el precio ORIGINAL? Prueba una etiqueta: ¿el descuento coincide con el recibo?",
+        },
+        receiptPaid: {
+          en: (s, p) =>
+            "RECEIPT: You paid " +
+            s +
+            " after " +
+            p +
+            "% off. What was the original price?",
+          es: (s, p) =>
+            "RECIBO: Pagaste " +
+            s +
+            " con " +
+            p +
+            "% de descuento. ¿Cuál era el precio original?",
+        },
+        receiptSaved: {
+          en: (d, p) =>
+            "RECEIPT: You saved " +
+            d +
+            ". That was " +
+            p +
+            "% off. What was the original price?",
+          es: (d, p) =>
+            "RECIBO: Ahorraste " +
+            d +
+            ". Eso fue un " +
+            p +
+            "% de descuento. ¿Cuál era el precio original?",
+        },
+        controlsLine: {
+          en: "Tap a deal card  •  or ← → / 1 2 3 and Enter  •  take all the time you need",
+          es: "Toca una tarjeta  •  o ← → / 1 2 3 y Enter  •  tómate todo el tiempo que necesites",
+        },
+        already: {
+          en: (i) => "You already checked Lane " + i + ". Try a different lane.",
+          es: (i) => "Ya revisaste el carril " + i + ". Prueba otro carril.",
+        },
+        firstTryWin: {
+          en: (p) => "Best deal — first try! +" + p,
+          es: (p) => "¡Mejor oferta al primer intento! +" + p,
+        },
+        helpedWin: {
+          en: (p) => "Best deal! +" + p + " (with help)",
+          es: (p) => "¡Mejor oferta! +" + p + " (con ayuda)",
+        },
+        compareWin: {
+          en: (i, w, s) =>
+            "\nLane " +
+            i +
+            ": " +
+            w +
+            " is the lowest sale price. You saved " +
+            s +
+            ".",
+          es: (i, w, s) =>
+            "\nCarril " +
+            i +
+            ": " +
+            w +
+            " es el precio de oferta más bajo. Ahorraste " +
+            s +
+            ".",
+        },
+        wholeFirst: {
+          en: (p) => "Case solved — first try! +" + p,
+          es: (p) => "¡Caso resuelto al primer intento! +" + p,
+        },
+        wholeHelped: {
+          en: (p) => "Case solved! +" + p + " (with help)",
+          es: (p) => "¡Caso resuelto! +" + p + " (con ayuda)",
+        },
+        wholeWinPaid: {
+          en: (o, p, s, k) =>
+            "\nOriginal " +
+            o +
+            ": " +
+            p +
+            "% off leaves " +
+            (100 - p) +
+            "% of " +
+            o +
+            " = " +
+            s +
+            ". So " +
+            s +
+            " ÷ " +
+            k +
+            " = " +
+            o +
+            ".",
+          es: (o, p, s, k) =>
+            "\nOriginal " +
+            o +
+            ": " +
+            p +
+            "% de descuento deja el " +
+            (100 - p) +
+            "% de " +
+            o +
+            " = " +
+            s +
+            ". Entonces " +
+            s +
+            " ÷ " +
+            k +
+            " = " +
+            o +
+            ".",
+        },
+        wholeWinSaved: {
+          en: (o, p, d, k) =>
+            "\nOriginal " +
+            o +
+            ": " +
+            p +
+            "% of " +
+            o +
+            " = " +
+            d +
+            " saved. So " +
+            d +
+            " ÷ " +
+            k +
+            " = " +
+            o +
+            ".",
+          es: (o, p, d, k) =>
+            "\nOriginal " +
+            o +
+            ": el " +
+            p +
+            "% de " +
+            o +
+            " = " +
+            d +
+            " de ahorro. Entonces " +
+            d +
+            " ÷ " +
+            k +
+            " = " +
+            o +
+            ".",
+        },
+        notQuite: { en: "Not quite. ", es: "Todavía no. " },
+        biggestPct: {
+          en: (i) =>
+            "Lane " +
+            i +
+            " has the biggest % off, but its price starts higher. The biggest % off is not always the lowest price.",
+          es: (i) =>
+            "El carril " +
+            i +
+            " tiene el mayor % de descuento, pero su precio empieza más alto. El mayor % no siempre da el precio más bajo.",
+        },
+        lowestStart: {
+          en: (i) =>
+            "Lane " +
+            i +
+            " has the lowest starting price, but the discounts are different. Starting low is not enough.",
+          es: (i) =>
+            "El carril " +
+            i +
+            " tiene el precio inicial más bajo, pero los descuentos son distintos. Empezar bajo no basta.",
+        },
+        notLowest: {
+          en: (i) => "Lane " + i + " is not the lowest sale price.",
+          es: (i) => "El carril " + i + " no tiene el precio de oferta más bajo.",
+        },
+        compareHint: {
+          en: "\nHint: you pay (100 − % off)% of the price. Find each lane's sale price, then compare.",
+          es: "\nPista: pagas el (100 − % desc.)% del precio. Halla el precio de oferta de cada carril y compara.",
+        },
+        workItOut: { en: "Let's work it out. ", es: "Vamos a calcularlo. " },
+        lastLane: {
+          en: ".\nNow find the sale price of the last lane the same way and compare.",
+          es: ".\nAhora halla el precio de oferta del último carril de la misma forma y compara.",
+        },
+        laneWorked: {
+          en: (i, w) => "Lane " + i + ": " + w,
+          es: (i, w) => "Carril " + i + ": " + w,
+        },
+        wholeHint: {
+          en: (p, target, paid) =>
+            "\nHint: test a tag. " +
+            p +
+            "% off a tag leaves " +
+            (100 - p) +
+            "% of it. Which tag " +
+            (paid ? "leaves exactly " : "saves exactly ") +
+            target +
+            "?",
+          es: (p, target, paid) =>
+            "\nPista: prueba una etiqueta. Un " +
+            p +
+            "% de descuento deja el " +
+            (100 - p) +
+            "% de la etiqueta. ¿Qué etiqueta " +
+            (paid ? "deja exactamente " : "ahorra exactamente ") +
+            target +
+            "?",
+        },
+        wholeCheck: {
+          en: (i, o, p, got, paid, target) =>
+            "Lane " +
+            i +
+            ": " +
+            p +
+            "% off " +
+            o +
+            (paid ? " leaves " : " saves ") +
+            got +
+            ", not " +
+            target,
+          es: (i, o, p, got, paid, target) =>
+            "Carril " +
+            i +
+            ": " +
+            p +
+            "% de descuento en " +
+            o +
+            (paid ? " deja " : " ahorra ") +
+            got +
+            ", no " +
+            target,
+        },
+        wholeLast: {
+          en: ".\nTest the last tag the same way.",
+          es: ".\nPrueba la última etiqueta de la misma forma.",
+        },
+        // Misconception feedback for mystery-receipt tags (never names the answer).
+        why: {
+          addBack: {
+            en: (i, p) =>
+              "Lane " +
+              i +
+              " adds " +
+              p +
+              "% of the SALE price back. But the discount was " +
+              p +
+              "% of the ORIGINAL price, a bigger number.",
+            es: (i, p) =>
+              "El carril " +
+              i +
+              " vuelve a sumar el " +
+              p +
+              "% del precio de OFERTA. Pero el descuento fue el " +
+              p +
+              "% del precio ORIGINAL, que es mayor.",
+          },
+          wrongPct: {
+            en: (i, s, p) =>
+              "Lane " +
+              i +
+              " treats " +
+              s +
+              " as " +
+              p +
+              "% of the price. You paid what was LEFT: " +
+              (100 - p) +
+              "% of the price.",
+            es: (i, s, p) =>
+              "El carril " +
+              i +
+              " trata " +
+              s +
+              " como el " +
+              p +
+              "% del precio. Tú pagaste lo que QUEDÓ: el " +
+              (100 - p) +
+              "% del precio.",
+          },
+          pctOfPart: {
+            en: (i, s) =>
+              "Lane " +
+              i +
+              " takes a percent of " +
+              s +
+              " again. Ask: " +
+              s +
+              " is what part of the original?",
+            es: (i, s) =>
+              "El carril " +
+              i +
+              " vuelve a sacar un porcentaje de " +
+              s +
+              ". Pregúntate: ¿qué parte del original es " +
+              s +
+              "?",
+          },
+          addDollars: {
+            en: (i, p) =>
+              "Lane " +
+              i +
+              " adds " +
+              p +
+              " dollars. A percent is a part out of 100, not a number of dollars.",
+            es: (i, p) =>
+              "El carril " +
+              i +
+              " suma " +
+              p +
+              " dólares. Un porcentaje es una parte de 100, no una cantidad de dólares.",
+          },
+          pctOfSaved: {
+            en: (i, d, p) =>
+              "Lane " +
+              i +
+              " finds " +
+              p +
+              "% of " +
+              d +
+              ". But " +
+              d +
+              " already IS " +
+              p +
+              "% of the original.",
+            es: (i, d, p) =>
+              "El carril " +
+              i +
+              " halla el " +
+              p +
+              "% de " +
+              d +
+              ". Pero " +
+              d +
+              " ya ES el " +
+              p +
+              "% del original.",
+          },
+          savedAsPaid: {
+            en: (i, d) =>
+              "Lane " +
+              i +
+              " treats " +
+              d +
+              " as the part you paid. " +
+              d +
+              " is the part you SAVED.",
+            es: (i, d) =>
+              "El carril " +
+              i +
+              " trata " +
+              d +
+              " como la parte que pagaste. " +
+              d +
+              " es la parte que AHORRASTE.",
+          },
+          salePrice: {
+            en: (i) =>
+              "Lane " +
+              i +
+              " is the price AFTER the discount. The question asks for the price before.",
+            es: (i) =>
+              "El carril " +
+              i +
+              " es el precio DESPUÉS del descuento. La pregunta pide el precio de antes.",
+          },
+        },
+        nextDeal: { en: "NEXT DEAL ▶", es: "SIGUIENTE ▶" },
+        seeResults: { en: "SEE RESULTS ▶", es: "VER RESULTADOS ▶" },
+        whenReady: {
+          en: (last) =>
+            "Press Enter or tap " +
+            (last ? "SEE RESULTS" : "NEXT DEAL") +
+            " when you are ready",
+          es: (last) =>
+            "Presiona Enter o toca " +
+            (last ? "VER RESULTADOS" : "SIGUIENTE") +
+            " cuando estés listo",
+        },
+        rowSr: {
+          en: (r, m, e, lanes) =>
+            "Deal row " +
+            r +
+            " of " +
+            m +
+            ": " +
+            e +
+            " — " +
+            lanes +
+            ". Which lane has the lowest sale price?",
+          es: (r, m, e, lanes) =>
+            "Fila de oferta " +
+            r +
+            " de " +
+            m +
+            ": " +
+            e +
+            " — " +
+            lanes +
+            ". ¿Qué carril tiene el precio de oferta más bajo?",
+        },
+        rowSrWhole: {
+          en: (r, m, receipt, lanes) =>
+            "Deal row " + r + " of " + m + ": " + receipt + " " + lanes + ".",
+          es: (r, m, receipt, lanes) =>
+            "Fila de oferta " + r + " de " + m + ": " + receipt + " " + lanes + ".",
+        },
+        srLane: {
+          en: (i, p, d) => "Lane " + i + ": " + p + " at " + d + "% off",
+          es: (i, p, d) => "Carril " + i + ": " + p + " con " + d + "% de descuento",
+        },
+        srTag: {
+          en: (i, p) => "Lane " + i + ": tag " + p,
+          es: (i, p) => "Carril " + i + ": etiqueta " + p,
+        },
+        laneButton: {
+          en: (i, p, d) => "Lane " + i + ": " + p + " · " + d + "% off",
+          es: (i, p, d) => "Carril " + i + ": " + p + " · " + d + "% de descuento",
+        },
+        tagButton: {
+          en: (i, p) => "Lane " + i + ": original price " + p + "?",
+          es: (i, p) => "Carril " + i + ": ¿precio original " + p + "?",
+        },
+        comparePrompt: {
+          en: "Which lane offers the lowest sale price? Compare all three discounts.",
+          es: "¿Qué carril tiene el precio de oferta más bajo? Compara los tres descuentos.",
+        },
+        checkout: { en: "CHECKOUT!", es: "¡A LA CAJA!" },
+        starsLine: {
+          en: (s) => "★".repeat(s) + "☆".repeat(3 - s) + "  " + s + " of 3 stars",
+          es: (s) => "★".repeat(s) + "☆".repeat(3 - s) + "  " + s + " de 3 estrellas",
+        },
+        scoreLine: {
+          en: (s, nb) => "Score: " + s + (nb ? "   ★ New best!" : ""),
+          es: (s, nb) => "Puntos: " + s + (nb ? "   ★ ¡Nueva mejor marca!" : ""),
+        },
+        firstLine: {
+          en: (f, n, a, h) =>
+            "Solved on the first try: " +
+            f +
+            " of " +
+            n +
+            " (" +
+            a +
+            "%)   •   With a hint: " +
+            h,
+          es: (f, n, a, h) =>
+            "Resueltas al primer intento: " +
+            f +
+            " de " +
+            n +
+            " (" +
+            a +
+            "%)   •   Con pista: " +
+            h,
+        },
+        totalSaved: {
+          en: (m) => "Total saved: " + m,
+          es: (m) => "Ahorro total: " + m,
+        },
+        bestLine: { en: (b) => "Best score: " + b, es: (b) => "Mejor puntaje: " + b },
+        skills: {
+          en: "Skills practiced: sale price = price × (100 − % off) ÷ 100 • comparing prices • finding the original price from a part and a percent",
+          es: "Practicaste: precio de oferta = precio × (100 − % desc.) ÷ 100 • comparar precios • hallar el precio original a partir de una parte y un porcentaje",
+        },
+        nextHigh: {
+          en: "Practice next: try a higher mission level — closer discounts and more mystery receipts.",
+          es: "Para practicar: prueba un nivel más alto — descuentos más parecidos y más recibos misteriosos.",
+        },
+        nextMid: {
+          en: "Practice next: find each sale price before you pick. For receipts, test each tag: does the discount match?",
+          es: "Para practicar: halla cada precio de oferta antes de elegir. En los recibos, prueba cada etiqueta: ¿el descuento coincide?",
+        },
+        nextLow: {
+          en: "Practice next: find 10% of a price first (divide by 10). 20% is double that, 5% is half of it.",
+          es: "Para practicar: primero halla el 10% de un precio (divide entre 10). El 20% es el doble y el 5% es la mitad.",
+        },
+        nextWhole: {
+          en: "Practice next: mystery receipts. If you paid 70% of the price, the price is what you paid ÷ 0.70.",
+          es: "Para practicar: recibos misteriosos. Si pagaste el 70% del precio, el precio es lo que pagaste ÷ 0.70.",
+        },
+        again: { en: "SHOP AGAIN ▶", es: "OTRA VEZ ▶" },
+        againNote: {
+          en: "New prices every time. Press Enter or tap.",
+          es: "Precios nuevos cada vez. Presiona Enter o toca.",
+        },
+        practiceMisses: { en: "PRACTICE THE MISSES", es: "PRACTICAR LOS ERRORES" },
+        resultsSr: {
+          en: (s, st, f, n, next) =>
+            "Checkout. Score " +
+            s +
+            ". " +
+            st +
+            " of 3 stars. First-try solves " +
+            f +
+            " of " +
+            n +
+            ". " +
+            next,
+          es: (s, st, f, n, next) =>
+            "A la caja. Puntos " +
+            s +
+            ". " +
+            st +
+            " de 3 estrellas. Resueltas al primer intento: " +
+            f +
+            " de " +
+            n +
+            ". " +
+            next,
+        },
+        canvas: {
+          en: "Discount Dash percent game. Pick the lane with the lowest sale price, or the tag that was the original price. Use the left and right arrow keys, A and D, or 1, 2, 3 to choose a lane, and Enter to pick or continue.",
+          es: "Juego de porcentajes Discount Dash. Elige el carril con el precio de oferta más bajo, o la etiqueta que era el precio original. Usa las flechas izquierda y derecha, A y D, o 1, 2, 3 para elegir un carril, y Enter para escoger o continuar.",
+        },
+      };
+      const t = (key, ...args) => {
+        const v = TX[key][lang()];
+        return typeof v === "function" ? v(...args) : v;
+      };
+      const tw = (key, ...args) => TX.why[key][lang()](...args);
+      // Enter/Space/number keys on a focused page control (mission panel, dialog,
+      // toolbar) belong to that control, not to the game underneath.
+      const pageControlFocused = () => {
+        const a = document.activeElement;
+        return !!a && /^(BUTTON|INPUT|SELECT|TEXTAREA|SUMMARY|A)$/.test(a.tagName);
+      };
 
       // ── Reduced-motion guard (bespoke FX respect prefers-reduced-motion) ──
       // Live-tracked so an OS-level toggle is honored without a reload.
@@ -192,7 +761,8 @@
           this.ctx = null;
         }
         init() {
-          if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
+          if (navigator.userActivation && !navigator.userActivation.hasBeenActive)
+            return;
           if (!this.ctx)
             try {
               this.ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -227,14 +797,16 @@
       }
       const sfx = new SFX();
       const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
-      const money = (n) => "$" + n.toFixed(2);
+      const cents = (n) => Math.round(n * 100) / 100;
+      const ITEMS = ["👟", "🎧", "🧥", "🎒", "⌚", "📱", "🕹️", "👕", "🧢", "👜"];
 
       // Build a deal-row: an item at one original price, with a different
       // percent-off in each lane. Exactly one lane is the best (lowest) deal.
       function makeRow(round, tier = 2) {
-        const items = ["👟", "🎧", "🧥", "🎒", "⌚", "📱", "🕹️", "👕", "🧢", "👜"];
         const base =
-          tier === 1 ? randInt(2, 12) * 10 : randInt(round < 4 ? 10 : 20, round < 4 ? 60 : 120);
+          tier === 1
+            ? randInt(2, 12) * 10
+            : randInt(round < 4 ? 10 : 20, round < 4 ? 60 : 120);
         // percents get closer together as rounds climb (harder to compare)
         const pcts =
           tier === 1
@@ -245,7 +817,7 @@
                 ? [15, 30, 45]
                 : [20, 35, 40];
         Phaser.Utils.Array.Shuffle(pcts);
-        const emoji = Phaser.Utils.Array.GetRandom(items);
+        const emoji = Phaser.Utils.Array.GetRandom(ITEMS);
         // Pedagogy fix: give each lane its OWN original price (close to the row
         // base) so the cheapest sale price is NOT just "biggest % off wins" —
         // students must actually compute price × (1 − %/100) to compare. The
@@ -271,7 +843,77 @@
         const bestIdxs = cells
           .map((c, i) => i)
           .filter((i) => cells[i].sale === cells[bestIdx].sale);
-        return { emoji, base, cells, bestIdx, bestIdxs };
+        return { kind: "compare", emoji, base, cells, bestIdx, bestIdxs };
+      }
+
+      // Mystery receipt (Lesson 4-5): find the whole from a part and a percent.
+      // Each lane is a possible original tag; the two wrong tags are what a
+      // student gets from a specific misconception, so feedback can name it.
+      function makeWholeRow(round, tier = 2) {
+        const emoji = Phaser.Utils.Array.GetRandom(ITEMS);
+        for (let guard = 0; guard < 200; guard++) {
+          const pct =
+            tier === 1
+              ? Phaser.Utils.Array.GetRandom([10, 20, 25, 50])
+              : Phaser.Utils.Array.GetRandom([15, 20, 25, 30, 40, 60, 75]);
+          const original = tier === 1 ? randInt(2, 10) * 20 : randInt(4, 24) * 5;
+          const paidFrame = tier === 1 ? true : Math.random() < 0.6;
+          const part = cents(
+            paidFrame ? (original * (100 - pct)) / 100 : (original * pct) / 100,
+          );
+          if (part < 3) continue;
+          const decoys = paidFrame
+            ? [
+                { value: cents(part * (1 + pct / 100)), why: "addBack" },
+                { value: cents(part / (pct / 100)), why: "wrongPct" },
+                { value: cents((part * (100 - pct)) / 100), why: "pctOfPart" },
+                { value: cents(part + pct), why: "addDollars" },
+              ]
+            : [
+                { value: cents(original - part), why: "salePrice" },
+                { value: cents(part / ((100 - pct) / 100)), why: "savedAsPaid" },
+                { value: cents((part * pct) / 100), why: "pctOfSaved" },
+                { value: cents(part + pct), why: "addDollars" },
+              ];
+          // Keep two decoys that are clearly different from the answer and each other.
+          const chosen = [];
+          for (const d of decoys) {
+            if (chosen.length === 2) break;
+            if (d.value <= 0 || Math.abs(d.value - original) < 1) continue;
+            if (chosen.some((c) => Math.abs(c.value - d.value) < 1)) continue;
+            chosen.push(d);
+          }
+          if (chosen.length < 2) continue;
+          const cells = Phaser.Utils.Array.Shuffle([
+            { base: original, pct, why: null },
+            { base: chosen[0].value, pct, why: chosen[0].why },
+            { base: chosen[1].value, pct, why: chosen[1].why },
+          ]).map((c) => ({ ...c, sale: cents((c.base * (100 - pct)) / 100) }));
+          const bestIdx = cells.findIndex((c) => c.why === null);
+          return {
+            kind: "whole",
+            frame: paidFrame ? "paid" : "saved",
+            emoji,
+            pct,
+            part,
+            original,
+            base: original,
+            cells,
+            bestIdx,
+            bestIdxs: [bestIdx],
+          };
+        }
+        return makeRow(round, tier);
+      }
+
+      // Which rounds are mystery receipts: tier 1 → 4, 8, 12; tier 2 → every
+      // third deal; tier 3 (Detective) → every deal.
+      function rowFor(round, tier) {
+        const whole =
+          tier === 3 ? true : tier === 1 ? round % 4 === 0 : round % 3 === 0;
+        return whole
+          ? makeWholeRow(round, Math.min(tier, 2))
+          : makeRow(round, Math.min(tier, 2));
       }
 
       class BootScene extends Phaser.Scene {
@@ -290,7 +932,7 @@
         create() {
           this.cameras.main.setBackgroundColor("#10243f");
           this.add
-            .text(W / 2, 140, "DISCOUNT DASH", {
+            .text(W / 2, 140, t("title"), {
               fontFamily: "Arial, Inter, system-ui, sans-serif",
               fontSize: "66px",
               fontStyle: "900",
@@ -298,7 +940,7 @@
             })
             .setOrigin(0.5);
           this.add
-            .text(W / 2, 208, "BEST DEAL SHOPPER", {
+            .text(W / 2, 208, t("subtitle"), {
               fontFamily: "Arial, Inter, system-ui, sans-serif",
               fontSize: "28px",
               fontStyle: "700",
@@ -307,44 +949,34 @@
             })
             .setOrigin(0.5);
           this.add
-            .text(
-              W / 2,
-              320,
-              "12 deals. Each lane shows the same kind of item\nat its own price and % off. Nothing moves until you choose —\ntake your time, then pick the lane with the LOWEST sale price!",
-              {
-                fontFamily: "Arial, Inter, system-ui, sans-serif",
-                fontSize: "21px",
-                color: "#dbe4ff",
-                align: "center",
-                lineSpacing: 8,
-              },
-            )
+            .text(W / 2, 320, t("intro"), {
+              fontFamily: "Arial, Inter, system-ui, sans-serif",
+              fontSize: "21px",
+              color: "#dbe4ff",
+              align: "center",
+              lineSpacing: 8,
+            })
             .setOrigin(0.5);
           this.add
-            .text(
-              W / 2,
-              440,
-              "Tap a deal card, or ← → / 1 2 3 + Enter    •    sale price = price × (100 − % off) ÷ 100",
-              {
-                fontFamily: "Arial, Inter, system-ui, sans-serif",
-                fontSize: "18px",
-                color: "#94a3b8",
-              },
-            )
+            .text(W / 2, 440, t("controls"), {
+              fontFamily: "Arial, Inter, system-ui, sans-serif",
+              fontSize: "18px",
+              color: "#94a3b8",
+            })
             .setOrigin(0.5);
           const hi = parseInt(localStorage.getItem(LS_KEY) || "0");
           this.add
-            .text(W / 2, 500, "Best savings total: " + hi, {
+            .text(W / 2, 500, t("best", hi), {
               fontFamily: "Arial, Inter, system-ui, sans-serif",
               fontSize: "18px",
               color: "#ffd43b",
             })
             .setOrigin(0.5);
           const btn = this.add
-            .rectangle(W / 2, 600, 280, 70, 0xffe066)
+            .rectangle(W / 2, 600, 320, 70, 0xffe066)
             .setInteractive({ useHandCursor: true });
-          const t = this.add
-            .text(W / 2, 600, "START SPREE", {
+          const label = this.add
+            .text(W / 2, 600, t("start"), {
               fontFamily: "Arial, Inter, system-ui, sans-serif",
               fontSize: "28px",
               fontStyle: "800",
@@ -353,7 +985,7 @@
             .setOrigin(0.5);
           if (!reducedMotion())
             this.tweens.add({
-              targets: [btn, t],
+              targets: [btn, label],
               scale: 1.05,
               duration: 700,
               yoyo: true,
@@ -365,7 +997,9 @@
             this.scene.start("Game");
           };
           btn.on("pointerdown", go);
-          this.input.keyboard.once("keydown-ENTER", go);
+          this.input.keyboard.on("keydown-ENTER", () => {
+            if (!pageControlFocused()) go();
+          });
         }
       }
 
@@ -384,7 +1018,9 @@
           this.solved = 0;
           this.answerTries = 0;
           this.misses = [];
+          this.wholeMisses = 0;
           const launch = this.sys.settings.data || {};
+          this.tier = launch.studioTier || 2;
           this.replayQueue =
             launch.replay && launch.replay.length
               ? launch.replay.map((row) => JSON.parse(JSON.stringify(row)))
@@ -398,8 +1034,9 @@
           this.row = null;
           this.walk = 0; // cosmetic aisle stroll between deals (ms left)
           this.nextBtn = null;
+          this.coachFn = null; // rebuilds the coach line in the current language
 
-          // ── Parallax mall storefront background (multi-depth layers) ──
+          // ── Mall storefront background (multi-depth layers) ──
           // Purely decorative; it only drifts during the short stroll between
           // deals (never while a deal waits). Honors reduced-motion.
           this.bgLayers = this.buildStorefronts();
@@ -447,6 +1084,21 @@
             .text(W / 2, 14, "", hudStyle("#ffd8e8"))
             .setOrigin(0.5, 0)
             .setDepth(20);
+          // Mystery-receipt banner (empty on best-deal rows).
+          this.receipt = this.add
+            .text(W / 2, RECEIPT_Y, "", {
+              fontFamily: "Arial, Inter, system-ui, sans-serif",
+              fontSize: "20px",
+              fontStyle: "800",
+              color: "#10243f",
+              backgroundColor: "#fff3bf",
+              padding: { x: 14, y: 8 },
+              align: "center",
+              wordWrap: { width: 960 },
+            })
+            .setOrigin(0.5)
+            .setDepth(24)
+            .setVisible(false);
 
           // Coach line (persistent — feedback never fades before it is read).
           this.coach = this.add
@@ -475,15 +1127,25 @@
           // input — every action has a key: ←/→ or A/D to move, 1/2/3 to jump
           // to a lane, Enter/Space to pick (or to go on to the next deal).
           const kb = this.input.keyboard;
-          kb.on("keydown-LEFT", () => this.move(-1));
-          kb.on("keydown-RIGHT", () => this.move(1));
-          kb.on("keydown-A", () => this.move(-1));
-          kb.on("keydown-D", () => this.move(1));
-          kb.on("keydown-ONE", () => this.setLane(0));
-          kb.on("keydown-TWO", () => this.setLane(1));
-          kb.on("keydown-THREE", () => this.setLane(2));
-          kb.on("keydown-ENTER", () => this.primaryAction());
-          kb.on("keydown-SPACE", () => this.primaryAction());
+          const key = (name, fn) =>
+            kb.on("keydown-" + name, () => {
+              if (!pageControlFocused()) fn();
+            });
+          key("LEFT", () => this.move(-1));
+          key("RIGHT", () => this.move(1));
+          key("A", () => this.move(-1));
+          key("D", () => this.move(1));
+          key("ONE", () => this.setLane(0));
+          key("TWO", () => this.setLane(1));
+          key("THREE", () => this.setLane(2));
+          key("ENTER", () => this.primaryAction());
+          key("SPACE", () => this.primaryAction());
+
+          const relabel = () => this.relabel();
+          document.addEventListener("ewl:lang", relabel);
+          this.events.once("shutdown", () =>
+            document.removeEventListener("ewl:lang", relabel),
+          );
 
           this.nextDeal();
         }
@@ -577,11 +1239,9 @@
           });
           return layers;
         }
-
         move(dir) {
           this.setLane(this.lane + dir);
         }
-
         setLane(nl) {
           nl = Phaser.Math.Clamp(nl, 0, 2);
           if (nl !== this.lane) {
@@ -596,13 +1256,40 @@
           }
           this.updateHUD();
         }
-
+        // msg may be a string or a function that rebuilds it in the current language.
         say(msg, color) {
-          this.coach.setText(msg).setColor(color || "#dbe4ff");
+          this.coachFn = typeof msg === "function" ? msg : null;
+          this.coachColor = color || "#dbe4ff";
+          const text = typeof msg === "function" ? msg() : msg;
+          this.coach.setText(text).setColor(this.coachColor);
           const fb = document.getElementById("dd-fb");
-          if (fb) fb.textContent = msg;
+          if (fb) fb.textContent = text;
+          // The readable mission panel shows the same coaching as the canvas.
+          this.feedbackText = text.replace(/\n/g, " ");
+          const fm = document.querySelector(".flagship-mission .fm-feedback");
+          if (fm) fm.textContent = this.feedbackText;
         }
-
+        isWhole() {
+          return !!(this.row && this.row.data.kind === "whole");
+        }
+        receiptText(d) {
+          return d.frame === "paid"
+            ? t("receiptPaid", money(d.part), d.pct)
+            : t("receiptSaved", money(d.part), d.pct);
+        }
+        // Mission-control contract: lane button labels and the readable prompt.
+        laneLabel(i) {
+          const d = this.row.data,
+            c = d.cells[i];
+          return d.kind === "whole"
+            ? t("tagButton", i + 1, money(c.base))
+            : t("laneButton", i + 1, money(c.base), c.pct);
+        }
+        rowPrompt() {
+          return this.isWhole()
+            ? this.receiptText(this.row.data)
+            : t("comparePrompt");
+        }
         // Put the next deal row on the shelf. It sits still and waits.
         nextDeal() {
           if (this.gameOver) return;
@@ -633,64 +1320,84 @@
           }
           this.round++;
           this.spawnRow();
-          this.say(
-            this.round === 1
-              ? "Each lane has its own price and % off. Find each SALE price, then pick the lowest."
-              : "New deal! Work out each sale price, then pick the lowest.",
+          const first = this.round === 1;
+          this.say(() =>
+            this.isWhole()
+              ? t("wholeIntro")
+              : first
+                ? t("firstCompare")
+                : t("nextCompare"),
           );
-          this.prompt.setText(
-            "Tap a deal card  •  or ← → / 1 2 3 and Enter  •  take all the time you need",
-          );
+          this.prompt.setText(t("controlsLine"));
           this.updateHUD();
         }
-
+        announceRow() {
+          // Mirror the deal row (given info only — never the answer) into the
+          // hidden live region for assistive tech + the shared hint ladder.
+          const ddSr = document.getElementById("dd-sr");
+          if (!ddSr || !this.row) return;
+          const data = this.row.data;
+          ddSr.textContent =
+            data.kind === "whole"
+              ? t(
+                  "rowSrWhole",
+                  this.round,
+                  this.maxRounds,
+                  this.receiptText(data),
+                  data.cells
+                    .map((cell, i) => t("srTag", i + 1, money(cell.base)))
+                    .join(". "),
+                )
+              : t(
+                  "rowSr",
+                  this.round,
+                  this.maxRounds,
+                  data.emoji,
+                  data.cells
+                    .map((cell, i) => t("srLane", i + 1, money(cell.base), cell.pct))
+                    .join(". "),
+                );
+        }
         spawnRow() {
           const data =
             this.replayQueue && this.replayQueue.length
               ? this.replayQueue.shift()
-              : makeRow(this.round, this.sys.settings.data?.studioTier || 2);
-          // Mirror the deal row (given info only — never the sale prices)
-          // into the hidden live region for assistive tech + the shared
-          // hint ladder. Additive: never touches gameplay/scoring.
-          const ddSr = document.getElementById("dd-sr");
-          if (ddSr)
-            ddSr.textContent =
-              `Deal row ${this.round} of ${this.maxRounds}: ${data.emoji} — ` +
-              data.cells
-                .map((cell, i) => `Lane ${i + 1}: ${money(cell.base)} at ${cell.pct}% off`)
-                .join(". ") +
-              ". Which lane has the lowest sale price?";
+              : rowFor(this.round, this.tier);
+          if (!data.kind) data.kind = "compare";
+          const whole = data.kind === "whole";
           const cells = data.cells.map((cell, i) => {
             const c = this.add.container(LANES[i], ROW_Y).setDepth(5);
             const pad = this.add
-              .rectangle(0, 0, 210, 170, 0x1d3a63)
-              .setStrokeStyle(3, 0x3b6cb5)
+              .rectangle(0, 0, 210, 170, whole ? 0x2b3a55 : 0x1d3a63)
+              .setStrokeStyle(3, whole ? 0xffd43b : 0x3b6cb5)
               .setInteractive({ useHandCursor: true });
             pad.on("pointerdown", () => {
               this.setLane(i);
               this.confirmGrab();
             });
-            const lane = this.add
-              .text(0, -66, "LANE " + (i + 1), {
+            const laneT = this.add
+              .text(0, -66, "", {
                 fontFamily: "Arial, Inter, system-ui, sans-serif",
                 fontSize: "15px",
                 fontStyle: "700",
                 color: "#a5d8ff",
               })
               .setOrigin(0.5);
-            const emo = this.add.text(0, -32, data.emoji, { fontSize: "38px" }).setOrigin(0.5);
+            const emo = this.add
+              .text(0, -32, whole ? "🏷️" : data.emoji, { fontSize: "38px" })
+              .setOrigin(0.5);
             const wasT = this.add
-              .text(0, 10, "Price " + money(cell.base), {
+              .text(0, 10, "", {
                 fontFamily: "Arial, Inter, system-ui, sans-serif",
-                fontSize: "24px",
+                fontSize: whole ? "30px" : "24px",
                 fontStyle: "700",
                 color: "#e9ecef",
               })
               .setOrigin(0.5);
             const pctT = this.add
-              .text(0, 40, cell.pct + "% OFF", {
+              .text(0, 44, "", {
                 fontFamily: "Arial, Inter, system-ui, sans-serif",
-                fontSize: "30px",
+                fontSize: whole ? "15px" : "30px",
                 fontStyle: "900",
                 color: "#ffe066",
               })
@@ -708,9 +1415,13 @@
                 align: "center",
               })
               .setOrigin(0.5);
-            c.add([pad, lane, emo, wasT, pctT, saleT]);
+            c.add([pad, laneT, emo, wasT, pctT, saleT]);
             c.pad = pad;
+            c.laneT = laneT;
+            c.wasT = wasT;
+            c.pctT = pctT;
             c.saleT = saleT;
+            c.saleFn = null;
             if (reducedMotion()) {
               c.setScale(1).setAngle(0);
             } else {
@@ -733,35 +1444,88 @@
               .setStrokeStyle(2, 0x2c4a72)
               .setDepth(3);
           this.row = { data, cells, wrong: [], scored: false, roundNum: this.round };
+          this.labelRow();
+          this.announceRow();
         }
-
+        // Card text in the current language (called again after a language switch).
+        labelRow() {
+          if (!this.row) return;
+          const d = this.row.data;
+          this.row.cells.forEach((c, i) => {
+            const cell = d.cells[i];
+            c.laneT.setText(t("lane", i + 1));
+            if (d.kind === "whole") {
+              c.wasT.setText(money(cell.base));
+              c.pctT.setText(t("tag"));
+            } else {
+              c.wasT.setText(t("price", money(cell.base)));
+              c.pctT.setText(t("off", cell.pct));
+            }
+            if (c.saleFn) c.saleT.setText(c.saleFn());
+          });
+          const whole = d.kind === "whole";
+          this.receipt.setVisible(whole);
+          if (whole) this.receipt.setText(this.receiptText(d));
+        }
+        setSale(i, fn) {
+          const c = this.row.cells[i];
+          c.saleFn = fn;
+          c.saleT.setText(fn());
+        }
+        relabel() {
+          if (!this.sys.isActive() && !this.sys.isPaused()) return;
+          this.labelRow();
+          this.announceRow();
+          if (this.coachFn) this.say(this.coachFn, this.coachColor);
+          this.prompt.setText(
+            this.row && this.row.scored
+              ? t("whenReady", this.round >= this.maxRounds)
+              : t("controlsLine"),
+          );
+          if (this.nextBtn)
+            this.nextBtn[1].setText(
+              this.round >= this.maxRounds ? t("seeResults") : t("nextDeal"),
+            );
+          this.updateHUD();
+        }
         // Worked sale price for one lane: price × (100 − %) ÷ 100.
         worked(i) {
           const c = this.row.data.cells[i];
           return money(c.base) + " × " + (100 - c.pct) + "% = " + money(c.sale);
         }
-
+        // Worked check of one tag on a mystery receipt (the student's own lane).
+        wholeCheck(i) {
+          const d = this.row.data,
+            c = d.cells[i];
+          const paid = d.frame === "paid";
+          const got = paid ? c.sale : cents((c.base * d.pct) / 100);
+          return t(
+            "wholeCheck",
+            i + 1,
+            money(c.base),
+            d.pct,
+            money(got),
+            paid,
+            money(d.part),
+          );
+        }
         // Mission-control (flagship-studio) contract: it reads waitingRow and
         // calls setLane()+confirmGrab(), and wraps grabCell() to track accuracy.
         get waitingRow() {
           return this.row && !this.row.scored ? this.row : null;
         }
-
         confirmGrab() {
           this.grabCell(this.row, this.lane);
         }
-
         grabCell(row, laneIdx) {
           if (!row || row.scored || this.gameOver) return;
           if (row.wrong.includes(laneIdx)) {
-            this.say(
-              "You already checked Lane " + (laneIdx + 1) + ". Try a different lane.",
-              "#ffd43b",
-            );
+            this.say(() => t("already", laneIdx + 1), "#ffd43b");
             return;
           }
           const rm = reducedMotion();
           const d = row.data;
+          const whole = d.kind === "whole";
           // Ties at the same rounded-cents sale price: either lane is correct.
           if (d.bestIdxs.includes(laneIdx)) {
             row.scored = true;
@@ -769,7 +1533,9 @@
             this.solved++;
             this.answerTries++;
             const cell = d.cells[laneIdx];
-            const saved = Math.round((cell.base - cell.sale) * 100) / 100;
+            const saved = whole
+              ? cents(d.frame === "paid" ? d.original - d.part : d.part)
+              : Math.round((cell.base - cell.sale) * 100) / 100;
             let pts;
             if (tries === 0) {
               this.combo++;
@@ -782,13 +1548,22 @@
               pts = tries === 1 ? 50 : 25;
             }
             this.score += pts;
-            window.FlagshipAdventure?.record({ firstTry: tries === 0, kind: "discount" });
+            window.FlagshipAdventure?.record({
+              firstTry: tries === 0,
+              kind: whole ? "find-whole" : "discount",
+            });
             const prevSav = this.savings;
             this.savings = Math.round((this.savings + saved) * 100) / 100;
             sfx.grab();
-            // Reveal every lane's worked sale price so the comparison is visible.
+            // Reveal every lane's worked numbers so the comparison is visible.
             row.cells.forEach((c, i) => {
-              c.saleT.setText("Sale " + money(d.cells[i].sale));
+              if (whole)
+                this.setSale(i, () =>
+                  d.frame === "paid"
+                    ? t("sale", money(d.cells[i].sale))
+                    : "−" + money(cents((d.cells[i].base * d.pct) / 100)),
+                );
+              else this.setSale(i, () => t("sale", money(d.cells[i].sale)));
               if (i !== laneIdx) c.setAlpha(0.6);
             });
             this.flashBestLane(row.cells[laneIdx]);
@@ -812,27 +1587,45 @@
                 });
               }
             }
-            const lead =
-              tries === 0
-                ? "Best deal — first try! +" + pts
-                : "Best deal! +" + pts + " (with help)";
-            this.say(
-              lead +
-                "\nLane " +
-                (laneIdx + 1) +
-                ": " +
-                this.worked(laneIdx) +
-                " is the lowest sale price. You saved " +
-                money(saved) +
-                ".",
-              "#8ce99a",
-            );
+            const k = d.frame === "paid" ? (100 - d.pct) / 100 : d.pct / 100;
+            this.say(() => {
+              if (whole) {
+                const lead =
+                  tries === 0 ? t("wholeFirst", pts) : t("wholeHelped", pts);
+                return (
+                  lead +
+                  (d.frame === "paid"
+                    ? t(
+                        "wholeWinPaid",
+                        money(d.original),
+                        d.pct,
+                        money(d.part),
+                        String(k),
+                      )
+                    : t(
+                        "wholeWinSaved",
+                        money(d.original),
+                        d.pct,
+                        money(d.part),
+                        String(k),
+                      ))
+                );
+              }
+              const lead = tries === 0 ? t("firstTryWin", pts) : t("helpedWin", pts);
+              return (
+                lead +
+                t("compareWin", laneIdx + 1, this.worked(laneIdx), money(saved))
+              );
+            }, "#8ce99a");
             this.showNext();
           } else {
             row.wrong.push(laneIdx);
             this.answerTries++;
             this.combo = 0;
-            if (row.wrong.length === 1) this.misses.push(JSON.parse(JSON.stringify(d)));
+            if (row.wrong.length === 1) {
+              this.misses.push(JSON.parse(JSON.stringify(d)));
+              if (whole) this.wholeMisses++;
+            }
             sfx.bad();
             this.wrongFlash();
             const cellC = row.cells[laneIdx];
@@ -841,52 +1634,87 @@
             if (row.wrong.length === 1) {
               // Tier 1 — method hint, misconception-specific, no answer.
               const picked = d.cells[laneIdx];
-              const maxPct = Math.max(...d.cells.map((c) => c.pct));
-              const minBase = Math.min(...d.cells.map((c) => c.base));
-              let why;
-              if (picked.pct === maxPct)
-                why =
-                  "Lane " +
-                  (laneIdx + 1) +
-                  " has the biggest % off, but its price starts higher. The biggest % off is not always the lowest price.";
-              else if (picked.base === minBase)
-                why =
-                  "Lane " +
-                  (laneIdx + 1) +
-                  " has the lowest starting price, but the discounts are different. Starting low is not enough.";
-              else why = "Lane " + (laneIdx + 1) + " is not the lowest sale price.";
-              this.say(
-                "Not quite. " +
-                  why +
-                  "\nHint: you pay (100 − % off)% of the price. Find each lane's sale price, then compare.",
-                "#ffd43b",
-              );
+              if (whole) {
+                const target = money(d.part);
+                this.say(() => {
+                  const i = laneIdx + 1;
+                  const why =
+                    picked.why === "addBack"
+                      ? tw("addBack", i, d.pct)
+                      : picked.why === "wrongPct"
+                        ? tw("wrongPct", i, target, d.pct)
+                        : picked.why === "pctOfPart"
+                          ? tw("pctOfPart", i, target)
+                          : picked.why === "addDollars"
+                            ? tw("addDollars", i, d.pct)
+                            : picked.why === "pctOfSaved"
+                              ? tw("pctOfSaved", i, target, d.pct)
+                              : picked.why === "savedAsPaid"
+                                ? tw("savedAsPaid", i, target)
+                                : tw("salePrice", i);
+                  return (
+                    t("notQuite") +
+                    why +
+                    t("wholeHint", d.pct, target, d.frame === "paid")
+                  );
+                }, "#ffd43b");
+              } else {
+                const maxPct = Math.max(...d.cells.map((c) => c.pct));
+                const minBase = Math.min(...d.cells.map((c) => c.base));
+                this.say(() => {
+                  const why =
+                    picked.pct === maxPct
+                      ? t("biggestPct", laneIdx + 1)
+                      : picked.base === minBase
+                        ? t("lowestStart", laneIdx + 1)
+                        : t("notLowest", laneIdx + 1);
+                  return t("notQuite") + why + t("compareHint");
+                }, "#ffd43b");
+              }
             } else {
               // Tier 2 — concrete worked step for the lanes already ruled out.
-              row.wrong.forEach((i) =>
-                row.cells[i].saleT.setText("Sale " + money(d.cells[i].sale)),
-              );
-              this.say(
-                "Let's work it out. " +
-                  row.wrong.map((i) => "Lane " + (i + 1) + ": " + this.worked(i)).join(".  ") +
-                  ".\nNow find the sale price of the last lane the same way and compare.",
-                "#ffd43b",
-              );
+              if (whole) {
+                row.wrong.forEach((i) =>
+                  this.setSale(i, () =>
+                    d.frame === "paid"
+                      ? t("sale", money(d.cells[i].sale))
+                      : "−" + money(cents((d.cells[i].base * d.pct) / 100)),
+                  ),
+                );
+                this.say(
+                  () =>
+                    t("workItOut") +
+                    row.wrong.map((i) => this.wholeCheck(i)).join(".  ") +
+                    t("wholeLast"),
+                  "#ffd43b",
+                );
+              } else {
+                row.wrong.forEach((i) =>
+                  this.setSale(i, () => t("sale", money(d.cells[i].sale))),
+                );
+                this.say(
+                  () =>
+                    t("workItOut") +
+                    row.wrong
+                      .map((i) => t("laneWorked", i + 1, this.worked(i)))
+                      .join(".  ") +
+                    t("lastLane"),
+                  "#ffd43b",
+                );
+              }
             }
           }
           this.updateHUD();
         }
-
         showNext() {
           const last = this.round >= this.maxRounds;
-          const label = last ? "SEE RESULTS ▶" : "NEXT DEAL ▶";
           const bg = this.add
-            .rectangle(W / 2, NEXT_Y, 280, 60, 0xffe066)
+            .rectangle(W / 2, NEXT_Y, 300, 60, 0xffe066)
             .setStrokeStyle(3, 0xffffff)
             .setDepth(26)
             .setInteractive({ useHandCursor: true });
-          const t = this.add
-            .text(W / 2, NEXT_Y, label, {
+          const label = this.add
+            .text(W / 2, NEXT_Y, last ? t("seeResults") : t("nextDeal"), {
               fontFamily: "Arial, Inter, system-ui, sans-serif",
               fontSize: "24px",
               fontStyle: "800",
@@ -895,12 +1723,9 @@
             .setOrigin(0.5)
             .setDepth(27);
           bg.on("pointerdown", () => this.nextDeal());
-          this.nextBtn = [bg, t];
-          this.prompt.setText(
-            "Press Enter or tap " + (last ? "SEE RESULTS" : "NEXT DEAL") + " when you are ready",
-          );
+          this.nextBtn = [bg, label];
+          this.prompt.setText(t("whenReady", last));
         }
-
         // Gold glow + quick pop around the pad the player correctly grabbed.
         flashBestLane(cell) {
           if (!cell || !cell.active) return;
@@ -917,11 +1742,6 @@
             .rectangle(cell.x, cell.y, 220, 170, 0xffe066, 0.0)
             .setStrokeStyle(5, 0xffe066, 0.95)
             .setDepth(4);
-          // keep the glow pinned to the (still-scrolling) grabbed pad
-          const follow = () => {
-            if (cell.active) glow.y = cell.y;
-          };
-          this.events.on("update", follow);
           this.tweens.add({
             targets: glow,
             scaleX: 1.18,
@@ -930,10 +1750,7 @@
             alpha: 0,
             duration: 620,
             ease: "Quad.out",
-            onComplete: () => {
-              this.events.off("update", follow);
-              glow.destroy();
-            },
+            onComplete: () => glow.destroy(),
           });
           if (cell.active) {
             this.tweens.add({
@@ -946,12 +1763,11 @@
             });
           }
         }
-
         // Animated savings ticker — eases the SAVED HUD value upward.
         tickSavings(from, to) {
           if (this.savTween) this.savTween.remove();
           if (reducedMotion()) {
-            this.savHud.setText("SAVED  " + money(to));
+            this.savHud.setText(t("saved", money(to)));
             return;
           }
           const obj = { v: from };
@@ -960,14 +1776,13 @@
             v: to,
             duration: 500,
             ease: "Cubic.out",
-            onUpdate: () => this.savHud.setText("SAVED  " + money(obj.v)),
-            onComplete: () => this.savHud.setText("SAVED  " + money(to)),
+            onUpdate: () => this.savHud.setText(t("saved", money(obj.v))),
+            onComplete: () => this.savHud.setText(t("saved", money(to))),
           });
           try {
             window.GameFX && window.GameFX.pop(this.game.canvas);
           } catch (e) {}
         }
-
         // Combo multiplier badge scaling — bigger pop for bigger combos.
         popCombo() {
           if (this.combo < 2 || reducedMotion()) return;
@@ -982,8 +1797,7 @@
             ease: "Back.out",
           });
         }
-
-        // Brief full-screen red flash on a wrong (overpaid) grab.
+        // Brief soft red wash on a wrong pick.
         wrongFlash() {
           const f = this.add
             .rectangle(W / 2, H / 2, W, H, 0xff3b3b, reducedMotion() ? 0.08 : 0.14)
@@ -996,21 +1810,13 @@
             onComplete: () => f.destroy(),
           });
         }
-
         updateHUD() {
-          this.hud.setText("SCORE " + this.score);
+          this.hud.setText(t("score", this.score));
           if (!(this.savTween && this.savTween.isPlaying())) {
-            this.savHud.setText("SAVED  " + money(this.savings));
+            this.savHud.setText(t("saved", money(this.savings)));
           }
-          this.comboHud.setText(
-            "Deal " +
-              this.round +
-              " of " +
-              this.maxRounds +
-              (this.combo > 1 ? "   streak x" + this.combo : ""),
-          );
+          this.comboHud.setText(t("dealOf", this.round, this.maxRounds, this.combo));
         }
-
         endGame() {
           if (this.gameOver) return;
           this.gameOver = true;
@@ -1033,15 +1839,15 @@
             firstTry: this.firstTry,
             helped: this.helped,
             newBest: this.score > hi,
-            tier: this.sys.settings.data?.studioTier,
+            tier: this.tier,
             bestStreak: this.bestStreak,
             solved: this.solved,
             answerTries: this.answerTries,
             misses: this.misses.slice(),
+            wholeMisses: this.wholeMisses,
             rounds: this.maxRounds,
           });
         }
-
         update(time, delta) {
           if (this.gameOver) return;
           // The aisle only moves during the short stroll between deals.
@@ -1093,87 +1899,62 @@
                 wordWrap: { width: 880 },
               })
               .setOrigin(0.5);
-          txt(110, "CHECKOUT!", "58px", "#ffe066", true);
+          txt(110, t("checkout"), "58px", "#ffe066", true);
+          txt(164, t("starsLine", stars), "28px", "#ffe066", true);
+          txt(206, t("scoreLine", r.score || 0, r.newBest), "32px", "#ffffff", true);
           txt(
-            164,
-            "★".repeat(stars) + "☆".repeat(3 - stars) + "  " + stars + " of 3 stars",
-            "28px",
-            "#ffe066",
-            true,
-          );
-          txt(
-            190,
-            "Score: " + (r.score || 0) + (r.newBest ? "   ★ New best!" : ""),
-            "32px",
-            "#ffffff",
-            true,
-          );
-          txt(
-            240,
-            "Best deal on the first try: " +
-              first +
-              " of " +
-              items +
-              " (" +
-              acc +
-              "%)" +
-              "   •   With a hint: " +
-              (r.helped || 0),
+            248,
+            t("firstLine", first, items, acc, r.helped || 0),
             "22px",
             "#dbe4ff",
           );
-          txt(282, "Total saved: " + money(r.savings || 0), "24px", "#51cf66", true);
+          txt(288, t("totalSaved", money(r.savings || 0)), "24px", "#51cf66", true);
           txt(
-            318,
-            "Best score: " + (localStorage.getItem(LS_KEY) || r.score || 0),
+            322,
+            t("bestLine", localStorage.getItem(LS_KEY) || r.score || 0),
             "20px",
             "#74c0fc",
           );
-          txt(
-            380,
-            "Skills practiced: percent of a quantity • sale price = price × (100 − % off) ÷ 100 • comparing prices",
-            "19px",
-            "#c5d3f0",
-          );
+          txt(382, t("skills"), "19px", "#c5d3f0");
           const next =
-            acc >= 80
-              ? "Practice next: try Level 2 (L2 Challenge) — closer discounts and bigger prices."
-              : acc >= 50
-                ? "Practice next: find each sale price before you pick. Write price × (100 − % off) ÷ 100 for every lane."
-                : "Practice next: find 10% of a price first (divide by 10). 20% is double that, 5% is half of it.";
-          txt(440, next, "20px", "#ffd43b", true);
+            (r.wholeMisses || 0) >= 2
+              ? t("nextWhole")
+              : acc >= 80
+                ? t("nextHigh")
+                : acc >= 50
+                  ? t("nextMid")
+                  : t("nextLow");
+          txt(444, next, "20px", "#ffd43b", true);
           const btn = this.add
             .rectangle(W / 2, 540, 300, 66, 0xffe066)
             .setInteractive({ useHandCursor: true });
-          txt(540, "SHOP AGAIN ▶", "26px", "#10243f", true);
-          txt(600, "New prices every time. Press Enter or tap.", "17px", "#94a3b8");
+          txt(540, t("again"), "26px", "#10243f", true);
+          txt(600, t("againNote"), "17px", "#94a3b8");
           const again = () => this.scene.start("Game", { studioTier: r.tier || 2 });
           btn.on("pointerdown", again);
           if (r.misses && r.misses.length) {
             const practice = this.add
-              .rectangle(W / 2, 660, 320, 52, 0x74c0fc)
+              .rectangle(W / 2, 660, 340, 52, 0x74c0fc)
               .setInteractive({ useHandCursor: true });
-            txt(660, "PRACTICE THE MISSES", "22px", "#10243f", true);
+            txt(660, t("practiceMisses"), "22px", "#10243f", true);
             practice.on("pointerdown", () =>
               this.scene.start("Game", { studioTier: r.tier || 2, replay: r.misses }),
             );
           }
-          this.input.keyboard.once("keydown-ENTER", again);
+          this.input.keyboard.on("keydown-ENTER", () => {
+            if (!pageControlFocused()) again();
+          });
           const fb = document.getElementById("dd-fb");
           if (fb)
-            fb.textContent =
-              "Checkout. Score " +
-              (r.score || 0) +
-              ". " +
-              stars +
-              " of 3 stars. First-try best deals " +
-              first +
-              " of " +
-              items +
-              ". " +
-              next;
+            fb.textContent = t("resultsSr", r.score || 0, stars, first, items, next);
+          const relabel = () => this.scene.restart(this.r);
+          document.addEventListener("ewl:lang", relabel);
+          this.events.once("shutdown", () =>
+            document.removeEventListener("ewl:lang", relabel),
+          );
         }
       }
+
       const config = {
         type: Phaser.AUTO,
         width: W,
@@ -1187,7 +1968,13 @@
         scene: [BootScene, TitleScene, GameScene, ResultsScene],
       };
       const ddGame = (window.__flagshipGame = new Phaser.Game(config));
-
+      // Title screen follows a language switch immediately.
+      document.addEventListener("ewl:lang", () => {
+        const title = ddGame.scene.getScene("Title");
+        if (title && title.sys.isActive()) title.scene.restart();
+        const cv = ddGame.canvas;
+        if (cv) cv.setAttribute("aria-label", t("canvas"));
+      });
       // ── Canvas accessibility (additive; no gameplay change) ──
       // Phaser renders to one <canvas> that is not in the tab order by default,
       // so keyboard-only students cannot focus the game to use the arrow / A-D
@@ -1198,13 +1985,11 @@
           const cv = ddGame.canvas;
           if (!cv) return;
           cv.setAttribute("role", "application");
+          cv.setAttribute("aria-label", t("canvas"));
           cv.setAttribute(
-            "aria-label",
-            "Discount Dash best-deal math game. Pick the lane with the " +
-              "lowest sale price. Use the left and right arrow keys, A and D, " +
-              "or 1, 2, 3 to choose a lane, and Enter to pick or continue.",
+            "aria-roledescription",
+            lang() === "es" ? "juego de matemáticas" : "math game",
           );
-          cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
           cv.addEventListener("pointerdown", function () {
             try {
@@ -1232,12 +2017,19 @@
           window.NeftHintLadder.watch({
             sourceSelector: "#dd-sr",
             standard: "6.AT.4",
-            accept: "^Deal row",
-            staticHints: [
-              "Percent means 'out of 100.' A percent off tells you what part of the price you do NOT pay — so what part do you still pay?",
-              "Find 10% of a price first by dividing by 10 — then build the discount from there (20% is double it, 5% is half of it).",
-              "Set it up lane by lane: price × (100 − percent off) ÷ 100 gives each sale price. Compare the final prices, not the percents.",
-            ],
+            accept: "^(Deal row|Fila de oferta)",
+            staticHints:
+              localStorage.getItem("nt-lang") === "es"
+                ? [
+                    "Porcentaje significa 'de cada 100'. Un porcentaje de descuento dice qué parte del precio NO pagas — entonces, ¿qué parte sí pagas?",
+                    "Primero halla el 10% de un precio dividiendo entre 10 — luego arma el descuento (el 20% es el doble, el 5% es la mitad).",
+                    "Carril por carril: precio × (100 − % de descuento) ÷ 100 da cada precio de oferta. En un recibo, prueba cada etiqueta: ¿el descuento coincide con el recibo?",
+                  ]
+                : [
+                    "Percent means 'out of 100.' A percent off tells you what part of the price you do NOT pay — so what part do you still pay?",
+                    "Find 10% of a price first by dividing by 10 — then build the discount from there (20% is double it, 5% is half of it).",
+                    "Set it up lane by lane: price × (100 − percent off) ÷ 100 gives each sale price. On a receipt, test each tag: does the discount match the receipt?",
+                  ],
           });
       });
     </script>
@@ -1267,8 +2059,8 @@
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <script src="/assets/formula-popup.js" defer></script>
     <script src="/assets/game-studio.js?v=20261003" defer></script>
-    <script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
-    <script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
-    <script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
+    <script src="/math/games/shared/flagship-studio.js?v=20261015" defer></script>
+    <script src="/math/games/shared/flagship-puzzles.js?v=20261015" defer></script>
+    <script src="/math/games/shared/flagship-adventures.js?v=20261015" defer></script>
   </body>
 </html>

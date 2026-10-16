@@ -7,7 +7,7 @@
     <title>Volume Vault — Build the Prism | Neft Teacher</title>
     <meta
       name="description"
-      content="Volume Vault: a calm, self-paced Grade 6 game where you set a rectangular prism's length, width, and height to build a vault of an exact volume — V = l × w × h made visible, one unit cube at a time (6.GR.A.2)."
+      content="Volume Vault: a calm, self-paced Grade 6 game (Unit 5, lessons 5-5 and 5-10) where you set a rectangular prism's length, width, and height — including fractional edges — to build a vault of an exact volume, V = l × w × h = B × h (6.GR.2)."
     />
     <style>
       * {
@@ -247,6 +247,14 @@
       }
 
       /* ── Builder ── */
+      #screen-play .play-layout-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) !important;
+      }
+      @media (max-width: 860px) {
+        #screen-play .play-layout-grid {
+          grid-template-columns: minmax(0, 1fr) !important;
+        }
+      }
       .builder {
         display: grid;
         grid-template-columns: 1fr;
@@ -380,6 +388,110 @@
         justify-content: center;
         margin-top: 16px;
       }
+      .title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .lang-btn {
+        min-height: 44px;
+        padding: 8px 16px;
+      }
+      .hud .lang-btn {
+        margin-left: auto;
+      }
+      .help-pill {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .vv-visually-hidden {
+        position: absolute !important;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+      }
+      .target .kind {
+        display: inline-block;
+        margin-bottom: 6px;
+        padding: 3px 12px;
+        border-radius: 999px;
+        background: #12384a;
+        color: var(--gold);
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .stepper.sel {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 2px rgba(212, 149, 42, 0.35);
+      }
+      .stepper.locked {
+        background: #10303f;
+        border-style: dashed;
+      }
+      .stepper.locked .sval {
+        color: #ffe2a6;
+      }
+      .given-tag {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      #steppers {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
+      }
+      #steppers .stepper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        text-align: left;
+        min-height: 72px;
+      }
+      #steppers .slabel {
+        margin: 0;
+      }
+      #steppers .given-tag {
+        margin: 0;
+      }
+      .kbd-tip {
+        color: var(--muted);
+        font-size: 0.82rem;
+        margin-top: 12px;
+        text-align: center;
+      }
+      .vault-center-stage > * {
+        align-self: stretch;
+      }
+      .layer-note {
+        color: var(--muted);
+        font-size: 0.9rem;
+        text-align: center;
+        min-height: 1.3em;
+      }
+      .seal-row {
+        margin-top: 14px;
+      }
+      .result-note {
+        text-align: center;
+        color: var(--txt);
+        margin-top: 12px;
+      }
+      @media (max-width: 560px) {
+        .vault-center-stage {
+          padding: 16px 12px !important;
+        }
+        .side-panel-inputs {
+          padding: 14px !important;
+        }
+      }
     </style>
     <!-- gfx-injected:begin (shared game polish — tools/inject-game-fx.js) -->
     <link rel="stylesheet" href="/assets/game-fx.css" />
@@ -397,8 +509,8 @@
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
   <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/game-studio.css?v=20261002">
-<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007">
-<link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007">
+<link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261015">
+<link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261015">
 </head>
   <body>
     <!-- nt-game-topbar-injected:begin (tools/inject-game-topbar.js) -->
@@ -425,21 +537,25 @@
 <main id="wrap">
       <!-- VOCAB GATE -->
       <section id="screen-vocab" class="screen on" aria-labelledby="vh">
-        <h1 id="vh">🔒 Volume Vault</h1>
-        <p class="sub">
-          Build rectangular prisms · Volume = l × w × h · 6.GR.A.2
-        </p>
+        <div class="title-row">
+          <h1 id="vh">🔒 <span data-t="title">Volume Vault</span></h1>
+          <button type="button" class="btn ghost lang-btn" data-lang-toggle>Español</button>
+        </div>
+        <p class="sub" data-t="tagline">Build rectangular prisms · V = l × w × h = B × h · 6.GR.2</p>
         <div class="card">
-          <h2 style="color: #fff; font-size: 1.2rem">Words to know first</h2>
+          <h2 style="color: #fff; font-size: 1.2rem" data-t="wordsFirst">Words to know first</h2>
           <div class="vocab" id="vocab-list"></div>
-          <button class="btn big" id="vocab-go">I'm ready →</button>
+          <button type="button" class="btn big" id="vocab-go" data-t="ready">I'm ready →</button>
         </div>
       </section>
 
       <!-- LEVEL SELECT -->
       <section id="screen-level" class="screen" aria-labelledby="lh">
-        <h1 id="lh">Choose your level</h1>
-        <p class="sub">You can change this any time by playing again.</p>
+        <div class="title-row">
+          <h1 id="lh" data-t="chooseLevel">Choose your level</h1>
+          <button type="button" class="btn ghost lang-btn" data-lang-toggle>Español</button>
+        </div>
+        <p class="sub" data-t="changeAnyTime">You can change this any time by playing again.</p>
         <div class="card">
           <div class="levels" id="level-list"></div>
         </div>
@@ -447,144 +563,59 @@
 
       <!-- PLAY -->
       <section id="screen-play" class="screen" aria-labelledby="ph">
-        <h1 id="ph" style="position: absolute; left: -9999px">
-          Volume Vault play
-        </h1>
+        <h1 id="ph" class="vv-visually-hidden" data-t="playHeading">Volume Vault play</h1>
         <div class="hud">
-          <span class="pill"
-            ><small>Round</small> <span id="hud-round">1</span>/<span
-              id="hud-total"
-              >4</span
-            ></span
-          >
-          <span class="pill"
-            ><small>Score</small> <span id="hud-score">0</span></span
-          >
+          <span class="pill"><small data-t="round">Round</small> <span id="hud-round">1</span>/<span id="hud-total">4</span></span>
+          <span class="pill"><small data-t="score">Score</small> <span id="hud-score">0</span></span>
+          <span class="pill" id="hud-level"></span>
+          <span class="pill help-pill" id="hud-help" aria-live="off"></span>
+          <button type="button" class="btn ghost lang-btn" data-lang-toggle>Español</button>
         </div>
         <div class="card play-layout-grid">
-          <!-- SIDE PANEL: Dimension Steppers & Controls -->
+          <!-- SIDE PANEL: mission + dimension steppers -->
           <div class="side-panel-inputs">
             <div class="target">
+              <div class="kind" id="t-kind"></div>
               <div class="nums">
-                Target <span class="vocab-word" data-vocab="volume" style="border-bottom:2px dotted #0284C7; color:#0284C7; font-weight:800; cursor:pointer;" onclick="openVocabModal('volume')">Volume</span>: <span id="t-vol">24</span> cu units
+                <span data-t="targetVolume">Target volume</span>: <span id="t-vol">24</span>
+                <span data-t="cuUnits">cubic units</span>
               </div>
-              <div class="prompt">
-                Adjust length, width, and height to match the target volume.
-              </div>
+              <div class="prompt" id="t-prompt"></div>
             </div>
-
-            <div class="steppers">
-              <div class="stepper">
-                <span class="slabel">Length (l)</span>
-                <div class="srow">
-                  <button
-                    class="sbtn"
-                    data-dim="l"
-                    data-d="-1"
-                    aria-label="Decrease length"
-                  >
-                    −
-                  </button>
-                  <span class="sval" id="v-l">1</span>
-                  <button
-                    class="sbtn"
-                    data-dim="l"
-                    data-d="1"
-                    aria-label="Increase length"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-              <div class="stepper">
-                <span class="slabel">Width (w)</span>
-                <div class="srow">
-                  <button
-                    class="sbtn"
-                    data-dim="w"
-                    data-d="-1"
-                    aria-label="Decrease width"
-                  >
-                    −
-                  </button>
-                  <span class="sval" id="v-w">1</span>
-                  <button
-                    class="sbtn"
-                    data-dim="w"
-                    data-d="1"
-                    aria-label="Increase width"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-              <div class="stepper">
-                <span class="slabel">Height (h)</span>
-                <div class="srow">
-                  <button
-                    class="sbtn"
-                    data-dim="h"
-                    data-d="-1"
-                    aria-label="Decrease height"
-                  >
-                    −
-                  </button>
-                  <span class="sval" id="v-h">1</span>
-                  <button
-                    class="sbtn"
-                    data-dim="h"
-                    data-d="1"
-                    aria-label="Increase height"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-            </div>
+            <div class="steppers" id="steppers"></div>
+            <p class="kbd-tip" data-t="kbdTip">Keyboard: Tab to a + or − button, then Enter. Or press L, W, H to pick an edge and ↑ ↓ to change it.</p>
           </div>
 
-          <!-- CENTER VAULT STAGE -->
+          <!-- VAULT STAGE: live model + formula + seal -->
           <div class="vault-center-stage">
             <div class="stage">
-              <canvas
-                id="prism"
-                width="420"
-                height="280"
-                role="img"
-                aria-label="A rectangular prism built from unit cubes."
-              ></canvas>
+              <canvas id="prism" width="420" height="280" role="img" aria-label="A rectangular prism built from unit cubes."></canvas>
             </div>
-            <div class="formula" id="formula"></div>
-            <div class="seal-row" style="margin-top: 14px;">
-              <button class="btn big seal ewl-open-vault-btn" id="seal">🔓 SEAL & OPEN VAULT</button>
+            <div class="formula" id="formula" aria-live="off"></div>
+            <div class="layer-note" id="layer-note"></div>
+            <div class="seal-row">
+              <button type="button" class="btn big seal ewl-open-vault-btn" id="seal" data-t="seal">🔓 Seal the vault</button>
             </div>
           </div>
         </div>
-
-          <div
-            class="feedback"
-            id="feedback"
-            role="status"
-            aria-live="assertive"
-          ></div>
-          <p class="hint" id="hint"></p>
-        </div>
+        <div class="feedback" id="feedback" role="status" aria-live="assertive"></div>
+        <p class="hint" id="hint"></p>
       </section>
 
       <!-- RESULT -->
       <section id="screen-result" class="screen" aria-labelledby="rh">
-        <h1 id="rh">Vault sealed</h1>
+        <h1 id="rh" data-t="resultTitle">Vaults sealed</h1>
         <div class="card">
-          <div class="result-stars" id="r-stars">★★★</div>
-          <div class="result-stat"><span>Score</span><b id="r-score">0</b></div>
-          <div class="result-stat">
-            <span>Vaults sealed</span><b id="r-sealed">0</b>
-          </div>
-          <div class="result-stat" id="r-high-row" style="display: none">
-            <span>★ New high score!</span><b id="r-high">0</b>
-          </div>
+          <div class="result-stars" id="r-stars" aria-hidden="true">★★★</div>
+          <p class="vv-visually-hidden" id="r-stars-sr"></p>
+          <div class="result-stat"><span data-t="score">Score</span><b id="r-score">0</b></div>
+          <div class="result-stat"><span data-t="sealedCount">Vaults sealed</span><b id="r-sealed">0</b></div>
+          <div class="result-stat"><span data-t="firstTry">Sealed on the first try</span><b id="r-first">0</b></div>
+          <div class="result-stat" id="r-high-row" style="display: none"><span data-t="newHigh">★ New high score!</span><b id="r-high">0</b></div>
+          <p class="result-note" id="r-note"></p>
           <div class="row">
-            <button class="btn big" id="r-again">Play again</button>
+            <button type="button" class="btn big" id="r-again" data-t="playAgain">Play again</button>
+            <button type="button" class="btn big ghost" id="r-practice" data-t="practiceMisses" hidden>Practice the misses</button>
           </div>
         </div>
       </section>
@@ -592,68 +623,391 @@
 
     <script>
       // ════════════════════════════════════════════════════════════════════
-      //  VOLUME VAULT — Dimension Builder  ·  Grade 6  ·  6.GR.A.2
+      //  VOLUME VAULT — Dimension Builder  ·  Grade 6  ·  Unit 5 (6.GR.2)
+      //  Lessons 5-5 (volume of rectangular prisms) and 5-10 (volume with
+      //  fractional edges, V = B × h).
       //
-      //  Volume of a rectangular prism, as a real mechanic. Each round gives a
-      //  target volume; the player sets Length / Width / Height with steppers
-      //  and a gridded isometric prism of unit cubes builds live, with the
-      //  formula V = l × w × h shown the whole time. Seal the vault when the
-      //  volume is exactly the target. Many shapes work, so it teaches the
-      //  formula AND that volume has many factor shapes. Calm, self-paced,
-      //  no timer, no-fail — a wrong seal nudges and you adjust.
+      //  Each round names a target volume. The student sets the prism's edges
+      //  with steppers and a gridded isometric prism builds live. The volume
+      //  itself is NOT computed for them: they multiply (l × w × h, or B × h)
+      //  and seal when they believe it matches. Help is earned in tiers:
+      //  miss 1 → the method, miss 2 → a concrete step with their own numbers,
+      //  miss 3 → the live volume meter switches on and a working build is
+      //  shown. Full points only for an unaided first seal. Calm and
+      //  self-paced: no clock, no game over.
+      //    Bronze  (5-5)  open build: any whole-number box with the volume
+      //    Silver  (5-5)  B × h: a locked floor (find h) or a locked height
+      //                   (build a floor that holds V ÷ h cubes per layer)
+      //    Gold    (5-10) fractional edges in ½-unit steps; ½-unit cubes are
+      //                   ⅛ cubic unit each
       // ════════════════════════════════════════════════════════════════════
-      const STANDARD = "6.GR.A.2";
+      const STANDARD = "6.GR.2";
       const ACTIVITY_TITLE = "Volume Vault — Volume of Prisms";
       const LS_KEY = "volumevault_builder_hi";
+      const LANG_KEY = "nt-lang";
       const ROUNDS = 4;
+      const DIMS = ["l", "w", "h"];
+
+      // ── Language (site-wide key nt-lang; "ewl:lang" event keeps pages in sync) ──
+      function lang() {
+        try {
+          return localStorage.getItem(LANG_KEY) === "es" ? "es" : "en";
+        } catch (e) {
+          return "en";
+        }
+      }
+      const TX = {
+        title: { en: "Volume Vault", es: "Bóveda de Volumen" },
+        tagline: {
+          en: "Build rectangular prisms · V = l × w × h = B × h · 6.GR.2",
+          es: "Construye prismas rectangulares · V = l × a × h = B × h · 6.GR.2",
+        },
+        wordsFirst: { en: "Words to know first", es: "Palabras que debes saber" },
+        ready: { en: "I'm ready →", es: "Estoy listo →" },
+        chooseLevel: { en: "Choose your level", es: "Elige tu nivel" },
+        changeAnyTime: {
+          en: "You can change this any time by playing again.",
+          es: "Puedes cambiarlo cuando vuelvas a jugar.",
+        },
+        playHeading: { en: "Volume Vault play", es: "Juego de la Bóveda de Volumen" },
+        round: { en: "Round", es: "Ronda" },
+        score: { en: "Score", es: "Puntos" },
+        targetVolume: { en: "Target volume", es: "Volumen meta" },
+        cuUnits: { en: "cubic units", es: "unidades cúbicas" },
+        kbdTip: {
+          en: "Keyboard: Tab to a + or − button, then Enter. Or press L, W, H to pick an edge and ↑ ↓ to change it.",
+          es: "Teclado: usa Tab hasta un botón + o − y pulsa Enter. O pulsa L, W, H para elegir una arista y ↑ ↓ para cambiarla.",
+        },
+        seal: { en: "🔓 Seal the vault", es: "🔓 Sellar la bóveda" },
+        resultTitle: { en: "Vaults sealed", es: "Bóvedas selladas" },
+        sealedCount: { en: "Vaults sealed", es: "Bóvedas selladas" },
+        firstTry: { en: "Sealed on the first try", es: "Selladas al primer intento" },
+        newHigh: { en: "★ New high score!", es: "★ ¡Nuevo récord!" },
+        playAgain: { en: "Play again", es: "Jugar otra vez" },
+        practiceMisses: { en: "Practice the misses", es: "Practicar los errores" },
+        langBtn: { en: "Español", es: "English" },
+        length: { en: "Length (l)", es: "Largo (l)" },
+        width: { en: "Width (w)", es: "Ancho (a)" },
+        height: { en: "Height (h)", es: "Altura (h)" },
+        given: { en: "given", es: "dato" },
+        lockedEdge: { en: "{name} is given: {v}", es: "{name} es un dato: {v}" },
+        dec: { en: "Decrease {name}", es: "Disminuir {name}" },
+        inc: { en: "Increase {name}", es: "Aumentar {name}" },
+        lName: { en: "length", es: "el largo" },
+        wName: { en: "width", es: "el ancho" },
+        hName: { en: "height", es: "la altura" },
+        level: { en: "Level {n}", es: "Nivel {n}" },
+        helpTier: { en: "Help used: {n} of 3", es: "Ayuda usada: {n} de 3" },
+        noHelp: { en: "No help used", es: "Sin ayuda" },
+        kindOpen: { en: "Open build · any box works", es: "Construcción libre · sirve cualquier caja" },
+        kindFloor: { en: "Locked floor · find the height", es: "Piso fijo · encuentra la altura" },
+        kindHeight: { en: "Locked height · build the floor", es: "Altura fija · construye el piso" },
+        kindFrac: { en: "Fractional edges · ½-unit steps", es: "Aristas fraccionarias · pasos de ½" },
+        promptOpen: {
+          en: "Set length, width, and height so the box holds exactly the target. Multiply to check before you seal.",
+          es: "Ajusta el largo, el ancho y la altura para que la caja tenga justo el volumen meta. Multiplica para comprobar antes de sellar.",
+        },
+        promptFloor: {
+          en: "The floor is locked at {l} × {w}. How many layers (the height) give the target volume?",
+          es: "El piso está fijo en {l} × {a}. ¿Cuántas capas (la altura) dan el volumen meta?",
+        },
+        promptHeight: {
+          en: "The height is locked at {h} layers. Build a floor (length × width) so the vault holds the target.",
+          es: "La altura está fija en {h} capas. Construye un piso (largo × ancho) para que la bóveda tenga el volumen meta.",
+        },
+        promptFrac: {
+          en: "Two edges are locked. Set the {name} in ½-unit steps so the volume is exactly the target.",
+          es: "Dos aristas están fijas. Ajusta {name} en pasos de ½ para que el volumen sea justo la meta.",
+        },
+        hintBronze: {
+          en: "Tip: count the cubes in one layer (length × width), then multiply by the number of layers.",
+          es: "Consejo: cuenta los cubos de una capa (largo × ancho) y multiplica por el número de capas.",
+        },
+        hintSilver: {
+          en: "Tip: V = B × h. B is the area of the floor — the cubes in one layer.",
+          es: "Consejo: V = B × h. B es el área del piso: los cubos de una capa.",
+        },
+        hintGold: {
+          en: "Tip: a ½-unit cube is ½ × ½ × ½ = ⅛ cubic unit. Multiply fractions and mixed numbers carefully.",
+          es: "Consejo: un cubo de ½ unidad mide ½ × ½ × ½ = ⅛ de unidad cúbica. Multiplica fracciones y números mixtos con cuidado.",
+        },
+        layerNote: {
+          en: "One layer holds {l} × {w} = {b} cubes · {h} layers",
+          es: "Una capa tiene {l} × {w} = {b} cubos · {h} capas",
+        },
+        floorNote: {
+          en: "Floor B = {l} × {w} = {b} square units (given)",
+          es: "Piso B = {l} × {w} = {b} unidades cuadradas (dato)",
+        },
+        floorOpen: { en: "Floor B = {l} × {w}", es: "Piso B = {l} × {w}" },
+        halfCube: {
+          en: "Each small cube is ½ × ½ × ½ = ⅛ cubic unit.",
+          es: "Cada cubo pequeño mide ½ × ½ × ½ = ⅛ de unidad cúbica.",
+        },
+        meterOn: { en: "Volume meter on", es: "Medidor de volumen encendido" },
+        sealedMsg: {
+          en: "Sealed! {expr} = {v} cubic units 🔒",
+          es: "¡Sellada! {expr} = {v} unidades cúbicas 🔒",
+        },
+        notYet: { en: "Not yet.", es: "Todavía no." },
+        misAdd: {
+          en: "You ADDED the edges ({l} + {w} + {h}). Volume MULTIPLIES them: l × w × h.",
+          es: "SUMASTE las aristas ({l} + {w} + {h}). El volumen las MULTIPLICA: l × a × h.",
+        },
+        misSA: {
+          en: "That number is the surface area — the outside of the box. Volume counts the cubes INSIDE.",
+          es: "Ese número es el área de superficie: el exterior de la caja. El volumen cuenta los cubos de ADENTRO.",
+        },
+        misOneEdge: {
+          en: "You used only one edge of the floor. Each layer holds the WHOLE floor: B = {l} × {w}.",
+          es: "Usaste solo una arista del piso. Cada capa tiene TODO el piso: B = {l} × {w}.",
+        },
+        t1open: {
+          en: "Method: V = length × width × height. Find the cubes in one layer, then multiply by the number of layers.",
+          es: "Método: V = largo × ancho × altura. Halla los cubos de una capa y multiplica por el número de capas.",
+        },
+        t1floor: {
+          en: "Method: V = B × h. Each layer holds B = {b} cubes. How many layers of {b} make {t}?",
+          es: "Método: V = B × h. Cada capa tiene B = {b} cubos. ¿Cuántas capas de {b} forman {t}?",
+        },
+        t1height: {
+          en: "Method: V = B × h. With {h} layers, each layer must hold {t} ÷ {h} cubes. Pick a length and width for that floor.",
+          es: "Método: V = B × h. Con {h} capas, cada capa debe tener {t} ÷ {h} cubos. Elige un largo y un ancho para ese piso.",
+        },
+        t1frac: {
+          en: "Method: multiply all three edges. Rename mixed numbers as fractions first (2½ = 5/2).",
+          es: "Método: multiplica las tres aristas. Primero escribe los números mixtos como fracciones (2½ = 5/2).",
+        },
+        t2: {
+          en: "Your box: floor {l} × {w} = {b}, times {h} layers = {v} cubic units. The vault needs {t} — that is too {dir}.",
+          es: "Tu caja: piso {l} × {w} = {b}, por {h} capas = {v} unidades cúbicas. La bóveda necesita {t}: es demasiado {dir}.",
+        },
+        tooMany: { en: "much", es: "grande" },
+        tooFew: { en: "little", es: "pequeño" },
+        t3open: {
+          en: "The volume meter is on now. One box that works: {l} × {w} × {h} = {t}. Build it (or another one) and seal.",
+          es: "El medidor de volumen ya está encendido. Una caja que funciona: {l} × {w} × {h} = {t}. Constrúyela (u otra) y sella.",
+        },
+        t3floor: {
+          en: "The volume meter is on now. {b} × {h} = {t}, so the height is {h} layers.",
+          es: "El medidor de volumen ya está encendido. {b} × {h} = {t}, así que la altura es {h} capas.",
+        },
+        t3height: {
+          en: "The volume meter is on now. Each layer needs {t} ÷ {h} = {b} cubes — for example {l} × {w}.",
+          es: "El medidor de volumen ya está encendido. Cada capa necesita {t} ÷ {h} = {b} cubos; por ejemplo {l} × {w}.",
+        },
+        t3frac: {
+          en: "The volume meter is on now. {expr} = {t}, so the {name} is {v}.",
+          es: "El medidor de volumen ya está encendido. {expr} = {t}, así que {name} es {v}.",
+        },
+        roundSay: {
+          en: "Round {n} of {total}. Target volume {t} cubic units. {prompt}",
+          es: "Ronda {n} de {total}. Volumen meta {t} unidades cúbicas. {prompt}",
+        },
+        dimSay: { en: "{name} {v}.", es: "{name} {v}." },
+        canvasLabel: {
+          en: "A rectangular prism {l} long, {w} wide, and {h} tall, built from unit cubes.",
+          es: "Un prisma rectangular de {l} de largo, {w} de ancho y {h} de alto, hecho de cubos unitarios.",
+        },
+        allSealed: {
+          en: "All vaults sealed. Score {s}, {n} stars.",
+          es: "Todas las bóvedas selladas. {s} puntos, {n} estrellas.",
+        },
+        resultNoteAll: {
+          en: "Every vault on the first try — you multiplied like an engineer.",
+          es: "Todas las bóvedas al primer intento: multiplicaste como un ingeniero.",
+        },
+        resultNoteSome: {
+          en: "Practice the misses to rebuild those vaults with new confidence.",
+          es: "Practica los errores para reconstruir esas bóvedas con más confianza.",
+        },
+        starsSr: { en: "{n} of 3 stars", es: "{n} de 3 estrellas" },
+      };
+      function t(key, vars) {
+        const entry = TX[key];
+        let s = entry ? entry[lang()] || entry.en : key;
+        if (vars) s = s.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m));
+        return s;
+      }
 
       const VOCAB = [
         {
-          term: "volume",
-          defn: "The amount of space inside a 3-D shape, measured in cubic units (how many unit cubes fit inside).",
+          term: { en: "volume", es: "volumen" },
+          defn: {
+            en: "The amount of space inside a 3-D shape, measured in cubic units (how many unit cubes fit inside).",
+            es: "La cantidad de espacio dentro de una figura 3-D, medida en unidades cúbicas (cuántos cubos unitarios caben adentro).",
+          },
         },
         {
-          term: "rectangular prism",
-          defn: "A 3-D box shape with 6 rectangular faces, like a cereal box or a shipping crate.",
+          term: { en: "rectangular prism", es: "prisma rectangular" },
+          defn: {
+            en: "A 3-D box shape with 6 rectangular faces, like a cereal box or a shipping crate.",
+            es: "Una figura 3-D como una caja, con 6 caras rectangulares, como una caja de cereal.",
+          },
         },
         {
-          term: "cubic unit",
-          defn: "A cube that is 1 unit long, 1 unit wide, and 1 unit tall. We count volume in cubic units.",
+          term: { en: "cubic unit", es: "unidad cúbica" },
+          defn: {
+            en: "A cube that is 1 unit long, 1 unit wide, and 1 unit tall. We count volume in cubic units.",
+            es: "Un cubo de 1 unidad de largo, 1 de ancho y 1 de alto. Medimos el volumen en unidades cúbicas.",
+          },
         },
         {
-          term: "V = l × w × h",
-          defn: "To find a box's volume, multiply its length by its width by its height.",
+          term: { en: "base area (B)", es: "área de la base (B)" },
+          defn: {
+            en: "The area of the floor of the prism: B = l × w. It is the number of cubes in one layer.",
+            es: "El área del piso del prisma: B = l × a. Es el número de cubos en una capa.",
+          },
+        },
+        {
+          term: { en: "V = l × w × h = B × h", es: "V = l × a × h = B × h" },
+          defn: {
+            en: "Multiply length × width × height — or multiply the base area by the height (the number of layers).",
+            es: "Multiplica largo × ancho × altura, o multiplica el área de la base por la altura (el número de capas).",
+          },
         },
       ];
 
       const TIERS = {
         1: {
-          label: "Level 1",
-          sub: "Support",
-          name: "Bronze Vault",
-          desc: "Smaller targets · dimensions up to 6",
+          label: { en: "Level 1 · Support", es: "Nivel 1 · Apoyo" },
+          name: { en: "Bronze Vault", es: "Bóveda de Bronce" },
+          desc: {
+            en: "Lesson 5-5 · build any box with the volume · edges up to 6",
+            es: "Lección 5-5 · construye cualquier caja con el volumen · aristas hasta 6",
+          },
         },
         2: {
-          label: "Level 2",
-          sub: "On level",
-          name: "Silver Vault",
-          desc: "Bigger targets · dimensions up to 9",
+          label: { en: "Level 2 · On level", es: "Nivel 2 · A nivel" },
+          name: { en: "Silver Vault", es: "Bóveda de Plata" },
+          desc: {
+            en: "Lesson 5-5 · V = B × h with a locked floor or height",
+            es: "Lección 5-5 · V = B × h con piso o altura fijos",
+          },
         },
         3: {
-          label: "Level 3",
-          sub: "Enrichment",
-          name: "Gold Vault",
-          desc: "Large targets · think in factors",
+          label: { en: "Level 3 · Enrichment", es: "Nivel 3 · Enriquecimiento" },
+          name: { en: "Gold Vault", es: "Bóveda de Oro" },
+          desc: {
+            en: "Lesson 5-10 · fractional edges in ½-unit steps",
+            es: "Lección 5-10 · aristas fraccionarias en pasos de ½",
+          },
         },
       };
+      const tierText = (obj) => obj[lang()] || obj.en;
 
-      // Curated target volumes (each is reachable with the level's dimension
-      // cap and has several whole-number l × w × h shapes).
-      const TARGETS = {
-        1: [12, 16, 18, 20, 24],
-        2: [36, 40, 48, 54, 60, 72],
-        3: [64, 72, 96, 120, 144],
-      };
+      // ── VV_PURE_BEGIN — round generation, number formatting, judging ──
+      // No DOM in this block (kept pure so it can be unit-run under node).
+      const randInt = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+      const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+      function shuffle(a) {
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = (Math.random() * (i + 1)) | 0;
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+      // Volumes here are always whole multiples of 1/8 (edges move in ½ steps),
+      // so compare in eighths to stay exact.
+      const eighths = (x) => Math.round(x * 8);
+      const GLYPH = { 1: "⅛", 2: "¼", 3: "⅜", 4: "½", 5: "⅝", 6: "¾", 7: "⅞" };
+      function fmt(x) {
+        const e = eighths(x);
+        const whole = Math.floor(e / 8);
+        const rem = e % 8;
+        if (!rem) return String(whole);
+        return (whole ? String(whole) : "") + GLYPH[rem];
+      }
+      const BRONZE_TARGETS = [12, 16, 18, 20, 24, 30, 36];
+      const GOLD_EDGES = [1, 1.5, 2, 2.5, 3, 4];
+
+      function makeRound(level, kind) {
+        if (level === 1) {
+          return { kind: "open", target: kind, given: {}, free: DIMS.slice(), step: 1, max: 6 };
+        }
+        if (level === 2) {
+          if (kind === "floor") {
+            const l = randInt(2, 6),
+              w = randInt(2, 5),
+              h = randInt(2, 9);
+            return {
+              kind: "floor",
+              target: l * w * h,
+              given: { l, w },
+              free: ["h"],
+              solution: { l, w, h },
+              step: 1,
+              max: 9,
+            };
+          }
+          const h = randInt(2, 5);
+          const l = randInt(2, 6),
+            w = randInt(2, 6);
+          return {
+            kind: "height",
+            target: l * w * h,
+            given: { h },
+            free: ["l", "w"],
+            solution: { l, w, h },
+            step: 1,
+            max: 9,
+          };
+        }
+        // Gold — at least one fractional edge; the student sets one edge.
+        let l, w, h;
+        do {
+          l = pick(GOLD_EDGES);
+          w = pick(GOLD_EDGES);
+          h = pick(GOLD_EDGES);
+        } while (Number.isInteger(l) && Number.isInteger(w) && Number.isInteger(h));
+        const sol = { l, w, h };
+        // The edge to find never starts out already correct (steppers start at 1).
+        const freeKey = pick(DIMS.filter((k) => sol[k] !== 1));
+        const given = {};
+        DIMS.forEach((k) => {
+          if (k !== freeKey) given[k] = sol[k];
+        });
+        return {
+          kind: "frac",
+          target: l * w * h,
+          given,
+          free: [freeKey],
+          solution: sol,
+          step: 0.5,
+          max: 6,
+        };
+      }
+      function buildRounds(level) {
+        if (level === 1)
+          return shuffle(BRONZE_TARGETS.slice())
+            .slice(0, ROUNDS)
+            .map((n) => makeRound(1, n));
+        if (level === 2)
+          return shuffle(["floor", "height", "floor", "height"]).map((k) => makeRound(2, k));
+        return Array.from({ length: ROUNDS }, () => makeRound(3));
+      }
+      // A whole-number box for an open round (shown only at help tier 3).
+      function openSolution(target, max) {
+        for (let h = Math.min(max, target); h >= 1; h--) {
+          if (target % h) continue;
+          const B = target / h;
+          for (let l = Math.min(max, B); l >= 1; l--) {
+            if (B % l === 0 && B / l <= max && h > 1 && l > 1 && B / l > 1)
+              return { l, w: B / l, h };
+          }
+        }
+        return { l: 1, w: 1, h: target };
+      }
+      // Misconception detectors (in eighths, so fractions compare exactly).
+      function misconception(round, d) {
+        const t8 = eighths(round.target);
+        if (eighths(d.l + d.w + d.h) === t8) return "misAdd";
+        if (eighths(2 * (d.l * d.w + d.l * d.h + d.w * d.h)) === t8) return "misSA";
+        if (round.kind === "floor" && (eighths(d.l * d.h) === t8 || eighths(d.w * d.h) === t8))
+          return "misOneEdge";
+        return null;
+      }
+      // ── VV_PURE_END ──
 
       // ── Tiny WebAudio SFX ──
       const SFX = {
@@ -662,19 +1016,17 @@
           if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
           if (!this.ctx)
             try {
-              this.ctx = new (
-                window.AudioContext || window.webkitAudioContext
-              )();
+              this.ctx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {}
         },
-        play(t, f, d, v = 0.2) {
+        play(type, f, d, v = 0.2) {
           if (window.__flagshipMuted) return;
           if (!this.ctx) return;
           try {
             const c = this.ctx,
               o = c.createOscillator(),
               g = c.createGain();
-            o.type = t;
+            o.type = type;
             o.frequency.value = f;
             g.gain.setValueAtTime(v, c.currentTime);
             g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + d);
@@ -700,15 +1052,18 @@
       // ── State ──
       const S = {
         level: 1,
-        maxdim: 6,
+        maxdim: 6, // largest edge the current round's steppers allow
         score: 0,
         round: 0,
         mistakes: 0,
         sealed: 0,
+        firstTry: 0,
         correctActions: 0,
         totalActions: 0,
         targets: [],
+        misses: [],
         cur: null,
+        sel: "l",
         l: 1,
         w: 1,
         h: 1,
@@ -723,15 +1078,17 @@
         }
       };
       function show(screen) {
-        document
-          .querySelectorAll(".screen")
-          .forEach((s) => s.classList.remove("on"));
+        document.querySelectorAll(".screen").forEach((s) => s.classList.remove("on"));
         $("screen-" + screen).classList.add("on");
       }
-      let studioTrack = null, studioComplete = null;
+      let studioTrack = null,
+        studioComplete = null;
       window.__flagshipState = S;
       window.__flagshipStart = startGame;
-      window.__flagshipOnFeedback = (track, complete) => { studioTrack = track; studioComplete = complete; };
+      window.__flagshipOnFeedback = (track, complete) => {
+        studioTrack = track;
+        studioComplete = complete;
+      };
       function flash(msg, cls) {
         if (studioTrack && (cls === "good" || cls === "bad")) studioTrack(cls === "good", msg);
         const f = $("feedback");
@@ -739,15 +1096,11 @@
         f.className = "feedback " + cls;
         srSay(msg);
       }
-      function shuffle(a) {
-        for (let i = a.length - 1; i > 0; i--) {
-          const j = (Math.random() * (i + 1)) | 0;
-          [a[i], a[j]] = [a[j], a[i]];
-        }
-        return a;
-      }
+      const dimName = (k) => t(k + "Name");
+      const dimLabel = (k) => t({ l: "length", w: "width", h: "height" }[k]);
+      const meterOn = () => !!(S.cur && (S.cur.meter || S.roundLocked));
 
-      // ── Isometric gridded prism ──
+      // ── Isometric gridded prism (grid every ½ unit on Gold) ──
       function draw() {
         const cv = $("prism"),
           ctx = cv.getContext("2d");
@@ -755,7 +1108,7 @@
         const l = S.l,
           w = S.w,
           h = S.h;
-        // unit axis vectors (2:1 isometric); scaled to fit below
+        const g = S.cur && S.cur.step === 0.5 ? 0.5 : 1;
         const eX = { x: 1, y: 0.5 },
           eY = { x: -1, y: 0.5 },
           eZ = { x: 0, y: -1.1 };
@@ -763,148 +1116,194 @@
           x: a * eX.x + b * eY.x + c * eZ.x,
           y: a * eX.y + b * eY.y + c * eZ.y,
         });
-        // bounding box of the 8 corners to auto-fit
         const corners = [];
-        for (const a of [0, l])
-          for (const b of [0, w])
-            for (const c of [0, h]) corners.push(P(a, b, c));
+        for (const a of [0, l]) for (const b of [0, w]) for (const c of [0, h]) corners.push(P(a, b, c));
         const xs = corners.map((p) => p.x),
           ys = corners.map((p) => p.y);
         const minx = Math.min(...xs),
           maxx = Math.max(...xs),
           miny = Math.min(...ys),
           maxy = Math.max(...ys);
-        const pad = 28;
+        const pad = 40;
         const scale = Math.min(
           (cv.width - 2 * pad) / (maxx - minx || 1),
           (cv.height - 2 * pad) / (maxy - miny || 1),
+          60,
         );
-        const ox =
-          pad + (cv.width - 2 * pad - (maxx - minx) * scale) / 2 - minx * scale;
-        const oy =
-          pad +
-          (cv.height - 2 * pad - (maxy - miny) * scale) / 2 -
-          miny * scale;
+        const ox = pad + (cv.width - 2 * pad - (maxx - minx) * scale) / 2 - minx * scale;
+        const oy = pad + (cv.height - 2 * pad - (maxy - miny) * scale) / 2 - miny * scale;
         const T = (p) => ({ x: ox + p.x * scale, y: oy + p.y * scale });
-        const sX = { x: eX.x * scale, y: eX.y * scale },
-          sY = { x: eY.x * scale, y: eY.y * scale },
-          sZ = { x: eZ.x * scale, y: eZ.y * scale };
+        const sv = (e) => ({ x: e.x * scale, y: e.y * scale });
 
-        function face(originPt, e1, n, e2, m, fill) {
+        function face(originPt, e1, len1, e2, len2, fill) {
           const o = T(originPt);
-          const corner = (i, j) => ({
-            x: o.x + e1.x * i + e2.x * j,
-            y: o.y + e1.y * i + e2.y * j,
-          });
-          // fill
-          ctx.beginPath();
-          ctx.moveTo(o.x, o.y);
-          let p = corner(n, 0);
-          ctx.lineTo(p.x, p.y);
-          p = corner(n, m);
-          ctx.lineTo(p.x, p.y);
-          p = corner(0, m);
-          ctx.lineTo(p.x, p.y);
-          ctx.closePath();
+          const a = sv(e1),
+            b = sv(e2);
+          const corner = (i, j) => ({ x: o.x + a.x * i + b.x * j, y: o.y + a.y * i + b.y * j });
+          const quad = () => {
+            ctx.beginPath();
+            ctx.moveTo(o.x, o.y);
+            [corner(len1, 0), corner(len1, len2), corner(0, len2)].forEach((p) => ctx.lineTo(p.x, p.y));
+            ctx.closePath();
+          };
+          quad();
           ctx.fillStyle = fill;
           ctx.fill();
-          // unit grid
-          ctx.strokeStyle = "rgba(6,32,44,0.4)";
+          ctx.strokeStyle = "rgba(6,32,44,0.45)";
           ctx.lineWidth = 1;
-          for (let i = 0; i <= n; i++) {
-            const a = corner(i, 0),
-              b = corner(i, m);
+          for (let i = 0; i <= len1 + 1e-9; i += g) {
+            const p = corner(i, 0),
+              q = corner(i, len2);
             ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(q.x, q.y);
             ctx.stroke();
           }
-          for (let j = 0; j <= m; j++) {
-            const a = corner(0, j),
-              b = corner(n, j);
+          for (let j = 0; j <= len2 + 1e-9; j += g) {
+            const p = corner(0, j),
+              q = corner(len1, j);
             ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(q.x, q.y);
             ctx.stroke();
           }
-          // outline
           ctx.strokeStyle = "#06202c";
           ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.moveTo(o.x, o.y);
-          let q = corner(n, 0);
-          ctx.lineTo(q.x, q.y);
-          q = corner(n, m);
-          ctx.lineTo(q.x, q.y);
-          q = corner(0, m);
-          ctx.lineTo(q.x, q.y);
-          ctx.closePath();
+          quad();
           ctx.stroke();
         }
+        face(P(l, 0, 0), eY, w, eZ, h, "#4f86b0");
+        face(P(0, w, 0), eX, l, eZ, h, "#6ba6cf");
+        face(P(0, 0, h), eX, l, eY, w, S.cur && S.cur.given.l != null && S.cur.given.w != null ? "#ffe2a6" : "#bfe6ff");
 
-        // right face (a = l): plane spanned by Y and Z
-        face(P(l, 0, 0), sY, w, sZ, h, "#4f86b0");
-        // left face (b = w): plane spanned by X and Z
-        face(P(0, w, 0), sX, l, sZ, h, "#6ba6cf");
-        // top face (c = h): plane spanned by X and Y — drawn last
-        face(P(0, 0, h), sX, l, sY, w, "#bfe6ff");
+        // Edge labels so the picture and the formula use the same numbers.
+        ctx.font = "700 15px 'Segoe UI', system-ui, sans-serif";
+        ctx.textBaseline = "middle";
+        const label = (pt, dx, dy, text, align) => {
+          const p = T(pt);
+          ctx.textAlign = align;
+          ctx.lineWidth = 4;
+          ctx.strokeStyle = "#0b2330";
+          ctx.strokeText(text, p.x + dx, p.y + dy);
+          ctx.fillStyle = "#ffd98a";
+          ctx.fillText(text, p.x + dx, p.y + dy);
+        };
+        label(P(l / 2, w, 0), -8, 14, "l = " + fmt(l), "right");
+        label(P(l, w / 2, 0), 8, 14, (lang() === "es" ? "a = " : "w = ") + fmt(w), "left");
+        label(P(0, w, h / 2), -10, 0, "h = " + fmt(h), "right");
+        cv.setAttribute("aria-label", t("canvasLabel", { l: fmt(l), w: fmt(w), h: fmt(h) }));
+      }
+
+      function exprFor(d) {
+        return `${fmt(d.l)} × ${fmt(d.w)} × ${fmt(d.h)}`;
       }
 
       function updateFormula() {
-        $("v-l").textContent = S.l;
-        $("v-w").textContent = S.w;
-        $("v-h").textContent = S.h;
+        DIMS.forEach((k) => {
+          const el = $("v-" + k);
+          if (el) el.textContent = fmt(S[k]);
+        });
+        const r = S.cur;
+        if (!r) return;
         const v = S.l * S.w * S.h;
-        const hit = S.cur && v === S.cur.target ? " hit" : "";
-        $("formula").innerHTML =
-          `V = ${S.l} × ${S.w} × ${S.h} = <b class="${hit.trim()}">${v}</b> cubic units`;
+        const hit = eighths(v) === eighths(r.target);
+        const tail = meterOn()
+          ? ` = <b class="${hit ? "hit" : ""}">${fmt(v)}</b>`
+          : ` = <b>?</b>`;
+        const head = r.kind === "floor" || r.kind === "height" ? "V = B × h = " : "V = ";
+        const body =
+          r.kind === "floor"
+            ? `${fmt(S.l * S.w)} × ${fmt(S.h)}`
+            : r.kind === "height"
+              ? `(${fmt(S.l)} × ${fmt(S.w)}) × ${fmt(S.h)}`
+              : exprFor(S);
+        $("formula").innerHTML = head + body + tail;
+        let note = "";
+        if (r.kind === "open") note = t("layerNote", { l: S.l, w: S.w, b: S.l * S.w, h: S.h });
+        else if (r.kind === "floor")
+          note = t("floorNote", { l: fmt(r.given.l), w: fmt(r.given.w), b: fmt(r.given.l * r.given.w) });
+        else if (r.kind === "height") note = t("floorOpen", { l: fmt(S.l), w: fmt(S.w) });
+        else note = t("halfCube");
+        if (meterOn() && !S.roundLocked) note += " · " + t("meterOn");
+        $("layer-note").textContent = note;
+      }
+
+      function renderSteppers() {
+        const r = S.cur;
+        const box = $("steppers");
+        box.innerHTML = DIMS.map((k) => {
+          const given = r && r.given[k] != null;
+          if (given)
+            return `<div class="stepper locked" data-dim-box="${k}"><span class="slabel">${dimLabel(k)}</span>
+              <div class="srow"><span class="sval" id="v-${k}" aria-label="${t("lockedEdge", { name: dimName(k), v: fmt(r.given[k]) })}">${fmt(r.given[k])}</span></div>
+              <span class="given-tag">🔒 ${t("given")}</span></div>`;
+          return `<div class="stepper${S.sel === k ? " sel" : ""}" data-dim-box="${k}"><span class="slabel">${dimLabel(k)}</span>
+            <div class="srow">
+              <button type="button" class="sbtn" data-dim="${k}" data-d="-1" aria-label="${t("dec", { name: dimName(k) })}">−</button>
+              <span class="sval" id="v-${k}" aria-live="off">${fmt(S[k])}</span>
+              <button type="button" class="sbtn" data-dim="${k}" data-d="1" aria-label="${t("inc", { name: dimName(k) })}">+</button>
+            </div></div>`;
+        }).join("");
+        box.querySelectorAll(".sbtn").forEach((b) =>
+          b.addEventListener("click", () => {
+            S.sel = b.dataset.dim;
+            markSel();
+            setDim(b.dataset.dim, Number(b.dataset.d));
+          }),
+        );
+      }
+      function markSel() {
+        document.querySelectorAll("[data-dim-box]").forEach((el) =>
+          el.classList.toggle("sel", el.dataset.dimBox === S.sel && !el.classList.contains("locked")),
+        );
       }
 
       // ── Vocab + levels ──
       function renderVocab() {
         $("vocab-list").innerHTML = VOCAB.map(
           (v) =>
-            `<div class="vrow"><span class="vterm">${v.term}</span><span class="vdef">${v.defn}</span></div>`,
+            `<div class="vrow"><span class="vterm">${tierText(v.term)}</span><span class="vdef">${tierText(v.defn)}</span></div>`,
         ).join("");
       }
       function renderLevels() {
         $("level-list").innerHTML = Object.keys(TIERS)
           .map((k) => {
-            const t = TIERS[k];
-            return `<button class="level-pick" data-level="${k}">
-            <span class="tag">${t.label} · ${t.sub}</span>
-            <b>${t.name}</b>
-            <span class="desc">${t.desc}</span>
+            const tr = TIERS[k];
+            return `<button type="button" class="level-pick" data-level="${k}">
+            <span class="tag">${tierText(tr.label)}</span>
+            <b>${tierText(tr.name)}</b>
+            <span class="desc">${tierText(tr.desc)}</span>
           </button>`;
           })
           .join("");
         $("level-list")
           .querySelectorAll("[data-level]")
-          .forEach((el) =>
-            el.addEventListener("click", () =>
-              startGame(Number(el.dataset.level)),
-            ),
-          );
+          .forEach((el) => el.addEventListener("click", () => startGame(Number(el.dataset.level))));
       }
 
       // ── Game flow ──
       let pendingRound = null;
-      function scheduleRound(fn, delay) { clearTimeout(pendingRound); pendingRound = setTimeout(fn, delay); }
-      function startGame(level) {
+      function scheduleRound(fn, delay) {
+        clearTimeout(pendingRound);
+        pendingRound = setTimeout(fn, delay);
+      }
+      function startGame(level, replay) {
         clearTimeout(pendingRound);
         SFX.init();
-        S.level = level;
-        S.maxdim = level === 1 ? 6 : 9;
+        S.level = Math.max(1, Math.min(3, Number(level) || 1));
         S.score = 0;
         S.round = 0;
         S.mistakes = 0;
         S.sealed = 0;
+        S.firstTry = 0;
         S.correctActions = 0;
         S.totalActions = 0;
-        S.targets = shuffle((TARGETS[level] || TARGETS[1]).slice())
-          .slice(0, ROUNDS)
-          .map((n) => ({ target: n }));
-        $("hud-total").textContent = ROUNDS;
+        S.targets =
+          replay && replay.length
+            ? replay.map((r) => Object.assign(JSON.parse(JSON.stringify(r)), { meter: false }))
+            : buildRounds(S.level);
+        S.misses = [];
+        $("hud-total").textContent = S.targets.length;
         show("play");
         loadRound(0);
       }
@@ -914,27 +1313,54 @@
         S.cur = S.targets[i];
         S.roundMisses = 0;
         S.roundLocked = false;
-        S.l = 1;
-        S.w = 1;
-        S.h = 1;
-        $("hud-round").textContent = i + 1;
-        $("hud-score").textContent = S.score;
-        $("t-vol").textContent = S.cur.target;
+        S.cur.meter = false;
+        S.maxdim = S.cur.max;
+        DIMS.forEach((k) => {
+          S[k] = S.cur.given[k] != null ? S.cur.given[k] : 1;
+        });
+        S.sel = S.cur.free[0];
+        renderSteppers();
+        renderRoundText();
         $("feedback").textContent = "";
         $("feedback").className = "feedback";
-        $("hint").textContent =
-          S.level === 1
-            ? "Use − and + to set length, width, and height. Watch the volume — seal when it equals the target."
-            : "Find a length × width × height that equals the target. More than one box works!";
         draw();
         updateFormula();
         srSay(
-          `Round ${i + 1}. Build a vault of exactly ${S.cur.target} cubic units.`,
+          t("roundSay", {
+            n: i + 1,
+            total: S.targets.length,
+            t: fmt(S.cur.target),
+            prompt: promptText(),
+          }),
         );
+      }
+      function promptText() {
+        const r = S.cur;
+        if (!r) return "";
+        if (r.kind === "open") return t("promptOpen");
+        if (r.kind === "floor") return t("promptFloor", { l: r.given.l, w: r.given.w, a: r.given.w });
+        if (r.kind === "height") return t("promptHeight", { h: r.given.h });
+        return t("promptFrac", { name: dimName(r.free[0]) });
+      }
+      function renderRoundText() {
+        const r = S.cur;
+        if (!r) return;
+        $("hud-round").textContent = S.round + 1;
+        $("hud-score").textContent = S.score;
+        $("hud-level").textContent = t("level", { n: S.level }) + " · " + tierText(TIERS[S.level].name);
+        $("hud-help").textContent = S.roundMisses ? t("helpTier", { n: Math.min(3, S.roundMisses) }) : t("noHelp");
+        $("t-vol").textContent = fmt(r.target);
+        $("t-kind").textContent = t(
+          { open: "kindOpen", floor: "kindFloor", height: "kindHeight", frac: "kindFrac" }[r.kind],
+        );
+        $("t-prompt").textContent = promptText();
+        $("hint").textContent = t(S.level === 1 ? "hintBronze" : S.level === 2 ? "hintSilver" : "hintGold");
       }
 
       function setDim(dim, delta) {
-        const v = Math.max(1, Math.min(S.maxdim, S[dim] + delta));
+        const r = S.cur;
+        if (!r || S.roundLocked || r.given[dim] != null) return;
+        const v = Math.max(r.step, Math.min(r.max, S[dim] + delta * r.step));
         if (v === S[dim]) return;
         S[dim] = v;
         SFX.tick();
@@ -942,73 +1368,100 @@
         $("feedback").className = "feedback";
         draw();
         updateFormula();
-        const name = dim === "l" ? "Length" : dim === "w" ? "Width" : "Height";
-        srSay(`${name} ${v}. Volume ${S.l * S.w * S.h}.`);
+        srSay(t("dimSay", { name: dimLabel(dim), v: fmt(v) }));
       }
 
       function seal() {
-        if (!S.cur || S.roundLocked) return;
+        const r = S.cur;
+        if (!r || S.roundLocked) return;
+        SFX.init();
         S.totalActions++;
-        const v = S.l * S.w * S.h;
-        if (v === S.cur.target) {
+        const d = { l: S.l, w: S.w, h: S.h };
+        const v = d.l * d.w * d.h;
+        if (eighths(v) === eighths(r.target)) {
           S.roundLocked = true;
           S.sealed++;
           S.correctActions++;
-          window.FlagshipAdventure?.record({ firstTry: S.roundMisses === 0, kind: "volume" });
-          // Full points unaided; fewer after a miss (help was shown).
-          S.score += S.roundMisses ? 15 : 25;
+          const first = S.roundMisses === 0;
+          if (first) S.firstTry++;
+          window.FlagshipAdventure?.record({ firstTry: first, kind: "volume-" + r.kind });
+          // Full points unaided; fewer as more help was earned.
+          S.score += [25, 15, 10][S.roundMisses] ?? 5;
           $("hud-score").textContent = S.score;
           SFX.win();
-          flash(
-            `Sealed! ${S.l} × ${S.w} × ${S.h} = ${v} cubic units 🔒`,
-            "good",
-          );
+          updateFormula();
+          flash(t("sealedMsg", { expr: exprFor(d), v: fmt(v) }), "good");
           if (window.GameFX && GameFX.celebrate)
             try {
               GameFX.celebrate($("feedback"));
             } catch (e) {}
-          if (S.round + 1 >= ROUNDS) scheduleRound(() => endGame(true), 1500);
-          else scheduleRound(() => loadRound(S.round + 1), 1500);
-        } else {
-          S.mistakes++;
-          S.roundMisses = (S.roundMisses || 0) + 1;
-          SFX.bad();
-          const t = S.cur.target;
-          const unitWord = v === 1 ? "cubic unit" : "cubic units";
-          // Help ladder: Tier 1 names the method; Tier 2 gives a concrete
-          // first step without building the box for the student.
-          let step;
-          if (S.roundMisses === 1) {
-            step = `Volume = length × width × height. Find three numbers (each ${S.maxdim} or less) that multiply to ${t}.`;
-          } else {
-            let h = 1;
-            for (let k = Math.min(S.maxdim, t); k >= 1; k--) {
-              const rest = t / k;
-              if (Number.isInteger(rest) && rest > 1) {
-                let ok = false;
-                for (let a = 1; a <= S.maxdim; a++) if (rest % a === 0 && rest / a <= S.maxdim) ok = true;
-                if (ok) { h = k; break; }
-              }
-            }
-            step = `Try height ${h}: then length × width must be ${t} ÷ ${h} = ${t / h}. Which two numbers make ${t / h}?`;
-          }
-          flash(
-            `That vault holds ${v} ${unitWord} — you need ${t}. ${step}`,
-            "bad",
-          );
+          if (S.round + 1 >= S.targets.length) scheduleRound(() => endGame(), 1700);
+          else scheduleRound(() => loadRound(S.round + 1), 1700);
+          return;
         }
+        S.mistakes++;
+        S.roundMisses = (S.roundMisses || 0) + 1;
+        if (S.roundMisses === 1) S.misses.push(JSON.parse(JSON.stringify(r)));
+        SFX.bad();
+        const parts = [t("notYet")];
+        const mis = misconception(r, d);
+        if (mis) parts.push(t(mis, { l: fmt(d.l), w: fmt(d.w), h: fmt(d.h) }));
+        parts.push(tierMessage(r, d, v));
+        if (S.roundMisses >= 3) r.meter = true;
+        renderRoundText();
+        updateFormula();
+        flash(parts.join(" "), "bad");
       }
 
-      function endGame(won) {
+      // Help tier for the current miss: 1 method · 2 concrete step · 3 demo.
+      function tierMessage(r, d, v) {
+        const tier = Math.min(3, S.roundMisses);
+        const tt = fmt(r.target);
+        if (tier === 1) {
+          if (r.kind === "open") return t("t1open");
+          if (r.kind === "floor") return t("t1floor", { b: fmt(r.given.l * r.given.w), t: tt });
+          if (r.kind === "height") return t("t1height", { h: fmt(r.given.h), t: tt });
+          return t("t1frac");
+        }
+        if (tier === 2) {
+          return t("t2", {
+            l: fmt(d.l),
+            w: fmt(d.w),
+            b: fmt(d.l * d.w),
+            h: fmt(d.h),
+            v: fmt(v),
+            t: tt,
+            dir: v > r.target ? t("tooMany") : t("tooFew"),
+          });
+        }
+        if (r.kind === "open") {
+          const s = openSolution(r.target, r.max);
+          return t("t3open", { l: s.l, w: s.w, h: s.h, t: tt });
+        }
+        const s = r.solution;
+        if (r.kind === "floor") return t("t3floor", { b: fmt(s.l * s.w), h: fmt(s.h), t: tt });
+        if (r.kind === "height")
+          return t("t3height", { b: fmt(s.l * s.w), h: fmt(s.h), l: s.l, w: s.w, t: tt });
+        const k = r.free[0];
+        return t("t3frac", { expr: exprFor(s), t: tt, name: dimName(k), v: fmt(s[k]) });
+      }
+
+      function endGame() {
         if (studioComplete) studioComplete(S.score);
-        const stars = S.mistakes === 0 ? 3 : S.mistakes <= 2 ? 2 : 1;
+        const n = S.targets.length;
+        const stars = S.firstTry >= n ? 3 : S.firstTry >= Math.ceil(n / 2) ? 2 : 1;
         $("r-stars").textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
+        $("r-stars-sr").textContent = t("starsSr", { n: stars });
         $("r-score").textContent = S.score;
         $("r-sealed").textContent = S.sealed;
+        $("r-first").textContent = S.firstTry + " / " + n;
+        $("r-note").textContent = S.misses.length ? t("resultNoteSome") : t("resultNoteAll");
+        $("r-practice").hidden = !S.misses.length;
         let high = 0;
         try {
           high = Number(localStorage.getItem(LS_KEY) || 0);
         } catch (e) {}
+        $("r-high-row").style.display = "none";
         if (S.score > high) {
           try {
             localStorage.setItem(LS_KEY, String(S.score));
@@ -1020,22 +1473,53 @@
           window.EduPulse &&
             EduPulse.record({
               activityTitle: ACTIVITY_TITLE,
-              // Correct steps out of attempted steps (points are not a fraction).
+              // Correct seals out of attempted seals (points are not a fraction).
               score: S.correctActions,
               maxScore: S.totalActions,
               points: S.score,
               stars: stars,
               problemsCorrect: S.correctActions,
               problemsAttempted: S.totalActions,
-              percent: S.totalActions
-                ? Math.round((S.correctActions / S.totalActions) * 100)
-                : 100,
+              percent: S.totalActions ? Math.round((S.correctActions / S.totalActions) * 100) : 100,
               standard: STANDARD,
             });
         } catch (e) {}
-        srSay("All vaults sealed. Score " + S.score + ", " + stars + " stars.");
+        srSay(t("allSealed", { s: S.score, n: stars }));
         show("result");
+        $("r-again").focus({ preventScroll: true });
       }
+
+      // ── Language application (static [data-t] text + live round text) ──
+      function applyLang() {
+        const l = lang();
+        document.documentElement.lang = l;
+        document.querySelectorAll("[data-t]").forEach((el) => {
+          el.textContent = t(el.dataset.t);
+        });
+        document.querySelectorAll("[data-lang-toggle]").forEach((b) => {
+          b.textContent = t("langBtn");
+          b.setAttribute("lang", l === "es" ? "en" : "es");
+        });
+        renderVocab();
+        if ($("screen-level").classList.contains("on")) renderLevels();
+        if (S.cur && $("screen-play").classList.contains("on")) {
+          renderSteppers();
+          renderRoundText();
+          draw();
+          updateFormula();
+        }
+      }
+      function toggleLang() {
+        const next = lang() === "es" ? "en" : "es";
+        try {
+          localStorage.setItem(LANG_KEY, next);
+        } catch (e) {}
+        document.dispatchEvent(new CustomEvent("ewl:lang", { detail: { lang: next } }));
+      }
+      document.addEventListener("ewl:lang", applyLang);
+      window.addEventListener("storage", (e) => {
+        if (e.key === LANG_KEY) applyLang();
+      });
 
       // ── Wiring ──
       $("vocab-go").addEventListener("click", () => {
@@ -1046,16 +1530,33 @@
         renderLevels();
         show("level");
       });
-      document
-        .querySelectorAll(".sbtn")
-        .forEach((b) =>
-          b.addEventListener("click", () =>
-            setDim(b.dataset.dim, Number(b.dataset.d)),
-          ),
-        );
+      $("r-practice").addEventListener("click", () => startGame(S.level, S.misses.slice()));
       $("seal").addEventListener("click", seal);
+      document.querySelectorAll("[data-lang-toggle]").forEach((b) => b.addEventListener("click", toggleLang));
+      // Keyboard: L / W / H choose an edge, ↑ ↓ (or + −) change it, S seals.
+      document.addEventListener("keydown", (e) => {
+        if (!$("screen-play").classList.contains("on") || !S.cur || e.altKey || e.ctrlKey || e.metaKey) return;
+        if (e.target.closest && e.target.closest("input,select,textarea,dialog")) return;
+        const key = e.key.toLowerCase();
+        const map = { l: "l", w: "w", a: "w", h: "h" };
+        if (map[key] && S.cur.given[map[key]] == null) {
+          S.sel = map[key];
+          markSel();
+          srSay(t("dimSay", { name: dimLabel(S.sel), v: fmt(S[S.sel]) }));
+          e.preventDefault();
+        } else if (e.key === "ArrowUp" || e.key === "+" || e.key === "=") {
+          setDim(S.sel, 1);
+          e.preventDefault();
+        } else if (e.key === "ArrowDown" || e.key === "-") {
+          setDim(S.sel, -1);
+          e.preventDefault();
+        } else if (key === "s") {
+          seal();
+          e.preventDefault();
+        }
+      });
 
-      renderVocab();
+      applyLang();
     </script>
 
     <script src="/assets/nt-page-enhance.js" defer></script>
@@ -1070,16 +1571,26 @@
     <script src="/assets/game-hint-ladder.js" defer></script>
     <script>
       window.addEventListener("DOMContentLoaded", function () {
+        var es = false;
+        try {
+          es = localStorage.getItem("nt-lang") === "es";
+        } catch (e) {}
         if (window.NeftHintLadder)
           window.NeftHintLadder.watch({
             sourceSelector: "#vv-sr",
             standard: "6.GR.2",
-            accept: "^Round \\d",
-            staticHints: [
-              "Picture the vault as layers of unit cubes: how many cubes would fill just the flat bottom layer?",
-              "Length × width tells you how many cubes sit in ONE layer of the vault.",
-              "Multiply one layer by the height (the number of layers) — then adjust one dimension at a time until the product hits the target.",
-            ],
+            accept: "^(Round|Ronda) \\d",
+            staticHints: es
+              ? [
+                  "Imagina la bóveda como capas de cubos unitarios: ¿cuántos cubos llenan solo la capa del piso?",
+                  "Largo × ancho te dice cuántos cubos hay en UNA capa. Ese es el área de la base, B.",
+                  "Multiplica una capa por la altura (el número de capas): V = B × h. Con aristas de ½, cada cubito mide ⅛ de unidad cúbica.",
+                ]
+              : [
+                  "Picture the vault as layers of unit cubes: how many cubes would fill just the flat bottom layer?",
+                  "Length × width tells you how many cubes sit in ONE layer of the vault. That is the base area, B.",
+                  "Multiply one layer by the height (the number of layers): V = B × h. With ½-unit edges, each small cube is ⅛ cubic unit.",
+                ],
           });
       });
     </script>
@@ -1099,8 +1610,8 @@
   <script src="/assets/math-workbench-launcher.js" defer></script>
   <script src="/assets/formula-popup.js" defer></script>
 <script src="/assets/game-studio.js?v=20261003" defer></script>
-<script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
-<script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
-<script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
+<script src="/math/games/shared/flagship-studio.js?v=20261015" defer></script>
+<script src="/math/games/shared/flagship-puzzles.js?v=20261015" defer></script>
+<script src="/math/games/shared/flagship-adventures.js?v=20261015" defer></script>
 </body>
 </html>

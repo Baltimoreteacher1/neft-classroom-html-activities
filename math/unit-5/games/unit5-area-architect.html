@@ -147,8 +147,8 @@
     <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css" />
     <link href="/assets/fonts/inter-outfit-300ec6.css" rel="stylesheet" />
     <link rel="stylesheet" href="/assets/game-studio.css?v=20261002" />
-    <link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261007" />
-    <link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261007" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-studio.css?v=20261015" />
+    <link rel="stylesheet" href="/math/games/shared/flagship-adventures.css?v=20261015" />
   </head>
   <body>
     <!-- EWL Universal Arcade Enhancements Header -->
@@ -440,35 +440,217 @@
         if (el) el.textContent = msg;
       }
 
+      // ── Language: site-wide key nt-lang; the "ewl:lang" event keeps every
+      // open view in sync when it changes. tr({en, es}, vars) fills {names}.
+      const LANG_KEY = "nt-lang";
+      function lang() {
+        try {
+          return localStorage.getItem(LANG_KEY) === "es" ? "es" : "en";
+        } catch (e) {
+          return "en";
+        }
+      }
+      function tr(value, vars) {
+        let s = value == null ? "" : typeof value === "string" ? value : value[lang()] || value.en;
+        if (vars) s = s.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m));
+        return s;
+      }
+      function toggleLang() {
+        const next = lang() === "es" ? "en" : "es";
+        try {
+          localStorage.setItem(LANG_KEY, next);
+        } catch (e) {}
+        document.dispatchEvent(new CustomEvent("ewl:lang", { detail: { lang: next } }));
+      }
+      const FONT = '"Outfit", "Segoe UI", system-ui, sans-serif';
+
       // ── AA_PURE_BEGIN — round generator + lock validation (pure logic) ──
-      // No Phaser/DOM in this section: it is extracted verbatim and unit-run
-      // under node during QA, so keep it self-contained.
+      // No Phaser/DOM in this section (only lang()/tr() above): keep it
+      // self-contained so it can be extracted and unit-run under node.
       function randInt(a, b) {
         return Math.floor(Math.random() * (b - a + 1)) + a;
       }
       function fmtNum(n) {
         return Number.isInteger(n) ? String(n) : String(Math.round(n * 10) / 10);
       }
-      const DIM_LABELS = {
-        b: "the base",
-        h: "the height",
-        b1: "base b₁",
-        b2: "base b₂",
+      const AT = {
+        dimShort: {
+          b: { en: "base b", es: "la base b" },
+          h: { en: "height h", es: "la altura h" },
+          b1: { en: "base b₁", es: "la base b₁" },
+          b2: { en: "base b₂", es: "la base b₂" },
+          n: { en: "triangles n", es: "los triángulos n" },
+          A: { en: "area A", es: "el área A" },
+        },
+        rowLabel: {
+          b: { en: "Base b", es: "Base b" },
+          h: { en: "Height h", es: "Altura h" },
+          b1: { en: "Base b₁", es: "Base b₁" },
+          b2: { en: "Base b₂", es: "Base b₂" },
+          n: { en: "Triangles n", es: "Triángulos n" },
+          A: { en: "Area A", es: "Área A" },
+        },
+        shape: {
+          rectangle: { en: "🏠 Rectangle floor", es: "🏠 Piso rectangular" },
+          parallelogram: { en: "▱ Parallelogram wall", es: "▱ Muro en paralelogramo" },
+          triangle: { en: "🔺 Triangle roof", es: "🔺 Techo triangular" },
+          trapezoid: { en: "⬢ Trapezoid plaza", es: "⬢ Plaza en trapecio" },
+          composite: { en: "🏞️ L-shaped park", es: "🏞️ Parque en forma de L" },
+          polygon: { en: "⬡ Fountain plaza", es: "⬡ Plaza de la fuente" },
+        },
+        polyName: {
+          5: { en: "pentagon", es: "pentágono" },
+          6: { en: "hexagon", es: "hexágono" },
+          8: { en: "octagon", es: "octágono" },
+          10: { en: "decagon", es: "decágono" },
+        },
+        goal: {
+          en: "{title} — build an area of {a} sq units.",
+          es: "{title}: construye un área de {a} unidades cuadradas.",
+        },
+        givenOne: { en: "Blueprint sets {d} = {v}.", es: "El plano fija {d} = {v}." },
+        givenTwo: {
+          en: "Blueprint sets {d1} = {v1} and {d2} = {v2}.",
+          es: "El plano fija {d1} = {v1} y {d2} = {v2}.",
+        },
+        change: {
+          en: "Change {d} until the area matches. Work it out, then lock it in.",
+          es: "Cambia {d} hasta que el área coincida. Calcúlalo y luego fíjalo.",
+        },
+        composite: {
+          en: "{title}\nSplit it into two rectangles, add their areas, then lock in the total.",
+          es: "{title}\nDivídelo en dos rectángulos, suma sus áreas y luego fija el total.",
+        },
+        polygon: {
+          en: "{title} — a regular {name}, side s = {s}, apothem a = {a}.\nSplit it into equal triangles from the center (n), then set the total area A.",
+          es: "{title}: un {name} regular, lado s = {s}, apotema a = {a}.\nDivídelo en triángulos iguales desde el centro (n) y luego ajusta el área total A.",
+        },
+        sliceV: {
+          en: "Vertical cut (left tower | right wing)",
+          es: "Corte vertical (torre izquierda | ala derecha)",
+        },
+        sliceH: {
+          en: "Horizontal cut (bottom floor / top floor)",
+          es: "Corte horizontal (piso de abajo / piso de arriba)",
+        },
+        leftTower: { en: "left tower", es: "torre izquierda" },
+        rightWing: { en: "right wing", es: "ala derecha" },
+        bottomFloor: { en: "bottom floor", es: "piso de abajo" },
+        topFloor: { en: "top floor", es: "piso de arriba" },
+        sliceFirst: { en: "slice it first…", es: "primero corta…" },
+        tooHigh: { en: "high", es: "alto" },
+        tooLow: { en: "low", es: "bajo" },
+        tooMany: { en: "many", es: "de más" },
+        tooFew: { en: "few", es: "de menos" },
+        up: { en: "up", es: "hacia arriba" },
+        down: { en: "down", es: "hacia abajo" },
+        // Tier 1 — the method, no numbers worked out.
+        m1: {
+          rectangle: {
+            en: "Method: rectangle area = b × h. Use the blueprint's number and find the missing side.",
+            es: "Método: área del rectángulo = b × h. Usa el número del plano y halla el lado que falta.",
+          },
+          parallelogram: {
+            en: "Method: parallelogram area = b × h, using the straight-up height (the dashed line) — not the slanted side.",
+            es: "Método: área del paralelogramo = b × h, con la altura recta (la línea punteada), no el lado inclinado.",
+          },
+          triangle: {
+            en: "Method: triangle area = ½ × b × h. The triangle is half of the dashed rectangle.",
+            es: "Método: área del triángulo = ½ × b × h. El triángulo es la mitad del rectángulo punteado.",
+          },
+          trapezoid: {
+            en: "Method: trapezoid area = ½ × (b₁ + b₂) × h. Add the two parallel bases first.",
+            es: "Método: área del trapecio = ½ × (b₁ + b₂) × h. Primero suma las dos bases paralelas.",
+          },
+          composite: {
+            en: "Method: find each rectangle piece's area (length × width), then add the two areas.",
+            es: "Método: halla el área de cada parte rectangular (largo × ancho) y suma las dos áreas.",
+          },
+          polygon: {
+            en: "Method: a regular polygon splits into equal triangles from its center — one for each side. Each triangle is ½ × s × a.",
+            es: "Método: un polígono regular se divide en triángulos iguales desde su centro, uno por cada lado. Cada triángulo mide ½ × s × a.",
+          },
+        },
+        // Tier 2 — a concrete step that uses the student's own numbers.
+        m2shape: {
+          en: "Your shape covers {now} square units; the blueprint needs {need}. That is {diff} too {dir}. Step {d} {ud}.",
+          es: "Tu figura cubre {now} unidades cuadradas; el plano necesita {need}. Son {diff} {dir}. Mueve {d} {ud}.",
+        },
+        m2comp: {
+          en: "Piece areas: {l1} = {a1}, {l2} = {a2}. Your total of {t} is too {hl}.",
+          es: "Áreas de las partes: {l1} = {a1}, {l2} = {a2}. Tu total de {t} es demasiado {hl}.",
+        },
+        m2polyN: {
+          en: "Count the sides: a {name} has {sides} sides, so it splits into {sides} equal triangles.",
+          es: "Cuenta los lados: un {name} tiene {sides} lados, así que se divide en {sides} triángulos iguales.",
+        },
+        m2polyA: {
+          en: "One triangle: ½ × {s} × {a} = {tri}. Your total of {t} is too {hl}.",
+          es: "Un triángulo: ½ × {s} × {a} = {tri}. Tu total de {t} es demasiado {hl}.",
+        },
+        // Tier 3 — the meter switches on and the result is shown.
+        m3shape: {
+          en: "Area meter on: {d} = {v}, because {f} = {need}.",
+          es: "Medidor de área encendido: {d} = {v}, porque {f} = {need}.",
+        },
+        m3comp: {
+          en: "Area meter on: {a1} + {a2} = {need}.",
+          es: "Medidor de área encendido: {a1} + {a2} = {need}.",
+        },
+        m3poly: {
+          en: "Area meter on: {sides} triangles × {tri} = {need}.",
+          es: "Medidor de área encendido: {sides} triángulos × {tri} = {need}.",
+        },
+        // Misconceptions spotted from the exact wrong build.
+        triHalf: {
+          en: "{b} × {h} = {need} is the whole dashed rectangle. A triangle is only HALF of it.",
+          es: "{b} × {h} = {need} es todo el rectángulo punteado. El triángulo es solo la MITAD.",
+        },
+        trapHalf: {
+          en: "({b1} + {b2}) × {h} is twice the trapezoid — remember the ½.",
+          es: "({b1} + {b2}) × {h} es el doble del trapecio: recuerda el ½.",
+        },
+        trapOne: {
+          en: "That uses only one base. A trapezoid's area uses BOTH parallel bases.",
+          es: "Eso usa solo una base. El área del trapecio usa LAS DOS bases paralelas.",
+        },
+        compWhole: {
+          en: "{W} × {H} is the whole outer rectangle, but the cut corner is not part of the park.",
+          es: "{W} × {H} es todo el rectángulo exterior, pero la esquina cortada no es parte del parque.",
+        },
+        compAddCut: {
+          en: "You added the cut corner. It is missing from the park — add only the two pieces.",
+          es: "Sumaste la esquina cortada. No es parte del parque: suma solo las dos partes.",
+        },
+        compOne: {
+          en: "That is only one piece. Add BOTH rectangle pieces.",
+          es: "Esa es solo una parte. Suma LAS DOS partes rectangulares.",
+        },
+        polyNoHalf: {
+          en: "{n} × {s} × {a} forgets the ½: each triangle is half of an {s} × {a} rectangle.",
+          es: "{n} × {s} × {a} olvida el ½: cada triángulo es la mitad de un rectángulo de {s} × {a}.",
+        },
+        polyOne: {
+          en: "That is only ONE triangle. Multiply by the number of triangles.",
+          es: "Ese es solo UN triángulo. Multiplica por el número de triángulos.",
+        },
+        polyPerim: {
+          en: "{n} × {s} is the perimeter (the distance around), not the area.",
+          es: "{n} × {s} es el perímetro (la distancia alrededor), no el área.",
+        },
       };
-      function dimLabel(k) {
-        return DIM_LABELS[k] || k;
-      }
-      // Short labels used in the prompt + "what to change" hint so the
-      // wording maps directly onto the stepper rows the student sees.
-      const DIM_SHORT = {
-        b: "base b",
-        h: "height h",
-        b1: "base b₁",
-        b2: "base b₂",
-      };
-      function dimShort(k) {
-        return DIM_SHORT[k] || k;
-      }
+      const dimShort = (k) => tr(AT.dimShort[k] || k);
+      const rowLabel = (k) => tr(AT.rowLabel[k] || k);
+
+      // Regular polygons with real proportions (apothem ÷ side matches the
+      // true shape to within 2%) and whole-number areas.
+      const POLYGONS = [
+        { sides: 6, s: 4, a: 3.5 },
+        { sides: 6, s: 8, a: 7 },
+        { sides: 5, s: 8, a: 5.5 },
+        { sides: 8, s: 5, a: 6 },
+        { sides: 10, s: 4, a: 6.2 },
+      ];
 
       // Rounds where the target is (base, height): the blueprint fixes one
       // dimension and the target area; the student sizes the other dimension.
@@ -479,14 +661,19 @@
         dims[givenKey] = target[givenKey];
         const given = {};
         given[givenKey] = target[givenKey];
-        return {
-          type,
-          area,
-          target,
-          given,
-          freeKey: givenKey === "b" ? "h" : "b",
-          dims,
-        };
+        const freeKey = givenKey === "b" ? "h" : "b";
+        return settleStart({ type, area, target, given, freeKey, dims, meter: false });
+      }
+
+      // The free dimension never STARTS on the answer or on a value that a
+      // misconception check would flag — feedback must describe what the
+      // student did, not where the stepper happened to begin.
+      function settleStart(round) {
+        for (const v of [2, 1, 3, 4, 5, 6]) {
+          round.dims[round.freeKey] = v;
+          if (currentArea(round) !== round.area && !misconceptionFor(round)) break;
+        }
+        return round;
       }
 
       function makeRound(type) {
@@ -505,16 +692,32 @@
         if (type === "trapezoid") {
           let h = randInt(2, 8);
           const b1 = randInt(2, 7);
-          let b2 = randInt(2, 10);
+          let b2 = randInt(3, 10);
           if (b2 === b1) b2 = b1 < 10 ? b1 + 1 : b1 - 1;
           if (((b1 + b2) * h) % 2) h += 1; // keep the area a whole number
-          return {
+          return settleStart({
             type,
             area: ((b1 + b2) * h) / 2,
             target: { b1, b2, h },
             given: { b1, h },
             freeKey: "b2",
             dims: { b1, b2: 2, h },
+            meter: false,
+          });
+        }
+        if (type === "polygon") {
+          const p = POLYGONS[randInt(0, POLYGONS.length - 1)];
+          return {
+            type,
+            sides: p.sides,
+            s: p.s,
+            a: p.a,
+            area: Math.round((p.sides * p.s * p.a) / 2),
+            target: { n: p.sides, A: Math.round((p.sides * p.s * p.a) / 2) },
+            given: {},
+            freeKey: "n",
+            dims: { n: 3, A: 0 },
+            meter: false,
           };
         }
         // Composite: L-shape = outer W×H rectangle with a top-right corner cut
@@ -533,18 +736,25 @@
           sliceIndex: 0,
           phase: "slice",
           total: 0,
+          meter: false,
         };
       }
 
-      function generateRound(levelNum) {
-        const types =
-          levelNum === 1
-            ? ["rectangle", "parallelogram", "triangle"]
-            : ["rectangle", "parallelogram", "triangle", "trapezoid", "composite"];
-        return makeRound(types[randInt(0, types.length - 1)]);
+      // Shuffle-bag so every shape type shows up, not just whichever the dice favour.
+      function generateRound(levelNum, bag) {
+        if (!bag.length) {
+          const types =
+            levelNum === 1
+              ? ["rectangle", "parallelogram", "triangle"]
+              : ["parallelogram", "triangle", "trapezoid", "composite", "polygon"];
+          bag.push(...types.sort(() => Math.random() - 0.5));
+        }
+        return makeRound(bag.pop());
       }
 
       function dimBounds(round, key) {
+        if (key === "n") return { min: 3, max: 12 };
+        if (key === "A") return { min: 0, max: 300 };
         if (key === "h") return { min: 1, max: 12 };
         return { min: 1, max: round.type === "parallelogram" ? 9 : 10 };
       }
@@ -553,145 +763,354 @@
         const d = round.dims;
         if (round.type === "triangle") return (d.b * d.h) / 2;
         if (round.type === "trapezoid") return ((d.b1 + d.b2) * d.h) / 2;
+        if (round.type === "polygon") return d.A;
         return d.b * d.h;
       }
 
       // The two valid one-line decompositions of the L-shape: a vertical cut
       // or a horizontal cut through the concave corner. Both split it into
-      // exactly two rectangles.
+      // exactly two rectangles (w1 × h1 and w2 × h2).
       function sliceOptions(round) {
         const { W, H, nw, nh } = round;
         return [
           {
             dir: "vertical",
-            name: "Vertical cut (left tower | right wing)",
+            name: tr(AT.sliceV),
+            w1: W - nw,
+            h1: H,
             a1: (W - nw) * H,
-            l1: "left tower",
+            l1: tr(AT.leftTower),
+            w2: nw,
+            h2: H - nh,
             a2: nw * (H - nh),
-            l2: "right wing",
+            l2: tr(AT.rightWing),
           },
           {
             dir: "horizontal",
-            name: "Horizontal cut (bottom floor / top floor)",
+            name: tr(AT.sliceH),
+            w1: W,
+            h1: H - nh,
             a1: W * (H - nh),
-            l1: "bottom floor",
+            l1: tr(AT.bottomFloor),
+            w2: W - nw,
+            h2: nh,
             a2: (W - nw) * nh,
-            l2: "top floor",
+            l2: tr(AT.topFloor),
           },
         ];
       }
 
+      // The live formula. The RESULT stays hidden ("= ?") until the student
+      // has earned the area meter (help tier 3) — they do the arithmetic.
       function formulaFor(round) {
         const d = round.dims;
+        const show = round.meter;
         if (round.type === "composite") {
-          if (round.phase === "slice") return "slice it first…";
-          const opt = sliceOptions(round)[round.sliceIndex];
-          return opt.a1 + " + " + opt.a2 + " = ?";
+          if (round.phase === "slice") return tr(AT.sliceFirst);
+          const o = sliceOptions(round)[round.sliceIndex];
+          return (
+            "(" + o.w1 + " × " + o.h1 + ") + (" + o.w2 + " × " + o.h2 + ") = " +
+            (show ? round.area : "?")
+          );
         }
-        if (round.type === "triangle")
-          return "½ × " + d.b + " × " + d.h + " = " + fmtNum(currentArea(round));
+        if (round.type === "polygon")
+          return (
+            d.n + " × ½ × " + round.s + " × " + fmtNum(round.a) + " = " +
+            (show ? fmtNum((d.n * round.s * round.a) / 2) : "?")
+          );
+        const result = show ? fmtNum(currentArea(round)) : "?";
+        if (round.type === "triangle") return "½ × " + d.b + " × " + d.h + " = " + result;
         if (round.type === "trapezoid")
-          return "½ × (" + d.b1 + " + " + d.b2 + ") × " + d.h + " = " + fmtNum(currentArea(round));
-        return d.b + " × " + d.h + " = " + fmtNum(currentArea(round));
+          return "½ × (" + d.b1 + " + " + d.b2 + ") × " + d.h + " = " + result;
+        return d.b + " × " + d.h + " = " + result;
       }
 
-      const SHAPE_TITLE = {
-        rectangle: "🏠 Rectangle floor",
-        parallelogram: "▱ Parallelogram wall",
-        triangle: "🔺 Triangle roof",
-        trapezoid: "⬢ Trapezoid plaza",
-        composite: "🏞️ L-shaped park",
-      };
       // Short, action-first prompt: line 1 = the goal (target area),
       // line 2 = what the blueprint locked, line 3 = exactly what YOU change.
       function promptFor(round) {
-        const title = SHAPE_TITLE[round.type] || "Build";
-        if (round.type === "composite")
-          return title + "\nSplit it into two rectangles, add their areas, then Lock It In.";
-        const goal = title + " — build an area of " + fmtNum(round.area) + " sq units.";
-        if (round.type === "trapezoid")
-          return (
-            goal +
-            "\nBlueprint sets base b₁ = " +
-            round.given.b1 +
-            " and height h = " +
-            round.given.h +
-            ".\nChange base b₂ until the area matches."
-          );
-        const gk = Object.keys(round.given)[0];
-        return (
-          goal +
-          "\nBlueprint sets " +
-          dimShort(gk) +
-          " = " +
-          round.given[gk] +
-          ".\nChange " +
-          dimShort(round.freeKey) +
-          " until the area matches."
-        );
+        const title = tr(AT.shape[round.type]);
+        if (round.type === "composite") return tr(AT.composite, { title });
+        if (round.type === "polygon")
+          return tr(AT.polygon, {
+            title,
+            name: tr(AT.polyName[round.sides]),
+            s: round.s,
+            a: fmtNum(round.a),
+          });
+        const goal = tr(AT.goal, { title, a: fmtNum(round.area) });
+        const keys = Object.keys(round.given);
+        const given =
+          keys.length === 2
+            ? tr(AT.givenTwo, {
+                d1: dimShort(keys[0]),
+                v1: round.given[keys[0]],
+                d2: dimShort(keys[1]),
+                v2: round.given[keys[1]],
+              })
+            : tr(AT.givenOne, { d: dimShort(keys[0]), v: round.given[keys[0]] });
+        return goal + "\n" + given + "\n" + tr(AT.change, { d: dimShort(round.freeKey) });
       }
 
-      // Decide whether a lock-in is correct; if not, return a teaching message
-      // that names the dimension that is off and compares counted squares.
-      function lockDiagnosis(round) {
+      // A misconception the exact wrong build reveals, or null.
+      function misconceptionFor(round) {
+        const d = round.dims;
+        const need = round.area;
+        if (round.type === "triangle" && d.b * d.h === need)
+          return tr(AT.triHalf, { b: d.b, h: d.h, need });
+        if (round.type === "trapezoid") {
+          if ((d.b1 + d.b2) * d.h === need) return tr(AT.trapHalf, { b1: d.b1, b2: d.b2, h: d.h });
+          if (d.b2 * d.h === need || d.b1 * d.h === need) return tr(AT.trapOne);
+        }
+        if (round.type === "composite") {
+          const t = round.total;
+          const o = sliceOptions(round)[round.sliceIndex];
+          if (t === round.W * round.H) return tr(AT.compWhole, { W: round.W, H: round.H });
+          if (t === round.W * round.H + round.nw * round.nh) return tr(AT.compAddCut);
+          if (t === o.a1 || t === o.a2) return tr(AT.compOne);
+        }
+        if (round.type === "polygon" && d.n === round.sides) {
+          if (d.A === round.sides * round.s * round.a) {
+            return tr(AT.polyNoHalf, { n: round.sides, s: round.s, a: fmtNum(round.a) });
+          }
+          if (d.A === (round.s * round.a) / 2) return tr(AT.polyOne);
+          if (d.A === round.sides * round.s) return tr(AT.polyPerim, { n: round.sides, s: round.s });
+        }
+        return null;
+      }
+
+      // Decide whether a lock-in is correct; if not, return a teaching
+      // message for this help tier (1 method · 2 concrete step · 3 meter + result).
+      function lockDiagnosis(round, tier) {
+        const hl = (diff) => tr(diff > 0 ? AT.tooHigh : AT.tooLow);
         if (round.type === "composite") {
           if (round.total === round.area) return { ok: true };
-          const opt = sliceOptions(round)[round.sliceIndex];
-          const diff = round.total - round.area;
-          return {
-            ok: false,
-            teach:
-              "Count the pieces: the " +
-              opt.l1 +
-              " covers " +
-              opt.a1 +
-              " squares and the " +
-              opt.l2 +
-              " covers " +
-              opt.a2 +
-              " squares. Add the two parts together — your total of " +
-              round.total +
-              " is too " +
-              (diff > 0 ? "high" : "low") +
-              ".",
-          };
+          const o = sliceOptions(round)[round.sliceIndex];
+          const step =
+            tier === 1
+              ? tr(AT.m1.composite)
+              : tier === 2
+                ? tr(AT.m2comp, {
+                    l1: o.l1,
+                    a1: o.a1,
+                    l2: o.l2,
+                    a2: o.a2,
+                    t: round.total,
+                    hl: hl(round.total - round.area),
+                  })
+                : tr(AT.m3comp, { a1: o.a1, a2: o.a2, need: round.area });
+          return { ok: false, teach: [misconceptionFor(round), step].filter(Boolean).join(" ") };
         }
-        const wrongGiven = Object.keys(round.given).find((k) => round.dims[k] !== round.given[k]);
-        if (wrongGiven) {
-          return {
-            ok: false,
-            teach:
-              "The blueprint fixes " +
-              dimLabel(wrongGiven) +
-              " at " +
-              round.given[wrongGiven] +
-              ", but yours is set to " +
-              round.dims[wrongGiven] +
-              ". Reset that dimension first.",
-          };
+        if (round.type === "polygon") {
+          const d = round.dims;
+          if (d.n === round.sides && d.A === round.area) return { ok: true };
+          const tri = fmtNum((round.s * round.a) / 2);
+          const name = tr(AT.polyName[round.sides]);
+          let step;
+          if (tier === 1) step = tr(AT.m1.polygon);
+          else if (tier === 2)
+            step =
+              d.n !== round.sides
+                ? tr(AT.m2polyN, { name, sides: round.sides })
+                : tr(AT.m2polyA, {
+                    s: round.s,
+                    a: fmtNum(round.a),
+                    tri,
+                    t: d.A,
+                    hl: hl(d.A - round.area),
+                  });
+          else step = tr(AT.m3poly, { sides: round.sides, tri, need: round.area });
+          return { ok: false, teach: [misconceptionFor(round), step].filter(Boolean).join(" ") };
         }
         const a = currentArea(round);
         if (a === round.area) return { ok: true };
         const diff = a - round.area;
-        return {
-          ok: false,
-          teach:
-            "Your shape covers " +
-            fmtNum(a) +
-            " unit squares — the blueprint needs " +
-            fmtNum(round.area) +
-            ". That is " +
-            fmtNum(Math.abs(diff)) +
-            " too " +
-            (diff > 0 ? "many" : "few") +
-            ". Step " +
-            dimLabel(round.freeKey) +
-            " " +
-            (diff > 0 ? "down" : "up") +
-            ".",
-        };
+        let step;
+        if (tier === 1) step = tr(AT.m1[round.type]);
+        else if (tier === 2)
+          step = tr(AT.m2shape, {
+            now: fmtNum(a),
+            need: fmtNum(round.area),
+            diff: fmtNum(Math.abs(diff)),
+            dir: tr(diff > 0 ? AT.tooMany : AT.tooFew),
+            d: dimShort(round.freeKey),
+            ud: tr(diff > 0 ? AT.down : AT.up),
+          });
+        else {
+          const solved = Object.assign({}, round, { dims: round.target, meter: true });
+          step = tr(AT.m3shape, {
+            d: dimShort(round.freeKey),
+            v: round.target[round.freeKey],
+            f: formulaFor(solved).split(" = ")[0],
+            need: fmtNum(round.area),
+          });
+        }
+        return { ok: false, teach: [misconceptionFor(round), step].filter(Boolean).join(" ") };
       }
       // ── AA_PURE_END ──
+
+      // Scene text (EN/ES). Gameplay messages live in AT inside the pure block.
+      const AU = {
+        title1: { en: "AREA", es: "ARQUITECTO" },
+        title2: { en: "ARCHITECT", es: "DE ÁREAS" },
+        subtitle: { en: "CITY BUILDER", es: "CONSTRUCTOR DE CIUDADES" },
+        shapes: {
+          en: "Rectangles • Triangles • Parallelograms • Trapezoids • Regular polygons",
+          es: "Rectángulos • Triángulos • Paralelogramos • Trapecios • Polígonos regulares",
+        },
+        tip1: {
+          en: "Size each shape to match the blueprint — you build it, you do the math!",
+          es: "Ajusta cada figura al plano: ¡tú la construyes y tú haces el cálculo!",
+        },
+        tip2: {
+          en: "Tap + / − or use the arrow keys, then press Enter to lock in.",
+          es: "Toca + / − o usa las flechas y pulsa Enter para fijar.",
+        },
+        highScore: { en: "HIGH SCORE: {n}", es: "RÉCORD: {n}" },
+        build: { en: "BUILD YOUR CITY", es: "CONSTRUYE TU CIUDAD" },
+        langBtn: { en: "🌐 Español", es: "🌐 English" },
+        selectCity: { en: "SELECT YOUR CITY", es: "ELIGE TU CIUDAD" },
+        level2adds: {
+          en: "Level 2 adds trapezoids, L-shaped parks, and regular polygons",
+          es: "El nivel 2 agrega trapecios, parques en forma de L y polígonos regulares",
+        },
+        lvl1: { en: "LEVEL 1 — SMALL TOWN", es: "NIVEL 1 — PUEBLO" },
+        lvl1sub: {
+          en: "Lessons 5-1, 5-2 · rectangles, parallelograms & triangles",
+          es: "Lecciones 5-1, 5-2 · rectángulos, paralelogramos y triángulos",
+        },
+        lvl2: { en: "LEVEL 2 — MEGA CITY", es: "NIVEL 2 — GRAN CIUDAD" },
+        lvl2sub: {
+          en: "Lessons 5-3, 5-4, 5-9 · trapezoids, L-parks & polygons",
+          es: "Lecciones 5-3, 5-4, 5-9 · trapecios, parques en L y polígonos",
+        },
+        press12: {
+          en: "Press 1 or 2 to choose with the keyboard",
+          es: "Pulsa 1 o 2 para elegir con el teclado",
+        },
+        gridLabel: {
+          en: "BLUEPRINT GRID — 1 square = 1 sq unit",
+          es: "CUADRÍCULA — 1 cuadrado = 1 unidad cuadrada",
+        },
+        yourCity: { en: "YOUR CITY:", es: "TU CIUDAD:" },
+        score: { en: "Score: {n}", es: "Puntos: {n}" },
+        levelStage: { en: "Level {l} • Stage {s}", es: "Nivel {l} • Etapa {s}" },
+        buildings: { en: "Buildings: {n}", es: "Edificios: {n}" },
+        progress: { en: "Progress:", es: "Progreso:" },
+        blueprint: { en: "📐 BLUEPRINT:", es: "📐 PLANO:" },
+        lockIn: { en: "LOCK IT IN", es: "FIJAR" },
+        confirmSlice: { en: "CONFIRM SLICE", es: "CONFIRMAR CORTE" },
+        lockTotal: { en: "LOCK TOTAL", es: "FIJAR TOTAL" },
+        given: { en: "  🔒 given: {v}", es: "  🔒 dato: {v}" },
+        eitherCut: {
+          en: "Either cut works — both make two rectangles.",
+          es: "Cualquier corte sirve: los dos forman dos rectángulos.",
+        },
+        totalArea: { en: "Total area (sq units):", es: "Área total (unidades cuadradas):" },
+        arrowsTotal: {
+          en: "Arrows: left/right = ±1, up/down = ±10",
+          es: "Flechas: izquierda/derecha = ±1, arriba/abajo = ±10",
+        },
+        sliceHint: {
+          en: "Slice first, then add the two pieces.",
+          es: "Primero corta y luego suma las dos partes.",
+        },
+        addHint: {
+          en: "Find each piece's area, add them, set the total.",
+          es: "Halla el área de cada parte, súmalas y ajusta el total.",
+        },
+        computeHint: {
+          en: "Work out the area with your numbers, then lock it in.",
+          es: "Calcula el área con tus números y luego fíjala.",
+        },
+        polyHint: {
+          en: "Step n until the triangles meet every corner, then set A.",
+          es: "Cambia n hasta que los triángulos lleguen a cada esquina; luego ajusta A.",
+        },
+        meterHint: { en: "Area meter: now {now}, need {need}.", es: "Medidor: ahora {now}, se necesita {need}." },
+        matchHint: { en: "✓ Area = {a} — press LOCK IT IN!", es: "✓ Área = {a}: ¡pulsa FIJAR!" },
+        lockedIn: { en: "✓ Locked in! +{p}", es: "✓ ¡Fijado! +{p}" },
+        notYet: { en: "Not yet — ", es: "Todavía no: " },
+        refilled: { en: "♥ Refilled — keep going!", es: "♥ Corazones llenos: ¡sigue!" },
+        stage: { en: "STAGE {n}!", es: "¡ETAPA {n}!" },
+        streak: { en: "STREAK x{n}!", es: "¡RACHA x{n}!" },
+        streak5: { en: "STREAK x5! AMAZING!", es: "¡RACHA x5! ¡INCREÍBLE!" },
+        streak7: { en: "STREAK x7! UNSTOPPABLE!", es: "¡RACHA x7! ¡IMPARABLE!" },
+        helpUsed: { en: "Help {n}/3", es: "Ayuda {n}/3" },
+        roundSay: { en: "Round {n} of {m}. {prompt} {controls}", es: "Ronda {n} de {m}. {prompt} {controls}" },
+        ctlBuild: {
+          en: "Use the plus and minus buttons or the left and right arrows to size the shape, then press Enter to lock it in.",
+          es: "Usa los botones más y menos o las flechas izquierda y derecha para ajustar la figura y pulsa Enter para fijarla.",
+        },
+        ctlComposite: {
+          en: "Use the left and right arrows or the arrow buttons to pick a slice, then press Enter to confirm.",
+          es: "Usa las flechas izquierda y derecha o los botones de flecha para elegir un corte y pulsa Enter para confirmar.",
+        },
+        ctlPolygon: {
+          en: "Up and down arrows choose a row; left and right change it. Press Enter to lock it in.",
+          es: "Las flechas arriba y abajo eligen una fila; izquierda y derecha la cambian. Pulsa Enter para fijar.",
+        },
+        sliceOption: {
+          en: "Slice option: {name}. Press Enter to confirm.",
+          es: "Opción de corte: {name}. Pulsa Enter para confirmar.",
+        },
+        sliced: {
+          en: "Sliced! The {l1} is {w1} by {h1} and the {l2} is {w2} by {h2}. Find both areas, add them, set the total, then lock it in.",
+          es: "¡Cortado! La parte {l1} mide {w1} por {h1} y la parte {l2} mide {w2} por {h2}. Halla las dos áreas, súmalas, ajusta el total y fíjalo.",
+        },
+        correctSay: {
+          en: "Correct! {summary}. Plus {p} points. Building added to your city.",
+          es: "¡Correcto! {summary}. Más {p} puntos. Edificio agregado a tu ciudad.",
+        },
+        totalSay: { en: "total area {a} square units", es: "área total {a} unidades cuadradas" },
+        valueSay: { en: "{d} {v}.", es: "{d} {v}." },
+        cityComplete: { en: "CITY COMPLETE!", es: "¡CIUDAD COMPLETA!" },
+        everyBlueprint: {
+          en: "Every blueprint became a building!",
+          es: "¡Cada plano se convirtió en un edificio!",
+        },
+        newHigh: { en: "NEW HIGH SCORE!", es: "¡NUEVO RÉCORD!" },
+        finalScore: { en: "Final Score", es: "Puntos finales" },
+        buildingsBuilt: { en: "Buildings Built", es: "Edificios construidos" },
+        firstTry: { en: "First-Try Locks", es: "Fijados al primer intento" },
+        wrongLocks: { en: "Wrong Locks", es: "Intentos fallidos" },
+        bestStreak: { en: "Best Streak", es: "Mejor racha" },
+        stageReached: { en: "Stage Reached", es: "Etapa alcanzada" },
+        levelLbl: { en: "Level", es: "Nivel" },
+        levelN: { en: "Level {n}", es: "Nivel {n}" },
+        accuracy: { en: "{p}% First-Try Accuracy", es: "{p}% de acierto al primer intento" },
+        personalBest: { en: "Personal Best: {n}", es: "Mejor marca: {n}" },
+        buildAgain: { en: "BUILD AGAIN", es: "CONSTRUIR OTRA VEZ" },
+        mainMenu: { en: "MAIN MENU", es: "MENÚ PRINCIPAL" },
+        practiceMisses: { en: "PRACTICE THE MISSES", es: "PRACTICAR LOS ERRORES" },
+        citySay: {
+          en: "City complete! You built {b} buildings and locked {c} of {r} blueprints on the first try. Final score {s}.",
+          es: "¡Ciudad completa! Construiste {b} edificios y fijaste {c} de {r} planos al primer intento. Puntos finales {s}.",
+        },
+        canvasLabel: {
+          en: "Area Architect city builder math game. Build each shape to match the blueprint. Use the Up and Down arrows to choose a row, Left and Right arrows to change it, and Enter to lock in your build. Every control can also be tapped.",
+          es: "Arquitecto de Áreas, juego de matemáticas para construir una ciudad. Construye cada figura según el plano. Usa las flechas arriba y abajo para elegir una fila, izquierda y derecha para cambiarla, y Enter para fijar. También puedes tocar cada control.",
+        },
+      };
+
+      // A small language button any scene can place (44px+ tap target).
+      function addLangButton(scene, x, y) {
+        const t = scene.add
+          .text(x, y, tr(AU.langBtn), {
+            fontFamily: FONT,
+            fontSize: "15px",
+            fontStyle: "bold",
+            color: "#cfe3ff",
+            backgroundColor: "#1a3355",
+            padding: { x: 12, y: 13 },
+          })
+          .setOrigin(1, 0)
+          .setDepth(60)
+          .setInteractive({ useHandCursor: true });
+        t.on("pointerdown", () => toggleLang());
+        t.on("pointerover", () => t.setBackgroundColor("#2a4466"));
+        t.on("pointerout", () => t.setBackgroundColor("#1a3355"));
+        return t;
+      }
 
       const W = 800,
         H = 600;
@@ -719,6 +1138,7 @@
         triangle: 0x44cc88,
         trapezoid: 0xcc44cc,
         composite: 0xddaa00,
+        polygon: 0x22bbcc,
       };
 
       // ── BOOT ──
@@ -878,7 +1298,7 @@
 
         // Title with animated entrance
         const titleArea = this.add
-          .text(cx, 55, "AREA", {
+          .text(cx, 55, tr(AU.title1), {
             fontSize: "72px",
             fontFamily: "Impact,sans-serif",
             color: "#4488ff",
@@ -898,7 +1318,7 @@
         });
 
         const titleArch = this.add
-          .text(cx, 125, "ARCHITECT", {
+          .text(cx, 125, tr(AU.title2), {
             fontSize: "72px",
             fontFamily: "Impact,sans-serif",
             color: "#44cc88",
@@ -929,7 +1349,8 @@
         });
 
         const subtitle = this.add
-          .text(cx, 175, "CITY BUILDER", {
+          .text(cx, 175, tr(AU.subtitle), {
+            fontFamily: FONT,
             fontSize: "20px",
             color: "#88aacc",
             letterSpacing: 6,
@@ -945,29 +1366,36 @@
         });
 
         this.add
-          .text(cx, 210, "Rectangles • Triangles • Parallelograms • Trapezoids", {
+          .text(cx, 210, tr(AU.shapes), {
+            fontFamily: FONT,
             fontSize: "14px",
             color: "#6688aa",
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 235, "Size each shape to match the blueprint — you build it!", {
+          .text(cx, 235, tr(AU.tip1), {
+            fontFamily: FONT,
             fontSize: "14px",
             color: "#88aacc",
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 258, "Tap + / − or use the arrow keys, then press Enter to lock in.", {
+          .text(cx, 258, tr(AU.tip2), {
+            fontFamily: FONT,
             fontSize: "13px",
             color: "#557788",
           })
           .setOrigin(0.5);
 
         // High score display
-        const hs = localStorage.getItem(LS_KEY);
+        let hs = null;
+        try {
+          hs = localStorage.getItem(LS_KEY);
+        } catch (e) {}
         if (hs) {
           this.add
-            .text(cx, 310, `HIGH SCORE: ${hs}`, {
+            .text(cx, 310, tr(AU.highScore, { n: hs }), {
+              fontFamily: FONT,
               fontSize: "14px",
               color: "#ffdd00",
               fontStyle: "bold",
@@ -979,7 +1407,8 @@
           .rectangle(cx, 345, 260, 56, 0x44cc88)
           .setInteractive({ useHandCursor: true });
         const btnT = this.add
-          .text(cx, 345, "BUILD YOUR CITY", {
+          .text(cx, 345, tr(AU.build), {
+            fontFamily: FONT,
             fontSize: "22px",
             fontStyle: "bold",
             color: "#0a2a1e",
@@ -1012,8 +1441,7 @@
         this.input.keyboard.on("keydown-SPACE", go);
         this.input.keyboard.on("keydown-ENTER", go);
 
-        // Back-to-hub link (returns to the Unit 5 collection page).
-
+        addLangButton(this, W - 12, 12);
         this.cameras.main.fadeIn(500);
       };
 
@@ -1027,14 +1455,16 @@
         const cx = W / 2;
         this.add.rectangle(cx, H / 2, W, H, 0x0a1a2e);
         this.add
-          .text(cx, 70, "SELECT YOUR CITY", {
+          .text(cx, 70, tr(AU.selectCity), {
+            fontFamily: FONT,
             fontSize: "32px",
             fontStyle: "bold",
             color: "#44cc88",
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 112, "Level 2 adds trapezoids and L-shaped parks", {
+          .text(cx, 112, tr(AU.level2adds), {
+            fontFamily: FONT,
             fontSize: "15px",
             color: "#6688aa",
           })
@@ -1043,16 +1473,16 @@
         const diffs = [
           {
             level: 1,
-            label: "LEVEL 1 — SMALL TOWN",
-            sub: "Rectangles, parallelograms & triangles",
+            label: tr(AU.lvl1),
+            sub: tr(AU.lvl1sub),
             emoji: "🏠",
             color: 0x44cc88,
             y: 230,
           },
           {
             level: 2,
-            label: "LEVEL 2 — MEGA CITY",
-            sub: "Adds trapezoids & L-shaped parks",
+            label: tr(AU.lvl2),
+            sub: tr(AU.lvl2sub),
             emoji: "🏙️",
             color: 0xf59e0b,
             y: 370,
@@ -1080,12 +1510,13 @@
             delay: idx * 150 + 200,
           });
           const lbl = this.add
-            .text(cx - 190, d.y - 10, d.emoji, { fontSize: "40px" })
+            .text(cx - 190, d.y - 10, d.emoji, { fontFamily: FONT, fontSize: "40px" })
             .setOrigin(0, 0.5)
             .setAlpha(0);
           const ttl = this.add
             .text(cx + 20, d.y - 16, d.label, {
-              fontSize: "26px",
+              fontFamily: FONT,
+              fontSize: "24px",
               fontStyle: "bold",
               color: "#fff",
             })
@@ -1093,6 +1524,7 @@
             .setAlpha(0);
           const sub = this.add
             .text(cx + 20, d.y + 18, d.sub, {
+              fontFamily: FONT,
               fontSize: "15px",
               color: "#ffffffcc",
             })
@@ -1126,13 +1558,15 @@
           btn.on("pointerdown", () => start(d.level));
         });
         this.add
-          .text(cx, 480, "Press 1 or 2 to choose with the keyboard", {
+          .text(cx, 480, tr(AU.press12), {
+            fontFamily: FONT,
             fontSize: "13px",
             color: "#557788",
           })
           .setOrigin(0.5);
         this.input.keyboard.on("keydown-ONE", () => start(1));
         this.input.keyboard.on("keydown-TWO", () => start(2));
+        addLangButton(this, W - 12, 12);
         this.cameras.main.fadeIn(400);
       };
 
@@ -1175,6 +1609,7 @@
         this.valueTexts = {};
         this.rowBgs = [];
         this.rowKeys = [];
+        this.bag = []; // shuffle-bag of shape types for this run
       };
 
       GameScene.prototype.create = function () {
@@ -1198,8 +1633,9 @@
           .setDepth(0);
 
         // Blueprint grid background + lines
-        this.add
-          .text(GRID_X, GRID_Y - 20, "BLUEPRINT GRID — 1 square = 1 sq unit", {
+        this.gridLabelText = this.add
+          .text(GRID_X, GRID_Y - 20, tr(AU.gridLabel), {
+            fontFamily: FONT,
             fontSize: "13px",
             color: "#6688aa",
             fontStyle: "bold",
@@ -1222,8 +1658,9 @@
         // City strip below the grid: every locked build adds a building here.
         // Sits BELOW the shape's bottom "b = N" label band (which hugs the
         // grid's bottom edge) so the two never overprint into garble.
-        this.add
-          .text(GRID_X, GRID_Y + GRID_H + 34, "YOUR CITY:", {
+        this.yourCityText = this.add
+          .text(GRID_X, GRID_Y + GRID_H + 34, tr(AU.yourCity), {
+            fontFamily: FONT,
             fontSize: "13px",
             color: "#6688aa",
             fontStyle: "bold",
@@ -1241,15 +1678,18 @@
 
         // HUD
         this.scoreText = this.add.text(panelX, 12, "Score: 0", {
+          fontFamily: FONT,
           fontSize: "20px",
           color: "#44cc88",
           fontStyle: "bold",
         });
         this.levelText = this.add.text(panelX + 200, 15, "", {
+          fontFamily: FONT,
           fontSize: "16px",
           color: "#88aacc",
         });
         this.livesText = this.add.text(panelX, 40, "", {
+          fontFamily: FONT,
           fontSize: "18px",
           color: "#ff4444",
         });
@@ -1257,6 +1697,7 @@
         // (panelX+320) — the old panelX+200 let "Buildings: N" collide with
         // the streak glyph once a combo built up.
         this.buildingsText = this.add.text(panelX + 96, 42, "", {
+          fontFamily: FONT,
           fontSize: "14px",
           color: "#6688aa",
         });
@@ -1267,6 +1708,7 @@
         this.streakContainer.add(this.streakBg);
         this.comboText = this.add
           .text(0, 0, "", {
+            fontFamily: FONT,
             fontSize: "15px",
             color: "#ffdd00",
             fontStyle: "bold",
@@ -1275,7 +1717,8 @@
         this.streakContainer.add(this.comboText);
 
         // Progress bar
-        this.add.text(panelX, 62, "Progress:", {
+        this.progressLabel = this.add.text(panelX, 62, tr(AU.progress), {
+          fontFamily: FONT,
           fontSize: "13px",
           color: "#557788",
         });
@@ -1287,6 +1730,7 @@
           .setOrigin(0, 0.5);
         this.progressText = this.add
           .text(panelX + 290, 70, "", {
+            fontFamily: FONT,
             fontSize: "12px",
             color: "#557788",
           })
@@ -1294,7 +1738,8 @@
 
         // Blueprint prompt
         this.add.rectangle(panelX + 205, 90, 410, 3, 0x2a4466);
-        this.add.text(panelX, 100, "📐 BLUEPRINT:", {
+        this.blueprintLabel = this.add.text(panelX, 100, tr(AU.blueprint), {
+          fontFamily: FONT,
           fontSize: "15px",
           color: "#ffdd00",
           fontStyle: "bold",
@@ -1303,6 +1748,7 @@
         // up into the "BLUEPRINT:" header the way the old centered box did.
         this.promptText = this.add
           .text(panelX + 205, 120, "", {
+            fontFamily: FONT,
             fontSize: "15px",
             color: "#ffffff",
             fontStyle: "bold",
@@ -1315,6 +1761,7 @@
         // Live formula readout — the heart of the mechanic
         this.readoutText = this.add
           .text(panelX + 205, 240, "", {
+            fontFamily: FONT,
             fontSize: "26px",
             color: "#ffffff",
             fontStyle: "bold",
@@ -1322,6 +1769,7 @@
           .setOrigin(0.5);
         this.readoutHint = this.add
           .text(panelX + 205, 268, "", {
+            fontFamily: FONT,
             fontSize: "13px",
             color: "#557788",
           })
@@ -1332,7 +1780,8 @@
           .rectangle(panelX + 205, 478, 280, 56, 0x44cc88)
           .setInteractive({ useHandCursor: true });
         this.lockBtnText = this.add
-          .text(panelX + 205, 478, "LOCK IT IN", {
+          .text(panelX + 205, 478, tr(AU.lockIn), {
+            fontFamily: FONT,
             fontSize: "22px",
             fontStyle: "bold",
             color: "#0a2a1e",
@@ -1351,15 +1800,16 @@
 
         // Feedback / teaching text
         this.feedbackText = this.add
-          .text(panelX + 205, 548, "", {
-            fontSize: "15px",
+          .text(panelX + 205, 512, "", {
+            fontFamily: FONT,
+            fontSize: "14px",
             color: "#fff",
             fontStyle: "bold",
             wordWrap: { width: 395 },
             align: "center",
             lineSpacing: 3,
           })
-          .setOrigin(0.5);
+          .setOrigin(0.5, 0);
 
         // Particles — confetti burst for correct locks
         this.confettiEmitter = this.add
@@ -1394,6 +1844,7 @@
         this.transitionOverlay = this.add.rectangle(W / 2, H / 2, W, H, 0x0a1a2e, 0).setDepth(50);
         this.transitionText = this.add
           .text(W / 2, H / 2, "", {
+            fontFamily: FONT,
             fontSize: "40px",
             fontStyle: "bold",
             color: "#ffdd00",
@@ -1415,6 +1866,7 @@
         kb.on("keydown-ENTER", () => this.onLock());
         kb.on("keydown-SPACE", () => this.onLock());
 
+        this.langBtn = addLangButton(this, GRID_X + GRID_W, 2);
         this.nextRound();
         this.updateHUD();
         this.cameras.main.fadeIn(500);
@@ -1430,7 +1882,7 @@
         this.round =
           this.replayQueue && this.replayQueue.length
             ? this.replayQueue.shift()
-            : generateRound(this.levelNum);
+            : generateRound(this.levelNum, this.bag);
         this.roundCard = JSON.parse(JSON.stringify(this.round));
         this.roundsAsked++;
         this.attempts = 0;
@@ -1441,20 +1893,39 @@
         this.redrawShape();
         this.updateReadout();
         this.updateHUD();
-        const controls =
-          this.round.type === "composite"
-            ? "Use the left and right arrows or the arrow buttons to pick a slice, then press Enter to confirm."
-            : "Use the plus and minus buttons or arrow keys to size the shape, then press Enter to lock it in.";
-        srSay(
-          "Round " +
-            this.roundsAsked +
-            " of " +
-            this.maxRounds +
-            ". " +
-            promptFor(this.round) +
-            " " +
-            controls,
+        this.announceRound();
+      };
+
+      GameScene.prototype.announceRound = function () {
+        const type = this.round.type;
+        const controls = tr(
+          type === "composite" ? AU.ctlComposite : type === "polygon" ? AU.ctlPolygon : AU.ctlBuild,
         );
+        srSay(
+          tr(AU.roundSay, {
+            n: this.roundsAsked,
+            m: this.maxRounds,
+            prompt: promptFor(this.round),
+            controls,
+          }),
+        );
+      };
+
+      // Re-draw every visible string in the current language (no state change).
+      GameScene.prototype.relabel = function () {
+        if (!this.round) return;
+        this.gridLabelText.setText(tr(AU.gridLabel));
+        this.yourCityText.setText(tr(AU.yourCity));
+        this.progressLabel.setText(tr(AU.progress));
+        this.blueprintLabel.setText(tr(AU.blueprint));
+        this.langBtn.setText(tr(AU.langBtn));
+        this.promptText.setText(promptFor(this.round));
+        this.feedbackText.setText("");
+        this.buildRoundUI();
+        this.redrawShape();
+        this.updateReadout();
+        this.updateHUD();
+        this.announceRound();
       };
 
       // ── Round UI (steppers / slice chooser / total stepper) ──
@@ -1469,14 +1940,15 @@
 
       // Small factory for a square tap-friendly button (48px hit target).
       GameScene.prototype.makeButton = function (x, y, label, onTap, wide) {
-        const w = wide ? 64 : 48;
+        const w = wide ? 56 : 48;
         const bg = this.add
           .rectangle(x, y, w, 48, 0x1a3355)
           .setStrokeStyle(2, 0x2a5577)
           .setInteractive({ useHandCursor: true });
         const t = this.add
           .text(x, y, label, {
-            fontSize: "26px",
+            fontFamily: FONT,
+            fontSize: wide ? "20px" : "26px",
             fontStyle: "bold",
             color: "#aaccff",
           })
@@ -1499,6 +1971,8 @@
         return bg;
       };
 
+      // One row per dimension. Blueprint-given rows are locked (no buttons);
+      // only the rows the student must find get steppers and keyboard focus.
       GameScene.prototype.buildRoundUI = function () {
         this.clearRoundUI();
         const r = this.round;
@@ -1507,37 +1981,48 @@
           else this.buildTotalUI();
           return;
         }
-        const keys = r.type === "trapezoid" ? ["b1", "b2", "h"] : ["b", "h"];
-        this.rowKeys = keys;
-        const labels = {
-          b: "Base b",
-          h: "Height h",
-          b1: "Base b₁",
-          b2: "Base b₂",
-        };
+        const keys = r.type === "trapezoid" ? ["b1", "b2", "h"] : r.type === "polygon" ? ["n", "A"] : ["b", "h"];
+        const isGiven = (key) => Object.prototype.hasOwnProperty.call(r.given, key);
+        this.rowKeys = keys.filter((k) => !isGiven(k));
+        const px = this.panelX;
         keys.forEach((key, i) => {
           const y = 306 + i * 54;
-          const px = this.panelX;
+          const given = isGiven(key);
           const rowBg = this.add
-            .rectangle(px + 205, y, 400, 50, 0x13284a, 0.9)
-            .setStrokeStyle(2, 0x13284a);
+            .rectangle(px + 205, y, 400, 50, given ? 0x0f2238 : 0x13284a, 0.9)
+            .setStrokeStyle(2, given ? 0x0f2238 : 0x13284a);
           this.roundUI.push(rowBg);
-          this.rowBgs.push(rowBg);
-          const isGiven = Object.prototype.hasOwnProperty.call(r.given, key);
+          if (!given) this.rowBgs.push(rowBg);
           const lbl = this.add
-            .text(px + 12, y, labels[key] + (isGiven ? "  • given: " + r.given[key] : ""), {
+            .text(px + 12, y, rowLabel(key) + (given ? tr(AU.given, { v: r.given[key] }) : ""), {
+              fontFamily: FONT,
               fontSize: "16px",
               fontStyle: "bold",
-              color: isGiven ? "#ffdd00" : "#aaccff",
+              color: given ? "#ffdd00" : "#aaccff",
             })
             .setOrigin(0, 0.5);
           this.roundUI.push(lbl);
-          this.makeButton(px + 250, y, "−", () => {
-            this.setSel(i);
-            this.adjustDim(key, -1);
-          });
+          if (given) return;
+          const row = this.rowKeys.indexOf(key);
+          const step = (delta) => () => {
+            this.setSel(row);
+            this.adjustDim(key, delta);
+          };
+          let valX = px + 312;
+          if (key === "A") {
+            // Area totals can be large: ±10 and ±1 steppers.
+            this.makeButton(px + 128, y, "−10", step(-10), true);
+            this.makeButton(px + 184, y, "−", step(-1));
+            valX = px + 250;
+            this.makeButton(px + 316, y, "+", step(1));
+            this.makeButton(px + 372, y, "+10", step(10), true);
+          } else {
+            this.makeButton(px + 250, y, "−", step(-1));
+            this.makeButton(px + 374, y, "+", step(1));
+          }
           const val = this.add
-            .text(px + 312, y, String(r.dims[key]), {
+            .text(valX, y, String(r.dims[key]), {
+              fontFamily: FONT,
               fontSize: "28px",
               fontStyle: "bold",
               color: "#ffffff",
@@ -1545,14 +2030,10 @@
             .setOrigin(0.5);
           this.roundUI.push(val);
           this.valueTexts[key] = val;
-          this.makeButton(px + 374, y, "+", () => {
-            this.setSel(i);
-            this.adjustDim(key, 1);
-          });
         });
         // Start with the dimension the student must find selected.
-        this.setSel(Math.max(0, keys.indexOf(r.freeKey)));
-        this.lockBtnText.setText("LOCK IT IN");
+        this.setSel(Math.max(0, this.rowKeys.indexOf(r.freeKey)));
+        this.lockBtnText.setText(tr(AU.lockIn));
       };
 
       GameScene.prototype.buildSliceUI = function () {
@@ -1562,6 +2043,7 @@
         this.makeButton(px + 40, y, "◀", () => this.toggleSlice());
         this.sliceLabel = this.add
           .text(px + 205, y, opt.name, {
+            fontFamily: FONT,
             fontSize: "16px",
             fontStyle: "bold",
             color: "#ffdd00",
@@ -1572,20 +2054,22 @@
         this.roundUI.push(this.sliceLabel);
         this.makeButton(px + 370, y, "▶", () => this.toggleSlice());
         const hint = this.add
-          .text(px + 205, 390, "Either cut works — both make two rectangles.", {
+          .text(px + 205, 390, tr(AU.eitherCut), {
+            fontFamily: FONT,
             fontSize: "13px",
-            color: "#557788",
+            color: "#88aacc",
           })
           .setOrigin(0.5);
         this.roundUI.push(hint);
-        this.lockBtnText.setText("CONFIRM SLICE");
+        this.lockBtnText.setText(tr(AU.confirmSlice));
       };
 
       GameScene.prototype.buildTotalUI = function () {
         const px = this.panelX;
         const r = this.round;
         const lbl = this.add
-          .text(px + 205, 300, "Total area (sq units):", {
+          .text(px + 205, 300, tr(AU.totalArea), {
+            fontFamily: FONT,
             fontSize: "16px",
             fontStyle: "bold",
             color: "#aaccff",
@@ -1594,6 +2078,7 @@
         this.roundUI.push(lbl);
         this.totalText = this.add
           .text(px + 205, 340, String(r.total), {
+            fontFamily: FONT,
             fontSize: "34px",
             fontStyle: "bold",
             color: "#ffffff",
@@ -1606,13 +2091,14 @@
         this.makeButton(px + 280, y, "+1", () => this.adjustTotal(1), true);
         this.makeButton(px + 355, y, "+10", () => this.adjustTotal(10), true);
         const hint = this.add
-          .text(px + 205, 432, "Arrows: left/right = ±1, up/down = ±10", {
+          .text(px + 205, 432, tr(AU.arrowsTotal), {
+            fontFamily: FONT,
             fontSize: "12px",
-            color: "#557788",
+            color: "#88aacc",
           })
           .setOrigin(0.5);
         this.roundUI.push(hint);
-        this.lockBtnText.setText("LOCK TOTAL");
+        this.lockBtnText.setText(tr(AU.lockTotal));
       };
 
       // ── Input plumbing ──
@@ -1629,11 +2115,13 @@
           if (r.phase === "total") this.adjustTotal(dir === -1 ? 10 : -10);
           return;
         }
-        if (!this.rowKeys.length) return;
+        if (this.rowKeys.length < 2) return;
         const n = this.rowKeys.length;
         this.setSel((this.selRow + dir + n) % n);
         SFX.init();
         SFX.tick();
+        const key = this.rowKeys[this.selRow];
+        srSay(tr(AU.valueSay, { d: rowLabel(key), v: r.dims[key] }));
       };
 
       GameScene.prototype.onArrowHoriz = function (dir) {
@@ -1651,6 +2139,8 @@
       GameScene.prototype.adjustDim = function (key, delta) {
         const r = this.round;
         if (!r || this.lockBusy || r.type === "composite") return;
+        // Blueprint-given dimensions are locked.
+        if (Object.prototype.hasOwnProperty.call(r.given, key)) return;
         const bounds = dimBounds(r, key);
         const next = Math.min(bounds.max, Math.max(bounds.min, r.dims[key] + delta));
         if (next === r.dims[key]) return;
@@ -1661,6 +2151,7 @@
         this.feedbackText.setText("");
         this.redrawShape();
         this.updateReadout();
+        srSay(tr(AU.valueSay, { d: rowLabel(key), v: next }));
       };
 
       GameScene.prototype.adjustTotal = function (delta) {
@@ -1671,6 +2162,7 @@
         SFX.init();
         SFX.tick();
         this.feedbackText.setText("");
+        srSay(tr(AU.valueSay, { d: tr(AU.totalArea), v: r.total }));
       };
 
       GameScene.prototype.toggleSlice = function () {
@@ -1682,8 +2174,9 @@
         SFX.init();
         SFX.tick();
         this.redrawShape();
-        srSay("Slice option: " + opt.name + ". Press Enter to confirm.");
+        srSay(tr(AU.sliceOption, { name: opt.name }));
       };
+
 
       // ── Drawing ──
 
@@ -1710,6 +2203,7 @@
       GameScene.prototype.addDimLabel = function (x, y, text, originX, originY) {
         const t = this.add
           .text(x, y, text, {
+            fontFamily: FONT,
             fontSize: "15px",
             fontStyle: "bold",
             color: "#ffffff",
@@ -1794,6 +2288,8 @@
           this.addDimLabel(ux(d.b2 / 2), uy(0) + 6, "b₂ = " + d.b2, 0.5, 0);
           this.addDimLabel(ux(off + d.b1 / 2), uy(d.h) - 6, "b₁ = " + d.b1, 0.5, 1);
           this.addDimLabel(ux(d.b2 / 2) + 6, uy(d.h / 2), "h = " + d.h, 0, 0.5);
+        } else if (r.type === "polygon") {
+          this.drawPolygon(g, r);
         } else {
           // Composite L-shape: outer W×H minus a top-right nw×nh cut.
           const { W: w, H: h, nw, nh } = r;
@@ -1809,9 +2305,9 @@
           g.closePath();
           g.fillPath();
           g.strokePath();
-          this.addDimLabel(ux(w / 2), uy(0) + 6, w + " across", 0.5, 0);
-          this.addDimLabel(ux(0) - 8, uy(h / 2), h + " tall", 1, 0.5);
-          this.addDimLabel(ux(w - nw / 2), uy(h - nh / 2), "cut: " + nw + " × " + nh, 0.5, 0.5);
+          this.addDimLabel(ux(w / 2), uy(0) + 6, String(w), 0.5, 0);
+          this.addDimLabel(ux(0) - 8, uy(h / 2), String(h), 1, 0.5);
+          this.addDimLabel(ux(w - nw / 2), uy(h - nh / 2), nw + " × " + nh, 0.5, 0.5);
           const opt = sliceOptions(r)[r.sliceIndex];
           if (r.phase === "slice") {
             g.lineStyle(3, 0xffdd00, 1);
@@ -1821,16 +2317,61 @@
             g.lineStyle(4, 0xffdd00, 1);
             if (opt.dir === "vertical") g.lineBetween(ux(w - nw), uy(0), ux(w - nw), uy(h));
             else g.lineBetween(ux(0), uy(h - nh), ux(w), uy(h - nh));
-            // Label each rectangle piece with its counted area.
+            // Label each rectangle piece with its dimensions; the counted
+            // areas appear only once help tier 2 is earned.
+            const p1 = r.pieceAreas ? opt.a1 + " u²" : opt.w1 + " × " + opt.h1;
+            const p2 = r.pieceAreas ? opt.a2 + " u²" : opt.w2 + " × " + opt.h2;
             if (opt.dir === "vertical") {
-              this.addDimLabel(ux((w - nw) / 2), uy(h / 2), opt.a1 + " sq", 0.5, 0.5);
-              this.addDimLabel(ux(w - nw / 2), uy((h - nh) / 2), opt.a2 + " sq", 0.5, 0.5);
+              this.addDimLabel(ux((w - nw) / 2), uy(h / 2), p1, 0.5, 0.5);
+              this.addDimLabel(ux(w - nw / 2), uy((h - nh) / 2), p2, 0.5, 0.5);
             } else {
-              this.addDimLabel(ux(w / 2), uy((h - nh) / 2), opt.a1 + " sq", 0.5, 0.5);
-              this.addDimLabel(ux((w - nw) / 2), uy(h - nh / 2), opt.a2 + " sq", 0.5, 0.5);
+              this.addDimLabel(ux(w / 2), uy((h - nh) / 2), p1, 0.5, 0.5);
+              this.addDimLabel(ux((w - nw) / 2), uy(h - nh / 2), p2, 0.5, 0.5);
             }
           }
         }
+      };
+
+      // Regular polygon centred in the grid. The student's n spokes run from
+      // the centre; they meet every corner only when n equals the side count.
+      GameScene.prototype.drawPolygon = function (g, r) {
+        const cx = GRID_X + GRID_W / 2;
+        const cy = GRID_Y + GRID_H / 2 - 10;
+        const R = 125;
+        const start = Math.PI / 2 + Math.PI / r.sides; // flat bottom side
+        const pts = [];
+        for (let i = 0; i < r.sides; i++) {
+          const ang = start + (i * 2 * Math.PI) / r.sides;
+          pts.push({ x: cx + R * Math.cos(ang), y: cy + R * Math.sin(ang) });
+        }
+        g.fillStyle(SHAPE_COLORS.polygon, 0.4);
+        g.lineStyle(3, SHAPE_COLORS.polygon, 1);
+        g.beginPath();
+        g.moveTo(pts[0].x, pts[0].y);
+        pts.slice(1).forEach((p) => g.lineTo(p.x, p.y));
+        g.closePath();
+        g.fillPath();
+        g.strokePath();
+        // Student's spokes (n of them, evenly spaced from the first corner).
+        const n = r.dims.n;
+        const fits = n === r.sides;
+        g.lineStyle(2, fits ? 0xffdd00 : 0xffffff, fits ? 1 : 0.7);
+        for (let i = 0; i < n; i++) {
+          const ang = start + (i * 2 * Math.PI) / n;
+          const len = fits ? R : R * 1.08;
+          dashLine(g, cx, cy, cx + len * Math.cos(ang), cy + len * Math.sin(ang), 6, 4);
+        }
+        // Side s on the bottom edge, apothem a from the centre to it.
+        const p0 = pts[0];
+        const pLast = pts[r.sides - 1];
+        const midY = (p0.y + pLast.y) / 2;
+        g.lineStyle(2, 0xffffff, 0.95);
+        dashLine(g, cx, cy, cx, midY, 5, 4);
+        g.fillStyle(0xffffff, 1);
+        g.fillCircle(cx, cy, 3);
+        this.addDimLabel(cx, midY + 6, "s = " + r.s, 0.5, 0);
+        this.addDimLabel(cx + 6, (cy + midY) / 2, "a = " + fmtNum(r.a), 0, 0.5);
+        this.addDimLabel(cx, cy - R - 8, "n = " + n, 0.5, 1);
       };
 
       GameScene.prototype.updateReadout = function () {
@@ -1838,34 +2379,24 @@
         if (!r) return;
         this.readoutText.setText(formulaFor(r));
         if (r.type === "composite") {
-          this.readoutHint.setText(
-            r.phase === "slice"
-              ? "Slice first, then add the two pieces."
-              : "Add the two pieces, set the total, lock it in.",
-          );
+          this.readoutHint.setText(tr(r.phase === "slice" ? AU.sliceHint : AU.addHint));
           this.readoutText.setColor("#ffffff");
           return;
         }
-        const now = currentArea(r);
-        const match = now === r.area;
-        this.readoutText.setColor(match ? "#44cc88" : "#ffffff");
-        // Actionable hint: name the ONE dimension to change and which way.
-        let hint;
-        if (match) {
-          hint = "✓ Area = " + fmtNum(r.area) + " — press LOCK IT IN!";
-        } else {
-          const dir = now < r.area ? "bigger" : "smaller";
-          hint =
-            "Now " +
-            fmtNum(now) +
-            ", need " +
-            fmtNum(r.area) +
-            " — make " +
-            dimShort(r.freeKey) +
-            " " +
-            dir;
+        // The area is NOT computed for the student unless they earned the meter.
+        if (!r.meter) {
+          this.readoutText.setColor("#ffffff");
+          this.readoutHint.setText(tr(r.type === "polygon" ? AU.polyHint : AU.computeHint));
+          return;
         }
-        this.readoutHint.setText(hint);
+        const now = r.type === "polygon" ? (r.dims.n * r.s * r.a) / 2 : currentArea(r);
+        const match = now === r.area && (r.type !== "polygon" || r.dims.A === r.area);
+        this.readoutText.setColor(now === r.area ? "#44cc88" : "#ffffff");
+        this.readoutHint.setText(
+          match
+            ? tr(AU.matchHint, { a: fmtNum(r.area) })
+            : tr(AU.meterHint, { now: fmtNum(now), need: fmtNum(r.area) }),
+        );
       };
 
       // ── Lock-in resolution ──
@@ -1882,22 +2413,31 @@
           this.redrawShape();
           this.updateReadout();
           srSay(
-            "Sliced! The " +
-              opt.l1 +
-              " is " +
-              opt.a1 +
-              " square units and the " +
-              opt.l2 +
-              " is " +
-              opt.a2 +
-              " square units. Enter the total area, then lock it in.",
+            tr(AU.sliced, {
+              l1: opt.l1,
+              w1: opt.w1,
+              h1: opt.h1,
+              l2: opt.l2,
+              w2: opt.w2,
+              h2: opt.h2,
+            }),
           );
           return;
         }
-        const diag = lockDiagnosis(r);
-        if (diag.ok) this.resolveCorrect();
-        else this.resolveWrong(diag.teach);
+        // Help tier for THIS miss: 1 method · 2 concrete step · 3 meter + result.
+        const tier = Math.min(3, this.attempts + 1);
+        const diag = lockDiagnosis(r, tier);
+        if (diag.ok) {
+          this.resolveCorrect();
+          return;
+        }
+        if (tier >= 2) r.pieceAreas = true;
+        if (tier >= 3) r.meter = true;
+        this.redrawShape();
+        this.updateReadout();
+        this.resolveWrong(diag.teach);
       };
+
 
       GameScene.prototype.resolveCorrect = function () {
         const r = this.round;
@@ -1908,18 +2448,21 @@
           this.combo++;
           if (this.combo > this.maxCombo) this.maxCombo = this.combo;
         }
-        const pts = firstTry ? 100 + this.combo * 20 + (this.stage - 1) * 10 : 50;
+        // Full points only for an unaided first lock; less as help is earned.
+        const pts = firstTry
+          ? 100 + this.combo * 20 + (this.stage - 1) * 10
+          : [0, 50, 35][this.attempts] || 20;
         this.score += pts;
         this.shapesPlaced++;
         window.FlagshipAdventure?.record({ firstTry, kind: r.type });
 
         SFX.correct();
-        this.feedbackText.setText("✓ Locked in! +" + pts).setColor("#44cc88");
+        r.meter = true;
+        this.updateReadout();
+        this.feedbackText.setText(tr(AU.lockedIn, { p: pts })).setColor("#44cc88");
         const summary =
-          r.type === "composite"
-            ? "total area " + r.area + " square units"
-            : formulaFor(r) + " square units";
-        srSay("Correct! " + summary + ". Plus " + pts + " points. Building added to your city.");
+          r.type === "composite" ? tr(AU.totalSay, { a: r.area }) : formulaFor(r);
+        srSay(tr(AU.correctSay, { summary, p: pts }));
 
         this.showFloatingText(
           GRID_X + GRID_W / 2,
@@ -1933,18 +2476,18 @@
         if (firstTry) {
           if (this.combo === 3) {
             SFX.streak3();
-            this.showFloatingText(W / 2, H / 2 - 30, "STREAK x3!", "#ffdd00", "30px");
+            this.showFloatingText(W / 2, H / 2 - 30, tr(AU.streak, { n: 3 }), "#ffdd00", "30px");
           } else if (this.combo === 5) {
             SFX.streak5();
-            this.showFloatingText(W / 2, H / 2 - 30, "STREAK x5! AMAZING!", "#ff8844", "32px");
+            this.showFloatingText(W / 2, H / 2 - 30, tr(AU.streak5), "#ff8844", "32px");
           } else if (this.combo === 7) {
             SFX.streak7();
-            this.showFloatingText(W / 2, H / 2 - 30, "STREAK x7! UNSTOPPABLE!", "#ff4488", "34px");
+            this.showFloatingText(W / 2, H / 2 - 30, tr(AU.streak7), "#ff4488", "34px");
           } else if (this.combo >= 3) {
             SFX.combo();
           }
           if (this.combo >= 2) {
-            this.comboText.setText("STREAK x" + this.combo + "!");
+            this.comboText.setText(tr(AU.streak, { n: this.combo }));
             if (!this.reduceMotion) {
               this.tweens.add({
                 targets: this.streakContainer,
@@ -1970,7 +2513,7 @@
         if (this.shapesPlaced % 4 === 0 && this.roundsAsked < this.maxRounds) {
           this.stage++;
           SFX.levelUp();
-          this.showPhaseTransition("STAGE " + this.stage + "!");
+          this.showPhaseTransition(tr(AU.stage, { n: this.stage }));
         }
 
         this.updateHUD();
@@ -1987,8 +2530,8 @@
         this.lives--;
 
         SFX.wrong();
-        this.feedbackText.setText("Not yet — " + teach).setColor("#ffaa66");
-        srSay("Not yet. " + teach);
+        this.feedbackText.setText(tr(AU.notYet) + teach).setColor("#ffaa66");
+        srSay(tr(AU.notYet) + teach);
 
         // Calm feedback: gentle shake + brief low-alpha wash (no game-over).
         if (!this.reduceMotion) this.cameras.main.shake(150, 0.006);
@@ -2001,7 +2544,7 @@
           this.showFloatingText(
             GRID_X + GRID_W / 2,
             GRID_Y + GRID_H / 2 + 44,
-            "♥ Refilled — keep going!",
+            tr(AU.refilled),
             "#44cc88",
             "24px",
           );
@@ -2047,6 +2590,7 @@
       GameScene.prototype.showFloatingText = function (x, y, text, color, size) {
         const ft = this.add
           .text(x, y, text, {
+            fontFamily: FONT,
             fontSize: size || "20px",
             fontStyle: "bold",
             color: color || "#ffdd00",
@@ -2106,10 +2650,10 @@
       };
 
       GameScene.prototype.updateHUD = function () {
-        this.scoreText.setText("Score: " + this.score);
-        this.levelText.setText("Level " + this.levelNum + " • Stage " + this.stage);
+        this.scoreText.setText(tr(AU.score, { n: this.score }));
+        this.levelText.setText(tr(AU.levelStage, { l: this.levelNum, s: this.stage }));
         this.livesText.setText("♥".repeat(this.lives) + "♡".repeat(Math.max(0, 3 - this.lives)));
-        this.buildingsText.setText("Buildings: " + this.shapesPlaced);
+        this.buildingsText.setText(tr(AU.buildings, { n: this.shapesPlaced }));
         this.progressBarFill.width = (this.roundsAsked / this.maxRounds) * 200;
         this.progressText.setText(this.roundsAsked + "/" + this.maxRounds);
       };
@@ -2137,7 +2681,11 @@
           (d.maxCombo >= 3 || solved >= 8 ? 1 : 0) +
           (solved >= 4 && accuracy >= 0.8 ? 1 : 0);
 
-        try {
+        // A language switch re-creates this scene with the same data: report
+        // and save the high score only once.
+        const firstShow = !d.shown;
+        d.shown = true;
+        if (firstShow) try {
           window.EduPulse &&
             EduPulse.record({
               activityTitle: document.title,
@@ -2151,29 +2699,25 @@
         } catch (e) {}
 
         // High score check
-        const prevHigh = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
-        const isNewHigh = d.score > prevHigh;
-        if (isNewHigh && d.score > 0) {
-          localStorage.setItem(LS_KEY, String(d.score));
+        if (firstShow) {
+          let prevHigh = 0;
+          try {
+            prevHigh = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+          } catch (e) {}
+          d.isNewHigh = d.score > prevHigh && d.score > 0;
+          if (d.isNewHigh) {
+            try {
+              localStorage.setItem(LS_KEY, String(d.score));
+            } catch (e) {}
+          }
+          // Play appropriate sound
+          if (stars === 3) SFX.win3star();
+          else SFX.win();
         }
-
-        // Play appropriate sound
-        if (stars === 3) {
-          SFX.win3star();
-        } else {
-          SFX.win();
-        }
+        const isNewHigh = !!d.isNewHigh;
 
         srSay(
-          "City complete! You built " +
-            d.buildings +
-            " buildings and locked " +
-            d.totalCorrect +
-            " of " +
-            d.rounds +
-            " blueprints on the first try. Final score " +
-            d.score +
-            ".",
+          tr(AU.citySay, { b: d.buildings, c: d.totalCorrect, r: d.rounds, s: d.score }),
         );
 
         // City skyline celebration
@@ -2211,7 +2755,8 @@
         }
 
         this.add
-          .text(cx, 30, "CITY COMPLETE!", {
+          .text(cx, 30, tr(AU.cityComplete), {
+            fontFamily: FONT,
             fontSize: "36px",
             fontStyle: "bold",
             color: "#44cc88",
@@ -2220,7 +2765,8 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 60, "Every blueprint became a building!", {
+          .text(cx, 60, tr(AU.everyBlueprint), {
+            fontFamily: FONT,
             fontSize: "15px",
             color: "#88aacc",
           })
@@ -2233,6 +2779,7 @@
           // Empty star background
           this.add
             .text(sx, starY, "☆", {
+              fontFamily: FONT,
               fontSize: "42px",
               color: "#334455",
             })
@@ -2241,6 +2788,7 @@
           if (i < stars) {
             const fullStar = this.add
               .text(sx, starY, "★", {
+                fontFamily: FONT,
                 fontSize: "42px",
                 color: "#ffdd00",
               })
@@ -2260,10 +2808,11 @@
         }
 
         // NEW HIGH SCORE banner
-        if (isNewHigh && d.score > 0) {
-          SFX.highScore();
+        if (isNewHigh) {
+          if (firstShow) SFX.highScore();
           const hsText = this.add
-            .text(cx, 125, "NEW HIGH SCORE!", {
+            .text(cx, 125, tr(AU.newHigh), {
+              fontFamily: FONT,
               fontSize: "22px",
               fontStyle: "bold",
               color: "#ffdd00",
@@ -2283,30 +2832,31 @@
 
         const statsStartY = isNewHigh ? 150 : 130;
         const stats = [
-          { label: "Final Score", val: String(d.score), color: "#44cc88" },
+          { label: tr(AU.finalScore), val: String(d.score), color: "#44cc88" },
           {
-            label: "Buildings Built",
+            label: tr(AU.buildingsBuilt),
             val: String(d.buildings),
             color: "#4488ff",
           },
           {
-            label: "First-Try Locks",
+            label: tr(AU.firstTry),
             val: d.totalCorrect + " / " + d.rounds,
             color: "#44cc88",
           },
-          { label: "Wrong Locks", val: String(d.totalWrong), color: "#ffaa66" },
-          { label: "Best Streak", val: "x" + d.maxCombo, color: "#ffaa00" },
-          { label: "Stage Reached", val: String(d.stage), color: "#88aacc" },
-          { label: "Level", val: "Level " + d.levelNum, color: "#cc88ff" },
+          { label: tr(AU.wrongLocks), val: String(d.totalWrong), color: "#ffaa66" },
+          { label: tr(AU.bestStreak), val: "x" + d.maxCombo, color: "#ffaa00" },
+          { label: tr(AU.stageReached), val: String(d.stage), color: "#88aacc" },
+          { label: tr(AU.levelLbl), val: tr(AU.levelN, { n: d.levelNum }), color: "#cc88ff" },
         ];
         stats.forEach((s, i) => {
           const y = statsStartY + i * 40;
           this.add.rectangle(cx, y, 400, 32, 0x112233, 0.8);
           this.add
-            .text(cx - 170, y, s.label, { fontSize: "15px", color: "#6688aa" })
+            .text(cx - 170, y, s.label, { fontFamily: FONT, fontSize: "15px", color: "#6688aa" })
             .setOrigin(0, 0.5);
           const v = this.add
             .text(cx + 170, y, s.val, {
+              fontFamily: FONT,
               fontSize: "17px",
               fontStyle: "bold",
               color: s.color,
@@ -2325,6 +2875,7 @@
         const grade = pct >= 90 ? "A+" : pct >= 80 ? "A" : pct >= 70 ? "B" : pct >= 60 ? "C" : "D";
         this.add
           .text(cx, 460, grade, {
+            fontFamily: FONT,
             fontSize: "48px",
             fontStyle: "bold",
             color: pct >= 80 ? "#44cc88" : pct >= 60 ? "#f59e0b" : "#ff4444",
@@ -2333,17 +2884,22 @@
           })
           .setOrigin(0.5);
         this.add
-          .text(cx, 492, `${Math.round(pct)}% First-Try Accuracy`, {
+          .text(cx, 492, tr(AU.accuracy, { p: Math.round(pct) }), {
+            fontFamily: FONT,
             fontSize: "15px",
             color: "#88aacc",
           })
           .setOrigin(0.5);
 
         // Personal best display
-        const bestScore = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+        let bestScore = 0;
+        try {
+          bestScore = parseInt(localStorage.getItem(LS_KEY) || "0", 10);
+        } catch (e) {}
         if (bestScore > 0 && !isNewHigh) {
           this.add
-            .text(cx, 515, `Personal Best: ${bestScore}`, {
+            .text(cx, 515, tr(AU.personalBest, { n: bestScore }), {
+              fontFamily: FONT,
               fontSize: "13px",
               color: "#6688aa",
             })
@@ -2354,7 +2910,8 @@
           .rectangle(cx - 100, 550, 170, 42, 0x44cc88)
           .setInteractive({ useHandCursor: true });
         this.add
-          .text(cx - 100, 550, "BUILD AGAIN", {
+          .text(cx - 100, 550, tr(AU.buildAgain), {
+            fontFamily: FONT,
             fontSize: "17px",
             fontStyle: "bold",
             color: "#0a2a1e",
@@ -2371,7 +2928,8 @@
           .rectangle(cx + 100, 550, 170, 42, 0x1a3355)
           .setInteractive({ useHandCursor: true });
         this.add
-          .text(cx + 100, 550, "MAIN MENU", {
+          .text(cx + 100, 550, tr(AU.mainMenu), {
+            fontFamily: FONT,
             fontSize: "17px",
             fontStyle: "bold",
             color: "#88aacc",
@@ -2388,7 +2946,8 @@
             .rectangle(cx, 586, 250, 22, 0xf0b429)
             .setInteractive({ useHandCursor: true });
           this.add
-            .text(cx, 586, "PRACTICE THE MISSES", {
+            .text(cx, 586, tr(AU.practiceMisses), {
+              fontFamily: FONT,
               fontSize: "13px",
               fontStyle: "bold",
               color: "#1a1408",
@@ -2399,7 +2958,8 @@
           );
         }
 
-        this.cameras.main.fadeIn(600);
+        addLangButton(this, W - 12, 12);
+        if (firstShow) this.cameras.main.fadeIn(600);
       };
 
       const aaGame = (window.__flagshipGame = new Phaser.Game(config));
@@ -2414,20 +2974,29 @@
           var cv = aaGame.canvas;
           if (!cv) return;
           cv.setAttribute("role", "application");
-          cv.setAttribute(
-            "aria-label",
-            "Area Architect city builder math game. " +
-              "Build each shape to match the blueprint. " +
-              "Use the Up and Down arrows to choose a dimension, " +
-              "Left and Right arrows to size it, and Enter to lock in " +
-              "your build. Every control can also be tapped.",
-          );
+          cv.setAttribute("aria-label", tr(AU.canvasLabel));
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");
         } catch (e) {
           /* a11y wiring failed — non-fatal, game still plays */
         }
       });
+
+      // Language switch: the running game scene relabels in place; menus and
+      // results re-create themselves with the same data.
+      function applyLang() {
+        document.documentElement.lang = lang();
+        if (aaGame.canvas) aaGame.canvas.setAttribute("aria-label", tr(AU.canvasLabel));
+        aaGame.scene.getScenes(true).forEach((sc) => {
+          if (typeof sc.relabel === "function") sc.relabel();
+          else if (sc.scene.key !== "Boot") sc.scene.restart(sc.d);
+        });
+      }
+      document.addEventListener("ewl:lang", applyLang);
+      window.addEventListener("storage", (e) => {
+        if (e.key === LANG_KEY) applyLang();
+      });
+      document.documentElement.lang = lang();
     </script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
@@ -2441,15 +3010,26 @@
     <script src="/assets/game-hint-ladder.js" defer></script>
     <script>
       window.addEventListener("DOMContentLoaded", function () {
+        var es = false;
+        try {
+          es = localStorage.getItem("nt-lang") === "es";
+        } catch (e) {}
         if (window.NeftHintLadder)
           window.NeftHintLadder.watch({
             sourceSelector: "#aa-sr",
             standard: "6.GR.1",
-            staticHints: [
-              "Count the unit squares your shape covers on the grid. Is that more or fewer than the blueprint asks for?",
-              "Watch the live readout as you step one dimension up or down — which number in the formula are you changing?",
-              "Set up the formula with your numbers. For a triangle, the dashed rectangle shows why you take half; for the L-shape, add the two rectangle pieces.",
-            ],
+            accept: "^(Round|Ronda) \\d",
+            staticHints: es
+              ? [
+                  "Cuenta los cuadrados unitarios que cubre tu figura en la cuadrícula. ¿Son más o menos de los que pide el plano?",
+                  "Escribe la fórmula con tus números: ¿qué número de la fórmula cambias cuando mueves una medida?",
+                  "En un triángulo, el rectángulo punteado muestra por qué se toma la mitad; en el parque en L, suma las dos partes; en un polígono regular, suma los triángulos iguales.",
+                ]
+              : [
+                  "Count the unit squares your shape covers on the grid. Is that more or fewer than the blueprint asks for?",
+                  "Write the formula with your numbers: which number in the formula changes when you step one dimension?",
+                  "For a triangle, the dashed rectangle shows why you take half; for the L-shape, add the two rectangle pieces; for a regular polygon, add up the equal triangles.",
+                ],
           });
       });
     </script>
@@ -2479,8 +3059,8 @@
     <script src="/assets/math-workbench-launcher.js" defer></script>
     <script src="/assets/formula-popup.js" defer></script>
     <script src="/assets/game-studio.js?v=20261003" defer></script>
-    <script src="/math/games/shared/flagship-studio.js?v=20261007" defer></script>
-    <script src="/math/games/shared/flagship-puzzles.js?v=20261007" defer></script>
-    <script src="/math/games/shared/flagship-adventures.js?v=20261007" defer></script>
+    <script src="/math/games/shared/flagship-studio.js?v=20261015" defer></script>
+    <script src="/math/games/shared/flagship-puzzles.js?v=20261015" defer></script>
+    <script src="/math/games/shared/flagship-adventures.js?v=20261015" defer></script>
   </body>
 </html>
