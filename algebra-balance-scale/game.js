@@ -53,6 +53,7 @@ const app = {
   credited: false,
   lean: null,
   preview: null,
+  viewStep: null,
   labels: {},
   feedback: { coach: "", kind: "", tag: null, hint: "" },
 };
@@ -102,6 +103,7 @@ function loadPuzzle(source, saved = null) {
   app.credited = false;
   app.lean = null;
   app.preview = null;
+  app.viewStep = null;
   setFeedback("");
   for (const id of ["bb-amount", "bb-left", "bb-right", "bb-prove-l", "bb-prove-r", "bb-test-n"])
     $(id).value = "";
@@ -314,6 +316,7 @@ function onBackOrReset(action) {
   if (!changed) return;
   app.lean = null;
   app.preview = null;
+  app.viewStep = null;
   setFeedback("");
   say(t(app.lang, action === "undo" ? "liveUndo" : "liveReset", { eq: spoken(eqText(s.eq, s.v)) }));
   focusAfter = "bb-amount";

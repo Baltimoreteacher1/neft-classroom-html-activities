@@ -117,32 +117,85 @@ function renderScale(app) {
   const { session: s, lang } = app;
   const lean = leanOf(app);
   const text = eqText(s.eq, s.v);
-  $("bb-scale").innerHTML = scaleSvg(app.preview?.eq ?? s.eq, s.v, lean);
+  $("bb-scale").innerHTML = scaleSvg(app.preview?.eq ?? viewedEq(app), s.v, lean);
   $("bb-scale").setAttribute(
     "aria-label",
     lean === 0
       ? t(lang, "scaleLabelBalanced", { eq: spoken(text) })
       : t(lang, "scaleLabelTilt", { eq: spoken(text), pan: panName(lang, lean) }),
   );
+  $("bb-original").textContent = t(lang, "originalProblem", { eq: eqText(s.start, s.v) });
   $("bb-eq").innerHTML = equationHtml(s.eq, s.v);
   $("bb-eq").setAttribute("aria-label", spoken(text));
   $("bb-eq").setAttribute("role", "img");
   document.body.classList.toggle("bb-solved", s.status === "solved");
 }
 
-function renderHistory(app) {
+/** The scale shows the equation the student is looking at: a tapped step, else the live one. */
+function viewedEq(app) {
+  const { session: s, viewStep } = app;
+  if (viewStep == null || viewStep.n !== s.steps.length) return s.eq;
+  return viewStep.index < 0 ? s.start : s.steps[viewStep.index].eq;
+}
+
+const workLine = (eq, move, v) =>
+  `${unsimplified(eq.l, move, v)} ${eq.rel} ${unsimplified(eq.r, move, v)}`;
+
+function stepRow(app, refs, { index, label, eq, work, result }) {
+  const { session: s, lang, viewStep } = app;
+  const viewing = viewStep?.n === s.steps.length && viewStep.index === index;
+  const btn = el("button", { type: "button", className: "bb-step" });
+  btn.setAttribute("aria-pressed", String(viewing));
+  btn.append(el("span", { className: "bb-step-label", textContent: label }));
+  if (work) btn.append(el("span", { className: "bb-step-work", textContent: work }));
+  btn.append(el("span", { className: "bb-step-result", textContent: result ?? eqText(eq, s.v) }));
+  btn.addEventListener("click", () => {
+    app.viewStep = viewing ? null : { index, n: s.steps.length };
+    render(app, refs);
+  });
+  return el("li", { className: viewing ? "bb-step-viewing" : "" }, btn);
+}
+
+function renderHistory(app, refs) {
   const { session: s, lang } = app;
   const list = $("bb-history");
   list.replaceChildren();
-  if (!s.steps.length)
-    list.append(el("li", { className: "bb-none", textContent: t(lang, "historyEmpty") }));
-  for (const step of s.steps) {
+  const start = { index: -1, label: t(lang, "stepStart"), eq: s.start };
+  list.append(stepRow(app, refs, start));
+  s.steps.forEach((step, i) => {
+    const prev = i === 0 ? s.start : s.steps[i - 1].eq;
     list.append(
-      el("li", {
-        textContent: `${t(lang, "onBothSides", { move: step.text })}: ${eqText(step.eq, s.v)}`,
+      stepRow(app, refs, {
+        index: i,
+        label: `${t(lang, "stepNumber", { n: i + 1 })} · ${t(lang, "onBothSides", { move: step.text })}`,
+        eq: step.eq,
+        work: workLine(prev, step.move, s.v),
+        result: `${t(lang, "stepSimplified")}: ${eqText(step.eq, s.v)}`,
       }),
     );
+  });
+  if (s.pending) {
+    const move = s.pending.move;
+    list.append(
+      el("li", { className: "bb-step-pending" },
+        el("span", {
+          className: "bb-step-label",
+          textContent: `${t(lang, "stepNumber", { n: s.steps.length + 1 })} · ${t(lang, "onBothSides", { move: moveText(move, s.v) })}`,
+        }),
+        el("span", { className: "bb-step-work", textContent: workLine(s.eq, move, s.v) }),
+        el("span", {
+          className: "bb-step-result",
+          textContent: `${t(lang, "stepSimplified")}: ${t(lang, "stepYourTurn")}`,
+        }),
+      ),
+    );
   }
+  const view = app.viewStep?.n === s.steps.length ? app.viewStep : null;
+  $("bb-history-note").textContent = view
+    ? view.index < 0
+      ? t(lang, "stepViewingStart")
+      : t(lang, "stepViewing", { n: view.index + 1 })
+    : t(lang, "stepView");
 }
 
 function renderMoveForm(app, refs) {
@@ -259,7 +312,7 @@ export function render(app, refs) {
     source.kind === "level" ? t(lang, "progress", { n: solvedCount }) : "";
   $("bb-history-title").textContent = t(lang, "history");
   renderScale(app);
-  renderHistory(app);
+  renderHistory(app, refs);
   renderMoveForm(app, refs);
   renderEntryForm(app, refs);
   renderSolved(app, refs);

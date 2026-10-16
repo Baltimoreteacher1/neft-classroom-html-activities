@@ -308,6 +308,13 @@ body {
   font-size: clamp(1.6rem, 6vw, 2.4rem);
   font-weight: 800;
 }
+.bb-original {
+  margin: 0 0 6px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  opacity: 0.85;
+}
 .bb-rel {
   color: var(--bb-amber);
 }
@@ -319,18 +326,53 @@ body {
   font-size: 1rem;
 }
 .bb-history {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 10px;
+  display: grid;
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.bb-history li {
-  padding: 2px 12px;
+.bb-history-note {
+  margin: 0 0 6px;
+  color: var(--bb-muted);
+  font-size: 0.9rem;
+}
+.bb-step,
+.bb-step-pending {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: 8px 14px;
   border: 1px solid var(--bb-line);
-  border-radius: 99px;
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+.bb-step {
+  cursor: pointer;
+}
+.bb-step:hover,
+.bb-step[aria-pressed="true"] {
+  border-color: var(--bb-amber);
+}
+.bb-step-pending {
+  border-style: dashed;
+}
+.bb-step-label {
+  color: var(--bb-muted);
+  font-size: 0.85rem;
   font-weight: 700;
+}
+.bb-step-work {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+.bb-step-result {
+  color: var(--bb-teal);
+  font-size: 1.1rem;
+  font-weight: 800;
 }
 .bb-history li:empty,
 .bb-history .bb-none {

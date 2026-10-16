@@ -64,7 +64,7 @@ export function submitEntry(s, typed) {
   if (!s.pending) return { kind: "error", code: "noMove" };
   const out = M.checkEntry(s.eq, s.pending.move, typed, s.v, s.answer);
   if (out.ok) {
-    s.steps.push({ op: s.pending.move.op, text: s.pending.text, eq: out.eq });
+    s.steps.push({ op: s.pending.move.op, move: s.pending.move, text: s.pending.text, eq: out.eq });
     s.eq = out.eq;
     s.pending = null;
     s.rungs = 0;
@@ -167,7 +167,12 @@ export function restore(spec, saved) {
     const parsed = M.parseMove(String(op), String(amount), s.v);
     const next = parsed.ok && M.applyMove(s.eq, parsed.move);
     if (!next?.ok) break;
-    s.steps.push({ op: parsed.move.op, text: M.moveText(parsed.move, s.v), eq: next.eq });
+    s.steps.push({
+      op: parsed.move.op,
+      move: parsed.move,
+      text: M.moveText(parsed.move, s.v),
+      eq: next.eq,
+    });
     s.eq = next.eq;
   }
   s.earned = saved.earned === true;
