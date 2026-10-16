@@ -220,7 +220,8 @@ function filesUnder(dir) {
   return out;
 }
 
-const scanned = [...filesUnder(BROADCAST_DIR), ENDPOINT];
+const SHARE_MODULE = resolve(repoRoot, "assets/family-share/family-share.js");
+const scanned = [...filesUnder(BROADCAST_DIR), ENDPOINT, SHARE_MODULE];
 for (const file of scanned) {
   const src = readFileSync(file, "utf8");
   const lines = src.split("\n");
@@ -301,6 +302,61 @@ for (const banned of ["progress_percent", "manual_grade", "scoreFromState", "exe
   if (readSrc.includes(banned)) {
     fail(`family-broadcast.js reads "${banned}"; a family broadcast never shows a grade or score`);
   }
+}
+
+/* ------------- 5. "Show my family": student-chosen, opt-in, closed vocabulary -- */
+
+const share = await import(`file://${SHARE_MODULE}`).catch((err) => {
+  fail(`family-share.js does not load: ${err.message}`);
+  return null;
+});
+
+if (share) {
+  const { SHARE_MODELS, SHARE_STUDENT_COPY, SHARE_FAMILY_COPY } = share;
+  for (const [id, m] of Object.entries(SHARE_MODELS)) {
+    comparePair(`SHARE_MODELS["${id}"]`, m.en, m.es);
+  }
+  const enKeys = Object.keys(SHARE_STUDENT_COPY.en).sort().join();
+  if (enKeys !== Object.keys(SHARE_STUDENT_COPY.es).sort().join()) {
+    fail("SHARE_STUDENT_COPY.en and .es do not have the same keys");
+  }
+  for (const key of Object.keys(SHARE_STUDENT_COPY.en)) {
+    const en = SHARE_STUDENT_COPY.en[key];
+    const es = SHARE_STUDENT_COPY.es[key];
+    if (typeof en === "function") {
+      if (typeof es !== "function") fail(`SHARE_STUDENT_COPY.es.${key} is missing`);
+      else comparePair(`SHARE_STUDENT_COPY.${key}`, en(3), es(3));
+    } else {
+      comparePair(`SHARE_STUDENT_COPY.${key}`, en, es);
+    }
+  }
+  for (const [key, pair] of Object.entries(SHARE_FAMILY_COPY)) {
+    if (!pair.en || !pair.es) {
+      fail(`SHARE_FAMILY_COPY.${key} needs both languages`);
+      continue;
+    }
+    if (typeof pair.en === "function")
+      comparePair(`SHARE_FAMILY_COPY.${key}`, pair.en("x"), pair.es("x"));
+    else comparePair(`SHARE_FAMILY_COPY.${key}`, pair.en, pair.es);
+  }
+  // Sharing is OFF unless a record says otherwise: an empty/absent choice shares nothing.
+  if (share.sanitizeShare(undefined) !== null || share.sanitizeShare({ v: 1 }).on !== false) {
+    fail("family-share.js: a missing or unticked choice must share nothing");
+  }
+}
+
+// The endpoint may read the student's picks only through the shared sanitizer,
+// and must never put the saved state blob itself on the wire.
+if (!/sharedItems\(student\.state_json, lang\)/.test(endpointSrc)) {
+  fail("family-broadcast.js does not build `shared` through sharedItems(student.state_json, lang)");
+}
+if (!/findShare\(/.test(endpointSrc)) {
+  fail("family-broadcast.js does not read the student's choice through findShare()");
+}
+if (/\bstate:\s*(?:parsePayload|student)/.test(endpointSrc)) {
+  fail(
+    "family-broadcast.js returns the saved state blob; only the sanitized `shared` list may leave",
+  );
 }
 
 /* --------------------------------------------------------------- reporting */

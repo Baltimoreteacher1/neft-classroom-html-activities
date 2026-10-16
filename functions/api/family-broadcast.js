@@ -8,6 +8,7 @@
  *        stuck:[ { standard, label, tag, watchFor } ],
  *        kitchenTable: { title, minutes, materials, steps[], why },
  *        nextUp: [ { title, path, why } ],
+ *        shared: [ { kind: "skill"|"words"|"model", label?, text? } ],
  *        headline, note, thin, offline, lang }
  *
  * THIS IS THE MOST SENSITIVE READ ON THE PLATFORM. It returns data about ONE
@@ -43,11 +44,19 @@
  * 5. NO GRADES — nothing here returns a score, a percentage or a rank. The
  *    "grew" evidence counts effort (tries, lessons finished), never accuracy.
  *
+ * 6. STUDENT-CHOSEN, OPT-IN, OFF BY DEFAULT — `shared` carries ONLY what the
+ *    student picked on the "Show my family" screen, read from the same
+ *    student_progress row the code resolved to (family-share.js documents the
+ *    shape). It is empty unless the student turned sharing on, it is rebuilt
+ *    from a closed vocabulary (standards table, model list) plus one bounded,
+ *    contact-detail-free sentence, and the raw state blob is never returned.
+ *
  * Storage and graceful degradation mirror functions/api/misconception-heatmap.js:
  * D1 bound as `env.DB`, idempotent CREATE TABLE IF NOT EXISTS, and a working
  * answer rather than an error when the binding is absent.
  * ========================================================================== */
 
+import { findShare, SHARE_MODELS } from "../../assets/family-share/family-share.js";
 import {
   ASSETS,
   BRIDGES,
@@ -413,6 +422,37 @@ function buildKitchenTable(tag, standards, lang) {
   return activity;
 }
 
+/** Skills a student may choose are exactly the standards this endpoint can name. */
+const isKnownStandard = (std) => Object.hasOwn(STANDARDS, std);
+
+/** A saved state this large is not a progress record; do not parse it for a share. */
+const MAX_STATE_CHARS = 1_500_000;
+
+/**
+ * What the student chose to show their family, in the family's language.
+ * [] unless sharing is on. Never returns the state blob or anything not on the
+ * closed list: skills are labelled from STANDARDS, tools from SHARE_MODELS, and
+ * the one sentence has already passed sanitizeShare().
+ */
+function sharedItems(stateJson, lang) {
+  const text = String(stateJson || "");
+  if (!text || text.length > MAX_STATE_CHARS) return [];
+  const share = findShare(parsePayload(text), isKnownStandard);
+  if (!share || !share.on) return [];
+  const out = [];
+  for (const item of share.items) {
+    if (item.kind === "skill") {
+      out.push({ kind: "skill", standard: item.std, label: standardLabel(item.std, lang) });
+    } else if (item.kind === "model") {
+      const model = SHARE_MODELS[item.id];
+      out.push({ kind: "model", label: pick(lang, model.en, model.es) });
+    } else {
+      out.push({ kind: "words", text: item.text });
+    }
+  }
+  return out;
+}
+
 /** The whole broadcast when there is no database, or nothing personal to say. */
 function curriculumDefault(lang, days, since, extra) {
   const en = lang !== "es";
@@ -427,6 +467,7 @@ function curriculumDefault(lang, days, since, extra) {
     stuck: [],
     kitchenTable: kitchenTableFor("", lang),
     nextUp: buildNextUp([], lang),
+    shared: [],
     ...extra,
   };
 }
@@ -479,7 +520,7 @@ export async function onRequest(context) {
     }
 
     const student = await env.DB.prepare(
-      `SELECT save_code, student_name, section, activity_id, activity_title, updated_at
+      `SELECT save_code, student_name, section, activity_id, activity_title, updated_at, state_json
          FROM student_progress WHERE save_code = ?`,
     )
       .bind(code)
@@ -723,7 +764,9 @@ export async function onRequest(context) {
     const kitchenTable = buildKitchenTable(focusTag, kitchenStandards, lang);
     const nextUp = buildNextUp(kitchenStandards, lang);
 
-    const thin = did.length === 0 && grew.length === 0 && stuck.length === 0;
+    const shared = sharedItems(student.state_json, lang);
+
+    const thin = did.length === 0 && grew.length === 0 && stuck.length === 0 && shared.length === 0;
 
     return json({
       ok: true,
@@ -736,6 +779,7 @@ export async function onRequest(context) {
       stuck,
       kitchenTable,
       nextUp,
+      shared,
       thin,
       note: thin ? COPY.noteThin[langKey] : COPY.noteFull[langKey],
     });
@@ -752,4 +796,5 @@ export const __test__ = {
   displayNameFrom,
   resolvePath,
   clampDays,
+  sharedItems,
 };

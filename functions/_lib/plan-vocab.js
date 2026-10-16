@@ -1628,6 +1628,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/family-connections/math-night/",
+    title: "Family Math Night Kit",
+    category: "Activity",
+    unit: null,
+  },
+  {
     path: "/curriculum/family-connections/meetings/",
     title: "Family meetings",
     category: "Activity",
@@ -5766,6 +5772,12 @@ export const ACTIVITIES = [
   {
     path: "/teacher-tools/evidence-groups/",
     title: "Groups from Evidence",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/teacher-tools/family-engagement/",
+    title: "Family Engagement",
     category: "Tool",
     unit: null,
   },

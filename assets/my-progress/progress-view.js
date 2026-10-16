@@ -12,6 +12,7 @@
  * Usage: <div id="content" data-progress-view></div> plus
  *   <script src="/assets/my-progress/progress-stores.js" defer></script>
  *   <script src="/assets/my-progress/progress-sections.js" defer></script>
+ *   the Learning Atlas scripts (progress-atlas-*.js, progress-atlas.js), then
  *   <script src="/assets/my-progress/progress-view.js" defer></script>
  * ========================================================================== */
 (function () {
@@ -24,7 +25,7 @@
 
   /* ---------------- backup / restore ---------------- */
   var SNAPSHOT_KEY =
-    /^(nt-signal:v1|pa-summary-|pa-itemlog$|nt_results_v1$|choiceboard-u\d+$|nsr:rec:|ewl-fluency-(profiles|progress|tutor)|arl_progress$|nt_ttm\.(taught|proofs)$|nt-project-complete:v1$|nt_mentor$)/;
+    /^(nt-signal:v1|pa-summary-|pa-itemlog$|nt_results_v1$|choiceboard-u\d+$|nsr:rec:|ewl-fluency-(profiles|progress|tutor)|arl_progress$|nt_ttm\.(taught|proofs)$|nt-project-complete:v1$|nt_mentor$|nt-atlas:v1$)/;
   function readJson(key, fb) {
     try {
       var v = JSON.parse(localStorage.getItem(key));
@@ -100,10 +101,17 @@
           );
       }
     } catch (_e) {}
-    status.innerHTML = t(
-      "Restored and merged: activity results and choice boards. Games and labs keep their own saves on each device.",
-      "Restaurado y combinado: resultados de actividades y tableros. Los juegos y laboratorios guardan su progreso en cada dispositivo.",
-    );
+    // The Learning Atlas keeps its own proofs; it merges them itself.
+    var atlas = window.NTProgressAtlas && window.NTProgressAtlas.restore(data.stores);
+    status.innerHTML = atlas
+      ? t(
+          "Restored and merged: activity results, choice boards and your Learning Atlas proofs. Games and labs keep their own saves on each device.",
+          "Restaurado y combinado: resultados de actividades, tableros y las pruebas de tu Atlas de aprendizaje. Los juegos y laboratorios guardan su progreso en cada dispositivo.",
+        )
+      : t(
+          "Restored and merged: activity results and choice boards. Games and labs keep their own saves on each device.",
+          "Restaurado y combinado: resultados de actividades y tableros. Los juegos y laboratorios guardan su progreso en cada dispositivo.",
+        );
     return true;
   }
   function download() {
@@ -165,7 +173,7 @@
     el.classList.add("up-root");
     el.innerHTML =
       toolbarHtml() +
-      '<div data-up="body"></div><p class="up-private">' +
+      '<div data-up="atlas"></div><div data-up="body"></div><p class="up-private">' +
       t(
         "This page lives only on this device and is never sent anywhere.",
         "Esta página vive solo en este dispositivo y nunca se envía a ningún lugar.",
@@ -200,6 +208,9 @@
       reader.readAsText(f);
     });
     render();
+    // The Learning Atlas manages its own DOM (focus, an open check), so it
+    // lives outside the re-rendered body. Absent script = the view is unchanged.
+    if (window.NTProgressAtlas) window.NTProgressAtlas.mount(el.querySelector("[data-up=atlas]"));
     // Optional enrichments; the view is complete without either.
     if (typeof window.fetch === "function")
       window

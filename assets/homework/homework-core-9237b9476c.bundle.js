@@ -27,19 +27,30 @@ function famGamesData() {
    [ twin of the PREVIOUS problem | this problem ], so the chain closes into a
    loop: each placed domino's right end is a problem, and the next domino must
    carry that problem's twin on its left. Starting point rotates per game. */
+function famDomTiles(pairs, start) {
+  var n = pairs.length;
+  var tiles = [];
+  for (var k = 0; k < n; k++) {
+    var i = (start + k) % n;
+    var prev = (i + n - 1) % n;
+    tiles.push({ k: k, left: pairs[prev].b, right: pairs[i].a });
+  }
+  return tiles;
+}
+
+/* The game reports what happens so optional layers (two-player mode) can follow
+   along without the game knowing they exist. */
+function domAnnounce(type) {
+  document.dispatchEvent(new CustomEvent('hw:domino', { detail: { type: type } }));
+}
+
 function resetDominoGame() {
   var data = famGamesData();
   var chain = document.getElementById('fam_dom_chain');
   var tray = document.getElementById('fam_dom_tray');
   if (!data || !chain || !tray) return;
   var n = data.pairs.length;
-  var start = Math.floor(Math.random() * n);
-  var tiles = [];
-  for (var k = 0; k < n; k++) {
-    var i = (start + k) % n;
-    var prev = (i + n - 1) % n;
-    tiles.push({ k: k, left: data.pairs[prev].b, right: data.pairs[i].a });
-  }
+  var tiles = famDomTiles(data.pairs, Math.floor(Math.random() * n));
   famDom = { n: n, next: 1, tries: 0, tiles: tiles };
   var win = document.getElementById('fam_dom_win');
   if (win) win.hidden = true;
@@ -60,6 +71,7 @@ function resetDominoGame() {
     tray.appendChild(btn);
   });
   updateDominoStatus();
+  domAnnounce('reset');
 }
 
 function dominoTileEl(tile, isButton) {
@@ -108,6 +120,7 @@ function placeDomino(btn, tile) {
       'Not that one. Look at the problem on the end of the chain: which answer is its twin?',
       'Esa no. Mira el problema al final de la cadena: ¿cuál es su pareja?');
     updateDominoStatus();
+    domAnnounce('miss');
     return;
   }
   var slot = chain.querySelector('.fam-dom-slot');
@@ -128,6 +141,7 @@ function placeDomino(btn, tile) {
     chain.appendChild(dominoSlotEl());
   }
   updateDominoStatus();
+  domAnnounce('placed');
 }
 
 /* The page has three language modes (bilingual default / en / es), carried by
@@ -908,24 +922,6 @@ function openConceptZoom(btn) {
   dlg.showModal();
 }
 
-function toggleCoOpMode() {
-  var active = document.body.classList.toggle('coop-mode-active');
-  var btn = document.getElementById('btn_toggle_coop');
-  if (btn) {
-    btn.innerHTML = active
-      ? '<span class="lang-en">✓ Co-Op Active (2-Player)</span><span class="lang-es" lang="es">✓ Co-Op Activo (2 Jugadores)</span>'
-      : '<span class="lang-en">Turn On Co-Op</span><span class="lang-es" lang="es">Activar Co-Op</span>';
-    if (active) {
-      btn.style.background = '#22c55e';
-      btn.style.color = '#ffffff';
-    } else {
-      btn.style.background = '#ffffff';
-      btn.style.color = '#15803d';
-    }
-  }
-}
-window.toggleCoOpMode = toggleCoOpMode;
-
 function preparePaperPractice() {
   alert("For offline work, print now or choose Save as PDF in the print dialog. Open the saved PDF before disconnecting. This website has not downloaded an offline copy. / Para trabajar sin internet, imprime ahora o elige Guardar como PDF. Abre el PDF guardado antes de desconectarte. Este sitio no ha descargado una copia sin conexión.");
   printProblemsOnly();
@@ -1073,18 +1069,7 @@ function printRefrigeratorSheet() {
 window.printRefrigeratorSheet = printRefrigeratorSheet;
 
 function speakHomeworkText(enText, esText) {
-  try {
-    if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    var isEs = document.body.classList.contains('lang-mode-es') || document.documentElement.lang === 'es';
-    var text = (isEs && esText) ? esText : (enText || esText);
-    var lang = (isEs && esText) ? 'es-US' : 'en-US';
-    if (!text || !text.trim()) return;
-    var utter = new SpeechSynthesisUtterance(text.trim());
-    utter.lang = lang;
-    utter.rate = 0.95;
-    window.speechSynthesis.speak(utter);
-  } catch(e) {}
+  hwVoice.speak(enText, esText);
 }
 window.speakHomeworkText = speakHomeworkText;
 window.speakSectionText = speakHomeworkText;
@@ -2661,6 +2646,530 @@ function hwGameCheckSort() {
 }
 
 
+/* Voice: read-aloud for every stop, plus hooks for voice entry into answer boxes. */
+var hwVoice = (function () {
+  var LISTEN_EXCLUDE = 'button, summary, label, h1, h2, h3, h4, option, select, [aria-hidden="true"], [hidden], [data-no-listen], .problem-section, .hw-answer-key, .hw-answer-sheet, .hw-domino-sheet, .vocab-card, .vocab-container, .feedback, .feedback-box, .explanation-box, .obj-popup-backdrop, .cga-feedback, .hw-listen-bar, .homework-tab-bar';
+  var MIN_WORDS = 5;
+  var PREFS = { en: ['en-us', 'en-gb', 'en'], es: ['es-us', 'es-mx', 'es-419', 'es-es', 'es'] };
+  var token = 0;
+  var active = null;
+  var reading = null;
+
+  function supported() {
+    return 'speechSynthesis' in window && typeof window.SpeechSynthesisUtterance === 'function';
+  }
+
+  function mode() {
+    var c = document.body.classList;
+    if (c.contains('lang-mode-es')) return 'es';
+    if (c.contains('lang-mode-en')) return 'en';
+    return 'both';
+  }
+
+  function voiceList() {
+    try { return window.speechSynthesis.getVoices() || []; } catch (e) { return []; }
+  }
+
+  /* A voice installed for the language, local ones first. Null lets the browser fall back on utter.lang. */
+  function pick(lang) {
+    var list = voiceList();
+    var prefs = PREFS[lang] || [];
+    for (var p = 0; p < prefs.length; p++) {
+      var hits = list.filter(function (v) {
+        var l = String(v.lang || '').replace('_', '-').toLowerCase();
+        return l === prefs[p] || l.indexOf(prefs[p] + '-') === 0;
+      });
+      if (hits.length) {
+        var local = hits.filter(function (v) { return v.localService; });
+        return (local.length ? local : hits)[0];
+      }
+    }
+    return null;
+  }
+
+  var TAG = { en: 'en-US', es: 'es-US' };
+  var FRAC_EN = { 2: ['half', 'halves'], 3: ['third', 'thirds'], 4: ['fourth', 'fourths'], 5: ['fifth', 'fifths'], 6: ['sixth', 'sixths'], 7: ['seventh', 'sevenths'], 8: ['eighth', 'eighths'], 9: ['ninth', 'ninths'], 10: ['tenth', 'tenths'], 100: ['hundredth', 'hundredths'] };
+  var FRAC_ES = { 2: ['medio', 'medios'], 3: ['tercio', 'tercios'], 4: ['cuarto', 'cuartos'], 5: ['quinto', 'quintos'], 6: ['sexto', 'sextos'], 7: ['séptimo', 'séptimos'], 8: ['octavo', 'octavos'], 9: ['noveno', 'novenos'], 10: ['décimo', 'décimos'], 100: ['centésimo', 'centésimos'] };
+  var NUM_EN = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+  var NUM_ES = ['cero', 'un', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve'];
+  var SYM = {
+    en: { '×': ' times ', '÷': ' divided by ', '−': ' minus ', '–': ' to ', '+': ' plus ', '=': ' equals ', '≠': ' does not equal ', '≈': ' is about ', '≤': ' is less than or equal to ', '≥': ' is greater than or equal to ', '<': ' is less than ', '>': ' is greater than ', '%': ' percent', '°': ' degrees' },
+    es: { '×': ' por ', '÷': ' dividido entre ', '−': ' menos ', '–': ' a ', '+': ' más ', '=': ' es igual a ', '≠': ' no es igual a ', '≈': ' es aproximadamente ', '≤': ' es menor o igual que ', '≥': ' es mayor o igual que ', '<': ' es menor que ', '>': ' es mayor que ', '%': ' por ciento', '°': ' grados' }
+  };
+
+  /* Make the page's math say what a teacher would say. A "3/4" read raw is often a date. */
+  function prepare(text, lang) {
+    var s = String(text || '').replace(/[\p{Extended_Pictographic}️‍]/gu, ' ');
+    var es = lang === 'es';
+    s = s.replace(/(\d+)\s*\/\s*(\d+)/g, function (m, a, b) {
+      var n = parseInt(a, 10), d = parseInt(b, 10);
+      var words = (es ? FRAC_ES : FRAC_EN)[d];
+      if (!words || n < 1 || n > 9) return a + (es ? ' sobre ' : ' over ') + b;
+      return (es ? NUM_ES : NUM_EN)[n] + ' ' + words[n === 1 ? 0 : 1];
+    });
+    var table = SYM[lang] || SYM.en;
+    s = s.replace(/[×÷−–+=≠≈≤≥<>%°]/g, function (c) { return table[c] || c; });
+    return s.replace(/\s+/g, ' ').trim();
+  }
+
+  /* Short utterances: some engines stop a long one after a few seconds. */
+  function chunks(text) {
+    var parts = text.match(/[^.!?¿¡]+[.!?]*\s*/g) || [text];
+    var out = [], cur = '';
+    parts.forEach(function (p) {
+      if (cur && (cur + p).length > 180) { out.push(cur.trim()); cur = ''; }
+      cur += p;
+    });
+    if (cur.trim()) out.push(cur.trim());
+    return out;
+  }
+
+  function rate() {
+    try { if (typeof vocabSpeechRate === 'number') return vocabSpeechRate; } catch (e) {}
+    return 0.9;
+  }
+
+  function mark(el, on) {
+    if (el) el.classList.toggle('is-reading', on);
+  }
+
+  function stop() {
+    token++;
+    if (supported()) { try { window.speechSynthesis.cancel(); } catch (e) {} }
+    if (active) { active.setAttribute('aria-pressed', 'false'); active.classList.remove('is-speaking'); active = null; }
+    if (reading) { mark(reading, false); reading = null; }
+  }
+
+  /* items: [{text, lang, el?}] spoken in order. Returns false when speech is unavailable. */
+  function run(items, button) {
+    if (!supported()) return false;
+    stop();
+    var mine = token;
+    if (button) { active = button; button.setAttribute('aria-pressed', 'true'); button.classList.add('is-speaking'); }
+    var queue = [];
+    items.forEach(function (it) {
+      var text = prepare(it.text, it.lang);
+      if (!text) return;
+      chunks(text).forEach(function (c, i, all) {
+        queue.push({ text: c, lang: it.lang, el: it.el, last: i === all.length - 1 });
+      });
+    });
+    function next() {
+      if (mine !== token) return;
+      var q = queue.shift();
+      if (!q) { stop(); return; }
+      if (q.el && q.el !== reading) {
+        mark(reading, false);
+        reading = q.el;
+        mark(reading, true);
+        try { reading.scrollIntoView({ block: 'nearest' }); } catch (e) {}
+      }
+      var u = new window.SpeechSynthesisUtterance(q.text);
+      u.lang = TAG[q.lang] || q.lang;
+      var v = pick(q.lang);
+      if (v) { u.voice = v; u.lang = v.lang || u.lang; }
+      u.rate = rate();
+      u.onend = next;
+      u.onerror = next;
+      window.speechSynthesis.speak(u);
+    }
+    next();
+    return true;
+  }
+
+  /* One sentence in English and/or Spanish, following the language the family is reading. */
+  function speak(en, es, opts) {
+    var m = mode();
+    var items = [];
+    var single = opts && opts.single;
+    if (m === 'es' && es) items.push({ text: es, lang: 'es' });
+    else if (m === 'en' || single || !es || es === en) items.push({ text: en || es, lang: en ? 'en' : 'es' });
+    else { items.push({ text: en, lang: 'en' }); items.push({ text: es, lang: 'es' }); }
+    return run(items, opts && opts.button);
+  }
+
+  function plainText(el) {
+    var clone = el.cloneNode(true);
+    clone.querySelectorAll('.hw-listen, .btn-read-aloud, .btn-listen-prob, .btn-listen-concept, svg, script, style, .lang-label').forEach(function (n) { n.remove(); });
+    /* Chips and list items sit side by side with no space between them in the markup. */
+    clone.querySelectorAll('*').forEach(function (n) { n.after(' '); });
+    return clone.textContent.replace(/\s+/g, ' ').replace(/ ([.,;:!?])/g, '$1').trim();
+  }
+
+  function words(t) { return t ? t.split(' ').length : 0; }
+
+  function skipped(el) {
+    if (el.closest(LISTEN_EXCLUDE)) return true;
+    var d = el.closest('details:not([open])');
+    return !!d;
+  }
+
+  function isEs(el) { return el.classList.contains('lang-es') || el.getAttribute('lang') === 'es'; }
+
+  /* The element to highlight: the block itself, or the paragraph around a pair of spans. */
+  function hostOf(el) {
+    return el.tagName === 'SPAN' && el.parentElement ? el.parentElement : el;
+  }
+
+  /* Every instruction block of a stop, in page order: [{enEl, esEl, en, es}]. A block is a
+     language pair: an element marked lang-en and the Spanish sibling that follows it. */
+  function collect(panel) {
+    var out = [];
+    panel.querySelectorAll('.lang-en').forEach(function (en) {
+      if (en.parentElement && en.parentElement.closest('.lang-en')) return;
+      if (skipped(en)) return;
+      var es = en.nextElementSibling;
+      if (es && !isEs(es)) es = null;
+      var enText = plainText(en);
+      var esText = es ? plainText(es) : '';
+      if (words(enText) < MIN_WORDS) return;
+      out.push({ enEl: hostOf(en), esEl: es ? hostOf(es) : hostOf(en), en: enText, es: esText });
+    });
+    return out;
+  }
+
+  function readPanel(panel, button) {
+    var m = mode();
+    var items = [];
+    collect(panel).forEach(function (b) {
+      if (m !== 'es' && b.en) items.push({ text: b.en, lang: 'en', el: b.enEl });
+      if (m !== 'en' && b.es) items.push({ text: b.es, lang: 'es', el: b.esEl });
+      else if (m === 'es' && b.en) items.push({ text: b.en, lang: 'en', el: b.enEl });
+    });
+    return run(items, button);
+  }
+
+  return { supported: supported, pick: pick, prepare: prepare, speak: speak, run: run, stop: stop, collect: collect, readPanel: readPanel, mode: mode };
+})();
+window.hwVoice = hwVoice;
+
+/* A Listen button that carries its own text: data-speak-en / data-speak-es. */
+document.addEventListener('click', function (e) {
+  var b = e.target.closest ? e.target.closest('[data-speak-en]') : null;
+  if (!b) return;
+  if (b.classList.contains('is-speaking')) { hwVoice.stop(); return; }
+  hwVoice.speak(b.getAttribute('data-speak-en'), b.getAttribute('data-speak-es'), { button: b });
+});
+
+/* One "Read this stop aloud" control at the top of every stop. */
+function hwVoiceInstallBars() {
+  if (!hwVoice.supported()) { document.body.classList.add('no-speech'); return; }
+  document.querySelectorAll('[data-tab-panel]').forEach(function (panel) {
+    if (panel.querySelector('.hw-listen-bar')) return;
+    var bar = document.createElement('div');
+    bar.className = 'hw-listen-bar';
+    bar.setAttribute('data-no-vocab', '');
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn-read-aloud hw-listen hw-listen-stop';
+    btn.setAttribute('aria-pressed', 'false');
+    btn.innerHTML = '🔊 <span class="lang-en">Read this stop aloud</span><span class="lang-es" lang="es">Leer esta etapa en voz alta</span>';
+    btn.addEventListener('click', function () {
+      if (btn.classList.contains('is-speaking')) { hwVoice.stop(); return; }
+      hwVoice.readPanel(panel, btn);
+    });
+    bar.appendChild(btn);
+    var title = panel.querySelector('h2.section-title');
+    if (title && title.parentElement === panel) title.insertAdjacentElement('afterend', bar);
+    else panel.insertBefore(bar, panel.firstChild);
+  });
+}
+
+/* Answer boxes a speech-to-text layer may fill. */
+var hwVoiceSpoken = null;
+
+function hwVoiceKind(el) {
+  if (el.tagName === 'TEXTAREA') return 'text';
+  var key = String(el.getAttribute('data-correct') || '');
+  return /^[-+0-9.,/%$ ]+$/.test(key) ? 'number' : 'text';
+}
+
+function hwVoiceLang() {
+  return document.body.classList.contains('lang-mode-es') ? 'es' : 'en';
+}
+
+function hwVoiceAnnounce(en, es) {
+  var live = document.getElementById('hw_voice_status');
+  if (!live) {
+    live = document.createElement('p');
+    live.id = 'hw_voice_status';
+    live.className = 'hw-voice-status';
+    live.setAttribute('role', 'status');
+    live.setAttribute('aria-live', 'polite');
+    document.body.appendChild(live);
+  }
+  live.textContent = hwVoiceLang() === 'es' ? es : en;
+}
+
+function hwVoiceFill(box, transcript, lang) {
+  var kind = box.getAttribute('data-voice-entry');
+  var text = String(transcript || '').trim();
+  if (hwVoiceSpoken) {
+    text = kind === 'number' ? hwVoiceSpoken.spokenToNumberAnswer(text, lang || hwVoiceLang()) : hwVoiceSpoken.spokenToText(text, lang || hwVoiceLang());
+  }
+  if (kind === 'number' && !/^[-+]?[0-9][0-9.,/%$ ]*$/.test(text)) {
+    hwVoiceAnnounce('I did not hear a number. Try again.', 'No escuché un número. Intenta otra vez.');
+    return false;
+  }
+  if (!text) return false;
+  var proto = Object.getPrototypeOf(box);
+  var desc = Object.getOwnPropertyDescriptor(proto, 'value');
+  var joined = kind === 'number' || !box.value ? text : box.value.replace(/\s+$/, '') + ' ' + text;
+  if (desc && desc.set) desc.set.call(box, joined); else box.value = joined;
+  box.dispatchEvent(new Event('input', { bubbles: true }));
+  box.dispatchEvent(new Event('change', { bubbles: true }));
+  hwVoiceAnnounce('Heard: ' + text, 'Escuché: ' + text);
+  return true;
+}
+
+function hwVoiceInitEntry() {
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('input.table-input, textarea.open-response-textarea, textarea.error-explain-textarea, textarea.hw-work-input'));
+  boxes.forEach(function (box) {
+    box.setAttribute('data-voice-entry', hwVoiceKind(box));
+    /* The shared learning-supports layer (ls-voice-answer.js) offers its microphone beside any box inside [data-ls-voice]. */
+    box.setAttribute('data-ls-voice', 'on');
+  });
+  document.addEventListener('ewl:voice-entry', function (e) {
+    var box = e.target;
+    if (!box || !box.getAttribute || !box.getAttribute('data-voice-entry')) return;
+    var d = e.detail || {};
+    hwVoiceFill(box, d.transcript, d.lang);
+  });
+  var shared = window.EWLLearningSupports;
+  if (shared && typeof shared.attachVoiceEntry === 'function') {
+    boxes.forEach(function (box) {
+      try { shared.attachVoiceEntry(box, { kind: box.getAttribute('data-voice-entry'), lang: hwVoiceLang }); } catch (err) {}
+    });
+  }
+  document.dispatchEvent(new CustomEvent('ewl:voice-entry-targets', { detail: { boxes: boxes, lang: hwVoiceLang } }));
+  try {
+    import('/assets/learning-supports/ls-spoken-number.js').then(function (m) {
+      if (m && typeof m.spokenToText === 'function' && typeof m.spokenToNumberAnswer === 'function') hwVoiceSpoken = m;
+    }).catch(function () {});
+  } catch (err) {}
+}
+
+function hwVoiceInit() {
+  hwVoiceInstallBars();
+  hwVoiceInitEntry();
+  /* Browsers fill the voice list lazily; asking once now means the first Listen finds it. */
+  if (hwVoice.supported()) { try { window.speechSynthesis.getVoices(); } catch (err) {} }
+  window.addEventListener('pagehide', function () { hwVoice.stop(); });
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hwVoiceInit, { once: true });
+else hwVoiceInit();
+
+
+/* Play the Confused Grown-Up. The rounds are server-rendered; this only answers taps. */
+function cgaText(el, en, es) {
+  var wantEs = document.body.classList.contains('lang-mode-es');
+  return wantEs && es ? es : en;
+}
+function cgaSay(round, en, es) {
+  var out = round.querySelector('.cga-feedback');
+  if (!out) return;
+  if (typeof setBiText === 'function') setBiText(out, en, es || en);
+  else out.textContent = en;
+}
+function cgaChoose(btn) {
+  var round = btn.closest('.cga-round');
+  if (!round || round.classList.contains('is-solved')) return;
+  if (btn.getAttribute('data-cga-correct') === '1') {
+    btn.classList.add('is-right');
+    round.classList.add('is-solved');
+    round.querySelectorAll('.cga-choice').forEach(function (b) { b.disabled = true; });
+    cgaSay(round, '', '');
+    var win = round.querySelector('.cga-win');
+    if (win) win.hidden = false;
+    if (typeof playCorrectSound === 'function') playCorrectSound();
+    return;
+  }
+  btn.classList.add('is-wrong');
+  btn.setAttribute('aria-disabled', 'true');
+  var fbEn = btn.getAttribute('data-fb-en') || '';
+  var fbEs = btn.getAttribute('data-fb-es') || fbEn;
+  cgaSay(round, 'Not yet. ' + fbEn + ' Try another one.', 'Todavía no. ' + fbEs + ' Prueba con otra.');
+}
+function cgaShow(index) {
+  var rounds = document.querySelectorAll('#hw_cga .cga-round');
+  rounds.forEach(function (r, i) { r.hidden = i !== index; });
+  var target = rounds[index];
+  if (target) {
+    target.querySelectorAll('.cga-choice').forEach(function (b) {
+      b.disabled = false;
+      b.removeAttribute('aria-disabled');
+      b.classList.remove('is-wrong', 'is-right');
+    });
+    target.classList.remove('is-solved');
+    var win = target.querySelector('.cga-win');
+    if (win) win.hidden = true;
+    cgaSay(target, '', '');
+    var first = target.querySelector('.cga-choice');
+    if (first) first.focus();
+  }
+}
+document.addEventListener('click', function (e) {
+  var t = e.target.closest ? e.target.closest('#hw_cga button') : null;
+  if (!t) return;
+  if (t.classList.contains('cga-choice')) {
+    if (t.disabled) return;
+    cgaChoose(t);
+  } else if (t.classList.contains('cga-next')) {
+    var rounds = Array.prototype.slice.call(document.querySelectorAll('#hw_cga .cga-round'));
+    var here = rounds.indexOf(t.closest('.cga-round'));
+    cgaShow(Math.min(here + 1, rounds.length - 1));
+  } else if (t.classList.contains('cga-restart')) {
+    cgaShow(0);
+  }
+});
+
+
+/* Math Dominoes: two players on one device, and the paper version. */
+var domDuo = { on: false };
+
+function domDuoText(en, es) {
+  var span = function (cls, text, lang) {
+    var s = document.createElement('span');
+    s.className = cls;
+    if (lang) s.setAttribute('lang', lang);
+    s.textContent = text;
+    return s;
+  };
+  var frag = document.createDocumentFragment();
+  frag.appendChild(span('lang-en', en));
+  frag.appendChild(span('lang-es', es, 'es'));
+  return frag;
+}
+
+function domDuoSet(id, en, es) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = '';
+  el.appendChild(domDuoText(en, es));
+}
+
+/* Student places on even turns, the grown-up on odd turns. The turn is how many
+   dominoes have been placed after the first, so it stays right if the toggle is
+   switched on mid-chain. */
+function domDuoRender() {
+  var panel = document.getElementById('fam_dom_duo_panel');
+  if (!panel || !domDuo.on || typeof famDom === 'undefined' || !famDom.n) return;
+  var turn = Math.max(0, famDom.next - 1);
+  var done = famDom.next >= famDom.n;
+  var student = turn % 2 === 0;
+  panel.setAttribute('data-turn', student ? 'student' : 'grownup');
+  if (done) {
+    domDuoSet('fam_dom_duo_turn', '🎉 You built the loop together!', '🎉 ¡Armaron el círculo juntos!');
+    domDuoSet('fam_dom_duo_coach', 'Team chain: ' + famDom.n + ' of ' + famDom.n + ' dominoes. Tell each other one thing that helped.', 'Cadena del equipo: ' + famDom.n + ' de ' + famDom.n + ' fichas. Díganse una cosa que les ayudó.');
+    return;
+  }
+  if (student) {
+    domDuoSet('fam_dom_duo_turn', "🧑‍🎓 Student's turn: pick the domino that fits next.", '🧑‍🎓 Turno del estudiante: elige la ficha que sigue.');
+    domDuoSet('fam_dom_duo_coach', 'Grown-up, you are the coach: ask “How do you know it fits?” Please do not tap for them.', 'Adulto, eres el entrenador: pregunta «¿Cómo sabes que encaja?». Por favor no toques por ellos.');
+  } else {
+    domDuoSet('fam_dom_duo_turn', "👪 Grown-up's turn: pick a domino and think out loud.", '👪 Turno del adulto: elige una ficha y piensa en voz alta.');
+    domDuoSet('fam_dom_duo_coach', 'Student, you are the coach: say “yes” or “not yet” and tell why, before the domino goes down.', 'Estudiante, eres el entrenador: di «sí» o «todavía no» y explica por qué, antes de poner la ficha.');
+  }
+}
+
+/* The single-player lines talk about "wrong tries"; a team keeps one shared count of second looks. */
+function domDuoTeamStatus() {
+  if (!domDuo.on || typeof famDom === 'undefined' || !famDom.n) return;
+  domDuoSet('fam_dom_status',
+    'Team chain: ' + famDom.next + ' of ' + famDom.n + ' · Second looks: ' + famDom.tries,
+    'Cadena del equipo: ' + famDom.next + ' de ' + famDom.n + ' · Segundas miradas: ' + famDom.tries);
+}
+
+function toggleDominoDuo() {
+  domDuo.on = !domDuo.on;
+  var btn = document.getElementById('fam_dom_duo_toggle');
+  var panel = document.getElementById('fam_dom_duo_panel');
+  if (btn) btn.setAttribute('aria-pressed', domDuo.on ? 'true' : 'false');
+  if (panel) panel.hidden = !domDuo.on;
+  document.body.classList.toggle('dom-duo-on', domDuo.on);
+  if (domDuo.on) {
+    domDuoRender();
+    domDuoTeamStatus();
+  } else if (typeof updateDominoStatus === 'function') {
+    updateDominoStatus();
+  }
+}
+window.toggleDominoDuo = toggleDominoDuo;
+
+document.addEventListener('hw:domino', function (e) {
+  if (!domDuo.on) return;
+  var type = e.detail && e.detail.type;
+  if (type === 'miss') {
+    var hint = document.getElementById('fam_dom_hint');
+    if (hint) {
+      hint.textContent = '';
+      hint.appendChild(domDuoText('Not that one. Talk it over together: which answer is the twin of the problem at the end of the chain?', 'Esa no. Conversen juntos: ¿cuál respuesta es la pareja del problema al final de la cadena?'));
+    }
+  }
+  domDuoRender();
+  domDuoTeamStatus();
+});
+
+/* ── Paper dominoes ───────────────────────────────────────────────────────── */
+function dsheetEl(tag, cls, text) {
+  var el = document.createElement(tag);
+  if (cls) el.className = cls;
+  if (text != null) el.textContent = text;
+  return el;
+}
+
+function dsheetBi(tag, cls, en, es) {
+  var el = dsheetEl(tag, cls);
+  el.appendChild(domDuoText(en, es));
+  return el;
+}
+
+function buildDominoSheet() {
+  var data = typeof famGamesData === 'function' ? famGamesData() : null;
+  if (!data || typeof famDomTiles !== 'function') return null;
+  var tiles = famDomTiles(data.pairs, 0);
+  var old = document.querySelector('.hw-domino-sheet');
+  if (old) old.remove();
+  var sheet = dsheetEl('section', 'hw-domino-sheet');
+  sheet.setAttribute('aria-hidden', 'true');
+  sheet.appendChild(dsheetBi('h2', '', 'Math Dominoes: paper version', 'Dominó matemático: versión en papel'));
+  sheet.appendChild(dsheetBi('p', 'dsheet-note', 'For a student and a grown-up. No winner, no timer. Cut along the dashed lines.', 'Para un estudiante y un adulto. Sin ganador ni cronómetro. Recorten por las líneas punteadas.'));
+  var rules = dsheetEl('ol');
+  [
+    ['Lay the START domino down. Keep the others face up in a pile.', 'Pongan la ficha de INICIO. Dejen las demás boca arriba en un montón.'],
+    ['Take turns. Look at the problem on the right end of the chain. Find the domino whose LEFT side is its match, and say how you know.', 'Túrnense. Miren el problema del extremo derecho de la cadena. Busquen la ficha cuyo lado IZQUIERDO es su pareja y digan cómo lo saben.'],
+    ['The other person is the coach: ask “How do you know?” before you nod. Then switch roles.', 'La otra persona es el entrenador: pregunten «¿Cómo lo saben?» antes de asentir. Luego cambien de papel.'],
+    ['When the last domino matches the left side of the START domino, you built a loop together.', 'Cuando la última ficha coincide con el lado izquierdo de la ficha de INICIO, armaron un círculo juntos.']
+  ].forEach(function (r) { rules.appendChild(dsheetBi('li', '', r[0], r[1])); });
+  sheet.appendChild(rules);
+  /* The pile is printed in a scrambled order so the sheet does not hand over the chain. */
+  var pile = tiles.slice(1).reverse();
+  var grid = dsheetEl('div', 'dsheet-grid');
+  [tiles[0]].concat(pile).forEach(function (tile, i) {
+    var cell = dsheetEl('div', 'dsheet-tile');
+    if (i === 0) cell.appendChild(dsheetBi('span', 'dsheet-start', '★ START', '★ INICIO'));
+    cell.appendChild(dsheetEl('span', 'dsheet-half', tile.left));
+    cell.appendChild(dsheetEl('span', 'dsheet-half', tile.right));
+    grid.appendChild(cell);
+  });
+  sheet.appendChild(grid);
+  var key = dsheetEl('p', 'dsheet-key');
+  key.appendChild(dsheetBi('strong', '', 'Grown-up check, chain from the START domino: ', 'Revisión del adulto, cadena desde la ficha de INICIO: '));
+  key.appendChild(document.createTextNode(tiles.map(function (t) { return t.left + ' | ' + t.right; }).join('  →  ')));
+  sheet.appendChild(key);
+  document.body.appendChild(sheet);
+  return sheet;
+}
+
+function printDominoSheet() {
+  if (!buildDominoSheet()) return;
+  document.body.classList.add('print-domino-sheet');
+  window.print();
+  setTimeout(function () { document.body.classList.remove('print-domino-sheet'); }, 1000);
+}
+window.printDominoSheet = printDominoSheet;
+
+
 (function(){
   function init(lab){
     if(lab.dataset.questionReady)return;
@@ -3192,17 +3701,7 @@ function playFanfareSound() {
 }
 
 function speakMathWord(termEn, termEs) {
-  try {
-    if (!("speechSynthesis" in window)) return;
-    window.speechSynthesis.cancel();
-    const isEs = document.body.classList.contains("lang-mode-es");
-    const text = isEs && termEs ? termEs : termEn;
-    const lang = isEs && termEs ? "es-US" : "en-US";
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = lang;
-    utter.rate = 0.9;
-    window.speechSynthesis.speak(utter);
-  } catch (e) {}
+  hwVoice.speak(termEn, termEs, { single: true });
 }
 
 // Confetti Particle Engine
@@ -4707,19 +5206,8 @@ function toggleVocabSpeed() {
 }
 
 function speakBigIdea(textEn, textEs) {
-  try {
-    if (!("speechSynthesis" in window)) return;
-    window.speechSynthesis.cancel();
-    const isEs = document.body.classList.contains("lang-mode-es");
-    const text = isEs && textEs ? textEs : textEn;
-    const lang = isEs && textEs ? "es-US" : "en-US";
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = lang;
-    utter.rate = vocabSpeechRate;
-    window.speechSynthesis.speak(utter);
-  } catch (e) {}
+  hwVoice.speak(textEn, textEs);
 }
-window.speakHomeworkText = speakBigIdea;
 
 // Math Talk Prompt Spinner
 const mathTalkList = [

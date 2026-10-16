@@ -37,6 +37,9 @@ import {
   translateLanguageObjective,
 } from "./homework-spanish.mjs";
 import { getUnitTheme } from "./homework-themes.mjs";
+import { bridgeOf, bridgeSpeech, renderBridgeCard } from "./lib/homework-bridge.mjs";
+import { confusedRoundsFor, renderConfusedGrownUp } from "./lib/homework-confused-grownup.mjs";
+import { renderDominoDuo } from "./lib/homework-domino-duo.mjs";
 import { choiceFeedbackSpanish } from "./lib/homework-problems.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -3030,7 +3033,8 @@ function renderParentQuickCard(config) {
   const tips = stuckTips(config) || {};
   const ask = familyGuidance(config).question;
   const avoid = tips.dontSay?.[0];
-  if (!ask && !avoid) return "";
+  const bridge = bridgeOf(config.familyNotes);
+  if (!ask && !avoid && !bridge) return "";
   const row = (icon, labelEn, labelEs, tip) =>
     tip
       ? `<li><span aria-hidden="true">${icon}</span> <strong><span class="lang-en">${labelEn}</span><span class="lang-es" lang="es">${labelEs}</span></strong> <span class="lang-en">${esc(tip.en)}</span><span class="lang-es" lang="es">${esc(tip.es || tip.en)}</span></li>`
@@ -3041,7 +3045,14 @@ function renderParentQuickCard(config) {
         <ul>
           ${row("💬", "If they get stuck, ask:", "Si se atora, pregunten:", ask)}
           ${row("🚫", "Try not to say:", "Eviten decir:", avoid)}
-        </ul>
+        </ul>${
+          bridge
+            ? renderBridgeCard(
+                bridge,
+                `speakHomeworkText(${escAttr(JSON.stringify(bridgeSpeech(bridge, "en")))}, ${escAttr(JSON.stringify(bridgeSpeech(bridge, "es")))})`,
+              )
+            : ""
+        }
       </div>`;
 }
 
@@ -7363,6 +7374,7 @@ export function renderFamilyGameBreak(key, extras = {}, topic = key) {
           <span class="lang-en">Build a chain. The left side of each domino is the match for the problem on the end of the chain. Tap the domino that fits next.</span>
           <span class="lang-es" lang="es">Armen una cadena. El lado izquierdo de cada ficha es la pareja del problema al final de la cadena. Toquen la ficha que encaja.</span>
         </p>
+${renderDominoDuo()}
         <div class="fam-dom-chain" id="fam_dom_chain" role="list" aria-label="Domino chain"></div>
         <p class="fam-dom-hint" id="fam_dom_hint" aria-live="polite"></p>
         <div class="fam-dom-tray" id="fam_dom_tray" role="group" aria-label="Dominoes to place"></div>
@@ -8767,6 +8779,12 @@ export function renderPlayTabPanel(config, lessonId = "") {
   const arcadeUrl = lessonId
     ? `/math/games/practice-arcade/?lesson=${encodeURIComponent(lessonId)}`
     : "";
+  /* The Confused Grown-Up reuses authored items, so prefer ones the Check stop is not already asking. */
+  const { warmup, challenge } = selectTieredQuickCheckProblems(config.practice || {}, config);
+  const asked = [...(config.familyNotes?.basicPractice || []), ...warmup, ...challenge].map(
+    (p) => p.stem,
+  );
+  const confusedHtml = renderConfusedGrownUp(confusedRoundsFor(config, new Set(asked)));
   return `
     <div ${tabPanelAttrs("play", true)}>
       <h2 class="section-title">🎮 <span class="lang-en">Play</span><span class="lang-es" lang="es">Jugar</span></h2>
@@ -8774,24 +8792,7 @@ export function renderPlayTabPanel(config, lessonId = "") {
         <span class="lang-en">Pick a game and play as a team. Nothing here is timed, and every game can be replayed as many times as you like.</span>
         <span class="lang-es" lang="es">Escojan un juego y jueguen en equipo. Nada aquí tiene cronómetro, y pueden repetir cada juego cuantas veces quieran.</span>
       </p>
-      <div class="coop-mode-banner" style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:14px;padding:12px 16px;margin:12px 0 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span style="font-size:24px;">👥</span>
-          <div>
-            <strong style="font-size:13.5px;color:#15803d;display:block;">
-              <span class="lang-en">Pass-the-Phone Co-Op Mode</span>
-              <span class="lang-es" lang="es">Modo Cooperativo: Pasa el Teléfono</span>
-            </strong>
-            <small style="font-size:12px;color:#166534;">
-              <span class="lang-en">Turn 1: Parent sets or guesses · Turn 2: Student solves · Turn 3: Reveal together!</span>
-              <span class="lang-es" lang="es">Turno 1: Padre propone · Turno 2: Estudiante resuelve · Turno 3: ¡Celebren juntos!</span>
-            </small>
-          </div>
-        </div>
-        <button type="button" class="btn btn-sm btn-outline-success" id="btn_toggle_coop" onclick="toggleCoOpMode()" style="font-weight:700;padding:6px 14px;border-radius:8px;cursor:pointer;background:#ffffff;border:1.5px solid #22c55e;color:#15803d;">
-          <span class="lang-en">Turn On Co-Op</span><span class="lang-es" lang="es">Activar Co-Op</span>
-        </button>
-      </div>
+      ${confusedHtml}
       ${renderFamilyActivityCorner(config)}
       ${renderFamilyGameBreak(familyGameKey(config), { quizHtml, arcadeUrl }, detectVisualTopic(config))}
       <div class="tab-flow-nav">
@@ -9364,19 +9365,30 @@ function famGamesData() {
    [ twin of the PREVIOUS problem | this problem ], so the chain closes into a
    loop: each placed domino's right end is a problem, and the next domino must
    carry that problem's twin on its left. Starting point rotates per game. */
+function famDomTiles(pairs, start) {
+  var n = pairs.length;
+  var tiles = [];
+  for (var k = 0; k < n; k++) {
+    var i = (start + k) % n;
+    var prev = (i + n - 1) % n;
+    tiles.push({ k: k, left: pairs[prev].b, right: pairs[i].a });
+  }
+  return tiles;
+}
+
+/* The game reports what happens so optional layers (two-player mode) can follow
+   along without the game knowing they exist. */
+function domAnnounce(type) {
+  document.dispatchEvent(new CustomEvent('hw:domino', { detail: { type: type } }));
+}
+
 function resetDominoGame() {
   var data = famGamesData();
   var chain = document.getElementById('fam_dom_chain');
   var tray = document.getElementById('fam_dom_tray');
   if (!data || !chain || !tray) return;
   var n = data.pairs.length;
-  var start = Math.floor(Math.random() * n);
-  var tiles = [];
-  for (var k = 0; k < n; k++) {
-    var i = (start + k) % n;
-    var prev = (i + n - 1) % n;
-    tiles.push({ k: k, left: data.pairs[prev].b, right: data.pairs[i].a });
-  }
+  var tiles = famDomTiles(data.pairs, Math.floor(Math.random() * n));
   famDom = { n: n, next: 1, tries: 0, tiles: tiles };
   var win = document.getElementById('fam_dom_win');
   if (win) win.hidden = true;
@@ -9397,6 +9409,7 @@ function resetDominoGame() {
     tray.appendChild(btn);
   });
   updateDominoStatus();
+  domAnnounce('reset');
 }
 
 function dominoTileEl(tile, isButton) {
@@ -9445,6 +9458,7 @@ function placeDomino(btn, tile) {
       'Not that one. Look at the problem on the end of the chain: which answer is its twin?',
       'Esa no. Mira el problema al final de la cadena: ¿cuál es su pareja?');
     updateDominoStatus();
+    domAnnounce('miss');
     return;
   }
   var slot = chain.querySelector('.fam-dom-slot');
@@ -9465,6 +9479,7 @@ function placeDomino(btn, tile) {
     chain.appendChild(dominoSlotEl());
   }
   updateDominoStatus();
+  domAnnounce('placed');
 }
 
 /* The page has three language modes (bilingual default / en / es), carried by
@@ -10245,24 +10260,6 @@ function openConceptZoom(btn) {
   dlg.showModal();
 }
 
-function toggleCoOpMode() {
-  var active = document.body.classList.toggle('coop-mode-active');
-  var btn = document.getElementById('btn_toggle_coop');
-  if (btn) {
-    btn.innerHTML = active
-      ? '<span class="lang-en">✓ Co-Op Active (2-Player)</span><span class="lang-es" lang="es">✓ Co-Op Activo (2 Jugadores)</span>'
-      : '<span class="lang-en">Turn On Co-Op</span><span class="lang-es" lang="es">Activar Co-Op</span>';
-    if (active) {
-      btn.style.background = '#22c55e';
-      btn.style.color = '#ffffff';
-    } else {
-      btn.style.background = '#ffffff';
-      btn.style.color = '#15803d';
-    }
-  }
-}
-window.toggleCoOpMode = toggleCoOpMode;
-
 function preparePaperPractice() {
   alert("For offline work, print now or choose Save as PDF in the print dialog. Open the saved PDF before disconnecting. This website has not downloaded an offline copy. / Para trabajar sin internet, imprime ahora o elige Guardar como PDF. Abre el PDF guardado antes de desconectarte. Este sitio no ha descargado una copia sin conexión.");
   printProblemsOnly();
@@ -10410,18 +10407,7 @@ function printRefrigeratorSheet() {
 window.printRefrigeratorSheet = printRefrigeratorSheet;
 
 function speakHomeworkText(enText, esText) {
-  try {
-    if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    var isEs = document.body.classList.contains('lang-mode-es') || document.documentElement.lang === 'es';
-    var text = (isEs && esText) ? esText : (enText || esText);
-    var lang = (isEs && esText) ? 'es-US' : 'en-US';
-    if (!text || !text.trim()) return;
-    var utter = new SpeechSynthesisUtterance(text.trim());
-    utter.lang = lang;
-    utter.rate = 0.95;
-    window.speechSynthesis.speak(utter);
-  } catch(e) {}
+  hwVoice.speak(enText, esText);
 }
 window.speakHomeworkText = speakHomeworkText;
 window.speakSectionText = speakHomeworkText;
@@ -15057,7 +15043,8 @@ button.fam-dom-tile:focus-visible { outline: 3px solid var(--teal); outline-offs
 
 @media (max-width: 560px) {
   .fam-dom-tray { flex-direction: column; }
-  .fam-dom-half { min-width: 0; flex: 1; max-width: none; }
+  .fam-dom-chain .fam-dom-tile, .fam-dom-tray .fam-dom-tile { width: 100%; }
+  .fam-dom-half { min-width: 0; flex: 1 1 50%; max-width: none; }
   .fam-wyr-options { flex-direction: column; }
   .fam-wyr-or { align-self: flex-start; }
   .fam-sort-bins { flex-direction: column; }

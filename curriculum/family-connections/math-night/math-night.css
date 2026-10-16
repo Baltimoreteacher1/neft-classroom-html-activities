@@ -1,0 +1,609 @@
+/* Family Math Night kit — screen controls on top, print sheets below.
+   Print is the product: Letter paper, one idea per page, black on white,
+   no color-only meaning, nothing that needs a timer or a score. */
+:root {
+  --ink: #173b47;
+  --ink-deep: #0d2932;
+  --paper: #f7f3e9;
+  --paper-bright: #fffdf8;
+  --line: #c9c4b3;
+  --teal: #1a746f;
+  --teal-pale: #dcece6;
+  --muted: #4d5f65;
+  --font-display: "Outfit", "Lexend", system-ui, sans-serif;
+  --font-body: "Lexend", "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+  font: 400 1rem/1.55 var(--font-body);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: -4rem;
+  padding: 0.6rem 1rem;
+  background: var(--ink-deep);
+  color: #fff;
+  border-radius: 0.5rem;
+}
+
+.skip-link:focus {
+  top: 0.5rem;
+}
+
+:focus-visible {
+  outline: 3px solid #1b5fb3;
+  outline-offset: 2px;
+}
+
+.mn-bar {
+  padding: 0.75rem 1rem;
+}
+
+.mn-back {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--ink-deep);
+  font-weight: 700;
+}
+
+.mn-main {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 0 1rem 3rem;
+}
+
+.mn-es {
+  display: block;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.mn-controls h1 {
+  margin: 0.5rem 0;
+  font: 800 clamp(1.6rem, 5vw, 2.3rem) / 1.15 var(--font-display);
+  color: var(--ink-deep);
+}
+
+.mn-controls h1 .mn-es {
+  font-size: 0.6em;
+  font-weight: 500;
+}
+
+.mn-form {
+  display: grid;
+  gap: 1rem;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.mn-field {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.mn-field > label,
+.mn-field > legend,
+.mn-row > label {
+  font-weight: 700;
+}
+
+.mn-row {
+  display: grid;
+  gap: 0.25rem;
+  margin-bottom: 0.6rem;
+}
+
+.mn-row label .mn-es {
+  display: inline;
+  margin-left: 0.4rem;
+}
+
+#mn-unit,
+.mn-form input[type="text"] {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.7rem;
+  border: 2px solid var(--line);
+  border-radius: 0.6rem;
+  background: var(--paper-bright);
+  color: var(--ink);
+  font: inherit;
+}
+
+.mn-parts {
+  gap: 0.25rem;
+}
+
+.mn-part {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr;
+  column-gap: 0.6rem;
+  align-items: start;
+  min-height: 2.75rem;
+  padding: 0.2rem 0;
+}
+
+.mn-part input {
+  grid-row: 1 / span 2;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0.15rem;
+  accent-color: var(--teal);
+}
+
+.mn-print {
+  justify-self: start;
+  min-height: 2.75rem;
+  padding: 0.6rem 1.4rem;
+  border: 0;
+  border-radius: 0.7rem;
+  background: var(--ink-deep);
+  color: #fff;
+  font: 700 1rem var(--font-body);
+  cursor: pointer;
+}
+
+.mn-print .mn-es {
+  color: #d6e4e8;
+}
+
+.mn-status {
+  min-height: 1.5rem;
+  margin: 0.5rem 0 1rem;
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------- sheets --- */
+
+.mn-sheet {
+  margin: 0 0 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: #fff;
+  color: #111;
+}
+
+.mn-sheet[hidden] {
+  display: none;
+}
+
+.mn-sheet h2 {
+  margin: 0.2rem 0 0.6rem;
+  font: 800 1.9rem/1.1 var(--font-display);
+}
+
+.mn-sheet h3 {
+  margin: 1.1rem 0 0.4rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 2px solid #111;
+  font: 700 1.1rem/1.2 var(--font-display);
+}
+
+.mn-sheet .es {
+  display: block;
+  color: #333;
+  font-size: 0.93em;
+}
+
+.mn-sheet .en {
+  display: block;
+}
+
+.mn-kicker {
+  margin: 0;
+  color: #333;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.mn-event {
+  margin: 0 0 0.6rem;
+  font-weight: 700;
+}
+
+.mn-note {
+  margin: 0 0 0.6rem;
+}
+
+.mn-when {
+  margin: 0.7rem 0 0.3rem;
+  font: 700 1rem/1.2 var(--font-display);
+}
+
+.mn-list,
+.mn-checklist,
+.mn-station-index {
+  margin: 0;
+  padding-left: 1.3rem;
+}
+
+.mn-list li {
+  margin-bottom: 0.45rem;
+}
+
+.mn-checklist {
+  padding: 0;
+  list-style: none;
+}
+
+.mn-checklist li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  margin-bottom: 0.4rem;
+}
+
+.mn-box {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.25rem;
+  border: 2px solid #111;
+  border-radius: 0.2rem;
+}
+
+.mn-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mn-table th,
+.mn-table td {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #111;
+  vertical-align: top;
+  text-align: left;
+}
+
+.mn-time {
+  width: 6.5rem;
+  white-space: nowrap;
+}
+
+.mn-step-title {
+  font-weight: 700;
+}
+
+.mn-station-index {
+  padding: 0;
+  list-style: none;
+}
+
+.mn-station-index li {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  margin-bottom: 0.7rem;
+  break-inside: avoid;
+}
+
+.mn-station-index .mn-qr {
+  width: 5.5rem;
+  height: 5.5rem;
+}
+
+.mn-station-title {
+  display: block;
+  font-weight: 700;
+}
+
+.mn-station-link {
+  display: block;
+  color: #333;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.mn-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+/* station sign */
+.mn-sign-role {
+  font-size: 2.6rem;
+}
+
+.mn-sign-title {
+  margin: 0 0 0.3rem;
+  font: 800 1.6rem/1.2 var(--font-display);
+}
+
+.mn-unit-line {
+  margin: 0 0 0.6rem;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.mn-connects {
+  margin: 0 0 0.4rem;
+  padding: 0.5rem 0.7rem;
+  border-left: 0.35rem solid #111;
+  background: #f2f2f2;
+}
+
+.mn-connects-label {
+  font-weight: 700;
+}
+
+.mn-sign .mn-list {
+  font-size: 1.15rem;
+}
+
+.mn-scan {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin: 1rem 0 0.6rem;
+}
+
+.mn-qr {
+  flex: none;
+  width: 9rem;
+  height: 9rem;
+}
+
+.mn-short {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.mn-calm {
+  margin: 0.6rem 0 0;
+  padding: 0.5rem 0.7rem;
+  border: 2px solid #111;
+  border-radius: 0.5rem;
+  font-weight: 700;
+}
+
+/* passport */
+.mn-passport {
+  padding: 0.4rem 0.2rem;
+}
+
+.mn-passport h2 {
+  font-size: 1.5rem;
+}
+
+.mn-stamps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin: 0.6rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mn-stamp {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.4rem;
+  border: 2px solid #111;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.mn-stamp .es {
+  font-size: 0.8rem;
+}
+
+.mn-stamp-title {
+  color: #333;
+}
+
+.mn-stamp-box {
+  display: grid;
+  place-items: center;
+  height: 2.8rem;
+  text-align: center;
+  border: 2px dashed #555;
+  border-radius: 0.4rem;
+  color: #555;
+  font-size: 0.7rem;
+}
+
+.mn-noticed {
+  margin: 0.6rem 0;
+  min-height: 3rem;
+  border-bottom: 1px solid #111;
+}
+
+.mn-passport-foot {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.mn-passport-foot .mn-qr {
+  width: 5.5rem;
+  height: 5.5rem;
+}
+
+.mn-cut {
+  margin: 0.8rem 0;
+  border: 0;
+  border-top: 2px dashed #777;
+}
+
+@media (max-width: 40rem) {
+  .mn-stamps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mn-scan {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* --------------------------------------------------------------- print --- */
+
+@page {
+  size: letter portrait;
+  margin: 0.5in;
+}
+
+@media print {
+  body {
+    background: #fff;
+    font-size: 10pt;
+    line-height: 1.35;
+  }
+
+  .mn-screen,
+  .skip-link {
+    display: none !important;
+  }
+
+  .mn-main {
+    max-width: none;
+    padding: 0;
+  }
+
+  .mn-sheet {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .mn-sheet:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  .mn-sheet[hidden] {
+    display: none !important;
+  }
+
+  .mn-sheet h2,
+  .mn-sheet h3,
+  .mn-table tr,
+  .mn-checklist li,
+  .mn-stamp,
+  .mn-scan {
+    break-inside: avoid;
+  }
+
+  .mn-sheet h2 {
+    margin: 0.1rem 0 0.4rem;
+    font-size: 18pt;
+  }
+
+  .mn-sheet h3 {
+    margin: 0.7rem 0 0.3rem;
+    font-size: 12pt;
+    break-after: avoid;
+  }
+
+  .mn-sheet .es {
+    font-size: 0.9em;
+    line-height: 1.25;
+  }
+
+  .mn-list li,
+  .mn-checklist li {
+    margin-bottom: 0.18rem;
+  }
+
+  .mn-when {
+    margin: 0.4rem 0 0.2rem;
+  }
+
+  .mn-table th,
+  .mn-table td {
+    padding: 0.3rem 0.5rem;
+  }
+
+  .mn-sign {
+    font-size: 11.5pt;
+  }
+
+  .mn-sign .mn-list {
+    font-size: 11.5pt;
+  }
+
+  .mn-sign .mn-sign-role {
+    font-size: 26pt;
+  }
+
+  .mn-sign .mn-sign-title {
+    font-size: 16pt;
+  }
+
+  .mn-sign .mn-qr {
+    width: 7.5rem;
+    height: 7.5rem;
+  }
+
+  .mn-passport-sheet {
+    font-size: 9pt;
+  }
+
+  .mn-passport h2 {
+    font-size: 15pt;
+  }
+
+  .mn-passport .mn-note {
+    margin-bottom: 0.3rem;
+  }
+
+  .mn-passport .mn-stamp {
+    padding: 0.25rem 0.35rem;
+    font-size: 8pt;
+  }
+
+  .mn-passport .mn-stamp .es {
+    font-size: 8pt;
+  }
+
+  .mn-passport .mn-stamp-box {
+    height: 1.5rem;
+  }
+
+  .mn-passport {
+    padding: 0;
+  }
+
+  .mn-passport .mn-stamps {
+    gap: 0.3rem;
+    margin: 0.3rem 0;
+  }
+
+  .mn-passport .mn-noticed {
+    min-height: 1.3rem;
+    margin: 0.3rem 0;
+  }
+
+  .mn-passport .mn-passport-foot .mn-qr {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .mn-cut {
+    margin: 0.4rem 0;
+  }
+}

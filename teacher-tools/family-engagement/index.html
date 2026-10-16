@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Family Engagement · Neft Teacher</title>
+    <meta
+      name="description"
+      content="Aggregate-only view of how families use the family practice: which route they pick, which tabs they finish, language and device, by week. No names, no codes."
+    />
+    <link rel="stylesheet" href="./family-engagement.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#app">Skip to the numbers</a>
+    <header class="top">
+      <h1>Family Engagement</h1>
+      <div class="top-actions">
+        <a class="btn" href="/teacher-tools/">Teacher Tools</a>
+        <button class="btn hidden" id="refresh" type="button">Refresh</button>
+        <button class="btn hidden" id="signout" type="button">Sign out</button>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="gate" id="gate" aria-labelledby="gate-title">
+        <h2 id="gate-title">Teacher key</h2>
+        <p>
+          Enter the same teacher key the Gradebook uses. It is kept on this device only and sent
+          only as a request header.
+        </p>
+        <form id="key-form" autocomplete="off">
+          <label for="key-input">Teacher key</label>
+          <input id="key-input" type="password" autocomplete="off" />
+          <button class="btn primary" type="submit">Open</button>
+        </form>
+        <p class="gate-msg" id="gate-msg" role="alert"></p>
+      </section>
+
+      <section id="app" class="app hidden" aria-labelledby="app-title" tabindex="-1">
+        <h2 id="app-title">How families used practice</h2>
+        <p class="lede">
+          Counts only. Nothing here names a student or family, and no lesson, address or time of day
+          is recorded &mdash; only the week. Any number under <strong id="k">5</strong> is hidden
+          (shown as &ldquo;&lt;5&rdquo;) so a quiet week cannot point to one household.
+        </p>
+        <div class="controls">
+          <label for="weeks">Show the last</label>
+          <select id="weeks">
+            <option value="4">4 weeks</option>
+            <option value="8" selected>8 weeks</option>
+            <option value="12">12 weeks</option>
+            <option value="26">26 weeks</option>
+          </select>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+        <div id="cards"></div>
+      </section>
+    </main>
+
+    <script type="module" src="./family-engagement.js"></script>
+  </body>
+</html>

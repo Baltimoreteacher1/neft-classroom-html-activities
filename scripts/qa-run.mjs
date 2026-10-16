@@ -526,6 +526,10 @@ const COVERAGE = [
   [/^curriculum\/class-boss\//, ["validate:class-boss"]],
   [/^curriculum\/teach-the-machine\//, ["validate:teach-machine"]],
   [/^curriculum\/family-connections\//, ["validate:family-broadcast"]],
+  [
+    /^(data\/family-homework-notes\/|data\/homework-confused-grownup-tags\.json|tools\/validate-family-bridge\.mjs|tools\/lib\/family-bridge-check\.mjs)/,
+    ["validate:family-bridge"],
+  ],
   [/^curriculum\/about\//, ["validate:about", "audit:links"]],
   // Project Studio (8 unit studios x 3 phases in Chromium) — scoped to its own
   // surface so unrelated deploys do not pay ~90s for it. Must precede the

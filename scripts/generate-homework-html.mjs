@@ -48,6 +48,9 @@ import { STUDIO_SKIN_CSS, STUDIO_SKIN_JS } from "./homework-studio-skin.mjs";
 import { getUnitTheme, renderUnitThemeCss } from "./homework-themes.mjs";
 import { renderVisualMathLab, VISUAL_LABS_CSS, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
+import { BRIDGE_CSS } from "./lib/homework-bridge.mjs";
+import { CONFUSED_GROWNUP_CSS, CONFUSED_GROWNUP_JS } from "./lib/homework-confused-grownup.mjs";
+import { DOMINO_DUO_CSS, DOMINO_DUO_JS } from "./lib/homework-domino-duo.mjs";
 import { applyPracticeReview, loadPracticeReview } from "./lib/homework-practice-review.mjs";
 import {
   answerKeyLines,
@@ -64,6 +67,7 @@ import {
   staleSharedFiles,
   writeSharedFiles,
 } from "./lib/homework-shared-assets.mjs";
+import { VOICE_CSS, VOICE_JS } from "./lib/homework-voice.mjs";
 import { workedExampleFor } from "./lib/homework-worked-example.mjs";
 import { compareFamilyHomeworkIds, generatesFamilyHomework } from "./lib/lesson-scope.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
@@ -4052,6 +4056,10 @@ body {
   line-height: 1.6 !important;
 }
 ${STUDIO_SKIN_CSS}
+${BRIDGE_CSS}
+${CONFUSED_GROWNUP_CSS}
+${DOMINO_DUO_CSS}
+${VOICE_CSS}
 ${familyStyleCss}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -4182,6 +4190,9 @@ window.__HW_WORKED__ = ${jsonForScript(workedExampleFor(config, coreSelected))};
 ${HOMEWORK_TABS_JS}
 ${STUDIO_SKIN_JS}
 ${HOMEWORK_GAME_JS}
+${VOICE_JS}
+${CONFUSED_GROWNUP_JS}
+${DOMINO_DUO_JS}
 ${VISUAL_LABS_JS}
 ${MATH_INPUT_JS}
 // Sound engine
@@ -4369,17 +4380,7 @@ function playFanfareSound() {
 }
 
 function speakMathWord(termEn, termEs) {
-  try {
-    if (!("speechSynthesis" in window)) return;
-    window.speechSynthesis.cancel();
-    const isEs = document.body.classList.contains("lang-mode-es");
-    const text = isEs && termEs ? termEs : termEn;
-    const lang = isEs && termEs ? "es-US" : "en-US";
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = lang;
-    utter.rate = 0.9;
-    window.speechSynthesis.speak(utter);
-  } catch (e) {}
+  hwVoice.speak(termEn, termEs, { single: true });
 }
 
 // Confetti Particle Engine
@@ -5559,19 +5560,8 @@ function toggleVocabSpeed() {
 }
 
 function speakBigIdea(textEn, textEs) {
-  try {
-    if (!("speechSynthesis" in window)) return;
-    window.speechSynthesis.cancel();
-    const isEs = document.body.classList.contains("lang-mode-es");
-    const text = isEs && textEs ? textEs : textEn;
-    const lang = isEs && textEs ? "es-US" : "en-US";
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = lang;
-    utter.rate = vocabSpeechRate;
-    window.speechSynthesis.speak(utter);
-  } catch (e) {}
+  hwVoice.speak(textEn, textEs);
 }
-window.speakHomeworkText = speakBigIdea;
 
 // Math Talk Prompt Spinner
 const mathTalkList = [

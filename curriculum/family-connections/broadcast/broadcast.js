@@ -14,12 +14,16 @@
  *     sends no referrer, so a forwarded link cannot leak the code onward.
  *   - Nothing is ever inserted as HTML. Every value from the API lands through
  *     textContent, and link targets must be site-relative paths.
+ *   - When the student chose items on "Show my family", those LEAD the story,
+ *     in the student's own words, before the automatic did / grew / stuck cards.
+ *     Nothing is shown unless the student turned sharing on.
  *   - No grade, no score, no ranking, and no other child appears anywhere. The
  *     only class-level line comes from the anonymous, k-anonymous
  *     /api/class-pulse aggregate and is labelled as class-wide.
  * ========================================================================== */
 
 import { UI } from "./broadcast-content.js";
+import { SHARE_FAMILY_COPY } from "/assets/family-share/family-share.js";
 
 const LANG_KEY = "nt_broadcast.lang";
 const CODE_KEY = "nt_broadcast.code";
@@ -197,6 +201,37 @@ function weekday(iso) {
 
 /* ------------------------------------------------------------ card building */
 
+/** The student's own picks, led with their words and a way to start the talk. */
+function sharedCard(shared, name) {
+  const copy = SHARE_FAMILY_COPY;
+  const lang = state.lang === "es" ? "es" : "en";
+  return {
+    kicker: copy.kicker[lang](name),
+    title: copy.title[lang](name),
+    weight: shared.length * 2,
+    build(body) {
+      body.appendChild(node("p", "lede", copy.intro[lang]));
+      const list = node("ul", "share-list");
+      for (const item of shared) {
+        const li = node("li", `share-item share-kind-${item.kind}`);
+        if (item.kind === "skill") {
+          li.appendChild(node("span", "chip", copy.skill[lang](item.label)));
+        } else if (item.kind === "model") {
+          li.appendChild(node("span", "chip chip-warm", copy.model[lang](item.label)));
+        } else {
+          li.appendChild(node("strong", "share-words-label", copy.words[lang]));
+          li.appendChild(node("blockquote", "share-words", item.text));
+        }
+        list.appendChild(li);
+      }
+      body.appendChild(list);
+      const box = node("div", "callout");
+      box.appendChild(node("p", null, copy.ask[lang]));
+      body.appendChild(box);
+    },
+  };
+}
+
 function buildCards(data) {
   const t = ui();
   const cards = [];
@@ -209,6 +244,9 @@ function buildCards(data) {
       if (data.note) body.appendChild(node("p", "lede", data.note));
     },
   });
+
+  const shared = Array.isArray(data.shared) ? data.shared : [];
+  if (shared.length) cards.push(sharedCard(shared, data.child && data.child.displayName));
 
   const did = Array.isArray(data.did) ? data.did : [];
   cards.push({

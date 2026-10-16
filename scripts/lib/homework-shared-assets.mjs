@@ -67,7 +67,7 @@ export function externalizeSharedCode(html) {
   files[nameJs] = `${shared}\n`;
   out =
     out.slice(0, scriptOpen) +
-    `<script>\n${data}\n</script>\n<script src="${URL_DIR}/${nameJs}"></script>` +
+    `<script>\n${data}\n</script>\n<script src="${URL_DIR}/${nameJs}"></script>\n<script src="/assets/family-engagement/engagement-beacon.js" defer></script>` +
     out.slice(scriptClose + "</script>".length);
 
   return { html: out, files };

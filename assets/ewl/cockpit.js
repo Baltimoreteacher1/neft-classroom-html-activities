@@ -181,10 +181,18 @@
 
     function hud() {
       var slot = h("div", { class: "ewlc-hud" });
+      var atlas = h("div", { class: "ewlc-atlas" });
+      function withAtlas() {
+        if (window.NTProgressAtlas) {
+          slot.appendChild(atlas);
+          window.NTProgressAtlas.mountMini(atlas);
+        }
+        return slot;
+      }
       if (EWL.Fluency && typeof EWL.Fluency.hud === "function") {
         try {
           EWL.Fluency.hud(slot);
-          return slot;
+          return withAtlas();
         } catch (_err) {
           EWL.clear(slot);
         }
@@ -206,7 +214,7 @@
               t("Warm up your fluency", "Calienta tu fluidez"),
             ),
       );
-      return slot;
+      return withAtlas();
     }
 
     function stepper(states) {
