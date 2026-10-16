@@ -14,7 +14,7 @@ const SHELL = [
   "./rematch.js",
   "./rematch.css",
   "./manifest.webmanifest",
-  "/assets/game-studio.js?v=20261003",
+  "/assets/game-studio.js?v=20261016",
   "/assets/game-studio.css?v=20261002",
   "/assets/fonts/atkinson-hyperlegible-fredoka-bba435.css",
   "./art/char-sprout.png",

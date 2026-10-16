@@ -31,7 +31,7 @@ const CORE = [
   SCOPE + "studio.css",
   "/curriculum/review-expeditions/voyage.js?v=20261007",
   "/curriculum/review-expeditions/voyage.css?v=20261007",
-  "/assets/game-studio.js?v=20261003",
+  "/assets/game-studio.js?v=20261016",
   "/assets/game-studio.css?v=20261002",
   "/data/curriculum-manifest.json",
   "/games/vendor/phaser/phaser-3.80.1.min.js",

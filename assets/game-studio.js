@@ -18,12 +18,31 @@
   let adapter = {};
   let paused = false;
   let dialogPaused = false;
-  let toolbar, dialog, soundButton, motionButton, pauseButton, notice, sessionRail, ceremony;
+  let toolbar,
+    dialog,
+    soundButton,
+    motionButton,
+    pauseButton,
+    notice,
+    sessionRail,
+    ceremony,
+    helpButton,
+    settingsButton,
+    brandEl;
   let audioCtx;
   const session = { correct: 0, attempts: 0, streak: 0, bestStreak: 0, mastered: false };
   let notificationTimer;
   let previousFocus;
   const listeners = new EventTarget();
+  // Spanish follows the site-wide language key; read at call time so a switch applies without a reload.
+  const isEs = () => {
+    try {
+      return localStorage.getItem("nt-lang") === "es";
+    } catch {
+      return false;
+    }
+  };
+  const T = (en, es) => (isEs() ? es : en);
   function save() {
     try {
       localStorage.setItem(KEY, JSON.stringify(preferences));
@@ -38,11 +57,37 @@
     adapter.setMuted?.(preferences.muted);
     adapter.setMotion?.(preferences.reducedMotion);
     soundButton?.setAttribute("aria-pressed", String(!preferences.muted));
-    if (soundButton) soundButton.textContent = preferences.muted ? "Sound off" : "Sound on";
+    if (soundButton)
+      soundButton.textContent = preferences.muted
+        ? T("Sound off", "Sonido apagado")
+        : T("Sound on", "Sonido activado");
     motionButton?.setAttribute("aria-pressed", String(preferences.reducedMotion));
     if (motionButton)
-      motionButton.textContent = preferences.reducedMotion ? "Calm motion" : "Full motion";
+      motionButton.textContent = preferences.reducedMotion
+        ? T("Calm motion", "Movimiento calmado")
+        : T("Full motion", "Movimiento completo");
+    relabel();
     listeners.dispatchEvent(new CustomEvent("settings", { detail: { ...preferences } }));
+  }
+  // Re-label the static controls when the language changes (no reload needed).
+  function relabel() {
+    if (!toolbar) return;
+    toolbar.setAttribute(
+      "aria-label",
+      T("Game player controls", "Controles del reproductor del juego"),
+    );
+    if (brandEl && !adapter.title) brandEl.textContent = T("Arcade Studio", "Estudio Arcade");
+    if (helpButton) helpButton.textContent = T("How to play", "Cómo jugar");
+    if (settingsButton) settingsButton.textContent = T("Settings", "Ajustes");
+    if (pauseButton)
+      pauseButton.textContent = paused ? T("Resume", "Continuar") : T("Pause", "Pausa");
+    if (sessionRail) {
+      sessionRail.setAttribute("aria-label", T("This round", "Esta ronda"));
+      const label = sessionRail.querySelector("[data-objective]");
+      if (label) label.textContent = T("Objective", "Objetivo");
+      renderSession();
+    }
+    document.documentElement.lang = isEs() ? "es" : document.documentElement.lang;
   }
   function setPaused(value) {
     if (!adapter.pause || !adapter.resume || value === paused) return;
@@ -51,7 +96,7 @@
     else adapter.resume();
     document.documentElement.classList.toggle("studio-paused", paused);
     if (pauseButton) {
-      pauseButton.textContent = paused ? "Resume" : "Pause";
+      pauseButton.textContent = paused ? T("Resume", "Continuar") : T("Pause", "Pausa");
       pauseButton.setAttribute("aria-pressed", String(paused));
     }
   }
@@ -83,16 +128,28 @@
     dialog.replaceChildren();
     const title = document.createElement("h2");
     title.id = "studio-dialog-title";
-    title.textContent = mode === "help" ? adapter.title || "How to play" : "Player settings";
+    title.textContent =
+      mode === "help"
+        ? adapter.title || T("How to play", "Cómo jugar")
+        : T("Player settings", "Ajustes del jugador");
     dialog.append(title);
     if (mode === "help") {
       const steps = document.createElement("ol");
       (adapter.instructions?.length
         ? adapter.instructions
         : [
-            "Choose a practice level in the game. Read the challenge before making your move.",
-            "Use the game controls to build or choose an answer. Take as much time as you need.",
-            "Read the feedback, use a hint when available, and try again to strengthen your reasoning.",
+            T(
+              "Choose a practice level in the game. Read the challenge before making your move.",
+              "Elige un nivel de práctica en el juego. Lee el reto antes de hacer tu jugada.",
+            ),
+            T(
+              "Use the game controls to build or choose an answer. Take as much time as you need.",
+              "Usa los controles del juego para armar o elegir una respuesta. Tómate el tiempo que necesites.",
+            ),
+            T(
+              "Read the feedback, use a hint when available, and try again to strengthen your reasoning.",
+              "Lee los comentarios, usa una pista cuando haya y vuelve a intentarlo para fortalecer tu razonamiento.",
+            ),
           ]
       ).forEach((text) => {
         const li = document.createElement("li");
@@ -102,16 +159,21 @@
       dialog.append(steps);
     } else {
       dialog.append(
-        checkbox("Mute game audio", "muted"),
-        checkbox("Reduce motion and celebrations", "reducedMotion"),
-        checkbox("Stronger contrast", "contrast"),
+        checkbox(T("Mute game audio", "Silenciar el audio del juego"), "muted"),
+        checkbox(
+          T("Reduce motion and celebrations", "Reducir el movimiento y las celebraciones"),
+          "reducedMotion",
+        ),
+        checkbox(T("Stronger contrast", "Mayor contraste"), "contrast"),
       );
       const note = document.createElement("p");
-      note.textContent =
-        "Settings stay on this device and apply across the arcade. Your game progress uses the game's own save controls.";
+      note.textContent = T(
+        "Settings stay on this device and apply across the arcade. Your game progress uses the game's own save controls.",
+        "Los ajustes se quedan en este dispositivo y se aplican en todo el arcade. El progreso de tu juego usa los controles de guardado del propio juego.",
+      );
       dialog.append(note);
     }
-    dialog.append(button("Back to game", () => dialog.close()));
+    dialog.append(button(T("Back to game", "Volver al juego"), () => dialog.close()));
     dialog.showModal();
   }
   function tone(kind) {
@@ -150,13 +212,22 @@
     const mark = Math.floor(session.correct / 5) * 5;
     const goal = mark + 5;
     const into = session.correct - mark;
-    sessionRail.querySelector("[data-count]").textContent = `${session.correct} / ${goal} solved`;
+    sessionRail.querySelector("[data-count]").textContent =
+      `${session.correct} / ${goal} ${T("solved", "resueltas")}`;
     sessionRail.querySelector(".studio-meter i").style.width = `${(into / 5) * 100}%`;
     sessionRail.querySelector("[data-streak]").textContent =
-      session.streak > 1 ? `Streak ${session.streak}` : "Streak ready";
+      session.streak > 1
+        ? `${T("Streak", "Racha")} ${session.streak}`
+        : T("Streak ready", "Racha lista");
     const starNode = sessionRail.querySelector("[data-stars]");
     starNode.textContent = earned.map((on) => (on ? "★" : "☆")).join("");
-    starNode.setAttribute("aria-label", `${earned.filter(Boolean).length} of 3 stars`);
+    starNode.setAttribute(
+      "aria-label",
+      T(
+        `${earned.filter(Boolean).length} of 3 stars`,
+        `${earned.filter(Boolean).length} de 3 estrellas`,
+      ),
+    );
   }
   function noteFeedback(detail) {
     if (typeof detail?.correct !== "boolean") return false;
@@ -191,23 +262,47 @@
     if (!ceremony) return;
     const earned = stars();
     const lines = [
-      earned[0] ? "Star 1: three correct answers." : "Star 1 opens after three correct answers.",
+      earned[0]
+        ? T("Star 1: three correct answers.", "Estrella 1: tres respuestas correctas.")
+        : T(
+            "Star 1 opens after three correct answers.",
+            "La estrella 1 se abre con tres respuestas correctas.",
+          ),
       earned[1]
-        ? "Star 2: a streak of three, or eight correct."
-        : "Star 2 opens with a streak of three, or eight correct.",
+        ? T(
+            "Star 2: a streak of three, or eight correct.",
+            "Estrella 2: una racha de tres, u ocho correctas.",
+          )
+        : T(
+            "Star 2 opens with a streak of three, or eight correct.",
+            "La estrella 2 se abre con una racha de tres, u ocho correctas.",
+          ),
       earned[2]
-        ? "Star 3: at least 80% on a finished round."
-        : "Star 3 opens at 80% on a finished round of four or more.",
+        ? T(
+            "Star 3: at least 80% on a finished round.",
+            "Estrella 3: al menos 80% en una ronda terminada.",
+          )
+        : T(
+            "Star 3 opens at 80% on a finished round of four or more.",
+            "La estrella 3 se abre con 80% en una ronda terminada de cuatro o más.",
+          ),
     ];
     ceremony.replaceChildren();
     const title = document.createElement("h2");
     title.id = "studio-ceremony-title";
     title.textContent = earned.filter(Boolean).length
-      ? `${earned.filter(Boolean).length} of 3 stars`
-      : "Round complete";
+      ? T(
+          `${earned.filter(Boolean).length} of 3 stars`,
+          `${earned.filter(Boolean).length} de 3 estrellas`,
+        )
+      : T("Round complete", "Ronda completa");
     const score = document.createElement("p");
     score.textContent =
-      detail?.message || "Round complete. Your stars stay with this game on this device.";
+      detail?.message ||
+      T(
+        "Round complete. Your stars stay with this game on this device.",
+        "Ronda completa. Tus estrellas se quedan con este juego en este dispositivo.",
+      );
     const list = document.createElement("ul");
     lines.forEach((line) => {
       const li = document.createElement("li");
@@ -218,7 +313,7 @@
       title,
       score,
       list,
-      button("Back to the game", () => ceremony.close()),
+      button(T("Back to the game", "Volver al juego"), () => ceremony.close()),
     );
     if (!ceremony.open) ceremony.showModal();
   }
@@ -250,31 +345,31 @@
   function mount() {
     toolbar = document.createElement("nav");
     toolbar.className = "studio-toolbar";
-    toolbar.setAttribute("aria-label", "Game player controls");
+    toolbar.setAttribute(
+      "aria-label",
+      T("Game player controls", "Controles del reproductor del juego"),
+    );
     const brand = document.createElement("span");
     brand.className = "studio-badge";
-    brand.textContent = adapter.title || "Arcade Studio";
+    brand.textContent = adapter.title || T("Arcade Studio", "Estudio Arcade");
+    brandEl = brand;
     toolbar.append(brand);
     const controls = document.createElement("div");
-    soundButton = button("Sound off", () => {
+    soundButton = button(T("Sound off", "Sonido apagado"), () => {
       preferences.muted = !preferences.muted;
       save();
       apply();
     });
-    motionButton = button("Calm motion", () => {
+    motionButton = button(T("Calm motion", "Movimiento calmado"), () => {
       preferences.reducedMotion = !preferences.reducedMotion;
       save();
       apply();
     });
-    pauseButton = button("Pause", () => setPaused(!paused));
+    pauseButton = button(T("Pause", "Pausa"), () => setPaused(!paused));
     pauseButton.hidden = !adapter.pause || !adapter.resume;
-    controls.append(
-      button("How to play", () => openDialog("help")),
-      soundButton,
-      motionButton,
-      button("Settings", () => openDialog("settings")),
-      pauseButton,
-    );
+    helpButton = button(T("How to play", "Cómo jugar"), () => openDialog("help"));
+    settingsButton = button(T("Settings", "Ajustes"), () => openDialog("settings"));
+    controls.append(helpButton, soundButton, motionButton, settingsButton, pauseButton);
     toolbar.append(controls);
     dialog = document.createElement("dialog");
     dialog.className = "studio-dialog";
@@ -292,9 +387,9 @@
     notice.hidden = true;
     sessionRail = document.createElement("section");
     sessionRail.className = "studio-session";
-    sessionRail.setAttribute("aria-label", "This round");
+    sessionRail.setAttribute("aria-label", T("This round", "Esta ronda"));
     sessionRail.innerHTML =
-      '<p class="studio-objective"><span>Objective</span> <strong data-count>0 / 5 solved</strong><span class="studio-meter" aria-hidden="true"><i></i></span></p><p data-streak>Streak ready</p><p data-stars aria-label="0 of 3 stars">☆☆☆</p>';
+      '<p class="studio-objective"><span data-objective>Objective</span> <strong data-count>0 / 5 solved</strong><span class="studio-meter" aria-hidden="true"><i></i></span></p><p data-streak>Streak ready</p><p data-stars aria-label="0 of 3 stars">☆☆☆</p>';
     ceremony = document.createElement("dialog");
     ceremony.className = "studio-dialog studio-ceremony";
     ceremony.setAttribute("aria-labelledby", "studio-ceremony-title");
@@ -341,11 +436,23 @@
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", mount, { once: true });
   else mount();
+  window.addEventListener("storage", (event) => {
+    if (event.key === "nt-lang") {
+      relabel();
+      apply();
+    }
+  });
+  document.addEventListener("ewl:lang", () => {
+    relabel();
+    apply();
+  });
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
       if (adapter.pause && !paused) {
         setPaused(true);
-        announce("Paused. Choose Resume when you return.");
+        announce(
+          T("Paused. Choose Resume when you return.", "En pausa. Elige Continuar cuando vuelvas."),
+        );
       }
       host.GameJuice?.SFX?.musicStop();
     }
@@ -360,7 +467,10 @@
     if (detail.message) announce(detail.message, detail.correct ? "good" : "coach");
     if (objective)
       announce(
-        `Objective complete: ${session.correct} solved. The next mark is ${session.correct + 5}.`,
+        T(
+          `Objective complete: ${session.correct} solved. The next mark is ${session.correct + 5}.`,
+          `Objetivo cumplido: ${session.correct} resueltas. La siguiente meta es ${session.correct + 5}.`,
+        ),
         "good",
       );
   });
@@ -370,8 +480,18 @@
     recordComplete(detail);
     const count =
       Number.isFinite(detail.correct) && Number.isFinite(detail.total) && detail.total > 0
-        ? ` ${detail.correct} of ${detail.total} challenges solved.`
+        ? T(
+            ` ${detail.correct} of ${detail.total} challenges solved.`,
+            ` ${detail.correct} de ${detail.total} retos resueltos.`,
+          )
         : "";
-    announce(detail.message || `Session complete.${count} Ready for another round?`, "complete");
+    announce(
+      detail.message ||
+        T(
+          `Session complete.${count} Ready for another round?`,
+          `Sesión completa.${count} ¿Listo para otra ronda?`,
+        ),
+      "complete",
+    );
   });
 })();
