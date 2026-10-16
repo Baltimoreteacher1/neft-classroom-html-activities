@@ -1,0 +1,174 @@
+/* EduWonderLab Expedition Engine — DOM chrome shared by every expedition. */
+.ewl-x-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Achievement toasts */
+.ewl-x-toasts {
+  position: fixed;
+  top: 72px;
+  right: 16px;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+.ewl-x-toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 260px;
+  max-width: 360px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #142a3c, #0b1a28);
+  color: #f3f9ff;
+  border: 2px solid #ffd76a;
+  border-radius: 14px;
+  box-shadow: 0 14px 40px #0009;
+  font:
+    15px/1.35 "Outfit",
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+  animation: ewlToastIn 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+.ewl-x-toast.out {
+  animation: ewlToastOut 0.5s ease-in both;
+}
+.ewl-x-toast-icon {
+  font-size: 28px;
+  filter: drop-shadow(0 2px 6px #ffd76a66);
+}
+@keyframes ewlToastIn {
+  from {
+    transform: translateX(40px) scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes ewlToastOut {
+  to {
+    transform: translateX(30px);
+    opacity: 0;
+  }
+}
+
+/* Field journal dialog */
+.ewl-x-journal {
+  width: min(92vw, 640px);
+  max-height: 86vh;
+  padding: 24px 26px;
+  background: #0d1c2b;
+  color: #ecf5ff;
+  border: 2px solid #5e92b3;
+  border-radius: 18px;
+  box-shadow: 0 30px 90px #000c;
+  font:
+    16px/1.5 "Outfit",
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+}
+.ewl-x-journal::backdrop {
+  background: #02070cbb;
+  backdrop-filter: blur(3px);
+}
+.ewl-x-journal h2 {
+  margin: 0 0 14px;
+  font-size: 22px;
+}
+.ewl-x-journal h3 {
+  margin: 18px 0 8px;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9fc4dc;
+}
+.ewl-x-journal ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.ewl-x-journal li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #132a3d;
+  border-radius: 10px;
+}
+.ewl-x-journal li > span:first-child {
+  flex: 1 1 220px;
+}
+.ewl-x-journal small {
+  color: #9fc4dc;
+  margin-left: 6px;
+}
+.ewl-x-pill {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  background: #2a4356;
+}
+.ewl-x-skills li.mastered .ewl-x-pill {
+  background: #1f7a4f;
+}
+.ewl-x-skills li.growing .ewl-x-pill {
+  background: #8a6a12;
+}
+.ewl-x-ach {
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+.ewl-x-ach li {
+  opacity: 0.45;
+  filter: grayscale(1);
+  font-size: 14px;
+}
+.ewl-x-ach li.got {
+  opacity: 1;
+  filter: none;
+  border: 1px solid #ffd76a88;
+}
+.ewl-x-journal button {
+  min-height: 40px;
+  padding: 8px 14px;
+  background: #1b3f5a;
+  color: #fff;
+  border: 1px solid #5e92b3;
+  border-radius: 10px;
+  font: 600 15px/1.2 inherit;
+  cursor: pointer;
+}
+.ewl-x-journal button:hover {
+  background: #2b5774;
+}
+.ewl-x-journal button:focus-visible {
+  outline: 3px solid #ffd17b;
+  outline-offset: 3px;
+}
+.ewl-x-journal .ewl-x-close {
+  margin-top: 20px;
+  width: 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ewl-x-toast,
+  .ewl-x-toast.out {
+    animation: none;
+  }
+}

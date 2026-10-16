@@ -53,6 +53,22 @@
     }
     function refreshControls(current) {
       const name = current.sys.settings.key;
+      if (current.studio && Array.isArray(current.studio.actions)) {
+        // Expedition scenes publish their own action deck (see expedition-engine.js).
+        const sig = name + ':' + current.studio.v;
+        if (controls.dataset.scene === sig) return;
+        controls.dataset.scene = sig;
+        controls.replaceChildren();
+        current.studio.actions.forEach(action => {
+          const label = window.EWLExpedition ? window.EWLExpedition.t(action.label) : String(action.label);
+          const button = document.createElement('button');
+          button.type = 'button'; button.textContent = label; button.disabled = !!action.disabled;
+          button.setAttribute('aria-label', label + ' (' + (action.key === ' ' ? 'Space' : action.key) + ')');
+          button.addEventListener('click', () => { if (!(window.GameStudio && window.GameStudio.paused)) action.run(); update(); });
+          controls.append(button);
+        });
+        return;
+      }
       if (controls.dataset.scene === name) return;
       controls.dataset.scene = name;
       controls.replaceChildren();
@@ -63,6 +79,19 @@
         button.type = 'button'; button.textContent = label; button.setAttribute('aria-label', label + ' (' + key + ')');
         button.addEventListener('click', () => send(key)); controls.append(button);
       });
+      if (name === 'Title' && game.ewlExpedition && window.EWLExpedition) {
+        const expBtn = document.createElement('button');
+        expBtn.type = 'button';
+        expBtn.className = 'cabinet-expedition-entry';
+        expBtn.textContent = '🗺️ ' + window.EWLExpedition.t({en: 'Expedition — restore the world', es: 'Expedición — restaura el mundo'});
+        expBtn.addEventListener('click', () => {
+          if (window.GameStudio?.paused) window.GameStudio.resume();
+          game.scene.getScenes(true).forEach(s => game.scene.stop(s.sys.settings.key));
+          game.scene.start('ExpeditionMap');
+          update();
+        });
+        controls.append(expBtn);
+      }
       if (name === 'Title' || name === 'Vocab') {
         const quickBtn = document.createElement('button');
         quickBtn.type = 'button';
@@ -81,11 +110,20 @@
     function update() {
       const current = scene();
       if (!root || !current) return;
-      if (adventure && !current.cabinetWorldReady && current.children.list.length) {
+      if (adventure && !current.studio && !current.cabinetWorldReady && current.children.list.length) {
         adventure.decorate(current); current.cabinetWorldReady = true;
       }
       if (adventure && current.sys.settings.key === 'Game') adventure.observeSolved(current.solved);
       refreshControls(current);
+      root.classList.toggle('cabinet-expedition-mode', !!current.studio);
+      if (current.studio) {
+        prompt.textContent = current.studio.prompt || '';
+        feedback.textContent = current.studio.feedback || '';
+        progress.textContent = current.studio.progress || '';
+        const visible = current.children.list.filter(obj => obj.type === 'Text' && obj.visible && obj.alpha > 0).map(obj => obj.text);
+        root.querySelector('.cabinet-screen-text').textContent = [...new Set(visible)].join('\n');
+        return;
+      }
       const field = current.bannerText || current.promptText || current.targetText;
       const problem = current.problem;
       const text = current.sys.settings.key === 'Vocab' ? [current.termText && current.termText.text, current.defText && current.defText.text].filter(Boolean).join(': ') : (field && field.text) || (problem && (problem.prompt || problem.instruction)) || '';
