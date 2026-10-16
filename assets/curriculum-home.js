@@ -354,7 +354,14 @@
         if (!rec.activityTitle || pct >= 100 || !Number.isFinite(when)) continue;
         if (Date.now() - when > CONTINUE_MAX_DAYS * 86400000) continue;
         if (!best || when > best.when)
-          best = { code: rec.saveCode, url: rec.url, title: String(rec.activityTitle), pct, when };
+          best = {
+            code: rec.saveCode,
+            url: rec.url,
+            title: String(rec.activityTitle),
+            step: rec.currentStepLabel || rec.phase || "",
+            pct,
+            when,
+          };
       }
       if (best && localStorage.getItem(CONTINUE_DISMISSED) === `${best.code}@${best.when}`)
         return null;
@@ -372,6 +379,9 @@
   function renderContinue(host) {
     const item = latestUnfinished();
     if (!host || !item) return;
+    // Deduplicate legacy #resume-strip when the unified Continue card is active
+    const legacyStrip = document.getElementById("resume-strip");
+    if (legacyStrip) legacyStrip.classList.remove("on");
     const card = el("article", "hub-now__card hub-now__card--continue");
     const when = el("p", "hub-now__when");
     when.append(el("strong", "", "Pick up where you left off "), es("· Sigue donde lo dejaste"));
@@ -380,11 +390,29 @@
     link.href = item.url;
     heading.appendChild(link);
     const [ago, agoEs] = savedAgo(item.when);
-    const meter = el("p", "hub-now__unit", `${Math.round(item.pct)}% done · ${ago} `);
+    const stepText = item.step ? `${item.step} · ` : "";
+    const meter = el("p", "hub-now__unit", `${stepText}${Math.round(item.pct)}% done · ${ago} `);
     meter.appendChild(es(`· ${Math.round(item.pct)}% completado · ${agoEs}`));
     const bar = el("span", "hub-now__bar");
     bar.setAttribute("aria-hidden", "true");
     bar.style.setProperty("--pct", `${Math.min(100, Math.max(0, item.pct))}%`);
+    const meta = el("div", "hub-now__meta");
+    const saveCode =
+      item.code ||
+      (typeof window !== "undefined" &&
+      /** @type {any} */ (window).NTSignal &&
+      typeof (/** @type {any} */ (window).NTSignal.getCode) === "function"
+        ? /** @type {any} */ (window).NTSignal.getCode()
+        : "");
+    if (saveCode) {
+      const codePill = el("span", "hub-now__code", `Save Code: ${saveCode}`);
+      codePill.title = "Use this 6-character code on any school Chromebook to resume";
+      meta.appendChild(codePill);
+    }
+    const portfolioLink = el("a", "hub-now__portfolio", "My Progress & Portfolio ");
+    portfolioLink.href = "/curriculum/my-progress/";
+    portfolioLink.appendChild(es("· Mi progreso y portafolio"));
+    meta.appendChild(portfolioLink);
     const hide = el("button", "hub-now__dismiss", "Not me ");
     hide.type = "button";
     hide.appendChild(es("· No soy yo"));
@@ -394,7 +422,7 @@
       } catch {}
       card.remove();
     });
-    card.append(when, heading, meter, bar, hide);
+    card.append(when, heading, meter, bar, meta, hide);
     host.prepend(card);
   }
   function renderNowNext() {

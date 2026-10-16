@@ -61,6 +61,59 @@ import { mountTeacherClearButton } from "./teacher-clear.js";
 import { mountToolDrawer } from "./tool-drawer.js";
 import { isToolsMode, mountToolsMenuItem, renderToolsPage } from "./tools-mode.js";
 
+const STUDIO_MENTOR_MOVES = {
+  maya: {
+    name: "Maya",
+    move: "Draw It Out",
+    tip: "Sketch a tape diagram or number line in your notebook before computing.",
+  },
+  jordan: {
+    name: "Jordan",
+    move: "Table It",
+    tip: "Organize the quantities in a quick 2-column table to spot the multiplier.",
+  },
+  alex: {
+    name: "Alex",
+    move: "Try a Simpler Case",
+    tip: "Test the rule with friendly whole numbers first, then apply the same step.",
+  },
+  sam: {
+    name: "Sam",
+    move: "Estimate First",
+    tip: "Write a 5-second ballpark estimate first so you know if your answer makes sense.",
+  },
+  riley: {
+    name: "Riley",
+    move: "Work Backwards",
+    tip: "Start from the target and use inverse operations to verify your step.",
+  },
+};
+
+function isStandaloneStudentView() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    return (
+      params.get("lms") !== "scorm" && params.get("embed") !== "1" && window.self === window.top
+    );
+  } catch {
+    return true;
+  }
+}
+
+function readStudioMentor() {
+  try {
+    const raw = window.localStorage.getItem("nt_mentor");
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    const id = String(parsed?.id || "")
+      .trim()
+      .toLowerCase();
+    return STUDIO_MENTOR_MOVES[id] || null;
+  } catch {
+    return null;
+  }
+}
+
 function teacherPanel(config, accent, talk) {
   const group = config.smallGroup;
   if (!group || !(group.teacherMoves || group.moves || group.who || talk?.listenFor)) return null;
@@ -211,6 +264,28 @@ function hero(config, accent, voice) {
   chips.appendChild(el("span", "sg-chip", esc(config.timeEstimate || "15–20 min")));
   if (config.standard) chips.appendChild(el("span", "sg-chip", esc(config.standard)));
   chips.appendChild(el("span", "sg-chip", "Private · saved on this device"));
+  const mentor = readStudioMentor();
+  if (mentor) {
+    chips.appendChild(
+      el(
+        "span",
+        "sg-chip sg-chip-mentor",
+        `🧭 ${esc(mentor.name)} (${esc(mentor.move)}): ${esc(mentor.tip)}`,
+      ),
+    );
+  }
+  const baseId = baseLessonId(config.lessonId || "");
+  if (isStandaloneStudentView() && /^\d+-\d+$/.test(baseId) && more) {
+    const bridge = el(
+      "div",
+      "sg-pathway-bridge",
+      `<b>Switch pathway:</b> ` +
+        `<a href="/lessons/${esc(baseId)}/?student=1">🎯 Core Lesson</a> · ` +
+        `<a href="/lessons/${esc(baseId)}-group1/?student=1"${variantKey === "group1" ? ' aria-current="page"' : ""}>🧱 Foundations Studio</a> · ` +
+        `<a href="/lessons/${esc(baseId)}-group2/?student=1"${variantKey === "group2" ? ' aria-current="page"' : ""}>🚀 Challenge Studio</a>`,
+    );
+    more.appendChild(bridge);
+  }
   copy.appendChild(chips);
   const sceneName = themeDisplayName(config.theme);
   if (sceneName) {
@@ -631,7 +706,27 @@ function renderStudio(config) {
   const onComplete = () => {
     phaseDone("sg-tab-check", "checkDone")();
     completion.hidden = false;
-    completion.innerHTML = `<h2>Studio complete 🎉</h2><p>${esc(voice.completeBody)}</p>`;
+    const base = baseLessonId(config.lessonId || "");
+    const statsHtml =
+      `<div class="sg-done-stats">` +
+      `<span class="sg-chip">✓ ${tally.solved} solved</span>` +
+      (state.bestStreak > 1
+        ? `<span class="sg-chip">🔥 Best streak: ${state.bestStreak}</span>`
+        : "") +
+      (state.after ? `<span class="sg-chip">📈 Confidence: ${state.after}/5</span>` : "") +
+      `</div>`;
+    const actionsHtml =
+      isStandaloneStudentView() && /^\d+-\d+$/.test(base)
+        ? `<div class="sg-done-actions">` +
+          (variant !== "group2"
+            ? `<a class="btn" href="/lessons/${esc(base)}-group2/?student=1">🚀 Try Challenge Studio</a>`
+            : "") +
+          `<a class="btn ghost" href="/lessons/${esc(base)}/?student=1">🎯 Core Lesson</a>` +
+          `<a class="btn ghost" href="/curriculum/teach-the-machine/">🤖 Teach the Machine</a>` +
+          `<a class="btn ghost" href="/curriculum/my-progress/">📊 My Progress &amp; Portfolio</a>` +
+          `</div>`
+        : "";
+    completion.innerHTML = `<h2>Studio complete 🎉</h2><p>${esc(voice.completeBody)}</p>${statsHtml}${actionsHtml}`;
     if (completeSent) return;
     completeSent = true;
     // Section-scoped, name-free evidence for the teacher mastery dashboard.

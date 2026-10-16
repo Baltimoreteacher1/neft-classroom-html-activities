@@ -193,6 +193,28 @@ function readTaught() {
   }
 }
 
+const PROOFS_KEY = "nt_ttm.proofs";
+
+function saveVisualProof(tag) {
+  try {
+    const map = JSON.parse(localStorage.getItem(PROOFS_KEY) || "{}");
+    const safeMap = map && typeof map === "object" && !Array.isArray(map) ? map : {};
+    const vpb = state.vpb || { mode: "tape", a: 3, b: 4 };
+    safeMap[tag] = {
+      tag,
+      learnerName: state.persona?.persona?.name || tag,
+      mode: vpb.mode,
+      a: vpb.a,
+      b: vpb.b,
+      summary: vpb.summary || "",
+      savedAt: new Date().toISOString().slice(0, 10),
+    };
+    localStorage.setItem(PROOFS_KEY, JSON.stringify(safeMap));
+  } catch {
+    /* private mode — proof snapshot is optional */
+  }
+}
+
 function markTaught(tag) {
   const list = readTaught();
   if (!list.includes(tag)) list.push(tag);
@@ -201,6 +223,7 @@ function markTaught(tag) {
   } catch {
     /* private mode — the count just will not persist */
   }
+  saveVisualProof(tag);
   return list;
 }
 
@@ -855,6 +878,126 @@ function nextUntaught() {
   return TAGS[(start + 1) % TAGS.length];
 }
 
+/* ── Interactive Visual Proof Builder (SVG Tape · Partition · Balance) ──── */
+
+function ensureVpbState() {
+  if (!state.vpb) {
+    state.vpb = { mode: "tape", a: 3, b: 4, summary: "" };
+  }
+  return state.vpb;
+}
+
+function renderVisualProofBuilder() {
+  const stage = el("vpb-svg-stage");
+  if (!stage) return;
+  const vpb = ensureVpbState();
+  const isEs = state.lang === "es";
+
+  const summaryEl = el("vpb-summary");
+  if (summaryEl) {
+    summaryEl.textContent = isEs
+      ? "📐 Construye una prueba visual interactiva (Cinta · Recta numérica · Balanza)"
+      : "📐 Build an Interactive Visual Proof (Tape · Number Line · Balance)";
+  }
+  const attachBtn = el("attach-visual-proof");
+  if (attachBtn) {
+    attachBtn.textContent = isEs
+      ? "📐 Adjuntar prueba visual a mi explicación"
+      : "📐 Attach Visual Proof to Explanation";
+  }
+  const modeLabels = {
+    tape: isEs ? "Cinta de razón / %" : "Ratio / Percent Tape",
+    partition: isEs ? "Partición en recta" : "Number Line Partition",
+    balance: isEs ? "Balanza de ecuación" : "Equation Balance",
+  };
+  document.querySelectorAll("[data-vpb-mode]").forEach((btn) => {
+    const m = btn.getAttribute("data-vpb-mode");
+    btn.setAttribute("aria-pressed", String(m === vpb.mode));
+    if (m && modeLabels[m]) btn.textContent = modeLabels[m];
+  });
+
+  const a = Math.max(1, Math.min(12, Number(vpb.a) || 3));
+  const b = Math.max(1, Math.min(12, Number(vpb.b) || 4));
+  vpb.a = a;
+  vpb.b = b;
+  setText("vpb-out-a", String(a));
+  setText("vpb-out-b", String(b));
+
+  let svg = "";
+  let caption = "";
+
+  if (vpb.mode === "tape") {
+    setText("vpb-label-a", isEs ? " Cantidad A (Cajas)" : " Quantity A (Boxes)");
+    setText("vpb-label-b", isEs ? " Cantidad B (Cajas)" : " Quantity B (Boxes)");
+    const maxBoxes = Math.max(a, b, 1);
+    const boxW = Math.min(34, Math.floor(320 / maxBoxes));
+    let boxesA = "";
+    for (let i = 0; i < a; i++) {
+      boxesA += `<rect x="${90 + i * (boxW + 3)}" y="18" width="${boxW}" height="24" rx="4" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.5"/>`;
+    }
+    let boxesB = "";
+    for (let i = 0; i < b; i++) {
+      boxesB += `<rect x="${90 + i * (boxW + 3)}" y="54" width="${boxW}" height="24" rx="4" fill="#d1fae5" stroke="#047857" stroke-width="1.5"/>`;
+    }
+    const total = a + b;
+    svg = `<svg xmlns="http://www.w3.org/2000/svg" width="460" height="96" viewBox="0 0 460 96" style="background:white;max-width:100%;height:auto;border-radius:8px;border:1px solid #cbd5e1;">
+      <text x="12" y="35" font-family="system-ui,sans-serif" font-size="13" font-weight="700" fill="#1e3a8a">Part A (${a})</text>
+      ${boxesA}
+      <text x="12" y="71" font-family="system-ui,sans-serif" font-size="13" font-weight="700" fill="#065f46">Part B (${b})</text>
+      ${boxesB}
+      <text x="365" y="52" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#334155">Total = ${total} parts</text>
+    </svg>`;
+    caption = isEs
+      ? `[Prueba visual — Diagrama de cinta] Razón A:B = ${a}:${b} (${total} partes iguales en total; A es ${a}/${total} del total y B es ${b}/${total}, por lo que escalar multiplica cada caja por el mismo factor).`
+      : `[Visual Proof — Tape Diagram] Ratio A:B = ${a}:${b} (${total} equal parts in all; A is ${a}/${total} of the whole and B is ${b}/${total}, so scaling multiplies every box by the same factor).`;
+  } else if (vpb.mode === "partition") {
+    setText("vpb-label-a", isEs ? " Enteros (Longitud)" : " Whole Units (Length)");
+    setText("vpb-label-b", isEs ? " Partes por entero" : " Equal Parts per Unit");
+    const totalSub = a * b;
+    const lineW = 360;
+    let ticks = "";
+    for (let i = 0; i <= totalSub; i++) {
+      const x = 45 + (i / totalSub) * lineW;
+      const isWhole = i % b === 0;
+      const y1 = isWhole ? 32 : 40;
+      const y2 = isWhole ? 64 : 56;
+      const stroke = isWhole ? "#0f172a" : "#0284c7";
+      const sw = isWhole ? 2.2 : 1.2;
+      ticks += `<line x1="${x.toFixed(1)}" y1="${y1}" x2="${x.toFixed(1)}" y2="${y2}" stroke="${stroke}" stroke-width="${sw}"/>`;
+      if (isWhole) {
+        ticks += `<text x="${x.toFixed(1)}" y="80" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="#0f172a">${i / b}</text>`;
+      }
+    }
+    svg = `<svg xmlns="http://www.w3.org/2000/svg" width="460" height="96" viewBox="0 0 460 96" style="background:white;max-width:100%;height:auto;border-radius:8px;border:1px solid #cbd5e1;">
+      <text x="230" y="20" text-anchor="middle" font-family="system-ui,sans-serif" font-size="12.5" font-weight="700" fill="#0369a1">${a} ÷ (1/${b}) = ${totalSub} equal 1/${b}-size pieces</text>
+      <line x1="45" y1="48" x2="405" y2="48" stroke="#0f172a" stroke-width="2.5"/>
+      ${ticks}
+    </svg>`;
+    caption = isEs
+      ? `[Prueba visual — Recta numérica] Al partir ${a} enteros en piezas de tamaño 1/${b}, caben ${a} × ${b} = ${totalSub} piezas porque cada entero contiene ${b} partes iguales.`
+      : `[Visual Proof — Number Line Partition] Partitioning ${a} wholes into pieces of size 1/${b} makes ${a} × ${b} = ${totalSub} pieces because each whole holds ${b} equal parts.`;
+  } else {
+    setText("vpb-label-a", isEs ? " Grupos de x (Izquierda)" : " Groups of x (Left Pan)");
+    setText("vpb-label-b", isEs ? " Valor de cada x" : " Value of each x");
+    const totalRight = a * b;
+    svg = `<svg xmlns="http://www.w3.org/2000/svg" width="460" height="96" viewBox="0 0 460 96" style="background:white;max-width:100%;height:auto;border-radius:8px;border:1px solid #cbd5e1;">
+      <polygon points="230,58 214,88 246,88" fill="#475569"/>
+      <line x1="80" y1="58" x2="380" y2="58" stroke="#0f172a" stroke-width="3.5"/>
+      <rect x="85" y="26" width="110" height="28" rx="6" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+      <text x="140" y="45" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="800" fill="#92400e">${a}x (${a} groups)</text>
+      <rect x="265" y="26" width="110" height="28" rx="6" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.5"/>
+      <text x="320" y="45" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="800" fill="#5b21b6">${totalRight} total (x = ${b})</text>
+    </svg>`;
+    caption = isEs
+      ? `[Prueba visual — Balanza en equilibrio] La balanza muestra ${a}x = ${totalRight}. Para mantener el equilibrio, dividimos ambos lados entre ${a}, por lo que cada x vale ${b}.`
+      : `[Visual Proof — Balanced Scale] The pan balance shows ${a}x = ${totalRight}. To keep both sides equal, we divide both sides into ${a} equal groups, so each x = ${b}.`;
+  }
+
+  vpb.summary = caption;
+  stage.innerHTML = svg;
+  setText("vpb-caption", caption);
+}
+
 function wire() {
   el("learner-select").addEventListener("change", (event) => {
     setLearner(event.target.value);
@@ -865,6 +1008,32 @@ function wire() {
   });
   el("lang-en").addEventListener("click", () => switchLang("en"));
   el("lang-es").addEventListener("click", () => switchLang("es"));
+
+  document.querySelectorAll("[data-vpb-mode]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const vpb = ensureVpbState();
+      vpb.mode = btn.getAttribute("data-vpb-mode") || "tape";
+      renderVisualProofBuilder();
+    });
+  });
+  el("vpb-val-a")?.addEventListener("input", (ev) => {
+    ensureVpbState().a = Number(ev.target.value) || 3;
+    renderVisualProofBuilder();
+  });
+  el("vpb-val-b")?.addEventListener("input", (ev) => {
+    ensureVpbState().b = Number(ev.target.value) || 4;
+    renderVisualProofBuilder();
+  });
+  el("attach-visual-proof")?.addEventListener("click", () => {
+    renderVisualProofBuilder();
+    const box = el("entry");
+    const caption = ensureVpbState().summary;
+    if (!box || !caption) return;
+    const cur = box.value.trim();
+    box.value = cur ? `${cur}\n${caption}` : caption;
+    saveVisualProof(state.tag);
+    box.focus();
+  });
 
   el("composer").addEventListener("submit", (event) => {
     event.preventDefault();
@@ -907,6 +1076,7 @@ function switchLang(lang) {
   state.lang = lang;
   writeLang(lang);
   renderAll(false);
+  renderVisualProofBuilder();
   setText("coach", "");
 }
 
@@ -916,6 +1086,7 @@ async function init() {
   state.todayTag = state.tag;
   state.persona = PERSONAS[state.tag];
   resetConversation();
+  renderVisualProofBuilder();
   wire();
   window.GameStudio?.register({
     title: "Teach the Machine",

@@ -24,7 +24,7 @@
 
   /* ---------------- backup / restore ---------------- */
   var SNAPSHOT_KEY =
-    /^(nt-signal:v1|pa-summary-|pa-itemlog$|nt_results_v1$|choiceboard-u\d+$|nsr:rec:|ewl-fluency-(profiles|progress|tutor)|arl_progress$)/;
+    /^(nt-signal:v1|pa-summary-|pa-itemlog$|nt_results_v1$|choiceboard-u\d+$|nsr:rec:|ewl-fluency-(profiles|progress|tutor)|arl_progress$|nt_ttm\.(taught|proofs)$|nt-project-complete:v1$|nt_mentor$)/;
   function readJson(key, fb) {
     try {
       var v = JSON.parse(localStorage.getItem(key));
@@ -154,6 +154,7 @@
       body.innerHTML =
         V.summaryHtml(snap, rows) +
         V.nextHtml(snap, registry, fluencyTitle) +
+        (V.portfolioHtml ? V.portfolioHtml(snap) : "") +
         V.skillsHtml(rows, registry) +
         V.lessonsHtml(snap) +
         V.fluencyHtml(snap, fluencyTitle) +

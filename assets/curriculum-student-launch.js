@@ -181,16 +181,138 @@
     setText("next-step", message);
   }
 
+  var LAUNCH_MENTORS = {
+    maya: {
+      name: "Maya",
+      move: "Draw It Out",
+      tip: "Sketch a quick tape diagram or number line first.",
+    },
+    jordan: {
+      name: "Jordan",
+      move: "Table It",
+      tip: "Organize values in a two-column table to spot the pattern.",
+    },
+    alex: {
+      name: "Alex",
+      move: "Try a Simpler Case",
+      tip: "Test with small whole numbers first, then use the same rule.",
+    },
+    sam: {
+      name: "Sam",
+      move: "Estimate First",
+      tip: "Make a 5-second ballpark estimate before computing.",
+    },
+    riley: {
+      name: "Riley",
+      move: "Work Backwards",
+      tip: "Start from the goal and use inverse operations to check.",
+    },
+  };
+
+  function speakShortText(text) {
+    try {
+      if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return;
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(String(text || ""));
+      u.rate = 0.92;
+      window.speechSynthesis.speak(u);
+    } catch (_e) {
+      /* ignore speech errors */
+    }
+  }
+
   function renderVocabulary(lesson) {
     var container = byId("vocabulary");
     container.replaceChildren();
     var words = (lesson.vocabulary || []).slice(0, 10);
     if (!words.length) words = ["model", "explain", "reasoning"];
     words.forEach(function (word) {
-      addTextElement(container, "span", "vocabulary-word", word);
+      var pill = addTextElement(container, "span", "vocabulary-word", "🔊 " + word);
+      pill.setAttribute("role", "button");
+      pill.setAttribute("tabindex", "0");
+      pill.setAttribute("title", "Tap to hear pronunciation and add to your explanation");
+      var onPick = function () {
+        speakShortText(word);
+        var box = byId("sentence-rehearsal-input");
+        if (box) {
+          box.value = box.value ? box.value.replace(/_{2,}/, word) : word;
+          if (!box.value.includes(word)) box.value = (box.value.trim() + " " + word).trim();
+          box.focus();
+        }
+      };
+      pill.onclick = onPick;
+      pill.onkeydown = function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onPick();
+        }
+      };
     });
     var frame = (lesson.sentenceFrames || [])[0] || "My answer is ___ because ___.";
     setText("sentence-frame", "Sentence frame: " + frame);
+
+    var frameNode = byId("sentence-frame");
+    if (frameNode && frameNode.parentNode) {
+      var existingRehearsal = byId("sentence-rehearsal-wrap");
+      if (existingRehearsal) existingRehearsal.remove();
+      var wrap = document.createElement("div");
+      wrap.id = "sentence-rehearsal-wrap";
+      wrap.className = "sentence-rehearsal-wrap";
+      try {
+        var rawMentor = localStorage.getItem("nt_mentor");
+        var parsedMentor = rawMentor ? JSON.parse(rawMentor) : null;
+        var mentor =
+          parsedMentor && parsedMentor.id
+            ? LAUNCH_MENTORS[String(parsedMentor.id).toLowerCase()]
+            : null;
+        if (mentor) {
+          var mentorNote = document.createElement("p");
+          mentorNote.className = "launch-mentor-tip";
+          mentorNote.textContent =
+            "🧭 " + mentor.name + "’s Move (" + mentor.move + "): " + mentor.tip;
+          wrap.appendChild(mentorNote);
+        }
+      } catch (_e) {
+        /* ignore storage error */
+      }
+      var input = document.createElement("textarea");
+      input.id = "sentence-rehearsal-input";
+      input.className = "sentence-rehearsal-input";
+      input.rows = 2;
+      input.placeholder = frame;
+      input.setAttribute("aria-label", "Practice your math explanation using the sentence frame");
+      var btnRow = document.createElement("div");
+      btnRow.className = "sentence-rehearsal-actions";
+      var useFrameBtn = document.createElement("button");
+      useFrameBtn.type = "button";
+      useFrameBtn.className = "small-button";
+      useFrameBtn.textContent = "✍️ Use sentence starter";
+      useFrameBtn.onclick = function () {
+        if (!input.value.trim()) input.value = frame;
+        input.focus();
+      };
+      var hearBtn = document.createElement("button");
+      hearBtn.type = "button";
+      hearBtn.className = "small-button";
+      hearBtn.textContent = "🔊 Hear my explanation";
+      hearBtn.onclick = function () {
+        speakShortText(input.value.trim() || frame);
+      };
+      var markExplainBtn = document.createElement("button");
+      markExplainBtn.type = "button";
+      markExplainBtn.className = "small-button";
+      markExplainBtn.textContent = "✓ Mark reasoning explained";
+      markExplainBtn.onclick = function () {
+        var explainBox = document.querySelector('[data-progress="explain"]');
+        if (explainBox && !explainBox.checked) {
+          explainBox.checked = true;
+          if (typeof explainBox.onchange === "function") explainBox.onchange();
+        }
+      };
+      btnRow.append(useFrameBtn, hearBtn, markExplainBtn);
+      wrap.append(input, btnRow);
+      frameNode.after(wrap);
+    }
   }
 
   function renderResources(lesson) {

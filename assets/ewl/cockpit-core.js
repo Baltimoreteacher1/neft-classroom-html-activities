@@ -353,6 +353,112 @@
       });
   }
 
+  /* ---------- Unit 0 Math Mentor Thinking Moves & Prerequisite Readiness Bridge ---------- */
+  var MENTOR_MOVES = {
+    noticing: {
+      labEn: "The Noticing Lab",
+      labEs: "El laboratorio de observación",
+      moveEn: "Pause before calculating: what two quantities change together here?",
+      moveEs: "Haz una pausa antes de calcular: ¿qué dos cantidades cambian juntas aquí?",
+    },
+    balance: {
+      labEn: "The Balance Studio",
+      labEs: "El estudio del equilibrio",
+      moveEn: "Ask: what stays equal when I transform both sides or parts?",
+      moveEs: "Pregúntate: ¿qué se mantiene igual cuando transformo ambos lados o partes?",
+    },
+    drawing: {
+      labEn: "The Drawing Board",
+      labEs: "La mesa de dibujo",
+      moveEn: "Sketch a tape diagram or number line before writing an equation.",
+      moveEs: "Dibuja un diagrama de cinta o una recta numérica antes de escribir una ecuación.",
+    },
+    pattern: {
+      labEn: "The Pattern Forge",
+      labEs: "La fragua de patrones",
+      moveEn: "Test three cases in a table and look for the constant multiplier or step.",
+      moveEs: "Prueba tres casos en una tabla y busca el multiplicador o paso constante.",
+    },
+    "small-start": {
+      labEn: "The Small-Start Bench",
+      labEs: "El banco de empezar en pequeño",
+      moveEn: "Swap ugly numbers for friendly whole numbers first to see the structure.",
+      moveEs: "Cambia primero los números difíciles por enteros amigables para ver la estructura.",
+    },
+    reality: {
+      labEn: "The Reality Check",
+      labEs: "La prueba de realidad",
+      moveEn: "Estimate before and after: should the answer be bigger or smaller than the start?",
+      moveEs: "Estima antes y después: ¿debería la respuesta ser mayor o menor que el inicio?",
+    },
+    record: {
+      labEn: "The Clear Record",
+      labEs: "El registro claro",
+      moveEn: "Label every number with its unit so your reasoning speaks for itself.",
+      moveEs: "Etiqueta cada número con su unidad para que tu razonamiento hable por sí mismo.",
+    },
+    "second-way": {
+      labEn: "The Second Path",
+      labEs: "El segundo camino",
+      moveEn: "Verify your answer using a second representation (table, tape, or graph).",
+      moveEs: "Verifica tu respuesta usando una segunda representación (tabla, cinta o gráfica).",
+    },
+  };
+
+  function mentorInfo(rawJson) {
+    try {
+      var parsed = typeof rawJson === "string" ? JSON.parse(rawJson || "null") : rawJson;
+      if (!parsed || typeof parsed !== "object" || typeof parsed.id !== "string" || !parsed.id) {
+        return {
+          hasMentor: false,
+          id: "",
+          name: "",
+          labEn: "Unit 0 Mentor Lab",
+          labEs: "Laboratorio de Mentores (Unidad 0)",
+          moveEn: "Choose your Math Mentor & 2 thinking moves to guide every mission.",
+          moveEs:
+            "Elige tu Mentor Matemático y 2 movimientos de pensamiento para guiar cada misión.",
+        };
+      }
+      var prettyName = parsed.id
+        .split("-")
+        .map(function (w) {
+          return w ? w.charAt(0).toUpperCase() + w.slice(1) : "";
+        })
+        .join(" ");
+      var moves = Array.isArray(parsed.moves) ? parsed.moves : [];
+      var moveKey =
+        moves.find(function (m) {
+          return MENTOR_MOVES[m];
+        }) || "drawing";
+      var move = MENTOR_MOVES[moveKey];
+      return {
+        hasMentor: true,
+        id: parsed.id,
+        name: prettyName,
+        labEn: move.labEn,
+        labEs: move.labEs,
+        moveEn: move.moveEn,
+        moveEs: move.moveEs,
+      };
+    } catch (_e) {
+      return {
+        hasMentor: false,
+        id: "",
+        name: "",
+        labEn: "Unit 0 Mentor Lab",
+        labEs: "Laboratorio de Mentores (Unidad 0)",
+        moveEn: "Choose your Math Mentor & 2 thinking moves to guide every mission.",
+        moveEs: "Elige tu Mentor Matemático y 2 movimientos de pensamiento para guiar cada misión.",
+      };
+    }
+  }
+
+  function readinessHref(entry) {
+    var id = entry && entry.id ? String(entry.id).replace(/-catchup$/, "") : "1-1";
+    return withStudent("/lessons/" + id + "/readiness/");
+  }
+
   C.STAGES = STAGES;
   C.taughtLessons = taughtLessons;
   C.unitsOf = unitsOf;
@@ -372,4 +478,7 @@
   C.summarize = summarize;
   C.repairChips = repairChips;
   C.tagLabel = tagLabel;
+  C.MENTOR_MOVES = MENTOR_MOVES;
+  C.mentorInfo = mentorInfo;
+  C.readinessHref = readinessHref;
 })(typeof window !== "undefined" ? window : globalThis);

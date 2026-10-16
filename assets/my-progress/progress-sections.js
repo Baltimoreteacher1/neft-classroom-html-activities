@@ -584,6 +584,91 @@
     );
   }
 
+  function portfolioHtml(snap) {
+    var pf = snap.portfolio || { taught: [], proofs: [], projects: [], mentor: null };
+    if (!pf.taught.length && !pf.proofs.length && !pf.projects.length && !pf.mentor) return "";
+    var blocks = "";
+    if (pf.mentor) {
+      var mName = humanize(pf.mentor.id);
+      var movesText = pf.mentor.moves.length
+        ? pf.mentor.moves.map(humanize).join(", ")
+        : "Noticing & Visual Modeling";
+      blocks +=
+        '<div class="up-card up-portfolio-card"><p class="up-kicker">' +
+        t("Unit 0 Math Mentor & Thinking Moves", "Mentor matemático de la Unidad 0") +
+        "</p><p><strong>🧭 " +
+        esc(mName) +
+        '</strong> · <span class="up-meta">' +
+        esc(movesText) +
+        '</span></p><p><a class="up-link" href="/mentor-lab/">' +
+        t("Open Mentor Lab", "Abrir el Laboratorio de Mentores") +
+        "</a></p></div>";
+    }
+    if (pf.taught.length || pf.proofs.length) {
+      var proofItems = pf.proofs
+        .map(function (p) {
+          return (
+            "<li><strong>" +
+            esc(p.learnerName) +
+            '</strong> <span class="up-code">' +
+            esc(p.mode) +
+            "</span>" +
+            (p.summary ? '<p class="up-meta">' + esc(p.summary) + "</p>" : "") +
+            "</li>"
+          );
+        })
+        .join("");
+      var taughtBadges = pf.taught
+        .map(function (tag) {
+          return '<span class="up-badge">🤖 ' + esc(humanize(tag)) + "</span>";
+        })
+        .join("");
+      blocks +=
+        '<div class="up-card up-portfolio-card"><p class="up-kicker">' +
+        t(
+          "Teach the Machine · Mathematical Defenses",
+          "Enseña a la Máquina · Defensas matemáticas",
+        ) +
+        "</p>" +
+        (taughtBadges ? '<div class="up-badges">' + taughtBadges + "</div>" : "") +
+        (proofItems ? '<ul class="up-portfolio-list">' + proofItems + "</ul>" : "") +
+        '<p><a class="up-link" href="/curriculum/teach-the-machine/">' +
+        t("Teach another learner", "Enseñar a otro aprendiz") +
+        "</a></p></div>";
+    }
+    if (pf.projects.length) {
+      var projRows = pf.projects
+        .map(function (pr) {
+          return (
+            '<li><a class="up-link" href="' +
+            esc(pr.path) +
+            '">' +
+            esc("Unit " + pr.unit + " · " + pr.title) +
+            "</a> " +
+            (pr.stars ? '<span class="up-code">' + pr.stars + "★</span>" : "") +
+            "</li>"
+          );
+        })
+        .join("");
+      blocks +=
+        '<div class="up-card up-portfolio-card"><p class="up-kicker">' +
+        t("Culminating Unit Projects Completed", "Proyectos culminantes completados") +
+        '</p><ul class="up-portfolio-list">' +
+        projRows +
+        '</ul><p><a class="up-link" href="/curriculum/projects/">' +
+        t("Explore all unit projects", "Explorar todos los proyectos") +
+        "</a></p></div>";
+    }
+    return section(
+      "portfolio",
+      t(
+        "My Math Defense & Creations Portfolio",
+        "Mi portafolio de defensas y creaciones matemáticas",
+      ),
+      '<div class="up-portfolio">' + blocks + "</div>",
+    );
+  }
+
   function emptyHtml() {
     return (
       '<div class="up-empty"><p><strong>' +
@@ -610,6 +695,7 @@
     lessonsHtml: lessonsHtml,
     fluencyHtml: fluencyHtml,
     resultsHtml: resultsHtml,
+    portfolioHtml: portfolioHtml,
     recentHtml: recentHtml,
     emptyHtml: emptyHtml,
   };

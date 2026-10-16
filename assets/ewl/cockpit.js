@@ -343,6 +343,48 @@
       if (p) p.focus();
     }
 
+    function mentorBar(e) {
+      var rawMentor = null;
+      try {
+        if (root.localStorage) rawMentor = root.localStorage.getItem("nt_mentor");
+      } catch (_err) {}
+      var m = C.mentorInfo ? C.mentorInfo(rawMentor) : { hasMentor: false };
+      var rHref = C.readinessHref
+        ? C.readinessHref(e)
+        : "/lessons/" + e.id + "/readiness/?student=1";
+      return h(
+        "div",
+        { class: "ewlc-mentor" },
+        h(
+          "div",
+          { class: "ewlc-mentor__main" },
+          h(
+            "span",
+            { class: "ewlc-mentor__badge" },
+            m.hasMentor
+              ? t(
+                  "🧭 Mentor: " + m.name + " · " + m.labEn,
+                  "🧭 Mentor: " + m.name + " · " + m.labEs,
+                )
+              : t("🧭 Unit 0 Mentor Lab", "🧭 Laboratorio de Mentores"),
+          ),
+          h("span", { class: "ewlc-mentor__move" }, t(m.moveEn, m.moveEs)),
+        ),
+        h(
+          "div",
+          { class: "ewlc-mentor__actions" },
+          a(rHref, "ewl-chip ewlc-prereq", t("🌱 Prerequisite Warm-Up", "🌱 Calentamiento previo")),
+          a(
+            "/mentor-lab/",
+            "ewl-chip",
+            m.hasMentor
+              ? t("Switch Mentor", "Cambiar mentor")
+              : t("Pick Your Mentor", "Elige tu mentor"),
+          ),
+        ),
+      );
+    }
+
     function render() {
       if (checkApi) checkApi.destroy();
       checkApi = null;
@@ -391,6 +433,7 @@
             e.objective,
           ),
           hud(),
+          mentorBar(e),
           stepper(states),
           panel(e, states),
           h(
@@ -414,6 +457,18 @@
                 "See every page for this lesson in one playlist",
                 "Ver todas las páginas de esta lección en una lista",
               ),
+            ),
+            " · ",
+            a(
+              "/curriculum/class-boss/",
+              "",
+              t("Cooperative Class Boss", "Jefe cooperativo de la clase"),
+            ),
+            " · ",
+            a(
+              "/curriculum/teach-the-machine/",
+              "",
+              t("Teach the Machine", "Enséñale a la máquina"),
             ),
           ),
         ),
@@ -496,6 +551,18 @@
         p1 ===
           JSON.stringify(C.checkPlan({ lesson: "3-1", genIds: ["a", "b", "c"], code: "4821" })) ||
         "plan changed"
+      );
+    },
+  });
+  EWL.selfTests.push({
+    name: "cockpit: mentorInfo resolves Unit 0 mentor thinking moves",
+    run: function () {
+      var m = C.mentorInfo(
+        JSON.stringify({ version: 1, id: "katherine-johnson", moves: ["pattern"] }),
+      );
+      return (
+        (m.hasMentor && m.name === "Katherine Johnson" && m.labEn === "The Pattern Forge") ||
+        "mentorInfo failed"
       );
     },
   });

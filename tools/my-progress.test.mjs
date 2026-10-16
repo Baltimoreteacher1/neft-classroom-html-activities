@@ -223,6 +223,31 @@ for (const [label, pattern] of [
       missionStars: { "mission-1": 3, "mission-2": 2 },
       lastPlayedAt: new Date(now - 2 * day).toISOString(),
     }),
+    "nt_ttm.taught": JSON.stringify(["ratio-order"]),
+    "nt_ttm.proofs": JSON.stringify({
+      "ratio-order": {
+        tag: "ratio-order",
+        learnerName: "Ratio Bot",
+        mode: "tape",
+        summary: "[Visual Proof — Tape Diagram] Ratio A:B = 3:4",
+        savedAt: "2026-10-16",
+      },
+    }),
+    "nt-project-complete:v1": JSON.stringify({
+      "/math/unit-3/projects/version-a/": {
+        unit: 3,
+        version: "a",
+        title: "Community Recipe Scaling Studio",
+        completedAt: new Date(now - day).toISOString(),
+        stars: 3,
+      },
+    }),
+    nt_mentor: JSON.stringify({
+      version: 1,
+      id: "katherine-johnson",
+      moves: ["pattern", "drawing"],
+      chosenAt: new Date(now - 3 * day).toISOString(),
+    }),
   };
   /** A storage that records any attempt to write: reading must never write. */
   function readOnlyStorage(data) {
@@ -352,6 +377,10 @@ for (const [label, pattern] of [
       "Print my progress",
       "Back up to a file",
       "Restore from a file",
+      "My Math Defense & Creations Portfolio",
+      "Katherine Johnson",
+      "Ratio Bot",
+      "Community Recipe Scaling Studio",
     ]) {
       checks += 1;
       assert.ok(text.includes(expected), `${route} shows "${expected}"`);

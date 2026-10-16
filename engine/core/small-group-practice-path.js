@@ -244,7 +244,9 @@ function practiceCard(it, { n, key, store, score, mode, onAnswered, model, tick 
     store?.set(`${key}-done`, correct ? "right" : "shown");
     card.classList.add(correct ? "is-right" : "is-shown");
     // Answered (or closed by the solution): the controls are finished too.
-    for (const c of card.querySelectorAll(".sgp-choice, .sgb-input, .sgb-submit"))
+    /** @type {HTMLButtonElement | HTMLInputElement} */ for (const c of card.querySelectorAll(
+      ".sgp-choice, .sgb-input, .sgb-submit, .sgp-sym-btn",
+    ))
       c.disabled = true;
     if (correct && counted) score.solved();
     if (mode === "check" && steps) {
@@ -363,15 +365,44 @@ export function teacherLens(it) {
 function boxControl(it, key, store, grade) {
   const row = el("div", "sgb-try-row");
   const id = `sgp-${key}`;
-  const lab = el("label", "sgb-input-label", "My answer");
+  const lab = /** @type {HTMLLabelElement} */ (el("label", "sgb-input-label", "My answer"));
   lab.htmlFor = id;
-  const input = el("input", "sgb-input");
+  const input = /** @type {HTMLInputElement} */ (el("input", "sgb-input"));
   input.id = id;
   input.type = "text";
   input.autocomplete = "off";
   input.setAttribute("inputmode", /^[−-]?[\d.,\s/]+$/.test(it.answer) ? "decimal" : "text");
-  const check = el("button", "btn sgb-submit", "Check");
+  const check = /** @type {HTMLButtonElement} */ (el("button", "btn sgb-submit", "Check"));
   check.type = "button";
+  const symBar = el("div", "sgp-sym-bar");
+  symBar.setAttribute("role", "group");
+  symBar.setAttribute("aria-label", "Quick math symbols");
+  for (const [sym, name] of [
+    ["/", "Fraction slash /"],
+    ["÷", "Division ÷"],
+    ["×", "Multiplication ×"],
+    ["−", "Negative / minus −"],
+    ["%", "Percent %"],
+    [":", "Ratio colon :"],
+  ]) {
+    const symBtn = /** @type {HTMLButtonElement} */ (el("button", "sgp-sym-btn", sym));
+    symBtn.type = "button";
+    symBtn.title = `Insert ${name}`;
+    symBtn.setAttribute("aria-label", `Insert ${name}`);
+    symBtn.addEventListener("click", () => {
+      if (input.disabled) return;
+      const start = input.selectionStart ?? input.value.length;
+      const end = input.selectionEnd ?? input.value.length;
+      input.value = input.value.slice(0, start) + sym + input.value.slice(end);
+      input.focus();
+      try {
+        input.setSelectionRange(start + sym.length, start + sym.length);
+      } catch {
+        /* ignore selection range errors on unsupported inputs */
+      }
+    });
+    symBar.appendChild(symBtn);
+  }
   const run = (restoring) => {
     const value = input.value.trim();
     if (!value) return;
@@ -382,7 +413,7 @@ function boxControl(it, key, store, grade) {
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") run(false);
   });
-  row.append(lab, input, check);
+  row.append(lab, input, check, symBar);
   const saved = store?.get(key);
   if (saved) {
     input.value = saved;
@@ -546,7 +577,11 @@ function talkCard(talk, { store }) {
   );
   prompt.append(head, el("p", null, line(talk.prompt, talk.promptEs)));
   card.appendChild(prompt);
-  const framesLab = el("p", "sgp-frames-lab", "Start your sentence like this:");
+  const framesLab = el(
+    "p",
+    "sgp-frames-lab",
+    "Start your sentence like this (tap a frame to use it):",
+  );
   framesLab.id = "sgp-talk-frames-lab";
   card.appendChild(framesLab);
   const frames = framesRow(talk.frames, talk.framesEs, 2);
@@ -555,18 +590,61 @@ function talkCard(talk, { store }) {
     card.appendChild(frames);
   }
   const id = "sgp-talk-note";
-  const lab = el("label", "sgb-input-label", "Write your best sentence (optional)");
+  const lab = /** @type {HTMLLabelElement} */ (
+    el("label", "sgb-input-label", "Write your best sentence (optional)")
+  );
   lab.htmlFor = id;
-  const area = el("textarea", "sgb-why-box");
+  const area = /** @type {HTMLTextAreaElement} */ (el("textarea", "sgb-why-box"));
   area.id = id;
   // The frames are the scaffold for THIS box, so they are announced with it.
   // Sitting next to it is enough for a sighted student and nothing at all for a
   // screen-reader user, who otherwise hears the label and none of the frames.
-  if (frames) area.setAttribute("aria-describedby", `${framesLab.id} ${frames.id}`);
+  if (frames) {
+    area.setAttribute("aria-describedby", `${framesLab.id} ${frames.id}`);
+    frames.querySelectorAll(".sg-frame").forEach((chip) => {
+      chip.setAttribute("role", "button");
+      chip.setAttribute("tabindex", "0");
+      chip.setAttribute("title", "Tap to start your sentence with this frame");
+      const useFrame = () => {
+        const raw = (chip.textContent || "")
+          .split("·")[0]
+          .trim()
+          .replace(/…|\.{3}/g, " ");
+        if (!area.value.trim()) {
+          area.value = raw;
+        } else if (!area.value.includes(raw)) {
+          area.value = `${area.value.trim()} ${raw}`;
+        }
+        store?.set("talkNote", area.value);
+        area.focus();
+      };
+      chip.addEventListener("click", useFrame);
+      chip.addEventListener("keydown", (e) => {
+        if (
+          /** @type {KeyboardEvent} */ (e).key === "Enter" ||
+          /** @type {KeyboardEvent} */ (e).key === " "
+        ) {
+          e.preventDefault();
+          useFrame();
+        }
+      });
+    });
+  }
   area.rows = 2;
   area.value = store?.get("talkNote") || "";
   area.addEventListener("input", () => store?.set("talkNote", area.value));
-  card.append(lab, area);
+  const rehearseRow = el("div", "sgp-talk-actions");
+  const rehearseBtn = /** @type {HTMLButtonElement} */ (
+    el("button", "btn ghost sgp-read sgp-talk-rehearse", "🔊 Rehearse my sentence aloud")
+  );
+  rehearseBtn.type = "button";
+  rehearseBtn.setAttribute("aria-pressed", "false");
+  rehearseBtn.addEventListener("click", () => {
+    const draft = area.value.trim() || spoken(talk.prompt, talk.promptEs);
+    speak(draft, rehearseBtn, esLane() ? "es-US" : "en-US");
+  });
+  rehearseRow.appendChild(rehearseBtn);
+  card.append(lab, area, rehearseRow);
   return card;
 }
 
@@ -756,7 +834,7 @@ export function createExitCheckSection(config, state, ctx) {
     makePulse(state, "after", (v) => store?.set("pulseAfter", v), store?.get("pulseAfter")),
   );
   const row = el("div", "row sgb-done-row");
-  const finish = el("button", "btn", "Finish ✓");
+  const finish = /** @type {HTMLButtonElement} */ (el("button", "btn", "Finish ✓"));
   finish.type = "button";
   const done = () => {
     finish.disabled = true;
@@ -828,6 +906,17 @@ export const PRACTICE_CSS = `
 .sgp-why{margin:6px 0 0;padding:10px 14px;background:var(--sg-warn-bg);border-radius:var(--sg-radius-sm);color:var(--sg-warn-ink)}
 .sgp-frames-lab{margin:12px 0 6px;font-weight:700}
 .sgp-talk .sg-frames{margin:0 0 12px}
+.sgp-talk .sg-frame[role="button"]{cursor:pointer;transition:background .15s ease,border-color .15s ease}
+.sgp-talk .sg-frame[role="button"]:hover{border-color:var(--sg);background:#fff}
+.sgp-talk-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.sgp-sym-bar{display:inline-flex;flex-wrap:wrap;gap:5px;align-items:center}
+.sgp-sym-btn{min-width:34px;min-height:34px;padding:2px 8px;border:1px solid var(--sg-line);border-radius:6px;background:var(--sg-soft);color:var(--sg-ink);font-family:var(--sg-mono);font-size:15px;font-weight:700;cursor:pointer}
+.sgp-sym-btn:hover:not(:disabled){border-color:var(--sg);background:#fff}
+.sgp-sym-btn:disabled{opacity:.45;cursor:default}
+.sg-pathway-bridge{margin:10px 0 4px;padding:8px 12px;border-radius:8px;background:var(--sg-soft);font-size:14px}
+.sg-pathway-bridge a{color:var(--sg-ink);font-weight:700;text-decoration:underline}
+.sg-pathway-bridge a[aria-current="page"]{text-decoration:none;color:var(--sg-good)}
+.sg-done-stats,.sg-done-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .sgp-finish .sg-pulse{margin:0 0 12px}
-@media print{.sgp-tools,.sgp-read,.sgp-step-row .sgb-check,.sgp-step-row .sgp-showme,.sgp-finish{display:none!important}.sgp-solution,.sgp-why,.sgb-model{display:none!important}}
+@media print{.sgp-tools,.sgp-read,.sgp-sym-bar,.sgp-talk-actions,.sg-pathway-bridge,.sg-done-actions,.sgp-step-row .sgb-check,.sgp-step-row .sgp-showme,.sgp-finish{display:none!important}.sgp-solution,.sgp-why,.sgb-model{display:none!important}}
 `;

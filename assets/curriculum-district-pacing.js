@@ -341,6 +341,7 @@
       <option value="playlist">🎵 Tiered Student Playlist (Seq ${item.sequence})</option>
       <option value="unit_map">🗺️ Unit Scope & Prerequisites Map</option>
       <option value="groups">👥 Studio Small-Group Rotation Console</option>
+      <option value="auto_route_groups">🔀 Auto-Route Tomorrow's Small Groups (Seq ${item.sequence})</option>
       <option value="scorm">🎓 Download Canvas SCORM Package for Sequence ${item.sequence}</option>
     `;
     lessonSelect.appendChild(groupActions);
@@ -567,8 +568,129 @@
       showWeeklyNewsletterModal(item);
     } else if (actionType === "family_roster") {
       showFamilyRosterModal(item);
+    } else if (actionType === "auto_route_groups") {
+      showSmallGroupAutoRouterModal(item);
     }
   };
+
+  function showSmallGroupAutoRouterModal(item) {
+    const existing = document.getElementById("ewl-small-group-router-modal");
+    if (existing) existing.remove();
+
+    const baseLessonId = (
+      selectedLessonId() || (item.lessons[0] ? item.lessons[0].id : "3-1")
+    ).replace(/-(group1|group2|catchup)$/, "");
+    const lessonObj = (item.lessons || []).find((l) => l.id === baseLessonId) ||
+      (item.lessons && item.lessons[0]) || { id: baseLessonId, title: "Target Lesson" };
+    const lid = lessonObj.id;
+    const lTitle = lessonObj.title || "Target Lesson";
+    const unitTitle = item.district_title || "Unit Pacing";
+    const origin = window.location.origin;
+
+    const g1Url = origin + "/lessons/" + lid + "-group1/?student=1";
+    const coreUrl = origin + "/lessons/" + lid + "/?student=1";
+    const g2Url = origin + "/lessons/" + lid + "-group2/?student=1";
+    const readinessUrl = origin + "/lessons/" + lid + "/readiness/?student=1";
+    const rotationToolUrl =
+      "/teacher-tools/small-group-rotation/?seq=" +
+      item.sequence +
+      "&unit=" +
+      encodeURIComponent(unitTitle) +
+      "&lesson=" +
+      encodeURIComponent(lid);
+
+    // Inspect local exit-ticket / mastery signals if present on device
+    let localSignalNote =
+      "Ready for Exit-Ticket / Cool-Down Triage (0–1 pt → Group 1 · 2 pts → Core · 3+ pts → Group 2)";
+    try {
+      const results = JSON.parse(localStorage.getItem("nt_results_v1") || "[]");
+      const matching = Array.isArray(results)
+        ? results.filter((r) => String(r.lessonId || r.id || "").includes(lid))
+        : [];
+      if (matching.length > 0) {
+        localSignalNote = `${matching.length} local check-in signal(s) recorded for Lesson ${lid} on this device.`;
+      }
+    } catch (_e) {}
+
+    const boardSnippet =
+      `🔀 Tomorrow's Math Workshop Rotations · Lesson ${lid}: ${lTitle}\n\n` +
+      `🌱 Station 1 (Extra Visual & Guided Support — Group 1):\n${g1Url}\n` +
+      `   Warm-Up Bridge: ${readinessUrl}\n\n` +
+      `🎯 Station 2 (Core Studio & Partner Defense):\n${coreUrl}\n\n` +
+      `🚀 Station 3 (Challenge & Transfer Extension — Group 2):\n${g2Url}`;
+
+    const modal = document.createElement("div");
+    modal.id = "ewl-small-group-router-modal";
+    modal.style.cssText =
+      "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(15,23,42,0.68);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;";
+    modal.innerHTML = `
+      <div role="dialog" aria-modal="true" aria-labelledby="ewl-sg-router-title" style="background:#ffffff;border-radius:18px;max-width:780px;width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 45px rgba(0,0,0,0.28);border:1.5px solid #c084fc;overflow:hidden;font-family:Nunito,system-ui,sans-serif;">
+        <div style="background:linear-gradient(135deg,#6d28d9,#4c1d95);color:#ffffff;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:22px;">🔀</span>
+            <div>
+              <h3 id="ewl-sg-router-title" style="margin:0;font-size:18px;font-weight:900;">Exit-Ticket → Tomorrow's Small-Group Auto-Router</h3>
+              <p style="margin:2px 0 0;font-size:12.5px;opacity:0.92;">Seq ${item.sequence} · Lesson ${lid}: ${lTitle}</p>
+            </div>
+          </div>
+          <button type="button" onclick="document.getElementById('ewl-small-group-router-modal').remove()" style="background:rgba(255,255,255,0.2);border:none;color:#ffffff;font-size:18px;font-weight:900;border-radius:50%;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+        </div>
+        <div style="padding:20px 22px;overflow-y:auto;flex:1;">
+          <div style="background:#f5f3ff;border:1px solid #ddd6fe;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#4c1d95;line-height:1.5;">
+            <strong>⚡ Zero-Prep Instructional Routing:</strong> ${localSignalNote} Assign each student group their synchronized pathway below—every tier preserves the grade-level standard while varying concrete-to-abstract representation density.
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px;">
+            <div style="border:1.5px solid #bae6fd;border-radius:12px;padding:14px;background:#f0f9ff;display:flex;flex-direction:column;gap:6px;">
+              <span style="font-size:11px;font-weight:800;text-transform:uppercase;color:#0369a1;letter-spacing:0.04em;">Cool-Down 0–1 pt · Extra Support</span>
+              <strong style="font-size:15px;color:#0f172a;">🌱 Group 1: Visual &amp; Guided Bridge</strong>
+              <p style="margin:0;font-size:12.5px;color:#334155;line-height:1.45;">Starts with interactive readiness warm-up + step-by-step tape/balance visual scaffolds and bilingual sentence frames.</p>
+              <div style="margin-top:auto;padding-top:8px;display:flex;flex-wrap:wrap;gap:6px;">
+                <a href="/lessons/${lid}-group1/" target="_blank" rel="noopener" style="font-size:12px;font-weight:800;color:#ffffff;background:#0284c7;padding:6px 10px;border-radius:7px;text-decoration:none;">Open Group 1 ↗</a>
+                <a href="/lessons/${lid}/readiness/?student=1" target="_blank" rel="noopener" style="font-size:12px;font-weight:800;color:#0369a1;background:#e0f2fe;padding:6px 10px;border-radius:7px;text-decoration:none;">Readiness Bridge ↗</a>
+              </div>
+            </div>
+            <div style="border:1.5px solid #a7f3d0;border-radius:12px;padding:14px;background:#ecfdf5;display:flex;flex-direction:column;gap:6px;">
+              <span style="font-size:11px;font-weight:800;text-transform:uppercase;color:#047857;letter-spacing:0.04em;">Cool-Down 2 pts · Core On-Track</span>
+              <strong style="font-size:15px;color:#0f172a;">🎯 Core Studio &amp; Partner Defense</strong>
+              <p style="margin:0;font-size:12.5px;color:#334155;line-height:1.45;">Full grade-level investigation + partner mathematical defense and error-analysis reasoning check.</p>
+              <div style="margin-top:auto;padding-top:8px;display:flex;flex-wrap:wrap;gap:6px;">
+                <a href="/lessons/${lid}/" target="_blank" rel="noopener" style="font-size:12px;font-weight:800;color:#ffffff;background:#059669;padding:6px 10px;border-radius:7px;text-decoration:none;">Open Core Lesson ↗</a>
+                <a href="/lessons/${lid}/worksheet.html" target="_blank" rel="noopener" style="font-size:12px;font-weight:800;color:#065f46;background:#d1fae5;padding:6px 10px;border-radius:7px;text-decoration:none;">Practice Sheet ↗</a>
+              </div>
+            </div>
+            <div style="border:1.5px solid #fde68a;border-radius:12px;padding:14px;background:#fffbeb;display:flex;flex-direction:column;gap:6px;">
+              <span style="font-size:11px;font-weight:800;text-transform:uppercase;color:#b45309;letter-spacing:0.04em;">Cool-Down 3+ pts · Challenge</span>
+              <strong style="font-size:15px;color:#0f172a;">🚀 Group 2: Non-Routine Transfer</strong>
+              <p style="margin:0;font-size:12.5px;color:#334155;line-height:1.45;">Multi-constraint modeling, open-middle optimization, and Teach the Machine peer proof authoring.</p>
+              <div style="margin-top:auto;padding-top:8px;display:flex;flex-wrap:wrap;gap:6px;">
+                <a href="/lessons/${lid}-group2/" target="_blank" rel="noopener" style="font-size:12px;font-weight:800;color:#ffffff;background:#d97706;padding:6px 10px;border-radius:7px;text-decoration:none;">Open Group 2 ↗</a>
+                <a href="/curriculum/teach-the-machine/" target="_blank" rel="noopener" style="font-size:12px;font-weight:800;color:#92400e;background:#fef3c7;padding:6px 10px;border-radius:7px;text-decoration:none;">Teach the Machine ↗</a>
+              </div>
+            </div>
+          </div>
+          <label for="ewl-sg-router-snippet" style="display:block;font-size:12.5px;font-weight:800;color:#334155;margin-bottom:6px;">Canvas / Google Classroom / Smartboard Rotation Links:</label>
+          <textarea id="ewl-sg-router-snippet" readonly style="width:100%;height:110px;padding:10px 12px;border:1.5px solid #cbd5e1;border-radius:10px;font-size:12px;font-family:ui-monospace,monospace;color:#1e293b;background:#f8fafc;box-sizing:border-box;resize:none;">${boardSnippet}</textarea>
+        </div>
+        <div style="padding:14px 22px;background:#f8fafc;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+          <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('ewl-sg-router-snippet').value).then(()=>{this.textContent='✓ Rotation Links Copied!';this.style.background='#16a34a';})" style="min-height:40px;background:#6d28d9;color:#ffffff;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;padding:0 16px;">
+            📋 Copy 3-Group Rotation Links
+          </button>
+          <div style="display:flex;gap:8px;">
+            <a href="${rotationToolUrl}" style="min-height:40px;background:#f3e8ff;color:#5b21b6;border:1.5px solid #c084fc;border-radius:8px;font-size:13px;font-weight:800;padding:0 14px;display:inline-flex;align-items:center;text-decoration:none;">
+              👥 Open Live Rotation Console &amp; Roster
+            </a>
+            <button type="button" onclick="document.getElementById('ewl-small-group-router-modal').remove()" style="min-height:40px;background:#e2e8f0;color:#334155;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;padding:0 14px;">
+              Done
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.remove();
+    });
+    document.body.appendChild(modal);
+  }
 
   function showWeeklyNewsletterModal(item) {
     const existing = document.getElementById("ewl-weekly-newsletter-modal");

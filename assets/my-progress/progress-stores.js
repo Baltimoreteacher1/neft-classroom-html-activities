@@ -273,6 +273,58 @@
     };
   }
 
+  function readPortfolio(storage) {
+    var taughtRaw = json(storage, "nt_ttm.taught", []);
+    var taught = Array.isArray(taughtRaw) ? taughtRaw.filter(Boolean).map(String) : [];
+    var proofsRaw = json(storage, "nt_ttm.proofs", {});
+    var proofs = [];
+    if (isObj(proofsRaw)) {
+      Object.keys(proofsRaw).forEach(function (k) {
+        var p = proofsRaw[k];
+        if (!isObj(p)) return;
+        proofs.push({
+          tag: String(p.tag || k),
+          learnerName: String(p.learnerName || k),
+          mode: String(p.mode || "tape"),
+          summary: String(p.summary || ""),
+          savedAt: String(p.savedAt || ""),
+        });
+      });
+    }
+    var projRaw = json(storage, "nt-project-complete:v1", {});
+    var projects = [];
+    if (isObj(projRaw)) {
+      Object.keys(projRaw).forEach(function (path) {
+        var pr = projRaw[path];
+        if (!isObj(pr)) return;
+        projects.push({
+          path: path,
+          unit: num(pr.unit),
+          version: String(pr.version || ""),
+          title: String(pr.title || "Unit Project"),
+          stars: num(pr.stars),
+          level: String(pr.level || ""),
+          at: ms(pr.completedAt),
+        });
+      });
+    }
+    var mentorRaw = json(storage, "nt_mentor", null);
+    var mentor =
+      isObj(mentorRaw) && typeof mentorRaw.id === "string" && mentorRaw.id
+        ? {
+            id: String(mentorRaw.id),
+            moves: Array.isArray(mentorRaw.moves) ? mentorRaw.moves.map(String) : [],
+            at: ms(mentorRaw.chosenAt),
+          }
+        : null;
+    return {
+      taught: taught,
+      proofs: proofs,
+      projects: projects,
+      mentor: mentor,
+    };
+  }
+
   function collect(storage) {
     return {
       signal: readSignal(storage),
@@ -282,6 +334,7 @@
       saves: readSaves(storage),
       fluency: readFluency(storage),
       almostRight: readAlmostRight(storage),
+      portfolio: readPortfolio(storage),
     };
   }
 
@@ -458,6 +511,7 @@
   }
 
   function isEmpty(s) {
+    var pf = s.portfolio || { taught: [], proofs: [], projects: [], mentor: null };
     return (
       !Object.keys(s.signal.standards).length &&
       !s.arcade.runs.length &&
@@ -465,6 +519,10 @@
       !s.saves.length &&
       !s.fluency.length &&
       !s.almostRight &&
+      !pf.taught.length &&
+      !pf.proofs.length &&
+      !pf.projects.length &&
+      !pf.mentor &&
       !s.boards.some(function (b) {
         return b.done > 0;
       })
