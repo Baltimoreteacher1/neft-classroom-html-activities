@@ -677,6 +677,69 @@
           if (sv === "es" || sv === "en") lang = sv;
         } catch (e) {}
 
+        // Spanish for lesson content that has no authored Spanish: an English → Spanish dictionary
+        // (es-dictionary.json). Loaded only when Spanish is showing; a round's missing Spanish
+        // fields are filled from it as the round starts, and anything absent stays English.
+        let esDict = null;
+        let esDictPromise = null;
+        function ensureEsDict() {
+          if (esDict) return Promise.resolve(esDict);
+          if (!esDictPromise)
+            esDictPromise = fetch("/math/games/practice-arcade/es-dictionary.json")
+              .then((res) => (res.ok ? res.json() : {}))
+              .catch(() => ({}))
+              .then((d) => (esDict = d && typeof d === "object" ? d : {}));
+          return esDictPromise;
+        }
+        if (lang === "es") ensureEsDict();
+        function fillEs(r) {
+          if (!r || !esDict || r.__esFilled) return;
+          r.__esFilled = true;
+          const g = (s) => (typeof s === "string" && s && esDict[s]) || "";
+          const list = (arr) => {
+            if (!Array.isArray(arr)) return null;
+            const out = arr.map((x) => g(x) || "");
+            return out.some(Boolean) ? out : null;
+          };
+          if (!r.promptEs) r.promptEs = g(r.prompt);
+          if (!r.whyEs) r.whyEs = g(r.why);
+          if (!(Array.isArray(r.hintsEs) && r.hintsEs.some(Boolean))) {
+            const h = list(r.hints);
+            if (h) r.hintsEs = h.map((x, i) => x || r.hints[i]);
+          }
+          if (Array.isArray(r.choices) && !(Array.isArray(r.choicesEs) && r.choicesEs.some(Boolean))) {
+            const c = list(r.choices);
+            if (c) r.choicesEs = c.map((x, i) => x || r.choices[i]);
+          }
+          if (Array.isArray(r.choiceFeedback)) {
+            const have = Array.isArray(r.choiceFeedbackEs) ? r.choiceFeedbackEs : [];
+            r.choiceFeedbackEs = r.choiceFeedback.map((f, i) => have[i] || g(f));
+          }
+          (r.pairs || []).forEach((q) => {
+            if (!q.termEs) q.termEs = g(q.term);
+            if (!q.matchEs) q.matchEs = g(q.match);
+          });
+          (r.items || []).forEach((q) => {
+            if (!q.textEs) q.textEs = g(q.text);
+          });
+          (r.categories || []).forEach((c) => {
+            if (!c.labelEs) c.labelEs = g(c.label);
+          });
+          (r.steps || []).forEach((st) => {
+            if (!st.labelEs) st.labelEs = g(st.label);
+            if (!st.workEs) st.workEs = g(st.work);
+            if (!st.promptEs) st.promptEs = g(st.prompt);
+            if (!st.whyEs) st.whyEs = g(st.why);
+            if (Array.isArray(st.choices) && !(Array.isArray(st.choicesEs) && st.choicesEs.some(Boolean))) {
+              const c = list(st.choices);
+              if (c) st.choicesEs = c.map((x, i) => x || st.choices[i]);
+            }
+          });
+          (r.distractors || []).forEach((q) => {
+            if (!q.fbEs) q.fbEs = g(q.fb);
+          });
+        }
+
         // Resolve the shared game-feel layer; provide safe no-op fallbacks so the
         // game still runs if /assets/game-juice.js failed to load.
         const JUICE = window.GameJuice || {
@@ -2545,7 +2608,8 @@
                 localStorage.setItem("pa-lang", lang);
                 localStorage.setItem("nt-lang", lang);
               } catch (e) {}
-              this.scene.restart();
+              if (lang === "es") ensureEsDict().then(() => this.scene.restart());
+              else this.scene.restart();
             });
             const mapBtn = this.add
               .text(W / 2 + 150, 580, t("openMap"), {
@@ -3156,6 +3220,11 @@
           }
 
           startRound() {
+            if (lang === "es" && !esDict) {
+              ensureEsDict().then(() => this.startRound());
+              return;
+            }
+            if (lang === "es") fillEs(rounds[this.idx]);
             if (this.idx > 0 || tier === "l1" || window.innerWidth > 640) {
               this.voyage.entered = this.idx;
             }
