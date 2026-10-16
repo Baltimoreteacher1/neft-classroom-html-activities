@@ -6,9 +6,13 @@
 // callbacks so a student's writing survives navigation, exactly like the
 // reflect / connect phases.
 
+import { mountReasoningCheck } from "../core/reasoning-check.js";
 import { deriveTWR } from "../core/twr.js";
 
 const TWR_STYLE_ID = "twr-polish-styles";
+
+// Scaffold level sent with a reasoning check: Start gets the plainest replies.
+const REASONING_LEVEL = { start: 1, build: 3, explain: 5 };
 
 /**
  * Inject the additive polish stylesheet once per document. Every animation and
@@ -184,7 +188,10 @@ function esc(s) {
 }
 
 // One labelled writing row: a frame line (bilingual) + a textarea that auto-saves.
-function writeRow(parent, { key, frameEn, frameEs, rows = 2, getResponse, saveResponse }) {
+function writeRow(
+  parent,
+  { key, frameEn, frameEs, rows = 2, getResponse, saveResponse, reasoning },
+) {
   if (frameEn) {
     const frame = document.createElement("p");
     frame.className = "sentence-frame";
@@ -233,6 +240,8 @@ function writeRow(parent, { key, frameEn, frameEs, rows = 2, getResponse, saveRe
     updateCounter();
   });
   parent.append(counter);
+  // Opt-in "Check my reasoning": one gap, one question, never a score or the answer.
+  if (reasoning) parent.append(mountReasoningCheck(ta, reasoning));
   return ta;
 }
 
@@ -301,7 +310,14 @@ export function renderTwrWriting(container, config, { getResponse, saveResponse,
       panel.append(frames);
     }
     inputs.push(
-      writeRow(panel, { key: `twr_${level.id}`, frameEn: "", rows, getResponse, saveResponse }),
+      writeRow(panel, {
+        key: `twr_${level.id}`,
+        frameEn: "",
+        rows,
+        getResponse,
+        saveResponse,
+        reasoning: { prompt: twr.focus.questionEn, level: REASONING_LEVEL[level.id] },
+      }),
     );
     parent.append(panel);
   };
@@ -433,11 +449,25 @@ export function renderTwrWriting(container, config, { getResponse, saveResponse,
       card.classList.add("is-celebrating");
       fireConfetti(card);
       if (onSubmit) onSubmit(written, inputs.length);
+      showSampleSolutions();
     }
     feedbackSlot.innerHTML = "";
     feedbackSlot.append(fb);
   });
   card.append(submitBtn);
+
+  // After a student saves, offer (never force) sample solutions grouped by
+  // strategy. Loaded on demand so the gallery costs nothing until it is used.
+  const gallerySlot = document.createElement("div");
+  card.append(gallerySlot);
+  const showSampleSolutions = () => {
+    if (gallerySlot.firstChild) return;
+    import("../core/strategy-gallery.js")
+      .then(({ mountStrategyGallery }) => mountStrategyGallery(gallerySlot, { config }))
+      .catch(() => {
+        /* the gallery is optional; a failed load leaves the lesson untouched */
+      });
+  };
 
   container.append(card);
 

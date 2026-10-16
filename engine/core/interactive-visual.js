@@ -279,9 +279,11 @@ const REGISTRY = {
   },
   // "Work It Out" step lab: line-by-line solving with per-step equivalence
   // checking (equation mode = same solution set, expression mode = same value).
-  "step-solver": async (host, cfg) => {
+  // `ctx.state` (when the mounting phase passes the lesson state) lets a named
+  // step mistake reach the lesson's per-tag misconception counts.
+  "step-solver": async (host, cfg, ctx) => {
     const { renderStepSolver } = await import("../components/step-solver.js");
-    return renderStepSolver(host, cfg);
+    return renderStepSolver(host, cfg, ctx);
   },
   // Box-plot construction lab: drag the five-number summary onto a number
   // line over a live dot plot of the data; per-stat coaching on Check.
@@ -433,7 +435,7 @@ export function mountInteractiveVisuals(root, opts) {
     // default path below is exactly the shipped behaviour.
     const mount = () =>
       Promise.resolve()
-        .then(() => factory(host, cfg))
+        .then(() => factory(host, cfg, opts))
         .then((handle) => {
           if (handle) host.__ivHandle = handle;
         })

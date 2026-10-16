@@ -46,9 +46,9 @@ import { hasConversionFacts, renderConversionChip } from "./conversion-chart.js"
 import { extractDivisionDiagram } from "./division-helper.js";
 import { MISCONCEPTIONS } from "./misconceptions.js";
 import { compareYourWorkFor } from "./notebook-prompt.js";
+import { mountReasoningCheck } from "./reasoning-check.js";
 import { pickWorkedModel } from "./small-group-adaptive.js";
 import { figureBlock } from "./small-group-labs.js";
-import { mountReasoningReader } from "./small-group-reasoning.js";
 import { createRubricDetails } from "./small-group-rubric.js";
 import { appendTryAnotherWay } from "./small-group-strategies.js";
 import { bi, biHtml, celebrate, el, esc, framesRow, speak } from "./small-group-ui.js";
@@ -835,7 +835,7 @@ function responseCard(item, index, variant, onSolved, scaffold, events = {}) {
         : "Show or explain your thinking…";
     // A reader on the writing. Until now this box collected a student's best
     // thinking and nothing on earth read it.
-    const reader = mountReasoningReader(response, {
+    const reader = mountReasoningCheck(response, {
       prompt: itemStem(item) || "Explain your thinking.",
       standard: item._standard || "",
       answerShown: item.answer || "",
@@ -1685,7 +1685,7 @@ export function createCheckSection(config, onSolved, tally, events = {}, store =
       ta.value = store?.get("checkExplainResponse") || "";
       const status = el("div", "fb");
       status.setAttribute("aria-live", "polite");
-      const explainReader = mountReasoningReader(ta, {
+      const explainReader = mountReasoningCheck(ta, {
         prompt: "Explain how you know your answer is correct.",
         standard: config.standard || "",
         answerShown: String(ticket?.answer ?? ""),

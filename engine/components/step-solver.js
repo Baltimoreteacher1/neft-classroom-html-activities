@@ -1,21 +1,32 @@
-// @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
-// (see tsconfig.json); the marker is the debt, and removing it is the unit of
-// work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
+// The math engine (tokenizer, parser, equivalence testing) lives in
+// engine/core/step-diagnosis-engine.js so the diagnosis of a wrong line reads
+// every line exactly as this component does.
 //
-// The math engine is dependency-free: a tokenizer + shunting-yard parser
-// (handles decimals, fractions as division, MIXED NUMBERS like "2 1/2",
-// unicode × ÷ ·, superscripts ², implicit multiplication like 3x and 2(x+1))
-// plus numeric equivalence testing — expressions are compared at sampled
-// variable values; equations are compared by their root sets found on a grid
-// and refined by bisection.
+// A line that is not equivalent to the one above is also run through
+// engine/core/step-diagnosis.js: when exactly one named mistake would produce
+// it, the student sees the same "Looks like: …" chip the multiple-choice items
+// show (EN + ES) plus one Socratic question — never the correct line — and the
+// misconception reaches the heatmap, class pulse and lesson state.
 //
-// Pure DOM, no dependencies. Public API:
-//   renderStepSolver(container, cfg) -> { destroy }
+// Pure DOM. Public API:
+//   renderStepSolver(container, cfg, ctx?) -> { destroy }
 //     cfg.mode    : "expression" (default) | "equation"
 //     cfg.start   : first line of the problem, e.g. "3x + 6 = 18" or "3/4 ÷ 1/8"
 //     cfg.answer  : optional final form, revealed only on request after real work
 //     cfg.presets : optional [{ start, label?, answer? }] quick-pick problems
 //     cfg.intro   : optional one-line coaching sentence under the title
+//     ctx.state   : optional lesson state; its recordMisconception(tag) is called
+
+import { stackContent } from "../core/i18n.js";
+import { misconceptionLabel } from "../core/misconceptions.js";
+import { diagnoseStep } from "../core/step-diagnosis.js";
+import {
+  isEquivalent,
+  looksSolved,
+  normalizeSides,
+  parseLine,
+} from "../core/step-diagnosis-engine.js";
+import { stepNudge } from "../core/step-diagnosis-nudges.js";
 
 const C = {
   navy: "#12355b",
@@ -44,258 +55,6 @@ function prefersReducedMotion() {
   );
 }
 
-// --- Tokenizer -------------------------------------------------------------
-// Normalizes student-friendly notation, then emits { num | var | op | paren }.
-// "2 1/2" (number, space, fraction) becomes a single mixed-number value token.
-const SUPS = { "⁰": 0, "¹": 1, "²": 2, "³": 3, "⁴": 4, "⁵": 5, "⁶": 6, "⁷": 7, "⁸": 8, "⁹": 9 };
-
-function tokenize(src) {
-  let s = String(src);
-  for (const [ch, d] of Object.entries(SUPS)) s = s.split(ch).join(`^${d}`);
-  s = s.replace(/[×·]/g, "*").replace(/−/g, "-");
-  const out = [];
-  let i = 0;
-  const isDigit = (c) => c >= "0" && c <= "9";
-  while (i < s.length) {
-    const c = s[i];
-    if (c === " " || c === "\t") {
-      i++;
-      continue;
-    }
-    if (isDigit(c) || (c === "." && isDigit(s[i + 1]))) {
-      let j = i;
-      while (j < s.length && (isDigit(s[j]) || s[j] === ".")) j++;
-      const whole = s.slice(i, j);
-      if ((whole.match(/\./g) || []).length > 1) throw new Error("number");
-      // Mixed number: "2 1/2" → integer, spaces, fraction. Only when the first
-      // part is an integer and a "a/b" follows the gap.
-      const m = /^ +(\d+) *\/ *(\d+)/.exec(s.slice(j));
-      if (m && !whole.includes(".")) {
-        const den = Number(m[2]);
-        if (den === 0) throw new Error("divzero");
-        out.push({ t: "num", v: Number(whole) + Number(m[1]) / den });
-        i = j + m[0].length;
-        continue;
-      }
-      out.push({ t: "num", v: Number(whole) });
-      i = j;
-      continue;
-    }
-    if (/[a-zA-Z]/.test(c)) {
-      out.push({ t: "var", v: c.toLowerCase() });
-      i++;
-      continue;
-    }
-    if ("+-*/^÷".includes(c)) {
-      out.push({ t: "op", v: c });
-      i++;
-      continue;
-    }
-    if (c === "(" || c === ")") {
-      out.push({ t: c });
-      i++;
-      continue;
-    }
-    throw new Error("symbol");
-  }
-  // Two number tokens in a row means a space-separated "3 4" — almost always a
-  // mixed-number typo; refuse with a specific hint rather than guessing.
-  for (let k = 1; k < out.length; k++) {
-    if (out[k].t === "num" && out[k - 1].t === "num") throw new Error("mixed");
-  }
-  return out;
-}
-
-// --- Parser (shunting-yard → RPN) ------------------------------------------
-// The fraction slash "/" binds tighter than the ÷ operation so a line like
-// "3/4 ÷ 1/8" reads the way a student writes it: (3/4) ÷ (1/8), not 3/4/1/8.
-const PREC = { "u-": 3, "^": 4, "*": 2, "÷": 2, "/": 2.5, "+": 1, "-": 1 };
-const RIGHT = { "^": true, "u-": true };
-
-function toRPN(tokens) {
-  const outQ = [];
-  const ops = [];
-  let prev = null; // previous significant token, for unary minus + implicit ×
-  const IMPLICIT_LEFT = (t) => t && (t.t === "num" || t.t === "var" || t.t === ")");
-  for (const raw of tokens) {
-    let tok = raw;
-    if (IMPLICIT_LEFT(prev) && (tok.t === "var" || tok.t === "(" || tok.t === "num")) {
-      // 3x, 2(x+1), (x+1)(x+2), x(4) — inject the multiplication.
-      pushOp({ t: "op", v: "*" });
-    }
-    if (tok.t === "op" && tok.v === "-" && !IMPLICIT_LEFT(prev)) tok = { t: "op", v: "u-" };
-    if (tok.t === "op" && tok.v === "+" && !IMPLICIT_LEFT(prev)) {
-      prev = null;
-      continue; // unary plus is a no-op
-    }
-    if (tok.t === "num" || tok.t === "var") outQ.push(tok);
-    else if (tok.t === "op") pushOp(tok);
-    else if (tok.t === "(") ops.push(tok);
-    else if (tok.t === ")") {
-      while (ops.length && ops[ops.length - 1].t !== "(") outQ.push(ops.pop());
-      if (!ops.length) throw new Error("paren");
-      ops.pop();
-    }
-    prev = tok.t === "op" ? { t: "op" } : tok;
-  }
-  while (ops.length) {
-    const o = ops.pop();
-    if (o.t === "(") throw new Error("paren");
-    outQ.push(o);
-  }
-  if (!outQ.length) throw new Error("empty");
-  return outQ;
-
-  function pushOp(tok) {
-    while (ops.length) {
-      const top = ops[ops.length - 1];
-      if (top.t !== "op") break;
-      const pT = PREC[top.v];
-      const pN = PREC[tok.v];
-      if (pT > pN || (pT === pN && !RIGHT[tok.v])) outQ.push(ops.pop());
-      else break;
-    }
-    ops.push(tok);
-  }
-}
-
-function evalRPN(rpn, x) {
-  const st = [];
-  for (const tok of rpn) {
-    if (tok.t === "num") st.push(tok.v);
-    else if (tok.t === "var") st.push(x);
-    else {
-      if (tok.v === "u-") {
-        if (!st.length) return NaN;
-        st.push(-st.pop());
-        continue;
-      }
-      const b = st.pop();
-      const a = st.pop();
-      if (a === undefined || b === undefined) return NaN;
-      if (tok.v === "+") st.push(a + b);
-      else if (tok.v === "-") st.push(a - b);
-      else if (tok.v === "*") st.push(a * b);
-      else if (tok.v === "/" || tok.v === "÷") st.push(b === 0 ? NaN : a / b);
-      else if (tok.v === "^") st.push(a ** b);
-    }
-  }
-  if (st.length !== 1) return NaN;
-  return st[0];
-}
-
-// Parse one full line. Returns { sides: [rpn] (1 or 2), vars:Set, tokens }.
-function parseLine(src) {
-  const parts = String(src).split("=");
-  if (parts.length > 2) throw new Error("equals");
-  const sides = [];
-  const vars = new Set();
-  let tokenCount = 0;
-  for (const part of parts) {
-    const toks = tokenize(part);
-    tokenCount += toks.length;
-    for (const t of toks) if (t.t === "var") vars.add(t.v);
-    sides.push(toRPN(toks));
-  }
-  if (vars.size > 1) throw new Error("vars");
-  return { sides, vars, tokenCount };
-}
-
-// --- Equivalence -----------------------------------------------------------
-const SAMPLES = [-3.7, -1.4, 0.6, 1.9, 3.3, 5.8];
-const close = (a, b, tol = 1e-7) => Math.abs(a - b) <= tol * Math.max(1, Math.abs(a), Math.abs(b));
-
-// Expression (single side): equal at every sample where both are defined.
-function exprEquivalent(rpnA, rpnB) {
-  let compared = 0;
-  for (const x of SAMPLES) {
-    const a = evalRPN(rpnA, x);
-    const b = evalRPN(rpnB, x);
-    if (!Number.isFinite(a) || !Number.isFinite(b)) continue;
-    if (!close(a, b, 1e-6)) return false;
-    compared++;
-  }
-  return compared > 0;
-}
-
-// Equation: root set of f(x) = L(x) − R(x) on a grid, refined by bisection.
-function rootsOf(parsed) {
-  const [L, R] = parsed.sides;
-  const f = (x) => {
-    const a = evalRPN(L, x);
-    const b = evalRPN(R, x);
-    return Number.isFinite(a) && Number.isFinite(b) ? a - b : NaN;
-  };
-  const roots = [];
-  const addRoot = (r) => {
-    if (!roots.some((q) => Math.abs(q - r) < 1e-3)) roots.push(r);
-  };
-  let allZero = true;
-  let prevX = null;
-  let prevY = null;
-  for (let x = -80; x <= 80.0001; x += 0.2) {
-    const y = f(x);
-    if (!Number.isFinite(y)) {
-      prevX = null;
-      continue;
-    }
-    if (Math.abs(y) > 1e-6) allZero = false;
-    if (Math.abs(y) < 1e-9) addRoot(x);
-    else if (prevY !== null && prevY * y < 0) {
-      let lo = prevX;
-      let hi = x;
-      let flo = prevY;
-      for (let k = 0; k < 60; k++) {
-        const mid = (lo + hi) / 2;
-        const fm = f(mid);
-        if (!Number.isFinite(fm)) break;
-        if (flo * fm <= 0) hi = mid;
-        else {
-          lo = mid;
-          flo = fm;
-        }
-      }
-      addRoot((lo + hi) / 2);
-    }
-    prevX = x;
-    prevY = y;
-  }
-  return { roots: roots.sort((a, b) => a - b), identity: allZero };
-}
-
-function eqEquivalent(pA, pB) {
-  const a = rootsOf(pA);
-  const b = rootsOf(pB);
-  if (a.identity || b.identity) return a.identity === b.identity;
-  if (a.roots.length !== b.roots.length) return false;
-  return a.roots.every((r, i) => Math.abs(r - b.roots[i]) < 1e-3);
-}
-
-// Is this line a finished answer? "x = 4" (either order) for equations; a lone
-// number for expressions; or matches the authored answer's compactness.
-function looksSolved(parsed, mode, answerTokens) {
-  if (mode === "equation") {
-    if (parsed.sides.length !== 2) return false;
-    const bare = (rpn) => rpn.length === 1 || (rpn.length === 2 && rpn[1].v === "u-");
-    const isVar = (rpn) => rpn[0].t === "var" && rpn.length === 1;
-    const isNum = (rpn) => rpn.every((t) => t.t !== "var") && bare(rpn);
-    return (
-      (isVar(parsed.sides[0]) && isNum(parsed.sides[1])) ||
-      (isVar(parsed.sides[1]) && isNum(parsed.sides[0]))
-    );
-  }
-  if (parsed.sides.length !== 1) return false;
-  if (parsed.vars.size === 0) {
-    const rpn = parsed.sides[0];
-    return (
-      rpn.length === 1 ||
-      (rpn.length === 2 && rpn[1].v === "u-") ||
-      (rpn.length === 3 && rpn[2].v === "/")
-    ); // simplified fraction counts
-  }
-  return answerTokens > 0 && parsed.tokenCount <= answerTokens;
-}
-
 const PARSE_MSGS = {
   symbol:
     "There's a symbol in there I can't read. Stick to numbers, + − × ÷, parentheses, and one letter.",
@@ -309,7 +68,39 @@ const PARSE_MSGS = {
   sides: "An equation line needs something on both sides of the = sign.",
 };
 
-export function renderStepSolver(container, cfg = {}) {
+// Where a named step mistake goes. Same sinks as a typed practice miss
+// (lesson-renderer.js reportTypedMisconception) so a diagnosed step is worth what
+// a diagnosed answer is worth: the device-local signal store, the lesson's
+// per-tag counts, and the teacher telemetry the heatmap and class pulse read.
+// Tag only — never the typed line, never a name. It deliberately carries no
+// `standard` into NTSignal: that would log an attempt for every wrong line while
+// the right ones log nothing, and skew the device's weak-standard rates.
+function reportStepMisconception(tag, ctx) {
+  try {
+    const meta = window.__ntLessonMeta || {};
+    window.NTSignal?.record?.({ misconceptionTag: tag, lesson: meta.lesson });
+    ctx?.state?.recordMisconception?.(tag);
+    window.NTtelemetry?.track?.("misconception", { tag, standard: meta.standard || "" });
+  } catch {
+    /* signals must never break a lesson */
+  }
+}
+
+// The chip + one question for a diagnosed step; "" when the tag has no copy.
+function diagnosisHtml(tag) {
+  const label = misconceptionLabel(tag, "en");
+  const labelEs = misconceptionLabel(tag, "es");
+  const nudge = stepNudge(tag);
+  if (!label || !nudge) return "";
+  return (
+    `<span class="stepslv-diagnosis"><span aria-hidden="true">💭</span> ${stackContent(
+      `Looks like: ${label}`,
+      labelEs === label ? undefined : `Parece que: ${labelEs}`,
+    )}</span>` + `<span class="stepslv-nudge">${stackContent(nudge.en, nudge.es)}</span>`
+  );
+}
+
+export function renderStepSolver(container, cfg = {}, ctx = {}) {
   const mode = cfg.mode === "equation" ? "equation" : "expression";
   let problem = {
     start: cfg.start || (mode === "equation" ? "x + 7 = 15" : "18.4 - 5.75 + 2.1"),
@@ -318,6 +109,7 @@ export function renderStepSolver(container, cfg = {}) {
   const presets = Array.isArray(cfg.presets) ? cfg.presets.filter((p) => p && p.start) : [];
   let lines = []; // { text, parsed }
   let attempts = 0;
+  const reported = new Set(); // "<line above>\n<typed line>" already counted
 
   injectStyles();
   const root = document.createElement("div");
@@ -358,14 +150,15 @@ export function renderStepSolver(container, cfg = {}) {
     `<div class="stepslv-feed" data-el="feed" role="status" aria-live="polite"></div>`;
   container.appendChild(root);
 
-  const el = (name) => root.querySelector(`[data-el="${name}"]`);
-  const inp = el("inp");
+  const el = (name) => /** @type {HTMLElement} */ (root.querySelector(`[data-el="${name}"]`));
+  const inp = /** @type {HTMLInputElement} */ (el("inp"));
   const feed = el("feed");
 
   function setProblem(p) {
     problem = { start: p.start, answer: p.answer || "" };
     lines = [];
     attempts = 0;
+    reported.clear();
     try {
       lines.push({ text: problem.start, parsed: parseLine(problem.start) });
     } catch {
@@ -443,28 +236,27 @@ export function renderStepSolver(container, cfg = {}) {
     }
     attempts++;
     const prev = lines[lines.length - 1];
-    let equivalent = false;
-    if (mode === "equation") {
-      if (parsed.sides.length !== 2) {
-        say("warn", esc(PARSE_MSGS.sides));
-        return;
-      }
-      equivalent = prev ? eqEquivalent(prev.parsed, parsed) : true;
-    } else {
-      if (parsed.sides.length !== 1) {
-        // Allow "= 13.75" style lines by treating the RHS as the expression.
-        parsed.sides = [parsed.sides[1]];
-      }
-      equivalent = prev
-        ? exprEquivalent(prev.parsed.sides[prev.parsed.sides.length - 1], parsed.sides[0])
-        : true;
+    if (!normalizeSides(parsed, mode)) {
+      say("warn", esc(PARSE_MSGS.sides));
+      return;
     }
+    const equivalent = prev ? isEquivalent(prev.parsed, parsed, mode) : true;
     if (!equivalent) {
+      // Name the mistake only when exactly one known error reproduces this line.
+      // Counted once per distinct wrong line so pressing Check twice on the same
+      // text does not double the teacher's tally.
+      const diagnosis = prev ? diagnoseStep(prev.text, text, mode) : null;
+      const key = `${prev?.text}\n${text}`;
+      if (diagnosis && !reported.has(key)) {
+        reported.add(key);
+        reportStepMisconception(diagnosis.tag, ctx);
+      }
       say(
         "warn",
-        mode === "equation"
+        (mode === "equation"
           ? "Not quite — this line doesn't have the same solution as your last line. Did you do the <strong>same thing to both sides</strong>? Fix this line and check again."
-          : "Not quite — this line isn't worth the same amount as your last line. Check that one operation, then try the line again.",
+          : "Not quite — this line isn't worth the same amount as your last line. Check that one operation, then try the line again.") +
+          (diagnosis ? diagnosisHtml(diagnosis.tag) : ""),
       );
       return;
     }
@@ -507,7 +299,7 @@ export function renderStepSolver(container, cfg = {}) {
 
   el("check").addEventListener("click", checkStep);
   inp.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
+    if (/** @type {KeyboardEvent} */ (e).key === "Enter") {
       e.preventDefault();
       checkStep();
     }
@@ -520,7 +312,7 @@ export function renderStepSolver(container, cfg = {}) {
     }
   });
   el("reset").addEventListener("click", () => setProblem(problem));
-  root.querySelectorAll("[data-key]").forEach((btn) =>
+  root.querySelectorAll("[data-key]").forEach((/** @type {HTMLElement} */ btn) =>
     btn.addEventListener("click", () => {
       const at = inp.selectionStart ?? inp.value.length;
       inp.value =
@@ -531,7 +323,7 @@ export function renderStepSolver(container, cfg = {}) {
   );
   root
     .querySelectorAll("[data-preset]")
-    .forEach((btn) =>
+    .forEach((/** @type {HTMLElement} */ btn) =>
       btn.addEventListener("click", () => setProblem(presets[Number(btn.dataset.preset)])),
     );
   const rev = el("reveal");
@@ -590,6 +382,8 @@ function injectStyles() {
   .stepslv-key:hover{background:#e2ecff;}
   .stepslv-feed{margin-top:10px;min-height:1.2em;}
   .stepslv-msg{padding:10px 14px;border-radius:12px;font-size:.95rem;line-height:1.5;animation:stepslv-msgin .28s ease;}
+  .stepslv-diagnosis{display:flex;gap:6px;align-items:flex-start;margin-top:8px;font-weight:700;line-height:1.35;}
+  .stepslv-nudge{display:block;margin-top:4px;font-weight:600;line-height:1.45;}
   .stepslv-msg-ok{background:${C.tealBg};color:#095350;border:1px solid #9adbd2;}
   .stepslv-msg-warn{background:${C.amberBg};color:${C.amber};border:1px solid #ecd9ae;}
   .stepslv-msg-win{background:linear-gradient(135deg,#e2f9f5,#eef2ff);color:${C.navy};border:1px solid #9adbd2;font-weight:500;}

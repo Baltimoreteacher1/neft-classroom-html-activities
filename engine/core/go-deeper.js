@@ -13,6 +13,7 @@
 //   the shared save/resume engine and the small-group studio store.
 // - Celebration is deterministic (no Math.random) and reduced-motion safe.
 import { canRegenerate, regenerate } from "../components/problem-generator.js";
+import { mountReasoningCheck } from "./reasoning-check.js";
 
 const STORE_PREFIX = "nt-godeeper:";
 const MIN_WORK = 8;
@@ -146,6 +147,14 @@ function challengeText(item) {
   return typeof text === "string" ? text.trim() : "";
 }
 
+// The answer to the challenge as authored, so the reasoning check can refuse to
+// echo it. Multiple-choice items carry an index rather than an answer string.
+function challengeAnswer(item) {
+  if (item?.answer != null) return String(item.answer);
+  const choice = Array.isArray(item?.choices) ? item.choices[item.correctIndex] : null;
+  return choice == null ? "" : String(choice);
+}
+
 // Hardest usable item wins: scan extending, then on-level, then the parallel
 // practice bank, each from the END (items are ordered easy → hard). Items
 // carry their text in `stem` (most types) or `prompt` (open-response);
@@ -263,6 +272,19 @@ export function createGoDeeper({ config, lessonId, variant = "lesson", peers = n
     },
   });
 
+  // A regenerated twist has its own answer; after a reload only its stem is
+  // stored, so the answer is then unknown and the server's number guard alone
+  // protects it.
+  let answerShown = store.get("stem") ? "" : challengeAnswer(item);
+  const currentStem = () => one.step.querySelector(".ntgd-stem")?.textContent || "";
+  one.area.after(
+    mountReasoningCheck(one.area, {
+      prompt: currentStem,
+      answerShown: () => answerShown,
+      level: 3,
+    }),
+  );
+
   // Fresh-challenge regeneration reuses the existing correctness-first
   // problem generator at stretch difficulty; hidden when unsupported.
   if (canRegenerate(item)) {
@@ -274,6 +296,7 @@ export function createGoDeeper({ config, lessonId, variant = "lesson", peers = n
       const twist = regenerate(item, { difficulty: "stretch" });
       if (!twist || !twist.stem) return;
       store.set("stem", twist.stem);
+      answerShown = twist.answer == null ? "" : String(twist.answer);
       one.step.querySelector(".ntgd-stem").textContent = twist.stem;
       one.area.value = "";
       one.button.disabled = true;
@@ -345,6 +368,13 @@ export function createGoDeeper({ config, lessonId, variant = "lesson", peers = n
     area.placeholder = "Write your proof… / Escribe tu prueba…";
     area.setAttribute("aria-label", "Convince a skeptic");
     step.appendChild(area);
+    step.appendChild(
+      mountReasoningCheck(area, {
+        prompt: () => `${currentStem()} Convince a skeptic that your answer works.`,
+        answerShown: () => answerShown,
+        level: 3,
+      }),
+    );
     const button = document.createElement("button");
     button.type = "button";
     button.className = "ntgd-btn";

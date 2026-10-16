@@ -28,6 +28,7 @@
 // Degrades to nothing: without a D1 binding, or offline, the room calls fail and
 // the phase renders exactly as it did before.
 
+import { mountReasoningCheck } from "./reasoning-check.js";
 import { createRoom } from "./small-group-room.js";
 
 // The frames ARE the routine. Critique-Correct-Clarify is three distinct moves,
@@ -75,11 +76,25 @@ export function mountPeerExchange(host, { config, state, phaseId = 3, itemKey, p
     </p>
     <div class="pe-room"></div>
     <div class="pe-write" hidden></div>
-    <div class="pe-read" hidden></div>`;
+    <div class="pe-read" hidden></div>
+    <div class="pe-gallery"></div>`;
 
   const roomSlot = card.querySelector(".pe-room");
   const writeSlot = card.querySelector(".pe-write");
   const readSlot = card.querySelector(".pe-read");
+  const gallerySlot = card.querySelector(".pe-gallery");
+
+  // Once a student has sent their own explanation, offer (never force) authored
+  // sample solutions grouped by strategy. Loaded on demand; it reads and writes
+  // nothing, so it cannot touch the table.
+  function offerSampleSolutions() {
+    if (gallerySlot.firstChild) return;
+    import("./strategy-gallery.js")
+      .then(({ mountStrategyGallery }) => mountStrategyGallery(gallerySlot, { config }))
+      .catch(() => {
+        /* optional extra: a failed load leaves the exchange untouched */
+      });
+  }
 
   // ── Table membership ─────────────────────────────────────────────────────
   function paintRoom() {
@@ -127,6 +142,7 @@ export function mountPeerExchange(host, { config, state, phaseId = 3, itemKey, p
         <blockquote style="margin:0 0 var(--sp-3); padding-left:var(--sp-3); border-left:3px solid var(--teal);">${esc(saved)}</blockquote>`;
       readSlot.hidden = false;
       paintRead();
+      offerSampleSolutions();
       return;
     }
     writeSlot.innerHTML = `
@@ -141,6 +157,10 @@ export function mountPeerExchange(host, { config, state, phaseId = 3, itemKey, p
       </div>`;
 
     const textarea = writeSlot.querySelector(".pe-mine");
+    // Opt-in coaching on the explanation BEFORE it is sent. Reads only this box.
+    textarea.after(
+      mountReasoningCheck(textarea, { prompt: prompt || "Why does your answer work?", level: 3 }),
+    );
     const msg = writeSlot.querySelector(".pe-write-msg");
     writeSlot.querySelector(".pe-send").addEventListener("click", async () => {
       const text = textarea.value.trim();
