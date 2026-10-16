@@ -1813,3 +1813,6 @@
     });
   });
 })();
+
+// Shared Learning Supports (read-aloud, voice answers, calm mode) on every game page.
+import("/assets/learning-supports/ls-boot.js").catch(function () {});

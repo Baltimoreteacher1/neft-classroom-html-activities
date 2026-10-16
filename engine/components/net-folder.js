@@ -18,6 +18,8 @@
 // If a question is provided, answering it reports correctness; otherwise simply
 // completing the fold reports success.
 
+import { labT } from "./lab-strings-es.js";
+
 // Inject-once scoped style block for the additive fold polish. Every animation
 // and transition below is gated by prefers-reduced-motion so the experience is
 // fully static (no easing, glow, shadow drift, or particles) when a student has
@@ -180,6 +182,24 @@ function buildFaces(solid, { w, h, d }) {
   ];
 }
 
+/**
+ * "a cube" / "a rectangular prism" / "a square pyramid", with the article, so the
+ * Spanish can agree in gender. An unrecognised solid keeps its raw name.
+ * @param {string} solid
+ */
+function solidWithArticle(solid) {
+  switch (solid) {
+    case "cube":
+      return labT("net-folder.a-cube", "a cube");
+    case "rectangular-prism":
+      return labT("net-folder.a-rectangular-prism", "a rectangular prism");
+    case "square-pyramid":
+      return labT("net-folder.a-square-pyramid", "a square pyramid");
+    default:
+      return `a ${solid.replace("-", " ")}`;
+  }
+}
+
 export function renderNetFolder(
   container,
   { instructions, solid = "cube", size, question, onComplete },
@@ -239,7 +259,9 @@ export function renderNetFolder(
   stage.setAttribute("role", "img");
   stage.setAttribute(
     "aria-label",
-    `Net of a ${solid.replace("-", " ")} that folds into a 3D solid`,
+    labT("net-folder.stage-label", "Net of {solid} that folds into a 3D solid", {
+      solid: solidWithArticle(solid),
+    }),
   );
 
   // Parallax shadow on the floor of the stage (grows + rotates with the fold).
@@ -378,14 +400,14 @@ export function renderNetFolder(
   foldRow.style.cssText =
     "display:flex; align-items:center; gap:var(--sp-3); margin-bottom:var(--sp-4);";
   const foldLbl = document.createElement("label");
-  foldLbl.textContent = "Fold the net:";
+  foldLbl.textContent = labT("net-folder.fold-label", "Fold the net:");
   foldLbl.style.cssText = "font-weight:600; color:var(--navy);";
   const slider = document.createElement("input");
   slider.type = "range";
   slider.min = "0";
   slider.max = "100";
   slider.value = "0";
-  slider.setAttribute("aria-label", "Fold the net into a solid");
+  slider.setAttribute("aria-label", labT("net-folder.fold-aria", "Fold the net into a solid"));
   slider.style.cssText = "flex:1; accent-color:var(--teal-ink);";
   const id = `fold-${Math.random().toString(36).slice(2, 7)}`;
   foldLbl.htmlFor = id;
@@ -396,7 +418,9 @@ export function renderNetFolder(
     applyFold(t);
     if (t >= 0.99 && !folded) {
       folded = true;
-      live.textContent = `The net has folded into a ${solid.replace("-", " ")}.`;
+      live.textContent = labT("net-folder.folded-live", "The net has folded into {solid}.", {
+        solid: solidWithArticle(solid),
+      });
       fireBurst();
       if (!question) finishOk();
     } else if (t < 0.99) {
@@ -410,8 +434,8 @@ export function renderNetFolder(
   const explodeBtn = document.createElement("button");
   explodeBtn.type = "button";
   explodeBtn.className = "btn btn-xs btn-outline";
-  explodeBtn.textContent = "💥 Explode Net";
-  explodeBtn.title = "Deconstruct 3D faces in spatial view";
+  explodeBtn.textContent = labT("net-folder.explode", "💥 Explode Net");
+  explodeBtn.title = labT("net-folder.explode-title", "Deconstruct 3D faces in spatial view");
   explodeBtn.style.cssText =
     "font-weight:600; color:#4f46e5; border:1.5px solid #818cf8; background:rgba(99,102,241,0.06); border-radius:8px; padding:4px 10px; cursor:pointer;";
   explodeBtn.addEventListener("click", () => {
@@ -438,7 +462,13 @@ export function renderNetFolder(
   function finishOk() {
     if (done) return;
     done = true;
-    showFb(feedbackSlot, "success", `Nice fold! The net closes into a ${solid.replace("-", " ")}.`);
+    showFb(
+      feedbackSlot,
+      "success",
+      labT("net-folder.nice-fold", "Nice fold! The net closes into {solid}.", {
+        solid: solidWithArticle(solid),
+      }),
+    );
     onComplete?.(1, 1);
   }
 
@@ -472,20 +502,23 @@ export function renderNetFolder(
 
     const checkBtn = document.createElement("button");
     checkBtn.className = "btn btn-primary mt-4";
-    checkBtn.textContent = "Check";
+    checkBtn.textContent = labT("net-folder.check", "Check");
     checkBtn.addEventListener("click", () => {
       if (done || selected === null) return;
       const ok = selected === question.correctIndex;
       if (ok) {
         done = true;
         checkBtn.style.display = "none";
-        showFb(feedbackSlot, "success", "Correct!");
+        showFb(feedbackSlot, "success", labT("net-folder.correct", "Correct!"));
         onComplete?.(1, 1);
       } else {
         showFb(
           feedbackSlot,
           "hint",
-          "Not quite — fold the net all the way and look at the faces again.",
+          labT(
+            "net-folder.not-quite",
+            "Not quite — fold the net all the way and look at the faces again.",
+          ),
         );
         onComplete?.(0, 1);
       }
@@ -500,8 +533,7 @@ export function renderNetFolder(
   launch3DBtn.rel = "noopener";
   launch3DBtn.style.cssText =
     "display:inline-flex; align-items:center; gap:6px; font-weight:600; color:#0d9488; border:1.5px solid #0d9488; background:rgba(13,148,136,0.06); border-radius:10px; padding:8px 14px; text-decoration:none; margin-top:12px; font-size:0.88rem;";
-  launch3DBtn.innerHTML =
-    "<span>📦 Open NetFold Pro 3D Studio</span> <span aria-hidden='true'>↗</span>";
+  launch3DBtn.innerHTML = `<span>📦 ${labT("net-folder.open-pro", "Open NetFold Pro 3D Studio")}</span> <span aria-hidden='true'>↗</span>`;
   wrapper.append(launch3DBtn);
 
   container.append(wrapper);

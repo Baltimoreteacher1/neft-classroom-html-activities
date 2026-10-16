@@ -165,12 +165,16 @@ function readModel(rows) {
  * one parent lesson plus its variants — which is not enough repetition to earn
  * a new config type. Static is the correct rendering.
  *
+ * `minGroups` is 2 for an authored figure (one group is not a pattern). A tape
+ * drawn from a linked model passes 1: there the student's own scale is 1 and
+ * "one group of a : b" is exactly the base ratio.
+ *
  * @returns {{a: number, b: number, groups: number, rowA: any, rowB: any}|null}
  */
-export function readRatioModel(rows) {
+export function readRatioModel(rows, minGroups = 2) {
   if (rows.length !== 2) return null;
   const [rowA, rowB] = rows;
-  if (rowA.parts.length !== rowB.parts.length || rowA.parts.length < 2) return null;
+  if (rowA.parts.length !== rowB.parts.length || rowA.parts.length < minGroups) return null;
   const uniform = (r) => r.parts.every((p) => Number(p.value) === Number(r.parts[0].value));
   if (!uniform(rowA) || !uniform(rowB)) return null;
   const a = Number(rowA.parts[0].value);
@@ -193,6 +197,11 @@ let tdlSeq = 0;
 
 export function renderTapeDiagram(host, cfg) {
   ensureStyles();
+  // Optional linked model (components/linked-model.js): the group count is the
+  // scale the other views share. Absent, nothing below behaves differently.
+  const linked = cfg.model || null;
+  const linkedToken = Symbol("tape");
+  let unsubscribeLinked = null;
   const rows = Array.isArray(cfg.rows) ? cfg.rows.filter((r) => Array.isArray(r.parts)) : [];
   if (!rows.length) return null;
 
@@ -201,7 +210,7 @@ export function renderTapeDiagram(host, cfg) {
   const maxTotal = Math.max(...rowTotals, 1);
   /* For the ratio shape the columns are equal and the BAR inside is scaled, so
      the scale is the largest single part, not the longest row. */
-  const maxPart = Math.max(...rows.flatMap((r) => r.parts.map((p) => Number(p.value) || 1)), 1);
+  let maxPart = Math.max(...rows.flatMap((r) => r.parts.map((p) => Number(p.value) || 1)), 1);
 
   // The activity used to be "tap each part to count them". Counting boxes that
   // are already drawn on the screen is not the thinking the diagram is there to
@@ -212,7 +221,7 @@ export function renderTapeDiagram(host, cfg) {
   // Only consulted when there is no whole/parts model — the two shapes are
   // mutually exclusive by construction (one needs a single-part row, the other
   // forbids it).
-  const ratio = model ? null : readRatioModel(rows);
+  const ratio = model ? null : readRatioModel(rows, linked ? 1 : 2);
   tdlSeq += 1;
   const inputId = `tdl-ans-${tdlSeq}`;
 
@@ -426,13 +435,14 @@ export function renderTapeDiagram(host, cfg) {
    * authored group count is always one click away via Start over. */
   function showRatioExplore() {
     if (!ratio || wrap.querySelector(".tdl-explore")) return;
-    const simple = simplestRatio(ratio.a, ratio.b);
-    const ratioTxt = `${formatQty(ratio.a)} : ${formatQty(ratio.b)}`;
+    unsubscribeLinked?.();
+    const simple = () => simplestRatio(ratio.a, ratio.b);
+    const ratioTxt = () => `${formatQty(ratio.a)} : ${formatQty(ratio.b)}`;
     const box = document.createElement("div");
     box.className = "tdl-explore";
     box.innerHTML = `
       <p class="tdl-explore-q"><strong>What if?</strong> Each group is
-        ${esc(ratioTxt)}. Predict first: if you add more groups, does the
+        ${linked ? '<span class="tdl-ratio-txt"></span>' : esc(ratioTxt())}. Predict first: if you add more groups, does the
         <em>ratio in one group</em> change, or only the totals?</p>
       <div class="tdl-explore-controls">
         <button type="button" class="tdl-btn tdl-fewer" aria-label="One fewer group">− group</button>
@@ -441,10 +451,28 @@ export function renderTapeDiagram(host, cfg) {
       </div>`;
     wrap.querySelector(".tdl-controls")?.before(box);
     const read = box.querySelector(".tdl-explore-read");
+    const ratioLabel = box.querySelector(".tdl-ratio-txt");
     let groups = ratio.groups;
 
-    const redraw = (next) => {
+    /* A linked tape starts from the student's ratio and scale, not from the
+       figure it was handed: the model is where the student's own numbers live. */
+    const adopt = (state) => {
+      ratio.a = state.a;
+      ratio.b = state.b;
+      maxPart = Math.max(ratio.a, ratio.b);
+      groups = state.k;
+    };
+    if (linked && linked.get().a != null) adopt(linked.get());
+
+    const redraw = (next, publish = false) => {
       groups = Math.max(1, Math.min(8, next));
+      if (ratioLabel) ratioLabel.textContent = ratioTxt();
+      // The opening sentence was written for the figure as authored; a linked
+      // tape keeps it true as the student's ratio and scale move.
+      if (linked) {
+        wrap.querySelector(".tdl-hint").textContent =
+          `Read the bars: each group is ${formatQty(ratio.a)} to ${formatQty(ratio.b)}, and there are ${groups} group${groups === 1 ? "" : "s"}.`;
+      }
       const tracks = stage.querySelectorAll(".tdl-track");
       [ratio.rowA, ratio.rowB].forEach((row, ri) => {
         const track = tracks[rows.indexOf(row)];
@@ -474,17 +502,25 @@ export function renderTapeDiagram(host, cfg) {
       });
       const totalA = round2(ratio.a * groups);
       const totalB = round2(ratio.b * groups);
+      const lowest = simple();
       const same =
-        simple && (simple[0] !== ratio.a || simple[1] !== ratio.b)
-          ? ` Both totals still simplify to ${formatQty(simple[0])} : ${formatQty(simple[1])}.`
+        lowest && (lowest[0] !== ratio.a || lowest[1] !== ratio.b)
+          ? ` Both totals still simplify to ${formatQty(lowest[0])} : ${formatQty(lowest[1])}.`
           : "";
       read.textContent =
-        `${groups} group${groups === 1 ? "" : "s"} of ${ratioTxt} → ${formatQty(totalA)} : ${formatQty(totalB)}. ` +
-        `Each group is still ${ratioTxt}.${same}`;
+        `${groups} group${groups === 1 ? "" : "s"} of ${ratioTxt()} → ${formatQty(totalA)} : ${formatQty(totalB)}. ` +
+        `Each group is still ${ratioTxt()}.${same}`;
+      if (linked && publish) linked.set({ k: groups }, linkedToken);
     };
-    redraw(ratio.groups);
-    box.querySelector(".tdl-more").addEventListener("click", () => redraw(groups + 1));
-    box.querySelector(".tdl-fewer").addEventListener("click", () => redraw(groups - 1));
+    redraw(groups);
+    box.querySelector(".tdl-more").addEventListener("click", () => redraw(groups + 1, true));
+    box.querySelector(".tdl-fewer").addEventListener("click", () => redraw(groups - 1, true));
+    unsubscribeLinked = linked?.subscribe((next, meta) => {
+      if (meta.source === linkedToken || next.a == null) return;
+      if (!meta.changed.some((key) => key === "a" || key === "b" || key === "k")) return;
+      adopt(next);
+      redraw(groups);
+    });
   }
   showRatioExplore();
 
@@ -528,6 +564,7 @@ export function renderTapeDiagram(host, cfg) {
   host.appendChild(wrap);
   return {
     destroy() {
+      unsubscribeLinked?.();
       resetBtn.removeEventListener("click", reset);
       checkBtn?.removeEventListener("click", check);
       hintBtn?.removeEventListener("click", showHint);

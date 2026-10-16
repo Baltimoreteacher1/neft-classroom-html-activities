@@ -8,6 +8,8 @@
 //     cfg.unitA,unitB  : unit labels (default "miles", "hours")
 //     cfg.presets      : quick-pick "a/b" strings
 
+import { labT } from "./lab-strings-es.js";
+
 const C = {
   navy: "#12355b",
   accent: "#1d4ed8",
@@ -55,14 +57,14 @@ export function renderUnitRateBuilder(container, cfg = {}) {
   const root = document.createElement("div");
   root.className = "urlab";
   root.innerHTML =
-    `<div class="urlab-title">Unit Rate Lab</div>` +
-    `<p class="urlab-hint">A <strong>unit rate</strong> tells you how much for just <strong>one</strong>. Type the two amounts and divide to find each per-1 rate.</p>` +
+    `<div class="urlab-title">${labT("unit-rate-builder.title", "Unit Rate Lab")}</div>` +
+    `<p class="urlab-hint">${labT("unit-rate-builder.hint", "A <strong>unit rate</strong> tells you how much for just <strong>one</strong>. Type the two amounts and divide to find each per-1 rate.")}</p>` +
     `<div class="urlab-controls">` +
     `<label class="urlab-field"><span>${esc(unitA)}</span><input type="number" min="1" value="${a}" data-inp="a" aria-label="${esc(unitA)}"/></label>` +
-    `<span class="urlab-per">per</span>` +
+    `<span class="urlab-per">${labT("unit-rate-builder.per", "per")}</span>` +
     `<label class="urlab-field"><span>${esc(unitB)}</span><input type="number" min="1" value="${b}" data-inp="b" aria-label="${esc(unitB)}"/></label>` +
-    `<button type="button" class="urlab-go">Find unit rate →</button></div>` +
-    `<div class="urlab-presets" role="group" aria-label="Quick-pick rates">` +
+    `<button type="button" class="urlab-go">${labT("unit-rate-builder.find", "Find unit rate →")}</button></div>` +
+    `<div class="urlab-presets" role="group" aria-label="${labT("unit-rate-builder.quick-pick", "Quick-pick rates")}">` +
     presets
       .map(
         (p) =>
@@ -88,20 +90,20 @@ export function renderUnitRateBuilder(container, cfg = {}) {
 
     result.innerHTML =
       `<div class="urlab-card urlab-card-main">` +
-      `<div class="urlab-step"><span class="urlab-badge">Step 1</span> <strong>Rate as a Fraction:</strong> <span class="urlab-frac"><span class="urlab-frac-top">${a} ${esc(unitA)}</span><span class="urlab-frac-bottom">${b} ${esc(unitB)}</span></span></div>` +
-      `<div class="urlab-step"><span class="urlab-badge">Step 2</span> <strong>Divide both parts by the bottom number (${b}):</strong> <span class="urlab-frac"><span class="urlab-frac-top">${a} ÷ ${b}</span><span class="urlab-frac-bottom">${b} ÷ ${b}</span></span></div>` +
-      `<div class="urlab-step urlab-step-highlight"><span class="urlab-badge urlab-badge-gold">Step 3</span> <strong>Unit Rate in fraction form over 1:</strong>` +
+      `<div class="urlab-step"><span class="urlab-badge">${labT("unit-rate-builder.step-1", "Step 1")}</span> <strong>${labT("unit-rate-builder.rate-fraction", "Rate as a Fraction:")}</strong> <span class="urlab-frac"><span class="urlab-frac-top">${a} ${esc(unitA)}</span><span class="urlab-frac-bottom">${b} ${esc(unitB)}</span></span></div>` +
+      `<div class="urlab-step"><span class="urlab-badge">${labT("unit-rate-builder.step-2", "Step 2")}</span> <strong>${labT("unit-rate-builder.divide-both", "Divide both parts by the bottom number ({b}):", { b })}</strong> <span class="urlab-frac"><span class="urlab-frac-top">${a} ÷ ${b}</span><span class="urlab-frac-bottom">${b} ÷ ${b}</span></span></div>` +
+      `<div class="urlab-step urlab-step-highlight"><span class="urlab-badge urlab-badge-gold">${labT("unit-rate-builder.step-3", "Step 3")}</span> <strong>${labT("unit-rate-builder.unit-rate-over-1", "Unit Rate in fraction form over 1:")}</strong>` +
       `<div class="urlab-big"><span class="urlab-frac"><span class="urlab-frac-top">${fmt(rateAB)} ${esc(unitA)}</span><span class="urlab-frac-bottom">1 ${esc(unitBsing)}</span></span></div>` +
-      `<div class="urlab-subnote">${fmt(rateAB)} ${esc(unitA)} per 1 ${esc(unitBsing)}</div></div>` +
+      `<div class="urlab-subnote">${labT("unit-rate-builder.per-one", "{rate} {a} per 1 {b}", { rate: fmt(rateAB), a: esc(unitA), b: esc(unitBsing) })}</div></div>` +
       `</div>` +
       `<div class="urlab-card">` +
-      `<div class="urlab-step"><span class="urlab-badge">Alternative</span> <strong>${esc(unitB)} per 1 ${esc(unitAsing)}:</strong></div>` +
-      `<div class="urlab-step">Fraction: <span class="urlab-frac"><span class="urlab-frac-top">${b} ${esc(unitB)}</span><span class="urlab-frac-bottom">${a} ${esc(unitA)}</span></span></div>` +
-      `<div class="urlab-step">Divide both by ${a}: <span class="urlab-frac"><span class="urlab-frac-top">${b} ÷ ${a}</span><span class="urlab-frac-bottom">${a} ÷ ${a}</span></span></div>` +
+      `<div class="urlab-step"><span class="urlab-badge">${labT("unit-rate-builder.alternative", "Alternative")}</span> <strong>${labT("unit-rate-builder.alt-title", "{b} per 1 {a}:", { b: esc(unitB), a: esc(unitAsing) })}</strong></div>` +
+      `<div class="urlab-step">${labT("unit-rate-builder.fraction", "Fraction:")} <span class="urlab-frac"><span class="urlab-frac-top">${b} ${esc(unitB)}</span><span class="urlab-frac-bottom">${a} ${esc(unitA)}</span></span></div>` +
+      `<div class="urlab-step">${labT("unit-rate-builder.divide-both-by", "Divide both by {a}:", { a })} <span class="urlab-frac"><span class="urlab-frac-top">${b} ÷ ${a}</span><span class="urlab-frac-bottom">${a} ÷ ${a}</span></span></div>` +
       `<div class="urlab-big urlab-alt"><span class="urlab-frac"><span class="urlab-frac-top">${fmt(rateBA)} ${esc(unitB)}</span><span class="urlab-frac-bottom">1 ${esc(unitAsing)}</span></span></div>` +
-      `<div class="urlab-work">${fmt(rateBA)} ${esc(unitB)} per 1 ${esc(unitAsing)}</div>` +
+      `<div class="urlab-work">${labT("unit-rate-builder.per-one", "{rate} {a} per 1 {b}", { rate: fmt(rateBA), a: esc(unitB), b: esc(unitAsing) })}</div>` +
       `</div>` +
-      `<p class="urlab-explain"><strong>How to find a Unit Rate:</strong> Write the rate as a fraction, divide both parts (top and bottom) by the bottom number, and write your unit rate in fraction form over 1!</p>`;
+      `<p class="urlab-explain">${labT("unit-rate-builder.explain", "<strong>How to find a Unit Rate:</strong> Write the rate as a fraction, divide both parts (top and bottom) by the bottom number, and write your unit rate in fraction form over 1!")}</p>`;
   }
 
   root.querySelector(".urlab-go").addEventListener("click", compute);

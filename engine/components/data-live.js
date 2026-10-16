@@ -1,4 +1,5 @@
 import { pickLang } from "../core/i18n.js";
+import { labT } from "./lab-strings-es.js";
 
 // @ts-nocheck — not yet type-clean. This file is INSIDE the checkJs program
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
@@ -141,17 +142,17 @@ function shell(host, cfg, ctrl) {
   root.className = "dlive";
   root.innerHTML =
     `<div class="dlive-head"><span class="dlive-title">${esc(cfg.title || ctrl.defaultTitle)}</span>` +
-    `<span class="dlive-badge">Data Live</span></div>` +
+    `<span class="dlive-badge">${labT("data-live.badge", "Data Live")}</span></div>` +
     `<div class="dlive-plot" data-el="plot"></div>` +
     `<div class="dlive-tools">` +
-    `<button type="button" class="dlive-btn" data-el="reveal" aria-pressed="false">📊 Reveal the math</button>` +
+    `<button type="button" class="dlive-btn" data-el="reveal" aria-pressed="false">📊 ${labT("data-live.reveal", "Reveal the math")}</button>` +
     (ctrl.editable
-      ? `<button type="button" class="dlive-btn ghost" data-el="whatif" aria-pressed="false">🧪 What if?</button>` +
-        `<button type="button" class="dlive-btn" data-el="reset" hidden>↺ Reset data</button>`
+      ? `<button type="button" class="dlive-btn ghost" data-el="whatif" aria-pressed="false">🧪 ${labT("data-live.what-if", "What if?")}</button>` +
+        `<button type="button" class="dlive-btn" data-el="reset" hidden>↺ ${labT("data-live.reset", "Reset data")}</button>`
       : "") +
     `<span class="dlive-nudge" data-el="nudge" hidden></span>` +
     `</div>` +
-    `<div class="dlive-measures" data-el="measures" role="group" aria-label="Measures"></div>` +
+    `<div class="dlive-measures" data-el="measures" role="group" aria-label="${labT("data-live.measures", "Measures")}"></div>` +
     `<div class="dlive-note" data-el="note" role="status" aria-live="polite"></div>`;
   host.appendChild(root);
   const el = (n) => root.querySelector(`[data-el="${n}"]`);
@@ -194,17 +195,32 @@ function shell(host, cfg, ctrl) {
       const moved = (a, b) => Math.abs(a - b) > 1e-9;
       const bits = [];
       if (moved(before.mean, after.mean))
-        bits.push(`mean ${num(before.mean)} → ${num(after.mean)}`);
+        bits.push(
+          labT("data-live.chg-mean", "mean {a} → {b}", { a: num(before.mean), b: num(after.mean) }),
+        );
       if (moved(before.median, after.median))
-        bits.push(`median ${num(before.median)} → ${num(after.median)}`);
-      if (moved(before.mad, after.mad)) bits.push(`MAD ${num(before.mad)} → ${num(after.mad)}`);
+        bits.push(
+          labT("data-live.chg-median", "median {a} → {b}", {
+            a: num(before.median),
+            b: num(after.median),
+          }),
+        );
+      if (moved(before.mad, after.mad))
+        bits.push(
+          labT("data-live.chg-mad", "MAD {a} → {b}", { a: num(before.mad), b: num(after.mad) }),
+        );
       if (!bits.length) {
-        api.say("The data changed, but the mean, median and MAD all stayed the same.");
+        api.say(
+          labT(
+            "data-live.chg-none",
+            "The data changed, but the mean, median and MAD all stayed the same.",
+          ),
+        );
         return;
       }
       const spread =
         moved(before.mad, after.mad) && !moved(before.median, after.median)
-          ? " The typical distance from the mean changed while the middle value did not."
+          ? ` ${labT("data-live.chg-spread", "The typical distance from the mean changed while the middle value did not.")}`
           : "";
       api.say(`${bits.join(" · ")}.${spread}`);
     },
@@ -229,7 +245,7 @@ function shell(host, cfg, ctrl) {
   });
   el("reset")?.addEventListener("click", () => {
     ctrl.reset();
-    state.note = "Data reset to the original.";
+    state.note = labT("data-live.reset-note", "Data reset to the original.");
     paint();
   });
 
@@ -269,11 +285,16 @@ function dotPlot(host, cfg, viewOpts) {
     return { a, b, xOf: (v) => padL + ((v - a) / (b - a)) * (W - padL - padR) };
   };
   return shell(host, cfg, {
-    defaultTitle: "Dot plot",
+    defaultTitle: labT("data-live.dot-plot", "Dot plot"),
     editable: viewOpts?.sandbox !== false,
-    exploreHint:
+    exploreHint: labT(
+      "data-live.dot-explore",
       "Tap a stack to read how many. Press “Reveal the math” to see the mean vs. median.",
-    editHint: "Tap the number line to add a dot; tap a dot to remove it.",
+    ),
+    editHint: labT(
+      "data-live.dot-edit",
+      "Tap the number line to add a dot; tap a dot to remove it.",
+    ),
     reset() {
       data = orig.slice();
     },
@@ -298,30 +319,33 @@ function dotPlot(host, cfg, viewOpts) {
           md = median([...data].sort((x, y) => x - y));
         overlay =
           `<line x1="${xOf(md).toFixed(1)}" y1="26" x2="${xOf(md).toFixed(1)}" y2="${baseY}" stroke="${DATA_2}" stroke-width="2.5" stroke-dasharray="4 3"/>` +
-          `<text x="${xOf(md).toFixed(1)}" y="20" text-anchor="middle" font-size="10.5" font-weight="800" fill="${DATA_2}">median ${num(md)}</text>` +
+          `<text x="${xOf(md).toFixed(1)}" y="20" text-anchor="middle" font-size="10.5" font-weight="800" fill="${DATA_2}">${labT("data-live.marker-median", "median {v}", { v: num(md) })}</text>` +
           `<path d="M${xOf(mn).toFixed(1)},${baseY - 2} l-7,12 l14,0 z" fill="${DATA_4}"/>` +
-          `<text x="${xOf(mn).toFixed(1)}" y="${baseY + 34}" text-anchor="middle" font-size="10.5" font-weight="800" fill="var(--navy,#264653)">mean ${num(mn)}</text>`;
+          `<text x="${xOf(mn).toFixed(1)}" y="${baseY + 34}" text-anchor="middle" font-size="10.5" font-weight="800" fill="var(--navy,#264653)">${labT("data-live.marker-mean", "mean {v}", { v: num(mn) })}</text>`;
       }
       const xLabel = cfg.xLabel
         ? `<text x="${(W / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(pickLang(cfg.xLabel, cfg.xLabelEs))}</text>`
         : "";
-      return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Interactive dot plot"><line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>${axisTicks}${dots}${overlay}${xLabel}</svg>`;
+      return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${labT("data-live.dot-aria", "Interactive dot plot")}"><line x1="${padL}" y1="${baseY}" x2="${W - padR}" y2="${baseY}" stroke="var(--ink,#333)" stroke-width="1.5"/>${axisTicks}${dots}${overlay}${xLabel}</svg>`;
     },
     measures() {
-      if (!data.length) return statCard("Count", "0");
+      if (!data.length) return statCard(labT("data-live.count", "Count"), "0");
       const s = [...data].sort((x, y) => x - y),
         md = median(s),
         mn = mean(data),
         mo = modes(data);
       return (
-        statCard("Count", data.length) +
-        statCard("Min", num(s[0])) +
-        statCard("Max", num(s[s.length - 1])) +
-        statCard("Range", num(s[s.length - 1] - s[0])) +
-        statCard("Mean", num(mn), true) +
-        statCard("Median", num(md), true) +
-        statCard("MAD", num(mad(data)), true) +
-        statCard("Mode", mo.length ? mo.map(num).join(", ") : "none")
+        statCard(labT("data-live.count", "Count"), data.length) +
+        statCard(labT("data-live.min", "Min"), num(s[0])) +
+        statCard(labT("data-live.max", "Max"), num(s[s.length - 1])) +
+        statCard(labT("data-live.range", "Range"), num(s[s.length - 1] - s[0])) +
+        statCard(labT("data-live.mean", "Mean"), num(mn), true) +
+        statCard(labT("data-live.median", "Median"), num(md), true) +
+        statCard(labT("data-live.mad", "MAD"), num(mad(data)), true) +
+        statCard(
+          labT("data-live.mode", "Mode"),
+          mo.length ? mo.map(num).join(", ") : labT("data-live.none", "none"),
+        )
       );
     },
     /* The three numbers the What-if sandbox exists to move. Exposed so the
@@ -348,7 +372,11 @@ function dotPlot(host, cfg, viewOpts) {
             api.repaint();
           } else {
             const n = data.filter((x) => x === v).length;
-            api.say(`The value ${num(v)} appears ${n} time${n === 1 ? "" : "s"}.`);
+            api.say(
+              n === 1
+                ? labT("data-live.appears-once", "The value {v} appears 1 time.", { v: num(v) })
+                : labT("data-live.appears-n", "The value {v} appears {n} times.", { v: num(v), n }),
+            );
             e.stopPropagation();
           }
         }),
@@ -388,7 +416,7 @@ function barFigure(host, cfg, opts) {
     defaultTitle: opts.title,
     editable: opts.sandbox !== false,
     exploreHint: opts.exploreHint,
-    editHint: "Choose a bar, then use ▲ ▼ to change its value.",
+    editHint: labT("data-live.bar-edit", "Choose a bar, then use ▲ ▼ to change its value."),
     reset() {
       bars = orig.map((b) => ({ ...b }));
       focus = 0;
@@ -437,7 +465,7 @@ function barFigure(host, cfg, opts) {
       const xl = cfg.xLabel
         ? `<text x="${(padL + plotW / 2).toFixed(1)}" y="${H - 4}" text-anchor="middle" font-size="12" font-weight="600" fill="var(--muted)">${esc(pickLang(cfg.xLabel, cfg.xLabelEs))}</text>`
         : "";
-      return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Interactive ${opts.title.toLowerCase()}"><line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${W - padR}" y2="${zeroY.toFixed(1)}" stroke="var(--ink,#333)" stroke-width="1.5"/>${zeroTick}${rects}${xl}${yl}</svg>`;
+      return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${opts.ariaLabel}"><line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${W - padR}" y2="${zeroY.toFixed(1)}" stroke="var(--ink,#333)" stroke-width="1.5"/>${zeroTick}${rects}${xl}${yl}</svg>`;
     },
     measures() {
       return opts.measures(bars);
@@ -447,7 +475,7 @@ function barFigure(host, cfg, opts) {
         nudge.innerHTML = "";
         return;
       }
-      nudge.innerHTML = `<span class="lab">${esc(bars[focus]?.label || "bar")}: ${bars[focus]?.value ?? 0}</span><button type="button" data-d="up" aria-label="Increase">▲</button><button type="button" data-d="dn" aria-label="Decrease">▼</button>`;
+      nudge.innerHTML = `<span class="lab">${esc(bars[focus]?.label || labT("data-live.bar", "bar"))}: ${bars[focus]?.value ?? 0}</span><button type="button" data-d="up" aria-label="${labT("data-live.increase", "Increase")}">▲</button><button type="button" data-d="dn" aria-label="${labT("data-live.decrease", "Decrease")}">▼</button>`;
       nudge.querySelector('[data-d="up"]').onclick = () => {
         bars[focus].value += 1;
         api.repaint();
@@ -476,12 +504,19 @@ function barFigure(host, cfg, opts) {
 
 function histogram(host, cfg, viewOpts) {
   return barFigure(host, cfg, {
-    title: "Histogram",
+    title: labT("data-live.histogram", "Histogram"),
+    ariaLabel: labT("data-live.histogram-aria", "Interactive histogram"),
     touching: true,
     sandbox: viewOpts?.sandbox,
-    exploreHint: "Tap an interval to read its frequency. Reveal the math to name the shape.",
+    exploreHint: labT(
+      "data-live.hist-explore",
+      "Tap an interval to read its frequency. Reveal the math to name the shape.",
+    ),
     readOne: (bars, i) =>
-      `The interval ${bars[i].label || "#" + (i + 1)} has a frequency of ${bars[i].value}.`,
+      labT("data-live.hist-read", "The interval {label} has a frequency of {value}.", {
+        label: bars[i].label || "#" + (i + 1),
+        value: bars[i].value,
+      }),
     measures(bars) {
       const total = bars.reduce((a, b) => a + b.value, 0);
       const maxV = Math.max(...bars.map((b) => b.value), 0);
@@ -495,17 +530,17 @@ function histogram(host, cfg, viewOpts) {
         mid = (vals.length - 1) / 2;
       const allEq = vals.every((v) => v === vals[0]);
       const shape = allEq
-        ? "uniform"
+        ? labT("data-live.shape-uniform", "uniform")
         : peak < mid - 0.5
-          ? "skewed right"
+          ? labT("data-live.shape-right", "skewed right")
           : peak > mid + 0.5
-            ? "skewed left"
-            : "roughly symmetric";
+            ? labT("data-live.shape-left", "skewed left")
+            : labT("data-live.shape-sym", "roughly symmetric");
       return (
-        statCard("Total", total) +
-        statCard("Intervals", bars.length) +
-        statCard("Modal interval", modal || "—", true) +
-        statCard("Shape", shape, true)
+        statCard(labT("data-live.total", "Total"), total) +
+        statCard(labT("data-live.intervals", "Intervals"), bars.length) +
+        statCard(labT("data-live.modal-interval", "Modal interval"), modal || "—", true) +
+        statCard(labT("data-live.shape", "Shape"), shape, true)
       );
     },
   });
@@ -513,26 +548,43 @@ function histogram(host, cfg, viewOpts) {
 
 function barChart(host, cfg, viewOpts) {
   return barFigure(host, cfg, {
-    title: "Bar chart",
+    title: labT("data-live.bar-chart", "Bar chart"),
+    ariaLabel: labT("data-live.bar-chart-aria", "Interactive bar chart"),
     touching: false,
     sandbox: viewOpts?.sandbox,
-    exploreHint: "Tap a bar to read its value and compare categories.",
-    readOne: (bars, i) => `${bars[i].label || "That category"}: ${bars[i].value}.`,
+    exploreHint: labT(
+      "data-live.bar-explore",
+      "Tap a bar to read its value and compare categories.",
+    ),
+    readOne: (bars, i) =>
+      `${bars[i].label || labT("data-live.that-category", "That category")}: ${bars[i].value}.`,
     measures(bars) {
-      if (!bars.length) return statCard("Total", "0");
+      if (!bars.length) return statCard(labT("data-live.total", "Total"), "0");
       const total = bars.reduce((a, b) => a + b.value, 0);
       const maxB = bars.reduce((a, b) => (b.value > a.value ? b : a));
       const minB = bars.reduce((a, b) => (b.value < a.value ? b : a));
       return (
-        statCard("Total", total) +
-        statCard("Greatest", `${esc(maxB.label)} (${maxB.value})`, true) +
-        statCard("Least", `${esc(minB.label)} (${minB.value})`)
+        statCard(labT("data-live.total", "Total"), total) +
+        statCard(
+          labT("data-live.greatest", "Greatest"),
+          `${esc(maxB.label)} (${maxB.value})`,
+          true,
+        ) +
+        statCard(labT("data-live.least", "Least"), `${esc(minB.label)} (${minB.value})`)
       );
     },
   });
 }
 
 // ── BOX PLOT ──────────────────────────────────────────────────────────────────
+// The nudge readout names the selected handle in lowercase (min, q1, median, ...).
+function handleName(key) {
+  if (key === "min") return labT("data-live.name-min", "min");
+  if (key === "median") return labT("data-live.name-median", "median");
+  if (key === "max") return labT("data-live.name-max", "max");
+  return key;
+}
+
 function boxPlot(host, cfg, viewOpts) {
   const KEYS = ["min", "q1", "median", "q3", "max"];
   const orig = {};
@@ -553,11 +605,16 @@ function boxPlot(host, cfg, viewOpts) {
   const axisHi = () => (cfg.axisMax != null ? Number(cfg.axisMax) : orig.max);
   const xOf = (v) => padL + ((v - axisLo()) / Math.max(1, axisHi() - axisLo())) * (W - padL - padR);
   return shell(host, cfg, {
-    defaultTitle: "Box plot",
+    defaultTitle: labT("data-live.box-plot", "Box plot"),
     editable: viewOpts?.sandbox !== false,
-    exploreHint:
+    exploreHint: labT(
+      "data-live.box-explore",
       "Tap the box or a whisker to read what it shows. Reveal the math for the IQR and range.",
-    editHint: "Choose a handle, then nudge it with ◀ ▶. Order stays min ≤ Q1 ≤ median ≤ Q3 ≤ max.",
+    ),
+    editHint: labT(
+      "data-live.box-edit",
+      "Choose a handle, then nudge it with ◀ ▶. Order stays min ≤ Q1 ≤ median ≤ Q3 ≤ max.",
+    ),
     reset() {
       fn = { ...orig };
       sel = 2;
@@ -573,11 +630,11 @@ function boxPlot(host, cfg, viewOpts) {
         return `<circle data-hit data-h="${i}" cx="${xOf(fn[k]).toFixed(1)}" cy="${midY}" r="${on ? 8 : 5}" fill="${on ? DATA_2 : "#fff"}" stroke="${k === "median" ? DATA_2 : "var(--navy,#264653)"}" stroke-width="2"/>`;
       }).join("");
       const labels = [
-        ["min", "Min"],
+        ["min", labT("data-live.handle-min", "Min")],
         ["q1", "Q1"],
-        ["median", "Med"],
+        ["median", labT("data-live.handle-med", "Med")],
         ["q3", "Q3"],
-        ["max", "Max"],
+        ["max", labT("data-live.handle-max", "Max")],
       ]
         .map(
           ([k, t]) =>
@@ -585,7 +642,7 @@ function boxPlot(host, cfg, viewOpts) {
         )
         .join("");
       return (
-        `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Interactive box plot">` +
+        `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${labT("data-live.box-aria", "Interactive box plot")}">` +
         `<line x1="${xOf(fn.min)}" y1="${midY}" x2="${xOf(fn.q1)}" y2="${midY}" stroke="var(--ink,#333)" stroke-width="2"/>` +
         `<line x1="${xOf(fn.q3)}" y1="${midY}" x2="${xOf(fn.max)}" y2="${midY}" stroke="var(--ink,#333)" stroke-width="2"/>` +
         `<line x1="${xOf(fn.min)}" y1="${top + 8}" x2="${xOf(fn.min)}" y2="${bot - 8}" stroke="var(--ink,#333)" stroke-width="2"/>` +
@@ -596,32 +653,43 @@ function boxPlot(host, cfg, viewOpts) {
           "whisker-l",
           xOf(fn.min),
           xOf(fn.q1),
-          `Lower whisker: the bottom 25% of the data, from ${num(fn.min)} to ${num(fn.q1)}.`,
+          labT(
+            "data-live.tip-lower",
+            "Lower whisker: the bottom 25% of the data, from {a} to {b}.",
+            { a: num(fn.min), b: num(fn.q1) },
+          ),
         ) +
         region(
           "box",
           xOf(fn.q1),
           xOf(fn.q3),
-          `The box holds the middle 50% of the data, from Q1 ${num(fn.q1)} to Q3 ${num(fn.q3)}.`,
+          labT(
+            "data-live.tip-box",
+            "The box holds the middle 50% of the data, from Q1 {a} to Q3 {b}.",
+            { a: num(fn.q1), b: num(fn.q3) },
+          ),
         ) +
         region(
           "whisker-r",
           xOf(fn.q3),
           xOf(fn.max),
-          `Upper whisker: the top 25% of the data, from ${num(fn.q3)} to ${num(fn.max)}.`,
+          labT("data-live.tip-upper", "Upper whisker: the top 25% of the data, from {a} to {b}.", {
+            a: num(fn.q3),
+            b: num(fn.max),
+          }),
         ) +
         `${handles}${labels}</svg>`
       );
     },
     measures() {
       return (
-        statCard("Min", num(fn.min)) +
+        statCard(labT("data-live.min", "Min"), num(fn.min)) +
         statCard("Q1", num(fn.q1)) +
-        statCard("Median", num(fn.median), true) +
+        statCard(labT("data-live.median", "Median"), num(fn.median), true) +
         statCard("Q3", num(fn.q3)) +
-        statCard("Max", num(fn.max)) +
-        statCard("IQR", num(fn.q3 - fn.q1), true) +
-        statCard("Range", num(fn.max - fn.min))
+        statCard(labT("data-live.max", "Max"), num(fn.max)) +
+        statCard(labT("data-live.iqr", "IQR"), num(fn.q3 - fn.q1), true) +
+        statCard(labT("data-live.range", "Range"), num(fn.max - fn.min))
       );
     },
     renderNudge(nudge, state, api) {
@@ -629,7 +697,7 @@ function boxPlot(host, cfg, viewOpts) {
         nudge.innerHTML = "";
         return;
       }
-      nudge.innerHTML = `<span class="lab">${KEYS[sel]}: ${num(fn[KEYS[sel]])}</span><button type="button" data-d="dn" aria-label="Decrease">◀</button><button type="button" data-d="up" aria-label="Increase">▶</button>`;
+      nudge.innerHTML = `<span class="lab">${handleName(KEYS[sel])}: ${num(fn[KEYS[sel]])}</span><button type="button" data-d="dn" aria-label="${labT("data-live.decrease", "Decrease")}">◀</button><button type="button" data-d="up" aria-label="${labT("data-live.increase", "Increase")}">▶</button>`;
       const step = () => {
         const sp = axisHi() - axisLo();
         return sp <= 20 ? 1 : Math.max(1, Math.round(sp / 20));

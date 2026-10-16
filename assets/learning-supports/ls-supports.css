@@ -1,0 +1,372 @@
+/* Student Learning Supports: the panel and the controls it adds to a page (the
+   read-aloud caption, the microphone, the one-problem-at-a-time bar). Loaded by
+   ls-boot.js along with ls-looks.css. Behaviour lives in the ls-*.js files next
+   to this one; this file is only appearance. Everything here is hidden when
+   printing. */
+
+.ls-launcher,
+.ls-panel,
+.ls-hub-extension,
+.ls-focus-bar,
+.ls-mic,
+.ls-mic-status,
+.ls-caption {
+  --ls-ink: #14365b;
+  --ls-soft: #3a4a5e;
+  --ls-line: #b3c7dc;
+  --ls-blue: #15487f;
+  --ls-wash: #f2f7fc;
+  --ls-warn: #a32117;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  letter-spacing: normal;
+  word-spacing: normal;
+}
+
+/* Pages set their own heading and control fonts; the panel keeps one voice. */
+.ls-panel :is(h2, h3, b, small, p, label, button, select, option) {
+  font-family: inherit !important;
+}
+
+.ls-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Bilingual text: English leads, Spanish sits beneath it. */
+.ls-bi {
+  display: inline-flex;
+  flex-direction: column;
+  text-align: inherit;
+}
+.ls-bi .ls-es {
+  font-size: 0.86em;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ls-soft);
+}
+.ls-btn-primary .ls-bi .ls-es,
+.ls-mic .ls-bi .ls-es,
+.ls-caption .ls-es {
+  color: inherit;
+}
+
+/* ---- Launcher and panel (pages that have no Reading supports popover) ---- */
+.ls-launcher {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  z-index: 9990;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  max-width: calc(100vw - 24px);
+  padding: 8px 14px;
+  border: 2px solid var(--ls-blue);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ls-blue);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgb(15 23 42 / 22%);
+}
+.ls-launcher:hover {
+  background: var(--ls-wash);
+}
+.ls-launcher[aria-expanded="true"] {
+  background: var(--ls-blue);
+  color: #fff;
+}
+.ls-launcher[aria-expanded="true"] .ls-es {
+  color: #fff;
+}
+
+.ls-panel {
+  position: fixed;
+  left: 12px;
+  bottom: 70px;
+  z-index: 9991;
+  box-sizing: border-box;
+  width: min(400px, calc(100vw - 24px));
+  max-height: min(78vh, 680px);
+  overflow-y: auto;
+  padding: 16px;
+  border: 1px solid var(--ls-line);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--ls-ink);
+  font-size: 16px;
+  line-height: 1.4;
+  box-shadow: 0 14px 36px rgb(15 23 42 / 28%);
+}
+.ls-panel[hidden] {
+  display: none;
+}
+.ls-panel-title {
+  margin: 0 0 8px;
+  font-size: 19px;
+  color: var(--ls-ink);
+}
+
+/* The hub sizes its popover as a percentage of the button it hangs from, which
+   leaves it about 110px wide once there is more than two switches inside. Give it
+   a real width on desktop; phones keep the hub's own full-width rule. */
+@media (min-width: 781px) {
+  #udlMenuPopover.ls-extended {
+    box-sizing: border-box;
+    width: min(420px, calc(100vw - 32px)) !important;
+    max-height: 80vh !important;
+  }
+}
+
+.ls-hub-extension {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--ls-line);
+  color: var(--ls-ink);
+}
+
+.ls-section {
+  margin: 0 0 14px;
+}
+.ls-h {
+  margin: 4px 0 8px;
+  font-size: 16px;
+  color: var(--ls-ink);
+}
+.ls-hint,
+.ls-note,
+.ls-status {
+  margin: 6px 0;
+  font-size: 14px;
+  color: var(--ls-soft);
+}
+.ls-status:empty {
+  display: none;
+}
+
+.ls-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 44px;
+  padding: 6px 0;
+  cursor: pointer;
+}
+.ls-row input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  margin: 2px 0 0;
+  accent-color: var(--ls-blue);
+}
+.ls-row-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ls-row-text b .ls-bi {
+  font-weight: 700;
+}
+.ls-row-text small {
+  font-size: 14px;
+  color: var(--ls-soft);
+}
+
+.ls-hub-extension .ls-field,
+.ls-field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  margin: 8px 0;
+  font-weight: 700;
+}
+/* The hub styles every label in its popover as a centred row; these are stacked. */
+#udlMenuPopover .ls-hub-extension .ls-field {
+  flex-direction: column;
+  align-items: stretch;
+  min-height: 0;
+}
+#udlMenuPopover .ls-hub-extension .ls-row {
+  align-items: flex-start;
+}
+.ls-select {
+  min-height: 44px;
+  padding: 6px 8px;
+  border: 1px solid var(--ls-blue);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ls-ink);
+  font: inherit;
+  font-weight: 400;
+}
+
+.ls-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  margin: 4px 0;
+  padding: 8px 14px;
+  border: 2px solid var(--ls-blue);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ls-blue);
+  font: inherit;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+}
+.ls-btn:hover:not(:disabled) {
+  background: var(--ls-wash);
+}
+.ls-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.ls-btn-primary {
+  background: var(--ls-blue);
+  color: #fff;
+}
+.ls-btn-primary:hover:not(:disabled) {
+  background: #0f3a68;
+}
+.ls-close {
+  margin-left: 8px;
+}
+
+.ls-launcher:focus-visible,
+.ls-btn:focus-visible,
+.ls-select:focus-visible,
+.ls-row input:focus-visible,
+.ls-mic:focus-visible {
+  outline: 3px solid #0b5cab;
+  outline-offset: 2px;
+}
+
+/* ---- Read aloud ---- */
+::highlight(ls-reading) {
+  background-color: #ffe066;
+  color: #111;
+}
+.ls-caption {
+  position: fixed;
+  left: 50%;
+  bottom: 76px;
+  z-index: 9992;
+  box-sizing: border-box;
+  width: min(720px, calc(100vw - 24px));
+  padding: 10px 14px;
+  transform: translateX(-50%);
+  border-radius: 12px;
+  background: var(--ls-ink);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1.5;
+}
+.ls-caption mark {
+  background: #ffe066;
+  color: #111;
+  border-radius: 3px;
+}
+
+/* ---- Say my answers ---- */
+.ls-mic {
+  position: fixed;
+  z-index: 9993;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 6px 12px;
+  border: 2px solid var(--ls-blue);
+  border-radius: 999px;
+  background: var(--ls-blue);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgb(15 23 42 / 28%);
+}
+.ls-mic[hidden],
+.ls-mic-status[hidden] {
+  display: none;
+}
+.ls-mic.is-listening {
+  border-color: var(--ls-warn);
+  background: var(--ls-warn);
+}
+.ls-mic-status {
+  position: fixed;
+  z-index: 9993;
+  max-width: min(280px, calc(100vw - 24px));
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--ls-ink);
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+/* ---- One problem at a time ---- */
+.ls-focus-bar {
+  position: sticky;
+  top: 8px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 12px;
+  padding: 8px 12px;
+  border: 2px solid var(--ls-blue);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ls-ink);
+}
+.ls-focus-count {
+  flex: 1 1 auto;
+  text-align: center;
+  font-weight: 700;
+}
+.ls-focus-hidden {
+  display: none !important;
+}
+
+@media print {
+  .ls-launcher,
+  .ls-panel,
+  .ls-focus-bar,
+  .ls-mic,
+  .ls-mic-status,
+  .ls-caption {
+    display: none !important;
+  }
+  .ls-focus-hidden {
+    display: block !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ls-launcher,
+  .ls-btn,
+  .ls-mic {
+    transition: none;
+  }
+}

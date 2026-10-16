@@ -10,52 +10,95 @@ function refreshVoices() {
   return _cachedVoices;
 }
 
+const voiceListeners = new Set();
+
 if (typeof window !== "undefined" && "speechSynthesis" in window) {
   refreshVoices();
   try {
-    window.speechSynthesis.addEventListener("voiceschanged", refreshVoices);
+    window.speechSynthesis.addEventListener("voiceschanged", () => {
+      refreshVoices();
+      for (const fn of voiceListeners) fn();
+    });
   } catch (_) {}
 }
 
+/**
+ * Voices load after the page does (and again when a device finishes
+ * downloading one). A voice picker calls this to fill itself in when they
+ * arrive. Returns an unsubscribe function.
+ */
+export function onVoicesChanged(fn) {
+  voiceListeners.add(fn);
+  return () => voiceListeners.delete(fn);
+}
+
 const VOICE_PREF_KEY = "nt-read-aloud-voice";
+const VOICE_PREF_KEY_ES = "nt-read-aloud-voice-es";
+
+const primaryOf = (lang) =>
+  String(lang || "en-US")
+    .toLowerCase()
+    .split("-")[0];
+const prefKeyFor = (lang) => (primaryOf(lang) === "es" ? VOICE_PREF_KEY_ES : VOICE_PREF_KEY);
 
 /**
- * The voice a teacher CHOSE, if any. Read-aloud used to pick one on its own
- * with no way to overrule it, so a device whose "best" match was a voice the
- * class found hard to follow was stuck with it (Joel, 2026-08-26: "the voice
- * reading, is it possible to change?").
+ * The voice a teacher or student CHOSE for a language, if any. Read-aloud used
+ * to pick one on its own with no way to overrule it, so a device whose "best"
+ * match was a voice the class found hard to follow was stuck with it (Joel,
+ * 2026-08-26: "the voice reading, is it possible to change?").
  *
- * Stored per device, by name. A name that is not installed on this device
- * simply loses and the automatic pick takes over, so a preference copied
- * between machines can never leave a lesson silent.
+ * Stored per device, by name, one choice per language: an English voice never
+ * hijacks the Spanish lane. The English key is the original one, so choices
+ * made before Spanish had its own still apply. A name that is not installed on
+ * this device simply loses and the automatic pick takes over, so a preference
+ * copied between machines can never leave a lesson silent.
  */
-export function getPreferredVoiceName() {
+export function getPreferredVoiceName(lang = "en-US") {
   try {
-    return localStorage.getItem(VOICE_PREF_KEY) || "";
+    return localStorage.getItem(prefKeyFor(lang)) || "";
   } catch (_) {
     return "";
   }
 }
 
-export function setPreferredVoiceName(name) {
+export function setPreferredVoiceName(name, lang = "en-US") {
   try {
-    if (name) localStorage.setItem(VOICE_PREF_KEY, String(name));
-    else localStorage.removeItem(VOICE_PREF_KEY);
+    if (name) localStorage.setItem(prefKeyFor(lang), String(name));
+    else localStorage.removeItem(prefKeyFor(lang));
   } catch (_) {
     /* storage blocked — the choice lasts for this page only */
   }
 }
 
-/** Every installed voice for a language, for a picker to list. */
-export function listVoices(lang = "en-US") {
-  const primary = String(lang || "en-US")
-    .toLowerCase()
-    .split("-")[0];
-  return refreshVoices().filter((v) => v.lang && v.lang.toLowerCase().startsWith(primary));
+/**
+ * Voices saved on the device work with no connection; the rest stream from a
+ * speech service. When the device is offline only the saved ones can speak.
+ */
+function isOffline() {
+  return typeof navigator !== "undefined" && navigator.onLine === false;
 }
 
-export function pickBestVoice(lang = "en-US") {
-  const voices = refreshVoices();
+/**
+ * Every installed voice for a language, for a picker to list.
+ * `localOnly` keeps just the voices stored on this device.
+ */
+export function listVoices(lang = "en-US", { localOnly = false } = {}) {
+  const primary = primaryOf(lang);
+  return refreshVoices().filter(
+    (v) =>
+      v.lang &&
+      v.lang.toLowerCase().startsWith(primary) &&
+      (!localOnly || v.localService !== false),
+  );
+}
+
+/**
+ * The best voice for a language. `localOnly` is for devices that should not
+ * use a network voice; it is also forced on when the device has no connection.
+ */
+export function pickBestVoice(lang = "en-US", { localOnly = false } = {}) {
+  const offlineOnly = localOnly || isOffline();
+  const voices = refreshVoices().filter((v) => !offlineOnly || v.localService !== false);
   if (!voices.length) return null;
 
   const targetLang = String(lang || "en-US").toLowerCase();
@@ -64,7 +107,7 @@ export function pickBestVoice(lang = "en-US") {
   // A chosen voice wins over every heuristic below — but only when it speaks
   // the language being read, so choosing an English voice does not hijack the
   // Spanish lane.
-  const preferred = getPreferredVoiceName();
+  const preferred = getPreferredVoiceName(lang);
   if (preferred) {
     const chosen = voices.find(
       (v) => v.name === preferred && v.lang && v.lang.toLowerCase().startsWith(primaryLang),
@@ -119,17 +162,26 @@ export function pickBestVoice(lang = "en-US") {
   return matchingVoices[0] || null;
 }
 
+/**
+ * An utterance with the right language, voice and speed already set. The one
+ * place that decides how a line is spoken, so read-aloud, the lesson tools and
+ * voice commands all sound the same and obey the same voice choice.
+ */
+export function makeUtterance(text, lang = "en-US", { rate = 0.92, localOnly = false } = {}) {
+  const u = new SpeechSynthesisUtterance(String(text));
+  u.lang = lang || "en-US";
+  const voice = pickBestVoice(u.lang, { localOnly });
+  if (voice) u.voice = voice;
+  u.rate = rate;
+  u.pitch = 1.0;
+  return u;
+}
+
 export function speakText(text, lang = "en-US") {
   if (typeof window === "undefined" || !("speechSynthesis" in window) || !text) return;
   try {
     window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(String(text));
-    u.lang = lang || "en-US";
-    const voice = pickBestVoice(u.lang);
-    if (voice) u.voice = voice;
-    u.rate = 0.92;
-    u.pitch = 1.0;
-    window.speechSynthesis.speak(u);
+    window.speechSynthesis.speak(makeUtterance(text, lang));
   } catch (_) {}
 }
 

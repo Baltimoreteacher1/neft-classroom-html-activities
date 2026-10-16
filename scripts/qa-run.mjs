@@ -530,6 +530,15 @@ const COVERAGE = [
     /^(data\/family-homework-notes\/|data\/homework-confused-grownup-tags\.json|tools\/validate-family-bridge\.mjs|tools\/lib\/family-bridge-check\.mjs)/,
     ["validate:family-bridge"],
   ],
+  [/^algebra-balance-scale\//, ["validate:game-rules", "test"]],
+  [
+    /^(assets\/(my-progress|learning-supports|class-investigation|family-share|family-engagement)\/|functions\/api\/(class-data|family-engagement))/,
+    ["test"],
+  ],
+  [
+    /^(engine\/components\/lab-|data\/(spanish-review-queue|part-two-feedback-additions)\.json|scripts\/(lib\/(part-two-feedback-additions|spanish-review-queue)|spanish-review-sheet)\.mjs)/,
+    ["test"],
+  ],
   [/^curriculum\/about\//, ["validate:about", "audit:links"]],
   // Project Studio (8 unit studios x 3 phases in Chromium) — scoped to its own
   // surface so unrelated deploys do not pay ~90s for it. Must precede the

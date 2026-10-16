@@ -13,6 +13,8 @@
 //     cfg.exponents  : false to skip the exponent-form second stage
 //   (cfg.left / cfg.right are ignored — the student builds any valid tree.)
 
+import { labT } from "./lab-strings-es.js";
+
 const C = {
   navy: "#12355b",
   primeFill: "#e2f9f5",
@@ -173,11 +175,11 @@ export function renderFactorTreeFill(host, cfg) {
   wrap.className = "ftb-wrap";
   wrap.innerHTML = `
     ${cfg.title ? `<div class="ftb-title">${esc(cfg.title)}</div>` : ""}
-    <div class="ftb-hint">Break the number into <b>two factors</b> that multiply to it. Keep splitting each branch until every circle is a <b>prime</b> number. You choose the factors — any correct path works!</div>
+    <div class="ftb-hint">${labT("factor-tree-fill.hint", "Break the number into <b>two factors</b> that multiply to it. Keep splitting each branch until every circle is a <b>prime</b> number. You choose the factors — any correct path works!")}</div>
     <div class="ftb-stage"><ul class="ftb-root"></ul></div>
     <div class="ftb-controls">
-      <button type="button" class="ftb-btn ftb-btn-reveal">Show me one way</button>
-      <button type="button" class="ftb-btn ftb-btn-reset">Start over</button>
+      <button type="button" class="ftb-btn ftb-btn-reveal">${labT("factor-tree-fill.show-one-way", "Show me one way")}</button>
+      <button type="button" class="ftb-btn ftb-btn-reset">${labT("factor-tree-fill.start-over", "Start over")}</button>
     </div>
     <div class="ftb-status" role="status" aria-live="polite"></div>
     <div class="ftb-result" hidden></div>
@@ -227,7 +229,7 @@ export function renderFactorTreeFill(host, cfg) {
       if (prime) {
         const tag = document.createElement("div");
         tag.className = "ftb-prime-tag";
-        tag.textContent = "prime ✓";
+        tag.textContent = labT("factor-tree-fill.prime-tag", "prime ✓");
         node.appendChild(tag);
       } else {
         node.appendChild(splitForm(n));
@@ -251,10 +253,10 @@ export function renderFactorTreeFill(host, cfg) {
     const form = document.createElement("div");
     form.className = "ftb-split";
     form.innerHTML = `
-      <input class="ftb-fac" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" aria-label="first factor of ${n.value}" placeholder="?">
+      <input class="ftb-fac" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" aria-label="${labT("factor-tree-fill.first-factor-label", "first factor of {n}", { n: n.value })}" placeholder="?">
       <span class="ftb-x">×</span>
-      <input class="ftb-fac" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" aria-label="second factor of ${n.value}" placeholder="?">
-      <button type="button" class="ftb-go">Split</button>
+      <input class="ftb-fac" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" aria-label="${labT("factor-tree-fill.second-factor-label", "second factor of {n}", { n: n.value })}" placeholder="?">
+      <button type="button" class="ftb-go">${labT("factor-tree-fill.split", "Split")}</button>
       <div class="ftb-err" role="status" aria-live="polite"></div>`;
     const [ia, ib] = form.querySelectorAll(".ftb-fac");
     const err = form.querySelector(".ftb-err");
@@ -285,18 +287,27 @@ export function renderFactorTreeFill(host, cfg) {
     const a = parseInt(av, 10);
     const b = parseInt(bv, 10);
     if (!av || !bv || Number.isNaN(a) || Number.isNaN(b)) {
-      err.textContent = "Type two numbers.";
+      err.textContent = labT("factor-tree-fill.type-two", "Type two numbers.");
       return;
     }
     if (a < 2 || b < 2) {
-      err.textContent = "Use factors greater than 1.";
+      err.textContent = labT("factor-tree-fill.greater-than-1", "Use factors greater than 1.");
       shake(form);
       nudgeBubble(n);
       return;
     }
     if (a * b !== n.value) {
       // Living feedback: wrong composite product gets a why-nudge, not just "no".
-      err.textContent = `${a} × ${b} = ${a * b}, not ${n.value}. Try factors of ${n.value}.`;
+      err.textContent = labT(
+        "factor-tree-fill.wrong-product",
+        "{a} × {b} = {product}, not {n}. Try factors of {n}.",
+        {
+          a,
+          b,
+          product: a * b,
+          n: n.value,
+        },
+      );
       shake(form);
       nudgeBubble(n);
       return;
@@ -350,12 +361,17 @@ export function renderFactorTreeFill(host, cfg) {
   function updateStatus() {
     if (solved()) {
       status.textContent = root.children
-        ? "Every branch is prime — factorization complete! 🎉"
-        : `${rootVal} is already a prime number. 🎉`;
+        ? labT("factor-tree-fill.complete", "Every branch is prime — factorization complete! 🎉")
+        : labT("factor-tree-fill.already-prime", "{n} is already a prime number. 🎉", {
+            n: rootVal,
+          });
       status.className = "ftb-status ok";
       showResult();
     } else {
-      status.textContent = "Keep splitting until every circle is a prime number.";
+      status.textContent = labT(
+        "factor-tree-fill.keep-splitting",
+        "Keep splitting until every circle is a prime number.",
+      );
       status.className = "ftb-status";
     }
   }
@@ -379,14 +395,14 @@ export function renderFactorTreeFill(host, cfg) {
       const factors = expCounts
         .map(
           ([p]) =>
-            `<span class="ftb-exp-factor"><span class="ftb-exp-base">${p}</span><input class="ftb-exp-input" data-p="${p}" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-label="exponent for prime ${p}"></span>`,
+            `<span class="ftb-exp-factor"><span class="ftb-exp-base">${p}</span><input class="ftb-exp-input" data-p="${p}" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" aria-label="${labT("factor-tree-fill.exponent-label", "exponent for prime {p}", { p })}"></span>`,
         )
         .join(`<span class="ftb-exp-times">×</span>`);
       expPanel.innerHTML = `
-        <div class="ftb-exp-title">Now write it in exponent form ✍️</div>
-        <div class="ftb-exp-hint">Tap each small box and type how many times that prime appears. A prime used once has exponent 1.</div>
+        <div class="ftb-exp-title">${labT("factor-tree-fill.exp-title", "Now write it in exponent form ✍️")}</div>
+        <div class="ftb-exp-hint">${labT("factor-tree-fill.exp-hint", "Tap each small box and type how many times that prime appears. A prime used once has exponent 1.")}</div>
         <div class="ftb-exp-row">${rootVal} = ${factors}</div>
-        <div class="ftb-controls"><button type="button" class="ftb-btn ftb-exp-check" style="background:${C.accent};color:#fff;border-color:${C.accent};">Check exponents</button></div>
+        <div class="ftb-controls"><button type="button" class="ftb-btn ftb-exp-check" style="background:${C.accent};color:#fff;border-color:${C.accent};">${labT("factor-tree-fill.check-exponents", "Check exponents")}</button></div>
         <div class="ftb-exp-status" role="status" aria-live="polite"></div>`;
       expPanel.hidden = false;
       expPanel.querySelector(".ftb-exp-check").addEventListener("click", checkExponents);
@@ -445,8 +461,11 @@ export function renderFactorTreeFill(host, cfg) {
       finishExponents();
     } else {
       st.textContent = anyEmpty
-        ? "Fill in every exponent."
-        : "Not yet — count how many times each prime appears in your tree.";
+        ? labT("factor-tree-fill.fill-every-exponent", "Fill in every exponent.")
+        : labT(
+            "factor-tree-fill.not-yet-count",
+            "Not yet — count how many times each prime appears in your tree.",
+          );
       st.className = "ftb-exp-status no";
     }
   }
@@ -483,7 +502,10 @@ export function renderFactorTreeFill(host, cfg) {
     expPanel.hidden = true;
     rerender();
     if (solved()) {
-      status.textContent = "Here's one way — every path reaches the same primes.";
+      status.textContent = labT(
+        "factor-tree-fill.one-way",
+        "Here's one way — every path reaches the same primes.",
+      );
       status.className = "ftb-status ok";
       if (withExponents)
         buildExponentStage(

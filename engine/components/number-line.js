@@ -1,5 +1,6 @@
 import { stackContent } from "../core/i18n.js";
 import { mountSymbolPad } from "../core/symbol-pad.js";
+import { labMode, labT } from "./lab-strings-es.js";
 export function renderNumberLine(container, config) {
   // Shape adapter, applied BEFORE anything reads the config: several lessons
   // author the plot-these-values task as `items:[{label,value}]` + `range:
@@ -41,8 +42,10 @@ export function renderNumberLine(container, config) {
     const warn = document.createElement("p");
     warn.className = "problem-stem";
     warn.textContent = config.hideStem
-      ? "This number-line task is unavailable."
-      : label || config.instructions || "This number-line task is unavailable.";
+      ? labT("number-line.task-unavailable", "This number-line task is unavailable.")
+      : label ||
+        config.instructions ||
+        labT("number-line.task-unavailable", "This number-line task is unavailable.");
     container.append(warn);
     return;
   }
@@ -67,7 +70,10 @@ export function renderNumberLine(container, config) {
   svg.setAttribute("viewBox", `0 0 600 ${HEIGHT}`);
   svg.style.cssText = "width:100%; height:auto; user-select:none; touch-action:none;";
   svg.setAttribute("role", "application");
-  svg.setAttribute("aria-label", `Number line from ${min} to ${max}`);
+  svg.setAttribute(
+    "aria-label",
+    labT("number-line.aria-range", "Number line from {min} to {max}", { min, max }),
+  );
 
   const usable = 600 - PAD_LEFT - PAD_RIGHT;
   const toX = (val) => PAD_LEFT + ((val - min) / (max - min)) * usable;
@@ -177,7 +183,7 @@ export function renderNumberLine(container, config) {
     // while dragging so the pointer is never laggy — see .nl-dragging.
     g.classList.add("nl-spring");
     g.setAttribute("role", "slider");
-    g.setAttribute("aria-label", t.label || `Point ${i + 1}`);
+    g.setAttribute("aria-label", t.label || labT("number-line.point-n", "Point {n}", { n: i + 1 }));
     g.setAttribute("tabindex", "0");
     g.setAttribute("aria-valuemin", String(min));
     g.setAttribute("aria-valuemax", String(max));
@@ -322,7 +328,7 @@ export function renderNumberLine(container, config) {
 
   const checkBtn = document.createElement("button");
   checkBtn.className = "btn btn-primary mt-4";
-  checkBtn.textContent = "Check Placement";
+  checkBtn.textContent = labT("number-line.check-placement-title", "Check Placement");
 
   let completed = false;
   /* Attempt counter for the reveal ladder. The first check used to light up a
@@ -378,7 +384,11 @@ export function renderNumberLine(container, config) {
       showFb(
         feedbackSlot,
         "success",
-        `All ${targets.length} points placed correctly! Each point matches its value on this number line.`,
+        labT(
+          "number-line.all-points-placed",
+          "All {total} points placed correctly! Each point matches its value on this number line.",
+          { total: targets.length },
+        ),
       );
       if (onComplete) onComplete(correct, targets.length);
     } else {
@@ -388,24 +398,32 @@ export function renderNumberLine(container, config) {
       const diagnosed = misses
         .map((m) => ({ m, msg: diagnosePlacement(m.placed, m.target, { step }) }))
         .find((x) => x.msg);
-      const count = `${correct} of ${targets.length} correct.`;
+      const counts = { correct, total: targets.length };
       if (!revealTargets && diagnosed) {
-        showFb(
-          feedbackSlot,
-          "hint",
-          `${count} Look at ${diagnosed.m.label || formatNum(diagnosed.m.target)}: ${diagnosed.msg}`,
-        );
+        const count = labT("number-line.count-correct", "{correct} of {total} correct.", counts);
+        const lookAt = labT("number-line.look-at", "Look at {what}:", {
+          what: diagnosed.m.label || formatNum(diagnosed.m.target),
+        });
+        showFb(feedbackSlot, "hint", `${count} ${lookAt} ${diagnosed.msg}`);
       } else if (!revealTargets) {
         showFb(
           feedbackSlot,
           "hint",
-          `${count} The red dots are not on their values yet. Find a labelled tick near each one and count the ticks from there.`,
+          labT(
+            "number-line.red-dots-not-yet",
+            "{correct} of {total} correct. The red dots are not on their values yet. Find a labelled tick near each one and count the ticks from there.",
+            counts,
+          ),
         );
       } else {
         showFb(
           feedbackSlot,
           "hint",
-          `${count} The line snapped your dots to nearby ticks — green circles show where the remaining points belong and why.`,
+          labT(
+            "number-line.snapped-to-ticks",
+            "{correct} of {total} correct. The line snapped your dots to nearby ticks — green circles show where the remaining points belong and why.",
+            counts,
+          ),
         );
       }
     }
@@ -497,7 +515,10 @@ function renderSequentialNumberLine(container, config) {
   svg.setAttribute("viewBox", `0 0 600 ${HEIGHT}`);
   svg.style.cssText = "width:100%; height:auto; user-select:none; touch-action:none;";
   svg.setAttribute("role", "application");
-  svg.setAttribute("aria-label", `Number line from ${lo} to ${hi}`);
+  svg.setAttribute(
+    "aria-label",
+    labT("number-line.aria-range", "Number line from {min} to {max}", { min: lo, max: hi }),
+  );
   const usable = 600 - PAD_LEFT - PAD_RIGHT;
   const toX = (v) => PAD_LEFT + ((v - lo) / (hi - lo)) * usable;
   const toVal = (x) => {
@@ -617,12 +638,17 @@ function renderSequentialNumberLine(container, config) {
   feedbackSlot.setAttribute("aria-live", "polite");
   const checkBtn = document.createElement("button");
   checkBtn.className = "btn btn-primary mt-4";
-  checkBtn.textContent = "Check placement";
+  checkBtn.textContent = labT("number-line.check-placement", "Check placement");
 
   let idx = 0;
   const showTarget = () => {
     const t = targets[idx];
-    prompt.innerHTML = `Move the dot to: <span style="color:var(--teal,#0d7a76)">${escHtml(t.label || formatNum(t.value))}</span> &nbsp;<span style="color:var(--muted,#5f6f80); font-weight:500;">(${idx + 1} of ${targets.length})</span>`;
+    const moveTo = labT("number-line.move-dot-to", "Move the dot to:");
+    const progress = labT("number-line.progress-n-of-total", "({n} of {total})", {
+      n: idx + 1,
+      total: targets.length,
+    });
+    prompt.innerHTML = `${moveTo} <span style="color:var(--teal,#0d7a76)">${escHtml(t.label || formatNum(t.value))}</span> &nbsp;<span style="color:var(--muted,#5f6f80); font-weight:500;">${progress}</span>`;
     targetMarker.style.display = "none";
   };
   showTarget();
@@ -637,15 +663,26 @@ function renderSequentialNumberLine(container, config) {
         showFb(
           feedbackSlot,
           "success",
-          `All ${targets.length} decimals placed! 🎉 Snap landed on ${formatNum(t.value)} because that tick matches the place value.`,
+          labT(
+            "number-line.all-decimals-placed",
+            "All {total} decimals placed! 🎉 Snap landed on {value} because that tick matches the place value.",
+            { total: targets.length, value: formatNum(t.value) },
+          ),
         );
-        prompt.textContent = "Nice — every decimal is in the right spot.";
+        prompt.textContent = labT(
+          "number-line.every-decimal-right",
+          "Nice — every decimal is in the right spot.",
+        );
         if (onComplete) onComplete(targets.length, targets.length);
       } else {
         showFb(
           feedbackSlot,
           "success",
-          `Snapped to ${formatNum(t.value)} — that tick matches the place value. Now the next one.`,
+          labT(
+            "number-line.snapped-next",
+            "Snapped to {value} — that tick matches the place value. Now the next one.",
+            { value: formatNum(t.value) },
+          ),
         );
         // Leave the dot where the student placed it — don't snap it back to 0,
         // which felt like losing their work. They slide on to the next value.
@@ -666,7 +703,11 @@ function renderSequentialNumberLine(container, config) {
         feedbackSlot,
         "hint",
         diagnosis ||
-          `Not yet — you landed near ${formatNum(curVal)}. ${formatNum(t.value)} is ${formatNum(delta)} away. The green circle shows the snap target.`,
+          labT(
+            "number-line.not-yet-away",
+            "Not yet — you landed near {landed}. {value} is {delta} away. The green circle shows the snap target.",
+            { landed: formatNum(curVal), value: formatNum(t.value), delta: formatNum(delta) },
+          ),
       );
     }
   });
@@ -758,7 +799,11 @@ export function diagnosePlacement(placed, target, { step = 1 } = {}) {
   // Opposite: same distance from zero, other side. Checked first because it is
   // the most specific claim the two numbers can support.
   if (target !== 0 && near(placed, -target)) {
-    return `You are the right distance from 0, but on the wrong side. ${formatNum(placed)} and ${formatNum(target)} are opposites — they sit the same distance from 0 in opposite directions. Which side of 0 does ${formatNum(target)} belong on?`;
+    return labT(
+      "number-line.diag-opposite",
+      "You are the right distance from 0, but on the wrong side. {placed} and {target} are opposites — they sit the same distance from 0 in opposite directions. Which side of 0 does {target} belong on?",
+      { placed: formatNum(placed), target: formatNum(target) },
+    );
   }
 
   // Place value: the digits are right, the scale is off by a power of ten.
@@ -766,7 +811,22 @@ export function diagnosePlacement(placed, target, { step = 1 } = {}) {
     const ratio = target / placed;
     for (const factor of [10, 100, 0.1, 0.01]) {
       if (near(ratio, factor)) {
-        return `Your digits are right but the size is off: ${formatNum(placed)} is ${factor > 1 ? `${factor} times smaller` : `${1 / factor} times larger`} than ${formatNum(target)}. Check which place each digit is in, then count the ticks again.`;
+        const vars = {
+          placed: formatNum(placed),
+          n: factor > 1 ? factor : 1 / factor,
+          target: formatNum(target),
+        };
+        return factor > 1
+          ? labT(
+              "number-line.diag-place-smaller",
+              "Your digits are right but the size is off: {placed} is {n} times smaller than {target}. Check which place each digit is in, then count the ticks again.",
+              vars,
+            )
+          : labT(
+              "number-line.diag-place-larger",
+              "Your digits are right but the size is off: {placed} is {n} times larger than {target}. Check which place each digit is in, then count the ticks again.",
+              vars,
+            );
       }
     }
   }
@@ -775,7 +835,11 @@ export function diagnosePlacement(placed, target, { step = 1 } = {}) {
   // number on the wrong side of the other.
   if (placed < 0 && target < 0 && Math.abs(placed) !== Math.abs(target)) {
     if (placed > target) {
-      return `On a number line, further LEFT means smaller. ${formatNum(target)} is less than ${formatNum(placed)}, so it belongs further to the left, not to the right.`;
+      return labT(
+        "number-line.diag-negative-order",
+        "On a number line, further LEFT means smaller. {target} is less than {placed}, so it belongs further to the left, not to the right.",
+        { target: formatNum(target), placed: formatNum(placed) },
+      );
     }
   }
 
@@ -784,7 +848,31 @@ export function diagnosePlacement(placed, target, { step = 1 } = {}) {
     const ticks = (target - placed) / step;
     if (near(ticks, Math.round(ticks)) && Math.abs(Math.round(ticks)) <= 3) {
       const n = Math.round(ticks);
-      return `Close — you are ${Math.abs(n)} tick${Math.abs(n) === 1 ? "" : "s"} to the ${n > 0 ? "left" : "right"} of ${formatNum(target)}. Each tick is ${formatNum(step)}. Count them from a labelled mark rather than from where you started.`;
+      const vars = { n: Math.abs(n), target: formatNum(target), step: formatNum(step) };
+      if (Math.abs(n) === 1) {
+        return n > 0
+          ? labT(
+              "number-line.diag-tick-left-one",
+              "Close — you are {n} tick to the left of {target}. Each tick is {step}. Count them from a labelled mark rather than from where you started.",
+              vars,
+            )
+          : labT(
+              "number-line.diag-tick-right-one",
+              "Close — you are {n} tick to the right of {target}. Each tick is {step}. Count them from a labelled mark rather than from where you started.",
+              vars,
+            );
+      }
+      return n > 0
+        ? labT(
+            "number-line.diag-tick-left-many",
+            "Close — you are {n} ticks to the left of {target}. Each tick is {step}. Count them from a labelled mark rather than from where you started.",
+            vars,
+          )
+        : labT(
+            "number-line.diag-tick-right-many",
+            "Close — you are {n} ticks to the right of {target}. Each tick is {step}. Count them from a labelled mark rather than from where you started.",
+            vars,
+          );
     }
   }
 
@@ -829,20 +917,117 @@ export function diagnoseInequality(written, prob) {
   const wrongCircle = got.inclusive !== wantInclusive;
 
   if (wrongBoundary) {
-    return `Your inequality turns at ${got.boundary}, but the circle on the graph sits at ${b}. Read the tick the circle is on first — that number is the boundary.`;
+    return labT(
+      "number-line.ineq-boundary",
+      "Your inequality turns at {yours}, but the circle on the graph sits at {b}. Read the tick the circle is on first — that number is the boundary.",
+      { yours: got.boundary, b },
+    );
   }
+  // The sentences below name the direction and the circle, so each combination
+  // is its own literal (a nested word would be translated twice on a bilingual
+  // page). Any value outside right/left and open/closed keeps the plain English.
+  const toRight = prob.direction === "right";
+  const knownDirection = toRight || prob.direction === "left";
+  const knownCircle = prob.circleType === "closed" || prob.circleType === "open";
   if (wrongDirection && wrongCircle) {
+    if (knownDirection && knownCircle) {
+      if (toRight) {
+        return wantInclusive
+          ? labT(
+              "number-line.ineq-two-right-closed",
+              "Two things to fix: the shading runs to the right, so the solutions are the numbers greater than {b} — and the circle is closed, so {b} itself IS a solution.",
+              { b },
+            )
+          : labT(
+              "number-line.ineq-two-right-open",
+              "Two things to fix: the shading runs to the right, so the solutions are the numbers greater than {b} — and the circle is open, so {b} itself is NOT a solution.",
+              { b },
+            );
+      }
+      return wantInclusive
+        ? labT(
+            "number-line.ineq-two-left-closed",
+            "Two things to fix: the shading runs to the left, so the solutions are the numbers less than {b} — and the circle is closed, so {b} itself IS a solution.",
+            { b },
+          )
+        : labT(
+            "number-line.ineq-two-left-open",
+            "Two things to fix: the shading runs to the left, so the solutions are the numbers less than {b} — and the circle is open, so {b} itself is NOT a solution.",
+            { b },
+          );
+    }
     return `Two things to fix: the shading runs to the ${prob.direction}, so the solutions are the numbers ${prob.direction === "right" ? "greater" : "less"} than ${b} — and the circle is ${prob.circleType}, so ${b} itself ${wantInclusive ? "IS" : "is NOT"} a solution.`;
   }
   if (wrongDirection) {
+    if (knownDirection) {
+      return toRight
+        ? labT(
+            "number-line.ineq-way-right",
+            "You have the boundary right, but you shaded the wrong way. The ray points right, so the solutions are the numbers greater than {b}. Pick a number on the shaded part and test it in your inequality.",
+            { b },
+          )
+        : labT(
+            "number-line.ineq-way-left",
+            "You have the boundary right, but you shaded the wrong way. The ray points left, so the solutions are the numbers less than {b}. Pick a number on the shaded part and test it in your inequality.",
+            { b },
+          );
+    }
     return `You have the boundary right, but you shaded the wrong way. The ray points ${prob.direction}, so the solutions are the numbers ${prob.direction === "right" ? "greater" : "less"} than ${b}. Pick a number on the shaded part and test it in your inequality.`;
   }
   if (wrongCircle) {
+    const symbol = got.direction === "right" ? ">" : "<";
     return wantInclusive
-      ? `The circle at ${b} is filled in, so ${b} itself IS a solution. Is ${b} ${got.direction === "right" ? ">" : "<"} ${b} true? You need the symbol that also allows equal.`
-      : `The circle at ${b} is open, so ${b} itself is NOT a solution. Your symbol allows ${b} = ${b}, which the open circle rules out.`;
+      ? labT(
+          "number-line.ineq-circle-filled",
+          "The circle at {b} is filled in, so {b} itself IS a solution. Is {b} {symbol} {b} true? You need the symbol that also allows equal.",
+          { b, symbol },
+        )
+      : labT(
+          "number-line.ineq-circle-open",
+          "The circle at {b} is open, so {b} itself is NOT a solution. Your symbol allows {b} = {b}, which the open circle rules out.",
+          { b },
+        );
   }
   return null;
+}
+
+// Spoken description of an inequality graph. The circle and direction words come
+// from the config, so each open/closed x left/right pair is its own literal; the
+// config's own spelling ("Closed") is kept on an English page.
+function inequalityAriaLabel(boundary, circleType, direction) {
+  const english = `Number line: ${circleType} circle at ${boundary}, shaded ${direction}`;
+  const circle = String(circleType ?? "")
+    .trim()
+    .toLowerCase();
+  if (labMode() === "en" || (circle !== "open" && circle !== "closed")) return english;
+  const vars = { b: boundary };
+  if (direction === "left") {
+    return circle === "closed"
+      ? labT(
+          "number-line.aria-graph-closed-left",
+          "Number line: closed circle at {b}, shaded left",
+          vars,
+        )
+      : labT(
+          "number-line.aria-graph-open-left",
+          "Number line: open circle at {b}, shaded left",
+          vars,
+        );
+  }
+  if (direction === "right") {
+    return circle === "closed"
+      ? labT(
+          "number-line.aria-graph-closed-right",
+          "Number line: closed circle at {b}, shaded right",
+          vars,
+        )
+      : labT(
+          "number-line.aria-graph-open-right",
+          "Number line: open circle at {b}, shaded right",
+          vars,
+        );
+  }
+  return english;
 }
 
 // Draw a single inequality graph (open/closed boundary circle + shaded ray) on
@@ -860,10 +1045,7 @@ function drawInequalityLine(boundary, circleType, direction) {
   svg.setAttribute("viewBox", `0 0 ${W} 100`);
   svg.style.cssText = "width:100%; height:auto;";
   svg.setAttribute("role", "img");
-  svg.setAttribute(
-    "aria-label",
-    `Number line: ${circleType} circle at ${boundary}, shaded ${direction}`,
-  );
+  svg.setAttribute("aria-label", inequalityAriaLabel(boundary, circleType, direction));
 
   // Legibility on a projector and on a Chromebook at arm's length: the axis was
   // a 3px mid-teal line with 1.5px ticks and 11px labels, which is the faintest
@@ -946,11 +1128,11 @@ function renderInequalityGraphs(container, config) {
     input.type = "text";
     input.className = "text-input";
     input.style.cssText = "max-width:160px;";
-    input.placeholder = "e.g. x ≥ 5";
-    input.setAttribute("aria-label", "Write the inequality");
+    input.placeholder = labT("number-line.placeholder-ineq", "e.g. x ≥ 5");
+    input.setAttribute("aria-label", labT("number-line.aria-write-ineq", "Write the inequality"));
     const checkBtn = document.createElement("button");
     checkBtn.className = "btn btn-primary";
-    checkBtn.textContent = "Check";
+    checkBtn.textContent = labT("number-line.check", "Check");
     controls.append(input, checkBtn);
     // ≤ and ≥ are not on the keyboard — offer them as buttons.
     mountSymbolPad(input, { force: true });
@@ -973,13 +1155,17 @@ function renderInequalityGraphs(container, config) {
       if (locked) return;
       const val = input.value.trim();
       if (!val) {
-        showFb(fb, "hint", "Type the inequality first.");
+        showFb(fb, "hint", labT("number-line.type-ineq-first", "Type the inequality first."));
         return;
       }
       if (matchesInequality(val, prob.inequality)) {
         input.style.borderColor = "var(--success)";
         input.style.background = "var(--success-bg)";
-        showFb(fb, "success", `Correct! ${prob.inequality}`);
+        showFb(
+          fb,
+          "success",
+          labT("number-line.correct-ineq", "Correct! {answer}", { answer: prob.inequality }),
+        );
         resolve(true);
       } else {
         attempts += 1;
@@ -999,13 +1185,17 @@ function renderInequalityGraphs(container, config) {
             "hint",
             (hints && hints[idx]) ||
               diagnosis ||
-              `Write it as a letter, a symbol, then a number — like x > ${prob.boundary}. Read the circle first, then the shading.`,
+              labT(
+                "number-line.write-it-as",
+                "Write it as a letter, a symbol, then a number — like x > {b}. Read the circle first, then the shading.",
+                { b: prob.boundary },
+              ),
           );
         } else {
           showFb(
             fb,
             "hint",
-            `The answer is ${prob.inequality}. ${(hints && hints[idx]) || ""}`.trim(),
+            `${labT("number-line.answer-is", "The answer is {answer}.", { answer: prob.inequality })} ${(hints && hints[idx]) || ""}`.trim(),
           );
           resolve(false);
         }
@@ -1061,7 +1251,14 @@ function renderJumpNumberLine(container, config) {
   svg.setAttribute("viewBox", `0 0 ${W} 110`);
   svg.style.cssText = "width:100%; height:auto;";
   svg.setAttribute("role", "img");
-  svg.setAttribute("aria-label", `Number line from ${lo} to ${hi} with ${jumps} equal jumps`);
+  svg.setAttribute(
+    "aria-label",
+    labT("number-line.aria-jumps", "Number line from {min} to {max} with {jumps} equal jumps", {
+      min: lo,
+      max: hi,
+      jumps,
+    }),
+  );
 
   line(svg, PAD, TICK_Y, W - PAD, TICK_Y, "#12355b", 4);
   const st = Number(step) || (hi - lo) / jumps;
@@ -1104,11 +1301,11 @@ function renderJumpNumberLine(container, config) {
   input.type = "text";
   input.className = "text-input";
   input.style.cssText = "max-width:130px;";
-  input.placeholder = "Your answer";
-  input.setAttribute("aria-label", questionText || "Your answer");
+  input.placeholder = labT("number-line.your-answer", "Your answer");
+  input.setAttribute("aria-label", questionText || labT("number-line.your-answer", "Your answer"));
   const checkBtn = document.createElement("button");
   checkBtn.className = "btn btn-primary";
-  checkBtn.textContent = "Check";
+  checkBtn.textContent = labT("number-line.check", "Check");
   controls.append(input, checkBtn);
   const fb = document.createElement("div");
   fb.className = "mt-3";
@@ -1120,7 +1317,7 @@ function renderJumpNumberLine(container, config) {
     if (done) return;
     const val = input.value.trim();
     if (!val) {
-      showFb(fb, "hint", "Enter your answer first.");
+      showFb(fb, "hint", labT("number-line.enter-answer-first", "Enter your answer first."));
       return;
     }
     const nv = parseFloat(val.replace(/[,\s]/g, ""));
@@ -1135,10 +1332,19 @@ function renderJumpNumberLine(container, config) {
       input.style.borderColor = "var(--success)";
       input.style.background = "var(--success-bg)";
       checkBtn.style.display = "none";
-      showFb(fb, "success", `Correct! The answer is ${answer}.`);
+      showFb(
+        fb,
+        "success",
+        labT("number-line.correct-answer-is", "Correct! The answer is {answer}.", { answer }),
+      );
       if (onComplete) onComplete(1, 1);
     } else {
-      showFb(fb, "hint", (hints && hints[0]) || "Count the jumps one at a time from the start.");
+      showFb(
+        fb,
+        "hint",
+        (hints && hints[0]) ||
+          labT("number-line.count-jumps", "Count the jumps one at a time from the start."),
+      );
     }
   });
 

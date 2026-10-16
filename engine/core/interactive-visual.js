@@ -277,6 +277,19 @@ const REGISTRY = {
       mode: cfg.mode,
     });
   },
+  // One ratio drawn as a table, double number line, tape, bar and hundred grid
+  // from a single shared model (components/linked-model.js). Offered beside a
+  // Unit 3/4 lesson's own tools; it takes no numbers from the lesson.
+  "linked-lab": async (host, cfg) => {
+    const { renderLinkedLab } = await import("../components/linked-lab.js");
+    return renderLinkedLab(host, cfg);
+  },
+  // Optional "invent your own way first" scene for a pilot lesson
+  // (core/invent-first.js). Reads data/invent-first/<lesson>.json; never gates.
+  "invent-first": async (host, cfg) => {
+    const { renderInventFirst } = await import("../components/invent-scene.js");
+    return renderInventFirst(host, cfg);
+  },
   // "Work It Out" step lab: line-by-line solving with per-step equivalence
   // checking (equation mode = same solution set, expression mode = same value).
   // `ctx.state` (when the mounting phase passes the lesson state) lets a named

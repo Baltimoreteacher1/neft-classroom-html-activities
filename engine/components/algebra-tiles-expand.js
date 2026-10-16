@@ -153,7 +153,7 @@ export function renderAlgebraExpand(host, cfg = {}) {
       `<span class="atx-badge">Build It</span></div>` +
       `<div class="atx-model">${modelSvg(a, c)}</div>` +
       `<div class="atx-steps">` +
-      stepMarkup("x", "x-tiles: how many?", "${DATA_1}", "x-tiles") +
+      stepMarkup("x", "x-tiles: how many?", DATA_1, "x-tiles") +
       stepMarkup("u", "unit tiles: how many?", "var(--coral,#d9795d)", "unit tiles") +
       `</div>` +
       `<div class="atx-expr" data-el="expr" role="status" aria-live="polite"></div>` +

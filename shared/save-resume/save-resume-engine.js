@@ -1624,8 +1624,8 @@
       // Intro choices (shown when no active session).
       '<div id="nsr-intro" class="nsr-section">',
       '  <p class="nsr-lead">Starting work you can finish another day? Save it and get a code to come back.</p>',
-      '  <label class="nsr-field"><span>Your first and last name</span>',
-      '    <input type="text" id="nsr-name" autocomplete="off" maxlength="60" placeholder="e.g. Jordan Nguyen"></label>',
+      '  <label class="nsr-field"><span>Your first name and last initial</span>',
+      '    <input type="text" id="nsr-name" autocomplete="off" maxlength="60" placeholder="e.g. Jordan N."></label>',
       '  <label class="nsr-field"><span>Your class</span>',
       '    <input type="text" id="nsr-section" autocomplete="off" maxlength="40" placeholder="e.g. Period 3"></label>',
       '  <p class="nsr-hint" id="nsr-id-hint" hidden></p>',

@@ -7,6 +7,8 @@
 //     cfg.a, cfg.b, cfg.c : starting values (default 3, 4, 2)
 //     cfg.presets         : quick-pick "a(b+c)" strings
 
+import { labT } from "./lab-strings-es.js";
+
 const C = {
   navy: "#12355b",
   accent: "#1d4ed8",
@@ -46,17 +48,17 @@ export function renderDistributiveBuilder(container, cfg = {}) {
   const root = document.createElement("div");
   root.className = "distlab";
   root.innerHTML =
-    `<div class="distlab-title">Distributive Property Lab</div>` +
-    `<p class="distlab-hint">The area of the whole rectangle can be counted two ways. Type a, b, and c to see why <strong>a(b + c) = a·b + a·c</strong>.</p>` +
+    `<div class="distlab-title">${labT("distributive-builder.title", "Distributive Property Lab")}</div>` +
+    `<p class="distlab-hint">${labT("distributive-builder.hint", "The area of the whole rectangle can be counted two ways. Type a, b, and c to see why <strong>a(b + c) = a·b + a·c</strong>.")}</p>` +
     `<div class="distlab-controls">` +
-    `<label class="distlab-field"><span>a</span><input type="number" min="1" max="12" value="${a}" data-inp="a" aria-label="a (1 to 12)"/></label>` +
+    `<label class="distlab-field"><span>a</span><input type="number" min="1" max="12" value="${a}" data-inp="a" aria-label="${labT("distributive-builder.aria-a", "a (1 to 12)")}"/></label>` +
     `<span class="distlab-x">(</span>` +
-    `<label class="distlab-field"><span>b</span><input type="number" min="1" max="20" value="${b}" data-inp="b" aria-label="b (1 to 20)"/></label>` +
+    `<label class="distlab-field"><span>b</span><input type="number" min="1" max="20" value="${b}" data-inp="b" aria-label="${labT("distributive-builder.aria-b", "b (1 to 20)")}"/></label>` +
     `<span class="distlab-x">+</span>` +
-    `<label class="distlab-field"><span>c</span><input type="number" min="1" max="20" value="${c}" data-inp="c" aria-label="c (1 to 20)"/></label>` +
+    `<label class="distlab-field"><span>c</span><input type="number" min="1" max="20" value="${c}" data-inp="c" aria-label="${labT("distributive-builder.aria-c", "c (1 to 20)")}"/></label>` +
     `<span class="distlab-x">)</span>` +
-    `<button type="button" class="distlab-go">Show →</button></div>` +
-    `<div class="distlab-presets" role="group" aria-label="Quick-pick expressions">` +
+    `<button type="button" class="distlab-go">${labT("distributive-builder.show", "Show →")}</button></div>` +
+    `<div class="distlab-presets" role="group" aria-label="${labT("distributive-builder.quick-pick", "Quick-pick expressions")}">` +
     presets
       .map(
         (p) => `<button type="button" class="distlab-chip" data-p="${esc(p)}">${esc(p)}</button>`,
@@ -93,7 +95,7 @@ export function renderDistributiveBuilder(container, cfg = {}) {
     const cw = (c / total) * plotW;
 
     const svg =
-      `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;height:auto;display:block;margin:0 auto;" role="img" aria-label="Area model of ${a} times open paren ${b} plus ${c} close paren">` +
+      `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;height:auto;display:block;margin:0 auto;" role="img" aria-label="${labT("distributive-builder.area-aria", "Area model of {a} times open paren {b} plus {c} close paren", { a, b, c })}">` +
       // height label a
       `<text x="${PADL - 10}" y="${PADT + plotH / 2}" text-anchor="middle" transform="rotate(-90 ${PADL - 10} ${PADT + plotH / 2})" font-family="Outfit,sans-serif" font-weight="800" font-size="14" fill="${C.navy}">${a}</text>` +
       // b box
@@ -110,7 +112,7 @@ export function renderDistributiveBuilder(container, cfg = {}) {
     result.innerHTML =
       `<div class="distlab-eqn">${a}(${b} + ${c}) = ${a}·${b} + ${a}·${c}</div>` +
       `<div class="distlab-eqn distlab-eqn-final">= ${a * b} + ${a * c} = <strong>${a * (b + c)}</strong></div>` +
-      `<p class="distlab-explain">Both the whole rectangle (${a} × ${b + c} = ${a * (b + c)}) and the two parts (${a * b} + ${a * c}) count the same area.</p>`;
+      `<p class="distlab-explain">${labT("distributive-builder.explain", "Both the whole rectangle ({a} × {bc} = {total}) and the two parts ({ab} + {ac}) count the same area.", { a, bc: b + c, total: a * (b + c), ab: a * b, ac: a * c })}</p>`;
   }
 
   root.querySelector(".distlab-go").addEventListener("click", draw);

@@ -34,6 +34,7 @@
  *   renderPrismVolume(container, { l, w, h, unit, max, step, label }) -> { destroy }
  */
 
+import { labT } from "./lab-strings-es.js";
 import { injectToolTokens } from "./tool-tokens.js";
 
 const C = {
@@ -79,7 +80,15 @@ function el(name, attrs) {
 export function renderPrismVolume(
   container,
   /** @type {{l?:number,w?:number,h?:number,unit?:string,max?:number,step?:number,label?:string}} */
-  { l = 2, w = 1.5, h = 1, unit = "units", max = 5, step: stepSize = 0.5, label = "" } = {},
+  {
+    l = 2,
+    w = 1.5,
+    h = 1,
+    unit = labT("prism-volume.units", "units"),
+    max = 5,
+    step: stepSize = 0.5,
+    label = "",
+  } = {},
 ) {
   injectToolTokens();
 
@@ -122,9 +131,9 @@ export function renderPrismVolume(
 
   const readouts = {};
   const FIELDS = [
-    ["l", "Length"],
-    ["w", "Width"],
-    ["h", "Height"],
+    ["l", labT("prism-volume.length", "Length")],
+    ["w", labT("prism-volume.width", "Width")],
+    ["h", labT("prism-volume.height", "Height")],
   ];
   for (const [key, name] of FIELDS) {
     const wrap = document.createElement("div");
@@ -140,12 +149,26 @@ export function renderPrismVolume(
     dec.className = "tool-btn";
     dec.style.cssText = "padding:0;width:44px;font-size:1.3rem;";
     dec.textContent = "−";
-    dec.setAttribute("aria-label", `decrease ${name} by ${num(fromHalves(STEP))} ${unit}`);
+    dec.setAttribute(
+      "aria-label",
+      labT("prism-volume.decrease", "decrease {name} by {amount} {unit}", {
+        name,
+        amount: num(fromHalves(STEP)),
+        unit,
+      }),
+    );
     const out = document.createElement("output");
     out.style.cssText = "min-width:46px;text-align:center;font-size:1.15rem;font-weight:700;";
     const inc = dec.cloneNode(false);
     inc.textContent = "+";
-    inc.setAttribute("aria-label", `increase ${name} by ${num(fromHalves(STEP))} ${unit}`);
+    inc.setAttribute(
+      "aria-label",
+      labT("prism-volume.increase", "increase {name} by {amount} {unit}", {
+        name,
+        amount: num(fromHalves(STEP)),
+        unit,
+      }),
+    );
     row.append(dec, out, inc);
     wrap.appendChild(row);
     controls.appendChild(wrap);
@@ -157,8 +180,11 @@ export function renderPrismVolume(
   const half = document.createElement("p");
   half.textContent =
     STEP === 1
-      ? `Each tap changes an edge by one half ${unit}.`
-      : `Each tap changes an edge by ${num(fromHalves(STEP))} ${unit}.`;
+      ? labT("prism-volume.tap-half", "Each tap changes an edge by one half {unit}.", { unit })
+      : labT("prism-volume.tap-step", "Each tap changes an edge by {amount} {unit}.", {
+          amount: num(fromHalves(STEP)),
+          unit,
+        });
 
   half.style.cssText = "margin:-6px 0 12px;font-size:.85rem;color:var(--tool-muted,#54677c);";
   side.appendChild(half);
@@ -205,14 +231,28 @@ export function renderPrismVolume(
       r.inc.disabled = dims[key] + STEP > MAXH;
     }
 
-    lineB.textContent = `Base area  B = l × w = ${num(L)} × ${num(W)} = ${num(B)} square ${unit}`;
-    lineBh.textContent = `Volume  V = B × h = ${num(B)} × ${num(H)} = ${num(V)} cubic ${unit}`;
-    lineLwh.textContent = `Same answer the other way:  l × w × h = ${num(L)} × ${num(W)} × ${num(H)} = ${num(V)}`;
+    lineB.textContent = labT(
+      "prism-volume.base-area",
+      "Base area  B = l × w = {L} × {W} = {B} square {unit}",
+      { L: num(L), W: num(W), B: num(B), unit },
+    );
+    lineBh.textContent = labT(
+      "prism-volume.volume",
+      "Volume  V = B × h = {B} × {H} = {V} cubic {unit}",
+      { B: num(B), H: num(H), V: num(V), unit },
+    );
+    lineLwh.textContent = labT(
+      "prism-volume.same-answer",
+      "Same answer the other way:  l × w × h = {L} × {W} × {H} = {V}",
+      { L: num(L), W: num(W), H: num(H), V: num(V) },
+    );
     svg.setAttribute(
       "aria-label",
-      `A rectangular prism ${num(L)} by ${num(W)} by ${num(H)} ${unit}. ` +
-        `Its shaded base has area ${num(B)} square ${unit}, and stacking that base ` +
-        `${num(H)} ${unit} high gives a volume of ${num(V)} cubic ${unit}.`,
+      labT(
+        "prism-volume.svg-label",
+        "A rectangular prism {L} by {W} by {H} {unit}. Its shaded base has area {B} square {unit}, and stacking that base {H} {unit} high gives a volume of {V} cubic {unit}.",
+        { L: num(L), W: num(W), H: num(H), B: num(B), V: num(V), unit },
+      ),
     );
 
     while (svg.firstChild) svg.removeChild(svg.firstChild);

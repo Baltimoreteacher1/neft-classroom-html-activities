@@ -10,6 +10,7 @@
 // English (CSS-gated on <html lang="es">, same contract as every other
 // practice component); the fixed chrome strings are stacked unconditionally.
 import { STRINGS, stackContent, stackHtml, stackT } from "../core/i18n.js";
+import { liveAnnouncer, say } from "../core/select-place.js";
 
 let MG_STYLE_INJECTED = false;
 
@@ -53,6 +54,11 @@ export function renderMatchingGame(container, { pairs, columns, label, labelEs, 
 
   const wrapper = document.createElement("div");
   wrapper.className = "card";
+  // Taps already work from the keyboard (every tile is a button); this says what
+  // each press did, so a screen reader hears a pick, a match or a miss.
+  const announce = liveAnnouncer(wrapper);
+  /** Plain text of a tile, without the second-language line. */
+  const nameOf = (el) => el.querySelector(".i18n-en")?.textContent || el.textContent || "";
 
   if (label) {
     const lbl = document.createElement("p");
@@ -112,6 +118,7 @@ export function renderMatchingGame(container, { pairs, columns, label, labelEs, 
       const el = document.createElement("button");
       el.type = "button";
       el.className = "mg-item";
+      el.setAttribute("aria-pressed", "false");
       el.innerHTML = stackContent(card.text, card.textEs);
       el.addEventListener("click", () => pick(el, card));
       card.el = el;
@@ -121,7 +128,10 @@ export function renderMatchingGame(container, { pairs, columns, label, labelEs, 
   }
 
   function clearSelection() {
-    if (selected) delete selected.el.dataset.selected;
+    if (selected) {
+      delete selected.el.dataset.selected;
+      selected.el.setAttribute("aria-pressed", "false");
+    }
     selected = null;
   }
 
@@ -133,6 +143,8 @@ export function renderMatchingGame(container, { pairs, columns, label, labelEs, 
       clearSelection();
       selected = { el, card };
       el.dataset.selected = "1";
+      el.setAttribute("aria-pressed", "true");
+      announce(say("selected", { item: nameOf(el) }));
       return;
     }
 
@@ -155,7 +167,10 @@ export function renderMatchingGame(container, { pairs, columns, label, labelEs, 
       [a.el, b.el].forEach((node) => {
         node.dataset.matched = "1";
         delete node.dataset.selected;
+        node.setAttribute("aria-pressed", "false");
+        node.setAttribute("aria-disabled", "true");
       });
+      announce(say("matchedPair", { a: nameOf(a.el), b: nameOf(b.el) }));
       matched.add(leftCard.pairId);
       setMatchCount(matched.size);
       if (matched.size === pairs.length) finishGame();
@@ -164,6 +179,7 @@ export function renderMatchingGame(container, { pairs, columns, label, labelEs, 
         node.dataset.wrong = "1";
         setTimeout(() => delete node.dataset.wrong, 360);
       });
+      announce(say("notAMatch", { a: nameOf(a.el), b: nameOf(b.el) }));
     }
   }
 

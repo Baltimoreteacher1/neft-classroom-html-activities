@@ -548,6 +548,23 @@ function buildVisual(v) {
         fallback: `Net folder for a ${solidName}. Turn on JavaScript to fold the flat net into the solid.`,
       });
     }
+    case "linked-lab":
+      // One ratio as table, double number line, tape, bar and grid. Registered in
+      // the interactive-visual REGISTRY and offered by the tool catalog; the case
+      // keeps a lesson-authored `diagram` of this kind renderable.
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Linked ratio lab. One ratio shown as a table, double number line, tape diagram, bar and hundred grid that change together.",
+        fallback:
+          "Linked ratio lab. Turn on JavaScript to see one ratio as a table, double number line, tape, bar and grid.",
+      });
+    case "invent-first":
+      return interactiveVisualHost(v, {
+        ariaLabel:
+          "Invent your own way first. Try the problem your own way before the lesson shows a method.",
+        fallback:
+          "Invent your own way first. Turn on JavaScript to try the problem before the lesson shows a method.",
+      });
     case "manip": {
       // Any shared/projects manipulative (number-line, fraction-bar,
       // algebra-tiles, …) surfaced via the interactive-visual bridge.

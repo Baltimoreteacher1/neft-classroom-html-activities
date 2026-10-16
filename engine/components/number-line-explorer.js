@@ -14,6 +14,8 @@
 //     cfg.startB: starting value of point B in compare mode (default 3)
 //     cfg.intro : optional coaching sentence under the title
 
+import { labT } from "./lab-strings-es.js";
+
 const C = {
   navy: "#12355b",
   accent: "#1d4ed8",
@@ -56,13 +58,19 @@ export function renderNumberLineExplorer(container, cfg = {}) {
   const intro =
     cfg.intro ||
     (mode === "compare"
-      ? "Drag both points. The number farther to the right is greater — and watch how a number can be less than another yet be farther from zero."
-      : "Drag the point along the line. Its absolute value is its distance from zero — see the segment light up, and find its opposite on the other side.");
+      ? labT(
+          "number-line-explorer.intro-compare",
+          "Drag both points. The number farther to the right is greater — and watch how a number can be less than another yet be farther from zero.",
+        )
+      : labT(
+          "number-line-explorer.intro-absolute",
+          "Drag the point along the line. Its absolute value is its distance from zero — see the segment light up, and find its opposite on the other side.",
+        ));
   root.innerHTML =
-    `<div class="nlex-head"><span class="nlex-title">📏 Number Line Explorer</span></div>` +
+    `<div class="nlex-head"><span class="nlex-title">📏 ${labT("number-line-explorer.title", "Number Line Explorer")}</span></div>` +
     `<p class="nlex-hint">${esc(intro)}</p>` +
     `<div class="nlex-plot" data-el="plot"></div>` +
-    `<div class="nlex-tip">drag a point, or focus it and use ← →</div>` +
+    `<div class="nlex-tip">${labT("number-line-explorer.tip", "drag a point, or focus it and use ← →")}</div>` +
     `<div class="nlex-read" data-el="read" aria-live="polite"></div>`;
   container.appendChild(root);
   const el = (n) => root.querySelector(`[data-el="${n}"]`);
@@ -75,11 +83,11 @@ export function renderNumberLineExplorer(container, cfg = {}) {
   const x = (v) => L + ((v + MAX) / (2 * MAX)) * (R - L);
   const fromX = (px) => ((px - L) / (R - L)) * (2 * MAX) - MAX;
 
-  function marker(v, color, key, filled = true, label = "") {
+  function marker(v, color, key, filled = true, label = "", valueText = "") {
     const px = x(v);
     return (
-      `<g class="nlex-pt" data-pt="${key}" tabindex="0" role="slider" aria-label="${label || "point"}" ` +
-      `aria-valuemin="${-MAX}" aria-valuemax="${MAX}" aria-valuenow="${v}" aria-valuetext="${label} at ${fmt(v)}">` +
+      `<g class="nlex-pt" data-pt="${key}" tabindex="0" role="slider" aria-label="${label}" ` +
+      `aria-valuemin="${-MAX}" aria-valuemax="${MAX}" aria-valuenow="${v}" aria-valuetext="${valueText}">` +
       `<line x1="${px}" y1="${AX}" x2="${px}" y2="${AX - 30}" stroke="${color}" stroke-width="2"/>` +
       `<circle cx="${px}" cy="${AX - 38}" r="12" fill="${filled ? color : "#fff"}" stroke="${color}" stroke-width="3"/>` +
       `<text x="${px}" y="${AX - 34}" text-anchor="middle" font-size="11" font-weight="800" fill="${filled ? "#fff" : color}">${fmt(v)}</text>` +
@@ -107,14 +115,46 @@ export function renderNumberLineExplorer(container, cfg = {}) {
         (a !== 0
           ? `<text x="${(x0 + xa) / 2}" y="${AX + 40}" text-anchor="middle" font-size="11" font-weight="800" fill="${C.absEdge}">|${fmt(a)}| = ${fmt(Math.abs(a))}</text>`
           : "");
-      overlays += marker(a, C.aColor, "a", true, "point");
-      if (a !== 0) overlays += marker(-a, C.absEdge, "opp", false, "opposite (not draggable)");
+      overlays += marker(
+        a,
+        C.aColor,
+        "a",
+        true,
+        labT("number-line-explorer.point", "point"),
+        labT("number-line-explorer.point-at", "point at {v}", { v: fmt(a) }),
+      );
+      if (a !== 0) {
+        overlays += marker(
+          -a,
+          C.absEdge,
+          "opp",
+          false,
+          labT("number-line-explorer.opposite", "opposite (not draggable)"),
+          labT("number-line-explorer.opposite-at", "opposite (not draggable) at {v}", {
+            v: fmt(-a),
+          }),
+        );
+      }
     } else {
-      overlays += marker(a, C.aColor, "a", true, "point A");
-      overlays += marker(b, C.bColor, "b", true, "point B");
+      overlays += marker(
+        a,
+        C.aColor,
+        "a",
+        true,
+        labT("number-line-explorer.point-a", "point A"),
+        labT("number-line-explorer.point-a-at", "point A at {v}", { v: fmt(a) }),
+      );
+      overlays += marker(
+        b,
+        C.bColor,
+        "b",
+        true,
+        labT("number-line-explorer.point-b", "point B"),
+        labT("number-line-explorer.point-b-at", "point B at {v}", { v: fmt(b) }),
+      );
     }
     el("plot").innerHTML =
-      `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Number line explorer">${axis}${overlays}</svg>`;
+      `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${labT("number-line-explorer.aria-plot", "Number line explorer")}">${axis}${overlays}</svg>`;
     wire();
   }
 
@@ -123,19 +163,57 @@ export function renderNumberLineExplorer(container, cfg = {}) {
       const opp = -a;
       el("read").innerHTML =
         `<div class="nlex-card">` +
-        `<div class="nlex-line"><b>${fmt(a)}</b> is <b>${fmt(Math.abs(a))}</b> unit${Math.abs(a) === 1 ? "" : "s"} from zero, so <b>|${fmt(a)}| = ${fmt(Math.abs(a))}</b>.</div>` +
-        `<div class="nlex-line nlex-muted">Its opposite is <b>${fmt(opp)}</b> — the same distance from zero, on the other side. Opposites always have the <em>same</em> absolute value.</div>` +
+        `<div class="nlex-line">${
+          Math.abs(a) === 1
+            ? labT(
+                "number-line-explorer.distance-one",
+                "<b>{a}</b> is <b>{abs}</b> unit from zero, so <b>|{a}| = {abs}</b>.",
+                { a: fmt(a), abs: fmt(Math.abs(a)) },
+              )
+            : labT(
+                "number-line-explorer.distance-many",
+                "<b>{a}</b> is <b>{abs}</b> units from zero, so <b>|{a}| = {abs}</b>.",
+                { a: fmt(a), abs: fmt(Math.abs(a)) },
+              )
+        }</div>` +
+        `<div class="nlex-line nlex-muted">${labT(
+          "number-line-explorer.opposite-note",
+          "Its opposite is <b>{opp}</b> — the same distance from zero, on the other side. Opposites always have the <em>same</em> absolute value.",
+          { opp: fmt(opp) },
+        )}</div>` +
         `</div>`;
     } else {
       const greater = a === b ? null : a > b ? a : b;
       const cmp = a === b ? "=" : a > b ? ">" : "<";
       const absNote =
         Math.abs(a) === Math.abs(b)
-          ? `They are the same distance from zero: |${fmt(a)}| = |${fmt(b)}| = ${fmt(Math.abs(a))}.`
-          : `But |${fmt(a)}| = ${fmt(Math.abs(a))} and |${fmt(b)}| = ${fmt(Math.abs(b))}, so <b>${fmt(Math.abs(a) > Math.abs(b) ? a : b)}</b> is farther from zero.`;
+          ? labT(
+              "number-line-explorer.same-distance",
+              "They are the same distance from zero: |{a}| = |{b}| = {abs}.",
+              { a: fmt(a), b: fmt(b), abs: fmt(Math.abs(a)) },
+            )
+          : labT(
+              "number-line-explorer.farther",
+              "But |{a}| = {absA} and |{b}| = {absB}, so <b>{far}</b> is farther from zero.",
+              {
+                a: fmt(a),
+                absA: fmt(Math.abs(a)),
+                b: fmt(b),
+                absB: fmt(Math.abs(b)),
+                far: fmt(Math.abs(a) > Math.abs(b) ? a : b),
+              },
+            );
       el("read").innerHTML =
         `<div class="nlex-card">` +
-        `<div class="nlex-line"><b>${fmt(a)} ${cmp} ${fmt(b)}</b>${greater !== null ? ` — <b>${fmt(greater)}</b> is greater because it sits farther to the right.` : " — the two points are equal."}</div>` +
+        `<div class="nlex-line"><b>${fmt(a)} ${cmp} ${fmt(b)}</b>${
+          greater !== null
+            ? ` — ${labT(
+                "number-line-explorer.greater",
+                "<b>{g}</b> is greater because it sits farther to the right.",
+                { g: fmt(greater) },
+              )}`
+            : ` — ${labT("number-line-explorer.equal", "the two points are equal.")}`
+        }</div>` +
         `<div class="nlex-line nlex-muted">${absNote}</div>` +
         `</div>`;
     }

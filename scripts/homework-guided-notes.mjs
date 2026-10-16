@@ -3291,6 +3291,8 @@ export function renderCelebration(config = null, _lessonId = "") {
            fold here, so the Done stop opens on how much is finished. -->
       <details class="homework-extras-more" id="homework_extras_more">
       <summary><span class="lang-en">Reflection, voice memo and badges</span><span class="lang-es" lang="es">Reflexión, nota de voz e insignias</span></summary>
+      <div data-home-mission></div>
+      <script type="module" src="/assets/class-investigation/home-mission.js"></script>
       <div class="parent-signoff-container card-ish">
         <h3 class="signoff-title">✍️ <span class="lang-en">Optional reflection on this device</span><span class="lang-es" lang="es">Reflexión opcional en este dispositivo</span></h3>
         

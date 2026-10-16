@@ -2847,7 +2847,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/algebra-balance-scale/",
-    title: "Algebra Balance Scale | Solve Equations Visually",
+    title: "Balance Builder | Algebra Balance Scale",
     category: "Math Tool",
     unit: null,
   },
@@ -5115,6 +5115,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/class-investigation/",
+    title: "Our Class Investigation",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/data-privacy/",
     title: "Curriculum Data & Privacy",
     category: "Hub",
@@ -5983,6 +5989,12 @@ export const ACTIVITIES = [
     path: "/work-coach/",
     title: "Show Your Work Coach",
     category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/about/privacy-and-data/",
+    title: "Privacy and Data Practices — Neft Classroom Platform",
+    category: "Practice",
     unit: null,
   },
   {

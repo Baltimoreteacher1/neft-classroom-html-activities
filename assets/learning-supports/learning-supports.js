@@ -33,6 +33,23 @@
     return urls;
   })();
 
+  // The student-facing supports (the "Learning supports" panel, read-aloud with
+  // word highlighting, calm mode, one problem at a time, saying answers, larger
+  // targets, easy-read spacing, high contrast) are one module in this folder.
+  // Every page that carries this layer gets them from here; pages that do not
+  // can load ls-boot.js directly. The dock below shares its high-contrast and
+  // comfort-spacing choices with it, so there is one setting, not two.
+  const sharedSupports = (function () {
+    try {
+      const url = new URL("ls-boot.js", SCRIPT_URL || window.location.href).href;
+      return import(url).catch(function () {
+        return null;
+      });
+    } catch (_e) {
+      return Promise.resolve(null);
+    }
+  })();
+
   const PROFILE_KEYS = [
     "read-understand",
     "focus-organize",
@@ -437,6 +454,8 @@
   // for backward compatibility but ignored: module state is the single source of
   // truth, so no call site can accidentally drop a field (e.g. textScale).
   function saveStoredPreferences(_pref) {
+    // High contrast and comfort spacing are shared with the student panel.
+    if (window.ewlLs) window.ewlLs.set({ contrast: highContrast, spacing: comfortActive });
     try {
       localStorage.setItem(
         STORAGE_KEY,
@@ -643,6 +662,25 @@
           activeQuickSetup = stored.quickSetup;
         }
       }
+    }
+
+    // The student panel owns high contrast and comfort spacing; follow it, in
+    // both directions, so the dock's buttons and the panel's switches agree.
+    await sharedSupports;
+    if (window.ewlLs) {
+      const adopt = function (p) {
+        highContrast = p.contrast;
+        comfortActive = p.spacing;
+        document.body.classList.remove(
+          "ewl-supports-contrast-active",
+          "ewl-supports-comfort-active",
+        );
+        if (typeof updateUIStates === "function") updateUIStates();
+      };
+      adopt(window.ewlLs.get());
+      window.ewlLs.subscribe(function (p) {
+        if (p.contrast !== highContrast || p.spacing !== comfortActive) adopt(p);
+      });
     }
 
     // TEACHER'S LESSON SUPPORT PROFILE (Phase 3).
@@ -1046,7 +1084,8 @@
     const studentTools = document.createElement("div");
     studentTools.setAttribute("data-ewl-supports-tools", "1");
     studentTools.className = "ewl-supports-tools-dock";
-    studentTools.setAttribute("role", "group");
+    // A labelled region, so the dock is a landmark rather than loose page content.
+    studentTools.setAttribute("role", "region");
     studentTools.setAttribute("aria-label", "Learning tools");
     studentTools.hidden = true;
 

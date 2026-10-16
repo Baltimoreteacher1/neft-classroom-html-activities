@@ -15,6 +15,8 @@
 //       presets?:[{ dividend, divisor, label? }]
 //     }
 
+import { labT } from "./lab-strings-es.js";
+
 const C = {
   navy: "#12355b",
   accent: "#1d4ed8",
@@ -159,7 +161,7 @@ function mountFractionDivide(host, cfg = {}) {
   const wrap = document.createElement("div");
   wrap.className = "fdiv-wrap";
   if (!A || !B || B.n === 0) {
-    wrap.innerHTML = `<p class="fdiv-hint">Could not read this problem.</p>`;
+    wrap.innerHTML = `<p class="fdiv-hint">${labT("fraction-divide.cannot-read", "Could not read this problem.")}</p>`;
     host.appendChild(wrap);
     return { destroy: () => wrap.remove() };
   }
@@ -182,13 +184,23 @@ function mountFractionDivide(host, cfg = {}) {
   const product = { n: A.n * B.d, d: A.d * B.n };
   const answer = reduce(product.n, product.d);
 
-  const title = cfg.title || `Divide: ${dividendStr} ÷ ${divisorStr}`;
+  const title =
+    cfg.title ||
+    labT("fraction-divide.default-title", "Divide: {a} ÷ {b}", { a: dividendStr, b: divisorStr });
   function rewriteRow(key, str, whole) {
     const hint = whole
-      ? `${esc(str)} is a whole number — put a 1 under it.`
-      : `${esc(str)} is a mixed number — rewrite it as an improper fraction.`;
+      ? labT("fraction-divide.whole-hint", "{str} is a whole number — put a 1 under it.", {
+          str: esc(str),
+        })
+      : labT(
+          "fraction-divide.mixed-hint",
+          "{str} is a mixed number — rewrite it as an improper fraction.",
+          { str: esc(str) },
+        );
     const placeholder = whole ? `${esc(str)}/1` : "a/b";
-    const ariaLabel = whole ? `${esc(str)} written over 1` : `${esc(str)} as an improper fraction`;
+    const ariaLabel = whole
+      ? labT("fraction-divide.whole-aria", "{str} written over 1", { str: esc(str) })
+      : labT("fraction-divide.mixed-aria", "{str} as an improper fraction", { str: esc(str) });
     return (
       `<div class="fdiv-rewrite-row">` +
       `<div class="fdiv-rewrite-hint">${hint}</div>` +
@@ -203,34 +215,34 @@ function mountFractionDivide(host, cfg = {}) {
 
   wrap.innerHTML =
     `<div class="fdiv-title">${esc(title)}</div>` +
-    `<div class="fdiv-hint">Keep–Change–Flip: keep the first fraction, change ÷ to ×, and flip the divisor. Type each answer as a fraction or mixed number.</div>` +
+    `<div class="fdiv-hint">${labT("fraction-divide.hint", "Keep–Change–Flip: keep the first fraction, change ÷ to ×, and flip the divisor. Type each answer as a fraction or mixed number.")}</div>` +
     `<div class="fdiv-problem" aria-hidden="true">${esc(dividendStr)} ÷ ${esc(divisorStr)}</div>` +
     `<div class="fdiv-steps">` +
     // Step 1 (conditional) — get both operands into fraction form
     (aNeeds || bNeeds
       ? `<div class="fdiv-step" data-step="1">` +
-        `<div class="fdiv-step-num">Step 1 · Fractions on both sides</div>` +
+        `<div class="fdiv-step-num">${labT("fraction-divide.step-1-title", "Step 1 · Fractions on both sides")}</div>` +
         `<div class="fdiv-rewrite-list">${rewriteInputs}</div>` +
-        `<div class="fdiv-row"><button type="button" class="fdiv-btn fdiv-btn-check" data-check="1">Check</button></div>` +
+        `<div class="fdiv-row"><button type="button" class="fdiv-btn fdiv-btn-check" data-check="1">${labT("fraction-divide.check", "Check")}</button></div>` +
         `<div class="fdiv-status" data-status="1" role="status" aria-live="polite"></div>` +
         `</div>`
       : "") +
     // Step 2 — keep change flip (reciprocal)
     `<div class="fdiv-step" data-step="2"${aNeeds || bNeeds ? " hidden" : ""}>` +
-    `<div class="fdiv-step-num">Step 2 · Keep · Change · Flip</div>` +
-    `<div class="fdiv-prompt">Change ÷ to ×, then <strong>flip the divisor</strong>. Write the divisor's reciprocal:</div>` +
-    `<div class="fdiv-row"><span class="fdiv-op">×</span><input class="fdiv-inp" data-k="recip" type="text" inputmode="numeric" aria-label="reciprocal of the divisor" placeholder="a/b"><button type="button" class="fdiv-btn fdiv-btn-check" data-check="2">Check</button></div>` +
+    `<div class="fdiv-step-num">${labT("fraction-divide.step-2-title", "Step 2 · Keep · Change · Flip")}</div>` +
+    `<div class="fdiv-prompt">${labT("fraction-divide.step-2-prompt", "Change ÷ to ×, then <strong>flip the divisor</strong>. Write the divisor's reciprocal:")}</div>` +
+    `<div class="fdiv-row"><span class="fdiv-op">×</span><input class="fdiv-inp" data-k="recip" type="text" inputmode="numeric" aria-label="${labT("fraction-divide.recip-aria", "reciprocal of the divisor")}" placeholder="a/b"><button type="button" class="fdiv-btn fdiv-btn-check" data-check="2">${labT("fraction-divide.check", "Check")}</button></div>` +
     `<div class="fdiv-status" data-status="2" role="status" aria-live="polite"></div>` +
     `</div>` +
     // Step 3 — multiply & simplify
     `<div class="fdiv-step" data-step="3" hidden>` +
-    `<div class="fdiv-step-num">Step 3 · Multiply &amp; simplify</div>` +
-    `<div class="fdiv-prompt">Multiply across, then simplify to lowest terms (use a mixed number if it's more than 1):</div>` +
-    `<div class="fdiv-row"><span class="fdiv-op">=</span><input class="fdiv-inp" data-k="answer" type="text" inputmode="numeric" aria-label="final answer" placeholder="answer"><button type="button" class="fdiv-btn fdiv-btn-check" data-check="3">Check</button></div>` +
+    `<div class="fdiv-step-num">${labT("fraction-divide.step-3-title", "Step 3 · Multiply &amp; simplify")}</div>` +
+    `<div class="fdiv-prompt">${labT("fraction-divide.step-3-prompt", "Multiply across, then simplify to lowest terms (use a mixed number if it's more than 1):")}</div>` +
+    `<div class="fdiv-row"><span class="fdiv-op">=</span><input class="fdiv-inp" data-k="answer" type="text" inputmode="numeric" aria-label="${labT("fraction-divide.answer-aria", "final answer")}" placeholder="${labT("fraction-divide.answer-placeholder", "answer")}"><button type="button" class="fdiv-btn fdiv-btn-check" data-check="3">${labT("fraction-divide.check", "Check")}</button></div>` +
     `<div class="fdiv-status" data-status="3" role="status" aria-live="polite"></div>` +
     `</div>` +
     `</div>` +
-    `<div class="fdiv-controls"><button type="button" class="fdiv-btn fdiv-btn-ghost" data-reveal>Show me</button></div>` +
+    `<div class="fdiv-controls"><button type="button" class="fdiv-btn fdiv-btn-ghost" data-reveal>${labT("fraction-divide.show-me", "Show me")}</button></div>` +
     `<div class="fdiv-result" hidden></div>`;
   host.appendChild(wrap);
 
@@ -280,8 +292,12 @@ function mountFractionDivide(host, cfg = {}) {
     mark(inp(key), ok);
     if (ok) return null;
     return whole
-      ? `${str} goes over 1 — try ${str}/1.`
-      : `Multiply the whole number by the denominator, then add the numerator, for ${str}.`;
+      ? labT("fraction-divide.whole-miss", "{str} goes over 1 — try {str}/1.", { str })
+      : labT(
+          "fraction-divide.mixed-miss",
+          "Multiply the whole number by the denominator, then add the numerator, for {str}.",
+          { str },
+        );
   }
   function check1() {
     const messages = [];
@@ -294,10 +310,14 @@ function mountFractionDivide(host, cfg = {}) {
       if (msg) messages.push(msg);
     }
     if (!messages.length) {
-      setStatus(1, "Yes — now keep, change, flip.", true);
+      setStatus(1, labT("fraction-divide.yes-flip", "Yes — now keep, change, flip."), true);
       reveal(2);
     } else {
-      setStatus(1, `Not yet — ${messages.join(" ")}`, false);
+      setStatus(
+        1,
+        labT("fraction-divide.not-yet", "Not yet — {msg}", { msg: messages.join(" ") }),
+        false,
+      );
     }
   }
 
@@ -308,10 +328,25 @@ function mountFractionDivide(host, cfg = {}) {
     const okLoose = v && fracEq(v, recip);
     mark(inp("recip"), okLoose);
     if (okLoose) {
-      setStatus(2, `Right — flip ${esc(divisorStr)} to ${recip.n}/${recip.d}. Now multiply.`, true);
+      setStatus(
+        2,
+        labT("fraction-divide.right-flip", "Right — flip {div} to {rn}/{rd}. Now multiply.", {
+          div: esc(divisorStr),
+          rn: recip.n,
+          rd: recip.d,
+        }),
+        true,
+      );
       reveal(3);
     } else {
-      setStatus(2, "Not yet — flipping a fraction swaps its top and bottom.", false);
+      setStatus(
+        2,
+        labT(
+          "fraction-divide.flip-miss",
+          "Not yet — flipping a fraction swaps its top and bottom.",
+        ),
+        false,
+      );
     }
   }
 
@@ -319,21 +354,35 @@ function mountFractionDivide(host, cfg = {}) {
     const v = parseFrac(inp("answer").value);
     if (!v)
       return (
-        mark(inp("answer"), false), setStatus(3, "Type a fraction, whole, or mixed number.", false)
+        mark(inp("answer"), false),
+        setStatus(
+          3,
+          labT("fraction-divide.type-answer", "Type a fraction, whole, or mixed number."),
+          false,
+        )
       );
     const ok = fracEq(v, answer);
     mark(inp("answer"), ok);
     if (ok) {
       if (!isReduced(v) && v.d !== 1) {
-        setStatus(3, `Correct value — simplify all the way to ${fracToString(answer)}.`, true);
+        setStatus(
+          3,
+          labT("fraction-divide.simplify-more", "Correct value — simplify all the way to {ans}.", {
+            ans: fracToString(answer),
+          }),
+          true,
+        );
       } else {
-        setStatus(3, "That's it!", true);
+        setStatus(3, labT("fraction-divide.thats-it", "That's it!"), true);
       }
       celebrate();
     } else {
       setStatus(
         3,
-        "Not yet — multiply the numerators, multiply the denominators, then simplify.",
+        labT(
+          "fraction-divide.multiply-miss",
+          "Not yet — multiply the numerators, multiply the denominators, then simplify.",
+        ),
         false,
       );
     }
@@ -348,15 +397,16 @@ function mountFractionDivide(host, cfg = {}) {
       inp("impB").value = `${B.n}/${B.d}`;
       mark(inp("impB"), true);
     }
-    if (aNeeds || bNeeds) setStatus(1, "Improper fractions ready.", true);
+    if (aNeeds || bNeeds)
+      setStatus(1, labT("fraction-divide.improper-ready", "Improper fractions ready."), true);
     reveal(2);
     inp("recip").value = `${recip.n}/${recip.d}`;
     mark(inp("recip"), true);
-    setStatus(2, "Keep · Change · Flip.", true);
+    setStatus(2, labT("fraction-divide.kcf-done", "Keep · Change · Flip."), true);
     reveal(3);
     inp("answer").value = fracToString(answer);
     mark(inp("answer"), true);
-    setStatus(3, "Multiplied and simplified.", true);
+    setStatus(3, labT("fraction-divide.multiplied", "Multiplied and simplified."), true);
     celebrate();
   }
 
@@ -386,7 +436,7 @@ export function renderFractionDivide(host, cfg = {}) {
   const bar = document.createElement("div");
   bar.className = "fdiv-presets";
   bar.setAttribute("role", "group");
-  bar.setAttribute("aria-label", "Pick a problem");
+  bar.setAttribute("aria-label", labT("fraction-divide.pick-problem", "Pick a problem"));
   const stage = document.createElement("div");
   let current = null;
   // `viaChip` is false for the initial mount (page load) and true when a person

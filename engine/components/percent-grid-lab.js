@@ -1,5 +1,13 @@
 //
 // API:  renderPercentGridLab(host, cfg) -> { destroy() } | null   (null ⇒ static fallback)
+//   cfg.percent : the authored shading (0-100). Omit it only with a model.
+//   cfg.model   : optional linked model (linked-model.js). Shading squares
+//                 publishes the student's ratio (n : 100 read as a part of a
+//                 whole, n : 100-n read as two parts); a ratio or reading set in
+//                 another view reshades the grid. Absent, nothing changes.
+
+import { stackContent } from "../core/i18n.js";
+import { percentOf, ratioForSquares, shadedSquares } from "./linked-model.js";
 
 const STYLE_ID = "percent-grid-lab-styles";
 
@@ -41,14 +49,24 @@ function trimDec(n) {
 export function renderPercentGridLab(host, cfg = {}) {
   try {
     if (typeof document === "undefined") return null;
-    const authored = Math.round(Number(cfg.percent));
+    const linked = cfg.model || null;
+    const token = Symbol("percent-grid");
+    // A linked grid may start empty: the shading is then the student's own.
+    const authored = linked && cfg.percent == null ? 0 : Math.round(Number(cfg.percent));
     if (!Number.isFinite(authored) || authored < 0 || authored > 100) return null;
     injectStyles();
 
     const root = document.createElement("div");
     root.className = "pgl";
     root.innerHTML =
-      `<p class="pgl-title">This grid shows the amount shaded. Reveal its equivalent forms — or tap squares to explore.</p>` +
+      `<p class="pgl-title">${
+        linked
+          ? stackContent(
+              "Tap squares to shade a percent. Every other picture will show it too.",
+              "Toca cuadros para sombrear un porcentaje. Las demás imágenes también lo mostrarán.",
+            )
+          : "This grid shows the amount shaded. Reveal its equivalent forms — or tap squares to explore."
+      }</p>` +
       `<div class="pgl-grid" role="group" aria-label="Hundred-square grid"></div>` +
       `<div class="pgl-read" data-el="read" aria-live="polite"></div>` +
       `<div class="pgl-tools">` +
@@ -65,10 +83,22 @@ export function renderPercentGridLab(host, cfg = {}) {
     const setCell = (c, on) => {
       c.setAttribute("aria-pressed", String(on));
     };
-    const recount = () => {
+    const recount = (publish = false) => {
       shaded = cells.reduce((n, c) => n + (c.getAttribute("aria-pressed") === "true" ? 1 : 0), 0);
       read.textContent = `${shaded} of 100 squares shaded`;
       if (root.classList.contains("show")) renderForms();
+      if (!linked || !publish) return;
+      // The student's shading IS an entry: tell the other pictures.
+      const next = ratioForSquares(shaded, linked.get().relation);
+      if (next) linked.set(next, token);
+      else linked.clear(token);
+    };
+    // Shade the first n squares from the model, without telling it back.
+    const paint = (n) => {
+      cells.forEach((c, i) => setCell(c, i < n));
+      recount(false);
+      const exact = linked ? percentOf(linked.get()) : null;
+      if (exact !== null && exact !== shaded) read.textContent += ` (exactly ${exact}%)`;
     };
     function renderForms() {
       const g = gcd(shaded, 100);
@@ -87,14 +117,16 @@ export function renderPercentGridLab(host, cfg = {}) {
       c.setAttribute("aria-label", `Square ${i + 1}`);
       c.addEventListener("click", () => {
         setCell(c, c.getAttribute("aria-pressed") !== "true");
-        recount();
+        recount(true);
       });
       cells.push(c);
       grid.appendChild(c);
     }
     const applyAuthored = () => cells.forEach((c, i) => setCell(c, i < authored));
     applyAuthored();
-    recount();
+    const start = linked ? shadedSquares(linked.get()) : null;
+    if (start !== null) paint(start);
+    else recount();
 
     root.querySelector('[data-el="reveal"]').addEventListener("click", (e) => {
       const on = root.classList.toggle("show");
@@ -103,11 +135,18 @@ export function renderPercentGridLab(host, cfg = {}) {
     });
     root.querySelector('[data-el="reset"]').addEventListener("click", () => {
       applyAuthored();
-      recount();
+      recount(true);
+    });
+
+    const unsubscribe = linked?.subscribe((next, meta) => {
+      if (meta.source === token) return;
+      if (!meta.changed.some((key) => key === "a" || key === "b" || key === "relation")) return;
+      paint(shadedSquares(next) ?? 0);
     });
 
     return {
       destroy() {
+        unsubscribe?.();
         root.remove();
       },
     };

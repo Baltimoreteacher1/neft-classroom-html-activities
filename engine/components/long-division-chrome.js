@@ -14,6 +14,7 @@
 // dark-on-transparent text with it.
 
 /** The lab's colour tokens. Nothing outside this file picks a colour. */
+import { labT } from "./lab-strings-es.js";
 import { injectToolTokens } from "./tool-tokens.js";
 
 const C = {
@@ -44,20 +45,20 @@ export function esc(s) {
  */
 export function template(uid, decimal, presets) {
   return (
-    `<div class="ldl-dmsb-banner" aria-label="Algorithm steps: Divide, Multiply, Subtract, Bring down">` +
-    `<span class="ldl-dmsb-chip d"><b class="ldl-dmsb-badge">D</b> <span class="ldl-dmsb-op">÷</span> Divide</span>` +
-    `<span class="ldl-dmsb-chip m"><b class="ldl-dmsb-badge">M</b> <span class="ldl-dmsb-op">×</span> Multiply</span>` +
-    `<span class="ldl-dmsb-chip s"><b class="ldl-dmsb-badge">S</b> <span class="ldl-dmsb-op">−</span> Subtract</span>` +
-    `<span class="ldl-dmsb-chip b"><b class="ldl-dmsb-badge">B</b> <span class="ldl-dmsb-op">↓</span> Bring down</span>` +
+    `<div class="ldl-dmsb-banner" aria-label="${labT("long-division-chrome.banner-label", "Algorithm steps: Divide, Multiply, Subtract, Bring down")}">` +
+    `<span class="ldl-dmsb-chip d"><b class="ldl-dmsb-badge">D</b> <span class="ldl-dmsb-op">÷</span> ${labT("long-division-chrome.chip-divide", "Divide")}</span>` +
+    `<span class="ldl-dmsb-chip m"><b class="ldl-dmsb-badge">M</b> <span class="ldl-dmsb-op">×</span> ${labT("long-division-chrome.chip-multiply", "Multiply")}</span>` +
+    `<span class="ldl-dmsb-chip s"><b class="ldl-dmsb-badge">${labT("long-division-chrome.badge-s", "S")}</b> <span class="ldl-dmsb-op">−</span> ${labT("long-division-chrome.chip-subtract", "Subtract")}</span>` +
+    `<span class="ldl-dmsb-chip b"><b class="ldl-dmsb-badge">B</b> <span class="ldl-dmsb-op">↓</span> ${labT("long-division-chrome.chip-bring-down", "Bring down")}</span>` +
     `</div>` +
     `<div class="ldl-controls">` +
-    `<label class="ldl-field" for="${uid}-dividend"><span>Dividend</span></label>` +
+    `<label class="ldl-field" for="${uid}-dividend"><span>${labT("long-division-chrome.dividend", "Dividend")}</span></label>` +
     `<input class="ldl-num" id="${uid}-dividend" type="text" inputmode="${decimal ? "decimal" : "numeric"}"/>` +
     `<span class="ldl-op">÷</span>` +
-    `<label class="ldl-field" for="${uid}-divisor"><span>Divisor</span></label>` +
+    `<label class="ldl-field" for="${uid}-divisor"><span>${labT("long-division-chrome.divisor", "Divisor")}</span></label>` +
     `<input class="ldl-num" id="${uid}-divisor" type="text" inputmode="${decimal ? "decimal" : "numeric"}"/>` +
-    `<button type="button" class="ldl-go">Set up this problem</button></div>` +
-    `<div class="ldl-presets" role="group" aria-label="Quick-pick problems">` +
+    `<button type="button" class="ldl-go">${labT("long-division-chrome.set-up", "Set up this problem")}</button></div>` +
+    `<div class="ldl-presets" role="group" aria-label="${labT("long-division-chrome.presets-label", "Quick-pick problems")}">` +
     presets
       .map(
         (p) =>
@@ -66,26 +67,29 @@ export function template(uid, decimal, presets) {
       .join("") +
     `</div>` +
     `<div class="ldl-shift" hidden></div>` +
-    `<div class="ldl-strip" role="group" aria-label="The four steps of the cycle"></div>` +
-    `<div class="ldl-board" role="img" aria-label="Long division notation"></div>` +
+    `<div class="ldl-strip" role="group" aria-label="${labT("long-division-chrome.strip-label", "The four steps of the cycle")}"></div>` +
+    `<div class="ldl-board" role="img" aria-label="${labT("long-division-chrome.board-label", "Long division notation")}"></div>` +
     `<p class="ldl-step" aria-live="polite"></p>` +
-    `<div class="ldl-play" role="group" aria-label="Playback" hidden>` +
-    `<button type="button" class="ldl-back">← Back</button>` +
-    `<button type="button" class="ldl-playpause" aria-pressed="false">▶ Play</button>` +
-    `<button type="button" class="ldl-next">Next step →</button>` +
-    `<button type="button" class="ldl-replay">↻ Replay</button>` +
-    `<button type="button" class="ldl-mine">Now you try this one →</button>` +
+    `<div class="ldl-play" role="group" aria-label="${labT("long-division-chrome.playback-label", "Playback")}" hidden>` +
+    `<button type="button" class="ldl-back">${labT("long-division-chrome.back", "← Back")}</button>` +
+    `<button type="button" class="ldl-playpause" aria-pressed="false">${labT("long-division-chrome.play", "▶ Play")}</button>` +
+    `<button type="button" class="ldl-next">${labT("long-division-chrome.next-step", "Next step →")}</button>` +
+    `<button type="button" class="ldl-replay">${labT("long-division-chrome.replay", "↻ Replay")}</button>` +
+    `<button type="button" class="ldl-mine">${labT("long-division-chrome.you-try", "Now you try this one →")}</button>` +
     `<span class="ldl-count"></span></div>` +
     `<div class="ldl-entry">` +
-    `<label class="ldl-alabel" for="${uid}-answer">Your answer</label>` +
+    `<label class="ldl-alabel" for="${uid}-answer">${labT("long-division-chrome.your-answer", "Your answer")}</label>` +
     `<input class="ldl-answer" id="${uid}-answer" type="text" inputmode="numeric" autocomplete="off"/>` +
-    `<button type="button" class="ldl-check">Check</button>` +
-    `<button type="button" class="ldl-bring" hidden>Bring down ↓</button>` +
-    `<button type="button" class="ldl-fact-toggle" title="Show multiplication facts helper">💡 Fact Helper</button></div>` +
+    `<button type="button" class="ldl-check">${labT("long-division-chrome.check", "Check")}</button>` +
+    `<button type="button" class="ldl-bring" hidden>${labT("long-division-chrome.bring-down", "Bring down ↓")}</button>` +
+    `<button type="button" class="ldl-fact-toggle" title="${labT("long-division-chrome.fact-helper-title", "Show multiplication facts helper")}">${labT("long-division-chrome.fact-helper", "💡 Fact Helper")}</button></div>` +
     `<div class="ldl-fact-helper" style="margin-top:8px; padding:10px 12px; background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:12px; font-size:0.88rem; color:#166534;" hidden></div>` +
-    `<div class="ldl-keypad" role="group" aria-label="Interactive Number Keypad">` +
+    `<div class="ldl-keypad" role="group" aria-label="${labT("long-division-chrome.keypad-label", "Interactive Number Keypad")}">` +
     ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "⌫", "Clear"]
-      .map((k) => `<button type="button" class="ldl-key" data-key="${k}">${k}</button>`)
+      .map(
+        (k) =>
+          `<button type="button" class="ldl-key" data-key="${k}">${k === "Clear" ? labT("long-division-chrome.clear", "Clear") : k}</button>`,
+      )
       .join("") +
     `</div>` +
     `<p class="ldl-feedback" aria-live="polite"></p>` +

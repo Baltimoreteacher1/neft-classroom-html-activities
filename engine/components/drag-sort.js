@@ -7,7 +7,8 @@
 // ask for reduced motion get the original, calm experience with no spring,
 // parallax, glow, or rotation. Mobile single-column reflow (a layout aid, not
 // motion) is the only rule outside that guard.
-import { stackContent, stackT } from "../core/i18n.js";
+import { getPreferredLang, stackContent, stackT } from "../core/i18n.js";
+import { createSelectPlace, liveAnnouncer, say } from "../core/select-place.js";
 
 const DRAG_SORT_STYLE_ID = "ds-polish-styles";
 function injectDragSortStyles() {
@@ -180,6 +181,8 @@ function renderDragOrder(container, { steps, label, onComplete }) {
   feedbackSlot.setAttribute("role", "status");
   feedbackSlot.setAttribute("aria-live", "polite");
 
+  const announce = liveAnnouncer(wrapper);
+
   // Index that just moved, so draw() can spring-animate the landing row.
   let justMoved = -1;
   function move(i, dir) {
@@ -188,6 +191,15 @@ function renderDragOrder(container, { steps, label, onComplete }) {
     [order[i], order[j]] = [order[j], order[i]];
     justMoved = j;
     draw();
+    // draw() rebuilds the rows, which drops keyboard focus: put it back on the
+    // same direction button of the row that moved (or the other if it is at an
+    // end), and say where the item went.
+    const buttons = list.children[j]?.querySelectorAll("button") ?? [];
+    const again = dir < 0 ? buttons[0] : buttons[1];
+    /** @type {HTMLElement | undefined} */ (
+      again && !again.disabled ? again : buttons[0] || buttons[1]
+    )?.focus();
+    announce(say("movedTo", { item: order[j], n: j + 1, total: order.length }));
   }
 
   function draw() {
@@ -210,7 +222,7 @@ function renderDragOrder(container, { steps, label, onComplete }) {
       up.className = "btn btn-secondary";
       up.style.cssText = "padding:4px 10px; min-width:0;";
       up.textContent = "▲";
-      up.setAttribute("aria-label", `Move "${text}" up`);
+      up.setAttribute("aria-label", say("moveUp", { item: text }));
       up.disabled = i === 0;
       up.addEventListener("click", () => move(i, -1));
       const down = document.createElement("button");
@@ -218,7 +230,7 @@ function renderDragOrder(container, { steps, label, onComplete }) {
       down.className = "btn btn-secondary";
       down.style.cssText = "padding:4px 10px; min-width:0;";
       down.textContent = "▼";
-      down.setAttribute("aria-label", `Move "${text}" down`);
+      down.setAttribute("aria-label", say("moveDown", { item: text }));
       down.disabled = i === order.length - 1;
       down.addEventListener("click", () => move(i, 1));
       controls.append(up, down);
@@ -257,6 +269,24 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
   const wrapper = document.createElement("div");
   wrapper.className = "card";
 
+  const spanish = getPreferredLang() === "es";
+  const board = createSelectPlace({
+    host: wrapper,
+    place(el, zone) {
+      zone.append(el);
+      springBounce(el);
+    },
+    mark: markPicked,
+    countIn: (zone) => zone.querySelectorAll(".drag-item").length,
+  });
+  /** A drop zone: named for screen readers, and the target of a tap or click. */
+  const wireZone = (zone, name) => {
+    zone.setAttribute("role", "group");
+    zone.setAttribute("aria-label", name);
+    board.registerZone(zone, name);
+    zone.addEventListener("click", () => board.placeInto(zone));
+  };
+
   const bankLabel = document.createElement("div");
   bankLabel.className = "badge badge-navy mb-4";
   bankLabel.innerHTML = stackT("dsBank");
@@ -266,7 +296,7 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
   bank.className = "drag-zone";
   bank.dataset.zone = "bank";
   bank.style.cssText = "margin-bottom:var(--sp-5); min-height:60px; background:var(--cream);";
-  wireZoneKeyboard(bank, "Return the picked-up item to the item bank");
+  wireZone(bank, spanish ? "El banco de elementos" : "The item bank");
 
   // Tag each item with a stable unique id so grading and drag/drop don't key off
   // the display text (which collides when two items share the same text).
@@ -274,7 +304,7 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
   const catById = new Map(itemsWithId.map((it) => [it._id, it.category]));
   const shuffled = [...itemsWithId].sort(() => Math.random() - 0.5);
   shuffled.forEach((item) => {
-    const el = createDragItem(item);
+    const el = createDragItem(item, board);
     bank.append(el);
   });
 
@@ -298,7 +328,7 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
     zone.className = "drag-zone";
     zone.dataset.zone = cat.id;
     zone.style.minHeight = "100px";
-    wireZoneKeyboard(zone, `Place the picked-up item in ${cat.label}`);
+    wireZone(zone, spanish && cat.labelEs ? cat.labelEs : cat.label);
     col.append(zone);
 
     zones.push({ zone, catId: cat.id });
@@ -382,57 +412,18 @@ function renderDragSortCore(container, { items, categories, onComplete }) {
   container.append(wrapper);
 }
 
-// Keyboard/tap "pick up then place" fallback so the sort is operable without a
-// mouse drag. A single item is selected at a time; clicking/activating a drop
-// zone moves the selected item there. Shared across items/zones in one render.
-let dsSelected = null;
 let activeDragElement = null;
-function dsClearSelection() {
-  if (dsSelected) {
-    dsSelected.classList.remove("ds-selected");
-    dsSelected.style.outline = "";
-    dsSelected.style.outlineOffset = "";
-    dsSelected.setAttribute("aria-pressed", "false");
-    dsSelected = null;
-  }
-}
-function dsSelect(el) {
-  if (dsSelected === el) {
-    dsClearSelection();
-    return;
-  }
-  dsClearSelection();
-  dsSelected = el;
-  el.classList.add("ds-selected");
-  el.style.outline = "3px solid var(--teal, #1fa6a2)";
-  el.style.outlineOffset = "2px";
-  el.setAttribute("aria-pressed", "true");
-}
-function dsPlaceInto(zone) {
-  if (!dsSelected) return;
-  const el = dsSelected;
-  if (zone !== el.parentElement) {
-    zone.append(el);
-    springBounce(el);
-  }
-  dsClearSelection();
-  el.focus();
-}
-// Make a drop zone able to receive the selected item via click/Enter/Space.
-function wireZoneKeyboard(zone, labelText) {
-  zone.tabIndex = 0;
-  zone.setAttribute("role", "button");
-  zone.setAttribute("aria-label", labelText);
-  zone.addEventListener("click", () => dsPlaceInto(zone));
-  zone.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      dsPlaceInto(zone);
-    }
-  });
+
+// The "picked up" look. The pick-up-then-place flow itself (keyboard, screen
+// reader and tap) lives in ../core/select-place.js, shared with the other
+// drag activities; this is only how a picked item looks here.
+function markPicked(el, picked) {
+  el.classList.toggle("ds-selected", picked);
+  el.style.outline = picked ? "3px solid var(--teal, #1fa6a2)" : "";
+  el.style.outlineOffset = picked ? "2px" : "";
 }
 
-function createDragItem(item) {
+function createDragItem(item, board) {
   const el = document.createElement("div");
   el.className = "drag-item";
   el.draggable = true;
@@ -479,21 +470,13 @@ function createDragItem(item) {
     el.append(previewBtn);
   }
 
-  // Keyboard/tap selection (paired with wireZoneKeyboard on the drop zones).
-  el.tabIndex = 0;
-  el.setAttribute("role", "button");
-  el.setAttribute("aria-pressed", "false");
-  el.setAttribute("aria-label", `${item.text} — press Enter to pick up, then choose a category`);
+  // Tap/click picks the item up; the keyboard gets a button of its own
+  // (select-place.js) so it is never an interactive control inside another.
+  const lang = getPreferredLang();
+  board.registerItem(el, lang === "es" && item.textEs ? item.textEs : item.text);
   el.addEventListener("click", (e) => {
     e.stopPropagation(); // don't bubble to the zone's place handler
-    dsSelect(el);
-  });
-  el.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      e.stopPropagation();
-      dsSelect(el);
-    }
+    board.toggle(el);
   });
 
   el.addEventListener("dragstart", (e) => {

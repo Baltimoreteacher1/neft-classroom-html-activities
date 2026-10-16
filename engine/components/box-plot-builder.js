@@ -13,6 +13,8 @@
 //     cfg.presets : optional [{ label, data, unit? }] quick-pick data sets
 //     cfg.intro   : optional coaching sentence under the title
 
+import { labT } from "./lab-strings-es.js";
+
 const C = {
   navy: "#12355b",
   accent: "#1d4ed8",
@@ -26,12 +28,19 @@ const C = {
 };
 
 const HANDLES = [
-  { key: "min", label: "Min", color: "#12355b" },
-  { key: "q1", label: "Q1", color: "#b45309" },
-  { key: "med", label: "Med", color: "#0d7a76" },
-  { key: "q3", label: "Q3", color: "#b45309" },
-  { key: "max", label: "Max", color: "#12355b" },
+  { key: "min", color: "#12355b" },
+  { key: "q1", color: "#b45309" },
+  { key: "med", color: "#0d7a76" },
+  { key: "q3", color: "#b45309" },
+  { key: "max", color: "#12355b" },
 ];
+
+function handleLabel(key) {
+  if (key === "min") return labT("box-plot-builder.handle-min", "Min");
+  if (key === "max") return labT("box-plot-builder.handle-max", "Max");
+  if (key === "med") return labT("box-plot-builder.handle-med", "Med");
+  return key === "q1" ? "Q1" : "Q3";
+}
 
 function esc(s) {
   return String(s).replace(
@@ -57,13 +66,32 @@ function fiveNumber(data) {
   return { min: s[0], q1: medianOf(lower), med: medianOf(s), q3: medianOf(upper), max: s[n - 1] };
 }
 
-const HINTS = {
-  min: "Min should sit on the smallest data value — look at the leftmost dot.",
-  max: "Max should sit on the largest data value — look at the rightmost dot.",
-  med: "Med is the middle of the ordered list. Count in from both ends at the same time; with an even count, it's halfway between the two middle values.",
-  q1: "Q1 is the median of the LOWER half (don't include the median itself when the count is odd).",
-  q3: "Q3 is the median of the UPPER half (don't include the median itself when the count is odd).",
-};
+function hintFor(key) {
+  if (key === "min")
+    return labT(
+      "box-plot-builder.hint-min",
+      "Min should sit on the smallest data value — look at the leftmost dot.",
+    );
+  if (key === "max")
+    return labT(
+      "box-plot-builder.hint-max",
+      "Max should sit on the largest data value — look at the rightmost dot.",
+    );
+  if (key === "med")
+    return labT(
+      "box-plot-builder.hint-med",
+      "Med is the middle of the ordered list. Count in from both ends at the same time; with an even count, it's halfway between the two middle values.",
+    );
+  if (key === "q1")
+    return labT(
+      "box-plot-builder.hint-q1",
+      "Q1 is the median of the LOWER half (don't include the median itself when the count is odd).",
+    );
+  return labT(
+    "box-plot-builder.hint-q3",
+    "Q3 is the median of the UPPER half (don't include the median itself when the count is odd).",
+  );
+}
 
 export function renderBoxPlotBuilder(container, cfg = {}) {
   const presets = Array.isArray(cfg.presets)
@@ -84,28 +112,28 @@ export function renderBoxPlotBuilder(container, cfg = {}) {
   const root = document.createElement("div");
   root.className = "bplab";
   root.innerHTML =
-    `<div class="bplab-head"><span class="bplab-title">📦 Box Plot Builder</span></div>` +
-    `<p class="bplab-hint">${esc(cfg.intro || "Build the box plot yourself: sort the data, then drag Min, Q1, Med, Q3, and Max into place on the number line. Check when you think all five are set.")}</p>` +
+    `<div class="bplab-head"><span class="bplab-title">📦 ${labT("box-plot-builder.title", "Box Plot Builder")}</span></div>` +
+    `<p class="bplab-hint">${esc(cfg.intro || labT("box-plot-builder.intro", "Build the box plot yourself: sort the data, then drag Min, Q1, Med, Q3, and Max into place on the number line. Check when you think all five are set."))}</p>` +
     (presets.length
-      ? `<div class="bplab-presets" role="group" aria-label="Pick a data set">` +
+      ? `<div class="bplab-presets" role="group" aria-label="${labT("box-plot-builder.pick-data-set", "Pick a data set")}">` +
         presets
           .map(
             (p, i) =>
-              `<button type="button" class="bplab-chip" data-preset="${i}">${esc(p.label || `Data set ${i + 1}`)}</button>`,
+              `<button type="button" class="bplab-chip" data-preset="${i}">${esc(p.label || labT("box-plot-builder.data-set-n", "Data set {n}", { n: i + 1 }))}</button>`,
           )
           .join("") +
         `</div>`
       : "") +
-    `<div class="bplab-datarow"><span class="bplab-datalabel">Data${unit ? ` (${esc(unit)})` : ""}</span><span class="bplab-chips" data-el="chips"></span>` +
-    `<button type="button" class="bplab-sort" data-el="sort">Sort the data →</button></div>` +
+    `<div class="bplab-datarow"><span class="bplab-datalabel">${unit ? labT("box-plot-builder.data-with-unit", "Data ({unit})", { unit: esc(unit) }) : labT("box-plot-builder.data", "Data")}</span><span class="bplab-chips" data-el="chips"></span>` +
+    `<button type="button" class="bplab-sort" data-el="sort">${labT("box-plot-builder.sort", "Sort the data →")}</button></div>` +
     `<div class="bplab-plot" data-el="plot"></div>` +
     `<div class="bplab-legend">` +
     HANDLES.map(
       (h) =>
-        `<span class="bplab-leg"><span class="bplab-dotkey" style="background:${h.color}"></span>${h.label}</span>`,
+        `<span class="bplab-leg"><span class="bplab-dotkey" style="background:${h.color}"></span>${handleLabel(h.key)}</span>`,
     ).join("") +
-    `<span class="bplab-leg bplab-leg-tip">drag a handle, or focus it and use ← →</span></div>` +
-    `<div class="bplab-actions"><button type="button" class="bplab-go" data-el="check">Check my box plot</button></div>` +
+    `<span class="bplab-leg bplab-leg-tip">${labT("box-plot-builder.drag-tip", "drag a handle, or focus it and use ← →")}</span></div>` +
+    `<div class="bplab-actions"><button type="button" class="bplab-go" data-el="check">${labT("box-plot-builder.check", "Check my box plot")}</button></div>` +
     `<div class="bplab-feed" data-el="feed" role="status" aria-live="polite"></div>`;
   container.appendChild(root);
   const el = (name) => root.querySelector(`[data-el="${name}"]`);
@@ -191,16 +219,16 @@ export function renderBoxPlotBuilder(container, cfg = {}) {
     const handles = HANDLES.map((h) => {
       const px = x(pos[h.key]);
       return (
-        `<g class="bplab-handle" data-h="${h.key}" tabindex="0" role="slider" aria-label="${h.label} handle" ` +
-        `aria-valuemin="${axMin}" aria-valuemax="${axMax}" aria-valuenow="${pos[h.key]}" aria-valuetext="${h.label} at ${fmt(pos[h.key])}">` +
+        `<g class="bplab-handle" data-h="${h.key}" tabindex="0" role="slider" aria-label="${labT("box-plot-builder.handle-aria", "{label} handle", { label: handleLabel(h.key) })}" ` +
+        `aria-valuemin="${axMin}" aria-valuemax="${axMax}" aria-valuenow="${pos[h.key]}" aria-valuetext="${labT("box-plot-builder.handle-valuetext", "{label} at {v}", { label: handleLabel(h.key), v: fmt(pos[h.key]) })}">` +
         `<line x1="${px}" y1="${AX}" x2="${px}" y2="${AX - 26}" stroke="${h.color}" stroke-width="2" stroke-dasharray="3 3" opacity=".55"/>` +
         `<circle cx="${px}" cy="${AX - 34}" r="12" fill="${h.color}"/>` +
-        `<text x="${px}" y="${AX - 30}" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">${h.label}</text>` +
+        `<text x="${px}" y="${AX - 30}" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">${handleLabel(h.key)}</text>` +
         `</g>`
       );
     }).join("");
     el("plot").innerHTML =
-      `<svg viewBox="0 0 ${geo.W} 185" role="img" aria-label="Number line with data dots and your box plot">` +
+      `<svg viewBox="0 0 ${geo.W} 185" role="img" aria-label="${labT("box-plot-builder.plot-aria", "Number line with data dots and your box plot")}">` +
       dots +
       axis +
       boxPlot +
@@ -266,17 +294,28 @@ export function renderBoxPlotBuilder(container, cfg = {}) {
       const iqr = truth.q3 - truth.q1;
       const range = truth.max - truth.min;
       feed.innerHTML =
-        `<div class="bplab-msg bplab-msg-win">🎉 <strong>That's the box plot!</strong> All five values are placed correctly. ` +
-        `Now read your own plot: the <strong>range</strong> is ${fmt(truth.max)} − ${fmt(truth.min)} = <strong>${fmt(range)}</strong>, and the ` +
-        `<strong>IQR</strong> (the box) is ${fmt(truth.q3)} − ${fmt(truth.q1)} = <strong>${fmt(iqr)}</strong> — the spread of the middle half of the data.</div>`;
+        `<div class="bplab-msg bplab-msg-win">🎉 ${labT("box-plot-builder.win-title", "<strong>That's the box plot!</strong> All five values are placed correctly. ")}` +
+        labT(
+          "box-plot-builder.win-read",
+          "Now read your own plot: the <strong>range</strong> is {max} − {min} = <strong>{range}</strong>, and the <strong>IQR</strong> (the box) is {q3} − {q1} = <strong>{iqr}</strong> — the spread of the middle half of the data.",
+          {
+            max: fmt(truth.max),
+            min: fmt(truth.min),
+            range: fmt(range),
+            q3: fmt(truth.q3),
+            q1: fmt(truth.q1),
+            iqr: fmt(iqr),
+          },
+        ) +
+        `</div>`;
       return;
     }
     const items = wrong
-      .map((h) => `<li><strong>${h.label}</strong>: ${esc(HINTS[h.key])}</li>`)
+      .map((h) => `<li><strong>${handleLabel(h.key)}</strong>: ${esc(hintFor(h.key))}</li>`)
       .join("");
     feed.innerHTML =
-      `<div class="bplab-msg bplab-msg-warn"><strong>${5 - wrong.length} of 5 placed correctly.</strong> ` +
-      `${sortedView ? "" : "Tip: sort the data first — it makes every one of these easier. "}Check:<ul class="bplab-list">${items}</ul></div>`;
+      `<div class="bplab-msg bplab-msg-warn">${labT("box-plot-builder.n-of-5", "<strong>{n} of 5 placed correctly.</strong> ", { n: 5 - wrong.length })}` +
+      `${sortedView ? "" : labT("box-plot-builder.tip-sort", "Tip: sort the data first — it makes every one of these easier. ")}${labT("box-plot-builder.check-colon", "Check:")}<ul class="bplab-list">${items}</ul></div>`;
   }
 
   function setData(next) {

@@ -12,6 +12,8 @@
 //     cfg.intro    : optional coaching sentence under the title
 //     cfg.presets  : optional [{ equation, label? }] quick-pick equations
 
+import { labT } from "./lab-strings-es.js";
+
 const C = {
   navy: "#12355b",
   teal: "#0d7a76",
@@ -112,11 +114,19 @@ function sideText(side, v) {
 }
 
 const OPS = [
-  { op: "add", sym: "+", label: "＋ Add to both sides" },
-  { op: "subtract", sym: "−", label: "－ Subtract from both sides" },
-  { op: "multiply", sym: "×", label: "× Multiply both sides" },
-  { op: "divide", sym: "÷", label: "÷ Divide both sides" },
+  { op: "add", sym: "+" },
+  { op: "subtract", sym: "−" },
+  { op: "multiply", sym: "×" },
+  { op: "divide", sym: "÷" },
 ];
+
+const opLabel = (op) =>
+  ({
+    add: labT("equation-balance-lab.op-add", "＋ Add to both sides"),
+    subtract: labT("equation-balance-lab.op-subtract", "－ Subtract from both sides"),
+    multiply: labT("equation-balance-lab.op-multiply", "× Multiply both sides"),
+    divide: labT("equation-balance-lab.op-divide", "÷ Divide both sides"),
+  })[op];
 
 function applyOp(side, op, k) {
   if (op === "add") return { a: side.a, b: side.b + k };
@@ -155,30 +165,69 @@ export function describeProgress(before, after, v) {
 
   if (constAfter < constBefore - 1e-9) {
     return constAfter === 0
-      ? { tone: "ok", text: `The number is gone from the ${v} side — that is what you wanted. ` }
+      ? {
+          tone: "ok",
+          text: labT(
+            "equation-balance-lab.progress-const-gone",
+            "The number is gone from the {v} side — that is what you wanted. ",
+            { v },
+          ),
+        }
       : {
           tone: "ok",
-          text: `Closer: the number beside ${v} went from ${fmt(b0.b)} to ${fmt(b1.b)}. `,
+          text: labT(
+            "equation-balance-lab.progress-const-closer",
+            "Closer: the number beside {v} went from {from} to {to}. ",
+            { v, from: fmt(b0.b), to: fmt(b1.b) },
+          ),
         };
   }
   if (coefAfter < coefBefore - 1e-9) {
     return coefAfter === 0
-      ? { tone: "ok", text: `${v} now has a coefficient of 1 — it stands alone. ` }
-      : { tone: "ok", text: `Closer: the coefficient moved from ${fmt(b0.a)} to ${fmt(b1.a)}. ` };
+      ? {
+          tone: "ok",
+          text: labT(
+            "equation-balance-lab.progress-coef-one",
+            "{v} now has a coefficient of 1 — it stands alone. ",
+            { v },
+          ),
+        }
+      : {
+          tone: "ok",
+          text: labT(
+            "equation-balance-lab.progress-coef-closer",
+            "Closer: the coefficient moved from {from} to {to}. ",
+            { from: fmt(b0.a), to: fmt(b1.a) },
+          ),
+        };
   }
   if (constAfter > constBefore + 1e-9) {
     return {
       tone: "warn",
-      text: `Both sides stayed equal, so that move was legal — but it went the wrong way: the number beside ${v} grew from ${fmt(b0.b)} to ${fmt(b1.b)}. To clear ${fmt(b0.b)}, apply its inverse. `,
+      text: labT(
+        "equation-balance-lab.progress-const-wrong",
+        "Both sides stayed equal, so that move was legal — but it went the wrong way: the number beside {v} grew from {from} to {to}. To clear {from}, apply its inverse. ",
+        { v, from: fmt(b0.b), to: fmt(b1.b) },
+      ),
     };
   }
   if (coefAfter > coefBefore + 1e-9) {
     return {
       tone: "warn",
-      text: `Legal, but further from the goal: ${v}'s coefficient moved from ${fmt(b0.a)} to ${fmt(b1.a)}, and you need it to be 1. `,
+      text: labT(
+        "equation-balance-lab.progress-coef-wrong",
+        "Legal, but further from the goal: {v}'s coefficient moved from {from} to {to}, and you need it to be 1. ",
+        { v, from: fmt(b0.a), to: fmt(b1.a) },
+      ),
     };
   }
-  return { tone: "ok", text: "Still balanced, but nothing about the equation changed. " };
+  return {
+    tone: "ok",
+    text: labT(
+      "equation-balance-lab.progress-no-change",
+      "Still balanced, but nothing about the equation changed. ",
+    ),
+  };
 }
 
 const isSolved = (left, right, _v) =>
@@ -196,10 +245,16 @@ export function renderEquationBalanceLab(container, cfg = {}) {
   const root = document.createElement("div");
   root.className = "eqlab";
   root.innerHTML =
-    `<div class="eqlab-head"><span class="eqlab-title">⚖️ Equation Balance Lab</span></div>` +
-    `<p class="eqlab-hint">${esc(cfg.intro || "Whatever you do to one side, do to the other — that keeps the scale balanced. Choose an operation and a number to peel away everything next to the variable until it stands alone.")}</p>` +
+    `<div class="eqlab-head"><span class="eqlab-title">${labT("equation-balance-lab.title", "⚖️ Equation Balance Lab")}</span></div>` +
+    `<p class="eqlab-hint">${esc(
+      cfg.intro ||
+        labT(
+          "equation-balance-lab.intro",
+          "Whatever you do to one side, do to the other — that keeps the scale balanced. Choose an operation and a number to peel away everything next to the variable until it stands alone.",
+        ),
+    )}</p>` +
     (presets.length
-      ? `<div class="eqlab-presets" role="group" aria-label="Pick an equation">` +
+      ? `<div class="eqlab-presets" role="group" aria-label="${labT("equation-balance-lab.pick-equation", "Pick an equation")}">` +
         presets
           .map(
             (p, i) =>
@@ -215,15 +270,16 @@ export function renderEquationBalanceLab(container, cfg = {}) {
     `<div class="eqlab-stage">` +
     `<div class="eqlab-scale" data-el="scale"></div>` +
     `<div class="eqlab-controls">` +
-    `<label class="eqlab-field"><span>Number</span><input type="number" inputmode="decimal" value="" data-el="val" placeholder="?" aria-label="Value to apply to both sides"/></label>` +
-    `<div class="eqlab-ops" role="group" aria-label="Operations">` +
+    `<label class="eqlab-field"><span>${labT("equation-balance-lab.number", "Number")}</span><input type="number" inputmode="decimal" value="" data-el="val" placeholder="?" aria-label="${labT("equation-balance-lab.value-aria", "Value to apply to both sides")}"/></label>` +
+    `<div class="eqlab-ops" role="group" aria-label="${labT("equation-balance-lab.operations", "Operations")}">` +
     OPS.map(
-      (o) => `<button type="button" class="eqlab-op" data-op="${o.op}">${esc(o.label)}</button>`,
+      (o) =>
+        `<button type="button" class="eqlab-op" data-op="${o.op}">${esc(opLabel(o.op))}</button>`,
     ).join("") +
     `</div></div></div>` +
     `<div class="eqlab-actions">` +
-    `<button type="button" class="eqlab-btn" data-el="undo">↩ Undo</button>` +
-    `<button type="button" class="eqlab-btn" data-el="reset">Start over</button></div>` +
+    `<button type="button" class="eqlab-btn" data-el="undo">${labT("equation-balance-lab.undo", "↩ Undo")}</button>` +
+    `<button type="button" class="eqlab-btn" data-el="reset">${labT("equation-balance-lab.start-over", "Start over")}</button></div>` +
     `<div class="eqlab-trail" data-el="trail"></div>` +
     `<div class="eqlab-feed" data-el="feed" role="status" aria-live="polite"></div>`;
   container.appendChild(root);
@@ -244,7 +300,7 @@ export function renderEquationBalanceLab(container, cfg = {}) {
     } catch (_e) {
       history = [{ left: { a: 1, b: 0 }, right: { a: 0, b: 0 }, note: "start" }];
       el("feed").innerHTML =
-        `<div class="eqlab-msg eqlab-msg-warn">Could not read that equation.</div>`;
+        `<div class="eqlab-msg eqlab-msg-warn">${labT("equation-balance-lab.cannot-read", "Could not read that equation.")}</div>`;
     }
     render();
   }
@@ -287,7 +343,7 @@ export function renderEquationBalanceLab(container, cfg = {}) {
     const rot = tilt ? `rotate(${tilt} ${MID} ${BEAM_Y})` : "";
     const panTop = 120;
     el("scale").innerHTML =
-      `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Balance scale for ${esc(sideText(s.left, v))} equals ${esc(sideText(s.right, v))}">` +
+      `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${labT("equation-balance-lab.scale-aria", "Balance scale for {left} equals {right}", { left: esc(sideText(s.left, v)), right: esc(sideText(s.right, v)) })}">` +
       // base + fulcrum
       `<rect x="${MID - 60}" y="${H - 26}" width="120" height="12" rx="6" fill="${C.navy}"/>` +
       `<polygon points="${MID},${BEAM_Y + 8} ${MID - 26},${H - 26} ${MID + 26},${H - 26}" fill="${C.navy}"/>` +
@@ -345,12 +401,21 @@ export function renderEquationBalanceLab(container, cfg = {}) {
     const raw = el("val").value.trim();
     const k = Number(raw);
     if (raw === "" || !Number.isFinite(k)) {
-      feed("warn", "Type a number in the box first, then choose an operation.");
+      feed(
+        "warn",
+        labT(
+          "equation-balance-lab.type-number",
+          "Type a number in the box first, then choose an operation.",
+        ),
+      );
       el("val").focus();
       return;
     }
     if ((op === "divide" || op === "multiply") && k === 0) {
-      feed("warn", "You can't multiply or divide both sides by 0.");
+      feed(
+        "warn",
+        labT("equation-balance-lab.no-zero", "You can't multiply or divide both sides by 0."),
+      );
       return;
     }
     const s = state();
@@ -368,14 +433,27 @@ export function renderEquationBalanceLab(container, cfg = {}) {
       const sol = left.a === 1 ? right.b : left.b;
       feed(
         "win",
-        `🎉 <strong>Solved!</strong> The variable is alone: <strong>${v} = ${fmt(sol)}</strong>. Every move kept both sides equal, so the scale stayed balanced. Substitute ${fmt(sol)} back into the original equation to prove it.`,
+        labT(
+          "equation-balance-lab.solved",
+          "🎉 <strong>Solved!</strong> The variable is alone: <strong>{v} = {sol}</strong>. Every move kept both sides equal, so the scale stayed balanced. Substitute {sol} back into the original equation to prove it.",
+          { v, sol: fmt(sol) },
+        ),
       );
     } else {
       const progress = describeProgress(s, { left, right }, v);
       feed(
         progress.tone,
-        `Applied <strong>${esc(note)}</strong> to both sides — still balanced. ${esc(progress.text)}` +
-          (progress.tone === "ok" ? `What's left to remove from the ${v} side?` : ""),
+        labT(
+          "equation-balance-lab.applied",
+          "Applied <strong>{note}</strong> to both sides — still balanced. ",
+          { note: esc(note) },
+        ) +
+          esc(progress.text) +
+          (progress.tone === "ok"
+            ? labT("equation-balance-lab.whats-left", "What's left to remove from the {v} side?", {
+                v,
+              })
+            : ""),
       );
     }
   }
@@ -398,7 +476,7 @@ export function renderEquationBalanceLab(container, cfg = {}) {
       history.pop();
       solvedFlag = false;
       render();
-      feed("ok", "Stepped back one move.");
+      feed("ok", labT("equation-balance-lab.stepped-back", "Stepped back one move."));
     }
   });
   el("reset").addEventListener("click", () => setEquation(equationSrc));

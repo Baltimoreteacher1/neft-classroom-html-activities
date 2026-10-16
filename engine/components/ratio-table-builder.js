@@ -8,6 +8,14 @@
 //     cfg.labelA, labelB : column labels (default "A", "B")
 //     cfg.steps          : how many multiples to show (default 6)
 //     cfg.presets        : quick-pick "a:b" strings
+//     cfg.model          : optional linked model (components/linked-model.js).
+//                          Building a ratio here publishes it to the model; a
+//                          ratio or scale set in another view redraws this one,
+//                          and a column header becomes a button that picks the
+//                          scale every view shows. Absent, nothing changes.
+
+import { stackContent } from "../core/i18n.js";
+import { MAX_TERM } from "./linked-model.js";
 
 const C = {
   navy: "#12355b",
@@ -44,8 +52,11 @@ function fmt(n) {
  *
  * Built as a string alongside the table so a single `stage.innerHTML` write
  * keeps them literally impossible to get out of sync.
+ *
+ * `activeK`, when it names one of the pairs, draws that pair's ticks heavier
+ * and in the accent colour: the scale a linked model is currently looking at.
  */
-export function doubleNumberLineSVG(a, b, steps, labelA, labelB) {
+export function doubleNumberLineSVG(a, b, steps, labelA, labelB, activeK = null) {
   const W = 560;
   const PAD = 54;
   const usable = W - PAD - 16;
@@ -61,13 +72,16 @@ export function doubleNumberLineSVG(a, b, steps, labelA, labelB) {
   let ticks = "";
   for (let k = 0; k <= steps; k += 1) {
     const px = x(k);
+    const on = k === activeK;
+    const tick = on ? C.accent : C.navy;
+    const weight = on ? 4 : 2;
     ticks +=
-      `<line x1="${px}" y1="${yA - 7}" x2="${px}" y2="${yA + 7}" stroke="${C.navy}" stroke-width="2"/>` +
-      `<line x1="${px}" y1="${yB - 7}" x2="${px}" y2="${yB + 7}" stroke="${C.navy}" stroke-width="2"/>` +
+      `<line x1="${px}" y1="${yA - 7}" x2="${px}" y2="${yA + 7}" stroke="${tick}" stroke-width="${weight}"/>` +
+      `<line x1="${px}" y1="${yB - 7}" x2="${px}" y2="${yB + 7}" stroke="${tick}" stroke-width="${weight}"/>` +
       // The vertical tie is the whole point: these two values are one pair.
       `<line x1="${px}" y1="${yA + 7}" x2="${px}" y2="${yB - 7}" stroke="${C.line}" stroke-width="1.5" stroke-dasharray="3 3"/>` +
-      `<text x="${px}" y="${yA - 13}" text-anchor="middle" font-size="13" font-weight="700" fill="${C.navy}">${fmt(a * k)}</text>` +
-      `<text x="${px}" y="${yB + 24}" text-anchor="middle" font-size="13" font-weight="700" fill="${C.navy}">${fmt(b * k)}</text>`;
+      `<text x="${px}" y="${yA - 13}" text-anchor="middle" font-size="13" font-weight="700" fill="${tick}">${fmt(a * k)}</text>` +
+      `<text x="${px}" y="${yB + 24}" text-anchor="middle" font-size="13" font-weight="700" fill="${tick}">${fmt(b * k)}</text>`;
   }
 
   const pairs = Array.from({ length: steps + 1 }, (_, k) => `${fmt(a * k)} to ${fmt(b * k)}`).join(
@@ -89,12 +103,16 @@ export function renderRatioTableBuilder(container, cfg = {}) {
   const labelA = cfg.labelA || "A";
   const labelB = cfg.labelB || "B";
   const STEPS = Math.max(3, Math.min(8, cfg.steps || 6));
+  // With a linked model the table can show any ratio the other views can hold.
+  const model = cfg.model || null;
+  const maxTerm = model ? MAX_TERM : 99;
+  const token = Symbol("ratio-table");
   let a = clamp(cfg.a ?? 2);
   let b = clamp(cfg.b ?? 3);
 
   function clamp(v) {
     v = Math.floor(Number(v) || 0);
-    return Math.max(1, Math.min(99, v));
+    return Math.max(1, Math.min(maxTerm, v));
   }
 
   const presets =
@@ -108,9 +126,9 @@ export function renderRatioTableBuilder(container, cfg = {}) {
     `<div class="rtlab-title">Ratio Table Lab</div>` +
     `<p class="rtlab-hint">Multiply <strong>both</strong> numbers by the same factor to build equivalent ratios. Type a ratio to fill the table.</p>` +
     `<div class="rtlab-controls">` +
-    `<label class="rtlab-field"><span>${esc(labelA)}</span><input type="number" min="1" max="99" value="${a}" data-inp="a" aria-label="${esc(labelA)} part of the ratio"/></label>` +
+    `<label class="rtlab-field"><span>${esc(labelA)}</span><input type="number" min="1" max="${maxTerm}" value="${model ? "" : a}" data-inp="a" aria-label="${esc(labelA)} part of the ratio"/></label>` +
     `<span class="rtlab-colon">:</span>` +
-    `<label class="rtlab-field"><span>${esc(labelB)}</span><input type="number" min="1" max="99" value="${b}" data-inp="b" aria-label="${esc(labelB)} part of the ratio"/></label>` +
+    `<label class="rtlab-field"><span>${esc(labelB)}</span><input type="number" min="1" max="${maxTerm}" value="${model ? "" : b}" data-inp="b" aria-label="${esc(labelB)} part of the ratio"/></label>` +
     `<button type="button" class="rtlab-go">Build table →</button></div>` +
     `<div class="rtlab-presets" role="group" aria-label="Quick-pick ratios">` +
     presets
@@ -127,26 +145,51 @@ export function renderRatioTableBuilder(container, cfg = {}) {
   const stage = root.querySelector(".rtlab-stage");
   const result = root.querySelector(".rtlab-result");
 
+  /** Read the two boxes, tell the model, and draw. */
   function build() {
+    // A linked table is the student's own: it never invents a missing number.
+    if (model && (inA.value === "" || inB.value === "")) return waiting();
     a = clamp(inA.value);
     b = clamp(inB.value);
     inA.value = a;
     inB.value = b;
+    // Writing the ratio first lets the model's scale (set by another view) be
+    // read back in draw(), so a rebuild keeps the column the student was on.
+    if (model) model.set({ a, b }, token);
+    draw();
+  }
+
+  function waiting() {
+    stage.innerHTML = `<p class="rtlab-wait">${stackContent(
+      "Type both numbers of a ratio, then press Build table. Every picture will show it.",
+      "Escribe los dos números de una razón y presiona Construir tabla. Todas las imágenes la mostrarán.",
+    )}</p>`;
+    result.innerHTML = "";
+  }
+
+  /** Draw the table, line and readout for the current (a, b) and scale. */
+  function draw() {
+    const activeK = model ? model.get().k : null;
 
     let head = `<tr><th class="rtlab-corner">×</th>`;
     let rowA = `<tr><th class="rtlab-rowlab" style="background:${C.headA}">${esc(labelA)}</th>`;
     let rowB = `<tr><th class="rtlab-rowlab" style="background:${C.headB}">${esc(labelB)}</th>`;
     for (let k = 1; k <= STEPS; k++) {
-      head += `<th>×${k}</th>`;
-      rowA += `<td class="${k === 1 ? "rtlab-base" : ""}">${a * k}</td>`;
-      rowB += `<td class="${k === 1 ? "rtlab-base" : ""}">${b * k}</td>`;
+      const cls = [k === 1 ? "rtlab-base" : "", k === activeK ? "rtlab-active" : ""]
+        .filter(Boolean)
+        .join(" ");
+      head += model
+        ? `<th><button type="button" class="rtlab-col" data-k="${k}" aria-pressed="${k === activeK}" aria-label="Show scale ×${k} in every view">×${k}</button></th>`
+        : `<th>×${k}</th>`;
+      rowA += `<td class="${cls}">${a * k}</td>`;
+      rowB += `<td class="${cls}">${b * k}</td>`;
     }
     head += `</tr>`;
     rowA += `</tr>`;
     rowB += `</tr>`;
     stage.innerHTML =
       `<table class="rtlab-table"><thead>${head}</thead><tbody>${rowA}${rowB}</tbody></table>` +
-      doubleNumberLineSVG(a, b, STEPS, labelA, labelB);
+      doubleNumberLineSVG(a, b, STEPS, labelA, labelB, activeK);
 
     const unit = fmt(b / a);
     result.innerHTML =
@@ -154,7 +197,7 @@ export function renderRatioTableBuilder(container, cfg = {}) {
       `<p class="rtlab-explain">Every column is the same ratio as ${a} : ${b}. The <strong>unit rate</strong> is ${unit} ${esc(labelB)} for each 1 ${esc(labelA)} (divide both by ${a}).</p>`;
   }
 
-  root.querySelector(".rtlab-go").addEventListener("click", build);
+  root.querySelector(".rtlab-go").addEventListener("click", () => build());
   root.querySelectorAll(".rtlab-chip").forEach((chip) =>
     chip.addEventListener("click", () => {
       const [x, y] = chip.dataset.p.split(":");
@@ -171,9 +214,54 @@ export function renderRatioTableBuilder(container, cfg = {}) {
       }
     }),
   );
+  // A column header picks the scale for every view that shares the model.
+  stage.addEventListener("click", (e) => {
+    const col = model && e.target.closest?.(".rtlab-col");
+    if (!col) return;
+    const k = Number(col.dataset.k);
+    // This view ignores its own broadcast, so it redraws itself, then puts
+    // keyboard focus back on the header it just replaced.
+    if (!model.set({ k }, token)) return;
+    draw();
+    stage.querySelector(`.rtlab-col[data-k="${k}"]`)?.focus();
+  });
 
-  build();
-  return { destroy: () => root.remove() };
+  let unsubscribe = null;
+  const state = model?.get();
+  if (state && state.a != null) {
+    a = state.a;
+    b = state.b;
+    inA.value = a;
+    inB.value = b;
+    draw();
+  } else if (model) {
+    // A linked table waits for the student's own ratio instead of showing 2 : 3.
+    waiting();
+  } else {
+    build();
+  }
+  if (model) {
+    unsubscribe = model.subscribe((next, meta) => {
+      if (meta.source === token) return;
+      if (next.a == null) return;
+      const ratioChanged = meta.changed.includes("a") || meta.changed.includes("b");
+      if (ratioChanged) {
+        a = clamp(next.a);
+        b = clamp(next.b);
+        inA.value = a;
+        inB.value = b;
+      }
+      // Only the ratio or the scale changes what this view draws.
+      if (ratioChanged || meta.changed.includes("k")) draw();
+    });
+  }
+
+  return {
+    destroy: () => {
+      unsubscribe?.();
+      root.remove();
+    },
+  };
 }
 
 let injected = false;
@@ -210,6 +298,11 @@ function injectStyles() {
   .rtlab-rowlab{color:${C.navy};font-weight:700;}
   .rtlab-table td{padding:7px 8px;border:1px solid ${C.line};font-weight:600;color:${C.navy};}
   .rtlab-base{background:#eef4ff;color:${C.accent};}
+  .rtlab-table td.rtlab-active{background:#dbe7ff;color:${C.accent};border-color:${C.accent};border-width:2px;}
+  .rtlab-col{min-width:44px;min-height:44px;font:inherit;font-weight:700;font-size:.85rem;color:${C.navy};background:#fff;border:1.5px solid ${C.line};border-radius:8px;cursor:pointer;}
+  .rtlab-col[aria-pressed="true"]{background:${C.accent};border-color:${C.accent};color:#fff;}
+  .rtlab-col:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
+  .rtlab-wait{margin:6px 4px;color:${C.muted};font-size:.95rem;line-height:1.5;text-align:center;}
   .rtlab-result{text-align:center;}
   .rtlab-answer{font-family:"Outfit",system-ui,sans-serif;font-weight:800;font-size:1.2rem;color:${C.teal};}
   .rtlab-explain{margin:6px auto 0;max-width:520px;color:${C.ink};font-size:.9rem;line-height:1.5;}

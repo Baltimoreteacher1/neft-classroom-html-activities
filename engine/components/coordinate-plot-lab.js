@@ -1,3 +1,5 @@
+import { labT } from "./lab-strings-es.js";
+
 const C = {
   ink: "#333",
   navy: "#264653",
@@ -84,9 +86,9 @@ export function renderCoordinatePlot(host, cfg) {
   wrap.className = "cpl-wrap";
   wrap.innerHTML = `
     ${cfg.title ? `<div class="cpl-title">${esc(cfg.title)}</div>` : ""}
-    <div class="cpl-hint">Tap the grid to plot each point in the list. Go right for x, then up for y.</div>
+    <div class="cpl-hint">${labT("coordinate-plot-lab.hint", "Tap the grid to plot each point in the list. Go right for x, then up for y.")}</div>
     <div class="cpl-stage">
-      <svg viewBox="0 0 ${W} ${W}" role="img" aria-label="Coordinate plane. Tap to plot each listed point.">
+      <svg viewBox="0 0 ${W} ${W}" role="img" aria-label="${labT("coordinate-plot-lab.aria-plane", "Coordinate plane. Tap to plot each listed point.")}">
         ${grid}${axes}<g class="cpl-plotted"></g>
       </svg>
     </div>
@@ -154,7 +156,11 @@ export function renderCoordinatePlot(host, cfg) {
     if (gx < lo || gx > hi || gy < lo || gy > hi) return;
     if (idx === -1) {
       showGhost(gx, gy);
-      status.textContent = `You tapped (${gx}, ${gy}) — that isn't one of the points in the list. Go right for x, then up for y.`;
+      status.textContent = labT(
+        "coordinate-plot-lab.not-in-list",
+        "You tapped ({gx}, {gy}) — that isn't one of the points in the list. Go right for x, then up for y.",
+        { gx, gy },
+      );
       status.className = "cpl-status no";
       return;
     }
@@ -162,14 +168,22 @@ export function renderCoordinatePlot(host, cfg) {
     place(points[idx]);
     todo.querySelector(`.cpl-chip[data-i="${idx}"]`)?.classList.add("done");
     if (done.size >= points.length) {
-      status.textContent = "🎉 All points plotted!";
+      status.textContent = `🎉 ${labT("coordinate-plot-lab.all-plotted", "All points plotted!")}`;
       status.className = "cpl-status ok";
       if (cfg.caption) {
         /** @type {HTMLElement} */ (reveal).hidden = false;
         reveal.innerHTML = esc(cfg.caption);
       }
     } else {
-      status.textContent = `Plotted (${gx}, ${gy}). ${points.length - done.size} to go.`;
+      status.textContent = labT(
+        "coordinate-plot-lab.plotted-to-go",
+        "Plotted ({gx}, {gy}). {left} to go.",
+        {
+          gx,
+          gy,
+          left: points.length - done.size,
+        },
+      );
       status.className = "cpl-status ok";
     }
   });

@@ -18,8 +18,10 @@
 //     word-search, …) are excluded automatically, and any new registered kind
 //     is picked up with no change here.
 
+import { linkedLabToolFor } from "../components/linked-model.js";
 import { getPreferredLang } from "./i18n.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
+import { inventFirstToolFor } from "./invent-first.js";
 import { resolveStandard } from "./small-group-standards.js";
 import { SECTION_LABEL, toolMeta } from "./tool-catalog.js";
 
@@ -96,6 +98,12 @@ export function collectTools(config) {
       else consider(slot, section);
     }
   }
+  // Supplements, not replacements: Unit 3 and 4 lessons also get the linked
+  // ratio lab, and pilot lessons the invent-first scene. Both are filed under
+  // their own "extra" section so the Explore/Practice coverage of the lesson's
+  // authored tools still reads exactly as authored.
+  consider(linkedLabToolFor(config), "extra");
+  consider(inventFirstToolFor(config), "extra");
   return out;
 }
 

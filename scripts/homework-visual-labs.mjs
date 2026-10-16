@@ -1,3 +1,4 @@
+import { LAB_KIND_FILES } from "@eduwonderlab/engine/components/lab-strings-es.js";
 import {
   QUESTION_MODEL_CSS,
   QUESTION_MODEL_JS,
@@ -639,6 +640,7 @@ const MANIP_ACTIONS = {
 
 function renderSharedLessonModel(topic, config, lessonModel) {
   const kind = lessonModel.kind || "interactive model";
+  const labIsLocalized = Object.hasOwn(LAB_KIND_FILES, kind);
   const isFactorTree = kind === "factor-tree" || kind === "factor-tree-lab";
   let modelName = lessonModel.title;
   let modelNameEs = "";
@@ -732,8 +734,8 @@ function renderSharedLessonModel(topic, config, lessonModel) {
       <h2 id="visual_lab_title"><span aria-hidden="true">${icon}</span> <span class="lang-en">${esc(modelName)}</span><span class="lang-es" lang="es">${esc(modelNameEs)}</span></h2></div>
       <p><span class="lang-en">${esc(prompt)}</span><span class="lang-es" lang="es">${esc(promptEs)}</span></p>
     </div>
-    <p class="visual-lab-lang-note lang-es" lang="es">🌐 Esta herramienta interactiva por ahora solo está en inglés.${lessonModel.purposeEs ? ` Para qué sirve: ${esc(lessonModel.purposeEs)}` : ""} Usen los pasos en español de esta tarjeta para guiarse.</p>
-    <div class="visual-lab-stage" data-lesson-model-host lang="en">${lessonModel.html}</div>
+    ${labIsLocalized ? "" : `<p class="visual-lab-lang-note lang-es" lang="es">🌐 Esta herramienta interactiva por ahora solo está en inglés.${lessonModel.purposeEs ? ` Para qué sirve: ${esc(lessonModel.purposeEs)}` : ""} Usen los pasos en español de esta tarjeta para guiarse.</p>`}
+    <div class="visual-lab-stage" data-lesson-model-host${labIsLocalized ? "" : ' lang="en"'}>${lessonModel.html}</div>
     <div class="visual-representation-grid" aria-label="Three ways to understand the lesson model">
       <article class="visual-representation-card visual-representation-model"><span class="representation-number">1</span><h3><span class="lang-en">Touch and change</span><span class="lang-es" lang="es">Toca y cambia</span></h3><p><span class="lang-en">${esc(touch.touchEn)}</span><span class="lang-es" lang="es">${esc(touch.touchEs)}</span></p></article>
       <article class="visual-representation-card visual-representation-math"><span class="representation-number">2</span><h3><span class="lang-en">Write the math</span><span class="lang-es" lang="es">Escribe las matemáticas</span></h3><p><span class="lang-en">${esc(touch.mathEn)}</span><span class="lang-es" lang="es">${esc(touch.mathEs)}</span></p></article>

@@ -15,6 +15,8 @@
 //     cfg.presets  : optional [{ label, data, binWidth?, start?, unit? }]
 //     cfg.intro    : optional coaching sentence under the title
 
+import { labT } from "./lab-strings-es.js";
+
 const C = {
   navy: "#12355b",
   accent: "#1d4ed8",
@@ -70,23 +72,23 @@ export function renderHistogramBuilder(container, cfg = {}) {
   const root = document.createElement("div");
   root.className = "hglab";
   root.innerHTML =
-    `<div class="hglab-head"><span class="hglab-title">📊 Histogram Builder</span></div>` +
-    `<p class="hglab-hint">${esc(cfg.intro || "Build the histogram yourself: sort the data, count how many values fall in each interval, then raise each bar to match. A value on a boundary belongs to the interval it STARTS (20 goes in 20–29, not 10–19).")}</p>` +
+    `<div class="hglab-head"><span class="hglab-title">📊 ${labT("histogram-builder.title", "Histogram Builder")}</span></div>` +
+    `<p class="hglab-hint">${esc(cfg.intro || labT("histogram-builder.intro", "Build the histogram yourself: sort the data, count how many values fall in each interval, then raise each bar to match. A value on a boundary belongs to the interval it STARTS (20 goes in 20–29, not 10–19)."))}</p>` +
     (presets.length
-      ? `<div class="hglab-presets" role="group" aria-label="Pick a data set">` +
+      ? `<div class="hglab-presets" role="group" aria-label="${labT("histogram-builder.pick-data-set", "Pick a data set")}">` +
         presets
           .map(
             (p, i) =>
-              `<button type="button" class="hglab-chip" data-preset="${i}">${esc(p.label || `Data set ${i + 1}`)}</button>`,
+              `<button type="button" class="hglab-chip" data-preset="${i}">${esc(p.label || labT("histogram-builder.data-set-n", "Data set {n}", { n: i + 1 }))}</button>`,
           )
           .join("") +
         `</div>`
       : "") +
     `<div class="hglab-datarow"><span class="hglab-datalabel" data-el="datalabel"></span><span class="hglab-chips" data-el="chips"></span>` +
-    `<button type="button" class="hglab-sort" data-el="sort">Sort the data →</button></div>` +
+    `<button type="button" class="hglab-sort" data-el="sort">${labT("histogram-builder.sort", "Sort the data →")}</button></div>` +
     `<div class="hglab-plot" data-el="plot"></div>` +
-    `<p class="hglab-tip">drag a bar's top edge, or focus a bar and use ↑ ↓</p>` +
-    `<div class="hglab-actions"><button type="button" class="hglab-go" data-el="check">Check my histogram</button></div>` +
+    `<p class="hglab-tip">${labT("histogram-builder.drag-tip", "drag a bar's top edge, or focus a bar and use ↑ ↓")}</p>` +
+    `<div class="hglab-actions"><button type="button" class="hglab-go" data-el="check">${labT("histogram-builder.check", "Check my histogram")}</button></div>` +
     `<div class="hglab-feed" data-el="feed" role="status" aria-live="polite"></div>`;
   container.appendChild(root);
   const el = (name) => root.querySelector(`[data-el="${name}"]`);
@@ -102,7 +104,9 @@ export function renderHistogramBuilder(container, cfg = {}) {
 
   function renderChips() {
     const shown = sortedView ? [...data].sort((a, b) => a - b) : data;
-    el("datalabel").textContent = `Data${unit ? ` (${unit})` : ""}`;
+    el("datalabel").textContent = unit
+      ? labT("histogram-builder.data-with-unit", "Data ({unit})", { unit })
+      : labT("histogram-builder.data", "Data");
     el("chips").innerHTML = shown
       .map((v) => `<span class="hglab-datachip${sortedView ? " hglab-sorted" : ""}">${v}</span>`)
       .join("");
@@ -135,7 +139,7 @@ export function renderHistogramBuilder(container, cfg = {}) {
         const h = student[i];
         const top = y(h);
         return (
-          `<g class="hglab-bar" data-bin="${i}" tabindex="0" role="slider" aria-label="Bar for interval ${binLabel(b, intData())}" ` +
+          `<g class="hglab-bar" data-bin="${i}" tabindex="0" role="slider" aria-label="${labT("histogram-builder.bar-aria", "Bar for interval {label}", { label: binLabel(b, intData()) })}" ` +
           `aria-valuemin="0" aria-valuemax="${yMax}" aria-valuenow="${h}" aria-valuetext="${binLabel(b, intData())}: ${h}">` +
           `<rect x="${x + 4}" y="${top}" width="${colW - 8}" height="${Math.max(0, AX - top)}" fill="${barColor}" fill-opacity="${h ? 0.75 : 0.12}" stroke="${barColor}" stroke-width="2"/>` +
           `<rect x="${x + 4}" y="${top - 7}" width="${colW - 8}" height="14" fill="transparent" class="hglab-grip"/>` +
@@ -149,7 +153,7 @@ export function renderHistogramBuilder(container, cfg = {}) {
       ? `<text x="${(L + R) / 2}" y="${AX + 32}" text-anchor="middle" font-size="11" font-weight="700" fill="${C.muted}">${esc(unit)}</text>`
       : "";
     el("plot").innerHTML =
-      `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Histogram you are building, one bar per interval">` +
+      `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${labT("histogram-builder.plot-aria", "Histogram you are building, one bar per interval")}">` +
       grid +
       bars +
       axisTitle +
@@ -207,24 +211,36 @@ export function renderHistogramBuilder(container, cfg = {}) {
       renderPlot();
       const peak = bins.reduce((best, b) => (b.count > best.count ? b : best), bins[0]);
       feed.innerHTML =
-        `<div class="hglab-msg hglab-msg-win">🎉 <strong>That's the histogram!</strong> All ${bins.length} bars match the data (${data.length} values total). ` +
-        `Now read your own display: the tallest bar is <strong>${binLabel(peak, intData())}</strong> — that interval holds the most values. Where is the data clustered, and where are the gaps?</div>`;
+        `<div class="hglab-msg hglab-msg-win">🎉 ${labT(
+          "histogram-builder.win-match",
+          "<strong>That's the histogram!</strong> All {bars} bars match the data ({total} values total).",
+          { bars: bins.length, total: data.length },
+        )} ` +
+        `${labT(
+          "histogram-builder.win-read",
+          "Now read your own display: the tallest bar is <strong>{label}</strong> — that interval holds the most values. Where is the data clustered, and where are the gaps?",
+          { label: binLabel(peak, intData()) },
+        )}</div>`;
       return;
     }
     const items = wrong
       .slice(0, 4)
       .map(
         ({ b }) =>
-          `<li><strong>${binLabel(b, intData())}</strong>: recount the values from ${b.lo} up to (but not including) ${b.hi}.</li>`,
+          `<li><strong>${binLabel(b, intData())}</strong>: ${labT("histogram-builder.recount", "recount the values from {lo} up to (but not including) {hi}.", { lo: b.lo, hi: b.hi })}</li>`,
       )
       .join("");
     const totalNote =
       totalPlaced === data.length
         ? ""
-        : ` Your bars add up to ${totalPlaced}, but there are ${data.length} data values — every value belongs in exactly one bar.`;
+        : labT(
+            "histogram-builder.total-note",
+            "Your bars add up to {placed}, but there are {total} data values — every value belongs in exactly one bar.",
+            { placed: totalPlaced, total: data.length },
+          );
     feed.innerHTML =
-      `<div class="hglab-msg hglab-msg-warn"><strong>${bins.length - wrong.length} of ${bins.length} bars correct.</strong>` +
-      `${totalNote} ${sortedView ? "" : "Tip: sort the data first — counting each interval gets much easier. "}Check:<ul class="hglab-list">${items}</ul></div>`;
+      `<div class="hglab-msg hglab-msg-warn">${labT("histogram-builder.n-correct", "<strong>{n} of {total} bars correct.</strong>", { n: bins.length - wrong.length, total: bins.length })}` +
+      `${totalNote ? ` ${totalNote}` : ""} ${sortedView ? "" : labT("histogram-builder.tip-sort", "Tip: sort the data first — counting each interval gets much easier. ")}${labT("histogram-builder.check-colon", "Check:")}<ul class="hglab-list">${items}</ul></div>`;
   }
 
   function setData(p) {

@@ -31,6 +31,8 @@
 //       presets?:[{ op, a, b, label? }]                  // quick-pick problems
 //     }
 
+import { labT } from "./lab-strings-es.js";
+
 const C = {
   navy: "#12355b",
   accent: "#1d4ed8",
@@ -52,21 +54,21 @@ function esc(s) {
   );
 }
 
-const INT_PLACES = [
-  "ones",
-  "tens",
-  "hundreds",
-  "thousands",
-  "ten-thousands",
-  "hundred-thousands",
-  "millions",
+const intPlaces = () => [
+  labT("decimal-columns.place-ones", "ones"),
+  labT("decimal-columns.place-tens", "tens"),
+  labT("decimal-columns.place-hundreds", "hundreds"),
+  labT("decimal-columns.place-thousands", "thousands"),
+  labT("decimal-columns.place-ten-thousands", "ten-thousands"),
+  labT("decimal-columns.place-hundred-thousands", "hundred-thousands"),
+  labT("decimal-columns.place-millions", "millions"),
 ];
-const FRAC_PLACES = [
-  "tenths",
-  "hundredths",
-  "thousandths",
-  "ten-thousandths",
-  "hundred-thousandths",
+const fracPlaces = () => [
+  labT("decimal-columns.place-tenths", "tenths"),
+  labT("decimal-columns.place-hundredths", "hundredths"),
+  labT("decimal-columns.place-thousandths", "thousandths"),
+  labT("decimal-columns.place-ten-thousandths", "ten-thousandths"),
+  labT("decimal-columns.place-hundred-thousandths", "hundred-thousandths"),
 ];
 
 // One-time scoped styles, guarded by id so repeated mounts share a single <style>.
@@ -146,9 +148,12 @@ function splitScaled(mag, intDigits, p) {
 function placeLabel(type, colIndex, intDigits) {
   if (type === "int") {
     const power = intDigits - 1 - colIndex; // rightmost int column = ones
-    return INT_PLACES[power] || `10^${power}`;
+    return intPlaces()[power] || `10^${power}`;
   }
-  return FRAC_PLACES[colIndex] || `decimal place ${colIndex + 1}`;
+  return (
+    fracPlaces()[colIndex] ||
+    labT("decimal-columns.place-n", "decimal place {n}", { n: colIndex + 1 })
+  );
 }
 
 export function renderDecimalColumns(host, cfg = {}) {
@@ -198,7 +203,7 @@ export function renderDecimalColumns(host, cfg = {}) {
     const bar = document.createElement("div");
     bar.className = "dccols-presets";
     bar.setAttribute("role", "group");
-    bar.setAttribute("aria-label", "Pick a problem");
+    bar.setAttribute("aria-label", labT("decimal-columns.pick-problem", "Pick a problem"));
     problems.forEach((p, i) => {
       const chip = document.createElement("button");
       chip.type = "button";
@@ -318,13 +323,27 @@ function renderProblem(wrap, problem, { typeIn, autofocus }) {
   };
 
   const block = document.createElement("div");
-  const rgLabel = op === "-" ? "Regroup" : "Carry";
+  const rgLabel =
+    op === "-"
+      ? labT("decimal-columns.regroup", "Regroup")
+      : labT("decimal-columns.carry", "Carry");
   const title =
-    problem.title || `Line up the decimal points and ${op === "-" ? "subtract" : "add"}.`;
+    problem.title ||
+    (op === "-"
+      ? labT("decimal-columns.title-subtract", "Line up the decimal points and subtract.")
+      : labT("decimal-columns.title-add", "Line up the decimal points and add."));
   const hint =
     op === "-"
-      ? `Each place value has its own column. When the top digit is too small, borrow: write the regrouped top value in the amber “${rgLabel}” box, then fill the answer.`
-      : `Each place value has its own column. When a column makes 10 or more, write the carry in the amber “${rgLabel}” box above the next column, then fill the answer.`;
+      ? labT(
+          "decimal-columns.hint-subtract",
+          "Each place value has its own column. When the top digit is too small, borrow: write the regrouped top value in the amber “{label}” box, then fill the answer.",
+          { label: rgLabel },
+        )
+      : labT(
+          "decimal-columns.hint-add",
+          "Each place value has its own column. When a column makes 10 or more, write the carry in the amber “{label}” box above the next column, then fill the answer.",
+          { label: rgLabel },
+        );
 
   // Amber regroup/carry row (interactive, optional).
   const rgRow = () => {
@@ -338,7 +357,7 @@ function renderProblem(wrap, problem, { typeIn, autofocus }) {
       cells +=
         `<span class="dccols-cell"><input class="dccols-rg" type="text" inputmode="numeric" ` +
         `pattern="[0-9]*" maxlength="2" data-t="${col.type}" data-i="${col.idx}" ` +
-        `aria-label="${esc(rgLabel)} for the ${esc(place)} column" placeholder="·"></span>`;
+        `aria-label="${labT("decimal-columns.rg-cell-label", "{label} for the {place} column", { label: esc(rgLabel), place: esc(place) })}" placeholder="·"></span>`;
     }
     return `<div class="dccols-row dccols-row-rg">${cells}</div>`;
   };
@@ -359,7 +378,15 @@ function renderProblem(wrap, problem, { typeIn, autofocus }) {
           `<span class="dccols-cell"><input class="dccols-inp" type="text" inputmode="numeric" ` +
           `pattern="[0-9]*" maxlength="1" data-role="operand" data-side="${isTop ? "a" : "b"}" ` +
           `data-t="${col.type}" data-i="${col.idx}" data-correct="${digit}" ` +
-          `aria-label="${isTop ? "Top" : "Bottom"} number, ${esc(place)} place"></span>`;
+          `aria-label="${
+            isTop
+              ? labT("decimal-columns.top-cell-label", "Top number, {place} place", {
+                  place: esc(place),
+                })
+              : labT("decimal-columns.bottom-cell-label", "Bottom number, {place} place", {
+                  place: esc(place),
+                })
+          }"></span>`;
       } else {
         cells += `<span class="dccols-cell${pad ? " pad" : ""}">${digit}</span>`;
       }
@@ -379,7 +406,7 @@ function renderProblem(wrap, problem, { typeIn, autofocus }) {
       cells +=
         `<span class="dccols-cell"><input class="dccols-inp" type="text" inputmode="numeric" ` +
         `pattern="[0-9]*" maxlength="1" data-role="answer" data-t="${col.type}" data-i="${col.idx}" ` +
-        `aria-label="${esc(place)} place of the answer"></span>`;
+        `aria-label="${labT("decimal-columns.answer-cell-label", "{place} place of the answer", { place: esc(place) })}"></span>`;
     }
     return `<div class="dccols-row">${cells}</div>`;
   };
@@ -388,7 +415,21 @@ function renderProblem(wrap, problem, { typeIn, autofocus }) {
     <div class="dccols-title">${esc(title)}</div>
     <div class="dccols-hint">${esc(hint)}</div>
     <div class="dccols-stage">
-      <div class="dccols-grid" role="group" aria-label="Vertical decimal ${op === "-" ? "subtraction" : "addition"} of ${esc(String(a))} and ${esc(String(b))}">
+      <div class="dccols-grid" role="group" aria-label="${
+        op === "-"
+          ? labT(
+              "decimal-columns.grid-label-subtract",
+              "Vertical decimal subtraction of {a} and {b}",
+              {
+                a: esc(String(a)),
+                b: esc(String(b)),
+              },
+            )
+          : labT("decimal-columns.grid-label-add", "Vertical decimal addition of {a} and {b}", {
+              a: esc(String(a)),
+              b: esc(String(b)),
+            })
+      }">
         ${anyRegroup || typeIn ? rgRow() : ""}
         ${operandRow(rowA, ai, "", true)}
         ${operandRow(rowB, bi, opSym, false)}
@@ -397,9 +438,9 @@ function renderProblem(wrap, problem, { typeIn, autofocus }) {
       </div>
     </div>
     <div class="dccols-controls">
-      <button type="button" class="dccols-btn dccols-btn-check">Check</button>
-      <button type="button" class="dccols-btn dccols-btn-ghost dccols-btn-reveal">Show me</button>
-      <button type="button" class="dccols-btn dccols-btn-ghost dccols-btn-clear">Clear</button>
+      <button type="button" class="dccols-btn dccols-btn-check">${labT("decimal-columns.check", "Check")}</button>
+      <button type="button" class="dccols-btn dccols-btn-ghost dccols-btn-reveal">${labT("decimal-columns.show-me", "Show me")}</button>
+      <button type="button" class="dccols-btn dccols-btn-ghost dccols-btn-clear">${labT("decimal-columns.clear", "Clear")}</button>
     </div>
     <div class="dccols-status" role="status" aria-live="polite"></div>
     <div class="dccols-result" hidden></div>
@@ -513,12 +554,15 @@ function renderProblem(wrap, problem, { typeIn, autofocus }) {
     }
 
     if (anyEmpty) {
-      status.textContent = "Fill in every answer box.";
+      status.textContent = labT("decimal-columns.fill-every-box", "Fill in every answer box.");
       status.className = "dccols-status no";
       return;
     }
     if (allCorrect && !rgIssue) {
-      status.textContent = "That's it — decimals lined up perfectly! 🎉";
+      status.textContent = labT(
+        "decimal-columns.success",
+        "That's it — decimals lined up perfectly! 🎉",
+      );
       status.className = "dccols-status ok";
       showEquation();
       announceSolved(false);
@@ -527,15 +571,27 @@ function renderProblem(wrap, problem, { typeIn, autofocus }) {
     if (allCorrect && rgIssue) {
       status.textContent =
         op === "-"
-          ? "Your answer is right — but check the amber regroup boxes. Each borrow makes the top digit smaller by 1 and adds 10 to the column on the right."
-          : "Your answer is right — but check the amber carry boxes. A carry is written above the column to the left.";
+          ? labT(
+              "decimal-columns.right-check-regroup",
+              "Your answer is right — but check the amber regroup boxes. Each borrow makes the top digit smaller by 1 and adds 10 to the column on the right.",
+            )
+          : labT(
+              "decimal-columns.right-check-carry",
+              "Your answer is right — but check the amber carry boxes. A carry is written above the column to the left.",
+            );
       status.className = "dccols-status no";
       return;
     }
     status.textContent =
       op === "-"
-        ? "Not yet — check the red boxes. Where the top digit is too small, borrow before you subtract."
-        : "Not yet — check the red boxes, and remember to carry when a column makes 10 or more.";
+        ? labT(
+            "decimal-columns.not-yet-subtract",
+            "Not yet — check the red boxes. Where the top digit is too small, borrow before you subtract.",
+          )
+        : labT(
+            "decimal-columns.not-yet-add",
+            "Not yet — check the red boxes, and remember to carry when a column makes 10 or more.",
+          );
     status.className = "dccols-status no";
   }
 
@@ -555,7 +611,10 @@ function renderProblem(wrap, problem, { typeIn, autofocus }) {
       inp.classList.remove("wrong");
       if (expected != null) inp.classList.add("correct");
     }
-    status.textContent = "Here's the lined-up work, regroups and all.";
+    status.textContent = labT(
+      "decimal-columns.reveal",
+      "Here's the lined-up work, regroups and all.",
+    );
     status.className = "dccols-status ok";
     showEquation();
     announceSolved(true);

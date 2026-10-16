@@ -105,13 +105,20 @@ const SESSION2_PRACTICE = (() => {
   const path = join(root, "data", "part-two-session2-practice.json");
   if (!existsSync(path)) return {};
   try {
-    return JSON.parse(readFileSync(path, "utf8")).lessons || {};
+    return applyFeedbackAdditions(
+      JSON.parse(readFileSync(path, "utf8")).lessons || {},
+      loadFeedbackAdditions(root),
+    );
   } catch (e) {
     throw new Error(`data/part-two-session2-practice.json is unreadable: ${e.message}`);
   }
 })();
 
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
+import {
+  applyFeedbackAdditions,
+  loadFeedbackAdditions,
+} from "./lib/part-two-feedback-additions.mjs";
 
 /** Off-skill pool items to hide, and authored replacements — see lib/homework-practice-review.mjs. */
 const PRACTICE_REVIEW = loadPracticeReview(root);
@@ -4069,6 +4076,7 @@ ${familyStyleCss}
   <link rel="stylesheet" href="/assets/mobile-access.css">
   <!-- mobile-access-injected:end -->
 
+  <script type="module" src="/assets/learning-supports/ls-boot.js"></script>
   <!-- enthead-injected:begin (enterprise head/meta — tools/inject-enterprise-head.js) -->
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/assets/favicon.svg">

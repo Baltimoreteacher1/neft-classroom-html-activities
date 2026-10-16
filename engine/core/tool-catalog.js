@@ -327,6 +327,43 @@ export const TOOL_CATALOG = {
     ],
   },
 
+  "linked-lab": {
+    name: "Linked Ratio Lab",
+    nameEs: "Laboratorio de razones conectadas",
+    purpose:
+      "See one ratio as a table, a double number line, a tape, a bar and a hundred grid at once. Change it in one picture and the others change with it.",
+    purposeEs:
+      "Mira una razón como tabla, recta numérica doble, cinta, barra y cuadrícula de cien a la vez. Cámbiala en una imagen y las demás cambian con ella.",
+    howTo: [
+      "Type two numbers in the table and press Build table, or shade squares on the hundred grid.",
+      "Pick a column in the table. The line, the tape and the bar show that same scale.",
+      "Choose what stays the same and what changes, then check your idea.",
+    ],
+    tryThis: [
+      "Shade 25 squares. What ratio does the table show for it?",
+      "Pick ×3, then ×5. What do all the pictures keep the same?",
+      "Switch between two parts of a mixture and a part of a whole. Which pictures change?",
+    ],
+  },
+
+  "invent-first": {
+    name: "Invent a Way First",
+    nameEs: "Inventa una manera primero",
+    purpose:
+      "Try to invent your own way to estimate before you see the lesson's ways, then compare the two side by side. Optional, untimed, and not graded.",
+    purposeEs:
+      "Intenta inventar tu propia manera de estimar antes de ver las de la lección y luego compáralas lado a lado. Es opcional, sin tiempo y sin calificación.",
+    howTo: [
+      "Read the problem, then add marks to the number line to show your thinking.",
+      "Add an easier number for the whole or your estimate if you used one.",
+      "Press Compare to see your way next to the lesson's way.",
+    ],
+    tryThis: [
+      "Make an estimate a different way and compare again. Does the lesson's way change?",
+      "Tell a partner which of the lesson's ways is closest to yours.",
+    ],
+  },
+
   // ── Expressions & equations ──────────────────────────────────────────────
   "algebra-expand": {
     name: "Distribute Lab",
@@ -969,6 +1006,8 @@ export const SECTION_LABEL = {
   connect: "Connect",
   launch: "Apply",
   reflect: "Reflect",
+  // Offered beside the lesson's own tools rather than authored in its config.
+  extra: "Extra",
 };
 
 /** Catalog key for a config block: `manip:<name>` for the bridge, else `kind`. */

@@ -53,7 +53,12 @@ function copyStandaloneHtml() {
   // shipped clobbered this way: a legacy hand-written stub of the same name sat
   // in `assets/`, so every homework page loaded 19 lines of dead code instead of
   // the interactive-visual mounter, and the model never appeared.)
-  const UNHASHED_BUNDLES = ["assets/homework-lesson-models.js", "assets/nt-web-vitals.js"];
+  const UNHASHED_BUNDLES = [
+    "assets/homework-lesson-models.js",
+    "assets/nt-web-vitals.js",
+    "assets/class-investigation/engine-tools.js",
+    "assets/learning-supports/engine-speech.js",
+  ];
 
   // Rollup-built HTML entries that live INSIDE a directory the static copy walks.
   // curriculum/ is copied wholesale, so the copy would overwrite Rollup's built
@@ -421,10 +426,18 @@ export default defineConfig({
   build: {
     outDir: "dist",
     rollupOptions: {
+      // Bridge entries (class-investigation, learning-supports) exist only to
+      // re-export engine modules; Vite strips entry exports unless told not to.
+      preserveEntrySignatures: "exports-only",
       input: {
         main: resolve(__dirname, "index.html"),
         "homework-lesson-models": resolve(__dirname, "engine/homework-lesson-models.js"),
         "nt-web-vitals": resolve(__dirname, "assets/nt-web-vitals.js"),
+        "learning-supports-speech": resolve(__dirname, "assets/learning-supports/engine-speech.js"),
+        "class-investigation-engine": resolve(
+          __dirname,
+          "assets/class-investigation/engine-tools.js",
+        ),
         "teacher-live-snapshot": resolve(__dirname, "teacher-tools/live-snapshot/index.html"),
         // The Forge renders AI-generated lesson configs through the REAL lesson
         // engine (bootLesson), so it must be a Rollup entry like the lessons are
@@ -434,10 +447,17 @@ export default defineConfig({
         ...getLessonEntries(),
       },
       output: {
-        entryFileNames: (chunk) =>
-          chunk.name === "homework-lesson-models" || chunk.name === "nt-web-vitals"
+        entryFileNames: (chunk) => {
+          if (chunk.name === "class-investigation-engine") {
+            return "assets/class-investigation/engine-tools.js";
+          }
+          if (chunk.name === "learning-supports-speech") {
+            return "assets/learning-supports/engine-speech.js";
+          }
+          return chunk.name === "homework-lesson-models" || chunk.name === "nt-web-vitals"
             ? `assets/${chunk.name}.js`
-            : "assets/[name]-[hash].js",
+            : "assets/[name]-[hash].js";
+        },
       },
     },
     assetsInlineLimit: 100000,

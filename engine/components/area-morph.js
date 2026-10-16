@@ -30,6 +30,8 @@
 // Honors prefers-reduced-motion: the slider still works (it IS the animation
 // timeline, user-driven), but the "Watch it" auto-demo never plays.
 
+import { labT } from "./lab-strings-es.js";
+
 const C = {
   navy: "#12355b",
   teal: "#1fa6a2",
@@ -48,6 +50,24 @@ function esc(s) {
     /[&<>"]/g,
     (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
   );
+}
+
+// The figure's name for the svg's aria-label; an unknown figure keeps its raw key.
+function figureName(figure) {
+  switch (figure) {
+    case "parallelogram":
+      return labT("area-morph.figure-parallelogram", "parallelogram");
+    case "triangle":
+      return labT("area-morph.figure-triangle", "triangle");
+    case "trapezoid":
+      return labT("area-morph.figure-trapezoid", "trapezoid");
+    case "polygon":
+      return labT("area-morph.figure-polygon", "polygon");
+    case "composite":
+      return labT("area-morph.figure-composite", "composite");
+    default:
+      return figure;
+  }
 }
 
 // Smooth the raw slider value so motion feels physical, not linear.
@@ -71,7 +91,7 @@ const dim = (p1, p2, text, off, opts = {}) => ({ p1, p2, text, off, ...opts });
 // Coordinates are in an abstract unit box; we scale into the viewBox.
 function figureDef(figure, { b, h, a }, unit) {
   const u = unit ? ` ${unit}` : "";
-  const sq = unit ? ` ${unit}²` : " square units";
+  const sq = unit ? ` ${unit}²` : ` ${labT("area-morph.square-units", "square units")}`;
 
   switch (figure) {
     case "triangle": {
@@ -81,7 +101,11 @@ function figureDef(figure, { b, h, a }, unit) {
       return {
         area: (B * H) / 2,
         grid: true,
-        steps: ["1 · Triangle", "2 · Rotate a copy", "3 · Parallelogram"],
+        steps: [
+          `1 · ${labT("area-morph.step-triangle", "Triangle")}`,
+          `2 · ${labT("area-morph.step-rotate-a-copy", "Rotate a copy")}`,
+          `3 · ${labT("area-morph.step-parallelogram", "Parallelogram")}`,
+        ],
         whole: [
           [0, H],
           [B, H],
@@ -131,9 +155,21 @@ function figureDef(figure, { b, h, a }, unit) {
         ],
         caption(t) {
           if (t < 0.05)
-            return `One triangle, base ${B}${u} and height ${H}${u}. Its area formula is the mystery — drag the slider below.`;
-          if (t < 0.95) return "A copy of the SAME triangle is rotating 180°…";
-          return `Two identical triangles tile a parallelogram of area b · h. So ONE triangle is HALF of it: ½ · ${B} · ${H} = ${(B * H) / 2}.`;
+            return labT(
+              "area-morph.triangle-caption-1",
+              "One triangle, base {base} and height {height}. Its area formula is the mystery — drag the slider below.",
+              { base: `${B}${u}`, height: `${H}${u}` },
+            );
+          if (t < 0.95)
+            return labT(
+              "area-morph.triangle-caption-2",
+              "A copy of the SAME triangle is rotating 180°…",
+            );
+          return labT(
+            "area-morph.triangle-caption-3",
+            "Two identical triangles tile a parallelogram of area b · h. So ONE triangle is HALF of it: ½ · {B} · {H} = {area}.",
+            { B, H, area: (B * H) / 2 },
+          );
         },
       };
     }
@@ -145,7 +181,11 @@ function figureDef(figure, { b, h, a }, unit) {
       return {
         area: ((A + B) / 2) * H,
         grid: true,
-        steps: ["1 · Trapezoid", "2 · Rotate a copy", "3 · Parallelogram"],
+        steps: [
+          `1 · ${labT("area-morph.step-trapezoid", "Trapezoid")}`,
+          `2 · ${labT("area-morph.step-rotate-a-copy", "Rotate a copy")}`,
+          `3 · ${labT("area-morph.step-parallelogram", "Parallelogram")}`,
+        ],
         whole: [
           [0, H],
           [B, H],
@@ -198,9 +238,21 @@ function figureDef(figure, { b, h, a }, unit) {
         ],
         caption(t) {
           if (t < 0.05)
-            return `One trapezoid: two different parallel bases, a = ${A}${u} and b = ${B}${u}. Drag the slider below.`;
-          if (t < 0.95) return "An identical copy is rotating 180° to dock against it…";
-          return `Together they make a parallelogram with base (a + b) = ${A + B}. One trapezoid is HALF of it: ½ (${A} + ${B}) · ${H} = ${((A + B) / 2) * H}.`;
+            return labT(
+              "area-morph.trapezoid-caption-1",
+              "One trapezoid: two different parallel bases, a = {baseA} and b = {baseB}. Drag the slider below.",
+              { baseA: `${A}${u}`, baseB: `${B}${u}` },
+            );
+          if (t < 0.95)
+            return labT(
+              "area-morph.trapezoid-caption-2",
+              "An identical copy is rotating 180° to dock against it…",
+            );
+          return labT(
+            "area-morph.trapezoid-caption-3",
+            "Together they make a parallelogram with base (a + b) = {sum}. One trapezoid is HALF of it: ½ ({A} + {B}) · {H} = {area}.",
+            { sum: A + B, A, B, H, area: ((A + B) / 2) * H },
+          );
         },
       };
     }
@@ -224,7 +276,11 @@ function figureDef(figure, { b, h, a }, unit) {
       return {
         area: 6 * ((S * ap) / 2),
         grid: false,
-        steps: ["1 · Hexagon", "2 · Break apart", "3 · Six triangles"],
+        steps: [
+          `1 · ${labT("area-morph.step-hexagon", "Hexagon")}`,
+          `2 · ${labT("area-morph.step-break-apart", "Break apart")}`,
+          `3 · ${labT("area-morph.step-six-triangles", "Six triangles")}`,
+        ],
         whole: [0, 1, 2, 3, 4, 5].map(vert),
         pieces(t) {
           const out = [];
@@ -272,9 +328,19 @@ function figureDef(figure, { b, h, a }, unit) {
         ],
         caption(t) {
           if (t < 0.05)
-            return "A regular hexagon looks hard to measure. Drag the slider below and watch what it is made of.";
-          if (t < 0.95) return "…it breaks into congruent triangles, all the same size.";
-          return `Six identical triangles. Find ONE triangle's area (½ · s · h), then multiply by 6. Decomposition beats memorization.`;
+            return labT(
+              "area-morph.polygon-caption-1",
+              "A regular hexagon looks hard to measure. Drag the slider below and watch what it is made of.",
+            );
+          if (t < 0.95)
+            return labT(
+              "area-morph.polygon-caption-2",
+              "…it breaks into congruent triangles, all the same size.",
+            );
+          return labT(
+            "area-morph.polygon-caption-3",
+            "Six identical triangles. Find ONE triangle's area (½ · s · h), then multiply by 6. Decomposition beats memorization.",
+          );
         },
       };
     }
@@ -289,7 +355,11 @@ function figureDef(figure, { b, h, a }, unit) {
       return {
         area: a1 + a2,
         grid: true,
-        steps: ["1 · L-shape", "2 · Split it", "3 · Two rectangles"],
+        steps: [
+          `1 · ${labT("area-morph.step-l-shape", "L-shape")}`,
+          `2 · ${labT("area-morph.step-split-it", "Split it")}`,
+          `3 · ${labT("area-morph.step-two-rectangles", "Two rectangles")}`,
+        ],
         whole: [
           [0, H],
           [B, H],
@@ -345,17 +415,28 @@ function figureDef(figure, { b, h, a }, unit) {
         },
         tokens: [
           { txt: "A =", at: 0 },
-          { txt: "(rectangle 1)", at: 0.35 },
+          { txt: labT("area-morph.rectangle-1", "(rectangle 1)"), at: 0.35 },
           { txt: "+", at: 0.35 },
-          { txt: "(rectangle 2)", at: 0.35 },
+          { txt: labT("area-morph.rectangle-2", "(rectangle 2)"), at: 0.35 },
           { txt: `= ${B}·${cutY} + ${cutX}·${H - cutY}`, at: 0.8 },
           { txt: `= ${a1 + a2}${sq}`, at: 0.97 },
         ],
         caption(t) {
           if (t < 0.05)
-            return "A composite (L-shaped) figure — no single formula fits it. Drag the slider below.";
-          if (t < 0.95) return "Pull it apart into shapes you already know…";
-          return `Two plain rectangles: ${a1} + ${a2} = ${a1 + a2} square units. Split, solve, add.`;
+            return labT(
+              "area-morph.composite-caption-1",
+              "A composite (L-shaped) figure — no single formula fits it. Drag the slider below.",
+            );
+          if (t < 0.95)
+            return labT(
+              "area-morph.composite-caption-2",
+              "Pull it apart into shapes you already know…",
+            );
+          return labT(
+            "area-morph.composite-caption-3",
+            "Two plain rectangles: {a1} + {a2} = {total} square units. Split, solve, add.",
+            { a1, a2, total: a1 + a2 },
+          );
         },
       };
     }
@@ -367,7 +448,11 @@ function figureDef(figure, { b, h, a }, unit) {
       return {
         area: B * H,
         grid: true,
-        steps: ["1 · Parallelogram", "2 · Cut & slide", "3 · Rectangle"],
+        steps: [
+          `1 · ${labT("area-morph.step-parallelogram", "Parallelogram")}`,
+          `2 · ${labT("area-morph.step-cut-slide", "Cut & slide")}`,
+          `3 · ${labT("area-morph.step-rectangle", "Rectangle")}`,
+        ],
         whole: [
           [0, H],
           [B, H],
@@ -427,9 +512,21 @@ function figureDef(figure, { b, h, a }, unit) {
         ],
         caption(t) {
           if (t < 0.05)
-            return `A slanted parallelogram, base ${B}${u} and height ${H}${u}. Drag the slider below to cut and slide it.`;
-          if (t < 0.95) return "Slicing the triangle off one end and carrying it to the other…";
-          return `Same pieces, zero area lost — it IS a ${B} × ${H} rectangle. That is why A = b · h.`;
+            return labT(
+              "area-morph.parallelogram-caption-1",
+              "A slanted parallelogram, base {base} and height {height}. Drag the slider below to cut and slide it.",
+              { base: `${B}${u}`, height: `${H}${u}` },
+            );
+          if (t < 0.95)
+            return labT(
+              "area-morph.parallelogram-caption-2",
+              "Slicing the triangle off one end and carrying it to the other…",
+            );
+          return labT(
+            "area-morph.parallelogram-caption-3",
+            "Same pieces, zero area lost — it IS a {B} × {H} rectangle. That is why A = b · h.",
+            { B, H },
+          );
         },
       };
     }
@@ -528,15 +625,28 @@ export function renderAreaMorph(container, cfg = {}) {
   let prediction = null;
   const predictionVerdict = (choice) =>
     choice === "same"
-      ? "You predicted the area would stay the same — watch why that is right:"
-      : `You predicted the area would get ${choice}. Look closely:`;
+      ? labT(
+          "area-morph.verdict-same",
+          "You predicted the area would stay the same — watch why that is right:",
+        )
+      : choice === "bigger"
+        ? labT(
+            "area-morph.verdict-bigger",
+            "You predicted the area would get bigger. Look closely:",
+          )
+        : labT(
+            "area-morph.verdict-smaller",
+            "You predicted the area would get smaller. Look closely:",
+          );
 
   const predictRow = document.createElement("div");
   predictRow.style.cssText =
     "display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center; margin:0 4px 12px;";
   const predictQ = document.createElement("span");
-  predictQ.textContent =
-    "Before you move it — does the AREA get bigger, smaller, or stay the same?";
+  predictQ.textContent = labT(
+    "area-morph.predict-question",
+    "Before you move it — does the AREA get bigger, smaller, or stay the same?",
+  );
   predictQ.style.cssText = `flex:1 1 100%; text-align:center; font-size:.9rem; font-weight:600; color:${C.navy};`;
   predictRow.appendChild(predictQ);
   const predictLive = document.createElement("span");
@@ -545,7 +655,12 @@ export function renderAreaMorph(container, cfg = {}) {
   for (const choice of ["bigger", "smaller", "same"]) {
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.textContent = choice === "same" ? "Stays the same" : `Gets ${choice}`;
+    btn.textContent =
+      choice === "same"
+        ? labT("area-morph.predict-same", "Stays the same")
+        : choice === "bigger"
+          ? labT("area-morph.predict-bigger", "Gets bigger")
+          : labT("area-morph.predict-smaller", "Gets smaller");
     btn.style.cssText = `min-height:44px; padding:6px 14px; border:1.5px solid ${C.line}; border-radius:10px; background:#fff; color:${C.navy}; font-size:.85rem; font-weight:600; cursor:pointer;`;
     btn.setAttribute("aria-pressed", "false");
     btn.addEventListener("click", () => {
@@ -556,7 +671,10 @@ export function renderAreaMorph(container, cfg = {}) {
         other.style.borderColor = on ? C.navy : C.line;
         other.style.background = on ? "#eef4ff" : "#fff";
       }
-      predictLive.textContent = "Prediction locked in — now move the slider and find out.";
+      predictLive.textContent = labT(
+        "area-morph.predict-locked",
+        "Prediction locked in — now move the slider and find out.",
+      );
     });
     predictRow.appendChild(btn);
   }
@@ -573,7 +691,9 @@ export function renderAreaMorph(container, cfg = {}) {
   sliderWrap.innerHTML =
     '<label for="am-slider-ID" style="display:block; text-align:center; font-weight:700; color:' +
     C.navy +
-    '; font-size:.95rem; margin-bottom:2px;">Drag to transform the figure</label>' +
+    '; font-size:.95rem; margin-bottom:2px;">' +
+    labT("area-morph.slider-label", "Drag to transform the figure") +
+    "</label>" +
     '<input id="am-slider-ID" type="range" min="0" max="1000" value="0" step="25" style="display:block; width:100%; min-height:44px; accent-color:' +
     C.teal +
     ';" />' +
@@ -593,7 +713,7 @@ export function renderAreaMorph(container, cfg = {}) {
   // clearly subordinate to the slider above.
   const stepBar = document.createElement("div");
   stepBar.setAttribute("role", "group");
-  stepBar.setAttribute("aria-label", "Jump to a step");
+  stepBar.setAttribute("aria-label", labT("area-morph.jump-to-step", "Jump to a step"));
   stepBar.style.cssText =
     "display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin-top:12px;";
   stepBar.innerHTML =
@@ -603,7 +723,7 @@ export function renderAreaMorph(container, cfg = {}) {
           `<button type="button" class="morph-step-btn" data-step="${i}" aria-pressed="false" style="min-height:44px; padding:6px 12px; border:1.5px solid ${C.line}; border-radius:10px; background:#fff; color:${C.navy}; font-size:.82rem; font-weight:600; cursor:pointer;">${esc(name)}</button>`,
       )
       .join("") +
-    `<button type="button" data-act="play" aria-label="Watch the whole transformation" style="min-height:44px; padding:6px 14px; border:1.5px solid ${C.navy}; border-radius:10px; background:#fff; color:${C.navy}; font-size:.82rem; font-weight:600; cursor:pointer;">Watch it</button>`;
+    `<button type="button" data-act="play" aria-label="${labT("area-morph.watch-whole", "Watch the whole transformation")}" style="min-height:44px; padding:6px 14px; border:1.5px solid ${C.navy}; border-radius:10px; background:#fff; color:${C.navy}; font-size:.82rem; font-weight:600; cursor:pointer;">${labT("area-morph.watch-it", "Watch it")}</button>`;
   // The step chips sit ABOVE the caption, not at the very bottom. In a lesson
   // this component mounts inside `.nt-work-tool`, a STICKY column, while the
   // lesson floats a fixed "Next: …" button over the viewport's bottom-right.
@@ -743,13 +863,17 @@ export function renderAreaMorph(container, cfg = {}) {
         // and swamp the formula being built, so they are simply absent until
         // earned. Only the formula's own parts hold a place.
         if (/^=/.test(tok.txt.trim())) return "";
-        return `<span role="img" aria-label="blank" style="display:inline-block; width:1.9em; border-bottom:2px solid ${C.navy}; opacity:.28; vertical-align:baseline;">&nbsp;</span>`;
+        return `<span role="img" aria-label="${labT("area-morph.blank", "blank")}" style="display:inline-block; width:1.9em; border-bottom:2px solid ${C.navy}; opacity:.28; vertical-align:baseline;">&nbsp;</span>`;
       })
       .filter(Boolean)
       .join(" ");
     svg.setAttribute(
       "aria-label",
-      `${figure} area transformation, ${Math.round(t * 100)}% complete. ${def.caption(t)}`,
+      labT("area-morph.svg-label", "{figure} area transformation, {pct}% complete. {caption}", {
+        figure: figureName(figure),
+        pct: Math.round(t * 100),
+        caption: def.caption(t),
+      }),
     );
     updateStepUI(tRaw);
   }

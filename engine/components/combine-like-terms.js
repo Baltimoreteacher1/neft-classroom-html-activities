@@ -9,6 +9,8 @@
 //   renderCombineLikeTerms(host, cfg) -> { destroy }
 //     cfg = { kind:'combine-like-terms', expr:String, title?, presets?:[{expr,label?}] }
 
+import { labT } from "./lab-strings-es.js";
+
 const C = {
   navy: "#12355b",
   accent: "#1d4ed8",
@@ -127,12 +129,13 @@ function mountCombine(host, cfg = {}) {
   const wrap = document.createElement("div");
   wrap.className = "clt-wrap";
   if (!parsed) {
-    wrap.innerHTML = `<p class="clt-hint">Could not read this expression.</p>`;
+    wrap.innerHTML = `<p class="clt-hint">${labT("combine-like-terms.cannot-read", "Could not read this expression.")}</p>`;
     host.appendChild(wrap);
     return { destroy: () => wrap.remove() };
   }
   const answer = parsed; // {x, c}
-  const title = cfg.title || `Simplify: ${exprStr}`;
+  const title =
+    cfg.title || labT("combine-like-terms.default-title", "Simplify: {expr}", { expr: exprStr });
 
   // Colour the x-terms and constants in the shown expression.
   const colored = exprStr
@@ -145,29 +148,29 @@ function mountCombine(host, cfg = {}) {
 
   wrap.innerHTML =
     `<div class="clt-title">${esc(title)}</div>` +
-    `<div class="clt-hint">Add the like terms: combine the <strong>x-terms</strong>, then combine the <strong>number terms</strong>.</div>` +
+    `<div class="clt-hint">${labT("combine-like-terms.hint", "Add the like terms: combine the <strong>x-terms</strong>, then combine the <strong>number terms</strong>.")}</div>` +
     `<div class="clt-expr" aria-label="${esc(exprStr)}">${colored}</div>` +
     `<div class="clt-steps">` +
     `<div class="clt-step" data-step="1">` +
-    `<div class="clt-step-num">Step 1 · Combine the x-terms</div>` +
-    `<div class="clt-prompt">Add the coefficients of the x-terms:</div>` +
-    `<div class="clt-row"><input class="clt-inp" data-k="x" type="text" inputmode="numeric" aria-label="combined x coefficient" placeholder="?"><span class="clt-suffix">x</span><button type="button" class="clt-btn clt-btn-check" data-check="1">Check</button></div>` +
+    `<div class="clt-step-num">${labT("combine-like-terms.step-1", "Step 1 · Combine the x-terms")}</div>` +
+    `<div class="clt-prompt">${labT("combine-like-terms.prompt-1", "Add the coefficients of the x-terms:")}</div>` +
+    `<div class="clt-row"><input class="clt-inp" data-k="x" type="text" inputmode="numeric" aria-label="${labT("combine-like-terms.aria-x", "combined x coefficient")}" placeholder="?"><span class="clt-suffix">x</span><button type="button" class="clt-btn clt-btn-check" data-check="1">${labT("combine-like-terms.check", "Check")}</button></div>` +
     `<div class="clt-status" data-status="1" role="status" aria-live="polite"></div>` +
     `</div>` +
     `<div class="clt-step" data-step="2" hidden>` +
-    `<div class="clt-step-num">Step 2 · Combine the numbers</div>` +
-    `<div class="clt-prompt">Add the constant number terms (keep their signs):</div>` +
-    `<div class="clt-row"><input class="clt-inp" data-k="c" type="text" inputmode="numeric" aria-label="combined constant" placeholder="?"><button type="button" class="clt-btn clt-btn-check" data-check="2">Check</button></div>` +
+    `<div class="clt-step-num">${labT("combine-like-terms.step-2", "Step 2 · Combine the numbers")}</div>` +
+    `<div class="clt-prompt">${labT("combine-like-terms.prompt-2", "Add the constant number terms (keep their signs):")}</div>` +
+    `<div class="clt-row"><input class="clt-inp" data-k="c" type="text" inputmode="numeric" aria-label="${labT("combine-like-terms.aria-c", "combined constant")}" placeholder="?"><button type="button" class="clt-btn clt-btn-check" data-check="2">${labT("combine-like-terms.check", "Check")}</button></div>` +
     `<div class="clt-status" data-status="2" role="status" aria-live="polite"></div>` +
     `</div>` +
     `<div class="clt-step" data-step="3" hidden>` +
-    `<div class="clt-step-num">Step 3 · Write the simplified expression</div>` +
-    `<div class="clt-prompt">Put it together in simplest form:</div>` +
-    `<div class="clt-row"><input class="clt-inp" data-k="expr" type="text" inputmode="text" style="width:150px" aria-label="simplified expression" placeholder="e.g. 8x - 2"><button type="button" class="clt-btn clt-btn-check" data-check="3">Check</button></div>` +
+    `<div class="clt-step-num">${labT("combine-like-terms.step-3", "Step 3 · Write the simplified expression")}</div>` +
+    `<div class="clt-prompt">${labT("combine-like-terms.prompt-3", "Put it together in simplest form:")}</div>` +
+    `<div class="clt-row"><input class="clt-inp" data-k="expr" type="text" inputmode="text" style="width:150px" aria-label="${labT("combine-like-terms.aria-expr", "simplified expression")}" placeholder="${labT("combine-like-terms.placeholder-expr", "e.g. 8x - 2")}"><button type="button" class="clt-btn clt-btn-check" data-check="3">${labT("combine-like-terms.check", "Check")}</button></div>` +
     `<div class="clt-status" data-status="3" role="status" aria-live="polite"></div>` +
     `</div>` +
     `</div>` +
-    `<div class="clt-controls"><button type="button" class="clt-btn clt-btn-ghost" data-reveal>Show me</button></div>` +
+    `<div class="clt-controls"><button type="button" class="clt-btn clt-btn-ghost" data-reveal>${labT("combine-like-terms.show-me", "Show me")}</button></div>` +
     `<div class="clt-result" hidden></div>`;
   host.appendChild(wrap);
 
@@ -212,13 +215,20 @@ function mountCombine(host, cfg = {}) {
       setStatus(
         1,
         answer.x === 0
-          ? "Right — the x-terms cancel out."
-          : `Right — the x-terms make ${answer.x}x.`,
+          ? labT("combine-like-terms.right-x-cancel", "Right — the x-terms cancel out.")
+          : labT("combine-like-terms.right-x", "Right — the x-terms make {x}x.", { x: answer.x }),
         true,
       );
       reveal(2);
     } else {
-      setStatus(1, "Not yet — add the numbers in front of each x (watch the signs).", false);
+      setStatus(
+        1,
+        labT(
+          "combine-like-terms.not-yet-x",
+          "Not yet — add the numbers in front of each x (watch the signs).",
+        ),
+        false,
+      );
     }
   }
   function check2() {
@@ -226,36 +236,58 @@ function mountCombine(host, cfg = {}) {
     const ok = v === answer.c;
     mark(inp("c"), ok);
     if (ok) {
-      setStatus(2, `Right — the numbers combine to ${answer.c}.`, true);
+      setStatus(
+        2,
+        labT("combine-like-terms.right-c", "Right — the numbers combine to {c}.", { c: answer.c }),
+        true,
+      );
       reveal(3);
     } else {
-      setStatus(2, "Not yet — add the constant terms, keeping each sign.", false);
+      setStatus(
+        2,
+        labT(
+          "combine-like-terms.not-yet-c",
+          "Not yet — add the constant terms, keeping each sign.",
+        ),
+        false,
+      );
     }
   }
   function check3() {
     const v = parseLinear(inp("expr").value);
-    if (!v) return mark(inp("expr"), false), setStatus(3, "Write it like 8x - 2.", false);
+    if (!v)
+      return (
+        mark(inp("expr"), false),
+        setStatus(3, labT("combine-like-terms.write-like", "Write it like 8x - 2."), false)
+      );
     const ok = linEq(v, answer);
     mark(inp("expr"), ok);
     if (ok) {
-      setStatus(3, "That's it — fully simplified!", true);
+      setStatus(3, labT("combine-like-terms.done", "That's it — fully simplified!"), true);
       celebrate();
     } else {
-      setStatus(3, "Not yet — combine both parts into one expression.", false);
+      setStatus(
+        3,
+        labT(
+          "combine-like-terms.not-yet-expr",
+          "Not yet — combine both parts into one expression.",
+        ),
+        false,
+      );
     }
   }
   function showMe() {
     inp("x").value = String(answer.x);
     mark(inp("x"), true);
-    setStatus(1, "x-terms combined.", true);
+    setStatus(1, labT("combine-like-terms.x-combined", "x-terms combined."), true);
     reveal(2);
     inp("c").value = String(answer.c);
     mark(inp("c"), true);
-    setStatus(2, "Numbers combined.", true);
+    setStatus(2, labT("combine-like-terms.c-combined", "Numbers combined."), true);
     reveal(3);
     inp("expr").value = fmtLinear(answer);
     mark(inp("expr"), true);
-    setStatus(3, "Simplified.", true);
+    setStatus(3, labT("combine-like-terms.simplified", "Simplified."), true);
     celebrate();
   }
 
@@ -280,7 +312,7 @@ export function renderCombineLikeTerms(host, cfg = {}) {
   const bar = document.createElement("div");
   bar.className = "clt-presets";
   bar.setAttribute("role", "group");
-  bar.setAttribute("aria-label", "Pick a problem");
+  bar.setAttribute("aria-label", labT("combine-like-terms.pick-problem", "Pick a problem"));
   const stage = document.createElement("div");
   let current = null;
   const mount = (p, viaChip = false) => {

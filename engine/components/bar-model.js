@@ -2,6 +2,7 @@
 // (see tsconfig.json); the marker is the debt, and removing it is the unit of
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 import { stackContent } from "../core/i18n.js";
+import { fmt, percentOf } from "./linked-model.js";
 
 let BM_STYLE_INJECTED = false;
 
@@ -307,25 +308,61 @@ export function renderBarModel(container, config) {
   container.append(wrapper);
 }
 
+const escapeHtml = (v) =>
+  String(v).replace(
+    /[&<>"]/g,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+  );
+
+/**
+ * The bar a linked ratio draws. Read as two parts, one segment per quantity;
+ * read as a part of a whole, the part followed by the rest of the whole. Each
+ * segment prints only the student's own number scaled by their chosen k.
+ */
+function linkedSegments(state, config) {
+  if (state.a == null) return [];
+  const nameA = escapeHtml(config.labelA || "A");
+  const nameB = escapeHtml(config.labelB || "B");
+  const x = fmt(state.a * state.k);
+  const y = fmt(state.b * state.k);
+  if (state.relation === "part-part") {
+    return [
+      { label: `${nameA}: ${x}`, value: state.a },
+      { label: `${nameB}: ${y}`, value: state.b },
+    ];
+  }
+  const out = [{ label: `${nameA}: ${x} of ${y}`, value: state.a }];
+  if (state.b > state.a) out.push({ label: `rest of the ${nameB}`, value: state.b - state.a });
+  return out;
+}
+
 // Static "ratio / part-whole" bar model for configs authored as
 // `parts:[{label,value,color}] + whole`. Draws the segmented bar, shows the
 // task prompt (from `instructions`), and hides the worked solution (`label`)
 // behind a reveal so the answer is never leaked up front. Completes the phase
 // when the learner reveals the solution.
+//
+// `config.model` (optional, linked-model.js) turns it into a view of the
+// student's own ratio instead: two segments, one per quantity, sized a·k : b·k
+// (or a·k of a whole b·k). It is only ever a LISTENER: the answer-entry path
+// above is a lesson question and is never linked, and this path has nothing to
+// type into. Without a model every line below behaves as it always has.
 function renderRatioBarModel(container, config) {
   const { parts, whole, instructions, label, hint, hints, onComplete } = config;
+  const linked = config.model || null;
   const wrapper = document.createElement("div");
   wrapper.className = "card";
 
   // `parts` is authored either as objects ({label,value,color}) or as plain
   // numbers ([80, 80, 12]); normalize both to {label,value,color}.
-  const segs = (Array.isArray(parts) ? parts : [])
+  let segs = (Array.isArray(parts) ? parts : [])
     .map((p) => (typeof p === "number" ? { value: p } : p))
     .filter((p) => p && p.value != null);
+  if (linked) segs = linkedSegments(linked.get(), config);
 
   // Graceful fallback: nothing usable to draw — show the prompt and complete so
   // the practice queue never stalls on a blank card.
-  if (segs.length === 0) {
+  if (segs.length === 0 && !linked) {
     const p = document.createElement("p");
     p.className = "problem-stem";
     p.textContent = instructions || label || "This bar-model task is unavailable.";
@@ -345,7 +382,6 @@ function renderRatioBarModel(container, config) {
 
   const BAR_H = 48;
   const GAP = 3;
-  const partSum = segs.reduce((s, p) => s + Number(p.value || 0), 0) || 1;
   const palette = ["#1fa6a2", "#f2c15b", "#d9795d", "#2f80d1", "#0fa958", "#875f00"];
 
   const vizWrap = document.createElement("div");
@@ -356,8 +392,9 @@ function renderRatioBarModel(container, config) {
   vizWrap.style.cssText =
     "position:relative; margin-bottom:var(--sp-5); overflow-x:auto; -webkit-overflow-scrolling:touch;";
 
-  // Whole/total bar on top when a total is given.
-  if (whole != null) {
+  // Whole/total bar on top when a total is given. A linked bar never prints a
+  // total: the student's two quantities are the whole story.
+  if (whole != null && !linked) {
     const totalBar = document.createElement("div");
     totalBar.className = "bm-total";
     totalBar.style.cssText = `
@@ -371,22 +408,59 @@ function renderRatioBarModel(container, config) {
 
   const segBar = document.createElement("div");
   segBar.style.cssText = `display:flex; gap:${GAP}px; height:${BAR_H}px;`;
-  segs.forEach((part, i) => {
-    const pct = (Number(part.value || 0) / partSum) * 100;
-    const seg = document.createElement("div");
-    seg.className = "bm-seg bm-seg-in";
-    seg.style.cssText = `
+  const paintSegments = (list) => {
+    const sum = list.reduce((acc, p) => acc + Number(p.value || 0), 0) || 1;
+    segBar.textContent = "";
+    list.forEach((part, i) => {
+      const pct = (Number(part.value || 0) / sum) * 100;
+      const seg = document.createElement("div");
+      seg.className = "bm-seg bm-seg-in";
+      seg.style.cssText = `
       flex:${pct}; background:${part.color || palette[i % palette.length]}; border-radius:var(--radius-sm);
       display:grid; place-items:center; color:white; font-weight:700; font-size:0.82rem;
       position:relative; min-width:40px; text-align:center; line-height:1.15;
     `;
-    // Entrance stagger — set after cssText (which replaces inline style).
-    seg.style.animationDelay = `${i * 70}ms`;
-    seg.innerHTML = `<div><div style="font-size:0.7rem; opacity:0.9;">${part.label || ""}</div></div>`;
-    segBar.append(seg);
-  });
+      // Entrance stagger — set after cssText (which replaces inline style).
+      seg.style.animationDelay = `${i * 70}ms`;
+      seg.innerHTML = `<div><div style="font-size:0.7rem; opacity:0.9;">${part.label || ""}</div></div>`;
+      segBar.append(seg);
+    });
+  };
+  paintSegments(segs);
   vizWrap.append(segBar);
   wrapper.append(vizWrap);
+
+  if (linked) {
+    const note = document.createElement("p");
+    note.setAttribute("role", "status");
+    note.setAttribute("aria-live", "polite");
+    note.style.cssText = "margin:0; font-size:0.9rem; font-weight:600; line-height:1.4;";
+    wrapper.append(note);
+    const show = (state) => {
+      const next = linkedSegments(state, config);
+      paintSegments(next);
+      const percent = percentOf(state);
+      note.innerHTML =
+        percent === null
+          ? stackContent(
+              "Type a ratio in the table to see it as a bar.",
+              "Escribe una razón en la tabla para verla como una barra.",
+            )
+          : stackContent(
+              `The first quantity is ${fmt(percent)}% of the ${state.relation === "part-whole" ? "whole" : "bar"}.`,
+              `La primera cantidad es el ${fmt(percent)}% ${state.relation === "part-whole" ? "del entero" : "de la barra"}.`,
+            );
+    };
+    show(linked.get());
+    const unsubscribe = linked.subscribe((state) => show(state));
+    container.append(wrapper);
+    return {
+      destroy() {
+        unsubscribe();
+        wrapper.remove();
+      },
+    };
+  }
 
   // Reveal-the-solution control (self-check). Keeps the worked answer hidden
   // until the learner has attempted the model on paper.

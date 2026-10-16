@@ -10,6 +10,8 @@
 // floating point: the decimal path shifts the point (the classroom move) and
 // then runs the identical whole-number cycle.
 
+import { labT } from "./lab-strings-es.js";
+
 /** @typedef {"divide"|"multiply"|"subtract"|"bringdown"} LDStepType */
 
 /**
@@ -62,12 +64,38 @@ export function stepPosition(type) {
   return CYCLE_TYPES.indexOf(String(type));
 }
 
-const LABEL_OF = Object.freeze({
-  divide: "Divide",
-  multiply: "Multiply",
-  subtract: "Subtract",
-  bringdown: "Bring Down",
-});
+/**
+ * The name of step type `type` as the student reads it. CYCLE_LABELS stays the
+ * English constant (tests and keys read it); this is the page-language name.
+ * @param {LDStepType} type
+ * @returns {string}
+ */
+function labelOf(type) {
+  if (type === "divide") return labT("long-division-steps.label-divide", "Divide");
+  if (type === "multiply") return labT("long-division-steps.label-multiply", "Multiply");
+  if (type === "subtract") return labT("long-division-steps.label-subtract", "Subtract");
+  return labT("long-division-steps.label-bringdown", "Bring Down");
+}
+
+/**
+ * Page-language name of the step at cycle position `i` (0–3), for the strip.
+ * @param {number} i
+ * @returns {string}
+ */
+export function cycleLabel(i) {
+  return labelOf(/** @type {LDStepType} */ (CYCLE_TYPES[i] || "bringdown"));
+}
+
+/**
+ * Page-language mnemonic letter for the badge at cycle position `i` (0–3).
+ * Spanish names the steps Dividir, Multiplicar, Restar, Bajar, so S becomes R.
+ * @param {number} i
+ * @returns {string}
+ */
+export function cycleLetter(i) {
+  if (i === 2) return labT("long-division-steps.badge-s", "S");
+  return CYCLE_BADGES[i] ? CYCLE_BADGES[i].letter : String(i + 1);
+}
 
 const MAX_DIGITS = 24;
 
@@ -298,39 +326,73 @@ function buildSteps(cycles, divisor) {
     steps.push({
       ...at,
       type: "divide",
-      label: LABEL_OF.divide,
+      label: labelOf("divide"),
       expected: c.quotientDigit,
-      prompt: `How many ${divisor}s fit into ${c.current}?`,
+      prompt: labT("long-division-steps.divide-prompt", "How many {divisor}s fit into {current}?", {
+        divisor,
+        current: c.current,
+      }),
       hint:
         c.current < divisor
-          ? `${divisor} is bigger than ${c.current}, so no whole ${divisor} fits yet. Write 0 here and keep going.`
-          : `Skip-count: ${divisor}, ${divisor * 2}, ${divisor * 3}, … Take the biggest one that is still ` +
-            `${c.current} or less. The answer is one digit (0–9).`,
+          ? labT(
+              "long-division-steps.divide-hint-zero",
+              "{divisor} is bigger than {current}, so no whole {divisor} fits yet. Write 0 here and keep going.",
+              { divisor, current: c.current },
+            )
+          : labT(
+              "long-division-steps.divide-hint-skip",
+              "Skip-count: {divisor}, {double}, {triple}, … Take the biggest one that is still {current} or less. The answer is one digit (0–9).",
+              { divisor, double: divisor * 2, triple: divisor * 3, current: c.current },
+            ),
     });
     steps.push({
       ...at,
       type: "multiply",
-      label: LABEL_OF.multiply,
+      label: labelOf("multiply"),
       expected: c.product,
-      prompt: `Multiply: ${c.quotientDigit} × ${divisor} = ?`,
-      hint: `Multiply the digit you just wrote, ${c.quotientDigit}, by the divisor ${divisor}. Write the product under ${c.current}.`,
+      prompt: labT("long-division-steps.multiply-prompt", "Multiply: {digit} × {divisor} = ?", {
+        digit: c.quotientDigit,
+        divisor,
+      }),
+      hint: labT(
+        "long-division-steps.multiply-hint",
+        "Multiply the digit you just wrote, {digit}, by the divisor {divisor}. Write the product under {current}.",
+        { digit: c.quotientDigit, divisor, current: c.current },
+      ),
     });
     steps.push({
       ...at,
       type: "subtract",
-      label: LABEL_OF.subtract,
+      label: labelOf("subtract"),
       expected: c.difference,
-      prompt: `Subtract: ${c.current} − ${c.product} = ?`,
-      hint: `Take ${c.product} away from ${c.current}. The difference must be smaller than the divisor ${divisor} — if it is not, the digit you chose was too small.`,
+      prompt: labT("long-division-steps.subtract-prompt", "Subtract: {current} − {product} = ?", {
+        current: c.current,
+        product: c.product,
+      }),
+      hint: labT(
+        "long-division-steps.subtract-hint",
+        "Take {product} away from {current}. The difference must be smaller than the divisor {divisor} — if it is not, the digit you chose was too small.",
+        { product: c.product, current: c.current, divisor },
+      ),
     });
     if (c.bringDown) {
       steps.push({
         ...at,
         type: "bringdown",
-        label: LABEL_OF.bringdown,
+        label: labelOf("bringdown"),
         expected: c.bringDown.digit,
-        prompt: `Bring down the next digit: ${c.bringDown.digit}.`,
-        hint: `Pull the ${c.bringDown.digit} straight down next to ${c.difference} to make the new number to divide.`,
+        prompt: labT(
+          "long-division-steps.bringdown-prompt",
+          "Bring down the next digit: {digit}.",
+          {
+            digit: c.bringDown.digit,
+          },
+        ),
+        hint: labT(
+          "long-division-steps.bringdown-hint",
+          "Pull the {digit} straight down next to {difference} to make the new number to divide.",
+          { digit: c.bringDown.digit, difference: c.difference },
+        ),
       });
     }
   });
@@ -387,59 +449,128 @@ export function checkInputs(input = {}) {
   /** @type {(message?:string) => LDVerdict} */
   const go = (message = "") => ({ ok: true, message, tone: "info", field: null });
 
-  if (d === "") return stop("Type a dividend first — the number being divided.", "dividend");
-  if (v === "") return stop("Type a divisor first — the number you are dividing by.", "divisor");
+  if (d === "") {
+    return stop(
+      labT(
+        "long-division-steps.need-dividend",
+        "Type a dividend first — the number being divided.",
+      ),
+      "dividend",
+    );
+  }
+  if (v === "") {
+    return stop(
+      labT(
+        "long-division-steps.need-divisor",
+        "Type a divisor first — the number you are dividing by.",
+      ),
+      "divisor",
+    );
+  }
 
   const cleanD = d.replace(/,/g, "");
   const cleanV = v.replace(/,/g, "");
   const dn = Number(cleanD);
   const vn = Number(cleanV);
   if (!Number.isFinite(dn)) {
-    return stop(`“${d}” is not a number. Use digits only, like 754.`, "dividend");
+    return stop(
+      labT(
+        "long-division-steps.dividend-nan",
+        "“{typed}” is not a number. Use digits only, like 754.",
+        {
+          typed: d,
+        },
+      ),
+      "dividend",
+    );
   }
   if (!Number.isFinite(vn)) {
-    return stop(`“${v}” is not a number. Use digits only, like 6.`, "divisor");
+    return stop(
+      labT(
+        "long-division-steps.divisor-nan",
+        "“{typed}” is not a number. Use digits only, like 6.",
+        {
+          typed: v,
+        },
+      ),
+      "divisor",
+    );
   }
   if (dn < 0) {
-    return stop("Use a dividend of 0 or more — this lab divides positive numbers.", "dividend");
+    return stop(
+      labT(
+        "long-division-steps.dividend-negative",
+        "Use a dividend of 0 or more — this lab divides positive numbers.",
+      ),
+      "dividend",
+    );
   }
   if (vn < 0) {
-    return stop("Use a divisor of 1 or more — this lab divides positive numbers.", "divisor");
+    return stop(
+      labT(
+        "long-division-steps.divisor-negative",
+        "Use a divisor of 1 or more — this lab divides positive numbers.",
+      ),
+      "divisor",
+    );
   }
   if (vn === 0) {
     return stop(
-      "You cannot divide by 0 — no number of empty groups will ever fill a number. Try a divisor of 1 or more.",
+      labT(
+        "long-division-steps.divide-by-zero",
+        "You cannot divide by 0 — no number of empty groups will ever fill a number. Try a divisor of 1 or more.",
+      ),
       "divisor",
     );
   }
   if (!decimal && Math.floor(vn) === 0) {
     return stop(
-      `This lab is set to whole numbers, so ${v} would become 0 — and nothing can be divided by 0. Type a divisor of 1 or more.`,
+      labT(
+        "long-division-steps.divisor-floors-to-zero",
+        "This lab is set to whole numbers, so {typed} would become 0 — and nothing can be divided by 0. Type a divisor of 1 or more.",
+        { typed: v },
+      ),
       "divisor",
     );
   }
   if (digitCount(d) > MAX_DIVIDEND_DIGITS) {
     return stop(
-      `That dividend has ${digitCount(d)} digits. Use ${MAX_DIVIDEND_DIGITS} or fewer so the whole board still fits on the screen.`,
+      labT(
+        "long-division-steps.dividend-too-long",
+        "That dividend has {count} digits. Use {max} or fewer so the whole board still fits on the screen.",
+        { count: digitCount(d), max: MAX_DIVIDEND_DIGITS },
+      ),
       "dividend",
     );
   }
   if (digitCount(v) > MAX_DIVISOR_DIGITS) {
     return stop(
-      `That divisor has ${digitCount(v)} digits. Use ${MAX_DIVISOR_DIGITS} or fewer so the whole board still fits on the screen.`,
+      labT(
+        "long-division-steps.divisor-too-long",
+        "That divisor has {count} digits. Use {max} or fewer so the whole board still fits on the screen.",
+        { count: digitCount(v), max: MAX_DIVISOR_DIGITS },
+      ),
       "divisor",
     );
   }
   if (!decimal && (d.includes(".") || v.includes("."))) {
     return go(
-      `Heads up: this lab is set to whole numbers, so ${d} ÷ ${v} is worked as ${Math.floor(dn)} ÷ ${Math.floor(vn)}.`,
+      labT(
+        "long-division-steps.whole-numbers-notice",
+        "Heads up: this lab is set to whole numbers, so {dividend} ÷ {divisor} is worked as {wholeDividend} ÷ {wholeDivisor}.",
+        { dividend: d, divisor: v, wholeDividend: Math.floor(dn), wholeDivisor: Math.floor(vn) },
+      ),
     );
   }
   // Only in whole-number mode: with decimals the lab annexes zeros instead, so
   // 3 ÷ 4 is 0.75 and nothing is "left over".
   if (!decimal && dn > 0 && vn > dn) {
     return go(
-      `${v} is bigger than ${d}, so the quotient starts with 0 and the whole ${d} is left over. That is a real answer — watch what the algorithm does with it.`,
+      labT(
+        "long-division-steps.divisor-bigger-notice",
+        "{divisor} is bigger than {dividend}, so the quotient starts with 0 and the whole {dividend} is left over. That is a real answer — watch what the algorithm does with it.",
+        { divisor: v, dividend: d },
+      ),
     );
   }
   return go();

@@ -25,6 +25,7 @@
 //     cfg.maxPlaces             : decimal places to divide to (default 3)
 //     cfg.mode                  : "solve" (default) or "watch"
 
+import { labT } from "./lab-strings-es.js";
 import { esc, injectStyles, template } from "./long-division-chrome.js";
 import { buildNarration, createNarrationCursor } from "./long-division-narration.js";
 import {
@@ -32,15 +33,45 @@ import {
   CYCLE_BADGES,
   CYCLE_LABELS,
   checkInputs,
+  cycleLabel,
+  cycleLetter,
   stepPosition,
 } from "./long-division-steps.js";
 
-const STEP_NOTE = {
-  divide: "Write the digit above the place you are working in.",
-  multiply: "Write the product under the working number.",
-  subtract: "Draw the line and subtract.",
-  bringdown: "Pull the next digit straight down.",
-};
+/**
+ * The one-line "how to write it" note under each step prompt.
+ * @param {string} type
+ * @returns {string}
+ */
+function stepNote(type) {
+  if (type === "divide") {
+    return labT(
+      "long-division-builder.note-divide",
+      "Write the digit above the place you are working in.",
+    );
+  }
+  if (type === "multiply") {
+    return labT(
+      "long-division-builder.note-multiply",
+      "Write the product under the working number.",
+    );
+  }
+  if (type === "subtract") {
+    return labT("long-division-builder.note-subtract", "Draw the line and subtract.");
+  }
+  return labT("long-division-builder.note-bringdown", "Pull the next digit straight down.");
+}
+
+/**
+ * "1 place" / "3 places" — the distance the decimal point moves.
+ * @param {number} n
+ * @returns {string}
+ */
+function placesText(n) {
+  return n === 1
+    ? labT("long-division-builder.one-place", "1 place")
+    : labT("long-division-builder.n-places", "{n} places", { n });
+}
 
 /** Auto-advance pace: long enough to read two sentences, short enough to feel live. */
 const PLAY_MS = 3800;
@@ -143,8 +174,17 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     } catch (err) {
       clear(
         err instanceof RangeError
-          ? `That problem cannot be divided: ${err.message}.`
-          : "That problem cannot be divided. Try different numbers.",
+          ? labT(
+              "long-division-builder.cannot-divide-why",
+              "That problem cannot be divided: {why}.",
+              {
+                why: err.message,
+              },
+            )
+          : labT(
+              "long-division-builder.cannot-divide",
+              "That problem cannot be divided. Try different numbers.",
+            ),
       );
       return;
     }
@@ -163,7 +203,10 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     cursor = null;
     frame = null;
     board.innerHTML = "";
-    board.setAttribute("aria-label", "No problem set up yet.");
+    board.setAttribute(
+      "aria-label",
+      labT("long-division-builder.no-problem", "No problem set up yet."),
+    );
     strip.innerHTML = "";
     shiftBar.hidden = true;
     stepBox.textContent = "";
@@ -212,14 +255,16 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
       return;
     }
     shiftBar.hidden = false;
-    const places = plan.shift === 1 ? "1 place" : plan.shift + " places";
+    const places = placesText(plan.shift);
 
     // Watch mode demonstrates; it never asks. Keep its single summary line.
     if (mode === "watch") {
       shiftBar.innerHTML = shiftDone
-        ? '<span class="ldl-shift-done">\u2713 Point moved ' +
-          esc(places) +
-          ":</span> " +
+        ? labT(
+            "long-division-builder.point-moved",
+            '<span class="ldl-shift-done">✓ Point moved {places}:</span> ',
+            { places: esc(places) },
+          ) +
           "<b>" +
           esc(plan.dividendText) +
           " \u00f7 " +
@@ -230,27 +275,34 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
           " \u00f7 " +
           esc(plan.workingDivisorText) +
           "</b>" +
-          " \u2014 now it is a whole-number divisor, so the cycle works exactly the same."
-        : "<b>Step 0 \u2014 MOVE THE POINT.</b> The divisor <b>" +
-          esc(plan.divisorText) +
-          "</b> is not a whole number. " +
-          "Slide the point " +
-          esc(places) +
-          " to the right in <em>both</em> numbers, then divide as usual.";
+          labT(
+            "long-division-builder.now-whole",
+            " — now it is a whole-number divisor, so the cycle works exactly the same.",
+          )
+        : labT(
+            "long-division-builder.watch-step-0",
+            "<b>Step 0 — MOVE THE POINT.</b> The divisor <b>{divisor}</b> is not a whole number. Slide the point {places} to the right in <em>both</em> numbers, then divide as usual.",
+            { divisor: esc(plan.divisorText), places: esc(places) },
+          );
       return;
     }
 
     if (shiftStage === 0) {
       // STEP 1 — the divisor, and the student decides how far.
       shiftBar.innerHTML =
-        "<b>Step 1 \u2014 MOVE THE DIVISOR.</b> The divisor <b>" +
-        esc(plan.divisorText) +
-        "</b> is not a whole number. " +
-        "How many places to the right must its decimal point move to make it whole?" +
+        labT(
+          "long-division-builder.step-1-ask",
+          "<b>Step 1 — MOVE THE DIVISOR.</b> The divisor <b>{divisor}</b> is not a whole number. How many places to the right must its decimal point move to make it whole?",
+          { divisor: esc(plan.divisorText) },
+        ) +
         '<span class="ldl-shift-ask">' +
-        '<label class="ldl-shift-label" for="ldl-shift-places">places</label>' +
+        '<label class="ldl-shift-label" for="ldl-shift-places">' +
+        labT("long-division-builder.places-label", "places") +
+        "</label>" +
         '<input id="ldl-shift-places" class="ldl-shift-input" type="number" inputmode="numeric" min="1" max="6" step="1" />' +
-        '<button type="button" class="ldl-shiftcheck">Move the divisor \u2192</button>' +
+        '<button type="button" class="ldl-shiftcheck">' +
+        labT("long-division-builder.move-divisor-btn", "Move the divisor →") +
+        "</button>" +
         "</span>" +
         (shiftEntryError
           ? '<span class="ldl-shift-err" role="status">' + esc(shiftEntryError) + "</span>"
@@ -263,22 +315,26 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
       const submit = () => {
         const raw = String(input && input.value ? input.value : "").trim();
         if (!raw) {
-          shiftEntryError = "Type how many places, then press Move the divisor.";
+          shiftEntryError = labT(
+            "long-division-builder.type-places",
+            "Type how many places, then press Move the divisor.",
+          );
           renderShift();
           return;
         }
         const n = Number(raw);
         if (!Number.isInteger(n) || n === 0) {
-          shiftEntryError = "Use a whole number of places, like 1 or 2.";
+          shiftEntryError = labT(
+            "long-division-builder.whole-places",
+            "Use a whole number of places, like 1 or 2.",
+          );
         } else if (n !== plan.shift) {
           // Name what their number WOULD do, rather than just marking it wrong.
-          shiftEntryError =
-            "Moving " +
-            n +
-            (n === 1 ? " place" : " places") +
-            " does not make " +
-            plan.divisorText +
-            " a whole number. Count the digits after its decimal point.";
+          shiftEntryError = labT(
+            "long-division-builder.wrong-places",
+            "Moving {places} does not make {divisor} a whole number. Count the digits after its decimal point.",
+            { places: placesText(n), divisor: plan.divisorText },
+          );
         } else {
           shiftEntryError = "";
           shiftStage = 1;
@@ -308,23 +364,26 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
       // STEP 2 — the dividend moves the SAME amount. Stated as a consequence of
       // what they just did, which is the whole point of splitting the two.
       shiftBar.innerHTML =
-        '<span class="ldl-shift-done">\u2713 Divisor moved ' +
-        esc(places) +
-        ":</span> " +
+        labT(
+          "long-division-builder.divisor-moved",
+          '<span class="ldl-shift-done">✓ Divisor moved {places}:</span> ',
+          { places: esc(places) },
+        ) +
         "<b>" +
         esc(plan.divisorText) +
         '</b> \u2192 <b class="ldl-shift-new">' +
         esc(plan.workingDivisorText) +
         "</b><br />" +
-        "<b>Step 2 \u2014 MOVE THE DIVIDEND.</b> Move <b>" +
-        esc(plan.dividendText) +
-        "</b> the same " +
-        esc(places) +
-        " to the right, " +
-        "so the answer does not change." +
-        ' <button type="button" class="ldl-shiftgo">Move the dividend ' +
-        esc(places) +
-        " \u2192</button>";
+        labT(
+          "long-division-builder.step-2",
+          "<b>Step 2 — MOVE THE DIVIDEND.</b> Move <b>{dividend}</b> the same {places} to the right, so the answer does not change.",
+          { dividend: esc(plan.dividendText), places: esc(places) },
+        ) +
+        ' <button type="button" class="ldl-shiftgo">' +
+        labT("long-division-builder.move-dividend-btn", "Move the dividend {places} →", {
+          places: esc(places),
+        }) +
+        "</button>";
       const go = shiftBar.querySelector(".ldl-shiftgo");
       if (go) {
         go.addEventListener("click", () => {
@@ -339,9 +398,11 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     }
 
     shiftBar.innerHTML =
-      '<span class="ldl-shift-done">\u2713 Both points moved ' +
-      esc(places) +
-      ":</span> " +
+      labT(
+        "long-division-builder.both-moved",
+        '<span class="ldl-shift-done">✓ Both points moved {places}:</span> ',
+        { places: esc(places) },
+      ) +
       "<b>" +
       esc(plan.dividendText) +
       " \u00f7 " +
@@ -352,7 +413,10 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
       " \u00f7 " +
       esc(plan.workingDivisorText) +
       "</b>" +
-      " \u2014 now it is a whole-number divisor, so the cycle works exactly the same.";
+      labT(
+        "long-division-builder.now-whole",
+        " — now it is a whole-number divisor, so the cycle works exactly the same.",
+      );
   }
 
   // ── the notation grid ────────────────────────────────────────────────────
@@ -517,10 +581,16 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
       .map((c) => c.quotientDigit)
       .join("");
     return (
-      `Long division: ${plan.workingDividendText} divided by ${plan.workingDivisorText}. ` +
+      labT(
+        "long-division-builder.board-summary",
+        "Long division: {dividend} divided by {divisor}. ",
+        { dividend: plan.workingDividendText, divisor: plan.workingDivisorText },
+      ) +
       (written
-        ? `Quotient digits written so far: ${written.split("").join(" ")}.`
-        : "No quotient digits written yet.")
+        ? labT("long-division-builder.board-digits", "Quotient digits written so far: {digits}.", {
+            digits: written.split("").join(" "),
+          })
+        : labT("long-division-builder.board-none", "No quotient digits written yet."))
     );
   }
 
@@ -528,8 +598,12 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     const total = plan.cycles.length;
     const cycleNo = step ? step.cycle + 1 : shiftDone ? total : 1;
     strip.innerHTML =
-      `<span class="ldl-cycle">Cycle ${cycleNo} of ${total}</span>` +
-      CYCLE_LABELS.map((name, i) => {
+      `<span class="ldl-cycle">${labT("long-division-builder.cycle-of", "Cycle {n} of {total}", {
+        n: cycleNo,
+        total,
+      })}</span>` +
+      CYCLE_LABELS.map((_name, i) => {
+        const name = cycleLabel(i);
         const active = step && shiftDone && stepPosition(step.type) === i;
         const passed = step ? stepPosition(step.type) > i : shiftDone;
         // Letter badge + operator, matching the DMSB banner above the board:
@@ -538,45 +612,66 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
         const badge = CYCLE_BADGES[i] || { letter: String(i + 1), op: "" };
         return (
           `<span class="ldl-pill${active ? " is-on" : ""}${passed ? " is-done" : ""}">` +
-          `<b class="ldl-badge">${esc(badge.letter)}</b>` +
+          `<b class="ldl-badge">${esc(cycleLetter(i))}</b>` +
           `<span class="ldl-op-symbol" aria-hidden="true">${esc(badge.op)}</span>` +
           `<span class="ldl-pill-label">${esc(name)}</span></span>`
         );
       }).join("") +
-      `<span class="ldl-loop" aria-hidden="true">↻ repeat</span>`;
+      `<span class="ldl-loop" aria-hidden="true">${labT("long-division-builder.repeat", "↻ repeat")}</span>`;
   }
 
   function drawPrompt(step) {
     if (!shiftDone) {
       stepBox.textContent =
         shiftStage === 1
-          ? "Now move the dividend the same number of places, then the cycle begins."
-          : "First make the divisor a whole number, then the cycle begins.";
+          ? labT(
+              "long-division-builder.prompt-move-dividend",
+              "Now move the dividend the same number of places, then the cycle begins.",
+            )
+          : labT(
+              "long-division-builder.prompt-move-divisor",
+              "First make the divisor a whole number, then the cycle begins.",
+            );
       entry.hidden = true;
       return;
     }
     if (!step) {
       entry.hidden = true;
-      stepBox.innerHTML =
-        `<b class="ldl-stepname">Cycle complete.</b> Every digit has been divided, so there is ` +
-        `nothing left to bring down — the last difference is the remainder.`;
+      stepBox.innerHTML = labT(
+        "long-division-builder.cycle-complete",
+        `<b class="ldl-stepname">Cycle complete.</b> Every digit has been divided, so there is nothing left to bring down — the last difference is the remainder.`,
+      );
       finish();
       return;
     }
     entry.hidden = false;
     stepBox.innerHTML =
-      `<b class="ldl-stepname">Step ${stepPosition(step.type) + 1} — ${esc(step.label.toUpperCase())}:</b> ` +
-      `${esc(step.prompt)} <span class="ldl-note">${esc(STEP_NOTE[step.type])}</span>`;
+      labT(
+        "long-division-builder.step-heading",
+        `<b class="ldl-stepname">Step {n} — {label}:</b> `,
+        {
+          n: stepPosition(step.type) + 1,
+          label: esc(step.label.toUpperCase()),
+        },
+      ) + `${esc(step.prompt)} <span class="ldl-note">${esc(stepNote(step.type))}</span>`;
     const bring = step.type === "bringdown";
     answer.hidden = bring;
     answerLabel.hidden = bring;
     checkBtn.hidden = bring;
     bringBtn.hidden = !bring;
     if (bring) {
-      bringBtn.textContent = `Bring down the ${step.expected} ↓`;
+      bringBtn.textContent = labT("long-division-builder.bring-btn", "Bring down the {digit} ↓", {
+        digit: step.expected,
+      });
     } else {
       answer.value = "";
-      answerLabel.textContent = `${step.label} — your answer`;
+      answerLabel.textContent = labT(
+        "long-division-builder.answer-label",
+        "{label} — your answer",
+        {
+          label: step.label,
+        },
+      );
       answer.setAttribute("aria-label", `${step.label}. ${step.prompt}`);
     }
   }
@@ -595,8 +690,13 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     draw();
     stepBox.innerHTML =
       `<b class="ldl-stepname">${esc(frame.headline)}:</b> ${esc(frame.text)}` +
-      (frame.cycleRestart ? ` <span class="ldl-repeat">↻ Cycle restarts.</span>` : "");
-    countBox.textContent = `${cursor.index + 1} of ${cursor.length}`;
+      (frame.cycleRestart
+        ? ` <span class="ldl-repeat">${labT("long-division-builder.cycle-restarts", "↻ Cycle restarts.")}</span>`
+        : "");
+    countBox.textContent = labT("long-division-builder.frame-count", "{n} of {total}", {
+      n: cursor.index + 1,
+      total: cursor.length,
+    });
     if (frame.kind === "finish") {
       stopPlay();
       finish();
@@ -618,7 +718,7 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
   function stopPlay() {
     if (timer) clearInterval(timer);
     timer = 0;
-    playBtn.textContent = "▶ Play";
+    playBtn.textContent = labT("long-division-chrome.play", "▶ Play");
     playBtn.setAttribute("aria-pressed", "false");
   }
 
@@ -629,7 +729,7 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     }
     if (!cursor) return;
     if (cursor.atEnd()) cursor.reset();
-    playBtn.textContent = "⏸ Pause";
+    playBtn.textContent = labT("long-division-builder.pause", "⏸ Pause");
     playBtn.setAttribute("aria-pressed", "true");
     showFrame();
     timer = setInterval(() => {
@@ -649,8 +749,14 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     if (announce && ready) {
       say(
         mode === "watch"
-          ? "Watch mode: press Next step, or Play to let it run."
-          : "Your turn — same problem, and you write every number this time.",
+          ? labT(
+              "long-division-builder.watch-mode",
+              "Watch mode: press Next step, or Play to let it run.",
+            )
+          : labT(
+              "long-division-builder.your-turn",
+              "Your turn — same problem, and you write every number this time.",
+            ),
         mode === "watch" ? "info" : "repeat",
       );
     }
@@ -667,12 +773,15 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     }
     const raw = answer.value.replace(/,/g, "").trim();
     if (raw === "") {
-      say("Type your answer for this step first.", "warn");
+      say(
+        labT("long-division-builder.type-answer", "Type your answer for this step first."),
+        "warn",
+      );
       return;
     }
     const value = Number(raw);
     if (!Number.isFinite(value)) {
-      say("Enter a number.", "warn");
+      say(labT("long-division-builder.enter-number", "Enter a number."), "warn");
       return;
     }
     if (value === step.expected) {
@@ -695,23 +804,41 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     let why = "";
     if (step.type === "divide") {
       if (value * v > c.current) {
-        why = `${value} × ${v} = ${value * v}, and that is bigger than ${c.current}. Choose a smaller digit. `;
+        why = labT(
+          "long-division-builder.too-big",
+          "{value} × {v} = {product}, and that is bigger than {current}. Choose a smaller digit. ",
+          { value, v, product: value * v, current: c.current },
+        );
       } else if (c.current - value * v >= v) {
-        why = `${value} × ${v} = ${value * v}, which leaves ${c.current - value * v} — another ${v} still fits. Choose a bigger digit. `;
+        why = labT(
+          "long-division-builder.too-small",
+          "{value} × {v} = {product}, which leaves {left} — another {v} still fits. Choose a bigger digit. ",
+          { value, v, product: value * v, left: c.current - value * v },
+        );
       } else if (value > 9 || value < 0) {
-        why = "This step is one digit, 0 to 9. ";
+        why = labT("long-division-builder.one-digit", "This step is one digit, 0 to 9. ");
       }
     } else if (step.type === "multiply") {
       if (value === c.quotientDigit + v)
-        why = "That is what you get by ADDING. This step multiplies. ";
+        why = labT(
+          "long-division-builder.added-multiply",
+          "That is what you get by ADDING. This step multiplies. ",
+        );
     } else if (step.type === "subtract") {
       if (value === c.current + c.product)
-        why = "That is what you get by ADDING. This step subtracts. ";
+        why = labT(
+          "long-division-builder.added-subtract",
+          "That is what you get by ADDING. This step subtracts. ",
+        );
       else if (value >= v)
-        why = `A difference of ${value} is not smaller than the divisor ${v}, so something is off. `;
+        why = labT(
+          "long-division-builder.difference-too-big",
+          "A difference of {value} is not smaller than the divisor {v}, so something is off. ",
+          { value, v },
+        );
     }
     const tail = attempts >= 3 ? coach(step) : step.hint;
-    return `Not yet. ${why}${tail}`;
+    return labT("long-division-builder.not-yet", "Not yet. {why}{tail}", { why, tail });
   }
 
   /**
@@ -730,27 +857,30 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
         .map((k) => k * v)
         .filter((x) => x <= c.current + v)
         .join(", ");
-      return (
-        `Try skip-counting by ${v}: ${ladder}… Stop at the last one that is not past ` +
-        `${c.current}, and count how many ${v}s that took — that count is the digit.`
+      return labT(
+        "long-division-builder.coach-divide",
+        "Try skip-counting by {v}: {ladder}… Stop at the last one that is not past {current}, and count how many {v}s that took — that count is the digit.",
+        { v, ladder, current: c.current },
       );
     }
     if (step.type === "multiply") {
-      return (
-        `Multiply the digit you just wrote above the bar by the divisor ${v}. ` +
-        `If it helps, add ${v} to itself that many times.`
+      return labT(
+        "long-division-builder.coach-multiply",
+        "Multiply the digit you just wrote above the bar by the divisor {v}. If it helps, add {v} to itself that many times.",
+        { v },
       );
     }
     if (step.type === "subtract") {
-      return (
-        `Subtract what you just wrote (${c.product}) from the number above it (${c.current}). ` +
-        `Line the digits up in their columns first.`
+      return labT(
+        "long-division-builder.coach-subtract",
+        "Subtract what you just wrote ({product}) from the number above it ({current}). Line the digits up in their columns first.",
+        { product: c.product, current: c.current },
       );
     }
     if (step.type === "bringdown") {
-      return (
-        "Bring down the very next digit of the dividend and write it beside what is left, " +
-        "making one new number to divide."
+      return labT(
+        "long-division-builder.coach-bringdown",
+        "Bring down the very next digit of the dividend and write it beside what is left, making one new number to divide.",
       );
     }
     return step.hint;
@@ -764,13 +894,29 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
     draw();
     if (step.type === "bringdown") {
       say(
-        `Cycle ${step.cycle + 1} complete — there are still digits to divide, so REPEAT the cycle: divide again.`,
+        labT(
+          "long-division-builder.cycle-done",
+          "Cycle {n} complete — there are still digits to divide, so REPEAT the cycle: divide again.",
+          { n: step.cycle + 1 },
+        ),
         "repeat",
       );
     } else if (next) {
-      say(`✓ ${step.label} done. Next: ${next.label}.`, "good");
+      say(
+        labT("long-division-builder.step-done", "✓ {label} done. Next: {next}.", {
+          label: step.label,
+          next: next.label,
+        }),
+        "good",
+      );
     } else {
-      say("✓ Every digit is divided — the division is finished.", "good");
+      say(
+        labT(
+          "long-division-builder.all-divided",
+          "✓ Every digit is divided — the division is finished.",
+        ),
+        "good",
+      );
     }
     if (next && next.type === "bringdown") bringBtn.focus();
     else if (next) answer.focus();
@@ -787,17 +933,28 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
       ? `${esc(plan.dividendText)} ÷ ${esc(plan.divisorText)}`
       : `${esc(plan.workingDividendText)} ÷ ${esc(workingDivisorText)}`;
     const words = remainder
-      ? `${shown} is <b>${esc(quotientText)}</b> with <b>${esc(remainderText)}</b> left over.`
-      : `${shown} is exactly <b>${esc(quotientText)}</b> — nothing left over.`;
-    const againLabel = mode === "watch" ? "Watch it again" : "Work it again";
+      ? labT(
+          "long-division-builder.result-remainder",
+          "{shown} is <b>{quotient}</b> with <b>{remainder}</b> left over.",
+          { shown, quotient: esc(quotientText), remainder: esc(remainderText) },
+        )
+      : labT(
+          "long-division-builder.result-exact",
+          "{shown} is exactly <b>{quotient}</b> — nothing left over.",
+          { shown, quotient: esc(quotientText) },
+        );
+    const againLabel =
+      mode === "watch"
+        ? labT("long-division-builder.watch-again", "Watch it again")
+        : labT("long-division-builder.work-again", "Work it again");
     result.hidden = false;
     result.innerHTML =
       `<div class="ldl-final">${esc(plan.dividendText)} ÷ ${esc(plan.divisorText)} = ${esc(quotientText)}` +
       `${remainder && !plan.decimal ? ` R ${esc(remainderText)}` : ""}</div>` +
       `<p class="ldl-words">${words}</p>` +
-      `<p class="ldl-verify"><b>Check by multiplying back:</b> ${esc(checkText)} ✓</p>` +
+      `<p class="ldl-verify"><b>${labT("long-division-builder.check-back", "Check by multiplying back:")}</b> ${esc(checkText)} ✓</p>` +
       (plan.decimal && remainder
-        ? `<p class="ldl-words">It does not come out even, so this quotient is rounded down at that last place.</p>`
+        ? `<p class="ldl-words">${labT("long-division-builder.rounded-down", "It does not come out even, so this quotient is rounded down at that last place.")}</p>`
         : "") +
       `<button type="button" class="ldl-again">${esc(againLabel)}</button>`;
     const again = result.querySelector(".ldl-again");
@@ -847,7 +1004,7 @@ export function renderLongDivisionBuilder(host, cfg = {}) {
   function renderFactHelper() {
     if (!plan || !plan.divisor) return;
     const d = plan.divisor;
-    let html = `<strong style="font-weight:800;">Multiplication Facts for ${d}:</strong><div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">`;
+    let html = `<strong style="font-weight:800;">${labT("long-division-builder.facts-for", "Multiplication Facts for {d}:", { d })}</strong><div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">`;
     for (let i = 1; i <= 9; i++) {
       const prod = d * i;
       html += `<button type="button" class="ldl-fact-chip" data-val="${prod}" style="padding:4px 8px; font-size:0.82rem; font-weight:700; color:#15803d; background:#ffffff; border:1px solid #86efac; border-radius:6px; cursor:pointer;">${d} × ${i} = ${prod}</button>`;

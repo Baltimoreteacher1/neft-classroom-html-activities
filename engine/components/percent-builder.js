@@ -16,6 +16,8 @@
 //                              so the plain percent-of-a-number lessons (4-4)
 //                              are untouched.
 
+import { labT } from "./lab-strings-es.js";
+
 const C = {
   navy: "#12355b",
   accent: "#1d4ed8",
@@ -37,12 +39,13 @@ function round2(n) {
   return Math.round(n * 100) / 100;
 }
 
-const CHIP_OP = { part: "", off: " off", on: " added" };
-
 function chipLabel(p) {
   const m = String(p).match(/(\d+)%?of(\d+)(?::(part|off|on))?/);
   if (!m) return String(p).replace("of", "% of ").replace("%%", "%");
-  return `${m[1]}% of ${m[2]}${CHIP_OP[m[3]] || ""}`;
+  const v = { p: m[1], w: m[2] };
+  if (m[3] === "off") return labT("percent-builder.chip-off", "{p}% of {w} off", v);
+  if (m[3] === "on") return labT("percent-builder.chip-on", "{p}% of {w} added", v);
+  return labT("percent-builder.chip", "{p}% of {w}", v);
 }
 
 export function renderPercentBuilder(container, cfg = {}) {
@@ -67,10 +70,14 @@ export function renderPercentBuilder(container, cfg = {}) {
   // label: what the dropdown calls the starting number and the finished answer,
   // so the tool reads like the word problems instead of like a naked equation.
   const OPS = {
-    part: { label: "just the part", verb: null },
-    off: { label: "take it OFF (discount, sale)", verb: "−", word: "you pay" },
+    part: { label: labT("percent-builder.op-part", "just the part"), verb: null },
+    off: {
+      label: labT("percent-builder.op-off", "take it OFF (discount, sale)"),
+      verb: "−",
+      word: "you pay",
+    },
     on: {
-      label: "add it ON (tax, tip, markup)",
+      label: labT("percent-builder.op-on", "add it ON (tax, tip, markup)"),
       verb: "+",
       word: "you pay",
     },
@@ -82,18 +89,24 @@ export function renderPercentBuilder(container, cfg = {}) {
   const root = document.createElement("div");
   root.className = "pctlab";
   root.innerHTML =
-    `<div class="pctlab-title">${apply ? "Percent Problem Lab" : "Percent of a Number Lab"}</div>` +
+    `<div class="pctlab-title">${apply ? labT("percent-builder.title-apply", "Percent Problem Lab") : labT("percent-builder.title", "Percent of a Number Lab")}</div>` +
     `<p class="pctlab-hint">${
       apply
-        ? `Finding the percent is only step 1. Pick what the problem does with that amount — a discount comes <strong>off</strong> the price, while tax, a tip, and markup go <strong>on</strong> top.`
-        : `"Percent" means "out of 100." Type a percent and a whole to find that part of the number.`
+        ? labT(
+            "percent-builder.hint-apply",
+            `Finding the percent is only step 1. Pick what the problem does with that amount — a discount comes <strong>off</strong> the price, while tax, a tip, and markup go <strong>on</strong> top.`,
+          )
+        : labT(
+            "percent-builder.hint",
+            `"Percent" means "out of 100." Type a percent and a whole to find that part of the number.`,
+          )
     }</p>` +
     `<div class="pctlab-controls">` +
-    `<label class="pctlab-field"><span>Percent</span><input type="number" min="0" max="100" value="${pct}" data-inp="pct" aria-label="Percent (0 to 100)"/></label>` +
-    `<span class="pctlab-of">% of</span>` +
-    `<label class="pctlab-field"><span>Whole</span><input type="number" min="1" max="10000" value="${whole}" data-inp="whole" aria-label="The whole number"/></label>` +
+    `<label class="pctlab-field"><span>${labT("percent-builder.percent", "Percent")}</span><input type="number" min="0" max="100" value="${pct}" data-inp="pct" aria-label="${labT("percent-builder.percent-aria", "Percent (0 to 100)")}"/></label>` +
+    `<span class="pctlab-of">${labT("percent-builder.of", "% of")}</span>` +
+    `<label class="pctlab-field"><span>${labT("percent-builder.whole", "Whole")}</span><input type="number" min="1" max="10000" value="${whole}" data-inp="whole" aria-label="${labT("percent-builder.whole-aria", "The whole number")}"/></label>` +
     (apply
-      ? `<label class="pctlab-field pctlab-field-op"><span>Then</span><select data-inp="op" aria-label="What the problem does with that amount">` +
+      ? `<label class="pctlab-field pctlab-field-op"><span>${labT("percent-builder.then", "Then")}</span><select data-inp="op" aria-label="${labT("percent-builder.then-aria", "What the problem does with that amount")}">` +
         Object.entries(OPS)
           .map(
             ([k, v]) =>
@@ -102,8 +115,8 @@ export function renderPercentBuilder(container, cfg = {}) {
           .join("") +
         `</select></label>`
       : "") +
-    `<button type="button" class="pctlab-go">Find it →</button></div>` +
-    `<div class="pctlab-presets" role="group" aria-label="Quick-pick problems">` +
+    `<button type="button" class="pctlab-go">${labT("percent-builder.find", "Find it →")}</button></div>` +
+    `<div class="pctlab-presets" role="group" aria-label="${labT("percent-builder.quick-pick", "Quick-pick problems")}">` +
     presets
       .map(
         (p) =>
@@ -140,7 +153,7 @@ export function renderPercentBuilder(container, cfg = {}) {
     const fx = PADL + (pct / 100) * lineW;
 
     const svg =
-      `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;height:auto;display:block;margin:0 auto;" role="img" aria-label="Double number line: ${pct} percent of ${whole} is ${part}">` +
+      `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;height:auto;display:block;margin:0 auto;" role="img" aria-label="${labT("percent-builder.svg-aria", "Double number line: {pct} percent of {whole} is {part}", { pct, whole, part })}">` +
       // top line (quantity)
       `<line x1="${PADL}" y1="${yTop}" x2="${PADL + lineW}" y2="${yTop}" stroke="${C.line}" stroke-width="3"/>` +
       `<line x1="${PADL}" y1="${yTop}" x2="${fx}" y2="${yTop}" stroke="${C.teal}" stroke-width="4"/>` +
@@ -168,18 +181,42 @@ export function renderPercentBuilder(container, cfg = {}) {
             const total = round2(op === "off" ? whole - part : whole + part);
             return (
               `<div class="pctlab-step2">` +
-              `<div class="pctlab-eqn">Step 2 — ${money(whole)} ${OPS[op].verb} ${money(part)} = <strong>${money(total)}</strong></div>` +
+              `<div class="pctlab-eqn">${labT("percent-builder.step-2", "Step 2 — {whole} {verb} {part} = <strong>{total}</strong>", { whole: money(whole), verb: OPS[op].verb, part: money(part), total: money(total) })}</div>` +
               `<p class="pctlab-explain">${
                 op === "off"
-                  ? `A discount comes off the original price, so the answer must be <strong>less</strong> than ${money(whole)}.`
-                  : `Tax, a tip, and markup go on top of the original price, so the answer must be <strong>more</strong> than ${money(whole)}.`
-              } The finished answer is ${money(total)} — not ${money(part)}, which is only the amount you found in step 1.</p>` +
+                  ? labT(
+                      "percent-builder.explain-off",
+                      "A discount comes off the original price, so the answer must be <strong>less</strong> than {whole}.",
+                      { whole: money(whole) },
+                    )
+                  : labT(
+                      "percent-builder.explain-on",
+                      "Tax, a tip, and markup go on top of the original price, so the answer must be <strong>more</strong> than {whole}.",
+                      { whole: money(whole) },
+                    )
+              } ${labT(
+                "percent-builder.finished",
+                "The finished answer is {total} — not {part}, which is only the amount you found in step 1.",
+                { total: money(total), part: money(part) },
+              )}</p>` +
               `</div>`
             );
           })();
     result.innerHTML =
-      `<div class="pctlab-eqn">${op === "part" ? "" : "Step 1 — "}${pct}% of ${whole} = ${pct}/100 × ${whole} = <strong>${part}</strong></div>` +
-      `<p class="pctlab-explain">Move ${pct}% of the way along the line: ${pct}% is the same fraction as ${pct}/100, so you take ${pct}/100 of ${whole}.</p>` +
+      `<div class="pctlab-eqn">${
+        op === "part"
+          ? labT(
+              "percent-builder.eqn",
+              "{pct}% of {whole} = {pct}/100 × {whole} = <strong>{part}</strong>",
+              { pct, whole, part },
+            )
+          : labT(
+              "percent-builder.eqn-step-1",
+              "Step 1 — {pct}% of {whole} = {pct}/100 × {whole} = <strong>{part}</strong>",
+              { pct, whole, part },
+            )
+      }</div>` +
+      `<p class="pctlab-explain">${labT("percent-builder.explain", "Move {pct}% of the way along the line: {pct}% is the same fraction as {pct}/100, so you take {pct}/100 of {whole}.", { pct, whole })}</p>` +
       step2;
   }
 

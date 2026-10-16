@@ -14,6 +14,8 @@
 //     cfg.b     : second factor (e.g. 1.2)
 //     cfg.title : optional heading
 
+import { labT } from "./lab-strings-es.js";
+
 const C = {
   navy: "#12355b",
   ink: "#1a2b3c",
@@ -120,51 +122,58 @@ function mountProduct(host, cfg) {
   const totalPlaces = aPlaces + bPlaces; // e.g. 2
   const finalStr = formatDecimal(wholeProduct, totalPlaces); // e.g. "5.4"
 
-  const placeWord = (p) => (p === 1 ? "place" : "places");
+  const placeWord = (p) =>
+    p === 1
+      ? labT("decimal-product.place-one", "place")
+      : labT("decimal-product.place-many", "places");
+  const decimalPlaceWord = (p) =>
+    p === 1
+      ? labT("decimal-product.decimal-place-one", "decimal place")
+      : labT("decimal-product.decimal-place-many", "decimal places");
 
   const wrap = document.createElement("div");
   wrap.className = "dp-wrap";
   wrap.innerHTML = `
     ${cfg.title ? `<div class="dp-title">${esc(cfg.title)}</div>` : ""}
-    <div class="dp-hint">Multiply as if there were no decimal points, then place the decimal by counting decimal places.</div>
-    <div class="dp-expr" aria-label="${esc(aStr)} times ${esc(bStr)}">${esc(aStr)} × ${esc(bStr)}</div>
+    <div class="dp-hint">${labT("decimal-product.hint", "Multiply as if there were no decimal points, then place the decimal by counting decimal places.")}</div>
+    <div class="dp-expr" aria-label="${labT("decimal-product.expr-label", "{a} times {b}", { a: esc(aStr), b: esc(bStr) })}">${esc(aStr)} × ${esc(bStr)}</div>
     <div class="dp-steps">
       <div class="dp-step" data-step="1">
-        <div class="dp-step-num">Step 1 · Multiply the digits</div>
-        <div class="dp-prompt">Ignore the decimals and multiply the whole numbers:<br>
+        <div class="dp-step-num">${labT("decimal-product.step-1-title", "Step 1 · Multiply the digits")}</div>
+        <div class="dp-prompt">${labT("decimal-product.step-1-prompt", "Ignore the decimals and multiply the whole numbers:")}<br>
           ${aDigits} × ${bDigits} =
           <input class="dp-input" data-input="1" type="text" inputmode="numeric" pattern="[0-9]*"
-            aria-label="product of ${aDigits} times ${bDigits}">
+            aria-label="${labT("decimal-product.step-1-input-label", "product of {a} times {b}", { a: aDigits, b: bDigits })}">
         </div>
-        <div class="dp-row"><button type="button" class="dp-btn dp-btn-check" data-check="1">Check</button></div>
+        <div class="dp-row"><button type="button" class="dp-btn dp-btn-check" data-check="1">${labT("decimal-product.check", "Check")}</button></div>
         <div class="dp-status" data-status="1" role="status" aria-live="polite"></div>
       </div>
       <div class="dp-step" data-step="2" hidden>
-        <div class="dp-step-num">Step 2 · Count decimal places</div>
-        <div class="dp-prompt">Count the decimal places in each factor:<br>
-          ${esc(aStr)} has <span class="dp-count">${aPlaces}</span> ${placeWord(aPlaces)}
-          + ${esc(bStr)} has <span class="dp-count">${bPlaces}</span> ${placeWord(bPlaces)} =
+        <div class="dp-step-num">${labT("decimal-product.step-2-title", "Step 2 · Count decimal places")}</div>
+        <div class="dp-prompt">${labT("decimal-product.step-2-prompt", "Count the decimal places in each factor:")}<br>
+          ${esc(aStr)} ${labT("decimal-product.has", "has")} <span class="dp-count">${aPlaces}</span> ${placeWord(aPlaces)}
+          + ${esc(bStr)} ${labT("decimal-product.has", "has")} <span class="dp-count">${bPlaces}</span> ${placeWord(bPlaces)} =
           <input class="dp-input narrow" data-input="2" type="text" inputmode="numeric" pattern="[0-9]*"
-            aria-label="total number of decimal places">
-          decimal places
+            aria-label="${labT("decimal-product.step-2-input-label", "total number of decimal places")}">
+          ${labT("decimal-product.decimal-place-many", "decimal places")}
         </div>
-        <div class="dp-row"><button type="button" class="dp-btn dp-btn-check" data-check="2">Check</button></div>
+        <div class="dp-row"><button type="button" class="dp-btn dp-btn-check" data-check="2">${labT("decimal-product.check", "Check")}</button></div>
         <div class="dp-status" data-status="2" role="status" aria-live="polite"></div>
       </div>
       <div class="dp-step" data-step="3" hidden>
-        <div class="dp-step-num">Step 3 · Place the decimal point</div>
-        <div class="dp-prompt">Take ${wholeProduct} and place the decimal point so the answer has
-          <span class="dp-count">${totalPlaces}</span> decimal ${placeWord(totalPlaces)}.<br>
+        <div class="dp-step-num">${labT("decimal-product.step-3-title", "Step 3 · Place the decimal point")}</div>
+        <div class="dp-prompt">${labT("decimal-product.step-3-prompt", "Take {n} and place the decimal point so the answer has", { n: wholeProduct })}
+          <span class="dp-count">${totalPlaces}</span> ${decimalPlaceWord(totalPlaces)}.<br>
           ${esc(aStr)} × ${esc(bStr)} =
           <input class="dp-input" data-input="3" type="text" inputmode="decimal" pattern="[0-9.]*"
-            aria-label="final decimal product">
+            aria-label="${labT("decimal-product.step-3-input-label", "final decimal product")}">
         </div>
-        <div class="dp-row"><button type="button" class="dp-btn dp-btn-check" data-check="3">Check</button></div>
+        <div class="dp-row"><button type="button" class="dp-btn dp-btn-check" data-check="3">${labT("decimal-product.check", "Check")}</button></div>
         <div class="dp-status" data-status="3" role="status" aria-live="polite"></div>
       </div>
     </div>
     <div class="dp-controls">
-      <button type="button" class="dp-btn dp-btn-reveal" data-reveal>Show me</button>
+      <button type="button" class="dp-btn dp-btn-reveal" data-reveal>${labT("decimal-product.show-me", "Show me")}</button>
     </div>
     <div class="dp-result" hidden></div>
   `;
@@ -221,12 +230,24 @@ function mountProduct(host, cfg) {
     const inp = inputEl(1);
     const st = statusEl(1);
     const t = inp.value.trim();
-    if (t === "") return markWrong(inp, st, "Type the product, then check.");
+    if (t === "")
+      return markWrong(
+        inp,
+        st,
+        labT("decimal-product.type-product", "Type the product, then check."),
+      );
     if (parseInt(t, 10) === wholeProduct) {
-      markOk(inp, st, "Yes! Now count the decimal places.");
+      markOk(inp, st, labT("decimal-product.yes-count", "Yes! Now count the decimal places."));
       revealStep(2);
     } else {
-      markWrong(inp, st, `Not yet — multiply ${aDigits} × ${bDigits} again.`);
+      markWrong(
+        inp,
+        st,
+        labT("decimal-product.not-yet-multiply", "Not yet — multiply {a} × {b} again.", {
+          a: aDigits,
+          b: bDigits,
+        }),
+      );
     }
   }
 
@@ -235,12 +256,24 @@ function mountProduct(host, cfg) {
     const inp = inputEl(2);
     const st = statusEl(2);
     const t = inp.value.trim();
-    if (t === "") return markWrong(inp, st, "Type the total, then check.");
+    if (t === "")
+      return markWrong(inp, st, labT("decimal-product.type-total", "Type the total, then check."));
     if (parseInt(t, 10) === totalPlaces) {
-      markOk(inp, st, `Right — ${totalPlaces} decimal ${placeWord(totalPlaces)} in all.`);
+      markOk(
+        inp,
+        st,
+        labT("decimal-product.right-in-all", "Right — {n} {unit} in all.", {
+          n: totalPlaces,
+          unit: decimalPlaceWord(totalPlaces),
+        }),
+      );
       revealStep(3);
     } else {
-      markWrong(inp, st, `Not yet — add ${aPlaces} + ${bPlaces}.`);
+      markWrong(
+        inp,
+        st,
+        labT("decimal-product.not-yet-add", "Not yet — add {a} + {b}.", { a: aPlaces, b: bPlaces }),
+      );
     }
   }
 
@@ -250,18 +283,31 @@ function mountProduct(host, cfg) {
     const inp = inputEl(3);
     const st = statusEl(3);
     const t = inp.value.trim();
-    if (t === "" || t === ".") return markWrong(inp, st, "Type the answer, then check.");
+    if (t === "" || t === ".")
+      return markWrong(
+        inp,
+        st,
+        labT("decimal-product.type-answer", "Type the answer, then check."),
+      );
     const val = parseFloat(t);
-    if (Number.isNaN(val)) return markWrong(inp, st, "Type a number like " + finalStr + ".");
+    if (Number.isNaN(val))
+      return markWrong(
+        inp,
+        st,
+        labT("decimal-product.type-number", "Type a number like {n}.", { n: finalStr }),
+      );
     const scaled = Math.round(val * Math.pow(10, totalPlaces));
     if (scaled === wholeProduct) {
-      markOk(inp, st, "Perfect placement!");
+      markOk(inp, st, labT("decimal-product.perfect", "Perfect placement!"));
       celebrate();
     } else {
       markWrong(
         inp,
         st,
-        `Not yet — count ${totalPlaces} place${totalPlaces === 1 ? "" : "s"} in from the right.`,
+        labT("decimal-product.not-yet-count", "Not yet — count {n} {unit} in from the right.", {
+          n: totalPlaces,
+          unit: placeWord(totalPlaces),
+        }),
       );
     }
   }
@@ -269,7 +315,11 @@ function mountProduct(host, cfg) {
   // "Show me": fill and reveal every step with the correct answers.
   function reveal() {
     inputEl(1).value = String(wholeProduct);
-    markOk(inputEl(1), statusEl(1), "Multiply the digits.");
+    markOk(
+      inputEl(1),
+      statusEl(1),
+      labT("decimal-product.multiply-digits", "Multiply the digits."),
+    );
     revealStep(2);
     inputEl(2).value = String(totalPlaces);
     markOk(inputEl(2), statusEl(2), `${aPlaces} + ${bPlaces} = ${totalPlaces}.`);
@@ -278,7 +328,10 @@ function mountProduct(host, cfg) {
     markOk(
       inputEl(3),
       statusEl(3),
-      `Decimal moved in ${totalPlaces} place${totalPlaces === 1 ? "" : "s"}.`,
+      labT("decimal-product.decimal-moved", "Decimal moved in {n} {unit}.", {
+        n: totalPlaces,
+        unit: placeWord(totalPlaces),
+      }),
     );
     celebrate();
   }
@@ -323,7 +376,7 @@ export function renderDecimalProduct(host, cfg = {}) {
   const bar = document.createElement("div");
   bar.className = "dp-presets";
   bar.setAttribute("role", "group");
-  bar.setAttribute("aria-label", "Pick a problem");
+  bar.setAttribute("aria-label", labT("decimal-product.pick-problem", "Pick a problem"));
   const stage = document.createElement("div");
   let current = null;
   const mount = (p, viaChip = false) => {

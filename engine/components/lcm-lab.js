@@ -18,6 +18,8 @@
 //       presets?:[{ a, b, label? }]           // quick-pick problems
 //     }
 
+import { labT } from "./lab-strings-es.js";
+
 const C = {
   navy: "#12355b",
   accent: "#1d4ed8",
@@ -112,13 +114,13 @@ export function renderLcmLab(host, cfg = {}) {
     const bar = document.createElement("div");
     bar.className = "lcmlab-presets";
     bar.setAttribute("role", "group");
-    bar.setAttribute("aria-label", "Pick a problem");
+    bar.setAttribute("aria-label", labT("lcm-lab.pick-problem", "Pick a problem"));
     problems.forEach((p, i) => {
       const chip = document.createElement("button");
       chip.type = "button";
       chip.className = "lcmlab-chip-p";
       chip.setAttribute("aria-pressed", i === 0 ? "true" : "false");
-      chip.textContent = p.label || `LCM(${p.a}, ${p.b})`;
+      chip.textContent = p.label || labT("lcm-lab.chip", "LCM({a}, {b})", { a: p.a, b: p.b });
       chip.addEventListener("click", () => {
         [...bar.children].forEach((c, j) =>
           c.setAttribute("aria-pressed", j === i ? "true" : "false"),
@@ -144,19 +146,25 @@ export function renderLcmLab(host, cfg = {}) {
     const multsA = Array.from({ length: countA }, (_, i) => a * (i + 1));
     const multsB = Array.from({ length: countB }, (_, i) => b * (i + 1));
 
-    const title = problem.title || cfg.title || `Find the least common multiple of ${a} and ${b}.`;
+    const title =
+      problem.title ||
+      cfg.title ||
+      labT("lcm-lab.default-title", "Find the least common multiple of {a} and {b}.", { a, b });
     const intro =
       cfg.intro ||
-      "Count by each number. Click the FIRST value that shows up in BOTH lanes — that's the LCM.";
+      labT(
+        "lcm-lab.intro",
+        "Count by each number. Click the FIRST value that shows up in BOTH lanes — that's the LCM.",
+      );
 
     stage.innerHTML =
       `<div class="lcmlab-title">${esc(title)}</div>` +
       `<p class="lcmlab-hint">${esc(intro)}</p>` +
-      lane(`Count by ${a}`, multsA) +
-      lane(`Count by ${b}`, multsB) +
+      lane(labT("lcm-lab.count-by", "Count by {n}", { n: a }), multsA) +
+      lane(labT("lcm-lab.count-by", "Count by {n}", { n: b }), multsB) +
       `<div class="lcmlab-controls">` +
-      `<button type="button" class="lcmlab-btn lcmlab-btn-ghost" data-el="reveal">Show me</button>` +
-      `<button type="button" class="lcmlab-btn lcmlab-btn-ghost" data-el="clear">Clear</button>` +
+      `<button type="button" class="lcmlab-btn lcmlab-btn-ghost" data-el="reveal">${labT("lcm-lab.show-me", "Show me")}</button>` +
+      `<button type="button" class="lcmlab-btn lcmlab-btn-ghost" data-el="clear">${labT("lcm-lab.clear", "Clear")}</button>` +
       `</div>` +
       `<div class="lcmlab-feed" data-el="feed" role="status" aria-live="polite"></div>` +
       `<div class="lcmlab-result" data-el="result" hidden></div>`;
@@ -187,21 +195,36 @@ export function renderLcmLab(host, cfg = {}) {
         if (isCommon && value === target) {
           solved = true;
           markMatch(target);
-          say("ok", `🎉 <strong>Yes!</strong> ${target} is the first number in both lanes.`);
+          say(
+            "ok",
+            labT(
+              "lcm-lab.yes",
+              "🎉 <strong>Yes!</strong> {target} is the first number in both lanes.",
+              { target },
+            ),
+          );
           result.hidden = false;
-          result.textContent = `LCM(${a}, ${b}) = ${target}`;
+          result.textContent = labT("lcm-lab.result", "LCM({a}, {b}) = {target}", { a, b, target });
         } else if (isCommon) {
           btn.classList.add("nudge");
           say(
             "no",
-            `${value} is a common multiple, but not the <strong>smallest</strong> — look for an earlier match in both lanes.`,
+            labT(
+              "lcm-lab.not-smallest",
+              "{value} is a common multiple, but not the <strong>smallest</strong> — look for an earlier match in both lanes.",
+              { value },
+            ),
           );
         } else {
           btn.classList.add("nudge");
           const inA = value % a === 0;
           say(
             "no",
-            `${value} is only in the “count by ${inA ? a : b}” lane. The LCM has to appear in <strong>both</strong> lanes.`,
+            labT(
+              "lcm-lab.one-lane",
+              "{value} is only in the “count by {n}” lane. The LCM has to appear in <strong>both</strong> lanes.",
+              { value, n: inA ? a : b },
+            ),
           );
         }
       });
@@ -211,9 +234,12 @@ export function renderLcmLab(host, cfg = {}) {
       solved = true;
       clearMarks();
       markMatch(target);
-      say("ok", `The first match in both lanes is ${target}.`);
+      say(
+        "ok",
+        labT("lcm-lab.first-match", "The first match in both lanes is {target}.", { target }),
+      );
       result.hidden = false;
-      result.textContent = `LCM(${a}, ${b}) = ${target}`;
+      result.textContent = labT("lcm-lab.result", "LCM({a}, {b}) = {target}", { a, b, target });
     });
     stage.querySelector('[data-el="clear"]').addEventListener("click", () => {
       solved = false;

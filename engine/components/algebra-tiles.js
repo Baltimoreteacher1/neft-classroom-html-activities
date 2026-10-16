@@ -11,7 +11,8 @@
 //
 // Each tile: x-tile worth `x` (set per check), unit-tile worth ±1.
 // Keyboard: focus a tray tile and press Enter/Space to send it to the workspace;
-// focus a workspace tile and press Delete/Backspace to return it.
+// focus a workspace tile and press Enter/Space (or Delete/Backspace) to return it.
+// Focus stays on the tile after it moves, and the move is announced.
 
 export function renderAlgebraTiles(
   container,
@@ -54,6 +55,8 @@ export function renderAlgebraTiles(
 
   const tray = document.createElement("div");
   tray.dataset.zone = "tray";
+  tray.setAttribute("role", "group");
+  tray.setAttribute("aria-label", "Tile tray");
   tray.style.cssText =
     "display:flex; flex-wrap:wrap; gap:var(--sp-2); min-height:64px; padding:var(--sp-3); background:var(--cream); border-radius:var(--radius-md); margin-bottom:var(--sp-4);";
   wrapper.append(tray);
@@ -65,10 +68,32 @@ export function renderAlgebraTiles(
 
   const work = document.createElement("div");
   work.dataset.zone = "work";
+  work.setAttribute("role", "group");
+  work.setAttribute("aria-label", "Workspace");
   work.className = "at-workzone";
   work.style.cssText =
     "display:flex; flex-wrap:wrap; gap:var(--sp-2); min-height:80px; padding:var(--sp-3); border:2px dashed var(--line); border-radius:var(--radius-md);";
   wrapper.append(work);
+
+  // What a screen reader says for a tile: what it is, where it is, what Enter does.
+  function describeTile(el, inWork) {
+    const kind = el.dataset.type === "x" ? "variable" : "unit";
+    const name = tileLabel({ type: el.dataset.type, value: Number(el.dataset.value) });
+    return `${kind} tile ${name}, in the ${inWork ? "workspace" : "tray"}. Press Enter to move it to the ${inWork ? "tray" : "workspace"}.`;
+  }
+
+  // Move a tile between the tray and the workspace. A keyboard move keeps focus
+  // on the tile (re-parenting it would otherwise drop focus to the page) and says
+  // where it went; a pointer move behaves exactly as before.
+  function moveTile(el, into, byKeyboard) {
+    into.append(el);
+    el.setAttribute("aria-label", describeTile(el, into === work));
+    if (byKeyboard) el.focus();
+    const moved = byKeyboard
+      ? `${tileLabel({ type: el.dataset.type, value: Number(el.dataset.value) })} tile moved to the ${into === work ? "workspace" : "tray"}. `
+      : "";
+    announce(moved);
+  }
 
   let counter = 0;
   function makeTile(t) {
@@ -79,7 +104,7 @@ export function renderAlgebraTiles(
     el.dataset.value = String(t.value);
     el.dataset.tileId = `tile-${counter++}`;
     el.textContent = tileLabel(t);
-    el.setAttribute("aria-label", `${t.type === "x" ? "variable" : "unit"} tile ${tileLabel(t)}`);
+    el.setAttribute("aria-label", describeTile(el, false));
     el.style.cssText = `
       min-width:${t.type === "x" ? "56px" : "44px"}; height:44px; border-radius:var(--radius-sm);
       border:2px solid var(--navy); background:${tileColor(t)};
@@ -87,10 +112,10 @@ export function renderAlgebraTiles(
       font-weight:700; font-size:0.95rem; cursor:grab; touch-action:none;`;
     el.draggable = true;
 
-    el.addEventListener("click", () => {
+    el.addEventListener("click", (e) => {
       const into = el.parentElement === tray ? work : tray;
-      into.append(el);
-      announce();
+      // A click with no pointer position is the keyboard's (Enter or Space).
+      moveTile(el, into, e.detail === 0);
     });
     el.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
@@ -99,8 +124,7 @@ export function renderAlgebraTiles(
       }
       if ((e.key === "Delete" || e.key === "Backspace") && el.parentElement === work) {
         e.preventDefault();
-        tray.append(el);
-        announce();
+        moveTile(el, tray, true);
       }
     });
     el.addEventListener("dragstart", (e) => {
@@ -153,10 +177,7 @@ export function renderAlgebraTiles(
         clone = null;
       }
       const z = zoneUnderTouch(e);
-      if (z && z !== el.parentElement) {
-        z.append(el);
-        announce();
-      }
+      if (z && z !== el.parentElement) moveTile(el, z, false);
     });
     function moveClone(e) {
       const t2 = e.touches?.[0] || e.changedTouches?.[0];
@@ -195,10 +216,7 @@ export function renderAlgebraTiles(
       zone.style.borderColor = zone === work ? "var(--line)" : "";
       const id = e.dataTransfer.getData("text/plain");
       const tile = wrapper.querySelector(`[data-tile-id="${CSS.escape(id)}"]`);
-      if (tile) {
-        zone.append(tile);
-        announce();
-      }
+      if (tile) moveTile(tile, zone, false);
     });
   });
 
@@ -226,8 +244,8 @@ export function renderAlgebraTiles(
     return parts.join(" ") || "0";
   }
 
-  function announce() {
-    live.textContent = `Workspace: ${exprString()}, equals ${evaluate()} when x = ${xVal}.`;
+  function announce(prefix = "") {
+    live.textContent = `${prefix}Workspace: ${exprString()}, equals ${evaluate()} when x = ${xVal}.`;
   }
 
   const feedbackSlot = document.createElement("div");

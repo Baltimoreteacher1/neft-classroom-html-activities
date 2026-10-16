@@ -9,6 +9,8 @@
 //     cfg.presets  : quick-pick "base^exp" strings (default sensible set)
 //     cfg.maxValue : cap on the evaluated result (default 1e7)
 
+import { labT } from "./lab-strings-es.js";
+
 const C = {
   navy: "#12355b",
   accent: "#1d4ed8",
@@ -59,14 +61,14 @@ export function renderPowerBuilder(container, cfg = {}) {
   const root = document.createElement("div");
   root.className = "pwrlab";
   root.innerHTML =
-    `<div class="pwrlab-head"><span class="pwrlab-title">Powers &amp; Exponents Lab</span></div>` +
-    `<p class="pwrlab-hint">An exponent tells you <strong>how many times</strong> to use the base as a factor. Type a base and an exponent, then expand and evaluate it.</p>` +
+    `<div class="pwrlab-head"><span class="pwrlab-title">${labT("power-builder.title", "Powers &amp; Exponents Lab")}</span></div>` +
+    `<p class="pwrlab-hint">${labT("power-builder.hint", "An exponent tells you <strong>how many times</strong> to use the base as a factor. Type a base and an exponent, then expand and evaluate it.")}</p>` +
     `<div class="pwrlab-controls">` +
-    `<label class="pwrlab-field"><span>Base</span><input type="number" inputmode="numeric" min="0" max="20" value="${base}" data-inp="base" aria-label="Base (0 to 20)" /></label>` +
-    `<span class="pwrlab-caret">to the</span>` +
-    `<label class="pwrlab-field"><span>Exponent</span><input type="number" inputmode="numeric" min="0" max="12" value="${exp}" data-inp="exp" aria-label="Exponent (0 to 12)" /></label>` +
-    `<button type="button" class="pwrlab-go">Expand &amp; evaluate →</button></div>` +
-    `<div class="pwrlab-presets" role="group" aria-label="Quick-pick powers">` +
+    `<label class="pwrlab-field"><span>${labT("power-builder.base", "Base")}</span><input type="number" inputmode="numeric" min="0" max="20" value="${base}" data-inp="base" aria-label="${labT("power-builder.base-aria", "Base (0 to 20)")}" /></label>` +
+    `<span class="pwrlab-caret">${labT("power-builder.to-the", "to the")}</span>` +
+    `<label class="pwrlab-field"><span>${labT("power-builder.exponent", "Exponent")}</span><input type="number" inputmode="numeric" min="0" max="12" value="${exp}" data-inp="exp" aria-label="${labT("power-builder.exponent-aria", "Exponent (0 to 12)")}" /></label>` +
+    `<button type="button" class="pwrlab-go">${labT("power-builder.go", "Expand &amp; evaluate →")}</button></div>` +
+    `<div class="pwrlab-presets" role="group" aria-label="${labT("power-builder.quick-pick", "Quick-pick powers")}">` +
     presets
       .map(
         (p) =>
@@ -99,11 +101,11 @@ export function renderPowerBuilder(container, cfg = {}) {
     if (exp === 0) {
       body =
         `<div class="pwrlab-power">${powerText} = 1</div>` +
-        `<p class="pwrlab-explain">Any number (except 0) to the <strong>zero power</strong> is <strong>1</strong> — there are no factors to multiply, so you start from 1.</p>`;
+        `<p class="pwrlab-explain">${labT("power-builder.zero-power", "Any number (except 0) to the <strong>zero power</strong> is <strong>1</strong> — there are no factors to multiply, so you start from 1.")}</p>`;
     } else if (exp === 1) {
       body =
         `<div class="pwrlab-power">${powerText} = ${base}</div>` +
-        `<p class="pwrlab-explain">A number to the <strong>first power</strong> is just the base itself — you use it as a factor exactly once.</p>`;
+        `<p class="pwrlab-explain">${labT("power-builder.first-power", "A number to the <strong>first power</strong> is just the base itself — you use it as a factor exactly once.")}</p>`;
     } else {
       const factors = Array(exp).fill(base);
       const value = factors.reduce((a, b) => a * b, 1);
@@ -111,10 +113,18 @@ export function renderPowerBuilder(container, cfg = {}) {
       const over = value > MAXV;
       body =
         `<div class="pwrlab-power">${powerText} = ${expanded}${over ? "" : ` = <strong>${value.toLocaleString("en-US")}</strong>`}</div>` +
-        `<p class="pwrlab-explain">Use the base <strong>${base}</strong> as a factor <strong>${exp} times</strong>` +
+        `<p class="pwrlab-explain">` +
         (over
-          ? ` — this one grows past ${MAXV.toLocaleString("en-US")}, so keep the exponent smaller to see the exact value.`
-          : `. Notice it is <em>not</em> ${base} × ${exp} = ${base * exp}; a common mistake is to multiply the base by the exponent.`) +
+          ? labT(
+              "power-builder.too-big",
+              "Use the base <strong>{base}</strong> as a factor <strong>{exp} times</strong> — this one grows past {max}, so keep the exponent smaller to see the exact value.",
+              { base, exp, max: MAXV.toLocaleString("en-US") },
+            )
+          : labT(
+              "power-builder.not-multiply",
+              "Use the base <strong>{base}</strong> as a factor <strong>{exp} times</strong>. Notice it is <em>not</em> {base} × {exp} = {product}; a common mistake is to multiply the base by the exponent.",
+              { base, exp, product: base * exp },
+            )) +
         `</p>`;
     }
     result.innerHTML = body;

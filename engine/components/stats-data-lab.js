@@ -16,6 +16,8 @@
 //     cfg.presets : optional [{ label, data, unit? }]
 //     cfg.intro   : optional coaching sentence under the title
 
+import { labT } from "./lab-strings-es.js";
+
 const C = {
   navy: "#12355b",
   accent: "#1d4ed8",
@@ -69,18 +71,41 @@ function mad(a) {
 }
 
 const FOCUS_COPY = {
-  shape: "Each dot is one observation. Compare the stacks, peaks, gaps, and shape of the data.",
-  mean: "The mean is the total divided by the number of observations. Change a value and check the fair share.",
-  median:
-    "Order the values. Find the middle value, or average the two middle values when the count is even.",
-  variability:
-    "These are answers to a statistical question — they vary from case to case. Add or remove values and watch how spread out the data is.",
-  center:
-    "Three ways to describe the center. Add an outlier and watch the mean chase it while the median barely moves.",
-  spread:
-    "The MAD measures spread: the average distance each value sits from the mean. Spread the data out and watch it grow.",
-  choose:
-    "Which measure best describes this data? Add an outlier and compare: the mean gets pulled toward it, the median resists.",
+  shape: () =>
+    labT(
+      "stats-data-lab.focus-shape",
+      "Each dot is one observation. Compare the stacks, peaks, gaps, and shape of the data.",
+    ),
+  mean: () =>
+    labT(
+      "stats-data-lab.focus-mean",
+      "The mean is the total divided by the number of observations. Change a value and check the fair share.",
+    ),
+  median: () =>
+    labT(
+      "stats-data-lab.focus-median",
+      "Order the values. Find the middle value, or average the two middle values when the count is even.",
+    ),
+  variability: () =>
+    labT(
+      "stats-data-lab.focus-variability",
+      "These are answers to a statistical question — they vary from case to case. Add or remove values and watch how spread out the data is.",
+    ),
+  center: () =>
+    labT(
+      "stats-data-lab.focus-center",
+      "Three ways to describe the center. Add an outlier and watch the mean chase it while the median barely moves.",
+    ),
+  spread: () =>
+    labT(
+      "stats-data-lab.focus-spread",
+      "The MAD measures spread: the average distance each value sits from the mean. Spread the data out and watch it grow.",
+    ),
+  choose: () =>
+    labT(
+      "stats-data-lab.focus-choose",
+      "Which measure best describes this data? Add an outlier and compare: the mean gets pulled toward it, the median resists.",
+    ),
 };
 
 export function renderStatsDataLab(container, cfg = {}) {
@@ -101,23 +126,23 @@ export function renderStatsDataLab(container, cfg = {}) {
   const root = document.createElement("div");
   root.className = "sdlab";
   root.innerHTML =
-    `<div class="sdlab-head"><span class="sdlab-title">📈 ${esc(cfg.title || "Data Lab")}</span></div>` +
-    `<p class="sdlab-hint">${esc(cfg.intro || FOCUS_COPY[focus])}</p>` +
+    `<div class="sdlab-head"><span class="sdlab-title">📈 ${esc(cfg.title || labT("stats-data-lab.title", "Data Lab"))}</span></div>` +
+    `<p class="sdlab-hint">${esc(cfg.intro || FOCUS_COPY[focus]())}</p>` +
     (presets.length
-      ? `<div class="sdlab-presets" role="group" aria-label="Pick a data set">` +
+      ? `<div class="sdlab-presets" role="group" aria-label="${labT("stats-data-lab.pick-data-set", "Pick a data set")}">` +
         presets
           .map(
             (p, i) =>
-              `<button type="button" class="sdlab-chip" data-preset="${i}">${esc(p.label || `Data set ${i + 1}`)}</button>`,
+              `<button type="button" class="sdlab-chip" data-preset="${i}">${esc(p.label || labT("stats-data-lab.data-set-n", "Data set {n}", { n: i + 1 }))}</button>`,
           )
           .join("") +
         `</div>`
       : "") +
     `<div class="sdlab-datarow"><span class="sdlab-datalabel" data-el="datalabel"></span><span class="sdlab-chips" data-el="chips"></span></div>` +
     `<div class="sdlab-addrow">` +
-    `<input type="number" inputmode="numeric" class="sdlab-input" data-el="add" placeholder="value" aria-label="New data value" min="0" max="${MAXV}"/>` +
-    `<button type="button" class="sdlab-addbtn" data-el="addbtn">+ Add value</button>` +
-    `<button type="button" class="sdlab-clear" data-el="clear">Clear</button></div>` +
+    `<input type="number" inputmode="numeric" class="sdlab-input" data-el="add" placeholder="${labT("stats-data-lab.value-placeholder", "value")}" aria-label="${labT("stats-data-lab.new-value-label", "New data value")}" min="0" max="${MAXV}"/>` +
+    `<button type="button" class="sdlab-addbtn" data-el="addbtn">${labT("stats-data-lab.add-value", "+ Add value")}</button>` +
+    `<button type="button" class="sdlab-clear" data-el="clear">${labT("stats-data-lab.clear", "Clear")}</button></div>` +
     `<div class="sdlab-plot" data-el="plot"></div>` +
     `<div class="sdlab-measures" data-el="measures"></div>` +
     `<div class="sdlab-note" data-el="note" role="status" aria-live="polite"></div>`;
@@ -125,15 +150,17 @@ export function renderStatsDataLab(container, cfg = {}) {
   const el = (n) => root.querySelector(`[data-el="${n}"]`);
 
   function renderChips() {
-    el("datalabel").textContent = `Data${unit ? ` (${unit})` : ""}`;
+    el("datalabel").textContent = unit
+      ? labT("stats-data-lab.data-with-unit", "Data ({unit})", { unit })
+      : labT("stats-data-lab.data", "Data");
     el("chips").innerHTML = data.length
       ? data
           .map(
             (v, i) =>
-              `<button type="button" class="sdlab-datachip" data-i="${i}" title="Tap to remove" aria-label="Remove ${v}">${v}<span class="sdlab-x">×</span></button>`,
+              `<button type="button" class="sdlab-datachip" data-i="${i}" title="${labT("stats-data-lab.tap-to-remove", "Tap to remove")}" aria-label="${labT("stats-data-lab.remove-value", "Remove {v}", { v })}">${v}<span class="sdlab-x">×</span></button>`,
           )
           .join("")
-      : `<span class="sdlab-empty">No data — add some values.</span>`;
+      : `<span class="sdlab-empty">${labT("stats-data-lab.no-data", "No data — add some values.")}</span>`;
     el("chips")
       .querySelectorAll("[data-i]")
       .forEach((b) =>
@@ -174,12 +201,11 @@ export function renderStatsDataLab(container, cfg = {}) {
         `<text x="${x(t)}" y="${AX + 20}" text-anchor="middle" font-size="11" fill="${C.muted}">${t}</text>`;
     }
     const m = focus === "median" ? median(data) : mean(data);
-    const marker = focus === "median" ? "median" : "mean";
     const meanLine =
       `<line x1="${x(m)}" y1="18" x2="${x(m)}" y2="${AX}" stroke="${C.mean}" stroke-width="2" stroke-dasharray="4 3"/>` +
       `<polygon points="${x(m)},${AX} ${x(m) - 7},${AX + 11} ${x(m) + 7},${AX + 11}" fill="${C.mean}"/>` +
-      `<text x="${x(m)}" y="14" text-anchor="middle" font-size="11" font-weight="800" fill="${C.mean}">${marker} ${fmt(m)}</text>`;
-    plot.innerHTML = `<svg viewBox="0 0 ${W} 150" role="img" aria-label="${focus === "shape" ? "Dot plot with one dot for each observation" : focus === "median" ? "Dot plot with the median marked" : "Dot plot of the data with the mean marked as a balance point"}">${axis}${dots}${focus === "shape" ? "" : meanLine}</svg>`;
+      `<text x="${x(m)}" y="14" text-anchor="middle" font-size="11" font-weight="800" fill="${C.mean}">${focus === "median" ? labT("stats-data-lab.marker-median", "median {v}", { v: fmt(m) }) : labT("stats-data-lab.marker-mean", "mean {v}", { v: fmt(m) })}</text>`;
+    plot.innerHTML = `<svg viewBox="0 0 ${W} 150" role="img" aria-label="${focus === "shape" ? labT("stats-data-lab.plot-shape", "Dot plot with one dot for each observation") : focus === "median" ? labT("stats-data-lab.plot-median", "Dot plot with the median marked") : labT("stats-data-lab.plot-mean", "Dot plot of the data with the mean marked as a balance point")}">${axis}${dots}${focus === "shape" ? "" : meanLine}</svg>`;
   }
 
   function measureCard(label, value, hi = false) {
@@ -193,53 +219,108 @@ export function renderStatsDataLab(container, cfg = {}) {
       return;
     }
     const md = modes(data);
-    const modeText = md.length ? md.map(fmt).join(", ") : "none";
+    const modeText = md.length ? md.map(fmt).join(", ") : labT("stats-data-lab.mode-none", "none");
     if (focus === "shape") {
-      el("measures").innerHTML = measureCard("Observations", data.length);
-      el("note").textContent =
-        "One dot represents one observation. Describe the peaks, gaps, and whether the two sides look similar.";
+      el("measures").innerHTML = measureCard(
+        labT("stats-data-lab.m-observations", "Observations"),
+        data.length,
+      );
+      el("note").textContent = labT(
+        "stats-data-lab.note-shape",
+        "One dot represents one observation. Describe the peaks, gaps, and whether the two sides look similar.",
+      );
       return;
     }
     if (focus === "mean") {
       const total = data.reduce((sum, value) => sum + value, 0);
       el("measures").innerHTML =
-        measureCard("Total", fmt(total)) +
-        measureCard("Count", data.length) +
-        measureCard("Mean", fmt(mean(data)), true);
-      el("note").textContent =
-        `${fmt(total)} ÷ ${data.length} = ${fmt(mean(data))}. The mean is the fair share for each observation.`;
+        measureCard(labT("stats-data-lab.m-total", "Total"), fmt(total)) +
+        measureCard(labT("stats-data-lab.m-count", "Count"), data.length) +
+        measureCard(labT("stats-data-lab.m-mean", "Mean"), fmt(mean(data)), true);
+      el("note").textContent = labT(
+        "stats-data-lab.note-mean",
+        "{total} ÷ {count} = {mean}. The mean is the fair share for each observation.",
+        {
+          total: fmt(total),
+          count: data.length,
+          mean: fmt(mean(data)),
+        },
+      );
       return;
     }
     if (focus === "median") {
       const sorted = [...data].sort((a, b) => a - b);
       const mid = Math.floor(sorted.length / 2);
-      el("measures").innerHTML = measureCard("Median", fmt(median(data)), true);
+      el("measures").innerHTML = measureCard(
+        labT("stats-data-lab.m-median", "Median"),
+        fmt(median(data)),
+        true,
+      );
       el("note").textContent =
-        `Ordered data: ${sorted.join(", ")}. ` +
+        labT("stats-data-lab.note-ordered", "Ordered data: {list}.", { list: sorted.join(", ") }) +
+        " " +
         (sorted.length % 2
-          ? `The middle value is ${sorted[mid]}.`
-          : `The two middle values are ${sorted[mid - 1]} and ${sorted[mid]}. Their mean is (${sorted[mid - 1]} + ${sorted[mid]}) ÷ 2 = ${fmt(median(data))}.`);
+          ? labT("stats-data-lab.note-middle-one", "The middle value is {v}.", { v: sorted[mid] })
+          : labT(
+              "stats-data-lab.note-middle-two",
+              "The two middle values are {a} and {b}. Their mean is ({a} + {b}) ÷ 2 = {med}.",
+              { a: sorted[mid - 1], b: sorted[mid], med: fmt(median(data)) },
+            ));
       return;
     }
+    // [name cfg.measures can ask for, card html]; the name stays English so the
+    // filter below never depends on the displayed (translated) label.
     const cards = [
-      measureCard("Mean", fmt(mean(data)), focus === "center" || focus === "choose"),
-      measureCard("Median", fmt(median(data)), focus === "center" || focus === "choose"),
-      measureCard("Mode", modeText, focus === "center"),
-      measureCard("Range", fmt(Math.max(...data) - Math.min(...data)), focus === "variability"),
-      measureCard("MAD", fmt(mad(data)), focus === "spread" || focus === "choose"),
+      [
+        "Mean",
+        measureCard(
+          labT("stats-data-lab.m-mean", "Mean"),
+          fmt(mean(data)),
+          focus === "center" || focus === "choose",
+        ),
+      ],
+      [
+        "Median",
+        measureCard(
+          labT("stats-data-lab.m-median", "Median"),
+          fmt(median(data)),
+          focus === "center" || focus === "choose",
+        ),
+      ],
+      ["Mode", measureCard(labT("stats-data-lab.m-mode", "Mode"), modeText, focus === "center")],
+      [
+        "Range",
+        measureCard(
+          labT("stats-data-lab.m-range", "Range"),
+          fmt(Math.max(...data) - Math.min(...data)),
+          focus === "variability",
+        ),
+      ],
+      [
+        "MAD",
+        measureCard(
+          labT("stats-data-lab.m-mad", "MAD"),
+          fmt(mad(data)),
+          focus === "spread" || focus === "choose",
+        ),
+      ],
     ];
     if (Array.isArray(cfg.measures) && cfg.measures.includes("IQR") && data.length >= 2) {
       const sorted = [...data].sort((a, b) => a - b);
       const mid = Math.floor(sorted.length / 2);
       const lower = sorted.slice(0, mid),
         upper = sorted.slice(Math.ceil(sorted.length / 2));
-      cards.push(measureCard("IQR", fmt(median(upper) - median(lower)), true));
+      cards.push([
+        "IQR",
+        measureCard(labT("stats-data-lab.m-iqr", "IQR"), fmt(median(upper) - median(lower)), true),
+      ]);
     }
     el("measures").innerHTML = Array.isArray(cfg.measures)
       ? cards
-          .filter((card) => cfg.measures.some((name) => card.includes(`>${name}</span>`)))
+          .filter(([key]) => cfg.measures.includes(key))
+          .map(([, card]) => card)
           .join("")
-      : cards.join("");
+      : cards.map(([, card]) => card).join("");
     renderNote();
   }
 
@@ -254,18 +335,37 @@ export function renderStatsDataLab(container, cfg = {}) {
       // stick (not the range or MAD) because both of those are inflated by the
       // very outlier we're trying to surface, which would hide the skew.
       if (data.length >= 3 && gap >= Math.max(1, 0.12 * Math.abs(md))) {
-        msg = `The mean (${fmt(m)}) and median (${fmt(md)}) are far apart — a sign of an <strong>outlier or skew</strong>. When that happens the <strong>median</strong> usually describes the typical value better.`;
+        msg = labT(
+          "stats-data-lab.msg-far",
+          "The mean ({mean}) and median ({median}) are far apart — a sign of an <strong>outlier or skew</strong>. When that happens the <strong>median</strong> usually describes the typical value better.",
+          { mean: fmt(m), median: fmt(md) },
+        );
       } else if (data.length >= 3) {
-        msg = `The mean (${fmt(m)}) and median (${fmt(md)}) are close, so the data is fairly <strong>symmetric</strong> — the mean is a good summary of the center.`;
+        msg = labT(
+          "stats-data-lab.msg-close",
+          "The mean ({mean}) and median ({median}) are close, so the data is fairly <strong>symmetric</strong> — the mean is a good summary of the center.",
+          { mean: fmt(m), median: fmt(md) },
+        );
       }
     } else if (focus === "spread") {
-      msg = `On average each value sits <strong>${fmt(mad(data))} ${unit}</strong> from the mean. A larger MAD means the data is more spread out; a smaller MAD means it clusters near the mean.`;
+      msg = labT(
+        "stats-data-lab.msg-spread",
+        "On average each value sits <strong>{mad} {unit}</strong> from the mean. A larger MAD means the data is more spread out; a smaller MAD means it clusters near the mean.",
+        { mad: fmt(mad(data)), unit },
+      );
     } else if (focus === "variability") {
       const set = new Set(data);
       msg =
         set.size <= 1
-          ? "Every value is the same — there's no variability, so this wouldn't be a statistical question."
-          : `The values range across <strong>${fmt(Math.max(...data) - Math.min(...data))} ${unit}</strong>. Because the answers vary, this is a <strong>statistical question</strong> worth collecting data on.`;
+          ? labT(
+              "stats-data-lab.msg-same",
+              "Every value is the same — there's no variability, so this wouldn't be a statistical question.",
+            )
+          : labT(
+              "stats-data-lab.msg-varies",
+              "The values range across <strong>{range} {unit}</strong>. Because the answers vary, this is a <strong>statistical question</strong> worth collecting data on.",
+              { range: fmt(Math.max(...data) - Math.min(...data)), unit },
+            );
     }
     el("note").innerHTML = msg ? `<div class="sdlab-msg">${msg}</div>` : "";
   }

@@ -62,6 +62,11 @@ export function withCurriculumShell(html, active = "", options = {}) {
       "</head>",
       '<link rel="stylesheet" href="/assets/curriculum-system.css">\n</head>',
     );
+  if (!html.includes("/assets/learning-supports/ls-boot.js"))
+    html = html.replace(
+      "</head>",
+      '<script type="module" src="/assets/learning-supports/ls-boot.js"></script>\n</head>',
+    );
   html = html.replace(/<body([^>]*)>/, (match, attributes) => {
     if (/class=/.test(attributes))
       return match.replace(
