@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CurriculumManifest",
+  "description": "Canonical manifest schema for EduWonderLab Grade 6 Mathematics curriculum shell and discovery architecture.",
+  "type": "object",
+  "required": ["schemaVersion", "generatedAt", "units", "lessons"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "type": "integer", "const": 2 },
+    "generatedAt": { "type": "string" },
+    "total": { "type": "integer" },
+    "familyHomework": { "type": "array" },
+    "units": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "required": ["number", "title", "bigIdea"],
+        "properties": {
+          "number": { "type": "integer", "minimum": 1, "maximum": 10 },
+          "title": { "$ref": "#/$defs/i18nString" },
+          "bigIdea": { "$ref": "#/$defs/i18nString" },
+          "capstones": {
+            "type": "object",
+            "properties": {
+              "readinessFluency": { "type": "string" },
+              "missionLab": { "type": "string" },
+              "unitReview": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "lessons": {
+      "type": "array",
+      "minItems": 84,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "unit",
+          "title",
+          "bigIdea",
+          "standards",
+          "representations",
+          "tools",
+          "printables",
+          "scaffolding",
+          "teacher"
+        ],
+        "properties": {
+          "id": { "type": "string", "pattern": "^\\d+-\\d+$" },
+          "unit": { "type": "integer", "minimum": 1, "maximum": 10 },
+          "lesson": { "type": "integer" },
+          "title": { "$ref": "#/$defs/i18nString" },
+          "bigIdea": { "$ref": "#/$defs/i18nString" },
+          "resources": { "type": "object" },
+          "lessonPath": { "type": "string" },
+          "titleEs": { "type": "string" },
+          "objective": { "type": "string" },
+          "languageObjective": { "type": "string" },
+          "topic": { "type": "string" },
+          "flagship": { "type": "boolean" },
+          "supports": { "type": "object" },
+          "arcade": { "type": ["object", "null"] },
+          "standards": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string" }
+          },
+          "standard": { "type": "string" },
+          "representations": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["tape-diagram", "double-number-line", "coordinate-plane", "table"]
+            }
+          },
+          "tools": {
+            "type": "object",
+            "properties": {
+              "notesStudio": { "type": "string" },
+              "mathCanvas": { "type": "string" },
+              "missionLab": { "type": "string" },
+              "extraHelp": { "type": "string" },
+              "fluencyDrill": { "type": "string" }
+            },
+            "additionalProperties": false
+          },
+          "printables": {
+            "type": "object",
+            "required": ["practiceSheet", "guidedNotes", "familyHomework"],
+            "properties": {
+              "practiceSheet": { "$ref": "#/$defs/i18nString" },
+              "guidedNotes": { "$ref": "#/$defs/i18nString" },
+              "familyHomework": { "$ref": "#/$defs/i18nString" },
+              "teacherKey": { "type": "string" },
+              "subSummary": { "type": "string" }
+            },
+            "additionalProperties": false
+          },
+          "scaffolding": {
+            "type": "object",
+            "required": ["widaLevel2_3"],
+            "properties": {
+              "widaLevel2_3": {
+                "type": "object",
+                "required": ["sentenceFrames", "wordBank"],
+                "properties": {
+                  "sentenceFrames": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  },
+                  "wordBank": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          },
+          "teacher": {
+            "type": "object",
+            "required": ["objective", "misconceptions", "interventionNotes"],
+            "properties": {
+              "objective": { "type": "string" },
+              "misconceptions": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "interventionNotes": {
+                "type": "object",
+                "required": ["tier2", "tier3"],
+                "properties": {
+                  "tier2": { "type": "string" },
+                  "tier3": { "type": "string" }
+                },
+                "additionalProperties": false
+              },
+              "pacing": { "type": "string" }
+            },
+            "additionalProperties": false
+          },
+          "discoursePrompts": {
+            "type": "object",
+            "required": ["en"],
+            "properties": {
+              "en": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "es": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "additionalProperties": false
+          },
+          "pathways": {
+            "type": "object",
+            "properties": {
+              "group1": { "type": "string" },
+              "group2": { "type": "string" },
+              "catchup": { "type": "string" }
+            },
+            "additionalProperties": false
+          },
+          "esGaps": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "boolean" },
+              "bigIdea": { "type": "boolean" },
+              "practiceSheet": { "type": "boolean" },
+              "guidedNotes": { "type": "boolean" },
+              "familyHomework": { "type": "boolean" },
+              "discoursePrompts": { "type": "boolean" }
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "i18nString": {
+      "type": "object",
+      "required": ["en", "es"],
+      "properties": {
+        "en": { "type": "string", "minLength": 1 },
+        "es": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

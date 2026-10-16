@@ -89,7 +89,7 @@ const lessons = manifest.lessons.map((l) => ({
   id: l.id,
   unit: l.unit,
   lesson: l.lesson,
-  title: l.title,
+  title: typeof l.title === "object" && l.title ? l.title.en : l.title,
   standard: l.standard || null,
 }));
 

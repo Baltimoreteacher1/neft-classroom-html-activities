@@ -54,7 +54,9 @@ for (const card of document.querySelectorAll("details.unit")) {
 const unitVocabulary = new Map();
 for (const [n, name] of unitName) unitVocabulary.set(n, [name]);
 for (const lesson of curriculum.lessons) {
-  unitVocabulary.get(lesson.unit)?.push(lesson.title || "");
+  const title =
+    typeof lesson.title === "object" && lesson.title ? lesson.title.en : lesson.title || "";
+  unitVocabulary.get(lesson.unit)?.push(title);
 }
 
 const words = (text) =>

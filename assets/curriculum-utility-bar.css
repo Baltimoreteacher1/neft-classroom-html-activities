@@ -1,0 +1,197 @@
+/**
+ * curriculum-utility-bar.css — Slim in-tool utility bar for math sub-tools.
+ *
+ * SPEC: <= 40px (default 38px) persistent utility bar docked to top of sub-tools:
+ * - /curriculum/learning-labs/*
+ * - /curriculum/math-canvas/
+ * - /curriculum/extra-help/
+ * - /curriculum/notes-studio/
+ *
+ * PALETTE: Navy (#0a1f33, #102a45) + Teal (#0f766e, #1fa6a2) on warm off-white (#fbfaf7, #ffffff).
+ * HARD CONSTRAINT: No purple anywhere in any UI, state, or element.
+ * WCAG 2.2 AA compliant: contrast >= 4.5:1, 3px focus-visible rings, zero layout shift.
+ */
+
+:root {
+  --in-tool-bar-h: 38px;
+  --in-tool-navy: #102a45;
+  --in-tool-teal: #0f766e;
+  --in-tool-teal-light: #e6f6f4;
+  --in-tool-bg: #ffffff;
+  --in-tool-border: #e2ded5;
+  --in-tool-ink: #17202a;
+  --in-tool-muted: #536471;
+}
+
+body.has-in-tool-bar {
+  padding-top: var(--in-tool-bar-h) !important;
+}
+
+.curriculum-in-tool-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--in-tool-bar-h);
+  background-color: var(--in-tool-bg);
+  border-bottom: 1px solid var(--in-tool-border);
+  box-shadow: 0 1px 3px rgba(10, 31, 51, 0.06);
+  z-index: 10000;
+  box-sizing: border-box;
+  font-family: "Nunito", "Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
+  color: var(--in-tool-ink);
+}
+
+.in-tool-bar-inner {
+  height: 100%;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Left: Breadcrumbs & 1-Click Return to Hub */
+.in-tool-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.in-tool-hub-btn {
+  background-color: var(--in-tool-navy);
+  color: #ffffff;
+  text-decoration: none;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 0.78rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.15s ease;
+  min-height: 28px;
+}
+
+.in-tool-hub-btn:hover {
+  background-color: var(--in-tool-teal);
+}
+
+.in-tool-sep {
+  color: var(--in-tool-muted);
+  opacity: 0.6;
+}
+
+.in-tool-crumb-trail {
+  color: var(--in-tool-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+/* Middle: Tool Title */
+.in-tool-center {
+  flex: 1;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: var(--in-tool-navy);
+}
+
+/* Right: Mini-Utility Segment */
+.in-tool-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.mini-segment {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f1f5f9;
+  border: 1px solid var(--in-tool-border);
+  border-radius: 14px;
+  padding: 1px;
+  gap: 1px;
+}
+
+.mini-segment-btn {
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--in-tool-muted);
+  border-radius: 12px;
+  padding: 2px 7px;
+  cursor: pointer;
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s ease;
+}
+
+.mini-segment-btn:hover:not([aria-pressed="true"]) {
+  color: var(--in-tool-navy);
+}
+
+.mini-segment-btn[aria-pressed="true"] {
+  background-color: var(--in-tool-navy);
+  color: #ffffff;
+}
+
+.mini-segment-btn[data-role="teacher"][aria-pressed="true"] {
+  background-color: var(--in-tool-teal);
+  color: #ffffff;
+}
+
+.mini-pill-btn {
+  background-color: #f1f5f9;
+  border: 1px solid var(--in-tool-border);
+  border-radius: 14px;
+  padding: 2px 8px;
+  font-family: inherit;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--in-tool-muted);
+  cursor: pointer;
+  min-height: 26px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.12s ease;
+}
+
+.mini-pill-btn:hover {
+  border-color: var(--in-tool-teal);
+  color: var(--in-tool-navy);
+}
+
+.mini-pill-btn[aria-pressed="true"] {
+  background-color: var(--in-tool-teal);
+  color: #ffffff;
+  border-color: #0b5c56;
+}
+
+@media (max-width: 640px) {
+  .in-tool-crumb-trail {
+    display: none;
+  }
+}
+
+.curriculum-in-tool-bar a:focus-visible,
+.curriculum-in-tool-bar button:focus-visible {
+  outline: 2px solid var(--in-tool-teal) !important;
+  outline-offset: 1px !important;
+}

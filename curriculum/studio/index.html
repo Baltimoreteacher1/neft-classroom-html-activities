@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="EduWonderLab Interactive Studio — Explore standalone Living Math Canvases, Mission Labs, and virtual manipulatives for Grade 6 Mathematics."
+    />
+    <title>Interactive Studio — EduWonderLab Grade 6 Mathematics</title>
+    <link rel="canonical" href="https://eduwonderlab.com/curriculum/studio/" />
+    <meta name="theme-color" content="#102a45" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/favicon.svg" />
+    <link rel="stylesheet" href="/assets/fonts/hub-curriculum.css" />
+    <link rel="stylesheet" href="/assets/curriculum-shell.css" />
+    <style>
+      :root {
+        --studio-navy: #102a45;
+        --studio-teal: #0f766e;
+        --studio-teal-light: #e6f6f4;
+        --studio-bg: #fbfaf7;
+        --studio-card: #ffffff;
+        --studio-border: #e2ded5;
+        --studio-muted: #536471;
+        --studio-ink: #17202a;
+      }
+      body {
+        margin: 0;
+        background-color: var(--studio-bg);
+        color: var(--studio-ink);
+        font-family: "Nunito", "Atkinson Hyperlegible", system-ui, sans-serif;
+        line-height: 1.5;
+      }
+      .studio-container {
+        max-width: 1360px;
+        margin: 0 auto;
+        padding: 32px 16px 80px;
+      }
+      .studio-hero {
+        background: linear-gradient(135deg, #ffffff 0%, var(--studio-teal-light) 100%);
+        border: 1px solid var(--studio-border);
+        border-radius: 16px;
+        padding: clamp(24px, 4vw, 40px);
+        margin-bottom: 32px;
+        box-shadow: 0 4px 16px rgba(10, 31, 51, 0.05);
+      }
+      .studio-hero h1 {
+        margin: 0 0 12px;
+        font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+        font-weight: 900;
+        color: var(--studio-navy);
+      }
+      .studio-hero p {
+        margin: 0;
+        font-size: 1.05rem;
+        max-width: 74ch;
+        color: #334155;
+      }
+      .studio-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        background: #ffffff;
+        border: 1px solid var(--studio-border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        margin-bottom: 28px;
+        box-shadow: 0 2px 6px rgba(10, 31, 51, 0.04);
+      }
+      .studio-filter-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .studio-filter-btn {
+        background: transparent;
+        border: 1px solid var(--studio-border);
+        border-radius: 20px;
+        padding: 6px 14px;
+        font-family: inherit;
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: var(--studio-muted);
+        cursor: pointer;
+        min-height: 38px;
+        transition: all 0.15s ease;
+      }
+      .studio-filter-btn:hover {
+        background-color: var(--studio-teal-light);
+        color: var(--studio-navy);
+      }
+      .studio-filter-btn[aria-pressed="true"] {
+        background-color: var(--studio-navy);
+        color: #ffffff;
+        border-color: var(--studio-navy);
+      }
+      .studio-search-input {
+        padding: 8px 14px;
+        border: 1px solid var(--studio-border);
+        border-radius: 20px;
+        font-family: inherit;
+        font-size: 0.88rem;
+        background: var(--studio-bg);
+        color: var(--studio-ink);
+        min-width: 240px;
+        min-height: 38px;
+      }
+      .studio-search-input:focus {
+        outline: none;
+        border-color: var(--studio-teal);
+        box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.2);
+      }
+      .studio-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+      }
+      .studio-card {
+        background: #ffffff;
+        border: 1px solid var(--studio-border);
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 14px;
+        box-shadow: 0 2px 8px rgba(10, 31, 51, 0.04);
+        transition: all 0.15s ease;
+      }
+      .studio-card:hover {
+        border-color: var(--studio-teal);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(15, 118, 110, 0.12);
+      }
+      .studio-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .studio-type-badge {
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 3px 8px;
+        border-radius: 6px;
+        background-color: #f1f5f9;
+        color: #334155;
+      }
+      .studio-type-badge.canvas {
+        background-color: #e0f2fe;
+        color: #0369a1;
+      }
+      .studio-type-badge.lab {
+        background-color: #dcfce7;
+        color: #15803d;
+      }
+      .studio-type-badge.manipulative {
+        background-color: #fef3c7;
+        color: #92400e;
+      }
+      .studio-unit-tag {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--studio-muted);
+      }
+      .studio-card-title {
+        margin: 0;
+        font-size: 1.15rem;
+        font-weight: 900;
+        color: var(--studio-navy);
+      }
+      .studio-card-desc {
+        margin: 0;
+        font-size: 0.88rem;
+        color: #475569;
+        line-height: 1.45;
+      }
+      .studio-launch-btn {
+        background-color: var(--studio-navy);
+        color: #ffffff;
+        font-weight: 800;
+        font-size: 0.86rem;
+        padding: 8px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-height: 40px;
+        transition: background 0.15s ease;
+      }
+      .studio-launch-btn:hover {
+        background-color: var(--studio-teal);
+      }
+      .studio-container a:focus-visible,
+      .studio-container button:focus-visible,
+      .studio-container input:focus-visible {
+        outline: 3px solid var(--studio-teal) !important;
+        outline-offset: 2px !important;
+      }
+    </style>
+  </head>
+  <body class="has-curriculum-shell">
+    <a class="ewl-skip" href="#main-content">Skip to main content</a>
+    <header class="curriculum-header" data-active-route="studio"></header>
+    <div id="shell-live-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <main id="main-content" class="studio-container">
+      <section class="studio-hero">
+        <h1 data-shell-i18n="studioHeroTitle">Interactive Math Studio</h1>
+        <p data-shell-i18n="studioHeroSubtitle">
+          Explore standalone Living Math Canvases, multi-stage Mission Labs, and virtual manipulatives. Manipulate quantities, predict outcomes, and connect visual concrete models to algebraic reasoning.
+        </p>
+      </section>
+
+      <section class="studio-toolbar" aria-label="Catalog filters">
+        <div class="studio-filter-group" role="group" aria-label="Filter by resource type">
+          <button type="button" class="studio-filter-btn" data-type-filter="all" aria-pressed="true">All Tools</button>
+          <button type="button" class="studio-filter-btn" data-type-filter="canvas" aria-pressed="false">Living Canvases</button>
+          <button type="button" class="studio-filter-btn" data-type-filter="lab" aria-pressed="false">Mission Labs</button>
+          <button type="button" class="studio-filter-btn" data-type-filter="manipulative" aria-pressed="false">Manipulatives</button>
+        </div>
+        <input type="search" id="studio-search" class="studio-search-input" placeholder="Search by name, model, topic..." aria-label="Search studio tools" />
+      </section>
+
+      <section class="studio-grid" id="studio-grid" aria-label="Interactive Tools Catalog">
+        <!-- Rendered dynamically from data/curriculum-manifest.json & learning-labs.json -->
+      </section>
+    </main>
+
+    <script src="/assets/curriculum-shell-state.js"></script>
+    <script>
+      (function() {
+        var allItems = [];
+        var activeFilter = "all";
+        var query = "";
+
+        async function initStudio() {
+          try {
+            var [manifestRes, labsRes] = await Promise.all([
+              fetch("/data/curriculum-manifest.json"),
+              fetch("/data/learning-labs.json").catch(function() { return { ok: false }; })
+            ]);
+
+            var manifest = manifestRes.ok ? await manifestRes.json() : null;
+            var labsData = labsRes.ok ? await labsRes.json() : null;
+
+            if (manifest) {
+              // Canvas scenes
+              manifest.lessons.forEach(function(l) {
+                if (l.tools && l.tools.mathCanvas) {
+                  allItems.push({
+                    type: "canvas",
+                    typeLabel: "Living Canvas",
+                    unit: l.unit,
+                    id: l.id,
+                    title: "Math Canvas: " + (l.title.en || l.title),
+                    titleEs: "Lienzo: " + (l.title.es || l.title.en || l.title),
+                    desc: "Interactive visual model: " + (l.representations ? l.representations.join(", ") : "CRA model") + ". Connected to Lesson " + l.id + ".",
+                    href: l.tools.mathCanvas
+                  });
+                }
+              });
+            }
+
+            if (labsData && Array.isArray(labsData.labs)) {
+              labsData.labs.forEach(function(lab) {
+                allItems.push({
+                  type: "lab",
+                  typeLabel: "Mission Lab",
+                  unit: lab.unit,
+                  id: lab.id,
+                  title: "Mission Lab: " + lab.title,
+                  titleEs: "Laboratorio: " + lab.title,
+                  desc: "Multi-level investigative lab with predict, explore, practice, and challenge modes.",
+                  href: lab.href
+                });
+              });
+            }
+
+            // Standalone manipulatives
+            var manipulatives = [
+              { id: "double-number-line", unit: 3, title: "Double Number Line Studio", desc: "Interact with proportional scaling and unit rate steps.", href: "/curriculum/math-canvas/?scene=double-number-line" },
+              { id: "tape-diagram", unit: 3, title: "Tape Diagram Playground", desc: "Partition and compare part-to-part and part-to-whole bars.", href: "/curriculum/math-canvas/?scene=tape-diagram" },
+              { id: "coordinate-plane", unit: 7, title: "Four-Quadrant Coordinate Explorer", desc: "Plot, reflect across axes, and measure geometric distances.", href: "/curriculum/math-canvas/?scene=coordinate-plane" },
+              { id: "ratio-table", unit: 3, title: "Dynamic Ratio Table Workbench", desc: "Generate multiplicative columns and verify equivalent ratios.", href: "/curriculum/learning-labs/ratio-table-lab/" }
+            ];
+
+            manipulatives.forEach(function(m) {
+              allItems.push({
+                type: "manipulative",
+                typeLabel: "Manipulative",
+                unit: m.unit,
+                id: m.id,
+                title: m.title,
+                titleEs: m.title,
+                desc: m.desc,
+                href: m.href
+              });
+            });
+
+            renderGrid();
+          } catch(e) {
+            console.error("Error loading studio items:", e);
+          }
+        }
+
+        function renderGrid() {
+          var grid = document.getElementById("studio-grid");
+          if (!grid) return;
+
+          var lang = window.CurriculumShell ? window.CurriculumShell.getLanguage() : "en";
+          var q = query.toLowerCase().trim();
+
+          var filtered = allItems.filter(function(item) {
+            var matchType = activeFilter === "all" || item.type === activeFilter;
+            var matchQ = !q || item.title.toLowerCase().indexOf(q) !== -1 || (item.titleEs && item.titleEs.toLowerCase().indexOf(q) !== -1) || item.desc.toLowerCase().indexOf(q) !== -1 || ("unit " + item.unit).indexOf(q) !== -1;
+            return matchType && matchQ;
+          });
+
+          if (filtered.length === 0) {
+            grid.innerHTML = '<div style="grid-column: 1/-1; padding: 40px; text-align: center; color: var(--studio-muted); font-size: 1.1rem;">No tools found matching your criteria.</div>';
+            return;
+          }
+
+          var html = filtered.map(function(item) {
+            var title = lang === "es" && item.titleEs ? item.titleEs : item.title;
+            return (
+              '<article class="studio-card">' +
+              '  <div>' +
+              '    <div class="studio-card-head">' +
+              '      <span class="studio-type-badge ' + item.type + '">' + item.typeLabel + '</span>' +
+              '      <span class="studio-unit-tag">Unit ' + item.unit + '</span>' +
+              '    </div>' +
+              '    <h2 class="studio-card-title" style="margin-top:10px;">' + title + '</h2>' +
+              '    <p class="studio-card-desc" style="margin-top:8px;">' + item.desc + '</p>' +
+              '  </div>' +
+              '  <a href="' + item.href + '" class="studio-launch-btn"><span>Launch ' + item.typeLabel + '</span> <span aria-hidden="true">→</span></a>' +
+              '</article>'
+            );
+          }).join("");
+
+          grid.innerHTML = html;
+        }
+
+        // Toolbar bindings
+        var filterBtns = document.querySelectorAll("[data-type-filter]");
+        filterBtns.forEach(function(btn) {
+          btn.addEventListener("click", function() {
+            filterBtns.forEach(function(b) { b.setAttribute("aria-pressed", "false"); });
+            btn.setAttribute("aria-pressed", "true");
+            activeFilter = btn.getAttribute("data-type-filter");
+            renderGrid();
+          });
+        });
+
+        var searchInput = document.getElementById("studio-search");
+        if (searchInput) {
+          searchInput.addEventListener("input", function(e) {
+            query = e.target.value;
+            renderGrid();
+          });
+        }
+
+        window.addEventListener("curriculum:state-change", function() {
+          renderGrid();
+        });
+
+        initStudio();
+      })();
+    </script>
+  </body>
+</html>

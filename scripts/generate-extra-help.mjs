@@ -54,7 +54,9 @@ export function renderExtraHelp(
       const cards = lessons
         .map((lesson) => {
           const original = book.get(lesson.id);
-          const title = original?.title || lesson.title;
+          const lessonTitle =
+            typeof lesson.title === "object" && lesson.title ? lesson.title.en : lesson.title;
+          const title = original?.title || lessonTitle;
           const links = CONFIG.resources
             .flatMap(([key, label]) => {
               const resource = lesson.resources[key];
@@ -69,10 +71,10 @@ export function renderExtraHelp(
             .join("\n");
           if (!links) throw new Error(`Extra Help: no resources for ${lesson.id}`);
           const alias =
-            original && title.toLowerCase() !== lesson.title.toLowerCase()
-              ? `<p class="eh-alias">On EduWonderLab: ${esc(lesson.title)}</p>`
+            original && title.toLowerCase() !== lessonTitle.toLowerCase()
+              ? `<p class="eh-alias">On EduWonderLab: ${esc(lessonTitle)}</p>`
               : "";
-          return `<li class="eh-lesson" id="lesson-${esc(lesson.id)}" data-lesson data-search="${esc(`${lesson.id} ${lesson.id.replace("-", ".")} ${title} ${lesson.title} ${lesson.titleEs || ""} ${lesson.standard} ${original?.standards?.join(" ") || ""} ${lesson.objective} ${unit.title}`.toLowerCase())}">
+          return `<li class="eh-lesson" id="lesson-${esc(lesson.id)}" data-lesson data-search="${esc(`${lesson.id} ${lesson.id.replace("-", ".")} ${title} ${lessonTitle} ${lesson.titleEs || ""} ${lesson.standard} ${original?.standards?.join(" ") || ""} ${lesson.objective} ${unit.title}`.toLowerCase())}">
 <p class="eh-number">Lesson ${esc(lesson.id.replace("-", "."))}${original ? "" : " <span>Additional practice</span>"}</p>
 <h3>${esc(title)}</h3>${alias}
 <p class="eh-target">${esc(lesson.objective)}</p>
@@ -95,8 +97,14 @@ export function renderExtraHelp(
 <link rel="canonical" href="https://eduwonderlab.com${CONFIG.route}">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/curriculum-extra-help.css">
+<link rel="stylesheet" href="/assets/curriculum-utility-bar.css">
 <script src="/assets/curriculum-extra-help.js" defer></script>
+<script src="/assets/curriculum-shell-state.js"></script>
+<script src="/assets/curriculum-utility-bar.js" defer></script>
 </head><body class="extra-help">
+<!-- curriculum-utility-bar:begin -->
+<div class="curriculum-in-tool-bar" data-tool="Extra Help"></div>
+<!-- curriculum-utility-bar:end -->
 <main id="extra-help-content" class="eh-wrap" tabindex="-1">
 <header class="eh-header"><a class="eh-back" href="/curriculum/">Back to curriculum</a>
 <h1>Strategy Boosters &amp; Concept Unlocks <span class="eh-h1-es" lang="es">/ Impulsores de Estrategia</span></h1><p class="eh-lede">Find your Reveal Math unit and lesson. Pick a strategy booster: step-by-step help, notes, or practice that unlocks the big idea.</p>

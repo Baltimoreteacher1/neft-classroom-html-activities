@@ -7,6 +7,9 @@
 
 /** path -> [destination, status] */
 export const EXACT = {
+  "/curriculum/studio": ["/curriculum/studio/", 301],
+  "/curriculum/practice": ["/curriculum/practice/", 301],
+  "/curriculum/family": ["/curriculum/family/", 301],
   "/lessons/1-1-flagship": ["/lessons/6-13/", 301],
   "/lessons/2-1-flagship": ["/lessons/6-1/", 301],
   "/lessons/3-1-flagship": ["/lessons/3-1/", 301],

@@ -195,6 +195,8 @@
     <link rel="stylesheet" href="/assets/curriculum-teacher-workflow.css?v=msaoy7gp" />
     <link rel="stylesheet" href="/assets/curriculum-guided-path.css?v=msaoy7gp" />
     <link rel="stylesheet" href="/assets/curriculum-studio-journey.css?v=msaoy7gp" />
+    <link rel="stylesheet" href="/assets/curriculum-shell.css" />
+    <link rel="stylesheet" href="/assets/curriculum-hub-progressive.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
@@ -306,10 +308,12 @@
     <link rel="stylesheet" href="/assets/ewl/reference.css?v=d5dbda60" />
   <script type="module" src="/assets/learning-supports/ls-boot.js"></script>
 </head>
-  <body class="light-theme curriculum-home curriculum-product">
+  <body class="light-theme curriculum-home has-curriculum-shell curriculum-product">
 <!-- curriculum-shell:begin -->
 <a class="ewl-skip" href="#main-content">Skip to main content</a><nav class="ewl-course-nav" aria-label="Curriculum navigation"><div class="ewl-course-nav__inner"><a class="ewl-course-brand" href="/curriculum/"><img src="/assets/favicon.svg" width="28" height="28" alt="">EduWonderLab<span>Grade 6 math</span></a><div class="ewl-course-menu"><ul class="ewl-course-links"><li><a href="/curriculum/" aria-current="page">Dashboard</a></li><li><a href="/curriculum/units/">Lessons</a></li><li><a href="/curriculum/practice-workbooks/">Practice</a></li><li><a href="/curriculum/arcade/">Games</a></li><li><a href="/curriculum/learning-labs/">Learning labs</a></li><li><a href="/curriculum/family-connections/">Homework</a></li><li><a href="/curriculum/extra-help/">Extra Help</a></li><li><a href="/curriculum/fluency/">Fluency</a></li></ul><details class="ewl-course-more"><summary>More</summary><ul><li><a href="/curriculum/arcade/">Games</a></li><li><a href="/curriculum/learning-labs/">Learning labs</a></li><li><a href="/curriculum/family-connections/">Homework</a></li><li><a href="/curriculum/extra-help/">Extra Help</a></li><li><a href="/curriculum/fluency/">Fluency</a></li></ul></details></div><div class="ewl-course-tools"><div class="hub-reading-control"><button id="udlFloatingLauncher" type="button" aria-expanded="false" aria-controls="udlMenuPopover" onclick="toggleUdlMenu()">Reading supports</button><div id="udlMenuPopover" role="region" aria-labelledby="udlMenuTitle" style="display: none"><h2 id="udlMenuTitle">Reading and language supports</h2><label><span>Atkinson headings and controls</span><input type="checkbox" id="chkDyslexiaFont" onchange="toggleDyslexiaFont(this.checked)" /></label><label><span>High contrast</span><input type="checkbox" id="chkHighContrast" onchange="toggleHighContrast(this.checked)" /></label><a href="/esol/">Open language supports</a></div></div></div></div></nav>
 <!-- curriculum-shell:end -->
+<div id="shell-live-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+<header class="curriculum-header" data-active-route="curriculum"></header>
 <header class="curriculum-guide" id="curriculum-start">
       <p class="curriculum-guide__eyebrow">Curriculum</p>
       <h1>Grade 6 mathematics</h1>
@@ -406,6 +410,7 @@
     </header>
 
     <main id="main-content" class="hub-page">
+      <div id="hub-progressive-mount"></div>
       <!-- Now / Next: the lesson the class is on today and the next class day,
            read from the pacing baseline in assets/pacing-days.generated.js
            (tools/sync-curriculum-shell.mjs). Rendered by assets/curriculum-home.js;
@@ -4883,12 +4888,6 @@
               <span>Search every lesson, tool, game, practice set, and hub in one place.</span>
             </a>
           </div>
-          <script>
-            (function forwardUnitAnchors() {
-              var m = /^#unit-(\d{1,2})$/.exec(location.hash || "");
-              if (m) location.replace("/curriculum/units/#unit-" + m[1]);
-            })();
-          </script>
 
         </div>
       </details>
@@ -5006,7 +5005,7 @@
     <script src="/assets/curriculum-studio-journey.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-lesson-merge.js?v=msaoy7gp" defer></script>
     <script src="/assets/curriculum-product-upgrades.js?v=a1d332a0" defer></script>
-    <script src="/assets/curriculum-navigator.js?v=6570ddf0" defer></script>
+    <script src="/assets/curriculum-navigator.js?v=fe00dc0d" defer></script>
     <link rel="stylesheet" href="/assets/reveal-document-links.css?v=b4feb3a4" />
     <script src="/assets/curriculum-resources.js?v=7b688655" defer></script>
     <script src="/assets/pacing-days.generated.js" defer></script>
@@ -5462,5 +5461,7 @@
     <script src="/assets/reveal-document-links.js?v=b3597233" defer></script>
     <script src="/assets/curriculum-hub-pedagogy.js?v=fd1f9c68" defer></script>
     <script src="/assets/formula-popup.js" defer></script>
+    <script src="/assets/curriculum-shell-state.js"></script>
+    <script src="/assets/curriculum-hub-progressive.js" defer></script>
   </body>
 </html>

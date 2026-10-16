@@ -1196,17 +1196,29 @@
         !data[1].lessons.length
       )
         throw new Error("Invalid catalog");
-      lessons = data[0].lessons.filter(function (lesson) {
-        return (
-          lesson &&
-          /^\d{1,2}-\d{1,2}$/.test(lesson.id) &&
-          typeof lesson.title === "string" &&
-          Number.isInteger(lesson.unit) &&
-          lesson.resources &&
-          typeof lesson.resources === "object" &&
-          !Array.isArray(lesson.resources)
-        );
-      });
+      lessons = data[0].lessons
+        .filter(function (lesson) {
+          return (
+            lesson &&
+            /^\d{1,2}-\d{1,2}$/.test(lesson.id) &&
+            (typeof lesson.title === "string" ||
+              (typeof lesson.title === "object" && typeof lesson.title?.en === "string")) &&
+            Number.isInteger(lesson.unit) &&
+            lesson.resources &&
+            typeof lesson.resources === "object" &&
+            !Array.isArray(lesson.resources)
+          );
+        })
+        .map(function (lesson) {
+          if (typeof lesson.title === "object" && lesson.title) {
+            return {
+              ...lesson,
+              title: lesson.title.en,
+              titleEs: lesson.titleEs || lesson.title.es || "",
+            };
+          }
+          return lesson;
+        });
       byId = new Map(
         lessons.map(function (lesson) {
           return [lesson.id, lesson];

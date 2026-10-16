@@ -148,10 +148,9 @@ test("unit and saved filters combine; no-results reset restores the catalog", ()
 test("selection shows target and real resources, including supported lesson variants", () =>
   using({}, ({ $, pick, window }) => {
     pick("3-2");
-    assert.equal(
-      $("nav-lesson-title").textContent,
-      catalog.lessons.find((lesson) => lesson.id === "3-2").title,
-    );
+    const l32 = catalog.lessons.find((lesson) => lesson.id === "3-2");
+    const l32Title = typeof l32.title === "object" ? l32.title.en : l32.title;
+    assert.equal($("nav-lesson-title").textContent, l32Title);
     assert.match($("nav-preview").textContent, /Learning target/);
     assert.match($("nav-preview").textContent, /Continue with Part 2/);
     assert.match($("nav-preview").textContent, /Small-group learning/);
@@ -708,7 +707,10 @@ test("with no lesson chosen, the panel opens on today's lesson from the pacing p
     [iso(today), "3-4", "Core Lesson", ""],
     [iso(tomorrow), "3-5", "Core Lesson", ""],
   ];
-  const title = (id) => catalog.lessons.find((lesson) => lesson.id === id).title;
+  const title = (id) => {
+    const l = catalog.lessons.find((lesson) => lesson.id === id);
+    return typeof l.title === "object" ? l.title.en : l.title;
+  };
   await using({ pacingDays: days }, ({ $, window }) => {
     assert.equal($("nav-lesson-title").textContent, title("3-4"));
     assert.match($("nav-preview").textContent, /Today in class/);

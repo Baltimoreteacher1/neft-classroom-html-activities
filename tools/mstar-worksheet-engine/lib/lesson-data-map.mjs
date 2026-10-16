@@ -992,7 +992,8 @@ export function curriculumIdentities(
     if (Array.isArray(node)) return node.forEach(walk);
     if (!node || typeof node !== "object") return;
     if (typeof node.id === "string" && /^\d+-\d+$/.test(node.id) && (node.title || node.standard)) {
-      out[node.id] = { title: node.title, standard: node.standard };
+      const title = typeof node.title === "object" && node.title ? node.title.en : node.title;
+      out[node.id] = { title, standard: node.standard };
     }
     Object.values(node).forEach(walk);
   };

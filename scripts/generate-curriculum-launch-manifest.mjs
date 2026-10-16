@@ -28,6 +28,9 @@ const FORBIDDEN_RESOURCE =
   /slides|teacher|answer(?:-|_)?key|gradebook|dashboard|docx|\.pdf(?:$|[?#])/i;
 
 function cleanText(value) {
+  if (value && typeof value === "object" && typeof value.en === "string") {
+    value = value.en;
+  }
   return typeof value === "string" ? value.trim() : "";
 }
 

@@ -13,7 +13,6 @@ const destinations = [
 export const readingSupportPages = new Set(["curriculum/index.html"]);
 export const shellPages = new Map([
   ["curriculum/index.html", "home"],
-  ["curriculum/extra-help/index.html", "help"],
   ["curriculum/fluency/index.html", "fluency"],
   ["curriculum/units/index.html", "units"],
   ["curriculum/arcade/index.html", "games"],
@@ -23,7 +22,6 @@ export const shellPages = new Map([
   ["curriculum/manipulatives/index.html", "practice"],
   ["curriculum/my-progress/index.html", ""],
   ["curriculum/reality-lab/index.html", "practice"],
-  ["curriculum/math-canvas/index.html", "practice"],
   ["curriculum/matrix/index.html", "units"],
   ["curriculum/family-connections/index.html", "families"],
 ]);

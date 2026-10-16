@@ -16,10 +16,14 @@ const SCHOOL_ALTERNATIVE =
 const OPTIONAL_PRACTICE_NOTE =
   "Optional family practice is separate from regular homework. Use it only when it works for your family; it is never graded.";
 
-const cleanText = (value, maximum = 500) =>
-  String(value ?? "")
+const cleanText = (value, maximum = 500) => {
+  if (value && typeof value === "object" && typeof value.en === "string") {
+    value = value.en;
+  }
+  return String(value ?? "")
     .trim()
     .slice(0, maximum);
+};
 
 export function createDefaultSnapshot() {
   return {

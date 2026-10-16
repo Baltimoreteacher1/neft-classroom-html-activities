@@ -86,7 +86,7 @@ export function buildTaughtSequence() {
     out.push({
       id,
       standard: String(m.standard || ""),
-      title: String(m.title || ""),
+      title: typeof m.title === "object" && m.title ? m.title.en : String(m.title || ""),
       unit: entry.unitKey || String(m.unit || ""),
       ...(firstDate.has(id) ? { date: firstDate.get(id) } : {}),
     });

@@ -1,0 +1,408 @@
+/**
+ * curriculum-shell.css — Persistent, zero-shift header & navigation shell.
+ *
+ * PALETTE: Navy (#0a2540, #12355b) + Teal (#0f766e, #1fa6a2) on warm off-white (#fbfaf7, #ffffff).
+ * HARD CONSTRAINT: No purple anywhere in any UI, state, or element.
+ * WCAG 2.2 AA compliant: contrast >= 4.5:1, 3px focus-visible rings, touch target >= 44x44px.
+ */
+
+:root {
+  --shell-header-h-desktop: 64px;
+  --shell-header-h-mobile: 56px;
+  --shell-header-h: var(--shell-header-h-desktop);
+
+  /* Shell Color Tokens (Navy + Teal on Warm Off-White) */
+  --shell-navy-900: #0a1f33;
+  --shell-navy-800: #102a45;
+  --shell-navy-700: #183e66;
+  --shell-navy-600: #205081;
+  --shell-navy-100: #e7eff6;
+
+  --shell-teal-800: #0b5c56;
+  --shell-teal-700: #0f766e;
+  --shell-teal-600: #138a81;
+  --shell-teal-500: #1fa6a2;
+  --shell-teal-100: #dff2ef;
+  --shell-teal-50: #f0f9f8;
+
+  --shell-warm-bg: #fbfaf7;
+  --shell-warm-surface: #ffffff;
+  --shell-warm-border: #e2ded5;
+  --shell-warm-muted: #536471;
+  --shell-warm-ink: #17202a;
+
+  --shell-amber-600: #b45309;
+  --shell-amber-100: #fef3c7;
+
+  /* Typography */
+  --shell-font-sans: "Nunito", "Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
+  --shell-font-display: "Nunito", system-ui, sans-serif;
+
+  /* Elevation */
+  --shell-shadow-sm: 0 1px 3px rgba(10, 31, 51, 0.08);
+  --shell-shadow-md: 0 4px 12px rgba(10, 31, 51, 0.1);
+  --shell-shadow-lg: 0 10px 25px rgba(10, 31, 51, 0.15);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --shell-header-h: var(--shell-header-h-mobile);
+  }
+}
+
+/* Ensure body accounts for fixed/sticky header with zero layout shift */
+body.has-curriculum-shell {
+  padding-top: var(--shell-header-h);
+}
+
+body.has-curriculum-shell .ewl-course-nav {
+  display: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   GLOBAL HEADER SHELL
+───────────────────────────────────────────────────────────── */
+.curriculum-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--shell-header-h);
+  background-color: var(--shell-warm-surface);
+  border-bottom: 1px solid var(--shell-warm-border);
+  box-shadow: var(--shell-shadow-sm);
+  z-index: 1000;
+  box-sizing: border-box;
+  font-family: var(--shell-font-sans);
+  color: var(--shell-warm-ink);
+  transition: box-shadow 0.2s ease;
+}
+
+.curriculum-header-inner {
+  max-width: 1360px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* Brand Link */
+.curriculum-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--shell-navy-900);
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+  flex-shrink: 0;
+  border-radius: 8px;
+  padding: 4px 6px;
+}
+
+.curriculum-brand:hover {
+  color: var(--shell-teal-700);
+}
+
+.curriculum-brand-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--shell-navy-800) 0%, var(--shell-teal-700) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.curriculum-brand-logo svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.curriculum-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.curriculum-brand-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--shell-navy-900);
+}
+
+.curriculum-brand-sub {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--shell-teal-700);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PRIMARY NAV (4 Canonical Routes)
+───────────────────────────────────────────────────────────── */
+.curriculum-primary-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.curriculum-nav-item {
+  display: flex;
+}
+
+.curriculum-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--shell-warm-muted);
+  text-decoration: none;
+  border-radius: 8px;
+  position: relative;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  min-height: 44px; /* WCAG touch target */
+  box-sizing: border-box;
+}
+
+.curriculum-nav-link:hover {
+  color: var(--shell-navy-900);
+  background-color: var(--shell-teal-50);
+}
+
+.curriculum-nav-link[aria-current="page"] {
+  color: var(--shell-navy-900);
+  background-color: var(--shell-teal-100);
+}
+
+.curriculum-nav-link[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 14px;
+  right: 14px;
+  height: 3px;
+  background-color: var(--shell-teal-700);
+  border-radius: 3px 3px 0 0;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   UTILITY BAR (Right-aligned controls)
+───────────────────────────────────────────────────────────── */
+.curriculum-utility-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Segmented Buttons (Role, Language) */
+.shell-segment {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--shell-warm-bg);
+  border: 1px solid var(--shell-warm-border);
+  border-radius: 20px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.shell-segment-btn {
+  background: transparent;
+  border: none;
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--shell-warm-muted);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shell-segment-btn:hover:not([aria-pressed="true"]) {
+  color: var(--shell-navy-900);
+  background-color: rgba(16, 42, 69, 0.05);
+}
+
+.shell-segment-btn[aria-pressed="true"] {
+  background-color: var(--shell-navy-800);
+  color: #ffffff;
+  box-shadow: 0 1px 2px rgba(10, 31, 51, 0.15);
+}
+
+/* Specific Role Highlight */
+.shell-segment-btn[data-role-btn="teacher"][aria-pressed="true"] {
+  background-color: var(--shell-teal-700);
+  color: #ffffff;
+}
+
+/* ESOL Supports Pill */
+.shell-supports-pill {
+  background-color: var(--shell-warm-bg);
+  border: 1px solid var(--shell-warm-border);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--shell-warm-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  min-height: 38px;
+}
+
+.shell-supports-pill:hover {
+  color: var(--shell-navy-900);
+  border-color: var(--shell-teal-600);
+}
+
+.shell-supports-pill[aria-pressed="true"] {
+  background-color: var(--shell-teal-700);
+  color: #ffffff;
+  border-color: var(--shell-teal-800);
+  box-shadow: 0 1px 3px rgba(15, 118, 110, 0.3);
+}
+
+.shell-supports-pill[aria-pressed="true"] .shell-pill-icon {
+  filter: brightness(1.2);
+}
+
+/* Teacher Mode Indicator Banner / Badge */
+.shell-teacher-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: var(--shell-teal-50);
+  border: 1px solid var(--shell-teal-500);
+  color: var(--shell-teal-800);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 12px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* Mobile Menu Toggle */
+.shell-mobile-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--shell-warm-border);
+  border-radius: 8px;
+  padding: 8px;
+  color: var(--shell-navy-900);
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+}
+
+.shell-mobile-toggle svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   MOBILE DRAWER NAVIGATION
+───────────────────────────────────────────────────────────── */
+.shell-mobile-drawer {
+  display: none;
+  position: fixed;
+  top: var(--shell-header-h);
+  left: 0;
+  right: 0;
+  background: var(--shell-warm-surface);
+  border-bottom: 2px solid var(--shell-teal-700);
+  box-shadow: var(--shell-shadow-lg);
+  padding: 16px;
+  z-index: 999;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.shell-mobile-drawer[aria-hidden="false"] {
+  display: flex;
+}
+
+.shell-mobile-drawer .curriculum-nav-link {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 1rem;
+}
+
+.shell-mobile-drawer-utilities {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--shell-warm-border);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   RESPONSIVE BREAKPOINTS (Optimized for Chromebooks 1366x768)
+───────────────────────────────────────────────────────────── */
+@media (max-width: 960px) {
+  .curriculum-primary-nav {
+    display: none;
+  }
+  .shell-mobile-toggle {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 600px) {
+  .curriculum-brand-sub {
+    display: none;
+  }
+  .curriculum-utility-bar .shell-supports-pill span:not(.shell-pill-icon) {
+    display: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ACCESSIBILITY & FOCUS STYLES
+───────────────────────────────────────────────────────────── */
+.curriculum-header a:focus-visible,
+.curriculum-header button:focus-visible {
+  outline: 3px solid var(--shell-teal-700) !important;
+  outline-offset: 2px !important;
+}
+
+/* Screen reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

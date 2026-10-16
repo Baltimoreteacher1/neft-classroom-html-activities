@@ -31,24 +31,30 @@ function resourceLabels(resources) {
 
 const docs = lessons.map((l) => {
   const id = l.id || `${l.unit}-${l.lesson}`;
+  const titleEn = typeof l.title === "object" && l.title ? l.title.en : l.title || "";
+  const titleEs = typeof l.title === "object" && l.title ? l.title.es || "" : "";
+  const standard = Array.isArray(l.standards) ? l.standards.join(" ") : l.standard || "";
+  const topic = typeof l.bigIdea === "object" && l.bigIdea ? l.bigIdea.en : l.topic || "";
   return {
     id,
     unit: String(l.unit ?? ""),
     unitLabel: `Unit ${l.unit}`,
     lesson: String(l.lesson ?? ""),
-    title: l.title || "",
-    standard: l.standard || "",
+    title: titleEn,
+    titleEs,
+    standard,
     objective: l.objective || "",
     languageObjective: l.languageObjective || "",
-    topic: l.topic || "",
+    topic,
     lessonPath: l.lessonPath || `/lessons/${id}/`,
     resources: resourceLabels(l.resources),
     searchText: [
-      l.title,
-      l.standard,
+      titleEn,
+      titleEs,
+      standard,
       l.objective,
       l.languageObjective,
-      l.topic,
+      topic,
       resourceLabels(l.resources),
       `lesson ${id}`,
       `unit ${l.unit}`,

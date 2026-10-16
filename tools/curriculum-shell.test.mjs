@@ -56,7 +56,11 @@ const manifest = loadCurriculumManifest();
 const sequence = JSON.parse(readFileSync(`${REPO_ROOT}/assets/curriculum-lesson-sequence.json`));
 assert.deepEqual(
   sequence,
-  manifest.lessons.map(({ id, unit, title }) => ({ id, unit, title })),
+  manifest.lessons.map(({ id, unit, title }) => ({
+    id,
+    unit,
+    title: typeof title === "object" && title ? title.en : title,
+  })),
 );
 const home = new JSDOM(readFileSync(`${REPO_ROOT}/curriculum/index.html`, "utf8")).window.document;
 assert.equal(home.querySelectorAll(".course-unit-list li").length, manifest.units.length);

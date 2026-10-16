@@ -54,7 +54,12 @@ function esc(s) {
 
 function collectUnits() {
   const manifest = JSON.parse(readFileSync(join(ROOT, "data/curriculum-manifest.json"), "utf8"));
-  const titles = new Map(manifest.lessons.map((l) => [l.id, l.title]));
+  const titles = new Map(
+    manifest.lessons.map((l) => [
+      l.id,
+      typeof l.title === "object" && l.title ? l.title.en : l.title,
+    ]),
+  );
 
   const units = new Map();
   const problems = [];

@@ -84,7 +84,7 @@ export function build() {
         return {
           id,
           lessonNumber: l.lesson,
-          title: l.title,
+          title: typeof l.title === "object" && l.title ? l.title.en : l.title,
           standards: l.standard ? [l.standard] : [],
           objective: l.objective || "",
           topics: (l.vocabulary || []).filter((v) => typeof v === "string").slice(0, 12),

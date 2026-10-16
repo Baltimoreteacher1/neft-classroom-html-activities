@@ -113,12 +113,12 @@ for (const l of manifest.lessons.filter((lesson) => inScope(lesson.unit))) {
     if (state === "missing") missing.push(key);
     if (state === "empty") empty.push(key);
   }
-  const needsReview = l.status.needsReview || /needs review/i.test(l.standard);
+  const needsReview = Boolean(l.status?.needsReview || /needs review/i.test(l.standard || ""));
   const complete = missing.length === 0 && empty.length === 0 && !needsReview;
   perLesson.push({
     id: l.id,
     unit: l.unit,
-    title: l.title,
+    title: typeof l.title === "object" && l.title ? l.title.en : l.title || "",
     standard: l.standard,
     needsReview,
     complete,

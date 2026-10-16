@@ -5151,6 +5151,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/family/",
+    title: "Family & Review — EduWonderLab Grade 6 Mathematics",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/fluency/",
     title: "Fluency Practice Studio & Lessons Index",
     category: "Hub",
@@ -5229,6 +5235,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/practice/",
+    title: "Practice & Fluency — EduWonderLab Grade 6 Mathematics",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/projects/",
     title: "Unit Projects — Project Studio · Curriculum projects",
     category: "Hub",
@@ -5279,6 +5291,12 @@ export const ACTIVITIES = [
   {
     path: "/curriculum/student-supports/",
     title: "Student Supports & Accommodations",
+    category: "Hub",
+    unit: null,
+  },
+  {
+    path: "/curriculum/studio/",
+    title: "Interactive Studio — EduWonderLab Grade 6 Mathematics",
     category: "Hub",
     unit: null,
   },

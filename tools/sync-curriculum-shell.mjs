@@ -66,7 +66,10 @@ const teachingRank = (unit) => {
   return NOT_SCHEDULED.has(unit) || !range?.startDate ? Infinity : range.sequence;
 };
 const unitsInOrder = manifest.units
-  .map((unit, index) => ({ unit, name: names[index] }))
+  .map((u, index) => {
+    const unitNum = typeof u === "object" && u !== null ? u.number : u;
+    return { unit: unitNum, name: names[index] };
+  })
   .sort((a, b) => teachingRank(a.unit) - teachingRank(b.unit) || a.unit - b.unit);
 
 // The day-by-day plan, compacted for the hub's Now / Next card:
@@ -91,7 +94,13 @@ const pacingDays = baseline.days
     const base = lessonId.replace(/-catchup$/, "");
     const lesson = lessonById.get(base);
     if (!lesson) throw new Error(`Pacing day ${day.date} names unknown lesson ${lessonId}`);
-    pacingLessons[base] = [lesson.title, lesson.titleEs || lesson.title];
+    const titleEn =
+      typeof lesson.title === "object" && lesson.title ? lesson.title.en : lesson.title;
+    const titleEs =
+      typeof lesson.title === "object" && lesson.title
+        ? lesson.title.es || titleEn
+        : lesson.titleEs || lesson.title;
+    pacingLessons[base] = [titleEn, titleEs];
     const part = /— Day (\d+)$/.exec(planTitle || "")?.[1];
     return [day.date, unit, dayType, lessonId, Number(part) > 1 ? Number(part) : null];
   })
@@ -148,7 +157,13 @@ if (current !== updated) {
 
 const sequencePath = resolve(REPO_ROOT, "assets/curriculum-lesson-sequence.json");
 const sequence =
-  JSON.stringify(manifest.lessons.map(({ id, unit, title }) => ({ id, unit, title }))) + "\n";
+  JSON.stringify(
+    manifest.lessons.map(({ id, unit, title }) => ({
+      id,
+      unit,
+      title: typeof title === "object" && title ? title.en : title,
+    })),
+  ) + "\n";
 let previousSequence = "";
 try {
   previousSequence = readFileSync(sequencePath, "utf8");

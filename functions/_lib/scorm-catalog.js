@@ -167,7 +167,7 @@ export function canonicalTitle(lessonUrl) {
         ? `EduWonderLab — ${stem} ${suffix}`
         : variant
           ? `EduWonderLab — ${stem}`
-          : `EduWonderLab — ${stem}: ${lesson.title}`,
+          : `EduWonderLab — ${stem}: ${typeof lesson.title === "object" && lesson.title ? lesson.title.en : lesson.title}`,
       known: true,
     };
   }

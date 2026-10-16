@@ -121,9 +121,11 @@ for (const l of lessons) {
       check(false, `hub labels Lesson ${id} but it is not in the manifest`);
       continue;
     }
+    const lessonTitle =
+      typeof lesson.title === "object" && lesson.title ? lesson.title.en : lesson.title;
     check(
-      title === lesson.title,
-      `hub labels Lesson ${id} as "${title}", manifest title is "${lesson.title}"`,
+      title === lessonTitle,
+      `hub labels Lesson ${id} as "${title}", manifest title is "${lessonTitle}"`,
     );
     check(
       standard === lesson.standard,

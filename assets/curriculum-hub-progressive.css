@@ -1,0 +1,822 @@
+/**
+ * curriculum-hub-progressive.css — Progressive disclosure styling for Curriculum Hub.
+ *
+ * PALETTE: Navy (#0a1f33, #102a45) + Teal (#0f766e, #1fa6a2) on warm off-white (#fbfaf7).
+ * HARD CONSTRAINT: No purple anywhere in any UI, state, or illustration.
+ * WCAG 2.2 AA compliant: contrast >= 4.5:1, 3px focus-visible rings, touch targets >= 44px.
+ */
+
+:root {
+  --hub-navy-900: #0a1f33;
+  --hub-navy-800: #102a45;
+  --hub-navy-700: #183e66;
+  --hub-navy-50: #eef4fa;
+
+  --hub-teal-800: #0b5c56;
+  --hub-teal-700: #0f766e;
+  --hub-teal-600: #138a81;
+  --hub-teal-500: #1fa6a2;
+  --hub-teal-100: #dff2ef;
+  --hub-teal-50: #f0f9f8;
+
+  --hub-warm-bg: #fbfaf7;
+  --hub-warm-surface: #ffffff;
+  --hub-warm-border: #e2ded5;
+  --hub-warm-muted: #536471;
+  --hub-warm-ink: #17202a;
+
+  --hub-amber-700: #92400e;
+  --hub-amber-100: #fef3c7;
+  --hub-amber-50: #fffbeb;
+
+  --hub-green-700: #15803d;
+  --hub-green-100: #dcfce7;
+
+  --hub-radius-sm: 6px;
+  --hub-radius-md: 10px;
+  --hub-radius-lg: 16px;
+
+  --hub-font-sans: "Nunito", "Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   CONTAINER & LAYOUT
+───────────────────────────────────────────────────────────── */
+.hub-progressive-container {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+  font-family: var(--hub-font-sans);
+  color: var(--hub-warm-ink);
+}
+
+/* Hide legacy header and unmigrated sections when persistent progressive shell is active */
+body.has-curriculum-shell .curriculum-guide,
+body.has-curriculum-shell .hub-page > :not(#hub-progressive-mount) {
+  display: none !important;
+}
+
+#hub-progressive-mount {
+  min-height: 480px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TIER 1: STICKY UNIT RIBBON & QUICK SEARCH
+───────────────────────────────────────────────────────────── */
+.hub-sticky-bar {
+  position: sticky;
+  top: var(--shell-header-h, 64px);
+  background-color: var(--hub-warm-surface);
+  border: 1px solid var(--hub-warm-border);
+  border-radius: var(--hub-radius-md);
+  box-shadow: 0 4px 14px rgba(10, 31, 51, 0.08);
+  padding: 10px 14px;
+  z-index: 100;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.hub-unit-ribbon {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 2px;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+.hub-unit-ribbon::-webkit-scrollbar {
+  height: 4px;
+}
+.hub-unit-ribbon::-webkit-scrollbar-thumb {
+  background: var(--hub-warm-border);
+  border-radius: 4px;
+}
+
+.hub-unit-tab {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--hub-warm-muted);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 800;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hub-unit-tab:hover:not([aria-selected="true"]) {
+  background-color: var(--hub-teal-50);
+  color: var(--hub-navy-900);
+}
+
+.hub-unit-tab[aria-selected="true"] {
+  background-color: var(--hub-navy-800);
+  color: #ffffff;
+  border-color: var(--hub-navy-900);
+  box-shadow: 0 2px 6px rgba(10, 31, 51, 0.2);
+}
+
+/* Quick Search Filter */
+.hub-search-box {
+  display: flex;
+  align-items: center;
+  position: relative;
+  min-width: 260px;
+  flex: 1;
+  max-width: 420px;
+}
+
+.hub-search-input {
+  width: 100%;
+  padding: 8px 36px 8px 12px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border: 1px solid var(--hub-warm-border);
+  border-radius: 20px;
+  background-color: var(--hub-warm-bg);
+  color: var(--hub-warm-ink);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  min-height: 40px;
+}
+
+.hub-search-input:focus {
+  outline: none;
+  border-color: var(--hub-teal-700);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.2);
+}
+
+.hub-search-clear {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  color: var(--hub-warm-muted);
+  cursor: pointer;
+  display: none;
+  padding: 4px;
+  min-width: 28px;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+}
+
+.hub-search-clear[aria-hidden="false"] {
+  display: inline-flex;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   UNIT HEADER CARD
+───────────────────────────────────────────────────────────── */
+.hub-unit-card {
+  background: linear-gradient(135deg, var(--hub-warm-surface) 0%, #f6fbfb 100%);
+  border: 1px solid var(--hub-warm-border);
+  border-left: 6px solid var(--hub-teal-700);
+  border-radius: var(--hub-radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(10, 31, 51, 0.05);
+}
+
+.hub-unit-card-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.hub-unit-badge {
+  background-color: var(--hub-navy-800);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.hub-unit-lesson-count {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--hub-warm-muted);
+}
+
+.hub-unit-title {
+  margin: 0 0 10px 0;
+  font-size: 1.65rem;
+  font-weight: 900;
+  color: var(--hub-navy-900);
+  line-height: 1.25;
+}
+
+.hub-unit-big-idea {
+  margin: 0 0 20px 0;
+  font-size: 1.02rem;
+  line-height: 1.55;
+  color: var(--hub-warm-ink);
+  max-width: 78ch;
+}
+
+.hub-unit-capstones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(226, 222, 213, 0.7);
+}
+
+.hub-capstone-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  border-radius: var(--hub-radius-md);
+  text-decoration: none;
+  transition: all 0.15s ease;
+  min-height: 42px;
+}
+
+.hub-capstone-readiness {
+  background-color: var(--hub-navy-50);
+  border: 1px solid rgba(24, 62, 102, 0.25);
+  color: var(--hub-navy-800);
+}
+.hub-capstone-readiness:hover {
+  background-color: var(--hub-navy-100, #dbeafe);
+  border-color: var(--hub-navy-700);
+}
+
+.hub-capstone-lab {
+  background-color: var(--hub-teal-50);
+  border: 1px solid rgba(15, 118, 110, 0.3);
+  color: var(--hub-teal-800);
+}
+.hub-capstone-lab:hover {
+  background-color: var(--hub-teal-100);
+  border-color: var(--hub-teal-700);
+}
+
+.hub-capstone-review {
+  background-color: var(--hub-amber-50);
+  border: 1px solid rgba(146, 64, 14, 0.25);
+  color: var(--hub-amber-700);
+}
+.hub-capstone-review:hover {
+  background-color: var(--hub-amber-100);
+  border-color: var(--hub-amber-700);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TIER 2: PROGRESSIVE LESSON ROWS
+───────────────────────────────────────────────────────────── */
+.hub-lesson-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.hub-lesson-row-card {
+  background-color: var(--hub-warm-surface);
+  border: 1px solid var(--hub-warm-border);
+  border-radius: var(--hub-radius-md);
+  box-shadow: 0 2px 6px rgba(10, 31, 51, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  overflow: visible;
+}
+
+.hub-lesson-row-card:hover {
+  border-color: var(--hub-teal-600);
+  box-shadow: 0 4px 12px rgba(10, 31, 51, 0.08);
+}
+
+.hub-lesson-row-card[data-expanded="true"] {
+  border-color: var(--hub-teal-700);
+  box-shadow: 0 6px 18px rgba(15, 118, 110, 0.12);
+}
+
+.hub-lesson-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  gap: 16px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Left Group */
+.hub-lesson-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.hub-lesson-badge {
+  background-color: var(--hub-navy-800);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  min-width: 42px;
+  text-align: center;
+}
+
+.hub-lesson-title-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.hub-lesson-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--hub-navy-900);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.hub-rep-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.hub-rep-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background-color: var(--hub-navy-50);
+  border: 1px solid rgba(24, 62, 102, 0.2);
+  color: var(--hub-navy-800);
+  position: relative;
+}
+
+.hub-rep-pill svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+/* Middle Group: Availability Dots */
+.hub-lesson-avail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.hub-avail-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background-color: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+}
+
+.hub-avail-dot[data-available="true"] {
+  background-color: var(--hub-teal-50);
+  color: var(--hub-teal-800);
+  border-color: rgba(15, 118, 110, 0.35);
+}
+
+.hub-avail-dot[data-available="false"] {
+  background-color: #f1f5f9;
+  color: #475569;
+  border-color: #cbd5e1;
+  text-decoration: line-through;
+}
+
+/* Right Group: CTAs & Chevron */
+.hub-lesson-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Docs Menu Trigger */
+.hub-docs-dropdown-container {
+  position: relative;
+}
+
+.hub-docs-trigger {
+  background-color: var(--hub-warm-bg);
+  border: 1px solid var(--hub-warm-border);
+  color: var(--hub-navy-900);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  min-height: 40px;
+}
+
+.hub-docs-trigger:hover {
+  background-color: var(--hub-teal-50);
+  border-color: var(--hub-teal-600);
+}
+
+.hub-docs-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #ffffff;
+  border: 1px solid var(--hub-warm-border);
+  border-radius: var(--hub-radius-md);
+  box-shadow: 0 8px 24px rgba(10, 31, 51, 0.16);
+  min-width: 250px;
+  padding: 6px 0;
+  z-index: 200;
+  display: none;
+  flex-direction: column;
+}
+
+.hub-docs-menu[aria-hidden="false"] {
+  display: flex;
+}
+
+.hub-docs-item {
+  padding: 9px 16px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--hub-warm-ink);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  transition: background 0.1s ease;
+}
+
+.hub-docs-item:hover,
+.hub-docs-item:focus {
+  background-color: var(--hub-teal-50);
+  color: var(--hub-teal-800);
+  outline: none;
+}
+
+.hub-docs-item-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.hub-docs-item-protected {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+/* Primary Launch CTA */
+.hub-launch-btn {
+  background: linear-gradient(135deg, var(--hub-navy-800) 0%, var(--hub-teal-700) 100%);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  transition: transform 0.1s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+
+.hub-launch-btn:hover {
+  box-shadow: 0 3px 8px rgba(15, 118, 110, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Accordion Chevron */
+.hub-accordion-btn {
+  background: transparent;
+  border: 1px solid var(--hub-warm-border);
+  border-radius: 8px;
+  padding: 6px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--hub-navy-800);
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.15s ease;
+}
+
+.hub-accordion-btn:hover {
+  background-color: var(--hub-teal-50);
+}
+
+.hub-accordion-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  transition: transform 0.2s ease;
+}
+
+.hub-lesson-row-card[data-expanded="true"] .hub-accordion-btn svg {
+  transform: rotate(180deg);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TIER 3: IN-PLACE CRA TRAJECTORY DRAWER
+───────────────────────────────────────────────────────────── */
+.hub-drawer-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border-top: 1px solid transparent;
+}
+
+.hub-lesson-row-card[data-expanded="true"] .hub-drawer-wrapper {
+  grid-template-rows: 1fr;
+  border-top-color: var(--hub-warm-border);
+}
+
+.hub-drawer-inner {
+  overflow: hidden;
+  background-color: #fafcfc;
+}
+
+.hub-cra-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 20px;
+}
+
+.hub-cra-col {
+  background: #ffffff;
+  border: 1px solid var(--hub-warm-border);
+  border-radius: var(--hub-radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hub-cra-col-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--hub-navy-900);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid var(--hub-teal-500);
+  padding-bottom: 6px;
+}
+
+.hub-cra-link-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hub-cra-link-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background-color: var(--hub-warm-bg);
+  border: 1px solid var(--hub-warm-border);
+  border-radius: var(--hub-radius-sm);
+  text-decoration: none;
+  color: var(--hub-warm-ink);
+  font-size: 0.86rem;
+  font-weight: 700;
+  transition: all 0.15s ease;
+  min-height: 40px;
+}
+
+.hub-cra-link-card:hover {
+  background-color: var(--hub-teal-50);
+  border-color: var(--hub-teal-600);
+  color: var(--hub-teal-800);
+}
+
+/* Scaffolding & Vocabulary Chips */
+.hub-vocab-section {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--hub-warm-border);
+}
+
+.hub-vocab-title {
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--hub-warm-muted);
+  margin-bottom: 6px;
+}
+
+.hub-vocab-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hub-vocab-chip {
+  background-color: var(--hub-teal-50);
+  border: 1px solid rgba(15, 118, 110, 0.25);
+  color: var(--hub-teal-800);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  cursor: help;
+  position: relative;
+}
+
+/* Discourse Prompts */
+.hub-discourse-box {
+  background-color: #f8fafc;
+  border-left: 3px solid var(--hub-navy-700);
+  padding: 8px 12px;
+  border-radius: 0 6px 6px 0;
+  margin-top: 6px;
+}
+
+.hub-discourse-title {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--hub-navy-800);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.hub-discourse-prompt {
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: #334155;
+  margin: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TEACHER TRAY (Teacher Mode Only — Real DOM Absence in Student)
+───────────────────────────────────────────────────────────── */
+.hub-teacher-tray {
+  margin: 0 20px 20px;
+  background: linear-gradient(135deg, #f8fafc 0%, #edf7f6 100%);
+  border: 2px dashed var(--hub-teal-600);
+  border-radius: var(--hub-radius-md);
+  padding: 18px;
+}
+
+.hub-teacher-tray-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(15, 118, 110, 0.2);
+  padding-bottom: 8px;
+}
+
+.hub-teacher-tray-title {
+  font-size: 0.96rem;
+  font-weight: 900;
+  color: var(--hub-teal-800);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.hub-teacher-tray-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.hub-teacher-tray-card {
+  background: #ffffff;
+  border: 1px solid #d5e4e2;
+  border-radius: var(--hub-radius-sm);
+  padding: 12px;
+}
+
+.hub-teacher-tray-card h4 {
+  margin: 0 0 6px 0;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--hub-navy-800);
+}
+
+.hub-teacher-tray-card p,
+.hub-teacher-tray-card ul {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: #334155;
+  padding-left: 18px;
+}
+
+.hub-teacher-standards-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.hub-standard-badge {
+  background-color: var(--hub-navy-50);
+  border: 1px solid rgba(24, 62, 102, 0.3);
+  color: var(--hub-navy-900);
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   RESPONSIVE LAYOUT FOR CHROMEBOOKS & MOBILE
+───────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .hub-cra-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .hub-sticky-bar {
+    position: relative;
+    top: 0;
+  }
+  .hub-lesson-row-header {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .hub-lesson-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .hub-launch-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+/* Accessibility focus styles */
+.hub-progressive-container a:focus-visible,
+.hub-progressive-container button:focus-visible,
+.hub-progressive-container input:focus-visible {
+  outline: 3px solid var(--hub-teal-700) !important;
+  outline-offset: 2px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hub-drawer-wrapper {
+    transition: none !important;
+  }
+  .hub-accordion-btn svg {
+    transition: none !important;
+  }
+}
