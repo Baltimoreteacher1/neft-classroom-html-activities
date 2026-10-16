@@ -152,6 +152,15 @@
         chaptersRestored: def.chapters.filter((c) => chapterDone(c, state)).length,
         chapters: def.chapters.length,
         achievements: Object.keys(state.achievements).length,
+        achievementKeys: Object.keys(state.achievements),
+        accent: def.accent,
+        skills: Object.keys(def.skills).length,
+        skillsMastered: Object.values(state.skills).filter((x) => x.independent > 0).length,
+        // Top misconceptions with their labels, so the games hub can suggest what to revisit.
+        revisit: Object.entries(state.misconceptions)
+          .sort((a, b) => b[1].count - a[1].count)
+          .slice(0, 2)
+          .map(([tag, m]) => ({ tag, count: m.count, label: def.misconceptions?.[tag] || null })),
         updated: state.updated,
       };
       localStorage.setItem(INDEX_KEY, JSON.stringify(index));

@@ -183,17 +183,17 @@
     return `<svg viewBox="0 0 720 260" role="img" aria-label="${description || type + ' mission diagram'}">${svg}</svg>`;
   }
   const curriculum = {
-    'u1-decimal-dash': { unit: 'Unit 6 · Lessons 6-5 to 6-6', topic: 'Multi-Digit Decimal Operations & Number Lines (6.NOS.3)', tip: 'Count the 10 tenths or 100 hundredths between whole numbers and line up decimal points by place value.' },
-    'u1-factor-frenzy': { unit: 'Unit 6 · Lesson 6-2', topic: 'Prime Factorization, GCF & LCM (6.NOS.4)', tip: 'Split any composite number into a factor pair until every branch ends in a prime number (2, 3, 5, 7, 11).' },
-    'u2-fraction-frenzy': { unit: 'Unit 6 · Lessons 6-7 to 6-10', topic: 'Dividing Fractions & Visual Tape Models (6.NOS.1)', tip: 'Partition each whole to match the divisor denominator, then count how many divisor-sized groups fit.' },
-    'u3-ratio-rush': { unit: 'Unit 3 · Lessons 3-1 to 3-7', topic: 'Ratios, Double Number Lines & Unit Rates (6.AT.1–3)', tip: 'Multiply or divide both quantities by the same scale factor so the multiplicative ratio stays constant.' },
-    'u4-percent-power': { unit: 'Unit 4 · Lessons 4-1 to 4-6', topic: 'Percents as Rates per 100 & Benchmark Percents (6.AT.3c)', tip: 'Find 10% (÷10) or 1% (÷100) of the whole first, then scale to the target percent.' },
-    'u5-area-attack': { unit: 'Unit 5 · Lessons 5-1 to 5-4', topic: 'Area of Parallelograms, Triangles & Composite Polygons (6.GR.1)', tip: 'Decompose composite shapes into non-overlapping rectangles (A = bh) and triangles (A = ½bh).' },
-    'u6-expression-express': { unit: 'Unit 6 · Lessons 6-1, 6-3, 6-4', topic: 'Exponents, Order of Operations & Algebraic Expressions (6.AT.4–6)', tip: 'Evaluate grouping symbols first, then exponents, then multiply/divide, then add/subtract.' },
-    'u7-equation-quest': { unit: 'Unit 8 · Lessons 8-1 to 8-5', topic: 'One-Step Equations & Balance Scale Models (6.AT.7–9)', tip: 'Apply the inverse operation to BOTH sides of the balance scale to isolate a single x.' },
-    'u8-data-dash': { unit: 'Unit 2 · Lessons 2-1 to 2-9', topic: 'Statistical Questions, Dot Plots, Mean, Median, IQR & MAD (6.DS.1–5)', tip: 'Mean is the fair-share balance point (sum ÷ count); median is the ordered middle value.' },
-    'u9-coordinate-quest': { unit: 'Unit 7 · Lessons 7-5 to 7-7', topic: 'Four-Quadrant Coordinate Plane, Reflections & Distance (6.NOS.6–8)', tip: 'From (0, 0), move horizontally along the x-axis first, then vertically along the y-axis.' },
-    'u10-volume-blast': { unit: 'Unit 5 · Lessons 5-5 to 5-7', topic: 'Volume with Fractional Edges & Surface Area Nets (6.GR.2, 6.GR.4)', tip: 'Multiply length × width for the base layer area (B), then multiply by height (V = l · w · h).' }
+    'u1-decimal-dash': { unit: 'Unit 2 · Lessons 2-6, 2-7, 2-11, 2-12', topic: 'Decimal Operations & Multi-Digit Division (6.NOS.2–3)', tip: 'Count the 10 tenths or 100 hundredths between whole numbers and line up decimal points by place value.' },
+    'u1-factor-frenzy': { unit: 'Unit 6 · Lessons 6-7, 6-12, 6-13', topic: 'Factors, Multiples, GCF, LCM & Prime Factorization (6.NOS.4)', tip: 'Split any composite number into a factor pair until every branch ends in a prime number (2, 3, 5, 7, 11).' },
+    'u2-fraction-frenzy': { unit: 'Unit 6 · Lessons 6-1, 6-2, 6-9 to 6-11', topic: 'Dividing Fractions & Mixed Numbers with Visual Models (6.NOS.1)', tip: 'Partition each whole to match the divisor denominator, then count how many divisor-sized groups fit.' },
+    'u3-ratio-rush': { unit: 'Unit 3 · Lessons 3-1 to 3-5, 3-8', topic: 'Ratios, Ratio Tables, Graphs & Unit Rates (6.AT.1–3)', tip: 'Multiply or divide both quantities by the same scale factor so the multiplicative ratio stays constant.' },
+    'u4-percent-power': { unit: 'Unit 4 · Lessons 4-1 to 4-5', topic: 'Percents as Rates per 100, Benchmarks & Finding the Whole (6.AT.4)', tip: 'Find 10% (÷10) or 1% (÷100) of the whole first, then scale to the target percent.' },
+    'u5-area-attack': { unit: 'Unit 5 · Lessons 5-1 to 5-4, 5-9', topic: 'Area of Parallelograms, Triangles, Trapezoids & Composite Polygons (6.GR.1)', tip: 'Decompose composite shapes into non-overlapping rectangles (A = bh) and triangles (A = ½bh).' },
+    'u6-expression-express': { unit: 'Unit 6 · Lessons 6-3 to 6-6, 6-8, 6-14, 6-15', topic: 'Exponents, Order of Operations & Equivalent Expressions (6.AT.5–7)', tip: 'Evaluate grouping symbols first, then exponents, then multiply/divide, then add/subtract.' },
+    'u7-equation-quest': { unit: 'Unit 8 · Lessons 8-1 to 8-7', topic: 'Equations, Inequalities & Balance Models (6.AT.8–9)', tip: 'Apply the inverse operation to BOTH sides of the balance scale to isolate a single x.' },
+    'u8-data-dash': { unit: 'Unit 2 · Lessons 2-1 to 2-5, 2-8 to 2-10', topic: 'Statistical Questions, Data Displays, Center & Spread (6.DS.1–6)', tip: 'Mean is the fair-share balance point (sum ÷ count); median is the ordered middle value.' },
+    'u9-coordinate-quest': { unit: 'Unit 7 · Lessons 7-1 to 7-9', topic: 'Integers, Absolute Value & the Four-Quadrant Plane (6.NOS.5–9, 6.GR.3)', tip: 'From (0, 0), move horizontally along the x-axis first, then vertically along the y-axis.' },
+    'u10-volume-blast': { unit: 'Unit 5 · Lessons 5-5 to 5-8, 5-10', topic: 'Volume with Fractional Edges, Nets & Surface Area (6.GR.2, 6.GR.4)', tip: 'Multiply length × width for the base layer area (B), then multiply by height (V = l · w · h).' }
   };
   function create({id,host,onView,storageId=id,title,chapters,artId=id}) {
     const sourceWorld=window.CabinetWorlds.worlds[artId],type=typeOf(id);
