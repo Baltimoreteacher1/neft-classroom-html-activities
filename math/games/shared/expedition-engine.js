@@ -1262,6 +1262,7 @@
         this.practice = !!data.practice;
         this.seed = data.seed || (Date.now() ^ (Math.random() * 1e9)) >>> 0;
         this.misses = 0;
+        this.stuck = 0; // checks pressed before there was anything to judge
         this.hintsUsed = 0;
         this.demoed = false;
         this.busy = false;
@@ -1395,7 +1396,12 @@
         this.events.once("shutdown", () => this.controller.destroy?.());
       }
       canDemo() {
-        return !this.mission.mastery && this.misses >= 2 && this.hintsUsed >= 2 && !this.demoed;
+        return (
+          !this.mission.mastery &&
+          this.misses + this.stuck >= 2 &&
+          this.hintsUsed >= 2 &&
+          !this.demoed
+        );
       }
       publishState() {
         publish(this, {
@@ -1436,7 +1442,10 @@
         if (res.ok) return this.win(res);
         if (res.incomplete) {
           // Nothing to judge yet (empty plate, no stations): guide, but no miss and no evidence.
+          // Repeated attempts still count toward "Show me" so a stuck student is never locked out.
+          this.stuck++;
           Audio.sfx.tap();
+          if (this.canDemo()) this.hintBtn.setLabel("🎬 " + t(UI.showMe));
           this.showFeedback(res.feedback || UI.notYet, "info");
           return;
         }
@@ -1487,8 +1496,8 @@
           Audio.sfx.select();
           this.showFeedback("💡 " + t(h), "hint");
           if (this.hintsUsed >= hints.length)
-            this.hintBtn.setLabel(this.misses >= 2 ? "🎬 " + t(UI.showMe) : "💡 " + t(UI.hint));
-        } else if (!this.controller.demo || this.misses < 2) {
+            this.hintBtn.setLabel(this.canDemo() ? "🎬 " + t(UI.showMe) : "💡 " + t(UI.hint));
+        } else if (!this.controller.demo || !this.canDemo()) {
           this.showFeedback(
             lang() === "es"
               ? "Usaste todas las pistas. Prueba tu idea y mira lo que pasa en el mundo."

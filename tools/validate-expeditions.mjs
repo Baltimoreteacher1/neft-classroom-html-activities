@@ -177,6 +177,11 @@ function captureDef(slug, html, files) {
   for (const m of html.matchAll(/(?:const|let|var)\s+(\w+)\s*=\s*new Phaser\.Game/g)) w[m[1]] = {};
   w.Phaser = { Game: function () {}, Math: {}, Scale: {}, BlendModes: {}, Curves: {}, Display: {} };
   for (const f of files) w.eval(readFileSync(join(ROOT, f.s.replace(/^\//, "")), "utf8"));
+  // DOM games mount lazily from a script that publishes its definition as window.<XX>_DEF.
+  if (!captured) {
+    const key = Object.keys(w).find((k) => /_DEF$/.test(k) && w[k]?.chapters);
+    if (key) captured = w[key];
+  }
   dom.window.close();
   return captured;
 }

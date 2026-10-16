@@ -140,7 +140,7 @@
     <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
       <link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
     <script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
-    <script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+    <script src="/math/games/shared/cabinet-adventure.js?v=20261015"></script>
 </head>
   <body>
     <!-- Decorative animated spark-field (behind the Phaser canvas). -->
@@ -575,7 +575,7 @@
           )
           .setOrigin(0.5);
         this.add
-          .text(cx, 292, "Drag, or nudge with ← → / A·D · 6.NOS.3 · Lessons 1.4–1.7", {
+          .text(cx, 292, "Drag, or nudge with ← → / A·D · 6.NOS.3 · Lessons 2-11, 2-12", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "14px",
             color: "#7fa8c3",
@@ -1800,6 +1800,7 @@
 
       // ── Launch ──
       const ddGame = new Phaser.Game(config);
+      window.ddGame = ddGame; // stable handle for the expedition and QA harnesses
       // In-canvas NEXT (and Enter/Space while the explanation is up) hand off to
       // the shared studio's Continue so its pacing stays the single path.
       let ddAdvancing = false; // re-entrancy guard: send() re-emits Enter when nothing is pending
@@ -1864,6 +1865,13 @@
         } catch (e) {}
       });
     </script>
+    <!-- Expedition: Cloudline Courier (shared engine + this game's world and missions) -->
+    <link rel="stylesheet" href="/math/games/shared/expedition-engine.css?v=20261015" />
+    <script src="/math/games/shared/expedition-engine.js?v=20261015"></script>
+    <script src="/math/games/u1-decimal-dash/expedition-missions.js?v=20261015"></script>
+    <script src="/math/games/u1-decimal-dash/expedition-fuel.js?v=20261015"></script>
+    <script src="/math/games/u1-decimal-dash/expedition-cargo.js?v=20261015"></script>
+    <script src="/math/games/u1-decimal-dash/expedition.js?v=20261015"></script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>

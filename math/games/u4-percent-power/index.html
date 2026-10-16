@@ -157,7 +157,7 @@
     <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
     <link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
     <script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
-    <script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+    <script src="/math/games/shared/cabinet-adventure.js?v=20261015"></script>
 </head>
   <body>
 
@@ -1567,6 +1567,7 @@
 
       // ── Launch ──
       const ppGame = new Phaser.Game(config);
+      window.ppGame = ppGame; // handle for the Neon Grid expedition
       // Native math controls now have a readable, touch-accessible console.
       window.PhaserStudio.mount({
         game: ppGame, id: "u4-percent-power", GameScene, ResultScene, audio: SFX,
@@ -1605,6 +1606,16 @@
         } catch (e) {}
       });
     </script>
+    <!-- Expedition: Neon Grid (shared engine + this game's world and missions) -->
+    <link
+      rel="stylesheet"
+      href="/math/games/shared/expedition-engine.css?v=20261015"
+    />
+    <script src="/math/games/shared/expedition-engine.js?v=20261015"></script>
+    <script src="/math/games/u4-percent-power/expedition-math.js?v=20261015"></script>
+    <script src="/math/games/u4-percent-power/expedition-missions.js?v=20261015"></script>
+    <script src="/math/games/u4-percent-power/expedition-flow.js?v=20261015"></script>
+    <script src="/math/games/u4-percent-power/expedition.js?v=20261015"></script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>

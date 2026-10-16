@@ -141,7 +141,7 @@
     <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
     <link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
     <script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
-    <script src="/math/games/shared/cabinet-adventure.js?v=20261007"></script>
+    <script src="/math/games/shared/cabinet-adventure.js?v=20261015"></script>
 </head>
   <body>
 
@@ -642,7 +642,7 @@
           )
           .setOrigin(0.5);
         this.add
-          .text(cx, 295, "Tap or ← → cut · ↑ ↓ shade · 6.NOS.1 · Lessons 2.1–2.5", {
+          .text(cx, 295, "Tap or ← → cut · ↑ ↓ shade · 6.NOS.1 · Lessons 6-1, 6-2, 6-9", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "14px",
             color: "#c890a8",
@@ -1944,6 +1944,7 @@
 
       // ── Launch ──
       const ffGame = new Phaser.Game(config);
+      window.ffGame = ffGame; // expedition handle (expedition.js registers on it)
       // In-canvas NEXT (and Enter/Space while the explanation is up) hand off to
       // the shared studio's Continue so its pacing stays the single path.
       let ffAdvancing = false; // re-entrancy guard: send() re-emits Enter when nothing is pending
@@ -2005,6 +2006,13 @@
         } catch (e) {}
       });
     </script>
+    <!-- Expedition: Reef Rescue (shared engine + this game's world and missions) -->
+    <link rel="stylesheet" href="/math/games/shared/expedition-engine.css?v=20261015" />
+    <script src="/math/games/shared/expedition-engine.js?v=20261015"></script>
+    <script src="/math/games/u2-fraction-frenzy/expedition-math.js?v=20261015"></script>
+    <script src="/math/games/u2-fraction-frenzy/expedition-missions.js?v=20261015"></script>
+    <script src="/math/games/u2-fraction-frenzy/expedition-flow.js?v=20261015"></script>
+    <script src="/math/games/u2-fraction-frenzy/expedition.js?v=20261015"></script>
     <script src="/assets/nt-page-enhance.js" defer></script>
     <script src="/assets/edupulse-config.js"></script>
     <script src="/assets/edupulse-bridge.js"></script>
