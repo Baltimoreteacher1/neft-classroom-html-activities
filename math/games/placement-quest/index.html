@@ -288,6 +288,46 @@
         .topic-table td {
           padding: 6px 4px;
         }
+        /* Phones: each topic becomes a small card instead of four cramped columns. */
+        .topic-table,
+        .topic-table tbody,
+        .topic-table tr,
+        .topic-table td {
+          display: block;
+          width: 100%;
+        }
+        .topic-table thead {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+          clip: rect(0 0 0 0);
+        }
+        .topic-table tr {
+          margin: 0 0 10px;
+          padding: 6px 10px;
+          border: 1px solid rgba(255, 255, 255, 0.16);
+          border-radius: 10px;
+        }
+        .topic-table td {
+          display: flex;
+          gap: 10px;
+          justify-content: space-between;
+          border-bottom: 0;
+          padding: 4px 0;
+          white-space: normal;
+        }
+        .topic-table td::before {
+          content: attr(data-label);
+          flex: 0 0 38%;
+          color: #94a3b8;
+          font-size: 13px;
+          text-transform: uppercase;
+        }
+        .topic-table td > span {
+          flex: 1;
+          text-align: right;
+        }
         .intro {
           font-size: 17px;
         }
@@ -355,11 +395,11 @@
   <body>
     <main class="container" id="pq-main">
       <div class="header-bar">
-        <h1>🧭 Math Placement Quest</h1>
+        <h1 data-es="🧭 Misión de Ubicación de Matemáticas">🧭 Math Placement Quest</h1>
         <div class="stats-row" id="pq-stats" hidden>
-          <span>Question <span id="q-num">1</span> of <span id="q-total">11</span></span>
-          <span>Correct: <span id="q-score">0</span></span>
-          <span id="pq-pass" hidden>Return trip</span>
+          <span data-es="Pregunta <span id=&quot;q-num&quot;>1</span> de <span id=&quot;q-total&quot;>11</span>">Question <span id="q-num">1</span> of <span id="q-total">11</span></span>
+          <span data-es="Correctas: <span id=&quot;q-score&quot;>0</span>">Correct: <span id="q-score">0</span></span>
+          <span id="pq-pass" hidden data-es="Viaje de regreso">Return trip</span>
         </div>
       </div>
 
@@ -388,36 +428,36 @@
             />
             <circle cx="40" cy="169" r="6" fill="#8fe2cf" />
             <circle cx="438" cy="48" r="6" fill="#f5d08a" /></svg
-          ><span>EXPEDITION 00 / READINESS SURVEY</span>
+          ><span data-es="EXPEDICIÓN 00 / ENCUESTA DE PREPARACIÓN">EXPEDITION 00 / READINESS SURVEY</span>
         </div>
-        <h2 id="intro-title">The Lost Compass</h2>
-        <p class="pq-story">
+        <h2 id="intro-title" data-es="La brújula perdida">The Lost Compass</h2>
+        <p class="pq-story" data-es="Once estaciones. Una brújula dispersa. Pilota tu nave de exploración por arrecifes, puestos congelados y ciudades flotantes para trazar la ruta de regreso a casa.">
           Eleven stations. One scattered compass. Pilot your survey ship across reefs, frozen
           outposts, and floating cities to chart a route home.
         </p>
-        <p class="intro-lead">
+        <p class="intro-lead" data-es="Responde <strong>11 preguntas</strong>, una de cada tema de matemáticas de 6.º grado. <strong>No hay reloj</strong>. Toma unos 10 minutos.">
           Answer <strong>11 questions</strong>, one from each Grade 6 math topic. There is
           <strong>no timer</strong>. It takes about 10 minutes.
         </p>
         <ul class="intro-list">
-          <li>
+          <li data-es="Cada pregunta de la encuesta se revisa <strong>una sola vez</strong>. Así se ve lo que ya sabes.">
             Each survey question is checked <strong>one time</strong>. That shows what you already
             know.
           </li>
-          <li>A miss does not show the answer. Those stations return with new numbers.</li>
-          <li>
+          <li data-es="Un error no muestra la respuesta. Esas estaciones regresan con números nuevos.">A miss does not show the answer. Those stations return with new numbers.</li>
+          <li data-es="Al final recibes tu <strong>Nivel</strong> y un viaje de regreso para lo que fallaste.">
             At the end you get your <strong>Level</strong> and a return trip for anything you
             missed.
           </li>
         </ul>
         <p id="intro-last" class="intro-last" hidden></p>
-        <p class="pq-route-note">
+        <p class="pq-route-note" data-es="Explora para encontrar fragmentos de brújula y rescatar exploradores varados. Cada estación abre un reto de matemáticas. Las recompensas de exploración son aparte de tu resultado de ubicación.">
           Explore for compass fragments and rescue stranded scouts. Each station opens one math
           challenge. Exploration rewards are separate from your placement result.
         </p>
         <div class="pq-launch-actions">
-          <button type="button" id="pq-start" class="start-btn">Launch expedition →</button
-          ><button type="button" id="pq-resume" class="start-btn pq-resume" hidden>
+          <button type="button" id="pq-start" class="start-btn" data-es="Lanzar expedición →">Launch expedition →</button
+          ><button type="button" id="pq-resume" class="start-btn pq-resume" hidden data-es="Continuar la expedición guardada">
             Resume saved expedition
           </button>
         </div>
@@ -489,18 +529,19 @@
         <table class="topic-table" aria-label="Your answer for each topic">
           <thead>
             <tr>
-              <th scope="col">Topic</th>
-              <th scope="col">Result</th>
-              <th scope="col">Practice game</th>
+              <th scope="col" data-es="Tema">Topic</th>
+              <th scope="col" data-es="Resultado">Result</th>
+              <th scope="col" data-es="Juego de práctica">Practice game</th>
+              <th scope="col" data-es="Lección para repasar">Lesson to review</th>
             </tr>
           </thead>
           <tbody id="topic-rows"></tbody>
         </table>
         <p id="next-steps" class="next-steps"></p>
-        <button type="button" id="pq-return" class="start-btn" hidden>
+        <button type="button" id="pq-return" class="start-btn" hidden data-es="Viaje de regreso · estaciones falladas">
           Return trip · missed stations
         </button>
-        <button type="button" id="pq-again" class="start-btn">Take it again · new numbers</button>
+        <button type="button" id="pq-again" class="start-btn" data-es="Repetir · números nuevos">Take it again · new numbers</button>
       </section>
     </main>
 
@@ -516,6 +557,24 @@
       //  Math order (statistics = Unit 2, coordinate plane = Unit 7, ...).
       //  No links out: practice games are named, not linked (self-contained).
       // ════════════════════════════════════════════════════════════════════
+      // Spanish for the static page text: each element carries its Spanish in data-es.
+      (function applyStaticLanguage() {
+        let es = false;
+        try {
+          es = localStorage.getItem("nt-lang") === "es";
+        } catch (_e) {}
+        if (!es) return;
+        document.documentElement.lang = "es";
+        document.querySelectorAll("[data-es]").forEach((el) => {
+          if (!el.hasAttribute("data-en")) el.setAttribute("data-en", el.innerHTML);
+          el.innerHTML = el.getAttribute("data-es");
+        });
+        const table = document.querySelector(".topic-table");
+        if (table) table.setAttribute("aria-label", "Tu respuesta en cada tema");
+        const question = document.getElementById("play-screen");
+        if (question) question.setAttribute("aria-label", "Pregunta");
+      })();
+
       const RI = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
       const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
       const gcd = (a, b) => (b ? gcd(b, a % b) : a);
@@ -537,487 +596,604 @@
           const v = Number(m[2]) + (k % 2 ? 1 : -1) * Math.ceil(k / 2);
           const t = m[1] + num(v) + m[3];
           if (v > 0 && !c.some((x) => x.t === t))
-            c.push({ t, why: "Recheck the arithmetic one step at a time." });
+            c.push({
+              t,
+              why: L(
+                "Recheck the arithmetic one step at a time.",
+                "Revisa la aritmética un paso a la vez.",
+              ),
+            });
         }
         return { domain, game, q, c, why };
       }
 
-      const GEN = [
-        function gcf() {
-          const g = pick([4, 6, 8, 9, 12]);
-          let m, n;
-          do {
-            m = RI(2, 5);
-            n = RI(m + 1, 7);
-          } while (gcd(m, n) !== 1);
-          const a = g * m,
-            b = g * n;
-          const f = g === 9 ? 3 : g / 2; // a smaller common factor
-          return item(
-            "Unit 6 · Factors (GCF)",
-            "Factor Frenzy",
-            "What is the greatest common factor (GCF) of " + a + " and " + b + "?",
-            String(g),
-            a +
-              " = " +
-              g +
-              " × " +
-              m +
-              " and " +
-              b +
-              " = " +
-              g +
-              " × " +
-              n +
-              ". " +
-              g +
-              " is the biggest factor they share.",
-            [
-              [
-                String(f),
-                f +
-                  " is a common factor, but not the GREATEST one. Look for a bigger factor of both.",
-              ],
-              [
-                String((a * b) / g),
-                "That is the least common MULTIPLE. The GCF is a FACTOR, so it is not bigger than either number.",
-              ],
-              [
-                String(a),
-                a + " is not a factor of " + b + ". A common factor must divide BOTH numbers.",
-              ],
-            ],
-            [[String(g * 2), g * 2 + " does not divide both numbers."]],
-          );
-        },
-        function decimals() {
-          let X, Y;
-          do {
-            X = RI(1001, 1999); // hundredths: 10.01 .. 19.99
-            Y = RI(11, 99); // tenths: 1.1 .. 9.9
-          } while (X % 10 === 0 || Y % 10 === 0);
-          const fx = (X / 100).toFixed(2),
-            fy = (Y / 10).toFixed(1);
-          const show = (c) => (c / 100).toFixed(2);
-          return item(
-            "Unit 2 · Adding Decimals",
-            "Decimal Dash",
-            "Compute: " + fx + " + " + fy,
-            show(X + Y * 10),
-            "Line up the decimal points: " + fx + " + " + fy + "0 = " + show(X + Y * 10) + ".",
-            [
-              [
-                show(X + Y),
-                "The decimal points were not lined up. Write " +
-                  fy +
-                  " as " +
-                  fy +
-                  "0, then add place by place.",
-              ],
-              [
-                show(X + Y * 10 + 100),
-                "Check the regrouping. Add each place carefully from right to left.",
-              ],
-              [
-                show(X + Y * 10 - 10),
-                "Check the tenths place. Add each place carefully from right to left.",
-              ],
-            ],
-          );
-        },
-        function fractionDivide() {
-          let a, b;
-          do {
-            b = RI(3, 6);
-            a = RI(2, b - 1);
-          } while (gcd(a, b) !== 1);
-          const k = RI(2, 4),
-            d = b * k; // a/b ÷ 1/d = a·d/b = a·k (a whole number)
-          return item(
-            "Unit 6 · Dividing Fractions",
-            "Fraction Frenzy",
-            "Divide: " + a + "/" + b + " ÷ 1/" + d,
-            String(a * k),
-            "Dividing asks how many 1/" +
-              d +
-              "s fit in " +
-              a +
-              "/" +
-              b +
-              ": " +
-              a +
-              "/" +
-              b +
-              " × " +
-              d +
-              " = " +
-              a * k +
-              ".",
-            [
-              [
-                a + "/" + b * d,
-                "That multiplies the fractions straight across. To divide, multiply by the RECIPROCAL: × " +
-                  d +
-                  ".",
-              ],
-              [
-                "1/" + a * k,
-                "That is upside down. Many small 1/" +
-                  d +
-                  " pieces fit, so the answer is bigger than 1.",
-              ],
-              [
-                String(k),
-                "Close: " +
-                  k +
-                  " pieces of 1/" +
-                  d +
-                  " make 1/" +
-                  b +
-                  ". But you have " +
-                  a +
-                  "/" +
-                  b +
-                  ", so multiply by " +
-                  a +
-                  ".",
-              ],
-            ],
-          );
-        },
-        function unitRate() {
-          const [x, y] = pick([
-            [3, 2],
-            [5, 2],
-            [7, 2],
-            [5, 4],
-            [9, 4],
-            [7, 5],
-            [8, 5],
-          ]);
-          const thing = pick([
-            ["cups of flour", "cup of sugar", "cups of sugar"],
-            ["laps", "minute", "minutes"],
-            ["pages", "hour", "hours"],
-          ]);
-          return item(
-            "Unit 3 · Ratios & Unit Rates",
-            "Ratio Rush",
-            "There are " +
-              x +
-              " " +
-              thing[0] +
-              " for every " +
-              y +
-              " " +
-              thing[2] +
-              ". How many " +
-              thing[0] +
-              " per " +
-              thing[1] +
-              "?",
-            num(x / y),
-            "Per ONE " + thing[1] + " means divide: " + x + " ÷ " + y + " = " + num(x / y) + ".",
-            [
-              [
-                num(y / x),
-                "That is " +
-                  y +
-                  " ÷ " +
-                  x +
-                  ", the rate the other way around. Divide by the 'per' amount: " +
-                  x +
-                  " ÷ " +
-                  y +
-                  ".",
-              ],
-              [
-                String(x + y),
-                "Adding does not give a rate. A unit rate divides: " + x + " ÷ " + y + ".",
-              ],
-              [
-                String(x * y),
-                "Multiplying does not give a rate. A unit rate divides: " + x + " ÷ " + y + ".",
-              ],
-            ],
-          );
-        },
-        function percentOff() {
-          let P, pct;
-          do {
-            P = pick([20, 30, 40, 50, 60, 80]);
-            pct = pick([10, 20, 25, 30, 50]);
-          } while (
-            (P * pct) % 100 !== 0 ||
-            P - pct <= 0 ||
-            (P * pct) / 100 === P - (P * pct) / 100
-          );
-          const off = (P * pct) / 100;
-          return item(
-            "Unit 4 · Percents",
-            "Percent Power",
-            "A shirt costs $" + P + ". It is on sale for " + pct + "% off. What is the sale price?",
-            "$" + (P - off),
-            pct +
-              "% of $" +
-              P +
-              " is $" +
-              off +
-              " off, so you pay $" +
-              P +
-              " − $" +
-              off +
-              " = $" +
-              (P - off) +
-              ".",
-            [
-              [
-                "$" + off,
-                "$" +
-                  off +
-                  " is the amount OFF (the discount). Subtract it from $" +
-                  P +
-                  " to get the sale price.",
-              ],
-              [
-                "$" + (P - pct),
-                "A percent is not dollars. Find " + pct + "% OF $" + P + " first, then subtract.",
-              ],
-              ["$" + (P + off), "On sale means the price goes DOWN. Subtract the discount."],
-            ],
-          );
-        },
-        function triangleArea() {
-          let b, h;
-          do {
-            b = RI(4, 12);
-            h = RI(3, 10);
-          } while ((b * h) % 2 !== 0 || b === h);
-          return item(
-            "Unit 5 · Area",
-            "Area Attack",
-            "Find the area of a triangle with a base of " + b + " cm and a height of " + h + " cm.",
-            (b * h) / 2 + " cm²",
-            "A triangle is half of a rectangle: ½ × " +
-              b +
-              " × " +
-              h +
-              " = " +
-              (b * h) / 2 +
-              " cm².",
-            [
-              [
-                b * h + " cm²",
-                "That is the area of the whole RECTANGLE. A triangle is half of it: ÷ 2.",
-              ],
-              [
-                b + h + " cm²",
-                "Area multiplies base × height (then halves it). Adding finds a length, not an area.",
-              ],
-              [
-                2 * (b + h) + " cm²",
-                "That adds lengths around the outside. Area = ½ × base × height.",
-              ],
-            ],
-          );
-        },
-        function orderOfOps() {
-          let a, b, c, v;
-          do {
-            a = RI(3, 6);
-            b = RI(2, 4);
-            c = RI(2, 4);
-            v = a * a - b * c;
-          } while (v <= 0 || (a * a - b) * c === v);
-          return item(
-            "Unit 6 · Expressions & Exponents",
-            "Expression Express",
-            "Evaluate: " + a + "² − " + b + " × " + c,
-            String(v),
-            "Exponents first: " +
-              a +
-              "² = " +
-              a * a +
-              ". Then multiply: " +
-              b +
-              " × " +
-              c +
-              " = " +
-              b * c +
-              ". Then subtract: " +
-              a * a +
-              " − " +
-              b * c +
-              " = " +
-              v +
-              ".",
-            [
-              [String((a * a - b) * c), "That works left to right. Multiply BEFORE you subtract."],
-              [String(a * 2 - b * c), a + "² means " + a + " × " + a + ", not " + a + " × 2."],
-              [
-                String(a * a + b * c),
-                "Check the sign: the expression subtracts " + b + " × " + c + ".",
-              ],
-            ],
-            [[String(v + 1), "Recheck the arithmetic one step at a time."]],
-          );
-        },
-        function equation() {
-          const p = RI(6, 19),
-            x = RI(5, 30),
-            q = x + p;
-          return item(
-            "Unit 8 · Equations",
-            "Equation Quest",
-            "Solve for x:  x + " + p + " = " + q,
-            String(x),
-            "Undo + " +
-              p +
-              " by subtracting " +
-              p +
-              " from both sides: x = " +
-              q +
-              " − " +
-              p +
-              " = " +
-              x +
-              ".",
-            [
-              [
-                String(q + p),
-                "You added " + p + ". To undo + " + p + ", SUBTRACT " + p + " from both sides.",
-              ],
-              [String(x + 1), "Check the subtraction: " + q + " − " + p + "."],
-              [
-                String(p),
-                p + " is the number added to x. Check: does " + p + " + " + p + " = " + q + "?",
-              ],
-            ],
-          );
-        },
-        function median() {
-          const pool = new Set();
-          while (pool.size < 5) pool.add(RI(1, 20));
-          const vals = [...pool];
-          const sorted = vals.slice().sort((p, q) => p - q);
-          let shown;
-          do {
-            shown = vals.slice().sort(() => Math.random() - 0.5);
-          } while (shown[2] === sorted[2]);
-          const mean = sorted.reduce((s, v) => s + v, 0) / 5;
-          return item(
-            "Unit 2 · Statistics",
-            "Data Dash",
-            "Find the median of this data set: " + shown.join(", "),
-            String(sorted[2]),
-            "Put the numbers in order: " +
-              sorted.join(", ") +
-              ". The middle (3rd of 5) is " +
-              sorted[2] +
-              ".",
-            [
-              [
-                String(shown[2]),
-                shown[2] +
-                  " is in the middle of the list as written. Put the numbers IN ORDER first.",
-              ],
-              [
-                num(mean),
-                "That is the MEAN (add, then divide). The median is the middle number in order.",
-              ],
-              [
-                String(sorted[4] - sorted[0]),
-                "That is the RANGE (greatest − least). The median is the middle number in order.",
-              ],
-            ],
-            [
-              [
-                String(sorted[4]),
-                "That is the greatest value. The median is the middle number in order.",
-              ],
-              [
-                String(sorted[0]),
-                "That is the least value. The median is the middle number in order.",
-              ],
-            ],
-          );
-        },
-        function quadrant() {
-          const a = RI(2, 7),
-            b = RI(2, 7);
-          const pts = {
-            I: "(" + a + ", " + b + ")",
-            II: "(−" + a + ", " + b + ")",
-            III: "(−" + a + ", −" + b + ")",
-            IV: "(" + a + ", −" + b + ")",
-          };
-          const sign = {
-            I: "x positive, y positive",
-            II: "x negative, y positive",
-            III: "x negative, y negative",
-            IV: "x positive, y negative",
-          };
-          const target = pick(["II", "III", "IV"]);
-          const wrongs = ["I", "II", "III", "IV"]
-            .filter((k) => k !== target)
-            .map((k) => [
-              pts[k],
-              pts[k] +
-                " is in Quadrant " +
-                k +
-                " (" +
-                sign[k] +
-                "). Quadrant " +
-                target +
-                " has " +
-                sign[target] +
-                ".",
-            ]);
-          return item(
-            "Unit 7 · Coordinate Plane",
-            "Coordinate Quest",
-            "Which point is in Quadrant " + target + " of the coordinate plane?",
-            pts[target],
-            "Quadrant " + target + " has " + sign[target] + ": " + pts[target] + ".",
-            wrongs,
-          );
-        },
-        function volume() {
-          const l = RI(2, 6),
-            w = RI(2, 6),
-            h = RI(3, 7);
-          return item(
-            "Unit 5 · Volume",
-            "Volume Blast",
-            "A rectangular prism is " +
-              l +
-              " cm long, " +
-              w +
-              " cm wide, and " +
-              h +
-              " cm tall. What is its volume?",
-            l * w * h + " cm³",
-            "Volume counts cubic units: " + l + " × " + w + " × " + h + " = " + l * w * h + " cm³.",
-            [
-              [
-                l + w + h + " cm³",
-                "You added the edges. Volume MULTIPLIES length × width × height.",
-              ],
-              [
-                l * w + " cm³",
-                "That is one layer (length × width). Multiply by the height to stack " +
-                  h +
-                  " layers.",
-              ],
-              [
-                2 * (l * w + l * h + w * h) + " cm³",
-                "That is the surface area (the outside faces). Volume counts the cubes inside.",
-              ],
-            ],
-            [[l * w * h + l * w + " cm³", "Count the layers again: there are " + h + " layers."]],
-          );
-        },
+// Language: follows the site-wide key. Items are generated in the language showing at that
+// moment, so a return trip or a new attempt uses the current language.
+function isEs() {
+  try {
+    return localStorage.getItem("nt-lang") === "es";
+  } catch (_e) {
+    return false;
+  }
+}
+const L = (en, es) => (isEs() ? es : en);
+
+const GEN = [
+  function gcf() {
+    const g = pick([4, 6, 8, 9, 12]);
+    let m, n;
+    do {
+      m = RI(2, 5);
+      n = RI(m + 1, 7);
+    } while (gcd(m, n) !== 1);
+    const a = g * m,
+      b = g * n;
+    const f = g === 9 ? 3 : g / 2; // a smaller common factor
+    return item(
+      L("Unit 6 · Factors (GCF)", "Unidad 6 · Factores (MCD)"),
+      "Factor Frenzy",
+      L(
+        `What is the greatest common factor (GCF) of ${a} and ${b}?`,
+        `¿Cuál es el máximo común divisor (MCD) de ${a} y ${b}?`,
+      ),
+      String(g),
+      L(
+        `${a} = ${g} × ${m} and ${b} = ${g} × ${n}. ${g} is the biggest factor they share.`,
+        `${a} = ${g} × ${m} y ${b} = ${g} × ${n}. ${g} es el factor más grande que comparten.`,
+      ),
+      [
+        [
+          String(f),
+          L(
+            `${f} is a common factor, but not the GREATEST one. Look for a bigger factor of both.`,
+            `${f} es un factor común, pero no el MAYOR. Busca un factor más grande de los dos.`,
+          ),
+        ],
+        [
+          String((a * b) / g),
+          L(
+            "That is the least common MULTIPLE. The GCF is a FACTOR, so it is not bigger than either number.",
+            "Ese es el mínimo común MÚLTIPLO. El MCD es un FACTOR, así que no es mayor que ninguno de los números.",
+          ),
+        ],
+        [
+          String(a),
+          L(
+            `${a} is not a factor of ${b}. A common factor must divide BOTH numbers.`,
+            `${a} no es un factor de ${b}. Un factor común debe dividir a AMBOS números.`,
+          ),
+        ],
+      ],
+      [
+        [
+          String(g * 2),
+          L(
+            `${g * 2} does not divide both numbers.`,
+            `${g * 2} no divide a los dos números.`,
+          ),
+        ],
+      ],
+    );
+  },
+  function decimals() {
+    let X, Y;
+    do {
+      X = RI(1001, 1999); // hundredths: 10.01 .. 19.99
+      Y = RI(11, 99); // tenths: 1.1 .. 9.9
+    } while (X % 10 === 0 || Y % 10 === 0);
+    const fx = (X / 100).toFixed(2),
+      fy = (Y / 10).toFixed(1);
+    const show = (c) => (c / 100).toFixed(2);
+    return item(
+      L("Unit 2 · Adding Decimals", "Unidad 2 · Suma de decimales"),
+      "Decimal Dash",
+      L(`Compute: ${fx} + ${fy}`, `Calcula: ${fx} + ${fy}`),
+      show(X + Y * 10),
+      L(
+        `Line up the decimal points: ${fx} + ${fy}0 = ${show(X + Y * 10)}.`,
+        `Alinea los puntos decimales: ${fx} + ${fy}0 = ${show(X + Y * 10)}.`,
+      ),
+      [
+        [
+          show(X + Y),
+          L(
+            `The decimal points were not lined up. Write ${fy} as ${fy}0, then add place by place.`,
+            `Los puntos decimales no estaban alineados. Escribe ${fy} como ${fy}0 y suma posición por posición.`,
+          ),
+        ],
+        [
+          show(X + Y * 10 + 100),
+          L(
+            "Check the regrouping. Add each place carefully from right to left.",
+            "Revisa el reagrupamiento. Suma cada posición con cuidado, de derecha a izquierda.",
+          ),
+        ],
+        [
+          show(X + Y * 10 - 10),
+          L(
+            "Check the tenths place. Add each place carefully from right to left.",
+            "Revisa la posición de las décimas. Suma cada posición con cuidado, de derecha a izquierda.",
+          ),
+        ],
+      ],
+    );
+  },
+  function fractionDivide() {
+    let a, b;
+    do {
+      b = RI(3, 6);
+      a = RI(2, b - 1);
+    } while (gcd(a, b) !== 1);
+    const k = RI(2, 4),
+      d = b * k; // a/b ÷ 1/d = a·d/b = a·k (a whole number)
+    return item(
+      L("Unit 6 · Dividing Fractions", "Unidad 6 · División de fracciones"),
+      "Fraction Frenzy",
+      L(`Divide: ${a}/${b} ÷ 1/${d}`, `Divide: ${a}/${b} ÷ 1/${d}`),
+      String(a * k),
+      L(
+        `Dividing asks how many 1/${d}s fit in ${a}/${b}: ${a}/${b} × ${d} = ${a * k}.`,
+        `Dividir pregunta cuántos 1/${d} caben en ${a}/${b}: ${a}/${b} × ${d} = ${a * k}.`,
+      ),
+      [
+        [
+          a + "/" + b * d,
+          L(
+            `That multiplies the fractions straight across. To divide, multiply by the RECIPROCAL: × ${d}.`,
+            `Eso multiplica las fracciones de frente. Para dividir, multiplica por el RECÍPROCO: × ${d}.`,
+          ),
+        ],
+        [
+          "1/" + a * k,
+          L(
+            `That is upside down. Many small 1/${d} pieces fit, so the answer is bigger than 1.`,
+            `Eso está al revés. Caben muchas piezas pequeñas de 1/${d}, así que la respuesta es mayor que 1.`,
+          ),
+        ],
+        [
+          String(k),
+          L(
+            `Close: ${k} pieces of 1/${d} make 1/${b}. But you have ${a}/${b}, so multiply by ${a}.`,
+            `Cerca: ${k} piezas de 1/${d} forman 1/${b}. Pero tienes ${a}/${b}, así que multiplica por ${a}.`,
+          ),
+        ],
+      ],
+    );
+  },
+  function unitRate() {
+    const [x, y] = pick([
+      [3, 2],
+      [5, 2],
+      [7, 2],
+      [5, 4],
+      [9, 4],
+      [7, 5],
+      [8, 5],
+    ]);
+    const t = pick([
+      [
+        ["cups of flour", "cup of sugar", "cups of sugar"],
+        ["tazas de harina", "taza de azúcar", "tazas de azúcar"],
+      ],
+      [
+        ["laps", "minute", "minutes"],
+        ["vueltas", "minuto", "minutos"],
+      ],
+      [
+        ["pages", "hour", "hours"],
+        ["páginas", "hora", "horas"],
+      ],
+    ]);
+    const thing = isEs() ? t[1] : t[0];
+    return item(
+      L("Unit 3 · Ratios & Unit Rates", "Unidad 3 · Razones y tasas unitarias"),
+      "Ratio Rush",
+      L(
+        `There are ${x} ${thing[0]} for every ${y} ${thing[2]}. How many ${thing[0]} per ${thing[1]}?`,
+        `Hay ${x} ${thing[0]} por cada ${y} ${thing[2]}. ¿Cuántas ${thing[0]} por ${thing[1]}?`,
+      ),
+      num(x / y),
+      L(
+        `Per ONE ${thing[1]} means divide: ${x} ÷ ${y} = ${num(x / y)}.`,
+        `Por 1 ${thing[1]} significa dividir: ${x} ÷ ${y} = ${num(x / y)}.`,
+      ),
+      [
+        [
+          num(y / x),
+          L(
+            `That is ${y} ÷ ${x}, the rate the other way around. Divide by the 'per' amount: ${x} ÷ ${y}.`,
+            `Eso es ${y} ÷ ${x}, la tasa al revés. Divide entre la cantidad de "por": ${x} ÷ ${y}.`,
+          ),
+        ],
+        [
+          String(x + y),
+          L(
+            `Adding does not give a rate. A unit rate divides: ${x} ÷ ${y}.`,
+            `Sumar no da una tasa. Una tasa unitaria se calcula dividiendo: ${x} ÷ ${y}.`,
+          ),
+        ],
+        [
+          String(x * y),
+          L(
+            `Multiplying does not give a rate. A unit rate divides: ${x} ÷ ${y}.`,
+            `Multiplicar no da una tasa. Una tasa unitaria se calcula dividiendo: ${x} ÷ ${y}.`,
+          ),
+        ],
+      ],
+    );
+  },
+  function percentOff() {
+    let P, pct;
+    do {
+      P = pick([20, 30, 40, 50, 60, 80]);
+      pct = pick([10, 20, 25, 30, 50]);
+    } while (
+      (P * pct) % 100 !== 0 ||
+      P - pct <= 0 ||
+      (P * pct) / 100 === P - (P * pct) / 100
+    );
+    const off = (P * pct) / 100;
+    return item(
+      L("Unit 4 · Percents", "Unidad 4 · Porcentajes"),
+      "Percent Power",
+      L(
+        `A shirt costs $${P}. It is on sale for ${pct}% off. What is the sale price?`,
+        `Una camisa cuesta $${P}. Está en oferta con ${pct}% de descuento. ¿Cuál es el precio de oferta?`,
+      ),
+      "$" + (P - off),
+      L(
+        `${pct}% of $${P} is $${off} off, so you pay $${P} − $${off} = $${P - off}.`,
+        `El ${pct}% de $${P} es $${off} de descuento, así que pagas $${P} − $${off} = $${P - off}.`,
+      ),
+      [
+        [
+          "$" + off,
+          L(
+            `$${off} is the amount OFF (the discount). Subtract it from $${P} to get the sale price.`,
+            `$${off} es la cantidad de DESCUENTO. Réstala de $${P} para obtener el precio de oferta.`,
+          ),
+        ],
+        [
+          "$" + (P - pct),
+          L(
+            `A percent is not dollars. Find ${pct}% OF $${P} first, then subtract.`,
+            `Un porcentaje no son dólares. Primero halla el ${pct}% DE $${P} y luego resta.`,
+          ),
+        ],
+        [
+          "$" + (P + off),
+          L(
+            "On sale means the price goes DOWN. Subtract the discount.",
+            "Estar en oferta significa que el precio BAJA. Resta el descuento.",
+          ),
+        ],
+      ],
+    );
+  },
+  function triangleArea() {
+    let b, h;
+    do {
+      b = RI(4, 12);
+      h = RI(3, 10);
+    } while ((b * h) % 2 !== 0 || b === h);
+    return item(
+      L("Unit 5 · Area", "Unidad 5 · Área"),
+      "Area Attack",
+      L(
+        `Find the area of a triangle with a base of ${b} cm and a height of ${h} cm.`,
+        `Halla el área de un triángulo con base de ${b} cm y altura de ${h} cm.`,
+      ),
+      (b * h) / 2 + " cm²",
+      L(
+        `A triangle is half of a rectangle: ½ × ${b} × ${h} = ${(b * h) / 2} cm².`,
+        `Un triángulo es la mitad de un rectángulo: ½ × ${b} × ${h} = ${(b * h) / 2} cm².`,
+      ),
+      [
+        [
+          b * h + " cm²",
+          L(
+            "That is the area of the whole RECTANGLE. A triangle is half of it: ÷ 2.",
+            "Esa es el área de todo el RECTÁNGULO. Un triángulo es la mitad: ÷ 2.",
+          ),
+        ],
+        [
+          b + h + " cm²",
+          L(
+            "Area multiplies base × height (then halves it). Adding finds a length, not an area.",
+            "El área multiplica base × altura (y luego toma la mitad). Sumar da una longitud, no un área.",
+          ),
+        ],
+        [
+          2 * (b + h) + " cm²",
+          L(
+            "That adds lengths around the outside. Area = ½ × base × height.",
+            "Eso suma las longitudes del contorno. Área = ½ × base × altura.",
+          ),
+        ],
+      ],
+    );
+  },
+  function orderOfOps() {
+    let a, b, c, v;
+    do {
+      a = RI(3, 6);
+      b = RI(2, 4);
+      c = RI(2, 4);
+      v = a * a - b * c;
+    } while (v <= 0 || (a * a - b) * c === v);
+    return item(
+      L(
+        "Unit 6 · Expressions & Exponents",
+        "Unidad 6 · Expresiones y exponentes",
+      ),
+      "Expression Express",
+      L(`Evaluate: ${a}² − ${b} × ${c}`, `Evalúa: ${a}² − ${b} × ${c}`),
+      String(v),
+      L(
+        `Exponents first: ${a}² = ${a * a}. Then multiply: ${b} × ${c} = ${b * c}. Then subtract: ${a * a} − ${b * c} = ${v}.`,
+        `Primero los exponentes: ${a}² = ${a * a}. Luego multiplica: ${b} × ${c} = ${b * c}. Luego resta: ${a * a} − ${b * c} = ${v}.`,
+      ),
+      [
+        [
+          String((a * a - b) * c),
+          L(
+            "That works left to right. Multiply BEFORE you subtract.",
+            "Eso va de izquierda a derecha. Multiplica ANTES de restar.",
+          ),
+        ],
+        [
+          String(a * 2 - b * c),
+          L(
+            `${a}² means ${a} × ${a}, not ${a} × 2.`,
+            `${a}² significa ${a} × ${a}, no ${a} × 2.`,
+          ),
+        ],
+        [
+          String(a * a + b * c),
+          L(
+            `Check the sign: the expression subtracts ${b} × ${c}.`,
+            `Revisa el signo: la expresión resta ${b} × ${c}.`,
+          ),
+        ],
+      ],
+      [
+        [
+          String(v + 1),
+          L(
+            "Recheck the arithmetic one step at a time.",
+            "Revisa la aritmética un paso a la vez.",
+          ),
+        ],
+      ],
+    );
+  },
+  function equation() {
+    const p = RI(6, 19),
+      x = RI(5, 30),
+      q = x + p;
+    return item(
+      L("Unit 8 · Equations", "Unidad 8 · Ecuaciones"),
+      "Equation Quest",
+      L(`Solve for x:  x + ${p} = ${q}`, `Resuelve para x:  x + ${p} = ${q}`),
+      String(x),
+      L(
+        `Undo + ${p} by subtracting ${p} from both sides: x = ${q} − ${p} = ${x}.`,
+        `Deshaz + ${p} restando ${p} de ambos lados: x = ${q} − ${p} = ${x}.`,
+      ),
+      [
+        [
+          String(q + p),
+          L(
+            `You added ${p}. To undo + ${p}, SUBTRACT ${p} from both sides.`,
+            `Sumaste ${p}. Para deshacer + ${p}, RESTA ${p} de ambos lados.`,
+          ),
+        ],
+        [
+          String(x + 1),
+          L(
+            `Check the subtraction: ${q} − ${p}.`,
+            `Revisa la resta: ${q} − ${p}.`,
+          ),
+        ],
+        [
+          String(p),
+          L(
+            `${p} is the number added to x. Check: does ${p} + ${p} = ${q}?`,
+            `${p} es el número que se suma a x. Comprueba: ¿${p} + ${p} = ${q}?`,
+          ),
+        ],
+      ],
+    );
+  },
+  function median() {
+    const pool = new Set();
+    while (pool.size < 5) pool.add(RI(1, 20));
+    const vals = [...pool];
+    const sorted = vals.slice().sort((p, q) => p - q);
+    let shown;
+    do {
+      shown = vals.slice().sort(() => Math.random() - 0.5);
+    } while (shown[2] === sorted[2]);
+    const mean = sorted.reduce((s, v) => s + v, 0) / 5;
+    return item(
+      L("Unit 2 · Statistics", "Unidad 2 · Estadística"),
+      "Data Dash",
+      L(
+        `Find the median of this data set: ${shown.join(", ")}`,
+        `Halla la mediana de este conjunto de datos: ${shown.join(", ")}`,
+      ),
+      String(sorted[2]),
+      L(
+        `Put the numbers in order: ${sorted.join(", ")}. The middle (3rd of 5) is ${sorted[2]}.`,
+        `Ordena los números: ${sorted.join(", ")}. El del medio (el 3.º de 5) es ${sorted[2]}.`,
+      ),
+      [
+        [
+          String(shown[2]),
+          L(
+            `${shown[2]} is in the middle of the list as written. Put the numbers IN ORDER first.`,
+            `${shown[2]} está en el medio de la lista tal como está escrita. Primero ordena los números.`,
+          ),
+        ],
+        [
+          num(mean),
+          L(
+            "That is the MEAN (add, then divide). The median is the middle number in order.",
+            "Esa es la MEDIA (se suma y luego se divide). La mediana es el número del medio, en orden.",
+          ),
+        ],
+        [
+          String(sorted[4] - sorted[0]),
+          L(
+            "That is the RANGE (greatest − least). The median is the middle number in order.",
+            "Ese es el RANGO (mayor − menor). La mediana es el número del medio, en orden.",
+          ),
+        ],
+      ],
+      [
+        [
+          String(sorted[4]),
+          L(
+            "That is the greatest value. The median is the middle number in order.",
+            "Ese es el valor mayor. La mediana es el número del medio, en orden.",
+          ),
+        ],
+        [
+          String(sorted[0]),
+          L(
+            "That is the least value. The median is the middle number in order.",
+            "Ese es el valor menor. La mediana es el número del medio, en orden.",
+          ),
+        ],
+      ],
+    );
+  },
+  function quadrant() {
+    const a = RI(2, 7),
+      b = RI(2, 7);
+    const pts = {
+      I: "(" + a + ", " + b + ")",
+      II: "(−" + a + ", " + b + ")",
+      III: "(−" + a + ", −" + b + ")",
+      IV: "(" + a + ", −" + b + ")",
+    };
+    const sign = {
+      I: L("x positive, y positive", "x positivo, y positivo"),
+      II: L("x negative, y positive", "x negativo, y positivo"),
+      III: L("x negative, y negative", "x negativo, y negativo"),
+      IV: L("x positive, y negative", "x positivo, y negativo"),
+    };
+    const target = pick(["II", "III", "IV"]);
+    const wrongs = ["I", "II", "III", "IV"]
+      .filter((k) => k !== target)
+      .map((k) => [
+        pts[k],
+        L(
+          `${pts[k]} is in Quadrant ${k} (${sign[k]}). Quadrant ${target} has ${sign[target]}.`,
+          `${pts[k]} está en el Cuadrante ${k} (${sign[k]}). El Cuadrante ${target} tiene ${sign[target]}.`,
+        ),
+      ]);
+    return item(
+      L("Unit 7 · Coordinate Plane", "Unidad 7 · Plano de coordenadas"),
+      "Coordinate Quest",
+      L(
+        `Which point is in Quadrant ${target} of the coordinate plane?`,
+        `¿Qué punto está en el Cuadrante ${target} del plano de coordenadas?`,
+      ),
+      pts[target],
+      L(
+        `Quadrant ${target} has ${sign[target]}: ${pts[target]}.`,
+        `El Cuadrante ${target} tiene ${sign[target]}: ${pts[target]}.`,
+      ),
+      wrongs,
+    );
+  },
+  function volume() {
+    const l = RI(2, 6),
+      w = RI(2, 6),
+      h = RI(3, 7);
+    return item(
+      L("Unit 5 · Volume", "Unidad 5 · Volumen"),
+      "Volume Blast",
+      L(
+        `A rectangular prism is ${l} cm long, ${w} cm wide, and ${h} cm tall. What is its volume?`,
+        `Un prisma rectangular mide ${l} cm de largo, ${w} cm de ancho y ${h} cm de alto. ¿Cuál es su volumen?`,
+      ),
+      l * w * h + " cm³",
+      L(
+        `Volume counts cubic units: ${l} × ${w} × ${h} = ${l * w * h} cm³.`,
+        `El volumen cuenta unidades cúbicas: ${l} × ${w} × ${h} = ${l * w * h} cm³.`,
+      ),
+      [
+        [
+          l + w + h + " cm³",
+          L(
+            "You added the edges. Volume MULTIPLIES length × width × height.",
+            "Sumaste las aristas. El volumen MULTIPLICA largo × ancho × alto.",
+          ),
+        ],
+        [
+          l * w + " cm³",
+          L(
+            `That is one layer (length × width). Multiply by the height to stack ${h} layers.`,
+            `Esa es una capa (largo × ancho). Multiplica por la altura para apilar ${h} capas.`,
+          ),
+        ],
+        [
+          2 * (l * w + l * h + w * h) + " cm³",
+          L(
+            "That is the surface area (the outside faces). Volume counts the cubes inside.",
+            "Esa es el área de superficie (las caras de afuera). El volumen cuenta los cubos de adentro.",
+          ),
+        ],
+      ],
+      [
+        [
+          l * w * h + l * w + " cm³",
+          L(
+            `Count the layers again: there are ${h} layers.`,
+            `Cuenta las capas otra vez: hay ${h} capas.`,
+          ),
+        ],
+      ],
+    );
+  },
+];
+      // Lesson to review for each topic, in GEN order. Ids and titles come from the curriculum
+      // manifest (data/curriculum-manifest.json); shown as text only, never as a link.
+      const LESSON_REVIEW = [
+        ["6-7", "Find Factors and Multiples", "Encontrar factores y múltiplos"],
+        ["2-11", "Add and Subtract Decimals", "Sumar y restar decimales"],
+        [
+          "6-9",
+          "Divide Whole Numbers by Fractions",
+          "Dividir números enteros no negativos entre fracciones",
+        ],
+        ["3-2", "Understand Rates and Unit Rates", "Comprender las tasas y las tasas unitarias"],
+        ["4-4", "Find and Compare with Percentages", "Calcular y comparar usando porcentajes"],
+        ["5-2", "Determine the Area of Triangles", "Determinar el área de triángulos"],
+        [
+          "6-4",
+          "Write and Evaluate Numerical Expressions with Exponents",
+          "Escribir y evaluar expresiones numéricas con exponentes",
+        ],
+        [
+          "8-2",
+          "Write and Solve Equations Using Addition or Subtraction",
+          "Escribir y resolver ecuaciones usando suma o resta",
+        ],
+        ["2-3", "Describe the Data Using the Median", "Describir datos usando la mediana"],
+        ["7-8", "Ordered Pairs in All Four Quadrants", "Pares ordenados en los cuatro cuadrantes"],
+        [
+          "5-5",
+          "Determine the Volume of Rectangular Prisms",
+          "Determinar el volumen de prismas rectangulares",
+        ],
       ];
+      const reviewText = (gen) => {
+        const r = LESSON_REVIEW[gen];
+        return r ? L("Lesson " + r[0] + " · " + r[1], "Lección " + r[0] + " · " + r[2]) : "";
+      };
       window.PlacementQuest = { GEN };
 
       let questions = [];
@@ -1083,7 +1259,10 @@
         svg.setAttribute("role", "img");
         svg.setAttribute(
           "aria-label",
-          "Quest progress across all " + questions.length + " math topics",
+          L(
+            "Quest progress across all " + questions.length + " math topics",
+            "Progreso de la misión en los " + questions.length + " temas de matemáticas",
+          ),
         );
         document.querySelectorAll('[id^="stone-"]').forEach((node) => node.remove());
         questions.forEach((_, index) => {
@@ -1152,6 +1331,12 @@
         openPlay(null);
       }
 
+      function nextLabel() {
+        return currentIdx + 1 >= questions.length
+          ? L("See my results →", "Ver mis resultados →")
+          : L("Chart the next station →", "Trazar la siguiente estación →");
+      }
+
       function loadQuestion() {
         if (currentIdx >= questions.length) {
           showResults();
@@ -1165,7 +1350,11 @@
             unit: "placement",
             stage: currentIdx,
             total: questions.length,
-            title: "Compass station " + (currentIdx + 1) + " · " + questions[currentIdx].domain,
+            title:
+              L("Compass station ", "Estación de la brújula ") +
+              (currentIdx + 1) +
+              " · " +
+              questions[currentIdx].domain,
             state: voyage,
             onSave: saveQuest,
             onEnter: loadQuestion,
@@ -1197,7 +1386,7 @@
             '<span class="choice-key" aria-hidden="true"></span><span class="choice-txt"></span>';
           btn.querySelector(".choice-key").textContent = String(position + 1);
           btn.querySelector(".choice-txt").textContent = choice.t;
-          btn.setAttribute("aria-label", "Choice " + (position + 1) + ": " + choice.t);
+          btn.setAttribute("aria-label", L("Choice ", "Opción ") + (position + 1) + ": " + choice.t);
           btn.dataset.option = index;
           btn.onclick = () => selectChoice(index, btn);
           container.appendChild(btn);
@@ -1213,11 +1402,13 @@
             else if (option === selections[currentIdx]) button.classList.add("is-wrong");
           });
           feedback.textContent = correct
-            ? "✓ Correct! " + q.why
-            : "Marked for the return trip. The answer stays hidden until you work this station again.";
+            ? L("✓ Correct! ", "✓ ¡Correcto! ") + q.why
+            : L(
+                "Marked for the return trip. The answer stays hidden until you work this station again.",
+                "Marcada para el viaje de regreso. La respuesta sigue oculta hasta que vuelvas a trabajar esta estación.",
+              );
           feedback.className = "feedback-line " + (correct ? "good" : "bad");
-          $("quest-next").textContent =
-            currentIdx + 1 >= questions.length ? "See my results →" : "Chart the next station →";
+          $("quest-next").textContent = nextLabel();
           $("quest-next").hidden = false;
           $("quest-next").focus({ preventScroll: true });
           return;
@@ -1246,15 +1437,17 @@
         if (correct) {
           correctCount++;
           $("q-score").textContent = correctCount;
-          feedback.textContent = "✓ Correct! " + q.why;
+          feedback.textContent = L("✓ Correct! ", "✓ ¡Correcto! ") + q.why;
           feedback.className = "feedback-line good";
           if (stone) stone.setAttribute("fill", "#10b981");
           document.body.classList.add("gfx-correct");
           setTimeout(() => document.body.classList.remove("gfx-correct"), 200);
         } else {
           if (btn) btn.classList.add("is-wrong");
-          feedback.textContent =
-            "Not on this pass. This station is marked for the return trip. The answer stays hidden.";
+          feedback.textContent = L(
+            "Not on this pass. This station is marked for the return trip. The answer stays hidden.",
+            "No en esta ronda. Esta estación queda marcada para el viaje de regreso. La respuesta sigue oculta.",
+          );
           feedback.className = "feedback-line bad";
           if (stone) stone.setAttribute("fill", "#f59e0b");
           document.body.classList.add("gfx-wrong");
@@ -1270,8 +1463,7 @@
           new CustomEvent("game:feedback", { detail: { correct, message: feedback.textContent } }),
         );
         const next = $("quest-next");
-        next.textContent =
-          currentIdx + 1 >= questions.length ? "See my results →" : "Chart the next station →";
+        next.textContent = nextLabel();
         next.hidden = false;
         next.focus({ preventScroll: true });
         next.scrollIntoView({ block: "nearest" });
@@ -1281,19 +1473,28 @@
         if (rate >= 0.8)
           return {
             n: 2,
-            name: "Level 2",
-            desc: "You are ready for grade-level challenges. Start the unit games on Level 2.",
+            name: L("Level 2", "Nivel 2"),
+            desc: L(
+              "You are ready for grade-level challenges. Start the unit games on Level 2.",
+              "Estás listo para los retos del nivel de tu grado. Empieza los juegos de unidad en el Nivel 2.",
+            ),
           };
         if (rate >= 0.45)
           return {
             n: 1,
-            name: "Level 1",
-            desc: "You are on your way. Start the unit games on Level 1, then move up.",
+            name: L("Level 1", "Nivel 1"),
+            desc: L(
+              "You are on your way. Start the unit games on Level 1, then move up.",
+              "Vas por buen camino. Empieza los juegos de unidad en el Nivel 1 y luego sube.",
+            ),
           };
         return {
           n: 0,
-          name: "Level 0 · extra support",
-          desc: "Start with the step coach: play the unit games on Level 1 and use every hint.",
+          name: L("Level 0 · extra support", "Nivel 0 · apoyo adicional"),
+          desc: L(
+            "Start with the step coach: play the unit games on Level 1 and use every hint.",
+            "Empieza con el entrenador de pasos: juega los juegos de unidad en el Nivel 1 y usa todas las pistas.",
+          ),
         };
       }
 
@@ -1327,38 +1528,69 @@
         const returning = pass === "return";
         $("badge-level").textContent = returning ? correctCount + "/" + total : "L" + lvl.n;
         $("result-title").textContent = returning
-          ? "Return trip complete"
-          : "Your placement: " + lvl.name;
+          ? L("Return trip complete", "Viaje de regreso completo")
+          : L("Your placement: ", "Tu nivel: ") + lvl.name;
         $("feedback-text").textContent = returning
-          ? "You cleared " +
-            correctCount +
-            " of " +
-            total +
-            " stations on the return trip. Placement level stays the one from the survey."
-          : "You answered " + correctCount + " of " + total + " correctly. " + lvl.desc;
+          ? L(
+              "You cleared " +
+                correctCount +
+                " of " +
+                total +
+                " stations on the return trip. Placement level stays the one from the survey.",
+              "Superaste " +
+                correctCount +
+                " de " +
+                total +
+                " estaciones en el viaje de regreso. El nivel de ubicación sigue siendo el de la encuesta.",
+            )
+          : L(
+              "You answered " + correctCount + " of " + total + " correctly. ",
+              "Respondiste " + correctCount + " de " + total + " correctamente. ",
+            ) + lvl.desc;
         $("pq-return").hidden = missed.length === 0;
         $("pq-return").textContent =
-          "Return trip · " + missed.length + (missed.length === 1 ? " station" : " stations");
+          L("Return trip · ", "Viaje de regreso · ") +
+          missed.length +
+          L(missed.length === 1 ? " station" : " stations", missed.length === 1 ? " estación" : " estaciones");
         const rows = $("topic-rows");
         rows.replaceChildren();
         questions.forEach((q, i) => {
           const tr = document.createElement("tr");
           const ok = !!results[i];
-          [q.domain, ok ? "✓ Ready" : "Practice", q.game].forEach((text, c) => {
+          [
+            q.domain,
+            ok ? L("✓ Ready", "✓ Listo") : L("Practice", "Practicar"),
+            q.game,
+            ok ? "—" : reviewText(q.gen),
+          ].forEach((text, c) => {
             const td = document.createElement("td");
-            td.textContent = text;
+            td.dataset.label = [
+              L("Topic", "Tema"),
+              L("Result", "Resultado"),
+              L("Practice game", "Juego de práctica"),
+              L("Lesson to review", "Lección para repasar"),
+            ][c];
+            const cell = document.createElement("span");
+            cell.textContent = text;
+            td.append(cell);
             if (c === 1) td.className = ok ? "ok" : "todo";
             tr.append(td);
           });
           rows.append(tr);
         });
         $("next-steps").textContent = missed.length
-          ? (returning ? "Still open: " : "Practice next: ") +
+          ? (returning ? L("Still open: ", "Aún pendiente: ") : L("Practice next: ", "Practica a continuación: ")) +
             missed.map((q) => q.game).join(", ") +
-            ". The return trip uses new numbers and still hides the answer."
+            L(
+              ". The return trip uses new numbers and still hides the answer.",
+              ". El viaje de regreso usa números nuevos y sigue ocultando la respuesta.",
+            )
           : returning
-            ? "Every missed station is clear."
-            : "You answered every question correctly. Outstanding readiness!";
+            ? L("Every missed station is clear.", "Todas las estaciones falladas están superadas.")
+            : L(
+                "You answered every question correctly. Outstanding readiness!",
+                "¡Respondiste todas las preguntas correctamente! ¡Excelente preparación!",
+              );
         if (!returning) {
           try {
             localStorage.setItem(
@@ -1399,14 +1631,26 @@
               total,
               accuracy: Math.round(rate * 100),
               message: returning
-                ? "Return trip: " + correctCount + " of " + total + " stations cleared."
-                : "Placement complete: " +
-                  correctCount +
-                  " of " +
-                  total +
-                  " correct. " +
-                  lvl.name +
-                  ".",
+                ? L(
+                    "Return trip: " + correctCount + " of " + total + " stations cleared.",
+                    "Viaje de regreso: " + correctCount + " de " + total + " estaciones superadas.",
+                  )
+                : L(
+                    "Placement complete: " +
+                      correctCount +
+                      " of " +
+                      total +
+                      " correct. " +
+                      lvl.name +
+                      ".",
+                    "Ubicación completa: " +
+                      correctCount +
+                      " de " +
+                      total +
+                      " correctas. " +
+                      lvl.name +
+                      ".",
+                  ),
             },
           }),
         );
@@ -1419,7 +1663,7 @@
         next.id = "quest-next";
         next.className = "choice-btn next-btn";
         next.type = "button";
-        next.textContent = "Next question →";
+        next.textContent = L("Next question →", "Siguiente pregunta →");
         next.hidden = true;
         $("choices-container").after(next);
         next.addEventListener("click", () => {
@@ -1442,27 +1686,43 @@
           const last = JSON.parse(localStorage.getItem(LAST_KEY) || "null");
           if (last && last.total) {
             const el = $("intro-last");
-            el.textContent =
+            el.textContent = L(
               "Last time: " +
-              last.correct +
-              " of " +
-              last.total +
-              " correct (Level " +
-              last.level +
-              "). The numbers are new each time.";
+                last.correct +
+                " of " +
+                last.total +
+                " correct (Level " +
+                last.level +
+                "). The numbers are new each time.",
+              "La vez pasada: " +
+                last.correct +
+                " de " +
+                last.total +
+                " correctas (Nivel " +
+                last.level +
+                "). Los números son nuevos cada vez.",
+            );
             el.hidden = false;
           }
         } catch (e) {}
         window.GameStudio &&
           window.GameStudio.register({
             title: "Placement Quest",
-            instructions: [
-              "Pilot the survey ship through eleven stations. Choose map tiles or arrow controls to explore, collect compass fragments, and rescue scouts.",
-              "Each station opens one question for a Grade 6 math topic. There is no timer. Focus on math skips travel whenever you prefer.",
-              "Tap a choice, or press keys 1–4. Each answer is checked one time.",
-              "A correct answer explains why it works. A miss does not show the answer — those stations come back on the return trip with new numbers.",
-              "At the end you see your Level and which practice games to play next.",
-            ],
+            instructions: isEs()
+              ? [
+                  "Pilota la nave de exploración por once estaciones. Elige casillas del mapa o usa las flechas para explorar, reunir fragmentos de brújula y rescatar exploradores.",
+                  "Cada estación abre una pregunta de un tema de matemáticas de 6.º grado. No hay reloj. «Enfocarme en matemáticas» se salta el viaje cuando prefieras.",
+                  "Toca una opción o presiona las teclas 1–4. Cada respuesta se revisa una sola vez.",
+                  "Una respuesta correcta explica por qué funciona. Un error no muestra la respuesta: esas estaciones vuelven en el viaje de regreso con números nuevos.",
+                  "Al final ves tu Nivel y qué juegos de práctica te conviene jugar.",
+                ]
+              : [
+                  "Pilot the survey ship through eleven stations. Choose map tiles or arrow controls to explore, collect compass fragments, and rescue scouts.",
+                  "Each station opens one question for a Grade 6 math topic. There is no timer. Focus on math skips travel whenever you prefer.",
+                  "Tap a choice, or press keys 1–4. Each answer is checked one time.",
+                  "A correct answer explains why it works. A miss does not show the answer — those stations come back on the return trip with new numbers.",
+                  "At the end you see your Level and which practice games to play next.",
+                ],
             pause() {
               questPaused = true;
             },
