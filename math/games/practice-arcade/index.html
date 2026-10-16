@@ -1661,22 +1661,42 @@
           }
           if (it.type === "matching-game") {
             if (!Array.isArray(it.pairs) || it.pairs.length < 2) return null;
+            // Lessons author pairs as {term, match} or {left, right}; accept both, and drop the
+            // round when fewer than two usable pairs remain (an empty match round strands the student).
+            const matchPairs = it.pairs
+              .map((p) =>
+                p
+                  ? {
+                      term: p.term ?? p.left,
+                      match: p.match ?? p.right,
+                      termEs: p.termEs ?? p.leftEs,
+                      matchEs: p.matchEs ?? p.rightEs,
+                    }
+                  : null,
+              )
+              .filter((p) => p && p.term != null && p.match != null)
+              .slice(0, 5)
+              .map((p) => ({
+                term: String(p.term),
+                match: String(p.match),
+                termEs: p.termEs ? String(p.termEs) : "",
+                matchEs: p.matchEs ? String(p.matchEs) : "",
+              }));
+            if (matchPairs.length < 2) return null;
             return {
               kind: "match",
               // Configs author the matching prompt under `label`; older ones use
               // `instructions`. Fall back to a generic line only if both are absent
               // (otherwise the authored question is silently replaced — the bug
               // that made nearly every lesson read "Match each card to its partner").
-              prompt: it.instructions || it.label || it.prompt || "Match each card to its partner.",
-              pairs: it.pairs
-                .filter((p) => p && p.term != null && p.match != null)
-                .slice(0, 5)
-                .map((p) => ({
-                  term: String(p.term),
-                  match: String(p.match),
-                  termEs: p.termEs ? String(p.termEs) : "",
-                  matchEs: p.matchEs ? String(p.matchEs) : "",
-                })),
+              prompt:
+                it.instructions ||
+                it.label ||
+                it.prompt ||
+                it.stem ||
+                "Match each card to its partner.",
+              promptEs: it.instructionsEs || it.labelEs || it.promptEs || it.stemEs || "",
+              pairs: matchPairs,
               why: "",
             };
           }
