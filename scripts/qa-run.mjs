@@ -394,8 +394,8 @@ const COVERAGE = [
   ],
   // Student games, arcade cabinets & game progression
   [
-    /^(math\/games\/.*|math\/unit-\d+\/games\/.*|math\/statistics\/games\/.*|tools\/validate-game-rules\.mjs)$/,
-    ["test", "validate:game-rules", "validate:js-syntax", "check"],
+    /^(math\/games\/.*|math\/unit-\d+\/games\/.*|math\/statistics\/games\/.*|tools\/validate-(game-rules|expeditions)\.mjs)$/,
+    ["test", "validate:game-rules", "validate:expeditions", "validate:js-syntax", "check"],
   ],
   // Unit identity metadata is keyed by the CURRENT unit number; an edit here or
   // to the units page must re-run the identity + placement pins.

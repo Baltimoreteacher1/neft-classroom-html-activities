@@ -106,7 +106,7 @@
     skills: {
       equiv: {
         ...L("Equivalent ratios", "Razones equivalentes"),
-        standard: "6.AT.1 / 6.AT.3a",
+        standard: "6.AT.1 / 6.AT.3",
         lessons: "3-1, 3-9",
       },
       table: { ...L("Ratio tables", "Tablas de razones"), standard: "6.AT.3a", lessons: L33 },
