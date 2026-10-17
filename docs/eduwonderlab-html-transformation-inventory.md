@@ -57,3 +57,18 @@ The current `Reveal Math by Unit and Lesson` desktop folder contains 54 lesson f
 Verification includes direct source-byte checks, repeated-import stability, route/access tests for all downloads, source-fidelity checks for the 53 lesson mappings, a rendered percent practice PDF, and browser flows for first response, model/hint use, comparison autosave, refresh, revision, and work export. Production release status for this batch must be recorded after shipping.
 
 Desktop PowerPoint slide content and all generated online lesson examples have not been individually reconciled in this batch. The direct source downloads and new lab checks match the current authored material; this does not claim that every online task is identical to the desktop packet.
+
+## Release 2 — live desktop alignment and source checks
+
+- Feature commit: `2694a3f3ed`; production commit assembled by `ship`: `a62d131eee`.
+- Pre-commit: 129/129 checks passed, including all 436 test scripts. The required full gate caught an outdated generated download index after the lesson-link ordering repair; regenerating and staging that index resolved it. No tests or deployment guards were bypassed.
+- Shipping gate: 134/134 checks passed, including the production build, generated-file freshness, mathematics/curriculum validators, SCORM checks, and the applicable browser checks. Production served the expected commit after 115 seconds; post-deployment smoke passed 40/40.
+- Every one of the 2,331 files in the production build matched its current manifest byte length and SHA-256. A fresh read-only comparison with the Desktop masters found zero changed or missing sources. Ten live public download samples spanning Units 2–9, a current practice PDF, and a guided-step document matched their source hashes. These ten samples are not a hash audit of every deployed file.
+- The live browser sweep passed all 27 route/viewport combinations (1365, 1024, and 390 CSS pixels). It found no sampled axe violations, runtime errors, or horizontal overflow. The targeted live lab workflow verified an immutable first response, comparison autosave after refresh, revision without replacing first evidence, work export, and recorded model/hint use on a separate fresh check. Its 1024- and 390-pixel renders were visually inspected.
+- A current teaching-support guide returned HTTP 401 without teacher authentication. The build-only original concept bank returned HTTP 404. Student testing used an isolated browser context and synthetic responses; no production student records were read or changed.
+
+### Continuation
+
+The work remains on `feat/eduwonderlab-integrated-mission` in `/Users/joelneft/wt-eduwonderlab-mission`; the stale original checkout remains untouched. Use `ALLOW_DEPLOY=1 npm run ship -- <new-feature-sha>` for subsequent releases. Production already contains the equivalent cherry-picked Release 1 and Release 2 commits; do not replay their feature SHAs.
+
+Next substantive batch: improve existing game mechanics and resume behavior, beginning with an existing mathematical model game, then extend verified patterns to appropriate games. Percent Power's bar builder is an identified opportunity: preserve its actual shading mechanic, strengthen constructed numerical reasoning, remove automatic answer completion after repeated mistakes, and verify state restoration through the existing Save/Resume system. No such gameplay changes have been made yet. Continue the broader activity-specific HTML work and the remaining architecture/teacher/project work listed above. Desktop slide-by-slide and online-example reconciliation remains incomplete.
