@@ -3,6 +3,8 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { controls, evaluate } from "../curriculum/learning-labs/shared/math.mjs";
 import { esc } from "../curriculum/learning-labs/shared/model.mjs";
+import { UNMAPPED_REVEAL_LESSONS } from "../scripts/lib/worksheet-reveal.mjs";
+import { injectUtilityBar } from "./inject-curriculum-utility-bar.mjs";
 import { blueprints, unitNames } from "./learning-labs/blueprints.mjs";
 import { catalogBody } from "./learning-labs/catalog-page.mjs";
 import { originalPractice } from "./learning-labs/practice.mjs";
@@ -16,6 +18,9 @@ import {
 
 const destination = join(REPO_ROOT, "curriculum/learning-labs");
 const LEVELS = { support: "approaching", core: "onLevel", stretch: "extending" };
+const revealConcepts = JSON.parse(
+  readFileSync(join(REPO_ROOT, "tools/learning-labs/reveal-concept-source.json"), "utf8"),
+);
 const palette = [
   "#175d76",
   "#315ba7",
@@ -171,6 +176,35 @@ for (const blueprint of blueprints) {
             "Compare your reasoning with the lesson objective. Identify the quantities, show a valid representation or calculation, and explain why the result makes sense.",
           hints: reflection.hints || [reflection.hint].filter(Boolean),
         });
+      // Keep session boundaries: a core lab uses only the current Session 1
+      // fresh check. Session 2 remains in the separately assigned Apply Day.
+      const sourceLesson = id.replace("-", ".");
+      const sourceCheck = UNMAPPED_REVEAL_LESSONS.has(id)
+        ? null
+        : revealConcepts.lessons[sourceLesson]?.[0];
+      if (sourceCheck)
+        bank.push({
+          id: `${level}-${id}-reveal-fresh-check`,
+          lesson: id,
+          type: "explain",
+          evidenceMode: "fresh-check",
+          prompt: sourceCheck.check,
+          explanation: sourceCheck.check_key,
+          frame:
+            level === "support"
+              ? "My claim is ___. My mathematical evidence is ___. This supports my claim because ___."
+              : "",
+          hints: [
+            "Identify the quantities and what the question asks you to find.",
+            "Choose a model or calculation. Label the quantities and check that your evidence supports your claim.",
+          ],
+          source: {
+            path: revealConcepts.sourcePath,
+            sha256: revealConcepts.sha256,
+            lesson: sourceLesson,
+            session: 1,
+          },
+        });
     }
     const values = [...blueprint.model.values],
       fields = controls(blueprint.model);
@@ -224,10 +258,13 @@ for (const blueprint of blueprints) {
   const label = blueprint.lessons.map((x) => x.replace("-", ".")).join(" & ");
   writeFileSync(
     join(dir, "index.html"),
-    page(
-      blueprint.title,
-      `<a class="skip-link" href="#workspace">Skip to activity</a>${courseNav("labs")}<div id="lab-root" data-lab="${blueprint.id}"><nav class="crumbs" aria-label="Breadcrumb"><a href="/curriculum/">Curriculum</a><a href="/curriculum/learning-labs/">Learning labs</a></nav><main><h1>${esc(blueprint.title)}</h1><p>${esc(blueprint.mission)}</p><p>Lessons ${label}. Loading your activities…</p><noscript>This lab needs JavaScript. You can still <a href="/lessons/${blueprint.lessons[0]}/">open the connected lesson</a>.</noscript></main></div><script type="module" src="/curriculum/learning-labs/shared/app.mjs?v=${version}"></script>`,
-      `<link rel="canonical" href="https://eduwonderlab.com/curriculum/learning-labs/${blueprint.id}/">`,
+    injectUtilityBar(
+      page(
+        blueprint.title,
+        `<a class="skip-link" href="#workspace">Skip to activity</a>${courseNav("labs")}<div id="lab-root" data-lab="${blueprint.id}"><nav class="crumbs" aria-label="Breadcrumb"><a href="/curriculum/">Curriculum</a><a href="/curriculum/learning-labs/">Learning labs</a></nav><main><h1>${esc(blueprint.title)}</h1><p>${esc(blueprint.mission)}</p><p>Lessons ${label}. Loading your activities…</p><noscript>This lab needs JavaScript. You can still <a href="/lessons/${blueprint.lessons[0]}/">open the connected lesson</a>.</noscript></main></div><script type="module" src="/curriculum/learning-labs/shared/app.mjs?v=${version}"></script>`,
+        `<link rel="canonical" href="https://eduwonderlab.com/curriculum/learning-labs/${blueprint.id}/">`,
+      ),
+      join(dir, "index.html"),
     ),
   );
   catalog.push({
@@ -274,7 +311,12 @@ let unitHtml = readFileSync(unitPath, "utf8").replace(
 );
 for (const item of catalog)
   for (const id of item.lessons) {
-    const pattern = new RegExp(`(<a\\b[^>]*href="/lessons/${id}/"[^>]*>[\\s\\S]*?</a\\s*>)`);
+    const practiceSlot = new RegExp(
+      `(<!-- (?:practice-studio|lesson-path):${id} -->[\\s\\S]*?<!-- /(?:practice-studio|lesson-path) -->)`,
+    );
+    const pattern = practiceSlot.test(unitHtml)
+      ? practiceSlot
+      : new RegExp(`(<a\\b[^>]*href="/lessons/${id}/"[^>]*>[\\s\\S]*?</a\\s*>)`);
     if (!pattern.test(unitHtml)) throw new Error(`Missing curriculum lesson anchor: ${id}`);
     unitHtml = unitHtml.replace(
       pattern,

@@ -63,6 +63,9 @@ export function revealFor(lessonId) {
 
 /** Exposed for the map guard test. */
 export const UNMAPPED_REVEAL_LESSONS = UNMAPPED;
+// Original source files retain their publisher numbers. These destinations
+// provide supplemental documents, not a renumbering of the site's lessons.
+export const REVEAL_SUPPLEMENTAL_DESTINATIONS = Object.freeze({ "2-6": "2-3" });
 
 /** "Unit 3: Ratios & Rates" — the district's own unit name. */
 export function unitLabel(cfg) {

@@ -33,6 +33,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import JSZip from "jszip";
+import { REVEAL_SUPPLEMENTAL_DESTINATIONS } from "../scripts/lib/worksheet-reveal.mjs";
 import { CORE_ID_RE, LESSONS_DIR, listLessonDirs } from "./lib/curriculum-source.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -40,6 +41,25 @@ const manifest = JSON.parse(
   readFileSync(join(ROOT, "data/curriculum-launch-manifest.json"), "utf8"),
 );
 const LESSONS = new Map(manifest.lessons.map((l) => [l.id, l]));
+const originalDocuments = new Map(
+  JSON.parse(readFileSync(join(ROOT, "data/reveal-document-downloads.json"), "utf8")).documents.map(
+    (doc) => [doc.url, doc],
+  ),
+);
+
+export function sourceLabelId(siteId, url, doc) {
+  const mapped =
+    doc?.url === url &&
+    doc.targetLesson === siteId &&
+    REVEAL_SUPPLEMENTAL_DESTINATIONS[doc.sourceLesson] === siteId;
+  if (!mapped) return siteId;
+  // The current desktop prerequisite masters already print the site's 2-3
+  // label, while their retained filenames still begin 2.6. Check those exact
+  // headings too; do not broadly waive labels in supplemental resources.
+  const prerequisite =
+    doc.category === "prerequisite" || /Prerequisite Practice Answer Key/.test(doc.filename || "");
+  return prerequisite ? siteId : doc.sourceLesson;
+}
 
 const decode = (s) =>
   s
@@ -174,6 +194,47 @@ const goodReady =
   "<h1>Get Ready: Understand Statistical Questions</h1><span>Unit 2 · Lesson 1</span>" +
   '<a>Start Lesson 2-1</a><script>({ type: "nt-readiness-complete", lessonId: "2-1" })</script>';
 const selftests = [
+  [
+    "current prerequisite masters retain their printed site label",
+    () =>
+      sourceLabelId("2-3", "/original.docx", {
+        url: "/original.docx",
+        targetLesson: "2-3",
+        sourceLesson: "2-6",
+        category: "prerequisite",
+      }) === "2-3",
+  ],
+  [
+    "a reviewed original source mapping retains its source number",
+    () =>
+      sourceLabelId("2-3", "/original.docx", {
+        url: "/original.docx",
+        targetLesson: "2-3",
+        sourceLesson: "2-6",
+      }) === "2-6",
+  ],
+  [
+    "an arbitrary source remapping is rejected",
+    () =>
+      sourceLabelId("2-3", "/original.docx", {
+        url: "/original.docx",
+        targetLesson: "2-3",
+        sourceLesson: "2-1",
+      }) === "2-3",
+  ],
+  [
+    "a different file cannot borrow an original source mapping",
+    () =>
+      sourceLabelId("2-3", "/other.docx", {
+        url: "/original.docx",
+        targetLesson: "2-3",
+        sourceLesson: "2-6",
+      }) === "2-3",
+  ],
+  [
+    "a mapped source still rejects an incorrect heading",
+    () => docxHeadingProblems("2-6", "x", ["Lesson 2-4 · Practice"]).length === 1,
+  ],
   ["a correct readiness page passes", () => readinessProblems("2-1", goodReady, L21).length === 0],
   [
     "the 2026-10-08 defect (old number + old title) is caught",
@@ -306,12 +367,16 @@ function* docxUnder(dir) {
 for (const id of coreIds) {
   for (const file of docxUnder(join(LESSONS_DIR, id, "downloads", "reveal"))) {
     docxFiles++;
+    const url = "/" + relative(ROOT, file);
+    const expectedLabel = sourceLabelId(id, url, originalDocuments.get(url));
     const zip = await JSZip.loadAsync(readFileSync(file));
     for (const part of Object.keys(zip.files).filter((k) =>
       /^word\/(document|header\d*|footer\d*)\.xml$/.test(k),
     )) {
       const xml = await zip.file(part).async("string");
-      problems.push(...docxHeadingProblems(id, `${relative(ROOT, file)} ${part}`, paragraphs(xml)));
+      problems.push(
+        ...docxHeadingProblems(expectedLabel, `${relative(ROOT, file)} ${part}`, paragraphs(xml)),
+      );
     }
   }
 }
@@ -330,5 +395,5 @@ if (problems.length) {
 }
 console.log(
   `validate-lesson-labels: ${selftests.length} self-tests; ${readinessPages} readiness pages, ` +
-    `${docxFiles} Reveal docx, ${sheets.length} study guides + index — every lesson label matches the launch manifest.`,
+    `${docxFiles} Reveal docx, ${sheets.length} study guides + index — every lesson label matches the launch manifest or its declared original-source relationship.`,
 );

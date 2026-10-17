@@ -257,7 +257,17 @@ export function practice(ctx, host) {
   host.innerHTML = `<div class="section-intro"><h2>${levels[state.level].label} practice</h2><p>${bank.length} activities from Lessons ${lab.lessons.map((l) => lessonNumber(l.id)).join(' and ')} and the lab model. Hints never cost progress. Written explanations are saved for a teacher or partner to review.</p></div><div class="practice-progress"><div class="progress-bar" role="progressbar" aria-label="Practice progress" aria-valuemin="0" aria-valuemax="${s.scored}" aria-valuenow="${s.solved}"><span style="width:${s.scored ? (100 * s.solved) / s.scored : 0}%"></span></div><p class="progress-text">${esc(s.summary)}</p></div>${s.status === 'done' ? `<div class="practice-complete"><strong>All ${levels[state.level].label} activities complete.</strong> ${nextLevel ? `Ready for more? Choose ${levels[nextLevel].label} from the level menu.` : 'Try the Create challenge or the games next.'}</div>` : ''}<div class="question-nav" role="group" aria-label="Choose practice activity">${bank.map((p, i) => { const r = state.practice[p.id]; const done = r?.correct || (p.type === 'explain' && r?.reviewed); const tried = r?.attempts > 0 && !done; return `<button type="button" data-question="${i}" class="${done ? 'is-done' : tried ? 'is-tried' : ''}" aria-pressed="${i === index}" aria-label="Activity ${i + 1}${done ? ', complete' : tried ? ', in progress' : ''}">${done ? '✓' : i + 1}</button>`; }).join('')}</div><form class="question"><div class="question-meta"><span class="lesson-chip">Activity ${index + 1} of ${bank.length}</span><span class="lesson-chip quiet-chip">${q.lesson ? `Lesson ${lessonNumber(q.lesson)}` : 'Lab model'}</span><span class="lesson-chip quiet-chip">${titles[q.type]}</span></div><p class="question-prompt">${esc(q.prompt)}</p>${q.parameters ? `<ul class="parameter-list">${q.parameters.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}${choices ? `<fieldset><legend>${q.type === 'repair' ? 'Select the first incorrect step (click a step or math token).' : 'Choose one answer.'}</legend>${choices.map((choice, i) => `<label class="choice ${q.type === 'repair' ? 'repair-step-choice' : ''}" ${q.type === 'repair' ? `data-step-line="${i}"` : ''}><input type="radio" name="answer" value="${i}" ${String(record.input) === String(i) ? 'checked' : ''}><span>${q.type === 'repair' ? `<strong>Step ${i + 1}.</strong> ${tokenizeRepairStep(choice, i)}` : esc(choice)}</span></label>`).join('')}</fieldset>${repairBuilderHtml}` : q.type === 'number' ? `<label class="number-answer">Your answer<input name="answer" type="text" inputmode="text" autocomplete="off" value="${esc(record.input)}"><span class="field-hint">Decimals, fractions (3/4), and mixed numbers (1 1/2) are accepted.</span></label>` : `<label class="writing">Your reasoning${q.frame ? `<span class="field-hint">${esc(q.frame)}</span>` : ''}<textarea name="answer" rows="5">${esc(record.input)}</textarea></label>`}<div class="actions"><button type="submit">${q.type === 'explain' ? 'Save and compare reasoning' : 'Check my answer'}</button><button type="button" class="quiet" data-hint></button><button type="button" class="quiet" data-explain ${record.attempts || record.reviewed ? '' : 'hidden'}>Study the explanation</button></div><div class="practice-feedback" role="status"></div><div class="hint-area" aria-live="polite"></div><div class="explanation" hidden></div></form><div class="practice-pagination"><button type="button" class="quiet" data-back ${index === 0 ? 'disabled' : ''}>Previous problem</button><button type="button" data-next ${index === bank.length - 1 ? 'disabled' : ''}>Next problem</button></div>`;
   const form = host.querySelector('form'), status = host.querySelector('.practice-feedback'), explanation = host.querySelector('.explanation');
   // The lab's own model, one tap away: students can test an idea on it while they work the problem.
-  form.before(modelPanel(ctx, 'practice', 'Open the lab model to work this out'));
+  const modelTool = modelPanel(ctx, q.evidenceMode ? `check-${q.id}` : 'practice', 'Open the lab model to work this out');
+  form.before(modelTool);
+  if (q.evidenceMode === 'fresh-check') {
+    const label = document.createElement('span');
+    label.className = 'lesson-chip'; label.textContent = 'Fresh check · Session 1';
+    form.querySelector('.question-meta').append(label);
+    const note = document.createElement('p'); note.className = 'field-hint';
+    note.textContent = 'Try this new case before opening task hints or the model. Supports are always available. Your first response and support use are saved for review; this is not an automatic grade.';
+    form.querySelector('.question-prompt').after(note);
+    modelTool.addEventListener('toggle', () => { if (modelTool.open) { record.modelUsed = true; save(); } });
+  }
   const explain = () => {
     explanation.hidden = false;
     explanation.innerHTML = `<h4>${q.type === 'explain' ? 'Compare your reasoning' : 'Why it works'}</h4><p>${esc(q.explanation)}</p>${q.type === 'explain' ? `<p>This is a model response, not an automatic grade. Compare the quantities, model, and reason with your own explanation.</p><label class="writing">What mathematical evidence supports your claim?<textarea data-comparison rows="3">${esc(record.comparison || '')}</textarea></label><button type="button" data-finish-comparison>Save my comparison</button>` : ''}`;
@@ -372,6 +382,9 @@ export function practice(ctx, host) {
   form.onsubmit = (event) => {
     event.preventDefault(); record.input = getInput();
     if (!String(record.input).trim()) { status.className = 'practice-feedback'; status.textContent = 'Enter your response first. You can use a hint whenever you need one.'; return; }
+    if (q.evidenceMode === 'fresh-check' && !record.firstResponse) {
+      record.firstResponse = { input: String(record.input), at: Date.now(), taskSupport: record.hints || record.modelUsed ? 'Task support used' : 'No task support recorded' };
+    }
     if (q.type === 'explain') { record.attempts++; record.reviewed = false; status.className = 'practice-feedback saved'; status.textContent = 'Draft saved. Compare it with the model response and name the mathematical evidence before you finish.'; const button = host.querySelector(`[data-question="${index}"]`); button.className = 'is-tried'; button.setAttribute('aria-label', `Activity ${index + 1}, draft saved`); explain(); save(); refresh(); return; }
     const number = q.type === 'number' ? numericAnswer(record.input) : Number(record.input);
     if (!Number.isFinite(number)) { status.className = 'practice-feedback'; status.textContent = 'Use a number, fraction, or mixed number. For example: 0.5, 1/2, or 2 1/2.'; return; }
@@ -456,8 +469,8 @@ export function create(ctx, host) {
   const area = host.querySelector('#creation');
   const refresh = () => {
     const s = activityStatus(lab, state, 'create');
-    host.querySelector('[data-words]').textContent = s.words ? `${s.words} words${s.words < 40 ? ' · aim for at least 40 so a reader can follow every step' : ''}` : 'Nothing written yet.';
-    host.querySelector('[data-share]').textContent = s.status === 'done' ? 'Ready to share: every check is complete and the explanation has enough detail.' : `${state.checklist.length} of 3 checks complete.`;
+    host.querySelector('[data-words]').textContent = s.words ? 'Draft saved. A labeled model, calculation, or short explanation can show your thinking. Use the self-checks to review its mathematical evidence.' : 'Nothing recorded yet. You can begin with a model, calculation, or explanation.';
+    host.querySelector('[data-share]').textContent = s.status === 'done' ? 'Draft ready for a teacher or partner to review. Self-checks do not automatically verify the mathematics.' : `${state.checklist.length} of 3 self-checks complete.`;
     host.querySelector('[data-share]').classList.toggle('is-ready', s.status === 'done');
     ctx.refreshProgress();
   };

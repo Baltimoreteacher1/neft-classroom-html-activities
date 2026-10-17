@@ -26,6 +26,10 @@ import {
 
 const catalogue = JSON.parse(readFileSync(join(REPO_ROOT, "data/learning-labs.json")));
 const core = listLessonDirs({ filter: CORE_ID_RE }).sort();
+const currentReveal = JSON.parse(
+  readFileSync(join(REPO_ROOT, "tools/learning-labs/reveal-concept-source.json")),
+);
+const freshCheckLessons = new Set();
 const covered = catalogue.labs.flatMap((l) => l.lessons).sort();
 assert.deepEqual(covered, core, "Every core lesson must be covered exactly once");
 assert.equal(catalogue.labCount, blueprints.length);
@@ -69,6 +73,21 @@ for (const item of catalogue.labs) {
       }
       if (q.type === "repair") assert.ok(q.answer >= 0 && q.answer < q.steps.length);
       if (q.type === "number") assert.ok(Number.isFinite(q.answer) && q.tolerance > 0);
+      if (q.source) {
+        const lesson = q.lesson.replace("-", ".");
+        assert.notEqual(
+          q.lesson,
+          "2-6",
+          "district median material must not enter the site's long-division lesson",
+        );
+        assert.equal(q.source.lesson, lesson);
+        assert.equal(q.source.session, 1, "core labs retain the first-session boundary");
+        assert.equal(q.source.sha256, currentReveal.sha256);
+        assert.equal(q.prompt, currentReveal.lessons[lesson][0].check);
+        assert.equal(q.explanation, currentReveal.lessons[lesson][0].check_key);
+        assert.equal(q.evidenceMode, "fresh-check");
+        freshCheckLessons.add(q.lesson);
+      }
       questions++;
     }
   }
@@ -102,6 +121,18 @@ for (const item of catalogue.labs) {
   assert.equal(fresh.done, 0);
   assert.equal(fresh.next, "brief");
   assert.ok(fresh.items.every((i) => i.status === "new"));
+  const concise = { ...blank, created: "3/5 = 60/100 = 0.6 = 60%.", checklist: [0, 1, 2] };
+  assert.equal(
+    activityStatus(lab, concise, "create").status,
+    "done",
+    "a concise mathematical explanation is not rejected for its word count",
+  );
+  assert.match(activityStatus(lab, concise, "create").summary, /human review needed/);
+  assert.notEqual(
+    activityStatus(lab, { ...concise, checklist: [] }, "create").status,
+    "done",
+    "text quantity does not replace a mathematical self-review",
+  );
   const practiced = structuredClone(blank);
   for (const q of lab.practice.core)
     practiced.practice[q.id] =
@@ -126,6 +157,11 @@ for (const item of catalogue.labs) {
       gameGoals++;
     }
 }
+assert.equal(
+  freshCheckLessons.size,
+  53,
+  "all matching current desktop source lessons have a fresh check",
+);
 const wide = new JSDOM(
   visual(
     { kind: "data", mode: "histogram" },

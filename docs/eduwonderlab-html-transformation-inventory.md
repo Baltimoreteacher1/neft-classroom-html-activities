@@ -35,3 +35,25 @@ Counts are path inventory, not claims of page-by-page review. The `lessons/` tre
 - **Manual verification:** Screen reader, keyboard-only, Chromebook hardware, print device, and mobile touch checks still need human review beyond the sampled automated browser checks.
 
 Release status and live smoke evidence should be appended only after the guarded deployment completes.
+
+## Release 1 — live
+
+- Feature commit: `05f9f26a8f`; production commit assembled by `ship`: `59725c25c7`.
+- The shipping gate passed 134/134 checks, and the live build stamp matched the production commit.
+- The repository's production smoke test passed 40/40 checks, including public curriculum routes and teacher authentication boundaries.
+- The pre-commit test run exposed a polling race in the read-aloud test. The mock now observes highlights immediately after speech boundaries, retaining the original word-by-word assertions.
+
+## Desktop source alignment — second implementation batch
+
+The current `Reveal Math by Unit and Lesson` desktop folder contains 54 lesson folders. Its newer Word/PDF masters differed from 1,090 packaged copies. The importer now supports refreshing established resources in place, checking freshness, and adding newly authored unit resources while preserving existing URLs, IDs, categories, and teacher access. It preflights conflicting duplicate masters and retains downloadable copies when a master is missing. Two moved Unit 3 masters were subsequently found under their new paths; their existing URLs were retained.
+
+- Refreshed 1,090 document copies and added 592 document resources. The resulting manifest has 2,331 downloads and 2,333 source references, including two historical aliases for moved masters.
+- Added 216 current guided-step practice documents and 108 teaching-support guides to the existing lesson resource groups. All 54 source lesson numbers remain intact. Reveal 2.6 still maps explicitly to site 2-3 as supplemental median material; it is excluded from site 2-6's long-division lab.
+- `--check-existing` verifies all 2,331 current downloadable files against the desktop masters with zero stale files and zero missing masters. A repeat import is byte-stable. Existing download tests verify every file's hash, filename, lesson placement, and teacher access. A text scan found no teacher-key markers in 760 student-facing Word masters; this is a sampled-content safeguard, not a complete answer-disclosure audit.
+- Snapshotted the exact current conceptual task bank in build-only tooling. Its Session 1 fresh checks are integrated into the existing labs for 53 matching lessons, adding 159 items across the three existing support choices. Session 2 tasks are not silently moved into Session 1.
+- Fresh checks preserve the first response and distinguish recorded task support from later model comparison and revision. Download/print reports now include that evidence. These records need human review and do not establish mastery automatically.
+- Removed the 40-word completion requirement from the existing Create activities. Students review quantities, representations, and reasoning with the established self-checklist; concise mathematical evidence is accepted and labeled for human review.
+
+Verification includes direct source-byte checks, repeated-import stability, route/access tests for all downloads, source-fidelity checks for the 53 lesson mappings, a rendered percent practice PDF, and browser flows for first response, model/hint use, comparison autosave, refresh, revision, and work export. Production release status for this batch must be recorded after shipping.
+
+Desktop PowerPoint slide content and all generated online lesson examples have not been individually reconciled in this batch. The direct source downloads and new lab checks match the current authored material; this does not claim that every online task is identical to the desktop packet.

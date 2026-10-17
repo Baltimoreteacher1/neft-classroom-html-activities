@@ -93,7 +93,9 @@ async function sweepLab(page, item) {
           .fill(
             q.type === "number"
               ? String(q.answer)
-              : "I compared the given quantities, used a model, and checked my reasoning with the lesson.",
+              : q.evidenceMode === "fresh-check"
+                ? q.explanation
+                : "I compared the given quantities, used a model, and checked my reasoning with the lesson.",
           );
       await page.locator('.question button[type="submit"]').click();
       const feedback = await page.locator(".practice-feedback").innerText();
@@ -124,6 +126,71 @@ async function sweepLab(page, item) {
         );
       }
       report.answers++;
+    }
+  }
+  if (item.id === "hundred-square-studio") {
+    await page.selectOption("#level", "core");
+    await page.locator("#tab-practice").click();
+    const bank = lab.practice.core;
+    const fresh = bank.find((q) => q.evidenceMode === "fresh-check");
+    if (fresh) {
+      await page.locator(`[data-question="${bank.indexOf(fresh)}"]`).click();
+      assert.equal(
+        await page.locator("#panel-practice details.practice-model").getAttribute("open"),
+        null,
+      );
+      await page.locator('.question [name="answer"]').fill(fresh.explanation);
+      await page.locator('.question button[type="submit"]').click();
+      const key = `eduwonderlab:learning-lab:v1:${item.id}`;
+      const first = await page.evaluate(
+        ({ key, id }) => JSON.parse(localStorage.getItem(key)).practice[id].firstResponse,
+        { key, id: fresh.id },
+      );
+      assert.equal(first.input, fresh.explanation);
+      assert.equal(first.taskSupport, "No task support recorded");
+      await page
+        .locator("[data-comparison]")
+        .fill("My quantities and calculation match the whole in this new case.");
+      await page.reload();
+      await page.locator("[data-comparison]").waitFor();
+      assert.equal(
+        await page.locator("[data-comparison]").inputValue(),
+        "My quantities and calculation match the whole in this new case.",
+      );
+      await page.locator('.question [name="answer"]').fill(`Revised: ${fresh.explanation}`);
+      await page.locator('.question button[type="submit"]').click();
+      assert.deepEqual(
+        await page.evaluate(
+          ({ key, id }) => JSON.parse(localStorage.getItem(key)).practice[id].firstResponse,
+          { key, id: fresh.id },
+        ),
+        first,
+        "revision retains the original evidence",
+      );
+      await page.locator("[data-finish-comparison]").click();
+      const downloadPromise = page.waitForEvent("download");
+      await page.locator("#download").click();
+      const downloaded = await downloadPromise;
+      const text = readFileSync(await downloaded.path(), "utf8");
+      assert.match(text, /First response:/);
+      assert.match(text, /Comparison \/ revision evidence:/);
+      assert.match(text, /Source: Reveal Lesson 4.1, Session 1/);
+
+      await page.selectOption("#level", "support");
+      const supported = lab.practice.support.find(
+        (q) => q.evidenceMode === "fresh-check" && q.lesson !== fresh.lesson,
+      );
+      assert.ok(supported, "a second source check tests a first attempt with task support");
+      await page.locator(`[data-question="${lab.practice.support.indexOf(supported)}"]`).click();
+      await page.locator("#panel-practice details.practice-model > summary").click();
+      await page.locator("[data-hint]").click();
+      await page.locator('.question [name="answer"]').fill(supported.explanation);
+      await page.locator('.question button[type="submit"]').click();
+      const assisted = await page.evaluate(
+        ({ key, id }) => JSON.parse(localStorage.getItem(key)).practice[id].firstResponse,
+        { key, id: supported.id },
+      );
+      assert.equal(assisted.taskSupport, "Task support used");
     }
   }
   for (const gameLevel of full ? ["support", "core", "stretch"] : ["core"]) {

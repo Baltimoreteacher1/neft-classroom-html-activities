@@ -29,13 +29,13 @@ for (const resource of resources) {
   if (!resourcesByUrl.has(resource.url)) resourcesByUrl.set(resource.url, []);
   resourcesByUrl.get(resource.url).push(resource);
 }
-assert.equal(manifest.sourceFileCount, 1739);
-assert.equal(manifest.documents.length, 1739);
+assert.equal(manifest.sourceFileCount, 2333);
+assert.equal(manifest.documents.length, 2331);
 assert.equal(
   manifest.documents.reduce((sum, doc) => sum + doc.sources.length, 0),
-  1739,
+  2333,
 );
-assert.equal(new Set(manifest.documents.map((doc) => doc.url)).size, 1739);
+assert.equal(new Set(manifest.documents.map((doc) => doc.url)).size, 2331);
 assert.equal(new Set(manifest.documents.map((doc) => doc.sourceLesson).filter(Boolean)).size, 54);
 const language = manifest.documents.filter((doc) => doc.category === "language-support");
 assert.equal(language.length, 109);
@@ -106,9 +106,22 @@ for (const doc of manifest.documents) {
   }
 }
 const median = manifest.documents.filter((doc) => doc.sourceLesson === "2-6");
-assert.equal(median.length, 31);
+assert.equal(median.length, 38);
 assert.ok(median.every((doc) => doc.targetLesson === "2-3" && doc.filename.startsWith("2.6")));
 assert.equal(manifest.documents.filter((doc) => doc.targetLesson === "2-6").length, 0);
+assert.match(
+  staticDom.window.document.querySelector(".reveal-source-mapping").textContent,
+  /Reveal Lesson 2-6.*site Lesson 2-3/,
+);
+const guidedSteps = manifest.documents.filter((doc) => /Guided Steps/.test(doc.filename));
+assert.equal(guidedSteps.length, 216);
+assert.ok(guidedSteps.every((doc) => !doc.teacherOnly && doc.category === "practice"));
+assert.equal(new Set(guidedSteps.map((doc) => doc.sourceLesson)).size, 54);
+const teacherSupport = manifest.documents.filter((doc) =>
+  /Teaching Support Guide/.test(doc.filename),
+);
+assert.equal(teacherSupport.length, 108);
+assert.ok(teacherSupport.every((doc) => doc.teacherOnly));
 staticDom.window.close();
 
 const source = readFileSync(join(root, "assets/reveal-document-links.js"), "utf8");

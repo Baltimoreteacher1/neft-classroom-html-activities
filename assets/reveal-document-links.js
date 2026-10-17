@@ -1,7 +1,7 @@
 /* Original Reveal files beside the lesson desk's practice links. */
 (function () {
   "use strict";
-  /** @typedef {{targetLesson: string|null, unit: number|null, teacherOnly: boolean, url: string, filename: string, title: string, category: string}} RevealDocument */
+  /** @typedef {{sourceLesson: string|null, targetLesson: string|null, unit: number|null, teacherOnly: boolean, url: string, filename: string, title: string, category: string}} RevealDocument */
   const preview = document.getElementById("nav-preview");
   /** @type {RevealDocument[]} */
   let documents = [];
@@ -35,6 +35,19 @@
       fallback.textContent = "Browse the lesson’s original documents in the unit directory";
       group.appendChild(fallback);
     } else {
+      const sourceNumbers = [
+        ...new Set(
+          docs
+            .filter((doc) => doc.targetLesson === id && doc.sourceLesson && doc.sourceLesson !== id)
+            .map((doc) => doc.sourceLesson),
+        ),
+      ];
+      if (sourceNumbers.length) {
+        const note = document.createElement("p");
+        note.className = "reveal-source-mapping";
+        note.textContent = `Source numbering: Reveal Lesson ${sourceNumbers.join(", ")} provides supplemental material for site Lesson ${id}. Original source numbers are retained in the files.`;
+        group.appendChild(note);
+      }
       for (const [teacher, label, category] of [
         [false, "Language support · Word & PDF", "language-support"],
         [false, "Prerequisite practice · Word & PDF", "prerequisite"],

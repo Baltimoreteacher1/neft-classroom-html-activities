@@ -53,8 +53,8 @@ export function activityStatus(lab, state, id) {
   if (id === 'create') {
     const count = words(state.created);
     const checks = state.checklist.length;
-    const complete = count >= 40 && checks === 3;
-    return { status: complete ? 'done' : count || checks ? 'started' : 'new', summary: count ? `${count} words · ${checks} of 3 checks` : 'Design not started', words: count };
+    const complete = filled(state.created) && checks === 3;
+    return { status: complete ? 'done' : count || checks ? 'started' : 'new', summary: count ? `Design recorded · ${checks} of 3 self-checks · human review needed` : 'Design not started', words: count };
   }
   if (id === 'games') {
     const g = state.games[level] || {};

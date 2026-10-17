@@ -44,6 +44,11 @@ try {
       if (name === "worksheet") {
         await page.locator("[data-worksheet-screen]").waitFor({ state: "attached" });
         assert.equal(await page.locator("[data-worksheet-screen]").getAttribute("media"), "screen");
+        await page.waitForFunction(() => {
+          const sheet = document.querySelector("[data-worksheet-screen]");
+          const stem = document.querySelector(".ws-stem");
+          return sheet?.sheet && stem && Number.parseFloat(getComputedStyle(stem).fontSize) >= 16;
+        });
         assert.ok(
           Number.parseFloat(
             await page

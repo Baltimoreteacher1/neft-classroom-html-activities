@@ -233,6 +233,9 @@ function reportText() {
     const q = Object.values(lab.practice).flat().find((item) => item.id === id);
     const answer = q?.type === 'choice' ? q.choices[Number(response.input)] : q?.type === 'repair' ? q.steps[Number(response.input)] : response.input;
     lines.push(q?.prompt || id, `Response: ${answer}`, q?.type === 'explain' ? 'Written response: review needed' : response.correct ? 'Solved at least once' : 'Still practicing', '');
+    if (response.firstResponse) lines.push(`First response: ${response.firstResponse.input}`, `Conditions: ${response.firstResponse.taskSupport}. These conditions do not establish mastery.`, '');
+    if (response.comparison) lines.push(`Comparison / revision evidence: ${response.comparison}`, '');
+    if (q?.source) lines.push(`Source: Reveal Lesson ${q.source.lesson}, Session ${q.source.session}`, '');
   }
   lines.push('GAMES', ...Object.entries(state.games).map(([level, g]) => `${levels[level]?.label || level}: ${Math.min(3, g.rounds || 0)}/3 construction puzzles; ${g.matches?.length || 0} connections.`));
   return lines.join('\n');
