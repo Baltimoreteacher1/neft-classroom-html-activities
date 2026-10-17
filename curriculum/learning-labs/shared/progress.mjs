@@ -46,7 +46,7 @@ export function activityStatus(lab, state, id) {
     const complete = solved === scored.length && written === explainCount;
     return {
       status: complete ? 'done' : attempted ? 'started' : 'new',
-      summary: `${solved} of ${scored.length} solved${explainCount ? ` · ${written} of ${explainCount} explanations written` : ''} (${levels[level].label})`,
+      summary: `${solved} of ${scored.length} solved${explainCount ? ` · ${written} of ${explainCount} explanations compared (awaiting human review)` : ''} (${levels[level].label})`,
       solved, scored: scored.length,
     };
   }

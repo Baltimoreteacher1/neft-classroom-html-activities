@@ -357,6 +357,111 @@
     byId("start-lesson").href = forceStudentMode(lesson.resources.lesson, lesson.id);
   }
 
+  function savedLessonWork(lessonId) {
+    var latest = null;
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var key = localStorage.key(i);
+        if (!key || !key.startsWith("nsr:rec:")) continue;
+        var record;
+        try {
+          record = JSON.parse(localStorage.getItem(key) || "null");
+        } catch (_invalidRecord) {
+          continue;
+        }
+        if (!record || typeof record.url !== "string") continue;
+        var url;
+        try {
+          url = new URL(record.url, window.location.origin);
+        } catch (_invalidUrl) {
+          continue;
+        }
+        if (url.origin !== window.location.origin) continue;
+        if (!url.pathname.startsWith("/lessons/" + lessonId + "/")) continue;
+        if (/teacher|answer(?:-|_)?key|gradebook|dashboard/i.test(url.pathname)) continue;
+        var updated = Date.parse(record.updatedAt);
+        if (!Number.isFinite(updated) || Date.now() - updated > 30 * 86400000) continue;
+        if (Number(record.progressPercent) >= 100) continue;
+        if (!latest || updated > latest.updated) {
+          latest = {
+            url: url.pathname + url.search + url.hash,
+            updated: updated,
+            step: record.currentStepLabel || record.phase || "",
+          };
+        }
+      }
+    } catch (_error) {
+      return null;
+    }
+    return latest;
+  }
+
+  function renderMission(lesson) {
+    var store = window.EWLStateStore;
+    var stages = {};
+    var check = null;
+    if (store && !lesson.id.endsWith("-flagship")) {
+      try {
+        store.setLesson(lesson.id);
+        var state = store.get();
+        stages = (state.mission[lesson.id] && state.mission[lesson.id].stages) || {};
+        check = state.checks[lesson.id] || null;
+      } catch (_error) {
+        stages = {};
+      }
+    }
+    var steps = [
+      ["curious", "Investigate the lesson", "lesson"],
+      ["notes", "Represent and explain", "guidedNotes"],
+      ["lab", "Test a new case", "learningLab"],
+      ["check", "Check your understanding", "exitTicket"],
+    ];
+    var list = byId("mission-stages");
+    list.replaceChildren();
+    var next = null;
+    steps.forEach(function (step) {
+      var href = forceStudentMode(
+        lesson.resources && lesson.resources[step[2]],
+        lesson.id,
+        step[2],
+      );
+      if (!href) return;
+      var item = document.createElement("li");
+      var status = document.createElement("span");
+      status.className = "mission-stage-status";
+      status.textContent = stages[step[0]] ? "Recorded as done" : "To explore";
+      var link = document.createElement("a");
+      link.href = href;
+      link.textContent = step[1];
+      item.append(link, status);
+      list.appendChild(item);
+      if (!next && !stages[step[0]]) next = step[1].toLowerCase();
+    });
+    setText(
+      "mission-guidance",
+      next
+        ? "Next: " + next + ". Your teacher may choose a different starting point."
+        : "All available mission stages have recorded work. Try a new case or review your teacher's next assignment.",
+    );
+    setText(
+      "mission-evidence",
+      check && check.status === "ok"
+        ? "A Check Yourself result is recorded. Open the final check to review or try again; completion alone does not show independent understanding."
+        : check && check.status === "unsure"
+          ? "Your Check Yourself result says you are unsure. Use a model or notes, then try a new check."
+          : "Mission stages record activity. Your final check is separate evidence of understanding.",
+    );
+    var saved = savedLessonWork(lesson.id);
+    var resume = byId("resume-work");
+    resume.hidden = !saved;
+    if (saved) {
+      resume.href = forceStudentMode(saved.url, lesson.id, "lesson");
+      resume.textContent = saved.step
+        ? "Continue saved work: " + String(saved.step).slice(0, 80)
+        : "Continue saved work";
+    }
+  }
+
   function readLesson(lesson) {
     if (!("speechSynthesis" in window)) {
       setText("launch-status", "Read aloud is not available in this browser.");
@@ -419,6 +524,7 @@
     setText("language-objective", "Language goal: " + lesson.languageObjective);
     renderVocabulary(lesson);
     renderResources(lesson);
+    renderMission(lesson);
     loadProgress(lesson.id);
     renderPlaylistNavigation();
     byId("launch-error").hidden = true;

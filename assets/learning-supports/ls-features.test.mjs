@@ -29,7 +29,11 @@ const synth = {
       if (synth._cur !== u) return;
       u.onstart?.({});
       starts.forEach((charIndex, i) =>
-        setTimeout(() => synth._cur === u && u.onboundary?.({ name: "word", charIndex }), i * 2),
+        setTimeout(() => {
+          if (synth._cur !== u) return;
+          u.onboundary?.({ name: "word", charIndex });
+          synth.afterBoundary?.();
+        }, i * 2),
       );
       setTimeout(() => {
         if (synth._cur === u) {
@@ -257,21 +261,28 @@ function reader(prefs, onState) {
   return createReader({ getPrefs: () => prefs.get(), getLang: () => "en", onState });
 }
 
-test("read aloud speaks the page and highlights the word being said", async () => {
+test("read aloud speaks the page and highlights the word being said", { timeout: 5000 }, async () => {
   setPage("<main><h1>Ratios</h1><p>Find 3:4 of 12.</p></main>");
   spoken.length = 0;
   const prefs = memoryPrefs();
   prefs.set({ rate: 0.7 });
   const seen = [];
   const states = [];
-  const r = reader(prefs, (s) => states.push(s));
-  assert.equal(r.read(), true);
-  const watch = setInterval(() => {
+  let finish;
+  const finished = new Promise((resolve) => { finish = resolve; });
+  const r = reader(prefs, (s) => { states.push(s); if (s === "idle") finish(); });
+  // Observe immediately after each speech boundary. A 1 ms polling timer can
+  // miss intermediate words when the full gate queues several timers at once.
+  synth.afterBoundary = () => {
     const word = document.querySelector(".ls-caption mark")?.textContent.trim();
     if (word && seen.at(-1) !== word) seen.push(word);
-  }, 1);
-  await tick(250);
-  clearInterval(watch);
+  };
+  try {
+    assert.equal(r.read(), true);
+    await finished;
+  } finally {
+    synth.afterBoundary = null;
+  }
   assert.deepEqual(spoken.map((s) => s.text), ["Ratios.", "Find 3 to 4 of 12."]);
   assert.equal(spoken[0].rate, 0.7);
   assert.deepEqual(seen, ["Ratios", "Find", "3:4", "of", "12."], "the DISPLAYED word is highlighted, not the spoken one");

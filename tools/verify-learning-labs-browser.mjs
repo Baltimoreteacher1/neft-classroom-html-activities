@@ -102,6 +102,27 @@ async function sweepLab(page, item) {
         q.type === "explain" ? /saved/ : /That works/,
         `${item.id} ${q.id}: ${feedback}`,
       );
+      if (q.type === "explain") {
+        assert.equal(
+          await page.locator(`[data-question="${bank.indexOf(q)}"]`).getAttribute("class"),
+          "is-tried",
+          "a saved draft is not a reviewed explanation",
+        );
+        await page
+          .locator("[data-comparison]")
+          .fill(
+            "My model shows the same quantities as the calculation, so the claim matches this case.",
+          );
+        await page.locator("[data-finish-comparison]").click();
+        assert.match(
+          await page.locator(".practice-feedback").innerText(),
+          /not an automatic grade/i,
+        );
+        assert.equal(
+          await page.locator(`[data-question="${bank.indexOf(q)}"]`).getAttribute("class"),
+          "is-done",
+        );
+      }
       report.answers++;
     }
   }
@@ -329,6 +350,30 @@ try {
         })),
       });
     }
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await page.goto(`${origin}/curriculum/learning-labs/hundred-square-studio/`);
+    await page.locator("#tab-investigate").click();
+    const percentInput = page
+      .locator('#panel-investigate .model-workspace [data-control="0"]')
+      .first();
+    await percentInput.fill("150");
+    assert.equal(
+      await page.locator("#panel-investigate .model-picture rect.shape").first().count(),
+      1,
+    );
+    assert.equal(await page.locator("#panel-investigate .model-picture rect.shape").count(), 150);
+    assert.match(await page.locator("#panel-investigate .model-picture").innerText(), /150%/);
+    await percentInput.fill("35");
+    await page.locator("#panel-investigate .model-picture rect").nth(149).click();
+    assert.equal(
+      await percentInput.inputValue(),
+      "150",
+      "touching the second whole updates the percent control",
+    );
+    await page
+      .locator("#panel-investigate .model-workspace")
+      .first()
+      .screenshot({ path: join(artifactDir, "hundred-square-studio-1024-150-percent.png") });
     await page.setViewportSize({ width: 1365, height: 900 });
     await page.goto(`${origin}/curriculum/learning-labs/`);
     assert.equal(await page.locator(".lab-card").count(), catalog.length);

@@ -67,6 +67,8 @@ const areaScale = ([a, b]) => 360 / Math.max(a, b, 12);
 
 /** The one-line instruction shown under a touchable picture. */
 export function directHint(model) {
+  if (model.kind === 'percent')
+    return model.mode === 'grid' ? 'Tap a square in either grid to shade up to that square; the second grid represents another whole.' : 'Tap a square to change the percent; type a value below to be precise.';
   if (['decimal', 'division', 'rate', 'conversion'].includes(model.kind))
     return 'Slide across each box in the picture to change its number.';
   if (['factors', 'power'].includes(model.kind)) return 'Slide across each row of the picture to change its number.';
@@ -139,9 +141,13 @@ export function grab(model, values, p, shape = 'prism') {
 export function move(model, values, p, h, fields) {
   switch (model.kind) {
     case 'percent': {
-      const col = Math.floor((p.x - 35) / 23), row = Math.floor((p.y - 20) / 23);
+      const two = model.mode === 'grid';
+      const size = two ? 17 : 21;
+      const grid = two && p.x >= 220 ? 1 : 0;
+      const left = two ? 28 + grid * 192 : 75;
+      const col = Math.floor((p.x - left) / size), row = Math.floor((p.y - 25) / size);
       if (col < 0 || col > 9 || row < 0 || row > 9) return null;
-      return set(values, fields, 0, row * 10 + col + 1);
+      return set(values, fields, 0, grid * 100 + row * 10 + col + 1);
     }
     case 'array': {
       const col = Math.floor((p.x - h.geo.left) / h.geo.size), row = Math.floor((p.y - 22) / h.geo.size);

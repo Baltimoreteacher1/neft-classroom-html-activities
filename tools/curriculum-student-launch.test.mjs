@@ -23,6 +23,21 @@ async function boot(query, options = {}) {
   });
   if (options.storage)
     Object.defineProperty(dom.window, "localStorage", { value: options.storage });
+  if (options.seedProgress) {
+    dom.window.eval(read("assets/ewl/state-store.js"));
+    dom.window.EWLStateStore.markStage("1-1", "curious");
+    dom.window.EWLStateStore.setCheck("1-1", "unsure");
+    dom.window.localStorage.setItem("nsr:rec:damaged", "{invalid");
+    dom.window.localStorage.setItem(
+      "nsr:rec:test",
+      JSON.stringify({
+        url: "/lessons/1-1/?step=2#work",
+        updatedAt: new Date().toISOString(),
+        progressPercent: 40,
+        currentStepLabel: "Represent the problem",
+      }),
+    );
+  }
   dom.window.scrollTo = () => {};
   dom.window.eval(source);
   await new Promise((resolve) => setImmediate(resolve));
@@ -164,6 +179,21 @@ assert.match(
   /saved on this device/,
 );
 saved.window.close();
+
+const mission = await boot("?lesson=1-1", { seedProgress: true });
+const missionDoc = mission.window.document;
+assert.equal(missionDoc.querySelectorAll("#mission-stages li").length, 4);
+assert.match(missionDoc.querySelector("#mission-stages li").textContent, /Recorded as done/);
+assert.match(missionDoc.getElementById("mission-guidance").textContent, /represent and explain/i);
+assert.match(missionDoc.getElementById("mission-evidence").textContent, /unsure/i);
+const resume = missionDoc.getElementById("resume-work");
+assert.equal(resume.hidden, false);
+assert.equal(new URL(resume.href).pathname, "/lessons/1-1/");
+assert.equal(new URL(resume.href).searchParams.get("step"), "2");
+assert.equal(new URL(resume.href).hash, "#work");
+assert.equal(new URL(resume.href).searchParams.get("student"), "1");
+assert.equal(mission.window.EWLStateStore.get().lesson, "1-1");
+mission.window.close();
 console.log(
-  "✓ student launcher: anchors, supports, safe resources, optional practice, readiness/labs, playlist, and honest checklist persistence",
+  "✓ student launcher: anchors, supports, safe resources, mission progress, saved-position resume, playlist, and honest checklist persistence",
 );

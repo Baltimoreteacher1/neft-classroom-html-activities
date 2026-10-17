@@ -17,12 +17,12 @@ const drag = (model, values, p) => {
 // exact hits
 const pct = { kind: "percent", mode: "grid", values: [35, 100] };
 assert.deepEqual(
-  drag(pct, [35, 100], { x: 35 + 6 * 23 + 10, y: 20 + 10 }),
+  drag(pct, [35, 100], { x: 28 + 6 * 17 + 8, y: 25 + 8 }),
   [7, 100],
   "square 7 shades 7%",
 );
 assert.deepEqual(
-  drag(pct, [35, 100], { x: 35 + 9 * 23 + 10, y: 20 + 9 * 23 + 10 }),
+  drag(pct, [35, 100], { x: 28 + 9 * 17 + 8, y: 25 + 9 * 17 + 8 }),
   [100, 100],
   "last square is 100%",
 );

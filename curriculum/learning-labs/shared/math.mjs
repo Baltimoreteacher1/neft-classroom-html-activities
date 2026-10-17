@@ -25,7 +25,7 @@ export function controls(model) {
     case 'rate': return [control('Pack price ($)', 1, 30), control('Items in pack', 1, 15)];
     case 'conversion': return [control(model.mode === 'scale' ? 'Length (feet)' : 'Length (inches)', 1, 12), control(model.mode === 'scale' ? 'Inches per foot (fixed)' : 'Centimeters per inch (fixed)', model.values[1], model.values[1])];
     case 'growth': return [control(model.mode === 'ratio-graph' ? 'Passengers per carriage' : 'Increase per step', 1, 8), control('Starting amount', 0, model.mode === 'ratio-graph' ? 0 : 12), control(model.mode === 'ratio-graph' ? 'Carriages' : 'Input / step', 1, 12)];
-    case 'percent': return [control('Percent', 1, 100), control(model.mode === 'whole' ? 'Known part' : 'Whole amount', 1, 120)];
+    case 'percent': return [control('Percent', model.mode === 'whole' ? 1 : 0, model.mode === 'grid' ? 200 : 100), control(model.mode === 'whole' ? 'Known part' : 'Whole amount', 1, 120)];
     case 'area': return model.mode === 'polygon' ? [control('Number of equal sides', 3, 8), control('Length of each side', 1, 12), control('Unused', 3, 3)] : [control(model.mode === 'trapezoid' ? 'First parallel base' : 'Base', 1, 12), control(model.mode === 'trapezoid' ? 'Second parallel base' : 'Perpendicular height', 1, 12), control(model.mode === 'trapezoid' ? 'Perpendicular height' : 'Unused', model.mode === 'trapezoid' ? 1 : 4, model.mode === 'trapezoid' ? 12 : 4)];
     case 'solid': return [control('Length', 1, 10), control('Width', 1, 10), control('Height', 1, 10)];
     case 'fraction': return [control('Supply (whole units)', 0.5, 8, 0.5), control('Serving-size numerator', 1, 5), control('Serving-size denominator', 2, 8)];
@@ -61,10 +61,11 @@ export function evaluate(model, values = model.values, options = {}) {
     case 'conversion': value = a * b; label = 'Converted length'; unit = model.mode === 'scale' ? 'inches' : 'centimeters'; equation = `${fmt(a)} × ${b} = ${fmt(value)}`; note = model.mode === 'scale' ? '1 foot = exactly 12 inches. Divide inches by 12 to convert back.' : '1 inch = exactly 2.54 centimeters. Divide centimeters by 2.54 to convert back.'; break;
     case 'growth': value = a * c + b; label = 'Output'; equation = `y = ${a}x + ${b}; when x = ${c}, y = ${value}`; note = `At x = 0, y = ${b}. Every increase of 1 in x adds ${a} to y.`; extra = { points: Array.from({ length: 7 }, (_, x) => [x, a * x + b]) }; break;
     case 'percent':
+      if (model.mode === 'whole' && a === 0) throw new Error('A known part cannot determine a whole from 0%.');
       value = model.mode === 'whole' ? b / (a / 100) : a / 100 * b;
       label = model.mode === 'whole' ? 'Recovered whole' : model.mode === 'discount' ? 'Discount' : 'Shaded amount';
       equation = model.mode === 'whole' ? `${b} ÷ (${a} ÷ 100) = ${fmt(value)}` : `${a}% of ${b} = ${fmt(value)}`;
-      note = model.mode === 'discount' ? `Final price: $${fmt(b - value)}. The discount is subtracted from the original price.` : `${a}% = ${a / 100} = ${a / gcd(a, 100)}/${100 / gcd(a, 100)}. ${model.mode === 'whole' ? 'Check the part by multiplying the whole by the decimal percent.' : 'The hundred grid always shows the percentage; the whole amount can change.'}`; break;
+      note = model.mode === 'discount' ? `Final price: $${fmt(b - value)}. The discount is subtracted from the original price.` : `${a}% = ${a / 100} = ${a / gcd(a, 100)}/${100 / gcd(a, 100)}. ${model.mode === 'whole' ? 'Check the part by multiplying the whole by the decimal percent.' : 'Each hundred grid is one whole. A percent above 100 uses a second grid; changing the whole amount changes the corresponding part.'}`; break;
     case 'area':
       if (model.mode === 'trapezoid') { value = (a + b) * c / 2; equation = `(${a} + ${b}) × ${c} ÷ 2 = ${fmt(value)}`; }
       else if (model.mode === 'polygon') { extra.apothem = b / (2 * Math.tan(Math.PI / a)); value = a * b * extra.apothem / 2; equation = `${a} × ${b} × ${fmt(extra.apothem)} ÷ 2 ≈ ${fmt(value)}`; }

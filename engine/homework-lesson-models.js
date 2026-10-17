@@ -1,6 +1,15 @@
 import { labMode } from "./components/lab-strings-es.js";
 import { mountInteractiveVisuals } from "./core/interactive-visual.js";
 
+// The shared homework theme bundles are generated per family style. Keep this
+// small readability correction in one place so all lesson homework pages use it.
+if (!document.querySelector("[data-homework-readability]")) {
+  const style = document.createElement("style");
+  style.dataset.homeworkReadability = "";
+  style.textContent = ".powerup-badge-star { color: #863900 !important; }";
+  document.head.append(style);
+}
+
 document.querySelectorAll("[data-lesson-model-host]").forEach((host) => {
   mountInteractiveVisuals(host);
   host.closest("[data-visual-lab]")?.setAttribute("data-visual-ready", "1");

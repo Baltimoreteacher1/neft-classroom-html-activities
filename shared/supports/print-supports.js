@@ -31,6 +31,17 @@
   "use strict";
   if (window.EWLPrintSupports) return;
 
+  // The generated worksheet is page-sized for printing. Give its existing HTML
+  // a readable, reflowing screen layout without altering paper dimensions.
+  if (document.querySelector(".ws-page") && !document.querySelector("[data-worksheet-screen]")) {
+    var screen = document.createElement("link");
+    screen.rel = "stylesheet";
+    screen.href = "/assets/worksheet-screen.css?v=20261017a";
+    screen.media = "screen";
+    screen.setAttribute("data-worksheet-screen", "1");
+    document.head.appendChild(screen);
+  }
+
   var LESSON_ID = document.documentElement.getAttribute("data-ewl-supports-lesson") || "";
   var AUDIENCE =
     document.documentElement.getAttribute("data-support-audience") === "teacher"

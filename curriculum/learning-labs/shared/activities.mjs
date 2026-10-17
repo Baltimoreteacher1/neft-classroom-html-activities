@@ -258,7 +258,33 @@ export function practice(ctx, host) {
   const form = host.querySelector('form'), status = host.querySelector('.practice-feedback'), explanation = host.querySelector('.explanation');
   // The lab's own model, one tap away: students can test an idea on it while they work the problem.
   form.before(modelPanel(ctx, 'practice', 'Open the lab model to work this out'));
-  const explain = () => { explanation.hidden = false; explanation.innerHTML = `<h4>${q.type === 'explain' ? 'Compare your reasoning' : 'Why it works'}</h4><p>${esc(q.explanation)}</p>${q.type === 'explain' ? '<p>This is a model response, not an automatic grade. Does your response name the quantities, show evidence, and explain why the result makes sense?</p>' : ''}`; };
+  const explain = () => {
+    explanation.hidden = false;
+    explanation.innerHTML = `<h4>${q.type === 'explain' ? 'Compare your reasoning' : 'Why it works'}</h4><p>${esc(q.explanation)}</p>${q.type === 'explain' ? `<p>This is a model response, not an automatic grade. Compare the quantities, model, and reason with your own explanation.</p><label class="writing">What mathematical evidence supports your claim?<textarea data-comparison rows="3">${esc(record.comparison || '')}</textarea></label><button type="button" data-finish-comparison>Save my comparison</button>` : ''}`;
+    if (q.type === 'explain') explanation.querySelector('[data-comparison]').oninput = (event) => {
+      record.comparison = event.target.value;
+      save();
+    };
+    if (q.type === 'explain') explanation.querySelector('[data-finish-comparison]').onclick = () => {
+      const evidence = explanation.querySelector('[data-comparison]').value.trim();
+      if (!evidence) {
+        status.className = 'practice-feedback retry';
+        status.textContent = 'Name a number, model, calculation, or example that supports your claim before saving the comparison.';
+        explanation.querySelector('[data-comparison]').focus();
+        return;
+      }
+      record.comparison = evidence;
+      record.reviewed = true;
+      status.className = 'practice-feedback saved';
+      status.textContent = 'Your explanation and comparison are saved for a teacher or partner to review. This is not an automatic grade.';
+      save();
+      const button = host.querySelector(`[data-question="${index}"]`);
+      button.textContent = '✓';
+      button.className = 'is-done';
+      button.setAttribute('aria-label', `Activity ${index + 1}, explanation compared`);
+      refresh();
+    };
+  };
   const getInput = () => (choices ? (form.querySelector('input[name="answer"]:checked')?.value ?? '') : form.elements.answer.value);
   form.addEventListener('input', () => {
     record.input = getInput();
@@ -346,7 +372,7 @@ export function practice(ctx, host) {
   form.onsubmit = (event) => {
     event.preventDefault(); record.input = getInput();
     if (!String(record.input).trim()) { status.className = 'practice-feedback'; status.textContent = 'Enter your response first. You can use a hint whenever you need one.'; return; }
-    if (q.type === 'explain') { record.reviewed = true; state.streak = (state.streak || 0) + 1; status.className = 'practice-feedback saved'; status.textContent = 'Your writing is saved. Compare the reasoning below, then revise if needed.'; explain(); save(); host.querySelector(`[data-question="${index}"]`).textContent = '✓'; refresh(); return; }
+    if (q.type === 'explain') { record.attempts++; record.reviewed = false; status.className = 'practice-feedback saved'; status.textContent = 'Draft saved. Compare it with the model response and name the mathematical evidence before you finish.'; const button = host.querySelector(`[data-question="${index}"]`); button.className = 'is-tried'; button.setAttribute('aria-label', `Activity ${index + 1}, draft saved`); explain(); save(); refresh(); return; }
     const number = q.type === 'number' ? numericAnswer(record.input) : Number(record.input);
     if (!Number.isFinite(number)) { status.className = 'practice-feedback'; status.textContent = 'Use a number, fraction, or mixed number. For example: 0.5, 1/2, or 2 1/2.'; return; }
     const ok = q.type === 'number' ? Math.abs(number - q.answer) <= q.tolerance : number === q.answer;
@@ -367,7 +393,8 @@ export function practice(ctx, host) {
   host.querySelector('[data-back]').onclick = () => go(index - 1);
   host.querySelector('[data-next]').onclick = () => go(index + 1);
   if (record.correct) { status.className = 'practice-feedback saved'; status.textContent = 'You solved this item earlier. Try it again or study the explanation.'; }
-  else if (q.type === 'explain' && record.reviewed) { status.className = 'practice-feedback saved'; status.textContent = 'Your writing is saved. You can revise it and save again.'; }
+  else if (q.type === 'explain' && record.reviewed) { status.className = 'practice-feedback saved'; status.textContent = 'Your explanation and comparison are saved for review. You can revise and compare again.'; }
+  else if (q.type === 'explain' && record.attempts) { status.className = 'practice-feedback saved'; status.textContent = 'Your draft is saved. Compare it with the model response and name the evidence.'; explain(); }
   drawHints();
   mountByteBot(host, ctx, 'byte-practice');
 }

@@ -116,6 +116,7 @@ const GATE = [
   // SOURCE tree until 2026-08-20, so it failed 6/6 on Vite-resolved specifiers
   // and was never wired; it now serves dist/, which is what Cloudflare serves.
   "smoke:injection",
+  "validate:html-experiences-browser",
 ];
 
 /* `build` is a BARRIER, not just a peer. It is the only member of the gate that
@@ -135,6 +136,7 @@ const needsOf = (c) => (c === "build" ? [] : ["build"]);
  * `--push` (or in a worktree without `dist/index.html`) and any of these is in
  * the selected set, `build` is prepended automatically. */
 const NEEDS_DIST = new Set([
+  "validate:html-experiences-browser",
   "validate:hub",
   "validate:notebook",
   "validate:notebook-render",
@@ -159,6 +161,7 @@ const NEEDS_DIST = new Set([
  * time. Both read as real page defects. Both vanish when the check runs on its
  * own against the same dist/. A third Chromium was the difference. */
 const EXCLUSIVE = new Set([
+  "validate:html-experiences-browser",
   "validate:project-studio-browser",
   "validate:fluency-workshops-browser",
   "validate:lesson-boot",
@@ -186,6 +189,10 @@ const EXCLUSIVE = new Set([
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  [
+    /^(tools\/verify-html-experiences-browser\.mjs|assets\/worksheet-screen\.css|engine\/homework-lesson-models\.js)$/,
+    ["validate:html-experiences-browser", "validate:static", "validate:css-integrity"],
+  ],
   // LESSON FLOW — the forward control, the act step strip and the fixed chrome
   // that floats over them. These three files are where "press Next and see
   // where it lands" is decided, and on 2026-08-28 all three were individually
@@ -367,6 +374,7 @@ const COVERAGE = [
       "validate:js-syntax",
       "typecheck",
       "validate:worksheet-audience",
+      "validate:html-experiences-browser",
     ],
   ],
   // The SCORM pipeline: the SCO builder, the ZIP writer, the two endpoints, the
@@ -640,7 +648,14 @@ const COVERAGE = [
   ],
   [
     /^curriculum\//,
-    ["validate:hub", "validate:runtime", "validate:static", "audit:links", "audit:curriculum"],
+    [
+      "validate:hub",
+      "validate:runtime",
+      "validate:static",
+      "audit:links",
+      "audit:curriculum",
+      "validate:html-experiences-browser",
+    ],
   ],
   // Families hub, bilingual weekly homework pages, and guided notes
   [
@@ -665,6 +680,7 @@ const COVERAGE = [
   [
     /^assets\/(curriculum-[^/]+\.(js|css)|pacing-[^/]+\.css)$/,
     [
+      "validate:html-experiences-browser",
       "validate:hub",
       "validate:curriculum-top1",
       "validate:teacher-workflow",

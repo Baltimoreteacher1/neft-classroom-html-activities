@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { JSDOM } from "jsdom";
+import { grab, move } from "../curriculum/learning-labs/shared/direct.mjs";
 import {
   controls,
   evaluate,
@@ -164,6 +165,43 @@ check("division", "shipments", [14.4, 1.2], 12);
 check("decimal", "receipt", [2.75, 6], 16.5);
 check("percent", "whole", [30, 18], 60);
 check("percent", "discount", [25, 80], 20);
+assert.equal(controls({ kind: "percent", mode: "grid", values: [35, 100] })[0].max, 200);
+assert.equal(controls({ kind: "percent", mode: "discount", values: [25, 80] })[0].max, 100);
+const percentGrid = { kind: "percent", mode: "grid", values: [35, 100] };
+assert.equal(
+  move(
+    percentGrid,
+    percentGrid.values,
+    { x: 381, y: 101 },
+    grab(percentGrid, percentGrid.values, { x: 381, y: 101 }),
+    controls(percentGrid),
+  )[0],
+  150,
+);
+assert.equal(
+  move(
+    percentGrid,
+    percentGrid.values,
+    { x: 205, y: 101 },
+    grab(percentGrid, percentGrid.values, { x: 205, y: 101 }),
+    controls(percentGrid),
+  ),
+  null,
+  "the gap between wholes is not a mathematical square",
+);
+for (const [percent, grids, shaded] of [
+  [0, 2, 0],
+  [100, 2, 100],
+  [150, 2, 150],
+  [200, 2, 200],
+]) {
+  const model = { kind: "percent", mode: "grid", values: [percent, 100] };
+  const picture = new JSDOM(visual(model, model.values, evaluate(model))).window.document;
+  assert.equal(picture.querySelectorAll("rect").length, grids * 100);
+  assert.equal(picture.querySelectorAll("rect.shape").length, shaded);
+  assert.match(picture.querySelector("svg").getAttribute("aria-label"), new RegExp(`${percent}%`));
+}
+assert.throws(() => evaluate({ kind: "percent", mode: "whole", values: [0, 18] }), /0%/);
 check("area", "triangle", [8, 5, 4], 20);
 check("area", "trapezoid", [10, 6, 4], 32);
 check("area", "polygon", [4, 6, 3], 36);

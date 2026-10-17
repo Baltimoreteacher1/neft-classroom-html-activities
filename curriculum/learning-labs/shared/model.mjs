@@ -63,9 +63,17 @@ export function visual(model, values, result) {
     for (let x = 0; x <= maxX; x++) { body += dot(sx(x), sy(a * x + b), x === c ? `(${x}, ${a * x + b})` : ''); body += text(sx(x), 269, x); }
     body += line(sx(0), sy(b), sx(maxX), sy(maxY), 'plot') + text(300, 294, 'Input x') + text(32, 27, 'y') + text(40, 50, maxY) + text(44, 243, '0');
   } else if (k === 'percent') {
-    for (let i = 0; i < 100; i++) body += rect(35 + i % 10 * 23, 20 + Math.floor(i / 10) * 23, 21, 21, i < a ? 'shape' : 'shape-light');
-    body += text(422, 90, `${a} out of 100`) + text(422, 135, `${a / 100}`) + text(422, 180, `${a}%`);
-    body += text(300, 285, `${result.label}: ${fmt(result.value)}`);
+    const grids = model.mode === 'grid' ? 2 : 1;
+    for (let g = 0; g < grids; g++) {
+      const left = grids === 2 ? 28 + g * 192 : 75;
+      const size = grids === 2 ? 17 : 21;
+      for (let i = 0; i < 100; i++)
+        body += rect(left + i % 10 * size, 25 + Math.floor(i / 10) * size, size - 2, size - 2,
+          i + g * 100 < a ? 'shape' : 'shape-light');
+      body += text(left + 5 * size, grids === 2 ? 215 : 255, `Whole ${g + 1}: ${Math.max(0, Math.min(100, a - g * 100))} of 100`);
+    }
+    body += text(493, 85, grids === 2 && a > 100 ? `${fmt(a)} hundredths` : `${fmt(a)} out of 100`) + text(493, 132, `${fmt(a / 100)}`) + text(493, 179, `${fmt(a)}%`);
+    body += text(300, 288, `${result.label}: ${fmt(result.value)}`);
   } else if (k === 'area') {
     if (model.mode === 'polygon') {
       const points = Array.from({ length: a }, (_, i) => [300 + 105 * Math.cos(i * 2 * Math.PI / a - Math.PI / 2), 135 + 105 * Math.sin(i * 2 * Math.PI / a - Math.PI / 2)]);
@@ -229,6 +237,7 @@ const watch = {
   'growth': ['Points follow a rule y = (increase per step)·x + starting amount. The highlighted point shows the current input.', 'Change the starting amount and watch the whole line shift without changing its steepness.'],
   'growth:ratio-graph': ['Each point is (carriages, passengers). The line passes through (0, 0) because the relationship is proportional.', 'Change passengers per carriage and watch the steepness of the line.'],
   'percent': ['The hundred grid shades one square for each percent. The readout applies that percent to the whole amount.', 'Keep the percent fixed and change the whole. The shading stays the same while the amount changes.'],
+  'percent:grid': ['Each hundred grid is one whole: one square is 1%. Values over 100% need a second whole. The readout applies the percent to the whole amount.', 'Predict what 150% will look like, then change the percent to 150 and compare the two grids.'],
   'percent:whole': ['The grid shows the percent. The readout works backward from a known part to recover the whole.', 'Check the recovered whole: multiply it by the percent as a decimal to get the part back.'],
   'area': ['The dashed segment is the perpendicular height. Area uses base and height, not slanted sides.', 'Double the height and predict whether the area doubles.'],
   'area:trapezoid': ['The two horizontal sides are the parallel bases. The dashed segment is the perpendicular height.', 'Swap the two bases. Does the area change?'],

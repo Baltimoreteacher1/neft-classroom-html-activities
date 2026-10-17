@@ -162,6 +162,21 @@
         margin: 0 auto 36px;
         padding: 0 24px;
       }
+      .teacher-note summary {
+        width: fit-content;
+        cursor: pointer;
+        color: var(--ink);
+        font-weight: 800;
+        padding: 10px 14px;
+        border: 1px solid rgba(20, 34, 58, 0.25);
+        border-radius: 10px;
+        background: #fff;
+      }
+      .teacher-note summary:focus-visible {
+        outline: 3px solid var(--coral);
+        outline-offset: 3px;
+      }
+      .teacher-note[open] .note-box { margin-top: 12px; }
       .note-box {
         background: var(--coral-light);
         border: 1px solid rgba(224, 90, 43, 0.25);
@@ -559,7 +574,8 @@
     </header>
 
     <!-- ── Teacher Note ── -->
-    <div class="teacher-note">
+    <details class="teacher-note">
+      <summary>Teacher guidance</summary>
       <div class="note-box" role="note" aria-label="Teacher note">
         <span class="note-icon" aria-hidden="true">🎓</span>
         <div>
@@ -571,7 +587,7 @@
           needed. Progress saves on this device.
         </div>
       </div>
-    </div>
+    </details>
 
     <!-- ── Units ── -->
     <main class="section-wrap" id="main-content">
