@@ -552,6 +552,15 @@
   function install(s) {
     if (s.__studioInstalled) return;
     s.__studioInstalled = true;
+    if (typeof s.update === "function" && !s.__gsSceneDeltaClamped) {
+      s.__gsSceneDeltaClamped = true;
+      const origUpdate = s.update;
+      s.update = function (time, delta) {
+        const clampedDelta =
+          typeof delta === "number" ? Math.min(Math.max(0, delta), 50) : 1000 / 60;
+        return origUpdate.call(this, time, clampedDelta);
+      };
+    }
     wrap(s, "submitAnswer", function (i) {
       if (this.answered || this.answerBtns?.[i]?.eliminated || this.removedChoices?.includes(i))
         return;
@@ -854,23 +863,55 @@
       modelEl = document.createElement("div");
       modelEl.className = "fm-live-model";
       modelEl.style.cssText =
-        "margin:6px 0 8px;padding:8px 12px;border-radius:10px;background:rgba(56,189,248,0.12);border-left:3px solid #38bdf8;color:#e0f2fe;font-size:0.86rem;font-weight:700;";
+        "margin:6px 0 8px;padding:8px 12px;border-radius:10px;background:rgba(56,189,248,0.12);border-left:3px solid #38bdf8;color:#e0f2fe;font-size:0.86rem;font-weight:700;display:grid;gap:6px;";
+      modelEl.innerHTML = '<div class="fm-live-text"></div><div class="fm-live-svg"></div>';
       question.after(modelEl);
     }
+    const modelTextEl = modelEl.querySelector(".fm-live-text") || modelEl;
+    const modelSvgEl = modelEl.querySelector(".fm-live-svg");
+    let svgKind = "ratios";
+    let svgParams = { a: 2, b: 3, currentA: 2, currentB: 3 };
     if (scene?.round && Array.isArray(scene.counts)) {
       const rA = scene.round.a || 1,
         rB = scene.round.b || 1,
         [cA, cB] = scene.counts;
       const eq = cA > 0 && cB > 0 && cA * rB === cB * rA;
-      modelEl.textContent =
+      modelTextEl.textContent =
         "⚖️ " +
         T("liveRatio", rA, rB, scene.round.hideTotal ? 0 : scene.round.capacity, cA, cB, eq);
+      svgKind = "ratios";
+      svgParams = { a: rA, b: rB, currentA: cA, currentB: cB };
     } else if (scene?.forge && q) {
-      modelEl.textContent = `🍕 ${T("liveFoundry")}: ${T("cutsInfo", scene.cuts || 1, q.mode === "partition", q.mode === "partition" ? scene.sel || 0 : scene.groups || 0)}`;
+      const selCount = q.mode === "partition" ? scene.sel || 0 : scene.groups || 0;
+      modelTextEl.textContent = `🍕 ${T("liveFoundry")}: ${T("cutsInfo", scene.cuts || 1, q.mode === "partition", selCount)}`;
+      svgKind = "fractions";
+      svgParams = { cuts: scene.cuts || 1, selected: selCount };
     } else if (scene?.order) {
-      modelEl.textContent = `🧪 ${T("liveJug", Math.round((scene.fill || 0) * scene.order.jugDen), scene.order.jugDen, scene.order.shownNum, scene.order.shownDen)}`;
+      const filled = Math.round((scene.fill || 0) * scene.order.jugDen);
+      modelTextEl.textContent = `🧪 ${T("liveJug", filled, scene.order.jugDen, scene.order.shownNum, scene.order.shownDen)}`;
+      svgKind = "fractions";
+      svgParams = { cuts: scene.order.jugDen || 4, selected: filled };
     } else {
-      modelEl.textContent = `🔬 ${C("topic")}: ${C("coach")}`;
+      modelTextEl.textContent = `🔬 ${C("topic")}: ${C("coach")}`;
+      if (slug.includes("coordinate") || slug.includes("velocity")) {
+        svgKind = "coordinates";
+        svgParams = { x: q?.x ?? 3, y: q?.y ?? 2 };
+      } else if (slug.includes("fraction")) {
+        svgKind = "fractions";
+        svgParams = { cuts: 4, selected: 3 };
+      } else if (slug.includes("equation") || slug.includes("expression")) {
+        svgKind = "integers";
+        svgParams = { value: (session.correct % 7) - 3 };
+      }
+    }
+    if (modelSvgEl) {
+      const svgSig = svgKind + ":" + JSON.stringify(svgParams);
+      if (modelSvgEl.dataset.sig !== svgSig) {
+        modelSvgEl.dataset.sig = svgSig;
+        modelSvgEl.innerHTML = window.GameStudio?.renderMathModelSVG
+          ? window.GameStudio.renderMathModelSVG(svgKind, svgParams)
+          : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 88" width="360" height="88" style="background:#FFFFFF;border-radius:8px;display:block;max-width:100%;height:auto;" role="img" aria-label="Math model"><rect x="0" y="0" width="360" height="88" fill="#FFFFFF" rx="8"/><rect x="16" y="28" width="160" height="32" fill="#0284C7" rx="4"/></svg>`;
+      }
     }
     const signature = JSON.stringify([
       lang(),

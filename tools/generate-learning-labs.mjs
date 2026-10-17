@@ -21,10 +21,10 @@ const palette = [
   "#315ba7",
   "#076859",
   "#785000",
-  "#6d4ca2",
+  "#0b7285",
   "#086575",
   "#315ba7",
-  "#764273",
+  "#155e75",
   "#075f80",
   "#176746",
 ];
@@ -57,6 +57,8 @@ const version = createHash("sha256")
       "watch.mjs",
       "sound.mjs",
       "celebrate.mjs",
+      "scratchpad.mjs",
+      "nextgen.mjs",
       "lab.css",
     ]
       .map((f) => readFileSync(join(destination, "shared", f)))

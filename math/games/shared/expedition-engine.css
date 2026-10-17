@@ -35,7 +35,7 @@
   border-radius: 14px;
   box-shadow: 0 14px 40px #0009;
   font:
-    15px/1.35 "Outfit",
+    15px / 1.35 "Outfit",
     "Segoe UI",
     system-ui,
     sans-serif;
@@ -76,10 +76,11 @@
   border-radius: 18px;
   box-shadow: 0 30px 90px #000c;
   font:
-    16px/1.5 "Outfit",
+    16px / 1.5 "Outfit",
     "Segoe UI",
     system-ui,
     sans-serif;
+  box-sizing: border-box;
 }
 .ewl-x-journal::backdrop {
   background: #02070cbb;
@@ -95,6 +96,13 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #9fc4dc;
+}
+.ewl-x-svg-model {
+  margin: 0 0 14px;
+  padding: 8px;
+  border-radius: 12px;
+  background: #132a3d;
+  border: 1px solid #355874;
 }
 .ewl-x-journal ul {
   list-style: none;
@@ -146,17 +154,25 @@
   border: 1px solid #ffd76a88;
 }
 .ewl-x-journal button {
-  min-height: 40px;
+  min-height: 48px;
+  min-width: 48px;
   padding: 8px 14px;
   background: #1b3f5a;
   color: #fff;
   border: 1px solid #5e92b3;
   border-radius: 10px;
-  font: 600 15px/1.2 inherit;
+  font: 600 15px / 1.2 inherit;
   cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
 }
 .ewl-x-journal button:hover {
   background: #2b5774;
+}
+.ewl-x-journal button:active {
+  transform: translateY(1px) scale(0.98);
 }
 .ewl-x-journal button:focus-visible {
   outline: 3px solid #ffd17b;

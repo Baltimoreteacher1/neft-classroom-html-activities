@@ -1,42 +1,473 @@
-/* Consistent player controls without replacing each game's art direction. */
-.studio-toolbar { position:relative; z-index:120; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; padding:10px clamp(12px,3vw,32px); background:#101b2e; color:#f7fafc; border-bottom:1px solid #40516d; font:600 16px/1.4 system-ui,sans-serif; box-sizing:border-box; }
-.studio-toolbar > div { display:flex; flex-wrap:wrap; gap:6px; }
-.studio-toolbar button,.studio-toolbar a { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:8px 12px; border:1px solid #61728e; border-radius:10px; background:#1e304c; color:#f7fafc; font:inherit; text-decoration:none; cursor:pointer; box-sizing:border-box; }
-.studio-toolbar button:hover,.studio-toolbar a:hover { background:#314666; }
-.studio-toolbar button[aria-pressed=true] { color:#101b2e; background:#b4f0de; border-color:#b4f0de; }
-.studio-toolbar [hidden],.studio-notice[hidden] { display:none !important; }
-.studio-toolbar :focus-visible,.studio-dialog :focus-visible { outline:3px solid #f5c96a; outline-offset:3px; }
-.studio-dialog { width:min(560px,calc(100vw - 32px)); max-height:calc(100dvh - 48px); overflow:auto; padding:28px; border:1px solid #8ca0bc; border-radius:20px; background:#14243a; color:#f7fafc; font:400 18px/1.6 system-ui,sans-serif; margin:auto; box-sizing:border-box; box-shadow:0 24px 100px #0009; }
-.studio-dialog::backdrop { background:#071221c9; }
-.studio-dialog h2 { color:#fff; font-size:26px; line-height:1.2; margin:0 0 20px; }
-.studio-dialog ol { padding-left:25px; }
-.studio-dialog li { margin-bottom:16px; }
-.studio-dialog p { color:#cbd7e7; font-size:16px; }
-.studio-dialog label { display:flex; gap:12px; align-items:center; padding:12px 0; cursor:pointer; }
-.studio-dialog input { accent-color:#a7ebd5; width:24px; height:24px; flex-shrink:0; }
-.studio-dialog button { border:0; border-radius:10px; background:#b4f0de; color:#101b2e; min-height:48px; padding:10px 18px; font:700 18px/1.4 system-ui,sans-serif; cursor:pointer; width:100%; }
-.studio-notice { position:fixed; bottom:max(20px,env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); z-index:150; width:max-content; max-width:calc(100vw - 32px); padding:12px 20px; border:1px solid #93a7c4; border-radius:12px; color:#f7fafc; background:#14243a; font:600 16px/1.5 system-ui,sans-serif; box-shadow:0 8px 40px #0005; box-sizing:border-box; pointer-events:none; }
-.studio-notice[data-kind=good],.studio-notice[data-kind=complete] { border-color:#a7ebd5; }
-.studio-notice[data-kind=coach] { border-color:#f5c96a; }
-.studio-reduced-motion *, .studio-reduced-motion *::before,.studio-reduced-motion *::after { animation-duration:.001ms!important; animation-iteration-count:1!important; transition-duration:.001ms!important; scroll-behavior:auto!important; }
-.studio-contrast .studio-toolbar,.studio-contrast .studio-dialog { background:#000; border-color:#fff; }
-.studio-contrast canvas { filter:contrast(1.15); }
-@media(max-width:600px) { .studio-toolbar { align-items:stretch; padding:8px; } .studio-toolbar > div { flex:1; } .studio-toolbar button,.studio-toolbar a { font-size:14px; padding:8px; } .studio-dialog { padding:20px; } }
-@media print { .studio-toolbar,.studio-dialog,.studio-notice { display:none!important; } }
+/* Consistent player controls, Enterprise Micro-HUD, CDDA Scaffold & BioAdaptiveFlow without replacing each game's art direction. */
+:root {
+  --gs-hitbox-scale: 1;
+}
 
-.studio-toolbar > a, .studio-toolbar > .studio-badge { align-self:center; }
-.studio-badge { display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:9px; background:#16263f; border:1px solid #354c6e; color:#b4f0de; font-weight:700; font-size:15px; }
+.studio-toolbar {
+  position: relative;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px clamp(12px, 3vw, 32px);
+  background: #101b2e;
+  color: #f7fafc;
+  border-bottom: 1px solid #40516d;
+  font: 600 16px / 1.4 system-ui, sans-serif;
+  box-sizing: border-box;
+  max-width: 100%;
+}
 
-.studio-session { position:relative; z-index:110; display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; padding:6px clamp(12px,3vw,32px); background:#0c1728; color:#e7eef8; border-bottom:1px solid #2c4060; font:600 14px/1.35 system-ui,sans-serif; }
-.studio-objective { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0; min-width:min(100%,280px); }
-.studio-meter { display:inline-block; width:120px; height:8px; border-radius:99px; background:#1c314c; overflow:hidden; }
-.studio-meter i { display:block; height:100%; width:0; background:#7ddec4; }
-.studio-session p { margin:0; }
-.studio-session [data-stars] { letter-spacing:.12em; color:#f3d48a; font-size:18px; }
-.studio-ceremony ul { padding-left:22px; }
-.studio-ceremony li { margin:8px 0; }
-body:has(.studio-toolbar) .ntp-pill { top:56px !important; right:16px !important; left:auto !important; bottom:auto !important; z-index:95 !important; }
-body:has(.studio-toolbar) #nsr-workbench, body:has(.studio-toolbar) #mwb-launcher { display:none !important; }
-@media print { .studio-session { display:none!important; } }
-@media(max-width:600px) { .studio-meter { width:72px; } }
+.studio-toolbar > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
 
+.studio-toolbar button,
+.studio-toolbar a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  min-width: 48px;
+  padding: 8px 14px;
+  border: 1px solid #61728e;
+  border-radius: 10px;
+  background: #1e304c;
+  color: #f7fafc;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  touch-action: manipulation;
+  user-select: none;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.studio-toolbar button:hover,
+.studio-toolbar a:hover {
+  background: #314666;
+}
+
+.studio-toolbar button:active,
+.studio-toolbar a:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.studio-toolbar button[aria-pressed="true"] {
+  color: #101b2e;
+  background: #b4f0de;
+  border-color: #b4f0de;
+}
+
+.studio-toolbar [hidden],
+.studio-notice[hidden],
+.gs-rewind-banner[hidden],
+.gs-cdda-scaffold-overlay[hidden],
+.gs-diagnostics[hidden] {
+  display: none !important;
+}
+
+.studio-toolbar :focus-visible,
+.studio-dialog :focus-visible,
+.gs-token-selected {
+  outline: 3px solid #f5c96a;
+  outline-offset: 3px;
+}
+
+.gs-token-selected {
+  box-shadow: 0 0 0 4px rgba(245, 201, 106, 0.45) !important;
+}
+
+/* Universal Canvas & Interactive SVG Touch/Selection Rules */
+canvas,
+.gs-interactive-svg,
+svg[data-interactive="true"] {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  max-width: 100%;
+}
+
+.studio-dialog {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+  padding: 28px;
+  border: 1px solid #8ca0bc;
+  border-radius: 20px;
+  background: #14243a;
+  color: #f7fafc;
+  font: 400 18px / 1.6 system-ui, sans-serif;
+  margin: auto;
+  box-sizing: border-box;
+  box-shadow: 0 24px 100px #0009;
+}
+
+.studio-dialog::backdrop {
+  background: #071221c9;
+}
+
+.studio-dialog h2 {
+  color: #fff;
+  font-size: 26px;
+  line-height: 1.2;
+  margin: 0 0 20px;
+}
+
+.studio-dialog ol {
+  padding-left: 25px;
+}
+
+.studio-dialog li {
+  margin-bottom: 16px;
+}
+
+.studio-dialog p {
+  color: #cbd7e7;
+  font-size: 16px;
+}
+
+.studio-dialog label {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 48px;
+  padding: 10px 0;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.studio-dialog input {
+  accent-color: #a7ebd5;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.studio-dialog button {
+  border: 0;
+  border-radius: 10px;
+  background: #b4f0de;
+  color: #101b2e;
+  min-height: 48px;
+  min-width: 48px;
+  padding: 10px 18px;
+  font: 700 18px / 1.4 system-ui, sans-serif;
+  cursor: pointer;
+  width: 100%;
+  touch-action: manipulation;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.studio-dialog button:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.studio-notice {
+  position: fixed;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 150;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  padding: 12px 20px;
+  border: 1px solid #93a7c4;
+  border-radius: 12px;
+  color: #f7fafc;
+  background: #14243a;
+  font: 600 16px / 1.5 system-ui, sans-serif;
+  box-shadow: 0 8px 40px #0005;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.studio-notice[data-kind="good"],
+.studio-notice[data-kind="complete"] {
+  border-color: #a7ebd5;
+}
+
+.studio-notice[data-kind="coach"] {
+  border-color: #f5c96a;
+}
+
+.studio-reduced-motion *,
+.studio-reduced-motion *::before,
+.studio-reduced-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+.studio-contrast .studio-toolbar,
+.studio-contrast .studio-dialog {
+  background: #000;
+  border-color: #fff;
+}
+
+.studio-contrast canvas {
+  filter: contrast(1.15);
+}
+
+.studio-toolbar > a,
+.studio-toolbar > .studio-badge {
+  align-self: center;
+}
+
+.studio-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 9px;
+  background: #16263f;
+  border: 1px solid #354c6e;
+  color: #b4f0de;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+/* Enterprise Micro-HUD Session Rail */
+.studio-session {
+  position: relative;
+  z-index: 110;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 6px clamp(12px, 3vw, 32px);
+  background: #0c1728;
+  color: #e7eef8;
+  border-bottom: 1px solid #2c4060;
+  font: 600 14px / 1.35 system-ui, sans-serif;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.studio-objective {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  min-width: min(100%, 240px);
+}
+
+.studio-hud-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #142640;
+  border: 1px solid #2f486d;
+  color: #dbeafe;
+  font-size: 13px;
+  font-weight: 700;
+  transition:
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.studio-hud-pill[data-mastery-glow="1"] {
+  border-color: #7ddec4;
+  color: #ecfdf5;
+  box-shadow: 0 0 12px rgba(125, 222, 196, 0.45);
+}
+
+.studio-meter {
+  display: inline-block;
+  width: 120px;
+  height: 8px;
+  border-radius: 99px;
+  background: #1c314c;
+  overflow: hidden;
+}
+
+.studio-meter i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: #7ddec4;
+  transition: width 180ms ease;
+}
+
+.studio-session p {
+  margin: 0;
+}
+
+.studio-session [data-stars] {
+  letter-spacing: 0.12em;
+  color: #f3d48a;
+  font-size: 18px;
+}
+
+.studio-ceremony ul {
+  padding-left: 22px;
+}
+
+.studio-ceremony li {
+  margin: 8px 0;
+}
+
+/* 2-Second Visual Rewind & Recovery Banner */
+.gs-rewind-banner {
+  position: fixed;
+  top: 96px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 145;
+  max-width: min(640px, calc(100vw - 24px));
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: #1e293b;
+  color: #fef3c7;
+  border: 2px solid #f59e0b;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  font: 700 15px / 1.4 system-ui, sans-serif;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+/* Silent CDDA Visual Scaffolding Overlay */
+.gs-cdda-scaffold-overlay {
+  position: fixed;
+  bottom: max(68px, env(safe-area-inset-bottom));
+  right: 16px;
+  z-index: 125;
+  max-width: min(380px, calc(100vw - 32px));
+  pointer-events: none;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.gs-cdda-card {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #0f172a;
+  border: 2px solid #38bdf8;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+  color: #f8fafc;
+  font: 600 13px / 1.35 system-ui, sans-serif;
+}
+
+.gs-cdda-tag {
+  display: inline-block;
+  margin-bottom: 6px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #0284c7;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* BioAdaptiveFlow: Overload Visual De-clutter & 25% Hitbox Expansion */
+body[data-bio-flow="overload"] .ghero .deco,
+body[data-bio-flow="overload"] .gfx-specular-glare,
+body[data-bio-flow="overload"] [data-parallax-layer] {
+  opacity: 0.15 !important;
+  transition: opacity 200ms ease !important;
+}
+
+body[data-bio-flow="overload"] .fm-live-model,
+body[data-bio-flow="overload"] .gs-cdda-card,
+body[data-bio-flow="overload"] .ewl-x-svg-model {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.35) !important;
+}
+
+body[data-bio-flow="overload"] .fm-actions button,
+body[data-bio-flow="overload"] .flagship-mission button,
+body[data-bio-flow="overload"] button.opt,
+body[data-bio-flow="overload"] button.choice {
+  min-height: 60px;
+  min-width: 60px;
+  padding: 12px 18px;
+}
+
+/* BioAdaptiveFlow: Flow State Subtle Mastery Glow */
+body[data-bio-flow="flow"] .studio-session {
+  border-bottom-color: #38bdf8;
+}
+
+/* Hidden Diagnostics Overlay (Shift + D) */
+.gs-diagnostics {
+  position: fixed;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.94);
+  border: 1px solid #38bdf8;
+  color: #bae6fd;
+  font: 600 12px / 1.35 ui-monospace, SFMono-Regular, Menlo, monospace;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: calc(100vw - 16px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body:has(.studio-toolbar) .ntp-pill {
+  top: 56px !important;
+  right: 16px !important;
+  left: auto !important;
+  bottom: auto !important;
+  z-index: 95 !important;
+}
+
+body:has(.studio-toolbar) #nsr-workbench,
+body:has(.studio-toolbar) #mwb-launcher {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+  .studio-toolbar {
+    align-items: stretch;
+    padding: 8px;
+  }
+  .studio-toolbar > div {
+    flex: 1;
+  }
+  .studio-toolbar button,
+  .studio-toolbar a {
+    font-size: 14px;
+    padding: 8px 10px;
+  }
+  .studio-dialog {
+    padding: 20px;
+  }
+  .studio-meter {
+    width: 72px;
+  }
+}
+
+@media print {
+  .studio-toolbar,
+  .studio-dialog,
+  .studio-notice,
+  .studio-session,
+  .gs-rewind-banner,
+  .gs-cdda-scaffold-overlay,
+  .gs-diagnostics {
+    display: none !important;
+  }
+}

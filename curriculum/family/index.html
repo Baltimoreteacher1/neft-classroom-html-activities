@@ -165,9 +165,113 @@
         color: var(--fam-teal);
       }
       .fam-container a:focus-visible,
-      .fam-container button:focus-visible {
+      .fam-container button:focus-visible,
+      .fam-container input:focus-visible,
+      .fam-container select:focus-visible {
         outline: 3px solid var(--fam-teal) !important;
         outline-offset: 2px !important;
+      }
+      .fam-mesh-hub {
+        background: #ffffff;
+        border: 2px solid var(--fam-navy);
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 36px;
+        box-shadow: 0 4px 14px rgba(16, 42, 69, 0.06);
+        contain: layout style;
+      }
+      .fam-mesh-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .fam-mesh-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .fam-mesh-tab {
+        min-height: 48px;
+        min-width: 48px;
+        padding: 10px 16px;
+        border-radius: 8px;
+        border: 1.5px solid var(--fam-navy);
+        background: #f8fafc;
+        color: var(--fam-navy);
+        font-weight: 800;
+        font-size: 0.9rem;
+        cursor: pointer;
+        touch-action: manipulation;
+        transition: background-color 160ms ease, color 160ms ease;
+      }
+      .fam-mesh-tab[aria-pressed="true"] {
+        background: var(--fam-navy);
+        color: #ffffff;
+      }
+      .fam-coop-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 16px;
+        margin-top: 14px;
+      }
+      .fam-player-box {
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        padding: 16px;
+      }
+      .fam-player-box h3 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+        color: var(--fam-navy);
+      }
+      .fam-step-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .fam-step-btn {
+        min-height: 48px;
+        min-width: 48px;
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: 1.5px solid var(--fam-teal);
+        background: #ffffff;
+        color: var(--fam-navy);
+        font-weight: 800;
+        font-size: 0.95rem;
+        cursor: pointer;
+        touch-action: none;
+        transition: background-color 160ms ease;
+      }
+      .fam-step-btn:hover {
+        background: var(--fam-teal-light);
+      }
+      .fam-sync-bar {
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px solid var(--fam-border);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .fam-hash-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border-radius: 8px;
+        background: #f0fdfa;
+        border: 1.5px solid var(--fam-teal);
+        color: #134e4a;
+        font-weight: 800;
+        font-size: 0.9rem;
       }
     </style>
   </head>
@@ -197,6 +301,35 @@
         </a>
       </section>
 
+      <section class="fam-mesh-hub" id="family-physics-mesh" aria-labelledby="fam-mesh-title">
+        <div class="fam-mesh-header">
+          <div>
+            <h2 id="fam-mesh-title" style="margin:0 0 4px;font-size:1.3rem;font-weight:900;color:var(--fam-navy);">
+              2-Player Household Co-Op Sandboxes (FamilyPhysicsMesh)
+            </h2>
+            <p style="margin:0;font-size:0.92rem;color:#334155;">
+              Quick 3-minute side-by-side table challenges for Caregiver (Player 1) and Student (Player 2) — plain language, zero jargon.
+            </p>
+          </div>
+          <div class="fam-mesh-tabs" role="group" aria-label="Choose a household co-op game">
+            <button type="button" class="fam-mesh-tab" data-fam-mode="pantry" aria-pressed="true">Pantry Balancer (Ratios)</button>
+            <button type="button" class="fam-mesh-tab" data-fam-mode="sub" aria-pressed="false">Deep-Sea Sub Search (Coordinates)</button>
+            <button type="button" class="fam-mesh-tab" data-fam-mode="airlock" aria-pressed="false">Atmospheric Airlock (Opposite Numbers)</button>
+          </div>
+        </div>
+
+        <div id="fam-mesh-stage" class="fam-coop-grid"></div>
+
+        <div class="fam-sync-bar">
+          <div class="fam-hash-badge" id="fam-sync-status" role="status" aria-live="polite">
+            Morning Lab Seed Code: <strong id="fam-seed-code">F6R2</strong>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+            <button type="button" class="fam-mesh-tab" id="fam-export-morning-btn">Export to Morning Lab</button>
+          </div>
+        </div>
+      </section>
+
       <h2 style="font-size: 1.4rem; font-weight: 900; color: var(--fam-navy); margin-bottom: 20px;">
         Grade 6 Mathematics Unit Guides
       </h2>
@@ -210,8 +343,241 @@
     <script>
       (function() {
         var manifest = null;
+        var famAudioCtx = null;
+        var famState = {
+          mode: "pantry",
+          p1Batch: 12,
+          p2Parts: 4,
+          p1RadarX: 3,
+          p1RadarY: -2,
+          p2HelmX: 2,
+          p2HelmY: -2,
+          p1Vacuum: -15,
+          p2Counter: 12,
+          solvedCount: 0,
+          seedHash: "F6R2",
+          seedBase64: ""
+        };
+
+        function playFamTone(converged) {
+          var AudioCtor = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtor) return;
+          try {
+            famAudioCtx = famAudioCtx || new AudioCtor();
+            if (famAudioCtx.state === "suspended") famAudioCtx.resume();
+            var freqs = converged ? [523.25, 659.25, 783.99] : [220, 196];
+            freqs.forEach(function(f, idx) {
+              var start = famAudioCtx.currentTime + idx * 0.09;
+              var osc = famAudioCtx.createOscillator();
+              var gain = famAudioCtx.createGain();
+              osc.type = "sine";
+              osc.frequency.value = f;
+              gain.gain.setValueAtTime(0.0001, start);
+              gain.gain.exponentialRampToValueAtTime(0.05, start + 0.02);
+              gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.16);
+              osc.connect(gain).connect(famAudioCtx.destination);
+              osc.start(start);
+              osc.stop(start + 0.18);
+            });
+          } catch (e) {}
+        }
+
+        function computeMorningSeed() {
+          var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+          var n = Math.abs(famState.p1Batch * 7 + famState.p2Parts * 13 + famState.p2HelmX * 19 + famState.p2Counter * 23 + famState.solvedCount * 31);
+          var c1 = chars[n % chars.length];
+          var c2 = chars[Math.floor(n / 7) % chars.length];
+          var c3 = chars[Math.floor(n / 49) % chars.length];
+          var c4 = chars[Math.floor(n / 343) % chars.length];
+          famState.seedHash = c1 + c2 + c3 + c4;
+          var payload = {
+            mode: famState.mode,
+            hash: famState.seedHash,
+            solvedCount: famState.solvedCount,
+            updatedAt: Date.now()
+          };
+          try {
+            famState.seedBase64 = window.btoa(JSON.stringify(payload));
+            var masterRaw = window.localStorage.getItem("eduwonder_master_v3");
+            var master = masterRaw ? JSON.parse(masterRaw) : { version: 3 };
+            master.familyMesh = payload;
+            window.localStorage.setItem("eduwonder_master_v3", JSON.stringify(master));
+          } catch (e) {}
+        }
+
+        function renderFamMesh() {
+          var stage = document.getElementById("fam-mesh-stage");
+          if (!stage) return;
+          var converged = false;
+          var svgMarkup = "";
+          var p1Controls = "";
+          var p2Controls = "";
+          var statusCopy = "";
+
+          if (famState.mode === "pantry") {
+            var targetParts = Math.round(famState.p1Batch / 3);
+            converged = famState.p2Parts === targetParts;
+            statusCopy = converged
+              ? "Balanced! " + famState.p2Parts + " berry cups for a " + famState.p1Batch + "-cup batch keeps the 1:3 recipe steady."
+              : "Match the recipe: 1 cup of berries for every 3 cups of total mix.";
+            var barW = Math.min(340, famState.p2Parts * 40);
+            svgMarkup =
+              '<svg width="420" height="140" viewBox="0 0 420 140" style="background:#FFFFFF;width:100%;height:auto;border:1px solid #cbd5e1;border-radius:8px;touch-action:none;" role="img" aria-label="Pantry Balancer ratio tape model">' +
+              '<rect x="24" y="26" width="360" height="32" rx="6" fill="#e2e8f0" stroke="#0f172a"/>' +
+              '<text x="204" y="47" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">Total Batch: ' + famState.p1Batch + ' cups (Target: ' + targetParts + ' berry cups)</text>' +
+              '<rect x="24" y="76" width="' + barW + '" height="32" rx="6" fill="' + (converged ? '#0f766e' : '#0284c7') + '" stroke="#0f172a"/>' +
+              '<text x="' + Math.max(85, 24 + Math.round(barW / 2)) + '" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">Student Partition: ' + famState.p2Parts + ' cups</text>' +
+              '</svg>';
+            p1Controls =
+              '<h3>Player 1 (Caregiver): Batch Weight</h3>' +
+              '<p style="margin:0;font-size:0.86rem;color:#334155;">Pick the total family recipe size (in cups):</p>' +
+              '<div class="fam-step-row">' +
+              '<button type="button" class="fam-step-btn" data-fam-act="p1-batch-down" aria-label="Decrease batch weight">− 3 cups</button>' +
+              '<strong>' + famState.p1Batch + ' cups</strong>' +
+              '<button type="button" class="fam-step-btn" data-fam-act="p1-batch-up" aria-label="Increase batch weight">+ 3 cups</button>' +
+              '</div>';
+            p2Controls =
+              '<h3>Player 2 (Student): Tape Partition</h3>' +
+              '<p style="margin:0;font-size:0.86rem;color:#334155;">Adjust berry cups so the unit rate is 1 per 3 total cups:</p>' +
+              '<div class="fam-step-row">' +
+              '<button type="button" class="fam-step-btn" data-fam-act="p2-parts-down" aria-label="Fewer berry cups">− 1 cup</button>' +
+              '<strong>' + famState.p2Parts + ' cups</strong>' +
+              '<button type="button" class="fam-step-btn" data-fam-act="p2-parts-up" aria-label="More berry cups">+ 1 cup</button>' +
+              '</div>';
+          } else if (famState.mode === "sub") {
+            converged = famState.p1RadarX === famState.p2HelmX && famState.p1RadarY === famState.p2HelmY;
+            statusCopy = converged
+              ? "Radar Locked at (" + famState.p2HelmX + ", " + famState.p2HelmY + ")!"
+              : "Steer the helm to the Caregiver's radar bearing: (" + famState.p1RadarX + ", " + famState.p1RadarY + ").";
+            var tx = 210 + famState.p1RadarX * 26;
+            var ty = 70 - famState.p1RadarY * 14;
+            var hx = 210 + famState.p2HelmX * 26;
+            var hy = 70 - famState.p2HelmY * 14;
+            svgMarkup =
+              '<svg width="420" height="140" viewBox="0 0 420 140" style="background:#FFFFFF;width:100%;height:auto;border:1px solid #cbd5e1;border-radius:8px;touch-action:none;" role="img" aria-label="Deep-Sea Sub coordinate grid">' +
+              '<line x1="20" y1="70" x2="400" y2="70" stroke="#64748b" stroke-width="1.5"/>' +
+              '<line x1="210" y1="10" x2="210" y2="130" stroke="#64748b" stroke-width="1.5"/>' +
+              '<circle cx="' + tx + '" cy="' + ty + '" r="10" fill="none" stroke="#b45309" stroke-width="2.5" stroke-dasharray="3,2"/>' +
+              '<circle cx="' + hx + '" cy="' + hy + '" r="7" fill="' + (converged ? '#0f766e' : '#1d4ed8') + '"/>' +
+              '<text x="24" y="24" font-size="12" font-weight="800" fill="#0f172a">Helm (' + famState.p2HelmX + ', ' + famState.p2HelmY + ') · Target (' + famState.p1RadarX + ', ' + famState.p1RadarY + ')</text>' +
+              '</svg>';
+            p1Controls =
+              '<h3>Player 1 (Caregiver): Radar Bearing</h3>' +
+              '<p style="margin:0;font-size:0.86rem;color:#334155;">Call out the horizontal and vertical distance from center (0, 0):</p>' +
+              '<div class="fam-step-row">' +
+              '<button type="button" class="fam-step-btn" data-fam-act="p1-radar-next">New Radar Bearing</button>' +
+              '<strong>(' + famState.p1RadarX + ', ' + famState.p1RadarY + ')</strong>' +
+              '</div>';
+            p2Controls =
+              '<h3>Player 2 (Student): Vector Helm</h3>' +
+              '<p style="margin:0;font-size:0.86rem;color:#334155;">Steer horizontal (x) and vertical (y) position:</p>' +
+              '<div class="fam-step-row">' +
+              '<button type="button" class="fam-step-btn" data-fam-act="p2-x-down" aria-label="Move left">x − 1</button>' +
+              '<button type="button" class="fam-step-btn" data-fam-act="p2-x-up" aria-label="Move right">x + 1</button>' +
+              '<button type="button" class="fam-step-btn" data-fam-act="p2-y-down" aria-label="Move down">y − 1</button>' +
+              '<button type="button" class="fam-step-btn" data-fam-act="p2-y-up" aria-label="Move up">y + 1</button>' +
+              '</div>';
+          } else {
+            converged = famState.p1Vacuum + famState.p2Counter === 0;
+            statusCopy = converged
+              ? "Airlock Equalized! " + famState.p1Vacuum + " and +" + famState.p2Counter + " sum to zero."
+              : "Balance outside pressure (" + famState.p1Vacuum + ") with its opposite positive value.";
+            svgMarkup =
+              '<svg width="420" height="140" viewBox="0 0 420 140" style="background:#FFFFFF;width:100%;height:auto;border:1px solid #cbd5e1;border-radius:8px;touch-action:none;" role="img" aria-label="Atmospheric Airlock integer balance scale">' +
+              '<line x1="30" y1="80" x2="390" y2="80" stroke="#0f172a" stroke-width="2"/>' +
+              '<circle cx="210" cy="80" r="5" fill="#0f172a"/>' +
+              '<rect x="60" y="42" width="110" height="30" rx="6" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>' +
+              '<text x="115" y="62" text-anchor="middle" font-size="13" font-weight="800" fill="#78350f">Exterior: ' + famState.p1Vacuum + '</text>' +
+              '<rect x="250" y="42" width="110" height="30" rx="6" fill="#e6f4ea" stroke="#0f766e" stroke-width="2"/>' +
+              '<text x="305" y="62" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">Interior: +' + famState.p2Counter + '</text>' +
+              '<text x="210" y="116" text-anchor="middle" font-size="12" font-weight="800" fill="#0f172a">Net Pressure Sum: ' + (famState.p1Vacuum + famState.p2Counter) + '</text>' +
+              '</svg>';
+            p1Controls =
+              '<h3>Player 1 (Caregiver): Exterior Vacuum</h3>' +
+              '<p style="margin:0;font-size:0.86rem;color:#334155;">Set the outside negative pressure scale:</p>' +
+              '<div class="fam-step-row">' +
+              '<button type="button" class="fam-step-btn" data-fam-act="p1-vac-down" aria-label="More negative vacuum">− 3</button>' +
+              '<strong>' + famState.p1Vacuum + '</strong>' +
+              '<button type="button" class="fam-step-btn" data-fam-act="p1-vac-up" aria-label="Less negative vacuum">+ 3</button>' +
+              '</div>';
+            p2Controls =
+              '<h3>Player 2 (Student): Interior Counter</h3>' +
+              '<p style="margin:0;font-size:0.86rem;color:#334155;">Match the distance from zero to reach net 0:</p>' +
+              '<div class="fam-step-row">' +
+              '<button type="button" class="fam-step-btn" data-fam-act="p2-cnt-down" aria-label="Decrease interior pressure">− 3</button>' +
+              '<strong>+' + famState.p2Counter + '</strong>' +
+              '<button type="button" class="fam-step-btn" data-fam-act="p2-cnt-up" aria-label="Increase interior pressure">+ 3</button>' +
+              '</div>';
+          }
+
+          if (converged) famState.solvedCount += 1;
+          computeMorningSeed();
+
+          stage.innerHTML =
+            '<div class="fam-player-box">' + p1Controls + '</div>' +
+            '<div class="fam-player-box">' + svgMarkup + '<p style="margin:8px 0 0;font-size:0.88rem;font-weight:800;color:' + (converged ? '#0f766e' : '#1e293b') + ';">' + statusCopy + '</p></div>' +
+            '<div class="fam-player-box">' + p2Controls + '</div>';
+
+          var codeEl = document.getElementById("fam-seed-code");
+          if (codeEl) codeEl.textContent = famState.seedHash;
+        }
+
+        document.addEventListener("click", function(ev) {
+          var modeBtn = ev.target.closest("[data-fam-mode]");
+          if (modeBtn) {
+            famState.mode = modeBtn.getAttribute("data-fam-mode");
+            document.querySelectorAll("[data-fam-mode]").forEach(function(b) {
+              b.setAttribute("aria-pressed", String(b === modeBtn));
+            });
+            renderFamMesh();
+            return;
+          }
+          var actBtn = ev.target.closest("[data-fam-act]");
+          if (actBtn) {
+            var act = actBtn.getAttribute("data-fam-act");
+            if (act === "p1-batch-down") famState.p1Batch = Math.max(6, famState.p1Batch - 3);
+            else if (act === "p1-batch-up") famState.p1Batch = Math.min(24, famState.p1Batch + 3);
+            else if (act === "p2-parts-down") famState.p2Parts = Math.max(1, famState.p2Parts - 1);
+            else if (act === "p2-parts-up") famState.p2Parts = Math.min(8, famState.p2Parts + 1);
+            else if (act === "p1-radar-next") {
+              famState.p1RadarX = ((famState.p1RadarX + 3) % 7) - 3;
+              famState.p1RadarY = ((famState.p1RadarY + 2) % 5) - 2;
+            } else if (act === "p2-x-down") famState.p2HelmX = Math.max(-4, famState.p2HelmX - 1);
+            else if (act === "p2-x-up") famState.p2HelmX = Math.min(4, famState.p2HelmX + 1);
+            else if (act === "p2-y-down") famState.p2HelmY = Math.max(-3, famState.p2HelmY - 1);
+            else if (act === "p2-y-up") famState.p2HelmY = Math.min(3, famState.p2HelmY + 1);
+            else if (act === "p1-vac-down") famState.p1Vacuum = Math.max(-24, famState.p1Vacuum - 3);
+            else if (act === "p1-vac-up") famState.p1Vacuum = Math.min(-3, famState.p1Vacuum + 3);
+            else if (act === "p2-cnt-down") famState.p2Counter = Math.max(3, famState.p2Counter - 3);
+            else if (act === "p2-cnt-up") famState.p2Counter = Math.min(24, famState.p2Counter + 3);
+            renderFamMesh();
+            playFamTone(
+              (famState.mode === "pantry" && famState.p2Parts === Math.round(famState.p1Batch / 3)) ||
+              (famState.mode === "sub" && famState.p1RadarX === famState.p2HelmX && famState.p1RadarY === famState.p2HelmY) ||
+              (famState.mode === "airlock" && famState.p1Vacuum + famState.p2Counter === 0)
+            );
+            return;
+          }
+          if (ev.target.closest("#fam-export-morning-btn")) {
+            var btn = document.getElementById("fam-export-morning-btn");
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(famState.seedHash + ":" + famState.seedBase64).catch(function() {});
+            }
+            if (btn) btn.textContent = "Copied Seed " + famState.seedHash + " ✓";
+          }
+        });
+
+        window.FamilyPhysicsMesh = {
+          getState: function() { return famState; },
+          render: renderFamMesh
+        };
+        window.MeshClassroomSync = {
+          getSeedHash: function() { return famState.seedHash; },
+          getSeedToken: function() { return famState.seedBase64; }
+        };
 
         async function initFamily() {
+          renderFamMesh();
           try {
             var res = await fetch("/data/curriculum-manifest.json");
             if (res.ok) manifest = await res.json();
@@ -262,3 +628,4 @@
     </script>
   </body>
 </html>
+

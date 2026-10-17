@@ -290,12 +290,21 @@
       },
       whoosh: () => noise(0.35, { filter: "bandpass", freq: 1200, vol: 0.1 }),
       flow: () => noise(0.9, { filter: "lowpass", freq: 600, vol: 0.08 }),
-      success: () =>
-        [523, 659, 784, 1047].forEach((f, i) =>
-          tone(f, 0.28, { delay: i * 0.07, type: "triangle", vol: 0.14 }),
-        ),
+      success: () => {
+        if (window.EduWonderAudio?.playCorrect) {
+          window.EduWonderAudio.playCorrect(3);
+          return;
+        }
+        [523.25, 587.33, 659.25, 783.99, 1046.5].forEach((f, i) =>
+          tone(f, 0.15, { delay: i * 0.055, type: "sine", vol: 0.14 }),
+        );
+      },
       miss: () => {
-        tone(330, 0.16, { type: "sine", vol: 0.12, slide: 262 });
+        if (window.EduWonderAudio?.playRewind) {
+          window.EduWonderAudio.playRewind();
+          return;
+        }
+        tone(220, 0.24, { type: "triangle", vol: 0.11, slide: 130 });
       },
       unlock: () =>
         [392, 523, 659, 784, 1047, 1319].forEach((f, i) =>
@@ -727,6 +736,15 @@
         return new Promise((resolve) =>
           scene.time.delayedCall(reducedMotion() ? 1 : ms, resolve),
         );
+      },
+      /** Inline SVG math physics model with explicit viewBox, width/height, and #FFFFFF surface. */
+      mathModelSVG(kind = "ratios", params = {}) {
+        if (window.GameStudio?.renderMathModelSVG) {
+          return window.GameStudio.renderMathModelSVG(kind, params);
+        }
+        const a = Number(params.a) || 2;
+        const b = Number(params.b) || 3;
+        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 88" width="360" height="88" style="background:#FFFFFF;border-radius:8px;display:block;max-width:100%;height:auto;" role="img" aria-label="Math model ${a}:${b}"><rect x="0" y="0" width="360" height="88" fill="#FFFFFF" rx="8"/><rect x="16" y="24" width="${Math.min(240, a * 36)}" height="18" fill="#0284C7" rx="4"/><rect x="16" y="48" width="${Math.min(240, b * 36)}" height="18" fill="#0D9488" rx="4"/></svg>`;
       },
       rng,
     };
@@ -1229,7 +1247,21 @@
           `<li class="${state.achievements[k] ? "got" : ""}" title="${t(a.desc)}"><span aria-hidden="true">${a.icon}</span>${t(a)}</li>`,
       )
       .join("");
+    const svgKind = /coord|graph/i.test(def.id)
+      ? "coordinates"
+      : /frac/i.test(def.id)
+        ? "fractions"
+        : /int|dec/i.test(def.id)
+          ? "integers"
+          : "ratios";
+    const svgModel = window.GameStudio?.renderMathModelSVG
+      ? window.GameStudio.renderMathModelSVG(svgKind, {
+          a: Math.max(1, Object.values(state.missions).filter((m) => m?.done).length),
+          b: Math.max(1, allMissions(def).length),
+        })
+      : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 88" width="360" height="88" style="background:#FFFFFF;border-radius:8px;display:block;max-width:100%;height:auto;" role="img" aria-label="Expedition progress model"><rect x="0" y="0" width="360" height="88" fill="#FFFFFF" rx="8"/><rect x="16" y="30" width="${Math.round(restoredFraction(def, state) * 320)}" height="28" fill="#0284C7" rx="6"/></svg>`;
     d.innerHTML = `<h2>📓 ${t(UI.journal)} · ${t(def.title)}</h2>
+      <div class="ewl-x-svg-model">${svgModel}</div>
       <section><h3>${lang() === "es" ? "Habilidades" : "Skills"}</h3><ul class="ewl-x-skills">${skillRows}</ul></section>
       ${misc ? `<section><h3>${t(UI.revisit)}</h3><ul class="ewl-x-misc">${misc}</ul></section>` : ""}
       <section><h3>${lang() === "es" ? "Logros" : "Achievements"}</h3><ul class="ewl-x-ach">${ach}</ul></section>
@@ -1468,7 +1500,13 @@
                 ? " Puedes pedir «Muéstrame»."
                 : " You can ask “Show me”."
               : "";
-        this.showFeedback(t(res.feedback || UI.notYet) + extra, "bad");
+        const missMsg = t(res.feedback || UI.notYet) + extra;
+        this.showFeedback(missMsg, "bad");
+        window.GameStudio?.emit?.("feedback", {
+          correct: false,
+          misconception: res.misconception,
+          message: missMsg,
+        });
         if (this.canDemo()) this.hintBtn.setLabel("🎬 " + t(UI.showMe));
       }
       async hint() {
@@ -1533,7 +1571,7 @@
         state.plays++;
         const chapter = def.chapters[this.chapterIdx];
         const wasChapterDone = chapter.missions.every(
-          (x) => x.id === m.id ? !!prev.done : !!state.missions[x.id]?.done,
+          (x) => (x.id === m.id ? !!prev.done : !!state.missions[x.id]?.done),
         );
         const chapterNow = chapterDone(chapter, state);
         // Achievements.
@@ -1554,8 +1592,20 @@
         try {
           window.NTPassport?.award?.(stars * 5, def.id + ":expedition");
         } catch (_e) {}
-        if (chapterNow && !wasChapterDone)
-          this.time.delayedCall(reducedMotion() ? 400 : 1800, () => reportChapter(def, state, chapter));
+        window.GameStudio?.emit?.("feedback", {
+          correct: true,
+          message: t(UI.missionDone),
+        });
+        if (chapterNow && !wasChapterDone) {
+          window.GameStudio?.emit?.("complete", {
+            score: state.xp,
+            correct: chapter.missions.length,
+            total: chapter.missions.length,
+          });
+          this.time.delayedCall(reducedMotion() ? 400 : 1800, () =>
+            reportChapter(def, state, chapter),
+          );
+        }
 
         // Celebration: world restoration + mission card.
         Audio.sfx.success();
@@ -1742,6 +1792,7 @@
     const add = () => {
       game.scene.add("ExpeditionMap", makeMapScene(def), false);
       game.scene.add("Expedition", makeMissionScene(def), false);
+      window.GameStudio?.patchPhaserDeltaClamp?.(game);
       addTitleEntry(game, def);
       // Deep link: ?expedition=1 opens the map directly (hub "Continue expedition").
       if (/[?&]expedition=1\b/.test(location.search)) {
@@ -1768,6 +1819,7 @@
       scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_HORIZONTALLY },
       scene: [makeMapScene(def), makeMissionScene(def)],
     });
+    window.GameStudio?.patchPhaserDeltaClamp?.(game);
     game.ewlExpedition = def;
     return game;
   }

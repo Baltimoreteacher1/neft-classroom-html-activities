@@ -210,32 +210,73 @@ export function move(model, values, p, h, fields) {
 }
 
 const same = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
+const escAttr = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-/** Wire pointer events on the picture. `host` is the stable container the SVG is re-rendered inside. */
-export function attachDirect(host, model, { fields, getValues, apply, getShape = () => 'prism' }) {
+/** Wire pointer, touch, and accessible Click-to-Select / Click-to-Place events on the picture. */
+export function attachDirect(host, model, { fields, free = null, workspace = null, getValues, apply, getShape = () => 'prism' }) {
   if (!isDirect(model)) return;
   host.classList.add('direct');
   host.setAttribute('data-direct', model.kind);
+  host.style.touchAction = 'none';
   let handle = null;
+  let startValues = null;
+  let outOfBounds = false;
+
   const point = (e) => {
     const svg = host.querySelector('svg');
     const m = svg?.getScreenCTM?.();
     if (!svg || !m) return null;
     const pt = svg.createSVGPoint();
-    pt.x = e.clientX; pt.y = e.clientY;
+    const clientX = e.touches?.[0]?.clientX ?? e.changedTouches?.[0]?.clientX ?? e.clientX;
+    const clientY = e.touches?.[0]?.clientY ?? e.changedTouches?.[0]?.clientY ?? e.clientY;
+    if (!Number.isFinite(clientX) || !Number.isFinite(clientY)) return null;
+    pt.x = clientX;
+    pt.y = clientY;
     const r = pt.matrixTransform(m.inverse());
-    return { x: r.x, y: r.y };
+    const minX = model.kind === 'coordinates' ? 135 : 0;
+    const maxX = model.kind === 'coordinates' ? 465 : 600;
+    const minY = model.kind === 'coordinates' ? -8 : 0;
+    const maxY = model.kind === 'coordinates' ? 297 : 300;
+    const invalid = r.x < minX - 24 || r.x > maxX + 24 || r.y < minY - 24 || r.y > maxY + 24;
+    return {
+      x: Math.max(minX, Math.min(maxX, r.x)),
+      y: Math.max(minY, Math.min(maxY, r.y)),
+      rawX: r.x,
+      rawY: r.y,
+      invalid,
+    };
   };
+
   const run = (e) => {
     const p = point(e);
     if (!p || !handle) return;
+    if (p.invalid) {
+      outOfBounds = true;
+      host.classList.add('out-of-bounds');
+      return;
+    }
+    outOfBounds = false;
+    host.classList.remove('out-of-bounds');
     const next = move(model, getValues(), p, handle, fields);
-    if (next && !same(next, getValues())) apply(next);
+    if (!next) {
+      outOfBounds = true;
+      return;
+    }
+    if (free !== null) {
+      const locked = [...getValues()];
+      locked[free] = next[free];
+      if (!same(locked, getValues())) apply(locked);
+      return;
+    }
+    if (!same(next, getValues())) apply(next);
   };
+
   host.addEventListener('pointerdown', (e) => {
     if (e.button > 0) return;
     const p = point(e);
     if (!p) return;
+    startValues = [...getValues()];
+    outOfBounds = false;
     handle = grab(model, getValues(), p, getShape());
     if (!handle) return;
     e.preventDefault();
@@ -243,8 +284,80 @@ export function attachDirect(host, model, { fields, getValues, apply, getShape =
     host.classList.add('dragging');
     run(e);
   });
-  host.addEventListener('pointermove', (e) => { if (handle) run(e); });
-  const end = () => { handle = null; host.classList.remove('dragging'); };
+  host.addEventListener('pointermove', (e) => {
+    if (handle) run(e);
+  });
+  const end = () => {
+    if (!handle) return;
+    if (outOfBounds && startValues && !same(startValues, getValues())) {
+      apply(startValues);
+      host.classList.add('snap-back');
+      setTimeout(() => host.classList.remove('snap-back'), 200);
+    }
+    handle = null;
+    startValues = null;
+    outOfBounds = false;
+    host.classList.remove('dragging', 'out-of-bounds');
+    renderClickPlace();
+  };
   host.addEventListener('pointerup', end);
   host.addEventListener('pointercancel', end);
+
+  // Accessible Click-to-Select / Click-to-Place keyboard & switch assistive bar
+  const editableIndices = fields
+    .map((f, i) => ({ f, i }))
+    .filter(({ f, i }) => f.label !== 'Unused' && f.min !== f.max && (free === null || free === i));
+  let selectedIdx = editableIndices[0]?.i ?? 0;
+  let bar = null;
+
+  function renderClickPlace() {
+    if (!editableIndices.length) return;
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.className = 'direct-click-place';
+      bar.setAttribute('role', 'region');
+      bar.setAttribute('aria-label', 'Click-to-select and click-to-place model controls');
+      const anchor = workspace || host;
+      anchor.after(bar);
+    }
+    if (!editableIndices.some((x) => x.i === selectedIdx)) selectedIdx = editableIndices[0].i;
+    const activeField = fields[selectedIdx];
+    const currentVals = getValues();
+    const cur = currentVals[selectedIdx];
+    const presets = [...new Set([
+      activeField.min,
+      snap(activeField, cur - activeField.step),
+      snap(activeField, (activeField.min + activeField.max) / 2),
+      snap(activeField, cur + activeField.step),
+      activeField.max,
+    ])].sort((a, b) => a - b);
+
+    bar.innerHTML = `<div class="click-place-row"><span class="click-place-label">1. Select quantity:</span><div class="click-place-chips" role="group" aria-label="Select quantity to place">${editableIndices
+      .map(
+        ({ f, i }) =>
+          `<button type="button" class="small ${i === selectedIdx ? '' : 'quiet'}" data-direct-param="${i}" aria-pressed="${i === selectedIdx}">${escAttr(f.label)} (${currentVals[i]})</button>`,
+      )
+      .join('')}</div></div><div class="click-place-row"><span class="click-place-label">2. Place value:</span><div class="click-place-chips" role="group" aria-label="Place target value for ${escAttr(activeField.label)}">${presets
+      .map(
+        (val) =>
+          `<button type="button" class="small ${val === cur ? '' : 'quiet'}" data-direct-val="${val}" aria-pressed="${val === cur}">${val === activeField.min ? `Min (${val})` : val === activeField.max ? `Max (${val})` : val}</button>`,
+      )
+      .join('')}</div></div>`;
+
+    bar.querySelectorAll('[data-direct-param]').forEach((btn) => {
+      btn.onclick = () => {
+        selectedIdx = Number(btn.dataset.directParam);
+        renderClickPlace();
+      };
+    });
+    bar.querySelectorAll('[data-direct-val]').forEach((btn) => {
+      btn.onclick = () => {
+        const next = set(getValues(), fields, selectedIdx, Number(btn.dataset.directVal));
+        if (!same(next, getValues())) apply(next);
+        renderClickPlace();
+      };
+    });
+  }
+
+  renderClickPlace();
 }

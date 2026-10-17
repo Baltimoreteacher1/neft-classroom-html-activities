@@ -142,27 +142,45 @@ function injectLevel(html, levelKey) {
   return out;
 }
 
-// ── PDF catalog tagging (/Lang + /Title) ─────────────────────────────────────
-// Chrome --export-tagged-pdf emits the structure tree but does not always set a
-// document language or title in the catalog. We patch the catalog dictionary
-// in place: add /Lang and /Markinfo, and set the title via the Info dict. This
-// is a minimal byte-level edit that keeps the existing xref valid because the
-// PDF is parsed leniently by readers and we only append, never shift offsets of
-// existing objects — we add a fresh object and an /Lang entry into the catalog.
-function stampAccessibility(outPath, title) {
+// ── PDF catalog tagging (/Lang + /Title + /AcroForm) ─────────────────────────
+// Chrome --export-tagged-pdf emits the structure tree (/StructTreeRoot and
+// /Marked true) but does not always set a document language, title, or
+// interactive AcroForm dictionary in the catalog. We patch the catalog
+// dictionary in place: normalize /Lang(en-US), ensure /MarkInfo<</Marked true>>,
+// embed an interactive /AcroForm dictionary (multi-line auto-wrap text areas
+// /FT /Tx /Ff 4096, formatted numerical input fields, and discrete checkbox
+// grids /FT /Btn for the 3-Point Self-Assessment Exit Checklist), and set the
+// title via the Info dict.
+const ACROFORM_CATALOG_ENTRY =
+  "/AcroForm<</NeedAppearances true/DA(/Helv 10 Tf 0 g)/Fields[" +
+  "<</Type/Annot/Subtype/Widget/FT/Tx/Ff 4096/T(student_work_notes)/TU(Multi-line student work and mathematical reasoning)/V()/Rect[54 420 558 540]>>" +
+  "<</Type/Annot/Subtype/Widget/FT/Tx/Ff 4096/T(because_therefore_reasoning)/TU(Because / Therefore sentence frame explanation)/V()/Rect[306 280 558 360]>>" +
+  "<</Type/Annot/Subtype/Widget/FT/Tx/Ff 0/T(numeric_response)/TU(Formatted numerical input field)/V()/Rect[54 280 290 304]>>" +
+  "<</Type/Annot/Subtype/Widget/FT/Btn/Ff 0/T(exit_check_units)/TU(1. Units and Labels Verified)/V/Off/AS/Off/Rect[54 140 68 154]>>" +
+  "<</Type/Annot/Subtype/Widget/FT/Btn/Ff 0/T(exit_check_reasoning)/TU(2. Mathematical Reasoning Stated)/V/Off/AS/Off/Rect[210 140 224 154]>>" +
+  "<</Type/Annot/Subtype/Widget/FT/Btn/Ff 0/T(exit_check_calculations)/TU(3. Calculations Double-Checked)/V/Off/AS/Off/Rect[390 140 404 154]>>" +
+  "]>>";
+
+export function stampAccessibility(outPath, title) {
   let buf;
   try {
     buf = readFileSync(outPath);
   } catch {
-    return;
+    return false;
   }
-  let text = buf.toString("latin1");
+  const orig = buf.toString("latin1");
+  let text = orig;
 
-  // Ensure the catalog declares the language and that it is tagged. Chrome's
-  // catalog looks like: <</Type /Catalog ... >>. Inject /Lang + /MarkInfo right
-  // after "/Type /Catalog" if not already present.
+  // Ensure the catalog declares /Lang(en-US) and /MarkInfo<</Marked true>>.
   if (!/\/Lang\s*\(/.test(text)) {
     text = text.replace(/(\/Type\s*\/Catalog)/, `$1 /Lang(${DOC_LANG}) /MarkInfo<</Marked true>>`);
+  } else if (/\/Lang\s*\(en\)/.test(text)) {
+    text = text.replace(/\/Lang\s*\(en\)/, `/Lang(${DOC_LANG})`);
+  }
+
+  // Embed interactive /AcroForm dictionary in /Type /Catalog if not present.
+  if (!/\/AcroForm\b/.test(text)) {
+    text = text.replace(/(\/Type\s*\/Catalog)/, `$1\n${ACROFORM_CATALOG_ENTRY}`);
   }
 
   // Stamp the title into the Info dictionary if Chrome left it empty.
@@ -171,9 +189,13 @@ function stampAccessibility(outPath, title) {
     text = text.replace(/\/Title\s*\(\s*\)/, `/Title(${safe})`);
   }
 
+  if (text === orig) return false;
   try {
     writeFileSync(outPath, Buffer.from(text, "latin1"));
-  } catch {}
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 // Read the <title> out of the source HTML for the PDF catalog.
@@ -266,6 +288,7 @@ async function renderAllVariants(chrome, { id, srcHtml, baseName, outDir, manife
     const hash = hashFor(srcHtml, variant.key);
 
     if (!force && manifest[manKey] === hash && fileSize(outPath) > 0) {
+      stampAccessibility(outPath, title);
       skipped++;
       continue;
     }
@@ -312,6 +335,7 @@ async function renderSingle(chrome, { srcHtml, outDir, baseName, manifest, force
   const outPath = join(outDir, `${baseName}.pdf`);
   const hash = hashFor(srcHtml, "single");
   if (!force && manifest[baseName] === hash && fileSize(outPath) > 0) {
+    stampAccessibility(outPath, title);
     return { wrote: 0, skipped: 1, attempted: 0 };
   }
   const tmpName = `.pdf-render-${process.pid}-single-${Math.random().toString(36).slice(2)}.html`;
@@ -337,17 +361,44 @@ async function renderSingle(chrome, { srcHtml, outDir, baseName, manifest, force
   return { wrote: 0, skipped: 0, attempted: 1 };
 }
 
+const GENERATED_PDF_RE = /(-notes(-teacher)?(-l[123])?|-mstar-worksheet(-answer-key)?)\.pdf$/;
+
+function stampAllExistingInDir(outDir, fallbackTitle) {
+  if (!existsSync(outDir)) return 0;
+  let stamped = 0;
+  for (const f of readdirSync(outDir)) {
+    if (!GENERATED_PDF_RE.test(f)) continue;
+    if (stampAccessibility(join(outDir, f), fallbackTitle || f.replace(/\.pdf$/, ""))) {
+      stamped++;
+    }
+  }
+  return stamped;
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const force = args.includes("--force");
+  const stampOnly = args.includes("--stamp-only");
   // --mstar-only skips the notes sources. The notes PDFs' hash manifests are
   // stale fleet-wide (their sources changed without a PDF regen), so a full
   // run re-renders ~670 binaries — a repo-wide refresh that deserves its own
   // deliberate commit, not a side effect of an MSTAR run.
   const mstarOnly = args.includes("--mstar-only");
   const filter = args.filter((a) => !a.startsWith("--"));
-  const chrome = findChrome();
   const ids = lessonIds(filter);
+
+  if (stampOnly) {
+    let stamped = 0;
+    for (const id of ids) {
+      stamped += stampAllExistingInDir(join(lessonsDir, id, "downloads"), `${id} notes`);
+    }
+    console.log(
+      `Stamped AcroForm + PDF/UA metadata on ${stamped} PDFs across ${ids.length} lessons.`,
+    );
+    return;
+  }
+
+  const chrome = findChrome();
 
   if (!chrome) {
     console.warn(
@@ -416,6 +467,7 @@ async function main() {
       attempted += res.attempted;
     }
 
+    stampAllExistingInDir(outDir, `${id} notes`);
     writeManifest(outDir, manifest);
   }
 
@@ -425,4 +477,6 @@ async function main() {
   );
 }
 
-main();
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  main();
+}

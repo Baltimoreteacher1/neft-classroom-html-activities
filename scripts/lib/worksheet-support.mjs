@@ -231,10 +231,12 @@ function sayItBlock(cfg, reveal, rows) {
 }
 
 function watchOutBlock(cfg) {
-  const text = commonMistakeOf(cfg);
+  const raw = commonMistakeOf(cfg);
+  if (!raw) return "";
+  const text = String(raw).split(/[;—]/)[0].trim();
   if (!text) return "";
   return `<section class="ws-block ws-block-watch">
-    <h2 class="ws-block-title"><span class="ws-block-kicker">Watch out</span>A common mistake</h2>
+    <h2 class="ws-block-title"><span class="ws-block-kicker">Watch out!</span>A common mistake</h2>
     <p class="ws-watch-text">${esc(text)}</p>
   </section>`;
 }

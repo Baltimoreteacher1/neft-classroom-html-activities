@@ -6,7 +6,7 @@ import * as M from './lens-math.mjs';
 import { fmt } from './math.mjs';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const svg = (body, label, h = 190) => `<svg class="lens-svg" viewBox="0 0 600 ${h}" role="img" aria-label="${esc(label)}" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
+const svg = (body, label, h = 190) => `<svg role="img" aria-label="${esc(label)}" class="lens-svg" width="600" height="${h}" viewBox="0 0 600 ${h}" style="background:#FFFFFF" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
 const rect = (x, y, w, h, cls = 'shape', extra = '') => `<rect x="${x}" y="${y}" width="${Math.max(0, w)}" height="${Math.max(0, h)}" class="${cls}" rx="3" ${extra}/>`;
 const line = (x1, y1, x2, y2, cls = '') => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${cls}"/>`;
 const text = (x, y, t, anchor = 'middle', cls = '') => `<text x="${x}" y="${y}" text-anchor="${anchor}" class="${cls}">${esc(t)}</text>`;

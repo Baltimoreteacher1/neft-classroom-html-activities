@@ -7,6 +7,18 @@ import { play } from './sound.mjs';
 import { mountWatch } from './watch.mjs';
 import { controls, numericAnswer } from './math.mjs';
 import { activityStatus, levels, parseKeyIdea } from './progress.mjs';
+import {
+  attachGhostMesh,
+  mountAresColony,
+  mountByteBot,
+  mountMeshClassroomSync,
+  mountSmallGroupStation,
+  mountSpatialInspector,
+  renderTier2DiagramStrip,
+  synthesizeTier3Hint,
+  VisualLogicRewind,
+} from './nextgen.mjs';
+import { renderSnapshotsCard } from './scratchpad.mjs';
 
 const lessonNumber = (id) => id.replace('-', '.');
 
@@ -21,6 +33,18 @@ function stepper(host, lines, count, { onReveal, onAll, label = 'step', lang = '
   host.querySelector('[data-all]').onclick = onAll;
 }
 
+function tokenizeRepairStep(text, stepIdx) {
+  return String(text || '')
+    .split(/(\s+)/)
+    .map((part, tokIdx) => {
+      if (/^\s+$/.test(part)) return part;
+      const isMathToken = /[\d+\-*/=<>:%().,]+/.test(part);
+      return isMathToken
+        ? `<span class="repair-token" data-token-step="${stepIdx}" data-token-index="${tokIdx}">${esc(part)}</span>`
+        : esc(part);
+    })
+    .join('');
+}
 
 /** A collapsible copy of the lab's live model. Its settings and open/closed state are remembered per place. */
 function modelPanel(ctx, key, summary) {
@@ -41,6 +65,7 @@ function modelPanel(ctx, key, summary) {
       level: state.level,
       lang: () => state.lang,
     });
+    attachGhostMesh(slot);
     if (key.startsWith('learn-')) slot.prepend(mountWatch(slot, controls(lab.model)));
   };
   tool.addEventListener('toggle', () => { state.modelOpen[key] = tool.open; if (tool.open) mount(); save(); });
@@ -85,6 +110,7 @@ export function learn(ctx, host) {
       drawTogether();
     }
     bindNotes(stage);
+    mountByteBot(stage, ctx, `byte-learn-${lesson.id}`);
   };
   host.querySelectorAll('[data-lesson]').forEach((b) => (b.onclick = () => { current = Number(b.dataset.lesson); render(); }));
   host.querySelectorAll('[data-lang]').forEach((b) => (b.onclick = () => { state.lang = b.dataset.lang; save(); render(); }));
@@ -151,13 +177,24 @@ export function investigate(ctx, host) {
     }, 700);
   };
   drawPredict();
-  mountModel(host.querySelector('#investigation-model'), lab.model, {
+  const invModelHost = host.querySelector('#investigation-model');
+  mountModel(invModelHost, lab.model, {
     initial: state.models.investigate || lab.model.values,
-    onChange: (values, result) => { const first = !latest; latest = { values, result }; state.models.investigate = values; save(); checkChallenge(result); if (first) drawPredict(); else judgePrediction(result); },
+    onChange: (values, result) => {
+      const first = !latest;
+      latest = { values, result };
+      state.models.investigate = values;
+      VisualLogicRewind.record(state, values, result.equation);
+      save();
+      checkChallenge(result);
+      if (first) drawPredict();
+      else judgePrediction(result);
+    },
     level: state.level,
     lens: true,
     lang: () => state.lang,
   });
+  attachGhostMesh(invModelHost);
   bindNotes(host);
   host.querySelectorAll('[data-capture]').forEach((button) => (button.onclick = () => {
     const i = button.dataset.capture, area = host.querySelector(`#note-investigate-${i}`);
@@ -172,33 +209,133 @@ export function investigate(ctx, host) {
     state.investigated = box.checked ? [...new Set([...state.investigated, i])] : state.investigated.filter((n) => n !== i);
     box.closest('article').classList.toggle('is-done', box.checked); save(); ctx.refreshProgress();
   }));
+  mountSpatialInspector(host, ctx, 'spatial-inv');
+  mountAresColony(host, ctx, 'ares-inv');
+  mountSmallGroupStation(host, ctx, 'sg-inv');
 }
 
 export function practice(ctx, host) {
   const { lab, state, save } = ctx;
   const bank = lab.practice[state.level]; state.practiceIndex ||= {};
   const index = Math.min(state.practiceIndex[state.level] || 0, bank.length - 1), q = bank[index];
-  const record = (state.practice[q.id] ||= { input: '', hints: 0, attempts: 0, correct: false, reviewed: false });
+  const record = (state.practice[q.id] ||= {
+    input: '',
+    hints: 0,
+    hintLog: [],
+    attempts: 0,
+    correct: false,
+    reviewed: false,
+    stemConnector: 'Because',
+    stemExplanation: '',
+  });
+  record.hintLog ||= [];
+  record.stemConnector ||= 'Because';
+  record.stemExplanation ||= '';
   const choices = q.type === 'choice' ? q.choices : q.type === 'repair' ? q.steps : null;
   const titles = { repair: 'Find the first step that needs repair', explain: 'Explain your thinking', number: 'Calculate and predict', choice: 'Choose and justify' };
   const summary = () => activityStatus(lab, state, 'practice');
   const s = summary();
   const nextLevel = state.level === 'support' ? 'core' : state.level === 'core' ? 'stretch' : null;
-  host.innerHTML = `<div class="section-intro"><h2>${levels[state.level].label} practice</h2><p>${bank.length} activities from Lessons ${lab.lessons.map((l) => lessonNumber(l.id)).join(' and ')} and the lab model. Hints never cost progress. Written explanations are saved for a teacher or partner to review.</p></div><div class="practice-progress"><div class="progress-bar" role="progressbar" aria-label="Practice progress" aria-valuemin="0" aria-valuemax="${s.scored}" aria-valuenow="${s.solved}"><span style="width:${s.scored ? (100 * s.solved) / s.scored : 0}%"></span></div><p class="progress-text">${esc(s.summary)}</p></div>${s.status === 'done' ? `<div class="practice-complete"><strong>All ${levels[state.level].label} activities complete.</strong> ${nextLevel ? `Ready for more? Choose ${levels[nextLevel].label} from the level menu.` : 'Try the Create challenge or the games next.'}</div>` : ''}<div class="question-nav" role="group" aria-label="Choose practice activity">${bank.map((p, i) => { const r = state.practice[p.id]; const done = r?.correct || (p.type === 'explain' && r?.reviewed); const tried = r?.attempts > 0 && !done; return `<button type="button" data-question="${i}" class="${done ? 'is-done' : tried ? 'is-tried' : ''}" aria-pressed="${i === index}" aria-label="Activity ${i + 1}${done ? ', complete' : tried ? ', in progress' : ''}">${done ? '✓' : i + 1}</button>`; }).join('')}</div><form class="question"><div class="question-meta"><span class="lesson-chip">Activity ${index + 1} of ${bank.length}</span><span class="lesson-chip quiet-chip">${q.lesson ? `Lesson ${lessonNumber(q.lesson)}` : 'Lab model'}</span><span class="lesson-chip quiet-chip">${titles[q.type]}</span></div><p class="question-prompt">${esc(q.prompt)}</p>${q.parameters ? `<ul class="parameter-list">${q.parameters.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}${choices ? `<fieldset><legend>${q.type === 'repair' ? 'Select the first incorrect step.' : 'Choose one answer.'}</legend>${choices.map((choice, i) => `<label class="choice"><input type="radio" name="answer" value="${i}" ${String(record.input) === String(i) ? 'checked' : ''}><span>${q.type === 'repair' ? `<strong>Step ${i + 1}.</strong> ` : ''}${esc(choice)}</span></label>`).join('')}</fieldset>` : q.type === 'number' ? `<label class="number-answer">Your answer<input name="answer" type="text" inputmode="text" autocomplete="off" value="${esc(record.input)}"><span class="field-hint">Decimals, fractions (3/4), and mixed numbers (1 1/2) are accepted.</span></label>` : `<label class="writing">Your reasoning${q.frame ? `<span class="field-hint">${esc(q.frame)}</span>` : ''}<textarea name="answer" rows="5">${esc(record.input)}</textarea></label>`}<div class="actions"><button type="submit">${q.type === 'explain' ? 'Save and compare reasoning' : 'Check my answer'}</button><button type="button" class="quiet" data-hint></button><button type="button" class="quiet" data-explain ${record.attempts || record.reviewed ? '' : 'hidden'}>Study the explanation</button></div><div class="practice-feedback" role="status"></div><div class="hint-area" aria-live="polite"></div><div class="explanation" hidden></div></form><div class="practice-pagination"><button type="button" class="quiet" data-back ${index === 0 ? 'disabled' : ''}>Previous problem</button><button type="button" data-next ${index === bank.length - 1 ? 'disabled' : ''}>Next problem</button></div>`;
+
+  const repairBuilderHtml =
+    q.type === 'repair'
+      ? `<div class="repair-stem-builder" role="region" aria-label="Diagnostic explanation stem builder">
+          <p class="field-hint"><strong>Fix-the-Misconception Diagnostic:</strong> Tap any flawed math token or line above to highlight it, then build your repair explanation:</p>
+          <div class="repair-stem-row">
+            <label for="repair-stem-select">Reasoning connector
+              <select id="repair-stem-select" data-repair-stem>
+                ${['Because', 'Although', 'Therefore'].map((opt) => `<option value="${opt}" ${record.stemConnector === opt ? 'selected' : ''}>${opt}…</option>`).join('')}
+              </select>
+            </label>
+            <label for="repair-stem-input">How to repair this step (optional)
+              <input id="repair-stem-input" type="text" data-repair-note value="${esc(record.stemExplanation)}" placeholder="e.g., both parts of the ratio must be multiplied by the same factor">
+            </label>
+          </div>
+        </div>`
+      : '';
+
+  host.innerHTML = `<div class="section-intro"><h2>${levels[state.level].label} practice</h2><p>${bank.length} activities from Lessons ${lab.lessons.map((l) => lessonNumber(l.id)).join(' and ')} and the lab model. Hints never cost progress. Written explanations are saved for a teacher or partner to review.</p></div><div class="practice-progress"><div class="progress-bar" role="progressbar" aria-label="Practice progress" aria-valuemin="0" aria-valuemax="${s.scored}" aria-valuenow="${s.solved}"><span style="width:${s.scored ? (100 * s.solved) / s.scored : 0}%"></span></div><p class="progress-text">${esc(s.summary)}</p></div>${s.status === 'done' ? `<div class="practice-complete"><strong>All ${levels[state.level].label} activities complete.</strong> ${nextLevel ? `Ready for more? Choose ${levels[nextLevel].label} from the level menu.` : 'Try the Create challenge or the games next.'}</div>` : ''}<div class="question-nav" role="group" aria-label="Choose practice activity">${bank.map((p, i) => { const r = state.practice[p.id]; const done = r?.correct || (p.type === 'explain' && r?.reviewed); const tried = r?.attempts > 0 && !done; return `<button type="button" data-question="${i}" class="${done ? 'is-done' : tried ? 'is-tried' : ''}" aria-pressed="${i === index}" aria-label="Activity ${i + 1}${done ? ', complete' : tried ? ', in progress' : ''}">${done ? '✓' : i + 1}</button>`; }).join('')}</div><form class="question"><div class="question-meta"><span class="lesson-chip">Activity ${index + 1} of ${bank.length}</span><span class="lesson-chip quiet-chip">${q.lesson ? `Lesson ${lessonNumber(q.lesson)}` : 'Lab model'}</span><span class="lesson-chip quiet-chip">${titles[q.type]}</span></div><p class="question-prompt">${esc(q.prompt)}</p>${q.parameters ? `<ul class="parameter-list">${q.parameters.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}${choices ? `<fieldset><legend>${q.type === 'repair' ? 'Select the first incorrect step (click a step or math token).' : 'Choose one answer.'}</legend>${choices.map((choice, i) => `<label class="choice ${q.type === 'repair' ? 'repair-step-choice' : ''}" ${q.type === 'repair' ? `data-step-line="${i}"` : ''}><input type="radio" name="answer" value="${i}" ${String(record.input) === String(i) ? 'checked' : ''}><span>${q.type === 'repair' ? `<strong>Step ${i + 1}.</strong> ${tokenizeRepairStep(choice, i)}` : esc(choice)}</span></label>`).join('')}</fieldset>${repairBuilderHtml}` : q.type === 'number' ? `<label class="number-answer">Your answer<input name="answer" type="text" inputmode="text" autocomplete="off" value="${esc(record.input)}"><span class="field-hint">Decimals, fractions (3/4), and mixed numbers (1 1/2) are accepted.</span></label>` : `<label class="writing">Your reasoning${q.frame ? `<span class="field-hint">${esc(q.frame)}</span>` : ''}<textarea name="answer" rows="5">${esc(record.input)}</textarea></label>`}<div class="actions"><button type="submit">${q.type === 'explain' ? 'Save and compare reasoning' : 'Check my answer'}</button><button type="button" class="quiet" data-hint></button><button type="button" class="quiet" data-explain ${record.attempts || record.reviewed ? '' : 'hidden'}>Study the explanation</button></div><div class="practice-feedback" role="status"></div><div class="hint-area" aria-live="polite"></div><div class="explanation" hidden></div></form><div class="practice-pagination"><button type="button" class="quiet" data-back ${index === 0 ? 'disabled' : ''}>Previous problem</button><button type="button" data-next ${index === bank.length - 1 ? 'disabled' : ''}>Next problem</button></div>`;
   const form = host.querySelector('form'), status = host.querySelector('.practice-feedback'), explanation = host.querySelector('.explanation');
   // The lab's own model, one tap away: students can test an idea on it while they work the problem.
   form.before(modelPanel(ctx, 'practice', 'Open the lab model to work this out'));
   const explain = () => { explanation.hidden = false; explanation.innerHTML = `<h4>${q.type === 'explain' ? 'Compare your reasoning' : 'Why it works'}</h4><p>${esc(q.explanation)}</p>${q.type === 'explain' ? '<p>This is a model response, not an automatic grade. Does your response name the quantities, show evidence, and explain why the result makes sense?</p>' : ''}`; };
-  const getInput = () => (choices ? (form.querySelector('input:checked')?.value ?? '') : form.elements.answer.value);
-  form.addEventListener('input', () => { record.input = getInput(); save(); });
-  const hints = q.hints?.length ? q.hints : ['Read the question again and identify what is known and what you need to find.', 'Try a worked example or the live model, then return to this problem.'];
+  const getInput = () => (choices ? (form.querySelector('input[name="answer"]:checked')?.value ?? '') : form.elements.answer.value);
+  form.addEventListener('input', () => {
+    record.input = getInput();
+    const stemSel = form.querySelector('[data-repair-stem]');
+    const stemNote = form.querySelector('[data-repair-note]');
+    if (stemSel) record.stemConnector = stemSel.value;
+    if (stemNote) record.stemExplanation = stemNote.value;
+    save();
+  });
+
+  if (q.type === 'repair') {
+    form.querySelectorAll('.repair-token, [data-step-line]').forEach((el) => {
+      el.addEventListener('click', (e) => {
+        const lineEl = e.target.closest('[data-step-line]');
+        if (!lineEl) return;
+        const radio = lineEl.querySelector('input[type="radio"][name="answer"]');
+        if (radio && !radio.checked) {
+          radio.checked = true;
+          record.input = radio.value;
+          save();
+        }
+        form.querySelectorAll('.repair-token.is-highlighted').forEach((t) => t.classList.remove('is-highlighted'));
+        const tok = e.target.closest('.repair-token');
+        if (tok) tok.classList.add('is-highlighted');
+      });
+    });
+  }
+
+  const baseHints = q.hints?.length
+    ? q.hints
+    : [
+        'Read the question again and identify what is known and what you need to find.',
+        'Try a worked example or the live model, then return to this problem.',
+      ];
+  const tier1Text = baseHints[0] || 'Identify the given quantities and what relationship connects them.';
+  const tier2Text = baseHints[1] || 'Use the visual model strip above to align the units before calculating.';
+  const tier3Text = synthesizeTier3Hint(q, baseHints);
+  const totalTiers = 3;
+
   const hintButton = host.querySelector('[data-hint]');
   const drawHints = () => {
-    host.querySelector('.hint-area').innerHTML = hints.slice(0, record.hints).map((h, i) => `<p><strong>Hint ${i + 1}:</strong> ${esc(h)}</p>`).join('');
-    hintButton.textContent = record.hints >= hints.length ? 'All hints shown' : record.hints ? `Next hint (${record.hints} of ${hints.length} shown)` : `Get a hint (${hints.length} available)`;
-    hintButton.disabled = record.hints >= hints.length;
+    const shownCount = Math.min(totalTiers, Number(record.hints) || 0);
+    const tierCards = [];
+    if (shownCount >= 1) {
+      tierCards.push(
+        `<div class="clue-tier-card" data-clue-tier="1"><p class="clue-tier-kicker">Tier 1 · Conceptual Reflection Nudge</p><p><strong>Hint 1:</strong> ${esc(tier1Text)}</p></div>`,
+      );
+    }
+    if (shownCount >= 2) {
+      tierCards.push(
+        `<div class="clue-tier-card" data-clue-tier="2"><p class="clue-tier-kicker">Tier 2 · Visual &amp; Formula Strip</p><div class="clue-diagram-wrap">${renderTier2DiagramStrip(lab.model, q)}</div><p><strong>Hint 2:</strong> ${esc(tier2Text)}</p></div>`,
+      );
+    }
+    if (shownCount >= 3) {
+      tierCards.push(
+        `<div class="clue-tier-card" data-clue-tier="3"><p class="clue-tier-kicker">Tier 3 · First-Step Scaffolded Setup</p><p><strong>Hint 3:</strong> ${esc(tier3Text)}</p></div>`,
+      );
+    }
+    host.querySelector('.hint-area').innerHTML = tierCards.join('');
+    hintButton.textContent =
+      shownCount >= totalTiers
+        ? 'All 3 clue tiers shown'
+        : shownCount
+          ? `Next clue tier (${shownCount} of ${totalTiers} shown)`
+          : `Open clue drawer (3 tiers available)`;
+    hintButton.disabled = shownCount >= totalTiers;
   };
-  hintButton.onclick = () => { record.hints = Math.min(hints.length, record.hints + 1); drawHints(); save(); };
+  hintButton.onclick = () => {
+    record.hints = Math.min(totalTiers, (Number(record.hints) || 0) + 1);
+    const entry = { questionId: q.id, tier: record.hints, timestamp: Date.now(), level: state.level };
+    record.hintLog.push(entry);
+    state.hintHistory ||= [];
+    state.hintHistory.push(entry);
+    drawHints();
+    save();
+    ctx.refreshProgress();
+  };
   host.querySelector('[data-explain]').onclick = explain;
   const refresh = () => {
     const now = summary();
@@ -209,11 +346,12 @@ export function practice(ctx, host) {
   form.onsubmit = (event) => {
     event.preventDefault(); record.input = getInput();
     if (!String(record.input).trim()) { status.className = 'practice-feedback'; status.textContent = 'Enter your response first. You can use a hint whenever you need one.'; return; }
-    if (q.type === 'explain') { record.reviewed = true; status.className = 'practice-feedback saved'; status.textContent = 'Your writing is saved. Compare the reasoning below, then revise if needed.'; explain(); save(); host.querySelector(`[data-question="${index}"]`).textContent = '✓'; refresh(); return; }
+    if (q.type === 'explain') { record.reviewed = true; state.streak = (state.streak || 0) + 1; status.className = 'practice-feedback saved'; status.textContent = 'Your writing is saved. Compare the reasoning below, then revise if needed.'; explain(); save(); host.querySelector(`[data-question="${index}"]`).textContent = '✓'; refresh(); return; }
     const number = q.type === 'number' ? numericAnswer(record.input) : Number(record.input);
     if (!Number.isFinite(number)) { status.className = 'practice-feedback'; status.textContent = 'Use a number, fraction, or mixed number. For example: 0.5, 1/2, or 2 1/2.'; return; }
     const ok = q.type === 'number' ? Math.abs(number - q.answer) <= q.tolerance : number === q.answer;
     record.attempts++; record.correct ||= ok; record.lastCorrect = ok;
+    if (ok) state.streak = (state.streak || 0) + 1;
     host.querySelector('[data-explain]').hidden = false;
     status.className = `practice-feedback ${ok ? 'correct' : 'retry'}`;
     status.textContent = ok ? 'That works. Read the explanation and check it against your strategy.' : q.feedback?.[number] || 'That response needs another look. Use a hint, check the quantities, and try again.';
@@ -231,6 +369,7 @@ export function practice(ctx, host) {
   if (record.correct) { status.className = 'practice-feedback saved'; status.textContent = 'You solved this item earlier. Try it again or study the explanation.'; }
   else if (q.type === 'explain' && record.reviewed) { status.className = 'practice-feedback saved'; status.textContent = 'Your writing is saved. You can revise it and save again.'; }
   drawHints();
+  mountByteBot(host, ctx, 'byte-practice');
 }
 
 export function create(ctx, host) {
@@ -238,7 +377,7 @@ export function create(ctx, host) {
   const criteria = ['I named and labeled the quantities and units.', 'I showed a representation or calculation someone else can follow.', 'I explained why the result makes sense and checked it.'];
   const starters = ['My design is', 'The quantities are', 'My model shows', 'I calculated', 'I checked by', 'This makes sense because'];
   const level = state.level;
-  host.innerHTML = `<div class="section-intro"><h2>Create something worth explaining</h2><p class="large-copy">${esc(lab.create)}</p></div><div class="create-layout"><div><div class="starter-row" role="group" aria-label="Sentence starters"><span>Add a starter:</span>${starters.map((s) => `<button type="button" class="quiet small" data-starter="${esc(s)}">${esc(s)}…</button>`).join('')}</div><label class="writing" for="creation">My design and explanation<textarea id="creation" rows="12">${esc(state.created)}</textarea></label><p class="progress-text" data-words></p><p>Use paper for a drawing, then describe its labels and reasoning here. Include enough detail for someone else to reconstruct your idea.</p></div><aside class="review-card"><h3>Check your work</h3>${criteria.map((c, i) => `<label class="check-item"><input type="checkbox" data-criterion="${i}" ${state.checklist.includes(i) ? 'checked' : ''}><span>${esc(c)}</span></label>`).join('')}<p class="share-status" data-share></p><h3>${level === 'support' ? 'A useful starting frame' : level === 'stretch' ? 'Stretch your explanation' : 'Partner check'}</h3><p>${level === 'support' ? 'My plan is ___. The quantities are ___. My model shows ___. I checked by ___.' : level === 'stretch' ? 'Create a second valid solution, or a convincing counterexample to an incorrect claim. Explain the condition that makes your argument work.' : 'Ask a partner to follow your reasoning without your help. Which step needs another label, example, or explanation?'}</p></aside></div>${textArea('revision', 'One thing I revised, or one question I still have')}<p>Use Download work or Print work to keep your design and reflections.</p>`;
+  host.innerHTML = `<div class="section-intro"><h2>Create something worth explaining</h2><p class="large-copy">${esc(lab.create)}</p></div><div class="create-layout"><div><div class="starter-row" role="group" aria-label="Sentence starters"><span>Add a starter:</span>${starters.map((s) => `<button type="button" class="quiet small" data-starter="${esc(s)}">${esc(s)}…</button>`).join('')}</div><label class="writing" for="creation">My design and explanation<textarea id="creation" rows="12">${esc(state.created)}</textarea></label><p class="progress-text" data-words></p><p>Use paper or the Scratchpad (Alt+S) for a drawing, then describe its labels and reasoning here. Include enough detail for someone else to reconstruct your idea.</p><div id="create-snapshots-slot"></div></div><aside class="review-card"><h3>Check your work</h3>${criteria.map((c, i) => `<label class="check-item"><input type="checkbox" data-criterion="${i}" ${state.checklist.includes(i) ? 'checked' : ''}><span>${esc(c)}</span></label>`).join('')}<p class="share-status" data-share></p><h3>${level === 'support' ? 'A useful starting frame' : level === 'stretch' ? 'Stretch your explanation' : 'Partner check'}</h3><p>${level === 'support' ? 'My plan is ___. The quantities are ___. My model shows ___. I checked by ___.' : level === 'stretch' ? 'Create a second valid solution, or a convincing counterexample to an incorrect claim. Explain the condition that makes your argument work.' : 'Ask a partner to follow your reasoning without your help. Which step needs another label, example, or explanation?'}</p></aside></div>${textArea('revision', 'One thing I revised, or one question I still have')}<p>Use Download work or Print work to keep your design and reflections.</p>`;
   // Build on the live model, then keep a picture of it.
   const studio = document.createElement('section');
   studio.className = 'create-studio'; studio.setAttribute('aria-labelledby', 'create-studio-title');
@@ -246,11 +385,13 @@ export function create(ctx, host) {
     <p class="create-actions"><button type="button" data-add-model>Add this model to my write-up</button><button type="button" data-save-picture>Save my model picture (PNG)</button></p><p class="create-note" role="status" aria-live="polite"></p>`;
   host.querySelector('.create-layout').before(studio);
   let shown = null;
-  mountModel(studio.querySelector('.create-model'), lab.model, {
+  const createModelHost = studio.querySelector('.create-model');
+  mountModel(createModelHost, lab.model, {
     initial: state.models.create || lab.model.values,
     onChange: (values, result) => { shown = result; state.models.create = values; save(); },
     prefix: 'create-model', level: state.level, lang: () => state.lang,
   });
+  attachGhostMesh(createModelHost);
   const note = studio.querySelector('.create-note');
   studio.querySelector('[data-add-model]').onclick = () => {
     if (!shown) return;
@@ -269,6 +410,22 @@ export function create(ctx, host) {
       note.textContent = 'Picture saved to your downloads.';
     } catch { note.textContent = 'Could not save the picture in this browser. Try Print work instead.'; }
   };
+
+  const paintSnapshots = () => {
+    const slot = host.querySelector('#create-snapshots-slot');
+    if (!slot) return;
+    slot.innerHTML = renderSnapshotsCard(state, true);
+    slot.querySelectorAll('[data-remove-snapshot]').forEach((btn) => {
+      btn.onclick = () => {
+        const idx = Number(btn.dataset.removeSnapshot);
+        state.snapshots.splice(idx, 1);
+        save();
+        paintSnapshots();
+      };
+    });
+  };
+  paintSnapshots();
+
   const area = host.querySelector('#creation');
   const refresh = () => {
     const s = activityStatus(lab, state, 'create');
@@ -285,4 +442,5 @@ export function create(ctx, host) {
   }));
   host.querySelectorAll('[data-criterion]').forEach((el) => (el.onchange = () => { state.checklist = [...host.querySelectorAll('[data-criterion]:checked')].map((c) => Number(c.dataset.criterion)); save(); refresh(); }));
   bindNotes(host); refresh();
+  mountMeshClassroomSync(host, ctx, 'mesh-create');
 }

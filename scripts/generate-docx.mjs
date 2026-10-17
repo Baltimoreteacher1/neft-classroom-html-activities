@@ -64,16 +64,6 @@ const LINE_GREY = "AFBECC"; // handwriting rules
 
 const choiceLetter = (i) => String.fromCharCode(65 + i);
 
-const NO_BORDER = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
-const NO_BORDERS = {
-  top: NO_BORDER,
-  bottom: NO_BORDER,
-  left: NO_BORDER,
-  right: NO_BORDER,
-  insideHorizontal: NO_BORDER,
-  insideVertical: NO_BORDER,
-};
-
 // ── vocab image rasterization (unchanged pipeline: SVG → PNG via resvg) ────────
 // Rasterize a term's vocab illustration (an SVG on disk) to a PNG buffer so it
 // embeds in Word natively. Memoized per file. Returns { data, width, height }
@@ -398,100 +388,159 @@ function objectivesBlock(cfg) {
   return [spacer(140), calloutBox(inner), spacer(40)];
 }
 
-// ── VOCABULARY (cards in a borderless 2-col table: image | term + meaning) ─────
+// ── VOCABULARY (4-column inline Vocabulary Anchor Box: 9360 DXA total) ────────
 function vocabBlock(vocab = []) {
   if (!vocab.length) return [];
   const out = [
     sectionHeading("Key Vocabulary"),
-    muted("Look at the picture, read the word, then read what it means."),
+    muted("Review each concept term, definition, non-example, and visual clue."),
   ];
 
-  for (const v of vocab) {
-    const pic = vocabPng(v.term, 110);
+  const cellBorder = { style: BorderStyle.SINGLE, size: 6, color: RULE };
+  const tableBorders = {
+    top: cellBorder,
+    bottom: cellBorder,
+    left: cellBorder,
+    right: cellBorder,
+    insideHorizontal: cellBorder,
+    insideVertical: cellBorder,
+  };
 
-    // Left cell: image (or a small placeholder note). Right cell: term + meaning.
-    const leftChildren = pic
-      ? [
-          new Paragraph({
-            alignment: AlignmentType.CENTER,
-            spacing: { after: 0 },
-            children: [
-              new ImageRun({
-                type: "png",
-                data: pic.data,
-                transformation: { width: pic.width, height: pic.height },
-              }),
-            ],
-          }),
-        ]
-      : [
-          new Paragraph({
-            alignment: AlignmentType.CENTER,
-            children: [new TextRun({ text: "📐", size: 40, color: MUTED })],
-          }),
-        ];
+  const headerHeaders = [
+    { label: "Concept Term", width: 1800 },
+    { label: "Student-Friendly Definition", width: 3160 },
+    { label: "Non-Example", width: 2200 },
+    { label: "Visual Clue", width: 2200 },
+  ];
 
-    const rightChildren = [
-      para(
-        [
-          new TextRun({ text: v.term, bold: true, color: NAVY, size: 24 }),
-          v.termEs
-            ? new TextRun({
-                text: `   ${v.termEs}`,
-                italics: true,
-                color: MUTED,
-                size: 19,
-              })
-            : new TextRun(""),
-        ],
-        { spacing: { after: 50 } },
-      ),
-      para(new TextRun({ text: v.definition || "", size: 21 }), {
-        spacing: { after: v.visual ? 40 : 0 },
+  const headerRow = new TableRow({
+    tableHeader: true,
+    cantSplit: true,
+    children: headerHeaders.map(
+      (h) =>
+        new TableCell({
+          width: { size: h.width, type: WidthType.DXA },
+          shading: { type: ShadingType.CLEAR, fill: BOX_BG, color: "auto" },
+          margins: { top: 80, bottom: 80, left: 100, right: 100 },
+          children: [
+            para(new TextRun({ text: h.label, bold: true, color: NAVY, size: 19 }), {
+              spacing: { after: 0 },
+            }),
+          ],
+        }),
+    ),
+  });
+
+  const dataRows = vocab.map((v) => {
+    const pic = vocabPng(v.term, 92);
+
+    const termChildren = [
+      para(new TextRun({ text: v.term || "", bold: true, color: NAVY, size: 21 }), {
+        spacing: { after: v.termEs ? 30 : 0 },
       }),
     ];
-    if (v.visual) {
-      rightChildren.push(
-        para(
-          [
-            new TextRun({ text: "Example:  ", bold: true, color: TEAL, size: 18 }),
-            new TextRun({ text: v.visual, italics: true, color: MUTED, size: 18 }),
+    if (v.termEs) {
+      termChildren.push(
+        para(new TextRun({ text: v.termEs, italics: true, color: MUTED, size: 18 }), {
+          spacing: { after: 0 },
+        }),
+      );
+    }
+
+    const defChildren = [
+      para(new TextRun({ text: v.definition || "", size: 20 }), {
+        spacing: { after: 0 },
+      }),
+    ];
+
+    const nonExampleText =
+      v.nonExample ||
+      `Not ${v.term || "this concept"}: write a counter-example that breaks the definition.`;
+    const nonExampleChildren = [
+      para(new TextRun({ text: nonExampleText, italics: !v.nonExample, color: MUTED, size: 19 }), {
+        spacing: { after: 40 },
+      }),
+      ...writeline(1),
+    ];
+
+    const visualChildren = [];
+    if (pic) {
+      visualChildren.push(
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          spacing: { after: v.visual ? 40 : 0 },
+          children: [
+            new ImageRun({
+              type: "png",
+              data: pic.data,
+              transformation: { width: pic.width, height: pic.height },
+            }),
           ],
-          { spacing: { after: 0 } },
+        }),
+      );
+    }
+    if (v.visual) {
+      visualChildren.push(
+        para(new TextRun({ text: v.visual, italics: true, color: MUTED, size: 18 }), {
+          spacing: { after: 0 },
+        }),
+      );
+    }
+    if (!visualChildren.length) {
+      visualChildren.push(
+        para(
+          new TextRun({
+            text: "Sketch a quick model or diagram.",
+            italics: true,
+            color: MUTED,
+            size: 18,
+          }),
+          {
+            spacing: { after: 0 },
+          },
         ),
       );
     }
 
-    out.push(
-      new Table({
-        width: { size: 100, type: WidthType.PERCENTAGE },
-        borders: {
-          ...NO_BORDERS,
-          bottom: { style: BorderStyle.SINGLE, size: 4, color: RULE },
-        },
-        columnWidths: [1800, 7560],
-        rows: [
-          new TableRow({
-            cantSplit: true,
-            children: [
-              new TableCell({
-                width: { size: 1800, type: WidthType.DXA },
-                verticalAlign: VerticalAlign.CENTER,
-                margins: { top: 100, bottom: 100, left: 40, right: 120 },
-                children: leftChildren,
-              }),
-              new TableCell({
-                width: { size: 7560, type: WidthType.DXA },
-                verticalAlign: VerticalAlign.CENTER,
-                margins: { top: 100, bottom: 100, left: 40, right: 40 },
-                children: rightChildren,
-              }),
-            ],
-          }),
-        ],
-      }),
-    );
-  }
+    return new TableRow({
+      cantSplit: true,
+      children: [
+        new TableCell({
+          width: { size: 1800, type: WidthType.DXA },
+          verticalAlign: VerticalAlign.TOP,
+          margins: { top: 80, bottom: 80, left: 100, right: 100 },
+          children: termChildren,
+        }),
+        new TableCell({
+          width: { size: 3160, type: WidthType.DXA },
+          verticalAlign: VerticalAlign.TOP,
+          margins: { top: 80, bottom: 80, left: 100, right: 100 },
+          children: defChildren,
+        }),
+        new TableCell({
+          width: { size: 2200, type: WidthType.DXA },
+          verticalAlign: VerticalAlign.TOP,
+          margins: { top: 80, bottom: 80, left: 100, right: 100 },
+          children: nonExampleChildren,
+        }),
+        new TableCell({
+          width: { size: 2200, type: WidthType.DXA },
+          verticalAlign: VerticalAlign.TOP,
+          margins: { top: 80, bottom: 80, left: 100, right: 100 },
+          children: visualChildren,
+        }),
+      ],
+    });
+  });
+
+  out.push(
+    new Table({
+      width: { size: 9360, type: WidthType.DXA },
+      borders: tableBorders,
+      columnWidths: [1800, 3160, 2200, 2200],
+      rows: [headerRow, ...dataRows],
+    }),
+  );
   return out;
 }
 
@@ -802,14 +851,28 @@ function gatherPracticeTiered(practice = {}, excludeStems = new Set(), maxTotal 
   return groups;
 }
 
-// ── INDEPENDENT PRACTICE / "You Do" (numbered problems + work space) ─────────
-function independentPracticeBlock(cfg, excludeStems = new Set(), level = null) {
+// ── INDEPENDENT PRACTICE / "You Do" (3-column reasoning table: 9360 DXA) ─────
+function independentPracticeBlock(cfg, excludeStems = new Set(), level = null, teacher = false) {
   const groups = gatherPracticeTiered(cfg.practice, excludeStems, 6, level);
   if (!groups.length) return [];
 
   const out = [sectionHeading("Independent Practice")];
-  out.push(subHeading("On Your Own", "You Do — show your work", AMBER));
-  out.push(muted("Solve each problem. Show your thinking in the work box."));
+  out.push(subHeading("On Your Own", "You Do — show your work and reasoning", AMBER));
+  out.push(
+    muted(
+      "Solve each problem in the middle column and explain your reasoning using the sentence starters on the right.",
+    ),
+  );
+
+  const cellBorder = { style: BorderStyle.SINGLE, size: 6, color: RULE };
+  const tableBorders = {
+    top: cellBorder,
+    bottom: cellBorder,
+    left: cellBorder,
+    right: cellBorder,
+    insideHorizontal: cellBorder,
+    insideVertical: cellBorder,
+  };
 
   groups.forEach((group) => {
     // Label the differentiation tier that already exists in the config so the
@@ -817,29 +880,171 @@ function independentPracticeBlock(cfg, excludeStems = new Set(), level = null) {
     out.push(subHeading(group.label, group.cue, group.color));
     group.items.forEach((it, idx) => {
       const num = group.startIndex + idx + 1;
-      out.push(
+
+      const col1Children = [
         para(
           [
-            new TextRun({ text: `${num}.  `, bold: true, color: NAVY, size: 22 }),
-            new TextRun({ text: it.stem, bold: true, size: 21 }),
+            new TextRun({ text: `${num}.  `, bold: true, color: NAVY, size: 21 }),
+            new TextRun({ text: it.stem, bold: true, size: 20 }),
           ],
-          { spacing: { before: 160, after: 60 }, keepNext: true },
+          { spacing: { after: 60 } },
         ),
-      );
+      ];
       if (Array.isArray(it.choices)) {
         it.choices.forEach((c, j) =>
-          out.push(
-            para(new TextRun({ text: `${choiceLetter(j)})  ${c}`, size: 20 }), {
-              indent: { left: 420 },
-              spacing: { after: 40 },
+          col1Children.push(
+            para(new TextRun({ text: `${choiceLetter(j)})  ${c}`, size: 19 }), {
+              indent: { left: 180 },
+              spacing: { after: 30 },
             }),
           ),
         );
-        out.push(spacer(20));
-        out.push(workBox(2, AMBER_BG));
-      } else {
-        out.push(workBox(4, AMBER_BG));
       }
+
+      const col2Children = [];
+      if (teacher) {
+        let ans = "";
+        if (Array.isArray(it.choices) && typeof it.correctIndex === "number") {
+          ans = `${choiceLetter(it.correctIndex)})  ${it.choices[it.correctIndex]}`;
+        } else if (it.sampleAnswer) {
+          ans = it.sampleAnswer;
+        }
+        col2Children.push(
+          para(
+            [
+              new TextRun({ text: "Solution:  ", bold: true, color: TEAL, size: 19 }),
+              new TextRun({ text: ans || "Answers vary.", bold: true, size: 19 }),
+            ],
+            { spacing: { after: 40 } },
+          ),
+        );
+        if (it.explanation) {
+          col2Children.push(
+            para(new TextRun({ text: it.explanation, italics: true, color: MUTED, size: 18 }), {
+              spacing: { after: 40 },
+            }),
+          );
+        }
+        col2Children.push(...writeline(2));
+      } else {
+        col2Children.push(...writeline(4));
+      }
+
+      const col3Children = [
+        para(
+          [
+            new TextRun({ text: "Because... ", bold: true, color: NAVY, size: 19 }),
+            new TextRun({ text: "________________", color: LINE_GREY, size: 19 }),
+          ],
+          { spacing: { after: 40 } },
+        ),
+        ...writeline(1),
+        para(
+          [
+            new TextRun({ text: "Although... ", bold: true, color: PURPLE, size: 19 }),
+            new TextRun({ text: "_______________", color: LINE_GREY, size: 19 }),
+          ],
+          { spacing: { before: 80, after: 40 } },
+        ),
+        ...writeline(1),
+        para(
+          [
+            new TextRun({ text: "Therefore... ", bold: true, color: TEAL, size: 19 }),
+            new TextRun({ text: "______________", color: LINE_GREY, size: 19 }),
+          ],
+          { spacing: { before: 80, after: 40 } },
+        ),
+        ...writeline(1),
+      ];
+
+      out.push(
+        new Table({
+          width: { size: 9360, type: WidthType.DXA },
+          borders: tableBorders,
+          columnWidths: [2800, 3560, 3000],
+          rows: [
+            new TableRow({
+              tableHeader: true,
+              cantSplit: true,
+              children: [
+                new TableCell({
+                  width: { size: 2800, type: WidthType.DXA },
+                  shading: { type: ShadingType.CLEAR, fill: BOX_BG, color: "auto" },
+                  margins: { top: 60, bottom: 60, left: 100, right: 100 },
+                  children: [
+                    para(
+                      new TextRun({
+                        text: "CORE PROBLEM / GIVEN REPRESENTATION",
+                        bold: true,
+                        color: NAVY,
+                        size: 16,
+                      }),
+                      { spacing: { after: 0 } },
+                    ),
+                  ],
+                }),
+                new TableCell({
+                  width: { size: 3560, type: WidthType.DXA },
+                  shading: { type: ShadingType.CLEAR, fill: BOX_BG, color: "auto" },
+                  margins: { top: 60, bottom: 60, left: 100, right: 100 },
+                  children: [
+                    para(
+                      new TextRun({
+                        text: "WORKING SPACE / CALCULATION STEPS",
+                        bold: true,
+                        color: NAVY,
+                        size: 16,
+                      }),
+                      { spacing: { after: 0 } },
+                    ),
+                  ],
+                }),
+                new TableCell({
+                  width: { size: 3000, type: WidthType.DXA },
+                  shading: { type: ShadingType.CLEAR, fill: AMBER_BG, color: "auto" },
+                  margins: { top: 60, bottom: 60, left: 100, right: 100 },
+                  children: [
+                    para(
+                      new TextRun({
+                        text: "EXPLAIN YOUR REASONING",
+                        bold: true,
+                        color: AMBER,
+                        size: 16,
+                      }),
+                      { spacing: { after: 0 } },
+                    ),
+                  ],
+                }),
+              ],
+            }),
+            new TableRow({
+              cantSplit: true,
+              children: [
+                new TableCell({
+                  width: { size: 2800, type: WidthType.DXA },
+                  verticalAlign: VerticalAlign.TOP,
+                  margins: { top: 80, bottom: 80, left: 100, right: 100 },
+                  children: col1Children,
+                }),
+                new TableCell({
+                  width: { size: 3560, type: WidthType.DXA },
+                  verticalAlign: VerticalAlign.TOP,
+                  margins: { top: 80, bottom: 80, left: 100, right: 100 },
+                  children: col2Children,
+                }),
+                new TableCell({
+                  width: { size: 3000, type: WidthType.DXA },
+                  verticalAlign: VerticalAlign.TOP,
+                  shading: { type: ShadingType.CLEAR, fill: AMBER_BG, color: "auto" },
+                  margins: { top: 80, bottom: 80, left: 100, right: 100 },
+                  children: col3Children,
+                }),
+              ],
+            }),
+          ],
+        }),
+      );
+      out.push(spacer(80));
     });
   });
 
@@ -912,7 +1117,68 @@ function writingBlock(cfg) {
   return out;
 }
 
-// ── REFLECT / EXIT TICKET ─────────────────────────────────────────────────────
+// ── REFLECT / EXIT TICKET (with 3-item self-validation checklist table) ──────
+function exitSelfCheckTable() {
+  const cellBorder = { style: BorderStyle.SINGLE, size: 6, color: RULE };
+  const checks = [
+    "☐ 1. Units & Labels Verified",
+    "☐ 2. Reasoning Stated (Because / Although / Therefore)",
+    "☐ 3. Calculations Double-Checked",
+  ];
+  return new Table({
+    width: { size: 9360, type: WidthType.DXA },
+    borders: {
+      top: cellBorder,
+      bottom: cellBorder,
+      left: cellBorder,
+      right: cellBorder,
+      insideHorizontal: cellBorder,
+      insideVertical: cellBorder,
+    },
+    columnWidths: [3120, 3120, 3120],
+    rows: [
+      new TableRow({
+        tableHeader: true,
+        cantSplit: true,
+        children: [
+          new TableCell({
+            columnSpan: 3,
+            width: { size: 9360, type: WidthType.DXA },
+            shading: { type: ShadingType.CLEAR, fill: BOX_BG, color: "auto" },
+            margins: { top: 60, bottom: 60, left: 100, right: 100 },
+            children: [
+              para(
+                new TextRun({
+                  text: "EXIT CHECK · 3-POINT SELF-ASSESSMENT CHECKLIST",
+                  bold: true,
+                  color: NAVY,
+                  size: 18,
+                }),
+                { spacing: { after: 0 } },
+              ),
+            ],
+          }),
+        ],
+      }),
+      new TableRow({
+        cantSplit: true,
+        children: checks.map(
+          (label) =>
+            new TableCell({
+              width: { size: 3120, type: WidthType.DXA },
+              margins: { top: 80, bottom: 80, left: 100, right: 100 },
+              children: [
+                para(new TextRun({ text: label, bold: true, color: INK, size: 18 }), {
+                  spacing: { after: 0 },
+                }),
+              ],
+            }),
+        ),
+      }),
+    ],
+  });
+}
+
 function reflectBlock(cfg) {
   const et = (cfg.reflect || {}).exitTicket || {};
   if (!et.stem) return [];
@@ -940,6 +1206,8 @@ function reflectBlock(cfg) {
   } else {
     out.push(...writeline(4));
   }
+  out.push(spacer(60));
+  out.push(exitSelfCheckTable());
   return out;
 }
 
@@ -1277,7 +1545,7 @@ function buildDoc(id, cfg, variant = "student", level = null) {
         // student through a second modelled problem is not enrichment. L1 and L2
         // keep it — it is the bridge from watching to doing.
         ...(level === "l3" ? [] : guidedPracticeBlock(cfg, worked)),
-        ...independentPracticeBlock(cfg, excludeStems, level),
+        ...independentPracticeBlock(cfg, excludeStems, level, teacher),
         ...reflectBlock(cfg),
         // Answer Key & Teacher Guide only on the teacher copy.
         ...(teacher ? answerKeyBlock(cfg, worked, excludeStems) : []),

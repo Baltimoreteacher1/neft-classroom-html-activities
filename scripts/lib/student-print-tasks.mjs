@@ -353,7 +353,7 @@ function renderToolWorkspace(item) {
 }
 
 // Render one practice/explore item into a static, answer-free block.
-export function renderItem(item, idx) {
+export function renderItem(item, idx, opts = {}) {
   if (!item || typeof item !== "object") return "";
   validateStudentPrint(item.studentPrint);
   const type = item.type || "open-response";
@@ -408,12 +408,23 @@ export function renderItem(item, idx) {
   const directions = item.studentPrint ? item.studentPrint.instructions : item.instructions;
   const instructions =
     directions && directions !== q ? `<p class="task-directions">${esc(directions)}</p>` : "";
+  const content = opts.dualWorkspace
+    ? `<div class="dual-workspace"><div class="dw-col dw-given"><div class="dw-head">GIVEN DATA / MODEL</div>${instructions}${body}</div><div class="dw-col dw-thinking"><div class="dw-head">STUDENT THINKING &amp; SENTENCE FRAME</div><p class="frame">${esc(item.sentenceFrame || "Because ___ , therefore ___ .")}</p>${workLines(3)}</div></div>`
+    : `${instructions}${body}`;
   // data-practice-item is the anchor the runtime support layer uses to mark the
   // tail of the set optional when a teacher applies the shorter-practice-set
   // modification. A semantic marker, not a CSS selector, so re-styling the
   // packet cannot quietly break the one support that changes the task.
-  return `<div class="item" data-practice-item data-task-type="${esc(type)}">${num ? `<p class="qtext">${num}${esc(q)}</p>` : q ? `<p class="qtext">${esc(q)}</p>` : ""}${instructions}${body}</div>`;
+  return `<div class="item" data-practice-item data-task-type="${esc(type)}">${num ? `<p class="qtext">${num}${esc(q)}</p>` : q ? `<p class="qtext">${esc(q)}</p>` : ""}${content}</div>`;
 }
+
+export const DUAL_WORKSPACE_CSS = `
+  .dual-workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 0.14in; margin-top: 8px; align-items: start; }
+  .dw-col { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 10px; background: #ffffff; }
+  .dw-thinking { background: #f8fafc; }
+  .dw-head { font-size: 9pt; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #0f172a; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; margin-bottom: 6px; }
+  @media (max-width: 560px) { .dual-workspace { grid-template-columns: 1fr; } }
+`;
 
 // Mixed legacy fields sometimes contain worked answers. This explicit authored
 // contract selects what the student may see instead of guessing from prose.

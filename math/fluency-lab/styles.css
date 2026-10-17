@@ -1546,3 +1546,204 @@ html.reading-font li {
   padding-top: 0.05in;
   min-width: 2.2in;
 }
+
+/* KineticDecomposer, FlowPacerEngine, FluencyTelemetryHUD & SpacedZPDEngine */
+.fluency-micro-hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem 1rem;
+  padding: 0.6rem 0.9rem;
+  margin-bottom: 0.85rem;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  contain: layout style;
+}
+
+.fluency-hud-domain {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.fluency-hud-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.fluency-hud-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1e293b;
+  transition: box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.fluency-hud-pill.is-flow-glow {
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.18);
+}
+
+.focus-orbit-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.focus-orbit-svg {
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.focus-orbit-ring {
+  transform-origin: 18px 18px;
+  animation: fluencyOrbitPulse 882ms ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .focus-orbit-ring {
+    animation: none;
+  }
+}
+
+body.focus-mode .focus-orbit-ring {
+  animation: none;
+}
+
+@keyframes fluencyOrbitPulse {
+  from {
+    transform: scale(0.88);
+    opacity: 0.65;
+  }
+  to {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+
+.flow-dilation-nudge {
+  margin: 0.55rem 0;
+  padding: 0.55rem 0.85rem;
+  border-radius: 8px;
+  background: #f0fdfa;
+  border-left: 4px solid #0f766e;
+  color: #134e4a;
+  font-size: 0.88rem;
+  font-weight: 700;
+  transition: opacity 180ms ease;
+}
+
+.kinetic-decomposer-card {
+  margin-top: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  contain: layout style;
+}
+
+.kinetic-decomposer-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.kinetic-decomposer-head strong {
+  font-size: 0.88rem;
+  color: #0f172a;
+}
+
+.kinetic-slice-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.kinetic-slice-btn {
+  min-height: 48px;
+  min-width: 48px;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  border: 1.5px solid #17345f;
+  background: #f8fafc;
+  color: #17345f;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.kinetic-slice-btn:hover,
+.kinetic-slice-btn[aria-pressed="true"] {
+  background: #17345f;
+  color: #ffffff;
+}
+
+.kinetic-slice-btn:focus-visible {
+  outline: 3px solid #0f766e;
+  outline-offset: 2px;
+}
+
+.fluency-telemetry-drawer {
+  margin-top: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: #0f172a;
+  color: #f8fafc;
+  border-radius: 10px;
+  font-size: 0.82rem;
+}
+
+.fluency-telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.5rem;
+}
+
+.fluency-telemetry-cell {
+  background: #1e293b;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #334155;
+}
+
+.fluency-profile-card {
+  margin-top: 1rem;
+  padding: 1rem 1.15rem;
+  background: #f8fafc;
+  border: 1.5px solid #94a3b8;
+  border-left: 5px solid #17345f;
+  border-radius: 10px;
+}
+
+.fluency-profile-card h4 {
+  margin: 0 0 0.45rem;
+  color: #0f172a;
+}
+
+.fluency-profile-card p {
+  margin: 0.3rem 0;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+

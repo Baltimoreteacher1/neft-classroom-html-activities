@@ -16,12 +16,13 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
-import { writeGenerated } from "./lib/preserve-injected.mjs";
+import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 
 import {
   answerBlank,
+  DUAL_WORKSPACE_CSS,
   esc,
   renderChoices,
   renderItem,
@@ -39,11 +40,32 @@ const SUPPORT_SLOTS = {
   "Exit Ticket": "response",
 };
 
-function section(title, emoji, inner) {
+const SECTION_IDS = {
+  "Learning Goals": "sec-hook",
+  "Notice & Wonder": "sec-notice-wonder",
+  Vocabulary: "sec-vocab",
+  Launch: "sec-worked-model",
+  Explore: "sec-explore",
+  Practice: "sec-practice",
+  "Exit Ticket": "sec-exit-ticket",
+};
+
+function section(title, emoji, inner, extraClass = "") {
   if (!inner) return "";
   const slot = SUPPORT_SLOTS[title];
   const slotAttr = slot ? ` data-support-slot="${slot}"` : "";
-  return `<section class="lp-section"${slotAttr}><h2>${emoji ? esc(emoji) + " " : ""}${esc(title)}</h2>${inner}</section>`;
+  const secId = SECTION_IDS[title];
+  const idAttr = secId ? ` id="${secId}"` : "";
+  const cls = `lp-section${extraClass ? ` ${extraClass}` : ""}`;
+  return `<section${idAttr} class="${cls}"${slotAttr}><h2>${emoji ? esc(emoji) + " " : ""}${esc(title)}</h2>${inner}</section>`;
+}
+
+function studentSafeMistake(raw) {
+  const src = String(raw || "").trim();
+  if (!src) return "";
+  const cut = src.split(/[;—]/)[0].trim();
+  const firstSentence = (cut.match(/[^.!?]+[.!?]+/) || [cut])[0].trim();
+  return firstSentence || cut;
 }
 
 // ---- Full-lesson builder --------------------------------------------------
@@ -52,30 +74,42 @@ function buildPrintable(config) {
   const id = config.lessonId || "";
   const bilingual = (en, es) => `${esc(en)}${es ? ` <span class="es">${esc(es)}</span>` : ""}`;
 
-  // Objectives
+  // Objectives + The Big Hook / Why This Matters (Slate/Navy Theme Container)
+  const hookNarrative = config.launch?.narrative || config.connect?.scenario || "";
   const objectives = section(
     "Learning Goals",
     "🎯",
-    [
-      config.contentObjective
-        ? `<p><strong>Content:</strong> ${bilingual(config.contentObjective, config.contentObjectiveEs)}</p>`
-        : "",
-      config.languageObjective
-        ? `<p><strong>Language:</strong> ${bilingual(config.languageObjective, config.languageObjectiveEs)}</p>`
-        : "",
-    ].join(""),
+    `<div class="hook-banner">
+      <div class="hook-badge">THE BIG HOOK · WHY THIS MATTERS</div>
+      ${hookNarrative ? `<p class="hook-narrative">${esc(hookNarrative)}</p>` : ""}
+      ${
+        config.contentObjective
+          ? `<p class="hook-goal"><strong>Content:</strong> ${bilingual(config.contentObjective, config.contentObjectiveEs)}</p>`
+          : ""
+      }
+      ${
+        config.languageObjective
+          ? `<p class="hook-goal"><strong>Language:</strong> ${bilingual(config.languageObjective, config.languageObjectiveEs)}</p>`
+          : ""
+      }
+    </div>`,
+    "lp-hook-section",
   );
 
-  // Notice & Wonder
+  // Notice & Wonder (Soft Cool Tint + 2-column writing grid)
   const nw = config.noticeAndWonder;
   const noticeWonder = nw
     ? section(
         "Notice & Wonder",
         "👀",
-        `${nw.context ? `<p class="context">${esc(nw.context)}</p>` : ""}
-         ${nw.image ? `<figure class="notice-figure"><img src="${esc(nw.image)}" alt="${esc(nw.imageAlt || nw.alt || nw.context || "Notice and Wonder lesson visual")}" loading="eager" decoding="sync"></figure>` : ""}
-         <p><strong>I notice…</strong></p>${workLines(2)}
-         <p><strong>I wonder…</strong></p>${workLines(2)}`,
+        `<div class="nw-box">
+          ${nw.context ? `<p class="context">${esc(nw.context)}</p>` : ""}
+          ${nw.image ? `<figure class="notice-figure"><img src="${esc(nw.image)}" alt="${esc(nw.imageAlt || nw.alt || nw.context || "Notice and Wonder lesson visual")}" loading="eager" decoding="sync"></figure>` : ""}
+          <div class="nw-grid">
+            <div class="nw-col"><p><strong>I Notice...</strong></p>${workLines(2)}</div>
+            <div class="nw-col"><p><strong>I Wonder...</strong></p>${workLines(2)}</div>
+          </div>
+        </div>`,
       )
     : "";
 
@@ -108,7 +142,7 @@ function buildPrintable(config) {
     .join("");
   const turnTalk = tt ? section("Turn & Talk", "💬", tt) : "";
 
-  // Launch
+  // Launch (Dual-Column Workspace preserving every iDo.lines number verbatim)
   const ci = config.launch?.conceptIntro;
   const launchInner = [
     config.launch?.narrative ? `<p class="context">${esc(config.launch.narrative)}</p>` : "",
@@ -119,7 +153,20 @@ function buildPrintable(config) {
       const step = ci?.[k];
       if (!step) return "";
       const lines = (step.lines || []).map((l) => `<li>${esc(l)}</li>`).join("");
-      return `<div class="cistep"><p class="cititle">${esc(step.title || k)}</p><ul>${lines}</ul></div>`;
+      return `<div class="cistep">
+        <p class="cititle">${esc(step.title || k)}</p>
+        <div class="dual-workspace">
+          <div class="dw-col dw-given">
+            <div class="dw-head">GIVEN DATA / MODEL</div>
+            <ul>${lines}</ul>
+          </div>
+          <div class="dw-col dw-thinking">
+            <div class="dw-head">STUDENT THINKING &amp; SENTENCE FRAME</div>
+            <p class="frame">Because ___ , therefore ___ .</p>
+            ${workLines(2)}
+          </div>
+        </div>
+      </div>`;
     }),
   ].join("");
   const launch = launchInner ? section("Launch", "🚀", launchInner) : "";
@@ -127,7 +174,7 @@ function buildPrintable(config) {
   // Explore
   const ex = config.explore;
   const exploreInner = ex
-    ? `${renderItem(ex, null)}${
+    ? `${renderItem(ex, null, { dualWorkspace: true })}${
         ex.discourse?.prompt
           ? `<p class="frame">${esc(ex.discourse.prompt)}${ex.discourse.sentenceFrame ? " — " + esc(ex.discourse.sentenceFrame) : ""}</p>${workLines(2)}`
           : ""
@@ -135,14 +182,24 @@ function buildPrintable(config) {
     : "";
   const explore = exploreInner ? section("Explore", "🔍", exploreInner) : "";
 
-  // Practice (on-level set; fall back to approaching, then any band)
+  // Watch Out! Misconception Badge (Coral Accent Banner) + Practice
   const p = config.practice || {};
+  const mistakeText = studentSafeMistake(p.commonMistake);
+  const watchOutBanner = mistakeText
+    ? `<div class="watch-out-banner" role="note" aria-label="Watch Out misconception alert">
+        <div class="watch-out-badge">⚠️ WATCH OUT! · COMMON MISCONCEPTION</div>
+        <p class="watch-out-text">${esc(mistakeText)}</p>
+      </div>`
+    : "";
   const band =
     (p.onLevel && p.onLevel.length && p.onLevel) ||
     (p.approaching && p.approaching.length && p.approaching) ||
     (p.extending && p.extending.length && p.extending) ||
     [];
-  const practiceInner = band.length ? band.map((it, i) => renderItem(it, i)).join("") : "";
+  const practiceItems = band.length
+    ? band.map((it, i) => renderItem(it, i, { dualWorkspace: true })).join("")
+    : "";
+  const practiceInner = watchOutBanner || practiceItems ? `${watchOutBanner}${practiceItems}` : "";
   const practice = practiceInner ? section("Practice", "✏️", practiceInner) : "";
 
   // Connect
@@ -169,6 +226,41 @@ function buildPrintable(config) {
     : "";
   const reflect = reflectInner ? section("Exit Ticket", "🎟️", reflectInner) : "";
 
+  // 3-Point Self-Assessment Exit Checklist at Footer
+  const exitChecklist = `<section id="sec-exit-checklist" class="lp-section exit-checklist-box" aria-label="Self-Assessment Exit Checklist">
+    <h2>✅ 3-Point Self-Assessment Exit Checklist</h2>
+    <ul class="exit-check-grid">
+      <li>☐ <strong>1. Units &amp; Labels Verified</strong> — Every quantity includes its unit or label.</li>
+      <li>☐ <strong>2. Mathematical Reasoning Stated</strong> — Explained using <em>Because… / Therefore…</em></li>
+      <li>☐ <strong>3. Calculations Double-Checked</strong> — Arithmetic and signs verified against the model.</li>
+    </ul>
+    <div class="confidence-strip">
+      <strong>Confidence Check:</strong>
+      <span>☐ 4 · I can teach it</span>
+      <span>☐ 3 · I've got it</span>
+      <span>☐ 2 · I need a hint</span>
+      <span>☐ 1 · I need help</span>
+    </div>
+  </section>`;
+
+  // Structured Navigation & Table of Contents (>2 Pages)
+  const tocLinks = [
+    objectives ? `<a href="#sec-hook">1. The Big Hook &amp; Goals</a>` : "",
+    noticeWonder ? `<a href="#sec-notice-wonder">2. Notice &amp; Wonder</a>` : "",
+    vocab ? `<a href="#sec-vocab">3. Vocabulary</a>` : "",
+    launch ? `<a href="#sec-worked-model">4. Worked Model (I/We/You Do)</a>` : "",
+    explore ? `<a href="#sec-explore">5. Explore</a>` : "",
+    practice ? `<a href="#sec-practice">6. Practice &amp; Watch Out!</a>` : "",
+    reflect ? `<a href="#sec-exit-ticket">7. Exit Ticket</a>` : "",
+    `<a href="#sec-exit-checklist">8. Self-Assessment</a>`,
+  ]
+    .filter(Boolean)
+    .join("");
+  const tocNav = `<nav class="pdf-toc" role="doc-toc" aria-label="Table of Contents">
+    <span class="toc-title">PACKET GUIDE:</span>
+    <div class="toc-links">${tocLinks}</div>
+  </nav>`;
+
   const title = esc(config.title || "Lesson");
   const meta = `${esc(config.standard || "")} · Unit ${esc(config.unit ?? "")}${config.lesson != null ? " · Lesson " + esc(config.lesson) : ""}`;
 
@@ -182,6 +274,7 @@ function buildPrintable(config) {
 <style>
   :root { --ink:#1a1a1a; --muted:#555; --rule:#c9c9c9; --accent:#155fa0; }
   * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   body { font-family: Georgia, "Times New Roman", serif; color: var(--ink);
     max-width: 820px; margin: 0 auto; padding: 28px 32px; line-height: 1.5; font-size: 12.5pt; }
   h1 { font-size: 21pt; margin: 0 0 2px; }
@@ -189,10 +282,41 @@ function buildPrintable(config) {
   h3 { font-size: 12.5pt; margin: 12px 0 4px; }
   .doc-meta { color: var(--muted); font-size: 10.5pt; margin: 0 0 12px; }
   .idbar { display: flex; gap: 20px; flex-wrap: wrap; border: 1px solid var(--rule);
-    border-radius: 8px; padding: 10px 14px; margin: 0 0 18px; font-size: 11pt; }
+    border-radius: 8px; padding: 10px 14px; margin: 0 0 14px; font-size: 11pt; }
   .idbar span { flex: 1 1 auto; }
   .idbar .u { display: inline-block; min-width: 120px; border-bottom: 1px solid #999; }
+  .pdf-toc { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; background: #f8fafc;
+    border: 1px solid #cbd5e1; border-left: 4px solid #0f172a; border-radius: 6px; padding: 8px 12px;
+    margin: 0 0 18px; font-size: 9.5pt; }
+  .toc-title { font-weight: 800; letter-spacing: 0.06em; color: #0f172a; text-transform: uppercase; }
+  .toc-links { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+  .toc-links a { color: #155fa0; text-decoration: none; font-weight: 600; }
+  .toc-links a:hover { text-decoration: underline; }
   .lp-section { margin: 0 0 22px; page-break-inside: avoid; }
+  .hook-banner { background: #0f172a; color: #ffffff; border-left: 5px solid #38bdf8;
+    border-radius: 8px; padding: 12px 16px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .hook-banner .es { color: #cbd5e1; }
+  .hook-badge { display: inline-block; background: #38bdf8; color: #0f172a; font-size: 8.5pt;
+    font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 8px;
+    border-radius: 4px; margin-bottom: 6px; }
+  .hook-narrative { margin: 0 0 8px; font-size: 11.5pt; color: #f1f5f9; }
+  .hook-goal { margin: 4px 0; font-size: 11pt; color: #ffffff; }
+  .nw-box { background: #f0f7ff; border: 1.5px solid #93c5fd; border-left: 5px solid #155fa0;
+    border-radius: 8px; padding: 12px 14px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .nw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.14in; margin-top: 8px; }
+  .nw-col { background: #ffffff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 8px 10px; }
+  .nw-col p { margin: 0 0 4px; color: #155fa0; }
+  .watch-out-banner { background: #fff5f2; border: 1.5px solid #f5c2b4; border-left: 5px solid #e05638;
+    color: #7c2d12; border-radius: 8px; padding: 10px 14px; margin: 0 0 14px;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .watch-out-badge { font-size: 9pt; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+    color: #c2410c; margin-bottom: 4px; }
+  .watch-out-text { margin: 0; font-size: 11pt; color: #7c2d12; }
+  .exit-checklist-box { background: #f8fafc; border: 1.5px solid #cbd5e1; border-top: 4px solid #0f172a;
+    border-radius: 8px; padding: 12px 16px; }
+  .exit-check-grid { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 6px; font-size: 11pt; }
+  .confidence-strip { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+    border-top: 1px solid #cbd5e1; padding-top: 8px; font-size: 10.5pt; color: #334155; }
   .es { color: var(--muted); font-style: italic; font-size: 0.92em; }
   .context { background: #f6f6f2; border-left: 3px solid var(--accent); padding: 8px 12px; margin: 0 0 10px; }
   .notice-figure { margin: 12px 0; break-inside: avoid; text-align: center; }
@@ -235,7 +359,7 @@ function buildPrintable(config) {
   .print-btn { background: var(--accent); color: #fff; min-height: 44px;
     border: none; border-radius: 8px; padding: 10px 16px; font-size: 12pt; cursor: pointer; font-family: inherit; }
   :focus-visible { outline: 3px solid #a9471a; outline-offset: 4px; }
-  @media (max-width: 560px) { body { padding: 16px; } .idbar { gap: 12px; } }
+  @media (max-width: 560px) { body { padding: 16px; } .idbar { gap: 12px; } .nw-grid { grid-template-columns: 1fr; } }
   @page { size: Letter; margin: .55in; }
   footer { margin-top: 26px; border-top: 1px solid var(--rule); padding-top: 8px; color: var(--muted); font-size: 10pt; }
   @media print {
@@ -246,6 +370,7 @@ function buildPrintable(config) {
     p { orphans: 3; widows: 3; }
   }
   ${STUDENT_TASK_CSS}
+  ${DUAL_WORKSPACE_CSS}
 </style>
 </head>
 <body>
@@ -261,6 +386,7 @@ function buildPrintable(config) {
     <span>Class / Period: <span class="u"></span></span>
     <span>Date: <span class="u"></span></span>
   </div>
+  ${tocNav}
   ${objectives}
   ${noticeWonder}
   ${vocab}
@@ -270,6 +396,7 @@ function buildPrintable(config) {
   ${practice}
   ${connect}
   ${reflect}
+  ${exitChecklist}
   <footer>Neft Teacher · ${esc(id)} · Printable full-lesson packet · Complete every section, then bring it to class.</footer>
   </main>
   <!-- Anonymous usage beacon. It has to be emitted HERE rather than added by
@@ -292,20 +419,38 @@ function buildPrintable(config) {
 
 // ---- Run ------------------------------------------------------------------
 
-const argv = process.argv.slice(2);
+const CHECK = process.argv.includes("--check");
+const argv = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 const all = readdirSync(lessonsDir).filter(
   (d) => LESSON_DIR_RE.test(d) && existsSync(join(lessonsDir, d, "config.json")),
 );
 const targets = argv.length ? argv.filter((d) => all.includes(d)) : all;
 
 let n = 0;
+const stale = [];
 for (const id of targets) {
   const config = JSON.parse(readFileSync(join(lessonsDir, id, "config.json"), "utf8"));
+  const file = join(lessonsDir, id, "printable.html");
+  const html = buildPrintable(config);
+  if (CHECK) {
+    if (!isGeneratedFresh(file, html)) stale.push(`lessons/${id}/printable.html`);
+    continue;
+  }
   // writeGenerated, not writeFileSync. printable.html carries no injected blocks
   // TODAY, so this is a no-op that returns the html unchanged — but the moment an
   // injector starts targeting it (tools/inject-usage-signal.mjs already names this
   // page), a plain overwrite would silently strip the layer. Cheap to be correct now.
-  writeGenerated(join(lessonsDir, id, "printable.html"), buildPrintable(config));
+  writeGenerated(file, html);
   n++;
 }
-console.log(`✓ generated ${n} printable.html file(s)`);
+if (CHECK) {
+  if (stale.length) {
+    console.error(
+      `Stale printable.html files (${stale.length}):\n  ${stale.slice(0, 15).join("\n  ")}`,
+    );
+    process.exit(1);
+  }
+  console.log(`✓ ${targets.length} printable.html file(s) fresh`);
+} else {
+  console.log(`✓ generated ${n} printable.html file(s)`);
+}

@@ -528,25 +528,46 @@
       } catch (_e) {}
     },
     playSuccess: function () {
-      this.playTone(523.25, "triangle", 0.08, 0.1);
+      if (this.muted) return;
+      if (window.EduWonderAudio && typeof window.EduWonderAudio.playCorrect === "function") {
+        window.EduWonderAudio.playCorrect(comboStreak);
+        return;
+      }
       var self = this;
-      setTimeout(function () {
-        self.playTone(659.25, "triangle", 0.08, 0.1);
-      }, 60);
-      setTimeout(function () {
-        self.playTone(783.99, "triangle", 0.12, 0.1);
-      }, 120);
-      setTimeout(function () {
-        self.playTone(1046.5, "sine", 0.18, 0.1);
-      }, 180);
+      var notes = [523.25, 587.33, 659.25, 783.99, 1046.5];
+      notes.forEach(function (hz, idx) {
+        setTimeout(function () {
+          self.playTone(hz, "sine", 0.15, 0.08);
+        }, idx * 55);
+      });
     },
     playError: function () {
-      this.playTone(150, "sawtooth", 0.1, 0.12);
-      var self = this;
-      setTimeout(function () {
-        self.playTone(90, "sawtooth", 0.25, 0.15);
-      }, 80);
-      this.noise(0.2, 0.06);
+      if (this.muted) return;
+      if (window.EduWonderAudio && typeof window.EduWonderAudio.playRewind === "function") {
+        window.EduWonderAudio.playRewind();
+        return;
+      }
+      this.init();
+      if (!this.ctx) return;
+      try {
+        var now = this.ctx.currentTime + 0.01;
+        var osc = this.ctx.createOscillator();
+        var lpf = this.ctx.createBiquadFilter();
+        var gain = this.ctx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.exponentialRampToValueAtTime(130, now + 0.24);
+        lpf.type = "lowpass";
+        lpf.frequency.setValueAtTime(520, now);
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.06, now + 0.025);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.26);
+        osc.connect(lpf);
+        lpf.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.28);
+      } catch (_e) {}
     },
     startMusic: function () {
       if (this.playingMusic) return;
@@ -1231,6 +1252,7 @@
   };
 
   window.GameFX = {
+    AudioSynth: AudioSynth,
     celebrate: celebrate,
     burst: burst,
     pop: pop,

@@ -7,16 +7,47 @@ import { createCelebrator } from './celebrate.mjs';
 import * as sound from './sound.mjs';
 import { worldArt } from './expedition.mjs';
 import { expeditionWorlds } from './expedition-worlds.mjs';
+import { mountScratchpad, renderSnapshotsCard } from './scratchpad.mjs';
+import { mountTeacherRadarHUD, syncUnifiedStorage } from './nextgen.mjs';
 
 const root = document.getElementById('lab-root');
-let lab, state, storeKey, memoryOnly = false, bridge = null, celebrator = null;
-const fresh = () => ({ version: 1, level: 'core', tab: 'brief', practice: {}, notes: {}, steps: {}, games: {}, models: {}, created: '', checklist: [], investigated: [], lang: 'en', stamped: 0 });
+let lab, state, storeKey, memoryOnly = false, bridge = null, celebrator = null, scratchpadCtrl = null;
+const fresh = () => ({
+  version: 1,
+  level: 'core',
+  tab: 'brief',
+  practice: {},
+  notes: {},
+  steps: {},
+  games: {},
+  models: {},
+  created: '',
+  checklist: [],
+  investigated: [],
+  lang: 'en',
+  stamped: 0,
+  streak: 0,
+  theme: 'light',
+  scratchpadStrokes: [],
+  snapshots: [],
+  hintHistory: [],
+  byteBot: null,
+  marsColony: null,
+  smallGroup: null,
+  rewindHistory: [],
+});
+
 function save() {
   // The catalog cannot load every lab's content, so each save carries a small progress summary it can read.
   const o = overview(lab, state);
   state.summary = { done: o.done, total: o.total, started: o.done > 0 || o.items.some((i) => i.status === 'started'), next: o.next, savedAt: Date.now(), stamped: !!state.stamped };
-  try { localStorage.setItem(storeKey, JSON.stringify(state)); memoryOnly = false; }
-  catch { memoryOnly = true; }
+  try {
+    localStorage.setItem(storeKey, JSON.stringify(state));
+    syncUnifiedStorage(lab, state);
+    memoryOnly = false;
+  } catch {
+    memoryOnly = true;
+  }
   const el = document.getElementById('save-status');
   if (el) el.textContent = memoryOnly ? 'Browser save unavailable. Download your work before leaving.' : 'Saved in this browser';
 }
@@ -24,7 +55,21 @@ const writeNote = (key, value) => { state.notes[key] = value; save(); refreshPro
 const textArea = (key, label, hint = '') => `<label class="writing" for="note-${esc(key)}">${esc(label)}${hint ? `<span class="field-hint">${esc(hint)}</span>` : ''}<textarea id="note-${esc(key)}" data-note="${esc(key)}" rows="3">${esc(state.notes[key] || '')}</textarea></label>`;
 function bindNotes(host) { host.querySelectorAll('[data-note]').forEach((el) => el.addEventListener('input', () => writeNote(el.dataset.note, el.value))); }
 const lessonNumber = (id) => id.replace('-', '.');
-const ctx = { get lab() { return lab; }, get state() { return state; }, save, textArea, bindNotes, refreshProgress, showTab };
+const ctx = {
+  get lab() { return lab; },
+  get state() { return state; },
+  save,
+  textArea,
+  bindNotes,
+  refreshProgress,
+  showTab,
+  onSnapshot() {
+    if (state.tab === 'create') {
+      const slot = document.getElementById('create-snapshots-slot');
+      if (slot) slot.innerHTML = renderSnapshotsCard(state, true);
+    }
+  },
+};
 
 const statusIcon = { done: '✓', started: '•', new: '' };
 const statusWord = { done: 'complete', started: 'in progress', new: 'not started' };
@@ -39,16 +84,79 @@ function refreshProgress() {
   }
   const summary = document.getElementById('progress-summary');
   if (summary) summary.textContent = `${o.done} of ${o.total} activities complete`;
+  const segWrap = document.getElementById('hud-segments');
+  if (segWrap) {
+    segWrap.innerHTML = o.items
+      .map(
+        (item) =>
+          `<span class="hud-seg" data-status="${item.status}" title="${esc(item.title)}: ${esc(statusWord[item.status])}"></span>`,
+      )
+      .join('');
+  }
+  const streakEl = document.getElementById('streak-anchor');
+  if (streakEl) streakEl.textContent = `Mastery streak: ${state.streak || 0}`;
+  const sessionBody = document.getElementById('session-summary-body');
+  if (sessionBody) {
+    const solvedCount = Object.values(state.practice || {}).filter((r) => r?.correct || r?.reviewed).length;
+    const hintCount = Array.isArray(state.hintHistory) ? state.hintHistory.length : 0;
+    const snapCount = Array.isArray(state.snapshots) ? state.snapshots.length : 0;
+    sessionBody.innerHTML = `<ul class="hud-metrics-list"><li><strong>Activities done:</strong> ${o.done}/${o.total}</li><li><strong>Practice solved:</strong> ${solvedCount}</li><li><strong>Clue tiers opened:</strong> ${hintCount}</li><li><strong>Visual snapshots:</strong> ${snapCount}</li></ul>`;
+  }
   bridge?.progress(o);
   celebrator?.update(o);
   const route = document.querySelector('.route-list');
   if (route) route.querySelectorAll('li').forEach((li, i) => { const item = o.items[i]; li.dataset.status = item.status; li.querySelector('.route-status').textContent = item.summary; });
 }
 
+function applyTheme(theme) {
+  const isDark = theme === 'dark';
+  document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+  const btn = document.getElementById('theme-toggle');
+  if (btn) {
+    btn.setAttribute('aria-pressed', String(isDark));
+    btn.textContent = isDark ? '☀️ Light mode' : '🌙 Dark mode';
+  }
+}
+
+function resetAllWork() {
+  state = fresh();
+  try {
+    localStorage.removeItem('eduwonder_byte_state');
+    localStorage.removeItem('eduwonder_byte_compiler_v4');
+  } catch {
+    // Ignore storage restriction
+  }
+  scratchpadCtrl?.reset?.();
+  save();
+  shell();
+}
+
 function shell() {
   document.documentElement.style.setProperty('--accent', lab.accent);
-  root.innerHTML = `<div class="page-shell"><nav class="crumbs" aria-label="Breadcrumb"><a href="/curriculum/">Curriculum</a><a href="/curriculum/learning-labs/#unit-${lab.unit}">Learning labs</a><span>Unit ${lab.unit}: ${esc(lab.unitName)}</span></nav><header class="lab-header"><div class="lab-emblem" aria-hidden="true">${lab.icon}</div><div><p class="lesson-label">Unit ${lab.unit} · Lessons ${lab.lessons.map((l) => lessonNumber(l.id)).join(' & ')}</p><h1>${esc(lab.title)}</h1><p class="mission-lead">${esc(lab.mission)}</p><ul class="lesson-chips" aria-label="Connected lessons">${lab.lessons.map((l) => `<li><a class="lesson-chip" href="/lessons/${l.id}/">${lessonNumber(l.id)} ${esc(l.title)}</a></li>`).join('')}<li><span class="lesson-chip quiet-chip">About 45 minutes</span></li></ul></div></header><div class="toolbar"><label for="level">Choose your level<select id="level">${Object.entries(levels).map(([id, l]) => `<option value="${id}">${l.label}</option>`).join('')}</select></label><p id="level-detail">${levels[state.level].detail}</p><div class="save-tools"><span id="progress-summary" class="progress-pill"></span><span id="save-status" role="status"></span><div><button type="button" class="quiet" id="download">Download work</button><button type="button" class="quiet" id="print">Print work</button></div></div></div><nav class="tabs" role="tablist" aria-label="Lab activities">${tabs.map(([id, title], i) => `<button type="button" id="tab-${id}" role="tab" aria-controls="panel-${id}" aria-selected="${state.tab === id}" tabindex="${state.tab === id ? 0 : -1}" data-tab="${id}"><span class="tab-step">${i + 1}</span><span class="tab-title">${title}</span><span class="tab-mark" aria-hidden="true"></span></button>`).join('')}</nav><main id="workspace">${tabs.map(([id]) => `<section id="panel-${id}" role="tabpanel" aria-labelledby="tab-${id}" tabindex="0" ${state.tab === id ? '' : 'hidden'}></section>`).join('')}</main><div class="bottom-nav"><button type="button" class="quiet" id="previous">Previous activity</button><p id="activity-position"></p><button type="button" id="next">Next activity</button></div><footer><p>Progress is saved in this browser on this device. No name or account is needed. Use Download work to keep a copy.</p><details><summary>For teachers: connected lessons and timing</summary><div class="lesson-links">${lab.lessons.map((l) => `<a href="/lessons/${l.id}/">${lessonNumber(l.id)}: ${esc(l.title)}${l.standard ? ` (${esc(l.standard)})` : ''}</a>`).join('')}</div><p>Suggested timing: ${tabs.map(([id, title]) => `${title} ${timing[id]}`).join('; ')}. Split across two sessions when useful. Levels are choices students make, not labels.</p><p>${esc(lab.source)}</p><button type="button" class="quiet" id="reset">Start fresh</button><span id="reset-area"></span></details></footer><section id="print-report" class="print-only"></section></div>`;
-  celebrator = createCelebrator(root.querySelector('.page-shell'), lab, state, save);
+  root.innerHTML = `<div class="page-shell"><nav class="crumbs" aria-label="Breadcrumb"><a href="/curriculum/">Curriculum</a><a href="/curriculum/learning-labs/#unit-${lab.unit}">Learning labs</a><span>Unit ${lab.unit}: ${esc(lab.unitName)}</span></nav><div class="micro-hud" role="region" aria-label="Session Micro-HUD"><div class="hud-progress-group"><span id="hud-segments" class="hud-segments" aria-hidden="true"></span><span id="progress-summary" class="progress-pill"></span><span id="streak-anchor" class="streak-pill" role="status">Mastery streak: ${state.streak || 0}</span></div><details id="session-summary-details" class="hud-session-summary"><summary>Session summary</summary><div id="session-summary-body"></div></details><div class="hud-actions"><button type="button" class="quiet small" id="scratchpad-toggle" aria-expanded="false" aria-controls="scratchpad-drawer">📝 Scratchpad (Alt+S)</button><button type="button" class="quiet small" id="theme-toggle" aria-pressed="${state.theme === 'dark'}">🌙 Dark mode</button><button type="button" class="quiet small" id="hud-reset-btn">↺ Reset Activity</button><span id="hud-reset-area"></span></div></div><header class="lab-header"><div class="lab-emblem" aria-hidden="true">${lab.icon}</div><div><p class="lesson-label">Unit ${lab.unit} · Lessons ${lab.lessons.map((l) => lessonNumber(l.id)).join(' & ')}</p><h1>${esc(lab.title)}</h1><p class="mission-lead">${esc(lab.mission)}</p><ul class="lesson-chips" aria-label="Connected lessons">${lab.lessons.map((l) => `<li><a class="lesson-chip" href="/lessons/${l.id}/">${lessonNumber(l.id)} ${esc(l.title)}</a></li>`).join('')}<li><span class="lesson-chip quiet-chip">About 45 minutes</span></li></ul></div></header><div class="toolbar"><label for="level">Choose your level<select id="level">${Object.entries(levels).map(([id, l]) => `<option value="${id}">${l.label}</option>`).join('')}</select></label><p id="level-detail">${levels[state.level].detail}</p><div class="save-tools"><span id="save-status" role="status"></span><div><button type="button" class="quiet" id="download">Download work</button><button type="button" class="quiet" id="print">Print work</button></div></div></div><nav class="tabs" role="tablist" aria-label="Lab activities">${tabs.map(([id, title], i) => `<button type="button" id="tab-${id}" role="tab" aria-controls="panel-${id}" aria-selected="${state.tab === id}" tabindex="${state.tab === id ? 0 : -1}" data-tab="${id}"><span class="tab-step">${i + 1}</span><span class="tab-title">${title}</span><span class="tab-mark" aria-hidden="true"></span></button>`).join('')}</nav><main id="workspace">${tabs.map(([id]) => `<section id="panel-${id}" role="tabpanel" aria-labelledby="tab-${id}" tabindex="0" ${state.tab === id ? '' : 'hidden'}></section>`).join('')}</main><div class="bottom-nav"><button type="button" class="quiet" id="previous">Previous activity</button><p id="activity-position"></p><button type="button" id="next">Next activity</button></div><footer><p>Progress is saved in this browser on this device. No name or account is needed. Use Download work to keep a copy.</p><details><summary>For teachers: connected lessons and timing</summary><div class="lesson-links">${lab.lessons.map((l) => `<a href="/lessons/${l.id}/">${lessonNumber(l.id)}: ${esc(l.title)}${l.standard ? ` (${esc(l.standard)})` : ''}</a>`).join('')}</div><p>Suggested timing: ${tabs.map(([id, title]) => `${title} ${timing[id]}`).join('; ')}. Split across two sessions when useful. Levels are choices students make, not labels.</p><p>${esc(lab.source)}</p><button type="button" class="quiet" id="reset">Start fresh</button><span id="reset-area"></span></details></footer><section id="print-report" class="print-only"></section></div>`;
+  const shellContainer = root.querySelector('.page-shell');
+  celebrator = createCelebrator(shellContainer, lab, state, save);
+  scratchpadCtrl = mountScratchpad(shellContainer, ctx);
+  mountTeacherRadarHUD(shellContainer, ctx);
+  applyTheme(state.theme || 'light');
+
+  document.getElementById('theme-toggle').onclick = () => {
+    state.theme = state.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(state.theme);
+    save();
+  };
+
+  document.getElementById('hud-reset-btn').onclick = () => {
+    const area = document.getElementById('hud-reset-area');
+    area.innerHTML = `<span class="reset-guard-inline"><span>Clear this lab’s work?</span> <button type="button" class="small" id="hud-reset-confirm">Yes, reset</button> <button type="button" class="quiet small" id="hud-reset-cancel">Cancel</button></span>`;
+    document.getElementById('hud-reset-confirm').onclick = () => resetAllWork();
+    document.getElementById('hud-reset-cancel').onclick = () => {
+      area.innerHTML = '';
+      document.getElementById('hud-reset-btn').focus();
+    };
+    document.getElementById('hud-reset-confirm').focus();
+  };
+
   document.getElementById('level').value = state.level;
   document.getElementById('level').addEventListener('change', (event) => { state.level = event.target.value; document.getElementById('level-detail').textContent = levels[state.level].detail; save(); showTab(state.tab); });
   root.querySelectorAll('[data-tab]').forEach((button) => {
@@ -75,7 +183,7 @@ function shell() {
   document.getElementById('reset').onclick = () => {
     const area = document.getElementById('reset-area');
     area.innerHTML = '<p>Clear only this lab’s saved work on this device?</p><button type="button" id="confirm-reset">Yes, clear this lab</button> <button type="button" class="quiet" id="cancel-reset">Keep my work</button>';
-    document.getElementById('confirm-reset').onclick = () => { state = fresh(); save(); shell(); };
+    document.getElementById('confirm-reset').onclick = () => resetAllWork();
     document.getElementById('cancel-reset').onclick = () => { area.innerHTML = ''; document.getElementById('reset').focus(); };
     document.getElementById('confirm-reset').focus();
   };
@@ -118,7 +226,7 @@ function games(host) {
 }
 function reportText() {
   const labels = noteLabels(lab), o = overview(lab, state);
-  const lines = [lab.title, `Unit ${lab.unit} · Lessons: ${lab.lessons.map((l) => lessonNumber(l.id)).join(', ')}`, `Level: ${levels[state.level].label}`, `Progress: ${o.done} of ${o.total} activities complete`, ...o.items.map((i) => `  ${i.title}: ${i.summary}`), '', 'MY CREATION', state.created || '(No creation recorded)', '', 'NOTES'];
+  const lines = [lab.title, `Unit ${lab.unit} · Lessons: ${lab.lessons.map((l) => lessonNumber(l.id)).join(', ')}`, `Level: ${levels[state.level].label}`, `Progress: ${o.done} of ${o.total} activities complete`, `Mastery streak: ${state.streak || 0}`, ...o.items.map((i) => `  ${i.title}: ${i.summary}`), '', 'MY CREATION', state.created || '(No creation recorded)', '', 'NOTES'];
   for (const [key, value] of Object.entries(state.notes)) if (value) lines.push(labels[key] || key, value, '');
   lines.push('PRACTICE RESPONSES');
   for (const [id, response] of Object.entries(state.practice)) if (String(response.input).trim()) {
@@ -133,7 +241,9 @@ function download() {
   const blob = new Blob([reportText()], { type: 'text/plain;charset=utf-8' }), url = URL.createObjectURL(blob), link = document.createElement('a');
   link.href = url; link.download = `${lab.id}-my-work.txt`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
-function makeReport() { document.getElementById('print-report').innerHTML = `<h1>${esc(lab.title)}</h1><pre>${esc(reportText())}</pre>`; }
+function makeReport() {
+  document.getElementById('print-report').innerHTML = `<h1>${esc(lab.title)}</h1><pre>${esc(reportText())}</pre>${renderSnapshotsCard(state, false)}`;
+}
 
 try {
   const id = root.dataset.lab;
@@ -145,8 +255,11 @@ try {
   if (!levels[state.level]) state.level = 'core';
   if (!tabs.some((t) => t[0] === state.tab)) state.tab = 'brief';
   for (const key of ['practice', 'notes', 'steps', 'games', 'models']) if (!state[key] || typeof state[key] !== 'object' || Array.isArray(state[key])) state[key] = {};
-  for (const key of ['checklist', 'investigated']) if (!Array.isArray(state[key])) state[key] = [];
+  for (const key of ['checklist', 'investigated', 'scratchpadStrokes', 'snapshots', 'hintHistory', 'rewindHistory']) if (!Array.isArray(state[key])) state[key] = [];
   if (!['en', 'es'].includes(state.lang)) state.lang = 'en';
+  if (!['light', 'dark'].includes(state.theme)) {
+    state.theme = window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
   const hash = location.hash.slice(1); if (tabs.some((t) => t[0] === hash)) state.tab = hash;
   try { bridge = await connect(lab, () => state.lang); } catch { bridge = null; }
   shell(); window.addEventListener('beforeprint', makeReport);

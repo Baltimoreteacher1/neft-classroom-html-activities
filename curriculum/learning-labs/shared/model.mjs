@@ -7,7 +7,10 @@ const line = (x1, y1, x2, y2, cls = '') => `<line x1="${x1}" y1="${y1}" x2="${x2
 const text = (x, y, t, anchor = 'middle') => `<text x="${x}" y="${y}" text-anchor="${anchor}">${esc(t)}</text>`;
 const rect = (x, y, w, h, cls = 'shape') => `<rect x="${x}" y="${y}" width="${w}" height="${h}" class="${cls}" rx="3"/>`;
 const dot = (x, y, label, cls = 'point') => `<circle cx="${x}" cy="${y}" r="7" class="${cls}"/>${label ? text(x, y - 12, label) : ''}`;
-const svg = (body, label, viewBox = '0 0 600 300') => `<svg viewBox="${viewBox}" role="img" aria-label="${esc(label)}" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
+const svg = (body, label, viewBox = '0 0 600 300') => {
+  const parts = viewBox.split(/\s+/);
+  return `<svg role="img" aria-label="${esc(label)}" width="${parts[2] || 600}" height="${parts[3] || 300}" viewBox="${viewBox}" style="background:#FFFFFF" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
+};
 
 export function visual(model, values, result) {
   const [a, b, c, d] = values;
@@ -145,7 +148,7 @@ export function visual(model, values, result) {
 export function mountModel(host, model, { initial = model.values, free = null, onChange = () => {}, prefix = 'model', compact = false, level = 'core', lens = false, lang = () => 'en' } = {}) {
   let values = [...initial], symbol = model.mode === 'entry' ? '>=' : '<=', valid = true, shape = 'prism';
   const fields = controls(model);
-  host.innerHTML = `<div class="model-workspace"><div class="model-picture"></div><div class="model-controls">${fields.map((field, i) => field.label === 'Unused' ? '' : `<label for="${prefix}-${i}">${esc(field.label)}<input id="${prefix}-${i}" data-control="${i}" type="number" min="${field.min}" max="${field.max}" step="${field.step}" value="${values[i]}" ${field.min === field.max || free !== null && free !== i ? 'readonly' : ''}></label>`).join('')}${model.kind === 'inequality' ? `<label>Rule<select data-symbol><option value=">=">At least (≥)</option><option value=">">More than (&gt;)</option><option value="<=">At most (≤)</option><option value="<">Less than (&lt;)</option></select></label>` : ''}<button type="button" class="quiet" data-reset>Reset model</button></div></div><p class="model-error" role="status"></p><div class="model-readout" aria-live="polite" aria-atomic="true"></div>`;
+  host.innerHTML = `<div class="model-workspace"><div class="model-picture"></div><div class="model-controls">${fields.map((field, i) => field.label === 'Unused' ? '' : `<label for="${prefix}-${i}">${esc(field.label)}<input id="${prefix}-${i}" data-control="${i}" type="number" min="${field.min}" max="${field.max}" step="${field.step}" value="${values[i]}" ${field.min === field.max || free !== null && free !== i ? 'readonly' : ''}></label>`).join('')}${model.kind === 'inequality' ? `<label for="${prefix}-symbol">Rule<select id="${prefix}-symbol" data-symbol><option value=">=">At least (≥)</option><option value=">">More than (&gt;)</option><option value="<=">At most (≤)</option><option value="<">Less than (&lt;)</option></select></label>` : ''}<button type="button" class="quiet" data-reset>Reset model</button></div></div><p class="model-error" role="status"></p><div class="model-readout" aria-live="polite" aria-atomic="true"></div>`;
   const lensView = lens ? mountLens(host, model, { lang, prefix: `${prefix}-lens` }) : null;
   const update = () => {
     const r = evaluate(model, values, { symbol, shape });
@@ -170,6 +173,8 @@ export function mountModel(host, model, { initial = model.values, free = null, o
     const picture = host.querySelector('.model-picture');
     attachDirect(picture, model, {
       fields,
+      free,
+      workspace: host.querySelector('.model-workspace'),
       getValues: () => values,
       getShape: () => shape,
       apply: (next) => {

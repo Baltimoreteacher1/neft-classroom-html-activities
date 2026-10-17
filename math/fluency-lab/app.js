@@ -565,6 +565,7 @@ function nextProblem(restoredItem = null) {
   renderGuidedCoach();
   renderAnswerControl();
   updateSessionHeader();
+  onFluencyProblemPresented();
   saveActiveSession();
   if (state.item.choices) els.choiceAnswers.querySelector("button")?.focus();
   else els.answerInput.focus();
@@ -660,7 +661,10 @@ function submitAnswer(value) {
   const correct = validateAnswer(value, state.item);
   if (state.itemAttempts === 1) {
     state.firstAnswerCorrect = correct;
-    if (!correct) rememberMistake(state.tutor, state.item.skill, state.item, value);
+    if (!correct) {
+      state.firstSlipAt = performance.now();
+      rememberMistake(state.tutor, state.item.skill, state.item, value);
+    }
   }
   if (state.session.mode === "diagnostic") { finalizeProblem(correct); return; }
   if (correct || state.session.mode === "streak") {
@@ -716,6 +720,7 @@ function finalizeProblem(correct) {
       if (consecutive[key] >= 2) for (const entry of state.tutor.mistakes) if (entry.key === key && !entry.resolvedAt) entry.resolvedAt = Date.now();
     } else if (session.mode === "repair") { (session.repairWins ||= {})[tutorSkillKey(state.item.skill)] = 0; }
   }
+  onFluencyProblemFinalized(correct, independent, firstCorrect);
   saveProgress();
   if (state.skill) renderMastery();
   renderOverallStats();
@@ -839,7 +844,8 @@ function finishSession() {
   els.summaryStats.innerHTML = `<div><strong>${session.correct}</strong><span>solved</span></div><div><strong>${session.answered}</strong><span>completed</span></div><div><strong>${session.independentCorrect}</strong><span>without help on first try</span></div>`;
   const next = recommendations(state.tutor, state.grade)[0];
   const foundations = prerequisites(next.skill);
-  els.summaryNext.innerHTML = `<h4>A useful next step</h4><p>${escapeHtml(next.reason)}: ${escapeHtml(next.skill.title)}.</p><div class="button-row"><button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">Explore the visual lesson</button><button class="outline-action" data-view="path">See my learning path</button></div>${session.mode === 'diagnostic' && foundations.length ? `<p>Helpful foundation: <button class="text-action" data-open-key="${tutorSkillKey(foundations[0])}" data-open-mode="visual">${escapeHtml(foundations[0].title)} (Grade ${foundations[0].grade})</button></p>` : ''}${state.skill ? `<p class="teach-back-prompt">${escapeHtml(transferPrompt(state.skill))}</p>` : ''}`;
+  const profileBrief = buildFluencyProfileSummary(session, accuracyPercent, next);
+  els.summaryNext.innerHTML = `<h4>A useful next step</h4><p>${escapeHtml(next.reason)}: ${escapeHtml(next.skill.title)}.</p><div class="button-row"><button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">Explore the visual lesson</button><button class="outline-action" data-view="path">See my learning path</button></div>${session.mode === 'diagnostic' && foundations.length ? `<p>Helpful foundation: <button class="text-action" data-open-key="${tutorSkillKey(foundations[0])}" data-open-mode="visual">${escapeHtml(foundations[0].title)} (Grade ${foundations[0].grade})</button></p>` : ''}${state.skill ? `<p class="teach-back-prompt">${escapeHtml(transferPrompt(state.skill))}</p>` : ''}${profileBrief}`;
   saveProgress(); renderOverallStats();
   announce("Practice saved for this learner on this device.");
 }
@@ -1303,6 +1309,414 @@ els.quickSkillSelect?.addEventListener("change", (event) => {
   }
 });
 
+const ZPD_STORAGE_KEY = "eduwonder_fluency_zpd";
+const HISTORY_STORAGE_KEY = "eduwonder_fluency_history";
+const MASTER_V3_KEY = "eduwonder_master_v3";
+
+const fluencyNextGenState = {
+  problemShownAt: 0,
+  hesitationHandle: null,
+  hesitatedOnCurrent: false,
+  decomposedOnCurrent: false,
+  sliceSplit: 5,
+  telemetryOpen: false,
+  metrics: {
+    totalSolved: 0,
+    automaticRecallCount: 0,
+    decomposedAttempts: 0,
+    decomposedSuccesses: 0,
+    slipRecoveriesMs: [],
+    badges: new Set(),
+  },
+};
+
+function safeReadJson(key, fallback) {
+  try {
+    const raw = window.localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function safeWriteJson(key, value) {
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    /* local storage restricted */
+  }
+}
+
+function syncFluencyMasterV3(patch) {
+  const master = safeReadJson(MASTER_V3_KEY, { version: 3 });
+  master.fluency = { ...(master.fluency || {}), ...patch, updatedAt: Date.now() };
+  safeWriteJson(MASTER_V3_KEY, master);
+}
+
+const SpacedZPDEngine = {
+  load() {
+    return safeReadJson(ZPD_STORAGE_KEY, { facts: {}, queue: [] });
+  },
+  save(data) {
+    safeWriteJson(ZPD_STORAGE_KEY, data);
+    syncFluencyMasterV3({ zpdCount: Object.keys(data.facts || {}).length });
+  },
+  recordFact(item, correct, hesitated) {
+    if (!item || !item.question) return;
+    const store = this.load();
+    const id = `${item.skill?.grade || state.grade}:${item.skill?.id || "skill"}:${item.question}`;
+    const prev = store.facts[id] || { easiness: 2.5, interval: 1, reps: 0, mutations: 0 };
+    const quality = correct ? (hesitated ? 3 : 5) : 1;
+    const nextEasiness = Math.max(
+      1.3,
+      prev.easiness + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)),
+    );
+    let nextInterval = 1;
+    let nextReps = prev.reps;
+    if (!correct || hesitated) {
+      nextReps = 0;
+      nextInterval = !correct ? 1 : 3;
+      const scheduleOffsets = [1, 3, 7];
+      for (const offset of scheduleOffsets) {
+        store.queue.push({
+          factId: id,
+          skillKey: `${item.skill?.grade || state.grade}:${item.skill?.id || ""}`,
+          baseQuestion: item.question,
+          dueAfterProblems: offset,
+          mutationMode: offset === 1 ? "inverse" : offset === 3 ? "missing-factor" : "area-model",
+        });
+      }
+      store.queue = store.queue.slice(-30);
+    } else {
+      nextReps += 1;
+      nextInterval = nextReps === 1 ? 1 : nextReps === 2 ? 3 : Math.round(prev.interval * nextEasiness);
+    }
+    store.facts[id] = {
+      easiness: Number(nextEasiness.toFixed(2)),
+      interval: nextInterval,
+      reps: nextReps,
+      mutations: prev.mutations + (!correct || hesitated ? 1 : 0),
+      updatedAt: Date.now(),
+    };
+    for (const qEntry of store.queue) {
+      qEntry.dueAfterProblems = Math.max(0, (qEntry.dueAfterProblems || 1) - 1);
+    }
+    this.save(store);
+  },
+};
+
+const FlowPacerEngine = {
+  clearHesitationMonitor() {
+    if (fluencyNextGenState.hesitationHandle) {
+      window.clearTimeout(fluencyNextGenState.hesitationHandle);
+      fluencyNextGenState.hesitationHandle = null;
+    }
+    const oldNudge = document.querySelector("#flow-dilation-nudge");
+    if (oldNudge) oldNudge.hidden = true;
+  },
+  startProblemMonitor(item) {
+    this.clearHesitationMonitor();
+    fluencyNextGenState.problemShownAt = performance.now();
+    fluencyNextGenState.hesitatedOnCurrent = false;
+    fluencyNextGenState.decomposedOnCurrent = false;
+    fluencyNextGenState.hesitationHandle = window.setTimeout(() => {
+      if (state.itemDone || !state.session || state.session.finished) return;
+      fluencyNextGenState.hesitatedOnCurrent = true;
+      chime("hesitation");
+      let nudge = document.querySelector("#flow-dilation-nudge");
+      if (!nudge && els.drillPanel) {
+        nudge = document.createElement("div");
+        nudge.id = "flow-dilation-nudge";
+        nudge.className = "flow-dilation-nudge";
+        nudge.setAttribute("role", "status");
+        els.question?.insertAdjacentElement("afterend", nudge);
+      }
+      if (nudge) {
+        nudge.hidden = false;
+        nudge.textContent =
+          item?.hint ||
+          "Anchor strategy: decompose into friendly 5s or 10s, or slice the visual model below.";
+      }
+    }, 2500);
+  },
+};
+
+const KineticDecomposer = {
+  extractFactors(questionText) {
+    const q = String(questionText || "");
+    const mulMatch = q.match(/(\d+)\s*[×*x]\s*(\d+)/i);
+    if (mulMatch) {
+      return {
+        mode: "area",
+        a: Math.min(12, Math.max(3, Number(mulMatch[1]))),
+        b: Math.min(12, Math.max(2, Number(mulMatch[2]))),
+      };
+    }
+    const intMatch = q.match(/(-?\d+)\s*[+−-]\s*(-?\d+)/);
+    if (intMatch && (q.includes("-") || q.includes("−"))) {
+      return {
+        mode: "integer",
+        a: Math.max(-9, Math.min(9, Number(intMatch[1]))),
+        b: Math.max(-9, Math.min(9, Number(intMatch[2]))),
+      };
+    }
+    return { mode: "partition", a: 7, b: 8 };
+  },
+  renderSvg(spec, splitPoint) {
+    const a = spec.a || 7;
+    const b = spec.b || 8;
+    const k = Math.max(1, Math.min(a - 1, splitPoint || Math.min(5, a - 1)));
+    const rem = a - k;
+    const totalW = 360;
+    const leftW = Math.round((k / a) * totalW);
+    const rightW = totalW - leftW;
+    if (spec.mode === "integer") {
+      const posCount = Math.min(8, Math.max(2, Math.abs(a)));
+      const negCount = Math.min(8, Math.max(1, Math.abs(b)));
+      const pairs = Math.min(posCount, negCount);
+      const chips = [];
+      for (let i = 0; i < posCount; i += 1) {
+        const paired = i < pairs;
+        chips.push(
+          `<circle cx="${50 + i * 36}" cy="46" r="13" fill="${paired ? "#e2e8f0" : "#0f766e"}" stroke="#0f172a" stroke-width="1.5"/><text x="${50 + i * 36}" y="50" text-anchor="middle" font-size="11" font-weight="800" fill="${paired ? "#475569" : "#ffffff"}">+1</text>`,
+        );
+      }
+      for (let j = 0; j < negCount; j += 1) {
+        const paired = j < pairs;
+        chips.push(
+          `<circle cx="${50 + j * 36}" cy="92" r="13" fill="${paired ? "#e2e8f0" : "#b45309"}" stroke="#0f172a" stroke-width="1.5"/><text x="${50 + j * 36}" y="96" text-anchor="middle" font-size="11" font-weight="800" fill="${paired ? "#475569" : "#ffffff"}">-1</text>`,
+        );
+      }
+      return `<svg width="460" height="130" viewBox="0 0 460 130" style="background:#FFFFFF" role="img" aria-label="Integer zero-pair counter field"><rect x="4" y="4" width="452" height="122" rx="8" fill="#FFFFFF" stroke="#cbd5e1"/>${chips.join("")}<text x="345" y="72" font-size="12" font-weight="800" fill="#0f172a">${pairs} zero pairs neutral</text></svg>`;
+    }
+    return `<svg width="460" height="130" viewBox="0 0 460 130" style="background:#FFFFFF" role="img" aria-label="Kinetic decomposition area model splitting ${a} by ${b} into ${k} by ${b} plus ${rem} by ${b}"><rect x="40" y="24" width="${leftW}" height="68" rx="4" fill="#e6f4ea" stroke="#0f766e" stroke-width="2"/><rect x="${40 + leftW + 6}" y="24" width="${rightW}" height="68" rx="4" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/><line x1="${40 + leftW + 3}" y1="16" x2="${40 + leftW + 3}" y2="100" stroke="#b45309" stroke-width="3" stroke-dasharray="5,3"/><text x="${40 + Math.round(leftW / 2)}" y="62" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">(${k} × ${b})</text><text x="${40 + leftW + 6 + Math.round(rightW / 2)}" y="62" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">(${rem} × ${b})</text><text x="220" y="116" text-anchor="middle" font-size="12" font-weight="700" fill="#334155">Decompose ${a} into ${k} + ${rem}: (${k} × ${b}) + (${rem} × ${b})</text></svg>`;
+  },
+  mount(item) {
+    if (!els.drillPanel || !item) return;
+    let host = document.querySelector("#kinetic-decomposer-host");
+    if (!host) {
+      host = document.createElement("div");
+      host.id = "kinetic-decomposer-host";
+      host.className = "kinetic-decomposer-card";
+      els.problemVisualScaffold?.insertAdjacentElement("afterend", host);
+    }
+    const spec = this.extractFactors(item.question);
+    const maxSplit = Math.max(2, (spec.a || 7) - 1);
+    const currentSplit = Math.min(maxSplit, Math.max(1, fluencyNextGenState.sliceSplit || 5));
+    const options = [1, 2, Math.min(5, maxSplit), Math.max(1, Math.floor((spec.a || 7) / 2))].filter(
+      (v, idx, arr) => v >= 1 && v <= maxSplit && arr.indexOf(v) === idx,
+    );
+    host.innerHTML = `
+      <div class="kinetic-decomposer-head">
+        <strong>Kinetic Decomposer · Strategic Split</strong>
+        <div class="kinetic-slice-controls" role="group" aria-label="Decomposition split options">
+          ${options
+            .map(
+              (opt) =>
+                `<button type="button" class="kinetic-slice-btn" data-kinetic-split="${opt}" aria-pressed="${opt === currentSplit}">Split at ${opt}</button>`,
+            )
+            .join("")}
+        </div>
+      </div>
+      <div id="kinetic-svg-stage">${this.renderSvg(spec, currentSplit)}</div>
+    `;
+  },
+};
+
+const FluencyTelemetryHUD = {
+  getStats() {
+    const m = fluencyNextGenState.metrics;
+    const arr = m.totalSolved ? Math.round((m.automaticRecallCount / m.totalSolved) * 100) : 0;
+    const de = m.decomposedAttempts
+      ? Math.round((m.decomposedSuccesses / m.decomposedAttempts) * 100)
+      : 100;
+    const srv = m.slipRecoveriesMs.length
+      ? Math.round(m.slipRecoveriesMs.reduce((a, b) => a + b, 0) / m.slipRecoveriesMs.length)
+      : 0;
+    return { arr, de, srv, badges: [...m.badges] };
+  },
+  render() {
+    if (!els.drillPanel) return;
+    let bar = document.querySelector("#fluency-micro-hud");
+    if (!bar) {
+      bar = document.createElement("div");
+      bar.id = "fluency-micro-hud";
+      bar.className = "fluency-micro-hud";
+      els.drillPanel.insertBefore(bar, els.drillPanel.firstChild);
+    }
+    const stats = this.getStats();
+    const streak = state.session?.streak || 0;
+    const domainTitle = state.item?.skill
+      ? `${state.item.skill.strand}: ${state.item.skill.title}`
+      : `Grade ${state.grade} Fluency`;
+    const activeBadge = stats.badges.at(-1) || "Anchor 5 Explorer";
+    bar.innerHTML = `
+      <div class="fluency-hud-domain">
+        <span class="focus-orbit-wrap">
+          <svg class="focus-orbit-svg" width="32" height="32" viewBox="0 0 36 36" style="background:#FFFFFF" role="img" aria-label="Calm 68 BPM Focus Orbit">
+            <circle cx="18" cy="18" r="14" fill="#f0fdfa" stroke="#99f6e4" stroke-width="2"/>
+            <circle class="focus-orbit-ring" cx="18" cy="18" r="8" fill="#0f766e"/>
+          </svg>
+          <span>Focus Orbit</span>
+        </span>
+        <span>· ${escapeHtml(domainTitle)}</span>
+      </div>
+      <div class="fluency-hud-metrics">
+        <span class="fluency-hud-pill ${streak >= 3 ? "is-flow-glow" : ""}">Focus Level: ${streak >= 5 ? "Deep Flow" : streak >= 2 ? "Steady" : "Building"}</span>
+        <span class="fluency-hud-pill">Strategy Badge: ${escapeHtml(activeBadge)}</span>
+        <span class="fluency-hud-pill">ARR: ${stats.arr}%</span>
+      </div>
+    `;
+    let drawer = document.querySelector("#fluency-telemetry-hud-drawer");
+    if (!drawer) {
+      drawer = document.createElement("section");
+      drawer.id = "fluency-telemetry-hud-drawer";
+      drawer.className = "fluency-telemetry-drawer";
+      drawer.setAttribute("aria-label", "Fluency Strategy Diagnostic Telemetry");
+      drawer.hidden = !fluencyNextGenState.telemetryOpen;
+      bar.insertAdjacentElement("afterend", drawer);
+    }
+    drawer.hidden = !fluencyNextGenState.telemetryOpen;
+    const zpdStore = SpacedZPDEngine.load();
+    drawer.innerHTML = `
+      <strong>Multi-Dimensional Fluency Diagnostic HUD (Shift + F)</strong>
+      <div class="fluency-telemetry-grid">
+        <div class="fluency-telemetry-cell"><strong>Automatic Recall Rate (ARR)</strong><div>${stats.arr}% (&lt;1.5s independent)</div></div>
+        <div class="fluency-telemetry-cell"><strong>Decomposition Efficiency (DE)</strong><div>${stats.de}% accuracy with split model</div></div>
+        <div class="fluency-telemetry-cell"><strong>Slip Recovery Velocity (SRV)</strong><div>${stats.srv ? `${stats.srv} ms` : "No slips"}</div></div>
+        <div class="fluency-telemetry-cell"><strong>Spaced ZPD Queue</strong><div>${(zpdStore.queue || []).length} facts scheduled</div></div>
+      </div>
+    `;
+  },
+};
+
+function onFluencyProblemPresented() {
+  if (!state.item) return;
+  FlowPacerEngine.startProblemMonitor(state.item);
+  KineticDecomposer.mount(state.item);
+  FluencyTelemetryHUD.render();
+}
+
+function onFluencyProblemFinalized(correct, independent, firstCorrect) {
+  FlowPacerEngine.clearHesitationMonitor();
+  const elapsedMs = Math.max(0, performance.now() - (fluencyNextGenState.problemShownAt || performance.now()));
+  const m = fluencyNextGenState.metrics;
+  m.totalSolved += 1;
+  if (correct && independent && firstCorrect && elapsedMs <= 1500) {
+    m.automaticRecallCount += 1;
+    m.badges.add("Automaticity Spark");
+  }
+  if (fluencyNextGenState.decomposedOnCurrent) {
+    m.decomposedAttempts += 1;
+    if (correct) {
+      m.decomposedSuccesses += 1;
+      m.badges.add("Anchor 5 Master");
+    }
+  }
+  if (correct && !firstCorrect && state.firstSlipAt) {
+    m.slipRecoveriesMs.push(Math.round(performance.now() - state.firstSlipAt));
+    state.firstSlipAt = null;
+    m.badges.add("Steady Self-Corrector");
+  }
+  if ((state.session?.streak || 0) >= 4) {
+    m.badges.add("Doubling Architect");
+  }
+  SpacedZPDEngine.recordFact(state.item, correct, fluencyNextGenState.hesitatedOnCurrent);
+  FluencyTelemetryHUD.render();
+}
+
+function buildFluencyProfileSummary(session, accuracyPercent, nextRecommendation) {
+  const stats = FluencyTelemetryHUD.getStats();
+  const strengths =
+    accuracyPercent >= 85
+      ? `Strong independent fluency (${accuracyPercent}% accuracy, ${stats.arr}% rapid recall).`
+      : `Steady strategic persistence (${session.correct} of ${session.answered} solved, DE ${stats.de}%).`;
+  const frontier =
+    session.missed?.length > 0
+      ? `Benefited from visual 5-split decomposition on ${session.missed[0]?.skill?.title || "target facts"}.`
+      : `Ready to extend automaticity into ${nextRecommendation?.skill?.title || "next strand"}.`;
+  const takeaway = `Goal: Use strategic 5-and-10 decomposition first whenever a new fact causes a pause.`;
+  const tokenPayload = {
+    g: state.grade,
+    acc: accuracyPercent,
+    arr: stats.arr,
+    de: stats.de,
+    srv: stats.srv,
+    at: Date.now(),
+  };
+  let tokenHash = "";
+  try {
+    tokenHash = window.btoa(JSON.stringify(tokenPayload));
+  } catch {
+    tokenHash = "ewl-fluency-token";
+  }
+  const history = safeReadJson(HISTORY_STORAGE_KEY, []);
+  history.push({
+    grade: state.grade,
+    mode: session.mode,
+    answered: session.answered,
+    correct: session.correct,
+    accuracyPercent,
+    arr: stats.arr,
+    de: stats.de,
+    srv: stats.srv,
+    strengths,
+    frontier,
+    takeaway,
+    tokenHash,
+    at: Date.now(),
+  });
+  safeWriteJson(HISTORY_STORAGE_KEY, history.slice(-40));
+  syncFluencyMasterV3({ lastFluencyProfile: tokenPayload, lastTokenHash: tokenHash });
+  return `
+    <div class="fluency-profile-card" id="fluency-profile-card">
+      <h4>Fluency Profile · Diagnostic Synthesis</h4>
+      <p><strong>Strengths Identified:</strong> ${escapeHtml(strengths)}</p>
+      <p><strong>Growth Frontier:</strong> ${escapeHtml(frontier)}</p>
+      <p><strong>Student Goal Takeaway:</strong> ${escapeHtml(takeaway)}</p>
+      <p><strong>Tri-Factor Telemetry:</strong> ARR ${stats.arr}% · DE ${stats.de}% · SRV ${stats.srv ? `${stats.srv} ms` : "Instant"}</p>
+      <div class="button-row">
+        <button type="button" class="outline-action" data-copy-teacher-token="${escapeHtml(tokenHash)}">Copy Teacher Token</button>
+      </div>
+    </div>
+  `;
+}
+
+document.addEventListener("click", (event) => {
+  const splitBtn = event.target.closest("[data-kinetic-split]");
+  if (splitBtn && state.item) {
+    fluencyNextGenState.sliceSplit = Number(splitBtn.dataset.kineticSplit) || 5;
+    fluencyNextGenState.decomposedOnCurrent = true;
+    chime("slice");
+    KineticDecomposer.mount(state.item);
+    return;
+  }
+  const tokenBtn = event.target.closest("[data-copy-teacher-token]");
+  if (tokenBtn) {
+    const token = tokenBtn.dataset.copyTeacherToken || "";
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(token).catch(() => {});
+    }
+    tokenBtn.textContent = "Teacher Token Copied ✓";
+    announce("Fluency teacher token copied to clipboard.");
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.shiftKey && (event.key === "F" || event.key === "f")) {
+    const tag = document.activeElement?.tagName || "";
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+    event.preventDefault();
+    fluencyNextGenState.telemetryOpen = !fluencyNextGenState.telemetryOpen;
+    FluencyTelemetryHUD.render();
+  }
+});
+
+window.KineticDecomposer = KineticDecomposer;
+window.FlowPacerEngine = FlowPacerEngine;
+window.FluencyTelemetryHUD = FluencyTelemetryHUD;
+window.SpacedZPDEngine = SpacedZPDEngine;
+
 populateQuickSkillDropdown();
 applySettings();
 renderLibrary();
@@ -1316,3 +1730,4 @@ if (initialSkill) openSkill(initialSkill);
 renderProfiles();
 renderAssignmentBanner();
 if (["teacher", "games"].includes(initialParams.get("view"))) openHubView(initialParams.get("view"));
+

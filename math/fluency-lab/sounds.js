@@ -2,7 +2,11 @@
 import { readLocal, writeLocal } from "./school-tools.js";
 
 const KEY = "ewl-fluency-sound-v1";
-const NOTES = { good: [523.25, 659.25], win: [523.25, 659.25, 783.99, 1046.5] };
+const NOTES = {
+  good: [523.25, 659.25, 783.99],
+  win: [523.25, 659.25, 783.99, 1046.5],
+  hesitation: [261.63, 329.63],
+};
 let enabled = null;
 let context = null;
 
@@ -15,26 +19,47 @@ export function setSound(next) {
 }
 
 export function chime(kind) {
-  if (!soundOn() || !NOTES[kind]) return;
+  if (!soundOn()) return;
   const Audio = globalThis.AudioContext || globalThis.webkitAudioContext;
   if (!Audio) return;
   try {
     context ||= new Audio();
     if (context.state === "suspended") context.resume();
+    if (kind === "slice") {
+      const start = context.currentTime;
+      const osc = context.createOscillator();
+      const filter = context.createBiquadFilter();
+      const gain = context.createGain();
+      osc.type = "square";
+      osc.frequency.setValueAtTime(420, start);
+      osc.frequency.exponentialRampToValueAtTime(180, start + 0.04);
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(900, start);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.06, start + 0.005);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.045);
+      osc.connect(filter).connect(gain).connect(context.destination);
+      osc.start(start);
+      osc.stop(start + 0.05);
+      return;
+    }
+    if (!NOTES[kind]) return;
+    const isHesitation = kind === "hesitation";
     NOTES[kind].forEach((frequency, i) => {
-      const start = context.currentTime + i * 0.11;
+      const start = context.currentTime + i * (isHesitation ? 0.16 : 0.09);
       const osc = context.createOscillator();
       const gain = context.createGain();
       osc.type = "sine";
       osc.frequency.value = frequency;
       gain.gain.setValueAtTime(0.0001, start);
-      gain.gain.exponentialRampToValueAtTime(0.07, start + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.35);
+      gain.gain.exponentialRampToValueAtTime(isHesitation ? 0.035 : 0.07, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + (isHesitation ? 0.28 : 0.14));
       osc.connect(gain).connect(context.destination);
       osc.start(start);
-      osc.stop(start + 0.4);
+      osc.stop(start + (isHesitation ? 0.32 : 0.16));
     });
   } catch {
     /* sound is optional */
   }
 }
+
