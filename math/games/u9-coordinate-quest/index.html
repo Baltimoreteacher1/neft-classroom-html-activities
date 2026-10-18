@@ -1524,44 +1524,17 @@
         this.streak = 0;
         this.misses++;
         this.hintsUsed++;
-        if (this.misses < 3) {
-          // Hint 1 = name the mix-up + the method (no answer).
-          // Hint 2 = a concrete step drawn on the grid (still not placed).
-          const tip = this.misses === 1 ? this.tier1() : this.tier2();
-          const label = this.misses === 1 ? "Hint 1 of 2: " : "Hint 2 of 2: ";
-          this.locked = false;
-          this.feedback.setText(label + tip).setColor(C.goldS).setAlpha(1);
-          this.updateHUD();
-          srSay("Not quite. " + label + tip + " Move the marker, then lock in again.");
-          return;
-        }
-        // Third miss: teach — light up the correct cell, glide the marker to
-        // it, explain, and continue. The round still counts as finished.
-        this.helpG.clear();
-        this.markerRing.setStrokeStyle(3, C.bad);
-        this.markerDot.setFillStyle(C.bad);
-        const msg = "Here is the spot: " + p.why;
-        this.feedback.setText(msg).setColor(C.goldS).setAlpha(1);
+        // Keep the model editable; feedback supports another mathematical revision.
+        // Hint 1 = name the mix-up + the method (no answer).
+        // Hint 2 = a concrete step drawn on the grid (still not placed).
+        const tip = this.misses === 1 ? this.tier1() : this.tier2();
+        const label = this.misses === 1 ? "Hint 1 of 2: " : "Hint 2 of 2: ";
+        this.locked = false;
+        this.feedback.setText(label + tip).setColor(C.goldS).setAlpha(1);
         this.updateHUD();
-        srSay(msg);
-        const tx = this.sx(p.tx),
-          ty = this.sy(p.ty);
-        this.ghost.setPosition(tx, ty).setVisible(true);
-        this.tweens.add({
-          targets: [this.markerRing, this.markerDot],
-          x: tx,
-          y: ty,
-          duration: this.reduceMotion ? 0 : 600,
-          onComplete: () => {
-            this.guideG.clear();
-            if (p.answer) {
-              // Still ask the length question — the points are now visible.
-              this.time.delayedCall(700, () => this.beginAnswerPhase());
-            } else {
-              this.afterAttempt(false);
-            }
-          },
-        });
+        srSay("Not quite. " + label + tip + " Move the marker, then lock in again.");
+        return;
+
       };
 
       // Hint 1: spot the likely mix-up from WHERE the marker is, and name the
@@ -1853,7 +1826,7 @@
           this.feedback.setText("Correct! " + ans.why).setColor(C.goodS).setAlpha(1);
           srSay("Correct. " + ans.why);
           this.afterAttempt(true);
-        } else if (!this.answerMissedOnce) {
+        } else {
           // Calm retry: no reveal, just a nudge back to counting.
           this.answerMissedOnce = true;
           this.hintsUsed++;
@@ -1866,20 +1839,6 @@
             .setAlpha(1);
           this.updateHUD();
           srSay("Not quite. Count the unit steps along the highlighted line, then pick again.");
-        } else {
-          this.answerDone = true;
-          this.streak = 0;
-          SFX.bad();
-          JUICE.audio.wrong();
-          const ci = this.choiceVals.indexOf(ans.correct);
-          if (ci >= 0) this.choiceRects[ci].setFillStyle(0x2f8f5a);
-          this.feedback
-            .setText("The answer is " + ans.correct + ". " + ans.why)
-            .setColor(C.goldS)
-            .setAlpha(1);
-          this.updateHUD();
-          srSay("The answer is " + ans.correct + ". " + ans.why);
-          this.afterAttempt(false);
         }
       };
 

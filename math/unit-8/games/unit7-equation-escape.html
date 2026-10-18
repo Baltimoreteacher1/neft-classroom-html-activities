@@ -2584,6 +2584,14 @@
           padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
           pointer-events: none;
         }
+        /* The pad is fixed, so reserve its height; otherwise controls at the
+           bottom of the page (e.g. "Enter") can never scroll clear of it. */
+        html {
+          scroll-padding-bottom: calc(190px + env(safe-area-inset-bottom, 0px));
+        }
+        body {
+          padding-bottom: calc(190px + env(safe-area-inset-bottom, 0px));
+        }
       }
       .ee-dpad,
       .ee-keys {

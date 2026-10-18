@@ -1640,43 +1640,33 @@
             ltr = o === "×" ? ltr * n : o === "+" ? ltr + n : ltr - n;
           });
         }
-        if (this.attempts < 3) {
-          // Tier 1 after the first miss: what is off + a method hint (no
-          // reveal). Tier 2 after the second: the step-by-step check.
-          this.helpTier = this.attempts;
-          const dir = st.value > p.goal ? "too high. Try a smaller number or a different sign." : "too low. Try a bigger number or a different sign.";
-          let tip = "";
-          if (ltr === p.goal) tip = " Careful: you worked left to right. Do × BEFORE + and −.";
-          else if (hasMul && hasAdd && this.attempts < 2) tip = " Remember: × happens before + and −.";
-          if (st.hasPow) tip += " An exponent means repeated multiplying: 3² = 3 × 3.";
-          let head = "Not quite. Your build equals " + st.value + ", ";
-          if (this.helpTier >= 2) {
-            const op = p.solution.find((t) => t.kind === "op");
-            head = "Not quite. Check it step by step: " + this.walkThrough(st) + ". That is ";
-            tip += " Hint: one way uses the " + (op ? op.label : "+") + " sign.";
-          }
-          this.feedback
-            .setText(head + dir + tip)
-            .setColor("#ffb0b0")
-            .setAlpha(1);
-          srSay(head + dir + tip);
-          this.time.delayedCall(this.reduceMotion ? 300 : 600, () => {
-            this.slots.forEach((s) => s.rect.setStrokeStyle(2, 0x6a4f8c));
-            this.locked = false;
-            this.refreshReadout();
-          });
-          return;
+        // Keep the model editable; feedback supports another mathematical revision.
+        // Tier 1 after the first miss: what is off + a method hint (no
+        // reveal). Tier 2 after the second: the step-by-step check.
+        this.helpTier = Math.min(2, this.attempts);
+        const dir = st.value > p.goal ? "too high. Try a smaller number or a different sign." : "too low. Try a bigger number or a different sign.";
+        let tip = "";
+        if (ltr === p.goal) tip = " Careful: you worked left to right. Do × BEFORE + and −.";
+        else if (hasMul && hasAdd && this.attempts < 2) tip = " Remember: × happens before + and −.";
+        if (st.hasPow) tip += " An exponent means repeated multiplying: 3² = 3 × 3.";
+        let head = "Not quite. Your build equals " + st.value + ", ";
+        if (this.helpTier >= 2) {
+          const op = p.solution.find((t) => t.kind === "op");
+          head = "Not quite. Check it step by step: " + this.walkThrough(st) + ". That is ";
+          tip += " Hint: one way uses the " + (op ? op.label : "+") + " sign.";
         }
-        // Third miss: teach — show why, reveal one correct assembly, move on.
-        this.stats[kind].seen++;
         this.feedback
-          .setText("Your build equals " + st.value + ". The goal is " + p.goal + ". One correct build: " + p.exprStr + ". " + p.why)
+          .setText(head + dir + tip)
           .setColor("#ffb0b0")
           .setAlpha(1);
-        srSay("Not quite. Your build equals " + st.value + ". One correct build is " + p.exprStr + ". " + p.why);
-        this.coachText.setText("");
-        this.showSolution();
-        this.time.delayedCall(this.reduceMotion ? 300 : 900, () => this.afterAttempt());
+        srSay(head + dir + tip);
+        this.time.delayedCall(this.reduceMotion ? 300 : 600, () => {
+          this.slots.forEach((s) => s.rect.setStrokeStyle(2, 0x6a4f8c));
+          this.locked = false;
+          this.refreshReadout();
+        });
+        return;
+
       };
 
       // Teach: clear the student's tiles and reveal one correct assembly.

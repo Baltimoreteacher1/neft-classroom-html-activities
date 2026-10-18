@@ -1796,16 +1796,6 @@
         this.usedHelp = true;
         this.streak = 0;
         c.used = true;
-        if (this.areaTries >= 2) {
-          const right = this.choices.find((k) => k.opt.correct);
-          right.done = true;
-          right.rect.setFillStyle(0x2fae73).setStrokeStyle(5, 0xffffff);
-          this.paintChoices();
-          this.feedback.setText(c.opt.why + " " + p.why).setColor("#ffcf4d").setAlpha(1);
-          srSay(c.opt.why + " " + p.why);
-          this.finishProblem(false, true);
-          return;
-        }
         // Tier 2 help: label each row's tile count on the grid.
         this.showRowCounts();
         this.moveChoice(1);

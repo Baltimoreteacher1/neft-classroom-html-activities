@@ -1521,39 +1521,20 @@
         this.hintsUsed++;
         this.flashRed();
         if (!this.reduceMotion) JUICE.shake(this, 0.006);
-        if (this.misses < 3) {
-          // Tier 1 = method hint (no answer). Tier 2 = a concrete step.
-          const why = this.misses === 1 ? this.tier1(stat, cur) : this.tier2(stat, cur);
-          const label = this.misses === 1 ? "Hint 1 of 2: " : "Hint 2 of 2: ";
-          this.feedback
-            .setText(label + why)
-            .setColor("#ffe08a")
-            .setAlpha(1);
-          this.hintText.setVisible(false);
-          if (this.misses === 2 && stat === "mean") this.drawTargetLine(true);
-          srSay("Not quite. " + label + why + " Change your dots, then lock in again.");
-          this.locked = false;
-          return;
-        }
-        // Third miss: show one plot that works, explain it, and move on.
-        this.counts = this.problem.sample.slice();
-        this.showingSample = true;
-        this.redrawDots();
-        this.updateReadout();
-        this.suggest.setVisible(false);
-        const added = [];
-        for (let i = 0; i < this.n; i++)
-          for (let k = this.given[i]; k < this.counts[i]; k++) added.push(this.lo + i);
-        const sampleVal = statOf(this.counts, this.lo, stat);
-        const msg =
-          "Here is one plot that works (green dots): add " +
-          added.join(", ") +
-          ". " +
-          this.successWhy(stat, sampleVal);
-        this.feedback.setText(msg).setColor("#ffe08a").setAlpha(1);
+        // Keep the model editable; feedback supports another mathematical revision.
+        // Tier 1 = method hint (no answer). Tier 2 = a concrete step.
+        const why = this.misses === 1 ? this.tier1(stat, cur) : this.tier2(stat, cur);
+        const label = this.misses === 1 ? "Hint 1 of 2: " : "Hint 2 of 2: ";
+        this.feedback
+          .setText(label + why)
+          .setColor("#ffe08a")
+          .setAlpha(1);
         this.hintText.setVisible(false);
-        srSay(msg);
-        this.roundDone(false);
+        if (this.misses === 2 && stat === "mean") this.drawTargetLine(true);
+        srSay("Not quite. " + label + why + " Change your dots, then lock in again.");
+        this.locked = false;
+        return;
+
       };
 
       // Teaching text that shows the student's ACTUAL statistic (the "correct
@@ -1988,7 +1969,7 @@
           "Tap a number column to add a dot. Tap one of your teal dots to remove it. Keyboard: \u2190 \u2192 choose a column, \u2191 add, \u2193 remove, Enter = Lock In.",
           "Gold dots are given data. They stay on the plot and count in every statistic.",
           "Level 1: the mean is the balance point. The coach counts steps below and above the target and tells you the next dot to add.",
-          "Level 2: mean, median, range, or MAD. A miss unlocks Hint 1 (the method), then Hint 2 (a step with your numbers). After 3 tries you see one plot that works.",
+          "Level 2: mean, median, range, or MAD. A miss unlocks Hint 1 (the method), then Hint 2 (a step with your numbers). Your plot stays editable: use each hint to revise and test your own construction.",
           "There is no timer. First-try builds earn the most points. 10 rounds, then you see your summary.",
         ],
         setLevel(level) { ddLevel = level; ddAuto = false; ddEndless = false; ddGame.scene.getScenes(true).forEach(scene => ddGame.scene.stop(scene.sys.settings.key)); ddGame.scene.start(ddVocabSeen ? "Game" : "Vocab"); }

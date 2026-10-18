@@ -1511,124 +1511,78 @@
         JUICE.shake(this, 0.008);
         this.streak = 0;
         this.attemptsThis = (this.attemptsThis || 0) + 1;
-        if (this.attemptsThis < 3) {
-          // Miss 1 = Tier 1 (method only). Miss 2 = Tier 2 (a concrete step
-          // with this problem's numbers + the paired multiples drawn on the
-          // number lines). Knobs stay where the student put them.
-          let diag;
-          if (!(c > 0 && d > 0)) {
-            diag = "Both knobs need a value past 0. Slide each knob first.";
-          } else if (p.kind === "full" && sameAsBase) {
+        // Keep the model editable; feedback supports another mathematical revision.
+        // Miss 1 = Tier 1 (method only). Miss 2 = Tier 2 (a concrete step
+        // with this problem's numbers + the paired multiples drawn on the
+        // number lines). Knobs stay where the student put them.
+        let diag;
+        if (!(c > 0 && d > 0)) {
+          diag = "Both knobs need a value past 0. Slide each knob first.";
+        } else if (p.kind === "full" && sameAsBase) {
+          diag =
+            "That's the starting ratio itself — multiply BOTH parts by the same number to build an EQUIVALENT ratio.";
+        } else if (this.attemptsThis === 1) {
+          diag =
+            c +
+            ":" +
+            d +
+            " is not equivalent to " +
+            p.a +
+            ":" +
+            p.b +
+            ". Whatever you multiply or divide the top by, do the SAME to the bottom.";
+        } else {
+          this.drawPairs();
+          if (p.kind === "one")
             diag =
-              "That's the starting ratio itself — multiply BOTH parts by the same number to build an EQUIVALENT ratio.";
-          } else if (this.attemptsThis === 1) {
+              p.topFixed +
+              " ÷ " +
+              p.a +
+              " = " +
+              p.topFixed / p.a +
+              ", so the scale factor is " +
+              p.topFixed / p.a +
+              ". Multiply " +
+              p.b +
+              " by " +
+              p.topFixed / p.a +
+              ". The lines show matching pairs.";
+          else if (p.kind === "unit")
             diag =
-              c +
-              ":" +
-              d +
-              " is not equivalent to " +
+              p.a +
+              " ÷ " +
+              p.a +
+              " = 1, so divide " +
+              p.b +
+              " by " +
+              p.a +
+              " too. What is " +
+              p.b +
+              " ÷ " +
+              p.a +
+              "?";
+          else
+            diag =
+              "The lines join matching pairs: " +
               p.a +
               ":" +
               p.b +
-              ". Whatever you multiply or divide the top by, do the SAME to the bottom.";
-          } else {
-            this.drawPairs();
-            if (p.kind === "one")
-              diag =
-                p.topFixed +
-                " ÷ " +
-                p.a +
-                " = " +
-                p.topFixed / p.a +
-                ", so the scale factor is " +
-                p.topFixed / p.a +
-                ". Multiply " +
-                p.b +
-                " by " +
-                p.topFixed / p.a +
-                ". The lines show matching pairs.";
-            else if (p.kind === "unit")
-              diag =
-                p.a +
-                " ÷ " +
-                p.a +
-                " = 1, so divide " +
-                p.b +
-                " by " +
-                p.a +
-                " too. What is " +
-                p.b +
-                " ÷ " +
-                p.a +
-                "?";
-            else
-              diag =
-                "The lines join matching pairs: " +
-                p.a +
-                ":" +
-                p.b +
-                ", " +
-                2 * p.a +
-                ":" +
-                2 * p.b +
-                (3 * p.a <= MAXV && 3 * p.b <= MAXV ? ", …" : "") +
-                ". Pick one that is not " +
-                p.a +
-                ":" +
-                p.b +
-                ".";
-          }
-          this.feedback.setText("Not quite — " + diag + " Try again!").setAlpha(1);
-          srSay("Not quite. " + diag + " Try again.");
-          this.locked = false;
-          return;
+              ", " +
+              2 * p.a +
+              ":" +
+              2 * p.b +
+              (3 * p.a <= MAXV && 3 * p.b <= MAXV ? ", …" : "") +
+              ". Pick one that is not " +
+              p.a +
+              ":" +
+              p.b +
+              ".";
         }
-        this.helpedBy[p.kind] = (this.helpedBy[p.kind] || 0) + 1;
-        this.feedback.setText("Here is one way — " + p.why).setAlpha(1);
-        srSay("Here is one way. " + p.why);
-        // Teach: show the correct value(s) with green ghost markers and glide
-        // the movable knob(s) to the right spot, then continue.
-        const ghosts = [];
-        const makeGhost = (line, val) => {
-          const refs = line === "top" ? this.topLine : this.botLine;
-          ghosts.push(this.add.circle(tickX(val), refs.y, 13, 0x8ff0d8, 0.5).setDepth(6));
-        };
-        const tweenTargets = [];
-        if (p.topFixed === null) {
-          makeGhost("top", p.targetTop);
-          tweenTargets.push({ o: this.topLine.knob, x: tickX(p.targetTop) });
-          tweenTargets.push({ o: this.topLine.knobVal, x: tickX(p.targetTop) });
-          this.topLine.knobVal.setText(String(p.targetTop));
-        }
-        if (p.botFixed === null) {
-          makeGhost("bottom", p.targetBot);
-          tweenTargets.push({ o: this.botLine.knob, x: tickX(p.targetBot) });
-          tweenTargets.push({ o: this.botLine.knobVal, x: tickX(p.targetBot) });
-          this.botLine.knobVal.setText(String(p.targetBot));
-        }
-        this.ratioReadout.setText(p.targetTop + " : " + p.targetBot);
-        let done = false;
-        const finish = () => {
-          if (done) return;
-          done = true;
-          ghosts.forEach((g) => g.destroy());
-          this.afterAttempt(false);
-        };
-        if (this.reduceMotion || tweenTargets.length === 0) {
-          tweenTargets.forEach((t) => (t.o.x = t.x));
-          this.time.delayedCall(400, finish);
-        } else {
-          this.tweens.add({
-            targets: tweenTargets.map((t) => t.o),
-            duration: 600,
-            ease: "Quad.Out",
-            x: function (target) {
-              const m = tweenTargets.find((t) => t.o === target);
-              return m ? m.x : target.x;
-            },
-            onComplete: finish,
-          });
-        }
+        this.feedback.setText("Not quite — " + diag + " Try again!").setAlpha(1);
+        srSay("Not quite. " + diag + " Try again.");
+        this.locked = false;
+        return;
+
       };
 
       GameScene.prototype.afterAttempt = function (correct) {
@@ -1909,7 +1863,7 @@
           "Goal: the two number lines are a ratio table. Move the GOLD knob(s) so the pair (top : bottom) is equal to the given ratio. Solve 10 to finish.",
           "Move a knob: drag it, or press \u2190 \u2192 (A/D). Press \u2191 \u2193 to switch lines when both knobs move. Grey knobs are fixed.",
           "Think first: find the scale factor (how many times bigger), and do the same thing to BOTH numbers. For a unit rate, make the top number 1.",
-          "Press LOCK IN (or Enter) to check. Not yet? Hint 1 tells you the method. Hint 2 gives the scale factor step and draws matching pairs. After 3 tries the game shows one answer — no one fails.",
+          "Press LOCK IN (or Enter) to check. Not yet? Hint 1 tells you the method. Hint 2 gives the scale factor step and draws matching pairs. Your model stays editable after every try. Use the feedback to revise and check again.",
           "Points: most for right on the first try, fewer after a hint. Press NEXT when you have read the explanation.",
         ],
         setLevel(level) {

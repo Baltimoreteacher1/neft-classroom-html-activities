@@ -153,6 +153,7 @@
     <script src="/assets/game-studio.js?v=20261016" defer></script>
     <link rel="stylesheet" href="/math/games/shared/phaser-studio.css?v=20261015">
     <script src="/math/games/shared/phaser-studio.js?v=20261015"></script>
+    <script src="/math/games/u4-percent-power/construction.js?v=20261017"></script>
     <link rel="stylesheet" href="/math/games/shared/cabinet-tools.css?v=20261002">
     <script src="/math/games/shared/cabinet-tools.js?v=20261002" defer></script>
     <link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
@@ -240,7 +241,7 @@
       // wrong lock-in, a benchmark hint appears (Tier 1), then the live part
       // readout switches on (Tier 2). A clean first-try solve scores full
       // points; a helped solve still counts but scores less and resets the
-      // independent-solve streak. No-fail: after 3 tries the answer is taught
+      // independent-solve streak. Every miss keeps the mathematical model editable
       // and play continues.
       // Difficulty rises by level: more framings (find the part → decimal →
       // find the percent → sale price).
@@ -337,8 +338,8 @@
       //   level 3   : + decimal → percent ("Shade the bar to show 0.25")
       //   level 4-5 : + find the percent ("15 is what percent of 20?")
       //   level 6+  : + sale price     ("$20, 25% off — shade what you PAY")
-      // "Find the part" and "Sale price" have a STEP 2: the student picks the
-      // value the shading is worth from choices built from real misconceptions.
+      // "Find the part" and "Sale price" have a STEP 2: the student constructs
+      // the value of the shading. Known misconception values give specific feedback.
       // Nothing on screen computes the answer for them — the percent dial only
       // echoes their own shading, and value labels on the bar are Tier-2 help.
       const PCTS = [10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90];
@@ -1046,6 +1047,7 @@
         this.events.once("shutdown", () => this.hideChoices());
         if (!this.reduceMotion) this.cameras.main.fadeIn(400);
         this.newProblem();
+        if (ppResume) { const saved = ppResume; ppResume = null; this.restoreConstruction(saved); }
       };
 
       GameScene.prototype.setMarker = function (pct) {
@@ -1086,7 +1088,7 @@
       GameScene.prototype.updateCoach = function () {
         if (!this.coachText) return;
         if (this.phase === "value") {
-          this.keysText.setText("← → choose a number · Enter = pick it · or press 1–" + this.choices.length);
+          this.keysText.setText("Build the amount in the answer box below the game · Check amount");
         } else {
           this.keysText.setText("Drag the handle or press ← → (5% each) · Enter = Lock In");
         }
@@ -1095,7 +1097,7 @@
           return;
         }
         let msg;
-        if (this.phase === "value") msg = "Next: use the shaded bar to find the number. Pick it with ← → and Enter.";
+        if (this.phase === "value") msg = "Next: use the shaded bar to construct the amount in the answer box below.";
         else if (this.markerPct === 0) msg = "Next: press → (or drag the handle) to shade the bar. Each press adds 5%.";
         else msg = "Next: when your shading answers the question, press Enter to Lock In.";
         this.coachText.setText("👉 " + msg);
@@ -1111,6 +1113,7 @@
         this.wrongValue = 0;
         this.scaffoldTier = 0;
         this.usedHelp = false;
+        this.amountDraft = "";
         this.hideChoices();
         this.hintText.setAlpha(0).setText("");
         this.feedback.setAlpha(0).setText("");
@@ -1133,7 +1136,7 @@
 
       GameScene.prototype.lockIn = function () {
         if (this.locked || !this.problem) return;
-        if (this.phase === "value") return this.submitChoice(this.choiceIdx);
+        if (this.phase === "value") return this.submitConstructedValue();
         if (this.phase !== "shade") return;
         const p = this.problem;
         this.attempts += 1;
@@ -1158,26 +1161,6 @@
         this.usedHelp = true;
         this.streak = 0;
         this.fill.setFillStyle(0xd4952a);
-        if (this.wrongShade >= 3) {
-          // No-fail last resort: show the shading, explain, and keep going.
-          this.locked = true;
-          this.feedback.setText("Here is the shading. " + p.why).setColor("#ffd24a").setAlpha(1);
-          srSay("Here is the shading. " + p.why);
-          this.tweens.add({
-            targets: [this.handle, this.knob],
-            x: pctToX(p.targetPct),
-            duration: this.reduceMotion ? 0 : 600,
-            onComplete: () => {
-              this.setMarker(p.targetPct);
-              this.fill.setFillStyle(0x2d874b);
-              if (p.ask) {
-                this.locked = false;
-                this.enterValuePhase();
-              } else this.finishProblem(false);
-            },
-          });
-          return;
-        }
         const why = shadeMistake(p, this.markerPct);
         this.setScaffold(this.wrongShade === 1 ? 1 : 2);
         this.feedback.setText("Not quite. " + why + " Try again.").setColor("#ffd24a").setAlpha(1);
@@ -1198,14 +1181,66 @@
         this.lockLabel.setVisible(false);
         // A Tier-1 hint from Step 1 is about shading — swap it for this step.
         if (this.scaffoldTier === 1) this.hintText.setText("💡 " + scaffoldHint(p, "value"));
-        this.showChoices(p.ask.options);
+        this.showConstruction();
         this.updateCoach();
-        srSay(
-          p.ask.q +
-            " Choices: " +
-            p.ask.options.map((o, i) => i + 1 + ", " + o.label).join("; ") +
-            ". Use left and right, then Enter, or press a number key.",
-        );
+        srSay(p.ask.q + " Construct the amount in the labeled answer box below the game. Fractions and decimals are accepted.");
+      };
+      GameScene.prototype.showConstruction = function () {
+        this.hideChoices();
+        const host = document.querySelector(".cabinet-console");
+        if (!host) return;
+        const form = document.createElement("form");
+        form.className = "percent-construction";
+        form.noValidate = true;
+        form.innerHTML = '<label for="percent-amount">Build the amount <span></span></label><p id="percent-amount-guide">Use the bar: what is 10% worth? Combine equal parts. You can enter a whole number, decimal, or fraction.</p><div class="percent-amount-row"><input id="percent-amount" type="text" inputmode="decimal" autocomplete="off" data-nsr-ignore aria-describedby="percent-amount-guide"><button type="submit">Check amount</button></div><p class="percent-amount-status" role="status" aria-live="polite"></p><button type="button" class="percent-method-hint">Use a bar-model hint</button>';
+        form.querySelector("label span").textContent = this.problem.money ? "(dollars)" : "(same units as the whole)";
+        const input = form.querySelector("input");
+        input.value = this.amountDraft || "";
+        input.addEventListener("input", () => { this.amountDraft = input.value; this.saveConstruction(); });
+        form.addEventListener("submit", (ev) => { ev.preventDefault(); this.submitConstructedValue(); });
+        form.querySelector(".percent-method-hint").addEventListener("click", () => {
+          this.setScaffold(Math.min(2, this.scaffoldTier + 1));
+          form.querySelector(".percent-amount-status").textContent = this.hintText.text;
+          this.saveConstruction();
+        });
+        host.insertBefore(form, host.querySelector(".cabinet-controls"));
+        this.amountForm = form;
+        input.focus({ preventScroll: false });
+        this.amountCaption = this.add.text(W / 2, 498, "Construct the amount in the answer box below ↓", TXT(20, "#ffffff", { align: "center", wordWrap: { width: W - 70 } })).setOrigin(0.5);
+      };
+      GameScene.prototype.submitConstructedValue = function () {
+        if (this.locked || this.phase !== "value" || !this.problem.ask) return;
+        const input = this.amountForm?.querySelector("input");
+        const value = window.PercentConstruction.parseAmount(input?.value ?? this.amountDraft);
+        const status = this.amountForm?.querySelector(".percent-amount-status");
+        if (value == null) {
+          if (status) status.textContent = "Enter an amount, such as 12, 12.5, or 25/2. A fraction needs a nonzero denominator.";
+          input?.setAttribute("aria-invalid", "true");
+          input?.focus({ preventScroll: true });
+          return;
+        }
+        input?.removeAttribute("aria-invalid");
+        this.attempts += 1;
+        const expected = this.problem.ask.options.find(o => o.correct).value;
+        if (Math.abs(value - expected) < 1e-9) {
+          this.correctSubs += 1;
+          SFX.good();
+          if (status) status.textContent = "Your amount matches the constructed bar.";
+          this.amountForm?.querySelectorAll("input,button").forEach(el => { el.disabled = true; });
+          this.finishProblem(true);
+        } else {
+          this.wrongValue += 1;
+          this.usedHelp = true;
+          this.streak = 0;
+          SFX.bad();
+          const match = this.problem.ask.options.find(o => !o.correct && Math.abs(o.value - value) < 1e-9);
+          const message = match?.why || (value < 0 ? "The shaded part is nonnegative. Compare it with zero and the whole." : "Compare your amount with the shaded share of the whole. How many 10% blocks and half-blocks does your bar contain?");
+          this.feedback.setText(message + " Revise your amount.").setColor("#ffd24a").setAlpha(1);
+          if (status) status.textContent = message + " Your model stays in place. Revise and test again.";
+          srSay(message);
+          this.updateHUD();
+        }
+        this.saveConstruction();
       };
       GameScene.prototype.showChoices = function (options) {
         this.hideChoices();
@@ -1257,6 +1292,10 @@
           c.num.destroy();
         });
         this.choices = [];
+        this.amountForm?.remove();
+        this.amountForm = null;
+        this.amountCaption?.destroy();
+        this.amountCaption = null;
         if (this.domBar) this.domBar.remove();
         this.domBar = null;
       };
@@ -1304,16 +1343,6 @@
         this.usedHelp = true;
         this.streak = 0;
         c.used = true;
-        if (this.wrongValue >= 2) {
-          const right = this.choices.find((k) => k.opt.correct);
-          right.done = true;
-          right.rect.setFillStyle(0x36a35b).setStrokeStyle(5, 0xffffff);
-          this.paintChoices();
-          this.feedback.setText(c.opt.why + " The answer is " + right.opt.label + ". " + p.why).setColor("#ffd24a").setAlpha(1);
-          srSay(c.opt.why + " The answer is " + right.opt.label + ". " + p.why);
-          this.finishProblem(false, true);
-          return;
-        }
         this.setScaffold(2);
         this.moveChoice(1);
         this.feedback.setText("Not quite. " + c.opt.why + " Try another.").setColor("#ffd24a").setAlpha(1);
@@ -1565,16 +1594,74 @@
           .setOrigin(0.5);
       };
 
+      let ppResume = null;
+      let ppLastConstruction = null;
+      GameScene.prototype.captureConstruction = function () {
+        const keys = ["score", "streak", "bestStreak", "level", "startLevel", "support", "auto", "endless", "attempts", "correctSubs", "solved", "firstTry", "round", "problem", "phase", "markerPct", "wrongShade", "wrongValue", "scaffoldTier", "usedHelp", "stats", "amountDraft"];
+        return Object.fromEntries(keys.map(key => [key, this[key]]));
+      };
+      GameScene.prototype.saveConstruction = function () {
+        if (window.NeftSaveResume?.record) window.NeftSaveResume.save("percent-model");
+      };
+      GameScene.prototype.restoreConstruction = function (raw) {
+        const saved = window.PercentConstruction.validSnapshot(raw);
+        if (!saved) return;
+        this.hideChoices();
+        Object.assign(this, saved);
+        this.target = this.endless ? Infinity : 10;
+        this.locked = false;
+        const p = this.problem;
+        this.endR.setText((p.money ? "$" : "") + p.whole);
+        this.bannerLabel.setText(p.label + (p.ask ? " · Step 1 of 2: shade the bar" : ""));
+        this.bannerText.setText(p.prompt);
+        this.setMarker(saved.markerPct);
+        if (saved.scaffoldTier >= 2) this.showTickLabels();
+        if (saved.scaffoldTier) this.hintText.setText("💡 " + (saved.scaffoldTier >= 2 ? concreteHint(p, saved.phase) : scaffoldHint(p, saved.phase))).setAlpha(1);
+        if (saved.phase === "value") this.enterValuePhase();
+        else if (saved.phase === "done") {
+          this.locked = true;
+          this.lockBtn.setVisible(false);
+          this.lockLabel.setVisible(false);
+          this.feedback.setText("Saved completed model. " + p.why).setColor("#8fd6a0").setAlpha(1);
+          this.studioNextRound(() => this.newProblem());
+        }
+        this.updateHUD();
+      };
       // ── Launch ──
       const ppGame = new Phaser.Game(config);
       window.ppGame = ppGame; // handle for the Neon Grid expedition
+      // Phaser tears down scenes before the shared engine's unload listener.
+      // Keep a current in-memory board so that final save cannot replace valid
+      // mathematical work with null during that teardown.
+      ppGame.events.on("step", () => {
+        const scene = ppGame.scene?.getScene("Game");
+        if (scene?.problem && (ppGame.scene.isActive("Game") || ppGame.scene.isPaused("Game"))) ppLastConstruction = scene.captureConstruction();
+        else if (ppGame.scene?.getScenes(true).some(s => s.sys.settings.key !== "Boot")) ppLastConstruction = null;
+      });
+      document.addEventListener("DOMContentLoaded", () => {
+        const nsr = window.NeftSaveResume;
+        if (!nsr) return;
+        nsr.registerStateProvider(() => {
+          const scene = ppGame.scene?.getScene("Game");
+          if (scene?.problem && (ppGame.scene.isActive("Game") || ppGame.scene.isPaused("Game"))) ppLastConstruction = scene.captureConstruction();
+          return { percentConstruction: ppLastConstruction };
+        });
+        nsr.registerStateRestorer(custom => {
+          const saved = window.PercentConstruction.validSnapshot(custom?.percentConstruction);
+          if (!saved) return;
+          ppResume = saved;
+          ppLevel = saved.startLevel;
+          ppGame.scene.getScenes(true).forEach(scene => ppGame.scene.stop(scene.sys.settings.key));
+          ppGame.scene.start("Game");
+        });
+      });
       // Native math controls now have a readable, touch-accessible console.
       window.PhaserStudio.mount({
         game: ppGame, id: "u4-percent-power", GameScene, ResultScene, audio: SFX,
         instructions: [
           "Read the question at the top. The long bar is the whole amount (100%). Each tick mark is 10%.",
           "Shade the bar: drag the handle, or press \u2190 \u2192 to change it by 5%. Press Enter or LOCK IN to check.",
-          "Some questions have Step 2: pick the number your shading is worth. Use \u2190 \u2192 and Enter, or press 1\u20134.",
+          "Some questions have Step 2: construct the amount your shading is worth in the answer box. Decimals and equivalent fractions are accepted.",
           "Not right? Read the tip and try again. A hint appears after a try. First-try answers with no help earn the most points.",
         ],
         setLevel(level) { ppLevel = level === 1 ? 1 : 4; ppAuto = false; ppEndless = false; ppGame.scene.getScenes(true).forEach(scene => ppGame.scene.stop(scene.sys.settings.key)); ppGame.scene.start(ppVocabSeen ? "Game" : "Vocab"); }
@@ -1591,8 +1678,7 @@
             "Percent Power Bar Model Builder math game. A percent problem " +
               "appears at the top; drag the handle, or use the left and right " +
               "arrow keys, to shade the bar, then press Enter. Some problems " +
-              "have a second step: choose the number the shading is worth with " +
-              "the arrow keys and Enter, or press 1 to 4.",
+              "have a second step: construct the amount in the labeled answer box below the game.",
           );
           cv.setAttribute("aria-roledescription", "math game");
           if (!cv.hasAttribute("tabindex")) cv.setAttribute("tabindex", "0");

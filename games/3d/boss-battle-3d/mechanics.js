@@ -101,3 +101,25 @@ export function missMessage(round, result) {
   return bad === "low" ? round.low : round.high;
 }
 
+
+/** Recover old v2 battle progress plus an optional exact-round draft. A zero-HP
+ * save is a defeated phase, including when refresh interrupts its animation. */
+export function restoreBattleProgress(saved, plan) {
+  if (!saved || !Number.isInteger(saved.phaseIndex) || saved.phaseIndex < 0 || saved.phaseIndex >= plan.phaseUnits.length) return null;
+  if (![saved.bossHp, saved.totalScore, saved.turn].every(n => Number.isSafeInteger(n) && n >= 0 && n < 1e9)) return null;
+  let phaseIndex = saved.phaseIndex;
+  let totalScore = saved.totalScore;
+  const turn = saved.turn;
+  let bossMaxHp = plan.hpForPhase(phaseIndex);
+  let bossHp = Math.max(0, Math.min(bossMaxHp, saved.bossHp));
+  const d = saved.draft;
+  let draft = null;
+  if (d && Number.isSafeInteger(d.seed) && d.seed > 0 && d.seed <= 0xffffffff && d.turn === turn && Number.isInteger(d.misses) && d.misses >= 0 && d.misses < 100000 && Number.isInteger(d.hintsOpened) && d.hintsOpened >= 0 && d.hintsOpened <= Math.min(2, d.misses) && Array.isArray(d.values) && d.values.length <= 2 && d.values.every(v => typeof v === "string" && v.length < 200)) draft = d;
+  if (bossHp === 0) {
+    phaseIndex++;
+    totalScore += 25;
+    draft = null;
+    if (phaseIndex < plan.phaseUnits.length) bossHp = bossMaxHp = plan.hpForPhase(phaseIndex);
+  }
+  return { phaseIndex, bossHp, bossMaxHp, totalScore, turn, draft, victory: phaseIndex >= plan.phaseUnits.length };
+}

@@ -1374,15 +1374,6 @@
         this.usedHelp = true;
         this.streak = 0;
         c.used = true;
-        if (this.pickTries >= 2) {
-          const right = this.choices.find((k) => k.opt.correct);
-          right.done = true;
-          right.rect.setFillStyle(0x36a35b).setStrokeStyle(5, 0xffffff);
-          this.feedback.setText(c.opt.why + " A number that works: " + right.opt.label + ".").setColor("#ffb38a");
-          srSay(c.opt.why + " A number that works: " + right.opt.label + ".");
-          this.finishProblem(false);
-          return;
-        }
         this.moveChoice(1);
         this.feedback.setText("Not quite. " + c.opt.why + " Try another.").setColor("#ffb38a");
         srSay("Not quite. " + c.opt.why + " Try another.");

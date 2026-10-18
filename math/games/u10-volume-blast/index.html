@@ -1558,33 +1558,17 @@
         this.streak = 0;
         this.misses++;
         this.hintsUsed++;
-        if (this.misses < 3) {
-          const tip = this.misses === 1 ? this.tier1() : this.tier2();
-          const label = this.misses === 1 ? "Hint 1 of 2: " : "Hint 2 of 2: ";
-          this.feedback
-            .setColor("#ffcd4d")
-            .setText(label + tip)
-            .setAlpha(1);
-          this.updateHUD();
-          srSay("Not quite. " + label + tip + " Change the prism, then lock in again.");
-          return;
-        }
-        // Third miss: redraw the prism as a CORRECT build and explain it.
-        const goal = correctBuild(t);
-        this.built = { l: goal.l, w: goal.w, h: goal.h };
-        this.redrawPrism();
-        this.updateSteppers();
-        if (t.mode === "dims") {
-          this.locked = true;
-          this.feedback
-            .setColor("#ffcd4d")
-            .setText("Here is the prism, built for you. Now find its volume.")
-            .setAlpha(1);
-          this.beginAnswerPhase();
-          return;
-        }
-        this.updateReadout(true);
-        this.finishRound(false, "Here is one prism that works:  " + t.why);
+        // Keep the model editable; feedback supports another mathematical revision.
+        const tip = this.misses === 1 ? this.tier1() : this.tier2();
+        const label = this.misses === 1 ? "Hint 1 of 2: " : "Hint 2 of 2: ";
+        this.feedback
+          .setColor("#ffcd4d")
+          .setText(label + tip)
+          .setAlpha(1);
+        this.updateHUD();
+        srSay("Not quite. " + label + tip + " Change the prism, then lock in again.");
+        return;
+
       };
 
       // Hint 1: name the mix-up and the method — never the answer.
@@ -1784,36 +1768,32 @@
         this.answerMisses++;
         this.hintsUsed++;
         this.choiceRects[i].setFillStyle(0x4a2a2a);
-        if (this.answerMisses < 3) {
-          const layer = (t.l * t.w) / 2;
-          const tip =
-            this.answerMisses === 1
-              ? CHOICE_WHY[c.why] || CHOICE_WHY.count
-              : "One layer = " +
-                fmtHalf(t.l) +
-                " × " +
-                fmtHalf(t.w) +
-                " = " +
-                fmtHalf(layer) +
-                " cubes. There are " +
-                fmtHalf(t.h) +
-                " layers. Multiply " +
-                fmtHalf(layer) +
-                " × " +
-                fmtHalf(t.h) +
-                ".";
-          const label = this.answerMisses === 1 ? "Hint 1 of 2: " : "Hint 2 of 2: ";
-          this.feedback
-            .setColor("#ffcd4d")
-            .setText(label + tip)
-            .setAlpha(1);
-          srSay("Not quite. " + label + tip + " Pick again.");
-          return;
-        }
-        const ci = this.choices.findIndex((x) => x.v === t.dV);
-        if (ci >= 0) this.choiceRects[ci].setFillStyle(0x1f7a52);
-        this.updateReadout(true);
-        this.finishRound(false, "The volume is " + fmtHalf(t.dV) + " cubic units.  " + t.why);
+        // Keep the amount open for mathematical revision after every miss.
+        const layer = (t.l * t.w) / 2;
+        const tip =
+          this.answerMisses === 1
+            ? CHOICE_WHY[c.why] || CHOICE_WHY.count
+            : "One layer = " +
+              fmtHalf(t.l) +
+              " × " +
+              fmtHalf(t.w) +
+              " = " +
+              fmtHalf(layer) +
+              " cubes. There are " +
+              fmtHalf(t.h) +
+              " layers. Multiply " +
+              fmtHalf(layer) +
+              " × " +
+              fmtHalf(t.h) +
+              ".";
+        const label = this.answerMisses === 1 ? "Hint 1 of 2: " : "Hint 2 of 2: ";
+        this.feedback
+          .setColor("#ffcd4d")
+          .setText(label + tip)
+          .setAlpha(1);
+        srSay("Not quite. " + label + tip + " Pick again.");
+        return;
+
       };
 
       // One round is over: score it, explain, then offer NEXT ROUND.

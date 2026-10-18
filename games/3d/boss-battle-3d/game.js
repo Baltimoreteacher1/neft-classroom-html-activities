@@ -26,7 +26,7 @@ import { createArena } from "./scene.js";
 import { initClarity } from "/games/3d/_clarity/clarity-kit.js";
 import { UNITS } from "./problems.js";
 import { makeRound } from "./generators.js";
-import { checkBuild, makeRng, missMessage } from "./mechanics.js";
+import { checkBuild, makeRng, missMessage, restoreBattleProgress } from "./mechanics.js";
 import { createBoard, boardPoint } from "./board.js";
 import { createHpBar, createPanel, injectStyles } from "./ui.js";
 
@@ -45,7 +45,7 @@ const SAVE_PREFIX = "bb3d:run:v2:L";
 function loadRun(level) {
   try {
     const s = JSON.parse(localStorage.getItem(SAVE_PREFIX + level) || "null");
-    return s && Number.isInteger(s.phaseIndex) ? s : null;
+    return s && Number.isInteger(s.phaseIndex) && s.phaseIndex >= 0 && s.phaseIndex < 10 && [s.bossHp, s.totalScore, s.turn].every(n => Number.isSafeInteger(n) && n >= 0 && n < 1e9) ? s : null;
   } catch {
     return null;
   }
@@ -97,7 +97,9 @@ export default {
     const { scene, camera, THREE, hud, feel, announce, caption, level, onScore, onFrame } = ctx;
     const plan = buildPlan(level);
     const reduced = feel.reducedMotion;
-    const rng = makeRng((Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0);
+    let roundSeed = 0;
+    let resumeDraft = null;
+    let hintsOpened = 0;
 
     let phaseIndex = 0;
     let bossMaxHp = 0;
@@ -160,7 +162,8 @@ export default {
     const panel = createPanel(mountEl, {
       onFire: fire,
       onHint: () => revealHint(),
-      onSwap: () => nextRound(true),
+      onSwap: () => { resumeDraft = null; nextRound(); },
+      onChange: () => persist(),
       onToggleEs: () => panel.setEs(!panel.showEs),
       onRestart: () => {
         clearRun(level);
@@ -188,15 +191,20 @@ export default {
     }
 
     // ================================================================ FLOW
-    function persist() {
-      saveRun(level, { phaseIndex, bossHp, bossMaxHp, totalScore, turn });
+    function persist(advance = false) {
+      const draft = !advance && round ? { seed: roundSeed, turn, values: panel.drafts(), misses, hintsOpened } : null;
+      saveRun(level, { phaseIndex, bossHp, bossMaxHp, totalScore, turn, draft });
     }
 
-    function nextRound() {
+    function nextRound(resume = false) {
       // A swap ("New challenge") calls this too: same skill (turn unchanged), fresh numbers.
       if (gameOver) return;
-      round = makeRound(plan.phaseUnits[phaseIndex], rng, turn);
-      misses = 0;
+      const draft = resume ? resumeDraft : null;
+      resumeDraft = null;
+      roundSeed = draft?.seed || (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0 || 1;
+      round = makeRound(plan.phaseUnits[phaseIndex], makeRng(roundSeed), turn);
+      misses = draft?.misses || 0;
+      hintsOpened = draft?.hintsOpened || 0;
       busy = false;
       const meta = unitMeta();
       panel.render(
@@ -216,12 +224,22 @@ export default {
       if (clarity && clarity.setTarget) clarity.setTarget(`${meta.theme} · ${meta.standard}`);
       announce(`Phase ${phaseIndex + 1}. ${round.en}`);
       caption(round.en);
+      if (draft) {
+        panel.restoreDrafts(draft.values);
+        for (let t = 1; t <= hintsOpened; t++) panel.addHint(t, round.hints[t - 1]);
+        panel.allowHint(misses > 0);
+        panel.allowSwap(misses >= 3);
+        panel.feedback({ en: "Your construction and previous attempts were restored. Revise or fire when ready.", es: "Se restauraron tu construcción y tus intentos anteriores. Revisa o dispara cuando quieras." }, "info");
+      }
+      persist();
     }
 
     function revealHint() {
       if (!round) return;
       const tier = misses >= 2 ? 2 : 1;
       for (let t = 1; t <= tier; t++) panel.addHint(t, round.hints[t - 1]);
+      hintsOpened = Math.max(hintsOpened, tier);
+      persist();
       announce(round.hints[tier - 1].en);
     }
 
@@ -273,8 +291,8 @@ export default {
             },
         "ok",
       );
-      persist();
       turn += 1;
+      persist(true);
       if (bossHp <= 0) later(clearPhase, 900);
       else later(() => nextRound(), 1500);
     }
@@ -307,6 +325,7 @@ export default {
       announce(msg.en);
       busy = false;
       panel.lock(false);
+      persist();
     }
 
     function clearPhase() {
@@ -325,7 +344,7 @@ export default {
         return;
       }
       startPhase();
-      persist();
+      persist(true);
       later(() => {
         dressForPhase();
         const m = unitMeta();
@@ -572,7 +591,7 @@ export default {
       );
       later(() => {
         panel.show();
-        nextRound();
+        nextRound(true);
       }, 1950);
     }
 
@@ -600,14 +619,13 @@ export default {
     return {
       start() {
         startPhase();
-        const saved = loadRun(level);
-        if (saved && saved.phaseIndex < plan.phaseUnits.length) {
-          phaseIndex = saved.phaseIndex;
-          bossMaxHp = plan.hpForPhase(phaseIndex);
-          bossHp = Math.max(1, Math.min(bossMaxHp, saved.bossHp | 0));
-          totalScore = saved.totalScore | 0;
-          turn = saved.turn | 0;
+        const saved = restoreBattleProgress(loadRun(level), plan);
+        if (saved) {
+          ({ phaseIndex, bossHp, bossMaxHp, totalScore, turn } = saved);
+          resumeDraft = saved.draft;
         }
+        const savedVictory = !!saved?.victory;
+        if (savedVictory) phaseIndex = plan.phaseUnits.length - 1;
         dressForPhase();
         cameraIntro();
         hud.setScore(totalScore);
@@ -654,6 +672,7 @@ export default {
           `Phase ${phaseIndex + 1}/${plan.phaseUnits.length} — build the exact attack to hit ${unitMeta().title}.`,
         );
         announce(`Boss Battle. ${plan.phaseUnits.length} phases. Press Start battle to begin.`);
+        if (savedVictory) later(winGame, 1);
       },
       dispose() {
         gameOver = true;

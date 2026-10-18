@@ -391,6 +391,7 @@
     relics: bounded(stored.relics, 9999),
     firstTry: bounded(stored.firstTry, 99999),
     missionFirstTry: bounded(stored.missionFirstTry, 9999),
+    draft: stored.draft && typeof stored.draft === "object" ? stored.draft : null,
   };
   const target = () => (state.route ? 4 : 3);
   state.steps = Math.min(state.steps, target());
@@ -516,6 +517,7 @@
   let mission = null;
   dialog.addEventListener("close", () => {
     if (!wasPaused && window.GameStudio?.paused) window.GameStudio.resume();
+    rememberConstruction();
     mission = null;
     (returnFocus?.isConnected ? returnFocus : enter).focus({ preventScroll: true });
   });
@@ -597,6 +599,42 @@
     },
   });
 
+  const draftKey = () => `${state.chapter}:${state.site}:${state.route}`;
+  function rememberConstruction() {
+    if (!mission || mission.resolved) return;
+    state.draft = { key: draftKey(), values: mission.values, misses: mission.misses, help: mission.help, modelA: mission.modelA, history: mission.history, feedback: mission.feedback, result: mission.result };
+    save();
+  }
+  function restoreDraft() {
+    const d = state.draft;
+    const puzzle = window.FlagshipPuzzles.create(world.id, state.site + state.chapter * 4, state.route, lang());
+    const valid = values => Array.isArray(values) && values.length === puzzle.fields.length && values.every(v => v === null || Number.isFinite(v) && Math.abs(v) <= 1e9);
+    if (!d || d.key !== draftKey() || !valid(d.values)) return null;
+    return { values: d.values.map(v => v === null ? NaN : v), misses: bounded(d.misses, 99999), help: bounded(d.help, 3), resolved: false, feedback: typeof d.feedback === "string" ? d.feedback.slice(0, 2000) : "", result: d.result === "retry" ? "retry" : "", modelA: valid(d.modelA) ? d.modelA : null, history: Array.isArray(d.history) ? d.history.filter(valid).slice(-20) : [] };
+  }
+  function registerPortableConstruction() {
+    const nsr = window.NeftSaveResume;
+    if (!nsr) return;
+    nsr.registerStateProvider(() => ({ flagshipConstruction: { world: world.id, state: JSON.parse(JSON.stringify(state)) } }));
+    nsr.registerStateRestorer(custom => {
+      const record = custom?.flagshipConstruction;
+      const next = record?.state;
+      const limits = { site: 4, steps: 4, route: 1, chapter: 999, relics: 9999, firstTry: 99999, missionFirstTry: 9999 };
+      if (record?.world !== world.id || !next || !Object.entries(limits).every(([key, max]) => Number.isInteger(next[key]) && next[key] >= 0 && next[key] <= max)) return;
+      mission = null;
+      const wasOpen = dialog.open;
+      if (wasOpen) dialog.close();
+      for (const key of Object.keys(limits)) state[key] = next[key];
+      state.draft = next.draft && typeof next.draft === "object" ? next.draft : null;
+      save();
+      render();
+      // A late restore must not dismiss a construction the student already reopened.
+      // The dialog's close event is queued, so reopen after it has reset `mission`.
+      if (wasOpen) dialog.addEventListener("close", openPuzzle, { once: true });
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", registerPortableConstruction, { once: true });
+  else registerPortableConstruction();
   function openPuzzle() {
     if (state.site === 4) {
       state.site = 0;
@@ -612,7 +650,7 @@
     returnFocus = document.activeElement;
     wasPaused = !!window.GameStudio?.paused;
     if (!wasPaused) window.GameStudio?.pause();
-    mission = { values: null, misses: 0, help: 0, resolved: false, feedback: "", result: "" };
+    mission = restoreDraft() || { values: null, misses: 0, help: 0, resolved: false, feedback: "", result: "", modelA: null, history: [] };
     buildDialog();
     dialog.showModal();
     dialog.querySelector("input,select")?.focus();
@@ -655,8 +693,49 @@
     const helpButton = button("", requestHint, "adventure-hint");
     const helpNote = el("p", "adventure-help-note");
     help.append(helpButton, helpNote, helpList);
+    const comparison = el("section", "adventure-comparison");
+    comparison.setAttribute("aria-label", lang() === "es" ? "Comparar construcciones matemáticas" : "Compare mathematical constructions");
+    const compareTools = el("div", "adventure-compare-tools");
+    const baseline = el("div", "adventure-model-a");
+    const changeNote = el("p", "adventure-change-note");
+    const modelTitle = el("h3", "", lang() === "es" ? "Tu modelo actual" : "Your current model");
+    const saveModel = button(lang() === "es" ? "Guardar como modelo A" : "Keep this as model A", () => {
+      if (!values.every(Number.isFinite) || mission.resolved) return;
+      mission.modelA = [...values];
+      rememberConstruction();
+      redraw();
+    });
+    const restoreModel = button(lang() === "es" ? "Usar modelo A" : "Use model A", () => {
+      if (!mission.modelA || mission.resolved) return;
+      mission.history.push([...values]);
+      mission.values = [...mission.modelA];
+      rememberConstruction();
+      buildDialog();
+      dialog.querySelector("input,select")?.focus();
+    });
+    const undo = button(lang() === "es" ? "Deshacer cambio" : "Undo last change", () => {
+      if (!mission.history.length || mission.resolved) return;
+      mission.values = mission.history.pop();
+      rememberConstruction();
+      buildDialog();
+      dialog.querySelector("input,select")?.focus();
+    });
+    compareTools.append(saveModel, restoreModel, undo);
+    comparison.append(el("h3", "", lang() === "es" ? "Prueba dos ideas" : "Test two ideas"), el("p", "", lang() === "es" ? "Guarda una construcción, cambia cantidades y compara. ¿Qué cambió? ¿Qué relación debe mantenerse?" : "Keep a construction, change quantities, and compare. What changed? Which mathematical relationship must stay true?"), compareTools, baseline, changeNote);
     const redraw = () => {
       visual.innerHTML = puzzle.draw(values);
+      baseline.replaceChildren();
+      if (mission.modelA) {
+        baseline.append(el("h4", "", lang() === "es" ? "Modelo A guardado" : "Saved model A"));
+        const drawing = el("div", "adventure-puzzle-visual");
+        drawing.innerHTML = puzzle.draw(mission.modelA);
+        baseline.append(drawing);
+        const changed = puzzle.fields.map((field, i) => values[i] !== mission.modelA[i] ? `${field.label}: ${mission.modelA[i]} → ${Number.isFinite(values[i]) ? values[i] : "?"}` : "").filter(Boolean);
+        changeNote.textContent = changed.length ? changed.join(" · ") : (lang() === "es" ? "Los dos modelos son iguales. Cambia una cantidad para investigar." : "The two models match. Change one quantity to investigate.");
+      } else changeNote.textContent = lang() === "es" ? "Aún no hay modelo A. Tus modelos y cambios se guardan en este dispositivo." : "No model A yet. Your models and changes are saved on this device.";
+      restoreModel.disabled = !mission.modelA || mission.resolved;
+      saveModel.disabled = mission.resolved || !values.every(Number.isFinite);
+      undo.disabled = mission.resolved || !mission.history.length;
     };
     const maxOf = (field) => field.max ?? (field.options ? field.options.length - 1 : 50);
     puzzle.fields.forEach((field, index) => {
@@ -678,7 +757,10 @@
       input.id = labelEl.htmlFor;
       input.value = Number.isFinite(values[index]) ? String(values[index]) : "";
       input.addEventListener("input", () => {
+        mission.history.push([...values]);
+        mission.history = mission.history.slice(-20);
         values[index] = input.value === "" ? NaN : Number(input.value);
+        rememberConstruction();
         if (!mission.resolved) {
           feedback.textContent = "";
           delete feedback.dataset.result;
@@ -729,6 +811,7 @@
       const allowed = mission.misses >= 2 ? 3 : mission.misses;
       if (mission.resolved || mission.help >= allowed) return;
       mission.help++;
+      rememberConstruction();
       renderHelp();
       helpList.lastElementChild?.setAttribute("tabindex", "-1");
       helpList.lastElementChild?.focus({ preventScroll: false });
@@ -752,6 +835,7 @@
           mission.misses++;
           mission.feedback = `${T("notYet")} ${puzzle.diagnose(values)}`;
           mission.result = "retry";
+          rememberConstruction();
           feedback.textContent = mission.feedback;
           feedback.dataset.result = "retry";
           renderHelp();
@@ -764,6 +848,7 @@
         if (unaided) state.missionFirstTry++;
         state.site++;
         state.steps = 0;
+        state.draft = null;
         save();
         render();
         mission.feedback = `${puzzle.explain(values)} ${T("restored", rewardWord(earned))} ${unaided ? T("bonus") : T("helped")} ${
@@ -784,6 +869,7 @@
       feedback.textContent = mission.feedback;
       feedback.dataset.result = "correct";
       check.disabled = true;
+      comparison.querySelectorAll("button").forEach(node => { node.disabled = true; });
       controls.querySelectorAll("input,select,button").forEach((node) => {
         node.disabled = true;
       });
@@ -801,8 +887,10 @@
       header,
       el("span", "adventure-eyebrow", T("siteOf", routeName, siteNumber)),
       instruction,
+      modelTitle,
       visual,
       controls,
+      comparison,
       check,
       feedback,
       help,

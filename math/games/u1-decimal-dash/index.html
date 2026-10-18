@@ -7,7 +7,7 @@
     <title>Decimal Dash — Number-Line Placer | Math Games</title>
     <meta
       name="description"
-      content="A place-it math game for Grade 6 lessons 1.4–1.7 (6.NOS.3): drag a marker onto a number line to place a decimal, or order several decimals least-to-greatest. Calm and self-paced — a wrong placement earns a hint and a retry, then shows the correct spot to teach."
+      content="A place-it math game for Grade 6 lessons 1.4–1.7 (6.NOS.3): drag a marker onto a number line to place a decimal, or order several decimals least-to-greatest. Calm and self-paced — a wrong placement earns a hint and a retry, then supports revision on the same number line."
     />
     <style>
       * {
@@ -1420,45 +1420,22 @@
         });
         this.tries++;
         this.updateHUD();
-        if (this.tries < 3) {
-          // Miss 1 = Tier 1 (method hint, no answer). Miss 2 = Tier 2 (a
-          // concrete step: where the marker is vs. the goal, and every mark gets
-          // a label). The SAME problem stays up both times.
-          const hint = this.tries === 1 ? this.methodHint(wrong) : this.stepHint(wrong);
-          if (this.tries === 2) {
-            this.labelsAll = true;
-            this.drawTickLabels();
-          }
-          this.feedback.setText("Not yet — " + hint).setAlpha(1);
-          srSay("Not yet. " + hint);
-          this.time.delayedCall(this.reduceMotion ? 60 : 350, () => {
-            this.locked = false;
-          });
-          return;
+        // Keep the model editable; feedback supports another mathematical revision.
+        // Miss 1 = Tier 1 (method hint, no answer). Miss 2 = Tier 2 (a
+        // concrete step: where the marker is vs. the goal, and every mark gets
+        // a label). The SAME problem stays up both times.
+        const hint = this.tries === 1 ? this.methodHint(wrong) : this.stepHint(wrong);
+        if (this.tries === 2) {
+          this.labelsAll = true;
+          this.drawTickLabels();
         }
-        // Third miss: teach. Explain the answer, drop a green ghost on each
-        // correct tick, glide the markers home, then move on (no-fail).
-        this.helpedBy[ddSkillOf(this.problem)]++;
-        this.feedback.setText("Here is where they go — " + this.problem.why).setAlpha(1);
-        srSay("Here is where they go. " + this.problem.why);
-        this.beads.forEach((b) => {
-          const gx = tickX(b.targetIdx);
-          const ghost = this.add.circle(gx, LINE_Y, 10, 0x7fd6a0, 0.6).setDepth(5);
-          this.ghosts.push(ghost);
-          this.tweens.add({
-            targets: b.c,
-            x: gx,
-            duration: this.reduceMotion ? 0 : 600,
-            ease: "Quad.easeOut",
-            onUpdate: () => {
-              b.idx = nearestIndex(b.c.x);
-            },
-          });
+        this.feedback.setText("Not yet — " + hint).setAlpha(1);
+        srSay("Not yet. " + hint);
+        this.time.delayedCall(this.reduceMotion ? 60 : 350, () => {
+          this.locked = false;
         });
-        this.time.delayedCall(this.reduceMotion ? 60 : 700, () => {
-          this.beads.forEach((b) => (b.idx = b.targetIdx));
-          this.afterAttempt(false);
-        });
+        return;
+
       };
 
       // Tier 1 (first miss): the METHOD, never the answer or a direction.
@@ -1824,7 +1801,7 @@
           "Goal: put each decimal marker on its exact spot on the number line. Solve 10 to finish.",
           "Only some marks have labels. Each small mark is 0.1 (tenths) or 0.01 (hundredths) — start at a labeled number and count marks.",
           "Move a marker: drag it, tap the line, or press \u2190 \u2192 (A/D). With 2\u20133 markers, press 1, 2, or 3 to pick one. The smallest value ends up farthest left.",
-          "Press LOCK IN (or Enter) to check. Not yet? Hint 1 tells you the method. Hint 2 shows where your marker is and labels every mark. After 3 tries the game shows the answer — no one fails.",
+          "Press LOCK IN (or Enter) to check. Not yet? Hint 1 tells you the method. Hint 2 shows where your marker is and labels every mark. Your model stays editable after every try. Use the feedback to revise and check again.",
           "Points: most for right on the first try, fewer after a hint. Press NEXT when you have read the explanation.",
         ],
         setLevel(level) {

@@ -1548,58 +1548,36 @@
         this.updateHUD();
         this.flashWrong();
         JUICE.shake(this, 0.008);
-        if (this.phaseTries < 3) {
-          // Miss 1 = Tier 1 (method, never the answer). Miss 2 = Tier 2 (a
-          // concrete step / visual). The SAME problem stays up both times.
-          let hint;
-          if (this.phase === "count") {
-            hint =
-              this.phaseTries === 1
-                ? "each group is " +
-                  p.groupSize +
-                  (p.groupSize === 1 ? " piece" : " pieces") +
-                  " (" +
-                  p.groupName +
-                  "). Count the shaded pieces, then see how many full groups of " +
-                  p.groupSize +
-                  " you can make."
-                : "the colored boxes on the bar each hold " +
-                  p.groupSize +
-                  (p.groupSize === 1 ? " piece" : " pieces") +
-                  ". Count the boxes.";
-            if (this.phaseTries === 2) this.drawGroupMarks(false);
-          } else {
-            hint = this.phaseTries === 1 ? this.diagnosticHint(p) : this.stepHint(p);
-          }
-          this.feedback.setText("Not quite — " + hint + " Try again!").setAlpha(1);
-          srSay("Not quite. " + hint + " Try again.");
-          this.time.delayedCall(400, () => {
-            this.locked = false;
-          });
-          return;
+        // Keep the model editable; feedback supports another mathematical revision.
+        // Miss 1 = Tier 1 (method, never the answer). Miss 2 = Tier 2 (a
+        // concrete step / visual). The SAME problem stays up both times.
+        let hint;
+        if (this.phase === "count") {
+          hint =
+            this.phaseTries === 1
+              ? "each group is " +
+                p.groupSize +
+                (p.groupSize === 1 ? " piece" : " pieces") +
+                " (" +
+                p.groupName +
+                "). Count the shaded pieces, then see how many full groups of " +
+                p.groupSize +
+                " you can make."
+              : "the colored boxes on the bar each hold " +
+                p.groupSize +
+                (p.groupSize === 1 ? " piece" : " pieces") +
+                ". Count the boxes.";
+          if (this.phaseTries === 2) this.drawGroupMarks(false);
+        } else {
+          hint = this.phaseTries === 1 ? this.diagnosticHint(p) : this.stepHint(p);
         }
-        // Third miss in a step: teach. Snap to the correct model (and groups),
-        // explain, and continue — no lives, no fail state.
-        this.helpedBy[p.kind] = (this.helpedBy[p.kind] || 0) + 1;
-        this.feedback.setText("Here is how it works — " + p.why).setAlpha(1);
-        srSay("Here is how it works. " + p.why);
-        this.parts = p.targetParts;
-        this.shaded = p.targetShaded;
-        if (p.quotient) {
-          this.phase = "count";
-          this.groups = p.quotient;
-        }
-        this.drawBar();
-        if (p.quotient) this.drawGroupMarks(true);
-        if (!this.reduceMotion) {
-          this.tweens.add({
-            targets: this.cellRects,
-            scaleY: 1.12,
-            yoyo: true,
-            duration: 220,
-          });
-        }
-        this.time.delayedCall(700, () => this.afterAttempt(false));
+        this.feedback.setText("Not quite — " + hint + " Try again!").setAlpha(1);
+        srSay("Not quite. " + hint + " Try again.");
+        this.time.delayedCall(400, () => {
+          this.locked = false;
+        });
+        return;
+
       };
 
       // Tier 1 (first miss): name WHICH part of the build to re-check (the cut
@@ -1968,7 +1946,7 @@
           "Goal: the bar is one whole. Cut it into equal parts and shade parts to build each fraction. Solve 10 to finish.",
           "Cut: press − / + (or \u2190 \u2192). Shade: tap a part (or \u2191 \u2193). The BOTTOM number is how many equal parts; the TOP number is how many to shade.",
           "Division problems (like \u201chow many 2/3 are in 2?\u201d) have 2 steps: 1) build the first number on the bar, 2) set how many groups of the second fraction fit, using − / +.",
-          "Press LOCK IN (or Enter) to check. Not yet? Hint 1 tells you the method. Hint 2 gives a concrete step or draws the groups. After 3 tries the game shows the answer — no one fails.",
+          "Press LOCK IN (or Enter) to check. Not yet? Hint 1 tells you the method. Hint 2 gives a concrete step or draws the groups. Your model stays editable after every try. Use the feedback to revise and check again.",
           "Points: most for right on the first try, fewer after a hint. Press NEXT when you have read the explanation.",
         ],
         setLevel(level) {

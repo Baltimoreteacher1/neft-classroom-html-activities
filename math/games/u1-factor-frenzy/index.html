@@ -1435,15 +1435,12 @@
             if (S.calTries === 1) S.helped.exponent++;
             if (S.calTries === 1) {
               flash("Not yet. An exponent counts how many times a prime is multiplied. Count each prime in your tree's gold leaves.", "bad");
-            } else if (S.calTries === 2) {
+            } else {
               const b0 = wrongBases[0];
               flash(
                 "Not yet. Check base " + wrongBases.join(" and base ") + ". Count the " + b0 + "s in " + S.cur.n + " = " + lockedPrimes().join(" × ") + ".",
                 "bad",
               );
-            } else {
-              uniqueBases.forEach((b) => { S.userExponents[b] = actualCounts[b]; const el = $("exp-val-" + b); if (el) el.textContent = actualCounts[b]; });
-              unlock(true);
             }
           };
         }
@@ -1559,7 +1556,7 @@
         window.__cabinetAdventure = window.CabinetAdventure.create({id: 'u1-factor-frenzy', host: factorHost, onView(open) { factorBoard.inert = open; }});
         const factorArt = document.createElement('canvas'); window.CabinetWorlds.paint(factorArt, 'u1-factor-frenzy', 0, true);
         factorHost.style.setProperty('--factor-world', 'url(' + factorArt.toDataURL() + ')');
-        window.GameStudio && window.GameStudio.register({title: "Factor Frenzy", instructions: ["Goal: break each number into primes with a factor tree, then unlock the vault by writing the exponents. 5 numbers per run; no timer.", "Tap a blue number. If it can be split, choose a factor pair whose product equals it (multiply to check). If it is prime, choose \u201cIt\u2019s prime\u201d.", "When every branch ends in a gold prime, count each prime and set its exponent with + and \u2212. Example: 2 \u00d7 2 \u00d7 2 \u00d7 3 = 2\u00b3 \u00d7 3.", "Wrong move? Hint 1 tells you the method; hint 2 gives a concrete step. In the vault, after 3 tries the game shows the exponents so you can keep going.", "Use Tab and Enter to play with the keyboard. Undo restores your last branch before the vault."], pause() {factorPaused = true;}, resume() {factorPaused = false;}, setMuted(value) {window.NT_MUTED = value; if (SFX.ctx) {if(value) SFX.ctx.suspend().catch(()=>{}); else SFX.ctx.resume().catch(()=>{});}}});
+        window.GameStudio && window.GameStudio.register({title: "Factor Frenzy", instructions: ["Goal: break each number into primes with a factor tree, then unlock the vault by writing the exponents. 5 numbers per run; no timer.", "Tap a blue number. If it can be split, choose a factor pair whose product equals it (multiply to check). If it is prime, choose \u201cIt\u2019s prime\u201d.", "When every branch ends in a gold prime, count each prime and set its exponent with + and \u2212. Example: 2 \u00d7 2 \u00d7 2 \u00d7 3 = 2\u00b3 \u00d7 3.", "Wrong move? Hint 1 tells you the method; hint 2 gives a concrete step. In the vault, keep revising your exponents using the prime leaves. Mistakes never fill in the answer for you.", "Use Tab and Enter to play with the keyboard. Undo restores your last branch before the vault."], pause() {factorPaused = true;}, resume() {factorPaused = false;}, setMuted(value) {window.NT_MUTED = value; if (SFX.ctx) {if(value) SFX.ctx.suspend().catch(()=>{}); else SFX.ctx.resume().catch(()=>{});}}});
         const undo = document.createElement("button"); undo.className = "btn"; undo.type = "button"; undo.textContent = "Undo last branch";
         $("hint").after(undo);
         undo.onclick = () => {

@@ -117,6 +117,7 @@ const GATE = [
   // and was never wired; it now serves dist/, which is what Cloudflare serves.
   "smoke:injection",
   "validate:html-experiences-browser",
+  "validate:game-transformation-browser",
 ];
 
 /* `build` is a BARRIER, not just a peer. It is the only member of the gate that
@@ -136,6 +137,7 @@ const needsOf = (c) => (c === "build" ? [] : ["build"]);
  * `--push` (or in a worktree without `dist/index.html`) and any of these is in
  * the selected set, `build` is prepended automatically. */
 const NEEDS_DIST = new Set([
+  "validate:game-transformation-browser",
   "validate:html-experiences-browser",
   "validate:hub",
   "validate:notebook",
@@ -161,6 +163,7 @@ const NEEDS_DIST = new Set([
  * time. Both read as real page defects. Both vanish when the check runs on its
  * own against the same dist/. A third Chromium was the difference. */
 const EXCLUSIVE = new Set([
+  "validate:game-transformation-browser",
   "validate:html-experiences-browser",
   "validate:project-studio-browser",
   "validate:fluency-workshops-browser",
@@ -189,6 +192,10 @@ const EXCLUSIVE = new Set([
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  [
+    /^(math\/games\/|games\/3d\/|tools\/(percent-construction\.test|verify-game-transformation-browser)\.mjs$)/,
+    ["validate:game-transformation-browser", "validate:game-rules", "test"],
+  ],
   [
     /^(tools\/verify-html-experiences-browser\.mjs|assets\/worksheet-(screen\.css|work\.js)|engine\/homework-lesson-models\.js)$/,
     ["validate:html-experiences-browser", "validate:static", "validate:css-integrity"],

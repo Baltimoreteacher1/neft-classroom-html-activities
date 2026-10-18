@@ -93,8 +93,10 @@ export function createPanel(mountEl, handlers) {
           const base = Number.isFinite(v) ? v : 0;
           input.value = String(Math.round((base + Number(b.dataset.d)) * 1000) / 1000);
           input.focus();
+          handlers.onChange?.();
         });
       }
+      input.addEventListener("input", () => handlers.onChange?.());
       input.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
           e.preventDefault();
@@ -146,6 +148,10 @@ export function createPanel(mountEl, handlers) {
       } else els.gauge.hidden = true;
       renderFields(round);
       if (inputs[0]) inputs[0].focus();
+    },
+    drafts() { return inputs.map(input => input.value); },
+    restoreDrafts(values) {
+      inputs.forEach((input, i) => { input.value = typeof values?.[i] === "string" ? values[i] : ""; });
     },
     values() {
       return inputs.map((i) => parseAnswer(i.value));
