@@ -103,3 +103,11 @@ Game redesign, slide-by-slide deck reconciliation, per-page checks of lesson mat
 - Live probes: the Percent Power page and `construction.js`, the boss battle page and the Equation Escape page (including the touch-pad clearance CSS) are served. All 55 teacher decks added in Release 3 return 401 without authentication.
 - Not exercised live: the constructed-answer flows and Save/Resume restore on production; only the pre-deploy browser check covered them. Gameplay feel and difficulty have had no human review.
 - The superseded local branch `wip/game-transformation` (committed with `--no-verify`) still exists and can be deleted; its content lives in `feat/game-construction`.
+
+## Deck-to-online reconciliation (2026-10-18) — findings
+
+Read-only number-level comparison of all 55 classroom decks (2,591 slides) against each lesson's own online content: 1,524 of 1,559 numeric task paragraphs matched; 35 flagged. Most flags are extraction artifacts or skills-check warm-ups. Ten lessons have deck launch/explore tasks with no online counterpart: 2-4, 2-10, 3-2, 5-2, 5-7, 6-5, 7-3, 8-1, 8-2, 9-3. The full table, figure dependence, method and limits are in `~/reports/deck-online-reconciliation-2026-10-18.md`; the re-runnable script is `~/reports/deck-online-compare.mjs` (run from the repo root).
+
+No online slot exists for these tasks: the lesson model has one `revealWordProblem` (the Apply task), the site's own launch narrative, and district practice-sheet examples (Session 1 data). The Session 1 source is not the deck launch tasks. No content was added. Slide text stays the source of truth; copy it verbatim from `tools/reveal-classroom-slide-text.json`.
+
+Decision needed before building: where deck launch tasks live online (a new field on the lesson config rendered on the existing lesson page, or inside the existing concept-intro "We do"), and how figure-dependent tasks get their figure (the deck images are in the lesson's `reveal-assets/` where present). Then add the tasks lesson by lesson with a validator that fails when a deck task has no online counterpart, so this cannot drift again.
