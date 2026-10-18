@@ -82,9 +82,15 @@ Next substantive batch: improve existing game mechanics and resume behavior, beg
 - Worksheet work tools (`assets/worksheet-work.js`): typed reasoning, keyboard answer selection, optional hints, and prediction before revealing worked steps, on the existing Save/Resume system with the paper print layout kept. Covered by unit tests and the sampled browser sweep. The live typed-reasoning, hint and predict flows were not exercised by hand.
 - The slide-by-slide comparison is not complete. The new check confirms the reconciliation data is current; it does not establish that every slide matches its online lesson.
 
-### Parked, not shipped
+### Game construction batch — Release 4
 
-Game work is on branch `wip/game-transformation` (`56b50ba114`), including the Percent Power construction mechanic (`math/games/u4-percent-power/construction.js`) and edits to the other unit games and the 3D boss battle. `validate:game-transformation-browser` fails when run alone: the `gfx-mission-brief` dialog intercepts pointer events, so the first click in the game flow times out. Fix that first, then verify state restoration through Save/Resume. The branch was committed with `--no-verify` and must pass the hooks before it is merged.
+Branch `feat/game-construction`, commit `e89ec24c76`. Percent Power and the unit games now have the student construct the amount (`math/games/u4-percent-power/construction.js`) and keep the model editable after every miss; the 3D boss battle resumes battle progress and drafts. Fixes found by `validate:game-transformation-browser`:
+
+- The check raced the delayed `gfx-mission-brief`; it now dismisses the briefing and waits for the auto-resume toast.
+- Save/Resume's late restore closed a construction dialog the student had reopened; `flagship-adventures.js` now reopens it after the queued close event.
+- At 390px the fixed on-screen pad in `unit7-equation-escape.html` covered the "Enter" button; the page now reserves bottom space.
+
+The check passes at 1365, 1024 and 390px (60 runs) and the commit gate passed 130/130. Gameplay feel, replay balance and the mathematical difficulty of each constructed task were not reviewed by a person. Release status below is recorded after shipping.
 
 ### Still remaining
 
