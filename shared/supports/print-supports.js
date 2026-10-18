@@ -37,9 +37,14 @@
     var screen = document.createElement("link");
     screen.rel = "stylesheet";
     screen.href = "/assets/worksheet-screen.css?v=20261017a";
-    screen.media = "screen";
+    screen.media = "all";
     screen.setAttribute("data-worksheet-screen", "1");
     document.head.appendChild(screen);
+    if (document.documentElement.getAttribute("data-support-audience") !== "teacher") {
+      var work = document.createElement("script");
+      work.src = "/assets/worksheet-work.js";
+      document.head.appendChild(work);
+    }
   }
 
   var LESSON_ID = document.documentElement.getAttribute("data-ewl-supports-lesson") || "";

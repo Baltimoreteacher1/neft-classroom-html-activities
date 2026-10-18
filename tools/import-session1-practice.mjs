@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { createHash } from "node:crypto";
 /**
  * import-session1-practice.mjs — read the district's Reveal "Session 1" practice
  * sheets into `data/reveal-session1-source.json`.
@@ -18,9 +19,14 @@
  *   node tools/import-session1-practice.mjs --check    # fail if stale
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { parsePractice, REVEAL_ROOT, revealLessonDirs } from "./lib/reveal-docx.mjs";
+import {
+  parseModernPractice,
+  parsePractice,
+  REVEAL_ROOT,
+  revealLessonDirs,
+} from "./lib/reveal-docx.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const OUTPUT = join(ROOT, "data/reveal-session1-source.json");
@@ -32,10 +38,29 @@ if (!existsSync(REVEAL_ROOT)) {
 }
 
 const lessons = [];
+const retained = new Map(
+  JSON.parse(readFileSync(OUTPUT, "utf8")).lessons.map((lesson) => [lesson.id, lesson]),
+);
 for (const { unit, lesson, base } of revealLessonDirs()) {
-  const practice = join(base, "Practice", `${unit}.${lesson} Session 1.docx`);
+  const modern = join(base, "Practice", `${unit}.${lesson} Session 1 Practice - Form A.docx`);
+  const practice = existsSync(modern)
+    ? modern
+    : join(base, "Practice", `${unit}.${lesson} Session 1.docx`);
   if (!existsSync(practice)) continue;
-  lessons.push({ id: `${unit}-${lesson}`, unit, lesson, ...parsePractice(practice) });
+  const id = `${unit}-${lesson}`;
+  const parsed =
+    practice === modern ? parseModernPractice(practice, retained.get(id)) : parsePractice(practice);
+  lessons.push({
+    id,
+    unit,
+    lesson,
+    ...parsed,
+    sourcePractice: {
+      path: relative(REVEAL_ROOT, practice),
+      sha256: createHash("sha256").update(readFileSync(practice)).digest("hex"),
+      languageScaffolds: "Retained authored lesson supports",
+    },
+  });
 }
 
 const payload = {

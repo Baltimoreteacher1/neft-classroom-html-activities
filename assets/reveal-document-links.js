@@ -71,7 +71,7 @@
         for (const doc of selection) {
           // Only the importer’s original, same-site Word/PDF paths are usable.
           if (
-            !/^\/(?:lessons\/\d+-\d+\/downloads\/reveal\/|curriculum\/reveal-documents\/)[a-z0-9/.-]+\.(?:docx|pdf)$/.test(
+            !/^\/(?:lessons\/\d+-\d+\/downloads\/reveal\/|curriculum\/reveal-documents\/)[a-z0-9/.-]+\.(?:docx|pdf|pptx)$/.test(
               doc.url,
             )
           )
@@ -80,7 +80,12 @@
           const link = document.createElement("a");
           link.href = doc.url;
           link.download = doc.filename;
-          link.textContent = `${doc.title} · ${doc.filename.toLowerCase().endsWith(".docx") ? "Word" : "PDF"}`;
+          const format = doc.filename.toLowerCase().endsWith(".pptx")
+            ? "PowerPoint"
+            : doc.filename.toLowerCase().endsWith(".docx")
+              ? "Word"
+              : "PDF";
+          link.textContent = `${doc.title} · ${format}`;
           link.setAttribute("aria-label", `Download ${link.textContent}`);
           item.appendChild(link);
           list.appendChild(item);

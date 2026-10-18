@@ -32,6 +32,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 
+const sourceDecks = JSON.parse(
+  fs.readFileSync(path.join(lessonsDir, "../data/reveal-document-downloads.json"), "utf8"),
+).documents.filter((doc) => doc.category === "source-slides");
+
 // Matches core lessons ("3-2") and flagship lessons ("3-2-flagship").
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 
@@ -105,6 +109,15 @@ footer{color:var(--muted);font-size:14px;text-align:center;margin-top:32px;}
 `.trim();
 
 function page({ id, unit, lesson, title, standard, contentObjective, languageObjective }) {
+  const classroom = sourceDecks.filter((doc) => doc.targetLesson === id);
+  const classroomCard = classroom.length
+    ? `<div class="card feature" data-classroom-source-slides>
+    <h2>Current classroom source slides</h2>
+    <p>The classroom sequence retains the original slide order, diagrams, and publisher lesson numbers. The interactive lesson provides additional models and guided worked examples.</p>
+    ${classroom.map((doc) => `<p><a class="btn ppt" href="${esc(doc.url)}" download="${esc(doc.filename)}">Download Reveal ${esc(doc.sourceLesson.replace("-", "."))} classroom PowerPoint</a>${doc.sourceLesson !== id ? `<br>Supplemental source for site Lesson ${esc(id)}.` : ""}</p>`).join("")}
+    <p>Teacher sign-in is required for these source files.</p>
+  </div>`
+    : "";
   const lessonNum = `Unit ${unit}, Lesson ${lesson}`;
   const stdBadge = standard ? `<span class="std">${esc(standard)}</span>` : "";
   const co = contentObjective
@@ -199,6 +212,7 @@ ${objBlock}
 
 </div>
 
+${classroomCard}
 <div class="note">
   <strong>Why upload instead of "import by link"?</strong>
   Our class site is password-protected, so Google Slides and Office Online can't open the deck from a web link.

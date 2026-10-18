@@ -29,14 +29,17 @@ for (const resource of resources) {
   if (!resourcesByUrl.has(resource.url)) resourcesByUrl.set(resource.url, []);
   resourcesByUrl.get(resource.url).push(resource);
 }
-assert.equal(manifest.sourceFileCount, 2333);
-assert.equal(manifest.documents.length, 2331);
+assert.equal(manifest.sourceFileCount, 2388);
+assert.equal(manifest.documents.length, 2386);
 assert.equal(
   manifest.documents.reduce((sum, doc) => sum + doc.sources.length, 0),
-  2333,
+  2388,
 );
-assert.equal(new Set(manifest.documents.map((doc) => doc.url)).size, 2331);
+assert.equal(new Set(manifest.documents.map((doc) => doc.url)).size, 2386);
 assert.equal(new Set(manifest.documents.map((doc) => doc.sourceLesson).filter(Boolean)).size, 54);
+const decks = manifest.documents.filter((doc) => doc.category === "source-slides");
+assert.equal(decks.length, 55);
+assert.ok(decks.every((doc) => doc.teacherOnly && doc.filename.endsWith(".pptx")));
 const language = manifest.documents.filter((doc) => doc.category === "language-support");
 assert.equal(language.length, 109);
 assert.equal(new Set(language.map((doc) => doc.sourceLesson)).size, 54);
@@ -106,7 +109,7 @@ for (const doc of manifest.documents) {
   }
 }
 const median = manifest.documents.filter((doc) => doc.sourceLesson === "2-6");
-assert.equal(median.length, 38);
+assert.equal(median.length, 39);
 assert.ok(median.every((doc) => doc.targetLesson === "2-3" && doc.filename.startsWith("2.6")));
 assert.equal(manifest.documents.filter((doc) => doc.targetLesson === "2-6").length, 0);
 assert.match(

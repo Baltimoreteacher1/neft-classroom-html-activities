@@ -190,7 +190,7 @@ const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
   [
-    /^(tools\/verify-html-experiences-browser\.mjs|assets\/worksheet-screen\.css|engine\/homework-lesson-models\.js)$/,
+    /^(tools\/verify-html-experiences-browser\.mjs|assets\/worksheet-(screen\.css|work\.js)|engine\/homework-lesson-models\.js)$/,
     ["validate:html-experiences-browser", "validate:static", "validate:css-integrity"],
   ],
   // LESSON FLOW — the forward control, the act step strip and the fixed chrome

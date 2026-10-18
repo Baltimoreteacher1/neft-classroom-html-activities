@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { createHash } from "node:crypto";
 /**
  * import-session2-practice.mjs — read the district's Reveal "Session 2" material
  * into `data/part-two-session2-source.json`.
@@ -25,9 +26,15 @@
  *   node tools/import-session2-practice.mjs --check    # fail if stale
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { parseHomework, parsePractice, REVEAL_ROOT, revealLessonDirs } from "./lib/reveal-docx.mjs";
+import {
+  parseHomework,
+  parseModernPractice,
+  parsePractice,
+  REVEAL_ROOT,
+  revealLessonDirs,
+} from "./lib/reveal-docx.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const OUTPUT = join(ROOT, "data/part-two-session2-source.json");
@@ -39,16 +46,32 @@ if (!existsSync(REVEAL_ROOT)) {
 }
 
 const lessons = [];
+const retained = new Map(
+  JSON.parse(readFileSync(OUTPUT, "utf8")).lessons.map((lesson) => [lesson.id, lesson]),
+);
 for (const { unit, lesson, base } of revealLessonDirs()) {
-  const practice = join(base, "Practice", `${unit}.${lesson} Session 2.docx`);
+  const modern = join(base, "Practice", `${unit}.${lesson} Session 2 Practice - Form A.docx`);
+  const practice = existsSync(modern)
+    ? modern
+    : join(base, "Practice", `${unit}.${lesson} Session 2.docx`);
   const homework = join(base, "HW", `${unit}.${lesson} Session 2 HW.docx`);
-  if (!existsSync(practice) || !existsSync(homework)) continue;
+  if (!existsSync(practice)) continue;
+  const id = `${unit}-${lesson}-part2`;
+  const parsed =
+    practice === modern ? parseModernPractice(practice, retained.get(id)) : parsePractice(practice);
   lessons.push({
-    id: `${unit}-${lesson}-part2`,
+    id,
     unit,
     lesson,
-    ...parsePractice(practice),
-    homework: parseHomework(homework),
+    ...parsed,
+    homework: existsSync(homework) ? parseHomework(homework) : retained.get(id)?.homework || [],
+    sourcePractice: {
+      path: relative(REVEAL_ROOT, practice),
+      sha256: createHash("sha256").update(readFileSync(practice)).digest("hex"),
+      languageScaffolds: "Retained authored lesson supports",
+      additionalHomework:
+        "Existing authored Session 2 extension tasks; not a transcription of the current Form A",
+    },
   });
 }
 

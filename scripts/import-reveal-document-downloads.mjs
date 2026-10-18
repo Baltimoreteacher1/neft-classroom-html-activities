@@ -30,6 +30,7 @@ const desktop = join(homedir(), "Desktop");
 const languageOnly = process.argv.includes("--language-support");
 const prerequisiteOnly = process.argv.includes("--prerequisite");
 const includeNew = process.argv.includes("--include-new");
+const includeSlides = process.argv.includes("--slides");
 // A partial run keeps every other manifest entry and re-imports only its own folder.
 const partial = languageOnly || prerequisiteOnly;
 const partialFolder = languageOnly ? "/Language Support/" : "/Prerequisite Practice/";
@@ -112,7 +113,11 @@ function walk(dir) {
     .flatMap((entry) => {
       if (entry.name.startsWith(".") || entry.name.startsWith("~$")) return [];
       const file = join(dir, entry.name);
-      return entry.isDirectory() ? walk(file) : /\.(docx|pdf)$/i.test(entry.name) ? [file] : [];
+      return entry.isDirectory()
+        ? walk(file)
+        : (includeSlides ? /\.(docx|pdf|pptx)$/i : /\.(docx|pdf)$/i).test(entry.name)
+          ? [file]
+          : [];
     });
 }
 const manifestPath = join(root, "data/reveal-document-downloads.json");
@@ -150,22 +155,24 @@ for (const file of files) {
   const targetLesson = sourceLesson ? supplemental[sourceLesson] || sourceLesson : null;
   if (targetLesson && !lessonIds.has(targetLesson))
     throw new Error(`No curriculum lesson for ${rel}`);
-  const category = /\/Language Support\//.test(rel)
-    ? "language-support"
-    : /Answer Key|Warm-Up Key|Teacher Key/i.test(rel)
-      ? "answer-key"
-      : /\/Assessments\//.test(rel) || /test\.pdf$/i.test(filename)
-        ? "assessment"
-        : /(?:^|\/)Prerequisite Practice\//.test(rel)
-          ? "prerequisite"
-          : /Homework Packets|\/HW\/|HW_Packet/.test(rel)
-            ? "homework"
-            : /\/Warm-Up\//.test(rel)
-              ? "warm-up"
-              : /\/(?:Practice|Visual Practice)\//.test(rel)
-                ? "practice"
-                : "guide";
-  const teacherOnly = ["answer-key", "assessment", "guide"].includes(category);
+  const category = /\.pptx$/i.test(filename)
+    ? "source-slides"
+    : /\/Language Support\//.test(rel)
+      ? "language-support"
+      : /Answer Key|Warm-Up Key|Teacher Key/i.test(rel)
+        ? "answer-key"
+        : /\/Assessments\//.test(rel) || /test\.pdf$/i.test(filename)
+          ? "assessment"
+          : /(?:^|\/)Prerequisite Practice\//.test(rel)
+            ? "prerequisite"
+            : /Homework Packets|\/HW\/|HW_Packet/.test(rel)
+              ? "homework"
+              : /\/Warm-Up\//.test(rel)
+                ? "warm-up"
+                : /\/(?:Practice|Visual Practice)\//.test(rel)
+                  ? "practice"
+                  : "guide";
+  const teacherOnly = ["answer-key", "assessment", "guide", "source-slides"].includes(category);
   const folder = targetLesson
     ? `lessons/${targetLesson}/downloads/reveal`
     : `curriculum/reveal-documents/${unit ? `unit-${unit}` : "shared"}`;
@@ -236,7 +243,9 @@ writeFileSync(
 function links(docs) {
   return docs
     .map((doc) => {
-      const format = extname(doc.filename).toLowerCase() === ".docx" ? "Word" : "PDF";
+      const format = { ".docx": "Word", ".pdf": "PDF", ".pptx": "PowerPoint" }[
+        extname(doc.filename).toLowerCase()
+      ];
       const prefix = doc.teacherOnly ? "Teacher · " : "";
       return `                <a class="res reveal-document-link${doc.teacherOnly ? " hub-teacher-only" : ""}" href="${escape(doc.url)}" download="${escape(doc.filename)}" data-reveal-document="${escape(doc.category)}">${escape(`${prefix}${doc.title} · ${format}`)}</a>`;
     })
@@ -266,7 +275,7 @@ for (const id of new Set(documents.map((doc) => doc.targetLesson).filter(Boolean
   const prerequisiteMarkup = prerequisiteDocs.length
     ? `\n              <details class="reveal-document-downloads prerequisite-practice-downloads">\n                <summary>Prerequisite practice · Word &amp; PDF (${prerequisiteDocs.length})</summary>\n                <div class="res-row">\n${links(prerequisiteDocs)}\n                </div>\n              </details>`
     : "";
-  const markup = `\n              <!-- REVEAL-DOCUMENTS:lesson-${id} -->${prerequisiteMarkup}\n              <details class="reveal-document-downloads">\n                <summary>Reveal documents · Word &amp; PDF (${publicDocs.length})</summary>\n                <div class="res-row">\n${links(publicDocs)}\n                </div>\n              </details>${languageDocs.length ? `\n              <details class="reveal-document-downloads">\n                <summary>Language support · Word &amp; PDF (${languageDocs.length})</summary>\n                <div class="res-row">\n${links(languageDocs)}\n                </div>\n              </details>` : ""}${teacherDocs.length ? `\n              <details class="reveal-document-downloads hub-teacher-only">\n                <summary>Teacher answer keys (${teacherDocs.length})</summary>\n                <div class="res-row">\n${links(teacherDocs)}\n                </div>\n              </details>` : ""}\n              <!-- /REVEAL-DOCUMENTS -->`;
+  const markup = `\n              <!-- REVEAL-DOCUMENTS:lesson-${id} -->${prerequisiteMarkup}\n              <details class="reveal-document-downloads">\n                <summary>Reveal documents · Word &amp; PDF (${publicDocs.length})</summary>\n                <div class="res-row">\n${links(publicDocs)}\n                </div>\n              </details>${languageDocs.length ? `\n              <details class="reveal-document-downloads">\n                <summary>Language support · Word &amp; PDF (${languageDocs.length})</summary>\n                <div class="res-row">\n${links(languageDocs)}\n                </div>\n              </details>` : ""}${teacherDocs.length ? `\n              <details class="reveal-document-downloads hub-teacher-only">\n                <summary>Teacher keys, guides &amp; classroom slides (${teacherDocs.length})</summary>\n                <div class="res-row">\n${links(teacherDocs)}\n                </div>\n              </details>` : ""}\n              <!-- /REVEAL-DOCUMENTS -->`;
   const sourceNumbers = [
     ...new Set(
       docs

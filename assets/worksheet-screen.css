@@ -11,6 +11,20 @@
   .ws-words th, .ws-es, .ws-chip { font-size: 14px; }
   .ws-meta-row, .ws-answer-line, .ws-answer-unit { font-size: 14px; }
   .ws-line { height: 28px; }
+  .ws-screen-concealed { display: none !important; }
+  .ws-work-tools { margin: 16px auto; max-width: 860px; padding: 20px; border: 2px solid #12355b; border-radius: 14px; background: #eef6fb; color: #19262f; font: 16px/1.55 system-ui, sans-serif; }
+  .ws-work-tools h2 { margin: 0 0 8px; font-size: 24px; }
+  .ws-digital-work { margin: 16px 12px; font: 16px/1.5 system-ui, sans-serif; }
+  .ws-digital-work label { display: block; margin-bottom: 6px; font-weight: 650; }
+  .ws-digital-work textarea { display: block; width: 100%; min-height: 112px; resize: vertical; border: 2px solid #64798a; border-radius: 8px; padding: 12px; font: inherit; background: white; color: #19262f; }
+  .ws-digital-choice { margin: 12px; padding: 12px; border: 1px solid #64798a; border-radius: 8px; font: 16px/1.5 system-ui, sans-serif; }
+  .ws-digital-choice label { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 8px; cursor: pointer; }
+  .ws-digital-choice input { width: 22px; height: 22px; flex-shrink: 0; }
+  .ws-digital-choice label:has(:checked) { background: #dceee9; outline: 2px solid #0c5e57; border-radius: 6px; }
+  .ws-work-tools button, .ws-example-reveal, .ws-hint-toggle { margin: 8px 0; min-height: 48px; padding: 10px 16px; border: 2px solid #12355b; border-radius: 8px; font: 650 16px/1.4 system-ui, sans-serif; background: #12355b; color: white; cursor: pointer; }
+  .ws-step-status { font: 16px/1.5 system-ui, sans-serif; color: #19262f; }
+  .ws-digital-work textarea:focus-visible, .ws-digital-choice input:focus-visible, .ws-work-tools button:focus-visible, .ws-example-reveal:focus-visible, .ws-hint-toggle:focus-visible { outline: 3px solid #a94d00; outline-offset: 3px; }
+  .ws-work .ws-lines, .ws-block-explain > .ws-lines, .ws-block-author > .ws-lines { display: none; }
 }
 
 @media screen and (max-width: 700px) {
@@ -24,6 +38,14 @@
   .ws-title-row { flex-wrap: wrap; }
   .ws-opts { grid-template-columns: 1fr; gap: 8px; }
   .ws-pbody { padding: 12px; }
+  .ws-problems { grid-template-columns: minmax(0, 1fr); }
+  .ws-problem-card { min-width: 0; }
+  .wsd-wrap { flex-wrap: wrap; }
+  .wsd-rail { min-width: 0; flex: 1 1 100%; }
   .ws-band { flex-wrap: wrap; }
   .ws-band span:last-child { white-space: normal; }
+}
+
+@media print {
+  .ws-work-tools, .ws-digital-work, .ws-digital-choice, .ws-example-reveal, .ws-hint-toggle, .ws-step-status { display: none !important; }
 }

@@ -16,7 +16,52 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { inflateRawSync } from "node:zlib";
 
-export const REVEAL_ROOT = join(homedir(), "Desktop", "Reveal Math by Unit and Lesson");
+const desktop = join(homedir(), "Desktop");
+export const REVEAL_ROOT = join(
+  desktop,
+  existsSync(desktop)
+    ? readdirSync(desktop).find((name) => name.trim() === "Reveal Math by Unit and Lesson") ||
+        "Reveal Math by Unit and Lesson"
+    : "Reveal Math by Unit and Lesson",
+);
+
+/** Current Form A masters put REMEMBER and WORKED EXAMPLE in adjacent cells.
+ * Parse that cell independently; never mistake practice answers for the model. */
+export function parseModernPractice(path, retained = {}) {
+  const cells = blocks(path).flat();
+  const raw = cells.find((cell) => cell.includes("WORKED EXAMPLE") && /Step\s*1/.test(cell));
+  if (!raw) throw new Error(`Current practice has no complete worked example: ${path}`);
+  const example = raw.slice(raw.indexOf("WORKED EXAMPLE") + "WORKED EXAMPLE".length);
+  const prompt = example.split(/Step\s*1/)[0].trim();
+  // A step label and a following quantity can be adjacent OOXML runs:
+  // "Step 2" + "3 × 25" becomes "Step 23 × 25". Step numbers are one digit;
+  // consuming all digits here would silently eat the first mathematical value.
+  const steps = [...example.matchAll(/Step\s*([1-9])\s*([\s\S]*?)(?=Step\s*[1-9]|Answer|$)/g)].map(
+    (m) => ({ n: Number(m[1]), text: m[2].trim() }),
+  );
+  const answer = /Answer\s*:?\s*([\s\S]+)$/.exec(example)?.[1]?.trim();
+  if (
+    !prompt ||
+    steps.length < 2 ||
+    !answer ||
+    steps.some((step, i) => !step.text || step.n !== i + 1)
+  )
+    throw new Error(`Incomplete current worked example: ${path}`);
+  const header = cells.find((cell) => /Lesson \d+-\d+.*Session \d/.test(cell));
+  const ids = /Lesson (\d+)-(\d+).*Session (\d)/.exec(header || "");
+  if (!ids) throw new Error(`Current practice has no lesson/session identity: ${path}`);
+  const target = cells.find((cell) => /^Learning target/.test(cell)) || "";
+  return {
+    ...retained,
+    revealLesson: `${ids[1]}.${ids[2]}`,
+    session: Number(ids[3]),
+    learningTarget: target.replace(/^Learning target\s*[—–-]\s*/, "").split(" · ")[0],
+    workedExample: { prompt, steps, answer },
+    // Current masters have no NOW YOU TRY banner. The generator uses the
+    // lesson's authored weDo, rather than attaching obsolete source blanks.
+    yourProblem: { stem: null, steps: [] },
+  };
+}
 
 export function readZipEntry(buf, wanted) {
   // End of central directory: scan back for its signature.
@@ -50,6 +95,19 @@ const TEXT_RUN = /<w:t[^>]*>([\s\S]*?)<\/w:t>/g;
 const TAGS = /<[^>]+>/g;
 
 function cellText(xml) {
+  // Word stores raised exponents as run formatting, not as literal glyphs.
+  // Preserve that mathematical information before flattening text runs.
+  const raised = "⁰¹²³⁴⁵⁶⁷⁸⁹";
+  const lowered = "₀₁₂₃₄₅₆₇₈₉";
+  xml = xml.replace(/<w:r(?:\s[^>]*)?>[\s\S]*?<\/w:r>/g, (run) => {
+    const mode = /<w:vertAlign\b[^>]*w:val="(superscript|subscript)"/.exec(run)?.[1];
+    if (!mode) return run;
+    return run.replace(
+      /<w:t([^>]*)>([\s\S]*?)<\/w:t>/g,
+      (_, attrs, text) =>
+        `<w:t${attrs}>${text.replace(/\d/g, (n) => (mode === "superscript" ? raised : lowered)[Number(n)])}</w:t>`,
+    );
+  });
   let out = "";
   for (const m of xml.matchAll(TEXT_RUN)) out += m[1];
   return out

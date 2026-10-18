@@ -1,7 +1,7 @@
 // Representative student HTML smoke check. Run against `npm run dev` or preview:
 // node tools/verify-html-experiences-browser.mjs http://localhost:4199
 import assert from "node:assert/strict";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
 import { chromium } from "playwright";
 import { preview } from "vite";
@@ -23,6 +23,11 @@ const routes = [
   ["misconception", "/curriculum/almost-right-lab/", "h1"],
   ["fluency", "/curriculum/fluency/", "#fluencyHeroHeading"],
   ["game", "/curriculum/class-boss/", "h1"],
+  ...[1, 2, 3, 5, 6, 7, 8, 9, 10].map((unit) => [
+    `worksheet-unit-${unit}`,
+    `/lessons/${unit}-1/worksheet.html`,
+    ".ws-page",
+  ]),
 ];
 let browser;
 const results = [];
@@ -41,9 +46,10 @@ try {
       const response = await page.goto(base + path, { waitUntil: "domcontentloaded" });
       assert.equal(response?.status(), 200, `${name} HTTP response`);
       await page.locator(marker).first().waitFor({ timeout: 15000 });
-      if (name === "worksheet") {
+      if (name.startsWith("worksheet")) {
         await page.locator("[data-worksheet-screen]").waitFor({ state: "attached" });
-        assert.equal(await page.locator("[data-worksheet-screen]").getAttribute("media"), "screen");
+        assert.equal(await page.locator("[data-worksheet-screen]").getAttribute("media"), "all");
+        await page.locator("[data-worksheet-work]").waitFor();
         await page.waitForFunction(() => {
           const sheet = document.querySelector("[data-worksheet-screen]");
           const stem = document.querySelector(".ws-stem");
@@ -57,6 +63,49 @@ try {
               .evaluate((el) => getComputedStyle(el).fontSize),
           ) >= 16,
         );
+        assert.equal(
+          await page.locator(".ws-problem-card").count(),
+          await page.locator(".ws-problem-card textarea").count(),
+        );
+        const reveal = page.locator(".ws-example-reveal").first();
+        if (await reveal.count()) {
+          await reveal.focus();
+          await page.keyboard.press("Enter");
+          assert.match(await page.locator(".ws-step-status").first().innerText(), /1 of/);
+        }
+        if (name === "worksheet") {
+          await page.locator("#nsr-launcher").click();
+          if (await page.locator("#nsr-start").isVisible())
+            await page.locator("#nsr-start").click();
+          await page.locator("#nsr-close").click();
+          const input = page.locator(".ws-problem-card textarea").first();
+          const id = await input.getAttribute("id");
+          await input.fill("3/5 = 60/100 = 0.6 = 60%. The whole stays the same.");
+          const radio = page.locator(".ws-digital-choice input").first();
+          const radioId = await radio.getAttribute("id");
+          await radio.check();
+          await page.locator("#nsr-launcher").click();
+          await page.locator("#nsr-savebtn").click();
+          await page.locator("#nsr-close").click();
+          await page.reload();
+          await page.locator(`#${id}`).waitFor();
+          await page.waitForFunction(
+            ({ id }) => document.getElementById(id)?.value?.includes("whole stays"),
+            { id },
+          );
+          assert.equal(await page.locator(`#${radioId}`).isChecked(), true);
+          const pending = page.waitForEvent("download");
+          await page.getByRole("button", { name: "Download my reasoning" }).click();
+          const file = await pending;
+          const text = readFileSync(await file.path(), "utf8");
+          assert.match(text, /whole stays/);
+          assert.match(text, /Selected option:/);
+          await page.emulateMedia({ media: "print" });
+          assert.equal(await page.locator("[data-worksheet-work]").isVisible(), false);
+          assert.equal(await page.locator(".ws-example-steps > li").first().isVisible(), true);
+          assert.equal(await page.locator(".ws-opts").first().isVisible(), true);
+          await page.emulateMedia({ media: "screen" });
+        }
       }
       if (name === "launcher") assert.equal(await page.locator("#mission-stages li").count(), 4);
       if (name === "misconception") {
