@@ -95,3 +95,11 @@ The check passes at 1365, 1024 and 390px (60 runs) and the commit gate passed 13
 ### Still remaining
 
 Game redesign, slide-by-slide deck reconciliation, per-page checks of lesson mathematics, answer keys and interactivity across the HTML pages, the unbuilt systems listed under Work remaining above, and manual screen reader, keyboard-only, Chromebook, print and touch review.
+
+## Release 4 — live game construction batch
+
+- Feature commits: `e89ec24c76` (games) and `6602e51761` (docs), with `968ea7946d` (Release 3 record); production commit assembled by `ship`: `7908d775eb`. Do not replay these feature SHAs.
+- Pre-commit gate 130/130, pre-push gate passed, post-deploy smoke 40/40, live build stamp matched after 125 seconds.
+- Live probes: the Percent Power page and `construction.js`, the boss battle page and the Equation Escape page (including the touch-pad clearance CSS) are served. All 55 teacher decks added in Release 3 return 401 without authentication.
+- Not exercised live: the constructed-answer flows and Save/Resume restore on production; only the pre-deploy browser check covered them. Gameplay feel and difficulty have had no human review.
+- The superseded local branch `wip/game-transformation` (committed with `--no-verify`) still exists and can be deleted; its content lives in `feat/game-construction`.
