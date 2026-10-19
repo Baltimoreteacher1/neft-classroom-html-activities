@@ -108,6 +108,10 @@ check(
   "a plan-notes change must pull in validate:plan-notes — coverage that names the file but not the gate is how stale vocab shipped",
 );
 check(
+  Array.isArray(scopeFor(["sitemap.xml"])) && scopeFor(["sitemap.xml"]).includes("test"),
+  "a sitemap.xml change must be covered (not escalate to the full gate) and run test for tools/sitemap.test.mjs",
+);
+check(
   scopeFor(["scripts/generate-worksheets.mjs"])?.includes("validate:worksheet-audience"),
   "a worksheet generator change must pull in validate:worksheet-audience",
 );
