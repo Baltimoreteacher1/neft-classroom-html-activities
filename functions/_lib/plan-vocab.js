@@ -5175,6 +5175,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/lesson-materials/",
+    title: "Everything for a lesson",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/manipulatives/",
     title: "Printable Manipulative Masters",
     category: "Hub",

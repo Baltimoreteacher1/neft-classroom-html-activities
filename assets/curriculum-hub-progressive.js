@@ -412,6 +412,9 @@
               <span>${lang === "es" ? "Iniciar Lección" : "Launch Lesson"}</span>
               <span aria-hidden="true">→</span>
             </a>
+            <a href="/curriculum/lesson-materials/?lesson=${encodeURIComponent(lesson.id)}" class="hub-materials-btn">
+              ${lang === "es" ? "Todos los materiales" : "All materials"}
+            </a>
             <button type="button" class="hub-accordion-btn hub-drawer-toggle" data-drawer-toggle="${
               lesson.id
             }" data-lesson-toggle="${lesson.id}" aria-expanded="${

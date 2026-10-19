@@ -335,7 +335,7 @@
       "    </ul>" +
       "  </nav>" +
       '  <div class="curriculum-utility-bar">' +
-      '    <div class="shell-segment" role="group" aria-label="' +
+      '    <div class="shell-segment shell-lang-group" role="group" aria-label="' +
       t("langGroupLabel") +
       '">' +
       '      <button type="button" class="shell-segment-btn" data-lang-btn="en" aria-pressed="' +
@@ -345,7 +345,7 @@
       (curLang === "es" ? "true" : "false") +
       '">ES</button>' +
       "    </div>" +
-      '    <div class="shell-segment" role="group" aria-label="' +
+      '    <div class="shell-segment shell-role-group" role="group" aria-label="' +
       t("roleGroupLabel") +
       '">' +
       '      <button type="button" class="shell-segment-btn" data-role-btn="student" aria-pressed="' +
@@ -396,6 +396,27 @@
         })
         .join("") +
       "  </nav>" +
+      '  <div class="shell-mobile-drawer-utilities">' +
+      '    <div class="shell-segment" role="group" aria-label="' +
+      t("roleGroupLabel") +
+      '">' +
+      '      <button type="button" class="shell-segment-btn" data-role-btn="student" aria-pressed="' +
+      (!isT ? "true" : "false") +
+      '" data-shell-i18n="roleStudent">' +
+      t("roleStudent") +
+      "</button>" +
+      '      <button type="button" class="shell-segment-btn" data-role-btn="teacher" aria-pressed="' +
+      (isT ? "true" : "false") +
+      '" data-shell-i18n="roleTeacher">' +
+      t("roleTeacher") +
+      "</button>" +
+      "    </div>" +
+      '    <button type="button" class="shell-supports-pill" data-supports-btn aria-pressed="' +
+      (isSupp ? "true" : "false") +
+      '" data-shell-i18n="supportsLabel">' +
+      t("supportsLabel") +
+      "</button>" +
+      "  </div>" +
       "</div>"
     );
   }

@@ -694,6 +694,7 @@ if (existsSync(resolve(TT_DIR, "index.html"))) {
 const CURRICULUM_STUDENT = new Set([
   "extra-help",
   "fluency",
+  "lesson-materials",
   "learning-labs",
   "my-progress",
   "student-launch",
@@ -721,13 +722,15 @@ if (existsSync(curriculumDir)) {
         ? "student"
         : "teacher";
     const section =
-      d.name === "learning-labs"
-        ? "labs"
-        : audience === "family"
-          ? "family"
-          : audience === "student"
-            ? "math-tools"
-            : "curriculum";
+      d.name === "lesson-materials"
+        ? "curriculum"
+        : d.name === "learning-labs"
+          ? "labs"
+          : audience === "family"
+            ? "family"
+            : audience === "student"
+              ? "math-tools"
+              : "curriculum";
     add({
       title: titleFromHtml(idx, titleCase(d.name)),
       path: `/curriculum/${d.name}/`,
