@@ -2,6 +2,7 @@
 // Every question, answer, hint and Spanish line comes from the lesson or from its authored studio file —
 // nothing is composed here, so a studio can never teach different mathematics than its lesson.
 import { createHash } from "node:crypto";
+import { benchItems } from "./practice-studio-bench.mjs";
 
 const text = (/** @type {any} */ s) => (typeof s === "string" && s.trim() ? s.trim() : undefined);
 const esArray = (/** @type {any} */ a, /** @type {number} */ n) =>
@@ -527,6 +528,10 @@ export function buildSections(
       const g = worlds.generic[mode][i];
       const nm = world.sections[mode][i];
       const items = stamp(sec.items, i + 1);
+      // The lab bench joins one section per page (Practice 4, Challenge 3). Its items carry explicit ids and are added
+      // AFTER the rest are stamped, so a student's saved progress on the existing items keeps its keys.
+      const bench = ld.bench ? benchItems(ld.bench)[mode] : null;
+      const benched = bench && i === (mode === "practice" ? 3 : 2);
       return {
         name: nm.n,
         nameEs: nm.nEs,
@@ -537,7 +542,7 @@ export function buildSections(
         p: g.p,
         pEs: g.pEs,
         ...(sec.conf ? { conf: true } : {}),
-        items,
+        items: benched ? [...bench.before, ...items, ...bench.after] : items,
         ...(sec.pool ? { pool: stamp(sec.pool, i + 1) } : {}),
       };
     });

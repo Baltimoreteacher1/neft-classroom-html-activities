@@ -113,6 +113,7 @@ export function evaluate(model, values = model.values, options = {}) {
   return { value, label, unit, equation, note, ...extra };
 }
 
+const withSetting = (values, i, v) => values.map((x, j) => (j === i ? v : x));
 // Constructible puzzles: targets are derived from valid hidden control settings.
 // A solution is checked against the mathematical relationship, never a click count.
 export function puzzle(model, round, level) {
@@ -123,6 +124,8 @@ export function puzzle(model, round, level) {
   goal[free] = Number((f.min + ((round * 3 + level * 2 + 3) % (steps + 1)) * f.step).toFixed(6));
   if (model.kind === 'balance') {
     goal[free] = 4 + round * 2 + level;
+    // The right-side control stops at its maximum, so a large coefficient must not push the product past it.
+    if (model.mode !== 'add') { const room = Math.max(1, Math.floor(fields[1].max / goal[0])); goal[free] = ((goal[free] - 1) % room) + 1; }
     base[1] = goal[1] = model.mode === 'add' ? goal[2] + goal[0] : goal[2] * goal[0];
   }
   if (model.kind === 'data') { free = model.mode === 'histogram' ? 7 : 3; goal[free] = 2 + 3 * round + level; }
@@ -132,6 +135,30 @@ export function puzzle(model, round, level) {
     base[2] = 1 + round; base[3] = 2 + level;
     goal = [...base]; goal[free] = -base[free + 2]; goal[1 - free] = base[3 - free];
     base[1 - free] = goal[1 - free];
+  }
+  // A target a student can PLAN is one they can reach by reasoning: a terminating decimal, not already where the model starts, and
+  // reached by few settings of the free control (a median that ignores the free value is a coin flip, not a puzzle). The first
+  // candidate above is only the default; look outward from it for one that qualifies, and keep it if none does.
+  if (!['balance', 'inequality'].includes(model.kind) && !(model.kind === 'coordinates' && ['reflect', 'symmetry'].includes(model.mode))) {
+    const plannable = (v) => {
+      const trial = withSetting(goal, free, v), t = evaluate(model, trial).value;
+      if (!Number.isFinite(t) || Math.abs(t * 100 - Math.round(t * 100)) > 1e-6) return false;
+      if (Math.abs(evaluate(model, withSetting(base, free, base[free])).value - t) < 1e-8) return false;
+      let hits = 0;
+      for (let i = 0; i <= Math.round((f2.max - f2.min) / f2.step); i++) {
+        const w = Number((f2.min + i * f2.step).toFixed(6));
+        if (Math.abs(evaluate(model, withSetting(base, free, w)).value - t) < 1e-8 && ++hits > 4) return false;
+      }
+      return true;
+    };
+    const f2 = fields[free], n2 = Math.round((f2.max - f2.min) / f2.step);
+    const at = Math.max(0, Math.min(n2, Math.round((goal[free] - f2.min) / f2.step)));
+    for (let d = 0; d <= n2; d++) for (const i of d ? [at + d, at - d] : [at]) {
+      if (i < 0 || i > n2) continue;
+      const v = Number((f2.min + i * f2.step).toFixed(6));
+      if (v === base[free] || !plannable(v)) continue;
+      goal[free] = v; d = n2 + 1; break;
+    }
   }
   const target = evaluate(model, goal).value;
   if (Math.abs(evaluate(model, base).value - target) < 1e-8) {

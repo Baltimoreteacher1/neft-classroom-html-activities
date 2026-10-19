@@ -263,3 +263,56 @@ Authoring rules:
    Challenge separately, and a lesson earns a gold stamp when the Challenge boss is cleared.
 7. **Worlds** — each lesson has its own look, voice, and mission story; no two neighbouring lessons look alike.
 8. **Share code** — a short, anonymous "my results" text the student can paste to a teacher or family member.
+
+## 10. Lab bench — the learning labs inside the studios
+
+The 46 learning labs (`/curriculum/learning-labs/`, 2 lessons each) own a live model, a predict-first routine, investigations, a
+create task and an expedition game. Those now live INSIDE each studio instead of in a page of their own: `data/practice-studio/<id>.json`
+carries a `bench` object and the build adds its items to one section per page. The lab pages stay as they are. The mathematics is the
+labs' own — `curriculum/learning-labs/shared/{math,model,predict,expedition}.mjs`, imported at runtime and stamped with a content hash
+(`labV`) so a lab fix reaches every studio. Unit 4's five lessons have hand-built pages, so their bench lives in
+`data/practice-studio-u4/<id>.json` and `scripts/inject-u4-lab-bench.mjs` writes the same items into both pages of each lesson
+(`assets/studio/lab-embed.js` gives the shared kinds a small ctx; no stars, no change to the page's own state).
+
+```jsonc
+"bench": {
+  "lab": "ratio-railway",                       // a lab in data/learning-labs.json that lists this lesson
+  "model": { "kind": "growth", "mode": "ratio-graph", "values": [3, 0, 4] },   // same kind as the lab; any mode; values on each control's grid
+  "explore":     { "q","qEs", "goal", "miss"?,"missEs"?, "x","xEs", "h","hEs" },    // item kind "lab"  -> Practice section 4, first
+  "investigate": { /* a wr item: p,pEs,fr,frEs,min,kw,kwEs,rubric,rubricEs,x,xEs,h,hEs */ },  // Practice section 4, second
+  "stretch":     { /* like explore; miss/missEs REQUIRED; a different goal */ },    // item kind "lab"  -> Challenge section 3, first
+  "create":      { /* a wr item */ },                                               // Challenge section 3, after the existing items
+  "mission":     { "finale": "Signal Switch" }                                      // item kind "mission" -> both pages, last in that section
+}
+```
+
+Item ids are explicit (`lab-explore`, `lab-investigate`, `lab-stretch`, `lab-create`, `lab-mission`) and the items are added AFTER the
+section's existing items are stamped, so a student's saved progress on existing items keeps its keys.
+
+**Goals.** Exactly one of: `{target, free}` (only control `free` changes; solved when the model's readout equals `target`),
+`{match: {index: value}}` (solved when those controls hold those values; reflections, "place the point"), `{pass: boolean}`
+(inequality models; solved when the test value does or does not satisfy the rule). A wrong check says `too high` / `too low` (target goals)
+and the item's `miss` line; it never prints the answer. Predictions (up / down / same) are judged by the model's own readout and never graded.
+
+**What the gate refuses** (`benchProblems`, run by `validate:practice-studio-data` and by the generator). The mathematics is SEARCHED, not read:
+a goal no setting reaches; a model that already starts solved; a solving value one click from the start or at the end of its slider; a
+starting readout (equation + note) that already prints the solving value; an explanation that does not state the solving value in both
+languages; a hint that states it; text that says "Output" for a model whose readout has another name; a missing Spanish sibling or
+English copied into it; timer language; `x`/`*` for multiplication. The mission is checked on all nine puzzles (3 destinations x 3
+levels): none may start solved, every target must be a terminating decimal a student can plan, at most four settings may solve it, the
+puzzles must differ, and every value they set must be one the page's controls accept.
+
+**The mission text is generated** (`missionText(model)`), because the game asks one thing and a per-lesson sentence could only over-promise: it
+unlocks one control (or, for a reflection, one coordinate), states a target, and checks the build when the student tests it. A bench
+therefore carries only the lab's `finale`. The game plans difficulty from the student: a clean restore (no hint, first test) raises the next
+puzzle one level, a struggle lowers it, and the field badge is earned only for a first-test, no-hint restore.
+
+**Kinds** (`assets/studio/kinds-lab.js`). `lab` mounts the model in a shadow root (lab.css styles whole pages, so it is adopted into the root
+and the prompt, hints and feedback stay in the studio's DOM), shows what the picture shows, asks for a prediction, and checks the goal.
+`mission` mounts the lab's expedition (three destinations, each a different construction, hints and retries free, sound off until the
+student turns it on) and solves when all three are restored. A lab file that cannot load leaves the item unsolved and lets the student move
+on, unlike `broken`.
+
+**Gates.** `tools/studio-lab-bench.test.mjs` (goals, mission puzzles of every bench AND every lab, page/data agreement, Unit 4 injection
+freshness) and `npm run validate:studio-lab-browser` (every bench on both pages, driven as a student: a wrong test that must explain, the
+right setting, the written items, the whole adaptive mission, reload-resume, the Spanish stack, 375px, axe).

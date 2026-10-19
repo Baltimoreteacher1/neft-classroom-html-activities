@@ -831,5 +831,146 @@
       "d": "Break a figure into simpler shapes.",
       "dEs": "Separar una figura en figuras más simples."
     }
-  ]
+  ],
+  "bench": {
+    "lab": "festival-floorplan",
+    "model": {
+      "kind": "area",
+      "mode": "trapezoid",
+      "values": [
+        8,
+        6,
+        5
+      ]
+    },
+    "explore": {
+      "q": "A festival stage is a trapezoid. Its first parallel base is 8 units, its perpendicular height is 5 units, and its area must be 45 square units. Change ONLY the second parallel base until the Area is 45.",
+      "qEs": "Un escenario de festival es un trapecio. Su primera base paralela mide 8 unidades, su altura perpendicular mide 5 unidades y su área debe ser de 45 unidades cuadradas. Cambia SOLO la segunda base paralela hasta que el área sea 45.",
+      "goal": {
+        "target": 45,
+        "free": 1
+      },
+      "miss": "The area is half of (b1 + b2) × height. Undo the half and the height first to find what the two bases must add up to.",
+      "missEs": "El área es la mitad de (b1 + b2) × altura. Deshaz primero la mitad y la altura para hallar cuánto deben sumar las dos bases.",
+      "x": "A = ½ × (b1 + b2) × h. Double the area: 45 × 2 = 90. Divide by the height: 90 ÷ 5 = 18, so b1 + b2 = 18. Then b2 = 18 − 8 = 10 units. Check: ½ × (8 + 10) × 5 = 45.",
+      "xEs": "A = ½ × (b1 + b2) × h. Duplica el área: 45 × 2 = 90. Divide entre la altura: 90 ÷ 5 = 18, así que b1 + b2 = 18. Entonces b2 = 18 − 8 = 10 unidades. Comprobación: ½ × (8 + 10) × 5 = 45.",
+      "h": [
+        "Work backward from the formula: undo the half, then undo the height.",
+        "You are looking for the sum of the two bases first.",
+        "Subtract the base you already know from that sum."
+      ],
+      "hEs": [
+        "Trabaja hacia atrás desde la fórmula: deshaz la mitad y luego la altura.",
+        "Primero buscas la suma de las dos bases.",
+        "Resta la base que ya conoces de esa suma."
+      ]
+    },
+    "investigate": {
+      "p": "A trapezoid has bases 8 and 4 and a height of 5. Predict the area of a rectangle with the same height whose length is the average of the two bases. Then set the model's second base to 4 and compare its Area.",
+      "pEs": "Un trapecio tiene bases de 8 y 4 y una altura de 5. Predice el área de un rectángulo con la misma altura cuyo largo es el promedio de las dos bases. Luego pon la segunda base del modelo en 4 y compara su área.",
+      "fr": "The average of the bases is ___. The rectangle has area ___ × ___ = ___. The model's Area for the trapezoid is ___. They are ___ because ___.",
+      "frEs": "El promedio de las bases es ___. El rectángulo tiene área ___ × ___ = ___. El área del modelo para el trapecio es ___. Son ___ porque ___.",
+      "min": 70,
+      "kw": [
+        "trapezoid",
+        "bases",
+        "height",
+        "average"
+      ],
+      "kwEs": [
+        "trapecio",
+        "bases",
+        "altura",
+        "promedio"
+      ],
+      "rubric": [
+        "I found the average of the two bases.",
+        "I compared the rectangle's area with the model's Area.",
+        "I explained why the two areas match."
+      ],
+      "rubricEs": [
+        "Hallé el promedio de las dos bases.",
+        "Comparé el área del rectángulo con el área del modelo.",
+        "Expliqué por qué las dos áreas coinciden."
+      ],
+      "x": "The average of the bases is (8 + 4) ÷ 2 = 6. The rectangle is 6 × 5 = 30 square units. The model shows 30 for the trapezoid: ½ × (8 + 4) × 5 = 30. They match because ½ × (b1 + b2) is the average base, so the formula is average base × height.",
+      "xEs": "El promedio de las bases es (8 + 4) ÷ 2 = 6. El rectángulo mide 6 × 5 = 30 unidades cuadradas. El modelo muestra 30 para el trapecio: ½ × (8 + 4) × 5 = 30. Coinciden porque ½ × (b1 + b2) es la base promedio, así que la fórmula es base promedio × altura.",
+      "h": [
+        "Add the two bases, then split the sum in half to get the average.",
+        "A rectangle's area is length × height.",
+        "Read the Area only after you write your prediction."
+      ],
+      "hEs": [
+        "Suma las dos bases y luego divide la suma entre 2 para obtener el promedio.",
+        "El área de un rectángulo es largo × altura.",
+        "Lee el área del modelo solo después de escribir tu predicción."
+      ]
+    },
+    "stretch": {
+      "q": "A trapezoid has bases of 8 and 6 units. A rectangle whose length is the average of those bases, with the same height as the trapezoid, has an area of 56 square units. Change ONLY the trapezoid's height until its area matches the rectangle.",
+      "qEs": "Un trapecio tiene bases de 8 y 6 unidades. Un rectángulo cuyo largo es el promedio de esas bases, con la misma altura que el trapecio, tiene un área de 56 unidades cuadradas. Cambia SOLO la altura del trapecio hasta que su área coincida con la del rectángulo.",
+      "goal": {
+        "target": 56,
+        "free": 2
+      },
+      "miss": "Find the average of the two bases first. That is the rectangle's length. Then ask what height makes the rectangle's area 56.",
+      "missEs": "Halla primero el promedio de las dos bases. Ese es el largo del rectángulo. Luego pregunta qué altura hace que el área del rectángulo sea 56.",
+      "x": "The average base is (8 + 6) ÷ 2 = 7. The rectangle has area 7 × height = 56, so the height is 56 ÷ 7 = 8 units. Check: ½ × (8 + 6) × 8 = 56.",
+      "xEs": "La base promedio es (8 + 6) ÷ 2 = 7. El rectángulo tiene área 7 × altura = 56, así que la altura es 56 ÷ 7 = 8 unidades. Comprobación: ½ × (8 + 6) × 8 = 56.",
+      "h": [
+        "The trapezoid has the same area as a rectangle with the average base as its length.",
+        "Find that length, then divide the area by it.",
+        "Check by putting your height into A = ½ × (b1 + b2) × h."
+      ],
+      "hEs": [
+        "El trapecio tiene la misma área que un rectángulo cuyo largo es la base promedio.",
+        "Halla ese largo y luego divide el área entre él.",
+        "Comprueba poniendo tu altura en A = ½ × (b1 + b2) × h."
+      ]
+    },
+    "create": {
+      "p": "Design two different trapezoids that both have an area of 60 square units. Label the two bases and the perpendicular height of each. Show ½ × (b1 + b2) × h for both, and explain why different shapes can have the same area.",
+      "pEs": "Diseña dos trapecios distintos que tengan un área de 60 unidades cuadradas. Rotula las dos bases y la altura perpendicular de cada uno. Muestra ½ × (b1 + b2) × h en los dos y explica por qué figuras distintas pueden tener la misma área.",
+      "fr": "Trapezoid 1 has bases ___ and ___ and height ___, so its area is ___. Trapezoid 2 has bases ___ and ___ and height ___, so its area is ___. Both areas are 60 because ___.",
+      "frEs": "El trapecio 1 tiene bases ___ y ___ y altura ___, así que su área es ___. El trapecio 2 tiene bases ___ y ___ y altura ___, así que su área es ___. Las dos áreas son 60 porque ___.",
+      "min": 100,
+      "kw": [
+        "trapezoid",
+        "bases",
+        "height",
+        "average"
+      ],
+      "kwEs": [
+        "trapecio",
+        "bases",
+        "altura",
+        "promedio"
+      ],
+      "rubric": [
+        "I labeled both bases and the perpendicular height on each trapezoid.",
+        "I showed that each area is 60 by calculating ½ × (b1 + b2) × h.",
+        "I explained why different shapes can have the same area."
+      ],
+      "rubricEs": [
+        "Rotulé las dos bases y la altura perpendicular de cada trapecio.",
+        "Mostré que cada área es 60 calculando ½ × (b1 + b2) × h.",
+        "Expliqué por qué figuras distintas pueden tener la misma área."
+      ],
+      "x": "Sample: Trapezoid 1 has bases 7 and 5 and height 10, so ½ × (7 + 5) × 10 = ½ × 12 × 10 = 60. Trapezoid 2 has bases 12 and 8 and height 6, so ½ × (12 + 8) × 6 = ½ × 20 × 6 = 60. The shapes look different, but in both the sum of the bases times the height is 120, and half of 120 is 60.",
+      "xEs": "Ejemplo: el trapecio 1 tiene bases 7 y 5 y altura 10, así que ½ × (7 + 5) × 10 = ½ × 12 × 10 = 60. El trapecio 2 tiene bases 12 y 8 y altura 6, así que ½ × (12 + 8) × 6 = ½ × 20 × 6 = 60. Las figuras se ven distintas, pero en las dos la suma de las bases por la altura es 120, y la mitad de 120 es 60.",
+      "h": [
+        "Double the area. The sum of the bases times the height must be 120.",
+        "Choose a height that divides 120 evenly, then find what the two bases must add up to.",
+        "Pick two bases with that sum, then check with the formula."
+      ],
+      "hEs": [
+        "Duplica el área. La suma de las bases por la altura debe ser 120.",
+        "Elige una altura que divida 120 exactamente y luego halla cuánto deben sumar las dos bases.",
+        "Elige dos bases con esa suma y comprueba con la fórmula."
+      ]
+    },
+    "mission": {
+      "finale": "Floorplan Fit"
+    }
+  }
 }

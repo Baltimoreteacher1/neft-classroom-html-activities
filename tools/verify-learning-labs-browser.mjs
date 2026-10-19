@@ -201,11 +201,12 @@ async function sweepLab(page, item) {
     // of order to exercise route choice.
     if (await page.locator("[data-replay]").isVisible())
       await page.locator("[data-replay]").click();
-    const kicker = await page.locator(".lab-expedition-kicker").innerText();
-    const cycle = Number(/expedition (\d+)/i.exec(kicker)[1]) - 1;
-    const tier = (["support", "core", "stretch"].indexOf(gameLevel) + cycle) % 3;
     for (const r of [2, 0, 1]) {
       await page.locator(`[data-site="${r}"]`).click();
+      // The puzzle level adapts to the student (a clean restore raises the next one), so the
+      // page states the level it built rather than the test re-deriving it.
+      const tier = Number(await page.locator(".lab-expedition-deck").getAttribute("data-level"));
+      assert.ok([0, 1, 2].includes(tier), `${item.id} game destination ${r} states its level`);
       const p = puzzle(lab.model, r, tier);
       if (lab.model.kind === "inequality") {
         // The default includes equality; choose an interior solution or counterexample.
@@ -218,7 +219,7 @@ async function sweepLab(page, item) {
       await page.locator("[data-check]").click();
       assert.match(
         await page.locator(".game-feedback").innerText(),
-        /restored\./,
+        /restored(?: on [^.]+)?\./,
         `${item.id} game destination ${r}`,
       );
       await page.locator("[data-check]").click();

@@ -39,12 +39,40 @@ export const FAVICON = (/** @type {string} */ emoji) =>
 const hsl = (/** @type {number} */ h, /** @type {number} */ s, /** @type {number} */ l) =>
   `hsl(${h}, ${Math.round(s)}%, ${l}%)`;
 
+/** sRGB of an hsl() colour, 0-255. */
+function rgbOf(/** @type {number} */ h, /** @type {number} */ s, /** @type {number} */ l) {
+  const sat = s / 100;
+  const lum = l / 100;
+  const k = (/** @type {number} */ n) => (n + h / 30) % 12;
+  const c = sat * Math.min(lum, 1 - lum);
+  return [0, 8, 4].map((n) => 255 * (lum - c * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1))));
+}
+function contrast(/** @type {number[]} */ x, /** @type {number[]} */ y) {
+  const L = (/** @type {number[]} */ rgb) => {
+    const [r, g, b] = rgb.map((v) => {
+      const u = v / 255;
+      return u <= 0.03928 ? u / 12.92 : ((u + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  const [hi, lo] = [L(x), L(y)].sort((p, q) => q - p);
+  return (hi + 0.05) / (lo + 0.05);
+}
+/** The lightness of the accent (--sun) that keeps the dark ink on a .btn-go at 4.5:1 or better, starting from the house 60%. */
+function sunLightness(/** @type {number} */ h, /** @type {number} */ s, /** @type {number} */ a) {
+  const ink = rgbOf(h, s * 0.6, 15);
+  let l = 60;
+  while (l < 90 && contrast(rgbOf(a, 92, l), ink) < 4.6) l += 1;
+  return l;
+}
+
 function day(/** @type {string} */ id, /** @type {any} */ w) {
   const { hue: h, sat: s, accent: a } = w;
   const r = w.radius;
+  const sunL = sunLightness(h, s, a);
   return `body[data-world="${id}"] {
   --brand: ${hsl(h, s, 30)}; --brand-dark: ${hsl(h, s * 0.6, 15)}; --brand-tint: ${hsl(h, s * 0.55, 93)}; --brand-line: ${hsl(h, s * 0.35, 78)};
-  --sun: ${hsl(a, 92, 60)}; --sun-deep: ${hsl(a, 85, 33)}; --sun-tint: ${hsl(a, 90, 92)}; --sun-ink: ${hsl(a, 75, 20)};
+  --sun: ${hsl(a, 92, sunL)}; --sun-deep: ${hsl(a, 85, 33)}; --sun-tint: ${hsl(a, 90, 92)}; --sun-ink: ${hsl(a, 75, 20)};
   --paper: ${hsl(h, 30, 96)}; --well: ${hsl(h, 25, 91)}; --surface: #FFFFFF; --surface-soft: ${hsl(h, 35, 97.5)};
   --border: ${hsl(h, 18, 84)}; --border-strong: ${hsl(h, 14, 47)};
   --ink: ${hsl(h, 35, 13)}; --ink-muted: ${hsl(h, 18, 27)}; --ink-light: ${hsl(h, 12, 37)};

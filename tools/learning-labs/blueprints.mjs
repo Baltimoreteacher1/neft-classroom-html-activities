@@ -72,7 +72,7 @@ export const blueprints = [
     "Investigate a question whose answers vary. Turn the data into an honest histogram and choose a headline the evidence supports.",
     "data",
     "histogram",
-    [4, 5, 7, 8, 9, 12, 14, 15],
+    [12, 14, 15, 17, 18, 20, 22, 16],
     [
       "Group the data into intervals of width 5. Count every value exactly once.",
       "Move a value across an interval boundary. Which bars change?",
@@ -106,7 +106,7 @@ export const blueprints = [
     "Compare how spread out a team’s results are. Decide whether the range or the middle half tells the more useful story.",
     "data",
     "spread",
-    [3, 4, 5, 5, 6, 7, 8, 10],
+    [0, 1, 14, 6, 20, 22, 24, 26],
     [
       "Predict the range and interquartile range of the starting results.",
       "Keep the median fixed while increasing the range. What did you change?",
@@ -157,7 +157,7 @@ export const blueprints = [
     "A dramatic number has changed a report. Investigate which measures still describe a typical observation honestly.",
     "data",
     "outlier",
-    [5, 6, 6, 7, 7, 8, 9, 40],
+    [1, 2, 3, 7, 11, 12, 14, 40],
     [
       "Compare the mean and median. Which one is closer to most values?",
       "Replace 40 with 10. Describe how each measure changes.",

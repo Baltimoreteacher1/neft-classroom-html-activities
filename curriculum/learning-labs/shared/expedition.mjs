@@ -1,6 +1,7 @@
 import { puzzle, fmt } from './math.mjs';
 import { esc, mountModel } from './model.mjs';
 import { expeditionWorlds } from './expedition-worlds.mjs';
+import * as sound from './sound.mjs';
 
 export function worldArt(theme, repaired, selected = -1) {
   const sky = { ocean:'#113e55', mountain:'#223c4a', factory:'#33344c', citadel:'#293350', observatory:'#192640', city:'#264249' }[theme];
@@ -14,64 +15,90 @@ export function worldArt(theme, repaired, selected = -1) {
   const stars = Array.from({length:18},(_,i)=>`<circle cx="${(i*137+39)%710}" cy="${(i*47+11)%133}" r="${i%3===0?2:1}" fill="#d4e7e4" opacity=".6"/>`).join('');
   const points = [[132,215],[352,175],[579,215]];
   const sites = points.map(([x,y],i)=>`<g transform="translate(${x} ${y})" class="${repaired.includes(i)?'lab-site-lit':''}"><ellipse cy="28" rx="59" ry="15" fill="#0b1e2c" opacity=".5"/><path d="M-37 21v-52L0-54l37 23v52Z" fill="${repaired.includes(i)?'#659c85':'#526577'}" stroke="${selected===i?'#ffffff':'#a4b7bc'}" stroke-width="${selected===i?4:2}"/><path d="M-37-31 0-54 37-31 0-10Z" fill="${repaired.includes(i)?'#b9e5b0':'#91a7ac'}"/><path d="M0-10v31m-20-40v19m40-19v19" stroke="${repaired.includes(i)?'#fff5b0':'#27394a'}" stroke-width="7"/><circle cy="-76" r="18" fill="${repaired.includes(i)?'#d4f5ac':'#182d40'}" stroke="#b7d5d6"/><text y="-70" text-anchor="middle" fill="${repaired.includes(i)?'#18342b':'#fff'}" font-size="18" font-family="system-ui" font-weight="700">${repaired.includes(i)?'✓':i+1}</text></g>`).join('');
-  return `<svg role="img" aria-label="Expedition landscape: ${repaired.length} of 3 locations restored" width="720" height="320" viewBox="0 0 720 320" style="background:#FFFFFF" xmlns="http://www.w3.org/2000/svg"><rect width="720" height="320" fill="${sky}"/>${stars}${scenery}<path d="M132 241Q240 277 352 200T579 241" fill="none" stroke="#a3bbc4" stroke-width="4" stroke-dasharray="5 10"/>${sites}</svg>`;
+  return `<svg role="img" aria-label="Expedition landscape: ${repaired.length} of 3 locations restored" width="720" height="320" viewBox="0 0 720 320" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><rect width="720" height="320" fill="${sky}"/>${stars}${scenery}<path d="M132 241Q240 277 352 200T579 241" fill="none" stroke="#a3bbc4" stroke-width="4" stroke-dasharray="5 10"/>${sites}</svg>`;
 }
 
-export function mountExpedition(stage, lab, progress, save, level, choose) {
+// `choose` switches to a sibling game (the lab shell passes one); `hooks` lets a host page hear the outcome
+// (feedback / complete) without a global, so the same expedition can run inside a lesson practice page.
+export function mountExpedition(stage, lab, progress, save, level, choose, hooks = {}) {
   const world = expeditionWorlds[lab.id];
   if (!world) throw new Error(`Missing expedition world: ${lab.id}`);
   const tier = ['support','core','stretch'].indexOf(level);
+  // The host may pass a bare object (a lesson practice page does); the lab shell has always pre-filled these.
+  progress.checks ||= 0; progress.hints ||= 0; progress.rounds ||= 0; progress.solutions ||= [];
   if (!progress.expedition || typeof progress.expedition !== 'object' || Array.isArray(progress.expedition)) progress.expedition = { repaired: Array.from({length:Math.min(3,progress.rounds||0)},(_,i)=>i), medals:[], cycle:0 };
   const expedition = progress.expedition;
   expedition.repaired = [...new Set((Array.isArray(expedition.repaired) ? expedition.repaired : []).filter(n=>Number.isInteger(n)&&n>=0&&n<3))];
   expedition.medals = Array.isArray(expedition.medals) ? expedition.medals.filter(n => Number.isInteger(n) && n >= 0 && n < 3) : [];
   expedition.cycle = Math.max(0, Math.min(1000, Math.floor(Number(expedition.cycle) || 0)));
   let selected = Number.isInteger(expedition.active) && !expedition.repaired.includes(expedition.active) ? expedition.active : -1;
-  const emit = (name, detail) => window.GameStudio?.emit(name, detail);
+  const emit = (name, detail) => { window.GameStudio?.emit(name, detail); hooks[name]?.(detail); };
   function heading() {
     return `<div class="lab-expedition-banner"><p class="lab-expedition-kicker">${esc(lab.finale)} · expedition ${expedition.cycle+1}</p><h3>${esc(world.goal)}</h3><p>${esc(world.brief)}</p></div><div class="lab-expedition-world">${worldArt(world.theme,expedition.repaired,selected)}</div>`;
   }
   function map() {
     selected=-1; delete expedition.active; save();
     const won = expedition.repaired.length===3;
-    stage.innerHTML = `<section class="lab-expedition">${heading()}<div class="lab-expedition-deck"><p class="lab-expedition-status" role="status">${won?'Expedition complete. All three locations are working again.':'Choose your route. Each location needs a different construction.'} ${expedition.repaired.length}/3 restored.</p><div class="lab-expedition-sites">${world.locations.map((name,i)=>`<button type="button" data-site="${i}" ${expedition.repaired.includes(i)?'disabled':''}><span>${expedition.repaired.includes(i)?'RESTORED':`DESTINATION ${i+1}`}</span><strong>${esc(name)}</strong><small>${expedition.repaired.includes(i)?'Evidence saved in your log':'Plan → build → restore'}</small></button>`).join('')}</div>${won?'<div class="actions"><button type="button" data-replay>New expedition</button><button type="button" class="quiet" data-other>Decode the field guide</button></div>':''}<details><summary>Expedition log · ${expedition.medals.length} field badges</summary><p>A field badge means a location was restored without a hint on that attempt. Hints and retries are always available.</p><ol>${world.locations.map((name,i)=>`<li>${esc(name)} — ${expedition.repaired.includes(i)?'restored':'awaiting your crew'}${expedition.medals.includes(i)?' · field badge earned':''}</li>`).join('')}</ol></details></div></section>`;
+    stage.innerHTML = `<section class="lab-expedition">${heading()}<div class="lab-expedition-deck"><p class="lab-expedition-status" role="status">${won?'Expedition complete. All three locations are working again.':'Choose your route. Each location needs a different construction.'} ${expedition.repaired.length}/3 restored.</p><div class="lab-expedition-sites">${world.locations.map((name,i)=>`<button type="button" data-site="${i}" ${expedition.repaired.includes(i)?'disabled':''}><span>${expedition.repaired.includes(i)?'RESTORED':`DESTINATION ${i+1}`}</span><strong>${esc(name)}</strong><small>${expedition.repaired.includes(i)?'Evidence saved in your log':'Plan → build → restore'}</small></button>`).join('')}</div>${won?'<div class="actions"><button type="button" data-replay>New expedition</button>'+(choose?'<button type="button" class="quiet" data-other>Decode the field guide</button>':'')+'</div>':''}<details><summary>Expedition log · ${expedition.medals.length} field badges</summary><p>A field badge means a location was restored on the first test without a hint. Hints and retries are always free.</p><ol>${world.locations.map((name,i)=>`<li>${esc(name)} — ${expedition.repaired.includes(i)?'restored':'awaiting your crew'}${expedition.medals.includes(i)?' · field badge earned':''}</li>`).join('')}</ol></details></div></section>`;
     stage.querySelectorAll('[data-site]').forEach(b=>b.onclick=()=>{selected=Number(b.dataset.site); expedition.active=selected;save();mission();stage.querySelector('[data-return]')?.focus({preventScroll:true});});
-    stage.querySelector('[data-other]')?.addEventListener('click',()=>choose('match'));
-    stage.querySelector('[data-replay]')?.addEventListener('click',()=>{expedition.repaired=[];expedition.medals=[];expedition.hints={};expedition.cycle++;progress.rounds=0;progress.checks=0;progress.hints=0;progress.solutions=[];delete progress.puzzleValues;map();});
+    stage.querySelector('[data-other]')?.addEventListener('click',()=>choose?.('match'));
+    stage.querySelector('[data-replay]')?.addEventListener('click',()=>{expedition.repaired=[];expedition.medals=[];expedition.hints={};expedition.tests={};expedition.cycle++;progress.rounds=0;progress.checks=0;progress.hints=0;progress.solutions=[];delete progress.puzzleValues;map();});
   }
   function mission() {
     const round = selected;
-    const challenge = puzzle(lab.model, round, (tier+expedition.cycle)%3);
+    // Difficulty follows the student: a clean restore (no hint, first test) raises the next puzzle, a struggle lowers it.
+    const puzzleLevel = (((tier + expedition.cycle + (expedition.adapt || 0)) % 3) + 3) % 3;
+    const challenge = puzzle(lab.model, round, puzzleLevel);
     const isBalance=lab.model.kind==='balance',isMirror=lab.model.kind==='coordinates'&&['reflect','symmetry'].includes(lab.model.mode),isInequality=lab.model.kind==='inequality';
     const approximate=Math.abs(challenge.target-Number(challenge.target.toFixed(4)))>1e-8;
     const goal=isMirror?`Move A to the reflection of B across the ${round%2?'x':'y'}-axis.`:isInequality?`Find a test value that ${round%2?'does not satisfy':'satisfies'} the rule.`:isBalance?'Make both sides equal. Only the candidate value of x can change.':`Make ${challenge.metric.toLowerCase()} ${approximate?'approximately':'equal'} ${fmt(challenge.target)}. Only one control is unlocked.`;
-    stage.innerHTML=`<section class="lab-expedition">${heading()}<div class="lab-expedition-deck"><button type="button" class="quiet" data-return>← Choose another destination</button><div class="round-heading"><h3>${esc(world.locations[round])}</h3><p>${expedition.repaired.length}/3 restored</p></div><p class="target">${esc(goal)}</p><p class="goal-gap" aria-live="polite"></p><div class="puzzle-model"></div><div class="actions"><button type="button" data-check>Restore this location</button><button type="button" class="quiet" data-hint>Ask the field guide</button></div><p class="game-feedback" role="status"></p></div></section>`;
+    const soundOn = sound.enabled();
+    stage.innerHTML=`<section class="lab-expedition">${heading()}<div class="lab-expedition-deck" data-level="${puzzleLevel}"><div class="lab-expedition-bar"><button type="button" class="quiet" data-return>← Choose another destination</button><button type="button" class="quiet" data-sound aria-pressed="${soundOn}">${soundOn?'🔊 Sound on':'🔈 Sound off'}</button></div><div class="round-heading"><h3>${esc(world.locations[round])}</h3><p>${expedition.repaired.length}/3 restored</p></div><p class="target">${esc(goal)}</p><p class="lab-plan">Plan before you test: decide what the unlocked control must be, build it, then test. Each location rewards a plan, not a search.</p><p class="goal-gap" aria-live="polite"></p><div class="puzzle-model"></div><div class="actions"><button type="button" data-check>Test my build</button><button type="button" class="quiet" data-hint>Ask the field guide</button></div><p class="game-feedback" role="status"></p></div></section>`;
     const saved=progress.puzzleValues, status=stage.querySelector('.game-feedback'),gap=stage.querySelector('.goal-gap');
+    expedition.tests ||= {};
     let hintsThisMission=expedition.hints?.[round]||0,completed=false;
+    // The live line states what the model shows, never whether it is close: closeness is only reported by a test.
     function describe(result) {
-      if(isBalance){gap.textContent=`Left ${fmt(result.lhs)} · right ${fmt(result.rhs)} · ${Math.abs(result.value)<1e-9?'balanced':'adjust the candidate'}`;return;}
-      if(isMirror||isInequality){gap.textContent='Use the diagram to test your next move.';return;}
-      const diff=result.value-challenge.target;
-      gap.textContent=`Current ${challenge.metric.toLowerCase()}: ${fmt(result.value)} · target ${fmt(challenge.target)} · ${Math.abs(diff)<=challenge.tolerance?'ready to restore':diff>0?'too high':'too low'}`;
+      if(isBalance){gap.textContent=`Left ${fmt(result.lhs)} · right ${fmt(result.rhs)}`;return;}
+      if(isMirror||isInequality){gap.textContent='Use the diagram to plan your next move.';return;}
+      gap.textContent=`Current ${challenge.metric.toLowerCase()}: ${fmt(result.value)} · target ${fmt(challenge.target)}`;
     }
     const model=mountModel(stage.querySelector('.puzzle-model'),lab.model,{initial:saved?.round===round?saved.values:challenge.start,free:challenge.free,prefix:'game',level,onChange:(values,result)=>{progress.puzzleValues={round,values};describe(result);save();}});
     describe(model.result());
+    const toggle=stage.querySelector('[data-sound]');
+    toggle.onclick=()=>{const next=!sound.enabled();sound.set(next);toggle.setAttribute('aria-pressed',String(next));toggle.textContent=next?'🔊 Sound on':'🔈 Sound off';};
     stage.querySelector('[data-return]').onclick=map;
     stage.querySelector('[data-hint]').onclick=()=>{hintsThisMission++;expedition.hints||={};expedition.hints[round]=hintsThisMission;progress.hints++;save();status.textContent=isMirror?'A reflection changes the sign of the coordinate perpendicular to the mirror. Keep the other coordinate.':isInequality?'Read the direction. Test the boundary and check whether equality is allowed.':isBalance?'Use the inverse operation, then substitute your candidate back into the equation.':'Read the model’s relationship. Predict whether the unlocked value should increase or decrease, then test one change.';};
+    // What a failed test says: where the build landed against the goal, and what to rethink. Never the answer.
+    function diagnose(result, n) {
+      if(isBalance)return `Test ${n}: the sides differ by ${fmt(Math.abs(result.value))}. Undo what was done to x, then test your value again.`;
+      if(isMirror)return `Test ${n}: A is not on the reflection yet. Which coordinate changes sign across this axis, and which stays the same?`;
+      if(isInequality)return `Test ${n}: ${fmt(result.value)} ${result.pass?'satisfies':'does not satisfy'} the rule, but this location needs a value that ${round%2?'does not satisfy':'satisfies'} it. Check the boundary and whether equality is allowed.`;
+      const diff=result.value-challenge.target;
+      return `Test ${n}: ${challenge.metric} came out ${fmt(result.value)}; the target is ${fmt(challenge.target)}, so the build is ${diff>0?'too high':'too low'} by ${fmt(Math.abs(diff))}. Plan which way the unlocked control must move and by about how much before you test again.`;
+    }
     stage.querySelector('[data-check]').onclick=()=>{
       if(completed){map();return;}
-      if(!model.valid){status.textContent='Fix the highlighted input before restoring this location.';return;}
+      if(!model.valid){status.textContent='Fix the highlighted input before testing this location.';return;}
       progress.checks++;
+      const attempts=(expedition.tests[round]||0)+1;
+      expedition.tests[round]=attempts;
       let correct=Math.abs(model.result().value-challenge.target)<=challenge.tolerance;
       if(isMirror)correct=model.values.every((n,i)=>Math.abs(n-challenge.goal[i])<1e-8);
       if(isInequality)correct=model.result().pass===(round%2===0);
       emit('feedback',{correct});
-      if(!correct){save();status.textContent='The station is not aligned yet. Compare the model with the target, change one value, and try again. Your restored locations are safe.';return;}
-      completed=true;expedition.repaired.push(round);if(!hintsThisMission&&!expedition.medals.includes(round))expedition.medals.push(round);
+      if(!correct){save();status.textContent=`${diagnose(model.result(),attempts)} Your restored locations are safe.`;return;}
+      completed=true;expedition.repaired.push(round);
+      const clean=!hintsThisMission&&attempts===1;
+      if(clean&&!expedition.medals.includes(round))expedition.medals.push(round);
+      expedition.adapt=Math.max(-1,Math.min(2,(expedition.adapt||0)+(clean?1:attempts>=4||hintsThisMission>=2?-1:0)));
       progress.solutions.push({round,values:[...model.values]});progress.rounds=expedition.repaired.length;delete progress.puzzleValues;delete expedition.active;save();
       stage.querySelector('.lab-expedition-world').innerHTML=worldArt(world.theme,expedition.repaired,round);
-      status.textContent=`${world.locations[round]} restored. ${hintsThisMission?'You used your field guide and solved it.':'Field badge earned.'} Your construction is saved.`;
-      stage.querySelector('[data-check]').textContent=progress.rounds===3?'See the restored world':'Return to the route map';
+      sound.play(progress.rounds===3?'stamp':'hit');
+      status.textContent=`${world.locations[round]} restored${attempts>1?` on test ${attempts}`:' on the first test'}. ${clean?'Field badge earned.':hintsThisMission?'You used your field guide and solved it.':'Your plan worked after revising it.'} Your construction is saved.`;
+      const next=stage.querySelector('[data-check]');
+      next.textContent=progress.rounds===3?'See the restored world':'Return to the route map';
+      next.focus({preventScroll:true});
       stage.querySelector('[data-hint]').disabled=true;
       if(progress.rounds===3)emit('complete',{correct:3,total:3,message:`${lab.finale}: all three locations restored.`});
     };

@@ -170,6 +170,7 @@ const EXCLUSIVE = new Set([
   "validate:lesson-boot",
   "validate:learning-labs-browser",
   "validate:studio-enhancements-browser",
+  "validate:studio-lab-browser",
   "validate:math-workbench-browser",
   "smoke:injection",
   "validate:visibility",
@@ -241,10 +242,11 @@ const COVERAGE = [
   // (init called, sync inside updateProgressHeader, no retired token, no call to
   // an undefined quiz-results function).
   [
-    /^(assets\/u4-studio[^/]*\.(js|css)|math\/unit-4\/[^/]*practice-studio[^/]*\/index\.html|tools\/unit4-studio\.test\.mjs)$/,
+    /^(assets\/u4-studio[^/]*\.(js|css)|assets\/studio\/lab-embed\.(js|css)|math\/unit-4\/[^/]*practice-studio[^/]*\/index\.html|tools\/unit4-studio\.test\.mjs)$/,
     [
       "test",
       "validate:studio-enhancements-browser",
+      "validate:studio-lab-browser",
       "validate:save-resume",
       "validate:js-syntax",
       "validate:css-integrity",
@@ -264,11 +266,12 @@ const COVERAGE = [
   // hub links are written by scripts/generate-practice-studios.mjs from the lesson configs; the test
   // proves they are current and that every answer is the lesson's own.
   [
-    /^(math\/practice-studio\/|assets\/studio\/|assets\/studio-(gen|act)\/|assets\/studio-(viz[\w-]*\.js|v2\.css|worlds\.css|comfort\.(js|css))$|data\/practice-studio\/|scripts\/generate-practice-studios\.mjs$|scripts\/lib\/practice-studio-[\w-]+\.mjs$|tools\/(practice-studios|studio-[\w-]+)\.test\.mjs$|tools\/validate-practice-studio-data\.mjs$|tools\/verify-studio-enhancements-browser\.mjs$|tools\/lib\/studio-vm\.mjs$)/,
+    /^(math\/practice-studio\/|assets\/studio\/|assets\/studio-(gen|act)\/|assets\/studio-(viz[\w-]*\.js|v2\.css|worlds\.css|comfort\.(js|css))$|data\/practice-studio(-u4)?\/|scripts\/(generate-practice-studios|inject-u4-lab-bench)\.mjs$|scripts\/lib\/practice-studio-[\w-]+\.mjs$|tools\/(practice-studios|studio-[\w-]+)\.test\.mjs$|tools\/validate-practice-studio-data\.mjs$|tools\/verify-studio-(enhancements|lab)-browser\.mjs$|tools\/lib\/studio-vm\.mjs$)/,
     [
       "test",
       "validate:practice-studio-data",
       "validate:studio-enhancements-browser",
+      "validate:studio-lab-browser",
       "validate:save-resume",
       "validate:js-syntax",
       "validate:css-integrity",
@@ -645,6 +648,8 @@ const COVERAGE = [
     [
       "validate:learning-labs",
       "validate:learning-labs-browser",
+      // The practice studios import the lab modules at runtime (docs/specs/practice-studio-v2.md section 10).
+      "validate:studio-lab-browser",
       "validate:static",
       "audit:links",
       "test",

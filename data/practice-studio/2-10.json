@@ -1114,5 +1114,155 @@
       "d": "How spread out the data values are.",
       "dEs": "Qué tan dispersos están los valores de los datos."
     }
-  ]
+  ],
+  "bench": {
+    "lab": "outlier-investigation",
+    "model": {
+      "kind": "data",
+      "mode": "outlier",
+      "values": [
+        11,
+        5,
+        4,
+        12,
+        14,
+        3,
+        13,
+        48
+      ]
+    },
+    "explore": {
+      "q": "A player scored 11, 5, 4, 12, 14, 3, and 13 points in seven games. The eighth game, 48 points, is an outlier. Change ONLY Observation 8 until the median is 9.5 points.",
+      "qEs": "Un jugador anotó 11, 5, 4, 12, 14, 3 y 13 puntos en siete juegos. El octavo juego, de 48 puntos, es un valor atípico. Cambia SOLO la observación 8 hasta que la mediana sea 9.5 puntos.",
+      "goal": {
+        "target": 9.5,
+        "free": 7
+      },
+      "miss": "Order all eight values first. The median is the middle of the ordered list, not the middle of the list as written.",
+      "missEs": "Primero ordena los ocho valores. La mediana es el centro de la lista ordenada, no el centro de la lista como está escrita.",
+      "x": "In order, the seven fixed games are 3, 4, 5, 11, 12, 13, 14. A new game of 8 lands between 5 and 11, so the 4th and 5th values are 8 and 11. The median is (8 + 11) ÷ 2 = 9.5. While the outlier was 48, the median was 11.5 but the mean was 13.75, higher than 6 of the 8 games. The median shows a typical game better.",
+      "xEs": "En orden, los siete juegos fijos son 3, 4, 5, 11, 12, 13, 14. Un juego nuevo de 8 queda entre 5 y 11, así que el 4.º y el 5.º valor son 8 y 11. La mediana es (8 + 11) ÷ 2 = 9.5. Mientras el valor atípico era 48, la mediana era 11.5 pero la media era 13.75, más alta que 6 de los 8 juegos. La mediana muestra mejor un juego típico.",
+      "h": [
+        "Put the eight values in order. With eight values, the median is the mean of the 4th and 5th values.",
+        "The median only changes once the new game drops below the middle values.",
+        "The two middle values must average to 9.5, and one of them is already known."
+      ],
+      "hEs": [
+        "Ordena los ocho valores. Con ocho valores, la mediana es la media del 4.º y el 5.º valor.",
+        "La mediana solo cambia cuando el juego nuevo baja por debajo de los valores centrales.",
+        "Los dos valores centrales deben tener un promedio de 9.5, y uno de ellos ya se conoce."
+      ]
+    },
+    "investigate": {
+      "p": "Use the starting data. Predict: if you change the 48 to 40, will the median change? Test it. Then compare what happens to the mean and say which measure is better for a typical game.",
+      "pEs": "Usa los datos iniciales. Predice: si cambias el 48 a 40, ¿cambiará la mediana? Pruébalo. Luego compara qué pasa con la media y di qué medida es mejor para un juego típico.",
+      "fr": "I predicted the median would ___. The model showed the median is ___ and the mean is ___. The ___ changed because ___. The better measure here is the ___ because the outlier ___.",
+      "frEs": "Predije que la mediana ___. El modelo mostró que la mediana es ___ y la media es ___. La ___ cambió porque ___. La mejor medida aquí es la ___ porque el valor atípico ___.",
+      "min": 70,
+      "kw": [
+        "median",
+        "mean",
+        "outlier",
+        "skewed"
+      ],
+      "kwEs": [
+        "mediana",
+        "media",
+        "valor atípico",
+        "sesgado"
+      ],
+      "rubric": [
+        "I made a prediction about the median before I tested it.",
+        "I wrote the mean and the median before and after the change.",
+        "I explained why one measure changed and the other did not.",
+        "I chose the better measure for a typical game and gave a reason."
+      ],
+      "rubricEs": [
+        "Hice una predicción sobre la mediana antes de probar.",
+        "Escribí la media y la mediana antes y después del cambio.",
+        "Expliqué por qué una medida cambió y la otra no.",
+        "Elegí la mejor medida para un juego típico y di una razón."
+      ],
+      "x": "The median stays 11.5 because 40 and 48 are both above the middle values 11 and 12, so the order in the middle does not change. The mean drops from 13.75 to 12.75 because it uses the size of every value. With an outlier, the median is the better measure of a typical game.",
+      "xEs": "La mediana se queda en 11.5 porque 40 y 48 están por encima de los valores centrales 11 y 12, así que el orden en el centro no cambia. La media baja de 13.75 a 12.75 porque usa el tamaño de cada valor. Con un valor atípico, la mediana es la mejor medida de un juego típico.",
+      "h": [
+        "Write the mean and the median you see before you change anything.",
+        "Change only Observation 8, then read both numbers again.",
+        "Ask: which measure uses the size of the outlier, and which one only uses its position?"
+      ],
+      "hEs": [
+        "Escribe la media y la mediana que ves antes de cambiar algo.",
+        "Cambia solo la observación 8 y lee ambos números otra vez.",
+        "Pregunta: ¿qué medida usa el tamaño del valor atípico y cuál solo usa su posición?"
+      ]
+    },
+    "stretch": {
+      "q": "Seven of eight games are fixed: 11, 5, 4, 12, 3, 13, and 48 points. The fifth game is open. Change ONLY Observation 5 until the median is 10 points.",
+      "qEs": "Siete de ocho juegos son fijos: 11, 5, 4, 12, 3, 13 y 48 puntos. El quinto juego está abierto. Cambia SOLO la observación 5 hasta que la mediana sea 10 puntos.",
+      "goal": {
+        "target": 10,
+        "free": 4
+      },
+      "miss": "Moving a game only matters once it crosses the middle values. Reorder the list after every change and look at the middle two.",
+      "missEs": "Mover un juego solo importa cuando cruza los valores centrales. Reordena la lista después de cada cambio y mira los dos del centro.",
+      "x": "In order, the fixed games are 3, 4, 5, 11, 12, 13, 48. A fifth game of 9 lands between 5 and 11, so the middle two values are 9 and 11. The median is (9 + 11) ÷ 2 = 10. Lowering the fifth game from 14 to 9 moved it below the middle, so the median changed. The median depends on position, and the 48 still has no effect on it.",
+      "xEs": "En orden, los juegos fijos son 3, 4, 5, 11, 12, 13, 48. Un quinto juego de 9 queda entre 5 y 11, así que los dos valores centrales son 9 y 11. La mediana es (9 + 11) ÷ 2 = 10. Bajar el quinto juego de 14 a 9 lo movió por debajo del centro, así que la mediana cambió. La mediana depende de la posición, y el 48 sigue sin afectarla.",
+      "h": [
+        "Write the seven fixed games in order and look at the middle.",
+        "With eight values, the median is the mean of the two middle values.",
+        "One middle value is already fixed. What number averages with it to make the median?"
+      ],
+      "hEs": [
+        "Escribe los siete juegos fijos en orden y mira el centro.",
+        "Con ocho valores, la mediana es la media de los dos valores centrales.",
+        "Un valor central ya está fijo. ¿Qué número, promediado con él, da la mediana?"
+      ]
+    },
+    "create": {
+      "p": "Make up eight game scores with one outlier. Write two short reports about the same data, one using the mean and one using the median. Recommend which report a coach should trust and explain why.",
+      "pEs": "Inventa ocho puntajes de juegos con un valor atípico. Escribe dos informes cortos sobre los mismos datos, uno con la media y otro con la mediana. Recomienda en cuál debe confiar un entrenador y explica por qué.",
+      "fr": "My scores are ___. The outlier is ___. Report 1: the mean is ___. Report 2: the median is ___. A coach should trust the ___ because ___.",
+      "frEs": "Mis puntajes son ___. El valor atípico es ___. Informe 1: la media es ___. Informe 2: la mediana es ___. Un entrenador debe confiar en la ___ porque ___.",
+      "min": 100,
+      "kw": [
+        "mean",
+        "median",
+        "outlier",
+        "skewed"
+      ],
+      "kwEs": [
+        "media",
+        "mediana",
+        "valor atípico",
+        "sesgado"
+      ],
+      "rubric": [
+        "I wrote eight scores and pointed out the outlier.",
+        "I calculated the mean and the median correctly.",
+        "I recommended one measure and explained why the outlier matters.",
+        "I said what the other measure would wrongly suggest."
+      ],
+      "rubricEs": [
+        "Escribí ocho puntajes y señalé el valor atípico.",
+        "Calculé correctamente la media y la mediana.",
+        "Recomendé una medida y expliqué por qué importa el valor atípico.",
+        "Dije qué sugeriría de forma equivocada la otra medida."
+      ],
+      "x": "Sample: 12, 14, 15, 15, 16, 17, 18, 45. The outlier is 45. Report 1: the mean is 152 ÷ 8 = 19. Report 2: the median is (15 + 16) ÷ 2 = 15.5. The coach should trust the median, because 19 is higher than 7 of the 8 scores. The 45 pulled the mean up, so the mean would wrongly suggest a typical game is about 19 points.",
+      "xEs": "Ejemplo: 12, 14, 15, 15, 16, 17, 18, 45. El valor atípico es 45. Informe 1: la media es 152 ÷ 8 = 19. Informe 2: la mediana es (15 + 16) ÷ 2 = 15.5. El entrenador debe confiar en la mediana, porque 19 es mayor que 7 de los 8 puntajes. El 45 subió la media, así que la media sugeriría de forma equivocada que un juego típico es de unos 19 puntos.",
+      "h": [
+        "Choose seven scores that are close together and one score far away.",
+        "Add all eight scores for the mean; order them and find the middle two for the median.",
+        "Compare each measure with most of the scores. Which one sits closer to them?"
+      ],
+      "hEs": [
+        "Elige siete puntajes cercanos entre sí y uno muy lejano.",
+        "Suma los ocho puntajes para la media; ordénalos y halla los dos centrales para la mediana.",
+        "Compara cada medida con la mayoría de los puntajes. ¿Cuál queda más cerca de ellos?"
+      ]
+    },
+    "mission": {
+      "finale": "Evidence Verdict"
+    }
+  }
 }

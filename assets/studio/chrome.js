@@ -45,7 +45,21 @@
   });
 
   /* ---- config validation: fail fast with a clear reason --------------------------------------------------------- */
-  const KINDS = ["mc", "num", "err", "tbl", "wr", "sort", "match", "nline", "gen", "pool", "act"];
+  const KINDS = [
+    "mc",
+    "num",
+    "err",
+    "tbl",
+    "wr",
+    "sort",
+    "match",
+    "nline",
+    "gen",
+    "pool",
+    "act",
+    "lab",
+    "mission",
+  ];
   /** @param {any} d @returns {string[]} */
   function validateConfig(d) {
     /** @type {string[]} */
@@ -70,6 +84,8 @@
             p.push(`section ${i + 1} item ${j + 1}: the answer index is outside the choices`);
           if (it.k === "gen" && !W.StudioGen?.registry?.[it.g])
             p.push(`section ${i + 1} item ${j + 1}: generator "${it.g}" is not registered`);
+          if ((it.k === "lab" || it.k === "mission") && !(it.model && it.model.kind && it.lab))
+            p.push(`section ${i + 1} item ${j + 1}: a ${it.k} item needs a lab and a model`);
           if (it.k === "act" && !W.StudioAct?.registry?.[it.kind])
             p.push(`section ${i + 1} item ${j + 1}: activity "${it.kind}" is not registered`);
         }

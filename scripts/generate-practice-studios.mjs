@@ -16,8 +16,14 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
-import { listLessonDirs, loadLessonConfig, REPO_ROOT } from "../tools/lib/curriculum-source.mjs";
+import {
+  lessonPath,
+  listLessonDirs,
+  loadLessonConfig,
+  REPO_ROOT,
+} from "../tools/lib/curriculum-source.mjs";
 import { typographizeItems } from "./lib/math-typography.mjs";
+import { benchProblems } from "./lib/practice-studio-bench.mjs";
 import { buildSections } from "./lib/practice-studio-config.mjs";
 import { validateLessonData } from "./lib/practice-studio-data.mjs";
 import { boostPage, indexPage, pageFor } from "./lib/practice-studio-pages.mjs";
@@ -39,7 +45,7 @@ const coreFirst = (/** @type {string[]} */ fs) => [
 ];
 
 /** Unit 4 keeps its hand-built pages; the finder links to them. */
-const UNIT4 = [
+export const UNIT4 = [
   ["4-1", "percent-practice-studio", "percent-practice-studio-challenging"],
   ["4-2", "4-2-practice-studio", "4-2-practice-studio-challenging"],
   ["4-3", "4-3-practice-studio", "4-3-practice-studio-challenging"],
@@ -56,7 +62,7 @@ function assetPlan(/** @type {string} */ worlds) {
     ...vizAll.filter((f) => f === "studio-viz.js"),
     ...vizAll.filter((f) => f !== "studio-viz.js"),
   ].map((f) => `assets/${f}`);
-  const runtime = ["store", "kinds-basic", "kinds-hands", "insight", "runtime"].map(
+  const runtime = ["store", "kinds-basic", "kinds-hands", "kinds-lab", "insight", "runtime"].map(
     (f) => `assets/studio/${f}.js`,
   );
   const scripts = [
@@ -86,7 +92,42 @@ function assetPlan(/** @type {string} */ worlds) {
     );
   const v = h.digest("hex").slice(0, 10);
   const url = (/** @type {string} */ f) => `/${f}?v=${v}`;
-  return { styles: styles.map(url), scripts: scripts.map(url), stamp: v };
+  // The learning-lab modules the lab items import at runtime. Stamped separately so a lab fix reaches every studio
+  // and a studio-only change does not churn the lab URLs.
+  const labDir = "curriculum/learning-labs/shared";
+  const lh = createHash("sha1");
+  for (const f of readdirSync(join(REPO_ROOT, labDir)).sort())
+    if (/\.(mjs|css)$/.test(f)) lh.update(read(`${labDir}/${f}`));
+  return {
+    styles: styles.map(url),
+    scripts: scripts.map(url),
+    stamp: v,
+    labV: lh.digest("hex").slice(0, 10),
+  };
+}
+
+/**
+ * Student-facing materials a lesson has on disk, offered from the studio footer so nothing about the lesson is more than one tap
+ * away. Answer keys and teacher notes are never listed: they stay behind their own gate.
+ */
+const STUDENT_FILES = [
+  ["notes.html", "Guided notes"],
+  ["worksheet.html", "Worksheet"],
+  ["worksheet-2.html", "Worksheet B"],
+  ["homework.html", "Homework"],
+  ["vocab.html", "Vocabulary"],
+  ["family/index.html", "Family page"],
+];
+function studentResources(/** @type {string} */ id, /** @type {any} */ labs) {
+  const links = STUDENT_FILES.filter(([f]) => existsSync(lessonPath(id, f))).map(([f, label]) => ({
+    href: `/lessons/${id}/${f.replace(/index\.html$/, "")}`,
+    label,
+  }));
+  if (existsSync(lessonPath(`${id}-part2`, "index.html")))
+    links.push({ href: `/lessons/${id}-part2/`, label: "Part 2 · Apply" });
+  const lab = labs.labs.find((/** @type {any} */ l) => l.lessons.includes(id));
+  if (lab) links.push({ href: lab.href, label: `Learning Lab: ${lab.title}` });
+  return links;
 }
 
 const HUB = "curriculum/units/index.html";
@@ -100,6 +141,7 @@ const PATH_LINK = (/** @type {string} */ id) =>
 /** @param {{only?: string[]}} [opts] `only` builds a subset of lessons (smoke tests); the real build never passes it. */
 export function outputs(opts = {}) {
   const worlds = JSON.parse(read("data/practice-studio/worlds.json"));
+  const labs = JSON.parse(read("data/learning-labs.json"));
   const css = worldsCss(worlds);
   const assets = assetPlan(css);
   const ids = listLessonDirs({ filter: /^\d+-\d+$/ })
@@ -117,7 +159,10 @@ export function outputs(opts = {}) {
     const dataFile = `data/practice-studio/${id}.json`;
     if (!existsSync(join(REPO_ROOT, dataFile))) throw new Error(`${id}: missing ${dataFile}`);
     const ld = JSON.parse(read(dataFile));
-    const problems = validateLessonData(id, ld, worlds);
+    const problems = [
+      ...validateLessonData(id, ld, worlds),
+      ...(ld.bench ? benchProblems(id, ld.bench, labs) : []),
+    ];
     if (problems.length)
       throw new Error(`${dataFile} is invalid:\n  ${problems.slice(0, 8).join("\n  ")}`);
     const worldId = worlds.lessons[id];
@@ -132,7 +177,16 @@ export function outputs(opts = {}) {
           );
       files.set(
         `math/practice-studio/${id}/${mode === "practice" ? "" : "challenge/"}index.html`,
-        pageFor({ id, mode, cfg, ld, world, sections: typographizeItems(sections), assets }),
+        pageFor({
+          id,
+          mode,
+          cfg,
+          ld,
+          world,
+          sections: typographizeItems(sections),
+          assets,
+          resources: studentResources(id, labs),
+        }),
       );
     }
     entries.push({ id, title: cfg.title || id, emoji: world.emoji, world: worldId });

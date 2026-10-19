@@ -52,7 +52,7 @@ const bi = (/** @type {string} */ en, /** @type {string} */ es) =>
  * @param {any[]} o.sections the five sections for this mode
  * @param {{scripts: string[], styles: string[]}} o.assets URLs (already stamped) in load order
  */
-export function pageFor({ id, mode, cfg, ld, world, sections, assets }) {
+export function pageFor({ id, mode, cfg, ld, world, sections, assets, resources = [] }) {
   const unit = id.split("-")[0];
   const standard = cfg.standard || "";
   const title = cfg.title || `Lesson ${id}`;
@@ -76,6 +76,9 @@ export function pageFor({ id, mode, cfg, ld, world, sections, assets }) {
       : "¡Terminaste todas las secciones de esta lección!",
     world: { id: world.id, voice: world.voice },
     glyphs: ["★", "✓", "+", "="],
+    ...(sections.some((s) => s.items.some((it) => it.k === "lab" || it.k === "mission"))
+      ? { labV: assets.labV }
+      : {}),
     sections,
   };
   const story = challenge ? ld.challengeStory : ld.story;
@@ -168,6 +171,11 @@ ${panels}
     <div class="footer-wrap">
       <span><strong>Grade 6 Mathematics · Lesson ${esc(id)}: ${esc(title)}</strong>${standard ? ` (Standard ${esc(standard)})` : ""}</span>
       <span>${label} · Progress saves on this device · <a href="/lessons/${id}/">Open the full lesson</a> · <a href="${otherUrl}">${challenge ? "Practice version" : "Challenge version"}</a></span>
+      ${
+        resources.length
+          ? `<nav class="footer-more" aria-label="More for this lesson"><strong>${bi("More for this lesson", "Más para esta lección")}:</strong> ${resources.map((r) => `<a href="${esc(r.href)}">${esc(r.label)}</a>`).join(" · ")}</nav>`
+          : ""
+      }
     </div>
   </footer>
 
