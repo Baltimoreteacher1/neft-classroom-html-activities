@@ -51,11 +51,6 @@
       },
       "vocabulary": [
         {
-          "term": "Understand Ratios",
-          "definition": "Use a ratio to compare two quantities by division.",
-          "example": "3 red tiles to 5 blue tiles can be written 3:5 or 3/5."
-        },
-        {
           "term": "Ratio",
           "definition": "A way to compare two amounts, like 3 to 2.",
           "example": "3 cups flour to 2 cups sugar → 3:2"
@@ -244,11 +239,6 @@
   "unitName": "Ratios & Rates",
   "accent": "#076859",
   "vocabulary": [
-    {
-      "term": "Understand Ratios",
-      "definition": "Use a ratio to compare two quantities by division.",
-      "example": "3 red tiles to 5 blue tiles can be written 3:5 or 3/5."
-    },
     {
       "term": "Ratio",
       "definition": "A way to compare two amounts, like 3 to 2.",
@@ -623,7 +613,7 @@
       {
         "id": "support-model",
         "type": "number",
-        "prompt": "Predict the juice per cup of water for these settings. Give the answer in cups per cup. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. How many cups of juice are there for each cup of water? Round to four decimal places if needed.",
         "parameters": [
           "Juice (cups): 3",
           "Water (cups): 2"
@@ -632,8 +622,14 @@
         "tolerance": 0.000051,
         "explanation": "3:2 = 3:2. First ingredient to whole: 3:5. The whole includes both ingredients. Scaling both amounts by the same factor keeps the recipe equivalent.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Write the ratio juice : water.",
+          "Divide the cups of juice by the cups of water."
+        ],
+        "mistakes": [
+          {
+            "answer": 0.666667,
+            "feedback": "You divided the wrong way. Put juice first: juice ÷ water."
+          }
         ]
       },
       {
@@ -642,11 +638,17 @@
         "prompt": "A drink has juice:water = 3:2. How many cups of water go with 9 cups of juice?",
         "answer": 6,
         "explanation": "The juice is multiplied by 3, so the water is also multiplied by 3: 2 × 3 = 6.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "The juice went from 3 cups to 9 cups. What was it multiplied by?",
+          "Multiply the water part by the same number."
+        ],
+        "mistakes": [
+          {
+            "answer": 8,
+            "feedback": "You added 6 to the water. Multiply both parts by the same number instead."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "support-original-1",
@@ -654,11 +656,17 @@
         "prompt": "A 5-cup drink costs $4 in total. What is its cost per cup in dollars?",
         "answer": 0.8,
         "explanation": "Cost per cup = 4 ÷ 5 = 0.80 dollars per cup. Keep the cost unit first.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Cost per cup means dollars for one cup.",
+          "Divide the total cost by the number of cups."
+        ],
+        "mistakes": [
+          {
+            "answer": 1.25,
+            "feedback": "You divided cups by dollars. Put the cost first: dollars ÷ cups."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "core": [
@@ -838,7 +846,7 @@
       {
         "id": "core-model",
         "type": "number",
-        "prompt": "Predict the juice per cup of water for these settings. Give the answer in cups per cup. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. How many cups of juice are there for each cup of water?",
         "parameters": [
           "Juice (cups): 4",
           "Water (cups): 2"
@@ -847,8 +855,14 @@
         "tolerance": 0.000051,
         "explanation": "4:2 = 2:1. First ingredient to whole: 4:6. The whole includes both ingredients. Scaling both amounts by the same factor keeps the recipe equivalent.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Write the ratio juice : water.",
+          "Divide the cups of juice by the cups of water."
+        ],
+        "mistakes": [
+          {
+            "answer": 0.5,
+            "feedback": "You divided the wrong way. Put juice first: juice ÷ water."
+          }
         ]
       },
       {
@@ -857,11 +871,17 @@
         "prompt": "A drink has juice:water = 3:2. How many cups of water go with 9 cups of juice?",
         "answer": 6,
         "explanation": "The juice is multiplied by 3, so the water is also multiplied by 3: 2 × 3 = 6.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "The juice went from 3 cups to 9 cups. What was it multiplied by?",
+          "Multiply the water part by the same number."
+        ],
+        "mistakes": [
+          {
+            "answer": 8,
+            "feedback": "You added 6 to the water. Multiply both parts by the same number instead."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "core-original-1",
@@ -869,11 +889,17 @@
         "prompt": "A 5-cup drink costs $4 in total. What is its cost per cup in dollars?",
         "answer": 0.8,
         "explanation": "Cost per cup = 4 ÷ 5 = 0.80 dollars per cup. Keep the cost unit first.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Cost per cup means dollars for one cup.",
+          "Divide the total cost by the number of cups."
+        ],
+        "mistakes": [
+          {
+            "answer": 1.25,
+            "feedback": "You divided cups by dollars. Put the cost first: dollars ÷ cups."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "stretch": [
@@ -979,7 +1005,7 @@
       {
         "id": "stretch-model",
         "type": "number",
-        "prompt": "Predict the juice per cup of water for these settings. Give the answer in cups per cup. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. How many cups of juice are there for each cup of water? Round to four decimal places if needed.",
         "parameters": [
           "Juice (cups): 5",
           "Water (cups): 2"
@@ -988,8 +1014,14 @@
         "tolerance": 0.000051,
         "explanation": "5:2 = 5:2. First ingredient to whole: 5:7. The whole includes both ingredients. Scaling both amounts by the same factor keeps the recipe equivalent.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Write the ratio juice : water.",
+          "Divide the cups of juice by the cups of water."
+        ],
+        "mistakes": [
+          {
+            "answer": 0.4,
+            "feedback": "You divided the wrong way. Put juice first: juice ÷ water."
+          }
         ]
       },
       {
@@ -998,11 +1030,17 @@
         "prompt": "A drink has juice:water = 3:2. How many cups of water go with 9 cups of juice?",
         "answer": 6,
         "explanation": "The juice is multiplied by 3, so the water is also multiplied by 3: 2 × 3 = 6.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "The juice went from 3 cups to 9 cups. What was it multiplied by?",
+          "Multiply the water part by the same number."
+        ],
+        "mistakes": [
+          {
+            "answer": 8,
+            "feedback": "You added 6 to the water. Multiply both parts by the same number instead."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "stretch-original-1",
@@ -1010,11 +1048,17 @@
         "prompt": "A 5-cup drink costs $4 in total. What is its cost per cup in dollars?",
         "answer": 0.8,
         "explanation": "Cost per cup = 4 ÷ 5 = 0.80 dollars per cup. Keep the cost unit first.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Cost per cup means dollars for one cup.",
+          "Divide the total cost by the number of cups."
+        ],
+        "mistakes": [
+          {
+            "answer": 1.25,
+            "feedback": "You divided cups by dollars. Put the cost first: dollars ÷ cups."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ]
   },

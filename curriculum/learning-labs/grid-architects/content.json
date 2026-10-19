@@ -152,11 +152,6 @@
       },
       "vocabulary": [
         {
-          "term": "Ordered Pairs in All Four Quadrants",
-          "definition": "Points written as (x, y) whose positive or negative coordinates place them in one of four quadrants.",
-          "example": "(−3, 4) is in Quadrant II."
-        },
-        {
           "term": "Quadrant",
           "definition": "One of the four parts of a coordinate grid, numbered I to IV.",
           "example": "I (+, +) top-right, II (-, +) top-left, III (-, -) bottom-left, IV (+, -) bottom-right"
@@ -237,11 +232,6 @@
       "term": "Side length",
       "definition": "The distance between two vertices that are joined by a side.",
       "example": "Found with absolute value when the points share a coordinate."
-    },
-    {
-      "term": "Ordered Pairs in All Four Quadrants",
-      "definition": "Points written as (x, y) whose positive or negative coordinates place them in one of four quadrants.",
-      "example": "(−3, 4) is in Quadrant II."
     },
     {
       "term": "Quadrant",
@@ -494,7 +484,7 @@
       {
         "id": "support-model",
         "type": "number",
-        "prompt": "Predict the rectangle area for these settings. Give the answer in square units. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the area of the rectangle with opposite corners A and B? Give the answer in square units.",
         "parameters": [
           "Point A: x: -4",
           "Point A: y: -2",
@@ -505,8 +495,14 @@
         "tolerance": 0.000051,
         "explanation": "7 × 6 = 42; perimeter = 26. A (-4, -2), B (3, 4). The displayed distance follows horizontal and vertical streets, not the diagonal.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Width = difference of the x-coordinates. Height = difference of the y-coordinates.",
+          "Subtracting a negative coordinate adds its distance from zero."
+        ],
+        "mistakes": [
+          {
+            "answer": 26,
+            "feedback": "That is the perimeter. Area = width × height."
+          }
         ]
       },
       {
@@ -515,11 +511,21 @@
         "prompt": "A rectangle has opposite corners (−4, −2) and (3, 4). What is its area?",
         "answer": 42,
         "explanation": "Width = 3 − (−4) = 7; height = 4 − (−2) = 6. Area = 42 square units.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Width = difference of the x-coordinates. Height = difference of the y-coordinates.",
+          "Subtracting a negative coordinate adds its distance from zero."
+        ],
+        "mistakes": [
+          {
+            "answer": 26,
+            "feedback": "That is the perimeter. Area = width × height."
+          },
+          {
+            "answer": 2,
+            "feedback": "Subtracting a negative coordinate adds distance: use the full distance across zero."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "support-original-1",
@@ -527,11 +533,21 @@
         "prompt": "What is the perimeter of that 7-by-6 rectangle?",
         "answer": 26,
         "explanation": "Perimeter = 2(7 + 6) = 26 units.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Perimeter is the distance around.",
+          "Add width and height, then double."
+        ],
+        "mistakes": [
+          {
+            "answer": 42,
+            "feedback": "That is the area. Perimeter adds the sides."
+          },
+          {
+            "answer": 13,
+            "feedback": "That is only two sides. Double it."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "core": [
@@ -758,7 +774,7 @@
       {
         "id": "core-model",
         "type": "number",
-        "prompt": "Predict the rectangle area for these settings. Give the answer in square units. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the area of the rectangle with opposite corners A and B? Give the answer in square units.",
         "parameters": [
           "Point A: x: -3",
           "Point A: y: -2",
@@ -769,8 +785,14 @@
         "tolerance": 0.000051,
         "explanation": "6 × 6 = 36; perimeter = 24. A (-3, -2), B (3, 4). The displayed distance follows horizontal and vertical streets, not the diagonal.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Width = difference of the x-coordinates. Height = difference of the y-coordinates.",
+          "Subtracting a negative coordinate adds its distance from zero."
+        ],
+        "mistakes": [
+          {
+            "answer": 24,
+            "feedback": "That is the perimeter. Area = width × height."
+          }
         ]
       },
       {
@@ -779,11 +801,21 @@
         "prompt": "A rectangle has opposite corners (−4, −2) and (3, 4). What is its area?",
         "answer": 42,
         "explanation": "Width = 3 − (−4) = 7; height = 4 − (−2) = 6. Area = 42 square units.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Width = difference of the x-coordinates. Height = difference of the y-coordinates.",
+          "Subtracting a negative coordinate adds its distance from zero."
+        ],
+        "mistakes": [
+          {
+            "answer": 26,
+            "feedback": "That is the perimeter. Area = width × height."
+          },
+          {
+            "answer": 2,
+            "feedback": "Subtracting a negative coordinate adds distance: use the full distance across zero."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "core-original-1",
@@ -791,11 +823,21 @@
         "prompt": "What is the perimeter of that 7-by-6 rectangle?",
         "answer": 26,
         "explanation": "Perimeter = 2(7 + 6) = 26 units.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Perimeter is the distance around.",
+          "Add width and height, then double."
+        ],
+        "mistakes": [
+          {
+            "answer": 42,
+            "feedback": "That is the area. Perimeter adds the sides."
+          },
+          {
+            "answer": 13,
+            "feedback": "That is only two sides. Double it."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "stretch": [
@@ -960,7 +1002,7 @@
       {
         "id": "stretch-model",
         "type": "number",
-        "prompt": "Predict the rectangle area for these settings. Give the answer in square units. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the area of the rectangle with opposite corners A and B? Give the answer in square units.",
         "parameters": [
           "Point A: x: -2",
           "Point A: y: -2",
@@ -971,8 +1013,14 @@
         "tolerance": 0.000051,
         "explanation": "5 × 6 = 30; perimeter = 22. A (-2, -2), B (3, 4). The displayed distance follows horizontal and vertical streets, not the diagonal.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Width = difference of the x-coordinates. Height = difference of the y-coordinates.",
+          "Subtracting a negative coordinate adds its distance from zero."
+        ],
+        "mistakes": [
+          {
+            "answer": 22,
+            "feedback": "That is the perimeter. Area = width × height."
+          }
         ]
       },
       {
@@ -981,11 +1029,21 @@
         "prompt": "A rectangle has opposite corners (−4, −2) and (3, 4). What is its area?",
         "answer": 42,
         "explanation": "Width = 3 − (−4) = 7; height = 4 − (−2) = 6. Area = 42 square units.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Width = difference of the x-coordinates. Height = difference of the y-coordinates.",
+          "Subtracting a negative coordinate adds its distance from zero."
+        ],
+        "mistakes": [
+          {
+            "answer": 26,
+            "feedback": "That is the perimeter. Area = width × height."
+          },
+          {
+            "answer": 2,
+            "feedback": "Subtracting a negative coordinate adds distance: use the full distance across zero."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "stretch-original-1",
@@ -993,11 +1051,21 @@
         "prompt": "What is the perimeter of that 7-by-6 rectangle?",
         "answer": 26,
         "explanation": "Perimeter = 2(7 + 6) = 26 units.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Perimeter is the distance around.",
+          "Add width and height, then double."
+        ],
+        "mistakes": [
+          {
+            "answer": 42,
+            "feedback": "That is the area. Perimeter adds the sides."
+          },
+          {
+            "answer": 13,
+            "feedback": "That is only two sides. Double it."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ]
   },

@@ -6,6 +6,7 @@ import { toPng } from './snapshot.mjs';
 import { play } from './sound.mjs';
 import { mountWatch } from './watch.mjs';
 import { controls, numericAnswer } from './math.mjs';
+import { numberFeedback } from './number-feedback.mjs';
 import { activityStatus, levels, parseKeyIdea } from './progress.mjs';
 import {
   attachGhostMesh,
@@ -393,7 +394,7 @@ export function practice(ctx, host) {
     if (ok) state.streak = (state.streak || 0) + 1;
     host.querySelector('[data-explain]').hidden = false;
     status.className = `practice-feedback ${ok ? 'correct' : 'retry'}`;
-    status.textContent = ok ? 'That works. Read the explanation and check it against your strategy.' : q.feedback?.[number] || 'That response needs another look. Use a hint, check the quantities, and try again.';
+    status.textContent = ok ? 'That works. Read the explanation and check it against your strategy.' : (q.type === 'number' ? numberFeedback(q, number) : q.feedback?.[number]) || 'That response needs another look. Use a hint, check the quantities, and try again.';
     if (ok) { play('hit'); explain(); } save();
     const button = host.querySelector(`[data-question="${index}"]`);
     if (ok) { button.textContent = '✓'; button.className = 'is-done'; button.setAttribute('aria-label', `Activity ${index + 1}, complete`); }

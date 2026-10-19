@@ -61,11 +61,6 @@
       },
       "vocabulary": [
         {
-          "term": "Describe the Data Using the Median",
-          "definition": "Using the middle value of the ordered data to say what is typical for the whole set.",
-          "example": "2, 4, 4, 6, 9 → median 4"
-        },
-        {
           "term": "Median",
           "definition": "The middle number when you put them in order.",
           "example": "Data: 1, 3, 5, 7, 9 → the middle (3rd) value is 5, so median = 5"
@@ -241,11 +236,6 @@
   "unitName": "Statistics",
   "accent": "#315ba7",
   "vocabulary": [
-    {
-      "term": "Describe the Data Using the Median",
-      "definition": "Using the middle value of the ordered data to say what is typical for the whole set.",
-      "example": "2, 4, 4, 6, 9 → median 4"
-    },
     {
       "term": "Median",
       "definition": "The middle number when you put them in order.",
@@ -595,7 +585,7 @@
       {
         "id": "support-model",
         "type": "number",
-        "prompt": "Predict the median for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the median of the observations?",
         "parameters": [
           "Observation 1: 2",
           "Observation 2: 4",
@@ -610,9 +600,10 @@
         "tolerance": 0.000051,
         "explanation": "Mean 8 · Median 8 · Range 13. Q1 4.5, Q3 11, IQR 6.5, MAD 3.5. Quartiles use the median of each half.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
-        ]
+          "Put the observations in order first.",
+          "With an even number of observations, the median is halfway between the two middle values."
+        ],
+        "mistakes": []
       },
       {
         "id": "support-original-0",
@@ -620,11 +611,21 @@
         "prompt": "Find the median: 2, 4, 6, 8, 10, 12.",
         "answer": 7,
         "explanation": "There are six values. Average the middle pair, 6 and 8: (6 + 8) ÷ 2 = 7.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "The list is already in order. Find the middle position.",
+          "With an even number of values, average the two middle values."
+        ],
+        "mistakes": [
+          {
+            "answer": 6,
+            "feedback": "With six values there are two middle values. Average them."
+          },
+          {
+            "answer": 8,
+            "feedback": "With six values there are two middle values. Average them."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "support-original-1",
@@ -632,11 +633,21 @@
         "prompt": "For 2, 4, 6, 8, 10, 12, find Q3 using the median of the upper half.",
         "answer": 10,
         "explanation": "The upper half is 8, 10, 12. Its median is 10, so Q3 = 10.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Split the ordered list into a lower half and an upper half.",
+          "Q3 is the median of the upper half."
+        ],
+        "mistakes": [
+          {
+            "answer": 4,
+            "feedback": "That is Q1, the median of the lower half. Q3 comes from the upper half."
+          },
+          {
+            "answer": 7,
+            "feedback": "That is the median of the whole set. Q3 is the median of the upper half."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "core": [
@@ -767,7 +778,7 @@
       {
         "id": "core-model",
         "type": "number",
-        "prompt": "Predict the median for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the median of the observations?",
         "parameters": [
           "Observation 1: 3",
           "Observation 2: 4",
@@ -782,8 +793,14 @@
         "tolerance": 0.000051,
         "explanation": "Mean 8.125 · Median 8 · Range 12. Q1 4.5, Q3 11, IQR 6.5, MAD 3.375. Quartiles use the median of each half.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Put the observations in order first.",
+          "With an even number of observations, the median is halfway between the two middle values."
+        ],
+        "mistakes": [
+          {
+            "answer": 8.125,
+            "feedback": "That is the mean. The median is the middle of the ordered list."
+          }
         ]
       },
       {
@@ -792,11 +809,21 @@
         "prompt": "Find the median: 2, 4, 6, 8, 10, 12.",
         "answer": 7,
         "explanation": "There are six values. Average the middle pair, 6 and 8: (6 + 8) ÷ 2 = 7.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "The list is already in order. Find the middle position.",
+          "With an even number of values, average the two middle values."
+        ],
+        "mistakes": [
+          {
+            "answer": 6,
+            "feedback": "With six values there are two middle values. Average them."
+          },
+          {
+            "answer": 8,
+            "feedback": "With six values there are two middle values. Average them."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "core-original-1",
@@ -804,11 +831,21 @@
         "prompt": "For 2, 4, 6, 8, 10, 12, find Q3 using the median of the upper half.",
         "answer": 10,
         "explanation": "The upper half is 8, 10, 12. Its median is 10, so Q3 = 10.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Split the ordered list into a lower half and an upper half.",
+          "Q3 is the median of the upper half."
+        ],
+        "mistakes": [
+          {
+            "answer": 4,
+            "feedback": "That is Q1, the median of the lower half. Q3 comes from the upper half."
+          },
+          {
+            "answer": 7,
+            "feedback": "That is the median of the whole set. Q3 is the median of the upper half."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "stretch": [
@@ -915,7 +952,7 @@
       {
         "id": "stretch-model",
         "type": "number",
-        "prompt": "Predict the median for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the median of the observations?",
         "parameters": [
           "Observation 1: 4",
           "Observation 2: 4",
@@ -930,8 +967,14 @@
         "tolerance": 0.000051,
         "explanation": "Mean 8.25 · Median 8 · Range 11. Q1 4.5, Q3 11, IQR 6.5, MAD 3.25. Quartiles use the median of each half.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Put the observations in order first.",
+          "With an even number of observations, the median is halfway between the two middle values."
+        ],
+        "mistakes": [
+          {
+            "answer": 8.25,
+            "feedback": "That is the mean. The median is the middle of the ordered list."
+          }
         ]
       },
       {
@@ -940,11 +983,21 @@
         "prompt": "Find the median: 2, 4, 6, 8, 10, 12.",
         "answer": 7,
         "explanation": "There are six values. Average the middle pair, 6 and 8: (6 + 8) ÷ 2 = 7.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "The list is already in order. Find the middle position.",
+          "With an even number of values, average the two middle values."
+        ],
+        "mistakes": [
+          {
+            "answer": 6,
+            "feedback": "With six values there are two middle values. Average them."
+          },
+          {
+            "answer": 8,
+            "feedback": "With six values there are two middle values. Average them."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "stretch-original-1",
@@ -952,11 +1005,21 @@
         "prompt": "For 2, 4, 6, 8, 10, 12, find Q3 using the median of the upper half.",
         "answer": 10,
         "explanation": "The upper half is 8, 10, 12. Its median is 10, so Q3 = 10.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Split the ordered list into a lower half and an upper half.",
+          "Q3 is the median of the upper half."
+        ],
+        "mistakes": [
+          {
+            "answer": 4,
+            "feedback": "That is Q1, the median of the lower half. Q3 comes from the upper half."
+          },
+          {
+            "answer": 7,
+            "feedback": "That is the median of the whole set. Q3 is the median of the upper half."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ]
   },

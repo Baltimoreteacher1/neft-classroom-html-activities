@@ -308,7 +308,7 @@
       {
         "id": "support-model",
         "type": "number",
-        "prompt": "Predict the interquartile range for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the interquartile range (IQR) of the observations?",
         "parameters": [
           "Observation 1: 3",
           "Observation 2: 4",
@@ -323,8 +323,18 @@
         "tolerance": 0.000051,
         "explanation": "Mean 6 · Median 5.5 · Range 7. Q1 4.5, Q3 7.5, IQR 3, MAD 1.75. Quartiles use the median of each half.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Split the ordered data into a lower half and an upper half.",
+          "Find the median of each half (Q1 and Q3), then subtract: Q3 − Q1."
+        ],
+        "mistakes": [
+          {
+            "answer": 7,
+            "feedback": "That is the range. The IQR uses only the middle half: Q3 − Q1."
+          },
+          {
+            "answer": 7.5,
+            "feedback": "That is Q3. Subtract Q1 from it."
+          }
         ]
       },
       {
@@ -333,11 +343,17 @@
         "prompt": "A team records 3, 4, 5, 7, 8, 9. What is the range?",
         "answer": 6,
         "explanation": "Range = maximum − minimum = 9 − 3 = 6.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Find the greatest and the least values.",
+          "Range = greatest − least."
+        ],
+        "mistakes": [
+          {
+            "answer": 9,
+            "feedback": "That is the greatest value. Subtract the least value from it."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "support-original-1",
@@ -345,11 +361,17 @@
         "prompt": "For 3, 4, 5, 7, 8, 9, what is the IQR using medians of halves?",
         "answer": 4,
         "explanation": "The lower half 3, 4, 5 has median 4. The upper half 7, 8, 9 has median 8. IQR = 8 − 4 = 4.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Split the data into a lower half (3, 4, 5) and an upper half (7, 8, 9).",
+          "Find the median of each half, then subtract: Q3 − Q1."
+        ],
+        "mistakes": [
+          {
+            "answer": 6,
+            "feedback": "That is the range. The IQR uses only the middle half: Q3 − Q1."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "core": [
@@ -494,7 +516,7 @@
       {
         "id": "core-model",
         "type": "number",
-        "prompt": "Predict the interquartile range for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the interquartile range (IQR) of the observations?",
         "parameters": [
           "Observation 1: 4",
           "Observation 2: 4",
@@ -509,8 +531,18 @@
         "tolerance": 0.000051,
         "explanation": "Mean 6.125 · Median 5.5 · Range 6. Q1 4.5, Q3 7.5, IQR 3, MAD 1.6563. Quartiles use the median of each half.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Split the ordered data into a lower half and an upper half.",
+          "Find the median of each half (Q1 and Q3), then subtract: Q3 − Q1."
+        ],
+        "mistakes": [
+          {
+            "answer": 6,
+            "feedback": "That is the range. The IQR uses only the middle half: Q3 − Q1."
+          },
+          {
+            "answer": 7.5,
+            "feedback": "That is Q3. Subtract Q1 from it."
+          }
         ]
       },
       {
@@ -519,11 +551,17 @@
         "prompt": "A team records 3, 4, 5, 7, 8, 9. What is the range?",
         "answer": 6,
         "explanation": "Range = maximum − minimum = 9 − 3 = 6.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Find the greatest and the least values.",
+          "Range = greatest − least."
+        ],
+        "mistakes": [
+          {
+            "answer": 9,
+            "feedback": "That is the greatest value. Subtract the least value from it."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "core-original-1",
@@ -531,11 +569,17 @@
         "prompt": "For 3, 4, 5, 7, 8, 9, what is the IQR using medians of halves?",
         "answer": 4,
         "explanation": "The lower half 3, 4, 5 has median 4. The upper half 7, 8, 9 has median 8. IQR = 8 − 4 = 4.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Split the data into a lower half (3, 4, 5) and an upper half (7, 8, 9).",
+          "Find the median of each half, then subtract: Q3 − Q1."
+        ],
+        "mistakes": [
+          {
+            "answer": 6,
+            "feedback": "That is the range. The IQR uses only the middle half: Q3 − Q1."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "stretch": [
@@ -594,7 +638,7 @@
       {
         "id": "stretch-model",
         "type": "number",
-        "prompt": "Predict the interquartile range for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the interquartile range (IQR) of the observations? Round to four decimal places if needed.",
         "parameters": [
           "Observation 1: 5",
           "Observation 2: 4",
@@ -609,8 +653,18 @@
         "tolerance": 0.000051,
         "explanation": "Mean 6.25 · Median 5.5 · Range 6. Q1 5, Q3 7.5, IQR 2.5, MAD 1.5625. Quartiles use the median of each half.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Split the ordered data into a lower half and an upper half.",
+          "Find the median of each half (Q1 and Q3), then subtract: Q3 − Q1."
+        ],
+        "mistakes": [
+          {
+            "answer": 6,
+            "feedback": "That is the range. The IQR uses only the middle half: Q3 − Q1."
+          },
+          {
+            "answer": 7.5,
+            "feedback": "That is Q3. Subtract Q1 from it."
+          }
         ]
       },
       {
@@ -619,11 +673,17 @@
         "prompt": "A team records 3, 4, 5, 7, 8, 9. What is the range?",
         "answer": 6,
         "explanation": "Range = maximum − minimum = 9 − 3 = 6.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Find the greatest and the least values.",
+          "Range = greatest − least."
+        ],
+        "mistakes": [
+          {
+            "answer": 9,
+            "feedback": "That is the greatest value. Subtract the least value from it."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "stretch-original-1",
@@ -631,11 +691,17 @@
         "prompt": "For 3, 4, 5, 7, 8, 9, what is the IQR using medians of halves?",
         "answer": 4,
         "explanation": "The lower half 3, 4, 5 has median 4. The upper half 7, 8, 9 has median 8. IQR = 8 − 4 = 4.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Split the data into a lower half (3, 4, 5) and an upper half (7, 8, 9).",
+          "Find the median of each half, then subtract: Q3 − Q1."
+        ],
+        "mistakes": [
+          {
+            "answer": 6,
+            "feedback": "That is the range. The IQR uses only the middle half: Q3 − Q1."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ]
   },

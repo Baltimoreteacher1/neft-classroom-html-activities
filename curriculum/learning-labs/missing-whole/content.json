@@ -67,11 +67,6 @@
       },
       "vocabulary": [
         {
-          "term": "Determine the Whole Given the Part and Percent",
-          "definition": "Working backwards from a part and its percent to find the whole amount it came from.",
-          "example": "$42 is 60% of what? → $70"
-        },
-        {
           "term": "Part",
           "definition": "The amount you already know — the piece of the whole that the percent describes.",
           "example": "The $42 sale price is the part"
@@ -126,11 +121,6 @@
   "unitName": "Percents",
   "accent": "#785000",
   "vocabulary": [
-    {
-      "term": "Determine the Whole Given the Part and Percent",
-      "definition": "Working backwards from a part and its percent to find the whole amount it came from.",
-      "example": "$42 is 60% of what? → $70"
-    },
     {
       "term": "Part",
       "definition": "The amount you already know — the piece of the whole that the percent describes.",
@@ -305,7 +295,7 @@
       {
         "id": "support-model",
         "type": "number",
-        "prompt": "Predict the recovered whole for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the whole amount?",
         "parameters": [
           "Percent: 30",
           "Known part: 18"
@@ -314,8 +304,14 @@
         "tolerance": 0.000051,
         "explanation": "18 ÷ (30 ÷ 100) = 60. 30% = 0.3 = 3/10. Check the part by multiplying the whole by the decimal percent.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "The known part is only some percent of the whole, so the whole is bigger.",
+          "Divide the known part by the percent written as a decimal."
+        ],
+        "mistakes": [
+          {
+            "answer": 5.4,
+            "feedback": "You found that percent of the part. The part is the percent of the whole, so divide."
+          }
         ]
       },
       {
@@ -324,11 +320,17 @@
         "prompt": "Eighteen tickets are 30% of all tickets. How many tickets are there in all?",
         "answer": 60,
         "explanation": "10% is 18 ÷ 3 = 6. Therefore 100% is 6 × 10 = 60. Check: 0.30 × 60 = 18.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "30% is part of the whole, so the whole is bigger than 18.",
+          "Find 10% first (30% ÷ 3), then multiply to get 100%."
+        ],
+        "mistakes": [
+          {
+            "answer": 5.4,
+            "feedback": "You found 30% of 18. Here 18 is the 30%, so work back to 100%."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "support-original-1",
@@ -336,11 +338,17 @@
         "prompt": "A $12 saving is 20% of an original price. What was the original price in dollars?",
         "answer": 60,
         "explanation": "The whole is 12 ÷ 0.20 = 60 dollars. The saving is the part, not the original price.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "The $12 saving is the part. The original price is the whole.",
+          "Divide the part by the percent as a decimal (0.20)."
+        ],
+        "mistakes": [
+          {
+            "answer": 2.4,
+            "feedback": "You found 20% of 12. The $12 is the 20%, so divide by 0.20."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "core": [
@@ -460,17 +468,23 @@
       {
         "id": "core-model",
         "type": "number",
-        "prompt": "Predict the recovered whole for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the whole amount? Round to four decimal places if needed.",
         "parameters": [
           "Percent: 31",
           "Known part: 18"
         ],
-        "answer": 58.064516129032256,
+        "answer": 58.064516129,
         "tolerance": 0.000051,
         "explanation": "18 ÷ (31 ÷ 100) = 58.0645. 31% = 0.31 = 31/100. Check the part by multiplying the whole by the decimal percent.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "The known part is only some percent of the whole, so the whole is bigger.",
+          "Divide the known part by the percent written as a decimal."
+        ],
+        "mistakes": [
+          {
+            "answer": 5.58,
+            "feedback": "You found that percent of the part. The part is the percent of the whole, so divide."
+          }
         ]
       },
       {
@@ -479,11 +493,17 @@
         "prompt": "Eighteen tickets are 30% of all tickets. How many tickets are there in all?",
         "answer": 60,
         "explanation": "10% is 18 ÷ 3 = 6. Therefore 100% is 6 × 10 = 60. Check: 0.30 × 60 = 18.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "30% is part of the whole, so the whole is bigger than 18.",
+          "Find 10% first (30% ÷ 3), then multiply to get 100%."
+        ],
+        "mistakes": [
+          {
+            "answer": 5.4,
+            "feedback": "You found 30% of 18. Here 18 is the 30%, so work back to 100%."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "core-original-1",
@@ -491,11 +511,17 @@
         "prompt": "A $12 saving is 20% of an original price. What was the original price in dollars?",
         "answer": 60,
         "explanation": "The whole is 12 ÷ 0.20 = 60 dollars. The saving is the part, not the original price.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "The $12 saving is the part. The original price is the whole.",
+          "Divide the part by the percent as a decimal (0.20)."
+        ],
+        "mistakes": [
+          {
+            "answer": 2.4,
+            "feedback": "You found 20% of 12. The $12 is the 20%, so divide by 0.20."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "stretch": [
@@ -553,7 +579,7 @@
       {
         "id": "stretch-model",
         "type": "number",
-        "prompt": "Predict the recovered whole for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the whole amount? Round to four decimal places if needed.",
         "parameters": [
           "Percent: 32",
           "Known part: 18"
@@ -562,8 +588,14 @@
         "tolerance": 0.000051,
         "explanation": "18 ÷ (32 ÷ 100) = 56.25. 32% = 0.32 = 8/25. Check the part by multiplying the whole by the decimal percent.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "The known part is only some percent of the whole, so the whole is bigger.",
+          "Divide the known part by the percent written as a decimal."
+        ],
+        "mistakes": [
+          {
+            "answer": 5.76,
+            "feedback": "You found that percent of the part. The part is the percent of the whole, so divide."
+          }
         ]
       },
       {
@@ -572,11 +604,17 @@
         "prompt": "Eighteen tickets are 30% of all tickets. How many tickets are there in all?",
         "answer": 60,
         "explanation": "10% is 18 ÷ 3 = 6. Therefore 100% is 6 × 10 = 60. Check: 0.30 × 60 = 18.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "30% is part of the whole, so the whole is bigger than 18.",
+          "Find 10% first (30% ÷ 3), then multiply to get 100%."
+        ],
+        "mistakes": [
+          {
+            "answer": 5.4,
+            "feedback": "You found 30% of 18. Here 18 is the 30%, so work back to 100%."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "stretch-original-1",
@@ -584,11 +622,17 @@
         "prompt": "A $12 saving is 20% of an original price. What was the original price in dollars?",
         "answer": 60,
         "explanation": "The whole is 12 ÷ 0.20 = 60 dollars. The saving is the part, not the original price.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "The $12 saving is the part. The original price is the whole.",
+          "Divide the part by the percent as a decimal (0.20)."
+        ],
+        "mistakes": [
+          {
+            "answer": 2.4,
+            "feedback": "You found 20% of 12. The $12 is the 20%, so divide by 0.20."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ]
   },

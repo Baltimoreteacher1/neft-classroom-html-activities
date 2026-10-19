@@ -52,11 +52,6 @@
       },
       "vocabulary": [
         {
-          "term": "Fraction Division Problem Solving",
-          "definition": "Use fraction division to find an unknown number of groups or the size of each group.",
-          "example": "Number of groups = total amount ÷ amount in each group."
-        },
-        {
           "term": "Model",
           "definition": "A picture or math way to show a problem so you can solve it.",
           "example": "A bar model showing 3/4 split into 1/8-size pieces, or the equation 3/4 ÷ 1/8 = 6"
@@ -107,11 +102,6 @@
   "unitName": "Expressions",
   "accent": "#086575",
   "vocabulary": [
-    {
-      "term": "Fraction Division Problem Solving",
-      "definition": "Use fraction division to find an unknown number of groups or the size of each group.",
-      "example": "Number of groups = total amount ÷ amount in each group."
-    },
     {
       "term": "Model",
       "definition": "A picture or math way to show a problem so you can solve it.",
@@ -261,7 +251,7 @@
       {
         "id": "support-model",
         "type": "number",
-        "prompt": "Predict the number of portions for these settings. Give the answer in portions. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. How many servings of that size fit in the supply? Give the exact quotient, as a fraction, mixed number, or decimal.",
         "parameters": [
           "Supply (whole units): 4.5",
           "Serving-size numerator: 2",
@@ -271,8 +261,18 @@
         "tolerance": 0.000051,
         "explanation": "4.5 ÷ (2/3) = 6.75. 6 complete portions; 0.5 units remain. Check: quotient × 2/3 = 4.5. A fractional quotient is meaningful even when only whole portions are usable.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Ask: how many of this serving size fit into the supply?",
+          "Dividing by a fraction is the same as multiplying by its reciprocal."
+        ],
+        "mistakes": [
+          {
+            "answer": 3,
+            "feedback": "You multiplied by the serving size. Divide by it: multiply by the reciprocal."
+          },
+          {
+            "answer": 6,
+            "feedback": "That counts whole servings only. Give the exact quotient, including the fraction."
+          }
         ]
       },
       {
@@ -281,11 +281,21 @@
         "prompt": "How many 2/3-liter portions are in 4 1/2 liters? Give the exact quotient.",
         "answer": 6.75,
         "explanation": "9/2 ÷ 2/3 = 9/2 × 3/2 = 27/4 = 6 3/4 portions.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Write 4 1/2 as an improper fraction.",
+          "Multiply by the reciprocal of 2/3, which is 3/2."
+        ],
+        "mistakes": [
+          {
+            "answer": 3,
+            "feedback": "You multiplied by 2/3. Dividing by 2/3 means multiplying by 3/2."
+          },
+          {
+            "answer": 6,
+            "feedback": "That counts whole portions only. Give the exact quotient."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "support-original-1",
@@ -293,11 +303,17 @@
         "prompt": "After filling six whole 2/3-liter bottles from 4 1/2 liters, how many liters remain?",
         "answer": 0.5,
         "explanation": "Six bottles use 6 × 2/3 = 4 liters. The remainder is 4 1/2 − 4 = 1/2 liter.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Find how many liters six bottles use: 6 × 2/3.",
+          "Subtract that from 4 1/2."
+        ],
+        "mistakes": [
+          {
+            "answer": 4,
+            "feedback": "That is how much the bottles use. Subtract it from 4 1/2."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "core": [
@@ -397,7 +413,7 @@
       {
         "id": "core-model",
         "type": "number",
-        "prompt": "Predict the number of portions for these settings. Give the answer in portions. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. How many servings of that size fit in the supply? Give the exact quotient, as a fraction, mixed number, or decimal.",
         "parameters": [
           "Supply (whole units): 5",
           "Serving-size numerator: 2",
@@ -407,8 +423,18 @@
         "tolerance": 0.000051,
         "explanation": "5 ÷ (2/3) = 7.5. 7 complete portions; 0.3333 units remain. Check: quotient × 2/3 = 5. A fractional quotient is meaningful even when only whole portions are usable.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Ask: how many of this serving size fit into the supply?",
+          "Dividing by a fraction is the same as multiplying by its reciprocal."
+        ],
+        "mistakes": [
+          {
+            "answer": 3.333333,
+            "feedback": "You multiplied by the serving size. Divide by it: multiply by the reciprocal."
+          },
+          {
+            "answer": 7,
+            "feedback": "That counts whole servings only. Give the exact quotient, including the fraction."
+          }
         ]
       },
       {
@@ -417,11 +443,21 @@
         "prompt": "How many 2/3-liter portions are in 4 1/2 liters? Give the exact quotient.",
         "answer": 6.75,
         "explanation": "9/2 ÷ 2/3 = 9/2 × 3/2 = 27/4 = 6 3/4 portions.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Write 4 1/2 as an improper fraction.",
+          "Multiply by the reciprocal of 2/3, which is 3/2."
+        ],
+        "mistakes": [
+          {
+            "answer": 3,
+            "feedback": "You multiplied by 2/3. Dividing by 2/3 means multiplying by 3/2."
+          },
+          {
+            "answer": 6,
+            "feedback": "That counts whole portions only. Give the exact quotient."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "core-original-1",
@@ -429,11 +465,17 @@
         "prompt": "After filling six whole 2/3-liter bottles from 4 1/2 liters, how many liters remain?",
         "answer": 0.5,
         "explanation": "Six bottles use 6 × 2/3 = 4 liters. The remainder is 4 1/2 − 4 = 1/2 liter.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Find how many liters six bottles use: 6 × 2/3.",
+          "Subtract that from 4 1/2."
+        ],
+        "mistakes": [
+          {
+            "answer": 4,
+            "feedback": "That is how much the bottles use. Subtract it from 4 1/2."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "stretch": [
@@ -471,7 +513,7 @@
       {
         "id": "stretch-model",
         "type": "number",
-        "prompt": "Predict the number of portions for these settings. Give the answer in portions. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. How many servings of that size fit in the supply? Give the exact quotient, as a fraction, mixed number, or decimal.",
         "parameters": [
           "Supply (whole units): 5.5",
           "Serving-size numerator: 2",
@@ -481,8 +523,18 @@
         "tolerance": 0.000051,
         "explanation": "5.5 ÷ (2/3) = 8.25. 8 complete portions; 0.1667 units remain. Check: quotient × 2/3 = 5.5. A fractional quotient is meaningful even when only whole portions are usable.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Ask: how many of this serving size fit into the supply?",
+          "Dividing by a fraction is the same as multiplying by its reciprocal."
+        ],
+        "mistakes": [
+          {
+            "answer": 3.666667,
+            "feedback": "You multiplied by the serving size. Divide by it: multiply by the reciprocal."
+          },
+          {
+            "answer": 8,
+            "feedback": "That counts whole servings only. Give the exact quotient, including the fraction."
+          }
         ]
       },
       {
@@ -491,11 +543,21 @@
         "prompt": "How many 2/3-liter portions are in 4 1/2 liters? Give the exact quotient.",
         "answer": 6.75,
         "explanation": "9/2 ÷ 2/3 = 9/2 × 3/2 = 27/4 = 6 3/4 portions.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Write 4 1/2 as an improper fraction.",
+          "Multiply by the reciprocal of 2/3, which is 3/2."
+        ],
+        "mistakes": [
+          {
+            "answer": 3,
+            "feedback": "You multiplied by 2/3. Dividing by 2/3 means multiplying by 3/2."
+          },
+          {
+            "answer": 6,
+            "feedback": "That counts whole portions only. Give the exact quotient."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "stretch-original-1",
@@ -503,11 +565,17 @@
         "prompt": "After filling six whole 2/3-liter bottles from 4 1/2 liters, how many liters remain?",
         "answer": 0.5,
         "explanation": "Six bottles use 6 × 2/3 = 4 liters. The remainder is 4 1/2 − 4 = 1/2 liter.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Find how many liters six bottles use: 6 × 2/3.",
+          "Subtract that from 4 1/2."
+        ],
+        "mistakes": [
+          {
+            "answer": 4,
+            "feedback": "That is how much the bottles use. Subtract it from 4 1/2."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ]
   },

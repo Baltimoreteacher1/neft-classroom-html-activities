@@ -185,11 +185,6 @@
       },
       "vocabulary": [
         {
-          "term": "Write and Evaluate Numerical Expressions with Exponents",
-          "definition": "Turning a situation into a number sentence without an equal sign, then finding its value in the correct order.",
-          "example": "2 × 15 + 4 × 20 + 8 × 2³ = 174"
-        },
-        {
           "term": "Numerical expression",
           "definition": "A math phrase built from numbers and operations, with no equal sign and no variable.",
           "example": "4 × 20 is an expression; 4 × 20 = 80 is an equation"
@@ -294,11 +289,6 @@
       "term": "Cubed",
       "definition": "A base used as a factor three times.",
       "example": "4^3 = 4 × 4 × 4"
-    },
-    {
-      "term": "Write and Evaluate Numerical Expressions with Exponents",
-      "definition": "Turning a situation into a number sentence without an equal sign, then finding its value in the correct order.",
-      "example": "2 × 15 + 4 × 20 + 8 × 2³ = 174"
     },
     {
       "term": "Numerical expression",
@@ -594,7 +584,7 @@
       {
         "id": "support-model",
         "type": "number",
-        "prompt": "Predict the expression value for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. Evaluate 2 + 3^4.",
         "parameters": [
           "Base: 3",
           "Exponent: 4",
@@ -604,8 +594,18 @@
         "tolerance": 0.000051,
         "explanation": "2 + 3^4 = 83. 3^4 means 3 × 3 × 3 × 3 = 81. Evaluate the power before adding 2.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "3^4 means 3 multiplied by itself 4 times, not 3 × 4.",
+          "Work out the power first, then add 2."
+        ],
+        "mistakes": [
+          {
+            "answer": 14,
+            "feedback": "An exponent means repeated multiplication, not base × exponent."
+          },
+          {
+            "answer": 625,
+            "feedback": "Work out the power first, then add."
+          }
         ]
       },
       {
@@ -614,11 +614,21 @@
         "prompt": "Evaluate 2 + 3⁴.",
         "answer": 83,
         "explanation": "3⁴ = 3 × 3 × 3 × 3 = 81. Then add 2: 83.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "3⁴ means 3 multiplied by itself 4 times, not 3 × 4.",
+          "Work out the power first, then add 2."
+        ],
+        "mistakes": [
+          {
+            "answer": 14,
+            "feedback": "An exponent is repeated multiplication: 3⁴ = 3 × 3 × 3 × 3."
+          },
+          {
+            "answer": 625,
+            "feedback": "Find the power first, then add. Do not add 2 + 3 first."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "support-original-1",
@@ -626,11 +636,21 @@
         "prompt": "Evaluate (2 + 3)².",
         "answer": 25,
         "explanation": "Parentheses first: 2 + 3 = 5. Then square: 5² = 25. Grouping changes the result.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Parentheses come first.",
+          "Find 2 + 3, then multiply that number by itself."
+        ],
+        "mistakes": [
+          {
+            "answer": 10,
+            "feedback": "Squaring means multiplying a number by itself, not by 2."
+          },
+          {
+            "answer": 11,
+            "feedback": "The square applies to the whole group (2 + 3). Add first."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "core": [
@@ -760,7 +780,7 @@
       {
         "id": "core-model",
         "type": "number",
-        "prompt": "Predict the expression value for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. Evaluate 2 + 4^4.",
         "parameters": [
           "Base: 4",
           "Exponent: 4",
@@ -770,8 +790,18 @@
         "tolerance": 0.000051,
         "explanation": "2 + 4^4 = 258. 4^4 means 4 × 4 × 4 × 4 = 256. Evaluate the power before adding 2.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "4^4 means 4 multiplied by itself 4 times, not 4 × 4.",
+          "Work out the power first, then add 2."
+        ],
+        "mistakes": [
+          {
+            "answer": 18,
+            "feedback": "An exponent means repeated multiplication, not base × exponent."
+          },
+          {
+            "answer": 1296,
+            "feedback": "Work out the power first, then add."
+          }
         ]
       },
       {
@@ -780,11 +810,21 @@
         "prompt": "Evaluate 2 + 3⁴.",
         "answer": 83,
         "explanation": "3⁴ = 3 × 3 × 3 × 3 = 81. Then add 2: 83.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "3⁴ means 3 multiplied by itself 4 times, not 3 × 4.",
+          "Work out the power first, then add 2."
+        ],
+        "mistakes": [
+          {
+            "answer": 14,
+            "feedback": "An exponent is repeated multiplication: 3⁴ = 3 × 3 × 3 × 3."
+          },
+          {
+            "answer": 625,
+            "feedback": "Find the power first, then add. Do not add 2 + 3 first."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "core-original-1",
@@ -792,11 +832,21 @@
         "prompt": "Evaluate (2 + 3)².",
         "answer": 25,
         "explanation": "Parentheses first: 2 + 3 = 5. Then square: 5² = 25. Grouping changes the result.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Parentheses come first.",
+          "Find 2 + 3, then multiply that number by itself."
+        ],
+        "mistakes": [
+          {
+            "answer": 10,
+            "feedback": "Squaring means multiplying a number by itself, not by 2."
+          },
+          {
+            "answer": 11,
+            "feedback": "The square applies to the whole group (2 + 3). Add first."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "stretch": [
@@ -903,7 +953,7 @@
       {
         "id": "stretch-model",
         "type": "number",
-        "prompt": "Predict the expression value for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. Evaluate 2 + 5^4.",
         "parameters": [
           "Base: 5",
           "Exponent: 4",
@@ -913,8 +963,18 @@
         "tolerance": 0.000051,
         "explanation": "2 + 5^4 = 627. 5^4 means 5 × 5 × 5 × 5 = 625. Evaluate the power before adding 2.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "5^4 means 5 multiplied by itself 4 times, not 5 × 4.",
+          "Work out the power first, then add 2."
+        ],
+        "mistakes": [
+          {
+            "answer": 22,
+            "feedback": "An exponent means repeated multiplication, not base × exponent."
+          },
+          {
+            "answer": 2401,
+            "feedback": "Work out the power first, then add."
+          }
         ]
       },
       {
@@ -923,11 +983,21 @@
         "prompt": "Evaluate 2 + 3⁴.",
         "answer": 83,
         "explanation": "3⁴ = 3 × 3 × 3 × 3 = 81. Then add 2: 83.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "3⁴ means 3 multiplied by itself 4 times, not 3 × 4.",
+          "Work out the power first, then add 2."
+        ],
+        "mistakes": [
+          {
+            "answer": 14,
+            "feedback": "An exponent is repeated multiplication: 3⁴ = 3 × 3 × 3 × 3."
+          },
+          {
+            "answer": 625,
+            "feedback": "Find the power first, then add. Do not add 2 + 3 first."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "stretch-original-1",
@@ -935,11 +1005,21 @@
         "prompt": "Evaluate (2 + 3)².",
         "answer": 25,
         "explanation": "Parentheses first: 2 + 3 = 5. Then square: 5² = 25. Grouping changes the result.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Parentheses come first.",
+          "Find 2 + 3, then multiply that number by itself."
+        ],
+        "mistakes": [
+          {
+            "answer": 10,
+            "feedback": "Squaring means multiplying a number by itself, not by 2."
+          },
+          {
+            "answer": 11,
+            "feedback": "The square applies to the whole group (2 + 3). Add first."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ]
   },

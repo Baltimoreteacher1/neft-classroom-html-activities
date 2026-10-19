@@ -238,7 +238,10 @@ async function sweepLab(page, item) {
       if (await page.locator("[data-clear]").isVisible())
         await page.locator("[data-clear]").click();
     }
-    for (const v of lab.vocabulary.slice(0, gameLevel === "stretch" ? 6 : 4)) {
+    // Each round deals words drawn from the whole word bank, not its first few.
+    const dealt = lab.vocabulary.filter((v) => revealed.has(v.term));
+    assert.equal(dealt.length, gameLevel === "stretch" ? 6 : 4);
+    for (const v of dealt) {
       const a = revealed.get(v.term),
         b = revealed.get(v.definition);
       assert.notEqual(a, undefined);

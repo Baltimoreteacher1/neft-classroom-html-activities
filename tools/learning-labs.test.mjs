@@ -11,12 +11,14 @@ import {
   statistics,
 } from "../curriculum/learning-labs/shared/math.mjs";
 import { guidance, visual } from "../curriculum/learning-labs/shared/model.mjs";
+import { numberFeedback } from "../curriculum/learning-labs/shared/number-feedback.mjs";
 import {
   activityStatus,
   overview,
   parseKeyIdea,
 } from "../curriculum/learning-labs/shared/progress.mjs";
 import { blueprints } from "./learning-labs/blueprints.mjs";
+import { isLessonName } from "./learning-labs/vocabulary.mjs";
 import {
   CORE_ID_RE,
   listLessonDirs,
@@ -37,6 +39,13 @@ assert.equal(new Set(catalogue.labs.map((l) => l.id)).size, catalogue.labCount);
 assert.equal(new Set(catalogue.labs.map((l) => l.title)).size, catalogue.labCount);
 const unitsDOM = new JSDOM(readFileSync(join(REPO_ROOT, "curriculum/units/index.html"), "utf8"))
   .window.document;
+const allTitles = new Set(core.map((id) => loadLessonConfig(id).title.trim().toLowerCase()));
+const GENERIC_HINTS = new Set([
+  "Name the given quantities and the quantity you need.",
+  "Draw a model or write the relationship first. Check your answer in the original situation.",
+  "Identify which quantities the requested measure uses.",
+  "Use the relationship you explored in Investigate. Check with a second method.",
+]);
 let questions = 0,
   gameGoals = 0;
 for (const item of catalogue.labs) {
@@ -49,6 +58,13 @@ for (const item of catalogue.labs) {
   assert.equal(lab.investigate.length, 3);
   assert.ok(lab.create.length > 60);
   assert.ok(lab.vocabulary.length >= 4);
+  // 2026-10-14 audit: lesson names ("Understand Percent") sat in 16 word banks and the
+  // matching game dealt them as terms.
+  for (const v of lab.vocabulary)
+    assert.ok(
+      !isLessonName(v.term, allTitles),
+      `${item.id} lists the lesson name "${v.term}" as vocabulary`,
+    );
   for (const lesson of lab.lessons) {
     const source = loadLessonConfig(lesson.id);
     assert.equal(lesson.title, source.title);
@@ -72,7 +88,31 @@ for (const item of catalogue.labs) {
         assert.equal(new Set(q.choices).size, q.choices.length, `${q.id} has duplicate choices`);
       }
       if (q.type === "repair") assert.ok(q.answer >= 0 && q.answer < q.steps.length);
-      if (q.type === "number") assert.ok(Number.isFinite(q.answer) && q.tolerance > 0);
+      if (q.type === "number") {
+        assert.ok(Number.isFinite(q.answer) && q.tolerance > 0);
+        // 2026-10-14 audit: all 414 number items shared two generic hints and had no
+        // wrong-answer feedback.
+        assert.ok(q.hints?.length >= 2, `${item.id} ${q.id} needs two hints`);
+        for (const hint of q.hints) {
+          assert.ok(!GENERIC_HINTS.has(hint), `${item.id} ${q.id} uses a generic hint: ${hint}`);
+          assert.ok(
+            !new RegExp(`=\\s*${String(q.answer).replace(/[.-]/g, "\\$&")}(?![\\d.])`).test(hint),
+            `${item.id} ${q.id} hint states the answer`,
+          );
+        }
+        for (const m of q.mistakes || []) {
+          assert.ok(m.feedback?.length > 15, `${item.id} ${q.id} mistake needs feedback`);
+          assert.ok(
+            Math.abs(m.answer - q.answer) > q.tolerance,
+            `${item.id} ${q.id} lists the answer as a mistake`,
+          );
+          assert.equal(numberFeedback(q, m.answer), m.feedback);
+        }
+        assert.ok(
+          !/^Predict the /.test(q.prompt),
+          `${item.id} ${q.id} uses the old generated prompt`,
+        );
+      }
       if (q.source) {
         const lesson = q.lesson.replace("-", ".");
         assert.notEqual(
@@ -287,6 +327,18 @@ for (const [input, expected] of [
   ["1,200", 1200],
 ])
   close(numericAnswer(input), expected);
+// Wrong-answer diagnostics: authored mistakes win; shapes of common slips otherwise.
+{
+  const q = { answer: 2.5, tolerance: 0.000051, mistakes: [{ answer: 3.7, feedback: "added" }] };
+  assert.equal(numberFeedback(q, 3.7), "added");
+  assert.match(numberFeedback(q, -2.5), /sign/);
+  assert.match(numberFeedback(q, 25), /place value/);
+  assert.match(numberFeedback(q, 0.25), /place value/);
+  assert.match(numberFeedback(q, 0.4), /flipped/);
+  assert.match(numberFeedback(q, 2.52), /close/);
+  assert.equal(numberFeedback(q, 9), null);
+  assert.equal(numberFeedback({ answer: 0, tolerance: 0.000051 }, 0.5), null);
+}
 for (const input of ["", " ", "1/0", "Infinity", "2+2", "cat"])
   assert.ok(Number.isNaN(numericAnswer(input)));
 console.log(

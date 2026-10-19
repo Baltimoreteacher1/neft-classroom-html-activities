@@ -79,11 +79,6 @@
       },
       "vocabulary": [
         {
-          "term": "Add and Subtract Decimals",
-          "definition": "Combine or find the difference between decimals by lining up equal place values.",
-          "example": "15.70 − 8.36 = 7.34; line up the decimal points."
-        },
-        {
           "term": "Decimal",
           "definition": "A number with a dot, like 0.5, that shows a part less than one.",
           "example": "3.75 means 3 ones + 7 tenths + 5 hundredths — it is between 3 and 4"
@@ -177,11 +172,6 @@
       },
       "vocabulary": [
         {
-          "term": "Multiply Decimals",
-          "definition": "Find the product of decimals, then use place value to place the decimal point.",
-          "example": "3.4 × 2.6 = 8.84"
-        },
-        {
           "term": "Product",
           "definition": "The answer when you multiply.",
           "example": "4 × 7 = 28, so the product is 28"
@@ -232,11 +222,6 @@
   "accent": "#315ba7",
   "vocabulary": [
     {
-      "term": "Add and Subtract Decimals",
-      "definition": "Combine or find the difference between decimals by lining up equal place values.",
-      "example": "15.70 − 8.36 = 7.34; line up the decimal points."
-    },
-    {
       "term": "Decimal",
       "definition": "A number with a dot, like 0.5, that shows a part less than one.",
       "example": "3.75 means 3 ones + 7 tenths + 5 hundredths — it is between 3 and 4"
@@ -260,11 +245,6 @@
       "term": "Annex zeros",
       "definition": "Adding zeros at the end of a decimal so numbers line up evenly.",
       "example": "15.7 becomes 15.70 so you can subtract 15.70 − 8.36 with aligned place values"
-    },
-    {
-      "term": "Multiply Decimals",
-      "definition": "Find the product of decimals, then use place value to place the decimal point.",
-      "example": "3.4 × 2.6 = 8.84"
     },
     {
       "term": "Product",
@@ -528,7 +508,7 @@
       {
         "id": "support-model",
         "type": "number",
-        "prompt": "Predict the order total for these settings. Give the answer in dollars. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the order total in dollars? Round to four decimal places if needed.",
         "parameters": [
           "Price per item ($): 2.75",
           "Number of items: 6"
@@ -537,8 +517,14 @@
         "tolerance": 0.000051,
         "explanation": "$2.75 × 6 = $16.50. Change from $50: $33.50. A negative result means more money is needed.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Every item costs the same, so multiply the price by the number of items.",
+          "Estimate first: round the price to a whole dollar and check your answer is close."
+        ],
+        "mistakes": [
+          {
+            "answer": 8.75,
+            "feedback": "You added. Items at the same price means multiply."
+          }
         ]
       },
       {
@@ -547,11 +533,17 @@
         "prompt": "Two design subtotals are $12.30 and $4.05. What is their sum in dollars?",
         "answer": 16.35,
         "explanation": "Align decimal place values: 12.30 + 4.05 = 16.35.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Line up the decimal points before you add.",
+          "Write 12.30 and 4.05 so tenths line up with tenths and hundredths with hundredths."
+        ],
+        "mistakes": [
+          {
+            "answer": 5.28,
+            "feedback": "Line up the decimal points, not the last digits."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "support-original-1",
@@ -559,11 +551,17 @@
         "prompt": "A design uses 2.5 meters of ribbon costing $1.20 per meter. What is the ribbon cost in dollars?",
         "answer": 3,
         "explanation": "2.5 × 1.20 = 3.00. Two meters cost $2.40 and half a meter costs $0.60.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Cost = meters × price per meter.",
+          "Split it up: 2 meters cost 2 × 1.20, half a meter costs half of 1.20."
+        ],
+        "mistakes": [
+          {
+            "answer": 3.7,
+            "feedback": "You added the numbers. The cost is length × price per meter."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "core": [
@@ -656,7 +654,7 @@
       {
         "id": "core-model",
         "type": "number",
-        "prompt": "Predict the order total for these settings. Give the answer in dollars. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the order total in dollars?",
         "parameters": [
           "Price per item ($): 3",
           "Number of items: 6"
@@ -665,8 +663,14 @@
         "tolerance": 0.000051,
         "explanation": "$3.00 × 6 = $18.00. Change from $50: $32.00. A negative result means more money is needed.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Every item costs the same, so multiply the price by the number of items.",
+          "Estimate first: round the price to a whole dollar and check your answer is close."
+        ],
+        "mistakes": [
+          {
+            "answer": 9,
+            "feedback": "You added. Items at the same price means multiply."
+          }
         ]
       },
       {
@@ -675,11 +679,17 @@
         "prompt": "Two design subtotals are $12.30 and $4.05. What is their sum in dollars?",
         "answer": 16.35,
         "explanation": "Align decimal place values: 12.30 + 4.05 = 16.35.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Line up the decimal points before you add.",
+          "Write 12.30 and 4.05 so tenths line up with tenths and hundredths with hundredths."
+        ],
+        "mistakes": [
+          {
+            "answer": 5.28,
+            "feedback": "Line up the decimal points, not the last digits."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "core-original-1",
@@ -687,11 +697,17 @@
         "prompt": "A design uses 2.5 meters of ribbon costing $1.20 per meter. What is the ribbon cost in dollars?",
         "answer": 3,
         "explanation": "2.5 × 1.20 = 3.00. Two meters cost $2.40 and half a meter costs $0.60.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Cost = meters × price per meter.",
+          "Split it up: 2 meters cost 2 × 1.20, half a meter costs half of 1.20."
+        ],
+        "mistakes": [
+          {
+            "answer": 3.7,
+            "feedback": "You added the numbers. The cost is length × price per meter."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "stretch": [
@@ -760,7 +776,7 @@
       {
         "id": "stretch-model",
         "type": "number",
-        "prompt": "Predict the order total for these settings. Give the answer in dollars. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the order total in dollars? Round to four decimal places if needed.",
         "parameters": [
           "Price per item ($): 3.25",
           "Number of items: 6"
@@ -769,8 +785,14 @@
         "tolerance": 0.000051,
         "explanation": "$3.25 × 6 = $19.50. Change from $50: $30.50. A negative result means more money is needed.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Every item costs the same, so multiply the price by the number of items.",
+          "Estimate first: round the price to a whole dollar and check your answer is close."
+        ],
+        "mistakes": [
+          {
+            "answer": 9.25,
+            "feedback": "You added. Items at the same price means multiply."
+          }
         ]
       },
       {
@@ -779,11 +801,17 @@
         "prompt": "Two design subtotals are $12.30 and $4.05. What is their sum in dollars?",
         "answer": 16.35,
         "explanation": "Align decimal place values: 12.30 + 4.05 = 16.35.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Line up the decimal points before you add.",
+          "Write 12.30 and 4.05 so tenths line up with tenths and hundredths with hundredths."
+        ],
+        "mistakes": [
+          {
+            "answer": 5.28,
+            "feedback": "Line up the decimal points, not the last digits."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "stretch-original-1",
@@ -791,11 +819,17 @@
         "prompt": "A design uses 2.5 meters of ribbon costing $1.20 per meter. What is the ribbon cost in dollars?",
         "answer": 3,
         "explanation": "2.5 × 1.20 = 3.00. Two meters cost $2.40 and half a meter costs $0.60.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Cost = meters × price per meter.",
+          "Split it up: 2 meters cost 2 × 1.20, half a meter costs half of 1.20."
+        ],
+        "mistakes": [
+          {
+            "answer": 3.7,
+            "feedback": "You added the numbers. The cost is length × price per meter."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ]
   },

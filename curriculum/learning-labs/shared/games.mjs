@@ -18,7 +18,8 @@ export function mountGames(host, lab, state, save, level) {
   const mission = () => mountExpedition(stage, lab, progress, save, level, choose);
 
   const match = () => {
-    const vocab = lab.vocabulary.slice(0, tier === 2 ? 6 : 4);
+    // Each round draws from the whole word bank, so replays meet new words.
+    const vocab = shuffled(lab.vocabulary, lab.id.length * 31 + tier + progress.shuffle * 104729).slice(0, tier === 2 ? 6 : 4);
     const cards = shuffled(vocab.flatMap((v, i) => [{ pair: i, side: 'term', text: v.term }, { pair: i, side: 'meaning', text: v.definition }]), lab.id.length * 153 + tier + progress.shuffle * 7919);
     const found = new Set(progress.matches);
     let selected = [], showingWrong = false;

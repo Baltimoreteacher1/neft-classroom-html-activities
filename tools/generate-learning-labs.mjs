@@ -1,13 +1,15 @@
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { controls, evaluate } from "../curriculum/learning-labs/shared/math.mjs";
+import { controls } from "../curriculum/learning-labs/shared/math.mjs";
 import { esc } from "../curriculum/learning-labs/shared/model.mjs";
 import { UNMAPPED_REVEAL_LESSONS } from "../scripts/lib/worksheet-reveal.mjs";
 import { injectUtilityBar } from "./inject-curriculum-utility-bar.mjs";
 import { blueprints, unitNames } from "./learning-labs/blueprints.mjs";
 import { catalogBody } from "./learning-labs/catalog-page.mjs";
+import { modelQuestion } from "./learning-labs/model-question.mjs";
 import { originalPractice } from "./learning-labs/practice.mjs";
+import { isLessonName, vocabKey } from "./learning-labs/vocabulary.mjs";
 import { courseNav, withCurriculumShell } from "./lib/curriculum-shell.mjs";
 import {
   CORE_ID_RE,
@@ -63,6 +65,7 @@ const version = createHash("sha256")
       "sound.mjs",
       "celebrate.mjs",
       "scratchpad.mjs",
+      "number-feedback.mjs",
       "nextgen.mjs",
       "lab.css",
     ]
@@ -87,6 +90,7 @@ function standalone(question) {
     )
   );
 }
+const lessonTitles = new Set([...sources.values()].map((c) => c.title.trim().toLowerCase()));
 const catalog = [];
 for (const blueprint of blueprints) {
   const unit = Number(blueprint.lessons[0].split("-")[0]);
@@ -114,11 +118,11 @@ for (const blueprint of blueprints) {
       },
       vocabulary: c.vocabulary
         .map((v) => ({ term: v.term, definition: v.definition, example: v.visual || "" }))
-        .filter((v) => v.term && v.definition),
+        .filter((v) => v.term && v.definition && !isLessonName(v.term, lessonTitles)),
     };
   });
   const vocabulary = [
-    ...new Map(lessons.flatMap((l) => l.vocabulary).map((v) => [v.term.toLowerCase(), v])).values(),
+    ...new Map(lessons.flatMap((l) => l.vocabulary).map((v) => [vocabKey(v.term), v])).values(),
   ];
   const practice = {};
   for (const [level, sourceLevel] of Object.entries(LEVELS)) {
@@ -209,34 +213,13 @@ for (const blueprint of blueprints) {
     const values = [...blueprint.model.values],
       fields = controls(blueprint.model);
     values[0] = Math.min(fields[0].max, Math.max(fields[0].min, values[0] + tier * fields[0].step));
-    const r = evaluate(blueprint.model, values);
     bank.push({
       id: `${level}-model`,
       type: "number",
-      prompt: `Predict the ${r.label.toLowerCase()} for these settings. ${r.unit ? `Give the answer in ${r.unit}.` : ""} Round to four decimal places if needed.`,
-      parameters: fields
-        .filter((f) => f.label !== "Unused")
-        .map((f, i) => `${f.label}: ${values[i]}`),
-      answer: r.value,
-      tolerance: 0.000051,
-      explanation: `${r.equation}. ${r.note}`,
-      hints: [
-        "Identify which quantities the requested measure uses.",
-        "Use the relationship you explored in Investigate. Check with a second method.",
-      ],
+      ...modelQuestion(blueprint.model, values, fields, 0.000051),
     });
-    for (const [i, task] of originalPractice(blueprint.model).entries()) {
-      bank.push({
-        id: `${level}-original-${i}`,
-        type: "number",
-        ...task,
-        tolerance: 0.000051,
-        hints: [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation.",
-        ],
-      });
-    }
+    for (const [i, task] of originalPractice(blueprint.model).entries())
+      bank.push({ id: `${level}-original-${i}`, type: "number", ...task, tolerance: 0.000051 });
     if (bank.length < 5) throw new Error(`Insufficient practice for ${blueprint.id} ${level}`);
     practice[level] = bank;
   }

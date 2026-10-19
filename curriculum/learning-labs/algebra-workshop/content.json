@@ -166,11 +166,6 @@
       },
       "vocabulary": [
         {
-          "term": "Simplify Algebraic Expressions",
-          "definition": "Rewrite an expression in a shorter equivalent form by combining like terms and using properties.",
-          "example": "3x + 2 + 4x − 1 = 7x + 1"
-        },
-        {
           "term": "Like Terms",
           "definition": "Terms with the same variable raised to the same exponent, like 2x and 5x.",
           "example": "5x and 3x are like terms (both x); 5x and 5y are NOT (different variables); 2x and 2x² are NOT (different powers)"
@@ -227,11 +222,6 @@
   "accent": "#086575",
   "vocabulary": [
     {
-      "term": "The Distributive Property",
-      "definition": "Multiply a factor by every term inside parentheses.",
-      "example": "3(x + 4) = 3x + 12"
-    },
-    {
       "term": "Distributive property",
       "definition": "Multiplying a number by everything inside the parentheses: a(b + c) = ab + ac.",
       "example": "3(x + 4) = 3·x + 3·4 = 3x + 12."
@@ -260,11 +250,6 @@
       "term": "Like Terms",
       "definition": "Terms with the same variable raised to the same exponent, like 2x and 5x.",
       "example": "5x and 3x are like terms (both x); 5x and 5y are NOT (different variables); 2x and 2x² are NOT (different powers)"
-    },
-    {
-      "term": "Simplify Algebraic Expressions",
-      "definition": "Rewrite an expression in a shorter equivalent form by combining like terms and using properties.",
-      "example": "3x + 2 + 4x − 1 = 7x + 1"
     },
     {
       "term": "Combine",
@@ -521,7 +506,7 @@
       {
         "id": "support-model",
         "type": "number",
-        "prompt": "Predict the both expression values for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. a(x + b) and ax + ab give the same value. What is that value?",
         "parameters": [
           "Factor a: 3",
           "Constant b: 4",
@@ -531,8 +516,14 @@
         "tolerance": 0.000051,
         "explanation": "3(2 + 4) = 3×2 + 3×4 = 18. a(x + b) = ax + ab. Here a = 3, b = 4, x = 2. Distribution changes the form, not the value.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Replace x with its value, then work out a(x + b).",
+          "Check by distributing: a × x + a × b should match."
+        ],
+        "mistakes": [
+          {
+            "answer": 10,
+            "feedback": "The factor a multiplies every term in the parentheses, including b."
+          }
         ]
       },
       {
@@ -541,11 +532,17 @@
         "prompt": "Evaluate 3(x + 4) when x = 2.",
         "answer": 18,
         "explanation": "Substitute: 3(2 + 4) = 18. Distribute to check: 3×2 + 3×4 = 6 + 12 = 18.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Replace x with 2.",
+          "Work out the parentheses first, then multiply by 3."
+        ],
+        "mistakes": [
+          {
+            "answer": 10,
+            "feedback": "The 3 multiplies everything in the parentheses: 3 × 2 and 3 × 4."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "support-original-1",
@@ -553,11 +550,21 @@
         "prompt": "Simplify 3x + 2x + 7. What is the coefficient of x in the simplified expression?",
         "answer": 5,
         "explanation": "Combine only like terms: 3x + 2x = 5x. The constant 7 remains separate.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Like terms have the same variable part.",
+          "Add the coefficients of 3x and 2x. The 7 has no x."
+        ],
+        "mistakes": [
+          {
+            "answer": 12,
+            "feedback": "The 7 is a constant, not an x-term. Add only the x coefficients."
+          },
+          {
+            "answer": 6,
+            "feedback": "Combine like terms by adding coefficients, not multiplying them."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "core": [
@@ -598,7 +605,7 @@
       {
         "id": "core-model",
         "type": "number",
-        "prompt": "Predict the both expression values for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. a(x + b) and ax + ab give the same value. What is that value?",
         "parameters": [
           "Factor a: 4",
           "Constant b: 4",
@@ -608,8 +615,14 @@
         "tolerance": 0.000051,
         "explanation": "4(2 + 4) = 4×2 + 4×4 = 24. a(x + b) = ax + ab. Here a = 4, b = 4, x = 2. Distribution changes the form, not the value.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Replace x with its value, then work out a(x + b).",
+          "Check by distributing: a × x + a × b should match."
+        ],
+        "mistakes": [
+          {
+            "answer": 12,
+            "feedback": "The factor a multiplies every term in the parentheses, including b."
+          }
         ]
       },
       {
@@ -618,11 +631,17 @@
         "prompt": "Evaluate 3(x + 4) when x = 2.",
         "answer": 18,
         "explanation": "Substitute: 3(2 + 4) = 18. Distribute to check: 3×2 + 3×4 = 6 + 12 = 18.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Replace x with 2.",
+          "Work out the parentheses first, then multiply by 3."
+        ],
+        "mistakes": [
+          {
+            "answer": 10,
+            "feedback": "The 3 multiplies everything in the parentheses: 3 × 2 and 3 × 4."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "core-original-1",
@@ -630,11 +649,21 @@
         "prompt": "Simplify 3x + 2x + 7. What is the coefficient of x in the simplified expression?",
         "answer": 5,
         "explanation": "Combine only like terms: 3x + 2x = 5x. The constant 7 remains separate.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Like terms have the same variable part.",
+          "Add the coefficients of 3x and 2x. The 7 has no x."
+        ],
+        "mistakes": [
+          {
+            "answer": 12,
+            "feedback": "The 7 is a constant, not an x-term. Add only the x coefficients."
+          },
+          {
+            "answer": 6,
+            "feedback": "Combine like terms by adding coefficients, not multiplying them."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "stretch": [
@@ -701,7 +730,7 @@
       {
         "id": "stretch-model",
         "type": "number",
-        "prompt": "Predict the both expression values for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. a(x + b) and ax + ab give the same value. What is that value?",
         "parameters": [
           "Factor a: 5",
           "Constant b: 4",
@@ -711,8 +740,14 @@
         "tolerance": 0.000051,
         "explanation": "5(2 + 4) = 5×2 + 5×4 = 30. a(x + b) = ax + ab. Here a = 5, b = 4, x = 2. Distribution changes the form, not the value.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Replace x with its value, then work out a(x + b).",
+          "Check by distributing: a × x + a × b should match."
+        ],
+        "mistakes": [
+          {
+            "answer": 14,
+            "feedback": "The factor a multiplies every term in the parentheses, including b."
+          }
         ]
       },
       {
@@ -721,11 +756,17 @@
         "prompt": "Evaluate 3(x + 4) when x = 2.",
         "answer": 18,
         "explanation": "Substitute: 3(2 + 4) = 18. Distribute to check: 3×2 + 3×4 = 6 + 12 = 18.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Replace x with 2.",
+          "Work out the parentheses first, then multiply by 3."
+        ],
+        "mistakes": [
+          {
+            "answer": 10,
+            "feedback": "The 3 multiplies everything in the parentheses: 3 × 2 and 3 × 4."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "stretch-original-1",
@@ -733,11 +774,21 @@
         "prompt": "Simplify 3x + 2x + 7. What is the coefficient of x in the simplified expression?",
         "answer": 5,
         "explanation": "Combine only like terms: 3x + 2x = 5x. The constant 7 remains separate.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Like terms have the same variable part.",
+          "Add the coefficients of 3x and 2x. The 7 has no x."
+        ],
+        "mistakes": [
+          {
+            "answer": 12,
+            "feedback": "The 7 is a constant, not an x-term. Add only the x coefficients."
+          },
+          {
+            "answer": 6,
+            "feedback": "Combine like terms by adding coefficients, not multiplying them."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ]
   },

@@ -557,7 +557,7 @@
       {
         "id": "support-model",
         "type": "number",
-        "prompt": "Predict the equal shipments for these settings. Give the answer in shipments. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. How many equal shipments does the total supply make?",
         "parameters": [
           "Total supply: 144",
           "Amount in each shipment: 12"
@@ -566,8 +566,18 @@
         "tolerance": 0.000051,
         "explanation": "144 ÷ 12 = 12. Check: 12 × 12 = 144. The displayed quotient may be rounded.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Divide the total supply by the amount in each shipment.",
+          "Multiply both numbers by 10 so you divide by a whole number."
+        ],
+        "mistakes": [
+          {
+            "answer": 1728,
+            "feedback": "You multiplied. Splitting the supply into shipments means divide."
+          },
+          {
+            "answer": 0.083333,
+            "feedback": "You divided the wrong way. Divide the total by the amount in each shipment."
+          }
         ]
       },
       {
@@ -576,11 +586,21 @@
         "prompt": "A shipment contains 14.4 kg divided into bags of 1.2 kg. How many bags are filled?",
         "answer": 12,
         "explanation": "Multiply both dividend and divisor by 10: 144 ÷ 12 = 12. Check: 12 × 1.2 = 14.4.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "How many 1.2 kg bags fit in 14.4 kg? Divide.",
+          "Multiply both numbers by 10 to divide whole numbers instead."
+        ],
+        "mistakes": [
+          {
+            "answer": 1.2,
+            "feedback": "Check the place value: multiply both numbers by 10 before dividing."
+          },
+          {
+            "answer": 17.28,
+            "feedback": "You multiplied. Splitting into bags means divide."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "support-original-1",
@@ -588,11 +608,17 @@
         "prompt": "Split 25.2 liters equally into containers holding 0.6 liter each. How many containers are needed?",
         "answer": 42,
         "explanation": "25.2 ÷ 0.6 = 252 ÷ 6 = 42. Check: 42 × 0.6 = 25.2.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "How many 0.6-liter containers fit in 25.2 liters? Divide.",
+          "Multiply both numbers by 10, then divide."
+        ],
+        "mistakes": [
+          {
+            "answer": 4.2,
+            "feedback": "Check the place value: 0.6 × 4.2 is not 25.2. Multiply both numbers by 10 before dividing."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "core": [
@@ -704,7 +730,7 @@
       {
         "id": "core-model",
         "type": "number",
-        "prompt": "Predict the equal shipments for these settings. Give the answer in shipments. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. How many equal shipments does the total supply make? Round to four decimal places if needed.",
         "parameters": [
           "Total supply: 145.2",
           "Amount in each shipment: 12"
@@ -713,8 +739,18 @@
         "tolerance": 0.000051,
         "explanation": "145.2 ÷ 12 = 12.1. Check: 12.1 × 12 = 145.2. The displayed quotient may be rounded.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Divide the total supply by the amount in each shipment.",
+          "Multiply both numbers by 10 so you divide by a whole number."
+        ],
+        "mistakes": [
+          {
+            "answer": 1742.4,
+            "feedback": "You multiplied. Splitting the supply into shipments means divide."
+          },
+          {
+            "answer": 0.082645,
+            "feedback": "You divided the wrong way. Divide the total by the amount in each shipment."
+          }
         ]
       },
       {
@@ -723,11 +759,21 @@
         "prompt": "A shipment contains 14.4 kg divided into bags of 1.2 kg. How many bags are filled?",
         "answer": 12,
         "explanation": "Multiply both dividend and divisor by 10: 144 ÷ 12 = 12. Check: 12 × 1.2 = 14.4.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "How many 1.2 kg bags fit in 14.4 kg? Divide.",
+          "Multiply both numbers by 10 to divide whole numbers instead."
+        ],
+        "mistakes": [
+          {
+            "answer": 1.2,
+            "feedback": "Check the place value: multiply both numbers by 10 before dividing."
+          },
+          {
+            "answer": 17.28,
+            "feedback": "You multiplied. Splitting into bags means divide."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "core-original-1",
@@ -735,11 +781,17 @@
         "prompt": "Split 25.2 liters equally into containers holding 0.6 liter each. How many containers are needed?",
         "answer": 42,
         "explanation": "25.2 ÷ 0.6 = 252 ÷ 6 = 42. Check: 42 × 0.6 = 25.2.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "How many 0.6-liter containers fit in 25.2 liters? Divide.",
+          "Multiply both numbers by 10, then divide."
+        ],
+        "mistakes": [
+          {
+            "answer": 4.2,
+            "feedback": "Check the place value: 0.6 × 4.2 is not 25.2. Multiply both numbers by 10 before dividing."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "stretch": [
@@ -829,17 +881,27 @@
       {
         "id": "stretch-model",
         "type": "number",
-        "prompt": "Predict the equal shipments for these settings. Give the answer in shipments. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. How many equal shipments does the total supply make? Round to four decimal places if needed.",
         "parameters": [
           "Total supply: 146.4",
           "Amount in each shipment: 12"
         ],
-        "answer": 12.200000000000001,
+        "answer": 12.2,
         "tolerance": 0.000051,
         "explanation": "146.4 ÷ 12 = 12.2. Check: 12.2 × 12 = 146.4. The displayed quotient may be rounded.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Divide the total supply by the amount in each shipment.",
+          "Multiply both numbers by 10 so you divide by a whole number."
+        ],
+        "mistakes": [
+          {
+            "answer": 1756.8,
+            "feedback": "You multiplied. Splitting the supply into shipments means divide."
+          },
+          {
+            "answer": 0.081967,
+            "feedback": "You divided the wrong way. Divide the total by the amount in each shipment."
+          }
         ]
       },
       {
@@ -848,11 +910,21 @@
         "prompt": "A shipment contains 14.4 kg divided into bags of 1.2 kg. How many bags are filled?",
         "answer": 12,
         "explanation": "Multiply both dividend and divisor by 10: 144 ÷ 12 = 12. Check: 12 × 1.2 = 14.4.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "How many 1.2 kg bags fit in 14.4 kg? Divide.",
+          "Multiply both numbers by 10 to divide whole numbers instead."
+        ],
+        "mistakes": [
+          {
+            "answer": 1.2,
+            "feedback": "Check the place value: multiply both numbers by 10 before dividing."
+          },
+          {
+            "answer": 17.28,
+            "feedback": "You multiplied. Splitting into bags means divide."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "stretch-original-1",
@@ -860,11 +932,17 @@
         "prompt": "Split 25.2 liters equally into containers holding 0.6 liter each. How many containers are needed?",
         "answer": 42,
         "explanation": "25.2 ÷ 0.6 = 252 ÷ 6 = 42. Check: 42 × 0.6 = 25.2.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "How many 0.6-liter containers fit in 25.2 liters? Divide.",
+          "Multiply both numbers by 10, then divide."
+        ],
+        "mistakes": [
+          {
+            "answer": 4.2,
+            "feedback": "Check the place value: 0.6 × 4.2 is not 25.2. Multiply both numbers by 10 before dividing."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ]
   },

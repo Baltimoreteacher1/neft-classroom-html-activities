@@ -45,11 +45,6 @@
       },
       "vocabulary": [
         {
-          "term": "Reflect Points Across Axes",
-          "definition": "Flip a point across an axis so it stays the same perpendicular distance from that axis.",
-          "example": "Across the x-axis: (3, 2) → (3, −2)."
-        },
-        {
           "term": "Reflection",
           "definition": "A flipped, mirror image across a line.",
           "example": "(3, 2) reflected over the y-axis becomes (-3, 2) — x changes sign, y stays"
@@ -106,11 +101,6 @@
   "unitName": "Integers & the Coordinate Plane",
   "accent": "#315ba7",
   "vocabulary": [
-    {
-      "term": "Reflect Points Across Axes",
-      "definition": "Flip a point across an axis so it stays the same perpendicular distance from that axis.",
-      "example": "Across the x-axis: (3, 2) → (3, −2)."
-    },
     {
       "term": "Reflection",
       "definition": "A flipped, mirror image across a line.",
@@ -239,7 +229,7 @@
       {
         "id": "support-model",
         "type": "number",
-        "prompt": "Predict the street-route distance for these settings. Give the answer in units. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. Moving only along horizontal and vertical streets, how far is it from A to B? Give the answer in units.",
         "parameters": [
           "Point A: x: -3",
           "Point A: y: 4",
@@ -250,8 +240,18 @@
         "tolerance": 0.000051,
         "explanation": "Horizontal 6 + vertical 8 = 14. A reflected in x-axis: (-3, -4); in y-axis: (3, 4). B is your movable comparison point.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Find the horizontal distance from the x-coordinates.",
+          "Find the vertical distance from the y-coordinates, then add the two distances."
+        ],
+        "mistakes": [
+          {
+            "answer": 6,
+            "feedback": "That is only the horizontal distance. Add the vertical distance too."
+          },
+          {
+            "answer": 8,
+            "feedback": "That is only the vertical distance. Add the horizontal distance too."
+          }
         ]
       },
       {
@@ -260,11 +260,21 @@
         "prompt": "Reflect (−3, 4) across the y-axis. What is the image’s x-coordinate?",
         "answer": 3,
         "explanation": "Reflection across the y-axis changes the sign of x. The image is (3, 4).",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Reflecting across the y-axis flips left and right.",
+          "The x-coordinate changes sign. The y-coordinate stays."
+        ],
+        "mistakes": [
+          {
+            "answer": -3,
+            "feedback": "Across the y-axis, x changes sign."
+          },
+          {
+            "answer": 4,
+            "feedback": "That is the y-coordinate. The question asks for x."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "support-original-1",
@@ -272,11 +282,21 @@
         "prompt": "Reflect (−3, 4) across the x-axis. What is the image’s y-coordinate?",
         "answer": -4,
         "explanation": "Reflection across the x-axis changes the sign of y. The image is (−3, −4).",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Reflecting across the x-axis flips up and down.",
+          "The y-coordinate changes sign. The x-coordinate stays."
+        ],
+        "mistakes": [
+          {
+            "answer": 4,
+            "feedback": "Across the x-axis, y changes sign."
+          },
+          {
+            "answer": -3,
+            "feedback": "That is the x-coordinate. The question asks for y."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "core": [
@@ -325,7 +345,7 @@
       {
         "id": "core-model",
         "type": "number",
-        "prompt": "Predict the street-route distance for these settings. Give the answer in units. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. Moving only along horizontal and vertical streets, how far is it from A to B? Give the answer in units.",
         "parameters": [
           "Point A: x: -2",
           "Point A: y: 4",
@@ -336,8 +356,18 @@
         "tolerance": 0.000051,
         "explanation": "Horizontal 5 + vertical 8 = 13. A reflected in x-axis: (-2, -4); in y-axis: (2, 4). B is your movable comparison point.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Find the horizontal distance from the x-coordinates.",
+          "Find the vertical distance from the y-coordinates, then add the two distances."
+        ],
+        "mistakes": [
+          {
+            "answer": 5,
+            "feedback": "That is only the horizontal distance. Add the vertical distance too."
+          },
+          {
+            "answer": 8,
+            "feedback": "That is only the vertical distance. Add the horizontal distance too."
+          }
         ]
       },
       {
@@ -346,11 +376,21 @@
         "prompt": "Reflect (−3, 4) across the y-axis. What is the image’s x-coordinate?",
         "answer": 3,
         "explanation": "Reflection across the y-axis changes the sign of x. The image is (3, 4).",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Reflecting across the y-axis flips left and right.",
+          "The x-coordinate changes sign. The y-coordinate stays."
+        ],
+        "mistakes": [
+          {
+            "answer": -3,
+            "feedback": "Across the y-axis, x changes sign."
+          },
+          {
+            "answer": 4,
+            "feedback": "That is the y-coordinate. The question asks for x."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "core-original-1",
@@ -358,11 +398,21 @@
         "prompt": "Reflect (−3, 4) across the x-axis. What is the image’s y-coordinate?",
         "answer": -4,
         "explanation": "Reflection across the x-axis changes the sign of y. The image is (−3, −4).",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Reflecting across the x-axis flips up and down.",
+          "The y-coordinate changes sign. The x-coordinate stays."
+        ],
+        "mistakes": [
+          {
+            "answer": 4,
+            "feedback": "Across the x-axis, y changes sign."
+          },
+          {
+            "answer": -3,
+            "feedback": "That is the x-coordinate. The question asks for y."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "stretch": [
@@ -399,7 +449,7 @@
       {
         "id": "stretch-model",
         "type": "number",
-        "prompt": "Predict the street-route distance for these settings. Give the answer in units. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. Moving only along horizontal and vertical streets, how far is it from A to B? Give the answer in units.",
         "parameters": [
           "Point A: x: -1",
           "Point A: y: 4",
@@ -410,8 +460,18 @@
         "tolerance": 0.000051,
         "explanation": "Horizontal 4 + vertical 8 = 12. A reflected in x-axis: (-1, -4); in y-axis: (1, 4). B is your movable comparison point.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Find the horizontal distance from the x-coordinates.",
+          "Find the vertical distance from the y-coordinates, then add the two distances."
+        ],
+        "mistakes": [
+          {
+            "answer": 4,
+            "feedback": "That is only the horizontal distance. Add the vertical distance too."
+          },
+          {
+            "answer": 8,
+            "feedback": "That is only the vertical distance. Add the horizontal distance too."
+          }
         ]
       },
       {
@@ -420,11 +480,21 @@
         "prompt": "Reflect (−3, 4) across the y-axis. What is the image’s x-coordinate?",
         "answer": 3,
         "explanation": "Reflection across the y-axis changes the sign of x. The image is (3, 4).",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Reflecting across the y-axis flips left and right.",
+          "The x-coordinate changes sign. The y-coordinate stays."
+        ],
+        "mistakes": [
+          {
+            "answer": -3,
+            "feedback": "Across the y-axis, x changes sign."
+          },
+          {
+            "answer": 4,
+            "feedback": "That is the y-coordinate. The question asks for x."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "stretch-original-1",
@@ -432,11 +502,21 @@
         "prompt": "Reflect (−3, 4) across the x-axis. What is the image’s y-coordinate?",
         "answer": -4,
         "explanation": "Reflection across the x-axis changes the sign of y. The image is (−3, −4).",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Reflecting across the x-axis flips up and down.",
+          "The y-coordinate changes sign. The x-coordinate stays."
+        ],
+        "mistakes": [
+          {
+            "answer": 4,
+            "feedback": "Across the x-axis, y changes sign."
+          },
+          {
+            "answer": -3,
+            "feedback": "That is the x-coordinate. The question asks for y."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ]
   },

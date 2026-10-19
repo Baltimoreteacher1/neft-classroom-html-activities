@@ -70,11 +70,6 @@
       },
       "vocabulary": [
         {
-          "term": "Solve and Graph Inequalities",
-          "definition": "Isolate the variable, then show the complete solution set on a number line.",
-          "example": "x + 2 ≤ 7 → x ≤ 5; closed circle at 5, arrow left."
-        },
-        {
           "term": "Solve",
           "definition": "To find the number that makes it true.",
           "example": "x + 3 > 10 → subtract 3 → x > 7 — any number greater than 7 works"
@@ -161,11 +156,6 @@
       },
       "vocabulary": [
         {
-          "term": "Equations and Inequalities Problem Solving",
-          "definition": "Use an equation for one exact value or an inequality for a range of values in a real situation.",
-          "example": "Exactly $20: 4x = 20. At most $20: 4x ≤ 20."
-        },
-        {
           "term": "Model",
           "definition": "To show a real-life situation with an equation or inequality.",
           "example": "'Twice a number is 18' → 2n = 18 — the equation models the words"
@@ -221,11 +211,6 @@
   "accent": "#155e75",
   "vocabulary": [
     {
-      "term": "Solve and Graph Inequalities",
-      "definition": "Isolate the variable, then show the complete solution set on a number line.",
-      "example": "x + 2 ≤ 7 → x ≤ 5; closed circle at 5, arrow left."
-    },
-    {
       "term": "Solve",
       "definition": "To find the number that makes it true.",
       "example": "x + 3 > 10 → subtract 3 → x > 7 — any number greater than 7 works"
@@ -254,11 +239,6 @@
       "term": "Inverse operation",
       "definition": "Two math actions that undo each other, like × and ÷.",
       "example": "To solve x + 3 > 7, use the inverse of adding 3: subtract 3 to get x > 4."
-    },
-    {
-      "term": "Equations and Inequalities Problem Solving",
-      "definition": "Use an equation for one exact value or an inequality for a range of values in a real situation.",
-      "example": "Exactly $20: 4x = 20. At most $20: 4x ≤ 20."
     },
     {
       "term": "Model",
@@ -532,17 +512,22 @@
       {
         "id": "support-model",
         "type": "number",
-        "prompt": "Predict the test value for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. The rule is x ≤ 15. What is the greatest whole number that follows the rule?",
         "parameters": [
-          "Boundary: 15",
-          "Test value: 6"
+          "Boundary: 15"
         ],
-        "answer": 6,
+        "answer": 15,
         "tolerance": 0.000051,
-        "explanation": "x ≤ 15; x = 6 qualifies. Closed circle at 15: the boundary is included.",
+        "explanation": "≤ includes the boundary, so 15 itself follows the rule. Closed circle at 15.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Does ≤ include the boundary itself?",
+          "The line under the symbol means “or equal to.”"
+        ],
+        "mistakes": [
+          {
+            "answer": 14,
+            "feedback": "≤ includes 15 itself."
+          }
         ]
       },
       {
@@ -551,11 +536,21 @@
         "prompt": "Tickets cost $3 each and you have $15. What is the greatest whole number of tickets you can buy?",
         "answer": 5,
         "explanation": "3t ≤ 15, so t ≤ 5. Five tickets cost exactly $15.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Write an inequality: 3t ≤ 15.",
+          "Divide both sides by 3 to find the greatest t."
+        ],
+        "mistakes": [
+          {
+            "answer": 45,
+            "feedback": "You multiplied. The cost of t tickets is 3t, so divide 15 by 3."
+          },
+          {
+            "answer": 4,
+            "feedback": "≤ includes equality: 5 tickets cost exactly $15."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "support-original-1",
@@ -563,11 +558,17 @@
         "prompt": "You have $20 and must first pay a $5 entry fee. Each ticket then costs $3. What is the greatest whole number of tickets you can buy?",
         "answer": 5,
         "explanation": "5 + 3t ≤ 20. Subtract 5, then divide by 3: t ≤ 5.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Pay the entry fee first: how much money is left?",
+          "Divide the money left by $3 per ticket."
+        ],
+        "mistakes": [
+          {
+            "answer": 6,
+            "feedback": "Subtract the $5 fee before dividing by $3."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "core": [
@@ -660,17 +661,22 @@
       {
         "id": "core-model",
         "type": "number",
-        "prompt": "Predict the test value for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. The rule is x ≤ 16. What is the greatest whole number that follows the rule?",
         "parameters": [
-          "Boundary: 16",
-          "Test value: 6"
+          "Boundary: 16"
         ],
-        "answer": 6,
+        "answer": 16,
         "tolerance": 0.000051,
-        "explanation": "x ≤ 16; x = 6 qualifies. Closed circle at 16: the boundary is included.",
+        "explanation": "≤ includes the boundary, so 16 itself follows the rule. Closed circle at 16.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Does ≤ include the boundary itself?",
+          "The line under the symbol means “or equal to.”"
+        ],
+        "mistakes": [
+          {
+            "answer": 15,
+            "feedback": "≤ includes 16 itself."
+          }
         ]
       },
       {
@@ -679,11 +685,21 @@
         "prompt": "Tickets cost $3 each and you have $15. What is the greatest whole number of tickets you can buy?",
         "answer": 5,
         "explanation": "3t ≤ 15, so t ≤ 5. Five tickets cost exactly $15.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Write an inequality: 3t ≤ 15.",
+          "Divide both sides by 3 to find the greatest t."
+        ],
+        "mistakes": [
+          {
+            "answer": 45,
+            "feedback": "You multiplied. The cost of t tickets is 3t, so divide 15 by 3."
+          },
+          {
+            "answer": 4,
+            "feedback": "≤ includes equality: 5 tickets cost exactly $15."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "core-original-1",
@@ -691,11 +707,17 @@
         "prompt": "You have $20 and must first pay a $5 entry fee. Each ticket then costs $3. What is the greatest whole number of tickets you can buy?",
         "answer": 5,
         "explanation": "5 + 3t ≤ 20. Subtract 5, then divide by 3: t ≤ 5.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Pay the entry fee first: how much money is left?",
+          "Divide the money left by $3 per ticket."
+        ],
+        "mistakes": [
+          {
+            "answer": 6,
+            "feedback": "Subtract the $5 fee before dividing by $3."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "stretch": [
@@ -764,17 +786,22 @@
       {
         "id": "stretch-model",
         "type": "number",
-        "prompt": "Predict the test value for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. The rule is x ≤ 17. What is the greatest whole number that follows the rule?",
         "parameters": [
-          "Boundary: 17",
-          "Test value: 6"
+          "Boundary: 17"
         ],
-        "answer": 6,
+        "answer": 17,
         "tolerance": 0.000051,
-        "explanation": "x ≤ 17; x = 6 qualifies. Closed circle at 17: the boundary is included.",
+        "explanation": "≤ includes the boundary, so 17 itself follows the rule. Closed circle at 17.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Does ≤ include the boundary itself?",
+          "The line under the symbol means “or equal to.”"
+        ],
+        "mistakes": [
+          {
+            "answer": 16,
+            "feedback": "≤ includes 17 itself."
+          }
         ]
       },
       {
@@ -783,11 +810,21 @@
         "prompt": "Tickets cost $3 each and you have $15. What is the greatest whole number of tickets you can buy?",
         "answer": 5,
         "explanation": "3t ≤ 15, so t ≤ 5. Five tickets cost exactly $15.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Write an inequality: 3t ≤ 15.",
+          "Divide both sides by 3 to find the greatest t."
+        ],
+        "mistakes": [
+          {
+            "answer": 45,
+            "feedback": "You multiplied. The cost of t tickets is 3t, so divide 15 by 3."
+          },
+          {
+            "answer": 4,
+            "feedback": "≤ includes equality: 5 tickets cost exactly $15."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "stretch-original-1",
@@ -795,11 +832,17 @@
         "prompt": "You have $20 and must first pay a $5 entry fee. Each ticket then costs $3. What is the greatest whole number of tickets you can buy?",
         "answer": 5,
         "explanation": "5 + 3t ≤ 20. Subtract 5, then divide by 3: t ≤ 5.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Pay the entry fee first: how much money is left?",
+          "Divide the money left by $3 per ticket."
+        ],
+        "mistakes": [
+          {
+            "answer": 6,
+            "feedback": "Subtract the $5 fee before dividing by $3."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ]
   },

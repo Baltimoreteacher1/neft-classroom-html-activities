@@ -187,15 +187,17 @@ function shell() {
     document.getElementById('cancel-reset').onclick = () => { area.innerHTML = ''; document.getElementById('reset').focus(); };
     document.getElementById('confirm-reset').focus();
   };
-  showTab(state.tab); save();
+  showTab(state.tab, 'replace'); save();
 }
 function move(direction) {
   const i = tabs.findIndex(([id]) => id === state.tab), next = tabs[i + direction];
   if (next) { showTab(next[0]); document.getElementById(`panel-${next[0]}`).focus(); document.getElementById('workspace').scrollIntoView({ block: 'start', behavior: 'instant' }); }
 }
-function showTab(id) {
+// The tab lives in the URL hash so a teacher can link to a step and Back returns to the previous step.
+function showTab(id, nav = 'push') {
   if (!tabs.some((t) => t[0] === id)) id = 'brief';
   state.tab = id;
+  if (location.hash !== `#${id}` && nav !== 'none') history[nav === 'replace' ? 'replaceState' : 'pushState'](null, '', `#${id}`);
   root.querySelectorAll('[role="tabpanel"]').forEach((panel) => { panel.hidden = panel.id !== `panel-${id}`; });
   root.querySelectorAll('[data-tab]').forEach((button) => { const selected = button.dataset.tab === id; button.setAttribute('aria-selected', String(selected)); button.tabIndex = selected ? 0 : -1; });
   const host = document.getElementById(`panel-${id}`);
@@ -266,6 +268,7 @@ try {
   const hash = location.hash.slice(1); if (tabs.some((t) => t[0] === hash)) state.tab = hash;
   try { bridge = await connect(lab, () => state.lang); } catch { bridge = null; }
   shell(); window.addEventListener('beforeprint', makeReport);
+  window.addEventListener('hashchange', () => { const id = location.hash.slice(1); if (id !== state.tab && tabs.some((t) => t[0] === id)) showTab(id, 'none'); });
 } catch (error) {
   root.innerHTML = `<main class="load-error"><h1>This lab could not finish loading</h1><p>Your saved work has not been cleared. Check your connection, then reload.</p><button type="button" id="reload">Reload lab</button><p><a href="/curriculum/learning-labs/">Return to learning labs</a></p></main>`;
   document.getElementById('reload').onclick = () => location.reload(); console.error(error);

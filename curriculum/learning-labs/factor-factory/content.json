@@ -73,11 +73,6 @@
       },
       "vocabulary": [
         {
-          "term": "Find Factors and Multiples",
-          "definition": "Listing what divides a number evenly (its factors) and what it divides into evenly (its multiples), then finding what two numbers share.",
-          "example": "GCF of 48 and 36 is 12 · LCM of 6 and 8 is 24"
-        },
-        {
           "term": "Factor",
           "definition": "A whole number that divides another number evenly, with no remainder.",
           "example": "Factors of 36: 1, 2, 3, 4, 6, 9, 12, 18, 36"
@@ -278,11 +273,6 @@
   "unitName": "Expressions",
   "accent": "#086575",
   "vocabulary": [
-    {
-      "term": "Find Factors and Multiples",
-      "definition": "Listing what divides a number evenly (its factors) and what it divides into evenly (its multiples), then finding what two numbers share.",
-      "example": "GCF of 48 and 36 is 12 · LCM of 6 and 8 is 24"
-    },
     {
       "term": "Factor",
       "definition": "A whole number that divides another number evenly, with no remainder.",
@@ -578,7 +568,7 @@
       {
         "id": "support-model",
         "type": "number",
-        "prompt": "Predict the greatest common factor for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the greatest common factor of the two numbers?",
         "parameters": [
           "First number: 18",
           "Second number: 24"
@@ -587,8 +577,18 @@
         "tolerance": 0.000051,
         "explanation": "GCF(18, 24) = 6; LCM(18, 24) = 72. 18 + 24 = 6(3 + 4). A factor divides a number; a multiple is a product of the number and a whole number.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "List the factors of each number.",
+          "Pick the largest factor that is in both lists."
+        ],
+        "mistakes": [
+          {
+            "answer": 72,
+            "feedback": "That is the least common multiple. A common factor divides both numbers."
+          },
+          {
+            "answer": 1,
+            "feedback": "1 is always a common factor. Look for a greater one."
+          }
         ]
       },
       {
@@ -597,11 +597,21 @@
         "prompt": "What is the greatest common factor of 18 and 24?",
         "answer": 6,
         "explanation": "The common factors are 1, 2, 3, 6. The greatest is 6.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "List the factors of 18 and the factors of 24.",
+          "Pick the largest factor that is in both lists."
+        ],
+        "mistakes": [
+          {
+            "answer": 72,
+            "feedback": "That is the least common multiple. A factor divides both numbers."
+          },
+          {
+            "answer": 3,
+            "feedback": "3 is a common factor, but there is a greater one."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "support-original-1",
@@ -609,11 +619,17 @@
         "prompt": "Fill the missing number: 18 + 24 = 6(3 + __).",
         "answer": 4,
         "explanation": "18 = 6×3 and 24 = 6×4, so factoring out 6 gives 6(3 + 4).",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "18 = 6 × 3. Write 24 the same way.",
+          "Which number times 6 makes 24?"
+        ],
+        "mistakes": [
+          {
+            "answer": 24,
+            "feedback": "Factor the 6 out of 24 as well."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "core": [
@@ -744,7 +760,7 @@
       {
         "id": "core-model",
         "type": "number",
-        "prompt": "Predict the greatest common factor for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the greatest common factor of the two numbers?",
         "parameters": [
           "First number: 19",
           "Second number: 24"
@@ -753,8 +769,14 @@
         "tolerance": 0.000051,
         "explanation": "GCF(19, 24) = 1; LCM(19, 24) = 456. 19 + 24 = 1(19 + 24). A factor divides a number; a multiple is a product of the number and a whole number.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "List the factors of each number.",
+          "Pick the largest factor that is in both lists."
+        ],
+        "mistakes": [
+          {
+            "answer": 456,
+            "feedback": "That is the least common multiple. A common factor divides both numbers."
+          }
         ]
       },
       {
@@ -763,11 +785,21 @@
         "prompt": "What is the greatest common factor of 18 and 24?",
         "answer": 6,
         "explanation": "The common factors are 1, 2, 3, 6. The greatest is 6.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "List the factors of 18 and the factors of 24.",
+          "Pick the largest factor that is in both lists."
+        ],
+        "mistakes": [
+          {
+            "answer": 72,
+            "feedback": "That is the least common multiple. A factor divides both numbers."
+          },
+          {
+            "answer": 3,
+            "feedback": "3 is a common factor, but there is a greater one."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "core-original-1",
@@ -775,11 +807,17 @@
         "prompt": "Fill the missing number: 18 + 24 = 6(3 + __).",
         "answer": 4,
         "explanation": "18 = 6×3 and 24 = 6×4, so factoring out 6 gives 6(3 + 4).",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "18 = 6 × 3. Write 24 the same way.",
+          "Which number times 6 makes 24?"
+        ],
+        "mistakes": [
+          {
+            "answer": 24,
+            "feedback": "Factor the 6 out of 24 as well."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "stretch": [
@@ -886,7 +924,7 @@
       {
         "id": "stretch-model",
         "type": "number",
-        "prompt": "Predict the greatest common factor for these settings.  Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. What is the greatest common factor of the two numbers?",
         "parameters": [
           "First number: 20",
           "Second number: 24"
@@ -895,8 +933,18 @@
         "tolerance": 0.000051,
         "explanation": "GCF(20, 24) = 4; LCM(20, 24) = 120. 20 + 24 = 4(5 + 6). A factor divides a number; a multiple is a product of the number and a whole number.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "List the factors of each number.",
+          "Pick the largest factor that is in both lists."
+        ],
+        "mistakes": [
+          {
+            "answer": 120,
+            "feedback": "That is the least common multiple. A common factor divides both numbers."
+          },
+          {
+            "answer": 1,
+            "feedback": "1 is always a common factor. Look for a greater one."
+          }
         ]
       },
       {
@@ -905,11 +953,21 @@
         "prompt": "What is the greatest common factor of 18 and 24?",
         "answer": 6,
         "explanation": "The common factors are 1, 2, 3, 6. The greatest is 6.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "List the factors of 18 and the factors of 24.",
+          "Pick the largest factor that is in both lists."
+        ],
+        "mistakes": [
+          {
+            "answer": 72,
+            "feedback": "That is the least common multiple. A factor divides both numbers."
+          },
+          {
+            "answer": 3,
+            "feedback": "3 is a common factor, but there is a greater one."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "stretch-original-1",
@@ -917,11 +975,17 @@
         "prompt": "Fill the missing number: 18 + 24 = 6(3 + __).",
         "answer": 4,
         "explanation": "18 = 6×3 and 24 = 6×4, so factoring out 6 gives 6(3 + 4).",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "18 = 6 × 3. Write 24 the same way.",
+          "Which number times 6 makes 24?"
+        ],
+        "mistakes": [
+          {
+            "answer": 24,
+            "feedback": "Factor the 6 out of 24 as well."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ]
   },

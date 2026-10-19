@@ -335,17 +335,23 @@
       {
         "id": "support-model",
         "type": "number",
-        "prompt": "Predict the color per cup of white for these settings. Give the answer in cups per cup. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. How many cups of color paint are there for each cup of white paint? Round to four decimal places if needed.",
         "parameters": [
           "Color paint (cups): 2",
           "White paint (cups): 3"
         ],
-        "answer": 0.6666666666666666,
+        "answer": 0.6666666667,
         "tolerance": 0.000051,
         "explanation": "2:3 = 2:3. First ingredient to whole: 2:5. Reference mixture: 3:5 = 0.6 cups per cup. Compare using the same second quantity.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Write the ratio color paint : white paint.",
+          "Divide the cups of color paint by the cups of white paint."
+        ],
+        "mistakes": [
+          {
+            "answer": 1.5,
+            "feedback": "You divided the wrong way. Put color paint first: color paint ÷ white paint."
+          }
         ]
       },
       {
@@ -354,11 +360,17 @@
         "prompt": "Paint A uses color:white = 2:3. How many cups of color go with 15 cups of white?",
         "answer": 10,
         "explanation": "Scale both parts by 5: 2:3 = 10:15.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "How many groups of 3 cups of white make 15 cups?",
+          "Multiply the color part by that same number."
+        ],
+        "mistakes": [
+          {
+            "answer": 14,
+            "feedback": "You added 12 to each part. Equivalent ratios multiply both parts by the same number."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "support-original-1",
@@ -366,11 +378,17 @@
         "prompt": "Paint B uses color:white = 3:5. With 15 cups of white, how many fewer cups of color does B use than A’s 10?",
         "answer": 1,
         "explanation": "Scale B by 3: 3:5 = 9:15. It uses 10 − 9 = 1 fewer cup of color.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Scale Paint B's ratio so the white part is 15 cups.",
+          "Compare B's cups of color with A's 10 cups and subtract."
+        ],
+        "mistakes": [
+          {
+            "answer": 9,
+            "feedback": "That is how much color B uses. The question asks how many fewer cups than A."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "core": [
@@ -439,7 +457,7 @@
       {
         "id": "core-model",
         "type": "number",
-        "prompt": "Predict the color per cup of white for these settings. Give the answer in cups per cup. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. How many cups of color paint are there for each cup of white paint?",
         "parameters": [
           "Color paint (cups): 3",
           "White paint (cups): 3"
@@ -448,9 +466,10 @@
         "tolerance": 0.000051,
         "explanation": "3:3 = 1:1. First ingredient to whole: 3:6. Reference mixture: 3:5 = 0.6 cups per cup. Compare using the same second quantity.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
-        ]
+          "Write the ratio color paint : white paint.",
+          "Divide the cups of color paint by the cups of white paint."
+        ],
+        "mistakes": []
       },
       {
         "id": "core-original-0",
@@ -458,11 +477,17 @@
         "prompt": "Paint A uses color:white = 2:3. How many cups of color go with 15 cups of white?",
         "answer": 10,
         "explanation": "Scale both parts by 5: 2:3 = 10:15.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "How many groups of 3 cups of white make 15 cups?",
+          "Multiply the color part by that same number."
+        ],
+        "mistakes": [
+          {
+            "answer": 14,
+            "feedback": "You added 12 to each part. Equivalent ratios multiply both parts by the same number."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "core-original-1",
@@ -470,11 +495,17 @@
         "prompt": "Paint B uses color:white = 3:5. With 15 cups of white, how many fewer cups of color does B use than A’s 10?",
         "answer": 1,
         "explanation": "Scale B by 3: 3:5 = 9:15. It uses 10 − 9 = 1 fewer cup of color.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Scale Paint B's ratio so the white part is 15 cups.",
+          "Compare B's cups of color with A's 10 cups and subtract."
+        ],
+        "mistakes": [
+          {
+            "answer": 9,
+            "feedback": "That is how much color B uses. The question asks how many fewer cups than A."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ],
     "stretch": [
@@ -531,17 +562,23 @@
       {
         "id": "stretch-model",
         "type": "number",
-        "prompt": "Predict the color per cup of white for these settings. Give the answer in cups per cup. Round to four decimal places if needed.",
+        "prompt": "Set the lab model to these values. How many cups of color paint are there for each cup of white paint? Round to four decimal places if needed.",
         "parameters": [
           "Color paint (cups): 4",
           "White paint (cups): 3"
         ],
-        "answer": 1.3333333333333333,
+        "answer": 1.3333333333,
         "tolerance": 0.000051,
         "explanation": "4:3 = 4:3. First ingredient to whole: 4:7. Reference mixture: 3:5 = 0.6 cups per cup. Compare using the same second quantity.",
         "hints": [
-          "Identify which quantities the requested measure uses.",
-          "Use the relationship you explored in Investigate. Check with a second method."
+          "Write the ratio color paint : white paint.",
+          "Divide the cups of color paint by the cups of white paint."
+        ],
+        "mistakes": [
+          {
+            "answer": 0.75,
+            "feedback": "You divided the wrong way. Put color paint first: color paint ÷ white paint."
+          }
         ]
       },
       {
@@ -550,11 +587,17 @@
         "prompt": "Paint A uses color:white = 2:3. How many cups of color go with 15 cups of white?",
         "answer": 10,
         "explanation": "Scale both parts by 5: 2:3 = 10:15.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "How many groups of 3 cups of white make 15 cups?",
+          "Multiply the color part by that same number."
+        ],
+        "mistakes": [
+          {
+            "answer": 14,
+            "feedback": "You added 12 to each part. Equivalent ratios multiply both parts by the same number."
+          }
+        ],
+        "tolerance": 0.000051
       },
       {
         "id": "stretch-original-1",
@@ -562,11 +605,17 @@
         "prompt": "Paint B uses color:white = 3:5. With 15 cups of white, how many fewer cups of color does B use than A’s 10?",
         "answer": 1,
         "explanation": "Scale B by 3: 3:5 = 9:15. It uses 10 − 9 = 1 fewer cup of color.",
-        "tolerance": 0.000051,
         "hints": [
-          "Name the given quantities and the quantity you need.",
-          "Draw a model or write the relationship first. Check your answer in the original situation."
-        ]
+          "Scale Paint B's ratio so the white part is 15 cups.",
+          "Compare B's cups of color with A's 10 cups and subtract."
+        ],
+        "mistakes": [
+          {
+            "answer": 9,
+            "feedback": "That is how much color B uses. The question asks how many fewer cups than A."
+          }
+        ],
+        "tolerance": 0.000051
       }
     ]
   },
