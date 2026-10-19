@@ -1,11 +1,57 @@
 // Real rendered classic controls and mathematical construction dialogs.
 // Pass a local or deployed base URL; default uses the production build preview.
 import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
 import { mkdirSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import AxeBuilder from "@axe-core/playwright";
 import { chromium } from "playwright";
 import { preview } from "vite";
 import { REPO_ROOT } from "./lib/curriculum-source.mjs";
+
+// The widths are independent (own browser, own contexts, screenshots named by width)
+// and each costs ~80s on software WebGL, so run one child per width and aggregate.
+// Set GAME_WIDTHS to a single width (or GAME_WIDTH_CHILD) to run in-process.
+const widths = (process.env.GAME_WIDTHS || "1365,1024,390").split(",").map(Number);
+if (widths.length > 1 && !process.env.GAME_WIDTH_CHILD) {
+  const children = widths.map(
+    (width) =>
+      new Promise((resolve) => {
+        const child = spawn(
+          process.execPath,
+          [fileURLToPath(import.meta.url), ...process.argv.slice(2)],
+          {
+            env: { ...process.env, GAME_WIDTHS: String(width), GAME_WIDTH_CHILD: "1" },
+            stdio: ["ignore", "pipe", "inherit"],
+          },
+        );
+        let stdout = "";
+        child.stdout.on("data", (d) => {
+          stdout += d;
+        });
+        child.on("close", (code) => resolve({ width, code, stdout, child }));
+      }),
+  );
+  const results = await Promise.all(children);
+  const failed = results.filter((r) => r.code !== 0);
+  if (failed.length) {
+    console.error(`FAILED at width(s): ${failed.map((r) => r.width).join(", ")}`);
+    process.exit(1);
+  }
+  const parsed = results.map((r) => JSON.parse(r.stdout));
+  console.log(
+    JSON.stringify(
+      {
+        checks: parsed.reduce((n, r) => n + r.checks, 0),
+        results: parsed.flatMap((r) => r.results),
+        screenshots: parsed[0].screenshots,
+      },
+      null,
+      2,
+    ),
+  );
+  process.exit(0);
+}
 
 const server = process.argv[2]
   ? null
