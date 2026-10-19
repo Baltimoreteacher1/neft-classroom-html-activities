@@ -692,6 +692,7 @@ if (existsSync(resolve(TT_DIR, "index.html"))) {
 
 // Student-facing surfaces that live under /curriculum/ but are not teacher tools.
 const CURRICULUM_STUDENT = new Set([
+  "activities",
   "extra-help",
   "fluency",
   "lesson-materials",

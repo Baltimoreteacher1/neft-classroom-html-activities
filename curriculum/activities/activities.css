@@ -1,0 +1,25 @@
+:root { --activity-ink: #172a3a; --activity-teal: #0f766e; --activity-line: #d4e0e3; }
+body { margin: 0; background: #f7f5ef; color: var(--activity-ink); font: 1rem/1.5 "Nunito", system-ui, sans-serif; }
+.activity-skip { position: absolute; left: 1rem; top: -5rem; z-index: 20; padding: .7rem 1rem; background: white; }
+.activity-skip:focus { top: 1rem; }
+.activity-page { max-width: 72rem; margin: auto; padding: clamp(1rem, 3vw, 2rem); }
+.activity-eyebrow { margin: 0; color: #075f58; font-weight: 800; }
+.activity-page h1 { margin: .25rem 0; color: #12355b; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.12; }
+.activity-lede { max-width: 43rem; }
+.activity-paths { display: flex; flex-wrap: wrap; gap: .5rem 1rem; margin: 1.3rem 0 1.7rem; }
+.activity-paths a { color: #075f58; font-weight: 800; }
+.activity-filters { display: grid; grid-template-columns: minmax(14rem, 2fr) repeat(2, minmax(9rem, 1fr)) auto; align-items: end; gap: .8rem; padding: 1rem; border: 1px solid var(--activity-line); border-radius: 1rem; background: white; }
+.activity-filters label { display: block; margin-bottom: .35rem; font-weight: 800; }
+.activity-filters input, .activity-filters select { box-sizing: border-box; width: 100%; min-height: 3rem; padding: .5rem .7rem; border: 1px solid #879aa6; border-radius: .5rem; background: white; color: var(--activity-ink); font: inherit; }
+.activity-reset, .activity-more { min-height: 3rem; padding: .5rem 1rem; border: 1px solid #0b6861; border-radius: .5rem; background: white; color: #075f58; cursor: pointer; font: inherit; font-weight: 800; }
+.activity-more { display: block; margin: 1.5rem auto; }
+.activity-more[hidden] { display: none; }
+.activity-status { margin: 1.25rem 0; color: #3d5260; font-weight: 700; }
+.activity-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: .75rem; }
+.activity-card { display: flex; flex-direction: column; gap: .4rem; min-height: 7rem; padding: 1rem; border: 1px solid var(--activity-line); border-radius: .75rem; background: white; color: var(--activity-ink); text-decoration: none; }
+.activity-card strong { color: #075f58; font-size: 1.07rem; line-height: 1.25; }
+.activity-card span { color: #425969; }
+.activity-card:hover { border-color: var(--activity-teal); background: #effaf7; }
+a:focus-visible, input:focus-visible, select:focus-visible, button:focus-visible { outline: 3px solid #d08724; outline-offset: 3px; }
+@media (max-width: 49rem) { .activity-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } .activity-search { grid-column: 1 / -1; } }
+@media (max-width: 31rem) { .activity-filters { grid-template-columns: 1fr; } .activity-search { grid-column: auto; } }

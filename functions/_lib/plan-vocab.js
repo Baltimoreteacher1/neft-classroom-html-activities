@@ -5085,6 +5085,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/activities/",
+    title: "Activities and tools",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/ai-hub/",
     title: "AI Learning Hub",
     category: "Hub",
@@ -5850,6 +5856,12 @@ export const ACTIVITIES = [
   {
     path: "/teacher-tools/learning-supports-manager/",
     title: "Learning Supports Manager",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/teacher-tools/lesson-materials/",
+    title: "Teacher Materials by Lesson",
     category: "Tool",
     unit: null,
   },
