@@ -50,10 +50,36 @@ export function syncUnifiedStorage(lab, state) {
 // ============================================================================
 // 2. Tier-2 Inline Concept Diagram / Formula Strip for Progressive Clue Drawer
 // ============================================================================
+const DATA_RULES = {
+  histogram: ['Range = greatest value − least value', 'Find both ends of the data first.'],
+  box: ['Median = middle of the ordered data', 'Even count: halfway between the two middle values.'],
+  outlier: ['Median = middle of the ordered data', 'One extreme value moves the mean more than the median.'],
+  spread: ['IQR = Q3 − Q1', 'Q1 and Q3 are the medians of the lower and upper halves.'],
+  'mean-mad': ['MAD = average distance from the mean', 'Find the mean, then each distance from it.'],
+};
+function formulaLines(model) {
+  const mode = model.mode;
+  switch (model.kind) {
+    case 'array': return ['Total = rows × items in each row', 'Each row is one equal group.'];
+    case 'data': return DATA_RULES[mode] || null;
+    case 'decimal': return ['Total = price per item × number of items', 'Estimate with whole dollars to check.'];
+    case 'division': return ['Groups = total ÷ size of each group', 'Multiply both numbers by 10 to divide by a whole number.'];
+    case 'conversion': return ['Smaller unit → more of them: multiply', 'Larger unit → fewer of them: divide.'];
+    case 'growth': return mode === 'ratio-graph' ? ['Total = amount in each group × groups', 'Every group holds the same amount.'] : ['y = increase per step × x + starting amount', 'At x = 0, y is the starting amount.'];
+    case 'percent': return mode === 'whole' ? ['Whole = part ÷ (percent ÷ 100)', 'The part is only some percent of the whole.'] : ['Part = (percent ÷ 100) × whole', 'A percent is a number out of 100.'];
+    case 'power': return ['aⁿ = a × a × … (n factors of a)', 'Work out powers before adding.'];
+    case 'factors': return mode === 'lcm' ? ['LCM = least multiple both numbers share', 'List multiples, or use prime factorizations.'] : ['GCF = greatest factor both numbers share', 'List the factors of each number.'];
+    case 'balance': return mode === 'add' ? ['x + a = b  →  x = b − a', 'Do the same operation to both sides.'] : ['a × x = b  →  x = b ÷ a', 'Do the same operation to both sides.'];
+    case 'inequality': return ['≥ and ≤ include the boundary (closed circle)', '> and < leave it out (open circle).'];
+    default: return null;
+  }
+}
+
 export function renderTier2DiagramStrip(model, q) {
   const kind = model?.kind || 'ratio';
   let body = '<rect x="0" y="0" width="360" height="84" fill="#FFFFFF"/>';
-  if (kind === 'ratio' || kind === 'rate' || kind === 'conversion') {
+  let spoken = '';
+  if (kind === 'ratio' || kind === 'rate') {
     body += `<rect x="16" y="14" width="64" height="24" rx="4" fill="#f9cf55" stroke="#84640c" stroke-width="1.5"/>
       <rect x="84" y="14" width="64" height="24" rx="4" fill="#f9cf55" stroke="#84640c" stroke-width="1.5"/>
       <rect x="16" y="46" width="64" height="24" rx="4" fill="#82c7df" stroke="#266580" stroke-width="1.5"/>
@@ -70,21 +96,28 @@ export function renderTier2DiagramStrip(model, q) {
       <line x1="94" y1="18" x2="94" y2="68" stroke="#17344b" stroke-width="2" stroke-dasharray="4 3"/>
       <text x="142" y="36" fill="#17344b" font-size="13" font-weight="700">Use perpendicular height (⊥)</text>
       <text x="142" y="58" fill="#17344b" font-size="12" font-weight="700">Decompose faces or base × height</text>`;
-  } else if (kind === 'coordinates' || kind === 'line' || kind === 'inequality') {
+  } else if (kind === 'coordinates' || kind === 'line') {
     body += `<line x1="20" y1="44" x2="200" y2="44" stroke="#17344b" stroke-width="2"/>
       <circle cx="60" cy="44" r="6" fill="#075f80"/><circle cx="110" cy="44" r="5" fill="#17344b"/><circle cx="160" cy="44" r="6" fill="#176746"/>
       <text x="60" y="68" text-anchor="middle" fill="#17344b" font-size="12" font-weight="700">−a</text>
       <text x="110" y="68" text-anchor="middle" fill="#17344b" font-size="12" font-weight="700">0</text>
       <text x="160" y="68" text-anchor="middle" fill="#17344b" font-size="12" font-weight="700">+a</text>
       <text x="215" y="48" fill="#17344b" font-size="12" font-weight="700">|x| = distance from 0</text>`;
-  } else {
+  } else if (kind === 'expression') {
     body += `<rect x="18" y="18" width="110" height="44" rx="6" fill="#eaf4fb" stroke="#075f80" stroke-width="2"/>
       <text x="73" y="45" text-anchor="middle" fill="#17344b" font-size="13" font-weight="700">a(x + b)</text>
       <text x="148" y="45" text-anchor="middle" fill="#17344b" font-size="16" font-weight="800">=</text>
       <rect x="168" y="18" width="172" height="44" rx="6" fill="#edf6ef" stroke="#176746" stroke-width="2"/>
       <text x="254" y="45" text-anchor="middle" fill="#17344b" font-size="13" font-weight="700">a·x + a·b (Both sides)</text>`;
+  } else {
+    // Every other model gets its own rule. Until 2026-10-19 they all fell through to the
+    // distributive-property picture above, so a balance lab's hint showed a(x + b) = ax + ab.
+    const lines = formulaLines(model);
+    if (!lines) return '';
+    spoken = lines.join(' ');
+    body += lines.map((line, i) => `<text x="16" y="${34 + i * 26}" fill="#17344b" font-size="${i ? 12 : 14}" font-weight="700">${esc(line)}</text>`).join('');
   }
-  const label = `Concept diagram strip for ${q?.type || kind}`;
+  const label = spoken || `Concept diagram strip for ${q?.type || kind}`;
   return `<svg role="img" aria-label="${esc(label)}" width="360" height="84" viewBox="0 0 360 84" style="background:#FFFFFF" xmlns="${SVG_NS}">${body}</svg>`;
 }
 

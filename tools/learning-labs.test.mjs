@@ -11,6 +11,7 @@ import {
   statistics,
 } from "../curriculum/learning-labs/shared/math.mjs";
 import { guidance, visual } from "../curriculum/learning-labs/shared/model.mjs";
+import { renderTier2DiagramStrip } from "../curriculum/learning-labs/shared/nextgen.mjs";
 import { numberFeedback } from "../curriculum/learning-labs/shared/number-feedback.mjs";
 import {
   activityStatus,
@@ -136,6 +137,11 @@ for (const item of catalogue.labs) {
   assert.ok(Number.isFinite(result.value));
   const diagram = new JSDOM(visual(lab.model, lab.model.values, result)).window.document;
   assert.ok(diagram.querySelector('svg[role="img"][aria-label]'));
+  // 2026-10-19: every model without its own branch showed the distributive-property strip.
+  const strip = renderTier2DiagramStrip(lab.model, { type: "number" });
+  assert.ok(strip.includes("<svg"), `${item.id} needs a formula strip`);
+  if (lab.model.kind !== "expression")
+    assert.ok(!strip.includes("a·x + a·b"), `${item.id} shows the distributive property strip`);
   const tips = guidance(lab.model);
   assert.ok(tips.show.length > 30 && tips.tip.length > 20, `${item.id} needs model guidance`);
   for (const lesson of lab.lessons) {
