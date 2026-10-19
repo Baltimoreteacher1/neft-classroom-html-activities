@@ -229,7 +229,7 @@ test("family homework offers three real practice paths without a Together stop",
     assert.doesNotMatch(d.body.textContent, /time remaining|tiempo restante/i, id);
     assert.doesNotMatch(d.querySelector(".homework-tab-bar").textContent, /together|juntos/i, id);
     assert.ok(
-      d.querySelector(".hw-pair-note a[href*='-part2/homework.html']"),
+      d.querySelector(".hw-session-banner a[href*='-part2/homework.html']"),
       `${id} links to its Part 2 family page`,
     );
     assert.ok(
@@ -323,7 +323,7 @@ test("all Unit 2–6 Part 1 and Part 2 pages have bilingual titles and a useful 
         assert.notEqual(titleEs, titleEn, `${id} Spanish title is not an English fallback`);
         const mate = id.endsWith("-part2") ? id.replace(/-part2$/, "") : `${id}-part2`;
         assert.equal(
-          d.querySelector(`.hw-pair-note a[href="/lessons/${mate}/homework.html"]`) != null,
+          d.querySelector(`.hw-session-banner a[href="/lessons/${mate}/homework.html"]`) != null,
           existsSync(lessonPath(mate, "homework.html")),
           `${id} points to its matching family page when the pair exists`,
         );

@@ -41,6 +41,14 @@ import { bridgeOf, bridgeSpeech, renderBridgeCard } from "./lib/homework-bridge.
 import { confusedRoundsFor, renderConfusedGrownUp } from "./lib/homework-confused-grownup.mjs";
 import { renderDominoDuo } from "./lib/homework-domino-duo.mjs";
 import { choiceFeedbackSpanish } from "./lib/homework-problems.mjs";
+import { renderScratchpadHtml } from "./lib/homework-scratchpad.mjs";
+import {
+  renderQuickOptional,
+  renderSessionBanner,
+  renderWarmupHuddle,
+  SESSIONS,
+  sessionOf,
+} from "./lib/homework-session-flow.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const _root = join(__dirname, "..");
@@ -67,7 +75,7 @@ export const escAttr = esc;
  * families for it; the hub tile in lessons/3-2-part3/config.json says the same
  * words, and this map is the one place the two are kept in step.
  */
-const SESSION_LABELS = { part2: "Part 2", part3: "Section 3" };
+const SESSION_LABELS = { part2: "Session 2", part3: "Section 3" };
 
 // Lesson folder slugs carry internal variant suffixes ("2-1-flagship",
 // "2-1-group1", "2-1-catchup"). Those are build/routing details — families
@@ -78,7 +86,7 @@ export function displayLessonId(lessonId) {
   // `-partN` is NOT a build detail like the others: it is one of the sessions
   // the lesson is taught over, and a family holding several pages for one
   // lesson needs to see which night each belongs to. Kept, but said in words —
-  // "Lesson 2-1 · Part 2", never the folder slug "2-1-part2".
+  // "Lesson 2-1 · Session 2", never the folder slug "2-1-part2".
   return String(lessonId ?? "")
     .replace(/-(flagship|group\d+|catchup)$/, "")
     .replace(/-(part[23])$/, (_, slug) => ` · ${SESSION_LABELS[slug]}`);
@@ -2851,6 +2859,12 @@ export function renderWelcomeBanner(config, lessonId) {
   const title = config.familyNotes?.sessionTitle || config.title || "Tonight's Lesson";
   const standard = config.standard || "";
   const experience = config.familyNotes?.experience;
+  const partner = sessionPartner(lessonId);
+  const here = partner ? sessionOf(lessonId) : null;
+  const pageLabelEn = here
+    ? `Lesson ${here.baseId} · ${SESSIONS[here.session].en}`
+    : homeworkPageLabel(lessonId);
+  const bigIdea = learningTonight(config);
 
   return `
     <header class="hw-hero" aria-label="Family Math Night welcome">
@@ -2865,22 +2879,29 @@ export function renderWelcomeBanner(config, lessonId) {
         <div class="hw-hero-head">
           <span class="hw-hero-emoji" aria-hidden="true">${esc(themeEmoji)}</span>
           <div class="hw-hero-titles">
-            <h1><span class="welcome-title-en lang-en">Family Math Homework</span><span class="welcome-title-es lang-es" lang="es">Tarea de matemáticas en familia</span></h1>
+            <h1><span class="welcome-title-en lang-en">Family Math Studio</span><span class="welcome-title-es lang-es" lang="es">Estudio familiar de matemáticas</span></h1>
+            <p class="hw-hero-subtitle"><span class="lang-en">Optional &amp; Ungraded Home Exploration</span><span class="lang-es" lang="es">Exploración opcional en casa, sin calificación</span></p>
           </div>
         </div>
 
         <p class="hw-hero-lesson">
           <span class="hw-hero-lesson-title"><span class="lang-en">${esc(title)}</span><span class="lang-es" lang="es">${esc(familyTitlesEs[lessonId] || title)}</span></span>
-          <span class="hw-hero-lesson-meta"><span class="lang-en">${esc(homeworkPageLabel(lessonId))}</span><span class="lang-es" lang="es">${esc(
-            homeworkPageLabel(lessonId)
+          <span class="hw-hero-lesson-meta"><span class="lang-en">${esc(pageLabelEn)}</span><span class="lang-es" lang="es">${esc(
+            pageLabelEn
               .replace(/^Lesson /, "Lección ")
               .replace(/^Review/, "Repaso")
-              .replace("Part 2", "Parte 2")
+              .replace(/Session (\d): .*$/, (_, n) => SESSIONS[n].es)
+              .replace("Session 2", "Sesión 2")
               .replace("Section 3", "Sección 3"),
           )}</span></span>
         </p>
 
-        ${renderFamilyPairLink(lessonId)}
+        ${renderSessionBanner(lessonId, partner)}
+
+        <p class="hw-hero-bigidea" aria-label="Big idea">
+          <span class="hw-hero-bigidea-label"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
+          <span class="lang-en">${esc(completeSentence(bigIdea.en))}</span><span class="lang-es" lang="es">${esc(completeSentence(bigIdea.es))}</span>
+        </p>
 
         <div class="hw-hero-controls">
           <div class="lang-selector-card">
@@ -2898,16 +2919,6 @@ export function renderWelcomeBanner(config, lessonId) {
             </div>
           </div>
         </div>
-
-        ${
-          standard
-            ? `
-        <details class="hw-standard-details">
-          <summary class="hw-standard-summary">📚 <span><span class="lang-en">Standard:</span><span class="lang-es" lang="es">Estándar:</span> <code>${esc(standard)}</code></span> ▾</summary>
-          <p class="hw-standard-desc"><span class="lang-en">This lesson builds proficiency in Grade 6 mathematical standard ${esc(standard)}.</span><span class="lang-es" lang="es">Esta lección desarrolla destrezas en el estándar matemático de 6.º grado ${esc(standard)}.</span></p>
-        </details>`
-            : ""
-        }
 
         <p class="hw-hero-lead">
           <span class="lang-en">Optional, ungraded practice. Work with someone or on your own; no adult signature is needed.</span>
@@ -2931,8 +2942,9 @@ export function renderWelcomeBanner(config, lessonId) {
 
         ${renderQuickPlan()}
 
-        <details class="hw-tools-menu"><summary><span class="lang-en">Share, print &amp; paper practice</span><span class="lang-es" lang="es">Compartir, imprimir y practicar en papel</span></summary>
+        <details class="hw-tools-menu"><summary><span class="lang-en">Tools: scratchpad, share, print &amp; standard</span><span class="lang-es" lang="es">Herramientas: pizarra, compartir, imprimir y estándar</span></summary>
         <div class="hw-hero-share-bar">
+          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Scratchpad</span><span class="lang-es" lang="es">Pizarra</span></button>
           <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="copyHomeworkLink()">📋 <span class="lang-en">Copy Link</span><span class="lang-es" lang="es">Copiar enlace</span></button>
           <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_text_link" href="#" target="_blank" rel="noopener">💬 <span class="lang-en">Text</span><span class="lang-es" lang="es">Mensaje</span></a>
           <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_email_link" href="#" target="_blank" rel="noopener">✉️ <span class="lang-en">Email</span><span class="lang-es" lang="es">Correo</span></a>
@@ -2941,6 +2953,15 @@ export function renderWelcomeBanner(config, lessonId) {
           <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printAnswerSheet()">🔑 <span class="lang-en">Print answer sheet</span><span class="lang-es" lang="es">Imprimir respuestas</span></button>
           <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_offline_btn" onclick="preparePaperPractice()">📄 <span class="lang-en">Prepare paper practice</span><span class="lang-es" lang="es">Preparar práctica en papel</span></button>
         </div>
+        ${
+          standard
+            ? `
+        <details class="hw-standard-details">
+          <summary class="hw-standard-summary">📚 <span><span class="lang-en">Standard:</span><span class="lang-es" lang="es">Estándar:</span> <code>${esc(standard)}</code></span> ▾</summary>
+          <p class="hw-standard-desc"><span class="lang-en">This lesson builds proficiency in Grade 6 mathematical standard ${esc(standard)}.</span><span class="lang-es" lang="es">Esta lección desarrolla destrezas en el estándar matemático de 6.º grado ${esc(standard)}.</span></p>
+        </details>`
+            : ""
+        }
 
         </details>
 
@@ -2950,44 +2971,21 @@ export function renderWelcomeBanner(config, lessonId) {
     </header>`;
 }
 
-/* A lightweight bridge between the two family pages for a two-session lesson.
+/* The other night's page for a two-session lesson, or null when the lesson has one night.
    This stays on family homework; the separate classroom lesson exit remains
    intentionally free of a next-day navigation prompt. */
-function renderFamilyPairLink(lessonId) {
-  const match = String(lessonId || "").match(/^(\d+-\d+)(-part2)?$/);
-  if (!match) return "";
-  const baseId = match[1];
-  const isPart2 = Boolean(match[2]);
-  const otherId = isPart2 ? baseId : `${baseId}-part2`;
-  if (!existsSync(lessonPath(otherId, "homework.html"))) return "";
-  let partnerTitle = "";
-  try {
-    const partnerConfig = JSON.parse(readFileSync(lessonPath(otherId, "config.json"), "utf8"));
-    const notesPath = join(
-      dirname(fileURLToPath(import.meta.url)),
-      "../data/family-homework-notes",
-      `${otherId}.json`,
-    );
-    const notes = existsSync(notesPath) ? JSON.parse(readFileSync(notesPath, "utf8")) : {};
-    partnerTitle = notes.sessionTitle || partnerConfig.title || "";
-  } catch {}
-  const esTitle = familyTitlesEs[otherId] || "";
-  const labelEn = isPart2 ? "Review Part 1" : "Explore Part 2";
-  const labelEs = isPart2 ? "Repasar la Parte 1" : "Explorar la Parte 2";
-  const sentenceEn = isPart2
-    ? "This page builds on Part 1. You can revisit it any time."
-    : "This lesson has an optional second part. Open it when it is assigned.";
-  const sentenceEs = isPart2
-    ? "Esta página se basa en la Parte 1. Puedes volver a ella cuando quieras."
-    : "Esta lección tiene una segunda parte opcional. Ábrela cuando te la asignen.";
-  return `<aside class="hw-pair-note" aria-label="Two-part lesson">
-    <p><span class="lang-en">${sentenceEn}</span><span class="lang-es" lang="es">${sentenceEs}</span></p>
-    <a href="/lessons/${otherId}/homework.html" class="hw-pair-link">
-      <span class="lang-en">${labelEn}${partnerTitle ? " · " + esc(partnerTitle) : " · Lesson " + baseId}</span>
-      <span class="lang-es" lang="es">${labelEs}${esTitle ? " · " + esc(esTitle) : " · Lección " + baseId}</span>
-      <span aria-hidden="true">→</span>
-    </a>
-  </aside>`;
+function sessionPartner(lessonId) {
+  const here = sessionOf(lessonId);
+  if (!here) return null;
+  const otherId = here.session === 2 ? here.baseId : `${here.baseId}-part2`;
+  if (!existsSync(lessonPath(otherId, "homework.html"))) return null;
+  const notesPath = join(
+    dirname(fileURLToPath(import.meta.url)),
+    "../data/family-homework-notes",
+    `${otherId}.json`,
+  );
+  const notes = existsSync(notesPath) ? JSON.parse(readFileSync(notesPath, "utf8")) : {};
+  return { href: `/lessons/${otherId}/homework.html`, learningTonight: notes.learningTonight };
 }
 
 /* The start panel lives inside the hero, before secondary controls. */
@@ -8367,6 +8365,7 @@ export function renderLearnTab(config, visualLabHtml = "", workbenchHtml = "") {
 ${workbenchLaunchHtml}
 ${workbenchHtml}
       <div class="learn-extended-block" id="hw_learn_quick">${parentDrawerHtml}${powerUpHtml}</div>
+${renderWarmupHuddle(confusedGrownUpCard(config))}
       <p class="tab-help-row learn-extended-block">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>
       <div class="tab-flow-nav">
         <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('learn')">
@@ -8547,6 +8546,7 @@ export function renderCheckTab(
       ${basicBlock}
       ${warmupBlock}
       ${challengeBlock}
+      ${renderQuickOptional()}
       ${more}
       ${flowNext}
     </div>`;
@@ -8835,6 +8835,15 @@ ${offlineCta}
       </section>`;
 }
 
+/* The Confused Grown-Up reuses authored items, so prefer ones the Check stop is not already asking. */
+function confusedGrownUpCard(config) {
+  const { warmup, challenge } = selectTieredQuickCheckProblems(config.practice || {}, config);
+  const asked = [...(config.familyNotes?.basicPractice || []), ...warmup, ...challenge].map(
+    (p) => p.stem,
+  );
+  return renderConfusedGrownUp(confusedRoundsFor(config, new Set(asked)));
+}
+
 /**
  * The Play stop: every game in one arcade. This used to be three separate
  * tabs — a "Play" tab holding one quiz, an "Arcade" tab holding one iframe,
@@ -8847,12 +8856,6 @@ export function renderPlayTabPanel(config, lessonId = "") {
   const arcadeUrl = lessonId
     ? `/math/games/practice-arcade/?lesson=${encodeURIComponent(lessonId)}`
     : "";
-  /* The Confused Grown-Up reuses authored items, so prefer ones the Check stop is not already asking. */
-  const { warmup, challenge } = selectTieredQuickCheckProblems(config.practice || {}, config);
-  const asked = [...(config.familyNotes?.basicPractice || []), ...warmup, ...challenge].map(
-    (p) => p.stem,
-  );
-  const confusedHtml = renderConfusedGrownUp(confusedRoundsFor(config, new Set(asked)));
   return `
     <div ${tabPanelAttrs("play", true)}>
       <h2 class="section-title">🎮 <span class="lang-en">Play</span><span class="lang-es" lang="es">Jugar</span></h2>
@@ -8860,7 +8863,6 @@ export function renderPlayTabPanel(config, lessonId = "") {
         <span class="lang-en">Pick a game and play as a team. Nothing here is timed, and every game can be replayed as many times as you like.</span>
         <span class="lang-es" lang="es">Escojan un juego y jueguen en equipo. Nada aquí tiene cronómetro, y pueden repetir cada juego cuantas veces quieran.</span>
       </p>
-      ${confusedHtml}
       ${renderFamilyActivityCorner(config)}
       ${renderFamilyGameBreak(familyGameKey(config), { quizHtml, arcadeUrl }, detectVisualTopic(config))}
       <div class="tab-flow-nav">
@@ -9274,47 +9276,15 @@ const HOMEWORK_EXTRA_TABS = [
 
 export const HOMEWORK_STOP_COUNT = HOMEWORK_TABS.length;
 
-export function renderScratchpadHtml() {
-  return `
-    <div class="interactive-scratchpad card-ish" id="hw_scratchpad_wrapper" hidden>
-      <div class="scratchpad-header">
-        <div class="scratchpad-title">
-          <span class="scratchpad-icon" aria-hidden="true">✏️</span>
-          <strong><span class="lang-en">Family Math Scratchpad</span><span class="lang-es" lang="es">Pizarra Familiar de Matemáticas</span></strong>
-        </div>
-        <div class="scratchpad-tools">
-          <div class="color-palette" role="radiogroup" aria-label="Drawing color">
-            <button type="button" class="color-dot is-active" data-color="#12355b" style="background:#12355b;" onclick="setScratchpadColor('#12355b', this)" aria-label="Navy pen"></button>
-            <button type="button" class="color-dot" data-color="#1fa6a2" style="background:#1fa6a2;" onclick="setScratchpadColor('#1fa6a2', this)" aria-label="Teal pen"></button>
-            <button type="button" class="color-dot" data-color="#d97706" style="background:#d97706;" onclick="setScratchpadColor('#d97706', this)" aria-label="Amber pen"></button>
-            <button type="button" class="color-dot" data-color="#d9795d" style="background:#d9795d;" onclick="setScratchpadColor('#d9795d', this)" aria-label="Coral pen"></button>
-          </div>
-          <div class="grid-mode-group">
-            <button type="button" class="btn btn-sm btn-outline-secondary grid-btn is-active" onclick="setScratchpadGrid('blank', this)">📄 <span class="lang-en">Blank</span><span class="lang-es" lang="es">Blanco</span></button>
-            <button type="button" class="btn btn-sm btn-outline-secondary grid-btn" onclick="setScratchpadGrid('graph', this)">📐 <span class="lang-en">Grid</span><span class="lang-es" lang="es">Cuadrícula</span></button>
-            <button type="button" class="btn btn-sm btn-outline-secondary grid-btn" onclick="setScratchpadGrid('dots', this)">⚬ <span class="lang-en">Dots</span><span class="lang-es" lang="es">Puntos</span></button>
-          </div>
-          <button type="button" class="btn btn-sm btn-secondary tool-btn" id="scratchpad_eraser_btn" onclick="toggleScratchpadEraser()">🧹 <span class="lang-en">Eraser</span><span class="lang-es" lang="es">Borrador</span></button>
-          <button type="button" class="btn btn-sm btn-secondary tool-btn" onclick="clearScratchpad()">🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
-          <button type="button" class="scratchpad-close-btn" onclick="toggleScratchpad()" aria-label="Close scratchpad">✕</button>
-        </div>
-      </div>
-      <div class="scratchpad-canvas-wrap">
-        <canvas class="scratchpad-canvas" id="hw_scratchpad_canvas" width="760" height="220" style="background:white; width:100%; height:220px; touch-action:none;"></canvas>
-      </div>
-      <p class="scratchpad-hint"><span class="lang-en">💡 Draw fraction bars, tape diagrams, equations, or line up decimals together!</span><span class="lang-es" lang="es">💡 ¡Dibujen barras de fracciones, modelos o alineen decimales juntos!</span></p>
-    </div>`;
-}
-
 /**
  * One navigation, not two. Each tab carries its own stop number, its own
  * minutes and its own "done" tick, so the bar answers the three questions the
  * separate rail was added to answer — where am I, how long is this, what have
  * we finished — without a second row competing with it for the same job.
  */
-export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "") {
+export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null) {
   const tabCount = HOMEWORK_TABS.length;
-  const scratchpad = renderScratchpadHtml();
+  const scratchpad = renderScratchpadHtml(unit);
   const tabBtn = (t, i) => `
             <button type="button" role="tab" id="hw_tab_${t.id}" class="homework-tab-btn${i === 0 ? " is-active" : ""}"
               aria-selected="${i === 0 ? "true" : "false"}"${i === 0 ? ' aria-current="step"' : ""} aria-controls="hw_panel_${t.id}"
@@ -9897,7 +9867,10 @@ function setHomeworkRoute(mode, options) {
     ),
     function (problem) { return !problem.closest('.more-practice'); }
   );
-  var limit = route.problemLimit > 0 ? Math.min(route.problemLimit, coreProblems.length) : coreProblems.length;
+  if (mode !== 'quick') delete document.body.dataset.quickMore;
+  var quickMore = mode === 'quick' && document.body.dataset.quickMore === '1';
+  var routeLimit = route.problemLimit > 0 ? Math.min(route.problemLimit, coreProblems.length) : coreProblems.length;
+  var limit = quickMore ? coreProblems.length : routeLimit;
   coreProblems.forEach(function (problem, index) { problem.hidden = index >= limit; });
   document.querySelectorAll('.practice-tier, .practice-tier-basic, .practice-tier-warmup, .practice-tier-challenge').forEach(function (tier) {
     if (tier.closest('.more-practice')) return;
@@ -9905,6 +9878,17 @@ function setHomeworkRoute(mode, options) {
   });
   var more = document.querySelector('.more-practice');
   if (more) more.hidden = mode === 'quick';
+  /* Quick practice sets problems aside, never takes them away: one tap shows the rest. */
+  var optional = document.getElementById('hw_quick_optional');
+  if (optional) {
+    var extra = coreProblems.length - routeLimit;
+    optional.hidden = !(mode === 'quick' && extra > 0);
+    var optionalBtn = document.getElementById('hw_quick_optional_btn');
+    if (optionalBtn) optionalBtn.setAttribute('aria-expanded', quickMore ? 'true' : 'false');
+    optional.querySelectorAll('[data-hw-quick-more-label]').forEach(function (el) { el.textContent = quickMore ? 'Hide' : 'Show'; });
+    optional.querySelectorAll('[data-hw-quick-more-label-es]').forEach(function (el) { el.textContent = quickMore ? 'Ocultar' : 'Mostrar'; });
+    optional.querySelectorAll('[data-hw-quick-more-count], [data-hw-quick-more-count-es]').forEach(function (el) { el.textContent = String(extra); });
+  }
   document.querySelectorAll('[data-hw-core-count]').forEach(function (el) { el.textContent = String(coreProblems.length); });
   ['hw_goal_count', 'hw_goal_count_es', 'hw_check_problem_count', 'hw_check_problem_count_es'].forEach(function (id) {
     var el = document.getElementById(id);

@@ -109,7 +109,7 @@ selfTestCountQuickChecks();
 
 const REQUIRED_MARKERS = [
   "Family Math Night",
-  "Tarea de matemáticas en familia",
+  "Estudio familiar de matemáticas",
   "What we're learning tonight",
   "Qué aprendemos hoy",
   "The big idea",

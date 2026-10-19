@@ -62,6 +62,8 @@ import {
   spanishChoiceFeedback,
   tableModel,
 } from "./lib/homework-problems.mjs";
+import { SCRATCHPAD_CSS, SCRATCHPAD_JS } from "./lib/homework-scratchpad.mjs";
+import { SESSION_FLOW_CSS, SESSION_FLOW_JS } from "./lib/homework-session-flow.mjs";
 import {
   externalizeSharedCode,
   staleSharedFiles,
@@ -1363,6 +1365,7 @@ body[data-family-style="unlock"] .hw-experience-banner { border:1px solid #ccd4c
   const tabsHtml = renderHomeworkTabs(
     tabPanels,
     renderHelpDrawer(renderHelpContent(config), renderMoreContent(config, lessonId)),
+    config.unit,
   );
   const helpModalHtml = renderHelpModal();
   const refrigeratorSheetHtml = renderRefrigeratorSheet(config, lessonId);
@@ -4065,6 +4068,8 @@ body {
 ${STUDIO_SKIN_CSS}
 ${BRIDGE_CSS}
 ${CONFUSED_GROWNUP_CSS}
+${SCRATCHPAD_CSS}
+${SESSION_FLOW_CSS}
 ${DOMINO_DUO_CSS}
 ${VOICE_CSS}
 ${familyStyleCss}
@@ -4200,6 +4205,8 @@ ${STUDIO_SKIN_JS}
 ${HOMEWORK_GAME_JS}
 ${VOICE_JS}
 ${CONFUSED_GROWNUP_JS}
+${SCRATCHPAD_JS}
+${SESSION_FLOW_JS}
 ${DOMINO_DUO_JS}
 ${VISUAL_LABS_JS}
 ${MATH_INPUT_JS}
@@ -4724,104 +4731,6 @@ function markVocabCardKnown(idx, known) {
       localStorage.setItem('hw_vocab_review_deck', JSON.stringify(reviewDeck));
     }
   } catch (e) {}
-}
-
-// Scratchpad Engine
-let scratchpadCanvas = null;
-let scratchpadCtx = null;
-let isDrawing = false;
-let scratchpadColor = "#12355b";
-let isEraser = false;
-
-function initScratchpad() {
-  scratchpadCanvas = document.getElementById("hw_scratchpad_canvas");
-  if (!scratchpadCanvas) return;
-  scratchpadCtx = scratchpadCanvas.getContext("2d");
-
-  function getPos(e) {
-    const rect = scratchpadCanvas.getBoundingClientRect();
-    const cx = e.touches ? e.touches[0].clientX : e.clientX;
-    const cy = e.touches ? e.touches[0].clientY : e.clientY;
-    return {
-      x: ((cx - rect.left) / rect.width) * scratchpadCanvas.width,
-      y: ((cy - rect.top) / rect.height) * scratchpadCanvas.height,
-    };
-  }
-
-  function startDraw(e) {
-    e.preventDefault();
-    isDrawing = true;
-    const pos = getPos(e);
-    scratchpadCtx.beginPath();
-    scratchpadCtx.moveTo(pos.x, pos.y);
-  }
-
-  function draw(e) {
-    if (!isDrawing) return;
-    e.preventDefault();
-    const pos = getPos(e);
-    scratchpadCtx.lineCap = "round";
-    scratchpadCtx.lineJoin = "round";
-    if (isEraser) {
-      scratchpadCtx.strokeStyle = "#ffffff";
-      scratchpadCtx.lineWidth = 18;
-    } else {
-      scratchpadCtx.strokeStyle = scratchpadColor;
-      scratchpadCtx.lineWidth = 3.5;
-    }
-    scratchpadCtx.lineTo(pos.x, pos.y);
-    scratchpadCtx.stroke();
-  }
-
-  function stopDraw() {
-    if (isDrawing) {
-      isDrawing = false;
-      scratchpadCtx.closePath();
-    }
-  }
-
-  scratchpadCanvas.addEventListener("pointerdown", startDraw);
-  scratchpadCanvas.addEventListener("pointermove", draw);
-  scratchpadCanvas.addEventListener("pointerup", stopDraw);
-  scratchpadCanvas.addEventListener("pointercancel", stopDraw);
-  scratchpadCanvas.addEventListener("pointerleave", stopDraw);
-}
-
-function toggleScratchpad() {
-  const wrap = document.getElementById("hw_scratchpad_wrapper");
-  if (!wrap) return;
-  const isHidden = wrap.hidden;
-  wrap.hidden = !isHidden;
-  if (!wrap.hidden) {
-    if (!scratchpadCtx) initScratchpad();
-    wrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }
-}
-
-function setScratchpadColor(color, btn) {
-  scratchpadColor = color;
-  isEraser = false;
-  document.querySelectorAll(".color-dot").forEach((d) => d.classList.remove("is-active"));
-  if (btn) btn.classList.add("is-active");
-  const eraserBtn = document.getElementById("scratchpad_eraser_btn");
-  if (eraserBtn) eraserBtn.classList.remove("is-active");
-}
-
-function toggleScratchpadEraser() {
-  isEraser = !isEraser;
-  const eraserBtn = document.getElementById("scratchpad_eraser_btn");
-  if (eraserBtn) eraserBtn.classList.toggle("is-active", isEraser);
-  if (isEraser) {
-    document.querySelectorAll(".color-dot").forEach((d) => d.classList.remove("is-active"));
-  } else {
-    const defaultDot = document.querySelector('.color-dot[data-color="' + scratchpadColor + '"]');
-    if (defaultDot) defaultDot.classList.add("is-active");
-  }
-}
-
-function clearScratchpad() {
-  if (!scratchpadCanvas || !scratchpadCtx) return;
-  scratchpadCtx.clearRect(0, 0, scratchpadCanvas.width, scratchpadCanvas.height);
 }
 
 // Celebration & High-Five Engine
@@ -5801,16 +5710,6 @@ function updateTapeDiagram() {
   for (let j = 0; j < b; j++) html += '<div class="tape-block tape-block-b">' + f + '</div>';
   html += '</div></div>';
   render.innerHTML = html;
-}
-
-function setScratchpadGrid(gridType, btn) {
-  document.querySelectorAll(".grid-btn").forEach(b => b.classList.remove("is-active"));
-  if (btn) btn.classList.add("is-active");
-  const canvas = document.getElementById("hw_scratchpad_canvas");
-  if (!canvas) return;
-  canvas.classList.remove("canvas-bg-graph", "canvas-bg-dots");
-  if (gridType === "graph") canvas.classList.add("canvas-bg-graph");
-  if (gridType === "dots") canvas.classList.add("canvas-bg-dots");
 }
 
 function setCertRibbon(theme, btn) {

@@ -491,7 +491,10 @@ function setHomeworkRoute(mode, options) {
     ),
     function (problem) { return !problem.closest('.more-practice'); }
   );
-  var limit = route.problemLimit > 0 ? Math.min(route.problemLimit, coreProblems.length) : coreProblems.length;
+  if (mode !== 'quick') delete document.body.dataset.quickMore;
+  var quickMore = mode === 'quick' && document.body.dataset.quickMore === '1';
+  var routeLimit = route.problemLimit > 0 ? Math.min(route.problemLimit, coreProblems.length) : coreProblems.length;
+  var limit = quickMore ? coreProblems.length : routeLimit;
   coreProblems.forEach(function (problem, index) { problem.hidden = index >= limit; });
   document.querySelectorAll('.practice-tier, .practice-tier-basic, .practice-tier-warmup, .practice-tier-challenge').forEach(function (tier) {
     if (tier.closest('.more-practice')) return;
@@ -499,6 +502,17 @@ function setHomeworkRoute(mode, options) {
   });
   var more = document.querySelector('.more-practice');
   if (more) more.hidden = mode === 'quick';
+  /* Quick practice sets problems aside, never takes them away: one tap shows the rest. */
+  var optional = document.getElementById('hw_quick_optional');
+  if (optional) {
+    var extra = coreProblems.length - routeLimit;
+    optional.hidden = !(mode === 'quick' && extra > 0);
+    var optionalBtn = document.getElementById('hw_quick_optional_btn');
+    if (optionalBtn) optionalBtn.setAttribute('aria-expanded', quickMore ? 'true' : 'false');
+    optional.querySelectorAll('[data-hw-quick-more-label]').forEach(function (el) { el.textContent = quickMore ? 'Hide' : 'Show'; });
+    optional.querySelectorAll('[data-hw-quick-more-label-es]').forEach(function (el) { el.textContent = quickMore ? 'Ocultar' : 'Mostrar'; });
+    optional.querySelectorAll('[data-hw-quick-more-count], [data-hw-quick-more-count-es]').forEach(function (el) { el.textContent = String(extra); });
+  }
   document.querySelectorAll('[data-hw-core-count]').forEach(function (el) { el.textContent = String(coreProblems.length); });
   ['hw_goal_count', 'hw_goal_count_es', 'hw_check_problem_count', 'hw_check_problem_count_es'].forEach(function (id) {
     var el = document.getElementById(id);
@@ -3024,6 +3038,187 @@ document.addEventListener('click', function (e) {
 });
 
 
+/* Family Math Scratchpad */
+var scratchpadCanvas = null;
+var scratchpadCtx = null;
+var isDrawing = false;
+var scratchpadColor = "#12355b";
+var isEraser = false;
+var scratchpadReturnFocus = null;
+
+function scratchpadScale() {
+  var rect = scratchpadCanvas.getBoundingClientRect();
+  return rect.width ? scratchpadCanvas.width / rect.width : 1;
+}
+
+/* Keep the backing store the size it is drawn, so full screen is crisp and never stretched. */
+function fitScratchpad() {
+  if (!scratchpadCanvas || !scratchpadCtx || isDrawing) return;
+  var rect = scratchpadCanvas.getBoundingClientRect();
+  if (rect.width < 2 || rect.height < 2) return;
+  var ratio = Math.min(window.devicePixelRatio || 1, 2);
+  var w = Math.round(rect.width * ratio);
+  var h = Math.round(rect.height * ratio);
+  if (w === scratchpadCanvas.width && h === scratchpadCanvas.height) return;
+  var snap = document.createElement("canvas");
+  snap.width = scratchpadCanvas.width;
+  snap.height = scratchpadCanvas.height;
+  snap.getContext("2d").drawImage(scratchpadCanvas, 0, 0);
+  scratchpadCanvas.width = w;
+  scratchpadCanvas.height = h;
+  scratchpadCtx.drawImage(snap, 0, 0, w, h);
+}
+
+function initScratchpad() {
+  scratchpadCanvas = document.getElementById("hw_scratchpad_canvas");
+  if (!scratchpadCanvas) return;
+  scratchpadCtx = scratchpadCanvas.getContext("2d");
+  var canvas = scratchpadCanvas;
+
+  function getPos(e) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+      x: ((e.clientX - rect.left) / rect.width) * canvas.width,
+      y: ((e.clientY - rect.top) / rect.height) * canvas.height,
+    };
+  }
+  function startDraw(e) {
+    e.preventDefault();
+    isDrawing = true;
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+    var pos = getPos(e);
+    scratchpadCtx.beginPath();
+    scratchpadCtx.moveTo(pos.x, pos.y);
+  }
+  function draw(e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+    var pos = getPos(e);
+    var scale = scratchpadScale();
+    scratchpadCtx.lineCap = "round";
+    scratchpadCtx.lineJoin = "round";
+    scratchpadCtx.globalCompositeOperation = isEraser ? "destination-out" : "source-over";
+    scratchpadCtx.strokeStyle = scratchpadColor;
+    scratchpadCtx.lineWidth = (isEraser ? 18 : 3.5) * scale;
+    scratchpadCtx.lineTo(pos.x, pos.y);
+    scratchpadCtx.stroke();
+  }
+  function stopDraw() {
+    if (!isDrawing) return;
+    isDrawing = false;
+    scratchpadCtx.closePath();
+  }
+  canvas.addEventListener("pointerdown", startDraw);
+  canvas.addEventListener("pointermove", draw);
+  canvas.addEventListener("pointerup", stopDraw);
+  canvas.addEventListener("pointercancel", stopDraw);
+  canvas.addEventListener("pointerleave", stopDraw);
+  if (window.ResizeObserver) new ResizeObserver(fitScratchpad).observe(canvas);
+  fitScratchpad();
+}
+
+function setScratchpadExpanded(on) {
+  var wrap = document.getElementById("hw_scratchpad_wrapper");
+  if (!wrap) return;
+  var wasOn = wrap.classList.contains("is-expanded");
+  wrap.classList.toggle("is-expanded", on);
+  document.body.classList.toggle("hw-scratchpad-open", on);
+  if (on) {
+    wrap.setAttribute("role", "dialog");
+    wrap.setAttribute("aria-modal", "true");
+    wrap.setAttribute("aria-label", "Family Math Scratchpad");
+  } else {
+    wrap.removeAttribute("role");
+    wrap.removeAttribute("aria-modal");
+    wrap.removeAttribute("aria-label");
+  }
+  var btn = document.getElementById("scratchpad_expand_btn");
+  if (btn) {
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+    var en = btn.querySelector(".scratchpad-expand-en");
+    var es = btn.querySelector(".scratchpad-expand-es");
+    if (en) en.textContent = on ? "Exit full screen" : "Full screen";
+    if (es) es.textContent = on ? "Salir de pantalla completa" : "Pantalla completa";
+    if (on && !wasOn) btn.focus();
+  }
+  fitScratchpad();
+}
+
+function toggleScratchpadExpand() {
+  var wrap = document.getElementById("hw_scratchpad_wrapper");
+  if (wrap) setScratchpadExpanded(!wrap.classList.contains("is-expanded"));
+}
+
+function toggleScratchpad() {
+  var wrap = document.getElementById("hw_scratchpad_wrapper");
+  if (!wrap) return;
+  var willOpen = wrap.hidden;
+  wrap.hidden = !willOpen;
+  if (willOpen) {
+    scratchpadReturnFocus = document.activeElement;
+    if (!scratchpadCtx) initScratchpad();
+    /* A 220px strip is too small to draw in on a phone, so phones open full screen. */
+    if (window.matchMedia && window.matchMedia("(max-width: 640px)").matches) setScratchpadExpanded(true);
+    else wrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    fitScratchpad();
+  } else {
+    setScratchpadExpanded(false);
+    if (scratchpadReturnFocus && scratchpadReturnFocus.focus) scratchpadReturnFocus.focus();
+  }
+}
+
+document.addEventListener("keydown", function (e) {
+  if (e.key !== "Escape") return;
+  var wrap = document.getElementById("hw_scratchpad_wrapper");
+  if (wrap && wrap.classList.contains("is-expanded")) setScratchpadExpanded(false);
+});
+
+function setScratchpadColor(color, btn) {
+  scratchpadColor = color;
+  isEraser = false;
+  document.querySelectorAll(".color-dot").forEach(function (d) { d.classList.remove("is-active"); });
+  if (btn) btn.classList.add("is-active");
+  var eraserBtn = document.getElementById("scratchpad_eraser_btn");
+  if (eraserBtn) eraserBtn.classList.remove("is-active");
+}
+
+function toggleScratchpadEraser() {
+  isEraser = !isEraser;
+  var eraserBtn = document.getElementById("scratchpad_eraser_btn");
+  if (eraserBtn) eraserBtn.classList.toggle("is-active", isEraser);
+  if (isEraser) {
+    document.querySelectorAll(".color-dot").forEach(function (d) { d.classList.remove("is-active"); });
+  } else {
+    var dot = document.querySelector('.color-dot[data-color="' + scratchpadColor + '"]');
+    if (dot) dot.classList.add("is-active");
+  }
+}
+
+function clearScratchpad() {
+  if (!scratchpadCanvas || !scratchpadCtx) return;
+  scratchpadCtx.clearRect(0, 0, scratchpadCanvas.width, scratchpadCanvas.height);
+}
+
+function setScratchpadGrid(gridType, btn) {
+  document.querySelectorAll(".grid-btn").forEach(function (b) { b.classList.remove("is-active"); });
+  if (btn) btn.classList.add("is-active");
+  var wrap = document.querySelector(".scratchpad-canvas-wrap");
+  if (!wrap) return;
+  Array.prototype.slice.call(wrap.classList).forEach(function (name) {
+    if (name.indexOf("scratchpad-bg-") === 0) wrap.classList.remove(name);
+  });
+  if (gridType !== "blank") wrap.classList.add("scratchpad-bg-" + gridType);
+}
+
+
+/* Quick route: the problems the route set aside stay one tap away. */
+function toggleQuickOptional() {
+  var open = document.body.dataset.quickMore === '1';
+  if (open) delete document.body.dataset.quickMore; else document.body.dataset.quickMore = '1';
+  setHomeworkRoute('quick', { silent: true, keepTab: true });
+}
+
+
 /* Math Dominoes: two players on one device, and the paper version. */
 var domDuo = { on: false };
 
@@ -4037,104 +4232,6 @@ function markVocabCardKnown(idx, known) {
       localStorage.setItem('hw_vocab_review_deck', JSON.stringify(reviewDeck));
     }
   } catch (e) {}
-}
-
-// Scratchpad Engine
-let scratchpadCanvas = null;
-let scratchpadCtx = null;
-let isDrawing = false;
-let scratchpadColor = "#12355b";
-let isEraser = false;
-
-function initScratchpad() {
-  scratchpadCanvas = document.getElementById("hw_scratchpad_canvas");
-  if (!scratchpadCanvas) return;
-  scratchpadCtx = scratchpadCanvas.getContext("2d");
-
-  function getPos(e) {
-    const rect = scratchpadCanvas.getBoundingClientRect();
-    const cx = e.touches ? e.touches[0].clientX : e.clientX;
-    const cy = e.touches ? e.touches[0].clientY : e.clientY;
-    return {
-      x: ((cx - rect.left) / rect.width) * scratchpadCanvas.width,
-      y: ((cy - rect.top) / rect.height) * scratchpadCanvas.height,
-    };
-  }
-
-  function startDraw(e) {
-    e.preventDefault();
-    isDrawing = true;
-    const pos = getPos(e);
-    scratchpadCtx.beginPath();
-    scratchpadCtx.moveTo(pos.x, pos.y);
-  }
-
-  function draw(e) {
-    if (!isDrawing) return;
-    e.preventDefault();
-    const pos = getPos(e);
-    scratchpadCtx.lineCap = "round";
-    scratchpadCtx.lineJoin = "round";
-    if (isEraser) {
-      scratchpadCtx.strokeStyle = "#ffffff";
-      scratchpadCtx.lineWidth = 18;
-    } else {
-      scratchpadCtx.strokeStyle = scratchpadColor;
-      scratchpadCtx.lineWidth = 3.5;
-    }
-    scratchpadCtx.lineTo(pos.x, pos.y);
-    scratchpadCtx.stroke();
-  }
-
-  function stopDraw() {
-    if (isDrawing) {
-      isDrawing = false;
-      scratchpadCtx.closePath();
-    }
-  }
-
-  scratchpadCanvas.addEventListener("pointerdown", startDraw);
-  scratchpadCanvas.addEventListener("pointermove", draw);
-  scratchpadCanvas.addEventListener("pointerup", stopDraw);
-  scratchpadCanvas.addEventListener("pointercancel", stopDraw);
-  scratchpadCanvas.addEventListener("pointerleave", stopDraw);
-}
-
-function toggleScratchpad() {
-  const wrap = document.getElementById("hw_scratchpad_wrapper");
-  if (!wrap) return;
-  const isHidden = wrap.hidden;
-  wrap.hidden = !isHidden;
-  if (!wrap.hidden) {
-    if (!scratchpadCtx) initScratchpad();
-    wrap.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  }
-}
-
-function setScratchpadColor(color, btn) {
-  scratchpadColor = color;
-  isEraser = false;
-  document.querySelectorAll(".color-dot").forEach((d) => d.classList.remove("is-active"));
-  if (btn) btn.classList.add("is-active");
-  const eraserBtn = document.getElementById("scratchpad_eraser_btn");
-  if (eraserBtn) eraserBtn.classList.remove("is-active");
-}
-
-function toggleScratchpadEraser() {
-  isEraser = !isEraser;
-  const eraserBtn = document.getElementById("scratchpad_eraser_btn");
-  if (eraserBtn) eraserBtn.classList.toggle("is-active", isEraser);
-  if (isEraser) {
-    document.querySelectorAll(".color-dot").forEach((d) => d.classList.remove("is-active"));
-  } else {
-    const defaultDot = document.querySelector('.color-dot[data-color="' + scratchpadColor + '"]');
-    if (defaultDot) defaultDot.classList.add("is-active");
-  }
-}
-
-function clearScratchpad() {
-  if (!scratchpadCanvas || !scratchpadCtx) return;
-  scratchpadCtx.clearRect(0, 0, scratchpadCanvas.width, scratchpadCanvas.height);
 }
 
 // Celebration & High-Five Engine
@@ -5439,16 +5536,6 @@ function updateTapeDiagram() {
   for (let j = 0; j < b; j++) html += '<div class="tape-block tape-block-b">' + f + '</div>';
   html += '</div></div>';
   render.innerHTML = html;
-}
-
-function setScratchpadGrid(gridType, btn) {
-  document.querySelectorAll(".grid-btn").forEach(b => b.classList.remove("is-active"));
-  if (btn) btn.classList.add("is-active");
-  const canvas = document.getElementById("hw_scratchpad_canvas");
-  if (!canvas) return;
-  canvas.classList.remove("canvas-bg-graph", "canvas-bg-dots");
-  if (gridType === "graph") canvas.classList.add("canvas-bg-graph");
-  if (gridType === "dots") canvas.classList.add("canvas-bg-dots");
 }
 
 function setCertRibbon(theme, btn) {

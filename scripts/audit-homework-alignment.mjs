@@ -147,7 +147,7 @@ const REQUIRED_MARKERS = [
   },
   {
     id: "bilingual",
-    test: (h) => h.includes('lang="es"') && h.includes("Tarea de matemáticas en familia"),
+    test: (h) => h.includes('lang="es"') && h.includes("Estudio familiar de matemáticas"),
   },
   {
     id: "no-curriculum",
