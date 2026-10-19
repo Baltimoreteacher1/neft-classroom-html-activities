@@ -5343,6 +5343,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/unit-4-test-review/",
+    title: "Unit 4 Test Review | Grade 6 Family Homework",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/unit-5-adventure-review/",
     title: "The Architect's Vault — Unit 5 Review Adventure (Area, Surface Area, and Volume)",
     category: "Hub",

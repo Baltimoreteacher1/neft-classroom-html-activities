@@ -61,6 +61,7 @@ const GAME_DIRS = [
   "curriculum/unit-rate-market-mission",
   "curriculum/ratio-rate-review-mission",
   "curriculum/unit-3-test-review",
+  "curriculum/unit-4-test-review",
   "curriculum/teach-the-machine",
   "games/3d/boss-battle-3d",
   "games/3d/boss-battle-3d/play",
