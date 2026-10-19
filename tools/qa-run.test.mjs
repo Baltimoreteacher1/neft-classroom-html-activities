@@ -21,6 +21,7 @@ import {
   expand,
   GATE,
   needsOf,
+  packageScriptsDelta,
   resolveSet,
   scopeFor,
   testEnv,
@@ -106,6 +107,92 @@ check(
 check(
   scopeFor(["curriculum/plan-notes/plan-notes.js"])?.includes("validate:plan-notes"),
   "a plan-notes change must pull in validate:plan-notes — coverage that names the file but not the gate is how stale vocab shipped",
+);
+/* package.json: scripts-only edits may skip the full gate; everything else may not. */
+const pj = (o) => JSON.stringify(o);
+const base = {
+  name: "x",
+  dependencies: { a: "1" },
+  scripts: { build: "vite build", t: "node t.mjs" },
+};
+const withScripts = (scripts, rest = {}) => pj({ ...base, ...rest, scripts });
+const d1 = packageScriptsDelta(
+  pj(base),
+  withScripts({ ...base.scripts, "validate:new": "node v.mjs" }),
+);
+check(
+  d1.safe && d1.changed.join() === "validate:new",
+  "a new non-build script is a safe scripts-only edit",
+);
+check(
+  !packageScriptsDelta(pj(base), withScripts({ ...base.scripts, build: "vite build && x" })).safe,
+  "editing the build script is NOT safe",
+);
+check(
+  !packageScriptsDelta(
+    pj({
+      ...base,
+      scripts: { ...base.scripts, build: "npm run gen && vite build", gen: "node g.mjs" },
+    }),
+    pj({
+      ...base,
+      scripts: { ...base.scripts, build: "npm run gen && vite build", gen: "node g2.mjs" },
+    }),
+  ).safe,
+  "editing a script the build chain runs is NOT safe",
+);
+check(
+  !packageScriptsDelta(pj(base), withScripts(base.scripts, { dependencies: { a: "2" } })).safe,
+  "a dependency change is NOT safe",
+);
+check(
+  !packageScriptsDelta(pj(base), withScripts(base.scripts, { type: "module" })).safe,
+  "a new top-level field is NOT safe",
+);
+check(
+  !packageScriptsDelta(pj(base), withScripts({ ...base.scripts, postinstall: "node p.mjs" })).safe,
+  "a lifecycle script is NOT safe",
+);
+check(!packageScriptsDelta("{", pj(base)).safe, "an unparseable base is NOT safe");
+check(
+  scopeFor(["package.json"]) === null,
+  "without proof, package.json stays uncovered (default-deny)",
+);
+const pkgScope = scopeFor(["package.json"], {
+  packageDelta: { safe: true, changed: ["validate:extra-help", "deploy", "no-such-script"] },
+});
+check(
+  Array.isArray(pkgScope) &&
+    pkgScope.includes("test") &&
+    pkgScope.includes("validate:gate-coverage"),
+  "a proven scripts-only package.json edit runs test + gate-coverage",
+);
+check(
+  Array.isArray(pkgScope) && !pkgScope.includes("deploy") && !pkgScope.includes("no-such-script"),
+  "a changed script joins the run only if it is a read-only gate member — never `deploy`",
+);
+check(
+  scopeFor(["package.json", "some/unknown/file.txt"], {
+    packageDelta: { safe: true, changed: [] },
+  }) === null,
+  "a proven package.json edit does not excuse another uncovered path",
+);
+check(
+  testEnv("test", ["test"], "/tmp/c.txt", {
+    baseManifestsFile: "/tmp/b.json",
+    packageScriptsOnly: true,
+  }).QA_TEST_PKG_SCRIPTS_ONLY === "1",
+  "the scripts-only proof reaches the test runner",
+);
+check(
+  testEnv("test", ["test"], null, { packageScriptsOnly: true }).QA_TEST_PKG_SCRIPTS_ONLY ===
+    undefined,
+  "no change list means no proof is forwarded",
+);
+check(
+  testEnv("validate:static", ["test"], "/tmp/c.txt", { packageScriptsOnly: true })
+    .QA_TEST_PKG_SCRIPTS_ONLY === undefined,
+  "only the test check receives the proof",
 );
 check(
   Array.isArray(scopeFor(["sitemap.xml"])) && scopeFor(["sitemap.xml"]).includes("test"),

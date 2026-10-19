@@ -117,10 +117,17 @@ if (!RECORD && process.env.QA_TEST_SCOPE_FILES) {
   try {
     changed = readFileSync(process.env.QA_TEST_SCOPE_FILES, "utf8").split("\n").filter(Boolean);
   } catch {}
+  let baseManifests = null;
+  try {
+    // qa-run writes the manifest(s) as of each base the change is measured against.
+    if (process.env.QA_TEST_BASE_MANIFESTS)
+      baseManifests = JSON.parse(readFileSync(process.env.QA_TEST_BASE_MANIFESTS, "utf8"));
+  } catch {}
   const pick = selectTests(
     tests.map((f) => relative(ROOT, f)),
     manifest,
     changed,
+    { baseManifests, packageScriptsOnly: process.env.QA_TEST_PKG_SCRIPTS_ONLY === "1" },
   );
   const chosen = new Set(pick.selected);
   toRun = tests.filter((f) => chosen.has(relative(ROOT, f)));

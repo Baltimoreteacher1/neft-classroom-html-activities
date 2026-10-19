@@ -106,14 +106,35 @@ export function serializeManifest(tests) {
  * Pick the tests to run. `all` is the discovered set (repo-relative). Returns
  * the selected list plus a human-readable account of why anything was widened.
  */
-export function selectTests(all, manifest, changed) {
+export function selectTests(all, manifest, changed, opts = {}) {
   const everything = (why) => ({ selected: [...all], why, scoped: false });
   if (!manifest) return everything("no data/test-reads.json (run `npm run test:reads`)");
   if (changed.length === 0) return everything("no change list");
   // Node reads the nearest package.json ("type", "exports") whenever it loads a
   // module, below the layer the tracer can see — so any of them is global.
-  const trigger = changed.find((p) => GLOBAL_TRIGGERS.has(p) || p.endsWith("/package.json"));
-  if (trigger) return everything(`${trigger} changed`);
+  //
+  // Two of those triggers are narrowed when the caller can PROVE the change is
+  // smaller than the file (qa-run diffs against the base; an unprovable change
+  // passes nothing here and stays global):
+  //   - root package.json where ONLY `scripts` differ. Node's loader never reads
+  //     `scripts`; a test that reads them does so through fs (traced -> selected
+  //     by its read set) or by spawning npm (opaque -> always run).
+  //   - the manifest itself: only tests whose recorded entry changed (or is new)
+  //     run. An unchanged entry is exactly as trusted as it was in the base.
+  const baseManifests = opts.baseManifests?.length ? opts.baseManifests : null;
+  const blocking = changed.filter((p) => {
+    if (!GLOBAL_TRIGGERS.has(p) && !p.endsWith("/package.json")) return false;
+    if (p === MANIFEST_PATH && baseManifests) return false;
+    if (p === "package.json" && opts.packageScriptsOnly) return false;
+    return true;
+  });
+  if (blocking.length) return everything(`${blocking[0]} changed`);
+  const entryChanged = (t) =>
+    changed.includes(MANIFEST_PATH) &&
+    baseManifests !== null &&
+    baseManifests.some(
+      (base) => JSON.stringify(base?.tests?.[t]) !== JSON.stringify(manifest.tests[t]),
+    );
   const counts = { wide: 0, unlisted: 0, hit: 0 };
   const selected = all.filter((t) => {
     const entry = manifest.tests[t];
@@ -125,7 +146,7 @@ export function selectTests(all, manifest, changed) {
       counts.wide++;
       return true;
     }
-    if (changed.includes(t) || changed.some((p) => covers(entry, p))) {
+    if (changed.includes(t) || entryChanged(t) || changed.some((p) => covers(entry, p))) {
       counts.hit++;
       return true;
     }

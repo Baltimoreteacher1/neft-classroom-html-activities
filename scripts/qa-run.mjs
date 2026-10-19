@@ -821,13 +821,84 @@ function changedPaths(noRenames = false) {
   ];
 }
 
-function scopeFor(paths) {
+/** Lifecycle scripts npm runs implicitly: editing one changes install/publish, not just a command. */
+const LIFECYCLE =
+  /^(pre|post)?(install|uninstall|publish|prepare|pack|version|shrinkwrap)$|^prepublishOnly$/;
+
+/** Scripts reachable from `root` by `npm run X` (and its pre/post hooks) inside `scripts`. */
+function scriptClosure(scripts, root) {
+  const seen = new Set();
+  const visit = (name) => {
+    if (seen.has(name) || typeof scripts[name] !== "string") return;
+    seen.add(name);
+    for (const m of scripts[name].matchAll(/npm run (?:-s )?([\w:.-]+)/g)) visit(m[1]);
+    visit(`pre${name}`);
+    visit(`post${name}`);
+  };
+  visit(root);
+  return seen;
+}
+
+/**
+ * Is an edit to package.json provably confined to `scripts` entries that do not
+ * feed the build or the install? Only then may it skip the full gate: every other
+ * field (dependencies, workspaces, engines, type, exports, overrides ...) changes
+ * how code is resolved or run, so those — and anything unparseable — stay FULL.
+ * `changed` names the scripts whose text differs (added, removed or edited).
+ */
+function packageScriptsDelta(oldText, newText) {
+  const unsafe = (why) => ({ safe: false, changed: [], why });
+  let before;
+  let after;
+  try {
+    before = JSON.parse(oldText);
+    after = JSON.parse(newText);
+  } catch {
+    return unsafe("package.json is not parseable");
+  }
+  const { scripts: oldScripts = {}, ...oldRest } = before;
+  const { scripts: newScripts = {}, ...newRest } = after;
+  if (JSON.stringify(oldRest) !== JSON.stringify(newRest))
+    return unsafe("a non-scripts field changed");
+  const changed = [...new Set([...Object.keys(oldScripts), ...Object.keys(newScripts)])].filter(
+    (k) => oldScripts[k] !== newScripts[k],
+  );
+  const lifecycle = changed.find((k) => LIFECYCLE.test(k));
+  if (lifecycle) return unsafe(`lifecycle script "${lifecycle}" changed`);
+  const build = new Set([
+    ...scriptClosure(oldScripts, "build"),
+    ...scriptClosure(newScripts, "build"),
+  ]);
+  const touched = changed.find((k) => build.has(k));
+  if (touched) return unsafe(`"${touched}" is part of the build chain`);
+  return { safe: true, changed, why: "only non-build scripts changed" };
+}
+
+/**
+ * Pick the covering checks for a change list, or null for the full gate.
+ * `ctx.packageDelta` (from packageScriptsDelta) lets a scripts-only package.json
+ * edit run the checks that read it instead of everything; without it, package.json
+ * is uncovered and default-deny applies.
+ */
+function scopeFor(paths, ctx = {}) {
   if (paths.length === 0) return null; // nothing changed → caller decides
   const picked = new Set(UNIVERSAL);
   if (paths.some((p) => CARRIES_SCRIPT.test(p))) picked.add("validate:js-syntax");
   for (const p of paths) {
     const rule = COVERAGE.find(([re]) => re.test(p));
-    if (!rule) return null; // default-deny → full gate
+    if (!rule) {
+      if (p === "package.json" && ctx.packageDelta?.safe) {
+        // `test` covers ci-scripts-exist / documented-gates-wired; gate-coverage
+        // re-resolves the chains. A changed script runs only if it is itself a
+        // read-only gate member — never an arbitrary script such as `deploy`.
+        picked.add("validate:gate-coverage");
+        picked.add("test");
+        const gate = new Set(resolveSet(GATE));
+        for (const name of ctx.packageDelta.changed) if (gate.has(name)) picked.add(name);
+        continue;
+      }
+      return null; // default-deny → full gate
+    }
     for (const c of rule[1]) picked.add(c);
   }
   return [...picked];
@@ -849,7 +920,7 @@ function scopeFor(paths) {
  * matters because EXCLUSIVE checks wait for everything else to finish — and it
  * rewrote source and dist/ while other checks read them. Standalone `npm test`
  * (and CI) still run it. Only set when `build` is part of THIS run. */
-function testEnv(name, checks, scopeFile = null) {
+function testEnv(name, checks, scopeFile = null, scope = {}) {
   // Strip first: this process may itself be running inside a gate's `test`
   // check (qa-run.test.mjs imports this), and a leaked flag would otherwise
   // reach checks that must not have it.
@@ -857,6 +928,8 @@ function testEnv(name, checks, scopeFile = null) {
     QA_BUILD_VERIFIED: _inherited,
     QA_TEST_SCOPE_FILES: _scope,
     QA_TEST_VERIFY: _verify,
+    QA_TEST_BASE_MANIFESTS: _bases,
+    QA_TEST_PKG_SCRIPTS_ONLY: _pkg,
     ...env
   } = process.env;
   if (name !== "test") return env;
@@ -868,6 +941,10 @@ function testEnv(name, checks, scopeFile = null) {
     QA_TEST_VERIFY: "1",
     ...(checks.includes("build") ? { QA_BUILD_VERIFIED: "1" } : {}),
     ...(scopeFile ? { QA_TEST_SCOPE_FILES: scopeFile } : {}),
+    ...(scopeFile && scope.baseManifestsFile
+      ? { QA_TEST_BASE_MANIFESTS: scope.baseManifestsFile }
+      : {}),
+    ...(scopeFile && scope.packageScriptsOnly ? { QA_TEST_PKG_SCRIPTS_ONLY: "1" } : {}),
   };
 }
 
@@ -879,6 +956,7 @@ export {
   GATE,
   NEEDS_DIST,
   needsOf,
+  packageScriptsDelta,
   resolveSet,
   scopeFor,
   testEnv,
@@ -887,6 +965,59 @@ export {
 
 /** Path of the file listing changed paths for the `test` check, when the change set is known. */
 let testScopeFile = null;
+/** What the gate could prove about a package.json / test-manifest edit; see baseScope(). */
+let testScope = {};
+
+/** Both refs a change list can be measured against (worktree vs HEAD, branch vs origin/main). */
+const BASE_REFS = ["HEAD", "origin/main"];
+
+function showAt(ref, file) {
+  try {
+    return execFileSync("git", ["show", `${ref}:${file}`], {
+      cwd: ROOT,
+      encoding: "utf8",
+      maxBuffer: 1 << 26,
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Narrow the two global test triggers when the edit is provably small. Measured
+ * against EVERY base ref, and any base that cannot be read leaves the trigger
+ * global: only a positive proof narrows anything.
+ *  - package.json: scripts-only, outside the build chain (packageScriptsDelta).
+ *  - data/test-reads.json: hand the base manifests to run-tests so only tests
+ *    whose recorded entry changed rerun, instead of all of them.
+ */
+function baseScope(paths) {
+  const out = {};
+  if (paths.includes("package.json")) {
+    const current = readFileSync(join(ROOT, "package.json"), "utf8");
+    const deltas = BASE_REFS.map((ref) => {
+      const old = showAt(ref, "package.json");
+      if (old === null) return { safe: false, changed: [] };
+      return old === current ? { safe: true, changed: [] } : packageScriptsDelta(old, current);
+    });
+    out.packageDelta = {
+      safe: deltas.every((d) => d.safe),
+      changed: [...new Set(deltas.flatMap((d) => d.changed))],
+    };
+    out.packageScriptsOnly = out.packageDelta.safe;
+  }
+  if (paths.includes("data/test-reads.json")) {
+    try {
+      const bases = BASE_REFS.map((ref) => JSON.parse(showAt(ref, "data/test-reads.json")));
+      if (bases.every((b) => b?.version === 1 && b.tests)) {
+        out.baseManifestsFile = join(mkdtempSync(join(tmpdir(), "qa-bases-")), "bases.json");
+        writeFileSync(out.baseManifestsFile, JSON.stringify(bases));
+      }
+    } catch {} // unreadable base -> trigger stays global
+  }
+  return out;
+}
 
 async function main() {
   /* --- Decide the check set ------------------------------------------------- */
@@ -900,8 +1031,9 @@ async function main() {
     if (paths.length) {
       testScopeFile = join(mkdtempSync(join(tmpdir(), "qa-scope-")), "changed.txt");
       writeFileSync(testScopeFile, `${changedPaths(true).join("\n")}\n`);
+      testScope = baseScope(paths);
     }
-    const scoped = scopeFor(paths);
+    const scoped = scopeFor(paths, { packageDelta: testScope.packageDelta });
     if (scoped) {
       checks = resolveSet(scoped);
       if (
@@ -1064,7 +1196,7 @@ async function main() {
         ["run", name],
         {
           cwd: ROOT,
-          env: testEnv(name, checks, testScopeFile),
+          env: testEnv(name, checks, testScopeFile, testScope),
           maxBuffer: 64 * 1024 * 1024,
           timeout: TIMEOUT_MS,
         },

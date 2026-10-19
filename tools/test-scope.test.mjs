@@ -102,6 +102,58 @@ for (const trigger of [
 ]) {
   assert.equal(pick([trigger]).length, all.length, `${trigger} must run everything`);
 }
+// Narrowed triggers: only with a positive proof from the caller, never by default.
+const sel = (changed, opts) => selectTests(all, manifest, changed, opts).selected;
+assert.deepEqual(
+  sel(["package.json"], { packageScriptsOnly: true }),
+  ["t/c.test.mjs", "t/new.test.mjs"],
+  "a proven scripts-only package.json edit runs only opaque/unlisted tests",
+);
+assert.equal(
+  sel(["package.json"], { packageScriptsOnly: false }).length,
+  all.length,
+  "an unproven package.json edit stays global",
+);
+assert.equal(
+  sel(["engine/package.json"], { packageScriptsOnly: true }).length,
+  all.length,
+  "the scripts-only proof is about the ROOT package.json — a nested one stays global",
+);
+assert.equal(
+  sel(["package.json", "package-lock.json"], { packageScriptsOnly: true }).length,
+  all.length,
+  "the lockfile alongside it is still global",
+);
+assert.equal(
+  sel(["package.json", "tools/run-tests.mjs"], { packageScriptsOnly: true }).length,
+  all.length,
+  "another trigger in the same change still widens it",
+);
+const edited = {
+  version: 1,
+  tests: { ...manifest.tests, "t/a.test.mjs": { files: ["data/a.json", "data/b.json"], dirs: [] } },
+};
+assert.deepEqual(
+  selectTests(all, edited, ["data/test-reads.json"], { baseManifests: [manifest] }).selected,
+  ["t/a.test.mjs", "t/c.test.mjs", "t/new.test.mjs"],
+  "a manifest edit reruns only the tests whose entry changed (plus opaque/unlisted)",
+);
+assert.equal(
+  selectTests(all, manifest, ["data/test-reads.json"], { baseManifests: [manifest] }).scoped,
+  true,
+  "an unchanged manifest entry set is not a global trigger",
+);
+assert.deepEqual(
+  selectTests(all, edited, ["data/test-reads.json"], { baseManifests: [manifest, edited] })
+    .selected,
+  ["t/a.test.mjs", "t/c.test.mjs", "t/new.test.mjs"],
+  "entries are compared against EVERY base ref",
+);
+assert.equal(
+  selectTests(all, edited, ["data/test-reads.json"], { baseManifests: [] }).selected.length,
+  all.length,
+  "with no base manifest to diff against, a manifest edit stays global",
+);
 assert.equal(pick([]).length, all.length, "no change list means no scoping");
 assert.equal(
   selectTests(all, null, ["data/a.json"]).selected.length,
