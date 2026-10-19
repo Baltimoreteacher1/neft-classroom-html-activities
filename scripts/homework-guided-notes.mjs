@@ -1988,28 +1988,38 @@ function conceptVisual(config) {
           <!-- Quiz 1 Card -->
           ${conceptCard(34, 68, 276, 218)}
           <rect x="52" y="80" width="140" height="24" rx="6" fill="#1e40af"/>
-          <text x="122" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">QUIZ 1 (OUT OF 25)</text>
-          <text x="172" y="130" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">21 out of 25 correct</text>
-          <text x="172" y="156" text-anchor="middle" font-size="15" font-weight="700" fill="#1e40af">Scale denominator to 100:</text>
+          <text class="concept-title-en" x="122" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">QUIZ 1 (OUT OF 25)</text>
+          <text class="concept-title-es" lang="es" x="122" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">PRUEBA 1 (DE 25)</text>
+          <text class="concept-title-en" x="172" y="130" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">21 out of 25 correct</text>
+          <text class="concept-title-es" lang="es" x="172" y="130" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">21 de 25 correctas</text>
+          <text class="concept-title-en" x="172" y="156" text-anchor="middle" font-size="15" font-weight="700" fill="#1e40af">Scale denominator to 100:</text>
+          <text class="concept-title-es" lang="es" x="172" y="156" text-anchor="middle" font-size="15" font-weight="700" fill="#1e40af">Escala el denominador a 100:</text>
           <text x="172" y="180" text-anchor="middle" font-size="16" font-weight="800" fill="#1e40af">21 × 4 / 25 × 4 = 84 / 100</text>
           <rect x="62" y="196" width="220" height="42" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
-          <text x="172" y="222" text-anchor="middle" font-size="20" font-weight="800" fill="#15803d">= 84% ★ HIGHER SCORE</text>
+          <text class="concept-title-en" x="172" y="222" text-anchor="middle" font-size="20" font-weight="800" fill="#15803d">= 84% ★ HIGHER SCORE</text>
+          <text class="concept-title-es" lang="es" x="172" y="222" text-anchor="middle" font-size="20" font-weight="800" fill="#15803d">= 84% ★ MEJOR PUNTAJE</text>
 
           <!-- Quiz 2 Card -->
           ${conceptCard(330, 68, 276, 218)}
           <rect x="348" y="80" width="140" height="24" rx="6" fill="#1e40af"/>
-          <text x="418" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">QUIZ 2 (OUT OF 20)</text>
-          <text x="468" y="130" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">16 out of 20 correct</text>
-          <text x="468" y="156" text-anchor="middle" font-size="15" font-weight="700" fill="#1e40af">Scale denominator to 100:</text>
+          <text class="concept-title-en" x="418" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">QUIZ 2 (OUT OF 20)</text>
+          <text class="concept-title-es" lang="es" x="418" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">PRUEBA 2 (DE 20)</text>
+          <text class="concept-title-en" x="468" y="130" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">16 out of 20 correct</text>
+          <text class="concept-title-es" lang="es" x="468" y="130" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">16 de 20 correctas</text>
+          <text class="concept-title-en" x="468" y="156" text-anchor="middle" font-size="15" font-weight="700" fill="#1e40af">Scale denominator to 100:</text>
+          <text class="concept-title-es" lang="es" x="468" y="156" text-anchor="middle" font-size="15" font-weight="700" fill="#1e40af">Escala el denominador a 100:</text>
           <text x="468" y="180" text-anchor="middle" font-size="16" font-weight="800" fill="#1e40af">16 × 5 / 20 × 5 = 80 / 100</text>
           <rect x="358" y="196" width="220" height="42" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
           <text x="468" y="222" text-anchor="middle" font-size="20" font-weight="800" fill="#64748b">= 80%</text>
 
           <!-- Takeaway Callout -->
           <rect x="34" y="300" width="572" height="104" rx="14" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
-          <text x="54" y="326" font-size="15" font-weight="800" fill="#1d4ed8">✔ WHY PERCENTS MAKE COMPARISON FAIR:</text>
-          <text x="54" y="350" font-size="14" font-weight="700" fill="#12355b">You can't compare 21 and 16 directly: the totals differ (25 vs 20).</text>
-          <text x="54" y="372" font-size="14" font-weight="700" fill="#12355b">Percents put both scores on the same 100-point scale: 84% beats 80%.</text>
+          <text class="concept-title-en" x="54" y="326" font-size="15" font-weight="800" fill="#1d4ed8">✔ WHY PERCENTS MAKE COMPARISON FAIR:</text>
+          <text class="concept-title-es" lang="es" x="54" y="326" font-size="15" font-weight="800" fill="#1d4ed8">✔ POR QUÉ LOS PORCENTAJES HACEN LA COMPARACIÓN JUSTA:</text>
+          <text class="concept-title-en" x="54" y="350" font-size="14" font-weight="700" fill="#12355b">You can't compare 21 and 16 directly: the totals differ (25 vs 20).</text>
+          <text class="concept-title-es" lang="es" x="54" y="350" font-size="14" font-weight="700" fill="#12355b">No se comparan 21 y 16 directo: los totales son distintos (25 y 20).</text>
+          <text class="concept-title-en" x="54" y="372" font-size="14" font-weight="700" fill="#12355b">Percents put both scores on the same 100-point scale: 84% beats 80%.</text>
+          <text class="concept-title-es" lang="es" x="54" y="372" font-size="14" font-weight="700" fill="#12355b">Los porcentajes ponen ambos sobre 100: 84% supera a 80%.</text>
           <text x="54" y="392" font-size="13" font-weight="700" fill="#1d4ed8">Equivalent ratio scaling: 21/25 = 84/100 and 16/20 = 80/100</text>`,
         })}</div>`,
         capEn:
@@ -2030,8 +2040,9 @@ function conceptVisual(config) {
         body: `
         <!-- Tape Diagram Card -->
         ${conceptCard(34, 68, 572, 136)}
-        <rect x="52" y="80" width="220" height="24" rx="6" fill="#0f766e"/>
-        <text x="162" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">TAPE DIAGRAM: $40 BACKPACK</text>
+        <rect x="52" y="80" width="240" height="24" rx="6" fill="#0f766e"/>
+        <text class="concept-title-en" x="172" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">TAPE DIAGRAM: $40 BACKPACK</text>
+        <text class="concept-title-es" lang="es" x="172" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">DIAGRAMA: MOCHILA DE $40</text>
 
         <!-- 4 Blocks of $10 each -->
         <g transform="translate(52, 116)">
@@ -2047,18 +2058,24 @@ function conceptVisual(config) {
           <rect x="404" y="0" width="125" height="42" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
           <text x="466" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#15803d">$10 (25%)</text>
         </g>
-        <text x="117" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="#b91c1c">Discount Part</text>
-        <text x="390" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="#15803d">Sale Price Part = $30 (75%)</text>
+        <text class="concept-title-en" x="117" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="#b91c1c">Discount Part</text>
+        <text class="concept-title-es" lang="es" x="117" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="#b91c1c">Parte de descuento</text>
+        <text class="concept-title-en" x="390" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="#15803d">Sale Price Part = $30 (75%)</text>
+        <text class="concept-title-es" lang="es" x="390" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="#15803d">Precio de oferta = $30 (75%)</text>
 
         <!-- Calculation Card -->
         <rect x="34" y="216" width="572" height="188" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
-        <text x="54" y="242" font-size="15" font-weight="800" fill="#0f766e">✔ TWO-STEP DISCOUNT FORMULA:</text>
+        <text class="concept-title-en" x="54" y="242" font-size="15" font-weight="800" fill="#0f766e">✔ TWO-STEP DISCOUNT FORMULA:</text>
+        <text class="concept-title-es" lang="es" x="54" y="242" font-size="15" font-weight="800" fill="#0f766e">✔ FÓRMULA DE DESCUENTO EN DOS PASOS:</text>
         <g transform="translate(54, 258)">
-          <text x="0" y="18" font-size="14" font-weight="700" fill="#12355b">Step 1: Find the discount (Part = Percent × Whole)</text>
+          <text class="concept-title-en" x="0" y="18" font-size="14" font-weight="700" fill="#12355b">Step 1: Find the discount (Part = Percent × Whole)</text>
+          <text class="concept-title-es" lang="es" x="0" y="18" font-size="14" font-weight="700" fill="#12355b">Paso 1: Halla el descuento (Parte = Porcentaje × Total)</text>
           <text x="0" y="40" font-size="15" font-weight="800" fill="#0f766e">25% of $40 = 0.25 × 40 = $10 discount</text>
-          <text x="0" y="68" font-size="14" font-weight="700" fill="#12355b">Step 2: Subtract discount from original price</text>
+          <text class="concept-title-en" x="0" y="68" font-size="14" font-weight="700" fill="#12355b">Step 2: Subtract discount from original price</text>
+          <text class="concept-title-es" lang="es" x="0" y="68" font-size="14" font-weight="700" fill="#12355b">Paso 2: Resta el descuento del precio original</text>
           <text x="0" y="90" font-size="15" font-weight="800" fill="#0f766e">Sale Price = $40 − $10 = $30</text>
-          <text x="0" y="118" font-size="13" font-weight="700" fill="#5f6f80">The word "of" means multiply: 25% OF $40 → 0.25 × 40 = $10</text>
+          <text class="concept-title-en" x="0" y="118" font-size="13" font-weight="700" fill="#5f6f80">The word "of" means multiply: 25% OF $40 → 0.25 × 40 = $10</text>
+          <text class="concept-title-es" lang="es" x="0" y="118" font-size="13" font-weight="700" fill="#5f6f80">La palabra "de" significa multiplicar: 25% DE $40 → 0.25 × 40 = $10</text>
         </g>`,
       })}</div>`,
       capEn:
@@ -2080,29 +2097,38 @@ function conceptVisual(config) {
           body: `
           <!-- Equation Solving Card -->
           ${conceptCard(34, 68, 572, 224)}
-          <rect x="52" y="80" width="250" height="24" rx="6" fill="#b45309"/>
-          <text x="177" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">EQUATION: PERCENT × WHOLE = PART</text>
+          <rect x="52" y="80" width="280" height="24" rx="6" fill="#b45309"/>
+          <text class="concept-title-en" x="192" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">EQUATION: PERCENT × WHOLE = PART</text>
+          <text class="concept-title-es" lang="es" x="192" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">ECUACIÓN: PORCENTAJE × TOTAL = PARTE</text>
 
-          <text x="54" y="132" font-size="15" font-weight="700" fill="#12355b">Problem: A $6 tip is 15% of the total restaurant bill (b).</text>
+          <text class="concept-title-en" x="54" y="132" font-size="15" font-weight="700" fill="#12355b">Problem: A $6 tip is 15% of the total restaurant bill (b).</text>
+          <text class="concept-title-es" lang="es" x="54" y="132" font-size="15" font-weight="700" fill="#12355b">Problema: Una propina de $6 es el 15% de la cuenta total (b).</text>
 
           <!-- Worked Steps -->
           <g transform="translate(54, 150)">
-            <text x="0" y="20" font-size="15" font-weight="800" fill="#b45309">1. Write the equation:</text>
+            <text class="concept-title-en" x="0" y="20" font-size="15" font-weight="800" fill="#b45309">1. Write the equation:</text>
+            <text class="concept-title-es" lang="es" x="0" y="20" font-size="15" font-weight="800" fill="#b45309">1. Escribe la ecuación:</text>
             <text x="260" y="20" font-size="17" font-weight="800" fill="#12355b">0.15 × b = 6</text>
 
-            <text x="0" y="52" font-size="15" font-weight="800" fill="#b45309">2. Divide to undo multiplication:</text>
+            <text class="concept-title-en" x="0" y="52" font-size="15" font-weight="800" fill="#b45309">2. Divide to undo multiplication:</text>
+            <text class="concept-title-es" lang="es" x="0" y="52" font-size="15" font-weight="800" fill="#b45309">2. Divide para despejar:</text>
             <text x="260" y="52" font-size="17" font-weight="800" fill="#12355b">b = 6 ÷ 0.15</text>
 
-            <text x="0" y="84" font-size="15" font-weight="800" fill="#b45309">3. Calculate the missing whole:</text>
+            <text class="concept-title-en" x="0" y="84" font-size="15" font-weight="800" fill="#b45309">3. Calculate the missing whole:</text>
+            <text class="concept-title-es" lang="es" x="0" y="84" font-size="15" font-weight="800" fill="#b45309">3. Calcula el entero que falta:</text>
             <text x="260" y="84" font-size="18" font-weight="800" fill="#0f766e">b = $40 total bill</text>
           </g>
 
           <!-- Check & Reason Card -->
           <rect x="34" y="304" width="572" height="98" rx="14" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
-          <text x="54" y="328" font-size="15" font-weight="800" fill="#047857">✔ CHECK YOUR WORK (INVERSE OPERATION):</text>
-          <text x="54" y="352" font-size="14" font-weight="700" fill="#12355b">Multiply back: 15% of $40 = 0.15 × 40 = $6. ✓ Matches the tip!</text>
-          <text x="54" y="374" font-size="13" font-weight="700" fill="#12355b">Sanity check: 15% is less than 100%, so the whole MUST exceed the part ($40 &gt; $6).</text>
-          <text x="54" y="392" font-size="13" font-weight="700" fill="#047857">Multiplying by 0.15 would give $0.90 — an obvious red flag for a total bill!</text>`,
+          <text class="concept-title-en" x="54" y="328" font-size="15" font-weight="800" fill="#047857">✔ CHECK YOUR WORK (INVERSE OPERATION):</text>
+          <text class="concept-title-es" lang="es" x="54" y="328" font-size="15" font-weight="800" fill="#047857">✔ COMPRUEBA TU TRABAJO (OPERACIÓN INVERSA):</text>
+          <text class="concept-title-en" x="54" y="352" font-size="14" font-weight="700" fill="#12355b">Multiply back: 15% of $40 = 0.15 × 40 = $6. ✓ Matches the tip!</text>
+          <text class="concept-title-es" lang="es" x="54" y="352" font-size="14" font-weight="700" fill="#12355b">Multiplica de regreso: 15% de $40 = 0.15 × 40 = $6. ✓ ¡Coincide!</text>
+          <text class="concept-title-en" x="54" y="374" font-size="13" font-weight="700" fill="#12355b">Sanity check: 15% is less than 100%, so the whole MUST exceed the part ($40 &gt; $6).</text>
+          <text class="concept-title-es" lang="es" x="54" y="374" font-size="13" font-weight="700" fill="#12355b">Sentido común: 15% es menor que 100%, así que el entero DEBE superar la parte ($40 &gt; $6).</text>
+          <text class="concept-title-en" x="54" y="392" font-size="13" font-weight="700" fill="#047857">Multiplying by 0.15 would give $0.90 — an obvious red flag for a total bill!</text>
+          <text class="concept-title-es" lang="es" x="54" y="392" font-size="13" font-weight="700" fill="#047857">Multiplicar por 0.15 daría $0.90 — ¡una señal clara de que algo falló!</text>`,
         })}</div>`,
         capEn:
           "Percent times whole equals part. Divide both sides by the decimal percent to isolate the whole.",
@@ -2122,8 +2148,9 @@ function conceptVisual(config) {
         body: `
         <!-- Tape Diagram Card -->
         ${conceptCard(34, 68, 572, 142)}
-        <rect x="52" y="80" width="220" height="24" rx="6" fill="#0f766e"/>
-        <text x="162" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">TAPE DIAGRAM: 4 EQUAL 25% BLOCKS</text>
+        <rect x="52" y="80" width="280" height="24" rx="6" fill="#0f766e"/>
+        <text class="concept-title-en" x="192" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">TAPE DIAGRAM: 4 EQUAL 25% BLOCKS</text>
+        <text class="concept-title-es" lang="es" x="192" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">DIAGRAMA: 4 BLOQUES IGUALES DE 25%</text>
 
         <!-- 4 Blocks of 6 beads -->
         <g transform="translate(52, 116)">
@@ -2139,17 +2166,22 @@ function conceptVisual(config) {
           <rect x="404" y="0" width="125" height="42" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
           <text x="466" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#0369a1">6 (25%)</text>
         </g>
-        <text x="320" y="184" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">WHOLE BAG = 4 blocks × 6 beads = 24 beads (100%)</text>
+        <text class="concept-title-en" x="320" y="184" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">WHOLE BAG = 4 blocks × 6 beads = 24 beads (100%)</text>
+        <text class="concept-title-es" lang="es" x="320" y="184" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">TOTAL = 4 bloques × 6 cuentas = 24 cuentas (100%)</text>
 
         <!-- Division Formula Card -->
         <rect x="34" y="222" width="572" height="182" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
-        <text x="54" y="246" font-size="15" font-weight="800" fill="#0f766e">✔ DIVISION FINDS THE WHOLE:</text>
+        <text class="concept-title-en" x="54" y="246" font-size="15" font-weight="800" fill="#0f766e">✔ DIVISION FINDS THE WHOLE:</text>
+        <text class="concept-title-es" lang="es" x="54" y="246" font-size="15" font-weight="800" fill="#0f766e">✔ LA DIVISIÓN HALLA EL ENTERO:</text>
         <g transform="translate(54, 262)">
-          <text x="0" y="18" font-size="15" font-weight="700" fill="#12355b">Formula: Whole = Part ÷ Percent (as decimal)</text>
+          <text class="concept-title-en" x="0" y="18" font-size="15" font-weight="700" fill="#12355b">Formula: Whole = Part ÷ Percent (as decimal)</text>
+          <text class="concept-title-es" lang="es" x="0" y="18" font-size="15" font-weight="700" fill="#12355b">Fórmula: Entero = Parte ÷ Porcentaje (en decimal)</text>
           <text x="0" y="44" font-size="17" font-weight="800" fill="#0f766e">Whole = 6 ÷ 0.25 = 24 beads</text>
-          <text x="0" y="72" font-size="14" font-weight="700" fill="#12355b">Check: 25% of 24 = 0.25 × 24 = 6 beads ✓</text>
+          <text class="concept-title-en" x="0" y="72" font-size="14" font-weight="700" fill="#12355b">Check: 25% of 24 = 0.25 × 24 = 6 beads ✓</text>
+          <text class="concept-title-es" lang="es" x="0" y="72" font-size="14" font-weight="700" fill="#12355b">Comprueba: 25% de 24 = 0.25 × 24 = 6 cuentas ✓</text>
           <text x="0" y="98" font-size="13.5" font-weight="700" fill="#0f766e">whole / entero = 6 ÷ 0.25 = 24</text>
-          <text x="0" y="120" font-size="13" font-weight="700" fill="#5f6f80">Dividing by a decimal smaller than 1 makes the answer LARGER than the part.</text>
+          <text class="concept-title-en" x="0" y="120" font-size="13" font-weight="700" fill="#5f6f80">Dividing by a decimal smaller than 1 makes the answer LARGER than the part.</text>
+          <text class="concept-title-es" lang="es" x="0" y="120" font-size="13" font-weight="700" fill="#5f6f80">Dividir entre un decimal menor que 1 hace que la respuesta sea MAYOR que la parte.</text>
         </g>`,
       })}</div>`,
       capEn:
@@ -3093,17 +3125,51 @@ function renderUnit4FamilyBigIdeaVisual(config) {
 
   if (model.type === "discount") {
     return `<div class="family-big-idea-visual family-discount-visual">
-      <div class="family-discount-equation"><strong>${esc(model.original)}</strong><span aria-hidden="true">−</span><span>${esc(model.savings)} <small>${bilingual("saved", "de ahorro")}</small></span><span aria-hidden="true">=</span><strong>${esc(model.salePrice)}</strong></div>
-      <div class="family-discount-bar" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-      <div class="family-discount-labels"><span>${bilingual(`${model.percent} off = ${model.savings}`, `${model.percent} de descuento = ${model.savings}`)}</span><span>${bilingual("price to pay", "precio a pagar")}</span></div>
+      <div class="family-discount-equation">
+        <strong>${esc(model.original)} <small style="display:block;font-size:12px;font-weight:600;">${bilingual("Original (100%)", "Original (100%)")}</small></strong>
+        <span aria-hidden="true">−</span>
+        <span>${esc(model.savings)} <small style="display:block;font-size:12px;font-weight:600;">${bilingual(`${model.percent} saved`, `${model.percent} de ahorro`)}</small></span>
+        <span aria-hidden="true">=</span>
+        <strong style="background:#d8f1ea;">${esc(model.salePrice)} <small style="display:block;font-size:12px;font-weight:600;">${bilingual("Sale price to pay", "Precio de oferta")}</small></strong>
+      </div>
+      <div class="family-discount-bar" aria-hidden="true">
+        <span style="display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#92400e;">${esc(model.savings)}</span>
+        <span style="display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#1e3a8a;">${esc(model.savings)}</span>
+        <span style="display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#1e3a8a;">${esc(model.savings)}</span>
+        <span style="display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#1e3a8a;">${esc(model.savings)}</span>
+      </div>
+      <div class="family-discount-labels">
+        <span>${bilingual(`${model.percent} off = ${model.savings}`, `${model.percent} de descuento = ${model.savings}`)}</span>
+        <span>${bilingual(`Sale price = ${model.salePrice}`, `Precio a pagar = ${model.salePrice}`)}</span>
+      </div>
+      <p style="margin:12px 0 0;font-size:15px;line-height:1.45;text-align:center;">
+        ${bilingual(
+          `How it works: 25% of ${model.original} = 0.25 × ${model.original.replace("$", "")} = ${model.savings} off. Then subtract: ${model.original} − ${model.savings} = ${model.salePrice}.`,
+          `Cómo funciona: 25% de ${model.original} = 0.25 × ${model.original.replace("$", "")} = ${model.savings} de descuento. Luego resta: ${model.original} − ${model.savings} = ${model.salePrice}.`,
+        )}
+      </p>
     </div>`;
   }
 
   if (model.type === "find-whole") {
     return `<div class="family-big-idea-visual family-whole-visual">
-      <div class="family-whole-labels"><strong>${esc(model.part)} = ${esc(model.percent)}</strong><strong>100% = ${esc(model.whole)}</strong></div>
-      <div class="family-whole-bar" aria-hidden="true">${Array.from({ length: 10 }, (_, i) => `<span class="${i < model.tenths ? "is-filled" : ""}"></span>`).join("")}</div>
-      <p>${bilingual("The full bar is the whole amount.", "La barra completa representa el entero.")}</p>
+      <div class="family-whole-labels">
+        <strong>${esc(model.part)} = ${esc(model.percent)}</strong>
+        <strong style="color:#0f766e;">100% = ${esc(model.whole)}</strong>
+      </div>
+      <div class="family-whole-bar" aria-hidden="true">
+        ${Array.from({ length: 10 }, (_, i) => `<span class="${i < model.tenths ? "is-filled" : ""}" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:${i < model.tenths ? "#ffffff" : "#64748b"};">$7</span>`).join("")}
+      </div>
+      <div class="family-discount-labels" style="margin-top:6px;">
+        <span style="color:#0f766e;">${bilingual(`6 blocks = ${model.part} (${model.percent})`, `6 bloques = ${model.part} (${model.percent})`)}</span>
+        <span style="color:#0369a1;">${bilingual(`10 blocks = ${model.whole} (100%)`, `10 bloques = ${model.whole} (100%)`)}</span>
+      </div>
+      <p style="margin:12px 0 0;font-size:15px;line-height:1.45;text-align:center;">
+        ${bilingual(
+          `How it works: Divide the part by the percent as a decimal: ${model.part} ÷ 0.60 = ${model.whole}. Each 10% block is $42 ÷ 6 = $7, so all 10 blocks equal 10 × $7 = ${model.whole}.`,
+          `Cómo funciona: Divide la parte entre el porcentaje en decimal: ${model.part} ÷ 0.60 = ${model.whole}. Cada bloque de 10% vale $42 ÷ 6 = $7, así que los 10 bloques suman 10 × $7 = ${model.whole}.`,
+        )}
+      </p>
     </div>`;
   }
 
