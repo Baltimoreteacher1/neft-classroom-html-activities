@@ -8,8 +8,8 @@ test.use({
 });
 
 test.describe("Curriculum Shell & Progressive Hub Acceptance Suite", () => {
+  // /curriculum/ is excluded: the hub returned to its pre-2026-10-16 layout (data/product-decisions.json, curriculum-hub-original-layout).
   const PRIMARY_ROUTES = [
-    { path: "/curriculum/", title: "Curriculum Hub" },
     { path: "/curriculum/studio/", title: "Interactive Studio" },
     { path: "/curriculum/practice/", title: "Practice & Fluency" },
     { path: "/curriculum/family/", title: "Family & Review" },
@@ -43,7 +43,8 @@ test.describe("Curriculum Shell & Progressive Hub Acceptance Suite", () => {
     expect(consoleErrors).toEqual([]);
   });
 
-  test("2. Language toggle updates in place, syncs <html lang>, and announces politely", async ({
+  // Progressive-hub behaviour, retired with the hub layout revert (curriculum-hub-original-layout).
+  test.skip("2. Language toggle updates in place, syncs <html lang>, and announces politely", async ({
     page,
   }) => {
     await page.goto("/curriculum/", { waitUntil: "domcontentloaded" });
@@ -70,7 +71,8 @@ test.describe("Curriculum Shell & Progressive Hub Acceptance Suite", () => {
     await expect(announcer).toContainText(/english/i);
   });
 
-  test("3. Role toggle enforces strict DOM absence in Student Mode", async ({ page }) => {
+  // Progressive-hub behaviour, retired with the hub layout revert (curriculum-hub-original-layout).
+  test.skip("3. Role toggle enforces strict DOM absence in Student Mode", async ({ page }) => {
     // Clear storage to guarantee default Student mode
     await page.goto("/curriculum/", { waitUntil: "domcontentloaded" });
     await page.evaluate(() => {
@@ -114,7 +116,8 @@ test.describe("Curriculum Shell & Progressive Hub Acceptance Suite", () => {
     await expect(page.locator(".hub-docs-item-protected")).toHaveCount(0);
   });
 
-  test("4. ESOL Supports pill toggles learning supports state", async ({ page }) => {
+  // Progressive-hub behaviour, retired with the hub layout revert (curriculum-hub-original-layout).
+  test.skip("4. ESOL Supports pill toggles learning supports state", async ({ page }) => {
     await page.goto("/curriculum/", { waitUntil: "domcontentloaded" });
 
     const supportsBtn = page.locator("[data-supports-btn]");
@@ -131,7 +134,8 @@ test.describe("Curriculum Shell & Progressive Hub Acceptance Suite", () => {
     await expect(supportsBtn).toHaveAttribute("aria-pressed", "false");
   });
 
-  test("5. Sticky Unit Ribbon provides single-unit isolation, persistence, and hash routing", async ({
+  // Progressive-hub behaviour, retired with the hub layout revert (curriculum-hub-original-layout).
+  test.skip("5. Sticky Unit Ribbon provides single-unit isolation, persistence, and hash routing", async ({
     page,
   }) => {
     await page.goto("/curriculum/", { waitUntil: "domcontentloaded" });
@@ -173,7 +177,8 @@ test.describe("Curriculum Shell & Progressive Hub Acceptance Suite", () => {
     await expect(page.locator(".hub-unit-card-title")).toContainText(/Unit 3|Ratios/i);
   });
 
-  test("6. Docs dropdown menu implements roving tabindex and Escape/click dismiss", async ({
+  // Progressive-hub behaviour, retired with the hub layout revert (curriculum-hub-original-layout).
+  test.skip("6. Docs dropdown menu implements roving tabindex and Escape/click dismiss", async ({
     page,
   }) => {
     await page.goto("/curriculum/#unit-3", { waitUntil: "domcontentloaded" });
@@ -242,7 +247,8 @@ test.describe("Curriculum Shell & Progressive Hub Acceptance Suite", () => {
     }
   });
 
-  test("9. Performance: CLS < 0.05 and boot storage reads <= 3", async ({ page }) => {
+  // Progressive-hub behaviour, retired with the hub layout revert (curriculum-hub-original-layout).
+  test.skip("9. Performance: CLS < 0.05 and boot storage reads <= 3", async ({ page }) => {
     await page.goto("/curriculum/", { waitUntil: "domcontentloaded" });
     await page.waitForSelector(".hub-unit-tab");
 
