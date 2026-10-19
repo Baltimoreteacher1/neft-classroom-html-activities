@@ -6,7 +6,7 @@
 // --refresh-existing updates retained bytes without changing routes or access.
 // --check-existing checks that refresh without writing.
 // --concept-checks snapshots the current authored conceptual tasks for labs.
-// --include-new adds current Unit folders while retaining every established URL.
+// --include-new adds current Unit folders (and top-level course guides) while retaining every established URL.
 import { createHash } from "node:crypto";
 import {
   copyFileSync,
@@ -132,7 +132,9 @@ const byIdentity = new Map(documents.map((doc) => [`${doc.filename}|${doc.sha256
 const destinations = new Set(documents.map((doc) => doc.url.slice(1)));
 const files = walk(source).filter(
   (file) =>
-    (!includeNew || /^Unit \d+\//.test(relative(source, file))) &&
+    (!includeNew ||
+      /^Unit \d+\//.test(relative(source, file)) ||
+      !relative(source, file).includes("/")) &&
     (!partial || relative(source, file).includes(partialFolder)),
 );
 if (partial && !files.length) throw new Error(`No files found in ${partialFolder}`);

@@ -29,13 +29,13 @@ for (const resource of resources) {
   if (!resourcesByUrl.has(resource.url)) resourcesByUrl.set(resource.url, []);
   resourcesByUrl.get(resource.url).push(resource);
 }
-assert.equal(manifest.sourceFileCount, 2388);
-assert.equal(manifest.documents.length, 2386);
+assert.equal(manifest.sourceFileCount, 2392);
+assert.equal(manifest.documents.length, 2390);
 assert.equal(
   manifest.documents.reduce((sum, doc) => sum + doc.sources.length, 0),
-  2388,
+  2392,
 );
-assert.equal(new Set(manifest.documents.map((doc) => doc.url)).size, 2386);
+assert.equal(new Set(manifest.documents.map((doc) => doc.url)).size, 2390);
 assert.equal(new Set(manifest.documents.map((doc) => doc.sourceLesson).filter(Boolean)).size, 54);
 const decks = manifest.documents.filter((doc) => doc.category === "source-slides");
 assert.equal(decks.length, 55);
