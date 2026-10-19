@@ -292,32 +292,37 @@
     const it = ctx.it;
     const text = String(ctx.state.notes[it.id] || "").toLowerCase();
     const ticks = ctx.state.rubric[it.id] || [];
-    const kw = (it.kw || []).map(
-      (/** @type {string} */ k) =>
-        `${text.includes(String(k).toLowerCase()) ? "✓" : "○"} ${esc(k)}`,
-    );
+    // an idea written in Spanish (or in both languages) counts: the word is looked for in either list
+    const kw = (it.kw || []).map((/** @type {string} */ k, /** @type {number} */ i) => {
+      const alt = String((it.kwEs || [])[i] || "").toLowerCase();
+      const hit = text.includes(String(k).toLowerCase()) || (alt && text.includes(alt));
+      return `${hit ? "✓" : "○"} ${esc(k)}${alt && alt !== String(k).toLowerCase() ? ` <span class="es-text" lang="es">/ ${esc((it.kwEs || [])[i])}</span>` : ""}`;
+    });
     const rows = (it.rubric || [])
       .map(
         (/** @type {string} */ r, /** @type {number} */ i) =>
-          `<li><label><input type="checkbox" data-rubric="${i}"${ticks[i] ? " checked" : ""}${lock ? " disabled" : ""}> ${esc(r)}</label></li>`,
+          `<li><label><input type="checkbox" data-rubric="${i}"${ticks[i] ? " checked" : ""}${lock ? " disabled" : ""}> ${esc(r)}${es((it.rubricEs || [])[i])}</label></li>`,
       )
       .join("");
-    return `<div class="wr-review"><p><strong>Compare your answer with this model.</strong> ${esc(it.x)}${es(it.xEs)}</p>
-      ${kw.length ? `<p class="item-sub">Words to look for in your answer: ${kw.join(" · ")}</p>` : ""}
-      <p class="item-sub"><strong>Check yourself.</strong> Tick what your answer really did:</p><ul class="rubric-list">${rows}</ul>
-      ${lock ? "" : '<div class="item-actions"><button type="button" class="btn btn-go btn-sm" data-rubric-done>I checked my answer</button></div>'}</div>`;
+    return `<div class="wr-review"><p><strong>Compare your answer with this model.${es("Compara tu respuesta con este modelo.")}</strong> ${esc(it.x)}${es(it.xEs)}</p>
+      ${kw.length ? `<p class="item-sub">Words to look for in your answer: ${kw.join(" · ")}${es("Palabras que debes buscar en tu respuesta (en español o inglés).")}</p>` : ""}
+      <p class="item-sub"><strong>Check yourself.${es("Revísate.")}</strong> Tick what your answer really did:${es("Marca lo que tu respuesta realmente hizo:")}</p><ul class="rubric-list">${rows}</ul>
+      ${lock ? "" : `<div class="item-actions"><button type="button" class="btn btn-go btn-sm" data-rubric-done>I checked my answer${es("Revisé mi respuesta")}</button></div>`}</div>`;
   };
   K.wr = {
     mount(/** @type {any} */ ctx) {
       const it = ctx.it;
       const text = ctx.state.notes[it.id] || "";
+      // The Foundational pathway asks for a shorter piece of writing: the idea matters more than the length.
+      const min = W.EWLChrome?.pathway?.scaffold ? Math.max(30, Math.round(it.min * 0.6)) : it.min;
       const reviewed = ctx.solved || ctx.state.rubric[it.id] !== undefined;
       ctx.host.innerHTML = `${viz(it)}<p class="item-q">${esc(it.p)}${es(it.pEs)}</p>
-        ${it.fr ? `<p class="item-sub"><strong>Sentence frame:</strong> ${esc(it.fr)}</p>` : ""}
-        <label class="write-label" for="wr-${esc(it.id)}">Your explanation</label>
+        ${it.fr ? `<p class="item-sub"><strong>Sentence frame:${es("Marco de oración:")}</strong> ${esc(it.fr)}${es(it.frEs)}</p>` : ""}
+        <p class="item-sub">You can write in English, Spanish, or both.${es("Puedes escribir en inglés, en español o en ambos.")}</p>
+        <label class="write-label" for="wr-${esc(it.id)}">Your explanation${es("Tu explicación")}</label>
         <textarea id="wr-${esc(it.id)}" class="write-box" rows="5" data-write${reviewed ? " readonly" : ""}>${esc(text)}</textarea>
-        <p class="item-sub" data-count>${text.trim().length} of ${it.min} characters</p>
-        ${reviewed ? "" : '<div class="item-actions"><button type="button" class="btn btn-primary btn-sm" data-check-write>Check my thinking</button></div>'}
+        <p class="item-sub" data-count>${text.trim().length} of ${min} characters</p>
+        ${reviewed ? "" : `<div class="item-actions"><button type="button" class="btn btn-primary btn-sm" data-check-write>Check my thinking${es("Revisar mi razonamiento")}</button></div>`}
         <div data-review>${reviewed ? review(ctx, ctx.solved) : ""}</div>
         ${ctx.hintBlock()}<div class="item-fb feedback-box" role="status"></div>`;
       const box = /** @type {HTMLTextAreaElement} */ (ctx.host.querySelector("[data-write]"));
@@ -344,14 +349,14 @@
       box.addEventListener("input", () => {
         ctx.state.notes[it.id] = box.value;
         const c = ctx.host.querySelector("[data-count]");
-        if (c) c.textContent = `${box.value.trim().length} of ${it.min} characters`;
+        if (c) c.textContent = `${box.value.trim().length} of ${min} characters`;
         ctx.save();
       });
       ctx.host.querySelector("[data-check-write]")?.addEventListener("click", () => {
-        if (box.value.trim().length < it.min) {
+        if (box.value.trim().length < min) {
           ctx.fb(
             "warn",
-            `<strong>Keep going.</strong> Write at least ${it.min} characters, using your own words and the numbers from the problem.${es("Sigue escribiendo: usa tus propias palabras y los números del problema.")}`,
+            `<strong>Keep going.</strong> Write at least ${min} characters, using your own words and the numbers from the problem.${es("Sigue escribiendo: usa tus propias palabras y los números del problema.")}`,
           );
           return;
         }

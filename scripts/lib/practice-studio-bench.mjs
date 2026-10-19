@@ -63,6 +63,11 @@ function modelProblems(model, lab, where) {
     if (!(v >= f.min && v <= f.max && onGrid))
       bad(`value ${i} (${v}) is outside "${f.label}" ${f.min}-${f.max} step ${f.step}`);
   });
+  if (
+    model.shape !== undefined &&
+    !(model.shape === "pyramid" && model.kind === "solid" && model.mode === "surface")
+  )
+    bad(`shape "${model.shape}" is only for the solid:surface model ("pyramid")`);
   try {
     evaluate(model, model.values);
   } catch (e) {
@@ -197,7 +202,7 @@ function reasoningProblems(model, task, where) {
   return p;
 }
 
-/** The mission builds nine puzzles per model (3 destinations x 3 levels). Each must be plannable, not a coin flip. */
+/** The mission can build 27 puzzles per model (9 rounds, because a replay moves to new targets, x 3 levels). Each must be plannable, not a coin flip. */
 export function missionProblems(model, where) {
   const p = [];
   if (
@@ -207,7 +212,7 @@ export function missionProblems(model, where) {
     return p;
   const targets = new Set();
   for (let level = 0; level < 3; level++)
-    for (let round = 0; round < 3; round++) {
+    for (let round = 0; round < 9; round++) {
       const q = puzzle(model, round, level);
       const tag = `${where}.mission r${round} L${level}`;
       // a balance always aims at 0; what differs from one puzzle to the next is the value that balances it
@@ -245,6 +250,59 @@ export function missionProblems(model, where) {
   return [...new Set(p)];
 }
 
+const core = (label) =>
+  String(label)
+    .replace(/\s*\([^)]*\)/g, "")
+    .trim()
+    .toLowerCase();
+
+/**
+ * The lesson's own words for the model: every control and the readout carry a name (English + Spanish) that the task text uses, so a
+ * student never has to decide that "pieces", "portions" and "serving size" are one idea. The prompt must use at least one of them.
+ */
+function labelProblems(model, bench, where) {
+  const p = [];
+  const L = bench.labels;
+  if (!L || typeof L !== "object")
+    return [`${where}.labels: required (name every control and the readout in the lesson's words)`];
+  const fields = controls(model);
+  fields.forEach((f, i) => {
+    if (f.label === "Unused") return;
+    const c = L.controls?.[i];
+    if (!c || !str(c.en, 2) || !str(c.es, 2))
+      p.push(`${where}.labels.controls[${i}]: needs en and es for "${f.label}"`);
+    else if (c.en === c.es && /[a-z]{4,}/i.test(c.en) && !/^(base|factor|x|y)\b/i.test(c.en))
+      p.push(`${where}.labels.controls[${i}]: the Spanish is the English`);
+  });
+  if (!str(L.readout?.en, 2) || !str(L.readout?.es, 2))
+    p.push(`${where}.labels.readout: needs en and es`);
+  const extra = Object.keys(L.controls || {}).filter(
+    (k) => !fields[Number(k)] || fields[Number(k)].label === "Unused",
+  );
+  if (extra.length) p.push(`${where}.labels.controls: unknown control index ${extra.join(", ")}`);
+  if (p.length) return p;
+  // the same words in the task: the prompt names the result or the control it unlocks
+  for (const name of ["explore", "stretch"]) {
+    const t = bench[name];
+    const goal = t?.goal;
+    const names = [
+      L.readout,
+      ...(goalType(goal) === "target" ? [L.controls[goal.free]] : Object.values(L.controls)),
+    ];
+    const en = String(t?.q || "").toLowerCase();
+    const es = String(t?.qEs || "").toLowerCase();
+    if (!names.some((n) => en.includes(core(n.en))))
+      p.push(
+        `${where}.${name}.q: uses none of the model's own words (${names.map((n) => `"${core(n.en)}"`).join(", ")})`,
+      );
+    if (!names.some((n) => es.includes(core(n.es))))
+      p.push(
+        `${where}.${name}.qEs: uses none of the model's Spanish words (${names.map((n) => `"${core(n.es)}"`).join(", ")})`,
+      );
+  }
+  return p;
+}
+
 /** Problems with data/practice-studio/<id>.json -> bench. `labs` is data/learning-labs.json (optional). */
 export function benchProblems(id, bench, labs = null) {
   const p = [];
@@ -259,6 +317,7 @@ export function benchProblems(id, bench, labs = null) {
   const mp = modelProblems(bench.model, lab, `${where}.model`);
   p.push(...mp);
   if (mp.length) return p;
+  p.push(...labelProblems(bench.model, bench, where));
   p.push(...taskProblems(bench.explore, bench.model, `${where}.explore`, { stretch: false }));
   p.push(...taskProblems(bench.stretch, bench.model, `${where}.stretch`, { stretch: true }));
   p.push(...reasoningProblems(bench.model, bench.explore, `${where}.explore`));
@@ -334,6 +393,7 @@ export function benchItems(bench) {
     id,
     lab: bench.lab,
     model: bench.model,
+    ...(bench.labels ? { labels: bench.labels } : {}),
     level,
     ...stripEs(task),
   });
@@ -343,6 +403,7 @@ export function benchItems(bench) {
     id,
     lab: bench.lab,
     model: bench.model,
+    ...(bench.labels ? { labels: bench.labels } : {}),
     level,
     finale: bench.mission.finale,
     q: text.q.en,

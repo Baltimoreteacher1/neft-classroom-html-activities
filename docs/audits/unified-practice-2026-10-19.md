@@ -48,3 +48,19 @@ agreement, Unit 4 injection), `npm run validate:studio-lab-browser` (144 pages).
   audited, not rewritten; they keep their own recent audits and the `validate:game-rules` gate.
 - **Interactive Lesson pages** (`/lessons/<id>/`) were not changed: they are a different page from the HTML practice the request named.
 - The bench is ungraded: no star, coin, SCORM value or grade is written.
+
+## Round 2 — expert panel (same day)
+
+Five reviewers (learning science, game design, UX/accessibility, ESOL/WIDA, teaching/assessment) judged the live build for award criteria. A student
+also reported the 6-9 "Street arch" stop confusing. What was built from that:
+
+- **Lesson words.** Every bench names its controls and result in the lesson's own words, English and Spanish (`labels`), enforced by the gate; the fraction model
+  says pieces / servings / groups by lab; a bench can open on the pyramid net (5-8).
+- **Honest plan-then-test.** Goal bar instead of a live closeness line, direction-only diagnoses, a test trail, a three-rung hint ladder ending in a worked build with
+  other numbers, a confidence tap, lab misses no longer punished or mis-tagged; the difficulty ladder no longer wraps to the easiest level.
+- **Bilingual and accessible.** Spanish for written-item frames/rubrics (211 existing, never shown before), the lab shell, the game and its worlds, controls and chips;
+  Comfort settings reach the model; selected-state contrast; `aria-invalid`; focus kept; layout fixed; paper twin; Data Saver; read-aloud of the game.
+- **Teacher and shared computers.** Finish-on-this-computer hand-off; station deep links.
+- **Not built (recommended next):** a paste-in Class Pulse page (needs a new teacher-gated route), per-lesson teacher look-fors with a model-fit note, a "predict the number"
+  step, spaced re-checks, concreteness fading, a faulty-build error-analysis round, and a "make a puzzle for a friend" code.
+

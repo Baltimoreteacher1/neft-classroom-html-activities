@@ -316,3 +316,32 @@ on, unlike `broken`.
 **Gates.** `tools/studio-lab-bench.test.mjs` (goals, mission puzzles of every bench AND every lab, page/data agreement, Unit 4 injection
 freshness) and `npm run validate:studio-lab-browser` (every bench on both pages, driven as a student: a wrong test that must explain, the
 right setting, the written items, the whole adaptive mission, reload-resume, the Spanish stack, 375px, axe).
+
+**Words (`labels`).** A bench names its model in the lesson's own words, English and Spanish: `labels.controls[<index>] = {en, es}` for every control
+but "Unused", and `labels.readout = {en, es}`. The gate requires the explore and stretch prompts (both languages) to use the readout's name or the
+unlocked control's name, so "pieces", "portions" and "serving size" can never be three words for one idea (a student found the 6-9 mission confusing
+for exactly that reason). The names reach the controls, the goal bar, the prediction question, the click-to-place chips and the mission. A bench
+that opens on the square-pyramid net says so with `model.shape: "pyramid"` (the mission itself is played on the prism formula).
+
+**What the student sees (added after a five-lens expert panel: learning science, game design, UX/accessibility, ESOL/WIDA, teaching).**
+- *An honest loop.* The page states the GOAL ("Goal: Number of pieces = 36 · You can change: Ribbon length"); it never shows how close a build is. A
+  test names only the direction ("too high"), and every test leaves a line in **My tests** (the build's equation and its direction) that the student
+  can read back. A lab miss does not reset the streak and does not enter the Mistake Map (a direction is not a misconception). A "how sure are you?"
+  tap before the first check feeds the studio's calibration record.
+- *A hint ladder in the mission.* Press 1 asks a question, 2 states the relationship, 3 shows a worked build with DIFFERENT numbers to map across; only
+  the third counts as heavy help. The difficulty ladder rises with the student and stops at the top (it used to wrap round to the easiest); a replay moves to
+  new targets (rounds 0-8), not a new level.
+- *The mission remembers.* Each restored place records its build's equation in the Expedition log, and the student is asked "How did you find it?" after
+  every restore (the order turns with the destination). The copy-my-results note carries predictions and mission progress, never names.
+- *Bilingual all the way down.* Written items show the Spanish frame, rubric and word list already authored; the lab shell, the prediction verdicts, the
+  game and its 46 worlds, the controls, the click-to-place chips and the error messages carry Spanish beneath the English. A student may write in either
+  language; the Foundational pathway asks for 60% of the length.
+- *Accessible.* Comfort font and spacing reach the model by inheritance; selected state has a 3:1 outline; an invalid box is marked `aria-invalid` and
+  described; locked controls say they are locked; focus survives a click-to-place and a return to the map; the "Touch the picture" hint sits in the
+  controls column; the goal and the Check button sit together above the model.
+- *On paper and offline.* Every lab and mission item carries a hidden paper twin (the goal, a try-it table named with the model's own controls, a
+  sentence frame) that prints and that shows when the lab files cannot load. Data Saver and 2G skip the idle preload. Read aloud now reads the game's
+  goal and feedback and says plainly when a device has no Spanish voice.
+- *Teachers and shared computers.* "I am finished on this computer" (in My thinking) clears this lesson's saved work after a confirm; links accept
+  `?s=4&i=1` (section, problem) and `&lang=es` to send a student straight to a station.
+

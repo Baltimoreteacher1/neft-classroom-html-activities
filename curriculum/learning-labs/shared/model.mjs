@@ -1,7 +1,8 @@
-import { controls, evaluate, fmt } from './math.mjs';
+import { controls, evaluate, fmt, portionNoun } from './math.mjs';
 import { mountLens } from './lens.mjs';
 import { attachDirect, directHint, isDirect } from './direct.mjs';
 import { play } from './sound.mjs';
+import { esLabel } from './labels-es.mjs';
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const line = (x1, y1, x2, y2, cls = '') => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${cls}"/>`;
 const text = (x, y, t, anchor = 'middle') => `<text x="${x}" y="${y}" text-anchor="${anchor}">${esc(t)}</text>`;
@@ -118,7 +119,7 @@ export function visual(model, values, result) {
       body += rect(50, 20 + i * size, supplyWidth * Math.min(1, a - i), size - 5, 'shape');
       for (let j = 1; j < c; j++) body += line(50 + j * supplyWidth / c, 20 + i * size, 50 + j * supplyWidth / c, 20 + i * size + size - 5);
     }
-    body += text(300, 273, `Each full strip = 1 unit, divided into ${c} equal parts`) + text(300, 296, `A portion uses ${b} of those parts (${fmt(portion)} units).`);
+    body += text(300, 273, `Each full strip = 1 unit, divided into ${c} equal parts`) + text(300, 296, `A ${portionNoun(model.mode)} uses ${b} of those parts (${fmt(portion)} units).`);
   } else if (['power', 'expression', 'factors'].includes(k)) {
     if (k === 'factors') {
       body += text(300, 57, `Factors of ${a}: ${result.first.join(', ')}`) + text(300, 112, `Factors of ${b}: ${result.second.join(', ')}`);
@@ -153,10 +154,17 @@ export function visual(model, values, result) {
   return svg(body, `${result.equation}. ${result.note}`, k === 'coordinates' ? '135 -8 330 305' : '0 0 600 300');
 }
 
-export function mountModel(host, model, { initial = model.values, free = null, onChange = () => {}, prefix = 'model', compact = false, level = 'core', lens = false, lang = () => 'en' } = {}) {
+export function mountModel(host, model, { initial = model.values, free = null, onChange = () => {}, prefix = 'model', compact = false, level = 'core', lens = false, lang = () => 'en', labels = null } = {}) {
   let values = [...initial], symbol = model.mode === 'entry' ? '>=' : '<=', valid = true, shape = 'prism';
   const fields = controls(model);
-  host.innerHTML = `<div class="model-workspace"><div class="model-picture"></div><div class="model-controls">${fields.map((field, i) => field.label === 'Unused' ? '' : `<label for="${prefix}-${i}">${esc(field.label)}<input id="${prefix}-${i}" data-control="${i}" type="number" min="${field.min}" max="${field.max}" step="${field.step}" value="${values[i]}" ${field.min === field.max || free !== null && free !== i ? 'readonly' : ''}></label>`).join('')}${model.kind === 'inequality' ? `<label for="${prefix}-symbol">Rule<select id="${prefix}-symbol" data-symbol><option value=">=">At least (≥)</option><option value=">">More than (&gt;)</option><option value="<=">At most (≤)</option><option value="<">Less than (&lt;)</option></select></label>` : ''}<button type="button" class="quiet" data-reset>Reset model</button></div></div><p class="model-error" role="status"></p><div class="model-readout" aria-live="polite" aria-atomic="true"></div>`;
+  // English always; with Spanish on, the Spanish name sits beneath it (the studios' own convention).
+  const spanish = () => lang() === 'es';
+  // A lesson may name its controls in its own words (bench.labels); otherwise the model's generic names and their Spanish apply.
+  const nameEn = (field, i) => labels?.controls?.[i]?.en || field.label;
+  const nameEs = (field, i) => labels?.controls?.[i]?.es || esLabel(field.label);
+  const labelHtml = (field, i) => `${esc(nameEn(field, i))}${spanish() && nameEs(field, i) ? `<span class="es-line" lang="es">${esc(nameEs(field, i))}</span>` : ''}`;
+  const lockedNote = free !== null ? `<p class="model-locked" id="${prefix}-locked">${esc(`Only “${nameEn(fields[free], free)}” can change in this task.`)}${spanish() ? `<span class="es-line" lang="es">${esc(`En esta tarea solo puede cambiar “${nameEs(fields[free], free) || nameEn(fields[free], free)}”.`)}</span>` : ''}</p>` : '';
+  host.innerHTML = `<div class="model-workspace"><div class="model-picture"></div><div class="model-controls">${lockedNote}${fields.map((field, i) => field.label === 'Unused' ? '' : `<label for="${prefix}-${i}">${labelHtml(field, i)}<input id="${prefix}-${i}" data-control="${i}" type="number" min="${field.min}" max="${field.max}" step="${field.step}" value="${values[i]}" ${field.min === field.max || free !== null && free !== i ? `readonly aria-describedby="${prefix}-locked"` : ''}></label>`).join('')}${model.kind === 'inequality' ? `<label for="${prefix}-symbol">Rule<select id="${prefix}-symbol" data-symbol><option value=">=">At least (≥)</option><option value=">">More than (&gt;)</option><option value="<=">At most (≤)</option><option value="<">Less than (&lt;)</option></select></label>` : ''}<button type="button" class="quiet" data-reset>${spanish() ? 'Reset model<span class="es-line" lang="es">Reiniciar el modelo</span>' : 'Reset model'}</button></div></div><p class="model-error" id="${prefix}-err" role="status"></p><div class="model-readout" aria-live="polite" aria-atomic="true"></div>`;
   const lensView = lens ? mountLens(host, model, { lang, prefix: `${prefix}-lens` }) : null;
   const update = () => {
     const r = evaluate(model, values, { symbol, shape });
@@ -168,8 +176,9 @@ export function mountModel(host, model, { initial = model.values, free = null, o
   host.querySelectorAll('[data-control]').forEach(input => input.addEventListener('input', () => {
     const i = Number(input.dataset.control), f = fields[i], n = Number(input.value);
     if (input.value.trim() === '' || !Number.isFinite(n) || n < f.min || n > f.max || Math.abs((n - f.min) / f.step - Math.round((n - f.min) / f.step)) > 1e-7) {
-      valid = false; host.querySelector('.model-error').textContent = `Use ${f.min} to ${f.max}, in steps of ${f.step}. The model keeps your last valid value.`; return;
+      valid = false; input.setAttribute('aria-invalid', 'true'); input.setAttribute('aria-describedby', `${prefix}-err`); host.querySelector('.model-error').innerHTML = `${esc(`Use ${f.min} to ${f.max}, in steps of ${f.step}. The model keeps your last valid value.`)}${spanish() ? `<span class="es-line" lang="es">${esc(`Usa de ${f.min} a ${f.max}, de ${f.step} en ${f.step}. El modelo conserva tu último valor válido.`)}</span>` : ''}`; return;
     }
+    input.removeAttribute('aria-invalid'); input.removeAttribute('aria-describedby');
     valid = [...host.querySelectorAll('[data-control]')].every(el => el.value.trim() !== '' && el.validity.valid);
     if (valid) host.querySelector('.model-error').textContent = '';
     values[i] = n; update();
@@ -183,6 +192,8 @@ export function mountModel(host, model, { initial = model.values, free = null, o
       fields,
       free,
       workspace: host.querySelector('.model-workspace'),
+      lang,
+      nameOf: nameEn,
       getValues: () => values,
       getShape: () => shape,
       apply: (next) => {
@@ -196,7 +207,8 @@ export function mountModel(host, model, { initial = model.values, free = null, o
     const hint = document.createElement('p');
     hint.className = 'direct-hint';
     hint.textContent = directHint(model);
-    picture.after(hint);
+    // Inside the controls column, not a third grid item: the picture is redrawn on every change and the old placement left a gap.
+    host.querySelector('.model-controls').prepend(hint);
   }
   if (model.kind === 'solid' && model.mode === 'surface' && free === null) {
     const switcher = document.createElement('div'); switcher.className = 'lesson-switch';
@@ -209,10 +221,13 @@ export function mountModel(host, model, { initial = model.values, free = null, o
       fields.forEach((field, i) => {
         const input = host.querySelector(`[data-control="${i}"]`);
         input.parentElement.hidden = shape === 'pyramid' && i === 1;
-        input.parentElement.firstChild.textContent = shape === 'pyramid' ? ['Base side', 'Width', 'Slant height'][i] : field.label;
+        // The lesson's own names apply to the shape the lesson is about (a bench that opens on the pyramid names its pyramid controls).
+        input.parentElement.firstChild.textContent = shape === 'pyramid' ? (model.shape === 'pyramid' && labels?.controls?.[i]?.en) || ['Base side', 'Width', 'Slant height'][i] : nameEn(field, i);
       });
       update();
     });
+    // A bench may open on the square-pyramid net (model.shape): the shape is part of the model, not something to hunt for.
+    if (model.shape === 'pyramid') switcher.querySelector('[data-shape="pyramid"]').click();
   }
   host.querySelector('[data-reset]').addEventListener('click', () => {
     values = [...initial]; valid = true; lensView?.reset(); host.querySelectorAll('[data-control]').forEach(el => { el.value = values[Number(el.dataset.control)]; }); host.querySelector('.model-error').textContent = ''; update();
@@ -257,6 +272,7 @@ const watch = {
   'inequality': ['The highlighted ray shows every value that satisfies the rule. An open circle excludes the boundary; a closed circle includes it.', 'Test the boundary value itself and explain whether it qualifies.'],
 };
 export function guidance(model) {
-  const [show, tip] = watch[`${model.kind}:${model.mode}`] || watch[model.kind] || ['The picture updates as you change the controls.', 'Change one quantity at a time and record what the readout shows.'];
+  let [show, tip] = watch[`${model.kind}:${model.mode}`] || watch[model.kind] || ['The picture updates as you change the controls.', 'Change one quantity at a time and record what the readout shows.'];
+  if (model.kind === 'fraction') { const n = portionNoun(model.mode); show = show.replace(/portion/g, n); tip = tip.replace(/portion/g, n); }
   return { show, tip };
 }

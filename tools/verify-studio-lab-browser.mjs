@@ -166,7 +166,12 @@ async function solveLab(page, where, spec) {
       },
       { i, v },
     );
-  const check = () => page.locator(`${spec.root} [data-check-lab]`).click();
+  const check = async () => {
+    // "How sure are you?" appears once before the first check; the button is disabled until the student answers it
+    const conf = page.locator(`${spec.root} [data-conf="2"]`);
+    if (await conf.count()) await conf.click();
+    await page.locator(`${spec.root} [data-check-lab]`).click();
+  };
 
   // a wrong test first: it must explain without printing the answer
   if (type === "target") {
@@ -254,13 +259,15 @@ async function playMission(page, where, spec) {
         shadow.querySelector(`[data-site="${round}"]`).click();
         await new Promise((r) => setTimeout(r, 350));
         const level = Number(shadow.querySelector(".lab-expedition-deck").dataset.level);
-        const p = m.puzzle(model, round, level);
+        const puzzleRound = Number(shadow.querySelector(".lab-expedition-deck").dataset.round);
+        const p = m.puzzle(model, puzzleRound, level);
         const set = (i, v) => {
           const input = shadow.querySelector(`#game-${i}`);
           input.value = String(v);
           input.dispatchEvent(new Event("input", { bubbles: true }));
         };
         let missText = "";
+        let trailAfterMiss = 0;
         if (round === 0 && model.kind !== "inequality") {
           // one wrong test: it must explain, not hand over the answer
           const f = p.free;
@@ -273,7 +280,25 @@ async function playMission(page, where, spec) {
             await new Promise((r) => setTimeout(r, 60));
             shadow.querySelector("[data-check]").click();
             missText = shadow.querySelector(".game-feedback").textContent;
+            trailAfterMiss = shadow.querySelectorAll(".lab-trail li").length;
           }
+        }
+        // the hint ladder: three presses give a question, the relationship, and (where there is one) a worked build with other numbers
+        let hintInfo = null;
+        if (round === 1) {
+          for (let k = 0; k < 3; k++) shadow.querySelector("[data-hint]").click();
+          const items = [...shadow.querySelectorAll(".lab-hints li")].map((li) => li.textContent);
+          const goalText = String(p.goal[p.free]);
+          const leak = items
+            .slice(0, 2)
+            .some((t) =>
+              new RegExp(`(^|[^\\d.])${goalText.replace(".", "\\.")}([^\\d]|$)`).test(t),
+            );
+          hintInfo = {
+            n: items.length,
+            leak,
+            same: items[2] ? items[2].includes(`to ${goalText} makes`) : false,
+          };
         }
         if (model.kind === "inequality") {
           const threshold = p.start[0];
@@ -289,12 +314,25 @@ async function playMission(page, where, spec) {
         shadow.querySelector("[data-check]").click();
         await new Promise((r) => setTimeout(r, 150));
         const text = shadow.querySelector(".game-feedback").textContent;
+        // the "how did you find it?" reflection appears after a restore made without a hint; tap one to prove it saves
+        const chip = shadow.querySelector(".lab-strategy:not([hidden]) [data-strategy]");
+        if (round === 2 && chip) chip.click();
         shadow.querySelector("[data-check]").click();
         await new Promise((r) => setTimeout(r, 200));
-        return { level, text, missText };
+        return {
+          level,
+          text,
+          missText,
+          hintInfo,
+          trail: trailAfterMiss,
+        };
       },
       { root: spec.root, round, V, model: item.model },
     );
+    if (result.hintInfo && (result.hintInfo.n < 2 || result.hintInfo.leak || result.hintInfo.same))
+      fail(where, `mission hint ladder is wrong: ${JSON.stringify(result.hintInfo)}`);
+    if (round === 0 && result.missText && !result.trail)
+      fail(where, "a wrong test left no line in the test trail");
     if (!/restored/.test(result.text))
       fail(where, `mission destination ${round}: ${result.text.slice(0, 100)}`);
     if (result.missText && !/Test \d/.test(result.missText))
@@ -303,6 +341,25 @@ async function playMission(page, where, spec) {
   const done = await feedback(page, spec);
   if (!/Mission complete/.test(done))
     fail(where, `mission did not complete the item: ${done.slice(0, 100)}`);
+  // the construction log names every build in the model's own words, and the reflection was kept
+  const log = await page.evaluate((root) => {
+    const shadow = document.querySelector(`${root} .lab-mission`).shadowRoot;
+    return {
+      rows: [...shadow.querySelectorAll(".lab-expedition-deck details li")].map(
+        (li) => li.textContent,
+      ),
+      summary: shadow.querySelector(".lab-summary")?.textContent || "",
+    };
+  }, spec.root);
+  if (log.rows.length !== 3 || log.rows.some((r) => !/\d/.test(r) || !/test \d/.test(r)))
+    fail(
+      where,
+      `mission log is not three builds with their equations: ${JSON.stringify(log.rows).slice(0, 160)}`,
+    );
+  if (!log.rows.some((r) => /I reasoned|I estimated|I tried|field guide/.test(r)))
+    fail(where, "the strategy reflection was not kept in the log");
+  if (!/Your expedition/.test(log.summary))
+    fail(where, "the completed expedition shows no summary");
   stats.missions++;
 }
 
@@ -319,9 +376,9 @@ const solvedCount = (page, unit4) =>
 
 /* ---- the sweep ----------------------------------------------------------------------------------------- */
 try {
-  for (const id of ids) {
+  const runPage = async ({ id, mode }) => {
     const unit4 = /^4-/.test(id);
-    for (const mode of ["practice", "challenge"]) {
+    {
       const where = `${id} ${mode}`;
       const context = await browser.newContext({ viewport: { width: 1366, height: 768 } });
       const page = await context.newPage();
@@ -363,7 +420,7 @@ try {
         if (after !== before || !before)
           fail(where, `reload lost progress (${before} -> ${after})`);
         plan = await planOf(page, unit4);
-        const first = plan[0];
+        let first = plan[0];
         // phone width: the bench must not push the page sideways
         await page.setViewportSize({ width: 375, height: 812 });
         await openItem(page, first, unit4);
@@ -375,10 +432,39 @@ try {
         // Spanish: the stack shows
         await page.setViewportSize({ width: 1366, height: 768 });
         await page.locator("#toggle-es-btn").click();
+        plan = await planOf(page, unit4); // Unit 4 redraws its bench on the language change
+        first = plan[0];
         await openItem(page, first, unit4);
         if (!(await page.locator(`${first.root} .es-text:visible`).count()))
           fail(where, "Spanish toggle shows no Spanish in the first bench item");
+        // the game speaks Spanish too: world text and every sentence carry a Spanish line beneath the English
+        const missionSpec = plan.find((x) => x.item.k === "mission");
+        if (missionSpec) {
+          await openItem(page, missionSpec, unit4);
+          await page.waitForFunction(
+            (r) =>
+              !!document
+                .querySelector(`${r} .lab-mission`)
+                ?.shadowRoot?.querySelector(".lab-expedition-banner"),
+            missionSpec.root,
+            { timeout: 15000 },
+          );
+          const lines = await page.evaluate(
+            (r) =>
+              document.querySelector(`${r} .lab-mission`).shadowRoot.querySelectorAll(".es-line")
+                .length,
+            missionSpec.root,
+          );
+          if (lines < 4) fail(where, `the mission shows ${lines} Spanish lines with Spanish on`);
+        }
+        if (!unit4) {
+          const share = await page.evaluate(() => window.StudioInsight?.shareText?.() || "");
+          if (!/Lab bench: .*mission 3 of 3/.test(share))
+            fail(where, `share text carries no lab bench line: ${share.slice(-160)}`);
+        }
         await page.locator("#toggle-es-btn").click();
+        plan = await planOf(page, unit4); // Unit 4 redraws its bench on the language change
+        first = plan[0];
         // accessibility on one bench item per page (after the feedback fade-in settles: axe samples a mid-fade colour)
         await page.waitForTimeout(900);
         const axe = await new AxeBuilder({ page })
@@ -399,7 +485,15 @@ try {
       for (const e of errors) fail(where, `console error: ${e.slice(0, 160)}`);
       await context.close();
     }
-  }
+  };
+  // Pages are independent (a fresh context each), so a small pool keeps the sweep inside the pre-commit gate's time limit.
+  const tasks = ids.flatMap((id) => ["practice", "challenge"].map((mode) => ({ id, mode })));
+  const POOL = Number(process.env.LAB_BROWSER_POOL || 4);
+  await Promise.all(
+    Array.from({ length: Math.min(POOL, tasks.length) }, async () => {
+      while (tasks.length) await runPage(tasks.shift());
+    }),
+  );
 } finally {
   await browser.close();
   server.close();

@@ -83,7 +83,7 @@ export function evaluate(model, values = model.values, options = {}) {
         note = extra.validShape ? `One square base and four congruent triangular faces. Each triangle has base ${a} and perpendicular slant height ${c}; slant height is not the vertical height of the solid.` : `Choose a slant height greater than half the base side (${fmt(a / 2)}).`;
       }
       break;
-    case 'fraction': value = a / (b / c); label = 'Number of portions'; unit = 'portions'; equation = `${fmt(a)} ÷ (${b}/${c}) = ${fmt(value)}`; extra = { full: Math.floor(value + 1e-10), remainder: a - Math.floor(value + 1e-10) * b / c }; note = `${extra.full} complete portions; ${fmt(extra.remainder)} units remain. Check: quotient × ${b}/${c} = ${fmt(a)}. A fractional quotient is meaningful even when only whole portions are usable.`; break;
+    case 'fraction': value = a / (b / c); label = 'Number of portions'; unit = 'portions'; equation = `${fmt(a)} ÷ (${b}/${c}) = ${fmt(value)}`; extra = { full: Math.floor(value + 1e-10), remainder: a - Math.floor(value + 1e-10) * b / c }; note = `${extra.full} complete ${portionNoun(model.mode)}s; ${fmt(extra.remainder)} units remain. Check: quotient × ${b}/${c} = ${fmt(a)}. A fractional quotient is meaningful even when only whole ${portionNoun(model.mode)}s are usable.`; break;
     case 'power': value = a ** b + c; label = 'Expression value'; equation = `${c} + ${a}^${b} = ${fmt(value)}`; note = `${a}^${b} means ${Array(b).fill(a).join(' × ')} = ${a ** b}. Evaluate the power before adding ${c}.`; break;
     case 'expression': value = a * (c + b); label = 'Both expression values'; equation = `${a}(${c} + ${b}) = ${a}×${c} + ${a}×${b} = ${value}`; note = `a(x + b) = ax + ab. Here a = ${a}, b = ${b}, x = ${c}. Distribution changes the form, not the value.`; break;
     case 'factors':
@@ -113,6 +113,8 @@ export function evaluate(model, values = model.values, options = {}) {
   return { value, label, unit, equation, note, ...extra };
 }
 
+/** What one share is called in each fraction lab: a ribbon is cut into pieces, a soup into servings, a supply into groups. */
+export const portionNoun = (mode) => ({ ribbon: 'piece', servings: 'serving', field: 'group' }[mode] || 'portion');
 const withSetting = (values, i, v) => values.map((x, j) => (j === i ? v : x));
 // Constructible puzzles: targets are derived from valid hidden control settings.
 // A solution is checked against the mathematical relationship, never a click count.

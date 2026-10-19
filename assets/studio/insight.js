@@ -112,6 +112,27 @@
     return /** @type {HTMLElement} */ ($(".u4-dialog-body", d));
   }
 
+  /** One line about the lab bench (predictions and the mission), or "" when this studio has none or the student has not started. */
+  function benchLine(/** @type {any} */ st) {
+    const acts = /** @type {Record<string, any>} */ (st.acts || {});
+    let right = 0;
+    let total = 0;
+    for (const a of Object.values(acts)) {
+      right += a?.predict?.right || 0;
+      total += a?.predict?.total || 0;
+    }
+    const ex = acts["lab-mission"]?.expedition;
+    const parts = [];
+    if (total) parts.push(`predictions ${right} of ${total} right`);
+    if (ex?.repaired?.length)
+      parts.push(
+        `mission ${ex.repaired.length} of 3 stations restored, ${ex.medals?.length || 0} on the first test`,
+      );
+    const reasoned = Object.values(ex?.strategy || {}).filter((v) => v === "reasoned").length;
+    if (reasoned) parts.push(`${reasoned} planned from the relationship`);
+    return parts.length ? `Lab bench: ${parts.join(" · ")}` : "";
+  }
+
   /* ---- share code --------------------------------------------------------------------------------- */
   function shareText() {
     const { state: st, data, sections } = rt.api;
@@ -129,6 +150,7 @@
       `EduWonderLab · Lesson ${data.lesson} · ${data.mode === "practice" ? "Practice" : "Challenge"}`,
       `${done} of ${total} problems solved · first-try accuracy ${acc}% · best streak ${st.stats.best} · hints used ${st.stats.hints}`,
       top.length ? `Still working on: ${top.join("; ")}` : "No tricky patterns yet",
+      benchLine(st),
       st.quest
         ? `Skill Quest: best ${"★".repeat(st.quest.best)}${"☆".repeat(3 - st.quest.best)} in ${st.quest.runs} run${st.quest.runs === 1 ? "" : "s"}`
         : "",
@@ -241,8 +263,27 @@
       ${redo ? `<p><button type="button" class="btn btn-go" data-redeem>Redemption round (${Math.min(redo, 5)} to redo)</button></p>` : ""}
       ${calibrationHtml()}
       <h3>Your numbers</h3><p>First-try accuracy: <strong>${st.stats.tries ? Math.round((100 * st.stats.first) / st.stats.tries) : 0}%</strong> · Best streak: <strong>${st.stats.best}</strong> · Hints used: <strong>${st.stats.hints}</strong> · Extra reps: <strong>${st.stats.reps}</strong></p>
+      <h3>Done on this computer?</h3><p class="item-sub">This page keeps your work only on this computer: your stars, solved problems, notes and the map above. Nothing is sent anywhere. If another class uses this computer next, clear yours first.</p><p><button type="button" class="btn btn-sm" data-handoff>I am finished on this computer</button></p>
       ${has("share") ? '<p><button type="button" class="btn btn-sm" data-copy>Copy my results</button> <span class="item-sub">A short note with no name. Paste it to your teacher or family.</span></p>' : ""}`;
     body.querySelector("[data-redeem]")?.addEventListener("click", () => redemption(body, dlg));
+    body.querySelector("[data-handoff]")?.addEventListener("click", () => {
+      if (
+        !window.confirm(
+          "Clear everything this page saved on this computer (stars, solved problems, notes)? Copy your results first if you want to keep a note.",
+        )
+      )
+        return;
+      const key = String(rt.api.data.storageKey);
+      for (const k of [key, `${key}_p1`]) W.StudioStore.clear(k);
+      try {
+        for (const k of Object.keys(localStorage))
+          if (k === `ewl_u${String(rt.api.data.lesson).replace("-", "_l")}_v2`)
+            localStorage.removeItem(k);
+      } catch (_e) {
+        /* storage blocked: nothing to clear */
+      }
+      location.reload();
+    });
     body
       .querySelector("[data-copy]")
       ?.addEventListener("click", (e) =>
@@ -272,7 +313,7 @@
     let letter = 0;
     for (const n of /** @type {HTMLElement[]} */ ([
       ...stage.querySelectorAll(
-        ".item-q, .item-sub:not(.nline-read), .choice-btn, .sort-card, .match-item",
+        ".item-q, .item-sub:not(.nline-read), .choice-btn, .sort-card, .match-item, .item-fb, .lab-trail li",
       ),
     ])) {
       const t = take(n).replace(/\s+/g, " ").trim();
@@ -283,7 +324,28 @@
           : t,
       );
     }
+    // The lab model and the mission live in shadow roots: read what the student needs from the game (the goal, the readout, the last message).
+    for (const host of /** @type {HTMLElement[]} */ ([
+      ...stage.querySelectorAll(".lab-model, .lab-mission"),
+    ])) {
+      const root = host.shadowRoot;
+      if (!root) continue;
+      for (const n of /** @type {HTMLElement[]} */ ([
+        ...root.querySelectorAll(
+          ".target, .goal-gap, .model-readout strong, .game-feedback, .lab-expedition-status",
+        ),
+      ])) {
+        const t = (n.textContent || "").replace(/\s+/g, " ").trim();
+        if (t) parts.push(t);
+      }
+    }
     return parts.join(". ");
+  }
+  /** A voice for the language, or "" when this device has none (Chromebooks often lack a Spanish voice). */
+  function voiceFor(/** @type {boolean} */ spanish) {
+    const voices = window.speechSynthesis?.getVoices?.() || [];
+    if (!voices.length) return "pending";
+    return voices.some((v) => v.lang.toLowerCase().startsWith(spanish ? "es" : "en")) ? "ok" : "";
   }
   function read(/** @type {number} */ tab) {
     const synth = window.speechSynthesis;
@@ -294,6 +356,14 @@
       return;
     }
     const spanish = rt.api.state.showEs;
+    if (voiceFor(spanish) === "") {
+      rt.api.say(
+        spanish
+          ? "This device has no Spanish voice, so Read cannot speak Spanish here. The text is still on the page."
+          : "This device has no English voice for Read.",
+      );
+      return;
+    }
     const u = new SpeechSynthesisUtterance(
       stageText(/** @type {HTMLElement} */ ($(`#stage-${tab}`)), spanish),
     );

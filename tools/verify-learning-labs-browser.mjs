@@ -207,7 +207,8 @@ async function sweepLab(page, item) {
       // page states the level it built rather than the test re-deriving it.
       const tier = Number(await page.locator(".lab-expedition-deck").getAttribute("data-level"));
       assert.ok([0, 1, 2].includes(tier), `${item.id} game destination ${r} states its level`);
-      const p = puzzle(lab.model, r, tier);
+      const round = Number(await page.locator(".lab-expedition-deck").getAttribute("data-round"));
+      const p = puzzle(lab.model, round, tier);
       if (lab.model.kind === "inequality") {
         // The default includes equality; choose an interior solution or counterexample.
         const threshold = p.start[0],

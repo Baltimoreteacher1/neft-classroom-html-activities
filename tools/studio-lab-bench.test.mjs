@@ -54,6 +54,51 @@ const ids = listLessonDirs({ filter: /^\d+-\d+$/ })
   );
 }
 
+/* ---- the difficulty ladder rises with the student and stops at the top (it used to wrap to the easiest) ---- */
+{
+  const { missionLevel } = await import("../curriculum/learning-labs/shared/expedition.mjs");
+  for (let tier = 0; tier < 3; tier++) {
+    let last = -1;
+    for (let adapt = -1; adapt <= 4; adapt++) {
+      const level = missionLevel(tier, adapt);
+      assert.ok(level >= 0 && level <= 2, `level ${level} stays inside 0-2`);
+      assert.ok(
+        level >= last,
+        `level never falls as the student does better (tier ${tier}, adapt ${adapt})`,
+      );
+      last = level;
+    }
+  }
+  assert.equal(missionLevel(2, 1), 2, "a stretch student who restores cleanly stays at the top");
+  assert.equal(missionLevel(0, 0), 0);
+  assert.ok(missionLevel(1, 1) > missionLevel(1, 0), "a clean restore raises the next puzzle");
+}
+
+/* ---- the game speaks Spanish: every lab's world has its Spanish text, three places ----------------------- */
+{
+  const { expeditionWorlds } = await import(
+    "../curriculum/learning-labs/shared/expedition-worlds.mjs"
+  );
+  const { expeditionWorldsEs } = await import(
+    "../curriculum/learning-labs/shared/expedition-worlds-es.mjs"
+  );
+  for (const [id, w] of Object.entries(expeditionWorlds)) {
+    const es = expeditionWorldsEs[id];
+    assert.ok(es?.goal && es.brief, `${id} has a Spanish goal and brief`);
+    assert.equal(
+      es.locations.length,
+      w.locations.length,
+      `${id} has Spanish names for every place`,
+    );
+    assert.notEqual(es.goal, w.goal, `${id} goal is translated`);
+  }
+  assert.deepEqual(
+    Object.keys(expeditionWorldsEs).sort(),
+    Object.keys(expeditionWorlds).sort(),
+    "no stray worlds",
+  );
+}
+
 /* ---- the learning labs' own mission puzzles are plannable too (the engine is shared) ------------------- */
 {
   const { blueprints } = await import("./learning-labs/blueprints.mjs");

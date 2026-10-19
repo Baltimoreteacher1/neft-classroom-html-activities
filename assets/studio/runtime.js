@@ -580,6 +580,19 @@
     goToTab: selectTab,
     glyphs: data.glyphs || ["★", "✓", "+", "="],
   });
+  // A teacher can send a student straight to a station: ?s=4&i=1 opens section 4, problem 1; &lang=es starts in Spanish.
+  // Nothing is marked solved by a link, and a saved position is only replaced when the link names one.
+  {
+    const q = new URLSearchParams(location.search);
+    const sec = Number(q.get("s"));
+    if (Number.isInteger(sec) && sec >= 1 && sec <= 5) {
+      state.activeTab = sec;
+      const at = Number(q.get("i"));
+      if (Number.isInteger(at) && at >= 1 && at <= SECTIONS[sec - 1].items.length)
+        state.idx[sec] = at - 1;
+    }
+    if (q.get("lang") === "es") state.showEs = true;
+  }
   applyLang();
   TABS.forEach(render);
   selectTab(Math.min(5, Math.max(1, state.activeTab)));

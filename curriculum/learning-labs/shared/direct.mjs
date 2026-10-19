@@ -219,7 +219,7 @@ const same = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
 const escAttr = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 /** Wire pointer, touch, and accessible Click-to-Select / Click-to-Place events on the picture. */
-export function attachDirect(host, model, { fields, free = null, workspace = null, getValues, apply, getShape = () => 'prism' }) {
+export function attachDirect(host, model, { fields, free = null, workspace = null, getValues, apply, getShape = () => 'prism', lang = () => 'en', nameOf = (f) => f.label }) {
   if (!isDirect(model)) return;
   host.classList.add('direct');
   host.setAttribute('data-direct', model.kind);
@@ -333,23 +333,28 @@ export function attachDirect(host, model, { fields, free = null, workspace = nul
     const presets = [...new Set([
       activeField.min,
       snap(activeField, cur - activeField.step),
-      snap(activeField, (activeField.min + activeField.max) / 2),
       snap(activeField, cur + activeField.step),
       activeField.max,
     ])].sort((a, b) => a - b);
 
-    bar.innerHTML = `<div class="click-place-row"><span class="click-place-label">1. Select quantity:</span><div class="click-place-chips" role="group" aria-label="Select quantity to place">${editableIndices
+    // Rebuilding the bar destroys the focused chip: remember which one it was and give focus back to its twin.
+    const live = bar.getRootNode().activeElement;
+    const keep = live && bar.contains(live) ? (live.dataset.directParam !== undefined ? ['directParam', live.dataset.directParam] : ['directVal', live.dataset.directVal]) : null;
+    const es = lang() === 'es';
+    const sp = (en, sp) => (es ? `${en} / ${sp}` : en);
+    bar.innerHTML = `<div class="click-place-row"><span class="click-place-label">${sp('1. Choose a quantity:', 'Elige una cantidad:')}</span><div class="click-place-chips" role="group" aria-label="Select quantity to place">${editableIndices
       .map(
         ({ f, i }) =>
-          `<button type="button" class="small ${i === selectedIdx ? '' : 'quiet'}" data-direct-param="${i}" aria-pressed="${i === selectedIdx}">${escAttr(f.label)} (${currentVals[i]})</button>`,
+          `<button type="button" class="small ${i === selectedIdx ? '' : 'quiet'}" data-direct-param="${i}" aria-pressed="${i === selectedIdx}">${escAttr(nameOf(f, i))} (${currentVals[i]})</button>`,
       )
-      .join('')}</div></div><div class="click-place-row"><span class="click-place-label">2. Place value:</span><div class="click-place-chips" role="group" aria-label="Place target value for ${escAttr(activeField.label)}">${presets
+      .join('')}</div></div><div class="click-place-row"><span class="click-place-label">${sp('2. Set it to:', 'Ponla en:')}</span><div class="click-place-chips" role="group" aria-label="Place target value for ${escAttr(nameOf(activeField, selectedIdx))}">${presets
       .map(
         (val) =>
-          `<button type="button" class="small ${val === cur ? '' : 'quiet'}" data-direct-val="${val}" aria-pressed="${val === cur}">${val === activeField.min ? `Min (${val})` : val === activeField.max ? `Max (${val})` : val}</button>`,
+          `<button type="button" class="small ${val === cur ? '' : 'quiet'}" data-direct-val="${val}" aria-pressed="${val === cur}">${val === activeField.min ? `${sp('Min', 'Mín.')} (${val})` : val === activeField.max ? `${sp('Max', 'Máx.')} (${val})` : val}</button>`,
       )
       .join('')}</div></div>`;
 
+    if (keep) (bar.querySelector(`[data-${keep[0].replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}="${keep[1]}"]`) || bar.querySelector(`[data-direct-param="${selectedIdx}"]`))?.focus({ preventScroll: true });
     bar.querySelectorAll('[data-direct-param]').forEach((btn) => {
       btn.onclick = () => {
         selectedIdx = Number(btn.dataset.directParam);
