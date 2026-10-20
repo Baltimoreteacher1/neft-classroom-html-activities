@@ -52,6 +52,7 @@ import { BRIDGE_CSS } from "./lib/homework-bridge.mjs";
 import { CONFUSED_GROWNUP_CSS, CONFUSED_GROWNUP_JS } from "./lib/homework-confused-grownup.mjs";
 import { DOMINO_DUO_CSS, DOMINO_DUO_JS } from "./lib/homework-domino-duo.mjs";
 import { applyPracticeReview, loadPracticeReview } from "./lib/homework-practice-review.mjs";
+import { PRINT_CSS, PRINT_JS } from "./lib/homework-print.mjs";
 import {
   answerKeyLines,
   matchingPairs,
@@ -4116,6 +4117,7 @@ ${SESSION_FLOW_CSS}
 ${DOMINO_DUO_CSS}
 ${VOICE_CSS}
 ${familyStyleCss}
+${PRINT_CSS}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -4245,6 +4247,7 @@ window.__HW_VOCAB_MATCH__ = ${vocabGlossary ? jsonForScript(vocabGlossary.match)
 window.__HW_WORKED__ = ${jsonForScript(workedExampleFor(config, coreSelected))};
 /*hw-shared-js:begin*/
 ${HOMEWORK_TABS_JS}
+${PRINT_JS}
 ${STUDIO_SKIN_JS}
 ${HOMEWORK_GAME_JS}
 ${VOICE_JS}

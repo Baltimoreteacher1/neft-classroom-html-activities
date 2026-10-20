@@ -2466,6 +2466,28 @@ document.addEventListener('visibilitychange', function() {
 })();
 
 
+window.addEventListener("beforeprint", function () {
+  document.querySelectorAll(".matching-pairs").forEach(function (pairs) {
+    var select = pairs.querySelector("select");
+    if (!select || pairs.parentNode.querySelector(".hw-print-choices")) return;
+    var texts = Array.prototype.filter.call(select.options, function (o) { return o.value; })
+      .map(function (o) { return o.textContent.trim(); });
+    if (!texts.length) return;
+    var list = document.createElement("ol");
+    list.className = "hw-print-choices";
+    texts.forEach(function (t) {
+      var li = document.createElement("li");
+      li.textContent = t;
+      list.appendChild(li);
+    });
+    pairs.insertAdjacentElement("afterend", list);
+  });
+});
+window.addEventListener("afterprint", function () {
+  document.querySelectorAll(".hw-print-choices").forEach(function (n) { n.remove(); });
+});
+
+
 /* Studio stepper: show ONE problem at a time per .problems-container, with
    numbered dots and Back/Next. Purely a view over the existing problem
    sections — answering, checking and saving are handled by the page as before. */

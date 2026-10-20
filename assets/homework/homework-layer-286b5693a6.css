@@ -8177,3 +8177,124 @@ body[data-family-style="arcade"] .hw-hero-glow { background:radial-gradient(circ
 body[data-family-style="arcade"] .card, body[data-family-style="arcade"] .practice-tier { border-color:#cbd6dc; border-radius:20px; }
 body[data-family-style="arcade"] .homework-tab-btn.is-active { box-shadow:inset 0 -3px #8c7442; }
 body[data-family-style="arcade"] .hw-experience-banner { border-style:dashed; border-width:2px; }
+
+
+/* ===== Family homework print sheet (scripts/lib/homework-print.mjs) ===== */
+.hw-print-head, .hw-print-choices { display: none; }
+@page { size: letter; margin: 14mm 13mm 16mm; }
+@media print {
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) { background: #fff !important; color: #000 !important; padding: 0 !important;
+    font-size: 12pt !important; line-height: 1.4 !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .container { max-width: none !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) * { box-shadow: none !important; text-shadow: none !important; animation: none !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) a { color: #000 !important; text-decoration: none !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .card, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .card-ish, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .problem-section, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .practice-tier-head,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .learn-summary-block, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .learn-big-idea-block, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .parent-quick-card,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .bilingual-col { background: #fff !important; color: #000 !important; border-color: #777 !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .container p, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .container li, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .container label,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .container td, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .container th, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .choice-text, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .problem-stem,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .learning-big, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .learning-sub { font-size: 12pt !important; line-height: 1.4 !important; color: #000 !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .container small, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .lang-label, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-print-kicker { font-size: 12pt !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) h1, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) h2, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) h3 { color: #000 !important; break-after: avoid; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .section-title { font-size: 15pt !important; margin: 4mm 0 2mm !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .practice-tier-title { font-size: 14pt !important; }
+
+  /* Header: title, Name / Date on ruled lines */
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-print-head { display: block; margin: 0 0 5mm; padding-bottom: 3mm; border-bottom: 1.5pt solid #000; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-print-kicker { margin: 0 0 1mm; font-weight: 700; letter-spacing: .02em; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-print-title { margin: 0 0 4mm; font-size: 20pt !important; font-weight: 800; line-height: 1.2 !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-print-name { display: flex; gap: 10mm; margin: 0 0 3mm; align-items: flex-end; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-print-field { flex: 1 1 70%; display: flex; align-items: flex-end; gap: 2mm; font-weight: 700; white-space: nowrap; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-print-field-short { flex: 1 1 30%; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-print-field i { flex: 1; border-bottom: 1pt solid #000; height: 7mm; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-print-note { margin: 0; font-style: italic; }
+
+  /* A panel is far taller than a page. Forcing it to stay whole pushed the
+     problems to a new page and left the end of the Learn panel alone on one. */
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .tab-panel-inner { break-inside: auto !important; page-break-inside: auto !important; }
+
+  /* Interactive-only chrome never reaches paper */
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-hero, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .homework-tab-chrome, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-rail, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-listen-bar,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .btn-read-aloud, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .btn-listen-prob, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-listen, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .bridge-listen,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .lang-selector-card, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .stars-to-win-bar, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .live-streak-banner,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .goal-reached-banner, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .scratchpad-inline-toggle, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .interactive-scratchpad,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-stepper-bar, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .problem-hint-row, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .problem-coach-ladder,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .problem-check-row, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .problem-check-result, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .feedback,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .problem-feedback, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .solution-explanation, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-answer-key,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .family-problem-tip, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .family-hint-box, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .tab-flow-nav,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-draw-clear, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .drag-controls, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .mobile-cat-select,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .drag-handle, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .learn-jump-row, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .learn-extended-block,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-huddle, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .tab-help-row, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .help-pop-btn, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .bridge-card,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) details:not([open]):not(.hw-workspace-toggle), body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-quick-optional, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .more-practice:not([open]), body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-help-drawer,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .help-modal-overlay, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .bottom-status-bar, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .ls-launcher,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .ls-panel, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .mathpad, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .mathpad-fab, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-stuck-fab,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .workbench-drawer, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-tools-menu, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .parent-signoff-container,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-session-banner, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .cga-card,
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) #hw_panel_check > p.bilingual-block:not(.quick-check-time),
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) [data-tab-panel="words"], body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) [data-tab-panel="play"],
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) [data-tab-panel="photobooth"],
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) #hw_panel_done > *:not(.print-only-certificate) { display: none !important; }
+
+  /* Vocabulary buttons read as plain words on paper */
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .obj-term { border: 0 !important; background: none !important; color: inherit !important;
+    font: inherit !important; padding: 0 !important; text-decoration: underline; text-decoration-style: dotted; }
+
+  /* Problems: keep each together, leave room to write */
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .problem-section { break-inside: avoid; margin: 0 0 6mm !important; padding: 3mm 4mm !important;
+    border: 1pt solid #777 !important; border-radius: 2mm !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .problem-header-row { display: flex; gap: 3mm; align-items: center; break-after: avoid; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .problem-number-badge { background: #fff !important; color: #000 !important;
+    border: 1.5pt solid #000 !important; min-width: 8mm; text-align: center; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .problem-type-badge, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .practice-tier-badge { background: #fff !important; color: #000 !important;
+    border: 1pt solid #777 !important; font-size: 11pt !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .problem-stem { font-weight: 700; break-after: avoid; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .practice-tier { margin-bottom: 5mm; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .practice-tier-head { padding: 2mm 3mm !important; border: 1pt solid #777; break-after: avoid; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .mc-options { display: block !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .mc-option-label { display: flex !important; align-items: center; gap: 3mm; margin: 0 0 2mm !important;
+    padding: 1.5mm 3mm !important; background: #fff !important; border: 1pt solid #777 !important;
+    border-radius: 2mm !important; min-height: 9mm; break-inside: avoid; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .custom-radio { border: 1.5pt solid #000 !important; background: #fff !important; flex: none; }
+
+  /* Answer fields become ruled lines */
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) input[type="text"], body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) input[type="number"], body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) input:not([type]),
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .table-input, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .custom-input {
+    border: 0 !important; border-bottom: 1pt solid #000 !important; border-radius: 0 !important;
+    background: transparent !important; min-width: 30mm; height: 9mm; font-size: 12pt !important;
+    color: #000 !important; box-shadow: none !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) select, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .matching-select { appearance: none; -webkit-appearance: none;
+    border: 0 !important; border-bottom: 1pt solid #000 !important; border-radius: 0 !important;
+    background: transparent !important; min-width: 40mm; height: 9mm; font-size: 12pt !important; color: #000 !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) textarea { appearance: none; -webkit-appearance: none; resize: none; overflow: visible;
+    border: 0 !important; border-radius: 0 !important;
+    min-height: 36mm; width: 100% !important; font-size: 12pt !important; line-height: 8mm !important;
+    color: #000 !important; padding: 0 !important;
+    background: repeating-linear-gradient(to bottom, transparent 0, transparent calc(8mm - 1pt), #777 calc(8mm - 1pt), #777 8mm) !important;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .fill-table { border-collapse: collapse; width: 100%; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .fill-table th, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .fill-table td { border: 1pt solid #000 !important; padding: 2mm !important;
+    background: #fff !important; color: #000 !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .drag-card { border: 1pt solid #000 !important; background: #fff !important; display: inline-block; margin: 0 2mm 2mm 0; padding: 1mm 3mm; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .drag-column { border: 1pt solid #000 !important; background: #fff !important; min-height: 28mm; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .matching-row { break-inside: avoid; }
+
+  /* Work space and models: keep the picture, drop the controls */
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-workspace-toggle { border: 0 !important; background: none !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-workspace-toggle > summary { list-style: none; font-weight: 700; font-size: 12pt !important;
+    border: 0 !important; background: none !important; padding: 0 !important; margin: 0 0 1mm; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) textarea::placeholder, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) input::placeholder { color: transparent !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) select:has(option:checked[value=""]) { color: transparent !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .drag-source-header { display: none !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .more-practice { border: 0 !important; padding: 0 !important; background: none !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .more-practice > summary { list-style: none; font-weight: 700; font-size: 14pt !important;
+    border: 0 !important; background: none !important; padding: 0 !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .more-practice > summary::-webkit-details-marker { display: none; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-print-choices { display: block; list-style: upper-alpha; margin: 3mm 0 0; padding-left: 9mm; font-size: 12pt !important; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-print-choices li { margin: 0 0 1mm; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-workspace-toggle > summary::-webkit-details-marker { display: none; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-workspace { display: grid !important; grid-template-columns: 1fr 1fr; gap: 4mm; align-items: start; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-visual-frame { border: 1pt dashed #777 !important; background: #fff !important; min-height: 36mm; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-visual-frame svg, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .concept-svg, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .family-big-idea-visual svg { max-width: 100%; height: auto; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-work { margin: 0; }
+  body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-work-label { font-weight: 700; font-size: 12pt !important; }
+}

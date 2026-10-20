@@ -40,6 +40,7 @@ import { getUnitTheme } from "./homework-themes.mjs";
 import { bridgeOf, bridgeSpeech, renderBridgeCard } from "./lib/homework-bridge.mjs";
 import { confusedRoundsFor, renderConfusedGrownUp } from "./lib/homework-confused-grownup.mjs";
 import { renderDominoDuo } from "./lib/homework-domino-duo.mjs";
+import { renderPrintHead } from "./lib/homework-print.mjs";
 import { choiceFeedbackSpanish } from "./lib/homework-problems.mjs";
 import { renderScratchpadHtml } from "./lib/homework-scratchpad.mjs";
 import {
@@ -2865,8 +2866,22 @@ export function renderWelcomeBanner(config, lessonId) {
     ? `Lesson ${here.baseId} · ${SESSIONS[here.session].en}`
     : homeworkPageLabel(lessonId);
   const bigIdea = learningTonight(config);
+  const pageLabelEs = pageLabelEn
+    .replace(/^Lesson /, "Lección ")
+    .replace(/^Review/, "Repaso")
+    .replace(/Session (\d): .*$/, (_, n) => SESSIONS[n].es)
+    .replace("Session 2", "Sesión 2")
+    .replace("Section 3", "Sección 3");
 
   return `
+    ${renderPrintHead({
+      unitLabel: {
+        en: `Unit ${unit}${unitTitle.en ? ` · ${unitTitle.en}` : ""}`,
+        es: `Unidad ${unit}${unitTitle.es ? ` · ${unitTitle.es}` : ""}`,
+      },
+      lessonTitle: { en: title, es: familyTitlesEs[lessonId] || title },
+      pageLabel: { en: pageLabelEn, es: pageLabelEs },
+    })}
     <header class="hw-hero" aria-label="Family Math Night welcome">
       <div class="hw-hero-glow" aria-hidden="true"></div>
       <div class="hw-hero-body">
@@ -2886,14 +2901,7 @@ export function renderWelcomeBanner(config, lessonId) {
 
         <p class="hw-hero-lesson">
           <span class="hw-hero-lesson-title"><span class="lang-en">${esc(title)}</span><span class="lang-es" lang="es">${esc(familyTitlesEs[lessonId] || title)}</span></span>
-          <span class="hw-hero-lesson-meta"><span class="lang-en">${esc(pageLabelEn)}</span><span class="lang-es" lang="es">${esc(
-            pageLabelEn
-              .replace(/^Lesson /, "Lección ")
-              .replace(/^Review/, "Repaso")
-              .replace(/Session (\d): .*$/, (_, n) => SESSIONS[n].es)
-              .replace("Session 2", "Sesión 2")
-              .replace("Section 3", "Sección 3"),
-          )}</span></span>
+          <span class="hw-hero-lesson-meta"><span class="lang-en">${esc(pageLabelEn)}</span><span class="lang-es" lang="es">${esc(pageLabelEs)}</span></span>
         </p>
 
         ${renderSessionBanner(lessonId, partner)}
