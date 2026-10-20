@@ -26,7 +26,7 @@ import {
   TextRun,
   WidthType,
 } from "docx";
-import { isPublisherSourcedDocx } from "./lib/homework-docx-a11y.mjs";
+import { isPublisherSourcedDocx, withoutTeacherKey } from "./lib/homework-docx-a11y.mjs";
 import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -755,7 +755,12 @@ async function main() {
       kept.push(id);
       continue;
     }
-    writeFileSync(outPath, await Packer.toBuffer(buildDoc(id, config, "en").doc));
+    // The public sheet carries no answers. The full sheet, key page included,
+    // ships as homework-answer-key.docx, which the teacher-surface gate keeps
+    // behind the teacher login (any path containing "answer-key").
+    const full = await Packer.toBuffer(buildDoc(id, config, "en").doc);
+    writeFileSync(outPath, await withoutTeacherKey(full));
+    writeFileSync(join(lessonsDir, id, "homework-answer-key.docx"), full);
     written++;
 
     const es = buildDoc(id, config, "es");

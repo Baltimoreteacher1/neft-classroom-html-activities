@@ -167,6 +167,14 @@ function copyStandaloneHtml() {
             mkdirSync(destDir, { recursive: true });
             cpSync(homework, resolve(destDir, "homework.docx"));
           }
+          // Full homework sheet with the teacher key page; the path contains
+          // "answer-key", so the teacher-surface gate keeps it behind login.
+          const homeworkKey = resolve(lessonsDir, dir.name, "homework-answer-key.docx");
+          if (existsSync(homeworkKey)) {
+            const destDir = resolve(__dirname, "dist", "lessons", dir.name);
+            mkdirSync(destDir, { recursive: true });
+            cpSync(homeworkKey, resolve(destDir, "homework-answer-key.docx"));
+          }
           // Spanish homework sheet — only lessons with fully authored Spanish have one.
           const homeworkEs = resolve(lessonsDir, dir.name, "homework-es.docx");
           if (existsSync(homeworkEs)) {

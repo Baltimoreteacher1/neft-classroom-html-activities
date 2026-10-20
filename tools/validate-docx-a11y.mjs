@@ -14,6 +14,8 @@
  *   HEADING   at least one Heading 1-3 paragraph, and the style is defined
  *   ALT       every <wp:docPr> drawing has non-empty alt text
  *   TOKEN     no PUBLISHER_WORKSPACE token anywhere in the document body
+ *   KEY       no "Answer Key (Teacher)" page: these files are public; the
+ *             keyed copy is homework-answer-key.docx, which sits behind login
  *   TITLE     docProps/core.xml has a real title (not empty, not "... HW Version N")
  *   LANGUAGE  a document language is declared
  *   LABEL     no "Version N" / "Regular" internal label in header, footer or
@@ -60,6 +62,9 @@ export async function auditDocx(buffer) {
   if (/PUBLISHER_WORKSPACE/.test(doc))
     found.push("TOKEN: PUBLISHER_WORKSPACE appears in the document");
 
+  if (/Answer Key \(Teacher\)/.test(doc))
+    found.push("KEY: a public homework file carries the teacher answer key");
+
   const title = (core.match(/<dc:title>([\s\S]*?)<\/dc:title>/) || [])[1] ?? "";
   if (BAD_TITLE.test(title))
     found.push(`TITLE: "${title.trim()}" is empty or an internal file name`);
@@ -102,6 +107,7 @@ async function syntheticDocx({ bad }) {
   const noAlt = bad ? "" : 'descr="Blank grid"';
   const body = bad
     ? `<w:p><w:r><w:t>Version 2 / Regular</w:t></w:r></w:p><w:p><w:r><w:t>Plain title</w:t></w:r></w:p>
+       <w:p><w:r><w:t>Answer Key (Teacher)</w:t></w:r></w:p>
        <w:p><w:r><w:drawing><wp:inline><wp:docPr id="1" name="a" ${alt}/></wp:inline></w:drawing></w:r></w:p>
        <w:p><w:r><w:drawing><wp:inline><wp:docPr id="2" name="b" ${noAlt}/></wp:inline></w:drawing></w:r></w:p>
        <w:tbl><w:tblPr><w:tblW w:w="1" w:type="dxa"/></w:tblPr><w:tr><w:tc><w:p/></w:tc></w:tr></w:tbl>`
@@ -128,7 +134,7 @@ async function selfTest() {
   const good = await auditDocx(await syntheticDocx({ bad: false }));
   if (good.length) throw new Error(`self-test: the clean fixture failed: ${good.join("; ")}`);
   const bad = (await auditDocx(await syntheticDocx({ bad: true }))).map((f) => f.split(":")[0]);
-  for (const kind of ["HEADING", "ALT", "TOKEN", "TITLE", "LANGUAGE", "LABEL", "TABLE"]) {
+  for (const kind of ["HEADING", "ALT", "TOKEN", "KEY", "TITLE", "LANGUAGE", "LABEL", "TABLE"]) {
     if (!bad.includes(kind))
       throw new Error(`self-test: the ${kind} detector did not fire on the bad fixture`);
   }
