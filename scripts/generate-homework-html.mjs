@@ -267,7 +267,7 @@ const vocabKey = (term) =>
     .replace(/s$/, "")
     .trim();
 
-function buildVocabGlossary(vocab) {
+function buildVocabEntries(vocab) {
   const lessonList = Array.isArray(vocab) ? vocab : [];
   // Terms THIS lesson declares are never suppressed: if tonight is about
   // fractions, the family page should still define "fraction". The stoplist
@@ -323,6 +323,49 @@ function buildVocabGlossary(vocab) {
   });
 
   return { entries, match: { regexSource: matcher.regexSource, lookup: matcher.lookup } };
+}
+
+// The glossary every lesson shares: the math-glossary terms plus the whole
+// Grade 6 bank, in bank order, with no lesson's own terms. ~170 KB that used to
+// be inlined byte-for-byte on every homework page. It is written once to a
+// content-hashed file; a page ships only the entries that differ from it.
+let _sharedVocab = null;
+function sharedVocabEntries() {
+  _sharedVocab ??= buildVocabEntries([])?.entries ?? [];
+  return _sharedVocab;
+}
+
+/**
+ * Split one lesson's glossary into what the page inlines and what it takes from
+ * the shared file. `head` = entries this lesson adds or overrides (placed first,
+ * as before); `skip` = indices of shared entries the page must not append
+ * because the head already carries that term. The browser rebuilds
+ * `head + shared minus skip`, which is asserted here to equal the old full list
+ * entry for entry, so every index in `match.lookup` still points at the same
+ * entry.
+ */
+function buildVocabGlossary(vocab) {
+  const built = buildVocabEntries(vocab);
+  if (!built) return null;
+  const shared = sharedVocabEntries();
+  // The lesson's own entries lead the list, then the shared ones in shared
+  // order: find the shortest head after which the rest IS the shared list minus
+  // the terms the head already carries.
+  const all = built.entries;
+  for (let k = 0; k <= all.length; k++) {
+    const head = all.slice(0, k);
+    const headKeys = new Set(head.map((e) => vocabKey(e.term)));
+    const skip = [];
+    shared.forEach((e, i) => {
+      if (headKeys.has(vocabKey(e.term))) skip.push(i);
+    });
+    if (all.length - k !== shared.length - skip.length) continue;
+    const skipSet = new Set(skip);
+    const rest = shared.filter((_, i) => !skipSet.has(i));
+    if (rest.every((e, i) => JSON.stringify(e) === JSON.stringify(all[k + i])))
+      return { head, skip, match: built.match };
+  }
+  throw new Error("homework glossary: the lesson list is not head + shared entries");
 }
 
 const FAMILY_TIPS_BY_TYPE = {
@@ -4196,7 +4239,8 @@ window.LESSON_TITLE = "${escAttr(title)}";
    bar counted to 6: a family could hit "Goal Reached! 3 Stars Earned!" and read
    "0 / 6 Completed" in the same glance. */
 window.HW_CORE_COUNT = ${coreSelected.length};
-window.__HW_VOCAB__ = ${vocabGlossary ? jsonForScript(vocabGlossary.entries) : "[]"};
+window.__HW_VOCAB__ = ${vocabGlossary ? jsonForScript(vocabGlossary.head) : "[]"};
+window.__HW_VOCAB_SKIP__ = ${vocabGlossary ? jsonForScript(vocabGlossary.skip) : "[]"};
 window.__HW_VOCAB_MATCH__ = ${vocabGlossary ? jsonForScript(vocabGlossary.match) : "null"};
 window.__HW_WORKED__ = ${jsonForScript(workedExampleFor(config, coreSelected))};
 /*hw-shared-js:begin*/
@@ -6780,7 +6824,10 @@ function main() {
   for (const { id, config } of lessons) {
     const homeworkHtml = localizeBilingualLabels(generateHtml(id, config));
     const lessonPath = join(lessonsDir, id, "homework.html");
-    const split = externalizeSharedCode(`${homeworkHtml.replace(/[ \t]+$/gm, "").trimEnd()}\n`);
+    const split = externalizeSharedCode(
+      `${homeworkHtml.replace(/[ \t]+$/gm, "").trimEnd()}\n`,
+      sharedVocabEntries(),
+    );
     Object.assign(sharedFiles, split.files);
     const normalizedHtml = split.html;
     // --check: report drift, write nothing. This page does NOT run in

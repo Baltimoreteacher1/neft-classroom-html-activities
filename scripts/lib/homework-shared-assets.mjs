@@ -31,7 +31,7 @@ const hash = (text) => createHash("sha256").update(text).digest("hex").slice(0, 
  * edit that drops one fails the generator instead of shipping a page that
  * inlines everything again unnoticed.
  */
-export function externalizeSharedCode(html) {
+export function externalizeSharedCode(html, sharedVocab) {
   const files = {};
 
   const styleOpen = html.indexOf("<style>");
@@ -65,9 +65,13 @@ export function externalizeSharedCode(html) {
   // from Biome like every other bundle (it was never linted while inline).
   const nameJs = `homework-core-${hash(shared)}.bundle.js`;
   files[nameJs] = `${shared}\n`;
+  // The glossary every lesson shares, ahead of the core bundle that reads it.
+  const vocabJson = JSON.stringify(sharedVocab);
+  const nameVocab = `homework-vocab-${hash(vocabJson)}.bundle.js`;
+  files[nameVocab] = `window.__HW_VOCAB_SHARED__ = ${vocabJson};\n`;
   out =
     out.slice(0, scriptOpen) +
-    `<script>\n${data}\n</script>\n<script src="${URL_DIR}/${nameJs}"></script>\n<script src="/assets/family-engagement/engagement-beacon.js" defer></script>` +
+    `<script>\n${data}\n</script>\n<script src="${URL_DIR}/${nameVocab}"></script>\n<script src="${URL_DIR}/${nameJs}"></script>\n<script src="/assets/family-engagement/engagement-beacon.js" defer></script>` +
     out.slice(scriptClose + "</script>".length);
 
   return { html: out, files };
@@ -83,7 +87,7 @@ export function writeSharedFiles(root, files) {
   }
   for (const name of readdirSync(dir)) {
     if (
-      /^homework-(base|layer|core)-[0-9a-f]{10}\.(css|js|bundle\.js)$/.test(name) &&
+      /^homework-(base|layer|core|vocab)-[0-9a-f]{10}\.(css|js|bundle\.js)$/.test(name) &&
       !(name in files)
     ) {
       rmSync(join(dir, name));

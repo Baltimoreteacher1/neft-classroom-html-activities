@@ -1447,7 +1447,14 @@ if (document.readyState === 'loading') {
 // lookup, including prime/composite-style aliases) is precomputed in Node and
 // handed over as window.__HW_VOCAB_MATCH__, so the browser only walks text nodes.
 function initHomeworkVocabPopups() {
-  var list = Array.isArray(window.__HW_VOCAB__) ? window.__HW_VOCAB__ : [];
+  // The page inlines only this lesson's own entries; the rest of the glossary
+  // is one cached file shared by every lesson (window.__HW_VOCAB_SHARED__).
+  // __HW_VOCAB_SKIP__ lists the shared entries the lesson entries replace.
+  var head = Array.isArray(window.__HW_VOCAB__) ? window.__HW_VOCAB__ : [];
+  var shared = Array.isArray(window.__HW_VOCAB_SHARED__) ? window.__HW_VOCAB_SHARED__ : [];
+  var skip = Object.create(null);
+  (window.__HW_VOCAB_SKIP__ || []).forEach(function(i) { skip[i] = true; });
+  var list = head.concat(shared.filter(function(_e, i) { return !skip[i]; }));
   var match = window.__HW_VOCAB_MATCH__ || null;
   var container = document.getElementById('hw_tab_panels');
   if (!container || !list.length || !match || !match.regexSource) return;
