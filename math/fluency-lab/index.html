@@ -235,18 +235,48 @@
             <div class="problem-meta">
               <span id="problem-number">Problem 1 of 10</span>
               <div class="problem-meta-actions">
-                <button id="toggle-decomposer" class="icon-button" type="button" aria-expanded="false" aria-controls="fact-decomposer" title="See mental math break-apart strategy">
-                  🧩 Decompose
+                <button id="toggle-interactive-solver" class="icon-button" type="button" aria-expanded="false" aria-controls="interactive-solver-workspace" title="Step-by-step interactive workspace where you can insert numbers and use regrouping">
+                  🧮 Interactive Solver
                 </button>
                 <button id="hear-problem" class="icon-button" type="button" aria-label="Read the problem aloud">
                   🔊 Read aloud
                 </button>
               </div>
             </div>
-            <p id="question" class="question"></p>
-            <p id="problem-topic" class="problem-topic"></p>
-            <div id="fact-decomposer" class="fact-decomposer" hidden></div>
+            <div class="problem-arena">
+              <div class="problem-question-zone">
+                <p id="question" class="question"></p>
+                <p id="problem-topic" class="problem-topic"></p>
+              </div>
+              <div class="problem-answer-zone">
+                <form id="answer-form" novalidate>
+                  <label class="answer-label" for="answer-input">Your answer</label>
+                  <div class="answer-input-row">
+                    <input
+                      id="answer-input"
+                      class="answer-input"
+                      aria-describedby="question"
+                      type="text"
+                      autocomplete="off"
+                      autocapitalize="off"
+                      spellcheck="false"
+                      required
+                    />
+                    <button id="check-answer" class="primary-action" type="submit">Check</button>
+                    <button id="fix-answer-btn" class="primary-action fix-answer-btn" type="button" hidden>🔧 Fix My Answer</button>
+                    <button id="next-problem" class="primary-action" type="button" hidden>Next problem</button>
+                  </div>
+                  <div id="choice-answers" class="choice-answers" hidden></div>
+                  <div class="answer-actions">
+                    <button id="show-hint" class="outline-action" type="button">Show a step</button>
+                    <button id="toggle-problem-visual" class="outline-action" type="button" aria-expanded="true">Hide the model</button>
+                    <button id="skip-checkup" class="outline-action" type="button" hidden>I’m not sure yet</button>
+                  </div>
+                </form>
+              </div>
+            </div>
 
+            <div id="interactive-solver-workspace" class="interactive-solver-workspace" hidden></div>
             <div id="problem-visual-scaffold" class="problem-visual-scaffold"></div>
             <section id="guided-coach" class="guided-coach" aria-labelledby="guided-coach-title" hidden>
               <div class="guided-coach-heading">
@@ -261,28 +291,6 @@
                 Show the next step
               </button>
             </section>
-
-            <form id="answer-form" novalidate>
-              <label class="answer-label" for="answer-input">Your answer</label>
-              <input
-                id="answer-input"
-                class="answer-input"
-                aria-describedby="question"
-                type="text"
-                autocomplete="off"
-                autocapitalize="off"
-                spellcheck="false"
-                required
-              />
-              <div id="choice-answers" class="choice-answers" hidden></div>
-              <div class="answer-actions">
-                <button id="check-answer" class="primary-action" type="submit">Check answer</button>
-                <button id="show-hint" class="outline-action" type="button">Show a step</button>
-                <button id="toggle-problem-visual" class="outline-action" type="button" aria-expanded="true">Hide the model</button>
-                <button id="skip-checkup" class="outline-action" type="button" hidden>I’m not sure yet</button>
-                <button id="next-problem" class="primary-action" type="button" hidden>Next problem</button>
-              </div>
-            </form>
 
             <div id="feedback" class="feedback" role="status" aria-live="polite" hidden>
               <strong id="feedback-title"></strong>

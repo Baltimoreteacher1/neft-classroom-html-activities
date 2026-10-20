@@ -4,6 +4,7 @@ import {
   generateProblem,
   getGrade,
   getSkill,
+  primeFactors,
   seededRandom,
   validateAnswer,
 } from "./problem-bank.js";
@@ -84,6 +85,7 @@ const els = {
   answerInput: document.querySelector("#answer-input"),
   choiceAnswers: document.querySelector("#choice-answers"),
   checkButton: document.querySelector("#check-answer"),
+  fixAnswerBtn: document.querySelector("#fix-answer-btn"),
   nextButton: document.querySelector("#next-problem"),
   hintButton: document.querySelector("#show-hint"),
   feedback: document.querySelector("#feedback"),
@@ -129,8 +131,10 @@ const els = {
   tptKnowCard: document.querySelector("#tpt-know-card"),
   tptQuickForm: document.querySelector("#tpt-quick-form"),
   tptQuickInput: document.querySelector("#tpt-quick-input"),
-  toggleDecomposer: document.querySelector("#toggle-decomposer"),
-  factDecomposer: document.querySelector("#fact-decomposer"),
+  sprintWrap: document.querySelector("#sprint-wrap"),
+  sprintTimer: document.querySelector("#sprint-timer"),
+  toggleSolver: document.querySelector("#toggle-interactive-solver"),
+  solverWorkspace: document.querySelector("#interactive-solver-workspace"),
 };
 
 const state = {
@@ -647,6 +651,21 @@ function nextProblem(restoredItem = null) {
   renderGuidedCoach();
   renderAnswerControl();
   updateSessionHeader();
+  state.isFixing = false;
+  if (els.fixAnswerBtn) els.fixAnswerBtn.hidden = true;
+  if (els.checkButton) {
+    els.checkButton.hidden = false;
+    els.checkButton.textContent = "Check";
+  }
+  if (els.toggleSolver) {
+    els.toggleSolver.hidden = !InteractiveSolver.canSolve(state.item);
+    els.toggleSolver.setAttribute("aria-expanded", "false");
+  }
+  if (els.solverWorkspace) {
+    els.solverWorkspace.hidden = true;
+    els.solverWorkspace.innerHTML = "";
+  }
+  document.querySelector("#kinetic-decomposer-host")?.remove();
   const isFlashcard = state.session.mode === "flashcard";
   if (els.flashcardStage) els.flashcardStage.hidden = !isFlashcard;
   document.querySelector(".problem-meta")?.classList.toggle("is-flashcard-hidden", isFlashcard);
@@ -923,137 +942,378 @@ function printPracticeSheet() {
   `);
 }
 
-function renderFactDecomposition(item) {
-  const container = els.factDecomposer || document.querySelector("#fact-decomposer");
-  if (!container || !item) return;
+const gcd = (a, b) => { let x = Math.abs(a), y = Math.abs(b); while (y) [x, y] = [y, x % y]; return x || 1; };
+const lcm = (a, b) => Math.abs(a * b) / gcd(a, b);
 
-  const q = item.question.replaceAll(",", "").trim();
-  const mulMatch = q.match(/^(\d+)\s*[×*]\s*(\d+)/);
-  const addMatch = q.match(/^(\d+)\s*\+\s*(\d+)/);
-  const subMatch = q.match(/^(\d+)\s*[−-]\s*(\d+)/);
-  const divMatch = q.match(/^(\d+)\s*[÷/]\s*(\d+)/);
+const InteractiveSolver = {
+  canSolve(item) {
+    if (!item) return false;
+    const q = item.question || "";
+    if (/find the lcm of/i.test(q)) return true;
+    if (/\d+\s*[+−\-×*÷/]\s*\d+/.test(q)) return true;
+    if (/\d+\/\d+\s*[+−\-×*÷/]\s*\d+\/\d+/.test(q)) return true;
+    return false;
+  },
 
-  let html = "";
-  if (mulMatch) {
-    const a = Number(mulMatch[1]);
-    const b = Number(mulMatch[2]);
-    const big = Math.max(a, b);
-    const small = Math.min(a, b);
-    if (big >= 6 && big <= 9) {
-      const split1 = 5;
-      const split2 = big - 5;
-      const ans1 = split1 * small;
-      const ans2 = split2 * small;
-      const total = ans1 + ans2;
-      html = `
-        <div class="decomposer-card">
-          <div class="decomposer-header">
-            <strong>🧩 Friendly 5s Break-Apart Strategy</strong>
-          </div>
-          <div class="decomposer-math-row">
-            <span class="d-chunk">(${split1} × ${small} = ${ans1})</span>
-            <span class="d-op">+</span>
-            <span class="d-chunk">(${split2} × ${small} = ${ans2})</span>
-            <span class="d-arrow">➔</span>
-            <strong class="d-total">${ans1} + ${ans2} = ${total}</strong>
-          </div>
-          <p class="decomposer-note">Break ${big} into friendly parts: ${split1} and ${split2}. Multiply each by ${small}, then combine!</p>
-        </div>`;
-    } else if (big > 10 && big <= 99) {
-      const tens = Math.floor(big / 10) * 10;
-      const ones = big - tens;
-      html = `
-        <div class="decomposer-card">
-          <div class="decomposer-header">
-            <strong>🧩 Place Value Break-Apart Strategy</strong>
-          </div>
-          <div class="decomposer-math-row">
-            <span class="d-chunk">(${tens} × ${small} = ${tens * small})</span>
-            <span class="d-op">+</span>
-            <span class="d-chunk">(${ones} × ${small} = ${ones * small})</span>
-            <span class="d-arrow">➔</span>
-            <strong class="d-total">${tens * small} + ${ones * small} = ${big * small}</strong>
-          </div>
-          <p class="decomposer-note">Multiply the tens first (${tens} × ${small}), then the ones (${ones} × ${small}), and add them together.</p>
-        </div>`;
-    }
-  } else if (addMatch) {
-    const a = Number(addMatch[1]);
-    const b = Number(addMatch[2]);
-    const big = Math.max(a, b);
-    const small = Math.min(a, b);
-    if (big < 10 && big + small > 10) {
-      const needed = 10 - big;
-      const leftover = small - needed;
-      html = `
-        <div class="decomposer-card">
-          <div class="decomposer-header">
-            <strong>🧩 Make-a-10 Bridge Strategy</strong>
-          </div>
-          <div class="decomposer-math-row">
-            <span class="d-chunk">(${big} + ${needed} = 10)</span>
-            <span class="d-op">+</span>
-            <span class="d-chunk">(${leftover} left)</span>
-            <span class="d-arrow">➔</span>
-            <strong class="d-total">10 + ${leftover} = ${big + small}</strong>
-          </div>
-          <p class="decomposer-note">Give ${needed} to ${big} to make a clean 10. Then add what is left over (${leftover})!</p>
-        </div>`;
-    }
-  } else if (subMatch) {
-    const a = Number(subMatch[1]);
-    const b = Number(subMatch[2]);
-    if (a <= 20) {
-      const toTen = 10 - b;
-      const overTen = a - 10;
-      html = `
-        <div class="decomposer-card">
-          <div class="decomposer-header">
-            <strong>🧩 Think-Addition & Bridge to 10</strong>
-          </div>
-          <div class="decomposer-math-row">
-            <span class="d-chunk">${b} + ? = ${a}</span>
-            <span class="d-arrow">➔</span>
-            <span class="d-chunk">To 10 (+${Math.max(0, toTen)})</span>
-            <span class="d-op">+</span>
-            <span class="d-chunk">To ${a} (+${Math.max(0, overTen)})</span>
-            <span class="d-arrow">➔</span>
-            <strong class="d-total">${a} − ${b} = ${a - b}</strong>
-          </div>
-          <p class="decomposer-note">Count up from ${b} to the friendly 10, then from 10 to ${a}. Total jump is ${a - b}!</p>
-        </div>`;
-    }
-  } else if (divMatch) {
-    const a = Number(divMatch[1]);
-    const b = Number(divMatch[2]);
-    html = `
-      <div class="decomposer-card">
-        <div class="decomposer-header">
-          <strong>🧩 Think-Multiplication Strategy</strong>
+  render(item, container) {
+    if (!container || !item) return;
+    const q = item.question.replaceAll(",", "").trim();
+
+    // 1. Grade 6 LCM Prime Factorization Workspace
+    const lcmMatch = q.match(/find the lcm of (\d+) and (\d+)/i);
+    if (lcmMatch) {
+      const a = Number(lcmMatch[1]);
+      const b = Number(lcmMatch[2]);
+      const pa = primeFactors(a);
+      const pb = primeFactors(b);
+      const ans = lcm(a, b);
+
+      container.innerHTML = `
+        <div class="solver-header">
+          <strong>🌳 Prime Factorization Method for LCM(${a}, ${b})</strong>
+          <span class="solver-hint-tag">Grade 6 Essential Standard</span>
         </div>
-        <div class="decomposer-math-row">
-          <span class="d-chunk">${b} × ? = ${a}</span>
-          <span class="d-arrow">➔</span>
-          <span class="d-chunk">${b} × ${a / b} = ${a}</span>
-          <span class="d-arrow">➔</span>
-          <strong class="d-total">${a} ÷ ${b} = ${a / b}</strong>
+        <div class="lcm-prime-scaffold">
+          <div class="lcm-row">
+            <span>1) Factor <strong>${a}</strong> into primes:</span>
+            ${pa.map((p, idx) => `<input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${p}" data-group="a" aria-label="Prime factor ${idx + 1} of ${a}" placeholder="?" />${idx < pa.length - 1 ? " × " : ""}`).join("")}
+            <span class="lcm-status" data-status="a"></span>
+          </div>
+          <div class="lcm-row">
+            <span>2) Factor <strong>${b}</strong> into primes:</span>
+            ${pb.map((p, idx) => `<input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${p}" data-group="b" aria-label="Prime factor ${idx + 1} of ${b}" placeholder="?" />${idx < pb.length - 1 ? " × " : ""}`).join("")}
+            <span class="lcm-status" data-status="b"></span>
+          </div>
+          <div class="lcm-tip-banner">
+            💡 <strong>Help with primes:</strong> The prime numbers are 2, 3, 5, 7, 11, 13... If a number is even, divide by 2!
+          </div>
+          <div class="lcm-row" style="margin-top:0.5rem">
+            <span>3) Multiply the highest powers of each prime:</span>
+            <span>LCM(${a}, ${b}) = </span>
+            <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${ans}" data-group="lcm-final" style="width:72px" placeholder="LCM" />
+            <button type="button" class="outline-action" id="lcm-copy-ans" style="display:none">Copy to Answer</button>
+          </div>
         </div>
-        <p class="decomposer-note">Division is finding the missing factor: what times ${b} equals ${a}?</p>
+      `;
+
+      container.querySelectorAll(".lcm-prime-input").forEach((inp) => {
+        inp.addEventListener("input", () => {
+          const expected = inp.dataset.target;
+          if (inp.value.trim() === expected) {
+            inp.classList.add("is-ok");
+            inp.readOnly = true;
+            chime("step");
+            const finalInp = container.querySelector('[data-group="lcm-final"]');
+            if (finalInp && finalInp.value.trim() === String(ans)) {
+              finalInp.classList.add("is-ok");
+              els.answerInput.value = String(ans);
+              chime("good");
+              const copyBtn = container.querySelector("#lcm-copy-ans");
+              if (copyBtn) {
+                copyBtn.style.display = "inline-block";
+                copyBtn.textContent = "✓ Copied to answer!";
+              }
+            }
+          }
+        });
+      });
+      return;
+    }
+
+    // 2. Vertical Addition with Regrouping / Carry Boxes
+    const addMatch = q.match(/^(\d+)\s*\+\s*(\d+)/);
+    if (addMatch) {
+      const a = Number(addMatch[1]);
+      const b = Number(addMatch[2]);
+      const sum = a + b;
+      const strA = String(a);
+      const strB = String(b);
+      const maxLen = Math.max(strA.length, strB.length);
+      const padA = strA.padStart(maxLen, " ");
+      const padB = strB.padStart(maxLen, " ");
+
+      const carries = Array(maxLen + 1).fill(0);
+      let c = 0;
+      for (let i = 0; i < maxLen; i++) {
+        const da = Number(padA[maxLen - 1 - i]) || 0;
+        const db = Number(padB[maxLen - 1 - i]) || 0;
+        const colSum = da + db + c;
+        c = Math.floor(colSum / 10);
+        carries[maxLen - 1 - i] = c;
+      }
+
+      container.innerHTML = `
+        <div class="solver-header">
+          <strong>🧮 Interactive Vertical Addition &amp; Regrouping</strong>
+          <span class="solver-hint-tag">Type carries &amp; digits right to left</span>
+        </div>
+        <div style="display:flex; justify-content:center">
+          <div class="vertical-algorithm-grid">
+            <div class="algo-carry-row">
+              <span class="algo-col" style="font-size:0.75rem; color:#b45309">Regroup:</span>
+              ${carries.slice(0, maxLen).map((cr) => `<input type="text" class="algo-carry-box" inputmode="numeric" maxlength="1" data-carry="${cr}" placeholder="${cr ? "1" : ""}" title="Regroup / carry box" />`).join("")}
+            </div>
+            <div class="algo-num-row">
+              <span class="algo-col"></span>
+              ${padA.split("").map((ch) => `<span class="algo-col">${ch === " " ? "" : ch}</span>`).join("")}
+            </div>
+            <div class="algo-num-row">
+              <span class="algo-col">+</span>
+              ${padB.split("").map((ch) => `<span class="algo-col">${ch === " " ? "" : ch}</span>`).join("")}
+            </div>
+            <div class="algo-divider"></div>
+            <div class="algo-ans-row">
+              ${String(sum).split("").map((digit, idx) => `<input type="text" class="algo-digit-input" inputmode="numeric" maxlength="1" data-ans-digit="${digit}" data-pos="${idx}" placeholder="?" />`).join("")}
+            </div>
+          </div>
+        </div>
+      `;
+
+      const digitInputs = [...container.querySelectorAll(".algo-digit-input")];
+      const carryInputs = [...container.querySelectorAll(".algo-carry-box")];
+
+      carryInputs.forEach((ci) => {
+        ci.addEventListener("input", () => {
+          if (ci.value.trim() === ci.dataset.carry) ci.classList.add("is-ok");
+        });
+      });
+
+      digitInputs.forEach((di, idx) => {
+        di.addEventListener("input", () => {
+          if (di.value.trim() === di.dataset.ansDigit) {
+            di.classList.add("is-ok");
+            chime("step");
+            if (idx > 0) digitInputs[idx - 1].focus();
+            if (digitInputs.every((d) => d.classList.contains("is-ok"))) {
+              els.answerInput.value = String(sum);
+              chime("good");
+            }
+          }
+        });
+      });
+      return;
+    }
+
+    // 3. Vertical Subtraction with Borrowing / Regrouping
+    const subMatch = q.match(/^(\d+)\s*[−-]\s*(\d+)/);
+    if (subMatch) {
+      const a = Number(subMatch[1]);
+      const b = Number(subMatch[2]);
+      const diff = a - b;
+      const strA = String(a);
+      const strB = String(b);
+      const maxLen = Math.max(strA.length, strB.length);
+      const padA = strA.padStart(maxLen, " ");
+      const padB = strB.padStart(maxLen, " ");
+
+      container.innerHTML = `
+        <div class="solver-header">
+          <strong>🧮 Interactive Vertical Subtraction &amp; Regrouping</strong>
+          <span class="solver-hint-tag">Borrow from tens when top is smaller</span>
+        </div>
+        <div style="display:flex; justify-content:center">
+          <div class="vertical-algorithm-grid">
+            <div class="algo-carry-row">
+              <span class="algo-col" style="font-size:0.75rem; color:#b91c1c">Regroup:</span>
+              ${padA.split("").map(() => `<input type="text" class="algo-borrow-box" inputmode="numeric" placeholder="?" title="Regroup / borrow box" />`).join("")}
+            </div>
+            <div class="algo-num-row">
+              <span class="algo-col"></span>
+              ${padA.split("").map((ch) => `<span class="algo-col">${ch === " " ? "" : ch}</span>`).join("")}
+            </div>
+            <div class="algo-num-row">
+              <span class="algo-col">−</span>
+              ${padB.split("").map((ch) => `<span class="algo-col">${ch === " " ? "" : ch}</span>`).join("")}
+            </div>
+            <div class="algo-divider"></div>
+            <div class="algo-ans-row">
+              ${String(diff).split("").map((digit, idx) => `<input type="text" class="algo-digit-input" inputmode="numeric" maxlength="1" data-ans-digit="${digit}" data-pos="${idx}" placeholder="?" />`).join("")}
+            </div>
+          </div>
+        </div>
+      `;
+
+      const digitInputs = [...container.querySelectorAll(".algo-digit-input")];
+      digitInputs.forEach((di, idx) => {
+        di.addEventListener("input", () => {
+          if (di.value.trim() === di.dataset.ansDigit) {
+            di.classList.add("is-ok");
+            chime("step");
+            if (idx > 0) digitInputs[idx - 1].focus();
+            if (digitInputs.every((d) => d.classList.contains("is-ok"))) {
+              els.answerInput.value = String(diff);
+              chime("good");
+            }
+          }
+        });
+      });
+      return;
+    }
+
+    // 4. Fractions (Multiplication or Division)
+    const fracMatch = q.match(/(\d+)\/(\d+)\s*([×*÷/])\s*(\d+)\/(\d+)/);
+    if (fracMatch) {
+      const a = Number(fracMatch[1]);
+      const b = Number(fracMatch[2]);
+      const op = fracMatch[3] === "÷" || fracMatch[3] === "/" ? "÷" : "×";
+      const c = Number(fracMatch[4]);
+      const d = Number(fracMatch[5]);
+
+      if (op === "÷") {
+        const top = a * d;
+        const bot = b * c;
+        const divGcd = gcd(top, bot);
+        const simpTop = top / divGcd;
+        const simpBot = bot / divGcd;
+        const finalAns = simpBot === 1 ? String(simpTop) : `${simpTop}/${simpBot}`;
+
+        container.innerHTML = `
+          <div class="solver-header">
+            <strong>🍕 Interactive Fraction Division: Keep, Change, Flip!</strong>
+            <span class="solver-hint-tag">Type the flipped fraction</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.75rem; align-items:center; font-size:1.25rem; font-weight:800">
+            <div style="display:flex; align-items:center; gap:0.6rem">
+              <span>Keep: <strong>${a}/${b}</strong></span>
+              <span>×</span>
+              <span>Flip: </span>
+              <input type="text" class="lcm-prime-input" data-frac-target="${d}" style="width:48px" placeholder="${d}" title="Flipped numerator" />
+              <span>/</span>
+              <input type="text" class="lcm-prime-input" data-frac-target="${c}" style="width:48px" placeholder="${c}" title="Flipped denominator" />
+            </div>
+            <div style="display:flex; align-items:center; gap:0.6rem">
+              <span>Multiply: </span>
+              <span>(${a} × ${d}) / (${b} × ${c}) = </span>
+              <input type="text" class="lcm-prime-input" data-frac-target="${top}" style="width:58px" placeholder="${top}" />
+              <span>/</span>
+              <input type="text" class="lcm-prime-input" data-frac-target="${bot}" style="width:58px" placeholder="${bot}" />
+            </div>
+            <div style="display:flex; align-items:center; gap:0.6rem">
+              <span>Simplified Final Answer: </span>
+              <input type="text" class="lcm-prime-input" data-frac-target="${finalAns}" style="width:84px" placeholder="${finalAns}" />
+            </div>
+          </div>
+        `;
+      } else {
+        const top = a * c;
+        const bot = b * d;
+        const g = gcd(top, bot);
+        const simpTop = top / g;
+        const simpBot = bot / g;
+        const finalAns = simpBot === 1 ? String(simpTop) : `${simpTop}/${simpBot}`;
+
+        container.innerHTML = `
+          <div class="solver-header">
+            <strong>🍕 Interactive Fraction Multiplication: Straight Across!</strong>
+            <span class="solver-hint-tag">Top × Top, Bottom × Bottom</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.75rem; align-items:center; font-size:1.25rem; font-weight:800">
+            <div style="display:flex; align-items:center; gap:0.6rem">
+              <span>Multiply Numerators: ${a} × ${c} = </span>
+              <input type="text" class="lcm-prime-input" data-frac-target="${top}" style="width:58px" placeholder="${top}" />
+            </div>
+            <div style="display:flex; align-items:center; gap:0.6rem">
+              <span>Multiply Denominators: ${b} × ${d} = </span>
+              <input type="text" class="lcm-prime-input" data-frac-target="${bot}" style="width:58px" placeholder="${bot}" />
+            </div>
+            <div style="display:flex; align-items:center; gap:0.6rem">
+              <span>Simplified Final Answer: </span>
+              <input type="text" class="lcm-prime-input" data-frac-target="${finalAns}" style="width:84px" placeholder="${finalAns}" />
+            </div>
+          </div>
+        `;
+      }
+
+      container.querySelectorAll("[data-frac-target]").forEach((inp) => {
+        inp.addEventListener("input", () => {
+          if (inp.value.trim() === inp.dataset.fracTarget) {
+            inp.classList.add("is-ok");
+            chime("step");
+            const inputs = [...container.querySelectorAll("[data-frac-target]")];
+            if (inputs.every((i) => i.classList.contains("is-ok"))) {
+              const last = inputs[inputs.length - 1];
+              els.answerInput.value = last.dataset.fracTarget;
+              chime("good");
+            }
+          }
+        });
+      });
+      return;
+    }
+
+    // Fallback
+    container.innerHTML = `
+      <div class="solver-header">
+        <strong>✍️ Interactive Step-by-Step Workspace</strong>
+        <span class="solver-hint-tag">Work it out step-by-step</span>
+      </div>
+      <p style="margin:0.5rem 0; font-size:0.95rem; color:#334155">${escapeHtml(item.hint || "Take it one step at a time.")}</p>
+    `;
+  }
+};
+
+function renderStudentFriendlyExplanation(item, copy) {
+  if (!item) return `<p>${escapeHtml(copy)}</p>`;
+  const q = item.question || "";
+  let visualSvg = "";
+  let goal = "Solve accurately by identifying the operation and numbers.";
+  let tip = item.hint || "Work from right to left or multiply straight across.";
+
+  const divFrac = q.match(/(\d+)\/(\d+)\s*[÷/]\s*(\d+)\/(\d+)/);
+  if (divFrac) {
+    const [, a, b, c, d] = divFrac;
+    goal = `Divide fractions using Keep, Change, Flip!`;
+    tip = `Never divide fractions directly. Always multiply by the reciprocal (the flip) of the second fraction!`;
+    visualSvg = `
+      <div class="student-expl-visual">
+        <svg width="380" height="90" viewBox="0 0 380 90" style="background:#ffffff; border-radius:10px" role="img" aria-label="Keep Change Flip Visual Diagram">
+          <rect x="15" y="15" width="85" height="60" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+          <text x="57" y="38" text-anchor="middle" font-size="11" font-weight="800" fill="#1e40af">KEEP</text>
+          <text x="57" y="60" text-anchor="middle" font-size="15" font-weight="900" fill="#1e3a8a">${a}/${b}</text>
+          
+          <rect x="120" y="15" width="65" height="60" rx="8" fill="#fdf4ff" stroke="#a855f7" stroke-width="2"/>
+          <text x="152" y="38" text-anchor="middle" font-size="11" font-weight="800" fill="#7e22ce">CHANGE</text>
+          <text x="152" y="62" text-anchor="middle" font-size="18" font-weight="900" fill="#6b21a8">×</text>
+          
+          <rect x="205" y="15" width="85" height="60" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="2"/>
+          <text x="247" y="38" text-anchor="middle" font-size="11" font-weight="800" fill="#15803d">FLIP</text>
+          <text x="247" y="60" text-anchor="middle" font-size="15" font-weight="900" fill="#14532d">${d}/${c}</text>
+
+          <text x="310" y="52" font-size="16" font-weight="900" fill="#0f172a">➔</text>
+          <text x="345" y="52" text-anchor="middle" font-size="14" font-weight="900" fill="#0369a1">${item.displayAnswer}</text>
+        </svg>
       </div>`;
+  } else if (/find the lcm of/i.test(q)) {
+    goal = `Find the Least Common Multiple (the smallest number both numbers divide into).`;
+    tip = `Prime Factorization Secret: Find the prime factors of both numbers, then multiply the highest power of each prime!`;
+  } else if (/\d+\.\d+/.test(q)) {
+    goal = `Line up the decimal points like buttons on a coat so each place value matches!`;
+    tip = `Always check the reasonable size of your answer.`;
+  } else if (/how many/i.test(q)) {
+    goal = `Convert between units using the core conversion fact.`;
+    tip = `Going from bigger units to smaller units (like feet to inches)? Multiply!`;
   }
 
-  if (!html) {
-    const hint = item.hint || item.explanation || "";
-    html = `
-      <div class="decomposer-card">
-        <div class="decomposer-header">
-          <strong>💡 Strategy Anchor</strong>
-        </div>
-        <p class="decomposer-note">${escapeHtml(hint)}</p>
-      </div>`;
-  }
+  const stepsList = item.steps && item.steps.length > 1
+    ? `<div class="student-expl-steps-wrap">
+        <p class="student-expl-steps-heading"><strong>🪜 Clear Action Steps:</strong></p>
+        <ol class="student-expl-steps-list">
+          ${item.steps.map((st) => `<li>${mathText(st)}</li>`).join("")}
+        </ol>
+      </div>`
+    : `<p class="student-expl-goal">${escapeHtml(copy)}</p>`;
 
-  container.innerHTML = html;
+  return `
+    <div class="student-expl-card">
+      <div class="student-expl-header">
+        <span class="student-expl-badge">💡 Strategy &amp; Solution Guide</span>
+      </div>
+      <p class="student-expl-goal"><strong>🎯 Goal:</strong> ${escapeHtml(goal)}</p>
+      ${visualSvg}
+      ${stepsList}
+      <div class="student-expl-tip"><strong>💡 Pro Tip:</strong> ${escapeHtml(tip)}</div>
+    </div>
+  `;
 }
 
 // Every practice problem carries its own model: the interactive picture of these numbers, or,
@@ -1152,8 +1412,33 @@ function renderAnswerControl() {
 }
 
 function submitAnswer(value) {
-  if (!state.item || !state.session || state.itemDone || state.session.finished) return;
+  if (!state.item || !state.session || state.session.finished) return;
   if (!String(value).trim()) { showFeedback("Enter an answer", "Type an answer before checking, or open a strategy hint.", "try"); return; }
+
+  if (state.isFixing) {
+    const isFixed = validateAnswer(value, state.item);
+    if (isFixed) {
+      state.isFixing = false;
+      state.itemDone = true;
+      els.answerInput.disabled = true;
+      els.checkButton.hidden = true;
+      if (els.fixAnswerBtn) els.fixAnswerBtn.hidden = true;
+      els.nextButton.hidden = false;
+      chime("win");
+      showFeedback("Fixed & Mastered! 🌟", "Awesome resilience! You found the slip, repaired it, and solved it correctly.", "correct");
+      if (state.session) {
+        state.session.correct += 1;
+        updateSessionHeader();
+      }
+      return;
+    } else {
+      showFeedback("Keep trying!", "Almost! Review the steps above carefully and try one more time.", "try");
+      els.answerInput.select();
+      return;
+    }
+  }
+
+  if (state.itemDone) return;
   state.itemAttempts += 1;
   const correct = validateAnswer(value, state.item);
   if (state.itemAttempts === 1) {
@@ -1197,11 +1482,15 @@ function finalizeProblem(correct) {
     session.bestStreak = Math.max(session.bestStreak, session.streak);
     if (session.streak > 0 && session.streak % 5 === 0) chime("streak");
     showFeedback("Correct", state.item.explanation, "correct");
+    if (els.fixAnswerBtn) els.fixAnswerBtn.hidden = true;
   } else {
     const lostStreak = session.mode === "streak" && session.streak > 0;
     session.streak = 0;
     session.missed.push({ skill: state.item.skill, item: state.item });
     showFeedback(lostStreak ? "New streak starts now" : "Keep this one", `${state.item.hint} ${state.item.explanation}`, "incorrect");
+    if (els.fixAnswerBtn && session.mode !== "streak" && session.mode !== "sprint") {
+      els.fixAnswerBtn.hidden = false;
+    }
   }
   const independent = !state.initialSupport && !state.hintBeforeFirst;
   const firstCorrect = state.firstAnswerCorrect === true;
@@ -1255,17 +1544,8 @@ function showFeedback(title, copy, type) {
   els.feedback.hidden = false;
   els.feedback.dataset.type = type;
   els.feedbackTitle.textContent = title;
-  if (type !== "correct" && state.item?.steps?.length > 1) {
-    els.feedbackCopy.innerHTML = `
-      <div class="feedback-coach-block">
-        <p class="feedback-coach-main">${escapeHtml(copy)}</p>
-        <div class="feedback-steps-accordion">
-          <p class="feedback-steps-title"><strong>🪜 Think through it step-by-step:</strong></p>
-          <ol class="feedback-mini-steps">
-            ${state.item.steps.map((st, idx) => `<li><span class="mini-step-num">${idx + 1}</span> <span>${mathText(st)}</span></li>`).join("")}
-          </ol>
-        </div>
-      </div>`;
+  if (type !== "correct" && state.item) {
+    els.feedbackCopy.innerHTML = renderStudentFriendlyExplanation(state.item, copy);
   } else {
     els.feedbackCopy.textContent = copy;
   }
@@ -1997,87 +2277,7 @@ const FlowPacerEngine = {
   },
 };
 
-const KineticDecomposer = {
-  extractFactors(questionText) {
-    const q = String(questionText || "");
-    const mulMatch = q.match(/(\d+)\s*[×*x]\s*(\d+)/i);
-    if (mulMatch) {
-      return {
-        mode: "area",
-        a: Math.min(12, Math.max(3, Number(mulMatch[1]))),
-        b: Math.min(12, Math.max(2, Number(mulMatch[2]))),
-      };
-    }
-    const intMatch = q.match(/(-?\d+)\s*[+−-]\s*(-?\d+)/);
-    if (intMatch && (q.includes("-") || q.includes("−"))) {
-      return {
-        mode: "integer",
-        a: Math.max(-9, Math.min(9, Number(intMatch[1]))),
-        b: Math.max(-9, Math.min(9, Number(intMatch[2]))),
-      };
-    }
-    return { mode: "partition", a: 7, b: 8 };
-  },
-  renderSvg(spec, splitPoint) {
-    const a = spec.a || 7;
-    const b = spec.b || 8;
-    const k = Math.max(1, Math.min(a - 1, splitPoint || Math.min(5, a - 1)));
-    const rem = a - k;
-    const totalW = 360;
-    const leftW = Math.round((k / a) * totalW);
-    const rightW = totalW - leftW;
-    if (spec.mode === "integer") {
-      const posCount = Math.min(8, Math.max(2, Math.abs(a)));
-      const negCount = Math.min(8, Math.max(1, Math.abs(b)));
-      const pairs = Math.min(posCount, negCount);
-      const chips = [];
-      for (let i = 0; i < posCount; i += 1) {
-        const paired = i < pairs;
-        chips.push(
-          `<circle cx="${50 + i * 36}" cy="46" r="13" fill="${paired ? "#e2e8f0" : "#0f766e"}" stroke="#0f172a" stroke-width="1.5"/><text x="${50 + i * 36}" y="50" text-anchor="middle" font-size="11" font-weight="800" fill="${paired ? "#475569" : "#ffffff"}">+1</text>`,
-        );
-      }
-      for (let j = 0; j < negCount; j += 1) {
-        const paired = j < pairs;
-        chips.push(
-          `<circle cx="${50 + j * 36}" cy="92" r="13" fill="${paired ? "#e2e8f0" : "#b45309"}" stroke="#0f172a" stroke-width="1.5"/><text x="${50 + j * 36}" y="96" text-anchor="middle" font-size="11" font-weight="800" fill="${paired ? "#475569" : "#ffffff"}">-1</text>`,
-        );
-      }
-      return `<svg width="460" height="130" viewBox="0 0 460 130" style="background:#FFFFFF" role="img" aria-label="Integer zero-pair counter field"><rect x="4" y="4" width="452" height="122" rx="8" fill="#FFFFFF" stroke="#cbd5e1"/>${chips.join("")}<text x="345" y="72" font-size="12" font-weight="800" fill="#0f172a">${pairs} zero pairs neutral</text></svg>`;
-    }
-    return `<svg width="460" height="130" viewBox="0 0 460 130" style="background:#FFFFFF" role="img" aria-label="Kinetic decomposition area model splitting ${a} by ${b} into ${k} by ${b} plus ${rem} by ${b}"><rect x="40" y="24" width="${leftW}" height="68" rx="4" fill="#e6f4ea" stroke="#0f766e" stroke-width="2"/><rect x="${40 + leftW + 6}" y="24" width="${rightW}" height="68" rx="4" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/><line x1="${40 + leftW + 3}" y1="16" x2="${40 + leftW + 3}" y2="100" stroke="#b45309" stroke-width="3" stroke-dasharray="5,3"/><text x="${40 + Math.round(leftW / 2)}" y="62" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">(${k} × ${b})</text><text x="${40 + leftW + 6 + Math.round(rightW / 2)}" y="62" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">(${rem} × ${b})</text><text x="220" y="116" text-anchor="middle" font-size="12" font-weight="700" fill="#334155">Decompose ${a} into ${k} + ${rem}: (${k} × ${b}) + (${rem} × ${b})</text></svg>`;
-  },
-  mount(item) {
-    if (!els.drillPanel || !item) return;
-    let host = document.querySelector("#kinetic-decomposer-host");
-    if (!host) {
-      host = document.createElement("div");
-      host.id = "kinetic-decomposer-host";
-      host.className = "kinetic-decomposer-card";
-      els.problemVisualScaffold?.insertAdjacentElement("afterend", host);
-    }
-    const spec = this.extractFactors(item.question);
-    const maxSplit = Math.max(2, (spec.a || 7) - 1);
-    const currentSplit = Math.min(maxSplit, Math.max(1, fluencyNextGenState.sliceSplit || 5));
-    const options = [1, 2, Math.min(5, maxSplit), Math.max(1, Math.floor((spec.a || 7) / 2))].filter(
-      (v, idx, arr) => v >= 1 && v <= maxSplit && arr.indexOf(v) === idx,
-    );
-    host.innerHTML = `
-      <div class="kinetic-decomposer-head">
-        <strong>Kinetic Decomposer · Strategic Split</strong>
-        <div class="kinetic-slice-controls" role="group" aria-label="Decomposition split options">
-          ${options
-            .map(
-              (opt) =>
-                `<button type="button" class="kinetic-slice-btn" data-kinetic-split="${opt}" aria-pressed="${opt === currentSplit}">Split at ${opt}</button>`,
-            )
-            .join("")}
-        </div>
-      </div>
-      <div id="kinetic-svg-stage">${this.renderSvg(spec, currentSplit)}</div>
-    `;
-  },
-};
+
 
 const FluencyTelemetryHUD = {
   getStats() {
@@ -2149,7 +2349,7 @@ const FluencyTelemetryHUD = {
 function onFluencyProblemPresented() {
   if (!state.item) return;
   FlowPacerEngine.startProblemMonitor(state.item);
-  KineticDecomposer.mount(state.item);
+  document.querySelector("#kinetic-decomposer-host")?.remove();
   FluencyTelemetryHUD.render();
 }
 
@@ -2239,14 +2439,6 @@ function buildFluencyProfileSummary(session, accuracyPercent, nextRecommendation
 }
 
 document.addEventListener("click", (event) => {
-  const splitBtn = event.target.closest("[data-kinetic-split]");
-  if (splitBtn && state.item) {
-    fluencyNextGenState.sliceSplit = Number(splitBtn.dataset.kineticSplit) || 5;
-    fluencyNextGenState.decomposedOnCurrent = true;
-    chime("slice");
-    KineticDecomposer.mount(state.item);
-    return;
-  }
   const tokenBtn = event.target.closest("[data-copy-teacher-token]");
   if (tokenBtn) {
     const token = tokenBtn.dataset.copyTeacherToken || "";
@@ -2268,7 +2460,7 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-window.KineticDecomposer = KineticDecomposer;
+window.InteractiveSolver = InteractiveSolver;
 window.FlowPacerEngine = FlowPacerEngine;
 window.FluencyTelemetryHUD = FluencyTelemetryHUD;
 window.SpacedZPDEngine = SpacedZPDEngine;
@@ -2463,17 +2655,30 @@ els.summary?.addEventListener("click", (event) => {
   }
 });
 
-els.toggleDecomposer?.addEventListener("click", () => {
-  if (!els.factDecomposer || !state.item) return;
-  const isHidden = els.factDecomposer.hidden;
+els.toggleSolver?.addEventListener("click", () => {
+  if (!els.solverWorkspace || !state.item) return;
+  const isHidden = els.solverWorkspace.hidden;
   if (isHidden) {
-    renderFactDecomposition(state.item);
-    els.factDecomposer.hidden = false;
-    els.toggleDecomposer.setAttribute("aria-expanded", "true");
+    InteractiveSolver.render(state.item, els.solverWorkspace);
+    els.solverWorkspace.hidden = false;
+    els.toggleSolver.setAttribute("aria-expanded", "true");
   } else {
-    els.factDecomposer.hidden = true;
-    els.toggleDecomposer.setAttribute("aria-expanded", "false");
+    els.solverWorkspace.hidden = true;
+    els.toggleSolver.setAttribute("aria-expanded", "false");
   }
+});
+
+els.fixAnswerBtn?.addEventListener("click", () => {
+  state.isFixing = true;
+  state.itemDone = false;
+  els.answerInput.disabled = false;
+  els.answerInput.value = "";
+  els.answerInput.focus();
+  els.checkButton.hidden = false;
+  els.checkButton.textContent = "Check";
+  els.fixAnswerBtn.hidden = true;
+  els.nextButton.hidden = true;
+  showFeedback("Fix your answer", "Take another shot! Use the strategy steps above to get it right.", "try");
 });
 
 // Flashcard interactive controls & keybindings

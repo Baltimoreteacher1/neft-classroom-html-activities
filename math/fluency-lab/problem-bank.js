@@ -95,16 +95,48 @@ const ordinal = (n) => `${n}${["th", "st", "nd", "rd"][n % 10 > 3 || Math.floor(
 const listed = (values, cap = 10) => (values.length > cap ? `${values.slice(0, cap).join(", ")}, …` : values.join(", "));
 const factorsOf = (n) => Array.from({ length: n }, (_, i) => i + 1).filter((f) => n % f === 0);
 
-// GCF/LCM steps build the two lists first and name the answer last.
+export function primeFactors(n) {
+  const factors = [];
+  let d = 2;
+  let val = Math.abs(n);
+  while (val >= 2) {
+    if (val % d === 0) {
+      factors.push(d);
+      val /= d;
+    } else {
+      d += d === 2 ? 1 : 2;
+    }
+  }
+  return factors.length ? factors : [n];
+}
+
+// GCF/LCM steps: LCM uses the student-friendly prime factorization method.
 function gcfLcmSteps(find, a, b, answer) {
   if (find === "gcf") {
     const [fa, fb] = [factorsOf(a), factorsOf(b)];
     return [`Factors of ${a}: ${listed(fa)}`, `Factors of ${b}: ${listed(fb)}`, "Which factors are on both lists? Look for the ones that match.", `The greatest shared factor is ${answer}.`];
   }
-  const [small, big] = a < b ? [a, b] : [b, a];
-  // Show a few multiples past the first match too, so the list is a search space and does not end on the answer.
-  const multiples = Array.from({ length: Math.min(6, Math.max(3, answer / big + 1)) }, (_, i) => big * (i + 1));
-  return [`Multiples of ${big}: ${listed(multiples, 5)}`, `Does ${small} divide each one? Check from the start.`, `The first multiple of ${big} that ${small} divides is ${answer}.`];
+  const pa = primeFactors(a);
+  const pb = primeFactors(b);
+  const countPrimes = (list) => {
+    const map = {};
+    for (const p of list) map[p] = (map[p] || 0) + 1;
+    return map;
+  };
+  const ca = countPrimes(pa);
+  const cb = countPrimes(pb);
+  const allPrimes = [...new Set([...pa, ...pb])].sort((x, y) => x - y);
+  const maxParts = [];
+  for (const p of allPrimes) {
+    const maxCount = Math.max(ca[p] || 0, cb[p] || 0);
+    for (let i = 0; i < maxCount; i += 1) maxParts.push(p);
+  }
+  return [
+    `Prime factors of ${a}: ${pa.join(" × ")}.`,
+    `Prime factors of ${b}: ${pb.join(" × ")}.`,
+    `Take the highest power of each prime: ${maxParts.join(" × ")}.`,
+    `Multiply them together to get the LCM: ${maxParts.join(" × ")} = ${answer}.`,
+  ];
 }
 
 const FACT_SYMBOL = { add: "+", sub: "−", mul: "×", div: "÷" };
