@@ -11,6 +11,7 @@
   <script src="/assets/studio-comfort.js" defer></script>
   <script src="/assets/u4-studio.js"></script>
   <script src="/assets/u4-studio-bonus.js"></script>
+  <script src="/assets/u4-studio-story.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -67,8 +68,8 @@
       <button type="button" class="tab-btn" role="tab" id="tab-4" aria-selected="false" aria-controls="panel-4" tabindex="-1" data-tab="4">
         <span class="tab-badge" id="badge-4">4</span>
         <span class="tab-text">
-          <span class="tab-name">Battery &amp; Discounts</span>
-          <span class="tab-desc">Notice &amp; Wonder (8)</span>
+          <span class="tab-name">Real-Life Percents</span>
+          <span class="tab-desc">Battery, Sales, Tips (8)</span>
         </span>
       </button>
 
@@ -167,15 +168,15 @@
       <div class="stage-card" id="t3-stage-card"></div>
     </section>
 
-    <!-- PANEL 4: Battery & Discounts -->
+    <!-- PANEL 4: Real-Life Percents -->
     <section id="panel-4" class="tab-panel" role="tabpanel" aria-labelledby="tab-4">
       <div class="topic-strip">
         <div>
-          <h2>Tab 4: Battery Life &amp; Store Discounts (Reveal Math Applications)</h2>
-          <p>Solve authentic problems inspired by Reveal Math Notice &amp; Wonder (phone battery bars) and shopping discount calculations.</p>
-          <div class="es-text">Resuelve problemas aut&eacute;nticos basados en las barras de bater&iacute;a de Reveal Math y descuentos de compras.</div>
+          <h2>Tab 4: Real-Life Percents</h2>
+          <p>Use the same plan every time: find the whole, write the percent as a decimal, then multiply.</p>
+          <div class="es-text">Usa el mismo plan cada vez: halla el total, escribe el porcentaje como decimal y luego multiplica.</div>
         </div>
-        <div class="key-rule-pill">&#128267; 5 battery bars = 100% &rarr; 1 bar = 20%</div>
+        <div class="key-rule-pill">part = percent &times; whole</div>
       </div>
 
       <div class="stepper-bar">
@@ -215,7 +216,7 @@
 
   <footer class="app-footer">
     <div class="footer-wrap">
-      <div>Grade 6 Reveal Math &middot; Unit 4 Percents &middot; <strong>Lesson 4-4 Practice Studio</strong></div>
+      <div>Grade 6 Math &middot; Unit 4 Percents &middot; <strong>Lesson 4-4 Practice Studio</strong></div>
       <div>Aligned to standard <strong>6.AT.4</strong> &middot; Find and Compare with Percentages</div>
     </div>
   </footer>
@@ -978,72 +979,235 @@ function renderT3() {
       };
 
       // =========================================================================
-      // TAB 4: BATTERY & STORE DISCOUNTS
+      // TAB 4: REAL-LIFE PERCENTS (battery, sale, tip, tax, attendance)
+      // Cards come from assets/u4-studio-story.js: facts, ONE question, labelled boxes,
+      // a two-step hint ladder, and a message written for each common wrong answer.
       // =========================================================================
       const T4_APPS = [
         {
           id: 't4_1',
-          title: 'Reveal Battery: Full Capacity',
-          prompt: 'A phone battery has 5 equal indicator bars (each bar = 20%). A full battery lasts 15 hours. How many hours does 1 bar last?',
-          promptEs: 'La batería tiene 5 barras iguales (cada barra = 20%). Si dura 15 horas al 100%, ¿cuántas horas dura 1 barra?',
-          targetAns: 3,
-          explain: '1 bar is 20% of 15 hours. 0.20 × 15 = 3 hours (or 15 ÷ 5 = 3).'
+          title: { en: 'Battery: 1 bar', es: 'Batería: 1 barra' },
+          facts: [
+            { en: 'A phone battery has 5 equal bars. Each bar is 20% of the battery.', es: 'La batería de un teléfono tiene 5 barras iguales. Cada barra es el 20% de la batería.' },
+            { en: 'A full battery lasts 15 hours.', es: 'Una batería llena dura 15 horas.' }
+          ],
+          q: { en: 'How many hours does 1 bar last?', es: '¿Cuántas horas dura 1 barra?' },
+          fields: [{
+            label: { en: 'Hours for 1 bar', es: 'Horas de 1 barra' },
+            unit: { en: 'hours', es: 'horas' },
+            ans: 3,
+            wrong: {
+              300: { en: 'That uses 20 instead of 0.20. Write 20% as a decimal before you multiply.', es: 'Eso usa 20 en lugar de 0.20. Escribe 20% como decimal antes de multiplicar.' },
+              20: { en: '20 is the percent, not hours. Find 20% of the 15 hours.', es: '20 es el porcentaje, no las horas. Halla el 20% de las 15 horas.' },
+              0.2: { en: '0.2 is the percent written as a decimal. Now multiply it by the hours of the full battery.', es: '0.2 es el porcentaje escrito como decimal. Ahora multiplícalo por las horas de la batería llena.' },
+              15: { en: '15 hours is the whole battery. One bar is only part of it.', es: '15 horas es la batería completa. Una barra es solo una parte.' },
+              75: { en: '5 is the number of bars, not a percent. Each bar is 20%.', es: '5 es el número de barras, no un porcentaje. Cada barra es el 20%.' }
+            }
+          }],
+          hints: [
+            { en: '1 bar is 20% of the whole battery. The whole is 15 hours. Write 20% as a decimal.', es: '1 barra es el 20% de toda la batería. El total es 15 horas. Escribe 20% como decimal.' },
+            { en: 'Multiply the decimal by the whole: 0.20 × 15 = ?', es: 'Multiplica el decimal por el total: 0.20 × 15 = ?' }
+          ],
+          miss: { en: 'One bar is only part of the full battery, so the answer must be less than 15 hours. Use part = percent × whole.', es: 'Una barra es solo una parte de la batería llena, así que la respuesta debe ser menor que 15 horas. Usa parte = porcentaje × total.' },
+          explain: { en: '1 bar is 20% of 15 hours. 0.20 × 15 = 3 hours. (Another way: 15 ÷ 5 bars = 3 hours.)', es: '1 barra es el 20% de 15 horas. 0.20 × 15 = 3 horas. (Otra forma: 15 ÷ 5 barras = 3 horas.)' }
         },
         {
           id: 't4_2',
-          title: 'Reveal Battery: 2 Bars Remaining',
-          prompt: 'If the battery currently shows 2 bars out of 5, what percent is charged, and how many hours remain (out of 15)?',
-          promptEs: 'Si muestra 2 barras de 5, ¿cuántas horas quedan de las 15 horas totales?',
-          targetAns: 6,
-          explain: '2 bars is 40%. 40% of 15 hours = 0.40 × 15 = 6 hours (or 2 × 3 = 6).'
-        },
-        {
-          id: 't4_3',
-          title: 'Store Discount: Hoodie',
-          prompt: 'A hoodie costs $45. It is on sale for 20% off. What is the discount in dollars?',
-          promptEs: 'Una sudadera cuesta $45 y tiene un 20% de descuento. ¿Cuál es el descuento en dólares?',
-          targetAns: 9,
-          explain: 'Discount = 20% of $45 = 0.20 × 45 = $9.'
-        },
-        {
-          id: 't4_4',
-          title: 'Store Sale Price: Hoodie',
-          prompt: 'The $45 hoodie has a $9 discount. What is the sale price?',
-          promptEs: 'La sudadera de $45 tiene un descuento de $9. ¿Cuál es el precio de oferta?',
-          targetAns: 36,
-          explain: 'Sale price = $45 - $9 = $36.'
-        },
-        {
-          id: 't4_5',
-          title: 'Restaurant Tip Calculation',
-          prompt: 'A family meal costs $60. They leave a 15% tip. What is the tip amount in dollars?',
-          promptEs: 'Una comida cuesta $60 y dejan el 15% de propina. ¿Cuánto es la propina en dólares?',
-          targetAns: 9,
-          explain: '15% of $60 = 0.15 × 60 = $9.'
-        },
-        {
-          id: 't4_6',
-          title: 'Sales Tax Calculation',
-          prompt: 'A video game costs $50. The state sales tax is 6%. How much is the tax in dollars?',
-          promptEs: 'Un videojuego cuesta $50 con impuesto del 6%. ¿Cuánto es el impuesto en dólares?',
-          targetAns: 3,
-          explain: 'Tax = 6% of $50 = 0.06 × 50 = $3.'
-        },
-        {
-          id: 't4_7',
-          title: 'School Attendance',
-          prompt: 'There are 240 students in Grade 6. On Friday, 95% of students were present. How many students were present?',
-          promptEs: 'Hay 240 estudiantes y el 95% asistió el viernes. ¿Cuántos estudiantes asistieron?',
-          targetAns: 228,
-          explain: '0.95 × 240 = 228 students present.'
+          title: { en: 'Battery: 2 bars', es: 'Batería: 2 barras' },
+          facts: [
+            { en: 'A phone battery has 5 equal bars. Each bar is 20% of the battery.', es: 'La batería de un teléfono tiene 5 barras iguales. Cada barra es el 20% de la batería.' },
+            { en: 'A full battery lasts 15 hours.', es: 'Una batería llena dura 15 horas.' },
+            { en: 'The phone shows 2 bars.', es: 'El teléfono muestra 2 barras.' }
+          ],
+          q: { en: 'What percent is charged? Then, how many hours are left?', es: '¿Qué porcentaje está cargado? Luego, ¿cuántas horas quedan?' },
+          fields: [
+            {
+              label: { en: 'Step 1: Percent charged', es: 'Paso 1: Porcentaje cargado' },
+              unit: '%',
+              ans: 40,
+              miss: { en: 'Each bar is 20%. Count up the percent for the 2 bars on the screen.', es: 'Cada barra es el 20%. Suma el porcentaje de las 2 barras de la pantalla.' },
+              wrong: {
+                2: { en: '2 is the number of bars. Each bar is 20%, so find the percent for 2 bars.', es: '2 es el número de barras. Cada barra es el 20%, así que halla el porcentaje de 2 barras.' },
+                20: { en: '20% is only 1 bar. The phone shows 2 bars.', es: '20% es solo 1 barra. El teléfono muestra 2 barras.' },
+                60: { en: '60% is 3 bars. The phone shows 2 bars.', es: '60% son 3 barras. El teléfono muestra 2 barras.' }
+              }
+            },
+            {
+              label: { en: 'Step 2: Hours left', es: 'Paso 2: Horas que quedan' },
+              unit: { en: 'hours', es: 'horas' },
+              ans: 6,
+              miss: { en: 'Find your Step 1 percent of the full 15 hours: percent × whole.', es: 'Halla el porcentaje del Paso 1 de las 15 horas completas: porcentaje × total.' },
+              wrong: {
+                600: { en: 'Write your percent as a decimal before you multiply (hundredths).', es: 'Escribe tu porcentaje como decimal antes de multiplicar (centésimos).' },
+                3: { en: '3 hours is what 1 bar lasts. The phone shows 2 bars.', es: '3 horas es lo que dura 1 barra. El teléfono muestra 2 barras.' },
+                9: { en: '9 hours is for 3 bars. The phone shows 2 bars.', es: '9 horas es para 3 barras. El teléfono muestra 2 barras.' },
+                15: { en: '15 hours is a full battery. The phone is not full.', es: '15 horas es una batería llena. El teléfono no está lleno.' }
+              }
+            }
+          ],
+          hints: [
+            { en: 'Step 1: each bar is 20%, and the phone shows 2 bars. Step 2: the whole is 15 hours, so write your percent as a decimal.', es: 'Paso 1: cada barra es el 20% y el teléfono muestra 2 barras. Paso 2: el total es 15 horas, así que escribe tu porcentaje como decimal.' },
+            { en: 'Step 1: 20% + 20% = ?%. Step 2: multiply that percent as a decimal by 15.', es: 'Paso 1: 20% + 20% = ?%. Paso 2: multiplica ese porcentaje, como decimal, por 15.' }
+          ],
+          miss: { en: 'Check each step: first the percent for 2 bars, then that percent of the 15 hours.', es: 'Revisa cada paso: primero el porcentaje de 2 barras, luego ese porcentaje de las 15 horas.' },
+          explain: { en: '2 bars = 2 × 20% = 40%. 40% of 15 hours = 0.40 × 15 = 6 hours. (Another way: 2 × 3 hours = 6 hours.)', es: '2 barras = 2 × 20% = 40%. 40% de 15 horas = 0.40 × 15 = 6 horas. (Otra forma: 2 × 3 horas = 6 horas.)' }
         },
         {
           id: 't4_8',
-          title: 'Battery Low Power Mode',
-          prompt: 'A phone enters Low Power Mode at 20% battery. If total battery is 25 hours, at how many remaining hours does it turn on?',
-          promptEs: 'El modo de ahorro se activa al 20%. Si la batería total es de 25 horas, ¿a cuántas horas restantes se activa?',
-          targetAns: 5,
-          explain: '20% of 25 = 0.20 × 25 = 5 hours.'
+          title: { en: 'Battery: Low Power Mode', es: 'Batería: modo de bajo consumo' },
+          facts: [
+            { en: 'A full battery lasts 25 hours.', es: 'Una batería llena dura 25 horas.' },
+            { en: 'Low Power Mode turns on when the battery is down to 20%.', es: 'El modo de bajo consumo se activa cuando la batería llega al 20%.' }
+          ],
+          q: { en: 'How many hours are left when Low Power Mode turns on?', es: '¿Cuántas horas quedan cuando se activa el modo de bajo consumo?' },
+          fields: [{
+            label: { en: 'Hours left', es: 'Horas que quedan' },
+            unit: { en: 'hours', es: 'horas' },
+            ans: 5,
+            wrong: {
+              500: { en: 'Write 20% as 0.20 before you multiply.', es: 'Escribe 20% como 0.20 antes de multiplicar.' },
+              20: { en: '20 is the percent, not hours. Find 20% of the 25 hours.', es: '20 es el porcentaje, no las horas. Halla el 20% de las 25 horas.' },
+              0.2: { en: '0.2 is the percent written as a decimal. Now multiply it by the full 25 hours.', es: '0.2 es el porcentaje escrito como decimal. Ahora multiplícalo por las 25 horas completas.' },
+              25: { en: '25 hours is the full battery. 20% is only part of it.', es: '25 horas es la batería llena. El 20% es solo una parte.' }
+            }
+          }],
+          hints: [
+            { en: 'The whole is the full 25 hours. You need 20% of it. Write 20% as a decimal.', es: 'El total son las 25 horas completas. Necesitas el 20% de ese total. Escribe 20% como decimal.' },
+            { en: 'Multiply the decimal by the whole: 0.20 × 25 = ?', es: 'Multiplica el decimal por el total: 0.20 × 25 = ?' }
+          ],
+          miss: { en: 'You want a part of the 25-hour battery, so the answer must be less than 25. Use part = percent × whole.', es: 'Quieres una parte de la batería de 25 horas, así que la respuesta debe ser menor que 25. Usa parte = porcentaje × total.' },
+          explain: { en: '20% of 25 hours = 0.20 × 25 = 5 hours. (Another way: 20% is 1/5, and 25 ÷ 5 = 5.)', es: '20% de 25 horas = 0.20 × 25 = 5 horas. (Otra forma: 20% es 1/5, y 25 ÷ 5 = 5.)' }
+        },
+        {
+          id: 't4_3',
+          title: { en: 'Discount: hoodie', es: 'Descuento: sudadera' },
+          facts: [
+            { en: 'A hoodie costs $45.', es: 'Una sudadera cuesta $45.' },
+            { en: 'It is on sale for 20% off.', es: 'Está en oferta con 20% de descuento.' }
+          ],
+          q: { en: 'How many dollars is the discount?', es: '¿Cuántos dólares es el descuento?' },
+          fields: [{
+            label: { en: 'Discount', es: 'Descuento' },
+            unit: { en: 'dollars ($)', es: 'dólares ($)' },
+            ans: 9,
+            wrong: {
+              36: { en: '$36 is what you pay after the discount. The question asks for the discount, the amount taken off.', es: '$36 es lo que pagas después del descuento. La pregunta pide el descuento, la cantidad que se quita.' },
+              900: { en: 'Write 20% as 0.20 before you multiply.', es: 'Escribe 20% como 0.20 antes de multiplicar.' },
+              20: { en: '20 is the percent, not dollars. Find 20% of the $45 price.', es: '20 es el porcentaje, no los dólares. Halla el 20% del precio de $45.' },
+              0.2: { en: '0.2 is the percent written as a decimal. Now multiply it by the price.', es: '0.2 es el porcentaje escrito como decimal. Ahora multiplícalo por el precio.' }
+            }
+          }],
+          hints: [
+            { en: 'The discount is a percent of the original price, so the whole is $45. Write 20% as a decimal.', es: 'El descuento es un porcentaje del precio original, así que el total es $45. Escribe 20% como decimal.' },
+            { en: 'Multiply the decimal by the whole: 0.20 × 45 = ?', es: 'Multiplica el decimal por el total: 0.20 × 45 = ?' }
+          ],
+          miss: { en: 'The discount is only part of the $45 price. Use part = percent × whole.', es: 'El descuento es solo una parte del precio de $45. Usa parte = porcentaje × total.' },
+          explain: { en: 'Discount = 20% of $45 = 0.20 × 45 = $9. (Another way: 20% is 1/5, and 45 ÷ 5 = 9.)', es: 'Descuento = 20% de $45 = 0.20 × 45 = $9. (Otra forma: 20% es 1/5, y 45 ÷ 5 = 9.)' }
+        },
+        {
+          id: 't4_4',
+          title: { en: 'Discount: sale price', es: 'Descuento: precio de oferta' },
+          facts: [
+            { en: 'A hoodie costs $45.', es: 'Una sudadera cuesta $45.' },
+            { en: 'The discount is $9.', es: 'El descuento es $9.' }
+          ],
+          q: { en: 'What is the sale price, the amount you pay?', es: '¿Cuál es el precio de oferta, la cantidad que pagas?' },
+          fields: [{
+            label: { en: 'Sale price', es: 'Precio de oferta' },
+            unit: { en: 'dollars ($)', es: 'dólares ($)' },
+            ans: 36,
+            wrong: {
+              9: { en: '$9 is the discount. The sale price is what you pay after the discount is taken off.', es: '$9 es el descuento. El precio de oferta es lo que pagas después de quitar el descuento.' },
+              54: { en: 'A discount takes money OFF the price, so the sale price must be less than $45.', es: 'Un descuento QUITA dinero del precio, así que el precio de oferta debe ser menor que $45.' },
+              45: { en: '$45 is the price before the discount. Take the discount off.', es: '$45 es el precio antes del descuento. Quítale el descuento.' }
+            }
+          }],
+          hints: [
+            { en: 'The discount is taken off the original price. Do you add or subtract?', es: 'El descuento se quita del precio original. ¿Sumas o restas?' },
+            { en: 'Subtract the discount from the price: $45 − $9 = ?', es: 'Resta el descuento del precio: $45 − $9 = ?' }
+          ],
+          miss: { en: 'Sale price = original price − discount, so it must be less than $45.', es: 'Precio de oferta = precio original − descuento, así que debe ser menor que $45.' },
+          explain: { en: 'Sale price = $45 − $9 = $36.', es: 'Precio de oferta = $45 − $9 = $36.' }
+        },
+        {
+          id: 't4_5',
+          title: { en: 'Tip at a restaurant', es: 'Propina en un restaurante' },
+          facts: [
+            { en: 'A family meal costs $60.', es: 'Una comida familiar cuesta $60.' },
+            { en: 'They leave a 15% tip.', es: 'Dejan una propina del 15%.' }
+          ],
+          q: { en: 'How many dollars is the tip?', es: '¿Cuántos dólares es la propina?' },
+          fields: [{
+            label: { en: 'Tip', es: 'Propina' },
+            unit: { en: 'dollars ($)', es: 'dólares ($)' },
+            ans: 9,
+            wrong: {
+              900: { en: 'Write 15% as 0.15 before you multiply.', es: 'Escribe 15% como 0.15 antes de multiplicar.' },
+              15: { en: '15 is the percent, not dollars. Find 15% of the $60 meal.', es: '15 es el porcentaje, no los dólares. Halla el 15% de la comida de $60.' },
+              0.15: { en: '0.15 is the percent written as a decimal. Now multiply it by the meal cost.', es: '0.15 es el porcentaje escrito como decimal. Ahora multiplícalo por el costo de la comida.' },
+              69: { en: 'The question asks for the tip only, not the total bill.', es: 'La pregunta pide solo la propina, no la cuenta total.' },
+              75: { en: 'The question asks for the tip only, not the total bill.', es: 'La pregunta pide solo la propina, no la cuenta total.' }
+            }
+          }],
+          hints: [
+            { en: 'The tip is 15% of the meal cost, so the whole is $60. Write 15% as a decimal.', es: 'La propina es el 15% del costo de la comida, así que el total es $60. Escribe 15% como decimal.' },
+            { en: 'Multiply the decimal by the whole: 0.15 × 60 = ?', es: 'Multiplica el decimal por el total: 0.15 × 60 = ?' }
+          ],
+          miss: { en: 'The tip is only a small part of the $60 meal. Use part = percent × whole.', es: 'La propina es solo una parte pequeña de la comida de $60. Usa parte = porcentaje × total.' },
+          explain: { en: 'Tip = 15% of $60 = 0.15 × 60 = $9. (Another way: 10% of 60 is 6, 5% is 3, and 6 + 3 = 9.)', es: 'Propina = 15% de $60 = 0.15 × 60 = $9. (Otra forma: 10% de 60 es 6, 5% es 3, y 6 + 3 = 9.)' }
+        },
+        {
+          id: 't4_6',
+          title: { en: 'Sales tax', es: 'Impuesto sobre la venta' },
+          facts: [
+            { en: 'A video game costs $50.', es: 'Un videojuego cuesta $50.' },
+            { en: 'The sales tax is 6%.', es: 'El impuesto sobre la venta es 6%.' }
+          ],
+          q: { en: 'How many dollars is the tax?', es: '¿Cuántos dólares es el impuesto?' },
+          fields: [{
+            label: { en: 'Tax', es: 'Impuesto' },
+            unit: { en: 'dollars ($)', es: 'dólares ($)' },
+            ans: 3,
+            wrong: {
+              300: { en: 'Write 6% as 0.06 before you multiply.', es: 'Escribe 6% como 0.06 antes de multiplicar.' },
+              30: { en: '6% is 6 hundredths, 0.06, not 0.6.', es: '6% es 6 centésimos, 0.06, no 0.6.' },
+              6: { en: '6 is the percent, not dollars. Find 6% of the $50 price.', es: '6 es el porcentaje, no los dólares. Halla el 6% del precio de $50.' },
+              0.06: { en: '0.06 is the percent written as a decimal. Now multiply it by the price.', es: '0.06 es el porcentaje escrito como decimal. Ahora multiplícalo por el precio.' },
+              53: { en: 'The question asks for the tax only, not the total price.', es: 'La pregunta pide solo el impuesto, no el precio total.' }
+            }
+          }],
+          hints: [
+            { en: 'The tax is 6% of the price, so the whole is $50. Write 6% as a decimal (6 hundredths).', es: 'El impuesto es el 6% del precio, así que el total es $50. Escribe 6% como decimal (6 centésimos).' },
+            { en: 'Multiply the decimal by the whole: 0.06 × 50 = ?', es: 'Multiplica el decimal por el total: 0.06 × 50 = ?' }
+          ],
+          miss: { en: 'The tax is only a small part of the $50 price. Use part = percent × whole.', es: 'El impuesto es solo una parte pequeña del precio de $50. Usa parte = porcentaje × total.' },
+          explain: { en: 'Tax = 6% of $50 = 0.06 × 50 = $3.', es: 'Impuesto = 6% de $50 = 0.06 × 50 = $3.' }
+        },
+        {
+          id: 't4_7',
+          title: { en: 'School attendance', es: 'Asistencia escolar' },
+          facts: [
+            { en: 'There are 240 students in Grade 6.', es: 'Hay 240 estudiantes en 6.º grado.' },
+            { en: 'On Friday, 95% of them were at school.', es: 'El viernes, el 95% de ellos estuvo en la escuela.' }
+          ],
+          q: { en: 'How many students were at school on Friday?', es: '¿Cuántos estudiantes estuvieron en la escuela el viernes?' },
+          fields: [{
+            label: { en: 'Students at school', es: 'Estudiantes en la escuela' },
+            unit: { en: 'students', es: 'estudiantes' },
+            ans: 228,
+            wrong: {
+              12: { en: '12 is how many were NOT at school (the other 5%). The question asks how many were at school.', es: '12 es cuántos NO estuvieron en la escuela (el otro 5%). La pregunta pide cuántos estuvieron en la escuela.' },
+              22800: { en: 'Write 95% as 0.95 before you multiply.', es: 'Escribe 95% como 0.95 antes de multiplicar.' },
+              95: { en: '95 is the percent, not a number of students. Find 95% of the 240 students.', es: '95 es el porcentaje, no un número de estudiantes. Halla el 95% de los 240 estudiantes.' },
+              0.95: { en: '0.95 is the percent written as a decimal. Now multiply it by the number of students.', es: '0.95 es el porcentaje escrito como decimal. Ahora multiplícalo por el número de estudiantes.' }
+            }
+          }],
+          hints: [
+            { en: 'The whole is all 240 students. You need 95% of them. Write 95% as a decimal.', es: 'El total son los 240 estudiantes. Necesitas el 95% de ellos. Escribe 95% como decimal.' },
+            { en: 'Multiply the decimal by the whole: 0.95 × 240 = ?', es: 'Multiplica el decimal por el total: 0.95 × 240 = ?' }
+          ],
+          miss: { en: '95% is almost all of the 240 students, so the answer is a little less than 240. Use part = percent × whole.', es: 'El 95% es casi todos los 240 estudiantes, así que la respuesta es un poco menos que 240. Usa parte = porcentaje × total.' },
+          explain: { en: '0.95 × 240 = 228 students were at school. (Another way: 5% of 240 is 12, and 240 − 12 = 228.)', es: '0.95 × 240 = 228 estudiantes estuvieron en la escuela. (Otra forma: 5% de 240 es 12, y 240 − 12 = 228.)' }
         }
       ];
 
@@ -1055,53 +1219,25 @@ function renderT3() {
           state.idx4 = ni; renderT4();
         });
 
-        const stage = document.getElementById('t4-stage-card');
-        stage.innerHTML = `
-          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:0.84rem; font-weight:800; color:var(--brand);">Application ${state.idx4 + 1} of ${T4_APPS.length} · ${a.title}</span>
-            <button type="button" class="speak-btn" id="t4-speak">🔊 Read Problem</button>
-          </div>
-          <p style="font-size:1.15rem; font-weight:700; color:var(--brand); margin:0 0 6px 0;">${a.prompt}</p>
-          <div class="es-text">${a.promptEs}</div>
-
-          <div style="display:flex; align-items:center; gap:12px; margin-top:18px; flex-wrap:wrap;">
-            <label for="t4-in" style="font-weight:700; color:var(--brand);">Your Answer:</label>
-            <input type="number" step="any" id="t4-in" class="num-input" style="width:130px;" placeholder="?" value="${isSolved ? a.targetAns : ''}" ${isSolved ? 'disabled' : ''}>
-            <button type="button" class="btn btn-primary" id="t4-check-btn" ${isSolved ? 'disabled' : ''}>Submit Answer</button>
-          </div>
-
-          <div id="t4-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
-            ${isSolved ? `Correct! ${a.explain}` : ''}
-          </div>
-        `;
-
-        stage.querySelector('#t4-speak').onclick = () => speak(state.showEs ? a.promptEs : a.prompt);
-
-        if (isSolved) appendNext(document.getElementById('t4-fb'), 4, T4_APPS.length, renderT4);
-
-        stage.querySelector('#t4-check-btn').onclick = () => {
-          const val = parseFloat(stage.querySelector('#t4-in').value);
-          const fb = document.getElementById('t4-fb');
-          if (isNaN(val)) return;
-
-          if (val === a.targetAns) {
+        const { fb } = U4Studio.story.card({
+          host: document.getElementById('t4-stage-card'),
+          item: a,
+          index: state.idx4,
+          count: T4_APPS.length,
+          solved: isSolved,
+          speak,
+          showEs: () => state.showEs,
+          onMiss: () => { playSound('wrong'); saveState(); },
+          onSolve: (fbEl) => {
             playSound('correct');
             state.solved4[a.id] = true;
-            fb.className = 'feedback-box show ok';
-            fb.innerHTML = `Great job! ${a.explain}`;
-            stage.querySelector('#t4-in').classList.add('ok');
             renderDots('t4-dots', T4_APPS, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4(); });
             updateProgressHeader();
-            appendNext(fb, 4, T4_APPS.length, renderT4);
-          } else {
-            playSound('wrong');
-            fb.className = 'feedback-box show warn';
-            fb.textContent = `Review the percent equation: multiply decimal by the total amount.`;
-            stage.querySelector('#t4-in').classList.add('err');
-            setTimeout(() => stage.querySelector('#t4-in').classList.remove('err'), 800);
+            appendNext(fbEl, 4, T4_APPS.length, renderT4);
+            saveState();
           }
-          saveState();
-        };
+        });
+        if (isSolved) appendNext(fb, 4, T4_APPS.length, renderT4);
       }
 
       document.getElementById('t4-prev-btn').onclick = () => {

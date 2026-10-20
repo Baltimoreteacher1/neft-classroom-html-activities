@@ -127,6 +127,58 @@ function initObject(html, key) {
   return JSON.parse(html.slice(start, i + 1));
 }
 
+/* ---- Tab 4 story cards (assets/u4-studio-story.js) ----------------------------------------------
+ * Tab 4 was one paragraph, one box and one generic "review the equation" line. A card is data, so the
+ * contract is checkable: both languages everywhere, a hint ladder that never prints the answer, wrong
+ * answers named for the mistake (and really wrong), and no curriculum jargon in student text. */
+const isBi = (t) =>
+  t && typeof t.en === "string" && typeof t.es === "string" && t.en.trim() && t.es.trim();
+const hasAnswer = (text, ans) => {
+  const forms = new Set([String(ans), Number(ans).toLocaleString("en-US")]);
+  return [...forms].some((f) =>
+    new RegExp(`(^|[^\\d.,])${f.replace(/[.]/g, "\\.")}(?![\\d]|[.,]\\d)`).test(text),
+  );
+};
+let storyItems = 0;
+function checkStoryItems(tag, items) {
+  const ids = new Set();
+  for (const it of items) {
+    const at = `${tag} ${it.id}`;
+    assert.ok(it.id && !ids.has(it.id), `${at}: unique id`);
+    ids.add(it.id);
+    for (const k of ["title", "q", "miss", "explain"])
+      assert.ok(isBi(it[k]), `${at}: ${k} has EN+ES`);
+    assert.ok(it.facts?.length >= 1 && it.facts.every(isBi), `${at}: facts have EN+ES`);
+    assert.ok(
+      it.hints?.length >= 2 && it.hints.length <= 3 && it.hints.every(isBi),
+      `${at}: 2-3 hints with EN+ES`,
+    );
+    assert.ok(it.fields?.length >= 1 && it.fields.length <= 2, `${at}: one or two answer boxes`);
+    for (const f of it.fields) {
+      assert.ok(Number.isFinite(f.ans), `${at}: numeric answer`);
+      assert.ok(isBi(f.label), `${at}: box label has EN+ES`);
+      assert.ok(typeof f.unit === "string" || isBi(f.unit), `${at}: box has a unit`);
+      if (f.miss) assert.ok(isBi(f.miss), `${at}: box miss has EN+ES`);
+      for (const [v, m] of Object.entries(f.wrong || {})) {
+        assert.notEqual(Number(v), f.ans, `${at}: wrong answer ${v} is the right answer`);
+        assert.ok(isBi(m), `${at}: wrong[${v}] has EN+ES`);
+        assert.ok(!hasAnswer(m.en, f.ans), `${at}: wrong[${v}] prints the answer ${f.ans}`);
+      }
+      for (const h of it.hints)
+        assert.ok(
+          !hasAnswer(h.en, f.ans) && !hasAnswer(h.es, f.ans),
+          `${at}: a hint prints the answer ${f.ans}`,
+        );
+      assert.ok(!hasAnswer(it.miss.en, f.ans), `${at}: miss prints the answer ${f.ans}`);
+      assert.ok(
+        hasAnswer(it.explain.en, f.ans),
+        `${at}: explain does not state the answer ${f.ans}`,
+      );
+    }
+    storyItems++;
+  }
+}
+
 /* ---- the shared stylesheet owns every token the pages use -------------------------------------- */
 const sharedCss = [read("assets/u4-studio.css"), read("assets/u4-studio-percent.css")].join("\n");
 const defined = new Set([...sharedCss.matchAll(/(--[\w-]+)\s*:/g)].map((m) => m[1]));
@@ -209,6 +261,28 @@ for (const name of pages) {
       assert.ok(html.includes(`function ${f}`), `${tag} calls ${f} but never defines it`);
   }
 
+  // Tab 4: no curriculum jargon in student text, and story cards are valid data
+  const panel4 = html.slice(html.indexOf('id="panel-4"'), html.indexOf('id="panel-5"'));
+  const tab4Btn = html.slice(html.indexOf('id="tab-4"'), html.indexOf('id="tab-5"'));
+  const t4Data = [...html.matchAll(/const (T4_[A-Z_]+) = (\[[^]*?\n {6}\]);/g)];
+  assert.ok(t4Data.length >= 1, `${tag} keeps its Tab 4 items as const T4_* = [ ... ] data`);
+  for (const text of [panel4, tab4Btn, ...t4Data.map((m) => m[2])])
+    assert.ok(
+      !/Reveal|Notice\s*(&amp;|&|and)\s*Wonder/i.test(text),
+      `${tag} Tab 4 shows curriculum jargon to students`,
+    );
+  if (html.includes("U4Studio.story.card(")) {
+    assert.ok(
+      html.indexOf('src="/assets/u4-studio-story.js"') > order[2] &&
+        html.indexOf('src="/assets/u4-studio-story.js"') < order[3],
+      `${tag} loads u4-studio-story.js after the shared scripts and before init`,
+    );
+    for (const [, name, body] of t4Data) {
+      const items = vm.runInNewContext(`(${body})`);
+      if (items.every((i) => i.fields)) checkStoryItems(`${tag} ${name}`, items);
+    }
+  }
+
   // Bonus Round
   const bonus = initObject(html, "bonus");
   assert.ok(verifiers[bonus.gen], `${tag} bonus generator ${bonus.gen} has a verifier`);
@@ -231,5 +305,5 @@ for (const name of pages) {
 }
 
 console.log(
-  `unit4-studio: ${pages.length} pages wired, ${trios} Bonus Round trios re-verified from their own text, ${meaningCases} meaning checks have exactly one right sentence`,
+  `unit4-studio: ${pages.length} pages wired, ${trios} Bonus Round trios re-verified from their own text, ${meaningCases} meaning checks have exactly one right sentence, ${storyItems} Tab 4 story items checked`,
 );

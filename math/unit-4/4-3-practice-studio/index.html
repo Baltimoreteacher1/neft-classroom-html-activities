@@ -11,6 +11,7 @@
   <script src="/assets/studio-comfort.js" defer></script>
   <script src="/assets/u4-studio.js"></script>
   <script src="/assets/u4-studio-bonus.js"></script>
+  <script src="/assets/u4-studio-story.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -68,7 +69,7 @@
         <span class="tab-badge" id="badge-4">4</span>
         <span class="tab-text">
           <span class="tab-name">Tipping &amp; Sales</span>
-          <span class="tab-desc">Real-World Errors (8)</span>
+          <span class="tab-desc">Tips, Sales, Error Detective (8)</span>
         </span>
       </button>
 
@@ -219,8 +220,8 @@
       <div class="topic-strip">
         <div>
           <h2>4. Real-World Tipping, Sales &amp; Error Detective</h2>
-          <p>Apply estimation to restaurant bills, sale discounts, phone storage (Reveal 4-3), and catch common estimation traps.</p>
-          <p class="es-text">Aplica la estimación a propinas, descuentos y corrige errores comunes.</p>
+          <p>Estimate tips, sale discounts, tax, and phone storage. Then play detective and find the mistake in two estimates.</p>
+          <p class="es-text">Estima propinas, descuentos, impuestos y almacenamiento del teléfono. Luego juega al detective y encuentra el error en dos estimaciones.</p>
         </div>
       </div>
 
@@ -756,7 +757,7 @@
         { id: 't3_2', orig: '48% of 198', rPct: 50, rWhole: 200, ans: 100, stem: 'Estimate 48% of 198 by rounding to friendly benchmark 50% of 200.' },
         { id: 't3_3', orig: '24% of 81', rPct: 25, rWhole: 80, ans: 20, stem: 'Estimate 24% of 81 by using benchmark 25% (1/4) of 80.' },
         { id: 't3_4', orig: '76% of 39', rPct: 75, rWhole: 40, ans: 30, stem: 'Estimate 76% of 39 using benchmark 75% (3/4) of 40.' },
-        { id: 't3_5', orig: '9.2% of 216 (Reveal 4-3)', rPct: 10, rWhole: 220, ans: 22, stem: 'In Reveal Lesson 4-3, estimate 8.6% of 216 lbs of metal by rounding to 10% of 220.' },
+        { id: 't3_5', orig: '8.6% of 216', rPct: 10, rWhole: 220, ans: 22, stem: 'Estimate 8.6% of 216 lbs of metal by rounding to 10% of 220.' },
         { id: 't3_6', orig: '19% of 62', rPct: 20, rWhole: 60, ans: 12, stem: 'Estimate 19% of 62 by rounding to 20% of 60.' },
         { id: 't3_7', orig: '32% of 89', rPct: 30, rWhole: 90, ans: 27, stem: 'Estimate 32% of 89 by rounding to 30% of 90.' },
         { id: 't3_8', orig: '51% of 302', rPct: 50, rWhole: 300, ans: 150, stem: 'Estimate 51% of 302 by rounding to 50% of 300.' }
@@ -854,190 +855,334 @@
 
       /* ----------------------------------------------------------------------
          TAB 4: TIPPING & SALES (8 PROBLEMS)
+         Number problems use assets/u4-studio-story.js (facts, ONE question, labelled box, hint ladder,
+         a message per common wrong answer). Error-detective problems are multiple choice with a
+         reason for every wrong pick; the right answer sits at a different letter each time.
          ---------------------------------------------------------------------- */
-      const T4_PROBLEMS = [
+      const T4_NUMBERS = [
         {
           id: 't4_1',
-          title: 'Problem 1 · Restaurant Tip Calculation',
-          stem: 'A family dinner bill is $58.75. Estimate a 15% tip by rounding the bill to $60.',
-          type: 'single',
-          ans: '9',
-          suffix: 'dollars',
-          hint: '10% of $60 is $6. 5% is $3. $6 + $3 = $9.',
-          explain: 'Correct! 15% of $60 is $9.'
+          title: { en: 'Tip: family dinner', es: 'Propina: cena familiar' },
+          facts: [
+            { en: 'A family dinner bill is $58.75.', es: 'La cuenta de una cena familiar es $58.75.' },
+            { en: 'They want to leave a 15% tip.', es: 'Quieren dejar una propina del 15%.' },
+            { en: 'Round the bill to $60.', es: 'Redondea la cuenta a $60.' }
+          ],
+          q: { en: 'About how much is the tip?', es: '¿Aproximadamente cuánto es la propina?' },
+          fields: [{
+            label: { en: 'Estimated tip', es: 'Propina estimada' },
+            unit: { en: 'dollars ($)', es: 'dólares ($)' },
+            ans: 9,
+            wrong: {
+              900: { en: 'That uses 15 instead of 0.15. A 15% tip is a small part of the bill, not 15 times the bill.', es: 'Eso usa 15 en lugar de 0.15. Una propina del 15% es una parte pequeña de la cuenta, no 15 veces la cuenta.' },
+              15: { en: '15 is the percent, not dollars. Find 15% of the $60 bill.', es: '15 es el porcentaje, no los dólares. Halla el 15% de la cuenta de $60.' },
+              6: { en: '$6 is only the 10% part. Add the 5% part to get to 15%.', es: '$6 es solo la parte del 10%. Suma la parte del 5% para llegar al 15%.' },
+              3: { en: '$3 is only the 5% part. Add the 10% part too.', es: '$3 es solo la parte del 5%. Suma también la parte del 10%.' },
+              60: { en: '$60 is the rounded bill. The tip is only a part of it.', es: '$60 es la cuenta redondeada. La propina es solo una parte de ella.' },
+              69: { en: 'That is the bill plus the tip. The question asks for the tip only.', es: 'Eso es la cuenta más la propina. La pregunta pide solo la propina.' }
+            }
+          }],
+          hints: [
+            { en: 'Use the rounded bill, $60. Break 15% into two easy parts: 10% and 5%. For 10%, move the decimal point one place left.', es: 'Usa la cuenta redondeada, $60. Separa el 15% en dos partes fáciles: 10% y 5%. Para el 10%, mueve el punto decimal un lugar a la izquierda.' },
+            { en: '10% of $60 = ?   5% is half of that = ?   Then add the two parts.', es: '10% de $60 = ?   El 5% es la mitad de eso = ?   Luego suma las dos partes.' }
+          ],
+          miss: { en: 'A 15% tip is a small part of the bill, so it must be much less than $60. Use the rounded bill.', es: 'Una propina del 15% es una parte pequeña de la cuenta, así que debe ser mucho menos que $60. Usa la cuenta redondeada.' },
+          explain: { en: 'Round the bill to $60. 10% of $60 is $6 and 5% is $3, so the tip is $6 + $3 = $9.', es: 'Redondea la cuenta a $60. El 10% de $60 es $6 y el 5% es $3, así que la propina es $6 + $3 = $9.' }
         },
         {
           id: 't4_2',
-          title: 'Problem 2 · 20% Tip for Great Service',
-          stem: 'Estimate a 20% tip on a $42.20 lunch by rounding the bill to $40.',
-          type: 'single',
-          ans: '8',
-          suffix: 'dollars',
-          hint: '10% of $40 is $4. 20% is 2 &times; $4 = $8.',
-          explain: 'Correct! 20% of $40 is $8.'
+          title: { en: 'Tip: great service', es: 'Propina: servicio excelente' },
+          facts: [
+            { en: 'A lunch bill is $42.20.', es: 'La cuenta de un almuerzo es $42.20.' },
+            { en: 'The tip is 20% for great service.', es: 'La propina es del 20% por un servicio excelente.' },
+            { en: 'Round the bill to $40.', es: 'Redondea la cuenta a $40.' }
+          ],
+          q: { en: 'About how much is the tip?', es: '¿Aproximadamente cuánto es la propina?' },
+          fields: [{
+            label: { en: 'Estimated tip', es: 'Propina estimada' },
+            unit: { en: 'dollars ($)', es: 'dólares ($)' },
+            ans: 8,
+            wrong: {
+              800: { en: 'That uses 20 instead of 0.20. A 20% tip is only a part of the bill.', es: 'Eso usa 20 en lugar de 0.20. Una propina del 20% es solo una parte de la cuenta.' },
+              20: { en: '20 is the percent, not dollars. Find 20% of the $40 bill.', es: '20 es el porcentaje, no los dólares. Halla el 20% de la cuenta de $40.' },
+              0.2: { en: '0.2 is 20% written as a decimal. Now multiply it by the $40 bill.', es: '0.2 es el 20% escrito como decimal. Ahora multiplícalo por la cuenta de $40.' },
+              4: { en: '$4 is only 10%. A 20% tip is two groups of 10%.', es: '$4 es solo el 10%. Una propina del 20% son dos grupos de 10%.' },
+              40: { en: '$40 is the rounded bill. The tip is only a part of it.', es: '$40 es la cuenta redondeada. La propina es solo una parte de ella.' },
+              48: { en: 'That is the bill plus the tip. The question asks for the tip only.', es: 'Eso es la cuenta más la propina. La pregunta pide solo la propina.' }
+            }
+          }],
+          hints: [
+            { en: 'Use the rounded bill, $40. 20% is two groups of 10%. For 10%, move the decimal point one place left.', es: 'Usa la cuenta redondeada, $40. El 20% son dos grupos de 10%. Para el 10%, mueve el punto decimal un lugar a la izquierda.' },
+            { en: '10% of $40 = ?   Then 2 × ? = the tip.', es: '10% de $40 = ?   Luego 2 × ? = la propina.' }
+          ],
+          miss: { en: 'A 20% tip is a small part of the bill, so it must be much less than $40. Use the rounded bill.', es: 'Una propina del 20% es una parte pequeña de la cuenta, así que debe ser mucho menos que $40. Usa la cuenta redondeada.' },
+          explain: { en: 'Round the bill to $40. 10% of $40 is $4, so 20% is 2 × $4 = $8.', es: 'Redondea la cuenta a $40. El 10% de $40 es $4, así que el 20% es 2 × $4 = $8.' }
         },
         {
           id: 't4_3',
-          title: 'Problem 3 · Phone Storage Estimate (Reveal 4-3)',
-          stem: 'In Reveal Lesson 4-3, a phone has 6 GB storage. Photos fill about 68% of the space. Estimate the GB used by photos by rounding to 70% of 6 GB.',
-          type: 'single',
-          ans: '4.2',
-          suffix: 'GB',
-          hint: '10% of 6 is 0.6. 70% is 7 &times; 0.6 = 4.2 GB.',
-          explain: 'Spot on! 70% of 6 GB is about 4.2 GB.'
-        },
-        {
-          id: 't4_4',
-          title: 'Problem 4 · Error Detective: Rounding Direction',
-          stem: 'Marcus estimates 28% of 52 by calculating 30% of 60 = 18. Why is Marcus’s estimate significantly too high?',
-          type: 'mc',
-          choices: [
-            'He rounded BOTH the percent UP (28% &rarr; 30%) AND the whole UP (52 &rarr; 60), compounding an overestimate',
-            'He should have multiplied 28 &times; 52',
-            '30% of 60 is actually 12',
-            'He should have rounded 28% down to 20%'
+          title: { en: 'Phone storage: photos', es: 'Almacenamiento del teléfono: fotos' },
+          facts: [
+            { en: 'A phone has 6 GB of storage.', es: 'Un teléfono tiene 6 GB de almacenamiento.' },
+            { en: 'Photos fill about 68% of the space.', es: 'Las fotos ocupan alrededor del 68% del espacio.' },
+            { en: 'Round 68% to 70%.', es: 'Redondea 68% a 70%.' }
           ],
-          correct: 0,
-          hint: 'Rounding both numbers up always makes the estimate much higher than the real answer (real answer is ~14.56).',
-          explain: 'Excellent! When both factors are rounded up, the result is an inflated overestimate.'
+          q: { en: 'About how many GB do the photos use?', es: '¿Aproximadamente cuántos GB usan las fotos?' },
+          fields: [{
+            label: { en: 'Estimated GB used by photos', es: 'GB estimados que usan las fotos' },
+            unit: 'GB',
+            ans: 4.2,
+            wrong: {
+              420: { en: 'That uses 70 instead of 0.70. The photos fill only part of the 6 GB.', es: 'Eso usa 70 en lugar de 0.70. Las fotos ocupan solo una parte de los 6 GB.' },
+              70: { en: '70 is the percent, not GB. Find 70% of the 6 GB.', es: '70 es el porcentaje, no los GB. Halla el 70% de los 6 GB.' },
+              7: { en: '7 is how many groups of 10% you need. Find the size of one group first, then use it.', es: '7 es cuántos grupos de 10% necesitas. Primero halla el tamaño de un grupo y luego úsalo.' },
+              0.6: { en: '0.6 GB is only 10% of the storage. The photos fill about 70%.', es: '0.6 GB es solo el 10% del almacenamiento. Las fotos ocupan alrededor del 70%.' },
+              1.8: { en: 'That is the space the photos do NOT use. Find the part the photos fill.', es: 'Eso es el espacio que las fotos NO usan. Halla la parte que ocupan las fotos.' },
+              6: { en: '6 GB is the whole phone. The photos use only part of it.', es: '6 GB es todo el teléfono. Las fotos usan solo una parte.' },
+              4.08: { en: 'That is the exact amount. This question asks for an estimate, so use 70%.', es: 'Esa es la cantidad exacta. Esta pregunta pide una estimación, así que usa 70%.' }
+            }
+          }],
+          hints: [
+            { en: 'Use 70% of the 6 GB. 70% is 7 groups of 10%. For 10%, move the decimal point one place left.', es: 'Usa el 70% de los 6 GB. El 70% son 7 grupos de 10%. Para el 10%, mueve el punto decimal un lugar a la izquierda.' },
+            { en: '10% of 6 = ?   Then 7 × ? = the GB used by photos.', es: '10% de 6 = ?   Luego 7 × ? = los GB que usan las fotos.' }
+          ],
+          miss: { en: 'The photos fill about 70% of the phone, so the answer must be less than the whole 6 GB. Use part = percent × whole.', es: 'Las fotos ocupan alrededor del 70% del teléfono, así que la respuesta debe ser menor que los 6 GB completos. Usa parte = porcentaje × total.' },
+          explain: { en: 'Round 68% to 70%. 10% of 6 GB is 0.6 GB, so 70% is 7 × 0.6 = 4.2 GB.', es: 'Redondea 68% a 70%. El 10% de 6 GB es 0.6 GB, así que el 70% es 7 × 0.6 = 4.2 GB.' }
         },
         {
           id: 't4_5',
-          title: 'Problem 5 · Store Clearance Discount',
-          stem: 'A winter jacket costs $79.99 and is on sale for 25% off. Estimate the discount amount in dollars.',
-          type: 'single',
-          ans: '20',
-          suffix: 'dollars',
-          hint: 'Round $79.99 to $80. 25% of $80 = 80 &divide; 4 = $20.',
-          explain: 'Correct! 25% of $80 is $20.'
+          title: { en: 'Sale: winter jacket', es: 'Oferta: chaqueta de invierno' },
+          facts: [
+            { en: 'A winter jacket costs $79.99.', es: 'Una chaqueta de invierno cuesta $79.99.' },
+            { en: 'It is on sale for 25% off.', es: 'Está en oferta con 25% de descuento.' }
+          ],
+          q: { en: 'About how much is the discount?', es: '¿Aproximadamente cuánto es el descuento?' },
+          fields: [{
+            label: { en: 'Estimated discount', es: 'Descuento estimado' },
+            unit: { en: 'dollars ($)', es: 'dólares ($)' },
+            ans: 20,
+            wrong: {
+              2000: { en: 'That uses 25 instead of 0.25. The discount is only a part of the price.', es: 'Eso usa 25 en lugar de 0.25. El descuento es solo una parte del precio.' },
+              25: { en: '25 is the percent, not dollars. Find 25% of the price.', es: '25 es el porcentaje, no los dólares. Halla el 25% del precio.' },
+              0.25: { en: '0.25 is 25% written as a decimal. Now multiply it by the rounded price.', es: '0.25 es el 25% escrito como decimal. Ahora multiplícalo por el precio redondeado.' },
+              80: { en: '$80 is the rounded price. The discount is only a part of it.', es: '$80 es el precio redondeado. El descuento es solo una parte de él.' },
+              60: { en: '$60 is about what you pay (the sale price). The question asks for the amount taken off.', es: '$60 es aproximadamente lo que pagas (el precio de oferta). La pregunta pide la cantidad que se descuenta.' },
+              19.9975: { en: 'That is the exact amount. This question asks for an estimate, so round the price first.', es: 'Esa es la cantidad exacta. Esta pregunta pide una estimación, así que primero redondea el precio.' }
+            }
+          }],
+          hints: [
+            { en: 'Round $79.99 to a friendly number first. 25% is the same as 1/4 of the whole.', es: 'Primero redondea $79.99 a un número fácil. El 25% es lo mismo que 1/4 del total.' },
+            { en: 'Divide your rounded price by 4:   rounded price ÷ 4 = the discount.', es: 'Divide tu precio redondeado entre 4:   precio redondeado ÷ 4 = el descuento.' }
+          ],
+          miss: { en: 'The discount is only a part of the price, so it must be much less than the price of the jacket.', es: 'El descuento es solo una parte del precio, así que debe ser mucho menos que el precio de la chaqueta.' },
+          explain: { en: 'Round $79.99 to $80. 25% is 1/4, and $80 ÷ 4 = $20, so the discount is about $20.', es: 'Redondea $79.99 a $80. El 25% es 1/4, y $80 ÷ 4 = $20, así que el descuento es aproximadamente $20.' }
         },
         {
           id: 't4_6',
-          title: 'Problem 6 · Sales Tax Estimate',
-          stem: 'A computer game costs $48. Sales tax is about 8%. Estimate the sales tax by rounding to 10% of $50.',
-          type: 'single',
-          ans: '5',
-          suffix: 'dollars',
-          hint: '10% of $50 is $5.',
-          explain: 'Correct! 10% of $50 is $5 (giving a safe quick estimate).'
+          title: { en: 'Sales tax: video game', es: 'Impuesto: videojuego' },
+          facts: [
+            { en: 'A computer game costs $48.', es: 'Un videojuego cuesta $48.' },
+            { en: 'The sales tax is about 8%.', es: 'El impuesto sobre la venta es alrededor del 8%.' },
+            { en: 'Round the price to $50 and the tax to 10%.', es: 'Redondea el precio a $50 y el impuesto a 10%.' }
+          ],
+          q: { en: 'About how much is the sales tax?', es: '¿Aproximadamente cuánto es el impuesto?' },
+          fields: [{
+            label: { en: 'Estimated sales tax', es: 'Impuesto estimado' },
+            unit: { en: 'dollars ($)', es: 'dólares ($)' },
+            ans: 5,
+            wrong: {
+              500: { en: 'That uses 10 instead of 0.10. Tax is only a small part of the price.', es: 'Eso usa 10 en lugar de 0.10. El impuesto es solo una parte pequeña del precio.' },
+              10: { en: '10 is the percent, not dollars. Find 10% of the rounded price.', es: '10 es el porcentaje, no los dólares. Halla el 10% del precio redondeado.' },
+              50: { en: '$50 is the rounded price. The tax is only a part of it.', es: '$50 es el precio redondeado. El impuesto es solo una parte de él.' },
+              4: { en: '$4 uses 8%. This question rounds the tax to 10% too.', es: '$4 usa el 8%. Esta pregunta también redondea el impuesto a 10%.' },
+              3.84: { en: 'That is the exact tax. This question asks for an estimate with the rounded numbers.', es: 'Ese es el impuesto exacto. Esta pregunta pide una estimación con los números redondeados.' },
+              55: { en: 'That is the price plus the tax. The question asks for the tax only.', es: 'Eso es el precio más el impuesto. La pregunta pide solo el impuesto.' }
+            }
+          }],
+          hints: [
+            { en: 'Find 10% of the rounded price. Move the decimal point one place to the left.', es: 'Halla el 10% del precio redondeado. Mueve el punto decimal un lugar a la izquierda.' },
+            { en: '10% of $50 = $50 ÷ 10 = ?', es: '10% de $50 = $50 ÷ 10 = ?' }
+          ],
+          miss: { en: 'Sales tax is a small part of the price, so it must be much less than the price of the game.', es: 'El impuesto es una parte pequeña del precio, así que debe ser mucho menos que el precio del videojuego.' },
+          explain: { en: '10% of $50 is $50 ÷ 10 = $5. Rounding 8% up to 10% makes this a little more than the exact tax, which is a safe quick estimate.', es: 'El 10% de $50 es $50 ÷ 10 = $5. Redondear 8% a 10% da un poco más que el impuesto exacto, lo cual es una estimación rápida y segura.' }
+        }
+      ];
+
+      const T4_DETECTIVES = [
+        {
+          id: 't4_4',
+          title: { en: 'Error detective: rounding', es: 'Detective de errores: redondeo' },
+          facts: [
+            { en: 'Marcus wants to estimate 28% of 52.', es: 'Marcus quiere estimar el 28% de 52.' },
+            { en: 'He rounds 28% to 30% and 52 to 60.', es: 'Redondea 28% a 30% y 52 a 60.' },
+            { en: 'He says: 30% of 60 = 18.', es: 'Dice: 30% de 60 = 18.' }
+          ],
+          q: { en: 'Why is Marcus’s estimate too high?', es: '¿Por qué la estimación de Marcus es demasiado alta?' },
+          choices: [
+            {
+              text: { en: 'He should have multiplied 28 × 52.', es: 'Debió multiplicar 28 × 52.' },
+              why: { en: 'Multiplying 28 × 52 does not find a percent. A percent means “out of 100.”', es: 'Multiplicar 28 × 52 no halla un porcentaje. Un porcentaje significa “de cada 100”.' }
+            },
+            {
+              text: { en: 'He should have rounded 28% down to 20%.', es: 'Debió redondear 28% hacia abajo a 20%.' },
+              why: { en: '20% is much too far from 28%. A close friendly percent like 30% is fine. Look at the other number.', es: '20% está demasiado lejos de 28%. Un porcentaje cercano y fácil como 30% está bien. Mira el otro número.' }
+            },
+            {
+              text: { en: 'He rounded both numbers up.', es: 'Redondeó los dos números hacia arriba.' }
+            },
+            {
+              text: { en: 'He did 30% of 60 the wrong way.', es: 'Calculó mal el 30% de 60.' },
+              why: { en: 'His math is fine: 30% of 60 is 18. Look at the numbers he chose to round to.', es: 'Su cálculo está bien: el 30% de 60 es 18. Mira los números a los que redondeó.' }
+            }
+          ],
+          correct: 2,
+          explain: { en: 'Both numbers went up (28% to 30%, and 52 to 60), so the estimate of 18 is higher than the real value, about 14.6. Rounding 52 to 50 gives 30% of 50 = 15, which is much closer.', es: 'Los dos números subieron (28% a 30%, y 52 a 60), así que la estimación de 18 es mayor que el valor real, alrededor de 14.6. Redondear 52 a 50 da 30% de 50 = 15, que está mucho más cerca.' }
         },
         {
           id: 't4_7',
-          title: 'Problem 7 · Error Detective: 1% vs 10%',
-          stem: 'Chloe wants to find 10% of $350. She calculates $3.50. What error did Chloe make?',
-          type: 'mc',
-          choices: [
-            'She found 1% ($350 &divide; 100 = $3.50) instead of 10% ($350 &divide; 10 = $35)',
-            'She multiplied by 10 instead of dividing',
-            'She moved the decimal point in the wrong direction',
-            'Her answer is correct'
+          title: { en: 'Error detective: 10% of $350', es: 'Detective de errores: 10% de $350' },
+          facts: [
+            { en: 'Chloe wants to find 10% of $350.', es: 'Chloe quiere hallar el 10% de $350.' },
+            { en: 'She says the answer is $3.50.', es: 'Ella dice que la respuesta es $3.50.' }
           ],
-          correct: 0,
-          hint: '10% of 350 is 35. 1% is 3.50.',
-          explain: 'Exactly! She divided by 100 instead of 10.'
+          q: { en: 'What mistake did Chloe make?', es: '¿Qué error cometió Chloe?' },
+          choices: [
+            {
+              text: { en: 'She multiplied $350 by 10 instead of dividing.', es: 'Multiplicó $350 por 10 en lugar de dividir.' },
+              why: { en: 'Multiplying would make a number bigger than $350. Chloe’s answer is much smaller.', es: 'Multiplicar daría un número mayor que $350. La respuesta de Chloe es mucho menor.' }
+            },
+            {
+              text: { en: 'She moved the decimal point to the right.', es: 'Movió el punto decimal hacia la derecha.' },
+              why: { en: 'Moving right makes a number bigger. Chloe’s answer is smaller than $350, so she moved left. Check how many places.', es: 'Mover a la derecha hace el número más grande. La respuesta de Chloe es menor que $350, así que movió a la izquierda. Revisa cuántos lugares.' }
+            },
+            {
+              text: { en: 'Her answer is correct.', es: 'Su respuesta es correcta.' },
+              why: { en: 'Do a quick check: 10% of $100 is $10. So 10% of $350 must be more than $10.', es: 'Haz una revisión rápida: el 10% de $100 es $10. Así que el 10% de $350 debe ser más de $10.' }
+            },
+            {
+              text: { en: 'She found 1% instead of 10%.', es: 'Halló el 1% en lugar del 10%.' }
+            }
+          ],
+          correct: 3,
+          explain: { en: '10% means ÷ 10, so 10% of $350 is $35. Chloe divided by 100, which finds 1%: $350 ÷ 100 = $3.50.', es: 'El 10% significa ÷ 10, así que el 10% de $350 es $35. Chloe dividió entre 100, lo que halla el 1%: $350 ÷ 100 = $3.50.' }
         },
         {
           id: 't4_8',
-          title: 'Problem 8 · Book Fair Budget',
-          stem: 'At a book fair, Maya has $25. Books have a 19% student discount. A set of books costs $29. Will $25 be enough? Estimate the discount and sale price.',
-          type: 'mc',
-          choices: [
-            'Yes: 19% of $29 &approx; 20% of $30 = $6 off. $30 - $6 = $24, so $25 is enough',
-            'No: $25 is less than $29 so it cannot be enough',
-            'No: The discount is only $2',
-            'Yes: Any discount makes $29 less than $20'
+          title: { en: 'Budget: book fair', es: 'Presupuesto: feria del libro' },
+          facts: [
+            { en: 'Maya has $25.', es: 'Maya tiene $25.' },
+            { en: 'A set of books costs $29.', es: 'Un conjunto de libros cuesta $29.' },
+            { en: 'Students get 19% off the price.', es: 'Los estudiantes reciben 19% de descuento en el precio.' }
           ],
-          correct: 0,
-          hint: '20% of $30 is $6. $30 - $6 = $24, which fits inside her $25 budget.',
-          explain: 'Perfect reasoning! $24 is under her $25 budget.'
+          q: { en: 'Estimate: is $25 enough to buy the set?', es: 'Estima: ¿alcanzan los $25 para comprar el conjunto?' },
+          choices: [
+            {
+              text: { en: 'No. $25 is less than the $29 price.', es: 'No. $25 es menos que el precio de $29.' },
+              why: { en: 'The books are 19% off, so Maya does not pay $29. Compare $25 to the sale price.', es: 'Los libros tienen 19% de descuento, así que Maya no paga $29. Compara $25 con el precio de oferta.' }
+            },
+            {
+              text: { en: 'Yes. The sale price is about $24.', es: 'Sí. El precio de oferta es alrededor de $24.' }
+            },
+            {
+              text: { en: 'No. The discount is only about $2.', es: 'No. El descuento es solo de alrededor de $2.' },
+              why: { en: 'Check the size: 10% of $30 is $3, and 19% is almost double that. So the discount is more than $2.', es: 'Revisa el tamaño: el 10% de $30 es $3, y el 19% es casi el doble. Así que el descuento es más de $2.' }
+            },
+            {
+              text: { en: 'Yes. Any discount brings the price under $20.', es: 'Sí. Cualquier descuento baja el precio a menos de $20.' },
+              why: { en: 'A discount of about 1 out of every 5 dollars is not enough to go under $20. Estimate the discount first.', es: 'Un descuento de alrededor de 1 de cada 5 dólares no alcanza para bajar de $20. Primero estima el descuento.' }
+            }
+          ],
+          correct: 1,
+          explain: { en: '19% is about 20% and $29 is about $30. 20% of $30 is $6, so the sale price is about $30 − $6 = $24. That is less than $25, so Maya has enough.', es: '19% es alrededor de 20% y $29 es alrededor de $30. El 20% de $30 es $6, así que el precio de oferta es alrededor de $30 − $6 = $24. Eso es menos que $25, así que a Maya le alcanza.' }
         }
       ];
+
+      const T4_ORDER = 't4_1 t4_2 t4_3 t4_4 t4_5 t4_6 t4_7 t4_8'.split(' ');
+      const T4_PROBLEMS = T4_ORDER.map((id) => T4_NUMBERS.find((x) => x.id === id) || T4_DETECTIVES.find((x) => x.id === id));
+
+      const t4bi = (t) => `${t.en}<span class="es-text">${t.es}</span>`;
+      const t4attr = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 
       function renderT4Problem() {
         const p = T4_PROBLEMS[state.idx4];
         const isDone = !!state.solved4[p.id];
-
-        renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => {
-          state.idx4 = ni; renderT4Problem();
-        });
-
         const stage = document.getElementById('t4-stage-card');
-        let body = '';
 
-        if (p.type === 'mc') {
-          body = `
-            <div class="choice-stack">
-              ${p.choices.map((c, i) => `
-                <button type="button" class="choice-btn ${isDone && i === p.correct ? 'correct' : ''}" data-t4-mc="${i}">
-                  <span>${c}</span>
-                </button>
-              `).join('')}
-            </div>
-          `;
-        } else if (p.type === 'single') {
-          body = `
-            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin:18px 0;">
-              <input type="text" id="t4-inp" class="num-input ${isDone ? 'ok' : ''}" style="width:120px;" value="${isDone ? p.ans : ''}" placeholder="?">
-              <strong style="color:var(--brand); font-size:1.1rem;">${p.suffix || ''}</strong>
-              <button type="button" class="btn btn-primary" id="t4-check-btn">Check Estimate</button>
-              <button type="button" class="btn" id="t4-hint-btn">💡 Hint</button>
-            </div>
-          `;
-        }
+        const dots = () => renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4Problem(); });
+        dots();
 
-        stage.innerHTML = `
-          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:0.84rem; font-weight:800; color:var(--brand);">${p.title}</span>
-            <button type="button" class="speak-btn" data-speak="${p.stem}">🔊 Read</button>
-          </div>
-          <p style="font-size:1.15rem; font-weight:700; color:var(--brand); margin:0 0 6px 0;">${p.stem}</p>
-          ${body}
-          <div id="t4-fb" class="feedback-box ${isDone ? 'show ok' : ''}">${isDone ? p.explain : ''}</div>
-        `;
-
-        if (isDone) appendNext(document.getElementById('t4-fb'), 4, T4_PROBLEMS.length, renderT4Problem);
-
-        if (p.type === 'mc') {
-          stage.querySelectorAll('[data-t4-mc]').forEach(btn => {
-            btn.addEventListener('click', () => {
-              if (state.solved4[p.id]) return;
-              const idx = Number(btn.dataset.t4Mc);
-              const fb = document.getElementById('t4-fb');
-              stage.querySelectorAll('[data-t4-mc]').forEach(b => b.classList.remove('correct', 'wrong'));
-              if (idx === p.correct) {
-                btn.classList.add('correct');
-                fb.className = 'feedback-box show ok'; fb.textContent = p.explain;
-                markSolved(state.solved4, p.id);
-                renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4Problem(); });
-                updateProgressHeader();
-                appendNext(document.getElementById('t4-fb'), 4, T4_PROBLEMS.length, renderT4Problem);
-              } else {
-                btn.classList.add('wrong');
-                fb.className = 'feedback-box show err'; fb.textContent = `Hint: ${p.hint}`;
-              }
-            });
-          });
-        } else {
-          document.getElementById('t4-check-btn').addEventListener('click', () => {
-            const inp = document.getElementById('t4-inp');
-            const ok = parseNum(inp.value) === Number(p.ans);
-            inp.classList.toggle('ok', ok); inp.classList.toggle('err', !ok);
-            const fb = document.getElementById('t4-fb');
-            if (ok) {
-              fb.className = 'feedback-box show ok'; fb.textContent = p.explain;
+        if (p.fields) {
+          const { fb } = U4Studio.story.card({
+            host: stage,
+            item: p,
+            index: state.idx4,
+            count: T4_PROBLEMS.length,
+            solved: isDone,
+            speak: (txt) => speak(txt, txt),
+            showEs: () => state.showEs,
+            onMiss: () => { saveState(); },
+            onSolve: (fbEl) => {
               markSolved(state.solved4, p.id);
-              renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4Problem(); });
+              dots();
               updateProgressHeader();
-              appendNext(document.getElementById('t4-fb'), 4, T4_PROBLEMS.length, renderT4Problem);
-            } else {
-              fb.className = 'feedback-box show err'; fb.textContent = `Hint: ${p.hint}`;
+              appendNext(fbEl, 4, T4_PROBLEMS.length, renderT4Problem);
+              saveState();
             }
           });
-          document.getElementById('t4-hint-btn').addEventListener('click', () => {
-            const fb = document.getElementById('t4-fb');
-            fb.className = 'feedback-box show warn'; fb.textContent = `💡 Hint: ${p.hint}`;
-          });
+          if (isDone) appendNext(fb, 4, T4_PROBLEMS.length, renderT4Problem);
+          return;
         }
+
+        const letters = ['A', 'B', 'C', 'D'];
+        stage.innerHTML = `
+          <div class="item-head">
+            <span class="item-count">${state.idx4 + 1} of ${T4_PROBLEMS.length} · ${t4bi(p.title)}</span>
+            <button type="button" class="speak-btn" id="t4-speak">🔊 Read</button>
+          </div>
+          <div class="story-facts">
+            <div class="story-label">${t4bi({ en: 'What you know', es: 'Lo que sabes' })}</div>
+            <ul>${p.facts.map((f) => `<li>${t4bi(f)}</li>`).join('')}</ul>
+          </div>
+          <p class="item-q"><span class="story-label">${t4bi({ en: 'Question', es: 'Pregunta' })}</span>${t4bi(p.q)}</p>
+          <div class="choice-stack" role="group" aria-label="Answer choices">
+            ${p.choices.map((c, i) => `
+              <button type="button" class="choice-btn ${isDone && i === p.correct ? 'correct' : ''}" data-t4-mc="${i}" ${isDone ? 'disabled' : ''}>
+                <span class="choice-letter" aria-hidden="true">${letters[i]}</span>
+                <span>${t4bi(c.text)}</span>
+              </button>`).join('')}
+          </div>
+          <div id="t4-fb" class="feedback-box ${isDone ? 'show ok' : ''}" aria-live="polite">${isDone ? `${t4bi({ en: 'Correct!', es: '¡Correcto!' })} ${t4bi(p.explain)}` : ''}</div>
+        `;
+
+        document.getElementById('t4-speak').addEventListener('click', () => {
+          const pick = (k) => [...p.facts.map((f) => f[k]), p.q[k]].join('. ');
+          speak(pick('en'), pick('es'));
+        });
+        if (isDone) appendNext(document.getElementById('t4-fb'), 4, T4_PROBLEMS.length, renderT4Problem);
+
+        stage.querySelectorAll('[data-t4-mc]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            if (state.solved4[p.id]) return;
+            const idx = Number(btn.dataset.t4Mc);
+            const fb = document.getElementById('t4-fb');
+            if (idx === p.correct) {
+              stage.querySelectorAll('[data-t4-mc]').forEach((b) => { b.disabled = true; });
+              btn.classList.remove('wrong');
+              btn.classList.add('correct');
+              fb.className = 'feedback-box show ok';
+              fb.innerHTML = `${t4bi({ en: 'Correct!', es: '¡Correcto!' })} ${t4bi(p.explain)}`;
+              markSolved(state.solved4, p.id);
+              dots();
+              updateProgressHeader();
+              appendNext(fb, 4, T4_PROBLEMS.length, renderT4Problem);
+            } else {
+              btn.classList.add('wrong');
+              btn.disabled = true;
+              fb.className = 'feedback-box show err';
+              fb.innerHTML = `<strong>${letters[idx]}.</strong> ${t4bi(p.choices[idx].why)}`;
+            }
+            saveState();
+          });
+        });
       }
 
       document.getElementById('t4-prev-btn').addEventListener('click', () => {

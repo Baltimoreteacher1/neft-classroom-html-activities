@@ -11,6 +11,7 @@
   <script src="/assets/studio-comfort.js" defer></script>
   <script src="/assets/u4-studio.js"></script>
   <script src="/assets/u4-studio-bonus.js"></script>
+  <script src="/assets/u4-studio-story.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -52,7 +53,7 @@
         <span class="tab-badge" id="badge-2">2</span>
         <span class="tab-text">
           <span class="tab-name">Toy Store Puzzles</span>
-          <span class="tab-desc">Reveal Capstone (8)</span>
+          <span class="tab-desc">Combined Groups (8)</span>
         </span>
       </button>
 
@@ -68,7 +69,7 @@
         <span class="tab-badge" id="badge-4">4</span>
         <span class="tab-text">
           <span class="tab-name">Reconstruct Tables</span>
-          <span class="tab-desc">Incomplete Data (6)</span>
+          <span class="tab-desc">Fill Missing Cells (6)</span>
         </span>
       </button>
 
@@ -109,9 +110,9 @@
     <section id="panel-2" class="tab-panel" role="tabpanel" aria-labelledby="tab-2">
       <div class="topic-strip">
         <div>
-          <h2>Tab 2: The Reveal Toy Store Puzzle Problem (Compound Partitions)</h2>
+          <h2>Tab 2: The Toy Store Puzzle Problem (Combined Groups)</h2>
           <p>Solve compound multi-category inventory problems where two groups combined represent a known percent of the total.</p>
-          <div class="es-text">Resuelve el problema aut&eacute;ntico de Reveal Math donde dos grupos combinados forman un porcentaje del inventario total.</div>
+          <div class="es-text">Resuelve el problema de la juguetería donde dos grupos combinados forman un porcentaje del inventario total.</div>
         </div>
         <div class="key-rule-pill">&#129513; 120 puzzles sold = 35% + 25% = 60% of inventory</div>
       </div>
@@ -153,11 +154,11 @@
     <section id="panel-4" class="tab-panel" role="tabpanel" aria-labelledby="tab-4">
       <div class="topic-strip">
         <div>
-          <h2>Tab 4: Reconstructing Incomplete Data Tables</h2>
-          <p>Use sparse partial counts and percentages to determine the overall population total, then fill in all remaining categories.</p>
-          <div class="es-text">Reconstruye tablas de datos incompletas calculando el total y completando las categor&iacute;as faltantes.</div>
+          <h2>Tab 4: Fill In the Missing Table Cells</h2>
+          <p>Each table has one count you know. Use it with its percent to find the blank cells.</p>
+          <div class="es-text">Cada tabla tiene una cantidad que conoces. &Uacute;sala con su porcentaje para hallar las casillas vac&iacute;as.</div>
         </div>
-        <div class="key-rule-pill">&#128202; Find Total First &rarr; Calculate Remaining Rows</div>
+        <div class="key-rule-pill">&#128202; Find the Total first, then the other cell<span class="es-text">Halla primero el total y luego la otra casilla</span></div>
       </div>
 
       <div class="stepper-bar">
@@ -197,7 +198,7 @@
 
   <footer class="app-footer">
     <div class="footer-wrap">
-      <div>Grade 6 Reveal Math &middot; Unit 4 Percents &middot; <strong>Lesson 4-5 Challenging Studio</strong></div>
+      <div>Grade 6 Math &middot; Unit 4 Percents &middot; <strong>Lesson 4-5 Challenging Studio</strong></div>
       <div>Aligned to standard <strong>6.AT.4</strong> &middot; Determine the Whole Given Part &amp; Percent</div>
     </div>
   </footer>
@@ -491,7 +492,7 @@
       const T2_PUZZLES = [
         {
           id: 't2_1',
-          title: 'Reveal Math: The Complete Puzzle Inventory',
+          title: 'The Complete Puzzle Inventory',
           context: 'A toy store has three puzzle types: 100-piece (40%), 300-piece (35%), and 500-piece (25%). During a flash sale, the store sold ALL of its 300-piece and 500-piece puzzles — 120 puzzles in all.',
           step1Question: 'What combined percentage of total puzzles was sold?',
           step1Ans: 60,
@@ -501,7 +502,7 @@
         },
         {
           id: 't2_2',
-          title: 'Reveal Math: Remaining 100-Piece Puzzles',
+          title: 'Remaining 100-Piece Puzzles',
           context: 'The total inventory was 200 puzzles. 100-piece puzzles made up 40% of the inventory.',
           step1Question: 'How many 100-piece puzzles did the store have before the sale?',
           step1Ans: 80,
@@ -817,173 +818,340 @@
       // =========================================================================
       const T4_TABLES = [
         {
-          id: 't4_1',
-          title: 'Middle School Elective Survey',
-          table: [
-            { name: 'Drama', pct: '25%', count: '75 students' },
-            { name: 'Coding', pct: '40%', count: '? students' },
-            { name: 'Band', pct: '35%', count: '? students' },
-            { name: 'Total', pct: '100%', count: '? Total' }
+          id: "t4_1",
+          title: { en: "Elective Survey", es: "Encuesta de electivas" },
+          caption: { en: "Which elective each student chose", es: "Qué electiva eligió cada estudiante" },
+          rows: [{ name: { en: "Drama", es: "Teatro" }, pct: 25, count: 75 }, { name: { en: "Coding", es: "Programación" }, pct: 40, count: null, ask: true }, { name: { en: "Band", es: "Banda" }, pct: 35, count: null }],
+          totalLabel: { en: "Total", es: "Total" },
+          facts: [
+            { en: "The percents cover the whole group, so they add up to 100%.", es: "Los porcentajes cubren todo el grupo, así que suman 100%." },
+            { en: "Drama is 25% of the group, and that is 75 students.", es: "Teatro es el 25% del grupo, y eso son 75 estudiantes." }
           ],
-          step1Label: 'Total survey participants (75 ÷ 0.25):',
-          targetTotal: 300,
-          step2Label: 'Coding students (40% of Total):',
-          targetCoding: 120,
-          explain: 'Drama is 25% = 75 &rarr; Total = 75 ÷ 0.25 = 300. Coding = 0.40 × 300 = 120 students.'
+          q: { en: "Find the two blank cells: the Total (Step 1) and the Coding row (Step 2).", es: "Halla las dos casillas vacías: el total (Paso 1) y la fila de Programación (Paso 2)." },
+          fields: [
+            {
+              label: { en: "Step 1 · Total students surveyed", es: "Paso 1 · Total de estudiantes encuestados" },
+              unit: { en: "students", es: "estudiantes" },
+              ans: 300,
+              wrong: {
+                "3": { en: "It looks like you divided by 25. Write 25% as the decimal 0.25 first.", es: "Parece que dividiste entre 25. Primero escribe 25% como el decimal 0.25." },
+                "75": { en: "75 is only the Drama count. The Total counts every row together.", es: "75 es solo la cantidad de Teatro. El total cuenta todas las filas juntas." },
+                "100": { en: "75 is 25% of the Total, not 75%. Use the percent in the Drama row.", es: "75 es el 25% del total, no el 75%. Usa el porcentaje de la fila de Teatro." },
+                "18.75": { en: "That is 25% of 75. But 75 is already 25% of the Total, so the Total has to be bigger than 75.", es: "Eso es el 25% de 75. Pero 75 ya es el 25% del total, así que el total tiene que ser mayor que 75." }
+              },
+              miss: { en: "Not yet. The 75 students are only part of the Total.", es: "Todavía no. Los 75 estudiantes son solo una parte del total." }
+            },
+            {
+              label: { en: "Step 2 · Coding students", es: "Paso 2 · Estudiantes de Programación" },
+              unit: { en: "students", es: "estudiantes" },
+              ans: 120,
+              wrong: {
+                "30": { en: "That takes 40% of 75. Take 40% of the Total instead.", es: "Eso toma el 40% de 75. Mejor toma el 40% del total." },
+                "40": { en: "40 is the percent, not the count. Find 40% of the Total.", es: "40 es el porcentaje, no la cantidad. Halla el 40% del total." },
+                "75": { en: "75 is the Drama count. Find the Coding count.", es: "75 es la cantidad de Teatro. Halla la cantidad de Programación." },
+                "180": { en: "That is 60% of the Total. The Coding row is 40%.", es: "Eso es el 60% del total. La fila de Programación es el 40%." },
+                "12000": { en: "Write 40% as the decimal 0.40 before you multiply.", es: "Escribe 40% como el decimal 0.40 antes de multiplicar." }
+              },
+              miss: { en: "Not yet. Use the Total from Step 1 and the Coding percent.", es: "Todavía no. Usa el total del Paso 1 y el porcentaje de Programación." }
+            }
+          ],
+          hints: [
+            { en: "The Total is the whole. Drama is a part of it: 25%. Write 25% as a decimal.", es: "El total es el todo. Teatro es una parte: el 25%. Escribe 25% como decimal." },
+            { en: "75 = 0.25 × Total, so you divide 75 by 0.25. Step 2 is 0.40 × your Total.", es: "75 = 0.25 × total, así que divides 75 entre 0.25. El Paso 2 es 0.40 × tu total." }
+          ],
+          miss: { en: "Find the Total first, then use it to find the Coding count.", es: "Primero halla el total y luego úsalo para hallar la cantidad de Programación." },
+          explain: { en: "Drama is 25% = 75, so Total = 75 ÷ 0.25 = 300. Coding = 0.40 × 300 = 120 students.", es: "Teatro es el 25% = 75, así que total = 75 ÷ 0.25 = 300. Programación = 0.40 × 300 = 120 estudiantes." }
         },
         {
-          id: 't4_2',
-          title: 'Library Summer Readers',
-          table: [
-            { name: 'Fiction', pct: '50%', count: '160 readers' },
-            { name: 'Biography', pct: '20%', count: '? readers' },
-            { name: 'Science', pct: '30%', count: '? readers' },
-            { name: 'Total', pct: '100%', count: '? Total' }
+          id: "t4_2",
+          title: { en: "Summer Reading", es: "Lectura de verano" },
+          caption: { en: "Which kind of book each reader chose", es: "Qué tipo de libro eligió cada lector" },
+          rows: [{ name: { en: "Fiction", es: "Ficción" }, pct: 50, count: 160 }, { name: { en: "Biography", es: "Biografía" }, pct: 20, count: null }, { name: { en: "Science", es: "Ciencias" }, pct: 30, count: null, ask: true }],
+          totalLabel: { en: "Total", es: "Total" },
+          facts: [
+            { en: "The percents cover the whole group, so they add up to 100%.", es: "Los porcentajes cubren todo el grupo, así que suman 100%." },
+            { en: "Fiction is 50% of the group, and that is 160 readers.", es: "Ficción es el 50% del grupo, y eso son 160 lectores." }
           ],
-          step1Label: 'Total readers (160 ÷ 0.50):',
-          targetTotal: 320,
-          step2Label: 'Science readers (30% of Total):',
-          targetCoding: 96,
-          explain: 'Total = 160 ÷ 0.50 = 320. Science = 0.30 × 320 = 96 readers.'
+          q: { en: "Find the two blank cells: the Total (Step 1) and the Science row (Step 2).", es: "Halla las dos casillas vacías: el total (Paso 1) y la fila de Ciencias (Paso 2)." },
+          fields: [
+            {
+              label: { en: "Step 1 · Total summer readers", es: "Paso 1 · Total de lectores de verano" },
+              unit: { en: "readers", es: "lectores" },
+              ans: 320,
+              wrong: {
+                "80": { en: "That is 50% of 160. But 160 is already 50% of the Total, so the Total has to be bigger than 160.", es: "Eso es el 50% de 160. Pero 160 ya es el 50% del total, así que el total tiene que ser mayor que 160." },
+                "160": { en: "160 is only the Fiction count. The Total counts every row together.", es: "160 es solo la cantidad de Ficción. El total cuenta todas las filas juntas." },
+                "3.2": { en: "It looks like you divided by 50. Write 50% as the decimal 0.50 first.", es: "Parece que dividiste entre 50. Primero escribe 50% como el decimal 0.50." }
+              },
+              miss: { en: "Not yet. The 160 readers are only part of the Total.", es: "Todavía no. Los 160 lectores son solo una parte del total." }
+            },
+            {
+              label: { en: "Step 2 · Science readers", es: "Paso 2 · Lectores de Ciencias" },
+              unit: { en: "readers", es: "lectores" },
+              ans: 96,
+              wrong: {
+                "30": { en: "30 is the percent, not the count. Find 30% of the Total.", es: "30 es el porcentaje, no la cantidad. Halla el 30% del total." },
+                "48": { en: "That takes 30% of 160. Take 30% of the Total instead.", es: "Eso toma el 30% de 160. Mejor toma el 30% del total." },
+                "160": { en: "160 is the Fiction count. Find the Science count.", es: "160 es la cantidad de Ficción. Halla la cantidad de Ciencias." },
+                "224": { en: "That is 70% of the Total. The Science row is 30%.", es: "Eso es el 70% del total. La fila de Ciencias es el 30%." },
+                "9600": { en: "Write 30% as the decimal 0.30 before you multiply.", es: "Escribe 30% como el decimal 0.30 antes de multiplicar." }
+              },
+              miss: { en: "Not yet. Use the Total from Step 1 and the Science percent.", es: "Todavía no. Usa el total del Paso 1 y el porcentaje de Ciencias." }
+            }
+          ],
+          hints: [
+            { en: "The Total is the whole. Fiction is a part of it: 50%. Write 50% as a decimal.", es: "El total es el todo. Ficción es una parte: el 50%. Escribe 50% como decimal." },
+            { en: "160 = 0.50 × Total, so you divide 160 by 0.50. Step 2 is 0.30 × your Total.", es: "160 = 0.50 × total, así que divides 160 entre 0.50. El Paso 2 es 0.30 × tu total." }
+          ],
+          miss: { en: "Find the Total first, then use it to find the Science count.", es: "Primero halla el total y luego úsalo para hallar la cantidad de Ciencias." },
+          explain: { en: "Fiction is 50% = 160, so Total = 160 ÷ 0.50 = 320. Science = 0.30 × 320 = 96 readers.", es: "Ficción es el 50% = 160, así que total = 160 ÷ 0.50 = 320. Ciencias = 0.30 × 320 = 96 lectores." }
         },
         {
-          id: 't4_3',
-          title: 'Animal Shelter Adoptions',
-          table: [
-            { name: 'Dogs', pct: '60%', count: '108 adoptions' },
-            { name: 'Cats', pct: '30%', count: '? adoptions' },
-            { name: 'Birds/Other', pct: '10%', count: '? adoptions' },
-            { name: 'Total', pct: '100%', count: '? Total' }
+          id: "t4_3",
+          title: { en: "Animal Shelter Adoptions", es: "Adopciones del refugio de animales" },
+          caption: { en: "Which animals were adopted", es: "Qué animales fueron adoptados" },
+          rows: [{ name: { en: "Dogs", es: "Perros" }, pct: 60, count: 108 }, { name: { en: "Cats", es: "Gatos" }, pct: 30, count: null, ask: true }, { name: { en: "Birds/Other", es: "Aves/Otros" }, pct: 10, count: null }],
+          totalLabel: { en: "Total", es: "Total" },
+          facts: [
+            { en: "The percents cover the whole group, so they add up to 100%.", es: "Los porcentajes cubren todo el grupo, así que suman 100%." },
+            { en: "Dogs is 60% of the group, and that is 108 adoptions.", es: "Perros es el 60% del grupo, y eso son 108 adopciones." }
           ],
-          step1Label: 'Total adoptions (108 ÷ 0.60):',
-          targetTotal: 180,
-          step2Label: 'Cats adopted (30% of Total):',
-          targetCoding: 54,
-          explain: 'Total = 108 ÷ 0.60 = 180. Cats = 0.30 × 180 = 54.'
+          q: { en: "Find the two blank cells: the Total (Step 1) and the Cats row (Step 2).", es: "Halla las dos casillas vacías: el total (Paso 1) y la fila de Gatos (Paso 2)." },
+          fields: [
+            {
+              label: { en: "Step 1 · Total adoptions", es: "Paso 1 · Total de adopciones" },
+              unit: { en: "adoptions", es: "adopciones" },
+              ans: 180,
+              wrong: {
+                "108": { en: "108 is only the Dogs count. The Total counts every row together.", es: "108 es solo la cantidad de Perros. El total cuenta todas las filas juntas." },
+                "270": { en: "108 is 60% of the Total, not 40%. Use the percent in the Dogs row.", es: "108 es el 60% del total, no el 40%. Usa el porcentaje de la fila de Perros." },
+                "64.8": { en: "That is 60% of 108. But 108 is already 60% of the Total, so the Total has to be bigger than 108.", es: "Eso es el 60% de 108. Pero 108 ya es el 60% del total, así que el total tiene que ser mayor que 108." },
+                "1.8": { en: "It looks like you divided by 60. Write 60% as the decimal 0.60 first.", es: "Parece que dividiste entre 60. Primero escribe 60% como el decimal 0.60." }
+              },
+              miss: { en: "Not yet. The 108 adoptions are only part of the Total.", es: "Todavía no. Los 108 adopciones son solo una parte del total." }
+            },
+            {
+              label: { en: "Step 2 · Cats adopted", es: "Paso 2 · Gatos adoptados" },
+              unit: { en: "adoptions", es: "adopciones" },
+              ans: 54,
+              wrong: {
+                "30": { en: "30 is the percent, not the count. Find 30% of the Total.", es: "30 es el porcentaje, no la cantidad. Halla el 30% del total." },
+                "108": { en: "108 is the Dogs count. Find the Cats count.", es: "108 es la cantidad de Perros. Halla la cantidad de Gatos." },
+                "126": { en: "That is 70% of the Total. The Cats row is 30%.", es: "Eso es el 70% del total. La fila de Gatos es el 30%." },
+                "5400": { en: "Write 30% as the decimal 0.30 before you multiply.", es: "Escribe 30% como el decimal 0.30 antes de multiplicar." },
+                "32.4": { en: "That takes 30% of 108. Take 30% of the Total instead.", es: "Eso toma el 30% de 108. Mejor toma el 30% del total." }
+              },
+              miss: { en: "Not yet. Use the Total from Step 1 and the Cats percent.", es: "Todavía no. Usa el total del Paso 1 y el porcentaje de Gatos." }
+            }
+          ],
+          hints: [
+            { en: "The Total is the whole. Dogs is a part of it: 60%. Write 60% as a decimal.", es: "El total es el todo. Perros es una parte: el 60%. Escribe 60% como decimal." },
+            { en: "108 = 0.60 × Total, so you divide 108 by 0.60. Step 2 is 0.30 × your Total.", es: "108 = 0.60 × total, así que divides 108 entre 0.60. El Paso 2 es 0.30 × tu total." }
+          ],
+          miss: { en: "Find the Total first, then use it to find the Cats count.", es: "Primero halla el total y luego úsalo para hallar la cantidad de Gatos." },
+          explain: { en: "Dogs is 60% = 108, so Total = 108 ÷ 0.60 = 180. Cats = 0.30 × 180 = 54 adoptions.", es: "Perros es el 60% = 108, así que total = 108 ÷ 0.60 = 180. Gatos = 0.30 × 180 = 54 adopciones." }
         },
         {
-          id: 't4_4',
-          title: 'Youth Sports League Registration',
-          table: [
-            { name: 'Soccer', pct: '45%', count: '135 players' },
-            { name: 'Baseball', pct: '35%', count: '? players' },
-            { name: 'Track', pct: '20%', count: '? players' },
-            { name: 'Total', pct: '100%', count: '? Total' }
+          id: "t4_4",
+          title: { en: "Youth Sports Sign-Ups", es: "Inscripciones deportivas juveniles" },
+          caption: { en: "Which sport each player joined", es: "En qué deporte se inscribió cada jugador" },
+          rows: [{ name: { en: "Soccer", es: "Fútbol" }, pct: 45, count: 135 }, { name: { en: "Baseball", es: "Béisbol" }, pct: 35, count: null }, { name: { en: "Track", es: "Atletismo" }, pct: 20, count: null, ask: true }],
+          totalLabel: { en: "Total", es: "Total" },
+          facts: [
+            { en: "The percents cover the whole group, so they add up to 100%.", es: "Los porcentajes cubren todo el grupo, así que suman 100%." },
+            { en: "Soccer is 45% of the group, and that is 135 players.", es: "Fútbol es el 45% del grupo, y eso son 135 jugadores." }
           ],
-          step1Label: 'Total players (135 ÷ 0.45):',
-          targetTotal: 300,
-          step2Label: 'Track players (20% of Total):',
-          targetCoding: 60,
-          explain: 'Total = 135 ÷ 0.45 = 300. Track = 0.20 × 300 = 60.'
+          q: { en: "Find the two blank cells: the Total (Step 1) and the Track row (Step 2).", es: "Halla las dos casillas vacías: el total (Paso 1) y la fila de Atletismo (Paso 2)." },
+          fields: [
+            {
+              label: { en: "Step 1 · Total players", es: "Paso 1 · Total de jugadores" },
+              unit: { en: "players", es: "jugadores" },
+              ans: 300,
+              wrong: {
+                "3": { en: "It looks like you divided by 45. Write 45% as the decimal 0.45 first.", es: "Parece que dividiste entre 45. Primero escribe 45% como el decimal 0.45." },
+                "135": { en: "135 is only the Soccer count. The Total counts every row together.", es: "135 es solo la cantidad de Fútbol. El total cuenta todas las filas juntas." },
+                "60.75": { en: "That is 45% of 135. But 135 is already 45% of the Total, so the Total has to be bigger than 135.", es: "Eso es el 45% de 135. Pero 135 ya es el 45% del total, así que el total tiene que ser mayor que 135." }
+              },
+              miss: { en: "Not yet. The 135 players are only part of the Total.", es: "Todavía no. Los 135 jugadores son solo una parte del total." }
+            },
+            {
+              label: { en: "Step 2 · Track players", es: "Paso 2 · Jugadores de Atletismo" },
+              unit: { en: "players", es: "jugadores" },
+              ans: 60,
+              wrong: {
+                "20": { en: "20 is the percent, not the count. Find 20% of the Total.", es: "20 es el porcentaje, no la cantidad. Halla el 20% del total." },
+                "27": { en: "That takes 20% of 135. Take 20% of the Total instead.", es: "Eso toma el 20% de 135. Mejor toma el 20% del total." },
+                "135": { en: "135 is the Soccer count. Find the Track count.", es: "135 es la cantidad de Fútbol. Halla la cantidad de Atletismo." },
+                "240": { en: "That is 80% of the Total. The Track row is 20%.", es: "Eso es el 80% del total. La fila de Atletismo es el 20%." },
+                "6000": { en: "Write 20% as the decimal 0.20 before you multiply.", es: "Escribe 20% como el decimal 0.20 antes de multiplicar." }
+              },
+              miss: { en: "Not yet. Use the Total from Step 1 and the Track percent.", es: "Todavía no. Usa el total del Paso 1 y el porcentaje de Atletismo." }
+            }
+          ],
+          hints: [
+            { en: "The Total is the whole. Soccer is a part of it: 45%. Write 45% as a decimal.", es: "El total es el todo. Fútbol es una parte: el 45%. Escribe 45% como decimal." },
+            { en: "135 = 0.45 × Total, so you divide 135 by 0.45. Step 2 is 0.20 × your Total.", es: "135 = 0.45 × total, así que divides 135 entre 0.45. El Paso 2 es 0.20 × tu total." }
+          ],
+          miss: { en: "Find the Total first, then use it to find the Track count.", es: "Primero halla el total y luego úsalo para hallar la cantidad de Atletismo." },
+          explain: { en: "Soccer is 45% = 135, so Total = 135 ÷ 0.45 = 300. Track = 0.20 × 300 = 60 players.", es: "Fútbol es el 45% = 135, así que total = 135 ÷ 0.45 = 300. Atletismo = 0.20 × 300 = 60 jugadores." }
         },
         {
-          id: 't4_5',
-          title: 'Tech Store Laptop Inventory',
-          table: [
-            { name: 'Ultrabooks', pct: '30%', count: '48 laptops' },
-            { name: 'Gaming', pct: '50%', count: '? laptops' },
-            { name: 'Budget', pct: '20%', count: '? laptops' },
-            { name: 'Total', pct: '100%', count: '? Total' }
+          id: "t4_5",
+          title: { en: "Laptop Inventory", es: "Inventario de laptops" },
+          caption: { en: "Laptops in stock by type", es: "Laptops en existencia por tipo" },
+          rows: [{ name: { en: "Ultrabooks", es: "Ultradelgadas" }, pct: 30, count: 48 }, { name: { en: "Gaming", es: "Para juegos" }, pct: 50, count: null, ask: true }, { name: { en: "Budget", es: "Económicas" }, pct: 20, count: null }],
+          totalLabel: { en: "Total", es: "Total" },
+          facts: [
+            { en: "The percents cover the whole group, so they add up to 100%.", es: "Los porcentajes cubren todo el grupo, así que suman 100%." },
+            { en: "Ultrabooks is 30% of the group, and that is 48 laptops.", es: "Ultradelgadas es el 30% del grupo, y eso son 48 laptops." }
           ],
-          step1Label: 'Total laptops (48 ÷ 0.30):',
-          targetTotal: 160,
-          step2Label: 'Gaming laptops (50% of Total):',
-          targetCoding: 80,
-          explain: 'Total = 48 ÷ 0.30 = 160. Gaming = 0.50 × 160 = 80.'
+          q: { en: "Find the two blank cells: the Total (Step 1) and the Gaming row (Step 2).", es: "Halla las dos casillas vacías: el total (Paso 1) y la fila de Para juegos (Paso 2)." },
+          fields: [
+            {
+              label: { en: "Step 1 · Total laptops in stock", es: "Paso 1 · Total de laptops en existencia" },
+              unit: { en: "laptops", es: "laptops" },
+              ans: 160,
+              wrong: {
+                "48": { en: "48 is only the Ultrabooks count. The Total counts every row together.", es: "48 es solo la cantidad de Ultradelgadas. El total cuenta todas las filas juntas." },
+                "14.4": { en: "That is 30% of 48. But 48 is already 30% of the Total, so the Total has to be bigger than 48.", es: "Eso es el 30% de 48. Pero 48 ya es el 30% del total, así que el total tiene que ser mayor que 48." },
+                "1.6": { en: "It looks like you divided by 30. Write 30% as the decimal 0.30 first.", es: "Parece que dividiste entre 30. Primero escribe 30% como el decimal 0.30." }
+              },
+              miss: { en: "Not yet. The 48 laptops are only part of the Total.", es: "Todavía no. Los 48 laptops son solo una parte del total." }
+            },
+            {
+              label: { en: "Step 2 · Gaming laptops", es: "Paso 2 · Laptops para juegos" },
+              unit: { en: "laptops", es: "laptops" },
+              ans: 80,
+              wrong: {
+                "24": { en: "That takes 50% of 48. Take 50% of the Total instead.", es: "Eso toma el 50% de 48. Mejor toma el 50% del total." },
+                "48": { en: "48 is the Ultrabooks count. Find the Gaming count.", es: "48 es la cantidad de Ultradelgadas. Halla la cantidad de Para juegos." },
+                "50": { en: "50 is the percent, not the count. Find 50% of the Total.", es: "50 es el porcentaje, no la cantidad. Halla el 50% del total." },
+                "8000": { en: "Write 50% as the decimal 0.50 before you multiply.", es: "Escribe 50% como el decimal 0.50 antes de multiplicar." }
+              },
+              miss: { en: "Not yet. Use the Total from Step 1 and the Gaming percent.", es: "Todavía no. Usa el total del Paso 1 y el porcentaje de Para juegos." }
+            }
+          ],
+          hints: [
+            { en: "The Total is the whole. Ultrabooks is a part of it: 30%. Write 30% as a decimal.", es: "El total es el todo. Ultradelgadas es una parte: el 30%. Escribe 30% como decimal." },
+            { en: "48 = 0.30 × Total, so you divide 48 by 0.30. Step 2 is 0.50 × your Total.", es: "48 = 0.30 × total, así que divides 48 entre 0.30. El Paso 2 es 0.50 × tu total." }
+          ],
+          miss: { en: "Find the Total first, then use it to find the Gaming count.", es: "Primero halla el total y luego úsalo para hallar la cantidad de Para juegos." },
+          explain: { en: "Ultrabooks is 30% = 48, so Total = 48 ÷ 0.30 = 160. Gaming = 0.50 × 160 = 80 laptops.", es: "Ultradelgadas es el 30% = 48, así que total = 48 ÷ 0.30 = 160. Para juegos = 0.50 × 160 = 80 laptops." }
         },
         {
-          id: 't4_6',
-          title: 'School Cafeteria Milk Choices',
-          table: [
-            { name: 'Chocolate', pct: '70%', count: '280 cartons' },
-            { name: 'White', pct: '25%', count: '? cartons' },
-            { name: 'Strawberry', pct: '5%', count: '? cartons' },
-            { name: 'Total', pct: '100%', count: '? Total' }
+          id: "t4_6",
+          title: { en: "Cafeteria Milk Choices", es: "Leche en la cafetería" },
+          caption: { en: "Which milk students picked", es: "Qué leche escogieron los estudiantes" },
+          rows: [{ name: { en: "Chocolate", es: "Chocolate" }, pct: 70, count: 280 }, { name: { en: "White", es: "Blanca" }, pct: 25, count: null }, { name: { en: "Strawberry", es: "Fresa" }, pct: 5, count: null, ask: true }],
+          totalLabel: { en: "Total", es: "Total" },
+          facts: [
+            { en: "The percents cover the whole group, so they add up to 100%.", es: "Los porcentajes cubren todo el grupo, así que suman 100%." },
+            { en: "Chocolate is 70% of the group, and that is 280 cartons.", es: "Chocolate es el 70% del grupo, y eso son 280 cartones." }
           ],
-          step1Label: 'Total milk cartons (280 ÷ 0.70):',
-          targetTotal: 400,
-          step2Label: 'Strawberry milk cartons (5% of Total):',
-          targetCoding: 20,
-          explain: 'Total = 280 ÷ 0.70 = 400. Strawberry = 0.05 × 400 = 20.'
+          q: { en: "Find the two blank cells: the Total (Step 1) and the Strawberry row (Step 2).", es: "Halla las dos casillas vacías: el total (Paso 1) y la fila de Fresa (Paso 2)." },
+          fields: [
+            {
+              label: { en: "Step 1 · Total milk cartons", es: "Paso 1 · Total de cartones de leche" },
+              unit: { en: "cartons", es: "cartones" },
+              ans: 400,
+              wrong: {
+                "4": { en: "It looks like you divided by 70. Write 70% as the decimal 0.70 first.", es: "Parece que dividiste entre 70. Primero escribe 70% como el decimal 0.70." },
+                "196": { en: "That is 70% of 280. But 280 is already 70% of the Total, so the Total has to be bigger than 280.", es: "Eso es el 70% de 280. Pero 280 ya es el 70% del total, así que el total tiene que ser mayor que 280." },
+                "280": { en: "280 is only the Chocolate count. The Total counts every row together.", es: "280 es solo la cantidad de Chocolate. El total cuenta todas las filas juntas." }
+              },
+              miss: { en: "Not yet. The 280 cartons are only part of the Total.", es: "Todavía no. Los 280 cartones son solo una parte del total." }
+            },
+            {
+              label: { en: "Step 2 · Strawberry cartons", es: "Paso 2 · Cartones de Fresa" },
+              unit: { en: "cartons", es: "cartones" },
+              ans: 20,
+              wrong: {
+                "5": { en: "5 is the percent, not the count. Find 5% of the Total.", es: "5 es el porcentaje, no la cantidad. Halla el 5% del total." },
+                "14": { en: "That takes 5% of 280. Take 5% of the Total instead.", es: "Eso toma el 5% de 280. Mejor toma el 5% del total." },
+                "280": { en: "280 is the Chocolate count. Find the Strawberry count.", es: "280 es la cantidad de Chocolate. Halla la cantidad de Fresa." },
+                "380": { en: "That is 95% of the Total. The Strawberry row is 5%.", es: "Eso es el 95% del total. La fila de Fresa es el 5%." },
+                "2000": { en: "Write 5% as the decimal 0.05 before you multiply.", es: "Escribe 5% como el decimal 0.05 antes de multiplicar." }
+              },
+              miss: { en: "Not yet. Use the Total from Step 1 and the Strawberry percent.", es: "Todavía no. Usa el total del Paso 1 y el porcentaje de Fresa." }
+            }
+          ],
+          hints: [
+            { en: "The Total is the whole. Chocolate is a part of it: 70%. Write 70% as a decimal.", es: "El total es el todo. Chocolate es una parte: el 70%. Escribe 70% como decimal." },
+            { en: "280 = 0.70 × Total, so you divide 280 by 0.70. Step 2 is 0.05 × your Total.", es: "280 = 0.70 × total, así que divides 280 entre 0.70. El Paso 2 es 0.05 × tu total." }
+          ],
+          miss: { en: "Find the Total first, then use it to find the Strawberry count.", es: "Primero halla el total y luego úsalo para hallar la cantidad de Fresa." },
+          explain: { en: "Chocolate is 70% = 280, so Total = 280 ÷ 0.70 = 400. Strawberry = 0.05 × 400 = 20 cartons.", es: "Chocolate es el 70% = 280, así que total = 280 ÷ 0.70 = 400. Fresa = 0.05 × 400 = 20 cartones." }
         }
       ];
 
+      const t4Bi = (t) => t.es === t.en ? t.en : `${t.en}<span class="es-text">${t.es}</span>`;
+
+      // The table the student is completing. A blank cell names the step that fills it; a row the
+      // question does not ask about shows a dash. When solved, the blanks show the real numbers.
+      function t4TableHtml(t, solved) {
+        const [total, part] = [t.fields[0].ans, t.fields[1].ans];
+        const blank = (n, value) => solved
+          ? `<strong>${value}</strong>`
+          : `<span style="display:inline-block; min-width:5.5em; padding:3px 10px; border:2px dashed var(--sun-deep); border-radius:var(--radius-sm); background:var(--sun-tint); color:var(--sun-ink); font-weight:800;">${t4Bi({ en: 'Step ' + n, es: 'Paso ' + n })}</span>`;
+        const cell = (r) => r.count !== null ? r.count : r.ask ? blank(2, part) : `<span style="color:var(--ink-muted);" aria-label="not asked">&mdash;</span>`;
+        const rows = t.rows.map((r) => `
+              <tr>
+                <td style="font-weight:700; color:var(--brand);">${t4Bi(r.name)}</td>
+                <td style="font-family:var(--font-display);">${r.pct}%</td>
+                <td style="font-family:var(--font-display); font-weight:700; color:var(--brand);">${cell(r)}</td>
+              </tr>`).join('');
+        return `
+          <table class="data-table" id="t4-table">
+            <caption style="caption-side:top; text-align:left; font-weight:700; color:var(--ink-muted); padding-bottom:4px;">${t4Bi(t.caption)}</caption>
+            <thead>
+              <tr>
+                <th scope="col">${t4Bi({ en: 'Row', es: 'Fila' })}</th>
+                <th scope="col">${t4Bi({ en: 'Percent', es: 'Porcentaje' })}</th>
+                <th scope="col">${t4Bi({ en: `Count (${t.fields[0].unit.en})`, es: `Cantidad (${t.fields[0].unit.es})` })}</th>
+              </tr>
+            </thead>
+            <tbody>${rows}
+              <tr>
+                <td style="font-weight:800; color:var(--brand);">${t4Bi(t.totalLabel)}</td>
+                <td style="font-family:var(--font-display);">100%</td>
+                <td style="font-family:var(--font-display); font-weight:700; color:var(--brand);">${blank(1, total)}</td>
+              </tr>
+            </tbody>
+          </table>`;
+      }
+
       function renderT4() {
-        const tbl = T4_TABLES[state.idx4];
-        const isSolved = !!state.solved4[tbl.id];
+        const t = T4_TABLES[state.idx4];
+        const isSolved = !!state.solved4[t.id];
 
         renderDots('t4-dots', T4_TABLES, state.idx4, state.solved4, (ni) => {
           state.idx4 = ni; renderT4();
         });
 
-        const stage = document.getElementById('t4-stage-card');
-        stage.innerHTML = `
-          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:0.84rem; font-weight:800; color: var(--warn);">Table ${state.idx4 + 1} of ${T4_TABLES.length} · ${tbl.title}</span>
-            <button type="button" class="speak-btn" id="t4-speak">🔊 Read Table</button>
-          </div>
-
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Category</th>
-                <th>Percent</th>
-                <th>Count</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${tbl.table.map(r => `
-                <tr>
-                  <td style="font-weight:700; color:var(--brand);">${r.name}</td>
-                  <td style="font-family:var(--font-display);">${r.pct}</td>
-                  <td style="font-family:var(--font-display); font-weight:700; color:var(--brand);">${r.count}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
-            <div style="background:var(--surface-soft); border:1.5px solid var(--border); border-radius:var(--radius-md); padding:16px;">
-              <label style="display:block; font-weight:700; color:var(--brand); margin-bottom:6px;">${tbl.step1Label}</label>
-              <input type="number" id="t4-s1-in" class="num-input" style="width:100%;" placeholder="Total" value="${isSolved ? tbl.targetTotal : ''}" ${isSolved ? 'disabled' : ''}>
-            </div>
-            <div style="background:var(--surface-soft); border:1.5px solid var(--border); border-radius:var(--radius-md); padding:16px;">
-              <label style="display:block; font-weight:700; color:var(--brand); margin-bottom:6px;">${tbl.step2Label}</label>
-              <input type="number" id="t4-s2-in" class="num-input" style="width:100%;" placeholder="Count" value="${isSolved ? tbl.targetCoding : ''}" ${isSolved ? 'disabled' : ''}>
-            </div>
-          </div>
-
-          <button type="button" class="btn btn-primary" id="t4-check-btn" ${isSolved ? 'disabled' : ''}>Verify Reconstruction</button>
-
-          <div id="t4-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
-            ${isSolved ? `Solved! ${tbl.explain}` : ''}
-          </div>
-        `;
-
-        stage.querySelector('#t4-speak').onclick = () => speak(tbl.title);
-
-        if (isSolved) appendNext(document.getElementById('t4-fb'), 4, T4_TABLES.length, renderT4);
-
-        stage.querySelector('#t4-check-btn').onclick = () => {
-          const s1 = parseFloat(stage.querySelector('#t4-s1-in').value);
-          const s2 = parseFloat(stage.querySelector('#t4-s2-in').value);
-          const fb = document.getElementById('t4-fb');
-
-          if (s1 === tbl.targetTotal && s2 === tbl.targetCoding) {
+        const host = document.getElementById('t4-stage-card');
+        const { fb } = U4Studio.story.card({
+          host,
+          item: t,
+          index: state.idx4,
+          count: T4_TABLES.length,
+          solved: isSolved,
+          challenge: true,
+          speak,
+          showEs: () => state.showEs,
+          onMiss: () => { playSound('wrong'); saveState(); },
+          onSolve: (fbEl) => {
             playSound('correct');
-            state.solved4[tbl.id] = true;
-            fb.className = 'feedback-box show ok';
-            fb.innerHTML = `Perfect reconstruction! ${tbl.explain}`;
+            state.solved4[t.id] = true;
+            host.querySelector('#t4-table').outerHTML = t4TableHtml(t, true);
             renderDots('t4-dots', T4_TABLES, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4(); });
             updateProgressHeader();
-            appendNext(fb, 4, T4_TABLES.length, renderT4);
-          } else {
-            playSound('wrong');
-            fb.className = 'feedback-box show warn';
-            fb.textContent = `Divide the known category count by its percent decimal to find the Total. Then multiply Total by the second category percent.`;
+            appendNext(fbEl, 4, T4_TABLES.length, renderT4);
+            saveState();
           }
-          saveState();
-        };
+        });
+        // the story card owns facts, question, boxes, hints and feedback; the table sits between the facts and the question
+        host.querySelector('.story-facts').insertAdjacentHTML('afterend', t4TableHtml(t, isSolved));
+        if (isSolved) appendNext(fb, 4, T4_TABLES.length, renderT4);
       }
 
       document.getElementById('t4-prev-btn').onclick = () => {

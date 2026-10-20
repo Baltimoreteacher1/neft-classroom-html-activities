@@ -12,6 +12,7 @@
   <script src="/assets/studio-comfort.js" defer></script>
   <script src="/assets/u4-studio.js"></script>
   <script src="/assets/u4-studio-bonus.js"></script>
+  <script src="/assets/u4-studio-story.js"></script>
   <style>
     .visual-wrap { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin: 12px 0 6px;
     }
@@ -184,7 +185,7 @@
         <span class="tab-badge" id="badge-4">4</span>
         <span class="tab-text">
           <span class="tab-name">Multi-Step Stories</span>
-          <span class="tab-desc">Stories &amp; Errors (10)</span>
+          <span class="tab-desc">Stories &amp; Mistakes (10)</span>
         </span>
       </button>
       <button
@@ -368,10 +369,11 @@
     >
       <div class="topic-strip">
         <div>
-          <h2>4. Multi-Step Stories &amp; Error Detective</h2>
+          <h2>4. Multi-Step Stories &amp; Fix-It</h2>
           <p>
-            Use percents to compare different-sized groups, chain several steps
-            together, and decide whether someone else’s reasoning holds up.
+            Use percents to compare groups of different sizes, solve stories in
+            several steps, and decide whether someone else’s reasoning is
+            correct.
           </p>
           <p class="es-text">
             Usa porcentajes para comparar grupos de distinto tamaño, encadenar
@@ -381,6 +383,7 @@
         <div class="key-rule-pill">
           🕵️ <strong>Check:</strong> percent of <em>what</em> whole? Did the
           whole change?
+          <span class="es-text">Revisa: ¿porcentaje de qué total? ¿Cambió el total?</span>
         </div>
       </div>
       <div class="stepper-bar">
@@ -1068,195 +1071,6 @@ const BASE_SECTIONS = [
       explainEs: "$2.40 ÷ 6 = $0.40 por cada 1%, y $0.40 × 100 = $40.",
     },
   ],
-
-  /* ---------------- 4. MULTI-STEP STORIES & ERROR DETECTIVE ---------------- */
-  [
-    {
-      id: "s4_1",
-      title: "Fair Comparison",
-      stem: "Team A made 18 of 24 free throws. Team B made 21 of 30 free throws. Find each team’s percent. Which team shot a higher percent? (Type A or B.)",
-      stemEs:
-        "El equipo A encestó 18 de 24 tiros libres. El equipo B encestó 21 de 30. Halla el porcentaje de cada equipo. ¿Cuál tuvo mayor porcentaje? (Escribe A o B.)",
-      fields: [
-        { label: "Team A percent:", ans: 75, suf: "%" },
-        { label: "Team B percent:", ans: 70, suf: "%" },
-        {
-          label: "Higher percent (A or B):",
-          ans: ["a"],
-          kind: "text",
-          ph: "A or B",
-        },
-      ],
-      traps: [
-        {
-          i: 2,
-          v: "b",
-          msg: "B made more shots (21 vs 18), but out of more tries. Compare the percents, not the counts.",
-          text: true,
-        },
-      ],
-      hint: "Team A: 18/24 = 3/4. Team B: 21/30 = 7/10. Put both over 100.",
-      hintEs:
-        "Equipo A: 18/24 = 3/4. Equipo B: 21/30 = 7/10. Escribe ambos sobre 100.",
-      explain:
-        "A: 18/24 = 75%. B: 21/30 = 70%. Team A shot better even though Team B made more baskets.",
-      explainEs:
-        "A: 18/24 = 75%. B: 21/30 = 70%. El equipo A tiró mejor aunque B encestó más.",
-    },
-    {
-      id: "s4_2",
-      title: "How Students Get to School",
-      stem: "In a class of 32 students, 25% walk, 37.5% bike, and the rest ride the bus. How many students walk? How many bike? How many ride the bus?",
-      stemEs:
-        "En una clase de 32 estudiantes, 25% camina, 37.5% va en bicicleta y el resto va en autobús. ¿Cuántos caminan? ¿Cuántos van en bicicleta? ¿Cuántos van en autobús?",
-      fields: [
-        { label: "Walk:", ans: 8 },
-        { label: "Bike:", ans: 12 },
-        { label: "Bus:", ans: 12 },
-      ],
-      hint: "25% = 1/4 of 32. 37.5% = 3/8 of 32 (1/8 of 32 is 4). Subtract both groups from 32 for the bus.",
-      hintEs:
-        "25% = 1/4 de 32. 37.5% = 3/8 de 32 (1/8 de 32 es 4). Resta ambos grupos de 32 para el autobús.",
-      explain:
-        "Walk: 32 ÷ 4 = 8. Bike: 3 × 4 = 12. Bus: 32 − 8 − 12 = 12 (which is also 37.5%).",
-      explainEs:
-        "Caminan: 32 ÷ 4 = 8. Bicicleta: 3 × 4 = 12. Autobús: 32 − 8 − 12 = 12 (también 37.5%).",
-    },
-    {
-      id: "s4_3",
-      title: "Discount, Then Coupon",
-      stem: "Sneakers cost $80. They are 30% off. Then you use a $5 coupon on the sale price. How much do you pay?",
-      stemEs:
-        "Unos tenis cuestan $80 y tienen 30% de descuento. Luego usas un cupón de $5 sobre el precio de oferta. ¿Cuánto pagas?",
-      fields: [
-        { label: "Discount ($):", ans: 24, pre: "$" },
-        { label: "Sale price ($):", ans: 56, pre: "$" },
-        { label: "Final price after the coupon ($):", ans: 51, pre: "$" },
-      ],
-      hint: "30% of 80: 10% is 8, so 30% is 24. Take it off, then take off the $5.",
-      hintEs:
-        "30% de 80: 10% es 8, así que 30% es 24. Réstalo y luego resta los $5.",
-      explain: "✓ 30% of $80 = $24, sale price $56, minus the $5 coupon = $51.",
-      explainEs:
-        "✓ 30% de $80 = $24, precio de oferta $56, menos el cupón de $5 = $51.",
-    },
-    {
-      id: "s4_4",
-      title: "Tax and Tip",
-      stem: "A meal costs $45 before tax. Tax is 8% of $45, and the tip is 20% of $45. What is the tax, the tip, and the total bill?",
-      stemEs:
-        "Una comida cuesta $45 antes de impuestos. El impuesto es 8% de $45 y la propina es 20% de $45. ¿Cuánto es el impuesto, la propina y la cuenta total?",
-      fields: [
-        { label: "Tax ($):", ans: 3.6, pre: "$" },
-        { label: "Tip ($):", ans: 9, pre: "$" },
-        { label: "Total bill ($):", ans: 57.6, pre: "$" },
-      ],
-      hint: "1% of $45 is $0.45. Tax is 8 of those. Tip is 20 of them (or 2 tenths). Then add all three amounts.",
-      hintEs:
-        "1% de $45 es $0.45. El impuesto son 8 de esos. La propina son 20 (o 2 décimos). Luego suma las tres cantidades.",
-      explain:
-        "Tax: 8 × $0.45 = $3.60. Tip: 20% of $45 = $9. Total: $45 + $3.60 + $9 = $57.60.",
-      explainEs:
-        "Impuesto: 8 × $0.45 = $3.60. Propina: 20% de $45 = $9. Total: $45 + $3.60 + $9 = $57.60.",
-    },
-    {
-      id: "s4_5",
-      title: "Paint Mix",
-      stem: "A paint mix is 40% blue paint. A painter uses 6 liters of blue. How many liters of paint are in the whole mix, and how many liters are NOT blue?",
-      stemEs:
-        "Una mezcla de pintura es 40% pintura azul. Un pintor usa 6 litros de azul. ¿Cuántos litros tiene la mezcla completa y cuántos NO son azules?",
-      fields: [
-        { label: "Whole mix (liters):", ans: 15 },
-        { label: "Not blue (liters):", ans: 9 },
-      ],
-      traps: [
-        {
-          i: 0,
-          v: 2.4,
-          msg: "That is 40% of 6. The 6 liters is the 40%, and you need the whole.",
-        },
-      ],
-      hint: "40% is four 10% blocks, so each 10% block is 6 ÷ 4 = 1.5 liters. Ten blocks make the whole.",
-      hintEs:
-        "40% son cuatro bloques de 10%, así que cada bloque es 6 ÷ 4 = 1.5 litros. Diez bloques forman el entero.",
-      explain:
-        "✓ 6 ÷ 4 = 1.5 L per 10%, so the whole is 15 L. Not blue = 15 − 6 = 9 L (60%).",
-      explainEs:
-        "✓ 6 ÷ 4 = 1.5 L por cada 10%, así que el total es 15 L. No azul = 15 − 6 = 9 L (60%).",
-    },
-    {
-      id: "s4_6",
-      title: "Which Group Is the Whole?",
-      stem: "The chorus has 40 members. The band has 50 members. The band is what percent of the chorus size? The chorus is what percent of the band size?",
-      stemEs:
-        "El coro tiene 40 miembros. La banda tiene 50 miembros. ¿Qué porcentaje del tamaño del coro es la banda? ¿Qué porcentaje del tamaño de la banda es el coro?",
-      fields: [
-        { label: "Band as a percent of chorus:", ans: 125, suf: "%" },
-        { label: "Chorus as a percent of band:", ans: 80, suf: "%" },
-      ],
-      hint: "The whole is the group after the word “of.” 50/40 simplifies to 5/4. 40/50 simplifies to 4/5.",
-      hintEs:
-        "El entero es el grupo que va después de “de.” 50/40 se simplifica a 5/4. 40/50 se simplifica a 4/5.",
-      explain:
-        "✓ 50/40 = 125/100 = 125%, but 40/50 = 80/100 = 80%. Changing the whole changes the percent.",
-      explainEs:
-        "✓ 50/40 = 125/100 = 125%, pero 40/50 = 80/100 = 80%. Si cambia el entero, cambia el porcentaje.",
-    },
-    {
-      id: "s4_7",
-      title: "Error Detective",
-      stem: "Ben wants 12 out of 40 as a percent. He adds 60 to both numbers: (12 + 60) / (40 + 60) = 72/100, so he says 72%. What is wrong with Ben’s method?",
-      stemEs:
-        "Ben quiere 12 de 40 como porcentaje. Suma 60 a ambos números: (12 + 60) / (40 + 60) = 72/100, y dice 72%. ¿Qué tiene de malo el método de Ben?",
-      type: "mc",
-      choices: [
-        "Nothing is wrong. 72% is correct.",
-        "Equivalent ratios come from multiplying (or dividing) both numbers by the same factor, not from adding the same amount.",
-        "He should have subtracted 60 instead of adding.",
-        "The whole 40 cannot be changed to 100.",
-      ],
-      correct: 1,
-      feedback: [
-        "12 is less than half of 40, so the answer cannot be 72%. Check with 12/40 = 3/10.",
-        "Multiply both by 2.5: 12 × 2.5 = 30 and 40 × 2.5 = 100. So 12 out of 40 is 30%.",
-        "Subtracting is the same mistake. Ratios scale by multiplication, not by adding or subtracting.",
-        "The whole can become 100. It just has to be multiplied by the right factor (2.5), and the part by the same factor.",
-      ],
-      hint: "Try 12/40 in lowest terms first. Does it look close to 72/100?",
-      hintEs:
-        "Escribe 12/40 en su mínima expresión primero. ¿Se parece a 72/100?",
-      explain: "✓ 12/40 = 3/10 = 30/100 = 30%.",
-      explainEs: "✓ 12/40 = 3/10 = 30/100 = 30%.",
-    },
-    {
-      id: "s4_8",
-      title: "Error Detective",
-      stem: "A $50 shirt is marked 20% off. The store then takes another 20% off the new price. Dana says, “20% + 20% = 40%, so the shirt is 40% off.” Is she right?",
-      stemEs:
-        "Una camisa de $50 tiene 20% de descuento. Luego la tienda quita otro 20% al nuevo precio. Dana dice: “20% + 20% = 40%, entonces la camisa tiene 40% de descuento.” ¿Tiene razón?",
-      type: "mc",
-      choices: [
-        "Yes. Discounts add: 20% + 20% = 40% off.",
-        "No. The second 20% comes off a smaller price ($40, not $50), so the total discount is less than 40%.",
-        "No. The second discount should have been 40% to make it fair.",
-        "No. Two discounts cannot be used on the same item.",
-      ],
-      correct: 1,
-      feedback: [
-        "Check with the numbers: 20% off $50 is $40. Another 20% off $40 is $32. That is $18 off, not $20 off.",
-        "$50 → $40 → $32. The total discount is $18, and 18/50 = 36%, not 40%.",
-        "Nothing in the problem says the second discount is 40%. Both discounts are 20%.",
-        "The problem says it happened. Percent discounts can be applied one after another.",
-      ],
-      hint: "Do it with dollars. Find the price after 20% off, then take 20% off that new price.",
-      hintEs:
-        "Hazlo con dólares. Halla el precio después del 20% de descuento y luego quita el 20% a ese nuevo precio.",
-      explain:
-        "✓ 20% of $50 = $10 → $40. 20% of $40 = $8 → $32. Total discount = $18 = 36% of $50.",
-      explainEs:
-        "✓ 20% de $50 = $10 → $40. 20% de $40 = $8 → $32. Descuento total = $18 = 36% de $50.",
-    },
-  ],
 ];
 
 const QUIZ_QUESTIONS = [
@@ -1524,35 +1338,818 @@ const RAMP_EASY = [
       explainEs: "✓ 10% = 5 saltos y 35 = 7 × 5, así que completó 7 × 10% = 70%.",
     },
   ],
-  [
-    {
-      id: "s4_e1",
-      title: "Reusable Bottles",
-      stem: "3 out of every 4 students brought a reusable water bottle. What percent of the students is that?",
-      stemEs: "3 de cada 4 estudiantes trajeron una botella reutilizable. ¿Qué porcentaje de los estudiantes es?",
-      fields: [{ label: "Percent:", ans: 75, suf: "%" }],
-      hint: "4 × 25 = 100, so multiply 3 by 25 as well.",
-      hintEs: "4 × 25 = 100, así que multiplica 3 por 25 también.",
-      explain: "✓ 3/4 = 75/100 = 75%.",
-      explainEs: "✓ 3/4 = 75/100 = 75%.",
-    },
-    {
-      id: "s4_e2",
-      title: "Ten Percent Off",
-      stem: "A shirt costs $40 and is 10% off. How many dollars is the discount, and what is the sale price?",
-      stemEs: "Una camisa cuesta $40 y tiene 10% de descuento. ¿Cuántos dólares es el descuento y cuál es el precio de oferta?",
-      visual: () => dnl([[0, "$0", "0%"], [10, "?", "10%"], [100, "$40", "100%"]]),
-      fields: [
-        { label: "Discount ($):", ans: 4, pre: "$" },
-        { label: "Sale price ($):", ans: 36, pre: "$" },
-      ],
-      hint: "10% is one tenth: $40 ÷ 10. Then subtract the discount from $40.",
-      hintEs: "10% es un décimo: $40 ÷ 10. Luego resta el descuento de $40.",
-      explain: "✓ 10% of $40 = $4 off, so the sale price is $40 − $4 = $36.",
-      explainEs: "✓ 10% de $40 = $4 de descuento, así que el precio de oferta es $40 − $4 = $36.",
-    },
-  ],
 ];
+
+      /* Section 4 cards come from assets/u4-studio-story.js: facts, ONE question, labelled boxes with units,
+         a two-step hint ladder, and a message written for each common wrong answer. */
+      const T4_STORIES = [
+        {
+          id: "s4_e1",
+          title: { en: "Reusable Bottles", es: "Botellas reutilizables" },
+          facts: [
+            {
+              en: "3 out of every 4 students brought a reusable water bottle.",
+              es: "3 de cada 4 estudiantes trajeron una botella de agua reutilizable.",
+            },
+          ],
+          q: {
+            en: "What percent of the students brought a bottle?",
+            es: "¿Qué porcentaje de los estudiantes trajo una botella?",
+          },
+          fields: [
+            {
+              label: { en: "Percent with a bottle", es: "Porcentaje con botella" },
+              unit: "%",
+              ans: 75,
+              wrong: {
+                3: {
+                  en: "3 is out of 4, not out of 100. Scale both numbers up so the whole is 100.",
+                  es: "3 es de 4, no de 100. Escala ambos números para que el total sea 100.",
+                },
+                25: {
+                  en: "25% is the part of the students who did NOT bring a bottle.",
+                  es: "25% es la parte de los estudiantes que NO trajo una botella.",
+                },
+              },
+            },
+          ],
+          hints: [
+            {
+              en: "Percent means out of 100. Find the number you multiply 4 by to get 100.",
+              es: "Porcentaje significa sobre 100. Halla el número por el que multiplicas 4 para obtener 100.",
+            },
+            {
+              en: "4 × 25 = 100, so 3 × 25 = ? out of 100.",
+              es: "4 × 25 = 100, así que 3 × 25 = ? de 100.",
+            },
+          ],
+          miss: {
+            en: "Write 3 out of 4 as an amount out of 100: multiply both numbers by the same factor.",
+            es: "Escribe 3 de 4 como una cantidad sobre 100: multiplica ambos números por el mismo factor.",
+          },
+          explain: {
+            en: "3/4 = 75/100 = 75%.",
+            es: "3/4 = 75/100 = 75%.",
+          },
+        },
+        {
+          id: "s4_e2",
+          title: { en: "Ten Percent Off", es: "Diez por ciento de descuento" },
+          facts: [
+            { en: "A shirt costs $40.", es: "Una camisa cuesta $40." },
+            { en: "It is 10% off.", es: "Tiene 10% de descuento." },
+          ],
+          q: {
+            en: "What is the sale price? Find the discount first.",
+            es: "¿Cuál es el precio de oferta? Primero halla el descuento.",
+          },
+          visual: () =>
+            dnl([
+              [0, "$0", "0%"],
+              [10, "?", "10%"],
+              [100, "$40", "100%"],
+            ]),
+          fields: [
+            {
+              label: { en: "Step 1: Discount", es: "Paso 1: Descuento" },
+              unit: { en: "dollars ($)", es: "dólares ($)" },
+              ans: 4,
+              miss: {
+                en: "10% is one tenth of the price. Find one tenth of $40.",
+                es: "10% es un décimo del precio. Halla un décimo de $40.",
+              },
+              wrong: {
+                36: {
+                  en: "That is the sale price. Step 1 is only the amount taken off.",
+                  es: "Ese es el precio de oferta. El Paso 1 es solo la cantidad que se quita.",
+                },
+                40: {
+                  en: "$40 is the original price. The discount is only part of it.",
+                  es: "$40 es el precio original. El descuento es solo una parte.",
+                },
+                10: {
+                  en: "10 is the percent, not dollars. Find 10% of $40.",
+                  es: "10 es el porcentaje, no dólares. Halla el 10% de $40.",
+                },
+                400: {
+                  en: "That multiplies by 10. A tenth means divide by 10.",
+                  es: "Eso multiplica por 10. Un décimo significa dividir entre 10.",
+                },
+              },
+            },
+            {
+              label: { en: "Step 2: Sale price", es: "Paso 2: Precio de oferta" },
+              unit: { en: "dollars ($)", es: "dólares ($)" },
+              ans: 36,
+              miss: {
+                en: "A discount lowers the price. Take your Step 1 answer off $40.",
+                es: "Un descuento baja el precio. Réstale tu respuesta del Paso 1 a $40.",
+              },
+              wrong: {
+                4: {
+                  en: "That is the discount, the amount taken off. The sale price is what you pay after it.",
+                  es: "Ese es el descuento, la cantidad que se quita. El precio de oferta es lo que pagas después.",
+                },
+                44: {
+                  en: "A discount lowers the price. Take it off instead of adding it.",
+                  es: "Un descuento baja el precio. Réstalo en lugar de sumarlo.",
+                },
+                40: {
+                  en: "$40 is the price before the discount.",
+                  es: "$40 es el precio antes del descuento.",
+                },
+              },
+            },
+          ],
+          hints: [
+            {
+              en: "10% is one tenth of the price. Find the discount first, then take it off $40.",
+              es: "10% es un décimo del precio. Halla primero el descuento y luego réstalo de $40.",
+            },
+            {
+              en: "$40 ÷ 10 = ? Then $40 − ? = the sale price.",
+              es: "$40 ÷ 10 = ? Luego $40 − ? = el precio de oferta.",
+            },
+          ],
+          miss: {
+            en: "Do the discount first (one tenth of $40), then subtract it from the price.",
+            es: "Primero el descuento (un décimo de $40) y luego réstalo del precio.",
+          },
+          explain: {
+            en: "10% of $40 = $40 ÷ 10 = $4 off, so the sale price is $40 − $4 = $36.",
+            es: "10% de $40 = $40 ÷ 10 = $4 de descuento, así que el precio de oferta es $40 − $4 = $36.",
+          },
+        },
+        {
+          id: "s4_3",
+          title: { en: "Discount, Then Coupon", es: "Descuento y luego cupón" },
+          facts: [
+            { en: "Sneakers cost $80.", es: "Unos tenis cuestan $80." },
+            { en: "They are 30% off.", es: "Tienen 30% de descuento." },
+            {
+              en: "Then you use a $5 coupon on the sale price.",
+              es: "Luego usas un cupón de $5 sobre el precio de oferta.",
+            },
+          ],
+          q: {
+            en: "How much do you pay after the coupon?",
+            es: "¿Cuánto pagas después del cupón?",
+          },
+          fields: [
+            {
+              label: {
+                en: "Step 1: Sale price after 30% off",
+                es: "Paso 1: Precio de oferta con 30% de descuento",
+              },
+              unit: { en: "dollars ($)", es: "dólares ($)" },
+              ans: 56,
+              miss: {
+                en: "Find 30% of $80, then take that amount off $80.",
+                es: "Halla el 30% de $80 y luego réstalo de $80.",
+              },
+              wrong: {
+                24: {
+                  en: "That is the discount, the amount taken off. The sale price is what is left.",
+                  es: "Ese es el descuento, la cantidad que se quita. El precio de oferta es lo que queda.",
+                },
+                50: {
+                  en: "30 is the percent, not dollars. Find 30% of $80 first.",
+                  es: "30 es el porcentaje, no dólares. Primero halla el 30% de $80.",
+                },
+                110: {
+                  en: "A discount lowers the price. Take it off instead of adding it.",
+                  es: "Un descuento baja el precio. Réstalo en lugar de sumarlo.",
+                },
+                2400: {
+                  en: "That uses 30 instead of 0.30. Write 30% as a decimal before you multiply.",
+                  es: "Eso usa 30 en lugar de 0.30. Escribe 30% como decimal antes de multiplicar.",
+                },
+              },
+            },
+            {
+              label: {
+                en: "Step 2: Final price after the $5 coupon",
+                es: "Paso 2: Precio final con el cupón de $5",
+              },
+              unit: { en: "dollars ($)", es: "dólares ($)" },
+              ans: 51,
+              miss: {
+                en: "The coupon comes off the sale price from Step 1.",
+                es: "El cupón se resta del precio de oferta del Paso 1.",
+              },
+              wrong: {
+                56: {
+                  en: "That is the price before the coupon. The coupon comes off it.",
+                  es: "Ese es el precio antes del cupón. El cupón se resta de él.",
+                },
+                75: {
+                  en: "That takes the coupon off $80. Start from the sale price instead.",
+                  es: "Eso resta el cupón de $80. Mejor empieza con el precio de oferta.",
+                },
+                61: {
+                  en: "A coupon lowers the price. Take it off instead of adding it.",
+                  es: "Un cupón baja el precio. Réstalo en lugar de sumarlo.",
+                },
+              },
+            },
+          ],
+          hints: [
+            {
+              en: "Find 30% of $80 and take it off to get the sale price. The coupon comes off the sale price, not off $80.",
+              es: "Halla el 30% de $80 y réstalo para obtener el precio de oferta. El cupón se resta del precio de oferta, no de $80.",
+            },
+            {
+              en: "10% of $80 is $8, so 30% is 3 × $8. Sale price: $80 − that amount. Then take $5 off.",
+              es: "10% de $80 es $8, así que 30% es 3 × $8. Precio de oferta: $80 − esa cantidad. Luego réstale $5.",
+            },
+          ],
+          miss: {
+            en: "Go in order: the 30% discount first, then the $5 coupon on the sale price.",
+            es: "Ve en orden: primero el descuento del 30% y luego el cupón de $5 sobre el precio de oferta.",
+          },
+          explain: {
+            en: "30% of $80 = $24, so the sale price is $80 − $24 = $56. After the $5 coupon: $56 − $5 = $51.",
+            es: "30% de $80 = $24, así que el precio de oferta es $80 − $24 = $56. Con el cupón de $5: $56 − $5 = $51.",
+          },
+        },
+        {
+          id: "s4_1",
+          title: { en: "Fair Comparison", es: "Comparación justa" },
+          facts: [
+            {
+              en: "Team A made 18 of its 24 free throws.",
+              es: "El equipo A encestó 18 de sus 24 tiros libres.",
+            },
+            {
+              en: "Team B made 21 of its 30 free throws.",
+              es: "El equipo B encestó 21 de sus 30 tiros libres.",
+            },
+          ],
+          q: {
+            en: "What percent of its free throws did each team make?",
+            es: "¿Qué porcentaje de sus tiros libres encestó cada equipo?",
+          },
+          fields: [
+            {
+              label: { en: "Step 1: Team A", es: "Paso 1: Equipo A" },
+              unit: "%",
+              ans: 75,
+              miss: {
+                en: "Write 18 out of 24 as a number out of 100.",
+                es: "Escribe 18 de 24 como un número sobre 100.",
+              },
+              wrong: {
+                18: {
+                  en: "18 is the number of baskets. Write 18 out of 24 as a percent.",
+                  es: "18 es el número de canastas. Escribe 18 de 24 como porcentaje.",
+                },
+                70: {
+                  en: "70% is Team B’s percent. Step 1 is Team A (18 out of 24).",
+                  es: "70% es el porcentaje del equipo B. El Paso 1 es el equipo A (18 de 24).",
+                },
+                0.75: {
+                  en: "That is a decimal. Write it as a percent, a number out of 100.",
+                  es: "Eso es un decimal. Escríbelo como porcentaje, un número sobre 100.",
+                },
+              },
+            },
+            {
+              label: { en: "Step 2: Team B", es: "Paso 2: Equipo B" },
+              unit: "%",
+              ans: 70,
+              miss: {
+                en: "Write 21 out of 30 as a number out of 100.",
+                es: "Escribe 21 de 30 como un número sobre 100.",
+              },
+              wrong: {
+                21: {
+                  en: "21 is the number of baskets. Write 21 out of 30 as a percent.",
+                  es: "21 es el número de canastas. Escribe 21 de 30 como porcentaje.",
+                },
+                75: {
+                  en: "75% is Team A’s percent. Step 2 is Team B (21 out of 30).",
+                  es: "75% es el porcentaje del equipo A. El Paso 2 es el equipo B (21 de 30).",
+                },
+                0.7: {
+                  en: "That is a decimal. Write it as a percent, a number out of 100.",
+                  es: "Eso es un decimal. Escríbelo como porcentaje, un número sobre 100.",
+                },
+              },
+            },
+          ],
+          hints: [
+            {
+              en: "The teams took different numbers of shots, so change each score to a percent out of 100. Simplify the fractions first if you can.",
+              es: "Los equipos lanzaron números distintos de tiros, así que cambia cada puntaje a un porcentaje sobre 100. Si puedes, simplifica primero las fracciones.",
+            },
+            {
+              en: "Team A: 18/24 = 3/4. Team B: 21/30 = 7/10. Put both over 100.",
+              es: "Equipo A: 18/24 = 3/4. Equipo B: 21/30 = 7/10. Escribe ambos sobre 100.",
+            },
+          ],
+          miss: {
+            en: "Each team took a different number of shots, so compare percents, not counts.",
+            es: "Cada equipo lanzó un número distinto de tiros, así que compara porcentajes, no cantidades.",
+          },
+          explain: {
+            en: "A: 18/24 = 75%. B: 21/30 = 70%. Team A shot better even though Team B made more baskets.",
+            es: "A: 18/24 = 75%. B: 21/30 = 70%. El equipo A tiró mejor aunque el equipo B encestó más canastas.",
+          },
+        },
+        {
+          id: "s4_2",
+          title: {
+            en: "How Students Get to School",
+            es: "Cómo llegan los estudiantes a la escuela",
+          },
+          facts: [
+            { en: "A class has 32 students.", es: "Una clase tiene 32 estudiantes." },
+            {
+              en: "25% walk and 37.5% bike.",
+              es: "25% camina y 37.5% va en bicicleta.",
+            },
+            { en: "The rest ride the bus.", es: "El resto va en autobús." },
+          ],
+          q: {
+            en: "How many students bike? How many ride the bus?",
+            es: "¿Cuántos estudiantes van en bicicleta? ¿Cuántos van en autobús?",
+          },
+          fields: [
+            {
+              label: {
+                en: "Step 1: Students who bike",
+                es: "Paso 1: Estudiantes en bicicleta",
+              },
+              unit: { en: "students", es: "estudiantes" },
+              ans: 12,
+              miss: {
+                en: "Bikers are 37.5% of the 32 students. Find the part of 32.",
+                es: "Los que van en bicicleta son el 37.5% de los 32 estudiantes. Halla la parte de 32.",
+              },
+              wrong: {
+                8: {
+                  en: "8 students walk (25% of 32). Find 37.5% of 32 for the bikers.",
+                  es: "8 estudiantes caminan (25% de 32). Halla el 37.5% de 32 para los que van en bicicleta.",
+                },
+                37.5: {
+                  en: "37.5 is the percent, not a number of students. Find 37.5% of 32.",
+                  es: "37.5 es el porcentaje, no un número de estudiantes. Halla el 37.5% de 32.",
+                },
+                1200: {
+                  en: "That uses 37.5 instead of 0.375. Write the percent as a decimal before you multiply.",
+                  es: "Eso usa 37.5 en lugar de 0.375. Escribe el porcentaje como decimal antes de multiplicar.",
+                },
+                4: {
+                  en: "4 students is only one eighth of the class. Bikers are three eighths.",
+                  es: "4 estudiantes es solo un octavo de la clase. Los que van en bicicleta son tres octavos.",
+                },
+              },
+            },
+            {
+              label: {
+                en: "Step 2: Students who ride the bus",
+                es: "Paso 2: Estudiantes en autobús",
+              },
+              unit: { en: "students", es: "estudiantes" },
+              ans: 12,
+              miss: {
+                en: "The bus riders are the students left after the walkers and the bikers.",
+                es: "Los que van en autobús son los estudiantes que quedan después de los que caminan y los que van en bicicleta.",
+              },
+              wrong: {
+                8: {
+                  en: "8 students walk. The bus riders are the rest of the class.",
+                  es: "8 estudiantes caminan. Los que van en autobús son el resto de la clase.",
+                },
+                20: {
+                  en: "20 students walk or bike. The bus riders are the rest of the class.",
+                  es: "20 estudiantes caminan o van en bicicleta. Los que van en autobús son el resto de la clase.",
+                },
+                24: {
+                  en: "That only takes the walkers away from 32. Take the bikers away, too.",
+                  es: "Eso solo quita a los que caminan de 32. Quita también a los que van en bicicleta.",
+                },
+              },
+            },
+          ],
+          hints: [
+            {
+              en: "Find the walkers first: 25% is one fourth of 32. 37.5% is three eighths of the class (one eighth of 32 is 4).",
+              es: "Primero halla los que caminan: 25% es un cuarto de 32. 37.5% son tres octavos de la clase (un octavo de 32 es 4).",
+            },
+            {
+              en: "Bikers: 3 × (32 ÷ 8) = ? Bus riders: 32 − walkers − your answer for the bikers.",
+              es: "En bicicleta: 3 × (32 ÷ 8) = ? En autobús: 32 − los que caminan − tu respuesta de los que van en bicicleta.",
+            },
+          ],
+          miss: {
+            en: "Every percent here is a percent of all 32 students. The bus riders are whoever is left.",
+            es: "Cada porcentaje aquí es un porcentaje de los 32 estudiantes. Los que van en autobús son los que quedan.",
+          },
+          explain: {
+            en: "Walk: 32 ÷ 4 = 8. Bike: 3 × 4 = 12. Bus: 32 − 8 − 12 = 12 (which is also 37.5%).",
+            es: "Caminan: 32 ÷ 4 = 8. Bicicleta: 3 × 4 = 12. Autobús: 32 − 8 − 12 = 12 (que también es 37.5%).",
+          },
+        },
+        {
+          id: "s4_5",
+          title: { en: "Paint Mix", es: "Mezcla de pintura" },
+          facts: [
+            {
+              en: "A paint mix is 40% blue paint.",
+              es: "Una mezcla de pintura es 40% pintura azul.",
+            },
+            {
+              en: "A painter uses 6 liters of blue.",
+              es: "Un pintor usa 6 litros de azul.",
+            },
+          ],
+          q: {
+            en: "How many liters are in the whole mix? How many liters are NOT blue?",
+            es: "¿Cuántos litros tiene la mezcla completa? ¿Cuántos litros NO son azules?",
+          },
+          fields: [
+            {
+              label: { en: "Step 1: Whole mix", es: "Paso 1: Mezcla completa" },
+              unit: { en: "liters", es: "litros" },
+              ans: 15,
+              miss: {
+                en: "The 6 liters is 40% of the whole mix. You need the whole.",
+                es: "Los 6 litros son el 40% de la mezcla completa. Necesitas el total.",
+              },
+              wrong: {
+                2.4: {
+                  en: "That is 40% of 6. The 6 liters IS the 40%, and you need the whole.",
+                  es: "Eso es el 40% de 6. Los 6 litros SON el 40% y necesitas el total.",
+                },
+                1.5: {
+                  en: "That is the size of one 10% block. The whole mix is ten blocks.",
+                  es: "Ese es el tamaño de un bloque de 10%. La mezcla completa son diez bloques.",
+                },
+                6: {
+                  en: "6 liters is the blue paint, which is only 40% of the mix.",
+                  es: "6 litros es la pintura azul, que es solo el 40% de la mezcla.",
+                },
+              },
+            },
+            {
+              label: { en: "Step 2: Not blue", es: "Paso 2: No azul" },
+              unit: { en: "liters", es: "litros" },
+              ans: 9,
+              miss: {
+                en: "Not blue is what is left of the whole mix after the blue paint.",
+                es: "No azul es lo que queda de la mezcla completa después de la pintura azul.",
+              },
+              wrong: {
+                6: {
+                  en: "6 liters is the blue paint. Find the paint that is NOT blue.",
+                  es: "6 litros es la pintura azul. Halla la pintura que NO es azul.",
+                },
+                15: {
+                  en: "That is the whole mix. Take the blue paint away from it.",
+                  es: "Esa es la mezcla completa. Quítale la pintura azul.",
+                },
+                21: {
+                  en: "Adding gives more than the whole mix. Take the blue away instead.",
+                  es: "Sumar da más que la mezcla completa. Mejor quita el azul.",
+                },
+                60: {
+                  en: "60 is the percent that is not blue. The question asks for liters.",
+                  es: "60 es el porcentaje que no es azul. La pregunta pide litros.",
+                },
+              },
+            },
+          ],
+          hints: [
+            {
+              en: "6 liters is 40% of the whole mix. 40% is four 10% blocks, so find the size of one block.",
+              es: "6 litros es el 40% de la mezcla completa. 40% son cuatro bloques de 10%, así que halla el tamaño de un bloque.",
+            },
+            {
+              en: "6 ÷ 4 = ? liters in one 10% block. The whole mix is 10 blocks. Not blue = whole mix − 6.",
+              es: "6 ÷ 4 = ? litros en un bloque de 10%. La mezcla completa son 10 bloques. No azul = mezcla completa − 6.",
+            },
+          ],
+          miss: {
+            en: "The blue paint is only part of the mix. Find the whole first, then what is left.",
+            es: "La pintura azul es solo una parte de la mezcla. Halla primero el total y luego lo que queda.",
+          },
+          explain: {
+            en: "6 ÷ 4 = 1.5 L per 10%, so the whole mix is 15 L. Not blue = 15 − 6 = 9 L (60%).",
+            es: "6 ÷ 4 = 1.5 L por cada 10%, así que la mezcla completa es 15 L. No azul = 15 − 6 = 9 L (60%).",
+          },
+        },
+        {
+          id: "s4_6",
+          title: { en: "Which Group Is the Whole?", es: "¿Cuál grupo es el total?" },
+          facts: [
+            { en: "The chorus has 40 members.", es: "El coro tiene 40 miembros." },
+            { en: "The band has 50 members.", es: "La banda tiene 50 miembros." },
+          ],
+          q: {
+            en: "What percent is each group of the other group’s size?",
+            es: "¿Qué porcentaje es cada grupo del tamaño del otro grupo?",
+          },
+          fields: [
+            {
+              label: {
+                en: "Step 1: Band as a percent of the chorus",
+                es: "Paso 1: Banda como porcentaje del coro",
+              },
+              unit: "%",
+              ans: 125,
+              miss: {
+                en: "The group after the word “of” is the whole. Here the whole is the chorus.",
+                es: "El grupo que va después de “del” es el total. Aquí el total es el coro.",
+              },
+              wrong: {
+                80: {
+                  en: "80% is the chorus as a percent of the band. Here the chorus is the whole.",
+                  es: "80% es el coro como porcentaje de la banda. Aquí el total es el coro.",
+                },
+                25: {
+                  en: "25% only measures the 10 extra members. Compare the whole band to the whole chorus.",
+                  es: "25% solo mide los 10 miembros de más. Compara toda la banda con todo el coro.",
+                },
+                10: {
+                  en: "10 is how many more members the band has. Compare all 50 members with the chorus.",
+                  es: "10 es cuántos miembros más tiene la banda. Compara los 50 miembros con el coro.",
+                },
+              },
+            },
+            {
+              label: {
+                en: "Step 2: Chorus as a percent of the band",
+                es: "Paso 2: Coro como porcentaje de la banda",
+              },
+              unit: "%",
+              ans: 80,
+              miss: {
+                en: "The group after the word “of” is the whole. Here the whole is the band.",
+                es: "El grupo que va después de “de la” es el total. Aquí el total es la banda.",
+              },
+              wrong: {
+                125: {
+                  en: "125% is the band as a percent of the chorus. Here the band is the whole.",
+                  es: "125% es la banda como porcentaje del coro. Aquí el total es la banda.",
+                },
+                20: {
+                  en: "20% only measures the 10 missing members. Compare all 40 chorus members with the band.",
+                  es: "20% solo mide los 10 miembros que faltan. Compara los 40 miembros del coro con la banda.",
+                },
+                10: {
+                  en: "10 is how many fewer members the chorus has. Compare all 40 members with the band.",
+                  es: "10 es cuántos miembros menos tiene el coro. Compara los 40 miembros con la banda.",
+                },
+              },
+            },
+          ],
+          hints: [
+            {
+              en: "The whole is the group right after the word “of.” For the band as a percent of the chorus, the chorus is the whole.",
+              es: "El total es el grupo que va justo después de “de”. Para la banda como porcentaje del coro, el total es el coro.",
+            },
+            {
+              en: "50/40 = 5/4 and 40/50 = 4/5. Scale each one to a denominator of 100.",
+              es: "50/40 = 5/4 y 40/50 = 4/5. Escala cada una a un denominador de 100.",
+            },
+          ],
+          miss: {
+            en: "Ask “percent of what?” each time. Changing the whole changes the percent.",
+            es: "Pregunta “¿porcentaje de qué?” cada vez. Si cambia el total, cambia el porcentaje.",
+          },
+          explain: {
+            en: "50/40 = 125/100 = 125%, but 40/50 = 80/100 = 80%. Changing the whole changes the percent.",
+            es: "50/40 = 125/100 = 125%, pero 40/50 = 80/100 = 80%. Si cambia el total, cambia el porcentaje.",
+          },
+        },
+        {
+          id: "s4_4",
+          title: { en: "Tax and Tip", es: "Impuesto y propina" },
+          facts: [
+            {
+              en: "A meal costs $45 before tax.",
+              es: "Una comida cuesta $45 antes de impuestos.",
+            },
+            { en: "Tax is 8% of $45.", es: "El impuesto es 8% de $45." },
+            { en: "The tip is 20% of $45.", es: "La propina es 20% de $45." },
+          ],
+          q: {
+            en: "What is the total bill (meal, tax, and tip)?",
+            es: "¿Cuál es la cuenta total (comida, impuesto y propina)?",
+          },
+          fields: [
+            {
+              label: { en: "Step 1: Tax", es: "Paso 1: Impuesto" },
+              unit: { en: "dollars ($)", es: "dólares ($)" },
+              ans: 3.6,
+              miss: {
+                en: "Tax is 8% of the $45 meal. Write 8% as a decimal and multiply.",
+                es: "El impuesto es el 8% de la comida de $45. Escribe 8% como decimal y multiplica.",
+              },
+              wrong: {
+                360: {
+                  en: "That uses 8 instead of 0.08. Write the percent as a decimal before you multiply.",
+                  es: "Eso usa 8 en lugar de 0.08. Escribe el porcentaje como decimal antes de multiplicar.",
+                },
+                8: {
+                  en: "8 is the percent, not dollars. Find 8% of $45.",
+                  es: "8 es el porcentaje, no dólares. Halla el 8% de $45.",
+                },
+                9: {
+                  en: "$9 is the tip (20% of $45). Step 1 is the tax (8%).",
+                  es: "$9 es la propina (20% de $45). El Paso 1 es el impuesto (8%).",
+                },
+                0.36: {
+                  en: "Check the decimal point: 8% is 0.08, not 0.008.",
+                  es: "Revisa el punto decimal: 8% es 0.08, no 0.008.",
+                },
+              },
+            },
+            {
+              label: { en: "Step 2: Total bill", es: "Paso 2: Cuenta total" },
+              unit: { en: "dollars ($)", es: "dólares ($)" },
+              ans: 57.6,
+              miss: {
+                en: "The total bill is the meal plus the tax plus the tip. Find the tip, then add all three.",
+                es: "La cuenta total es la comida más el impuesto más la propina. Halla la propina y suma las tres cantidades.",
+              },
+              wrong: {
+                48.6: {
+                  en: "That is the meal plus the tax. The tip is part of the bill, too.",
+                  es: "Eso es la comida más el impuesto. La propina también es parte de la cuenta.",
+                },
+                54: {
+                  en: "That is the meal plus the tip. The tax is part of the bill, too.",
+                  es: "Eso es la comida más la propina. El impuesto también es parte de la cuenta.",
+                },
+                12.6: {
+                  en: "That is the tax and the tip added together. The bill also includes the meal.",
+                  es: "Eso es el impuesto y la propina sumados. La cuenta también incluye la comida.",
+                },
+                3.6: {
+                  en: "That is only the tax. The bill includes the meal, the tax, and the tip.",
+                  es: "Eso es solo el impuesto. La cuenta incluye la comida, el impuesto y la propina.",
+                },
+              },
+            },
+          ],
+          hints: [
+            {
+              en: "Tax and tip are both percents of $45, the price of the meal. Find each amount, then add the meal, the tax, and the tip.",
+              es: "El impuesto y la propina son porcentajes de $45, el precio de la comida. Halla cada cantidad y luego suma la comida, el impuesto y la propina.",
+            },
+            {
+              en: "1% of $45 is $0.45. Tax: 8 × 0.45. Tip: 20% of 45 is 2 tenths of 45. Total: 45 + tax + tip.",
+              es: "1% de $45 es $0.45. Impuesto: 8 × 0.45. Propina: 20% de 45 son 2 décimos de 45. Total: 45 + impuesto + propina.",
+            },
+          ],
+          miss: {
+            en: "Tax and tip are each a percent of $45. Find both amounts, then add them to the $45.",
+            es: "El impuesto y la propina son cada uno un porcentaje de $45. Halla ambas cantidades y súmalas a los $45.",
+          },
+          explain: {
+            en: "Tax: 8 × 0.45 = 3.6 dollars. Tip: 20% of 45 = 9 dollars. Total bill: 45 + 3.6 + 9 = 57.6 dollars.",
+            es: "Impuesto: 8 × 0.45 = 3.6 dólares. Propina: 20% de 45 = 9 dólares. Cuenta total: 45 + 3.6 + 9 = 57.6 dólares.",
+          },
+        },
+      ];
+
+      /* Error-detective cards: pick the choice that finds the real mistake. One feedback line per choice. */
+      const T4_DETECTIVE = [
+        {
+          id: "s4_7",
+          title: { en: "Fix It: Ben’s Method", es: "Corrígelo: el método de Ben" },
+          facts: [
+            {
+              en: "Ben wants to write 12 out of 40 as a percent.",
+              es: "Ben quiere escribir 12 de 40 como porcentaje.",
+            },
+            {
+              en: "He adds 60 to both numbers: (12 + 60) / (40 + 60) = 72/100. So he says 72%.",
+              es: "Suma 60 a ambos números: (12 + 60) / (40 + 60) = 72/100. Entonces dice 72%.",
+            },
+          ],
+          q: {
+            en: "What is wrong with Ben’s method?",
+            es: "¿Qué tiene de malo el método de Ben?",
+          },
+          choices: [
+            {
+              en: "Nothing is wrong. 72% is correct.",
+              es: "No hay error. 72% es correcto.",
+            },
+            {
+              en: "He should subtract 60 instead of adding.",
+              es: "Debió restar 60 en lugar de sumar.",
+            },
+            {
+              en: "Ratios stay equal by multiplying, not adding.",
+              es: "Las razones siguen iguales al multiplicar, no al sumar.",
+            },
+            {
+              en: "A whole of 40 cannot be changed to 100.",
+              es: "Un total de 40 no se puede cambiar a 100.",
+            },
+          ],
+          correct: 2,
+          feedback: [
+            {
+              en: "12 is less than half of 40, so the percent has to be less than 50%. Check with 12/40 in lowest terms.",
+              es: "12 es menos de la mitad de 40, así que el porcentaje tiene que ser menor que 50%. Compruébalo con 12/40 en su mínima expresión.",
+            },
+            {
+              en: "Subtracting is the same kind of mistake as adding. Both change the ratio.",
+              es: "Restar es el mismo tipo de error que sumar. Ambos cambian la razón.",
+            },
+            { en: "That’s right.", es: "Así es." },
+            {
+              en: "40 can become 100. You multiply it by the right factor, and multiply the part by the same factor.",
+              es: "40 sí puede convertirse en 100. Lo multiplicas por el factor correcto y multiplicas la parte por el mismo factor.",
+            },
+          ],
+          hints: [
+            {
+              en: "Write 12/40 in lowest terms. Does it look close to 72/100?",
+              es: "Escribe 12/40 en su mínima expresión. ¿Se parece a 72/100?",
+            },
+            {
+              en: "What do you multiply 40 by to get 100? Do the same to 12 and compare.",
+              es: "¿Por qué número multiplicas 40 para obtener 100? Haz lo mismo con 12 y compara.",
+            },
+          ],
+          explain: {
+            en: "12/40 = 3/10 = 30/100 = 30%. Multiplying both numbers by 2.5 keeps the ratio equal; adding 60 does not.",
+            es: "12/40 = 3/10 = 30/100 = 30%. Multiplicar ambos números por 2.5 mantiene igual la razón; sumar 60 no.",
+          },
+        },
+        {
+          id: "s4_8",
+          title: {
+            en: "Fix It: Dana’s Discounts",
+            es: "Corrígelo: los descuentos de Dana",
+          },
+          facts: [
+            {
+              en: "A $50 shirt is 20% off. Then the store takes another 20% off the new price.",
+              es: "Una camisa de $50 tiene 20% de descuento. Luego la tienda quita otro 20% al nuevo precio.",
+            },
+            {
+              en: "Dana says: “20% + 20% = 40%, so the shirt is 40% off.”",
+              es: "Dana dice: “20% + 20% = 40%, entonces la camisa tiene 40% de descuento.”",
+            },
+          ],
+          q: { en: "Is Dana right?", es: "¿Tiene razón Dana?" },
+          choices: [
+            {
+              en: "Yes. Discounts add: 20% + 20% = 40%.",
+              es: "Sí. Los descuentos se suman: 20% + 20% = 40%.",
+            },
+            {
+              en: "No. The second 20% should have been 40%.",
+              es: "No. El segundo 20% debió ser 40%.",
+            },
+            {
+              en: "No. Two discounts cannot be used together.",
+              es: "No. No se pueden usar dos descuentos juntos.",
+            },
+            {
+              en: "No. The second 20% comes off a smaller price.",
+              es: "No. El segundo 20% se quita de un precio más bajo.",
+            },
+          ],
+          correct: 3,
+          feedback: [
+            {
+              en: "Try it with dollars: take 20% off $50, then take 20% off the new price. Is the total saved 40% of $50?",
+              es: "Pruébalo con dólares: quita el 20% de $50 y luego el 20% del nuevo precio. ¿El ahorro total es el 40% de $50?",
+            },
+            {
+              en: "Nothing in the problem says the second discount is 40%. Both discounts are 20%.",
+              es: "Nada en el problema dice que el segundo descuento es 40%. Ambos descuentos son 20%.",
+            },
+            {
+              en: "The problem says it happened. Percent discounts can be applied one after another.",
+              es: "El problema dice que ocurrió. Los descuentos porcentuales se pueden aplicar uno tras otro.",
+            },
+            { en: "That’s right.", es: "Así es." },
+          ],
+          hints: [
+            {
+              en: "Use dollars. Find the price after the first 20% off.",
+              es: "Usa dólares. Halla el precio después del primer 20% de descuento.",
+            },
+            {
+              en: "Then find 20% of that new price, not of $50. Compare the total saved with 40% of $50.",
+              es: "Luego halla el 20% de ese nuevo precio, no de $50. Compara el ahorro total con el 40% de $50.",
+            },
+          ],
+          explain: {
+            en: "20% of $50 = $10, so the price is $40. 20% of $40 = $8, so the price is $32. Total discount = $18 = 36% of $50, which is less than 40%.",
+            es: "20% de $50 = $10, así que el precio es $40. 20% de $40 = $8, así que el precio es $32. Descuento total = $18 = 36% de $50, que es menos de 40%.",
+          },
+        },
+      ];
 
 const W = "Warm-Up";
 const C = "Core";
@@ -1565,7 +2162,7 @@ const RAMP_ORDER = [
   [["s4_e1", W], ["s4_e2", W], ["s4_3", C], ["s4_1", C], ["s4_2", C], ["s4_5", S], ["s4_6", S], ["s4_4", S], ["s4_7", H], ["s4_8", H]],
 ];
 const SECTIONS = RAMP_ORDER.map((order, i) => {
-  const pool = [...RAMP_EASY[i], ...BASE_SECTIONS[i]];
+  const pool = i < 3 ? [...RAMP_EASY[i], ...BASE_SECTIONS[i]] : [...T4_STORIES, ...T4_DETECTIVE];
   if (pool.length !== order.length) throw new Error(`ramp section ${i + 1}: ${pool.length} problems vs ${order.length} ordered`);
   return order.map(([id, level]) => {
     const found = pool.find((q) => q.id === id);
@@ -1973,41 +2570,22 @@ const CHALLENGE_GUIDES = {
     solve: ["There are three 50% groups in 150%, but only two 50% groups in the whole.", "El 150% contiene tres grupos de 50%, pero el entero contiene solo dos."],
     check: ["The unknown whole must be smaller than 42. Check that 150% of your whole returns 42.", "El entero desconocido debe ser menor que 42. Comprueba que el 150% de tu entero sea 42."],
   },
-  s4_7: {
-    read: ["Ben starts with 12 out of 40. He changes the ratio by adding 60, then claims the new ratio is equivalent.", "Ben empieza con 12 de 40. Cambia la razón al sumar 60 y afirma que la nueva razón es equivalente."],
-    plan: ["Compare 12/40 with 72/100. Equivalent ratios scale both terms by the same multiplier; adding the same amount is a different operation.", "Compara 12/40 con 72/100. Las razones equivalentes multiplican ambos términos por el mismo factor; sumar la misma cantidad es otra operación."],
-    solve: ["Check what multiplier changes 40 to 100. Apply that same multiplier to 12 and compare the result with 72.", "Halla el factor que convierte 40 en 100. Aplica ese mismo factor a 12 y compara el resultado con 72."],
-    check: ["Simplify both ratios or convert both to a denominator of 100. Decide whether Ben preserved the original ratio.", "Simplifica ambas razones o conviértelas a denominador 100. Decide si Ben conservó la razón original."],
-  },
-  s4_8: {
-    read: ["The shirt starts at $50. The first 20% discount is based on $50; the second is based on the new, lower price.", "La camisa cuesta $50 al principio. El primer descuento del 20% se basa en $50; el segundo, en el nuevo precio más bajo."],
-    plan: ["Track the price in order: apply the first discount, then find 20% of that sale price. Do not apply both discounts to $50.", "Sigue el precio en orden: aplica el primer descuento y luego halla el 20% de ese precio. No apliques ambos descuentos a $50."],
-    solve: ["Record each price after a discount. Then compare the total dollars saved with 40% of the original $50.", "Anota el precio después de cada descuento. Luego compara el ahorro total con el 40% de los $50 originales."],
-    check: ["The second discount is smaller in dollars because it is taken from a lower price. Test whether the final savings equal 40% of $50.", "El segundo descuento es menor en dólares porque se aplica a un precio más bajo. Comprueba si el ahorro total equivale al 40% de $50."],
-  },
 };
 
 function guideFor(n, p) {
   const read = p.type === "mc" && n === 1
     ? "Notice the number forms and the order or claim the question asks you to check."
-    : p.type === "mc" && n === 4
-      ? "Find the person's claim. Identify the original whole and any new whole."
     : n === 2 && Number.isFinite(p.knownWhole)
     ? `The part is ${p.knownPart}; the whole (100%) is ${p.knownWhole}.`
     : n === 3
       ? "Find the number that represents 100%. Decide whether the missing number is the part, whole, or percent."
-      : n === 4
-        ? "Underline what the question asks. If the story changes the amount, check which amount is 100% at each step."
-        : "Identify one whole (100%). Check whether the amount is less than or greater than one whole.";
+      : "Identify one whole (100%). Check whether the amount is less than or greater than one whole.";
   const plan = p.type === "mc" && n === 1
     ? "Convert each value to a percent, then compare before you choose."
-    : p.type === "mc" && n === 4
-      ? "Rework the claim with equivalent ratios or the correct percent of each whole."
-      : [
+    : [
     "Use the grid, fraction, or decimal to make a percent out of 100.",
     "Write part/whole. Simplify if helpful, then scale the whole to 100 using the same factor on both numbers.",
     "Use a benchmark such as 10%, 5%, 1%, or 50% to build the amount you need.",
-    "Find each amount in story order. Label your units and check whether the whole changes.",
   ][n - 1];
   const level = p.level || "Core";
   if (level === "Warm-Up") {
@@ -2015,9 +2593,7 @@ function guideFor(n, p) {
       ? "Use the 100-grid. One full grid is 100%."
       : n === 2
         ? "Name the part and the whole. The whole is 100%."
-        : n === 3
-          ? "Use the model or benchmark in the question. Work one answer at a time."
-          : "Solve one part at a time. Keep track of what the percent is based on.";
+        : "Use the model or benchmark in the question. Work one answer at a time.";
     return `<div class="solve-guide brief" aria-label="Quick cue"><p><strong>Quick cue:</strong> ${esc(cue)}</p></div>`;
   }
   const tryText = p.type === "mc"
@@ -2221,15 +2797,149 @@ function renderSection(n) {
   );
 }
 
+/* ----------------------------------------------------------------------
+   SECTION 4: stories and error detective, one card at a time.
+   Number cards come from assets/u4-studio-story.js; the two detective cards
+   (pick the real mistake) use the same layout with per-choice feedback.
+   ---------------------------------------------------------------------- */
+const biHtml = (t) => `${esc(t.en)}<span class="es-text">${esc(t.es)}</span>`;
+
+function levelPill(p) {
+  return `<span class="level-pill lvl-${esc(p.level)}">${esc(p.level)}</span>`;
+}
+
+/* The two-step hint ladder of a detective card: a wrong pick or the Hint button shows the next hint. */
+function detectiveCard(host, p, pos, len, done, onSolve) {
+  const letters = ["A", "B", "C", "D"];
+  const choices = p.choices
+    .map(
+      (c, i) => `
+      <button type="button" class="choice-btn ${done && i === p.correct ? "correct" : ""}" data-mc="${i}"${done ? " disabled" : ""}>
+        <span class="choice-letter">${letters[i]}</span><span>${biHtml(c)}</span>
+      </button>`,
+    )
+    .join("");
+  host.innerHTML = `
+    <div class="item-head">
+      <span class="item-count">${pos} of ${len} · ${biHtml(p.title)} ${levelPill(p)}</span>
+      <button type="button" class="speak-btn" data-detective-speak>🔊 Read</button>
+    </div>
+    <div class="story-facts story-challenge">
+      <div class="story-label">${biHtml({ en: "What you know", es: "Lo que sabes" })}</div>
+      <ul>${p.facts.map((f) => `<li>${biHtml(f)}</li>`).join("")}</ul>
+    </div>
+    <p class="item-q"><span class="story-label">${biHtml({ en: "Question", es: "Pregunta" })}</span>${biHtml(p.q)}</p>
+    <div class="choice-list">${choices}</div>
+    <div class="item-actions">${done ? "" : `<button type="button" class="btn" data-detective-hint>💡 ${biHtml({ en: "Hint", es: "Pista" })}</button>`}</div>
+    <div class="story-hints" data-detective-hints aria-live="polite"></div>
+    <div class="feedback-box ${done ? "show ok" : ""}" data-detective-fb aria-live="polite">${done ? `${biHtml({ en: "Correct!", es: "¡Correcto!" })} ${biHtml(p.explain)}` : ""}</div>`;
+  const fb = host.querySelector("[data-detective-fb]");
+  const hintBox = host.querySelector("[data-detective-hints]");
+  const hintBtn = host.querySelector("[data-detective-hint]");
+  let shown = 0;
+  const showHints = (n) => {
+    shown = Math.max(shown, Math.min(n, p.hints.length));
+    hintBox.innerHTML = p.hints
+      .slice(0, shown)
+      .map(
+        (h, i) =>
+          `<p class="story-hint"><strong>${biHtml({ en: `Hint ${i + 1}`, es: `Pista ${i + 1}` })}</strong>${biHtml(h)}</p>`,
+      )
+      .join("");
+    if (hintBtn && shown >= p.hints.length) hintBtn.remove();
+  };
+  if (hintBtn) hintBtn.addEventListener("click", () => showHints(shown + 1));
+  host.querySelector("[data-detective-speak]").addEventListener("click", () => {
+    const t = (x) => (state.showEs ? x.es : x.en);
+    const text = [
+      ...p.facts.map(t),
+      t(p.q),
+      ...p.choices.map((c, i) => `${letters[i]}. ${t(c)}`),
+    ].join(". ");
+    speak(text, text);
+  });
+  if (done) return fb;
+  host.querySelectorAll("[data-mc]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const i = Number(btn.dataset.mc);
+      if (i === p.correct) {
+        onSolve();
+        return;
+      }
+      host
+        .querySelectorAll("[data-mc]")
+        .forEach((b) => b.classList.remove("wrong"));
+      btn.classList.add("wrong");
+      misses[p.id] = (misses[p.id] || 0) + 1;
+      fb.className = "feedback-box show err";
+      fb.innerHTML = biHtml(p.feedback[i]);
+      showHints(misses[p.id]);
+    });
+  });
+  return fb;
+}
+
+function renderStories() {
+  const k = 3;
+  const list = SECTIONS[k];
+  const p = list[state.idx[k]];
+  const done = !!state.solved[k][p.id];
+  const host = $("s4-stage");
+  const dots = () =>
+    renderDots("s4-dots", list, state.idx[k], state.solved[k], (ni) => {
+      state.idx[k] = ni;
+      renderStories();
+    });
+  dots();
+  const finish = (fbEl) => {
+    state.solved[k][p.id] = true;
+    updateProgressHeader();
+    dots();
+    appendNext(fbEl, 4, renderStories);
+    announce("Correct!");
+  };
+  let fb;
+  if (p.choices) {
+    fb = detectiveCard(host, p, state.idx[k] + 1, list.length, done, () => {
+      state.solved[k][p.id] = true;
+      justSolved = true;
+      updateProgressHeader();
+      renderStories();
+      announce("Correct!");
+    });
+  } else {
+    fb = U4Studio.story.card({
+      host,
+      item: p,
+      index: state.idx[k],
+      count: list.length,
+      solved: done,
+      challenge: true,
+      speak: (t) => speak(t, t),
+      showEs: () => state.showEs,
+      onMiss: saveState,
+      onSolve: finish,
+    }).fb;
+    host
+      .querySelector(".item-count")
+      .insertAdjacentHTML("beforeend", ` ${levelPill(p)}`);
+    if (p.visual)
+      host
+        .querySelector(".item-q")
+        .insertAdjacentHTML("beforebegin", p.visual());
+  }
+  if (done) appendNext(fb, 4, renderStories);
+}
 [1, 2, 3, 4].forEach((n) => {
   const k = n - 1;
+  const render = n === 4 ? renderStories : () => renderSection(n);
   $(`s${n}-prev-btn`).addEventListener("click", () => {
     state.idx[k] = (state.idx[k] - 1 + SECTION_SIZES[k]) % SECTION_SIZES[k];
-    renderSection(n);
+    render();
   });
   $(`s${n}-next-btn`).addEventListener("click", () => {
     state.idx[k] = (state.idx[k] + 1) % SECTION_SIZES[k];
-    renderSection(n);
+    render();
   });
 });
 
@@ -2342,7 +3052,8 @@ $("s5-next-btn").addEventListener("click", () => {
 $("s5-reset-btn").addEventListener("click", resetQuiz);
 
 function renderAll() {
-  [1, 2, 3, 4].forEach(renderSection);
+  [1, 2, 3].forEach(renderSection);
+  renderStories();
   renderQuestion();
   updateProgressHeader();
 }

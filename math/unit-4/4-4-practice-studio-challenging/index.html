@@ -11,6 +11,7 @@
   <script src="/assets/studio-comfort.js" defer></script>
   <script src="/assets/u4-studio.js"></script>
   <script src="/assets/u4-studio-bonus.js"></script>
+  <script src="/assets/u4-studio-story.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -68,7 +69,7 @@
         <span class="tab-badge" id="badge-4">4</span>
         <span class="tab-text">
           <span class="tab-name">Commission &amp; Drain</span>
-          <span class="tab-desc">Car Sales &amp; Tech (6)</span>
+          <span class="tab-desc">Commission, Battery, Interest (6)</span>
         </span>
       </button>
 
@@ -153,11 +154,11 @@
     <section id="panel-4" class="tab-panel" role="tabpanel" aria-labelledby="tab-4">
       <div class="topic-strip">
         <div>
-          <h2>Tab 4: Sales Commission &amp; Battery Drain Curves</h2>
-          <p>Solve high-level real-world problems: vehicle sales commissions and phone battery discharge rates over time.</p>
-          <div class="es-text">Resuelve comisiones de ventas de autos y curvas dinámicas de descarga de batería.</div>
+          <h2>Tab 4: Commission, Battery &amp; Interest Problems</h2>
+          <p>Solve real-life percent problems about sales commission, battery use and savings interest. Each one has a plan: find the whole, then find the part.</p>
+          <div class="es-text">Resuelve problemas de porcentaje de la vida real sobre comisiones, uso de batería e interés de ahorros. Cada uno tiene un plan: halla el total y luego la parte.</div>
         </div>
-        <div class="key-rule-pill">&#128663; Car Sales &middot; Reveal Math Capstone Context</div>
+        <div class="key-rule-pill">&#128663; part = percent &times; whole</div>
       </div>
 
       <div class="stepper-bar">
@@ -197,7 +198,7 @@
 
   <footer class="app-footer">
     <div class="footer-wrap">
-      <div>Grade 6 Reveal Math &middot; Unit 4 Percents &middot; <strong>Lesson 4-4 Challenging Studio</strong></div>
+      <div>Grade 6 Math &middot; Unit 4 Percents &middot; <strong>Lesson 4-4 Challenging Studio</strong></div>
       <div>Aligned to standard <strong>6.AT.4</strong> &middot; Find and Compare with Percentages</div>
     </div>
   </footer>
@@ -1003,51 +1004,171 @@ function renderT2() {
       const T4_STORIES = [
         {
           id: 't4_1',
-          title: 'Car Sales Commission (Reveal Math Problem)',
-          scenario: 'A sales consultant earns a 4.5% commission on every car sold. This week she sold an SUV for $28,000.',
-          task: 'Calculate her exact commission earnings in dollars.',
-          targetAns: 1260,
-          explain: '0.045 × $28,000 = $1,260 commission.'
+          title: { en: 'Car Sales Commission', es: 'Comisión por venta de autos' },
+          facts: [
+            { en: 'A sales consultant earns a 4.5% commission on every car she sells.', es: 'Una vendedora gana una comisión del 4.5% por cada auto que vende.' },
+            { en: 'She sold an SUV for $28,000.', es: 'Vendió una camioneta por $28,000.' }
+          ],
+          q: { en: 'How much commission does she earn on the SUV?', es: '¿Cuánta comisión gana por la camioneta?' },
+          fields: [{
+            label: { en: 'Commission', es: 'Comisión' },
+            unit: { en: 'dollars ($)', es: 'dólares ($)' },
+            ans: 1260,
+            wrong: {
+              126000: { en: 'That uses 4.5 instead of 0.045. Move the decimal point two places to the left before you multiply.', es: 'Eso usa 4.5 en lugar de 0.045. Mueve el punto decimal dos lugares a la izquierda antes de multiplicar.' },
+              12600: { en: 'That uses 0.45, which is 45%. Write 4.5% as 0.045.', es: 'Eso usa 0.45, que es el 45%. Escribe 4.5% como 0.045.' },
+              4.5: { en: '4.5 is the commission rate, not the dollars she earns. Find 4.5% of the sale price.', es: '4.5 es la tasa de comisión, no los dólares que gana. Halla el 4.5% del precio de venta.' },
+              28000: { en: '$28,000 is the price of the SUV. Her commission is only a small part of it.', es: '$28,000 es el precio de la camioneta. Su comisión es solo una parte pequeña.' },
+              26740: { en: 'Commission is money she earns, so do not subtract it from the price. Find 4.5% of the price.', es: 'La comisión es dinero que ella gana, así que no la restes del precio. Halla el 4.5% del precio.' }
+            }
+          }],
+          hints: [
+            { en: 'The whole is the price of the SUV. Write 4.5% as a decimal.', es: 'El total es el precio de la camioneta. Escribe 4.5% como decimal.' },
+            { en: 'Multiply the decimal by the whole: 0.045 × 28,000 = ?', es: 'Multiplica el decimal por el total: 0.045 × 28,000 = ?' }
+          ],
+          miss: { en: 'Commission is a small percent of the sale, so it must be much less than $28,000. Use part = percent × whole.', es: 'La comisión es un porcentaje pequeño de la venta, así que debe ser mucho menos que $28,000. Usa parte = porcentaje × total.' },
+          explain: { en: '4.5% of $28,000 = 0.045 × 28,000 = $1,260 commission.', es: '4.5% de $28,000 = 0.045 × 28,000 = $1,260 de comisión.' }
         },
         {
           id: 't4_2',
-          title: 'Heavy Gaming Battery Discharge',
-          scenario: 'A smartphone battery is at 100% (holds 4,000 mAh). A 3D game drains 18.5% of full battery per hour.',
-          task: 'How many mAh are consumed in 2 hours of gaming?',
-          targetAns: 1480,
-          explain: 'In 2 hours: 2 × 18.5% = 37%. 0.37 × 4,000 = 1,480 mAh.'
+          title: { en: 'Gaming Battery Drain', es: 'Batería al jugar' },
+          facts: [
+            { en: 'A phone battery holds 4,000 mAh when it is full.', es: 'La batería de un teléfono guarda 4,000 mAh cuando está llena.' },
+            { en: 'A 3D game uses 18.5% of the full battery every hour.', es: 'Un juego 3D usa el 18.5% de la batería llena cada hora.' },
+            { en: 'You play for 2 hours.', es: 'Juegas durante 2 horas.' }
+          ],
+          q: { en: 'How many mAh does the game use in 2 hours?', es: '¿Cuántos mAh usa el juego en 2 horas?' },
+          fields: [{
+            label: { en: 'Battery used', es: 'Batería usada' },
+            unit: 'mAh',
+            ans: 1480,
+            wrong: {
+              740: { en: 'That is only 1 hour of gaming. The game ran for 2 hours.', es: 'Eso es solo 1 hora de juego. El juego funcionó 2 horas.' },
+              37: { en: '37 is the percent used in 2 hours. Now find that percent of the 4,000 mAh battery.', es: '37 es el porcentaje usado en 2 horas. Ahora halla ese porcentaje de la batería de 4,000 mAh.' },
+              148000: { en: 'That uses 37 instead of 0.37. Write the percent as a decimal before you multiply.', es: 'Eso usa 37 en lugar de 0.37. Escribe el porcentaje como decimal antes de multiplicar.' },
+              74000: { en: 'That uses 18.5 instead of 0.185, and only 1 hour. Write the percent as a decimal and count both hours.', es: 'Eso usa 18.5 en lugar de 0.185, y solo 1 hora. Escribe el porcentaje como decimal y cuenta las dos horas.' },
+              2520: { en: 'That is how much battery is left. The question asks how much the game uses.', es: 'Eso es lo que queda de batería. La pregunta es cuánto usa el juego.' },
+              4000: { en: '4,000 mAh is the whole battery. The game uses only part of it.', es: '4,000 mAh es la batería completa. El juego usa solo una parte.' }
+            }
+          }],
+          hints: [
+            { en: 'The game uses the same percent every hour. First find the total percent used in 2 hours, then write it as a decimal.', es: 'El juego usa el mismo porcentaje cada hora. Primero halla el porcentaje total usado en 2 horas y luego escríbelo como decimal.' },
+            { en: 'Percent used = 2 × 18.5%. Then multiply the decimal by the whole: ? × 4,000 = ?', es: 'Porcentaje usado = 2 × 18.5%. Luego multiplica el decimal por el total: ? × 4,000 = ?' }
+          ],
+          miss: { en: 'The game uses only part of the 4,000 mAh battery, so the answer must be less than 4,000. Find the percent for 2 hours, then use part = percent × whole.', es: 'El juego usa solo una parte de la batería de 4,000 mAh, así que la respuesta debe ser menor que 4,000. Halla el porcentaje de 2 horas y usa parte = porcentaje × total.' },
+          explain: { en: 'In 2 hours: 2 × 18.5% = 37%. 0.37 × 4,000 = 1,480 mAh.', es: 'En 2 horas: 2 × 18.5% = 37%. 0.37 × 4,000 = 1,480 mAh.' }
         },
         {
           id: 't4_3',
-          title: 'Real Estate Agent Sliding Commission',
-          scenario: 'An agent earns 3% on the first $200,000 of a house sale, plus 2% on any amount above $200,000. A home sells for $250,000.',
-          task: 'Calculate the total commission earned.',
-          targetAns: 7000,
-          explain: '3% of $200,000 = $6,000. 2% of $50,000 = $1,000. Total = $7,000.'
+          title: { en: 'Home Sale Commission', es: 'Comisión por venta de una casa' },
+          facts: [
+            { en: 'An agent earns 3% of the first $200,000 of a home sale.', es: 'Un agente gana el 3% de los primeros $200,000 de la venta de una casa.' },
+            { en: 'The agent earns 2% of any amount above $200,000.', es: 'El agente gana el 2% de cualquier cantidad por encima de $200,000.' },
+            { en: 'A home sells for $250,000.', es: 'Una casa se vende por $250,000.' }
+          ],
+          q: { en: 'What is the agent’s total commission?', es: '¿Cuál es la comisión total del agente?' },
+          fields: [{
+            label: { en: 'Total commission', es: 'Comisión total' },
+            unit: { en: 'dollars ($)', es: 'dólares ($)' },
+            ans: 7000,
+            wrong: {
+              5000: { en: 'That uses 2% on the whole sale. The 2% rate only applies to the amount above $200,000.', es: 'Eso usa el 2% en toda la venta. La tasa del 2% solo se aplica a la cantidad por encima de $200,000.' },
+              7500: { en: 'That uses 3% on the whole sale. The 3% rate only applies to the first $200,000.', es: 'Eso usa el 3% en toda la venta. La tasa del 3% solo se aplica a los primeros $200,000.' },
+              6000: { en: 'That is the commission on the first $200,000 only. The agent earns more on the rest of the sale.', es: 'Esa es la comisión solo de los primeros $200,000. El agente gana más con el resto de la venta.' },
+              1000: { en: 'That is the commission on the amount above $200,000 only. Add the commission on the first $200,000.', es: 'Esa es la comisión solo de la cantidad por encima de $200,000. Suma la comisión de los primeros $200,000.' },
+              12500: { en: 'Do not add the rates together (3% + 2%). Each rate applies to a different piece of the sale.', es: 'No sumes las tasas (3% + 2%). Cada tasa se aplica a una parte distinta de la venta.' }
+            }
+          }],
+          hints: [
+            { en: 'Split the sale into two pieces: the first $200,000, and the amount above it. Each piece has its own percent.', es: 'Divide la venta en dos partes: los primeros $200,000 y la cantidad por encima. Cada parte tiene su propio porcentaje.' },
+            { en: 'Piece 1: 0.03 × 200,000. Piece 2: 0.02 × (250,000 − 200,000). Add the two commissions.', es: 'Parte 1: 0.03 × 200,000. Parte 2: 0.02 × (250,000 − 200,000). Suma las dos comisiones.' }
+          ],
+          miss: { en: 'The two rates apply to two different pieces of the sale. Find the commission on each piece, then add them.', es: 'Las dos tasas se aplican a dos partes distintas de la venta. Halla la comisión de cada parte y luego súmalas.' },
+          explain: { en: '3% of $200,000 = $6,000. The amount above is $250,000 − $200,000 = $50,000, and 2% of $50,000 = $1,000. Total = $6,000 + $1,000 = $7,000.', es: '3% de $200,000 = $6,000. La cantidad por encima es $250,000 − $200,000 = $50,000, y 2% de $50,000 = $1,000. Total = $6,000 + $1,000 = $7,000.' }
         },
         {
           id: 't4_4',
-          title: 'High-Yield Savings Compound Yield',
-          scenario: 'An account has $5,000 and earns 4.2% annual interest. Interest is paid at year end.',
-          task: 'How much interest in dollars is earned in one year?',
-          targetAns: 210,
-          explain: '0.042 × $5,000 = $210.'
+          title: { en: 'Savings Interest, One Year', es: 'Interés de ahorros, un año' },
+          facts: [
+            { en: 'A savings account has $5,000 in it.', es: 'Una cuenta de ahorros tiene $5,000.' },
+            { en: 'It earns 4.2% interest each year. The interest is paid once, at the end of the year.', es: 'Gana un interés del 4.2% cada año. El interés se paga una vez, al final del año.' }
+          ],
+          q: { en: 'How much interest does the account earn in one year?', es: '¿Cuánto interés gana la cuenta en un año?' },
+          fields: [{
+            label: { en: 'Interest earned', es: 'Interés ganado' },
+            unit: { en: 'dollars ($)', es: 'dólares ($)' },
+            ans: 210,
+            wrong: {
+              21000: { en: 'That uses 4.2 instead of 0.042. Move the decimal point two places to the left before you multiply.', es: 'Eso usa 4.2 en lugar de 0.042. Mueve el punto decimal dos lugares a la izquierda antes de multiplicar.' },
+              2100: { en: 'That uses 0.42, which is 42%. Write 4.2% as 0.042.', es: 'Eso usa 0.42, que es el 42%. Escribe 4.2% como 0.042.' },
+              4.2: { en: '4.2 is the interest rate, not the dollars earned. Find 4.2% of the money in the account.', es: '4.2 es la tasa de interés, no los dólares ganados. Halla el 4.2% del dinero de la cuenta.' },
+              5000: { en: '$5,000 is the money already in the account. The interest is only a small part of it.', es: '$5,000 es el dinero que ya está en la cuenta. El interés es solo una parte pequeña.' },
+              5210: { en: 'That is the total in the account after the interest. The question asks for the interest only.', es: 'Eso es el total en la cuenta después del interés. La pregunta es solo por el interés.' }
+            }
+          }],
+          hints: [
+            { en: 'The whole is the money in the account. Write 4.2% as a decimal.', es: 'El total es el dinero de la cuenta. Escribe 4.2% como decimal.' },
+            { en: 'Multiply the decimal by the whole: 0.042 × 5,000 = ?', es: 'Multiplica el decimal por el total: 0.042 × 5,000 = ?' }
+          ],
+          miss: { en: 'One year of interest is a small part of the $5,000, so the answer must be much less than $5,000. Use part = percent × whole.', es: 'Un año de interés es una parte pequeña de los $5,000, así que la respuesta debe ser mucho menos que $5,000. Usa parte = porcentaje × total.' },
+          explain: { en: '4.2% of $5,000 = 0.042 × 5,000 = $210 interest.', es: '4.2% de $5,000 = 0.042 × 5,000 = $210 de interés.' }
         },
         {
           id: 't4_5',
-          title: 'Drone Battery Video Transmission',
-          scenario: 'A drone flight controller reserves 15% battery for emergency return. Total battery capacity is 3,500 mAh.',
-          task: 'How many mAh are usable for flight before emergency return is triggered?',
-          targetAns: 2975,
-          explain: 'Usable is 85%: 0.85 × 3,500 = 2,975 mAh (or 3,500 - 525 = 2,975).'
+          title: { en: 'Drone Battery Reserve', es: 'Reserva de batería del dron' },
+          facts: [
+            { en: 'A drone battery holds 3,500 mAh.', es: 'La batería de un dron guarda 3,500 mAh.' },
+            { en: 'The drone keeps 15% of the battery in reserve for its flight back.', es: 'El dron guarda el 15% de la batería de reserva para el vuelo de regreso.' }
+          ],
+          q: { en: 'How many mAh can the drone use before it has to turn back?', es: '¿Cuántos mAh puede usar el dron antes de tener que regresar?' },
+          fields: [{
+            label: { en: 'Battery for flight', es: 'Batería para volar' },
+            unit: 'mAh',
+            ans: 2975,
+            wrong: {
+              525: { en: 'That is the reserve, the part the drone keeps. The question asks for the rest.', es: 'Esa es la reserva, la parte que el dron guarda. La pregunta es por el resto.' },
+              52500: { en: 'That uses 15 instead of 0.15, and it finds the reserve. Write the percent as a decimal and find the usable part.', es: 'Eso usa 15 en lugar de 0.15, y halla la reserva. Escribe el porcentaje como decimal y halla la parte que se puede usar.' },
+              3500: { en: '3,500 mAh is the whole battery. Some of it is kept in reserve.', es: '3,500 mAh es la batería completa. Una parte se guarda de reserva.' },
+              3485: { en: 'Do not subtract 15 mAh. The 15 is a percent of the battery, not a number of mAh.', es: 'No restes 15 mAh. El 15 es un porcentaje de la batería, no una cantidad de mAh.' },
+              15: { en: '15 is the percent kept in reserve. Find how many mAh the drone can use.', es: '15 es el porcentaje de reserva. Halla cuántos mAh puede usar el dron.' },
+              85: { en: '85 is a percent, not mAh. Find that percent of the whole battery.', es: '85 es un porcentaje, no mAh. Halla ese porcentaje de la batería completa.' }
+            }
+          }],
+          hints: [
+            { en: 'The whole is the full 3,500 mAh. The drone can use everything except the reserve, so first find what percent is not in reserve.', es: 'El total son los 3,500 mAh completos. El dron puede usar todo menos la reserva, así que primero halla qué porcentaje no es reserva.' },
+            { en: 'Percent usable = 100% − 15%. Write it as a decimal, then multiply: ? × 3,500 = ?', es: 'Porcentaje utilizable = 100% − 15%. Escríbelo como decimal y multiplica: ? × 3,500 = ?' }
+          ],
+          miss: { en: 'The drone can use most of the battery, but not all of it, so the answer is a little less than 3,500. Find the percent that is not in reserve.', es: 'El dron puede usar la mayor parte de la batería, pero no toda, así que la respuesta es un poco menos que 3,500. Halla el porcentaje que no es reserva.' },
+          explain: { en: 'The usable part is 100% − 15% = 85%. 0.85 × 3,500 = 2,975 mAh. (Another way: 15% of 3,500 is 525, and 3,500 − 525 = 2,975.)', es: 'La parte utilizable es 100% − 15% = 85%. 0.85 × 3,500 = 2,975 mAh. (Otra forma: el 15% de 3,500 es 525, y 3,500 − 525 = 2,975.)' }
         },
         {
           id: 't4_6',
-          title: 'Car Sales Quota Bonus',
-          scenario: 'A salesperson sells $120,000 in vehicles. Their base commission is 3.5%, plus a 1.5% bonus for beating monthly quota.',
-          task: 'Calculate their total commission rate (5%) applied to $120,000.',
-          targetAns: 6000,
-          explain: '5% of $120,000 = 0.05 × 120,000 = $6,000.'
+          title: { en: 'Car Sales Quota Bonus', es: 'Bono por cumplir la meta de ventas' },
+          facts: [
+            { en: 'A salesperson sold $120,000 in cars this month.', es: 'Un vendedor vendió $120,000 en autos este mes.' },
+            { en: 'The base commission is 3.5% of the sales.', es: 'La comisión base es el 3.5% de las ventas.' },
+            { en: 'The salesperson beat the monthly quota, so a bonus of 1.5% of the sales is added.', es: 'El vendedor superó la meta mensual, así que se suma un bono del 1.5% de las ventas.' }
+          ],
+          q: { en: 'How much total commission does the salesperson earn?', es: '¿Cuánta comisión total gana el vendedor?' },
+          fields: [{
+            label: { en: 'Total commission', es: 'Comisión total' },
+            unit: { en: 'dollars ($)', es: 'dólares ($)' },
+            ans: 6000,
+            wrong: {
+              4200: { en: 'That is the base commission only. Add the bonus too.', es: 'Esa es solo la comisión base. Suma también el bono.' },
+              1800: { en: 'That is the bonus only. Add the base commission too.', es: 'Ese es solo el bono. Suma también la comisión base.' },
+              5: { en: '5 is a percent, not dollars. Find that percent of the sales.', es: '5 es un porcentaje, no dólares. Halla ese porcentaje de las ventas.' },
+              600000: { en: 'That uses 5 instead of 0.05. Write the percent as a decimal before you multiply.', es: 'Eso usa 5 en lugar de 0.05. Escribe el porcentaje como decimal antes de multiplicar.' },
+              60000: { en: 'That uses 0.5, which is 50%. Check where the decimal point goes.', es: 'Eso usa 0.5, que es el 50%. Revisa dónde va el punto decimal.' },
+              120000: { en: '$120,000 is the sales total, the whole. The commission is only a small part of it.', es: '$120,000 es el total de ventas, el total. La comisión es solo una parte pequeña.' }
+            }
+          }],
+          hints: [
+            { en: 'Both percents are taken from the same $120,000. First add the base rate and the bonus rate, then write the total rate as a decimal.', es: 'Ambos porcentajes se toman de los mismos $120,000. Primero suma la tasa base y la tasa del bono, y luego escribe la tasa total como decimal.' },
+            { en: 'Total rate = 3.5% + 1.5%. Then multiply the decimal by the whole: ? × 120,000 = ?', es: 'Tasa total = 3.5% + 1.5%. Luego multiplica el decimal por el total: ? × 120,000 = ?' }
+          ],
+          miss: { en: 'The commission is a small percent of $120,000. Make sure you included both the base rate and the bonus rate.', es: 'La comisión es un porcentaje pequeño de $120,000. Asegúrate de incluir la tasa base y la tasa del bono.' },
+          explain: { en: 'Total rate = 3.5% + 1.5% = 5%. 0.05 × 120,000 = $6,000. (Another way: $4,200 base + $1,800 bonus = $6,000.)', es: 'Tasa total = 3.5% + 1.5% = 5%. 0.05 × 120,000 = $6,000. (Otra forma: $4,200 de base + $1,800 de bono = $6,000.)' }
         }
       ];
 
@@ -1059,55 +1180,26 @@ function renderT2() {
           state.idx4 = ni; renderT4();
         });
 
-        const stage = document.getElementById('t4-stage-card');
-        stage.innerHTML = `
-          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:0.84rem; font-weight:800; color: var(--warn);">Challenge ${state.idx4 + 1} of ${T4_STORIES.length} · ${s.title}</span>
-            <button type="button" class="speak-btn" id="t4-speak">🔊 Read Scenario</button>
-          </div>
-          <div style="background:var(--surface-soft); border-left:4px solid var(--sun-deep); padding:14px 18px; border-radius:var(--radius-sm); margin-bottom:14px;">
-            <p style="font-size:1.1rem; color:var(--brand); font-weight:600; margin:0 0 4px 0;">${s.scenario}</p>
-          </div>
-          <p style="font-size:1.15rem; font-family:var(--font-display); font-weight:700; color:var(--brand); margin:0 0 14px 0;">${s.task}</p>
-
-          <div style="display:flex; align-items:center; gap:12px; margin-top:18px; flex-wrap:wrap;">
-            <label for="t4-in" style="font-weight:700; color:var(--brand);">Calculated Amount:</label>
-            <input type="number" step="any" id="t4-in" class="num-input" style="width:140px;" placeholder="?" value="${isSolved ? s.targetAns : ''}" ${isSolved ? 'disabled' : ''}>
-            <button type="button" class="btn btn-primary" id="t4-check-btn" ${isSolved ? 'disabled' : ''}>Check Answer</button>
-          </div>
-
-          <div id="t4-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
-            ${isSolved ? `Correct! ${s.explain}` : ''}
-          </div>
-        `;
-
-        stage.querySelector('#t4-speak').onclick = () => speak(s.scenario);
-
-        if (isSolved) appendNext(document.getElementById('t4-fb'), 4, T4_STORIES.length, renderT4);
-
-        stage.querySelector('#t4-check-btn').onclick = () => {
-          const val = parseFloat(stage.querySelector('#t4-in').value);
-          const fb = document.getElementById('t4-fb');
-          if (isNaN(val)) return;
-
-          if (Math.abs(val - s.targetAns) < 0.1) {
+        const { fb } = U4Studio.story.card({
+          host: document.getElementById('t4-stage-card'),
+          item: s,
+          index: state.idx4,
+          count: T4_STORIES.length,
+          solved: isSolved,
+          challenge: true,
+          speak,
+          showEs: () => state.showEs,
+          onMiss: () => { playSound('wrong'); saveState(); },
+          onSolve: (fbEl) => {
             playSound('correct');
             state.solved4[s.id] = true;
-            fb.className = 'feedback-box show ok';
-            fb.innerHTML = `Outstanding! ${s.explain}`;
-            stage.querySelector('#t4-in').classList.add('ok');
             renderDots('t4-dots', T4_STORIES, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4(); });
             updateProgressHeader();
-            appendNext(fb, 4, T4_STORIES.length, renderT4);
-          } else {
-            playSound('wrong');
-            fb.className = 'feedback-box show warn';
-            fb.textContent = `Convert the rate carefully: e.g. 4.5% = 0.045. Then multiply by the base amount.`;
-            stage.querySelector('#t4-in').classList.add('err');
-            setTimeout(() => stage.querySelector('#t4-in').classList.remove('err'), 800);
+            appendNext(fbEl, 4, T4_STORIES.length, renderT4);
+            saveState();
           }
-          saveState();
-        };
+        });
+        if (isSolved) appendNext(fb, 4, T4_STORIES.length, renderT4);
       }
 
       document.getElementById('t4-prev-btn').onclick = () => {

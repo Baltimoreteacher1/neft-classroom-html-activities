@@ -83,7 +83,7 @@
         <span class="tab-badge" id="badge-4">4</span>
         <span class="tab-text">
           <span class="tab-name">Real-World Stories</span>
-          <span class="tab-desc">Storage, Solar, Bills (6)</span>
+          <span class="tab-desc">Storage, Tips, Sales (6)</span>
         </span>
       </button>
 
@@ -191,11 +191,11 @@
     <section id="panel-4" class="tab-panel" role="tabpanel" aria-labelledby="tab-4">
       <div class="topic-strip">
         <div>
-          <h2>Tab 4: Multi-Step Real-World Scenarios</h2>
-          <p>Apply estimation to smartphone storage allocation, solar home battery storage, restaurant taxes + tips, and retail discounts.</p>
-          <div class="es-text">Aplica estimaciones en almacenamiento de teléfonos, baterías solares, propinas y descuentos con múltiples pasos.</div>
+          <h2>Tab 4: Real-World Estimation Stories</h2>
+          <p>Estimate a percent of a number in real stories: phone storage, batteries, tips, sales, miles, and water.</p>
+          <div class="es-text">Estima un porcentaje de un número en historias reales: almacenamiento del teléfono, baterías, propinas, ofertas, millas y agua.</div>
         </div>
-        <div class="key-rule-pill">&#128241; Notice &amp; Wonder Storage Problem (Reveal Math)</div>
+        <div class="key-rule-pill">Round first, then use a friendly percent</div>
       </div>
 
       <div class="stepper-bar">
@@ -235,7 +235,7 @@
 
   <footer class="app-footer">
     <div class="footer-wrap">
-      <div>Grade 6 Reveal Math &middot; Unit 4 Percents &middot; <strong>Lesson 4-3 Challenging Studio</strong></div>
+      <div>Grade 6 Math &middot; Unit 4 Percents &middot; <strong>Lesson 4-3 Challenging Studio</strong></div>
       <div>Aligned to standard <strong>6.AT.4</strong> &middot; Compatible Numbers &amp; Benchmarks</div>
     </div>
   </footer>
@@ -871,156 +871,222 @@
 
       // =========================================================================
       // TAB 4: REAL-WORLD STORIES
+      // Each story: a short list of facts, ONE question, three short choices, and a reason for every
+      // wrong pick. The right answer sits at a different letter each time; the worked solution is
+      // shown only after a correct pick.
       // =========================================================================
       const T4_STORIES = [
         {
           id: 't4_1',
-          title: 'Reveal Math Storage Allocation',
-          scenario: 'A smartphone has 128 GB total capacity. Photos take 48% of the storage, Apps take 28%, and Video takes 14%.',
-          scenarioEs: 'Un teléfono tiene 128 GB en total. Las fotos ocupan el 48%, las aplicaciones el 28% y los videos el 14%.',
-          task: 'Estimate how many gigabytes (GB) are used for Photos using compatible numbers.',
-          choices: [
-            { text: 'About 64 GB (50% of 128 GB)', correct: true },
-            { text: 'About 48 GB', correct: false },
-            { text: 'About 80 GB', correct: false }
+          title: { en: 'Phone storage: photos', es: 'Almacenamiento del teléfono: fotos' },
+          facts: [
+            { en: 'A smartphone has 128 GB of storage.', es: 'Un teléfono tiene 128 GB de almacenamiento.' },
+            { en: 'Photos take up 48% of the storage.', es: 'Las fotos ocupan el 48% del almacenamiento.' }
           ],
-          explain: '48% is very close to 50% (1/2). 1/2 of 128 GB = 64 GB.'
+          q: { en: 'About how many GB do the photos use?', es: '¿Aproximadamente cuántos GB usan las fotos?' },
+          choices: [
+            {
+              text: { en: 'About 48 GB', es: 'Alrededor de 48 GB' },
+              why: { en: '48 is the percent, not the number of GB. Find 48% of the 128 GB.', es: '48 es el porcentaje, no el número de GB. Halla el 48% de los 128 GB.' }
+            },
+            {
+              text: { en: 'About 64 GB', es: 'Alrededor de 64 GB' }
+            },
+            {
+              text: { en: 'About 32 GB', es: 'Alrededor de 32 GB' },
+              why: { en: '32 GB is 1/4 of the storage. 48% is closer to 1/2.', es: '32 GB es 1/4 del almacenamiento. El 48% está más cerca de 1/2.' }
+            }
+          ],
+          correct: 1,
+          explain: { en: '48% is close to 50%, which is 1/2. 1/2 of 128 GB is 64 GB.', es: '48% está cerca de 50%, que es 1/2. La mitad de 128 GB es 64 GB.' }
         },
         {
           id: 't4_2',
-          title: 'Solar Home Battery Backup',
-          scenario: 'A home battery holds 4,800 watt-hours. A power outage begins with the battery charged at 74%.',
-          scenarioEs: 'Una batería del hogar tiene 4,800 vatios-hora. Empieza un corte de luz con el 74% de carga.',
-          task: 'Estimate the stored watt-hours remaining using 75% (3/4).',
-          choices: [
-            { text: '3,600 watt-hours (3/4 of 4,800)', correct: true },
-            { text: '2,400 watt-hours', correct: false },
-            { text: '4,000 watt-hours', correct: false }
+          title: { en: 'Home battery: charge left', es: 'Batería del hogar: carga restante' },
+          facts: [
+            { en: 'A home battery holds 4,800 watt-hours.', es: 'Una batería del hogar guarda 4,800 vatios-hora.' },
+            { en: 'A power outage starts when it is 74% charged.', es: 'Un corte de luz empieza cuando tiene el 74% de carga.' },
+            { en: 'Use 75% (3/4) to estimate.', es: 'Usa 75% (3/4) para estimar.' }
           ],
-          explain: '74% ≈ 75% = 3/4. 4,800 ÷ 4 = 1,200. 1,200 × 3 = 3,600 watt-hours.'
+          q: { en: 'About how many watt-hours are stored?', es: '¿Aproximadamente cuántos vatios-hora hay guardados?' },
+          choices: [
+            {
+              text: { en: 'About 2,400 watt-hours', es: 'Alrededor de 2,400 vatios-hora' },
+              why: { en: '2,400 is 1/2 of 4,800. The battery is at about 74%, which is more than half.', es: '2,400 es 1/2 de 4,800. La batería está al 74% aproximadamente, que es más de la mitad.' }
+            },
+            {
+              text: { en: 'About 1,200 watt-hours', es: 'Alrededor de 1,200 vatios-hora' },
+              why: { en: '1,200 is just one quarter (25%). 75% takes more than one quarter.', es: '1,200 es solo un cuarto (25%). El 75% necesita más de un cuarto.' }
+            },
+            {
+              text: { en: 'About 3,600 watt-hours', es: 'Alrededor de 3,600 vatios-hora' }
+            }
+          ],
+          correct: 2,
+          explain: { en: '74% is about 75%, which is 3/4. 4,800 ÷ 4 = 1,200, and 3 × 1,200 = 3,600 watt-hours.', es: '74% es alrededor de 75%, que es 3/4. 4,800 ÷ 4 = 1,200, y 3 × 1,200 = 3,600 vatios-hora.' }
         },
         {
           id: 't4_3',
-          title: 'Dinner Bill: Tax + Tip Combination',
-          scenario: 'A restaurant food bill comes to $78.40. Sales tax is 8.5% and you want to leave a 15% tip.',
-          scenarioEs: 'La cuenta es de $78.40. El impuesto es 8.5% y quieres dejar 15% de propina.',
-          task: 'Estimate total tip using compatible numbers for $78.40 (approx $80).',
-          choices: [
-            { text: 'About $12 (10% is $8, 5% is $4 &rarr; $8 + $4 = $12)', correct: true },
-            { text: 'About $8', correct: false },
-            { text: 'About $16', correct: false }
+          title: { en: 'Dinner bill: tip', es: 'Cuenta de la cena: propina' },
+          facts: [
+            { en: 'A restaurant bill is $78.40.', es: 'La cuenta de un restaurante es $78.40.' },
+            { en: 'You want to leave a 15% tip.', es: 'Quieres dejar una propina del 15%.' },
+            { en: 'Round the bill to $80.', es: 'Redondea la cuenta a $80.' }
           ],
-          explain: 'Round $78.40 to $80. 10% is $8, 5% is half of $8 ($4). $8 + $4 = $12 tip.'
+          q: { en: 'About how much is the tip?', es: '¿Aproximadamente cuánto es la propina?' },
+          choices: [
+            {
+              text: { en: 'About $12', es: 'Alrededor de $12' }
+            },
+            {
+              text: { en: 'About $8', es: 'Alrededor de $8' },
+              why: { en: '$8 is only 10% of the bill. A 15% tip needs more than that.', es: '$8 es solo el 10% de la cuenta. Una propina del 15% necesita más que eso.' }
+            },
+            {
+              text: { en: 'About $16', es: 'Alrededor de $16' },
+              why: { en: '$16 is 20% of the bill. A 15% tip is a little less.', es: '$16 es el 20% de la cuenta. Una propina del 15% es un poco menos.' }
+            }
+          ],
+          correct: 0,
+          explain: { en: 'Round $78.40 to $80. 10% of $80 is $8, and 5% is half of that, $4. $8 + $4 = $12.', es: 'Redondea $78.40 a $80. El 10% de $80 es $8, y el 5% es la mitad, $4. $8 + $4 = $12.' }
         },
         {
           id: 't4_4',
-          title: 'Laptop Flash Sale',
-          scenario: 'A laptop with an original price of $419.99 is on clearance for 24% off.',
-          scenarioEs: 'Una laptop de $419.99 tiene un 24% de descuento.',
-          task: 'Estimate the dollar amount of the discount.',
-          choices: [
-            { text: 'About $100 to $105 (25% of $400 or $420)', correct: true },
-            { text: 'About $50', correct: false },
-            { text: 'About $150', correct: false }
+          title: { en: 'Laptop sale: discount', es: 'Oferta de laptop: descuento' },
+          facts: [
+            { en: 'A laptop costs $419.99.', es: 'Una laptop cuesta $419.99.' },
+            { en: 'It is on sale for 24% off.', es: 'Está en oferta con 24% de descuento.' }
           ],
-          explain: '24% ≈ 25% = 1/4. Round $419.99 to $400 (or $420). 1/4 of $400 is $100 (or 1/4 of $420 is $105).'
+          q: { en: 'About how much is the discount?', es: '¿Aproximadamente cuánto es el descuento?' },
+          choices: [
+            {
+              text: { en: 'About $300', es: 'Alrededor de $300' },
+              why: { en: '$300 is close to what you pay after the sale. The question asks for the discount, the amount taken off.', es: '$300 se acerca a lo que pagas después de la oferta. La pregunta pide el descuento, la cantidad que se quita.' }
+            },
+            {
+              text: { en: 'About $100', es: 'Alrededor de $100' }
+            },
+            {
+              text: { en: 'About $24', es: 'Alrededor de $24' },
+              why: { en: '24 is the percent, not dollars. Find 24% of the price.', es: '24 es el porcentaje, no los dólares. Halla el 24% del precio.' }
+            }
+          ],
+          correct: 1,
+          explain: { en: '24% is close to 25%, which is 1/4. $419.99 is close to $400. 1/4 of $400 is $100.', es: '24% está cerca de 25%, que es 1/4. $419.99 está cerca de $400. 1/4 de $400 es $100.' }
         },
         {
           id: 't4_5',
-          title: 'Electric Car Fleet Miles',
-          scenario: 'A delivery company logged 19,850 total miles this week. Hybrid/electric vans drove 19% of those miles.',
-          scenarioEs: 'Una compañía registró 19,850 millas en total. Las camionetas eléctricas recorrieron el 19%.',
-          task: 'Estimate electric miles driven.',
-          choices: [
-            { text: 'About 4,000 miles (20% of 20,000)', correct: true },
-            { text: 'About 2,000 miles', correct: false },
-            { text: 'About 6,000 miles', correct: false }
+          title: { en: 'Delivery vans: electric miles', es: 'Camionetas de reparto: millas eléctricas' },
+          facts: [
+            { en: 'A delivery company drove 19,850 miles this week.', es: 'Una compañía de reparto recorrió 19,850 millas esta semana.' },
+            { en: 'Electric vans drove 19% of those miles.', es: 'Las camionetas eléctricas recorrieron el 19% de esas millas.' }
           ],
-          explain: '19% ≈ 20% and 19,850 ≈ 20,000. 10% of 20,000 is 2,000; 20% is 4,000 miles.'
+          q: { en: 'About how many miles did the electric vans drive?', es: '¿Aproximadamente cuántas millas recorrieron las camionetas eléctricas?' },
+          choices: [
+            {
+              text: { en: 'About 2,000 miles', es: 'Alrededor de 2,000 millas' },
+              why: { en: '2,000 is only about 10%. Ask how many 10% parts make about 20%.', es: '2,000 es solo alrededor del 10%. Pregunta cuántas partes de 10% forman alrededor del 20%.' }
+            },
+            {
+              text: { en: 'About 400 miles', es: 'Alrededor de 400 millas' },
+              why: { en: 'That is much too small. Check where the decimal point goes when you find 10%: move it one place left.', es: 'Eso es demasiado pequeño. Revisa dónde va el punto decimal al hallar el 10%: muévelo un lugar a la izquierda.' }
+            },
+            {
+              text: { en: 'About 4,000 miles', es: 'Alrededor de 4,000 millas' }
+            }
+          ],
+          correct: 2,
+          explain: { en: '19% is close to 20% and 19,850 is close to 20,000. 10% of 20,000 is 2,000, so 20% is 4,000 miles.', es: '19% está cerca de 20% y 19,850 está cerca de 20,000. El 10% de 20,000 es 2,000, así que el 20% es 4,000 millas.' }
         },
         {
           id: 't4_6',
-          title: 'Water Reservoir Capacity',
-          scenario: 'A reservoir holds 809 million gallons when full. Following a dry summer, it is at 31% capacity.',
-          scenarioEs: 'Un embalse tiene 809 millones de galones cuando está lleno. Tras un verano seco, está al 31%.',
-          task: 'Estimate the gallons currently in the reservoir.',
-          choices: [
-            { text: 'About 240 million gallons (30% of 800)', correct: true },
-            { text: 'About 180 million gallons', correct: false },
-            { text: 'About 320 million gallons', correct: false }
+          title: { en: 'Reservoir: water in storage', es: 'Embalse: agua almacenada' },
+          facts: [
+            { en: 'A reservoir holds 809 million gallons when it is full.', es: 'Un embalse guarda 809 millones de galones cuando está lleno.' },
+            { en: 'After a dry summer, it is 31% full.', es: 'Después de un verano seco, está al 31% de su capacidad.' }
           ],
-          explain: '31% ≈ 30% and 809 ≈ 800. 10% of 800 = 80; 30% = 3 × 80 = 240 million gallons.'
+          q: { en: 'About how many gallons are in the reservoir now?', es: '¿Aproximadamente cuántos galones hay ahora en el embalse?' },
+          choices: [
+            {
+              text: { en: 'About 240 million gallons', es: 'Alrededor de 240 millones de galones' }
+            },
+            {
+              text: { en: 'About 80 million gallons', es: 'Alrededor de 80 millones de galones' },
+              why: { en: 'That is only about 10%. The reservoir is closer to 30% full.', es: 'Eso es solo alrededor del 10%. El embalse está más cerca del 30% de su capacidad.' }
+            },
+            {
+              text: { en: 'About 560 million gallons', es: 'Alrededor de 560 millones de galones' },
+              why: { en: 'That is about how much is EMPTY. The reservoir is only 31% full.', es: 'Eso es más o menos lo que está VACÍO. El embalse está solo al 31% de su capacidad.' }
+            }
+          ],
+          correct: 0,
+          explain: { en: '31% is close to 30% and 809 is close to 800. 10% of 800 is 80, so 30% is 3 × 80 = 240 million gallons.', es: '31% está cerca de 30% y 809 está cerca de 800. El 10% de 800 es 80, así que el 30% es 3 × 80 = 240 millones de galones.' }
         }
       ];
+
+      const t4bi = (t) => `${t.en}<span class="es-text">${t.es}</span>`;
 
       function renderT4() {
         const p = T4_STORIES[state.idx4];
         const isSolved = !!state.solved4[p.id];
-        const chosen = state.solved4[`${p.id}_choice`];
+        const letters = ['A', 'B', 'C'];
 
-        renderDots('t4-dots', T4_STORIES, state.idx4, state.solved4, (ni) => {
-          state.idx4 = ni; renderT4();
-        });
+        // Older saves stored a wrong pick as `<id>_choice` inside solved4, which inflated the tab count.
+        Object.keys(state.solved4).forEach((k) => { if (k.endsWith('_choice')) delete state.solved4[k]; });
+
+        const dots = () => renderDots('t4-dots', T4_STORIES, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4(); });
+        dots();
 
         const stage = document.getElementById('t4-stage-card');
         stage.innerHTML = `
-          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:0.84rem; font-weight:800; color: var(--warn);">Story ${state.idx4 + 1} of ${T4_STORIES.length} · ${p.title}</span>
-            <button type="button" class="speak-btn" data-speak="${p.scenario}">🔊 Read Story</button>
+          <div class="item-head">
+            <span class="item-count">${state.idx4 + 1} of ${T4_STORIES.length} · ${t4bi(p.title)}</span>
+            <button type="button" class="speak-btn" id="t4-speak">🔊 Read</button>
           </div>
-          <div style="background:var(--surface-soft); border-left:4px solid var(--brand); padding:14px 18px; border-radius:var(--radius-sm); margin-bottom:14px;">
-            <p style="font-size:1.08rem; color:var(--brand); font-weight:600; margin:0 0 4px 0;">${p.scenario}</p>
-            <div class="es-text">${p.scenarioEs}</div>
+          <div class="story-facts story-challenge">
+            <div class="story-label">${t4bi({ en: 'What you know', es: 'Lo que sabes' })}</div>
+            <ul>${p.facts.map((f) => `<li>${t4bi(f)}</li>`).join('')}</ul>
           </div>
-          <p style="font-size:1.15rem; font-family:var(--font-display); font-weight:700; color:var(--brand); margin:0 0 14px 0;">${p.task}</p>
-
-          <div class="choice-stack">
-            ${p.choices.map((c, i) => {
-              let cls = '';
-              if (isSolved) {
-                if (c.correct) cls = 'correct';
-                else if (i === chosen) cls = 'wrong';
-              }
-              return `
-                <button type="button" class="choice-btn ${cls}" data-t4-mc="${i}">
-                  <span style="font-weight:700; width:24px;">${['A','B','C'][i]}.</span>
-                  <span>${c.text}</span>
-                </button>
-              `;
-            }).join('')}
+          <p class="item-q"><span class="story-label">${t4bi({ en: 'Question', es: 'Pregunta' })}</span>${t4bi(p.q)}</p>
+          <div class="choice-stack" role="group" aria-label="Answer choices">
+            ${p.choices.map((c, i) => `
+              <button type="button" class="choice-btn ${isSolved && i === p.correct ? 'correct' : ''}" data-t4-mc="${i}" ${isSolved ? 'disabled' : ''}>
+                <span class="choice-letter" aria-hidden="true">${letters[i]}</span>
+                <span>${t4bi(c.text)}</span>
+              </button>`).join('')}
           </div>
-
-          <div id="t4-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
-            ${isSolved ? `Correct! ${p.explain}` : ''}
-          </div>
+          <div id="t4-fb" class="feedback-box ${isSolved ? 'show ok' : ''}" aria-live="polite">${isSolved ? `${t4bi({ en: 'Correct!', es: '¡Correcto!' })} ${t4bi(p.explain)}` : ''}</div>
         `;
 
-        stage.querySelector('[data-speak]').onclick = () => speak(state.showEs ? p.scenarioEs : p.scenario);
+        document.getElementById('t4-speak').onclick = () => {
+          const k = state.showEs ? 'es' : 'en';
+          speak([...p.facts.map((f) => f[k]), p.q[k]].join('. '));
+        };
 
         if (isSolved) appendNext(document.getElementById('t4-fb'), 4, T4_STORIES.length, renderT4);
 
-        stage.querySelectorAll('[data-t4-mc]').forEach(btn => {
+        stage.querySelectorAll('[data-t4-mc]').forEach((btn) => {
           btn.addEventListener('click', () => {
             if (state.solved4[p.id]) return;
             const idx = Number(btn.dataset.t4Mc);
-            const c = p.choices[idx];
-            state.solved4[`${p.id}_choice`] = idx;
             const fb = document.getElementById('t4-fb');
 
-            if (c.correct) {
+            if (idx === p.correct) {
               playSound('correct');
+              stage.querySelectorAll('[data-t4-mc]').forEach((b) => { b.disabled = true; });
               btn.classList.add('correct');
               fb.className = 'feedback-box show ok';
-              fb.innerHTML = `Correct! ${p.explain}`;
+              fb.innerHTML = `${t4bi({ en: 'Correct!', es: '¡Correcto!' })} ${t4bi(p.explain)}`;
               state.solved4[p.id] = true;
-              renderDots('t4-dots', T4_STORIES, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4(); });
+              dots();
               updateProgressHeader();
               appendNext(fb, 4, T4_STORIES.length, renderT4);
             } else {
               playSound('wrong');
               btn.classList.add('wrong');
+              btn.disabled = true;
               fb.className = 'feedback-box show err';
-              fb.textContent = 'Consider which benchmark fractions or rounded tens give the cleanest mental math.';
+              fb.innerHTML = `<strong>${letters[idx]}.</strong> ${t4bi(p.choices[idx].why)}`;
             }
             saveState();
           });

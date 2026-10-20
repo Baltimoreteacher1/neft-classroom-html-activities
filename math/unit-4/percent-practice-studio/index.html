@@ -12,6 +12,7 @@
   <script src="/assets/studio-comfort.js" defer></script>
   <script src="/assets/u4-studio.js"></script>
   <script src="/assets/u4-studio-bonus.js"></script>
+  <script src="/assets/u4-studio-story.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -75,7 +76,7 @@
         <span class="tab-badge" id="badge-4">4</span>
         <span class="tab-text">
           <span class="tab-name">Word Problems</span>
-          <span class="tab-desc">Apply &amp; Fix Errors (8)</span>
+          <span class="tab-desc">Stories &amp; Mistakes (8)</span>
         </span>
       </button>
 
@@ -280,12 +281,13 @@
     <section id="panel-4" class="tab-panel" role="tabpanel" aria-labelledby="tab-4">
       <div class="topic-strip">
         <div>
-          <h2>4. Real-World Problems &amp; Error Detective</h2>
-          <p>Apply equivalent ratios to real-world stories, percents over 100%, and spot common mistakes.</p>
-          <p class="es-text">Resuelve problemas del mundo real, porcentajes mayores que 100% y corrige errores comunes.</p>
+          <h2>4. Word Problems &amp; Fix-It</h2>
+          <p>Use what you know about percent on real stories, percents over 100%, and mistakes other students made.</p>
+          <p class="es-text">Usa lo que sabes de porcentaje en historias reales, porcentajes mayores que 100% y errores de otros estudiantes.</p>
         </div>
         <div class="key-rule-pill">
-          🔍 <strong>Ask First:</strong> What number is the <strong>whole (100%)</strong>? Does the question ask for the part or the complement?
+          🔍 <strong>Ask first:</strong> What is the <strong>whole (100%)</strong>? Does the question ask about the part, or about what is left over?
+          <span class="es-text">Pregunta primero: ¿cuál es el total (100%)? ¿La pregunta es sobre la parte o sobre lo que sobra?</span>
         </div>
       </div>
 
@@ -2147,394 +2149,794 @@ ${step3Html}
       if (t3RandBtn) t3RandBtn.addEventListener('click', newRandomT3);
 
       /* ----------------------------------------------------------------------
-         TAB 4: WORD PROBLEMS & ERROR DETECTIVE (8 PROBLEMS — ONE AT A TIME)
-         ---------------------------------------------------------------------- */
-      const T4_PROBLEMS = [
+               TAB 4: WORD PROBLEMS & FIX-IT (8 PROBLEMS — ONE AT A TIME)
+               Cards come from assets/u4-studio-story.js: facts, ONE question, a labelled box,
+               a two-step hint ladder, and a message written for each common wrong answer.
+               `bars` draws a plain bar model with the unknown marked "?" (never the answer).
+               ---------------------------------------------------------------------- */
+      const T4_STORIES = [
         {
-          id: 't4_1',
-          badge: 'Word Problem 1 of 8 · Used vs. Did Not Use (Complement)',
-          title: 'Farmer’s Market Coupons',
-          story: 'At a farmer’s market, 11 out of every 20 shoppers used a coupon. The rest of the shoppers did NOT use a coupon.',
-          question: 'What percent of the shoppers did NOT use a coupon?',
-          stemEs: 'En un mercado, 11 de cada 20 compradores usaron un cupón y el resto no. ¿Qué porcentaje NO usó un cupón?',
-          ans: '45',
-          unit: '%',
-          visualSvg: `
-            <svg viewBox="0 0 580 76" width="580" height="76" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="Bar model showing 11 shoppers used a coupon and 9 shoppers did not out of 20 total shoppers">
-              <text x="20" y="18" font-size="11.5" font-weight="800" fill="var(--brand)">Whole = 20 Shoppers (100%)</text>
-              <rect x="20" y="25" width="297" height="28" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
-              <text x="168" y="43" text-anchor="middle" font-size="11.5" font-weight="800" fill="#FFFFFF">Used Coupon: 11 / 20</text>
-              <rect x="317" y="25" width="243" height="28" fill="var(--sun-tint)" stroke="var(--brand)" stroke-width="1.5"/>
-              <text x="438" y="43" text-anchor="middle" font-size="11.5" font-weight="800" fill="var(--warn)">Did NOT Use: 9 / 20 = ?%</text>
-              <text x="20" y="68" font-size="10.5" font-weight="700" fill="var(--brand)">0%</text>
-              <text x="560" y="68" text-anchor="end" font-size="10.5" font-weight="700" fill="var(--brand)">100% (×5 to scale 20 → 100)</text>
-            </svg>
-          `,
-          traps: {
-            55: '55% is the percent who USED a coupon (11/20). The question asks what percent did NOT use a coupon!',
-            9: '9 out of 20 shoppers did not use a coupon, but 9 is out of 20—scale 9/20 so the whole is 100!'
+          id: "t4_1",
+          title: { en: "Farmer’s Market Coupons", es: "Cupones en el mercado" },
+          facts: [
+            {
+              en: "11 out of every 20 shoppers used a coupon.",
+              es: "11 de cada 20 compradores usaron un cupón.",
+            },
+            {
+              en: "The rest of the shoppers did NOT use a coupon.",
+              es: "Los demás compradores NO usaron un cupón.",
+            },
+          ],
+          q: {
+            en: "What percent of the shoppers did NOT use a coupon?",
+            es: "¿Qué porcentaje de los compradores NO usó un cupón?",
           },
-          firstNudge: 'First find how many shoppers out of 20 did NOT use a coupon (20 − 11), then scale that ratio to a denominator of 100.',
-          hint: '11 out of 20 used a coupon (11 × 5 = 55%), so 9 out of 20 did not. Subtract 100% − 55% (or multiply 9 × 5).',
-          hintEs: '11 de 20 usaron cupón (55%), así que 9 de 20 no. Resta 100% − 55% (o multiplica 9 × 5).',
-          explain: 'Correct! 11/20 = 55% used a coupon, so 100% − 55% = 45% (9 out of 20) did NOT use a coupon.',
-          explainEs: '¡Correcto! 11/20 = 55% usaron un cupón, así que 100% − 55% = 45% (9 de 20) NO usaron un cupón.'
+          bars: {
+            rows: [
+              {
+                segs: [
+                  {
+                    t: { en: "Used a coupon: 11", es: "Usó cupón: 11" },
+                    w: 55,
+                    tone: "a",
+                  },
+                  { t: { en: "Did NOT use: ?", es: "NO usó: ?" }, w: 45, tone: "q" },
+                ],
+              },
+            ],
+            note: { en: "20 shoppers in all", es: "20 compradores en total" },
+          },
+          fields: [
+            {
+              label: {
+                en: "Percent who did NOT use a coupon",
+                es: "Porcentaje que NO usó un cupón",
+              },
+              unit: "%",
+              ans: 45,
+              wrong: {
+                55: {
+                  en: "55% is the percent who USED a coupon (11 out of 20). The question asks about the shoppers who did NOT.",
+                  es: "55% es el porcentaje que SÍ usó un cupón (11 de 20). La pregunta es sobre los compradores que NO lo usaron.",
+                },
+                9: {
+                  en: "9 is how many shoppers out of 20 did not use a coupon. Now write it out of 100.",
+                  es: "9 es cuántos compradores de 20 no usaron un cupón. Ahora escríbelo sobre 100.",
+                },
+                11: {
+                  en: "11 is the number who USED a coupon. Find the shoppers who did not, then scale to 100.",
+                  es: "11 es el número que SÍ usó un cupón. Halla los compradores que no lo usaron y luego escala a 100.",
+                },
+                20: {
+                  en: "20 is all the shoppers (the whole). Find the part who did NOT use a coupon, then write it out of 100.",
+                  es: "20 es todos los compradores (el total). Halla la parte que NO usó un cupón y luego escríbela sobre 100.",
+                },
+              },
+            },
+          ],
+          hints: [
+            {
+              en: "Find how many of the 20 shoppers did NOT use a coupon. Then write that number out of 100.",
+              es: "Halla cuántos de los 20 compradores NO usaron un cupón. Luego escribe ese número sobre 100.",
+            },
+            {
+              en: "20 − 11 = ? shoppers. ? out of 20 = ? out of 100, so multiply both numbers by 5.",
+              es: "20 − 11 = ? compradores. ? de 20 = ? de 100, así que multiplica ambos números por 5.",
+            },
+          ],
+          miss: {
+            en: "Check which group the question asks about (the shoppers who did NOT use a coupon), then scale that group to a whole of 100.",
+            es: "Revisa de qué grupo habla la pregunta (los compradores que NO usaron un cupón) y luego escala ese grupo a un total de 100.",
+          },
+          explain: {
+            en: "20 − 11 = 9 shoppers did not use a coupon. 9 out of 20 × 5/5 = 45 out of 100 = 45%. (Another way: 11/20 = 55%, and 100% − 55% = 45%.)",
+            es: "20 − 11 = 9 compradores no usaron un cupón. 9 de 20 × 5/5 = 45 de 100 = 45%. (Otra forma: 11/20 = 55% y 100% − 55% = 45%.)",
+          },
         },
         {
-          id: 't4_2',
-          badge: 'Word Problem 2 of 8 · Finding the Missing Part First',
-          title: 'Class Pet Election (Out of 50 Students)',
-          story: 'A class of 50 students voted for a class pet. 16 students chose a hamster, 24 chose a fish, and the rest chose a turtle.',
-          question: 'What percent of the 50 students voted for a turtle?',
-          stemEs: 'De 50 estudiantes, 16 eligieron un hámster, 24 un pez y el resto una tortuga. ¿Qué porcentaje eligió la tortuga?',
-          ans: '20',
-          unit: '%',
-          visualSvg: `
-            <svg viewBox="0 0 580 76" width="580" height="76" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="Bar model of 50 students: 16 hamster, 24 fish, and the rest turtle">
-              <text x="20" y="18" font-size="11.5" font-weight="800" fill="var(--brand)">Whole = 50 Students (Scale ×2 to make 100%)</text>
-              <rect x="20" y="25" width="173" height="28" fill="var(--border)" stroke="var(--brand)" stroke-width="1.5"/>
-              <text x="106" y="43" text-anchor="middle" font-size="11" font-weight="800" fill="var(--brand)">🐹 Hamster: 16</text>
-              <rect x="193" y="25" width="259" height="28" fill="var(--brand-tint)" stroke="var(--brand)" stroke-width="1.5"/>
-              <text x="322" y="43" text-anchor="middle" font-size="11" font-weight="800" fill="var(--brand)">🐟 Fish: 24</text>
-              <rect x="452" y="25" width="108" height="28" fill="var(--sun-tint)" stroke="var(--brand)" stroke-width="1.5"/>
-              <text x="506" y="43" text-anchor="middle" font-size="11" font-weight="800" fill="var(--warn)">🐢 Turtle: ?</text>
-              <text x="20" y="68" font-size="10.5" font-weight="700" fill="var(--ink-muted)">16 + 24 + ? = 50 students total</text>
-              <text x="560" y="68" text-anchor="end" font-size="10.5" font-weight="700" fill="var(--brand)">100%</text>
-            </svg>
-          `,
-          traps: {
-            10: '10 students voted for a turtle, but that is 10 out of 50 students. Scale 10/50 to a denominator of 100!',
-            40: '40 is the number of students who voted for hamster or fish (16 + 24). Find the remaining students who chose turtle, then scale to 100!',
-            80: '80% voted for hamster or fish. Subtract from 100% to find the turtle percent!'
+          id: "t4_2",
+          title: { en: "Class Pet Election", es: "Elección de la mascota del salón" },
+          facts: [
+            {
+              en: "50 students voted for a class pet.",
+              es: "50 estudiantes votaron por una mascota del salón.",
+            },
+            {
+              en: "16 students chose a hamster and 24 chose a fish.",
+              es: "16 estudiantes eligieron un hámster y 24 eligieron un pez.",
+            },
+            {
+              en: "The rest chose a turtle.",
+              es: "Los demás eligieron una tortuga.",
+            },
+          ],
+          q: {
+            en: "What percent of the 50 students chose a turtle?",
+            es: "¿Qué porcentaje de los 50 estudiantes eligió la tortuga?",
           },
-          firstNudge: 'Start by subtracting 50 − 16 − 24 to find how many students chose a turtle, then scale that number out of 50 up to 100.',
-          hint: 'First find how many students chose a turtle: 50 − 16 − 24 = 10 students. Then scale 10 out of 50 to 100 by multiplying by 2.',
-          hintEs: 'Primero halla cuántos eligieron tortuga: 50 − 16 − 24 = 10 estudiantes. Luego escala 10 de 50 a 100 multiplicando por 2.',
-          explain: 'Correct! 50 − 16 − 24 = 10 turtle votes, and 10 out of 50 scales by ×2 to 20 out of 100 = 20%.',
-          explainEs: '¡Correcto! 50 − 16 − 24 = 10 votos por la tortuga, y 10 de 50 escala (×2) a 20 de 100 = 20%.'
+          bars: {
+            rows: [
+              {
+                segs: [
+                  { t: { en: "Hamster: 16", es: "Hámster: 16" }, w: 32, tone: "c" },
+                  { t: { en: "Fish: 24", es: "Pez: 24" }, w: 48, tone: "a" },
+                  { t: { en: "Turtle: ?", es: "Tortuga: ?" }, w: 20, tone: "q" },
+                ],
+              },
+            ],
+            note: { en: "50 students in all", es: "50 estudiantes en total" },
+          },
+          fields: [
+            {
+              label: {
+                en: "Percent who chose a turtle",
+                es: "Porcentaje que eligió la tortuga",
+              },
+              unit: "%",
+              ans: 20,
+              wrong: {
+                10: {
+                  en: "10 is the NUMBER of students who chose a turtle. Write 10 out of 50 as a percent (out of 100).",
+                  es: "10 es el NÚMERO de estudiantes que eligió la tortuga. Escribe 10 de 50 como porcentaje (sobre 100).",
+                },
+                40: {
+                  en: "40 is how many students chose a hamster or a fish. Find the students who chose a turtle.",
+                  es: "40 es cuántos estudiantes eligieron un hámster o un pez. Halla los estudiantes que eligieron la tortuga.",
+                },
+                80: {
+                  en: "80% is the percent who chose a hamster or a fish. The question asks about the turtle.",
+                  es: "80% es el porcentaje que eligió un hámster o un pez. La pregunta es sobre la tortuga.",
+                },
+                32: {
+                  en: "32% is the percent for the hamster only. Find the turtle votes first.",
+                  es: "32% es el porcentaje solo del hámster. Primero halla los votos de la tortuga.",
+                },
+                48: {
+                  en: "48% is the percent for the fish. Find the turtle votes first.",
+                  es: "48% es el porcentaje del pez. Primero halla los votos de la tortuga.",
+                },
+              },
+            },
+          ],
+          hints: [
+            {
+              en: "First find how many students chose a turtle (take the other votes away from 50). Then write that number out of 50 as a percent.",
+              es: "Primero halla cuántos estudiantes eligieron la tortuga (quita los otros votos de 50). Luego escribe ese número de 50 como porcentaje.",
+            },
+            {
+              en: "50 − 16 − 24 = ? students. ? out of 50 = ? out of 100, so multiply both numbers by 2.",
+              es: "50 − 16 − 24 = ? estudiantes. ? de 50 = ? de 100, así que multiplica ambos números por 2.",
+            },
+          ],
+          miss: {
+            en: "Find the turtle votes first, then write that number out of 50 as a percent (out of 100).",
+            es: "Primero halla los votos de la tortuga y luego escribe ese número de 50 como porcentaje (sobre 100).",
+          },
+          explain: {
+            en: "50 − 16 − 24 = 10 students chose a turtle. 10 out of 50 × 2/2 = 20 out of 100 = 20%.",
+            es: "50 − 16 − 24 = 10 estudiantes eligieron la tortuga. 10 de 50 × 2/2 = 20 de 100 = 20%.",
+          },
         },
         {
-          id: 't4_3',
-          badge: 'Word Problem 3 of 8 · Percents Greater Than 100%',
-          title: 'Robotics Club Fundraising Goal ($750 out of $500)',
-          story: 'A robotics club set a fundraising goal of $500 (the whole = 100%). By Friday, they collected $750!',
-          question: 'What percent of their $500 goal did the robotics club achieve?',
-          stemEs: 'Un club de robótica tenía una meta de $500 (100%) y recaudó $750. ¿Qué porcentaje de su meta lograron?',
-          ans: '150',
-          unit: '%',
-          visualSvg: `
-            <svg viewBox="0 0 580 82" width="580" height="82" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="Comparison bar showing 500 dollar goal is 100 percent and 750 dollars raised is 500 plus 250">
-              <text x="20" y="18" font-size="11" font-weight="800" fill="var(--brand)">Goal ($500 = 100%) vs. Collected ($750 = ?%)</text>
-              <rect x="20" y="24" width="320" height="22" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
-              <text x="180" y="39" text-anchor="middle" font-size="11" font-weight="800" fill="#FFFFFF">$500 Goal = 100%</text>
-              <rect x="20" y="50" width="320" height="22" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
-              <text x="180" y="65" text-anchor="middle" font-size="11" font-weight="800" fill="#FFFFFF">$500 (100%)</text>
-              <rect x="340" y="50" width="160" height="22" fill="var(--sun-tint)" stroke="var(--brand)" stroke-width="1.5"/>
-              <text x="420" y="65" text-anchor="middle" font-size="11" font-weight="800" fill="var(--warn)">+ $250 (+?%)</text>
-            </svg>
-          `,
-          traps: {
-            50: '50% is the extra $250 they raised above the goal. Include the full $500 goal (100%) + the extra 50%!',
-            250: '$250 is the extra dollar amount above $500. Scale the ratio 750/500 so the denominator is 100!'
+          id: "t4_3",
+          title: {
+            en: "Robotics Club Fundraiser",
+            es: "Recaudación del club de robótica",
           },
-          firstNudge: 'Since $750 is more than the $500 goal, the percent is greater than 100%. Scale the ratio 750 out of 500 so the whole is 100.',
-          hint: 'Write the ratio 750/500 and divide both terms by 5 so the denominator is 100.',
-          hintEs: 'Escribe la razón 750/500 y divide ambos números entre 5 para que el denominador sea 100.',
-          explain: 'Correct! 750/500 ÷ 5/5 = 150/100 = 150% (1.5 times their goal).',
-          explainEs: '¡Correcto! 750/500 ÷ 5/5 = 150/100 = 150% (1.5 veces su meta).'
+          facts: [
+            {
+              en: "A robotics club set a fundraising goal of $500.",
+              es: "Un club de robótica se puso una meta de recaudar $500.",
+            },
+            {
+              en: "By Friday it had collected $750.",
+              es: "Para el viernes había recaudado $750.",
+            },
+          ],
+          q: {
+            en: "What percent of its $500 goal did the club collect?",
+            es: "¿Qué porcentaje de su meta de $500 recaudó el club?",
+          },
+          bars: {
+            rows: [
+              {
+                label: { en: "Goal", es: "Meta" },
+                segs: [{ t: { en: "$500", es: "$500" }, w: 66.7, tone: "a" }],
+              },
+              {
+                label: { en: "Collected", es: "Recaudado" },
+                segs: [{ t: { en: "$750", es: "$750" }, w: 100, tone: "b" }],
+              },
+            ],
+          },
+          fields: [
+            {
+              label: {
+                en: "Percent of the goal collected",
+                es: "Porcentaje de la meta recaudado",
+              },
+              unit: "%",
+              ans: 150,
+              wrong: {
+                50: {
+                  en: "50% is only the EXTRA money above the goal. The club collected the whole goal and more.",
+                  es: "50% es solo el dinero EXTRA sobre la meta. El club recaudó toda la meta y más.",
+                },
+                250: {
+                  en: "$250 is the extra dollars above the goal. The question asks for a percent of the goal.",
+                  es: "$250 son los dólares extra sobre la meta. La pregunta pide un porcentaje de la meta.",
+                },
+                750: {
+                  en: "$750 is the amount collected, not a percent. Compare it with the $500 goal.",
+                  es: "$750 es la cantidad recaudada, no un porcentaje. Compárala con la meta de $500.",
+                },
+                1.5: {
+                  en: "1.5 is a decimal. The question asks for a percent, which is a number out of 100.",
+                  es: "1.5 es un decimal. La pregunta pide un porcentaje, que es un número sobre 100.",
+                },
+                66.67: {
+                  en: "That compares the goal with the money collected, backwards. The goal ($500) is the whole.",
+                  es: "Eso compara la meta con el dinero recaudado, al revés. La meta ($500) es el total.",
+                },
+                67: {
+                  en: "That compares the goal with the money collected, backwards. The goal ($500) is the whole.",
+                  es: "Eso compara la meta con el dinero recaudado, al revés. La meta ($500) es el total.",
+                },
+              },
+            },
+          ],
+          hints: [
+            {
+              en: "The goal ($500) is the whole. A part that is bigger than the whole is more than 100%. Write the amount collected out of the goal.",
+              es: "La meta ($500) es el total. Una parte mayor que el total es más del 100%. Escribe la cantidad recaudada sobre la meta.",
+            },
+            {
+              en: "750 out of 500: divide both numbers by 5 to make the whole 100. 750 ÷ 5 = ? and 500 ÷ 5 = 100.",
+              es: "750 de 500: divide ambos números entre 5 para que el total sea 100. 750 ÷ 5 = ? y 500 ÷ 5 = 100.",
+            },
+          ],
+          miss: {
+            en: "The club raised more than its goal, so the percent must be greater than 100%. The goal ($500) is the whole.",
+            es: "El club recaudó más que su meta, así que el porcentaje debe ser mayor que 100%. La meta ($500) es el total.",
+          },
+          explain: {
+            en: "750/500 ÷ 5/5 = 150/100, so the club collected 150% of its goal (1.5 times the goal).",
+            es: "750/500 ÷ 5/5 = 150/100, así que el club recaudó el 150% de su meta (1.5 veces la meta).",
+          },
         },
         {
-          id: 't4_4',
-          badge: 'Word Problem 4 of 8 · Comparing Rates with Different Wholes',
-          title: 'Who Had the Better Free-Throw Rate?',
-          story: 'At basketball practice, Kira made 36 out of 60 free throws, and Dev made 32 out of 40 free throws.',
-          question: 'By how many percentage points was Dev’s free-throw percent higher than Kira’s?',
-          stemEs: 'Kira encestó 36 de 60 tiros libres y Dev encestó 32 de 40. ¿Por cuántos puntos porcentuales fue mayor el porcentaje de Dev?',
-          ans: '20',
-          unit: 'percentage points',
-          visualSvg: `
-            <svg viewBox="0 0 580 82" width="580" height="82" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="Comparison bars for Kira 36 out of 60 and Dev 32 out of 40">
-              <text x="20" y="18" font-size="11" font-weight="800" fill="var(--brand)">Scale both ratios to 100% to compare fairly:</text>
-              <text x="20" y="39" font-size="11" font-weight="800" fill="var(--brand)">Kira (36/60):</text>
-              <rect x="105" y="25" width="270" height="20" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
-              <rect x="375" y="25" width="180" height="20" fill="var(--well)" stroke="var(--brand)" stroke-width="1.5"/>
-              <text x="240" y="39" text-anchor="middle" font-size="10.5" font-weight="800" fill="#FFFFFF">36 ÷ 6 = 6 out of 10 = ?%</text>
-              <text x="20" y="65" font-size="11" font-weight="800" fill="var(--brand)">Dev (32/40):</text>
-              <rect x="105" y="51" width="360" height="20" fill="var(--sun-deep)" stroke="var(--brand)" stroke-width="1.5"/>
-              <rect x="465" y="51" width="90" height="20" fill="var(--well)" stroke="var(--brand)" stroke-width="1.5"/>
-              <text x="285" y="65" text-anchor="middle" font-size="10.5" font-weight="800" fill="#FFFFFF">32 ÷ 4 = 8 out of 10 = ?%</text>
-            </svg>
-          `,
-          traps: {
-            60: '60% is Kira’s rate. Now find Dev’s rate (32/40) and subtract to find how many percentage points higher Dev’s rate is!',
-            80: '80% is Dev’s rate. Now subtract Kira’s rate (36/60 = 60%) from 80%!',
-            4: 'You cannot subtract 36 − 32 directly because their wholes (60 and 40) are different. Find each player’s percent first!'
+          id: "t4_4",
+          title: { en: "Free Throws: Kira vs. Dev", es: "Tiros libres: Kira y Dev" },
+          facts: [
+            {
+              en: "Kira made 36 of her 60 free throws.",
+              es: "Kira encestó 36 de sus 60 tiros libres.",
+            },
+            {
+              en: "Dev made 32 of his 40 free throws.",
+              es: "Dev encestó 32 de sus 40 tiros libres.",
+            },
+          ],
+          q: {
+            en: "How many percentage points higher is Dev’s free-throw percent than Kira’s?",
+            es: "¿Cuántos puntos porcentuales más alto es el porcentaje de tiros libres de Dev que el de Kira?",
           },
-          firstNudge: 'Find each player’s percent out of 100 first (Kira: 36/60, Dev: 32/40), then subtract their percents.',
-          hint: 'Find each player’s percent first (Kira: 36/60 = 6/10 = 60%; Dev: 32/40 = 8/10 = 80%), then subtract.',
-          hintEs: 'Halla el porcentaje de cada jugador primero (Kira: 36/60 = 60%; Dev: 32/40 = 80%) y luego resta.',
-          explain: 'Correct! Dev made 80% (32/40) and Kira made 60% (36/60), so Dev’s rate was 80% − 60% = 20 percentage points higher.',
-          explainEs: '¡Correcto! Dev encestó 80% (32/40) y Kira 60% (36/60), así que Dev estuvo 80% − 60% = 20 puntos porcentuales más alto.'
+          bars: {
+            rows: [
+              {
+                label: { en: "Kira: 60 shots", es: "Kira: 60 tiros" },
+                segs: [
+                  { t: { en: "Made 36", es: "Encestó 36" }, w: 60, tone: "a" },
+                  { t: { en: "Missed 24", es: "Falló 24" }, w: 40, tone: "c" },
+                ],
+              },
+              {
+                label: { en: "Dev: 40 shots", es: "Dev: 40 tiros" },
+                segs: [
+                  { t: { en: "Made 32", es: "Encestó 32" }, w: 80, tone: "a" },
+                  { t: { en: "Missed 8", es: "Falló 8" }, w: 20, tone: "c" },
+                ],
+              },
+            ],
+          },
+          fields: [
+            {
+              label: {
+                en: "Dev’s percent minus Kira’s percent",
+                es: "Porcentaje de Dev menos porcentaje de Kira",
+              },
+              unit: { en: "percentage points", es: "puntos porcentuales" },
+              ans: 20,
+              wrong: {
+                60: {
+                  en: "60% is Kira’s percent. Find Dev’s percent too, then subtract.",
+                  es: "60% es el porcentaje de Kira. Halla también el de Dev y luego resta.",
+                },
+                80: {
+                  en: "80% is Dev’s percent. Now subtract Kira’s percent from it.",
+                  es: "80% es el porcentaje de Dev. Ahora réstale el porcentaje de Kira.",
+                },
+                4: {
+                  en: "36 − 32 compares counts, but they took different numbers of shots (60 and 40). Find each percent first.",
+                  es: "36 − 32 compara cantidades, pero lanzaron números distintos de tiros (60 y 40). Primero halla cada porcentaje.",
+                },
+                25: {
+                  en: "Percentage points are the plain gap between the two percents. Subtract them; do not divide.",
+                  es: "Los puntos porcentuales son la diferencia directa entre los dos porcentajes. Réstalos; no los dividas.",
+                },
+              },
+            },
+          ],
+          hints: [
+            {
+              en: "The wholes are different (60 shots and 40 shots), so first write each player’s score as a percent out of 100.",
+              es: "Los totales son distintos (60 tiros y 40 tiros), así que primero escribe el puntaje de cada jugador como porcentaje sobre 100.",
+            },
+            {
+              en: "Kira: 36 out of 60 = ? out of 100. Dev: 32 out of 40 = ? out of 100. Then subtract: Dev’s percent − Kira’s percent.",
+              es: "Kira: 36 de 60 = ? de 100. Dev: 32 de 40 = ? de 100. Luego resta: porcentaje de Dev − porcentaje de Kira.",
+            },
+          ],
+          miss: {
+            en: "Kira and Dev took different numbers of shots, so turn each score into a percent out of 100 before you compare.",
+            es: "Kira y Dev lanzaron números distintos de tiros, así que convierte cada puntaje en un porcentaje sobre 100 antes de comparar.",
+          },
+          explain: {
+            en: "Kira: 36/60 = 60%. Dev: 32/40 = 80%. 80% − 60% = 20 percentage points higher.",
+            es: "Kira: 36/60 = 60%. Dev: 32/40 = 80%. 80% − 60% = 20 puntos porcentuales más alto.",
+          },
         },
         {
-          id: 't4_5',
-          badge: 'Error Detective 5 of 8 · Spot & Fix Trey’s Mistake',
-          title: 'Trey’s Claim: “12 out of 25 is 12%”',
-          story: '🔍 Trey says: “12 out of every 25 museum visitors bought a postcard, so that means 12% bought a postcard.” Trey forgot that the whole is 25, not 100!',
-          question: 'Scale 12 out of 25 to a denominator of 100 to find the TRUE percent of visitors:',
-          stemEs: 'Trey dice que 12 de 25 es 12%. Escala 12 de 25 a un denominador de 100 para hallar el porcentaje verdadero:',
-          ans: '48',
-          unit: '%',
-          visualSvg: `
-            <svg viewBox="0 0 580 74" width="580" height="74" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="Scaling diagram showing 12 out of 25 multiplied by 4 to reach 100">
-              <text x="20" y="20" font-size="11.5" font-weight="800" fill="var(--bad)">✗ Trey’s Trap: 12 / 25 ≠ 12 / 100</text>
-              <text x="300" y="20" font-size="11.5" font-weight="800" fill="var(--brand)">Fix: Multiply both part &amp; whole by 4 (25 × 4 = 100)</text>
-              <rect x="20" y="28" width="259" height="26" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
-              <rect x="279" y="28" width="281" height="26" fill="var(--well)" stroke="var(--brand)" stroke-width="1.5"/>
-              <text x="150" y="45" text-anchor="middle" font-size="11.5" font-weight="800" fill="#FFFFFF">12 × 4 = ? out of 100</text>
-            </svg>
-          `,
-          traps: {
-            12: '12 is out of 25! Multiply 12 by the same factor that turns 25 into 100.',
-            87: 'Remember: scale by multiplying (×4), not by adding 75!'
+          id: "t4_5",
+          title: {
+            en: "Fix It: Trey’s Postcards",
+            es: "Corrígelo: las postales de Trey",
           },
-          firstNudge: 'Ask: what do you multiply 25 by to get 100? Multiply 12 by that same factor.',
-          hint: 'Since 25 × 4 = 100, multiply the numerator 12 by 4 as well.',
-          hintEs: 'Como 25 × 4 = 100, multiplica el numerador 12 también por 4.',
-          explain: 'Case Solved! 12/25 × 4/4 = 48/100 = 48%, not 12%.',
-          explainEs: '¡Caso resuelto! 12/25 × 4/4 = 48/100 = 48%, no 12%.'
+          facts: [
+            {
+              en: "12 out of every 25 museum visitors bought a postcard.",
+              es: "12 de cada 25 visitantes del museo compraron una postal.",
+            },
+            {
+              en: "Trey says that means 12% of the visitors bought a postcard.",
+              es: "Trey dice que eso significa que el 12% de los visitantes compró una postal.",
+            },
+          ],
+          q: {
+            en: "What percent of the visitors really bought a postcard?",
+            es: "¿Qué porcentaje de los visitantes realmente compró una postal?",
+          },
+          bars: {
+            rows: [
+              {
+                segs: [
+                  { t: { en: "Bought one: 12", es: "Compró: 12" }, w: 48, tone: "a" },
+                  { t: { en: "Did not: 13", es: "No compró: 13" }, w: 52, tone: "c" },
+                ],
+              },
+            ],
+            note: { en: "25 visitors in all", es: "25 visitantes en total" },
+          },
+          fields: [
+            {
+              label: {
+                en: "Percent who bought a postcard",
+                es: "Porcentaje que compró una postal",
+              },
+              unit: "%",
+              ans: 48,
+              wrong: {
+                12: {
+                  en: "12 is the number out of 25 (Trey’s mistake). The whole is 25, not 100, so scale up.",
+                  es: "12 es el número de 25 (el error de Trey). El total es 25, no 100, así que escala.",
+                },
+                87: {
+                  en: "Adding 75 to both numbers does not keep the ratio equal. Multiply both numbers by the same factor.",
+                  es: "Sumar 75 a ambos números no mantiene igual la razón. Multiplica ambos números por el mismo factor.",
+                },
+                4: {
+                  en: "4 is the factor that turns 25 into 100. Use it on the 12, too.",
+                  es: "4 es el factor que convierte 25 en 100. Úsalo también con el 12.",
+                },
+                13: {
+                  en: "13 visitors did NOT buy a postcard. The question asks about the visitors who did.",
+                  es: "13 visitantes NO compraron una postal. La pregunta es sobre los que sí la compraron.",
+                },
+                52: {
+                  en: "52% is the percent who did NOT buy a postcard.",
+                  es: "52% es el porcentaje que NO compró una postal.",
+                },
+              },
+            },
+          ],
+          hints: [
+            {
+              en: "Trey wrote 12 out of 25 as if the whole were 100. Find the number you multiply 25 by to get 100.",
+              es: "Trey escribió 12 de 25 como si el total fuera 100. Halla el número por el que multiplicas 25 para obtener 100.",
+            },
+            {
+              en: "25 × 4 = 100, so 12 × 4 = ? out of 100.",
+              es: "25 × 4 = 100, así que 12 × 4 = ? de 100.",
+            },
+          ],
+          miss: {
+            en: "A percent means out of 100, and the whole here is 25. Multiply BOTH numbers by the same factor.",
+            es: "Un porcentaje significa sobre 100, y el total aquí es 25. Multiplica AMBOS números por el mismo factor.",
+          },
+          explain: {
+            en: "25 × 4 = 100 and 12 × 4 = 48, so 12 out of 25 = 48 out of 100 = 48%, not 12%.",
+            es: "25 × 4 = 100 y 12 × 4 = 48, así que 12 de 25 = 48 de 100 = 48%, no 12%.",
+          },
         },
         {
-          id: 't4_6',
-          badge: 'Error Detective 6 of 8 · Spot & Fix Sam’s Addition Trap',
-          title: 'Sam’s Claim: “Add 90 to Top and Bottom”',
-          story: '🔍 Sam wants to turn 4 out of 10 into a percent. He writes: “10 + 90 = 100, so 4 + 90 = 94%.” Adding breaks the ratio!',
-          question: 'Scale 4 out of 10 by multiplying to find the TRUE percent:',
-          stemEs: 'Sam sumó 90 arriba y abajo en 4/10 y obtuvo 94%. Multiplica para hallar el porcentaje verdadero de 4 de 10:',
-          ans: '40',
-          unit: '%',
-          visualSvg: `
-            <svg viewBox="0 0 580 74" width="580" height="74" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="10-block bar showing 4 out of 10 blocks shaded">
-              <text x="20" y="20" font-size="11.5" font-weight="800" fill="var(--bad)">✗ Sam Added +90 (Wrong!)</text>
-              <text x="280" y="20" font-size="11.5" font-weight="800" fill="var(--brand)">Equivalent Ratios Scale by Multiplication: 10 × 10 = 100</text>
-              <rect x="20" y="28" width="216" height="26" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
-              <rect x="236" y="28" width="324" height="26" fill="var(--well)" stroke="var(--brand)" stroke-width="1.5"/>
-              <text x="128" y="45" text-anchor="middle" font-size="11.5" font-weight="800" fill="#FFFFFF">4 out of 10 (×10 = ?%)</text>
-            </svg>
-          `,
-          traps: {
-            94: '94% is Sam’s addition mistake (4 + 90). Multiply 4 by 10 instead of adding 90!',
-            4: '4 is out of 10. Multiply 4 × 10 to find how many out of 100!'
+          id: "t4_6",
+          title: {
+            en: "Fix It: Sam’s Adding Mistake",
+            es: "Corrígelo: el error de suma de Sam",
           },
-          firstNudge: 'Since 10 × 10 = 100, multiply the part (4) by 10 as well.',
-          hint: 'Multiply both terms of 4/10 by 10 so the denominator becomes 100.',
-          hintEs: 'Multiplica ambos términos de 4/10 por 10 para que el denominador sea 100.',
-          explain: 'Case Solved! Equivalent ratios scale by multiplication: 4/10 × 10/10 = 40/100 = 40%.',
-          explainEs: '¡Caso resuelto! Las razones equivalentes se escalan multiplicando: 4/10 × 10/10 = 40/100 = 40%.'
+          facts: [
+            {
+              en: "Sam wants to write 4 out of 10 as a percent.",
+              es: "Sam quiere escribir 4 de 10 como porcentaje.",
+            },
+            {
+              en: "He adds 90 to both numbers: 4 + 90 = 94 and 10 + 90 = 100. So he says 94%.",
+              es: "Suma 90 a ambos números: 4 + 90 = 94 y 10 + 90 = 100. Entonces dice 94%.",
+            },
+          ],
+          q: {
+            en: "What percent is 4 out of 10 really?",
+            es: "¿Qué porcentaje es realmente 4 de 10?",
+          },
+          bars: {
+            rows: [
+              {
+                segs: [
+                  { t: { en: "4 shaded", es: "4 sombreados" }, w: 40, tone: "a" },
+                  {
+                    t: { en: "6 not shaded", es: "6 sin sombrear" },
+                    w: 60,
+                    tone: "c",
+                  },
+                ],
+              },
+            ],
+            note: { en: "10 blocks in all", es: "10 bloques en total" },
+          },
+          fields: [
+            {
+              label: {
+                en: "Percent that 4 out of 10 really is",
+                es: "Porcentaje que realmente es 4 de 10",
+              },
+              unit: "%",
+              ans: 40,
+              wrong: {
+                94: {
+                  en: "94% is Sam’s answer. Adding 90 to both numbers changes the ratio. Multiply instead.",
+                  es: "94% es la respuesta de Sam. Sumar 90 a ambos números cambia la razón. Mejor multiplica.",
+                },
+                4: {
+                  en: "4 is out of 10, not out of 100. Multiply to find how many out of 100.",
+                  es: "4 es de 10, no de 100. Multiplica para hallar cuántos de 100.",
+                },
+                400: {
+                  en: "That is too big. Multiply both numbers by the factor that turns 10 into 100, not by 100.",
+                  es: "Eso es demasiado grande. Multiplica ambos números por el factor que convierte 10 en 100, no por 100.",
+                },
+                6: {
+                  en: "6 out of 10 is the part that is NOT shaded. The question is about the 4.",
+                  es: "6 de 10 es la parte que NO está sombreada. La pregunta es sobre el 4.",
+                },
+              },
+            },
+          ],
+          hints: [
+            {
+              en: "Adding the same number to the top and bottom does not keep a ratio equal. Multiply both numbers by the same factor. What do you multiply 10 by to get 100?",
+              es: "Sumar el mismo número arriba y abajo no mantiene igual una razón. Multiplica ambos números por el mismo factor. ¿Por qué número multiplicas 10 para obtener 100?",
+            },
+            {
+              en: "10 × 10 = 100, so 4 × 10 = ? out of 100.",
+              es: "10 × 10 = 100, así que 4 × 10 = ? de 100.",
+            },
+          ],
+          miss: {
+            en: "Equivalent ratios come from multiplying both numbers by the same factor, not from adding.",
+            es: "Las razones equivalentes salen de multiplicar ambos números por el mismo factor, no de sumar.",
+          },
+          explain: {
+            en: "Equivalent ratios scale by multiplying: 4/10 × 10/10 = 40/100 = 40%.",
+            es: "Las razones equivalentes se escalan multiplicando: 4/10 × 10/10 = 40/100 = 40%.",
+          },
         },
         {
-          id: 't4_7',
-          badge: 'Error Detective 7 of 8 · Spot & Fix Mia’s Grid Mix-Up',
-          title: 'Mia’s Claim: Shaded vs. Not Shaded',
-          story: '🔍 On a 100-square grid, 35 squares are shaded. The question asks what percent is NOT shaded, and Mia wrote 35%.',
-          question: 'What is the TRUE percent of the grid that is NOT shaded?',
-          stemEs: 'En una cuadrícula de 100, 35 cuadrados están sombreados. ¿Qué porcentaje NO está sombreado?',
-          ans: '65',
-          unit: '%',
-          visualSvg: `
-            <svg viewBox="0 0 580 74" width="580" height="74" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="Bar showing 35 shaded squares and 65 unshaded squares out of 100">
-              <text x="20" y="19" font-size="11.5" font-weight="800" fill="var(--brand)">Whole Grid = 100 Squares (100%)</text>
-              <rect x="20" y="26" width="189" height="28" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
-              <text x="114" y="44" text-anchor="middle" font-size="11.5" font-weight="800" fill="#FFFFFF">Shaded: 35%</text>
-              <rect x="209" y="26" width="351" height="28" fill="var(--sun-tint)" stroke="var(--brand)" stroke-width="1.5"/>
-              <text x="384" y="44" text-anchor="middle" font-size="11.5" font-weight="800" fill="var(--warn)">NOT Shaded: 100 − 35 = ?%</text>
-            </svg>
-          `,
-          traps: {
-            35: '35% is the SHADED part. Subtract 35 from 100 to find the part that is NOT shaded!'
+          id: "t4_7",
+          title: { en: "Fix It: Mia’s Grid", es: "Corrígelo: la cuadrícula de Mia" },
+          facts: [
+            {
+              en: "A grid has 100 squares. 35 squares are shaded.",
+              es: "Una cuadrícula tiene 100 cuadrados. 35 cuadrados están sombreados.",
+            },
+            {
+              en: "Mia says 35% of the grid is NOT shaded.",
+              es: "Mia dice que el 35% de la cuadrícula NO está sombreado.",
+            },
+          ],
+          q: {
+            en: "What percent of the grid is really NOT shaded?",
+            es: "¿Qué porcentaje de la cuadrícula realmente NO está sombreado?",
           },
-          firstNudge: 'The shaded part and the unshaded part add up to 100 squares (100%).',
-          hint: 'Subtract the 35 shaded squares from the 100 total squares.',
-          hintEs: 'Resta los 35 cuadrados sombreados de los 100 cuadrados totales.',
-          explain: 'Case Solved! 35% is the shaded part; 100% − 35% = 65% is NOT shaded.',
-          explainEs: '¡Caso resuelto! 35% es la parte sombreada; 100% − 35% = 65% NO está sombreado.'
+          bars: {
+            rows: [
+              {
+                segs: [
+                  { t: { en: "Shaded: 35", es: "Sombreados: 35" }, w: 35, tone: "a" },
+                  {
+                    t: { en: "NOT shaded: ?", es: "SIN sombrear: ?" },
+                    w: 65,
+                    tone: "q",
+                  },
+                ],
+              },
+            ],
+            note: { en: "100 squares in all", es: "100 cuadrados en total" },
+          },
+          fields: [
+            {
+              label: { en: "Percent NOT shaded", es: "Porcentaje SIN sombrear" },
+              unit: "%",
+              ans: 65,
+              wrong: {
+                35: {
+                  en: "35% is the SHADED part. Mia answered about the wrong part.",
+                  es: "35% es la parte SOMBREADA. Mia respondió sobre la parte equivocada.",
+                },
+                135: {
+                  en: "The shaded part and the NOT-shaded part must add up to 100%, not more.",
+                  es: "La parte sombreada y la parte SIN sombrear deben sumar 100%, no más.",
+                },
+                100: {
+                  en: "100% is the whole grid. Take the shaded part away from it.",
+                  es: "100% es toda la cuadrícula. Quítale la parte sombreada.",
+                },
+              },
+            },
+          ],
+          hints: [
+            {
+              en: "The shaded part and the NOT-shaded part together make the whole grid, which is 100%.",
+              es: "La parte sombreada y la parte SIN sombrear juntas forman toda la cuadrícula, que es el 100%.",
+            },
+            { en: "100% − 35% = ?%", es: "100% − 35% = ?%" },
+          ],
+          miss: {
+            en: "Mia found the shaded part. The question asks for the part that is left over.",
+            es: "Mia halló la parte sombreada. La pregunta pide la parte que sobra.",
+          },
+          explain: {
+            en: "The shaded and NOT-shaded parts make 100%, so 100% − 35% = 65% is NOT shaded.",
+            es: "Las partes sombreada y SIN sombrear forman el 100%, así que 100% − 35% = 65% está SIN sombrear.",
+          },
         },
         {
-          id: 't4_8',
-          badge: 'Error Detective 8 of 8 · Spot & Fix Ali’s Kitten Claim (>100%)',
-          title: 'Ali’s Claim: “Percents Can’t Pass 100%”',
-          story: '🔍 A gray kitten weighs 8 ounces (100%). Its brother weighs 14 ounces. Ali says: “14 ounces cannot be a percent of 8 ounces because a percent cannot be over 100%.”',
-          question: 'Write 14 out of 8 as a percent to find the brother’s TRUE weight compared to the gray kitten:',
-          stemEs: 'Un gatito gris pesa 8 oz (100%) y su hermano 14 oz. Escribe 14 de 8 como porcentaje:',
-          ans: '175',
-          unit: '%',
-          visualSvg: `
-            <svg viewBox="0 0 580 82" width="580" height="82" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:0 0 14px 0; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="Block comparison showing 8 ounces is 4 blocks of 2 ounces (100 percent) and 14 ounces is 7 blocks of 2 ounces">
-              <text x="20" y="18" font-size="11" font-weight="800" fill="var(--brand)">Each block = 2 oz = 25% of the gray kitten:</text>
-              <text x="20" y="38" font-size="11" font-weight="800" fill="var(--brand)">Gray (8 oz):</text>
-              <rect x="110" y="24" width="240" height="20" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
-              <text x="230" y="38" text-anchor="middle" font-size="10.5" font-weight="800" fill="#FFFFFF">4 blocks of 2 oz = 100%</text>
-              <text x="20" y="64" font-size="11" font-weight="800" fill="var(--warn)">Brother (14 oz):</text>
-              <rect x="110" y="50" width="240" height="20" fill="var(--pct)" stroke="var(--brand)" stroke-width="1.5"/>
-              <rect x="350" y="50" width="180" height="20" fill="var(--sun-tint)" stroke="var(--brand)" stroke-width="1.5"/>
-              <text x="320" y="64" text-anchor="middle" font-size="10.5" font-weight="800" fill="#FFFFFF">7 blocks of 2 oz = 7 × 25% = ?%</text>
-            </svg>
-          `,
-          traps: {
-            75: '75% is the extra 6 ounces (3 blocks of 25%) above 8 ounces. Add the full 100% (8 oz) + 75% (6 oz)!',
-            106: 'Remember to scale by dividing and multiplying (14/8 = 7/4 = 175/100), not by adding 92!'
+          id: "t4_8",
+          title: { en: "Fix It: Ali’s Kittens", es: "Corrígelo: los gatitos de Ali" },
+          facts: [
+            {
+              en: "A gray kitten weighs 8 ounces. Its brother weighs 14 ounces.",
+              es: "Un gatito gris pesa 8 onzas. Su hermano pesa 14 onzas.",
+            },
+            {
+              en: "Ali says 14 ounces cannot be a percent of 8 ounces, because a percent cannot be over 100%.",
+              es: "Ali dice que 14 onzas no puede ser un porcentaje de 8 onzas, porque un porcentaje no puede pasar de 100%.",
+            },
+          ],
+          q: {
+            en: "The brother weighs what percent of the gray kitten’s weight?",
+            es: "¿Qué porcentaje del peso del gatito gris pesa su hermano?",
           },
-          firstNudge: 'Use a Bridge Ratio: divide both 14 and 8 by 2 to get fourths (7/4), then multiply by 25 to reach a denominator of 100.',
-          hint: 'Simplify 14/8 by dividing both terms by 2 to get 7/4, then multiply both terms by 25 to get a denominator of 100.',
-          hintEs: 'Simplifica 14/8 dividiendo ambos entre 2 para obtener 7/4, y luego multiplica por 25 para llegar a un denominador de 100.',
-          explain: 'Case Solved! 14/8 simplifies to 7/4, and 7/4 × 25/25 = 175/100 = 175%.',
-          explainEs: '¡Caso resuelto! 14/8 se simplifica a 7/4, y 7/4 × 25/25 = 175/100 = 175%.'
-        }
+          bars: {
+            rows: [
+              {
+                label: { en: "Gray kitten", es: "Gatito gris" },
+                segs: [{ t: { en: "8 oz", es: "8 oz" }, w: 57.14, tone: "a" }],
+              },
+              {
+                label: { en: "Brother", es: "Hermano" },
+                segs: [{ t: { en: "14 oz", es: "14 oz" }, w: 100, tone: "b" }],
+              },
+            ],
+          },
+          fields: [
+            {
+              label: {
+                en: "Percent of the gray kitten’s weight",
+                es: "Porcentaje del peso del gatito gris",
+              },
+              unit: "%",
+              ans: 175,
+              wrong: {
+                75: {
+                  en: "75% is only the extra 6 ounces. The brother weighs all of the gray kitten’s weight and more.",
+                  es: "75% es solo el extra de 6 onzas. El hermano pesa todo el peso del gatito gris y más.",
+                },
+                14: {
+                  en: "14 is the brother’s weight in ounces. Compare it with the gray kitten’s 8 ounces.",
+                  es: "14 es el peso del hermano en onzas. Compáralo con las 8 onzas del gatito gris.",
+                },
+                6: {
+                  en: "6 ounces is how much heavier the brother is. The question asks for a percent of the gray kitten’s weight.",
+                  es: "6 onzas es cuánto más pesado es el hermano. La pregunta pide un porcentaje del peso del gatito gris.",
+                },
+                106: {
+                  en: "Adding 92 to both numbers does not keep the ratio equal. Scale by multiplying.",
+                  es: "Sumar 92 a ambos números no mantiene igual la razón. Escala multiplicando.",
+                },
+                57.14: {
+                  en: "That compares the gray kitten with the brother, backwards. The gray kitten (8 oz) is the whole.",
+                  es: "Eso compara al gatito gris con el hermano, al revés. El gatito gris (8 oz) es el total.",
+                },
+                57: {
+                  en: "That compares the gray kitten with the brother, backwards. The gray kitten (8 oz) is the whole.",
+                  es: "Eso compara al gatito gris con el hermano, al revés. El gatito gris (8 oz) es el total.",
+                },
+              },
+            },
+          ],
+          hints: [
+            {
+              en: "The gray kitten (8 ounces) is the whole. A percent can be over 100% when something is bigger than the whole. Write 14 out of 8, then make the whole 100.",
+              es: "El gatito gris (8 onzas) es el total. Un porcentaje puede pasar de 100% cuando algo es mayor que el total. Escribe 14 de 8 y luego haz que el total sea 100.",
+            },
+            {
+              en: "14/8 = 7/4 (divide both numbers by 2). 4 × 25 = 100, so 7 × 25 = ? out of 100.",
+              es: "14/8 = 7/4 (divide ambos números entre 2). 4 × 25 = 100, así que 7 × 25 = ? de 100.",
+            },
+          ],
+          miss: {
+            en: "The brother is heavier than the gray kitten, so the percent is more than 100%. The gray kitten’s weight is the whole.",
+            es: "El hermano pesa más que el gatito gris, así que el porcentaje es mayor que 100%. El peso del gatito gris es el total.",
+          },
+          explain: {
+            en: "14/8 = 7/4, and 7/4 × 25/25 = 175/100 = 175%. A percent can be greater than 100% when the part is bigger than the whole.",
+            es: "14/8 = 7/4, y 7/4 × 25/25 = 175/100 = 175%. Un porcentaje puede ser mayor que 100% cuando la parte es mayor que el total.",
+          },
+        },
       ];
 
-      function renderT4Problem() {
-        const p = T4_PROBLEMS[state.idx4];
-        const isDone = !!state.solved4[p.id];
-        const explainTxt = state.showEs && p.explainEs ? `${p.explain} (${p.explainEs})` : p.explain;
-        const hintTxt = state.showEs && p.hintEs ? `${p.hint} (${p.hintEs})` : p.hint;
+      const T4_BAR_TONES = {
+        a: "background:var(--pct); color:#FFFFFF;",
+        b: "background:var(--brand); color:#FFFFFF;",
+        c: "background:var(--well); color:var(--brand);",
+        q: "background:var(--sun-tint); color:var(--warn); border-style:dashed;",
+      };
 
-        renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => {
-          state.idx4 = ni;
-          renderT4Problem();
-        });
+      /* A plain bar model: known parts are labelled, the unknown part shows "?". */
+      function t4BarsHtml(a) {
+        if (!a.bars) return "";
+        const both = (t) => `${t.en}<span class="es-text">${t.es}</span>`;
+        const rows = a.bars.rows
+          .map((r) => {
+            const segs = r.segs
+              .map(
+                (s) =>
+                  `<div style="flex:${s.w} 1 0; min-width:0; padding:8px 6px; border:1.5px solid var(--brand); font-size:0.88rem; font-weight:800; text-align:center; ${T4_BAR_TONES[s.tone]}">${both(s.t)}</div>`,
+              )
+              .join("");
+            return `${r.label ? `<div style="font-size:0.84rem; font-weight:800; color:var(--ink-muted); margin:6px 0 2px;">${both(r.label)}</div>` : ""}<div style="display:flex;">${segs}</div>`;
+          })
+          .join("");
+        const note = a.bars.note
+          ? `<div style="font-size:0.84rem; font-weight:700; color:var(--ink-muted); margin-top:4px;">${both(a.bars.note)}</div>`
+          : "";
+        const label = a.bars.rows
+          .map(
+            (r) =>
+              (r.label ? `${r.label.en}: ` : "") +
+              r.segs.map((s) => s.t.en).join(", "),
+          )
+          .join(". ");
+        return `<div role="img" aria-label="Bar model. ${label}" style="margin:0 0 14px;">${rows}${note}</div>`;
+      }
 
-        const stage = document.getElementById('t4-stage-card');
-        stage.innerHTML = `
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
-            <span style="font-size: 0.84rem; font-weight: 800; color: var(--warn);">${p.badge}</span>
-            <button type="button" class="speak-btn" data-speak="${p.story} ${p.question}" data-speak-es="${p.stemEs}">🔊 Read</button>
-          </div>
-          <h3 style="font-family: var(--font-display); font-size: 1.35rem; color: var(--brand); margin: 0 0 12px 0;">${p.title}</h3>
+      const T4_SCRATCHPAD = `
+              <details class="scratchpad-details">
+                <summary>🧮 Scratchpad (optional)<span class="es-text">Espacio para calcular (opcional)</span></summary>
+                <div class="scratchpad-grid">
+                  <div class="scratchpad-cell">
+                    <label for="t4-sc-part">Start part<span class="es-text">Parte inicial</span></label>
+                    <input type="text" id="t4-sc-part" class="num-input" style="width:74px; min-height:36px; font-size:0.95rem;" inputmode="decimal" placeholder="part" data-nsr-ignore="true">
+                  </div>
+                  <div style="font-weight:800; color:var(--ink-muted);">out of</div>
+                  <div class="scratchpad-cell">
+                    <label for="t4-sc-whole">Start whole<span class="es-text">Total inicial</span></label>
+                    <input type="text" id="t4-sc-whole" class="num-input" style="width:74px; min-height:36px; font-size:0.95rem;" inputmode="decimal" placeholder="whole" data-nsr-ignore="true">
+                  </div>
+                  <div style="font-weight:800; color:var(--brand);">→</div>
+                  <div class="scratchpad-cell">
+                    <label for="t4-sc-p100">Part per 100<span class="es-text">Parte por cada 100</span></label>
+                    <input type="text" id="t4-sc-p100" class="num-input" style="width:82px; min-height:36px; font-size:0.95rem;" inputmode="decimal" placeholder="? / 100" data-nsr-ignore="true">
+                  </div>
+                  <div id="t4-sc-auto" aria-live="polite" style="font-size:0.86rem; font-weight:700; color:var(--brand); min-width:120px;"></div>
+                </div>
+              </details>`;
 
-          <div style="background: var(--surface-soft); border-left: 5px solid var(--brand); padding: 16px 18px; border-radius: 8px; font-size: 1.04rem; margin-bottom: 14px;">
-            ${p.story}
-            <p class="es-text">${p.stemEs}</p>
-          </div>
-
-          ${p.visualSvg || ''}
-
-          <p style="font-weight: 700; font-size: 1.05rem; color: var(--brand); margin-bottom: 12px;">${p.question}</p>
-
-          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-            <label for="t4-inp" class="sr-only">${p.question}</label>
-            <input type="text" id="t4-inp" class="num-input ${isDone ? 'ok' : ''}" inputmode="numeric" value="${isDone ? p.ans : ''}" placeholder="?">
-            <strong style="font-size: 1.15rem; color: var(--brand);">${p.unit}</strong>
-            <button type="button" class="btn btn-primary" id="t4-check-btn">Check Answer</button>
-            <button type="button" class="btn" id="t4-hint-btn">💡 Hint</button>
-          </div>
-
-          <details class="scratchpad-details">
-            <summary>🧮 Open Ratio &amp; Percent Scratchpad (Optional Workspace)</summary>
-            <div class="scratchpad-grid">
-              <div class="scratchpad-cell">
-                <label for="t4-sc-part">Start Part</label>
-                <input type="text" id="t4-sc-part" class="num-input" style="width:74px; min-height:36px; font-size:0.95rem;" inputmode="decimal" placeholder="part" data-nsr-ignore="true">
-              </div>
-              <div style="font-weight:800; color:var(--ink-muted);">out of</div>
-              <div class="scratchpad-cell">
-                <label for="t4-sc-whole">Start Whole</label>
-                <input type="text" id="t4-sc-whole" class="num-input" style="width:74px; min-height:36px; font-size:0.95rem;" inputmode="decimal" placeholder="whole" data-nsr-ignore="true">
-              </div>
-              <div style="font-weight:800; color:var(--brand);">→</div>
-              <div class="scratchpad-cell">
-                <label for="t4-sc-p100">Part per 100</label>
-                <input type="text" id="t4-sc-p100" class="num-input" style="width:82px; min-height:36px; font-size:0.95rem;" inputmode="decimal" placeholder="? / 100" data-nsr-ignore="true">
-              </div>
-              <div id="t4-sc-auto" style="font-size:0.86rem; font-weight:700; color:var(--brand); min-width:120px;">Type part &amp; whole to test!</div>
-            </div>
-          </details>
-
-          <div id="t4-fb" class="feedback-box ${isDone ? 'show ok' : ''}" role="status">
-            ${isDone ? explainTxt : ''}
-          </div>
-        `;
-
-        const inp = document.getElementById('t4-inp');
-        const fb = document.getElementById('t4-fb');
-        if (isDone) appendNext(fb, 4, T4_PROBLEMS.length, renderT4Problem);
-
-        // Wire optional Scratchpad helper
-        const scPart = document.getElementById('t4-sc-part');
-        const scWhole = document.getElementById('t4-sc-whole');
-        const scP100 = document.getElementById('t4-sc-p100');
-        const scAuto = document.getElementById('t4-sc-auto');
-        function updateScratchpad() {
+      /* The scratchpad only tests numbers the student types; it never fills in an answer. */
+      function wireT4Scratchpad(host) {
+        const scPart = host.querySelector("#t4-sc-part");
+        const scWhole = host.querySelector("#t4-sc-whole");
+        const scP100 = host.querySelector("#t4-sc-p100");
+        const scAuto = host.querySelector("#t4-sc-auto");
+        const say = (en, es) => {
+          scAuto.innerHTML = `${en}<span class="es-text">${es}</span>`;
+        };
+        const idle = () =>
+          say(
+            "Type part &amp; whole to test!",
+            "Escribe la parte y el total para probar.",
+          );
+        idle();
+        const update = () => {
           const pv = parseNum(scPart.value);
           const wv = parseNum(scWhole.value);
           if (!Number.isNaN(pv) && !Number.isNaN(wv) && wv > 0) {
             const factor = 100 / wv;
-            const factorStr = Number.isInteger(factor) ? `× ${factor}` : `× ${(factor).toFixed(2)}`;
-            scAuto.textContent = `Scale factor to 100: ${factorStr}`;
-          } else {
-            scAuto.textContent = 'Type part & whole to test!';
-          }
-        }
-        if (scPart && scWhole) {
-          scPart.addEventListener('input', updateScratchpad);
-          scWhole.addEventListener('input', updateScratchpad);
-          if (scP100) {
-            scP100.addEventListener('input', () => {
-              const v = parseNum(scP100.value);
-              if (!Number.isNaN(v)) scAuto.textContent = `${v} / 100 = ${v}%`;
-            });
-          }
-        }
-
-        function checkT4() {
-          if (!inp.value.trim()) {
-            fb.className = 'feedback-box show warn';
-            fb.textContent = 'Type your answer in the box, then press Check Answer.';
-            return;
-          }
-          const numVal = parseNum(inp.value);
-          const ok = numVal === Number(p.ans);
-          inp.classList.toggle('ok', ok);
-          inp.classList.toggle('err', !ok);
-          if (ok) {
-            fb.className = 'feedback-box show ok';
-            fb.textContent = explainTxt;
-            markSolved(state.solved4, p.id);
-            updateProgressHeader();
-            renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4Problem(); });
-            appendNext(fb, 4, T4_PROBLEMS.length, renderT4Problem);
-            announce(`Correct! ${p.ans} ${p.unit}.`);
-          } else {
-            const n = bumpMiss(p.id);
-            fb.className = 'feedback-box show err';
-            if (p.traps && p.traps[numVal]) {
-              fb.textContent = p.traps[numVal];
-            } else if (n < 2 && p.firstNudge) {
-              fb.textContent = `Not quite yet. ${p.firstNudge}`;
-            } else {
-              fb.textContent = `Not quite yet. Hint: ${hintTxt}`;
-            }
-          }
-        }
-
-        document.getElementById('t4-check-btn').addEventListener('click', checkT4);
-        document.getElementById('t4-hint-btn').addEventListener('click', () => {
-          fb.className = 'feedback-box show warn';
-          fb.textContent = `💡 Hint: ${hintTxt}`;
-        });
-        inp.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' && !e.isComposing) {
-            e.preventDefault();
-            checkT4();
-          }
+            const f = Number.isInteger(factor) ? factor : factor.toFixed(2);
+            say(`Scale factor to 100: × ${f}`, `Factor para llegar a 100: × ${f}`);
+          } else idle();
+        };
+        scPart.addEventListener("input", update);
+        scWhole.addEventListener("input", update);
+        scP100.addEventListener("input", () => {
+          const v = parseNum(scP100.value);
+          if (!Number.isNaN(v)) say(`${v} / 100 = ${v}%`, `${v} / 100 = ${v}%`);
         });
       }
 
+      function renderT4Problem() {
+        const a = T4_STORIES[state.idx4];
+        const isSolved = !!state.solved4[a.id];
+        const dots = () =>
+          renderDots("t4-dots", T4_STORIES, state.idx4, state.solved4, (ni) => {
+            state.idx4 = ni;
+            renderT4Problem();
+          });
+        dots();
+
+        const host = document.getElementById("t4-stage-card");
+        const { fb } = U4Studio.story.card({
+          host,
+          item: a,
+          index: state.idx4,
+          count: T4_STORIES.length,
+          solved: isSolved,
+          speak: (t) => speak(t, t),
+          showEs: () => state.showEs,
+          onMiss: () => {},
+          onSolve: (fbEl) => {
+            state.solved4[a.id] = true;
+            updateProgressHeader();
+            dots();
+            appendNext(fbEl, 4, T4_STORIES.length, renderT4Problem);
+            announce("Correct!");
+          },
+        });
+        host
+          .querySelector(".item-q")
+          .insertAdjacentHTML("beforebegin", t4BarsHtml(a));
+        host.insertAdjacentHTML("beforeend", T4_SCRATCHPAD);
+        wireT4Scratchpad(host);
+        if (isSolved) appendNext(fb, 4, T4_STORIES.length, renderT4Problem);
+      }
+
       document.getElementById('t4-prev-btn').addEventListener('click', () => {
-        state.idx4 = (state.idx4 - 1 + T4_PROBLEMS.length) % T4_PROBLEMS.length;
+        state.idx4 = (state.idx4 - 1 + T4_STORIES.length) % T4_STORIES.length;
         renderT4Problem();
       });
       document.getElementById('t4-next-btn').addEventListener('click', () => {
-        state.idx4 = (state.idx4 + 1) % T4_PROBLEMS.length;
+        state.idx4 = (state.idx4 + 1) % T4_STORIES.length;
         renderT4Problem();
       });
 
@@ -2883,7 +3285,7 @@ ${step3Html}
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(custom));
           loadState();
-          [['idx1', T1_TASKS], ['idx2', T2_PROBLEMS], ['idx3', T3_PROBLEMS], ['idx4', T4_PROBLEMS], ['idx5', QUIZ_QUESTIONS]].forEach(([k, arr]) => {
+          [['idx1', T1_TASKS], ['idx2', T2_PROBLEMS], ['idx3', T3_PROBLEMS], ['idx4', T4_STORIES], ['idx5', QUIZ_QUESTIONS]].forEach(([k, arr]) => {
             if (state[k] >= arr.length) state[k] = 0;
           });
           currentT2 = T2_PROBLEMS[state.idx2];
@@ -2985,10 +3387,10 @@ ${step3Html}
         state.idx1 = firstUnsolved(T1_TASKS, state.solved1);
         state.idx2 = firstUnsolved(T2_PROBLEMS, state.solved2);
         state.idx3 = firstUnsolved(T3_PROBLEMS, state.solved3);
-        state.idx4 = firstUnsolved(T4_PROBLEMS, state.solved4);
+        state.idx4 = firstUnsolved(T4_STORIES, state.solved4);
         state.idx5 = firstUnsolved(QUIZ_QUESTIONS, state.solved5);
       }
-      [['idx1', T1_TASKS], ['idx2', T2_PROBLEMS], ['idx3', T3_PROBLEMS], ['idx4', T4_PROBLEMS], ['idx5', QUIZ_QUESTIONS]].forEach(([k, arr]) => {
+      [['idx1', T1_TASKS], ['idx2', T2_PROBLEMS], ['idx3', T3_PROBLEMS], ['idx4', T4_STORIES], ['idx5', QUIZ_QUESTIONS]].forEach(([k, arr]) => {
         if (state[k] >= arr.length) state[k] = 0;
       });
       currentT2 = T2_PROBLEMS[state.idx2];

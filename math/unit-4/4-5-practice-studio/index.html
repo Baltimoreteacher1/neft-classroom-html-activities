@@ -11,6 +11,7 @@
   <script src="/assets/studio-comfort.js" defer></script>
   <script src="/assets/u4-studio.js"></script>
   <script src="/assets/u4-studio-bonus.js"></script>
+  <script src="/assets/u4-studio-story.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -68,7 +69,7 @@
         <span class="tab-badge" id="badge-4">4</span>
         <span class="tab-text">
           <span class="tab-name">Snacks &amp; Word Stories</span>
-          <span class="tab-desc">Reveal Problems (8)</span>
+          <span class="tab-desc">Find the Whole (8)</span>
         </span>
       </button>
 
@@ -153,11 +154,11 @@
     <section id="panel-4" class="tab-panel" role="tabpanel" aria-labelledby="tab-4">
       <div class="topic-strip">
         <div>
-          <h2>Tab 4: Cafeteria Snacks &amp; Word Stories (Reveal Math)</h2>
-          <p>Work backward from partial survey data: 45% fruit, 30% cheese sticks, 25% veggie sticks.</p>
-          <div class="es-text">Trabaja hacia atrás a partir de datos de encuestas: 45% fruta, 30% queso, 25% vegetales.</div>
+          <h2>Tab 4: Word Stories: Find the Whole</h2>
+          <p>Each story gives a part and its percent. Use the part and the percent to find the whole.</p>
+          <div class="es-text">Cada historia da una parte y su porcentaje. Usa la parte y el porcentaje para hallar el total.</div>
         </div>
-        <div class="key-rule-pill">&#129367; 90 students = 30% of Total &rarr; Total = 300 students</div>
+        <div class="key-rule-pill">&#129367; whole = part &divide; percent (as a decimal)</div>
       </div>
 
       <div class="stepper-bar">
@@ -197,7 +198,7 @@
 
   <footer class="app-footer">
     <div class="footer-wrap">
-      <div>Grade 6 Reveal Math &middot; Unit 4 Percents &middot; <strong>Lesson 4-5 Practice Studio</strong></div>
+      <div>Grade 6 Math &middot; Unit 4 Percents &middot; <strong>Lesson 4-5 Practice Studio</strong></div>
       <div>Aligned to standard <strong>6.AT.4</strong> &middot; Determine the Whole Given Part &amp; Percent</div>
     </div>
   </footer>
@@ -819,67 +820,222 @@
       const T4_STORIES = [
         {
           id: 't4_1',
-          title: 'Reveal Notice & Wonder: Cheese Sticks',
-          prompt: 'In a cafeteria survey, 30% of middle school students chose cheese sticks. If 90 students chose cheese sticks, how many students voted in all?',
-          promptEs: 'El 30% de los estudiantes eligió palitos de queso. Si fueron 90 estudiantes, ¿cuántos votaron en total?',
-          ans: 300,
-          explain: '90 ÷ 0.30 = 300 total students.'
+          title: { en: "Cafeteria: Cheese Sticks", es: "Cafetería: palitos de queso" },
+          facts: [
+            { en: "In a cafeteria survey, 30% of the students chose cheese sticks.", es: "En una encuesta de la cafetería, el 30% de los estudiantes eligió palitos de queso." },
+            { en: "90 students chose cheese sticks.", es: "90 estudiantes eligieron palitos de queso." }
+          ],
+          q: { en: "How many students voted in all?", es: "¿Cuántos estudiantes votaron en total?" },
+          fields: [{
+            label: { en: "Students who voted", es: "Estudiantes que votaron" },
+            unit: { en: "students", es: "estudiantes" },
+            ans: 300,
+            wrong: {
+              27: { en: "That multiplies 90 by 0.30. 90 is the part, so divide it by the percent to find the whole.", es: "Eso multiplica 90 por 0.30. 90 es la parte, así que divídela entre el porcentaje para hallar el total." },
+              3: { en: "That divides by 30. Write 30% as a decimal (0.30) before you divide.", es: "Eso divide entre 30. Escribe 30% como decimal (0.30) antes de dividir." },
+              2700: { en: "That multiplies by 30. The whole is bigger than 90, but not that big. Divide the part by the decimal.", es: "Eso multiplica por 30. El total es mayor que 90, pero no tanto. Divide la parte entre el decimal." },
+              90: { en: "90 is the students who chose cheese sticks. That is only part of the voters.", es: "90 son los estudiantes que eligieron palitos de queso. Esa es solo una parte de los votantes." },
+              30: { en: "30 is the percent, not a number of students.", es: "30 es el porcentaje, no una cantidad de estudiantes." }
+            }
+          }],
+          hints: [
+            { en: "The part is 90. It is 30% of the whole. Write 30% as a decimal.", es: "La parte es 90. Es el 30% del total. Escribe 30% como decimal." },
+            { en: "Divide the part by the decimal: 90 ÷ 0.30 = ?", es: "Divide la parte entre el decimal: 90 ÷ 0.30 = ?" }
+          ],
+          miss: { en: "The whole is bigger than the part, so the answer must be more than 90. Divide the part by the percent, written as a decimal.", es: "El total es mayor que la parte, así que la respuesta debe ser más que 90. Divide la parte entre el porcentaje escrito como decimal." },
+          explain: { en: "90 ÷ 0.30 = 300 students voted in all.", es: "90 ÷ 0.30 = 300 estudiantes votaron en total." }
         },
         {
           id: 't4_2',
-          title: 'Reveal Cafeteria: Fruit Snack',
-          prompt: '45% of students chose fresh fruit. If 135 students chose fruit, how many total students took the survey?',
-          promptEs: 'El 45% eligió fruta (135 estudiantes). ¿Cuántos estudiantes fueron en total?',
-          ans: 300,
-          explain: '135 ÷ 0.45 = 300 total students.'
+          title: { en: "Cafeteria: Fruit", es: "Cafetería: fruta" },
+          facts: [
+            { en: "In a cafeteria survey, 45% of the students chose fresh fruit.", es: "En una encuesta de la cafetería, el 45% de los estudiantes eligió fruta fresca." },
+            { en: "135 students chose fruit.", es: "135 estudiantes eligieron fruta." }
+          ],
+          q: { en: "How many students took the survey?", es: "¿Cuántos estudiantes respondieron la encuesta?" },
+          fields: [{
+            label: { en: "Students in the survey", es: "Estudiantes en la encuesta" },
+            unit: { en: "students", es: "estudiantes" },
+            ans: 300,
+            wrong: {
+              60.75: { en: "That multiplies 135 by 0.45. 135 is the part, so divide it by the percent to find the whole.", es: "Eso multiplica 135 por 0.45. 135 es la parte, así que divídela entre el porcentaje para hallar el total." },
+              3: { en: "That divides by 45. Write 45% as a decimal (0.45) before you divide.", es: "Eso divide entre 45. Escribe 45% como decimal (0.45) antes de dividir." },
+              6075: { en: "That multiplies by 45. The whole is bigger than 135, but not that big. Divide the part by the decimal.", es: "Eso multiplica por 45. El total es mayor que 135, pero no tanto. Divide la parte entre el decimal." },
+              135: { en: "135 is the students who chose fruit. That is only part of the survey.", es: "135 son los estudiantes que eligieron fruta. Esa es solo una parte de la encuesta." },
+              45: { en: "45 is the percent, not a number of students.", es: "45 es el porcentaje, no una cantidad de estudiantes." }
+            }
+          }],
+          hints: [
+            { en: "The part is 135. It is 45% of the whole. Write 45% as a decimal.", es: "La parte es 135. Es el 45% del total. Escribe 45% como decimal." },
+            { en: "Divide the part by the decimal: 135 ÷ 0.45 = ?", es: "Divide la parte entre el decimal: 135 ÷ 0.45 = ?" }
+          ],
+          miss: { en: "The whole is bigger than the part, so the answer must be more than 135. Divide the part by the percent, written as a decimal.", es: "El total es mayor que la parte, así que la respuesta debe ser más que 135. Divide la parte entre el porcentaje escrito como decimal." },
+          explain: { en: "135 ÷ 0.45 = 300 students took the survey.", es: "135 ÷ 0.45 = 300 estudiantes respondieron la encuesta." }
         },
         {
           id: 't4_3',
-          title: 'Reveal Cafeteria: Veggie Sticks',
-          prompt: '25% of students chose veggie sticks. If 75 students chose veggie sticks, what was the total student count?',
-          promptEs: 'El 25% eligió palitos de verdura (75 estudiantes). ¿Cuál fue el total de estudiantes?',
-          ans: 300,
-          explain: '75 ÷ 0.25 = 300 total students (or 75 × 4 = 300).'
+          title: { en: "Cafeteria: Veggie Sticks", es: "Cafetería: palitos de verdura" },
+          facts: [
+            { en: "In a cafeteria survey, 25% of the students chose veggie sticks.", es: "En una encuesta de la cafetería, el 25% de los estudiantes eligió palitos de verdura." },
+            { en: "75 students chose veggie sticks.", es: "75 estudiantes eligieron palitos de verdura." }
+          ],
+          q: { en: "How many students took the survey?", es: "¿Cuántos estudiantes respondieron la encuesta?" },
+          fields: [{
+            label: { en: "Students in the survey", es: "Estudiantes en la encuesta" },
+            unit: { en: "students", es: "estudiantes" },
+            ans: 300,
+            wrong: {
+              18.75: { en: "That multiplies 75 by 0.25. 75 is the part, so divide it by the percent to find the whole.", es: "Eso multiplica 75 por 0.25. 75 es la parte, así que divídela entre el porcentaje para hallar el total." },
+              3: { en: "That divides by 25. Write 25% as a decimal (0.25) before you divide.", es: "Eso divide entre 25. Escribe 25% como decimal (0.25) antes de dividir." },
+              1875: { en: "That multiplies by 25. The whole is bigger than 75, but not that big. Divide the part by the decimal.", es: "Eso multiplica por 25. El total es mayor que 75, pero no tanto. Divide la parte entre el decimal." },
+              75: { en: "75 is the students who chose veggie sticks. That is only part of the survey.", es: "75 son los estudiantes que eligieron palitos de verdura. Esa es solo una parte de la encuesta." },
+              25: { en: "25 is the percent, not a number of students.", es: "25 es el porcentaje, no una cantidad de estudiantes." },
+              100: { en: "Do not add the part and the percent. Divide the part by the percent written as a decimal.", es: "No sumes la parte y el porcentaje. Divide la parte entre el porcentaje escrito como decimal." }
+            }
+          }],
+          hints: [
+            { en: "The part is 75. It is 25% of the whole. Write 25% as a decimal.", es: "La parte es 75. Es el 25% del total. Escribe 25% como decimal." },
+            { en: "Divide the part by the decimal: 75 ÷ 0.25 = ?", es: "Divide la parte entre el decimal: 75 ÷ 0.25 = ?" }
+          ],
+          miss: { en: "The whole is bigger than the part, so the answer must be more than 75. Divide the part by the percent, written as a decimal.", es: "El total es mayor que la parte, así que la respuesta debe ser más que 75. Divide la parte entre el porcentaje escrito como decimal." },
+          explain: { en: "75 ÷ 0.25 = 300 students took the survey. (Another way: 25% is 1/4, so 4 × 75 = 300.)", es: "75 ÷ 0.25 = 300 estudiantes respondieron la encuesta. (Otra forma: 25% es 1/4, así que 4 × 75 = 300.)" }
         },
         {
           id: 't4_4',
-          title: 'Math Test Problems Solved',
-          prompt: 'Leo completed 16 math problems, which was 80% of the entire test. How many total questions were on the test?',
-          promptEs: 'Leo resolvió 16 problemas, que era el 80% del examen. ¿Cuántas preguntas tenía el examen?',
-          ans: 20,
-          explain: '16 ÷ 0.80 = 20 total questions.'
+          title: { en: "Math Test: Problems Done", es: "Examen de matemáticas: problemas resueltos" },
+          facts: [
+            { en: "Leo finished 16 problems on a math test.", es: "Leo terminó 16 problemas de un examen de matemáticas." },
+            { en: "Those 16 problems are 80% of the whole test.", es: "Esos 16 problemas son el 80% de todo el examen." }
+          ],
+          q: { en: "How many problems are on the whole test?", es: "¿Cuántos problemas tiene todo el examen?" },
+          fields: [{
+            label: { en: "Problems on the test", es: "Problemas en el examen" },
+            unit: { en: "problems", es: "problemas" },
+            ans: 20,
+            wrong: {
+              12.8: { en: "That multiplies 16 by 0.80. 16 is the part, so divide it by the percent to find the whole.", es: "Eso multiplica 16 por 0.80. 16 es la parte, así que divídela entre el porcentaje para hallar el total." },
+              0.2: { en: "That divides by 80. Write 80% as a decimal (0.80) before you divide.", es: "Eso divide entre 80. Escribe 80% como decimal (0.80) antes de dividir." },
+              1280: { en: "That multiplies by 80. The whole is only a little bigger than 16. Divide the part by the decimal.", es: "Eso multiplica por 80. El total es solo un poco mayor que 16. Divide la parte entre el decimal." },
+              16: { en: "16 is the problems Leo finished. That is only part of the test.", es: "16 son los problemas que Leo terminó. Esa es solo una parte del examen." },
+              80: { en: "80 is the percent, not a number of problems.", es: "80 es el porcentaje, no una cantidad de problemas." }
+            }
+          }],
+          hints: [
+            { en: "The part is 16. It is 80% of the whole. Write 80% as a decimal.", es: "La parte es 16. Es el 80% del total. Escribe 80% como decimal." },
+            { en: "Divide the part by the decimal: 16 ÷ 0.80 = ?", es: "Divide la parte entre el decimal: 16 ÷ 0.80 = ?" }
+          ],
+          miss: { en: "The whole is bigger than the part, so the answer must be more than 16. Divide the part by the percent, written as a decimal.", es: "El total es mayor que la parte, así que la respuesta debe ser más que 16. Divide la parte entre el porcentaje escrito como decimal." },
+          explain: { en: "16 ÷ 0.80 = 20 problems on the test.", es: "16 ÷ 0.80 = 20 problemas en el examen." }
         },
         {
           id: 't4_5',
-          title: 'Shoe Sale Savings',
-          prompt: 'You saved $15 on a jacket using a 25% off coupon. What was the original full price of the jacket?',
-          promptEs: 'Ahorraste $15 con un cupón del 25%. ¿Cuál era el precio original de la chaqueta?',
-          ans: 60,
-          explain: '$15 is 25% (1/4) of the price. 4 × $15 = $60 (or 15 ÷ 0.25 = 60).'
+          title: { en: "Coupon Savings", es: "Ahorro con cupón" },
+          facts: [
+            { en: "You used a coupon for 25% off a jacket.", es: "Usaste un cupón de 25% de descuento en una chaqueta." },
+            { en: "The coupon saved you $15.", es: "El cupón te ahorró $15." }
+          ],
+          q: { en: "What was the original price of the jacket?", es: "¿Cuál era el precio original de la chaqueta?" },
+          fields: [{
+            label: { en: "Original price", es: "Precio original" },
+            unit: { en: "dollars ($)", es: "dólares ($)" },
+            ans: 60,
+            wrong: {
+              3.75: { en: "That multiplies 15 by 0.25. $15 is the part, so divide it by the percent to find the whole.", es: "Eso multiplica 15 por 0.25. $15 es la parte, así que divídela entre el porcentaje para hallar el total." },
+              0.6: { en: "That divides by 25. Write 25% as a decimal (0.25) before you divide.", es: "Eso divide entre 25. Escribe 25% como decimal (0.25) antes de dividir." },
+              375: { en: "That multiplies by 25. The original price is bigger than $15, but not that big. Divide the part by the decimal.", es: "Eso multiplica por 25. El precio original es mayor que $15, pero no tanto. Divide la parte entre el decimal." },
+              45: { en: "That is the price after the coupon. The question asks for the original price, before the coupon.", es: "Ese es el precio después del cupón. La pregunta es por el precio original, antes del cupón." },
+              15: { en: "$15 is the amount you saved. That is only part of the original price.", es: "$15 es lo que ahorraste. Esa es solo una parte del precio original." },
+              25: { en: "25 is the percent, not dollars.", es: "25 es el porcentaje, no dólares." }
+            }
+          }],
+          hints: [
+            { en: "The part is $15. It is 25% of the whole. Write 25% as a decimal.", es: "La parte es $15. Es el 25% del total. Escribe 25% como decimal." },
+            { en: "Divide the part by the decimal: $15 ÷ 0.25 = ?", es: "Divide la parte entre el decimal: $15 ÷ 0.25 = ?" }
+          ],
+          miss: { en: "The whole is bigger than the part, so the answer must be more than $15. Divide the part by the percent, written as a decimal.", es: "El total es mayor que la parte, así que la respuesta debe ser más que $15. Divide la parte entre el porcentaje escrito como decimal." },
+          explain: { en: "$15 is 25% of the original price. 15 ÷ 0.25 = $60. (Another way: 25% is 1/4, so 4 × $15 = $60.)", es: "$15 es el 25% del precio original. 15 ÷ 0.25 = $60. (Otra forma: 25% es 1/4, así que 4 × $15 = $60.)" }
         },
         {
           id: 't4_6',
-          title: 'Basketball Team Free Throws',
-          prompt: 'The basketball team made 42 free throws, which represented 70% of their attempts. How many free throws did they attempt?',
-          promptEs: 'El equipo encestó 42 tiros libres (70% de sus intentos). ¿Cuántos tiros intentaron?',
-          ans: 60,
-          explain: '42 ÷ 0.70 = 60 attempts.'
+          title: { en: "Basketball Free Throws", es: "Tiros libres de baloncesto" },
+          facts: [
+            { en: "A basketball team made 42 free throws.", es: "Un equipo de baloncesto encestó 42 tiros libres." },
+            { en: "Those 42 shots are 70% of all the free throws they tried.", es: "Esos 42 tiros son el 70% de todos los tiros libres que intentaron." }
+          ],
+          q: { en: "How many free throws did the team try?", es: "¿Cuántos tiros libres intentó el equipo?" },
+          fields: [{
+            label: { en: "Free throws tried", es: "Tiros libres intentados" },
+            unit: { en: "free throws", es: "tiros libres" },
+            ans: 60,
+            wrong: {
+              29.4: { en: "That multiplies 42 by 0.70. 42 is the part, so divide it by the percent to find the whole.", es: "Eso multiplica 42 por 0.70. 42 es la parte, así que divídela entre el porcentaje para hallar el total." },
+              0.6: { en: "That divides by 70. Write 70% as a decimal (0.70) before you divide.", es: "Eso divide entre 70. Escribe 70% como decimal (0.70) antes de dividir." },
+              2940: { en: "That multiplies by 70. The whole is bigger than 42, but not that big. Divide the part by the decimal.", es: "Eso multiplica por 70. El total es mayor que 42, pero no tanto. Divide la parte entre el decimal." },
+              42: { en: "42 is the shots the team made. That is only part of the shots they tried.", es: "42 son los tiros que el equipo encestó. Esa es solo una parte de los tiros que intentó." },
+              70: { en: "70 is the percent, not a number of shots.", es: "70 es el porcentaje, no una cantidad de tiros." }
+            }
+          }],
+          hints: [
+            { en: "The part is 42. It is 70% of the whole. Write 70% as a decimal.", es: "La parte es 42. Es el 70% del total. Escribe 70% como decimal." },
+            { en: "Divide the part by the decimal: 42 ÷ 0.70 = ?", es: "Divide la parte entre el decimal: 42 ÷ 0.70 = ?" }
+          ],
+          miss: { en: "The whole is bigger than the part, so the answer must be more than 42. Divide the part by the percent, written as a decimal.", es: "El total es mayor que la parte, así que la respuesta debe ser más que 42. Divide la parte entre el porcentaje escrito como decimal." },
+          explain: { en: "42 ÷ 0.70 = 60 free throws tried.", es: "42 ÷ 0.70 = 60 tiros libres intentados." }
         },
         {
           id: 't4_7',
-          title: 'Book Chapters Read',
-          prompt: 'Maya read 36 pages, which is 15% of the novel. How many pages are in the entire novel?',
-          promptEs: 'Maya leyó 36 páginas (15% de la novela). ¿Cuántas páginas tiene la novela completa?',
-          ans: 240,
-          explain: '36 ÷ 0.15 = 240 pages.'
+          title: { en: "Novel Pages Read", es: "Páginas leídas de una novela" },
+          facts: [
+            { en: "Maya read 36 pages of a novel.", es: "Maya leyó 36 páginas de una novela." },
+            { en: "Those 36 pages are 15% of the whole book.", es: "Esas 36 páginas son el 15% de todo el libro." }
+          ],
+          q: { en: "How many pages are in the whole novel?", es: "¿Cuántas páginas tiene toda la novela?" },
+          fields: [{
+            label: { en: "Pages in the novel", es: "Páginas de la novela" },
+            unit: { en: "pages", es: "páginas" },
+            ans: 240,
+            wrong: {
+              5.4: { en: "That multiplies 36 by 0.15. 36 is the part, so divide it by the percent to find the whole.", es: "Eso multiplica 36 por 0.15. 36 es la parte, así que divídela entre el porcentaje para hallar el total." },
+              2.4: { en: "That divides by 15. Write 15% as a decimal (0.15) before you divide.", es: "Eso divide entre 15. Escribe 15% como decimal (0.15) antes de dividir." },
+              540: { en: "That multiplies by 15. The whole is bigger than 36, but not that big. Divide the part by the decimal.", es: "Eso multiplica por 15. El total es mayor que 36, pero no tanto. Divide la parte entre el decimal." },
+              36: { en: "36 is the pages Maya read. That is only part of the book.", es: "36 son las páginas que Maya leyó. Esa es solo una parte del libro." },
+              15: { en: "15 is the percent, not a number of pages.", es: "15 es el porcentaje, no una cantidad de páginas." }
+            }
+          }],
+          hints: [
+            { en: "The part is 36. It is 15% of the whole. Write 15% as a decimal.", es: "La parte es 36. Es el 15% del total. Escribe 15% como decimal." },
+            { en: "Divide the part by the decimal: 36 ÷ 0.15 = ?", es: "Divide la parte entre el decimal: 36 ÷ 0.15 = ?" }
+          ],
+          miss: { en: "The whole is bigger than the part, so the answer must be more than 36. Divide the part by the percent, written as a decimal.", es: "El total es mayor que la parte, así que la respuesta debe ser más que 36. Divide la parte entre el porcentaje escrito como decimal." },
+          explain: { en: "36 ÷ 0.15 = 240 pages in the novel.", es: "36 ÷ 0.15 = 240 páginas en la novela." }
         },
         {
           id: 't4_8',
-          title: 'Concert Hall Ticket Sales',
-          prompt: '540 tickets have been sold so far, filling 90% of the auditorium seats. What is the total seating capacity?',
-          promptEs: 'Se han vendido 540 boletos (90% de los asientos). ¿Cuál es la capacidad total?',
-          ans: 600,
-          explain: '540 ÷ 0.90 = 600 seats.'
+          title: { en: "Concert Hall Tickets", es: "Boletos del auditorio" },
+          facts: [
+            { en: "540 tickets have been sold for a concert.", es: "Se han vendido 540 boletos para un concierto." },
+            { en: "Those tickets fill 90% of the seats in the auditorium.", es: "Esos boletos llenan el 90% de los asientos del auditorio." }
+          ],
+          q: { en: "How many seats are in the auditorium?", es: "¿Cuántos asientos tiene el auditorio?" },
+          fields: [{
+            label: { en: "Seats in the auditorium", es: "Asientos del auditorio" },
+            unit: { en: "seats", es: "asientos" },
+            ans: 600,
+            wrong: {
+              486: { en: "That multiplies 540 by 0.90. 540 is the part, so divide it by the percent to find the whole.", es: "Eso multiplica 540 por 0.90. 540 es la parte, así que divídela entre el porcentaje para hallar el total." },
+              6: { en: "That divides by 90. Write 90% as a decimal (0.90) before you divide.", es: "Eso divide entre 90. Escribe 90% como decimal (0.90) antes de dividir." },
+              48600: { en: "That multiplies by 90. The whole is only a little bigger than 540. Divide the part by the decimal.", es: "Eso multiplica por 90. El total es solo un poco mayor que 540. Divide la parte entre el decimal." },
+              540: { en: "540 is the tickets sold. That is only part of the seats.", es: "540 son los boletos vendidos. Esa es solo una parte de los asientos." },
+              90: { en: "90 is the percent, not a number of seats.", es: "90 es el porcentaje, no una cantidad de asientos." },
+              60: { en: "That is only 10% of the seats. 540 tickets fill 90% of them.", es: "Eso es solo el 10% de los asientos. Los 540 boletos llenan el 90%." }
+            }
+          }],
+          hints: [
+            { en: "The part is 540. It is 90% of the whole. Write 90% as a decimal.", es: "La parte es 540. Es el 90% del total. Escribe 90% como decimal." },
+            { en: "Divide the part by the decimal: 540 ÷ 0.90 = ?", es: "Divide la parte entre el decimal: 540 ÷ 0.90 = ?" }
+          ],
+          miss: { en: "The whole is bigger than the part, so the answer must be more than 540. Divide the part by the percent, written as a decimal.", es: "El total es mayor que la parte, así que la respuesta debe ser más que 540. Divide la parte entre el porcentaje escrito como decimal." },
+          explain: { en: "540 ÷ 0.90 = 600 seats.", es: "540 ÷ 0.90 = 600 asientos." }
         }
       ];
 
@@ -891,53 +1047,25 @@
           state.idx4 = ni; renderT4();
         });
 
-        const stage = document.getElementById('t4-stage-card');
-        stage.innerHTML = `
-          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:0.84rem; font-weight:800; color:var(--brand);">Context Story ${state.idx4 + 1} of ${T4_STORIES.length} · ${s.title}</span>
-            <button type="button" class="speak-btn" id="t4-speak">🔊 Read</button>
-          </div>
-          <p style="font-size:1.15rem; font-weight:700; color:var(--brand); margin:0 0 6px 0;">${s.prompt}</p>
-          <div class="es-text">${s.promptEs}</div>
-
-          <div style="display:flex; align-items:center; gap:12px; margin-top:18px; flex-wrap:wrap;">
-            <label for="t4-in" style="font-weight:700; color:var(--brand);">The Total Whole =</label>
-            <input type="number" step="any" id="t4-in" class="num-input" style="width:130px;" placeholder="?" value="${isSolved ? s.ans : ''}" ${isSolved ? 'disabled' : ''}>
-            <button type="button" class="btn btn-primary" id="t4-check-btn" ${isSolved ? 'disabled' : ''}>Check Whole</button>
-          </div>
-
-          <div id="t4-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
-            ${isSolved ? `Correct! ${s.explain}` : ''}
-          </div>
-        `;
-
-        stage.querySelector('#t4-speak').onclick = () => speak(state.showEs ? s.promptEs : s.prompt);
-
-        if (isSolved) appendNext(document.getElementById('t4-fb'), 4, T4_STORIES.length, renderT4);
-
-        stage.querySelector('#t4-check-btn').onclick = () => {
-          const val = parseFloat(stage.querySelector('#t4-in').value);
-          const fb = document.getElementById('t4-fb');
-          if (isNaN(val)) return;
-
-          if (val === s.ans) {
+        const { fb } = U4Studio.story.card({
+          host: document.getElementById('t4-stage-card'),
+          item: s,
+          index: state.idx4,
+          count: T4_STORIES.length,
+          solved: isSolved,
+          speak,
+          showEs: () => state.showEs,
+          onMiss: () => { playSound('wrong'); saveState(); },
+          onSolve: (fbEl) => {
             playSound('correct');
             state.solved4[s.id] = true;
-            fb.className = 'feedback-box show ok';
-            fb.innerHTML = `Great job! ${s.explain}`;
-            stage.querySelector('#t4-in').classList.add('ok');
             renderDots('t4-dots', T4_STORIES, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4(); });
             updateProgressHeader();
-            appendNext(fb, 4, T4_STORIES.length, renderT4);
-          } else {
-            playSound('wrong');
-            fb.className = 'feedback-box show warn';
-            fb.textContent = `Divide the given part by its decimal percent to determine the total whole.`;
-            stage.querySelector('#t4-in').classList.add('err');
-            setTimeout(() => stage.querySelector('#t4-in').classList.remove('err'), 800);
+            appendNext(fbEl, 4, T4_STORIES.length, renderT4);
+            saveState();
           }
-          saveState();
-        };
+        });
+        if (isSolved) appendNext(fb, 4, T4_STORIES.length, renderT4);
       }
 
       document.getElementById('t4-prev-btn').onclick = () => {

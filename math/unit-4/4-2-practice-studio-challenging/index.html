@@ -11,6 +11,7 @@
   <script src="/assets/studio-comfort.js" defer></script>
   <script src="/assets/u4-studio.js"></script>
   <script src="/assets/u4-studio-bonus.js"></script>
+<script src="/assets/u4-studio-story.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -68,7 +69,7 @@
         <span class="tab-badge" id="badge-4">4</span>
         <span class="tab-text">
           <span class="tab-name">Complex Stories</span>
-          <span class="tab-desc">Sleepy Animals &amp; More (8)</span>
+          <span class="tab-desc">Stories &amp; Error Checks (8)</span>
         </span>
       </button>
 
@@ -165,9 +166,9 @@
     <section id="panel-4" class="tab-panel" role="tabpanel" aria-labelledby="tab-4">
       <div class="topic-strip">
         <div>
-          <h2>4. Complex Stories &amp; Deep Error Analysis</h2>
-          <p>Solve authentic Grade 6 multi-step comparison challenges, including the complete 8-animal sleep dataset from Reveal Math 4-2.</p>
-          <p class="es-text">Resuelve desafíos de comparación y analiza errores conceptuales avanzados.</p>
+          <h2>4. Real-Life Stories &amp; Error Checks</h2>
+          <p>Solve real-life problems with fractions, decimals, and percents, and find the mistake in other students' work.</p>
+          <p class="es-text">Resuelve problemas de la vida real con fracciones, decimales y porcentajes, y encuentra el error en el trabajo de otros estudiantes.</p>
         </div>
       </div>
 
@@ -897,106 +898,319 @@
          ---------------------------------------------------------------------- */
       const T4_PROBLEMS = [
         {
-          id: 't4_1',
-          title: 'Problem 1 · Sleepy Animals Complete Order (Reveal Math 4-2)',
-          stem: 'The Reveal Math Lesson 4-2 table gives sleep times as part of a 24-hr day: Python (3/4), Tiger (0.65), Chimpanzee (2/5), Giraffe (8/100). Order these 4 animals from MOST sleep to LEAST sleep.',
-          type: 'mc',
-          choices: [
-            'Python (75%), Tiger (65%), Chimpanzee (40%), Giraffe (8%)',
-            'Giraffe (8%), Chimpanzee (40%), Tiger (65%), Python (75%)',
-            'Tiger (65%), Python (34%), Chimpanzee (25%), Giraffe (8%)',
-            'Python (75%), Chimpanzee (50%), Tiger (65%), Giraffe (8%)'
+          id: "t4_1",
+          title: { en: "Animal Sleep Order", es: "Orden del sueño de los animales" },
+          facts: [
+            { en: "Each number is the part of a 24-hour day the animal sleeps.", es: "Cada número es la parte de un día de 24 horas que duerme el animal." },
+            { en: "Python 3/4 · Tiger 0.65 · Chimpanzee 2/5 · Giraffe 8/100", es: "Pitón 3/4 · Tigre 0.65 · Chimpancé 2/5 · Jirafa 8/100" }
           ],
-          correct: 0,
-          hint: 'Python 3/4 = 75%, Tiger 0.65 = 65%, Chimpanzee 2/5 = 40%, Giraffe 8/100 = 8%.',
-          explain: 'Correct! Converting to percents: Python (75%) > Tiger (65%) > Chimpanzee (40%) > Giraffe (8%).'
-        },
-        {
-          id: 't4_2',
-          title: 'Problem 2 · Python Daily Sleep Hours',
-          stem: 'If a python sleeps 3/4 of a 24-hour day, exactly how many hours does it sleep each day?',
-          type: 'single',
-          ans: '18',
-          suffix: 'hours',
-          hint: '3/4 of 24 = (24 &divide; 4) &times; 3 = 6 &times; 3 = 18 hours.',
-          explain: 'Correct! 0.75 &times; 24 = 18 hours of sleep per day!'
-        },
-        {
-          id: 't4_3',
-          title: 'Problem 3 · Cow Sleep Time Conversion',
-          stem: 'A cow sleeps 16.5% of the day. Write 16.5% as a decimal and as a fraction in simplest form.',
-          type: 'mc',
+          q: { en: "Which list puts the animals in order from MOST sleep to LEAST sleep?", es: "¿Qué lista ordena a los animales de MÁS sueño a MENOS sueño?" },
           choices: [
-            '0.165 and 33/200',
-            '1.65 and 165/1000',
-            '0.165 and 16/100',
-            '0.0165 and 33/2000'
-          ],
-          correct: 0,
-          hint: '16.5% = 16.5/100 = 165/1000. Divide by 5/5 = 33/200. Decimal is 0.165.',
-          explain: 'Spot on! 16.5% = 0.165 = 165/1000 = 33/200.'
-        },
-        {
-          id: 't4_4',
-          title: 'Problem 4 · Error Detective: Consecutive Discounts',
-          stem: 'A sign says: "Take 25% off original price, then an extra 20% off at the register!" Jordan says this equals a 45% discount. Is Jordan correct?',
-          type: 'mc',
-          choices: [
-            'Yes, because 25% + 20% = 45%',
-            'No, because the 20% applies to the ALREADY discounted price, not the original price (actual discount is 40%)',
-            'No, the total discount is 50%',
-            'Yes, discounts always add directly together'
+            { en: "Giraffe, Python, Chimpanzee, Tiger", es: "Jirafa, Pitón, Chimpancé, Tigre" },
+            { en: "Python, Tiger, Chimpanzee, Giraffe", es: "Pitón, Tigre, Chimpancé, Jirafa" },
+            { en: "Giraffe, Chimpanzee, Tiger, Python", es: "Jirafa, Chimpancé, Tigre, Pitón" },
+            { en: "Python, Chimpanzee, Tiger, Giraffe", es: "Pitón, Chimpancé, Tigre, Jirafa" }
           ],
           correct: 1,
-          hint: 'On a $100 item: 25% off leaves $75. 20% of $75 is $15 off, leaving $60. $100 to $60 is a 40% discount, NOT 45%!',
-          explain: 'Excellent reasoning! Sequential percentages do NOT add up because the base changes.'
+          why: [
+            { en: "It looks like you compared only the top numbers. A fraction depends on the top AND the bottom.", es: "Parece que solo comparaste los números de arriba. Una fracción depende del numerador Y del denominador." },
+            null,
+            { en: "That list goes from LEAST sleep to MOST sleep. Read the question again.", es: "Esa lista va de MENOS sueño a MÁS sueño. Lee la pregunta otra vez." },
+            { en: "Check the chimpanzee again. Is 2 out of 5 as much as a whole half?", es: "Revisa otra vez al chimpancé. ¿2 de 5 es tanto como la mitad?" }
+          ],
+          hints: [
+            { en: "The four numbers are written in different ways. Write each one as a percent so you can compare them.", es: "Los cuatro números están escritos de formas distintas. Escribe cada uno como porcentaje para poder compararlos." },
+            { en: "Python: 3 ÷ 4. Tiger: 0.65 × 100. Chimpanzee: 2 ÷ 5. Giraffe: 8 out of 100. Then order the percents.", es: "Pitón: 3 ÷ 4. Tigre: 0.65 × 100. Chimpancé: 2 ÷ 5. Jirafa: 8 de 100. Luego ordena los porcentajes." }
+          ],
+          miss: { en: "Change all four to percents first, then order them.", es: "Primero cambia los cuatro a porcentajes y luego ordénalos." },
+          explain: {
+            en: "As percents: Python 75%, Tiger 65%, Chimpanzee 40%, Giraffe 8%. From most to least sleep: Python, Tiger, Chimpanzee, Giraffe.",
+            es: "Como porcentajes: Pitón 75%, Tigre 65%, Chimpancé 40%, Jirafa 8%. De más a menos sueño: Pitón, Tigre, Chimpancé, Jirafa."
+          }
         },
         {
-          id: 't4_5',
-          title: 'Problem 5 · Marathon Energy Boost',
-          stem: 'A sports drink has 0.75% electrolyte solution. How many grams of electrolytes are in 200 grams of the drink?',
-          type: 'single',
-          ans: '1.5',
-          suffix: 'grams',
-          hint: '0.75% = 0.0075. Multiply 0.0075 &times; 200 = 1.5 grams.',
-          explain: 'Correct! 0.75% of 200 = 0.0075 &times; 200 = 1.5 grams.'
+          id: "t4_2",
+          title: { en: "Python Sleep Hours", es: "Horas de sueño del pitón" },
+          facts: [{ en: "A python sleeps 3/4 of a 24-hour day.", es: "Un pitón duerme 3/4 de un día de 24 horas." }],
+          q: { en: "How many hours does the python sleep each day?", es: "¿Cuántas horas duerme el pitón cada día?" },
+          fields: [
+            {
+              label: { en: "Python sleep time", es: "Tiempo que duerme el pitón" },
+              unit: { en: "hours", es: "horas" },
+              ans: 18,
+              wrong: {
+                "6": { en: "24 ÷ 4 gives ONE fourth of the day. The python sleeps 3 of those fourths.", es: "24 ÷ 4 da UN cuarto del día. El pitón duerme 3 de esos cuartos." },
+                "8": { en: "The bottom number says how many equal parts to make. Divide by 4, not by 3.", es: "El denominador dice cuántas partes iguales hacer. Divide entre 4, no entre 3." },
+                "72": { en: "Multiplying 24 by 3 skips the “÷ 4”. The day is split into 4 equal parts first.", es: "Multiplicar 24 por 3 se salta el “÷ 4”. Primero el día se divide en 4 partes iguales." },
+                "0.75": { en: "0.75 is the same part of the day written as a decimal. The question asks for hours.", es: "0.75 es la misma parte del día escrita como decimal. La pregunta pide horas." }
+              },
+              miss: { en: "Think of the 24-hour day as 4 equal parts. How many of the parts does the python sleep?", es: "Piensa en el día de 24 horas como 4 partes iguales. ¿En cuántas de las partes duerme el pitón?" }
+            }
+          ],
+          hints: [
+            {
+              en: "The whole is 24 hours. The bottom number of 3/4 tells how many equal parts to split it into, and the top number tells how many parts to count.",
+              es: "El total es 24 horas. El denominador de 3/4 dice en cuántas partes iguales dividirlo y el numerador dice cuántas partes contar."
+            },
+            { en: "Size of one part: 24 ÷ 4. Then count 3 parts: (24 ÷ 4) × 3.", es: "Tamaño de una parte: 24 ÷ 4. Luego cuenta 3 partes: (24 ÷ 4) × 3." }
+          ],
+          miss: { en: "Find the size of one equal part of the day first.", es: "Primero halla el tamaño de una parte igual del día." },
+          explain: { en: "24 ÷ 4 = 6 hours is one fourth of the day. 6 × 3 = 18 hours.", es: "24 ÷ 4 = 6 horas es un cuarto del día. 6 × 3 = 18 horas." }
         },
         {
-          id: 't4_6',
-          title: 'Problem 6 · Precision Science Measure',
-          stem: 'In a lab experiment, liquid was measured at 5/16 of a liter. What is this volume as a percent of a liter?',
-          type: 'single',
-          ans: '31.25',
-          suffix: '%',
-          hint: '5 &divide; 16 = 0.3125. 0.3125 &times; 100 = 31.25%.',
-          explain: 'Exactly! 5/16 = 0.3125 = 31.25%.'
+          id: "t4_3",
+          title: { en: "Cow Sleep Time", es: "Tiempo de sueño de la vaca" },
+          facts: [{ en: "A cow sleeps 16.5% of the day.", es: "Una vaca duerme el 16.5% del día." }],
+          q: { en: "Which choice shows 16.5% as a decimal and as a fraction in simplest form?", es: "¿Qué opción muestra 16.5% como decimal y como fracción en su mínima expresión?" },
+          choices: [{ en: "1.65 and 165/1000", es: "1.65 y 165/1000" }, { en: "0.165 and 16/100", es: "0.165 y 16/100" }, { en: "0.0165 and 33/2000", es: "0.0165 y 33/2000" }, { en: "0.165 and 33/200", es: "0.165 y 33/200" }],
+          correct: 3,
+          why: [
+            { en: "The decimal is too big. Percent means out of 100, so move the decimal point two places to the left.", es: "El decimal es muy grande. Porcentaje significa de 100, así que mueve el punto decimal dos lugares a la izquierda." },
+            { en: "The decimal fits, but the fraction ignores the 0.5. 16/100 is 16%, not 16.5%.", es: "El decimal sirve, pero la fracción ignora el 0.5. 16/100 es 16%, no 16.5%." },
+            { en: "Both parts are too small. Percent is out of 100, not out of 1000.", es: "Las dos partes son muy pequeñas. Porcentaje es de 100, no de 1000." },
+            null
+          ],
+          hints: [
+            {
+              en: "Percent means out of 100. Write 16.5 over 100, then multiply the top and bottom by 10 to make the top a whole number.",
+              es: "Porcentaje significa de 100. Escribe 16.5 sobre 100 y luego multiplica numerador y denominador por 10 para que el numerador sea entero."
+            },
+            { en: "Decimal: 16.5 ÷ 100. Fraction: 165/1000 = (165 ÷ 5)/(1000 ÷ 5).", es: "Decimal: 16.5 ÷ 100. Fracción: 165/1000 = (165 ÷ 5)/(1000 ÷ 5)." }
+          ],
+          miss: { en: "Check both parts of the choice: the decimal AND the simplest-form fraction.", es: "Revisa las dos partes de la opción: el decimal Y la fracción en su mínima expresión." },
+          explain: { en: "16.5% = 16.5 ÷ 100 = 0.165. As a fraction, 16.5/100 = 165/1000 = 33/200.", es: "16.5% = 16.5 ÷ 100 = 0.165. Como fracción, 16.5/100 = 165/1000 = 33/200." }
         },
         {
-          id: 't4_7',
-          title: 'Problem 7 · Error Detective: Percent to Fraction',
-          stem: 'Kendra converts 0.5% to a fraction and writes 1/2. Explain her misconception.',
-          type: 'mc',
+          id: "t4_4",
+          title: { en: "Error Detective: Two Discounts", es: "Detective de errores: dos descuentos" },
+          facts: [
+            { en: "A sign says: “25% off the original price, then an extra 20% off at the register.”", es: "Un letrero dice: “25% de descuento en el precio original y 20% extra en la caja”." },
+            { en: "Jordan says this is the same as 45% off.", es: "Jordan dice que es lo mismo que 45% de descuento." }
+          ],
+          q: { en: "Is Jordan right?", es: "¿Tiene razón Jordan?" },
           choices: [
-            'She forgot that 1/2 is 50%, whereas 0.5% is 1/2 of 1%, which equals 1/200',
-            'She should have written 5/10',
-            '0.5% cannot be written as a fraction',
-            'She divided by 10 instead of 100'
+            { en: "No. The 20% comes off the sale price, not the original.", es: "No. El 20% se quita del precio de oferta, no del original." },
+            { en: "Yes. The discounts add: 25% + 20% = 45%.", es: "Sí. Los descuentos se suman: 25% + 20% = 45%." },
+            { en: "No. The discounts multiply: 25% × 20% = 5%.", es: "No. Los descuentos se multiplican: 25% × 20% = 5%." },
+            { en: "Yes. Order does not matter, so they add.", es: "Sí. El orden no importa, así que se suman." }
           ],
           correct: 0,
-          hint: '0.5 = 1/2, but 0.5% = 0.5/100 = 1/200.',
-          explain: 'Correct! 0.5% means 0.5 out of 100 = 1/200. 1/2 is 50%.'
+          why: [
+            null,
+            { en: "Test it on a $100 item. After 25% off, what price does the extra 20% come off?", es: "Pruébalo con un artículo de $100. Después del 25% de descuento, ¿de qué precio se quita el 20% extra?" },
+            { en: "Discounts do not multiply. A 5% discount would be far less than the 25% alone.", es: "Los descuentos no se multiplican. Un descuento de 5% sería mucho menos que el 25% solo." },
+            {
+              en: "The second percent is taken from a smaller amount than the first. Can two percents of different amounts just add?",
+              es: "El segundo porcentaje se toma de una cantidad menor que el primero. ¿Se pueden sumar dos porcentajes de cantidades distintas?"
+            }
+          ],
+          hints: [
+            {
+              en: "Try it on a $100 item. After 25% off, find the new price. The extra 20% comes off that new price.",
+              es: "Pruébalo con un artículo de $100. Después del 25% de descuento, halla el precio nuevo. El 20% extra se quita de ese precio nuevo."
+            },
+            { en: "First: $100 − (0.25 × $100). Then: take 0.20 of that new price. Compare the final price with $100.", es: "Primero: $100 − (0.25 × $100). Luego: toma 0.20 de ese precio nuevo. Compara el precio final con $100." }
+          ],
+          miss: { en: "Work it out with a real price, like $100, one discount at a time.", es: "Resuélvelo con un precio real, como $100, un descuento a la vez." },
+          explain: {
+            en: "On $100: 25% off leaves $75. 20% of $75 is $15, leaving $60. $100 to $60 is 40% off, not 45%. The second percent comes off a smaller amount.",
+            es: "Con $100: 25% de descuento deja $75. El 20% de $75 es $15 y quedan $60. De $100 a $60 es 40% de descuento, no 45%. El segundo porcentaje se quita de una cantidad menor."
+          }
         },
         {
-          id: 't4_8',
-          title: 'Problem 8 · Factory Output Growth',
-          stem: 'A solar plant produced 225% of its rated target power. If its target power was 80 megawatts, how many megawatts did it actually produce?',
-          type: 'single',
-          ans: '180',
-          suffix: 'MW',
-          hint: '225% = 2.25. Multiply 2.25 &times; 80 = 180 MW.',
-          explain: 'Correct! 2.25 &times; 80 = 180 MW.'
+          id: "t4_5",
+          title: { en: "Sports Drink Electrolytes", es: "Electrolitos de la bebida deportiva" },
+          facts: [{ en: "A sports drink is 0.75% electrolytes.", es: "Una bebida deportiva tiene 0.75% de electrolitos." }, { en: "You have 200 grams of the drink.", es: "Tienes 200 gramos de la bebida." }],
+          q: { en: "How many grams of electrolytes are in the 200 grams?", es: "¿Cuántos gramos de electrolitos hay en los 200 gramos?" },
+          fields: [
+            {
+              label: { en: "Electrolytes", es: "Electrolitos" },
+              unit: { en: "grams", es: "gramos" },
+              ans: 1.5,
+              wrong: {
+                "15": { en: "Check the decimal. Move the point two places left, not just one.", es: "Revisa el decimal. Mueve el punto dos lugares a la izquierda, no solo uno." },
+                "150": { en: "That treats 0.75% as 0.75. Percent means out of 100, so 0.75% is less than 1 out of 100.", es: "Eso trata 0.75% como 0.75. Porcentaje significa de 100, así que 0.75% es menos de 1 de cada 100." },
+                "0.15": { en: "That is too small. Divide 0.75 by 100 once, not by 1000.", es: "Es muy pequeño. Divide 0.75 entre 100 una vez, no entre 1000." },
+                "0.75": { en: "0.75 is the percent, not the grams. Find 0.75% of 200 grams.", es: "0.75 es el porcentaje, no los gramos. Halla el 0.75% de 200 gramos." }
+              },
+              miss: { en: "Write 0.75% as a decimal, then take that part of 200 grams.", es: "Escribe 0.75% como decimal y luego toma esa parte de 200 gramos." }
+            }
+          ],
+          hints: [
+            {
+              en: "The whole is 200 grams. Percent means out of 100, so change 0.75% to a decimal by moving the decimal point two places left.",
+              es: "El total es 200 gramos. Porcentaje significa de 100, así que cambia 0.75% a decimal moviendo el punto decimal dos lugares a la izquierda."
+            },
+            { en: "grams = (0.75 ÷ 100) × 200", es: "gramos = (0.75 ÷ 100) × 200" }
+          ],
+          miss: { en: "Change the percent to a decimal first, then multiply by the whole.", es: "Primero cambia el porcentaje a decimal y luego multiplica por el total." },
+          explain: { en: "0.75% = 0.75 ÷ 100 = 0.0075, and 0.0075 × 200 = 1.5 grams.", es: "0.75% = 0.75 ÷ 100 = 0.0075, y 0.0075 × 200 = 1.5 gramos." }
+        },
+        {
+          id: "t4_6",
+          title: { en: "Liquid Measure as a Percent", es: "Medida de líquido como porcentaje" },
+          facts: [{ en: "A lab measured 5/16 of a liter of liquid.", es: "Un laboratorio midió 5/16 de litro de líquido." }],
+          q: { en: "What percent of a liter is 5/16 of a liter?", es: "¿Qué porcentaje de un litro es 5/16 de litro?" },
+          fields: [
+            {
+              label: { en: "Percent of a liter", es: "Porcentaje de un litro" },
+              unit: "%",
+              ans: 31.25,
+              wrong: {
+                "320": { en: "It looks like you divided 16 by 5. The part goes on top: divide 5 by 16.", es: "Parece que dividiste 16 entre 5. La parte va arriba: divide 5 entre 16." },
+                "0.3125": { en: "That is the decimal. Percent means out of 100, so change the decimal to a percent.", es: "Ese es el decimal. Porcentaje significa de 100, así que cambia el decimal a porcentaje." },
+                "3.125": { en: "Close. To change a decimal to a percent, move the point two places right, not just one.", es: "Casi. Para cambiar un decimal a porcentaje, mueve el punto dos lugares a la derecha, no solo uno." },
+                "312.5": { en: "That moved the decimal point too far. Move it two places, not three.", es: "Moviste el punto decimal demasiado. Muévelo dos lugares, no tres." },
+                "3.2": { en: "It looks like you divided 16 by 5. The part goes on top: divide 5 by 16.", es: "Parece que dividiste 16 entre 5. La parte va arriba: divide 5 entre 16." }
+              },
+              miss: { en: "Turn the fraction into a decimal first, then into a percent.", es: "Primero convierte la fracción en decimal y luego en porcentaje." }
+            }
+          ],
+          hints: [
+            {
+              en: "A fraction is part ÷ whole. Divide the top number by the bottom number, then change the decimal to a percent.",
+              es: "Una fracción es parte ÷ total. Divide el numerador entre el denominador y luego cambia el decimal a porcentaje."
+            },
+            { en: "5 ÷ 16, then × 100", es: "5 ÷ 16, luego × 100" }
+          ],
+          miss: { en: "Divide the top number by the bottom number first.", es: "Primero divide el numerador entre el denominador." },
+          explain: { en: "5 ÷ 16 = 0.3125, and 0.3125 × 100 = 31.25%.", es: "5 ÷ 16 = 0.3125, y 0.3125 × 100 = 31.25%." }
+        },
+        {
+          id: "t4_7",
+          title: { en: "Error Detective: Percent to Fraction", es: "Detective de errores: de porcentaje a fracción" },
+          facts: [{ en: "Kendra changes 0.5% to a fraction.", es: "Kendra cambia 0.5% a una fracción." }, { en: "She writes 1/2.", es: "Ella escribe 1/2." }],
+          q: { en: "What mistake did Kendra make?", es: "¿Qué error cometió Kendra?" },
+          choices: [
+            { en: "She should have written 5/10.", es: "Debió escribir 5/10." },
+            { en: "She said 0.5% cannot be a fraction.", es: "Dijo que 0.5% no puede ser una fracción." },
+            { en: "She skipped the ÷ 100: 0.5% is 0.5 out of 100.", es: "Se saltó el ÷ 100: 0.5% es 0.5 de 100." },
+            { en: "She divided by 10 instead of 100.", es: "Dividió entre 10 en vez de entre 100." }
+          ],
+          correct: 2,
+          why: [
+            { en: "5/10 is just another name for 1/2. Look at what 0.5% means: 0.5 out of what?", es: "5/10 es otro nombre para 1/2. Fíjate en lo que significa 0.5%: ¿0.5 de cuánto?" },
+            {
+              en: "Kendra did write a fraction, so that is not the mistake. Every percent can be written as a fraction out of 100.",
+              es: "Kendra sí escribió una fracción, así que ese no es el error. Todo porcentaje se puede escribir como fracción de 100."
+            },
+            null,
+            { en: "Dividing 0.5 by 10 would give 1/20, but Kendra wrote 1/2. Compare 1/2 with 0.5 itself.", es: "Dividir 0.5 entre 10 daría 1/20, pero Kendra escribió 1/2. Compara 1/2 con el 0.5 mismo." }
+          ],
+          hints: [
+            { en: "Percent means out of 100. So 0.5% means 0.5 out of 100. Does 1/2 show that?", es: "Porcentaje significa de 100. Así que 0.5% significa 0.5 de 100. ¿1/2 muestra eso?" },
+            { en: "0.5% = 0.5 ÷ 100 = 0.5/100. Multiply the top and bottom by 10 to remove the decimal, then simplify.", es: "0.5% = 0.5 ÷ 100 = 0.5/100. Multiplica numerador y denominador por 10 para quitar el decimal y luego simplifica." }
+          ],
+          miss: { en: "Ask what 0.5% means, then compare it with the fraction Kendra wrote.", es: "Pregunta qué significa 0.5% y compáralo con la fracción que escribió Kendra." },
+          explain: { en: "0.5% = 0.5/100 = 5/1000 = 1/200. Kendra wrote 0.5 as the fraction, but 1/2 is 50%.", es: "0.5% = 0.5/100 = 5/1000 = 1/200. Kendra escribió 0.5 como la fracción, pero 1/2 es 50%." }
+        },
+        {
+          id: "t4_8",
+          title: { en: "Solar Plant Output", es: "Producción de la planta solar" },
+          facts: [{ en: "A solar plant has a target power of 80 megawatts (MW).", es: "Una planta solar tiene una potencia meta de 80 megavatios (MW)." }, { en: "It produced 225% of its target.", es: "Produjo el 225% de su meta." }],
+          q: { en: "How many megawatts did the plant produce?", es: "¿Cuántos megavatios produjo la planta?" },
+          fields: [
+            {
+              label: { en: "Power produced", es: "Potencia producida" },
+              unit: { en: "MW (megawatts)", es: "MW (megavatios)" },
+              ans: 180,
+              wrong: {
+                "18": { en: "Check the decimal. 225% is 225 out of 100, so move the point two places left.", es: "Revisa el decimal. 225% es 225 de 100, así que mueve el punto dos lugares a la izquierda." },
+                "100": { en: "That is only the extra above the target. The question asks for all the power the plant produced.", es: "Eso es solo lo que pasa de la meta. La pregunta pide toda la potencia que produjo la planta." },
+                "225": { en: "225 is the percent, not the megawatts. Find 225% of 80 MW.", es: "225 es el porcentaje, no los megavatios. Halla el 225% de 80 MW." },
+                "18000": { en: "Write 225% as a decimal before you multiply. Percent means out of 100.", es: "Escribe 225% como decimal antes de multiplicar. Porcentaje significa de 100." },
+                "2.25": { en: "2.25 is 225% written as a decimal. Use it to find the power in MW.", es: "2.25 es 225% escrito como decimal. Úsalo para hallar la potencia en MW." }
+              },
+              miss: { en: "The target is the whole. Write 225% as a decimal, then multiply it by the whole.", es: "La meta es el total. Escribe 225% como decimal y luego multiplícalo por el total." }
+            }
+          ],
+          hints: [
+            {
+              en: "The target (80 MW) is the whole. 225% is more than 100%, so the plant made more than its target. Write 225% as a decimal.",
+              es: "La meta (80 MW) es el total. 225% es más de 100%, así que la planta produjo más que su meta. Escribe 225% como decimal."
+            },
+            { en: "MW = (225 ÷ 100) × 80", es: "MW = (225 ÷ 100) × 80" }
+          ],
+          miss: { en: "Write 225% as a decimal, then multiply it by the target.", es: "Escribe 225% como decimal y luego multiplícalo por la meta." },
+          explain: { en: "225% = 2.25, and 2.25 × 80 = 180 MW.", es: "225% = 2.25, y 2.25 × 80 = 180 MW." }
         }
       ];
+
+      const t4Bi = (t) => `${t.en}<span class="es-text">${t.es}</span>`;
+      const t4Done = (p) => {
+        markSolved(state.solved4, p.id);
+        renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4Problem(); });
+        updateProgressHeader();
+      };
+
+      // Multiple-choice card. Same layout as the numeric story card (facts, ONE question, hint ladder);
+      // each wrong choice answers with the message written for that misconception.
+      function renderT4Choice(p, isDone) {
+        const host = document.getElementById('t4-stage-card');
+        const misses = U4Studio.story.misses;
+        host.innerHTML = `
+          <div class="item-head">
+            <span class="item-count">${state.idx4 + 1} of ${T4_PROBLEMS.length} · ${t4Bi(p.title)}</span>
+            <button type="button" class="speak-btn" id="t4-speak">🔊 Read</button>
+          </div>
+          <div class="story-facts story-challenge">
+            <div class="story-label">${t4Bi({ en: 'What you know', es: 'Lo que sabes' })}</div>
+            <ul>${p.facts.map((f) => `<li>${t4Bi(f)}</li>`).join('')}</ul>
+          </div>
+          <p class="item-q" id="t4-q"><span class="story-label">${t4Bi({ en: 'Question', es: 'Pregunta' })}</span>${t4Bi(p.q)}</p>
+          <div class="choice-stack" role="group" aria-labelledby="t4-q">
+            ${p.choices.map((c, i) => `<button type="button" class="choice-btn ${isDone && i === p.correct ? 'correct' : ''}" data-t4-mc="${i}" ${isDone ? 'disabled' : ''}><span>${t4Bi(c)}</span></button>`).join('')}
+          </div>
+          <div class="item-actions">${isDone ? '' : `<button type="button" class="btn" id="t4-hint-btn">💡 ${t4Bi({ en: 'Hint', es: 'Pista' })}</button>`}</div>
+          <div class="story-hints" id="t4-hints" aria-live="polite"></div>
+          <div id="t4-fb" class="feedback-box ${isDone ? 'show ok' : ''}" aria-live="polite">${isDone ? `${t4Bi({ en: 'Correct!', es: '¡Correcto!' })} ${t4Bi(p.explain)}` : ''}</div>`;
+
+        const fb = document.getElementById('t4-fb');
+        const hintBox = document.getElementById('t4-hints');
+        let shown = 0;
+        const showHints = (n) => {
+          shown = Math.max(shown, Math.min(n, p.hints.length));
+          hintBox.innerHTML = p.hints.slice(0, shown).map((h, i) =>
+            `<p class="story-hint"><strong>${t4Bi({ en: 'Hint ' + (i + 1), es: 'Pista ' + (i + 1) })}</strong>${t4Bi(h)}</p>`).join('');
+          const hb = document.getElementById('t4-hint-btn');
+          if (hb && shown >= p.hints.length) hb.remove();
+        };
+        const hintBtn = document.getElementById('t4-hint-btn');
+        if (hintBtn) hintBtn.addEventListener('click', () => showHints(shown + 1));
+        if (!isDone && (misses[p.id] || 0) > 0) showHints(misses[p.id]);
+
+        document.getElementById('t4-speak').addEventListener('click', () => {
+          const es = state.showEs;
+          const t = (x) => (es ? x.es : x.en);
+          const letters = p.choices.map((c, i) => `${'ABCD'[i]}. ${t(c)}`);
+          const text = [...p.facts.map(t), t(p.q), ...letters].join('. ');
+          speak(text, text);
+        });
+
+        if (isDone) { appendNext(fb, 4, T4_PROBLEMS.length, renderT4Problem); return; }
+        host.querySelectorAll('[data-t4-mc]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            if (state.solved4[p.id]) return;
+            const idx = Number(btn.dataset.t4Mc);
+            host.querySelectorAll('[data-t4-mc]').forEach((b) => b.classList.remove('correct', 'wrong'));
+            if (idx === p.correct) {
+              btn.classList.add('correct');
+              host.querySelectorAll('[data-t4-mc]').forEach((b) => { b.disabled = true; });
+              fb.className = 'feedback-box show ok';
+              fb.innerHTML = `${t4Bi({ en: 'Correct!', es: '¡Correcto!' })} ${t4Bi(p.explain)}`;
+              if (hintBtn) hintBtn.remove();
+              t4Done(p);
+              appendNext(fb, 4, T4_PROBLEMS.length, renderT4Problem);
+            } else {
+              btn.classList.add('wrong');
+              misses[p.id] = (misses[p.id] || 0) + 1;
+              fb.className = 'feedback-box show err';
+              fb.innerHTML = t4Bi(p.why[idx] || p.miss);
+              showHints(misses[p.id]);
+            }
+          });
+        });
+      }
 
       function renderT4Problem() {
         const p = T4_PROBLEMS[state.idx4];
@@ -1006,89 +1220,24 @@
           state.idx4 = ni; renderT4Problem();
         });
 
-        const stage = document.getElementById('t4-stage-card');
-        let body = '';
+        if (p.choices) { renderT4Choice(p, isDone); return; }
 
-        if (p.type === 'mc') {
-          body = `
-            <div class="choice-stack">
-              ${p.choices.map((c, i) => `
-                <button type="button" class="choice-btn ${isDone && i === p.correct ? 'correct' : ''}" data-t4-mc="${i}">
-                  <span>${c}</span>
-                </button>
-              `).join('')}
-            </div>
-          `;
-        } else if (p.type === 'single') {
-          body = `
-            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin:18px 0;">
-              <input type="text" id="t4-inp-single" class="num-input ${isDone ? 'ok' : ''}" style="width:120px;" value="${isDone ? p.ans : ''}" placeholder="?">
-              <strong style="color:var(--brand); font-size:1.1rem;">${p.suffix || ''}</strong>
-              <button type="button" class="btn btn-primary" id="t4-check-btn">Check Answer</button>
-              <button type="button" class="btn" id="t4-hint-btn">💡 Hint</button>
-            </div>
-          `;
-        }
-
-        stage.innerHTML = `
-          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:0.84rem; font-weight:800; color: var(--warn);">${p.title}</span>
-            <button type="button" class="speak-btn" data-speak="${p.stem}">🔊 Read</button>
-          </div>
-          <p style="font-size:1.15rem; font-weight:700; color:var(--brand); margin:0 0 6px 0;">${p.stem}</p>
-          ${body}
-          <div id="t4-fb" class="feedback-box ${isDone ? 'show ok' : ''}">${isDone ? p.explain : ''}</div>
-        `;
-
-        if (isDone) appendNext(document.getElementById('t4-fb'), 4, T4_PROBLEMS.length, renderT4Problem);
-
-        if (p.type === 'mc') {
-          stage.querySelectorAll('[data-t4-mc]').forEach(btn => {
-            btn.addEventListener('click', () => {
-              if (state.solved4[p.id]) return;
-              const idx = Number(btn.dataset.t4Mc);
-              const fb = document.getElementById('t4-fb');
-              stage.querySelectorAll('[data-t4-mc]').forEach(b => b.classList.remove('correct', 'wrong'));
-              if (idx === p.correct) {
-                btn.classList.add('correct');
-                fb.className = 'feedback-box show ok'; fb.innerHTML = p.explain;
-                markSolved(state.solved4, p.id);
-                renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4Problem(); });
-                updateProgressHeader();
-                appendNext(document.getElementById('t4-fb'), 4, T4_PROBLEMS.length, renderT4Problem);
-              } else {
-                btn.classList.add('wrong');
-                fb.className = 'feedback-box show err'; fb.innerHTML = `Hint: ${p.hint}`;
-              }
-            });
-          });
-        } else {
-          const checkBtn = document.getElementById('t4-check-btn');
-          const hintBtn = document.getElementById('t4-hint-btn');
-          const fb = document.getElementById('t4-fb');
-          if (checkBtn) {
-            checkBtn.addEventListener('click', () => {
-              const inp = document.getElementById('t4-inp-single');
-              const val = inp.value.replace(/[%\s]/g, '').trim();
-              const ok = parseNum(val) === Number(p.ans);
-              inp.classList.toggle('ok', ok); inp.classList.toggle('err', !ok);
-              if (ok) {
-                fb.className = 'feedback-box show ok'; fb.innerHTML = p.explain;
-                markSolved(state.solved4, p.id);
-                renderDots('t4-dots', T4_PROBLEMS, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4Problem(); });
-                updateProgressHeader();
-                appendNext(document.getElementById('t4-fb'), 4, T4_PROBLEMS.length, renderT4Problem);
-              } else {
-                fb.className = 'feedback-box show err'; fb.innerHTML = `Hint: ${p.hint}`;
-              }
-            });
+        const { fb } = U4Studio.story.card({
+          host: document.getElementById('t4-stage-card'),
+          item: p,
+          index: state.idx4,
+          count: T4_PROBLEMS.length,
+          solved: isDone,
+          challenge: true,
+          speak: (text) => speak(text, text),
+          showEs: () => state.showEs,
+          onMiss: () => {},
+          onSolve: (fbEl) => {
+            t4Done(p);
+            appendNext(fbEl, 4, T4_PROBLEMS.length, renderT4Problem);
           }
-          if (hintBtn) {
-            hintBtn.addEventListener('click', () => {
-              fb.className = 'feedback-box show warn'; fb.innerHTML = `💡 Hint: ${p.hint}`;
-            });
-          }
-        }
+        });
+        if (isDone) appendNext(fb, 4, T4_PROBLEMS.length, renderT4Problem);
       }
 
       document.getElementById('t4-prev-btn').addEventListener('click', () => {
