@@ -358,6 +358,17 @@ ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); 
 .lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
 .auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
   padding:4px 16px;font-size:15px;font-weight:700;color:var(--ink);margin:0 0 12px;}
+
+/* Phone: the desktop type scale wrapped the title to four lines and left a
+   heading and its hint each on a line of their own. Language buttons stay
+   thumb-sized (44px). */
+@media (max-width: 560px) {
+  .hero-header { padding: 36px 20px; }
+  .hero-header h1 { font-size: 30px; }
+  section { padding: 28px 20px; }
+  section h2 { font-size: 24px; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .lang-radio + label { min-height: 44px; padding: 10px 20px; }
+}
 `;
 
 function page({ title, kind, head, body, id, scripts = "" }) {
@@ -373,8 +384,10 @@ function page({ title, kind, head, body, id, scripts = "" }) {
 </head>
 <body>
 <div class="wrap">
-${kind === "family" ? "" : `<nav class="crumbs"><a href="/curriculum/">← Curriculum Hub</a> · <a href="/lessons/${esc(id)}/">Open Lesson ${esc(id)}</a></nav>\n`}${head}
+${kind === "family" ? "" : `<nav class="crumbs"><a href="/curriculum/">← Curriculum Hub</a> · <a href="/lessons/${esc(id)}/">Open Lesson ${esc(id)}</a></nav>\n`}<main id="main">
+${head}
 ${body}
+</main>
 <footer>Neft Teacher · Grade 6 Math · auto-generated from the lesson plan — a teacher may edit and lock this page.</footer>
 </div>
 ${scripts}
@@ -431,7 +444,7 @@ function familyPage(id, cfg, unit, lesson) {
          <p style="font-size:22px;color:var(--navy);margin:12px 0;">${esc(problems[0].q)}</p>
          ${choiceList(problems[0])}
          <details style="margin-top: 20px; font-size: 18px;">
-           <summary style="cursor: pointer; color: var(--teal); font-weight: 600;">Check the answer</summary>
+           <summary style="cursor: pointer; color: var(--teal-ink); font-weight: 600;">Check the answer</summary>
            <p style="margin-top: 12px; margin-bottom:0;">The answer is: <strong class="answer" style="font-size:20px;">${esc(problems[0].a)}</strong></p>
          </details>
        </div>`
