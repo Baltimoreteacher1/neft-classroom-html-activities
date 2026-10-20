@@ -202,7 +202,8 @@
                         type="text"
                         id="tpt-quick-input"
                         class="tpt-quick-input"
-                        placeholder="Type answer & press Enter..."
+                        placeholder="Your answer..."
+                        aria-label="Your answer"
                         autocomplete="off"
                         autocapitalize="off"
                         spellcheck="false"
@@ -369,6 +370,51 @@
       <p><strong>Your progress stays on this device.</strong> No account, name, or student information is required.</p>
       <p>Learning comes before speed. Short checkups suggest a starting point; they do not assign a grade level.</p>
     </footer>
+
+    <!-- Bilingual Interactive Vocabulary & Concept Modal -->
+    <div id="fluency-vocab-modal" class="vocab-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="vocab-modal-title" hidden>
+      <div class="vocab-modal-card">
+        <div class="vocab-modal-header">
+          <div class="vocab-modal-title-group">
+            <span class="vocab-modal-icon" aria-hidden="true">📖</span>
+            <div>
+              <h2 id="vocab-modal-title" class="vocab-modal-title">Math Vocabulary</h2>
+              <p id="vocab-modal-es-title" class="vocab-modal-es-title">Vocabulario Matemático</p>
+            </div>
+          </div>
+          <button type="button" class="vocab-modal-close" id="vocab-modal-close" aria-label="Close vocabulary popup">✕</button>
+        </div>
+
+        <div id="vocab-modal-svg" class="vocab-modal-svg"></div>
+
+        <div class="vocab-modal-definitions">
+          <div class="vocab-def-box vocab-en-box">
+            <div class="vocab-def-header">
+              <span class="vocab-badge en-badge">🇺🇸 Simple Definition</span>
+              <button type="button" class="vocab-tts-button" id="vocab-tts-en" aria-label="Listen in English">🗣️ Listen</button>
+            </div>
+            <p id="vocab-modal-en-def" class="vocab-def-copy"></p>
+          </div>
+
+          <div class="vocab-def-box vocab-es-box">
+            <div class="vocab-def-header">
+              <span class="vocab-badge es-badge">🇲🇽 Definición Sencilla</span>
+              <button type="button" class="vocab-tts-button" id="vocab-tts-es" aria-label="Escuchar en español">🗣️ Escuchar</button>
+            </div>
+            <p id="vocab-modal-es-def" class="vocab-def-copy"></p>
+          </div>
+        </div>
+
+        <div class="vocab-example-container">
+          <div class="vocab-example-tag">💡 Example · Ejemplo</div>
+          <p id="vocab-modal-example" class="vocab-example-copy"></p>
+        </div>
+
+        <div class="vocab-modal-actions">
+          <button type="button" class="vocab-gotit-btn" id="vocab-confirm-btn">Got it! · ¡Entendido!</button>
+        </div>
+      </div>
+    </div>
 
     <section id="print-sheet" class="print-sheet" aria-hidden="true"></section>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>

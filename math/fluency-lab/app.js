@@ -28,6 +28,7 @@ import { familySummaryDocument, familySummaryHtml } from "./family-page.js";
 import { mountPaperGames } from "./paper-games.js";
 import { stopOptions, stopsFor } from "./game-pool.js";
 import { cleanPlay, exportPlay, importPlay } from "./play-backup.js";
+import { highlightVocab, initVocabSystem, openVocabModal } from "./vocab.js";
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
@@ -495,10 +496,10 @@ function renderLearn() {
   const picture = interactivePicture(example.model) || trailPicture(example.model);
   els.learnPanel.innerHTML = `
     <div class="learn-simple" style="--trail:${getGrade(skill.grade).color}">
-      <h3 class="tr-idea">${escapeHtml(skill.learn.rule)}</h3>
+      <h3 class="tr-idea">${highlightVocab(escapeHtml(skill.learn.rule))}</h3>
       <div class="tr-lesson">
         <div class="tr-example">
-          <p class="tr-example-fact">${mathText(example.question)}</p>
+          <p class="tr-example-fact">${highlightVocab(mathText(example.question))}</p>
           ${picture}
         </div>
         <div class="tr-guide">
@@ -506,7 +507,7 @@ function renderLearn() {
           <div data-learn-steps>${stepsBlock(example.steps, 1, { id: "learn-steps" })}</div>
         </div>
       </div>
-      <p class="learn-watch"><strong>Watch out:</strong> ${escapeHtml(skill.learn.watch)}</p>
+      <p class="learn-watch"><strong>Watch out:</strong> ${highlightVocab(escapeHtml(skill.learn.watch))}</p>
       <div class="learn-actions">
         <button class="primary-action" data-start-guided>Try 5 with help</button>
         <button class="primary-action" data-start-independent>Practice 10</button>
@@ -758,8 +759,8 @@ function formatFlashcardDisplay(item) {
 
   // 5. Word problems / questions: e.g. "What is the value of the digit in the tens place of 59?"
   return {
-    front: `<div class="tpt-prompt-text">${mathText(rawQ)}</div>`,
-    back: `<div class="tpt-prompt-text">${mathText(rawQ)}</div><div class="tpt-word-ans"><span class="tpt-ans-label">Correct Answer:</span> <strong class="tpt-ans-badge">${mathText(ans)}</strong></div>`,
+    front: `<div class="tpt-prompt-text">${highlightVocab(mathText(rawQ))}</div>`,
+    back: `<div class="tpt-prompt-text">${highlightVocab(mathText(rawQ))}</div><div class="tpt-word-ans"><span class="tpt-ans-label">Correct Answer:</span> <strong class="tpt-ans-badge">${mathText(ans)}</strong></div>`,
     type: "word"
   };
 }
@@ -783,7 +784,7 @@ function formatProblemArena(item) {
     if (m) {
       els.question.innerHTML = `<span class="arena-comp-num">${mathText(m[1].trim())}</span> <span class="arena-comp-blank" aria-label="blank">?</span> <span class="arena-comp-num">${mathText(m[2].replace(/[=?]/g, "").trim())}</span>`;
     } else {
-      els.question.innerHTML = mathText(rawQ);
+      els.question.innerHTML = highlightVocab(mathText(rawQ));
     }
   } else if (isPureEquation) {
     if (arena) arena.classList.add("has-equation");
@@ -793,7 +794,7 @@ function formatProblemArena(item) {
   } else {
     if (arena) arena.classList.add("has-sentence");
     els.question.classList.add("is-sentence");
-    els.question.innerHTML = mathText(rawQ);
+    els.question.innerHTML = highlightVocab(mathText(rawQ));
   }
 
   const unitEl = els.answerUnit || document.querySelector("#answer-unit");
@@ -924,8 +925,8 @@ function renderFlashcardProblem() {
   const backStrategy = document.querySelector("#tpt-back-strategy");
   if (backStrategy) {
     const hint = item.hint || item.explanation || skill?.learn?.rule || "";
-    const stepsList = item.steps?.length > 1 ? `<div class="tpt-mini-steps">${item.steps.map((s, idx) => `<div><span class="mini-step-num">${idx + 1}</span> <span>${mathText(s)}</span></div>`).join("")}</div>` : "";
-    backStrategy.innerHTML = `<strong>💡 Strategy breakdown:</strong><p>${escapeHtml(hint)}</p>${stepsList}`;
+    const stepsList = item.steps?.length > 1 ? `<div class="tpt-mini-steps">${item.steps.map((s, idx) => `<div><span class="mini-step-num">${idx + 1}</span> <span>${highlightVocab(mathText(s))}</span></div>`).join("")}</div>` : "";
+    backStrategy.innerHTML = `<strong>💡 Strategy breakdown:</strong><p>${highlightVocab(escapeHtml(hint))}</p>${stepsList}`;
   }
 
   const quickInput = els.tptQuickInput || document.querySelector("#tpt-quick-input");
@@ -943,10 +944,15 @@ function flipFlashcard(reveal) {
   const shouldFlip = typeof reveal === "boolean" ? reveal : !isFlipped;
   if (shouldFlip) {
     card.classList.add("is-flipped");
-    (els.tptNextCard || document.querySelector("#tpt-next-card") || els.tptKnowCard || document.querySelector("#tpt-know-card"))?.focus();
+    const cardBack = card.querySelector(".tpt-card-back");
+    if (cardBack) cardBack.scrollTop = 0;
+    const focusTarget = els.tptNextCard || document.querySelector("#tpt-next-card") || els.tptKnowCard || document.querySelector("#tpt-know-card");
+    focusTarget?.focus({ preventScroll: true });
+    if (cardBack) cardBack.scrollTop = 0;
   } else {
     card.classList.remove("is-flipped");
-    (els.tptQuickInput || els.tptFlipButton || document.querySelector("#tpt-flip-button"))?.focus();
+    const focusTarget = els.tptQuickInput || els.tptFlipButton || document.querySelector("#tpt-flip-button");
+    focusTarget?.focus({ preventScroll: true });
   }
 }
 
@@ -2147,7 +2153,7 @@ function renderGuidedCoach() {
           <span class="guided-step-num">${index + 1}</span>
           <div class="guided-step-body">
             ${badgeHtml}
-            ${open || `<p class="guided-step-text">${mathText(step.copy)}</p>`}
+            ${open || `<p class="guided-step-text">${highlightVocab(mathText(step.copy))}</p>`}
             ${whyHtml}
             ${visual}
           </div>
@@ -3752,6 +3758,7 @@ populateQuickSkillDropdown();
 applySettings();
 renderLibrary();
 initVoiceControl();
+initVocabSystem();
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", registerSharedSaveResume, { once: true });
 } else {

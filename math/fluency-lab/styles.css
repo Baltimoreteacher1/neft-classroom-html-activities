@@ -2210,7 +2210,8 @@ body.focus-mode .focus-orbit-ring {
    ========================================================================== */
 .flashcard-stage {
   margin: 1.25rem auto 1.5rem;
-  max-width: 480px;
+  max-width: 620px;
+  width: 100%;
   perspective: 1200px;
 }
 
@@ -2224,10 +2225,11 @@ body.focus-mode .focus-orbit-ring {
   outline: 2px dashed #94a3b8;
   outline-offset: -10px;
   border-radius: 24px;
-  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.16), 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.16), 0 4px 12px -2px rgba(15, 23, 42, 0.08);
   overflow: hidden;
-  min-height: 380px;
-  max-width: 580px;
+  min-height: 440px;
+  max-width: 620px;
+  width: 100%;
   margin: 1rem auto;
   display: flex;
   flex-direction: column;
@@ -2255,11 +2257,13 @@ body.focus-mode .focus-orbit-ring {
 
 .tpt-card-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 20px 12px 46px;
+  gap: 0.5rem 0.75rem;
+  padding: 12px 18px 12px 48px;
   background: #f8fafc;
-  border-bottom: 2px solid #f1f5f9;
+  border-bottom: 2px solid #e2e8f0;
   z-index: 5;
 }
 
@@ -2269,27 +2273,29 @@ body.focus-mode .focus-orbit-ring {
   gap: 6px;
   font-size: 0.74rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   padding: 4px 12px;
   border-radius: 999px;
   background: #eff6ff;
   color: #1e40af;
   border: 1.5px solid #93c5fd;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .tpt-card-counter {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 800;
-  color: #64748b;
+  color: #475569;
   letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 .tpt-card-flipper {
   position: relative;
-  flex: 1;
+  flex: 1 1 auto;
   width: 100%;
-  min-height: 310px;
+  min-height: 380px;
   transition: transform 0.45s cubic-bezier(0.34, 1.25, 0.64, 1);
   transform-style: preserve-3d;
 }
@@ -2309,7 +2315,7 @@ body.focus-mode .focus-orbit-ring {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 22px 28px;
+  padding: 24px 30px;
   box-sizing: border-box;
   text-align: center;
 }
@@ -2324,7 +2330,7 @@ body.focus-mode .focus-orbit-ring {
   background: #fcfefe;
   overflow-y: auto;
   justify-content: flex-start;
-  padding-top: 16px;
+  padding: 20px 24px 24px;
 }
 
 .tpt-face-prompt {
@@ -2515,14 +2521,15 @@ body.focus-mode .focus-orbit-ring {
 
 .tpt-quick-form {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   margin-top: 14px;
-  max-width: 340px;
+  max-width: 380px;
   width: 100%;
 }
 
 .tpt-quick-input {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0;
   border: 2.5px solid #cbd5e1;
   border-radius: 12px;
   padding: 10px 14px;
@@ -2532,6 +2539,12 @@ body.focus-mode .focus-orbit-ring {
   transition: border-color 0.15s ease;
 }
 
+.tpt-quick-input::placeholder {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
 .tpt-quick-input:focus {
   border-color: #4f46e5;
   outline: none;
@@ -2539,6 +2552,7 @@ body.focus-mode .focus-orbit-ring {
 }
 
 .tpt-quick-submit {
+  flex-shrink: 0;
   border: 2.5px solid #4f46e5;
   background: #eef2ff;
   color: #4338ca;
@@ -2557,14 +2571,14 @@ body.focus-mode .focus-orbit-ring {
 .tpt-strategy-box {
   background: #fffbeb;
   border: 2px solid #fde68a;
-  border-radius: 12px;
-  padding: 12px 16px;
-  font-size: 0.92rem;
+  border-radius: 14px;
+  padding: 14px 18px;
+  font-size: 0.94rem;
   color: #78350f;
-  margin: 6px 0 14px;
+  margin: 8px 0 16px;
   width: 100%;
   box-sizing: border-box;
-  line-height: 1.45;
+  line-height: 1.5;
   text-align: left;
 }
 
@@ -3260,6 +3274,7 @@ body.focus-mode .focus-orbit-ring {
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  flex-wrap: nowrap;
 }
 
 .answer-input-row .answer-input {
@@ -3273,6 +3288,12 @@ body.focus-mode .focus-orbit-ring {
   border-radius: 12px;
   background: #ffffff;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.answer-input-row .answer-input::placeholder {
+  font-size: 1.15rem !important;
+  font-weight: 600 !important;
+  color: #94a3b8 !important;
 }
 
 .answer-input-row .answer-input:focus {
@@ -4392,6 +4413,276 @@ body.focus-mode .workspace-view {
   margin: 1.5rem auto;
   box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.12);
   border-radius: 24px;
+}
+
+/* ==========================================================================
+   Bilingual Math Vocabulary Highlight & Modal System
+   ========================================================================== */
+.vocab-word {
+  background: transparent;
+  border: none;
+  padding: 0 3px;
+  border-bottom: 2.5px dotted #0284c7;
+  color: #0369a1;
+  font-weight: 800;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  font-size: inherit;
+  display: inline;
+  text-decoration: none;
+  line-height: inherit;
+  vertical-align: baseline;
+}
+
+.vocab-word:hover,
+.vocab-word:focus-visible {
+  background: #e0f2fe;
+  color: #0284c7;
+  outline: none;
+  border-bottom: 2.5px solid #0284c7;
+}
+
+body.vocab-modal-open {
+  overflow: hidden;
+}
+
+.vocab-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(5px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  box-sizing: border-box;
+  animation: modal-fade-in 0.2s ease-out;
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.vocab-modal-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.35);
+  border: 1.5px solid #e2e8f0;
+  font-family: var(--font-family, inherit);
+  animation: modal-pop-in 0.25s cubic-bezier(0.34, 1.25, 0.64, 1);
+}
+
+@keyframes modal-pop-in {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.vocab-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1.5px solid #f1f5f9;
+}
+
+.vocab-modal-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.vocab-modal-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.vocab-modal-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.vocab-modal-es-title {
+  margin: 0.2rem 0 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #059669;
+  letter-spacing: 0.01em;
+}
+
+.vocab-modal-close {
+  background: #f1f5f9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.vocab-modal-close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.vocab-modal-svg {
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.vocab-modal-definitions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.vocab-def-box {
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.vocab-en-box {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+}
+
+.vocab-es-box {
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+}
+
+.vocab-def-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.vocab-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.en-badge {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.es-badge {
+  background: #059669;
+  color: #ffffff;
+}
+
+.vocab-tts-button {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.vocab-tts-button:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.vocab-def-copy {
+  margin: 0;
+  font-size: 0.94rem;
+  font-weight: 700;
+  line-height: 1.45;
+  color: #0f172a;
+}
+
+.vocab-example-container {
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 1.25rem;
+}
+
+.vocab-example-tag {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #b45309;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.vocab-example-copy {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #78350f;
+  line-height: 1.4;
+}
+
+.vocab-modal-actions {
+  display: flex;
+}
+
+.vocab-gotit-btn {
+  width: 100%;
+  background: #0284c7;
+  color: #ffffff;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.vocab-gotit-btn:hover {
+  background: #0369a1;
 }
 
 
