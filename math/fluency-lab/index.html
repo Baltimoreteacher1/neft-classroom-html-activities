@@ -179,6 +179,59 @@
           <div class="problem-stage">
             <p id="session-insight" class="session-insight" aria-live="polite"></p>
 
+            <div id="flashcard-stage" class="flashcard-stage" hidden>
+              <!-- Clear, Teachers-Pay-Teachers (TpT) Quality Math Flashcard -->
+              <div class="tpt-flashcard" id="tpt-flashcard">
+                <div class="tpt-punch-hole" aria-hidden="true" title="Ring hole punch"></div>
+                <div class="tpt-card-header">
+                  <span id="tpt-strand-badge" class="tpt-strand-badge">GRADE 1 · ADDITION</span>
+                  <span id="tpt-card-counter" class="tpt-card-counter">Card 1 of 10</span>
+                </div>
+                <div class="tpt-card-flipper">
+                  <div class="tpt-card-face tpt-card-front">
+                    <span class="tpt-face-prompt">MATH FLASHCARD</span>
+                    <div id="tpt-front-equation" class="tpt-equation"></div>
+                    <div class="tpt-front-actions">
+                      <button type="button" id="tpt-flip-button" class="tpt-flip-action">
+                        <span aria-hidden="true">🔄</span> Flip Card <kbd>Space</kbd>
+                      </button>
+                    </div>
+                    <form id="tpt-quick-form" class="tpt-quick-form" novalidate>
+                      <input
+                        type="text"
+                        id="tpt-quick-input"
+                        class="tpt-quick-input"
+                        placeholder="Type answer (or press Space to flip)..."
+                        autocomplete="off"
+                        autocapitalize="off"
+                        spellcheck="false"
+                      />
+                      <button type="submit" class="tpt-quick-submit">Check</button>
+                    </form>
+                  </div>
+                  <div class="tpt-card-face tpt-card-back">
+                    <span class="tpt-face-prompt tpt-prompt-success">ANSWER &amp; STRATEGY</span>
+                    <div id="tpt-back-equation" class="tpt-equation tpt-answer-revealed"></div>
+                    <div id="tpt-back-strategy" class="tpt-strategy-box"></div>
+                    <div class="tpt-self-eval">
+                      <p class="tpt-eval-label">How did you do?</p>
+                      <div class="tpt-eval-buttons">
+                        <button type="button" id="tpt-repeat-card" class="tpt-rate-btn tpt-btn-repeat">
+                          <span aria-hidden="true">🔁</span> Still Practicing <kbd>1</kbd>
+                        </button>
+                        <button type="button" id="tpt-know-card" class="tpt-rate-btn tpt-btn-know">
+                          <span aria-hidden="true">⭐</span> I Know It! <kbd>2</kbd>
+                        </button>
+                      </div>
+                      <button type="button" id="tpt-flip-back" class="tpt-flip-back-link">
+                        ↩ Turn card back over
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div class="problem-meta">
               <span id="problem-number">Problem 1 of 10</span>
               <button id="hear-problem" class="icon-button" type="button" aria-label="Read the problem aloud">
@@ -234,6 +287,18 @@
               <button id="open-visual-help" class="outline-action" type="button">See it &amp; build it</button>
               <span>Your practice will be saved while you explore.</span>
             </div>
+            <details id="drill-toolbox" class="drill-toolbox-drawer">
+              <summary><span>🧮</span> Math Tool Drawer (Number Line · Ten-Frame · Fact Grid · Fractions)</summary>
+              <div class="drill-toolbox-body">
+                <div class="drill-tool-picker" role="tablist" aria-label="Math tool options">
+                  <button type="button" class="tool-btn active" data-tool="numberline">Number Line</button>
+                  <button type="button" class="tool-btn" data-tool="tenframe">Ten-Frame</button>
+                  <button type="button" class="tool-btn" data-tool="multigrid">10×10 Grid</button>
+                  <button type="button" class="tool-btn" data-tool="fractions">Fraction Wall</button>
+                </div>
+                <div id="drill-tool-viewport" class="drill-tool-viewport"></div>
+              </div>
+            </details>
             <details class="scratchpad-wrap">
               <summary>Open a scratchpad</summary>
               <label for="scratchpad">Work area — this stays on this page only</label>

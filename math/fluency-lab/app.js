@@ -10,7 +10,7 @@ import {
 import { adaptiveProblem, dailyPlan, diagnosticPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, prerequisites, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
 import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visual-lab.js";
 import { transferPrompt } from "./lesson-content.js";
-import { handleModelInput, handleModelTap, interactivePicture, mathText, openFillRow, stepVisual, stepWaiting, stepsBlock, trailPicture } from "./trail-pictures.js";
+import { handleModelInput, handleModelTap, interactivePicture, mathText, openFillRow, stepPhaseBadge, stepVisual, stepWaiting, stepsBlock, trailPicture } from "./trail-pictures.js";
 import { PROFILE_NAMES, assignmentQueue, cleanProgress, decodeAssignment, downloadFile, makeBackup, mountTeacherStudio, parseBackup, profileKey, profiles, progressReport, readLocal, selectProfile, writeLocal } from "./school-tools.js";
 import { mountWorkbench } from "./workbench.js";
 import { createWorkbenchState } from "./workbench-state.js";
@@ -121,6 +121,14 @@ const els = {
   quickSkillSelect: document.querySelector("#quick-skill-select"),
   problemVisualScaffold: document.querySelector("#problem-visual-scaffold"),
   toggleProblemVisual: document.querySelector("#toggle-problem-visual"),
+  flashcardStage: document.querySelector("#flashcard-stage"),
+  tptCard: document.querySelector("#tpt-flashcard"),
+  tptFlipButton: document.querySelector("#tpt-flip-button"),
+  tptFlipBack: document.querySelector("#tpt-flip-back"),
+  tptRepeatCard: document.querySelector("#tpt-repeat-card"),
+  tptKnowCard: document.querySelector("#tpt-know-card"),
+  tptQuickForm: document.querySelector("#tpt-quick-form"),
+  tptQuickInput: document.querySelector("#tpt-quick-input"),
 };
 
 const state = {
@@ -331,6 +339,11 @@ function renderSkillCard(skill) {
       <p>${escapeHtml(skill.learn.rule)}</p>
       <div class="skill-card-actions">
         <button class="open-skill primary-action" data-skill="${skill.id}">Practice &amp; Learn</button>
+        <div class="skill-action-row">
+          <button type="button" class="outline-action quick-drill-btn" data-quick-skill="${skill.id}">⚡ Quick 5 Drill</button>
+          <button type="button" class="outline-action flashcard-btn" data-flashcard-skill="${skill.id}">🃏 Flashcards</button>
+          <button type="button" class="outline-action learn-btn" data-visual-skill="${skill.id}">💡 See Idea</button>
+        </div>
       </div>
     </article>`;
 }
@@ -439,7 +452,7 @@ function renderMastery() {
 }
 
 // Each mode tab shows one panel; a tab list is one stop for Tab, and the arrow keys move between its tabs.
-const MODE_PANEL = { learn: "learn-panel", visual: "visual-panel", guided: "drill-panel", practice: "drill-panel", streak: "drill-panel" };
+const MODE_PANEL = { learn: "learn-panel", visual: "visual-panel", guided: "drill-panel", quick: "drill-panel", flashcard: "drill-panel", practice: "drill-panel", streak: "drill-panel" };
 function renderModeTabs(mixed = false) {
   els.modeTabs.innerHTML = mixed
     ? `<button role="tab" aria-selected="true" aria-controls="drill-panel" data-mode="${state.mode}">${state.mode === "daily" ? "Today's 10" : "Mixed review"}</button>`
@@ -447,6 +460,8 @@ function renderModeTabs(mixed = false) {
         ["learn", "Learn it"],
         ["visual", "Build it"],
         ["guided", "Guided practice"],
+        ["quick", "Quick 5"],
+        ["flashcard", "🃏 Flashcards"],
         ["practice", "Practice 10"],
         ["streak", "10 in a row"],
       ]
@@ -518,7 +533,7 @@ function setMode(mode) {
       });
     }
   } else {
-    beginSession(mode, mode === "streak" ? Infinity : mode === "guided" ? 5 : 10);
+    beginSession(mode, mode === "streak" ? Infinity : mode === "quick" ? 5 : mode === "guided" ? 5 : 10);
   }
 }
 
@@ -558,13 +573,17 @@ function beginSession(mode, target, queue = null) {
   els.sessionType.textContent =
     mode === "streak"
       ? "Streak · 10 in a row"
-      : mode === "guided"
-        ? "Guided practice · 5"
-        : mode === "daily"
-          ? "Today's 10"
-          : mode === "mixed"
-            ? "Mixed review"
-            : "Practice 10";
+      : mode === "quick"
+        ? "Quick 5 Drill"
+        : mode === "flashcard"
+          ? "🃏 Flashcard Drill · 10 Cards"
+          : mode === "guided"
+            ? "Guided practice · 5"
+            : mode === "daily"
+              ? "Today's 10"
+              : mode === "mixed"
+                ? "Mixed review"
+                : "Practice 10";
   if (mode === "adaptive") els.sessionType.textContent = "Adaptive practice · 10";
   if (mode === "diagnostic") els.sessionType.textContent = "Starting-point checkup · 10";
   if (mode === "repair") els.sessionType.textContent = "Repair practice";
@@ -626,10 +645,203 @@ function nextProblem(restoredItem = null) {
   renderGuidedCoach();
   renderAnswerControl();
   updateSessionHeader();
+  const isFlashcard = state.session.mode === "flashcard";
+  if (els.flashcardStage) els.flashcardStage.hidden = !isFlashcard;
+  document.querySelector(".problem-meta")?.classList.toggle("is-flashcard-hidden", isFlashcard);
+  els.question.hidden = isFlashcard;
+  els.topic.hidden = isFlashcard;
+  if (els.problemVisualScaffold) els.problemVisualScaffold.hidden = isFlashcard;
+  if (els.toggleProblemVisual) els.toggleProblemVisual.hidden = isFlashcard;
+  if (isFlashcard) {
+    els.answerForm.hidden = true;
+    renderFlashcardProblem();
+  } else {
+    els.answerForm.hidden = false;
+  }
   onFluencyProblemPresented();
   saveActiveSession();
-  if (state.item.choices) els.choiceAnswers.querySelector("button")?.focus();
+  if (isFlashcard) {
+    (els.tptQuickInput || document.querySelector("#tpt-quick-input"))?.focus();
+  } else if (state.item.choices) els.choiceAnswers.querySelector("button")?.focus();
   else els.answerInput.focus();
+}
+
+function renderFlashcardProblem() {
+  const item = state.item;
+  if (!item) return;
+  const card = els.tptCard || document.querySelector("#tpt-flashcard");
+  card?.classList.remove("is-flipped", "is-correct");
+
+  const skill = item.skill || state.skill;
+  const grade = getGrade(skill?.grade || state.grade);
+  const strand = skill?.strand || "Math";
+  const icon = STRAND_ICONS[strand] || "✏️";
+
+  const strandBadge = document.querySelector("#tpt-strand-badge");
+  if (strandBadge) {
+    strandBadge.innerHTML = `<span aria-hidden="true">${icon}</span> GRADE ${skill?.grade || state.grade} · ${escapeHtml(strand).toUpperCase()}`;
+    strandBadge.style.borderColor = grade.color;
+  }
+
+  const cardCounter = document.querySelector("#tpt-card-counter");
+  if (cardCounter) {
+    cardCounter.textContent = `Card ${state.session.answered + 1} of ${state.session.target}`;
+  }
+
+  const frontEq = document.querySelector("#tpt-front-equation");
+  if (frontEq) {
+    let q = item.question.trim();
+    if (q.endsWith("=")) q = `${q} ?`;
+    else if (!q.includes("=") && !q.includes("?")) q = `${q} = ?`;
+    frontEq.innerHTML = mathText(q);
+  }
+
+  const backEq = document.querySelector("#tpt-back-equation");
+  if (backEq) {
+    let q = item.question.trim();
+    const ans = item.answers?.[0] || "";
+    if (q.endsWith("=")) q = q.slice(0, -1).trim();
+    backEq.innerHTML = `${mathText(q)} <span class="tpt-ans-equals">=</span> <strong class="tpt-ans-bold">${mathText(ans)}</strong>`;
+  }
+
+  const backStrategy = document.querySelector("#tpt-back-strategy");
+  if (backStrategy) {
+    const hint = item.hint || item.explanation || skill?.learn?.rule || "";
+    const stepsList = item.steps?.length > 1 ? `<div class="tpt-mini-steps">${item.steps.map((s, idx) => `<div><span class="mini-step-num">${idx + 1}</span> <span>${mathText(s)}</span></div>`).join("")}</div>` : "";
+    backStrategy.innerHTML = `<strong>💡 Strategy breakdown:</strong><p>${escapeHtml(hint)}</p>${stepsList}`;
+  }
+
+  const quickInput = els.tptQuickInput || document.querySelector("#tpt-quick-input");
+  if (quickInput) {
+    quickInput.value = "";
+    quickInput.disabled = false;
+    setTimeout(() => quickInput.focus(), 60);
+  }
+}
+
+function flipFlashcard(reveal) {
+  const card = els.tptCard || document.querySelector("#tpt-flashcard");
+  if (!card) return;
+  const isFlipped = card.classList.contains("is-flipped");
+  const shouldFlip = typeof reveal === "boolean" ? reveal : !isFlipped;
+  if (shouldFlip) {
+    card.classList.add("is-flipped");
+    (els.tptKnowCard || document.querySelector("#tpt-know-card"))?.focus();
+  } else {
+    card.classList.remove("is-flipped");
+    (els.tptFlipButton || document.querySelector("#tpt-flip-button"))?.focus();
+  }
+}
+
+function handleFlashcardAnswer(correct) {
+  if (!state.session || state.itemDone) return;
+  finalizeProblem(correct);
+  if (correct) {
+    const card = els.tptCard || document.querySelector("#tpt-flashcard");
+    card?.classList.add("is-correct");
+    celebrateSparkles();
+  }
+  setTimeout(() => {
+    nextProblem();
+  }, 220);
+}
+
+function celebrateSparkles() {
+  const stage = els.flashcardStage || document.querySelector(".problem-stage");
+  if (!stage) return;
+  const container = document.createElement("div");
+  container.className = "sparkle-container";
+  container.setAttribute("aria-hidden", "true");
+  const colors = ["#fbbf24", "#3b82f6", "#10b981", "#ec4899", "#8b5cf6"];
+  for (let i = 0; i < 20; i++) {
+    const sparkle = document.createElement("span");
+    sparkle.className = "sparkle-particle";
+    const angle = (i / 20) * 360;
+    const distance = 40 + Math.random() * 80;
+    sparkle.style.setProperty("--tx", `${Math.cos((angle * Math.PI) / 180) * distance}px`);
+    sparkle.style.setProperty("--ty", `${Math.sin((angle * Math.PI) / 180) * distance}px`);
+    sparkle.style.backgroundColor = colors[i % colors.length];
+    container.appendChild(sparkle);
+  }
+  stage.appendChild(container);
+  setTimeout(() => container.remove(), 750);
+}
+
+function printFlashcardDeck() {
+  const skill = state.skill;
+  if (!skill) return;
+  const grade = getGrade(skill.grade);
+  const rng = seededRandom(skill.id.length * 133 + skill.grade * 77);
+  const cards = Array.from({ length: 8 }, () => generateProblem(skill, rng));
+
+  const frontHtml = cards
+    .map(
+      (c, i) => `
+    <div class="pfc-card pfc-front">
+      <div class="pfc-hole" aria-hidden="true"></div>
+      <div class="pfc-tag">${grade.label.toUpperCase()} · ${escapeHtml(skill.strand).toUpperCase()}</div>
+      <div class="pfc-math">${mathText(c.question)}</div>
+      <div class="pfc-footer">Card ${i + 1} of 8 · ${escapeHtml(skill.title)}</div>
+    </div>
+  `,
+    )
+    .join("");
+
+  const backHtml = cards
+    .map(
+      (c, i) => `
+    <div class="pfc-card pfc-back">
+      <div class="pfc-hole" aria-hidden="true"></div>
+      <div class="pfc-tag">ANSWER &amp; STRATEGY</div>
+      <div class="pfc-math pfc-ans">${mathText(c.question.replace(/\s*=.*$/, ""))} = <strong>${mathText(c.answers[0])}</strong></div>
+      <div class="pfc-hint">${escapeHtml(c.hint || skill.learn.rule)}</div>
+      <div class="pfc-footer">EduWonderLab Fluency Lab</div>
+    </div>
+  `,
+    )
+    .join("");
+
+  printHtml(`
+    <article class="pfc-print-sheet">
+      <header class="pfc-header">
+        <h1>${escapeHtml(skill.title)} · Flashcard Deck</h1>
+        <p>${grade.label} Fluency Practice · Print double-sided (flip on short edge) or cut and fold along center line</p>
+      </header>
+      <div class="pfc-grid">
+        ${frontHtml}
+      </div>
+      <div class="pfc-page-break"></div>
+      <div class="pfc-grid">
+        ${backHtml}
+      </div>
+    </article>
+  `);
+}
+
+function printMasteryCertificate(skill) {
+  const s = skill || state.skill;
+  if (!s) return;
+  const learner = PROFILE_NAMES[activeProfile] || "Learner";
+  printHtml(`
+    <article class="cert-print-sheet">
+      <div class="cert-border">
+        <div class="cert-inner">
+          <p class="cert-kicker">EduWonderLab Math Fluency Lab</p>
+          <h1 class="cert-title">Certificate of Fluency Mastery</h1>
+          <p class="cert-awarded">This certifies that</p>
+          <h2 class="cert-name">${escapeHtml(learner)}</h2>
+          <p class="cert-desc">has demonstrated automatic, independent fluency in</p>
+          <h3 class="cert-skill">${escapeHtml(s.title)} (Grade ${s.grade})</h3>
+          <p class="cert-rule">“${escapeHtml(s.learn.rule)}”</p>
+          <div class="cert-footer">
+            <div><span class="cert-line"></span><small>Date: ${new Date().toLocaleDateString()}</small></div>
+            <div class="cert-seal">★ GOLD STANDARD FLUENCY ★</div>
+            <div><span class="cert-line"></span><small>Teacher / Coach</small></div>
+          </div>
+        </div>
+      </div>
+    </article>
+  `);
 }
 
 // Every practice problem carries its own model: the interactive picture of these numbers, or,
@@ -673,15 +885,27 @@ function guidedStepContent() {
 function renderGuidedCoach() {
   if (!state.initialSupport || !state.item) return;
   const steps = guidedStepContent();
+  const allCopies = steps.map((entry) => entry.copy);
   els.guidedSteps.innerHTML = steps
     .slice(0, state.guidedStepsShown)
-    .map(
-      (step, index) => `
+    .map((step, index) => {
+      const badge = stepPhaseBadge(step.copy, index, allCopies);
+      const badgeHtml = badge ? `<span class="guided-step-badge">${escapeHtml(badge)}</span>` : "";
+      const why = whyFor(step.copy, index, allCopies);
+      const whyHtml = why ? `<div class="tr-step-why"><span class="tr-why-icon" aria-hidden="true">💡</span><span class="tr-why-copy">${escapeHtml(why)}</span></div>` : "";
+      const open = openFillRow(step.copy, index, allCopies, `coach:${state.item.question}`);
+      const visual = open ? "" : stepVisual(step.copy);
+      return `
         <li class="${index === state.guidedStepsShown - 1 ? "current" : "complete"}">
-          <span>${index + 1}</span>
-          <div class="guided-step-body">${openFillRow(step.copy, index, steps.map((entry) => entry.copy), `coach:${state.item.question}`) || `<p>${mathText(step.copy)}</p>`}${whyFor(step.copy, index, steps.map((entry) => entry.copy)) ? `<p class="tr-step-why">${escapeHtml(whyFor(step.copy, index, steps.map((entry) => entry.copy)))}</p>` : ""}${openFillRow(step.copy, index, steps.map((entry) => entry.copy), `coach:${state.item.question}`) ? "" : stepVisual(step.copy)}</div>
-        </li>`,
-    )
+          <span class="guided-step-num">${index + 1}</span>
+          <div class="guided-step-body">
+            ${badgeHtml}
+            ${open || `<p class="guided-step-text">${mathText(step.copy)}</p>`}
+            ${whyHtml}
+            ${visual}
+          </div>
+        </li>`;
+    })
     .join("");
   els.guidedStepCount.textContent = `${state.guidedStepsShown} of ${steps.length} steps open`;
   els.guidedNextStep.hidden = state.guidedStepsShown >= steps.length;
@@ -818,7 +1042,20 @@ function showFeedback(title, copy, type) {
   els.feedback.hidden = false;
   els.feedback.dataset.type = type;
   els.feedbackTitle.textContent = title;
-  els.feedbackCopy.textContent = copy;
+  if (type !== "correct" && state.item?.steps?.length > 1) {
+    els.feedbackCopy.innerHTML = `
+      <div class="feedback-coach-block">
+        <p class="feedback-coach-main">${escapeHtml(copy)}</p>
+        <div class="feedback-steps-accordion">
+          <p class="feedback-steps-title"><strong>🪜 Think through it step-by-step:</strong></p>
+          <ol class="feedback-mini-steps">
+            ${state.item.steps.map((st, idx) => `<li><span class="mini-step-num">${idx + 1}</span> <span>${mathText(st)}</span></li>`).join("")}
+          </ol>
+        </div>
+      </div>`;
+  } else {
+    els.feedbackCopy.textContent = copy;
+  }
   if (type === "correct") chime("good");
 }
 
@@ -859,9 +1096,13 @@ function finishSession() {
   els.summaryTitle.textContent =
     streakComplete(session)
       ? "Ten in a row!"
-      : session.mode === "guided"
-        ? "Guided practice complete"
-        : "Practice complete";
+      : session.mode === "quick"
+        ? "Quick 5 complete"
+        : session.mode === "flashcard"
+          ? "Flashcard set complete"
+          : session.mode === "guided"
+            ? "Guided practice complete"
+            : "Practice complete";
   els.summaryCopy.textContent =
     session.mode === "guided"
       ? "You worked through five coached examples. Continue to Practice 10 when the steps feel familiar, or repeat this guided set."
@@ -906,7 +1147,7 @@ function finishSession() {
   const next = recommendations(state.tutor, state.grade)[0];
   const foundations = prerequisites(next.skill);
   const profileBrief = buildFluencyProfileSummary(session, accuracyPercent, next);
-  els.summaryNext.innerHTML = `<h4>A useful next step</h4><p>${escapeHtml(next.reason)}: ${escapeHtml(next.skill.title)}.</p><div class="button-row"><button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">Explore the visual lesson</button><button class="outline-action" data-view="path">See my learning path</button></div>${session.mode === 'diagnostic' && foundations.length ? `<p>Helpful foundation: <button class="text-action" data-open-key="${tutorSkillKey(foundations[0])}" data-open-mode="visual">${escapeHtml(foundations[0].title)} (Grade ${foundations[0].grade})</button></p>` : ''}${state.skill ? `<p class="teach-back-prompt">${escapeHtml(transferPrompt(state.skill))}</p>` : ''}${profileBrief}`;
+  els.summaryNext.innerHTML = `<h4>A useful next step</h4><p>${escapeHtml(next.reason)}: ${escapeHtml(next.skill.title)}.</p><div class="button-row"><button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">Explore the visual lesson</button><button class="outline-action" data-view="path">See my learning path</button></div><div class="drill-again-actions button-row" style="margin-top:0.75rem"><button class="outline-action" type="button" data-start-quick-drill>⚡ Drill 5 more</button><button class="outline-action flashcard-btn" type="button" data-start-flashcard-drill>🃏 Flashcards</button><button class="outline-action" type="button" data-start-streak-drill>🔥 10 in a row challenge</button><button class="outline-action" type="button" data-print-flashcards>🖨️ Print Flashcards</button>${streakComplete(session) || accuracyPercent === 100 ? `<button class="outline-action" type="button" data-print-cert>🏆 Print Certificate</button>` : ''}</div>${session.mode === 'diagnostic' && foundations.length ? `<p>Helpful foundation: <button class="text-action" data-open-key="${tutorSkillKey(foundations[0])}" data-open-mode="visual">${escapeHtml(foundations[0].title)} (Grade ${foundations[0].grade})</button></p>` : ''}${state.skill ? `<p class="teach-back-prompt">${escapeHtml(transferPrompt(state.skill))}</p>` : ''}${profileBrief}`;
   saveProgress(); renderOverallStats();
   announce("Practice saved for this learner on this device.");
 }
@@ -1164,6 +1405,16 @@ els.strandFilters.addEventListener("click", (event) => {
 });
 
 els.skillGrid.addEventListener("click", (event) => {
+  const quick = event.target.closest("[data-quick-skill]");
+  if (quick) {
+    openSkill(quick.dataset.quickSkill, "quick");
+    return;
+  }
+  const flashcard = event.target.closest("[data-flashcard-skill]");
+  if (flashcard) {
+    openSkill(flashcard.dataset.flashcardSkill, "flashcard");
+    return;
+  }
   const button = event.target.closest("[data-skill]");
   if (button) openSkill(button.dataset.skill);
   const visual = event.target.closest("[data-visual-skill]");
@@ -1808,6 +2059,236 @@ window.KineticDecomposer = KineticDecomposer;
 window.FlowPacerEngine = FlowPacerEngine;
 window.FluencyTelemetryHUD = FluencyTelemetryHUD;
 window.SpacedZPDEngine = SpacedZPDEngine;
+
+const InteractiveDrillToolbox = {
+  activeTool: "numberline",
+  tenFrameCount: 0,
+  numberLinePos: 5,
+  multRow: 6,
+  multCol: 7,
+
+  render(container) {
+    if (!container) return;
+    if (this.activeTool === "numberline") {
+      const pos = this.numberLinePos;
+      const ticks = Array.from({ length: 21 }, (_, i) => {
+        const isCurrent = i === pos;
+        return `<g class="nl-tick" data-val="${i}" style="cursor:pointer">
+          <line x1="${25 + i * 18}" y1="35" x2="${25 + i * 18}" y2="${isCurrent ? "12" : "24"}" stroke="${isCurrent ? "#17345f" : "#64748b"}" stroke-width="${isCurrent ? "3" : "1.5"}"/>
+          <text x="${25 + i * 18}" y="52" text-anchor="middle" font-size="${isCurrent ? "12" : "10"}" font-weight="${isCurrent ? "800" : "600"}" fill="${isCurrent ? "#17345f" : "#475569"}">${i}</text>
+          ${isCurrent ? `<circle cx="${25 + i * 18}" cy="18" r="5" fill="#17345f"/>` : ""}
+        </g>`;
+      }).join("");
+      container.innerHTML = `
+        <div class="tool-content">
+          <div class="tool-controls">
+            <span>Position: <strong>${pos}</strong></span>
+            <button type="button" class="mini-tool-btn" data-nl-step="-1">−1</button>
+            <button type="button" class="mini-tool-btn" data-nl-step="1">+1</button>
+            <button type="button" class="mini-tool-btn" data-nl-step="-5">−5</button>
+            <button type="button" class="mini-tool-btn" data-nl-step="5">+5</button>
+            <button type="button" class="mini-tool-btn" data-nl-reset>Reset</button>
+          </div>
+          <svg width="100%" height="68" viewBox="0 0 420 68" style="background:#ffffff; border-radius:8px; border:1px solid #cbd5e1" role="img" aria-label="Interactive number line 0 to 20 at position ${pos}">
+            <line x1="15" y1="35" x2="400" y2="35" stroke="#1e293b" stroke-width="2"/>
+            <polygon points="405,35 397,31 397,39" fill="#1e293b"/>
+            ${ticks}
+          </svg>
+        </div>
+      `;
+    } else if (this.activeTool === "tenframe") {
+      const count = this.tenFrameCount;
+      const slots = Array.from({ length: 20 }, (_, i) => {
+        const filled = i < count;
+        const isTen = i < 10;
+        return `<div class="tf-slot ${filled ? (isTen ? "red" : "blue") : "empty"}" data-slot="${i}" role="button" aria-label="Slot ${i + 1} ${filled ? "filled" : "empty"}" tabindex="0">
+          ${filled ? `<span class="counter-dot"></span>` : ""}
+        </div>`;
+      });
+      container.innerHTML = `
+        <div class="tool-content">
+          <div class="tool-controls">
+            <span>Counters: <strong>${count} of 20</strong> (${Math.min(10, count)} in first frame${count > 10 ? `, ${count - 10} in second` : ""})</span>
+            <button type="button" class="mini-tool-btn" data-tf-add="1">+1</button>
+            <button type="button" class="mini-tool-btn" data-tf-sub="1">−1</button>
+            <button type="button" class="mini-tool-btn" data-tf-clear>Clear</button>
+          </div>
+          <div class="ten-frame-double-grid">
+            <div class="ten-frame-box" aria-label="First Ten-Frame">${slots.slice(0, 10).join("")}</div>
+            <div class="ten-frame-box" aria-label="Second Ten-Frame">${slots.slice(10, 20).join("")}</div>
+          </div>
+        </div>
+      `;
+    } else if (this.activeTool === "multigrid") {
+      const r = this.multRow;
+      const c = this.multCol;
+      const rows = Array.from({ length: 10 }, (_, rowIdx) => {
+        const rowNum = rowIdx + 1;
+        const cells = Array.from({ length: 10 }, (_, colIdx) => {
+          const colNum = colIdx + 1;
+          const active = rowNum <= r && colNum <= c;
+          const isTarget = rowNum === r && colNum === c;
+          return `<button type="button" class="mg-cell ${active ? "active" : ""} ${isTarget ? "target" : ""}" data-row="${rowNum}" data-col="${colNum}" title="${rowNum} × ${colNum} = ${rowNum * colNum}">${rowNum * colNum}</button>`;
+        }).join("");
+        return `<div class="mg-row"><span class="mg-head">${rowNum}</span>${cells}</div>`;
+      }).join("");
+      const head = `<div class="mg-row head-row"><span>×</span>${Array.from({ length: 10 }, (_, i) => `<span>${i + 1}</span>`).join("")}</div>`;
+      container.innerHTML = `
+        <div class="tool-content">
+          <div class="tool-controls">
+            <span>Current Array: <strong>${r} × ${c} = ${r * c}</strong></span>
+          </div>
+          <div class="mult-grid-table">${head}${rows}</div>
+        </div>
+      `;
+    } else if (this.activeTool === "fractions") {
+      const denoms = [1, 2, 3, 4, 5, 6, 8, 10, 12];
+      const rows = denoms.map((d) => {
+        const parts = Array.from({ length: d }, (_, i) => `<div class="fw-part" style="width:${100 / d}%">1/${d}</div>`).join("");
+        return `<div class="fw-row" aria-label="Denominator ${d}"><span class="fw-label">1/${d}</span><div class="fw-strip">${parts}</div></div>`;
+      }).join("");
+      container.innerHTML = `
+        <div class="tool-content">
+          <div class="tool-controls">
+            <span>Fraction Strips Wall · Compare equivalent lengths</span>
+          </div>
+          <div class="fraction-wall-container">${rows}</div>
+        </div>
+      `;
+    }
+  },
+  wire(container) {
+    if (!container) return;
+    container.addEventListener("click", (event) => {
+      const toolTab = event.target.closest("[data-tool]");
+      if (toolTab) {
+        this.activeTool = toolTab.dataset.tool;
+        container.querySelectorAll(".tool-btn").forEach((btn) => btn.classList.toggle("active", btn.dataset.tool === this.activeTool));
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      const nlStep = event.target.closest("[data-nl-step]");
+      if (nlStep) {
+        this.numberLinePos = Math.max(0, Math.min(20, this.numberLinePos + Number(nlStep.dataset.nlStep)));
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-nl-reset]")) {
+        this.numberLinePos = 0;
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      const tick = event.target.closest(".nl-tick");
+      if (tick) {
+        this.numberLinePos = Number(tick.dataset.val);
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-tf-add]")) {
+        this.tenFrameCount = Math.min(20, this.tenFrameCount + 1);
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-tf-sub]")) {
+        this.tenFrameCount = Math.max(0, this.tenFrameCount - 1);
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-tf-clear]")) {
+        this.tenFrameCount = 0;
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      const tfSlot = event.target.closest("[data-slot]");
+      if (tfSlot) {
+        const idx = Number(tfSlot.dataset.slot);
+        this.tenFrameCount = idx + 1 === this.tenFrameCount ? idx : idx + 1;
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      const mgCell = event.target.closest(".mg-cell");
+      if (mgCell) {
+        this.multRow = Number(mgCell.dataset.row);
+        this.multCol = Number(mgCell.dataset.col);
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+    });
+  }
+};
+
+const drillToolbox = document.querySelector("#drill-toolbox");
+if (drillToolbox) {
+  InteractiveDrillToolbox.wire(drillToolbox);
+  InteractiveDrillToolbox.render(document.querySelector("#drill-tool-viewport"));
+}
+
+els.summary?.addEventListener("click", (event) => {
+  if (event.target.closest("[data-start-quick-drill]")) {
+    setMode("quick");
+    return;
+  }
+  if (event.target.closest("[data-start-flashcard-drill]")) {
+    setMode("flashcard");
+    return;
+  }
+  if (event.target.closest("[data-start-streak-drill]")) {
+    setMode("streak");
+    return;
+  }
+  if (event.target.closest("[data-print-flashcards]")) {
+    printFlashcardDeck();
+    return;
+  }
+  if (event.target.closest("[data-print-cert]")) {
+    printMasteryCertificate();
+    return;
+  }
+});
+
+// Flashcard interactive controls & keybindings
+els.tptFlipButton?.addEventListener("click", () => flipFlashcard(true));
+els.tptFlipBack?.addEventListener("click", () => flipFlashcard(false));
+els.tptKnowCard?.addEventListener("click", () => handleFlashcardAnswer(true));
+els.tptRepeatCard?.addEventListener("click", () => handleFlashcardAnswer(false));
+
+els.tptQuickForm?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const val = (els.tptQuickInput || document.querySelector("#tpt-quick-input"))?.value.trim();
+  if (!val) {
+    flipFlashcard(true);
+    return;
+  }
+  const isCorrect = validateAnswer(val, state.item);
+  flipFlashcard(true);
+  if (isCorrect) {
+    handleFlashcardAnswer(true);
+  } else {
+    (els.tptRepeatCard || document.querySelector("#tpt-repeat-card"))?.focus();
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (state.session?.mode === "flashcard" && !els.drillPanel.hidden && !state.itemDone) {
+    const card = els.tptCard || document.querySelector("#tpt-flashcard");
+    const isFlipped = card?.classList.contains("is-flipped");
+    const tag = document.activeElement?.tagName || "";
+    if (event.code === "Space" && tag !== "INPUT") {
+      event.preventDefault();
+      flipFlashcard();
+    } else if (isFlipped) {
+      if (event.key === "1") {
+        event.preventDefault();
+        handleFlashcardAnswer(false);
+      } else if (event.key === "2" || event.key === "Enter") {
+        if (tag !== "INPUT") {
+          event.preventDefault();
+          handleFlashcardAnswer(true);
+        }
+      }
+    }
+  }
+});
 
 populateQuickSkillDropdown();
 applySettings();

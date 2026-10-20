@@ -853,6 +853,13 @@ export function openFillRow(line, i, steps, id) {
 export const stepWaiting = (steps, count, id) =>
   steps.slice(0, count).some((line, i) => splitFill(line, i, steps) && !isSolved(fillKey(id, i, line)));
 
+export function stepPhaseBadge(line, i, steps) {
+  if (!Array.isArray(steps) || steps.length <= 1) return "";
+  if (i === 0) return "Friendly Start";
+  if (i === steps.length - 1) return "Put It Together";
+  return "Next Part";
+}
+
 export function stepsBlock(steps, shown, { id, cap = steps.length } = {}) {
   const visible = steps.slice(0, Math.min(shown, cap));
   // A step only gets a picture when it shows something the step above did not.
@@ -864,8 +871,11 @@ export function stepsBlock(steps, shown, { id, cap = steps.length } = {}) {
     const same = html.replace(/>[^<]*</g, "><") === previous.replace(/>[^<]*</g, "><") && html.includes("sv-array");
     if (!open) previous = html;
     const why = whyFor(line, i, steps);
-    const text = open ? row : `<span class="tr-step-text">${mathText(line)}</span>`;
-    return `<li${i === visible.length - 1 ? ' class="latest"' : ""}><span class="tr-step-num">${i + 1}</span>${text}${same ? "" : html}${why ? `<span class="tr-step-why">${esc(why)}</span>` : ""}</li>`;
+    const badge = stepPhaseBadge(line, i, steps);
+    const badgeHtml = badge ? `<span class="tr-step-badge">${esc(badge)}</span>` : "";
+    const text = open ? row : `<span class="tr-step-text">${badgeHtml}${mathText(line)}</span>`;
+    const whyHtml = why ? `<div class="tr-step-why"><span class="tr-why-icon" aria-hidden="true">💡</span><span class="tr-why-copy">${esc(why)}</span></div>` : "";
+    return `<li${i === visible.length - 1 ? ' class="latest"' : ""}><span class="tr-step-num">${i + 1}</span>${text}${same ? "" : html}${whyHtml}</li>`;
   });
   const more = shown < cap;
   // The next step builds on this one's result, so it waits until the number is typed (two misses also open it).
