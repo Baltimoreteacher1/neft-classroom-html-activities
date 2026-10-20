@@ -2919,6 +2919,31 @@ function isSpiralWarmup(warmup) {
   return String(warmup?.kind || "") === "spiral";
 }
 
+const DECK_WARMUP_GROUP = "deck";
+
+/**
+ * The lesson's warm-up as students answer it: the Reveal deck's own Slide 1
+ * warm-up (`config.deckWarmup`, authored as autograded choices) first, then the
+ * lesson's Previous Lesson Check. They are two different things — the deck
+ * checks today's skills, the check retrieves the last lesson — and the
+ * warmup-sequencing gate holds `config.warmup` to 2–4 retrieval items, so the
+ * deck items live in their own field rather than stretching that contract.
+ * Returns `config.warmup` itself when there is no deck warm-up, so callers can
+ * tell the two cases apart by identity.
+ */
+function withDeckWarmup(config) {
+  const deck = config.deckWarmup?.questions;
+  if (!Array.isArray(deck) || deck.length === 0) return config.warmup;
+  const own = Array.isArray(config.warmup?.questions) ? config.warmup.questions : [];
+  return {
+    ...config.warmup,
+    questions: [
+      ...deck.map((q) => ({ ...q, group: DECK_WARMUP_GROUP })),
+      ...own.map((q) => ({ ...q, group: "review" })),
+    ],
+  };
+}
+
 /**
  * The warm-up surface. EXPORTED because Part 2 (Apply Day) opens with a warm-up
  * too, and its own hand-rolled version had drifted into something else: it fed
@@ -2944,7 +2969,8 @@ function isSpiralWarmup(warmup) {
  *   removed from Act 1.
  */
 export function renderWarmupPhase(el, state, ctx, config, opts = {}) {
-  const warmup = config.warmup;
+  const warmup = withDeckWarmup(config);
+  const hasDeckWarmup = warmup !== config.warmup;
   // Phase 1 is always in the sidebar (phaseConfigs is a fixed eight-phase list),
   // so returning empty here left a lesson with no authored warmup showing a
   // blank screen — the student clicks "1 Warmup" and nothing is there. Never
@@ -3012,14 +3038,18 @@ export function renderWarmupPhase(el, state, ctx, config, opts = {}) {
   // a side effect of a Part 2 fix.
   const warmupHeading =
     opts.heading ||
-    (isSpiral
-      ? `Warm-Up: Skills You Need Today${esc(spiralFrom)}`
-      : `Warm-Up: Last Lesson Check${esc(prevTitle)}`);
+    (hasDeckWarmup
+      ? "Warm-Up"
+      : isSpiral
+        ? `Warm-Up: Skills You Need Today${esc(spiralFrom)}`
+        : `Warm-Up: Last Lesson Check${esc(prevTitle)}`);
   const warmupLede =
     opts.lede ||
-    (isSpiral
-      ? "Quick check on the skills today's lesson builds on."
-      : "Quick check on the last lesson — answer each one, then submit.");
+    (hasDeckWarmup
+      ? "Try each one on your own, then submit to see how you did."
+      : isSpiral
+        ? "Quick check on the skills today's lesson builds on."
+        : "Quick check on the last lesson — answer each one, then submit.");
   card.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
       <h3 style="margin:0; font-size:20px; font-weight:700; color:#14223a;">⚡ ${warmupHeading}</h3>
@@ -3346,6 +3376,22 @@ export function renderWarmupPhase(el, state, ctx, config, opts = {}) {
     qBox.className = "warmup-question-card";
     qBox.style.cssText =
       "border:1px solid #cbd5e1; border-radius:12px; padding:16px; background:#f8fafc;";
+
+    // The label sits INSIDE the first card of each group: the list below is
+    // addressed by child index (submit, card reader), so it can't take siblings.
+    if (hasDeckWarmup && q.group !== warmup.questions[qIdx - 1]?.group) {
+      const groupLabel = document.createElement("div");
+      groupLabel.className = "warmup-group-label";
+      groupLabel.style.cssText =
+        "font-size:14px; font-weight:800; color:#0b5a63; margin-bottom:10px;";
+      groupLabel.textContent =
+        q.group === DECK_WARMUP_GROUP
+          ? "From today's slides"
+          : isSpiral
+            ? `Skills you need today${spiralFrom}`
+            : `Last lesson check${prevTitle}`;
+      qBox.append(groupLabel);
+    }
 
     // Warmup text is read from across the room and by students who need larger
     // print, so the stem is deliberately heavier and larger than body copy.
