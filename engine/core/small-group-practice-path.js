@@ -314,7 +314,7 @@ function practiceCard(it, { n, key, store, score, mode, onAnswered, model, tick 
  * toward the table.
  *
  * It came over from the practice renderer this path replaced
- * (`small-group-practice.js`, now imported only by its own test files). The
+ * (`small-group-practice.js`, deleted 2026-10-20 once only its own tests imported it). The
  * lens is a teacher capability, not one of the student-facing panels this path
  * was written to remove — its header names those: "strategy pickers, a
  * readiness pulse, a level ladder, a consensus protocol, a coach". Losing it

@@ -568,7 +568,7 @@ console.log(`Known kinds: ${buildable.size} renderable, ${registry.size} in REGI
 const staticFailures = [];
 for (const id of ids) {
   // Core-app lessons only. Small-group lessons render their visuals through
-  // engine/core/small-group-visual-practice.js, which dispatches on its own
+  // the small-group renderer, which dispatches on its own
   // substring-matched kinds (factor-table, multiple-lanes, …) and shares nothing
   // with buildVisual(). Judging them by the core switch reports ~1,600 defects
   // that are all fine.
@@ -586,7 +586,7 @@ for (const id of ids) {
     // Same exemption as the small-group `continue` above, for the same reason:
     // an Apply Day's leveled banks are lifted from the small-group and catch-up
     // parallel sets, and part-two-renderer.js draws those items with
-    // small-group-visual-practice.js — the dispatcher that owns xy-table,
+    // the small-group figure dispatcher (formerly small-group-visual-practice.js), which owns xy-table,
     // volume-prism and 41 more kinds buildVisual has never heard of. Judging
     // them by the core switch reported 674 findings on figures a browser walk
     // shows rendering. `sgFigure` is written by scripts/generate-part-two.mjs

@@ -8,7 +8,7 @@
  * practice items (8%) could name a specific misconception, and 36 of 64 core
  * lessons could diagnose nothing at all. Everything downstream of a diagnosis —
  * the misconception heatmap, the class pulse, small-group routing, the adaptive
- * step-down in `engine/core/small-group-adaptive.js` — is already built and
+ * step-down (retired with `small-group-adaptive.js`) — is already built and
  * shipped. It is starved of input, not of features.
  *
  * The audit also identified why the runtime predictor cannot close the gap:

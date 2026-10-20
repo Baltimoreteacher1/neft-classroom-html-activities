@@ -2,8 +2,8 @@
 //
 // This file exists because of what its absence cost. `small-group-renderer.js`
 // imports its practice sections from `small-group-practice-path.js`; the
-// renderer it replaced, `small-group-practice.js`, is imported only by its own
-// seven test files. So the dead module had seven suites proving it healthy and
+// renderer it replaced, `small-group-practice.js` (deleted 2026-10-20), was
+// imported only by its own seven test files. So the dead module had seven suites proving it healthy and
 // the live one had NONE — and `teacherLens()` was lost in the handover without
 // a single check going red. `.sg-lens` rendered on zero studios across all 204
 // variants, and the browser assertion that would have said so ("a studio

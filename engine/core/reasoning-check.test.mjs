@@ -326,15 +326,11 @@ test("accessibility: live regions, described button, 44px target, visible focus 
   assert.match(css, /prefers-reduced-motion:reduce/);
 });
 
-test("one client: only reasoning-check.js talks to /api/reasoning, and the studio uses it", () => {
+test("one client: only reasoning-check.js talks to /api/reasoning", () => {
   const offenders = readdirSync(HERE)
     .filter((name) => name.endsWith(".js"))
     .filter((name) => readFileSync(join(HERE, name), "utf8").includes("/api/reasoning/review"));
   assert.deepEqual(offenders, ["reasoning-check.js"]);
-  assert.match(
-    readFileSync(join(HERE, "small-group-practice.js"), "utf8"),
-    /import \{ mountReasoningCheck \} from "\.\/reasoning-check\.js"/,
-  );
 });
 
 test("every engine writing surface mounts the shared control", async () => {

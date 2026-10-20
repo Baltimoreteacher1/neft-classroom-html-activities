@@ -16,7 +16,7 @@
 //      repeatedly by two copies drifting apart. If the lesson changes, the
 //      presented lesson changes with it, because it IS the lesson.
 //
-//   2. NEVER own `hidden`. `paginateProblems()` in small-group-practice.js
+//   2. NEVER own `hidden`. `paginateProblems()` in the retired small-group-practice.js
 //      drives problem visibility through the `hidden` attribute. If this module
 //      also set `hidden`, the two would fight and a problem would vanish for
 //      reasons neither could explain. Veiling here is a CLASS, and the class

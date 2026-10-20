@@ -6,8 +6,8 @@
 // those guarantees; this module owns the part a 12-year-old actually touches:
 // an opt-in control that is quiet, bilingual, and can never get in the way.
 //
-// Mounted by: small-group-practice.js (studio), twr-writing.js and go-deeper.js
-// (whole-class lessons), peer-exchange.js. Anything that has a <textarea> and a
+// Mounted by: twr-writing.js and go-deeper.js (whole-class lessons),
+// peer-exchange.js. (The small-group studio's practice path does not mount it.) Anything that has a <textarea> and a
 // prompt can mount it — there is deliberately no second client.
 //
 // CONTRACT

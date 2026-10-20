@@ -93,7 +93,7 @@ export const NOTEBOOK_PROMPT_TYPES = new Set(["multiple-choice", "error-analysis
  * What small group genuinely lacked was the AFTER-answer comparison, and that
  * is what it now has, keyed to the cue it already had. If a richer setup is ever
  * wanted there, the right move is to enrich `.sg-notebook-cue` in
- * small-group-visual-practice.js — not to stack a second block beside it.
+ * the small-group practice path — not to stack a second block beside it.
  */
 
 /**
@@ -241,7 +241,7 @@ export function notebookPromptFor(def, number, model = null) {
  *
  * WHY THIS IS A REFRAME AND NOT A NEW FEATURE. The engine already shows the
  * item's `explanation` once a student answers — whole-group in
- * `multiple-choice.js`, small-group in `small-group-practice.js`. The data was
+ * `multiple-choice.js`, small-group formerly in `small-group-practice.js` (retired). The data was
  * never missing and neither was the moment. What was missing is what the moment
  * is FOR: "Correct! Great work." closes the item, and a student who wrote
  * nothing gets exactly the same screen as one who worked it out on paper.

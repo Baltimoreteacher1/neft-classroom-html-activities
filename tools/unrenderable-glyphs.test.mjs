@@ -15,8 +15,7 @@
 // look like, which is the reader — after it is live.
 //
 // So the rule is a character rule, checked at the only place it can be: the
-// source. Draw the bracket instead (`divisionHouse` in
-// engine/core/small-group-visual-practice.js draws it with borders, which every
+// source. Draw the bracket instead (with CSS borders, which every
 // device renders identically), or write it in words — "63 into 189" / "189 ÷
 // 63" — which every font covers and every screen reader can say.
 //
@@ -37,8 +36,7 @@ const BANNED = [
     char: "⟌",
     name: "U+27CC LONG DIVISION",
     why: "absent from Outfit and the mono fallbacks — drew a hairline hook or a tofu box",
-    instead:
-      'draw it (divisionHouse() in small-group-visual-practice.js) or write "<dividend> ÷ <divisor>"',
+    instead: 'draw it with CSS borders or write "<dividend> ÷ <divisor>"',
   },
 ];
 
