@@ -12695,8 +12695,12 @@ body.lang-mode-es .welcome-title-en,
 body.lang-mode-es .tab-en,
 body.lang-mode-es .vocab-def,
 body.lang-mode-es .ext-title-en,
-body.lang-mode-es .learning-big:not([lang="es"]),
-body.lang-mode-es .learning-sub:not([lang="es"]),
+/* "Not Spanish" means neither the element nor an ancestor carries lang="es":
+   the Spanish column puts lang="es" on the column, not on its paragraph, so a
+   test on the paragraph alone hid the Spanish sentence too, and a family in
+   Español mode saw an empty "Qué aprendemos hoy" box. */
+body.lang-mode-es .learning-big:not(:is([lang="es"], [lang="es"] *)),
+body.lang-mode-es .learning-sub:not(:is([lang="es"], [lang="es"] *)),
 body.lang-mode-es .bilingual-col.lang-en {
   display: none !important;
 }
