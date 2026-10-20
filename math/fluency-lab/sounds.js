@@ -6,6 +6,8 @@ const NOTES = {
   good: [523.25, 659.25, 783.99],
   win: [523.25, 659.25, 783.99, 1046.5],
   hesitation: [261.63, 329.63],
+  streak: [523.25, 659.25, 783.99, 1046.5, 1318.51],
+  sprint: [523.25, 659.25, 783.99, 1046.5],
 };
 let enabled = null;
 let context = null;
@@ -25,18 +27,18 @@ export function chime(kind) {
   try {
     context ||= new Audio();
     if (context.state === "suspended") context.resume();
-    if (kind === "slice") {
+    if (kind === "slice" || kind === "flip") {
       const start = context.currentTime;
       const osc = context.createOscillator();
       const filter = context.createBiquadFilter();
       const gain = context.createGain();
-      osc.type = "square";
-      osc.frequency.setValueAtTime(420, start);
-      osc.frequency.exponentialRampToValueAtTime(180, start + 0.04);
+      osc.type = kind === "flip" ? "triangle" : "square";
+      osc.frequency.setValueAtTime(kind === "flip" ? 220 : 420, start);
+      osc.frequency.exponentialRampToValueAtTime(kind === "flip" ? 380 : 180, start + 0.04);
       filter.type = "lowpass";
-      filter.frequency.setValueAtTime(900, start);
+      filter.frequency.setValueAtTime(kind === "flip" ? 600 : 900, start);
       gain.gain.setValueAtTime(0.0001, start);
-      gain.gain.exponentialRampToValueAtTime(0.06, start + 0.005);
+      gain.gain.exponentialRampToValueAtTime(kind === "flip" ? 0.04 : 0.06, start + 0.005);
       gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.045);
       osc.connect(filter).connect(gain).connect(context.destination);
       osc.start(start);

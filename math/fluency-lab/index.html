@@ -173,6 +173,10 @@
               <div id="streak-meter" class="streak-meter" role="img" aria-label="0 of 10 correct in a row"></div>
               <strong id="streak-label" aria-live="polite">0 of 10 in a row</strong>
             </div>
+            <div id="sprint-wrap" class="sprint-wrap" hidden>
+              <span>⏱️ Sprint</span>
+              <strong id="sprint-timer" class="sprint-timer" role="timer" aria-live="polite">60s</strong>
+            </div>
           </div>
           <div class="progress-track" aria-hidden="true"><span id="session-progress"></span></div>
 
@@ -234,12 +238,18 @@
 
             <div class="problem-meta">
               <span id="problem-number">Problem 1 of 10</span>
-              <button id="hear-problem" class="icon-button" type="button" aria-label="Read the problem aloud">
-                🔊 Read aloud
-              </button>
+              <div class="problem-meta-actions">
+                <button id="toggle-decomposer" class="icon-button" type="button" aria-expanded="false" aria-controls="fact-decomposer" title="See mental math break-apart strategy">
+                  🧩 Decompose
+                </button>
+                <button id="hear-problem" class="icon-button" type="button" aria-label="Read the problem aloud">
+                  🔊 Read aloud
+                </button>
+              </div>
             </div>
             <p id="question" class="question"></p>
             <p id="problem-topic" class="problem-topic"></p>
+            <div id="fact-decomposer" class="fact-decomposer" hidden></div>
 
             <div id="problem-visual-scaffold" class="problem-visual-scaffold"></div>
             <section id="guided-coach" class="guided-coach" aria-labelledby="guided-coach-title" hidden>
