@@ -70,6 +70,7 @@ import {
   staleSharedFiles,
   writeSharedFiles,
 } from "./lib/homework-shared-assets.mjs";
+import { TOUCH_CSS } from "./lib/homework-touch.mjs";
 import { VOICE_CSS, VOICE_JS } from "./lib/homework-voice.mjs";
 import { workedExampleFor } from "./lib/homework-worked-example.mjs";
 import { compareFamilyHomeworkIds, generatesFamilyHomework } from "./lib/lesson-scope.mjs";
@@ -4118,6 +4119,7 @@ ${DOMINO_DUO_CSS}
 ${VOICE_CSS}
 ${familyStyleCss}
 ${PRINT_CSS}
+${TOUCH_CSS}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">

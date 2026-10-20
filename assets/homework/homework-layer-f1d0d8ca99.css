@@ -8163,21 +8163,6 @@ body.no-speech .hw-listen-bar, body.no-speech .hw-listen, body.no-speech .btn-re
 @media print { .hw-listen-bar { display: none; } }
 
 
-.hw-experience-banner { display:flex; align-items:center; gap:12px; margin:14px 0 0; padding:12px 14px; color:#fff; background:rgba(255,255,255,.11); border:1px solid rgba(255,255,255,.45); border-radius:14px; }
-.hw-experience-icon { flex:0 0 auto; font-size:26px; line-height:1; }
-.hw-experience-copy { min-width:0; }
-.hw-experience-title { margin:0; font-weight:800; letter-spacing:.02em; }
-.hw-experience-description { margin:2px 0 0; color:#f2f6fb; font-size:14px; line-height:1.4; }
-.hw-experience-banner .lang-es { color:inherit; }
-@media (max-width:550px) { .hw-experience-banner { align-items:flex-start; padding:10px 12px; } .hw-experience-description { font-size:13px; } }
-
-body[data-family-style="unlock"] { --navy:#293b34; --navy-light:#496456; --teal:#718c78; --teal-ink:#496653; --teal-light:#e8eee8; --amber:#927d55; --amber-light:#f4f0e7; }
-body[data-family-style="unlock"] .hw-hero { background:linear-gradient(135deg,#293b34 0%,#496456 64%,#788477 100%) !important; border:1px solid #ccd4ca; }
-body[data-family-style="unlock"] .hw-hero-glow { background:radial-gradient(circle,rgba(230,234,221,.18) 0%,transparent 70%); }
-body[data-family-style="unlock"] .card, body[data-family-style="unlock"] .practice-tier { border-top:3px solid #a6b4a5; border-radius:16px; }
-body[data-family-style="unlock"] .homework-tab-btn.is-active { box-shadow:inset 0 -3px #927d55; }
-body[data-family-style="unlock"] .hw-experience-banner { border:1px solid #ccd4ca; background:rgba(255,255,255,.14); }
-
 
 /* ===== Family homework print sheet (scripts/lib/homework-print.mjs) ===== */
 .hw-print-head, .hw-print-choices { display: none; }
@@ -8297,4 +8282,20 @@ body[data-family-style="unlock"] .hw-experience-banner { border:1px solid #ccd4c
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-visual-frame svg, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .concept-svg, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .family-big-idea-visual svg { max-width: 100%; height: auto; }
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-work { margin: 0; }
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-work-label { font-weight: 700; font-size: 12pt !important; }
+}
+
+
+/* ===== Phone touch targets (scripts/lib/homework-touch.mjs) ===== */
+@media (max-width: 700px) {
+  .container button:not(.obj-term):not(.obj-term-glue),
+  .container summary,
+  .container select,
+  .container input[type="text"],
+  .container input[type="number"],
+  .container input:not([type]),
+  .container input[type="file"],
+  .container .btn,
+  .sound-toggle-btn { min-height: 44px; }
+  .sound-toggle-btn { min-width: 44px; }
+  .container button:not(.obj-term):not(.obj-term-glue) { min-width: 44px; }
 }
