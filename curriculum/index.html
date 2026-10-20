@@ -199,12 +199,8 @@
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
     <style>
-      /* Remove the left "Curriculum Hub" side column (heading, class board,
-         search/filter toolbar, persona picker, EOY callouts, teacher-tools
-         links). Keep the interactive units + activities browser full-width. */
-      #hub-side {
-        display: none !important;
-      }
+      /* The old "Curriculum Hub" side column (#hub-side) is gone; the library
+         wrapper stays a single full-width block. */
       .wrap {
         display: block !important;
         max-width: 1180px;
@@ -1065,10 +1061,7 @@
               Map.</span
             >
           </a>
-          <!-- These five destinations previously lived only in #hub-side, which
-             the July 2026 redesign hides — without these cards they are
-             unreachable from the hub in BOTH modes. Keep them outside
-             #hub-side. -->
+          <!-- These five destinations are linked only from here. -->
           <a
             class="curriculum-guide__action"
             href="/mentor-lab/"
@@ -1621,381 +1614,6 @@
           })();
         </script>
 
-        <div class="wrap" id="curriculum-library">
-          <p class="result-count" id="result-count" role="status" aria-live="polite"></p>
-          <p class="no-results" id="no-results" role="status">No lessons match your search.</p>
-
-          <div class="hub-side" id="hub-side">
-            <!-- Unit 0 · one-time mentor choice. Static markup and a plain flex child
-             of .hub-side on purpose: .wrap is a CSS grid and a spanning child
-             inserted mid-grid gets auto-placed to the bottom. -->
-            <a class="unit0-card" href="/mentor-lab/">
-              <span class="unit0-tag">Unit 0 · Start here</span>
-              <span class="unit0-title">Choose your math mentor</span>
-              <span class="unit0-sub">
-                Pick a mathematician to work with this year — and the thinking move they give you.
-                Takes about five minutes, once.
-              </span>
-              <span class="unit0-go">Open Unit 0 →</span>
-            </a>
-            <style>
-              .unit0-card {
-                display: grid;
-                gap: 6px;
-                margin: 0 0 18px;
-                padding: 18px 20px;
-                border-radius: 16px;
-                border: 1px solid rgba(124, 58, 237, 0.35);
-                background: linear-gradient(
-                  160deg,
-                  rgba(124, 58, 237, 0.1),
-                  rgba(15, 118, 110, 0.08)
-                );
-                text-decoration: none;
-                color: inherit;
-                transition:
-                  transform 0.15s ease,
-                  box-shadow 0.15s ease;
-              }
-              .unit0-card:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 10px 26px rgba(15, 23, 42, 0.12);
-              }
-              .unit0-card:focus-visible {
-                outline: 3px solid #7c3aed;
-                outline-offset: 3px;
-              }
-              .unit0-tag {
-                font-size: 0.68rem;
-                font-weight: 800;
-                letter-spacing: 0.11em;
-                text-transform: uppercase;
-                color: #7c3aed;
-              }
-              .unit0-title {
-                font-size: 1.16rem;
-                font-weight: 750;
-                line-height: 1.2;
-              }
-              .unit0-sub {
-                font-size: 0.86rem;
-                line-height: 1.5;
-                opacity: 0.82;
-              }
-              .unit0-go {
-                margin-top: 4px;
-                font-size: 0.86rem;
-                font-weight: 700;
-                color: #0f766e;
-              }
-              @media (prefers-reduced-motion: reduce) {
-                .unit0-card {
-                  transition: none;
-                }
-                .unit0-card:hover {
-                  transform: none;
-                }
-              }
-            </style>
-            <header class="hub" id="top">
-              <p class="lede">
-                <strong>Browse the library</strong> — expand a unit for its lessons, activities,
-                notes, downloads, and homework.
-              </p>
-              <style>
-                .unit-jump-bar {
-                  display: flex;
-                  align-items: center;
-                  gap: 10px;
-                  margin: 16px 0 0;
-                  padding: 10px 14px;
-                  background: rgba(255, 255, 255, 0.7);
-                  border: 1px solid var(--line);
-                  border-radius: 14px;
-                  backdrop-filter: blur(10px);
-                  overflow-x: auto;
-                  scrollbar-width: thin;
-                }
-                .unit-jump-label {
-                  font-weight: 800;
-                  font-size: 11px;
-                  letter-spacing: 0.1em;
-                  text-transform: uppercase;
-                  color: var(--teal);
-                  white-space: nowrap;
-                  flex-shrink: 0;
-                }
-                .unit-jump-pills {
-                  display: flex;
-                  gap: 6px;
-                  flex-wrap: nowrap;
-                }
-                .unit-jump-pill {
-                  display: inline-flex;
-                  align-items: center;
-                  padding: 5px 11px;
-                  font-size: 13px;
-                  font-weight: 700;
-                  color: var(--ink);
-                  background: #ffffff;
-                  border: 1px solid var(--line);
-                  border-radius: 8px;
-                  white-space: nowrap;
-                  transition: all 0.2s ease;
-                }
-                .unit-jump-pill:hover,
-                .unit-jump-pill:focus-visible {
-                  background: var(--teal);
-                  color: #ffffff;
-                  border-color: var(--teal);
-                }
-                .unit-jump-pill.is-active,
-                .unit-jump-pill[aria-current="true"] {
-                  background: var(--navy, #12355b);
-                  color: #ffffff !important;
-                  border-color: var(--navy, #12355b);
-                  box-shadow: 0 2px 6px rgba(18, 53, 91, 0.25);
-                }
-                .unit-jump-bar--bottom {
-                  margin: 24px 0 12px;
-                  background: rgba(255, 255, 255, 0.95);
-                  box-shadow: 0 4px 16px rgba(18, 53, 91, 0.08);
-                }
-                .unit-jump-top-btn {
-                  background: var(--teal-light, #dff2ee);
-                  color: var(--teal, #1fa6a2);
-                  border-color: var(--teal, #1fa6a2);
-                }
-                .unit-jump-top-btn:hover,
-                .unit-jump-top-btn:focus-visible {
-                  background: var(--teal, #1fa6a2);
-                  color: #ffffff !important;
-                }
-                .bottom-lesson-jump {
-                  display: flex;
-                  align-items: center;
-                  gap: 10px;
-                  margin: 12px 0 24px;
-                  padding: 10px 14px;
-                  background: #ffffff;
-                  border: 1px solid var(--line);
-                  border-radius: 12px;
-                  box-shadow: 0 2px 8px rgba(18, 53, 91, 0.04);
-                }
-                .bottom-lesson-label {
-                  font-weight: 800;
-                  font-size: 12px;
-                  text-transform: uppercase;
-                  letter-spacing: 0.04em;
-                  color: var(--navy);
-                  white-space: nowrap;
-                }
-                .bottom-lesson-select {
-                  flex: 1;
-                  min-height: 38px;
-                  padding: 0 12px;
-                  border: 1px solid var(--line);
-                  border-radius: 8px;
-                  font-size: 14px;
-                  font-weight: 600;
-                  color: var(--ink);
-                  background: var(--cream, #f7f4ec);
-                  cursor: pointer;
-                }
-                .card-collapse-toggle {
-                  position: absolute;
-                  top: 10px;
-                  right: 12px;
-                  z-index: 10;
-                  background: rgba(255, 255, 255, 0.35);
-                  border: 1px solid rgba(20, 34, 58, 0.15);
-                  border-radius: 8px;
-                  padding: 3px 9px;
-                  font-family: "Nunito", system-ui, sans-serif;
-                  font-weight: 800;
-                  font-size: 11px;
-                  color: inherit;
-                  cursor: pointer;
-                  display: inline-flex;
-                  align-items: center;
-                  gap: 4px;
-                  transition: all 0.18s ease;
-                  backdrop-filter: blur(8px);
-                }
-                .card-collapse-toggle:hover,
-                .card-collapse-toggle:focus-visible {
-                  background: #ffffff;
-                  color: var(--teal, #205fa6);
-                  border-color: var(--teal, #205fa6);
-                  box-shadow: 0 2px 8px rgba(20, 34, 58, 0.1);
-                  outline: none;
-                }
-                .card-is-collapsed {
-                  padding-bottom: 10px !important;
-                }
-                .card-is-collapsed > *:not(.card-keep-visible):not(.card-collapse-toggle) {
-                  display: none !important;
-                }
-              </style>
-              <script>
-                (function () {
-                  var STORAGE_KEY = "nt-collapsed-cards";
-                  function getCollapsedSet() {
-                    try {
-                      var raw = localStorage.getItem(STORAGE_KEY);
-                      return raw ? JSON.parse(raw) : {};
-                    } catch (e) {
-                      return {};
-                    }
-                  }
-                  function saveCollapsedSet(set) {
-                    try {
-                      localStorage.setItem(STORAGE_KEY, JSON.stringify(set));
-                    } catch (e) {}
-                  }
-
-                  function setupCollapsibleCards() {
-                    var selectors = [
-                      "section.mailbox-feature",
-                      "section.ai-hub-feature",
-                      ".ctw-readiness",
-                      ".ctw-today-card",
-                      ".ctw-quick",
-                      ".eoy-callout",
-                      "details.teacher-tools",
-                      ".unit-card",
-                    ];
-
-                    var cards = document.querySelectorAll(selectors.join(", "));
-                    var collapsedSet = getCollapsedSet();
-
-                    // Dense Command Center sections open collapsed by default so the
-                    // page reads simply (lesson + launch buttons first); the heading
-                    // and an Expand button stay visible. An explicit user toggle is
-                    // stored in collapsedSet and always wins over these defaults.
-                    // Matched by slug prefix so class-suffixed ids (e.g.
-                    // "live-class-signal-601") still collapse.
-                    // (Lesson Readiness + Favorites/recent sections were removed from
-                    // the cockpit; only the Live class signal collapses by default.)
-                    var DEFAULT_COLLAPSED_PREFIXES = ["live-class-signal"];
-                    function defaultCollapsed(id) {
-                      return DEFAULT_COLLAPSED_PREFIXES.some(function (p) {
-                        return id === p || id.indexOf(p) === 0;
-                      });
-                    }
-
-                    cards.forEach(function (card, index) {
-                      if (card.dataset.collapsibleInit) return;
-                      card.dataset.collapsibleInit = "1";
-
-                      var heading = card.querySelector(
-                        "h2, h3, .unit-card-name, summary, .ctw-kicker",
-                      );
-                      if (!heading) return;
-
-                      var cardId =
-                        card.id ||
-                        heading.textContent
-                          .trim()
-                          .toLowerCase()
-                          .replace(/[^a-z0-9]+/g, "-")
-                          .slice(0, 35) ||
-                        "card-" + index;
-
-                      var compStyle = window.getComputedStyle(card);
-                      if (compStyle.position === "static") {
-                        card.style.position = "relative";
-                      }
-
-                      // Keep header visible when collapsed
-                      if (heading.tagName === "SUMMARY") {
-                        heading.classList.add("card-keep-visible");
-                      } else if (heading.parentNode === card) {
-                        heading.classList.add("card-keep-visible");
-                      } else {
-                        var topChild = heading;
-                        while (topChild.parentNode && topChild.parentNode !== card) {
-                          topChild = topChild.parentNode;
-                        }
-                        if (topChild && topChild.parentNode === card) {
-                          topChild.classList.add("card-keep-visible");
-                        }
-                      }
-
-                      var toggleBtn = document.createElement("button");
-                      toggleBtn.type = "button";
-                      toggleBtn.className = "card-collapse-toggle";
-                      toggleBtn.setAttribute("aria-label", "Collapse or expand card");
-
-                      var isCollapsed =
-                        cardId in collapsedSet ? !!collapsedSet[cardId] : defaultCollapsed(cardId);
-
-                      function updateCardState() {
-                        if (isCollapsed) {
-                          card.classList.add("card-is-collapsed");
-                          toggleBtn.innerHTML = "<span>Expand</span> ▾";
-                          toggleBtn.setAttribute("aria-expanded", "false");
-                        } else {
-                          card.classList.remove("card-is-collapsed");
-                          toggleBtn.innerHTML = "<span>Collapse</span> ▴";
-                          toggleBtn.setAttribute("aria-expanded", "true");
-                        }
-                      }
-
-                      toggleBtn.addEventListener("click", function (e) {
-                        e.stopPropagation();
-                        isCollapsed = !isCollapsed;
-                        collapsedSet[cardId] = isCollapsed;
-                        saveCollapsedSet(collapsedSet);
-                        updateCardState();
-                      });
-
-                      card.appendChild(toggleBtn);
-                      updateCardState();
-                    });
-                  }
-
-                  if (document.readyState === "loading") {
-                    document.addEventListener("DOMContentLoaded", setupCollapsibleCards);
-                  } else {
-                    setTimeout(setupCollapsibleCards, 50);
-                  }
-                  setInterval(setupCollapsibleCards, 800);
-                })();
-              </script>
-              <nav class="unit-jump-bar" aria-label="Quick jump to unit">
-                <span class="unit-jump-label">Quick Jump:</span>
-                <div class="unit-jump-pills">
-                  <a href="/curriculum/units/#unit-1" class="unit-jump-pill"
-                    >Unit 1 Math Is Discovery</a
-                  >
-                  <a href="/curriculum/units/#unit-2" class="unit-jump-pill">Unit 2 Statistics</a>
-                  <a href="/curriculum/units/#unit-3" class="unit-jump-pill"
-                    >Unit 3 Ratios &amp; Rates</a
-                  >
-                  <a href="/curriculum/units/#unit-4" class="unit-jump-pill">Unit 4 Percents</a>
-                  <a href="/curriculum/units/#unit-5" class="unit-jump-pill"
-                    >Unit 5 Area, Surface Area &amp; Volume</a
-                  >
-                  <a href="/curriculum/units/#unit-6" class="unit-jump-pill">Unit 6 Expressions</a>
-                  <a href="/curriculum/units/#unit-7" class="unit-jump-pill"
-                    >Unit 7 Integers &amp; the Coordinate Plane</a
-                  >
-                  <a href="/curriculum/units/#unit-8" class="unit-jump-pill"
-                    >Unit 8 Equations &amp; Inequalities</a
-                  >
-                  <a href="/curriculum/units/#unit-9" class="unit-jump-pill"
-                    >Unit 9 Two-Variable Relationships</a
-                  >
-                  <a href="/curriculum/units/#unit-10" class="unit-jump-pill"
-                    >Unit 10 Math Is Synthesis</a
-                  >
-                </div>
-              </nav>
-            </header>
-
-            <div data-class-board-strip hidden></div>
-
             <!-- Featured tools: Student Digital Mailbox & Gemini AI Learning Hub -->
             <style>
               .features-grid {
@@ -2255,7 +1873,7 @@
               }
             </style>
 
-            <div class="features-grid">
+            <div class="features-grid curriculum-tools-bar">
               <style>
                 .resume-strip {
                   display: none;
@@ -4599,118 +4217,6 @@
               <script defer src="/assets/curriculum-hub-options.js?v=0ca629f2"></script>
             </div>
 
-            <!-- Seasonal entry point: End-of-Year Command Center -->
-            <style>
-              .eoy-callout[hidden] {
-                display: none;
-              }
-              .eoy-callout {
-                display: flex;
-                flex-wrap: wrap;
-                align-items: center;
-                gap: 12px;
-                background: var(--amber-light);
-                border: 1px solid rgba(44, 125, 107, 0.35);
-                border-radius: 14px;
-                padding: 14px 18px;
-                margin: 0 0 18px;
-              }
-              .eoy-callout .eoy-text {
-                flex: 1;
-                min-width: 220px;
-                font-weight: 600;
-                color: var(--ink);
-              }
-              .eoy-callout .eoy-text b {
-                color: var(--amber);
-                font-weight: 800;
-              }
-              .eoy-callout a.eoy-btn {
-                display: inline-flex;
-                align-items: center;
-                min-height: 44px;
-                padding: 0 18px;
-                border-radius: 10px;
-                background: var(--amber);
-                color: #fff;
-                font-weight: 800;
-                font-size: 0.95rem;
-                text-decoration: none;
-              }
-              .eoy-callout a.eoy-btn:hover {
-                background: #24685a;
-                color: #fff;
-              }
-            </style>
-            <section class="eoy-callout" aria-label="Arcade Games">
-              <span class="eoy-text"
-                >🕹️ <b>Arcade Games</b> — Practice Arcade World Map, 11 unit cabinets, Placement
-                Quest, and Monster Math Academy.</span
-              >
-              <a class="eoy-btn" href="/curriculum/arcade/">Open Arcade →</a>
-            </section>
-
-            <section class="eoy-callout" aria-label="Culminating Projects">
-              <span class="eoy-text"
-                >🎓 <b>Culminating Projects</b> — all 10 unit projects with Version A/B, portfolio
-                tracker, and certificates.</span
-              >
-              <a class="eoy-btn" href="/curriculum/projects/">Open Projects →</a>
-            </section>
-
-            <section
-              class="eoy-callout"
-              aria-label="End-of-year resources"
-              data-season-start="2027-05-01"
-              data-season-end="2027-08-31"
-              hidden
-            >
-              <span class="eoy-text"
-                >🎓 <b>End-of-Year Command Center</b> — quick review, MCAP practice, summer bridge,
-                and final projects in one place.</span
-              >
-              <a class="eoy-btn" href="/end-of-year/">Open Command Center →</a>
-            </section>
-
-            <section class="eoy-callout" aria-label="What You Can Do">
-              <span class="eoy-text"
-                >📈 <b>What You Can Do</b> — your progress by skill, not by how many lessons you
-                opened. Stays on your own device.</span
-              >
-              <a class="eoy-btn" href="/curriculum/my-progress/">See my skills →</a>
-            </section>
-
-            <section class="eoy-callout" aria-label="The Almost-Right Lab">
-              <span class="eoy-text"
-                >🧪 <b>The Almost-Right Lab</b> — coach a mistake-making creature to find and fix
-                one-step equation misconceptions. 5 missions · 6.AT.C.8.</span
-              >
-              <a class="eoy-btn" href="/curriculum/almost-right-lab/">Open the Lab →</a>
-            </section>
-
-            <script>
-              /* Seasonal callouts — an element carrying data-season-start /
-             data-season-end ships `hidden` and is revealed only inside its
-             window. Default-hidden on purpose: if this script never runs, an
-             out-of-season card stays off rather than stuck on. */
-              (function () {
-                var today = new Date();
-                var stamp =
-                  today.getFullYear() +
-                  "-" +
-                  String(today.getMonth() + 1).padStart(2, "0") +
-                  "-" +
-                  String(today.getDate()).padStart(2, "0");
-                var nodes = document.querySelectorAll("[data-season-start][data-season-end]");
-                for (var i = 0; i < nodes.length; i++) {
-                  var el = nodes[i];
-                  var from = el.getAttribute("data-season-start");
-                  var to = el.getAttribute("data-season-end");
-                  el.hidden = !(stamp >= from && stamp <= to);
-                }
-              })();
-            </script>
-
             <style>
               .teacher-tools {
                 background: #ffffff;
@@ -4797,7 +4303,7 @@
                 border-left-color: #c85f3f;
               }
             </style>
-            <details class="teacher-tools">
+            <details class="teacher-tools hub-teacher-only">
               <summary>🧰 Teacher Tools <span class="tt-sub">(for Mr. Neft)</span></summary>
               <div class="tt-links">
                 <a class="tt-link" href="/teacher-tools/insight-brief/"
@@ -4850,8 +4356,182 @@
                 <a class="tt-link" href="/teacher-tools/">🛠️ All Teacher Tools</a>
               </div>
             </details>
-          </div>
-          <!-- /hub-side -->
+
+        <style>
+              .card-collapse-toggle {
+                position: absolute;
+                top: 10px;
+                right: 12px;
+                z-index: 10;
+                background: rgba(255, 255, 255, 0.35);
+                border: 1px solid rgba(20, 34, 58, 0.15);
+                border-radius: 8px;
+                padding: 3px 9px;
+                font-family: "Nunito", system-ui, sans-serif;
+                font-weight: 800;
+                font-size: 11px;
+                color: inherit;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                transition: all 0.18s ease;
+                backdrop-filter: blur(8px);
+              }
+              .card-collapse-toggle:hover,
+              .card-collapse-toggle:focus-visible {
+                background: #ffffff;
+                color: var(--teal, #205fa6);
+                border-color: var(--teal, #205fa6);
+                box-shadow: 0 2px 8px rgba(20, 34, 58, 0.1);
+                outline: none;
+              }
+              .card-is-collapsed {
+                padding-bottom: 10px !important;
+              }
+              .card-is-collapsed > *:not(.card-keep-visible):not(.card-collapse-toggle) {
+                display: none !important;
+              }
+        </style>
+        <script>
+          (function () {
+            var STORAGE_KEY = "nt-collapsed-cards";
+            function getCollapsedSet() {
+              try {
+                var raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : {};
+              } catch (e) {
+                return {};
+              }
+            }
+            function saveCollapsedSet(set) {
+              try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(set));
+              } catch (e) {}
+            }
+
+            function setupCollapsibleCards() {
+              var selectors = [
+                "section.mailbox-feature",
+                "section.ai-hub-feature",
+                ".ctw-readiness",
+                ".ctw-today-card",
+                ".ctw-quick",
+                      "details.teacher-tools",
+                ".unit-card",
+              ];
+
+              var cards = document.querySelectorAll(selectors.join(", "));
+              var collapsedSet = getCollapsedSet();
+
+              // Dense Command Center sections open collapsed by default so the
+              // page reads simply (lesson + launch buttons first); the heading
+              // and an Expand button stay visible. An explicit user toggle is
+              // stored in collapsedSet and always wins over these defaults.
+              // Matched by slug prefix so class-suffixed ids (e.g.
+              // "live-class-signal-601") still collapse.
+              // (Lesson Readiness + Favorites/recent sections were removed from
+              // the cockpit; only the Live class signal collapses by default.)
+              var DEFAULT_COLLAPSED_PREFIXES = ["live-class-signal"];
+              function defaultCollapsed(id) {
+                return DEFAULT_COLLAPSED_PREFIXES.some(function (p) {
+                  return id === p || id.indexOf(p) === 0;
+                });
+              }
+
+              cards.forEach(function (card, index) {
+                if (card.dataset.collapsibleInit) return;
+                card.dataset.collapsibleInit = "1";
+
+                var heading = card.querySelector(
+                  "h2, h3, .unit-card-name, summary, .ctw-kicker",
+                );
+                if (!heading) return;
+
+                var cardId =
+                  card.id ||
+                  heading.textContent
+                    .trim()
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, "-")
+                    .slice(0, 35) ||
+                  "card-" + index;
+
+                var compStyle = window.getComputedStyle(card);
+                if (compStyle.position === "static") {
+                  card.style.position = "relative";
+                }
+
+                // Keep header visible when collapsed
+                if (heading.tagName === "SUMMARY") {
+                  heading.classList.add("card-keep-visible");
+                } else if (heading.parentNode === card) {
+                  heading.classList.add("card-keep-visible");
+                } else {
+                  var topChild = heading;
+                  while (topChild.parentNode && topChild.parentNode !== card) {
+                    topChild = topChild.parentNode;
+                  }
+                  if (topChild && topChild.parentNode === card) {
+                    topChild.classList.add("card-keep-visible");
+                  }
+                }
+
+                var toggleBtn = document.createElement("button");
+                toggleBtn.type = "button";
+                toggleBtn.className = "card-collapse-toggle";
+                toggleBtn.setAttribute("aria-label", "Collapse or expand card");
+
+                var isCollapsed =
+                  cardId in collapsedSet ? !!collapsedSet[cardId] : defaultCollapsed(cardId);
+
+                function updateCardState() {
+                  if (isCollapsed) {
+                    card.classList.add("card-is-collapsed");
+                    toggleBtn.innerHTML = "<span>Expand</span> ▾";
+                    toggleBtn.setAttribute("aria-expanded", "false");
+                  } else {
+                    card.classList.remove("card-is-collapsed");
+                    toggleBtn.innerHTML = "<span>Collapse</span> ▴";
+                    toggleBtn.setAttribute("aria-expanded", "true");
+                  }
+                }
+
+                toggleBtn.addEventListener("click", function (e) {
+                  e.stopPropagation();
+                  isCollapsed = !isCollapsed;
+                  collapsedSet[cardId] = isCollapsed;
+                  saveCollapsedSet(collapsedSet);
+                  updateCardState();
+                });
+
+                card.appendChild(toggleBtn);
+                updateCardState();
+              });
+            }
+
+            if (document.readyState === "loading") {
+              document.addEventListener("DOMContentLoaded", setupCollapsibleCards);
+            } else {
+              setTimeout(setupCollapsibleCards, 50);
+            }
+            // Cards built later by the teacher-workflow scripts need toggles too; watch
+          // for them instead of polling, coalescing bursts into one pass per frame.
+          var queued = false;
+          new MutationObserver(function () {
+            if (queued) return;
+            queued = true;
+            requestAnimationFrame(function () {
+              queued = false;
+              setupCollapsibleCards();
+            });
+          }).observe(document.body, { childList: true, subtree: true });
+          })();
+        </script>
+
+        <div class="wrap" id="curriculum-library">
+          <p class="result-count" id="result-count" role="status" aria-live="polite"></p>
+          <p class="no-results" id="no-results" role="status">No lessons match your search.</p>
           <!-- The units-and-lessons browser used to live here; it is now its own
            page at /curriculum/units/ so the hub can be about planning and
            launching rather than 6,000 lines of unit markup. The static
@@ -5063,16 +4743,6 @@
         gap: 8px;
       }
     </style>
-    <script>
-      (function () {
-        var wrap = document.querySelector(".wrap");
-        if (!wrap || !wrap.parentNode) return;
-        var fg = wrap.querySelector(".hub-side > .features-grid");
-        if (!fg) return;
-        fg.classList.add("curriculum-tools-bar");
-        wrap.parentNode.insertBefore(fg, wrap);
-      })();
-    </script>
     <style>
       /* Mode toggle, lifted to the top of the page (see script below). */
       .hub-enhance-controls--top {
