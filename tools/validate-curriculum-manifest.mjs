@@ -20,6 +20,9 @@ const MANIFEST_PATH = join(ROOT, "data/curriculum-manifest.json");
 const SCHEMA_PATH = join(ROOT, "data/curriculum-manifest.schema.json");
 const REDIRECTS_PATH = join(ROOT, "_redirects");
 
+// Units whose resource gaps are tolerated: Unit 10 is not taught this year.
+const UNTAUGHT_UNITS = new Set([10]);
+
 function loadJson(absPath) {
   return JSON.parse(readFileSync(absPath, "utf8"));
 }
@@ -180,6 +183,21 @@ export function validateManifest(manifest, options = {}) {
         for (const rep of lesson.representations) {
           if (!validReps.has(rep)) {
             errors.push(`Lesson ${id} has invalid representation "${rep}"`);
+          }
+        }
+      }
+
+      // Resources: a resource flagged applicable must exist on disk, otherwise the
+      // hub, unit pages and picker would link a 404. A lesson with no source for a
+      // resource (no authored mstarPractice items, say) is applicable:false in the
+      // generator and is never linked. Unit 10 is not taught this year (Joel's
+      // standing decision) and is the one declared exemption.
+      if (lesson.resources && typeof lesson.resources === "object" && !UNTAUGHT_UNITS.has(u)) {
+        for (const [resKey, res] of Object.entries(lesson.resources)) {
+          if (res?.applicable && res.exists === false) {
+            errors.push(
+              `Lesson ${id} resource ${resKey} is applicable but missing on disk: ${res.file}`,
+            );
           }
         }
       }
@@ -363,7 +381,26 @@ export function runSelfTest() {
     }
   }
 
-  console.log("✓ Negative controls passed: all 3 corrupt inputs failed as expected.");
+  // Case 4: an applicable resource missing on disk fails; Unit 10 is exempt
+  {
+    const base = loadJson(MANIFEST_PATH);
+    const withGap = (unit) => {
+      const copy = structuredClone(base);
+      const lesson = copy.lessons.find((l) => l.unit === unit);
+      lesson.resources.mstarWorksheet = { ...lesson.resources.mstarWorksheet };
+      lesson.resources.mstarWorksheet.applicable = true;
+      lesson.resources.mstarWorksheet.exists = false;
+      return validateManifest(copy, { skipUrlCheck: true });
+    };
+    if (!withGap(2).errors.some((e) => e.includes("applicable but missing on disk"))) {
+      throw new Error("Self-test failed: validator allowed an applicable resource missing on disk");
+    }
+    if (withGap(10).errors.some((e) => e.includes("applicable but missing on disk"))) {
+      throw new Error("Self-test failed: validator did not exempt Unit 10");
+    }
+  }
+
+  console.log("✓ Negative controls passed: all 4 corrupt inputs failed as expected.");
 }
 
 function printEsReport(esStats) {

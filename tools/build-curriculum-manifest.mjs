@@ -16,6 +16,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSy
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { lessonMstarItems } from "../scripts/lib/mstar-items.mjs";
 import { LESSONS_DIR } from "./lib/curriculum-source.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -39,7 +40,11 @@ function loadJson(rel) {
   return JSON.parse(readFileSync(join(ROOT, rel), "utf8"));
 }
 
-function resourcesFor(id) {
+/** The MSTAR worksheet generator composes ONLY authored `mstarPractice` items
+ *  (scripts/generate-mstar-worksheets.mjs), so a lesson without them (units 1
+ *  and 10 today) has no sheet. applicable mirrors that same test. */
+function resourcesFor(id, cfg) {
+  const mstarApplicable = Boolean(lessonMstarItems(cfg));
   const dl = (suffix) => `lessons/${id}/downloads/${id}-${suffix}`;
   const res = {
     lesson: { path: `/lessons/${id}/`, file: `lessons/${id}/index.html`, applicable: true },
@@ -81,12 +86,12 @@ function resourcesFor(id) {
     mstarWorksheet: {
       path: `/lessons/${id}/mstar-worksheet.html`,
       file: `lessons/${id}/mstar-worksheet.html`,
-      applicable: true,
+      applicable: mstarApplicable,
     },
     mstarWorksheetPdf: {
       path: `/lessons/${id}/downloads/${id}-mstar-worksheet.pdf`,
       file: `lessons/${id}/downloads/${id}-mstar-worksheet.pdf`,
-      applicable: true,
+      applicable: mstarApplicable,
     },
     homework: {
       path: `/lessons/${id}/homework.html`,
@@ -599,7 +604,7 @@ function buildLesson(id, cfg, familyTitlesEs, _launchManifest, scenes, labs, pac
       vocabulary: wordBank,
       sentenceFrames: frames,
     },
-    resources: resourcesFor(id),
+    resources: resourcesFor(id, cfg),
     esGaps: {
       title: titleEsGap,
       bigIdea: bigIdeaEsGap,
