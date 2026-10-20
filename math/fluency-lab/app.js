@@ -139,6 +139,10 @@ const els = {
   tptNextCard: document.querySelector("#tpt-next-card"),
   answerUnit: document.querySelector("#answer-unit"),
   problemArena: document.querySelector("#problem-arena"),
+  voiceAnswerBtn: document.querySelector("#voice-answer-btn"),
+  voiceFlashcardBtn: document.querySelector("#voice-flashcard-btn"),
+  tptPrintDeck: document.querySelector("#tpt-print-deck"),
+  tptLeitnerBadge: document.querySelector("#tpt-leitner-badge"),
 };
 
 const state = {
@@ -803,6 +807,77 @@ function formatProblemArena(item) {
   }
 }
 
+const LEITNER_KEY = "fluency_leitner_v1";
+
+function getLeitnerData() {
+  try {
+    return JSON.parse(localStorage.getItem(LEITNER_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function saveLeitnerData(data) {
+  try {
+    localStorage.setItem(LEITNER_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.warn("Could not save Leitner data", e);
+  }
+}
+
+function getItemLeitnerKey(item) {
+  if (!item) return "default";
+  const skillId = item.skill?.id || state.skill?.id || "skill";
+  const q = (item.question || "").replaceAll(/\s+/g, " ").trim();
+  return `${skillId}::${q}`;
+}
+
+function getCardLeitnerBox(item) {
+  const data = getLeitnerData();
+  const key = getItemLeitnerKey(item);
+  return data[key]?.box || 1;
+}
+
+function updateLeitnerCard(item, correct) {
+  if (!item) return 1;
+  const data = getLeitnerData();
+  const key = getItemLeitnerKey(item);
+  const now = Date.now();
+  const record = data[key] || { box: 1, history: [], count: 0 };
+  let currentBox = record.box || 1;
+  if (correct) {
+    currentBox = Math.min(3, currentBox + 1);
+  } else {
+    currentBox = 1; // Reset to Box 1 for reinforcement
+  }
+  record.box = currentBox;
+  record.lastReviewed = now;
+  record.count = (record.count || 0) + 1;
+  data[key] = record;
+  saveLeitnerData(data);
+
+  const badge = els.tptLeitnerBadge || document.querySelector("#tpt-leitner-badge");
+  if (badge) {
+    updateLeitnerBadge(badge, currentBox);
+  }
+  return currentBox;
+}
+
+function updateLeitnerBadge(badge, box) {
+  if (!badge) return;
+  badge.className = `tpt-leitner-badge box-${box}`;
+  if (box === 1) {
+    badge.innerHTML = "🧠 Box 1 · Daily";
+    badge.title = "Leitner Box 1: Review daily for retention";
+  } else if (box === 2) {
+    badge.innerHTML = "🧠 Box 2 · 3-Day";
+    badge.title = "Leitner Box 2: Review every 3 days";
+  } else {
+    badge.innerHTML = "⭐ Box 3 · Mastered";
+    badge.title = "Leitner Box 3: Mastered! Review weekly";
+  }
+}
+
 function renderFlashcardProblem() {
   const item = state.item;
   if (!item) return;
@@ -825,6 +900,12 @@ function renderFlashcardProblem() {
   if (strandBadge) {
     strandBadge.innerHTML = `<span aria-hidden="true">${icon}</span> GRADE ${skill?.grade || state.grade} · ${escapeHtml(strand).toUpperCase()}`;
     strandBadge.style.borderColor = grade.color;
+  }
+
+  const leitnerBadge = els.tptLeitnerBadge || document.querySelector("#tpt-leitner-badge");
+  if (leitnerBadge) {
+    const box = getCardLeitnerBox(item);
+    updateLeitnerBadge(leitnerBadge, box);
   }
 
   const cardCounter = document.querySelector("#tpt-card-counter");
@@ -871,6 +952,7 @@ function flipFlashcard(reveal) {
 
 function handleFlashcardAnswer(correct) {
   if (!state.session || state.itemDone) return;
+  updateLeitnerCard(state.item, correct);
   finalizeProblem(correct);
   if (correct) {
     const card = els.tptCard || document.querySelector("#tpt-flashcard");
@@ -908,45 +990,99 @@ function printFlashcardDeck() {
   const rng = seededRandom(skill.id.length * 133 + skill.grade * 77);
   const cards = Array.from({ length: 8 }, () => generateProblem(skill, rng));
 
-  const frontHtml = cards
-    .map(
-      (c, i) => `
-    <div class="pfc-card pfc-front">
-      <div class="pfc-hole" aria-hidden="true"></div>
-      <div class="pfc-tag">${grade.label.toUpperCase()} · ${escapeHtml(skill.strand).toUpperCase()}</div>
-      <div class="pfc-math">${mathText(c.question)}</div>
-      <div class="pfc-footer">Card ${i + 1} of 8 · ${escapeHtml(skill.title)}</div>
-    </div>
-  `,
-    )
-    .join("");
+  function cardFrontHtml(c, num) {
+    return `
+      <div class="pfc-card pfc-front">
+        <div class="pfc-hole" aria-hidden="true" title="Ring hole punch guide"></div>
+        <div class="pfc-tag">${grade.label.toUpperCase()} · ${escapeHtml(skill.strand).toUpperCase()}</div>
+        <div class="pfc-math">${mathText(c.question)}</div>
+        <div class="pfc-footer">Card ${num} of 8 · ${escapeHtml(skill.title)}</div>
+      </div>
+    `;
+  }
 
-  const backHtml = cards
-    .map(
-      (c, i) => `
-    <div class="pfc-card pfc-back">
-      <div class="pfc-hole" aria-hidden="true"></div>
-      <div class="pfc-tag">ANSWER &amp; STRATEGY</div>
-      <div class="pfc-math pfc-ans">${mathText(c.question.replace(/\s*=.*$/, ""))} = <strong>${mathText(c.answers[0])}</strong></div>
-      <div class="pfc-hint">${escapeHtml(c.hint || skill.learn.rule)}</div>
-      <div class="pfc-footer">EduWonderLab Fluency Lab</div>
-    </div>
-  `,
-    )
-    .join("");
+  function cardBackHtml(c, num) {
+    const rawQ = c.question.replace(/\s*=.*$/, "").replace(/\.\s*find.*$/i, "");
+    const ans = c.answers?.[0] ?? "";
+    const hint = c.hint || skill.learn?.rule || "";
+    return `
+      <div class="pfc-card pfc-back">
+        <div class="pfc-hole" aria-hidden="true" title="Ring hole punch guide"></div>
+        <div class="pfc-tag">ANSWER &amp; STRATEGY</div>
+        <div class="pfc-math pfc-ans">${mathText(rawQ)} = <strong>${mathText(ans)}</strong></div>
+        <div class="pfc-hint">${escapeHtml(hint)}</div>
+        <div class="pfc-footer">Card ${num} of 8 · eduwonderlab.com</div>
+      </div>
+    `;
+  }
+
+  // Duplex pairing for Sheet 1:
+  // Front: [Card 0, Card 1] / [Card 2, Card 3]
+  // Back (mirrored horizontally for short-edge / duplex alignment):
+  //        [Card 1 Back, Card 0 Back] / [Card 3 Back, Card 2 Back]
+  const sheet1Front = [cards[0], cards[1], cards[2], cards[3]].map((c, i) => cardFrontHtml(c, i + 1)).join("");
+  const sheet1Back = [
+    cardBackHtml(cards[1], 2), cardBackHtml(cards[0], 1),
+    cardBackHtml(cards[3], 4), cardBackHtml(cards[2], 3)
+  ].join("");
+
+  // Duplex pairing for Sheet 2:
+  const sheet2Front = [cards[4], cards[5], cards[6], cards[7]].map((c, i) => cardFrontHtml(c, i + 5)).join("");
+  const sheet2Back = [
+    cardBackHtml(cards[5], 6), cardBackHtml(cards[4], 5),
+    cardBackHtml(cards[7], 8), cardBackHtml(cards[6], 7)
+  ].join("");
 
   printHtml(`
     <article class="pfc-print-sheet">
-      <header class="pfc-header">
-        <h1>${escapeHtml(skill.title)} · Flashcard Deck</h1>
-        <p>${grade.label} Fluency Practice · Print double-sided (flip on short edge) or cut and fold along center line</p>
-      </header>
-      <div class="pfc-grid">
-        ${frontHtml}
+      <!-- Sheet 1 Front -->
+      <div class="pfc-page pfc-front-page">
+        <header class="pfc-header">
+          <h1>${escapeHtml(skill.title)} · Flashcard Deck (Sheet 1 Front)</h1>
+          <p>${grade.label} Fluency Practice · Print 4-Up Duplex (Flip on short edge) · Cut along dashed lines ✂️</p>
+        </header>
+        <div class="pfc-grid">
+          ${sheet1Front}
+        </div>
       </div>
+
       <div class="pfc-page-break"></div>
-      <div class="pfc-grid">
-        ${backHtml}
+
+      <!-- Sheet 1 Back (Mirrored for Duplex) -->
+      <div class="pfc-page pfc-back-page">
+        <header class="pfc-header">
+          <h1>${escapeHtml(skill.title)} · Flashcard Deck (Sheet 1 Back — Mirrored)</h1>
+          <p>Duplex Back Face · Aligns behind Sheet 1 Front · Hole punch guide on top right</p>
+        </header>
+        <div class="pfc-grid">
+          ${sheet1Back}
+        </div>
+      </div>
+
+      <div class="pfc-page-break"></div>
+
+      <!-- Sheet 2 Front -->
+      <div class="pfc-page pfc-front-page">
+        <header class="pfc-header">
+          <h1>${escapeHtml(skill.title)} · Flashcard Deck (Sheet 2 Front)</h1>
+          <p>${grade.label} Fluency Practice · Print 4-Up Duplex (Flip on short edge) · Cut along dashed lines ✂️</p>
+        </header>
+        <div class="pfc-grid">
+          ${sheet2Front}
+        </div>
+      </div>
+
+      <div class="pfc-page-break"></div>
+
+      <!-- Sheet 2 Back (Mirrored for Duplex) -->
+      <div class="pfc-page pfc-back-page">
+        <header class="pfc-header">
+          <h1>${escapeHtml(skill.title)} · Flashcard Deck (Sheet 2 Back — Mirrored)</h1>
+          <p>Duplex Back Face · Aligns behind Sheet 2 Front · Hole punch guide on top right</p>
+        </header>
+        <div class="pfc-grid">
+          ${sheet2Back}
+        </div>
       </div>
     </article>
   `);
@@ -1063,6 +1199,29 @@ const InteractiveSolver = {
     if (!item) return false;
     const q = item.question ? item.question.replaceAll(",", "").trim() : "";
     if (/find the lcm of \d+ and \d+/i.test(q)) return true;
+    if (/find the gcf of \d+ and \d+/i.test(q)) return true;
+
+    // Multi-digit whole number division:
+    const divMatch = q.replace(/\s*=\s*\?.*$/, "").match(/^(\d+)\s*[÷/]\s*(\d+)$/);
+    if (divMatch && !q.includes("/")) {
+      const a = Number(divMatch[1]);
+      const b = Number(divMatch[2]);
+      if (a >= 20 && b >= 2 && a > b) return true;
+    }
+
+    // Two-step or one-step algebra linear equations:
+    const qNorm = q.replace(/\u2212/g, "-");
+    if (/^(?:(\d*)x\s*([+\-])\s*(\d+)|(\d+)x|x\s*([+\-])\s*(\d+)|x\s*[÷/]\s*(\d+))\s*=\s*(-?\d+)/i.test(qNorm)) {
+      return true;
+    }
+
+    // Signed integers (addition/subtraction with negative numbers):
+    const intMatch = qNorm.match(/^(-?\d+)\s*([+\-])\s*\(?(-?\d+)\)?\s*=\s*\?/i);
+    if (intMatch) {
+      const a = Number(intMatch[1]);
+      const b = Number(intMatch[3]);
+      if (a < 0 || b < 0 || (intMatch[2] === "-" && a < b)) return true;
+    }
 
     // Multi-digit addition with carry (at least one number >= 10 and generates carry):
     const addMatch = q.match(/^(\d+)\s*\+\s*(\d+)/);
@@ -1387,6 +1546,452 @@ const InteractiveSolver = {
             }
           }
         });
+      });
+      return;
+    }
+
+    // 5. Grade 6 GCF Prime Factorization Venn Diagram Workspace
+    const gcfMatch = q.match(/find the gcf of (\d+) and (\d+)/i);
+    if (gcfMatch) {
+      const a = Number(gcfMatch[1]);
+      const b = Number(gcfMatch[2]);
+      const pa = primeFactors(a);
+      const pb = primeFactors(b);
+      const shared = [];
+      const pbCopy = [...pb];
+      for (const factor of pa) {
+        const idx = pbCopy.indexOf(factor);
+        if (idx !== -1) {
+          shared.push(factor);
+          pbCopy.splice(idx, 1);
+        }
+      }
+      const onlyA = [...pa];
+      const onlyB = [...pb];
+      for (const factor of shared) {
+        const ia = onlyA.indexOf(factor);
+        if (ia !== -1) onlyA.splice(ia, 1);
+        const ib = onlyB.indexOf(factor);
+        if (ib !== -1) onlyB.splice(ib, 1);
+      }
+      const ans = gcd(a, b);
+
+      container.innerHTML = `
+        <div class="solver-header">
+          <strong>🌳 Prime Factorization Venn Diagram for GCF(${a}, ${b})</strong>
+          <span class="solver-hint-tag">Grade 6 Essential Standard</span>
+        </div>
+        <div class="gcf-venn-scaffold">
+          <div class="gcf-factors-summary">
+            <div><strong>Primes of ${a}:</strong> ${pa.join(" × ")}</div>
+            <div><strong>Primes of ${b}:</strong> ${pb.join(" × ")}</div>
+          </div>
+          <div class="venn-diagram-wrap" aria-label="Venn Diagram showing shared prime factors">
+            <div class="venn-circle venn-left">
+              <span class="venn-circle-label">Only ${a}</span>
+              <div class="venn-chip-group">
+                ${onlyA.length ? onlyA.map((p) => `<span class="venn-chip factor-a">${p}</span>`).join("") : `<span class="venn-empty">none</span>`}
+              </div>
+            </div>
+            <div class="venn-intersection">
+              <span class="venn-intersection-label">Shared Primes</span>
+              <div class="venn-chip-group">
+                ${shared.length ? shared.map((p) => `<span class="venn-chip factor-shared">${p}</span>`).join("<span class=\"venn-mult\">×</span>") : `<span class="venn-empty">1</span>`}
+              </div>
+            </div>
+            <div class="venn-circle venn-right">
+              <span class="venn-circle-label">Only ${b}</span>
+              <div class="venn-chip-group">
+                ${onlyB.length ? onlyB.map((p) => `<span class="venn-chip factor-b">${p}</span>`).join("") : `<span class="venn-empty">none</span>`}
+              </div>
+            </div>
+          </div>
+          <div class="solver-calc-row">
+            <span>Multiply the shared prime factors: <strong>GCF(${a}, ${b}) =</strong></span>
+            <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${ans}" data-group="gcf-final" style="width:72px" placeholder="GCF" />
+            <button type="button" class="outline-action" id="gcf-copy-ans" style="display:none">Copy to Answer</button>
+          </div>
+        </div>
+      `;
+
+      const gcfInp = container.querySelector('[data-group="gcf-final"]');
+      gcfInp?.addEventListener("input", () => {
+        if (gcfInp.value.trim() === String(ans)) {
+          gcfInp.classList.add("is-ok");
+          els.answerInput.value = String(ans);
+          chime("good");
+          const copyBtn = container.querySelector("#gcf-copy-ans");
+          if (copyBtn) {
+            copyBtn.style.display = "inline-block";
+            copyBtn.textContent = "✓ Copied to answer!";
+          }
+        }
+      });
+      return;
+    }
+
+    // 6. Grades 4-5 Standard Algorithm Long Division Bracket
+    const divMatch = q.replace(/\s*=\s*\?.*$/, "").match(/^(\d+)\s*[÷/]\s*(\d+)$/);
+    if (divMatch && !q.includes("/")) {
+      const dividend = Number(divMatch[1]);
+      const divisor = Number(divMatch[2]);
+      if (dividend >= 20 && divisor >= 2 && dividend > divisor) {
+        const quotient = Math.floor(dividend / divisor);
+        const digits = String(dividend).split("").map(Number);
+        const steps = [];
+        let cur = 0;
+        let started = false;
+        for (let i = 0; i < digits.length; i++) {
+          cur = cur * 10 + digits[i];
+          const qDigit = Math.floor(cur / divisor);
+          if (qDigit > 0 || started || i === digits.length - 1) {
+            started = true;
+            const prod = qDigit * divisor;
+            const rem = cur - prod;
+            steps.push({ pos: i, digit: digits[i], cur, qDigit, prod, rem });
+            cur = rem;
+          }
+        }
+
+        container.innerHTML = `
+          <div class="solver-header">
+            <strong>➗ Interactive Standard Algorithm Bracket: Divide → Multiply → Subtract → Bring Down</strong>
+            <span class="solver-hint-tag">Fill each quotient digit above</span>
+          </div>
+          <div class="long-div-workspace">
+            <div class="long-div-bracket-box">
+              <div class="long-div-quotient-row">
+                <span class="long-div-spacer"></span>
+                ${digits.map((_, idx) => {
+                  const s = steps.find((st) => st.pos === idx);
+                  if (!s) return `<span class="long-div-q-col"></span>`;
+                  return `<input type="text" class="long-div-q-input" inputmode="numeric" maxlength="1" data-target="${s.qDigit}" data-step="${s.pos}" placeholder="?" title="Quotient digit" />`;
+                }).join("")}
+              </div>
+              <div class="long-div-dividend-row">
+                <span class="long-div-divisor">${divisor}</span>
+                <span class="long-div-bracket">)</span>
+                <div class="long-div-overbar">
+                  ${digits.map((d) => `<span class="long-div-col">${d}</span>`).join("")}
+                </div>
+              </div>
+            </div>
+            <div class="long-div-steps-guide">
+              ${steps.map((st, sIdx) => `
+                <div class="long-div-step-card" data-step-card="${st.pos}">
+                  <span class="step-num-pill">Step ${sIdx + 1}</span>
+                  <div class="step-line"><strong>Divide:</strong> How many times does <strong>${divisor}</strong> go into <strong>${st.cur}</strong>? → <strong>${st.qDigit}</strong></div>
+                  <div class="step-line"><strong>Multiply:</strong> ${st.qDigit} × ${divisor} = <strong>${st.prod}</strong></div>
+                  <div class="step-line"><strong>Subtract:</strong> ${st.cur} − ${st.prod} = <strong>${st.rem}</strong></div>
+                  ${sIdx < steps.length - 1 ? `<div class="step-line bring-down"><strong>Bring Down:</strong> Next digit ${steps[sIdx + 1].digit} → ${st.rem}${steps[sIdx + 1].digit}</div>` : `<div class="step-line final-rem">Remainder: <strong>${st.rem}</strong></div>`}
+                </div>
+              `).join("")}
+            </div>
+            <div class="solver-calc-row" style="margin-top:0.75rem">
+              <span>Full Quotient: <strong>${dividend} ÷ ${divisor} =</strong></span>
+              <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${quotient}" data-group="div-final" style="width:78px" placeholder="Quotient" />
+              <button type="button" class="outline-action" id="div-copy-ans" style="display:none">Copy to Answer</button>
+            </div>
+          </div>
+        `;
+
+        const qInputs = [...container.querySelectorAll(".long-div-q-input")];
+        const finalInp = container.querySelector('[data-group="div-final"]');
+
+        qInputs.forEach((qi, i) => {
+          qi.addEventListener("input", () => {
+            if (qi.value.trim() === qi.dataset.target) {
+              qi.classList.add("is-ok");
+              chime("step");
+              if (i + 1 < qInputs.length) qInputs[i + 1].focus();
+              if (qInputs.every((q) => q.classList.contains("is-ok"))) {
+                if (finalInp) {
+                  finalInp.value = String(quotient);
+                  finalInp.classList.add("is-ok");
+                }
+                els.answerInput.value = String(quotient);
+                chime("good");
+                const copyBtn = container.querySelector("#div-copy-ans");
+                if (copyBtn) {
+                  copyBtn.style.display = "inline-block";
+                  copyBtn.textContent = "✓ Copied to answer!";
+                }
+              }
+            }
+          });
+        });
+
+        finalInp?.addEventListener("input", () => {
+          if (finalInp.value.trim() === String(quotient)) {
+            finalInp.classList.add("is-ok");
+            els.answerInput.value = String(quotient);
+            chime("good");
+            const copyBtn = container.querySelector("#div-copy-ans");
+            if (copyBtn) {
+              copyBtn.style.display = "inline-block";
+              copyBtn.textContent = "✓ Copied to answer!";
+            }
+          }
+        });
+        return;
+      }
+    }
+
+    // 7. Grades 7-8 Algebra Balance Scale Solver
+    const qNorm = q.replace(/\u2212/g, "-");
+    const eqMatch = qNorm.match(/^(?:(\d*)x\s*([+\-])\s*(\d+)|(\d+)x|x\s*([+\-])\s*(\d+)|x\s*[÷/]\s*(\d+))\s*=\s*(-?\d+)/i);
+    if (eqMatch) {
+      let a = 1;
+      let b = 0;
+      let c = 0;
+      let isDiv = false;
+
+      const mLinear = qNorm.match(/^(\d*)x\s*([+\-])\s*(\d+)\s*=\s*(-?\d+)/i);
+      const mSingle = qNorm.match(/^(\d+)x\s*=\s*(-?\d+)/i);
+      const mShift = qNorm.match(/^x\s*([+\-])\s*(\d+)\s*=\s*(-?\d+)/i);
+      const mDiv = qNorm.match(/^x\s*[÷/]\s*(\d+)\s*=\s*(-?\d+)/i);
+
+      if (mLinear) {
+        a = mLinear[1] === "" ? 1 : Number(mLinear[1]);
+        b = Number(mLinear[3]) * (mLinear[2] === "-" ? -1 : 1);
+        c = Number(mLinear[4]);
+      } else if (mSingle) {
+        a = Number(mSingle[1]);
+        b = 0;
+        c = Number(mSingle[2]);
+      } else if (mShift) {
+        a = 1;
+        b = Number(mShift[2]) * (mShift[1] === "-" ? -1 : 1);
+        c = Number(mShift[3]);
+      } else if (mDiv) {
+        isDiv = true;
+        a = Number(mDiv[1]);
+        c = Number(mDiv[2]);
+      }
+
+      const solution = isDiv ? c * a : (c - b) / a;
+
+      container.innerHTML = `
+        <div class="solver-header">
+          <strong>⚖️ Interactive Equation Balance Scale</strong>
+          <span class="solver-hint-tag">Apply inverse operations to both sides</span>
+        </div>
+        <div class="eq-balance-scaffold">
+          <div class="balance-scale-svg-wrap">
+            <svg class="balance-scale-svg" viewBox="0 0 400 160" aria-label="Balance scale illustration">
+              <!-- Base and Fulcrum -->
+              <polygon points="185,150 215,150 200,90" fill="#64748b" />
+              <circle cx="200" cy="90" r="7" fill="#0f172a" />
+              <!-- Level Beam -->
+              <line x1="60" y1="90" x2="340" y2="90" stroke="#0f172a" stroke-width="5" stroke-linecap="round" />
+              <!-- Left Chains & Pan -->
+              <line x1="75" y1="90" x2="50" y2="125" stroke="#94a3b8" stroke-width="2" />
+              <line x1="75" y1="90" x2="100" y2="125" stroke="#94a3b8" stroke-width="2" />
+              <path d="M 40,125 Q 75,145 110,125 Z" fill="#3b82f6" opacity="0.85" />
+              <!-- Right Chains & Pan -->
+              <line x1="325" y1="90" x2="300" y2="125" stroke="#94a3b8" stroke-width="2" />
+              <line x1="325" y1="90" x2="350" y2="125" stroke="#94a3b8" stroke-width="2" />
+              <path d="M 290,125 Q 325,145 360,125 Z" fill="#10b981" opacity="0.85" />
+              <!-- Left Pan Label -->
+              <text x="75" y="120" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a" id="scale-left-label">${isDiv ? `x ÷ ${a}` : `${a === 1 ? "x" : `${a}x`}${b ? (b > 0 ? ` + ${b}` : ` − ${Math.abs(b)}`) : ""}`}</text>
+              <!-- Right Pan Label -->
+              <text x="325" y="120" text-anchor="middle" font-size="14" font-weight="bold" fill="#065f46" id="scale-right-label">${c}</text>
+            </svg>
+          </div>
+          <div class="eq-steps-workspace">
+            ${b !== 0 ? `
+              <div class="eq-step-row">
+                <span>1) Undo ${b > 0 ? `adding ${b}` : `subtracting ${Math.abs(b)}`}: <strong>${b > 0 ? `Subtract ${b}` : `Add ${Math.abs(b)}`}</strong> from both sides:</span>
+                <div class="eq-calc-subrow">
+                  <span>${a === 1 ? "x" : `${a}x`} = ${c} ${b > 0 ? "−" : "+"} ${Math.abs(b)} = </span>
+                  <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${c - b}" data-group="eq-step1" style="width:68px" placeholder="?" />
+                </div>
+              </div>
+            ` : ""}
+            ${a > 1 && !isDiv ? `
+              <div class="eq-step-row">
+                <span>${b !== 0 ? "2)" : "1)"} Undo multiplying by ${a}: <strong>Divide both sides by ${a}</strong>:</span>
+                <div class="eq-calc-subrow">
+                  <span>x = ${c - b} ÷ ${a} = </span>
+                  <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${solution}" data-group="eq-step2" style="width:68px" placeholder="x = ?" />
+                </div>
+              </div>
+            ` : ""}
+            ${isDiv ? `
+              <div class="eq-step-row">
+                <span>1) Undo dividing by ${a}: <strong>Multiply both sides by ${a}</strong>:</span>
+                <div class="eq-calc-subrow">
+                  <span>x = ${c} × ${a} = </span>
+                  <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${solution}" data-group="eq-step2" style="width:68px" placeholder="x = ?" />
+                </div>
+              </div>
+            ` : ""}
+            <div class="solver-calc-row">
+              <span>Solution: <strong>x =</strong></span>
+              <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${solution}" data-group="eq-final" style="width:72px" placeholder="x" />
+              <button type="button" class="outline-action" id="eq-copy-ans" style="display:none">Copy to Answer</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const rightLabel = container.querySelector("#scale-right-label");
+      const leftLabel = container.querySelector("#scale-left-label");
+      const step1Inp = container.querySelector('[data-group="eq-step1"]');
+      const step2Inp = container.querySelector('[data-group="eq-step2"]');
+      const finalInp = container.querySelector('[data-group="eq-final"]');
+
+      step1Inp?.addEventListener("input", () => {
+        if (step1Inp.value.trim() === String(c - b)) {
+          step1Inp.classList.add("is-ok");
+          chime("step");
+          if (rightLabel) rightLabel.textContent = String(c - b);
+          if (leftLabel) leftLabel.textContent = a === 1 ? "x" : `${a}x`;
+          if (a === 1 && finalInp) {
+            finalInp.value = String(solution);
+            finalInp.classList.add("is-ok");
+            els.answerInput.value = String(solution);
+            chime("good");
+            const copyBtn = container.querySelector("#eq-copy-ans");
+            if (copyBtn) {
+              copyBtn.style.display = "inline-block";
+              copyBtn.textContent = "✓ Copied to answer!";
+            }
+          }
+        }
+      });
+
+      step2Inp?.addEventListener("input", () => {
+        if (step2Inp.value.trim() === String(solution)) {
+          step2Inp.classList.add("is-ok");
+          chime("step");
+          if (rightLabel) rightLabel.textContent = String(solution);
+          if (leftLabel) leftLabel.textContent = "x";
+          if (finalInp) {
+            finalInp.value = String(solution);
+            finalInp.classList.add("is-ok");
+            els.answerInput.value = String(solution);
+            chime("good");
+            const copyBtn = container.querySelector("#eq-copy-ans");
+            if (copyBtn) {
+              copyBtn.style.display = "inline-block";
+              copyBtn.textContent = "✓ Copied to answer!";
+            }
+          }
+        }
+      });
+
+      finalInp?.addEventListener("input", () => {
+        if (finalInp.value.trim() === String(solution)) {
+          finalInp.classList.add("is-ok");
+          els.answerInput.value = String(solution);
+          chime("good");
+          const copyBtn = container.querySelector("#eq-copy-ans");
+          if (copyBtn) {
+            copyBtn.style.display = "inline-block";
+            copyBtn.textContent = "✓ Copied to answer!";
+          }
+        }
+      });
+      return;
+    }
+
+    // 8. Grade 7 Signed Integers Zero-Pair Board
+    const intMatch = qNorm.match(/^(-?\d+)\s*([+\-])\s*\(?(-?\d+)\)?\s*=\s*\?/i);
+    if (intMatch) {
+      const a = Number(intMatch[1]);
+      const op = intMatch[2];
+      const b = Number(intMatch[3]);
+      const ans = op === "+" ? a + b : a - b;
+
+      const term2 = op === "-" ? -b : b;
+      const posCount = (a > 0 ? a : 0) + (term2 > 0 ? term2 : 0);
+      const negCount = (a < 0 ? Math.abs(a) : 0) + (term2 < 0 ? Math.abs(term2) : 0);
+      const zeroPairs = Math.min(posCount, negCount);
+
+      const displayPos = Math.min(15, posCount);
+      const displayNeg = Math.min(15, negCount);
+      const displayPairs = Math.min(displayPos, displayNeg);
+
+      container.innerHTML = `
+        <div class="solver-header">
+          <strong>🟡🔴 Interactive Zero-Pair Cancellation Counter Board</strong>
+          <span class="solver-hint-tag">Each (+) and (−) cancel to make 0</span>
+        </div>
+        <div class="integer-chips-scaffold">
+          <div class="chips-strategy-note">
+            ${op === "-" ? `💡 <strong>Subtracting ${b}</strong> is the same as <strong>adding ${term2}</strong>: ${a} + (${term2})` : `💡 Combining <strong>${posCount} positives</strong> and <strong>${negCount} negatives</strong>`}
+          </div>
+          <div class="chips-board">
+            <div class="chips-column pos-column">
+              <span class="chips-col-title">Positives (+) [${posCount}]</span>
+              <div class="chips-grid" id="pos-chips-grid">
+                ${Array.from({ length: displayPos }, (_, i) => `<span class="chip-item chip-pos" data-chip-idx="${i}">+</span>`).join("")}
+              </div>
+            </div>
+            <div class="chips-column neg-column">
+              <span class="chips-col-title">Negatives (−) [${negCount}]</span>
+              <div class="chips-grid" id="neg-chips-grid">
+                ${Array.from({ length: displayNeg }, (_, i) => `<span class="chip-item chip-neg" data-chip-idx="${i}">−</span>`).join("")}
+              </div>
+            </div>
+          </div>
+          <div class="chips-actions">
+            <button type="button" class="primary-action chips-cancel-action" id="cancel-zero-pairs-btn">
+              ⚡ Cancel ${zeroPairs} Zero Pair${zeroPairs === 1 ? "" : "s"} (+ &amp; − = 0)
+            </button>
+            <span class="chips-cancel-status" id="chips-cancel-status"></span>
+          </div>
+          <div class="solver-calc-row">
+            <span>Result after cancelling zero pairs: <strong>${a} ${op === "-" ? "−" : "+"} ${b < 0 ? `(${b})` : b} =</strong></span>
+            <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${ans}" data-group="int-final" style="width:72px" placeholder="?" />
+            <button type="button" class="outline-action" id="int-copy-ans" style="display:none">Copy to Answer</button>
+          </div>
+        </div>
+      `;
+
+      const cancelBtn = container.querySelector("#cancel-zero-pairs-btn");
+      const statusSpan = container.querySelector("#chips-cancel-status");
+      const intFinalInp = container.querySelector('[data-group="int-final"]');
+
+      cancelBtn?.addEventListener("click", () => {
+        chime("step");
+        container.querySelectorAll(".chip-item").forEach((ch) => {
+          const idx = Number(ch.dataset.chipIdx);
+          if (idx < displayPairs) {
+            ch.classList.add("is-cancelled");
+          } else {
+            ch.classList.add("is-active-remainder");
+          }
+        });
+        cancelBtn.disabled = true;
+        if (statusSpan) {
+          statusSpan.innerHTML = `✓ <strong>${zeroPairs} zero pair(s) cancelled</strong>! Net remaining = <strong>${ans}</strong>`;
+        }
+        if (intFinalInp) {
+          intFinalInp.value = String(ans);
+          intFinalInp.classList.add("is-ok");
+          els.answerInput.value = String(ans);
+          chime("good");
+          const copyBtn = container.querySelector("#int-copy-ans");
+          if (copyBtn) {
+            copyBtn.style.display = "inline-block";
+            copyBtn.textContent = "✓ Copied to answer!";
+          }
+        }
+      });
+
+      intFinalInp?.addEventListener("input", () => {
+        if (intFinalInp.value.trim() === String(ans)) {
+          intFinalInp.classList.add("is-ok");
+          els.answerInput.value = String(ans);
+          chime("good");
+          const copyBtn = container.querySelector("#int-copy-ans");
+          if (copyBtn) {
+            copyBtn.style.display = "inline-block";
+            copyBtn.textContent = "✓ Copied to answer!";
+          }
+        }
       });
       return;
     }
@@ -2891,6 +3496,8 @@ document.querySelector("#tpt-next-card")?.addEventListener("click", () => {
   nextProblem();
 });
 
+els.tptPrintDeck?.addEventListener("click", () => printFlashcardDeck());
+
 els.tptQuickForm?.addEventListener("submit", (e) => {
   e.preventDefault();
   const val = (els.tptQuickInput || document.querySelector("#tpt-quick-input"))?.value.trim();
@@ -2899,6 +3506,7 @@ els.tptQuickForm?.addEventListener("submit", (e) => {
     return;
   }
   const isCorrect = validateAnswer(val, state.item);
+  updateLeitnerCard(state.item, isCorrect);
   const banner = els.tptBackBanner || document.querySelector("#tpt-back-banner");
   if (banner) {
     banner.hidden = false;
@@ -2917,6 +3525,202 @@ els.tptQuickForm?.addEventListener("submit", (e) => {
   }
   (els.tptNextCard || document.querySelector("#tpt-next-card"))?.focus();
 });
+
+function wordsToNumber(str) {
+  if (!str) return null;
+  const trimmed = str.trim();
+  if (/^-?\d+(\.\d+)?$/.test(trimmed)) return Number(trimmed);
+  const small = {
+    zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9,
+    ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16,
+    seventeen: 17, eighteen: 18, nineteen: 19, twenty: 20, thirty: 30, forty: 40, fifty: 50,
+    sixty: 60, seventy: 70, eighty: 80, ninety: 90
+  };
+  const words = trimmed.toLowerCase().split(/[\s-]+/);
+  let total = 0;
+  let current = 0;
+  for (const w of words) {
+    if (small[w] !== undefined) {
+      current += small[w];
+    } else if (w === "hundred") {
+      current = (current || 1) * 100;
+    } else if (w === "thousand") {
+      total += (current || 1) * 1000;
+      current = 0;
+    } else if (w === "and") {
+      // skip
+    } else {
+      return null;
+    }
+  }
+  return total + current;
+}
+
+function parseSpokenMath(text) {
+  if (!text) return "";
+  let s = text.toLowerCase().trim()
+    .replace(/[.,!?]/g, "")
+    .replace(/\s+/g, " ");
+
+  if (s === "yes" || s === "true") return "yes";
+  if (s === "no" || s === "false") return "no";
+  if (s === "greater than" || s === "more than") return ">";
+  if (s === "less than") return "<";
+  if (s === "equal to" || s === "equals" || s === "equal") return "=";
+
+  const xEq = s.match(/(?:x|variable)\s*(?:equals|is|=)\s*(.+)/);
+  if (xEq) s = xEq[1].trim();
+
+  let isNegative = false;
+  if (s.startsWith("negative ") || s.startsWith("minus ")) {
+    isNegative = true;
+    s = s.replace(/^(?:negative|minus)\s+/, "");
+  }
+
+  const fractionWords = {
+    half: 2, halves: 2,
+    third: 3, thirds: 3,
+    fourth: 4, fourths: 4, quarter: 4, quarters: 4,
+    fifth: 5, fifths: 5,
+    sixth: 6, sixths: 6,
+    seventh: 7, sevenths: 7,
+    eighth: 8, eighths: 8,
+    ninth: 9, ninths: 9,
+    tenth: 10, tenths: 10,
+    eleventh: 11, elevenths: 11,
+    twelfth: 12, twelfths: 12,
+  };
+
+  const overMatch = s.match(/^(.+?)\s+(?:over|divided by)\s+(.+)$/);
+  if (overMatch) {
+    const num = wordsToNumber(overMatch[1]);
+    const den = wordsToNumber(overMatch[2]);
+    if (num !== null && den !== null && den !== 0) {
+      return `${isNegative ? "-" : ""}${num}/${den}`;
+    }
+  }
+
+  for (const [w, den] of Object.entries(fractionWords)) {
+    const rx = new RegExp(`^(.+?)\\s+${w}$`);
+    const m = s.match(rx);
+    if (m) {
+      let num = wordsToNumber(m[1]);
+      if (m[1] === "a" || m[1] === "one") num = 1;
+      if (num !== null) {
+        return `${isNegative ? "-" : ""}${num}/${den}`;
+      }
+    }
+  }
+
+  if (s.includes("point ") || s.includes("dot ")) {
+    const parts = s.split(/\s+(?:point|dot)\s+/);
+    if (parts.length === 2) {
+      const whole = parts[0] ? (wordsToNumber(parts[0]) ?? parts[0]) : "0";
+      let dec = wordsToNumber(parts[1]);
+      if (dec === null) {
+        dec = parts[1].split(/\s+/).map((w) => wordsToNumber(w) ?? w).join("");
+      }
+      return `${isNegative ? "-" : ""}${whole}.${dec}`;
+    }
+  }
+
+  const num = wordsToNumber(s);
+  if (num !== null) {
+    return `${isNegative ? "-" : ""}${num}`;
+  }
+
+  const cleaned = s.replace(/[^0-9/.\-]/g, "");
+  if (cleaned) {
+    return `${isNegative && !cleaned.startsWith("-") ? "-" : ""}${cleaned}`;
+  }
+
+  return s;
+}
+
+let activeSpeechRec = null;
+
+function initVoiceControl() {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const micBtns = [
+    els.voiceAnswerBtn || document.querySelector("#voice-answer-btn"),
+    els.voiceFlashcardBtn || document.querySelector("#voice-flashcard-btn"),
+  ].filter(Boolean);
+
+  if (!SpeechRec) {
+    micBtns.forEach((btn) => {
+      btn.title = "Voice input is not supported in this browser (available in Chrome, Edge, Safari)";
+      btn.addEventListener("click", () => {
+        alert("Speech recognition is not available in your current browser. For voice-response mode, try Chrome, Edge, or Safari.");
+      });
+    });
+    return;
+  }
+
+  function stopListening() {
+    if (activeSpeechRec) {
+      try { activeSpeechRec.stop(); } catch {}
+      activeSpeechRec = null;
+    }
+    micBtns.forEach((b) => b.classList.remove("is-listening"));
+  }
+
+  micBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (btn.classList.contains("is-listening")) {
+        stopListening();
+        return;
+      }
+
+      stopListening();
+      try {
+        const recognition = new SpeechRec();
+        recognition.lang = "en-US";
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = () => {
+          btn.classList.add("is-listening");
+          chime("step");
+        };
+
+        recognition.onresult = (evt) => {
+          const raw = evt.results[0][0].transcript;
+          const parsed = parseSpokenMath(raw);
+          btn.classList.remove("is-listening");
+
+          const isFlashcard = state.session?.mode === "flashcard";
+          if (isFlashcard) {
+            const qInp = els.tptQuickInput || document.querySelector("#tpt-quick-input");
+            if (qInp) {
+              qInp.value = parsed;
+              els.tptQuickForm?.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+            }
+          } else {
+            if (els.answerInput) {
+              els.answerInput.value = parsed;
+              els.answerForm?.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+            }
+          }
+        };
+
+        recognition.onerror = () => {
+          btn.classList.remove("is-listening");
+        };
+
+        recognition.onend = () => {
+          btn.classList.remove("is-listening");
+          activeSpeechRec = null;
+        };
+
+        activeSpeechRec = recognition;
+        recognition.start();
+      } catch (err) {
+        console.warn("Speech recognition failed to start:", err);
+        btn.classList.remove("is-listening");
+      }
+    });
+  });
+}
 
 document.addEventListener("keydown", (event) => {
   if (state.session?.mode === "flashcard" && !els.drillPanel.hidden && !state.itemDone) {
@@ -2947,6 +3751,7 @@ document.addEventListener("keydown", (event) => {
 populateQuickSkillDropdown();
 applySettings();
 renderLibrary();
+initVoiceControl();
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", registerSharedSaveResume, { once: true });
 } else {

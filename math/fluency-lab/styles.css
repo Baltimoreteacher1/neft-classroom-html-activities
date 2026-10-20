@@ -2987,6 +2987,15 @@ body.focus-mode .focus-orbit-ring {
   height: 0.5in;
 }
 
+.pfc-back-page .pfc-hole {
+  left: auto !important;
+  right: 0.15in !important;
+}
+
+.pfc-back-page .pfc-tag {
+  color: #047857;
+}
+
 /* Mastery Certificate */
 .cert-print-sheet {
   padding: 0.2in;
@@ -3645,6 +3654,545 @@ body.focus-mode .focus-orbit-ring {
   font-size: 0.92rem;
   color: #166534;
   font-weight: 600;
+}
+
+/* ==========================================================================
+   Voice-Response Mode ("Oral Fluency Drill")
+   ========================================================================== */
+.voice-answer-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.75rem;
+  height: 48px;
+  background: #f1f5f9;
+  border: 2px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  flex-shrink: 0;
+}
+
+.voice-answer-btn:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.voice-flashcard-btn {
+  height: 42px;
+  font-size: 0.92rem;
+  padding: 0.4rem 0.85rem;
+}
+
+@keyframes micPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    background-color: #fee2e2;
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(239, 68, 68, 0);
+    background-color: #fecaca;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    background-color: #fee2e2;
+  }
+}
+
+.voice-answer-btn.is-listening {
+  background-color: #fee2e2 !important;
+  border-color: #ef4444 !important;
+  color: #b91c1c !important;
+  animation: micPulse 1.4s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   Leitner Spaced-Repetition Smart Queue & Flashcard Header
+   ========================================================================== */
+.tpt-header-left,
+.tpt-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.tpt-leitner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  transition: all 0.2s ease;
+}
+
+.tpt-leitner-badge.box-1 {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1.5px solid #f59e0b;
+}
+
+.tpt-leitner-badge.box-2 {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border: 1.5px solid #3b82f6;
+}
+
+.tpt-leitner-badge.box-3 {
+  background: #d1fae5;
+  color: #047857;
+  border: 1.5px solid #10b981;
+}
+
+.tpt-print-btn {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tpt-print-btn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+/* ==========================================================================
+   GCF Venn Diagram Interactive Scaffold
+   ========================================================================== */
+.gcf-venn-scaffold {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.gcf-factors-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.75rem 1.25rem;
+  font-size: 1.05rem;
+  color: #1e293b;
+}
+
+.venn-diagram-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 520px;
+  height: 220px;
+  margin: 0.5rem 0;
+}
+
+.venn-circle {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 1.25rem;
+  box-sizing: border-box;
+}
+
+.venn-left {
+  left: calc(50% - 170px);
+  border: 3px solid #3b82f6;
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.venn-right {
+  right: calc(50% - 170px);
+  border: 3px solid #8b5cf6;
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.venn-circle-label {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #1e3a8a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.venn-right .venn-circle-label {
+  color: #5b21b6;
+}
+
+.venn-intersection {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 190px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.18);
+  border: 2.5px dashed #059669;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+.venn-intersection-label {
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: #047857;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.venn-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.venn-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.factor-a { background: #2563eb; }
+.factor-b { background: #7c3aed; }
+.factor-shared { background: #059669; box-shadow: 0 0 8px rgba(5, 150, 105, 0.4); }
+
+.venn-mult {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #047857;
+}
+
+.venn-empty {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #94a3b8;
+}
+
+/* ==========================================================================
+   Long Division Standard Algorithm Bracket
+   ========================================================================== */
+.long-div-workspace {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.long-div-bracket-box {
+  display: inline-flex;
+  flex-direction: column;
+  background: #f8fafc;
+  padding: 1rem 1.75rem;
+  border-radius: 12px;
+  border: 2px solid #cbd5e1;
+  font-family: var(--font-mono, monospace);
+}
+
+.long-div-quotient-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 4px;
+}
+
+.long-div-spacer {
+  width: 58px;
+}
+
+.long-div-q-col {
+  width: 44px;
+  height: 44px;
+}
+
+.long-div-q-input {
+  width: 44px;
+  height: 44px;
+  border: 2.5px solid #0284c7;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #0f172a;
+  background: #ffffff;
+}
+
+.long-div-q-input.is-ok {
+  background: #dcfce7;
+  border-color: #16a34a;
+  color: #15803d;
+}
+
+.long-div-dividend-row {
+  display: flex;
+  align-items: center;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.long-div-divisor {
+  padding-right: 8px;
+  color: #0369a1;
+}
+
+.long-div-bracket {
+  padding-right: 6px;
+  color: #0f172a;
+}
+
+.long-div-overbar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-top: 3.5px solid #0f172a;
+  padding-top: 4px;
+}
+
+.long-div-col {
+  width: 44px;
+  text-align: center;
+}
+
+.long-div-steps-guide {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.85rem;
+  width: 100%;
+}
+
+.long-div-step-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+  color: #334155;
+}
+
+.step-num-pill {
+  align-self: flex-start;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  background: #e0f2fe;
+  color: #0284c7;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.bring-down {
+  color: #b45309;
+  font-weight: 700;
+}
+
+.final-rem {
+  color: #15803d;
+  font-weight: 800;
+}
+
+/* ==========================================================================
+   Equation Balance Scale
+   ========================================================================== */
+.eq-balance-scaffold {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.balance-scale-svg-wrap {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  justify-content: center;
+}
+
+.balance-scale-svg {
+  width: 100%;
+  height: auto;
+}
+
+.eq-steps-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  width: 100%;
+  max-width: 500px;
+}
+
+.eq-step-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: #1e293b;
+}
+
+.eq-calc-subrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   Signed Integers Zero-Pair Board
+   ========================================================================== */
+.integer-chips-scaffold {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.chips-strategy-note {
+  font-size: 1rem;
+  color: #334155;
+  background: #f1f5f9;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+.chips-board {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  width: 100%;
+}
+
+.chips-column {
+  flex: 1;
+  min-width: 220px;
+  max-width: 320px;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.chips-col-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pos-column .chips-col-title { color: #854d0e; }
+.neg-column .chips-col-title { color: #991b1b; }
+
+.chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip-item {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  font-weight: 900;
+  transition: all 0.25s ease;
+}
+
+.chip-pos {
+  background: #fef08a;
+  border: 2px solid #ca8a04;
+  color: #854d0e;
+}
+
+.chip-neg {
+  background: #fecaca;
+  border: 2px solid #dc2626;
+  color: #991b1b;
+}
+
+.chip-item.is-cancelled {
+  opacity: 0.28;
+  border-style: dashed;
+  text-decoration: line-through;
+  transform: scale(0.85);
+}
+
+.chip-item.is-active-remainder {
+  transform: scale(1.12);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.55);
+}
+
+.chips-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chips-cancel-action {
+  font-size: 1rem;
+  padding: 0.6rem 1.25rem;
+}
+
+.chips-cancel-status {
+  font-size: 0.92rem;
+  color: #047857;
+}
+
+.solver-calc-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 /* ==========================================================================
