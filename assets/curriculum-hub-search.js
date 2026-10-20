@@ -30,13 +30,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/2-1/downloads/2-1-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/2-1/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/2-1/downloads/2-1-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/2-1/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/2-1/downloads/2-1-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -67,13 +82,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/2-2/downloads/2-2-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/2-2/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/2-2/downloads/2-2-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/2-2/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/2-2/downloads/2-2-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -104,13 +134,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/2-3/downloads/2-3-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/2-3/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/2-3/downloads/2-3-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/2-3/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/2-3/downloads/2-3-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -141,13 +186,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/2-4/downloads/2-4-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/2-4/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/2-4/downloads/2-4-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/2-4/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/2-4/downloads/2-4-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -178,13 +238,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/2-5/downloads/2-5-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/2-5/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/2-5/downloads/2-5-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/2-5/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/2-5/downloads/2-5-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -215,13 +290,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/2-6/downloads/2-6-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/2-6/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/2-6/downloads/2-6-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/2-6/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/2-6/downloads/2-6-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -252,13 +342,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/2-7/downloads/2-7-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/2-7/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/2-7/downloads/2-7-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/2-7/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/2-7/downloads/2-7-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -289,13 +394,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/2-9/downloads/2-9-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/2-9/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/2-9/downloads/2-9-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/2-9/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/2-9/downloads/2-9-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -326,13 +446,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/2-10/downloads/2-10-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/2-10/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/2-10/downloads/2-10-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/2-10/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/2-10/downloads/2-10-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -363,13 +498,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/2-11/downloads/2-11-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/2-11/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/2-11/downloads/2-11-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/2-11/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/2-11/downloads/2-11-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -390,13 +540,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/2-12/downloads/2-12-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/2-12/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/2-12/downloads/2-12-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/2-12/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/2-12/downloads/2-12-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -417,13 +582,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/3-1/downloads/3-1-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/3-1/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/3-1/downloads/3-1-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/3-1/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/3-1/downloads/3-1-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -454,13 +634,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/3-2/downloads/3-2-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/3-2/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/3-2/downloads/3-2-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/3-2/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/3-2/downloads/3-2-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -491,13 +686,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/3-3/downloads/3-3-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/3-3/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/3-3/downloads/3-3-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/3-3/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/3-3/downloads/3-3-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -528,13 +738,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/3-4/downloads/3-4-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/3-4/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/3-4/downloads/3-4-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/3-4/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/3-4/downloads/3-4-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -565,13 +790,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/3-5/downloads/3-5-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/3-5/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/3-5/downloads/3-5-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/3-5/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/3-5/downloads/3-5-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -602,13 +842,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/3-6/downloads/3-6-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/3-6/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/3-6/downloads/3-6-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/3-6/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/3-6/downloads/3-6-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -629,13 +884,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/3-7/downloads/3-7-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/3-7/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/3-7/downloads/3-7-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/3-7/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/3-7/downloads/3-7-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -656,13 +926,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/3-8/downloads/3-8-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/3-8/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/3-8/downloads/3-8-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/3-8/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/3-8/downloads/3-8-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -683,13 +968,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/3-9/downloads/3-9-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/3-9/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/3-9/downloads/3-9-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/3-9/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/3-9/downloads/3-9-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -710,13 +1010,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/3-10/downloads/3-10-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/3-10/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/3-10/downloads/3-10-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/3-10/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/3-10/downloads/3-10-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -747,13 +1062,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/4-1/downloads/4-1-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/4-1/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/4-1/downloads/4-1-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/4-1/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/4-1/downloads/4-1-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -774,13 +1104,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/4-2/downloads/4-2-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/4-2/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/4-2/downloads/4-2-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/4-2/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/4-2/downloads/4-2-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -811,13 +1156,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/4-4/downloads/4-4-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/4-4/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/4-4/downloads/4-4-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/4-4/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/4-4/downloads/4-4-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -848,13 +1208,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/4-5/downloads/4-5-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/4-5/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/4-5/downloads/4-5-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/4-5/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/4-5/downloads/4-5-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -885,13 +1260,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/5-1/downloads/5-1-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/5-1/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/5-1/downloads/5-1-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/5-1/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/5-1/downloads/5-1-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -922,13 +1312,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/5-2/downloads/5-2-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/5-2/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/5-2/downloads/5-2-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/5-2/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/5-2/downloads/5-2-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -959,13 +1364,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/5-3/downloads/5-3-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/5-3/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/5-3/downloads/5-3-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/5-3/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/5-3/downloads/5-3-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -996,13 +1416,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/5-4/downloads/5-4-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/5-4/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/5-4/downloads/5-4-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/5-4/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/5-4/downloads/5-4-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1033,13 +1468,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/5-5/downloads/5-5-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/5-5/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/5-5/downloads/5-5-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/5-5/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/5-5/downloads/5-5-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1060,13 +1510,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/5-6/downloads/5-6-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/5-6/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/5-6/downloads/5-6-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/5-6/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/5-6/downloads/5-6-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1097,13 +1562,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/5-7/downloads/5-7-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/5-7/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/5-7/downloads/5-7-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/5-7/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/5-7/downloads/5-7-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1134,13 +1614,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/5-8/downloads/5-8-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/5-8/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/5-8/downloads/5-8-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/5-8/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/5-8/downloads/5-8-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1171,13 +1666,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/5-9/downloads/5-9-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/5-9/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/5-9/downloads/5-9-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/5-9/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/5-9/downloads/5-9-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1198,13 +1708,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/5-10/downloads/5-10-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/5-10/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/5-10/downloads/5-10-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/5-10/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/5-10/downloads/5-10-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1235,13 +1760,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/6-1/downloads/6-1-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-1/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/6-1/downloads/6-1-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/6-1/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/6-1/downloads/6-1-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1262,13 +1802,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/6-2/downloads/6-2-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-2/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/6-2/downloads/6-2-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/6-2/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/6-2/downloads/6-2-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1289,13 +1844,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/6-3/downloads/6-3-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-3/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/6-3/downloads/6-3-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/6-3/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/6-3/downloads/6-3-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1326,13 +1896,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/6-4/downloads/6-4-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-4/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/6-4/downloads/6-4-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/6-4/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/6-4/downloads/6-4-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1363,13 +1948,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/6-5/downloads/6-5-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-5/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/6-5/downloads/6-5-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/6-5/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/6-5/downloads/6-5-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1400,13 +2000,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/6-6/downloads/6-6-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-6/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/6-6/downloads/6-6-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/6-6/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/6-6/downloads/6-6-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1437,13 +2052,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/6-7/downloads/6-7-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-7/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/6-7/downloads/6-7-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/6-7/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/6-7/downloads/6-7-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1474,13 +2104,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/6-8/downloads/6-8-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-8/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/6-8/downloads/6-8-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/6-8/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/6-8/downloads/6-8-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1501,13 +2146,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/6-9/downloads/6-9-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-9/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/6-9/downloads/6-9-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/6-9/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/6-9/downloads/6-9-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1538,13 +2198,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/6-10/downloads/6-10-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-10/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/6-10/downloads/6-10-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/6-10/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/6-10/downloads/6-10-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1575,13 +2250,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/6-11/downloads/6-11-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-11/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/6-11/downloads/6-11-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/6-11/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/6-11/downloads/6-11-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1602,13 +2292,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/6-12/downloads/6-12-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-12/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/6-12/downloads/6-12-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/6-12/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/6-12/downloads/6-12-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1629,13 +2334,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/6-13/downloads/6-13-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-13/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/6-13/downloads/6-13-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/6-13/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/6-13/downloads/6-13-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1656,13 +2376,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/6-14/downloads/6-14-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-14/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/6-14/downloads/6-14-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/6-14/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/6-14/downloads/6-14-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1693,13 +2428,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/6-15/downloads/6-15-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/6-15/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/6-15/downloads/6-15-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/6-15/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/6-15/downloads/6-15-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1720,13 +2470,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/7-2/downloads/7-2-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/7-2/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/7-2/downloads/7-2-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/7-2/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/7-2/downloads/7-2-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1757,13 +2522,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/7-3/downloads/7-3-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/7-3/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/7-3/downloads/7-3-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/7-3/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/7-3/downloads/7-3-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1794,13 +2574,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/7-4/downloads/7-4-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/7-4/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/7-4/downloads/7-4-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/7-4/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/7-4/downloads/7-4-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1831,13 +2626,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/7-5/downloads/7-5-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/7-5/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/7-5/downloads/7-5-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/7-5/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/7-5/downloads/7-5-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1868,13 +2678,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/7-6/downloads/7-6-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/7-6/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/7-6/downloads/7-6-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/7-6/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/7-6/downloads/7-6-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1905,13 +2730,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/7-8/downloads/7-8-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/7-8/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/7-8/downloads/7-8-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/7-8/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/7-8/downloads/7-8-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1932,13 +2772,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/7-9/downloads/7-9-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/7-9/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/7-9/downloads/7-9-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/7-9/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/7-9/downloads/7-9-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1959,13 +2814,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/8-1/downloads/8-1-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/8-1/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/8-1/downloads/8-1-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/8-1/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/8-1/downloads/8-1-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -1996,13 +2866,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/8-2/downloads/8-2-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/8-2/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/8-2/downloads/8-2-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/8-2/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/8-2/downloads/8-2-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -2033,13 +2918,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/8-3/downloads/8-3-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/8-3/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/8-3/downloads/8-3-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/8-3/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/8-3/downloads/8-3-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -2070,13 +2970,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/8-4/downloads/8-4-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/8-4/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/8-4/downloads/8-4-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/8-4/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/8-4/downloads/8-4-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -2107,13 +3022,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/8-5/downloads/8-5-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/8-5/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/8-5/downloads/8-5-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/8-5/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/8-5/downloads/8-5-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -2144,13 +3074,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/8-6/downloads/8-6-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/8-6/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/8-6/downloads/8-6-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/8-6/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/8-6/downloads/8-6-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {
@@ -2171,13 +3116,28 @@
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set A · PDF",
+        href: "/lessons/8-7/downloads/8-7-worksheet.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Set B",
         href: "/lessons/8-7/worksheet-2.html",
         isPrintable: true,
       },
       {
+        text: "📝 Practice Worksheet — Set B · PDF",
+        href: "/lessons/8-7/downloads/8-7-worksheet-2.pdf",
+        isPrintable: true,
+      },
+      {
         text: "📝 Practice Worksheet — Level 0 (most support)",
         href: "/lessons/8-7/worksheet-level-0.html",
+        isPrintable: true,
+      },
+      {
+        text: "📝 Practice Worksheet — Level 0 (most support) · PDF",
+        href: "/lessons/8-7/downloads/8-7-worksheet-level-0.pdf",
         isPrintable: true,
       },
       {

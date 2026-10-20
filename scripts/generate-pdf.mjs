@@ -71,7 +71,7 @@ function localizeFonts(html) {
   });
 }
 
-function findChrome() {
+export function findChrome() {
   const fromEnv = process.env.CHROME_PATH || process.env.PUPPETEER_EXECUTABLE_PATH;
   const candidates = [
     fromEnv,
@@ -256,7 +256,7 @@ function titleFromHtml(html) {
 // non-empty, stable output file. Once the PDF is on disk we kill the whole
 // process group — Chrome does not always self-exit when another instance is
 // running, so we never rely on it terminating on its own.
-async function renderPdf(chrome, htmlPath, outPath) {
+export async function renderPdf(chrome, htmlPath, outPath) {
   const profile = join(tmpdir(), `neft-pdf-${process.pid}-${Math.random().toString(36).slice(2)}`);
   try {
     rmSync(outPath, { force: true });

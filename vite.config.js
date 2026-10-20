@@ -167,6 +167,13 @@ function copyStandaloneHtml() {
             mkdirSync(destDir, { recursive: true });
             cpSync(homework, resolve(destDir, "homework.docx"));
           }
+          // Spanish homework sheet — only lessons with fully authored Spanish have one.
+          const homeworkEs = resolve(lessonsDir, dir.name, "homework-es.docx");
+          if (existsSync(homeworkEs)) {
+            const destDir = resolve(__dirname, "dist", "lessons", dir.name);
+            mkdirSync(destDir, { recursive: true });
+            cpSync(homeworkEs, resolve(destDir, "homework-es.docx"));
+          }
           const familyHomework = resolve(lessonsDir, dir.name, "homework.html");
           if (existsSync(familyHomework)) {
             const destDir = resolve(__dirname, "dist", "lessons", dir.name);

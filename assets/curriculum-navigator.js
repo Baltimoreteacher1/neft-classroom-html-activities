@@ -58,6 +58,11 @@
     guidedNotesDocx: "Word",
     mstarWorksheetPdf: "PDF",
     homeworkDocx: "Word",
+    homeworkDocxEs: "Word",
+    homeworkPdf: "PDF",
+    worksheetPdf: "PDF",
+    worksheet2Pdf: "PDF",
+    worksheetLevel0Pdf: "PDF",
     practice: "Printable",
   };
   var SAVED_KEY = "ewl:curriculum:saved:v1";
@@ -1064,6 +1069,11 @@
         ["guidedNotesDocx", "Guided notes · Word"],
         ["mstarWorksheetPdf", "MSTAR practice · PDF"],
         ["homeworkDocx", "Homework · Word"],
+        ["homeworkDocxEs", "Homework · Word (Español)"],
+        ["homeworkPdf", "Homework · PDF"],
+        ["worksheetPdf", "Practice worksheet A · PDF"],
+        ["worksheet2Pdf", "Practice worksheet B · PDF"],
+        ["worksheetLevel0Pdf", "Practice worksheet Level 0 · PDF"],
       ],
       true,
     );

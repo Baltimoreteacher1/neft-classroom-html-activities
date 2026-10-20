@@ -103,6 +103,34 @@ function resourcesFor(id, cfg) {
       file: `lessons/${id}/homework.docx`,
       applicable: true,
     },
+    // Spanish homework sheet: only a lesson whose every printed word has
+    // authored Spanish gets one (scripts/generate-homework.mjs).
+    homeworkDocxEs: {
+      path: `/lessons/${id}/homework-es.docx`,
+      file: `lessons/${id}/homework-es.docx`,
+      applicable: existsSync(join(ROOT, `lessons/${id}/homework-es.docx`)),
+    },
+    // Print-ready PDFs (scripts/generate-homework-pdf.mjs, generate-worksheet-pdf.mjs).
+    homeworkPdf: {
+      path: `/lessons/${id}/downloads/${id}-homework.pdf`,
+      file: `lessons/${id}/downloads/${id}-homework.pdf`,
+      applicable: true,
+    },
+    worksheetPdf: {
+      path: `/lessons/${id}/downloads/${id}-worksheet.pdf`,
+      file: `lessons/${id}/downloads/${id}-worksheet.pdf`,
+      applicable: true,
+    },
+    worksheet2Pdf: {
+      path: `/lessons/${id}/downloads/${id}-worksheet-2.pdf`,
+      file: `lessons/${id}/downloads/${id}-worksheet-2.pdf`,
+      applicable: true,
+    },
+    worksheetLevel0Pdf: {
+      path: `/lessons/${id}/downloads/${id}-worksheet-level-0.pdf`,
+      file: `lessons/${id}/downloads/${id}-worksheet-level-0.pdf`,
+      applicable: true,
+    },
     slides: {
       path: `/lessons/${id}/slides.html`,
       file: `lessons/${id}/slides.html`,

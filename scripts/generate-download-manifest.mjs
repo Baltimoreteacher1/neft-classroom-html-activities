@@ -177,6 +177,13 @@ function classifyLink(href, text) {
   return "unit-resource";
 }
 
+/** Rows that share a type need their own label so the three sheets read apart. */
+const MANIFEST_KEY_LABEL = {
+  worksheetPdf: "Practice Worksheet — Set A (PDF)",
+  worksheet2Pdf: "Practice Worksheet — Set B (PDF)",
+  worksheetLevel0Pdf: "Practice Worksheet — Level 0, most support (PDF)",
+};
+
 /** Manifest resource key → downloader type id. Keys with no entry are skipped. */
 const MANIFEST_KEY_TYPE = {
   lesson: "interactive-lesson",
@@ -187,6 +194,11 @@ const MANIFEST_KEY_TYPE = {
   handout: "handout",
   homework: "homework",
   homeworkDocx: "homework-docx",
+  homeworkDocxEs: "homework-docx-es",
+  homeworkPdf: "homework-pdf",
+  worksheetPdf: "worksheet-pdf",
+  worksheet2Pdf: "worksheet-pdf",
+  worksheetLevel0Pdf: "worksheet-pdf",
   studentPractice: "student-practice",
   // Only the print-ready PDF is packaged: the interactive mstar-worksheet.html
   // is reachable from the lesson picker and links this PDF itself, and two
@@ -565,6 +577,7 @@ function main() {
             lessonTitle: title,
             type,
             url: entry.path,
+            label: MANIFEST_KEY_LABEL[key],
           }),
         );
       }

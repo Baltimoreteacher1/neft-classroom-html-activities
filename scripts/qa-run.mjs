@@ -551,6 +551,18 @@ const COVERAGE = [
   [/^lessons\/[^/]+\/reveal-assets\//, ["validate:reveal-assets"]],
   // the retention manifest is part of the same contract as the files it records
   [/^data\/reveal-assets-retained\.json$/, ["validate:reveal-assets"]],
+  // Student homework Word files: opened and read as XML (headings, alt text, title,
+  // language, internal labels). Covers the generator, the publisher-file remediation
+  // pass and the gate itself.
+  [
+    /^(lessons\/[^/]+\/homework(-es)?\.docx|scripts\/(generate-homework|remediate-homework-docx)\.mjs|scripts\/lib\/homework-docx-a11y\.mjs|tools\/validate-docx-a11y\.mjs)$/,
+    ["validate:docx-a11y", "validate:downloads", "test", "check"],
+  ],
+  // The print-ready PDFs of the homework and the three practice sheets.
+  [
+    /^(lessons\/[^/]+\/downloads\/[^/]+-(homework|worksheet(-2|-level-0)?)\.pdf|data\/student-pdf-manifest\.json|scripts\/(generate-(homework|worksheet)-pdf\.mjs|lib\/student-pdf\.mjs)|tools\/validate-student-pdfs\.mjs)$/,
+    ["validate:student-pdfs", "validate:downloads", "test", "check"],
+  ],
   [/^lessons\/[^/]+\/worksheet(-2)?(-answer-key)?\.html$/, ["test", "validate:worksheet-audience"]],
   [/^tools\/validate-worksheet-audience\.mjs$/, ["test", "validate:worksheet-audience"]],
   // the deploy graph maps artifacts, mirrors and hook commands to real files;

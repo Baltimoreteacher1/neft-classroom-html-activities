@@ -1,8 +1,12 @@
 // Generates printable per-lesson HOMEWORK .docx files from each lesson's config.
-// Output: lessons/<id>/homework.docx
+// Output: lessons/<id>/homework.docx (English) and lessons/<id>/homework-es.docx
+// (Spanish, only for a lesson whose every printed word has authored Spanish).
+//
+// Lessons whose homework.docx is the publisher-sourced Reveal document are left
+// alone: they have no config to regenerate from (see lib/homework-docx-a11y.mjs).
 //
 // Run: node scripts/generate-homework.mjs
-import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
@@ -22,6 +26,7 @@ import {
   TextRun,
   WidthType,
 } from "docx";
+import { isPublisherSourcedDocx } from "./lib/homework-docx-a11y.mjs";
 import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -29,6 +34,90 @@ const root = join(__dirname, "..");
 const lessonsDir = join(root, "lessons");
 
 const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
+
+// Arial is installed with Word and every classroom Chromebook-to-Word path, so
+// the file never depends on a font the family may not have.
+const FONT = "Arial";
+const DOC_LANG = { en: "en-US", es: "es-US" };
+
+const readData = (name) => JSON.parse(readFileSync(join(root, "data", name), "utf8"));
+const choiceSpanish = readData("homework-choices-spanish.json");
+const tableSpanish = readData("homework-table-spanish.json");
+const titlesSpanish = readData("family-homework-titles-es.json");
+
+// Student-visible chrome. Spanish covers only fixed instructions; every lesson
+// word (stems, choices, terms) must come from the lesson's own authored Spanish.
+const UI = {
+  en: {
+    homework: "Homework",
+    lesson: "Lesson",
+    standard: "Standard",
+    name: "Name: ",
+    period: "Period: ",
+    date: "Date: ",
+    goals: "Today's Goals",
+    content: "Content: ",
+    language: "Language: ",
+    keyWords: "Key Words",
+    practice: "Practice",
+    showWork: "Show your work. Use the blank space under each problem.",
+    noProblems: "No printable practice problems for this lesson.",
+    completeTable: "Complete the table.",
+    matchDefault: "Match each item on the left to its answer on the right.",
+    sortDefault: "Sort each item into the correct group.",
+    mistakeDefault: "Find the mistake.",
+    groups: "Groups: ",
+    starter: "Sentence starter: ",
+    step: "Step",
+    whichStep: "Which step has the mistake? Explain and fix it:",
+    item: "Item",
+    choices: "Answer choices",
+    wordPicture: (term) => `Picture illustrating the vocabulary word "${term}"`,
+  },
+  es: {
+    homework: "Tarea",
+    lesson: "Lección",
+    standard: "Estándar",
+    name: "Nombre: ",
+    period: "Período: ",
+    date: "Fecha: ",
+    keyWords: "Palabras clave",
+    practice: "Práctica",
+    showWork: "Muestra tu trabajo. Usa el espacio en blanco debajo de cada problema.",
+    noProblems: "Esta lección no tiene problemas de práctica para imprimir.",
+    completeTable: "Completa la tabla.",
+    matchDefault: "Relaciona cada elemento de la izquierda con su respuesta de la derecha.",
+    sortDefault: "Clasifica cada elemento en el grupo correcto.",
+    mistakeDefault: "Encuentra el error.",
+    groups: "Grupos: ",
+    starter: "Inicio de oración: ",
+    step: "Paso",
+    whichStep: "¿En qué paso está el error? Explica y corrígelo:",
+    item: "Elemento",
+    choices: "Opciones de respuesta",
+    wordPicture: (term) => `Ilustración de la palabra de vocabulario "${term}"`,
+  },
+};
+
+// A string with no word of two or more letters ("39.25 × 2", "(6, 24)") reads
+// the same in both languages.
+const isNeutral = (text) => !/[A-Za-z]{2,}/.test(String(text));
+
+/**
+ * Text picker for one language. English returns the English. Spanish returns
+ * the authored Spanish and records every English string it had to leave
+ * untranslated, so the caller can refuse to publish a half-translated sheet.
+ */
+function textPicker(lang, missing) {
+  return (en, es) => {
+    if (lang === "en") return en ?? "";
+    if (en == null || en === "") return "";
+    if (es) return es;
+    if (isNeutral(en)) return String(en);
+    missing.push(String(en));
+    return String(en);
+  };
+}
 
 // Rasterize a vocab term's SVG illustration to a PNG buffer so it embeds in
 // Word natively (no SVG-fallback quirks). Memoized per source file. Returns
@@ -158,71 +247,74 @@ function isPrintable(it) {
 }
 
 // ---------- per-type renderers (worksheet body) ----------
-function renderProblem(it, num) {
+// `T(en, es)` picks the text for the sheet's language (see textPicker).
+function renderProblem(it, num, T, ui) {
   const out = [];
   switch (it.type) {
     case "multiple-choice":
-      out.push(p(`${num}. ${it.stem || ""}`, { bold: true, after: 80 }));
+      out.push(p(`${num}. ${T(it.stem, it.stemEs)}`, { bold: true, after: 80 }));
       (it.choices || []).forEach((c, i) => {
-        out.push(p(`     ${LETTERS[i] || i}. ${c}`, { after: 40 }));
+        const choice = T(c, it.choicesEs?.[i] || choiceSpanish[c]);
+        out.push(p(`     ${LETTERS[i] || i}. ${choice}`, { after: 40 }));
       });
       out.push(...blankLines(1));
       break;
 
     case "fill-table": {
-      out.push(
-        p(`${num}. ${it.instructions || it.label || "Complete the table."}`, {
-          bold: true,
-          after: 80,
-        }),
-      );
-      out.push(buildWorksheetTable(it));
+      const label = it.instructions || it.label;
+      const heading = label
+        ? T(label, it.instructions ? it.instructionsEs : it.labelEs)
+        : ui.completeTable;
+      out.push(p(`${num}. ${heading}`, { bold: true, after: 80 }));
+      out.push(buildWorksheetTable(it, T));
       out.push(...blankLines(1));
       break;
     }
 
     case "matching-game": {
-      out.push(
-        p(`${num}. ${it.label || "Match each item on the left to its answer on the right."}`, {
-          bold: true,
-          after: 80,
-        }),
-      );
-      out.push(buildMatchingTable(it));
+      const heading = it.label ? T(it.label, it.labelEs) : ui.matchDefault;
+      out.push(p(`${num}. ${heading}`, { bold: true, after: 80 }));
+      out.push(buildMatchingTable(it, T, ui));
       out.push(...blankLines(1));
       break;
     }
 
     case "drag-sort": {
-      out.push(
-        p(`${num}. ${it.instructions || "Sort each item into the correct group."}`, {
-          bold: true,
-          after: 80,
-        }),
-      );
-      const cats = (it.categories || []).map((c) => c.label).join("   |   ");
-      if (cats) out.push(p(`Groups: ${cats}`, { italics: true, after: 80 }));
-      (it.items || []).forEach((item) => {
-        out.push(p(`   • ${item.text}   → __________________`, { after: 40 }));
+      const heading = it.instructions ? T(it.instructions, it.instructionsEs) : ui.sortDefault;
+      out.push(p(`${num}. ${heading}`, { bold: true, after: 80 }));
+      const cats = (it.categories || []).map((c) => T(c.label, c.labelEs)).join("   |   ");
+      if (cats) out.push(p(`${ui.groups}${cats}`, { italics: true, after: 80 }));
+      sortItems(it).forEach((item) => {
+        out.push(p(`   • ${T(item.text, item.textEs)}   → __________________`, { after: 40 }));
       });
       out.push(...blankLines(1));
       break;
     }
 
     case "error-analysis": {
-      out.push(p(`${num}. ${it.title || "Find the mistake."}`, { bold: true, after: 80 }));
+      const title = it.title ? T(it.title, it.titleEs) : ui.mistakeDefault;
+      out.push(p(`${num}. ${title}`, { bold: true, after: 80 }));
       (it.workedExample || []).forEach((step, i) => {
-        out.push(p(`   Step ${i + 1} (${step.label}): ${step.work}`, { after: 40 }));
+        const label = T(step.label, step.labelEs);
+        out.push(
+          p(`   ${ui.step} ${i + 1} (${label}): ${T(step.work, step.workEs)}`, { after: 40 }),
+        );
       });
-      out.push(p("Which step has the mistake? Explain and fix it:", { italics: true, after: 60 }));
+      out.push(p(ui.whichStep, { italics: true, after: 60 }));
       out.push(...blankLines(3));
       break;
     }
 
     case "open-response": {
-      out.push(p(`${num}. ${it.prompt || ""}`, { bold: true, after: 80 }));
+      const prompt = it.prompt || it.stem || "";
+      out.push(p(`${num}. ${T(prompt, it.promptEs || it.stemEs)}`, { bold: true, after: 80 }));
       if (it.sentenceFrame) {
-        out.push(p(`Sentence starter: ${it.sentenceFrame}`, { italics: true, after: 60 }));
+        out.push(
+          p(`${ui.starter}${T(it.sentenceFrame, it.sentenceFrameEs)}`, {
+            italics: true,
+            after: 60,
+          }),
+        );
       }
       out.push(...blankLines(4));
       break;
@@ -234,29 +326,50 @@ function renderProblem(it, num) {
   return out;
 }
 
+// drag-sort supports two config shapes:
+//  A) { items:[{text, category}], categories:[{id, label}] }
+//  B) { categories:[{label, items:[...], itemsEs:[...]}] }  (items nested per group)
+function sortItems(it) {
+  if (Array.isArray(it.items)) {
+    return it.items.map((item) => ({
+      text: item.text,
+      textEs: item.textEs,
+      category: item.category,
+    }));
+  }
+  return (it.categories || []).flatMap((c) =>
+    (c.items || []).map((text, i) => ({
+      text,
+      textEs: c.itemsEs?.[i],
+      category: c.id ?? c.label,
+    })),
+  );
+}
+
 // fill-table supports two config shapes:
 //  A) { columns:[...], rows:[{given, split, answer, expanded, ...}] }  (1-1)
 //  B) { headers:[...], rows:[[...]], editableCells:[{row,col,answer}] } (5-1)
-function buildWorksheetTable(it) {
+function buildWorksheetTable(it, T) {
   let headers = [];
+  let headersEs = [];
   let bodyRows = [];
+  const cell = (v) => (v == null || v === "" ? "" : T(String(v), tableSpanish[String(v)]));
 
   if (Array.isArray(it.headers) && Array.isArray(it.rows) && Array.isArray(it.rows[0])) {
     // Shape B
     headers = it.headers;
-    bodyRows = it.rows.map((row) =>
-      row.map((cell) => (cell == null || cell === "" ? "" : String(cell))),
-    );
+    headersEs = it.headersEs || [];
+    bodyRows = it.rows.map((row) => row.map(cell));
   } else if (Array.isArray(it.columns) && Array.isArray(it.rows)) {
     // Shape A — derive cell values from object keys, blanking out the "answer".
     headers = it.columns;
+    headersEs = it.columnsEs || [];
     const keys = headerKeysFor(it.columns, it.rows[0] || {});
-    bodyRows = it.rows.map((rowObj) =>
-      keys.map((k) => (k === "answer" ? "" : String(rowObj[k] ?? ""))),
-    );
+    bodyRows = it.rows.map((rowObj) => keys.map((k) => (k === "answer" ? "" : cell(rowObj[k]))));
   } else {
     return p("(table)", { italics: true });
   }
+  headers = headers.map((h, i) => T(h, headersEs[i] || tableSpanish[h]));
 
   const makeCell = (text, isHeader) =>
     new TableCell({
@@ -304,11 +417,14 @@ function headerKeysFor(columns, sampleRow) {
   return guesses;
 }
 
-function buildMatchingTable(it) {
+function buildMatchingTable(it, T, ui) {
   const pairs = it.pairs || [];
   // Left column = terms in order; right column = shuffled matches with letters
   // so students draw lines / write the letter.
-  const matches = pairs.map((pr, i) => ({ letter: LETTERS[i] || String(i), text: pr.match }));
+  const matches = pairs.map((pr, i) => ({
+    letter: LETTERS[i] || String(i),
+    text: T(pr.match, pr.matchEs),
+  }));
   // Simple deterministic shuffle (reverse) so the answers aren't aligned.
   const shuffled = [...matches].reverse();
 
@@ -323,15 +439,15 @@ function buildMatchingTable(it) {
     new TableRow({
       tableHeader: true,
       children: [
-        makeCell([new TextRun({ text: "Item", bold: true })]),
-        makeCell([new TextRun({ text: "Answer choices", bold: true })]),
+        makeCell([new TextRun({ text: ui.item, bold: true })]),
+        makeCell([new TextRun({ text: ui.choices, bold: true })]),
       ],
     }),
   ];
 
   const maxLen = Math.max(pairs.length, shuffled.length);
   for (let i = 0; i < maxLen; i++) {
-    const left = pairs[i] ? `____  ${pairs[i].term}` : "";
+    const left = pairs[i] ? `____  ${T(pairs[i].term, pairs[i].termEs)}` : "";
     const right = shuffled[i] ? `${shuffled[i].letter}. ${shuffled[i].text}` : "";
     rows.push(
       new TableRow({
@@ -384,8 +500,8 @@ function renderAnswer(it, num, commonMistake = "") {
     case "drag-sort": {
       out.push(p(`${num}. Correct groups:`, { bold: true, after: 40 }));
       const catLabel = {};
-      (it.categories || []).forEach((c) => (catLabel[c.id] = c.label));
-      (it.items || []).forEach((item) => {
+      (it.categories || []).forEach((c) => (catLabel[c.id ?? c.label] = c.label));
+      sortItems(it).forEach((item) => {
         out.push(
           p(`     ${item.text} → ${catLabel[item.category] || item.category}`, { after: 20 }),
         );
@@ -440,20 +556,40 @@ function fillTableAnswers(it) {
 }
 
 // ---------- document assembly ----------
-function buildDoc(id, config) {
+
+// "1-1" -> "1.1"; a small-group id like "1-1-group1" keeps only its lesson number.
+const lessonLabel = (id) => id.match(/^\d+-\d+/)?.[0].replace("-", ".") ?? id;
+
+function documentTitle(id, lang, titleText) {
+  const ui = UI[lang];
+  if (/^\d/.test(titleText)) return `${ui.homework} — ${titleText}`;
+  return `${ui.lesson} ${lessonLabel(id)} ${ui.homework} — ${titleText}`;
+}
+
+/**
+ * Build one homework document. Returns { doc } or, for Spanish when some printed
+ * word has no authored Spanish, { missing } listing what was untranslated.
+ */
+function buildDoc(id, config, lang = "en") {
+  const ui = UI[lang];
+  const missing = [];
+  const T = textPicker(lang, missing);
   const children = [];
+
+  const titleText =
+    lang === "es" ? T(config.title || "Lesson", titlesSpanish[id]) : config.title || "Lesson";
 
   // Header: title + standard
   children.push(
     new Paragraph({
       heading: HeadingLevel.HEADING_1,
       spacing: { after: 60 },
-      children: [new TextRun({ text: `${config.title || "Lesson"} — Homework`, bold: true })],
+      children: [new TextRun({ text: `${titleText} — ${ui.homework}`, bold: true })],
     }),
   );
   if (config.standard) {
     children.push(
-      p(`Lesson ${config.lessonId || id}  •  Standard ${config.standard}`, {
+      p(`${ui.lesson} ${config.lessonId || id}  •  ${ui.standard} ${config.standard}`, {
         italics: true,
         after: 160,
       }),
@@ -465,24 +601,25 @@ function buildDoc(id, config) {
     new Paragraph({
       spacing: { after: 200 },
       children: [
-        new TextRun({ text: "Name: ", bold: true }),
+        new TextRun({ text: ui.name, bold: true }),
         new TextRun({ text: "______________________     " }),
-        new TextRun({ text: "Period: ", bold: true }),
+        new TextRun({ text: ui.period, bold: true }),
         new TextRun({ text: "______     " }),
-        new TextRun({ text: "Date: ", bold: true }),
+        new TextRun({ text: ui.date, bold: true }),
         new TextRun({ text: "____________" }),
       ],
     }),
   );
 
-  // Objectives
-  if (config.contentObjective || config.languageObjective) {
-    children.push(sectionHeading("Today's Goals"));
+  // Objectives (authored in English only, so the Spanish sheet omits them
+  // rather than printing English on a Spanish page).
+  if (lang === "en" && (config.contentObjective || config.languageObjective)) {
+    children.push(sectionHeading(ui.goals));
     if (config.contentObjective) {
-      children.push(p(`Content: ${objectiveText(config.contentObjective)}`, { after: 60 }));
+      children.push(p(`${ui.content}${objectiveText(config.contentObjective)}`, { after: 60 }));
     }
     if (config.languageObjective) {
-      children.push(p(`Language: ${objectiveText(config.languageObjective)}`, { after: 60 }));
+      children.push(p(`${ui.language}${objectiveText(config.languageObjective)}`, { after: 60 }));
     }
   }
 
@@ -490,9 +627,10 @@ function buildDoc(id, config) {
   // mirroring the visual-vocabulary house pattern used in the notes packets.
   const vocab = Array.isArray(config.vocabulary) ? config.vocabulary : [];
   if (vocab.length) {
-    children.push(sectionHeading("Key Words"));
+    children.push(sectionHeading(ui.keyWords));
     vocab.forEach((v) => {
       const pic = vocabPng(v.term);
+      const shown = lang === "es" ? T(v.term, v.termEs) : v.term;
       if (pic) {
         children.push(
           new Paragraph({
@@ -504,19 +642,25 @@ function buildDoc(id, config) {
                 type: "png",
                 data: pic.data,
                 transformation: { width: pic.width, height: pic.height },
+                altText: {
+                  name: shown,
+                  title: shown,
+                  description: ui.wordPicture(shown),
+                },
               }),
             ],
           }),
         );
       }
-      const es = v.termEs ? ` (${v.termEs})` : "";
+      const es = lang === "en" && v.termEs ? ` (${v.termEs})` : "";
+      const gloss = lang === "es" && v.term !== shown ? ` (${v.term})` : "";
       children.push(
         new Paragraph({
           spacing: { after: pic ? 120 : 60 },
           keepNext: !!pic,
           children: [
-            new TextRun({ text: `${v.term}${es}`, bold: true }),
-            new TextRun({ text: ` — ${v.definition || ""}` }),
+            new TextRun({ text: `${shown}${es}${gloss}`, bold: true }),
+            new TextRun({ text: ` — ${T(v.definition || "", v.definitionEs)}` }),
           ],
         }),
       );
@@ -525,49 +669,65 @@ function buildDoc(id, config) {
 
   // Practice
   const problems = selectProblems(config.practice || {});
-  children.push(sectionHeading("Practice"));
-  children.push(
-    p("Show your work. Use the blank space under each problem.", { italics: true, after: 160 }),
-  );
+  children.push(sectionHeading(ui.practice));
+  children.push(p(ui.showWork, { italics: true, after: 160 }));
 
   if (!problems.length) {
-    children.push(p("No printable practice problems for this lesson.", { italics: true }));
+    children.push(p(ui.noProblems, { italics: true }));
   } else {
     problems.forEach((it, i) => {
-      for (const node of renderProblem(it, i + 1)) children.push(node);
+      for (const node of renderProblem(it, i + 1, T, ui)) children.push(node);
     });
   }
 
-  // Answer Key (page break before)
-  children.push(new Paragraph({ children: [new PageBreak()] }));
-  children.push(
-    new Paragraph({
-      heading: HeadingLevel.HEADING_1,
-      spacing: { after: 120 },
-      children: [new TextRun({ text: "Answer Key (Teacher)", bold: true })],
-    }),
-  );
-  if (!problems.length) {
-    children.push(p("No problems.", { italics: true }));
-  } else {
-    const commonMistake = config.practice?.commonMistake || "";
-    problems.forEach((it, i) => {
-      for (const node of renderAnswer(it, i + 1, commonMistake)) children.push(node);
-    });
+  // Answer Key (English sheet only; the PDF export strips it).
+  if (lang === "en") {
+    children.push(new Paragraph({ children: [new PageBreak()] }));
+    children.push(
+      new Paragraph({
+        heading: HeadingLevel.HEADING_1,
+        spacing: { after: 120 },
+        children: [new TextRun({ text: "Answer Key (Teacher)", bold: true })],
+      }),
+    );
+    if (!problems.length) {
+      children.push(p("No problems.", { italics: true }));
+    } else {
+      const commonMistake = config.practice?.commonMistake || "";
+      problems.forEach((it, i) => {
+        for (const node of renderAnswer(it, i + 1, commonMistake)) children.push(node);
+      });
+    }
   }
 
-  return new Document({
-    creator: "Neft Teacher",
-    title: `${config.title || id} Homework`,
-    sections: [
-      {
-        properties: {
-          page: { margin: { top: 720, bottom: 720, left: 900, right: 900 } },
-        },
-        children,
-      },
-    ],
+  if (missing.length) return { missing };
+
+  const heading = (size, color) => ({
+    run: { font: FONT, size, bold: true, color },
+    paragraph: { keepNext: true },
   });
+  return {
+    doc: new Document({
+      creator: "Neft Teacher",
+      title: documentTitle(id, lang, titleText),
+      description: `${ui.homework} — ${titleText}`,
+      styles: {
+        default: {
+          document: { run: { font: FONT, size: 22, language: { value: DOC_LANG[lang] } } },
+          heading1: heading(34, "183E56"),
+          heading2: heading(26, "176B70"),
+        },
+      },
+      sections: [
+        {
+          properties: {
+            page: { margin: { top: 720, bottom: 720, left: 900, right: 900 } },
+          },
+          children,
+        },
+      ],
+    }),
+  };
 }
 
 // Objectives may already start with "I can"; keep them clean and simple.
@@ -579,15 +739,39 @@ function objectiveText(obj) {
 // ---------- main ----------
 async function main() {
   const lessons = lessonConfigs();
-  let count = 0;
+  let written = 0;
+  let spanish = 0;
+  const kept = [];
+  const uncovered = [];
   for (const { id, config } of lessons) {
-    const doc = buildDoc(id, config);
-    const buffer = await Packer.toBuffer(doc);
     const outPath = join(lessonsDir, id, "homework.docx");
-    writeFileSync(outPath, buffer);
-    count++;
+    const esPath = join(lessonsDir, id, "homework-es.docx");
+    // Only lessons that already ship a homework.docx are (re)generated: adding
+    // one to a lesson that has none is a new download, not a refresh.
+    if (!existsSync(outPath)) continue;
+    // The Reveal-sourced file is the lesson's homework; it has no config to
+    // regenerate from and its Spanish does not exist, so leave both alone.
+    if (await isPublisherSourcedDocx(readFileSync(outPath))) {
+      kept.push(id);
+      continue;
+    }
+    writeFileSync(outPath, await Packer.toBuffer(buildDoc(id, config, "en").doc));
+    written++;
+
+    const es = buildDoc(id, config, "es");
+    if (es.doc) {
+      writeFileSync(esPath, await Packer.toBuffer(es.doc));
+      spanish++;
+    } else {
+      rmSync(esPath, { force: true });
+      uncovered.push(
+        `${id} (${es.missing.length} untranslated, e.g. "${es.missing[0].slice(0, 50)}")`,
+      );
+    }
   }
-  console.log(`Generated ${count} homework.docx files.`);
+  console.log(`Generated ${written} homework.docx and ${spanish} homework-es.docx files.`);
+  console.log(`Left ${kept.length} publisher-sourced homework.docx files untouched.`);
+  if (process.argv.includes("--list-uncovered")) console.log(uncovered.join("\n"));
 }
 
 main().catch((err) => {

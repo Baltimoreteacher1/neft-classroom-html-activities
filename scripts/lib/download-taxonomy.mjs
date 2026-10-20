@@ -22,6 +22,13 @@ export const TYPES = [
   { id: "handout", label: "Handout", group: "print", folder: "Handout" },
   { id: "homework", label: "Homework", group: "homework", folder: "Homework" },
   { id: "homework-docx", label: "Homework DOCX", group: "homework", folder: "Homework" },
+  {
+    id: "homework-docx-es",
+    label: "Homework DOCX (Español)",
+    group: "homework",
+    folder: "Homework",
+  },
+  { id: "homework-pdf", label: "Homework PDF", group: "homework", folder: "Homework" },
   { id: "student-practice", label: "Student Practice", group: "print", folder: "Practice" },
   { id: "activity-pack", label: "Activity Pack", group: "print", folder: "Activity-Pack" },
   { id: "sub-plan", label: "Sub Plan / Printable Packet", group: "print", folder: "Sub-Plan" },
@@ -62,6 +69,16 @@ export const TYPES = [
     folder: "Small-Group",
   },
   { id: "catchup-lesson", label: "Catch-Up Station", group: "small-groups", folder: "Catch-Up" },
+
+  // Practice worksheet PDFs — the print-ready form of worksheet.html / -2 / -level-0
+  // (scripts/generate-worksheet-pdf.mjs). Student sheets only; keys stay on their
+  // gated *-answer-key.html pages.
+  {
+    id: "worksheet-pdf",
+    label: "Practice Worksheet PDF",
+    group: "worksheets",
+    folder: "Worksheet-PDF",
+  },
 
   // MSTAR practice worksheet — the per-lesson printable rehearsal of the state
   // test's formats (scripts/generate-mstar-worksheets.mjs). The HTML page and
@@ -165,6 +182,8 @@ export const PRESETS = [
       "handout",
       "homework",
       "homework-docx",
+      "homework-docx-es",
+      "homework-pdf",
       "interactive-bundle",
       "teacher-notes",
     ],
@@ -180,6 +199,9 @@ export const PRESETS = [
       "handout",
       "homework",
       "homework-docx",
+      "homework-docx-es",
+      "homework-pdf",
+      "worksheet-pdf",
       "student-practice",
       "practice-workbook-docx",
       "practice-workbook-pdf",
@@ -199,6 +221,7 @@ export const PRESETS = [
       "student-practice",
       "practice-workbook-docx",
       "practice-workbook-pdf",
+      "worksheet-pdf",
       "small-group-worksheet",
       "small-group-practice",
       "mstar-practice",
@@ -217,6 +240,7 @@ export const PRESETS = [
       "practice-workbook-docx",
       "notes-docx",
       "homework-docx",
+      "homework-docx-es",
       "small-group-homework",
       "handout",
       "student-practice",
