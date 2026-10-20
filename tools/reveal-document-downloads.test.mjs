@@ -29,13 +29,27 @@ for (const resource of resources) {
   if (!resourcesByUrl.has(resource.url)) resourcesByUrl.set(resource.url, []);
   resourcesByUrl.get(resource.url).push(resource);
 }
-assert.equal(manifest.sourceFileCount, 2392);
-assert.equal(manifest.documents.length, 2390);
+// 2390 documents come from the Desktop import. The eight unit student homework
+// packets (Units 2-9, Word + PDF = 16 documents, one source per lesson sheet) are
+// assembled from the lesson packets by scripts/build-unit-hw-packets.mjs.
+const unitPackets = manifest.documents.filter((doc) =>
+  /-student-hw-packet\.(docx|pdf)$/.test(doc.url),
+);
+assert.equal(unitPackets.length, 16);
+assert.deepEqual(
+  [...new Set(unitPackets.map((doc) => doc.unit))].sort((a, b) => a - b),
+  [2, 3, 4, 5, 6, 7, 8, 9],
+);
+assert.ok(
+  unitPackets.every((doc) => !doc.teacherOnly && doc.category === "homework" && !doc.targetLesson),
+);
+assert.equal(manifest.sourceFileCount, 2490);
+assert.equal(manifest.documents.length, 2406);
 assert.equal(
   manifest.documents.reduce((sum, doc) => sum + doc.sources.length, 0),
-  2392,
+  2490,
 );
-assert.equal(new Set(manifest.documents.map((doc) => doc.url)).size, 2390);
+assert.equal(new Set(manifest.documents.map((doc) => doc.url)).size, 2406);
 assert.equal(new Set(manifest.documents.map((doc) => doc.sourceLesson).filter(Boolean)).size, 54);
 const decks = manifest.documents.filter((doc) => doc.category === "source-slides");
 assert.equal(decks.length, 55);
