@@ -201,6 +201,20 @@ const COVERAGE = [
     /^(sitemap\.xml|scripts\/(generate-sitemap\.mjs|lib\/sitemap\.mjs)|tools\/sitemap\.test\.mjs)$/,
     ["validate:static", "test"],
   ],
+  // NOTES PACKET PDFs — the print stylesheet, the PDF renderer and the 672
+  // rendered binaries. `validate:notes-pdf-layout` is the only check that can see
+  // a header-only page or a printed "Type your name" placeholder (both lint clean
+  // and render fine on screen); `validate:pdf-tagged` holds the accessibility
+  // stamp that the renderer's post-processing must not lose.
+  [
+    /^(scripts\/(generate-pdf|validate-pdf-tagged)\.mjs|scripts\/lib\/notes-print\.mjs|tools\/validate-notes-pdf-layout\.mjs|lessons\/[^/]+\/downloads\/(\.pdf-manifest\.json|[^/]+-notes(-teacher)?(-l[123])?\.pdf))$/,
+    [
+      "validate:notes-pdf-layout",
+      "validate:pdf-tagged",
+      "validate:downloads",
+      "validate:js-syntax",
+    ],
+  ],
   [
     /^(math\/games\/|games\/3d\/|tools\/(percent-construction\.test|verify-game-transformation-browser)\.mjs$)/,
     ["validate:game-transformation-browser", "validate:game-rules", "test"],
@@ -387,6 +401,7 @@ const COVERAGE = [
       "test",
       "validate:lesson-supports",
       "validate:support-equivalence",
+      "validate:notes-pdf-layout",
       "validate:supports",
       "validate:student-supports",
       "validate:js-syntax",

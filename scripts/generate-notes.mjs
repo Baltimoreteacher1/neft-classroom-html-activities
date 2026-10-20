@@ -8,6 +8,7 @@ import { deriveWorkedSteps } from "@eduwonderlab/engine/core/worked-steps.js";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import { workedFigure, workedStepFigures } from "./lib/learn-figures.mjs";
 import { inScope, lessonScope } from "./lib/lesson-scope.mjs";
+import { notesPrintCss } from "./lib/notes-print.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -2512,6 +2513,7 @@ ${styles(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
     .ss-grip,.ss-move{display:none;}
   }
 </style>
+${notesPrintCss(`${cfg.title}${standardPlain ? " · " + standardPlain : ""}`)}
 <script>
   if(/[?&]embed=1(?:&|$)/.test(location.search)){document.documentElement.classList.add("nt-embed");}
   (function() {

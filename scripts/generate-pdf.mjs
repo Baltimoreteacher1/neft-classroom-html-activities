@@ -43,7 +43,7 @@ const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 
 // Bump when the rendering pipeline changes in a way that should invalidate
 // every previously-rendered PDF (flags, level injection, tagging, etc.).
-const GENERATOR_VERSION = "2-leveled-tagged";
+const GENERATOR_VERSION = "3-print-layout";
 
 // The leveled-mode tiers the notes template understands (see generate-notes.mjs:
 // html.level-l1 / l2 / l3). l2 is the on-screen default. We keep the default
@@ -55,6 +55,21 @@ const LEVELS = [
 ];
 
 const DOC_LANG = "en-US";
+
+// The notes page asks for its fonts the way the site serves them
+// (/assets/fonts/<file>), which a file:// render cannot resolve. Point those at
+// the repo's own copies so the PDF embeds the same Atkinson Hyperlegible the
+// site uses, and fail loudly when a font file is missing rather than silently
+// printing a fallback face.
+const FONT_DIR = join(root, "public", "assets", "fonts");
+function localizeFonts(html) {
+  return html.replace(/url\(\/assets\/fonts\/([\w.-]+)\)/g, (_match, file) => {
+    if (!existsSync(join(FONT_DIR, file))) {
+      throw new Error(`missing self-hosted font ${file} in ${FONT_DIR}`);
+    }
+    return `url(file://${join(FONT_DIR, file)})`;
+  });
+}
 
 function findChrome() {
   const fromEnv = process.env.CHROME_PATH || process.env.PUPPETEER_EXECUTABLE_PATH;
@@ -161,6 +176,38 @@ const ACROFORM_CATALOG_ENTRY =
   "<</Type/Annot/Subtype/Widget/FT/Btn/Ff 0/T(exit_check_calculations)/TU(3. Calculations Double-Checked)/V/Off/AS/Off/Rect[390 140 404 154]>>" +
   "]>>";
 
+// Patching the catalog changes its byte length, which moves every later object and
+// leaves the xref table pointing at the old offsets. Readers rebuild a broken table
+// by scanning (and some report syntax errors while doing it), so rewrite it from the
+// real object offsets. Chrome/Skia writes one classic table: `xref\n0 N\n` + N
+// 20-byte entries, `trailer`, `startxref\n<offset>`.
+function rebuildXref(text) {
+  const head = text.match(/xref\n0 (\d+)\n/);
+  if (!head) return text;
+  const size = Number(head[1]);
+  const xrefAt = head.index;
+  const tableStart = xrefAt + head[0].length;
+  const offsets = new Array(size).fill(null);
+  for (const m of text.slice(0, xrefAt).matchAll(/(?:^|\n)(\d+) 0 obj\n/g)) {
+    const num = Number(m[1]);
+    if (num < size) offsets[num] = m.index + (m[0].startsWith("\n") ? 1 : 0);
+  }
+  let table = "0000000000 65535 f \n";
+  for (let n = 1; n < size; n++) {
+    table +=
+      offsets[n] == null
+        ? "0000000000 00000 f \n"
+        : `${String(offsets[n]).padStart(10, "0")} 00000 n \n`;
+  }
+  const tableEnd = tableStart + size * 20;
+  if (text.slice(tableEnd, tableEnd + 7) !== "trailer") return text;
+  return (
+    text.slice(0, tableStart) +
+    table +
+    text.slice(tableEnd).replace(/startxref\n\d+/, `startxref\n${xrefAt}`)
+  );
+}
+
 export function stampAccessibility(outPath, title) {
   let buf;
   try {
@@ -190,6 +237,7 @@ export function stampAccessibility(outPath, title) {
   }
 
   if (text === orig) return false;
+  text = rebuildXref(text);
   try {
     writeFileSync(outPath, Buffer.from(text, "latin1"));
     return true;
@@ -294,7 +342,9 @@ async function renderAllVariants(chrome, { id, srcHtml, baseName, outDir, manife
     }
 
     attempted++;
-    const renderHtml = variant.level == null ? srcHtml : injectLevel(srcHtml, variant.level);
+    const renderHtml = localizeFonts(
+      variant.level == null ? srcHtml : injectLevel(srcHtml, variant.level),
+    );
 
     // Render from a temp HTML that lives in the lesson dir so relative asset
     // URLs (images, etc.) still resolve against the original location.
@@ -342,7 +392,7 @@ async function renderSingle(chrome, { srcHtml, outDir, baseName, manifest, force
   const tmpHtmlPath = join(outDir, "..", tmpName);
   let ok = false;
   try {
-    writeFileSync(tmpHtmlPath, srcHtml);
+    writeFileSync(tmpHtmlPath, localizeFonts(srcHtml));
     ok = await renderPdf(chrome, tmpHtmlPath, outPath);
   } catch (e) {
     console.warn(`generate-pdf: failed for ${baseName}: ${e.message}`);
