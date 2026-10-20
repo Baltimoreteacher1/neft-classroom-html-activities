@@ -129,8 +129,6 @@ const els = {
   tptKnowCard: document.querySelector("#tpt-know-card"),
   tptQuickForm: document.querySelector("#tpt-quick-form"),
   tptQuickInput: document.querySelector("#tpt-quick-input"),
-  sprintWrap: document.querySelector("#sprint-wrap"),
-  sprintTimer: document.querySelector("#sprint-timer"),
   toggleDecomposer: document.querySelector("#toggle-decomposer"),
   factDecomposer: document.querySelector("#fact-decomposer"),
 };
@@ -346,7 +344,6 @@ function renderSkillCard(skill) {
         <div class="skill-action-row">
           <button type="button" class="outline-action quick-drill-btn" data-quick-skill="${skill.id}">⚡ Quick 5</button>
           <button type="button" class="outline-action flashcard-btn" data-flashcard-skill="${skill.id}">🃏 Flashcards</button>
-          <button type="button" class="outline-action sprint-btn" data-sprint-skill="${skill.id}">⏱️ 60s Sprint</button>
           <button type="button" class="outline-action learn-btn" data-visual-skill="${skill.id}">💡 See Idea</button>
         </div>
       </div>
@@ -457,7 +454,7 @@ function renderMastery() {
 }
 
 // Each mode tab shows one panel; a tab list is one stop for Tab, and the arrow keys move between its tabs.
-const MODE_PANEL = { learn: "learn-panel", visual: "visual-panel", guided: "drill-panel", quick: "drill-panel", flashcard: "drill-panel", sprint: "drill-panel", practice: "drill-panel", streak: "drill-panel" };
+const MODE_PANEL = { learn: "learn-panel", visual: "visual-panel", guided: "drill-panel", quick: "drill-panel", flashcard: "drill-panel", practice: "drill-panel", streak: "drill-panel" };
 function renderModeTabs(mixed = false) {
   els.modeTabs.innerHTML = mixed
     ? `<button role="tab" aria-selected="true" aria-controls="drill-panel" data-mode="${state.mode}">${state.mode === "daily" ? "Today's 10" : "Mixed review"}</button>`
@@ -467,7 +464,6 @@ function renderModeTabs(mixed = false) {
         ["guided", "Guided practice"],
         ["quick", "Quick 5"],
         ["flashcard", "🃏 Flashcards"],
-        ["sprint", "⚡ 60s Sprint"],
         ["practice", "Practice 10"],
         ["streak", "10 in a row"],
       ]
@@ -539,7 +535,7 @@ function setMode(mode) {
       });
     }
   } else {
-    beginSession(mode, mode === "streak" || mode === "sprint" ? Infinity : mode === "quick" ? 5 : mode === "guided" ? 5 : 10);
+    beginSession(mode, mode === "streak" ? Infinity : mode === "quick" ? 5 : mode === "guided" ? 5 : 10);
   }
 }
 
@@ -560,15 +556,10 @@ function createSession(mode, target, queue = null) {
     independentCorrect: 0,
     diagnosticResults: {},
     finished: false,
-    sprintSecs: 60,
   };
 }
 
 function beginSession(mode, target, queue = null) {
-  if (state.sprintInterval) {
-    clearInterval(state.sprintInterval);
-    state.sprintInterval = null;
-  }
   state.session = createSession(mode, target, queue);
   state.recentQuestions = [];
   state.item = null;
@@ -580,28 +571,7 @@ function beginSession(mode, target, queue = null) {
   document.querySelector(".problem-stage").hidden = false;
   els.answerForm.hidden = false;
   els.independentPractice.hidden = true;
-  const isSprint = mode === "sprint";
-  if (els.sprintWrap) els.sprintWrap.hidden = !isSprint;
-  if (isSprint) {
-    state.session.sprintSecs = 60;
-    if (els.sprintTimer) els.sprintTimer.textContent = "60s";
-    state.sprintInterval = setInterval(() => {
-      if (!state.session || state.session.mode !== "sprint" || state.session.finished) {
-        clearInterval(state.sprintInterval);
-        state.sprintInterval = null;
-        return;
-      }
-      state.session.sprintSecs -= 1;
-      if (els.sprintTimer) els.sprintTimer.textContent = `${state.session.sprintSecs}s`;
-      if (state.session.sprintSecs <= 0) {
-        clearInterval(state.sprintInterval);
-        state.sprintInterval = null;
-        chime("win");
-        finishSession();
-      }
-    }, 1000);
-  }
-  els.resetButton.textContent = mode === "guided" ? "Try another guided set" : mode === "sprint" ? "Start another 60s sprint" : "Start another set";
+  els.resetButton.textContent = mode === "guided" ? "Try another guided set" : "Start another set";
   els.sessionType.textContent =
     mode === "streak"
       ? "Streak · 10 in a row"
@@ -609,15 +579,13 @@ function beginSession(mode, target, queue = null) {
         ? "Quick 5 Drill"
         : mode === "flashcard"
           ? "🃏 Flashcard Drill · 10 Cards"
-          : mode === "sprint"
-            ? "⚡ 60s Fluency Sprint"
-            : mode === "guided"
-              ? "Guided practice · 5"
-              : mode === "daily"
-                ? "Today's 10"
-                : mode === "mixed"
-                  ? "Mixed review"
-                  : "Practice 10";
+          : mode === "guided"
+            ? "Guided practice · 5"
+            : mode === "daily"
+              ? "Today's 10"
+              : mode === "mixed"
+                ? "Mixed review"
+                : "Practice 10";
   if (mode === "adaptive") els.sessionType.textContent = "Adaptive practice · 10";
   if (mode === "diagnostic") els.sessionType.textContent = "Starting-point checkup · 10";
   if (mode === "repair") els.sessionType.textContent = "Repair practice";
@@ -878,7 +846,7 @@ function printMasteryCertificate(skill) {
   `);
 }
 
-function printTimedDrillSheet() {
+function printPracticeSheet() {
   const grade = getGrade(state.grade);
   const pool = state.skill ? [state.skill] : state.mixedPool || grade.skills;
   const seed = Date.now() % 1000000;
@@ -913,18 +881,17 @@ function printTimedDrillSheet() {
     .join("");
 
   printHtml(`
-    <article class="timed-drill-print">
-      <header class="timed-drill-header">
+    <article class="practice-sheet-print">
+      <header class="practice-sheet-header">
         <div class="drill-top-row">
-          <h1>⚡ 1-Minute Math Fluency Sprint</h1>
+          <h1>Math Fluency Practice</h1>
           <div class="drill-meta-inputs">
             <span>Name: ____________________</span>
             <span>Date: _________</span>
-            <span>Time: 60s</span>
             <span>Score: ____ / 24</span>
           </div>
         </div>
-        <p class="drill-directions">Directions: Set a timer for 1 minute. Solve as many problems as you can with steady accuracy. Ready, set, go!</p>
+        <p class="drill-directions">Directions: Take your time. Solve each problem carefully, check your work, and work at your own pace.</p>
       </header>
       <div class="drill-grid">
         ${drillProblems}
@@ -935,16 +902,16 @@ function printTimedDrillSheet() {
 
       <div class="pfc-page-break"></div>
 
-      <header class="timed-drill-header key-header">
+      <header class="practice-sheet-header key-header">
         <div class="drill-top-row">
-          <h1>⚡ Answer Key · 1-Minute Sprint</h1>
+          <h1>Answer Key · Math Fluency Practice</h1>
           <div class="drill-meta-inputs">
             <span>${grade.label}</span>
             <span>${escapeHtml(state.skill?.title || "Mixed Practice")}</span>
             <span>Set #${seed}</span>
           </div>
         </div>
-        <p class="drill-directions">Teacher &amp; Parent Scoring Key: 20-24 Correct = Automatic Fluency | 15-19 = Getting Strong | Under 15 = Practice with Flashcards</p>
+        <p class="drill-directions">Teacher &amp; Parent Key: check each answer together and revisit any missed facts with Flashcards.</p>
       </header>
       <div class="drill-grid">
         ${keyProblems}
@@ -1264,13 +1231,6 @@ function finalizeProblem(correct) {
   els.nextButton.textContent = session.answered >= session.target || streakComplete(session) ? "Finish set" : "Next problem";
   updateSessionHeader();
   saveActiveSession();
-  if (correct && session.mode === "sprint" && session.sprintSecs > 0) {
-    setTimeout(() => {
-      if (state.session?.mode === "sprint" && state.session.sprintSecs > 0 && !state.session.finished) {
-        nextProblem();
-      }
-    }, 160);
-  }
 }
 
 function updateSkillRecord(skill, correct, mode) {
@@ -1340,19 +1300,12 @@ function finishSession() {
   if (!state.session || state.session.finished) return;
   const session = state.session;
   session.finished = true;
-  if (state.sprintInterval) {
-    clearInterval(state.sprintInterval);
-    state.sprintInterval = null;
-  }
-  if (els.sprintWrap) els.sprintWrap.hidden = true;
   writeLocal(profileKey(SESSION_KEY, activeProfile), null);
   document.querySelector(".problem-stage").hidden = true;
   els.answerForm.hidden = true;
   els.feedback.hidden = true;
   els.summary.hidden = false;
   const accuracyPercent = session.answered ? Math.round((session.correct / session.answered) * 100) : 0;
-  const sprintMedal =
-    session.correct >= 15 ? "🥇 Gold Speed Medal" : session.correct >= 10 ? "🥈 Silver Speed Medal" : session.correct >= 5 ? "🥉 Bronze Speed Medal" : "🌟 Fluency Star";
   els.summaryTitle.textContent =
     streakComplete(session)
       ? "Ten in a row!"
@@ -1360,15 +1313,11 @@ function finishSession() {
         ? "Quick 5 complete"
         : session.mode === "flashcard"
           ? "Flashcard set complete"
-          : session.mode === "sprint"
-            ? `⚡ 60s Sprint Complete · ${sprintMedal}!`
-            : session.mode === "guided"
-              ? "Guided practice complete"
-              : "Practice complete";
+          : session.mode === "guided"
+            ? "Guided practice complete"
+            : "Practice complete";
   els.summaryCopy.textContent =
-    session.mode === "sprint"
-      ? `You solved ${session.correct} facts in 60 seconds with ${accuracyPercent}% accuracy. ${session.correct >= 10 ? "Incredible automaticity!" : "Great speed and focus. Every sprint builds automatic recall."}`
-      : session.mode === "guided"
+    session.mode === "guided"
       ? "You worked through five coached examples. Continue to Practice 10 when the steps feel familiar, or repeat this guided set."
       : streakComplete(session)
         ? "Ten correct answers in a row, each one at your own pace. That is steady, careful work."
@@ -1411,7 +1360,7 @@ function finishSession() {
   const next = recommendations(state.tutor, state.grade)[0];
   const foundations = prerequisites(next.skill);
   const profileBrief = buildFluencyProfileSummary(session, accuracyPercent, next);
-  els.summaryNext.innerHTML = `<h4>A useful next step</h4><p>${escapeHtml(next.reason)}: ${escapeHtml(next.skill.title)}.</p><div class="button-row"><button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">Explore the visual lesson</button><button class="outline-action" data-view="path">See my learning path</button></div><div class="drill-again-actions button-row" style="margin-top:0.75rem"><button class="outline-action" type="button" data-start-quick-drill>⚡ Drill 5 more</button><button class="outline-action flashcard-btn" type="button" data-start-flashcard-drill>🃏 Flashcards</button><button class="outline-action sprint-btn" type="button" data-start-sprint-drill>⏱️ 60s Sprint</button><button class="outline-action" type="button" data-start-streak-drill>🔥 10 in a row challenge</button><button class="outline-action" type="button" data-print-flashcards>🖨️ Print Flashcards</button><button class="outline-action" type="button" data-print-timed-drill>🖨️ 1-Min Drill Sheet</button>${streakComplete(session) || accuracyPercent === 100 || (session.mode === 'sprint' && session.correct >= 10) ? `<button class="outline-action" type="button" data-print-cert>🏆 Print Certificate</button>` : ''}</div>${session.mode === 'diagnostic' && foundations.length ? `<p>Helpful foundation: <button class="text-action" data-open-key="${tutorSkillKey(foundations[0])}" data-open-mode="visual">${escapeHtml(foundations[0].title)} (Grade ${foundations[0].grade})</button></p>` : ''}${state.skill ? `<p class="teach-back-prompt">${escapeHtml(transferPrompt(state.skill))}</p>` : ''}${profileBrief}`;
+  els.summaryNext.innerHTML = `<h4>A useful next step</h4><p>${escapeHtml(next.reason)}: ${escapeHtml(next.skill.title)}.</p><div class="button-row"><button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">Explore the visual lesson</button><button class="outline-action" data-view="path">See my learning path</button></div><div class="drill-again-actions button-row" style="margin-top:0.75rem"><button class="outline-action" type="button" data-start-quick-drill>⚡ Drill 5 more</button><button class="outline-action flashcard-btn" type="button" data-start-flashcard-drill>🃏 Flashcards</button><button class="outline-action" type="button" data-start-streak-drill>🔥 10 in a row challenge</button><button class="outline-action" type="button" data-print-flashcards>🖨️ Print Flashcards</button><button class="outline-action" type="button" data-print-practice-sheet>🖨️ Practice Sheet</button>${streakComplete(session) || accuracyPercent === 100 ? `<button class="outline-action" type="button" data-print-cert>🏆 Print Certificate</button>` : ''}</div>${session.mode === 'diagnostic' && foundations.length ? `<p>Helpful foundation: <button class="text-action" data-open-key="${tutorSkillKey(foundations[0])}" data-open-mode="visual">${escapeHtml(foundations[0].title)} (Grade ${foundations[0].grade})</button></p>` : ''}${state.skill ? `<p class="teach-back-prompt">${escapeHtml(transferPrompt(state.skill))}</p>` : ''}${profileBrief}`;
   saveProgress(); renderOverallStats();
   announce("Practice saved for this learner on this device.");
 }
@@ -1677,11 +1626,6 @@ els.skillGrid.addEventListener("click", (event) => {
   const flashcard = event.target.closest("[data-flashcard-skill]");
   if (flashcard) {
     openSkill(flashcard.dataset.flashcardSkill, "flashcard");
-    return;
-  }
-  const sprint = event.target.closest("[data-sprint-skill]");
-  if (sprint) {
-    openSkill(sprint.dataset.sprintSkill, "sprint");
     return;
   }
   const button = event.target.closest("[data-skill]");
@@ -2505,16 +2449,12 @@ els.summary?.addEventListener("click", (event) => {
     setMode("streak");
     return;
   }
-  if (event.target.closest("[data-start-sprint-drill]")) {
-    setMode("sprint");
-    return;
-  }
   if (event.target.closest("[data-print-flashcards]")) {
     printFlashcardDeck();
     return;
   }
-  if (event.target.closest("[data-print-timed-drill]")) {
-    printTimedDrillSheet();
+  if (event.target.closest("[data-print-practice-sheet]")) {
+    printPracticeSheet();
     return;
   }
   if (event.target.closest("[data-print-cert]")) {

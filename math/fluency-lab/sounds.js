@@ -7,7 +7,6 @@ const NOTES = {
   win: [523.25, 659.25, 783.99, 1046.5],
   hesitation: [261.63, 329.63],
   streak: [523.25, 659.25, 783.99, 1046.5, 1318.51],
-  sprint: [523.25, 659.25, 783.99, 1046.5],
 };
 let enabled = null;
 let context = null;
