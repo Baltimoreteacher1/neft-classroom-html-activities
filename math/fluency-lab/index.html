@@ -180,7 +180,7 @@
             <p id="session-insight" class="session-insight" aria-live="polite"></p>
 
             <div id="flashcard-stage" class="flashcard-stage" hidden>
-              <!-- Clear, Teachers-Pay-Teachers (TpT) Quality Math Flashcard -->
+              <!-- Teachers-Pay-Teachers (TpT) Best-Seller Quality Math Flashcard -->
               <div class="tpt-flashcard" id="tpt-flashcard">
                 <div class="tpt-punch-hole" aria-hidden="true" title="Ring hole punch"></div>
                 <div class="tpt-card-header">
@@ -191,30 +191,31 @@
                   <div class="tpt-card-face tpt-card-front">
                     <span class="tpt-face-prompt">MATH FLASHCARD</span>
                     <div id="tpt-front-equation" class="tpt-equation"></div>
-                    <div class="tpt-front-actions">
-                      <button type="button" id="tpt-flip-button" class="tpt-flip-action">
-                        <span aria-hidden="true">🔄</span> Flip Card <kbd>Space</kbd>
-                      </button>
-                    </div>
                     <form id="tpt-quick-form" class="tpt-quick-form" novalidate>
                       <input
                         type="text"
                         id="tpt-quick-input"
                         class="tpt-quick-input"
-                        placeholder="Type answer (or press Space to flip)..."
+                        placeholder="Type answer & press Enter..."
                         autocomplete="off"
                         autocapitalize="off"
                         spellcheck="false"
                       />
                       <button type="submit" class="tpt-quick-submit">Check</button>
                     </form>
+                    <div class="tpt-front-actions">
+                      <button type="button" id="tpt-flip-button" class="tpt-flip-action">
+                        <span aria-hidden="true">🔄</span> Flip Card <kbd>Space</kbd>
+                      </button>
+                    </div>
                   </div>
                   <div class="tpt-card-face tpt-card-back">
+                    <div id="tpt-back-banner" class="tpt-back-banner" hidden></div>
                     <span class="tpt-face-prompt tpt-prompt-success">ANSWER &amp; STRATEGY</span>
                     <div id="tpt-back-equation" class="tpt-equation tpt-answer-revealed"></div>
                     <div id="tpt-back-strategy" class="tpt-strategy-box"></div>
                     <div class="tpt-self-eval">
-                      <p class="tpt-eval-label">How did you do?</p>
+                      <p class="tpt-eval-label">Self-Check: Rate your recall</p>
                       <div class="tpt-eval-buttons">
                         <button type="button" id="tpt-repeat-card" class="tpt-rate-btn tpt-btn-repeat">
                           <span aria-hidden="true">🔁</span> Still Practicing <kbd>1</kbd>
@@ -223,9 +224,14 @@
                           <span aria-hidden="true">⭐</span> I Know It! <kbd>2</kbd>
                         </button>
                       </div>
-                      <button type="button" id="tpt-flip-back" class="tpt-flip-back-link">
-                        ↩ Turn card back over
-                      </button>
+                      <div class="tpt-back-actions">
+                        <button type="button" id="tpt-next-card" class="tpt-next-action">
+                          Next Card → <kbd>Space</kbd>
+                        </button>
+                        <button type="button" id="tpt-flip-back" class="tpt-flip-back-link">
+                          ↩ Turn card back over
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -235,7 +241,7 @@
             <div class="problem-meta">
               <span id="problem-number">Problem 1 of 10</span>
               <div class="problem-meta-actions">
-                <button id="toggle-interactive-solver" class="icon-button" type="button" aria-expanded="false" aria-controls="interactive-solver-workspace" title="Step-by-step interactive workspace where you can insert numbers and use regrouping">
+                <button id="toggle-interactive-solver" class="icon-button" type="button" aria-expanded="false" aria-controls="interactive-solver-workspace" title="Step-by-step interactive workspace where you can insert numbers and use regrouping" hidden>
                   🧮 Interactive Solver
                 </button>
                 <button id="hear-problem" class="icon-button" type="button" aria-label="Read the problem aloud">
@@ -243,7 +249,7 @@
                 </button>
               </div>
             </div>
-            <div class="problem-arena">
+            <div class="problem-arena" id="problem-arena">
               <div class="problem-question-zone">
                 <p id="question" class="question"></p>
                 <p id="problem-topic" class="problem-topic"></p>
@@ -262,18 +268,19 @@
                       spellcheck="false"
                       required
                     />
+                    <span id="answer-unit" class="answer-unit" hidden></span>
                     <button id="check-answer" class="primary-action" type="submit">Check</button>
                     <button id="fix-answer-btn" class="primary-action fix-answer-btn" type="button" hidden>🔧 Fix My Answer</button>
                     <button id="next-problem" class="primary-action" type="button" hidden>Next problem</button>
                   </div>
                   <div id="choice-answers" class="choice-answers" hidden></div>
-                  <div class="answer-actions">
-                    <button id="show-hint" class="outline-action" type="button">Show a step</button>
-                    <button id="toggle-problem-visual" class="outline-action" type="button" aria-expanded="true">Hide the model</button>
-                    <button id="skip-checkup" class="outline-action" type="button" hidden>I’m not sure yet</button>
-                  </div>
                 </form>
               </div>
+            </div>
+            <div class="problem-actions-bar">
+              <button id="show-hint" class="outline-action" type="button">💡 Show a step</button>
+              <button id="toggle-problem-visual" class="outline-action" type="button" aria-expanded="false" hidden>📐 Show the model</button>
+              <button id="skip-checkup" class="outline-action" type="button" hidden>I’m not sure yet</button>
             </div>
 
             <div id="interactive-solver-workspace" class="interactive-solver-workspace" hidden></div>

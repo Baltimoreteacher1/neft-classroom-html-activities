@@ -135,6 +135,10 @@ const els = {
   sprintTimer: document.querySelector("#sprint-timer"),
   toggleSolver: document.querySelector("#toggle-interactive-solver"),
   solverWorkspace: document.querySelector("#interactive-solver-workspace"),
+  tptBackBanner: document.querySelector("#tpt-back-banner"),
+  tptNextCard: document.querySelector("#tpt-next-card"),
+  answerUnit: document.querySelector("#answer-unit"),
+  problemArena: document.querySelector("#problem-arena"),
 };
 
 const state = {
@@ -637,13 +641,13 @@ function nextProblem(restoredItem = null) {
   els.hintButton.hidden = state.initialSupport || state.session.mode === "diagnostic";
   els.skip.hidden = state.session.mode !== "diagnostic";
   // A stretch problem (level 2) starts without the model; opening it before the first answer counts as help.
-  mountProblemModel(state.session.mode !== "diagnostic", adapting && (state.item.level ?? level) === 2);
+  mountProblemModel(state.session.mode !== "diagnostic", true);
   els.repair.hidden = !adapting;
   els.checkButton.hidden = false;
   els.answerInput.value = "";
   els.answerInput.disabled = false;
   els.problemNumber.textContent = state.session.mode === "streak" ? `Problem ${state.session.answered + 1}` : `Problem ${state.session.answered + 1} of ${state.session.target}`;
-  els.question.textContent = state.item.question;
+  formatProblemArena(state.item);
   els.topic.textContent = `${skill.title} · Grade ${skill.grade}`;
   els.insight.textContent = state.session.mode === "diagnostic" ? "One sample per skill. Choose “I’m not sure yet” whenever you need to." : state.session.queue?.[state.session.answered]?.purpose || (state.initialSupport ? "A smaller step with coaching. We’ll build back toward independent work." : adapting && level === 2 ? "Your recent answers were strong. Try this one independently, then explain a check." : adapting ? "Work at your pace. Help is here when you need it." : "");
   els.guidedCoach.hidden = !state.initialSupport;
@@ -669,8 +673,10 @@ function nextProblem(restoredItem = null) {
   const isFlashcard = state.session.mode === "flashcard";
   if (els.flashcardStage) els.flashcardStage.hidden = !isFlashcard;
   document.querySelector(".problem-meta")?.classList.toggle("is-flashcard-hidden", isFlashcard);
-  els.question.hidden = isFlashcard;
-  els.topic.hidden = isFlashcard;
+  const arenaEl = els.problemArena || document.querySelector("#problem-arena");
+  if (arenaEl) arenaEl.hidden = isFlashcard;
+  const actionsBar = document.querySelector(".problem-actions-bar");
+  if (actionsBar) actionsBar.hidden = isFlashcard;
   if (els.problemVisualScaffold) els.problemVisualScaffold.hidden = isFlashcard;
   if (els.toggleProblemVisual) els.toggleProblemVisual.hidden = isFlashcard;
   if (isFlashcard) {
@@ -687,11 +693,128 @@ function nextProblem(restoredItem = null) {
   else els.answerInput.focus();
 }
 
+function formatFlashcardDisplay(item) {
+  if (!item) return { front: "", back: "", isEquation: false, type: "text" };
+  const rawQ = item.question ? item.question.trim() : "";
+  const ans = String(item.answers?.[0] || item.displayAnswer || "").trim();
+
+  // 1. Comparison questions: e.g. "28 ___ 40" or "6/7 ___ 5/6"
+  const compMatch = rawQ.match(/^(.+?)\s*(?:_{2,}|□|\[\s*\])\s*(.+?)$/);
+  if (compMatch && (ans === "<" || ans === ">" || ans === "=" || item.choices?.includes("<"))) {
+    const left = compMatch[1].trim();
+    const right = compMatch[2].replace(/[=?]/g, "").trim();
+    return {
+      front: `<div class="tpt-comp-equation"><span class="tpt-num">${mathText(left)}</span> <span class="tpt-comp-circle">?</span> <span class="tpt-num">${mathText(right)}</span></div>`,
+      back: `<div class="tpt-comp-equation"><span class="tpt-num">${mathText(left)}</span> <span class="tpt-comp-circle is-solved">${escapeHtml(ans)}</span> <span class="tpt-num">${mathText(right)}</span></div>`,
+      type: "comparison"
+    };
+  }
+
+  // 2. Missing addend/factor: e.g. "6 + □ = 14"
+  const missingMatch = rawQ.match(/^(.+?)\s*([+−\-×*÷/])\s*(?:□|\?|___|\[\s*\])\s*=\s*(\d+)/i) ||
+                       rawQ.match(/^(?:□|\?|___|\[\s*\])\s*([+−\-×*÷/])\s*(.+?)\s*=\s*(\d+)/i);
+  if (missingMatch) {
+    const isFirstMissing = rawQ.startsWith("□") || rawQ.startsWith("?") || rawQ.startsWith("_");
+    const op = missingMatch[isFirstMissing ? 1 : 2];
+    const known = isFirstMissing ? missingMatch[2].trim() : missingMatch[1].trim();
+    const target = missingMatch[3].trim();
+    const frontHtml = isFirstMissing
+      ? `<span class="tpt-blank-box">?</span> ${op} ${mathText(known)} = ${target}`
+      : `${mathText(known)} ${op} <span class="tpt-blank-box">?</span> = ${target}`;
+    const backHtml = isFirstMissing
+      ? `<strong class="tpt-ans-badge">${escapeHtml(ans)}</strong> ${op} ${mathText(known)} = ${target}`
+      : `${mathText(known)} ${op} <strong class="tpt-ans-badge">${escapeHtml(ans)}</strong> = ${target}`;
+    return {
+      front: `<div class="tpt-equation">${frontHtml}</div>`,
+      back: `<div class="tpt-equation">${backHtml}</div>`,
+      type: "missing"
+    };
+  }
+
+  // 3. Number sequences: e.g. "45, 50, 55, 60, ___"
+  if (rawQ.includes("___") && rawQ.includes(",")) {
+    const seq = rawQ.replace(/___.*$/, "").trim();
+    return {
+      front: `<div class="tpt-equation tpt-seq">${mathText(seq)}, <span class="tpt-blank-box">?</span></div>`,
+      back: `<div class="tpt-equation tpt-seq">${mathText(seq)}, <strong class="tpt-ans-badge">${mathText(ans)}</strong></div>`,
+      type: "sequence"
+    };
+  }
+
+  // 4. Clean arithmetic equations: e.g. "7 × 9 = ?" or "10 − 4 = ?" or "3/4 ÷ 2/5"
+  const isPureMath = /^[\d\s.,+−\-×*÷/()^]+$/.test(rawQ.replace(/[=?_]/g, "").trim());
+  if (isPureMath) {
+    const expr = rawQ.replace(/\s*=.*$/, "").replace(/\?.*$/, "").trim();
+    return {
+      front: `<div class="tpt-equation"><span class="tpt-math-part">${mathText(expr)}</span> <span class="tpt-ans-equals">=</span> <span class="tpt-blank-box">?</span></div>`,
+      back: `<div class="tpt-equation"><span class="tpt-math-part">${mathText(expr)}</span> <span class="tpt-ans-equals">=</span> <strong class="tpt-ans-badge">${mathText(ans)}</strong></div>`,
+      type: "equation"
+    };
+  }
+
+  // 5. Word problems / questions: e.g. "What is the value of the digit in the tens place of 59?"
+  return {
+    front: `<div class="tpt-prompt-text">${mathText(rawQ)}</div>`,
+    back: `<div class="tpt-prompt-text">${mathText(rawQ)}</div><div class="tpt-word-ans"><span class="tpt-ans-label">Correct Answer:</span> <strong class="tpt-ans-badge">${mathText(ans)}</strong></div>`,
+    type: "word"
+  };
+}
+
+function formatProblemArena(item) {
+  if (!item) return;
+  const rawQ = item.question ? item.question.trim() : "";
+  const arena = els.problemArena || document.querySelector("#problem-arena");
+  const isComparison = item.choices?.includes("<") || /_{2,}|□|\[\s*\]/.test(rawQ);
+  const isPureEquation = /^[\d\s.,+−\-×*÷/()^]+(?:=\s*(?:\?|___)?)?$/.test(rawQ.replace(/[=?_]/g, "").trim()) && rawQ.length <= 25;
+
+  if (arena) {
+    arena.classList.remove("has-equation", "has-comparison", "has-sentence");
+  }
+  els.question.className = "question";
+
+  if (isComparison) {
+    if (arena) arena.classList.add("has-comparison");
+    els.question.classList.add("is-comparison");
+    const m = rawQ.match(/^(.+?)\s*(?:_{2,}|□|\[\s*\])\s*(.+?)$/);
+    if (m) {
+      els.question.innerHTML = `<span class="arena-comp-num">${mathText(m[1].trim())}</span> <span class="arena-comp-blank" aria-label="blank">?</span> <span class="arena-comp-num">${mathText(m[2].replace(/[=?]/g, "").trim())}</span>`;
+    } else {
+      els.question.innerHTML = mathText(rawQ);
+    }
+  } else if (isPureEquation) {
+    if (arena) arena.classList.add("has-equation");
+    els.question.classList.add("is-equation");
+    let expr = rawQ.replace(/\s*[=?_]+\s*$/, "").trim();
+    els.question.innerHTML = `${mathText(expr)} <span class="arena-eq-symbol">=</span>`;
+  } else {
+    if (arena) arena.classList.add("has-sentence");
+    els.question.classList.add("is-sentence");
+    els.question.innerHTML = mathText(rawQ);
+  }
+
+  const unitEl = els.answerUnit || document.querySelector("#answer-unit");
+  if (unitEl) {
+    if (item.unit) {
+      unitEl.textContent = item.unit;
+      unitEl.hidden = false;
+    } else {
+      unitEl.hidden = true;
+    }
+  }
+}
+
 function renderFlashcardProblem() {
   const item = state.item;
   if (!item) return;
   const card = els.tptCard || document.querySelector("#tpt-flashcard");
   card?.classList.remove("is-flipped", "is-correct");
+
+  const banner = els.tptBackBanner || document.querySelector("#tpt-back-banner");
+  if (banner) {
+    banner.hidden = true;
+    banner.className = "tpt-back-banner";
+    banner.innerHTML = "";
+  }
 
   const skill = item.skill || state.skill;
   const grade = getGrade(skill?.grade || state.grade);
@@ -709,21 +832,13 @@ function renderFlashcardProblem() {
     cardCounter.textContent = `Card ${state.session.answered + 1} of ${state.session.target}`;
   }
 
+  const display = formatFlashcardDisplay(item);
+
   const frontEq = document.querySelector("#tpt-front-equation");
-  if (frontEq) {
-    let q = item.question.trim();
-    if (q.endsWith("=")) q = `${q} ?`;
-    else if (!q.includes("=") && !q.includes("?")) q = `${q} = ?`;
-    frontEq.innerHTML = mathText(q);
-  }
+  if (frontEq) frontEq.innerHTML = display.front;
 
   const backEq = document.querySelector("#tpt-back-equation");
-  if (backEq) {
-    let q = item.question.trim();
-    const ans = item.answers?.[0] || "";
-    if (q.endsWith("=")) q = q.slice(0, -1).trim();
-    backEq.innerHTML = `${mathText(q)} <span class="tpt-ans-equals">=</span> <strong class="tpt-ans-bold">${mathText(ans)}</strong>`;
-  }
+  if (backEq) backEq.innerHTML = display.back;
 
   const backStrategy = document.querySelector("#tpt-back-strategy");
   if (backStrategy) {
@@ -747,10 +862,10 @@ function flipFlashcard(reveal) {
   const shouldFlip = typeof reveal === "boolean" ? reveal : !isFlipped;
   if (shouldFlip) {
     card.classList.add("is-flipped");
-    (els.tptKnowCard || document.querySelector("#tpt-know-card"))?.focus();
+    (els.tptNextCard || document.querySelector("#tpt-next-card") || els.tptKnowCard || document.querySelector("#tpt-know-card"))?.focus();
   } else {
     card.classList.remove("is-flipped");
-    (els.tptFlipButton || document.querySelector("#tpt-flip-button"))?.focus();
+    (els.tptQuickInput || els.tptFlipButton || document.querySelector("#tpt-flip-button"))?.focus();
   }
 }
 
@@ -762,9 +877,7 @@ function handleFlashcardAnswer(correct) {
     card?.classList.add("is-correct");
     celebrateSparkles();
   }
-  setTimeout(() => {
-    nextProblem();
-  }, 220);
+  nextProblem();
 }
 
 function celebrateSparkles() {
@@ -948,10 +1061,47 @@ const lcm = (a, b) => Math.abs(a * b) / gcd(a, b);
 const InteractiveSolver = {
   canSolve(item) {
     if (!item) return false;
-    const q = item.question || "";
-    if (/find the lcm of/i.test(q)) return true;
-    if (/\d+\s*[+−\-×*÷/]\s*\d+/.test(q)) return true;
-    if (/\d+\/\d+\s*[+−\-×*÷/]\s*\d+\/\d+/.test(q)) return true;
+    const q = item.question ? item.question.replaceAll(",", "").trim() : "";
+    if (/find the lcm of \d+ and \d+/i.test(q)) return true;
+
+    // Multi-digit addition with carry (at least one number >= 10 and generates carry):
+    const addMatch = q.match(/^(\d+)\s*\+\s*(\d+)/);
+    if (addMatch) {
+      const a = Number(addMatch[1]);
+      const b = Number(addMatch[2]);
+      if (a >= 10 || b >= 10) {
+        const strA = String(a);
+        const strB = String(b);
+        const maxLen = Math.max(strA.length, strB.length);
+        const padA = strA.padStart(maxLen, "0");
+        const padB = strB.padStart(maxLen, "0");
+        let carry = 0;
+        let hasCarry = false;
+        for (let i = maxLen - 1; i >= 0; i--) {
+          const s = Number(padA[i]) + Number(padB[i]) + carry;
+          if (s >= 10) { hasCarry = true; carry = 1; } else { carry = 0; }
+        }
+        if (hasCarry) return true;
+      }
+    }
+
+    // Multi-digit subtraction with borrow:
+    const subMatch = q.match(/^(\d+)\s*[−-]\s*(\d+)/);
+    if (subMatch) {
+      const a = Number(subMatch[1]);
+      const b = Number(subMatch[2]);
+      if (a >= 10 && a > b) {
+        const strA = String(a);
+        const strB = String(b).padStart(strA.length, "0");
+        for (let i = strA.length - 1; i >= 0; i--) {
+          if (Number(strA[i]) < Number(strB[i])) return true;
+        }
+      }
+    }
+
+    // Fraction division: Keep, Change, Flip
+    if (/(\d+)\/(\d+)\s*[÷/]\s*(\d+)\/(\d+)/.test(q)) return true;
+
     return false;
   },
 
@@ -1324,29 +1474,49 @@ function workbenchFits(item) {
   return wb.state.tool !== "model" || Boolean(renderInlineProblemModel(item.skill, item));
 }
 
-function mountProblemModel(show, collapsed = false) {
+function mountProblemModel(show, collapsed = true) {
   const host = els.problemVisualScaffold;
   if (!host) return;
-  host.hidden = !show;
-  els.toggleProblemVisual.hidden = !show;
   if (!show) {
-    host.innerHTML = "";
-    return;
-  }
-  const picture = interactivePicture(state.item.model);
-  els.drillPanel.style.setProperty("--trail", getGrade(state.item.skill.grade).color);
-  if (picture) host.innerHTML = `<div class="tr-model">${picture}</div>`;
-  else if (workbenchFits(state.item)) mountWorkbench(host, { skill: state.item.skill, item: state.item });
-  else {
-    // No model fits this kind of problem (rounding, money, time …): show nothing rather than an empty box.
     host.hidden = true;
     host.innerHTML = "";
-    els.toggleProblemVisual.hidden = true;
+    if (els.toggleProblemVisual) els.toggleProblemVisual.hidden = true;
     return;
   }
+
+  const isMultiplication = state.item?.skill?.strand === "Multiplication" || state.item?.skill?.op === "mul";
+  if (isMultiplication && state.item?.model?.type === "array") {
+    const a = state.item.model.a || 1;
+    const b = state.item.model.b || 1;
+    const total = a * b;
+    host.innerHTML = `
+      <div class="publisher-model-card">
+        <p class="pub-model-title">Visual Grid: <strong>${a} rows of ${b}</strong> (${a} × ${b} = ${total})</p>
+        <div class="pub-grid-dots" style="--cols: ${b}">
+          ${Array.from({ length: Math.min(total, 144) }, (_, i) => `<span class="pub-dot" aria-hidden="true"></span>`).join("")}
+        </div>
+      </div>
+    `;
+    if (els.toggleProblemVisual) els.toggleProblemVisual.hidden = false;
+  } else {
+    const picture = interactivePicture(state.item.model);
+    els.drillPanel.style.setProperty("--trail", getGrade(state.item.skill?.grade || state.grade).color);
+    if (picture) {
+      host.innerHTML = `<div class="tr-model">${picture}</div>`;
+      if (els.toggleProblemVisual) els.toggleProblemVisual.hidden = false;
+    } else {
+      host.hidden = true;
+      host.innerHTML = "";
+      if (els.toggleProblemVisual) els.toggleProblemVisual.hidden = true;
+      return;
+    }
+  }
+
   host.hidden = collapsed;
-  els.toggleProblemVisual.setAttribute("aria-expanded", String(!collapsed));
-  els.toggleProblemVisual.textContent = collapsed ? "Show the model" : "Hide the model";
+  if (els.toggleProblemVisual) {
+    els.toggleProblemVisual.setAttribute("aria-expanded", String(!collapsed));
+    els.toggleProblemVisual.textContent = collapsed ? "📐 Show the model" : "Hide the model";
+  }
 }
 
 function guidedStepContent() {
@@ -1393,21 +1563,52 @@ function revealGuidedStep() {
 }
 
 function renderAnswerControl() {
-  if (state.item.choices) {
+  const item = state.item;
+  if (!item) return;
+  const answerLabel = document.querySelector(".answer-label");
+
+  if (item.choices) {
     els.answerInput.hidden = true;
     els.answerInput.removeAttribute("required");
+    if (answerLabel) answerLabel.hidden = true;
     els.choiceAnswers.hidden = false;
-    els.choiceAnswers.innerHTML = state.item.choices
-      .map((choice) => `<button type="button" class="choice-answer" data-answer="${escapeHtml(choice)}">${escapeHtml(choice)}</button>`)
-      .join("");
+
+    const isComp = item.choices.length === 3 && item.choices.includes("<") && item.choices.includes(">");
+    if (isComp) {
+      els.choiceAnswers.className = "choice-answers choice-comparison-group";
+      els.choiceAnswers.innerHTML = item.choices
+        .map((c) => `<button type="button" class="choice-answer choice-comp-btn" data-answer="${escapeHtml(c)}" aria-label="Compare ${c}">${escapeHtml(c)}</button>`)
+        .join("");
+    } else if (item.choices.length === 2) {
+      els.choiceAnswers.className = "choice-answers choice-binary-group";
+      els.choiceAnswers.innerHTML = item.choices
+        .map((c) => `<button type="button" class="choice-answer choice-binary-btn" data-answer="${escapeHtml(c)}">${escapeHtml(c)}</button>`)
+        .join("");
+    } else {
+      els.choiceAnswers.className = "choice-answers choice-cards-grid";
+      const letters = ["A", "B", "C", "D"];
+      els.choiceAnswers.innerHTML = item.choices
+        .map((c, idx) => `
+          <button type="button" class="choice-answer choice-card-btn" data-answer="${escapeHtml(c)}">
+            <span class="choice-letter">${letters[idx] || idx + 1}</span>
+            <span class="choice-text">${mathText(c)}</span>
+          </button>
+        `)
+        .join("");
+    }
     els.checkButton.hidden = true;
   } else {
     els.answerInput.hidden = false;
     els.answerInput.setAttribute("required", "");
+    if (answerLabel) {
+      answerLabel.hidden = false;
+      answerLabel.textContent = item.unit ? `Your answer (${item.unit})` : "Your answer";
+    }
     els.choiceAnswers.hidden = true;
     els.choiceAnswers.innerHTML = "";
-    els.answerInput.inputMode = state.item.kind === "text" ? "text" : "decimal";
-    els.answerInput.placeholder = state.item.kind === "fraction" ? "Example: 3/4" : "Type your answer";
+    els.answerInput.inputMode = item.kind === "text" ? "text" : "decimal";
+    els.answerInput.placeholder = item.kind === "fraction" ? "Example: 3/4" : "Type your answer";
+    els.checkButton.hidden = false;
   }
 }
 
@@ -2686,6 +2887,9 @@ els.tptFlipButton?.addEventListener("click", () => flipFlashcard(true));
 els.tptFlipBack?.addEventListener("click", () => flipFlashcard(false));
 els.tptKnowCard?.addEventListener("click", () => handleFlashcardAnswer(true));
 els.tptRepeatCard?.addEventListener("click", () => handleFlashcardAnswer(false));
+document.querySelector("#tpt-next-card")?.addEventListener("click", () => {
+  nextProblem();
+});
 
 els.tptQuickForm?.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -2695,12 +2899,23 @@ els.tptQuickForm?.addEventListener("submit", (e) => {
     return;
   }
   const isCorrect = validateAnswer(val, state.item);
+  const banner = els.tptBackBanner || document.querySelector("#tpt-back-banner");
+  if (banner) {
+    banner.hidden = false;
+    if (isCorrect) {
+      banner.className = "tpt-back-banner is-correct";
+      banner.innerHTML = `<span class="banner-icon">✓</span> <strong>Great job! That's correct.</strong>`;
+    } else {
+      banner.className = "tpt-back-banner is-retry";
+      banner.innerHTML = `<span class="banner-icon">ℹ</span> You answered <strong>${escapeHtml(val)}</strong>. Review the strategy below!`;
+    }
+  }
   flipFlashcard(true);
   if (isCorrect) {
-    handleFlashcardAnswer(true);
-  } else {
-    (els.tptRepeatCard || document.querySelector("#tpt-repeat-card"))?.focus();
+    finalizeProblem(true);
+    celebrateSparkles();
   }
+  (els.tptNextCard || document.querySelector("#tpt-next-card"))?.focus();
 });
 
 document.addEventListener("keydown", (event) => {
@@ -2710,16 +2925,20 @@ document.addEventListener("keydown", (event) => {
     const tag = document.activeElement?.tagName || "";
     if (event.code === "Space" && tag !== "INPUT") {
       event.preventDefault();
-      flipFlashcard();
+      if (isFlipped) nextProblem();
+      else flipFlashcard(true);
     } else if (isFlipped) {
       if (event.key === "1") {
         event.preventDefault();
         handleFlashcardAnswer(false);
-      } else if (event.key === "2" || event.key === "Enter") {
+      } else if (event.key === "2") {
         if (tag !== "INPUT") {
           event.preventDefault();
           handleFlashcardAnswer(true);
         }
+      } else if (event.key === "Enter") {
+        event.preventDefault();
+        nextProblem();
       }
     }
   }
