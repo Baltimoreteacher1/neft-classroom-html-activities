@@ -153,7 +153,7 @@
           <p>A higher percentage does not always mean a higher quantity! Calculate the actual part for each group to compare.</p>
           <div class="es-text">&iexcl;Un porcentaje m&aacute;s alto no siempre significa una cantidad mayor! Calcula la cantidad real de cada grupo para comparar.</div>
         </div>
-        <div class="key-rule-pill">&#9878; 70% of 40 (28) vs. 60% of 50 (30)</div>
+        <div class="key-rule-pill">&#9878; 50% of 12 (6) vs. 25% of 40 (10)</div>
       </div>
 
       <div class="stepper-bar">
@@ -235,6 +235,7 @@
         solved1: {},
         solved2: {},
         solved3: {},
+        parts3: {},
         solved4: {},
         solved5: {},
         quizChoice: {},
@@ -687,14 +688,15 @@
           id: 't3_1',
           title: 'Basketball Game Wins',
           itemA: 'Team Thunder: won 60% of 50 games',
-          valA: 30,
+          pctA: 60, wholeA: 50, valA: 30,
           itemB: 'Team Lightning: won 70% of 40 games',
-          valB: 28,
+          pctB: 70, wholeB: 40, valB: 28,
+          unit: 'games',
           question: 'Which team won MORE games?',
           choices: [
-            { text: 'Team Thunder won more games (30 > 28).', correct: true },
-            { text: 'Team Lightning won more games because 70% > 60%.', correct: false },
-            { text: 'Both teams won the exact same number of games.', correct: false }
+            { text: 'Team Lightning won more games because 70% is greater than 60%.', correct: false },
+            { text: 'Team Thunder won more games.', correct: true },
+            { text: 'Both teams won the same number of games.', correct: false }
           ],
           explain: 'Team Thunder: 0.60 × 50 = 30 games. Team Lightning: 0.70 × 40 = 28 games. Thunder won more!'
         },
@@ -702,14 +704,15 @@
           id: 't3_2',
           title: 'School Band Enrollment',
           itemA: 'School A: 40% of 600 students',
-          valA: 240,
+          pctA: 40, wholeA: 600, valA: 240,
           itemB: 'School B: 50% of 450 students',
-          valB: 225,
+          pctB: 50, wholeB: 450, valB: 225,
+          unit: 'students',
           question: 'Which school has more students in band?',
           choices: [
-            { text: 'School A has more band students (240 vs. 225).', correct: true },
-            { text: 'School B has more because 50% is half.', correct: false },
-            { text: 'They are equal.', correct: false }
+            { text: 'School B has more band students because 50% is greater than 40%.', correct: false },
+            { text: 'The two schools have the same number of band students.', correct: false },
+            { text: 'School A has more band students.', correct: true }
           ],
           explain: 'School A: 0.40 × 600 = 240. School B: 0.50 × 450 = 225. 240 > 225.'
         },
@@ -717,14 +720,15 @@
           id: 't3_3',
           title: 'Library Book Genres',
           itemA: 'Section 1: 30% of 180 mystery books',
-          valA: 54,
+          pctA: 30, wholeA: 180, valA: 54,
           itemB: 'Section 2: 25% of 220 sci-fi books',
-          valB: 55,
+          pctB: 25, wholeB: 220, valB: 55,
+          unit: 'books',
           question: 'Which section has more checked-out books?',
           choices: [
-            { text: 'Section 2 has more (55 vs. 54).', correct: true },
-            { text: 'Section 1 has more (54 vs. 55).', correct: false },
-            { text: 'Both have 50 books.', correct: false }
+            { text: 'Section 2 has more books.', correct: true },
+            { text: 'Section 1 has more books because 30% is greater than 25%.', correct: false },
+            { text: 'Both sections have the same number of books.', correct: false }
           ],
           explain: 'Section 1: 0.30 × 180 = 54. Section 2: 0.25 × 220 = 55. Section 2 is higher by 1 book.'
         },
@@ -732,14 +736,15 @@
           id: 't3_4',
           title: 'Fruit Stand Apples',
           itemA: 'Stand X: 80% of 90 red apples',
-          valA: 72,
+          pctA: 80, wholeA: 90, valA: 72,
           itemB: 'Stand Y: 75% of 100 green apples',
-          valB: 75,
+          pctB: 75, wholeB: 100, valB: 75,
+          unit: 'apples',
           question: 'Which stand has more ripe apples?',
           choices: [
-            { text: 'Stand Y has more ripe apples (75 > 72).', correct: true },
-            { text: 'Stand X has more ripe apples because 80% > 75%.', correct: false },
-            { text: 'Both have 70.', correct: false }
+            { text: 'Both stands have the same number of ripe apples.', correct: false },
+            { text: 'Stand Y has more ripe apples.', correct: true },
+            { text: 'Stand X has more ripe apples because 80% is greater than 75%.', correct: false }
           ],
           explain: 'Stand X: 0.80 × 90 = 72. Stand Y: 0.75 × 100 = 75. Stand Y has more!'
         },
@@ -747,14 +752,15 @@
           id: 't3_5',
           title: 'Test Score Comparison',
           itemA: 'Quiz A: 85% of 40 points',
-          valA: 34,
+          pctA: 85, wholeA: 40, valA: 34,
           itemB: 'Quiz B: 70% of 50 points',
-          valB: 35,
+          pctB: 70, wholeB: 50, valB: 35,
+          unit: 'points',
           question: 'Which quiz resulted in higher earned points?',
           choices: [
-            { text: 'Quiz B earned more points (35 vs. 34).', correct: true },
-            { text: 'Quiz A earned more points because 85% is higher.', correct: false },
-            { text: 'They both earned 30 points.', correct: false }
+            { text: 'Both quizzes earned the same number of points.', correct: false },
+            { text: 'Quiz A earned more points because 85% is greater than 70%.', correct: false },
+            { text: 'Quiz B earned more points.', correct: true }
           ],
           explain: 'Quiz A: 0.85 × 40 = 34. Quiz B: 0.70 × 50 = 35. Quiz B has 35 points.'
         },
@@ -762,14 +768,15 @@
           id: 't3_6',
           title: 'Shoe Sale Discount',
           itemA: 'Deal 1: 30% off a $90 shoe',
-          valA: 27,
+          pctA: 30, wholeA: 90, valA: 27,
           itemB: 'Deal 2: 20% off a $140 shoe',
-          valB: 28,
+          pctB: 20, wholeB: 140, valB: 28,
+          unit: 'dollars saved',
           question: 'Which deal gives a LARGER dollar discount?',
           choices: [
-            { text: 'Deal 2 saves more money ($28 vs. $27).', correct: true },
-            { text: 'Deal 1 saves more money ($27 vs. $28).', correct: false },
-            { text: 'Both save $30.', correct: false }
+            { text: 'Deal 2 saves more money.', correct: true },
+            { text: 'Deal 1 saves more money because 30% is greater than 20%.', correct: false },
+            { text: 'Both deals save the same amount.', correct: false }
           ],
           explain: 'Deal 1 discount: 0.30 × 90 = $27. Deal 2 discount: 0.20 × 140 = $28. Deal 2 saves $1 more.'
         },
@@ -777,14 +784,15 @@
           id: 't3_7',
           title: 'Charity Fundraiser Donation',
           itemA: 'Donor A: pledges 15% of $400',
-          valA: 60,
+          pctA: 15, wholeA: 400, valA: 60,
           itemB: 'Donor B: pledges 12% of $500',
-          valB: 60,
+          pctB: 12, wholeB: 500, valB: 60,
+          unit: 'dollars pledged',
           question: 'Compare the dollar donations from both donors:',
           choices: [
-            { text: 'Both donors give the exact same amount ($60 each).', correct: true },
-            { text: 'Donor A gives more because 15% > 12%.', correct: false },
-            { text: 'Donor B gives more because $500 > $400.', correct: false }
+            { text: 'Donor A gives more because 15% is greater than 12%.', correct: false },
+            { text: 'Both donors give the same amount.', correct: true },
+            { text: 'Donor B gives more because $500 is greater than $400.', correct: false }
           ],
           explain: 'Donor A: 0.15 × 400 = $60. Donor B: 0.12 × 500 = $60. They are equal!'
         },
@@ -792,103 +800,176 @@
           id: 't3_8',
           title: 'Solar Panel Efficiency',
           itemA: 'Array 1: generates 45% of 800 kWh',
-          valA: 360,
+          pctA: 45, wholeA: 800, valA: 360,
           itemB: 'Array 2: generates 50% of 700 kWh',
-          valB: 350,
+          pctB: 50, wholeB: 700, valB: 350,
+          unit: 'kWh',
           question: 'Which solar array generates more kilowatt-hours?',
           choices: [
-            { text: 'Array 1 generates more (360 kWh vs. 350 kWh).', correct: true },
-            { text: 'Array 2 generates more because 50% is half.', correct: false },
-            { text: 'Both generate 400 kWh.', correct: false }
+            { text: 'Array 2 generates more because 50% is greater than 45%.', correct: false },
+            { text: 'Both arrays generate the same number of kilowatt-hours.', correct: false },
+            { text: 'Array 1 generates more.', correct: true }
           ],
           explain: 'Array 1: 0.45 × 800 = 360 kWh. Array 2: 0.50 × 700 = 350 kWh. Array 1 generates more.'
         }
       ];
 
-      function renderT3() {
-        const c = T3_COMPARES[state.idx3];
-        const isSolved = !!state.solved3[c.id];
-        const chosen = state.solved3[`${c.id}_choice`];
+// Scaffold, not giveaway: the student works out both parts first; the
+// choices unlock after that. Misses earn a method hint, then a concrete step.
+const t3Misses = {};
 
-        renderDots('t3-dots', T3_COMPARES, state.idx3, state.solved3, (ni) => {
-          state.idx3 = ni; renderT3();
-        });
+function t3Close(a, b) {
+  return Number.isFinite(a) && Math.abs(a - b) < 1e-6;
+}
 
-        const stage = document.getElementById('t3-stage-card');
-        stage.innerHTML = `
+function t3MissHelp(c, badA, badB, misses) {
+  const which =
+    badA && badB
+      ? "Neither part is right yet."
+      : badA
+        ? "Option A is not right yet."
+        : "Option B is not right yet.";
+  if (misses < 2) {
+    return `${which} Turn each percent into a decimal, then multiply it by the whole.`;
+  }
+  const step = (label, pct, whole) =>
+    `Option ${label}: write ${pct}% as ${pct / 100}, then multiply ${pct / 100} × ${whole}.`;
+  return `${which} Next step: ${[badA ? step("A", c.pctA, c.wholeA) : "", badB ? step("B", c.pctB, c.wholeB) : ""].filter(Boolean).join(" ")}`;
+}
+
+function renderT3() {
+  const c = T3_COMPARES[state.idx3];
+  const isSolved = !!state.solved3[c.id];
+  const chosen = state.solved3[`${c.id}_choice`];
+  const partsOk = isSolved || !!state.parts3[c.id];
+
+  renderDots("t3-dots", T3_COMPARES, state.idx3, state.solved3, (ni) => {
+    state.idx3 = ni;
+    renderT3();
+  });
+
+  const partBox = (label, item, id, val) => `
+          <div style="background:var(--surface-soft); border:2px solid var(--brand); border-radius:var(--radius-md); padding:16px; text-align:center;">
+            <div style="font-size:0.8rem; font-weight:800; color:var(--brand);">Option ${label}</div>
+            <div style="font-size:1.1rem; font-weight:700; color:var(--ink); margin:8px 0;">${item}</div>
+            <label for="${id}" style="display:block; font-size:0.85rem; font-weight:700; margin-bottom:4px;">Part (${c.unit})</label>
+            <input type="number" step="any" inputmode="decimal" id="${id}" class="num-input" style="width:120px;" placeholder="?" value="${partsOk ? val : ""}" ${partsOk ? "disabled" : ""}>
+          </div>`;
+
+  const stage = document.getElementById("t3-stage-card");
+  stage.innerHTML = `
           <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
             <span style="font-size:0.84rem; font-weight:800; color:var(--brand);">Comparison ${state.idx3 + 1} of ${T3_COMPARES.length} · ${c.title}</span>
             <button type="button" class="speak-btn" data-speak="${c.question}">🔊 Read Question</button>
           </div>
 
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
-            <div style="background:var(--surface-soft); border:2px solid var(--brand); border-radius:var(--radius-md); padding:16px; text-align:center;">
-              <div style="font-size:0.8rem; font-weight:800; color:var(--brand);">Option A</div>
-              <div style="font-size:1.1rem; font-weight:700; color:var(--ink); margin:8px 0;">${c.itemA}</div>
-              <div style="font-size:1.4rem; font-family:var(--font-display); font-weight:800; color:var(--brand);">= ${c.valA}</div>
-            </div>
-            <div style="background:var(--surface-soft); border:2px solid var(--brand); border-radius:var(--radius-md); padding:16px; text-align:center;">
-              <div style="font-size:0.8rem; font-weight:800; color:var(--brand);">Option B</div>
-              <div style="font-size:1.1rem; font-weight:700; color:var(--ink); margin:8px 0;">${c.itemB}</div>
-              <div style="font-size:1.4rem; font-family:var(--font-display); font-weight:800; color:var(--brand);">= ${c.valB}</div>
-            </div>
+            ${partBox("A", c.itemA, "t3-pa", c.valA)}
+            ${partBox("B", c.itemB, "t3-pb", c.valB)}
           </div>
 
+          ${partsOk ? "" : `<button type="button" class="btn btn-sm btn-go" id="t3-parts-btn" style="margin-bottom:12px;">Check my parts</button>`}
+
           <p style="font-size:1.15rem; font-weight:700; color:var(--brand); margin:0 0 12px 0;">${c.question}</p>
+          ${partsOk ? "" : `<p style="font-size:0.9rem; margin:0 0 8px 0;">Find both parts first, then choose.</p>`}
 
           <div class="choice-stack">
-            ${c.choices.map((ch, i) => {
-              let cls = '';
-              if (isSolved) {
-                if (ch.correct) cls = 'correct';
-                else if (i === chosen) cls = 'wrong';
-              }
-              return `
-                <button type="button" class="choice-btn ${cls}" data-t3-mc="${i}">
-                  <span style="font-weight:700; width:24px;">${['A','B','C'][i]}.</span>
+            ${c.choices
+              .map((ch, i) => {
+                let cls = "";
+                if (isSolved) {
+                  if (ch.correct) cls = "correct";
+                  else if (i === chosen) cls = "wrong";
+                }
+                return `
+                <button type="button" class="choice-btn ${cls}" data-t3-mc="${i}" ${partsOk ? "" : "disabled"}>
+                  <span style="font-weight:700; width:24px;">${["A", "B", "C"][i]}.</span>
                   <span>${ch.text}</span>
                 </button>
               `;
-            }).join('')}
+              })
+              .join("")}
           </div>
 
-          <div id="t3-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
-            ${isSolved ? `Correct! ${c.explain}` : ''}
+          <div id="t3-fb" class="feedback-box ${isSolved ? "show ok" : ""}" aria-live="polite">
+            ${isSolved ? `Correct! ${c.explain}` : ""}
           </div>
         `;
 
-        stage.querySelector('[data-speak]').onclick = () => speak(c.question);
+  stage.querySelector("[data-speak]").onclick = () => speak(c.question);
 
-        if (isSolved) appendNext(document.getElementById('t3-fb'), 3, T3_COMPARES.length, renderT3);
+  if (isSolved)
+    appendNext(
+      document.getElementById("t3-fb"),
+      3,
+      T3_COMPARES.length,
+      renderT3,
+    );
 
-        stage.querySelectorAll('[data-t3-mc]').forEach(btn => {
-          btn.addEventListener('click', () => {
-            if (state.solved3[c.id]) return;
-            const idx = Number(btn.dataset.t3Mc);
-            const choice = c.choices[idx];
-            state.solved3[`${c.id}_choice`] = idx;
-            const fb = document.getElementById('t3-fb');
-
-            if (choice.correct) {
-              playSound('correct');
-              btn.classList.add('correct');
-              fb.className = 'feedback-box show ok';
-              fb.innerHTML = `Correct! ${c.explain}`;
-              state.solved3[c.id] = true;
-              renderDots('t3-dots', T3_COMPARES, state.idx3, state.solved3, (ni) => { state.idx3 = ni; renderT3(); });
-              updateProgressHeader();
-              appendNext(fb, 3, T3_COMPARES.length, renderT3);
-            } else {
-              playSound('wrong');
-              btn.classList.add('wrong');
-              fb.className = 'feedback-box show err';
-              fb.textContent = 'Carefully check the calculated parts: compare the actual numbers, not just the percents!';
-            }
-            saveState();
-          });
-        });
+  const partsBtn = document.getElementById("t3-parts-btn");
+  if (partsBtn) {
+    const checkParts = () => {
+      const inA = document.getElementById("t3-pa");
+      const inB = document.getElementById("t3-pb");
+      const fb = document.getElementById("t3-fb");
+      const okA = t3Close(parseFloat(inA.value), c.valA);
+      const okB = t3Close(parseFloat(inB.value), c.valB);
+      inA.setAttribute("aria-invalid", okA ? "false" : "true");
+      inB.setAttribute("aria-invalid", okB ? "false" : "true");
+      if (okA && okB) {
+        playSound("correct");
+        state.parts3[c.id] = true;
+        saveState();
+        renderT3();
+        const fbOk = document.getElementById("t3-fb");
+        fbOk.className = "feedback-box show ok";
+        fbOk.textContent = "Both parts are right. Now compare them and choose.";
+        return;
       }
+      playSound("wrong");
+      t3Misses[c.id] = (t3Misses[c.id] || 0) + 1;
+      fb.className = "feedback-box show err";
+      fb.textContent = t3MissHelp(c, !okA, !okB, t3Misses[c.id]);
+    };
+    partsBtn.addEventListener("click", checkParts);
+    stage.querySelectorAll("#t3-pa, #t3-pb").forEach((el) =>
+      el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") checkParts();
+      }),
+    );
+  }
 
+  stage.querySelectorAll("[data-t3-mc]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (state.solved3[c.id] || !partsOk) return;
+      const idx = Number(btn.dataset.t3Mc);
+      const choice = c.choices[idx];
+      state.solved3[`${c.id}_choice`] = idx;
+      const fb = document.getElementById("t3-fb");
+
+      if (choice.correct) {
+        playSound("correct");
+        btn.classList.add("correct");
+        fb.className = "feedback-box show ok";
+        fb.innerHTML = `Correct! ${c.explain}`;
+        state.solved3[c.id] = true;
+        renderDots("t3-dots", T3_COMPARES, state.idx3, state.solved3, (ni) => {
+          state.idx3 = ni;
+          renderT3();
+        });
+        updateProgressHeader();
+        appendNext(fb, 3, T3_COMPARES.length, renderT3);
+      } else {
+        playSound("wrong");
+        btn.classList.add("wrong");
+        fb.className = "feedback-box show err";
+        fb.textContent =
+          "Check your two parts again: compare the actual numbers, not just the percents.";
+      }
+      saveState();
+    });
+  });
+}
       document.getElementById('t3-prev-btn').onclick = () => {
         state.idx3 = (state.idx3 - 1 + T3_COMPARES.length) % T3_COMPARES.length; renderT3();
       };

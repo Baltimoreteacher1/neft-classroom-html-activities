@@ -216,6 +216,7 @@
         idx5: 0,
         solved1: {},
         solved2: {},
+        parts2: {},
         solved3: {},
         solved4: {},
         solved5: {},
@@ -499,9 +500,9 @@
           ],
           question: 'Which dealership sold the GREATEST total number of electric cars?',
           choices: [
-            { text: 'Dealership C (56 cars)', correct: true },
-            { text: 'Dealership A (54 cars)', correct: false },
-            { text: 'Dealership B (51 cars)', correct: false }
+            { text: 'Dealership A', correct: false },
+            { text: 'Dealership C', correct: true },
+            { text: 'Dealership B', correct: false }
           ],
           explain: 'A: 0.45 × 120 = 54. B: 0.60 × 85 = 51. C: 0.35 × 160 = 56. Dealership C sold the most!'
         },
@@ -515,9 +516,9 @@
           ],
           question: 'Which school collected the most pounds of recyclables?',
           choices: [
-            { text: 'School 3 (182 lbs)', correct: true },
-            { text: 'School 1 (180 lbs)', correct: false },
-            { text: 'School 2 (176 lbs)', correct: false }
+            { text: 'School 3', correct: true },
+            { text: 'School 1', correct: false },
+            { text: 'School 2', correct: false }
           ],
           explain: 'School 1: 180 lbs. School 2: 176 lbs. School 3: 0.65 × 280 = 182 lbs.'
         },
@@ -531,9 +532,9 @@
           ],
           question: 'Which division selected the MOST players?',
           choices: [
-            { text: 'Division West (46 players)', correct: true },
-            { text: 'Division East (45 players)', correct: false },
-            { text: 'Division North (44 players)', correct: false }
+            { text: 'Division North', correct: false },
+            { text: 'Division East', correct: false },
+            { text: 'Division West', correct: true }
           ],
           explain: 'East = 45, West = 0.25 × 184 = 46, North = 44. Division West selected 46.'
         },
@@ -547,9 +548,9 @@
           ],
           question: 'Which grade had the highest raw number of students attending?',
           choices: [
-            { text: 'Grade 8 (56 students)', correct: true },
-            { text: 'Grade 6 (54 students)', correct: false },
-            { text: 'Grade 7 (51 students)', correct: false }
+            { text: 'Grade 6', correct: false },
+            { text: 'Grade 8', correct: true },
+            { text: 'Grade 7', correct: false }
           ],
           explain: 'Grade 8 had 56 students (0.70 × 80 = 56).'
         },
@@ -563,9 +564,9 @@
           ],
           question: 'Which server cluster has the highest active nodes?',
           choices: [
-            { text: 'Cluster Beta (102 nodes)', correct: true },
-            { text: 'Cluster Alpha and Gamma tied at 100', correct: false },
-            { text: 'All three are equal', correct: false }
+            { text: 'Clusters Alpha and Gamma tie for the most active nodes.', correct: false },
+            { text: 'Cluster Beta has the most active nodes.', correct: true },
+            { text: 'All three clusters have the same number of active nodes.', correct: false }
           ],
           explain: 'Beta: 0.60 × 170 = 102 nodes. Alpha & Gamma have 100 nodes each.'
         },
@@ -579,9 +580,9 @@
           ],
           question: 'Which library branch had the most readers complete the program?',
           choices: [
-            { text: 'Branch C (117 readers)', correct: true },
-            { text: 'Branch A (110 readers)', correct: false },
-            { text: 'Branch B (105 readers)', correct: false }
+            { text: 'Branch C', correct: true },
+            { text: 'Branch A', correct: false },
+            { text: 'Branch B', correct: false }
           ],
           explain: 'Branch C: 0.45 × 260 = 117 readers.'
         },
@@ -595,9 +596,9 @@
           ],
           question: 'What is true regarding Room Y and Room Z?',
           choices: [
-            { text: 'Rooms Y and Z tied with exactly 93 items won each.', correct: true },
-            { text: 'Room Z won more items because 30% > 15%.', correct: false },
-            { text: 'Room Y won more items because 620 > 310.', correct: false }
+            { text: 'Room Z won more items because 30% is greater than 15%.', correct: false },
+            { text: 'Room Y won more items because 620 is greater than 310.', correct: false },
+            { text: 'Rooms Y and Z won the same number of items.', correct: true }
           ],
           explain: 'Room Y: 0.15 × 620 = 93. Room Z: 0.30 × 310 = 93. Both tied!'
         },
@@ -611,25 +612,51 @@
           ],
           question: 'Rank trails by sightings from greatest to least:',
           choices: [
-            { text: 'Trail 3 (45), Trail 2 (42), Trail 1 (40)', correct: true },
-            { text: 'Trail 2 (42), Trail 1 (40), Trail 3 (45)', correct: false },
-            { text: 'Trail 1, Trail 2, Trail 3', correct: false }
+            { text: 'Trail 2, then Trail 1, then Trail 3', correct: false },
+            { text: 'Trail 3, then Trail 2, then Trail 1', correct: true },
+            { text: 'Trail 1, then Trail 2, then Trail 3', correct: false }
           ],
           explain: 'Trail 3 (45) > Trail 2 (42) > Trail 1 (40).'
         }
       ];
 
-      function renderT2() {
-        const m = T2_MATRICES[state.idx2];
-        const isSolved = !!state.solved2[m.id];
-        const chosen = state.solved2[`${m.id}_choice`];
+// Scaffold, not giveaway: the student works out every row's output first;
+// the choices unlock after that. Misses earn a method hint, then a concrete step.
+const t2Misses = {};
 
-        renderDots('t2-dots', T2_MATRICES, state.idx2, state.solved2, (ni) => {
-          state.idx2 = ni; renderT2();
-        });
+function t2Close(a, b) {
+  return Number.isFinite(a) && Math.abs(a - b) < 1e-6;
+}
 
-        const stage = document.getElementById('t2-stage-card');
-        stage.innerHTML = `
+function t2MissHelp(m, badRows, misses) {
+  const names = badRows.map((i) => m.rows[i].name);
+  const which =
+    badRows.length === m.rows.length
+      ? "None of the outputs are right yet."
+      : `Check ${names.join(" and ")}.`;
+  if (misses < 2) {
+    return `${which} For each row, turn the percent into a decimal, then multiply it by the total whole.`;
+  }
+  const steps = badRows.map((i) => {
+    const pct = parseFloat(m.rows[i].rate);
+    return `${m.rows[i].name}: write ${m.rows[i].rate} as ${pct / 100}, then multiply ${pct / 100} × ${m.rows[i].base}.`;
+  });
+  return `${which} Next step: ${steps.join(" ")}`;
+}
+
+function renderT2() {
+  const m = T2_MATRICES[state.idx2];
+  const isSolved = !!state.solved2[m.id];
+  const chosen = state.solved2[`${m.id}_choice`];
+  const partsOk = isSolved || !!state.parts2[m.id];
+
+  renderDots("t2-dots", T2_MATRICES, state.idx2, state.solved2, (ni) => {
+    state.idx2 = ni;
+    renderT2();
+  });
+
+  const stage = document.getElementById("t2-stage-card");
+  stage.innerHTML = `
           <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
             <span style="font-size:0.84rem; font-weight:800; color: var(--warn);">Matrix ${state.idx2 + 1} of ${T2_MATRICES.length} · ${m.title}</span>
             <button type="button" class="speak-btn" data-speak="${m.question}">🔊 Read Question</button>
@@ -641,76 +668,129 @@
                 <th>Entity / Group</th>
                 <th>Percent Rate</th>
                 <th>Total Whole</th>
-                <th>Calculated Output</th>
+                <th>Your Output (rate &times; whole)</th>
               </tr>
             </thead>
             <tbody>
-              ${m.rows.map(r => `
+              ${m.rows
+                .map(
+                  (r, i) => `
                 <tr>
                   <td style="font-weight:700; color:var(--brand);">${r.name}</td>
                   <td style="font-family:var(--font-display);">${r.rate}</td>
                   <td style="font-family:var(--font-display);">${r.base}</td>
-                  <td style="font-family:var(--font-display); font-weight:800; color:var(--brand);">${r.rate} &times; ${r.base} = ${r.output}</td>
+                  <td><input type="number" step="any" inputmode="decimal" id="t2-o${i}" class="num-input" style="width:110px;" placeholder="?" aria-label="${r.name} output" value="${partsOk ? r.output : ""}" ${partsOk ? "disabled" : ""}></td>
                 </tr>
-              `).join('')}
+              `,
+                )
+                .join("")}
             </tbody>
           </table>
 
+          ${partsOk ? "" : `<button type="button" class="btn btn-sm btn-go" id="t2-parts-btn" style="margin:0 0 12px 0;">Check my outputs</button>`}
+
           <p style="font-size:1.15rem; font-weight:700; color:var(--brand); margin:0 0 12px 0;">${m.question}</p>
+          ${partsOk ? "" : `<p style="font-size:0.9rem; margin:0 0 8px 0;">Find every output first, then choose.</p>`}
 
           <div class="choice-stack">
-            ${m.choices.map((c, i) => {
-              let cls = '';
-              if (isSolved) {
-                if (c.correct) cls = 'correct';
-                else if (i === chosen) cls = 'wrong';
-              }
-              return `
-                <button type="button" class="choice-btn ${cls}" data-t2-mc="${i}">
-                  <span style="font-weight:700; width:24px;">${['A','B','C'][i]}.</span>
+            ${m.choices
+              .map((c, i) => {
+                let cls = "";
+                if (isSolved) {
+                  if (c.correct) cls = "correct";
+                  else if (i === chosen) cls = "wrong";
+                }
+                return `
+                <button type="button" class="choice-btn ${cls}" data-t2-mc="${i}" ${partsOk ? "" : "disabled"}>
+                  <span style="font-weight:700; width:24px;">${["A", "B", "C"][i]}.</span>
                   <span>${c.text}</span>
                 </button>
               `;
-            }).join('')}
+              })
+              .join("")}
           </div>
 
-          <div id="t2-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
-            ${isSolved ? `Correct! ${m.explain}` : ''}
+          <div id="t2-fb" class="feedback-box ${isSolved ? "show ok" : ""}" aria-live="polite">
+            ${isSolved ? `Correct! ${m.explain}` : ""}
           </div>
         `;
 
-        stage.querySelector('[data-speak]').onclick = () => speak(m.question);
+  stage.querySelector("[data-speak]").onclick = () => speak(m.question);
 
-        if (isSolved) appendNext(document.getElementById('t2-fb'), 2, T2_MATRICES.length, renderT2);
+  if (isSolved)
+    appendNext(
+      document.getElementById("t2-fb"),
+      2,
+      T2_MATRICES.length,
+      renderT2,
+    );
 
-        stage.querySelectorAll('[data-t2-mc]').forEach(btn => {
-          btn.addEventListener('click', () => {
-            if (state.solved2[m.id]) return;
-            const idx = Number(btn.dataset.t2Mc);
-            const c = m.choices[idx];
-            state.solved2[`${m.id}_choice`] = idx;
-            const fb = document.getElementById('t2-fb');
-
-            if (c.correct) {
-              playSound('correct');
-              btn.classList.add('correct');
-              fb.className = 'feedback-box show ok';
-              fb.innerHTML = `Correct! ${m.explain}`;
-              state.solved2[m.id] = true;
-              renderDots('t2-dots', T2_MATRICES, state.idx2, state.solved2, (ni) => { state.idx2 = ni; renderT2(); });
-              updateProgressHeader();
-              appendNext(fb, 2, T2_MATRICES.length, renderT2);
-            } else {
-              playSound('wrong');
-              btn.classList.add('wrong');
-              fb.className = 'feedback-box show err';
-              fb.textContent = 'Compare the calculated outputs in the rightmost table column.';
-            }
-            saveState();
-          });
-        });
+  const partsBtn = document.getElementById("t2-parts-btn");
+  if (partsBtn) {
+    const checkParts = () => {
+      const bad = [];
+      m.rows.forEach((r, i) => {
+        const el = document.getElementById(`t2-o${i}`);
+        const ok = t2Close(parseFloat(el.value), r.output);
+        el.setAttribute("aria-invalid", ok ? "false" : "true");
+        if (!ok) bad.push(i);
+      });
+      if (!bad.length) {
+        playSound("correct");
+        state.parts2[m.id] = true;
+        saveState();
+        renderT2();
+        const fbOk = document.getElementById("t2-fb");
+        fbOk.className = "feedback-box show ok";
+        fbOk.textContent =
+          "Every output is right. Now compare them and choose.";
+        return;
       }
+      playSound("wrong");
+      t2Misses[m.id] = (t2Misses[m.id] || 0) + 1;
+      const fb = document.getElementById("t2-fb");
+      fb.className = "feedback-box show err";
+      fb.textContent = t2MissHelp(m, bad, t2Misses[m.id]);
+    };
+    partsBtn.addEventListener("click", checkParts);
+    stage.querySelectorAll('[id^="t2-o"]').forEach((el) =>
+      el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") checkParts();
+      }),
+    );
+  }
 
+  stage.querySelectorAll("[data-t2-mc]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (state.solved2[m.id] || !partsOk) return;
+      const idx = Number(btn.dataset.t2Mc);
+      const c = m.choices[idx];
+      state.solved2[`${m.id}_choice`] = idx;
+      const fb = document.getElementById("t2-fb");
+
+      if (c.correct) {
+        playSound("correct");
+        btn.classList.add("correct");
+        fb.className = "feedback-box show ok";
+        fb.innerHTML = `Correct! ${m.explain}`;
+        state.solved2[m.id] = true;
+        renderDots("t2-dots", T2_MATRICES, state.idx2, state.solved2, (ni) => {
+          state.idx2 = ni;
+          renderT2();
+        });
+        updateProgressHeader();
+        appendNext(fb, 2, T2_MATRICES.length, renderT2);
+      } else {
+        playSound("wrong");
+        btn.classList.add("wrong");
+        fb.className = "feedback-box show err";
+        fb.textContent =
+          "Check your outputs again and compare the actual numbers.";
+      }
+      saveState();
+    });
+  });
+}
       document.getElementById('t2-prev-btn').onclick = () => {
         state.idx2 = (state.idx2 - 1 + T2_MATRICES.length) % T2_MATRICES.length; renderT2();
       };
