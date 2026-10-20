@@ -2238,7 +2238,7 @@ header.homework-header h1 {
 .vocab-btn-gotit {
   flex: 1 1 120px;
   max-width: 145px;
-  background: #10b981;
+  background: #047857;
   color: #ffffff;
   border: none;
   font-weight: 700;
@@ -2247,7 +2247,7 @@ header.homework-header h1 {
 }
 
 .vocab-btn-gotit:hover {
-  background: #059669;
+  background: #065f46;
   transform: translateY(-1px);
 }
 

@@ -750,7 +750,7 @@ header.homework-header h1 {
 .vocab-btn-gotit {
   flex: 1 1 120px;
   max-width: 145px;
-  background: #10b981;
+  background: #047857;
   color: #ffffff;
   border: none;
   font-weight: 700;
@@ -759,7 +759,7 @@ header.homework-header h1 {
 }
 
 .vocab-btn-gotit:hover {
-  background: #059669;
+  background: #065f46;
   transform: translateY(-1px);
 }
 
@@ -4175,7 +4175,8 @@ body[data-active-tab]:not([data-active-tab="check"]) .bottom-status-bar {
   padding: 1px 5px !important;
   border: none !important;
   background: rgba(15, 118, 110, 0.08) !important;
-  color: #0f766e !important;
+  /* #0f766e measured 4.3:1 on the tinted talk prompt; this clears 4.5:1. */
+  color: #0b5f58 !important;
   font-weight: 600 !important;
   border-bottom: 2px dotted #0f766e !important;
   border-radius: 4px !important;
@@ -4620,6 +4621,9 @@ body[data-active-tab]:not([data-active-tab="check"]) .bottom-status-bar {
 .hw-stuck-fab:hover { background: var(--navy-light); }
 .hw-stuck-fab:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
 .hw-stuck-fab-icon { font-size: 16px; line-height: 1; }
+/* The page-wide .lang-es rule sets dark ink, which made the Spanish label on
+   this navy button read at 1.15:1. */
+.hw-stuck-fab .lang-es { color: inherit; }
 
 .hw-help-drawer { position: fixed; inset: 0; z-index: 1300; }
 .hw-help-drawer[hidden] { display: none; }
@@ -8162,6 +8166,22 @@ body[data-homework-route="quick"] #hw_cga .cga-quick-note { display: block; }
 body.no-speech .hw-listen-bar, body.no-speech .hw-listen, body.no-speech .btn-read-aloud, body.no-speech .btn-listen-prob, body.no-speech .btn-listen-concept, body.no-speech .vocab-speak-btn { display: none !important; }
 @media print { .hw-listen-bar { display: none; } }
 
+
+.hw-experience-banner { display:flex; align-items:center; gap:12px; margin:14px 0 0; padding:12px 14px; color:#fff; background:rgba(255,255,255,.11); border:1px solid rgba(255,255,255,.45); border-radius:14px; }
+.hw-experience-icon { flex:0 0 auto; font-size:26px; line-height:1; }
+.hw-experience-copy { min-width:0; }
+.hw-experience-title { margin:0; font-weight:800; letter-spacing:.02em; }
+.hw-experience-description { margin:2px 0 0; color:#f2f6fb; font-size:14px; line-height:1.4; }
+.hw-experience-banner .lang-es { color:inherit; }
+@media (max-width:550px) { .hw-experience-banner { align-items:flex-start; padding:10px 12px; } .hw-experience-description { font-size:13px; } }
+
+body[data-family-style="case-file"] { --navy:#174338; --navy-light:#245b4e; --teal:#26866f; --teal-ink:#16634f; --teal-light:#e4f3eb; --amber:#a16207; --amber-light:#fff8dc; }
+body[data-family-style="case-file"] .hw-hero { background:linear-gradient(135deg,#173c3a 0%,#245b4e 60%,#765b24 100%) !important; border:2px solid #d6b85a; }
+body[data-family-style="case-file"] .hw-hero-glow { background:radial-gradient(circle,rgba(245,217,125,.24) 0%,transparent 70%); }
+body[data-family-style="case-file"] .family-guide, body[data-family-style="case-file"] .try-at-home { border-left:5px solid #6c8c58; }
+body[data-family-style="case-file"] .problem-section { border-left:4px solid #d6b85a; }
+body[data-family-style="case-file"] .homework-tab-btn.is-active { box-shadow:inset 0 -3px #d6b85a; }
+body[data-family-style="case-file"] .hw-experience-banner { border-left:5px solid #e5c75a; }
 
 
 /* ===== Family homework print sheet (scripts/lib/homework-print.mjs) ===== */

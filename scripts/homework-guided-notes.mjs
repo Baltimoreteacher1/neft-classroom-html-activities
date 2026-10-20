@@ -8497,7 +8497,7 @@ export function renderCheckTab(
             </div>
           </div>
         </div>
-        <section class="problems-container" aria-label="Practice problems">${warmupHtml}</section>
+        <section class="problems-container" aria-label="Warm-up problems">${warmupHtml}</section>
       </section>`
     : "";
 
@@ -8517,7 +8517,7 @@ export function renderCheckTab(
             </p>
           </div>
         </div>
-        <section class="problems-container" aria-label="Practice problems">${challengeHtml}</section>
+        <section class="problems-container" aria-label="Level-up problems">${challengeHtml}</section>
       </section>`
     : "";
 
@@ -13928,7 +13928,8 @@ body[data-active-tab]:not([data-active-tab="check"]) .bottom-status-bar {
   padding: 1px 5px !important;
   border: none !important;
   background: rgba(15, 118, 110, 0.08) !important;
-  color: #0f766e !important;
+  /* #0f766e measured 4.3:1 on the tinted talk prompt; this clears 4.5:1. */
+  color: #0b5f58 !important;
   font-weight: 600 !important;
   border-bottom: 2px dotted #0f766e !important;
   border-radius: 4px !important;
@@ -14373,6 +14374,9 @@ body[data-active-tab]:not([data-active-tab="check"]) .bottom-status-bar {
 .hw-stuck-fab:hover { background: var(--navy-light); }
 .hw-stuck-fab:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
 .hw-stuck-fab-icon { font-size: 16px; line-height: 1; }
+/* The page-wide .lang-es rule sets dark ink, which made the Spanish label on
+   this navy button read at 1.15:1. */
+.hw-stuck-fab .lang-es { color: inherit; }
 
 .hw-help-drawer { position: fixed; inset: 0; z-index: 1300; }
 .hw-help-drawer[hidden] { display: none; }
