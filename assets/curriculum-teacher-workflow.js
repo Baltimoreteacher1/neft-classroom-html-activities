@@ -164,6 +164,7 @@
     jump.addEventListener("click", function () {
       var target = document.getElementById("curriculum-teacher-workflow");
       if (!target) return;
+      window.CurriculumTeacherBar?.reveal(target);
       target.scrollIntoView({ behavior: "smooth", block: "start" });
       // Focus lands on the panel so keyboard users travel with the scroll.
       target.setAttribute("tabindex", "-1");
@@ -1068,6 +1069,7 @@
             if (opts.scroll !== false) {
               try {
                 var node = panel || document.getElementById("curriculum-teacher-workflow");
+                window.CurriculumTeacherBar?.reveal(node);
                 node.scrollIntoView({
                   behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
                     ? "auto"
@@ -1082,6 +1084,7 @@
         };
         window.CurriculumTeacherPlanning?.organizeTools?.();
         syncTeacherMode();
+        document.dispatchEvent(new CustomEvent("ctw:panel-ready"));
         new MutationObserver(syncTeacherMode).observe(document.body, {
           attributes: true,
           attributeFilter: ["class"],

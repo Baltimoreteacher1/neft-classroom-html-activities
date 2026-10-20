@@ -1168,3 +1168,57 @@ button.ctw-ql-card {
   color: #85381f;
   font-size: 0.95rem;
 }
+
+/* ---- Teacher command bar (assets/curriculum-teacher-bar.js) --------------
+   One tabbed host for "This week", the district pacing console and the
+   planning workspace + Teacher Command Center. Teacher Mode only: the markup
+   is hidden until the script adopts the consoles. */
+.hub-teacher-bar {
+  margin: 20px 0 24px;
+}
+.hub-teacher-bar[hidden] {
+  display: none;
+}
+.htb-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  border: 1.5px solid #027bb9;
+  border-radius: 14px;
+  background: #f0f7fc;
+}
+.htb-tab {
+  flex: 1 1 0;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #14365b;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+.htb-tab[aria-selected="true"] {
+  background: #027bb9;
+  color: #fff;
+}
+.htb-tab:focus-visible {
+  outline: 3px solid #b8791f;
+  outline-offset: 2px;
+}
+.htb-panel[hidden] {
+  display: none;
+}
+.htb-panel:focus-visible {
+  outline: 3px solid #b8791f;
+  outline-offset: 2px;
+}
+@media print {
+  .htb-tabs {
+    display: none;
+  }
+  .htb-panel[hidden] {
+    display: block;
+  }
+}

@@ -15,6 +15,7 @@
       }, 120);
       return;
     }
+    window.CurriculumTeacherBar?.reveal(panel);
     /** @type {HTMLElement} */ (tab).click();
     panel.scrollIntoView({ behavior: "smooth", block: "start" });
   }

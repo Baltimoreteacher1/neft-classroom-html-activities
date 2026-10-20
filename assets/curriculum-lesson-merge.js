@@ -139,6 +139,11 @@
     var panel = cockpit();
     var section = librarySection();
     if (!panel || !section || !section.parentNode) return;
+    // In Teacher Mode the teacher command bar already hosts the cockpit.
+    if (panel.closest("#hub-teacher-bar")) {
+      docked = true;
+      return;
+    }
     if (panel.nextElementSibling !== section) {
       section.parentNode.insertBefore(panel, section);
       panel.classList.add("ctw-docked");

@@ -12,6 +12,7 @@
     for (let node = target; node; node = node.parentElement) {
       if (node instanceof HTMLDetailsElement) node.open = true;
     }
+    window.CurriculumTeacherBar?.reveal(target);
   }
 
   // Capture runs before existing workflow handlers attempt to scroll/focus a panel.

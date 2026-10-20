@@ -131,8 +131,10 @@
         // for the other pages this bundle loads on, where one may still exist; it
         // is optional-chained because on the console there is none, and a click on
         // nothing must be a no-op rather than a throw.
-        if (panel && !panel.hidden) panel.scrollIntoView({ behavior: "smooth", block: "start" });
-        else document.getElementById("hub-mode-toggle")?.click();
+        if (panel && !panel.hidden) {
+          window.CurriculumTeacherBar?.reveal(panel);
+          panel.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else document.getElementById("hub-mode-toggle")?.click();
       });
     if (student) {
       student.href = studentLaunch(selectedLessonId());

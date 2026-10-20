@@ -76,6 +76,7 @@ const RUN = [
   "/assets/curriculum-guided-path.js",
   "/assets/curriculum-studio-journey.js",
   "/assets/curriculum-lesson-merge.js",
+  "/assets/curriculum-teacher-bar.js",
   "/assets/curriculum-product-upgrades.js",
   "/assets/curriculum-navigator.js",
   "/assets/curriculum-resources.js",
