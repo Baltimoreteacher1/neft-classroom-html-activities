@@ -1747,3 +1747,263 @@ body.focus-mode .focus-orbit-ring {
   color: #1e293b;
 }
 
+/* ==========================================================================
+   Publisher-Grade Fluency Lab Modernization (2026-10-20)
+   ========================================================================== */
+
+/* Settings Popover */
+.settings-menu-container {
+  position: relative;
+  display: inline-flex;
+}
+
+.settings-btn {
+  gap: 0.4rem;
+}
+
+.header-settings-popover {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 100;
+  width: 260px;
+  background: var(--surface);
+  color: var(--ink);
+  border: 2px solid var(--navy);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(23, 52, 95, 0.22);
+  padding: 1rem;
+}
+
+.popover-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.95rem;
+  color: var(--navy);
+}
+
+.close-popover-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+}
+
+.close-popover-btn:hover {
+  background: var(--blue-soft);
+  color: var(--ink);
+}
+
+.header-settings-popover .header-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.header-settings-popover .quiet-button {
+  width: 100%;
+  justify-content: flex-start;
+  color: var(--ink);
+  border-color: var(--line);
+  background: #f8fafc;
+  font-size: 0.88rem;
+}
+
+.header-settings-popover .quiet-button:hover {
+  background: var(--blue-soft);
+  border-color: var(--navy);
+}
+
+.header-settings-popover .quiet-button[aria-pressed="true"] {
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy);
+}
+
+/* Practice Sub-navigation: Segmented Switch */
+.practice-subnav {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1.5rem 0 2rem;
+  padding: 0.35rem;
+  background: var(--blue-soft);
+  border: 2px solid var(--navy);
+  border-radius: 14px;
+  max-width: 440px;
+}
+
+.subnav-tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0.6rem 1.1rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-weight: 800;
+  font-size: 1rem;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.subnav-tab:hover {
+  color: var(--navy);
+}
+
+.subnav-tab.active,
+.subnav-tab[aria-selected="true"] {
+  background: var(--navy);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(23, 52, 95, 0.2);
+}
+
+/* Skill Search Toolbar */
+.skill-search-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem;
+  margin: 1.5rem 0 1.2rem;
+  padding: 0.85rem 1rem;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 12px;
+}
+
+.skill-search-field {
+  position: relative;
+  flex: 1 1 280px;
+  display: flex;
+  align-items: center;
+}
+
+.skill-search-field .search-icon {
+  position: absolute;
+  left: 0.85rem;
+  pointer-events: none;
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.skill-search-field input[type="search"] {
+  width: 100%;
+  padding: 0.65rem 0.85rem 0.65rem 2.4rem;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  background: #fbfdff;
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.skill-search-field input[type="search"]:focus {
+  outline: none;
+  border-color: var(--navy);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(23, 52, 95, 0.12);
+}
+
+.skill-jump-top select {
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  background: #fbfdff;
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.skill-jump-top select:focus {
+  outline: none;
+  border-color: var(--navy);
+}
+
+.skill-search-empty {
+  grid-column: 1 / -1;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  background: var(--surface);
+  border: 2px dashed var(--line);
+  border-radius: 12px;
+  color: var(--ink-soft);
+}
+
+/* Practice Lower Grid */
+.practice-lower-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(320px, 1.4fr);
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+
+@media (max-width: 820px) {
+  .practice-lower-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Fact Chart Accordion */
+.tr-chart-accordion {
+  margin: 1.5rem 0;
+  border: 2px solid var(--navy);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.tr-chart-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  background: var(--blue-soft);
+  user-select: none;
+}
+
+.tr-chart-summary:hover {
+  background: #d8e8fc;
+}
+
+.tr-chart-summary .tr-chart-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tr-chart-summary h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.tr-chart-badge {
+  padding: 0.2rem 0.55rem;
+  background: var(--navy);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  border-radius: 999px;
+}
+
+.tr-chart-toggle-text {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.tr-chart-body {
+  padding: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+

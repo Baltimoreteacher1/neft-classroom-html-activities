@@ -36,13 +36,24 @@
       <nav aria-label="Page controls">
         <label class="profile-control" for="profile-select">Learner<select id="profile-select"></select></label>
         <button id="add-profile" class="quiet-button" type="button" data-i18n>Add learner</button>
-        <div class="header-settings">
-          <button id="text-size" class="quiet-button" type="button" aria-pressed="false">
-            Text size: Standard
+        <div class="settings-menu-container">
+          <button id="settings-toggle" class="quiet-button settings-btn" type="button" aria-expanded="false" aria-controls="header-settings-popover" aria-label="Display and sound settings">
+            <span aria-hidden="true">⚙️</span> <span data-i18n>Settings</span>
           </button>
-          <button id="focus-mode" class="quiet-button" type="button" aria-pressed="false">Focus view</button>
-          <button id="reading-font" class="quiet-button" type="button" aria-pressed="false">Reading font: Off</button>
-          <button id="sound-toggle" class="quiet-button" type="button" aria-pressed="false">Sound: Off</button>
+          <div id="header-settings-popover" class="header-settings-popover" hidden>
+            <div class="popover-header">
+              <strong data-i18n>Display & Sound</strong>
+              <button type="button" id="close-settings" class="close-popover-btn" aria-label="Close settings">✕</button>
+            </div>
+            <div class="header-settings">
+              <button id="text-size" class="quiet-button" type="button" aria-pressed="false">
+                Text size: Standard
+              </button>
+              <button id="focus-mode" class="quiet-button" type="button" aria-pressed="false">Focus view</button>
+              <button id="reading-font" class="quiet-button" type="button" aria-pressed="false">Reading font: Off</button>
+              <button id="sound-toggle" class="quiet-button" type="button" aria-pressed="false">Sound: Off</button>
+            </div>
+          </div>
         </div>
         <button id="lang-toggle" class="quiet-button" type="button" lang="es">Español</button>
       </nav>
@@ -73,32 +84,55 @@
         <div id="grade-tabs" class="grade-tabs" role="tablist" aria-label="Grade level"></div>
       </section>
 
-      <section id="library-view" class="library" aria-labelledby="trail-title">
-        <section id="trail-view" class="trail" aria-labelledby="trail-title"></section>
+      <section id="library-view" class="library" aria-labelledby="page-title">
+        <nav class="practice-subnav" aria-label="Practice view selection" role="tablist">
+          <button type="button" id="subnav-skills" class="subnav-tab active" data-subview="skills" role="tab" aria-selected="true">
+            <span aria-hidden="true">📚</span> <span data-i18n>Skill Library</span>
+          </button>
+          <button type="button" id="subnav-trail" class="subnav-tab" data-subview="trail" role="tab" aria-selected="false">
+            <span aria-hidden="true">🗺️</span> <span data-i18n>Fact Trail</span>
+          </button>
+        </nav>
+
+        <section id="trail-view" class="trail" aria-labelledby="trail-title" hidden></section>
+
         <div id="more-practice" class="more-practice">
-        <div class="library-heading">
-          <div>
-            <h2 id="grade-heading">Grade 1</h2>
-            <p id="grade-promise"></p>
+          <div class="library-heading">
+            <div>
+              <h2 id="grade-heading">Grade 1</h2>
+              <p id="grade-promise"></p>
+            </div>
+            <div id="grade-summary" class="grade-summary" aria-label="Grade progress"></div>
           </div>
-          <div id="grade-summary" class="grade-summary" aria-label="Grade progress"></div>
-        </div>
 
-        <div class="library-actions">
-          <div id="strand-filters" class="strand-filters" aria-label="Filter skills by strand"></div>
-          <button id="mixed-review" class="outline-action" type="button">Mix all skills</button>
-        </div>
-
-        <div id="skill-grid" class="skill-grid" aria-live="polite"></div>
-        <aside class="daily-card" aria-labelledby="daily-title">
-          <div>
-            <h3 id="daily-title">Today’s 10</h3>
-            <p>A mix of skills picked for you: one you are building, a few to remember, and one new idea.</p>
+          <div class="skill-search-toolbar">
+            <div class="skill-search-field">
+              <span class="search-icon" aria-hidden="true">🔍</span>
+              <input id="skill-search-input" type="search" placeholder="Search skills by topic or keyword..." aria-label="Search skills" autocomplete="off" />
+            </div>
+            <label class="skill-jump-top" for="quick-skill-select">
+              <span class="visually-hidden">Jump to any skill</span>
+              <select id="quick-skill-select"><option value="">Choose a skill (Grades 1–8)</option></select>
+            </label>
           </div>
-          <button id="daily-ten" class="primary-action" type="button">Start today’s 10</button>
-        </aside>
-        <section id="personal-dashboard" class="personal-dashboard" aria-label="Your next steps"></section>
-        <label class="skill-jump" for="quick-skill-select">Go to any skill<select id="quick-skill-select"><option value="">Choose a skill (Grades 1–8)</option></select></label>
+
+          <div class="library-actions">
+            <div id="strand-filters" class="strand-filters" aria-label="Filter skills by strand"></div>
+            <button id="mixed-review" class="outline-action" type="button">Mix all skills</button>
+          </div>
+
+          <div id="skill-grid" class="skill-grid" aria-live="polite"></div>
+
+          <div class="practice-lower-grid">
+            <aside class="daily-card" aria-labelledby="daily-title">
+              <div>
+                <h3 id="daily-title">Today’s 10</h3>
+                <p>A mix of skills picked for you: one you are building, a few to remember, and one new idea.</p>
+              </div>
+              <button id="daily-ten" class="primary-action" type="button">Start today’s 10</button>
+            </aside>
+            <section id="personal-dashboard" class="personal-dashboard" aria-label="Your next steps"></section>
+          </div>
         </div>
       </section>
 

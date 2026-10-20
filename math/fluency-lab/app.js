@@ -44,6 +44,12 @@ let pendingRestore = null;
 
 const els = {
   gradeTabs: document.querySelector("#grade-tabs"),
+  subnavSkills: document.querySelector("#subnav-skills"),
+  subnavTrail: document.querySelector("#subnav-trail"),
+  skillSearchInput: document.querySelector("#skill-search-input"),
+  settingsToggle: document.querySelector("#settings-toggle"),
+  settingsPopover: document.querySelector("#header-settings-popover"),
+  closeSettings: document.querySelector("#close-settings"),
   trail: document.querySelector("#trail-view"),
   morePractice: document.querySelector("#more-practice"),
   gradeHeading: document.querySelector("#grade-heading"),
@@ -211,6 +217,54 @@ function renderGradeTabs() {
   ).join("");
 }
 
+const STRAND_ICONS = {
+  Counting: "🔢", "Place value": "🧱", Addition: "➕", Subtraction: "➖",
+  Multiplication: "✖️", Division: "➗", Operations: "🧮", Fluency: "⚡",
+  "Number sense": "💡", Money: "🪙", Measurement: "📏", Fractions: "🍕",
+  Geometry: "📐", "Number theory": "🔍", Decimals: "🎯", "Number system": "🌐",
+  Ratios: "⚖️", Expressions: "✏️", Equations: "🟰", "Rational numbers": "🧭",
+  Proportions: "📊", Percents: "🏷️", Statistics: "📈", Exponents: "✨",
+  "Scientific notation": "🔬", "Real numbers": "🗺️", "Linear relationships": "📉",
+  Functions: "🔄", Systems: "🔗", Data: "📊"
+};
+
+function setPracticeSubview(subview) {
+  state.subview = subview;
+  const isSkills = subview === "skills";
+  els.subnavSkills?.setAttribute("aria-selected", String(isSkills));
+  els.subnavSkills?.classList.toggle("active", isSkills);
+  els.subnavTrail?.setAttribute("aria-selected", String(!isSkills));
+  els.subnavTrail?.classList.toggle("active", !isSkills);
+  if (els.trail) els.trail.hidden = isSkills;
+  if (els.morePractice) els.morePractice.hidden = !isSkills;
+}
+
+function filterSkillsBySearch() {
+  const query = (els.skillSearchInput?.value || "").trim().toLowerCase();
+  const cards = els.skillGrid?.querySelectorAll(".skill-card") || [];
+  let matches = 0;
+  cards.forEach((card) => {
+    const title = card.querySelector("h3")?.textContent.toLowerCase() || "";
+    const strand = card.querySelector(".strand-label")?.textContent.toLowerCase() || "";
+    const rule = card.querySelector("p")?.textContent.toLowerCase() || "";
+    const match = !query || title.includes(query) || strand.includes(query) || rule.includes(query);
+    card.style.display = match ? "" : "none";
+    if (match) matches++;
+  });
+  let empty = els.skillGrid?.querySelector(".skill-search-empty");
+  if (matches === 0 && query) {
+    if (!empty) {
+      empty = document.createElement("div");
+      empty.className = "skill-search-empty";
+      els.skillGrid.appendChild(empty);
+    }
+    empty.textContent = `No skills match "${query}" in Grade ${state.grade}.`;
+    empty.style.display = "";
+  } else if (empty) {
+    empty.style.display = "none";
+  }
+}
+
 function renderLibrary() {
   saveActiveSession();
   cleanupVisual?.();
@@ -223,10 +277,15 @@ function renderLibrary() {
   els.library.hidden = false;
   const grade = getGrade(state.grade);
   document.documentElement.style.setProperty("--grade", grade.color);
+  state.subview = state.subview || "skills";
+  setPracticeSubview(state.subview);
   cleanupTrail?.();
   cleanupTrail = mountTrail(els.trail, {
     grade: state.grade,
-    onShowSkills: () => els.morePractice.scrollIntoView({ behavior: "smooth", block: "start" }),
+    onShowSkills: () => {
+      setPracticeSubview("skills");
+      els.morePractice?.scrollIntoView({ behavior: "smooth", block: "start" });
+    },
     onPlayGame: (game) => { state.autoGame = game; openHubView("games"); },
   });
   els.gradeHeading.textContent = `More ${grade.label} practice`;
@@ -242,6 +301,7 @@ function renderLibrary() {
     .join("");
   const filtered = grade.skills.filter((skill) => state.strand === "All" || skill.strand === state.strand);
   els.skillGrid.innerHTML = filtered.map(renderSkillCard).join("");
+  if (els.skillSearchInput?.value) filterSkillsBySearch();
   const gradeRecords = grade.skills.map(recordFor);
   const fluent = grade.skills.filter((skill) => evidence(state.tutor, skill).secure).length;
   const attempts = gradeRecords.reduce((sum, record) => sum + record.attempts, 0);
@@ -260,16 +320,17 @@ function renderSkillCard(skill) {
   const status = evidence(state.tutor, skill);
   const level = status.secure ? 3 : status.independent >= 4 ? 2 : status.recent.length || status.lessonCompleted ? 1 : 0;
   const label = ["New", "Practicing", "Getting strong", "I know it"][level];
+  const icon = STRAND_ICONS[skill.strand] || "✏️";
   return `
     <article class="skill-card" data-level="${level}">
       <div class="skill-card-top">
-        <span class="strand-label">${escapeHtml(skill.strand)}</span>
+        <span class="strand-label"><span aria-hidden="true">${icon}</span> ${escapeHtml(skill.strand)}</span>
         <span class="mastery-pill level-${level}">${label}</span>
       </div>
       <h3>${escapeHtml(skill.title)}</h3>
       <p>${escapeHtml(skill.learn.rule)}</p>
       <div class="skill-card-actions">
-        <button class="open-skill" data-skill="${skill.id}">Learn and practice</button>
+        <button class="open-skill primary-action" data-skill="${skill.id}">Practice &amp; Learn</button>
       </div>
     </article>`;
 }
@@ -1306,6 +1367,37 @@ els.quickSkillSelect?.addEventListener("change", (event) => {
   const g = Number(gStr);
   if (g && sId) {
     openSkill(sId, "learn", g);
+  }
+});
+
+els.subnavSkills?.addEventListener("click", () => setPracticeSubview("skills"));
+els.subnavTrail?.addEventListener("click", () => setPracticeSubview("trail"));
+els.skillSearchInput?.addEventListener("input", filterSkillsBySearch);
+
+els.settingsToggle?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (!els.settingsPopover) return;
+  const isHidden = els.settingsPopover.hidden;
+  els.settingsPopover.hidden = !isHidden;
+  els.settingsToggle.setAttribute("aria-expanded", String(isHidden));
+});
+els.closeSettings?.addEventListener("click", () => {
+  if (els.settingsPopover) {
+    els.settingsPopover.hidden = true;
+    els.settingsToggle?.setAttribute("aria-expanded", "false");
+  }
+});
+document.addEventListener("click", (e) => {
+  if (els.settingsPopover && !els.settingsPopover.hidden && !e.target.closest(".settings-menu-container")) {
+    els.settingsPopover.hidden = true;
+    els.settingsToggle?.setAttribute("aria-expanded", "false");
+  }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && els.settingsPopover && !els.settingsPopover.hidden) {
+    els.settingsPopover.hidden = true;
+    els.settingsToggle?.setAttribute("aria-expanded", "false");
+    els.settingsToggle?.focus();
   }
 });
 

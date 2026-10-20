@@ -1,6 +1,11 @@
 // Spanish for the learner-facing Game Room, trail, rewards and family summary. The English text is the key.
 // Math problems, skill titles, and worked-example steps are not translated here.
 export const ES = {
+  "Settings": "Configuración",
+  "Display & Sound": "Pantalla y sonido",
+  "Skill Library": "Biblioteca de destrezas",
+  "Fact Trail": "Ruta de operaciones",
+  "Tap to view chart": "Toca para ver la tabla",
   "Balance It": "Equilibra la balanza",
   "Make the scale balance. Which number goes in the right pan?": "Haz que la balanza se equilibre. ¿Qué número va en el plato derecho?",
   "Left side: {a}. Right side: {b}.": "Lado izquierdo: {a}. Lado derecho: {b}.",

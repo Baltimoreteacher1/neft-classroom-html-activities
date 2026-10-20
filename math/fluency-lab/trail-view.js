@@ -163,14 +163,20 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
       }).join("");
       return `<tr><th scope="row">${r}</th>${cells}</tr>`;
     }).join("");
-    return `<section class="tr-chart" aria-labelledby="chart-title">
-      <div class="tr-chart-head">
-        <h3 id="chart-title">${t("My fact chart")}</h3>
+    return `<details class="tr-chart tr-chart-accordion" aria-labelledby="chart-title">
+      <summary class="tr-chart-summary">
+        <div class="tr-chart-head">
+          <h3 id="chart-title">${t("My fact chart")}</h3>
+          <span class="tr-chart-badge">${counts.known} / ${counts.total}</span>
+        </div>
+        <span class="tr-chart-toggle-text">${t("Tap to view chart")}</span>
+      </summary>
+      <div class="tr-chart-body">
         <p>${t("{a} of {b} facts filled in. A fact fills in after you get it right twice on the first try.", { a: counts.known, b: counts.total })}</p>
+        <div class="tr-chart-scroll"><table class="tr-grid ${op}">${head}${rows}</table></div>
+        <p class="tr-legend"><span><i class="known"></i>${t("I know it")}</span><span><i class="growing"></i>${t("Getting there")}</span><span><i class="practice"></i>${t("Practice more")}</span></p>
       </div>
-      <div class="tr-chart-scroll"><table class="tr-grid ${op}">${head}${rows}</table></div>
-      <p class="tr-legend"><span><i class="known"></i>${t("I know it")}</span><span><i class="growing"></i>${t("Getting there")}</span><span><i class="practice"></i>${t("Practice more")}</span></p>
-    </section>`;
+    </details>`;
   }
 
   function renderCard(id, shown = 1) {
