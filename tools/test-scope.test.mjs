@@ -207,7 +207,9 @@ const indexBefore = callerIndex ? statSync(callerIndex) : null;
 const dir = mkdtempSync(join(tmpdir(), "test-scope-"));
 try {
   mkdirSync(join(dir, "tools/lib"), { recursive: true });
+  mkdirSync(join(dir, "scripts/lib"), { recursive: true });
   mkdirSync(join(dir, "data"));
+  copyFileSync(join(ROOT, "scripts/lib/qa-lock.mjs"), join(dir, "scripts/lib/qa-lock.mjs"));
   for (const f of [
     "run-tests.mjs",
     "lib/test-scope.mjs",

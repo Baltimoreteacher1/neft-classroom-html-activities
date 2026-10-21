@@ -25,6 +25,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 export const LOCK_DIR = join(tmpdir(), "eduwonderlab-qa-gate.lock");
+/** One test phase at a time among runs that do NOT hold LOCK_DIR (see tools/run-tests.mjs). */
+export const TEST_LANE_DIR = join(tmpdir(), "eduwonderlab-test-lane.lock");
 /** No real gate runs this long (every check is killed at 15 min), so an older lock is dead. */
 export const STALE_MS = 90 * 60 * 1000;
 

@@ -8,7 +8,13 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { acquireGateLock, isStale, STALE_MS } from "../scripts/lib/qa-lock.mjs";
+import {
+  acquireGateLock,
+  isStale,
+  LOCK_DIR,
+  STALE_MS,
+  TEST_LANE_DIR,
+} from "../scripts/lib/qa-lock.mjs";
 
 // This test runs INSIDE a gate (npm test), whose own lock marks its children
 // with QA_GATE_LOCK_HELD=1 and may carry QA_NO_LOCK. Either would make every
@@ -119,6 +125,10 @@ try {
     parent.release();
     delete process.env.QA_GATE_LOCK_HELD;
   }
+
+  // The test lane (tools/run-tests.mjs) must be a different lock from the gate lock:
+  // sharing one directory would make a test phase wait on the gate that spawned it.
+  assert.notEqual(TEST_LANE_DIR, LOCK_DIR);
 
   console.log("✓ qa-lock: excludes, times out loudly, ignores dead owners, honours QA_NO_LOCK.");
 } finally {

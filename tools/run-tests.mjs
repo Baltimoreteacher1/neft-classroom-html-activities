@@ -28,8 +28,9 @@ import {
   writeFileSync,
 } from "node:fs";
 import { availableParallelism, setPriority, tmpdir } from "node:os";
-import { join, relative } from "node:path";
+import { basename, join, relative } from "node:path";
 import { pathToFileURL } from "node:url";
+import { acquireGateLock, TEST_LANE_DIR } from "../scripts/lib/qa-lock.mjs";
 import { SKIP_EXIT } from "./lib/skip-exit.mjs";
 import {
   entryFromTrace,
@@ -139,6 +140,19 @@ if (!RECORD && process.env.QA_TEST_SCOPE_FILES) {
 const traceDir = VERIFY ? mkdtempSync(join(tmpdir(), "qa-test-trace-")) : null;
 const traceFile = (file) => join(traceDir, `${relative(ROOT, file).replace(/[^\w.-]/g, "_")}.json`);
 const PRELOAD = pathToFileURL(join(ROOT, "tools/lib/test-trace-preload.mjs")).href;
+
+/* --- One test phase at a time per machine ------------------------------------
+ * A gate that holds the machine-wide gate lock (scripts/lib/qa-lock.mjs) already
+ * excludes the others, and its children inherit QA_GATE_LOCK_HELD, so this is a
+ * no-op for them. Small scoped runs (--commit / --push of a few checks, a manual
+ * `npm test`, `test:reads`) take no gate lock, so three or four sessions ran
+ * their test phases together: load average 40-50 on 10 cores, every one of them
+ * slower than if they had queued. They queue here instead, bounded and loud. */
+await acquireGateLock({
+  label: `${basename(ROOT)} · tests`,
+  lockDir: TEST_LANE_DIR,
+  log: console.log,
+});
 
 const JOBS = Math.max(1, Number(process.env.TEST_JOBS) || Math.min(8, availableParallelism() - 1));
 
