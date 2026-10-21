@@ -2,7 +2,16 @@
 //   node tools/studio-gen.test.mjs [genId ...]     (no ids = every registered generator)
 // A generator passes when its items are well-formed, deterministic, bilingual, varied, balanced in answer position,
 // and when its INDEPENDENT check() agrees with the key -- and disagrees once the key is corrupted.
+// Every wrong answer it names (mc tag[], typed-answer fw[].tag) must be a misconception taxonomy id
+// (data/practice-studio/misconceptions.json) that assets/studio-gen/traps.js carries a name for, so My thinking names a
+// generated miss like an authored one. A generator's own tag reaches the taxonomy through
+// data/practice-studio/generator-traps.json; a new tag fails here until it is mapped there (then rerun
+// node scripts/generate-practice-studios.mjs).
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { generatorTrapProblems } from "../scripts/lib/practice-studio-traps.mjs";
+import { REPO_ROOT } from "./lib/curriculum-source.mjs";
 import { loadStudio } from "./lib/studio-vm.mjs";
 
 const SEEDS = 300;
@@ -15,6 +24,34 @@ let problems = 0;
 const bad = (id, msg) => {
   problems++;
   console.error(`FAIL [${id}] ${msg}`);
+};
+const readJson = (rel) => JSON.parse(readFileSync(join(REPO_ROOT, rel), "utf8"));
+const { traps } = readJson("data/practice-studio/misconceptions.json");
+for (const p of generatorTrapProblems(
+  readJson("data/practice-studio/generator-traps.json"),
+  traps,
+  G.ids(),
+))
+  bad("generator-traps.json", p);
+const named = G.traps?.names || {};
+/** tags already reported, so one unmapped tag fails once, not once per seed */
+const unnamed = new Set();
+const trapCheck = (id, where, t) => {
+  if (!t) return bad(id, `${where} names no misconception`);
+  if (unnamed.has(`${id}|${t}`)) return;
+  if (!traps[t]) {
+    unnamed.add(`${id}|${t}`);
+    bad(
+      id,
+      `${where} tag "${t}" is not a taxonomy id: map it in data/practice-studio/generator-traps.json`,
+    );
+  } else if (named[t]?.n !== traps[t].name || named[t]?.nEs !== traps[t].nameEs) {
+    unnamed.add(`${id}|${t}`);
+    bad(
+      id,
+      `${where} trap "${t}" has no current name in traps.js: run node scripts/generate-practice-studios.mjs`,
+    );
+  }
 };
 
 for (const id of ids) {
@@ -66,9 +103,13 @@ for (const id of ids) {
           );
         if (Array.isArray(item.f) && item.f[item.a])
           bad(id, `${tag} right choice carries feedback text`);
+        item.c.forEach(
+          (_c, i) => i !== item.a && trapCheck(id, `${tag} choice ${i}`, (item.tag || [])[i]),
+        );
         if (item.c.length === 4) pos[item.a]++;
       } else if (item.k === "num") {
         if (!Number.isFinite(G.value(item.a))) bad(id, `${tag} num answer not numeric: ${item.a}`);
+        for (const w of item.fw || []) trapCheck(id, `${tag} typed wrong value ${w.v}`, w.tag);
       } else bad(id, `${tag} unknown kind ${item.k}`);
       stems.add(item.q + JSON.stringify(item.c || item.a));
       // the stem may not state its own answer as a standalone number for num items
@@ -105,4 +146,6 @@ if (problems) {
   console.error(`\n${problems} problem(s) across ${ids.length} generator(s).`);
   process.exit(1);
 }
-console.log(`studio-gen: ${ids.length} generator(s) x 4 levels x ${SEEDS} seeds passed.`);
+console.log(
+  `studio-gen: ${ids.length} generator(s) x 4 levels x ${SEEDS} seeds passed; every wrong answer names a taxonomy trap.`,
+);

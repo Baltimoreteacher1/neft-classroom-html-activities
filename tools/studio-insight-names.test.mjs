@@ -2,6 +2,8 @@
 //   - a tagged miss shows its trap name from misconceptions.json (EN + ES) and the trap's quick fix
 //   - an untagged miss shows its WHOLE feedback sentence, never the truncated "signature" fragment it is grouped by
 //     (it used to print "Different runners train different miles would the")
+//   - a generated ("New numbers") miss shows its trap name from assets/studio-gen/traps.js even though the page carries
+//     only the traps its authored items name
 //   - the share text uses the same names
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -25,6 +27,11 @@ w.StudioRT = {
 w.StudioBus = { on: (ev, fn) => (handlers[ev] = fn) };
 w.StudioStore = { passport: { update() {} }, clear() {} };
 w.eval(readFileSync(join(REPO_ROOT, "assets/studio/insight.js"), "utf8"));
+w.eval(readFileSync(join(REPO_ROOT, "assets/studio-gen/core.js"), "utf8"));
+w.eval(readFileSync(join(REPO_ROOT, "assets/studio-gen/traps.js"), "utf8"));
+/** what a medianFind item tags an unsorted-list median with, after StudioGen.make() maps it to the taxonomy */
+const genTrap = w.StudioGen.trapOf("medianFind", "stat-no-order");
+assert.ok(traps[genTrap], `a generator tag maps to a taxonomy id (got "${genTrap}")`);
 
 const trapId = "stat-mean-vs-median";
 const state = {
@@ -109,9 +116,19 @@ assert.ok(
 );
 assert.ok(items.length >= 1);
 
+// a generated miss (the page carries no name for it) is the most frequent pattern: it leads the map by its trap name
+assert.ok(!state.misses[genTrap]);
+for (const id of ["g1", "g2", "g3"])
+  answer({ ok: false, itemId: id, tab: 1, tag: genTrap, say: "Put them in order first." });
+w.document.querySelector("[data-open-think]").click();
+const lead = w.document.querySelector(".think-list li")?.textContent || "";
+assert.ok(lead.includes(traps[genTrap].name), `a generated miss shows its trap name: ${lead}`);
+assert.ok(lead.includes(traps[genTrap].nameEs), "and its Spanish name");
+assert.ok(lead.includes(traps[genTrap].fix), "and the trap's quick fix");
+
 const share = w.StudioInsight.shareText();
 assert.ok(share.includes(traps[trapId].name), "the share text names the trap");
 assert.ok(!/item:|#/.test(share.split("\n")[2]), "the share text carries no signature key");
 console.log(
-  `studio insight names: trap, untagged and legacy misses read cleanly (${all.length} patterns).`,
+  `studio insight names: trap, generated, untagged and legacy misses read cleanly (${all.length} patterns).`,
 );

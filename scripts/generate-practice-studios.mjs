@@ -6,12 +6,14 @@
  *   /math/practice-studio/<lesson>/challenge/index.html   the Challenge studio
  *   /math/practice-studio/index.html                      the finder, with the student's passport
  *   assets/studio-worlds.css                              one daylight + one night palette per world
+ *   assets/studio-gen/traps.js                            generator tag -> misconception id, and those traps' names
  *   curriculum/units/index.html                           "HTML practice" and "HTML practice (Challenge)" links on each lesson row
  *
  * Sources (nothing is composed here): the lesson's config.json (warm-up, practice tiers, connect check, exit ticket),
  * data/practice-studio/<lesson>.json (the authored studio content, validated against docs/specs/practice-studio-v2.md),
  * data/practice-studio/worlds.json (look, voice and section names) and data/practice-studio/misconceptions.json (the named
- * misconceptions behind wrong choices, shown in "My thinking"). `--check` fails if any generated file is stale.
+ * misconceptions behind wrong choices, shown in "My thinking"), and data/practice-studio/generator-traps.json (which trap
+ * each generator's own wrong-answer tag means). `--check` fails if any generated file is stale.
  */
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -28,6 +30,7 @@ import { benchProblems } from "./lib/practice-studio-bench.mjs";
 import { buildSections } from "./lib/practice-studio-config.mjs";
 import { validateLessonData } from "./lib/practice-studio-data.mjs";
 import { boostPage, indexPage, pageFor } from "./lib/practice-studio-pages.mjs";
+import { TRAPS_JS, trapsJs } from "./lib/practice-studio-traps.mjs";
 import { worldsCss } from "./lib/practice-studio-worlds.mjs";
 
 /** Units that get a generated studio. Unit 4's studios are hand-built; Units 1 and 10 are not in scope. */
@@ -54,9 +57,17 @@ export const UNIT4 = [
   ["4-5", "4-5-practice-studio", "4-5-practice-studio-challenging"],
 ];
 
-/** Script and stylesheet URLs in load order, each stamped with a hash of everything the studios load. */
-function assetPlan(/** @type {string} */ worlds) {
-  const gen = coreFirst(jsFiles("assets/studio-gen")).map((f) => `assets/studio-gen/${f}`);
+/**
+ * Script and stylesheet URLs in load order, each stamped with a hash of everything the studios load. `built` holds the
+ * assets this generator writes (path -> content), hashed as written rather than as they sit on disk.
+ */
+function assetPlan(/** @type {Map<string, string>} */ built) {
+  // traps.js is generated below, so it is listed even before its first write
+  const genFiles = new Set([
+    ...jsFiles("assets/studio-gen"),
+    TRAPS_JS.replace("assets/studio-gen/", ""),
+  ]);
+  const gen = coreFirst([...genFiles].sort()).map((f) => `assets/studio-gen/${f}`);
   const act = coreFirst(jsFiles("assets/studio-act")).map((f) => `assets/studio-act/${f}`);
   const vizAll = jsFiles("assets").filter((f) => /^studio-viz.*\.js$/.test(f));
   const viz = [
@@ -88,9 +99,7 @@ function assetPlan(/** @type {string} */ worlds) {
   ];
   const h = createHash("sha1");
   for (const f of [...styles, ...scripts, "assets/studio/finder.js"])
-    h.update(
-      f === "assets/studio-worlds.css" ? worlds : existsSync(join(REPO_ROOT, f)) ? read(f) : "",
-    );
+    h.update(built.get(f) ?? (existsSync(join(REPO_ROOT, f)) ? read(f) : ""));
   const v = h.digest("hex").slice(0, 10);
   const url = (/** @type {string} */ f) => `/${f}?v=${v}`;
   // The learning-lab modules the lab items import at runtime. Stamped separately so a lab fix reaches every studio
@@ -145,13 +154,20 @@ export function outputs(opts = {}) {
   const { traps } = JSON.parse(read("data/practice-studio/misconceptions.json"));
   const labs = JSON.parse(read("data/learning-labs.json"));
   const css = worldsCss(worlds);
-  const assets = assetPlan(css);
+  const trapsSource = trapsJs(JSON.parse(read("data/practice-studio/generator-traps.json")), traps);
+  const assets = assetPlan(
+    new Map([
+      ["assets/studio-worlds.css", css],
+      [TRAPS_JS, trapsSource],
+    ]),
+  );
   const ids = listLessonDirs({ filter: /^\d+-\d+$/ })
     .filter((id) => STUDIO_UNITS.includes(Number(id.split("-")[0])))
     .filter((id) => !opts.only || opts.only.includes(id))
     .sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
   const files = new Map();
   files.set("assets/studio-worlds.css", css);
+  files.set(TRAPS_JS, trapsSource);
   const entries = [];
   const report = [];
   /** every generated skill, with the first lesson that uses it: what the Daily Boost draws from */

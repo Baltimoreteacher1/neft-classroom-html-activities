@@ -40,8 +40,12 @@
     const s = t.replace(/[-_#]+/g, " ").trim();
     return s ? s.charAt(0).toUpperCase() + s.slice(1) : "Something to look at again";
   };
-  /** The named trap (data/practice-studio/misconceptions.json) behind a tag, when the page carries one. */
-  const trap = (/** @type {string} */ tag) => rt?.api?.data?.traps?.[tag] || null;
+  /**
+   * The named trap (data/practice-studio/misconceptions.json) behind a tag: the page carries the traps its authored items
+   * name, and assets/studio-gen/traps.js the traps a generated ("New numbers") item can name.
+   */
+  const trap = (/** @type {string} */ tag) =>
+    rt?.api?.data?.traps?.[tag] || W.StudioGen?.traps?.names?.[tag] || null;
   /** Untagged misses are keyed by signature() ("skill:words"); authored tags never contain a colon. */
   const untagged = (/** @type {string} */ tag, /** @type {any} */ r) =>
     !!r?.auto || tag.includes(":");

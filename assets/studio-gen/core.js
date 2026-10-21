@@ -218,6 +218,15 @@
     return o;
   };
 
+  /**
+   * The misconception taxonomy id (data/practice-studio/misconceptions.json) behind a generator's own wrong-answer tag.
+   * Generators name a wrong answer with a short tag that also keys their feedback ("stat-no-order"); make() swaps it for
+   * the trap it means, so My thinking names and counts a generated miss like an authored one. The table is
+   * data/practice-studio/generator-traps.json, compiled into traps.js; a tag it does not list passes through unchanged.
+   */
+  G.trapOf = (/** @type {string} */ id, /** @type {string} */ tag) =>
+    (tag && (G.traps?.byGenerator?.[id]?.[tag] || G.traps?.tags?.[tag])) || tag;
+
   G.make = (
     /** @type {string} */ id,
     /** @type {number} */ level,
@@ -229,6 +238,9 @@
     const rng = G.rng(`${id}|${lv}|${seed}`);
     const item = tidy(def.make(rng, lv));
     item.k = item.k || (item.c ? "mc" : "num");
+    if (Array.isArray(item.tag))
+      item.tag = item.tag.map((/** @type {string} */ t) => G.trapOf(id, t));
+    for (const w of Array.isArray(item.fw) ? item.fw : []) if (w.tag) w.tag = G.trapOf(id, w.tag);
     item.gen = { id, level: lv, seed };
     return item;
   };

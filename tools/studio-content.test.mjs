@@ -16,6 +16,8 @@
 //   - a `configTags` key that matches no converted item, or whose array is the wrong length or tags the right answer
 //   - a malformed taxonomy entry (name over 6 words, missing Spanish, engine:true that the engine does not define)
 //   - a generated page that does not carry the name of a trap its items use (rerun the generator)
+//   - a data/practice-studio/generator-traps.json entry that maps a generator's tag to an id not in misconceptions.json
+//     (every tag a generator actually emits is checked over 300 seeds x 4 levels by tools/studio-gen.test.mjs)
 // Reported, never failed: right-answer positions that are lopsided within a lesson.
 //
 // To tag another unit (say Unit 3):
@@ -38,6 +40,7 @@ import {
   needsSpanish,
   taxonomyProblems,
 } from "../scripts/lib/practice-studio-content.mjs";
+import { generatorTrapProblems } from "../scripts/lib/practice-studio-traps.mjs";
 import { listLessonDirs, loadLessonConfig, REPO_ROOT } from "./lib/curriculum-source.mjs";
 
 /**
@@ -105,10 +108,13 @@ assert.ok(
 
 /* ---- the taxonomy ---- */
 problems.push(...taxonomyProblems(traps, new Set(Object.keys(MISCONCEPTIONS)), STUDIO_UNITS));
+problems.push(
+  ...generatorTrapProblems(JSON.parse(read("data/practice-studio/generator-traps.json")), traps),
+);
 const count = Object.keys(traps).length;
 assert.ok(
-  count >= 40 && count <= 180,
-  `misconceptions.json should hold 40-180 traps, has ${count}`,
+  count >= 40 && count <= 190,
+  `misconceptions.json should hold 40-190 traps, has ${count}`,
 );
 
 /* ---- every rendered multiple-choice item ---- */
