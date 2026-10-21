@@ -300,6 +300,7 @@
           hints: state.hints[it.id] || 0,
           tag: m.tag || null,
           say: text,
+          sayEs: textEs,
           wrong: m.wrongText ?? null,
           skill: it.skill || null,
           tab,

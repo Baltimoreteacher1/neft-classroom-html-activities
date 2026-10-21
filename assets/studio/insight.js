@@ -40,6 +40,14 @@
     const s = t.replace(/[-_#]+/g, " ").trim();
     return s ? s.charAt(0).toUpperCase() + s.slice(1) : "Something to look at again";
   };
+  /** The named trap (data/practice-studio/misconceptions.json) behind a tag, when the page carries one. */
+  const trap = (/** @type {string} */ tag) => rt?.api?.data?.traps?.[tag] || null;
+  /** Untagged misses are keyed by signature() ("skill:words"); authored tags never contain a colon. */
+  const untagged = (/** @type {string} */ tag, /** @type {any} */ r) =>
+    !!r?.auto || tag.includes(":");
+  /** A miss's name in plain text: the trap's name, an authored tag made readable, or (untagged) the whole feedback sentence. */
+  const nameOf = (/** @type {string} */ tag, /** @type {any} */ r) =>
+    trap(tag)?.n || (untagged(tag, r) ? r?.say || "Something to look at again" : human(tag));
 
   /* ---- bus listeners ------------------------------------------------------------------------------ */
   function record(/** @type {any} */ e) {
@@ -52,7 +60,9 @@
     const tag = e.tag ? String(e.tag) : signature(e.say, e.skill);
     const rec = (st.misses[tag] ||= { n: 0, say: "", skill: e.skill || "" });
     rec.n++;
-    rec.say = String(e.say || rec.say).slice(0, 220);
+    rec.say = String(e.say || rec.say);
+    rec.sayEs = String(e.sayEs || rec.sayEs || "");
+    if (!e.tag) rec.auto = true;
     if (!e.redeem && !st.missLog.some((/** @type {any} */ m) => m.id === e.itemId))
       st.missLog.push({ id: e.itemId, tab: e.tab, tag });
     if (st.missLog.length > 12) st.missLog.shift();
@@ -144,7 +154,7 @@
     const top = Object.entries(/** @type {Record<string, any>} */ (st.misses))
       .sort((a, b) => b[1].n - a[1].n)
       .slice(0, 3)
-      .map(([tag]) => human(tag));
+      .map(([tag, r]) => nameOf(tag, r));
     const acc = st.stats.tries ? Math.round((100 * st.stats.first) / st.stats.tries) : 0;
     return [
       `EduWonderLab · Lesson ${data.lesson} · ${data.mode === "practice" ? "Practice" : "Challenge"}`,
@@ -251,10 +261,20 @@
     const top = patterns.filter((p) => p[1].n >= 2).slice(0, 3);
     const shown = top.length ? top : patterns.slice(0, 3);
     const list = shown
-      .map(
-        ([tag, r]) =>
-          `<li><strong>${esc(human(tag))}</strong> <span class="chip">${r.n}×</span><br><span class="item-sub">${esc(r.say)}</span></li>`,
-      )
+      .map(([tag, r]) => {
+        const t = trap(tag);
+        const head = t
+          ? `${esc(t.n)}${es(t.nEs)}`
+          : untagged(tag, r)
+            ? `${esc(nameOf(tag, r))}${es(r.sayEs)}`
+            : esc(human(tag));
+        const sub = t
+          ? `${esc(t.fix)}${es(t.fixEs)}`
+          : untagged(tag, r)
+            ? ""
+            : `${esc(r.say)}${es(r.sayEs)}`;
+        return `<li><strong>${head}</strong> <span class="chip">${r.n}×</span>${sub ? `<br><span class="item-sub">${sub}</span>` : ""}</li>`;
+      })
       .join("");
     const redo = st.missLog.length;
     body.innerHTML = `<p class="item-sub">This map is just for you. It shows the mistakes you keep meeting, so you know what to practice. Nothing here is a grade.</p>

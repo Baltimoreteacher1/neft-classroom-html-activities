@@ -10,7 +10,8 @@
  *
  * Sources (nothing is composed here): the lesson's config.json (warm-up, practice tiers, connect check, exit ticket),
  * data/practice-studio/<lesson>.json (the authored studio content, validated against docs/specs/practice-studio-v2.md),
- * and data/practice-studio/worlds.json (look, voice and section names). `--check` fails if any generated file is stale.
+ * data/practice-studio/worlds.json (look, voice and section names) and data/practice-studio/misconceptions.json (the named
+ * misconceptions behind wrong choices, shown in "My thinking"). `--check` fails if any generated file is stale.
  */
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -141,6 +142,7 @@ const PATH_LINK = (/** @type {string} */ id) =>
 /** @param {{only?: string[]}} [opts] `only` builds a subset of lessons (smoke tests); the real build never passes it. */
 export function outputs(opts = {}) {
   const worlds = JSON.parse(read("data/practice-studio/worlds.json"));
+  const { traps } = JSON.parse(read("data/practice-studio/misconceptions.json"));
   const labs = JSON.parse(read("data/learning-labs.json"));
   const css = worldsCss(worlds);
   const assets = assetPlan(css);
@@ -186,6 +188,7 @@ export function outputs(opts = {}) {
           sections: typographizeItems(sections),
           assets,
           resources: studentResources(id, labs),
+          traps,
         }),
       );
     }

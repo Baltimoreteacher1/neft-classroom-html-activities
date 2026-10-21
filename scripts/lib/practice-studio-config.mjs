@@ -2,6 +2,7 @@
 // Every question, answer, hint and Spanish line comes from the lesson or from its authored studio file —
 // nothing is composed here, so a studio can never teach different mathematics than its lesson.
 import { createHash } from "node:crypto";
+import { resolveAuthoredTag } from "@eduwonderlab/engine/core/misconceptions.js";
 import { benchItems } from "./practice-studio-bench.mjs";
 
 const text = (/** @type {any} */ s) => (typeof s === "string" && s.trim() ? s.trim() : undefined);
@@ -24,6 +25,11 @@ function mc(/** @type {any} */ q) {
     return [null, "duplicate choices"];
   if (q.diagram || WORDS_OF_PICTURE.test(q.stem)) return [null, "needs a figure"];
   const n = q.choices.length;
+  // The lesson's own misconception tags (engine taxonomy ids or their short aliases) name its distractors in the studio too.
+  const tags =
+    Array.isArray(q.misconceptionTags) && q.misconceptionTags.length === n
+      ? q.misconceptionTags.map((/** @type {any} */ t) => resolveAuthoredTag(t))
+      : [];
   return [
     {
       k: "mc",
@@ -39,6 +45,7 @@ function mc(/** @type {any} */ q) {
           ? q.choiceFeedback
           : undefined,
       fEs: esArray(q.choiceFeedbackEs, n),
+      tag: tags.some(Boolean) ? tags : undefined,
       h: Array.isArray(q.hints) && q.hints.length ? q.hints : text(q.hint) ? [q.hint] : undefined,
       hEs: Array.isArray(q.hintsEs) ? q.hintsEs : undefined,
     },
@@ -419,7 +426,10 @@ export function diagramToViz(/** @type {any} */ d) {
 }
 
 /** Convert authored config items; report what stays in the lesson, and why. */
-export function convert(/** @type {any[]} */ list, /** @type {Record<string, number>} */ left) {
+export function convertItems(
+  /** @type {any[]} */ list,
+  /** @type {Record<string, number>} */ left,
+) {
   const out = [];
   for (const q of list || []) {
     const kind = q.type || "multiple-choice";
@@ -460,6 +470,13 @@ export function buildSections(
   /** @type {string} */ id,
 ) {
   const left = /** @type {Record<string, number>} */ ({});
+  // `configTags` in the studio file names the misconception behind each wrong choice of a lesson-config item, keyed by its
+  // exact stem, where the lesson's own engine tags leave a choice unnamed. It replaces the whole tag array.
+  const named = /** @type {Record<string, (string|null)[]>} */ (ld.configTags || {});
+  const convert = (/** @type {any[]} */ list, /** @type {Record<string, number>} */ l) =>
+    convertItems(list, l).map((it) =>
+      it.k === "mc" && Array.isArray(named[it.q]) ? { ...it, tag: named[it.q] } : it,
+    );
   const p = cfg.practice || {};
   const connect = Array.isArray(cfg.connect?.check)
     ? cfg.connect.check

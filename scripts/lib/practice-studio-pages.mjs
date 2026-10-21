@@ -42,6 +42,22 @@ const bi = (/** @type {string} */ en, /** @type {string} */ es) =>
     ? `<span class="t-en">${esc(en)}</span><span class="t-es" lang="es">${esc(es)}</span>`
     : esc(en);
 
+/** The misconception names (EN + ES) and quick fixes for every trap a page's multiple-choice items name, in id order. */
+function trapNames(/** @type {any[]} */ sections, /** @type {Record<string, any>} */ traps) {
+  const used = new Set();
+  for (const s of sections)
+    for (const it of [...s.items, ...(s.pool || [])])
+      for (const t of Array.isArray(it.tag) ? it.tag : []) if (t && traps[t]) used.add(t);
+  return Object.fromEntries(
+    [...used]
+      .sort()
+      .map((t) => [
+        t,
+        { n: traps[t].name, nEs: traps[t].nameEs, fix: traps[t].fix, fixEs: traps[t].fixEs },
+      ]),
+  );
+}
+
 /**
  * @param {object} o
  * @param {string} o.id lesson id, e.g. "5-2"
@@ -51,8 +67,19 @@ const bi = (/** @type {string} */ en, /** @type {string} */ es) =>
  * @param {any} o.world the world definition (with .id)
  * @param {any[]} o.sections the five sections for this mode
  * @param {{scripts: string[], styles: string[]}} o.assets URLs (already stamped) in load order
+ * @param {Record<string, any>} [o.traps] data/practice-studio/misconceptions.json traps; the page carries the ones its items name
  */
-export function pageFor({ id, mode, cfg, ld, world, sections, assets, resources = [] }) {
+export function pageFor({
+  id,
+  mode,
+  cfg,
+  ld,
+  world,
+  sections,
+  assets,
+  resources = [],
+  traps = {},
+}) {
   const unit = id.split("-")[0];
   const standard = cfg.standard || "";
   const title = cfg.title || `Lesson ${id}`;
@@ -80,6 +107,7 @@ export function pageFor({ id, mode, cfg, ld, world, sections, assets, resources 
       ? { labV: assets.labV }
       : {}),
     sections,
+    traps: trapNames(sections, traps),
   };
   const story = challenge ? ld.challengeStory : ld.story;
   const storyEs = challenge ? ld.challengeStoryEs : ld.storyEs;

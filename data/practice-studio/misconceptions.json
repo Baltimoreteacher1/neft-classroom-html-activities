@@ -1,0 +1,929 @@
+{
+  "_doc": "Student-facing misconception taxonomy for the Practice Studios. Every multiple-choice distractor's tag[] entry names one of these ids. Entries with engine:true share their id with engine/core/misconceptions.js (lesson config misconceptionTags flow straight through); the rest are studio-only. Names are what a student sees in My thinking map; fix is a general quick fix that never answers a specific item. How to tag a unit and the rules a tag must follow: the header of tools/studio-content.test.mjs.",
+  "traps": {
+    "stat-question-no-variability": {
+      "name": "Fixed answer vs. varying answers",
+      "nameEs": "Respuesta fija vs. respuestas variadas",
+      "desc": "Treated a question with one fixed answer (a fact, one case, one total) as statistical, or expected answers that vary to all match.",
+      "descEs": "Traté como estadística una pregunta con una sola respuesta fija (un dato, un caso, un total), o esperé que respuestas que varían fueran iguales.",
+      "fix": "Ask: would different people or cases give different answers? If everyone gets the same answer, it is not statistical.",
+      "fixEs": "Pregúntate: ¿distintas personas o casos darían respuestas diferentes? Si todos obtienen la misma respuesta, no es estadística.",
+      "units": [
+        2
+      ],
+      "engine": true
+    },
+    "stat-question-judged-by-surface": {
+      "name": "Judged by topic, not variety",
+      "nameEs": "Juzgué por tema, no variedad",
+      "desc": "Decided whether a question is statistical from its topic, its number answer, or how many people were asked.",
+      "descEs": "Decidí si una pregunta es estadística por su tema, por tener respuesta numérica o por cuántas personas se preguntaron.",
+      "fix": "Ignore the topic and the units. Only one thing decides it: will the answers vary?",
+      "fixEs": "Ignora el tema y las unidades. Solo una cosa lo decide: ¿variarán las respuestas?",
+      "units": [
+        2
+      ]
+    },
+    "stat-question-vs-data": {
+      "name": "Mixed up question and data",
+      "nameEs": "Confundí la pregunta y los datos",
+      "desc": "Called the question, the unit, or the recording sheet the data.",
+      "descEs": "Llamé datos a la pregunta, a la unidad o a la hoja donde se anotan.",
+      "fix": "The question is what you ask. The data are the values you collect to answer it.",
+      "fixEs": "La pregunta es lo que preguntas. Los datos son los valores que reúnes para responderla.",
+      "units": [
+        2
+      ]
+    },
+    "stat-frequency-vs-value": {
+      "name": "Value vs. how many",
+      "nameEs": "Valor vs. cuántos",
+      "desc": "Gave a data value where the question asked how many times it happened (or the reverse).",
+      "descEs": "Di un valor de los datos cuando la pregunta pedía cuántas veces ocurrió (o al revés).",
+      "fix": "Decide first: does the question want a value on the axis, or a count of dots or a bar height?",
+      "fixEs": "Decide primero: ¿la pregunta pide un valor del eje, o un conteo de puntos o la altura de una barra?",
+      "units": [
+        2
+      ],
+      "engine": true
+    },
+    "stat-histogram-bin-misread": {
+      "name": "Misread the bins or scale",
+      "nameEs": "Leí mal intervalos o escala",
+      "desc": "Read the wrong bar, left a bar out, counted bars instead of data, or got an interval's width or edges wrong.",
+      "descEs": "Leí la barra equivocada, omití una barra, conté barras en vez de datos, o me equivoqué en el ancho o los bordes de un intervalo.",
+      "fix": "Point to each interval the question names, read its height, and count every whole number from its first value to its last.",
+      "fixEs": "Señala cada intervalo que nombra la pregunta, lee su altura y cuenta cada número entero desde su primer valor hasta el último.",
+      "units": [
+        2
+      ],
+      "engine": true
+    },
+    "stat-histogram-vs-bar-graph": {
+      "name": "Histogram vs. bar graph",
+      "nameEs": "Histograma vs. gráfica de barras",
+      "desc": "Mixed up when to use a histogram (number intervals, bars touch) and a bar graph (categories, gaps).",
+      "descEs": "Confundí cuándo usar un histograma (intervalos numéricos, barras juntas) y una gráfica de barras (categorías, con espacios).",
+      "fix": "Ask whether the data are numbers you can group into intervals. Numbers make a histogram; names or categories make a bar graph.",
+      "fixEs": "Pregúntate si los datos son números que se agrupan en intervalos. Los números van en histograma; los nombres o categorías, en gráfica de barras.",
+      "units": [
+        2
+      ]
+    },
+    "stat-shape-misread": {
+      "name": "Misread the shape",
+      "nameEs": "Leí mal la forma",
+      "desc": "Named a skew by where the tall bars sit, or called lopsided data symmetric or flat.",
+      "descEs": "Nombré el sesgo por donde están las barras altas, o llamé simétricos o planos a datos desiguales.",
+      "fix": "Find the long, thin tail. A skew is named for the side the tail points to; symmetric means both sides look alike.",
+      "fixEs": "Busca la cola larga y delgada. El sesgo se nombra por el lado hacia donde apunta la cola; simétrico significa que ambos lados se parecen.",
+      "units": [
+        2
+      ]
+    },
+    "stat-spread-misjudged": {
+      "name": "Misjudged how spread out",
+      "nameEs": "Juzgué mal la dispersión",
+      "desc": "Judged variability by how big the numbers are, how many there are, or one large value, not by how far apart they are.",
+      "descEs": "Juzgué la variabilidad por lo grandes que son los números, cuántos hay o un valor grande, no por qué tan separados están.",
+      "fix": "Spread means how far apart the values are. Compare the gaps between values, not their size or how many there are.",
+      "fixEs": "Dispersión significa qué tan separados están los valores. Compara las distancias entre valores, no su tamaño ni cuántos hay.",
+      "units": [
+        2
+      ]
+    },
+    "stat-one-value-for-many": {
+      "name": "Let one value speak for all",
+      "nameEs": "Un valor habló por todos",
+      "desc": "Described a whole data set, or a typical value, with one extreme value or one dot.",
+      "descEs": "Describí todo un conjunto de datos, o un valor típico, con un solo valor extremo o un solo punto.",
+      "fix": "A typical value sits where most of the data are. Describe the cluster and the spread, not one far-off value.",
+      "fixEs": "Un valor típico está donde está la mayoría de los datos. Describe el grupo y la dispersión, no un valor lejano.",
+      "units": [
+        2
+      ]
+    },
+    "stat-mean-vs-median": {
+      "name": "Mixed up mean and median",
+      "nameEs": "Confundí media y mediana",
+      "desc": "Gave the mean where the median was asked, or the median where the mean was asked.",
+      "descEs": "Di la media cuando se pedía la mediana, o la mediana cuando se pedía la media.",
+      "fix": "Median: put the values in order and find the middle. Mean: add them all, then divide by how many there are.",
+      "fixEs": "Mediana: ordena los valores y busca el del medio. Media: súmalos todos y divide entre cuántos hay.",
+      "units": [
+        2
+      ],
+      "engine": true
+    },
+    "stat-mode-mixup": {
+      "name": "Mixed up the mode",
+      "nameEs": "Confundí la moda",
+      "desc": "Used the most common value where another measure was asked, or the reverse.",
+      "descEs": "Usé el valor más frecuente cuando se pedía otra medida, o al revés.",
+      "fix": "The mode is the value that appears most often. The mean and the median are found by adding and dividing, or by ordering.",
+      "fixEs": "La moda es el valor que más se repite. La media y la mediana se hallan sumando y dividiendo, o al ordenar.",
+      "units": [
+        2
+      ]
+    },
+    "stat-median-middle-wrong": {
+      "name": "Found the wrong middle",
+      "nameEs": "Hallé mal el medio",
+      "desc": "Took the middle of an unordered list, the wrong position, or only one of the two middle values.",
+      "descEs": "Tomé el medio de una lista sin ordenar, la posición equivocada, o solo uno de los dos valores del medio.",
+      "fix": "Order the values first. With an even count, the median is halfway between the two middle values.",
+      "fixEs": "Ordena primero los valores. Con una cantidad par, la mediana está a la mitad entre los dos valores del medio.",
+      "units": [
+        2
+      ]
+    },
+    "stat-summed-instead-of-averaged": {
+      "name": "Added but did not divide",
+      "nameEs": "Sumé pero no dividí",
+      "desc": "Stopped at the total and gave it as the mean or the MAD.",
+      "descEs": "Me quedé en el total y lo di como la media o la DAM.",
+      "fix": "A mean is a fair share. After you add, divide the total by how many values there are.",
+      "fixEs": "La media es un reparto justo. Después de sumar, divide el total entre cuántos valores hay.",
+      "units": [
+        2
+      ],
+      "engine": true
+    },
+    "stat-mean-total-confused": {
+      "name": "Mixed up mean and total",
+      "nameEs": "Confundí media y total",
+      "desc": "Used the mean where a total was needed, or the total where the mean was needed.",
+      "descEs": "Usé la media cuando se necesitaba un total, o el total cuando se necesitaba la media.",
+      "fix": "Total = mean × number of values. Decide which one the question wants before you calculate.",
+      "fixEs": "Total = media × número de valores. Decide cuál pide la pregunta antes de calcular.",
+      "units": [
+        2
+      ]
+    },
+    "stat-mean-out-of-range": {
+      "name": "Mean outside the data",
+      "nameEs": "Media fuera de los datos",
+      "desc": "Gave a mean that is lower than the least value or higher than the greatest value.",
+      "descEs": "Di una media menor que el valor mínimo o mayor que el valor máximo.",
+      "fix": "A mean always lands between the least and the greatest value. Check your answer against both ends.",
+      "fixEs": "La media siempre queda entre el valor mínimo y el máximo. Compara tu respuesta con ambos extremos.",
+      "units": [
+        2
+      ]
+    },
+    "stat-mean-skewed-by-outlier": {
+      "name": "Let an outlier mislead you",
+      "nameEs": "Un valor atípico me engañó",
+      "desc": "Trusted the mean when an outlier pulls it away from most of the data.",
+      "descEs": "Confié en la media cuando un valor atípico la aleja de la mayoría de los datos.",
+      "fix": "Spot any value far from the rest. If there is one, the median describes a typical value better than the mean.",
+      "fixEs": "Busca algún valor lejos del resto. Si lo hay, la mediana describe mejor un valor típico que la media.",
+      "units": [
+        2
+      ],
+      "engine": true
+    },
+    "stat-outlier-moves-wrong-measure": {
+      "name": "Mixed up what outliers move",
+      "nameEs": "Confundí qué mueve un atípico",
+      "desc": "Thought an extreme value moves the median or the IQR a lot, or does not move the mean.",
+      "descEs": "Pensé que un valor extremo mueve mucho la mediana o el RIC, o que no mueve la media.",
+      "fix": "Measures that use every value's size (mean, range) feel an outlier. Measures that use position (median, IQR) barely move.",
+      "fixEs": "Las medidas que usan el tamaño de cada valor (media, rango) sienten al atípico. Las que usan la posición (mediana, RIC) casi no cambian.",
+      "units": [
+        2
+      ]
+    },
+    "stat-center-vs-spread": {
+      "name": "Center vs. spread mix-up",
+      "nameEs": "Confundí centro y dispersión",
+      "desc": "Used a measure of center where spread was asked, or paired a center with the wrong spread.",
+      "descEs": "Usé una medida de centro cuando se pedía dispersión, o junté un centro con la dispersión equivocada.",
+      "fix": "Center (mean, median) says where the data sit. Spread (range, IQR, MAD) says how far apart they are. Pair mean with MAD and median with IQR.",
+      "fixEs": "El centro (media, mediana) dice dónde están los datos. La dispersión (rango, RIC, DAM) dice qué tan separados están. Junta media con DAM y mediana con RIC.",
+      "units": [
+        2
+      ],
+      "engine": true
+    },
+    "stat-range-for-iqr": {
+      "name": "Mixed up range and IQR",
+      "nameEs": "Confundí rango y RIC",
+      "desc": "Used the full range where the interquartile range was asked, or the reverse.",
+      "descEs": "Usé el rango completo cuando se pedía el rango intercuartil, o al revés.",
+      "fix": "Range = greatest − least. IQR = Q3 − Q1, the middle half only. The IQR can never be bigger than the range.",
+      "fixEs": "Rango = máximo − mínimo. RIC = Q3 − Q1, solo la mitad central. El RIC nunca puede ser mayor que el rango.",
+      "units": [
+        2
+      ],
+      "engine": true
+    },
+    "stat-box-plot-misread": {
+      "name": "Misread the box plot",
+      "nameEs": "Leí mal el diagrama de caja",
+      "desc": "Mixed up the box, the whiskers and the quartiles, or how much of the data each part holds.",
+      "descEs": "Confundí la caja, los bigotes y los cuartiles, o cuántos datos tiene cada parte.",
+      "fix": "Each of the four sections holds about one quarter of the data. The box is Q1 to Q3, and its length shows spread, not amount.",
+      "fixEs": "Cada una de las cuatro secciones tiene más o menos un cuarto de los datos. La caja va de Q1 a Q3, y su largo muestra dispersión, no cantidad.",
+      "units": [
+        2
+      ]
+    },
+    "stat-mad-misread": {
+      "name": "Misread what MAD means",
+      "nameEs": "Interpreté mal la DAM",
+      "desc": "Read the MAD as the range, as the mean, or as an exact distance for every value.",
+      "descEs": "Leí la DAM como el rango, como la media o como una distancia exacta para cada valor.",
+      "fix": "MAD is the average distance from the mean. A bigger MAD means the values are more spread out.",
+      "fixEs": "La DAM es la distancia promedio a la media. Una DAM mayor significa que los valores están más dispersos.",
+      "units": [
+        2
+      ]
+    },
+    "absolute-value-misread": {
+      "name": "Misread distance from a point",
+      "nameEs": "Leí mal la distancia",
+      "desc": "Gave a negative distance, measured from 0 instead of the given point, or looked in only one direction.",
+      "descEs": "Di una distancia negativa, medí desde 0 en vez del punto dado, o miré en una sola dirección.",
+      "fix": "A distance is never negative, and you can move that far on either side of the point you start from.",
+      "fixEs": "Una distancia nunca es negativa, y puedes moverte esa distancia hacia cualquier lado del punto de partida.",
+      "units": [
+        2,
+        7
+      ]
+    },
+    "read-question-missed-key-word": {
+      "name": "Answered a different question",
+      "nameEs": "Respondí otra pregunta",
+      "desc": "Missed a key word like NOT, EACH or DIFFERENCE and answered a question that was not asked.",
+      "descEs": "No vi una palabra clave como NO, CADA o DIFERENCIA y respondí una pregunta que no se hizo.",
+      "fix": "Underline what the question asks for before you choose. Check that your choice answers exactly that.",
+      "fixEs": "Subraya lo que pide la pregunta antes de elegir. Revisa que tu opción responda exactamente eso.",
+      "units": [
+        2,
+        3,
+        5,
+        6,
+        7,
+        8,
+        9
+      ]
+    },
+    "reason-misses-the-math": {
+      "name": "Reason misses the math",
+      "nameEs": "La razón no explica la matemática",
+      "desc": "Chose a reason that is about something else, or only restates the answer, instead of the math idea.",
+      "descEs": "Elegí una razón que habla de otra cosa, o que solo repite la respuesta, en vez de la idea matemática.",
+      "fix": "A good reason names the math idea that makes the answer true. Ask: does this reason explain why?",
+      "fixEs": "Una buena razón nombra la idea matemática que hace verdadera la respuesta. Pregúntate: ¿esta razón explica por qué?",
+      "units": [
+        2,
+        3,
+        5,
+        6,
+        7,
+        8,
+        9
+      ]
+    },
+    "compare-direction-reversed": {
+      "name": "Flipped the comparison",
+      "nameEs": "Invertí la comparación",
+      "desc": "Found the right difference but named the wrong one as bigger, smaller, more or fewer.",
+      "descEs": "Hallé la diferencia correcta pero dije al revés cuál es mayor, menor, más o menos.",
+      "fix": "After you calculate, compare the two amounts again and say which one is greater in words.",
+      "fixEs": "Después de calcular, vuelve a comparar las dos cantidades y di con palabras cuál es mayor.",
+      "units": [
+        2,
+        3,
+        7,
+        8,
+        9
+      ]
+    },
+    "equation-answered-with-given-number": {
+      "name": "Reused a number from the problem",
+      "nameEs": "Reusé un número del problema",
+      "desc": "Answered with a number already in the problem, like the divisor, the count or a target, instead of working it out.",
+      "descEs": "Respondí con un número que ya estaba en el problema, como el divisor, la cantidad o una meta, en vez de calcular.",
+      "fix": "Your answer is usually a new number. Put it back into the problem and check that it works.",
+      "fixEs": "Tu respuesta suele ser un número nuevo. Vuelve a ponerlo en el problema y comprueba que funciona.",
+      "units": [
+        2,
+        6,
+        8,
+        9
+      ],
+      "engine": true
+    },
+    "op-added-instead-of-multiplied": {
+      "name": "Added instead of multiplied",
+      "nameEs": "Sumé en vez de multiplicar",
+      "desc": "Added two numbers when the situation needs repeated groups or a scale factor.",
+      "descEs": "Sumé dos números cuando la situación pide grupos repetidos o un factor de escala.",
+      "fix": "Look for 'each', 'per' or 'times as many'. Equal groups mean multiply.",
+      "fixEs": "Busca 'cada', 'por' o 'veces más'. Grupos iguales significan multiplicar.",
+      "units": [
+        2,
+        3,
+        5,
+        6,
+        8,
+        9
+      ],
+      "engine": true
+    },
+    "op-multiplied-instead-of-added": {
+      "name": "Scaled when you should add",
+      "nameEs": "Multipliqué cuando debía sumar",
+      "desc": "Multiplied or divided when the situation only adds an amount.",
+      "descEs": "Multipliqué o dividí cuando la situación solo agrega una cantidad.",
+      "fix": "Ask whether the amount is added once or repeated in groups. Added once means add.",
+      "fixEs": "Pregúntate si la cantidad se agrega una vez o se repite en grupos. Si se agrega una vez, suma.",
+      "units": [
+        2,
+        6,
+        8,
+        9
+      ],
+      "engine": true
+    },
+    "op-added-instead-of-subtracted": {
+      "name": "Added instead of subtracted",
+      "nameEs": "Sumé en vez de restar",
+      "desc": "Added two amounts when the question asks for a difference, a distance or what is missing.",
+      "descEs": "Sumé dos cantidades cuando la pregunta pide una diferencia, una distancia o lo que falta.",
+      "fix": "Difference, distance and 'how many more' all mean subtract. Check that your answer is smaller than the larger amount.",
+      "fixEs": "Diferencia, distancia y '¿cuántos más?' significan restar. Revisa que tu respuesta sea menor que la cantidad mayor.",
+      "units": [
+        2,
+        8,
+        9
+      ]
+    },
+    "op-multiplied-instead-of-divided": {
+      "name": "Multiplied instead of divided",
+      "nameEs": "Multipliqué en vez de dividir",
+      "desc": "Multiplied when the situation shares or splits an amount into groups.",
+      "descEs": "Multipliqué cuando la situación reparte o separa una cantidad en grupos.",
+      "fix": "Sharing, splitting and 'how many groups' mean divide. Estimate: should the answer be smaller?",
+      "fixEs": "Repartir, separar y '¿cuántos grupos?' significan dividir. Estima: ¿la respuesta debe ser menor?",
+      "units": [
+        2,
+        3,
+        6,
+        8,
+        9
+      ],
+      "engine": true
+    },
+    "op-divided-instead-of-multiplied": {
+      "name": "Divided instead of multiplied",
+      "nameEs": "Dividí en vez de multiplicar",
+      "desc": "Divided when the situation builds a total from equal groups.",
+      "descEs": "Dividí cuando la situación forma un total con grupos iguales.",
+      "fix": "If you know the size of each group and the number of groups, multiply to get the total.",
+      "fixEs": "Si sabes el tamaño de cada grupo y cuántos grupos hay, multiplica para obtener el total.",
+      "units": [
+        2,
+        3,
+        5,
+        6,
+        8,
+        9
+      ],
+      "engine": true
+    },
+    "op-reversed-division": {
+      "name": "Divided in the wrong order",
+      "nameEs": "Dividí en el orden equivocado",
+      "desc": "Divided the second number by the first instead of the first by the second.",
+      "descEs": "Dividí el segundo número entre el primero en vez del primero entre el segundo.",
+      "fix": "Say it as a question: how many of the divisor fit into the dividend? The amount being shared goes first.",
+      "fixEs": "Dilo como pregunta: ¿cuántas veces cabe el divisor en el dividendo? La cantidad que se reparte va primero.",
+      "units": [
+        2,
+        3,
+        6,
+        8,
+        9
+      ],
+      "engine": true
+    },
+    "op-reversed-subtraction": {
+      "name": "Subtracted in the wrong order",
+      "nameEs": "Resté en el orden equivocado",
+      "desc": "Subtracted the first number from the second instead of the second from the first.",
+      "descEs": "Resté el primer número del segundo en vez del segundo del primero.",
+      "fix": "Check the order the problem gives. Then add your answer back to see if you get the starting number.",
+      "fixEs": "Revisa el orden que da el problema. Luego suma tu respuesta para ver si obtienes el número inicial.",
+      "units": [
+        7,
+        8,
+        9
+      ],
+      "engine": true
+    },
+    "op-size-rule-overgeneralized": {
+      "name": "“× grows, ÷ shrinks” myth",
+      "nameEs": "Mito: “× agranda, ÷ achica”",
+      "desc": "Believed multiplying always makes a number bigger and dividing always makes it smaller.",
+      "descEs": "Creí que multiplicar siempre agranda un número y que dividir siempre lo achica.",
+      "fix": "Multiplying by a number less than 1 makes it smaller; dividing by a number less than 1 makes it bigger. Estimate first.",
+      "fixEs": "Multiplicar por un número menor que 1 lo achica; dividir entre un número menor que 1 lo agranda. Estima primero.",
+      "units": [
+        2,
+        6
+      ]
+    },
+    "decimal-place-value": {
+      "name": "Decimal point in the wrong place",
+      "nameEs": "Punto decimal en lugar equivocado",
+      "desc": "Got the digits right, but the answer is 10, 100 or 1,000 times too big or too small.",
+      "descEs": "Los dígitos están bien, pero la respuesta es 10, 100 o 1,000 veces demasiado grande o pequeña.",
+      "fix": "Estimate with whole numbers first. Then place the decimal point so the answer is close to your estimate.",
+      "fixEs": "Estima primero con números enteros. Luego coloca el punto decimal para que la respuesta quede cerca de tu estimación.",
+      "units": [
+        2,
+        3,
+        5,
+        6
+      ],
+      "engine": true
+    },
+    "decimal-place-names": {
+      "name": "Mixed up decimal places",
+      "nameEs": "Confundí los valores decimales",
+      "desc": "Mixed up tenths, hundredths and thousandths, or put a zero where it changes the value.",
+      "descEs": "Confundí décimos, centésimos y milésimos, o puse un cero donde cambia el valor.",
+      "fix": "Say each place after the point: tenths, hundredths, thousandths. A zero at the very end never changes the value.",
+      "fixEs": "Nombra cada lugar después del punto: décimos, centésimos, milésimos. Un cero al final nunca cambia el valor.",
+      "units": [
+        2,
+        7
+      ]
+    },
+    "decimal-longer-is-bigger": {
+      "name": "Longer decimal seems bigger",
+      "nameEs": "Decimal más largo parece mayor",
+      "desc": "Thought a decimal with more digits after the point is the greater number.",
+      "descEs": "Pensé que un decimal con más dígitos después del punto es el número mayor.",
+      "fix": "Compare place by place from the left: ones, then tenths, then hundredths. Add zeros so both have the same number of places.",
+      "fixEs": "Compara lugar por lugar desde la izquierda: unidades, luego décimos, luego centésimos. Agrega ceros para que ambos tengan los mismos lugares.",
+      "units": [
+        2,
+        7
+      ]
+    },
+    "decimal-not-lined-up": {
+      "name": "Lined up digits, not points",
+      "nameEs": "Alineé dígitos, no puntos",
+      "desc": "Lined up the last digits instead of the decimal points when adding or subtracting.",
+      "descEs": "Alineé los últimos dígitos en vez de los puntos decimales al sumar o restar.",
+      "fix": "Write the numbers so the decimal points sit in one column. Fill empty places with zeros.",
+      "fixEs": "Escribe los números con los puntos decimales en una misma columna. Llena los lugares vacíos con ceros.",
+      "units": [
+        2
+      ]
+    },
+    "regroup-slip": {
+      "name": "Carrying or borrowing slip",
+      "nameEs": "Error al llevar o pedir prestado",
+      "desc": "Lost or added a regrouped amount, or slipped on a digit, while adding, subtracting or multiplying.",
+      "descEs": "Perdí o agregué una cantidad reagrupada, o me equivoqué en un dígito, al sumar, restar o multiplicar.",
+      "fix": "Work one column at a time from the right, then check with the inverse operation or an estimate.",
+      "fixEs": "Trabaja una columna a la vez desde la derecha y luego comprueba con la operación inversa o una estimación.",
+      "units": [
+        2,
+        7
+      ]
+    },
+    "quotient-digit-off": {
+      "name": "Quotient too small or big",
+      "nameEs": "Cociente muy pequeño o grande",
+      "desc": "A digit in the quotient is too small (the remainder is too big) or too big (the product overshoots).",
+      "descEs": "Un dígito del cociente es muy pequeño (el residuo queda muy grande) o muy grande (el producto se pasa).",
+      "fix": "Multiply your quotient by the divisor. It should land on the dividend, with a remainder smaller than the divisor.",
+      "fixEs": "Multiplica tu cociente por el divisor. Debe llegar al dividendo, con un residuo menor que el divisor.",
+      "units": [
+        2,
+        6
+      ]
+    },
+    "division-quotient-missing-zero": {
+      "name": "Dropped a zero in the quotient",
+      "nameEs": "Omití un cero en el cociente",
+      "desc": "Skipped a 0 in the quotient when a step did not divide, so later digits slid into the wrong places.",
+      "descEs": "Omití un 0 en el cociente cuando un paso no se podía dividir, así que los otros dígitos quedaron en lugares equivocados.",
+      "fix": "Estimate the size first. Every time you bring a digit down, write a quotient digit, even if it is 0.",
+      "fixEs": "Estima primero el tamaño. Cada vez que bajes un dígito, escribe un dígito en el cociente, aunque sea 0.",
+      "units": [
+        2
+      ],
+      "engine": true
+    },
+    "remainder-misused": {
+      "name": "Misread the remainder",
+      "nameEs": "Interpreté mal el residuo",
+      "desc": "Ignored the remainder, swapped it with the quotient, or used it the wrong way for the situation.",
+      "descEs": "Ignoré el residuo, lo cambié por el cociente o lo usé de forma equivocada para la situación.",
+      "fix": "The quotient is how many in each group or how many groups. The remainder is what is left over. Decide what the situation needs.",
+      "fixEs": "El cociente es cuántos hay en cada grupo o cuántos grupos. El residuo es lo que sobra. Decide qué necesita la situación.",
+      "units": [
+        2
+      ]
+    },
+    "decimal-division-unequal-shift": {
+      "name": "Shifted decimal points unevenly",
+      "nameEs": "Moví los puntos de forma desigual",
+      "desc": "Moved the decimal point in only one number, or by different amounts, before dividing.",
+      "descEs": "Moví el punto decimal en un solo número, o en cantidades distintas, antes de dividir.",
+      "fix": "Multiply the divisor and the dividend by the same power of 10, so the divisor becomes a whole number.",
+      "fixEs": "Multiplica el divisor y el dividendo por la misma potencia de 10, para que el divisor sea un número entero.",
+      "units": [
+        2
+      ]
+    },
+    "estimate-rounded-poorly": {
+      "name": "Rounded to the wrong number",
+      "nameEs": "Redondeé al número equivocado",
+      "desc": "Rounded the wrong way or to an unhelpful number, so the estimate is far from the real answer.",
+      "descEs": "Redondeé hacia el lado equivocado o a un número poco útil, así que la estimación queda lejos.",
+      "fix": "Round each number to the nearest friendly number (5 or more rounds up). Keep the same operation and the same divisor.",
+      "fixEs": "Redondea cada número al número cómodo más cercano (5 o más sube). Mantén la misma operación y el mismo divisor.",
+      "units": [
+        2,
+        3,
+        5
+      ]
+    },
+    "ratio-inverted": {
+      "name": "Flipped the ratio",
+      "nameEs": "Invertí la razón",
+      "desc": "Wrote the two quantities in the opposite order from the one the question asks for.",
+      "descEs": "Escribí las dos cantidades en el orden contrario al que pide la pregunta.",
+      "fix": "Match each number to its label. The quantity named first in the question goes first.",
+      "fixEs": "Une cada número con su etiqueta. La cantidad que se nombra primero en la pregunta va primero.",
+      "units": [
+        3,
+        9
+      ],
+      "engine": true
+    },
+    "ratio-as-difference": {
+      "name": "Compared by subtracting",
+      "nameEs": "Comparé restando",
+      "desc": "Compared the two amounts by subtracting or adding instead of with a ratio.",
+      "descEs": "Comparé las dos cantidades restando o sumando en vez de usar una razón.",
+      "fix": "A ratio compares by how many times, not how many more. Write it as a : b and look for the scale factor.",
+      "fixEs": "Una razón compara cuántas veces, no cuántos más. Escríbela como a : b y busca el factor de escala.",
+      "units": [
+        3
+      ],
+      "engine": true
+    },
+    "ratio-scaled-additively": {
+      "name": "Added to scale a ratio",
+      "nameEs": "Sumé para ampliar una razón",
+      "desc": "Added the same number to both parts instead of multiplying both by the same number.",
+      "descEs": "Sumé el mismo número a ambas partes en vez de multiplicar ambas por el mismo número.",
+      "fix": "Equivalent ratios come from multiplying or dividing both parts by the same number. Check with a table.",
+      "fixEs": "Las razones equivalentes salen de multiplicar o dividir ambas partes por el mismo número. Compruébalo con una tabla.",
+      "units": [
+        3
+      ],
+      "engine": true
+    },
+    "ratio-compared-without-common-basis": {
+      "name": "Compared without a common base",
+      "nameEs": "Comparé sin una base común",
+      "desc": "Compared two ratios or rates by their raw numbers without making one part the same.",
+      "descEs": "Comparé dos razones o tasas por sus números sin igualar una de las partes.",
+      "fix": "Find a unit rate for each, or scale both so one quantity matches. Then compare the other.",
+      "fixEs": "Halla la tasa unitaria de cada una, o amplíalas para que una cantidad sea igual. Luego compara la otra.",
+      "units": [
+        3
+      ],
+      "engine": true
+    },
+    "rate-not-per-one": {
+      "name": "Total, not the unit rate",
+      "nameEs": "Total, no la tasa unitaria",
+      "desc": "Gave a total amount where the question asked for the amount for one unit.",
+      "descEs": "Di una cantidad total cuando la pregunta pedía la cantidad para una unidad.",
+      "fix": "A unit rate is the amount for exactly 1. Divide the total by the number of units.",
+      "fixEs": "Una tasa unitaria es la cantidad para exactamente 1. Divide el total entre el número de unidades.",
+      "units": [
+        3
+      ],
+      "engine": true
+    },
+    "unit-conversion-direction": {
+      "name": "Converted units the wrong way",
+      "nameEs": "Convertí unidades al revés",
+      "desc": "Multiplied when changing to a larger unit, or divided when changing to a smaller unit.",
+      "descEs": "Multipliqué al cambiar a una unidad mayor, o dividí al cambiar a una unidad menor.",
+      "fix": "Smaller units mean more of them, so the number grows. Larger units mean fewer, so the number shrinks.",
+      "fixEs": "Unidades más pequeñas significan más de ellas, así que el número crece. Unidades más grandes significan menos, así que el número baja.",
+      "units": [
+        3
+      ]
+    },
+    "percent-used-as-whole-number": {
+      "name": "Used the percent as a number",
+      "nameEs": "Usé el porcentaje como número",
+      "desc": "Used a percent as if it were the amount itself instead of a part out of 100.",
+      "descEs": "Usé un porcentaje como si fuera la cantidad misma en vez de una parte de 100.",
+      "fix": "A percent means out of 100. Write it as a fraction or decimal before you use it.",
+      "fixEs": "Un porcentaje significa de cada 100. Escríbelo como fracción o decimal antes de usarlo.",
+      "units": [
+        3
+      ],
+      "engine": true
+    },
+    "geom-triangle-area-no-half": {
+      "name": "Forgot the half",
+      "nameEs": "Olvidé la mitad",
+      "desc": "Multiplied base × height for a triangle or trapezoid but did not take half.",
+      "descEs": "Multipliqué base × altura de un triángulo o trapecio, pero no tomé la mitad.",
+      "fix": "A triangle is half of a parallelogram with the same base and height. Multiply, then take half.",
+      "fixEs": "Un triángulo es la mitad de un paralelogramo con la misma base y altura. Multiplica y luego toma la mitad.",
+      "units": [
+        5
+      ],
+      "engine": true
+    },
+    "measure-area-perimeter-swap": {
+      "name": "Mixed up area and perimeter",
+      "nameEs": "Confundí área y perímetro",
+      "desc": "Found the distance around when the question asked for the space inside, or the reverse.",
+      "descEs": "Hallé la distancia alrededor cuando la pregunta pedía el espacio de adentro, o al revés.",
+      "fix": "Area covers the inside and is in square units. Perimeter goes around the edge and is in plain units.",
+      "fixEs": "El área cubre el interior y se mide en unidades cuadradas. El perímetro rodea el borde y se mide en unidades lineales.",
+      "units": [
+        5
+      ],
+      "engine": true
+    },
+    "geom-surface-area-as-volume": {
+      "name": "Volume, not surface area",
+      "nameEs": "Volumen, no área de superficie",
+      "desc": "Found the volume when the question asked for the surface area, or the reverse.",
+      "descEs": "Hallé el volumen cuando la pregunta pedía el área de superficie, o al revés.",
+      "fix": "Surface area adds the areas of the faces (square units). Volume fills the inside (cubic units).",
+      "fixEs": "El área de superficie suma las áreas de las caras (unidades cuadradas). El volumen llena el interior (unidades cúbicas).",
+      "units": [
+        5
+      ],
+      "engine": true
+    },
+    "geom-volume-added-dimensions": {
+      "name": "Added the dimensions",
+      "nameEs": "Sumé las dimensiones",
+      "desc": "Added length, width and height instead of multiplying them.",
+      "descEs": "Sumé el largo, el ancho y la altura en vez de multiplicarlos.",
+      "fix": "Volume counts cubes: layers of length × width, stacked height times. Multiply all three.",
+      "fixEs": "El volumen cuenta cubos: capas de largo × ancho, apiladas tantas veces como la altura. Multiplica las tres.",
+      "units": [
+        5
+      ],
+      "engine": true
+    },
+    "net-face-missed-or-doubled": {
+      "name": "Missed or double-counted a face",
+      "nameEs": "Omití o conté doble una cara",
+      "desc": "Left out a face, counted one twice, or matched the wrong faces in a net.",
+      "descEs": "Omití una cara, conté una dos veces o junté las caras equivocadas en una red.",
+      "fix": "Name every face before you add: top, bottom, front, back, left, right. Check the count matches the solid.",
+      "fixEs": "Nombra cada cara antes de sumar: arriba, abajo, frente, atrás, izquierda, derecha. Revisa que el total coincida con el cuerpo.",
+      "units": [
+        5
+      ]
+    },
+    "exponent-as-multiplication": {
+      "name": "Multiplied base by exponent",
+      "nameEs": "Multipliqué base por exponente",
+      "desc": "Multiplied the base by the exponent instead of multiplying the base by itself.",
+      "descEs": "Multipliqué la base por el exponente en vez de multiplicar la base por sí misma.",
+      "fix": "Write the power out as repeated factors, like 3⁴ = 3 × 3 × 3 × 3, then multiply.",
+      "fixEs": "Escribe la potencia como factores repetidos, como 3⁴ = 3 × 3 × 3 × 3, y luego multiplica.",
+      "units": [
+        6
+      ],
+      "engine": true
+    },
+    "order-of-operations-left-to-right": {
+      "name": "Worked left to right only",
+      "nameEs": "Trabajé solo de izquierda a derecha",
+      "desc": "Did the operations in reading order instead of the order of operations.",
+      "descEs": "Hice las operaciones en orden de lectura en vez del orden de las operaciones.",
+      "fix": "Parentheses first, then exponents, then multiply and divide, then add and subtract.",
+      "fixEs": "Primero paréntesis, luego exponentes, luego multiplica y divide, y al final suma y resta.",
+      "units": [
+        6
+      ],
+      "engine": true
+    },
+    "algebra-distributive-partial": {
+      "name": "Distributed to one term only",
+      "nameEs": "Distribuí solo a un término",
+      "desc": "Multiplied the outside factor by the first term inside the parentheses only.",
+      "descEs": "Multipliqué el factor de afuera solo por el primer término de adentro.",
+      "fix": "Draw arrows from the outside factor to EVERY term inside, then multiply each one.",
+      "fixEs": "Dibuja flechas del factor de afuera a CADA término de adentro, y luego multiplica cada uno.",
+      "units": [
+        6
+      ],
+      "engine": true
+    },
+    "combined-unlike-terms": {
+      "name": "Combined unlike terms",
+      "nameEs": "Combiné términos no semejantes",
+      "desc": "Added terms with different variables, or a variable term and a number, as if they were alike.",
+      "descEs": "Sumé términos con variables distintas, o un término con variable y un número, como si fueran semejantes.",
+      "fix": "Only terms with the same variable part combine. Circle each kind before you add.",
+      "fixEs": "Solo se combinan los términos con la misma parte variable. Encierra cada tipo antes de sumar.",
+      "units": [
+        6
+      ]
+    },
+    "property-order-vs-grouping": {
+      "name": "Mixed up the properties",
+      "nameEs": "Confundí las propiedades",
+      "desc": "Confused the commutative property (order) with the associative property (grouping).",
+      "descEs": "Confundí la propiedad conmutativa (orden) con la asociativa (agrupación).",
+      "fix": "Commutative changes the ORDER of numbers. Associative changes the GROUPING with parentheses.",
+      "fixEs": "La conmutativa cambia el ORDEN de los números. La asociativa cambia la AGRUPACIÓN con paréntesis.",
+      "units": [
+        6
+      ],
+      "engine": true
+    },
+    "factors-multiples-confused": {
+      "name": "Mixed up factors and multiples",
+      "nameEs": "Confundí factores y múltiplos",
+      "desc": "Gave a factor where a multiple was asked, or the reverse.",
+      "descEs": "Di un factor cuando se pedía un múltiplo, o al revés.",
+      "fix": "Factors divide into a number (they are not bigger). Multiples are what you get when you multiply it (they are not smaller).",
+      "fixEs": "Los factores dividen a un número (no son mayores). Los múltiplos salen al multiplicarlo (no son menores).",
+      "units": [
+        6
+      ],
+      "engine": true
+    },
+    "gcf-lcm-confused": {
+      "name": "Mixed up GCF and LCM",
+      "nameEs": "Confundí MCD y mcm",
+      "desc": "Gave a common factor that is not the greatest, a common multiple that is not the least, or mixed the two up.",
+      "descEs": "Di un factor común que no es el mayor, un múltiplo común que no es el menor, o confundí los dos.",
+      "fix": "GCF: the largest number that divides both. LCM: the smallest number both divide into. List a few of each to check.",
+      "fixEs": "MCD: el número más grande que divide a ambos. mcm: el número más pequeño que ambos dividen. Haz una lista corta para comprobar.",
+      "units": [
+        6
+      ]
+    },
+    "factorization-stopped-early": {
+      "name": "Stopped factoring too early",
+      "nameEs": "Dejé de factorizar muy pronto",
+      "desc": "Stopped the factor tree before every factor was prime.",
+      "descEs": "Detuve el árbol de factores antes de que todos los factores fueran primos.",
+      "fix": "Keep splitting until every branch ends in a prime number. Multiply them back to check.",
+      "fixEs": "Sigue dividiendo hasta que cada rama termine en un número primo. Multiplícalos para comprobar.",
+      "units": [
+        6
+      ],
+      "engine": true
+    },
+    "fraction-no-reciprocal": {
+      "name": "Divided without the reciprocal",
+      "nameEs": "Dividí sin el recíproco",
+      "desc": "Multiplied by the divisor itself instead of by its reciprocal when dividing fractions.",
+      "descEs": "Multipliqué por el divisor mismo en vez de por su recíproco al dividir fracciones.",
+      "fix": "Keep the first fraction, change ÷ to ×, and flip only the divisor.",
+      "fixEs": "Deja la primera fracción, cambia ÷ por × y voltea solo el divisor.",
+      "units": [
+        6
+      ],
+      "engine": true
+    },
+    "fraction-straight-across-division": {
+      "name": "Divided straight across",
+      "nameEs": "Dividí directo",
+      "desc": "Divided numerators and denominators straight across, which only works when they divide evenly.",
+      "descEs": "Dividí numeradores y denominadores directamente, lo que solo funciona cuando la división es exacta.",
+      "fix": "Use the reciprocal method, or find common denominators first, so it works every time.",
+      "fixEs": "Usa el método del recíproco, o busca primero denominadores comunes, para que funcione siempre.",
+      "units": [
+        6
+      ],
+      "engine": true
+    },
+    "sign-dropped": {
+      "name": "Lost the negative sign",
+      "nameEs": "Perdí el signo negativo",
+      "desc": "Got the right size but left off the negative sign.",
+      "descEs": "Obtuve el tamaño correcto pero no puse el signo negativo.",
+      "fix": "Decide the sign first: which side of 0 should the answer be on? Then find the size.",
+      "fixEs": "Decide primero el signo: ¿de qué lado del 0 debe estar la respuesta? Luego halla el tamaño.",
+      "units": [
+        7,
+        8
+      ],
+      "engine": true
+    },
+    "integer-order-by-size": {
+      "name": "Ordered negatives by size",
+      "nameEs": "Ordené negativos por tamaño",
+      "desc": "Called −9 greater than −2 because 9 is bigger than 2.",
+      "descEs": "Dije que −9 es mayor que −2 porque 9 es mayor que 2.",
+      "fix": "On a number line, greater is always to the right. A negative farther from 0 is smaller.",
+      "fixEs": "En la recta numérica, mayor siempre está a la derecha. Un negativo más lejos del 0 es menor.",
+      "units": [
+        7
+      ]
+    },
+    "coord-xy-swapped": {
+      "name": "Swapped x and y",
+      "nameEs": "Intercambié x e y",
+      "desc": "Wrote or plotted the ordered pair with the coordinates in the wrong order.",
+      "descEs": "Escribí o ubiqué el par ordenado con las coordenadas en el orden equivocado.",
+      "fix": "x comes first: move across. y comes second: move up or down.",
+      "fixEs": "x va primero: muévete de lado. y va segundo: muévete hacia arriba o abajo.",
+      "units": [
+        7,
+        9
+      ],
+      "engine": true
+    },
+    "coord-quadrant-mixup": {
+      "name": "Mixed up quadrants or signs",
+      "nameEs": "Confundí cuadrantes o signos",
+      "desc": "Put a point in the wrong quadrant, or changed the wrong sign when reflecting.",
+      "descEs": "Puse un punto en el cuadrante equivocado, o cambié el signo equivocado al reflejar.",
+      "fix": "Check each sign: x negative means left, y negative means down. Reflecting over an axis changes the other coordinate's sign.",
+      "fixEs": "Revisa cada signo: x negativa es a la izquierda, y negativa es hacia abajo. Reflejar sobre un eje cambia el signo de la otra coordenada.",
+      "units": [
+        7
+      ]
+    },
+    "equation-not-inverse-operation": {
+      "name": "Did not undo the operation",
+      "nameEs": "No deshice la operación",
+      "desc": "Did the same operation as the equation, or a different one, instead of its inverse.",
+      "descEs": "Hice la misma operación de la ecuación, u otra, en vez de su inversa.",
+      "fix": "Name what is being done to the variable, then do the opposite to both sides.",
+      "fixEs": "Nombra lo que se le hace a la variable y luego haz lo contrario en ambos lados.",
+      "units": [
+        8
+      ],
+      "engine": true
+    },
+    "inequality-direction-flipped": {
+      "name": "Inequality symbol reversed",
+      "nameEs": "Símbolo de desigualdad invertido",
+      "desc": "Used the right boundary number with the symbol pointing the wrong way.",
+      "descEs": "Usé el número límite correcto con el símbolo apuntando al revés.",
+      "fix": "Read the inequality from the variable: x > 3 says x is greater than 3. Test one number.",
+      "fixEs": "Lee la desigualdad desde la variable: x > 3 dice que x es mayor que 3. Prueba un número.",
+      "units": [
+        8
+      ],
+      "engine": true
+    },
+    "inequality-boundary-inclusion": {
+      "name": "Boundary in or out?",
+      "nameEs": "¿Límite incluido o no?",
+      "desc": "Included the boundary when it should be left out, or left it out when it should be included.",
+      "descEs": "Incluí el límite cuando no debía, o lo dejé fuera cuando debía incluirlo.",
+      "fix": "'At least' and 'at most' include the boundary (≥, ≤, closed circle). 'More than' and 'less than' do not.",
+      "fixEs": "'Al menos' y 'como máximo' incluyen el límite (≥, ≤, círculo cerrado). 'Más que' y 'menos que' no.",
+      "units": [
+        8
+      ],
+      "engine": true
+    },
+    "inequality-graph-direction": {
+      "name": "Shaded the wrong side",
+      "nameEs": "Sombreé el lado equivocado",
+      "desc": "Shaded toward the wrong side of the boundary on the number line.",
+      "descEs": "Sombreé hacia el lado equivocado del límite en la recta numérica.",
+      "fix": "Pick one number on each side and test it in the inequality. Shade the side that works.",
+      "fixEs": "Elige un número de cada lado y pruébalo en la desigualdad. Sombrea el lado que funciona.",
+      "units": [
+        8
+      ],
+      "engine": true
+    },
+    "var-dependent-independent-swapped": {
+      "name": "Swapped input and output",
+      "nameEs": "Intercambié entrada y salida",
+      "desc": "Called the dependent variable independent, or the reverse.",
+      "descEs": "Llamé independiente a la variable dependiente, o al revés.",
+      "fix": "Ask which quantity depends on the other. The one you choose or control is independent; the result is dependent.",
+      "fixEs": "Pregúntate qué cantidad depende de la otra. La que eliges o controlas es independiente; el resultado es dependiente.",
+      "units": [
+        9
+      ]
+    }
+  }
+}
