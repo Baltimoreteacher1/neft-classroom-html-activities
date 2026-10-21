@@ -28,7 +28,7 @@ import { familySummaryDocument, familySummaryHtml } from "./family-page.js";
 import { mountPaperGames } from "./paper-games.js";
 import { stopOptions, stopsFor } from "./game-pool.js";
 import { cleanPlay, exportPlay, importPlay } from "./play-backup.js";
-import { highlightVocab, initVocabSystem, openVocabModal } from "./vocab.js";
+import { VOCAB_BILINGUAL_DB, highlightVocab, initVocabSystem, openVocabModal } from "./vocab.js";
 import { canSpeak, speak } from "./speech.js";
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
@@ -2484,6 +2484,129 @@ const InteractiveSolver = {
   }
 };
 
+let widaSpeechRecognition = null;
+function toggleWidaSpeech(btn) {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const wrap = btn.closest(".wida-composer-row");
+  const textarea = wrap?.querySelector("#wida-reasoning-input");
+  const statusEl = wrap?.querySelector(".wida-mic-status");
+
+  if (!SpeechRec) {
+    if (statusEl) {
+      statusEl.textContent = "🎙️ Voice recognition not supported in this browser. Type your math justification!";
+      setTimeout(() => { if (statusEl) statusEl.textContent = ""; }, 4000);
+    }
+    return;
+  }
+
+  if (widaSpeechRecognition) {
+    try {
+      widaSpeechRecognition.stop();
+    } catch (_) {}
+    widaSpeechRecognition = null;
+    btn.classList.remove("recording");
+    if (statusEl) statusEl.textContent = "";
+    return;
+  }
+
+  try {
+    const rec = new SpeechRec();
+    rec.continuous = false;
+    rec.interimResults = false;
+    rec.lang = state.lang === "es" ? "es-ES" : "en-US";
+
+    rec.onstart = () => {
+      btn.classList.add("recording");
+      if (statusEl) statusEl.textContent = "Listening... Speak your math thinking! 🎙️";
+    };
+
+    rec.onresult = (ev) => {
+      const transcript = Array.from(ev.results)
+        .map((r) => r[0]?.transcript)
+        .filter(Boolean)
+        .join(" ");
+      if (transcript && textarea) {
+        const cur = textarea.value.trim();
+        textarea.value = cur ? `${cur} ${transcript}` : transcript;
+        scanAndHighlightAcademicLanguage(textarea);
+      }
+    };
+
+    rec.onerror = () => {
+      btn.classList.remove("recording");
+      widaSpeechRecognition = null;
+      if (statusEl) {
+        statusEl.textContent = "Microphone paused or unavailable. Type your reasoning directly!";
+        setTimeout(() => { if (statusEl) statusEl.textContent = ""; }, 3500);
+      }
+    };
+
+    rec.onend = () => {
+      btn.classList.remove("recording");
+      widaSpeechRecognition = null;
+      if (statusEl) {
+        statusEl.textContent = "Math speech captured! Review or edit below. ✨";
+        setTimeout(() => { if (statusEl) statusEl.textContent = ""; }, 3000);
+      }
+    };
+
+    widaSpeechRecognition = rec;
+    rec.start();
+  } catch (err) {
+    btn.classList.remove("recording");
+    widaSpeechRecognition = null;
+    if (statusEl) statusEl.textContent = "Could not activate microphone.";
+  }
+}
+
+function scanAndHighlightAcademicLanguage(textarea) {
+  if (!textarea) return;
+  const text = (textarea.value || "").toLowerCase();
+  const row = textarea.closest(".wida-composer-row")?.querySelector("#wida-detected-vocab-row");
+  if (!row) return;
+  const list = row.querySelector(".vocab-badges-list");
+  if (!list) return;
+
+  const found = [];
+  const dbEntries = Object.values(VOCAB_BILINGUAL_DB || {});
+  for (const entry of dbEntries) {
+    const kws = [entry.id, ...(entry.keywords || [])];
+    for (const kw of kws) {
+      if (kw.length >= 3 && text.includes(kw.toLowerCase())) {
+        if (!found.some((f) => f.id === entry.id)) {
+          found.push(entry);
+        }
+        break;
+      }
+    }
+  }
+
+  const commonRoots = [
+    { id: "decompose", label: "Decompose / Descomponer" },
+    { id: "inverse", label: "Inverse / Inverso" },
+    { id: "distributive", label: "Distributive / Distributiva" },
+    { id: "estimate", label: "Estimate / Estimar" },
+    { id: "equal", label: "Equal Groups / Grupos Iguales" }
+  ];
+  for (const root of commonRoots) {
+    if (text.includes(root.id) && !found.some((f) => f.id === root.id)) {
+      found.push({ id: root.id, enTitle: root.label });
+    }
+  }
+
+  if (found.length > 0) {
+    row.hidden = false;
+    list.innerHTML = found.map((item) => `
+      <span class="vocab-badge-pill" title="Academic language recognized!">
+        ✨ ${escapeHtml(item.enTitle || item.id)} <small>+10 XP</small>
+      </span>
+    `).join("");
+  } else {
+    row.hidden = true;
+    list.innerHTML = "";
+  }
+}
+
 function renderWidaStudio(item) {
   if (!item) return "";
   const q = item.question || "";
@@ -2565,11 +2688,132 @@ function renderWidaStudio(item) {
 
         <div class="wida-composer-row">
           <label for="wida-reasoning-input" class="wida-sr">Your Math Justification</label>
-          <textarea id="wida-reasoning-input" class="wida-textarea" rows="2" placeholder="Tap a sentence starter above or write your mathematical justification..."></textarea>
+          <div class="wida-input-actions-bar">
+            <button type="button" class="wida-mic-btn" data-wida-mic-btn title="Speak your math into your microphone">
+              <span class="mic-icon">🎙️</span> <span class="mic-label">Speak Your Math</span>
+            </button>
+            <span class="wida-mic-status" aria-live="polite"></span>
+          </div>
+          <textarea id="wida-reasoning-input" class="wida-textarea" rows="2" placeholder="Tap a sentence starter above, speak your math, or type..."></textarea>
+          <div class="wida-detected-vocab-row" id="wida-detected-vocab-row" hidden>
+            <span class="vocab-lead">🌟 Academic Words Used:</span>
+            <div class="vocab-badges-list"></div>
+          </div>
           <div class="wida-action-bar">
             <button type="button" class="wida-speech-btn" data-wida-speak-btn>🔊 Read Aloud / Escuchar</button>
             <span class="wida-feedback-hint" aria-live="polite"></span>
           </div>
+        </div>
+      </div>
+    </details>
+  `;
+}
+
+function renderMultiStrategyComparison(item) {
+  if (!item) return "";
+  const q = String(item.question || item.expr || "").replaceAll(",", "");
+
+  let stratAName = "Decomposition / Friendly Numbers";
+  let stratADesc = "Break numbers into parts (like 10s and 1s or 5-facts) that are easy to compute mentally.";
+  let stratAMath = "Decompose into friendly parts";
+
+  let stratBName = "Visual Representation / Inverse Check";
+  let stratBDesc = "Use an interactive representation (number line, array, balance scale, or chip mat) to prove the result.";
+  let stratBMath = "Verify with visual model";
+
+  const mulMatch = q.match(/(\d+)\s*[×*]\s*(\d+)/);
+  const divMatch = q.match(/(\d+)\s*[÷/]\s*(\d+)/);
+  const addMatch = q.match(/(\d+)\s*[+]\s*(\d+)/);
+  const subMatch = q.match(/(\d+)\s*[−\-]\s*(\d+)/);
+  const fracMatch = q.match(/(\d+)\/(\d+)\s*([+−\-])\s*(\d+)\/(\d+)/);
+  const intMatch = q.match(/(-?\d+)\s*([+−\-])\s*(-?\d+)/);
+  const eqMatch = q.match(/([a-zA-Z]|\?|\bx\b)\s*([+−\-×÷=])/);
+
+  if (mulMatch) {
+    const a = Number(mulMatch[1]);
+    const b = Number(mulMatch[2]);
+    stratAName = "Partial Products / Distributive Splitting";
+    stratADesc = `Split the larger number (${Math.max(a, b)}) into tens and ones or friendly 5s.`;
+    const split = Math.max(a, b) > 10 ? 10 : 5;
+    const rem = Math.max(a, b) - split;
+    stratAMath = `${Math.min(a, b)} × ${Math.max(a, b)} = (${Math.min(a, b)} × ${split}) + (${Math.min(a, b)} × ${rem})`;
+
+    stratBName = "Array Area Model & Doubling";
+    stratBDesc = "Represent the product as an array grid of rows and columns, or halve one factor and double the other.";
+    stratBMath = `${a} rows of ${b} units = ${a * b} total units`;
+  } else if (divMatch) {
+    const a = Number(divMatch[1]);
+    const b = Number(divMatch[2]);
+    stratAName = "Think Multiplication Backwards";
+    stratADesc = `Ask: What factor times ${b} equals ${a}?`;
+    stratAMath = `${b} × ? = ${a}`;
+
+    stratBName = "Equal Groups Partitioning";
+    stratBDesc = `Distribute the total of ${a} into ${b} equal groups on a number line or bar model.`;
+    stratBMath = `${a} partitioned into ${b} groups = ${b > 0 ? a / b : 0} in each`;
+  } else if (fracMatch) {
+    const [, a, b, op, c, d] = fracMatch;
+    stratAName = "Like Denominator Model";
+    stratADesc = "Find a common denominator so all pieces have equal size before combining.";
+    stratAMath = `Convert ${a}/${b} and ${c}/${d} to matching denominator parts`;
+
+    stratBName = "Benchmarking & Number Line";
+    stratBDesc = "Compare fractions against 0, 1/2, and 1 to estimate the size on an open line.";
+    stratBMath = `Locate relative to 1/2 benchmark on line`;
+  } else if (addMatch) {
+    const a = Number(addMatch[1]);
+    const b = Number(addMatch[2]);
+    stratAName = "Make a Ten / Place Value Hop";
+    stratADesc = `Take parts from the smaller addend to round the larger addend to the nearest ten.`;
+    stratAMath = `Jump to nearest 10, then add remainder`;
+
+    stratBName = "Open Number Line Jump";
+    stratBDesc = `Start at ${Math.max(a, b)} on a number line and leap forward by ${Math.min(a, b)}.`;
+    stratBMath = `${Math.max(a, b)} + ${Math.min(a, b)} = ${a + b}`;
+  } else if (subMatch) {
+    const a = Number(subMatch[1]);
+    const b = Number(subMatch[2]);
+    stratAName = "Counting Up (Distance Strategy)";
+    stratADesc = `Start at the smaller number (${b}) and count up to ${a} to find the gap.`;
+    stratAMath = `${b} + ? = ${a}`;
+
+    stratBName = "Decompose Subtrahend";
+    stratADesc = `Subtract the tens first, then subtract the remaining ones.`;
+    stratBMath = `Subtract in friendly place-value hops`;
+  } else if (intMatch && (q.includes("-") || q.includes("−"))) {
+    stratAName = "Zero-Pair Chips Cancellation";
+    stratADesc = "Pair up positive and negative units. Each (+1) and (-1) cancel to zero!";
+    stratAMath = "Zero pairs cancel out (+1 + -1 = 0)";
+
+    stratBName = "Number Line Direction Walk";
+    stratBDesc = "Walk right for positive quantities and walk left for negative quantities.";
+    stratBMath = "Opposite signs reverse movement direction";
+  } else if (eqMatch) {
+    stratAName = "Pan Balance Equilibrium";
+    stratADesc = "Perform identical inverse operations on both sides to keep the scale balanced.";
+    stratAMath = "Undo operations on both left and right sides";
+
+    stratBName = "Working Backwards (Cover-Up Method)";
+    stratBDesc = "Cover the variable expression and determine what value is needed to make the statement true.";
+    stratBMath = "Isolate unknown by reversing steps";
+  }
+
+  return `
+    <details class="multi-strategy-compare-wrap">
+      <summary class="multi-strategy-summary">
+        <span>⚖️</span> <strong>Compare 2 Valid Strategies</strong>
+        <span class="multi-strat-pill">Multiple Pathways</span>
+      </summary>
+      <div class="multi-strategy-grid">
+        <div class="strategy-card strat-a">
+          <div class="strat-card-badge">Strategy A: ${escapeHtml(stratAName)}</div>
+          <p class="strat-desc">${escapeHtml(stratADesc)}</p>
+          <div class="strat-math-highlight">${escapeHtml(stratAMath)}</div>
+        </div>
+        <div class="strategy-card strat-b">
+          <div class="strat-card-badge">Strategy B: ${escapeHtml(stratBName)}</div>
+          <p class="strat-desc">${escapeHtml(stratBDesc)}</p>
+          <div class="strat-math-highlight">${escapeHtml(stratBMath)}</div>
         </div>
       </div>
     </details>
@@ -2862,6 +3106,7 @@ function renderStudentFriendlyExplanation(item, copy) {
       ${stepsList}
       <div class="student-expl-tip"><strong>💡 Pro Tip:</strong> ${escapeHtml(tip)}</div>
       ${toolCallout}
+      ${renderMultiStrategyComparison(item)}
       ${renderWidaStudio(item)}
     </div>
   `;
@@ -3163,12 +3408,116 @@ function updateSkillRecord(skill, correct, mode) {
   if (state.skill) renderMastery();
 }
 
+function generateTransferChallenge(item) {
+  if (!item) return null;
+  const q = String(item.question || item.expr || "").replaceAll(",", "");
+
+  const mulMatch = q.match(/(\d+)\s*[×*]\s*(\d+)/);
+  const divMatch = q.match(/(\d+)\s*[÷/]\s*(\d+)/);
+  const addSubFrac = q.match(/(\d+)\/(\d+)\s*([+−\-])\s*(\d+)\/(\d+)/);
+  const intMatch = q.match(/(-?\d+)\s*([+−\-])\s*(-?\d+)/);
+
+  if (mulMatch) {
+    const a = Number(mulMatch[1]);
+    const b = Number(mulMatch[2]);
+    const prod = a * b;
+    return {
+      title: "Real-World Context Transfer",
+      scenario: `Which real-world story matches the relationship ${a} × ${b} = ${prod}?`,
+      options: [
+        { text: `${a} packages with ${b} items in each (${prod} total items)`, correct: true },
+        { text: `${a} items in a box and someone puts ${b} more in (${a + b} items)`, correct: false },
+        { text: `A total of ${prod} items split into ${a + b} groups`, correct: false }
+      ]
+    };
+  }
+
+  if (divMatch) {
+    const a = Number(divMatch[1]);
+    const b = Number(divMatch[2]);
+    const quot = b > 0 ? a / b : 1;
+    return {
+      title: "Fair Sharing Transfer",
+      scenario: `Which model shows the meaning of ${a} ÷ ${b} = ${quot}?`,
+      options: [
+        { text: `${a} treats shared equally among ${b} friends (${quot} treats each)`, correct: true },
+        { text: `${a} books on one shelf and ${b} books on another shelf`, correct: false },
+        { text: `${b} times more books than ${a}`, correct: false }
+      ]
+    };
+  }
+
+  if (addSubFrac) {
+    const [, a, b, op, c, d] = addSubFrac;
+    return {
+      title: "Visual Unit Transfer",
+      scenario: `In the expression ${a}/${b} ${op} ${c}/${d}, what does the denominator tell you?`,
+      options: [
+        { text: "The total number of equal slices that make up one whole unit", correct: true },
+        { text: "How many total pizzas you ordered", correct: false },
+        { text: "The number of slices you have eaten so far", correct: false }
+      ]
+    };
+  }
+
+  if (intMatch && (q.includes("-") || q.includes("−"))) {
+    return {
+      title: "Elevation & Temperature Transfer",
+      scenario: `A diver starts at ${intMatch[1]} meters and changes position. What does a negative number mean here?`,
+      options: [
+        { text: "Depth below sea level or a drop in elevation", correct: true },
+        { text: "Speed of swimming faster than 0 meters per second", correct: false },
+        { text: "Distance traveled backwards regardless of direction", correct: false }
+      ]
+    };
+  }
+
+  return {
+    title: "Representation Transfer",
+    scenario: `Which strategy best verifies this mathematical result?`,
+    options: [
+      { text: `Use the inverse operation or a number line model to double check`, correct: true },
+      { text: `Assume it must be right without checking any steps`, correct: false },
+      { text: `Multiply everything by zero to verify`, correct: false }
+    ]
+  };
+}
+
+function renderTransferChallengeButton(item) {
+  const challenge = generateTransferChallenge(item);
+  if (!challenge) return "";
+  return `
+    <div class="transfer-challenge-wrap">
+      <button type="button" class="transfer-challenge-btn" data-toggle-transfer>
+        <span>🎯</span> <strong>Prove It: Transfer Challenge</strong>
+      </button>
+      <div class="transfer-challenge-card" id="transfer-challenge-card" hidden>
+        <div style="display:flex; justify-content:space-between; align-items:center">
+          <span style="font-size:0.75rem; font-weight:800; color:#7c3aed; background:#ede9fe; padding:2px 8px; border-radius:9999px">${escapeHtml(challenge.title)}</span>
+          <span style="font-size:0.75rem; font-weight:700; color:#6b7280">+15 Mastery XP</span>
+        </div>
+        <p style="margin:4px 0 6px; font-weight:700; color:#1e1b4b; font-size:0.92rem">${escapeHtml(challenge.scenario)}</p>
+        <div style="display:flex; flex-direction:column; gap:0.4rem">
+          ${challenge.options.map((opt, idx) => `
+            <button type="button" class="transfer-opt-btn" data-transfer-choice="${idx}" data-transfer-correct="${opt.correct}" style="text-align:left; font-size:0.85rem; padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff; cursor:pointer">
+              ${escapeHtml(opt.text)}
+            </button>
+          `).join("")}
+        </div>
+        <div class="transfer-feedback" id="transfer-feedback" hidden style="font-size:0.85rem; padding:6px 8px; border-radius:6px; font-weight:700"></div>
+      </div>
+    </div>
+  `;
+}
+
 function showFeedback(title, copy, type) {
   els.feedback.hidden = false;
   els.feedback.dataset.type = type;
   els.feedbackTitle.textContent = title;
   if (type !== "correct" && state.item) {
     els.feedbackCopy.innerHTML = renderStudentFriendlyExplanation(state.item, copy);
+  } else if (type === "correct" && state.item) {
+    els.feedbackCopy.innerHTML = `<p>${escapeHtml(copy)}</p>${renderTransferChallengeButton(state.item)}`;
   } else {
     els.feedbackCopy.textContent = copy;
   }
@@ -3364,6 +3713,185 @@ function renderPath() {
     }).join("")}</div><section class="family-guide"><h3>For families: five useful minutes</h3><ol><li>Let your child choose one developing skill.</li><li>Ask, “What do you notice?” before giving a method.</li><li>Use the visual lesson together when a step feels unclear.</li><li>Let your child try a few fresh questions independently.</li><li>Ask, “How could you check that?” Celebrate a useful strategy or a repaired mistake.</li></ol><p>Fresh problems are generated each visit. A familiar topic can be practiced again tomorrow without repeating a fixed worksheet.</p></section>`;
 }
 
+const DETECTIVE_STORAGE_KEY = "ewl-detective-cases-v1";
+function getSolvedDetectiveCases() {
+  return loadJson(profileKey(DETECTIVE_STORAGE_KEY, activeProfile), []);
+}
+function saveSolvedDetectiveCase(caseId) {
+  const solved = getSolvedDetectiveCases();
+  if (!solved.includes(caseId)) {
+    solved.push(caseId);
+    writeLocal(profileKey(DETECTIVE_STORAGE_KEY, activeProfile), JSON.stringify(solved));
+  }
+}
+
+const DETECTIVE_CASES = [
+  {
+    id: "case-fractions-add",
+    grade: 4,
+    title: "Case #101: The Denominator Trap",
+    suspect: "Alex",
+    problem: "1/3 + 1/4 = ?",
+    suspectAnswer: "2/7",
+    suspectThinking: "Alex added 1 + 1 = 2 on top, and 3 + 4 = 7 on the bottom.",
+    misconception: "Adding denominators instead of finding a common unit size.",
+    correctAnswer: "7/12",
+    why: "Denominators tell the size of the slice! 1/3 is 4/12 and 1/4 is 3/12. Together they make 7/12.",
+    tool: "fractions",
+    toolName: "Fraction Wall",
+    options: [
+      { text: "Alex is right because 1 + 1 = 2 and 3 + 4 = 7", correct: false, feedback: "Remember: denominators name the unit size, not how many pieces you have." },
+      { text: "Alex added denominators. Need common denominator: 4/12 + 3/12 = 7/12", correct: true, feedback: "Case Closed! 🏆 You found the common unit size!" },
+      { text: "Alex should multiply: 1/3 × 1/4 = 1/12", correct: false, feedback: "The problem was addition (+), not multiplication (×)." }
+    ]
+  },
+  {
+    id: "case-integer-signs",
+    grade: 6,
+    title: "Case #204: The Negative Confusion",
+    suspect: "Jordan",
+    problem: "-5 + 8 = ?",
+    suspectAnswer: "-13",
+    suspectThinking: "Jordan saw 5 and 8, added them to get 13, and put a negative sign on it.",
+    misconception: "Treating opposite signs as negative addition rather than canceling zero-pairs.",
+    correctAnswer: "+3",
+    why: "5 negative chips cancel with 5 positive chips (zero pairs), leaving 3 positive chips!",
+    tool: "integers",
+    toolName: "Integer Chips",
+    options: [
+      { text: "Jordan is right: any equation with a negative must have a negative answer", correct: false, feedback: "The positive value (+8) has a larger magnitude than the negative value (-5)." },
+      { text: "Cancel zero pairs: 5 negatives cancel 5 positives, leaving +3", correct: true, feedback: "Case Closed! 🏆 Zero pairs canceled out the negatives!" },
+      { text: "The answer is -3 because negative always wins", correct: false, feedback: "There are more positives (+8) than negatives (-5), so the result is positive." }
+    ]
+  },
+  {
+    id: "case-order-operations",
+    grade: 5,
+    title: "Case #312: The Left-to-Right Rush",
+    suspect: "Maya",
+    problem: "3 + 4 × 2 = ?",
+    suspectAnswer: "14",
+    suspectThinking: "Maya computed 3 + 4 = 7 first, then multiplied 7 × 2 = 14.",
+    misconception: "Executing operations strictly left-to-right without honoring multiplication precedence.",
+    correctAnswer: "11",
+    why: "Multiplication groups units first! 4 × 2 = 8, then 3 + 8 = 11.",
+    tool: "balance",
+    toolName: "Pan Balance",
+    options: [
+      { text: "Maya is right because we always read left-to-right in math", correct: false, feedback: "Multiplication has precedence over addition in order of operations." },
+      { text: "Multiply first: 4 × 2 = 8, then add 3 + 8 = 11", correct: true, feedback: "Case Closed! 🏆 Order of operations respected!" },
+      { text: "Add 3 + 2 first to get 5, then multiply 5 × 4 = 20", correct: false, feedback: "Only numbers directly connected by the multiplication sign are grouped first." }
+    ]
+  },
+  {
+    id: "case-decimal-place",
+    grade: 5,
+    title: "Case #408: The Long Decimal Illusion",
+    suspect: "Sam",
+    problem: "Compare: 0.35 and 0.7",
+    suspectAnswer: "0.35 is greater than 0.7",
+    suspectThinking: "Sam thought 35 is bigger than 7, so 0.35 must be larger than 0.7.",
+    misconception: "Whole-number thinking applied to decimals; ignoring place value columns.",
+    correctAnswer: "0.7 > 0.35 (or 0.70 > 0.35)",
+    why: "0.7 has 7 tenths (70 hundredths), which is more than 3 tenths and 5 hundredths (0.35)!",
+    tool: "grid",
+    toolName: "10×10 Grid",
+    options: [
+      { text: "Sam is right because 35 is larger than 7", correct: false, feedback: "In decimals, look at place value columns! 7 tenths is 70 hundredths." },
+      { text: "0.7 is 7 tenths (0.70), which is more than 3 tenths (0.35)", correct: true, feedback: "Case Closed! 🏆 Place value tenths trump hundredths!" },
+      { text: "They are equal because zeroes at the end do not change numbers", correct: false, feedback: "0.35 and 0.7 represent distinctly different fractional amounts." }
+    ]
+  },
+  {
+    id: "case-mult-distributive",
+    grade: 3,
+    title: "Case #515: The Forgotten Ones",
+    suspect: "Taylor",
+    problem: "4 × 12 = ?",
+    suspectAnswer: "40",
+    suspectThinking: "Taylor calculated 4 × 10 = 40 and forgot to multiply the remaining 2 ones.",
+    misconception: "Partial distribution without completing all partial products.",
+    correctAnswer: "48",
+    why: "Distributive property: 4 × (10 + 2) = (4 × 10) + (4 × 2) = 40 + 8 = 48!",
+    tool: "splitter",
+    toolName: "Number Splitter",
+    options: [
+      { text: "Taylor is right because 12 rounds down to 10", correct: false, feedback: "This is exact computation, not rounding." },
+      { text: "Taylor split 12 into 10 + 2, but forgot 4 × 2 = 8. Total is 40 + 8 = 48", correct: true, feedback: "Case Closed! 🏆 Both parts must be multiplied!" },
+      { text: "The answer is 412 because 4 placed next to 12", correct: false, feedback: "Multiplication creates equal groups, not concatenation of digits." }
+    ]
+  },
+  {
+    id: "case-algebra-isolate",
+    grade: 7,
+    title: "Case #620: The Unfinished Equation",
+    suspect: "Leo",
+    problem: "Solve for x: 2x + 6 = 14",
+    suspectAnswer: "x = 8",
+    suspectThinking: "Leo subtracted 6 from 14 and got 8, then called 8 the answer.",
+    misconception: "Stopping after the first inverse step without isolating the variable coefficient.",
+    correctAnswer: "x = 4",
+    why: "2x = 8, so dividing both sides by 2 gives x = 4!",
+    tool: "balance",
+    toolName: "Pan Balance",
+    options: [
+      { text: "Leo is right because 14 - 6 = 8", correct: false, feedback: "14 - 6 = 8 gives 2x = 8, not 1x = 8!" },
+      { text: "Leo found 2x = 8, but must divide both sides by 2: x = 4", correct: true, feedback: "Case Closed! 🏆 Variable is completely isolated!" },
+      { text: "Leo should have added 6 instead: 14 + 6 = 20, so x = 10", correct: false, feedback: "To undo addition of 6, subtraction is the correct inverse operation." }
+    ]
+  }
+];
+
+function renderDetectiveSection(currentGrade) {
+  const solved = getSolvedDetectiveCases();
+  const casesForGrade = DETECTIVE_CASES.filter((c) => Math.abs(c.grade - currentGrade) <= 1 || (currentGrade <= 3 && c.grade <= 4) || (currentGrade >= 6 && c.grade >= 5));
+  const displayCases = casesForGrade.length >= 3 ? casesForGrade : DETECTIVE_CASES.slice(0, 4);
+
+  return `
+    <section class="strategy-detective-section">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem">
+        <div>
+          <span class="detective-badge">🕵️ STRATEGY DETECTIVE · PEER ERROR LAB</span>
+          <h3 style="margin:4px 0 2px; font-size:1.35rem; color:#0f172a">Can You Spot What Went Wrong?</h3>
+          <p style="margin:0; font-size:0.9rem; color:#475569">Peers made common reasoning slips below. Inspect their claim, find the misconception, and repair the thinking!</p>
+        </div>
+        <span style="font-size:0.85rem; font-weight:800; color:#0369a1; background:#e0f2fe; padding:4px 10px; border-radius:9999px">
+          🏆 ${solved.length} Cases Cracked
+        </span>
+      </div>
+
+      <div class="detective-cases-grid">
+        ${displayCases.map((c) => {
+          const isSolved = solved.includes(c.id);
+          return `
+            <article class="detective-case-card ${isSolved ? 'solved' : ''}" data-case-id="${c.id}">
+              <div style="display:flex; justify-content:space-between; align-items:center">
+                <span class="case-id-tag">${c.title}</span>
+                <span style="font-size:0.8rem; font-weight:800; color:${isSolved ? '#166534' : '#b45309'}">
+                  ${isSolved ? '✅ Case Solved!' : '🔎 Open Case'}
+                </span>
+              </div>
+              <h4 class="case-claim">${escapeHtml(c.problem)}</h4>
+              <p class="case-error-quote"><strong>${c.suspect} thinks:</strong> "${escapeHtml(c.suspectAnswer)}" — <em>${escapeHtml(c.suspectThinking)}</em></p>
+              <div class="case-interactive-choices" style="display:flex; flex-direction:column; gap:0.4rem; margin-top:0.4rem">
+                ${c.options.map((opt, idx) => `
+                  <button type="button" class="case-choice-btn" data-solve-case="${c.id}" data-opt-idx="${idx}" ${isSolved ? 'disabled' : ''} style="text-align:left; font-size:0.85rem; padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; background:#fff; cursor:pointer">
+                    ${escapeHtml(opt.text)}
+                  </button>
+                `).join("")}
+              </div>
+              <div class="case-feedback" id="case-fb-${c.id}" hidden style="font-size:0.85rem; padding:6px 8px; border-radius:6px; font-weight:700"></div>
+              <div class="case-actions" style="margin-top:0.5rem">
+                <button type="button" class="outline-action" data-open-tool="${c.tool}" style="font-size:0.8rem; padding:4px 8px">🛠️ Prove with ${c.toolName}</button>
+              </div>
+            </article>
+          `;
+        }).join("")}
+      </div>
+    </section>
+  `;
+}
+
 function renderNotebook() {
   const entries = state.tutor.mistakes.filter((entry) => findSkill(entry.key)?.grade === state.grade);
   const open = entries.filter((entry) => !entry.resolvedAt);
@@ -3409,6 +3937,7 @@ function renderNotebook() {
         <button class="primary-action" data-view="library">Explore Skills</button>
       </div>
     `}
+    ${renderDetectiveSection(state.grade)}
   `;
 }
 
@@ -4117,6 +4646,7 @@ document.addEventListener("click", (event) => {
     if (drawer) {
       drawer.open = true;
       if (typeof InteractiveDrillToolbox !== "undefined") {
+        InteractiveDrillToolbox.syncFromProblem(state.item);
         InteractiveDrillToolbox.activeTool = tool;
         drawer.querySelectorAll(".tool-btn").forEach((btn) => btn.classList.toggle("active", btn.dataset.tool === tool));
         InteractiveDrillToolbox.render(document.querySelector("#drill-tool-viewport"));
@@ -4144,6 +4674,7 @@ document.addEventListener("click", (event) => {
     const textarea = card?.querySelector("#wida-reasoning-input");
     if (textarea) {
       textarea.value = text;
+      scanAndHighlightAcademicLanguage(textarea);
       textarea.focus();
     }
     return;
@@ -4156,7 +4687,84 @@ document.addEventListener("click", (event) => {
     if (textarea) {
       const val = textarea.value.trim();
       textarea.value = val ? `${val} ${word}` : word;
+      scanAndHighlightAcademicLanguage(textarea);
       textarea.focus();
+    }
+    return;
+  }
+  const widaMicBtn = event.target.closest("[data-wida-mic-btn]");
+  if (widaMicBtn) {
+    toggleWidaSpeech(widaMicBtn);
+    return;
+  }
+  const caseBtn = event.target.closest("[data-solve-case]");
+  if (caseBtn) {
+    const caseId = caseBtn.dataset.solveCase;
+    const optIdx = Number(caseBtn.dataset.optIdx);
+    const theCase = DETECTIVE_CASES.find((c) => c.id === caseId);
+    if (!theCase) return;
+    const opt = theCase.options[optIdx];
+    const card = caseBtn.closest(".detective-case-card");
+    const fb = card?.querySelector(`#case-fb-${caseId}`);
+    if (opt.correct) {
+      if (fb) {
+        fb.hidden = false;
+        fb.style.background = "#dcfce7";
+        fb.style.color = "#166534";
+        fb.style.border = "1px solid #86efac";
+        fb.textContent = `🌟 ${opt.feedback} (${theCase.why})`;
+      }
+      card.classList.add("solved");
+      saveSolvedDetectiveCase(caseId);
+      chime("streak");
+      announce("Case solved! Great detective work.");
+      card.querySelectorAll(".case-choice-btn").forEach((b) => (b.disabled = true));
+    } else {
+      if (fb) {
+        fb.hidden = false;
+        fb.style.background = "#fee2e2";
+        fb.style.color = "#991b1b";
+        fb.style.border = "1px solid #fca5a5";
+        fb.textContent = `⚠️ ${opt.feedback}`;
+      }
+      chime("bad");
+    }
+    return;
+  }
+  const toggleTransferBtn = event.target.closest("[data-toggle-transfer]");
+  if (toggleTransferBtn) {
+    const card = toggleTransferBtn.closest(".transfer-challenge-wrap")?.querySelector("#transfer-challenge-card");
+    if (card) card.hidden = !card.hidden;
+    return;
+  }
+  const transferChoiceBtn = event.target.closest("[data-transfer-choice]");
+  if (transferChoiceBtn) {
+    const card = transferChoiceBtn.closest(".transfer-challenge-card");
+    const fb = card?.querySelector("#transfer-feedback");
+    const isCorrect = transferChoiceBtn.dataset.transferCorrect === "true";
+    if (isCorrect) {
+      if (fb) {
+        fb.hidden = false;
+        fb.style.background = "#f0fdf4";
+        fb.style.color = "#15803d";
+        fb.style.border = "1px solid #86efac";
+        fb.textContent = "🎯 Concept Connected! You verified the mathematical relationship across representations! (+15 XP)";
+      }
+      chime("streak");
+      card?.querySelectorAll(".transfer-opt-btn").forEach((b) => (b.disabled = true));
+      transferChoiceBtn.style.background = "#dcfce7";
+      transferChoiceBtn.style.borderColor = "#22c55e";
+    } else {
+      if (fb) {
+        fb.hidden = false;
+        fb.style.background = "#fef2f2";
+        fb.style.color = "#b91c1c";
+        fb.style.border = "1px solid #fca5a5";
+        fb.textContent = "Almost! Rethink the underlying meaning and try another option.";
+      }
+      chime("bad");
+      transferChoiceBtn.disabled = true;
+      transferChoiceBtn.style.opacity = "0.6";
     }
     return;
   }
@@ -4232,6 +4840,90 @@ const InteractiveDrillToolbox = {
   tapeUnit: 5,
   tapeLabelA: "Apples",
   tapeLabelB: "Oranges",
+
+  syncFromProblem(item) {
+    if (!item) return;
+    const q = String(item.question || item.expr || "").replaceAll(",", "");
+
+    // Fractions
+    const fracPair = q.match(/(\d+)\/(\d+)\s*([+−\-])\s*(\d+)\/(\d+)/);
+    const fracSingle = q.match(/(\d+)\/(\d+)/);
+    if (fracPair) {
+      const den = Math.min(12, Math.max(2, Number(fracPair[2])));
+      const numA = Math.min(den, Math.max(0, Number(fracPair[1])));
+      const numB = Math.min(den, Math.max(0, Number(fracPair[4])));
+      this.pizzaSlices = den;
+      this.pizzaEaten = Array.from({ length: Math.min(den, numA + (fracPair[3] === "+" ? numB : 0)) }, (_, i) => i);
+    } else if (fracSingle) {
+      const den = Math.min(12, Math.max(2, Number(fracSingle[2])));
+      const num = Math.min(den, Math.max(0, Number(fracSingle[1])));
+      this.pizzaSlices = den;
+      this.pizzaEaten = Array.from({ length: num }, (_, i) => i);
+    }
+
+    // Integers
+    const intPair = q.match(/(-?\d+)\s*([+−\-])\s*\((-?\d+)\)/) || q.match(/(-?\d+)\s*([+−\-])\s*(-?\d+)/);
+    if (intPair && (q.includes("-") || q.includes("−") || /integer/i.test(item.skill?.id || ""))) {
+      const a = Number(intPair[1].replace("−", "-"));
+      const b = Number(intPair[3].replace("−", "-"));
+      const op = intPair[2];
+      let pos = 0;
+      let neg = 0;
+      if (a >= 0) pos += Math.min(10, a);
+      else neg += Math.min(10, Math.abs(a));
+
+      const effectiveB = op === "−" || op === "-" ? -b : b;
+      if (effectiveB >= 0) pos += Math.min(10, effectiveB);
+      else neg += Math.min(10, Math.abs(effectiveB));
+
+      this.integersPos = Math.max(1, Math.min(12, pos || 3));
+      this.integersNeg = Math.max(0, Math.min(12, neg || 0));
+    }
+
+    // Multiplication / Splitter
+    const mulMatch = q.match(/(\d+)\s*[×*]\s*(\d+)/);
+    if (mulMatch) {
+      const a = Number(mulMatch[1]);
+      const b = Number(mulMatch[2]);
+      const big = Math.max(a, b);
+      const small = Math.min(a, b);
+      this.splitTarget = Math.max(2, big);
+      if (big > 10) {
+        this.splitLeft = Math.floor(big / 10) * 10;
+        this.splitRight = big - this.splitLeft;
+      } else {
+        this.splitLeft = Math.floor(big / 2);
+        this.splitRight = big - this.splitLeft;
+      }
+      this.multRow = Math.min(10, Math.max(1, small));
+      this.multCol = Math.min(10, Math.max(1, big));
+    }
+
+    // Equations / Balance
+    const eqMatch = q.match(/(\d*)([a-zA-Z]|\?|\bx\b)\s*([+−\-])\s*(\d+)\s*=\s*(\d+)/);
+    if (eqMatch) {
+      this.balanceLeftX = Number(eqMatch[1]) || 1;
+      this.balanceLeftConst = Number(eqMatch[4]) || 0;
+      this.balanceRightVal = Number(eqMatch[5]) || 10;
+    }
+
+    // Ratios & Rates
+    const ratioMatch = q.match(/(\d+)\s*(?:to|:)\s*(\d+)/);
+    if (ratioMatch) {
+      this.tapeA = Math.min(8, Math.max(1, Number(ratioMatch[1])));
+      this.tapeB = Math.min(8, Math.max(1, Number(ratioMatch[2])));
+      this.dnlMultiplierA = Number(ratioMatch[1]) || 1;
+      this.dnlMultiplierB = Number(ratioMatch[2]) || 1;
+    }
+
+    // Addition / Subtraction within 20
+    const addSubMatch = q.match(/(\d+)\s*([+−\-])\s*(\d+)/);
+    if (addSubMatch && !fracSingle && !mulMatch) {
+      const a = Number(addSubMatch[1]);
+      this.numberLinePos = Math.min(20, Math.max(0, a));
+      this.tenFrameCount = Math.min(20, Math.max(0, a));
+    }
+  },
 
   render(container) {
     if (!container) return;
@@ -4880,6 +5572,12 @@ const drillToolbox = document.querySelector("#drill-toolbox");
 if (drillToolbox) {
   InteractiveDrillToolbox.wire(drillToolbox);
   InteractiveDrillToolbox.render(document.querySelector("#drill-tool-viewport"));
+  drillToolbox.addEventListener("toggle", () => {
+    if (drillToolbox.open && state.item) {
+      InteractiveDrillToolbox.syncFromProblem(state.item);
+      InteractiveDrillToolbox.render(document.querySelector("#drill-tool-viewport"));
+    }
+  });
 }
 
 els.summary?.addEventListener("click", (event) => {
@@ -5395,11 +6093,135 @@ document.addEventListener("click", (event) => {
   }
 });
 
+const MathWordWall = {
+  activeCategory: "all",
+  searchQuery: "",
+
+  open(termId) {
+    const modal = document.querySelector("#word-wall-modal");
+    if (!modal) return;
+    modal.hidden = false;
+    document.body.classList.add("vocab-modal-open");
+    this.render();
+    if (termId) {
+      setTimeout(() => {
+        const target = modal.querySelector(`[data-ww-term="${termId}"]`);
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 100);
+    }
+  },
+
+  close() {
+    const modal = document.querySelector("#word-wall-modal");
+    if (!modal) return;
+    modal.hidden = true;
+    document.body.classList.remove("vocab-modal-open");
+  },
+
+  getCategory(term) {
+    const id = term.id;
+    if (["fraction", "numerator", "denominator", "reciprocal"].includes(id)) return "fractions";
+    if (["factor", "multiple", "prime", "composite", "dividend", "divisor", "quotient", "remainder", "divide", "gcf", "lcm", "exponent"].includes(id)) return "operations";
+    if (["variable", "equation", "expression", "integer", "absolute value", "opposite", "zero pair"].includes(id)) return "algebra";
+    if (["ratio", "unit rate", "percent"].includes(id)) return "ratios";
+    return "operations";
+  },
+
+  render(filterText = this.searchQuery, category = this.activeCategory) {
+    this.searchQuery = filterText || "";
+    this.activeCategory = category || "all";
+
+    const viewport = document.querySelector("#ww-modal-viewport");
+    if (!viewport) return;
+
+    const query = this.searchQuery.toLowerCase().trim();
+    const allTerms = Object.values(VOCAB_BILINGUAL_DB || {});
+
+    const filtered = allTerms.filter((term) => {
+      const cat = this.getCategory(term);
+      if (this.activeCategory !== "all" && cat !== this.activeCategory) return false;
+      if (!query) return true;
+      const haystack = [
+        term.id,
+        term.enTitle,
+        term.esTitle,
+        term.enDef,
+        term.esDef,
+        ...(term.keywords || [])
+      ].filter(Boolean).join(" ").toLowerCase();
+      return haystack.includes(query);
+    });
+
+    if (!filtered.length) {
+      viewport.innerHTML = `
+        <div style="grid-column: 1/-1; text-align:center; padding:3rem 1rem; color:#64748b;">
+          <p style="font-size:2rem; margin:0 0 0.5rem">🔍</p>
+          <p style="font-weight:700; margin:0">No matching math words found.</p>
+          <p style="font-size:0.88rem; margin:4px 0 0">Try searching for "fraction", "factor", "ratio", or "integer".</p>
+        </div>
+      `;
+      return;
+    }
+
+    viewport.innerHTML = filtered.map((t) => `
+      <article class="ww-card" data-ww-term="${escapeHtml(t.id)}">
+        <div class="ww-card-head">
+          <div>
+            <h3 class="ww-card-title">${escapeHtml(t.enTitle)}</h3>
+            <div class="ww-card-es-title">${escapeHtml(t.esTitle)}</div>
+          </div>
+          <button type="button" class="ww-card-tts" data-ww-tts="${escapeHtml(t.enTitle + '. ' + t.enDef)}" aria-label="Listen to definition" title="Read aloud">🔊</button>
+        </div>
+        <p class="ww-card-def">${escapeHtml(t.enDef)}</p>
+        <p class="ww-card-es-def"><em>${escapeHtml(t.esDef)}</em></p>
+        ${t.svg ? `<div class="ww-card-svg">${t.svg}</div>` : ""}
+      </article>
+    `).join("");
+  },
+
+  wire() {
+    const openBtn = document.querySelector("#open-word-wall-btn");
+    const modal = document.querySelector("#word-wall-modal");
+    if (openBtn) {
+      openBtn.addEventListener("click", () => this.open());
+    }
+    if (modal) {
+      modal.querySelectorAll("[data-close-word-wall]").forEach((btn) => {
+        btn.addEventListener("click", () => this.close());
+      });
+      const searchInput = modal.querySelector("#ww-search-input");
+      if (searchInput) {
+        searchInput.addEventListener("input", (e) => this.render(e.target.value, this.activeCategory));
+      }
+      modal.querySelectorAll("[data-ww-cat]").forEach((catBtn) => {
+        catBtn.addEventListener("click", () => {
+          modal.querySelectorAll("[data-ww-cat]").forEach((b) => b.classList.toggle("active", b === catBtn));
+          this.render(this.searchQuery, catBtn.dataset.wwCat);
+        });
+      });
+      modal.addEventListener("click", (e) => {
+        const ttsBtn = e.target.closest("[data-ww-tts]");
+        if (ttsBtn) {
+          const txt = ttsBtn.dataset.wwTts || "";
+          if (txt) speak(txt);
+        }
+      });
+    }
+  }
+};
+
+document.addEventListener("input", (event) => {
+  if (event.target && event.target.id === "wida-reasoning-input") {
+    scanAndHighlightAcademicLanguage(event.target);
+  }
+});
+
 populateQuickSkillDropdown();
 applySettings();
 renderLibrary();
 initVoiceControl();
 initVocabSystem();
+MathWordWall.wire();
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", registerSharedSaveResume, { once: true });
 } else {
