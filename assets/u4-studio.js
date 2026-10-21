@@ -21,11 +21,11 @@
   const W = /** @type {any} */ (window);
   const TABS = [1, 2, 3, 4, 5];
   const RANKS = [
-    { name: "Starter", es: "Principiante", at: 0 },
-    { name: "Explorer", es: "Explorador", at: 0.2 },
-    { name: "Builder", es: "Constructor", at: 0.45 },
-    { name: "Pro", es: "Profesional", at: 0.7 },
-    { name: "Master", es: "Maestro", at: 0.92 },
+    { name: "Starter", article: "a", es: "Principiante", at: 0 },
+    { name: "Explorer", article: "an", es: "Explorador", at: 0.2 },
+    { name: "Builder", article: "a", es: "Constructor", at: 0.45 },
+    { name: "Pro", article: "a", es: "Profesional", at: 0.7 },
+    { name: "Master", article: "a", es: "Maestro", at: 0.92 },
   ];
   const FX_KEY = "u4-studio-fx";
   const KINDS = ["k-frac", "k-dec", "k-pct"];
@@ -312,7 +312,7 @@
     if (before !== undefined && rank.idx > S.lastRank) {
       showToast(
         bilingual(
-          `<strong>Level up!</strong> You are now a ${rank.name}.`,
+          `<strong>Level up!</strong> You are now ${rank.article} ${rank.name}.`,
           `Subiste de nivel: ${rank.es}.`,
         ),
         null,

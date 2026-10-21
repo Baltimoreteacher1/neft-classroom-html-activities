@@ -183,9 +183,9 @@
         ],
         "tag": [
           null,
-          "used-mean-instead",
-          "used-largest-value",
-          "took-lower-middle"
+          "stat-mean-skewed-by-outlier",
+          "stat-one-value-for-many",
+          "stat-median-middle-wrong"
         ],
         "x": "In order: 28, 29, 30, 31, 33, 95. The middle values 30 and 31 give a median of 30.5. The mean is 41 because 95 pulls it up, so the median describes a typical check better.",
         "xEs": "En orden: 28, 29, 30, 31, 33, 95. Los valores del medio 30 y 31 dan una mediana de 30.5. La media es 41 porque 95 la sube, así que la mediana describe mejor una verificación típica.",
@@ -462,9 +462,9 @@
         ],
         "tag": [
           null,
-          "outlier-moves-median",
-          "outlier-moves-median",
-          "took-lower-middle"
+          "stat-outlier-moves-wrong-measure",
+          "stat-outlier-moves-wrong-measure",
+          "stat-outlier-moves-wrong-measure"
         ],
         "x": "In order the values are still 3, 8, 11, 20 and then a bigger last value. The middle (3rd) value stays 11. A far-out value does not move the median.",
         "xEs": "En orden, los valores siguen siendo 3, 8, 11, 20 y luego un último valor más grande. El valor del medio (el 3.º) sigue siendo 11. Un valor muy lejano no mueve la mediana.",
@@ -544,10 +544,10 @@
           "Eso suma los dos valores del medio pero no divide la suma entre dos."
         ],
         "tag": [
-          "took-lower-middle",
+          "stat-median-middle-wrong",
           null,
-          "took-lower-middle",
-          "added-middle-values"
+          "stat-median-middle-wrong",
+          "stat-median-middle-wrong"
         ],
         "x": "With 10 values the two middle values are the 5th and 6th. The median is halfway between them: (18 + 25) ÷ 2 = 21.5.",
         "xEs": "Con 10 valores, los dos valores del medio son el 5.º y el 6.º. La mediana está a mitad de camino: (18 + 25) ÷ 2 = 21.5.",
@@ -605,9 +605,9 @@
           ""
         ],
         "tag": [
-          "used-mode-instead",
-          "used-largest-value",
-          "median-of-unordered-list",
+          "stat-mode-mixup",
+          "stat-median-middle-wrong",
+          "stat-median-middle-wrong",
           null
         ],
         "x": "There are 9 dots. Counting in from either end, the 5th dot is at 5, so the median is 5.",
@@ -685,10 +685,10 @@
           "La mitad de los tiempos puede estar por encima de la mediana. Solo el centro es 12."
         ],
         "tag": [
-          "used-mode-instead",
-          "used-mean-instead",
+          "stat-mode-mixup",
+          "stat-mean-vs-median",
           null,
-          "used-largest-value"
+          "stat-median-middle-wrong"
         ],
         "x": "The median splits the ordered data into two halves, so at least half the values are at or below it and at least half are at or above it.",
         "xEs": "La mediana divide los datos ordenados en dos mitades, así que al menos la mitad de los valores está en ella o por debajo, y al menos la mitad en ella o por encima.",
@@ -776,9 +776,9 @@
         ""
       ],
       "tag": [
-        "median-of-unordered-list",
-        "took-lower-middle",
-        "took-lower-middle",
+        "stat-median-middle-wrong",
+        "stat-median-middle-wrong",
+        "stat-median-middle-wrong",
         null
       ],
       "x": "In order: 37, 39, 41, 45, 52, 60. The middle values 41 and 45 give a median of 43.",
@@ -1036,5 +1036,85 @@
         "es": "Mediana"
       }
     }
+  },
+  "configTags": {
+    "A histogram bar for the interval 10–19 has a height of 6. How many data values fall in that interval?": [
+      null,
+      "stat-frequency-vs-value",
+      "stat-frequency-vs-value",
+      "stat-frequency-vs-value"
+    ],
+    "A histogram uses the intervals 0–9, 10–19 and 20–29. What is the width of each interval?": [
+      "stat-histogram-bin-misread",
+      "stat-histogram-bin-misread",
+      null,
+      "stat-histogram-bin-misread"
+    ],
+    "A histogram has bar heights 3, 7, 5 and 2. How many data values are in the whole set?": [
+      "stat-histogram-bin-misread",
+      "stat-histogram-bin-misread",
+      "stat-histogram-bin-misread",
+      null
+    ],
+    "How is a histogram different from a bar graph?": [
+      null,
+      "stat-histogram-vs-bar-graph",
+      "stat-histogram-vs-bar-graph",
+      "stat-histogram-vs-bar-graph"
+    ],
+    "Find the mean of: 10, 14, 8, 12, 16": [
+      "equation-answered-with-given-number",
+      null,
+      "equation-answered-with-given-number",
+      "stat-summed-instead-of-averaged"
+    ],
+    "Find the median of: 3, 7, 2, 9, 5": [
+      "stat-median-middle-wrong",
+      null,
+      "stat-mean-vs-median",
+      "stat-median-middle-wrong"
+    ],
+    "Find the mode of: 4, 7, 4, 9, 2, 4, 8": [
+      "stat-mode-mixup",
+      null,
+      "stat-mode-mixup",
+      "stat-mode-mixup"
+    ],
+    "Find the mean of: 6, 8, 10, 12, 14": [
+      "equation-answered-with-given-number",
+      null,
+      "equation-answered-with-given-number",
+      "stat-summed-instead-of-averaged"
+    ],
+    "Data set: 4, 6, 6, 8, 10, 12. What is the median?": [
+      "stat-median-middle-wrong",
+      null,
+      "stat-mean-vs-median",
+      "stat-median-middle-wrong"
+    ],
+    "The teacher said 'most students scored around 87.' Which measure is that?": [
+      "stat-mode-mixup",
+      null,
+      "stat-mean-vs-median",
+      "stat-center-vs-spread"
+    ],
+    "The student said 'the most common score was 92.' Which measure is that?": [
+      "stat-mode-mixup",
+      "stat-mode-mixup",
+      null,
+      "stat-center-vs-spread"
+    ],
+    "What is the median of the 10 scores?": [
+      "stat-mean-vs-median",
+      "stat-mean-vs-median",
+      null,
+      "stat-mode-mixup"
+    ],
+    "Data set: 4, 7, 10, 7, 12. What is the median, and what does it tell you?": [
+      null,
+      "stat-mean-vs-median",
+      "stat-median-middle-wrong",
+      "stat-median-middle-wrong"
+    ]
   }
 }

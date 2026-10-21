@@ -425,6 +425,87 @@ export function diagramToViz(/** @type {any} */ d) {
   return null;
 }
 
+/* ---- which Connect questions the Connect figure belongs to -------------------------------------- */
+// The figure is one picture of one data set; the Connect questions around it are a mix. Some read it ("Which interval has
+// the most players?"), some ask about another data set the scenario only describes ("Team A's IQR" under Team B's box),
+// some are conceptual ("Why round up instead of down?"), and some are answered BY it (the reflections of (3, 2) plotted
+// and labelled under "Where is the ship after reflecting (3, 2)?"). Showing it on all of them put a soccer dot plot under
+// "How tall are the students in my class?".
+const FIGURE_MARKS =
+  /\b(graph|plot|histogram|box|dots?|points?|line|intervals?|whiskers?|grid|map|path)\b/i;
+const STOP = new Set(
+  "about after also axis before both does each every from have into many more most much only over same than that their them then there they this what when where which while with would your".split(
+    " ",
+  ),
+);
+const unminus = (/** @type {any} */ s) => String(s ?? "").replace(/[−–]/g, "-");
+/** "(−3, 4)" and "(-3,4)" as one key */
+const pairsIn = (/** @type {any} */ s) =>
+  unminus(s)
+    .replace(/\s+/g, "")
+    .match(/\(-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?\)/g) || [];
+/** "Team B", "Class A": a scenario comparing two groups usually draws only one of them */
+const groupsIn = (/** @type {any} */ s) =>
+  [...String(s ?? "").matchAll(/\b(Team|Class|Group)\s+([A-Z])\b/g)].map((m) =>
+    `${m[1]} ${m[2]}`.toLowerCase(),
+  );
+/** content words, cut to five letters so "scored"/"Scores" and "triangular"/"Triangle" meet */
+const wordsIn = (/** @type {any} */ s) =>
+  (
+    String(s ?? "")
+      .toLowerCase()
+      .match(/[a-z]{4,}/g) || []
+  )
+    .filter((w) => !STOP.has(w))
+    .map((w) => w.slice(0, 5));
+
+/**
+ * Whether a Connect question uses the Connect figure, and why. A question gets the figure when its stem names the figure
+ * or its marks, cites a value it plots, or names what it is a picture of (its title, axis or point labels) — and not when
+ * the stem is about another group than the one drawn, or when the figure marks the right answer but not every other point the choices name.
+ * `item` is a converted studio item; `d` is the authored `connect.diagram`.
+ */
+export function figureServes(/** @type {any} */ item, /** @type {any} */ d) {
+  const stem = String(item?.q ?? item?.p ?? item?.t ?? "");
+  const names = [
+    d?.title,
+    d?.xLabel,
+    d?.yLabel,
+    ...(d?.points || []).map((/** @type {any} */ p) => p.label),
+  ];
+  const drawn = groupsIn(names.join(" "));
+  const other = groupsIn(stem).find((g) => drawn.length && !drawn.includes(g));
+  if (other)
+    return { use: false, why: `asks about ${other}; the figure draws ${drawn.join(", ")}` };
+
+  const plotted = new Set(
+    (d?.points || []).map((/** @type {any} */ p) => `(${num(p.x)},${num(p.y)})`),
+  );
+  if (Array.isArray(item?.c) && Number.isInteger(item?.a) && plotted.size) {
+    const inStem = new Set(pairsIn(stem));
+    const marked = (/** @type {any} */ c) =>
+      pairsIn(c).some((p) => plotted.has(p) && !inStem.has(p));
+    // all the points the choices name are on the figure: reading it is the task, not a giveaway
+    const named = item.c.filter((/** @type {any} */ c) => pairsIn(c).length);
+    if (marked(item.c[item.a]) && !named.every(marked))
+      return { use: false, why: "the figure plots the right answer" };
+  }
+
+  if (FIGURE_MARKS.test(stem))
+    return { use: true, why: `names the figure (${FIGURE_MARKS.exec(stem)?.[0]})` };
+  const cited = pairsIn(stem).find((p) => plotted.has(p));
+  if (cited) return { use: true, why: `cites the plotted point ${cited}` };
+  const values = [...(d?.values || []), ...["min", "q1", "median", "q3", "max"].map((k) => d?.[k])]
+    .filter((v) => v !== undefined && Number.isFinite(num(v)))
+    .map((v) => String(num(v)));
+  const cites = (String(stem).match(/-?\d+(?:\.\d+)?/g) || []).find((n) => values.includes(n));
+  if (cites) return { use: true, why: `cites the plotted value ${cites}` };
+  const label = new Set(wordsIn(names.join(" ")));
+  const shared = wordsIn(stem).find((w) => label.has(w));
+  if (shared) return { use: true, why: `names what the figure shows (${shared}…)` };
+  return { use: false, why: "does not refer to the figure" };
+}
+
 /** Convert authored config items; report what stays in the lesson, and why. */
 export function convertItems(
   /** @type {any[]} */ list,
@@ -501,6 +582,7 @@ export function buildSections(
   const scenario = cfg.connect?.scenario;
   // Only figures that show what the problem GIVES. A bar chart, tape or number line in a Connect section usually shows the
   // worked result (the 7,776 and 3,024 in 5-5 are the answers), so attaching it to the question would hand over the answer.
+  // And only to the questions that use it (figureServes): not every Connect question is about the picture.
   const GIVEN = new Set(["histogram", "dot-plot", "box-plot", "coordinate-plane"]);
   const picture = GIVEN.has(cfg.connect?.diagram?.kind) ? diagramToViz(cfg.connect.diagram) : null;
   const connected = convert(connect, left).map((it) => ({
@@ -508,7 +590,7 @@ export function buildSections(
     ...(scenario && !it.ctx
       ? { ctx: scenario, ...(cfg.connect.scenarioEs ? { ctxEs: cfg.connect.scenarioEs } : {}) }
       : {}),
-    ...(picture && !it.viz ? { viz: picture } : {}),
+    ...(picture && !it.viz && figureServes(it, cfg.connect.diagram).use ? { viz: picture } : {}),
   }));
   const mastery = [...connected, ...convert(exit, left), ...(ld.mastery || [])];
 

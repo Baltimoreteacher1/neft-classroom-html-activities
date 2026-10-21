@@ -7,8 +7,8 @@ Generated from `data/audit/studio-audit/<lesson>.json` by `scripts/audit/build-a
 Findings from the audit that have been fixed in code, with the proof. Everything else in the lesson-by-lesson table is still open.
 
 - **Mastery questions lost their scenario and picture when generated from a lesson's Connect section (2-2 to 2-5, 2-9 to 2-12, 3-2, 3-4, 3-5, 3-8, 3-9, 5-x, 6-1 to 6-6, 6-9 to 6-15, 7-2 to 7-8, 8-x, 9-x)**  
-  Fix: The converter now carries the Connect scenario onto each Connect question, and attaches the Connect figure when it shows what the problem GIVES (histogram, dot plot, box plot, coordinate points). Bar charts, tapes and number lines are not attached because they show the worked result.  
-  Proof: scripts/lib/practice-studio-config.mjs (diagramToViz, GIVEN); tools/studio-viz.test.mjs now renders every figure on every generated page (2,026).
+  Fix: The converter now carries the Connect scenario onto each Connect question, and attaches the Connect figure when it shows what the problem GIVES (histogram, dot plot, box plot, coordinate points). Bar charts, tapes and number lines are not attached because they show the worked result. Since 2026-10-21 the figure goes only on the Connect questions that use it (figureServes: the stem names the figure, cites a plotted value or names what it shows; not when it asks about another group than the one drawn, or when the figure plots the right answer); 15 of 38 questions lost a figure that was not theirs.  
+  Proof: scripts/lib/practice-studio-config.mjs (diagramToViz, GIVEN); tools/studio-viz.test.mjs now renders every figure on every generated page (2,026); tools/studio-connect-figure.test.mjs holds the attach rule.
 - **7-1 integerOpposites: the stem printed the tick count while the figure plotted tick x unit (17% of level-3 draws)**  
   Fix: oppLetters prints the plotted number for integer lines.  
   Proof: tools/studio-gen-figures.test.mjs checks 82 stems against their figures; it fails on the old code.

@@ -331,6 +331,7 @@
     const title = stage.querySelector(".viz-host svg title");
     if (title?.textContent) parts.push(title.textContent);
     let letter = 0;
+    let step = 0;
     for (const n of /** @type {HTMLElement[]} */ ([
       ...stage.querySelectorAll(
         ".item-q, .item-sub:not(.nline-read), .choice-btn, .sort-card, .match-item, .item-fb, .lab-trail li",
@@ -338,10 +339,13 @@
     ])) {
       const t = take(n).replace(/\s+/g, " ").trim();
       if (!t) continue;
+      // A "find the error" step is numbered, not lettered: read it as "Step 2" / "Paso 2", never "Choice B".
       parts.push(
-        n.classList.contains("choice-btn")
-          ? `Choice ${String.fromCharCode(65 + letter++)}. ${t}`
-          : t,
+        n.classList.contains("err-step")
+          ? `${spanish ? "Paso" : "Step"} ${++step}. ${t}`
+          : n.classList.contains("choice-btn")
+            ? `Choice ${String.fromCharCode(65 + letter++)}. ${t}`
+            : t,
       );
     }
     // The lab model and the mission live in shadow roots: read what the student needs from the game (the goal, the readout, the last message).
@@ -433,6 +437,8 @@
     read,
     shareText: () => shareText(),
     signature,
+    /** What Read speaks for a stage (exposed for tools/studio-insight-names.test.mjs). */
+    stageText,
   });
   void api;
 })();

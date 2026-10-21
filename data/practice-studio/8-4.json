@@ -21,19 +21,19 @@
         "The symbol points toward the greater number. Here it points toward the smaller one.",
         "The longer decimal looks bigger, but 4.05 has 0 tenths and 4.5 has 5 tenths. Compare place by place.",
         "",
-        "0.3 and 0.30 name the same amount, so neither is greater."
+        "The extra zero does not change the value. 0.3 and 0.30 name the same amount, so neither is greater."
       ],
       "fEs": [
         "El símbolo apunta hacia el número mayor. Aquí apunta hacia el menor.",
         "El decimal más largo parece mayor, pero 4.05 tiene 0 décimas y 4.5 tiene 5 décimas. Compara lugar por lugar.",
         "",
-        "0.3 y 0.30 nombran la misma cantidad, así que ninguno es mayor."
+        "El cero extra no cambia el valor. 0.3 y 0.30 nombran la misma cantidad, así que ninguno es mayor."
       ],
       "tag": [
-        "reversed-symbol",
-        "longer-decimal-is-bigger",
+        "compare-direction-reversed",
+        "decimal-longer-is-bigger",
         null,
-        "equal-values-seen-as-different"
+        "decimal-place-names"
       ],
       "x": "6.5 is 6 and 5 tenths, which is greater than 6. So 6 < 6.5 is true.",
       "xEs": "6.5 es 6 y 5 décimas, que es mayor que 6. Así que 6 < 6.5 es verdadero.",
@@ -105,27 +105,27 @@
       "c": [
         "0.25, 0.5, 0.75",
         "0.75, 0.5, 0.25",
-        "0.5, 0.75, 0.25",
+        "0.5, 0.25, 0.75",
         "0.25, 0.75, 0.5"
       ],
       "a": 0,
       "f": [
         "",
         "This list goes from greatest to least. The question asks for the smallest number first.",
-        "The last number, 0.25, is the smallest, so it cannot come last.",
-        "0.75 is greater than 0.5, so it belongs after it, not before it."
+        "0.25 has more digits, but it is less than 0.5: 2 tenths is less than 5 tenths. So 0.25 comes before 0.5.",
+        "0.5 has fewer digits, but it is not greater than 0.75: 5 tenths is less than 7 tenths. So 0.5 comes before 0.75."
       ],
       "fEs": [
         "",
         "Esta lista va de mayor a menor. La pregunta pide primero el número menor.",
-        "El último número, 0.25, es el menor, así que no puede ir al final.",
-        "0.75 es mayor que 0.5, así que va después, no antes."
+        "0.25 tiene más dígitos, pero es menor que 0.5: 2 décimas es menos que 5 décimas. Así que 0.25 va antes que 0.5.",
+        "0.5 tiene menos dígitos, pero no es mayor que 0.75: 5 décimas es menos que 7 décimas. Así que 0.5 va antes que 0.75."
       ],
       "tag": [
         null,
-        "reversed-order",
-        "mixed-order",
-        "mixed-order"
+        "compare-direction-reversed",
+        "decimal-longer-is-bigger",
+        "decimal-place-names"
       ],
       "x": "0.25 < 0.5 < 0.75, so the list from least to greatest is 0.25, 0.5, 0.75.",
       "xEs": "0.25 < 0.5 < 0.75, así que la lista de menor a mayor es 0.25, 0.5, 0.75.",
@@ -250,9 +250,9 @@
           ""
         ],
         "tag": [
-          "wrong-direction",
-          "wrong-direction",
-          "excluded-the-boundary",
+          "inequality-graph-direction",
+          "inequality-graph-direction",
+          "inequality-boundary-inclusion",
           null
         ],
         "x": "The filled circle at 12 means 12 is included, and the shading to the left means smaller weights work. That is w ≤ 12.",
@@ -290,10 +290,10 @@
           "Esto deja fuera las 230 cajas ya cargadas. El límite se aplica al total de la bodega."
         ],
         "tag": [
-          "strict-instead-of-inclusive",
+          "inequality-boundary-inclusion",
           null,
-          "wrong-direction",
-          "ignored-the-given-amount"
+          "inequality-direction-flipped",
+          "expression-term-dropped"
         ],
         "x": "The total is the 230 loaded plus c more, and it can be at most 500: c + 230 ≤ 500.",
         "xEs": "El total son las 230 cargadas más c adicionales, y puede ser como máximo 500: c + 230 ≤ 500.",
@@ -450,9 +450,9 @@
         ],
         "tag": [
           null,
-          "wrong-direction",
-          "wrong-direction",
-          "strict-instead-of-inclusive"
+          "inequality-direction-flipped",
+          "inequality-direction-flipped",
+          "inequality-boundary-inclusion"
         ],
         "x": "x ≥ 30 means 30 or more, so 30 is allowed and larger numbers too. 'At least 30' says exactly that.",
         "xEs": "x ≥ 30 significa 30 o más, así que el 30 está permitido y los números mayores también. «Al menos 30» dice exactamente eso.",
@@ -728,10 +728,10 @@
           "w ≥ 9 significaría cargas de 9 toneladas o más pesadas. Un máximo limita qué tan pesada puede ser una carga."
         ],
         "tag": [
-          "strict-instead-of-inclusive",
-          "ignored-the-symbol",
+          "inequality-boundary-inclusion",
+          "inequality-boundary-inclusion",
           null,
-          "wrong-direction"
+          "inequality-direction-flipped"
         ],
         "x": "A maximum of 9 tons means loads of 9 tons or less are allowed, including exactly 9. That is w ≤ 9, so Marcus is right.",
         "xEs": "Un máximo de 9 toneladas significa que se permiten cargas de 9 toneladas o menos, incluido exactamente 9. Eso es w ≤ 9, así que Marcus tiene razón.",
@@ -776,10 +776,10 @@
           "«No menos de» significa 15 o más. El símbolo < significa menor que 15."
         ],
         "tag": [
-          "strict-instead-of-inclusive",
+          "inequality-boundary-inclusion",
           null,
-          "wrong-direction",
-          "wrong-direction"
+          "inequality-direction-flipped",
+          "inequality-direction-flipped"
         ],
         "x": "y < 15 means y is smaller than 15 and 15 is not included. 'Fewer than 15' says that.",
         "xEs": "y < 15 significa que y es menor que 15 y que el 15 no está incluido. «Menos de 15» dice eso.",
@@ -816,9 +816,9 @@
           ""
         ],
         "tag": [
-          "wrong-direction",
-          "wrong-direction",
-          "strict-instead-of-inclusive",
+          "inequality-direction-flipped",
+          "inequality-direction-flipped",
+          "inequality-boundary-inclusion",
           null
         ],
         "x": "'No fewer than 6' means 6 or more, so s ≥ 6.",
@@ -873,26 +873,26 @@
           "p = 40",
           "p = 49.9",
           "p = 50",
-          "p = 5"
+          "p = −60"
         ],
         "a": 2,
         "f": [
           "40 is less than 50. The symbol ≥ allows 50 and larger values only.",
           "49.9 is very close to 50, but it is still below it. Close does not count.",
           "",
-          "5 is much less than 50. This looks like 50 with a digit missing."
+          "60 is bigger than 50, but −60 is left of 0, so it is less than 50. A negative number is never greater than a positive one."
         ],
         "fEs": [
           "40 es menor que 50. El símbolo ≥ permite solo 50 y valores mayores.",
           "49.9 está muy cerca de 50, pero sigue por debajo. Estar cerca no cuenta.",
           "",
-          "5 es mucho menos que 50. Parece un 50 al que le falta un dígito."
+          "60 es mayor que 50, pero −60 está a la izquierda del 0, así que es menor que 50. Un número negativo nunca es mayor que uno positivo."
         ],
         "tag": [
-          "wrong-direction",
-          "close-is-enough",
+          "inequality-direction-flipped",
+          "inequality-boundary-inclusion",
           null,
-          "dropped-a-digit"
+          "integer-order-by-size"
         ],
         "x": "≥ means greater than or equal to, so 50 itself makes the inequality true. 50 ≥ 50 is a true statement.",
         "xEs": "≥ significa mayor o igual que, así que el propio 50 hace verdadera la desigualdad. 50 ≥ 50 es una afirmación verdadera.",
@@ -935,10 +935,10 @@
           "«O menos» incluye el 20, así que necesita una línea de igual: ≤."
         ],
         "tag": [
-          "strict-instead-of-inclusive",
+          "inequality-boundary-inclusion",
           null,
-          "strict-instead-of-inclusive",
-          "strict-instead-of-inclusive"
+          "inequality-boundary-inclusion",
+          "inequality-boundary-inclusion"
         ],
         "x": "'Fewer than 20' leaves out 20 itself, so it uses < with no equal line.",
         "xEs": "«Menos de 20» deja fuera el propio 20, así que usa < sin línea de igual.",
@@ -1028,10 +1028,10 @@
         "«Menos de» apunta hacia valores menores, que es <."
       ],
       "tag": [
-        "wrong-direction",
+        "inequality-direction-flipped",
         null,
-        "strict-instead-of-inclusive",
-        "wrong-direction"
+        "inequality-boundary-inclusion",
+        "inequality-direction-flipped"
       ],
       "x": "d > 14 means d is greater than 14 and 14 is not included. 'More than $14' says exactly that.",
       "xEs": "d > 14 significa que d es mayor que 14 y que el 14 no está incluido. «Más de $14» dice exactamente eso.",

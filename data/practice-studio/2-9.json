@@ -233,9 +233,9 @@
         ],
         "tag": [
           null,
-          "mad-means-all-same-distance",
-          "mad-is-range",
-          "mad-is-range"
+          "stat-center-vs-spread",
+          "stat-mad-misread",
+          "stat-spread-misjudged"
         ],
         "x": "Group A distances: 1, 1, 1, 1, so MAD = 4 ÷ 4 = 1. Group B distances: 6, 2, 2, 6, so MAD = 16 ÷ 4 = 4. A bigger MAD means the values are farther from the mean on average.",
         "xEs": "Distancias del grupo A: 1, 1, 1, 1, así que DAM = 4 ÷ 4 = 1. Distancias del grupo B: 6, 2, 2, 6, así que DAM = 16 ÷ 4 = 4. Una DAM mayor significa que los valores están más lejos de la media en promedio.",
@@ -323,10 +323,10 @@
           "Las desviaciones con signo suman 0, pero las distancias no. Las distancias nunca son negativas."
         ],
         "tag": [
-          "mad-zero-means-mean-zero",
+          "stat-mad-misread",
           null,
-          "mad-is-range",
-          "signed-deviations-cancel"
+          "stat-mad-misread",
+          "absolute-value-misread"
         ],
         "x": "The distances from 6 are 2, 1, 0, 0, 1, 2. They total 6, and 6 ÷ 6 = 1. Most dots sit about 1 away from the mean.",
         "xEs": "Las distancias a 6 son 2, 1, 0, 0, 1, 2. Suman 6, y 6 ÷ 6 = 1. La mayoría de los puntos está a cerca de 1 de la media.",
@@ -574,10 +574,10 @@
           "Una DAM de 0 ocurre cuando ningún valor está lejos de la media."
         ],
         "tag": [
-          "mad-zero-means-mean-zero",
-          "mad-zero-means-mean-zero",
+          "stat-mad-misread",
+          "stat-mad-misread",
           null,
-          "mad-means-all-same-distance"
+          "stat-mad-misread"
         ],
         "x": "The MAD averages the distances from the mean. An average of nonnegative distances is 0 only when every distance is 0, so every value equals the mean.",
         "xEs": "La DAM promedia las distancias a la media. Un promedio de distancias no negativas es 0 solo cuando todas las distancias son 0, así que todos los valores son iguales a la media.",
@@ -658,9 +658,9 @@
         ],
         "tag": [
           null,
-          "mad-is-range",
-          "mad-zero-means-mean-zero",
-          "mad-means-all-same-distance"
+          "stat-mad-misread",
+          "stat-center-vs-spread",
+          "stat-mad-misread"
         ],
         "x": "A larger MAD means the values are farther from the mean on average. Studio Y’s 6 is greater than Studio X’s 2.5, so its lengths are more spread out.",
         "xEs": "Una DAM mayor significa que los valores están más lejos de la media en promedio. El 6 del estudio Y es mayor que el 2.5 del estudio X, así que sus duraciones están más dispersas.",
@@ -738,10 +738,10 @@
           "Eso describe el rango. La DAM promedia distancias a la media."
         ],
         "tag": [
-          "mad-means-all-same-distance",
+          "stat-mad-misread",
           null,
-          "mad-zero-means-mean-zero",
-          "mad-is-range"
+          "stat-mad-misread",
+          "stat-mad-misread"
         ],
         "x": "The MAD is the average distance of the values from the mean. A MAD of 4 minutes means that, on average, practice times are about 4 minutes above or below the mean.",
         "xEs": "La DAM es la distancia promedio de los valores a la media. Una DAM de 4 minutos significa que, en promedio, los tiempos de práctica están unos 4 minutos por encima o por debajo de la media.",
@@ -786,9 +786,9 @@
           ""
         ],
         "tag": [
-          "distance-read-one-way",
-          "distance-read-one-way",
-          "distance-read-one-way",
+          "absolute-value-misread",
+          "absolute-value-misread",
+          "absolute-value-misread",
           null
         ],
         "x": "12 − 7 = 5 and 12 + 7 = 19. Both are 7 away from 12, one below and one above, because a distance is the absolute value of the deviation.",
@@ -916,10 +916,10 @@
         "La DAM mide distancias a la media, no a la mediana."
       ],
       "tag": [
-        "forgot-to-divide",
+        "stat-mad-misread",
         null,
-        "forgot-to-divide",
-        "centered-on-median"
+        "stat-mad-misread",
+        "stat-mad-misread"
       ],
       "x": "The order is: find the mean, find each deviation, take absolute values, add them, and divide by the number of values.",
       "xEs": "El orden es: hallar la media, hallar cada desviación, tomar valores absolutos, sumarlos y dividir entre el número de valores.",
@@ -1156,5 +1156,85 @@
         "es": "Desviación media absoluta (minutos)"
       }
     }
+  },
+  "configTags": {
+    "Find the mean of 10, 14, 8, 12 and 16.": [
+      "equation-answered-with-given-number",
+      null,
+      "equation-answered-with-given-number",
+      "stat-summed-instead-of-averaged"
+    ],
+    "Four friends have 6, 9, 4 and 5 stickers. If they share them equally, how many does each get?": [
+      "equation-answered-with-given-number",
+      "regroup-slip",
+      null,
+      "stat-summed-instead-of-averaged"
+    ],
+    "A student's first three quiz scores are 82, 90 and 86. What score on a fourth quiz gives a mean of 87?": [
+      "equation-answered-with-given-number",
+      "stat-mean-total-confused",
+      null,
+      "stat-mean-total-confused"
+    ],
+    "The mean is called the balance point because…": [
+      "stat-mean-vs-median",
+      null,
+      "stat-mode-mixup",
+      "stat-mean-out-of-range"
+    ],
+    "The mean of a data set is 15. One value is 11. What is the absolute deviation of that value from the mean?": [
+      null,
+      "absolute-value-misread",
+      "equation-answered-with-given-number",
+      "op-added-instead-of-subtracted"
+    ],
+    "A data set has absolute deviations of 3, 1, 5, 2, 4. What is the MAD?": [
+      "stat-mad-misread",
+      null,
+      "stat-mad-misread",
+      "stat-summed-instead-of-averaged"
+    ],
+    "The mean of a data set is 20. A value is 26. What is the absolute deviation?": [
+      null,
+      "absolute-value-misread",
+      "equation-answered-with-given-number",
+      "op-added-instead-of-subtracted"
+    ],
+    "Team A has MAD = 2.1 points. Team B has MAD = 6.8 points. Which team is more consistent?": [
+      "stat-center-vs-spread",
+      "stat-mad-misread",
+      "stat-mad-misread",
+      null
+    ],
+    "Two runners have the same average time of 60 seconds. Runner A's MAD is 1.2 seconds. Runner B's MAD is 5.8 seconds. Which runner is the coach more likely to pick for a relay race that needs a reliable time?": [
+      "stat-center-vs-spread",
+      "stat-center-vs-spread",
+      null,
+      "stat-mad-misread"
+    ],
+    "What is each keeper's mean goals allowed per game?": [
+      null,
+      "quotient-digit-off",
+      "equation-answered-with-given-number",
+      "stat-summed-instead-of-averaged"
+    ],
+    "What does a smaller MAD tell you?": [
+      null,
+      "stat-center-vs-spread",
+      "stat-spread-misjudged",
+      "stat-mad-misread"
+    ],
+    "Which keeper should the coach start, and why?": [
+      "stat-one-value-for-many",
+      "stat-center-vs-spread",
+      null,
+      "stat-center-vs-spread"
+    ],
+    "Data set: 4, 8, 6, 10, 2. The mean is 6. What is the MAD?": [
+      "absolute-value-misread",
+      null,
+      "equation-answered-with-given-number",
+      "stat-summed-instead-of-averaged"
+    ]
   }
 }

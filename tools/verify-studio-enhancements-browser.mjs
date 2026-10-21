@@ -1,4 +1,5 @@
-// Browser verification for the practice-studio enhancements: Comfort panel, Skill Quest, Daily Boost, celebrations.
+// Browser verification for the practice-studio enhancements: Comfort panel, Skill Quest, Daily Boost, celebrations,
+// and the fixed chrome (launcher/spark contrast in every world and theme; launchers and toasts never cover the work).
 // Explicitly invoked (npm run validate:studio-enhancements-browser); never starts on ordinary site builds.
 import assert from "node:assert/strict";
 import { existsSync, readFileSync, statSync } from "node:fs";
@@ -224,6 +225,146 @@ try {
     assert.match(await page.locator("#comfort-toast").innerText(), /3 in a row/);
     await ctx.close();
     ok("celebrations: a three-in-a-row toast for something earned");
+  }
+  /* ---- 5. Fixed chrome: readable in every world and theme, and never on top of the work ---------------- */
+  {
+    // One studio per world (data/practice-studio/worlds.json), plus all ten hand-built Unit 4 pages.
+    const worlds = [
+      "2-1",
+      "2-10",
+      "2-11",
+      "2-12",
+      "2-2",
+      "2-3",
+      "2-4",
+      "2-5",
+      "2-6",
+      "2-7",
+      "2-8",
+      "2-9",
+    ];
+    const u4 = ["4-2", "4-3", "4-4", "4-5", "percent"].flatMap((l) => [
+      `/math/unit-4/${l}-practice-studio/`,
+      `/math/unit-4/${l}-practice-studio-challenging/`,
+    ]);
+    const pages = [...worlds.map((l) => `/math/practice-studio/${l}/`), ...u4];
+    let pairs = 0;
+    for (const vp of [
+      { width: 1280, height: 800 },
+      { width: 1366, height: 768 },
+    ]) {
+      const ctx = await browser.newContext({ viewport: vp, reducedMotion: "reduce" });
+      const page = await ctx.newPage();
+      for (const url of pages) {
+        await page.goto(`${origin}${url}`);
+        await page.locator("#nsr-launcher").waitFor();
+        const res = await page.evaluate(async (generated) => {
+          const parse = (c) => {
+            const x = document.createElement("canvas").getContext("2d");
+            x.fillStyle = c;
+            x.fillRect(0, 0, 1, 1);
+            const d = x.getImageData(0, 0, 1, 1).data;
+            return [d[0], d[1], d[2], d[3] / 255];
+          };
+          const lum = (c) =>
+            c
+              .slice(0, 3)
+              .map((v) => ((v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4))
+              .reduce((s, v, i) => s + v * [0.2126, 0.7152, 0.0722][i], 0);
+          const ratio = (el, bgEl) => {
+            const bg = parse(getComputedStyle(bgEl).backgroundColor);
+            const fg = parse(getComputedStyle(el).color);
+            const mix = fg.slice(0, 3).map((v, i) => v * fg[3] + bg[i] * (1 - fg[3]));
+            const [a, b] = [lum(mix), lum(bg)].sort((m, n) => n - m);
+            return (a + 0.05) / (b + 0.05);
+          };
+          const contrast = [];
+          for (const theme of generated ? ["light", "dark"] : [null]) {
+            if (theme) document.body.dataset.theme = theme;
+            const launcher = document.querySelector("#nsr-launcher");
+            const star = document.createElement("span");
+            star.className = "u4-spark k-star";
+            star.textContent = "★ +1";
+            document.body.appendChild(star);
+            contrast.push({
+              theme,
+              label: ratio(document.querySelector(".nsr-launcher-label"), launcher),
+              star: ratio(star, star),
+            });
+            star.remove();
+          }
+          // Show both toasts, then scroll every section: no fixed control may sit on a visible interactive one.
+          const toast = document.querySelector(".u4-toast");
+          if (toast) {
+            toast.innerHTML =
+              '<span><strong>Section 2 complete!</strong></span><button class="btn btn-go btn-sm" type="button">Go to section 3</button><button class="u4-toast-close" type="button">×</button>';
+            toast.hidden = false;
+          }
+          const ct = document.getElementById("comfort-toast") || document.createElement("div");
+          ct.id = "comfort-toast";
+          ct.textContent = "🌟 Section complete!";
+          ct.classList.add("show");
+          document.body.appendChild(ct);
+          const fixed = [
+            "#nsr-workbench",
+            "#nsr-launcher",
+            ".u4-toast:not([hidden])",
+            "#comfort-toast",
+          ];
+          const hits = new Set();
+          for (const tab of [...document.querySelectorAll(".tab-btn")]) {
+            tab.click();
+            await new Promise((r) => setTimeout(r, 40));
+            for (let y = 0; y <= document.documentElement.scrollHeight; y += innerHeight / 2) {
+              scrollTo(0, y);
+              await new Promise((r) => requestAnimationFrame(r));
+              const covers = fixed
+                .map((s) => document.querySelector(s))
+                .filter(Boolean)
+                .map((e) => [e, e.getBoundingClientRect()]);
+              const targets = document.querySelectorAll(
+                ".main-container :is(button, a[href], input, select, textarea, [role=button]), .app-footer a[href], .tab-bar button",
+              );
+              for (const el of targets) {
+                if (el.closest("#nsr-root, .u4-toast, dialog") || el.offsetParent === null)
+                  continue;
+                const r = el.getBoundingClientRect();
+                if (!r.width || r.bottom <= 0 || r.top >= innerHeight) continue;
+                for (const [c, f] of covers) {
+                  if (
+                    r.left < f.right - 1 &&
+                    f.left < r.right - 1 &&
+                    r.top < f.bottom - 1 &&
+                    f.top < r.bottom - 1
+                  )
+                    hits.add(
+                      `${c.id || c.className} covers ${el.className || el.tagName} "${el.textContent.trim().slice(0, 24)}"`,
+                    );
+                }
+              }
+            }
+          }
+          return { contrast, hits: [...hits] };
+        }, url.startsWith("/math/practice-studio/"));
+        for (const c of res.contrast) {
+          assert.ok(
+            c.label >= 4.5,
+            `${url} ${c.theme}: Save/Resume label ${c.label.toFixed(2)}:1 < 4.5`,
+          );
+          assert.ok(c.star >= 3, `${url} ${c.theme}: star spark ${c.star.toFixed(2)}:1 < 3`);
+          pairs++;
+        }
+        assert.deepEqual(
+          res.hits,
+          [],
+          `${url} at ${vp.width}x${vp.height}: fixed chrome covers interactive content`,
+        );
+      }
+      await ctx.close();
+    }
+    ok(
+      `fixed chrome: launcher label >= 4.5:1 and star spark >= 3:1 in ${pairs} world/theme checks; launchers and toasts cover nothing at 1280x800 and 1366x768`,
+    );
   }
 } finally {
   await browser.close();

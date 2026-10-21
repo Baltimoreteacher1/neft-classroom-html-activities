@@ -33,6 +33,16 @@ yes("3.5", "$3.50");
 yes("1,250", "1250");
 yes("3/4", "0.75");
 yes("−5", "-5");
+// a leading plus sign is a positive number ("+18" is 18), in a table cell and in a typed answer
+yes("+18", "18");
+yes("+ 18", "18");
+yes("+3.5", "$3.50");
+no("+18", "-18");
+assert.equal(w.StudioGen.value("+18"), 18);
+assert.equal(w.StudioGen.value("+2 1/3"), 2 + 1 / 3);
+assert.ok(Number.isNaN(w.StudioGen.value("+")), "a lone plus is not a number");
+assert.ok(w.StudioRT.util.same("+18", "18", 0), "typed answer +18 equals 18");
+assert.ok(!w.StudioRT.util.same("+18", "-18", 0), "+18 is not -18");
 no("13", "12 cm²");
 no("12 m²", "12 cm²");
 no("", "12");

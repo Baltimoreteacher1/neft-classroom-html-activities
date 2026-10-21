@@ -90,11 +90,12 @@
     const w = Math.floor(nn / dd);
     return w ? `${w} ${nn - w * dd}/${dd}` : `${nn}/${dd}`;
   };
-  /** Numeric value of "3", "-2.5", "3/4", "2 1/3". NaN if not a number. */
+  /** Numeric value of "3", "+18", "-2.5", "3/4", "2 1/3". NaN if not a number. A leading plus sign is allowed. */
   G.value = (/** @type {string|number} */ raw) => {
     const t = String(raw)
       .trim()
       .replace(/[$,%\s]+$/g, "")
+      .replace(/^\+\s*(?=[$\d.])/, "")
       .replace(/^\$/, "")
       .replace(/,/g, "")
       .replace(/−/g, "-");

@@ -330,6 +330,12 @@ body.show-es .es-text { display: block; }
 .u4-spark.k-dec { color: var(--dec); }
 .u4-spark.k-pct { color: var(--pct); }
 .u4-spark.k-star { color: var(--sun-ink); background: var(--sun); border-color: var(--sun-deep); }
+/* Night worlds lighten --sun-ink for text on dark tints; on the bright --sun pill it fell to 1.1-1.6:1.
+   The chips sit on the dark --surface, where the daylight fraction/decimal/percent hues are too dim. */
+body[data-theme="dark"] .u4-spark.k-star { color: hsl(22, 80%, 12%); }
+body[data-theme="dark"] .u4-spark.k-frac { color: #8DB4E2; }
+body[data-theme="dark"] .u4-spark.k-dec { color: #6FCFC4; }
+body[data-theme="dark"] .u4-spark.k-pct { color: #F2A77A; }
 body.fx-off #u4-fx { display: none; }
 
 .u4-toast {
@@ -513,8 +519,46 @@ body.theme-challenge .brand-icon { background: #D9822B; box-shadow: 0 4px 0 #A86
 
 /* ---- Save / Resume widget: the site-wide launcher is a vivid #1d4ed8 that reads purple beside this
    palette. Retint it here only; the shared widget stays as it is on every other page. ---- */
-body #nsr-root { --nsr-accent: var(--brand); }
-@media (prefers-color-scheme: dark) { body #nsr-root { --nsr-accent: var(--frac); } }
+body #nsr-root { --nsr-accent: var(--brand); --nsr-accent-fg: #FFFFFF; }
+/* Night worlds (body[data-theme="dark"]) lift --brand to a light tint, so white text on it fell to
+   1.5-3:1. Use the page's own paper as the on-accent ink: near-black in every night world, and #fff
+   under high-contrast comfort, where --brand is forced back to navy. */
+body[data-theme="dark"] #nsr-root { --nsr-accent-fg: var(--paper); }
+
+/* ---- Fixed-chrome rail: the Save/Resume and Math Workbench launchers and both toasts sit in a right rail
+   that page content never enters, so nothing fixed ever covers an answer choice, a Read button or a link.
+   Wide screens keep the labelled launchers; 600-899px uses icon-only launchers in a slimmer rail; phones keep
+   the shared widget's own layout. --studio-rail is the single source for the rail width. ---- */
+@media (min-width: 600px) {
+  body { --studio-rail: 172px; }
+  .main-container { padding-right: max(20px, calc(var(--studio-rail) - max(0px, (100% - 1120px) / 2))); }
+  .tab-list { max-width: min(1120px, calc(100% - 2 * var(--studio-rail))); }
+  .footer-wrap { padding-right: max(0px, calc(var(--studio-rail) - 24px - max(0px, (100% - 1120px) / 2))); }
+  body #nsr-root { right: 8px; bottom: 12px; width: calc(var(--studio-rail) - 16px); align-items: stretch; }
+  body #nsr-root #nsr-workbench, body #nsr-root #nsr-launcher { justify-content: center; text-align: center; }
+  .u4-toast {
+    left: auto; right: 8px; bottom: 124px; transform: none; width: calc(var(--studio-rail) - 16px); max-width: none;
+    flex-direction: column; align-items: stretch; gap: 8px; padding: 12px 14px; border-radius: var(--radius-md);
+    animation-name: u4-rise-rail;
+  }
+  .u4-toast > span { padding-right: 22px; }
+  .u4-toast .u4-toast-close { position: absolute; top: 2px; right: 2px; }
+  body #comfort-toast { left: auto; right: 8px; top: 40vh; bottom: auto; width: calc(var(--studio-rail) - 16px); max-width: none; transform: translateY(16px); }
+  body #comfort-toast.show { transform: none; }
+}
+@media (min-width: 600px) and (max-width: 899px) {
+  body { --studio-rail: 64px; }
+  body #nsr-root #nsr-workbench, body #nsr-root #nsr-launcher { min-width: 44px; min-height: 44px; padding: 4px; border-radius: 50%; }
+  body #nsr-root .nsr-launcher-label, body #nsr-root .nsr-workbench-label {
+    position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  body #nsr-root .nsr-dot { display: none; }
+  /* toasts are too wide for a 64px rail: they sit above the launchers and end short of the rail's column */
+  .u4-toast, body #comfort-toast { width: auto; left: 12px; right: 72px; }
+  .u4-toast { bottom: 12px; flex-direction: row; align-items: center; }
+  body #comfort-toast { top: auto; bottom: 80px; }
+}
+@keyframes u4-rise-rail { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
 
 /* ---- Generated practice studios (assets/studio/*.js) -------------------- */
 .item-head { display: flex; justify-content: space-between; margin-bottom: 8px; }

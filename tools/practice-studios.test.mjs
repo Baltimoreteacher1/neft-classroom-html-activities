@@ -66,6 +66,23 @@ const storageKeys = new Set();
 let items = 0;
 let generated = 0;
 
+/** Two choices that are the same number ("2" and "6/3", "1 1/8" and "9/8") make one distractor a duplicate of
+ *  another, or a second right answer. Returns the first such pair of indexes, or null. */
+const sameValue = (choices) => {
+  const v = choices.map((c) => ctx.StudioGen.value(String(c)));
+  for (let i = 0; i < v.length; i++)
+    for (let j = i + 1; j < v.length; j++)
+      if (Number.isFinite(v[i]) && Number.isFinite(v[j]) && Math.abs(v[i] - v[j]) < 1e-9)
+        return [i, j];
+  return null;
+};
+// the detector must fire on the shapes that shipped (6-2 / 6-9, 6-10 / 6-11) and stay quiet on their fixes
+assert.deepEqual(sameValue(["2", "3", "6/3", "18"]), [0, 2]);
+assert.deepEqual(sameValue(["1 1/8", "2", "3/4", "9/8"]), [0, 3]);
+assert.deepEqual(sameValue(["2.5", "10/4", "14", "40"]), [0, 1]);
+assert.equal(sameValue(["2", "3", "1/18", "18"]), null);
+assert.equal(sameValue(["12 cm", "12 cm²", "1/2", "Both"]), null);
+
 const pageData = (rel) => {
   const html = read(rel);
   const m = html.match(/id="studio-data">([\s\S]*?)<\/script>/);
@@ -92,6 +109,16 @@ for (const id of ids) {
     for (const [, url] of html.matchAll(/(?:src|href)="(\/assets\/[^"?]+)\?v=[0-9a-f]{10}"/g))
       assert.ok(existsSync(join(REPO_ROOT, url.slice(1))), `${tag} loads missing file ${url}`);
     const seen = new Set();
+    for (const sec of data.sections)
+      for (const it of [...sec.items, ...(sec.pool || [])])
+        if (it.k === "mc") {
+          const pair = sameValue(it.c);
+          assert.equal(
+            pair,
+            null,
+            `${tag} "${String(it.q).slice(0, 60)}": choices ${JSON.stringify(it.c)} — "${it.c[pair?.[0]]}" and "${it.c[pair?.[1]]}" are the same number`,
+          );
+        }
     for (const sec of data.sections) {
       assert.ok(sec.items.length >= 2, `${tag} section "${sec.name}" is too thin`);
       for (const it of sec.items) {

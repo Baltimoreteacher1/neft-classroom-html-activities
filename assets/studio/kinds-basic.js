@@ -28,9 +28,9 @@
     `${it.ctx ? `<p class="item-ctx">${esc(it.ctx)}${es(it.ctxEs)}</p>` : ""}${
       it.viz && W.StudioViz ? `<div class="viz-host">${W.StudioViz.render(it.viz)}</div>` : ""
     }`;
-  /** Number from "12", "$3.50", "3/4", "2 1/3", "−5", or "12 cm" (a trailing unit is ignored). */
+  /** Number from "12", "+18", "$3.50", "3/4", "2 1/3", "−5", or "12 cm" (a trailing unit is ignored). */
   const value = (/** @type {any} */ raw) => {
-    const lead = String(raw).match(/^\s*([−-]?\s*\$?[\d.,]+(?:\s+\d+\/\d+|\s*\/\s*\d+)?)/);
+    const lead = String(raw).match(/^\s*([+−-]?\s*\$?[\d.,]+(?:\s+\d+\/\d+|\s*\/\s*\d+)?)/);
     return W.StudioGen.value(lead ? lead[1].replace(/\s*\/\s*/, "/") : String(raw));
   };
   const same = (/** @type {any} */ typed, /** @type {any} */ right, /** @type {number} */ tol) => {
@@ -52,7 +52,7 @@
       .replace(/\s+/g, "")
       .replace(/(\d)to(\d)/g, "$1:$2")
       .replace(/\.$/, "");
-  const LEAD = /^([-−]?\$?\d[\d,]*(?:\.\d+)?(?:\s*\/\s*\d+)?)(.*)$/;
+  const LEAD = /^([+\-−]?\s*\$?\d[\d,]*(?:\.\d+)?(?:\s*\/\s*\d+)?)(.*)$/;
   const cellOk = (
     /** @type {any} */ typed,
     /** @type {any} */ want,
@@ -189,7 +189,7 @@
         .map((/** @type {any} */ s, /** @type {number} */ i) => {
           const cls =
             ctx.solved && i === it.e ? "correct" : chosen === i && i !== it.e ? "wrong" : "";
-          return `<li><button type="button" class="choice-btn err-step ${cls}" data-err="${i}"${ctx.solved ? " disabled" : ""}><span><strong>${esc(s.l)}</strong>: ${esc(s.w)}${s.wEs ? `<span class="es-text" lang="es">${esc(s.lEs || s.l)}: ${esc(s.wEs)}</span>` : ""}</span></button></li>`;
+          return `<li><button type="button" class="choice-btn err-step ${cls}" data-err="${i}"${ctx.solved ? " disabled" : ""}><span class="choice-letter" aria-hidden="true">${i + 1}</span><span><strong>${esc(s.l)}</strong>: ${esc(s.w)}${s.wEs ? `<span class="es-text" lang="es">${esc(s.lEs || s.l)}: ${esc(s.wEs)}</span>` : ""}</span></button></li>`;
         })
         .join("");
       ctx.host.innerHTML = `${viz(it)}<p class="item-q">${esc(it.t)}${es(it.tEs)}</p>

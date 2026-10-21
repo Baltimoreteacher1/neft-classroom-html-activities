@@ -70,10 +70,10 @@
         "Un signo menos significa hacia abajo o a la izquierda. El segundo movimiento va hacia arriba."
       ],
       "tag": [
-        "swapped-x-and-y",
+        "coord-xy-swapped",
         null,
-        "added-the-moves",
-        "wrong-direction"
+        "coord-moves-combined",
+        "negative-direction-reversed"
       ],
       "x": "The first number is how far to move right (or left), and the second is how far to move up (or down). Right 2 and up 5 gives (2, 5).",
       "xEs": "El primer número es cuánto moverse a la derecha (o a la izquierda), y el segundo es cuánto moverse hacia arriba (o hacia abajo). Derecha 2 y arriba 5 da (2, 5).",
@@ -117,9 +117,9 @@
       ],
       "tag": [
         null,
-        "swapped-x-and-y",
-        "combined-the-numbers",
-        "ignored-the-pair"
+        "coord-xy-swapped",
+        "coord-moves-combined",
+        "coord-moves-combined"
       ],
       "x": "In (x, y) the first number, x, is the left/right move. Here x = −4, so the point is 4 units to the left of the y-axis. The 7 is the up/down move.",
       "xEs": "En (x, y) el primer número, x, es el movimiento a la izquierda o a la derecha. Aquí x = −4, así que el punto está 4 unidades a la izquierda del eje y. El 7 es el movimiento hacia arriba o hacia abajo.",
@@ -254,10 +254,10 @@
           "Eso usa solo las direcciones de los dos últimos movimientos, a la derecha y hacia abajo. La posición suma TODOS los movimientos desde el origen."
         ],
         "tag": [
-          "ignored-directions",
-          "forgot-last-move",
+          "sign-dropped",
+          "coord-moves-combined",
           null,
-          "used-last-moves-only"
+          "coord-moves-combined"
         ],
         "x": "Add the left/right moves: −7 + 3 = −4, so x = −4. Add the up/down moves: 5 − 8 = −3, so y = −3. The robot stops at (−4, −3). Both coordinates are negative, so it is in Quadrant III.",
         "xEs": "Suma los movimientos a la izquierda y a la derecha: −7 + 3 = −4, así que x = −4. Suma los movimientos hacia arriba y hacia abajo: 5 − 8 = −3, así que y = −3. El robot se detiene en (−4, −3). Las dos coordenadas son negativas, así que está en el Cuadrante III.",
@@ -545,9 +545,9 @@
           ""
         ],
         "tag": [
-          "landed-on-an-axis",
-          "did-not-cross-zero",
-          "did-not-cross-the-x-axis",
+          "coord-axis-point-misplaced",
+          "coord-quadrant-mixup",
+          "coord-quadrant-mixup",
           null
         ],
         "x": "Moving right adds to x and moving down subtracts from y. To be in Quadrant IV, x must become positive and y negative. Moving 6 right gives x = −5 + 6 = 1, and moving 4 down gives y = 3 − 4 = −1, so the robot ends at (1, −1).",
@@ -798,10 +798,10 @@
           "Puedes hacer los dos movimientos en cualquier orden y llegar al mismo punto. Lo que importa es cuánto avanza cada uno."
         ],
         "tag": [
-          "bigger-number-first",
+          "coord-xy-swapped",
           null,
-          "same-quadrant-means-same-point",
-          "moves-must-be-in-order"
+          "coord-quadrant-mixup",
+          "reason-misses-the-math"
         ],
         "x": "In (x, y) the first number is the left/right move: −3 means 3 units left, and 5 means 5 units up. Jamal's moves land on (−5, 3), a different point, even though it is also in Quadrant II. The order of the two moves does not change where you land.",
         "xEs": "En (x, y) el primer número es el movimiento a la izquierda o derecha: −3 significa 3 unidades a la izquierda, y 5 significa 5 unidades hacia arriba. Los movimientos de Jamal llegan a (−5, 3), un punto distinto, aunque también está en el Cuadrante II. El orden de los dos movimientos no cambia dónde llegas.",
@@ -848,10 +848,10 @@
           "Eso lee −p como positivo. El signo menos al frente hace que la primera coordenada sea el opuesto de p."
         ],
         "tag": [
-          "ignored-both-signs",
-          "read-q-as-positive",
+          "sign-dropped",
+          "sign-dropped",
           null,
-          "read-minus-p-as-positive"
+          "sign-dropped"
         ],
         "x": "p is positive, so −p is negative: the point is left of the y-axis. q is negative: the point is below the x-axis. The signs are (−, −), so the point is in Quadrant III.",
         "xEs": "p es positivo, así que −p es negativo: el punto está a la izquierda del eje y. q es negativo: el punto está debajo del eje x. Los signos son (−, −), así que el punto está en el Cuadrante III.",
@@ -925,9 +925,9 @@
           ""
         ],
         "tag": [
-          "distance-from-wrong-axis",
-          "ignored-quadrant-signs",
-          "one-sign-wrong",
+          "coord-xy-swapped",
+          "sign-dropped",
+          "coord-quadrant-mixup",
           null
         ],
         "x": "The distance from the y-axis is the left/right amount, so x has size 4. The distance from the x-axis is the up/down amount, so y has size 6. In Quadrant III both coordinates are negative, so the point is (−4, −6).",
@@ -968,9 +968,9 @@
         ],
         "tag": [
           null,
-          "all-corners-in-one-quadrant",
-          "corners-on-an-axis",
-          "spans-only-two-quadrants"
+          "coord-quadrant-mixup",
+          "coord-axis-point-misplaced",
+          "coord-quadrant-mixup"
         ],
         "x": "A corner is inside a quadrant only if neither coordinate is 0. To have one corner in every quadrant, the rectangle needs x-values on both sides of the y-axis AND y-values on both sides of the x-axis. (−5, 4), (5, 4), (5, −2) and (−5, −2) are in Quadrants II, I, IV and III.",
         "xEs": "Una esquina está dentro de un cuadrante solo si ninguna coordenada es 0. Para tener una esquina en cada cuadrante, el rectángulo necesita valores de x a los dos lados del eje y Y valores de y a los dos lados del eje x. (−5, 4), (5, 4), (5, −2) y (−5, −2) están en los Cuadrantes II, I, IV y III.",
@@ -1029,20 +1029,20 @@
         "f": [
           "That reverses the two numbers and names a point in Quadrant II. The first number is how far left or right.",
           "",
-          "The signs fit Quadrant IV, but the distances are off by one. Count the grid lines from the origin again.",
+          "The signs fit Quadrant IV, but the 4 and the 5 are in swapped places. The first number is how far right, and the second is how far down.",
           "That drops the minus sign on the y-coordinate, which places the point above the x-axis in Quadrant I."
         ],
         "fEs": [
           "Eso invierte los dos números y nombra un punto en el Cuadrante II. El primer número es cuánto a la izquierda o a la derecha.",
           "",
-          "Los signos corresponden al Cuadrante IV, pero las distancias se pasan por uno. Vuelve a contar las líneas de la cuadrícula desde el origen.",
+          "Los signos corresponden al Cuadrante IV, pero el 4 y el 5 están en lugares intercambiados. El primer número es cuánto a la derecha y el segundo, cuánto hacia abajo.",
           "Eso omite el signo menos de la coordenada y, lo que pone el punto arriba del eje x, en el Cuadrante I."
         ],
         "tag": [
-          "swapped-x-and-y",
+          "coord-xy-swapped",
           null,
-          "misread-the-grid",
-          "dropped-negative"
+          "coord-xy-swapped",
+          "sign-dropped"
         ],
         "x": "Quadrant IV is the lower-right region. Sensor N is 5 units to the right of the y-axis and 4 units below the x-axis, so its coordinates are (5, −4).",
         "xEs": "El Cuadrante IV es la región de abajo a la derecha. El sensor N está 5 unidades a la derecha del eje y y 4 unidades debajo del eje x, así que sus coordenadas son (5, −4).",
@@ -1162,9 +1162,9 @@
         ""
       ],
       "tag": [
-        "swapped-x-and-y",
-        "axis-point-in-quadrant",
-        "one-sign-only",
+        "coord-axis-point-misplaced",
+        "coord-axis-point-misplaced",
+        "coord-axis-point-misplaced",
         null
       ],
       "x": "y = 0 means the point has not moved up or down, so it is on the x-axis. x = −7 means it is 7 units to the left of the origin. Points on an axis are in no quadrant.",

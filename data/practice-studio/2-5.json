@@ -245,10 +245,10 @@
           "Una mediana igual no dice nada de la dispersión. Resta para comparar."
         ],
         "tag": [
-          "range-for-middle-half",
-          "range-for-middle-half",
+          "stat-range-for-iqr",
+          "stat-range-for-iqr",
           null,
-          "same-median-same-spread"
+          "stat-center-vs-spread"
         ],
         "x": "Bed A: range 80 − 40 = 40, IQR 68 − 52 = 16. Bed B: range 100 − 20 = 80, IQR 65 − 55 = 10. B’s extremes are far out, but its middle half is tighter.",
         "xEs": "Cama A: rango 80 − 40 = 40, RIC 68 − 52 = 16. Cama B: rango 100 − 20 = 80, RIC 65 − 55 = 10. Los extremos de B están lejos, pero su mitad central es más compacta.",
@@ -601,9 +601,9 @@
           ""
         ],
         "tag": [
-          "extreme-value-moves-iqr",
-          "iqr-bigger-than-range",
-          "range-for-middle-half",
+          "stat-outlier-moves-wrong-measure",
+          "stat-range-for-iqr",
+          "reason-misses-the-math",
           null
         ],
         "x": "Range = 48 − 12 = 36, stretched by the 48. IQR = 15.5 − 13 = 2.5, which matches how close most snails are.",
@@ -744,9 +744,9 @@
         ],
         "tag": [
           null,
-          "range-for-middle-half",
-          "same-median-same-spread",
-          "iqr-bigger-than-range"
+          "stat-range-for-iqr",
+          "stat-center-vs-spread",
+          "read-question-missed-key-word"
         ],
         "x": "Packet X: IQR = 40 − 20 = 20. Packet Y: IQR = 33 − 27 = 6. The smaller IQR means more even plants.",
         "xEs": "Paquete X: RIC = 40 − 20 = 20. Paquete Y: RIC = 33 − 27 = 6. El RIC menor significa plantas más parejas.",
@@ -791,10 +791,10 @@
           "La mediana no entra en el RIC ni en el rango."
         ],
         "tag": [
-          "extreme-value-moves-iqr",
+          "stat-range-for-iqr",
           null,
-          "iqr-added",
-          "same-median-same-spread"
+          "op-added-instead-of-subtracted",
+          "stat-center-vs-spread"
         ],
         "x": "Q1 and Q3 sit between the minimum and maximum, so Q3 − Q1 can never be bigger than maximum − minimum. At most the two are equal.",
         "xEs": "Q1 y Q3 están entre el mínimo y el máximo, así que Q3 − Q1 nunca puede ser mayor que máximo − mínimo. Como mucho son iguales.",
@@ -921,9 +921,9 @@
       ],
       "tag": [
         null,
-        "extreme-value-moves-iqr",
-        "extreme-value-moves-iqr",
-        "range-for-middle-half"
+        "stat-outlier-moves-wrong-measure",
+        "stat-outlier-moves-wrong-measure",
+        "stat-outlier-moves-wrong-measure"
       ],
       "x": "The range is greatest minus least, so a new extreme value changes it directly. The quartiles depend on the middle of each half.",
       "xEs": "El rango es mayor menos menor, así que un valor extremo nuevo lo cambia directamente. Los cuartiles dependen del centro de cada mitad.",
@@ -1191,5 +1191,103 @@
         "es": "Rango intercuartílico (cm)"
       }
     }
+  },
+  "configTags": {
+    "A box plot has minimum 4, Q1 = 7, median = 10, Q3 = 14 and maximum 20. Which value splits the data in half?": [
+      "stat-box-plot-misread",
+      null,
+      "stat-median-middle-wrong",
+      "stat-box-plot-misread"
+    ],
+    "In that same box plot, what does the LEFT edge of the box show?": [
+      null,
+      "stat-box-plot-misread",
+      "stat-box-plot-misread",
+      "stat-box-plot-misread"
+    ],
+    "Find the five-number summary of 2, 5, 6, 8, 9, 11, 14.": [
+      null,
+      "stat-box-plot-misread",
+      "stat-median-middle-wrong",
+      "stat-box-plot-misread"
+    ],
+    "About what fraction of the data lies inside the box of a box plot?": [
+      "stat-box-plot-misread",
+      "stat-box-plot-misread",
+      null,
+      "stat-box-plot-misread"
+    ],
+    "A data set runs from a least value of 12 to a greatest value of 30. What is the range?": [
+      "equation-answered-with-given-number",
+      null,
+      "stat-center-vs-spread",
+      "equation-answered-with-given-number"
+    ],
+    "On a box plot, Q1 = 20 and Q3 = 36. What is the interquartile range?": [
+      null,
+      "stat-center-vs-spread",
+      "equation-answered-with-given-number",
+      "op-added-instead-of-subtracted"
+    ],
+    "Two classes both have a median score of 81. Class A's IQR is 13 and Class B's IQR is 8. Which statement is true?": [
+      "stat-center-vs-spread",
+      "stat-spread-misjudged",
+      null,
+      "stat-center-vs-spread"
+    ],
+    "A box plot shows: least 68, Q1 75.5, median 83.5, Q3 88, greatest 94. What are the range and the IQR?": [
+      "stat-range-for-iqr",
+      "regroup-slip",
+      null,
+      "stat-center-vs-spread"
+    ],
+    "Team A's salaries have a range of $14M and an IQR of $7M. Team B's have a range of $7M and an IQR of $2.5M. Both teams have the same median salary. What does this tell a player?": [
+      "stat-center-vs-spread",
+      null,
+      "stat-spread-misjudged",
+      "stat-center-vs-spread"
+    ],
+    "Class A's test scores are shown on a dot plot. Most dots stack between 80 and 90, and a few dots trail off to the left at 52, 58, and 61. Which word describes the SHAPE of this distribution?": [
+      null,
+      "stat-shape-misread",
+      "stat-shape-misread",
+      "stat-shape-misread"
+    ],
+    "Class B's nine retest scores are 72, 76, 78, 80, 80, 80, 82, 84, 88. Which statement describes the center, spread, AND shape of this distribution?": [
+      null,
+      "equation-answered-with-given-number",
+      "stat-center-vs-spread",
+      "stat-shape-misread"
+    ],
+    "Both classes have a median score of 81. Class A's scores make a symmetric dot plot. Class B's scores pile up between 78 and 86, with one score of 52. Which statement about Class B is true?": [
+      "stat-center-vs-spread",
+      "stat-shape-misread",
+      null,
+      "stat-shape-misread"
+    ],
+    "What is the range of Class A's scores?": [
+      "stat-range-for-iqr",
+      null,
+      "stat-center-vs-spread",
+      "equation-answered-with-given-number"
+    ],
+    "What is the interquartile range of Class B's scores?": [
+      null,
+      "read-question-missed-key-word",
+      "stat-range-for-iqr",
+      "stat-center-vs-spread"
+    ],
+    "Both classes have a median of 81. What do the smaller range and smaller IQR tell you about Class B?": [
+      "stat-center-vs-spread",
+      "stat-spread-misjudged",
+      "stat-center-vs-spread",
+      null
+    ],
+    "A box plot has Q1 = 20 and Q3 = 36, with a least value of 10 and a greatest value of 50. What is the IQR, and what does it tell you?": [
+      null,
+      "stat-center-vs-spread",
+      "stat-range-for-iqr",
+      "op-added-instead-of-subtracted"
+    ]
   }
 }
