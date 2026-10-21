@@ -44,7 +44,7 @@ import { listLessonDirs, loadLessonConfig, REPO_ROOT } from "./lib/curriculum-so
  * Units whose CONVERTED lesson-config items are not yet tagged (no `configTags` yet). Items authored in the studio file are
  * checked strictly in every unit. Remove a unit once its config items are named.
  */
-const PENDING_UNITS = [3, 5, 6, 7, 8, 9];
+const PENDING_UNITS = [];
 
 /**
  * Wrong choices that share a value, already known and being fixed elsewhere (`lesson|stem`). Listed here so the gate can
@@ -107,8 +107,8 @@ assert.ok(
 problems.push(...taxonomyProblems(traps, new Set(Object.keys(MISCONCEPTIONS)), STUDIO_UNITS));
 const count = Object.keys(traps).length;
 assert.ok(
-  count >= 40 && count <= 160,
-  `misconceptions.json should hold 40-160 traps, has ${count}`,
+  count >= 40 && count <= 180,
+  `misconceptions.json should hold 40-180 traps, has ${count}`,
 );
 
 /* ---- every rendered multiple-choice item ---- */
