@@ -625,7 +625,12 @@
             N: ee * dd10 + delta,
           };
         },
-        (v) => v.N10 >= 600 && v.N10 <= 9900,
+        // the friendly estimate must land within 25% of the whole-number quotient (762 ÷ 24 ≈ 800 ÷ 20 = 40
+        // is too far from 31 to be "the best estimate")
+        (v) =>
+          v.N10 >= 600 &&
+          v.N10 <= 9900 &&
+          Math.abs(v.E - Math.floor(v.N / v.d)) / Math.floor(v.N / v.d) < 0.25,
       );
       const near = (/** @type {number} */ v) => [`about ${cm(v)}`, `alrededor de ${cm(v)}`];
       // prettier-ignore
@@ -3095,6 +3100,8 @@
           return { N, m, extra, g, all: fits(clues), two: fits(clues.slice(0, 2)) };
         },
         (v) => v.all.length === 1 && v.two.length >= 2 && v.two.length <= 4,
+        // only ~5% of draws make a riddle with exactly one answer, so 150 tries ran out on ~1 seed in 2,000
+        2000,
       );
       const ans = r.all[0];
       const clue =

@@ -3427,11 +3427,17 @@
           });
         }
         const n = rng.int(3, 5);
-        const t = rng.int(st.lo + 2, st.hi - 2);
-        const known = until(
-          () => Array.from({ length: n }, () => rng.int(st.lo, st.hi)),
-          (v) => t * (n + 1) - sum(v) >= st.lo - 2 && t * (n + 1) - sum(v) <= st.hi + 8,
-        );
+        let t = rng.int(st.lo + 2, st.hi - 2);
+        const fits = (v) => t * (n + 1) - sum(v) >= st.lo - 2 && t * (n + 1) - sum(v) <= st.hi + 8;
+        const draw = () =>
+          until(() => Array.from({ length: n }, () => rng.int(st.lo, st.hi)), fits);
+        let known = draw();
+        // a goal mean near the low end can be out of reach (a mean of 7 after 13, 26, 29, 25 and 15 needs
+        // −66 dollars): pick another goal rather than ask for a negative amount
+        for (let k = 0; k < 40 && !fits(known); k++) {
+          t = rng.int(st.lo + 2, st.hi - 2);
+          known = draw();
+        }
         const need = t * (n + 1) - sum(known);
         return NUM({
           q: cat(

@@ -3945,6 +3945,8 @@
     const pick = rng.int(0, 3);
     const mine = works[pick];
     if (new Set(works.map((w) => w.tx)).size < 4) return null;
+    // 2(t + 2): adding 2 to the 2 gives the right 2t + 4, so that "mistake" is not wrong -- draw again
+    if (works.some((w) => w.tx === r.key)) return null;
     const say = (/** @type {number} */ k, w2 /** @type {any} */) =>
       DESC[w2.tag][k].replace("{N}", name);
     return mcx(rng, {

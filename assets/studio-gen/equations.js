@@ -2047,7 +2047,11 @@
       .shuffle(cands)
       .filter(([e]) => e.s > 0 && !near(e.s, s) && Number.isFinite(e.s))
       .map(([e, tag, fb]) => wr(eqStr(e), fb, tag));
-    for (let k = 1; k <= 8 && wrong.length < 4; k++) {
+    // two candidates can print the same equation, and G.mc drops repeats, so keep drawing until three
+    // DISTINCT wrong equations exist
+    const distinct = () =>
+      new Set(wrong.map((w) => norm(w.v)).filter((t) => t !== norm(eqStr(key)))).size;
+    for (let k = 1; (k <= 8 && wrong.length < 4) || (k <= 40 && distinct() < 3); k++) {
       const alt = eqWithSolution(rng, rng.pick(forms), v, s + (k % 2 ? k : -k));
       if (alt && alt.s > 0 && !wrong.some((w) => w.v === eqStr(alt)) && eqStr(alt) !== eqStr(key))
         wrong.push(
@@ -3884,7 +3888,11 @@
     });
   };
   const siTestItem = (rng, level, forms) => {
-    const q = ineqOf(rng, level, forms);
+    // a boundary near 0 leaves too few whole numbers outside the solution set for three wrong
+    // choices (n + 4 ≥ 6 has only 0 and 1), and x < 0 has no whole-number solution at all: draw again
+    let q = ineqOf(rng, level, forms);
+    for (let t = 0; t < 40 && (outValues(q.s, q.b).length < 3 || (q.s === "lt" && q.b < 1)); t++)
+      q = ineqOf(rng, level, forms);
     const { s, b, v } = q;
     const key = inValue(rng, s, b, true);
     const wrong = outValues(s, b).map((x) => {

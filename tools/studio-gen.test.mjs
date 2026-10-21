@@ -15,6 +15,27 @@ import { REPO_ROOT } from "./lib/curriculum-source.mjs";
 import { loadStudio } from "./lib/studio-vm.mjs";
 
 const SEEDS = 300;
+// Past the first SEEDS (which also feed the variety, position-balance, corrupted-key and determinism checks),
+// every item check runs on a spread of seeds up to SWEEP_TO plus each seed that once broke a generator, so a
+// generator cannot fail on a seed a student will meet: a lesson draws seeds far past 300. Seeds 1-6000 were
+// swept in full on 2026-10-21; these threw or mis-keyed until fixed (mcx: 3 choices, a "mistake" that gave the
+// right answer, a two-answer riddle, an estimate 30% off, a mean needing a negative amount).
+const SWEEP_TO = 6000;
+const SWEEP_STEP = 13;
+const PINNED = [
+  645, 883, 1128, 1129, 1190, 1260, 1274, 1658, 2192, 2242, 2320, 2321, 2421, 2443, 2482, 2542,
+  2967, 3067, 3328, 3665, 4081, 4958, 4992, 5486, 5495, 642, 773, 911, 3133,
+];
+const SEED_LIST = [
+  ...new Set([
+    ...Array.from({ length: SEEDS }, (_, i) => i + 1),
+    ...Array.from(
+      { length: Math.floor((SWEEP_TO - SEEDS) / SWEEP_STEP) },
+      (_, i) => SEEDS + 1 + i * SWEEP_STEP,
+    ),
+    ...PINNED,
+  ]),
+];
 const ctx = loadStudio({ gen: true });
 const G = ctx.StudioGen;
 const only = process.argv.slice(2);
@@ -66,7 +87,7 @@ for (const id of ids) {
     const pos = [0, 0, 0, 0, 0];
     let mc = 0;
     let first = null;
-    for (let seed = 1; seed <= SEEDS; seed++) {
+    for (const seed of SEED_LIST) {
       let item;
       try {
         item = G.make(id, level, seed);
@@ -88,7 +109,7 @@ for (const id of ids) {
       if (!Array.isArray(item.h) || item.h.length < 2 || item.h.some((h) => !text(h)))
         bad(id, `${tag} needs a hint ladder h[] of 2-3 hints`);
       if (item.k === "mc") {
-        mc++;
+        if (seed <= SEEDS) mc++;
         if (!Array.isArray(item.c) || item.c.length < 2 || item.c.length > 5)
           bad(id, `${tag} choice count`);
         if (new Set(item.c.map((c) => String(c).trim().toLowerCase())).size !== item.c.length)
@@ -106,12 +127,12 @@ for (const id of ids) {
         item.c.forEach(
           (_c, i) => i !== item.a && trapCheck(id, `${tag} choice ${i}`, (item.tag || [])[i]),
         );
-        if (item.c.length === 4) pos[item.a]++;
+        if (item.c.length === 4 && seed <= SEEDS) pos[item.a]++;
       } else if (item.k === "num") {
         if (!Number.isFinite(G.value(item.a))) bad(id, `${tag} num answer not numeric: ${item.a}`);
         for (const w of item.fw || []) trapCheck(id, `${tag} typed wrong value ${w.v}`, w.tag);
       } else bad(id, `${tag} unknown kind ${item.k}`);
-      stems.add(item.q + JSON.stringify(item.c || item.a));
+      if (seed <= SEEDS) stems.add(item.q + JSON.stringify(item.c || item.a));
       // the stem may not state its own answer as a standalone number for num items
       // key check, then a corrupted key must be rejected
       const ok = G.verify(item);
@@ -147,5 +168,5 @@ if (problems) {
   process.exit(1);
 }
 console.log(
-  `studio-gen: ${ids.length} generator(s) x 4 levels x ${SEEDS} seeds passed; every wrong answer names a taxonomy trap.`,
+  `studio-gen: ${ids.length} generator(s) x 4 levels x ${SEED_LIST.length} seeds (1-${SEEDS} in depth, a spread to ${SWEEP_TO}) passed; every wrong answer names a taxonomy trap.`,
 );
