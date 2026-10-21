@@ -2339,6 +2339,182 @@ body.focus-mode .focus-orbit-ring {
 }
 
 /* ==========================================================================
+   Student-Facing Upgrades: Confidence Meter, Pizza Slicer, Splitter, Tape
+   ========================================================================== */
+.confidence-meter-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.conf-lead {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.conf-chip {
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.conf-chip:hover {
+  background: #e2e8f0;
+}
+
+.conf-chip.active {
+  background: #eff6ff;
+  border-color: #2563eb;
+  color: #1d4ed8;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+}
+
+/* Pizza Fraction Slicer */
+.pizza-tool-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.pizza-slice-path {
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.pizza-slice-path:hover {
+  opacity: 0.82;
+}
+
+/* Number Splitter */
+.splitter-tool-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.splitter-bubble {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 900;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  user-select: none;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.splitter-bubble.target {
+  width: 64px;
+  height: 64px;
+  font-size: 1.6rem;
+  background: #0284c7;
+  border: 3px solid #0369a1;
+}
+
+.splitter-bubble.left {
+  width: 54px;
+  height: 54px;
+  font-size: 1.35rem;
+  background: #2563eb;
+  border: 3px solid #1d4ed8;
+}
+
+.splitter-bubble.right {
+  width: 54px;
+  height: 54px;
+  font-size: 1.35rem;
+  background: #eab308;
+  border: 3px solid #ca8a04;
+  color: #713f12;
+}
+
+/* Tape Diagram */
+.tape-tool-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.tape-bar-strip {
+  display: flex;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.tape-cell {
+  flex: 1;
+  min-width: 44px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.95rem;
+  border-right: 1.5px solid rgba(255, 255, 255, 0.4);
+}
+
+.tape-cell.a {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.tape-cell.b {
+  background: #10b981;
+  color: #ffffff;
+}
+
+/* Fix-It Garage */
+.garage-banner {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.garage-badge {
+  background: #f59e0b;
+  color: #78350f;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+/* ==========================================================================
    Teachers Pay Teachers (TpT) Quality Math Flashcard Stage
    ========================================================================== */
 .flashcard-stage {
@@ -4453,6 +4629,213 @@ body.focus-mode .focus-orbit-ring {
 .expl-tool-launcher:hover {
   background: #dcfce7;
   border-color: #16a34a;
+}
+
+/* WIDA ELD Standard 3: Math Language Studio */
+.wida-studio-wrap {
+  margin-top: 1rem;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.wida-studio-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: #f1f5f9;
+  cursor: pointer;
+  font-size: 0.92rem;
+  color: #1e293b;
+  font-weight: 700;
+  user-select: none;
+}
+
+.wida-studio-summary:hover {
+  background: #e2e8f0;
+}
+
+.wida-pill {
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.wida-studio-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.wida-lang-toggle-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wida-subheading {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.wida-lang-chip {
+  padding: 4px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #334155;
+  cursor: pointer;
+  min-height: 36px;
+}
+
+.wida-lang-chip.active {
+  background: #3b82f6;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.wida-instruction {
+  font-size: 0.85rem;
+  color: #1e293b;
+  margin: 0.4rem 0 0.25rem 0;
+}
+
+.wida-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.wida-frame-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: left;
+  background: #ffffff;
+  border: 1px solid #94a3b8;
+  border-radius: 8px;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.85rem;
+  color: #0f172a;
+  cursor: pointer;
+  line-height: 1.35;
+  transition: all 0.15s ease;
+  min-height: 44px;
+}
+
+.wida-frame-btn:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+}
+
+.wida-badge-type {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.wida-word-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #f0fdfa;
+  border: 1px solid #5eead4;
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0f766e;
+  cursor: pointer;
+  min-height: 38px;
+}
+
+.wida-word-btn:hover {
+  background: #ccfbf1;
+  border-color: #14b8a6;
+}
+
+.wida-cognate {
+  font-size: 0.75rem;
+  color: #0d9488;
+  font-weight: 500;
+}
+
+.wida-composer-row {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.wida-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.wida-textarea {
+  width: 100%;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.92rem;
+  font-family: inherit;
+  color: #0f172a;
+  resize: vertical;
+  min-height: 60px;
+}
+
+.wida-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.wida-action-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.wida-speech-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.wida-speech-btn:hover {
+  background: #1d4ed8;
+}
+
+.wida-feedback-hint {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #059669;
 }
 
 /* ==========================================================================

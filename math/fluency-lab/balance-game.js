@@ -43,7 +43,7 @@ export function scaleSvg({ left, rightText, tilt }) {
 
 const esc = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
-export function playBalance(host, { grade, stop, calm, finish }) {
+export function playBalance(host, { grade, stop, calm, finish, onFact }) {
   const total = calm ? 3 : ROUNDS;
   const rounds = Array.from({ length: total }, () => balanceRound(grade, stop));
   let at = 0;
@@ -95,6 +95,7 @@ export function playBalance(host, { grade, stop, calm, finish }) {
     const n = Number(tile.dataset.b);
     if (n === round.missing) {
       solved = true;
+      onFact?.(round.item, tried.size === 0);
       note = t("Balanced!");
       render();
       timer = setTimeout(advance, 1000);
@@ -102,6 +103,7 @@ export function playBalance(host, { grade, stop, calm, finish }) {
     }
     wrong += 1;
     missed.set(round.item.question, round.item);
+    onFact?.(round.item, false);
     tried.set(n, true);
     note = round.part + n < round.total ? t("The left side is still heavier. Try a bigger number.") : t("The right side is heavier now. Try a smaller number.");
     render(true);

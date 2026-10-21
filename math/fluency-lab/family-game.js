@@ -40,7 +40,7 @@ export function frameOk(frame, slots, numbers) {
   return value(frame.op, x, y) === z;
 }
 
-export function playFamily(host, { grade, calm, finish }) {
+export function playFamily(host, { grade, calm, finish, onFact }) {
   const op = familyOpFor(grade);
   const total = calm ? 2 : ROUNDS;
   let round = 0;
@@ -87,9 +87,14 @@ export function playFamily(host, { grade, calm, finish }) {
     if (result[0] && result[1] && slots[0][0] === slots[1][0] && slots[0][1] === slots[1][1]) result[1] = false;
     if (result[2] && result[3] && slots[2][0] === slots[3][0] && slots[2][1] === slots[3][1]) result[3] = false;
     verdict = result;
-    wrong += result.filter((ok, f) => !ok && slots[f].some((x) => x != null)).length;
+    const failures = result.filter((ok, f) => !ok && slots[f].some((x) => x != null)).length;
+    wrong += failures;
+    if (failures > 0) {
+      onFact?.({ question: `${numbers[0]} ${op} ${numbers[1]} = ?`, answers: [String(numbers[2])], generator: "fact" }, false);
+    }
     render();
     if (result.every(Boolean)) {
+      onFact?.({ question: `${numbers[0]} ${op} ${numbers[1]} = ?`, answers: [String(numbers[2])], generator: "fact" }, wrong === 0);
       round += 1;
       if (round >= total) timer = setTimeout(() => finish({ game: "family", stars: familyStars(wrong), missed: [], line: wrong === 1 ? t("{n} wrong equation", { n: wrong }) : t("{n} wrong equations", { n: wrong }) }), 1100);
       else host.querySelector("[data-gm-next]")?.focus();

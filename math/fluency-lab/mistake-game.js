@@ -43,7 +43,7 @@ export function buildRound(grade, stop) {
   throw new Error(`Could not build a Spot the Mistake round for grade ${grade} stop ${stop}`);
 }
 
-export function playMistake(host, { grade, stop, calm, finish }) {
+export function playMistake(host, { grade, stop, calm, finish, onFact }) {
   const total = calm ? 3 : ROUNDS;
   const rounds = Array.from({ length: total }, () => buildRound(grade, stop));
   let at = 0;
@@ -90,6 +90,7 @@ export function playMistake(host, { grade, stop, calm, finish }) {
   const miss = (round) => {
     wrong += 1;
     missed.set(round.item.question, round.item);
+    onFact?.(round.item, false);
   };
 
   host.onclick = (event) => {
@@ -116,6 +117,7 @@ export function playMistake(host, { grade, stop, calm, finish }) {
       if (saysWrong === !round.right) {
         if (round.right) {
           note = t("Yes, Sam is right. Nice checking.");
+          onFact?.(round.item, wrong === 0);
           render();
           timer = setTimeout(advance, 900);
           return;
@@ -136,6 +138,7 @@ export function playMistake(host, { grade, stop, calm, finish }) {
     const right = round.format === "steps" ? Number.isFinite(num(typed)) && typed.trim() !== "" && same(num(typed), round.truth) : validateAnswer(typed, round.item);
     if (right) {
       note = t("Yes! Mistake fixed.");
+      onFact?.(round.item, wrong === 0);
       phase = "done";
       render();
       timer = setTimeout(advance, 800);

@@ -177,7 +177,37 @@ export function feedbackFor(skill, item, raw) {
     if (["decimalOp", "powerTen"].includes(skill.generator) && answer !== 0 && [10, 100, 0.1, 0.01].some((factor) => Math.abs(submitted - answer * factor) < 1e-8)) return "Check the place value. Estimate the size first, then check how many decimal places your result needs.";
   }
   const fractions = item.question.match(/^(\d+)\/(\d+) ([+−]) (\d+)\/(\d+)/);
-  if (fractions && String(raw).replaceAll(" ", "") === `${Number(fractions[1]) + Number(fractions[4])}/${Number(fractions[2]) + Number(fractions[5])}`) return "The denominator names the size of the pieces. Make equal-sized pieces first; do not add the denominators.";
+  if (fractions) {
+    const [num1, den1, fracOp, num2, den2] = [Number(fractions[1]), Number(fractions[2]), fractions[3], Number(fractions[4]), Number(fractions[5])];
+    const cleaned = String(raw).replaceAll(" ", "");
+    if (fracOp === "+" && cleaned === `${num1 + num2}/${den1 + den2}`) return "The denominator names the size of the pieces. Make equal-sized pieces first; do not add the denominators.";
+    if (fracOp === "−" && cleaned === `${num1 - num2}/${den1 - den2}`) return "The denominator names the size of the pieces. Make equal-sized pieces first; do not subtract the denominators.";
+  }
+  const fracMul = item.question.match(/^(\d+)\/(\d+) [×*] (\d+)\/(\d+)/);
+  if (fracMul) {
+    const [n1, d1, n2, d2] = [Number(fracMul[1]), Number(fracMul[2]), Number(fracMul[3]), Number(fracMul[4])];
+    if (String(raw).replaceAll(" ", "") === `${n1 + n2}/${d1 + d2}`) return "When multiplying fractions, multiply the numerators together and multiply the denominators together.";
+  }
+  const fracDiv = item.question.match(/^(\d+)\/(\d+) [÷/] (\d+)\/(\d+)/);
+  if (fracDiv) {
+    const [n1, d1, n2, d2] = [Number(fracDiv[1]), Number(fracDiv[2]), Number(fracDiv[3]), Number(fracDiv[4])];
+    if (String(raw).replaceAll(" ", "") === `${n1 * n2}/${d1 * d2}`) return "Division by a fraction multiplies by its reciprocal: keep the first fraction, change to multiply, and flip the second fraction.";
+  }
+  const integerSub = item.question.replaceAll(",", "").match(/^(-?\d+) [−\-] \((-?\d+)\) =/);
+  if (integerSub) {
+    const a = Number(integerSub[1]); const b = Number(integerSub[2]);
+    if (b < 0 && submitted === a - Math.abs(b)) return "Subtracting a negative removes a deficit: it has the same effect as adding a positive amount.";
+  }
+  const integerMul = item.question.replaceAll(",", "").match(/^(-?\d+) [×*] \((-?\d+)\) =/);
+  if (integerMul) {
+    const a = Number(integerMul[1]); const b = Number(integerMul[2]);
+    if (a < 0 && b < 0 && submitted === -Math.abs(a * b)) return "A negative number multiplied by a negative number results in a positive product.";
+  }
+  const eqLinear = item.question.match(/^(\d+)([a-zA-Z]|\?|\bx\b)\s*=\s*(\d+)/);
+  if (eqLinear) {
+    const coef = Number(eqLinear[1]); const total = Number(eqLinear[3]);
+    if (submitted === total - coef) return "The coefficient multiplies the variable. Undo multiplication with division on both sides, not subtraction.";
+  }
   if (skill.generator === "exponent") {
     const [base, power] = item.question.match(/\d+/g).map(Number);
     if (submitted === base * power) return `The exponent counts factors: use ${base} as a factor ${power} times. It does not mean ${base} × ${power}.`;

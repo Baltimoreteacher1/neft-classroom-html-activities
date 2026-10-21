@@ -34,7 +34,7 @@ export function makeBoard(grade, pairsWanted = 3) {
   throw new Error(`Could not build a Make It board for grade ${grade}`);
 }
 
-export function playMake(host, { grade, calm, finish }) {
+export function playMake(host, { grade, calm, finish, onFact }) {
   const total = calm ? 2 : ROUNDS;
   let round = 0;
   let board = null;
@@ -85,9 +85,11 @@ export function playMake(host, { grade, calm, finish }) {
       return;
     }
     const [a, b] = [board.tiles[chosen], board.tiles[i]];
+    const factItem = { question: `${a} ${board.op} ${b} = ?`, answers: [String(board.target)], generator: "fact" };
     if (combine(board.op, a, b) === board.target) {
       used.add(chosen).add(i);
       found = [...found, `${a} ${board.op} ${b} = ${board.target}`];
+      onFact?.(factItem, wrong === 0);
       chosen = null;
       nope = null;
       render();
@@ -103,6 +105,7 @@ export function playMake(host, { grade, calm, finish }) {
     }
     wrong += 1;
     nope = i;
+    onFact?.(factItem, false);
     chosen = null;
     render(i);
   }

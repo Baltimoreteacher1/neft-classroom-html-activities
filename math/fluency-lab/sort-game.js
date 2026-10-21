@@ -35,7 +35,7 @@ export function sortBoard(grade, stop, count, { comeback = true } = {}) {
   throw new Error(`Could not build an Answer Sort board for grade ${grade} stop ${stop}`);
 }
 
-export function playSort(host, { grade, stop, calm, finish }) {
+export function playSort(host, { grade, stop, calm, finish, onFact }) {
   const count = calm ? 6 : 8;
   const { cards, line, lineText } = sortBoard(grade, stop, count);
   const placed = { low: [], high: [] };
@@ -65,11 +65,13 @@ export function playSort(host, { grade, stop, calm, finish }) {
       wrong += 1;
       nope = item;
       missed.set(item.question, item);
+      onFact?.(item, false);
       chosen = null;
       render();
       return;
     }
     placed[key].push(item);
+    onFact?.(item, !missed.has(item.question));
     chosen = null;
     render();
     if (!left().length) timer = setTimeout(() => finish({ game: "sort", stars: sortStars(wrong), missed: [...missed.values()], line: wrong === 1 ? t("{n} wrong placement", { n: wrong }) : t("{n} wrong placements", { n: wrong }) }), 900);

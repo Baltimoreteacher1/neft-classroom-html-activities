@@ -29,6 +29,7 @@ import { mountPaperGames } from "./paper-games.js";
 import { stopOptions, stopsFor } from "./game-pool.js";
 import { cleanPlay, exportPlay, importPlay } from "./play-backup.js";
 import { highlightVocab, initVocabSystem, openVocabModal } from "./vocab.js";
+import { canSpeak, speak } from "./speech.js";
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
@@ -661,6 +662,12 @@ function nextProblem(restoredItem = null) {
   renderAnswerControl();
   updateSessionHeader();
   state.isFixing = false;
+  state.confidence = "certain";
+  document.querySelectorAll(".conf-chip").forEach((c) => {
+    const isCertain = c.dataset.conf === "certain";
+    c.classList.toggle("active", isCertain);
+    c.setAttribute("aria-checked", isCertain ? "true" : "false");
+  });
   if (els.fixAnswerBtn) els.fixAnswerBtn.hidden = true;
   if (els.checkButton) {
     els.checkButton.hidden = false;
@@ -2477,6 +2484,98 @@ const InteractiveSolver = {
   }
 };
 
+function renderWidaStudio(item) {
+  if (!item) return "";
+  const q = item.question || "";
+  const ans = item.displayAnswer || (item.answers && item.answers[0]) || "";
+
+  let wordsEn = ["Strategy", "Reasoning", "Estimate", "Solution", "Check"];
+  let wordsEs = ["Estrategia", "Razonamiento", "Estimar", "Solución", "Verificar"];
+
+  if (/(\d+)\/(\d+)/.test(q)) {
+    wordsEn = ["Numerator", "Denominator", "Equal parts", "Common denominator", "Reciprocal", "Equivalent"];
+    wordsEs = ["Numerador", "Denominador", "Partes iguales", "Denominador común", "Recíproco", "Equivalente"];
+  } else if (/\b[xy]\b|[=]/.test(q) && /solve|equation|linear/i.test(item.skill?.id || "")) {
+    wordsEn = ["Variable", "Equation", "Coefficient", "Inverse operation", "Balance both sides", "Isolate"];
+    wordsEs = ["Variable", "Ecuación", "Coeficiente", "Operación inversa", "Balancear ambos lados", "Aislar"];
+  } else if (/[-−]\d+/.test(q) || /integer/i.test(item.skill?.id || "")) {
+    wordsEn = ["Positive", "Negative", "Zero pair", "Opposite", "Number line", "Absolute value"];
+    wordsEs = ["Positivo", "Negativo", "Par cero", "Opuesto", "Recta numérica", "Valor absoluto"];
+  } else if (/[×*÷/]/.test(q) || /mul|div|factor/i.test(item.skill?.id || "")) {
+    wordsEn = ["Factor", "Product", "Quotient", "Equal groups", "Array", "Decompose"];
+    wordsEs = ["Factor", "Producto", "Cociente", "Grupos iguales", "Matriz", "Descomponer"];
+  } else if (/%|ratio|rate|proportion/i.test(q) || /ratio|rate/i.test(item.skill?.id || "")) {
+    wordsEn = ["Ratio", "Rate", "Unit rate", "Proportion", "Scale factor", "Per unit"];
+    wordsEs = ["Razón", "Tasa", "Tasa unitaria", "Proporción", "Factor de escala", "Por unidad"];
+  } else if (/[+−\-]/.test(q)) {
+    wordsEn = ["Addend", "Sum", "Difference", "Tens and ones", "Regroup", "Friendly numbers"];
+    wordsEs = ["Sumando", "Suma", "Diferencia", "Decenas y unidades", "Reagrupar", "Números amigables"];
+  }
+
+  const cleanQ = q.replace("= ?", "").trim();
+
+  const framesEn = [
+    { type: "Explain", text: `I solved ${cleanQ} by decomposing into friendly parts because it makes calculation simpler.` },
+    { type: "Explain", text: `First I identified the core operation in ${cleanQ}, and then I calculated step-by-step.` },
+    { type: "Argue", text: `My answer of ${ans} is reasonable because the visual model and estimation verify it.` },
+    { type: "Argue", text: `I can prove this solution is correct using inverse operations to check the result.` },
+  ];
+
+  const framesEs = [
+    { type: "Explicar", text: `Resolví ${cleanQ} descomponiendo en partes amigables porque simplifica el cálculo.` },
+    { type: "Explicar", text: `Primero identifiqué la operación clave en ${cleanQ}, y luego calculé paso a paso.` },
+    { type: "Argumentar", text: `Mi respuesta de ${ans} es razonable porque el modelo visual y la estimación lo verifican.` },
+    { type: "Argumentar", text: `Puedo demostrar que esta solución es correcta usando operaciones inversas para comprobar.` },
+  ];
+
+  return `
+    <details class="wida-studio-wrap">
+      <summary class="wida-studio-summary">
+        <span>🗣️</span> <strong>Math Language Studio · WIDA ELD Standard 3</strong>
+        <span class="wida-pill">Dual-Language Scaffolds</span>
+      </summary>
+      <div class="wida-studio-body">
+        <div class="wida-lang-toggle-bar">
+          <span class="wida-subheading">Scaffold Language:</span>
+          <button type="button" class="wida-lang-chip active" data-wida-toggle="en">English</button>
+          <button type="button" class="wida-lang-chip" data-wida-toggle="es">Español</button>
+        </div>
+        
+        <div class="wida-frames-group" data-wida-lang-group="en">
+          <p class="wida-instruction"><strong>Select a Sentence Starter (Explain &amp; Argue):</strong></p>
+          <div class="wida-chip-row">
+            ${framesEn.map((f) => `<button type="button" class="wida-frame-btn" data-wida-insert="${escapeHtml(f.text)}"><span class="wida-badge-type">${f.type}</span> ${escapeHtml(f.text)}</button>`).join("")}
+          </div>
+          <p class="wida-instruction"><strong>Academic Vocabulary &amp; Cognates:</strong></p>
+          <div class="wida-chip-row">
+            ${wordsEn.map((w, idx) => `<button type="button" class="wida-word-btn" data-wida-word="${escapeHtml(w)}">${escapeHtml(w)} <small class="wida-cognate">(${escapeHtml(wordsEs[idx])})</small></button>`).join("")}
+          </div>
+        </div>
+
+        <div class="wida-frames-group" data-wida-lang-group="es" hidden>
+          <p class="wida-instruction"><strong>Selecciona una estructura de oración (Explicar y Argumentar):</strong></p>
+          <div class="wida-chip-row">
+            ${framesEs.map((f) => `<button type="button" class="wida-frame-btn" data-wida-insert="${escapeHtml(f.text)}"><span class="wida-badge-type">${f.type}</span> ${escapeHtml(f.text)}</button>`).join("")}
+          </div>
+          <p class="wida-instruction"><strong>Vocabulario Académico y Cognados:</strong></p>
+          <div class="wida-chip-row">
+            ${wordsEs.map((w, idx) => `<button type="button" class="wida-word-btn" data-wida-word="${escapeHtml(w)}">${escapeHtml(w)} <small class="wida-cognate">(${escapeHtml(wordsEn[idx])})</small></button>`).join("")}
+          </div>
+        </div>
+
+        <div class="wida-composer-row">
+          <label for="wida-reasoning-input" class="wida-sr">Your Math Justification</label>
+          <textarea id="wida-reasoning-input" class="wida-textarea" rows="2" placeholder="Tap a sentence starter above or write your mathematical justification..."></textarea>
+          <div class="wida-action-bar">
+            <button type="button" class="wida-speech-btn" data-wida-speak-btn>🔊 Read Aloud / Escuchar</button>
+            <span class="wida-feedback-hint" aria-live="polite"></span>
+          </div>
+        </div>
+      </div>
+    </details>
+  `;
+}
+
 function renderStudentFriendlyExplanation(item, copy) {
   if (!item) return `<p>${escapeHtml(copy)}</p>`;
   const q = item.question || "";
@@ -2763,6 +2862,7 @@ function renderStudentFriendlyExplanation(item, copy) {
       ${stepsList}
       <div class="student-expl-tip"><strong>💡 Pro Tip:</strong> ${escapeHtml(tip)}</div>
       ${toolCallout}
+      ${renderWidaStudio(item)}
     </div>
   `;
 }
@@ -2983,13 +3083,34 @@ function finalizeProblem(correct) {
     session.streak += 1;
     session.bestStreak = Math.max(session.bestStreak, session.streak);
     if (session.streak > 0 && session.streak % 5 === 0) chime("streak");
-    showFeedback("Correct", state.item.explanation, "correct");
+    const conf = state.confidence || "certain";
+    let title = "Correct";
+    let copy = state.item.explanation;
+    if (conf === "curious") {
+      title = "Curiosity Win! 🦉✨";
+      copy = `${state.item.explanation} — You explored your way to the solution!`;
+    } else if (conf === "thinking") {
+      title = "Strategy Success! 🦊💡";
+      copy = `${state.item.explanation} — Working through the steps paid off!`;
+    } else {
+      title = "Lightning Recall! 🦁⚡";
+    }
+    showFeedback(title, copy, "correct");
     if (els.fixAnswerBtn) els.fixAnswerBtn.hidden = true;
   } else {
     const lostStreak = session.mode === "streak" && session.streak > 0;
     session.streak = 0;
     session.missed.push({ skill: state.item.skill, item: state.item });
-    showFeedback(lostStreak ? "New streak starts now" : "Keep this one", `${state.item.hint} ${state.item.explanation}`, "incorrect");
+    const conf = state.confidence || "certain";
+    let title = lostStreak ? "New streak starts now" : "Keep this one";
+    let copy = `${state.item.hint} ${state.item.explanation}`;
+    if (conf === "curious") {
+      title = "Great Curiosity! 🦉";
+      copy = `Exploring with curiosity is how mathematicians grow! ${state.item.hint} ${state.item.explanation}`;
+    } else if (conf === "thinking") {
+      title = "Good Thinking Effort! 🦊";
+    }
+    showFeedback(title, copy, "incorrect");
     if (els.fixAnswerBtn && session.mode !== "streak" && session.mode !== "sprint") {
       els.fixAnswerBtn.hidden = false;
     }
@@ -3246,11 +3367,49 @@ function renderPath() {
 function renderNotebook() {
   const entries = state.tutor.mistakes.filter((entry) => findSkill(entry.key)?.grade === state.grade);
   const open = entries.filter((entry) => !entry.resolvedAt);
-  els.notebook.innerHTML = `<div class="section-heading"><div><p class="section-label">Grade ${state.grade} · Mistake notebook</p><h2>A mistake is a place to learn.</h2><p>Review the idea, then solve two fresh problems independently in a row to mark that skill’s mistakes as repaired.</p></div>${open.length ? '<button class="primary-action" data-repair-all>Practice my tricky skills</button>' : ''}</div>
+  els.notebook.innerHTML = `
+    <div class="garage-banner">
+      <div>
+        <span class="garage-badge">🔧 THE FIX-IT GARAGE</span>
+        <h2 style="margin:4px 0 2px; font-size:1.6rem; color:#fff">Tune Up Your Tricky Skills</h2>
+        <p style="margin:0; font-size:0.95rem; color:#94a3b8">Every mistake is a vehicle in the shop. Tune it up with tools, then solve 2 fresh problems to roll out with green lights!</p>
+      </div>
+      ${open.length ? '<button class="primary-action" data-repair-all style="background:#f59e0b; color:#78350f; font-weight:900; border:none; padding:10px 16px; border-radius:8px; cursor:pointer">⚡ Tune Up All (' + open.length + ')</button>' : ''}
+    </div>
     ${entries.length ? `<div class="mistake-list">${entries.map((entry) => {
       const skill = findSkill(entry.key);
-      return `<article class="mistake-entry ${entry.resolvedAt ? 'repaired' : ''}"><span class="mastery-pill">${entry.resolvedAt ? 'Repaired in fresh practice' : 'Ready to revisit'}</span><h3>${escapeHtml(skill.title)}</h3><p class="mistake-question">${escapeHtml(entry.question)}</p><p>Your first answer: <strong>${escapeHtml(entry.submitted)}</strong></p><details><summary>Review the strategy and solution</summary><p>${escapeHtml(entry.hint)}</p><p>${escapeHtml(entry.explanation)}</p><p>${escapeHtml(skill.learn.watch)}</p></details><div class="button-row"><button class="outline-action" data-open-key="${entry.key}" data-open-mode="visual">Build the idea</button><button class="primary-action" data-repair-key="${entry.key}">Try fresh problems</button></div></article>`;
-    }).join("")}</div>` : `<div class="empty-state"><h3>Your notebook is ready.</h3><p>When an answer needs another look, its strategy and explanation will appear here. Start a practice set to begin.</p><button class="primary-action" data-view="library">Choose a skill</button></div>`}`;
+      const isRepaired = !!entry.resolvedAt;
+      return `
+        <article class="mistake-entry ${isRepaired ? 'repaired' : ''}">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+            <span class="mastery-pill" style="background:${isRepaired ? '#dcfce7' : '#fef3c7'}; color:${isRepaired ? '#166534' : '#92400e'}">
+              ${isRepaired ? '✅ Tuned & Repaired 🏎️' : '🔧 In The Shop · Ready for Tune-Up'}
+            </span>
+            <span style="font-size:0.85rem; font-weight:700; color:#64748b">Grade ${skill.grade} · ${escapeHtml(skill.strand)}</span>
+          </div>
+          <h3>${escapeHtml(skill.title)}</h3>
+          <p class="mistake-question" style="font-size:1.4rem; font-weight:900; margin:8px 0">${escapeHtml(entry.question)}</p>
+          <p>Your previous answer: <strong style="color:#dc2626">${escapeHtml(entry.submitted)}</strong></p>
+          <details style="margin:10px 0; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px">
+            <summary style="font-weight:700; cursor:pointer">🔍 Peek at the Mechanic's Blueprint</summary>
+            <p style="margin:6px 0 4px"><strong>Strategy Hint:</strong> ${escapeHtml(entry.hint)}</p>
+            <p style="margin:4px 0"><strong>Solution Walkthrough:</strong> ${escapeHtml(entry.explanation)}</p>
+            <p style="margin:4px 0; color:#b45309"><strong>Watch Out:</strong> ${escapeHtml(skill.learn.watch)}</p>
+          </details>
+          <div class="button-row">
+            <button class="outline-action" data-open-key="${entry.key}" data-open-mode="visual">🛠️ Build with Tools</button>
+            <button class="primary-action" data-repair-key="${entry.key}">⚡ Test Drive Fresh Problems</button>
+          </div>
+        </article>`;
+    }).join("")}</div>` : `
+      <div class="empty-state" style="text-align:center; padding:3rem 1rem">
+        <div style="font-size:3rem">🏎️💨</div>
+        <h3>The Garage is Clean!</h3>
+        <p>No tricky slips waiting in the shop right now. Start a practice set to explore new skills or challenge your streaks!</p>
+        <button class="primary-action" data-view="library">Explore Skills</button>
+      </div>
+    `}
+  `;
 }
 
 function openPlanned(mode, queue) {
@@ -3481,6 +3640,16 @@ els.textSizeButton.addEventListener("click", () => {
 });
 
 document.addEventListener("click", (event) => {
+  const confChip = event.target.closest("[data-conf]");
+  if (confChip) {
+    state.confidence = confChip.dataset.conf;
+    document.querySelectorAll(".conf-chip").forEach((c) => {
+      const match = c === confChip;
+      c.classList.toggle("active", match);
+      c.setAttribute("aria-checked", match ? "true" : "false");
+    });
+    return;
+  }
   const view = event.target.closest("[data-view]");
   if (view) openHubView(view.dataset.view);
   const open = event.target.closest("[data-open-key]");
@@ -3956,6 +4125,61 @@ document.addEventListener("click", (event) => {
     }
     return;
   }
+  const widaLangBtn = event.target.closest("[data-wida-toggle]");
+  if (widaLangBtn) {
+    const lang = widaLangBtn.dataset.widaToggle;
+    const card = widaLangBtn.closest(".wida-studio-wrap");
+    if (card) {
+      card.querySelectorAll("[data-wida-toggle]").forEach((b) => b.classList.toggle("active", b.dataset.widaToggle === lang));
+      card.querySelectorAll("[data-wida-lang-group]").forEach((g) => {
+        g.hidden = g.dataset.widaLangGroup !== lang;
+      });
+    }
+    return;
+  }
+  const widaInsertBtn = event.target.closest("[data-wida-insert]");
+  if (widaInsertBtn) {
+    const text = widaInsertBtn.dataset.widaInsert;
+    const card = widaInsertBtn.closest(".wida-studio-wrap");
+    const textarea = card?.querySelector("#wida-reasoning-input");
+    if (textarea) {
+      textarea.value = text;
+      textarea.focus();
+    }
+    return;
+  }
+  const widaWordBtn = event.target.closest("[data-wida-word]");
+  if (widaWordBtn) {
+    const word = widaWordBtn.dataset.widaWord;
+    const card = widaWordBtn.closest(".wida-studio-wrap");
+    const textarea = card?.querySelector("#wida-reasoning-input");
+    if (textarea) {
+      const val = textarea.value.trim();
+      textarea.value = val ? `${val} ${word}` : word;
+      textarea.focus();
+    }
+    return;
+  }
+  const widaSpeakBtn = event.target.closest("[data-wida-speak-btn]");
+  if (widaSpeakBtn) {
+    const card = widaSpeakBtn.closest(".wida-studio-wrap");
+    const textarea = card?.querySelector("#wida-reasoning-input");
+    const hint = card?.querySelector(".wida-feedback-hint");
+    const content = textarea?.value?.trim() || "";
+    if (content) {
+      speak(content);
+      if (hint) {
+        hint.textContent = "Speaking explanation... 🔊";
+        setTimeout(() => { hint.textContent = ""; }, 2500);
+      }
+    } else {
+      if (hint) {
+        hint.textContent = "Please select or type a sentence starter first!";
+        setTimeout(() => { hint.textContent = ""; }, 2500);
+      }
+    }
+    return;
+  }
   const tokenBtn = event.target.closest("[data-copy-teacher-token]");
   if (tokenBtn) {
     const token = tokenBtn.dataset.copyTeacherToken || "";
@@ -3998,6 +4222,16 @@ const InteractiveDrillToolbox = {
   dnlMultiplierB: 1,
   dnlLabelA: "Miles",
   dnlLabelB: "Hours",
+  pizzaSlices: 8,
+  pizzaEaten: [0, 1, 2],
+  splitTarget: 14,
+  splitLeft: 10,
+  splitRight: 4,
+  tapeA: 3,
+  tapeB: 2,
+  tapeUnit: 5,
+  tapeLabelA: "Apples",
+  tapeLabelB: "Oranges",
 
   render(container) {
     if (!container) return;
@@ -4262,6 +4496,120 @@ const InteractiveDrillToolbox = {
           </svg>
         </div>
       `;
+    } else if (this.activeTool === "pizza") {
+      const n = this.pizzaSlices;
+      const eaten = this.pizzaEaten;
+      const r = 52;
+      const cx = 210;
+      const cy = 60;
+      const slicesSvg = Array.from({ length: n }, (_, i) => {
+        const a1 = (i * 2 * Math.PI) / n - Math.PI / 2;
+        const a2 = ((i + 1) * 2 * Math.PI) / n - Math.PI / 2;
+        const x1 = cx + r * Math.cos(a1);
+        const y1 = cy + r * Math.sin(a1);
+        const x2 = cx + r * Math.cos(a2);
+        const y2 = cy + r * Math.sin(a2);
+        const isEaten = eaten.includes(i);
+        const d = `M ${cx},${cy} L ${x1},${y1} A ${r},${r} 0 0,1 ${x2},${y2} Z`;
+        const midA = (a1 + a2) / 2;
+        const px = cx + (r * 0.6) * Math.cos(midA);
+        const py = cy + (r * 0.6) * Math.sin(midA);
+        return `
+          <g class="pizza-slice-path" data-slice="${i}" role="button" aria-label="Slice ${i + 1} of ${n} ${isEaten ? "eaten" : "remaining"}">
+            <path d="${d}" fill="${isEaten ? "#fed7aa" : "#f1f5f9"}" stroke="${isEaten ? "#ea580c" : "#94a3b8"}" stroke-width="${isEaten ? "2" : "1.5"}" stroke-dasharray="${isEaten ? "none" : "3,3"}"/>
+            ${isEaten ? `<circle cx="${px}" cy="${py}" r="3.5" fill="#dc2626"/>` : ""}
+          </g>
+        `;
+      }).join("");
+
+      container.innerHTML = `
+        <div class="tool-content pizza-tool-container">
+          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem">
+            <span>Pizza Slices: <strong style="font-size:1.1rem; color:#ea580c">${eaten.length}/${n} Eaten</strong> (${n - eaten.length}/${n} Remaining)</span>
+            <span style="color:#64748b">| Slices:</span>
+            ${[2, 3, 4, 6, 8, 12].map((s) => `<button type="button" class="mini-tool-btn ${s === n ? "active" : ""}" data-pizza-set="${s}">${s}</button>`).join("")}
+            <button type="button" class="mini-tool-btn" data-pizza-eat-one>+1 Eat</button>
+            <button type="button" class="mini-tool-btn" data-pizza-reset>Reset</button>
+          </div>
+          <svg width="100%" height="120" viewBox="0 0 420 120" style="background:#ffffff; border-radius:8px; border:1px solid #cbd5e1" role="img" aria-label="Pizza Fraction Slicer showing ${eaten.length} of ${n} slices">
+            <circle cx="${cx}" cy="${cy}" r="${r + 5}" fill="#fde68a" stroke="#d97706" stroke-width="3"/>
+            ${slicesSvg}
+          </svg>
+        </div>
+      `;
+    } else if (this.activeTool === "splitter") {
+      const t = this.splitTarget;
+      const l = this.splitLeft;
+      const r = this.splitRight;
+      container.innerHTML = `
+        <div class="tool-content splitter-tool-container">
+          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem">
+            <span>Decompose: <strong>${t} = ${l} + ${r}</strong></span>
+            <button type="button" class="mini-tool-btn" data-split-preset="14">14</button>
+            <button type="button" class="mini-tool-btn" data-split-preset="25">25</button>
+            <button type="button" class="mini-tool-btn" data-split-preset="48">48</button>
+            <button type="button" class="mini-tool-btn" data-split-preset="85">85</button>
+            <button type="button" class="mini-tool-btn" data-split-mode="tens">Tens &amp; Ones</button>
+            <button type="button" class="mini-tool-btn" data-split-mode="halves">Half &amp; Half</button>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:0.75rem; padding:0.5rem">
+            <div class="splitter-bubble target" title="Target Number">${t}</div>
+            <div style="font-size:1.1rem; color:#64748b; font-weight:800">↓ ✂️ Decompose ↓</div>
+            <div style="display:flex; align-items:center; gap:1.2rem">
+              <div class="splitter-bubble left" title="Left Part">${l}</div>
+              <span style="font-size:1.4rem; font-weight:900; color:#334155">+</span>
+              <div class="splitter-bubble right" title="Right Part">${r}</div>
+              <span style="font-size:1.4rem; font-weight:900; color:#334155">=</span>
+              <span style="font-size:1.3rem; font-weight:900; color:#0284c7">${t}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.5rem; width:100%; max-width:320px">
+              <span style="font-size:0.8rem; font-weight:700">1</span>
+              <input type="range" class="splitter-slider" min="1" max="${t - 1}" value="${l}" style="flex:1" data-split-slider/>
+              <span style="font-size:0.8rem; font-weight:700">${t - 1}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (this.activeTool === "tape") {
+      const a = this.tapeA;
+      const b = this.tapeB;
+      const u = this.tapeUnit;
+      const labelA = this.tapeLabelA || "Part A";
+      const labelB = this.tapeLabelB || "Part B";
+      const totA = a * u;
+      const totB = b * u;
+      const grandTot = totA + totB;
+
+      const cellsA = Array.from({ length: a }, () => `<div class="tape-cell a">${u}</div>`).join("");
+      const cellsB = Array.from({ length: b }, () => `<div class="tape-cell b">${u}</div>`).join("");
+
+      container.innerHTML = `
+        <div class="tool-content tape-tool-container">
+          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem">
+            <span>Ratio <strong>${a} : ${b}</strong> · Total: <strong>${grandTot}</strong> (Unit Value: ${u})</span>
+            <button type="button" class="mini-tool-btn" data-tape-preset="3:2">3:2</button>
+            <button type="button" class="mini-tool-btn" data-tape-preset="4:1">4:1</button>
+            <button type="button" class="mini-tool-btn" data-tape-preset="5:3">5:3</button>
+            <span style="color:#64748b">| Unit:</span>
+            ${[1, 2, 5, 10].map((val) => `<button type="button" class="mini-tool-btn ${val === u ? "active" : ""}" data-tape-unit="${val}">${val}</button>`).join("")}
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.6rem; padding:0.5rem">
+            <div style="display:flex; align-items:center; gap:0.5rem">
+              <strong style="width:65px; font-size:0.85rem; color:#2563eb">${labelA}:</strong>
+              <div class="tape-bar-strip" style="flex:1">${cellsA}</div>
+              <strong style="width:45px; text-align:right; font-size:1.05rem; color:#1d4ed8">${totA}</strong>
+            </div>
+            <div style="display:flex; align-items:center; gap:0.5rem">
+              <strong style="width:65px; font-size:0.85rem; color:#059669">${labelB}:</strong>
+              <div class="tape-bar-strip" style="flex:1">${cellsB}</div>
+              <strong style="width:45px; text-align:right; font-size:1.05rem; color:#047857">${totB}</strong>
+            </div>
+            <div style="font-size:0.85rem; color:#475569; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:6px 10px; margin-top:4px">
+              💡 <em>If 1 block represents ${u}, then ${labelA} has ${a} blocks (${totA}) and ${labelB} has ${b} blocks (${totB}). Total = ${grandTot}.</em>
+            </div>
+          </div>
+        </div>
+      `;
     }
   },
   wire(container) {
@@ -4439,6 +4787,90 @@ const InteractiveDrillToolbox = {
         this.dnlStep = 2;
         this.render(document.querySelector("#drill-tool-viewport"));
         return;
+      }
+
+      // Pizza Fraction Slicer
+      const sliceEl = event.target.closest("[data-slice]");
+      if (sliceEl) {
+        const idx = Number(sliceEl.dataset.slice);
+        if (this.pizzaEaten.includes(idx)) {
+          this.pizzaEaten = this.pizzaEaten.filter((i) => i !== idx);
+        } else {
+          this.pizzaEaten.push(idx);
+        }
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      const pizzaSet = event.target.closest("[data-pizza-set]");
+      if (pizzaSet) {
+        this.pizzaSlices = Number(pizzaSet.dataset.pizzaSet);
+        this.pizzaEaten = [0];
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-pizza-eat-one]")) {
+        for (let i = 0; i < this.pizzaSlices; i++) {
+          if (!this.pizzaEaten.includes(i)) {
+            this.pizzaEaten.push(i);
+            break;
+          }
+        }
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-pizza-reset]")) {
+        this.pizzaEaten = [];
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+
+      // Number Splitter
+      const splitPreset = event.target.closest("[data-split-preset]");
+      if (splitPreset) {
+        this.splitTarget = Number(splitPreset.dataset.splitPreset);
+        this.splitLeft = Math.floor(this.splitTarget / 2);
+        this.splitRight = this.splitTarget - this.splitLeft;
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      const splitMode = event.target.closest("[data-split-mode]");
+      if (splitMode) {
+        const mode = splitMode.dataset.splitMode;
+        if (mode === "tens") {
+          const ones = this.splitTarget % 10;
+          this.splitLeft = this.splitTarget - ones;
+          this.splitRight = ones;
+        } else if (mode === "halves") {
+          this.splitLeft = Math.floor(this.splitTarget / 2);
+          this.splitRight = this.splitTarget - this.splitLeft;
+        }
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+
+      // Tape Diagram
+      const tapePreset = event.target.closest("[data-tape-preset]");
+      if (tapePreset) {
+        const parts = tapePreset.dataset.tapePreset.split(":").map(Number);
+        this.tapeA = parts[0];
+        this.tapeB = parts[1];
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      const tapeUnit = event.target.closest("[data-tape-unit]");
+      if (tapeUnit) {
+        this.tapeUnit = Number(tapeUnit.dataset.tapeUnit);
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+    });
+
+    container.addEventListener("input", (event) => {
+      const slider = event.target.closest("[data-split-slider]");
+      if (slider) {
+        this.splitLeft = Number(slider.value);
+        this.splitRight = this.splitTarget - this.splitLeft;
+        this.render(document.querySelector("#drill-tool-viewport"));
       }
     });
   }

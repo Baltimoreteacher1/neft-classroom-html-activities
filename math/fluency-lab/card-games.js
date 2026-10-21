@@ -8,7 +8,7 @@ const pairStars = (tries) => (tries <= 8 ? 3 : tries <= 12 ? 2 : 1);
 const huntStars = (wrong) => (wrong <= 2 ? 3 : wrong <= 5 ? 2 : 1);
 
 // ---------- Fact Match: flip a problem card, then the card that holds its answer ----------
-export function playMatch(host, { grade, stop, calm, finish }) {
+export function playMatch(host, { grade, stop, calm, finish, onFact }) {
   const pairs = calm ? 4 : 6;
   const items = gameProblems(grade, stop, pairs, { distinctAnswers: true });
   const cards = shuffle([
@@ -52,6 +52,7 @@ export function playMatch(host, { grade, stop, calm, finish }) {
     const [a, b] = open.map((index) => cards[index]);
     if (a.id === b.id && a.side !== b.side) {
       matched.add(a.id);
+      onFact?.(items[a.id], !missedIds.has(a.id));
       open = [];
       note = `${t("Match!")} ${cardText(items[a.id])} = ${answerText(items[a.id])}`;
       render(i);
@@ -68,7 +69,12 @@ export function playMatch(host, { grade, stop, calm, finish }) {
         );
       return;
     }
-    for (const card of [a, b]) if (card.side === "q") missedIds.add(card.id);
+    for (const card of [a, b]) {
+      if (card.side === "q") {
+        missedIds.add(card.id);
+        onFact?.(items[card.id], false);
+      }
+    }
     locked = true;
     note = t("Not a match. Look again.");
     render(i);
@@ -94,7 +100,7 @@ export function playMatch(host, { grade, stop, calm, finish }) {
 // ---------- Target Hunt: tap every problem whose answer is the target number ----------
 const HUNT_ROUNDS = 3;
 
-export function playHunt(host, { grade, stop, calm, finish }) {
+export function playHunt(host, { grade, stop, calm, finish, onFact }) {
   let round = 0;
   let board = null;
   let found = new Set();
@@ -133,6 +139,7 @@ export function playHunt(host, { grade, stop, calm, finish }) {
     if (found.has(i)) return;
     if (answerOf(item) === board.target) {
       found.add(i);
+      onFact?.(item, !tried.has(i));
       tried.clear();
       render(i);
       if (found.size === winners()) {
@@ -159,6 +166,7 @@ export function playHunt(host, { grade, stop, calm, finish }) {
     wrong += 1;
     tried.add(i);
     missed.set(item.question, item);
+    onFact?.(item, false);
     render(i);
   }
 
