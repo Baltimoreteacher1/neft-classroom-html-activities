@@ -11,7 +11,9 @@
 //      it listed, or is the test itself.
 // A test's outcome is a function of the files it reads, so a test none of whose
 // files changed cannot change outcome. Everything this cannot see is ALWAYS RUN:
-//   - a test that spawns a subprocess or worker (what the child reads is unseen)
+//   - a test that spawns a subprocess or worker (what the child reads is unseen),
+//     except a node child (traced by the same preload) and the few read-only
+//     commands tools/lib/test-trace-commands.mjs models from their argv
 //   - a test that reads dist/ or .git/ (derived from the whole tree)
 //   - a test that reads an untracked/ignored file (a build product whose inputs
 //     are other files)
@@ -33,6 +35,7 @@ export const GLOBAL_TRIGGERS = new Set([
   "tools/run-tests.mjs",
   "tools/lib/test-scope.mjs",
   "tools/lib/test-trace-preload.mjs",
+  "tools/lib/test-trace-commands.mjs",
   MANIFEST_PATH,
 ]);
 

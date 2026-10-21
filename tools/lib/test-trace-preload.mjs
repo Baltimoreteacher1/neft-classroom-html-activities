@@ -16,6 +16,7 @@ import { basename, isAbsolute, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import workerThreads from "node:worker_threads";
+import { commandReads } from "./test-trace-commands.mjs";
 
 const PRELOAD = import.meta.url;
 const OUT = process.env.QA_TRACE_OUT;
@@ -50,6 +51,13 @@ function install() {
   let wide = null;
   const writeOut = fs.writeFileSync;
   const readOut = fs.readFileSync;
+  // This checkout's git directory (`.git` is a file in a worktree), read with the
+  // unwrapped fs so it is not recorded as a read of .git.
+  let gitDir = resolve(ROOT, ".git");
+  try {
+    const m = /^gitdir: (.+)$/m.exec(readOut(gitDir, "utf8"));
+    if (m) gitDir = resolve(ROOT, m[1].trim());
+  } catch {} // a directory (EISDIR) or no repository: keep ROOT/.git
   const widen = (why) => {
     wide ??= why;
   };
@@ -149,7 +157,27 @@ function install() {
     }
     const forked = name === "fork";
     if (forked ? opts?.execPath && !isNodeBinary(opts.execPath) : !isNodeBinary(a[0])) {
-      return widen("spawns a non-node subprocess");
+      // A few read-only commands have reads that follow from their argv
+      // (tools/lib/test-trace-commands.mjs); anything else stays opaque.
+      if (forked) return widen("spawns a non-node subprocess");
+      const stdio = opts?.stdio;
+      const reads = commandReads(a[0], list, {
+        root: resolve(ROOT),
+        gitDir,
+        // spawn accepts a file: URL for cwd; String(url) would resolve to a bogus path INSIDE the repo
+        cwd: resolve(
+          process.cwd(),
+          opts?.cwd instanceof URL ? fileURLToPath(opts.cwd) : (opts?.cwd ?? "."),
+        ),
+        env: opts?.env ?? process.env,
+        sync: name.endsWith("Sync"),
+        input: opts?.input,
+        stdinIgnored: stdio === "ignore" || (Array.isArray(stdio) && stdio[0] === "ignore"),
+      });
+      if (reads.opaque) return widen(`spawns a non-node subprocess (${reads.opaque})`);
+      for (const f of reads.files) noteFile(f);
+      for (const d of reads.dirs) noteDir(d);
+      return;
     }
     // The test runner starts its own workers through bindings this cannot see.
     if ((list ?? []).some((x) => x === "--test" || x === "--watch")) {

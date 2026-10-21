@@ -214,6 +214,7 @@ try {
     "run-tests.mjs",
     "lib/test-scope.mjs",
     "lib/test-trace-preload.mjs",
+    "lib/test-trace-commands.mjs",
     "lib/skip-exit.mjs",
   ]) {
     copyFileSync(join(ROOT, "tools", f), join(dir, "tools", f));
@@ -234,6 +235,12 @@ try {
     'import { execFileSync } from "node:child_process";\n' +
       "execFileSync(process.execPath, [\"-e\", \"require('node:fs').readFileSync('data/b.json')\"]);\n",
   );
+  const spawner = (args) =>
+    `import { execFileSync } from "node:child_process";\nexecFileSync("git", ${JSON.stringify(args)});\n`;
+  // A modelled command: `git ls-files data` depends on data/ and nothing else.
+  writeFileSync(join(dir, "e.test.mjs"), spawner(["ls-files", "data"]));
+  // ...but with no pathspec it lists the whole tree, which is a dependency on everything.
+  writeFileSync(join(dir, "f.test.mjs"), spawner(["ls-files"]));
   execFileSync("git", ["init", "-q"], { cwd: dir, env: cleanEnv });
   execFileSync("git", ["add", "-A"], { cwd: dir, env: cleanEnv });
   const run = (args, env = {}) =>
@@ -254,7 +261,21 @@ try {
   const m = JSON.parse(readFileSync(join(dir, "data/test-reads.json"), "utf8")).tests;
   assert.ok(m["a.test.mjs"].files.includes("data/a.json"), "the tracer saw the fs read");
   assert.ok(!m["a.test.mjs"].files.includes("data/b.json"));
-  assert.equal(m["c.test.mjs"].wide, "spawns a non-node subprocess", "a non-node spawn is opaque");
+  assert.match(
+    m["c.test.mjs"].wide,
+    /^spawns a non-node subprocess/,
+    "an unmodelled spawn is opaque",
+  );
+  assert.deepEqual(
+    m["e.test.mjs"].dirs,
+    ["data/"],
+    "git ls-files <dir> is a dependency on that dir",
+  );
+  assert.equal(
+    m["f.test.mjs"].wide,
+    "lists the repo root",
+    "git ls-files with no pathspec is opaque",
+  );
   assert.equal(m["d.test.mjs"].wide, undefined, "a node child is traced, not opaque");
   assert.ok(m["d.test.mjs"].files.includes("data/b.json"), "the CHILD's reads belong to the test");
 
@@ -262,16 +283,21 @@ try {
   writeFileSync(scopeFile, "data/a.json\n");
   const scoped = run([], { QA_TEST_SCOPE_FILES: scopeFile, QA_TEST_VERIFY: "1" });
   assert.equal(scoped.status, 0, scoped.stdout + scoped.stderr);
-  assert.match(scoped.stdout, /test scope: 2 of 4 scripts/);
+  assert.match(scoped.stdout, /test scope: 4 of 6 scripts/);
   assert.match(scoped.stdout, /PASS {2}a\.test\.mjs/);
   assert.match(scoped.stdout, /PASS {2}c\.test\.mjs/);
+  assert.match(
+    scoped.stdout,
+    /PASS {2}e\.test\.mjs/,
+    "a changed file under a modelled pathspec selects it",
+  );
   assert.doesNotMatch(scoped.stdout, /[bd]\.test\.mjs/, "an unaffected test must not run");
 
   // A file only a node CHILD reads still selects the test that spawned it.
   writeFileSync(scopeFile, "data/b.json\n");
   const viaChild = run([], { QA_TEST_SCOPE_FILES: scopeFile, QA_TEST_VERIFY: "1" });
   assert.equal(viaChild.status, 0, viaChild.stdout + viaChild.stderr);
-  assert.match(viaChild.stdout, /test scope: 3 of 4 scripts/);
+  assert.match(viaChild.stdout, /test scope: 5 of 6 scripts/);
   assert.match(viaChild.stdout, /PASS {2}d\.test\.mjs/);
   assert.doesNotMatch(viaChild.stdout, /a\.test\.mjs/);
 

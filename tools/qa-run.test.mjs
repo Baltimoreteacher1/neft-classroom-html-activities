@@ -18,12 +18,15 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   COVERAGE,
+  ENHANCEMENTS_LESSONS,
   expand,
   GATE,
+  narrowStudioSweeps,
   needsOf,
   packageScriptsDelta,
   resolveSet,
   scopeFor,
+  studioLessonSubset,
   testEnv,
 } from "../scripts/qa-run.mjs";
 
@@ -283,6 +286,93 @@ delete process.env.QA_TEST_SCOPE_FILES;
 check(
   fullSet.has("build") && fullSet.has("test"),
   "the full gate must contain both `build` and `test` (test relies on build ran)",
+);
+
+/* --- 8. Studio browser sweeps narrow only for lesson-scoped change sets ----- */
+/* validate:studio-lab-browser costs ~240s for 144 pages. A change confined to
+ * one lesson's files may drive only that lesson's pages; ANY other path must
+ * keep the full sweep (default-deny, like COVERAGE). */
+const sub = (paths) => studioLessonSubset(paths);
+check(
+  sub(["data/practice-studio/2-1.json"])?.join() === "2-1",
+  "one lesson's studio data narrows to it",
+);
+check(
+  sub(["lessons/6-2/config.json", "math/practice-studio/6-2/index.html"])?.join() === "6-2",
+  "a lesson config edit plus its regenerated studio page narrows to that lesson",
+);
+check(
+  sub([
+    "math/practice-studio/3-3/challenge/index.html",
+    "lessons/6-2-part2/homework.html",
+  ])?.join() === "3-3,6-2",
+  "a Challenge page and a lesson variant folder map to their lessons",
+);
+check(
+  sub(["math/unit-4/4-2-practice-studio-challenging/index.html"])?.join() === "4-2",
+  "Unit 4 pages map to lessons",
+);
+check(sub(["data/practice-studio-u4/4-3.json", "docs/x.md"])?.join() === "4-3", "docs are inert");
+for (const shared of [
+  "assets/studio/runtime.js",
+  "assets/studio-v2.css",
+  "assets/u4-studio.js",
+  "data/practice-studio/worlds.json",
+  "math/practice-studio/index.html",
+  "math/practice-studio/boost/index.html",
+  "scripts/generate-practice-studios.mjs",
+  "scripts/lib/practice-studio-bench.mjs",
+  "tools/verify-studio-lab-browser.mjs",
+  "curriculum/learning-labs/shared/math.mjs",
+  "shared/save-resume/save-resume-engine.js",
+  "math/unit-4/some-other-page/index.html",
+  "lessons/README.json",
+]) {
+  check(
+    sub([shared]) === null,
+    `${shared} can affect every studio page and must keep the full sweep`,
+  );
+  check(
+    sub(["data/practice-studio/2-1.json", shared]) === null,
+    `a lesson edit beside ${shared} must still run the full sweep`,
+  );
+}
+check(sub([]) === null, "an empty change set never narrows");
+const studioChecks = [
+  "test",
+  "validate:studio-enhancements-browser",
+  "validate:studio-lab-browser",
+];
+const narrowA = narrowStudioSweeps(studioChecks, ["data/practice-studio/2-1.json"]);
+check(
+  narrowA.args["validate:studio-lab-browser"]?.join() === "2-1" &&
+    !narrowA.checks.includes("validate:studio-enhancements-browser") &&
+    narrowA.checks.includes("validate:studio-lab-browser") &&
+    narrowA.checks.includes("test"),
+  "a 2-1 edit drives 2-1's benches and drops the enhancements sweep, which opens no 2-1 page",
+);
+const narrow35 = narrowStudioSweeps(studioChecks, ["data/practice-studio/3-5.json"]);
+check(
+  narrow35.checks.includes("validate:studio-enhancements-browser"),
+  "a 3-5 edit keeps the enhancements sweep, which opens 3-5",
+);
+const full = narrowStudioSweeps(studioChecks, ["assets/studio/runtime.js"]);
+check(
+  full.checks.length === studioChecks.length && Object.keys(full.args).length === 0,
+  "a shared runtime edit keeps both sweeps in full",
+);
+/* ENHANCEMENTS_LESSONS must name every lesson the enhancements verifier opens. */
+const enhSrc = readFileSync(join(ROOT, "tools/verify-studio-enhancements-browser.mjs"), "utf8");
+for (const [, page] of enhSrc.matchAll(/\/math\/practice-studio\/([^/"`]+)\//g)) {
+  const id = studioLessonSubset([`math/practice-studio/${page}/index.html`]);
+  check(
+    id === null || ENHANCEMENTS_LESSONS.includes(id[0]),
+    `the enhancements verifier opens ${page}, which ENHANCEMENTS_LESSONS does not list`,
+  );
+}
+check(
+  /\/math\/unit-4\/\$\{d\}\//.test(enhSrc) && /percent-practice-studio/.test(enhSrc),
+  "the enhancements verifier's Unit 4 pages changed shape; re-check ENHANCEMENTS_LESSONS",
 );
 
 /* -------------------------------------------------------------------------- */

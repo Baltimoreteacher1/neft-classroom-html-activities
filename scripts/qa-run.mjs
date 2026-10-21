@@ -46,6 +46,7 @@ import { cpus, setPriority, tmpdir } from "node:os";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SKIP_EXIT } from "../tools/lib/skip-exit.mjs";
+import { UNIT4 } from "./generate-practice-studios.mjs";
 import { acquireGateLock } from "./lib/qa-lock.mjs";
 import { execGroup } from "./lib/run-group.mjs";
 
@@ -752,7 +753,7 @@ const COVERAGE = [
   [/^functions\//, ["test", "validate:data-contracts"]],
   // Unit tests, Playwright specs, and QA runner / hook plumbing
   [
-    /^(tools\/[^/]+\.test\.mjs$|tests\/[^/]+\.spec\.ts$|scripts\/(qa-run\.mjs|lib\/(qa-lock|run-group)\.mjs|codex\/codex-verify\.sh)$|tools\/(run-tests|validate-js-syntax)\.mjs|tools\/lib\/test-(scope|trace-preload)\.mjs|data\/test-reads\.json$|\.githooks\/)/,
+    /^(tools\/[^/]+\.test\.mjs$|tests\/[^/]+\.spec\.ts$|scripts\/(qa-run\.mjs|lib\/(qa-lock|run-group)\.mjs|codex\/codex-verify\.sh)$|tools\/(run-tests|validate-js-syntax)\.mjs|tools\/lib\/test-(scope|trace-preload|trace-commands)\.mjs|data\/test-reads\.json$|\.githooks\/)/,
     ["test", "validate:gate-coverage", "validate:js-syntax"],
   ],
   [/^docs\/|\.md$/, []],
@@ -937,6 +938,81 @@ function scopeFor(paths, ctx = {}) {
 }
 
 /* --------------------------------------------------------------------------
+ * STUDIO LESSON SUBSET. `validate:studio-lab-browser` drives every bench on
+ * 144 pages (~240s) and `validate:studio-enhancements-browser` a fixed sample
+ * (~14s). Both serve the SOURCE tree and open one lesson's pages per browser
+ * context, and nothing a studio page loads is another lesson's file (pages are
+ * generated per lesson; the only runtime fetch is the shared lab stylesheet).
+ * So when EVERY changed path belongs to one lesson, the pages of every other
+ * lesson are byte-identical and load identical assets: their result cannot
+ * change, and only the affected lessons need driving.
+ *
+ * Default-deny, like COVERAGE: a single changed path that is not lesson-scoped
+ * (a shared runtime file, a generator, worlds.json, the finder, the Boost page,
+ * the verifier itself, a lab module, anything unknown) returns null and the
+ * sweep runs in full.
+ * ------------------------------------------------------------------------ */
+const UNIT4_PAGE = new Map(
+  UNIT4.flatMap(([id, p, c]) => [
+    [p, id],
+    [c, id],
+  ]),
+);
+const STUDIO_LESSON_PATH = [
+  // the authored studio data for one lesson
+  /^data\/practice-studio\/(\d+-\d+)\.json$/,
+  /^data\/practice-studio-u4\/(4-\d+)\.json$/,
+  // the two generated studio pages of one lesson
+  /^math\/practice-studio\/(\d+-\d+)\/(?:challenge\/)?index\.html$/,
+  // a lesson folder: never loaded by a studio page; it feeds only its own
+  // lesson's studio (a variant folder such as 6-2-part2 maps to 6-2)
+  /^lessons\/(\d+-\d+)(?:-[\w-]+)?\/./,
+];
+/** Inert for the studio sweeps: no studio page or verifier can load these. */
+const STUDIO_INERT = /^docs\/|\.md$/;
+
+/** Lesson ids whose studio pages a change set can affect, or null when it can affect all of them. */
+function studioLessonSubset(paths) {
+  if (!paths.length) return null;
+  const ids = new Set();
+  for (const p of paths) {
+    if (STUDIO_INERT.test(p)) continue;
+    const u4 = /^math\/unit-4\/([^/]+)\/index\.html$/.exec(p);
+    const id = u4
+      ? UNIT4_PAGE.get(u4[1])
+      : STUDIO_LESSON_PATH.map((re) => re.exec(p)?.[1]).find(Boolean);
+    if (!id) return null;
+    ids.add(id);
+  }
+  return [...ids].sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+}
+
+/* The lessons tools/verify-studio-enhancements-browser.mjs opens (3-5, and the
+ * Unit 4 studios). Its other page, /math/practice-studio/boost/, is not
+ * lesson-scoped, so a change to it never yields a subset. Pinned against the
+ * verifier's own source by tools/qa-run.test.mjs. */
+const ENHANCEMENTS_LESSONS = ["3-5", ...UNIT4.map(([id]) => id)];
+
+/**
+ * Narrow the two studio browser sweeps for a lesson-scoped change set.
+ * Returns { checks, args } — `args` maps a check to the extra argv it runs with.
+ */
+function narrowStudioSweeps(checks, paths) {
+  const lessons = studioLessonSubset(paths);
+  if (!lessons) return { checks, args: {}, lessons: null };
+  const args = {};
+  if (checks.includes("validate:studio-lab-browser")) args["validate:studio-lab-browser"] = lessons;
+  const keepEnhancements = lessons.some((id) => ENHANCEMENTS_LESSONS.includes(id));
+  return {
+    checks: keepEnhancements
+      ? checks
+      : checks.filter((c) => c !== "validate:studio-enhancements-browser"),
+    args,
+    lessons,
+  };
+}
+
+/* --------------------------------------------------------------------------
  * Everything above is pure and exported for tools/qa-run.test.mjs, which pins
  * the safety property that matters: the FULL set must remain a superset of the
  * checks the old serial loop ran. A scheduler that quietly stops running a
@@ -984,13 +1060,16 @@ export {
   CARRIES_SCRIPT,
   COVERAGE,
   classifyResult,
+  ENHANCEMENTS_LESSONS,
   expand,
   GATE,
   NEEDS_DIST,
+  narrowStudioSweeps,
   needsOf,
   packageScriptsDelta,
   resolveSet,
   scopeFor,
+  studioLessonSubset,
   testEnv,
   UNIVERSAL,
 };
@@ -999,6 +1078,8 @@ export {
 let testScopeFile = null;
 /** What the gate could prove about a package.json / test-manifest edit; see baseScope(). */
 let testScope = {};
+/** Extra argv per check (the studio lesson subset); see narrowStudioSweeps(). */
+let checkArgs = {};
 
 /** Both refs a change list can be measured against (worktree vs HEAD, branch vs origin/main). */
 const BASE_REFS = ["HEAD", "origin/main"];
@@ -1076,6 +1157,14 @@ async function main() {
         checks.unshift("build");
       }
       label = `change-scoped (${paths.length} changed file(s))`;
+      const narrowed = narrowStudioSweeps(checks, paths);
+      if (narrowed.lessons) {
+        const dropped = checks.filter((c) => !narrowed.checks.includes(c));
+        checks = narrowed.checks;
+        checkArgs = narrowed.args;
+        if (Object.keys(checkArgs).length || dropped.length)
+          label += ` — studio sweeps scoped to lesson(s) ${narrowed.lessons.join(", ")}${dropped.length ? `; ${dropped.join(", ")} opens none of them` : ""}`;
+      }
     } else if (PUSH_MODE && paths.length === 0) {
       checks = resolveSet(UNIVERSAL);
       label = "change-scoped (0 changed files vs origin/main)";
@@ -1116,7 +1205,8 @@ async function main() {
   if (LIST_ONLY) {
     for (const c of checks) {
       const after = needsOf(c).filter((d) => checks.includes(d));
-      console.log(`  ${c}${after.length ? `  (after ${after.join(", ")})` : ""}`);
+      const extra = checkArgs[c] ? `  [lessons: ${checkArgs[c].join(" ")}]` : "";
+      console.log(`  ${c}${extra}${after.length ? `  (after ${after.join(", ")})` : ""}`);
     }
     process.exit(0);
   }
@@ -1230,7 +1320,7 @@ async function main() {
       const t0 = Date.now();
       execGroup(
         "npm",
-        ["run", name],
+        ["run", name, ...(checkArgs[name] ? ["--", ...checkArgs[name]] : [])],
         {
           cwd: ROOT,
           env: testEnv(name, checks, testScopeFile, testScope),

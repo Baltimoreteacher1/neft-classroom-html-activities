@@ -8,6 +8,10 @@
 // For each page it drives the bench the way a student does: a wrong test first (the miss must explain, never print the
 // answer), then the right setting, the written items, and the whole mission with its adaptive levels; then it reloads
 // to prove the work resumed, and checks the Spanish stack, a phone-width viewport, the console, and axe.
+//
+// scripts/qa-run.mjs passes the lesson ids when every changed path belongs to those lessons (studioLessonSubset).
+// A requested lesson with no bench is not driven by the full sweep either, so a request where none has a bench SKIPS
+// (exit 3, "verified nothing") rather than passing.
 import assert from "node:assert/strict";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { createServer } from "node:http";
@@ -17,6 +21,7 @@ import { chromium } from "playwright";
 import { UNIT4 } from "../scripts/generate-practice-studios.mjs";
 import { goalType, settingsOf, targetSolutions } from "../scripts/lib/practice-studio-bench.mjs";
 import { listLessonDirs, REPO_ROOT } from "./lib/curriculum-source.mjs";
+import { skipExit } from "./lib/skip-exit.mjs";
 
 const types = {
   ".html": "text/html",
@@ -73,7 +78,15 @@ let ids = [
 ]
   .sort((a, b) => a.localeCompare(b, "en", { numeric: true }))
   .filter((id) => benchOf(id));
-if (wanted.length) ids = ids.filter((id) => wanted.includes(id));
+if (wanted.length) {
+  ids = ids.filter((id) => wanted.includes(id));
+  if (!ids.length) {
+    server.close();
+    process.exit(
+      skipExit(`none of the requested lessons (${wanted.join(", ")}) carries a lab bench`),
+    );
+  }
+}
 if (quick) {
   const seen = new Set();
   ids = ids.filter((id) => !seen.has(id[0]) && seen.add(id[0]));
