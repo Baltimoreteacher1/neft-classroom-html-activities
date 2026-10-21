@@ -2213,8 +2213,8 @@ function renderStudentFriendlyExplanation(item, copy) {
   } else if (intMatch && (q.includes("−") || q.includes("-") || q.includes("negative") || q.includes("integer"))) {
     goal = `Combine positive and negative integer counters. Zero pairs cancel out!`;
     tip = `Subtracting a negative is the exact same as adding a positive!`;
-    suggestedTool = "numberline";
-    toolLabel = "Number Line";
+    suggestedTool = "integers";
+    toolLabel = "Integer Chips Mat";
     visualSvg = `
       <div class="student-expl-visual">
         <svg width="380" height="80" viewBox="0 0 380 80" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Integer Zero Pair Chips">
@@ -2233,8 +2233,8 @@ function renderStudentFriendlyExplanation(item, copy) {
   } else if (eqMatch) {
     goal = `Keep the scale balanced! Whatever you do to one side, you must do to the other side.`;
     tip = `Use inverse operations: undo addition with subtraction, and undo multiplication with division!`;
-    suggestedTool = "numberline";
-    toolLabel = "Number Line";
+    suggestedTool = "balance";
+    toolLabel = "Interactive Pan Balance";
     visualSvg = `
       <div class="student-expl-visual">
         <svg width="380" height="85" viewBox="0 0 380 85" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Algebra Balance Scale Model">
@@ -2255,14 +2255,14 @@ function renderStudentFriendlyExplanation(item, copy) {
     tip = `For LCM, take the highest power of each prime. For GCF, multiply only the shared primes!`;
     suggestedTool = "multigrid";
     toolLabel = "10×10 Grid";
-  } else if (isPercent) {
-    goal = `Percent means "out of 100". Convert to a fraction or decimal to find the amount.`;
-    tip = `Friendly landmarks: 10% is dividing by 10, 50% is dividing by 2!`;
-    suggestedTool = "fractions";
-    toolLabel = "Fraction Wall";
+  } else if (isPercent || /ratio|rate|per hour|per mile|per minute|speed|scale/i.test(q)) {
+    goal = `Percent and ratios compare parts to wholes or scale at constant rates!`;
+    tip = `Use a double number line to scale both quantities up or down together.`;
+    suggestedTool = "doublenumberline";
+    toolLabel = "Double Number Line";
     visualSvg = `
       <div class="student-expl-visual">
-        <svg width="380" height="75" viewBox="0 0 380 75" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Percent Bar Model">
+        <svg width="380" height="75" viewBox="0 0 380 75" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Percent and Ratio Bar Model">
           <rect x="25" y="20" width="330" height="26" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
           <rect x="25" y="20" width="165" height="26" rx="6" fill="#3b82f6"/>
           <text x="25" y="62" text-anchor="middle" font-size="10" font-weight="800" fill="#64748b">0%</text>
@@ -3524,6 +3524,16 @@ const InteractiveDrillToolbox = {
   numberLinePos: 5,
   multRow: 6,
   multCol: 7,
+  balanceLeftX: 1,
+  balanceLeftConst: 3,
+  balanceRightVal: 9,
+  integersPos: 5,
+  integersNeg: 3,
+  dnlStep: 2,
+  dnlMultiplierA: 35,
+  dnlMultiplierB: 1,
+  dnlLabelA: "Miles",
+  dnlLabelB: "Hours",
 
   render(container) {
     if (!container) return;
@@ -3613,6 +3623,181 @@ const InteractiveDrillToolbox = {
           <div class="fraction-wall-container">${rows}</div>
         </div>
       `;
+    } else if (this.activeTool === "balance") {
+      const lx = this.balanceLeftX;
+      const lc = this.balanceLeftConst;
+      const rv = this.balanceRightVal;
+      const isSolved = lx === 1 && lc === 0;
+      const xBoxes = Array.from({ length: lx }, (_, i) =>
+        `<g transform="translate(${40 + i * 22}, 0)">
+           <rect x="0" y="0" width="18" height="18" rx="3" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5"/>
+           <text x="9" y="13" text-anchor="middle" font-size="11" font-weight="900" fill="#ffffff">x</text>
+         </g>`
+      ).join("");
+      const leftCubes = Array.from({ length: lc }, (_, i) =>
+        `<g transform="translate(${40 + (lx * 22) + i * 16}, 2)">
+           <rect x="0" y="0" width="14" height="14" rx="2" fill="#eab308" stroke="#ca8a04" stroke-width="1.5"/>
+           <text x="7" y="11" text-anchor="middle" font-size="9" font-weight="800" fill="#713f12">1</text>
+         </g>`
+      ).join("");
+      const rightCubes = Array.from({ length: rv }, (_, i) => {
+        const col = i % 8;
+        const row = Math.floor(i / 8);
+        return `<g transform="translate(${250 + col * 16}, ${row * 16})">
+           <rect x="0" y="0" width="14" height="14" rx="2" fill="#22c55e" stroke="#16a34a" stroke-width="1.5"/>
+           <text x="7" y="11" text-anchor="middle" font-size="9" font-weight="800" fill="#14532d">1</text>
+         </g>`;
+      }).join("");
+
+      container.innerHTML = `
+        <div class="tool-content balance-container">
+          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem">
+            <span class="balance-status-badge ${isSolved ? "balanced" : "unbalanced"}">
+              ${isSolved ? `🎉 Solved: <strong>x = ${rv}</strong>` : `Equation: <strong>${lx > 1 ? lx : ""}x + ${lc} = ${rv}</strong>`}
+            </span>
+            <button type="button" class="mini-tool-btn" data-bal-add-x="1">+1 x</button>
+            <button type="button" class="mini-tool-btn" data-bal-sub-x="1" ${lx <= 1 ? "disabled" : ""}>−1 x</button>
+            <button type="button" class="mini-tool-btn" data-bal-add-lc="1">+1 Left</button>
+            <button type="button" class="mini-tool-btn" data-bal-sub-lc="1" ${lc <= 0 ? "disabled" : ""}>−1 Left</button>
+            <button type="button" class="mini-tool-btn" data-bal-sub-both ${lc > 0 && rv >= lc ? "" : "disabled"}>Subtract ${lc} From Both Sides</button>
+            ${lx > 1 && lc === 0 && rv % lx === 0 ? `<button type="button" class="mini-tool-btn" data-bal-div-both="1" style="background:#dcfce7; color:#15803d; border-color:#86efac; font-weight:700">Divide Both Sides by ${lx}</button>` : ""}
+            <button type="button" class="mini-tool-btn" data-bal-reset>Reset</button>
+          </div>
+          <svg width="100%" height="110" viewBox="0 0 420 110" style="background:#f8fafc; border-radius:8px; border:1px solid #cbd5e1" role="img" aria-label="Visual Pan Balance showing equation ${lx}x + ${lc} = ${rv}">
+            <!-- Base and fulcrum -->
+            <polygon points="210,50 198,85 222,85" fill="#475569"/>
+            <rect x="180" y="85" width="60" height="6" rx="2" fill="#334155"/>
+            <!-- Beam -->
+            <line x1="30" y1="50" x2="390" y2="50" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="210" cy="50" r="5" fill="#0f172a"/>
+            <!-- Left Pan strings and plate -->
+            <line x1="35" y1="50" x2="70" y2="78" stroke="#64748b" stroke-width="1.5"/>
+            <line x1="165" y1="50" x2="130" y2="78" stroke="#64748b" stroke-width="1.5"/>
+            <rect x="35" y="78" width="130" height="6" rx="3" fill="#0284c7"/>
+            <!-- Right Pan strings and plate -->
+            <line x1="255" y1="50" x2="290" y2="78" stroke="#64748b" stroke-width="1.5"/>
+            <line x1="385" y1="50" x2="350" y2="78" stroke="#64748b" stroke-width="1.5"/>
+            <rect x="255" y="78" width="130" height="6" rx="3" fill="#0284c7"/>
+            <!-- Items on pans -->
+            <g transform="translate(0, 58)">${xBoxes}${leftCubes}</g>
+            <g transform="translate(0, 50)">${rightCubes}</g>
+            <!-- Labels -->
+            <text x="100" y="102" text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">Left: ${lx > 0 ? (lx > 1 ? lx : "") + "x" : ""}${lc > 0 ? (lx > 0 ? " + " : "") + lc : ""}</text>
+            <text x="320" y="102" text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">Right: ${rv}</text>
+          </svg>
+        </div>
+      `;
+    } else if (this.activeTool === "integers") {
+      const pos = this.integersPos;
+      const neg = this.integersNeg;
+      const net = pos - neg;
+      const zeroPairs = Math.min(pos, neg);
+      const remainingPos = pos - zeroPairs;
+      const remainingNeg = neg - zeroPairs;
+
+      const pairsHtml = Array.from({ length: zeroPairs }, () =>
+        `<div class="chip-zero-pair" title="Zero Pair: (+1) + (-1) = 0">
+           <div class="chip-circle pos">+</div>
+           <div class="chip-circle neg">−</div>
+           <span style="font-size:0.75rem; font-weight:800; color:#15803d; margin-left:2px">= 0</span>
+         </div>`
+      ).join("");
+
+      const posChipsHtml = Array.from({ length: remainingPos }, () =>
+        `<div class="chip-circle pos" title="Positive 1">+</div>`
+      ).join("");
+
+      const negChipsHtml = Array.from({ length: remainingNeg }, () =>
+        `<div class="chip-circle neg" title="Negative 1">−</div>`
+      ).join("");
+
+      container.innerHTML = `
+        <div class="tool-content chips-mat-container">
+          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem">
+            <span>Net Value: <strong style="font-size:1.1rem; color:${net > 0 ? "#2563eb" : net < 0 ? "#dc2626" : "#15803d"}">${net > 0 ? "+" + net : net}</strong></span>
+            <span style="color:#64748b; font-size:0.85rem">(${pos} positive, ${neg} negative · ${zeroPairs} zero pair${zeroPairs === 1 ? "" : "s"})</span>
+            <button type="button" class="mini-tool-btn" data-int-add-pos="+1">+1 (+)</button>
+            <button type="button" class="mini-tool-btn" data-int-sub-pos="1" ${pos <= 0 ? "disabled" : ""}>−1 (+)</button>
+            <button type="button" class="mini-tool-btn" data-int-add-neg="+1">+1 (−)</button>
+            <button type="button" class="mini-tool-btn" data-int-sub-neg="1" ${neg <= 0 ? "disabled" : ""}>−1 (−)</button>
+            <button type="button" class="mini-tool-btn" data-int-add-pair>+ Zero Pair</button>
+            <button type="button" class="mini-tool-btn" data-int-cancel-pairs ${zeroPairs <= 0 ? "disabled" : ""}>Cancel Zero Pairs</button>
+            <button type="button" class="mini-tool-btn" data-int-clear>Clear</button>
+          </div>
+          <div class="chips-board" aria-label="Integer chip workspace">
+            ${pos === 0 && neg === 0 ? `<span style="color:#94a3b8; font-size:0.9rem; margin:auto">Click buttons above to add positive (+) or negative (−) chips</span>` : ""}
+            ${pairsHtml}
+            ${posChipsHtml}
+            ${negChipsHtml}
+          </div>
+        </div>
+      `;
+    } else if (this.activeTool === "doublenumberline") {
+      const step = this.dnlStep;
+      const unitA = this.dnlMultiplierA;
+      const unitB = this.dnlMultiplierB;
+      const labelA = this.dnlLabelA || "Miles";
+      const labelB = this.dnlLabelB || "Hours";
+
+      const maxSteps = 5;
+      const ticksA = [];
+      const ticksB = [];
+      const connectors = [];
+
+      for (let i = 0; i <= maxSteps; i++) {
+        const x = 35 + i * 70;
+        const valA = i * unitA;
+        const valB = i * unitB;
+        const isSelected = i === step;
+
+        ticksA.push(`
+          <g class="dnl-tick" data-dnl-step="${i}" style="cursor:pointer">
+            <line x1="${x}" y1="28" x2="${x}" y2="38" stroke="${isSelected ? "#2563eb" : "#475569"}" stroke-width="${isSelected ? "3" : "1.5"}"/>
+            <text x="${x}" y="22" text-anchor="middle" font-size="${isSelected ? "12" : "10"}" font-weight="${isSelected ? "900" : "600"}" fill="${isSelected ? "#1d4ed8" : "#334155"}">${valA}</text>
+          </g>
+        `);
+
+        ticksB.push(`
+          <g class="dnl-tick" data-dnl-step="${i}" style="cursor:pointer">
+            <line x1="${x}" y1="72" x2="${x}" y2="82" stroke="${isSelected ? "#2563eb" : "#475569"}" stroke-width="${isSelected ? "3" : "1.5"}"/>
+            <text x="${x}" y="96" text-anchor="middle" font-size="${isSelected ? "12" : "10"}" font-weight="${isSelected ? "900" : "600"}" fill="${isSelected ? "#1d4ed8" : "#334155"}">${valB}</text>
+          </g>
+        `);
+
+        if (i > 0) {
+          connectors.push(`
+            <line x1="${x}" y1="38" x2="${x}" y2="72" stroke="${isSelected ? "#2563eb" : "#cbd5e1"}" stroke-width="${isSelected ? "2" : "1"}" stroke-dasharray="${isSelected ? "none" : "3,3"}"/>
+          `);
+        }
+      }
+
+      container.innerHTML = `
+        <div class="tool-content dnl-tool-container">
+          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem">
+            <span>Rate: <strong>${step * unitA} ${labelA}</strong> in <strong>${step * unitB} ${labelB}</strong> (Unit rate: ${unitA} ${labelA} per 1 ${labelB})</span>
+            <button type="button" class="mini-tool-btn" data-dnl-preset="speed">🚗 35 mph</button>
+            <button type="button" class="mini-tool-btn" data-dnl-preset="cost">💵 $4.50 / Item</button>
+            <button type="button" class="mini-tool-btn" data-dnl-preset="percent">📊 25% of 100</button>
+            <button type="button" class="mini-tool-btn" data-dnl-step-inc="-1" ${step <= 0 ? "disabled" : ""}>Step −1</button>
+            <button type="button" class="mini-tool-btn" data-dnl-step-inc="1" ${step >= maxSteps ? "disabled" : ""}>Step +1</button>
+          </div>
+          <svg width="100%" height="110" viewBox="0 0 420 110" style="background:#ffffff; border-radius:8px; border:1px solid #cbd5e1" role="img" aria-label="Double Number Line for ${labelA} and ${labelB}">
+            <!-- Line A -->
+            <line x1="20" y1="33" x2="395" y2="33" stroke="#1e293b" stroke-width="2"/>
+            <polygon points="400,33 392,29 392,37" fill="#1e293b"/>
+            <text x="25" y="16" font-size="10" font-weight="800" fill="#2563eb">${labelA}</text>
+            <!-- Line B -->
+            <line x1="20" y1="77" x2="395" y2="77" stroke="#1e293b" stroke-width="2"/>
+            <polygon points="400,77 392,73 392,81" fill="#1e293b"/>
+            <text x="25" y="105" font-size="10" font-weight="800" fill="#059669">${labelB}</text>
+            <!-- Connectors -->
+            ${connectors.join("")}
+            <!-- Ticks -->
+            ${ticksA.join("")}
+            ${ticksB.join("")}
+          </svg>
+        </div>
+      `;
     }
   },
   wire(container) {
@@ -3668,6 +3853,126 @@ const InteractiveDrillToolbox = {
       if (mgCell) {
         this.multRow = Number(mgCell.dataset.row);
         this.multCol = Number(mgCell.dataset.col);
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+
+      // Balance Scale controls
+      if (event.target.closest("[data-bal-add-x]")) {
+        this.balanceLeftX = Math.min(5, this.balanceLeftX + 1);
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-bal-sub-x]")) {
+        this.balanceLeftX = Math.max(1, this.balanceLeftX - 1);
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-bal-add-lc]")) {
+        this.balanceLeftConst = Math.min(20, this.balanceLeftConst + 1);
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-bal-sub-lc]")) {
+        this.balanceLeftConst = Math.max(0, this.balanceLeftConst - 1);
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-bal-sub-both]")) {
+        const sub = this.balanceLeftConst;
+        this.balanceRightVal = Math.max(0, this.balanceRightVal - sub);
+        this.balanceLeftConst = 0;
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-bal-div-both]")) {
+        this.balanceRightVal = Math.floor(this.balanceRightVal / this.balanceLeftX);
+        this.balanceLeftX = 1;
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-bal-reset]")) {
+        this.balanceLeftX = 1;
+        this.balanceLeftConst = 3;
+        this.balanceRightVal = 9;
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+
+      // Integer Chips Mat controls
+      if (event.target.closest("[data-int-add-pos]")) {
+        this.integersPos = Math.min(15, this.integersPos + 1);
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-int-sub-pos]")) {
+        this.integersPos = Math.max(0, this.integersPos - 1);
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-int-add-neg]")) {
+        this.integersNeg = Math.min(15, this.integersNeg + 1);
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-int-sub-neg]")) {
+        this.integersNeg = Math.max(0, this.integersNeg - 1);
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-int-add-pair]")) {
+        this.integersPos = Math.min(15, this.integersPos + 1);
+        this.integersNeg = Math.min(15, this.integersNeg + 1);
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-int-cancel-pairs]")) {
+        const pairs = Math.min(this.integersPos, this.integersNeg);
+        this.integersPos -= pairs;
+        this.integersNeg -= pairs;
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("[data-int-clear]")) {
+        this.integersPos = 0;
+        this.integersNeg = 0;
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+
+      // Double Number Line controls
+      const dnlTick = event.target.closest("[data-dnl-step]");
+      if (dnlTick) {
+        this.dnlStep = Number(dnlTick.dataset.dnlStep);
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      const dnlInc = event.target.closest("[data-dnl-step-inc]");
+      if (dnlInc) {
+        this.dnlStep = Math.max(0, Math.min(5, this.dnlStep + Number(dnlInc.dataset.dnlStepInc)));
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      const dnlPreset = event.target.closest("[data-dnl-preset]");
+      if (dnlPreset) {
+        const preset = dnlPreset.dataset.dnlPreset;
+        if (preset === "speed") {
+          this.dnlMultiplierA = 35;
+          this.dnlMultiplierB = 1;
+          this.dnlLabelA = "Miles";
+          this.dnlLabelB = "Hours";
+        } else if (preset === "cost") {
+          this.dnlMultiplierA = 4.5;
+          this.dnlMultiplierB = 1;
+          this.dnlLabelA = "Dollars ($)";
+          this.dnlLabelB = "Items";
+        } else if (preset === "percent") {
+          this.dnlMultiplierA = 25;
+          this.dnlMultiplierB = 25;
+          this.dnlLabelA = "Part";
+          this.dnlLabelB = "Percent (%)";
+        }
+        this.dnlStep = 2;
         this.render(document.querySelector("#drill-tool-viewport"));
         return;
       }
