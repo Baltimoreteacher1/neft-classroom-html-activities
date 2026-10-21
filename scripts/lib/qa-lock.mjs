@@ -18,9 +18,14 @@
  *     win. Only the owner removes the lock.
  *   - A gate nested inside a gate (QA_GATE_LOCK_HELD=1, inherited) never waits on its parent.
  *   - QA_NO_LOCK=1 turns it off.
+ *   - A higher `priority` goes first: a pre-push gate (the one in front of a
+ *     production deploy) was queueing behind nine ordinary commit gates for 25
+ *     minutes. Waiters record themselves beside the lock; a lower-priority
+ *     waiter does not claim it while a live higher-priority waiter exists.
+ *     Equal priorities are unordered, as before.
  * ========================================================================== */
 
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -30,6 +35,7 @@ export const TEST_LANE_DIR = join(tmpdir(), "eduwonderlab-test-lane.lock");
 /** No real gate runs this long (every check is killed at 15 min), so an older lock is dead. */
 export const STALE_MS = 90 * 60 * 1000;
 
+let waiterSeq = 0;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function pidAlive(pid) {
@@ -54,6 +60,31 @@ export function isStale(owner, now = Date.now()) {
   if (!owner) return false; // mkdir won but owner.json is not written yet: give it a moment
   if (now - owner.startedAt > STALE_MS) return true;
   return !pidAlive(owner.pid);
+}
+
+/** True when a live waiter with a higher priority than `priority` is queued. */
+function outranked(queueDir, priority, selfFile) {
+  let names = [];
+  try {
+    names = readdirSync(queueDir);
+  } catch {
+    return false;
+  }
+  for (const name of names) {
+    if (name === selfFile) continue;
+    let w;
+    try {
+      w = JSON.parse(readFileSync(join(queueDir, name), "utf8"));
+    } catch {
+      continue;
+    }
+    if (!pidAlive(w.pid)) {
+      rmSync(join(queueDir, name), { force: true });
+    } else if (w.priority > priority) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function tryClaim(lockDir, label) {
@@ -82,19 +113,34 @@ export async function acquireGateLock({
   waitMs = Number(process.env.QA_LOCK_WAIT_MS) || 30 * 60 * 1000,
   pollMs = 1500,
   graceMs = 5000,
+  priority = 0,
 } = {}) {
   if (process.env.QA_NO_LOCK === "1") return { held: false, release() {} };
   // A gate started BY a running gate (a check that shells out to qa-run) must not
   // queue behind its own parent: that is a deadlock until the wait times out.
   if (process.env.QA_GATE_LOCK_HELD === "1") return { held: false, release() {} };
 
+  const queueDir = `${lockDir}.queue`;
+  const selfFile = `${process.pid}-${(waiterSeq += 1)}.json`;
+  const leaveQueue = () => rmSync(join(queueDir, selfFile), { force: true });
+  mkdirSync(queueDir, { recursive: true });
+  writeFileSync(join(queueDir, selfFile), JSON.stringify({ pid: process.pid, priority }));
+
   const deadline = Date.now() + waitMs;
   let announced = 0;
   let graceUntil = 0;
   for (;;) {
-    if (tryClaim(lockDir, label)) break;
+    const rank = outranked(queueDir, priority, selfFile);
+    if (!rank && tryClaim(lockDir, label)) break;
     const owner = readOwner(lockDir);
-    if (!owner) {
+    if (!owner && rank) {
+      // Lock is free but a higher-priority waiter goes first. Bounded like any wait.
+      if (Date.now() >= deadline) {
+        log("qa-lock: outranked past the wait limit — running anyway, unserialised");
+        leaveQueue();
+        return { held: false, release() {} };
+      }
+    } else if (!owner) {
       // Between the winner's mkdir and its owner.json write. If it never
       // appears the winner died in that gap; do not wait on it forever.
       graceUntil ||= Date.now() + graceMs;
@@ -108,6 +154,7 @@ export async function acquireGateLock({
         log(
           `qa-lock: still held by pid ${owner.pid} (${owner.label}) after ${Math.round(waitMs / 1000)}s — running anyway, unserialised`,
         );
+        leaveQueue();
         return { held: false, release() {} };
       }
       if (Date.now() - announced > 30_000) {
@@ -121,6 +168,7 @@ export async function acquireGateLock({
     await sleep(pollMs);
   }
 
+  leaveQueue();
   process.env.QA_GATE_LOCK_HELD = "1"; // inherited by every check this gate spawns
   let released = false;
   const release = () => {

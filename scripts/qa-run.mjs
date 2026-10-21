@@ -1146,7 +1146,12 @@ async function main() {
   // A wide run of plain validators (7 workers, ~100 processes) overloads the Mac
   // just as a browser lane does, so it queues too; only small scoped runs stay instant.
   if (checks.some((c) => EXCLUSIVE.has(c)) || checks.length >= WIDE_RUN_CHECKS) {
-    await acquireGateLock({ label: `${basename(ROOT)} · ${label}`, log: console.log });
+    // A --push gate sits in front of a production deploy, so it goes first in the queue.
+    await acquireGateLock({
+      label: `${basename(ROOT)} · ${label}`,
+      log: console.log,
+      priority: PUSH_MODE ? 1 : 0,
+    });
   }
 
   /* --- Run ------------------------------------------------------------------ */

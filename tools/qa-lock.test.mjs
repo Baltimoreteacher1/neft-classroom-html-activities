@@ -126,6 +126,36 @@ try {
     delete process.env.QA_GATE_LOCK_HELD;
   }
 
+  {
+    // A higher-priority waiter goes first even when it arrived later, and a
+    // lower one does not claim the lock while it is queued.
+    const dir = fresh();
+    const holder = await acquireGateLock({ label: "holder", lockDir: dir, log, ...quick });
+    asOtherProcess();
+    const slow = { pollMs: 20, waitMs: 3000, graceMs: 100 };
+    const order = [];
+    const low = acquireGateLock({ label: "low", lockDir: dir, log, priority: 0, ...slow });
+    await new Promise((r) => setTimeout(r, 60));
+    const high = acquireGateLock({ label: "high", lockDir: dir, log, priority: 1, ...slow });
+    await new Promise((r) => setTimeout(r, 60));
+    holder.release();
+    const highLock = await high;
+    order.push("high");
+    assert.equal(highLock.held, true, "the higher priority waiter claims the freed lock");
+    const lowPending = low.then((l) => {
+      order.push("low");
+      return l;
+    });
+    await new Promise((r) => setTimeout(r, 150));
+    assert.deepEqual(order, ["high"], "the lower priority waiter keeps waiting behind it");
+    asOtherProcess();
+    highLock.release();
+    const lowLock = await lowPending;
+    assert.equal(lowLock.held, true, "and takes the lock once the higher one is done");
+    lowLock.release();
+    delete process.env.QA_GATE_LOCK_HELD;
+  }
+
   // The test lane (tools/run-tests.mjs) must be a different lock from the gate lock:
   // sharing one directory would make a test phase wait on the gate that spawned it.
   assert.notEqual(TEST_LANE_DIR, LOCK_DIR);
