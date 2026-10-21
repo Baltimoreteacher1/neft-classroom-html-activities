@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Help Your Student — Lesson 5-10: Volume of Rectangular Prisms</title>
+<title>Family Math Studio — Lesson 5-10: Volume of Rectangular Prisms</title>
 <link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/homework/homework-base-0d2a228add.css">
 <style>
@@ -114,26 +114,6 @@ header.homework-header,
   user-select: none;
 }
 
-/* 3 Stars Milestone Bar on Quick Check */
-.stars-to-win-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, var(--teal-light) 0%, #ffffff 100%);
-  border: 1.5px solid var(--teal);
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  margin-bottom: 20px;
-}
-.stars-to-win-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 14.5px;
-  color: var(--navy);
-}
 .stars-milestone-chips {
   display: flex;
   flex-wrap: wrap;
@@ -152,16 +132,7 @@ header.homework-header,
   flex: 0 0 auto;
   white-space: nowrap;
 }
-/* On a phone the goal sentence and the three milestone chips do not fit on one
-   line, so they stack instead of fighting for the same 400px. */
-@media (max-width: 620px) {
-  .stars-to-win-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .stars-milestone-chips { width: 100%; }
-}
+.stars-milestone-chips { width: 100%; }
 
 /* Rotated Huddle Activity Card */
 .huddle-hook-banner {
@@ -333,7 +304,7 @@ header.homework-header,
   margin-bottom: 3px;
 }
 </style>
-<link rel="stylesheet" href="/assets/homework/homework-layer-205c995f26.css">
+<link rel="stylesheet" href="/assets/homework/homework-layer-992d934c32.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -347,16 +318,17 @@ header.homework-header,
   <link rel="apple-touch-icon" href="/assets/favicon.svg">
   <meta name="theme-color" content="#12355b">
   <link rel="canonical" href="https://eduwonderlab.com/lessons/5-10/homework.html">
-  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 5-10: Volume of Rectangular Prisms.">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 5-10: Volume of Rectangular Prisms.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Neft Teacher">
-  <meta property="og:title" content="Help Your Student — Lesson 5-10: Volume of Rectangular Prisms">
-  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 5-10: Volume of Rectangular Prisms.">
+  <meta property="og:title" content="Family Math Studio — Lesson 5-10: Volume of Rectangular Prisms">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 5-10: Volume of Rectangular Prisms.">
   <meta property="og:url" content="https://eduwonderlab.com/lessons/5-10/homework.html">
   <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
   <!-- enthead-injected:end -->
 </head>
 <body>
+<a class="hw-skip" href="#hw_tab_panels" onclick="startHomework(); return false;"><span class="lang-en">Skip to tonight's math</span><span class="lang-es" lang="es">Ir a la matemática de hoy</span></a>
 
 <script>
 /* Language mode, BEFORE first paint. restoreParentSignoff sets the same class
@@ -365,10 +337,29 @@ header.homework-header,
    whole document. Same rule as the boot script below it: fail toward showing
    something readable, which here is English. */
 (function () {
-  var mode = 'en';
+  /* Blocked site data makes every localStorage access throw, which would stop the
+     page's own startup. Fall back to storage that lasts for this visit. */
   try {
+    window.localStorage.getItem('hw_probe');
+  } catch (blocked) {
+    var memory = {};
+    var stand = {
+      getItem: function (k) { return Object.prototype.hasOwnProperty.call(memory, k) ? memory[k] : null; },
+      setItem: function (k, v) { memory[k] = String(v); },
+      removeItem: function (k) { delete memory[k]; },
+      clear: function () { memory = {}; },
+      key: function (i) { return Object.keys(memory)[i] || null; },
+      get length() { return Object.keys(memory).length; }
+    };
+    try { Object.defineProperty(window, 'localStorage', { configurable: true, get: function () { return stand; } }); } catch (unsupported) {}
+  }
+  var mode = 'bilingual';
+  try {
+    var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
+    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
+      mode = requested;
+    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)
@@ -423,6 +414,23 @@ header.homework-header,
     <header class="hw-hero" aria-label="Family Math Night welcome">
       <div class="hw-hero-glow" aria-hidden="true"></div>
       <div class="hw-hero-body">
+        <div class="hw-hero-controls">
+          <div class="lang-selector-card">
+            <span class="lang-selector-title">Language / Idioma</span>
+            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
+              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
+                🇺🇸🇪🇸 <span class="lang-btn-long">Bilingual / Bilingüe</span><span class="lang-btn-short">EN + ES</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
+                🇺🇸 <span>English</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
+                🇪🇸 <span>Español</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <p class="hw-hero-kicker">
           <span class="hw-hero-kicker-icon" aria-hidden="true">📘</span>
           <span class="lang-en">Unit 5 · Solve Area, Surface Area, and Volume Problems</span>
@@ -443,39 +451,25 @@ header.homework-header,
         </p>
 
         <nav class="hw-session-banner" aria-label="Two-session lesson" data-session="1">
-    <ol class="hw-session-steps"><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span></span></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-next"><a class="hw-session-chip" href="/lessons/5-10-part2/homework.html"><span class="hw-session-mark" aria-hidden="true">○</span><span class="hw-session-name"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span></a></li></ol>
+    <ol class="hw-session-steps"><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span><span class="hw-session-short"><span class="lang-en">Session 1</span><span class="lang-es" lang="es">Sesión 1</span></span></span></span></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-next"><a class="hw-session-chip" href="/lessons/5-10-part2/homework.html"><span class="hw-session-mark" aria-hidden="true">○</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span><span class="hw-session-short"><span class="lang-en">Session 2</span><span class="lang-es" lang="es">Sesión 2</span></span></span></a></li></ol>
     <p class="hw-session-sentence"><strong><span class="lang-en">Coming up next:</span><span class="lang-es" lang="es">Lo que sigue:</span></strong> <span class="lang-en">In Session 2, we compute the volume of several boxes — fractional edges and all — and use the results to choose one.</span><span class="lang-es" lang="es">En la Sesión 2, calculamos el volumen de varias cajas — con aristas fraccionarias y todo — y usamos los resultados para elegir una.</span> <span class="lang-en">It builds on today’s model. Open it when it is assigned.</span><span class="lang-es" lang="es">Se basa en el modelo de hoy. Ábranla cuando se las asignen.</span></p>
   </nav>
 
         <p class="hw-hero-bigidea" aria-label="Big idea">
-          <span class="hw-hero-bigidea-label"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
+          <span class="hw-hero-bigidea-label hw-inline"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
           <span class="lang-en">Tonight we find the volume of a box even when one edge is a fraction or a decimal, like 1.5. The rule does not change: multiply length × width × height.</span><span class="lang-es" lang="es">Esta noche encontramos el volumen de una caja aunque una arista sea una fracción o un decimal, como 1.5. La regla no cambia: multiplica largo × ancho × altura.</span>
         </p>
-
-        <div class="hw-hero-controls">
-          <div class="lang-selector-card">
-            <span class="lang-selector-title">Language / Idioma</span>
-            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
-              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
-                🇺🇸🇪🇸 <span>Bilingual / Bilingüe</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
-                🇺🇸 <span>English</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
-                🇪🇸 <span>Español</span>
-              </button>
-            </div>
-          </div>
-        </div>
 
         <p class="hw-hero-lead">
           <span class="lang-en">Optional, ungraded practice. Work with someone or on your own; no adult signature is needed.</span>
           <span class="lang-es" lang="es">Práctica opcional, sin calificación. Trabaja con alguien o a solas; no necesitas la firma de un adulto.</span>
         </p>
 
-        <ul class="hw-hero-stats" aria-label="What tonight looks like">
-          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">5</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">5</span> paradas</span></li>
+
+        <ul class="hw-tonight hw-inline" aria-label="Tonight at a glance">
+          <li><span aria-hidden="true">⏱</span> <strong><span data-hw-tonight-time>20–30</span> min</strong></li>
+          <li><span aria-hidden="true">✏️</span> <span class="lang-en">Pencil and paper</span><span class="lang-es" lang="es">Lápiz y papel</span></li>
+          <li><span aria-hidden="true">🎯</span> <span class="lang-en">Goal:</span><span class="lang-es" lang="es">Meta:</span> <strong><span data-hw-goal-count>4</span> <span class="lang-en">problems</span><span class="lang-es" lang="es">problemas</span></strong></li>
         </ul>
 
 
@@ -483,30 +477,31 @@ header.homework-header,
         <div class="hw-route-heading">
           <span class="hw-route-icon" aria-hidden="true">🧭</span>
           <div>
-            <h2 id="hw_route_title"><span class="lang-en">Choose a practice path</span><span class="lang-es" lang="es">Elige una ruta de práctica</span></h2>
-            <p><span class="lang-en">All practice is optional and ungraded. Choose the time that works for your family; your route choice is saved on this device.</span><span class="lang-es" lang="es">Toda la práctica es opcional y no lleva calificación. Elijan el tiempo que les funcione; la ruta queda guardada en este dispositivo.</span></p>
+            <h2 id="hw_route_title" class="hw-inline"><span class="lang-en">How much time do you have tonight?</span><span class="lang-es" lang="es">¿Cuánto tiempo tienen esta noche?</span></h2>
+            <p class="hw-inline"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
           </div>
         </div>
-        <div class="hw-route-options" role="group" aria-label="Choose a practice path" data-aria-en="Choose a practice path" data-aria-es="Elige una ruta de práctica">
+        <div class="hw-route-options" role="group" aria-label="How much time do you have tonight?" data-aria-en="How much time do you have tonight?" data-aria-es="¿Cuánto tiempo tienen esta noche?">
           <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
-            <span class="hw-route-time">5–10 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Quick practice</span><span class="lang-es" lang="es">Práctica breve</span></strong><small><span class="lang-en">One example, 2 problems, and one explanation.</span><span class="lang-es" lang="es">Un ejemplo, 2 problemas y una explicación.</span></small></span>
+            <span class="hw-route-time">5–10 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Quick</span><span class="lang-es" lang="es">Rápida</span></strong><small><span class="lang-en">One example and 2 problems.</span><span class="lang-es" lang="es">Un ejemplo y 2 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
-            <span class="hw-route-time">15–20 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Learn, explore key words, practice <span data-hw-core-count>6</span> problems, and explain.</span><span class="lang-es" lang="es">Aprende, explora palabras clave, practica <span data-hw-core-count>6</span> problemas y explica.</span></small></span>
+            <span class="hw-route-time">15–20 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Key words, then practice. Goal: 4 problems.</span><span class="lang-es" lang="es">Palabras clave y práctica. Meta: 4 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option is-active" data-route-mode="full" aria-pressed="true" onclick="setHomeworkRoute('full')">
-            <span class="hw-route-time">20–30 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Family Math Studio</span><span class="lang-es" lang="es">Estudio familiar de matemáticas</span></strong><small><span class="lang-en">Add one home mission and one math game. Go at your own pace.</span><span class="lang-es" lang="es">Agrega una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span></small></span>
+            <span class="hw-route-time">20–30 <small>min</small></span>
+            <span class="hw-route-badge"><span aria-hidden="true">★</span><span class="hw-sr-only"><span class="lang-en">Recommended</span><span class="lang-es" lang="es">Recomendada</span></span></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Full Studio</span><span class="lang-es" lang="es">Estudio completo</span></strong><small><span class="lang-en">Everything, plus a home mission and a game.</span><span class="lang-es" lang="es">Todo, más una misión en casa y un juego.</span></small></span>
           </button>
         </div>
         <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Family Math Studio selected: <span data-hw-core-count>6</span> problems, key words, one home mission, and one math game. Go at your own pace.</span>
-          <span class="lang-es" lang="es">Estudio familiar seleccionado: <span data-hw-core-count>6</span> problemas, palabras clave, una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span>
+          <span class="lang-en">Full Studio (recommended): everything, plus one home mission and one game. Everything is optional.</span>
+          <span class="lang-es" lang="es">Estudio completo (recomendada): todo, más una misión en casa y un juego. Todo es opcional.</span>
         </p>
         <p id="hw_resume_note" role="status" aria-live="polite"></p>
-        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start this path</span><span class="lang-es" lang="es">Empezar esta ruta</span></button>
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
       </section>
 
         <details class="hw-tools-menu"><summary><span class="lang-en">Tools: scratchpad, share, print &amp; standard</span><span class="lang-es" lang="es">Herramientas: pizarra, compartir, imprimir y estándar</span></summary>
@@ -659,15 +654,39 @@ header.homework-header,
           <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Volumen de prismas rectangulares</li><li>Volumen</li><li>Prisma rectangular</li></ul></div>
         </div>
       </div>
-
-      <div class="parent-quick-card">
-        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
-        <ul>
-          <li><span aria-hidden="true">💬</span> <strong><span class="lang-en">If they get stuck, ask:</span><span class="lang-es" lang="es">Si se atora, pregunten:</span></strong> <span class="lang-en">What is the base area, and what do you multiply it by to get the volume?</span><span class="lang-es" lang="es">¿Cuál es el área de la base y por cuánto la multiplicas para obtener el volumen?</span></li>
-          <li><span aria-hidden="true">🚫</span> <strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">Just skip the fraction edge.</span><span class="lang-es" lang="es">Solo ignora la arista con fracción.</span></li>
-        </ul>
-      </div>
     </div>
+
+      <section class="hw-confidence" id="hw_conf_before" data-conf-phase="before" aria-labelledby="hw_conf_before_title">
+        <h3 id="hw_conf_before_title"><span class="lang-en">How sure do you feel about today&#039;s math?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes con la matemática de hoy?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_before_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="before" onclick="hwSetConfidence('before', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="before" onclick="hwSetConfidence('before', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="before" onclick="hwSetConfidence('before', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Just for you. It stays on this device. We ask again at the end.</span><span class="lang-es" lang="es">Solo para ti. Se queda en este dispositivo. Preguntamos otra vez al final.</span></p>
+
+      </section>
+
+      <section class="hw-mystery" id="hw_mystery" data-problem="problem_10" aria-labelledby="hw_mystery_title">
+        <span class="hw-mystery-lock" id="hw_mystery_lock" aria-hidden="true">🔒</span>
+        <div class="hw-mystery-body">
+          <p class="hw-eyebrow hw-inline"><span class="lang-en">Tonight&#039;s mystery challenge</span><span class="lang-es" lang="es">El reto misterioso de hoy</span></p>
+          <h3 id="hw_mystery_title"><span class="lang-en">Can you crack this before tonight is over?</span><span class="lang-es" lang="es">¿Puedes resolver esto antes de terminar hoy?</span></h3>
+          <p class="hw-mystery-stem"><span class="lang-en">Two storage boxes are ready to pack. Box A is 5 × 5 × 2 inches and Box B is 4 × 4 × 3 inches. Which box holds more?</span><span class="lang-es" lang="es">Hay dos cajas de almacenamiento listas para empacar. La caja A mide 5 × 5 × 2 pulgadas y la caja B mide 4 × 4 × 3 pulgadas. ¿Cuál caja guarda más?</span></p>
+          <p class="hw-mystery-status" id="hw_mystery_status" role="status" aria-live="polite">
+            <span class="lang-en">Locked. Finish <span data-hw-goal-count>4</span> problems and it opens.</span>
+            <span class="lang-es" lang="es">Bloqueado. Termina <span data-hw-goal-count>4</span> problemas y se abre.</span>
+          </p>
+          <button type="button" class="hw-mystery-open" id="hw_mystery_open" hidden onclick="hwOpenMystery()">
+            <span class="lang-en">Open the mystery challenge ➔</span><span class="lang-es" lang="es">Abrir el reto misterioso ➔</span>
+          </button>
+        </div>
+      </section>
       <div class="learn-big-idea-block" id="hw_learn_idea">
 
       <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span> <button type="button" class="btn-listen-concept" onclick="speakBigIdea(&quot;A fraction or decimal edge is still just a number. You multiply the three edges the same way you always do.&quot;, &quot;Una arista con fracción o decimal sigue siendo solo un número. Multiplicas las tres aristas igual que siempre.&quot;)" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button></h2>
@@ -793,18 +812,24 @@ header.homework-header,
 
 
       <div class="learn-extended-block" id="hw_learn_quick">
-    <details class="parent-coaching-drawer">
-      <summary class="parent-coaching-summary">
-        <span class="summary-left">
-          <span class="summary-icon">💡</span>
-          <span class="summary-text">
-            <strong><span class="lang-en">Parent Coaching Tips &amp; Real-World Connection</span><span class="lang-es" lang="es">Consejos para Padres y Conexión Real</span></strong>
-            <small><span class="lang-en">Tap to view coaching questions, common traps &amp; everyday examples</span><span class="lang-es" lang="es">Toca para ver preguntas guía, errores comunes y ejemplos</span></small>
-          </span>
+    <details class="hw-grownup" id="hw_grownup">
+      <summary>
+        <span class="hw-grownup-icon" aria-hidden="true">👪</span>
+        <span class="hw-grownup-text hw-stack">
+          <strong class="hw-stack"><span class="lang-en">For the grown-up · 1 minute</span><span class="lang-es" lang="es">Para el adulto · 1 minuto</span></strong>
+          <small class="hw-stack"><span class="lang-en">Ask: What is the base area, and what do you multiply it by to get the volume?</span><span class="lang-es" lang="es">Pregunta: ¿Cuál es el área de la base y por cuánto la multiplicas para obtener el volumen?</span></small>
         </span>
-        <span class="summary-chevron" aria-hidden="true">▾</span>
+        <span class="hw-grownup-chev" aria-hidden="true">▾</span>
       </summary>
-      <div class="parent-coaching-content">
+      <div class="hw-grownup-body">
+
+      <div class="parent-quick-card">
+        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
+        <ul>
+          <li><span aria-hidden="true">💬</span> <strong><span class="lang-en">If they get stuck, ask:</span><span class="lang-es" lang="es">Si se atora, pregunten:</span></strong> <span class="lang-en">What is the base area, and what do you multiply it by to get the volume?</span><span class="lang-es" lang="es">¿Cuál es el área de la base y por cuánto la multiplicas para obtener el volumen?</span></li>
+          <li><span aria-hidden="true">🚫</span> <strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">Just skip the fraction edge.</span><span class="lang-es" lang="es">Solo ignora la arista con fracción.</span></li>
+        </ul>
+      </div>
 
     <div class="real-world-spotlight card-ish">
       <div class="spotlight-badge"><span class="spotlight-icon" aria-hidden="true">🌱</span> <span><span class="lang-en">WHY THIS MATTERS</span><span class="lang-es" lang="es">¿POR QUÉ IMPORTA?</span></span></div>
@@ -982,7 +1007,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Volume of Rectangular Prisms&quot;, &quot;Volumen de prismas rectangulares&quot;)" title="Listen / Escuchar" aria-label="Pronounce Volume of Rectangular Prisms">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/volume-of-rectangular-prisms.svg" alt="Illustration of Volume of Rectangular Prisms: The space inside a rectangular prism. Formula: V = Bh = l × w × h." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/volume-of-rectangular-prisms.svg" alt="Illustration of Volume of Rectangular Prisms: Length times width times height." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1008,8 +1033,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Volumen de prismas rectangulares</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">The space inside a rectangular prism. Formula: V = Bh = l × w × h.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> El espacio dentro de un prisma rectangular. Fórmula: V = Bh = l × w × h.</p>
+                    <p class="vocab-def">Length times width times height.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Largo por ancho por alto.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>V = Bh = l × w × h</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1057,7 +1082,7 @@ header.homework-header,
                   </div>
                   <div class="vocab-back-content">
                     <p class="vocab-def">How much space is inside a solid shape.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Cuánto espacio hay dentro de una figura sólida.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Cuánto espacio hay dentro de un cuerpo sólido.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>A box 2 × 1.5 × 1 = 3 ft³ — it holds 3 cubic feet of stuff</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1078,7 +1103,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Rectangular prism&quot;, &quot;Prisma rectangular&quot;)" title="Listen / Escuchar" aria-label="Pronounce Rectangular prism">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/rectangular-prism.svg" alt="Illustration of Rectangular prism: A solid box shape with six flat rectangle sides." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/rectangular-prism.svg" alt="Illustration of Rectangular prism: A box shape with six flat sides." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1104,8 +1129,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Prisma rectangular</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A solid box shape with six flat rectangle sides.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una figura sólida en forma de caja con seis lados rectangulares.</p>
+                    <p class="vocab-def">A box shape with six flat sides.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una figura en forma de caja con seis lados planos.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>A tissue box, a fish tank, a brick — all rectangular prisms</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1126,7 +1151,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Cubic units&quot;, &quot;Unidades cúbicas&quot;)" title="Listen / Escuchar" aria-label="Pronounce Cubic units">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/cubic-units.svg" alt="Illustration of Cubic units: The units used to measure space inside, like cubic inches." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/cubic-units.svg" alt="Illustration of Cubic units: A cube with sides 1 unit long. It measures volume." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1152,8 +1177,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Unidades cúbicas</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">The units used to measure space inside, like cubic inches.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Las unidades para medir el espacio interior, como pulgadas cúbicas.</p>
+                    <p class="vocab-def">A cube with sides 1 unit long. It measures volume.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un cubo de 1 unidad por lado. Sirve para medir volumen.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>1 ft³ = a cube that is 1 foot on every edge</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1174,7 +1199,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Dimensions&quot;, &quot;Dimensiones&quot;)" title="Listen / Escuchar" aria-label="Pronounce Dimensions">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/dimensions.svg" alt="Illustration of Dimensions: How long, how wide, and how tall a shape is." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/dimensions.svg" alt="Illustration of Dimensions: How long, how wide, and how tall something is." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1200,8 +1225,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Dimensiones</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">How long, how wide, and how tall a shape is.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Qué tan largo, ancho y alto es una figura.</p>
+                    <p class="vocab-def">How long, how wide, and how tall something is.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Qué tan largo, ancho y alto es algo.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>A box with dimensions 4 × 3 × 2 means l = 4, w = 3, h = 2</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1222,7 +1247,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Base area&quot;, &quot;Área de la base&quot;)" title="Listen / Escuchar" aria-label="Pronounce Base area">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/base-area-prism.svg" alt="Illustration of Base area: The area of the bottom of a solid. Volume = base area × height." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/base-area-prism.svg" alt="Illustration of Base area: The space covered by the bottom of a solid." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1248,8 +1273,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Área de la base</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">The area of the bottom of a solid. Volume = base area × height.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> El área del fondo de un sólido. Volumen = área de la base × altura.</p>
+                    <p class="vocab-def">The space covered by the bottom of a solid.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> El espacio que cubre el fondo de un sólido.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>If the base is 6 × 4 = 24 cm² and h = 3, then V = 24 × 3 = 72 cm³</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1283,7 +1308,7 @@ header.homework-header,
         <p class="vq-done-score"><span class="lang-en">First-try stars:</span><span class="lang-es" lang="es">Estrellas al primer intento:</span> <strong id="vocab_quiz_score"></strong></p>
         <button type="button" class="btn btn-secondary" onclick="startVocabQuiz()"><span class="lang-en">Play again 🔄</span><span class="lang-es" lang="es">Jugar de nuevo 🔄</span></button>
       </div>
-      <script type="application/json" id="vocab_quiz_data">[{"term":"Volume of Rectangular Prisms","termEs":"Volumen de prismas rectangulares","def":"The space inside a rectangular prism. Formula: V = Bh = l × w × h.","defEs":"El espacio dentro de un prisma rectangular. Fórmula: V = Bh = l × w × h.","img":"/assets/vocab-images/volume-of-rectangular-prisms.svg","alt":"Illustration of Volume of Rectangular Prisms: The space inside a rectangular prism. Formula: V = Bh = l × w × h."},{"term":"Volume","termEs":"Volumen","def":"How much space is inside a solid shape.","defEs":"Cuánto espacio hay dentro de una figura sólida.","img":"/assets/vocab-images/volume.svg","alt":"Illustration of Volume: How much space is inside a solid shape."},{"term":"Rectangular prism","termEs":"Prisma rectangular","def":"A solid box shape with six flat rectangle sides.","defEs":"Una figura sólida en forma de caja con seis lados rectangulares.","img":"/assets/vocab-images/rectangular-prism.svg","alt":"Illustration of Rectangular prism: A solid box shape with six flat rectangle sides."},{"term":"Cubic units","termEs":"Unidades cúbicas","def":"The units used to measure space inside, like cubic inches.","defEs":"Las unidades para medir el espacio interior, como pulgadas cúbicas.","img":"/assets/vocab-images/cubic-units.svg","alt":"Illustration of Cubic units: The units used to measure space inside, like cubic inches."},{"term":"Dimensions","termEs":"Dimensiones","def":"How long, how wide, and how tall a shape is.","defEs":"Qué tan largo, ancho y alto es una figura.","img":"/assets/vocab-images/dimensions.svg","alt":"Illustration of Dimensions: How long, how wide, and how tall a shape is."},{"term":"Base area","termEs":"Área de la base","def":"The area of the bottom of a solid. Volume = base area × height.","defEs":"El área del fondo de un sólido. Volumen = área de la base × altura.","img":"/assets/vocab-images/base-area-prism.svg","alt":"Illustration of Base area: The area of the bottom of a solid. Volume = base area × height."}]</script>
+      <script type="application/json" id="vocab_quiz_data">[{"term":"Volume of Rectangular Prisms","termEs":"Volumen de prismas rectangulares","def":"Length times width times height.","defEs":"Largo por ancho por alto.","img":"/assets/vocab-images/volume-of-rectangular-prisms.svg","alt":"Illustration of Volume of Rectangular Prisms: Length times width times height."},{"term":"Volume","termEs":"Volumen","def":"How much space is inside a solid shape.","defEs":"Cuánto espacio hay dentro de un cuerpo sólido.","img":"/assets/vocab-images/volume.svg","alt":"Illustration of Volume: How much space is inside a solid shape."},{"term":"Rectangular prism","termEs":"Prisma rectangular","def":"A box shape with six flat sides.","defEs":"Una figura en forma de caja con seis lados planos.","img":"/assets/vocab-images/rectangular-prism.svg","alt":"Illustration of Rectangular prism: A box shape with six flat sides."},{"term":"Cubic units","termEs":"Unidades cúbicas","def":"A cube with sides 1 unit long. It measures volume.","defEs":"Un cubo de 1 unidad por lado. Sirve para medir volumen.","img":"/assets/vocab-images/cubic-units.svg","alt":"Illustration of Cubic units: A cube with sides 1 unit long. It measures volume."},{"term":"Dimensions","termEs":"Dimensiones","def":"How long, how wide, and how tall something is.","defEs":"Qué tan largo, ancho y alto es algo.","img":"/assets/vocab-images/dimensions.svg","alt":"Illustration of Dimensions: How long, how wide, and how tall something is."},{"term":"Base area","termEs":"Área de la base","def":"The space covered by the bottom of a solid.","defEs":"El espacio que cubre el fondo de un sólido.","img":"/assets/vocab-images/base-area-prism.svg","alt":"Illustration of Base area: The space covered by the bottom of a solid."}]</script>
     </div>
 
     <div class="vocab-game-shell card-ish" id="vocab_match_shell" data-vocab-total="6">
@@ -1339,28 +1364,28 @@ header.homework-header,
         <div class="vocab-match-col col-defs" aria-label="Vocabulary definitions">
 
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="5" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">The area of the bottom of a solid. Volume = base area × height.</span>
-              <span class="chip-label-es" lang="es">El área del fondo de un sólido. Volumen = área de la base × altura.</span>
+              <span class="chip-label-en">The space covered by the bottom of a solid.</span>
+              <span class="chip-label-es" lang="es">El espacio que cubre el fondo de un sólido.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="0" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">The space inside a rectangular prism. Formula: V = Bh = l × w × h.</span>
-              <span class="chip-label-es" lang="es">El espacio dentro de un prisma rectangular. Fórmula: V = Bh = l × w × h.</span>
+              <span class="chip-label-en">Length times width times height.</span>
+              <span class="chip-label-es" lang="es">Largo por ancho por alto.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="1" data-side="def" onclick="selectVocabMatchChip(this)">
               <span class="chip-label-en">How much space is inside a solid shape.</span>
-              <span class="chip-label-es" lang="es">Cuánto espacio hay dentro de una figura sólida.</span>
+              <span class="chip-label-es" lang="es">Cuánto espacio hay dentro de un cuerpo sólido.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="2" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A solid box shape with six flat rectangle sides.</span>
-              <span class="chip-label-es" lang="es">Una figura sólida en forma de caja con seis lados rectangulares.</span>
+              <span class="chip-label-en">A box shape with six flat sides.</span>
+              <span class="chip-label-es" lang="es">Una figura en forma de caja con seis lados planos.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="3" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">The units used to measure space inside, like cubic inches.</span>
-              <span class="chip-label-es" lang="es">Las unidades para medir el espacio interior, como pulgadas cúbicas.</span>
+              <span class="chip-label-en">A cube with sides 1 unit long. It measures volume.</span>
+              <span class="chip-label-es" lang="es">Un cubo de 1 unidad por lado. Sirve para medir volumen.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="4" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">How long, how wide, and how tall a shape is.</span>
-              <span class="chip-label-es" lang="es">Qué tan largo, ancho y alto es una figura.</span>
+              <span class="chip-label-en">How long, how wide, and how tall something is.</span>
+              <span class="chip-label-es" lang="es">Qué tan largo, ancho y alto es algo.</span>
             </button>
         </div>
       </div>
@@ -1390,29 +1415,24 @@ header.homework-header,
 
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
       <p class="quick-check-time bilingual-block">
-        <span class="lang-en">Complete the <span id="hw_check_problem_count">12</span> problems below.<span class="quick-check-extra-copy"> The extra practice at the bottom is optional.</span></span>
-        <span class="lang-es" lang="es">Completa los <span id="hw_check_problem_count_es">12</span> problemas de abajo.<span class="quick-check-extra-copy"> La práctica extra al final es opcional.</span></span>
-      </p>
-      <p class="bilingual-block">
-        <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
-        <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+        <span class="lang-en">Start with <strong>Basics</strong>. Each problem has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong> and a <strong>space for your work</strong>. Tap <strong>Check This Problem</strong> for instant help.<span class="quick-check-extra-copy"> The extra practice at the bottom is optional.</span></span>
+        <span class="lang-es" lang="es">Empiecen con las <strong>Básicas</strong>. Cada problema tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para su trabajo</strong>. Toquen <strong>Revisar esta pregunta</strong> para recibir ayuda al instante.<span class="quick-check-extra-copy"> La práctica extra al final es opcional.</span></span>
       </p>
 
 
-    <div class="stars-to-win-bar">
-      <div class="stars-to-win-title">
-        <span>⭐</span>
-        <div>
-          <span class="lang-en"><strong>Tonight's goal:</strong> finish the <span id="hw_goal_count">12</span> problems below. Stop any time — your work saves itself.</span>
-          <span class="lang-es" lang="es"><strong>La meta de hoy:</strong> terminar los <span id="hw_goal_count_es">12</span> problemas de abajo. Pueden parar cuando quieran: el trabajo se guarda solo.</span>
-        </div>
-      </div>
-      <div class="stars-milestone-chips" aria-hidden="true">
-        <span class="star-chip">🧱 Basics</span>
-        <span class="star-chip">🌱 Warm-Up ★</span>
-        <span class="star-chip">🚀 Level-Up ★★</span>
-        <span class="star-chip">🏆 Victory ★★★</span>
-      </div>
+    <div class="hw-goal-card">
+      <span class="hw-pips " role="img" aria-label="Tonight's goal progress"></span>
+      <p>
+        <span class="lang-en"><strong>Tonight's goal: any <span data-hw-goal-count>4</span> problems.</strong> There are <span data-hw-goal-avail>12</span> here, so pick the ones you like. Stop any time. Your work saves itself.</span>
+        <span class="lang-es" lang="es"><strong>La meta de hoy: cualquier <span data-hw-goal-count>4</span> problemas.</strong> Aquí hay <span data-hw-goal-avail>12</span>, así que escojan los que prefieran. Pueden parar cuando quieran. El trabajo se guarda solo.</span>
+      </p>
+      <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
+    </div>
+    <div class="stars-milestone-chips" aria-hidden="true">
+      <span class="star-chip">🧱 Basics</span>
+      <span class="star-chip">🌱 Warm-Up ★</span>
+      <span class="star-chip">🚀 Level-Up ★★</span>
+      <span class="star-chip">🏆 Victory ★★★</span>
     </div>
 
     <div class="live-streak-banner" id="hw_streak_banner" hidden>
@@ -1435,9 +1455,12 @@ header.homework-header,
         <strong><span class="lang-en">That's tonight's goal — done!</span><span class="lang-es" lang="es">¡Esa es la meta de hoy: completa!</span></strong>
         <p><span class="lang-en">Great work. Keep going with the extra practice if you want more, or head to <strong>Done</strong> to finish or choose optional extras.</span><span class="lang-es" lang="es">Buen trabajo. Sigan con la práctica extra si quieren más, o vayan a <strong>Listo</strong> para terminar o elegir extras opcionales.</span></p>
       </div>
-      <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
-        <span class="lang-en">Claim Certificate ➔</span><span class="lang-es" lang="es">Reclamar Certificado ➔</span>
-      </button>
+      <div class="goal-actions">
+        <button type="button" class="btn btn-sm btn-secondary hw-banner-mystery" hidden onclick="hwOpenMystery()"><span class="lang-en">🔓 Open the mystery challenge</span><span class="lang-es" lang="es">🔓 Abrir el reto misterioso</span></button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
+          <span class="lang-en">Teach it back, then claim your certificate ➔</span><span class="lang-es" lang="es">Enséñalo y reclama tu certificado ➔</span>
+        </button>
+      </div>
     </div>
 
       <section class="practice-tier practice-tier-basic" aria-label="Basic practice">
@@ -4069,7 +4092,7 @@ header.homework-header,
     </div>
 
     <div class="fam-game-break card-ish" id="fam_game_break">
-      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"Box 2 × 3 × 4","b":"24 cubic units"},{"a":"Cube with edge 3","b":"27 cubic units"},{"a":"Box 5 × 2 × 2","b":"20 cubic units"},{"a":"Unit cube 1 × 1 × 1","b":"1 cubic unit"}],"tf":[{"en":"Volume is measured in cubic units.","es":"El volumen se mide en unidades cúbicas.","answer":true,"whyEn":"Volume counts the unit cubes that FILL a box — three dimensions.","whyEs":"El volumen cuenta los cubos unitarios que LLENAN una caja: tres dimensiones."},{"en":"A taller box always holds more than a shorter box.","es":"Una caja más alta siempre cabe más que una más baja.","answer":false,"whyEn":"A tall skinny box can lose to a short wide one — multiply all three dimensions and let the numbers decide.","whyEs":"Una caja alta y flaca puede perder contra una baja y ancha: multipliquen las tres dimensiones y que decidan los números."},{"en":"A box 2 × 3 × 4 holds 24 unit cubes.","es":"Una caja de 2 × 3 × 4 contiene 24 cubos unitarios.","answer":true,"whyEn":"Bottom layer: 2 × 3 = 6 cubes. Four layers: 6 × 4 = 24.","whyEs":"Primera capa: 2 × 3 = 6 cubos. Cuatro capas: 6 × 4 = 24."},{"en":"Volume = length × width × height works even when an edge is a fraction like 1½.","es":"Volumen = largo × ancho × alto funciona aunque una arista sea una fracción como 1½.","answer":true,"whyEn":"3 × 2 × 1½ = 9 cubic units — half-layers count as half.","whyEs":"3 × 2 × 1½ = 9 unidades cúbicas: las medias capas cuentan como mitad."},{"en":"Doubling every edge of a box doubles its volume.","es":"Duplicar cada arista de una caja duplica su volumen.","answer":false,"whyEn":"It multiplies volume by 2 × 2 × 2 = 8! Try it: 1×1×1 = 1 but 2×2×2 = 8.","whyEs":"¡Multiplica el volumen por 2 × 2 × 2 = 8! Pruébenlo: 1×1×1 = 1 pero 2×2×2 = 8."}],"sort":{"a":{"en":"Volume (cubic units)","es":"Volumen (unidades cúbicas)"},"b":{"en":"Surface area (square units)","es":"Área de superficie (unidades cuadradas)"},"cards":[{"t":"Cereal that fits in the box","bucket":0,"en":"What fits inside is volume.","es":"Lo que cabe adentro es volumen."},{"t":"Wrapping paper for the box","bucket":1,"en":"Covering the outside.","es":"Cubrir el exterior."},{"t":"Water a fish tank holds","bucket":0,"en":"Filling a space.","es":"Llenar un espacio."},{"t":"Glass to build the tank","bucket":1,"en":"The faces themselves.","es":"Las caras mismas."},{"t":"l × w × h","bucket":0,"en":"Three dimensions multiplied.","es":"Tres dimensiones multiplicadas."},{"t":"Adding up all 6 faces","bucket":1,"en":"That is surface area.","es":"Eso es área de superficie."}]},"wyr":[{"a":{"en":"A box 2 × 3 × 6","es":"Una caja de 2 × 3 × 6"},"b":{"en":"A box 3 × 3 × 4","es":"Una caja de 3 × 3 × 4"},"en":"Both hold 36 cubic units — different shapes, same volume.","es":"Ambas caben 36 unidades cúbicas: distinta forma, mismo volumen."},{"a":{"en":"Double the height of a box","es":"Duplicar la altura de una caja"},"b":{"en":"Double every edge of a box","es":"Duplicar cada arista de una caja"},"en":"Doubling every edge — that multiplies volume by 8, not 2.","es":"Duplicar cada arista: eso multiplica el volumen por 8, no por 2."}]};</script>
+      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"Box 2 × 3 × 4","b":"24 cubic units","aEs":"Caja de 2 × 3 × 4","bEs":"24 unidades cúbicas"},{"a":"Cube with edge 3","b":"27 cubic units","aEs":"Cubo con arista 3","bEs":"27 unidades cúbicas"},{"a":"Box 5 × 2 × 2","b":"20 cubic units","aEs":"Caja de 5 × 2 × 2","bEs":"20 unidades cúbicas"},{"a":"Unit cube 1 × 1 × 1","b":"1 cubic unit","aEs":"Cubo unitario 1 × 1 × 1","bEs":"1 unidad cúbica"}],"tf":[{"en":"Volume is measured in cubic units.","es":"El volumen se mide en unidades cúbicas.","answer":true,"whyEn":"Volume counts the unit cubes that FILL a box — three dimensions.","whyEs":"El volumen cuenta los cubos unitarios que LLENAN una caja: tres dimensiones."},{"en":"A taller box always holds more than a shorter box.","es":"Una caja más alta siempre cabe más que una más baja.","answer":false,"whyEn":"A tall skinny box can lose to a short wide one — multiply all three dimensions and let the numbers decide.","whyEs":"Una caja alta y flaca puede perder contra una baja y ancha: multipliquen las tres dimensiones y que decidan los números."},{"en":"A box 2 × 3 × 4 holds 24 unit cubes.","es":"Una caja de 2 × 3 × 4 contiene 24 cubos unitarios.","answer":true,"whyEn":"Bottom layer: 2 × 3 = 6 cubes. Four layers: 6 × 4 = 24.","whyEs":"Primera capa: 2 × 3 = 6 cubos. Cuatro capas: 6 × 4 = 24."},{"en":"Volume = length × width × height works even when an edge is a fraction like 1½.","es":"Volumen = largo × ancho × alto funciona aunque una arista sea una fracción como 1½.","answer":true,"whyEn":"3 × 2 × 1½ = 9 cubic units — half-layers count as half.","whyEs":"3 × 2 × 1½ = 9 unidades cúbicas: las medias capas cuentan como mitad."},{"en":"Doubling every edge of a box doubles its volume.","es":"Duplicar cada arista de una caja duplica su volumen.","answer":false,"whyEn":"It multiplies volume by 2 × 2 × 2 = 8! Try it: 1×1×1 = 1 but 2×2×2 = 8.","whyEs":"¡Multiplica el volumen por 2 × 2 × 2 = 8! Pruébenlo: 1×1×1 = 1 pero 2×2×2 = 8."}],"sort":{"a":{"en":"Volume (cubic units)","es":"Volumen (unidades cúbicas)"},"b":{"en":"Surface area (square units)","es":"Área de superficie (unidades cuadradas)"},"cards":[{"t":"Cereal that fits in the box","bucket":0,"en":"What fits inside is volume.","es":"Lo que cabe adentro es volumen."},{"t":"Wrapping paper for the box","bucket":1,"en":"Covering the outside.","es":"Cubrir el exterior."},{"t":"Water a fish tank holds","bucket":0,"en":"Filling a space.","es":"Llenar un espacio."},{"t":"Glass to build the tank","bucket":1,"en":"The faces themselves.","es":"Las caras mismas."},{"t":"l × w × h","bucket":0,"en":"Three dimensions multiplied.","es":"Tres dimensiones multiplicadas."},{"t":"Adding up all 6 faces","bucket":1,"en":"That is surface area.","es":"Eso es área de superficie."}]},"wyr":[{"a":{"en":"A box 2 × 3 × 6","es":"Una caja de 2 × 3 × 6"},"b":{"en":"A box 3 × 3 × 4","es":"Una caja de 3 × 3 × 4"},"en":"Both hold 36 cubic units — different shapes, same volume.","es":"Ambas caben 36 unidades cúbicas: distinta forma, mismo volumen."},{"a":{"en":"Double the height of a box","es":"Duplicar la altura de una caja"},"b":{"en":"Double every edge of a box","es":"Duplicar cada arista de una caja"},"en":"Doubling every edge — that multiplies volume by 8, not 2.","es":"Duplicar cada arista: eso multiplica el volumen por 8, no por 2."}]};</script>
       <div class="fam-game-head">
         <span class="fam-game-badge">🎮 <span class="lang-en">FAMILY ARCADE</span><span class="lang-es" lang="es">SALA DE JUEGOS EN FAMILIA</span></span>
         <p class="fam-game-lead">
@@ -4257,7 +4280,40 @@ header.homework-header,
     </div>
 <div class="tab-panel-inner" data-tab-panel="done" id="hw_panel_done" role="tabpanel" hidden>
       <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
-      <p class="family-explain-finish"><span class="lang-en">Explain one answer aloud or on paper: “I got ___ because ___. I checked by ___.” Include your strategy and units. Then you are done.</span><span class="lang-es" lang="es">Explica una respuesta en voz alta o en papel: “Obtuve ___ porque ___. Comprobé usando ___.” Incluye tu estrategia y las unidades. Después termina.</span></p>
+
+      <section class="hw-teach" aria-labelledby="hw_teach_title">
+        <p class="hw-eyebrow hw-inline"><span class="lang-en">The last step</span><span class="lang-es" lang="es">El último paso</span></p>
+        <h3 id="hw_teach_title"><span class="lang-en">Teach it to someone</span><span class="lang-es" lang="es">Enséñaselo a alguien</span></h3>
+        <ol class="hw-teach-steps">
+          <li><span class="lang-en">Pick one problem you solved.</span><span class="lang-es" lang="es">Elige un problema que resolviste.</span></li>
+          <li><span class="lang-en">Explain it out loud. Use any language first.</span><span class="lang-es" lang="es">Explícalo en voz alta. Usa primero el idioma que prefieras.</span></li>
+          <li><span class="lang-en">Say it again with the English math words:</span><span class="lang-es" lang="es">Dilo otra vez con las palabras de matemáticas en inglés:</span><ul class="hw-teach-words" aria-label="Words to use"><li><strong>Volume of Rectangular Prisms</strong><span class="lang-es" lang="es"> · Volumen de prismas rectangulares</span></li><li><strong>Volume</strong><span class="lang-es" lang="es"> · Volumen</span></li><li><strong>Rectangular prism</strong><span class="lang-es" lang="es"> · Prisma rectangular</span></li></ul></li>
+          <li><span class="lang-en">Your partner asks: “How do you know?” Answer with: “I got ___ because ___. I checked by ___.”</span><span class="lang-es" lang="es">Tu acompañante pregunta: “¿Cómo lo sabes?” Responde: “Obtuve ___ porque ___. Comprobé usando ___.”</span></li>
+        </ol>
+      </section>
+
+      <section class="hw-confidence" id="hw_conf_after" data-conf-phase="after" aria-labelledby="hw_conf_after_title">
+        <h3 id="hw_conf_after_title"><span class="lang-en">How sure do you feel now?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes ahora?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_after_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="after" onclick="hwSetConfidence('after', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="after" onclick="hwSetConfidence('after', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="after" onclick="hwSetConfidence('after', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Compare it with how you felt at the start.</span><span class="lang-es" lang="es">Compáralo con cómo te sentías al empezar.</span></p>
+        <p class="hw-conf-growth" id="hw_conf_growth" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="hw-nights" id="hw_nights" aria-labelledby="hw_nights_title">
+        <h3 id="hw_nights_title"><span class="lang-en">Our family math nights</span><span class="lang-es" lang="es">Nuestras noches de matemáticas en familia</span></h3>
+        <ol class="hw-nights-week" id="hw_nights_week" aria-label="This week"></ol>
+        <p class="hw-nights-streak" id="hw_nights_streak" role="status" aria-live="polite"></p>
+        <p class="hw-nights-note"><span class="lang-en">Weekends never break it. Saved only on this device.</span><span class="lang-es" lang="es">Los fines de semana no la interrumpen. Se guarda solo en este dispositivo.</span></p>
+      </section>
       <div class="done-summary" id="hw_done_summary" role="status" aria-live="polite"></div>
       <ol class="done-problem-list" id="hw_done_problems" aria-label="Problems / Problemas"></ol>
       <p class="celebrate-text lang-en">Name one strategy that helped, or one question to ask next time. You can stop here; no adult signature is needed.</p>
@@ -4267,9 +4323,16 @@ header.homework-header,
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
 
+
+      <div class="hw-share">
+        <button type="button" class="btn btn-secondary hw-share-win" onclick="hwShareWin()">
+          🎉 <span class="lang-en">Share our win</span><span class="lang-es" lang="es">Compartir nuestro logro</span>
+        </button>
+        <p class="hw-share-note"><span class="lang-en">Shares only the lesson name and a link. No answers, no names.</span><span class="lang-es" lang="es">Comparte solo el nombre de la lección y un enlace. Sin respuestas ni nombres.</span></p>
+      </div>
       <div class="homework-message-action">
         <a class="btn btn-primary" href="https://home.classdojo.com/" target="_blank" rel="noopener"><span class="lang-en">Open ClassDojo to message Mr. Neft</span><span class="lang-es" lang="es">Abrir ClassDojo para escribir al Sr. Neft</span></a>
-        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicia sesión con tu cuenta familiar, abre Mensajes y elige al Sr. Neft. Incluye el número de esta lección y tu pregunta.</span></p>
+        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicien sesión con su cuenta familiar, abran Mensajes y elijan al Sr. Neft. Incluyan el número de esta lección y su pregunta.</span></p>
       </div>
       <section class="homework-optional-extras" aria-labelledby="homework_extras_title">
       <h3 id="homework_extras_title"><span class="lang-en">Want to do more?</span><span class="lang-es" lang="es">¿Quieren hacer más?</span></h3>
@@ -4738,25 +4801,19 @@ header.homework-header,
           </span>
           <span class="ai-lab-arrow" aria-hidden="true">↓</span>
         </a>
-        <p class="bilingual-block">
-          <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
-          <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
+
+        <p class="bilingual-block external-resource-claim">
+          <span class="lang-en">These links go to <strong>specific</strong> videos about tonight's topic — not general math pages.</span>
+          <span class="lang-es" lang="es">Estos enlaces van a videos <strong>específicos</strong> sobre el tema de hoy — no a páginas generales.</span>
         </p>
         <ul class="external-resource-list">
-
             <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-geometry/cc-6th-volume/v/volume-with-unit-cubes" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Volume of rectangular prisms</span>
-                <span class="ext-title-es" lang="es">Volumen de prismas rectangulares</span>
-              </a>
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-geometry-topic/cc-6th-volume-with-fractions/v/volume-of-a-rectangular-prism-with-fractional-dimensions" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-en"><span class="ext-source">Khan Academy</span><span class="ext-title-en">Volume of a rectangular prism</span></a>
+              <a href="https://es.khanacademy.org/math/cc-sixth-grade-math/cc-6th-geometry-topic/cc-6th-volume-with-fractions/v/volume-of-a-rectangular-prism-with-fractional-dimensions" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-es" lang="es"><span class="ext-source">Khan Academy en español</span><span class="ext-title-es">Volumen de un prisma rectangular</span></a>
             </li>
             <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-geometry/cc-6th-volume/v/volume-word-problem-example" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Volume word problems</span>
-                <span class="ext-title-es" lang="es">Problemas de volumen</span>
-              </a>
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-geometry-topic/cc-6th-volume-with-fractions/v/marbles-in-tank-volume" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-en"><span class="ext-source">Khan Academy</span><span class="ext-title-en">Volume of a rectangular prism: word problem</span></a>
+              <a href="https://es.khanacademy.org/math/cc-sixth-grade-math/cc-6th-geometry-topic/cc-6th-volume-with-fractions/v/marbles-in-tank-volume" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-es" lang="es"><span class="ext-source">Khan Academy en español</span><span class="ext-title-es">Volumen de un prisma rectangular: problema</span></a>
             </li>
         </ul>
       </section>
@@ -4854,6 +4911,17 @@ header.homework-header,
       </div>
     </div>
 
+<div class="hw-toast" id="hw_toast" aria-hidden="true" hidden></div><div class="hw-sr-only" id="hw_toast_live" role="status" aria-live="polite"></div>
+<dialog class="hw-dialog" id="hw_dialog" aria-labelledby="hw_dialog_text">
+  <form method="dialog">
+    <p id="hw_dialog_text"></p>
+    <div class="hw-dialog-actions">
+      <button type="submit" value="no" class="btn btn-secondary" id="hw_dialog_no"></button>
+      <button type="submit" value="yes" class="btn btn-primary" id="hw_dialog_yes"></button>
+    </div>
+  </form>
+</dialog>
+
 <section class="hw-answer-sheet" aria-hidden="true">
   <h2><span class="lang-en">Answer sheet</span><span class="lang-es" lang="es">Hoja de respuestas</span> · Volume of Rectangular Prisms</h2>
   <p><span class="lang-en">Check the work after trying each problem. Talk about why each answer makes sense.</span><span class="lang-es" lang="es">Revisen el trabajo después de intentar cada problema. Hablen de por qué cada respuesta tiene sentido.</span></p>
@@ -4893,8 +4961,10 @@ header.homework-header,
 
     <div class="score-progress-container">
       <div class="score-text">
-        <span class="lang-en">Progress:</span><span class="lang-es" lang="es">Progreso:</span>
-        <span id="progress_text">0 / 12</span>
+        <span class="hw-stack hw-goal-label"><span class="lang-en">Tonight's goal</span><span class="lang-es" lang="es">Meta de hoy</span></span>
+        <span id="progress_text">0 / 4</span>
+        <span class="hw-pips hw-pips-bar" role="img" aria-label="Tonight's goal progress"></span>
+        <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -4902,8 +4972,8 @@ header.homework-header,
     </div>
 
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
-      <button class="btn btn-primary" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
+      <button class="btn btn-secondary hw-stack" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
+      <button class="btn btn-primary hw-stack" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
     </div>
   </div>
 </div>
@@ -4911,18 +4981,19 @@ header.homework-header,
 <script>
 window.LESSON_ID = "5-10";
 window.LESSON_TITLE = "Volume of Rectangular Prisms";
+window.LESSON_TITLE_ES = "Volumen de prismas rectangulares";
 /* The number of core problems, so the celebration fires on the goal the page
    actually states. It was hardcoded to 3 while the page showed 6 and the status
    bar counted to 6: a family could hit "Goal Reached! 3 Stars Earned!" and read
    "0 / 6 Completed" in the same glance. */
 window.HW_CORE_COUNT = 12;
-window.__HW_VOCAB__ = [{"term":"Volume of Rectangular Prisms","termEs":"Volumen de prismas rectangulares","def":"The space inside a rectangular prism. Formula: V = Bh = l × w × h.","defEs":"El espacio dentro de un prisma rectangular. Fórmula: V = Bh = l × w × h.","example":"V = Bh = l × w × h","img":"/assets/vocab-images/volume-of-rectangular-prisms.svg","imgAlt":"Illustration of Volume of Rectangular Prisms: The space inside a rectangular prism. Formula: V = Bh = l × w × h.","cs":false},{"term":"Volume","termEs":"Volumen","def":"How much space is inside a solid shape.","defEs":"Cuánto espacio hay dentro de una figura sólida.","example":"A box 2 × 1.5 × 1 = 3 ft³ — it holds 3 cubic feet of stuff","img":"/assets/vocab-images/volume.svg","imgAlt":"Illustration of Volume: How much space is inside a solid shape.","cs":false},{"term":"Rectangular prism","termEs":"Prisma rectangular","def":"A solid box shape with six flat rectangle sides.","defEs":"Una figura sólida en forma de caja con seis lados rectangulares.","example":"A tissue box, a fish tank, a brick — all rectangular prisms","img":"/assets/vocab-images/rectangular-prism.svg","imgAlt":"Illustration of Rectangular prism: A solid box shape with six flat rectangle sides.","cs":false},{"term":"Cubic units","termEs":"Unidades cúbicas","def":"The units used to measure space inside, like cubic inches.","defEs":"Las unidades para medir el espacio interior, como pulgadas cúbicas.","example":"1 ft³ = a cube that is 1 foot on every edge","img":"/assets/vocab-images/cubic-units.svg","imgAlt":"Illustration of Cubic units: The units used to measure space inside, like cubic inches.","cs":false},{"term":"Dimensions","termEs":"Dimensiones","def":"How long, how wide, and how tall a shape is.","defEs":"Qué tan largo, ancho y alto es una figura.","example":"A box with dimensions 4 × 3 × 2 means l = 4, w = 3, h = 2","img":"/assets/vocab-images/dimensions.svg","imgAlt":"Illustration of Dimensions: How long, how wide, and how tall a shape is.","cs":false},{"term":"Base area","termEs":"Área de la base","def":"The area of the bottom of a solid. Volume = base area × height.","defEs":"El área del fondo de un sólido. Volumen = área de la base × altura.","example":"If the base is 6 × 4 = 24 cm² and h = 3, then V = 24 × 3 = 72 cm³","img":"/assets/vocab-images/base-area-prism.svg","imgAlt":"Illustration of Base area: The area of the bottom of a solid. Volume = base area × height.","cs":false}];
+window.__HW_VOCAB__ = [{"term":"Volume of Rectangular Prisms","termEs":"Volumen de prismas rectangulares","def":"Length times width times height.","defEs":"Largo por ancho por alto.","example":"5 × 3 × 2 = 30 cubes","img":"/assets/vocab-images/volume-of-rectangular-prisms.svg","imgAlt":"Illustration of Volume of Rectangular Prisms: Length times width times height.","cs":false,"formal":"The space inside a rectangular prism. Formula: V = Bh = l × w × h.","formalEs":"El espacio dentro de un prisma rectangular. Fórmula: V = Bh = l × w × h.","exampleEs":"5 × 3 × 2 = 30 cubos","exampleFormal":"V = Bh = l × w × h"},{"term":"Volume","termEs":"Volumen","def":"How much space is inside a solid shape.","defEs":"Cuánto espacio hay dentro de un cuerpo sólido.","example":"A 2 by 3 by 4 box holds 24 cubes","img":"/assets/vocab-images/volume.svg","imgAlt":"Illustration of Volume: How much space is inside a solid shape.","cs":false,"formalEs":"Cuánto espacio hay dentro de una figura sólida.","exampleEs":"Una caja de 2 por 3 por 4 tiene 24 cubos","exampleFormal":"A box 2 × 1.5 × 1 = 3 ft³ — it holds 3 cubic feet of stuff"},{"term":"Rectangular prism","termEs":"Prisma rectangular","def":"A box shape with six flat sides.","defEs":"Una figura en forma de caja con seis lados planos.","example":"A tissue box, a fish tank, a brick — all rectangular prisms","img":"/assets/vocab-images/rectangular-prism.svg","imgAlt":"Illustration of Rectangular prism: A box shape with six flat sides.","cs":false,"formal":"A solid box shape with six flat rectangle sides.","formalEs":"Una figura sólida en forma de caja con seis lados rectangulares."},{"term":"Cubic units","termEs":"Unidades cúbicas","def":"A cube with sides 1 unit long. It measures volume.","defEs":"Un cubo de 1 unidad por lado. Sirve para medir volumen.","example":"1 ft³ = a cube that is 1 foot on every edge","img":"/assets/vocab-images/cubic-units.svg","imgAlt":"Illustration of Cubic units: A cube with sides 1 unit long. It measures volume.","cs":false,"formal":"The units used to measure space inside, like cubic inches.","formalEs":"Las unidades para medir el espacio interior, como pulgadas cúbicas."},{"term":"Dimensions","termEs":"Dimensiones","def":"How long, how wide, and how tall something is.","defEs":"Qué tan largo, ancho y alto es algo.","example":"A box with dimensions 4 × 3 × 2 means l = 4, w = 3, h = 2","img":"/assets/vocab-images/dimensions.svg","imgAlt":"Illustration of Dimensions: How long, how wide, and how tall something is.","cs":false,"formal":"How long, how wide, and how tall a shape is.","formalEs":"Qué tan largo, ancho y alto es una figura."},{"term":"Base area","termEs":"Área de la base","def":"The space covered by the bottom of a solid.","defEs":"El espacio que cubre el fondo de un sólido.","example":"If the base is 6 × 4 = 24 cm² and h = 3, then V = 24 × 3 = 72 cm³","img":"/assets/vocab-images/base-area-prism.svg","imgAlt":"Illustration of Base area: The space covered by the bottom of a solid.","cs":false,"formal":"The area of the bottom of a solid. Volume = base area × height.","formalEs":"El área del fondo de un sólido. Volumen = área de la base × altura."}];
 window.__HW_VOCAB_SKIP__ = [44,121,155,171,311,379];
 window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Numerical\\s+Expressions\\s+with\\s+Exponents(?:es|s)?|Solve\\s+One-Step\\s+Addition\\s+and\\s+Subtraction\\s+Equations(?:es|s)?|Determine\\s+the\\s+Whole\\s+Given\\s+the\\s+Part\\s+and\\s+Percent(?:es|s)?|Convert\\s+Measurements\\s+within\\s+the\\s+Same\\s+System(?:es|s)?|Percents\\s+Greater\\s+Than\\s+100%\\s+and\\s+Less\\s+Than\\s+1%(?:es|s)?|Solve\\s+Multiplication\\s+and\\s+Division\\s+Equations(?:es|s)?|Equations\\s+and\\s+Inequalities\\s+Problem\\s+Solving(?:es|s)?|Convert\\s+Measurements\\s+Between\\s+Systems(?:es|s)?|Multiplication\\s+Property\\s+of\\s+Equalit(?:y|ies)|Ordered\\s+Pairs\\s+in\\s+All\\s+Four\\s+Quadrants(?:es|s)?|Rational\\s+Numbers\\s+on\\s+the\\s+Number\\s+Line(?:es|s)?|Describe\\s+the\\s+Data\\s+Using\\s+the\\s+Median(?:es|s)?|Divide\\s+Whole\\s+Numbers\\s+by\\s+Fractions(?:es|s)?|Fraction\\s+Division\\s+Problem\\s+Solving(?:es|s)?|Fractions,\\s+Decimals,\\s+and\\s+Percents(?:es|s)?|Distance\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Subtraction\\s+Property\\s+of\\s+Equalit(?:y|ies)|Appropriate\\s+Measures\\s+of\\s+Center(?:es|s)?|Ratio\\s+and\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|Simplify\\s+Algebraic\\s+Expressions(?:es|s)?|Statistical\\s+Questions\\s+and\\s+Data(?:es|s)?|Volume\\s+with\\s+Whole-Number\\s+Edges(?:es|s)?|Addition\\s+Property\\s+of\\s+Equalit(?:y|ies)|Division\\s+Property\\s+of\\s+Equalit(?:y|ies)|Graph\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Range\\s+and\\s+Interquartile\\s+Range(?:es|s)?|Volume\\s+of\\s+Rectangular\\s+Prisms(?:es|s)?|Display\\s+Data\\s+with\\s+Histograms(?:es|s)?|Greatest\\s+common\\s+factor\\s+\\(GCF\\)(?:es|s)?|Solve\\s+and\\s+Graph\\s+Inequalities(?:es|s)?|Display\\s+Data\\s+with\\s+Box\\s+Plots(?:es|s)?|Integers\\s+and\\s+Absolute\\s+Value(?:es|s)?|Least\\s+common\\s+multiple\\s+\\(LCM\\)(?:es|s)?|Shape\\s+of\\s+Data\\s+Distributions(?:es|s)?|Write\\s+Algebraic\\s+Expressions(?:es|s)?|Compare\\s+and\\s+Order\\s+Integers(?:es|s)?|Decimal\\s+Division\\s+Algorithm(?:es|s)?|Divide\\s+Multi-Digit\\s+Numbers(?:es|s)?|Find\\s+Factors\\s+and\\s+Multiples(?:es|s)?|Reflect\\s+Points\\s+Across\\s+Axes(?:es|s)?|Add\\s+and\\s+Subtract\\s+Decimals(?:es|s)?|Area\\s+of\\s+Composite\\s+Figures(?:es|s)?|Convert\\s+Measurement\\s+Units(?:es|s)?|distance\\s+between\\s+vertices(?:es|s)?|The\\s+Distributive\\s+Propert(?:y|ies)|Unit\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|least\\s+common\\s+denominator(?:es|s)?|Area\\s+of\\s+Regular\\s+Polygons(?:es|s)?|Non-statistical\\s+Question(?:es|s)?|Opposite\\s+of\\s+the\\s+opposite(?:es|s)?|Properties\\s+of\\s+Operations(?:es|s)?|Surface\\s+Area\\s+of\\s+Pyramids(?:es|s)?|mean\\s+absolute\\s+deviation(?:es|s)?|make\\s+sense\\s+of\\s+a\\s+problem(?:es|s)?|Percent\\s+Problem\\s+Solving(?:es|s)?|Repeated\\s+multiplication(?:es|s)?|Surface\\s+Area\\s+Using\\s+Nets(?:es|s)?|greatest\\s+common\\s+factor(?:es|s)?|Area\\s+of\\s+Parallelograms(?:es|s)?|Mean,\\s+Median,\\s+and\\s+Mode(?:es|s)?|Multiplicative\\s+inverse(?:es|s)?|Surface\\s+Area\\s+of\\s+Prisms(?:es|s)?|least\\s+common\\s+multiple(?:es|s)?|equivalent\\s+expression(?:es|s)?|Distributive\\s+Propert(?:y|ies)|Division\\s+of\\s+Fractions(?:es|s)?|Length,\\s+width,\\s+height(?:es|s)?|algebraic\\s+expression(?:es|s)?|Associative\\s+Propert(?:y|ies)|Commutative\\s+Propert(?:y|ies)|define\\s+the\\s+variables(?:es|s)?|Divide\\s+Mixed\\s+Numbers(?:es|s)?|Evaluate\\s+Expressions(?:es|s)?|Factor\\s+an\\s+expression(?:es|s)?|independent\\s+variable(?:es|s)?|Measure\\s+of\\s+variation(?:es|s)?|Numerical\\s+expression(?:es|s)?|Powers\\s+and\\s+Exponents(?:es|s)?|Rates\\s+and\\s+Unit\\s+Rates(?:es|s)?|Statistical\\s+Question(?:es|s)?|prime\\s+factorization(?:es|s)?|interquartile\\s+range(?:es|s)?|equivalent\\s+fraction(?:es|s)?|community\\s+agreement(?:es|s)?|Equivalent\\s+division(?:es|s)?|Five-number\\s+summar(?:y|ies)|Horizontal\\s+distance(?:es|s)?|Negative\\s+coordinate(?:es|s)?|Order\\s+of\\s+operations(?:es|s)?|Percent\\s+of\\s+a\\s+Number(?:es|s)?|Area\\s+of\\s+a\\s+Triangle(?:es|s)?|Area\\s+of\\s+Trapezoids(?:es|s)?|At\\s+least\\s+/\\s+At\\s+most(?:es|s)?|bilateral\\s+symmetr(?:y|ies)|Common\\s+denominator(?:es|s)?|compatible\\s+numbers(?:es|s)?|dependent\\s+variable(?:es|s)?|Double\\s+number\\s+line(?:es|s)?|Graph\\s+Inequalities(?:es|s)?|Graph\\s+Ratio\\s+Tables(?:es|s)?|Keep,\\s+Change,\\s+Flip(?:es|s)?|Measurement\\s+system(?:es|s)?|Multi-step\\s+problem(?:es|s)?|Understand\\s+Percent(?:es|s)?|Write\\s+Inequalities(?:es|s)?|Rectangular\\s+prism(?:es|s)?|improper\\s+fraction(?:es|s)?|conversion\\s+factor(?:es|s)?|benchmark\\s+percent(?:es|s)?|Data\\s+distribution(?:es|s)?|Greater\\s+than\\s+100%(?:es|s)?|Identity\\s+Propert(?:y|ies)|Inverse\\s+operation(?:es|s)?|Measure\\s+of\\s+center(?:es|s)?|Multiply\\s+Decimals(?:es|s)?|One-step\\s+equation(?:es|s)?|Shape\\s+of\\s+the\\s+data(?:es|s)?|Understand\\s+Ratios(?:es|s)?|Vertical\\s+distance(?:es|s)?|coordinate\\s+plane(?:es|s)?|keep-change-flip(?:es|s)?|equivalent\\s+ratio(?:es|s)?|Additive\\s+pattern(?:es|s)?|Composite\\s+figure(?:es|s)?|Composite\\s+number(?:es|s)?|Customary\\s+system(?:es|s)?|Divide\\s+Fractions(?:es|s)?|Grouping\\s+symbols(?:es|s)?|line\\s+of\\s+symmetr(?:y|ies)|Negative\\s+integer(?:es|s)?|Triangular\\s+prism(?:es|s)?|common\\s+multiple(?:es|s)?|Customary\\s+units(?:es|s)?|Divide\\s+Decimals(?:es|s)?|Frequency\\s+table(?:es|s)?|Negative\\s+number(?:es|s)?|Positive\\s+number(?:es|s)?|Problem\\s+solving(?:es|s)?|Ratio\\s+Reasoning(?:es|s)?|Rational\\s+number(?:es|s)?|Regular\\s+Polygon(?:es|s)?|Right\\s+trapezoid(?:es|s)?|table\\s+of\\s+values(?:es|s)?|Two-dimensional(?:es|s)?|Unit\\s+rate\\s+point(?:es|s)?|Write\\s+Equations(?:es|s)?|absolute\\s+value(?:es|s)?|Boundary\\s+point(?:es|s)?|Colon\\s+notation(?:es|s)?|Compare\\s+Ratios(?:es|s)?|counterexample(?:es|s)?|Cross-multipl(?:y|ies)|Decimal\\s+places(?:es|s)?|generalization(?:es|s)?|Linear\\s+pattern(?:es|s)?|math\\s+biograph(?:y|ies)|predictabilit(?:y|ies)|Rate\\s+of\\s+change(?:es|s)?|reasonableness(?:es|s)?|representation(?:es|s)?|True\\s+statement(?:es|s)?|long\\s+division(?:es|s)?|decimal\\s+point(?:es|s)?|parallelogram(?:es|s)?|common\\s+factor(?:es|s)?|Approximatel(?:y|ies)|Balance\\s+point(?:es|s)?|Closed\\s+circle(?:es|s)?|Expanded\\s+form(?:es|s)?|Extreme\\s+value(?:es|s)?|Halfway\\s+value(?:es|s)?|Metric\\s+system(?:es|s)?|Part-to-whole(?:es|s)?|Perpendicular(?:es|s)?|Simplest\\s+form(?:es|s)?|Skip\\s+counting(?:es|s)?|Unit\\s+fraction(?:es|s)?|Work\\s+backward(?:es|s)?|mixed\\s+number(?:es|s)?|ordered\\s+pair(?:es|s)?|surface\\s+area(?:es|s)?|line\\s+segment(?:es|s)?|distribution(?:es|s)?|scale\\s+factor(?:es|s)?|prime\\s+factor(?:es|s)?|Annex\\s+a\\s+zero(?:es|s)?|Decimal\\s+grid(?:es|s)?|doer\\s+of\\s+math(?:es|s)?|Lateral\\s+area(?:es|s)?|Lateral\\s+face(?:es|s)?|Less\\s+than\\s+1%(?:es|s)?|Metric\\s+units(?:es|s)?|mirror\\s+image(?:es|s)?|No\\s+more\\s+than(?:es|s)?|Part-to-part(?:es|s)?|pattern\\s+rule(?:es|s)?|pattern\\s+unit(?:es|s)?|Power\\s+of\\s+ten(?:es|s)?|Prime\\s+number(?:es|s)?|Proportional(?:es|s)?|relationship(?:es|s)?|Slant\\s+height(?:es|s)?|Slanted\\s+side(?:es|s)?|Solution\\s+set(?:es|s)?|tape\\s+diagram(?:es|s)?|Target\\s+total(?:es|s)?|x-coordinate(?:es|s)?|Distributive(?:es|s)?|Cubic\\s+units(?:es|s)?|multi-digit(?:es|s)?|place\\s+value(?:es|s)?|denominator(?:es|s)?|coefficient(?:es|s)?|Annex\\s+zeros(?:es|s)?|Base\\s+1\\s+\\(b1\\)(?:es|s)?|Base\\s+2\\s+\\(b2\\)(?:es|s)?|Common\\s+form(?:es|s)?|Coordinates(?:es|s)?|Factor\\s+pair(?:es|s)?|Factor\\s+tree(?:es|s)?|Middle\\s+half(?:es|s)?|Number\\s+line(?:es|s)?|Open\\s+circle(?:es|s)?|Per\\s+hundred(?:es|s)?|Ratio\\s+table(?:es|s)?|Side\\s+length(?:es|s)?|Target\\s+mean(?:es|s)?|Total\\s+parts(?:es|s)?|Total\\s+price(?:es|s)?|Variabilit(?:y|ies)|Associative(?:es|s)?|Commutative(?:es|s)?|Dimensions(?:es|s)?|bring\\s+down(?:es|s)?|equivalent(?:es|s)?|reciprocal(?:es|s)?|hundredths(?:es|s)?|proportion(?:es|s)?|expression(?:es|s)?|substitute(?:es|s)?|inequalit(?:y|ies)|like\\s+terms(?:es|s)?|Better\\s+Buy(?:es|s)?|Comparison(?:es|s)?|confidence(?:es|s)?|conjecture(?:es|s)?|Constraint(?:es|s)?|depends\\s+on(?:es|s)?|Equal\\s+sign(?:es|s)?|math\\s+stor(?:y|ies)|profession(?:es|s)?|reasonable(?:es|s)?|Reflection(?:es|s)?|repetition(?:es|s)?|round\\s+trip(?:es|s)?|Unit\\s+price(?:es|s)?|Unit\\s+ratio(?:es|s)?|Base\\s+area(?:es|s)?|remainder(?:es|s)?|algorithm(?:es|s)?|numerator(?:es|s)?|unit\\s+rate(?:es|s)?|perimeter(?:es|s)?|rectangle(?:es|s)?|trapezoid(?:es|s)?|histogram(?:es|s)?|frequenc(?:y|ies)|Benchmark(?:es|s)?|communit(?:y|ies)|Composite(?:es|s)?|Congruent(?:es|s)?|decompose(?:es|s)?|Deviation(?:es|s)?|Divisible(?:es|s)?|ingenuit(?:y|ies)|Interpret(?:es|s)?|inventor(?:y|ies)|Magnitude(?:es|s)?|persevere(?:es|s)?|represent(?:es|s)?|symmetric(?:es|s)?|the\\s+whole(?:es|s)?|Unit\\s+cube(?:es|s)?|Variation(?:es|s)?|quotient(?:es|s)?|exponent(?:es|s)?|estimate(?:es|s)?|simplif(?:y|ies)|variable(?:es|s)?|evaluate(?:es|s)?|opposite(?:es|s)?|triangle(?:es|s)?|box\\s+plot(?:es|s)?|dot\\s+plot(?:es|s)?|quartile(?:es|s)?|argument(?:es|s)?|at\\s+least(?:es|s)?|Constant(?:es|s)?|critique(?:es|s)?|Data\\s+set(?:es|s)?|Diagonal(?:es|s)?|Discount(?:es|s)?|Distance(?:es|s)?|Dividend(?:es|s)?|Interval(?:es|s)?|Negative(?:es|s)?|organize(?:es|s)?|Parallel(?:es|s)?|Per\\s+Unit(?:es|s)?|Positive(?:es|s)?|Propert(?:y|ies)|quantit(?:y|ies)|rotation(?:es|s)?|Solution(?:es|s)?|strateg(?:y|ies)|strength(?:es|s)?|Symmetr(?:y|ies)|Identit(?:y|ies)|Rational(?:es|s)?|product(?:es|s)?|regroup(?:es|s)?|decimal(?:es|s)?|percent(?:es|s)?|integer(?:es|s)?|rhombus(?:es|s)?|polygon(?:es|s)?|pyramid(?:es|s)?|segment(?:es|s)?|outlier(?:es|s)?|cluster(?:es|s)?|Average(?:es|s)?|balance(?:es|s)?|Convert(?:es|s)?|Divisor(?:es|s)?|Formula(?:es|s)?|Isolate(?:es|s)?|justif(?:y|ies)|portion(?:es|s)?|reflect(?:es|s)?|Squared(?:es|s)?|Unknown(?:es|s)?|Whisker(?:es|s)?|Volume(?:es|s)?|factor(?:es|s)?|tenths(?:es|s)?|vertex(?:es|s)?|median(?:es|s)?|Expand(?:es|s)?|growth(?:es|s)?|Markup(?:es|s)?|Output(?:es|s)?|puzzle(?:es|s)?|rhythm(?:es|s)?|Skewed(?:es|s)?|Spread(?:es|s)?|Survey(?:es|s)?|x-axis(?:es|s)?|y-axis(?:es|s)?|digit(?:es|s)?|ratio(?:es|s)?|prism(?:es|s)?|Cubed(?:es|s)?|Input(?:es|s)?|Order(?:es|s)?|Range(?:es|s)?|Scale(?:es|s)?|Solve(?:es|s)?|Prime(?:es|s)?|area(?:es|s)?|edge(?:es|s)?|data(?:es|s)?|Apex(?:es|s)?|Axis(?:es|s)?|Base(?:es|s)?|Face(?:es|s)?|gear(?:es|s)?|Mode(?:es|s)?|Peak(?:es|s)?|net(?:es|s)?|LCM(?:es|s)?|MCM(?:es|s)?|GCF(?:es|s)?|MCD(?:es|s)?|GCD(?:es|s)?|LCD(?:es|s)?|IQR(?:es|s)?|RIC(?:es|s)?|MAD(?:es|s)?|DMA(?:es|s)?|DAM(?:es|s)?|KCF(?:es|s)?|MCI(?:es|s)?|Gap(?:es|s)?|Tax(?:es|s)?|Tip(?:es|s)?|SA(?:es|s)?)\\b","lookup":{"volume of rectangular prism":0,"volume":1,"rectangular prism":2,"cubic unit":3,"dimension":4,"base area":5,"product":6,"quotient":7,"factor":8,"remainder":9,"digit":10,"multi-digit":11,"prime factorization":12,"greatest common factor":13,"least common multiple":14,"exponent":15,"algorithm":16,"long division":17,"bring down":18,"regroup":19,"place value":20,"estimate":21,"decimal point":22,"numerator":23,"denominator":24,"equivalent":25,"reciprocal":26,"mixed number":27,"decimal":28,"tenth":29,"hundredth":30,"improper fraction":31,"simplify":32,"ratio":33,"unit rate":34,"percent":35,"proportion":36,"variable":37,"expression":38,"coefficient":39,"substitute":40,"inequality":41,"evaluate":42,"like term":43,"integer":44,"absolute value":45,"opposite":46,"coordinate plane":47,"ordered pair":48,"perimeter":49,"surface area":50,"area":51,"triangle":52,"rectangle":53,"parallelogram":54,"trapezoid":55,"rhombu":56,"polygon":57,"prism":58,"pyramid":59,"net":60,"vertex":61,"edge":62,"segment":63,"line segment":64,"median":65,"outlier":66,"interquartile range":67,"mean absolute deviation":68,"keep-change-flip":69,"data":70,"histogram":71,"box plot":72,"dot plot":73,"quartile":74,"frequency":75,"distribution":76,"cluster":77,"scale factor":78,"equivalent ratio":79,"equivalent expression":80,"equivalent fraction":81,"common factor":82,"common multiple":83,"least common denominator":84,"prime factor":85,"conversion factor":86,"algebraic expression":87,"lcm":88,"mcm":89,"gcf":90,"mcd":91,"gcd":92,"lcd":93,"iqr":94,"ric":95,"mad":96,"dma":97,"dam":98,"sa":99,"kcf":100,"mci":101,"add and subtract decimal":102,"addition property of equality":103,"additive pattern":104,"annex a zero":105,"annex zero":106,"apex":107,"appropriate measures of center":108,"approximately":109,"area of a triangle":110,"area of composite figure":111,"area of parallelogram":112,"area of regular polygon":113,"area of trapezoid":114,"argument":115,"associative property":116,"at least":117,"at least / at most":118,"average":119,"axi":120,"balance":121,"balance point":122,"base":123,"base 1 (b1)":124,"base 2 (b2)":125,"benchmark":126,"benchmark percent":127,"better buy":128,"bilateral symmetry":129,"boundary point":130,"closed circle":131,"colon notation":132,"common denominator":133,"common form":134,"community":135,"community agreement":136,"commutative property":137,"compare and order integer":138,"compare ratio":139,"comparison":140,"compatible number":141,"composite":142,"composite figure":143,"composite number":144,"confidence":145,"congruent":146,"conjecture":147,"constant":148,"constraint":149,"convert":150,"convert measurement unit":151,"convert measurements between system":152,"convert measurements within the same system":153,"coordinate":154,"counterexample":155,"critique":156,"cross-multiply":157,"cubed":158,"customary system":159,"customary unit":160,"data distribution":161,"data set":162,"decimal division algorithm":163,"decimal grid":164,"decimal place":165,"decompose":166,"define the variable":167,"dependent variable":168,"depends on":169,"describe the data using the median":170,"determine the whole given the part and percent":171,"deviation":172,"diagonal":173,"discount":174,"display data with box plot":175,"display data with histogram":176,"distance":177,"distance between vertice":178,"distance on the coordinate plane":179,"distributive property":180,"divide decimal":181,"divide fraction":182,"divide mixed number":183,"divide multi-digit number":184,"divide whole numbers by fraction":185,"dividend":186,"divisible":187,"division of fraction":188,"division property of equality":189,"divisor":190,"doer of math":191,"double number line":192,"equal sign":193,"equations and inequalities problem solving":194,"equivalent division":195,"evaluate expression":196,"expand":197,"expanded form":198,"extreme value":199,"face":200,"factor an expression":201,"factor pair":202,"factor tree":203,"find factors and multiple":204,"five-number summary":205,"formula":206,"fraction division problem solving":207,"fractions, decimals, and percent":208,"frequency table":209,"gap":210,"gear":211,"generalization":212,"graph inequality":213,"graph on the coordinate plane":214,"graph ratio table":215,"greater than 100%":216,"greatest common factor (gcf)":217,"grouping symbol":218,"growth":219,"halfway value":220,"horizontal distance":221,"identity property":222,"independent variable":223,"ingenuity":224,"input":225,"integers and absolute value":226,"interpret":227,"interval":228,"inventory":229,"inverse operation":230,"isolate":231,"justify":232,"keep, change, flip":233,"lateral area":234,"lateral face":235,"least common multiple (lcm)":236,"length, width, height":237,"less than 1%":238,"line of symmetry":239,"linear pattern":240,"magnitude":241,"make sense of a problem":242,"markup":243,"math biography":244,"math story":245,"mean, median, and mode":246,"measure of center":247,"measure of variation":248,"measurement system":249,"metric system":250,"metric unit":251,"middle half":252,"mirror image":253,"mode":254,"multi-step problem":255,"multiplication property of equality":256,"multiplicative inverse":257,"multiply decimal":258,"negative":259,"negative coordinate":260,"negative integer":261,"negative number":262,"no more than":263,"non-statistical question":264,"number line":265,"numerical expression":266,"one-step equation":267,"open circle":268,"opposite of the opposite":269,"order":270,"order of operation":271,"ordered pairs in all four quadrant":272,"organize":273,"output":274,"parallel":275,"part-to-part":276,"part-to-whole":277,"pattern rule":278,"pattern unit":279,"peak":280,"per hundred":281,"per unit":282,"percent of a number":283,"percent problem solving":284,"percents greater than 100% and less than 1%":285,"perpendicular":286,"persevere":287,"portion":288,"positive":289,"positive number":290,"power of ten":291,"powers and exponent":292,"predictability":293,"prime number":294,"problem solving":295,"profession":296,"properties of operation":297,"property":298,"proportional":299,"puzzle":300,"quantity":301,"range":302,"range and interquartile range":303,"rate of change":304,"rates and unit rate":305,"ratio and rate problem solving":306,"ratio reasoning":307,"ratio table":308,"rational number":309,"rational numbers on the number line":310,"reasonable":311,"reasonablenes":312,"reflect":313,"reflect points across axe":314,"reflection":315,"regular polygon":316,"relationship":317,"repeated multiplication":318,"repetition":319,"represent":320,"representation":321,"rhythm":322,"right trapezoid":323,"rotation":324,"round trip":325,"scale":326,"shape of data distribution":327,"shape of the data":328,"side length":329,"simplest form":330,"simplify algebraic expression":331,"skewed":332,"skip counting":333,"slant height":334,"slanted side":335,"solution":336,"solution set":337,"solve":338,"solve and graph inequality":339,"solve multiplication and division equation":340,"solve one-step addition and subtraction equation":341,"spread":342,"squared":343,"statistical question":344,"statistical questions and data":345,"strategy":346,"strength":347,"subtraction property of equality":348,"surface area of prism":349,"surface area of pyramid":350,"surface area using net":351,"survey":352,"symmetric":353,"symmetry":354,"table of value":355,"tape diagram":356,"target mean":357,"target total":358,"tax":359,"the distributive property":360,"the whole":361,"tip":362,"total part":363,"total price":364,"triangular prism":365,"true statement":366,"two-dimensional":367,"understand percent":368,"understand ratio":369,"unit cube":370,"unit fraction":371,"unit price":372,"unit rate point":373,"unit rate problem solving":374,"unit ratio":375,"unknown":376,"variability":377,"variation":378,"vertical distance":379,"volume with whole-number edge":380,"whisker":381,"work backward":382,"write algebraic expression":383,"write and evaluate numerical expressions with exponent":384,"write equation":385,"write inequality":386,"x-axi":387,"x-coordinate":388,"y-axi":389,"associative":116,"commutative":137,"distributive":180,"identity":222,"prime":294,"rational":309}};
 window.__HW_WORKED__ = {"title":"Watch me","titleEs":"Mírame","lines":["My capsule is 2 ft long, 1.5 ft wide, and 1 ft tall. I write V = length × width × height.","I put in the numbers: V = 2 × 1.5 × 1.","First I multiply 2 × 1.5 = 3.","Then 3 × 1 = 3.","So the volume is 3 ft³. A fractional edge like 1.5 did not change my steps at all."],"linesEs":["Mi cápsula mide 2 pies de largo, 1.5 pies de ancho y 1 pie de alto. Escribo V = largo × ancho × alto.","Sustituyo los números: V = 2 × 1.5 × 1.","Primero multiplico 2 × 1.5 = 3.","Luego 3 × 1 = 3.","Entonces el volumen es 3 pies³. Una arista fraccionaria como 1.5 no cambió mis pasos para nada."]};
 </script>
-<script src="/assets/homework/homework-vocab-3da9690d66.bundle.js"></script>
-<script src="/assets/homework/homework-core-e12f28ae0a.bundle.js"></script>
+<script src="/assets/homework/homework-vocab-12619585d8.bundle.js"></script>
+<script src="/assets/homework/homework-core-4eeaa5cadb.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

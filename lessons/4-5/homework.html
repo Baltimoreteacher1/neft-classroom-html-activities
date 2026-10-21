@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Help Your Student — Lesson 4-5: Determine the Whole Given the Part and Percent</title>
+<title>Family Math Studio — Lesson 4-5: Determine the Whole Given the Part and Percent</title>
 <link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/homework/homework-base-0d2a228add.css">
 <style>
@@ -114,26 +114,6 @@ header.homework-header,
   user-select: none;
 }
 
-/* 3 Stars Milestone Bar on Quick Check */
-.stars-to-win-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, var(--teal-light) 0%, #ffffff 100%);
-  border: 1.5px solid var(--teal);
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  margin-bottom: 20px;
-}
-.stars-to-win-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 14.5px;
-  color: var(--navy);
-}
 .stars-milestone-chips {
   display: flex;
   flex-wrap: wrap;
@@ -152,16 +132,7 @@ header.homework-header,
   flex: 0 0 auto;
   white-space: nowrap;
 }
-/* On a phone the goal sentence and the three milestone chips do not fit on one
-   line, so they stack instead of fighting for the same 400px. */
-@media (max-width: 620px) {
-  .stars-to-win-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .stars-milestone-chips { width: 100%; }
-}
+.stars-milestone-chips { width: 100%; }
 
 /* Rotated Huddle Activity Card */
 .huddle-hook-banner {
@@ -373,7 +344,7 @@ body[data-family-style] .visual-lab-heading>p,body[data-family-style] .visual-la
 body[data-family-style] .hw-hero-lead,body[data-family-style] .hw-experience-description,body[data-family-style] .hw-route-note,body[data-family-style] .hw-route-chooser>p,body[data-family-style] .hw-route-option { font-size:18px!important; line-height:1.45!important; }
 body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 </style>
-<link rel="stylesheet" href="/assets/homework/homework-layer-275b5c30f4.css">
+<link rel="stylesheet" href="/assets/homework/homework-layer-9982b1cd71.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -387,16 +358,17 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
   <link rel="apple-touch-icon" href="/assets/favicon.svg">
   <meta name="theme-color" content="#12355b">
   <link rel="canonical" href="https://eduwonderlab.com/lessons/4-5/homework.html">
-  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 4-5: Determine the Whole Given the Part and Percent.">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 4-5: Determine the Whole Given the Part and Percent.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Neft Teacher">
-  <meta property="og:title" content="Help Your Student — Lesson 4-5: Determine the Whole Given the Part and Percent">
-  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 4-5: Determine the Whole Given the Part and Percent.">
+  <meta property="og:title" content="Family Math Studio — Lesson 4-5: Determine the Whole Given the Part and Percent">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 4-5: Determine the Whole Given the Part and Percent.">
   <meta property="og:url" content="https://eduwonderlab.com/lessons/4-5/homework.html">
   <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
   <!-- enthead-injected:end -->
 </head>
 <body data-family-style="unlock">
+<a class="hw-skip" href="#hw_tab_panels" onclick="startHomework(); return false;"><span class="lang-en">Skip to tonight's math</span><span class="lang-es" lang="es">Ir a la matemática de hoy</span></a>
 
 <script>
 /* Language mode, BEFORE first paint. restoreParentSignoff sets the same class
@@ -405,10 +377,29 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
    whole document. Same rule as the boot script below it: fail toward showing
    something readable, which here is English. */
 (function () {
-  var mode = 'en';
+  /* Blocked site data makes every localStorage access throw, which would stop the
+     page's own startup. Fall back to storage that lasts for this visit. */
   try {
+    window.localStorage.getItem('hw_probe');
+  } catch (blocked) {
+    var memory = {};
+    var stand = {
+      getItem: function (k) { return Object.prototype.hasOwnProperty.call(memory, k) ? memory[k] : null; },
+      setItem: function (k, v) { memory[k] = String(v); },
+      removeItem: function (k) { delete memory[k]; },
+      clear: function () { memory = {}; },
+      key: function (i) { return Object.keys(memory)[i] || null; },
+      get length() { return Object.keys(memory).length; }
+    };
+    try { Object.defineProperty(window, 'localStorage', { configurable: true, get: function () { return stand; } }); } catch (unsupported) {}
+  }
+  var mode = 'bilingual';
+  try {
+    var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
+    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
+      mode = requested;
+    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)
@@ -463,6 +454,23 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
     <header class="hw-hero" aria-label="Family Math Night welcome">
       <div class="hw-hero-glow" aria-hidden="true"></div>
       <div class="hw-hero-body">
+        <div class="hw-hero-controls">
+          <div class="lang-selector-card">
+            <span class="lang-selector-title">Language / Idioma</span>
+            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
+              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
+                🇺🇸🇪🇸 <span class="lang-btn-long">Bilingual / Bilingüe</span><span class="lang-btn-short">EN + ES</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
+                🇺🇸 <span>English</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
+                🇪🇸 <span>Español</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <p class="hw-hero-kicker">
           <span class="hw-hero-kicker-icon" aria-hidden="true">📘</span>
           <span class="lang-en">Unit 4 · Understand and Use Percentages</span>
@@ -483,31 +491,14 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         </p>
 
         <nav class="hw-session-banner" aria-label="Two-session lesson" data-session="1">
-    <ol class="hw-session-steps"><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span></span></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-next"><a class="hw-session-chip" href="/lessons/4-5-part2/homework.html"><span class="hw-session-mark" aria-hidden="true">○</span><span class="hw-session-name"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span></a></li></ol>
+    <ol class="hw-session-steps"><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span><span class="hw-session-short"><span class="lang-en">Session 1</span><span class="lang-es" lang="es">Sesión 1</span></span></span></span></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-next"><a class="hw-session-chip" href="/lessons/4-5-part2/homework.html"><span class="hw-session-mark" aria-hidden="true">○</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span><span class="hw-session-short"><span class="lang-en">Session 2</span><span class="lang-es" lang="es">Sesión 2</span></span></span></a></li></ol>
     <p class="hw-session-sentence"><strong><span class="lang-en">Coming up next:</span><span class="lang-es" lang="es">Lo que sigue:</span></strong> <span class="lang-en">In Session 2, we write a percent equation — part = percent × whole — and solve it for the unknown whole by dividing.</span><span class="lang-es" lang="es">En la Sesión 2, escribimos una ecuación de porcentaje — parte = porcentaje × todo — y la resolvemos para el todo desconocido dividiendo.</span> <span class="lang-en">It builds on today’s model. Open it when it is assigned.</span><span class="lang-es" lang="es">Se basa en el modelo de hoy. Ábranla cuando se las asignen.</span></p>
   </nav>
 
         <p class="hw-hero-bigidea" aria-label="Big idea">
-          <span class="hw-hero-bigidea-label"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
+          <span class="hw-hero-bigidea-label hw-inline"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
           <span class="lang-en">Tonight we work backwards: when we know a part and the percent that part represents, we find the whole amount it came from.</span><span class="lang-es" lang="es">Esta noche trabajamos al revés: cuando conocemos una parte y el porcentaje que representa, hallamos el total del que proviene.</span>
         </p>
-
-        <div class="hw-hero-controls">
-          <div class="lang-selector-card">
-            <span class="lang-selector-title">Language / Idioma</span>
-            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
-              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
-                🇺🇸🇪🇸 <span>Bilingual / Bilingüe</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
-                🇺🇸 <span>English</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
-                🇪🇸 <span>Español</span>
-              </button>
-            </div>
-          </div>
-        </div>
 
         <p class="hw-hero-lead">
           <span class="lang-en">Optional, ungraded practice. Work with someone or on your own; no adult signature is needed.</span>
@@ -521,8 +512,11 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
           </div>
         </section>
 
-        <ul class="hw-hero-stats" aria-label="What tonight looks like">
-          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">5</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">5</span> paradas</span></li>
+
+        <ul class="hw-tonight hw-inline" aria-label="Tonight at a glance">
+          <li><span aria-hidden="true">⏱</span> <strong><span data-hw-tonight-time>20–30</span> min</strong></li>
+          <li><span aria-hidden="true">✏️</span> <span class="lang-en">Pencil and paper</span><span class="lang-es" lang="es">Lápiz y papel</span></li>
+          <li><span aria-hidden="true">🎯</span> <span class="lang-en">Goal:</span><span class="lang-es" lang="es">Meta:</span> <strong><span data-hw-goal-count>4</span> <span class="lang-en">problems</span><span class="lang-es" lang="es">problemas</span></strong></li>
         </ul>
 
 
@@ -530,30 +524,31 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         <div class="hw-route-heading">
           <span class="hw-route-icon" aria-hidden="true">🧭</span>
           <div>
-            <h2 id="hw_route_title"><span class="lang-en">Choose a practice path</span><span class="lang-es" lang="es">Elige una ruta de práctica</span></h2>
-            <p><span class="lang-en">All practice is optional and ungraded. Choose the time that works for your family; your route choice is saved on this device.</span><span class="lang-es" lang="es">Toda la práctica es opcional y no lleva calificación. Elijan el tiempo que les funcione; la ruta queda guardada en este dispositivo.</span></p>
+            <h2 id="hw_route_title" class="hw-inline"><span class="lang-en">How much time do you have tonight?</span><span class="lang-es" lang="es">¿Cuánto tiempo tienen esta noche?</span></h2>
+            <p class="hw-inline"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
           </div>
         </div>
-        <div class="hw-route-options" role="group" aria-label="Choose a practice path" data-aria-en="Choose a practice path" data-aria-es="Elige una ruta de práctica">
+        <div class="hw-route-options" role="group" aria-label="How much time do you have tonight?" data-aria-en="How much time do you have tonight?" data-aria-es="¿Cuánto tiempo tienen esta noche?">
           <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
-            <span class="hw-route-time">5–10 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Quick practice</span><span class="lang-es" lang="es">Práctica breve</span></strong><small><span class="lang-en">One example, 2 problems, and one explanation.</span><span class="lang-es" lang="es">Un ejemplo, 2 problemas y una explicación.</span></small></span>
+            <span class="hw-route-time">5–10 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Quick</span><span class="lang-es" lang="es">Rápida</span></strong><small><span class="lang-en">One example and 2 problems.</span><span class="lang-es" lang="es">Un ejemplo y 2 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
-            <span class="hw-route-time">15–20 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Learn, explore key words, practice <span data-hw-core-count>6</span> problems, and explain.</span><span class="lang-es" lang="es">Aprende, explora palabras clave, practica <span data-hw-core-count>6</span> problemas y explica.</span></small></span>
+            <span class="hw-route-time">15–20 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Key words, then practice. Goal: 4 problems.</span><span class="lang-es" lang="es">Palabras clave y práctica. Meta: 4 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option is-active" data-route-mode="full" aria-pressed="true" onclick="setHomeworkRoute('full')">
-            <span class="hw-route-time">20–30 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Family Math Studio</span><span class="lang-es" lang="es">Estudio familiar de matemáticas</span></strong><small><span class="lang-en">Add one home mission and one math game. Go at your own pace.</span><span class="lang-es" lang="es">Agrega una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span></small></span>
+            <span class="hw-route-time">20–30 <small>min</small></span>
+            <span class="hw-route-badge"><span aria-hidden="true">★</span><span class="hw-sr-only"><span class="lang-en">Recommended</span><span class="lang-es" lang="es">Recomendada</span></span></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Full Studio</span><span class="lang-es" lang="es">Estudio completo</span></strong><small><span class="lang-en">Everything, plus a home mission and a game.</span><span class="lang-es" lang="es">Todo, más una misión en casa y un juego.</span></small></span>
           </button>
         </div>
         <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Family Math Studio selected: <span data-hw-core-count>6</span> problems, key words, one home mission, and one math game. Go at your own pace.</span>
-          <span class="lang-es" lang="es">Estudio familiar seleccionado: <span data-hw-core-count>6</span> problemas, palabras clave, una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span>
+          <span class="lang-en">Full Studio (recommended): everything, plus one home mission and one game. Everything is optional.</span>
+          <span class="lang-es" lang="es">Estudio completo (recomendada): todo, más una misión en casa y un juego. Todo es opcional.</span>
         </p>
         <p id="hw_resume_note" role="status" aria-live="polite"></p>
-        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start this path</span><span class="lang-es" lang="es">Empezar esta ruta</span></button>
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
       </section>
 
         <details class="hw-tools-menu"><summary><span class="lang-en">Tools: scratchpad, share, print &amp; standard</span><span class="lang-es" lang="es">Herramientas: pizarra, compartir, imprimir y estándar</span></summary>
@@ -706,6 +701,82 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
           <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Hallar el total dados la parte y el porcentaje</li><li>Parte</li><li>Total</li></ul></div>
         </div>
       </div>
+    </div>
+
+      <section class="hw-confidence" id="hw_conf_before" data-conf-phase="before" aria-labelledby="hw_conf_before_title">
+        <h3 id="hw_conf_before_title"><span class="lang-en">How sure do you feel about today&#039;s math?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes con la matemática de hoy?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_before_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="before" onclick="hwSetConfidence('before', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="before" onclick="hwSetConfidence('before', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="before" onclick="hwSetConfidence('before', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Just for you. It stays on this device. We ask again at the end.</span><span class="lang-es" lang="es">Solo para ti. Se queda en este dispositivo. Preguntamos otra vez al final.</span></p>
+
+      </section>
+
+      <section class="hw-mystery" id="hw_mystery" data-problem="problem_10" aria-labelledby="hw_mystery_title">
+        <span class="hw-mystery-lock" id="hw_mystery_lock" aria-hidden="true">🔒</span>
+        <div class="hw-mystery-body">
+          <p class="hw-eyebrow hw-inline"><span class="lang-en">Tonight&#039;s mystery challenge</span><span class="lang-es" lang="es">El reto misterioso de hoy</span></p>
+          <h3 id="hw_mystery_title"><span class="lang-en">Can you crack this before tonight is over?</span><span class="lang-es" lang="es">¿Puedes resolver esto antes de terminar hoy?</span></h3>
+          <p class="hw-mystery-stem"><span class="lang-en">18 students are 30% of an after-school group. How many students are in the whole group?</span><span class="lang-es" lang="es">18 estudiantes son el 30 % de un grupo después de clases. ¿Cuántos estudiantes hay en todo el grupo?</span></p>
+          <p class="hw-mystery-status" id="hw_mystery_status" role="status" aria-live="polite">
+            <span class="lang-en">Locked. Finish <span data-hw-goal-count>4</span> problems and it opens.</span>
+            <span class="lang-es" lang="es">Bloqueado. Termina <span data-hw-goal-count>4</span> problemas y se abre.</span>
+          </p>
+          <button type="button" class="hw-mystery-open" id="hw_mystery_open" hidden onclick="hwOpenMystery()">
+            <span class="lang-en">Open the mystery challenge ➔</span><span class="lang-es" lang="es">Abrir el reto misterioso ➔</span>
+          </button>
+        </div>
+      </section>
+      <div class="learn-big-idea-block" id="hw_learn_idea">
+
+      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span></h2>
+      <div class="big-idea">
+        <div class="family-big-idea-piece">
+          <div class="family-big-idea-copy">
+            <p class="lang-en">If $42 is 60% of a price, the full price is $70. The full amount represents 100%.</p>
+            <p class="lang-es" lang="es">Si $42 representa el 60% de un precio, el precio total es $70. La cantidad total representa el 100%.</p>
+            <button type="button" class="btn-read-aloud" onclick="speakHomeworkText(&quot;If $42 is 60% of a price, the full price is $70. The full amount represents 100%.&quot;, &quot;Si $42 representa el 60% de un precio, el precio total es $70. La cantidad total representa el 100%.&quot;)" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+          </div>
+          <div class="family-big-idea-visual family-whole-visual">
+      <div class="family-whole-labels">
+        <strong>$42 = 60%</strong>
+        <strong style="color:#0f766e;">100% = $70</strong>
+      </div>
+      <div class="family-whole-bar" aria-hidden="true">
+        <span class="is-filled" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#ffffff;">$7</span><span class="is-filled" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#ffffff;">$7</span><span class="is-filled" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#ffffff;">$7</span><span class="is-filled" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#ffffff;">$7</span><span class="is-filled" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#ffffff;">$7</span><span class="is-filled" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#ffffff;">$7</span><span class="" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#64748b;">$7</span><span class="" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#64748b;">$7</span><span class="" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#64748b;">$7</span><span class="" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#64748b;">$7</span>
+      </div>
+      <div class="family-discount-labels" style="margin-top:6px;">
+        <span style="color:#0f766e;"><span class="lang-en">6 blocks = $42 (60%)</span><span class="lang-es" lang="es">6 bloques = $42 (60%)</span></span>
+        <span style="color:#0369a1;"><span class="lang-en">10 blocks = $70 (100%)</span><span class="lang-es" lang="es">10 bloques = $70 (100%)</span></span>
+      </div>
+      <p style="margin:12px 0 0;font-size:15px;line-height:1.45;text-align:center;">
+        <span class="lang-en">How it works: Divide the part by the percent as a decimal: $42 ÷ 0.60 = $70. Each 10% block is $42 ÷ 6 = $7, so all 10 blocks equal 10 × $7 = $70.</span><span class="lang-es" lang="es">Cómo funciona: Divide la parte entre el porcentaje en decimal: $42 ÷ 0.60 = $70. Cada bloque de 10% vale $42 ÷ 6 = $7, así que los 10 bloques suman 10 × $7 = $70.</span>
+      </p>
+    </div>
+        </div>
+      </div>
+    </div>
+      <div class="learn-extended-block" id="hw_learn_try"><section class="family-visual-lab card-ish" data-family-paper-model="missing-whole"><h3><span class="lang-en">Build the missing whole</span><span class="lang-es" lang="es">Construye el total que falta</span></h3><p><span class="lang-en">Six beads are 25% of the bag. Draw a bar with four equal boxes. Label one box 25% and 6 beads. What belongs in each other box? Label the whole bar 100% and find the total. Check by finding one fourth of it.</span><span class="lang-es" lang="es">Seis cuentas son el 25% de la bolsa. Dibuja una barra con cuatro cajas iguales. Indica 25% y 6 cuentas en una caja. ¿Qué va en las otras? Indica 100% en toda la barra y halla el total. Comprueba hallando su cuarta parte.</span></p></section></div>
+
+
+      <div class="learn-extended-block" id="hw_learn_quick">
+    <details class="hw-grownup" id="hw_grownup">
+      <summary>
+        <span class="hw-grownup-icon" aria-hidden="true">👪</span>
+        <span class="hw-grownup-text hw-stack">
+          <strong class="hw-stack"><span class="lang-en">For the grown-up · 1 minute</span><span class="lang-es" lang="es">Para el adulto · 1 minuto</span></strong>
+          <small class="hw-stack"><span class="lang-en">Ask: When the whole is missing, why do we divide by the decimal percent instead of multiplying?</span><span class="lang-es" lang="es">Pregunta: Cuando falta el entero, ¿por qué dividimos entre el porcentaje decimal en vez de multiplicar?</span></small>
+        </span>
+        <span class="hw-grownup-chev" aria-hidden="true">▾</span>
+      </summary>
+      <div class="hw-grownup-body">
 
       <div class="parent-quick-card">
         <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
@@ -744,52 +815,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
           <button type="button" class="btn-read-aloud bridge-listen" onclick="speakHomeworkText(&quot;How you may have learned it. You may have learned to set up a proportion, 42/? = 60/100, and cross-multiply to find the missing whole. How we do it in class. In class we use 10 % as a stepping stone. If $42 is 60 %, we divide both by 6, so 10 % is $7. The whole is 100 %, ten of those steps: $7 × 10 = $70. Why both work. Dividing both numbers by 6 keeps the same ratio, and ten 10 % steps rebuild the whole. A proportion or the equation 0.6 × v = 42 follows the same ratio, so each lands on $70.&quot;, &quot;Cómo pudiste haberlo aprendido. Tal vez aprendiste a plantear una proporción, 42/? = 60/100, y multiplicar en cruz para hallar el total que falta. Cómo lo hacemos en clase. En clase usamos el 10 % como peldaño. Si $42 es el 60 %, dividimos ambos entre 6, así que el 10 % es $7. El total es el 100 %, diez de esos peldaños: $7 × 10 = $70. Por qué ambos funcionan. Dividir ambos números entre 6 conserva la misma razón, y diez peldaños de 10 % reconstruyen el total. Una proporción o la ecuación 0.6 × v = 42 siguen la misma razón, así que cada una llega a $70.&quot;)" aria-label="Listen to this card" data-aria-en="Listen to this card" data-aria-es="Escuchar esta tarjeta">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         </details>
       </div>
-    </div>
-      <div class="learn-big-idea-block" id="hw_learn_idea">
-
-      <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span></h2>
-      <div class="big-idea">
-        <div class="family-big-idea-piece">
-          <div class="family-big-idea-copy">
-            <p class="lang-en">If $42 is 60% of a price, the full price is $70. The full amount represents 100%.</p>
-            <p class="lang-es" lang="es">Si $42 representa el 60% de un precio, el precio total es $70. La cantidad total representa el 100%.</p>
-            <button type="button" class="btn-read-aloud" onclick="speakHomeworkText(&quot;If $42 is 60% of a price, the full price is $70. The full amount represents 100%.&quot;, &quot;Si $42 representa el 60% de un precio, el precio total es $70. La cantidad total representa el 100%.&quot;)" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
-          </div>
-          <div class="family-big-idea-visual family-whole-visual">
-      <div class="family-whole-labels">
-        <strong>$42 = 60%</strong>
-        <strong style="color:#0f766e;">100% = $70</strong>
-      </div>
-      <div class="family-whole-bar" aria-hidden="true">
-        <span class="is-filled" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#ffffff;">$7</span><span class="is-filled" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#ffffff;">$7</span><span class="is-filled" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#ffffff;">$7</span><span class="is-filled" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#ffffff;">$7</span><span class="is-filled" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#ffffff;">$7</span><span class="is-filled" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#ffffff;">$7</span><span class="" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#64748b;">$7</span><span class="" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#64748b;">$7</span><span class="" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#64748b;">$7</span><span class="" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#64748b;">$7</span>
-      </div>
-      <div class="family-discount-labels" style="margin-top:6px;">
-        <span style="color:#0f766e;"><span class="lang-en">6 blocks = $42 (60%)</span><span class="lang-es" lang="es">6 bloques = $42 (60%)</span></span>
-        <span style="color:#0369a1;"><span class="lang-en">10 blocks = $70 (100%)</span><span class="lang-es" lang="es">10 bloques = $70 (100%)</span></span>
-      </div>
-      <p style="margin:12px 0 0;font-size:15px;line-height:1.45;text-align:center;">
-        <span class="lang-en">How it works: Divide the part by the percent as a decimal: $42 ÷ 0.60 = $70. Each 10% block is $42 ÷ 6 = $7, so all 10 blocks equal 10 × $7 = $70.</span><span class="lang-es" lang="es">Cómo funciona: Divide la parte entre el porcentaje en decimal: $42 ÷ 0.60 = $70. Cada bloque de 10% vale $42 ÷ 6 = $7, así que los 10 bloques suman 10 × $7 = $70.</span>
-      </p>
-    </div>
-        </div>
-      </div>
-    </div>
-      <div class="learn-extended-block" id="hw_learn_try"><section class="family-visual-lab card-ish" data-family-paper-model="missing-whole"><h3><span class="lang-en">Build the missing whole</span><span class="lang-es" lang="es">Construye el total que falta</span></h3><p><span class="lang-en">Six beads are 25% of the bag. Draw a bar with four equal boxes. Label one box 25% and 6 beads. What belongs in each other box? Label the whole bar 100% and find the total. Check by finding one fourth of it.</span><span class="lang-es" lang="es">Seis cuentas son el 25% de la bolsa. Dibuja una barra con cuatro cajas iguales. Indica 25% y 6 cuentas en una caja. ¿Qué va en las otras? Indica 100% en toda la barra y halla el total. Comprueba hallando su cuarta parte.</span></p></section></div>
-
-
-      <div class="learn-extended-block" id="hw_learn_quick">
-    <details class="parent-coaching-drawer">
-      <summary class="parent-coaching-summary">
-        <span class="summary-left">
-          <span class="summary-icon">💡</span>
-          <span class="summary-text">
-            <strong><span class="lang-en">Parent Coaching Tips &amp; Real-World Connection</span><span class="lang-es" lang="es">Consejos para Padres y Conexión Real</span></strong>
-            <small><span class="lang-en">Tap to view coaching questions, common traps &amp; everyday examples</span><span class="lang-es" lang="es">Toca para ver preguntas guía, errores comunes y ejemplos</span></small>
-          </span>
-        </span>
-        <span class="summary-chevron" aria-hidden="true">▾</span>
-      </summary>
-      <div class="parent-coaching-content">
 
     <div class="real-world-spotlight card-ish">
       <div class="spotlight-badge"><span class="spotlight-icon" aria-hidden="true">🔍</span> <span><span class="lang-en">WHY THIS MATTERS</span><span class="lang-es" lang="es">¿POR QUÉ IMPORTA?</span></span></div>
@@ -967,7 +992,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Determine the Whole Given the Part and Percent&quot;, &quot;Hallar el total dados la parte y el porcentaje&quot;)" title="Listen / Escuchar" aria-label="Pronounce Determine the Whole Given the Part and Percent">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/percent-base.svg" alt="Illustration of Determine the Whole Given the Part and Percent: Working backwards from a part and its percent to find the whole amount it came from." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent-base.svg" alt="Illustration of Determine the Whole Given the Part and Percent: Use a part and its percent to find the whole." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -993,8 +1018,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <p class="vocab-back-term-es" lang="es">Hallar el total dados la parte y el porcentaje</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">Working backwards from a part and its percent to find the whole amount it came from.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Trabajar al revés a partir de una parte y su porcentaje para hallar el total del que proviene.</p>
+                    <p class="vocab-def">Use a part and its percent to find the whole.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Usar una parte y su porcentaje para hallar el total.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>$42 is 60% of what? → $70</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1015,7 +1040,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Part&quot;, &quot;Parte&quot;)" title="Listen / Escuchar" aria-label="Pronounce Part">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/percent-part.svg" alt="Illustration of Part: The amount you already know — the piece of the whole that the percent describes." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent-part.svg" alt="Illustration of Part: A piece of the whole." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1041,8 +1066,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <p class="vocab-back-term-es" lang="es">Parte</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">The amount you already know — the piece of the whole that the percent describes.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> La cantidad que ya conoces: el pedazo del total que describe el porcentaje.</p>
+                    <p class="vocab-def">A piece of the whole.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una pieza del total.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>The $42 sale price is the part</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1063,7 +1088,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Whole&quot;, &quot;Total&quot;)" title="Listen / Escuchar" aria-label="Pronounce Whole">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/part-to-whole.svg" alt="Illustration of Whole: The full amount the percent is measured against. The whole is always 100%." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/part-to-whole.svg" alt="Illustration of Whole: The full amount. It is always 100%." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1089,8 +1114,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <p class="vocab-back-term-es" lang="es">Total</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">The full amount the percent is measured against. The whole is always 100%.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> La cantidad completa contra la que se mide el porcentaje. El total siempre es 100 %.</p>
+                    <p class="vocab-def">The full amount. It is always 100%.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> La cantidad completa. Siempre es 100 %.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>The original price is the whole = 100%</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1111,7 +1136,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Double number line&quot;, &quot;Recta numérica doble&quot;)" title="Listen / Escuchar" aria-label="Pronounce Double number line">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/number-line.svg" alt="Illustration of Double number line: Two lines lined up — dollars on one, percents on the other — so matching marks show the same amount two ways." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/number-line.svg" alt="Illustration of Double number line: Two number lines side by side. Marks that line up go together." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1137,8 +1162,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <p class="vocab-back-term-es" lang="es">Recta numérica doble</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">Two lines lined up — dollars on one, percents on the other — so matching marks show the same amount two ways.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Dos rectas alineadas —dólares en una y porcentajes en la otra— para que las marcas correspondientes muestren la misma cantidad de dos formas.</p>
+                    <p class="vocab-def">Two number lines side by side. Marks that line up go together.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Dos rectas numéricas juntas. Las marcas que coinciden van juntas.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>$0, $7, $42, $70 above 0%, 10%, 60%, 100%</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1159,7 +1184,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Equation&quot;, &quot;Ecuación&quot;)" title="Listen / Escuchar" aria-label="Pronounce Equation">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/equation-0-7v.svg" alt="Illustration of Equation: A math sentence with an equal sign. Here it says percent × whole = part, with the whole unknown." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/equation-0-7v.svg" alt="Illustration of Equation: A math sentence with an equal sign." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1185,8 +1210,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <p class="vocab-back-term-es" lang="es">Ecuación</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A math sentence with an equal sign. Here it says percent × whole = part, with the whole unknown.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una oración matemática con signo de igual. Aquí dice porcentaje × total = parte, con el total desconocido.</p>
+                    <p class="vocab-def">A math sentence with an equal sign.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una oración matemática con un signo de igual.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>0.7v = 26,600 — the percent times the unknown whole equals the part</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1207,7 +1232,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Percent&quot;, &quot;Porcentaje&quot;)" title="Listen / Escuchar" aria-label="Pronounce Percent">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Percent: A ratio comparing a number to 100. To compute with it, write it in decimal form: 60% = 0.6." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Percent: A number out of 100, shown with the % sign." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1233,8 +1258,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <p class="vocab-back-term-es" lang="es">Porcentaje</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A ratio comparing a number to 100. To compute with it, write it in decimal form: 60% = 0.6.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una razón que compara un número con 100. Para calcular con él, escríbelo en forma decimal: 60 % = 0.6.</p>
+                    <p class="vocab-def">A number out of 100, shown with the % sign.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número de cada 100, con el signo %.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>60% = 0.6 · 70% = 0.7</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1255,7 +1280,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Inverse operation&quot;, &quot;Operación inversa&quot;)" title="Listen / Escuchar" aria-label="Pronounce Inverse operation">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/equation.svg" alt="Illustration of Inverse operation: The operation that undoes another operation." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/equation.svg" alt="Illustration of Inverse operation: Two actions that undo each other, like × and ÷." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1281,8 +1306,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <p class="vocab-back-term-es" lang="es">Operación inversa</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">The operation that undoes another operation.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> La operación que deshace otra operación.</p>
+                    <p class="vocab-def">Two actions that undo each other, like × and ÷.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Dos acciones que se deshacen entre sí, como × y ÷.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>Division undoes multiplication.</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1316,7 +1341,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         <p class="vq-done-score"><span class="lang-en">First-try stars:</span><span class="lang-es" lang="es">Estrellas al primer intento:</span> <strong id="vocab_quiz_score"></strong></p>
         <button type="button" class="btn btn-secondary" onclick="startVocabQuiz()"><span class="lang-en">Play again 🔄</span><span class="lang-es" lang="es">Jugar de nuevo 🔄</span></button>
       </div>
-      <script type="application/json" id="vocab_quiz_data">[{"term":"Determine the Whole Given the Part and Percent","termEs":"Hallar el total dados la parte y el porcentaje","def":"Working backwards from a part and its percent to find the whole amount it came from.","defEs":"Trabajar al revés a partir de una parte y su porcentaje para hallar el total del que proviene.","img":"/assets/vocab-images/percent-base.svg","alt":"Illustration of Determine the Whole Given the Part and Percent: Working backwards from a part and its percent to find the whole amount it came from."},{"term":"Part","termEs":"Parte","def":"The amount you already know — the piece of the whole that the percent describes.","defEs":"La cantidad que ya conoces: el pedazo del total que describe el porcentaje.","img":"/assets/vocab-images/percent-part.svg","alt":"Illustration of Part: The amount you already know — the piece of the whole that the percent describes."},{"term":"Whole","termEs":"Total","def":"The full amount the percent is measured against. The whole is always 100%.","defEs":"La cantidad completa contra la que se mide el porcentaje. El total siempre es 100 %.","img":"/assets/vocab-images/part-to-whole.svg","alt":"Illustration of Whole: The full amount the percent is measured against. The whole is always 100%."},{"term":"Double number line","termEs":"Recta numérica doble","def":"Two lines lined up — dollars on one, percents on the other — so matching marks show the same amount two ways.","defEs":"Dos rectas alineadas —dólares en una y porcentajes en la otra— para que las marcas correspondientes muestren la misma cantidad de dos formas.","img":"/assets/vocab-images/number-line.svg","alt":"Illustration of Double number line: Two lines lined up — dollars on one, percents on the other — so matching marks show the same amount two ways."},{"term":"Equation","termEs":"Ecuación","def":"A math sentence with an equal sign. Here it says percent × whole = part, with the whole unknown.","defEs":"Una oración matemática con signo de igual. Aquí dice porcentaje × total = parte, con el total desconocido.","img":"/assets/vocab-images/equation-0-7v.svg","alt":"Illustration of Equation: A math sentence with an equal sign. Here it says percent × whole = part, with the whole unknown."},{"term":"Percent","termEs":"Porcentaje","def":"A ratio comparing a number to 100. To compute with it, write it in decimal form: 60% = 0.6.","defEs":"Una razón que compara un número con 100. Para calcular con él, escríbelo en forma decimal: 60 % = 0.6.","img":"/assets/vocab-images/percent.svg","alt":"Illustration of Percent: A ratio comparing a number to 100. To compute with it, write it in decimal form: 60% = 0.6."},{"term":"Inverse operation","termEs":"Operación inversa","def":"The operation that undoes another operation.","defEs":"La operación que deshace otra operación.","img":"/assets/vocab-images/equation.svg","alt":"Illustration of Inverse operation: The operation that undoes another operation."}]</script>
+      <script type="application/json" id="vocab_quiz_data">[{"term":"Determine the Whole Given the Part and Percent","termEs":"Hallar el total dados la parte y el porcentaje","def":"Use a part and its percent to find the whole.","defEs":"Usar una parte y su porcentaje para hallar el total.","img":"/assets/vocab-images/percent-base.svg","alt":"Illustration of Determine the Whole Given the Part and Percent: Use a part and its percent to find the whole."},{"term":"Part","termEs":"Parte","def":"A piece of the whole.","defEs":"Una pieza del total.","img":"/assets/vocab-images/percent-part.svg","alt":"Illustration of Part: A piece of the whole."},{"term":"Whole","termEs":"Total","def":"The full amount. It is always 100%.","defEs":"La cantidad completa. Siempre es 100 %.","img":"/assets/vocab-images/part-to-whole.svg","alt":"Illustration of Whole: The full amount. It is always 100%."},{"term":"Double number line","termEs":"Recta numérica doble","def":"Two number lines side by side. Marks that line up go together.","defEs":"Dos rectas numéricas juntas. Las marcas que coinciden van juntas.","img":"/assets/vocab-images/number-line.svg","alt":"Illustration of Double number line: Two number lines side by side. Marks that line up go together."},{"term":"Equation","termEs":"Ecuación","def":"A math sentence with an equal sign.","defEs":"Una oración matemática con un signo de igual.","img":"/assets/vocab-images/equation-0-7v.svg","alt":"Illustration of Equation: A math sentence with an equal sign."},{"term":"Percent","termEs":"Porcentaje","def":"A number out of 100, shown with the % sign.","defEs":"Un número de cada 100, con el signo %.","img":"/assets/vocab-images/percent.svg","alt":"Illustration of Percent: A number out of 100, shown with the % sign."},{"term":"Inverse operation","termEs":"Operación inversa","def":"Two actions that undo each other, like × and ÷.","defEs":"Dos acciones que se deshacen entre sí, como × y ÷.","img":"/assets/vocab-images/equation.svg","alt":"Illustration of Inverse operation: Two actions that undo each other, like × and ÷."}]</script>
     </div>
 
     <div class="vocab-game-shell card-ish" id="vocab_match_shell" data-vocab-total="7">
@@ -1376,32 +1401,32 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         <div class="vocab-match-col col-defs" aria-label="Vocabulary definitions">
 
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="6" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">The operation that undoes another operation.</span>
-              <span class="chip-label-es" lang="es">La operación que deshace otra operación.</span>
+              <span class="chip-label-en">Two actions that undo each other, like × and ÷.</span>
+              <span class="chip-label-es" lang="es">Dos acciones que se deshacen entre sí, como × y ÷.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="0" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">Working backwards from a part and its percent to find the whole amount it came from.</span>
-              <span class="chip-label-es" lang="es">Trabajar al revés a partir de una parte y su porcentaje para hallar el total del que proviene.</span>
+              <span class="chip-label-en">Use a part and its percent to find the whole.</span>
+              <span class="chip-label-es" lang="es">Usar una parte y su porcentaje para hallar el total.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="1" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">The amount you already know — the piece of the whole that the percent describes.</span>
-              <span class="chip-label-es" lang="es">La cantidad que ya conoces: el pedazo del total que describe el porcentaje.</span>
+              <span class="chip-label-en">A piece of the whole.</span>
+              <span class="chip-label-es" lang="es">Una pieza del total.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="2" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">The full amount the percent is measured against. The whole is always 100%.</span>
-              <span class="chip-label-es" lang="es">La cantidad completa contra la que se mide el porcentaje. El total siempre es 100 %.</span>
+              <span class="chip-label-en">The full amount. It is always 100%.</span>
+              <span class="chip-label-es" lang="es">La cantidad completa. Siempre es 100 %.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="3" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">Two lines lined up — dollars on one, percents on the other — so matching marks show the same amount two ways.</span>
-              <span class="chip-label-es" lang="es">Dos rectas alineadas —dólares en una y porcentajes en la otra— para que las marcas correspondientes muestren la misma cantidad de dos formas.</span>
+              <span class="chip-label-en">Two number lines side by side. Marks that line up go together.</span>
+              <span class="chip-label-es" lang="es">Dos rectas numéricas juntas. Las marcas que coinciden van juntas.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="4" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A math sentence with an equal sign. Here it says percent × whole = part, with the whole unknown.</span>
-              <span class="chip-label-es" lang="es">Una oración matemática con signo de igual. Aquí dice porcentaje × total = parte, con el total desconocido.</span>
+              <span class="chip-label-en">A math sentence with an equal sign.</span>
+              <span class="chip-label-es" lang="es">Una oración matemática con un signo de igual.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="5" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A ratio comparing a number to 100. To compute with it, write it in decimal form: 60% = 0.6.</span>
-              <span class="chip-label-es" lang="es">Una razón que compara un número con 100. Para calcular con él, escríbelo en forma decimal: 60 % = 0.6.</span>
+              <span class="chip-label-en">A number out of 100, shown with the % sign.</span>
+              <span class="chip-label-es" lang="es">Un número de cada 100, con el signo %.</span>
             </button>
         </div>
       </div>
@@ -1431,29 +1456,24 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
       <p class="quick-check-time bilingual-block">
-        <span class="lang-en">Complete the <span id="hw_check_problem_count">12</span> problems below.<span class="quick-check-extra-copy"> The extra practice at the bottom is optional.</span></span>
-        <span class="lang-es" lang="es">Completa los <span id="hw_check_problem_count_es">12</span> problemas de abajo.<span class="quick-check-extra-copy"> La práctica extra al final es opcional.</span></span>
-      </p>
-      <p class="bilingual-block">
-        <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
-        <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+        <span class="lang-en">Start with <strong>Basics</strong>. Each problem has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong> and a <strong>space for your work</strong>. Tap <strong>Check This Problem</strong> for instant help.<span class="quick-check-extra-copy"> The extra practice at the bottom is optional.</span></span>
+        <span class="lang-es" lang="es">Empiecen con las <strong>Básicas</strong>. Cada problema tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para su trabajo</strong>. Toquen <strong>Revisar esta pregunta</strong> para recibir ayuda al instante.<span class="quick-check-extra-copy"> La práctica extra al final es opcional.</span></span>
       </p>
 
 
-    <div class="stars-to-win-bar">
-      <div class="stars-to-win-title">
-        <span>⭐</span>
-        <div>
-          <span class="lang-en"><strong>Tonight's goal:</strong> finish the <span id="hw_goal_count">12</span> problems below. Stop any time — your work saves itself.</span>
-          <span class="lang-es" lang="es"><strong>La meta de hoy:</strong> terminar los <span id="hw_goal_count_es">12</span> problemas de abajo. Pueden parar cuando quieran: el trabajo se guarda solo.</span>
-        </div>
-      </div>
-      <div class="stars-milestone-chips" aria-hidden="true">
-        <span class="star-chip">🧱 Basics</span>
-        <span class="star-chip">🌱 Warm-Up ★</span>
-        <span class="star-chip">🚀 Level-Up ★★</span>
-        <span class="star-chip">🏆 Victory ★★★</span>
-      </div>
+    <div class="hw-goal-card">
+      <span class="hw-pips " role="img" aria-label="Tonight's goal progress"></span>
+      <p>
+        <span class="lang-en"><strong>Tonight's goal: any <span data-hw-goal-count>4</span> problems.</strong> There are <span data-hw-goal-avail>12</span> here, so pick the ones you like. Stop any time. Your work saves itself.</span>
+        <span class="lang-es" lang="es"><strong>La meta de hoy: cualquier <span data-hw-goal-count>4</span> problemas.</strong> Aquí hay <span data-hw-goal-avail>12</span>, así que escojan los que prefieran. Pueden parar cuando quieran. El trabajo se guarda solo.</span>
+      </p>
+      <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
+    </div>
+    <div class="stars-milestone-chips" aria-hidden="true">
+      <span class="star-chip">🧱 Basics</span>
+      <span class="star-chip">🌱 Warm-Up ★</span>
+      <span class="star-chip">🚀 Level-Up ★★</span>
+      <span class="star-chip">🏆 Victory ★★★</span>
     </div>
 
     <div class="live-streak-banner" id="hw_streak_banner" hidden>
@@ -1476,9 +1496,12 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         <strong><span class="lang-en">That's tonight's goal — done!</span><span class="lang-es" lang="es">¡Esa es la meta de hoy: completa!</span></strong>
         <p><span class="lang-en">Great work. Keep going with the extra practice if you want more, or head to <strong>Done</strong> to finish or choose optional extras.</span><span class="lang-es" lang="es">Buen trabajo. Sigan con la práctica extra si quieren más, o vayan a <strong>Listo</strong> para terminar o elegir extras opcionales.</span></p>
       </div>
-      <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
-        <span class="lang-en">Claim Certificate ➔</span><span class="lang-es" lang="es">Reclamar Certificado ➔</span>
-      </button>
+      <div class="goal-actions">
+        <button type="button" class="btn btn-sm btn-secondary hw-banner-mystery" hidden onclick="hwOpenMystery()"><span class="lang-en">🔓 Open the mystery challenge</span><span class="lang-es" lang="es">🔓 Abrir el reto misterioso</span></button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
+          <span class="lang-en">Teach it back, then claim your certificate ➔</span><span class="lang-es" lang="es">Enséñalo y reclama tu certificado ➔</span>
+        </button>
+      </div>
     </div>
 
       <section class="practice-tier practice-tier-basic" aria-label="Basic practice">
@@ -4114,7 +4137,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
     </div>
 
     <div class="fam-game-break card-ish" id="fam_game_break">
-      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"1/2 as a percent","b":"50%"},{"a":"0.25","b":"25%"},{"a":"percent","b":"per 100"},{"a":"30 out of 100","b":"30%"}],"tf":[{"en":"Percent means “per 100.”","es":"Por ciento significa “por cada 100.”","answer":true,"whyEn":"45% means 45 out of every 100.","whyEs":"45% significa 45 de cada 100."},{"en":"25% of a number is the same as 1/4 of it.","es":"El 25% de un número es lo mismo que 1/4 de él.","answer":true,"whyEn":"25 out of 100 simplifies to 1/4, so both take the same amount.","whyEs":"25 de 100 se simplifica a 1/4, así que ambos toman la misma cantidad."},{"en":"A percent can never be more than 100.","es":"Un porcentaje nunca puede ser mayor que 100.","answer":false,"whyEn":"150% just means one and a half times the whole — 150% of 20 is 30.","whyEs":"150% significa una vez y media el total: el 150% de 20 es 30."},{"en":"To find 10% of a number, move the decimal point one place to the left.","es":"Para hallar el 10% de un número, mueve el punto decimal un lugar a la izquierda.","answer":true,"whyEn":"10% of 80 is 8.0 — and that makes 5% and 20% easy from there.","whyEs":"El 10% de 80 es 8.0, y desde ahí el 5% y el 20% salen fácil."},{"en":"Taking 50% off, then 50% off again, is the same as 100% off.","es":"Quitar 50%, y luego otro 50%, es lo mismo que quitar 100%.","answer":false,"whyEn":"The second 50% comes off the SMALLER price, so you still pay 25% — never free.","whyEs":"El segundo 50% se quita del precio MÁS PEQUEÑO, así que pagas 25%: nunca es gratis."}],"sort":{"a":{"en":"Equal to 1/4","es":"Igual a 1/4"},"b":{"en":"NOT equal to 1/4","es":"NO es igual a 1/4"},"cards":[{"t":"25%","bucket":0,"en":"25 out of 100 = 1/4.","es":"25 de 100 = 1/4."},{"t":"0.25","bucket":0,"en":"Twenty-five hundredths = 1/4.","es":"Veinticinco centésimas = 1/4."},{"t":"25 out of 100","bucket":0,"en":"That is what the word percent means.","es":"Eso es lo que significa la palabra por ciento."},{"t":"2.5%","bucket":1,"en":"2.5 out of 100 — that is 1/40, ten times smaller.","es":"2.5 de 100: eso es 1/40, diez veces más pequeño."},{"t":"1/40","bucket":1,"en":"Much smaller than one quarter.","es":"Mucho más pequeño que un cuarto."},{"t":"4%","bucket":1,"en":"That flips the fraction — 1/4 is 25%, not 4%.","es":"Eso invierte la fracción: 1/4 es 25%, no 4%."}]},"wyr":[{"a":{"en":"25% off a $40 jacket","es":"25% de descuento en una chaqueta de $40"},"b":{"en":"$12 off a $40 jacket","es":"$12 de descuento en una chaqueta de $40"},"en":"Take the $12. 25% of $40 is only $10 — a percent is worth whatever the whole is worth.","es":"Tomen los $12. El 25% de $40 son solo $10: un porcentaje vale según el total del que se saca."},{"a":{"en":"A 10% raise on $500 a week","es":"Un aumento del 10% sobre $500 por semana"},"b":{"en":"A $40 raise on $500 a week","es":"Un aumento de $40 sobre $500 por semana"},"en":"Take the 10% — that is $50, ten dollars more than the flat $40. Same idea, opposite answer.","es":"Tomen el 10%: son $50, diez dólares más que los $40 fijos. La misma idea, respuesta opuesta."}]};</script>
+      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"1/2 as a percent","b":"50%","aEs":"1/2 como porcentaje","bEs":""},{"a":"0.25","b":"25%","aEs":"","bEs":""},{"a":"percent","b":"per 100","aEs":"porcentaje","bEs":"por cada 100"},{"a":"30 out of 100","b":"30%","aEs":"30 de cada 100","bEs":""}],"tf":[{"en":"Percent means “per 100.”","es":"Por ciento significa “por cada 100.”","answer":true,"whyEn":"45% means 45 out of every 100.","whyEs":"45% significa 45 de cada 100."},{"en":"25% of a number is the same as 1/4 of it.","es":"El 25% de un número es lo mismo que 1/4 de él.","answer":true,"whyEn":"25 out of 100 simplifies to 1/4, so both take the same amount.","whyEs":"25 de 100 se simplifica a 1/4, así que ambos toman la misma cantidad."},{"en":"A percent can never be more than 100.","es":"Un porcentaje nunca puede ser mayor que 100.","answer":false,"whyEn":"150% just means one and a half times the whole — 150% of 20 is 30.","whyEs":"150% significa una vez y media el total: el 150% de 20 es 30."},{"en":"To find 10% of a number, move the decimal point one place to the left.","es":"Para hallar el 10% de un número, mueve el punto decimal un lugar a la izquierda.","answer":true,"whyEn":"10% of 80 is 8.0 — and that makes 5% and 20% easy from there.","whyEs":"El 10% de 80 es 8.0, y desde ahí el 5% y el 20% salen fácil."},{"en":"Taking 50% off, then 50% off again, is the same as 100% off.","es":"Quitar 50%, y luego otro 50%, es lo mismo que quitar 100%.","answer":false,"whyEn":"The second 50% comes off the SMALLER price, so you still pay 25% — never free.","whyEs":"El segundo 50% se quita del precio MÁS PEQUEÑO, así que pagas 25%: nunca es gratis."}],"sort":{"a":{"en":"Equal to 1/4","es":"Igual a 1/4"},"b":{"en":"NOT equal to 1/4","es":"NO es igual a 1/4"},"cards":[{"t":"25%","bucket":0,"en":"25 out of 100 = 1/4.","es":"25 de 100 = 1/4."},{"t":"0.25","bucket":0,"en":"Twenty-five hundredths = 1/4.","es":"Veinticinco centésimas = 1/4."},{"t":"25 out of 100","bucket":0,"en":"That is what the word percent means.","es":"Eso es lo que significa la palabra por ciento."},{"t":"2.5%","bucket":1,"en":"2.5 out of 100 — that is 1/40, ten times smaller.","es":"2.5 de 100: eso es 1/40, diez veces más pequeño."},{"t":"1/40","bucket":1,"en":"Much smaller than one quarter.","es":"Mucho más pequeño que un cuarto."},{"t":"4%","bucket":1,"en":"That flips the fraction — 1/4 is 25%, not 4%.","es":"Eso invierte la fracción: 1/4 es 25%, no 4%."}]},"wyr":[{"a":{"en":"25% off a $40 jacket","es":"25% de descuento en una chaqueta de $40"},"b":{"en":"$12 off a $40 jacket","es":"$12 de descuento en una chaqueta de $40"},"en":"Take the $12. 25% of $40 is only $10 — a percent is worth whatever the whole is worth.","es":"Tomen los $12. El 25% de $40 son solo $10: un porcentaje vale según el total del que se saca."},{"a":{"en":"A 10% raise on $500 a week","es":"Un aumento del 10% sobre $500 por semana"},"b":{"en":"A $40 raise on $500 a week","es":"Un aumento de $40 sobre $500 por semana"},"en":"Take the 10% — that is $50, ten dollars more than the flat $40. Same idea, opposite answer.","es":"Tomen el 10%: son $50, diez dólares más que los $40 fijos. La misma idea, respuesta opuesta."}]};</script>
       <div class="fam-game-head">
         <span class="fam-game-badge">🎮 <span class="lang-en">FAMILY ARCADE</span><span class="lang-es" lang="es">SALA DE JUEGOS EN FAMILIA</span></span>
         <p class="fam-game-lead">
@@ -4302,7 +4325,40 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
     </div>
 <div class="tab-panel-inner" data-tab-panel="done" id="hw_panel_done" role="tabpanel" hidden>
       <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
-      <p class="family-explain-finish"><span class="lang-en">Explain one answer aloud or on paper: “I got ___ because ___. I checked by ___.” Include your strategy and units. Then you are done.</span><span class="lang-es" lang="es">Explica una respuesta en voz alta o en papel: “Obtuve ___ porque ___. Comprobé usando ___.” Incluye tu estrategia y las unidades. Después termina.</span></p>
+
+      <section class="hw-teach" aria-labelledby="hw_teach_title">
+        <p class="hw-eyebrow hw-inline"><span class="lang-en">The last step</span><span class="lang-es" lang="es">El último paso</span></p>
+        <h3 id="hw_teach_title"><span class="lang-en">Teach it to someone</span><span class="lang-es" lang="es">Enséñaselo a alguien</span></h3>
+        <ol class="hw-teach-steps">
+          <li><span class="lang-en">Pick one problem you solved.</span><span class="lang-es" lang="es">Elige un problema que resolviste.</span></li>
+          <li><span class="lang-en">Explain it out loud. Use any language first.</span><span class="lang-es" lang="es">Explícalo en voz alta. Usa primero el idioma que prefieras.</span></li>
+          <li><span class="lang-en">Say it again with the English math words:</span><span class="lang-es" lang="es">Dilo otra vez con las palabras de matemáticas en inglés:</span><ul class="hw-teach-words" aria-label="Words to use"><li><strong>Determine the Whole Given the Part and Percent</strong><span class="lang-es" lang="es"> · Hallar el total dados la parte y el porcentaje</span></li><li><strong>Part</strong><span class="lang-es" lang="es"> · Parte</span></li><li><strong>Whole</strong><span class="lang-es" lang="es"> · Total</span></li></ul></li>
+          <li><span class="lang-en">Your partner asks: “How do you know?” Answer with: “I got ___ because ___. I checked by ___.”</span><span class="lang-es" lang="es">Tu acompañante pregunta: “¿Cómo lo sabes?” Responde: “Obtuve ___ porque ___. Comprobé usando ___.”</span></li>
+        </ol>
+      </section>
+
+      <section class="hw-confidence" id="hw_conf_after" data-conf-phase="after" aria-labelledby="hw_conf_after_title">
+        <h3 id="hw_conf_after_title"><span class="lang-en">How sure do you feel now?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes ahora?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_after_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="after" onclick="hwSetConfidence('after', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="after" onclick="hwSetConfidence('after', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="after" onclick="hwSetConfidence('after', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Compare it with how you felt at the start.</span><span class="lang-es" lang="es">Compáralo con cómo te sentías al empezar.</span></p>
+        <p class="hw-conf-growth" id="hw_conf_growth" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="hw-nights" id="hw_nights" aria-labelledby="hw_nights_title">
+        <h3 id="hw_nights_title"><span class="lang-en">Our family math nights</span><span class="lang-es" lang="es">Nuestras noches de matemáticas en familia</span></h3>
+        <ol class="hw-nights-week" id="hw_nights_week" aria-label="This week"></ol>
+        <p class="hw-nights-streak" id="hw_nights_streak" role="status" aria-live="polite"></p>
+        <p class="hw-nights-note"><span class="lang-en">Weekends never break it. Saved only on this device.</span><span class="lang-es" lang="es">Los fines de semana no la interrumpen. Se guarda solo en este dispositivo.</span></p>
+      </section>
       <div class="done-summary" id="hw_done_summary" role="status" aria-live="polite"></div>
       <ol class="done-problem-list" id="hw_done_problems" aria-label="Problems / Problemas"></ol>
       <p class="celebrate-text lang-en">Name one strategy that helped, or one question to ask next time. You can stop here; no adult signature is needed.</p>
@@ -4312,9 +4368,16 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
 
+
+      <div class="hw-share">
+        <button type="button" class="btn btn-secondary hw-share-win" onclick="hwShareWin()">
+          🎉 <span class="lang-en">Share our win</span><span class="lang-es" lang="es">Compartir nuestro logro</span>
+        </button>
+        <p class="hw-share-note"><span class="lang-en">Shares only the lesson name and a link. No answers, no names.</span><span class="lang-es" lang="es">Comparte solo el nombre de la lección y un enlace. Sin respuestas ni nombres.</span></p>
+      </div>
       <div class="homework-message-action">
         <a class="btn btn-primary" href="https://home.classdojo.com/" target="_blank" rel="noopener"><span class="lang-en">Open ClassDojo to message Mr. Neft</span><span class="lang-es" lang="es">Abrir ClassDojo para escribir al Sr. Neft</span></a>
-        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicia sesión con tu cuenta familiar, abre Mensajes y elige al Sr. Neft. Incluye el número de esta lección y tu pregunta.</span></p>
+        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicien sesión con su cuenta familiar, abran Mensajes y elijan al Sr. Neft. Incluyan el número de esta lección y su pregunta.</span></p>
       </div>
       <section class="homework-optional-extras" aria-labelledby="homework_extras_title">
       <h3 id="homework_extras_title"><span class="lang-en">Want to do more?</span><span class="lang-es" lang="es">¿Quieren hacer más?</span></h3>
@@ -4783,18 +4846,15 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
           </span>
           <span class="ai-lab-arrow" aria-hidden="true">↓</span>
         </a>
-        <p class="bilingual-block">
-          <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
-          <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
+
+        <p class="bilingual-block external-resource-claim">
+          <span class="lang-en">These links go to <strong>specific</strong> videos about tonight's topic — not general math pages.</span>
+          <span class="lang-es" lang="es">Estos enlaces van a videos <strong>específicos</strong> sobre el tema de hoy — no a páginas generales.</span>
         </p>
         <ul class="external-resource-list">
-
             <li>
-              <a href="https://www.khanacademy.org/math/6th-engage-ny/engage-6th-module-1/6th-module-1-topic-d/v/finding-the-whole-with-a-tape-diagram" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Find the whole with a tape diagram</span>
-                <span class="ext-title-es" lang="es">Hallar el total con un diagrama de cinta</span>
-              </a>
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/x0267d782:cc-6th-rates-and-percentages/x0267d782:visualize-percents/v/finding-the-whole-with-a-tape-diagram" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-en"><span class="ext-source">Khan Academy</span><span class="ext-title-en">Finding the whole with a tape diagram</span></a>
+              <a href="https://es.khanacademy.org/math/cc-sixth-grade-math/x0267d782:cc-6th-rates-and-percentages/x0267d782:visualize-percents/v/finding-the-whole-with-a-tape-diagram" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-es" lang="es"><span class="ext-source">Khan Academy en español</span><span class="ext-title-es">Hallar el total con un diagrama de cinta</span></a>
             </li>
         </ul>
       </section>
@@ -4892,6 +4952,17 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </div>
     </div>
 
+<div class="hw-toast" id="hw_toast" aria-hidden="true" hidden></div><div class="hw-sr-only" id="hw_toast_live" role="status" aria-live="polite"></div>
+<dialog class="hw-dialog" id="hw_dialog" aria-labelledby="hw_dialog_text">
+  <form method="dialog">
+    <p id="hw_dialog_text"></p>
+    <div class="hw-dialog-actions">
+      <button type="submit" value="no" class="btn btn-secondary" id="hw_dialog_no"></button>
+      <button type="submit" value="yes" class="btn btn-primary" id="hw_dialog_yes"></button>
+    </div>
+  </form>
+</dialog>
+
 <section class="hw-answer-sheet" aria-hidden="true">
   <h2><span class="lang-en">Answer sheet</span><span class="lang-es" lang="es">Hoja de respuestas</span> · Determine the Whole Given the Part and Percent</h2>
   <p><span class="lang-en">Check the work after trying each problem. Talk about why each answer makes sense.</span><span class="lang-es" lang="es">Revisen el trabajo después de intentar cada problema. Hablen de por qué cada respuesta tiene sentido.</span></p>
@@ -4931,8 +5002,10 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 
     <div class="score-progress-container">
       <div class="score-text">
-        <span class="lang-en">Progress:</span><span class="lang-es" lang="es">Progreso:</span>
-        <span id="progress_text">0 / 12</span>
+        <span class="hw-stack hw-goal-label"><span class="lang-en">Tonight's goal</span><span class="lang-es" lang="es">Meta de hoy</span></span>
+        <span id="progress_text">0 / 4</span>
+        <span class="hw-pips hw-pips-bar" role="img" aria-label="Tonight's goal progress"></span>
+        <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -4940,8 +5013,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
     </div>
 
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
-      <button class="btn btn-primary" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
+      <button class="btn btn-secondary hw-stack" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
+      <button class="btn btn-primary hw-stack" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
     </div>
   </div>
 </div>
@@ -4949,18 +5022,19 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 <script>
 window.LESSON_ID = "4-5";
 window.LESSON_TITLE = "Determine the Whole Given the Part and Percent";
+window.LESSON_TITLE_ES = "Determinar el entero conociendo la parte y el porcentaje";
 /* The number of core problems, so the celebration fires on the goal the page
    actually states. It was hardcoded to 3 while the page showed 6 and the status
    bar counted to 6: a family could hit "Goal Reached! 3 Stars Earned!" and read
    "0 / 6 Completed" in the same glance. */
 window.HW_CORE_COUNT = 12;
-window.__HW_VOCAB__ = [{"term":"Determine the Whole Given the Part and Percent","termEs":"Hallar el total dados la parte y el porcentaje","def":"Working backwards from a part and its percent to find the whole amount it came from.","defEs":"Trabajar al revés a partir de una parte y su porcentaje para hallar el total del que proviene.","example":"$42 is 60% of what? → $70","img":"/assets/vocab-images/percent-base.svg","imgAlt":"Illustration of Determine the Whole Given the Part and Percent: Working backwards from a part and its percent to find the whole amount it came from.","cs":false},{"term":"Part","termEs":"Parte","def":"The amount you already know — the piece of the whole that the percent describes.","defEs":"La cantidad que ya conoces: el pedazo del total que describe el porcentaje.","example":"The $42 sale price is the part","img":"/assets/vocab-images/percent-part.svg","imgAlt":"Illustration of Part: The amount you already know — the piece of the whole that the percent describes.","cs":false},{"term":"Whole","termEs":"Total","def":"The full amount the percent is measured against. The whole is always 100%.","defEs":"La cantidad completa contra la que se mide el porcentaje. El total siempre es 100 %.","example":"The original price is the whole = 100%","img":"/assets/vocab-images/part-to-whole.svg","imgAlt":"Illustration of Whole: The full amount the percent is measured against. The whole is always 100%.","cs":false},{"term":"Double number line","termEs":"Recta numérica doble","def":"Two lines lined up — dollars on one, percents on the other — so matching marks show the same amount two ways.","defEs":"Dos rectas alineadas —dólares en una y porcentajes en la otra— para que las marcas correspondientes muestren la misma cantidad de dos formas.","example":"$0, $7, $42, $70 above 0%, 10%, 60%, 100%","img":"/assets/vocab-images/number-line.svg","imgAlt":"Illustration of Double number line: Two lines lined up — dollars on one, percents on the other — so matching marks show the same amount two ways.","cs":false},{"term":"Equation","termEs":"Ecuación","def":"A math sentence with an equal sign. Here it says percent × whole = part, with the whole unknown.","defEs":"Una oración matemática con signo de igual. Aquí dice porcentaje × total = parte, con el total desconocido.","example":"0.7v = 26,600 — the percent times the unknown whole equals the part","img":"/assets/vocab-images/equation-0-7v.svg","imgAlt":"Illustration of Equation: A math sentence with an equal sign. Here it says percent × whole = part, with the whole unknown.","cs":false},{"term":"Percent","termEs":"Porcentaje","def":"A ratio comparing a number to 100. To compute with it, write it in decimal form: 60% = 0.6.","defEs":"Una razón que compara un número con 100. Para calcular con él, escríbelo en forma decimal: 60 % = 0.6.","example":"60% = 0.6 · 70% = 0.7","img":"/assets/vocab-images/percent.svg","imgAlt":"Illustration of Percent: A ratio comparing a number to 100. To compute with it, write it in decimal form: 60% = 0.6.","cs":false},{"term":"Inverse operation","termEs":"Operación inversa","def":"The operation that undoes another operation.","defEs":"La operación que deshace otra operación.","example":"Division undoes multiplication.","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Inverse operation: The operation that undoes another operation.","cs":false}];
+window.__HW_VOCAB__ = [{"term":"Determine the Whole Given the Part and Percent","termEs":"Hallar el total dados la parte y el porcentaje","def":"Use a part and its percent to find the whole.","defEs":"Usar una parte y su porcentaje para hallar el total.","example":"30 is 20% of what? 30 ÷ 0.2 = 150","img":"/assets/vocab-images/percent-base.svg","imgAlt":"Illustration of Determine the Whole Given the Part and Percent: Use a part and its percent to find the whole.","cs":false,"formal":"Working backwards from a part and its percent to find the whole amount it came from.","formalEs":"Trabajar al revés a partir de una parte y su porcentaje para hallar el total del que proviene.","exampleEs":"30 es el 20 % de qué? 30 ÷ 0.2 = 150","exampleFormal":"$42 is 60% of what? → $70"},{"term":"Part","termEs":"Parte","def":"A piece of the whole.","defEs":"Una pieza del total.","example":"In 25% of 80 = 20, the part is 20","img":"/assets/vocab-images/percent-part.svg","imgAlt":"Illustration of Part: A piece of the whole.","cs":false,"formal":"The amount you already know — the piece of the whole that the percent describes.","formalEs":"La cantidad que ya conoces: el pedazo del total que describe el porcentaje.","exampleEs":"En 25 % de 80 = 20, la parte es 20","exampleFormal":"The $42 sale price is the part"},{"term":"Whole","termEs":"Total","def":"The full amount. It is always 100%.","defEs":"La cantidad completa. Siempre es 100 %.","example":"The original price is the whole = 100%","img":"/assets/vocab-images/part-to-whole.svg","imgAlt":"Illustration of Whole: The full amount. It is always 100%.","cs":false,"formal":"The full amount the percent is measured against. The whole is always 100%.","formalEs":"La cantidad completa contra la que se mide el porcentaje. El total siempre es 100 %."},{"term":"Double number line","termEs":"Recta numérica doble","def":"Two number lines side by side. Marks that line up go together.","defEs":"Dos rectas numéricas juntas. Las marcas que coinciden van juntas.","example":"$0, $7, $42, $70 above 0%, 10%, 60%, 100%","img":"/assets/vocab-images/number-line.svg","imgAlt":"Illustration of Double number line: Two number lines side by side. Marks that line up go together.","cs":false,"formal":"Two lines lined up — dollars on one, percents on the other — so matching marks show the same amount two ways.","formalEs":"Dos rectas alineadas —dólares en una y porcentajes en la otra— para que las marcas correspondientes muestren la misma cantidad de dos formas."},{"term":"Equation","termEs":"Ecuación","def":"A math sentence with an equal sign.","defEs":"Una oración matemática con un signo de igual.","example":"x + 3 = 10","img":"/assets/vocab-images/equation-0-7v.svg","imgAlt":"Illustration of Equation: A math sentence with an equal sign.","cs":false,"formal":"A math sentence with an equal sign. Here it says percent × whole = part, with the whole unknown.","formalEs":"Una oración matemática con signo de igual. Aquí dice porcentaje × total = parte, con el total desconocido.","exampleEs":"x + 3 = 10","exampleFormal":"0.7v = 26,600 — the percent times the unknown whole equals the part"},{"term":"Percent","termEs":"Porcentaje","def":"A number out of 100, shown with the % sign.","defEs":"Un número de cada 100, con el signo %.","example":"30% means 30 out of 100","img":"/assets/vocab-images/percent.svg","imgAlt":"Illustration of Percent: A number out of 100, shown with the % sign.","cs":false,"formal":"A ratio comparing a number to 100. To compute with it, write it in decimal form: 60% = 0.6.","formalEs":"Una razón que compara un número con 100. Para calcular con él, escríbelo en forma decimal: 60 % = 0.6.","exampleEs":"30 % significa 30 de cada 100","exampleFormal":"60% = 0.6 · 70% = 0.7"},{"term":"Inverse operation","termEs":"Operación inversa","def":"Two actions that undo each other, like × and ÷.","defEs":"Dos acciones que se deshacen entre sí, como × y ÷.","example":"5 + 3 = 8, then 8 − 3 = 5","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Inverse operation: Two actions that undo each other, like × and ÷.","cs":false,"formal":"The operation that undoes another operation.","formalEs":"La operación que deshace otra operación.","exampleEs":"5 + 3 = 8, luego 8 − 3 = 5","exampleFormal":"Division undoes multiplication."}];
 window.__HW_VOCAB_SKIP__ = [29,168,190,228];
 window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Numerical\\s+Expressions\\s+with\\s+Exponents(?:es|s)?|Solve\\s+One-Step\\s+Addition\\s+and\\s+Subtraction\\s+Equations(?:es|s)?|Determine\\s+the\\s+Whole\\s+Given\\s+the\\s+Part\\s+and\\s+Percent(?:es|s)?|Convert\\s+Measurements\\s+within\\s+the\\s+Same\\s+System(?:es|s)?|Percents\\s+Greater\\s+Than\\s+100%\\s+and\\s+Less\\s+Than\\s+1%(?:es|s)?|Solve\\s+Multiplication\\s+and\\s+Division\\s+Equations(?:es|s)?|Equations\\s+and\\s+Inequalities\\s+Problem\\s+Solving(?:es|s)?|Convert\\s+Measurements\\s+Between\\s+Systems(?:es|s)?|Multiplication\\s+Property\\s+of\\s+Equalit(?:y|ies)|Ordered\\s+Pairs\\s+in\\s+All\\s+Four\\s+Quadrants(?:es|s)?|Rational\\s+Numbers\\s+on\\s+the\\s+Number\\s+Line(?:es|s)?|Describe\\s+the\\s+Data\\s+Using\\s+the\\s+Median(?:es|s)?|Divide\\s+Whole\\s+Numbers\\s+by\\s+Fractions(?:es|s)?|Fraction\\s+Division\\s+Problem\\s+Solving(?:es|s)?|Fractions,\\s+Decimals,\\s+and\\s+Percents(?:es|s)?|Distance\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Subtraction\\s+Property\\s+of\\s+Equalit(?:y|ies)|Appropriate\\s+Measures\\s+of\\s+Center(?:es|s)?|Ratio\\s+and\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|Simplify\\s+Algebraic\\s+Expressions(?:es|s)?|Statistical\\s+Questions\\s+and\\s+Data(?:es|s)?|Volume\\s+with\\s+Whole-Number\\s+Edges(?:es|s)?|Addition\\s+Property\\s+of\\s+Equalit(?:y|ies)|Division\\s+Property\\s+of\\s+Equalit(?:y|ies)|Graph\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Range\\s+and\\s+Interquartile\\s+Range(?:es|s)?|Display\\s+Data\\s+with\\s+Histograms(?:es|s)?|Greatest\\s+common\\s+factor\\s+\\(GCF\\)(?:es|s)?|Solve\\s+and\\s+Graph\\s+Inequalities(?:es|s)?|Volume\\s+of\\s+Rectangular\\s+Prisms(?:es|s)?|Display\\s+Data\\s+with\\s+Box\\s+Plots(?:es|s)?|Integers\\s+and\\s+Absolute\\s+Value(?:es|s)?|Least\\s+common\\s+multiple\\s+\\(LCM\\)(?:es|s)?|Shape\\s+of\\s+Data\\s+Distributions(?:es|s)?|Write\\s+Algebraic\\s+Expressions(?:es|s)?|Compare\\s+and\\s+Order\\s+Integers(?:es|s)?|Decimal\\s+Division\\s+Algorithm(?:es|s)?|Divide\\s+Multi-Digit\\s+Numbers(?:es|s)?|Find\\s+Factors\\s+and\\s+Multiples(?:es|s)?|Reflect\\s+Points\\s+Across\\s+Axes(?:es|s)?|Add\\s+and\\s+Subtract\\s+Decimals(?:es|s)?|Area\\s+of\\s+Composite\\s+Figures(?:es|s)?|Convert\\s+Measurement\\s+Units(?:es|s)?|distance\\s+between\\s+vertices(?:es|s)?|The\\s+Distributive\\s+Propert(?:y|ies)|Unit\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|least\\s+common\\s+denominator(?:es|s)?|Area\\s+of\\s+Regular\\s+Polygons(?:es|s)?|Non-statistical\\s+Question(?:es|s)?|Opposite\\s+of\\s+the\\s+opposite(?:es|s)?|Properties\\s+of\\s+Operations(?:es|s)?|Surface\\s+Area\\s+of\\s+Pyramids(?:es|s)?|mean\\s+absolute\\s+deviation(?:es|s)?|make\\s+sense\\s+of\\s+a\\s+problem(?:es|s)?|Percent\\s+Problem\\s+Solving(?:es|s)?|Repeated\\s+multiplication(?:es|s)?|Surface\\s+Area\\s+Using\\s+Nets(?:es|s)?|greatest\\s+common\\s+factor(?:es|s)?|Area\\s+of\\s+Parallelograms(?:es|s)?|Mean,\\s+Median,\\s+and\\s+Mode(?:es|s)?|Multiplicative\\s+inverse(?:es|s)?|Surface\\s+Area\\s+of\\s+Prisms(?:es|s)?|least\\s+common\\s+multiple(?:es|s)?|equivalent\\s+expression(?:es|s)?|Distributive\\s+Propert(?:y|ies)|Division\\s+of\\s+Fractions(?:es|s)?|Length,\\s+width,\\s+height(?:es|s)?|algebraic\\s+expression(?:es|s)?|Associative\\s+Propert(?:y|ies)|Commutative\\s+Propert(?:y|ies)|define\\s+the\\s+variables(?:es|s)?|Divide\\s+Mixed\\s+Numbers(?:es|s)?|Evaluate\\s+Expressions(?:es|s)?|Factor\\s+an\\s+expression(?:es|s)?|independent\\s+variable(?:es|s)?|Measure\\s+of\\s+variation(?:es|s)?|Numerical\\s+expression(?:es|s)?|Powers\\s+and\\s+Exponents(?:es|s)?|Rates\\s+and\\s+Unit\\s+Rates(?:es|s)?|Statistical\\s+Question(?:es|s)?|prime\\s+factorization(?:es|s)?|interquartile\\s+range(?:es|s)?|equivalent\\s+fraction(?:es|s)?|community\\s+agreement(?:es|s)?|Equivalent\\s+division(?:es|s)?|Five-number\\s+summar(?:y|ies)|Horizontal\\s+distance(?:es|s)?|Negative\\s+coordinate(?:es|s)?|Order\\s+of\\s+operations(?:es|s)?|Percent\\s+of\\s+a\\s+Number(?:es|s)?|Double\\s+number\\s+line(?:es|s)?|Area\\s+of\\s+a\\s+Triangle(?:es|s)?|Area\\s+of\\s+Trapezoids(?:es|s)?|At\\s+least\\s+/\\s+At\\s+most(?:es|s)?|bilateral\\s+symmetr(?:y|ies)|Common\\s+denominator(?:es|s)?|compatible\\s+numbers(?:es|s)?|dependent\\s+variable(?:es|s)?|Graph\\s+Inequalities(?:es|s)?|Graph\\s+Ratio\\s+Tables(?:es|s)?|Keep,\\s+Change,\\s+Flip(?:es|s)?|Measurement\\s+system(?:es|s)?|Multi-step\\s+problem(?:es|s)?|Understand\\s+Percent(?:es|s)?|Write\\s+Inequalities(?:es|s)?|Inverse\\s+operation(?:es|s)?|improper\\s+fraction(?:es|s)?|conversion\\s+factor(?:es|s)?|benchmark\\s+percent(?:es|s)?|Data\\s+distribution(?:es|s)?|Greater\\s+than\\s+100%(?:es|s)?|Identity\\s+Propert(?:y|ies)|Measure\\s+of\\s+center(?:es|s)?|Multiply\\s+Decimals(?:es|s)?|One-step\\s+equation(?:es|s)?|Rectangular\\s+prism(?:es|s)?|Shape\\s+of\\s+the\\s+data(?:es|s)?|Understand\\s+Ratios(?:es|s)?|Vertical\\s+distance(?:es|s)?|coordinate\\s+plane(?:es|s)?|keep-change-flip(?:es|s)?|equivalent\\s+ratio(?:es|s)?|Additive\\s+pattern(?:es|s)?|Composite\\s+figure(?:es|s)?|Composite\\s+number(?:es|s)?|Customary\\s+system(?:es|s)?|Divide\\s+Fractions(?:es|s)?|Grouping\\s+symbols(?:es|s)?|line\\s+of\\s+symmetr(?:y|ies)|Negative\\s+integer(?:es|s)?|Triangular\\s+prism(?:es|s)?|common\\s+multiple(?:es|s)?|Customary\\s+units(?:es|s)?|Divide\\s+Decimals(?:es|s)?|Frequency\\s+table(?:es|s)?|Negative\\s+number(?:es|s)?|Positive\\s+number(?:es|s)?|Problem\\s+solving(?:es|s)?|Ratio\\s+Reasoning(?:es|s)?|Rational\\s+number(?:es|s)?|Regular\\s+Polygon(?:es|s)?|Right\\s+trapezoid(?:es|s)?|table\\s+of\\s+values(?:es|s)?|Two-dimensional(?:es|s)?|Unit\\s+rate\\s+point(?:es|s)?|Write\\s+Equations(?:es|s)?|absolute\\s+value(?:es|s)?|Boundary\\s+point(?:es|s)?|Colon\\s+notation(?:es|s)?|Compare\\s+Ratios(?:es|s)?|counterexample(?:es|s)?|Cross-multipl(?:y|ies)|Decimal\\s+places(?:es|s)?|generalization(?:es|s)?|Linear\\s+pattern(?:es|s)?|math\\s+biograph(?:y|ies)|predictabilit(?:y|ies)|Rate\\s+of\\s+change(?:es|s)?|reasonableness(?:es|s)?|representation(?:es|s)?|True\\s+statement(?:es|s)?|long\\s+division(?:es|s)?|decimal\\s+point(?:es|s)?|parallelogram(?:es|s)?|common\\s+factor(?:es|s)?|Approximatel(?:y|ies)|Balance\\s+point(?:es|s)?|Closed\\s+circle(?:es|s)?|Expanded\\s+form(?:es|s)?|Extreme\\s+value(?:es|s)?|Halfway\\s+value(?:es|s)?|Metric\\s+system(?:es|s)?|Part-to-whole(?:es|s)?|Perpendicular(?:es|s)?|Simplest\\s+form(?:es|s)?|Skip\\s+counting(?:es|s)?|Unit\\s+fraction(?:es|s)?|Work\\s+backward(?:es|s)?|mixed\\s+number(?:es|s)?|ordered\\s+pair(?:es|s)?|surface\\s+area(?:es|s)?|line\\s+segment(?:es|s)?|distribution(?:es|s)?|scale\\s+factor(?:es|s)?|prime\\s+factor(?:es|s)?|Annex\\s+a\\s+zero(?:es|s)?|Decimal\\s+grid(?:es|s)?|doer\\s+of\\s+math(?:es|s)?|Lateral\\s+area(?:es|s)?|Lateral\\s+face(?:es|s)?|Less\\s+than\\s+1%(?:es|s)?|Metric\\s+units(?:es|s)?|mirror\\s+image(?:es|s)?|No\\s+more\\s+than(?:es|s)?|Part-to-part(?:es|s)?|pattern\\s+rule(?:es|s)?|pattern\\s+unit(?:es|s)?|Power\\s+of\\s+ten(?:es|s)?|Prime\\s+number(?:es|s)?|Proportional(?:es|s)?|relationship(?:es|s)?|Slant\\s+height(?:es|s)?|Slanted\\s+side(?:es|s)?|Solution\\s+set(?:es|s)?|tape\\s+diagram(?:es|s)?|Target\\s+total(?:es|s)?|x-coordinate(?:es|s)?|Distributive(?:es|s)?|multi-digit(?:es|s)?|place\\s+value(?:es|s)?|denominator(?:es|s)?|coefficient(?:es|s)?|Annex\\s+zeros(?:es|s)?|Base\\s+1\\s+\\(b1\\)(?:es|s)?|Base\\s+2\\s+\\(b2\\)(?:es|s)?|Common\\s+form(?:es|s)?|Coordinates(?:es|s)?|Factor\\s+pair(?:es|s)?|Factor\\s+tree(?:es|s)?|Middle\\s+half(?:es|s)?|Number\\s+line(?:es|s)?|Open\\s+circle(?:es|s)?|Per\\s+hundred(?:es|s)?|Ratio\\s+table(?:es|s)?|Side\\s+length(?:es|s)?|Target\\s+mean(?:es|s)?|Total\\s+parts(?:es|s)?|Total\\s+price(?:es|s)?|Variabilit(?:y|ies)|Associative(?:es|s)?|Commutative(?:es|s)?|bring\\s+down(?:es|s)?|equivalent(?:es|s)?|reciprocal(?:es|s)?|hundredths(?:es|s)?|proportion(?:es|s)?|expression(?:es|s)?|substitute(?:es|s)?|inequalit(?:y|ies)|like\\s+terms(?:es|s)?|Better\\s+Buy(?:es|s)?|Comparison(?:es|s)?|confidence(?:es|s)?|conjecture(?:es|s)?|Constraint(?:es|s)?|cubic\\s+unit(?:es|s)?|depends\\s+on(?:es|s)?|Dimensions(?:es|s)?|Equal\\s+sign(?:es|s)?|math\\s+stor(?:y|ies)|profession(?:es|s)?|reasonable(?:es|s)?|Reflection(?:es|s)?|repetition(?:es|s)?|round\\s+trip(?:es|s)?|Unit\\s+price(?:es|s)?|Unit\\s+ratio(?:es|s)?|remainder(?:es|s)?|algorithm(?:es|s)?|numerator(?:es|s)?|unit\\s+rate(?:es|s)?|perimeter(?:es|s)?|rectangle(?:es|s)?|trapezoid(?:es|s)?|histogram(?:es|s)?|frequenc(?:y|ies)|Base\\s+area(?:es|s)?|Benchmark(?:es|s)?|communit(?:y|ies)|Composite(?:es|s)?|Congruent(?:es|s)?|decompose(?:es|s)?|Deviation(?:es|s)?|Divisible(?:es|s)?|ingenuit(?:y|ies)|Interpret(?:es|s)?|inventor(?:y|ies)|Magnitude(?:es|s)?|persevere(?:es|s)?|represent(?:es|s)?|symmetric(?:es|s)?|the\\s+whole(?:es|s)?|Unit\\s+cube(?:es|s)?|Variation(?:es|s)?|Equation(?:es|s)?|quotient(?:es|s)?|exponent(?:es|s)?|estimate(?:es|s)?|simplif(?:y|ies)|variable(?:es|s)?|evaluate(?:es|s)?|opposite(?:es|s)?|triangle(?:es|s)?|box\\s+plot(?:es|s)?|dot\\s+plot(?:es|s)?|quartile(?:es|s)?|argument(?:es|s)?|at\\s+least(?:es|s)?|Constant(?:es|s)?|critique(?:es|s)?|Data\\s+set(?:es|s)?|Diagonal(?:es|s)?|Discount(?:es|s)?|Distance(?:es|s)?|Dividend(?:es|s)?|Interval(?:es|s)?|Negative(?:es|s)?|organize(?:es|s)?|Parallel(?:es|s)?|Per\\s+Unit(?:es|s)?|Positive(?:es|s)?|Propert(?:y|ies)|quantit(?:y|ies)|rotation(?:es|s)?|Solution(?:es|s)?|strateg(?:y|ies)|strength(?:es|s)?|Symmetr(?:y|ies)|Identit(?:y|ies)|Rational(?:es|s)?|Percent(?:es|s)?|product(?:es|s)?|regroup(?:es|s)?|decimal(?:es|s)?|integer(?:es|s)?|rhombus(?:es|s)?|polygon(?:es|s)?|pyramid(?:es|s)?|segment(?:es|s)?|outlier(?:es|s)?|cluster(?:es|s)?|Average(?:es|s)?|balance(?:es|s)?|Convert(?:es|s)?|Divisor(?:es|s)?|Formula(?:es|s)?|Isolate(?:es|s)?|justif(?:y|ies)|portion(?:es|s)?|reflect(?:es|s)?|Squared(?:es|s)?|Unknown(?:es|s)?|Whisker(?:es|s)?|factor(?:es|s)?|tenths(?:es|s)?|volume(?:es|s)?|vertex(?:es|s)?|median(?:es|s)?|Expand(?:es|s)?|growth(?:es|s)?|Markup(?:es|s)?|Output(?:es|s)?|puzzle(?:es|s)?|rhythm(?:es|s)?|Skewed(?:es|s)?|Spread(?:es|s)?|Survey(?:es|s)?|x-axis(?:es|s)?|y-axis(?:es|s)?|Whole(?:es|s)?|digit(?:es|s)?|ratio(?:es|s)?|prism(?:es|s)?|Cubed(?:es|s)?|Input(?:es|s)?|Order(?:es|s)?|Range(?:es|s)?|Scale(?:es|s)?|Solve(?:es|s)?|Prime(?:es|s)?|Part(?:es|s)?|area(?:es|s)?|edge(?:es|s)?|data(?:es|s)?|Apex(?:es|s)?|Axis(?:es|s)?|Base(?:es|s)?|Face(?:es|s)?|gear(?:es|s)?|Mode(?:es|s)?|Peak(?:es|s)?|net(?:es|s)?|LCM(?:es|s)?|MCM(?:es|s)?|GCF(?:es|s)?|MCD(?:es|s)?|GCD(?:es|s)?|LCD(?:es|s)?|IQR(?:es|s)?|RIC(?:es|s)?|MAD(?:es|s)?|DMA(?:es|s)?|DAM(?:es|s)?|KCF(?:es|s)?|MCI(?:es|s)?|Gap(?:es|s)?|Tax(?:es|s)?|Tip(?:es|s)?|SA(?:es|s)?)\\b","lookup":{"determine the whole given the part and percent":0,"part":1,"whole":2,"double number line":3,"equation":4,"percent":5,"inverse operation":6,"product":7,"quotient":8,"factor":9,"remainder":10,"digit":11,"multi-digit":12,"prime factorization":13,"greatest common factor":14,"least common multiple":15,"exponent":16,"algorithm":17,"long division":18,"bring down":19,"regroup":20,"place value":21,"estimate":22,"decimal point":23,"numerator":24,"denominator":25,"equivalent":26,"reciprocal":27,"mixed number":28,"decimal":29,"tenth":30,"hundredth":31,"improper fraction":32,"simplify":33,"ratio":34,"unit rate":35,"proportion":36,"variable":37,"expression":38,"coefficient":39,"substitute":40,"inequality":41,"evaluate":42,"like term":43,"integer":44,"absolute value":45,"opposite":46,"coordinate plane":47,"ordered pair":48,"perimeter":49,"volume":50,"surface area":51,"area":52,"triangle":53,"rectangle":54,"parallelogram":55,"trapezoid":56,"rhombu":57,"polygon":58,"prism":59,"pyramid":60,"net":61,"vertex":62,"edge":63,"segment":64,"line segment":65,"median":66,"outlier":67,"interquartile range":68,"mean absolute deviation":69,"keep-change-flip":70,"data":71,"histogram":72,"box plot":73,"dot plot":74,"quartile":75,"frequency":76,"distribution":77,"cluster":78,"scale factor":79,"equivalent ratio":80,"equivalent expression":81,"equivalent fraction":82,"common factor":83,"common multiple":84,"least common denominator":85,"prime factor":86,"conversion factor":87,"algebraic expression":88,"lcm":89,"mcm":90,"gcf":91,"mcd":92,"gcd":93,"lcd":94,"iqr":95,"ric":96,"mad":97,"dma":98,"dam":99,"sa":100,"kcf":101,"mci":102,"add and subtract decimal":103,"addition property of equality":104,"additive pattern":105,"annex a zero":106,"annex zero":107,"apex":108,"appropriate measures of center":109,"approximately":110,"area of a triangle":111,"area of composite figure":112,"area of parallelogram":113,"area of regular polygon":114,"area of trapezoid":115,"argument":116,"associative property":117,"at least":118,"at least / at most":119,"average":120,"axi":121,"balance":122,"balance point":123,"base":124,"base 1 (b1)":125,"base 2 (b2)":126,"base area":127,"benchmark":128,"benchmark percent":129,"better buy":130,"bilateral symmetry":131,"boundary point":132,"closed circle":133,"colon notation":134,"common denominator":135,"common form":136,"community":137,"community agreement":138,"commutative property":139,"compare and order integer":140,"compare ratio":141,"comparison":142,"compatible number":143,"composite":144,"composite figure":145,"composite number":146,"confidence":147,"congruent":148,"conjecture":149,"constant":150,"constraint":151,"convert":152,"convert measurement unit":153,"convert measurements between system":154,"convert measurements within the same system":155,"coordinate":156,"counterexample":157,"critique":158,"cross-multiply":159,"cubed":160,"cubic unit":161,"customary system":162,"customary unit":163,"data distribution":164,"data set":165,"decimal division algorithm":166,"decimal grid":167,"decimal place":168,"decompose":169,"define the variable":170,"dependent variable":171,"depends on":172,"describe the data using the median":173,"deviation":174,"diagonal":175,"dimension":176,"discount":177,"display data with box plot":178,"display data with histogram":179,"distance":180,"distance between vertice":181,"distance on the coordinate plane":182,"distributive property":183,"divide decimal":184,"divide fraction":185,"divide mixed number":186,"divide multi-digit number":187,"divide whole numbers by fraction":188,"dividend":189,"divisible":190,"division of fraction":191,"division property of equality":192,"divisor":193,"doer of math":194,"equal sign":195,"equations and inequalities problem solving":196,"equivalent division":197,"evaluate expression":198,"expand":199,"expanded form":200,"extreme value":201,"face":202,"factor an expression":203,"factor pair":204,"factor tree":205,"find factors and multiple":206,"five-number summary":207,"formula":208,"fraction division problem solving":209,"fractions, decimals, and percent":210,"frequency table":211,"gap":212,"gear":213,"generalization":214,"graph inequality":215,"graph on the coordinate plane":216,"graph ratio table":217,"greater than 100%":218,"greatest common factor (gcf)":219,"grouping symbol":220,"growth":221,"halfway value":222,"horizontal distance":223,"identity property":224,"independent variable":225,"ingenuity":226,"input":227,"integers and absolute value":228,"interpret":229,"interval":230,"inventory":231,"isolate":232,"justify":233,"keep, change, flip":234,"lateral area":235,"lateral face":236,"least common multiple (lcm)":237,"length, width, height":238,"less than 1%":239,"line of symmetry":240,"linear pattern":241,"magnitude":242,"make sense of a problem":243,"markup":244,"math biography":245,"math story":246,"mean, median, and mode":247,"measure of center":248,"measure of variation":249,"measurement system":250,"metric system":251,"metric unit":252,"middle half":253,"mirror image":254,"mode":255,"multi-step problem":256,"multiplication property of equality":257,"multiplicative inverse":258,"multiply decimal":259,"negative":260,"negative coordinate":261,"negative integer":262,"negative number":263,"no more than":264,"non-statistical question":265,"number line":266,"numerical expression":267,"one-step equation":268,"open circle":269,"opposite of the opposite":270,"order":271,"order of operation":272,"ordered pairs in all four quadrant":273,"organize":274,"output":275,"parallel":276,"part-to-part":277,"part-to-whole":278,"pattern rule":279,"pattern unit":280,"peak":281,"per hundred":282,"per unit":283,"percent of a number":284,"percent problem solving":285,"percents greater than 100% and less than 1%":286,"perpendicular":287,"persevere":288,"portion":289,"positive":290,"positive number":291,"power of ten":292,"powers and exponent":293,"predictability":294,"prime number":295,"problem solving":296,"profession":297,"properties of operation":298,"property":299,"proportional":300,"puzzle":301,"quantity":302,"range":303,"range and interquartile range":304,"rate of change":305,"rates and unit rate":306,"ratio and rate problem solving":307,"ratio reasoning":308,"ratio table":309,"rational number":310,"rational numbers on the number line":311,"reasonable":312,"reasonablenes":313,"rectangular prism":314,"reflect":315,"reflect points across axe":316,"reflection":317,"regular polygon":318,"relationship":319,"repeated multiplication":320,"repetition":321,"represent":322,"representation":323,"rhythm":324,"right trapezoid":325,"rotation":326,"round trip":327,"scale":328,"shape of data distribution":329,"shape of the data":330,"side length":331,"simplest form":332,"simplify algebraic expression":333,"skewed":334,"skip counting":335,"slant height":336,"slanted side":337,"solution":338,"solution set":339,"solve":340,"solve and graph inequality":341,"solve multiplication and division equation":342,"solve one-step addition and subtraction equation":343,"spread":344,"squared":345,"statistical question":346,"statistical questions and data":347,"strategy":348,"strength":349,"subtraction property of equality":350,"surface area of prism":351,"surface area of pyramid":352,"surface area using net":353,"survey":354,"symmetric":355,"symmetry":356,"table of value":357,"tape diagram":358,"target mean":359,"target total":360,"tax":361,"the distributive property":362,"the whole":363,"tip":364,"total part":365,"total price":366,"triangular prism":367,"true statement":368,"two-dimensional":369,"understand percent":370,"understand ratio":371,"unit cube":372,"unit fraction":373,"unit price":374,"unit rate point":375,"unit rate problem solving":376,"unit ratio":377,"unknown":378,"variability":379,"variation":380,"vertical distance":381,"volume of rectangular prism":382,"volume with whole-number edge":383,"whisker":384,"work backward":385,"write algebraic expression":386,"write and evaluate numerical expressions with exponent":387,"write equation":388,"write inequality":389,"x-axi":390,"x-coordinate":391,"y-axi":392,"associative":117,"commutative":139,"distributive":183,"identity":224,"prime":295,"rational":310}};
 window.__HW_WORKED__ = {"title":"Watch me find the original price of the sweater","titleEs":"Mírame hallar el precio original del suéter","lines":["Akela paid $42 for a sweater on sale, and that was 60% of the original price. The $42 is the part; the original price is the whole, which is 100%.","On a double number line, I put $42 under 60%. To find a smaller step, I use 10%: if 60% is $42, then 10% is 42 ÷ 6 = $7.","Now I count up to the whole: 100% is ten of those 10% steps, so 10 × $7 = $70.","The equation says the same thing in one move: 0.6 × v = 42, so v = 42 ÷ 0.6 = 70. The original price was $70 — larger than the sale price, which is exactly what a discount should mean."],"linesEs":["Akela pagó $42 por un suéter en oferta, y eso era el 60% del precio original. Los $42 son la parte; el precio original es el entero, que es el 100%.","En una recta numérica doble, pongo $42 debajo del 60%. Para hallar un paso más pequeño, uso el 10%: si el 60% es $42, entonces el 10% es 42 ÷ 6 = $7.","Ahora cuento hasta el entero: el 100% son diez de esos pasos de 10%, así que 10 × $7 = $70.","La ecuación dice lo mismo en un solo paso: 0.6 × v = 42, así que v = 42 ÷ 0.6 = 70. El precio original era $70 — mayor que el precio de oferta, que es exactamente lo que debe significar un descuento."]};
 </script>
-<script src="/assets/homework/homework-vocab-3da9690d66.bundle.js"></script>
-<script src="/assets/homework/homework-core-e12f28ae0a.bundle.js"></script>
+<script src="/assets/homework/homework-vocab-12619585d8.bundle.js"></script>
+<script src="/assets/homework/homework-core-4eeaa5cadb.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

@@ -82,7 +82,7 @@ export function renderSessionBanner(lessonId, partner) {
   const step = (n) => {
     const state = stepState(n);
     const s = SESSIONS[n];
-    const inner = `<span class="hw-session-mark" aria-hidden="true">${mark[state]}</span><span class="hw-session-name">${bi(s.en, s.es)}</span>`;
+    const inner = `<span class="hw-session-mark" aria-hidden="true">${mark[state]}</span><span class="hw-session-name"><span class="hw-session-full">${bi(s.en, s.es)}</span><span class="hw-session-short">${bi(s.short.en, s.short.es)}</span></span>`;
     return state === "current"
       ? `<li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step">${inner}</span></li>`
       : `<li class="hw-session-step is-${state}"><a class="hw-session-chip" href="${esc(partner.href)}">${inner}</a></li>`;
@@ -132,7 +132,7 @@ a.hw-session-chip:focus-visible { outline: 3px solid var(--teal-ink, #0c6f6b); o
 
 /* Mobile first: big idea, route pills, then the lesson. The detail lives one tap away. */
 @media (max-width: 640px) {
-  .hw-hero-lead, .hw-hero-stats, .hw-experience-banner { display: none !important; }
+  .hw-hero-lead, .hw-experience-banner { display: none !important; }
   .hw-hero-body { display: flex; flex-direction: column; }
   .hw-hero-body > .hw-hero-kicker { order: 1; }
   .hw-hero-body > .hw-hero-head { order: 2; }

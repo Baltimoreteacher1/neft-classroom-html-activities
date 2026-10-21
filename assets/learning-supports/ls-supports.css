@@ -91,8 +91,37 @@
   background: var(--ls-blue);
   color: #fff;
 }
+.ls-launcher .ls-es {
+  font-size: 13px;
+}
 .ls-launcher[aria-expanded="true"] .ls-es {
   color: #fff;
+}
+
+/* On a phone the launcher is an icon: the full pill sat over the lowest line of text
+   and over every page's bottom bar. The name stays in the accessible name. */
+@media (max-width: 640px) {
+  .ls-launcher {
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    width: 48px;
+    height: 48px;
+    min-height: 48px;
+    padding: 0;
+    justify-content: center;
+  }
+  .ls-launcher > span:first-child {
+    font-size: 24px;
+    line-height: 1;
+  }
+  .ls-launcher > span:not(:first-child) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
 }
 
 .ls-panel {

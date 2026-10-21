@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex" />
-<title>Family Support — Unit 5 Lesson 1: Determine the Area of Parallelograms and Rhombuses</title>
+<title>Family Math Studio · Lesson guide — Unit 5 Lesson 1: Determine the Area of Parallelograms and Rhombuses</title>
 <!-- generated:support-page kind=family lesson=5-1 — regenerate: npm run generate-support-pages -->
 <style>
 :root{--navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
@@ -51,7 +51,8 @@ body { background: #f1f5f9; font-family: "Outfit", system-ui, sans-serif; }
 .hero-header { background: linear-gradient(135deg, var(--navy), #1a4f8a); padding: 56px 32px; color: #fff; text-align: center; }
 .hero-header .eyebrow { color: var(--teal-light); font-size: 16px; margin-bottom: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
 .hero-header h1 { color: #fff; font-size: 44px; margin: 0; line-height: 1.1; font-weight: 800; }
-.hero-header .std { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; margin-top:16px; border-radius: 999px; padding: 4px 12px; font-size: 14px; font-weight: 700; }
+.hero-header .eyebrow .es { text-transform: none; letter-spacing: 0; font-weight: 600; opacity: .85; }
+.hero-header .std { display: block; background: none; border: 0; color: rgba(255,255,255,0.72); margin: 14px 0 0; padding: 0; font-size: 13px; font-weight: 500; }
 
 /* Upgrade sections to look like cards */
 section { padding: 40px 32px; border: none; margin: 0; border-bottom: 1px solid #edf1f5; }
@@ -60,12 +61,21 @@ section h2::before { content: "✨"; font-size: 28px; }
 
 /* Specific icons for sections */
 .section-learning h2::before { content: "💡"; }
-.section-kitchen h2::before { content: "🍕"; }
+.section-mission h2::before { content: "🏠"; }
 .section-tool h2::before { content: "🕹️"; }
 .section-vocab h2::before { content: "💬"; }
 .section-example h2::before { content: "🏫"; }
 .section-practice h2::before { content: "✏️"; }
 .section-stuck h2::before { content: "🆘"; }
+
+.glossary{margin:0;}
+.gloss-item{padding:14px 0;border-bottom:1px solid #edf1f5;}
+.gloss-item:last-child{border-bottom:0;}
+.gloss-item dt{font-size:22px;}
+.gloss-item .gloss-es{color:var(--muted);font-weight:600;}
+.gloss-item .gloss-es::before{content:"· ";}
+.gloss-item dd{margin:4px 0 0;font-size:19px;}
+.gloss-item dd.es-text{font-size:18px;}
 
 ol.choices{margin:16px 0 8px;list-style:none;padding-left:0;}
 ol.choices li{background: #f8fafc; border:2px solid #e2e8f0;border-radius:16px;padding:16px 20px;margin-bottom:12px;font-weight:600; font-size: 20px; cursor: pointer; transition: all 0.2s; color: var(--navy); }
@@ -77,30 +87,13 @@ ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); 
 
 .callout { border: none; border-radius: 20px; padding: 24px 32px; background: #f8fafc; font-size: 22px; line-height: 1.5; }
 
-.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
-.lang-radio + label{display:inline-block;border:2px solid #e2e8f0;border-radius:999px;padding:8px 24px;
-  margin:0 12px 16px 0;cursor:pointer;font-weight:700;color:var(--navy);background:#fff; font-size: 18px; transition: all 0.2s;}
-.lang-radio:checked + label{background:var(--navy);color:#fff;border-color:var(--navy);}
-.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
-.lang-panel{display:none;margin-top:6px;}
-#family-lang-en:checked ~ .lang-panels [data-lang="en"],
-#family-lang-es:checked ~ .lang-panels [data-lang="es"],
-#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
-#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
-#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
-.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
-.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
-  padding:4px 16px;font-size:15px;font-weight:700;color:var(--ink);margin:0 0 12px;}
-
 /* Phone: the desktop type scale wrapped the title to four lines and left a
-   heading and its hint each on a line of their own. Language buttons stay
-   thumb-sized (44px). */
+   heading and its hint each on a line of their own. */
 @media (max-width: 560px) {
   .hero-header { padding: 36px 20px; }
   .hero-header h1 { font-size: 30px; }
   section { padding: 28px 20px; }
   section h2 { font-size: 24px; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-  .lang-radio + label { min-height: 44px; padding: 10px 20px; }
 }
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -115,53 +108,39 @@ ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); 
 <main id="main">
 
 <div class="hero-header">
-  <p class="eyebrow">Family Lesson Support</p>
+  <p class="eyebrow">Family Math Studio · Lesson guide <span class="es">Guía de la lección</span></p>
   <h1>Unit 5, Lesson 1: Determine the Area of Parallelograms and Rhombuses</h1>
-  <span class="std">6.GR.1</span>
+  <span class="std">Standard 6.GR.1</span>
 </div>
 
 <section class="section-learning">
-  <h2>What students are learning</h2>
+  <h2>What students are learning <span class="es">Qué aprenden</span></h2>
   <p class="callout" style="font-size:22px;"><strong>Key idea:</strong> To find the area of a parallelogram, multiply the base by the height. The height goes straight up from the base, not along the slanted side. Example: a base of 6 ft and a height of 4 ft gives 6 × 4 = 24 square feet.<br><span class="es-text" lang="es" style="font-size:18px;">Idea clave: Para hallar el área de un paralelogramo, multiplica la base por la altura. La altura sube recta desde la base, no por el lado inclinado. Ejemplo: una base de 6 pies y una altura de 4 pies da 6 × 4 = 24 pies cuadrados.</span></p>
 </section>
 
-<section class="lang-section">
-  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
-  <div class="lang-picker"><input type="radio" class="lang-radio" name="family-lang" id="family-lang-en" value="en" checked><label for="family-lang-en" lang="en">English</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-es" value="es"><label for="family-lang-es" lang="es">Español</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-ar" value="ar"><label for="family-lang-ar" lang="ar">العربية</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-fr" value="fr"><label for="family-lang-fr" lang="fr">Français</label><input type="radio" class="lang-radio" name="family-lang" id="family-lang-prs" value="prs"><label for="family-lang-prs" lang="prs">دری</label>
-  <div class="lang-panels">
-  <div class="lang-panel" data-lang="en" lang="en"><p class="callout">To find the area of a parallelogram, multiply the base by the height. The height goes straight up from the base, not along the slanted side. Example: a base of 6 ft and a height of 4 ft gives 6 × 4 = 24 square feet.</p><ul><li><span class="kw"><bdi>Area of Parallelograms</bdi></span> — The space inside a parallelogram. Formula: A = b × h, using the perpendicular height.</li><li><span class="kw"><bdi>Slanted side</bdi></span> — A side that leans instead of going straight up and down. It is not the perpendicular height.</li><li><span class="kw"><bdi>Parallelogram</bdi></span> — A four-sided shape with two pairs of parallel sides.</li><li><span class="kw"><bdi>Parallel</bdi></span> — Two lines or sides that stay the same distance apart and never meet.</li><li><span class="kw"><bdi>Base</bdi></span> — Any side of a parallelogram can be the base. Once you pick a base, the height must be measured perpendicular (at a 90° angle) to it.</li><li><span class="kw"><bdi>Height</bdi></span> — The straight-up distance from the base to the top.</li><li><span class="kw"><bdi>Perpendicular</bdi></span> — Two lines that meet to make a square corner (90 degrees).</li><li><span class="kw"><bdi>Area</bdi></span> — How much space is inside a flat shape.</li><li><span class="kw"><bdi>Composite figure</bdi></span> — A shape made by putting two or more simple shapes together.</li><li><span class="kw"><bdi>Formula</bdi></span> — A math rule written with symbols.</li><li><span class="kw"><bdi>Rhombus</bdi></span> — A parallelogram with four sides of the same length.</li><li><span class="kw"><bdi>Diagonal</bdi></span> — A segment that joins two corners that are not next to each other.</li></ul></div>
-  <div class="lang-panel" data-lang="es" lang="es"><p class="callout">Para hallar el área de un paralelogramo, multiplica la base por la altura. La altura sube recta desde la base, no por el lado inclinado. Ejemplo: una base de 6 pies y una altura de 4 pies da 6 × 4 = 24 pies cuadrados.</p><ul><li><span class="kw"><bdi>Área de paralelogramos</bdi></span> — El espacio dentro de un paralelogramo. Fórmula: A = b × h, usando la altura perpendicular.</li><li><span class="kw"><bdi>Lado inclinado</bdi></span> — Un lado que está inclinado en vez de subir y bajar verticalmente. No es la altura perpendicular.</li><li><span class="kw"><bdi>Paralelogramo</bdi></span> — Una figura de cuatro lados con dos pares de lados paralelos.</li><li><span class="kw"><bdi>Paralelas</bdi></span> — Dos líneas o lados que se mantienen a la misma distancia y nunca se cruzan.</li><li><span class="kw"><bdi>Base</bdi></span> — Cualquier lado de un paralelogramo puede ser la base. Una vez que eliges la base, la altura debe medirse perpendicular (en un ángulo de 90°) a ella.</li><li><span class="kw"><bdi>Altura</bdi></span> — La distancia recta hacia arriba desde la base hasta la parte de arriba.</li><li><span class="kw"><bdi>Perpendicular</bdi></span> — Dos líneas que se cruzan formando una esquina cuadrada (90 grados).</li><li><span class="kw"><bdi>Área</bdi></span> — Cuánto espacio hay dentro de una figura plana.</li><li><span class="kw"><bdi>Figura compuesta</bdi></span> — Una figura formada al juntar dos o más figuras simples.</li><li><span class="kw"><bdi>Fórmula</bdi></span> — Una regla matemática escrita con símbolos.</li><li><span class="kw"><bdi>Rombo</bdi></span> — Un paralelogramo con cuatro lados de la misma longitud.</li><li><span class="kw"><bdi>Diagonal</bdi></span> — Un segmento que une dos esquinas que no están una junto a la otra.</li></ul></div>
-  <div class="lang-panel" data-lang="ar" lang="ar" dir="rtl"><p class="auto-label">ترجمة آلية · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">لإيجاد مساحة متوازي الأضلاع، اضرب القاعدة في الارتفاع. الارتفاع يصعد مستقيمًا من القاعدة، وليس على طول الضلع المائل. مثال: قاعدة 6 أقدام وارتفاع 4 أقدام يعطيان 6 × 4 = 24 قدمًا مربعة.</p><ul><li><span class="kw"><bdi>مساحة متوازي الأضلاع</bdi></span> (<bdi lang="en">Area of Parallelograms</bdi>) — المساحة داخل متوازي الأضلاع. القانون: A = b × h، باستخدام الارتفاع العمودي.</li><li><span class="kw"><bdi>الضلع المائل</bdi></span> (<bdi lang="en">Slanted side</bdi>) — ضلع مائل بدلًا من أن يكون مستقيمًا من الأعلى إلى الأسفل. وهو ليس الارتفاع العمودي.</li><li><span class="kw"><bdi>متوازي الأضلاع</bdi></span> (<bdi lang="en">Parallelogram</bdi>) — شكل رباعي له زوجان من الأضلاع المتوازية.</li><li><span class="kw"><bdi>متوازيان</bdi></span> (<bdi lang="en">Parallel</bdi>) — خطان أو ضلعان تبقى المسافة بينهما ثابتة ولا يلتقيان أبدًا.</li><li><span class="kw"><bdi>القاعدة</bdi></span> (<bdi lang="en">Base</bdi>) — يمكن أن يكون أي ضلع في متوازي الأضلاع هو القاعدة. بعد اختيار القاعدة، يُقاس الارتفاع عموديًا عليها (بزاوية 90°).</li><li><span class="kw"><bdi>الارتفاع</bdi></span> (<bdi lang="en">Height</bdi>) — المسافة المستقيمة إلى الأعلى من القاعدة حتى الضلع العلوي.</li><li><span class="kw"><bdi>متعامدان</bdi></span> (<bdi lang="en">Perpendicular</bdi>) — خطان يلتقيان فيكوّنان زاوية قائمة (90 درجة).</li><li><span class="kw"><bdi>المساحة</bdi></span> (<bdi lang="en">Area</bdi>) — مقدار الحيّز داخل شكل مستوٍ.</li><li><span class="kw"><bdi>شكل مركّب</bdi></span> (<bdi lang="en">Composite figure</bdi>) — شكل يتكوّن من ضمّ شكلين بسيطين أو أكثر معًا.</li><li><span class="kw"><bdi>القانون (الصيغة)</bdi></span> (<bdi lang="en">Formula</bdi>) — قاعدة رياضية مكتوبة بالرموز.</li><li><span class="kw"><bdi>المعيّن</bdi></span> (<bdi lang="en">Rhombus</bdi>) — متوازي أضلاع أضلاعه الأربعة متساوية في الطول.</li><li><span class="kw"><bdi>القطر</bdi></span> (<bdi lang="en">Diagonal</bdi>) — قطعة مستقيمة تصل بين رأسين غير متجاورين.</li></ul></div>
-  <div class="lang-panel" data-lang="fr" lang="fr"><p class="auto-label">Traduction automatique · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">Pour trouver l'aire d'un parallélogramme, multiplie la base par la hauteur. La hauteur monte tout droit depuis la base, pas le long du côté oblique. Exemple : une base de 6 pieds et une hauteur de 4 pieds donnent 6 × 4 = 24 pieds carrés.</p><ul><li><span class="kw"><bdi>Aire des parallélogrammes</bdi></span> (<bdi lang="en">Area of Parallelograms</bdi>) — L'espace à l'intérieur d'un parallélogramme. Formule : A = b × h, avec la hauteur perpendiculaire.</li><li><span class="kw"><bdi>Côté oblique</bdi></span> (<bdi lang="en">Slanted side</bdi>) — Un côté penché au lieu d'aller tout droit de haut en bas. Ce n'est pas la hauteur perpendiculaire.</li><li><span class="kw"><bdi>Parallélogramme</bdi></span> (<bdi lang="en">Parallelogram</bdi>) — Une figure à quatre côtés avec deux paires de côtés parallèles.</li><li><span class="kw"><bdi>Parallèles</bdi></span> (<bdi lang="en">Parallel</bdi>) — Deux droites ou deux côtés qui restent toujours à la même distance et ne se rencontrent jamais.</li><li><span class="kw"><bdi>Base</bdi></span> (<bdi lang="en">Base</bdi>) — N'importe quel côté d'un parallélogramme peut être la base. Une fois la base choisie, la hauteur se mesure perpendiculairement à elle (à 90°).</li><li><span class="kw"><bdi>Hauteur</bdi></span> (<bdi lang="en">Height</bdi>) — La distance tout droit vers le haut, de la base jusqu'au côté du haut.</li><li><span class="kw"><bdi>Perpendiculaires</bdi></span> (<bdi lang="en">Perpendicular</bdi>) — Deux droites qui se coupent en formant un angle droit (90 degrés).</li><li><span class="kw"><bdi>Aire</bdi></span> (<bdi lang="en">Area</bdi>) — La quantité d'espace à l'intérieur d'une figure plane.</li><li><span class="kw"><bdi>Figure composée</bdi></span> (<bdi lang="en">Composite figure</bdi>) — Une figure formée en assemblant deux figures simples ou plus.</li><li><span class="kw"><bdi>Formule</bdi></span> (<bdi lang="en">Formula</bdi>) — Une règle mathématique écrite avec des symboles.</li><li><span class="kw"><bdi>Losange</bdi></span> (<bdi lang="en">Rhombus</bdi>) — Un parallélogramme dont les quatre côtés ont la même longueur.</li><li><span class="kw"><bdi>Diagonale</bdi></span> (<bdi lang="en">Diagonal</bdi>) — Un segment qui relie deux sommets qui ne sont pas côte à côte.</li></ul></div>
-  <div class="lang-panel" data-lang="prs" lang="prs" dir="rtl"><p class="auto-label">ترجمه ماشینی · <span lang="en" dir="ltr">Automatic translation</span></p><p class="callout">برای پیدا کردن مساحت متوازی‌الاضلاع، قاعده را ضرب در ارتفاع کنید. ارتفاع از قاعده مستقیم به طرف بالا می‌رود، نه در امتداد ضلع مایل. مثال: قاعدهٔ 6 فوت و ارتفاع 4 فوت می‌شود 6 × 4 = 24 فوت مربع.</p><ul><li><span class="kw"><bdi>مساحت متوازی‌الاضلاع</bdi></span> (<bdi lang="en">Area of Parallelograms</bdi>) — جای داخل یک متوازی‌الاضلاع. فورمول: A = b × h، با استفاده از ارتفاع عمودی.</li><li><span class="kw"><bdi>ضلع مایل</bdi></span> (<bdi lang="en">Slanted side</bdi>) — ضلعی که به جای اینکه راست بالا و پایین برود، کج است. این ضلع ارتفاع عمودی نیست.</li><li><span class="kw"><bdi>متوازی‌الاضلاع</bdi></span> (<bdi lang="en">Parallelogram</bdi>) — شکل چهارضلعی که دو جوره ضلع موازی دارد.</li><li><span class="kw"><bdi>موازی</bdi></span> (<bdi lang="en">Parallel</bdi>) — دو خط یا دو ضلع که همیشه به یک فاصله از هم می‌مانند و هرگز به هم نمی‌رسند.</li><li><span class="kw"><bdi>قاعده</bdi></span> (<bdi lang="en">Base</bdi>) — هر ضلع متوازی‌الاضلاع می‌تواند قاعده باشد. وقتی قاعده را انتخاب کردید، ارتفاع باید عمود بر آن (با زاویهٔ 90°) اندازه شود.</li><li><span class="kw"><bdi>ارتفاع</bdi></span> (<bdi lang="en">Height</bdi>) — فاصلهٔ مستقیم به طرف بالا از قاعده تا ضلع بالایی.</li><li><span class="kw"><bdi>عمود</bdi></span> (<bdi lang="en">Perpendicular</bdi>) — دو خط که به هم می‌رسند و یک زاویهٔ قائمه (90 درجه) می‌سازند.</li><li><span class="kw"><bdi>مساحت</bdi></span> (<bdi lang="en">Area</bdi>) — اندازهٔ جای داخل یک شکل هموار.</li><li><span class="kw"><bdi>شکل مرکب</bdi></span> (<bdi lang="en">Composite figure</bdi>) — شکلی که از کنار هم گذاشتن دو یا چند شکل ساده ساخته می‌شود.</li><li><span class="kw"><bdi>فورمول</bdi></span> (<bdi lang="en">Formula</bdi>) — یک قاعدهٔ ریاضی که با علامه‌ها نوشته می‌شود.</li><li><span class="kw"><bdi>معین</bdi></span> (<bdi lang="en">Rhombus</bdi>) — متوازی‌الاضلاعی که هر چهار ضلع آن هم‌اندازه است.</li><li><span class="kw"><bdi>قطر</bdi></span> (<bdi lang="en">Diagonal</bdi>) — پارچه خطی که دو کنج غیر همسایه را به هم وصل می‌کند.</li></ul></div>
-  </div>
-  </div>
-</section>
-<section class="section-kitchen">
-  <h2>Kitchen Table Math</h2>
-  <div class="welcome-note" style="background:var(--yellow-light); border-left-color:var(--yellow); margin-bottom: 0;">
-    <strong>Math is everywhere!</strong>
-    <p>Try exploring this topic while you are cooking, shopping, or driving. Ask your student to be the teacher and explain it to you in their own words.</p>
-  </div>
+<section class="section-mission" data-mission>
+  <h2>Try at home <span class="es">Para hacer en casa</span></h2>
+  <div class="callout"><p>Draw a parallelogram on paper. Use a ruler to measure its base. Then use the corner of a book to find the straight-up height, not the slanted side. Multiply base × height to find the area and write the unit.</p><p class="es-text" lang="es">Dibuja un paralelogramo en papel. Usa una regla para medir su base. Luego usa la esquina de un libro para hallar la altura en línea recta, no el lado inclinado. Multiplica base × altura para hallar el área y escribe la unidad.</p></div>
+  <p><strong>Talk about it:</strong></p><p>Which measurement is the height: the slanted side or the straight-up distance? How do you know?</p><p class="es-text" lang="es">¿Cuál medida es la altura: el lado inclinado o la distancia en línea recta hacia arriba? ¿Cómo lo sabes?</p>
 </section>
 
 <section class="section-tool tool-section">
-  <h2>Play with today's math <span class="es">· Jueguen con las matemáticas</span></h2>
+  <h2>Play with today's math <span class="es">Jueguen con las matemáticas</span></h2>
   <p><strong>Interactive Lesson Model</strong> — This is the exact same interactive tool your student used in class today. Change the numbers and watch what happens!</p>
   <p class="es-text">Modelo interactivo de la lección — Esta es la misma herramienta interactiva que su estudiante usó en clase hoy. ¡Cambie los números y observe qué sucede!</p>
   <div class="tool-host" data-lesson-model-host><div class="interactive-visual" data-visual="area-morph" data-config="{&quot;kind&quot;:&quot;area-morph&quot;,&quot;figure&quot;:&quot;parallelogram&quot;,&quot;b&quot;:10,&quot;h&quot;:7,&quot;unit&quot;:&quot;cm&quot;}" role="group" aria-label="Interactive Determine the Area of Parallelograms and Rhombuses" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use this tool. The steps above work on paper too.</div></noscript></div></div>
   <p class="muted-note">Works on a phone, a tablet, or a computer. Nothing to install, nothing to sign in to.</p>
 </section>
 <section class="section-vocab">
-  <h2>Vocabulary you might hear</h2>
-  <ul><li><span class="kw">Area of Parallelograms</span> — The space inside a parallelogram. Formula: A = b × h, using the perpendicular height.<br><span class="es-text">Español: Área de paralelogramos — El espacio dentro de un paralelogramo. Fórmula: A = b × h, usando la altura perpendicular.</span></li><li><span class="kw">Slanted side</span> — A side that leans instead of going straight up and down. It is not the perpendicular height.<br><span class="es-text">Español: Lado inclinado — Un lado que está inclinado en vez de subir y bajar verticalmente. No es la altura perpendicular.</span></li><li><span class="kw">Parallelogram</span> — A four-sided shape with two pairs of parallel sides.<br><span class="es-text">Español: Paralelogramo — Una figura de cuatro lados con dos pares de lados paralelos.</span></li><li><span class="kw">Parallel</span> — Two lines or sides that stay the same distance apart and never meet.<br><span class="es-text">Español: Paralelas — Dos líneas o lados que se mantienen a la misma distancia y nunca se cruzan.</span></li><li><span class="kw">Base</span> — Any side of a parallelogram can be the base. Once you pick a base, the height must be measured perpendicular (at a 90° angle) to it.<br><span class="es-text">Español: Base — Cualquier lado de un paralelogramo puede ser la base. Una vez que eliges la base, la altura debe medirse perpendicular (en un ángulo de 90°) a ella.</span></li><li><span class="kw">Height</span> — The straight-up distance from the base to the top.<br><span class="es-text">Español: Altura — La distancia recta hacia arriba desde la base hasta la parte de arriba.</span></li><li><span class="kw">Perpendicular</span> — Two lines that meet to make a square corner (90 degrees).<br><span class="es-text">Español: Perpendicular — Dos líneas que se cruzan formando una esquina cuadrada (90 grados).</span></li><li><span class="kw">Area</span> — How much space is inside a flat shape.<br><span class="es-text">Español: Área — Cuánto espacio hay dentro de una figura plana.</span></li><li><span class="kw">Composite figure</span> — A shape made by putting two or more simple shapes together.<br><span class="es-text">Español: Figura compuesta — Una figura formada al juntar dos o más figuras simples.</span></li><li><span class="kw">Formula</span> — A math rule written with symbols.<br><span class="es-text">Español: Fórmula — Una regla matemática escrita con símbolos.</span></li><li><span class="kw">Rhombus</span> — A parallelogram with four sides of the same length.<br><span class="es-text">Español: Rombo — Un paralelogramo con cuatro lados de la misma longitud.</span></li><li><span class="kw">Diagonal</span> — A segment that joins two corners that are not next to each other.<br><span class="es-text">Español: Diagonal — Un segmento que une dos esquinas que no están una junto a la otra.</span></li></ul>
+  <h2>Words to know <span class="es">Palabras clave</span></h2>
+  <dl class="glossary" data-glossary><div class="gloss-item"><dt><span class="kw">Area of Parallelograms</span> <span class="gloss-es" lang="es">Área de paralelogramos</span></dt><dd>Base times height. Measure the height straight up.</dd><dd class="es-text" lang="es">Base por altura. Mide la altura en línea recta hacia arriba.</dd></div><div class="gloss-item"><dt><span class="kw">Slanted side</span> <span class="gloss-es" lang="es">Lado inclinado</span></dt><dd>A side that leans. It is not the straight-up height.</dd><dd class="es-text" lang="es">Un lado que se inclina. No es la altura en línea recta.</dd></div><div class="gloss-item"><dt><span class="kw">Parallelogram</span> <span class="gloss-es" lang="es">Paralelogramo</span></dt><dd>A shape with four sides. Opposite sides are parallel.</dd><dd class="es-text" lang="es">Una figura de cuatro lados. Los lados opuestos son paralelos.</dd></div><div class="gloss-item"><dt><span class="kw">Parallel</span> <span class="gloss-es" lang="es">Paralelas</span></dt><dd>Lines that stay the same distance apart and never meet.</dd><dd class="es-text" lang="es">Líneas que siempre están a la misma distancia y nunca se cruzan.</dd></div><div class="gloss-item"><dt><span class="kw">Base</span> <span class="gloss-es" lang="es">Base</span></dt><dd>The side you pick to measure height from.</dd><dd class="es-text" lang="es">El lado que eliges para medir la altura.</dd></div><div class="gloss-item"><dt><span class="kw">Height</span> <span class="gloss-es" lang="es">Altura</span></dt><dd>How tall it is, measured straight up from the base.</dd><dd class="es-text" lang="es">Qué tan alta es, medida en línea recta hacia arriba desde la base.</dd></div><div class="gloss-item"><dt><span class="kw">Perpendicular</span> <span class="gloss-es" lang="es">Perpendicular</span></dt><dd>Lines that meet at a square corner (90°).</dd><dd class="es-text" lang="es">Líneas que se cruzan en una esquina cuadrada (90°).</dd></div><div class="gloss-item"><dt><span class="kw">Area</span> <span class="gloss-es" lang="es">Área</span></dt><dd>How much flat space a shape covers.</dd><dd class="es-text" lang="es">Cuánto espacio plano cubre una figura.</dd></div><div class="gloss-item"><dt><span class="kw">Composite figure</span> <span class="gloss-es" lang="es">Figura compuesta</span></dt><dd>A shape made of simple shapes joined together.</dd><dd class="es-text" lang="es">Una figura hecha de figuras simples juntas.</dd></div><div class="gloss-item"><dt><span class="kw">Formula</span> <span class="gloss-es" lang="es">Fórmula</span></dt><dd>A rule written with letters and numbers.</dd><dd class="es-text" lang="es">Una regla escrita con letras y números.</dd></div><div class="gloss-item"><dt><span class="kw">Rhombus</span> <span class="gloss-es" lang="es">Rombo</span></dt><dd>A shape with four sides that are all the same length.</dd><dd class="es-text" lang="es">Una figura de cuatro lados que miden lo mismo.</dd></div><div class="gloss-item"><dt><span class="kw">Diagonal</span> <span class="gloss-es" lang="es">Diagonal</span></dt><dd>A line between two corners that are not side by side.</dd><dd class="es-text" lang="es">Una línea entre dos esquinas que no están una al lado de la otra.</dd></div></dl>
 </section>
 <section class="section-example">
-  <h2>How we did it in class today</h2>
+  <h2>How we did it in class today <span class="es">Cómo lo hicimos hoy en clase</span></h2>
   <div class="callout" style="background:#fff;border-color:var(--line);"><ol><li>I have a parallelogram with a base of 14 feet and a height of 9 feet.</li><li>I write the formula: A = base × height.</li><li>I put in the numbers: A = 14 × 9.</li><li>I multiply: 14 × 9 = 126.</li><li>So the area is 126 square feet. I used the height of 9, not the slanted side.</li></ol></div>
 </section>
 <section class="section-practice">
-  <h2>Try this together</h2>
+  <h2>Try this together <span class="es">Inténtenlo juntos</span></h2>
   <p class="sub" style="margin-top:-6px;">Pick one question to talk about. You don't need to do them all!</p>
   <div class="callout" style="background:var(--cream);border-color:var(--line); padding-bottom:16px;">
          <p><strong>Match each shape to its area.</strong></p>
@@ -174,19 +153,14 @@ ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); 
        </div>
 </section>
 <section class="section-stuck">
-  <h2>If they get stuck...</h2>
+  <h2>If they get stuck... <span class="es">Si se traban...</span></h2>
   <div class="callout" style="border-left: 6px solid #ff9800; background: #fff8e1;">
-    <p style="margin-top:0;"><strong>Watch out for this:</strong> The most common mistake in Area of Parallelograms is multiplying the base by the slanted side instead of the perpendicular height. For a parallelogram with a base of 16 ft, a perpendicular height of 9 ft, and a slanted side of 11 ft, students compute 16 × 11 = 176 square feet instead of the correct 16 × 9 = 144 square feet. The height must be the straight-up (perpendicular) distance between the base and its opposite side, not the length of the slanted side, even though the slanted side is often the number that 'looks' like it belongs in the formula.</p>
-    <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"</p>
+    <p style="margin-top:0;"><strong>Watch out for this:</strong> Thinking the slanted side is the height. The height always goes straight up, at a right angle to the base.<br><span class="es-text" lang="es">Atención: Pensar que el lado inclinado es la altura. La altura siempre va derecho hacia arriba, en ángulo recto con la base.</span></p>
+    <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"<br><span class="es-text" lang="es">Pregunte: «¿Puedes mostrarme cómo lo hiciste? ¿Nos saltamos algún paso?» Hablar de las matemáticas en voz alta ayuda mucho.</span></p>
   </div>
 </section>
 <section>
-  <h2>Spanish support <span class="es">· Apoyo en español</span></h2>
-  <p>Palabras clave de esta lección:</p><ul><li>Área de paralelogramos — El espacio dentro de un paralelogramo. Fórmula: A = b × h, usando la altura perpendicular.</li><li>Lado inclinado — Un lado que está inclinado en vez de subir y bajar verticalmente. No es la altura perpendicular.</li><li>Paralelogramo — Una figura de cuatro lados con dos pares de lados paralelos.</li><li>Paralelas — Dos líneas o lados que se mantienen a la misma distancia y nunca se cruzan.</li><li>Base — Cualquier lado de un paralelogramo puede ser la base. Una vez que eliges la base, la altura debe medirse perpendicular (en un ángulo de 90°) a ella.</li><li>Altura — La distancia recta hacia arriba desde la base hasta la parte de arriba.</li><li>Perpendicular — Dos líneas que se cruzan formando una esquina cuadrada (90 grados).</li><li>Área — Cuánto espacio hay dentro de una figura plana.</li><li>Figura compuesta — Una figura formada al juntar dos o más figuras simples.</li><li>Fórmula — Una regla matemática escrita con símbolos.</li><li>Rombo — Un paralelogramo con cuatro lados de la misma longitud.</li><li>Diagonal — Un segmento que une dos esquinas que no están una junto a la otra.</li></ul>
-  <p class="es-text">En casa: pida a su estudiante que le explique el ejemplo y por qué funciona cada paso. Hablar de las matemáticas en voz alta ayuda mucho.</p>
-</section>
-<section>
-  <h2>Sentence starters <span class="es">· Frases para empezar</span></h2>
+  <h2>Sentence starters <span class="es">Frases para empezar</span></h2>
   <p class="frame">I know ___ because ___.</p><p class="frame">First, I ___. Then, I ___.</p><p class="frame">The answer is ___, so ___.</p>
 </section>
 </main>

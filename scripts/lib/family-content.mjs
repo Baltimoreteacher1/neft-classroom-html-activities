@@ -1,7 +1,7 @@
 /**
  * Family-facing lesson fields — the one definition of their shape.
  *
- * Three optional top-level fields in lessons/<id>/config.json feed the public
+ * Optional top-level fields in lessons/<id>/config.json feed the public
  * family page (lessons/<id>/family/), rendered by
  * scripts/generate-lesson-support-pages.mjs, and the family homework ladder
  * (scripts/homework-guided-notes.mjs):
@@ -12,37 +12,23 @@
  *                      family surface; a lesson without one shows no check item.
  *   familyKeyIdea(+Es) the key idea in plain words; overrides the teacher key idea
  *                      on the family page only.
- *   familyLanguages    { ar, fr, prs }: machine-translated key idea + vocabulary,
- *                      shown in the family page's language picker and labelled
- *                      "Automatic translation" in that language and in English.
+ *
+ * Family surfaces are English and Spanish only (Joel, 2026-10-21: "I only need
+ * spanish and english"). `familyLanguages` — a machine-translated Arabic / French
+ * / Dari key idea + glossary that once fed a language picker — was deleted, and
+ * `FORBIDDEN_FAMILY_FIELDS` makes the schema fail if a config ever carries it
+ * again.
  *
  * The generator and `validate:family-exit-ticket` both read this module, so the
  * schema the sibling content authors write against is checked in one place.
  */
 
-/** Order is the picker order. `rtl` drives dir="rtl" on the panel. */
-export const FAMILY_LANGUAGES = [
-  { code: "en", name: "English" },
-  { code: "es", name: "Español" },
-  {
-    code: "ar",
-    name: "العربية",
-    rtl: true,
-    machine: true,
-    autoLabel: "ترجمة آلية",
-  },
-  { code: "fr", name: "Français", machine: true, autoLabel: "Traduction automatique" },
-  {
-    code: "prs",
-    name: "دری",
-    rtl: true,
-    machine: true,
-    autoLabel: "ترجمه ماشینی",
-  },
-];
-
-/** The codes `familyLanguages` must carry — exactly these, no more. */
-export const MACHINE_LANGUAGE_CODES = FAMILY_LANGUAGES.filter((l) => l.machine).map((l) => l.code);
+/**
+ * Config keys that must never come back. The only languages on a family surface
+ * are English and Spanish, so a key that carries any other language is a schema
+ * error, not an optional extra.
+ */
+export const FORBIDDEN_FAMILY_FIELDS = ["familyLanguages"];
 
 /** Arrays that run parallel to `choices` and must keep its length. */
 const PARALLEL_TO_CHOICES = [
@@ -128,48 +114,10 @@ function familyKeyIdeaProblems(cfg) {
   return out;
 }
 
-function familyLanguagesProblems(cfg) {
-  const fl = cfg.familyLanguages;
-  if (fl === undefined) return [];
-  if (!fl || typeof fl !== "object" || Array.isArray(fl))
-    return ["familyLanguages must be an object"];
-  const out = [];
-  const codes = Object.keys(fl).sort();
-  const want = [...MACHINE_LANGUAGE_CODES].sort();
-  if (JSON.stringify(codes) !== JSON.stringify(want))
-    out.push(
-      `familyLanguages must have exactly ${want.join(", ")} (has ${codes.join(", ") || "none"})`,
-    );
-  const terms = (Array.isArray(cfg.vocabulary) ? cfg.vocabulary : [])
-    .map((v) => v?.term)
-    .filter(isNonEmptyString);
-  for (const code of codes) {
-    const entry = fl[code];
-    if (!entry || typeof entry !== "object") {
-      out.push(`familyLanguages.${code} must be an object`);
-      continue;
-    }
-    if (!isNonEmptyString(entry.keyIdea)) out.push(`familyLanguages.${code}.keyIdea is missing`);
-    if (!Array.isArray(entry.vocabulary)) {
-      out.push(`familyLanguages.${code}.vocabulary must be an array`);
-      continue;
-    }
-    const seen = new Set();
-    entry.vocabulary.forEach((w, i) => {
-      if (!terms.includes(w?.term))
-        out.push(
-          `familyLanguages.${code}.vocabulary[${i}].term "${w?.term}" is not a vocabulary[] term`,
-        );
-      if (seen.has(w?.term)) out.push(`familyLanguages.${code} repeats term "${w?.term}"`);
-      seen.add(w?.term);
-      if (!isNonEmptyString(w?.translation) || !isNonEmptyString(w?.definition))
-        out.push(`familyLanguages.${code}.vocabulary[${i}] needs translation and definition`);
-    });
-    const missing = terms.filter((t) => !seen.has(t));
-    if (missing.length)
-      out.push(`familyLanguages.${code} is missing term(s): ${missing.join(", ")}`);
-  }
-  return out;
+function forbiddenFieldProblems(cfg) {
+  return FORBIDDEN_FAMILY_FIELDS.filter((key) => cfg[key] !== undefined).map(
+    (key) => `${key} is not allowed: family surfaces are English and Spanish only (delete the key)`,
+  );
 }
 
 /** Every schema problem in a config's family fields; [] when it is clean. */
@@ -177,6 +125,6 @@ export function familyFieldProblems(cfg) {
   return [
     ...familyCheckProblems(cfg),
     ...familyKeyIdeaProblems(cfg),
-    ...familyLanguagesProblems(cfg),
+    ...forbiddenFieldProblems(cfg),
   ];
 }

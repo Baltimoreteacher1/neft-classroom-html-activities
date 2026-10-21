@@ -1,6 +1,9 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { renderLanding } from "./lib/family-landing.mjs";
+import { withPlainDefinitions } from "./lib/family-plain-definitions.mjs";
+import { SESSIONS } from "./lib/homework-session-flow.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -18,49 +21,19 @@ const FAMILY_TITLES_ES = JSON.parse(
   readFileSync(join(root, "data", "family-homework-titles-es.json"), "utf8"),
 );
 
-const UNIT_THEMES = {
-  1: {
-    name: "Math Is Discovery",
-    blurb: "Math identity, problem solving, models, and explaining our thinking.",
-  },
-  2: {
-    name: "Statistics",
-    blurb:
-      "Statistical questions, data displays, and measures of center and spread, with decimal skills.",
-  },
-  3: {
-    name: "Ratios & Rates",
-    blurb: "Ratios and ratio reasoning through recipes, comparisons, and shared quantities.",
-  },
-  4: {
-    name: "Percents",
-    blurb: "Percents, equivalent forms, estimates, and part-whole problems.",
-  },
-  5: {
-    name: "Area, Surface Area & Volume",
-    blurb: "Area of shapes, volume of prisms, nets, and surface area.",
-  },
-  6: {
-    name: "Expressions",
-    blurb: "Fraction division, factors, exponents, and equivalent expressions.",
-  },
-  7: {
-    name: "Integers & the Coordinate Plane",
-    blurb: "Positive and negative numbers, absolute value, and points on the coordinate plane.",
-  },
-  8: {
-    name: "Equations & Inequalities",
-    blurb: "Writing, solving, and graphing equations and inequalities.",
-  },
-  9: {
-    name: "Two-Variable Relationships",
-    blurb: "Tables, graphs, and equations that show how two quantities change together.",
-  },
-  10: {
-    name: "Math Is Synthesis",
-    blurb: "Using and explaining skills from across the year in new problems.",
-  },
-};
+const LANDING = JSON.parse(readFileSync(join(root, "data", "family-landing-units.json"), "utf8"));
+const REVEAL_TOC = JSON.parse(readFileSync(join(root, "data", "reveal-toc-2025.json"), "utf8"));
+
+/** The ten units, named by the Reveal TOC (English) and the landing data (Spanish). */
+const UNITS = REVEAL_TOC.units
+  .map((tocUnit) => {
+    const extra = LANDING.units[String(tocUnit.unit)];
+    if (!extra) throw new Error(`data/family-landing-units.json has no unit ${tocUnit.unit}`);
+    return { unit: tocUnit.unit, nameEn: tocUnit.title, ...extra };
+  })
+  .sort((a, b) => a.unit - b.unit);
+
+const unitById = (unit) => UNITS.find((u) => u.unit === unit);
 
 const TOPIC_FALLBACK_VOCAB = {
   "Ratios, rates, and percents": [
@@ -258,7 +231,10 @@ function resourcesFor(lessonId, canonicalLesson) {
 }
 
 function normalizeVocabulary(config, topic) {
-  const source = Array.isArray(config.vocabulary) ? config.vocabulary : [];
+  const source = withPlainDefinitions(
+    Array.isArray(config.vocabulary) ? config.vocabulary : [],
+    config.lessonId || config.id,
+  );
   const terms = source
     .map((item) => ({
       term: textFromMaybe(item.term || item.word || item.name),
@@ -319,6 +295,15 @@ function spanishWhy(topic) {
   return "Esta habilidad ayuda con dinero, medidas, juegos, planificación y con revisar si una respuesta es razonable.";
 }
 
+/** The Family Math Studio pages for a lesson: Session 1, and Session 2 when it exists. */
+function studioLinks(lessonId) {
+  const part2 = join(root, "lessons", `${lessonId}-part2`, "homework.html");
+  return {
+    href: `/lessons/${lessonId}/homework.html`,
+    part2Href: existsSync(part2) ? `/lessons/${lessonId}-part2/homework.html` : null,
+  };
+}
+
 function buildLessonRecords() {
   const lessonsRoot = join(root, "lessons");
   return readdirSync(lessonsRoot)
@@ -330,10 +315,9 @@ function buildLessonRecords() {
       const canonical = CANONICAL_LESSONS.get(lessonId);
       const lessonSource = canonical ? { ...config, ...canonical } : config;
       const unit = Number(lessonSource.unit || lessonId.match(lessonDirPattern)[1]);
-      const unitInfo = UNIT_THEMES[unit] || {
-        name: `Unit ${unit}`,
-        blurb: "Grade 6 math practice and support.",
-      };
+      const unitInfo = unitById(unit);
+      if (!unitInfo)
+        throw new Error(`lesson ${lessonId} is in unit ${unit}, which the Reveal TOC lacks`);
       const topic = topicFor(lessonSource);
       const isFlagship = lessonId.endsWith("-flagship");
       const familyNote = JSON.parse(
@@ -350,12 +334,13 @@ function buildLessonRecords() {
         languageObjective:
           lessonSource.languageObjective ||
           "I can explain my strategy using math words and evidence.",
-        unitName: unitInfo.name,
-        unitBlurb: unitInfo.blurb,
+        unitName: unitInfo.nameEn,
+        unitNameEs: unitInfo.nameEs,
         topic,
         isFlagship,
         ...(isFlagship ? { variantLabel: "Flagship / Enrichment Version" } : {}),
         resources: resourcesFor(lessonId, canonical),
+        studio: studioLinks(lessonId),
         vocabulary: normalizeVocabulary(config, topic),
         support: {
           learningTonight: familyNote.learningTonight,
@@ -391,178 +376,13 @@ function resourceLinks(resources, className = "resource-list") {
     .join("")}</div>`;
 }
 
-function renderIndex(lessons) {
-  const units = [...new Map(lessons.map((lesson) => [lesson.unit, lesson])).values()].sort(
-    (a, b) => a.unit - b.unit,
-  );
-  const topics = [...new Set(lessons.map((lesson) => lesson.topic))].sort();
-  return `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Family Math Support</title>
-  <style>
-    :root {
-      --ink: #1f2933;
-      --muted: #52606d;
-      --line: #d7dee7;
-      --paper: #fffaf0;
-      --surface: #ffffff;
-      --teal: #0f766e;
-      --blue: #1d4ed8;
-      --amber: #b45309;
-      --rose: #be123c;
-      --shadow: 0 14px 30px rgba(31, 41, 51, 0.08);
-    }
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--ink); background: var(--paper); line-height: 1.55; }
-    a { color: inherit; }
-    .topbar { background: #12343b; color: #fff; }
-    .topbar-inner { max-width: 1180px; margin: 0 auto; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
-    .topbar a { color: #fff; text-decoration: none; font-weight: 700; }
-    main { max-width: 1180px; margin: 0 auto; padding: 34px 20px 56px; }
-    .hero { display: grid; gap: 14px; margin-bottom: 24px; }
-    .eyebrow { color: var(--teal-ink); font-weight: 800; text-transform: uppercase; font-size: 0.78rem; }
-    h1 { margin: 0; font-size: clamp(2rem, 5vw, 4rem); line-height: 1.02; }
-    .subtitle { margin: 0; max-width: 760px; font-size: 1.2rem; color: #334e68; }
-    .intro { max-width: 860px; color: var(--muted); margin: 0; }
-    .controls { display: grid; grid-template-columns: minmax(220px, 1fr) repeat(2, minmax(180px, 240px)); gap: 12px; margin: 28px 0; align-items: end; }
-    label { display: grid; gap: 6px; color: #334e68; font-weight: 800; font-size: 0.92rem; }
-    input, select { width: 100%; min-height: 46px; border: 2px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); padding: 10px 12px; font: inherit; }
-    input:focus, select:focus, a:focus-visible { outline: 3px solid rgba(15, 118, 110, 0.3); outline-offset: 2px; }
-    .unit-section { border-top: 3px solid #12343b; padding-top: 22px; margin-top: 34px; }
-    .unit-heading { display: flex; justify-content: space-between; gap: 18px; align-items: end; margin-bottom: 16px; flex-wrap: wrap; }
-    h2 { margin: 0; font-size: 1.6rem; }
-    .unit-heading p { margin: 4px 0 0; color: var(--muted); max-width: 760px; }
-    .count { color: var(--amber); font-weight: 900; }
-    .lesson-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
-    .lesson-card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; box-shadow: var(--shadow); display: grid; gap: 10px; }
-    .meta-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-    .lesson-id { color: var(--blue); font-weight: 900; }
-    .standard { color: var(--rose); font-weight: 800; font-size: 0.88rem; }
-    h3 { margin: 0; font-size: 1.15rem; line-height: 1.2; }
-    .objective { margin: 0; color: var(--muted); }
-    .badges { display: flex; flex-wrap: wrap; gap: 6px; }
-    .badge { border: 1px solid var(--line); border-radius: 999px; padding: 3px 8px; color: #334e68; font-size: 0.8rem; font-weight: 800; background: #f8fafc; }
-    .badge.flagship { border-color: #f59e0b; color: #92400e; background: #fffbeb; }
-    .open-button { justify-self: start; background: var(--teal); color: #fff; text-decoration: none; font-weight: 900; padding: 9px 12px; border-radius: 8px; }
-    .hidden { display: none; }
-    .empty { background: #fff; border: 2px dashed var(--line); border-radius: 8px; padding: 20px; color: var(--muted); }
-    @media (max-width: 760px) {
-      .controls { grid-template-columns: 1fr; }
-      main { padding-top: 24px; }
-    }
-  </style>
-</head>
-<body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <strong>Mr. Neft's Grade 6 Math</strong>
-      <a href="/curriculum/">Curriculum Hub</a>
-    </div>
-  </header>
-  <main>
-    <section class="hero" aria-labelledby="page-title">
-      <div class="eyebrow">Family and guardian guide</div>
-      <h1 id="page-title">Family Math Support</h1>
-      <p class="subtitle">Grade 6 Math help for families, parents, and guardians.</p>
-      <p class="intro">Use this page to see what each lesson is about, open the same class resources students use, and find a few calm ways to help at home. The explanations are written for busy families, not math experts.</p>
-    </section>
-
-    <section class="controls" aria-label="Find family support lessons">
-      <label for="family-search">Search by lesson, skill, or standard
-        <input id="family-search" type="search" placeholder="Try area, ratios, 6.SP.4, or 8-6">
-      </label>
-      <label for="unit-filter">Unit
-        <select id="unit-filter">
-          <option value="all">All units</option>
-          ${units.map((unit) => `<option value="${unit.unit}">Unit ${unit.unit}: ${esc(unit.unitName)}</option>`).join("\n          ")}
-        </select>
-      </label>
-      <label for="topic-filter">Topic
-        <select id="topic-filter">
-          <option value="all">All topics</option>
-          ${topics.map((topic) => `<option value="${esc(topic)}">${esc(topic)}</option>`).join("\n          ")}
-        </select>
-      </label>
-    </section>
-
-    <p id="empty-message" class="empty hidden">No lessons match those filters yet. Try a shorter search or choose all units and topics.</p>
-
-    ${units
-      .map((unit) => {
-        const unitLessons = lessons.filter((lesson) => lesson.unit === unit.unit);
-        return `<section class="unit-section" data-unit-section="${unit.unit}">
-      <div class="unit-heading">
-        <div>
-          <h2>Unit ${unit.unit}: ${esc(unit.unitName)}</h2>
-          <p>${esc(unit.unitBlurb)}</p>
-        </div>
-        <span class="count">${unitLessons.length} lessons</span>
-      </div>
-      <div class="lesson-grid">
-        ${unitLessons
-          .map(
-            (
-              lesson,
-            ) => `<article class="lesson-card" data-lesson-card data-unit="${lesson.unit}" data-topic="${esc(lesson.topic)}" data-search="${esc(`${lesson.lessonId} ${lesson.title} ${lesson.standard} ${lesson.objective} ${lesson.topic}`.toLowerCase())}">
-          <div class="meta-row">
-            <span class="lesson-id">Lesson ${esc(lesson.lessonId)}</span>
-            <span class="standard">${esc(lesson.standard)}</span>
-          </div>
-          <h3>${esc(lesson.title)}</h3>
-          <p class="objective">${esc(lesson.objective)}</p>
-          <div class="badges" aria-label="Available resources">
-            ${lesson.isFlagship ? `<span class="badge flagship">Flagship / Enrichment Version</span>` : ""}
-            ${lesson.resources.map((resource) => `<span class="badge">${esc(resource.label)}</span>`).join("")}
-          </div>
-          <a class="open-button" href="/families/lessons/${esc(lesson.lessonId)}/">Open family guide</a>
-        </article>`,
-          )
-          .join("\n        ")}
-      </div>
-    </section>`;
-      })
-      .join("\n\n    ")}
-  </main>
-  <script>
-    const searchInput = document.querySelector("#family-search");
-    const unitFilter = document.querySelector("#unit-filter");
-    const topicFilter = document.querySelector("#topic-filter");
-    const cards = [...document.querySelectorAll("[data-lesson-card]")];
-    const sections = [...document.querySelectorAll("[data-unit-section]")];
-    const empty = document.querySelector("#empty-message");
-
-    function applyFilters() {
-      const query = searchInput.value.trim().toLowerCase();
-      const unit = unitFilter.value;
-      const topic = topicFilter.value;
-      let visibleCount = 0;
-
-      for (const card of cards) {
-        const matchesQuery = !query || card.dataset.search.includes(query);
-        const matchesUnit = unit === "all" || card.dataset.unit === unit;
-        const matchesTopic = topic === "all" || card.dataset.topic === topic;
-        const isVisible = matchesQuery && matchesUnit && matchesTopic;
-        card.classList.toggle("hidden", !isVisible);
-        if (isVisible) visibleCount += 1;
-      }
-
-      for (const section of sections) {
-        const hasVisibleCard = [...section.querySelectorAll("[data-lesson-card]")].some((card) => !card.classList.contains("hidden"));
-        section.classList.toggle("hidden", !hasVisibleCard);
-      }
-      empty.classList.toggle("hidden", visibleCount !== 0);
-    }
-
-    searchInput.addEventListener("input", applyFilters);
-    unitFilter.addEventListener("change", applyFilters);
-    topicFilter.addEventListener("change", applyFilters);
-  </script>
-</body>
-</html>
-`;
+function studioLinksHtml(lesson) {
+  const { href, part2Href } = lesson.studio;
+  const link = (to, en, es) =>
+    `<a href="${esc(to)}"><span>${esc(en)}</span><small lang="es">${esc(es)}</small></a>`;
+  if (!part2Href)
+    return `<div class="studio-links">${link(href, "Open Family Math Studio", "Abrir el Estudio familiar")}</div>`;
+  return `<div class="studio-links"><span class="cap">Family Math Studio / Estudio familiar</span>${link(href, SESSIONS[1].en, SESSIONS[1].es)}${link(part2Href, SESSIONS[2].en, SESSIONS[2].es)}</div>`;
 }
 
 function renderLessonPage(lesson) {
@@ -571,7 +391,7 @@ function renderLessonPage(lesson) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${esc(lesson.lessonId)} Family Guide | ${esc(lesson.title)}</title>
+  <title>Family Math Studio · Lesson guide | ${esc(lesson.title)}</title>
   <style>
     :root {
       --ink: #1f2933;
@@ -594,7 +414,14 @@ function renderLessonPage(lesson) {
     .lesson-hero { display: grid; gap: 14px; padding-bottom: 24px; border-bottom: 3px solid #12343b; }
     .meta { display: flex; flex-wrap: wrap; gap: 8px; }
     .pill { display: inline-flex; align-items: center; min-height: 30px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; background: #fff; font-weight: 900; color: #334e68; }
-    .pill.standard { color: var(--rose); }
+    .eyebrow { margin: 0; color: var(--teal); font-weight: 800; text-transform: uppercase; letter-spacing: .06em; font-size: .8rem; }
+    .eyebrow span { text-transform: none; letter-spacing: 0; font-weight: 600; color: var(--muted); }
+    .standard-note { margin: 0; font-size: .8rem; color: var(--muted); }
+    .studio-links { display: flex; flex-wrap: wrap; gap: 8px; }
+    .studio-links a { background: var(--teal); color: #fff; text-decoration: none; font-weight: 900; padding: 12px 16px; border-radius: 8px; min-height: 48px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; line-height: 1.2; }
+    .studio-links small { font-weight: 600; opacity: .9; font-size: .8rem; }
+    .studio-links .cap { flex-basis: 100%; font-size: .8rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--teal); }
+    .more-materials summary { font-weight: 700; color: var(--muted); }
     .pill.flagship { color: #92400e; background: #fffbeb; border-color: #f59e0b; }
     h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.05; }
     .objective { margin: 0; max-width: 820px; font-size: 1.15rem; color: #334e68; font-weight: 700; }
@@ -624,7 +451,7 @@ function renderLessonPage(lesson) {
     a:focus-visible, summary:focus-visible { outline: 3px solid rgba(15, 118, 110, 0.3); outline-offset: 2px; }
     @media (max-width: 640px) {
       main { padding-top: 22px; }
-      .resource-list a { width: 100%; text-align: center; }
+      .resource-list a, .studio-links a { width: 100%; text-align: center; justify-content: center; }
       .bilingual-pair { grid-template-columns: 1fr; }
     }
   </style>
@@ -632,24 +459,29 @@ function renderLessonPage(lesson) {
 <body>
   <header class="topbar">
     <div class="topbar-inner">
-      <strong>Family Math Support</strong>
-      <a href="/families/">All family guides</a>
+      <strong>Family Math Studio · Estudio familiar</strong>
+      <a href="/families/">All family guides / Todas las guías</a>
     </div>
   </header>
   <main>
     <a class="back-link" href="/families/">Back to family guides</a>
     <header class="lesson-hero">
+      <p class="eyebrow">Family Math Studio · Lesson guide <span lang="es">· Guía de la lección</span></p>
       <div class="meta">
         <span class="pill">Unit ${esc(lesson.unit)}: ${esc(lesson.unitName)}</span>
         <span class="pill">Lesson ${esc(lesson.lessonId)}</span>
-        <span class="pill standard">${esc(lesson.standard)}</span>
         ${lesson.isFlagship ? `<span class="pill flagship">Flagship / Enrichment Version</span>` : ""}
       </div>
       <h1>${esc(lesson.title)}</h1>
       <p lang="es" class="objective">${esc(lesson.titleEs)}</p>
       <p class="objective">${esc(lesson.objective)}</p>
       <p class="language-goal"><strong>Speaking and writing goal:</strong> ${esc(lesson.languageObjective)}</p>
-      ${resourceLinks(lesson.resources)}
+      ${studioLinksHtml(lesson)}
+      <details class="more-materials">
+        <summary>More class materials / Más materiales de clase</summary>
+        ${resourceLinks(lesson.resources)}
+      </details>
+      <p class="standard-note">Standard: ${esc(lesson.standard)}</p>
     </header>
 
     <section>
@@ -743,7 +575,10 @@ writeFileSync(
 );
 
 mkdirSync(join(root, "families"), { recursive: true });
-writeFileSync(join(root, "families", "index.html"), renderIndex(lessons));
+writeFileSync(
+  join(root, "families", "index.html"),
+  renderLanding({ lessons, units: UNITS, promise: LANDING.promise }),
+);
 
 for (const lesson of lessons) {
   const lessonDir = join(root, "families", "lessons", lesson.lessonId);

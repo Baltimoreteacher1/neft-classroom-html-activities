@@ -31,12 +31,15 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { interactiveVisualHost } from "@eduwonderlab/engine/core/interactive-visual.js";
-import { FAMILY_LANGUAGES, familyFieldProblems } from "./lib/family-content.mjs";
+import { familyFieldProblems } from "./lib/family-content.mjs";
+import { withPlainDefinitions } from "./lib/family-plain-definitions.mjs";
 import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
+
+const notesDir = join(__dirname, "..", "data", "family-homework-notes");
 
 const LESSON_DIR_RE = /^(\d+)-(\d+)(-flagship)?$/;
 
@@ -113,7 +116,24 @@ function workedExampleLines(cfg) {
 }
 
 function vocab(cfg) {
-  return Array.isArray(cfg.vocabulary) ? cfg.vocabulary.filter((v) => v.term) : [];
+  return withPlainDefinitions(
+    Array.isArray(cfg.vocabulary) ? cfg.vocabulary.filter((v) => v.term) : [],
+    cfg.id || cfg.lessonId,
+  );
+}
+
+/**
+ * The lesson's own "Family Activity Corner" (mission, question, watch-out),
+ * authored per lesson in data/family-homework-notes/<id>.json. 43 of 84 lessons
+ * have one; the rest return null and the page shows no mission block rather than
+ * a generic one.
+ */
+function familyCorner(id) {
+  const file = join(notesDir, `${id}.json`);
+  if (!existsSync(file)) return null;
+  const corner = JSON.parse(readFileSync(file, "utf8")).corner;
+  if (!corner?.mission?.en || !corner.mission.es) return null;
+  return corner;
 }
 
 /* ---------- the lesson's own interactive tool, for families ---------- */
@@ -191,79 +211,11 @@ function familyToolSection(model) {
   const copy = FAMILY_TOOL_COPY[model.kind] || FAMILY_TOOL_FALLBACK;
   return `
 <section class="section-tool tool-section">
-  <h2>Play with today's math <span class="es">· Jueguen con las matemáticas</span></h2>
+  <h2>Play with today's math <span class="es">Jueguen con las matemáticas</span></h2>
   <p><strong>${esc(copy.name)}</strong> — ${esc(copy.blurb)}</p>
   <p class="es-text">${esc(copy.nameEs)} — ${esc(copy.blurbEs)}</p>
   <div class="tool-host" data-lesson-model-host>${model.html}</div>
   <p class="muted-note">Works on a phone, a tablet, or a computer. Nothing to install, nothing to sign in to.</p>
-</section>`;
-}
-
-/* ---------- the family language picker ---------- */
-
-/**
- * "Read this in your language": the key idea and key words in English, Spanish
- * and the three machine-translated languages from `familyLanguages`. Pure HTML +
- * CSS (radio inputs drive which panel shows), so it works with scripts off and on
- * every device a family has. The machine-translated panels say so — in their own
- * language AND in English, so the teacher reading over a shoulder knows too.
- * Arabic and Dari panels are right-to-left; English terms inside them are
- * isolated with <bdi> so a term like "Ratio table" keeps its own direction.
- */
-function familyLanguagesSection(cfg, vocabList) {
-  const fl = cfg.familyLanguages;
-  if (!fl) return "";
-  const keyIdeaEn = cfg.familyKeyIdea || cfg.launch?.conceptIntro?.keyIdea || "";
-  const keyIdeaEs = cfg.familyKeyIdeaEs || cfg.launch?.conceptIntro?.keyIdeaEs || "";
-  const panelBody = (code) => {
-    if (code === "en")
-      return {
-        keyIdea: keyIdeaEn,
-        words: vocabList.map((w) => ({ t: w.term, d: w.definition || "" })),
-      };
-    if (code === "es")
-      return {
-        keyIdea: keyIdeaEs,
-        words: vocabList
-          .filter((w) => w.termEs || w.definitionEs)
-          .map((w) => ({ t: w.termEs || w.term, d: w.definitionEs || "" })),
-      };
-    const entry = fl[code];
-    return {
-      keyIdea: entry.keyIdea,
-      words: entry.vocabulary.map((w) => ({ t: w.translation, d: w.definition, en: w.term })),
-    };
-  };
-  const radios = FAMILY_LANGUAGES.map(
-    (l, i) =>
-      `<input type="radio" class="lang-radio" name="family-lang" id="family-lang-${l.code}" value="${l.code}"${i === 0 ? " checked" : ""}><label for="family-lang-${l.code}" lang="${l.code}">${esc(l.name)}</label>`,
-  ).join("");
-  const panels = FAMILY_LANGUAGES.map((l) => {
-    const { keyIdea, words } = panelBody(l.code);
-    const dir = l.rtl ? ' dir="rtl"' : "";
-    const auto = l.machine
-      ? `<p class="auto-label">${esc(l.autoLabel)} · <span lang="en" dir="ltr">Automatic translation</span></p>`
-      : "";
-    const list = words.length
-      ? `<ul>${words
-          .map(
-            (w) =>
-              `<li><span class="kw"><bdi>${esc(w.t)}</bdi></span>${w.en ? ` (<bdi lang="en">${esc(w.en)}</bdi>)` : ""} — ${esc(w.d)}</li>`,
-          )
-          .join("")}</ul>`
-      : "";
-    return `<div class="lang-panel" data-lang="${l.code}" lang="${l.code}"${dir}>${auto}${
-      keyIdea ? `<p class="callout">${esc(keyIdea)}</p>` : ""
-    }${list}</div>`;
-  }).join("\n  ");
-  return `
-<section class="lang-section">
-  <h2>Read this in your language <span class="es">· Lea esto en su idioma</span></h2>
-  <div class="lang-picker">${radios}
-  <div class="lang-panels">
-  ${panels}
-  </div>
-  </div>
 </section>`;
 }
 
@@ -308,7 +260,7 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
   .tool-section{display:none;}}
 `;
 
-// Family-page-only rules (choice lists, language picker). Kept out of PALETTE so
+// Family-page-only rules (choice lists, hero, sections). Kept out of PALETTE so
 // the teacher-notes and student-help pages do not churn for styles they never use.
 const FAMILY_CSS = `
 body { background: #f1f5f9; font-family: "Outfit", system-ui, sans-serif; }
@@ -318,7 +270,8 @@ body { background: #f1f5f9; font-family: "Outfit", system-ui, sans-serif; }
 .hero-header { background: linear-gradient(135deg, var(--navy), #1a4f8a); padding: 56px 32px; color: #fff; text-align: center; }
 .hero-header .eyebrow { color: var(--teal-light); font-size: 16px; margin-bottom: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
 .hero-header h1 { color: #fff; font-size: 44px; margin: 0; line-height: 1.1; font-weight: 800; }
-.hero-header .std { display: inline-block; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; margin-top:16px; border-radius: 999px; padding: 4px 12px; font-size: 14px; font-weight: 700; }
+.hero-header .eyebrow .es { text-transform: none; letter-spacing: 0; font-weight: 600; opacity: .85; }
+.hero-header .std { display: block; background: none; border: 0; color: rgba(255,255,255,0.72); margin: 14px 0 0; padding: 0; font-size: 13px; font-weight: 500; }
 
 /* Upgrade sections to look like cards */
 section { padding: 40px 32px; border: none; margin: 0; border-bottom: 1px solid #edf1f5; }
@@ -327,12 +280,21 @@ section h2::before { content: "✨"; font-size: 28px; }
 
 /* Specific icons for sections */
 .section-learning h2::before { content: "💡"; }
-.section-kitchen h2::before { content: "🍕"; }
+.section-mission h2::before { content: "🏠"; }
 .section-tool h2::before { content: "🕹️"; }
 .section-vocab h2::before { content: "💬"; }
 .section-example h2::before { content: "🏫"; }
 .section-practice h2::before { content: "✏️"; }
 .section-stuck h2::before { content: "🆘"; }
+
+.glossary{margin:0;}
+.gloss-item{padding:14px 0;border-bottom:1px solid #edf1f5;}
+.gloss-item:last-child{border-bottom:0;}
+.gloss-item dt{font-size:22px;}
+.gloss-item .gloss-es{color:var(--muted);font-weight:600;}
+.gloss-item .gloss-es::before{content:"· ";}
+.gloss-item dd{margin:4px 0 0;font-size:19px;}
+.gloss-item dd.es-text{font-size:18px;}
 
 ol.choices{margin:16px 0 8px;list-style:none;padding-left:0;}
 ol.choices li{background: #f8fafc; border:2px solid #e2e8f0;border-radius:16px;padding:16px 20px;margin-bottom:12px;font-weight:600; font-size: 20px; cursor: pointer; transition: all 0.2s; color: var(--navy); }
@@ -344,30 +306,13 @@ ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); 
 
 .callout { border: none; border-radius: 20px; padding: 24px 32px; background: #f8fafc; font-size: 22px; line-height: 1.5; }
 
-.lang-radio{position:absolute;opacity:0;width:1px;height:1px;}
-.lang-radio + label{display:inline-block;border:2px solid #e2e8f0;border-radius:999px;padding:8px 24px;
-  margin:0 12px 16px 0;cursor:pointer;font-weight:700;color:var(--navy);background:#fff; font-size: 18px; transition: all 0.2s;}
-.lang-radio:checked + label{background:var(--navy);color:#fff;border-color:var(--navy);}
-.lang-radio:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px;}
-.lang-panel{display:none;margin-top:6px;}
-#family-lang-en:checked ~ .lang-panels [data-lang="en"],
-#family-lang-es:checked ~ .lang-panels [data-lang="es"],
-#family-lang-ar:checked ~ .lang-panels [data-lang="ar"],
-#family-lang-fr:checked ~ .lang-panels [data-lang="fr"],
-#family-lang-prs:checked ~ .lang-panels [data-lang="prs"]{display:block;}
-.lang-panel[dir="rtl"] ul{padding-left:0;padding-right:22px;}
-.auto-label{display:inline-block;background:var(--amber-light);border:1px solid var(--amber);border-radius:999px;
-  padding:4px 16px;font-size:15px;font-weight:700;color:var(--ink);margin:0 0 12px;}
-
 /* Phone: the desktop type scale wrapped the title to four lines and left a
-   heading and its hint each on a line of their own. Language buttons stay
-   thumb-sized (44px). */
+   heading and its hint each on a line of their own. */
 @media (max-width: 560px) {
   .hero-header { padding: 36px 20px; }
   .hero-header h1 { font-size: 30px; }
   section { padding: 28px 20px; }
   section h2 { font-size: 24px; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-  .lang-radio + label { min-height: 44px; padding: 10px 20px; }
 }
 `;
 
@@ -397,17 +342,52 @@ ${scripts}
 
 /* ---------- builders ---------- */
 
+/**
+ * ONE bilingual glossary: each word once, with its Spanish and a plain meaning
+ * in both languages. The page used to list the same words three times (key
+ * words, "Vocabulary you might hear", "Spanish support").
+ */
+function glossary(v) {
+  if (!v.length) return "";
+  return `<dl class="glossary" data-glossary>${v
+    .map(
+      (w) =>
+        `<div class="gloss-item"><dt><span class="kw">${esc(w.term)}</span>${
+          w.termEs ? ` <span class="gloss-es" lang="es">${esc(w.termEs)}</span>` : ""
+        }</dt><dd>${esc(w.definition || "")}</dd>${
+          w.definitionEs ? `<dd class="es-text" lang="es">${esc(w.definitionEs)}</dd>` : ""
+        }</div>`,
+    )
+    .join("")}</dl>`;
+}
+
+/** The lesson's own mission and conversation question, in both languages. */
+function missionSection(corner) {
+  if (!corner) return "";
+  const pair = (p) => `<p>${esc(p.en)}</p><p class="es-text" lang="es">${esc(p.es)}</p>`;
+  return `
+<section class="section-mission" data-mission>
+  <h2>Try at home <span class="es">Para hacer en casa</span></h2>
+  <div class="callout">${pair(corner.mission)}</div>
+  ${
+    corner.question?.en && corner.question.es
+      ? `<p><strong>Talk about it:</strong></p>${pair(corner.question)}`
+      : ""
+  }
+</section>`;
+}
+
 function familyPage(id, cfg, unit, lesson) {
   const problems0 = familyFieldProblems(cfg);
   if (problems0.length)
     throw new Error(`lessons/${id}/config.json family fields:\n  - ${problems0.join("\n  - ")}`);
   const v = vocab(cfg);
   const model = selectFamilyModel(cfg);
+  const corner = familyCorner(id);
   const example = workedExampleLines(cfg);
   const { directions, problems } = practiceProblems(cfg, 1);
-  const stdBadge = cfg.standard ? `<span class="std">${esc(cfg.standard)}</span>` : "";
+  const stdBadge = cfg.standard ? `<span class="std">Standard ${esc(cfg.standard)}</span>` : "";
 
-  // Remove the complex 'learning' objective and only use the simple key idea.
   // \`familyKeyIdea\` is the plain-language (grade-4 reading level) version a
   // family can use; the teacher key idea is the fallback, never the other way.
   const keyIdea =
@@ -415,19 +395,6 @@ function familyPage(id, cfg, unit, lesson) {
     cfg.launch?.conceptIntro?.keyIdea ||
     "Ask your student what the main idea was today!";
   const keyIdeaEs = cfg.familyKeyIdea ? cfg.familyKeyIdeaEs || "" : "";
-
-  const kwList = v.length
-    ? `<ul>${v
-        .map(
-          (w) =>
-            `<li><span class="kw">${esc(w.term)}</span> — ${esc(w.definition || "")}${
-              w.definitionEs
-                ? `<br><span class="es-text">Español: ${esc(w.termEs || w.term)} — ${esc(w.definitionEs)}</span>`
-                : ""
-            }</li>`,
-        )
-        .join("")}</ul>`
-    : `<p>See the lesson page for key words.</p>`;
 
   const exampleHtml = example.length
     ? `<div class="callout" style="background:#fff;border-color:var(--line);"><ol>${example.map((l) => `<li>${esc(l)}</li>`).join("")}</ol></div>`
@@ -450,67 +417,53 @@ function familyPage(id, cfg, unit, lesson) {
        </div>`
     : `<p>Use the homework for practice problems.</p>`;
 
-  const esWords = v
-    .filter((w) => w.termEs || w.definitionEs)
-    .map((w) => `${esc(w.termEs || w.term)} — ${esc(w.definitionEs || w.definition || "")}`);
+  // The watch-out is the lesson's own corner tip (English + Spanish) when it has
+  // one, else the config's common mistake (English).
+  const watchOut = corner?.watchOut?.en
+    ? `${esc(corner.watchOut.en)}${corner.watchOut.es ? `<br><span class="es-text" lang="es">Atención: ${esc(corner.watchOut.es)}</span>` : ""}`
+    : esc(cfg.practice?.commonMistake || "Slow down and re-read the question before solving.");
 
   const head = `
 <div class="hero-header">
-  <p class="eyebrow">Family Lesson Support</p>
+  <p class="eyebrow">Family Math Studio · Lesson guide <span class="es">Guía de la lección</span></p>
   <h1>Unit ${unit}, Lesson ${lesson}: ${esc(cfg.title || id)}</h1>
   ${stdBadge}
 </div>`;
 
   const body = `
 <section class="section-learning">
-  <h2>What students are learning</h2>
+  <h2>What students are learning <span class="es">Qué aprenden</span></h2>
   <p class="callout" style="font-size:22px;"><strong>Key idea:</strong> ${esc(keyIdea)}${keyIdeaEs ? `<br><span class="es-text" lang="es" style="font-size:18px;">Idea clave: ${esc(keyIdeaEs)}</span>` : ""}</p>
 </section>
-${familyLanguagesSection(cfg, v)}
-<section class="section-kitchen">
-  <h2>Kitchen Table Math</h2>
-  <div class="welcome-note" style="background:var(--yellow-light); border-left-color:var(--yellow); margin-bottom: 0;">
-    <strong>Math is everywhere!</strong>
-    <p>Try exploring this topic while you are cooking, shopping, or driving. Ask your student to be the teacher and explain it to you in their own words.</p>
-  </div>
-</section>
+${missionSection(corner)}
 ${familyToolSection(model)}
 <section class="section-vocab">
-  <h2>Vocabulary you might hear</h2>
-  ${kwList}
+  <h2>Words to know <span class="es">Palabras clave</span></h2>
+  ${glossary(v) || `<p>See the lesson page for key words.</p>`}
 </section>
 <section class="section-example">
-  <h2>How we did it in class today</h2>
+  <h2>How we did it in class today <span class="es">Cómo lo hicimos hoy en clase</span></h2>
   ${exampleHtml}
 </section>
 <section class="section-practice">
-  <h2>Try this together</h2>
+  <h2>Try this together <span class="es">Inténtenlo juntos</span></h2>
   <p class="sub" style="margin-top:-6px;">Pick one question to talk about. You don't need to do them all!</p>
   ${practiceHtml}
 </section>
 <section class="section-stuck">
-  <h2>If they get stuck...</h2>
+  <h2>If they get stuck... <span class="es">Si se traban...</span></h2>
   <div class="callout" style="border-left: 6px solid #ff9800; background: #fff8e1;">
-    <p style="margin-top:0;"><strong>Watch out for this:</strong> ${esc(cfg.practice?.commonMistake || "Slow down and re-read the question before solving.")}</p>
-    <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"</p>
+    <p style="margin-top:0;"><strong>Watch out for this:</strong> ${watchOut}</p>
+    <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"<br><span class="es-text" lang="es">Pregunte: «¿Puedes mostrarme cómo lo hiciste? ¿Nos saltamos algún paso?» Hablar de las matemáticas en voz alta ayuda mucho.</span></p>
   </div>
 </section>
 <section>
-  <h2>Spanish support <span class="es">· Apoyo en español</span></h2>
-  ${
-    esWords.length
-      ? `<p>Palabras clave de esta lección:</p><ul>${esWords.map((w) => `<li>${w}</li>`).join("")}</ul>`
-      : ""
-  }
-  <p class="es-text">En casa: pida a su estudiante que le explique el ejemplo y por qué funciona cada paso. Hablar de las matemáticas en voz alta ayuda mucho.</p>
-</section>
-<section>
-  <h2>Sentence starters <span class="es">· Frases para empezar</span></h2>
+  <h2>Sentence starters <span class="es">Frases para empezar</span></h2>
   ${SENTENCE_FRAMES.map((f) => `<p class="frame">${esc(f)}</p>`).join("")}
 </section>`;
 
   return page({
-    title: `Family Support — Unit ${unit} Lesson ${lesson}: ${cfg.title || id}`,
+    title: `Family Math Studio · Lesson guide — Unit ${unit} Lesson ${lesson}: ${cfg.title || id}`,
     kind: "family",
     head,
     body,

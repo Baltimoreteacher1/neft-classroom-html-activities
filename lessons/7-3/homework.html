@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Help Your Student — Lesson 7-3: Understand Absolute Value of Rational Numbers</title>
+<title>Family Math Studio — Lesson 7-3: Understand Absolute Value of Rational Numbers</title>
 <link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/homework/homework-base-0d2a228add.css">
 <style>
@@ -114,26 +114,6 @@ header.homework-header,
   user-select: none;
 }
 
-/* 3 Stars Milestone Bar on Quick Check */
-.stars-to-win-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, var(--teal-light) 0%, #ffffff 100%);
-  border: 1.5px solid var(--teal);
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  margin-bottom: 20px;
-}
-.stars-to-win-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 14.5px;
-  color: var(--navy);
-}
 .stars-milestone-chips {
   display: flex;
   flex-wrap: wrap;
@@ -152,16 +132,7 @@ header.homework-header,
   flex: 0 0 auto;
   white-space: nowrap;
 }
-/* On a phone the goal sentence and the three milestone chips do not fit on one
-   line, so they stack instead of fighting for the same 400px. */
-@media (max-width: 620px) {
-  .stars-to-win-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .stars-milestone-chips { width: 100%; }
-}
+.stars-milestone-chips { width: 100%; }
 
 /* Rotated Huddle Activity Card */
 .huddle-hook-banner {
@@ -333,7 +304,7 @@ header.homework-header,
   margin-bottom: 3px;
 }
 </style>
-<link rel="stylesheet" href="/assets/homework/homework-layer-205c995f26.css">
+<link rel="stylesheet" href="/assets/homework/homework-layer-992d934c32.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -347,16 +318,17 @@ header.homework-header,
   <link rel="apple-touch-icon" href="/assets/favicon.svg">
   <meta name="theme-color" content="#12355b">
   <link rel="canonical" href="https://eduwonderlab.com/lessons/7-3/homework.html">
-  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 7-3: Understand Absolute Value of Rational Numbers.">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 7-3: Understand Absolute Value of Rational Numbers.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Neft Teacher">
-  <meta property="og:title" content="Help Your Student — Lesson 7-3: Understand Absolute Value of Rational Numbers">
-  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 7-3: Understand Absolute Value of Rational Numbers.">
+  <meta property="og:title" content="Family Math Studio — Lesson 7-3: Understand Absolute Value of Rational Numbers">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 7-3: Understand Absolute Value of Rational Numbers.">
   <meta property="og:url" content="https://eduwonderlab.com/lessons/7-3/homework.html">
   <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
   <!-- enthead-injected:end -->
 </head>
 <body>
+<a class="hw-skip" href="#hw_tab_panels" onclick="startHomework(); return false;"><span class="lang-en">Skip to tonight's math</span><span class="lang-es" lang="es">Ir a la matemática de hoy</span></a>
 
 <script>
 /* Language mode, BEFORE first paint. restoreParentSignoff sets the same class
@@ -365,10 +337,29 @@ header.homework-header,
    whole document. Same rule as the boot script below it: fail toward showing
    something readable, which here is English. */
 (function () {
-  var mode = 'en';
+  /* Blocked site data makes every localStorage access throw, which would stop the
+     page's own startup. Fall back to storage that lasts for this visit. */
   try {
+    window.localStorage.getItem('hw_probe');
+  } catch (blocked) {
+    var memory = {};
+    var stand = {
+      getItem: function (k) { return Object.prototype.hasOwnProperty.call(memory, k) ? memory[k] : null; },
+      setItem: function (k, v) { memory[k] = String(v); },
+      removeItem: function (k) { delete memory[k]; },
+      clear: function () { memory = {}; },
+      key: function (i) { return Object.keys(memory)[i] || null; },
+      get length() { return Object.keys(memory).length; }
+    };
+    try { Object.defineProperty(window, 'localStorage', { configurable: true, get: function () { return stand; } }); } catch (unsupported) {}
+  }
+  var mode = 'bilingual';
+  try {
+    var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
+    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
+      mode = requested;
+    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)
@@ -423,6 +414,23 @@ header.homework-header,
     <header class="hw-hero" aria-label="Family Math Night welcome">
       <div class="hw-hero-glow" aria-hidden="true"></div>
       <div class="hw-hero-body">
+        <div class="hw-hero-controls">
+          <div class="lang-selector-card">
+            <span class="lang-selector-title">Language / Idioma</span>
+            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
+              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
+                🇺🇸🇪🇸 <span class="lang-btn-long">Bilingual / Bilingüe</span><span class="lang-btn-short">EN + ES</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
+                🇺🇸 <span>English</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
+                🇪🇸 <span>Español</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <p class="hw-hero-kicker">
           <span class="hw-hero-kicker-icon" aria-hidden="true">📘</span>
           <span class="lang-en">Unit 7 · Integers, Rational Numbers, and the Coordinate Plane</span>
@@ -443,39 +451,25 @@ header.homework-header,
         </p>
 
         <nav class="hw-session-banner" aria-label="Two-session lesson" data-session="1">
-    <ol class="hw-session-steps"><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span></span></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-next"><a class="hw-session-chip" href="/lessons/7-3-part2/homework.html"><span class="hw-session-mark" aria-hidden="true">○</span><span class="hw-session-name"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span></a></li></ol>
+    <ol class="hw-session-steps"><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span><span class="hw-session-short"><span class="lang-en">Session 1</span><span class="lang-es" lang="es">Sesión 1</span></span></span></span></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-next"><a class="hw-session-chip" href="/lessons/7-3-part2/homework.html"><span class="hw-session-mark" aria-hidden="true">○</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span><span class="hw-session-short"><span class="lang-en">Session 2</span><span class="lang-es" lang="es">Sesión 2</span></span></span></a></li></ol>
     <p class="hw-session-sentence"><strong><span class="lang-en">Coming up next:</span><span class="lang-es" lang="es">Lo que sigue:</span></strong> <span class="lang-en">In Session 2, we use absolute value to find the TOTAL distance between two points — including when they sit on opposite sides of zero.</span><span class="lang-es" lang="es">En la Sesión 2, usamos el valor absoluto para hallar la distancia TOTAL entre dos puntos — incluso cuando están en lados opuestos del cero.</span> <span class="lang-en">It builds on today’s model. Open it when it is assigned.</span><span class="lang-es" lang="es">Se basa en el modelo de hoy. Ábranla cuando se las asignen.</span></p>
   </nav>
 
         <p class="hw-hero-bigidea" aria-label="Big idea">
-          <span class="hw-hero-bigidea-label"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
+          <span class="hw-hero-bigidea-label hw-inline"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
           <span class="lang-en">Tonight we find the absolute value of a rational number — a whole number, a fraction, or a decimal — as its distance from zero.</span><span class="lang-es" lang="es">Esta noche hallamos el valor absoluto de un número racional —entero, fracción o decimal— como su distancia desde el cero.</span>
         </p>
-
-        <div class="hw-hero-controls">
-          <div class="lang-selector-card">
-            <span class="lang-selector-title">Language / Idioma</span>
-            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
-              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
-                🇺🇸🇪🇸 <span>Bilingual / Bilingüe</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
-                🇺🇸 <span>English</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
-                🇪🇸 <span>Español</span>
-              </button>
-            </div>
-          </div>
-        </div>
 
         <p class="hw-hero-lead">
           <span class="lang-en">Optional, ungraded practice. Work with someone or on your own; no adult signature is needed.</span>
           <span class="lang-es" lang="es">Práctica opcional, sin calificación. Trabaja con alguien o a solas; no necesitas la firma de un adulto.</span>
         </p>
 
-        <ul class="hw-hero-stats" aria-label="What tonight looks like">
-          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">5</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">5</span> paradas</span></li>
+
+        <ul class="hw-tonight hw-inline" aria-label="Tonight at a glance">
+          <li><span aria-hidden="true">⏱</span> <strong><span data-hw-tonight-time>20–30</span> min</strong></li>
+          <li><span aria-hidden="true">✏️</span> <span class="lang-en">Pencil and paper</span><span class="lang-es" lang="es">Lápiz y papel</span></li>
+          <li><span aria-hidden="true">🎯</span> <span class="lang-en">Goal:</span><span class="lang-es" lang="es">Meta:</span> <strong><span data-hw-goal-count>4</span> <span class="lang-en">problems</span><span class="lang-es" lang="es">problemas</span></strong></li>
         </ul>
 
 
@@ -483,30 +477,31 @@ header.homework-header,
         <div class="hw-route-heading">
           <span class="hw-route-icon" aria-hidden="true">🧭</span>
           <div>
-            <h2 id="hw_route_title"><span class="lang-en">Choose a practice path</span><span class="lang-es" lang="es">Elige una ruta de práctica</span></h2>
-            <p><span class="lang-en">All practice is optional and ungraded. Choose the time that works for your family; your route choice is saved on this device.</span><span class="lang-es" lang="es">Toda la práctica es opcional y no lleva calificación. Elijan el tiempo que les funcione; la ruta queda guardada en este dispositivo.</span></p>
+            <h2 id="hw_route_title" class="hw-inline"><span class="lang-en">How much time do you have tonight?</span><span class="lang-es" lang="es">¿Cuánto tiempo tienen esta noche?</span></h2>
+            <p class="hw-inline"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
           </div>
         </div>
-        <div class="hw-route-options" role="group" aria-label="Choose a practice path" data-aria-en="Choose a practice path" data-aria-es="Elige una ruta de práctica">
+        <div class="hw-route-options" role="group" aria-label="How much time do you have tonight?" data-aria-en="How much time do you have tonight?" data-aria-es="¿Cuánto tiempo tienen esta noche?">
           <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
-            <span class="hw-route-time">5–10 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Quick practice</span><span class="lang-es" lang="es">Práctica breve</span></strong><small><span class="lang-en">One example, 2 problems, and one explanation.</span><span class="lang-es" lang="es">Un ejemplo, 2 problemas y una explicación.</span></small></span>
+            <span class="hw-route-time">5–10 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Quick</span><span class="lang-es" lang="es">Rápida</span></strong><small><span class="lang-en">One example and 2 problems.</span><span class="lang-es" lang="es">Un ejemplo y 2 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
-            <span class="hw-route-time">15–20 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Learn, explore key words, practice <span data-hw-core-count>6</span> problems, and explain.</span><span class="lang-es" lang="es">Aprende, explora palabras clave, practica <span data-hw-core-count>6</span> problemas y explica.</span></small></span>
+            <span class="hw-route-time">15–20 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Key words, then practice. Goal: 4 problems.</span><span class="lang-es" lang="es">Palabras clave y práctica. Meta: 4 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option is-active" data-route-mode="full" aria-pressed="true" onclick="setHomeworkRoute('full')">
-            <span class="hw-route-time">20–30 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Family Math Studio</span><span class="lang-es" lang="es">Estudio familiar de matemáticas</span></strong><small><span class="lang-en">Add one home mission and one math game. Go at your own pace.</span><span class="lang-es" lang="es">Agrega una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span></small></span>
+            <span class="hw-route-time">20–30 <small>min</small></span>
+            <span class="hw-route-badge"><span aria-hidden="true">★</span><span class="hw-sr-only"><span class="lang-en">Recommended</span><span class="lang-es" lang="es">Recomendada</span></span></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Full Studio</span><span class="lang-es" lang="es">Estudio completo</span></strong><small><span class="lang-en">Everything, plus a home mission and a game.</span><span class="lang-es" lang="es">Todo, más una misión en casa y un juego.</span></small></span>
           </button>
         </div>
         <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Family Math Studio selected: <span data-hw-core-count>6</span> problems, key words, one home mission, and one math game. Go at your own pace.</span>
-          <span class="lang-es" lang="es">Estudio familiar seleccionado: <span data-hw-core-count>6</span> problemas, palabras clave, una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span>
+          <span class="lang-en">Full Studio (recommended): everything, plus one home mission and one game. Everything is optional.</span>
+          <span class="lang-es" lang="es">Estudio completo (recomendada): todo, más una misión en casa y un juego. Todo es opcional.</span>
         </p>
         <p id="hw_resume_note" role="status" aria-live="polite"></p>
-        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start this path</span><span class="lang-es" lang="es">Empezar esta ruta</span></button>
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
       </section>
 
         <details class="hw-tools-menu"><summary><span class="lang-en">Tools: scratchpad, share, print &amp; standard</span><span class="lang-es" lang="es">Herramientas: pizarra, compartir, imprimir y estándar</span></summary>
@@ -659,15 +654,39 @@ header.homework-header,
           <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Enteros y valor absoluto</li><li>Número entero</li><li>Positivo</li></ul></div>
         </div>
       </div>
-
-      <div class="parent-quick-card">
-        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
-        <ul>
-          <li><span aria-hidden="true">💬</span> <strong><span class="lang-en">If they get stuck, ask:</span><span class="lang-es" lang="es">Si se atora, pregunten:</span></strong> <span class="lang-en">How far is this number from 0? Can a distance ever be negative?</span><span class="lang-es" lang="es">¿A qué distancia del 0 está este número? ¿Una distancia puede ser negativa?</span></li>
-          <li><span aria-hidden="true">🚫</span> <strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">Absolute value just erases the minus sign.</span><span class="lang-es" lang="es">El valor absoluto solo borra el signo menos.</span></li>
-        </ul>
-      </div>
     </div>
+
+      <section class="hw-confidence" id="hw_conf_before" data-conf-phase="before" aria-labelledby="hw_conf_before_title">
+        <h3 id="hw_conf_before_title"><span class="lang-en">How sure do you feel about today&#039;s math?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes con la matemática de hoy?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_before_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="before" onclick="hwSetConfidence('before', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="before" onclick="hwSetConfidence('before', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="before" onclick="hwSetConfidence('before', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Just for you. It stays on this device. We ask again at the end.</span><span class="lang-es" lang="es">Solo para ti. Se queda en este dispositivo. Preguntamos otra vez al final.</span></p>
+
+      </section>
+
+      <section class="hw-mystery" id="hw_mystery" data-problem="problem_10" aria-labelledby="hw_mystery_title">
+        <span class="hw-mystery-lock" id="hw_mystery_lock" aria-hidden="true">🔒</span>
+        <div class="hw-mystery-body">
+          <p class="hw-eyebrow hw-inline"><span class="lang-en">Tonight&#039;s mystery challenge</span><span class="lang-es" lang="es">El reto misterioso de hoy</span></p>
+          <h3 id="hw_mystery_title"><span class="lang-en">Can you crack this before tonight is over?</span><span class="lang-es" lang="es">¿Puedes resolver esto antes de terminar hoy?</span></h3>
+          <p class="hw-mystery-stem"><span class="lang-en">Captain Vega compares |-12| (a deep cave) and |7| (a hilltop). Which absolute value is GREATER?</span><span class="lang-es" lang="es">La capitana Vega compara |-12| (una cueva profunda) y |7| (una cima). ¿Cuál valor absoluto es MAYOR?</span></p>
+          <p class="hw-mystery-status" id="hw_mystery_status" role="status" aria-live="polite">
+            <span class="lang-en">Locked. Finish <span data-hw-goal-count>4</span> problems and it opens.</span>
+            <span class="lang-es" lang="es">Bloqueado. Termina <span data-hw-goal-count>4</span> problemas y se abre.</span>
+          </p>
+          <button type="button" class="hw-mystery-open" id="hw_mystery_open" hidden onclick="hwOpenMystery()">
+            <span class="lang-en">Open the mystery challenge ➔</span><span class="lang-es" lang="es">Abrir el reto misterioso ➔</span>
+          </button>
+        </div>
+      </section>
       <div class="learn-big-idea-block" id="hw_learn_idea">
 
       <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span> <button type="button" class="btn-listen-concept" onclick="speakBigIdea(&quot;Absolute value is a distance, and distance is never negative. |−6| = 6 and |6| = 6.&quot;, &quot;El valor absoluto es una distancia, y una distancia nunca es negativa. |−6| = 6 y |6| = 6.&quot;)" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button></h2>
@@ -800,18 +819,24 @@ header.homework-header,
 
 
       <div class="learn-extended-block" id="hw_learn_quick">
-    <details class="parent-coaching-drawer">
-      <summary class="parent-coaching-summary">
-        <span class="summary-left">
-          <span class="summary-icon">💡</span>
-          <span class="summary-text">
-            <strong><span class="lang-en">Parent Coaching Tips &amp; Real-World Connection</span><span class="lang-es" lang="es">Consejos para Padres y Conexión Real</span></strong>
-            <small><span class="lang-en">Tap to view coaching questions, common traps &amp; everyday examples</span><span class="lang-es" lang="es">Toca para ver preguntas guía, errores comunes y ejemplos</span></small>
-          </span>
+    <details class="hw-grownup" id="hw_grownup">
+      <summary>
+        <span class="hw-grownup-icon" aria-hidden="true">👪</span>
+        <span class="hw-grownup-text hw-stack">
+          <strong class="hw-stack"><span class="lang-en">For the grown-up · 1 minute</span><span class="lang-es" lang="es">Para el adulto · 1 minuto</span></strong>
+          <small class="hw-stack"><span class="lang-en">Ask: How far is this number from 0? Can a distance ever be negative?</span><span class="lang-es" lang="es">Pregunta: ¿A qué distancia del 0 está este número? ¿Una distancia puede ser negativa?</span></small>
         </span>
-        <span class="summary-chevron" aria-hidden="true">▾</span>
+        <span class="hw-grownup-chev" aria-hidden="true">▾</span>
       </summary>
-      <div class="parent-coaching-content">
+      <div class="hw-grownup-body">
+
+      <div class="parent-quick-card">
+        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
+        <ul>
+          <li><span aria-hidden="true">💬</span> <strong><span class="lang-en">If they get stuck, ask:</span><span class="lang-es" lang="es">Si se atora, pregunten:</span></strong> <span class="lang-en">How far is this number from 0? Can a distance ever be negative?</span><span class="lang-es" lang="es">¿A qué distancia del 0 está este número? ¿Una distancia puede ser negativa?</span></li>
+          <li><span aria-hidden="true">🚫</span> <strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">Absolute value just erases the minus sign.</span><span class="lang-es" lang="es">El valor absoluto solo borra el signo menos.</span></li>
+        </ul>
+      </div>
 
     <div class="real-world-spotlight card-ish">
       <div class="spotlight-badge"><span class="spotlight-icon" aria-hidden="true">🧭</span> <span><span class="lang-en">WHY THIS MATTERS</span><span class="lang-es" lang="es">¿POR QUÉ IMPORTA?</span></span></div>
@@ -914,7 +939,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Integers and Absolute Value&quot;, &quot;Enteros y valor absoluto&quot;)" title="Listen / Escuchar" aria-label="Pronounce Integers and Absolute Value">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/concept-integers-and-absolute-value.svg" alt="Illustration of Integers and Absolute Value: Integers are whole numbers and their opposites; absolute value is their distance from zero." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/concept-integers-and-absolute-value.svg" alt="Illustration of Integers and Absolute Value: Whole numbers and their opposites, and how far each is from zero." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -940,8 +965,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Enteros y valor absoluto</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">Integers are whole numbers and their opposites; absolute value is their distance from zero.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Los enteros son números enteros y sus opuestos; el valor absoluto es su distancia desde cero.</p>
+                    <p class="vocab-def">Whole numbers and their opposites, and how far each is from zero.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Números enteros y sus opuestos, y qué tan lejos está cada uno del cero.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>|−6| = 6 because −6 is 6 units from zero.</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -962,7 +987,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Integer&quot;, &quot;Número entero&quot;)" title="Listen / Escuchar" aria-label="Pronounce Integer">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/integer.svg" alt="Illustration of Integer: Whole numbers and their opposites, like -2, -1, 0, 1, 2." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/integer.svg" alt="Illustration of Integer: A whole number or its opposite, like 2 and −2." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -988,8 +1013,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Número entero</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">Whole numbers and their opposites, like -2, -1, 0, 1, 2.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número entero que puede ser positivo, negativo o cero.</p>
+                    <p class="vocab-def">A whole number or its opposite, like 2 and −2.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número de contar, su opuesto o el cero, como 2, −2 y 0.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>... -3, -2, -1, 0, 1, 2, 3 ... shown on a number line with 0 in the center</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1010,7 +1035,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Positive&quot;, &quot;Positivo&quot;)" title="Listen / Escuchar" aria-label="Pronounce Positive">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/positive.svg" alt="Illustration of Positive: A number bigger than zero, to the right of zero on a number line." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/positive.svg" alt="Illustration of Positive: A number more than zero." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1036,8 +1061,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Positivo</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A number bigger than zero, to the right of zero on a number line.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número mayor que cero, a la derecha del cero en la recta numérica.</p>
+                    <p class="vocab-def">A number more than zero.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número mayor que cero.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>+5 means 5 above zero, like 5 floors above ground level</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1058,7 +1083,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Negative&quot;, &quot;Negativo&quot;)" title="Listen / Escuchar" aria-label="Pronounce Negative">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/negative.svg" alt="Illustration of Negative: A number smaller than zero, to the left of zero on a number line." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/negative.svg" alt="Illustration of Negative: A number less than zero." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1084,8 +1109,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Negativo</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A number smaller than zero, to the left of zero on a number line.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número menor que cero, a la izquierda del cero en la recta numérica.</p>
+                    <p class="vocab-def">A number less than zero.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número menor que cero.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>-3 means 3 below zero, like 3 floors underground</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1106,7 +1131,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Absolute value&quot;, &quot;Valor absoluto&quot;)" title="Listen / Escuchar" aria-label="Pronounce Absolute value">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/absolute-value.svg" alt="Illustration of Absolute value: How far a number is from zero. It is never negative." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/absolute-value.svg" alt="Illustration of Absolute value: How far a number is from zero." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1132,8 +1157,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Valor absoluto</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">How far a number is from zero. It is never negative.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Qué tan lejos está un número de cero. Nunca es negativo.</p>
+                    <p class="vocab-def">How far a number is from zero.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Qué tan lejos está un número del cero.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>|-5| = 5 and |5| = 5 — both are 5 units from 0</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1154,7 +1179,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Opposite&quot;, &quot;Opuesto&quot;)" title="Listen / Escuchar" aria-label="Pronounce Opposite">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/opposite.svg" alt="Illustration of Opposite: Two numbers the same distance from zero, on opposite sides, like 3 and -3." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/opposite.svg" alt="Illustration of Opposite: A number the same distance from 0 on the other side." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1180,8 +1205,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Opuesto</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">Two numbers the same distance from zero, on opposite sides, like 3 and -3.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Dos números a la misma distancia de cero, en lados opuestos, como 3 y -3.</p>
+                    <p class="vocab-def">A number the same distance from 0 on the other side.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número a la misma distancia del 0, del otro lado.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>3 and -3 are opposites — both are 3 units from 0</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1202,7 +1227,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Rational number&quot;, &quot;Número racional&quot;)" title="Listen / Escuchar" aria-label="Pronounce Rational number">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/number-line.svg" alt="Illustration of Rational number: A number that can be written as a fraction of two integers, with a bottom number that is not zero." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/number-line.svg" alt="Illustration of Rational number: A number you can write as a fraction." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1228,8 +1253,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Número racional</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A number that can be written as a fraction of two integers, with a bottom number that is not zero.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número que se puede escribir como una fracción de dos enteros, con un denominador que no sea cero.</p>
+                    <p class="vocab-def">A number you can write as a fraction.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número que puedes escribir como fracción.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>−1/2, 0 and 5/4 each sit at one exact point.</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1250,7 +1275,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Magnitude&quot;, &quot;Magnitud&quot;)" title="Listen / Escuchar" aria-label="Pronounce Magnitude">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/absolute-value.svg" alt="Illustration of Magnitude: The size of a number; its distance from zero." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/absolute-value.svg" alt="Illustration of Magnitude: The size of a number: its distance from zero." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1276,8 +1301,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Magnitud</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">The size of a number; its distance from zero.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> El tamaño de un número; su distancia de cero.</p>
+                    <p class="vocab-def">The size of a number: its distance from zero.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> El tamaño de un número: su distancia al cero.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>|−50| has magnitude 50.</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1311,7 +1336,7 @@ header.homework-header,
         <p class="vq-done-score"><span class="lang-en">First-try stars:</span><span class="lang-es" lang="es">Estrellas al primer intento:</span> <strong id="vocab_quiz_score"></strong></p>
         <button type="button" class="btn btn-secondary" onclick="startVocabQuiz()"><span class="lang-en">Play again 🔄</span><span class="lang-es" lang="es">Jugar de nuevo 🔄</span></button>
       </div>
-      <script type="application/json" id="vocab_quiz_data">[{"term":"Integers and Absolute Value","termEs":"Enteros y valor absoluto","def":"Integers are whole numbers and their opposites; absolute value is their distance from zero.","defEs":"Los enteros son números enteros y sus opuestos; el valor absoluto es su distancia desde cero.","img":"/assets/vocab-images/concept-integers-and-absolute-value.svg","alt":"Illustration of Integers and Absolute Value: Integers are whole numbers and their opposites; absolute value is their distance from zero."},{"term":"Integer","termEs":"Número entero","def":"Whole numbers and their opposites, like -2, -1, 0, 1, 2.","defEs":"Un número entero que puede ser positivo, negativo o cero.","img":"/assets/vocab-images/integer.svg","alt":"Illustration of Integer: Whole numbers and their opposites, like -2, -1, 0, 1, 2."},{"term":"Positive","termEs":"Positivo","def":"A number bigger than zero, to the right of zero on a number line.","defEs":"Un número mayor que cero, a la derecha del cero en la recta numérica.","img":"/assets/vocab-images/positive.svg","alt":"Illustration of Positive: A number bigger than zero, to the right of zero on a number line."},{"term":"Negative","termEs":"Negativo","def":"A number smaller than zero, to the left of zero on a number line.","defEs":"Un número menor que cero, a la izquierda del cero en la recta numérica.","img":"/assets/vocab-images/negative.svg","alt":"Illustration of Negative: A number smaller than zero, to the left of zero on a number line."},{"term":"Absolute value","termEs":"Valor absoluto","def":"How far a number is from zero. It is never negative.","defEs":"Qué tan lejos está un número de cero. Nunca es negativo.","img":"/assets/vocab-images/absolute-value.svg","alt":"Illustration of Absolute value: How far a number is from zero. It is never negative."},{"term":"Opposite","termEs":"Opuesto","def":"Two numbers the same distance from zero, on opposite sides, like 3 and -3.","defEs":"Dos números a la misma distancia de cero, en lados opuestos, como 3 y -3.","img":"/assets/vocab-images/opposite.svg","alt":"Illustration of Opposite: Two numbers the same distance from zero, on opposite sides, like 3 and -3."},{"term":"Rational number","termEs":"Número racional","def":"A number that can be written as a fraction of two integers, with a bottom number that is not zero.","defEs":"Un número que se puede escribir como una fracción de dos enteros, con un denominador que no sea cero.","img":"/assets/vocab-images/number-line.svg","alt":"Illustration of Rational number: A number that can be written as a fraction of two integers, with a bottom number that is not zero."},{"term":"Magnitude","termEs":"Magnitud","def":"The size of a number; its distance from zero.","defEs":"El tamaño de un número; su distancia de cero.","img":"/assets/vocab-images/absolute-value.svg","alt":"Illustration of Magnitude: The size of a number; its distance from zero."}]</script>
+      <script type="application/json" id="vocab_quiz_data">[{"term":"Integers and Absolute Value","termEs":"Enteros y valor absoluto","def":"Whole numbers and their opposites, and how far each is from zero.","defEs":"Números enteros y sus opuestos, y qué tan lejos está cada uno del cero.","img":"/assets/vocab-images/concept-integers-and-absolute-value.svg","alt":"Illustration of Integers and Absolute Value: Whole numbers and their opposites, and how far each is from zero."},{"term":"Integer","termEs":"Número entero","def":"A whole number or its opposite, like 2 and −2.","defEs":"Un número de contar, su opuesto o el cero, como 2, −2 y 0.","img":"/assets/vocab-images/integer.svg","alt":"Illustration of Integer: A whole number or its opposite, like 2 and −2."},{"term":"Positive","termEs":"Positivo","def":"A number more than zero.","defEs":"Un número mayor que cero.","img":"/assets/vocab-images/positive.svg","alt":"Illustration of Positive: A number more than zero."},{"term":"Negative","termEs":"Negativo","def":"A number less than zero.","defEs":"Un número menor que cero.","img":"/assets/vocab-images/negative.svg","alt":"Illustration of Negative: A number less than zero."},{"term":"Absolute value","termEs":"Valor absoluto","def":"How far a number is from zero.","defEs":"Qué tan lejos está un número del cero.","img":"/assets/vocab-images/absolute-value.svg","alt":"Illustration of Absolute value: How far a number is from zero."},{"term":"Opposite","termEs":"Opuesto","def":"A number the same distance from 0 on the other side.","defEs":"Un número a la misma distancia del 0, del otro lado.","img":"/assets/vocab-images/opposite.svg","alt":"Illustration of Opposite: A number the same distance from 0 on the other side."},{"term":"Rational number","termEs":"Número racional","def":"A number you can write as a fraction.","defEs":"Un número que puedes escribir como fracción.","img":"/assets/vocab-images/number-line.svg","alt":"Illustration of Rational number: A number you can write as a fraction."},{"term":"Magnitude","termEs":"Magnitud","def":"The size of a number: its distance from zero.","defEs":"El tamaño de un número: su distancia al cero.","img":"/assets/vocab-images/absolute-value.svg","alt":"Illustration of Magnitude: The size of a number: its distance from zero."}]</script>
     </div>
 
     <div class="vocab-game-shell card-ish" id="vocab_match_shell" data-vocab-total="8">
@@ -1375,36 +1400,36 @@ header.homework-header,
         <div class="vocab-match-col col-defs" aria-label="Vocabulary definitions">
 
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="7" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">The size of a number; its distance from zero.</span>
-              <span class="chip-label-es" lang="es">El tamaño de un número; su distancia de cero.</span>
+              <span class="chip-label-en">The size of a number: its distance from zero.</span>
+              <span class="chip-label-es" lang="es">El tamaño de un número: su distancia al cero.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="0" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">Integers are whole numbers and their opposites; absolute value is their distance from zero.</span>
-              <span class="chip-label-es" lang="es">Los enteros son números enteros y sus opuestos; el valor absoluto es su distancia desde cero.</span>
+              <span class="chip-label-en">Whole numbers and their opposites, and how far each is from zero.</span>
+              <span class="chip-label-es" lang="es">Números enteros y sus opuestos, y qué tan lejos está cada uno del cero.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="1" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">Whole numbers and their opposites, like -2, -1, 0, 1, 2.</span>
-              <span class="chip-label-es" lang="es">Un número entero que puede ser positivo, negativo o cero.</span>
+              <span class="chip-label-en">A whole number or its opposite, like 2 and −2.</span>
+              <span class="chip-label-es" lang="es">Un número de contar, su opuesto o el cero, como 2, −2 y 0.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="2" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A number bigger than zero, to the right of zero on a number line.</span>
-              <span class="chip-label-es" lang="es">Un número mayor que cero, a la derecha del cero en la recta numérica.</span>
+              <span class="chip-label-en">A number more than zero.</span>
+              <span class="chip-label-es" lang="es">Un número mayor que cero.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="3" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A number smaller than zero, to the left of zero on a number line.</span>
-              <span class="chip-label-es" lang="es">Un número menor que cero, a la izquierda del cero en la recta numérica.</span>
+              <span class="chip-label-en">A number less than zero.</span>
+              <span class="chip-label-es" lang="es">Un número menor que cero.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="4" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">How far a number is from zero. It is never negative.</span>
-              <span class="chip-label-es" lang="es">Qué tan lejos está un número de cero. Nunca es negativo.</span>
+              <span class="chip-label-en">How far a number is from zero.</span>
+              <span class="chip-label-es" lang="es">Qué tan lejos está un número del cero.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="5" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">Two numbers the same distance from zero, on opposite sides, like 3 and -3.</span>
-              <span class="chip-label-es" lang="es">Dos números a la misma distancia de cero, en lados opuestos, como 3 y -3.</span>
+              <span class="chip-label-en">A number the same distance from 0 on the other side.</span>
+              <span class="chip-label-es" lang="es">Un número a la misma distancia del 0, del otro lado.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="6" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A number that can be written as a fraction of two integers, with a bottom number that is not zero.</span>
-              <span class="chip-label-es" lang="es">Un número que se puede escribir como una fracción de dos enteros, con un denominador que no sea cero.</span>
+              <span class="chip-label-en">A number you can write as a fraction.</span>
+              <span class="chip-label-es" lang="es">Un número que puedes escribir como fracción.</span>
             </button>
         </div>
       </div>
@@ -1434,29 +1459,24 @@ header.homework-header,
 
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
       <p class="quick-check-time bilingual-block">
-        <span class="lang-en">Complete the <span id="hw_check_problem_count">12</span> problems below.<span class="quick-check-extra-copy"> The extra practice at the bottom is optional.</span></span>
-        <span class="lang-es" lang="es">Completa los <span id="hw_check_problem_count_es">12</span> problemas de abajo.<span class="quick-check-extra-copy"> La práctica extra al final es opcional.</span></span>
-      </p>
-      <p class="bilingual-block">
-        <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
-        <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+        <span class="lang-en">Start with <strong>Basics</strong>. Each problem has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong> and a <strong>space for your work</strong>. Tap <strong>Check This Problem</strong> for instant help.<span class="quick-check-extra-copy"> The extra practice at the bottom is optional.</span></span>
+        <span class="lang-es" lang="es">Empiecen con las <strong>Básicas</strong>. Cada problema tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para su trabajo</strong>. Toquen <strong>Revisar esta pregunta</strong> para recibir ayuda al instante.<span class="quick-check-extra-copy"> La práctica extra al final es opcional.</span></span>
       </p>
 
 
-    <div class="stars-to-win-bar">
-      <div class="stars-to-win-title">
-        <span>⭐</span>
-        <div>
-          <span class="lang-en"><strong>Tonight's goal:</strong> finish the <span id="hw_goal_count">12</span> problems below. Stop any time — your work saves itself.</span>
-          <span class="lang-es" lang="es"><strong>La meta de hoy:</strong> terminar los <span id="hw_goal_count_es">12</span> problemas de abajo. Pueden parar cuando quieran: el trabajo se guarda solo.</span>
-        </div>
-      </div>
-      <div class="stars-milestone-chips" aria-hidden="true">
-        <span class="star-chip">🧱 Basics</span>
-        <span class="star-chip">🌱 Warm-Up ★</span>
-        <span class="star-chip">🚀 Level-Up ★★</span>
-        <span class="star-chip">🏆 Victory ★★★</span>
-      </div>
+    <div class="hw-goal-card">
+      <span class="hw-pips " role="img" aria-label="Tonight's goal progress"></span>
+      <p>
+        <span class="lang-en"><strong>Tonight's goal: any <span data-hw-goal-count>4</span> problems.</strong> There are <span data-hw-goal-avail>12</span> here, so pick the ones you like. Stop any time. Your work saves itself.</span>
+        <span class="lang-es" lang="es"><strong>La meta de hoy: cualquier <span data-hw-goal-count>4</span> problemas.</strong> Aquí hay <span data-hw-goal-avail>12</span>, así que escojan los que prefieran. Pueden parar cuando quieran. El trabajo se guarda solo.</span>
+      </p>
+      <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
+    </div>
+    <div class="stars-milestone-chips" aria-hidden="true">
+      <span class="star-chip">🧱 Basics</span>
+      <span class="star-chip">🌱 Warm-Up ★</span>
+      <span class="star-chip">🚀 Level-Up ★★</span>
+      <span class="star-chip">🏆 Victory ★★★</span>
     </div>
 
     <div class="live-streak-banner" id="hw_streak_banner" hidden>
@@ -1479,9 +1499,12 @@ header.homework-header,
         <strong><span class="lang-en">That's tonight's goal — done!</span><span class="lang-es" lang="es">¡Esa es la meta de hoy: completa!</span></strong>
         <p><span class="lang-en">Great work. Keep going with the extra practice if you want more, or head to <strong>Done</strong> to finish or choose optional extras.</span><span class="lang-es" lang="es">Buen trabajo. Sigan con la práctica extra si quieren más, o vayan a <strong>Listo</strong> para terminar o elegir extras opcionales.</span></p>
       </div>
-      <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
-        <span class="lang-en">Claim Certificate ➔</span><span class="lang-es" lang="es">Reclamar Certificado ➔</span>
-      </button>
+      <div class="goal-actions">
+        <button type="button" class="btn btn-sm btn-secondary hw-banner-mystery" hidden onclick="hwOpenMystery()"><span class="lang-en">🔓 Open the mystery challenge</span><span class="lang-es" lang="es">🔓 Abrir el reto misterioso</span></button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
+          <span class="lang-en">Teach it back, then claim your certificate ➔</span><span class="lang-es" lang="es">Enséñalo y reclama tu certificado ➔</span>
+        </button>
+      </div>
     </div>
 
       <section class="practice-tier practice-tier-basic" aria-label="Basic practice">
@@ -4218,7 +4241,7 @@ header.homework-header,
     </div>
 
     <div class="fam-game-break card-ish" id="fam_game_break">
-      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"Opposite of −4","b":"4"},{"a":"|−6|","b":"6"},{"a":"Greater: −2 or −7","b":"−2"},{"a":"Distance from −3 to 0","b":"3"}],"tf":[{"en":"−7 is less than −2.","es":"−7 es menor que −2.","answer":true,"whyEn":"On the number line −7 sits farther LEFT. Owing $7 is worse than owing $2!","whyEs":"En la recta, −7 está más a la IZQUIERDA. ¡Deber $7 es peor que deber $2!"},{"en":"Only whole numbers belong on a number line.","es":"Solo los números enteros van en una recta numérica.","answer":false,"whyEn":"Fractions and decimals have their own spots: −2.5 sits halfway between −2 and −3.","whyEs":"Las fracciones y los decimales tienen su propio lugar: −2.5 queda a la mitad entre −2 y −3."},{"en":"−4 and 4 are opposites.","es":"−4 y 4 son opuestos.","answer":true,"whyEn":"Same distance from zero, opposite sides. Stand on the hallway number line and check!","whyEs":"Misma distancia del cero, lados opuestos. ¡Párense en la recta del pasillo y compruébenlo!"},{"en":"Zero is a negative number.","es":"El cero es un número negativo.","answer":false,"whyEn":"Zero is neither positive nor negative — it's the boundary between them.","whyEs":"El cero no es positivo ni negativo: es la frontera entre los dos."},{"en":"A bank account can hold a number below zero.","es":"Una cuenta bancaria puede tener un número bajo cero.","answer":true,"whyEn":"Overdrawn by $3 is −3 — negative numbers describe owing, cold, and below sea level.","whyEs":"Un sobregiro de $3 es −3: los negativos describen deudas, frío y bajo el nivel del mar."}],"sort":{"a":{"en":"Greater than −3","es":"Mayor que −3"},"b":{"en":"Less than −3","es":"Menor que −3"},"cards":[{"t":"0","bucket":0,"en":"Zero is right of every negative.","es":"El cero está a la derecha de todo negativo."},{"t":"−7","bucket":1,"en":"Further left than −3.","es":"Más a la izquierda que −3."},{"t":"−1","bucket":0,"en":"Closer to zero than −3 is.","es":"Más cerca de cero que −3."},{"t":"−10","bucket":1,"en":"Much further left.","es":"Mucho más a la izquierda."},{"t":"2","bucket":0,"en":"Positive beats any negative.","es":"Un positivo supera a cualquier negativo."},{"t":"−3.5","bucket":1,"en":"Half a step further left than −3.","es":"Medio paso más a la izquierda que −3."}]},"wyr":[{"a":{"en":"Owe $5","es":"Deber $5"},"b":{"en":"Owe $12","es":"Deber $12"},"en":"Owing $5 (−5) is better — it sits further right on the number line, closer to zero.","es":"Deber $5 (−5) es mejor: está más a la derecha en la recta, más cerca de cero."},{"a":{"en":"A day at −2 °C","es":"Un día a −2 °C"},"b":{"en":"A day at 2 °C","es":"Un día a 2 °C"},"en":"+2 °C is warmer. Both are 2 from zero — same absolute value, opposite directions.","es":"+2 °C es más cálido. Ambos están a 2 del cero: mismo valor absoluto, direcciones opuestas."}]};</script>
+      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"Opposite of −4","b":"4","aEs":"Opuesto de −4","bEs":""},{"a":"|−6|","b":"6","aEs":"","bEs":""},{"a":"Greater: −2 or −7","b":"−2","aEs":"Mayor: −2 o −7","bEs":""},{"a":"Distance from −3 to 0","b":"3","aEs":"Distancia de −3 a 0","bEs":""}],"tf":[{"en":"−7 is less than −2.","es":"−7 es menor que −2.","answer":true,"whyEn":"On the number line −7 sits farther LEFT. Owing $7 is worse than owing $2!","whyEs":"En la recta, −7 está más a la IZQUIERDA. ¡Deber $7 es peor que deber $2!"},{"en":"Only whole numbers belong on a number line.","es":"Solo los números enteros van en una recta numérica.","answer":false,"whyEn":"Fractions and decimals have their own spots: −2.5 sits halfway between −2 and −3.","whyEs":"Las fracciones y los decimales tienen su propio lugar: −2.5 queda a la mitad entre −2 y −3."},{"en":"−4 and 4 are opposites.","es":"−4 y 4 son opuestos.","answer":true,"whyEn":"Same distance from zero, opposite sides. Stand on the hallway number line and check!","whyEs":"Misma distancia del cero, lados opuestos. ¡Párense en la recta del pasillo y compruébenlo!"},{"en":"Zero is a negative number.","es":"El cero es un número negativo.","answer":false,"whyEn":"Zero is neither positive nor negative — it's the boundary between them.","whyEs":"El cero no es positivo ni negativo: es la frontera entre los dos."},{"en":"A bank account can hold a number below zero.","es":"Una cuenta bancaria puede tener un número bajo cero.","answer":true,"whyEn":"Overdrawn by $3 is −3 — negative numbers describe owing, cold, and below sea level.","whyEs":"Un sobregiro de $3 es −3: los negativos describen deudas, frío y bajo el nivel del mar."}],"sort":{"a":{"en":"Greater than −3","es":"Mayor que −3"},"b":{"en":"Less than −3","es":"Menor que −3"},"cards":[{"t":"0","bucket":0,"en":"Zero is right of every negative.","es":"El cero está a la derecha de todo negativo."},{"t":"−7","bucket":1,"en":"Further left than −3.","es":"Más a la izquierda que −3."},{"t":"−1","bucket":0,"en":"Closer to zero than −3 is.","es":"Más cerca de cero que −3."},{"t":"−10","bucket":1,"en":"Much further left.","es":"Mucho más a la izquierda."},{"t":"2","bucket":0,"en":"Positive beats any negative.","es":"Un positivo supera a cualquier negativo."},{"t":"−3.5","bucket":1,"en":"Half a step further left than −3.","es":"Medio paso más a la izquierda que −3."}]},"wyr":[{"a":{"en":"Owe $5","es":"Deber $5"},"b":{"en":"Owe $12","es":"Deber $12"},"en":"Owing $5 (−5) is better — it sits further right on the number line, closer to zero.","es":"Deber $5 (−5) es mejor: está más a la derecha en la recta, más cerca de cero."},{"a":{"en":"A day at −2 °C","es":"Un día a −2 °C"},"b":{"en":"A day at 2 °C","es":"Un día a 2 °C"},"en":"+2 °C is warmer. Both are 2 from zero — same absolute value, opposite directions.","es":"+2 °C es más cálido. Ambos están a 2 del cero: mismo valor absoluto, direcciones opuestas."}]};</script>
       <div class="fam-game-head">
         <span class="fam-game-badge">🎮 <span class="lang-en">FAMILY ARCADE</span><span class="lang-es" lang="es">SALA DE JUEGOS EN FAMILIA</span></span>
         <p class="fam-game-lead">
@@ -4406,7 +4429,40 @@ header.homework-header,
     </div>
 <div class="tab-panel-inner" data-tab-panel="done" id="hw_panel_done" role="tabpanel" hidden>
       <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
-      <p class="family-explain-finish"><span class="lang-en">Explain one answer aloud or on paper: “I got ___ because ___. I checked by ___.” Include your strategy and units. Then you are done.</span><span class="lang-es" lang="es">Explica una respuesta en voz alta o en papel: “Obtuve ___ porque ___. Comprobé usando ___.” Incluye tu estrategia y las unidades. Después termina.</span></p>
+
+      <section class="hw-teach" aria-labelledby="hw_teach_title">
+        <p class="hw-eyebrow hw-inline"><span class="lang-en">The last step</span><span class="lang-es" lang="es">El último paso</span></p>
+        <h3 id="hw_teach_title"><span class="lang-en">Teach it to someone</span><span class="lang-es" lang="es">Enséñaselo a alguien</span></h3>
+        <ol class="hw-teach-steps">
+          <li><span class="lang-en">Pick one problem you solved.</span><span class="lang-es" lang="es">Elige un problema que resolviste.</span></li>
+          <li><span class="lang-en">Explain it out loud. Use any language first.</span><span class="lang-es" lang="es">Explícalo en voz alta. Usa primero el idioma que prefieras.</span></li>
+          <li><span class="lang-en">Say it again with the English math words:</span><span class="lang-es" lang="es">Dilo otra vez con las palabras de matemáticas en inglés:</span><ul class="hw-teach-words" aria-label="Words to use"><li><strong>Integers and Absolute Value</strong><span class="lang-es" lang="es"> · Enteros y valor absoluto</span></li><li><strong>Integer</strong><span class="lang-es" lang="es"> · Número entero</span></li><li><strong>Positive</strong><span class="lang-es" lang="es"> · Positivo</span></li></ul></li>
+          <li><span class="lang-en">Your partner asks: “How do you know?” Answer with: “I got ___ because ___. I checked by ___.”</span><span class="lang-es" lang="es">Tu acompañante pregunta: “¿Cómo lo sabes?” Responde: “Obtuve ___ porque ___. Comprobé usando ___.”</span></li>
+        </ol>
+      </section>
+
+      <section class="hw-confidence" id="hw_conf_after" data-conf-phase="after" aria-labelledby="hw_conf_after_title">
+        <h3 id="hw_conf_after_title"><span class="lang-en">How sure do you feel now?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes ahora?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_after_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="after" onclick="hwSetConfidence('after', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="after" onclick="hwSetConfidence('after', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="after" onclick="hwSetConfidence('after', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Compare it with how you felt at the start.</span><span class="lang-es" lang="es">Compáralo con cómo te sentías al empezar.</span></p>
+        <p class="hw-conf-growth" id="hw_conf_growth" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="hw-nights" id="hw_nights" aria-labelledby="hw_nights_title">
+        <h3 id="hw_nights_title"><span class="lang-en">Our family math nights</span><span class="lang-es" lang="es">Nuestras noches de matemáticas en familia</span></h3>
+        <ol class="hw-nights-week" id="hw_nights_week" aria-label="This week"></ol>
+        <p class="hw-nights-streak" id="hw_nights_streak" role="status" aria-live="polite"></p>
+        <p class="hw-nights-note"><span class="lang-en">Weekends never break it. Saved only on this device.</span><span class="lang-es" lang="es">Los fines de semana no la interrumpen. Se guarda solo en este dispositivo.</span></p>
+      </section>
       <div class="done-summary" id="hw_done_summary" role="status" aria-live="polite"></div>
       <ol class="done-problem-list" id="hw_done_problems" aria-label="Problems / Problemas"></ol>
       <p class="celebrate-text lang-en">Name one strategy that helped, or one question to ask next time. You can stop here; no adult signature is needed.</p>
@@ -4416,9 +4472,16 @@ header.homework-header,
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
 
+
+      <div class="hw-share">
+        <button type="button" class="btn btn-secondary hw-share-win" onclick="hwShareWin()">
+          🎉 <span class="lang-en">Share our win</span><span class="lang-es" lang="es">Compartir nuestro logro</span>
+        </button>
+        <p class="hw-share-note"><span class="lang-en">Shares only the lesson name and a link. No answers, no names.</span><span class="lang-es" lang="es">Comparte solo el nombre de la lección y un enlace. Sin respuestas ni nombres.</span></p>
+      </div>
       <div class="homework-message-action">
         <a class="btn btn-primary" href="https://home.classdojo.com/" target="_blank" rel="noopener"><span class="lang-en">Open ClassDojo to message Mr. Neft</span><span class="lang-es" lang="es">Abrir ClassDojo para escribir al Sr. Neft</span></a>
-        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicia sesión con tu cuenta familiar, abre Mensajes y elige al Sr. Neft. Incluye el número de esta lección y tu pregunta.</span></p>
+        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicien sesión con su cuenta familiar, abran Mensajes y elijan al Sr. Neft. Incluyan el número de esta lección y su pregunta.</span></p>
       </div>
       <section class="homework-optional-extras" aria-labelledby="homework_extras_title">
       <h3 id="homework_extras_title"><span class="lang-en">Want to do more?</span><span class="lang-es" lang="es">¿Quieren hacer más?</span></h3>
@@ -4887,25 +4950,19 @@ header.homework-header,
           </span>
           <span class="ai-lab-arrow" aria-hidden="true">↓</span>
         </a>
-        <p class="bilingual-block">
-          <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
-          <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
+
+        <p class="bilingual-block external-resource-claim">
+          <span class="lang-en">These links go to <strong>specific</strong> videos about tonight's topic — not general math pages.</span>
+          <span class="lang-es" lang="es">Estos enlaces van a videos <strong>específicos</strong> sobre el tema de hoy — no a páginas generales.</span>
         </p>
         <ul class="external-resource-list">
-
             <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-negative-number/cc-6th-absolute-value/v/absolute-value-of-integers" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Absolute value</span>
-                <span class="ext-title-es" lang="es">Valor absoluto</span>
-              </a>
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-negative-number-topic/cc-6th-absolute-value/v/meaning-of-absolute-value" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-en"><span class="ext-source">Khan Academy</span><span class="ext-title-en">Meaning of absolute value</span></a>
+              <a href="https://es.khanacademy.org/math/cc-sixth-grade-math/cc-6th-negative-number-topic/cc-6th-absolute-value/v/meaning-of-absolute-value" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-es" lang="es"><span class="ext-source">Khan Academy en español</span><span class="ext-title-es">El significado del valor absoluto</span></a>
             </li>
             <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-negative-number/cc-6th-comparing-negative/v/comparing-absolute-values" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Comparing integers</span>
-                <span class="ext-title-es" lang="es">Comparar enteros</span>
-              </a>
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-negative-number-topic/cc-6th-absolute-value/v/absolute-value-of-integers" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-en"><span class="ext-source">Khan Academy</span><span class="ext-title-en">Absolute value examples</span></a>
+              <a href="https://es.khanacademy.org/math/cc-sixth-grade-math/cc-6th-negative-number-topic/cc-6th-absolute-value/v/absolute-value-of-integers" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-es" lang="es"><span class="ext-source">Khan Academy en español</span><span class="ext-title-es">Ejemplos de valor absoluto</span></a>
             </li>
         </ul>
       </section>
@@ -5003,6 +5060,17 @@ header.homework-header,
       </div>
     </div>
 
+<div class="hw-toast" id="hw_toast" aria-hidden="true" hidden></div><div class="hw-sr-only" id="hw_toast_live" role="status" aria-live="polite"></div>
+<dialog class="hw-dialog" id="hw_dialog" aria-labelledby="hw_dialog_text">
+  <form method="dialog">
+    <p id="hw_dialog_text"></p>
+    <div class="hw-dialog-actions">
+      <button type="submit" value="no" class="btn btn-secondary" id="hw_dialog_no"></button>
+      <button type="submit" value="yes" class="btn btn-primary" id="hw_dialog_yes"></button>
+    </div>
+  </form>
+</dialog>
+
 <section class="hw-answer-sheet" aria-hidden="true">
   <h2><span class="lang-en">Answer sheet</span><span class="lang-es" lang="es">Hoja de respuestas</span> · Understand Absolute Value of Rational Numbers</h2>
   <p><span class="lang-en">Check the work after trying each problem. Talk about why each answer makes sense.</span><span class="lang-es" lang="es">Revisen el trabajo después de intentar cada problema. Hablen de por qué cada respuesta tiene sentido.</span></p>
@@ -5042,8 +5110,10 @@ header.homework-header,
 
     <div class="score-progress-container">
       <div class="score-text">
-        <span class="lang-en">Progress:</span><span class="lang-es" lang="es">Progreso:</span>
-        <span id="progress_text">0 / 12</span>
+        <span class="hw-stack hw-goal-label"><span class="lang-en">Tonight's goal</span><span class="lang-es" lang="es">Meta de hoy</span></span>
+        <span id="progress_text">0 / 4</span>
+        <span class="hw-pips hw-pips-bar" role="img" aria-label="Tonight's goal progress"></span>
+        <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -5051,8 +5121,8 @@ header.homework-header,
     </div>
 
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
-      <button class="btn btn-primary" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
+      <button class="btn btn-secondary hw-stack" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
+      <button class="btn btn-primary hw-stack" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
     </div>
   </div>
 </div>
@@ -5060,18 +5130,19 @@ header.homework-header,
 <script>
 window.LESSON_ID = "7-3";
 window.LESSON_TITLE = "Understand Absolute Value of Rational Numbers";
+window.LESSON_TITLE_ES = "Comprender el valor absoluto de números racionales";
 /* The number of core problems, so the celebration fires on the goal the page
    actually states. It was hardcoded to 3 while the page showed 6 and the status
    bar counted to 6: a family could hit "Goal Reached! 3 Stars Earned!" and read
    "0 / 6 Completed" in the same glance. */
 window.HW_CORE_COUNT = 12;
-window.__HW_VOCAB__ = [{"term":"Integers and Absolute Value","termEs":"Enteros y valor absoluto","def":"Integers are whole numbers and their opposites; absolute value is their distance from zero.","defEs":"Los enteros son números enteros y sus opuestos; el valor absoluto es su distancia desde cero.","example":"|−6| = 6 because −6 is 6 units from zero.","img":"/assets/vocab-images/concept-integers-and-absolute-value.svg","imgAlt":"Illustration of Integers and Absolute Value: Integers are whole numbers and their opposites; absolute value is their distance from zero.","cs":false},{"term":"Integer","termEs":"Número entero","def":"Whole numbers and their opposites, like -2, -1, 0, 1, 2.","defEs":"Un número entero que puede ser positivo, negativo o cero.","example":"... -3, -2, -1, 0, 1, 2, 3 ... shown on a number line with 0 in the center","img":"/assets/vocab-images/integer.svg","imgAlt":"Illustration of Integer: Whole numbers and their opposites, like -2, -1, 0, 1, 2.","cs":false},{"term":"Positive","termEs":"Positivo","def":"A number bigger than zero, to the right of zero on a number line.","defEs":"Un número mayor que cero, a la derecha del cero en la recta numérica.","example":"+5 means 5 above zero, like 5 floors above ground level","img":"/assets/vocab-images/positive.svg","imgAlt":"Illustration of Positive: A number bigger than zero, to the right of zero on a number line.","cs":false},{"term":"Negative","termEs":"Negativo","def":"A number smaller than zero, to the left of zero on a number line.","defEs":"Un número menor que cero, a la izquierda del cero en la recta numérica.","example":"-3 means 3 below zero, like 3 floors underground","img":"/assets/vocab-images/negative.svg","imgAlt":"Illustration of Negative: A number smaller than zero, to the left of zero on a number line.","cs":false},{"term":"Absolute value","termEs":"Valor absoluto","def":"How far a number is from zero. It is never negative.","defEs":"Qué tan lejos está un número de cero. Nunca es negativo.","example":"|-5| = 5 and |5| = 5 — both are 5 units from 0","img":"/assets/vocab-images/absolute-value.svg","imgAlt":"Illustration of Absolute value: How far a number is from zero. It is never negative.","cs":false},{"term":"Opposite","termEs":"Opuesto","def":"Two numbers the same distance from zero, on opposite sides, like 3 and -3.","defEs":"Dos números a la misma distancia de cero, en lados opuestos, como 3 y -3.","example":"3 and -3 are opposites — both are 3 units from 0","img":"/assets/vocab-images/opposite.svg","imgAlt":"Illustration of Opposite: Two numbers the same distance from zero, on opposite sides, like 3 and -3.","cs":false},{"term":"Rational number","termEs":"Número racional","def":"A number that can be written as a fraction of two integers, with a bottom number that is not zero.","defEs":"Un número que se puede escribir como una fracción de dos enteros, con un denominador que no sea cero.","example":"−1/2, 0 and 5/4 each sit at one exact point.","img":"/assets/vocab-images/number-line.svg","imgAlt":"Illustration of Rational number: A number that can be written as a fraction of two integers, with a bottom number that is not zero.","cs":false},{"term":"Magnitude","termEs":"Magnitud","def":"The size of a number; its distance from zero.","defEs":"El tamaño de un número; su distancia de cero.","example":"|−50| has magnitude 50.","img":"/assets/vocab-images/absolute-value.svg","imgAlt":"Illustration of Magnitude: The size of a number; its distance from zero.","cs":false}];
+window.__HW_VOCAB__ = [{"term":"Integers and Absolute Value","termEs":"Enteros y valor absoluto","def":"Whole numbers and their opposites, and how far each is from zero.","defEs":"Números enteros y sus opuestos, y qué tan lejos está cada uno del cero.","example":"|−6| = 6 because −6 is 6 units from zero.","img":"/assets/vocab-images/concept-integers-and-absolute-value.svg","imgAlt":"Illustration of Integers and Absolute Value: Whole numbers and their opposites, and how far each is from zero.","cs":false,"formal":"Integers are whole numbers and their opposites; absolute value is their distance from zero.","formalEs":"Los enteros son números enteros y sus opuestos; el valor absoluto es su distancia desde cero."},{"term":"Integer","termEs":"Número entero","def":"A whole number or its opposite, like 2 and −2.","defEs":"Un número de contar, su opuesto o el cero, como 2, −2 y 0.","example":"... -3, -2, -1, 0, 1, 2, 3 ... shown on a number line with 0 in the center","img":"/assets/vocab-images/integer.svg","imgAlt":"Illustration of Integer: A whole number or its opposite, like 2 and −2.","cs":false,"formal":"Whole numbers and their opposites, like -2, -1, 0, 1, 2.","formalEs":"Un número entero que puede ser positivo, negativo o cero."},{"term":"Positive","termEs":"Positivo","def":"A number more than zero.","defEs":"Un número mayor que cero.","example":"+5 means 5 above zero, like 5 floors above ground level","img":"/assets/vocab-images/positive.svg","imgAlt":"Illustration of Positive: A number more than zero.","cs":false,"formal":"A number bigger than zero, to the right of zero on a number line.","formalEs":"Un número mayor que cero, a la derecha del cero en la recta numérica."},{"term":"Negative","termEs":"Negativo","def":"A number less than zero.","defEs":"Un número menor que cero.","example":"-3 means 3 below zero, like 3 floors underground","img":"/assets/vocab-images/negative.svg","imgAlt":"Illustration of Negative: A number less than zero.","cs":false,"formal":"A number smaller than zero, to the left of zero on a number line.","formalEs":"Un número menor que cero, a la izquierda del cero en la recta numérica."},{"term":"Absolute value","termEs":"Valor absoluto","def":"How far a number is from zero.","defEs":"Qué tan lejos está un número del cero.","example":"−3 is 3 steps from 0, so |−3| = 3","img":"/assets/vocab-images/absolute-value.svg","imgAlt":"Illustration of Absolute value: How far a number is from zero.","cs":false,"formal":"How far a number is from zero. It is never negative.","formalEs":"Qué tan lejos está un número de cero. Nunca es negativo.","exampleEs":"|−3| = 3: −3 está a 3 pasos de 0","exampleFormal":"|-5| = 5 and |5| = 5 — both are 5 units from 0"},{"term":"Opposite","termEs":"Opuesto","def":"A number the same distance from 0 on the other side.","defEs":"Un número a la misma distancia del 0, del otro lado.","example":"3 and −3 are both 3 steps from 0","img":"/assets/vocab-images/opposite.svg","imgAlt":"Illustration of Opposite: A number the same distance from 0 on the other side.","cs":false,"formal":"Two numbers the same distance from zero, on opposite sides, like 3 and -3.","formalEs":"Dos números a la misma distancia de cero, en lados opuestos, como 3 y -3.","exampleEs":"3 y −3 están a 3 pasos del 0","exampleFormal":"3 and -3 are opposites — both are 3 units from 0"},{"term":"Rational number","termEs":"Número racional","def":"A number you can write as a fraction.","defEs":"Un número que puedes escribir como fracción.","example":"0.5 = 1/2 and −3 = −3/1","img":"/assets/vocab-images/number-line.svg","imgAlt":"Illustration of Rational number: A number you can write as a fraction.","cs":false,"formal":"A number that can be written as a fraction of two integers, with a bottom number that is not zero.","formalEs":"Un número que se puede escribir como una fracción de dos enteros, con un denominador que no sea cero.","exampleEs":"0.5 = 1/2 y −3 = −3/1","exampleFormal":"−1/2, 0 and 5/4 each sit at one exact point."},{"term":"Magnitude","termEs":"Magnitud","def":"The size of a number: its distance from zero.","defEs":"El tamaño de un número: su distancia al cero.","example":"|−50| has magnitude 50.","img":"/assets/vocab-images/absolute-value.svg","imgAlt":"Illustration of Magnitude: The size of a number: its distance from zero.","cs":false,"formal":"The size of a number; its distance from zero.","formalEs":"El tamaño de un número; su distancia de cero."}];
 window.__HW_VOCAB_SKIP__ = [38,39,40,224,239,257,287,307];
 window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Numerical\\s+Expressions\\s+with\\s+Exponents(?:es|s)?|Solve\\s+One-Step\\s+Addition\\s+and\\s+Subtraction\\s+Equations(?:es|s)?|Determine\\s+the\\s+Whole\\s+Given\\s+the\\s+Part\\s+and\\s+Percent(?:es|s)?|Convert\\s+Measurements\\s+within\\s+the\\s+Same\\s+System(?:es|s)?|Percents\\s+Greater\\s+Than\\s+100%\\s+and\\s+Less\\s+Than\\s+1%(?:es|s)?|Solve\\s+Multiplication\\s+and\\s+Division\\s+Equations(?:es|s)?|Equations\\s+and\\s+Inequalities\\s+Problem\\s+Solving(?:es|s)?|Convert\\s+Measurements\\s+Between\\s+Systems(?:es|s)?|Multiplication\\s+Property\\s+of\\s+Equalit(?:y|ies)|Ordered\\s+Pairs\\s+in\\s+All\\s+Four\\s+Quadrants(?:es|s)?|Rational\\s+Numbers\\s+on\\s+the\\s+Number\\s+Line(?:es|s)?|Describe\\s+the\\s+Data\\s+Using\\s+the\\s+Median(?:es|s)?|Divide\\s+Whole\\s+Numbers\\s+by\\s+Fractions(?:es|s)?|Fraction\\s+Division\\s+Problem\\s+Solving(?:es|s)?|Fractions,\\s+Decimals,\\s+and\\s+Percents(?:es|s)?|Distance\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Subtraction\\s+Property\\s+of\\s+Equalit(?:y|ies)|Appropriate\\s+Measures\\s+of\\s+Center(?:es|s)?|Ratio\\s+and\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|Simplify\\s+Algebraic\\s+Expressions(?:es|s)?|Statistical\\s+Questions\\s+and\\s+Data(?:es|s)?|Volume\\s+with\\s+Whole-Number\\s+Edges(?:es|s)?|Addition\\s+Property\\s+of\\s+Equalit(?:y|ies)|Division\\s+Property\\s+of\\s+Equalit(?:y|ies)|Graph\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Range\\s+and\\s+Interquartile\\s+Range(?:es|s)?|Display\\s+Data\\s+with\\s+Histograms(?:es|s)?|Greatest\\s+common\\s+factor\\s+\\(GCF\\)(?:es|s)?|Solve\\s+and\\s+Graph\\s+Inequalities(?:es|s)?|Volume\\s+of\\s+Rectangular\\s+Prisms(?:es|s)?|Integers\\s+and\\s+Absolute\\s+Value(?:es|s)?|Display\\s+Data\\s+with\\s+Box\\s+Plots(?:es|s)?|Least\\s+common\\s+multiple\\s+\\(LCM\\)(?:es|s)?|Shape\\s+of\\s+Data\\s+Distributions(?:es|s)?|Write\\s+Algebraic\\s+Expressions(?:es|s)?|Compare\\s+and\\s+Order\\s+Integers(?:es|s)?|Decimal\\s+Division\\s+Algorithm(?:es|s)?|Divide\\s+Multi-Digit\\s+Numbers(?:es|s)?|Find\\s+Factors\\s+and\\s+Multiples(?:es|s)?|Reflect\\s+Points\\s+Across\\s+Axes(?:es|s)?|Add\\s+and\\s+Subtract\\s+Decimals(?:es|s)?|Area\\s+of\\s+Composite\\s+Figures(?:es|s)?|Convert\\s+Measurement\\s+Units(?:es|s)?|distance\\s+between\\s+vertices(?:es|s)?|The\\s+Distributive\\s+Propert(?:y|ies)|Unit\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|least\\s+common\\s+denominator(?:es|s)?|Area\\s+of\\s+Regular\\s+Polygons(?:es|s)?|Non-statistical\\s+Question(?:es|s)?|Opposite\\s+of\\s+the\\s+opposite(?:es|s)?|Properties\\s+of\\s+Operations(?:es|s)?|Surface\\s+Area\\s+of\\s+Pyramids(?:es|s)?|mean\\s+absolute\\s+deviation(?:es|s)?|make\\s+sense\\s+of\\s+a\\s+problem(?:es|s)?|Percent\\s+Problem\\s+Solving(?:es|s)?|Repeated\\s+multiplication(?:es|s)?|Surface\\s+Area\\s+Using\\s+Nets(?:es|s)?|greatest\\s+common\\s+factor(?:es|s)?|Area\\s+of\\s+Parallelograms(?:es|s)?|Mean,\\s+Median,\\s+and\\s+Mode(?:es|s)?|Multiplicative\\s+inverse(?:es|s)?|Surface\\s+Area\\s+of\\s+Prisms(?:es|s)?|least\\s+common\\s+multiple(?:es|s)?|equivalent\\s+expression(?:es|s)?|Distributive\\s+Propert(?:y|ies)|Division\\s+of\\s+Fractions(?:es|s)?|Length,\\s+width,\\s+height(?:es|s)?|algebraic\\s+expression(?:es|s)?|Associative\\s+Propert(?:y|ies)|Commutative\\s+Propert(?:y|ies)|define\\s+the\\s+variables(?:es|s)?|Divide\\s+Mixed\\s+Numbers(?:es|s)?|Evaluate\\s+Expressions(?:es|s)?|Factor\\s+an\\s+expression(?:es|s)?|independent\\s+variable(?:es|s)?|Measure\\s+of\\s+variation(?:es|s)?|Numerical\\s+expression(?:es|s)?|Powers\\s+and\\s+Exponents(?:es|s)?|Rates\\s+and\\s+Unit\\s+Rates(?:es|s)?|Statistical\\s+Question(?:es|s)?|prime\\s+factorization(?:es|s)?|interquartile\\s+range(?:es|s)?|equivalent\\s+fraction(?:es|s)?|community\\s+agreement(?:es|s)?|Equivalent\\s+division(?:es|s)?|Five-number\\s+summar(?:y|ies)|Horizontal\\s+distance(?:es|s)?|Negative\\s+coordinate(?:es|s)?|Order\\s+of\\s+operations(?:es|s)?|Percent\\s+of\\s+a\\s+Number(?:es|s)?|Area\\s+of\\s+a\\s+Triangle(?:es|s)?|Area\\s+of\\s+Trapezoids(?:es|s)?|At\\s+least\\s+/\\s+At\\s+most(?:es|s)?|bilateral\\s+symmetr(?:y|ies)|Common\\s+denominator(?:es|s)?|compatible\\s+numbers(?:es|s)?|dependent\\s+variable(?:es|s)?|Double\\s+number\\s+line(?:es|s)?|Graph\\s+Inequalities(?:es|s)?|Graph\\s+Ratio\\s+Tables(?:es|s)?|Keep,\\s+Change,\\s+Flip(?:es|s)?|Measurement\\s+system(?:es|s)?|Multi-step\\s+problem(?:es|s)?|Understand\\s+Percent(?:es|s)?|Write\\s+Inequalities(?:es|s)?|improper\\s+fraction(?:es|s)?|conversion\\s+factor(?:es|s)?|benchmark\\s+percent(?:es|s)?|Data\\s+distribution(?:es|s)?|Greater\\s+than\\s+100%(?:es|s)?|Identity\\s+Propert(?:y|ies)|Inverse\\s+operation(?:es|s)?|Measure\\s+of\\s+center(?:es|s)?|Multiply\\s+Decimals(?:es|s)?|One-step\\s+equation(?:es|s)?|Rectangular\\s+prism(?:es|s)?|Shape\\s+of\\s+the\\s+data(?:es|s)?|Understand\\s+Ratios(?:es|s)?|Vertical\\s+distance(?:es|s)?|coordinate\\s+plane(?:es|s)?|keep-change-flip(?:es|s)?|equivalent\\s+ratio(?:es|s)?|Additive\\s+pattern(?:es|s)?|Composite\\s+figure(?:es|s)?|Composite\\s+number(?:es|s)?|Customary\\s+system(?:es|s)?|Divide\\s+Fractions(?:es|s)?|Grouping\\s+symbols(?:es|s)?|line\\s+of\\s+symmetr(?:y|ies)|Negative\\s+integer(?:es|s)?|Triangular\\s+prism(?:es|s)?|Rational\\s+number(?:es|s)?|common\\s+multiple(?:es|s)?|Customary\\s+units(?:es|s)?|Divide\\s+Decimals(?:es|s)?|Frequency\\s+table(?:es|s)?|Negative\\s+number(?:es|s)?|Positive\\s+number(?:es|s)?|Problem\\s+solving(?:es|s)?|Ratio\\s+Reasoning(?:es|s)?|Regular\\s+Polygon(?:es|s)?|Right\\s+trapezoid(?:es|s)?|table\\s+of\\s+values(?:es|s)?|Two-dimensional(?:es|s)?|Unit\\s+rate\\s+point(?:es|s)?|Write\\s+Equations(?:es|s)?|Absolute\\s+value(?:es|s)?|Boundary\\s+point(?:es|s)?|Colon\\s+notation(?:es|s)?|Compare\\s+Ratios(?:es|s)?|counterexample(?:es|s)?|Cross-multipl(?:y|ies)|Decimal\\s+places(?:es|s)?|generalization(?:es|s)?|Linear\\s+pattern(?:es|s)?|math\\s+biograph(?:y|ies)|predictabilit(?:y|ies)|Rate\\s+of\\s+change(?:es|s)?|reasonableness(?:es|s)?|representation(?:es|s)?|True\\s+statement(?:es|s)?|long\\s+division(?:es|s)?|decimal\\s+point(?:es|s)?|parallelogram(?:es|s)?|common\\s+factor(?:es|s)?|Approximatel(?:y|ies)|Balance\\s+point(?:es|s)?|Closed\\s+circle(?:es|s)?|Expanded\\s+form(?:es|s)?|Extreme\\s+value(?:es|s)?|Halfway\\s+value(?:es|s)?|Metric\\s+system(?:es|s)?|Part-to-whole(?:es|s)?|Perpendicular(?:es|s)?|Simplest\\s+form(?:es|s)?|Skip\\s+counting(?:es|s)?|Unit\\s+fraction(?:es|s)?|Work\\s+backward(?:es|s)?|mixed\\s+number(?:es|s)?|ordered\\s+pair(?:es|s)?|surface\\s+area(?:es|s)?|line\\s+segment(?:es|s)?|distribution(?:es|s)?|scale\\s+factor(?:es|s)?|prime\\s+factor(?:es|s)?|Annex\\s+a\\s+zero(?:es|s)?|Decimal\\s+grid(?:es|s)?|doer\\s+of\\s+math(?:es|s)?|Lateral\\s+area(?:es|s)?|Lateral\\s+face(?:es|s)?|Less\\s+than\\s+1%(?:es|s)?|Metric\\s+units(?:es|s)?|mirror\\s+image(?:es|s)?|No\\s+more\\s+than(?:es|s)?|Part-to-part(?:es|s)?|pattern\\s+rule(?:es|s)?|pattern\\s+unit(?:es|s)?|Power\\s+of\\s+ten(?:es|s)?|Prime\\s+number(?:es|s)?|Proportional(?:es|s)?|relationship(?:es|s)?|Slant\\s+height(?:es|s)?|Slanted\\s+side(?:es|s)?|Solution\\s+set(?:es|s)?|tape\\s+diagram(?:es|s)?|Target\\s+total(?:es|s)?|x-coordinate(?:es|s)?|Distributive(?:es|s)?|multi-digit(?:es|s)?|place\\s+value(?:es|s)?|denominator(?:es|s)?|coefficient(?:es|s)?|Annex\\s+zeros(?:es|s)?|Base\\s+1\\s+\\(b1\\)(?:es|s)?|Base\\s+2\\s+\\(b2\\)(?:es|s)?|Common\\s+form(?:es|s)?|Coordinates(?:es|s)?|Factor\\s+pair(?:es|s)?|Factor\\s+tree(?:es|s)?|Middle\\s+half(?:es|s)?|Number\\s+line(?:es|s)?|Open\\s+circle(?:es|s)?|Per\\s+hundred(?:es|s)?|Ratio\\s+table(?:es|s)?|Side\\s+length(?:es|s)?|Target\\s+mean(?:es|s)?|Total\\s+parts(?:es|s)?|Total\\s+price(?:es|s)?|Variabilit(?:y|ies)|Associative(?:es|s)?|Commutative(?:es|s)?|bring\\s+down(?:es|s)?|equivalent(?:es|s)?|reciprocal(?:es|s)?|hundredths(?:es|s)?|proportion(?:es|s)?|expression(?:es|s)?|substitute(?:es|s)?|inequalit(?:y|ies)|like\\s+terms(?:es|s)?|Better\\s+Buy(?:es|s)?|Comparison(?:es|s)?|confidence(?:es|s)?|conjecture(?:es|s)?|Constraint(?:es|s)?|cubic\\s+unit(?:es|s)?|depends\\s+on(?:es|s)?|Dimensions(?:es|s)?|Equal\\s+sign(?:es|s)?|math\\s+stor(?:y|ies)|profession(?:es|s)?|reasonable(?:es|s)?|Reflection(?:es|s)?|repetition(?:es|s)?|round\\s+trip(?:es|s)?|Unit\\s+price(?:es|s)?|Unit\\s+ratio(?:es|s)?|Magnitude(?:es|s)?|remainder(?:es|s)?|algorithm(?:es|s)?|numerator(?:es|s)?|unit\\s+rate(?:es|s)?|perimeter(?:es|s)?|rectangle(?:es|s)?|trapezoid(?:es|s)?|histogram(?:es|s)?|frequenc(?:y|ies)|Base\\s+area(?:es|s)?|Benchmark(?:es|s)?|communit(?:y|ies)|Composite(?:es|s)?|Congruent(?:es|s)?|decompose(?:es|s)?|Deviation(?:es|s)?|Divisible(?:es|s)?|ingenuit(?:y|ies)|Interpret(?:es|s)?|inventor(?:y|ies)|persevere(?:es|s)?|represent(?:es|s)?|symmetric(?:es|s)?|the\\s+whole(?:es|s)?|Unit\\s+cube(?:es|s)?|Variation(?:es|s)?|Positive(?:es|s)?|Negative(?:es|s)?|Opposite(?:es|s)?|quotient(?:es|s)?|exponent(?:es|s)?|estimate(?:es|s)?|simplif(?:y|ies)|variable(?:es|s)?|evaluate(?:es|s)?|triangle(?:es|s)?|box\\s+plot(?:es|s)?|dot\\s+plot(?:es|s)?|quartile(?:es|s)?|argument(?:es|s)?|at\\s+least(?:es|s)?|Constant(?:es|s)?|critique(?:es|s)?|Data\\s+set(?:es|s)?|Diagonal(?:es|s)?|Discount(?:es|s)?|Distance(?:es|s)?|Dividend(?:es|s)?|Interval(?:es|s)?|organize(?:es|s)?|Parallel(?:es|s)?|Per\\s+Unit(?:es|s)?|Propert(?:y|ies)|quantit(?:y|ies)|rotation(?:es|s)?|Solution(?:es|s)?|strateg(?:y|ies)|strength(?:es|s)?|Symmetr(?:y|ies)|Rational(?:es|s)?|Identit(?:y|ies)|Integer(?:es|s)?|product(?:es|s)?|regroup(?:es|s)?|decimal(?:es|s)?|percent(?:es|s)?|rhombus(?:es|s)?|polygon(?:es|s)?|pyramid(?:es|s)?|segment(?:es|s)?|outlier(?:es|s)?|cluster(?:es|s)?|Average(?:es|s)?|balance(?:es|s)?|Convert(?:es|s)?|Divisor(?:es|s)?|Formula(?:es|s)?|Isolate(?:es|s)?|justif(?:y|ies)|portion(?:es|s)?|reflect(?:es|s)?|Squared(?:es|s)?|Unknown(?:es|s)?|Whisker(?:es|s)?|factor(?:es|s)?|tenths(?:es|s)?|volume(?:es|s)?|vertex(?:es|s)?|median(?:es|s)?|Expand(?:es|s)?|growth(?:es|s)?|Markup(?:es|s)?|Output(?:es|s)?|puzzle(?:es|s)?|rhythm(?:es|s)?|Skewed(?:es|s)?|Spread(?:es|s)?|Survey(?:es|s)?|x-axis(?:es|s)?|y-axis(?:es|s)?|digit(?:es|s)?|ratio(?:es|s)?|prism(?:es|s)?|Cubed(?:es|s)?|Input(?:es|s)?|Order(?:es|s)?|Range(?:es|s)?|Scale(?:es|s)?|Solve(?:es|s)?|Prime(?:es|s)?|area(?:es|s)?|edge(?:es|s)?|data(?:es|s)?|Apex(?:es|s)?|Axis(?:es|s)?|Base(?:es|s)?|Face(?:es|s)?|gear(?:es|s)?|Mode(?:es|s)?|Peak(?:es|s)?|net(?:es|s)?|LCM(?:es|s)?|MCM(?:es|s)?|GCF(?:es|s)?|MCD(?:es|s)?|GCD(?:es|s)?|LCD(?:es|s)?|IQR(?:es|s)?|RIC(?:es|s)?|MAD(?:es|s)?|DMA(?:es|s)?|DAM(?:es|s)?|KCF(?:es|s)?|MCI(?:es|s)?|Gap(?:es|s)?|Tax(?:es|s)?|Tip(?:es|s)?|SA(?:es|s)?)\\b","lookup":{"integers and absolute value":0,"integer":1,"positive":2,"negative":3,"absolute value":4,"opposite":5,"rational number":6,"magnitude":7,"product":8,"quotient":9,"factor":10,"remainder":11,"digit":12,"multi-digit":13,"prime factorization":14,"greatest common factor":15,"least common multiple":16,"exponent":17,"algorithm":18,"long division":19,"bring down":20,"regroup":21,"place value":22,"estimate":23,"decimal point":24,"numerator":25,"denominator":26,"equivalent":27,"reciprocal":28,"mixed number":29,"decimal":30,"tenth":31,"hundredth":32,"improper fraction":33,"simplify":34,"ratio":35,"unit rate":36,"percent":37,"proportion":38,"variable":39,"expression":40,"coefficient":41,"substitute":42,"inequality":43,"evaluate":44,"like term":45,"coordinate plane":46,"ordered pair":47,"perimeter":48,"volume":49,"surface area":50,"area":51,"triangle":52,"rectangle":53,"parallelogram":54,"trapezoid":55,"rhombu":56,"polygon":57,"prism":58,"pyramid":59,"net":60,"vertex":61,"edge":62,"segment":63,"line segment":64,"median":65,"outlier":66,"interquartile range":67,"mean absolute deviation":68,"keep-change-flip":69,"data":70,"histogram":71,"box plot":72,"dot plot":73,"quartile":74,"frequency":75,"distribution":76,"cluster":77,"scale factor":78,"equivalent ratio":79,"equivalent expression":80,"equivalent fraction":81,"common factor":82,"common multiple":83,"least common denominator":84,"prime factor":85,"conversion factor":86,"algebraic expression":87,"lcm":88,"mcm":89,"gcf":90,"mcd":91,"gcd":92,"lcd":93,"iqr":94,"ric":95,"mad":96,"dma":97,"dam":98,"sa":99,"kcf":100,"mci":101,"add and subtract decimal":102,"addition property of equality":103,"additive pattern":104,"annex a zero":105,"annex zero":106,"apex":107,"appropriate measures of center":108,"approximately":109,"area of a triangle":110,"area of composite figure":111,"area of parallelogram":112,"area of regular polygon":113,"area of trapezoid":114,"argument":115,"associative property":116,"at least":117,"at least / at most":118,"average":119,"axi":120,"balance":121,"balance point":122,"base":123,"base 1 (b1)":124,"base 2 (b2)":125,"base area":126,"benchmark":127,"benchmark percent":128,"better buy":129,"bilateral symmetry":130,"boundary point":131,"closed circle":132,"colon notation":133,"common denominator":134,"common form":135,"community":136,"community agreement":137,"commutative property":138,"compare and order integer":139,"compare ratio":140,"comparison":141,"compatible number":142,"composite":143,"composite figure":144,"composite number":145,"confidence":146,"congruent":147,"conjecture":148,"constant":149,"constraint":150,"convert":151,"convert measurement unit":152,"convert measurements between system":153,"convert measurements within the same system":154,"coordinate":155,"counterexample":156,"critique":157,"cross-multiply":158,"cubed":159,"cubic unit":160,"customary system":161,"customary unit":162,"data distribution":163,"data set":164,"decimal division algorithm":165,"decimal grid":166,"decimal place":167,"decompose":168,"define the variable":169,"dependent variable":170,"depends on":171,"describe the data using the median":172,"determine the whole given the part and percent":173,"deviation":174,"diagonal":175,"dimension":176,"discount":177,"display data with box plot":178,"display data with histogram":179,"distance":180,"distance between vertice":181,"distance on the coordinate plane":182,"distributive property":183,"divide decimal":184,"divide fraction":185,"divide mixed number":186,"divide multi-digit number":187,"divide whole numbers by fraction":188,"dividend":189,"divisible":190,"division of fraction":191,"division property of equality":192,"divisor":193,"doer of math":194,"double number line":195,"equal sign":196,"equations and inequalities problem solving":197,"equivalent division":198,"evaluate expression":199,"expand":200,"expanded form":201,"extreme value":202,"face":203,"factor an expression":204,"factor pair":205,"factor tree":206,"find factors and multiple":207,"five-number summary":208,"formula":209,"fraction division problem solving":210,"fractions, decimals, and percent":211,"frequency table":212,"gap":213,"gear":214,"generalization":215,"graph inequality":216,"graph on the coordinate plane":217,"graph ratio table":218,"greater than 100%":219,"greatest common factor (gcf)":220,"grouping symbol":221,"growth":222,"halfway value":223,"horizontal distance":224,"identity property":225,"independent variable":226,"ingenuity":227,"input":228,"interpret":229,"interval":230,"inventory":231,"inverse operation":232,"isolate":233,"justify":234,"keep, change, flip":235,"lateral area":236,"lateral face":237,"least common multiple (lcm)":238,"length, width, height":239,"less than 1%":240,"line of symmetry":241,"linear pattern":242,"make sense of a problem":243,"markup":244,"math biography":245,"math story":246,"mean, median, and mode":247,"measure of center":248,"measure of variation":249,"measurement system":250,"metric system":251,"metric unit":252,"middle half":253,"mirror image":254,"mode":255,"multi-step problem":256,"multiplication property of equality":257,"multiplicative inverse":258,"multiply decimal":259,"negative coordinate":260,"negative integer":261,"negative number":262,"no more than":263,"non-statistical question":264,"number line":265,"numerical expression":266,"one-step equation":267,"open circle":268,"opposite of the opposite":269,"order":270,"order of operation":271,"ordered pairs in all four quadrant":272,"organize":273,"output":274,"parallel":275,"part-to-part":276,"part-to-whole":277,"pattern rule":278,"pattern unit":279,"peak":280,"per hundred":281,"per unit":282,"percent of a number":283,"percent problem solving":284,"percents greater than 100% and less than 1%":285,"perpendicular":286,"persevere":287,"portion":288,"positive number":289,"power of ten":290,"powers and exponent":291,"predictability":292,"prime number":293,"problem solving":294,"profession":295,"properties of operation":296,"property":297,"proportional":298,"puzzle":299,"quantity":300,"range":301,"range and interquartile range":302,"rate of change":303,"rates and unit rate":304,"ratio and rate problem solving":305,"ratio reasoning":306,"ratio table":307,"rational numbers on the number line":308,"reasonable":309,"reasonablenes":310,"rectangular prism":311,"reflect":312,"reflect points across axe":313,"reflection":314,"regular polygon":315,"relationship":316,"repeated multiplication":317,"repetition":318,"represent":319,"representation":320,"rhythm":321,"right trapezoid":322,"rotation":323,"round trip":324,"scale":325,"shape of data distribution":326,"shape of the data":327,"side length":328,"simplest form":329,"simplify algebraic expression":330,"skewed":331,"skip counting":332,"slant height":333,"slanted side":334,"solution":335,"solution set":336,"solve":337,"solve and graph inequality":338,"solve multiplication and division equation":339,"solve one-step addition and subtraction equation":340,"spread":341,"squared":342,"statistical question":343,"statistical questions and data":344,"strategy":345,"strength":346,"subtraction property of equality":347,"surface area of prism":348,"surface area of pyramid":349,"surface area using net":350,"survey":351,"symmetric":352,"symmetry":353,"table of value":354,"tape diagram":355,"target mean":356,"target total":357,"tax":358,"the distributive property":359,"the whole":360,"tip":361,"total part":362,"total price":363,"triangular prism":364,"true statement":365,"two-dimensional":366,"understand percent":367,"understand ratio":368,"unit cube":369,"unit fraction":370,"unit price":371,"unit rate point":372,"unit rate problem solving":373,"unit ratio":374,"unknown":375,"variability":376,"variation":377,"vertical distance":378,"volume of rectangular prism":379,"volume with whole-number edge":380,"whisker":381,"work backward":382,"write algebraic expression":383,"write and evaluate numerical expressions with exponent":384,"write equation":385,"write inequality":386,"x-axi":387,"x-coordinate":388,"y-axi":389,"rational":6,"associative":116,"commutative":138,"distributive":183,"identity":225,"prime":293}};
 window.__HW_WORKED__ = {"title":"Watch me","titleEs":"Mírame","lines":["I want to find the absolute value of -6, written |-6|.","I find -6 on the number line. It sits 6 steps to the left of zero.","Distance does not care about direction, so -6 is 6 units from zero.","So |-6| = 6. Even though -6 is negative, its absolute value is positive 6."],"linesEs":["Quiero hallar el valor absoluto de -6, escrito |-6|.","Hallo el -6 en la recta numérica. Está 6 pasos a la izquierda del cero.","A la distancia no le importa la dirección, así que -6 está a 6 unidades del cero.","Entonces |-6| = 6. Aunque -6 es negativo, su valor absoluto es 6 positivo."]};
 </script>
-<script src="/assets/homework/homework-vocab-3da9690d66.bundle.js"></script>
-<script src="/assets/homework/homework-core-e12f28ae0a.bundle.js"></script>
+<script src="/assets/homework/homework-vocab-12619585d8.bundle.js"></script>
+<script src="/assets/homework/homework-core-4eeaa5cadb.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

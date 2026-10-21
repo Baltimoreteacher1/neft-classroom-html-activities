@@ -147,7 +147,6 @@ const REQUIRED_MARKERS = [
   // Every game lives in one arcade on the Play stop.
   'data-arcade-game="quiz"',
   'data-arcade-game="full"',
-  "external-resource-list",
   "help_modal_overlay",
   "switchHomeworkTab",
   "initHomeworkGame",
@@ -404,9 +403,11 @@ for (const id of lessonIds) {
     issues.push({ id, level: "CRITICAL", msg: "Contains curriculum/hub navigation link" });
   }
 
-  const extLinks = (html.match(/class="external-resource-link"/g) || []).length;
-  if (extLinks === 0) {
-    issues.push({ id, level: "HIGH", msg: "No external resource links" });
+  // A lesson with no verified on-topic resource shows no links section at all;
+  // a page that makes the "specific videos" promise must carry the links.
+  const extLinks = (html.match(/class="external-resource-link[ "]/g) || []).length;
+  if (html.includes("external-resource-claim") && extLinks === 0) {
+    issues.push({ id, level: "HIGH", msg: "Links claim with no external resource links" });
   }
 
   const bilingualRuns = findBilingualRuns(html);

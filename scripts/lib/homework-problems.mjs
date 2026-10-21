@@ -454,7 +454,7 @@ export function renderPercentBarSvg({
   <text x="${x + partW / 2}" y="${barY + 28}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="${textColor}">${unitPct}%</text>`;
     }).join("\n  ");
 
-    return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="auto" class="hw-percent-bar-svg" style="background:white; max-width:${W}px; display:block; margin:0 auto; border-radius:8px; border:1px solid #0f766e;" role="img" aria-label="Solved percent bar: ${parts} equal parts of ${unitPct} percent each, ${shaded} parts shaded equals ${targetPct} percent" xmlns="http://www.w3.org/2000/svg">
+    return `<svg viewBox="0 0 ${W} ${H}" width="100%" class="hw-percent-bar-svg" style="background:white; max-width:${W}px; display:block; margin:0 auto; border-radius:8px; border:1px solid #0f766e;" role="img" aria-label="Solved percent bar: ${parts} equal parts of ${unitPct} percent each, ${shaded} parts shaded equals ${targetPct} percent" xmlns="http://www.w3.org/2000/svg">
   <title>Solved Percent Bar: ${shaded} of ${parts} parts = ${targetPct}%</title>
   <path d="M ${startX} 28 L ${startX} 18 L ${startX + shadedW / 2} 18 L ${startX + shadedW / 2} 12 L ${startX + shadedW / 2} 18 L ${startX + shadedW} 18 L ${startX + shadedW} 28" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
   <rect x="${startX + shadedW / 2 - 95}" y="4" width="190" height="20" rx="5" fill="#0f766e"/>
@@ -488,7 +488,7 @@ export function renderPercentBarSvg({
   <text x="${x + partW / 2}" y="${barY + 28}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="700" fill="#cbd5e1">Part ${i + 1}</text>`;
     }).join("\n  ");
 
-    return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="auto" class="hw-percent-bar-svg" style="background:white; max-width:${W}px; display:block; margin:0 auto; border-radius:8px; border:1px dashed #94a3b8;" role="img" aria-label="Percent bar drawing template: ${parts} equal parts to shade and label" xmlns="http://www.w3.org/2000/svg">
+    return `<svg viewBox="0 0 ${W} ${H}" width="100%" class="hw-percent-bar-svg" style="background:white; max-width:${W}px; display:block; margin:0 auto; border-radius:8px; border:1px dashed #94a3b8;" role="img" aria-label="Percent bar drawing template: ${parts} equal parts to shade and label" xmlns="http://www.w3.org/2000/svg">
   <title>Percent Bar Workspace</title>
   <text x="${startX + totalBarW / 2}" y="20" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="11.5" font-weight="800" fill="#0f766e">
     <tspan class="lang-en">Draw or shade 3 of the 4 equal parts below</tspan><tspan class="lang-es" lang="es">Dibuja o sombrea 3 de las 4 partes iguales abajo</tspan>
@@ -515,7 +515,7 @@ export function renderPercentBarSvg({
   <text x="${x + partW / 2}" y="${barY + 28}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="${textColor}">${i + 1}</text>`;
   }).join("\n  ");
 
-  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="auto" class="hw-percent-bar-svg" style="background:white; max-width:${W}px; display:block; margin:0 auto; border-radius:8px; border:1px solid #cbd5e1;" role="img" aria-label="Percent bar with ${parts} equal parts and ${shaded} parts shaded" xmlns="http://www.w3.org/2000/svg">
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" class="hw-percent-bar-svg" style="background:white; max-width:${W}px; display:block; margin:0 auto; border-radius:8px; border:1px solid #cbd5e1;" role="img" aria-label="Percent bar with ${parts} equal parts and ${shaded} parts shaded" xmlns="http://www.w3.org/2000/svg">
   <title>Percent Bar: ${parts} equal parts, ${shaded} shaded</title>
   <path d="M ${startX} 28 L ${startX} 18 L ${startX + shadedW / 2} 18 L ${startX + shadedW / 2} 12 L ${startX + shadedW / 2} 18 L ${startX + shadedW} 18 L ${startX + shadedW} 28" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
   <rect x="${startX + shadedW / 2 - 70}" y="4" width="140" height="20" rx="5" fill="#0f766e"/>

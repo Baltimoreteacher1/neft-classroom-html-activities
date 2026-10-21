@@ -8,6 +8,16 @@ import {
   weekNote,
   safeExternalUrl,
 } from "./model.js";
+import { el, link } from "./hub-dom.js";
+import { welcomeForWeek } from "./family-welcome.js";
+import {
+  routeChooser,
+  routeIntro,
+  sessionLabel,
+  tonightAnywayPanel,
+  welcomeCard,
+} from "./hub-panels.js";
+import { homeworkHref, sessionsForWeek, sessionTwoPath } from "./hub-routes.js";
 
 export function schoolDate(now = new Date()) {
   return new Intl.DateTimeFormat("en-CA", {
@@ -76,12 +86,6 @@ export function assignedHomework(snapshot, lessons, sectionId) {
   }
   return assignments;
 }
-const el = (tag, text, className) => {
-  const node = document.createElement(tag);
-  if (text !== undefined) node.textContent = text;
-  if (className) node.className = className;
-  return node;
-};
 const dateLabel = (iso, lang) =>
   new Intl.DateTimeFormat(lang === "es" ? "es-US" : "en-US", {
     timeZone: "UTC",
@@ -92,25 +96,13 @@ const dateLabel = (iso, lang) =>
 const mondayOf = (iso) => addDays(iso, -(new Date(`${iso}T12:00:00Z`).getUTCDay() + 6) % 7);
 
 /** The public page and authenticated preview use exactly the same view. */
-/* Between weeks a family should still have somewhere to go: every lesson's
-   family homework page stays open all year. */
-function browseLessonsLink(t) {
-  const link = el(
-    "a",
-    t("Browse all lessons", "Ver todas las lecciones"),
-    "button browse-lessons-link",
-  );
-  link.setAttribute("href", "/curriculum/units/");
-  return link;
-}
-
 export function renderHomeworkHub(
   root,
   snapshot,
   lessons,
   sectionId,
   lang = "en",
-  { preview = false, archive = false, now = new Date() } = {},
+  { preview = false, archive = false, now = new Date(), linkLang = lang, welcome = null } = {},
 ) {
   const es = lang === "es";
   const t = (en, spanish) => (es ? spanish : en);
@@ -190,16 +182,11 @@ export function renderHomeworkHub(
     );
   const assignments = assignedHomework(snapshot, lessons, section.id);
   if (phase === "past" && !preview && !archive) {
-    week.append(
-      el(
-        "p",
-        t(
-          "Mr. Neft has not posted a new plan yet. Check ClassDojo for the latest update.",
-          "El Sr. Neft aún no ha publicado un plan nuevo. Consulta ClassDojo para ver novedades.",
-        ),
-        "empty-state",
-      ),
-    );
+    /* Between weeks this card used to be a dead end. It now offers three
+       optional places to go; the last plan stays one tap away. */
+    const catchUp = new URLSearchParams({ section: section.id, week: section.week.startDate });
+    if (es) catchUp.set("lang", "es");
+    week.append(tonightAnywayPanel(lang, `?${catchUp}`));
     week.append(
       el(
         "p",
@@ -207,32 +194,31 @@ export function renderHomeworkHub(
         "quiet last-posted",
       ),
     );
-    /* Between weeks this card used to be a dead end: no homework link at all
-       until a new plan was posted. The last plan stays one tap away. */
-    const catchUp = new URLSearchParams({ section: section.id, week: section.week.startDate });
-    if (es) catchUp.set("lang", "es");
-    week.append(
-      el(
-        "a",
-        t("Catch up on last week’s homework", "Ponte al día con la tarea de la semana pasada"),
-        "button catch-up-link",
-      ),
-    );
-    week.lastChild.setAttribute("href", `?${catchUp}`);
-    week.append(browseLessonsLink(t));
-  } else if (phase === "empty") {
     week.append(
       el(
         "p",
         t(
-          "No homework is posted for this week. Check back here or message Mr. Neft on ClassDojo.",
-          "No hay tareas publicadas para esta semana. Vuelve a consultar o envía un mensaje al Sr. Neft por ClassDojo.",
+          "Mr. Neft has not posted a new plan yet. ClassDojo has the latest news.",
+          "El Sr. Neft aún no ha publicado un plan nuevo. ClassDojo tiene las novedades.",
         ),
-        "empty-state",
+        "quiet",
       ),
     );
-    week.append(browseLessonsLink(t));
+  } else if (phase === "empty") {
+    week.append(tonightAnywayPanel(lang, null));
+    week.append(
+      el(
+        "p",
+        t(
+          "Check back here or message Mr. Neft on ClassDojo.",
+          "Vuelve a consultar aquí o envía un mensaje al Sr. Neft por ClassDojo.",
+        ),
+        "quiet",
+      ),
+    );
   } else {
+    const welcomeNote = welcomeForWeek(welcome, section.week.startDate);
+    if (welcomeNote) week.append(welcomeCard(welcomeNote, lang));
     if (preview && phase === "past")
       week.append(
         el(
@@ -263,6 +249,10 @@ export function renderHomeworkHub(
     }
     const note = weekNote(section.week, lang);
     if (note) week.append(el("p", note));
+    const sessions = new Map(
+      sessionsForWeek(assignments).map((value, index) => [assignments[index].entry.day, value]),
+    );
+    if (assignments.some((item) => item.kind === "lesson")) week.append(routeIntro(lang));
     const list = el("div", undefined, "homework-list");
     const byDay = new Map(assignments.map((item) => [item.entry.day, item]));
     for (const [index, day] of DAYS.entries()) {
@@ -324,12 +314,14 @@ export function renderHomeworkHub(
         list.append(card);
         continue;
       }
+      const session = sessions.get(day);
+      const sessionText = session ? sessionLabel(session, lang) : "";
       content.append(
         el(
           "p",
           item.kind === "unit-review"
             ? `${homeworkLabel(item, lang)} · ${t("Work through it together, a part at a time", "Háganlo juntos, una parte a la vez")}`
-            : `${homeworkLabel(item, lang)} · ${t("Choose 20 or 30 minutes", "Elige 20 o 30 minutos")}`,
+            : [homeworkLabel(item, lang), sessionText].filter(Boolean).join(" · "),
           "eyebrow",
         ),
       );
@@ -349,22 +341,17 @@ export function renderHomeworkHub(
         );
       // No authored due date: say nothing rather than "ask Mr. Neft" on every
       // card. The week's own guidance already explains catch-up days.
-      content.append(
-        el(
-          "p",
-          t(
-            "Complete one route. Work saves on this device; bring your work or questions to class. It is not sent automatically.",
-            "Completa una ruta. El trabajo se guarda en este dispositivo; lleva tu trabajo o preguntas a clase. No se envía automáticamente.",
-          ),
-          "assignment-guidance",
-        ),
-      );
-      const link = el("a", t("Open homework", "Abrir tarea"), "button");
-      const path = HOMEWORK_PATH_PATTERN.test(item.homeworkPath)
+      const ownPath = HOMEWORK_PATH_PATTERN.test(item.homeworkPath)
         ? item.homeworkPath
         : `/lessons/${item.id}/homework.html`;
-      link.href = `${path}?route=core&lang=${lang}&section=${encodeURIComponent(section.id)}`;
-      card.append(content, link);
+      const path = session === 2 ? sessionTwoPath(item.id) : ownPath;
+      if (item.kind === "unit-review")
+        content.append(
+          link(t("Open homework", "Abrir tarea"), homeworkHref(path, { lang: linkLang, sectionId: section.id })),
+        );
+      else
+        content.append(routeChooser({ lang, path, sectionId: section.id, linkLang, session }));
+      card.append(content);
       list.append(card);
     }
     week.append(list);
@@ -402,14 +389,14 @@ export function renderHomeworkHub(
       ),
     ),
   );
-  const link = el(
+  const dojoLink = el(
     "a",
     t("Open ClassDojo · sign in", "Abrir ClassDojo · iniciar sesión"),
     "button button-secondary",
   );
-  link.href = messageDestination(snapshot);
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  message.append(messageCopy, link);
+  dojoLink.href = messageDestination(snapshot);
+  dojoLink.target = "_blank";
+  dojoLink.rel = "noopener noreferrer";
+  message.append(messageCopy, dojoLink);
   root.append(week, message);
 }

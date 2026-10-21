@@ -19,7 +19,10 @@ import {
   selectMorePracticeProblems,
   selectTieredQuickCheckProblems,
 } from "./homework-alignment.mjs";
-import { getExternalResources } from "./homework-external-resources.mjs";
+import {
+  getExternalResources,
+  renderExternalResourcesSection,
+} from "./homework-external-resources.mjs";
 import {
   exactConceptVisual,
   exactFamilyMission,
@@ -40,6 +43,17 @@ import { getUnitTheme } from "./homework-themes.mjs";
 import { bridgeOf, bridgeSpeech, renderBridgeCard } from "./lib/homework-bridge.mjs";
 import { confusedRoundsFor, renderConfusedGrownUp } from "./lib/homework-confused-grownup.mjs";
 import { renderDominoDuo } from "./lib/homework-domino-duo.mjs";
+import {
+  GOAL_TARGET,
+  ROUTE_TIMES,
+  renderConfidence,
+  renderFamilyNights,
+  renderGoalPips,
+  renderMysteryChallenge,
+  renderShareWin,
+  renderTeachBack,
+  renderTonightStrip,
+} from "./lib/homework-experience.mjs";
 import { renderPrintHead } from "./lib/homework-print.mjs";
 import { choiceFeedbackSpanish } from "./lib/homework-problems.mjs";
 import { renderScratchpadHtml } from "./lib/homework-scratchpad.mjs";
@@ -53,8 +67,12 @@ import {
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const _root = join(__dirname, "..");
-const familyTitlesEs = JSON.parse(
+export const familyTitlesEs = JSON.parse(
   readFileSync(join(_root, "data/family-homework-titles-es.json"), "utf8"),
+);
+/* Spanish for the Math Dominoes tiles that carry words, keyed by the English tile text. */
+export const FAMILY_PAIRS_ES = JSON.parse(
+  readFileSync(join(_root, "data/family-game-pairs-es.json"), "utf8"),
 );
 
 export function esc(s) {
@@ -2885,6 +2903,23 @@ export function renderWelcomeBanner(config, lessonId) {
     <header class="hw-hero" aria-label="Family Math Night welcome">
       <div class="hw-hero-glow" aria-hidden="true"></div>
       <div class="hw-hero-body">
+        <div class="hw-hero-controls">
+          <div class="lang-selector-card">
+            <span class="lang-selector-title">Language / Idioma</span>
+            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
+              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
+                🇺🇸🇪🇸 <span class="lang-btn-long">Bilingual / Bilingüe</span><span class="lang-btn-short">EN + ES</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
+                🇺🇸 <span>English</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
+                🇪🇸 <span>Español</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <p class="hw-hero-kicker">
           <span class="hw-hero-kicker-icon" aria-hidden="true">📘</span>
           <span class="lang-en">Unit ${unit}${unitTitle.en ? ` · ${esc(unitTitle.en)}` : ""}</span>
@@ -2907,26 +2942,9 @@ export function renderWelcomeBanner(config, lessonId) {
         ${renderSessionBanner(lessonId, partner)}
 
         <p class="hw-hero-bigidea" aria-label="Big idea">
-          <span class="hw-hero-bigidea-label"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
+          <span class="hw-hero-bigidea-label hw-inline"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
           <span class="lang-en">${esc(completeSentence(bigIdea.en))}</span><span class="lang-es" lang="es">${esc(completeSentence(bigIdea.es))}</span>
         </p>
-
-        <div class="hw-hero-controls">
-          <div class="lang-selector-card">
-            <span class="lang-selector-title">Language / Idioma</span>
-            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
-              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
-                🇺🇸🇪🇸 <span>Bilingual / Bilingüe</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
-                🇺🇸 <span>English</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
-                🇪🇸 <span>Español</span>
-              </button>
-            </div>
-          </div>
-        </div>
 
         <p class="hw-hero-lead">
           <span class="lang-en">Optional, ungraded practice. Work with someone or on your own; no adult signature is needed.</span>
@@ -2944,9 +2962,7 @@ export function renderWelcomeBanner(config, lessonId) {
             : ""
         }
 
-        <ul class="hw-hero-stats" aria-label="What tonight looks like">
-          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">${HOMEWORK_STOP_COUNT}</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">${HOMEWORK_STOP_COUNT}</span> paradas</span></li>
-        </ul>
+        ${renderTonightStrip()}
 
         ${renderQuickPlan()}
 
@@ -2998,35 +3014,38 @@ function sessionPartner(lessonId) {
 
 /* The start panel lives inside the hero, before secondary controls. */
 export function renderQuickPlan() {
+  const time = (mode) =>
+    `<span class="hw-route-time">${ROUTE_TIMES[mode]} <small>min</small></span>`;
   return `
       <section class="hw-route-chooser" aria-labelledby="hw_route_title">
         <div class="hw-route-heading">
           <span class="hw-route-icon" aria-hidden="true">🧭</span>
           <div>
-            <h2 id="hw_route_title"><span class="lang-en">Choose a practice path</span><span class="lang-es" lang="es">Elige una ruta de práctica</span></h2>
-            <p><span class="lang-en">All practice is optional and ungraded. Choose the time that works for your family; your route choice is saved on this device.</span><span class="lang-es" lang="es">Toda la práctica es opcional y no lleva calificación. Elijan el tiempo que les funcione; la ruta queda guardada en este dispositivo.</span></p>
+            <h2 id="hw_route_title" class="hw-inline"><span class="lang-en">How much time do you have tonight?</span><span class="lang-es" lang="es">¿Cuánto tiempo tienen esta noche?</span></h2>
+            <p class="hw-inline"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
           </div>
         </div>
-        <div class="hw-route-options" role="group" aria-label="Choose a practice path" data-aria-en="Choose a practice path" data-aria-es="Elige una ruta de práctica">
+        <div class="hw-route-options" role="group" aria-label="How much time do you have tonight?" data-aria-en="How much time do you have tonight?" data-aria-es="¿Cuánto tiempo tienen esta noche?">
           <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
-            <span class="hw-route-time">5–10 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Quick practice</span><span class="lang-es" lang="es">Práctica breve</span></strong><small><span class="lang-en">One example, 2 problems, and one explanation.</span><span class="lang-es" lang="es">Un ejemplo, 2 problemas y una explicación.</span></small></span>
+            ${time("quick")}
+            <span class="hw-route-copy"><strong><span class="lang-en">Quick</span><span class="lang-es" lang="es">Rápida</span></strong><small><span class="lang-en">One example and 2 problems.</span><span class="lang-es" lang="es">Un ejemplo y 2 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
-            <span class="hw-route-time">15–20 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Learn, explore key words, practice <span data-hw-core-count>6</span> problems, and explain.</span><span class="lang-es" lang="es">Aprende, explora palabras clave, practica <span data-hw-core-count>6</span> problemas y explica.</span></small></span>
+            ${time("core")}
+            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Key words, then practice. Goal: ${GOAL_TARGET} problems.</span><span class="lang-es" lang="es">Palabras clave y práctica. Meta: ${GOAL_TARGET} problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option is-active" data-route-mode="full" aria-pressed="true" onclick="setHomeworkRoute('full')">
-            <span class="hw-route-time">20–30 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Family Math Studio</span><span class="lang-es" lang="es">Estudio familiar de matemáticas</span></strong><small><span class="lang-en">Add one home mission and one math game. Go at your own pace.</span><span class="lang-es" lang="es">Agrega una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span></small></span>
+            ${time("full")}
+            <span class="hw-route-badge"><span aria-hidden="true">★</span><span class="hw-sr-only"><span class="lang-en">Recommended</span><span class="lang-es" lang="es">Recomendada</span></span></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Full Studio</span><span class="lang-es" lang="es">Estudio completo</span></strong><small><span class="lang-en">Everything, plus a home mission and a game.</span><span class="lang-es" lang="es">Todo, más una misión en casa y un juego.</span></small></span>
           </button>
         </div>
         <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Family Math Studio selected: <span data-hw-core-count>6</span> problems, key words, one home mission, and one math game. Go at your own pace.</span>
-          <span class="lang-es" lang="es">Estudio familiar seleccionado: <span data-hw-core-count>6</span> problemas, palabras clave, una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span>
+          <span class="lang-en">Full Studio (recommended): everything, plus one home mission and one game. Everything is optional.</span>
+          <span class="lang-es" lang="es">Estudio completo (recomendada): todo, más una misión en casa y un juego. Todo es opcional.</span>
         </p>
         <p id="hw_resume_note" role="status" aria-live="polite"></p>
-        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start this path</span><span class="lang-es" lang="es">Empezar esta ruta</span></button>
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
       </section>`;
 }
 
@@ -3060,7 +3079,6 @@ export function renderLearningTonight(config) {
           ${wordsEs ? renderVocabularyChips(vocab, "es") : ""}
         </div>
       </div>
-      ${renderParentQuickCard(config)}
     </section>`;
 }
 
@@ -3336,7 +3354,9 @@ export function renderCelebration(config = null, _lessonId = "") {
   return `
     <section class="guided-section card section-celebrate" aria-label="Celebration">
       <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
-      <p class="family-explain-finish"><span class="lang-en">Explain one answer aloud or on paper: “I got ___ because ___. I checked by ___.” Include your strategy and units. Then you are done.</span><span class="lang-es" lang="es">Explica una respuesta en voz alta o en papel: “Obtuve ___ porque ___. Comprobé usando ___.” Incluye tu estrategia y las unidades. Después termina.</span></p>
+      ${renderTeachBack(config)}
+      ${renderConfidence("after")}
+      ${renderFamilyNights()}
       <div class="done-summary" id="hw_done_summary" role="status" aria-live="polite"></div>
       <ol class="done-problem-list" id="hw_done_problems" aria-label="Problems / Problemas"></ol>
       <p class="celebrate-text lang-en">Name one strategy that helped, or one question to ask next time. You can stop here; no adult signature is needed.</p>
@@ -3346,9 +3366,10 @@ export function renderCelebration(config = null, _lessonId = "") {
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
 
+      ${renderShareWin()}
       <div class="homework-message-action">
         <a class="btn btn-primary" href="https://home.classdojo.com/" target="_blank" rel="noopener"><span class="lang-en">Open ClassDojo to message Mr. Neft</span><span class="lang-es" lang="es">Abrir ClassDojo para escribir al Sr. Neft</span></a>
-        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicia sesión con tu cuenta familiar, abre Mensajes y elige al Sr. Neft. Incluye el número de esta lección y tu pregunta.</span></p>
+        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicien sesión con su cuenta familiar, abran Mensajes y elijan al Sr. Neft. Incluyan el número de esta lección y su pregunta.</span></p>
       </div>
       <section class="homework-optional-extras" aria-labelledby="homework_extras_title">
       <h3 id="homework_extras_title"><span class="lang-en">Want to do more?</span><span class="lang-es" lang="es">¿Quieren hacer más?</span></h3>
@@ -3588,22 +3609,19 @@ export function renderCelebration(config = null, _lessonId = "") {
    button, the hero total and this paragraph cannot disagree. They did: the hero
    promised 25 minutes across 5 stops, the rail billed Check at 10, and this
    paragraph asked for 15-20 — three numbers for one stop, on one screen. */
-export function renderQuickCheckIntro(coreCount = 6, hasMore = true) {
+export function renderQuickCheckIntro(_coreCount = 6, hasMore = true) {
   /* A Part 2 with authored session practice ships exactly its core set and no
      bonus accordion, so "the extra practice at the bottom" pointed at nothing.
-     Only promise it when the page renders it. */
+     Only promise it when the page renders it. The goal itself (how many to do
+     tonight) lives in the goal card, written once from one number. */
   const extraEn = hasMore ? " The extra practice at the bottom is optional." : "";
   const extraEs = hasMore ? " La práctica extra al final es opcional." : "";
   return `
     <section class="guided-section card section-quick-intro" aria-label="Quick check introduction">
       <h2 class="section-title">✅ Quick check / Repaso rápido</h2>
       <p class="quick-check-time bilingual-block">
-        <span class="lang-en">Complete the <span id="hw_check_problem_count">${coreCount}</span> problems below.<span class="quick-check-extra-copy">${extraEn}</span></span>
-        <span class="lang-es" lang="es">Completa los <span id="hw_check_problem_count_es">${coreCount}</span> problemas de abajo.<span class="quick-check-extra-copy">${extraEs}</span></span>
-      </p>
-      <p class="bilingual-block">
-        <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
-        <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+        <span class="lang-en">Start with <strong>Basics</strong>. Each problem has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong> and a <strong>space for your work</strong>. Tap <strong>Check This Problem</strong> for instant help.<span class="quick-check-extra-copy">${extraEn}</span></span>
+        <span class="lang-es" lang="es">Empiecen con las <strong>Básicas</strong>. Cada problema tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para su trabajo</strong>. Toquen <strong>Revisar esta pregunta</strong> para recibir ayuda al instante.<span class="quick-check-extra-copy">${extraEs}</span></span>
       </p>
     </section>`;
 }
@@ -7363,7 +7381,11 @@ function familyWyr(key, topic) {
 }
 
 function familyGamePairs(key, topic) {
-  return pickBank(FAMILY_GAME_PAIRS, key, topic);
+  return pickBank(FAMILY_GAME_PAIRS, key, topic).map((pair) => ({
+    ...pair,
+    aEs: FAMILY_PAIRS_ES[pair.a] || "",
+    bEs: FAMILY_PAIRS_ES[pair.b] || "",
+  }));
 }
 
 function familyTfQuestions(key, topic) {
@@ -8260,7 +8282,7 @@ function workbenchSpec(config) {
   return id ? { id, ...WORKBENCH_TOOL_COPY[id] } : null;
 }
 
-export function renderLearnTab(config, visualLabHtml = "", workbenchHtml = "") {
+export function renderLearnTab(config, visualLabHtml = "", workbenchHtml = "", mystery = null) {
   const learning = renderLearningTonight(config).replace(/<section[^>]*>|<\/section>/g, "");
   let concept = renderConceptExplainer(config).replace(/<section[^>]*>|<\/section>/g, "");
   const keyEn = keyIdea(config);
@@ -8326,19 +8348,26 @@ export function renderLearnTab(config, visualLabHtml = "", workbenchHtml = "") {
       </div>
     </div>`;
 
+  /* One drawer for the grown-up: the question to ask and the thing not to say stay
+     visible in the summary line; the bridge from "how you learned it", why this
+     matters and the common trap are one tap away. They used to be three separate
+     blocks in three places on this stop. */
+  const ask = familyGuidance(config).question;
+  const askPreview = ask
+    ? `<span class="lang-en">Ask: ${esc(ask.en)}</span><span class="lang-es" lang="es">Pregunta: ${esc(ask.es || ask.en)}</span>`
+    : `<span class="lang-en">Questions to ask, what to avoid, and why this matters.</span><span class="lang-es" lang="es">Preguntas para hacer, qué evitar y por qué importa.</span>`;
   const parentDrawerHtml = `
-    <details class="parent-coaching-drawer">
-      <summary class="parent-coaching-summary">
-        <span class="summary-left">
-          <span class="summary-icon">💡</span>
-          <span class="summary-text">
-            <strong><span class="lang-en">Parent Coaching Tips &amp; Real-World Connection</span><span class="lang-es" lang="es">Consejos para Padres y Conexión Real</span></strong>
-            <small><span class="lang-en">Tap to view coaching questions, common traps &amp; everyday examples</span><span class="lang-es" lang="es">Toca para ver preguntas guía, errores comunes y ejemplos</span></small>
-          </span>
+    <details class="hw-grownup" id="hw_grownup">
+      <summary>
+        <span class="hw-grownup-icon" aria-hidden="true">👪</span>
+        <span class="hw-grownup-text hw-stack">
+          <strong class="hw-stack"><span class="lang-en">For the grown-up · 1 minute</span><span class="lang-es" lang="es">Para el adulto · 1 minuto</span></strong>
+          <small class="hw-stack">${askPreview}</small>
         </span>
-        <span class="summary-chevron" aria-hidden="true">▾</span>
+        <span class="hw-grownup-chev" aria-hidden="true">▾</span>
       </summary>
-      <div class="parent-coaching-content">
+      <div class="hw-grownup-body">
+        ${renderParentQuickCard(config)}
         ${spotlightHtml}
         ${misconceptionHtml}
       </div>
@@ -8368,6 +8397,8 @@ export function renderLearnTab(config, visualLabHtml = "", workbenchHtml = "") {
         <a href="#hw_learn_quick"><span class="lang-en">Quick question</span><span class="lang-es" lang="es">Pregunta rápida</span></a>
       </nav>
       <div class="learn-summary-block">${learning}</div>
+      ${renderConfidence("before")}
+      ${renderMysteryChallenge(mystery)}
       <div class="learn-big-idea-block" id="hw_learn_idea">${concept}</div>
       <div class="learn-extended-block" id="hw_learn_try">${visualLabHtml}</div>
 ${workbenchLaunchHtml}
@@ -8399,6 +8430,7 @@ export function renderCheckTab(
   moreHtml = "",
   coreCount = 6,
   basicHtml = "",
+  hasMystery = false,
 ) {
   const intro = quickCheckIntro.replace(/<section[^>]*>|<\/section>/g, "");
 
@@ -8407,20 +8439,19 @@ export function renderCheckTab(
      "0 / 6" — so a family could finish the stated goal and still be told they
      were half done. */
   const starsBar = `
-    <div class="stars-to-win-bar">
-      <div class="stars-to-win-title">
-        <span>⭐</span>
-        <div>
-          <span class="lang-en"><strong>Tonight's goal:</strong> finish the <span id="hw_goal_count">${coreCount}</span> problems below. Stop any time — your work saves itself.</span>
-          <span class="lang-es" lang="es"><strong>La meta de hoy:</strong> terminar los <span id="hw_goal_count_es">${coreCount}</span> problemas de abajo. Pueden parar cuando quieran: el trabajo se guarda solo.</span>
-        </div>
-      </div>
-      <div class="stars-milestone-chips" aria-hidden="true">
-        ${basicHtml ? '<span class="star-chip">🧱 Basics</span>' : ""}
-        <span class="star-chip">🌱 Warm-Up ★</span>
-        <span class="star-chip">🚀 Level-Up ★★</span>
-        <span class="star-chip">🏆 Victory ★★★</span>
-      </div>
+    <div class="hw-goal-card">
+      ${renderGoalPips("")}
+      <p>
+        <span class="lang-en"><strong>Tonight's goal: any <span data-hw-goal-count>${Math.min(GOAL_TARGET, coreCount)}</span> problems.</strong> There are <span data-hw-goal-avail>${coreCount}</span> here, so pick the ones you like. Stop any time. Your work saves itself.</span>
+        <span class="lang-es" lang="es"><strong>La meta de hoy: cualquier <span data-hw-goal-count>${Math.min(GOAL_TARGET, coreCount)}</span> problemas.</strong> Aquí hay <span data-hw-goal-avail>${coreCount}</span>, así que escojan los que prefieran. Pueden parar cuando quieran. El trabajo se guarda solo.</span>
+      </p>
+      <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
+    </div>
+    <div class="stars-milestone-chips" aria-hidden="true">
+      ${basicHtml ? '<span class="star-chip">🧱 Basics</span>' : ""}
+      <span class="star-chip">🌱 Warm-Up ★</span>
+      <span class="star-chip">🚀 Level-Up ★★</span>
+      <span class="star-chip">🏆 Victory ★★★</span>
     </div>`;
 
   const streakBanner = `
@@ -8450,9 +8481,16 @@ export function renderCheckTab(
             : `<span class="lang-en">Great work. Head to <strong>Done</strong> to finish or choose optional extras.</span><span class="lang-es" lang="es">Buen trabajo. Vayan a <strong>Listo</strong> para terminar o elegir extras opcionales.</span>`
         }</p>
       </div>
-      <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
-        <span class="lang-en">Claim Certificate ➔</span><span class="lang-es" lang="es">Reclamar Certificado ➔</span>
-      </button>
+      <div class="goal-actions">
+        ${
+          hasMystery
+            ? `<button type="button" class="btn btn-sm btn-secondary hw-banner-mystery" hidden onclick="hwOpenMystery()"><span class="lang-en">🔓 Open the mystery challenge</span><span class="lang-es" lang="es">🔓 Abrir el reto misterioso</span></button>`
+            : ""
+        }
+        <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
+          <span class="lang-en">Teach it back, then claim your certificate ➔</span><span class="lang-es" lang="es">Enséñalo y reclama tu certificado ➔</span>
+        </button>
+      </div>
     </div>`;
 
   const tierNo = (n) => (basicHtml ? n + 1 : n);
@@ -8822,24 +8860,7 @@ export function renderMoreContent(config, lessonId) {
           <span class="ai-lab-arrow" aria-hidden="true">→</span>
         </a>
 ${offlineCta}
-        <p class="bilingual-block">
-          <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
-          <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
-        </p>
-        <ul class="external-resource-list">
-          ${links
-            .map(
-              (l) => `
-            <li>
-              <a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">${esc(l.source)}</span>
-                <span class="ext-title-en">${esc(l.titleEn)}</span>
-                <span class="ext-title-es" lang="es">${esc(l.titleEs)}</span>
-              </a>
-            </li>`,
-            )
-            .join("")}
-        </ul>
+${renderExternalResourcesSection(links)}
       </section>`;
 }
 
@@ -9417,7 +9438,7 @@ function famDomTiles(pairs, start) {
   for (var k = 0; k < n; k++) {
     var i = (start + k) % n;
     var prev = (i + n - 1) % n;
-    tiles.push({ k: k, left: pairs[prev].b, right: pairs[i].a });
+    tiles.push({ k: k, left: pairs[prev].b, leftEs: pairs[prev].bEs || '', right: pairs[i].a, rightEs: pairs[i].aEs || '' });
   }
   return tiles;
 }
@@ -9462,15 +9483,29 @@ function dominoTileEl(tile, isButton) {
   var el = document.createElement(isButton ? 'button' : 'div');
   if (isButton) el.type = 'button'; else el.setAttribute('role', 'listitem');
   el.className = 'fam-dom-tile';
-  var l = document.createElement('span');
-  l.className = 'fam-dom-half fam-dom-left';
-  l.textContent = tile.left;
-  var r = document.createElement('span');
-  r.className = 'fam-dom-half fam-dom-right';
-  r.textContent = tile.right;
+  var l = domHalfEl('fam-dom-half fam-dom-left', tile.left, tile.leftEs);
+  var r = domHalfEl('fam-dom-half fam-dom-right', tile.right, tile.rightEs);
   el.appendChild(l);
   el.appendChild(r);
   return el;
+}
+
+/* A tile half is English; when it carries words it carries the Spanish too, shown in
+   Spanish and bilingual modes. Numerals and symbols have no Spanish and stay one line. */
+function domHalfEl(className, en, es) {
+  var half = document.createElement('span');
+  half.className = className;
+  if (!es) { half.textContent = en; return half; }
+  var a = document.createElement('span');
+  a.className = 'lang-en';
+  a.textContent = en;
+  var b = document.createElement('span');
+  b.className = 'lang-es';
+  b.setAttribute('lang', 'es');
+  b.textContent = es;
+  half.appendChild(a);
+  half.appendChild(b);
+  return half;
 }
 
 function dominoSlotEl() {
@@ -9861,10 +9896,6 @@ function setHomeworkRoute(mode, options) {
   });
   var shell = document.querySelector('.homework-tabs-shell');
   if (shell) shell.dataset.tabCount = String(route.tabs.length);
-  ['hw_hero_stop_count', 'hw_hero_stop_count_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(route.tabs.length);
-  });
 
   /* Every core problem, in page order (basic practice, then warm-up, then level up). Quick practice is the first two;
      the other paths show them all. problemLimit 0 means "all of them", so the count follows the page instead of a number
@@ -9898,24 +9929,14 @@ function setHomeworkRoute(mode, options) {
     optional.querySelectorAll('[data-hw-quick-more-count], [data-hw-quick-more-count-es]').forEach(function (el) { el.textContent = String(extra); });
   }
   document.querySelectorAll('[data-hw-core-count]').forEach(function (el) { el.textContent = String(coreProblems.length); });
-  ['hw_goal_count', 'hw_goal_count_es', 'hw_check_problem_count', 'hw_check_problem_count_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(limit);
-  });
-  var progress = document.getElementById('progress_text');
-  if (progress) {
-    var completed = Array.from(document.querySelectorAll('.problem-section.correct, .problem-section.reviewed'))
-      .filter(function (problem) { return !problem.hidden && !problem.closest('[hidden]') && !problem.closest('.more-practice'); }).length;
-    progress.textContent = completed + ' / ' + limit;
-  }
-  if (typeof updateProgress === 'function') updateProgress();
+  if (typeof hwRenderGoal === 'function') hwRenderGoal(false);
 
   var note = document.getElementById('hw_route_note');
   if (note) {
     var copy = {
-      quick: ['Quick practice selected: one example, 2 problems, and one explanation. Pause or stop whenever you need.', 'Práctica breve seleccionada: un ejemplo, 2 problemas y una explicación. Pueden pausar o terminar cuando lo necesiten.'],
-      core: ['Learn & practice selected: ' + limit + ' problems, key words, and an explanation. Pause or stop whenever you need.', 'Ruta de aprendizaje seleccionada: ' + limit + ' problemas, palabras clave y una explicación. Pueden pausar o terminar cuando lo necesiten.'],
-      full: ['Family Math Studio selected: add one home mission and one math game. Everything is optional.', 'Estudio familiar seleccionado: agrega una misión en casa y un juego de matemáticas. Todo es opcional.']
+      quick: ['Quick selected: one example and 2 problems. Stop whenever you need.', 'Rápida seleccionada: un ejemplo y 2 problemas. Pueden parar cuando lo necesiten.'],
+      core: ['Learn & practice selected: key words, then practice. Goal: ' + HW_GOAL_TARGET + ' problems. Stop whenever you need.', 'Aprender y practicar seleccionada: palabras clave y práctica. Meta: ' + HW_GOAL_TARGET + ' problemas. Pueden parar cuando lo necesiten.'],
+      full: ['Full Studio (recommended): everything, plus one home mission and one game. Everything is optional.', 'Estudio completo (recomendada): todo, más una misión en casa y un juego. Todo es opcional.']
     }[mode];
     setBiText(note, copy[0], copy[1]);
   }
@@ -10321,7 +10342,7 @@ function openConceptZoom(btn) {
 }
 
 function preparePaperPractice() {
-  alert("For offline work, print now or choose Save as PDF in the print dialog. Open the saved PDF before disconnecting. This website has not downloaded an offline copy. / Para trabajar sin internet, imprime ahora o elige Guardar como PDF. Abre el PDF guardado antes de desconectarte. Este sitio no ha descargado una copia sin conexión.");
+  hwNotice("For offline work, print now or choose Save as PDF in the print dialog. Open the saved PDF before disconnecting. This website has not downloaded an offline copy. / Para trabajar sin internet, imprime ahora o elige Guardar como PDF. Abre el PDF guardado antes de desconectarte. Este sitio no ha descargado una copia sin conexión.", 9000);
   printProblemsOnly();
 }
 window.preparePaperPractice = preparePaperPractice;
@@ -10338,7 +10359,7 @@ function toggleVoiceRecording() {
     return;
   }
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    alert("Audio recording is not supported in this browser. / La grabación no es compatible en este navegador.");
+    hwNotice("Audio recording is not supported in this browser. / La grabación no es compatible en este navegador.");
     return;
   }
   navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
@@ -10397,7 +10418,7 @@ function toggleVoiceRecording() {
       }
     }, 1000);
   }).catch(function() {
-    alert("Microphone access was blocked. Please allow mic permissions to record. / Se bloqueó el acceso al micrófono.");
+    hwNotice("Microphone access was blocked. Please allow mic permissions to record. / Se bloqueó el acceso al micrófono.");
   });
 }
 window.toggleVoiceRecording = toggleVoiceRecording;
@@ -10419,11 +10440,13 @@ function toggleSignoffSubmitBtn() {
 }
 
 function homeworkShareUrl() {
-  var url = new URL(window.location.href);
+  /* The lesson page, the route, the language and the class section (the hub's class
+     link). A copied link carries nothing else from the address bar: no answers, no
+     Canvas or SCORM launch parameters, no tracking. */
   var route = document.body.dataset.homeworkRoute || 'full';
-  ['answers', 'responses', 'reflection', 'studentData', 'work', 'progress', 'photo', 'voiceMemo'].forEach(function (key) {
-    url.searchParams.delete(key);
-  });
+  var url = new URL(window.location.origin + window.location.pathname);
+  var section = new URLSearchParams(window.location.search).get('section');
+  if (section) url.searchParams.set('section', section);
   url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'full');
   url.searchParams.set('lang', document.body.dataset.homeworkLanguage || preferredLanguageMode());
   return url.href;
@@ -10433,15 +10456,19 @@ function copyHomeworkLink() {
   var url = homeworkShareUrl();
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(url).then(function() {
-      alert("Link copied with your route and language. / Enlace copiado con tu ruta e idioma.");
-    }).catch(function() { window.prompt('Copy this link / Copia este enlace:', url); });
-  } else window.prompt('Copy this link / Copia este enlace:', url);
+      hwNotice("Link copied with your route and language. / Enlace copiado con tu ruta e idioma.");
+    }).catch(function() { hwToast('Copy this link: ' + url, 'Copia este enlace: ' + url, 12000); });
+  } else hwToast('Copy this link: ' + url, 'Copia este enlace: ' + url, 12000);
 }
 
 function startHomework() {
   var last = document.body.dataset.activeTab || 'learn';
   switchHomeworkTab(last);
-  document.getElementById('hw_panel_' + last)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  var panel = document.getElementById('hw_panel_' + last);
+  if (!panel) return;
+  panel.scrollIntoView({ block: 'start', behavior: typeof hwReducedMotion === 'function' && hwReducedMotion() ? 'auto' : 'smooth' });
+  panel.setAttribute('tabindex', '-1');
+  panel.focus({ preventScroll: true });
 }
 
 function printProblemsOnly() {
@@ -10542,23 +10569,8 @@ function initHomeworkShareLinks() {
 }
 
 function getFamilyStreakCount() {
-  try {
-    var streakKey = 'hw_family_streak_history';
-    var history = JSON.parse(localStorage.getItem(streakKey) || '[]');
-    if (!history.length) return 1;
-    var streak = 1;
-    for (var i = history.length - 2; i >= 0; i--) {
-      var prev = new Date(history[i]);
-      var next = new Date(history[i + 1]);
-      var diffDays = Math.round((next - prev) / (1000 * 60 * 60 * 24));
-      if (diffDays === 1) streak++;
-      else if (diffDays === 0) continue;
-      else break;
-    }
-    return streak;
-  } catch(e) {
-    return 1;
-  }
+  /* The certificate and the Family nights card read one record (hw_family_nights_v1). */
+  return Math.max(1, hwStreakCount(new Date()));
 }
 
 function saveParentSignoff() {
@@ -10574,17 +10586,9 @@ function saveParentSignoff() {
     year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
   });
   
-  // Track consecutive nights practiced
-  try {
-    var todayKey = new Date().toISOString().slice(0, 10);
-    var streakKey = 'hw_family_streak_history';
-    var streakHistory = JSON.parse(localStorage.getItem(streakKey) || '[]');
-    if (streakHistory.indexOf(todayKey) === -1) {
-      streakHistory.push(todayKey);
-      streakHistory.sort();
-      localStorage.setItem(streakKey, JSON.stringify(streakHistory));
-    }
-  } catch(e) {}
+  // Signing off counts as a family night.
+  hwRecordNight();
+  hwRenderNights();
 
   const payload = {
     parentName: nameVal,
@@ -10598,10 +10602,19 @@ function saveParentSignoff() {
     lessonTitle: lessonTitle
   };
   
+  var signoffSaved = false;
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
+    signoffSaved = true;
   } catch(e) {
-    alert('This reflection could not be saved on this device. Copy it before leaving. / No se pudo guardar esta reflexión. Cópiala antes de salir.');
+    hwFreeSignoffMedia(lessonId);
+    try {
+      localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
+      signoffSaved = true;
+    } catch(e2) {}
+  }
+  if (!signoffSaved) {
+    hwNotice('This reflection could not be saved on this device. Copy it before leaving. / No se pudo guardar esta reflexión. Cópienla antes de salir.');
     return;
   }
 
@@ -10736,7 +10749,7 @@ function preferredLanguageMode() {
       : [navigator.language || ''];
     if (langs.some(function (l) { return String(l).toLowerCase().indexOf('es') === 0; })) return 'es';
   } catch (e) {}
-  return 'en';
+  return 'bilingual';
 }
 
 function restoreParentSignoff() {
@@ -10796,11 +10809,14 @@ function initHomeworkPage() {
   });
   try {
     localStorage.removeItem('hw_last_tab');
-    const last = localStorage.getItem(lastTabStorageKey());
+    // The photobooth is a tool beside Done, never a place to resume: a family that last used it
+    // had finished, so they continue at Done.
+    let last = localStorage.getItem(lastTabStorageKey());
+    if (last === 'photobooth') last = 'done';
     const lastBtn = last ? document.getElementById('hw_tab_' + last) : null;
     if (lastBtn && !lastBtn.hidden) {
       switchHomeworkTab(last);
-      setBiText(document.getElementById('hw_resume_note'), 'Welcome back. Your saved plan and answers are on this device. Continue at ' + lastBtn.querySelector('.tab-en').textContent + '.', 'Bienvenido de nuevo. Tu plan y tus respuestas están guardados en este dispositivo. Continúa en ' + lastBtn.querySelector('.tab-es').textContent + '.');
+      setBiText(document.getElementById('hw_resume_note'), 'Welcome back. Your saved plan and answers are on this device. Continue at ' + lastBtn.querySelector('.tab-en').textContent + '.', 'Bienvenidos de nuevo. Su plan y sus respuestas están guardados en este dispositivo. Continúen en ' + lastBtn.querySelector('.tab-es').textContent + '.');
     }
     else switchHomeworkTab('learn');
   } catch(e) {}
@@ -10919,7 +10935,7 @@ function initHomeworkVocabPopups() {
       btn.className = 'obj-term';
       btn.setAttribute('data-term-idx', String(idx));
       btn.setAttribute('aria-haspopup', 'dialog');
-      btn.setAttribute('aria-label', m[0] + ': open definition');
+      btn.setAttribute('aria-label', document.body.classList.contains('lang-mode-es') ? m[0] + ': abrir definición' : document.body.classList.contains('lang-mode-bilingual') ? m[0] + ': open definition / abrir definición' : m[0] + ': open definition');
       btn.textContent = m[0];
       frag.appendChild(btn);
       cursor = m.index + m[0].length;
@@ -10963,6 +10979,7 @@ function initHomeworkVocabPopups() {
       '<p class="obj-popup-translation"><span class="obj-popup-tr-label">Español:</span> <span class="obj-popup-tr-es" lang="es"></span></p>' +
       '<p class="obj-popup-def"></p>' +
       '<p class="obj-popup-def-es" lang="es"></p>' +
+      '<details class="obj-popup-formal" hidden><summary><span class="lang-en">More precisely</span><span class="lang-es" lang="es">Con más precisión</span></summary><p class="obj-popup-formal-en"></p><p class="obj-popup-formal-es" lang="es"></p></details>' +
       '<figure class="obj-popup-visual"><img class="obj-popup-img" alt="" /><figcaption class="obj-popup-example"></figcaption></figure>' +
       '</div>';
     document.body.appendChild(backdrop);
@@ -11009,6 +11026,13 @@ function initHomeworkVocabPopups() {
     var esEl = bd.querySelector('.obj-popup-def-es');
     if (entry.defEs) { esEl.textContent = String(entry.defEs); esEl.hidden = false; }
     else { esEl.textContent = ''; esEl.hidden = true; }
+    var fm = bd.querySelector('.obj-popup-formal');
+    if (fm) {
+      fm.open = false;
+      fm.querySelector('.obj-popup-formal-en').textContent = entry.formal ? String(entry.formal) : '';
+      fm.querySelector('.obj-popup-formal-es').textContent = entry.formalEs ? String(entry.formalEs) : '';
+      fm.hidden = !entry.formal && !entry.formalEs;
+    }
     lastFocus = document.activeElement;
     bd.removeAttribute('hidden');
     bd.hidden = false;
@@ -11016,16 +11040,31 @@ function initHomeworkVocabPopups() {
     document.body.classList.add('obj-popup-open');
     var cb = bd.querySelector('.obj-popup-close');
     if (cb && cb.focus) cb.focus();
-    keyHandler = function(e) { if (e.key === 'Escape') closePopup(); };
+    var closeBtn = bd.querySelector('.obj-popup-close');
+    if (closeBtn) closeBtn.setAttribute('aria-label', document.body.classList.contains('lang-mode-es') ? 'Cerrar' : document.body.classList.contains('lang-mode-bilingual') ? 'Close / Cerrar' : 'Close');
+    if (keyHandler) document.removeEventListener('keydown', keyHandler);
+    keyHandler = function(e) {
+      if (e.key === 'Escape') { closePopup(); return; }
+      if (e.key !== 'Tab') return;
+      /* The popup is modal: Tab stays inside it. */
+      var items = Array.prototype.filter.call(bd.querySelectorAll('button, summary, [href], [tabindex]:not([tabindex="-1"])'), function (el) { return el.offsetParent !== null; });
+      if (!items.length) return;
+      var first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      else if (!bd.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+    };
     document.addEventListener('keydown', keyHandler);
   }
-  container.addEventListener('click', function(e) {
+  if (container.__hwTermClick) container.removeEventListener('click', container.__hwTermClick);
+  container.__hwTermClick = function(e) {
     var btn = e.target && e.target.closest ? e.target.closest('.obj-term') : null;
     if (!btn || !container.contains(btn)) return;
     e.preventDefault();
     var idx = Number(btn.getAttribute('data-term-idx'));
     if (Number.isInteger(idx)) openPopup(list[idx]);
-  });
+  };
+  container.addEventListener('click', container.__hwTermClick);
 }
 
 // Make every "Draw your model" grid an actual drawable surface (mouse + touch + stylus).
@@ -11911,6 +11950,10 @@ export const GUIDED_NOTES_CSS = `
 .obj-popup-def { margin: 0; font-size: 1.05rem; line-height: 1.5; color: var(--navy, #12355b); }
 .obj-popup-def-es { margin: 10px 0 0; font-style: italic; color: var(--muted, #5f6f80); }
 .obj-popup-def-es[hidden] { display: none; }
+.obj-popup-formal { margin: 12px 0 0; font-size: 14px; color: var(--muted, #5f6f80); }
+.obj-popup-formal[hidden] { display: none; }
+.obj-popup-formal summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 700; color: var(--navy, #12355b); }
+.obj-popup-formal p { margin: 6px 0 0; line-height: 1.5; }
 .obj-popup-visual { margin: 14px 0 0; }
 .obj-popup-visual[hidden] { display: none; }
 .obj-popup-img { display: block; width: 100%; max-width: 200px; height: auto; margin: 0 auto 10px; }
@@ -13743,67 +13786,6 @@ header.homework-header,
   border-color: #0f172a !important;
 }
 
-/* Parent Coaching Accordion Drawer */
-.parent-coaching-drawer {
-  background: #f8fafc !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: var(--radius-md) !important;
-  margin: 20px 0 !important;
-  overflow: hidden !important;
-  transition: all 0.2s ease !important;
-}
-.parent-coaching-drawer[open] {
-  background: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  box-shadow: 0 6px 24px -2px rgba(15, 23, 42, 0.05) !important;
-}
-.parent-coaching-summary {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  padding: 16px 20px !important;
-  cursor: pointer !important;
-  list-style: none !important;
-  user-select: none !important;
-}
-.parent-coaching-summary::-webkit-details-marker { display: none !important; }
-.summary-left {
-  display: flex !important;
-  align-items: center !important;
-  gap: 12px !important;
-}
-.summary-icon { font-size: 22px !important; }
-.summary-text {
-  display: flex !important;
-  flex-direction: column !important;
-  text-align: left !important;
-}
-.summary-text strong {
-  font-size: 14.5px !important;
-  font-weight: 700 !important;
-  color: #0f172a !important;
-}
-.summary-text small {
-  font-size: 12.5px !important;
-  color: #64748b !important;
-  margin-top: 2px !important;
-}
-.summary-chevron {
-  font-size: 16px !important;
-  color: #94a3b8 !important;
-  transition: transform 0.25s ease !important;
-}
-.parent-coaching-drawer[open] .summary-chevron {
-  transform: rotate(180deg) !important;
-}
-.parent-coaching-content {
-  padding: 0 20px 20px !important;
-  border-top: 1px solid #f1f5f9 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 14px !important;
-}
-
 /* Calmer Real-World & Misconception Styling */
 .real-world-spotlight {
   background: #f0fdf4 !important;
@@ -14189,28 +14171,6 @@ body[data-active-tab]:not([data-active-tab="check"]) .bottom-status-bar {
   padding-left: 10px;
   margin-top: 6px;
 }
-.hw-hero-stats {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 18px 0 0;
-  padding: 0;
-}
-.hw-stat {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 14px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.09);
-  border: 1px solid rgba(255,255,255,.14);
-  font-size: 13px;
-  font-weight: 700;
-  color: #e7f1fa;
-}
-.hw-stat .lang-es { color: #e7f1fa; }
-.hw-stat .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 0; }
 .hw-hero-controls { margin-top: 20px; }
 .hw-hero .lang-selector-card {
   display: flex;
@@ -15638,19 +15598,6 @@ export const ARENA_CSS = `
 .hw-hero-lesson-title { font-size: 21px; font-weight: 800; }
 .hw-hero-lead { font-size: 16px; }
 
-/* Stat chips: the number is the message, so it goes big and gold over a
-   small caps label — the scoreboard reading of the same three facts. */
-.hw-hero-stats { gap: 9px; }
-.hw-stat {
-  min-width: 112px;
-  padding: 9px 13px;
-  border-radius: 13px;
-  background: rgba(255,255,255,.09);
-  border: 1px solid rgba(255,255,255,.17);
-  font-weight: 800;
-  letter-spacing: .01em;
-}
-
 /* ── Navigation: lifted onto its own card, overlapping the hero ──────── */
 .homework-tab-chrome {
   margin-top: -26px;
@@ -15736,7 +15683,6 @@ export const ARENA_CSS = `
   /* The stands would eat a third of a 375px hero. */
   .hw-hero::before, .hw-hero::after { width: 46px; opacity: .5; }
   .homework-tab-chrome { margin-top: -22px; padding: 7px 7px 6px; border-radius: 16px; }
-  .hw-stat { min-width: 0; padding: 7px 11px; }
 }
 
 @media print {
@@ -16577,7 +16523,6 @@ html [hidden] { display: none !important; }
 @media(max-width:600px) { .homework-tab-chrome { position:static; } .hw-tab-meta-row { flex-wrap:wrap; gap:8px; } .hw-hero-share-bar { gap:8px; } }
 @media print { .hw-tools-menu, .hw-utility-controls, .homework-message-action, .homework-optional-extras { display:none !important; } }
 .hw-hero { padding:20px !important; }
-.hw-hero-stats { display:none; }
 .family-reasoning-support, .family-extra-ladder { margin:16px 0; padding:14px; border:1px solid #cbd5e1; border-radius:12px; }
 .family-reasoning-support summary, .family-extra-ladder summary { min-height:44px; cursor:pointer; font-weight:700; }
 @media(max-width:700px) {

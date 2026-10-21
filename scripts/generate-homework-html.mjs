@@ -2,7 +2,10 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { interactiveVisualHost } from "@eduwonderlab/engine/core/interactive-visual.js";
-import { augmentVocabWithGlossary } from "@eduwonderlab/engine/core/math-glossary.js";
+import {
+  augmentVocabWithGlossary,
+  MATH_ACRONYMS,
+} from "@eduwonderlab/engine/core/math-glossary.js";
 import { toolMeta } from "@eduwonderlab/engine/core/tool-catalog.js";
 import {
   hasRealVocabImage,
@@ -22,6 +25,7 @@ import {
   ARENA_CSS,
   BIG_IDEA_CSS,
   displayLessonId,
+  familyTitlesEs,
   GUIDED_NOTES_CSS,
   HOMEWORK_TABS_JS,
   homeworkPageLabel,
@@ -48,9 +52,18 @@ import { STUDIO_SKIN_CSS, STUDIO_SKIN_JS } from "./homework-studio-skin.mjs";
 import { getUnitTheme, renderUnitThemeCss } from "./homework-themes.mjs";
 import { renderVisualMathLab, VISUAL_LABS_CSS, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
+import { vocabKey, withPlainDefinitions } from "./lib/family-plain-definitions.mjs";
 import { BRIDGE_CSS } from "./lib/homework-bridge.mjs";
 import { CONFUSED_GROWNUP_CSS, CONFUSED_GROWNUP_JS } from "./lib/homework-confused-grownup.mjs";
 import { DOMINO_DUO_CSS, DOMINO_DUO_JS } from "./lib/homework-domino-duo.mjs";
+import {
+  GOAL_TARGET,
+  pickMystery,
+  renderExperienceDialogs,
+  renderGoalPips,
+} from "./lib/homework-experience.mjs";
+import { EXPERIENCE_CSS } from "./lib/homework-experience-css.mjs";
+import { EXPERIENCE_JS } from "./lib/homework-experience-js.mjs";
 import { applyPracticeReview, loadPracticeReview } from "./lib/homework-practice-review.mjs";
 import { PRINT_CSS, PRINT_JS } from "./lib/homework-print.mjs";
 import {
@@ -263,14 +276,29 @@ const FAMILY_VOCAB_STOPLIST = new Set([
   "value",
 ]);
 
-const vocabKey = (term) =>
-  String(term || "")
-    .toLowerCase()
-    .replace(/s$/, "")
-    .trim();
+/** Acronym -> the full term whose definition it repeats ("LCM" -> "least common multiple"). */
+const ACRONYM_BASE = new Map(
+  MATH_ACRONYMS.flatMap((row) =>
+    [row.acronym, ...[row.es].flat()].filter(Boolean).map((a) => [a, row.term]),
+  ),
+);
 
-function buildVocabEntries(vocab) {
-  const lessonList = Array.isArray(vocab) ? vocab : [];
+/**
+ * Entries for the tap-to-define popup, plain wording first.
+ *
+ * `vocab` is the lesson's own list; `lessonId` picks the sense of a word that
+ * means different things in different lessons ("base" in a percent lesson, a
+ * parallelogram lesson, a power lesson). Everything the lesson does not list —
+ * the shared glossary, the bank, the acronyms — gets the default sense, so the
+ * shared file and every page agree on those entries (see buildVocabGlossary).
+ *
+ * `def` / `defEs` are the family wording (data/family-plain-definitions.json);
+ * `formal` / `formalEs` keep the lesson's own authored definition for a "More
+ * precisely" line; `example` is the plain example when there is one (else the
+ * authored visual caption, kept as `exampleFormal`), with `exampleEs` beside it.
+ */
+function buildVocabEntries(vocab, lessonId = "") {
+  const lessonList = withPlainDefinitions(Array.isArray(vocab) ? vocab : [], lessonId);
   // Terms THIS lesson declares are never suppressed: if tonight is about
   // fractions, the family page should still define "fraction". The stoplist
   // only trims what the shared glossary and the 349-term bank add on top.
@@ -297,9 +325,23 @@ function buildVocabEntries(vocab) {
       caseSensitive: !!item.caseSensitive,
     });
   }
+  // Words the lesson did not list take the default sense; an acronym repeats
+  // its full term's wording, so "LCM" and "least common multiple" never differ.
+  list = withPlainDefinitions(
+    list.map((v) => (v.acronym ? { ...v, plain: true } : v)),
+    "",
+  );
+  const byKey = new Map(list.filter((v) => !v.acronym).map((v) => [vocabKey(v.term), v]));
+  list = list.map((v) => {
+    const base = v.acronym && byKey.get(vocabKey(ACRONYM_BASE.get(v.term)));
+    if (!base || !base.plain) return v;
+    const { definition, definitionEs, formal, formalEs, plainExample } = base;
+    return { ...v, definition, definitionEs, formal, formalEs, plainExample };
+  });
   const matcher = buildVocabMatcher(list);
   if (!matcher) return null;
 
+  const cube = (text) => String(text || "").replace(/2³/g, "2^3");
   const entries = list.map((v) => {
     const term = String((v && v.term) || "").trim();
     const img = hasRealVocabImage(term, v && v.image)
@@ -307,21 +349,28 @@ function buildVocabEntries(vocab) {
       : v && v.image
         ? String(v.image)
         : "";
-    const def = String((v && v.definition) || "").replace(/2³/g, "2^3");
-    const defEs = String((v && v.definitionEs) || "").replace(/2³/g, "2^3");
-    const example = String((v && v.visual) || "").replace(/2³/g, "2^3");
-    return {
+    const def = cube(v && v.definition);
+    const defEs = cube(v && v.definitionEs);
+    const plainExample = v && v.plainExample;
+    const entry = {
       term,
       termEs: v && v.termEs ? String(v.termEs) : "",
       def,
       defEs,
-      example,
+      example: cube(plainExample ? plainExample.en : v && v.visual),
       img,
       imgAlt: img ? vocabImageAlt(term, def) : "",
       // Acronym entries ("MAD", "SA") answer only to their exact written form,
       // so the browser can tell them apart from the ordinary English word.
       cs: !!(v && v.caseSensitive),
     };
+    if (v && v.formal) entry.formal = cube(v.formal);
+    if (v && v.formalEs) entry.formalEs = cube(v.formalEs);
+    if (plainExample) {
+      entry.exampleEs = cube(plainExample.es);
+      if (v.visual) entry.exampleFormal = cube(v.visual);
+    }
+    return entry;
   });
 
   return { entries, match: { regexSource: matcher.regexSource, lookup: matcher.lookup } };
@@ -346,8 +395,8 @@ function sharedVocabEntries() {
  * entry for entry, so every index in `match.lookup` still points at the same
  * entry.
  */
-function buildVocabGlossary(vocab) {
-  const built = buildVocabEntries(vocab);
+function buildVocabGlossary(vocab, lessonId = "") {
+  const built = buildVocabEntries(vocab, lessonId);
   if (!built) return null;
   const shared = sharedVocabEntries();
   // The lesson's own entries lead the list, then the shared ones in shared
@@ -1228,8 +1277,8 @@ function generateHtml(lessonId, config) {
      rest of the parent-facing content, in the sidecar, because the part2
      configs are generated and carry a "do not hand-edit" banner. */
   const title = config.familyNotes?.sessionTitle || config.title || "Lesson Practice";
-  const vocab = config.vocabulary || [];
-  const vocabGlossary = buildVocabGlossary(vocab);
+  const vocab = withPlainDefinitions(config.vocabulary || [], lessonId);
+  const vocabGlossary = buildVocabGlossary(vocab, lessonId);
   // Serialize for an inline <script>; escape "<" so authored text can never
   // break out with a literal "</script>".
   const jsonForScript = (v) => JSON.stringify(v).replace(/</g, "\\u003c");
@@ -1343,6 +1392,7 @@ body[data-family-style="unlock"] .hw-experience-banner { border:1px solid #ccd4c
 `,
         }[familyStyle] || "");
 
+  const mystery = pickMystery(challenge, basic.length + warmup.length);
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
   const quickCheckIntroHtml = renderQuickCheckIntro(coreSelected.length, moreSelected.length > 0);
   const basicHtml = basic
@@ -1392,6 +1442,7 @@ body[data-family-style="unlock"] .hw-experience-banner { border:1px solid #ccd4c
       config,
       renderVisualMathLab(topic, config, lessonModel),
       renderWorkbenchTools(config),
+      mystery,
     ),
     renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
     renderCheckTab(
@@ -1401,6 +1452,7 @@ body[data-family-style="unlock"] .hw-experience-banner { border:1px solid #ccd4c
       morePracticeHtml,
       coreSelected.length,
       basicHtml,
+      Boolean(mystery),
     ),
     renderPlayTabPanel(config, lessonId),
     renderDoneTab(config, lessonId),
@@ -1440,7 +1492,7 @@ body[data-family-style="unlock"] .hw-experience-banner { border:1px solid #ccd4c
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Help Your Student — ${esc(homeworkPageLabel(lessonId))}: ${esc(title)}</title>
+<title>Family Math Studio — ${esc(homeworkPageLabel(lessonId))}: ${esc(title)}</title>
 <link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet">
 <style>
 ${EDITORIAL_FONT_IMPORT}
@@ -3829,13 +3881,11 @@ body {
    has to fit the container: in prose the two languages stack with a teal rule,
    while inside a chip, a tab or a rail label they must sit on ONE line with a
    visible separator, or "5 stops" and "5 paradas" run together into nonsense. */
-.hw-stat .lang-es,
 .hw-hero-kicker .lang-es,
 .fam-act-meta .lang-es,
 .hw-quickplan-summary .lang-es {
   display: inline !important;
 }
-.hw-stat .lang-en + .lang-es::before,
 .hw-hero-kicker .lang-en + .lang-es::before,
 .hw-quickplan-summary .lang-en + .lang-es::before {
   content: "·";
@@ -3998,18 +4048,6 @@ body .mwb-launcher {
   .hw-hero-kicker-icon { width: 20px; height: 20px; font-size: 11px; }
   .hw-hero-lesson { margin-top: 14px; padding-top: 12px; }
   .hw-hero-lead { margin-top: 10px; font-size: 14px; }
-  /* Bilingual doubles every chip, so THERE the row scrolls. In one language
-     the three chips fit, and a chip clipped at the screen edge with no scroll
-     affordance ("Bet…") is worse than a second row. */
-  .hw-hero-stats { margin-top: 14px; flex-wrap: wrap; }
-  body.lang-mode-bilingual .hw-hero-stats {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-    padding-bottom: 2px;
-  }
-  .hw-hero-stats::-webkit-scrollbar { display: none; }
-  .hw-stat { flex: 0 0 auto; padding: 6px 12px; font-size: 12px; }
   .hw-hero-controls { margin-top: 14px; }
   .hw-hero .lang-selector-card { gap: 8px; }
   .hw-hero .lang-selector-title { flex: 0 0 100%; font-size: 10.5px; }
@@ -4115,6 +4153,7 @@ ${BRIDGE_CSS}
 ${CONFUSED_GROWNUP_CSS}
 ${SCRATCHPAD_CSS}
 ${SESSION_FLOW_CSS}
+${EXPERIENCE_CSS}
 ${DOMINO_DUO_CSS}
 ${VOICE_CSS}
 ${familyStyleCss}
@@ -4134,16 +4173,17 @@ ${TOUCH_CSS}
   <link rel="apple-touch-icon" href="/assets/favicon.svg">
   <meta name="theme-color" content="#12355b">
   <link rel="canonical" href="https://eduwonderlab.com/lessons/${esc(lessonId)}/homework.html">
-  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — ${esc(homeworkPageLabel(lessonId))}: ${esc(title)}.">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — ${esc(homeworkPageLabel(lessonId))}: ${esc(title)}.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Neft Teacher">
-  <meta property="og:title" content="Help Your Student — ${esc(homeworkPageLabel(lessonId))}: ${esc(title)}">
-  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — ${esc(homeworkPageLabel(lessonId))}: ${esc(title)}.">
+  <meta property="og:title" content="Family Math Studio — ${esc(homeworkPageLabel(lessonId))}: ${esc(title)}">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — ${esc(homeworkPageLabel(lessonId))}: ${esc(title)}.">
   <meta property="og:url" content="https://eduwonderlab.com/lessons/${esc(lessonId)}/homework.html">
   <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
   <!-- enthead-injected:end -->
 </head>
 <body${familyStyle === "standard" ? "" : ` data-family-style="${familyStyle}"`}>
+<a class="hw-skip" href="#hw_tab_panels" onclick="startHomework(); return false;"><span class="lang-en">Skip to tonight's math</span><span class="lang-es" lang="es">Ir a la matemática de hoy</span></a>
 
 <script>
 /* Language mode, BEFORE first paint. restoreParentSignoff sets the same class
@@ -4152,10 +4192,29 @@ ${TOUCH_CSS}
    whole document. Same rule as the boot script below it: fail toward showing
    something readable, which here is English. */
 (function () {
-  var mode = 'en';
+  /* Blocked site data makes every localStorage access throw, which would stop the
+     page's own startup. Fall back to storage that lasts for this visit. */
   try {
+    window.localStorage.getItem('hw_probe');
+  } catch (blocked) {
+    var memory = {};
+    var stand = {
+      getItem: function (k) { return Object.prototype.hasOwnProperty.call(memory, k) ? memory[k] : null; },
+      setItem: function (k, v) { memory[k] = String(v); },
+      removeItem: function (k) { delete memory[k]; },
+      clear: function () { memory = {}; },
+      key: function (i) { return Object.keys(memory)[i] || null; },
+      get length() { return Object.keys(memory).length; }
+    };
+    try { Object.defineProperty(window, 'localStorage', { configurable: true, get: function () { return stand; } }); } catch (unsupported) {}
+  }
+  var mode = 'bilingual';
+  try {
+    var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
+    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
+      mode = requested;
+    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)
@@ -4204,6 +4263,7 @@ ${TOUCH_CSS}
 </div>
 
 ${helpModalHtml}
+${renderExperienceDialogs()}
 ${answerSheetHtml}
 
 ${renderMathKeypad()}
@@ -4220,8 +4280,10 @@ ${renderMathKeypad()}
 
     <div class="score-progress-container">
       <div class="score-text">
-        <span class="lang-en">Progress:</span><span class="lang-es" lang="es">Progreso:</span>
-        <span id="progress_text">0 / ${coreSelected.length}</span>
+        <span class="hw-stack hw-goal-label"><span class="lang-en">Tonight's goal</span><span class="lang-es" lang="es">Meta de hoy</span></span>
+        <span id="progress_text">0 / ${Math.min(GOAL_TARGET, coreSelected.length)}</span>
+        ${renderGoalPips("hw-pips-bar")}
+        <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -4229,8 +4291,8 @@ ${renderMathKeypad()}
     </div>
 
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
-      <button class="btn btn-primary" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
+      <button class="btn btn-secondary hw-stack" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
+      <button class="btn btn-primary hw-stack" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
     </div>
   </div>
 </div>
@@ -4238,6 +4300,7 @@ ${renderMathKeypad()}
 <script>
 window.LESSON_ID = "${escAttr(lessonId)}";
 window.LESSON_TITLE = "${escAttr(title)}";
+window.LESSON_TITLE_ES = "${escAttr(familyTitlesEs[lessonId] || title)}";
 /* The number of core problems, so the celebration fires on the goal the page
    actually states. It was hardcoded to 3 while the page showed 6 and the status
    bar counted to 6: a family could hit "Goal Reached! 3 Stars Earned!" and read
@@ -4256,6 +4319,7 @@ ${VOICE_JS}
 ${CONFUSED_GROWNUP_JS}
 ${SCRATCHPAD_JS}
 ${SESSION_FLOW_JS}
+${EXPERIENCE_JS}
 ${DOMINO_DUO_JS}
 ${VISUAL_LABS_JS}
 ${MATH_INPUT_JS}
@@ -4449,6 +4513,7 @@ function speakMathWord(termEn, termEs) {
 
 // Confetti Particle Engine
 function triggerConfettiBurst(originX, originY, count = 50) {
+  if (typeof hwReducedMotion === "function" && hwReducedMotion()) return;
   try {
     let canvas = document.getElementById("hw_confetti_canvas");
     if (!canvas) {
@@ -4794,22 +4859,9 @@ function triggerHighFive() {
 }
 
 function updateCelebrationTab() {
-  // Read from the Done stop, so the Check panel itself is hidden: only a
-  // hidden ancestor OTHER than a tab panel (the route's unused tier) excludes.
-  const hiddenBelowPanel = (el) => {
-    for (let n = el; n && !n.matches("[data-tab-panel]"); n = n.parentElement) {
-      if (n.hidden) return true;
-    }
-    return false;
-  };
-  const problems = Array.from(document.querySelectorAll(".problem-section")).filter(
-    (s) => !s.closest(".more-practice") && !hiddenBelowPanel(s),
-  );
+  const problems = activeCoreProblems();
   const correctCount = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("reviewed")).length;
-  const practiceGoal = Math.min(
-    3,
-    typeof activeHomeworkRoute === "function" ? activeHomeworkRoute().problemLimit : 3,
-  );
+  const practiceGoal = hwGoalSnapshot().goal;
 
   const bLearn = document.getElementById("badge_achieve_learn");
   const bVocab = document.getElementById("badge_achieve_vocab");
@@ -5229,7 +5281,19 @@ function saveState() {
     state.orderPositions[probIdx] = Array.from(list.querySelectorAll(".drag-order-row")).map((row) => row.dataset.stepText);
   });
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const json = JSON.stringify(state);
+  try {
+    localStorage.setItem(STORAGE_KEY, json);
+  } catch (e) {
+    /* Photos and voice notes from earlier nights are the bulk of what is stored.
+       Free them, keep every answer, and try once more. */
+    if (typeof hwFreeSignoffMedia === "function") hwFreeSignoffMedia(window.LESSON_ID);
+    try {
+      localStorage.setItem(STORAGE_KEY, json);
+    } catch (e2) {
+      hwNotice("This device is full, so tonight's work cannot be saved here. / Este dispositivo está lleno y no se puede guardar el trabajo de hoy.");
+    }
+  }
 }
 
 function loadState() {
@@ -5337,66 +5401,15 @@ function loadState() {
 
 ${ANSWER_MATCH_JS}
 
-function activeCoreProblems() {
-  return Array.from(document.querySelectorAll(".problem-section")).filter(
-    (section) =>
-      !section.closest(".more-practice") &&
-      !section.hidden &&
-      !section.closest("[hidden]"),
-  );
-}
-
 function activeHomeworkGoal() {
-  return typeof activeHomeworkRoute === "function"
-    ? activeHomeworkRoute().problemLimit
-    : window.HW_CORE_COUNT || activeCoreProblems().length;
+  return hwGoalSnapshot().goal;
 }
 
 function updateProgress() {
-  const problems = activeCoreProblems();
-  let completedCount = 0;
-
-  problems.forEach((section, idx) => {
-    const type = section.dataset.problemType;
-    let hasValue = false;
-
-    if (type === "multiple-choice") {
-      const selected = section.querySelector("input[type='radio']:checked");
-      if (selected) hasValue = true;
-    } else if (type === "matching-game") {
-      const selects = Array.from(section.querySelectorAll(".matching-select"));
-      const answered = selects.filter(s => s.value !== "");
-      if (answered.length > 0) hasValue = true;
-    } else if (type === "drag-sort") {
-      if (section.dataset.problemSubtype === "drag-order") {
-        hasValue = true;
-      } else {
-        const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
-        if (itemsInColumns.length > 0) hasValue = true;
-      }
-    } else if (type === "fill-table") {
-      const inputs = Array.from(section.querySelectorAll(".table-input"));
-      const filled = inputs.filter(i => i.value.trim() !== "");
-      if (filled.length > 0) hasValue = true;
-    } else if (type === "error-analysis") {
-      const sel = section.querySelector(".error-step-select");
-      const txt = section.querySelector(".error-explain-textarea");
-      if ((sel && sel.value !== "") || (txt && txt.value.trim() !== "")) hasValue = true;
-    } else if (type === "open-response") {
-      const txt = section.querySelector(".open-response-textarea");
-      if (txt && txt.value.trim() !== "") hasValue = true;
-    }
-
-    if (hasValue) completedCount++;
-  });
-
-  const total = problems.length;
-  const pct = total > 0 ? (completedCount / total) * 100 : 0;
-  document.getElementById("progress_bar").style.width = pct + "%";
-  // Bare "3 / 6". The word beside it is the label span in the bar, which is
-  // language-switched; appending "Completed" here reintroduced English into a
-  // Spanish page and wrapped mid-word ("Complete/d") in the 139px bar.
-  document.getElementById("progress_text").textContent = completedCount + " / " + total;
+  // Answers typed or chosen are saved by saveState(); what counts toward tonight's
+  // goal is a problem that is solved (or compared with the key), so the meter,
+  // the pips and the mystery lock all move together, from one place.
+  hwRenderGoal(true);
 }
 
 function setProblemCheckResult(idx, isCorrect, message, tone) {
@@ -6227,29 +6240,7 @@ function checkProblem(idx, options) {
 }
 
 function updateScoreSummary() {
-  const problems = activeCoreProblems();
-  const checked = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect") || s.classList.contains("reviewed"));
-  // "Done" = checked right, or a written answer saved and compared with the key.
-  const correctCount = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("reviewed")).length;
-  const total = problems.length;
-  if (checked.length > 0) {
-    document.getElementById("progress_text").textContent = correctCount + " / " + total;
-    document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
-  } else {
-    updateProgress();
-  }
-
-  // Goal milestone — the number the page states, not a hardcoded 3.
-  if (correctCount >= activeHomeworkGoal()) {
-    const goalBanner = document.getElementById("goal_reached_banner");
-    if (goalBanner && goalBanner.hidden) {
-      goalBanner.hidden = false;
-      if (typeof playFanfareSound === "function") playFanfareSound();
-      if (typeof triggerConfettiBurst === "function") triggerConfettiBurst(null, null, 100);
-      const checkBadge = document.getElementById("tab_badge_check");
-      if (checkBadge) checkBadge.textContent = "★★★";
-    }
-  }
+  hwRenderGoal(true);
 }
 
 function checkWorksheet() {
@@ -6263,111 +6254,112 @@ function checkWorksheet() {
     if (result.correct || result.done) correctCount++;
   });
 
-  const total = problems.length;
-  document.getElementById("progress_text").textContent = correctCount + " / " + total;
-  document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
-
-  if (correctCount >= activeHomeworkGoal()) {
-    const goalBanner = document.getElementById("goal_reached_banner");
-    if (goalBanner && goalBanner.hidden) {
-      goalBanner.hidden = false;
-      const checkBadge = document.getElementById("tab_badge_check");
-      if (checkBadge) checkBadge.textContent = "★★★";
-    }
-    triggerConfettiBurst(null, null, 100);
-    playFanfareSound();
-  } else if (correctCount === total && total > 0) {
-    playSuccessArpeggio();
-  } else {
-    playFailureSound();
-  }
+  const snap = hwGoalSnapshot();
+  hwRenderGoal(true);
+  if (correctCount >= snap.goal) return;
+  if (correctCount === problems.length && problems.length > 0) playSuccessArpeggio();
+  else playFailureSound();
 }
 
 function resetWorksheet() {
-  if (confirm("Are you sure you want to reset all your work?")) {
-    localStorage.removeItem(STORAGE_KEY);
+  hwConfirm(
+    "Reset all your work on this page?",
+    "¿Borrar todo tu trabajo en esta página?",
+    "Yes, reset",
+    "Sí, borrar",
+    "Keep my work",
+    "Conservar mi trabajo",
+    resetWorksheetNow,
+  );
+}
 
-    // Clear normal text inputs, textareas, dropdowns, and radios
-    const textareas = document.querySelectorAll("textarea");
-    textareas.forEach(t => {
-      t.value = "";
-      t.classList.remove("is-correct", "is-incorrect");
-    });
+function resetWorksheetNow() {
+  localStorage.removeItem(STORAGE_KEY);
+  hwClearProgress();
+  Object.keys(problemAttempts).forEach((k) => delete problemAttempts[k]);
+  Object.keys(revealForced).forEach((k) => delete revealForced[k]);
+  currentStreak = 0;
 
-    const inputs = document.querySelectorAll("input[type='text']");
-    inputs.forEach(i => {
-      i.value = "";
-      i.classList.remove("is-correct", "is-incorrect");
-    });
+  // Clear normal text inputs, textareas, dropdowns, and radios
+  const textareas = document.querySelectorAll("textarea");
+  textareas.forEach(t => {
+    t.value = "";
+    t.classList.remove("is-correct", "is-incorrect");
+  });
 
-    const selects = document.querySelectorAll("select:not(.mobile-cat-select)");
-    selects.forEach(s => {
-      s.value = "";
-      s.classList.remove("is-correct", "is-incorrect");
-    });
+  const inputs = document.querySelectorAll("input[type='text']");
+  inputs.forEach(i => {
+    i.value = "";
+    i.classList.remove("is-correct", "is-incorrect");
+  });
 
-    const radios = document.querySelectorAll("input[type='radio']");
-    radios.forEach(r => r.checked = false);
+  const selects = document.querySelectorAll("select:not(.mobile-cat-select)");
+  selects.forEach(s => {
+    s.value = "";
+    s.classList.remove("is-correct", "is-incorrect");
+  });
 
-    const labels = document.querySelectorAll(".mc-option-label, .ladder-choice");
-    labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
-    document.querySelectorAll(".ladder-feedback").forEach((el) => { el.textContent = ""; el.className = "ladder-feedback"; });
+  const radios = document.querySelectorAll("input[type='radio']");
+  radios.forEach(r => r.checked = false);
 
-    // Clear feedback badges and sections
-    const badges = document.querySelectorAll(".feedback-badge");
-    badges.forEach(b => b.className = "feedback-badge");
+  const labels = document.querySelectorAll(".mc-option-label, .ladder-choice");
+  labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
+  document.querySelectorAll(".ladder-feedback").forEach((el) => { el.textContent = ""; el.className = "ladder-feedback"; });
 
-    const sections = document.querySelectorAll(".problem-section");
-    document.querySelectorAll(".problem-check-result").forEach((el) => {
-      el.textContent = "";
-      el.className = "problem-check-result";
-    });
+  // Clear feedback badges and sections
+  const badges = document.querySelectorAll(".feedback-badge");
+  badges.forEach(b => b.className = "feedback-badge");
 
-    sections.forEach(s => {
-      s.classList.remove("correct", "incorrect", "reviewed");
-      const expBoxes = s.querySelectorAll(".explanation-box");
-      expBoxes.forEach(b => b.remove());
+  const sections = document.querySelectorAll(".problem-section");
+  document.querySelectorAll(".problem-check-result").forEach((el) => {
+    el.textContent = "";
+    el.className = "problem-check-result";
+  });
 
-      const workedSteps = s.querySelectorAll(".worked-step");
-      workedSteps.forEach(ws => ws.classList.remove("highlighted"));
+  sections.forEach(s => {
+    s.classList.remove("correct", "incorrect", "reviewed");
+    const expBoxes = s.querySelectorAll(".explanation-box");
+    expBoxes.forEach(b => b.remove());
 
-      const reveal = s.querySelector(".reveal-box");
-      if (reveal) reveal.style.display = "none";
+    const workedSteps = s.querySelectorAll(".worked-step");
+    workedSteps.forEach(ws => ws.classList.remove("highlighted"));
 
-      const type = s.dataset.problemType;
-      if (type === "drag-sort") {
-        const parts = s.id.split("_");
-        const idx = parts[1];
-        if (s.dataset.problemSubtype === "drag-order") {
-          resetDragOrder(idx);
-          shuffleOrderRows(idx);
-        } else {
-          resetDragSort(idx);
-        }
+    const reveal = s.querySelector(".reveal-box");
+    if (reveal) reveal.style.display = "none";
+
+    const type = s.dataset.problemType;
+    if (type === "drag-sort") {
+      const parts = s.id.split("_");
+      const idx = parts[1];
+      if (s.dataset.problemSubtype === "drag-order") {
+        resetDragOrder(idx);
+        shuffleOrderRows(idx);
+      } else {
+        resetDragSort(idx);
       }
-    });
-
-    // Save blank state
-    saveState();
-    updateProgress();
-
-    // Play a reset click sound
-    if (soundEnabled) {
-      try {
-        initAudio();
-        const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(200, now);
-        gain.gain.setValueAtTime(0.05, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now);
-        osc.stop(now + 0.15);
-      } catch (e) {}
     }
+  });
+
+  // Save blank state
+  saveState();
+  updateProgress();
+
+  // Play a reset click sound
+  if (soundEnabled) {
+    try {
+      initAudio();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(200, now);
+      gain.gain.setValueAtTime(0.05, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.15);
+    } catch (e) {}
   }
 }
 

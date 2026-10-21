@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Help Your Student — Lesson 8-2 · Session 2: Subtraction Equations</title>
+<title>Family Math Studio — Lesson 8-2 · Session 2: Subtraction Equations</title>
 <link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/homework/homework-base-0d2a228add.css">
 <style>
@@ -114,26 +114,6 @@ header.homework-header,
   user-select: none;
 }
 
-/* 3 Stars Milestone Bar on Quick Check */
-.stars-to-win-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, var(--teal-light) 0%, #ffffff 100%);
-  border: 1.5px solid var(--teal);
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  margin-bottom: 20px;
-}
-.stars-to-win-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 14.5px;
-  color: var(--navy);
-}
 .stars-milestone-chips {
   display: flex;
   flex-wrap: wrap;
@@ -152,16 +132,7 @@ header.homework-header,
   flex: 0 0 auto;
   white-space: nowrap;
 }
-/* On a phone the goal sentence and the three milestone chips do not fit on one
-   line, so they stack instead of fighting for the same 400px. */
-@media (max-width: 620px) {
-  .stars-to-win-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .stars-milestone-chips { width: 100%; }
-}
+.stars-milestone-chips { width: 100%; }
 
 /* Rotated Huddle Activity Card */
 .huddle-hook-banner {
@@ -333,7 +304,7 @@ header.homework-header,
   margin-bottom: 3px;
 }
 </style>
-<link rel="stylesheet" href="/assets/homework/homework-layer-205c995f26.css">
+<link rel="stylesheet" href="/assets/homework/homework-layer-992d934c32.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -347,16 +318,17 @@ header.homework-header,
   <link rel="apple-touch-icon" href="/assets/favicon.svg">
   <meta name="theme-color" content="#12355b">
   <link rel="canonical" href="https://eduwonderlab.com/lessons/8-2-part2/homework.html">
-  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 8-2 · Session 2: Subtraction Equations.">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 8-2 · Session 2: Subtraction Equations.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Neft Teacher">
-  <meta property="og:title" content="Help Your Student — Lesson 8-2 · Session 2: Subtraction Equations">
-  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 8-2 · Session 2: Subtraction Equations.">
+  <meta property="og:title" content="Family Math Studio — Lesson 8-2 · Session 2: Subtraction Equations">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 8-2 · Session 2: Subtraction Equations.">
   <meta property="og:url" content="https://eduwonderlab.com/lessons/8-2-part2/homework.html">
   <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
   <!-- enthead-injected:end -->
 </head>
 <body>
+<a class="hw-skip" href="#hw_tab_panels" onclick="startHomework(); return false;"><span class="lang-en">Skip to tonight's math</span><span class="lang-es" lang="es">Ir a la matemática de hoy</span></a>
 
 <script>
 /* Language mode, BEFORE first paint. restoreParentSignoff sets the same class
@@ -365,10 +337,29 @@ header.homework-header,
    whole document. Same rule as the boot script below it: fail toward showing
    something readable, which here is English. */
 (function () {
-  var mode = 'en';
+  /* Blocked site data makes every localStorage access throw, which would stop the
+     page's own startup. Fall back to storage that lasts for this visit. */
   try {
+    window.localStorage.getItem('hw_probe');
+  } catch (blocked) {
+    var memory = {};
+    var stand = {
+      getItem: function (k) { return Object.prototype.hasOwnProperty.call(memory, k) ? memory[k] : null; },
+      setItem: function (k, v) { memory[k] = String(v); },
+      removeItem: function (k) { delete memory[k]; },
+      clear: function () { memory = {}; },
+      key: function (i) { return Object.keys(memory)[i] || null; },
+      get length() { return Object.keys(memory).length; }
+    };
+    try { Object.defineProperty(window, 'localStorage', { configurable: true, get: function () { return stand; } }); } catch (unsupported) {}
+  }
+  var mode = 'bilingual';
+  try {
+    var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
+    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
+      mode = requested;
+    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)
@@ -423,6 +414,23 @@ header.homework-header,
     <header class="hw-hero" aria-label="Family Math Night welcome">
       <div class="hw-hero-glow" aria-hidden="true"></div>
       <div class="hw-hero-body">
+        <div class="hw-hero-controls">
+          <div class="lang-selector-card">
+            <span class="lang-selector-title">Language / Idioma</span>
+            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
+              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
+                🇺🇸🇪🇸 <span class="lang-btn-long">Bilingual / Bilingüe</span><span class="lang-btn-short">EN + ES</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
+                🇺🇸 <span>English</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
+                🇪🇸 <span>Español</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <p class="hw-hero-kicker">
           <span class="hw-hero-kicker-icon" aria-hidden="true">📘</span>
           <span class="lang-en">Unit 8 · Equations and Inequalities</span>
@@ -443,39 +451,25 @@ header.homework-header,
         </p>
 
         <nav class="hw-session-banner" aria-label="Two-session lesson" data-session="2">
-    <ol class="hw-session-steps"><li class="hw-session-step is-done"><a class="hw-session-chip" href="/lessons/8-2/homework.html"><span class="hw-session-mark" aria-hidden="true">✓</span><span class="hw-session-name"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span></a></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span></span></li></ol>
+    <ol class="hw-session-steps"><li class="hw-session-step is-done"><a class="hw-session-chip" href="/lessons/8-2/homework.html"><span class="hw-session-mark" aria-hidden="true">✓</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span><span class="hw-session-short"><span class="lang-en">Session 1</span><span class="lang-es" lang="es">Sesión 1</span></span></span></a></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span><span class="hw-session-short"><span class="lang-en">Session 2</span><span class="lang-es" lang="es">Sesión 2</span></span></span></span></li></ol>
     <p class="hw-session-sentence"><strong><span class="lang-en">Where we started:</span><span class="lang-es" lang="es">Donde empezamos:</span></strong> <span class="lang-en">In Session 1, we solve an equation that adds or subtracts. To solve means to find the number that makes the equation true.</span><span class="lang-es" lang="es">En la Sesión 1, resolvemos una ecuación que suma o resta. Resolver significa encontrar el número que hace verdadera la ecuación.</span> <span class="lang-en">Tonight takes that idea further.</span><span class="lang-es" lang="es">Hoy llevamos esa idea más lejos.</span></p>
   </nav>
 
         <p class="hw-hero-bigidea" aria-label="Big idea">
-          <span class="hw-hero-bigidea-label"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
+          <span class="hw-hero-bigidea-label hw-inline"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
           <span class="lang-en">Tonight we solve equations where something was SUBTRACTED from the variable — by adding it back to both sides.</span><span class="lang-es" lang="es">Esta noche resolvemos ecuaciones donde algo se RESTÓ de la variable — sumándolo de vuelta a ambos lados.</span>
         </p>
-
-        <div class="hw-hero-controls">
-          <div class="lang-selector-card">
-            <span class="lang-selector-title">Language / Idioma</span>
-            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
-              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
-                🇺🇸🇪🇸 <span>Bilingual / Bilingüe</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
-                🇺🇸 <span>English</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
-                🇪🇸 <span>Español</span>
-              </button>
-            </div>
-          </div>
-        </div>
 
         <p class="hw-hero-lead">
           <span class="lang-en">Optional, ungraded practice. Work with someone or on your own; no adult signature is needed.</span>
           <span class="lang-es" lang="es">Práctica opcional, sin calificación. Trabaja con alguien o a solas; no necesitas la firma de un adulto.</span>
         </p>
 
-        <ul class="hw-hero-stats" aria-label="What tonight looks like">
-          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">5</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">5</span> paradas</span></li>
+
+        <ul class="hw-tonight hw-inline" aria-label="Tonight at a glance">
+          <li><span aria-hidden="true">⏱</span> <strong><span data-hw-tonight-time>20–30</span> min</strong></li>
+          <li><span aria-hidden="true">✏️</span> <span class="lang-en">Pencil and paper</span><span class="lang-es" lang="es">Lápiz y papel</span></li>
+          <li><span aria-hidden="true">🎯</span> <span class="lang-en">Goal:</span><span class="lang-es" lang="es">Meta:</span> <strong><span data-hw-goal-count>4</span> <span class="lang-en">problems</span><span class="lang-es" lang="es">problemas</span></strong></li>
         </ul>
 
 
@@ -483,30 +477,31 @@ header.homework-header,
         <div class="hw-route-heading">
           <span class="hw-route-icon" aria-hidden="true">🧭</span>
           <div>
-            <h2 id="hw_route_title"><span class="lang-en">Choose a practice path</span><span class="lang-es" lang="es">Elige una ruta de práctica</span></h2>
-            <p><span class="lang-en">All practice is optional and ungraded. Choose the time that works for your family; your route choice is saved on this device.</span><span class="lang-es" lang="es">Toda la práctica es opcional y no lleva calificación. Elijan el tiempo que les funcione; la ruta queda guardada en este dispositivo.</span></p>
+            <h2 id="hw_route_title" class="hw-inline"><span class="lang-en">How much time do you have tonight?</span><span class="lang-es" lang="es">¿Cuánto tiempo tienen esta noche?</span></h2>
+            <p class="hw-inline"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
           </div>
         </div>
-        <div class="hw-route-options" role="group" aria-label="Choose a practice path" data-aria-en="Choose a practice path" data-aria-es="Elige una ruta de práctica">
+        <div class="hw-route-options" role="group" aria-label="How much time do you have tonight?" data-aria-en="How much time do you have tonight?" data-aria-es="¿Cuánto tiempo tienen esta noche?">
           <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
-            <span class="hw-route-time">5–10 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Quick practice</span><span class="lang-es" lang="es">Práctica breve</span></strong><small><span class="lang-en">One example, 2 problems, and one explanation.</span><span class="lang-es" lang="es">Un ejemplo, 2 problemas y una explicación.</span></small></span>
+            <span class="hw-route-time">5–10 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Quick</span><span class="lang-es" lang="es">Rápida</span></strong><small><span class="lang-en">One example and 2 problems.</span><span class="lang-es" lang="es">Un ejemplo y 2 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
-            <span class="hw-route-time">15–20 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Learn, explore key words, practice <span data-hw-core-count>6</span> problems, and explain.</span><span class="lang-es" lang="es">Aprende, explora palabras clave, practica <span data-hw-core-count>6</span> problemas y explica.</span></small></span>
+            <span class="hw-route-time">15–20 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Key words, then practice. Goal: 4 problems.</span><span class="lang-es" lang="es">Palabras clave y práctica. Meta: 4 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option is-active" data-route-mode="full" aria-pressed="true" onclick="setHomeworkRoute('full')">
-            <span class="hw-route-time">20–30 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Family Math Studio</span><span class="lang-es" lang="es">Estudio familiar de matemáticas</span></strong><small><span class="lang-en">Add one home mission and one math game. Go at your own pace.</span><span class="lang-es" lang="es">Agrega una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span></small></span>
+            <span class="hw-route-time">20–30 <small>min</small></span>
+            <span class="hw-route-badge"><span aria-hidden="true">★</span><span class="hw-sr-only"><span class="lang-en">Recommended</span><span class="lang-es" lang="es">Recomendada</span></span></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Full Studio</span><span class="lang-es" lang="es">Estudio completo</span></strong><small><span class="lang-en">Everything, plus a home mission and a game.</span><span class="lang-es" lang="es">Todo, más una misión en casa y un juego.</span></small></span>
           </button>
         </div>
         <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Family Math Studio selected: <span data-hw-core-count>6</span> problems, key words, one home mission, and one math game. Go at your own pace.</span>
-          <span class="lang-es" lang="es">Estudio familiar seleccionado: <span data-hw-core-count>6</span> problemas, palabras clave, una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span>
+          <span class="lang-en">Full Studio (recommended): everything, plus one home mission and one game. Everything is optional.</span>
+          <span class="lang-es" lang="es">Estudio completo (recomendada): todo, más una misión en casa y un juego. Todo es opcional.</span>
         </p>
         <p id="hw_resume_note" role="status" aria-live="polite"></p>
-        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start this path</span><span class="lang-es" lang="es">Empezar esta ruta</span></button>
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
       </section>
 
         <details class="hw-tools-menu"><summary><span class="lang-en">Tools: scratchpad, share, print &amp; standard</span><span class="lang-es" lang="es">Herramientas: pizarra, compartir, imprimir y estándar</span></summary>
@@ -659,15 +654,39 @@ header.homework-header,
           <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Ecuación</li><li>Operación inversa</li><li>Despejar</li></ul></div>
         </div>
       </div>
-
-      <div class="parent-quick-card">
-        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
-        <ul>
-          <li><span aria-hidden="true">💬</span> <strong><span class="lang-en">If they get stuck, ask:</span><span class="lang-es" lang="es">Si se atora, pregunten:</span></strong> <span class="lang-en">Why does adding undo the subtraction? What must you do to the other side?</span><span class="lang-es" lang="es">¿Por qué sumar deshace la resta? ¿Qué debes hacer al otro lado?</span></li>
-          <li><span aria-hidden="true">🚫</span> <strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">Subtract 7 from both sides to solve x − 7 = 15.</span><span class="lang-es" lang="es">Resta 7 de ambos lados para resolver x − 7 = 15.</span></li>
-        </ul>
-      </div>
     </div>
+
+      <section class="hw-confidence" id="hw_conf_before" data-conf-phase="before" aria-labelledby="hw_conf_before_title">
+        <h3 id="hw_conf_before_title"><span class="lang-en">How sure do you feel about today&#039;s math?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes con la matemática de hoy?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_before_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="before" onclick="hwSetConfidence('before', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="before" onclick="hwSetConfidence('before', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="before" onclick="hwSetConfidence('before', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Just for you. It stays on this device. We ask again at the end.</span><span class="lang-es" lang="es">Solo para ti. Se queda en este dispositivo. Preguntamos otra vez al final.</span></p>
+
+      </section>
+
+      <section class="hw-mystery" id="hw_mystery" data-problem="problem_11" aria-labelledby="hw_mystery_title">
+        <span class="hw-mystery-lock" id="hw_mystery_lock" aria-hidden="true">🔒</span>
+        <div class="hw-mystery-body">
+          <p class="hw-eyebrow hw-inline"><span class="lang-en">Tonight&#039;s mystery challenge</span><span class="lang-es" lang="es">El reto misterioso de hoy</span></p>
+          <h3 id="hw_mystery_title"><span class="lang-en">Can you crack this before tonight is over?</span><span class="lang-es" lang="es">¿Puedes resolver esto antes de terminar hoy?</span></h3>
+          <p class="hw-mystery-stem"><span class="lang-en">Solve n − 8 = 3.</span><span class="lang-es" lang="es">Resuelve n − 8 = 3.</span></p>
+          <p class="hw-mystery-status" id="hw_mystery_status" role="status" aria-live="polite">
+            <span class="lang-en">Locked. Finish <span data-hw-goal-count>4</span> problems and it opens.</span>
+            <span class="lang-es" lang="es">Bloqueado. Termina <span data-hw-goal-count>4</span> problemas y se abre.</span>
+          </p>
+          <button type="button" class="hw-mystery-open" id="hw_mystery_open" hidden onclick="hwOpenMystery()">
+            <span class="lang-en">Open the mystery challenge ➔</span><span class="lang-es" lang="es">Abrir el reto misterioso ➔</span>
+          </button>
+        </div>
+      </section>
       <div class="learn-big-idea-block" id="hw_learn_idea">
 
       <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span> <button type="button" class="btn-listen-concept" onclick="speakBigIdea(&quot;An equation is a balance. To get the variable alone, undo whatever was done to it — and addition undoes subtraction. Whatever you do to one side, you must do to the other, or the balance tips and the equation stops being true.&quot;, &quot;Una ecuación es una balanza. Para dejar sola la variable, deshaz lo que se le hizo — y la suma deshace la resta. Lo que hagas de un lado, debes hacerlo del otro, o la balanza se inclina y la ecuación deja de ser verdadera.&quot;)" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button></h2>
@@ -792,18 +811,24 @@ header.homework-header,
 
 
       <div class="learn-extended-block" id="hw_learn_quick">
-    <details class="parent-coaching-drawer">
-      <summary class="parent-coaching-summary">
-        <span class="summary-left">
-          <span class="summary-icon">💡</span>
-          <span class="summary-text">
-            <strong><span class="lang-en">Parent Coaching Tips &amp; Real-World Connection</span><span class="lang-es" lang="es">Consejos para Padres y Conexión Real</span></strong>
-            <small><span class="lang-en">Tap to view coaching questions, common traps &amp; everyday examples</span><span class="lang-es" lang="es">Toca para ver preguntas guía, errores comunes y ejemplos</span></small>
-          </span>
+    <details class="hw-grownup" id="hw_grownup">
+      <summary>
+        <span class="hw-grownup-icon" aria-hidden="true">👪</span>
+        <span class="hw-grownup-text hw-stack">
+          <strong class="hw-stack"><span class="lang-en">For the grown-up · 1 minute</span><span class="lang-es" lang="es">Para el adulto · 1 minuto</span></strong>
+          <small class="hw-stack"><span class="lang-en">Ask: Why does adding undo the subtraction? What must you do to the other side?</span><span class="lang-es" lang="es">Pregunta: ¿Por qué sumar deshace la resta? ¿Qué debes hacer al otro lado?</span></small>
         </span>
-        <span class="summary-chevron" aria-hidden="true">▾</span>
+        <span class="hw-grownup-chev" aria-hidden="true">▾</span>
       </summary>
-      <div class="parent-coaching-content">
+      <div class="hw-grownup-body">
+
+      <div class="parent-quick-card">
+        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
+        <ul>
+          <li><span aria-hidden="true">💬</span> <strong><span class="lang-en">If they get stuck, ask:</span><span class="lang-es" lang="es">Si se atora, pregunten:</span></strong> <span class="lang-en">Why does adding undo the subtraction? What must you do to the other side?</span><span class="lang-es" lang="es">¿Por qué sumar deshace la resta? ¿Qué debes hacer al otro lado?</span></li>
+          <li><span aria-hidden="true">🚫</span> <strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">Subtract 7 from both sides to solve x − 7 = 15.</span><span class="lang-es" lang="es">Resta 7 de ambos lados para resolver x − 7 = 15.</span></li>
+        </ul>
+      </div>
 
     <div class="real-world-spotlight card-ish">
       <div class="spotlight-badge"><span class="spotlight-icon" aria-hidden="true">🎟️</span> <span><span class="lang-en">WHY THIS MATTERS</span><span class="lang-es" lang="es">¿POR QUÉ IMPORTA?</span></span></div>
@@ -906,7 +931,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Equation&quot;, &quot;Ecuación&quot;)" title="Listen / Escuchar" aria-label="Pronounce Equation">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/equation-x-plus-25.svg" alt="Illustration of Equation: A math sentence with an equal sign showing both sides are the same." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/equation-x-plus-25.svg" alt="Illustration of Equation: A math sentence with an equal sign." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -932,8 +957,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Ecuación</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A math sentence with an equal sign showing both sides are the same.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una oración matemática con un signo igual que muestra que ambos lados son iguales.</p>
+                    <p class="vocab-def">A math sentence with an equal sign.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una oración matemática con un signo de igual.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>x + 25 = 60 — both sides equal 60 when x = 35</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -954,7 +979,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Inverse operation&quot;, &quot;Operación inversa&quot;)" title="Listen / Escuchar" aria-label="Pronounce Inverse operation">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/equation.svg" alt="Illustration of Inverse operation: Two math actions that undo each other, like × and ÷." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/equation.svg" alt="Illustration of Inverse operation: Two actions that undo each other, like × and ÷." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -980,8 +1005,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Operación inversa</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">Two math actions that undo each other, like × and ÷.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Dos operaciones que se deshacen entre sí, como × y ÷.</p>
+                    <p class="vocab-def">Two actions that undo each other, like × and ÷.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Dos acciones que se deshacen entre sí, como × y ÷.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>Addition undoes subtraction: if x − 3 = 10, add 3 to get x = 13</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1002,7 +1027,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Isolate&quot;, &quot;Despejar&quot;)" title="Listen / Escuchar" aria-label="Pronounce Isolate">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/equation.svg" alt="Illustration of Isolate: To get the letter by itself on one side." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/equation.svg" alt="Illustration of Isolate: Get the letter alone on one side." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1028,7 +1053,7 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Despejar</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">To get the letter by itself on one side.</p>
+                    <p class="vocab-def">Get the letter alone on one side.</p>
                     <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Dejar la letra sola en un lado.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>x + 5 = 12 → subtract 5 from both sides → x = 7 (x is isolated)</span></div>
                   </div>
@@ -1050,7 +1075,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Balance&quot;, &quot;Equilibrio&quot;)" title="Listen / Escuchar" aria-label="Pronounce Balance">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/equation.svg" alt="Illustration of Balance: Keeping both sides of an equation equal by doing the same thing to each side." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/equation.svg" alt="Illustration of Balance: Doing the same thing to both sides so they stay equal." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1076,8 +1101,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Equilibrio</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">Keeping both sides of an equation equal by doing the same thing to each side.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Mantener ambos lados de una ecuación iguales haciendo lo mismo a cada lado.</p>
+                    <p class="vocab-def">Doing the same thing to both sides so they stay equal.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Hacer lo mismo en ambos lados para que sigan siendo iguales.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>If you subtract 4 from the left side, you must subtract 4 from the right to keep balance.</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1098,7 +1123,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Addition Property of Equality&quot;, &quot;Propiedad de adición de la igualdad&quot;)" title="Listen / Escuchar" aria-label="Pronounce Addition Property of Equality">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/equation.svg" alt="Illustration of Addition Property of Equality: Adding the same amount to both sides keeps an equation balanced." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/equation.svg" alt="Illustration of Addition Property of Equality: Add the same number to both sides. They stay equal." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1124,8 +1149,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Propiedad de adición de la igualdad</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">Adding the same amount to both sides keeps an equation balanced.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Sumar la misma cantidad a ambos lados mantiene una ecuación equilibrada.</p>
+                    <p class="vocab-def">Add the same number to both sides. They stay equal.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Suma el mismo número a ambos lados. Siguen siendo iguales.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>Both sides + 9</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1146,7 +1171,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Solution&quot;, &quot;Solución&quot;)" title="Listen / Escuchar" aria-label="Pronounce Solution">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/equation.svg" alt="Illustration of Solution: A number that makes the equation or inequality true." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/equation.svg" alt="Illustration of Solution: A value that makes the math sentence true." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1172,8 +1197,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Solución</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A number that makes the equation or inequality true.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número que hace verdadera la ecuación o desigualdad.</p>
+                    <p class="vocab-def">A value that makes the math sentence true.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un valor que hace verdadera la oración matemática.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>x = 7 is the solution to x + 5 = 12 because 7 + 5 = 12 ✓</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1207,7 +1232,7 @@ header.homework-header,
         <p class="vq-done-score"><span class="lang-en">First-try stars:</span><span class="lang-es" lang="es">Estrellas al primer intento:</span> <strong id="vocab_quiz_score"></strong></p>
         <button type="button" class="btn btn-secondary" onclick="startVocabQuiz()"><span class="lang-en">Play again 🔄</span><span class="lang-es" lang="es">Jugar de nuevo 🔄</span></button>
       </div>
-      <script type="application/json" id="vocab_quiz_data">[{"term":"Equation","termEs":"Ecuación","def":"A math sentence with an equal sign showing both sides are the same.","defEs":"Una oración matemática con un signo igual que muestra que ambos lados son iguales.","img":"/assets/vocab-images/equation-x-plus-25.svg","alt":"Illustration of Equation: A math sentence with an equal sign showing both sides are the same."},{"term":"Inverse operation","termEs":"Operación inversa","def":"Two math actions that undo each other, like × and ÷.","defEs":"Dos operaciones que se deshacen entre sí, como × y ÷.","img":"/assets/vocab-images/equation.svg","alt":"Illustration of Inverse operation: Two math actions that undo each other, like × and ÷."},{"term":"Isolate","termEs":"Despejar","def":"To get the letter by itself on one side.","defEs":"Dejar la letra sola en un lado.","img":"/assets/vocab-images/equation.svg","alt":"Illustration of Isolate: To get the letter by itself on one side."},{"term":"Balance","termEs":"Equilibrio","def":"Keeping both sides of an equation equal by doing the same thing to each side.","defEs":"Mantener ambos lados de una ecuación iguales haciendo lo mismo a cada lado.","img":"/assets/vocab-images/equation.svg","alt":"Illustration of Balance: Keeping both sides of an equation equal by doing the same thing to each side."},{"term":"Addition Property of Equality","termEs":"Propiedad de adición de la igualdad","def":"Adding the same amount to both sides keeps an equation balanced.","defEs":"Sumar la misma cantidad a ambos lados mantiene una ecuación equilibrada.","img":"/assets/vocab-images/equation.svg","alt":"Illustration of Addition Property of Equality: Adding the same amount to both sides keeps an equation balanced."},{"term":"Solution","termEs":"Solución","def":"A number that makes the equation or inequality true.","defEs":"Un número que hace verdadera la ecuación o desigualdad.","img":"/assets/vocab-images/equation.svg","alt":"Illustration of Solution: A number that makes the equation or inequality true."}]</script>
+      <script type="application/json" id="vocab_quiz_data">[{"term":"Equation","termEs":"Ecuación","def":"A math sentence with an equal sign.","defEs":"Una oración matemática con un signo de igual.","img":"/assets/vocab-images/equation-x-plus-25.svg","alt":"Illustration of Equation: A math sentence with an equal sign."},{"term":"Inverse operation","termEs":"Operación inversa","def":"Two actions that undo each other, like × and ÷.","defEs":"Dos acciones que se deshacen entre sí, como × y ÷.","img":"/assets/vocab-images/equation.svg","alt":"Illustration of Inverse operation: Two actions that undo each other, like × and ÷."},{"term":"Isolate","termEs":"Despejar","def":"Get the letter alone on one side.","defEs":"Dejar la letra sola en un lado.","img":"/assets/vocab-images/equation.svg","alt":"Illustration of Isolate: Get the letter alone on one side."},{"term":"Balance","termEs":"Equilibrio","def":"Doing the same thing to both sides so they stay equal.","defEs":"Hacer lo mismo en ambos lados para que sigan siendo iguales.","img":"/assets/vocab-images/equation.svg","alt":"Illustration of Balance: Doing the same thing to both sides so they stay equal."},{"term":"Addition Property of Equality","termEs":"Propiedad de adición de la igualdad","def":"Add the same number to both sides. They stay equal.","defEs":"Suma el mismo número a ambos lados. Siguen siendo iguales.","img":"/assets/vocab-images/equation.svg","alt":"Illustration of Addition Property of Equality: Add the same number to both sides. They stay equal."},{"term":"Solution","termEs":"Solución","def":"A value that makes the math sentence true.","defEs":"Un valor que hace verdadera la oración matemática.","img":"/assets/vocab-images/equation.svg","alt":"Illustration of Solution: A value that makes the math sentence true."}]</script>
     </div>
 
     <div class="vocab-game-shell card-ish" id="vocab_match_shell" data-vocab-total="6">
@@ -1263,28 +1288,28 @@ header.homework-header,
         <div class="vocab-match-col col-defs" aria-label="Vocabulary definitions">
 
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="5" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A number that makes the equation or inequality true.</span>
-              <span class="chip-label-es" lang="es">Un número que hace verdadera la ecuación o desigualdad.</span>
+              <span class="chip-label-en">A value that makes the math sentence true.</span>
+              <span class="chip-label-es" lang="es">Un valor que hace verdadera la oración matemática.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="0" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A math sentence with an equal sign showing both sides are the same.</span>
-              <span class="chip-label-es" lang="es">Una oración matemática con un signo igual que muestra que ambos lados son iguales.</span>
+              <span class="chip-label-en">A math sentence with an equal sign.</span>
+              <span class="chip-label-es" lang="es">Una oración matemática con un signo de igual.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="1" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">Two math actions that undo each other, like × and ÷.</span>
-              <span class="chip-label-es" lang="es">Dos operaciones que se deshacen entre sí, como × y ÷.</span>
+              <span class="chip-label-en">Two actions that undo each other, like × and ÷.</span>
+              <span class="chip-label-es" lang="es">Dos acciones que se deshacen entre sí, como × y ÷.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="2" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">To get the letter by itself on one side.</span>
+              <span class="chip-label-en">Get the letter alone on one side.</span>
               <span class="chip-label-es" lang="es">Dejar la letra sola en un lado.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="3" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">Keeping both sides of an equation equal by doing the same thing to each side.</span>
-              <span class="chip-label-es" lang="es">Mantener ambos lados de una ecuación iguales haciendo lo mismo a cada lado.</span>
+              <span class="chip-label-en">Doing the same thing to both sides so they stay equal.</span>
+              <span class="chip-label-es" lang="es">Hacer lo mismo en ambos lados para que sigan siendo iguales.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="4" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">Adding the same amount to both sides keeps an equation balanced.</span>
-              <span class="chip-label-es" lang="es">Sumar la misma cantidad a ambos lados mantiene una ecuación equilibrada.</span>
+              <span class="chip-label-en">Add the same number to both sides. They stay equal.</span>
+              <span class="chip-label-es" lang="es">Suma el mismo número a ambos lados. Siguen siendo iguales.</span>
             </button>
         </div>
       </div>
@@ -1314,29 +1339,24 @@ header.homework-header,
 
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
       <p class="quick-check-time bilingual-block">
-        <span class="lang-en">Complete the <span id="hw_check_problem_count">12</span> problems below.<span class="quick-check-extra-copy"></span></span>
-        <span class="lang-es" lang="es">Completa los <span id="hw_check_problem_count_es">12</span> problemas de abajo.<span class="quick-check-extra-copy"></span></span>
-      </p>
-      <p class="bilingual-block">
-        <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
-        <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+        <span class="lang-en">Start with <strong>Basics</strong>. Each problem has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong> and a <strong>space for your work</strong>. Tap <strong>Check This Problem</strong> for instant help.<span class="quick-check-extra-copy"></span></span>
+        <span class="lang-es" lang="es">Empiecen con las <strong>Básicas</strong>. Cada problema tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para su trabajo</strong>. Toquen <strong>Revisar esta pregunta</strong> para recibir ayuda al instante.<span class="quick-check-extra-copy"></span></span>
       </p>
 
 
-    <div class="stars-to-win-bar">
-      <div class="stars-to-win-title">
-        <span>⭐</span>
-        <div>
-          <span class="lang-en"><strong>Tonight's goal:</strong> finish the <span id="hw_goal_count">12</span> problems below. Stop any time — your work saves itself.</span>
-          <span class="lang-es" lang="es"><strong>La meta de hoy:</strong> terminar los <span id="hw_goal_count_es">12</span> problemas de abajo. Pueden parar cuando quieran: el trabajo se guarda solo.</span>
-        </div>
-      </div>
-      <div class="stars-milestone-chips" aria-hidden="true">
-        <span class="star-chip">🧱 Basics</span>
-        <span class="star-chip">🌱 Warm-Up ★</span>
-        <span class="star-chip">🚀 Level-Up ★★</span>
-        <span class="star-chip">🏆 Victory ★★★</span>
-      </div>
+    <div class="hw-goal-card">
+      <span class="hw-pips " role="img" aria-label="Tonight's goal progress"></span>
+      <p>
+        <span class="lang-en"><strong>Tonight's goal: any <span data-hw-goal-count>4</span> problems.</strong> There are <span data-hw-goal-avail>12</span> here, so pick the ones you like. Stop any time. Your work saves itself.</span>
+        <span class="lang-es" lang="es"><strong>La meta de hoy: cualquier <span data-hw-goal-count>4</span> problemas.</strong> Aquí hay <span data-hw-goal-avail>12</span>, así que escojan los que prefieran. Pueden parar cuando quieran. El trabajo se guarda solo.</span>
+      </p>
+      <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
+    </div>
+    <div class="stars-milestone-chips" aria-hidden="true">
+      <span class="star-chip">🧱 Basics</span>
+      <span class="star-chip">🌱 Warm-Up ★</span>
+      <span class="star-chip">🚀 Level-Up ★★</span>
+      <span class="star-chip">🏆 Victory ★★★</span>
     </div>
 
     <div class="live-streak-banner" id="hw_streak_banner" hidden>
@@ -1359,9 +1379,12 @@ header.homework-header,
         <strong><span class="lang-en">That's tonight's goal — done!</span><span class="lang-es" lang="es">¡Esa es la meta de hoy: completa!</span></strong>
         <p><span class="lang-en">Great work. Head to <strong>Done</strong> to finish or choose optional extras.</span><span class="lang-es" lang="es">Buen trabajo. Vayan a <strong>Listo</strong> para terminar o elegir extras opcionales.</span></p>
       </div>
-      <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
-        <span class="lang-en">Claim Certificate ➔</span><span class="lang-es" lang="es">Reclamar Certificado ➔</span>
-      </button>
+      <div class="goal-actions">
+        <button type="button" class="btn btn-sm btn-secondary hw-banner-mystery" hidden onclick="hwOpenMystery()"><span class="lang-en">🔓 Open the mystery challenge</span><span class="lang-es" lang="es">🔓 Abrir el reto misterioso</span></button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
+          <span class="lang-en">Teach it back, then claim your certificate ➔</span><span class="lang-es" lang="es">Enséñalo y reclama tu certificado ➔</span>
+        </button>
+      </div>
     </div>
 
       <section class="practice-tier practice-tier-basic" aria-label="Basic practice">
@@ -2906,7 +2929,7 @@ header.homework-header,
     </div>
 
     <div class="fam-game-break card-ish" id="fam_game_break">
-      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"m + 4 = 10","b":"m = 6"},{"a":"3k = 21","b":"k = 7"},{"a":"y − 5 = 2","b":"y = 7"},{"a":"n ÷ 2 = 8","b":"n = 16"}],"tf":[{"en":"An equation stays balanced if you do the same thing to BOTH sides.","es":"Una ecuación sigue equilibrada si haces lo mismo en LOS DOS lados.","answer":true,"whyEn":"It works exactly like a balance scale — equal changes keep it level.","whyEs":"Funciona igual que una balanza: cambios iguales la mantienen nivelada."},{"en":"To solve m + 4 = 10, you add 4 to both sides.","es":"Para resolver m + 4 = 10, se suma 4 a los dos lados.","answer":false,"whyEn":"You UNDO the +4 by subtracting 4: m = 6. Adding would give m + 8 = 14.","whyEs":"Se DESHACE el +4 restando 4: m = 6. Sumar daría m + 8 = 14."},{"en":"The solution of 3k = 21 is k = 7.","es":"La solución de 3k = 21 es k = 7.","answer":true,"whyEn":"Divide both sides by 3. Check: 3 × 7 = 21. ✓","whyEs":"Dividan los dos lados entre 3. Comprueben: 3 × 7 = 21. ✓"},{"en":"You can always check a solution by substituting it back into the equation.","es":"Siempre se puede comprobar una solución sustituyéndola en la ecuación.","answer":true,"whyEn":"If both sides come out equal, the solution is right — the equation's own lie detector.","whyEs":"Si los dos lados salen iguales, la solución es correcta: el detector de mentiras de la ecuación."},{"en":"An equals sign means 'the answer comes next.'","es":"El signo igual significa 'aquí viene la respuesta'.","answer":false,"whyEn":"It means both sides have the SAME VALUE — that's why balancing works.","whyEs":"Significa que los dos lados tienen el MISMO VALOR: por eso funciona el equilibrio."}],"sort":{"a":{"en":"x = 5 makes it TRUE","es":"x = 5 la hace VERDADERA"},"b":{"en":"x = 5 makes it FALSE","es":"x = 5 la hace FALSA"},"cards":[{"t":"x + 3 = 8","bucket":0,"en":"5 + 3 = 8. ✓","es":"5 + 3 = 8. ✓"},{"t":"2x = 10","bucket":0,"en":"2 × 5 = 10. ✓","es":"2 × 5 = 10. ✓"},{"t":"x − 1 = 6","bucket":1,"en":"5 − 1 = 4, not 6. (x = 7)","es":"5 − 1 = 4, no 6. (x = 7)"},{"t":"x ÷ 5 = 1","bucket":0,"en":"5 ÷ 5 = 1. ✓","es":"5 ÷ 5 = 1. ✓"},{"t":"3x = 12","bucket":1,"en":"3 × 5 = 15, not 12. (x = 4)","es":"3 × 5 = 15, no 12. (x = 4)"},{"t":"x + 5 = 10","bucket":0,"en":"5 + 5 = 10. ✓","es":"5 + 5 = 10. ✓"}]},"wyr":[{"a":{"en":"Solve x + 17 = 42","es":"Resolver x + 17 = 42"},"b":{"en":"Solve 17x = 42","es":"Resolver 17x = 42"},"en":"The first is friendlier: x = 25. The second gives a fraction, 42/17.","es":"La primera es más amable: x = 25. La segunda da una fracción, 42/17."},{"a":{"en":"Save $3 a week toward $24","es":"Ahorrar $3 por semana para $24"},"b":{"en":"Save $4 a week toward $24","es":"Ahorrar $4 por semana para $24"},"en":"$4 a week: 4w = 24 gives 6 weeks, versus 8 weeks at $3.","es":"$4 por semana: 4s = 24 da 6 semanas, contra 8 semanas con $3."}]};</script>
+      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"m + 4 = 10","b":"m = 6","aEs":"","bEs":""},{"a":"3k = 21","b":"k = 7","aEs":"","bEs":""},{"a":"y − 5 = 2","b":"y = 7","aEs":"","bEs":""},{"a":"n ÷ 2 = 8","b":"n = 16","aEs":"","bEs":""}],"tf":[{"en":"An equation stays balanced if you do the same thing to BOTH sides.","es":"Una ecuación sigue equilibrada si haces lo mismo en LOS DOS lados.","answer":true,"whyEn":"It works exactly like a balance scale — equal changes keep it level.","whyEs":"Funciona igual que una balanza: cambios iguales la mantienen nivelada."},{"en":"To solve m + 4 = 10, you add 4 to both sides.","es":"Para resolver m + 4 = 10, se suma 4 a los dos lados.","answer":false,"whyEn":"You UNDO the +4 by subtracting 4: m = 6. Adding would give m + 8 = 14.","whyEs":"Se DESHACE el +4 restando 4: m = 6. Sumar daría m + 8 = 14."},{"en":"The solution of 3k = 21 is k = 7.","es":"La solución de 3k = 21 es k = 7.","answer":true,"whyEn":"Divide both sides by 3. Check: 3 × 7 = 21. ✓","whyEs":"Dividan los dos lados entre 3. Comprueben: 3 × 7 = 21. ✓"},{"en":"You can always check a solution by substituting it back into the equation.","es":"Siempre se puede comprobar una solución sustituyéndola en la ecuación.","answer":true,"whyEn":"If both sides come out equal, the solution is right — the equation's own lie detector.","whyEs":"Si los dos lados salen iguales, la solución es correcta: el detector de mentiras de la ecuación."},{"en":"An equals sign means 'the answer comes next.'","es":"El signo igual significa 'aquí viene la respuesta'.","answer":false,"whyEn":"It means both sides have the SAME VALUE — that's why balancing works.","whyEs":"Significa que los dos lados tienen el MISMO VALOR: por eso funciona el equilibrio."}],"sort":{"a":{"en":"x = 5 makes it TRUE","es":"x = 5 la hace VERDADERA"},"b":{"en":"x = 5 makes it FALSE","es":"x = 5 la hace FALSA"},"cards":[{"t":"x + 3 = 8","bucket":0,"en":"5 + 3 = 8. ✓","es":"5 + 3 = 8. ✓"},{"t":"2x = 10","bucket":0,"en":"2 × 5 = 10. ✓","es":"2 × 5 = 10. ✓"},{"t":"x − 1 = 6","bucket":1,"en":"5 − 1 = 4, not 6. (x = 7)","es":"5 − 1 = 4, no 6. (x = 7)"},{"t":"x ÷ 5 = 1","bucket":0,"en":"5 ÷ 5 = 1. ✓","es":"5 ÷ 5 = 1. ✓"},{"t":"3x = 12","bucket":1,"en":"3 × 5 = 15, not 12. (x = 4)","es":"3 × 5 = 15, no 12. (x = 4)"},{"t":"x + 5 = 10","bucket":0,"en":"5 + 5 = 10. ✓","es":"5 + 5 = 10. ✓"}]},"wyr":[{"a":{"en":"Solve x + 17 = 42","es":"Resolver x + 17 = 42"},"b":{"en":"Solve 17x = 42","es":"Resolver 17x = 42"},"en":"The first is friendlier: x = 25. The second gives a fraction, 42/17.","es":"La primera es más amable: x = 25. La segunda da una fracción, 42/17."},{"a":{"en":"Save $3 a week toward $24","es":"Ahorrar $3 por semana para $24"},"b":{"en":"Save $4 a week toward $24","es":"Ahorrar $4 por semana para $24"},"en":"$4 a week: 4w = 24 gives 6 weeks, versus 8 weeks at $3.","es":"$4 por semana: 4s = 24 da 6 semanas, contra 8 semanas con $3."}]};</script>
       <div class="fam-game-head">
         <span class="fam-game-badge">🎮 <span class="lang-en">FAMILY ARCADE</span><span class="lang-es" lang="es">SALA DE JUEGOS EN FAMILIA</span></span>
         <p class="fam-game-lead">
@@ -3094,7 +3117,40 @@ header.homework-header,
     </div>
 <div class="tab-panel-inner" data-tab-panel="done" id="hw_panel_done" role="tabpanel" hidden>
       <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
-      <p class="family-explain-finish"><span class="lang-en">Explain one answer aloud or on paper: “I got ___ because ___. I checked by ___.” Include your strategy and units. Then you are done.</span><span class="lang-es" lang="es">Explica una respuesta en voz alta o en papel: “Obtuve ___ porque ___. Comprobé usando ___.” Incluye tu estrategia y las unidades. Después termina.</span></p>
+
+      <section class="hw-teach" aria-labelledby="hw_teach_title">
+        <p class="hw-eyebrow hw-inline"><span class="lang-en">The last step</span><span class="lang-es" lang="es">El último paso</span></p>
+        <h3 id="hw_teach_title"><span class="lang-en">Teach it to someone</span><span class="lang-es" lang="es">Enséñaselo a alguien</span></h3>
+        <ol class="hw-teach-steps">
+          <li><span class="lang-en">Pick one problem you solved.</span><span class="lang-es" lang="es">Elige un problema que resolviste.</span></li>
+          <li><span class="lang-en">Explain it out loud. Use any language first.</span><span class="lang-es" lang="es">Explícalo en voz alta. Usa primero el idioma que prefieras.</span></li>
+          <li><span class="lang-en">Say it again with the English math words:</span><span class="lang-es" lang="es">Dilo otra vez con las palabras de matemáticas en inglés:</span><ul class="hw-teach-words" aria-label="Words to use"><li><strong>Equation</strong><span class="lang-es" lang="es"> · Ecuación</span></li><li><strong>Inverse operation</strong><span class="lang-es" lang="es"> · Operación inversa</span></li><li><strong>Isolate</strong><span class="lang-es" lang="es"> · Despejar</span></li></ul></li>
+          <li><span class="lang-en">Your partner asks: “How do you know?” Answer with: “I got ___ because ___. I checked by ___.”</span><span class="lang-es" lang="es">Tu acompañante pregunta: “¿Cómo lo sabes?” Responde: “Obtuve ___ porque ___. Comprobé usando ___.”</span></li>
+        </ol>
+      </section>
+
+      <section class="hw-confidence" id="hw_conf_after" data-conf-phase="after" aria-labelledby="hw_conf_after_title">
+        <h3 id="hw_conf_after_title"><span class="lang-en">How sure do you feel now?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes ahora?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_after_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="after" onclick="hwSetConfidence('after', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="after" onclick="hwSetConfidence('after', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="after" onclick="hwSetConfidence('after', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Compare it with how you felt at the start.</span><span class="lang-es" lang="es">Compáralo con cómo te sentías al empezar.</span></p>
+        <p class="hw-conf-growth" id="hw_conf_growth" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="hw-nights" id="hw_nights" aria-labelledby="hw_nights_title">
+        <h3 id="hw_nights_title"><span class="lang-en">Our family math nights</span><span class="lang-es" lang="es">Nuestras noches de matemáticas en familia</span></h3>
+        <ol class="hw-nights-week" id="hw_nights_week" aria-label="This week"></ol>
+        <p class="hw-nights-streak" id="hw_nights_streak" role="status" aria-live="polite"></p>
+        <p class="hw-nights-note"><span class="lang-en">Weekends never break it. Saved only on this device.</span><span class="lang-es" lang="es">Los fines de semana no la interrumpen. Se guarda solo en este dispositivo.</span></p>
+      </section>
       <div class="done-summary" id="hw_done_summary" role="status" aria-live="polite"></div>
       <ol class="done-problem-list" id="hw_done_problems" aria-label="Problems / Problemas"></ol>
       <p class="celebrate-text lang-en">Name one strategy that helped, or one question to ask next time. You can stop here; no adult signature is needed.</p>
@@ -3104,9 +3160,16 @@ header.homework-header,
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
 
+
+      <div class="hw-share">
+        <button type="button" class="btn btn-secondary hw-share-win" onclick="hwShareWin()">
+          🎉 <span class="lang-en">Share our win</span><span class="lang-es" lang="es">Compartir nuestro logro</span>
+        </button>
+        <p class="hw-share-note"><span class="lang-en">Shares only the lesson name and a link. No answers, no names.</span><span class="lang-es" lang="es">Comparte solo el nombre de la lección y un enlace. Sin respuestas ni nombres.</span></p>
+      </div>
       <div class="homework-message-action">
         <a class="btn btn-primary" href="https://home.classdojo.com/" target="_blank" rel="noopener"><span class="lang-en">Open ClassDojo to message Mr. Neft</span><span class="lang-es" lang="es">Abrir ClassDojo para escribir al Sr. Neft</span></a>
-        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicia sesión con tu cuenta familiar, abre Mensajes y elige al Sr. Neft. Incluye el número de esta lección y tu pregunta.</span></p>
+        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicien sesión con su cuenta familiar, abran Mensajes y elijan al Sr. Neft. Incluyan el número de esta lección y su pregunta.</span></p>
       </div>
       <section class="homework-optional-extras" aria-labelledby="homework_extras_title">
       <h3 id="homework_extras_title"><span class="lang-en">Want to do more?</span><span class="lang-es" lang="es">¿Quieren hacer más?</span></h3>
@@ -3567,25 +3630,19 @@ header.homework-header,
           <span class="ai-lab-arrow" aria-hidden="true">→</span>
         </a>
 
-        <p class="bilingual-block">
-          <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
-          <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
+
+        <p class="bilingual-block external-resource-claim">
+          <span class="lang-en">These links go to <strong>specific</strong> videos about tonight's topic — not general math pages.</span>
+          <span class="lang-es" lang="es">Estos enlaces van a videos <strong>específicos</strong> sobre el tema de hoy — no a páginas generales.</span>
         </p>
         <ul class="external-resource-list">
-
             <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-equations-and-inequalities/cc-6th-writing-equations/v/writing-equations-for-relationships-between-quantities" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Writing equations from words</span>
-                <span class="ext-title-es" lang="es">Escribir ecuaciones desde palabras</span>
-              </a>
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-equations-and-inequalities/cc-6th-one-step-add-sub-equations/v/solving-one-step-equations" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-en"><span class="ext-source">Khan Academy</span><span class="ext-title-en">One-step addition equation</span></a>
+              <a href="https://es.khanacademy.org/math/cc-sixth-grade-math/cc-6th-equations-and-inequalities/cc-6th-one-step-add-sub-equations/v/solving-one-step-equations" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-es" lang="es"><span class="ext-source">Khan Academy en español</span><span class="ext-title-es">Ecuación de un paso con suma</span></a>
             </li>
             <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-equations-and-inequalities/cc-6th-one-step-equations/v/one-step-equation-word-problems" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">One-step equation word problems</span>
-                <span class="ext-title-es" lang="es">Problemas de ecuaciones de un paso</span>
-              </a>
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-equations-and-inequalities/cc-6th-one-step-add-sub-equations/v/adding-and-subtracting-the-same-thing-from-both-sides" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-en"><span class="ext-source">Khan Academy</span><span class="ext-title-en">One-step addition and subtraction equations</span></a>
+              <a href="https://es.khanacademy.org/math/cc-sixth-grade-math/cc-6th-equations-and-inequalities/cc-6th-one-step-add-sub-equations/v/adding-and-subtracting-the-same-thing-from-both-sides" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-es" lang="es"><span class="ext-source">Khan Academy en español</span><span class="ext-title-es">Ecuaciones de un paso con suma y resta</span></a>
             </li>
         </ul>
       </section>
@@ -3683,6 +3740,17 @@ header.homework-header,
       </div>
     </div>
 
+<div class="hw-toast" id="hw_toast" aria-hidden="true" hidden></div><div class="hw-sr-only" id="hw_toast_live" role="status" aria-live="polite"></div>
+<dialog class="hw-dialog" id="hw_dialog" aria-labelledby="hw_dialog_text">
+  <form method="dialog">
+    <p id="hw_dialog_text"></p>
+    <div class="hw-dialog-actions">
+      <button type="submit" value="no" class="btn btn-secondary" id="hw_dialog_no"></button>
+      <button type="submit" value="yes" class="btn btn-primary" id="hw_dialog_yes"></button>
+    </div>
+  </form>
+</dialog>
+
 <section class="hw-answer-sheet" aria-hidden="true">
   <h2><span class="lang-en">Answer sheet</span><span class="lang-es" lang="es">Hoja de respuestas</span> · Subtraction Equations</h2>
   <p><span class="lang-en">Check the work after trying each problem. Talk about why each answer makes sense.</span><span class="lang-es" lang="es">Revisen el trabajo después de intentar cada problema. Hablen de por qué cada respuesta tiene sentido.</span></p>
@@ -3722,8 +3790,10 @@ header.homework-header,
 
     <div class="score-progress-container">
       <div class="score-text">
-        <span class="lang-en">Progress:</span><span class="lang-es" lang="es">Progreso:</span>
-        <span id="progress_text">0 / 12</span>
+        <span class="hw-stack hw-goal-label"><span class="lang-en">Tonight's goal</span><span class="lang-es" lang="es">Meta de hoy</span></span>
+        <span id="progress_text">0 / 4</span>
+        <span class="hw-pips hw-pips-bar" role="img" aria-label="Tonight's goal progress"></span>
+        <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -3731,8 +3801,8 @@ header.homework-header,
     </div>
 
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
-      <button class="btn btn-primary" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
+      <button class="btn btn-secondary hw-stack" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
+      <button class="btn btn-primary hw-stack" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
     </div>
   </div>
 </div>
@@ -3740,18 +3810,19 @@ header.homework-header,
 <script>
 window.LESSON_ID = "8-2-part2";
 window.LESSON_TITLE = "Subtraction Equations";
+window.LESSON_TITLE_ES = "Subtraction Equations";
 /* The number of core problems, so the celebration fires on the goal the page
    actually states. It was hardcoded to 3 while the page showed 6 and the status
    bar counted to 6: a family could hit "Goal Reached! 3 Stars Earned!" and read
    "0 / 6 Completed" in the same glance. */
 window.HW_CORE_COUNT = 12;
-window.__HW_VOCAB__ = [{"term":"Equation","termEs":"Ecuación","def":"A math sentence with an equal sign showing both sides are the same.","defEs":"Una oración matemática con un signo igual que muestra que ambos lados son iguales.","example":"x + 25 = 60 — both sides equal 60 when x = 35","img":"/assets/vocab-images/equation-x-plus-25.svg","imgAlt":"Illustration of Equation: A math sentence with an equal sign showing both sides are the same.","cs":false},{"term":"Inverse operation","termEs":"Operación inversa","def":"Two math actions that undo each other, like × and ÷.","defEs":"Dos operaciones que se deshacen entre sí, como × y ÷.","example":"Addition undoes subtraction: if x − 3 = 10, add 3 to get x = 13","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Inverse operation: Two math actions that undo each other, like × and ÷.","cs":false},{"term":"Isolate","termEs":"Despejar","def":"To get the letter by itself on one side.","defEs":"Dejar la letra sola en un lado.","example":"x + 5 = 12 → subtract 5 from both sides → x = 7 (x is isolated)","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Isolate: To get the letter by itself on one side.","cs":false},{"term":"Balance","termEs":"Equilibrio","def":"Keeping both sides of an equation equal by doing the same thing to each side.","defEs":"Mantener ambos lados de una ecuación iguales haciendo lo mismo a cada lado.","example":"If you subtract 4 from the left side, you must subtract 4 from the right to keep balance.","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Balance: Keeping both sides of an equation equal by doing the same thing to each side.","cs":false},{"term":"Addition Property of Equality","termEs":"Propiedad de adición de la igualdad","def":"Adding the same amount to both sides keeps an equation balanced.","defEs":"Sumar la misma cantidad a ambos lados mantiene una ecuación equilibrada.","example":"Both sides + 9","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Addition Property of Equality: Adding the same amount to both sides keeps an equation balanced.","cs":false},{"term":"Solution","termEs":"Solución","def":"A number that makes the equation or inequality true.","defEs":"Un número que hace verdadera la ecuación o desigualdad.","example":"x = 7 is the solution to x + 5 = 12 because 7 + 5 = 12 ✓","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Solution: A number that makes the equation or inequality true.","cs":false}];
+window.__HW_VOCAB__ = [{"term":"Equation","termEs":"Ecuación","def":"A math sentence with an equal sign.","defEs":"Una oración matemática con un signo de igual.","example":"x + 3 = 10","img":"/assets/vocab-images/equation-x-plus-25.svg","imgAlt":"Illustration of Equation: A math sentence with an equal sign.","cs":false,"formal":"A math sentence with an equal sign showing both sides are the same.","formalEs":"Una oración matemática con un signo igual que muestra que ambos lados son iguales.","exampleEs":"x + 3 = 10","exampleFormal":"x + 25 = 60 — both sides equal 60 when x = 35"},{"term":"Inverse operation","termEs":"Operación inversa","def":"Two actions that undo each other, like × and ÷.","defEs":"Dos acciones que se deshacen entre sí, como × y ÷.","example":"5 + 3 = 8, then 8 − 3 = 5","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Inverse operation: Two actions that undo each other, like × and ÷.","cs":false,"formal":"Two math actions that undo each other, like × and ÷.","formalEs":"Dos operaciones que se deshacen entre sí, como × y ÷.","exampleEs":"5 + 3 = 8, luego 8 − 3 = 5","exampleFormal":"Addition undoes subtraction: if x − 3 = 10, add 3 to get x = 13"},{"term":"Isolate","termEs":"Despejar","def":"Get the letter alone on one side.","defEs":"Dejar la letra sola en un lado.","example":"x + 3 = 10 → x = 7","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Isolate: Get the letter alone on one side.","cs":false,"formal":"To get the letter by itself on one side.","exampleEs":"x + 3 = 10 → x = 7","exampleFormal":"x + 5 = 12 → subtract 5 from both sides → x = 7 (x is isolated)"},{"term":"Balance","termEs":"Equilibrio","def":"Doing the same thing to both sides so they stay equal.","defEs":"Hacer lo mismo en ambos lados para que sigan siendo iguales.","example":"If you subtract 4 from the left side, you must subtract 4 from the right to keep balance.","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Balance: Doing the same thing to both sides so they stay equal.","cs":false,"formal":"Keeping both sides of an equation equal by doing the same thing to each side.","formalEs":"Mantener ambos lados de una ecuación iguales haciendo lo mismo a cada lado."},{"term":"Addition Property of Equality","termEs":"Propiedad de adición de la igualdad","def":"Add the same number to both sides. They stay equal.","defEs":"Suma el mismo número a ambos lados. Siguen siendo iguales.","example":"x − 3 = 7 → x = 10","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Addition Property of Equality: Add the same number to both sides. They stay equal.","cs":false,"formal":"Adding the same amount to both sides keeps an equation balanced.","formalEs":"Sumar la misma cantidad a ambos lados mantiene una ecuación equilibrada.","exampleEs":"x − 3 = 7 → x = 10","exampleFormal":"Both sides + 9"},{"term":"Solution","termEs":"Solución","def":"A value that makes the math sentence true.","defEs":"Un valor que hace verdadera la oración matemática.","example":"In x + 2 = 5, the answer is x = 3","img":"/assets/vocab-images/equation.svg","imgAlt":"Illustration of Solution: A value that makes the math sentence true.","cs":false,"formal":"A number that makes the equation or inequality true.","formalEs":"Un número que hace verdadera la ecuación o desigualdad.","exampleEs":"En x + 2 = 5, la respuesta es x = 3","exampleFormal":"x = 7 is the solution to x + 5 = 12 because 7 + 5 = 12 ✓"}];
 window.__HW_VOCAB_SKIP__ = [98,116,228,229,335];
 window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Numerical\\s+Expressions\\s+with\\s+Exponents(?:es|s)?|Solve\\s+One-Step\\s+Addition\\s+and\\s+Subtraction\\s+Equations(?:es|s)?|Determine\\s+the\\s+Whole\\s+Given\\s+the\\s+Part\\s+and\\s+Percent(?:es|s)?|Convert\\s+Measurements\\s+within\\s+the\\s+Same\\s+System(?:es|s)?|Percents\\s+Greater\\s+Than\\s+100%\\s+and\\s+Less\\s+Than\\s+1%(?:es|s)?|Solve\\s+Multiplication\\s+and\\s+Division\\s+Equations(?:es|s)?|Equations\\s+and\\s+Inequalities\\s+Problem\\s+Solving(?:es|s)?|Convert\\s+Measurements\\s+Between\\s+Systems(?:es|s)?|Multiplication\\s+Property\\s+of\\s+Equalit(?:y|ies)|Ordered\\s+Pairs\\s+in\\s+All\\s+Four\\s+Quadrants(?:es|s)?|Rational\\s+Numbers\\s+on\\s+the\\s+Number\\s+Line(?:es|s)?|Describe\\s+the\\s+Data\\s+Using\\s+the\\s+Median(?:es|s)?|Divide\\s+Whole\\s+Numbers\\s+by\\s+Fractions(?:es|s)?|Fraction\\s+Division\\s+Problem\\s+Solving(?:es|s)?|Fractions,\\s+Decimals,\\s+and\\s+Percents(?:es|s)?|Distance\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Subtraction\\s+Property\\s+of\\s+Equalit(?:y|ies)|Appropriate\\s+Measures\\s+of\\s+Center(?:es|s)?|Ratio\\s+and\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|Simplify\\s+Algebraic\\s+Expressions(?:es|s)?|Statistical\\s+Questions\\s+and\\s+Data(?:es|s)?|Volume\\s+with\\s+Whole-Number\\s+Edges(?:es|s)?|Addition\\s+Property\\s+of\\s+Equalit(?:y|ies)|Division\\s+Property\\s+of\\s+Equalit(?:y|ies)|Graph\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Range\\s+and\\s+Interquartile\\s+Range(?:es|s)?|Display\\s+Data\\s+with\\s+Histograms(?:es|s)?|Greatest\\s+common\\s+factor\\s+\\(GCF\\)(?:es|s)?|Solve\\s+and\\s+Graph\\s+Inequalities(?:es|s)?|Volume\\s+of\\s+Rectangular\\s+Prisms(?:es|s)?|Display\\s+Data\\s+with\\s+Box\\s+Plots(?:es|s)?|Integers\\s+and\\s+Absolute\\s+Value(?:es|s)?|Least\\s+common\\s+multiple\\s+\\(LCM\\)(?:es|s)?|Shape\\s+of\\s+Data\\s+Distributions(?:es|s)?|Write\\s+Algebraic\\s+Expressions(?:es|s)?|Compare\\s+and\\s+Order\\s+Integers(?:es|s)?|Decimal\\s+Division\\s+Algorithm(?:es|s)?|Divide\\s+Multi-Digit\\s+Numbers(?:es|s)?|Find\\s+Factors\\s+and\\s+Multiples(?:es|s)?|Reflect\\s+Points\\s+Across\\s+Axes(?:es|s)?|Add\\s+and\\s+Subtract\\s+Decimals(?:es|s)?|Area\\s+of\\s+Composite\\s+Figures(?:es|s)?|Convert\\s+Measurement\\s+Units(?:es|s)?|distance\\s+between\\s+vertices(?:es|s)?|The\\s+Distributive\\s+Propert(?:y|ies)|Unit\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|least\\s+common\\s+denominator(?:es|s)?|Area\\s+of\\s+Regular\\s+Polygons(?:es|s)?|Non-statistical\\s+Question(?:es|s)?|Opposite\\s+of\\s+the\\s+opposite(?:es|s)?|Properties\\s+of\\s+Operations(?:es|s)?|Surface\\s+Area\\s+of\\s+Pyramids(?:es|s)?|mean\\s+absolute\\s+deviation(?:es|s)?|make\\s+sense\\s+of\\s+a\\s+problem(?:es|s)?|Percent\\s+Problem\\s+Solving(?:es|s)?|Repeated\\s+multiplication(?:es|s)?|Surface\\s+Area\\s+Using\\s+Nets(?:es|s)?|greatest\\s+common\\s+factor(?:es|s)?|Area\\s+of\\s+Parallelograms(?:es|s)?|Mean,\\s+Median,\\s+and\\s+Mode(?:es|s)?|Multiplicative\\s+inverse(?:es|s)?|Surface\\s+Area\\s+of\\s+Prisms(?:es|s)?|least\\s+common\\s+multiple(?:es|s)?|equivalent\\s+expression(?:es|s)?|Distributive\\s+Propert(?:y|ies)|Division\\s+of\\s+Fractions(?:es|s)?|Length,\\s+width,\\s+height(?:es|s)?|algebraic\\s+expression(?:es|s)?|Associative\\s+Propert(?:y|ies)|Commutative\\s+Propert(?:y|ies)|define\\s+the\\s+variables(?:es|s)?|Divide\\s+Mixed\\s+Numbers(?:es|s)?|Evaluate\\s+Expressions(?:es|s)?|Factor\\s+an\\s+expression(?:es|s)?|independent\\s+variable(?:es|s)?|Measure\\s+of\\s+variation(?:es|s)?|Numerical\\s+expression(?:es|s)?|Powers\\s+and\\s+Exponents(?:es|s)?|Rates\\s+and\\s+Unit\\s+Rates(?:es|s)?|Statistical\\s+Question(?:es|s)?|prime\\s+factorization(?:es|s)?|interquartile\\s+range(?:es|s)?|equivalent\\s+fraction(?:es|s)?|community\\s+agreement(?:es|s)?|Equivalent\\s+division(?:es|s)?|Five-number\\s+summar(?:y|ies)|Horizontal\\s+distance(?:es|s)?|Negative\\s+coordinate(?:es|s)?|Order\\s+of\\s+operations(?:es|s)?|Percent\\s+of\\s+a\\s+Number(?:es|s)?|Area\\s+of\\s+a\\s+Triangle(?:es|s)?|Area\\s+of\\s+Trapezoids(?:es|s)?|At\\s+least\\s+/\\s+At\\s+most(?:es|s)?|bilateral\\s+symmetr(?:y|ies)|Common\\s+denominator(?:es|s)?|compatible\\s+numbers(?:es|s)?|dependent\\s+variable(?:es|s)?|Double\\s+number\\s+line(?:es|s)?|Graph\\s+Inequalities(?:es|s)?|Graph\\s+Ratio\\s+Tables(?:es|s)?|Keep,\\s+Change,\\s+Flip(?:es|s)?|Measurement\\s+system(?:es|s)?|Multi-step\\s+problem(?:es|s)?|Understand\\s+Percent(?:es|s)?|Write\\s+Inequalities(?:es|s)?|Inverse\\s+operation(?:es|s)?|improper\\s+fraction(?:es|s)?|conversion\\s+factor(?:es|s)?|benchmark\\s+percent(?:es|s)?|Data\\s+distribution(?:es|s)?|Greater\\s+than\\s+100%(?:es|s)?|Identity\\s+Propert(?:y|ies)|Measure\\s+of\\s+center(?:es|s)?|Multiply\\s+Decimals(?:es|s)?|One-step\\s+equation(?:es|s)?|Rectangular\\s+prism(?:es|s)?|Shape\\s+of\\s+the\\s+data(?:es|s)?|Understand\\s+Ratios(?:es|s)?|Vertical\\s+distance(?:es|s)?|coordinate\\s+plane(?:es|s)?|keep-change-flip(?:es|s)?|equivalent\\s+ratio(?:es|s)?|Additive\\s+pattern(?:es|s)?|Composite\\s+figure(?:es|s)?|Composite\\s+number(?:es|s)?|Customary\\s+system(?:es|s)?|Divide\\s+Fractions(?:es|s)?|Grouping\\s+symbols(?:es|s)?|line\\s+of\\s+symmetr(?:y|ies)|Negative\\s+integer(?:es|s)?|Triangular\\s+prism(?:es|s)?|common\\s+multiple(?:es|s)?|Customary\\s+units(?:es|s)?|Divide\\s+Decimals(?:es|s)?|Frequency\\s+table(?:es|s)?|Negative\\s+number(?:es|s)?|Positive\\s+number(?:es|s)?|Problem\\s+solving(?:es|s)?|Ratio\\s+Reasoning(?:es|s)?|Rational\\s+number(?:es|s)?|Regular\\s+Polygon(?:es|s)?|Right\\s+trapezoid(?:es|s)?|table\\s+of\\s+values(?:es|s)?|Two-dimensional(?:es|s)?|Unit\\s+rate\\s+point(?:es|s)?|Write\\s+Equations(?:es|s)?|absolute\\s+value(?:es|s)?|Boundary\\s+point(?:es|s)?|Colon\\s+notation(?:es|s)?|Compare\\s+Ratios(?:es|s)?|counterexample(?:es|s)?|Cross-multipl(?:y|ies)|Decimal\\s+places(?:es|s)?|generalization(?:es|s)?|Linear\\s+pattern(?:es|s)?|math\\s+biograph(?:y|ies)|predictabilit(?:y|ies)|Rate\\s+of\\s+change(?:es|s)?|reasonableness(?:es|s)?|representation(?:es|s)?|True\\s+statement(?:es|s)?|long\\s+division(?:es|s)?|decimal\\s+point(?:es|s)?|parallelogram(?:es|s)?|common\\s+factor(?:es|s)?|Approximatel(?:y|ies)|Balance\\s+point(?:es|s)?|Closed\\s+circle(?:es|s)?|Expanded\\s+form(?:es|s)?|Extreme\\s+value(?:es|s)?|Halfway\\s+value(?:es|s)?|Metric\\s+system(?:es|s)?|Part-to-whole(?:es|s)?|Perpendicular(?:es|s)?|Simplest\\s+form(?:es|s)?|Skip\\s+counting(?:es|s)?|Unit\\s+fraction(?:es|s)?|Work\\s+backward(?:es|s)?|mixed\\s+number(?:es|s)?|ordered\\s+pair(?:es|s)?|surface\\s+area(?:es|s)?|line\\s+segment(?:es|s)?|distribution(?:es|s)?|scale\\s+factor(?:es|s)?|prime\\s+factor(?:es|s)?|Annex\\s+a\\s+zero(?:es|s)?|Decimal\\s+grid(?:es|s)?|doer\\s+of\\s+math(?:es|s)?|Lateral\\s+area(?:es|s)?|Lateral\\s+face(?:es|s)?|Less\\s+than\\s+1%(?:es|s)?|Metric\\s+units(?:es|s)?|mirror\\s+image(?:es|s)?|No\\s+more\\s+than(?:es|s)?|Part-to-part(?:es|s)?|pattern\\s+rule(?:es|s)?|pattern\\s+unit(?:es|s)?|Power\\s+of\\s+ten(?:es|s)?|Prime\\s+number(?:es|s)?|Proportional(?:es|s)?|relationship(?:es|s)?|Slant\\s+height(?:es|s)?|Slanted\\s+side(?:es|s)?|Solution\\s+set(?:es|s)?|tape\\s+diagram(?:es|s)?|Target\\s+total(?:es|s)?|x-coordinate(?:es|s)?|Distributive(?:es|s)?|multi-digit(?:es|s)?|place\\s+value(?:es|s)?|denominator(?:es|s)?|coefficient(?:es|s)?|Annex\\s+zeros(?:es|s)?|Base\\s+1\\s+\\(b1\\)(?:es|s)?|Base\\s+2\\s+\\(b2\\)(?:es|s)?|Common\\s+form(?:es|s)?|Coordinates(?:es|s)?|Factor\\s+pair(?:es|s)?|Factor\\s+tree(?:es|s)?|Middle\\s+half(?:es|s)?|Number\\s+line(?:es|s)?|Open\\s+circle(?:es|s)?|Per\\s+hundred(?:es|s)?|Ratio\\s+table(?:es|s)?|Side\\s+length(?:es|s)?|Target\\s+mean(?:es|s)?|Total\\s+parts(?:es|s)?|Total\\s+price(?:es|s)?|Variabilit(?:y|ies)|Associative(?:es|s)?|Commutative(?:es|s)?|bring\\s+down(?:es|s)?|equivalent(?:es|s)?|reciprocal(?:es|s)?|hundredths(?:es|s)?|proportion(?:es|s)?|expression(?:es|s)?|substitute(?:es|s)?|inequalit(?:y|ies)|like\\s+terms(?:es|s)?|Better\\s+Buy(?:es|s)?|Comparison(?:es|s)?|confidence(?:es|s)?|conjecture(?:es|s)?|Constraint(?:es|s)?|cubic\\s+unit(?:es|s)?|depends\\s+on(?:es|s)?|Dimensions(?:es|s)?|Equal\\s+sign(?:es|s)?|math\\s+stor(?:y|ies)|profession(?:es|s)?|reasonable(?:es|s)?|Reflection(?:es|s)?|repetition(?:es|s)?|round\\s+trip(?:es|s)?|Unit\\s+price(?:es|s)?|Unit\\s+ratio(?:es|s)?|remainder(?:es|s)?|algorithm(?:es|s)?|numerator(?:es|s)?|unit\\s+rate(?:es|s)?|perimeter(?:es|s)?|rectangle(?:es|s)?|trapezoid(?:es|s)?|histogram(?:es|s)?|frequenc(?:y|ies)|Base\\s+area(?:es|s)?|Benchmark(?:es|s)?|communit(?:y|ies)|Composite(?:es|s)?|Congruent(?:es|s)?|decompose(?:es|s)?|Deviation(?:es|s)?|Divisible(?:es|s)?|ingenuit(?:y|ies)|Interpret(?:es|s)?|inventor(?:y|ies)|Magnitude(?:es|s)?|persevere(?:es|s)?|represent(?:es|s)?|symmetric(?:es|s)?|the\\s+whole(?:es|s)?|Unit\\s+cube(?:es|s)?|Variation(?:es|s)?|Equation(?:es|s)?|Solution(?:es|s)?|quotient(?:es|s)?|exponent(?:es|s)?|estimate(?:es|s)?|simplif(?:y|ies)|variable(?:es|s)?|evaluate(?:es|s)?|opposite(?:es|s)?|triangle(?:es|s)?|box\\s+plot(?:es|s)?|dot\\s+plot(?:es|s)?|quartile(?:es|s)?|argument(?:es|s)?|at\\s+least(?:es|s)?|Constant(?:es|s)?|critique(?:es|s)?|Data\\s+set(?:es|s)?|Diagonal(?:es|s)?|Discount(?:es|s)?|Distance(?:es|s)?|Dividend(?:es|s)?|Interval(?:es|s)?|Negative(?:es|s)?|organize(?:es|s)?|Parallel(?:es|s)?|Per\\s+Unit(?:es|s)?|Positive(?:es|s)?|Propert(?:y|ies)|quantit(?:y|ies)|rotation(?:es|s)?|strateg(?:y|ies)|strength(?:es|s)?|Symmetr(?:y|ies)|Identit(?:y|ies)|Rational(?:es|s)?|Isolate(?:es|s)?|Balance(?:es|s)?|product(?:es|s)?|regroup(?:es|s)?|decimal(?:es|s)?|percent(?:es|s)?|integer(?:es|s)?|rhombus(?:es|s)?|polygon(?:es|s)?|pyramid(?:es|s)?|segment(?:es|s)?|outlier(?:es|s)?|cluster(?:es|s)?|Average(?:es|s)?|Convert(?:es|s)?|Divisor(?:es|s)?|Formula(?:es|s)?|justif(?:y|ies)|portion(?:es|s)?|reflect(?:es|s)?|Squared(?:es|s)?|Unknown(?:es|s)?|Whisker(?:es|s)?|factor(?:es|s)?|tenths(?:es|s)?|volume(?:es|s)?|vertex(?:es|s)?|median(?:es|s)?|Expand(?:es|s)?|growth(?:es|s)?|Markup(?:es|s)?|Output(?:es|s)?|puzzle(?:es|s)?|rhythm(?:es|s)?|Skewed(?:es|s)?|Spread(?:es|s)?|Survey(?:es|s)?|x-axis(?:es|s)?|y-axis(?:es|s)?|digit(?:es|s)?|ratio(?:es|s)?|prism(?:es|s)?|Cubed(?:es|s)?|Input(?:es|s)?|Order(?:es|s)?|Range(?:es|s)?|Scale(?:es|s)?|Solve(?:es|s)?|Prime(?:es|s)?|area(?:es|s)?|edge(?:es|s)?|data(?:es|s)?|Apex(?:es|s)?|Axis(?:es|s)?|Base(?:es|s)?|Face(?:es|s)?|gear(?:es|s)?|Mode(?:es|s)?|Peak(?:es|s)?|net(?:es|s)?|LCM(?:es|s)?|MCM(?:es|s)?|GCF(?:es|s)?|MCD(?:es|s)?|GCD(?:es|s)?|LCD(?:es|s)?|IQR(?:es|s)?|RIC(?:es|s)?|MAD(?:es|s)?|DMA(?:es|s)?|DAM(?:es|s)?|KCF(?:es|s)?|MCI(?:es|s)?|Gap(?:es|s)?|Tax(?:es|s)?|Tip(?:es|s)?|SA(?:es|s)?)\\b","lookup":{"equation":0,"inverse operation":1,"isolate":2,"balance":3,"addition property of equality":4,"solution":5,"product":6,"quotient":7,"factor":8,"remainder":9,"digit":10,"multi-digit":11,"prime factorization":12,"greatest common factor":13,"least common multiple":14,"exponent":15,"algorithm":16,"long division":17,"bring down":18,"regroup":19,"place value":20,"estimate":21,"decimal point":22,"numerator":23,"denominator":24,"equivalent":25,"reciprocal":26,"mixed number":27,"decimal":28,"tenth":29,"hundredth":30,"improper fraction":31,"simplify":32,"ratio":33,"unit rate":34,"percent":35,"proportion":36,"variable":37,"expression":38,"coefficient":39,"substitute":40,"inequality":41,"evaluate":42,"like term":43,"integer":44,"absolute value":45,"opposite":46,"coordinate plane":47,"ordered pair":48,"perimeter":49,"volume":50,"surface area":51,"area":52,"triangle":53,"rectangle":54,"parallelogram":55,"trapezoid":56,"rhombu":57,"polygon":58,"prism":59,"pyramid":60,"net":61,"vertex":62,"edge":63,"segment":64,"line segment":65,"median":66,"outlier":67,"interquartile range":68,"mean absolute deviation":69,"keep-change-flip":70,"data":71,"histogram":72,"box plot":73,"dot plot":74,"quartile":75,"frequency":76,"distribution":77,"cluster":78,"scale factor":79,"equivalent ratio":80,"equivalent expression":81,"equivalent fraction":82,"common factor":83,"common multiple":84,"least common denominator":85,"prime factor":86,"conversion factor":87,"algebraic expression":88,"lcm":89,"mcm":90,"gcf":91,"mcd":92,"gcd":93,"lcd":94,"iqr":95,"ric":96,"mad":97,"dma":98,"dam":99,"sa":100,"kcf":101,"mci":102,"add and subtract decimal":103,"additive pattern":104,"annex a zero":105,"annex zero":106,"apex":107,"appropriate measures of center":108,"approximately":109,"area of a triangle":110,"area of composite figure":111,"area of parallelogram":112,"area of regular polygon":113,"area of trapezoid":114,"argument":115,"associative property":116,"at least":117,"at least / at most":118,"average":119,"axi":120,"balance point":121,"base":122,"base 1 (b1)":123,"base 2 (b2)":124,"base area":125,"benchmark":126,"benchmark percent":127,"better buy":128,"bilateral symmetry":129,"boundary point":130,"closed circle":131,"colon notation":132,"common denominator":133,"common form":134,"community":135,"community agreement":136,"commutative property":137,"compare and order integer":138,"compare ratio":139,"comparison":140,"compatible number":141,"composite":142,"composite figure":143,"composite number":144,"confidence":145,"congruent":146,"conjecture":147,"constant":148,"constraint":149,"convert":150,"convert measurement unit":151,"convert measurements between system":152,"convert measurements within the same system":153,"coordinate":154,"counterexample":155,"critique":156,"cross-multiply":157,"cubed":158,"cubic unit":159,"customary system":160,"customary unit":161,"data distribution":162,"data set":163,"decimal division algorithm":164,"decimal grid":165,"decimal place":166,"decompose":167,"define the variable":168,"dependent variable":169,"depends on":170,"describe the data using the median":171,"determine the whole given the part and percent":172,"deviation":173,"diagonal":174,"dimension":175,"discount":176,"display data with box plot":177,"display data with histogram":178,"distance":179,"distance between vertice":180,"distance on the coordinate plane":181,"distributive property":182,"divide decimal":183,"divide fraction":184,"divide mixed number":185,"divide multi-digit number":186,"divide whole numbers by fraction":187,"dividend":188,"divisible":189,"division of fraction":190,"division property of equality":191,"divisor":192,"doer of math":193,"double number line":194,"equal sign":195,"equations and inequalities problem solving":196,"equivalent division":197,"evaluate expression":198,"expand":199,"expanded form":200,"extreme value":201,"face":202,"factor an expression":203,"factor pair":204,"factor tree":205,"find factors and multiple":206,"five-number summary":207,"formula":208,"fraction division problem solving":209,"fractions, decimals, and percent":210,"frequency table":211,"gap":212,"gear":213,"generalization":214,"graph inequality":215,"graph on the coordinate plane":216,"graph ratio table":217,"greater than 100%":218,"greatest common factor (gcf)":219,"grouping symbol":220,"growth":221,"halfway value":222,"horizontal distance":223,"identity property":224,"independent variable":225,"ingenuity":226,"input":227,"integers and absolute value":228,"interpret":229,"interval":230,"inventory":231,"justify":232,"keep, change, flip":233,"lateral area":234,"lateral face":235,"least common multiple (lcm)":236,"length, width, height":237,"less than 1%":238,"line of symmetry":239,"linear pattern":240,"magnitude":241,"make sense of a problem":242,"markup":243,"math biography":244,"math story":245,"mean, median, and mode":246,"measure of center":247,"measure of variation":248,"measurement system":249,"metric system":250,"metric unit":251,"middle half":252,"mirror image":253,"mode":254,"multi-step problem":255,"multiplication property of equality":256,"multiplicative inverse":257,"multiply decimal":258,"negative":259,"negative coordinate":260,"negative integer":261,"negative number":262,"no more than":263,"non-statistical question":264,"number line":265,"numerical expression":266,"one-step equation":267,"open circle":268,"opposite of the opposite":269,"order":270,"order of operation":271,"ordered pairs in all four quadrant":272,"organize":273,"output":274,"parallel":275,"part-to-part":276,"part-to-whole":277,"pattern rule":278,"pattern unit":279,"peak":280,"per hundred":281,"per unit":282,"percent of a number":283,"percent problem solving":284,"percents greater than 100% and less than 1%":285,"perpendicular":286,"persevere":287,"portion":288,"positive":289,"positive number":290,"power of ten":291,"powers and exponent":292,"predictability":293,"prime number":294,"problem solving":295,"profession":296,"properties of operation":297,"property":298,"proportional":299,"puzzle":300,"quantity":301,"range":302,"range and interquartile range":303,"rate of change":304,"rates and unit rate":305,"ratio and rate problem solving":306,"ratio reasoning":307,"ratio table":308,"rational number":309,"rational numbers on the number line":310,"reasonable":311,"reasonablenes":312,"rectangular prism":313,"reflect":314,"reflect points across axe":315,"reflection":316,"regular polygon":317,"relationship":318,"repeated multiplication":319,"repetition":320,"represent":321,"representation":322,"rhythm":323,"right trapezoid":324,"rotation":325,"round trip":326,"scale":327,"shape of data distribution":328,"shape of the data":329,"side length":330,"simplest form":331,"simplify algebraic expression":332,"skewed":333,"skip counting":334,"slant height":335,"slanted side":336,"solution set":337,"solve":338,"solve and graph inequality":339,"solve multiplication and division equation":340,"solve one-step addition and subtraction equation":341,"spread":342,"squared":343,"statistical question":344,"statistical questions and data":345,"strategy":346,"strength":347,"subtraction property of equality":348,"surface area of prism":349,"surface area of pyramid":350,"surface area using net":351,"survey":352,"symmetric":353,"symmetry":354,"table of value":355,"tape diagram":356,"target mean":357,"target total":358,"tax":359,"the distributive property":360,"the whole":361,"tip":362,"total part":363,"total price":364,"triangular prism":365,"true statement":366,"two-dimensional":367,"understand percent":368,"understand ratio":369,"unit cube":370,"unit fraction":371,"unit price":372,"unit rate point":373,"unit rate problem solving":374,"unit ratio":375,"unknown":376,"variability":377,"variation":378,"vertical distance":379,"volume of rectangular prism":380,"volume with whole-number edge":381,"whisker":382,"work backward":383,"write algebraic expression":384,"write and evaluate numerical expressions with exponent":385,"write equation":386,"write inequality":387,"x-axi":388,"x-coordinate":389,"y-axi":390,"associative":116,"commutative":137,"distributive":182,"identity":224,"prime":294,"rational":309}};
 window.__HW_WORKED__ = {"title":"How to divide with fractions","titleEs":"","lines":["1. Identify operation on variable","2. Use inverse operation: subtract to undo addition; add to undo subtraction","3. Property of Equality: do same operation to both sides"],"linesEs":null};
 </script>
-<script src="/assets/homework/homework-vocab-3da9690d66.bundle.js"></script>
-<script src="/assets/homework/homework-core-e12f28ae0a.bundle.js"></script>
+<script src="/assets/homework/homework-vocab-12619585d8.bundle.js"></script>
+<script src="/assets/homework/homework-core-4eeaa5cadb.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

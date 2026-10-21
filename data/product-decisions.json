@@ -80,13 +80,14 @@
     {
       "id": "family-homework-route-choices",
       "surface": "lessons/*/homework.html — family homework only (scripts/homework-guided-notes.mjs)",
-      "decision": "Family homework offers three optional routes: Quick Practice (Learn, Check, Done; 2 problems), Learn & Practice (Learn, Words, Check, Done; 6 problems), and Family Math Studio (Learn, Words, Check, Play, Done; 6 problems plus one optional home mission and one game). Each route shows an approximate time range, never a countdown. No route requires an adult or a submission; the route choice is saved on the device, and a shared link contains the route and language but no student responses or reflection. The student may pause or stop at any time. Family Math Studio is the default path for a new or automatically initialized visit; explicit path choices and shared links take precedence.",
+      "decision": "Family homework offers three optional routes: Quick (Learn, Check, Done; 5–10 min; 2 problems), Learn & practice (Learn, Words, Check, Done; 15–20 min) and Full Studio (Learn, Words, Check, Play, Done; 20–30 min; adds one optional home mission and one game). The experience as a whole is named Family Math Studio, so the page and the route are never the same word. Each route shows an approximate time range, never a countdown. No route requires an adult or a submission; the route choice is saved on the device, and a shared link contains the route and language but no student responses or reflection. The student may pause or stop at any time. Full Studio is the default path for a new or automatically initialized visit; explicit path choices and shared links take precedence.",
       "decidedBy": "Joel",
       "decidedOn": "2026-10-12",
       "because": "Make all of these changes updates. After, merge, commit, deploy and make live. also, I want the default path to be the 30 minute one",
       "pinnedBy": "scripts/audit-homework-alignment.mjs",
       "pinnedCheck": "family-route",
-      "supersedes": "family-homework-single-path (Joel, 2026-10-09): one required path with no time estimates; and family-homework-three-routes (Joel, 2026-10-07): earlier three-route design."
+      "supersedes": "family-homework-single-path (Joel, 2026-10-09): one required path with no time estimates; and family-homework-three-routes (Joel, 2026-10-07): earlier three-route design.",
+      "amended": "2026-10-21: route labels renamed (Quick / Learn & practice / Full Studio) so the experience name Family Math Studio is not also a route name; the 30-minute default is unchanged."
     },
     {
       "id": "part-two-solve-it-shows-worked-steps",
@@ -128,6 +129,26 @@
       "pinnedBy": "tests/curriculum-shell-hub.spec.ts",
       "pinnedCheck": "curriculum-hub-original-layout",
       "supersedes": "a7845b6632 (2026-10-16) progressive hub, an agent-led refactor not put to Joel."
+    },
+    {
+      "id": "family-homework-experience-layer",
+      "surface": "lessons/*/homework.html — the family homework page (scripts/lib/homework-experience*.mjs, scripts/homework-guided-notes.mjs)",
+      "decision": "Tonight's goal is four problems (two on Quick) out of the dozen on the page, shown as a meter; a wrong answer is never progress and nothing celebrates before the goal; finishing the goal opens that page's mystery challenge. A first visit is bilingual (English with Spanish beneath), language is the first control on the first screen, and the page never opens a native alert/confirm/prompt. Every page asks how sure the student feels before and after (a plant that grows, kept only on the device) and ends with teach-it-back. Nothing a family must read is under 13px and every tap target is 44px.",
+      "decidedBy": "Joel",
+      "decidedOn": "2026-10-21",
+      "because": "Make all of the changes and make them live (merge, commit, deploy). You decide the order to do them, but make sure they are all made. Also, during and after the changes, think about what would make this page award-winning for engagement, family engagement, math engagement and clarity",
+      "pinnedBy": "tools/homework-experience.test.mjs",
+      "pinnedCheck": "a wrong answer is not progress and nothing celebrates before the goal"
+    },
+    {
+      "id": "family-surfaces-english-spanish-only",
+      "surface": "/families/, /families/lessons/<id>/, /lessons/<id>/family/ and lessons/<id>/homework*.html — every family-facing surface and the config fields that feed it",
+      "decision": "Family surfaces are English and Spanish only. The Arabic, French and Dari machine translations (the lesson config key `familyLanguages` and the language picker on /lessons/<id>/family/) are deleted, not spread to other surfaces, and the config key may not return.",
+      "decidedBy": "Joel",
+      "decidedOn": "2026-10-21",
+      "because": "Arabic, French and Dari exist only on /lessons/<id>/family/ -- don't do this. I only need spanish and english",
+      "pinnedBy": "tools/validate-family-exit-ticket.mjs",
+      "pinnedCheck": "a config carrying familyLanguages must fail"
     }
   ]
 }

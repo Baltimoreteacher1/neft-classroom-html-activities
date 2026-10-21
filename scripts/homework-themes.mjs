@@ -240,26 +240,6 @@ header.homework-header,
   user-select: none;
 }
 
-/* 3 Stars Milestone Bar on Quick Check */
-.stars-to-win-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, var(--teal-light) 0%, #ffffff 100%);
-  border: 1.5px solid var(--teal);
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  margin-bottom: 20px;
-}
-.stars-to-win-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 14.5px;
-  color: var(--navy);
-}
 .stars-milestone-chips {
   display: flex;
   flex-wrap: wrap;
@@ -278,16 +258,7 @@ header.homework-header,
   flex: 0 0 auto;
   white-space: nowrap;
 }
-/* On a phone the goal sentence and the three milestone chips do not fit on one
-   line, so they stack instead of fighting for the same 400px. */
-@media (max-width: 620px) {
-  .stars-to-win-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .stars-milestone-chips { width: 100%; }
-}
+.stars-milestone-chips { width: 100%; }
 
 /* Rotated Huddle Activity Card */
 .huddle-hook-banner {

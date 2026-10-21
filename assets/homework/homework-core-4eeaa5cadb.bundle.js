@@ -33,7 +33,7 @@ function famDomTiles(pairs, start) {
   for (var k = 0; k < n; k++) {
     var i = (start + k) % n;
     var prev = (i + n - 1) % n;
-    tiles.push({ k: k, left: pairs[prev].b, right: pairs[i].a });
+    tiles.push({ k: k, left: pairs[prev].b, leftEs: pairs[prev].bEs || '', right: pairs[i].a, rightEs: pairs[i].aEs || '' });
   }
   return tiles;
 }
@@ -78,15 +78,29 @@ function dominoTileEl(tile, isButton) {
   var el = document.createElement(isButton ? 'button' : 'div');
   if (isButton) el.type = 'button'; else el.setAttribute('role', 'listitem');
   el.className = 'fam-dom-tile';
-  var l = document.createElement('span');
-  l.className = 'fam-dom-half fam-dom-left';
-  l.textContent = tile.left;
-  var r = document.createElement('span');
-  r.className = 'fam-dom-half fam-dom-right';
-  r.textContent = tile.right;
+  var l = domHalfEl('fam-dom-half fam-dom-left', tile.left, tile.leftEs);
+  var r = domHalfEl('fam-dom-half fam-dom-right', tile.right, tile.rightEs);
   el.appendChild(l);
   el.appendChild(r);
   return el;
+}
+
+/* A tile half is English; when it carries words it carries the Spanish too, shown in
+   Spanish and bilingual modes. Numerals and symbols have no Spanish and stay one line. */
+function domHalfEl(className, en, es) {
+  var half = document.createElement('span');
+  half.className = className;
+  if (!es) { half.textContent = en; return half; }
+  var a = document.createElement('span');
+  a.className = 'lang-en';
+  a.textContent = en;
+  var b = document.createElement('span');
+  b.className = 'lang-es';
+  b.setAttribute('lang', 'es');
+  b.textContent = es;
+  half.appendChild(a);
+  half.appendChild(b);
+  return half;
 }
 
 function dominoSlotEl() {
@@ -477,10 +491,6 @@ function setHomeworkRoute(mode, options) {
   });
   var shell = document.querySelector('.homework-tabs-shell');
   if (shell) shell.dataset.tabCount = String(route.tabs.length);
-  ['hw_hero_stop_count', 'hw_hero_stop_count_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(route.tabs.length);
-  });
 
   /* Every core problem, in page order (basic practice, then warm-up, then level up). Quick practice is the first two;
      the other paths show them all. problemLimit 0 means "all of them", so the count follows the page instead of a number
@@ -514,24 +524,14 @@ function setHomeworkRoute(mode, options) {
     optional.querySelectorAll('[data-hw-quick-more-count], [data-hw-quick-more-count-es]').forEach(function (el) { el.textContent = String(extra); });
   }
   document.querySelectorAll('[data-hw-core-count]').forEach(function (el) { el.textContent = String(coreProblems.length); });
-  ['hw_goal_count', 'hw_goal_count_es', 'hw_check_problem_count', 'hw_check_problem_count_es'].forEach(function (id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = String(limit);
-  });
-  var progress = document.getElementById('progress_text');
-  if (progress) {
-    var completed = Array.from(document.querySelectorAll('.problem-section.correct, .problem-section.reviewed'))
-      .filter(function (problem) { return !problem.hidden && !problem.closest('[hidden]') && !problem.closest('.more-practice'); }).length;
-    progress.textContent = completed + ' / ' + limit;
-  }
-  if (typeof updateProgress === 'function') updateProgress();
+  if (typeof hwRenderGoal === 'function') hwRenderGoal(false);
 
   var note = document.getElementById('hw_route_note');
   if (note) {
     var copy = {
-      quick: ['Quick practice selected: one example, 2 problems, and one explanation. Pause or stop whenever you need.', 'Práctica breve seleccionada: un ejemplo, 2 problemas y una explicación. Pueden pausar o terminar cuando lo necesiten.'],
-      core: ['Learn & practice selected: ' + limit + ' problems, key words, and an explanation. Pause or stop whenever you need.', 'Ruta de aprendizaje seleccionada: ' + limit + ' problemas, palabras clave y una explicación. Pueden pausar o terminar cuando lo necesiten.'],
-      full: ['Family Math Studio selected: add one home mission and one math game. Everything is optional.', 'Estudio familiar seleccionado: agrega una misión en casa y un juego de matemáticas. Todo es opcional.']
+      quick: ['Quick selected: one example and 2 problems. Stop whenever you need.', 'Rápida seleccionada: un ejemplo y 2 problemas. Pueden parar cuando lo necesiten.'],
+      core: ['Learn & practice selected: key words, then practice. Goal: ' + HW_GOAL_TARGET + ' problems. Stop whenever you need.', 'Aprender y practicar seleccionada: palabras clave y práctica. Meta: ' + HW_GOAL_TARGET + ' problemas. Pueden parar cuando lo necesiten.'],
+      full: ['Full Studio (recommended): everything, plus one home mission and one game. Everything is optional.', 'Estudio completo (recomendada): todo, más una misión en casa y un juego. Todo es opcional.']
     }[mode];
     setBiText(note, copy[0], copy[1]);
   }
@@ -937,7 +937,7 @@ function openConceptZoom(btn) {
 }
 
 function preparePaperPractice() {
-  alert("For offline work, print now or choose Save as PDF in the print dialog. Open the saved PDF before disconnecting. This website has not downloaded an offline copy. / Para trabajar sin internet, imprime ahora o elige Guardar como PDF. Abre el PDF guardado antes de desconectarte. Este sitio no ha descargado una copia sin conexión.");
+  hwNotice("For offline work, print now or choose Save as PDF in the print dialog. Open the saved PDF before disconnecting. This website has not downloaded an offline copy. / Para trabajar sin internet, imprime ahora o elige Guardar como PDF. Abre el PDF guardado antes de desconectarte. Este sitio no ha descargado una copia sin conexión.", 9000);
   printProblemsOnly();
 }
 window.preparePaperPractice = preparePaperPractice;
@@ -954,7 +954,7 @@ function toggleVoiceRecording() {
     return;
   }
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    alert("Audio recording is not supported in this browser. / La grabación no es compatible en este navegador.");
+    hwNotice("Audio recording is not supported in this browser. / La grabación no es compatible en este navegador.");
     return;
   }
   navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
@@ -1013,7 +1013,7 @@ function toggleVoiceRecording() {
       }
     }, 1000);
   }).catch(function() {
-    alert("Microphone access was blocked. Please allow mic permissions to record. / Se bloqueó el acceso al micrófono.");
+    hwNotice("Microphone access was blocked. Please allow mic permissions to record. / Se bloqueó el acceso al micrófono.");
   });
 }
 window.toggleVoiceRecording = toggleVoiceRecording;
@@ -1035,11 +1035,13 @@ function toggleSignoffSubmitBtn() {
 }
 
 function homeworkShareUrl() {
-  var url = new URL(window.location.href);
+  /* The lesson page, the route, the language and the class section (the hub's class
+     link). A copied link carries nothing else from the address bar: no answers, no
+     Canvas or SCORM launch parameters, no tracking. */
   var route = document.body.dataset.homeworkRoute || 'full';
-  ['answers', 'responses', 'reflection', 'studentData', 'work', 'progress', 'photo', 'voiceMemo'].forEach(function (key) {
-    url.searchParams.delete(key);
-  });
+  var url = new URL(window.location.origin + window.location.pathname);
+  var section = new URLSearchParams(window.location.search).get('section');
+  if (section) url.searchParams.set('section', section);
   url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'full');
   url.searchParams.set('lang', document.body.dataset.homeworkLanguage || preferredLanguageMode());
   return url.href;
@@ -1049,15 +1051,19 @@ function copyHomeworkLink() {
   var url = homeworkShareUrl();
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(url).then(function() {
-      alert("Link copied with your route and language. / Enlace copiado con tu ruta e idioma.");
-    }).catch(function() { window.prompt('Copy this link / Copia este enlace:', url); });
-  } else window.prompt('Copy this link / Copia este enlace:', url);
+      hwNotice("Link copied with your route and language. / Enlace copiado con tu ruta e idioma.");
+    }).catch(function() { hwToast('Copy this link: ' + url, 'Copia este enlace: ' + url, 12000); });
+  } else hwToast('Copy this link: ' + url, 'Copia este enlace: ' + url, 12000);
 }
 
 function startHomework() {
   var last = document.body.dataset.activeTab || 'learn';
   switchHomeworkTab(last);
-  document.getElementById('hw_panel_' + last)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  var panel = document.getElementById('hw_panel_' + last);
+  if (!panel) return;
+  panel.scrollIntoView({ block: 'start', behavior: typeof hwReducedMotion === 'function' && hwReducedMotion() ? 'auto' : 'smooth' });
+  panel.setAttribute('tabindex', '-1');
+  panel.focus({ preventScroll: true });
 }
 
 function printProblemsOnly() {
@@ -1158,23 +1164,8 @@ function initHomeworkShareLinks() {
 }
 
 function getFamilyStreakCount() {
-  try {
-    var streakKey = 'hw_family_streak_history';
-    var history = JSON.parse(localStorage.getItem(streakKey) || '[]');
-    if (!history.length) return 1;
-    var streak = 1;
-    for (var i = history.length - 2; i >= 0; i--) {
-      var prev = new Date(history[i]);
-      var next = new Date(history[i + 1]);
-      var diffDays = Math.round((next - prev) / (1000 * 60 * 60 * 24));
-      if (diffDays === 1) streak++;
-      else if (diffDays === 0) continue;
-      else break;
-    }
-    return streak;
-  } catch(e) {
-    return 1;
-  }
+  /* The certificate and the Family nights card read one record (hw_family_nights_v1). */
+  return Math.max(1, hwStreakCount(new Date()));
 }
 
 function saveParentSignoff() {
@@ -1190,17 +1181,9 @@ function saveParentSignoff() {
     year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
   });
 
-  // Track consecutive nights practiced
-  try {
-    var todayKey = new Date().toISOString().slice(0, 10);
-    var streakKey = 'hw_family_streak_history';
-    var streakHistory = JSON.parse(localStorage.getItem(streakKey) || '[]');
-    if (streakHistory.indexOf(todayKey) === -1) {
-      streakHistory.push(todayKey);
-      streakHistory.sort();
-      localStorage.setItem(streakKey, JSON.stringify(streakHistory));
-    }
-  } catch(e) {}
+  // Signing off counts as a family night.
+  hwRecordNight();
+  hwRenderNights();
 
   const payload = {
     parentName: nameVal,
@@ -1214,10 +1197,19 @@ function saveParentSignoff() {
     lessonTitle: lessonTitle
   };
 
+  var signoffSaved = false;
   try {
     localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
+    signoffSaved = true;
   } catch(e) {
-    alert('This reflection could not be saved on this device. Copy it before leaving. / No se pudo guardar esta reflexión. Cópiala antes de salir.');
+    hwFreeSignoffMedia(lessonId);
+    try {
+      localStorage.setItem('hw_parent_signoff_' + lessonId, JSON.stringify(payload));
+      signoffSaved = true;
+    } catch(e2) {}
+  }
+  if (!signoffSaved) {
+    hwNotice('This reflection could not be saved on this device. Copy it before leaving. / No se pudo guardar esta reflexión. Cópienla antes de salir.');
     return;
   }
 
@@ -1352,7 +1344,7 @@ function preferredLanguageMode() {
       : [navigator.language || ''];
     if (langs.some(function (l) { return String(l).toLowerCase().indexOf('es') === 0; })) return 'es';
   } catch (e) {}
-  return 'en';
+  return 'bilingual';
 }
 
 function restoreParentSignoff() {
@@ -1412,11 +1404,14 @@ function initHomeworkPage() {
   });
   try {
     localStorage.removeItem('hw_last_tab');
-    const last = localStorage.getItem(lastTabStorageKey());
+    // The photobooth is a tool beside Done, never a place to resume: a family that last used it
+    // had finished, so they continue at Done.
+    let last = localStorage.getItem(lastTabStorageKey());
+    if (last === 'photobooth') last = 'done';
     const lastBtn = last ? document.getElementById('hw_tab_' + last) : null;
     if (lastBtn && !lastBtn.hidden) {
       switchHomeworkTab(last);
-      setBiText(document.getElementById('hw_resume_note'), 'Welcome back. Your saved plan and answers are on this device. Continue at ' + lastBtn.querySelector('.tab-en').textContent + '.', 'Bienvenido de nuevo. Tu plan y tus respuestas están guardados en este dispositivo. Continúa en ' + lastBtn.querySelector('.tab-es').textContent + '.');
+      setBiText(document.getElementById('hw_resume_note'), 'Welcome back. Your saved plan and answers are on this device. Continue at ' + lastBtn.querySelector('.tab-en').textContent + '.', 'Bienvenidos de nuevo. Su plan y sus respuestas están guardados en este dispositivo. Continúen en ' + lastBtn.querySelector('.tab-es').textContent + '.');
     }
     else switchHomeworkTab('learn');
   } catch(e) {}
@@ -1535,7 +1530,7 @@ function initHomeworkVocabPopups() {
       btn.className = 'obj-term';
       btn.setAttribute('data-term-idx', String(idx));
       btn.setAttribute('aria-haspopup', 'dialog');
-      btn.setAttribute('aria-label', m[0] + ': open definition');
+      btn.setAttribute('aria-label', document.body.classList.contains('lang-mode-es') ? m[0] + ': abrir definición' : document.body.classList.contains('lang-mode-bilingual') ? m[0] + ': open definition / abrir definición' : m[0] + ': open definition');
       btn.textContent = m[0];
       frag.appendChild(btn);
       cursor = m.index + m[0].length;
@@ -1579,6 +1574,7 @@ function initHomeworkVocabPopups() {
       '<p class="obj-popup-translation"><span class="obj-popup-tr-label">Español:</span> <span class="obj-popup-tr-es" lang="es"></span></p>' +
       '<p class="obj-popup-def"></p>' +
       '<p class="obj-popup-def-es" lang="es"></p>' +
+      '<details class="obj-popup-formal" hidden><summary><span class="lang-en">More precisely</span><span class="lang-es" lang="es">Con más precisión</span></summary><p class="obj-popup-formal-en"></p><p class="obj-popup-formal-es" lang="es"></p></details>' +
       '<figure class="obj-popup-visual"><img class="obj-popup-img" alt="" /><figcaption class="obj-popup-example"></figcaption></figure>' +
       '</div>';
     document.body.appendChild(backdrop);
@@ -1625,6 +1621,13 @@ function initHomeworkVocabPopups() {
     var esEl = bd.querySelector('.obj-popup-def-es');
     if (entry.defEs) { esEl.textContent = String(entry.defEs); esEl.hidden = false; }
     else { esEl.textContent = ''; esEl.hidden = true; }
+    var fm = bd.querySelector('.obj-popup-formal');
+    if (fm) {
+      fm.open = false;
+      fm.querySelector('.obj-popup-formal-en').textContent = entry.formal ? String(entry.formal) : '';
+      fm.querySelector('.obj-popup-formal-es').textContent = entry.formalEs ? String(entry.formalEs) : '';
+      fm.hidden = !entry.formal && !entry.formalEs;
+    }
     lastFocus = document.activeElement;
     bd.removeAttribute('hidden');
     bd.hidden = false;
@@ -1632,16 +1635,31 @@ function initHomeworkVocabPopups() {
     document.body.classList.add('obj-popup-open');
     var cb = bd.querySelector('.obj-popup-close');
     if (cb && cb.focus) cb.focus();
-    keyHandler = function(e) { if (e.key === 'Escape') closePopup(); };
+    var closeBtn = bd.querySelector('.obj-popup-close');
+    if (closeBtn) closeBtn.setAttribute('aria-label', document.body.classList.contains('lang-mode-es') ? 'Cerrar' : document.body.classList.contains('lang-mode-bilingual') ? 'Close / Cerrar' : 'Close');
+    if (keyHandler) document.removeEventListener('keydown', keyHandler);
+    keyHandler = function(e) {
+      if (e.key === 'Escape') { closePopup(); return; }
+      if (e.key !== 'Tab') return;
+      /* The popup is modal: Tab stays inside it. */
+      var items = Array.prototype.filter.call(bd.querySelectorAll('button, summary, [href], [tabindex]:not([tabindex="-1"])'), function (el) { return el.offsetParent !== null; });
+      if (!items.length) return;
+      var first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      else if (!bd.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+    };
     document.addEventListener('keydown', keyHandler);
   }
-  container.addEventListener('click', function(e) {
+  if (container.__hwTermClick) container.removeEventListener('click', container.__hwTermClick);
+  container.__hwTermClick = function(e) {
     var btn = e.target && e.target.closest ? e.target.closest('.obj-term') : null;
     if (!btn || !container.contains(btn)) return;
     e.preventDefault();
     var idx = Number(btn.getAttribute('data-term-idx'));
     if (Number.isInteger(idx)) openPopup(list[idx]);
-  });
+  };
+  container.addEventListener('click', container.__hwTermClick);
 }
 
 // Make every "Draw your model" grid an actual drawable surface (mouse + touch + stylus).
@@ -3248,6 +3266,377 @@ function toggleQuickOptional() {
 }
 
 
+/* ── Family experience: goal, mystery, confidence, share, dialogs ─────────── */
+var HW_GOAL_TARGET = 4;
+var HW_GOAL_QUICK = 2;
+var HW_ROUTE_TIMES = {"quick":"5–10","core":"15–20","full":"20–30"};
+
+function hwKey(name) { return 'hw_exp_' + (window.LESSON_ID || location.pathname) + '_' + name; }
+function hwGet(name) { try { return localStorage.getItem(hwKey(name)); } catch (e) { return null; } }
+/* Sign-off photos and voice notes (homework-guided-notes) are stored per lesson and are
+   the bulk of what a device holds. When the device is full, drop them from every other
+   lesson; the written reflection stays. */
+function hwFreeSignoffMedia(keepLessonId) {
+  try {
+    for (var i = localStorage.length - 1; i >= 0; i--) {
+      var key = localStorage.key(i);
+      if (!key || key.indexOf('hw_parent_signoff_') !== 0 || key === 'hw_parent_signoff_' + keepLessonId) continue;
+      var data = JSON.parse(localStorage.getItem(key) || '{}');
+      if (!data.photoData && !data.voiceMemoData) continue;
+      data.photoData = '';
+      data.voiceMemoData = '';
+      data.photo = '';
+      localStorage.setItem(key, JSON.stringify(data));
+    }
+  } catch (e) {}
+}
+function hwSet(name, value) { try { localStorage.setItem(hwKey(name), value); } catch (e) {} }
+function hwBi(en, es) {
+  var cls = document.body.classList;
+  if (cls.contains('lang-mode-es')) return es;
+  if (cls.contains('lang-mode-bilingual')) return en + ' · ' + es;
+  return en;
+}
+function hwReducedMotion() {
+  try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
+}
+
+/* Toast and confirm: in the page, in both languages, never a native dialog that a
+   phone browser can block and that only ever spoke English. */
+var hwToastTimer = 0;
+function hwToast(en, es, ms) {
+  var el = document.getElementById('hw_toast');
+  if (!el) return;
+  var message = hwBi(en, es);
+  el.textContent = message;
+  el.hidden = false;
+  /* The visible toast is hidden from screen readers; this region is always rendered, so
+     a change in it is announced. */
+  var live = document.getElementById('hw_toast_live');
+  if (live) live.textContent = message;
+  clearTimeout(hwToastTimer);
+  hwToastTimer = setTimeout(function () { el.hidden = true; if (live) live.textContent = ''; }, ms || 5000);
+}
+function hwConfirm(en, es, yesEn, yesEs, noEn, noEs, onYes) {
+  var dialog = document.getElementById('hw_dialog');
+  if (!dialog || typeof dialog.showModal !== 'function') {
+    if (window.confirm(hwBi(en, es))) onYes();
+    return;
+  }
+  document.getElementById('hw_dialog_text').textContent = hwBi(en, es);
+  document.getElementById('hw_dialog_yes').textContent = hwBi(yesEn, yesEs);
+  document.getElementById('hw_dialog_no').textContent = hwBi(noEn, noEs);
+  dialog.returnValue = '';
+  dialog.onclose = function () {
+    var answer = dialog.returnValue;
+    dialog.returnValue = '';
+    if (answer === 'yes') onYes();
+  };
+  dialog.showModal();
+}
+/* alert() replacement for strings written as "English / Español". */
+function hwNotice(pair, ms) {
+  var parts = String(pair).split(' / ');
+  hwToast(parts[0], parts.length > 1 ? parts.slice(1).join(' / ') : parts[0], ms);
+}
+
+/* A tab panel the family is not looking at is hidden, so only a hidden ancestor
+   BELOW the panel (the route's unused tier) excludes a problem. The goal, the share
+   text and the Done summary all read this one list from any tab. */
+function hiddenBelowPanel(el) {
+  for (var n = el; n && !(n.matches && n.matches('[data-tab-panel]')); n = n.parentElement) {
+    if (n.hidden) return true;
+  }
+  return false;
+}
+function activeCoreProblems() {
+  return Array.prototype.filter.call(document.querySelectorAll('.problem-section'), function (section) {
+    return !section.closest('.more-practice') && !hiddenBelowPanel(section);
+  });
+}
+
+/* Tonight's goal. One definition of "done": solved, or a written answer compared
+   with the key. The goal is four problems (two on Quick) out of the dozen on the
+   page, so it is reachable in a busy evening and the rest is honest bonus. */
+function hwGoalSnapshot() {
+  var problems = activeCoreProblems();
+  var done = problems.filter(function (section) {
+    return section.classList.contains('correct') || section.classList.contains('reviewed');
+  }).length;
+  var route = typeof activeHomeworkRoute === 'function' ? activeHomeworkRoute() : { problemLimit: 0 };
+  var cap = route.problemLimit > 0 ? HW_GOAL_QUICK : HW_GOAL_TARGET;
+  var available = problems.length;
+  return { done: done, goal: Math.max(1, Math.min(cap, available || cap)), available: available };
+}
+
+function hwDrawPips(el, shown, goal) {
+  var html = '';
+  for (var i = 0; i < goal; i++) html += '<span class="hw-pip' + (i < shown ? ' is-on' : '') + '"></span>';
+  el.innerHTML = html;
+  el.setAttribute('aria-label', hwBi("Tonight's goal: " + shown + ' of ' + goal, 'Meta de hoy: ' + shown + ' de ' + goal));
+}
+
+function hwCelebrate() {
+  if (hwReducedMotion()) return;
+  if (typeof playFanfareSound === 'function') playFanfareSound();
+  if (typeof triggerConfettiBurst === 'function') triggerConfettiBurst(null, null, 90);
+}
+
+/* A solved problem stays solved after a reload: the radio the family chose is
+   restored by the page, but the green "done" state is not, so tonight's meter
+   would read 0 / 4 on a page they had already finished. */
+var hwSolvedRestored = false;
+function hwPersistSolved() {
+  if (!hwSolvedRestored) return; // never overwrite saved progress before it has been read back
+  var map = {};
+  document.querySelectorAll('.problem-section').forEach(function (section) {
+    if (section.closest('.more-practice')) return;
+    var id = section.id.replace('problem_', '');
+    if (section.classList.contains('correct')) map[id] = 'correct';
+    else if (section.classList.contains('reviewed')) map[id] = 'reviewed';
+  });
+  hwSet('solved', JSON.stringify(map));
+}
+function hwRestoreSolved() {
+  var map = {};
+  try { map = JSON.parse(hwGet('solved') || '{}'); } catch (e) { map = {}; }
+  Object.keys(map).forEach(function (id) {
+    var section = document.getElementById('problem_' + id);
+    if (section && !section.classList.contains('incorrect')) section.classList.add(map[id]);
+  });
+  hwSolvedRestored = true;
+  var done = document.querySelector('[data-tab-panel="done"]');
+  if (done && !done.hidden && typeof updateCelebrationTab === 'function') updateCelebrationTab();
+}
+function hwClearProgress() {
+  hwSet('solved', '{}');
+  hwSet('goal_met', '');
+}
+
+/* The single writer for goal progress. Called after every check, on load, and when
+   the route or language changes. celebrate=false restores state without a fanfare. */
+function hwRenderGoal(celebrate) {
+  var snap = hwGoalSnapshot();
+  var shown = Math.min(snap.done, snap.goal);
+  var met = snap.done >= snap.goal;
+  var text = document.getElementById('progress_text');
+  if (text) text.textContent = shown + ' / ' + snap.goal;
+  var bar = document.getElementById('progress_bar');
+  if (bar) bar.style.width = (shown / snap.goal * 100) + '%';
+  document.querySelectorAll('.hw-pips').forEach(function (el) { hwDrawPips(el, shown, snap.goal); });
+  document.querySelectorAll('[data-hw-goal-count]').forEach(function (el) { el.textContent = String(snap.goal); });
+  document.querySelectorAll('[data-hw-goal-avail]').forEach(function (el) { el.textContent = String(snap.available); });
+  var bonus = Math.max(0, snap.done - snap.goal);
+  document.querySelectorAll('[data-hw-bonus]').forEach(function (el) {
+    el.hidden = bonus === 0;
+    var count = el.querySelector('[data-hw-bonus-count]');
+    if (count) count.textContent = String(bonus);
+  });
+  document.body.dataset.goalMet = met ? '1' : '0';
+  if (celebrate !== false) hwPersistSolved();
+
+  var banner = document.getElementById('goal_reached_banner');
+  if (banner) banner.hidden = !met;
+  if (met) {
+    var celebrated = hwGet('goal_met') === '1';
+    if (!celebrated) {
+      hwSet('goal_met', '1');
+      var badge = document.getElementById('tab_badge_check');
+      if (badge) badge.textContent = '★★★';
+      hwRecordNight();
+      hwRenderNights();
+      if (celebrate !== false) {
+        hwCelebrate();
+        hwToast("Goal reached! You did tonight's " + snap.goal + ' problems.', '¡Meta cumplida! Hicieron los ' + snap.goal + ' problemas de hoy.');
+      }
+    }
+  }
+  hwRenderMystery(met);
+}
+
+function hwRenderMystery(unlocked) {
+  var box = document.getElementById('hw_mystery');
+  if (!box) return;
+  box.classList.toggle('is-unlocked', !!unlocked);
+  var lock = document.getElementById('hw_mystery_lock');
+  if (lock) lock.textContent = unlocked ? '🔓' : '🔒';
+  var status = document.getElementById('hw_mystery_status');
+  var state = unlocked ? 'open' : 'locked-' + hwGoalSnapshot().goal;
+  if (status && status.dataset.state !== state) {
+    status.dataset.state = state;
+    status.innerHTML = unlocked
+      ? '<span class="lang-en"><strong>Unlocked!</strong> Go crack it.</span><span class="lang-es" lang="es"><strong>¡Desbloqueado!</strong> Ve a resolverlo.</span>'
+      : '<span class="lang-en">Locked. Finish <span data-hw-goal-count>' + hwGoalSnapshot().goal + '</span> problems and it opens.</span><span class="lang-es" lang="es">Bloqueado. Termina <span data-hw-goal-count>' + hwGoalSnapshot().goal + '</span> problemas y se abre.</span>';
+  }
+  var open = document.getElementById('hw_mystery_open');
+  if (open) open.hidden = !unlocked;
+  var quick = document.body.dataset.homeworkRoute === 'quick';
+  document.querySelectorAll('.hw-banner-mystery').forEach(function (el) { el.hidden = !unlocked || quick; });
+}
+
+function hwOpenMystery() {
+  var box = document.getElementById('hw_mystery');
+  if (!box) return;
+  if (typeof switchHomeworkTab === 'function') switchHomeworkTab('check');
+  setTimeout(function () {
+    var target = document.getElementById(box.dataset.problem);
+    if (!target) return;
+    target.scrollIntoView({ behavior: hwReducedMotion() ? 'auto' : 'smooth', block: 'start' });
+    target.setAttribute('tabindex', '-1');
+    target.focus({ preventScroll: true });
+    target.classList.add('hw-spotlight');
+    setTimeout(function () { target.classList.remove('hw-spotlight'); }, 2600);
+  }, 60);
+}
+
+/* Confidence: a plant that grows, asked before and after. Kept on this device. */
+function hwSetConfidence(phase, level) {
+  hwSet('conf_' + phase, String(level));
+  hwRenderConfidence();
+}
+function hwRenderConfidence() {
+  ['before', 'after'].forEach(function (phase) {
+    var value = hwGet('conf_' + phase);
+    document.querySelectorAll('.hw-conf-btn[data-conf-phase="' + phase + '"]').forEach(function (btn) {
+      var on = !!value && btn.dataset.confLevel === value;
+      btn.classList.toggle('is-on', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  });
+  var growth = document.getElementById('hw_conf_growth');
+  if (!growth) return;
+  var before = parseInt(hwGet('conf_before') || '0', 10);
+  var after = parseInt(hwGet('conf_after') || '0', 10);
+  var icons = ['', '🌱', '🌿', '🌳'];
+  if (!after) { growth.textContent = ''; return; }
+  if (!before) growth.textContent = hwBi('Thank you for telling us how you feel.', 'Gracias por contarnos cómo te sientes.');
+  else if (after > before) growth.textContent = hwBi('You grew from ' + icons[before] + ' to ' + icons[after] + '. That is learning!', 'Pasaste de ' + icons[before] + ' a ' + icons[after] + '. ¡Eso es aprender!');
+  else if (after === before) growth.textContent = hwBi('Steady at ' + icons[after] + '. Practice keeps confidence growing.', 'Constante en ' + icons[after] + '. Practicar hace crecer la confianza.');
+  else growth.textContent = hwBi('That is an honest answer. Hard things take time. You can ask Mr. Neft a question in ClassDojo.', 'Es una respuesta honesta. Lo difícil toma tiempo. Pueden hacerle una pregunta al Sr. Neft en ClassDojo.');
+}
+
+function hwRenderTonight() {
+  var mode = document.body.dataset.homeworkRoute || 'full';
+  var time = HW_ROUTE_TIMES[mode] || HW_ROUTE_TIMES.full;
+  document.querySelectorAll('[data-hw-tonight-time]').forEach(function (el) { el.textContent = time; });
+}
+
+/* Family nights: the dates a family finished a goal, kept on this device. A streak counts
+   school nights only (Monday to Friday), so a weekend never breaks it, and an unfinished
+   tonight does not break it either. Nothing here is ever sent anywhere. */
+var HW_NIGHTS_KEY = 'hw_family_nights_v1';
+function hwNightsRead() {
+  try {
+    var list = JSON.parse(localStorage.getItem(HW_NIGHTS_KEY) || '[]');
+    return Array.isArray(list) ? list : [];
+  } catch (e) { return []; }
+}
+function hwDateKey(d) {
+  var month = d.getMonth() + 1;
+  var day = d.getDate();
+  return d.getFullYear() + '-' + (month < 10 ? '0' : '') + month + '-' + (day < 10 ? '0' : '') + day;
+}
+function hwRecordNight() {
+  var key = hwDateKey(new Date());
+  var nights = hwNightsRead();
+  if (nights.indexOf(key) !== -1) return;
+  nights.push(key);
+  nights.sort();
+  try { localStorage.setItem(HW_NIGHTS_KEY, JSON.stringify(nights.slice(-120))); } catch (e) {}
+}
+/* Counts back from today. A school night that was missed ends the streak; tonight not being
+   finished yet does not; a weekend is never required, and counts if the family did one. */
+function hwStreakCount(today) {
+  var done = {};
+  hwNightsRead().forEach(function (key) { done[key] = true; });
+  var cursor = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  var count = 0;
+  for (var step = 0; step < 400; step++) {
+    var weekend = cursor.getDay() === 0 || cursor.getDay() === 6;
+    if (done[hwDateKey(cursor)]) count++;
+    else if (!weekend && step > 0) break;
+    cursor = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() - 1);
+  }
+  return count;
+}
+function hwRenderNights() {
+  var week = document.getElementById('hw_nights_week');
+  var streak = document.getElementById('hw_nights_streak');
+  if (!week || !streak) return;
+  var today = new Date();
+  var monday = new Date(today.getFullYear(), today.getMonth(), today.getDate() - ((today.getDay() + 6) % 7));
+  var done = {};
+  hwNightsRead().forEach(function (key) { done[key] = true; });
+  var es = document.body.classList.contains('lang-mode-es');
+  var html = '';
+  for (var i = 0; i < 5; i++) {
+    var day = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i);
+    var name = day.toLocaleDateString(es ? 'es' : 'en', { weekday: 'long' });
+    var on = !!done[hwDateKey(day)];
+    var short = day.toLocaleDateString(es ? 'es' : 'en', { weekday: 'short' }).replace('.', '');
+    html += '<li class="hw-night' + (on ? ' is-on' : '') + '" aria-label="' + name + (on ? (es ? ': hecho' : ': done') : '') + '"><span aria-hidden="true">' + short + '</span></li>';
+  }
+  week.innerHTML = html;
+  var n = hwStreakCount(today);
+  streak.textContent = n === 0
+    ? hwBi("Finish tonight's goal to start your family streak.", 'Cumplan la meta de hoy para empezar su racha familiar.')
+    : hwBi('🔥 ' + n + (n === 1 ? ' night' : ' nights') + ' in a row', '🔥 ' + n + (n === 1 ? ' noche seguida' : ' noches seguidas'));
+}
+
+/* Share the win: the lesson name and a link, nothing else. */
+function hwShareWin() {
+  var snap = hwGoalSnapshot();
+  var count = Math.min(snap.done, snap.goal) + ' / ' + snap.goal;
+  var titleEn = window.LESSON_TITLE || 'Family Math Studio';
+  var titleEs = window.LESSON_TITLE_ES || titleEn;
+  var en = 'We did Family Math Studio tonight: ' + titleEn + ' (' + count + ' problems). Try it: ';
+  var es = 'Hicimos el Estudio familiar de matemáticas hoy: ' + titleEs + ' (' + count + ' problemas). Pruébenlo: ';
+  var url = location.origin + location.pathname;
+  var text = document.body.classList.contains('lang-mode-es') ? es : document.body.classList.contains('lang-mode-bilingual') ? en + '\n' + es : en;
+  var full = text + url;
+  var copyInstead = function () {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(full).then(
+        function () { hwToast('Copied. Paste it into a message.', 'Copiado. Péguenlo en un mensaje.'); },
+        function () { hwToast('Could not copy. Copy the page address instead.', 'No se pudo copiar. Copien la dirección de la página.'); }
+      );
+    } else hwToast('Copy the page address to share it.', 'Copien la dirección de la página para compartirla.');
+  };
+  if (navigator.share) {
+    navigator.share({ title: 'Family Math Studio', text: text, url: url }).catch(function (error) {
+      if (!error || error.name !== 'AbortError') copyInstead();
+    });
+    return;
+  }
+  copyInstead();
+}
+
+/* Language switches re-run the pieces that write their own text. */
+function hwWrapLanguage() {
+  if (typeof setLanguageMode !== 'function' || setLanguageMode.hwWrapped) return;
+  var original = setLanguageMode;
+  setLanguageMode = function (mode) {
+    original(mode);
+    hwRenderGoal(false);
+    hwRenderConfidence();
+    hwRenderNights();
+  };
+  setLanguageMode.hwWrapped = true;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  hwRestoreSolved();
+  hwWrapLanguage();
+  hwRenderTonight();
+  hwRenderConfidence();
+  hwRenderNights();
+  setTimeout(function () { hwRenderGoal(false); }, 0);
+  new MutationObserver(function () { hwRenderTonight(); hwRenderGoal(false); })
+    .observe(document.body, { attributes: true, attributeFilter: ['data-homework-route'] });
+});
+window.addEventListener('load', function () { hwRestoreSolved(); hwRenderGoal(false); });
+
+
 /* Math Dominoes: two players on one device, and the paper version. */
 var domDuo = { on: false };
 
@@ -3930,6 +4319,7 @@ function speakMathWord(termEn, termEs) {
 
 // Confetti Particle Engine
 function triggerConfettiBurst(originX, originY, count = 50) {
+  if (typeof hwReducedMotion === "function" && hwReducedMotion()) return;
   try {
     let canvas = document.getElementById("hw_confetti_canvas");
     if (!canvas) {
@@ -4275,22 +4665,9 @@ function triggerHighFive() {
 }
 
 function updateCelebrationTab() {
-  // Read from the Done stop, so the Check panel itself is hidden: only a
-  // hidden ancestor OTHER than a tab panel (the route's unused tier) excludes.
-  const hiddenBelowPanel = (el) => {
-    for (let n = el; n && !n.matches("[data-tab-panel]"); n = n.parentElement) {
-      if (n.hidden) return true;
-    }
-    return false;
-  };
-  const problems = Array.from(document.querySelectorAll(".problem-section")).filter(
-    (s) => !s.closest(".more-practice") && !hiddenBelowPanel(s),
-  );
+  const problems = activeCoreProblems();
   const correctCount = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("reviewed")).length;
-  const practiceGoal = Math.min(
-    3,
-    typeof activeHomeworkRoute === "function" ? activeHomeworkRoute().problemLimit : 3,
-  );
+  const practiceGoal = hwGoalSnapshot().goal;
 
   const bLearn = document.getElementById("badge_achieve_learn");
   const bVocab = document.getElementById("badge_achieve_vocab");
@@ -4710,7 +5087,19 @@ function saveState() {
     state.orderPositions[probIdx] = Array.from(list.querySelectorAll(".drag-order-row")).map((row) => row.dataset.stepText);
   });
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const json = JSON.stringify(state);
+  try {
+    localStorage.setItem(STORAGE_KEY, json);
+  } catch (e) {
+    /* Photos and voice notes from earlier nights are the bulk of what is stored.
+       Free them, keep every answer, and try once more. */
+    if (typeof hwFreeSignoffMedia === "function") hwFreeSignoffMedia(window.LESSON_ID);
+    try {
+      localStorage.setItem(STORAGE_KEY, json);
+    } catch (e2) {
+      hwNotice("This device is full, so tonight's work cannot be saved here. / Este dispositivo está lleno y no se puede guardar el trabajo de hoy.");
+    }
+  }
 }
 
 function loadState() {
@@ -5143,66 +5532,15 @@ var NTAnswerMatch = (function () {
   return { norm, numberOf, stripLabel, numericValue, isRight, fullerFormHint };
 })();
 
-function activeCoreProblems() {
-  return Array.from(document.querySelectorAll(".problem-section")).filter(
-    (section) =>
-      !section.closest(".more-practice") &&
-      !section.hidden &&
-      !section.closest("[hidden]"),
-  );
-}
-
 function activeHomeworkGoal() {
-  return typeof activeHomeworkRoute === "function"
-    ? activeHomeworkRoute().problemLimit
-    : window.HW_CORE_COUNT || activeCoreProblems().length;
+  return hwGoalSnapshot().goal;
 }
 
 function updateProgress() {
-  const problems = activeCoreProblems();
-  let completedCount = 0;
-
-  problems.forEach((section, idx) => {
-    const type = section.dataset.problemType;
-    let hasValue = false;
-
-    if (type === "multiple-choice") {
-      const selected = section.querySelector("input[type='radio']:checked");
-      if (selected) hasValue = true;
-    } else if (type === "matching-game") {
-      const selects = Array.from(section.querySelectorAll(".matching-select"));
-      const answered = selects.filter(s => s.value !== "");
-      if (answered.length > 0) hasValue = true;
-    } else if (type === "drag-sort") {
-      if (section.dataset.problemSubtype === "drag-order") {
-        hasValue = true;
-      } else {
-        const itemsInColumns = Array.from(section.querySelectorAll(".drag-column-slots .drag-card"));
-        if (itemsInColumns.length > 0) hasValue = true;
-      }
-    } else if (type === "fill-table") {
-      const inputs = Array.from(section.querySelectorAll(".table-input"));
-      const filled = inputs.filter(i => i.value.trim() !== "");
-      if (filled.length > 0) hasValue = true;
-    } else if (type === "error-analysis") {
-      const sel = section.querySelector(".error-step-select");
-      const txt = section.querySelector(".error-explain-textarea");
-      if ((sel && sel.value !== "") || (txt && txt.value.trim() !== "")) hasValue = true;
-    } else if (type === "open-response") {
-      const txt = section.querySelector(".open-response-textarea");
-      if (txt && txt.value.trim() !== "") hasValue = true;
-    }
-
-    if (hasValue) completedCount++;
-  });
-
-  const total = problems.length;
-  const pct = total > 0 ? (completedCount / total) * 100 : 0;
-  document.getElementById("progress_bar").style.width = pct + "%";
-  // Bare "3 / 6". The word beside it is the label span in the bar, which is
-  // language-switched; appending "Completed" here reintroduced English into a
-  // Spanish page and wrapped mid-word ("Complete/d") in the 139px bar.
-  document.getElementById("progress_text").textContent = completedCount + " / " + total;
+  // Answers typed or chosen are saved by saveState(); what counts toward tonight's
+  // goal is a problem that is solved (or compared with the key), so the meter,
+  // the pips and the mystery lock all move together, from one place.
+  hwRenderGoal(true);
 }
 
 function setProblemCheckResult(idx, isCorrect, message, tone) {
@@ -6033,29 +6371,7 @@ function checkProblem(idx, options) {
 }
 
 function updateScoreSummary() {
-  const problems = activeCoreProblems();
-  const checked = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("incorrect") || s.classList.contains("reviewed"));
-  // "Done" = checked right, or a written answer saved and compared with the key.
-  const correctCount = problems.filter((s) => s.classList.contains("correct") || s.classList.contains("reviewed")).length;
-  const total = problems.length;
-  if (checked.length > 0) {
-    document.getElementById("progress_text").textContent = correctCount + " / " + total;
-    document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
-  } else {
-    updateProgress();
-  }
-
-  // Goal milestone — the number the page states, not a hardcoded 3.
-  if (correctCount >= activeHomeworkGoal()) {
-    const goalBanner = document.getElementById("goal_reached_banner");
-    if (goalBanner && goalBanner.hidden) {
-      goalBanner.hidden = false;
-      if (typeof playFanfareSound === "function") playFanfareSound();
-      if (typeof triggerConfettiBurst === "function") triggerConfettiBurst(null, null, 100);
-      const checkBadge = document.getElementById("tab_badge_check");
-      if (checkBadge) checkBadge.textContent = "★★★";
-    }
-  }
+  hwRenderGoal(true);
 }
 
 function checkWorksheet() {
@@ -6069,111 +6385,112 @@ function checkWorksheet() {
     if (result.correct || result.done) correctCount++;
   });
 
-  const total = problems.length;
-  document.getElementById("progress_text").textContent = correctCount + " / " + total;
-  document.getElementById("progress_bar").style.width = (correctCount / total * 100) + "%";
-
-  if (correctCount >= activeHomeworkGoal()) {
-    const goalBanner = document.getElementById("goal_reached_banner");
-    if (goalBanner && goalBanner.hidden) {
-      goalBanner.hidden = false;
-      const checkBadge = document.getElementById("tab_badge_check");
-      if (checkBadge) checkBadge.textContent = "★★★";
-    }
-    triggerConfettiBurst(null, null, 100);
-    playFanfareSound();
-  } else if (correctCount === total && total > 0) {
-    playSuccessArpeggio();
-  } else {
-    playFailureSound();
-  }
+  const snap = hwGoalSnapshot();
+  hwRenderGoal(true);
+  if (correctCount >= snap.goal) return;
+  if (correctCount === problems.length && problems.length > 0) playSuccessArpeggio();
+  else playFailureSound();
 }
 
 function resetWorksheet() {
-  if (confirm("Are you sure you want to reset all your work?")) {
-    localStorage.removeItem(STORAGE_KEY);
+  hwConfirm(
+    "Reset all your work on this page?",
+    "¿Borrar todo tu trabajo en esta página?",
+    "Yes, reset",
+    "Sí, borrar",
+    "Keep my work",
+    "Conservar mi trabajo",
+    resetWorksheetNow,
+  );
+}
 
-    // Clear normal text inputs, textareas, dropdowns, and radios
-    const textareas = document.querySelectorAll("textarea");
-    textareas.forEach(t => {
-      t.value = "";
-      t.classList.remove("is-correct", "is-incorrect");
-    });
+function resetWorksheetNow() {
+  localStorage.removeItem(STORAGE_KEY);
+  hwClearProgress();
+  Object.keys(problemAttempts).forEach((k) => delete problemAttempts[k]);
+  Object.keys(revealForced).forEach((k) => delete revealForced[k]);
+  currentStreak = 0;
 
-    const inputs = document.querySelectorAll("input[type='text']");
-    inputs.forEach(i => {
-      i.value = "";
-      i.classList.remove("is-correct", "is-incorrect");
-    });
+  // Clear normal text inputs, textareas, dropdowns, and radios
+  const textareas = document.querySelectorAll("textarea");
+  textareas.forEach(t => {
+    t.value = "";
+    t.classList.remove("is-correct", "is-incorrect");
+  });
 
-    const selects = document.querySelectorAll("select:not(.mobile-cat-select)");
-    selects.forEach(s => {
-      s.value = "";
-      s.classList.remove("is-correct", "is-incorrect");
-    });
+  const inputs = document.querySelectorAll("input[type='text']");
+  inputs.forEach(i => {
+    i.value = "";
+    i.classList.remove("is-correct", "is-incorrect");
+  });
 
-    const radios = document.querySelectorAll("input[type='radio']");
-    radios.forEach(r => r.checked = false);
+  const selects = document.querySelectorAll("select:not(.mobile-cat-select)");
+  selects.forEach(s => {
+    s.value = "";
+    s.classList.remove("is-correct", "is-incorrect");
+  });
 
-    const labels = document.querySelectorAll(".mc-option-label, .ladder-choice");
-    labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
-    document.querySelectorAll(".ladder-feedback").forEach((el) => { el.textContent = ""; el.className = "ladder-feedback"; });
+  const radios = document.querySelectorAll("input[type='radio']");
+  radios.forEach(r => r.checked = false);
 
-    // Clear feedback badges and sections
-    const badges = document.querySelectorAll(".feedback-badge");
-    badges.forEach(b => b.className = "feedback-badge");
+  const labels = document.querySelectorAll(".mc-option-label, .ladder-choice");
+  labels.forEach(l => l.classList.remove("is-correct", "is-incorrect"));
+  document.querySelectorAll(".ladder-feedback").forEach((el) => { el.textContent = ""; el.className = "ladder-feedback"; });
 
-    const sections = document.querySelectorAll(".problem-section");
-    document.querySelectorAll(".problem-check-result").forEach((el) => {
-      el.textContent = "";
-      el.className = "problem-check-result";
-    });
+  // Clear feedback badges and sections
+  const badges = document.querySelectorAll(".feedback-badge");
+  badges.forEach(b => b.className = "feedback-badge");
 
-    sections.forEach(s => {
-      s.classList.remove("correct", "incorrect", "reviewed");
-      const expBoxes = s.querySelectorAll(".explanation-box");
-      expBoxes.forEach(b => b.remove());
+  const sections = document.querySelectorAll(".problem-section");
+  document.querySelectorAll(".problem-check-result").forEach((el) => {
+    el.textContent = "";
+    el.className = "problem-check-result";
+  });
 
-      const workedSteps = s.querySelectorAll(".worked-step");
-      workedSteps.forEach(ws => ws.classList.remove("highlighted"));
+  sections.forEach(s => {
+    s.classList.remove("correct", "incorrect", "reviewed");
+    const expBoxes = s.querySelectorAll(".explanation-box");
+    expBoxes.forEach(b => b.remove());
 
-      const reveal = s.querySelector(".reveal-box");
-      if (reveal) reveal.style.display = "none";
+    const workedSteps = s.querySelectorAll(".worked-step");
+    workedSteps.forEach(ws => ws.classList.remove("highlighted"));
 
-      const type = s.dataset.problemType;
-      if (type === "drag-sort") {
-        const parts = s.id.split("_");
-        const idx = parts[1];
-        if (s.dataset.problemSubtype === "drag-order") {
-          resetDragOrder(idx);
-          shuffleOrderRows(idx);
-        } else {
-          resetDragSort(idx);
-        }
+    const reveal = s.querySelector(".reveal-box");
+    if (reveal) reveal.style.display = "none";
+
+    const type = s.dataset.problemType;
+    if (type === "drag-sort") {
+      const parts = s.id.split("_");
+      const idx = parts[1];
+      if (s.dataset.problemSubtype === "drag-order") {
+        resetDragOrder(idx);
+        shuffleOrderRows(idx);
+      } else {
+        resetDragSort(idx);
       }
-    });
-
-    // Save blank state
-    saveState();
-    updateProgress();
-
-    // Play a reset click sound
-    if (soundEnabled) {
-      try {
-        initAudio();
-        const now = audioCtx.currentTime;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(200, now);
-        gain.gain.setValueAtTime(0.05, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now);
-        osc.stop(now + 0.15);
-      } catch (e) {}
     }
+  });
+
+  // Save blank state
+  saveState();
+  updateProgress();
+
+  // Play a reset click sound
+  if (soundEnabled) {
+    try {
+      initAudio();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(200, now);
+      gain.gain.setValueAtTime(0.05, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.15);
+    } catch (e) {}
   }
 }
 

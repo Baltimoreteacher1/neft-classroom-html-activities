@@ -97,7 +97,9 @@ const REQUIRED_MARKERS = [
   },
   {
     id: "external-links",
-    test: (h) => h.includes("external-resource-list") && h.includes("external-resource-link"),
+    // A lesson with no verified on-topic resource shows no links section at all;
+    // when it does show one, the list and its links come together.
+    test: (h) => h.includes("external-resource-list") === h.includes("external-resource-link"),
   },
   {
     id: "help-modal",

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Help Your Student — Lesson 6-3: Explore Numerical Expressions with Exponents</title>
+<title>Family Math Studio — Lesson 6-3: Explore Numerical Expressions with Exponents</title>
 <link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/homework/homework-base-0d2a228add.css">
 <style>
@@ -114,26 +114,6 @@ header.homework-header,
   user-select: none;
 }
 
-/* 3 Stars Milestone Bar on Quick Check */
-.stars-to-win-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, var(--teal-light) 0%, #ffffff 100%);
-  border: 1.5px solid var(--teal);
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  margin-bottom: 20px;
-}
-.stars-to-win-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 14.5px;
-  color: var(--navy);
-}
 .stars-milestone-chips {
   display: flex;
   flex-wrap: wrap;
@@ -152,16 +132,7 @@ header.homework-header,
   flex: 0 0 auto;
   white-space: nowrap;
 }
-/* On a phone the goal sentence and the three milestone chips do not fit on one
-   line, so they stack instead of fighting for the same 400px. */
-@media (max-width: 620px) {
-  .stars-to-win-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .stars-milestone-chips { width: 100%; }
-}
+.stars-milestone-chips { width: 100%; }
 
 /* Rotated Huddle Activity Card */
 .huddle-hook-banner {
@@ -333,7 +304,7 @@ header.homework-header,
   margin-bottom: 3px;
 }
 </style>
-<link rel="stylesheet" href="/assets/homework/homework-layer-205c995f26.css">
+<link rel="stylesheet" href="/assets/homework/homework-layer-992d934c32.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -347,16 +318,17 @@ header.homework-header,
   <link rel="apple-touch-icon" href="/assets/favicon.svg">
   <meta name="theme-color" content="#12355b">
   <link rel="canonical" href="https://eduwonderlab.com/lessons/6-3/homework.html">
-  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 6-3: Explore Numerical Expressions with Exponents.">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 6-3: Explore Numerical Expressions with Exponents.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Neft Teacher">
-  <meta property="og:title" content="Help Your Student — Lesson 6-3: Explore Numerical Expressions with Exponents">
-  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 6-3: Explore Numerical Expressions with Exponents.">
+  <meta property="og:title" content="Family Math Studio — Lesson 6-3: Explore Numerical Expressions with Exponents">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 6-3: Explore Numerical Expressions with Exponents.">
   <meta property="og:url" content="https://eduwonderlab.com/lessons/6-3/homework.html">
   <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
   <!-- enthead-injected:end -->
 </head>
 <body>
+<a class="hw-skip" href="#hw_tab_panels" onclick="startHomework(); return false;"><span class="lang-en">Skip to tonight's math</span><span class="lang-es" lang="es">Ir a la matemática de hoy</span></a>
 
 <script>
 /* Language mode, BEFORE first paint. restoreParentSignoff sets the same class
@@ -365,10 +337,29 @@ header.homework-header,
    whole document. Same rule as the boot script below it: fail toward showing
    something readable, which here is English. */
 (function () {
-  var mode = 'en';
+  /* Blocked site data makes every localStorage access throw, which would stop the
+     page's own startup. Fall back to storage that lasts for this visit. */
   try {
+    window.localStorage.getItem('hw_probe');
+  } catch (blocked) {
+    var memory = {};
+    var stand = {
+      getItem: function (k) { return Object.prototype.hasOwnProperty.call(memory, k) ? memory[k] : null; },
+      setItem: function (k, v) { memory[k] = String(v); },
+      removeItem: function (k) { delete memory[k]; },
+      clear: function () { memory = {}; },
+      key: function (i) { return Object.keys(memory)[i] || null; },
+      get length() { return Object.keys(memory).length; }
+    };
+    try { Object.defineProperty(window, 'localStorage', { configurable: true, get: function () { return stand; } }); } catch (unsupported) {}
+  }
+  var mode = 'bilingual';
+  try {
+    var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
+    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
+      mode = requested;
+    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)
@@ -423,6 +414,23 @@ header.homework-header,
     <header class="hw-hero" aria-label="Family Math Night welcome">
       <div class="hw-hero-glow" aria-hidden="true"></div>
       <div class="hw-hero-body">
+        <div class="hw-hero-controls">
+          <div class="lang-selector-card">
+            <span class="lang-selector-title">Language / Idioma</span>
+            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
+              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
+                🇺🇸🇪🇸 <span class="lang-btn-long">Bilingual / Bilingüe</span><span class="lang-btn-short">EN + ES</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
+                🇺🇸 <span>English</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
+                🇪🇸 <span>Español</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <p class="hw-hero-kicker">
           <span class="hw-hero-kicker-icon" aria-hidden="true">📘</span>
           <span class="lang-en">Unit 6 · Numerical and Algebraic Expressions</span>
@@ -443,39 +451,25 @@ header.homework-header,
         </p>
 
         <nav class="hw-session-banner" aria-label="Two-session lesson" data-session="1">
-    <ol class="hw-session-steps"><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span></span></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-next"><a class="hw-session-chip" href="/lessons/6-3-part2/homework.html"><span class="hw-session-mark" aria-hidden="true">○</span><span class="hw-session-name"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span></a></li></ol>
+    <ol class="hw-session-steps"><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span><span class="hw-session-short"><span class="lang-en">Session 1</span><span class="lang-es" lang="es">Sesión 1</span></span></span></span></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-next"><a class="hw-session-chip" href="/lessons/6-3-part2/homework.html"><span class="hw-session-mark" aria-hidden="true">○</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span><span class="hw-session-short"><span class="lang-en">Session 2</span><span class="lang-es" lang="es">Sesión 2</span></span></span></a></li></ol>
     <p class="hw-session-sentence"><strong><span class="lang-en">Coming up next:</span><span class="lang-es" lang="es">Lo que sigue:</span></strong> <span class="lang-en">In Session 2, we evaluate powers — writing them out as repeated multiplication and finding the value.</span><span class="lang-es" lang="es">En la Sesión 2, evaluamos potencias — escribiéndolas como multiplicación repetida y hallando el valor.</span> <span class="lang-en">It builds on today’s model. Open it when it is assigned.</span><span class="lang-es" lang="es">Se basa en el modelo de hoy. Ábranla cuando se las asignen.</span></p>
   </nav>
 
         <p class="hw-hero-bigidea" aria-label="Big idea">
-          <span class="hw-hero-bigidea-label"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
+          <span class="hw-hero-bigidea-label hw-inline"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
           <span class="lang-en">Tonight we learn what an exponent means. A small raised number tells us how many times a number is used as a factor.</span><span class="lang-es" lang="es">Esta noche aprendemos qué significa un exponente. Un número pequeño y elevado nos dice cuántas veces se usa un número como factor.</span>
         </p>
-
-        <div class="hw-hero-controls">
-          <div class="lang-selector-card">
-            <span class="lang-selector-title">Language / Idioma</span>
-            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
-              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
-                🇺🇸🇪🇸 <span>Bilingual / Bilingüe</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
-                🇺🇸 <span>English</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
-                🇪🇸 <span>Español</span>
-              </button>
-            </div>
-          </div>
-        </div>
 
         <p class="hw-hero-lead">
           <span class="lang-en">Optional, ungraded practice. Work with someone or on your own; no adult signature is needed.</span>
           <span class="lang-es" lang="es">Práctica opcional, sin calificación. Trabaja con alguien o a solas; no necesitas la firma de un adulto.</span>
         </p>
 
-        <ul class="hw-hero-stats" aria-label="What tonight looks like">
-          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">5</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">5</span> paradas</span></li>
+
+        <ul class="hw-tonight hw-inline" aria-label="Tonight at a glance">
+          <li><span aria-hidden="true">⏱</span> <strong><span data-hw-tonight-time>20–30</span> min</strong></li>
+          <li><span aria-hidden="true">✏️</span> <span class="lang-en">Pencil and paper</span><span class="lang-es" lang="es">Lápiz y papel</span></li>
+          <li><span aria-hidden="true">🎯</span> <span class="lang-en">Goal:</span><span class="lang-es" lang="es">Meta:</span> <strong><span data-hw-goal-count>4</span> <span class="lang-en">problems</span><span class="lang-es" lang="es">problemas</span></strong></li>
         </ul>
 
 
@@ -483,30 +477,31 @@ header.homework-header,
         <div class="hw-route-heading">
           <span class="hw-route-icon" aria-hidden="true">🧭</span>
           <div>
-            <h2 id="hw_route_title"><span class="lang-en">Choose a practice path</span><span class="lang-es" lang="es">Elige una ruta de práctica</span></h2>
-            <p><span class="lang-en">All practice is optional and ungraded. Choose the time that works for your family; your route choice is saved on this device.</span><span class="lang-es" lang="es">Toda la práctica es opcional y no lleva calificación. Elijan el tiempo que les funcione; la ruta queda guardada en este dispositivo.</span></p>
+            <h2 id="hw_route_title" class="hw-inline"><span class="lang-en">How much time do you have tonight?</span><span class="lang-es" lang="es">¿Cuánto tiempo tienen esta noche?</span></h2>
+            <p class="hw-inline"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
           </div>
         </div>
-        <div class="hw-route-options" role="group" aria-label="Choose a practice path" data-aria-en="Choose a practice path" data-aria-es="Elige una ruta de práctica">
+        <div class="hw-route-options" role="group" aria-label="How much time do you have tonight?" data-aria-en="How much time do you have tonight?" data-aria-es="¿Cuánto tiempo tienen esta noche?">
           <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
-            <span class="hw-route-time">5–10 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Quick practice</span><span class="lang-es" lang="es">Práctica breve</span></strong><small><span class="lang-en">One example, 2 problems, and one explanation.</span><span class="lang-es" lang="es">Un ejemplo, 2 problemas y una explicación.</span></small></span>
+            <span class="hw-route-time">5–10 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Quick</span><span class="lang-es" lang="es">Rápida</span></strong><small><span class="lang-en">One example and 2 problems.</span><span class="lang-es" lang="es">Un ejemplo y 2 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
-            <span class="hw-route-time">15–20 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Learn, explore key words, practice <span data-hw-core-count>6</span> problems, and explain.</span><span class="lang-es" lang="es">Aprende, explora palabras clave, practica <span data-hw-core-count>6</span> problemas y explica.</span></small></span>
+            <span class="hw-route-time">15–20 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Key words, then practice. Goal: 4 problems.</span><span class="lang-es" lang="es">Palabras clave y práctica. Meta: 4 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option is-active" data-route-mode="full" aria-pressed="true" onclick="setHomeworkRoute('full')">
-            <span class="hw-route-time">20–30 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Family Math Studio</span><span class="lang-es" lang="es">Estudio familiar de matemáticas</span></strong><small><span class="lang-en">Add one home mission and one math game. Go at your own pace.</span><span class="lang-es" lang="es">Agrega una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span></small></span>
+            <span class="hw-route-time">20–30 <small>min</small></span>
+            <span class="hw-route-badge"><span aria-hidden="true">★</span><span class="hw-sr-only"><span class="lang-en">Recommended</span><span class="lang-es" lang="es">Recomendada</span></span></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Full Studio</span><span class="lang-es" lang="es">Estudio completo</span></strong><small><span class="lang-en">Everything, plus a home mission and a game.</span><span class="lang-es" lang="es">Todo, más una misión en casa y un juego.</span></small></span>
           </button>
         </div>
         <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Family Math Studio selected: <span data-hw-core-count>6</span> problems, key words, one home mission, and one math game. Go at your own pace.</span>
-          <span class="lang-es" lang="es">Estudio familiar seleccionado: <span data-hw-core-count>6</span> problemas, palabras clave, una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span>
+          <span class="lang-en">Full Studio (recommended): everything, plus one home mission and one game. Everything is optional.</span>
+          <span class="lang-es" lang="es">Estudio completo (recomendada): todo, más una misión en casa y un juego. Todo es opcional.</span>
         </p>
         <p id="hw_resume_note" role="status" aria-live="polite"></p>
-        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start this path</span><span class="lang-es" lang="es">Empezar esta ruta</span></button>
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
       </section>
 
         <details class="hw-tools-menu"><summary><span class="lang-en">Tools: scratchpad, share, print &amp; standard</span><span class="lang-es" lang="es">Herramientas: pizarra, compartir, imprimir y estándar</span></summary>
@@ -659,45 +654,39 @@ header.homework-header,
           <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Potencias y exponentes</li><li>Exponente</li><li>Base</li></ul></div>
         </div>
       </div>
-
-      <div class="parent-quick-card">
-        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
-        <ul>
-          <li><span aria-hidden="true">💬</span> <strong><span class="lang-en">If they get stuck, ask:</span><span class="lang-es" lang="es">Si se atora, pregunten:</span></strong> <span class="lang-en">In 2³, what does the small 3 tell us? How many 2s are multiplied?</span><span class="lang-es" lang="es">En 2³, ¿qué nos dice el 3 pequeño? ¿Cuántos 2 se multiplican?</span></li>
-          <li><span aria-hidden="true">🚫</span> <strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">2³ means 2 times 3.</span><span class="lang-es" lang="es">2³ significa 2 por 3.</span></li>
-        </ul>
-        <details class="bridge-card" data-bridge-card>
-          <summary><span aria-hidden="true">🌉</span> <span class="lang-en">Then vs. now: why class math may look different</span><span class="lang-es" lang="es">Antes y ahora: por qué las matemáticas de clase pueden verse distintas</span></summary>
-          <ol class="bridge-rows">
-          <li class="bridge-row bridge-before">
-            <span class="bridge-icon" aria-hidden="true">🕰️</span>
-            <div>
-              <strong class="bridge-label"><span class="lang-en">How you may have learned it</span><span class="lang-es" lang="es">Cómo pudiste haberlo aprendido</span></strong>
-              <p class="lang-en">You may think of doubling again and again: 2, then 4, then 8, one doubling at a time.</p>
-              <p class="lang-es" lang="es">Tal vez piensas en duplicar una y otra vez: 2, luego 4, luego 8, una duplicación a la vez.</p>
-            </div>
-          </li>
-          <li class="bridge-row bridge-class">
-            <span class="bridge-icon" aria-hidden="true">🏫</span>
-            <div>
-              <strong class="bridge-label"><span class="lang-en">How we do it in class</span><span class="lang-es" lang="es">Cómo lo hacemos en clase</span></strong>
-              <p class="lang-en">In class we write 2³ as repeated multiplication. The small 3 counts the 2s: 2 × 2 × 2. We multiply two at a time: 2 × 2 = 4, then 4 × 2 = 8.</p>
-              <p class="lang-es" lang="es">En clase escribimos 2³ como multiplicación repetida. El 3 pequeño cuenta los 2: 2 × 2 × 2. Multiplicamos de dos en dos: 2 × 2 = 4, luego 4 × 2 = 8.</p>
-            </div>
-          </li>
-          <li class="bridge-row bridge-why">
-            <span class="bridge-icon" aria-hidden="true">🤝</span>
-            <div>
-              <strong class="bridge-label"><span class="lang-en">Why both work</span><span class="lang-es" lang="es">Por qué ambos funcionan</span></strong>
-              <p class="lang-en">Doubling three times is multiplying by 2 three times, so both ways land on 8. The exponent counts how many 2s we multiply, so 2³ is 8, not 2 × 3 = 6.</p>
-              <p class="lang-es" lang="es">Duplicar tres veces es multiplicar por 2 tres veces, así que los dos caminos llegan a 8. El exponente cuenta cuántos 2 multiplicamos, por eso 2³ es 8 y no 2 × 3 = 6.</p>
-            </div>
-          </li>
-          </ol>
-          <button type="button" class="btn-read-aloud bridge-listen" onclick="speakHomeworkText(&quot;How you may have learned it. You may think of doubling again and again: 2, then 4, then 8, one doubling at a time. How we do it in class. In class we write 2³ as repeated multiplication. The small 3 counts the 2s: 2 × 2 × 2. We multiply two at a time: 2 × 2 = 4, then 4 × 2 = 8. Why both work. Doubling three times is multiplying by 2 three times, so both ways land on 8. The exponent counts how many 2s we multiply, so 2³ is 8, not 2 × 3 = 6.&quot;, &quot;Cómo pudiste haberlo aprendido. Tal vez piensas en duplicar una y otra vez: 2, luego 4, luego 8, una duplicación a la vez. Cómo lo hacemos en clase. En clase escribimos 2³ como multiplicación repetida. El 3 pequeño cuenta los 2: 2 × 2 × 2. Multiplicamos de dos en dos: 2 × 2 = 4, luego 4 × 2 = 8. Por qué ambos funcionan. Duplicar tres veces es multiplicar por 2 tres veces, así que los dos caminos llegan a 8. El exponente cuenta cuántos 2 multiplicamos, por eso 2³ es 8 y no 2 × 3 = 6.&quot;)" aria-label="Listen to this card" data-aria-en="Listen to this card" data-aria-es="Escuchar esta tarjeta">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
-        </details>
-      </div>
     </div>
+
+      <section class="hw-confidence" id="hw_conf_before" data-conf-phase="before" aria-labelledby="hw_conf_before_title">
+        <h3 id="hw_conf_before_title"><span class="lang-en">How sure do you feel about today&#039;s math?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes con la matemática de hoy?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_before_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="before" onclick="hwSetConfidence('before', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="before" onclick="hwSetConfidence('before', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="before" onclick="hwSetConfidence('before', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Just for you. It stays on this device. We ask again at the end.</span><span class="lang-es" lang="es">Solo para ti. Se queda en este dispositivo. Preguntamos otra vez al final.</span></p>
+
+      </section>
+
+      <section class="hw-mystery" id="hw_mystery" data-problem="problem_11" aria-labelledby="hw_mystery_title">
+        <span class="hw-mystery-lock" id="hw_mystery_lock" aria-hidden="true">🔒</span>
+        <div class="hw-mystery-body">
+          <p class="hw-eyebrow hw-inline"><span class="lang-en">Tonight&#039;s mystery challenge</span><span class="lang-es" lang="es">El reto misterioso de hoy</span></p>
+          <h3 id="hw_mystery_title"><span class="lang-en">Can you crack this before tonight is over?</span><span class="lang-es" lang="es">¿Puedes resolver esto antes de terminar hoy?</span></h3>
+          <p class="hw-mystery-stem"><span class="lang-en">It is the last problem in Level up. It is the hardest one — and you can do it.</span><span class="lang-es" lang="es">Es el último problema de «Sube de nivel». Es el más difícil, y tú puedes resolverlo.</span></p>
+          <p class="hw-mystery-status" id="hw_mystery_status" role="status" aria-live="polite">
+            <span class="lang-en">Locked. Finish <span data-hw-goal-count>4</span> problems and it opens.</span>
+            <span class="lang-es" lang="es">Bloqueado. Termina <span data-hw-goal-count>4</span> problemas y se abre.</span>
+          </p>
+          <button type="button" class="hw-mystery-open" id="hw_mystery_open" hidden onclick="hwOpenMystery()">
+            <span class="lang-en">Open the mystery challenge ➔</span><span class="lang-es" lang="es">Abrir el reto misterioso ➔</span>
+          </button>
+        </div>
+      </section>
       <div class="learn-big-idea-block" id="hw_learn_idea">
 
       <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span> <button type="button" class="btn-listen-concept" onclick="speakBigIdea(&quot;A power like 2³ is a short way to write repeated multiplication: 2 × 2 × 2. The small 3 counts the factors of 2; it does not mean times 3&quot;, &quot;Una potencia como 2³ es una forma corta de escribir una multiplicación repetida: 2 × 2 × 2. El 3 pequeño cuenta los factores de 2; no significa por 3&quot;)" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button></h2>
@@ -824,18 +813,54 @@ header.homework-header,
 
 
       <div class="learn-extended-block" id="hw_learn_quick">
-    <details class="parent-coaching-drawer">
-      <summary class="parent-coaching-summary">
-        <span class="summary-left">
-          <span class="summary-icon">💡</span>
-          <span class="summary-text">
-            <strong><span class="lang-en">Parent Coaching Tips &amp; Real-World Connection</span><span class="lang-es" lang="es">Consejos para Padres y Conexión Real</span></strong>
-            <small><span class="lang-en">Tap to view coaching questions, common traps &amp; everyday examples</span><span class="lang-es" lang="es">Toca para ver preguntas guía, errores comunes y ejemplos</span></small>
-          </span>
+    <details class="hw-grownup" id="hw_grownup">
+      <summary>
+        <span class="hw-grownup-icon" aria-hidden="true">👪</span>
+        <span class="hw-grownup-text hw-stack">
+          <strong class="hw-stack"><span class="lang-en">For the grown-up · 1 minute</span><span class="lang-es" lang="es">Para el adulto · 1 minuto</span></strong>
+          <small class="hw-stack"><span class="lang-en">Ask: In 2³, what does the small 3 tell us? How many 2s are multiplied?</span><span class="lang-es" lang="es">Pregunta: En 2³, ¿qué nos dice el 3 pequeño? ¿Cuántos 2 se multiplican?</span></small>
         </span>
-        <span class="summary-chevron" aria-hidden="true">▾</span>
+        <span class="hw-grownup-chev" aria-hidden="true">▾</span>
       </summary>
-      <div class="parent-coaching-content">
+      <div class="hw-grownup-body">
+
+      <div class="parent-quick-card">
+        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
+        <ul>
+          <li><span aria-hidden="true">💬</span> <strong><span class="lang-en">If they get stuck, ask:</span><span class="lang-es" lang="es">Si se atora, pregunten:</span></strong> <span class="lang-en">In 2³, what does the small 3 tell us? How many 2s are multiplied?</span><span class="lang-es" lang="es">En 2³, ¿qué nos dice el 3 pequeño? ¿Cuántos 2 se multiplican?</span></li>
+          <li><span aria-hidden="true">🚫</span> <strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">2³ means 2 times 3.</span><span class="lang-es" lang="es">2³ significa 2 por 3.</span></li>
+        </ul>
+        <details class="bridge-card" data-bridge-card>
+          <summary><span aria-hidden="true">🌉</span> <span class="lang-en">Then vs. now: why class math may look different</span><span class="lang-es" lang="es">Antes y ahora: por qué las matemáticas de clase pueden verse distintas</span></summary>
+          <ol class="bridge-rows">
+          <li class="bridge-row bridge-before">
+            <span class="bridge-icon" aria-hidden="true">🕰️</span>
+            <div>
+              <strong class="bridge-label"><span class="lang-en">How you may have learned it</span><span class="lang-es" lang="es">Cómo pudiste haberlo aprendido</span></strong>
+              <p class="lang-en">You may think of doubling again and again: 2, then 4, then 8, one doubling at a time.</p>
+              <p class="lang-es" lang="es">Tal vez piensas en duplicar una y otra vez: 2, luego 4, luego 8, una duplicación a la vez.</p>
+            </div>
+          </li>
+          <li class="bridge-row bridge-class">
+            <span class="bridge-icon" aria-hidden="true">🏫</span>
+            <div>
+              <strong class="bridge-label"><span class="lang-en">How we do it in class</span><span class="lang-es" lang="es">Cómo lo hacemos en clase</span></strong>
+              <p class="lang-en">In class we write 2³ as repeated multiplication. The small 3 counts the 2s: 2 × 2 × 2. We multiply two at a time: 2 × 2 = 4, then 4 × 2 = 8.</p>
+              <p class="lang-es" lang="es">En clase escribimos 2³ como multiplicación repetida. El 3 pequeño cuenta los 2: 2 × 2 × 2. Multiplicamos de dos en dos: 2 × 2 = 4, luego 4 × 2 = 8.</p>
+            </div>
+          </li>
+          <li class="bridge-row bridge-why">
+            <span class="bridge-icon" aria-hidden="true">🤝</span>
+            <div>
+              <strong class="bridge-label"><span class="lang-en">Why both work</span><span class="lang-es" lang="es">Por qué ambos funcionan</span></strong>
+              <p class="lang-en">Doubling three times is multiplying by 2 three times, so both ways land on 8. The exponent counts how many 2s we multiply, so 2³ is 8, not 2 × 3 = 6.</p>
+              <p class="lang-es" lang="es">Duplicar tres veces es multiplicar por 2 tres veces, así que los dos caminos llegan a 8. El exponente cuenta cuántos 2 multiplicamos, por eso 2³ es 8 y no 2 × 3 = 6.</p>
+            </div>
+          </li>
+          </ol>
+          <button type="button" class="btn-read-aloud bridge-listen" onclick="speakHomeworkText(&quot;How you may have learned it. You may think of doubling again and again: 2, then 4, then 8, one doubling at a time. How we do it in class. In class we write 2³ as repeated multiplication. The small 3 counts the 2s: 2 × 2 × 2. We multiply two at a time: 2 × 2 = 4, then 4 × 2 = 8. Why both work. Doubling three times is multiplying by 2 three times, so both ways land on 8. The exponent counts how many 2s we multiply, so 2³ is 8, not 2 × 3 = 6.&quot;, &quot;Cómo pudiste haberlo aprendido. Tal vez piensas en duplicar una y otra vez: 2, luego 4, luego 8, una duplicación a la vez. Cómo lo hacemos en clase. En clase escribimos 2³ como multiplicación repetida. El 3 pequeño cuenta los 2: 2 × 2 × 2. Multiplicamos de dos en dos: 2 × 2 = 4, luego 4 × 2 = 8. Por qué ambos funcionan. Duplicar tres veces es multiplicar por 2 tres veces, así que los dos caminos llegan a 8. El exponente cuenta cuántos 2 multiplicamos, por eso 2³ es 8 y no 2 × 3 = 6.&quot;)" aria-label="Listen to this card" data-aria-en="Listen to this card" data-aria-es="Escuchar esta tarjeta">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+        </details>
+      </div>
 
     <div class="real-world-spotlight card-ish">
       <div class="spotlight-badge"><span class="spotlight-icon" aria-hidden="true">📈</span> <span><span class="lang-en">WHY THIS MATTERS</span><span class="lang-es" lang="es">¿POR QUÉ IMPORTA?</span></span></div>
@@ -1013,7 +1038,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Powers and Exponents&quot;, &quot;Potencias y exponentes&quot;)" title="Listen / Escuchar" aria-label="Pronounce Powers and Exponents">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/concept-powers-and-exponents.svg" alt="Illustration of Powers and Exponents: A power uses a base and an exponent to show repeated multiplication." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/concept-powers-and-exponents.svg" alt="Illustration of Powers and Exponents: Short ways to write the same number times itself." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1039,8 +1064,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Potencias y exponentes</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A power uses a base and an exponent to show repeated multiplication.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una potencia usa una base y un exponente para mostrar multiplicación repetida.</p>
+                    <p class="vocab-def">Short ways to write the same number times itself.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Formas cortas de escribir un número multiplicado por sí mismo.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>2⁴ = 2 × 2 × 2 × 2 = 16</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1061,7 +1086,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Exponent&quot;, &quot;Exponente&quot;)" title="Listen / Escuchar" aria-label="Pronounce Exponent">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/exponent.svg" alt="Illustration of Exponent: A small number that tells how many times to multiply a number by itself." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/exponent.svg" alt="Illustration of Exponent: A small raised number. It counts the times a number is used." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1087,8 +1112,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Exponente</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A small number that tells how many times to multiply a number by itself.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número pequeño que dice cuántas veces multiplicar un número por sí mismo.</p>
+                    <p class="vocab-def">A small raised number. It counts the times a number is used.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número pequeño arriba. Cuenta las veces que se usa un número.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>In 2³, the small 3 means multiply 2 by itself 3 times: 2 × 2 × 2 = 8</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1109,7 +1134,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Base&quot;, &quot;Base&quot;)" title="Listen / Escuchar" aria-label="Pronounce Base">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/exponent-base.svg" alt="Illustration of Base: The number that gets multiplied by itself." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/exponent-base.svg" alt="Illustration of Base: The number in a power that repeats: the 2 in 2³." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1135,8 +1160,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Base</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">The number that gets multiplied by itself.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> El número que se multiplica por sí mismo.</p>
+                    <p class="vocab-def">The number in a power that repeats: the 2 in 2³.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> El número de una potencia que se repite: el 2 en 2³.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>In 5², the base is 5 — it is the number being multiplied: 5 × 5 = 25</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1157,7 +1182,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Power&quot;, &quot;Potencia&quot;)" title="Listen / Escuchar" aria-label="Pronounce Power">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/exponent.svg" alt="Illustration of Power: A number written with a base and an exponent, like 2³." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/exponent.svg" alt="Illustration of Power: A short way to write 2 × 2 × 2 as 2³." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1183,8 +1208,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Potencia</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A number written with a base and an exponent, like 2³.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número escrito con una base y un exponente, como 2³.</p>
+                    <p class="vocab-def">A short way to write 2 × 2 × 2 as 2³.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una forma corta de escribir 2 × 2 × 2 como 2³.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>10³ = 10 × 10 × 10 = 1,000 — read as &#039;10 to the third power&#039; or &#039;10 cubed&#039;</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1205,7 +1230,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Evaluate&quot;, &quot;Evaluar&quot;)" title="Listen / Escuchar" aria-label="Pronounce Evaluate">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/expression.svg" alt="Illustration of Evaluate: To find the value by putting numbers in for the letters." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/expression.svg" alt="Illustration of Evaluate: Find the value by putting in numbers for the letters." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1231,8 +1256,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Evaluar</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">To find the value by putting numbers in for the letters.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Encontrar el valor poniendo números en lugar de las letras.</p>
+                    <p class="vocab-def">Find the value by putting in numbers for the letters.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Hallar el valor poniendo números en lugar de las letras.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>Evaluate 3⁴: write 3 × 3 × 3 × 3, then multiply step by step: 9 × 9 = 81</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1253,7 +1278,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Repeated multiplication&quot;, &quot;Multiplicación repetida&quot;)" title="Listen / Escuchar" aria-label="Pronounce Repeated multiplication">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/exponent.svg" alt="Illustration of Repeated multiplication: Multiplying the same factor again and again." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/exponent.svg" alt="Illustration of Repeated multiplication: Times the same number again and again." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1279,8 +1304,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Multiplicación repetida</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">Multiplying the same factor again and again.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Multiplicar el mismo factor una y otra vez.</p>
+                    <p class="vocab-def">Times the same number again and again.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Multiplicar el mismo número una y otra vez.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>9 × 9 × 9 × 9</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1301,7 +1326,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Expanded form&quot;, &quot;Forma desarrollada&quot;)" title="Listen / Escuchar" aria-label="Pronounce Expanded form">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/exponent.svg" alt="Illustration of Expanded form: A power written out as a product of its factors." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/exponent.svg" alt="Illustration of Expanded form: A power written out in full, like 2 × 2 × 2." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1327,8 +1352,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Forma desarrollada</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A power written out as a product of its factors.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una potencia escrita como el producto de sus factores.</p>
+                    <p class="vocab-def">A power written out in full, like 2 × 2 × 2.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una potencia escrita completa, como 2 × 2 × 2.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>2^3 = 2 × 2 × 2</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1349,7 +1374,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Squared&quot;, &quot;Al cuadrado&quot;)" title="Listen / Escuchar" aria-label="Pronounce Squared">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/exponent.svg" alt="Illustration of Squared: A base used as a factor two times." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/exponent.svg" alt="Illustration of Squared: A number times itself." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1375,8 +1400,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Al cuadrado</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A base used as a factor two times.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una base usada como factor dos veces.</p>
+                    <p class="vocab-def">A number times itself.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número multiplicado por sí mismo.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>4^2 = 4 × 4</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1397,7 +1422,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Cubed&quot;, &quot;Al cubo&quot;)" title="Listen / Escuchar" aria-label="Pronounce Cubed">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/exponent.svg" alt="Illustration of Cubed: A base used as a factor three times." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/exponent.svg" alt="Illustration of Cubed: A number written three times in a product." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1423,8 +1448,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Al cubo</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A base used as a factor three times.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una base usada como factor tres veces.</p>
+                    <p class="vocab-def">A number written three times in a product.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número escrito tres veces en un producto.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>4^3 = 4 × 4 × 4</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1458,7 +1483,7 @@ header.homework-header,
         <p class="vq-done-score"><span class="lang-en">First-try stars:</span><span class="lang-es" lang="es">Estrellas al primer intento:</span> <strong id="vocab_quiz_score"></strong></p>
         <button type="button" class="btn btn-secondary" onclick="startVocabQuiz()"><span class="lang-en">Play again 🔄</span><span class="lang-es" lang="es">Jugar de nuevo 🔄</span></button>
       </div>
-      <script type="application/json" id="vocab_quiz_data">[{"term":"Powers and Exponents","termEs":"Potencias y exponentes","def":"A power uses a base and an exponent to show repeated multiplication.","defEs":"Una potencia usa una base y un exponente para mostrar multiplicación repetida.","img":"/assets/vocab-images/concept-powers-and-exponents.svg","alt":"Illustration of Powers and Exponents: A power uses a base and an exponent to show repeated multiplication."},{"term":"Exponent","termEs":"Exponente","def":"A small number that tells how many times to multiply a number by itself.","defEs":"Un número pequeño que dice cuántas veces multiplicar un número por sí mismo.","img":"/assets/vocab-images/exponent.svg","alt":"Illustration of Exponent: A small number that tells how many times to multiply a number by itself."},{"term":"Base","termEs":"Base","def":"The number that gets multiplied by itself.","defEs":"El número que se multiplica por sí mismo.","img":"/assets/vocab-images/exponent-base.svg","alt":"Illustration of Base: The number that gets multiplied by itself."},{"term":"Power","termEs":"Potencia","def":"A number written with a base and an exponent, like 2³.","defEs":"Un número escrito con una base y un exponente, como 2³.","img":"/assets/vocab-images/exponent.svg","alt":"Illustration of Power: A number written with a base and an exponent, like 2³."},{"term":"Evaluate","termEs":"Evaluar","def":"To find the value by putting numbers in for the letters.","defEs":"Encontrar el valor poniendo números en lugar de las letras.","img":"/assets/vocab-images/expression.svg","alt":"Illustration of Evaluate: To find the value by putting numbers in for the letters."},{"term":"Repeated multiplication","termEs":"Multiplicación repetida","def":"Multiplying the same factor again and again.","defEs":"Multiplicar el mismo factor una y otra vez.","img":"/assets/vocab-images/exponent.svg","alt":"Illustration of Repeated multiplication: Multiplying the same factor again and again."},{"term":"Expanded form","termEs":"Forma desarrollada","def":"A power written out as a product of its factors.","defEs":"Una potencia escrita como el producto de sus factores.","img":"/assets/vocab-images/exponent.svg","alt":"Illustration of Expanded form: A power written out as a product of its factors."},{"term":"Squared","termEs":"Al cuadrado","def":"A base used as a factor two times.","defEs":"Una base usada como factor dos veces.","img":"/assets/vocab-images/exponent.svg","alt":"Illustration of Squared: A base used as a factor two times."},{"term":"Cubed","termEs":"Al cubo","def":"A base used as a factor three times.","defEs":"Una base usada como factor tres veces.","img":"/assets/vocab-images/exponent.svg","alt":"Illustration of Cubed: A base used as a factor three times."}]</script>
+      <script type="application/json" id="vocab_quiz_data">[{"term":"Powers and Exponents","termEs":"Potencias y exponentes","def":"Short ways to write the same number times itself.","defEs":"Formas cortas de escribir un número multiplicado por sí mismo.","img":"/assets/vocab-images/concept-powers-and-exponents.svg","alt":"Illustration of Powers and Exponents: Short ways to write the same number times itself."},{"term":"Exponent","termEs":"Exponente","def":"A small raised number. It counts the times a number is used.","defEs":"Un número pequeño arriba. Cuenta las veces que se usa un número.","img":"/assets/vocab-images/exponent.svg","alt":"Illustration of Exponent: A small raised number. It counts the times a number is used."},{"term":"Base","termEs":"Base","def":"The number in a power that repeats: the 2 in 2³.","defEs":"El número de una potencia que se repite: el 2 en 2³.","img":"/assets/vocab-images/exponent-base.svg","alt":"Illustration of Base: The number in a power that repeats: the 2 in 2³."},{"term":"Power","termEs":"Potencia","def":"A short way to write 2 × 2 × 2 as 2³.","defEs":"Una forma corta de escribir 2 × 2 × 2 como 2³.","img":"/assets/vocab-images/exponent.svg","alt":"Illustration of Power: A short way to write 2 × 2 × 2 as 2³."},{"term":"Evaluate","termEs":"Evaluar","def":"Find the value by putting in numbers for the letters.","defEs":"Hallar el valor poniendo números en lugar de las letras.","img":"/assets/vocab-images/expression.svg","alt":"Illustration of Evaluate: Find the value by putting in numbers for the letters."},{"term":"Repeated multiplication","termEs":"Multiplicación repetida","def":"Times the same number again and again.","defEs":"Multiplicar el mismo número una y otra vez.","img":"/assets/vocab-images/exponent.svg","alt":"Illustration of Repeated multiplication: Times the same number again and again."},{"term":"Expanded form","termEs":"Forma desarrollada","def":"A power written out in full, like 2 × 2 × 2.","defEs":"Una potencia escrita completa, como 2 × 2 × 2.","img":"/assets/vocab-images/exponent.svg","alt":"Illustration of Expanded form: A power written out in full, like 2 × 2 × 2."},{"term":"Squared","termEs":"Al cuadrado","def":"A number times itself.","defEs":"Un número multiplicado por sí mismo.","img":"/assets/vocab-images/exponent.svg","alt":"Illustration of Squared: A number times itself."},{"term":"Cubed","termEs":"Al cubo","def":"A number written three times in a product.","defEs":"Un número escrito tres veces en un producto.","img":"/assets/vocab-images/exponent.svg","alt":"Illustration of Cubed: A number written three times in a product."}]</script>
     </div>
 
     <div class="vocab-game-shell card-ish" id="vocab_match_shell" data-vocab-total="9">
@@ -1526,40 +1551,40 @@ header.homework-header,
         <div class="vocab-match-col col-defs" aria-label="Vocabulary definitions">
 
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="8" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A base used as a factor three times.</span>
-              <span class="chip-label-es" lang="es">Una base usada como factor tres veces.</span>
+              <span class="chip-label-en">A number written three times in a product.</span>
+              <span class="chip-label-es" lang="es">Un número escrito tres veces en un producto.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="0" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A power uses a base and an exponent to show repeated multiplication.</span>
-              <span class="chip-label-es" lang="es">Una potencia usa una base y un exponente para mostrar multiplicación repetida.</span>
+              <span class="chip-label-en">Short ways to write the same number times itself.</span>
+              <span class="chip-label-es" lang="es">Formas cortas de escribir un número multiplicado por sí mismo.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="1" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A small number that tells how many times to multiply a number by itself.</span>
-              <span class="chip-label-es" lang="es">Un número pequeño que dice cuántas veces multiplicar un número por sí mismo.</span>
+              <span class="chip-label-en">A small raised number. It counts the times a number is used.</span>
+              <span class="chip-label-es" lang="es">Un número pequeño arriba. Cuenta las veces que se usa un número.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="2" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">The number that gets multiplied by itself.</span>
-              <span class="chip-label-es" lang="es">El número que se multiplica por sí mismo.</span>
+              <span class="chip-label-en">The number in a power that repeats: the 2 in 2³.</span>
+              <span class="chip-label-es" lang="es">El número de una potencia que se repite: el 2 en 2³.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="3" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A number written with a base and an exponent, like 2³.</span>
-              <span class="chip-label-es" lang="es">Un número escrito con una base y un exponente, como 2³.</span>
+              <span class="chip-label-en">A short way to write 2 × 2 × 2 as 2³.</span>
+              <span class="chip-label-es" lang="es">Una forma corta de escribir 2 × 2 × 2 como 2³.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="4" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">To find the value by putting numbers in for the letters.</span>
-              <span class="chip-label-es" lang="es">Encontrar el valor poniendo números en lugar de las letras.</span>
+              <span class="chip-label-en">Find the value by putting in numbers for the letters.</span>
+              <span class="chip-label-es" lang="es">Hallar el valor poniendo números en lugar de las letras.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="5" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">Multiplying the same factor again and again.</span>
-              <span class="chip-label-es" lang="es">Multiplicar el mismo factor una y otra vez.</span>
+              <span class="chip-label-en">Times the same number again and again.</span>
+              <span class="chip-label-es" lang="es">Multiplicar el mismo número una y otra vez.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="6" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A power written out as a product of its factors.</span>
-              <span class="chip-label-es" lang="es">Una potencia escrita como el producto de sus factores.</span>
+              <span class="chip-label-en">A power written out in full, like 2 × 2 × 2.</span>
+              <span class="chip-label-es" lang="es">Una potencia escrita completa, como 2 × 2 × 2.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="7" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A base used as a factor two times.</span>
-              <span class="chip-label-es" lang="es">Una base usada como factor dos veces.</span>
+              <span class="chip-label-en">A number times itself.</span>
+              <span class="chip-label-es" lang="es">Un número multiplicado por sí mismo.</span>
             </button>
         </div>
       </div>
@@ -1589,29 +1614,24 @@ header.homework-header,
 
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
       <p class="quick-check-time bilingual-block">
-        <span class="lang-en">Complete the <span id="hw_check_problem_count">12</span> problems below.<span class="quick-check-extra-copy"> The extra practice at the bottom is optional.</span></span>
-        <span class="lang-es" lang="es">Completa los <span id="hw_check_problem_count_es">12</span> problemas de abajo.<span class="quick-check-extra-copy"> La práctica extra al final es opcional.</span></span>
-      </p>
-      <p class="bilingual-block">
-        <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
-        <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+        <span class="lang-en">Start with <strong>Basics</strong>. Each problem has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong> and a <strong>space for your work</strong>. Tap <strong>Check This Problem</strong> for instant help.<span class="quick-check-extra-copy"> The extra practice at the bottom is optional.</span></span>
+        <span class="lang-es" lang="es">Empiecen con las <strong>Básicas</strong>. Cada problema tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para su trabajo</strong>. Toquen <strong>Revisar esta pregunta</strong> para recibir ayuda al instante.<span class="quick-check-extra-copy"> La práctica extra al final es opcional.</span></span>
       </p>
 
 
-    <div class="stars-to-win-bar">
-      <div class="stars-to-win-title">
-        <span>⭐</span>
-        <div>
-          <span class="lang-en"><strong>Tonight's goal:</strong> finish the <span id="hw_goal_count">12</span> problems below. Stop any time — your work saves itself.</span>
-          <span class="lang-es" lang="es"><strong>La meta de hoy:</strong> terminar los <span id="hw_goal_count_es">12</span> problemas de abajo. Pueden parar cuando quieran: el trabajo se guarda solo.</span>
-        </div>
-      </div>
-      <div class="stars-milestone-chips" aria-hidden="true">
-        <span class="star-chip">🧱 Basics</span>
-        <span class="star-chip">🌱 Warm-Up ★</span>
-        <span class="star-chip">🚀 Level-Up ★★</span>
-        <span class="star-chip">🏆 Victory ★★★</span>
-      </div>
+    <div class="hw-goal-card">
+      <span class="hw-pips " role="img" aria-label="Tonight's goal progress"></span>
+      <p>
+        <span class="lang-en"><strong>Tonight's goal: any <span data-hw-goal-count>4</span> problems.</strong> There are <span data-hw-goal-avail>12</span> here, so pick the ones you like. Stop any time. Your work saves itself.</span>
+        <span class="lang-es" lang="es"><strong>La meta de hoy: cualquier <span data-hw-goal-count>4</span> problemas.</strong> Aquí hay <span data-hw-goal-avail>12</span>, así que escojan los que prefieran. Pueden parar cuando quieran. El trabajo se guarda solo.</span>
+      </p>
+      <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
+    </div>
+    <div class="stars-milestone-chips" aria-hidden="true">
+      <span class="star-chip">🧱 Basics</span>
+      <span class="star-chip">🌱 Warm-Up ★</span>
+      <span class="star-chip">🚀 Level-Up ★★</span>
+      <span class="star-chip">🏆 Victory ★★★</span>
     </div>
 
     <div class="live-streak-banner" id="hw_streak_banner" hidden>
@@ -1634,9 +1654,12 @@ header.homework-header,
         <strong><span class="lang-en">That's tonight's goal — done!</span><span class="lang-es" lang="es">¡Esa es la meta de hoy: completa!</span></strong>
         <p><span class="lang-en">Great work. Keep going with the extra practice if you want more, or head to <strong>Done</strong> to finish or choose optional extras.</span><span class="lang-es" lang="es">Buen trabajo. Sigan con la práctica extra si quieren más, o vayan a <strong>Listo</strong> para terminar o elegir extras opcionales.</span></p>
       </div>
-      <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
-        <span class="lang-en">Claim Certificate ➔</span><span class="lang-es" lang="es">Reclamar Certificado ➔</span>
-      </button>
+      <div class="goal-actions">
+        <button type="button" class="btn btn-sm btn-secondary hw-banner-mystery" hidden onclick="hwOpenMystery()"><span class="lang-en">🔓 Open the mystery challenge</span><span class="lang-es" lang="es">🔓 Abrir el reto misterioso</span></button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
+          <span class="lang-en">Teach it back, then claim your certificate ➔</span><span class="lang-es" lang="es">Enséñalo y reclama tu certificado ➔</span>
+        </button>
+      </div>
     </div>
 
       <section class="practice-tier practice-tier-basic" aria-label="Basic practice">
@@ -4501,7 +4524,7 @@ header.homework-header,
     </div>
 
     <div class="fam-game-break card-ish" id="fam_game_break">
-      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"2³","b":"8"},{"a":"5²","b":"25"},{"a":"10⁴","b":"10,000"},{"a":"3 × 3 × 3","b":"3³"}],"tf":[{"en":"3⁴ means 3 × 4.","es":"3⁴ significa 3 × 4.","answer":false,"whyEn":"The #1 exponent trap! 3⁴ = 3 × 3 × 3 × 3 = 81, not 12.","whyEs":"¡La trampa #1 de los exponentes! 3⁴ = 3 × 3 × 3 × 3 = 81, no 12."},{"en":"2⁵ = 32.","es":"2⁵ = 32.","answer":true,"whyEn":"2, 4, 8, 16, 32 — five doublings.","whyEs":"2, 4, 8, 16, 32: cinco duplicaciones."},{"en":"Folding a paper in half 3 times gives 6 layers.","es":"Doblar un papel a la mitad 3 veces da 6 capas.","answer":false,"whyEn":"Each fold DOUBLES: 2, 4, 8 layers. That's 2³, not 2 × 3.","whyEs":"Cada doblez DUPLICA: 2, 4, 8 capas. Eso es 2³, no 2 × 3."},{"en":"Any number to the power of 1 is itself.","es":"Cualquier número elevado a 1 es él mismo.","answer":true,"whyEn":"7¹ means one copy of 7 in the product — just 7.","whyEs":"7¹ significa una sola copia del 7 en el producto: solo 7."},{"en":"10³ = 1,000.","es":"10³ = 1,000.","answer":true,"whyEn":"10 × 10 × 10 — the exponent counts the zeros for powers of ten.","whyEs":"10 × 10 × 10: el exponente cuenta los ceros en las potencias de diez."}],"sort":{"a":{"en":"Equals 16","es":"Es igual a 16"},"b":{"en":"Does NOT equal 16","es":"NO es igual a 16"},"cards":[{"t":"2⁴","bucket":0,"en":"2 × 2 × 2 × 2 = 16.","es":"2 × 2 × 2 × 2 = 16."},{"t":"4²","bucket":0,"en":"4 × 4 = 16.","es":"4 × 4 = 16."},{"t":"2 × 4","bucket":1,"en":"8 — this is the base-times-exponent trap.","es":"8: esta es la trampa de base por exponente."},{"t":"8²","bucket":1,"en":"64.","es":"64."},{"t":"16¹","bucket":0,"en":"One copy of 16.","es":"Una copia de 16."},{"t":"4 × 2","bucket":1,"en":"8, not 16.","es":"8, no 16."}]},"wyr":[{"a":{"en":"$100 today","es":"$100 hoy"},"b":{"en":"1¢ doubled every day for 3 weeks","es":"1¢ duplicado cada día por 3 semanas"},"en":"Take the penny! Day 21 alone is 2²⁰ cents — over $10,000.","es":"¡Toma el centavo! Solo el día 21 son 2²⁰ centavos: más de $10,000."},{"a":{"en":"Fold a paper 10 times","es":"Doblar un papel 10 veces"},"b":{"en":"Stack 100 sheets of paper","es":"Apilar 100 hojas de papel"},"en":"Ten folds wins: 2¹⁰ = 1,024 layers.","es":"Ganan los diez dobleces: 2¹⁰ = 1,024 capas."}]};</script>
+      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"2³","b":"8","aEs":"","bEs":""},{"a":"5²","b":"25","aEs":"","bEs":""},{"a":"10⁴","b":"10,000","aEs":"","bEs":""},{"a":"3 × 3 × 3","b":"3³","aEs":"","bEs":""}],"tf":[{"en":"3⁴ means 3 × 4.","es":"3⁴ significa 3 × 4.","answer":false,"whyEn":"The #1 exponent trap! 3⁴ = 3 × 3 × 3 × 3 = 81, not 12.","whyEs":"¡La trampa #1 de los exponentes! 3⁴ = 3 × 3 × 3 × 3 = 81, no 12."},{"en":"2⁵ = 32.","es":"2⁵ = 32.","answer":true,"whyEn":"2, 4, 8, 16, 32 — five doublings.","whyEs":"2, 4, 8, 16, 32: cinco duplicaciones."},{"en":"Folding a paper in half 3 times gives 6 layers.","es":"Doblar un papel a la mitad 3 veces da 6 capas.","answer":false,"whyEn":"Each fold DOUBLES: 2, 4, 8 layers. That's 2³, not 2 × 3.","whyEs":"Cada doblez DUPLICA: 2, 4, 8 capas. Eso es 2³, no 2 × 3."},{"en":"Any number to the power of 1 is itself.","es":"Cualquier número elevado a 1 es él mismo.","answer":true,"whyEn":"7¹ means one copy of 7 in the product — just 7.","whyEs":"7¹ significa una sola copia del 7 en el producto: solo 7."},{"en":"10³ = 1,000.","es":"10³ = 1,000.","answer":true,"whyEn":"10 × 10 × 10 — the exponent counts the zeros for powers of ten.","whyEs":"10 × 10 × 10: el exponente cuenta los ceros en las potencias de diez."}],"sort":{"a":{"en":"Equals 16","es":"Es igual a 16"},"b":{"en":"Does NOT equal 16","es":"NO es igual a 16"},"cards":[{"t":"2⁴","bucket":0,"en":"2 × 2 × 2 × 2 = 16.","es":"2 × 2 × 2 × 2 = 16."},{"t":"4²","bucket":0,"en":"4 × 4 = 16.","es":"4 × 4 = 16."},{"t":"2 × 4","bucket":1,"en":"8 — this is the base-times-exponent trap.","es":"8: esta es la trampa de base por exponente."},{"t":"8²","bucket":1,"en":"64.","es":"64."},{"t":"16¹","bucket":0,"en":"One copy of 16.","es":"Una copia de 16."},{"t":"4 × 2","bucket":1,"en":"8, not 16.","es":"8, no 16."}]},"wyr":[{"a":{"en":"$100 today","es":"$100 hoy"},"b":{"en":"1¢ doubled every day for 3 weeks","es":"1¢ duplicado cada día por 3 semanas"},"en":"Take the penny! Day 21 alone is 2²⁰ cents — over $10,000.","es":"¡Toma el centavo! Solo el día 21 son 2²⁰ centavos: más de $10,000."},{"a":{"en":"Fold a paper 10 times","es":"Doblar un papel 10 veces"},"b":{"en":"Stack 100 sheets of paper","es":"Apilar 100 hojas de papel"},"en":"Ten folds wins: 2¹⁰ = 1,024 layers.","es":"Ganan los diez dobleces: 2¹⁰ = 1,024 capas."}]};</script>
       <div class="fam-game-head">
         <span class="fam-game-badge">🎮 <span class="lang-en">FAMILY ARCADE</span><span class="lang-es" lang="es">SALA DE JUEGOS EN FAMILIA</span></span>
         <p class="fam-game-lead">
@@ -4689,7 +4712,40 @@ header.homework-header,
     </div>
 <div class="tab-panel-inner" data-tab-panel="done" id="hw_panel_done" role="tabpanel" hidden>
       <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
-      <p class="family-explain-finish"><span class="lang-en">Explain one answer aloud or on paper: “I got ___ because ___. I checked by ___.” Include your strategy and units. Then you are done.</span><span class="lang-es" lang="es">Explica una respuesta en voz alta o en papel: “Obtuve ___ porque ___. Comprobé usando ___.” Incluye tu estrategia y las unidades. Después termina.</span></p>
+
+      <section class="hw-teach" aria-labelledby="hw_teach_title">
+        <p class="hw-eyebrow hw-inline"><span class="lang-en">The last step</span><span class="lang-es" lang="es">El último paso</span></p>
+        <h3 id="hw_teach_title"><span class="lang-en">Teach it to someone</span><span class="lang-es" lang="es">Enséñaselo a alguien</span></h3>
+        <ol class="hw-teach-steps">
+          <li><span class="lang-en">Pick one problem you solved.</span><span class="lang-es" lang="es">Elige un problema que resolviste.</span></li>
+          <li><span class="lang-en">Explain it out loud. Use any language first.</span><span class="lang-es" lang="es">Explícalo en voz alta. Usa primero el idioma que prefieras.</span></li>
+          <li><span class="lang-en">Say it again with the English math words:</span><span class="lang-es" lang="es">Dilo otra vez con las palabras de matemáticas en inglés:</span><ul class="hw-teach-words" aria-label="Words to use"><li><strong>Powers and Exponents</strong><span class="lang-es" lang="es"> · Potencias y exponentes</span></li><li><strong>Exponent</strong><span class="lang-es" lang="es"> · Exponente</span></li><li><strong>Base</strong><span class="lang-es" lang="es"> · Base</span></li></ul></li>
+          <li><span class="lang-en">Your partner asks: “How do you know?” Answer with: “I got ___ because ___. I checked by ___.”</span><span class="lang-es" lang="es">Tu acompañante pregunta: “¿Cómo lo sabes?” Responde: “Obtuve ___ porque ___. Comprobé usando ___.”</span></li>
+        </ol>
+      </section>
+
+      <section class="hw-confidence" id="hw_conf_after" data-conf-phase="after" aria-labelledby="hw_conf_after_title">
+        <h3 id="hw_conf_after_title"><span class="lang-en">How sure do you feel now?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes ahora?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_after_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="after" onclick="hwSetConfidence('after', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="after" onclick="hwSetConfidence('after', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="after" onclick="hwSetConfidence('after', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Compare it with how you felt at the start.</span><span class="lang-es" lang="es">Compáralo con cómo te sentías al empezar.</span></p>
+        <p class="hw-conf-growth" id="hw_conf_growth" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="hw-nights" id="hw_nights" aria-labelledby="hw_nights_title">
+        <h3 id="hw_nights_title"><span class="lang-en">Our family math nights</span><span class="lang-es" lang="es">Nuestras noches de matemáticas en familia</span></h3>
+        <ol class="hw-nights-week" id="hw_nights_week" aria-label="This week"></ol>
+        <p class="hw-nights-streak" id="hw_nights_streak" role="status" aria-live="polite"></p>
+        <p class="hw-nights-note"><span class="lang-en">Weekends never break it. Saved only on this device.</span><span class="lang-es" lang="es">Los fines de semana no la interrumpen. Se guarda solo en este dispositivo.</span></p>
+      </section>
       <div class="done-summary" id="hw_done_summary" role="status" aria-live="polite"></div>
       <ol class="done-problem-list" id="hw_done_problems" aria-label="Problems / Problemas"></ol>
       <p class="celebrate-text lang-en">Name one strategy that helped, or one question to ask next time. You can stop here; no adult signature is needed.</p>
@@ -4699,9 +4755,16 @@ header.homework-header,
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
 
+
+      <div class="hw-share">
+        <button type="button" class="btn btn-secondary hw-share-win" onclick="hwShareWin()">
+          🎉 <span class="lang-en">Share our win</span><span class="lang-es" lang="es">Compartir nuestro logro</span>
+        </button>
+        <p class="hw-share-note"><span class="lang-en">Shares only the lesson name and a link. No answers, no names.</span><span class="lang-es" lang="es">Comparte solo el nombre de la lección y un enlace. Sin respuestas ni nombres.</span></p>
+      </div>
       <div class="homework-message-action">
         <a class="btn btn-primary" href="https://home.classdojo.com/" target="_blank" rel="noopener"><span class="lang-en">Open ClassDojo to message Mr. Neft</span><span class="lang-es" lang="es">Abrir ClassDojo para escribir al Sr. Neft</span></a>
-        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicia sesión con tu cuenta familiar, abre Mensajes y elige al Sr. Neft. Incluye el número de esta lección y tu pregunta.</span></p>
+        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicien sesión con su cuenta familiar, abran Mensajes y elijan al Sr. Neft. Incluyan el número de esta lección y su pregunta.</span></p>
       </div>
       <section class="homework-optional-extras" aria-labelledby="homework_extras_title">
       <h3 id="homework_extras_title"><span class="lang-en">Want to do more?</span><span class="lang-es" lang="es">¿Quieren hacer más?</span></h3>
@@ -5170,32 +5233,15 @@ header.homework-header,
           </span>
           <span class="ai-lab-arrow" aria-hidden="true">↓</span>
         </a>
-        <p class="bilingual-block">
-          <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
-          <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
+
+        <p class="bilingual-block external-resource-claim">
+          <span class="lang-en">These links go to <strong>specific</strong> videos about tonight's topic — not general math pages.</span>
+          <span class="lang-es" lang="es">Estos enlaces van a videos <strong>específicos</strong> sobre el tema de hoy — no a páginas generales.</span>
         </p>
         <ul class="external-resource-list">
-
             <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-equations-and-inequalities/cc-6th-writing-equations/v/writing-equations-for-relationships-between-quantities" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Writing equations from word problems</span>
-                <span class="ext-title-es" lang="es">Escribir ecuaciones desde problemas</span>
-              </a>
-            </li>
-            <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/x0267d782:cc-6th-exponents-and-order-of-operations/cc-6th-exponents/v/introduction-to-exponents" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Introduction to exponents</span>
-                <span class="ext-title-es" lang="es">Introducción a exponentes</span>
-              </a>
-            </li>
-            <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/x0267d782:cc-6th-exponents-and-order-of-operations/cc-6th-exponents/v/squaring-numbers" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Squaring numbers</span>
-                <span class="ext-title-es" lang="es">Elevar al cuadrado</span>
-              </a>
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/x0267d782:cc-6th-exponents-and-order-of-operations/cc-6th-exponents/v/introduction-to-exponents" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-en"><span class="ext-source">Khan Academy</span><span class="ext-title-en">Intro to exponents</span></a>
+              <a href="https://es.khanacademy.org/math/cc-sixth-grade-math/x0267d782:cc-6th-exponents-and-order-of-operations/cc-6th-exponents/v/introduction-to-exponents" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-es" lang="es"><span class="ext-source">Khan Academy en español</span><span class="ext-title-es">Introducción a los exponentes</span></a>
             </li>
         </ul>
       </section>
@@ -5293,6 +5339,17 @@ header.homework-header,
       </div>
     </div>
 
+<div class="hw-toast" id="hw_toast" aria-hidden="true" hidden></div><div class="hw-sr-only" id="hw_toast_live" role="status" aria-live="polite"></div>
+<dialog class="hw-dialog" id="hw_dialog" aria-labelledby="hw_dialog_text">
+  <form method="dialog">
+    <p id="hw_dialog_text"></p>
+    <div class="hw-dialog-actions">
+      <button type="submit" value="no" class="btn btn-secondary" id="hw_dialog_no"></button>
+      <button type="submit" value="yes" class="btn btn-primary" id="hw_dialog_yes"></button>
+    </div>
+  </form>
+</dialog>
+
 <section class="hw-answer-sheet" aria-hidden="true">
   <h2><span class="lang-en">Answer sheet</span><span class="lang-es" lang="es">Hoja de respuestas</span> · Explore Numerical Expressions with Exponents</h2>
   <p><span class="lang-en">Check the work after trying each problem. Talk about why each answer makes sense.</span><span class="lang-es" lang="es">Revisen el trabajo después de intentar cada problema. Hablen de por qué cada respuesta tiene sentido.</span></p>
@@ -5332,8 +5389,10 @@ header.homework-header,
 
     <div class="score-progress-container">
       <div class="score-text">
-        <span class="lang-en">Progress:</span><span class="lang-es" lang="es">Progreso:</span>
-        <span id="progress_text">0 / 12</span>
+        <span class="hw-stack hw-goal-label"><span class="lang-en">Tonight's goal</span><span class="lang-es" lang="es">Meta de hoy</span></span>
+        <span id="progress_text">0 / 4</span>
+        <span class="hw-pips hw-pips-bar" role="img" aria-label="Tonight's goal progress"></span>
+        <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -5341,8 +5400,8 @@ header.homework-header,
     </div>
 
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
-      <button class="btn btn-primary" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
+      <button class="btn btn-secondary hw-stack" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
+      <button class="btn btn-primary hw-stack" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
     </div>
   </div>
 </div>
@@ -5350,18 +5409,19 @@ header.homework-header,
 <script>
 window.LESSON_ID = "6-3";
 window.LESSON_TITLE = "Explore Numerical Expressions with Exponents";
+window.LESSON_TITLE_ES = "Explorar expresiones numéricas con exponentes";
 /* The number of core problems, so the celebration fires on the goal the page
    actually states. It was hardcoded to 3 while the page showed 6 and the status
    bar counted to 6: a family could hit "Goal Reached! 3 Stars Earned!" and read
    "0 / 6 Completed" in the same glance. */
 window.HW_CORE_COUNT = 12;
-window.__HW_VOCAB__ = [{"term":"Powers and Exponents","termEs":"Potencias y exponentes","def":"A power uses a base and an exponent to show repeated multiplication.","defEs":"Una potencia usa una base y un exponente para mostrar multiplicación repetida.","example":"2⁴ = 2 × 2 × 2 × 2 = 16","img":"/assets/vocab-images/concept-powers-and-exponents.svg","imgAlt":"Illustration of Powers and Exponents: A power uses a base and an exponent to show repeated multiplication.","cs":false},{"term":"Exponent","termEs":"Exponente","def":"A small number that tells how many times to multiply a number by itself.","defEs":"Un número pequeño que dice cuántas veces multiplicar un número por sí mismo.","example":"In 2^3, the small 3 means multiply 2 by itself 3 times: 2 × 2 × 2 = 8","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Exponent: A small number that tells how many times to multiply a number by itself.","cs":false},{"term":"Base","termEs":"Base","def":"The number that gets multiplied by itself.","defEs":"El número que se multiplica por sí mismo.","example":"In 5², the base is 5 — it is the number being multiplied: 5 × 5 = 25","img":"/assets/vocab-images/exponent-base.svg","imgAlt":"Illustration of Base: The number that gets multiplied by itself.","cs":false},{"term":"Power","termEs":"Potencia","def":"A number written with a base and an exponent, like 2^3.","defEs":"Un número escrito con una base y un exponente, como 2^3.","example":"10³ = 10 × 10 × 10 = 1,000 — read as '10 to the third power' or '10 cubed'","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Power: A number written with a base and an exponent, like 2^3.","cs":false},{"term":"Evaluate","termEs":"Evaluar","def":"To find the value by putting numbers in for the letters.","defEs":"Encontrar el valor poniendo números en lugar de las letras.","example":"Evaluate 3⁴: write 3 × 3 × 3 × 3, then multiply step by step: 9 × 9 = 81","img":"/assets/vocab-images/expression.svg","imgAlt":"Illustration of Evaluate: To find the value by putting numbers in for the letters.","cs":false},{"term":"Repeated multiplication","termEs":"Multiplicación repetida","def":"Multiplying the same factor again and again.","defEs":"Multiplicar el mismo factor una y otra vez.","example":"9 × 9 × 9 × 9","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Repeated multiplication: Multiplying the same factor again and again.","cs":false},{"term":"Expanded form","termEs":"Forma desarrollada","def":"A power written out as a product of its factors.","defEs":"Una potencia escrita como el producto de sus factores.","example":"2^3 = 2 × 2 × 2","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Expanded form: A power written out as a product of its factors.","cs":false},{"term":"Squared","termEs":"Al cuadrado","def":"A base used as a factor two times.","defEs":"Una base usada como factor dos veces.","example":"4^2 = 4 × 4","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Squared: A base used as a factor two times.","cs":false},{"term":"Cubed","termEs":"Al cubo","def":"A base used as a factor three times.","defEs":"Una base usada como factor tres veces.","example":"4^3 = 4 × 4 × 4","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Cubed: A base used as a factor three times.","cs":false}];
+window.__HW_VOCAB__ = [{"term":"Powers and Exponents","termEs":"Potencias y exponentes","def":"Short ways to write the same number times itself.","defEs":"Formas cortas de escribir un número multiplicado por sí mismo.","example":"5² = 5 × 5 = 25","img":"/assets/vocab-images/concept-powers-and-exponents.svg","imgAlt":"Illustration of Powers and Exponents: Short ways to write the same number times itself.","cs":false,"formal":"A power uses a base and an exponent to show repeated multiplication.","formalEs":"Una potencia usa una base y un exponente para mostrar multiplicación repetida.","exampleEs":"5² = 5 × 5 = 25","exampleFormal":"2⁴ = 2 × 2 × 2 × 2 = 16"},{"term":"Exponent","termEs":"Exponente","def":"A small raised number. It counts the times a number is used.","defEs":"Un número pequeño arriba. Cuenta las veces que se usa un número.","example":"In 2^3, the exponent is 3","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Exponent: A small raised number. It counts the times a number is used.","cs":false,"formal":"A small number that tells how many times to multiply a number by itself.","formalEs":"Un número pequeño que dice cuántas veces multiplicar un número por sí mismo.","exampleEs":"En 2^3, el exponente es 3","exampleFormal":"In 2^3, the small 3 means multiply 2 by itself 3 times: 2 × 2 × 2 = 8"},{"term":"Base","termEs":"Base","def":"The number in a power that repeats: the 2 in 2^3.","defEs":"El número de una potencia que se repite: el 2 en 2^3.","example":"In 5², the base is 5 — it is the number being multiplied: 5 × 5 = 25","img":"/assets/vocab-images/exponent-base.svg","imgAlt":"Illustration of Base: The number in a power that repeats: the 2 in 2^3.","cs":false,"formal":"The number that gets multiplied by itself.","formalEs":"El número que se multiplica por sí mismo."},{"term":"Power","termEs":"Potencia","def":"A short way to write 2 × 2 × 2 as 2^3.","defEs":"Una forma corta de escribir 2 × 2 × 2 como 2^3.","example":"10³ = 10 × 10 × 10 = 1,000 — read as '10 to the third power' or '10 cubed'","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Power: A short way to write 2 × 2 × 2 as 2^3.","cs":false,"formal":"A number written with a base and an exponent, like 2^3.","formalEs":"Un número escrito con una base y un exponente, como 2^3."},{"term":"Evaluate","termEs":"Evaluar","def":"Find the value by putting in numbers for the letters.","defEs":"Hallar el valor poniendo números en lugar de las letras.","example":"n + 4 with n = 3 is 7","img":"/assets/vocab-images/expression.svg","imgAlt":"Illustration of Evaluate: Find the value by putting in numbers for the letters.","cs":false,"formal":"To find the value by putting numbers in for the letters.","formalEs":"Encontrar el valor poniendo números en lugar de las letras.","exampleEs":"n + 4 con n = 3 es 7","exampleFormal":"Evaluate 3⁴: write 3 × 3 × 3 × 3, then multiply step by step: 9 × 9 = 81"},{"term":"Repeated multiplication","termEs":"Multiplicación repetida","def":"Times the same number again and again.","defEs":"Multiplicar el mismo número una y otra vez.","example":"2 × 2 × 2 × 2","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Repeated multiplication: Times the same number again and again.","cs":false,"formal":"Multiplying the same factor again and again.","formalEs":"Multiplicar el mismo factor una y otra vez.","exampleEs":"2 × 2 × 2 × 2","exampleFormal":"9 × 9 × 9 × 9"},{"term":"Expanded form","termEs":"Forma desarrollada","def":"A power written out in full, like 2 × 2 × 2.","defEs":"Una potencia escrita completa, como 2 × 2 × 2.","example":"2^3 = 2 × 2 × 2","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Expanded form: A power written out in full, like 2 × 2 × 2.","cs":false,"formal":"A power written out as a product of its factors.","formalEs":"Una potencia escrita como el producto de sus factores."},{"term":"Squared","termEs":"Al cuadrado","def":"A number times itself.","defEs":"Un número multiplicado por sí mismo.","example":"3² = 3 × 3 = 9","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Squared: A number times itself.","cs":false,"formal":"A base used as a factor two times.","formalEs":"Una base usada como factor dos veces.","exampleEs":"3² = 3 × 3 = 9","exampleFormal":"4^2 = 4 × 4"},{"term":"Cubed","termEs":"Al cubo","def":"A number written three times in a product.","defEs":"Un número escrito tres veces en un producto.","example":"2^3 = 2 × 2 × 2 = 8","img":"/assets/vocab-images/exponent.svg","imgAlt":"Illustration of Cubed: A number written three times in a product.","cs":false,"formal":"A base used as a factor three times.","formalEs":"Una base usada como factor tres veces.","exampleEs":"2^3 = 2 × 2 × 2 = 8","exampleFormal":"4^3 = 4 × 4 × 4"}];
 window.__HW_VOCAB_SKIP__ = [9,36,118,154,196,290,317,342];
 window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Numerical\\s+Expressions\\s+with\\s+Exponents(?:es|s)?|Solve\\s+One-Step\\s+Addition\\s+and\\s+Subtraction\\s+Equations(?:es|s)?|Determine\\s+the\\s+Whole\\s+Given\\s+the\\s+Part\\s+and\\s+Percent(?:es|s)?|Convert\\s+Measurements\\s+within\\s+the\\s+Same\\s+System(?:es|s)?|Percents\\s+Greater\\s+Than\\s+100%\\s+and\\s+Less\\s+Than\\s+1%(?:es|s)?|Solve\\s+Multiplication\\s+and\\s+Division\\s+Equations(?:es|s)?|Equations\\s+and\\s+Inequalities\\s+Problem\\s+Solving(?:es|s)?|Convert\\s+Measurements\\s+Between\\s+Systems(?:es|s)?|Multiplication\\s+Property\\s+of\\s+Equalit(?:y|ies)|Ordered\\s+Pairs\\s+in\\s+All\\s+Four\\s+Quadrants(?:es|s)?|Rational\\s+Numbers\\s+on\\s+the\\s+Number\\s+Line(?:es|s)?|Describe\\s+the\\s+Data\\s+Using\\s+the\\s+Median(?:es|s)?|Divide\\s+Whole\\s+Numbers\\s+by\\s+Fractions(?:es|s)?|Fraction\\s+Division\\s+Problem\\s+Solving(?:es|s)?|Fractions,\\s+Decimals,\\s+and\\s+Percents(?:es|s)?|Distance\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Subtraction\\s+Property\\s+of\\s+Equalit(?:y|ies)|Appropriate\\s+Measures\\s+of\\s+Center(?:es|s)?|Ratio\\s+and\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|Simplify\\s+Algebraic\\s+Expressions(?:es|s)?|Statistical\\s+Questions\\s+and\\s+Data(?:es|s)?|Volume\\s+with\\s+Whole-Number\\s+Edges(?:es|s)?|Addition\\s+Property\\s+of\\s+Equalit(?:y|ies)|Division\\s+Property\\s+of\\s+Equalit(?:y|ies)|Graph\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Range\\s+and\\s+Interquartile\\s+Range(?:es|s)?|Display\\s+Data\\s+with\\s+Histograms(?:es|s)?|Greatest\\s+common\\s+factor\\s+\\(GCF\\)(?:es|s)?|Solve\\s+and\\s+Graph\\s+Inequalities(?:es|s)?|Volume\\s+of\\s+Rectangular\\s+Prisms(?:es|s)?|Display\\s+Data\\s+with\\s+Box\\s+Plots(?:es|s)?|Integers\\s+and\\s+Absolute\\s+Value(?:es|s)?|Least\\s+common\\s+multiple\\s+\\(LCM\\)(?:es|s)?|Shape\\s+of\\s+Data\\s+Distributions(?:es|s)?|Write\\s+Algebraic\\s+Expressions(?:es|s)?|Compare\\s+and\\s+Order\\s+Integers(?:es|s)?|Decimal\\s+Division\\s+Algorithm(?:es|s)?|Divide\\s+Multi-Digit\\s+Numbers(?:es|s)?|Find\\s+Factors\\s+and\\s+Multiples(?:es|s)?|Reflect\\s+Points\\s+Across\\s+Axes(?:es|s)?|Add\\s+and\\s+Subtract\\s+Decimals(?:es|s)?|Area\\s+of\\s+Composite\\s+Figures(?:es|s)?|Convert\\s+Measurement\\s+Units(?:es|s)?|distance\\s+between\\s+vertices(?:es|s)?|The\\s+Distributive\\s+Propert(?:y|ies)|Unit\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|least\\s+common\\s+denominator(?:es|s)?|Area\\s+of\\s+Regular\\s+Polygons(?:es|s)?|Non-statistical\\s+Question(?:es|s)?|Opposite\\s+of\\s+the\\s+opposite(?:es|s)?|Properties\\s+of\\s+Operations(?:es|s)?|Surface\\s+Area\\s+of\\s+Pyramids(?:es|s)?|Repeated\\s+multiplication(?:es|s)?|mean\\s+absolute\\s+deviation(?:es|s)?|make\\s+sense\\s+of\\s+a\\s+problem(?:es|s)?|Percent\\s+Problem\\s+Solving(?:es|s)?|Surface\\s+Area\\s+Using\\s+Nets(?:es|s)?|greatest\\s+common\\s+factor(?:es|s)?|Area\\s+of\\s+Parallelograms(?:es|s)?|Mean,\\s+Median,\\s+and\\s+Mode(?:es|s)?|Multiplicative\\s+inverse(?:es|s)?|Surface\\s+Area\\s+of\\s+Prisms(?:es|s)?|least\\s+common\\s+multiple(?:es|s)?|equivalent\\s+expression(?:es|s)?|Distributive\\s+Propert(?:y|ies)|Division\\s+of\\s+Fractions(?:es|s)?|Length,\\s+width,\\s+height(?:es|s)?|Powers\\s+and\\s+Exponents(?:es|s)?|algebraic\\s+expression(?:es|s)?|Associative\\s+Propert(?:y|ies)|Commutative\\s+Propert(?:y|ies)|define\\s+the\\s+variables(?:es|s)?|Divide\\s+Mixed\\s+Numbers(?:es|s)?|Evaluate\\s+Expressions(?:es|s)?|Factor\\s+an\\s+expression(?:es|s)?|independent\\s+variable(?:es|s)?|Measure\\s+of\\s+variation(?:es|s)?|Numerical\\s+expression(?:es|s)?|Rates\\s+and\\s+Unit\\s+Rates(?:es|s)?|Statistical\\s+Question(?:es|s)?|prime\\s+factorization(?:es|s)?|interquartile\\s+range(?:es|s)?|equivalent\\s+fraction(?:es|s)?|community\\s+agreement(?:es|s)?|Equivalent\\s+division(?:es|s)?|Five-number\\s+summar(?:y|ies)|Horizontal\\s+distance(?:es|s)?|Negative\\s+coordinate(?:es|s)?|Order\\s+of\\s+operations(?:es|s)?|Percent\\s+of\\s+a\\s+Number(?:es|s)?|Area\\s+of\\s+a\\s+Triangle(?:es|s)?|Area\\s+of\\s+Trapezoids(?:es|s)?|At\\s+least\\s+/\\s+At\\s+most(?:es|s)?|bilateral\\s+symmetr(?:y|ies)|Common\\s+denominator(?:es|s)?|compatible\\s+numbers(?:es|s)?|dependent\\s+variable(?:es|s)?|Double\\s+number\\s+line(?:es|s)?|Graph\\s+Inequalities(?:es|s)?|Graph\\s+Ratio\\s+Tables(?:es|s)?|Keep,\\s+Change,\\s+Flip(?:es|s)?|Measurement\\s+system(?:es|s)?|Multi-step\\s+problem(?:es|s)?|Understand\\s+Percent(?:es|s)?|Write\\s+Inequalities(?:es|s)?|improper\\s+fraction(?:es|s)?|conversion\\s+factor(?:es|s)?|benchmark\\s+percent(?:es|s)?|Data\\s+distribution(?:es|s)?|Greater\\s+than\\s+100%(?:es|s)?|Identity\\s+Propert(?:y|ies)|Inverse\\s+operation(?:es|s)?|Measure\\s+of\\s+center(?:es|s)?|Multiply\\s+Decimals(?:es|s)?|One-step\\s+equation(?:es|s)?|Rectangular\\s+prism(?:es|s)?|Shape\\s+of\\s+the\\s+data(?:es|s)?|Understand\\s+Ratios(?:es|s)?|Vertical\\s+distance(?:es|s)?|coordinate\\s+plane(?:es|s)?|keep-change-flip(?:es|s)?|equivalent\\s+ratio(?:es|s)?|Additive\\s+pattern(?:es|s)?|Composite\\s+figure(?:es|s)?|Composite\\s+number(?:es|s)?|Customary\\s+system(?:es|s)?|Divide\\s+Fractions(?:es|s)?|Grouping\\s+symbols(?:es|s)?|line\\s+of\\s+symmetr(?:y|ies)|Negative\\s+integer(?:es|s)?|Triangular\\s+prism(?:es|s)?|common\\s+multiple(?:es|s)?|Customary\\s+units(?:es|s)?|Divide\\s+Decimals(?:es|s)?|Frequency\\s+table(?:es|s)?|Negative\\s+number(?:es|s)?|Positive\\s+number(?:es|s)?|Problem\\s+solving(?:es|s)?|Ratio\\s+Reasoning(?:es|s)?|Rational\\s+number(?:es|s)?|Regular\\s+Polygon(?:es|s)?|Right\\s+trapezoid(?:es|s)?|table\\s+of\\s+values(?:es|s)?|Two-dimensional(?:es|s)?|Unit\\s+rate\\s+point(?:es|s)?|Write\\s+Equations(?:es|s)?|absolute\\s+value(?:es|s)?|Boundary\\s+point(?:es|s)?|Colon\\s+notation(?:es|s)?|Compare\\s+Ratios(?:es|s)?|counterexample(?:es|s)?|Cross-multipl(?:y|ies)|Decimal\\s+places(?:es|s)?|generalization(?:es|s)?|Linear\\s+pattern(?:es|s)?|math\\s+biograph(?:y|ies)|predictabilit(?:y|ies)|Rate\\s+of\\s+change(?:es|s)?|reasonableness(?:es|s)?|representation(?:es|s)?|True\\s+statement(?:es|s)?|Expanded\\s+form(?:es|s)?|long\\s+division(?:es|s)?|decimal\\s+point(?:es|s)?|parallelogram(?:es|s)?|common\\s+factor(?:es|s)?|Approximatel(?:y|ies)|Balance\\s+point(?:es|s)?|Closed\\s+circle(?:es|s)?|Extreme\\s+value(?:es|s)?|Halfway\\s+value(?:es|s)?|Metric\\s+system(?:es|s)?|Part-to-whole(?:es|s)?|Perpendicular(?:es|s)?|Simplest\\s+form(?:es|s)?|Skip\\s+counting(?:es|s)?|Unit\\s+fraction(?:es|s)?|Work\\s+backward(?:es|s)?|mixed\\s+number(?:es|s)?|ordered\\s+pair(?:es|s)?|surface\\s+area(?:es|s)?|line\\s+segment(?:es|s)?|distribution(?:es|s)?|scale\\s+factor(?:es|s)?|prime\\s+factor(?:es|s)?|Annex\\s+a\\s+zero(?:es|s)?|Decimal\\s+grid(?:es|s)?|doer\\s+of\\s+math(?:es|s)?|Lateral\\s+area(?:es|s)?|Lateral\\s+face(?:es|s)?|Less\\s+than\\s+1%(?:es|s)?|Metric\\s+units(?:es|s)?|mirror\\s+image(?:es|s)?|No\\s+more\\s+than(?:es|s)?|Part-to-part(?:es|s)?|pattern\\s+rule(?:es|s)?|pattern\\s+unit(?:es|s)?|Power\\s+of\\s+ten(?:es|s)?|Prime\\s+number(?:es|s)?|Proportional(?:es|s)?|relationship(?:es|s)?|Slant\\s+height(?:es|s)?|Slanted\\s+side(?:es|s)?|Solution\\s+set(?:es|s)?|tape\\s+diagram(?:es|s)?|Target\\s+total(?:es|s)?|x-coordinate(?:es|s)?|Distributive(?:es|s)?|multi-digit(?:es|s)?|place\\s+value(?:es|s)?|denominator(?:es|s)?|coefficient(?:es|s)?|Annex\\s+zeros(?:es|s)?|Base\\s+1\\s+\\(b1\\)(?:es|s)?|Base\\s+2\\s+\\(b2\\)(?:es|s)?|Common\\s+form(?:es|s)?|Coordinates(?:es|s)?|Factor\\s+pair(?:es|s)?|Factor\\s+tree(?:es|s)?|Middle\\s+half(?:es|s)?|Number\\s+line(?:es|s)?|Open\\s+circle(?:es|s)?|Per\\s+hundred(?:es|s)?|Ratio\\s+table(?:es|s)?|Side\\s+length(?:es|s)?|Target\\s+mean(?:es|s)?|Total\\s+parts(?:es|s)?|Total\\s+price(?:es|s)?|Variabilit(?:y|ies)|Associative(?:es|s)?|Commutative(?:es|s)?|bring\\s+down(?:es|s)?|equivalent(?:es|s)?|reciprocal(?:es|s)?|hundredths(?:es|s)?|proportion(?:es|s)?|expression(?:es|s)?|substitute(?:es|s)?|inequalit(?:y|ies)|like\\s+terms(?:es|s)?|Better\\s+Buy(?:es|s)?|Comparison(?:es|s)?|confidence(?:es|s)?|conjecture(?:es|s)?|Constraint(?:es|s)?|cubic\\s+unit(?:es|s)?|depends\\s+on(?:es|s)?|Dimensions(?:es|s)?|Equal\\s+sign(?:es|s)?|math\\s+stor(?:y|ies)|profession(?:es|s)?|reasonable(?:es|s)?|Reflection(?:es|s)?|repetition(?:es|s)?|round\\s+trip(?:es|s)?|Unit\\s+price(?:es|s)?|Unit\\s+ratio(?:es|s)?|remainder(?:es|s)?|algorithm(?:es|s)?|numerator(?:es|s)?|unit\\s+rate(?:es|s)?|perimeter(?:es|s)?|rectangle(?:es|s)?|trapezoid(?:es|s)?|histogram(?:es|s)?|frequenc(?:y|ies)|Base\\s+area(?:es|s)?|Benchmark(?:es|s)?|communit(?:y|ies)|Composite(?:es|s)?|Congruent(?:es|s)?|decompose(?:es|s)?|Deviation(?:es|s)?|Divisible(?:es|s)?|ingenuit(?:y|ies)|Interpret(?:es|s)?|inventor(?:y|ies)|Magnitude(?:es|s)?|persevere(?:es|s)?|represent(?:es|s)?|symmetric(?:es|s)?|the\\s+whole(?:es|s)?|Unit\\s+cube(?:es|s)?|Variation(?:es|s)?|Exponent(?:es|s)?|Evaluate(?:es|s)?|quotient(?:es|s)?|estimate(?:es|s)?|simplif(?:y|ies)|variable(?:es|s)?|opposite(?:es|s)?|triangle(?:es|s)?|box\\s+plot(?:es|s)?|dot\\s+plot(?:es|s)?|quartile(?:es|s)?|argument(?:es|s)?|at\\s+least(?:es|s)?|Constant(?:es|s)?|critique(?:es|s)?|Data\\s+set(?:es|s)?|Diagonal(?:es|s)?|Discount(?:es|s)?|Distance(?:es|s)?|Dividend(?:es|s)?|Interval(?:es|s)?|Negative(?:es|s)?|organize(?:es|s)?|Parallel(?:es|s)?|Per\\s+Unit(?:es|s)?|Positive(?:es|s)?|Propert(?:y|ies)|quantit(?:y|ies)|rotation(?:es|s)?|Solution(?:es|s)?|strateg(?:y|ies)|strength(?:es|s)?|Symmetr(?:y|ies)|Identit(?:y|ies)|Rational(?:es|s)?|Squared(?:es|s)?|product(?:es|s)?|regroup(?:es|s)?|decimal(?:es|s)?|percent(?:es|s)?|integer(?:es|s)?|rhombus(?:es|s)?|polygon(?:es|s)?|pyramid(?:es|s)?|segment(?:es|s)?|outlier(?:es|s)?|cluster(?:es|s)?|Average(?:es|s)?|balance(?:es|s)?|Convert(?:es|s)?|Divisor(?:es|s)?|Formula(?:es|s)?|Isolate(?:es|s)?|justif(?:y|ies)|portion(?:es|s)?|reflect(?:es|s)?|Unknown(?:es|s)?|Whisker(?:es|s)?|factor(?:es|s)?|tenths(?:es|s)?|volume(?:es|s)?|vertex(?:es|s)?|median(?:es|s)?|Expand(?:es|s)?|growth(?:es|s)?|Markup(?:es|s)?|Output(?:es|s)?|puzzle(?:es|s)?|rhythm(?:es|s)?|Skewed(?:es|s)?|Spread(?:es|s)?|Survey(?:es|s)?|x-axis(?:es|s)?|y-axis(?:es|s)?|Power(?:es|s)?|Cubed(?:es|s)?|digit(?:es|s)?|ratio(?:es|s)?|prism(?:es|s)?|Input(?:es|s)?|Order(?:es|s)?|Range(?:es|s)?|Scale(?:es|s)?|Solve(?:es|s)?|Prime(?:es|s)?|Base(?:es|s)?|area(?:es|s)?|edge(?:es|s)?|data(?:es|s)?|Apex(?:es|s)?|Axis(?:es|s)?|Face(?:es|s)?|gear(?:es|s)?|Mode(?:es|s)?|Peak(?:es|s)?|net(?:es|s)?|LCM(?:es|s)?|MCM(?:es|s)?|GCF(?:es|s)?|MCD(?:es|s)?|GCD(?:es|s)?|LCD(?:es|s)?|IQR(?:es|s)?|RIC(?:es|s)?|MAD(?:es|s)?|DMA(?:es|s)?|DAM(?:es|s)?|KCF(?:es|s)?|MCI(?:es|s)?|Gap(?:es|s)?|Tax(?:es|s)?|Tip(?:es|s)?|SA(?:es|s)?)\\b","lookup":{"powers and exponent":0,"exponent":1,"base":2,"power":3,"evaluate":4,"repeated multiplication":5,"expanded form":6,"squared":7,"cubed":8,"product":9,"quotient":10,"factor":11,"remainder":12,"digit":13,"multi-digit":14,"prime factorization":15,"greatest common factor":16,"least common multiple":17,"algorithm":18,"long division":19,"bring down":20,"regroup":21,"place value":22,"estimate":23,"decimal point":24,"numerator":25,"denominator":26,"equivalent":27,"reciprocal":28,"mixed number":29,"decimal":30,"tenth":31,"hundredth":32,"improper fraction":33,"simplify":34,"ratio":35,"unit rate":36,"percent":37,"proportion":38,"variable":39,"expression":40,"coefficient":41,"substitute":42,"inequality":43,"like term":44,"integer":45,"absolute value":46,"opposite":47,"coordinate plane":48,"ordered pair":49,"perimeter":50,"volume":51,"surface area":52,"area":53,"triangle":54,"rectangle":55,"parallelogram":56,"trapezoid":57,"rhombu":58,"polygon":59,"prism":60,"pyramid":61,"net":62,"vertex":63,"edge":64,"segment":65,"line segment":66,"median":67,"outlier":68,"interquartile range":69,"mean absolute deviation":70,"keep-change-flip":71,"data":72,"histogram":73,"box plot":74,"dot plot":75,"quartile":76,"frequency":77,"distribution":78,"cluster":79,"scale factor":80,"equivalent ratio":81,"equivalent expression":82,"equivalent fraction":83,"common factor":84,"common multiple":85,"least common denominator":86,"prime factor":87,"conversion factor":88,"algebraic expression":89,"lcm":90,"mcm":91,"gcf":92,"mcd":93,"gcd":94,"lcd":95,"iqr":96,"ric":97,"mad":98,"dma":99,"dam":100,"sa":101,"kcf":102,"mci":103,"add and subtract decimal":104,"addition property of equality":105,"additive pattern":106,"annex a zero":107,"annex zero":108,"apex":109,"appropriate measures of center":110,"approximately":111,"area of a triangle":112,"area of composite figure":113,"area of parallelogram":114,"area of regular polygon":115,"area of trapezoid":116,"argument":117,"associative property":118,"at least":119,"at least / at most":120,"average":121,"axi":122,"balance":123,"balance point":124,"base 1 (b1)":125,"base 2 (b2)":126,"base area":127,"benchmark":128,"benchmark percent":129,"better buy":130,"bilateral symmetry":131,"boundary point":132,"closed circle":133,"colon notation":134,"common denominator":135,"common form":136,"community":137,"community agreement":138,"commutative property":139,"compare and order integer":140,"compare ratio":141,"comparison":142,"compatible number":143,"composite":144,"composite figure":145,"composite number":146,"confidence":147,"congruent":148,"conjecture":149,"constant":150,"constraint":151,"convert":152,"convert measurement unit":153,"convert measurements between system":154,"convert measurements within the same system":155,"coordinate":156,"counterexample":157,"critique":158,"cross-multiply":159,"cubic unit":160,"customary system":161,"customary unit":162,"data distribution":163,"data set":164,"decimal division algorithm":165,"decimal grid":166,"decimal place":167,"decompose":168,"define the variable":169,"dependent variable":170,"depends on":171,"describe the data using the median":172,"determine the whole given the part and percent":173,"deviation":174,"diagonal":175,"dimension":176,"discount":177,"display data with box plot":178,"display data with histogram":179,"distance":180,"distance between vertice":181,"distance on the coordinate plane":182,"distributive property":183,"divide decimal":184,"divide fraction":185,"divide mixed number":186,"divide multi-digit number":187,"divide whole numbers by fraction":188,"dividend":189,"divisible":190,"division of fraction":191,"division property of equality":192,"divisor":193,"doer of math":194,"double number line":195,"equal sign":196,"equations and inequalities problem solving":197,"equivalent division":198,"evaluate expression":199,"expand":200,"extreme value":201,"face":202,"factor an expression":203,"factor pair":204,"factor tree":205,"find factors and multiple":206,"five-number summary":207,"formula":208,"fraction division problem solving":209,"fractions, decimals, and percent":210,"frequency table":211,"gap":212,"gear":213,"generalization":214,"graph inequality":215,"graph on the coordinate plane":216,"graph ratio table":217,"greater than 100%":218,"greatest common factor (gcf)":219,"grouping symbol":220,"growth":221,"halfway value":222,"horizontal distance":223,"identity property":224,"independent variable":225,"ingenuity":226,"input":227,"integers and absolute value":228,"interpret":229,"interval":230,"inventory":231,"inverse operation":232,"isolate":233,"justify":234,"keep, change, flip":235,"lateral area":236,"lateral face":237,"least common multiple (lcm)":238,"length, width, height":239,"less than 1%":240,"line of symmetry":241,"linear pattern":242,"magnitude":243,"make sense of a problem":244,"markup":245,"math biography":246,"math story":247,"mean, median, and mode":248,"measure of center":249,"measure of variation":250,"measurement system":251,"metric system":252,"metric unit":253,"middle half":254,"mirror image":255,"mode":256,"multi-step problem":257,"multiplication property of equality":258,"multiplicative inverse":259,"multiply decimal":260,"negative":261,"negative coordinate":262,"negative integer":263,"negative number":264,"no more than":265,"non-statistical question":266,"number line":267,"numerical expression":268,"one-step equation":269,"open circle":270,"opposite of the opposite":271,"order":272,"order of operation":273,"ordered pairs in all four quadrant":274,"organize":275,"output":276,"parallel":277,"part-to-part":278,"part-to-whole":279,"pattern rule":280,"pattern unit":281,"peak":282,"per hundred":283,"per unit":284,"percent of a number":285,"percent problem solving":286,"percents greater than 100% and less than 1%":287,"perpendicular":288,"persevere":289,"portion":290,"positive":291,"positive number":292,"power of ten":293,"predictability":294,"prime number":295,"problem solving":296,"profession":297,"properties of operation":298,"property":299,"proportional":300,"puzzle":301,"quantity":302,"range":303,"range and interquartile range":304,"rate of change":305,"rates and unit rate":306,"ratio and rate problem solving":307,"ratio reasoning":308,"ratio table":309,"rational number":310,"rational numbers on the number line":311,"reasonable":312,"reasonablenes":313,"rectangular prism":314,"reflect":315,"reflect points across axe":316,"reflection":317,"regular polygon":318,"relationship":319,"repetition":320,"represent":321,"representation":322,"rhythm":323,"right trapezoid":324,"rotation":325,"round trip":326,"scale":327,"shape of data distribution":328,"shape of the data":329,"side length":330,"simplest form":331,"simplify algebraic expression":332,"skewed":333,"skip counting":334,"slant height":335,"slanted side":336,"solution":337,"solution set":338,"solve":339,"solve and graph inequality":340,"solve multiplication and division equation":341,"solve one-step addition and subtraction equation":342,"spread":343,"statistical question":344,"statistical questions and data":345,"strategy":346,"strength":347,"subtraction property of equality":348,"surface area of prism":349,"surface area of pyramid":350,"surface area using net":351,"survey":352,"symmetric":353,"symmetry":354,"table of value":355,"tape diagram":356,"target mean":357,"target total":358,"tax":359,"the distributive property":360,"the whole":361,"tip":362,"total part":363,"total price":364,"triangular prism":365,"true statement":366,"two-dimensional":367,"understand percent":368,"understand ratio":369,"unit cube":370,"unit fraction":371,"unit price":372,"unit rate point":373,"unit rate problem solving":374,"unit ratio":375,"unknown":376,"variability":377,"variation":378,"vertical distance":379,"volume of rectangular prism":380,"volume with whole-number edge":381,"whisker":382,"work backward":383,"write algebraic expression":384,"write and evaluate numerical expressions with exponent":385,"write equation":386,"write inequality":387,"x-axi":388,"x-coordinate":389,"y-axi":390,"associative":118,"commutative":139,"distributive":183,"identity":224,"prime":295,"rational":310}};
 window.__HW_WORKED__ = {"title":"Watch me","titleEs":"Mírame","lines":["I want to find the value of 2³.","The small 3 tells me to multiply 2 by itself 3 times.","So I write 2 × 2 × 2.","First 2 × 2 = 4. Then 4 × 2 = 8.","So 2³ = 8."],"linesEs":["Quiero hallar el valor de 2³.","El 3 pequeño me dice que multiplique 2 por sí mismo 3 veces.","Así que escribo 2 × 2 × 2.","Primero 2 × 2 = 4. Luego 4 × 2 = 8.","Entonces 2³ = 8."]};
 </script>
-<script src="/assets/homework/homework-vocab-3da9690d66.bundle.js"></script>
-<script src="/assets/homework/homework-core-e12f28ae0a.bundle.js"></script>
+<script src="/assets/homework/homework-vocab-12619585d8.bundle.js"></script>
+<script src="/assets/homework/homework-core-4eeaa5cadb.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

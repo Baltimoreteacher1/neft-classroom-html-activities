@@ -35,7 +35,9 @@ test("two-player dominoes: roles alternate, the score is the team's, nothing is 
   // a miss is a "second look" for the team, never a penalty
   const tray = [...d.querySelectorAll("#fam_dom_tray .fam-dom-tile")];
   const next = w.famDom.tiles[w.famDom.next];
-  const wrong = tray.find((t) => t.querySelector(".fam-dom-left").textContent !== next.left);
+  // A tile half carries its English and Spanish wording; the chain compares the English.
+  const english = (el) => (el.querySelector(".lang-en") || el).textContent;
+  const wrong = tray.find((t) => english(t.querySelector(".fam-dom-left")) !== next.left);
   wrong.click();
   assert.match(d.getElementById("fam_dom_status").textContent, /Second looks: 1/);
   assert.match(d.getElementById("fam_dom_hint").textContent, /Talk it over together/);

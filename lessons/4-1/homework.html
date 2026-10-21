@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Help Your Student — Lesson 4-1: Understand Percent</title>
+<title>Family Math Studio — Lesson 4-1: Understand Percent</title>
 <link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/homework/homework-base-0d2a228add.css">
 <style>
@@ -114,26 +114,6 @@ header.homework-header,
   user-select: none;
 }
 
-/* 3 Stars Milestone Bar on Quick Check */
-.stars-to-win-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, var(--teal-light) 0%, #ffffff 100%);
-  border: 1.5px solid var(--teal);
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  margin-bottom: 20px;
-}
-.stars-to-win-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 14.5px;
-  color: var(--navy);
-}
 .stars-milestone-chips {
   display: flex;
   flex-wrap: wrap;
@@ -152,16 +132,7 @@ header.homework-header,
   flex: 0 0 auto;
   white-space: nowrap;
 }
-/* On a phone the goal sentence and the three milestone chips do not fit on one
-   line, so they stack instead of fighting for the same 400px. */
-@media (max-width: 620px) {
-  .stars-to-win-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .stars-milestone-chips { width: 100%; }
-}
+.stars-milestone-chips { width: 100%; }
 
 /* Rotated Huddle Activity Card */
 .huddle-hook-banner {
@@ -373,7 +344,7 @@ body[data-family-style] .visual-lab-heading>p,body[data-family-style] .visual-la
 body[data-family-style] .hw-hero-lead,body[data-family-style] .hw-experience-description,body[data-family-style] .hw-route-note,body[data-family-style] .hw-route-chooser>p,body[data-family-style] .hw-route-option { font-size:18px!important; line-height:1.45!important; }
 body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 </style>
-<link rel="stylesheet" href="/assets/homework/homework-layer-c42010bc47.css">
+<link rel="stylesheet" href="/assets/homework/homework-layer-c419bd5b10.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -387,16 +358,17 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
   <link rel="apple-touch-icon" href="/assets/favicon.svg">
   <meta name="theme-color" content="#12355b">
   <link rel="canonical" href="https://eduwonderlab.com/lessons/4-1/homework.html">
-  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 4-1: Understand Percent.">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 4-1: Understand Percent.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Neft Teacher">
-  <meta property="og:title" content="Help Your Student — Lesson 4-1: Understand Percent">
-  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 4-1: Understand Percent.">
+  <meta property="og:title" content="Family Math Studio — Lesson 4-1: Understand Percent">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 4-1: Understand Percent.">
   <meta property="og:url" content="https://eduwonderlab.com/lessons/4-1/homework.html">
   <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
   <!-- enthead-injected:end -->
 </head>
 <body data-family-style="arcade">
+<a class="hw-skip" href="#hw_tab_panels" onclick="startHomework(); return false;"><span class="lang-en">Skip to tonight's math</span><span class="lang-es" lang="es">Ir a la matemática de hoy</span></a>
 
 <script>
 /* Language mode, BEFORE first paint. restoreParentSignoff sets the same class
@@ -405,10 +377,29 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
    whole document. Same rule as the boot script below it: fail toward showing
    something readable, which here is English. */
 (function () {
-  var mode = 'en';
+  /* Blocked site data makes every localStorage access throw, which would stop the
+     page's own startup. Fall back to storage that lasts for this visit. */
   try {
+    window.localStorage.getItem('hw_probe');
+  } catch (blocked) {
+    var memory = {};
+    var stand = {
+      getItem: function (k) { return Object.prototype.hasOwnProperty.call(memory, k) ? memory[k] : null; },
+      setItem: function (k, v) { memory[k] = String(v); },
+      removeItem: function (k) { delete memory[k]; },
+      clear: function () { memory = {}; },
+      key: function (i) { return Object.keys(memory)[i] || null; },
+      get length() { return Object.keys(memory).length; }
+    };
+    try { Object.defineProperty(window, 'localStorage', { configurable: true, get: function () { return stand; } }); } catch (unsupported) {}
+  }
+  var mode = 'bilingual';
+  try {
+    var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
+    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
+      mode = requested;
+    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)
@@ -463,6 +454,23 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
     <header class="hw-hero" aria-label="Family Math Night welcome">
       <div class="hw-hero-glow" aria-hidden="true"></div>
       <div class="hw-hero-body">
+        <div class="hw-hero-controls">
+          <div class="lang-selector-card">
+            <span class="lang-selector-title">Language / Idioma</span>
+            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
+              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
+                🇺🇸🇪🇸 <span class="lang-btn-long">Bilingual / Bilingüe</span><span class="lang-btn-short">EN + ES</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
+                🇺🇸 <span>English</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
+                🇪🇸 <span>Español</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <p class="hw-hero-kicker">
           <span class="hw-hero-kicker-icon" aria-hidden="true">📘</span>
           <span class="lang-en">Unit 4 · Understand and Use Percentages</span>
@@ -483,31 +491,14 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         </p>
 
         <nav class="hw-session-banner" aria-label="Two-session lesson" data-session="1">
-    <ol class="hw-session-steps"><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span></span></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-next"><a class="hw-session-chip" href="/lessons/4-1-part2/homework.html"><span class="hw-session-mark" aria-hidden="true">○</span><span class="hw-session-name"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span></a></li></ol>
+    <ol class="hw-session-steps"><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span><span class="hw-session-short"><span class="lang-en">Session 1</span><span class="lang-es" lang="es">Sesión 1</span></span></span></span></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-next"><a class="hw-session-chip" href="/lessons/4-1-part2/homework.html"><span class="hw-session-mark" aria-hidden="true">○</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span><span class="hw-session-short"><span class="lang-en">Session 2</span><span class="lang-es" lang="es">Sesión 2</span></span></span></a></li></ol>
     <p class="hw-session-sentence"><strong><span class="lang-en">Coming up next:</span><span class="lang-es" lang="es">Lo que sigue:</span></strong> <span class="lang-en">In Session 2, we work with percents greater than 100% — what &quot;150% of the goal&quot; or &quot;2.5 times as much&quot; really means.</span><span class="lang-es" lang="es">En la Sesión 2, trabajamos con porcentajes mayores que 100% — qué significa realmente &quot;150% de la meta&quot; o &quot;2.5 veces más&quot;.</span> <span class="lang-en">It builds on today’s model. Open it when it is assigned.</span><span class="lang-es" lang="es">Se basa en el modelo de hoy. Ábranla cuando se las asignen.</span></p>
   </nav>
 
         <p class="hw-hero-bigidea" aria-label="Big idea">
-          <span class="hw-hero-bigidea-label"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
+          <span class="hw-hero-bigidea-label hw-inline"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
           <span class="lang-en">Tonight we learn what a percent really means: a comparison to 100. Percent means &quot;per hundred.&quot;</span><span class="lang-es" lang="es">Esta noche aprendemos qué significa realmente un porcentaje: una comparación con 100. Por ciento significa &quot;por cada cien&quot;.</span>
         </p>
-
-        <div class="hw-hero-controls">
-          <div class="lang-selector-card">
-            <span class="lang-selector-title">Language / Idioma</span>
-            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
-              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
-                🇺🇸🇪🇸 <span>Bilingual / Bilingüe</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
-                🇺🇸 <span>English</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
-                🇪🇸 <span>Español</span>
-              </button>
-            </div>
-          </div>
-        </div>
 
         <p class="hw-hero-lead">
           <span class="lang-en">Optional, ungraded practice. Work with someone or on your own; no adult signature is needed.</span>
@@ -521,8 +512,11 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
           </div>
         </section>
 
-        <ul class="hw-hero-stats" aria-label="What tonight looks like">
-          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">5</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">5</span> paradas</span></li>
+
+        <ul class="hw-tonight hw-inline" aria-label="Tonight at a glance">
+          <li><span aria-hidden="true">⏱</span> <strong><span data-hw-tonight-time>20–30</span> min</strong></li>
+          <li><span aria-hidden="true">✏️</span> <span class="lang-en">Pencil and paper</span><span class="lang-es" lang="es">Lápiz y papel</span></li>
+          <li><span aria-hidden="true">🎯</span> <span class="lang-en">Goal:</span><span class="lang-es" lang="es">Meta:</span> <strong><span data-hw-goal-count>4</span> <span class="lang-en">problems</span><span class="lang-es" lang="es">problemas</span></strong></li>
         </ul>
 
 
@@ -530,30 +524,31 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         <div class="hw-route-heading">
           <span class="hw-route-icon" aria-hidden="true">🧭</span>
           <div>
-            <h2 id="hw_route_title"><span class="lang-en">Choose a practice path</span><span class="lang-es" lang="es">Elige una ruta de práctica</span></h2>
-            <p><span class="lang-en">All practice is optional and ungraded. Choose the time that works for your family; your route choice is saved on this device.</span><span class="lang-es" lang="es">Toda la práctica es opcional y no lleva calificación. Elijan el tiempo que les funcione; la ruta queda guardada en este dispositivo.</span></p>
+            <h2 id="hw_route_title" class="hw-inline"><span class="lang-en">How much time do you have tonight?</span><span class="lang-es" lang="es">¿Cuánto tiempo tienen esta noche?</span></h2>
+            <p class="hw-inline"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
           </div>
         </div>
-        <div class="hw-route-options" role="group" aria-label="Choose a practice path" data-aria-en="Choose a practice path" data-aria-es="Elige una ruta de práctica">
+        <div class="hw-route-options" role="group" aria-label="How much time do you have tonight?" data-aria-en="How much time do you have tonight?" data-aria-es="¿Cuánto tiempo tienen esta noche?">
           <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
-            <span class="hw-route-time">5–10 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Quick practice</span><span class="lang-es" lang="es">Práctica breve</span></strong><small><span class="lang-en">One example, 2 problems, and one explanation.</span><span class="lang-es" lang="es">Un ejemplo, 2 problemas y una explicación.</span></small></span>
+            <span class="hw-route-time">5–10 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Quick</span><span class="lang-es" lang="es">Rápida</span></strong><small><span class="lang-en">One example and 2 problems.</span><span class="lang-es" lang="es">Un ejemplo y 2 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
-            <span class="hw-route-time">15–20 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Learn, explore key words, practice <span data-hw-core-count>6</span> problems, and explain.</span><span class="lang-es" lang="es">Aprende, explora palabras clave, practica <span data-hw-core-count>6</span> problemas y explica.</span></small></span>
+            <span class="hw-route-time">15–20 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Key words, then practice. Goal: 4 problems.</span><span class="lang-es" lang="es">Palabras clave y práctica. Meta: 4 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option is-active" data-route-mode="full" aria-pressed="true" onclick="setHomeworkRoute('full')">
-            <span class="hw-route-time">20–30 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Family Math Studio</span><span class="lang-es" lang="es">Estudio familiar de matemáticas</span></strong><small><span class="lang-en">Add one home mission and one math game. Go at your own pace.</span><span class="lang-es" lang="es">Agrega una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span></small></span>
+            <span class="hw-route-time">20–30 <small>min</small></span>
+            <span class="hw-route-badge"><span aria-hidden="true">★</span><span class="hw-sr-only"><span class="lang-en">Recommended</span><span class="lang-es" lang="es">Recomendada</span></span></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Full Studio</span><span class="lang-es" lang="es">Estudio completo</span></strong><small><span class="lang-en">Everything, plus a home mission and a game.</span><span class="lang-es" lang="es">Todo, más una misión en casa y un juego.</span></small></span>
           </button>
         </div>
         <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Family Math Studio selected: <span data-hw-core-count>6</span> problems, key words, one home mission, and one math game. Go at your own pace.</span>
-          <span class="lang-es" lang="es">Estudio familiar seleccionado: <span data-hw-core-count>6</span> problemas, palabras clave, una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span>
+          <span class="lang-en">Full Studio (recommended): everything, plus one home mission and one game. Everything is optional.</span>
+          <span class="lang-es" lang="es">Estudio completo (recomendada): todo, más una misión en casa y un juego. Todo es opcional.</span>
         </p>
         <p id="hw_resume_note" role="status" aria-live="polite"></p>
-        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start this path</span><span class="lang-es" lang="es">Empezar esta ruta</span></button>
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
       </section>
 
         <details class="hw-tools-menu"><summary><span class="lang-en">Tools: scratchpad, share, print &amp; standard</span><span class="lang-es" lang="es">Herramientas: pizarra, compartir, imprimir y estándar</span></summary>
@@ -706,45 +701,39 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
           <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Comprender el porcentaje</li><li>Porcentaje</li><li>Por cada cien</li></ul></div>
         </div>
       </div>
-
-      <div class="parent-quick-card">
-        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
-        <ul>
-          <li><span aria-hidden="true">💬</span> <strong><span class="lang-en">If they get stuck, ask:</span><span class="lang-es" lang="es">Si se atora, pregunten:</span></strong> <span class="lang-en">Which amount is 100%? Are we finding the part, percent, or whole?</span><span class="lang-es" lang="es">¿Qué cantidad es el 100%? ¿Buscamos la parte, el porcentaje o el total?</span></li>
-          <li><span aria-hidden="true">🚫</span> <strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">Use a rule before checking what this question asks.</span><span class="lang-es" lang="es">Usa una regla sin revisar qué pide esta pregunta.</span></li>
-        </ul>
-        <details class="bridge-card" data-bridge-card>
-          <summary><span aria-hidden="true">🌉</span> <span class="lang-en">Then vs. now: why class math may look different</span><span class="lang-es" lang="es">Antes y ahora: por qué las matemáticas de clase pueden verse distintas</span></summary>
-          <ol class="bridge-rows">
-          <li class="bridge-row bridge-before">
-            <span class="bridge-icon" aria-hidden="true">🕰️</span>
-            <div>
-              <strong class="bridge-label"><span class="lang-en">How you may have learned it</span><span class="lang-es" lang="es">Cómo pudiste haberlo aprendido</span></strong>
-              <p class="lang-en">You may have learned to divide the part by the whole, then move the decimal point two places to the right.</p>
-              <p class="lang-es" lang="es">Tal vez aprendiste a dividir la parte entre el todo y luego mover el punto decimal dos lugares a la derecha.</p>
-            </div>
-          </li>
-          <li class="bridge-row bridge-class">
-            <span class="bridge-icon" aria-hidden="true">🏫</span>
-            <div>
-              <strong class="bridge-label"><span class="lang-en">How we do it in class</span><span class="lang-es" lang="es">Cómo lo hacemos en clase</span></strong>
-              <p class="lang-en">In class we rewrite the ratio so the second number is 100. 4 out of 10 becomes 40 out of 100 when we multiply both numbers by 10, so it is 40 %. We shade 40 squares on a 100-grid.</p>
-              <p class="lang-es" lang="es">En clase reescribimos la razón para que el segundo número sea 100. 4 de cada 10 se vuelve 40 de cada 100 al multiplicar ambos números por 10, así que es 40 %. Sombreamos 40 cuadros en una cuadrícula de 100.</p>
-            </div>
-          </li>
-          <li class="bridge-row bridge-why">
-            <span class="bridge-icon" aria-hidden="true">🤝</span>
-            <div>
-              <strong class="bridge-label"><span class="lang-en">Why both work</span><span class="lang-es" lang="es">Por qué ambos funcionan</span></strong>
-              <p class="lang-en">Percent means per hundred. Multiplying both numbers by 10 keeps the same comparison, and dividing then moving the decimal point finds that same 40 out of 100 in one move.</p>
-              <p class="lang-es" lang="es">Porcentaje significa por cada cien. Multiplicar ambos números por 10 conserva la misma comparación, y dividir y mover el punto decimal llega a esos mismos 40 de cada 100 en un solo paso.</p>
-            </div>
-          </li>
-          </ol>
-          <button type="button" class="btn-read-aloud bridge-listen" onclick="speakHomeworkText(&quot;How you may have learned it. You may have learned to divide the part by the whole, then move the decimal point two places to the right. How we do it in class. In class we rewrite the ratio so the second number is 100. 4 out of 10 becomes 40 out of 100 when we multiply both numbers by 10, so it is 40 %. We shade 40 squares on a 100-grid. Why both work. Percent means per hundred. Multiplying both numbers by 10 keeps the same comparison, and dividing then moving the decimal point finds that same 40 out of 100 in one move.&quot;, &quot;Cómo pudiste haberlo aprendido. Tal vez aprendiste a dividir la parte entre el todo y luego mover el punto decimal dos lugares a la derecha. Cómo lo hacemos en clase. En clase reescribimos la razón para que el segundo número sea 100. 4 de cada 10 se vuelve 40 de cada 100 al multiplicar ambos números por 10, así que es 40 %. Sombreamos 40 cuadros en una cuadrícula de 100. Por qué ambos funcionan. Porcentaje significa por cada cien. Multiplicar ambos números por 10 conserva la misma comparación, y dividir y mover el punto decimal llega a esos mismos 40 de cada 100 en un solo paso.&quot;)" aria-label="Listen to this card" data-aria-en="Listen to this card" data-aria-es="Escuchar esta tarjeta">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
-        </details>
-      </div>
     </div>
+
+      <section class="hw-confidence" id="hw_conf_before" data-conf-phase="before" aria-labelledby="hw_conf_before_title">
+        <h3 id="hw_conf_before_title"><span class="lang-en">How sure do you feel about today&#039;s math?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes con la matemática de hoy?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_before_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="before" onclick="hwSetConfidence('before', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="before" onclick="hwSetConfidence('before', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="before" onclick="hwSetConfidence('before', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Just for you. It stays on this device. We ask again at the end.</span><span class="lang-es" lang="es">Solo para ti. Se queda en este dispositivo. Preguntamos otra vez al final.</span></p>
+
+      </section>
+
+      <section class="hw-mystery" id="hw_mystery" data-problem="problem_10" aria-labelledby="hw_mystery_title">
+        <span class="hw-mystery-lock" id="hw_mystery_lock" aria-hidden="true">🔒</span>
+        <div class="hw-mystery-body">
+          <p class="hw-eyebrow hw-inline"><span class="lang-en">Tonight&#039;s mystery challenge</span><span class="lang-es" lang="es">El reto misterioso de hoy</span></p>
+          <h3 id="hw_mystery_title"><span class="lang-en">Can you crack this before tonight is over?</span><span class="lang-es" lang="es">¿Puedes resolver esto antes de terminar hoy?</span></h3>
+          <p class="hw-mystery-stem"><span class="lang-en">Match each comparison to its percent.</span><span class="lang-es" lang="es">Relaciona cada comparación con su porcentaje.</span></p>
+          <p class="hw-mystery-status" id="hw_mystery_status" role="status" aria-live="polite">
+            <span class="lang-en">Locked. Finish <span data-hw-goal-count>4</span> problems and it opens.</span>
+            <span class="lang-es" lang="es">Bloqueado. Termina <span data-hw-goal-count>4</span> problemas y se abre.</span>
+          </p>
+          <button type="button" class="hw-mystery-open" id="hw_mystery_open" hidden onclick="hwOpenMystery()">
+            <span class="lang-en">Open the mystery challenge ➔</span><span class="lang-es" lang="es">Abrir el reto misterioso ➔</span>
+          </button>
+        </div>
+      </section>
       <div class="learn-big-idea-block" id="hw_learn_idea">
 
       <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span></h2>
@@ -788,18 +777,54 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 
 
       <div class="learn-extended-block" id="hw_learn_quick">
-    <details class="parent-coaching-drawer">
-      <summary class="parent-coaching-summary">
-        <span class="summary-left">
-          <span class="summary-icon">💡</span>
-          <span class="summary-text">
-            <strong><span class="lang-en">Parent Coaching Tips &amp; Real-World Connection</span><span class="lang-es" lang="es">Consejos para Padres y Conexión Real</span></strong>
-            <small><span class="lang-en">Tap to view coaching questions, common traps &amp; everyday examples</span><span class="lang-es" lang="es">Toca para ver preguntas guía, errores comunes y ejemplos</span></small>
-          </span>
+    <details class="hw-grownup" id="hw_grownup">
+      <summary>
+        <span class="hw-grownup-icon" aria-hidden="true">👪</span>
+        <span class="hw-grownup-text hw-stack">
+          <strong class="hw-stack"><span class="lang-en">For the grown-up · 1 minute</span><span class="lang-es" lang="es">Para el adulto · 1 minuto</span></strong>
+          <small class="hw-stack"><span class="lang-en">Ask: Which amount is 100%? Are we finding the part, percent, or whole?</span><span class="lang-es" lang="es">Pregunta: ¿Qué cantidad es el 100%? ¿Buscamos la parte, el porcentaje o el total?</span></small>
         </span>
-        <span class="summary-chevron" aria-hidden="true">▾</span>
+        <span class="hw-grownup-chev" aria-hidden="true">▾</span>
       </summary>
-      <div class="parent-coaching-content">
+      <div class="hw-grownup-body">
+
+      <div class="parent-quick-card">
+        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
+        <ul>
+          <li><span aria-hidden="true">💬</span> <strong><span class="lang-en">If they get stuck, ask:</span><span class="lang-es" lang="es">Si se atora, pregunten:</span></strong> <span class="lang-en">Which amount is 100%? Are we finding the part, percent, or whole?</span><span class="lang-es" lang="es">¿Qué cantidad es el 100%? ¿Buscamos la parte, el porcentaje o el total?</span></li>
+          <li><span aria-hidden="true">🚫</span> <strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">Use a rule before checking what this question asks.</span><span class="lang-es" lang="es">Usa una regla sin revisar qué pide esta pregunta.</span></li>
+        </ul>
+        <details class="bridge-card" data-bridge-card>
+          <summary><span aria-hidden="true">🌉</span> <span class="lang-en">Then vs. now: why class math may look different</span><span class="lang-es" lang="es">Antes y ahora: por qué las matemáticas de clase pueden verse distintas</span></summary>
+          <ol class="bridge-rows">
+          <li class="bridge-row bridge-before">
+            <span class="bridge-icon" aria-hidden="true">🕰️</span>
+            <div>
+              <strong class="bridge-label"><span class="lang-en">How you may have learned it</span><span class="lang-es" lang="es">Cómo pudiste haberlo aprendido</span></strong>
+              <p class="lang-en">You may have learned to divide the part by the whole, then move the decimal point two places to the right.</p>
+              <p class="lang-es" lang="es">Tal vez aprendiste a dividir la parte entre el todo y luego mover el punto decimal dos lugares a la derecha.</p>
+            </div>
+          </li>
+          <li class="bridge-row bridge-class">
+            <span class="bridge-icon" aria-hidden="true">🏫</span>
+            <div>
+              <strong class="bridge-label"><span class="lang-en">How we do it in class</span><span class="lang-es" lang="es">Cómo lo hacemos en clase</span></strong>
+              <p class="lang-en">In class we rewrite the ratio so the second number is 100. 4 out of 10 becomes 40 out of 100 when we multiply both numbers by 10, so it is 40 %. We shade 40 squares on a 100-grid.</p>
+              <p class="lang-es" lang="es">En clase reescribimos la razón para que el segundo número sea 100. 4 de cada 10 se vuelve 40 de cada 100 al multiplicar ambos números por 10, así que es 40 %. Sombreamos 40 cuadros en una cuadrícula de 100.</p>
+            </div>
+          </li>
+          <li class="bridge-row bridge-why">
+            <span class="bridge-icon" aria-hidden="true">🤝</span>
+            <div>
+              <strong class="bridge-label"><span class="lang-en">Why both work</span><span class="lang-es" lang="es">Por qué ambos funcionan</span></strong>
+              <p class="lang-en">Percent means per hundred. Multiplying both numbers by 10 keeps the same comparison, and dividing then moving the decimal point finds that same 40 out of 100 in one move.</p>
+              <p class="lang-es" lang="es">Porcentaje significa por cada cien. Multiplicar ambos números por 10 conserva la misma comparación, y dividir y mover el punto decimal llega a esos mismos 40 de cada 100 en un solo paso.</p>
+            </div>
+          </li>
+          </ol>
+          <button type="button" class="btn-read-aloud bridge-listen" onclick="speakHomeworkText(&quot;How you may have learned it. You may have learned to divide the part by the whole, then move the decimal point two places to the right. How we do it in class. In class we rewrite the ratio so the second number is 100. 4 out of 10 becomes 40 out of 100 when we multiply both numbers by 10, so it is 40 %. We shade 40 squares on a 100-grid. Why both work. Percent means per hundred. Multiplying both numbers by 10 keeps the same comparison, and dividing then moving the decimal point finds that same 40 out of 100 in one move.&quot;, &quot;Cómo pudiste haberlo aprendido. Tal vez aprendiste a dividir la parte entre el todo y luego mover el punto decimal dos lugares a la derecha. Cómo lo hacemos en clase. En clase reescribimos la razón para que el segundo número sea 100. 4 de cada 10 se vuelve 40 de cada 100 al multiplicar ambos números por 10, así que es 40 %. Sombreamos 40 cuadros en una cuadrícula de 100. Por qué ambos funcionan. Porcentaje significa por cada cien. Multiplicar ambos números por 10 conserva la misma comparación, y dividir y mover el punto decimal llega a esos mismos 40 de cada 100 en un solo paso.&quot;)" aria-label="Listen to this card" data-aria-en="Listen to this card" data-aria-es="Escuchar esta tarjeta">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+        </details>
+      </div>
 
     <div class="real-world-spotlight card-ish">
       <div class="spotlight-badge"><span class="spotlight-icon" aria-hidden="true">🏡</span> <span><span class="lang-en">WHY THIS MATTERS</span><span class="lang-es" lang="es">¿POR QUÉ IMPORTA?</span></span></div>
@@ -977,7 +1002,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Understand Percent&quot;, &quot;Comprender el porcentaje&quot;)" title="Listen / Escuchar" aria-label="Pronounce Understand Percent">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Understand Percent: A percent is a ratio that compares a number to 100, so every percent answers the question “how many out of 100?”" loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Understand Percent: A percent tells how many out of 100." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1003,8 +1028,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <p class="vocab-back-term-es" lang="es">Comprender el porcentaje</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A percent is a ratio that compares a number to 100, so every percent answers the question “how many out of 100?”</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un porcentaje es una razón que compara un número con 100, así que todo porcentaje responde “¿cuántos de cada 100?”</p>
+                    <p class="vocab-def">A percent tells how many out of 100.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un porcentaje dice cuántos de cada 100.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>4 out of 10 = 40 out of 100 = 40%</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1025,7 +1050,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Percent&quot;, &quot;Porcentaje&quot;)" title="Listen / Escuchar" aria-label="Pronounce Percent">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Percent: A ratio that compares a number to 100. The word means “per hundred,” and the symbol is %." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Percent: A number out of 100, shown with the % sign." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1051,8 +1076,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <p class="vocab-back-term-es" lang="es">Porcentaje</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A ratio that compares a number to 100. The word means “per hundred,” and the symbol is %.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una razón que compara un número con 100. La palabra significa “por cada cien” y su símbolo es %.</p>
+                    <p class="vocab-def">A number out of 100, shown with the % sign.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número de cada 100, con el signo %.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>40% = 40 out of 100 = 40/100</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1073,7 +1098,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Per hundred&quot;, &quot;Por cada cien&quot;)" title="Listen / Escuchar" aria-label="Pronounce Per hundred">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Per hundred: The meaning hidden inside the word percent: for every group of 100. It is why every percent can be written as a fraction over 100." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Per hundred: For every group of 100. That is what percent means." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1099,8 +1124,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <p class="vocab-back-term-es" lang="es">Por cada cien</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">The meaning hidden inside the word percent: for every group of 100. It is why every percent can be written as a fraction over 100.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> El significado dentro de la palabra porcentaje: por cada grupo de 100. Por eso todo porcentaje se puede escribir como fracción sobre 100.</p>
+                    <p class="vocab-def">For every group of 100. That is what percent means.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Por cada grupo de 100. Eso significa porcentaje.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>23% = 23/100</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1121,7 +1146,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Decimal grid&quot;, &quot;Cuadrícula decimal&quot;)" title="Listen / Escuchar" aria-label="Pronounce Decimal grid">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/percent-part.svg" alt="Illustration of Decimal grid: A 10-by-10 grid of 100 squares. Shading squares shows a percent directly, one square per percent." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent-part.svg" alt="Illustration of Decimal grid: A grid of 100 squares. Each square is one percent." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1147,8 +1172,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <p class="vocab-back-term-es" lang="es">Cuadrícula decimal</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A 10-by-10 grid of 100 squares. Shading squares shows a percent directly, one square per percent.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una cuadrícula de 10 por 10 con 100 cuadros. Sombrear cuadros muestra un porcentaje directamente, un cuadro por cada uno por ciento.</p>
+                    <p class="vocab-def">A grid of 100 squares. Each square is one percent.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una cuadrícula de 100 cuadros. Cada cuadro es el uno por ciento.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>40 shaded squares out of 100 = 40%</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1169,7 +1194,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Part-to-whole&quot;, &quot;Parte a todo&quot;)" title="Listen / Escuchar" aria-label="Pronounce Part-to-whole">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/part-to-whole.svg" alt="Illustration of Part-to-whole: A comparison of one part against the whole amount. In a percent, the whole is always 100%." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/part-to-whole.svg" alt="Illustration of Part-to-whole: Compares one piece with the whole group." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1195,8 +1220,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <p class="vocab-back-term-es" lang="es">Parte a todo</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A comparison of one part against the whole amount. In a percent, the whole is always 100%.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una comparación de una parte con el total. En un porcentaje, el total siempre es 100 %.</p>
+                    <p class="vocab-def">Compares one piece with the whole group.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Compara una parte con todo el grupo.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>The whole = 100%; the part = the percent</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1217,7 +1242,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Greater than 100%&quot;, &quot;Mayor que 100 %&quot;)" title="Listen / Escuchar" aria-label="Pronounce Greater than 100%">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Greater than 100%: More than one whole. A percent above 100 means the amount is larger than the thing it is being compared to." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent.svg" alt="Illustration of Greater than 100%: More than the whole thing. It is over 100%." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1243,8 +1268,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <p class="vocab-back-term-es" lang="es">Mayor que 100 %</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">More than one whole. A percent above 100 means the amount is larger than the thing it is being compared to.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Más de un entero. Un porcentaje mayor que 100 significa que la cantidad es mayor que aquello con lo que se compara.</p>
+                    <p class="vocab-def">More than the whole thing. It is over 100%.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Más que el total. Es más de 100 %.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>150% of the gray kitten = 1.5 times its weight</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1265,7 +1290,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Equivalent ratio&quot;, &quot;Razón equivalente&quot;)" title="Listen / Escuchar" aria-label="Pronounce Equivalent ratio">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/equivalent-ratio.svg" alt="Illustration of Equivalent ratio: A ratio with the same value, made by multiplying or dividing both terms by the same number." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/equivalent-ratio.svg" alt="Illustration of Equivalent ratio: Ratios that compare in the same way." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1291,8 +1316,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <p class="vocab-back-term-es" lang="es">Razón equivalente</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A ratio with the same value, made by multiplying or dividing both terms by the same number.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una razón con el mismo valor, formada al multiplicar o dividir ambos términos por el mismo número.</p>
+                    <p class="vocab-def">Ratios that compare in the same way.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Razones que comparan de la misma manera.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>2 : 5 → 40 : 100</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1313,7 +1338,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Tape diagram&quot;, &quot;Diagrama de cinta&quot;)" title="Listen / Escuchar" aria-label="Pronounce Tape diagram">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/percent-bar.svg" alt="Illustration of Tape diagram: A bar split into equal parts to show a percent." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/percent-bar.svg" alt="Illustration of Tape diagram: A bar cut into equal parts to show amounts." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1339,8 +1364,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
                     <p class="vocab-back-term-es" lang="es">Diagrama de cinta</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A bar split into equal parts to show a percent.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una barra dividida en partes iguales para mostrar un porcentaje.</p>
+                    <p class="vocab-def">A bar cut into equal parts to show amounts.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una barra dividida en partes iguales para mostrar cantidades.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>4 equal parts: 3 shaded = 75%, whole = 100%</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1374,7 +1399,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         <p class="vq-done-score"><span class="lang-en">First-try stars:</span><span class="lang-es" lang="es">Estrellas al primer intento:</span> <strong id="vocab_quiz_score"></strong></p>
         <button type="button" class="btn btn-secondary" onclick="startVocabQuiz()"><span class="lang-en">Play again 🔄</span><span class="lang-es" lang="es">Jugar de nuevo 🔄</span></button>
       </div>
-      <script type="application/json" id="vocab_quiz_data">[{"term":"Understand Percent","termEs":"Comprender el porcentaje","def":"A percent is a ratio that compares a number to 100, so every percent answers the question “how many out of 100?”","defEs":"Un porcentaje es una razón que compara un número con 100, así que todo porcentaje responde “¿cuántos de cada 100?”","img":"/assets/vocab-images/percent.svg","alt":"Illustration of Understand Percent: A percent is a ratio that compares a number to 100, so every percent answers the question “how many out of 100?”"},{"term":"Percent","termEs":"Porcentaje","def":"A ratio that compares a number to 100. The word means “per hundred,” and the symbol is %.","defEs":"Una razón que compara un número con 100. La palabra significa “por cada cien” y su símbolo es %.","img":"/assets/vocab-images/percent.svg","alt":"Illustration of Percent: A ratio that compares a number to 100. The word means “per hundred,” and the symbol is %."},{"term":"Per hundred","termEs":"Por cada cien","def":"The meaning hidden inside the word percent: for every group of 100. It is why every percent can be written as a fraction over 100.","defEs":"El significado dentro de la palabra porcentaje: por cada grupo de 100. Por eso todo porcentaje se puede escribir como fracción sobre 100.","img":"/assets/vocab-images/percent.svg","alt":"Illustration of Per hundred: The meaning hidden inside the word percent: for every group of 100. It is why every percent can be written as a fraction over 100."},{"term":"Decimal grid","termEs":"Cuadrícula decimal","def":"A 10-by-10 grid of 100 squares. Shading squares shows a percent directly, one square per percent.","defEs":"Una cuadrícula de 10 por 10 con 100 cuadros. Sombrear cuadros muestra un porcentaje directamente, un cuadro por cada uno por ciento.","img":"/assets/vocab-images/percent-part.svg","alt":"Illustration of Decimal grid: A 10-by-10 grid of 100 squares. Shading squares shows a percent directly, one square per percent."},{"term":"Part-to-whole","termEs":"Parte a todo","def":"A comparison of one part against the whole amount. In a percent, the whole is always 100%.","defEs":"Una comparación de una parte con el total. En un porcentaje, el total siempre es 100 %.","img":"/assets/vocab-images/part-to-whole.svg","alt":"Illustration of Part-to-whole: A comparison of one part against the whole amount. In a percent, the whole is always 100%."},{"term":"Greater than 100%","termEs":"Mayor que 100 %","def":"More than one whole. A percent above 100 means the amount is larger than the thing it is being compared to.","defEs":"Más de un entero. Un porcentaje mayor que 100 significa que la cantidad es mayor que aquello con lo que se compara.","img":"/assets/vocab-images/percent.svg","alt":"Illustration of Greater than 100%: More than one whole. A percent above 100 means the amount is larger than the thing it is being compared to."},{"term":"Equivalent ratio","termEs":"Razón equivalente","def":"A ratio with the same value, made by multiplying or dividing both terms by the same number.","defEs":"Una razón con el mismo valor, formada al multiplicar o dividir ambos términos por el mismo número.","img":"/assets/vocab-images/equivalent-ratio.svg","alt":"Illustration of Equivalent ratio: A ratio with the same value, made by multiplying or dividing both terms by the same number."},{"term":"Tape diagram","termEs":"Diagrama de cinta","def":"A bar split into equal parts to show a percent.","defEs":"Una barra dividida en partes iguales para mostrar un porcentaje.","img":"/assets/vocab-images/percent-bar.svg","alt":"Illustration of Tape diagram: A bar split into equal parts to show a percent."}]</script>
+      <script type="application/json" id="vocab_quiz_data">[{"term":"Understand Percent","termEs":"Comprender el porcentaje","def":"A percent tells how many out of 100.","defEs":"Un porcentaje dice cuántos de cada 100.","img":"/assets/vocab-images/percent.svg","alt":"Illustration of Understand Percent: A percent tells how many out of 100."},{"term":"Percent","termEs":"Porcentaje","def":"A number out of 100, shown with the % sign.","defEs":"Un número de cada 100, con el signo %.","img":"/assets/vocab-images/percent.svg","alt":"Illustration of Percent: A number out of 100, shown with the % sign."},{"term":"Per hundred","termEs":"Por cada cien","def":"For every group of 100. That is what percent means.","defEs":"Por cada grupo de 100. Eso significa porcentaje.","img":"/assets/vocab-images/percent.svg","alt":"Illustration of Per hundred: For every group of 100. That is what percent means."},{"term":"Decimal grid","termEs":"Cuadrícula decimal","def":"A grid of 100 squares. Each square is one percent.","defEs":"Una cuadrícula de 100 cuadros. Cada cuadro es el uno por ciento.","img":"/assets/vocab-images/percent-part.svg","alt":"Illustration of Decimal grid: A grid of 100 squares. Each square is one percent."},{"term":"Part-to-whole","termEs":"Parte a todo","def":"Compares one piece with the whole group.","defEs":"Compara una parte con todo el grupo.","img":"/assets/vocab-images/part-to-whole.svg","alt":"Illustration of Part-to-whole: Compares one piece with the whole group."},{"term":"Greater than 100%","termEs":"Mayor que 100 %","def":"More than the whole thing. It is over 100%.","defEs":"Más que el total. Es más de 100 %.","img":"/assets/vocab-images/percent.svg","alt":"Illustration of Greater than 100%: More than the whole thing. It is over 100%."},{"term":"Equivalent ratio","termEs":"Razón equivalente","def":"Ratios that compare in the same way.","defEs":"Razones que comparan de la misma manera.","img":"/assets/vocab-images/equivalent-ratio.svg","alt":"Illustration of Equivalent ratio: Ratios that compare in the same way."},{"term":"Tape diagram","termEs":"Diagrama de cinta","def":"A bar cut into equal parts to show amounts.","defEs":"Una barra dividida en partes iguales para mostrar cantidades.","img":"/assets/vocab-images/percent-bar.svg","alt":"Illustration of Tape diagram: A bar cut into equal parts to show amounts."}]</script>
     </div>
 
     <div class="vocab-game-shell card-ish" id="vocab_match_shell" data-vocab-total="8">
@@ -1438,36 +1463,36 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         <div class="vocab-match-col col-defs" aria-label="Vocabulary definitions">
 
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="7" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A bar split into equal parts to show a percent.</span>
-              <span class="chip-label-es" lang="es">Una barra dividida en partes iguales para mostrar un porcentaje.</span>
+              <span class="chip-label-en">A bar cut into equal parts to show amounts.</span>
+              <span class="chip-label-es" lang="es">Una barra dividida en partes iguales para mostrar cantidades.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="0" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A percent is a ratio that compares a number to 100, so every percent answers the question “how many out of 100?”</span>
-              <span class="chip-label-es" lang="es">Un porcentaje es una razón que compara un número con 100, así que todo porcentaje responde “¿cuántos de cada 100?”</span>
+              <span class="chip-label-en">A percent tells how many out of 100.</span>
+              <span class="chip-label-es" lang="es">Un porcentaje dice cuántos de cada 100.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="1" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A ratio that compares a number to 100. The word means “per hundred,” and the symbol is %.</span>
-              <span class="chip-label-es" lang="es">Una razón que compara un número con 100. La palabra significa “por cada cien” y su símbolo es %.</span>
+              <span class="chip-label-en">A number out of 100, shown with the % sign.</span>
+              <span class="chip-label-es" lang="es">Un número de cada 100, con el signo %.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="2" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">The meaning hidden inside the word percent: for every group of 100. It is why every percent can be written as a fraction over 100.</span>
-              <span class="chip-label-es" lang="es">El significado dentro de la palabra porcentaje: por cada grupo de 100. Por eso todo porcentaje se puede escribir como fracción sobre 100.</span>
+              <span class="chip-label-en">For every group of 100. That is what percent means.</span>
+              <span class="chip-label-es" lang="es">Por cada grupo de 100. Eso significa porcentaje.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="3" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A 10-by-10 grid of 100 squares. Shading squares shows a percent directly, one square per percent.</span>
-              <span class="chip-label-es" lang="es">Una cuadrícula de 10 por 10 con 100 cuadros. Sombrear cuadros muestra un porcentaje directamente, un cuadro por cada uno por ciento.</span>
+              <span class="chip-label-en">A grid of 100 squares. Each square is one percent.</span>
+              <span class="chip-label-es" lang="es">Una cuadrícula de 100 cuadros. Cada cuadro es el uno por ciento.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="4" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A comparison of one part against the whole amount. In a percent, the whole is always 100%.</span>
-              <span class="chip-label-es" lang="es">Una comparación de una parte con el total. En un porcentaje, el total siempre es 100 %.</span>
+              <span class="chip-label-en">Compares one piece with the whole group.</span>
+              <span class="chip-label-es" lang="es">Compara una parte con todo el grupo.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="5" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">More than one whole. A percent above 100 means the amount is larger than the thing it is being compared to.</span>
-              <span class="chip-label-es" lang="es">Más de un entero. Un porcentaje mayor que 100 significa que la cantidad es mayor que aquello con lo que se compara.</span>
+              <span class="chip-label-en">More than the whole thing. It is over 100%.</span>
+              <span class="chip-label-es" lang="es">Más que el total. Es más de 100 %.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="6" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A ratio with the same value, made by multiplying or dividing both terms by the same number.</span>
-              <span class="chip-label-es" lang="es">Una razón con el mismo valor, formada al multiplicar o dividir ambos términos por el mismo número.</span>
+              <span class="chip-label-en">Ratios that compare in the same way.</span>
+              <span class="chip-label-es" lang="es">Razones que comparan de la misma manera.</span>
             </button>
         </div>
       </div>
@@ -1497,29 +1522,24 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
       <p class="quick-check-time bilingual-block">
-        <span class="lang-en">Complete the <span id="hw_check_problem_count">11</span> problems below.<span class="quick-check-extra-copy"> The extra practice at the bottom is optional.</span></span>
-        <span class="lang-es" lang="es">Completa los <span id="hw_check_problem_count_es">11</span> problemas de abajo.<span class="quick-check-extra-copy"> La práctica extra al final es opcional.</span></span>
-      </p>
-      <p class="bilingual-block">
-        <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
-        <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+        <span class="lang-en">Start with <strong>Basics</strong>. Each problem has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong> and a <strong>space for your work</strong>. Tap <strong>Check This Problem</strong> for instant help.<span class="quick-check-extra-copy"> The extra practice at the bottom is optional.</span></span>
+        <span class="lang-es" lang="es">Empiecen con las <strong>Básicas</strong>. Cada problema tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para su trabajo</strong>. Toquen <strong>Revisar esta pregunta</strong> para recibir ayuda al instante.<span class="quick-check-extra-copy"> La práctica extra al final es opcional.</span></span>
       </p>
 
 
-    <div class="stars-to-win-bar">
-      <div class="stars-to-win-title">
-        <span>⭐</span>
-        <div>
-          <span class="lang-en"><strong>Tonight's goal:</strong> finish the <span id="hw_goal_count">11</span> problems below. Stop any time — your work saves itself.</span>
-          <span class="lang-es" lang="es"><strong>La meta de hoy:</strong> terminar los <span id="hw_goal_count_es">11</span> problemas de abajo. Pueden parar cuando quieran: el trabajo se guarda solo.</span>
-        </div>
-      </div>
-      <div class="stars-milestone-chips" aria-hidden="true">
-        <span class="star-chip">🧱 Basics</span>
-        <span class="star-chip">🌱 Warm-Up ★</span>
-        <span class="star-chip">🚀 Level-Up ★★</span>
-        <span class="star-chip">🏆 Victory ★★★</span>
-      </div>
+    <div class="hw-goal-card">
+      <span class="hw-pips " role="img" aria-label="Tonight's goal progress"></span>
+      <p>
+        <span class="lang-en"><strong>Tonight's goal: any <span data-hw-goal-count>4</span> problems.</strong> There are <span data-hw-goal-avail>11</span> here, so pick the ones you like. Stop any time. Your work saves itself.</span>
+        <span class="lang-es" lang="es"><strong>La meta de hoy: cualquier <span data-hw-goal-count>4</span> problemas.</strong> Aquí hay <span data-hw-goal-avail>11</span>, así que escojan los que prefieran. Pueden parar cuando quieran. El trabajo se guarda solo.</span>
+      </p>
+      <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
+    </div>
+    <div class="stars-milestone-chips" aria-hidden="true">
+      <span class="star-chip">🧱 Basics</span>
+      <span class="star-chip">🌱 Warm-Up ★</span>
+      <span class="star-chip">🚀 Level-Up ★★</span>
+      <span class="star-chip">🏆 Victory ★★★</span>
     </div>
 
     <div class="live-streak-banner" id="hw_streak_banner" hidden>
@@ -1542,9 +1562,12 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         <strong><span class="lang-en">That's tonight's goal — done!</span><span class="lang-es" lang="es">¡Esa es la meta de hoy: completa!</span></strong>
         <p><span class="lang-en">Great work. Keep going with the extra practice if you want more, or head to <strong>Done</strong> to finish or choose optional extras.</span><span class="lang-es" lang="es">Buen trabajo. Sigan con la práctica extra si quieren más, o vayan a <strong>Listo</strong> para terminar o elegir extras opcionales.</span></p>
       </div>
-      <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
-        <span class="lang-en">Claim Certificate ➔</span><span class="lang-es" lang="es">Reclamar Certificado ➔</span>
-      </button>
+      <div class="goal-actions">
+        <button type="button" class="btn btn-sm btn-secondary hw-banner-mystery" hidden onclick="hwOpenMystery()"><span class="lang-en">🔓 Open the mystery challenge</span><span class="lang-es" lang="es">🔓 Abrir el reto misterioso</span></button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
+          <span class="lang-en">Teach it back, then claim your certificate ➔</span><span class="lang-es" lang="es">Enséñalo y reclama tu certificado ➔</span>
+        </button>
+      </div>
     </div>
 
       <section class="practice-tier practice-tier-basic" aria-label="Basic practice">
@@ -3010,7 +3033,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             <div class="coach-step-help" hidden>
               <p class="lang-en">Start here: Model the percent bar: divide the whole into 4 equal parts, shade 3 parts, and find each part&#039;s percent.</p>
               <p class="lang-es" lang="es">Empieza aquí: Modela la barra de porcentaje: divide el total en 4 partes iguales, sombrea 3 partes y halla el porcentaje de cada parte.</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 540 130" width="100%" height="auto" class="hw-percent-bar-svg" style="background:white; max-width:540px; display:block; margin:0 auto; border-radius:8px; border:1px solid #cbd5e1;" role="img" aria-label="Percent bar with 4 equal parts and 3 parts shaded" xmlns="http://www.w3.org/2000/svg">
+              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 540 130" width="100%" class="hw-percent-bar-svg" style="background:white; max-width:540px; display:block; margin:0 auto; border-radius:8px; border:1px solid #cbd5e1;" role="img" aria-label="Percent bar with 4 equal parts and 3 parts shaded" xmlns="http://www.w3.org/2000/svg">
   <title>Percent Bar: 4 equal parts, 3 shaded</title>
   <path d="M 50 28 L 50 18 L 215 18 L 215 12 L 215 18 L 380 18 L 380 28" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
   <rect x="145" y="4" width="140" height="20" rx="5" fill="#0f766e"/>
@@ -3048,7 +3071,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 
       <div class="problem-body">
         <p class="problem-stem"><span class="lang-en">A percent bar is split into 4 equal parts and 3 of the parts are shaded. What percent of the bar is shaded?</span><span class="lang-es" lang="es">Una barra de porcentaje está dividida en 4 partes iguales y 3 de las partes están sombreadas. ¿Qué porcentaje de la barra está sombreado?</span></p>
-        <div class="problem-visual-wrap"><svg viewBox="0 0 540 130" width="100%" height="auto" class="hw-percent-bar-svg" style="background:white; max-width:540px; display:block; margin:0 auto; border-radius:8px; border:1px solid #cbd5e1;" role="img" aria-label="Percent bar with 4 equal parts and 3 parts shaded" xmlns="http://www.w3.org/2000/svg">
+        <div class="problem-visual-wrap"><svg viewBox="0 0 540 130" width="100%" class="hw-percent-bar-svg" style="background:white; max-width:540px; display:block; margin:0 auto; border-radius:8px; border:1px solid #cbd5e1;" role="img" aria-label="Percent bar with 4 equal parts and 3 parts shaded" xmlns="http://www.w3.org/2000/svg">
   <title>Percent Bar: 4 equal parts, 3 shaded</title>
   <path d="M 50 28 L 50 18 L 215 18 L 215 12 L 215 18 L 380 18 L 380 28" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
   <rect x="145" y="4" width="140" height="20" rx="5" fill="#0f766e"/>
@@ -3115,7 +3138,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         <div class="hw-visual">
           <div class="hw-visual-caption"><span class="lang-en">✏️ Draw your model: Model the percent bar: divide the whole into 4 equal parts, shade 3 parts, and find each part&#039;s percent.</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: Modela la barra de porcentaje: divide el total en 4 partes iguales, sombrea 3 partes y halla el porcentaje de cada parte.</span></div>
           <div class="hw-visual-frame hw-drawable" data-draw-frame>
-            <svg viewBox="0 0 540 130" width="100%" height="auto" class="hw-percent-bar-svg" style="background:white; max-width:540px; display:block; margin:0 auto; border-radius:8px; border:1px dashed #94a3b8;" role="img" aria-label="Percent bar drawing template: 4 equal parts to shade and label" xmlns="http://www.w3.org/2000/svg">
+            <svg viewBox="0 0 540 130" width="100%" class="hw-percent-bar-svg" style="background:white; max-width:540px; display:block; margin:0 auto; border-radius:8px; border:1px dashed #94a3b8;" role="img" aria-label="Percent bar drawing template: 4 equal parts to shade and label" xmlns="http://www.w3.org/2000/svg">
   <title>Percent Bar Workspace</title>
   <text x="270" y="20" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="11.5" font-weight="800" fill="#0f766e">
     <tspan class="lang-en">Draw or shade 3 of the 4 equal parts below</tspan><tspan class="lang-es" lang="es">Dibuja o sombrea 3 de las 4 partes iguales abajo</tspan>
@@ -3161,7 +3184,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
           <p class="hw-answer-key-label"><span class="lang-en">Answer key for families — compare, then talk about why.</span><span class="lang-es" lang="es">Clave de respuestas para la familia — comparen y hablen del porqué.</span></p>
           <p class="hw-answer-key-try"><span class="lang-en">Not tried yet? Close this and give it one try first. A wrong first try still helps.</span><span class="lang-es" lang="es">¿Todavía no lo intentaron? Ciérrenla y hagan un intento primero. Un primer intento equivocado también ayuda.</span></p>
           <ul class="hw-answer-key-lines"><li>75%</li></ul>
-          <div class="hw-answer-key-visual" style="margin:12px 0; text-align:center;"><svg viewBox="0 0 540 130" width="100%" height="auto" class="hw-percent-bar-svg" style="background:white; max-width:540px; display:block; margin:0 auto; border-radius:8px; border:1px solid #0f766e;" role="img" aria-label="Solved percent bar: 4 equal parts of 25 percent each, 3 parts shaded equals 75 percent" xmlns="http://www.w3.org/2000/svg">
+          <div class="hw-answer-key-visual" style="margin:12px 0; text-align:center;"><svg viewBox="0 0 540 130" width="100%" class="hw-percent-bar-svg" style="background:white; max-width:540px; display:block; margin:0 auto; border-radius:8px; border:1px solid #0f766e;" role="img" aria-label="Solved percent bar: 4 equal parts of 25 percent each, 3 parts shaded equals 75 percent" xmlns="http://www.w3.org/2000/svg">
   <title>Solved Percent Bar: 3 of 4 parts = 75%</title>
   <path d="M 50 28 L 50 18 L 215 18 L 215 12 L 215 18 L 380 18 L 380 28" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
   <rect x="120" y="4" width="190" height="20" rx="5" fill="#0f766e"/>
@@ -4075,7 +4098,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
     </div>
 
     <div class="fam-game-break card-ish" id="fam_game_break">
-      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"1/2 as a percent","b":"50%"},{"a":"0.25","b":"25%"},{"a":"percent","b":"per 100"},{"a":"30 out of 100","b":"30%"}],"tf":[{"en":"Percent means “per 100.”","es":"Por ciento significa “por cada 100.”","answer":true,"whyEn":"45% means 45 out of every 100.","whyEs":"45% significa 45 de cada 100."},{"en":"25% of a number is the same as 1/4 of it.","es":"El 25% de un número es lo mismo que 1/4 de él.","answer":true,"whyEn":"25 out of 100 simplifies to 1/4, so both take the same amount.","whyEs":"25 de 100 se simplifica a 1/4, así que ambos toman la misma cantidad."},{"en":"A percent can never be more than 100.","es":"Un porcentaje nunca puede ser mayor que 100.","answer":false,"whyEn":"150% just means one and a half times the whole — 150% of 20 is 30.","whyEs":"150% significa una vez y media el total: el 150% de 20 es 30."},{"en":"To find 10% of a number, move the decimal point one place to the left.","es":"Para hallar el 10% de un número, mueve el punto decimal un lugar a la izquierda.","answer":true,"whyEn":"10% of 80 is 8.0 — and that makes 5% and 20% easy from there.","whyEs":"El 10% de 80 es 8.0, y desde ahí el 5% y el 20% salen fácil."},{"en":"Taking 50% off, then 50% off again, is the same as 100% off.","es":"Quitar 50%, y luego otro 50%, es lo mismo que quitar 100%.","answer":false,"whyEn":"The second 50% comes off the SMALLER price, so you still pay 25% — never free.","whyEs":"El segundo 50% se quita del precio MÁS PEQUEÑO, así que pagas 25%: nunca es gratis."}],"sort":{"a":{"en":"Equal to 1/4","es":"Igual a 1/4"},"b":{"en":"NOT equal to 1/4","es":"NO es igual a 1/4"},"cards":[{"t":"25%","bucket":0,"en":"25 out of 100 = 1/4.","es":"25 de 100 = 1/4."},{"t":"0.25","bucket":0,"en":"Twenty-five hundredths = 1/4.","es":"Veinticinco centésimas = 1/4."},{"t":"25 out of 100","bucket":0,"en":"That is what the word percent means.","es":"Eso es lo que significa la palabra por ciento."},{"t":"2.5%","bucket":1,"en":"2.5 out of 100 — that is 1/40, ten times smaller.","es":"2.5 de 100: eso es 1/40, diez veces más pequeño."},{"t":"1/40","bucket":1,"en":"Much smaller than one quarter.","es":"Mucho más pequeño que un cuarto."},{"t":"4%","bucket":1,"en":"That flips the fraction — 1/4 is 25%, not 4%.","es":"Eso invierte la fracción: 1/4 es 25%, no 4%."}]},"wyr":[{"a":{"en":"25% off a $40 jacket","es":"25% de descuento en una chaqueta de $40"},"b":{"en":"$12 off a $40 jacket","es":"$12 de descuento en una chaqueta de $40"},"en":"Take the $12. 25% of $40 is only $10 — a percent is worth whatever the whole is worth.","es":"Tomen los $12. El 25% de $40 son solo $10: un porcentaje vale según el total del que se saca."},{"a":{"en":"A 10% raise on $500 a week","es":"Un aumento del 10% sobre $500 por semana"},"b":{"en":"A $40 raise on $500 a week","es":"Un aumento de $40 sobre $500 por semana"},"en":"Take the 10% — that is $50, ten dollars more than the flat $40. Same idea, opposite answer.","es":"Tomen el 10%: son $50, diez dólares más que los $40 fijos. La misma idea, respuesta opuesta."}]};</script>
+      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"1/2 as a percent","b":"50%","aEs":"1/2 como porcentaje","bEs":""},{"a":"0.25","b":"25%","aEs":"","bEs":""},{"a":"percent","b":"per 100","aEs":"porcentaje","bEs":"por cada 100"},{"a":"30 out of 100","b":"30%","aEs":"30 de cada 100","bEs":""}],"tf":[{"en":"Percent means “per 100.”","es":"Por ciento significa “por cada 100.”","answer":true,"whyEn":"45% means 45 out of every 100.","whyEs":"45% significa 45 de cada 100."},{"en":"25% of a number is the same as 1/4 of it.","es":"El 25% de un número es lo mismo que 1/4 de él.","answer":true,"whyEn":"25 out of 100 simplifies to 1/4, so both take the same amount.","whyEs":"25 de 100 se simplifica a 1/4, así que ambos toman la misma cantidad."},{"en":"A percent can never be more than 100.","es":"Un porcentaje nunca puede ser mayor que 100.","answer":false,"whyEn":"150% just means one and a half times the whole — 150% of 20 is 30.","whyEs":"150% significa una vez y media el total: el 150% de 20 es 30."},{"en":"To find 10% of a number, move the decimal point one place to the left.","es":"Para hallar el 10% de un número, mueve el punto decimal un lugar a la izquierda.","answer":true,"whyEn":"10% of 80 is 8.0 — and that makes 5% and 20% easy from there.","whyEs":"El 10% de 80 es 8.0, y desde ahí el 5% y el 20% salen fácil."},{"en":"Taking 50% off, then 50% off again, is the same as 100% off.","es":"Quitar 50%, y luego otro 50%, es lo mismo que quitar 100%.","answer":false,"whyEn":"The second 50% comes off the SMALLER price, so you still pay 25% — never free.","whyEs":"El segundo 50% se quita del precio MÁS PEQUEÑO, así que pagas 25%: nunca es gratis."}],"sort":{"a":{"en":"Equal to 1/4","es":"Igual a 1/4"},"b":{"en":"NOT equal to 1/4","es":"NO es igual a 1/4"},"cards":[{"t":"25%","bucket":0,"en":"25 out of 100 = 1/4.","es":"25 de 100 = 1/4."},{"t":"0.25","bucket":0,"en":"Twenty-five hundredths = 1/4.","es":"Veinticinco centésimas = 1/4."},{"t":"25 out of 100","bucket":0,"en":"That is what the word percent means.","es":"Eso es lo que significa la palabra por ciento."},{"t":"2.5%","bucket":1,"en":"2.5 out of 100 — that is 1/40, ten times smaller.","es":"2.5 de 100: eso es 1/40, diez veces más pequeño."},{"t":"1/40","bucket":1,"en":"Much smaller than one quarter.","es":"Mucho más pequeño que un cuarto."},{"t":"4%","bucket":1,"en":"That flips the fraction — 1/4 is 25%, not 4%.","es":"Eso invierte la fracción: 1/4 es 25%, no 4%."}]},"wyr":[{"a":{"en":"25% off a $40 jacket","es":"25% de descuento en una chaqueta de $40"},"b":{"en":"$12 off a $40 jacket","es":"$12 de descuento en una chaqueta de $40"},"en":"Take the $12. 25% of $40 is only $10 — a percent is worth whatever the whole is worth.","es":"Tomen los $12. El 25% de $40 son solo $10: un porcentaje vale según el total del que se saca."},{"a":{"en":"A 10% raise on $500 a week","es":"Un aumento del 10% sobre $500 por semana"},"b":{"en":"A $40 raise on $500 a week","es":"Un aumento de $40 sobre $500 por semana"},"en":"Take the 10% — that is $50, ten dollars more than the flat $40. Same idea, opposite answer.","es":"Tomen el 10%: son $50, diez dólares más que los $40 fijos. La misma idea, respuesta opuesta."}]};</script>
       <div class="fam-game-head">
         <span class="fam-game-badge">🎮 <span class="lang-en">FAMILY ARCADE</span><span class="lang-es" lang="es">SALA DE JUEGOS EN FAMILIA</span></span>
         <p class="fam-game-lead">
@@ -4263,7 +4286,40 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
     </div>
 <div class="tab-panel-inner" data-tab-panel="done" id="hw_panel_done" role="tabpanel" hidden>
       <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
-      <p class="family-explain-finish"><span class="lang-en">Explain one answer aloud or on paper: “I got ___ because ___. I checked by ___.” Include your strategy and units. Then you are done.</span><span class="lang-es" lang="es">Explica una respuesta en voz alta o en papel: “Obtuve ___ porque ___. Comprobé usando ___.” Incluye tu estrategia y las unidades. Después termina.</span></p>
+
+      <section class="hw-teach" aria-labelledby="hw_teach_title">
+        <p class="hw-eyebrow hw-inline"><span class="lang-en">The last step</span><span class="lang-es" lang="es">El último paso</span></p>
+        <h3 id="hw_teach_title"><span class="lang-en">Teach it to someone</span><span class="lang-es" lang="es">Enséñaselo a alguien</span></h3>
+        <ol class="hw-teach-steps">
+          <li><span class="lang-en">Pick one problem you solved.</span><span class="lang-es" lang="es">Elige un problema que resolviste.</span></li>
+          <li><span class="lang-en">Explain it out loud. Use any language first.</span><span class="lang-es" lang="es">Explícalo en voz alta. Usa primero el idioma que prefieras.</span></li>
+          <li><span class="lang-en">Say it again with the English math words:</span><span class="lang-es" lang="es">Dilo otra vez con las palabras de matemáticas en inglés:</span><ul class="hw-teach-words" aria-label="Words to use"><li><strong>Understand Percent</strong><span class="lang-es" lang="es"> · Comprender el porcentaje</span></li><li><strong>Percent</strong><span class="lang-es" lang="es"> · Porcentaje</span></li><li><strong>Per hundred</strong><span class="lang-es" lang="es"> · Por cada cien</span></li></ul></li>
+          <li><span class="lang-en">Your partner asks: “How do you know?” Answer with: “I got ___ because ___. I checked by ___.”</span><span class="lang-es" lang="es">Tu acompañante pregunta: “¿Cómo lo sabes?” Responde: “Obtuve ___ porque ___. Comprobé usando ___.”</span></li>
+        </ol>
+      </section>
+
+      <section class="hw-confidence" id="hw_conf_after" data-conf-phase="after" aria-labelledby="hw_conf_after_title">
+        <h3 id="hw_conf_after_title"><span class="lang-en">How sure do you feel now?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes ahora?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_after_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="after" onclick="hwSetConfidence('after', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="after" onclick="hwSetConfidence('after', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="after" onclick="hwSetConfidence('after', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Compare it with how you felt at the start.</span><span class="lang-es" lang="es">Compáralo con cómo te sentías al empezar.</span></p>
+        <p class="hw-conf-growth" id="hw_conf_growth" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="hw-nights" id="hw_nights" aria-labelledby="hw_nights_title">
+        <h3 id="hw_nights_title"><span class="lang-en">Our family math nights</span><span class="lang-es" lang="es">Nuestras noches de matemáticas en familia</span></h3>
+        <ol class="hw-nights-week" id="hw_nights_week" aria-label="This week"></ol>
+        <p class="hw-nights-streak" id="hw_nights_streak" role="status" aria-live="polite"></p>
+        <p class="hw-nights-note"><span class="lang-en">Weekends never break it. Saved only on this device.</span><span class="lang-es" lang="es">Los fines de semana no la interrumpen. Se guarda solo en este dispositivo.</span></p>
+      </section>
       <div class="done-summary" id="hw_done_summary" role="status" aria-live="polite"></div>
       <ol class="done-problem-list" id="hw_done_problems" aria-label="Problems / Problemas"></ol>
       <p class="celebrate-text lang-en">Name one strategy that helped, or one question to ask next time. You can stop here; no adult signature is needed.</p>
@@ -4273,9 +4329,16 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
 
+
+      <div class="hw-share">
+        <button type="button" class="btn btn-secondary hw-share-win" onclick="hwShareWin()">
+          🎉 <span class="lang-en">Share our win</span><span class="lang-es" lang="es">Compartir nuestro logro</span>
+        </button>
+        <p class="hw-share-note"><span class="lang-en">Shares only the lesson name and a link. No answers, no names.</span><span class="lang-es" lang="es">Comparte solo el nombre de la lección y un enlace. Sin respuestas ni nombres.</span></p>
+      </div>
       <div class="homework-message-action">
         <a class="btn btn-primary" href="https://home.classdojo.com/" target="_blank" rel="noopener"><span class="lang-en">Open ClassDojo to message Mr. Neft</span><span class="lang-es" lang="es">Abrir ClassDojo para escribir al Sr. Neft</span></a>
-        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicia sesión con tu cuenta familiar, abre Mensajes y elige al Sr. Neft. Incluye el número de esta lección y tu pregunta.</span></p>
+        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicien sesión con su cuenta familiar, abran Mensajes y elijan al Sr. Neft. Incluyan el número de esta lección y su pregunta.</span></p>
       </div>
       <section class="homework-optional-extras" aria-labelledby="homework_extras_title">
       <h3 id="homework_extras_title"><span class="lang-en">Want to do more?</span><span class="lang-es" lang="es">¿Quieren hacer más?</span></h3>
@@ -4744,32 +4807,19 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
           </span>
           <span class="ai-lab-arrow" aria-hidden="true">↓</span>
         </a>
-        <p class="bilingual-block">
-          <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
-          <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
+
+        <p class="bilingual-block external-resource-claim">
+          <span class="lang-en">These links go to <strong>specific</strong> videos about tonight's topic — not general math pages.</span>
+          <span class="lang-es" lang="es">Estos enlaces van a videos <strong>específicos</strong> sobre el tema de hoy — no a páginas generales.</span>
         </p>
         <ul class="external-resource-list">
-
             <li>
-              <a href="https://www.khanacademy.org/math/pre-algebra/pre-algebra-ratios-rates/pre-algebra-ratios-intro/v/ratio-word-problems" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Intro to ratios</span>
-                <span class="ext-title-es" lang="es">Introducción a razones</span>
-              </a>
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/x0267d782:cc-6th-rates-and-percentages/cc-6th-percentages/v/describing-the-meaning-of-percent" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-en"><span class="ext-source">Khan Academy</span><span class="ext-title-en">The meaning of percent</span></a>
+              <a href="https://es.khanacademy.org/math/cc-sixth-grade-math/x0267d782:cc-6th-rates-and-percentages/cc-6th-percentages/v/describing-the-meaning-of-percent" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-es" lang="es"><span class="ext-source">Khan Academy en español</span><span class="ext-title-es">El significado de porcentaje</span></a>
             </li>
             <li>
-              <a href="https://www.khanacademy.org/math/pre-algebra/pre-algebra-ratios-rates/pre-algebra-ratios-prop/v/solving-ratio-problems-with-tables-exercise" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Ratio tables</span>
-                <span class="ext-title-es" lang="es">Tablas de razones</span>
-              </a>
-            </li>
-            <li>
-              <a href="https://www.khanacademy.org/math/pre-algebra/pre-algebra-ratios-rates/pre-algebra-ratios-prop/v/rate-problems" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Unit rates</span>
-                <span class="ext-title-es" lang="es">Tasas unitarias</span>
-              </a>
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/x0267d782:cc-6th-rates-and-percentages/cc-6th-percentages/v/percent-from-fraction-models" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-en"><span class="ext-source">Khan Academy</span><span class="ext-title-en">Percents from fraction models</span></a>
+              <a href="https://es.khanacademy.org/math/cc-sixth-grade-math/x0267d782:cc-6th-rates-and-percentages/cc-6th-percentages/v/percent-from-fraction-models" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-es" lang="es"><span class="ext-source">Khan Academy en español</span><span class="ext-title-es">Porcentajes con modelos de fracciones</span></a>
             </li>
         </ul>
       </section>
@@ -4867,6 +4917,17 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </div>
     </div>
 
+<div class="hw-toast" id="hw_toast" aria-hidden="true" hidden></div><div class="hw-sr-only" id="hw_toast_live" role="status" aria-live="polite"></div>
+<dialog class="hw-dialog" id="hw_dialog" aria-labelledby="hw_dialog_text">
+  <form method="dialog">
+    <p id="hw_dialog_text"></p>
+    <div class="hw-dialog-actions">
+      <button type="submit" value="no" class="btn btn-secondary" id="hw_dialog_no"></button>
+      <button type="submit" value="yes" class="btn btn-primary" id="hw_dialog_yes"></button>
+    </div>
+  </form>
+</dialog>
+
 <section class="hw-answer-sheet" aria-hidden="true">
   <h2><span class="lang-en">Answer sheet</span><span class="lang-es" lang="es">Hoja de respuestas</span> · Understand Percent</h2>
   <p><span class="lang-en">Check the work after trying each problem. Talk about why each answer makes sense.</span><span class="lang-es" lang="es">Revisen el trabajo después de intentar cada problema. Hablen de por qué cada respuesta tiene sentido.</span></p>
@@ -4906,8 +4967,10 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 
     <div class="score-progress-container">
       <div class="score-text">
-        <span class="lang-en">Progress:</span><span class="lang-es" lang="es">Progreso:</span>
-        <span id="progress_text">0 / 11</span>
+        <span class="hw-stack hw-goal-label"><span class="lang-en">Tonight's goal</span><span class="lang-es" lang="es">Meta de hoy</span></span>
+        <span id="progress_text">0 / 4</span>
+        <span class="hw-pips hw-pips-bar" role="img" aria-label="Tonight's goal progress"></span>
+        <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -4915,8 +4978,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
     </div>
 
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
-      <button class="btn btn-primary" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
+      <button class="btn btn-secondary hw-stack" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
+      <button class="btn btn-primary hw-stack" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
     </div>
   </div>
 </div>
@@ -4924,18 +4987,19 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 <script>
 window.LESSON_ID = "4-1";
 window.LESSON_TITLE = "Understand Percent";
+window.LESSON_TITLE_ES = "Comprender el porcentaje";
 /* The number of core problems, so the celebration fires on the goal the page
    actually states. It was hardcoded to 3 while the page showed 6 and the status
    bar counted to 6: a family could hit "Goal Reached! 3 Stars Earned!" and read
    "0 / 6 Completed" in the same glance. */
 window.HW_CORE_COUNT = 11;
-window.__HW_VOCAB__ = [{"term":"Understand Percent","termEs":"Comprender el porcentaje","def":"A percent is a ratio that compares a number to 100, so every percent answers the question “how many out of 100?”","defEs":"Un porcentaje es una razón que compara un número con 100, así que todo porcentaje responde “¿cuántos de cada 100?”","example":"4 out of 10 = 40 out of 100 = 40%","img":"/assets/vocab-images/percent.svg","imgAlt":"Illustration of Understand Percent: A percent is a ratio that compares a number to 100, so every percent answers the question “how many out of 100?”","cs":false},{"term":"Percent","termEs":"Porcentaje","def":"A ratio that compares a number to 100. The word means “per hundred,” and the symbol is %.","defEs":"Una razón que compara un número con 100. La palabra significa “por cada cien” y su símbolo es %.","example":"40% = 40 out of 100 = 40/100","img":"/assets/vocab-images/percent.svg","imgAlt":"Illustration of Percent: A ratio that compares a number to 100. The word means “per hundred,” and the symbol is %.","cs":false},{"term":"Per hundred","termEs":"Por cada cien","def":"The meaning hidden inside the word percent: for every group of 100. It is why every percent can be written as a fraction over 100.","defEs":"El significado dentro de la palabra porcentaje: por cada grupo de 100. Por eso todo porcentaje se puede escribir como fracción sobre 100.","example":"23% = 23/100","img":"/assets/vocab-images/percent.svg","imgAlt":"Illustration of Per hundred: The meaning hidden inside the word percent: for every group of 100. It is why every percent can be written as a fraction over 100.","cs":false},{"term":"Decimal grid","termEs":"Cuadrícula decimal","def":"A 10-by-10 grid of 100 squares. Shading squares shows a percent directly, one square per percent.","defEs":"Una cuadrícula de 10 por 10 con 100 cuadros. Sombrear cuadros muestra un porcentaje directamente, un cuadro por cada uno por ciento.","example":"40 shaded squares out of 100 = 40%","img":"/assets/vocab-images/percent-part.svg","imgAlt":"Illustration of Decimal grid: A 10-by-10 grid of 100 squares. Shading squares shows a percent directly, one square per percent.","cs":false},{"term":"Part-to-whole","termEs":"Parte a todo","def":"A comparison of one part against the whole amount. In a percent, the whole is always 100%.","defEs":"Una comparación de una parte con el total. En un porcentaje, el total siempre es 100 %.","example":"The whole = 100%; the part = the percent","img":"/assets/vocab-images/part-to-whole.svg","imgAlt":"Illustration of Part-to-whole: A comparison of one part against the whole amount. In a percent, the whole is always 100%.","cs":false},{"term":"Greater than 100%","termEs":"Mayor que 100 %","def":"More than one whole. A percent above 100 means the amount is larger than the thing it is being compared to.","defEs":"Más de un entero. Un porcentaje mayor que 100 significa que la cantidad es mayor que aquello con lo que se compara.","example":"150% of the gray kitten = 1.5 times its weight","img":"/assets/vocab-images/percent.svg","imgAlt":"Illustration of Greater than 100%: More than one whole. A percent above 100 means the amount is larger than the thing it is being compared to.","cs":false},{"term":"Equivalent ratio","termEs":"Razón equivalente","def":"A ratio with the same value, made by multiplying or dividing both terms by the same number.","defEs":"Una razón con el mismo valor, formada al multiplicar o dividir ambos términos por el mismo número.","example":"2 : 5 → 40 : 100","img":"/assets/vocab-images/equivalent-ratio.svg","imgAlt":"Illustration of Equivalent ratio: A ratio with the same value, made by multiplying or dividing both terms by the same number.","cs":false},{"term":"Tape diagram","termEs":"Diagrama de cinta","def":"A bar split into equal parts to show a percent.","defEs":"Una barra dividida en partes iguales para mostrar un porcentaje.","example":"4 equal parts: 3 shaded = 75%, whole = 100%","img":"/assets/vocab-images/percent-bar.svg","imgAlt":"Illustration of Tape diagram: A bar split into equal parts to show a percent.","cs":false}];
+window.__HW_VOCAB__ = [{"term":"Understand Percent","termEs":"Comprender el porcentaje","def":"A percent tells how many out of 100.","defEs":"Un porcentaje dice cuántos de cada 100.","example":"4 out of 10 = 40 out of 100 = 40%","img":"/assets/vocab-images/percent.svg","imgAlt":"Illustration of Understand Percent: A percent tells how many out of 100.","cs":false,"formal":"A percent is a ratio that compares a number to 100, so every percent answers the question “how many out of 100?”","formalEs":"Un porcentaje es una razón que compara un número con 100, así que todo porcentaje responde “¿cuántos de cada 100?”"},{"term":"Percent","termEs":"Porcentaje","def":"A number out of 100, shown with the % sign.","defEs":"Un número de cada 100, con el signo %.","example":"30% means 30 out of 100","img":"/assets/vocab-images/percent.svg","imgAlt":"Illustration of Percent: A number out of 100, shown with the % sign.","cs":false,"formal":"A ratio that compares a number to 100. The word means “per hundred,” and the symbol is %.","formalEs":"Una razón que compara un número con 100. La palabra significa “por cada cien” y su símbolo es %.","exampleEs":"30 % significa 30 de cada 100","exampleFormal":"40% = 40 out of 100 = 40/100"},{"term":"Per hundred","termEs":"Por cada cien","def":"For every group of 100. That is what percent means.","defEs":"Por cada grupo de 100. Eso significa porcentaje.","example":"23% = 23/100","img":"/assets/vocab-images/percent.svg","imgAlt":"Illustration of Per hundred: For every group of 100. That is what percent means.","cs":false,"formal":"The meaning hidden inside the word percent: for every group of 100. It is why every percent can be written as a fraction over 100.","formalEs":"El significado dentro de la palabra porcentaje: por cada grupo de 100. Por eso todo porcentaje se puede escribir como fracción sobre 100."},{"term":"Decimal grid","termEs":"Cuadrícula decimal","def":"A grid of 100 squares. Each square is one percent.","defEs":"Una cuadrícula de 100 cuadros. Cada cuadro es el uno por ciento.","example":"40 shaded squares out of 100 = 40%","img":"/assets/vocab-images/percent-part.svg","imgAlt":"Illustration of Decimal grid: A grid of 100 squares. Each square is one percent.","cs":false,"formal":"A 10-by-10 grid of 100 squares. Shading squares shows a percent directly, one square per percent.","formalEs":"Una cuadrícula de 10 por 10 con 100 cuadros. Sombrear cuadros muestra un porcentaje directamente, un cuadro por cada uno por ciento."},{"term":"Part-to-whole","termEs":"Parte a todo","def":"Compares one piece with the whole group.","defEs":"Compara una parte con todo el grupo.","example":"3 boys to 5 kids in all","img":"/assets/vocab-images/part-to-whole.svg","imgAlt":"Illustration of Part-to-whole: Compares one piece with the whole group.","cs":false,"formal":"A comparison of one part against the whole amount. In a percent, the whole is always 100%.","formalEs":"Una comparación de una parte con el total. En un porcentaje, el total siempre es 100 %.","exampleEs":"3 niños de 5 en total","exampleFormal":"The whole = 100%; the part = the percent"},{"term":"Greater than 100%","termEs":"Mayor que 100 %","def":"More than the whole thing. It is over 100%.","defEs":"Más que el total. Es más de 100 %.","example":"150% of 40 is 60","img":"/assets/vocab-images/percent.svg","imgAlt":"Illustration of Greater than 100%: More than the whole thing. It is over 100%.","cs":false,"formal":"More than one whole. A percent above 100 means the amount is larger than the thing it is being compared to.","formalEs":"Más de un entero. Un porcentaje mayor que 100 significa que la cantidad es mayor que aquello con lo que se compara.","exampleEs":"150 % de 40 es 60","exampleFormal":"150% of the gray kitten = 1.5 times its weight"},{"term":"Equivalent ratio","termEs":"Razón equivalente","def":"Ratios that compare in the same way.","defEs":"Razones que comparan de la misma manera.","example":"1:2 and 2:4 compare the same way","img":"/assets/vocab-images/equivalent-ratio.svg","imgAlt":"Illustration of Equivalent ratio: Ratios that compare in the same way.","cs":false,"formal":"A ratio with the same value, made by multiplying or dividing both terms by the same number.","formalEs":"Una razón con el mismo valor, formada al multiplicar o dividir ambos términos por el mismo número.","exampleEs":"1:2 y 2:4 comparan de la misma manera","exampleFormal":"2 : 5 → 40 : 100"},{"term":"Tape diagram","termEs":"Diagrama de cinta","def":"A bar cut into equal parts to show amounts.","defEs":"Una barra dividida en partes iguales para mostrar cantidades.","example":"4 equal parts: 3 shaded = 75%, whole = 100%","img":"/assets/vocab-images/percent-bar.svg","imgAlt":"Illustration of Tape diagram: A bar cut into equal parts to show amounts.","cs":false,"formal":"A bar split into equal parts to show a percent.","formalEs":"Una barra dividida en partes iguales para mostrar un porcentaje."}];
 window.__HW_VOCAB_SKIP__ = [29,74,161,214,275,279,355,367];
 window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Numerical\\s+Expressions\\s+with\\s+Exponents(?:es|s)?|Solve\\s+One-Step\\s+Addition\\s+and\\s+Subtraction\\s+Equations(?:es|s)?|Determine\\s+the\\s+Whole\\s+Given\\s+the\\s+Part\\s+and\\s+Percent(?:es|s)?|Convert\\s+Measurements\\s+within\\s+the\\s+Same\\s+System(?:es|s)?|Percents\\s+Greater\\s+Than\\s+100%\\s+and\\s+Less\\s+Than\\s+1%(?:es|s)?|Solve\\s+Multiplication\\s+and\\s+Division\\s+Equations(?:es|s)?|Equations\\s+and\\s+Inequalities\\s+Problem\\s+Solving(?:es|s)?|Convert\\s+Measurements\\s+Between\\s+Systems(?:es|s)?|Multiplication\\s+Property\\s+of\\s+Equalit(?:y|ies)|Ordered\\s+Pairs\\s+in\\s+All\\s+Four\\s+Quadrants(?:es|s)?|Rational\\s+Numbers\\s+on\\s+the\\s+Number\\s+Line(?:es|s)?|Describe\\s+the\\s+Data\\s+Using\\s+the\\s+Median(?:es|s)?|Divide\\s+Whole\\s+Numbers\\s+by\\s+Fractions(?:es|s)?|Fraction\\s+Division\\s+Problem\\s+Solving(?:es|s)?|Fractions,\\s+Decimals,\\s+and\\s+Percents(?:es|s)?|Distance\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Subtraction\\s+Property\\s+of\\s+Equalit(?:y|ies)|Appropriate\\s+Measures\\s+of\\s+Center(?:es|s)?|Ratio\\s+and\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|Simplify\\s+Algebraic\\s+Expressions(?:es|s)?|Statistical\\s+Questions\\s+and\\s+Data(?:es|s)?|Volume\\s+with\\s+Whole-Number\\s+Edges(?:es|s)?|Addition\\s+Property\\s+of\\s+Equalit(?:y|ies)|Division\\s+Property\\s+of\\s+Equalit(?:y|ies)|Graph\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Range\\s+and\\s+Interquartile\\s+Range(?:es|s)?|Display\\s+Data\\s+with\\s+Histograms(?:es|s)?|Greatest\\s+common\\s+factor\\s+\\(GCF\\)(?:es|s)?|Solve\\s+and\\s+Graph\\s+Inequalities(?:es|s)?|Volume\\s+of\\s+Rectangular\\s+Prisms(?:es|s)?|Display\\s+Data\\s+with\\s+Box\\s+Plots(?:es|s)?|Integers\\s+and\\s+Absolute\\s+Value(?:es|s)?|Least\\s+common\\s+multiple\\s+\\(LCM\\)(?:es|s)?|Shape\\s+of\\s+Data\\s+Distributions(?:es|s)?|Write\\s+Algebraic\\s+Expressions(?:es|s)?|Compare\\s+and\\s+Order\\s+Integers(?:es|s)?|Decimal\\s+Division\\s+Algorithm(?:es|s)?|Divide\\s+Multi-Digit\\s+Numbers(?:es|s)?|Find\\s+Factors\\s+and\\s+Multiples(?:es|s)?|Reflect\\s+Points\\s+Across\\s+Axes(?:es|s)?|Add\\s+and\\s+Subtract\\s+Decimals(?:es|s)?|Area\\s+of\\s+Composite\\s+Figures(?:es|s)?|Convert\\s+Measurement\\s+Units(?:es|s)?|distance\\s+between\\s+vertices(?:es|s)?|The\\s+Distributive\\s+Propert(?:y|ies)|Unit\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|least\\s+common\\s+denominator(?:es|s)?|Area\\s+of\\s+Regular\\s+Polygons(?:es|s)?|Non-statistical\\s+Question(?:es|s)?|Opposite\\s+of\\s+the\\s+opposite(?:es|s)?|Properties\\s+of\\s+Operations(?:es|s)?|Surface\\s+Area\\s+of\\s+Pyramids(?:es|s)?|mean\\s+absolute\\s+deviation(?:es|s)?|make\\s+sense\\s+of\\s+a\\s+problem(?:es|s)?|Percent\\s+Problem\\s+Solving(?:es|s)?|Repeated\\s+multiplication(?:es|s)?|Surface\\s+Area\\s+Using\\s+Nets(?:es|s)?|greatest\\s+common\\s+factor(?:es|s)?|Area\\s+of\\s+Parallelograms(?:es|s)?|Mean,\\s+Median,\\s+and\\s+Mode(?:es|s)?|Multiplicative\\s+inverse(?:es|s)?|Surface\\s+Area\\s+of\\s+Prisms(?:es|s)?|least\\s+common\\s+multiple(?:es|s)?|equivalent\\s+expression(?:es|s)?|Distributive\\s+Propert(?:y|ies)|Division\\s+of\\s+Fractions(?:es|s)?|Length,\\s+width,\\s+height(?:es|s)?|algebraic\\s+expression(?:es|s)?|Associative\\s+Propert(?:y|ies)|Commutative\\s+Propert(?:y|ies)|define\\s+the\\s+variables(?:es|s)?|Divide\\s+Mixed\\s+Numbers(?:es|s)?|Evaluate\\s+Expressions(?:es|s)?|Factor\\s+an\\s+expression(?:es|s)?|independent\\s+variable(?:es|s)?|Measure\\s+of\\s+variation(?:es|s)?|Numerical\\s+expression(?:es|s)?|Powers\\s+and\\s+Exponents(?:es|s)?|Rates\\s+and\\s+Unit\\s+Rates(?:es|s)?|Statistical\\s+Question(?:es|s)?|prime\\s+factorization(?:es|s)?|interquartile\\s+range(?:es|s)?|equivalent\\s+fraction(?:es|s)?|community\\s+agreement(?:es|s)?|Equivalent\\s+division(?:es|s)?|Five-number\\s+summar(?:y|ies)|Horizontal\\s+distance(?:es|s)?|Negative\\s+coordinate(?:es|s)?|Order\\s+of\\s+operations(?:es|s)?|Percent\\s+of\\s+a\\s+Number(?:es|s)?|Understand\\s+Percent(?:es|s)?|Area\\s+of\\s+a\\s+Triangle(?:es|s)?|Area\\s+of\\s+Trapezoids(?:es|s)?|At\\s+least\\s+/\\s+At\\s+most(?:es|s)?|bilateral\\s+symmetr(?:y|ies)|Common\\s+denominator(?:es|s)?|compatible\\s+numbers(?:es|s)?|dependent\\s+variable(?:es|s)?|Double\\s+number\\s+line(?:es|s)?|Graph\\s+Inequalities(?:es|s)?|Graph\\s+Ratio\\s+Tables(?:es|s)?|Keep,\\s+Change,\\s+Flip(?:es|s)?|Measurement\\s+system(?:es|s)?|Multi-step\\s+problem(?:es|s)?|Write\\s+Inequalities(?:es|s)?|Greater\\s+than\\s+100%(?:es|s)?|improper\\s+fraction(?:es|s)?|conversion\\s+factor(?:es|s)?|benchmark\\s+percent(?:es|s)?|Data\\s+distribution(?:es|s)?|Identity\\s+Propert(?:y|ies)|Inverse\\s+operation(?:es|s)?|Measure\\s+of\\s+center(?:es|s)?|Multiply\\s+Decimals(?:es|s)?|One-step\\s+equation(?:es|s)?|Rectangular\\s+prism(?:es|s)?|Shape\\s+of\\s+the\\s+data(?:es|s)?|Understand\\s+Ratios(?:es|s)?|Vertical\\s+distance(?:es|s)?|Equivalent\\s+ratio(?:es|s)?|coordinate\\s+plane(?:es|s)?|keep-change-flip(?:es|s)?|Additive\\s+pattern(?:es|s)?|Composite\\s+figure(?:es|s)?|Composite\\s+number(?:es|s)?|Customary\\s+system(?:es|s)?|Divide\\s+Fractions(?:es|s)?|Grouping\\s+symbols(?:es|s)?|line\\s+of\\s+symmetr(?:y|ies)|Negative\\s+integer(?:es|s)?|Triangular\\s+prism(?:es|s)?|common\\s+multiple(?:es|s)?|Customary\\s+units(?:es|s)?|Divide\\s+Decimals(?:es|s)?|Frequency\\s+table(?:es|s)?|Negative\\s+number(?:es|s)?|Positive\\s+number(?:es|s)?|Problem\\s+solving(?:es|s)?|Ratio\\s+Reasoning(?:es|s)?|Rational\\s+number(?:es|s)?|Regular\\s+Polygon(?:es|s)?|Right\\s+trapezoid(?:es|s)?|table\\s+of\\s+values(?:es|s)?|Two-dimensional(?:es|s)?|Unit\\s+rate\\s+point(?:es|s)?|Write\\s+Equations(?:es|s)?|absolute\\s+value(?:es|s)?|Boundary\\s+point(?:es|s)?|Colon\\s+notation(?:es|s)?|Compare\\s+Ratios(?:es|s)?|counterexample(?:es|s)?|Cross-multipl(?:y|ies)|Decimal\\s+places(?:es|s)?|generalization(?:es|s)?|Linear\\s+pattern(?:es|s)?|math\\s+biograph(?:y|ies)|predictabilit(?:y|ies)|Rate\\s+of\\s+change(?:es|s)?|reasonableness(?:es|s)?|representation(?:es|s)?|True\\s+statement(?:es|s)?|Part-to-whole(?:es|s)?|long\\s+division(?:es|s)?|decimal\\s+point(?:es|s)?|parallelogram(?:es|s)?|common\\s+factor(?:es|s)?|Approximatel(?:y|ies)|Balance\\s+point(?:es|s)?|Closed\\s+circle(?:es|s)?|Expanded\\s+form(?:es|s)?|Extreme\\s+value(?:es|s)?|Halfway\\s+value(?:es|s)?|Metric\\s+system(?:es|s)?|Perpendicular(?:es|s)?|Simplest\\s+form(?:es|s)?|Skip\\s+counting(?:es|s)?|Unit\\s+fraction(?:es|s)?|Work\\s+backward(?:es|s)?|Decimal\\s+grid(?:es|s)?|Tape\\s+diagram(?:es|s)?|mixed\\s+number(?:es|s)?|ordered\\s+pair(?:es|s)?|surface\\s+area(?:es|s)?|line\\s+segment(?:es|s)?|distribution(?:es|s)?|scale\\s+factor(?:es|s)?|prime\\s+factor(?:es|s)?|Annex\\s+a\\s+zero(?:es|s)?|doer\\s+of\\s+math(?:es|s)?|Lateral\\s+area(?:es|s)?|Lateral\\s+face(?:es|s)?|Less\\s+than\\s+1%(?:es|s)?|Metric\\s+units(?:es|s)?|mirror\\s+image(?:es|s)?|No\\s+more\\s+than(?:es|s)?|Part-to-part(?:es|s)?|pattern\\s+rule(?:es|s)?|pattern\\s+unit(?:es|s)?|Power\\s+of\\s+ten(?:es|s)?|Prime\\s+number(?:es|s)?|Proportional(?:es|s)?|relationship(?:es|s)?|Slant\\s+height(?:es|s)?|Slanted\\s+side(?:es|s)?|Solution\\s+set(?:es|s)?|Target\\s+total(?:es|s)?|x-coordinate(?:es|s)?|Distributive(?:es|s)?|Per\\s+hundred(?:es|s)?|multi-digit(?:es|s)?|place\\s+value(?:es|s)?|denominator(?:es|s)?|coefficient(?:es|s)?|Annex\\s+zeros(?:es|s)?|Base\\s+1\\s+\\(b1\\)(?:es|s)?|Base\\s+2\\s+\\(b2\\)(?:es|s)?|Common\\s+form(?:es|s)?|Coordinates(?:es|s)?|Factor\\s+pair(?:es|s)?|Factor\\s+tree(?:es|s)?|Middle\\s+half(?:es|s)?|Number\\s+line(?:es|s)?|Open\\s+circle(?:es|s)?|Ratio\\s+table(?:es|s)?|Side\\s+length(?:es|s)?|Target\\s+mean(?:es|s)?|Total\\s+parts(?:es|s)?|Total\\s+price(?:es|s)?|Variabilit(?:y|ies)|Associative(?:es|s)?|Commutative(?:es|s)?|bring\\s+down(?:es|s)?|equivalent(?:es|s)?|reciprocal(?:es|s)?|hundredths(?:es|s)?|proportion(?:es|s)?|expression(?:es|s)?|substitute(?:es|s)?|inequalit(?:y|ies)|like\\s+terms(?:es|s)?|Better\\s+Buy(?:es|s)?|Comparison(?:es|s)?|confidence(?:es|s)?|conjecture(?:es|s)?|Constraint(?:es|s)?|cubic\\s+unit(?:es|s)?|depends\\s+on(?:es|s)?|Dimensions(?:es|s)?|Equal\\s+sign(?:es|s)?|math\\s+stor(?:y|ies)|profession(?:es|s)?|reasonable(?:es|s)?|Reflection(?:es|s)?|repetition(?:es|s)?|round\\s+trip(?:es|s)?|Unit\\s+price(?:es|s)?|Unit\\s+ratio(?:es|s)?|remainder(?:es|s)?|algorithm(?:es|s)?|numerator(?:es|s)?|unit\\s+rate(?:es|s)?|perimeter(?:es|s)?|rectangle(?:es|s)?|trapezoid(?:es|s)?|histogram(?:es|s)?|frequenc(?:y|ies)|Base\\s+area(?:es|s)?|Benchmark(?:es|s)?|communit(?:y|ies)|Composite(?:es|s)?|Congruent(?:es|s)?|decompose(?:es|s)?|Deviation(?:es|s)?|Divisible(?:es|s)?|ingenuit(?:y|ies)|Interpret(?:es|s)?|inventor(?:y|ies)|Magnitude(?:es|s)?|persevere(?:es|s)?|represent(?:es|s)?|symmetric(?:es|s)?|the\\s+whole(?:es|s)?|Unit\\s+cube(?:es|s)?|Variation(?:es|s)?|quotient(?:es|s)?|exponent(?:es|s)?|estimate(?:es|s)?|simplif(?:y|ies)|variable(?:es|s)?|evaluate(?:es|s)?|opposite(?:es|s)?|triangle(?:es|s)?|box\\s+plot(?:es|s)?|dot\\s+plot(?:es|s)?|quartile(?:es|s)?|argument(?:es|s)?|at\\s+least(?:es|s)?|Constant(?:es|s)?|critique(?:es|s)?|Data\\s+set(?:es|s)?|Diagonal(?:es|s)?|Discount(?:es|s)?|Distance(?:es|s)?|Dividend(?:es|s)?|Interval(?:es|s)?|Negative(?:es|s)?|organize(?:es|s)?|Parallel(?:es|s)?|Per\\s+Unit(?:es|s)?|Positive(?:es|s)?|Propert(?:y|ies)|quantit(?:y|ies)|rotation(?:es|s)?|Solution(?:es|s)?|strateg(?:y|ies)|strength(?:es|s)?|Symmetr(?:y|ies)|Identit(?:y|ies)|Rational(?:es|s)?|Percent(?:es|s)?|product(?:es|s)?|regroup(?:es|s)?|decimal(?:es|s)?|integer(?:es|s)?|rhombus(?:es|s)?|polygon(?:es|s)?|pyramid(?:es|s)?|segment(?:es|s)?|outlier(?:es|s)?|cluster(?:es|s)?|Average(?:es|s)?|balance(?:es|s)?|Convert(?:es|s)?|Divisor(?:es|s)?|Formula(?:es|s)?|Isolate(?:es|s)?|justif(?:y|ies)|portion(?:es|s)?|reflect(?:es|s)?|Squared(?:es|s)?|Unknown(?:es|s)?|Whisker(?:es|s)?|factor(?:es|s)?|tenths(?:es|s)?|volume(?:es|s)?|vertex(?:es|s)?|median(?:es|s)?|Expand(?:es|s)?|growth(?:es|s)?|Markup(?:es|s)?|Output(?:es|s)?|puzzle(?:es|s)?|rhythm(?:es|s)?|Skewed(?:es|s)?|Spread(?:es|s)?|Survey(?:es|s)?|x-axis(?:es|s)?|y-axis(?:es|s)?|digit(?:es|s)?|ratio(?:es|s)?|prism(?:es|s)?|Cubed(?:es|s)?|Input(?:es|s)?|Order(?:es|s)?|Range(?:es|s)?|Scale(?:es|s)?|Solve(?:es|s)?|Prime(?:es|s)?|area(?:es|s)?|edge(?:es|s)?|data(?:es|s)?|Apex(?:es|s)?|Axis(?:es|s)?|Base(?:es|s)?|Face(?:es|s)?|gear(?:es|s)?|Mode(?:es|s)?|Peak(?:es|s)?|net(?:es|s)?|LCM(?:es|s)?|MCM(?:es|s)?|GCF(?:es|s)?|MCD(?:es|s)?|GCD(?:es|s)?|LCD(?:es|s)?|IQR(?:es|s)?|RIC(?:es|s)?|MAD(?:es|s)?|DMA(?:es|s)?|DAM(?:es|s)?|KCF(?:es|s)?|MCI(?:es|s)?|Gap(?:es|s)?|Tax(?:es|s)?|Tip(?:es|s)?|SA(?:es|s)?)\\b","lookup":{"understand percent":0,"percent":1,"per hundred":2,"decimal grid":3,"part-to-whole":4,"greater than 100%":5,"equivalent ratio":6,"tape diagram":7,"product":8,"quotient":9,"factor":10,"remainder":11,"digit":12,"multi-digit":13,"prime factorization":14,"greatest common factor":15,"least common multiple":16,"exponent":17,"algorithm":18,"long division":19,"bring down":20,"regroup":21,"place value":22,"estimate":23,"decimal point":24,"numerator":25,"denominator":26,"equivalent":27,"reciprocal":28,"mixed number":29,"decimal":30,"tenth":31,"hundredth":32,"improper fraction":33,"simplify":34,"ratio":35,"unit rate":36,"proportion":37,"variable":38,"expression":39,"coefficient":40,"substitute":41,"inequality":42,"evaluate":43,"like term":44,"integer":45,"absolute value":46,"opposite":47,"coordinate plane":48,"ordered pair":49,"perimeter":50,"volume":51,"surface area":52,"area":53,"triangle":54,"rectangle":55,"parallelogram":56,"trapezoid":57,"rhombu":58,"polygon":59,"prism":60,"pyramid":61,"net":62,"vertex":63,"edge":64,"segment":65,"line segment":66,"median":67,"outlier":68,"interquartile range":69,"mean absolute deviation":70,"keep-change-flip":71,"data":72,"histogram":73,"box plot":74,"dot plot":75,"quartile":76,"frequency":77,"distribution":78,"cluster":79,"scale factor":80,"equivalent expression":81,"equivalent fraction":82,"common factor":83,"common multiple":84,"least common denominator":85,"prime factor":86,"conversion factor":87,"algebraic expression":88,"lcm":89,"mcm":90,"gcf":91,"mcd":92,"gcd":93,"lcd":94,"iqr":95,"ric":96,"mad":97,"dma":98,"dam":99,"sa":100,"kcf":101,"mci":102,"add and subtract decimal":103,"addition property of equality":104,"additive pattern":105,"annex a zero":106,"annex zero":107,"apex":108,"appropriate measures of center":109,"approximately":110,"area of a triangle":111,"area of composite figure":112,"area of parallelogram":113,"area of regular polygon":114,"area of trapezoid":115,"argument":116,"associative property":117,"at least":118,"at least / at most":119,"average":120,"axi":121,"balance":122,"balance point":123,"base":124,"base 1 (b1)":125,"base 2 (b2)":126,"base area":127,"benchmark":128,"benchmark percent":129,"better buy":130,"bilateral symmetry":131,"boundary point":132,"closed circle":133,"colon notation":134,"common denominator":135,"common form":136,"community":137,"community agreement":138,"commutative property":139,"compare and order integer":140,"compare ratio":141,"comparison":142,"compatible number":143,"composite":144,"composite figure":145,"composite number":146,"confidence":147,"congruent":148,"conjecture":149,"constant":150,"constraint":151,"convert":152,"convert measurement unit":153,"convert measurements between system":154,"convert measurements within the same system":155,"coordinate":156,"counterexample":157,"critique":158,"cross-multiply":159,"cubed":160,"cubic unit":161,"customary system":162,"customary unit":163,"data distribution":164,"data set":165,"decimal division algorithm":166,"decimal place":167,"decompose":168,"define the variable":169,"dependent variable":170,"depends on":171,"describe the data using the median":172,"determine the whole given the part and percent":173,"deviation":174,"diagonal":175,"dimension":176,"discount":177,"display data with box plot":178,"display data with histogram":179,"distance":180,"distance between vertice":181,"distance on the coordinate plane":182,"distributive property":183,"divide decimal":184,"divide fraction":185,"divide mixed number":186,"divide multi-digit number":187,"divide whole numbers by fraction":188,"dividend":189,"divisible":190,"division of fraction":191,"division property of equality":192,"divisor":193,"doer of math":194,"double number line":195,"equal sign":196,"equations and inequalities problem solving":197,"equivalent division":198,"evaluate expression":199,"expand":200,"expanded form":201,"extreme value":202,"face":203,"factor an expression":204,"factor pair":205,"factor tree":206,"find factors and multiple":207,"five-number summary":208,"formula":209,"fraction division problem solving":210,"fractions, decimals, and percent":211,"frequency table":212,"gap":213,"gear":214,"generalization":215,"graph inequality":216,"graph on the coordinate plane":217,"graph ratio table":218,"greatest common factor (gcf)":219,"grouping symbol":220,"growth":221,"halfway value":222,"horizontal distance":223,"identity property":224,"independent variable":225,"ingenuity":226,"input":227,"integers and absolute value":228,"interpret":229,"interval":230,"inventory":231,"inverse operation":232,"isolate":233,"justify":234,"keep, change, flip":235,"lateral area":236,"lateral face":237,"least common multiple (lcm)":238,"length, width, height":239,"less than 1%":240,"line of symmetry":241,"linear pattern":242,"magnitude":243,"make sense of a problem":244,"markup":245,"math biography":246,"math story":247,"mean, median, and mode":248,"measure of center":249,"measure of variation":250,"measurement system":251,"metric system":252,"metric unit":253,"middle half":254,"mirror image":255,"mode":256,"multi-step problem":257,"multiplication property of equality":258,"multiplicative inverse":259,"multiply decimal":260,"negative":261,"negative coordinate":262,"negative integer":263,"negative number":264,"no more than":265,"non-statistical question":266,"number line":267,"numerical expression":268,"one-step equation":269,"open circle":270,"opposite of the opposite":271,"order":272,"order of operation":273,"ordered pairs in all four quadrant":274,"organize":275,"output":276,"parallel":277,"part-to-part":278,"pattern rule":279,"pattern unit":280,"peak":281,"per unit":282,"percent of a number":283,"percent problem solving":284,"percents greater than 100% and less than 1%":285,"perpendicular":286,"persevere":287,"portion":288,"positive":289,"positive number":290,"power of ten":291,"powers and exponent":292,"predictability":293,"prime number":294,"problem solving":295,"profession":296,"properties of operation":297,"property":298,"proportional":299,"puzzle":300,"quantity":301,"range":302,"range and interquartile range":303,"rate of change":304,"rates and unit rate":305,"ratio and rate problem solving":306,"ratio reasoning":307,"ratio table":308,"rational number":309,"rational numbers on the number line":310,"reasonable":311,"reasonablenes":312,"rectangular prism":313,"reflect":314,"reflect points across axe":315,"reflection":316,"regular polygon":317,"relationship":318,"repeated multiplication":319,"repetition":320,"represent":321,"representation":322,"rhythm":323,"right trapezoid":324,"rotation":325,"round trip":326,"scale":327,"shape of data distribution":328,"shape of the data":329,"side length":330,"simplest form":331,"simplify algebraic expression":332,"skewed":333,"skip counting":334,"slant height":335,"slanted side":336,"solution":337,"solution set":338,"solve":339,"solve and graph inequality":340,"solve multiplication and division equation":341,"solve one-step addition and subtraction equation":342,"spread":343,"squared":344,"statistical question":345,"statistical questions and data":346,"strategy":347,"strength":348,"subtraction property of equality":349,"surface area of prism":350,"surface area of pyramid":351,"surface area using net":352,"survey":353,"symmetric":354,"symmetry":355,"table of value":356,"target mean":357,"target total":358,"tax":359,"the distributive property":360,"the whole":361,"tip":362,"total part":363,"total price":364,"triangular prism":365,"true statement":366,"two-dimensional":367,"understand ratio":368,"unit cube":369,"unit fraction":370,"unit price":371,"unit rate point":372,"unit rate problem solving":373,"unit ratio":374,"unknown":375,"variability":376,"variation":377,"vertical distance":378,"volume of rectangular prism":379,"volume with whole-number edge":380,"whisker":381,"work backward":382,"write algebraic expression":383,"write and evaluate numerical expressions with exponent":384,"write equation":385,"write inequality":386,"x-axi":387,"x-coordinate":388,"y-axi":389,"associative":117,"commutative":139,"distributive":183,"identity":224,"prime":294,"rational":309}};
 window.__HW_WORKED__ = {"title":"Watch me turn a vote into a percent","titleEs":"Mírame convertir una votación en un porcentaje","lines":["Students voted on a mascot, and 4 out of every 10 voters chose the tiger. I want to know how many that is out of 100.","\"4 out of every 10\" is a ratio, so I write an equivalent ratio with 100 as the second term. Multiplying both terms by 10 gives 40 out of 100.","On a decimal grid of 100 squares, I shade 40 squares — one square for each percent.","40 out of 100 is written 40%. So 40% of the students voted for the tiger."],"linesEs":["Los estudiantes votaron por una mascota, y 4 de cada 10 votantes eligieron al tigre. Quiero saber cuántos son de cada 100.","«4 de cada 10» es una razón, así que escribo una razón equivalente con 100 como segundo término. Multiplicar los dos términos por 10 da 40 de cada 100.","En una cuadrícula decimal de 100 cuadros, sombreo 40 cuadros — un cuadro por cada porcentaje.","40 de cada 100 se escribe 40%. Entonces el 40% de los estudiantes votó por el tigre."]};
 </script>
-<script src="/assets/homework/homework-vocab-3da9690d66.bundle.js"></script>
-<script src="/assets/homework/homework-core-e12f28ae0a.bundle.js"></script>
+<script src="/assets/homework/homework-vocab-12619585d8.bundle.js"></script>
+<script src="/assets/homework/homework-core-4eeaa5cadb.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

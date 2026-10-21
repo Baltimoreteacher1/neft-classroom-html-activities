@@ -22,10 +22,12 @@
  *           text and are ignored. Equality, not substring: a different question
  *           that merely CONTAINS the stem ("The drum loop plays 3⁴ beats. What
  *           is the value of 3⁴?") is a different item.
- *   SCHEMA  `familyCheck`, `familyKeyIdea(+Es)` and `familyLanguages` match the
- *           shape in scripts/lib/family-content.mjs — the same check the
- *           generator fails fast on, so a malformed field is reported here with
- *           its lesson id instead of as a generator crash.
+ *   SCHEMA  `familyCheck` and `familyKeyIdea(+Es)` match the shape in
+ *           scripts/lib/family-content.mjs — the same check the generator fails
+ *           fast on, so a malformed field is reported here with its lesson id
+ *           instead of as a generator crash. It also FAILS if a config carries
+ *           `familyLanguages` (the Arabic / French / Dari machine translations
+ *           deleted 2026-10-21): family surfaces are English and Spanish only.
  *
  * Self-tests run first against fixtures; a sweep that finds zero pages FAILS,
  * because a sweep that checks nothing has verified nothing.
@@ -176,39 +178,21 @@ function selfTest() {
       .length,
     "an out-of-range correctIndex must fail",
   );
-  const vocabulary = [{ term: "Ratio" }, { term: "Rate" }];
-  const lang = (terms) => ({
-    keyIdea: "x",
-    vocabulary: terms.map((term) => ({ term, translation: "t", definition: "d" })),
-  });
+  // "No other languages" tripwire: the key may not come back in any shape.
+  for (const familyLanguages of [{}, { ar: { keyIdea: "x", vocabulary: [] } }, null]) {
+    assert.ok(
+      familyFieldProblems({ familyLanguages }).some((p) => p.includes("familyLanguages")),
+      "a config carrying familyLanguages must fail",
+    );
+  }
   assert.deepEqual(
     familyFieldProblems({
-      vocabulary,
-      familyLanguages: {
-        ar: lang(["Ratio", "Rate"]),
-        fr: lang(["Ratio", "Rate"]),
-        prs: lang(["Ratio", "Rate"]),
-      },
+      vocabulary: [{ term: "Ratio" }],
+      familyKeyIdea: "x",
+      familyKeyIdeaEs: "y",
     }),
     [],
-  );
-  assert.ok(
-    familyFieldProblems({
-      vocabulary,
-      familyLanguages: {
-        ar: lang(["Ratio"]),
-        fr: lang(["Ratio", "Rate"]),
-        prs: lang(["Ratio", "Rate"]),
-      },
-    }).some((p) => p.includes("missing term")),
-    "a language missing a vocabulary term must fail",
-  );
-  assert.ok(
-    familyFieldProblems({
-      vocabulary,
-      familyLanguages: { ar: lang(["Ratio", "Rate"]), fr: lang(["Ratio", "Rate"]) },
-    }).length,
-    "a missing language must fail",
+    "an English + Spanish config is clean",
   );
   assert.ok(
     familyFieldProblems({ familyKeyIdea: "Plain words" }).some((p) =>

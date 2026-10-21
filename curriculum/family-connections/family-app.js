@@ -19,6 +19,9 @@ import {
   resolveSection,
 } from "./shared/model.js";
 import { loadDraft, publishDraft, saveDraft } from "./shared/api-client.js";
+import { normalizeWelcome } from "./shared/family-welcome.js";
+import { readLanguageMode, resolveHubLanguage, writeLanguageMode } from "./shared/hub-language.js";
+import { PRODUCT_NAME } from "./shared/hub-routes.js";
 import {
   addDays,
   familyLink,
@@ -27,6 +30,13 @@ import {
   weekPhase,
 } from "./shared/homework-hub.js";
 const query = new URL(location.href).searchParams;
+function safeStorage() {
+  try {
+    return localStorage;
+  } catch {
+    return null;
+  }
+}
 // Old invitations and Canvas meeting anchors keep their existing destination.
 if (query.has("meeting") || location.hash === "#family-scheduler") {
   location.replace(`/curriculum/family-connections/meetings/${location.search}${location.hash}`);
@@ -36,15 +46,29 @@ let preferences = {};
 try {
   preferences = JSON.parse(localStorage.getItem(key)) || {};
 } catch {}
-let language =
-  query.get("lang") === "es" || (!query.has("lang") && preferences.language === "es") ? "es" : "en";
+const startLanguage = resolveHubLanguage({
+  queryLang: query.get("lang") || "",
+  storedMode: readLanguageMode(safeStorage()),
+  saved: preferences,
+  browserLanguages: navigator.languages?.length ? navigator.languages : [navigator.language || ""],
+});
+let language = startLanguage.language;
+// Only a language the family chose is carried in links; a browser-detected one is a default.
+let languageChosen = startLanguage.chosen;
 let sectionId = query.get("section") || preferences.sectionId || "";
+// "All Families" was saved automatically before the hub recorded choices, so it is not one.
+let classChosen =
+  query.has("section") ||
+  preferences.sectionChosen === true ||
+  Boolean(preferences.sectionId && preferences.sectionId !== "all-families");
+let welcome = normalizeWelcome(null);
 let snapshot = createDefaultSnapshot();
 let publishedWeeks = [];
 let selectedWeek = query.get("week") || "";
 let lessons = [];
 let lessonChoices = [];
 let loaded = false;
+let loadFailed = false;
 let editDraft = null;
 let editDirty = false;
 let editReviewed = false;
@@ -76,6 +100,8 @@ function renderFamilyView() {
   const record = explicit || defaultHomeworkWeek(weeks);
   renderHomeworkHub(root, snapshotForWeek(snapshot, record), lessons, sectionId, language, {
     archive: Boolean(explicit),
+    linkLang: languageChosen ? language : "",
+    welcome,
   });
   if (weeks.length) {
     const nav = document.createElement("div");
@@ -215,11 +241,10 @@ function renderEditor() {
     list.append(row);
   }
 }
-function render() {
+/* Everything on the page that is not the week itself: it needs no data, so the
+   family's language shows from the first paint instead of after the fetch. */
+function renderChrome() {
   const es = language === "es";
-  const visible = editDraft || snapshot;
-  const section = resolveSection(visible, sectionId);
-  sectionId = section.id;
   document.documentElement.lang = language;
   document.documentElement.classList.toggle("large-text", Boolean(preferences.largeText));
   document.body.classList.toggle("large-text", Boolean(preferences.largeText));
@@ -231,18 +256,40 @@ function render() {
     : es
       ? "Una nota semanal del Sr. Neft"
       : "A weekly note from Mr. Neft";
-  byId("hub-title").textContent = es ? "Tareas para la familia" : "Family homework";
+  byId("hub-title").textContent = editRequested
+    ? es
+      ? "Tareas para la familia"
+      : "Family homework"
+    : PRODUCT_NAME[language];
   byId("hub-intro").textContent = es
     ? editRequested
       ? "Elige las tareas que las familias verán cada noche."
-      : "Un lugar para ver las tareas de matemáticas de cada noche escolar."
+      : "Unos minutos de matemáticas en casa. Opcional. Sin calificaciones."
     : editRequested
       ? "Choose the homework families will see each night."
-      : "One place to see the math homework for each school night.";
-  byId("class-label").textContent = es ? "Clase" : "Class";
+      : "A few minutes of math at home. Optional. No grades.";
+  if (!editRequested) document.title = `${PRODUCT_NAME[language]} · EduWonderLab`;
+  byId("class-label").textContent = editRequested
+    ? es
+      ? "Clase"
+      : "Class"
+    : es
+      ? "Elige tu clase"
+      : "Pick your class";
   byId("display-options-label").textContent = es ? "Opciones de lectura" : "Display options";
-  byId("language-toggle").textContent = es ? "English" : "Español";
-  byId("language-toggle").setAttribute("aria-pressed", String(es));
+  const legacyToggle = byId("language-toggle");
+  if (legacyToggle) {
+    legacyToggle.textContent = es ? "English" : "Español";
+    legacyToggle.setAttribute("aria-pressed", String(es));
+  }
+  for (const button of document.querySelectorAll("#language-switch [data-lang]"))
+    button.setAttribute("aria-pressed", String(button.dataset.lang === language));
+  const languageLabel = byId("language-label");
+  if (languageLabel) languageLabel.textContent = "Language / Idioma";
+  if (!loaded && !loadFailed)
+    byId("family-status").textContent = es
+      ? "Cargando la tarea de esta semana…"
+      : "Loading this week’s homework…";
   byId("text-size-toggle").textContent = es ? "Texto grande" : "Larger text";
   byId("contrast-toggle").textContent = es ? "Contraste" : "Contrast";
   byId("text-size-toggle").setAttribute("aria-pressed", String(Boolean(preferences.largeText)));
@@ -257,11 +304,29 @@ function render() {
   byId("teacher-access").href = editRequested
     ? familyLink(sectionId, language, location.origin)
     : editorLoginUrl();
-  byId("section-select").replaceChildren(
-    ...visible.sections
-      .filter((s) => s.visible !== false)
-      .map((s) => new Option(s.label, s.id, false, s.id === sectionId)),
-  );
+}
+function render() {
+  const es = language === "es";
+  const visible = editDraft || snapshot;
+  const section = resolveSection(visible, sectionId);
+  sectionId = section.id;
+  renderChrome();
+  const classes = visible.sections.filter((s) => s.visible !== false);
+  const needsClass = !editRequested && !classChosen && classes.some((s) => !s.isDefault);
+  const options = classes.map((s) => new Option(s.label, s.id, false, !needsClass && s.id === sectionId));
+  if (needsClass) {
+    const placeholder = new Option(es ? "Elige tu clase" : "Pick your class", "", true, true);
+    placeholder.disabled = true;
+    options.unshift(placeholder);
+  }
+  byId("section-select").replaceChildren(...options);
+  const classHint = byId("class-hint");
+  if (classHint) classHint.hidden = !needsClass;
+  if (classHint) classHint.textContent = needsClass
+    ? es
+      ? `Elige tu clase (${classes.filter((s) => !s.isDefault).map((s) => s.label).join(", ")}) para ver tu tarea. Recordamos tu elección en este dispositivo. “${classes.find((s) => s.isDefault)?.label ?? ""}” muestra los avisos de todas las clases.`
+      : `Pick your class (${classes.filter((s) => !s.isDefault).map((s) => s.label).join(", ")}) to see your homework. We remember your choice on this device. “${classes.find((s) => s.isDefault)?.label ?? ""}” shows notes for every class.`
+    : "";
   const classLink = byId("class-link");
   if (classLink) classLink.replaceChildren();
   if (classLink && !editRequested && section.id !== "all-families") {
@@ -282,7 +347,10 @@ function render() {
   }
   if (editDraft) renderEditor();
   renderFamilyView();
-  preferences = { ...preferences, language, sectionId };
+  preferences = { ...preferences, sectionId, sectionChosen: classChosen };
+  // The hub's own language is only remembered once a family chose it; a
+  // browser-detected default must stay a default.
+  if (languageChosen) preferences = { ...preferences, language, languageChosen: true };
   try {
     localStorage.setItem(key, JSON.stringify(preferences));
   } catch {}
@@ -299,14 +367,23 @@ function render() {
 }
 byId("section-select").addEventListener("change", (e) => {
   sectionId = e.target.value;
+  classChosen = true;
   selectedWeek = "";
   editReviewed = false;
   render();
 });
-byId("language-toggle").addEventListener("click", () => {
-  language = language === "en" ? "es" : "en";
+function chooseLanguage(next) {
+  language = next;
+  languageChosen = true;
+  // The lesson pages read this key, so the choice follows the family there.
+  writeLanguageMode(safeStorage(), next);
   render();
-});
+}
+for (const button of document.querySelectorAll("#language-switch [data-lang]"))
+  button.addEventListener("click", () => chooseLanguage(button.dataset.lang));
+byId("language-toggle")?.addEventListener("click", () =>
+  chooseLanguage(language === "en" ? "es" : "en"),
+);
 byId("text-size-toggle").addEventListener("click", () => {
   preferences.largeText = !preferences.largeText;
   render();
@@ -424,6 +501,11 @@ window.addEventListener("beforeunload", (event) => {
 });
 async function load() {
   try {
+    // Mr. Neft's optional weekly note rides alongside; it is read through the
+    // shared one-request-per-file cache and can never block or break the hub.
+    const welcomeRequest =
+      window.NTJsonCache?.json("/data/family-welcome.json").catch(() => null) ??
+      Promise.resolve(null);
     const [manifestResponse, publishedResponse] = await Promise.all([
       fetch("/data/curriculum-manifest.json"),
       fetch("/api/family-connections/published", { cache: "no-store" }),
@@ -437,6 +519,7 @@ async function load() {
     // End-of-unit family homework pages are assignable alongside lessons.
     lessons = [...(manifest.lessons || []), ...(manifest.familyHomework || [])];
     lessonChoices = normalizeLessons(lessons);
+    welcome = normalizeWelcome(await welcomeRequest);
     loaded = true;
     byId("family-status").textContent = "";
     render();
@@ -451,6 +534,7 @@ async function load() {
       }
     }
   } catch {
+    loadFailed = true;
     render();
     byId("family-status").textContent =
       language === "es"
@@ -460,4 +544,5 @@ async function load() {
 }
 // Update the old service worker once so it can remove its own stale caches.
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(() => {});
+renderChrome();
 load();

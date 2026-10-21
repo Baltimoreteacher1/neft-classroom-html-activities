@@ -129,11 +129,14 @@ if (!existsSync(indexPath)) {
 } else {
   const indexHtml = readFileSync(indexPath, "utf8");
   assertIncludes(indexHtml, "Family Math Support", "families/index.html");
-  assertIncludes(
-    indexHtml,
-    "Grade 6 Math help for families, parents, and guardians.",
-    "families/index.html",
-  );
+  // The plain promise line, in both languages (data/family-landing-units.json).
+  const landing = readJson(join(root, "data", "family-landing-units.json"));
+  assertIncludes(indexHtml, htmlEsc(landing.promise.en), "families/index.html");
+  assertIncludes(indexHtml, htmlEsc(landing.promise.es), "families/index.html");
+  assertIncludes(indexHtml, "Estudio familiar de matemáticas", "families/index.html");
+  assertIncludes(indexHtml, 'href="/curriculum/family-connections/"', "families/index.html");
+  assertIncludes(indexHtml, 'data-set-lang="en"', "families/index.html");
+  assertIncludes(indexHtml, 'data-set-lang="es"', "families/index.html");
   assertIncludes(indexHtml, "family-search", "families/index.html");
   assertIncludes(indexHtml, "unit-filter", "families/index.html");
   assertIncludes(indexHtml, "topic-filter", "families/index.html");
@@ -181,6 +184,16 @@ for (const lessonId of expectedIds) {
     `families/lessons/${lessonId}/index.html`,
   );
   assertIncludes(pageHtml, htmlEsc(data?.titleEs), `families/lessons/${lessonId}/index.html`);
+  assertIncludes(
+    pageHtml,
+    "Family Math Studio · Lesson guide",
+    `families/lessons/${lessonId}/index.html`,
+  );
+  assertIncludes(
+    pageHtml,
+    `href="/lessons/${lessonId}/homework.html"`,
+    `families/lessons/${lessonId}/index.html`,
+  );
   for (const field of ["learningTonight", "bigIdea"]) {
     for (const lang of ["en", "es"]) {
       if (!data?.support?.[field]?.[lang]) fail(`Lesson ${lessonId} lacks ${lang} ${field}`);

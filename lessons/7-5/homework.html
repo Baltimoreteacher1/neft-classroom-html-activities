@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Help Your Student — Lesson 7-5: Represent Rational Numbers on the Coordinate Plane</title>
+<title>Family Math Studio — Lesson 7-5: Represent Rational Numbers on the Coordinate Plane</title>
 <link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/homework/homework-base-0d2a228add.css">
 <style>
@@ -114,26 +114,6 @@ header.homework-header,
   user-select: none;
 }
 
-/* 3 Stars Milestone Bar on Quick Check */
-.stars-to-win-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, var(--teal-light) 0%, #ffffff 100%);
-  border: 1.5px solid var(--teal);
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  margin-bottom: 20px;
-}
-.stars-to-win-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 14.5px;
-  color: var(--navy);
-}
 .stars-milestone-chips {
   display: flex;
   flex-wrap: wrap;
@@ -152,16 +132,7 @@ header.homework-header,
   flex: 0 0 auto;
   white-space: nowrap;
 }
-/* On a phone the goal sentence and the three milestone chips do not fit on one
-   line, so they stack instead of fighting for the same 400px. */
-@media (max-width: 620px) {
-  .stars-to-win-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .stars-milestone-chips { width: 100%; }
-}
+.stars-milestone-chips { width: 100%; }
 
 /* Rotated Huddle Activity Card */
 .huddle-hook-banner {
@@ -333,7 +304,7 @@ header.homework-header,
   margin-bottom: 3px;
 }
 </style>
-<link rel="stylesheet" href="/assets/homework/homework-layer-205c995f26.css">
+<link rel="stylesheet" href="/assets/homework/homework-layer-992d934c32.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -347,16 +318,17 @@ header.homework-header,
   <link rel="apple-touch-icon" href="/assets/favicon.svg">
   <meta name="theme-color" content="#12355b">
   <link rel="canonical" href="https://eduwonderlab.com/lessons/7-5/homework.html">
-  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 7-5: Represent Rational Numbers on the Coordinate Plane.">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 7-5: Represent Rational Numbers on the Coordinate Plane.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Neft Teacher">
-  <meta property="og:title" content="Help Your Student — Lesson 7-5: Represent Rational Numbers on the Coordinate Plane">
-  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 7-5: Represent Rational Numbers on the Coordinate Plane.">
+  <meta property="og:title" content="Family Math Studio — Lesson 7-5: Represent Rational Numbers on the Coordinate Plane">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 7-5: Represent Rational Numbers on the Coordinate Plane.">
   <meta property="og:url" content="https://eduwonderlab.com/lessons/7-5/homework.html">
   <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
   <!-- enthead-injected:end -->
 </head>
 <body>
+<a class="hw-skip" href="#hw_tab_panels" onclick="startHomework(); return false;"><span class="lang-en">Skip to tonight's math</span><span class="lang-es" lang="es">Ir a la matemática de hoy</span></a>
 
 <script>
 /* Language mode, BEFORE first paint. restoreParentSignoff sets the same class
@@ -365,10 +337,29 @@ header.homework-header,
    whole document. Same rule as the boot script below it: fail toward showing
    something readable, which here is English. */
 (function () {
-  var mode = 'en';
+  /* Blocked site data makes every localStorage access throw, which would stop the
+     page's own startup. Fall back to storage that lasts for this visit. */
   try {
+    window.localStorage.getItem('hw_probe');
+  } catch (blocked) {
+    var memory = {};
+    var stand = {
+      getItem: function (k) { return Object.prototype.hasOwnProperty.call(memory, k) ? memory[k] : null; },
+      setItem: function (k, v) { memory[k] = String(v); },
+      removeItem: function (k) { delete memory[k]; },
+      clear: function () { memory = {}; },
+      key: function (i) { return Object.keys(memory)[i] || null; },
+      get length() { return Object.keys(memory).length; }
+    };
+    try { Object.defineProperty(window, 'localStorage', { configurable: true, get: function () { return stand; } }); } catch (unsupported) {}
+  }
+  var mode = 'bilingual';
+  try {
+    var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
+    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
+      mode = requested;
+    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)
@@ -423,6 +414,23 @@ header.homework-header,
     <header class="hw-hero" aria-label="Family Math Night welcome">
       <div class="hw-hero-glow" aria-hidden="true"></div>
       <div class="hw-hero-body">
+        <div class="hw-hero-controls">
+          <div class="lang-selector-card">
+            <span class="lang-selector-title">Language / Idioma</span>
+            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
+              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
+                🇺🇸🇪🇸 <span class="lang-btn-long">Bilingual / Bilingüe</span><span class="lang-btn-short">EN + ES</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
+                🇺🇸 <span>English</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
+                🇪🇸 <span>Español</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <p class="hw-hero-kicker">
           <span class="hw-hero-kicker-icon" aria-hidden="true">📘</span>
           <span class="lang-en">Unit 7 · Integers, Rational Numbers, and the Coordinate Plane</span>
@@ -443,39 +451,25 @@ header.homework-header,
         </p>
 
         <nav class="hw-session-banner" aria-label="Two-session lesson" data-session="1">
-    <ol class="hw-session-steps"><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span></span></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-next"><a class="hw-session-chip" href="/lessons/7-5-part2/homework.html"><span class="hw-session-mark" aria-hidden="true">○</span><span class="hw-session-name"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span></a></li></ol>
+    <ol class="hw-session-steps"><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span><span class="hw-session-short"><span class="lang-en">Session 1</span><span class="lang-es" lang="es">Sesión 1</span></span></span></span></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-next"><a class="hw-session-chip" href="/lessons/7-5-part2/homework.html"><span class="hw-session-mark" aria-hidden="true">○</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span><span class="hw-session-short"><span class="lang-en">Session 2</span><span class="lang-es" lang="es">Sesión 2</span></span></span></a></li></ol>
     <p class="hw-session-sentence"><strong><span class="lang-en">Coming up next:</span><span class="lang-es" lang="es">Lo que sigue:</span></strong> <span class="lang-en">In Session 2, we reflect points across the x-axis and the y-axis — and see exactly which coordinate changes sign.</span><span class="lang-es" lang="es">En la Sesión 2, reflejamos puntos sobre el eje x y el eje y — y vemos exactamente qué coordenada cambia de signo.</span> <span class="lang-en">It builds on today’s model. Open it when it is assigned.</span><span class="lang-es" lang="es">Se basa en el modelo de hoy. Ábranla cuando se las asignen.</span></p>
   </nav>
 
         <p class="hw-hero-bigidea" aria-label="Big idea">
-          <span class="hw-hero-bigidea-label"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
+          <span class="hw-hero-bigidea-label hw-inline"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
           <span class="lang-en">Tonight we plot points on a grid called the coordinate plane. We use two numbers, called an ordered pair, to say exactly where a point goes.</span><span class="lang-es" lang="es">Esta noche marcamos puntos en una cuadrícula llamada plano cartesiano. Usamos dos números, llamados par ordenado, para decir exactamente dónde va un punto.</span>
         </p>
-
-        <div class="hw-hero-controls">
-          <div class="lang-selector-card">
-            <span class="lang-selector-title">Language / Idioma</span>
-            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
-              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
-                🇺🇸🇪🇸 <span>Bilingual / Bilingüe</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
-                🇺🇸 <span>English</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
-                🇪🇸 <span>Español</span>
-              </button>
-            </div>
-          </div>
-        </div>
 
         <p class="hw-hero-lead">
           <span class="lang-en">Optional, ungraded practice. Work with someone or on your own; no adult signature is needed.</span>
           <span class="lang-es" lang="es">Práctica opcional, sin calificación. Trabaja con alguien o a solas; no necesitas la firma de un adulto.</span>
         </p>
 
-        <ul class="hw-hero-stats" aria-label="What tonight looks like">
-          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">5</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">5</span> paradas</span></li>
+
+        <ul class="hw-tonight hw-inline" aria-label="Tonight at a glance">
+          <li><span aria-hidden="true">⏱</span> <strong><span data-hw-tonight-time>20–30</span> min</strong></li>
+          <li><span aria-hidden="true">✏️</span> <span class="lang-en">Pencil and paper</span><span class="lang-es" lang="es">Lápiz y papel</span></li>
+          <li><span aria-hidden="true">🎯</span> <span class="lang-en">Goal:</span><span class="lang-es" lang="es">Meta:</span> <strong><span data-hw-goal-count>4</span> <span class="lang-en">problems</span><span class="lang-es" lang="es">problemas</span></strong></li>
         </ul>
 
 
@@ -483,30 +477,31 @@ header.homework-header,
         <div class="hw-route-heading">
           <span class="hw-route-icon" aria-hidden="true">🧭</span>
           <div>
-            <h2 id="hw_route_title"><span class="lang-en">Choose a practice path</span><span class="lang-es" lang="es">Elige una ruta de práctica</span></h2>
-            <p><span class="lang-en">All practice is optional and ungraded. Choose the time that works for your family; your route choice is saved on this device.</span><span class="lang-es" lang="es">Toda la práctica es opcional y no lleva calificación. Elijan el tiempo que les funcione; la ruta queda guardada en este dispositivo.</span></p>
+            <h2 id="hw_route_title" class="hw-inline"><span class="lang-en">How much time do you have tonight?</span><span class="lang-es" lang="es">¿Cuánto tiempo tienen esta noche?</span></h2>
+            <p class="hw-inline"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
           </div>
         </div>
-        <div class="hw-route-options" role="group" aria-label="Choose a practice path" data-aria-en="Choose a practice path" data-aria-es="Elige una ruta de práctica">
+        <div class="hw-route-options" role="group" aria-label="How much time do you have tonight?" data-aria-en="How much time do you have tonight?" data-aria-es="¿Cuánto tiempo tienen esta noche?">
           <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
-            <span class="hw-route-time">5–10 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Quick practice</span><span class="lang-es" lang="es">Práctica breve</span></strong><small><span class="lang-en">One example, 2 problems, and one explanation.</span><span class="lang-es" lang="es">Un ejemplo, 2 problemas y una explicación.</span></small></span>
+            <span class="hw-route-time">5–10 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Quick</span><span class="lang-es" lang="es">Rápida</span></strong><small><span class="lang-en">One example and 2 problems.</span><span class="lang-es" lang="es">Un ejemplo y 2 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
-            <span class="hw-route-time">15–20 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Learn, explore key words, practice <span data-hw-core-count>6</span> problems, and explain.</span><span class="lang-es" lang="es">Aprende, explora palabras clave, practica <span data-hw-core-count>6</span> problemas y explica.</span></small></span>
+            <span class="hw-route-time">15–20 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Key words, then practice. Goal: 4 problems.</span><span class="lang-es" lang="es">Palabras clave y práctica. Meta: 4 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option is-active" data-route-mode="full" aria-pressed="true" onclick="setHomeworkRoute('full')">
-            <span class="hw-route-time">20–30 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Family Math Studio</span><span class="lang-es" lang="es">Estudio familiar de matemáticas</span></strong><small><span class="lang-en">Add one home mission and one math game. Go at your own pace.</span><span class="lang-es" lang="es">Agrega una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span></small></span>
+            <span class="hw-route-time">20–30 <small>min</small></span>
+            <span class="hw-route-badge"><span aria-hidden="true">★</span><span class="hw-sr-only"><span class="lang-en">Recommended</span><span class="lang-es" lang="es">Recomendada</span></span></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Full Studio</span><span class="lang-es" lang="es">Estudio completo</span></strong><small><span class="lang-en">Everything, plus a home mission and a game.</span><span class="lang-es" lang="es">Todo, más una misión en casa y un juego.</span></small></span>
           </button>
         </div>
         <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Family Math Studio selected: <span data-hw-core-count>6</span> problems, key words, one home mission, and one math game. Go at your own pace.</span>
-          <span class="lang-es" lang="es">Estudio familiar seleccionado: <span data-hw-core-count>6</span> problemas, palabras clave, una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span>
+          <span class="lang-en">Full Studio (recommended): everything, plus one home mission and one game. Everything is optional.</span>
+          <span class="lang-es" lang="es">Estudio completo (recomendada): todo, más una misión en casa y un juego. Todo es opcional.</span>
         </p>
         <p id="hw_resume_note" role="status" aria-live="polite"></p>
-        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start this path</span><span class="lang-es" lang="es">Empezar esta ruta</span></button>
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
       </section>
 
         <details class="hw-tools-menu"><summary><span class="lang-en">Tools: scratchpad, share, print &amp; standard</span><span class="lang-es" lang="es">Herramientas: pizarra, compartir, imprimir y estándar</span></summary>
@@ -659,15 +654,39 @@ header.homework-header,
           <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Representar en el plano de coordenadas</li><li>Plano cartesiano</li><li>Par ordenado</li></ul></div>
         </div>
       </div>
-
-      <div class="parent-quick-card">
-        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
-        <ul>
-          <li><span aria-hidden="true">💬</span> <strong><span class="lang-en">If they get stuck, ask:</span><span class="lang-es" lang="es">Si se atora, pregunten:</span></strong> <span class="lang-en">Which number tells how far to go sideways? Which tells how far to go up?</span><span class="lang-es" lang="es">¿Cuál número dice cuánto ir hacia el lado? ¿Cuál dice cuánto subir?</span></li>
-          <li><span aria-hidden="true">🚫</span> <strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">Move up first, then sideways.</span><span class="lang-es" lang="es">Muévete hacia arriba primero, luego de lado.</span></li>
-        </ul>
-      </div>
     </div>
+
+      <section class="hw-confidence" id="hw_conf_before" data-conf-phase="before" aria-labelledby="hw_conf_before_title">
+        <h3 id="hw_conf_before_title"><span class="lang-en">How sure do you feel about today&#039;s math?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes con la matemática de hoy?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_before_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="before" onclick="hwSetConfidence('before', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="before" onclick="hwSetConfidence('before', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="before" onclick="hwSetConfidence('before', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Just for you. It stays on this device. We ask again at the end.</span><span class="lang-es" lang="es">Solo para ti. Se queda en este dispositivo. Preguntamos otra vez al final.</span></p>
+
+      </section>
+
+      <section class="hw-mystery" id="hw_mystery" data-problem="problem_11" aria-labelledby="hw_mystery_title">
+        <span class="hw-mystery-lock" id="hw_mystery_lock" aria-hidden="true">🔒</span>
+        <div class="hw-mystery-body">
+          <p class="hw-eyebrow hw-inline"><span class="lang-en">Tonight&#039;s mystery challenge</span><span class="lang-es" lang="es">El reto misterioso de hoy</span></p>
+          <h3 id="hw_mystery_title"><span class="lang-en">Can you crack this before tonight is over?</span><span class="lang-es" lang="es">¿Puedes resolver esto antes de terminar hoy?</span></h3>
+          <p class="hw-mystery-stem"><span class="lang-en">Spot 1 — Captain Vega&#039;s first clue says the Sandy Dock is right 7 and up 2 from the origin. Which ordered pair names the Sandy Dock?</span><span class="lang-es" lang="es">Punto 1: la primera pista de la capitana Vega dice que el Muelle de Arena está 7 a la derecha y 2 hacia arriba desde el origen. ¿Qué par ordenado nombra el Muelle de Arena?</span></p>
+          <p class="hw-mystery-status" id="hw_mystery_status" role="status" aria-live="polite">
+            <span class="lang-en">Locked. Finish <span data-hw-goal-count>4</span> problems and it opens.</span>
+            <span class="lang-es" lang="es">Bloqueado. Termina <span data-hw-goal-count>4</span> problemas y se abre.</span>
+          </p>
+          <button type="button" class="hw-mystery-open" id="hw_mystery_open" hidden onclick="hwOpenMystery()">
+            <span class="lang-en">Open the mystery challenge ➔</span><span class="lang-es" lang="es">Abrir el reto misterioso ➔</span>
+          </button>
+        </div>
+      </section>
       <div class="learn-big-idea-block" id="hw_learn_idea">
 
       <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span> <button type="button" class="btn-listen-concept" onclick="speakBigIdea(&quot;An ordered pair (x, y) is like map directions. The first number tells you how far to move sideways. The second number tells you how far to move up. You always start at the center, called the origin.&quot;, &quot;Un par ordenado (x, y) es como las indicaciones de un mapa. El primer número dice cuánto moverse de lado. El segundo número dice cuánto subir. Siempre empiezas en el centro, llamado origen.&quot;)" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button></h2>
@@ -870,18 +889,24 @@ header.homework-header,
       </div>
     </details>
       <div class="learn-extended-block" id="hw_learn_quick">
-    <details class="parent-coaching-drawer">
-      <summary class="parent-coaching-summary">
-        <span class="summary-left">
-          <span class="summary-icon">💡</span>
-          <span class="summary-text">
-            <strong><span class="lang-en">Parent Coaching Tips &amp; Real-World Connection</span><span class="lang-es" lang="es">Consejos para Padres y Conexión Real</span></strong>
-            <small><span class="lang-en">Tap to view coaching questions, common traps &amp; everyday examples</span><span class="lang-es" lang="es">Toca para ver preguntas guía, errores comunes y ejemplos</span></small>
-          </span>
+    <details class="hw-grownup" id="hw_grownup">
+      <summary>
+        <span class="hw-grownup-icon" aria-hidden="true">👪</span>
+        <span class="hw-grownup-text hw-stack">
+          <strong class="hw-stack"><span class="lang-en">For the grown-up · 1 minute</span><span class="lang-es" lang="es">Para el adulto · 1 minuto</span></strong>
+          <small class="hw-stack"><span class="lang-en">Ask: Which number tells how far to go sideways? Which tells how far to go up?</span><span class="lang-es" lang="es">Pregunta: ¿Cuál número dice cuánto ir hacia el lado? ¿Cuál dice cuánto subir?</span></small>
         </span>
-        <span class="summary-chevron" aria-hidden="true">▾</span>
+        <span class="hw-grownup-chev" aria-hidden="true">▾</span>
       </summary>
-      <div class="parent-coaching-content">
+      <div class="hw-grownup-body">
+
+      <div class="parent-quick-card">
+        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
+        <ul>
+          <li><span aria-hidden="true">💬</span> <strong><span class="lang-en">If they get stuck, ask:</span><span class="lang-es" lang="es">Si se atora, pregunten:</span></strong> <span class="lang-en">Which number tells how far to go sideways? Which tells how far to go up?</span><span class="lang-es" lang="es">¿Cuál número dice cuánto ir hacia el lado? ¿Cuál dice cuánto subir?</span></li>
+          <li><span aria-hidden="true">🚫</span> <strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">Move up first, then sideways.</span><span class="lang-es" lang="es">Muévete hacia arriba primero, luego de lado.</span></li>
+        </ul>
+      </div>
 
     <div class="real-world-spotlight card-ish">
       <div class="spotlight-badge"><span class="spotlight-icon" aria-hidden="true">🗺️</span> <span><span class="lang-en">WHY THIS MATTERS</span><span class="lang-es" lang="es">¿POR QUÉ IMPORTA?</span></span></div>
@@ -1023,7 +1048,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Graph on the Coordinate Plane&quot;, &quot;Representar en el plano de coordenadas&quot;)" title="Listen / Escuchar" aria-label="Pronounce Graph on the Coordinate Plane">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/concept-graph-on-the-coordinate-plane.svg" alt="Illustration of Graph on the Coordinate Plane: Plot a point by moving horizontally to its x-coordinate and vertically to its y-coordinate." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/concept-graph-on-the-coordinate-plane.svg" alt="Illustration of Graph on the Coordinate Plane: Mark a point: go across first, then up or down." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1049,8 +1074,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Representar en el plano de coordenadas</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">Plot a point by moving horizontally to its x-coordinate and vertically to its y-coordinate.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Ubicar un punto moviéndose horizontalmente hasta su coordenada x y verticalmente hasta su coordenada y.</p>
+                    <p class="vocab-def">Mark a point: go across first, then up or down.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Marcar un punto: primero a lo ancho, luego arriba o abajo.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>For (3, −2), move right 3 and down 2.</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1071,7 +1096,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Coordinate plane&quot;, &quot;Plano cartesiano&quot;)" title="Listen / Escuchar" aria-label="Pronounce Coordinate plane">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/coordinate-plane.svg" alt="Illustration of Coordinate plane: A grid with a line going across and a line going up to plot points." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/coordinate-plane.svg" alt="Illustration of Coordinate plane: A flat grid for placing points with two numbers." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1097,8 +1122,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Plano cartesiano</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A grid with a line going across and a line going up to plot points.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una cuadrícula con una línea horizontal y una vertical para marcar puntos.</p>
+                    <p class="vocab-def">A flat grid for placing points with two numbers.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una cuadrícula plana para ubicar puntos con dos números.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>A grid with a horizontal line (x-axis) crossing a vertical line (y-axis), making four sections</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1119,7 +1144,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Ordered pair&quot;, &quot;Par ordenado&quot;)" title="Listen / Escuchar" aria-label="Pronounce Ordered pair">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/ordered-pair.svg" alt="Illustration of Ordered pair: Two numbers (x, y) that tell where a point is on a grid." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/ordered-pair.svg" alt="Illustration of Ordered pair: Two numbers (x, y) that tell where a point is." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1145,8 +1170,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Par ordenado</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">Two numbers (x, y) that tell where a point is on a grid.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Dos números (x, y) que dicen dónde está un punto en una cuadrícula.</p>
+                    <p class="vocab-def">Two numbers (x, y) that tell where a point is.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Dos números (x, y) que dicen dónde está un punto.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>(3, 5) means move right 3 from the origin, then up 5</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1167,7 +1192,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Origin&quot;, &quot;Origen&quot;)" title="Listen / Escuchar" aria-label="Pronounce Origin">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/origin.svg" alt="Illustration of Origin: The point (0, 0) where the two grid lines cross." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/origin.svg" alt="Illustration of Origin: The point (0, 0), where the two number lines cross." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1193,8 +1218,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Origen</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">The point (0, 0) where the two grid lines cross.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> El punto (0, 0) donde se cruzan las dos líneas de la cuadrícula.</p>
+                    <p class="vocab-def">The point (0, 0), where the two number lines cross.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> El punto (0, 0), donde se cruzan las dos rectas numéricas.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>The starting point at the center where both axes cross — (0, 0)</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1215,7 +1240,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Quadrant&quot;, &quot;Cuadrante&quot;)" title="Listen / Escuchar" aria-label="Pronounce Quadrant">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/quadrant.svg" alt="Illustration of Quadrant: One of the four parts of a coordinate grid, numbered I to IV." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/quadrant.svg" alt="Illustration of Quadrant: One of the four parts of a coordinate grid." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1241,8 +1266,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Cuadrante</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">One of the four parts of a coordinate grid, numbered I to IV.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una de las cuatro partes de una cuadrícula de coordenadas, numeradas I a IV.</p>
+                    <p class="vocab-def">One of the four parts of a coordinate grid.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una de las cuatro partes de una cuadrícula de coordenadas.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>I (+,+) top-right, II (-,+) top-left, III (-,-) bottom-left, IV (+,-) bottom-right</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1263,7 +1288,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Reflection&quot;, &quot;Reflexión&quot;)" title="Listen / Escuchar" aria-label="Pronounce Reflection">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/reflection.svg" alt="Illustration of Reflection: A flipped, mirror image across a line." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/reflection.svg" alt="Illustration of Reflection: A flip of a shape across a line." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1289,8 +1314,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Reflexión</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A flipped, mirror image across a line.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una imagen reflejada al otro lado de una línea.</p>
+                    <p class="vocab-def">A flip of a shape across a line.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una figura volteada al otro lado de una línea.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>(3, 2) reflected over the x-axis becomes (3, -2) — same x, opposite y</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1311,7 +1336,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Integer&quot;, &quot;Número entero&quot;)" title="Listen / Escuchar" aria-label="Pronounce Integer">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/integer.svg" alt="Illustration of Integer: Whole numbers and their opposites, like -2, -1, 0, 1, 2." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/integer.svg" alt="Illustration of Integer: A whole number or its opposite, like 2 and −2." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1337,8 +1362,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Número entero</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">Whole numbers and their opposites, like -2, -1, 0, 1, 2.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Números enteros y sus opuestos, como -2, -1, 0, 1, 2.</p>
+                    <p class="vocab-def">A whole number or its opposite, like 2 and −2.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un número de contar, su opuesto o el cero, como 2, −2 y 0.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>..., -3, -2, -1, 0, 1, 2, 3, ...</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1359,7 +1384,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;x-coordinate&quot;, &quot;Coordenada x&quot;)" title="Listen / Escuchar" aria-label="Pronounce x-coordinate">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/ordered-pair.svg" alt="Illustration of x-coordinate: The first number in an ordered pair; how far right or left." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/ordered-pair.svg" alt="Illustration of x-coordinate: The first number in a pair. It tells left or right." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1385,8 +1410,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Coordenada x</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">The first number in an ordered pair; how far right or left.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> El primer número de un par ordenado; cuánto hacia la derecha o la izquierda.</p>
+                    <p class="vocab-def">The first number in a pair. It tells left or right.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> El primer número de un par. Dice cuánto a la derecha o izquierda.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>In (−3, 4), the x-coordinate is −3.</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1407,7 +1432,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;x-axis&quot;, &quot;Eje x&quot;)" title="Listen / Escuchar" aria-label="Pronounce x-axis">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/axis.svg" alt="Illustration of x-axis: The horizontal number line through the origin." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/axis.svg" alt="Illustration of x-axis: The number line that goes left to right." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1433,8 +1458,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Eje x</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">The horizontal number line through the origin.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> La recta numérica horizontal que pasa por el origen.</p>
+                    <p class="vocab-def">The number line that goes left to right.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> La recta numérica que va de izquierda a derecha.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>Runs left and right.</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1455,7 +1480,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;y-axis&quot;, &quot;Eje y&quot;)" title="Listen / Escuchar" aria-label="Pronounce y-axis">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/axis.svg" alt="Illustration of y-axis: The vertical number line through the origin." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/axis.svg" alt="Illustration of y-axis: The number line that goes up and down." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1481,8 +1506,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Eje y</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">The vertical number line through the origin.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> La recta numérica vertical que pasa por el origen.</p>
+                    <p class="vocab-def">The number line that goes up and down.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> La recta numérica que va hacia arriba y abajo.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>Runs up and down.</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1516,7 +1541,7 @@ header.homework-header,
         <p class="vq-done-score"><span class="lang-en">First-try stars:</span><span class="lang-es" lang="es">Estrellas al primer intento:</span> <strong id="vocab_quiz_score"></strong></p>
         <button type="button" class="btn btn-secondary" onclick="startVocabQuiz()"><span class="lang-en">Play again 🔄</span><span class="lang-es" lang="es">Jugar de nuevo 🔄</span></button>
       </div>
-      <script type="application/json" id="vocab_quiz_data">[{"term":"Graph on the Coordinate Plane","termEs":"Representar en el plano de coordenadas","def":"Plot a point by moving horizontally to its x-coordinate and vertically to its y-coordinate.","defEs":"Ubicar un punto moviéndose horizontalmente hasta su coordenada x y verticalmente hasta su coordenada y.","img":"/assets/vocab-images/concept-graph-on-the-coordinate-plane.svg","alt":"Illustration of Graph on the Coordinate Plane: Plot a point by moving horizontally to its x-coordinate and vertically to its y-coordinate."},{"term":"Coordinate plane","termEs":"Plano cartesiano","def":"A grid with a line going across and a line going up to plot points.","defEs":"Una cuadrícula con una línea horizontal y una vertical para marcar puntos.","img":"/assets/vocab-images/coordinate-plane.svg","alt":"Illustration of Coordinate plane: A grid with a line going across and a line going up to plot points."},{"term":"Ordered pair","termEs":"Par ordenado","def":"Two numbers (x, y) that tell where a point is on a grid.","defEs":"Dos números (x, y) que dicen dónde está un punto en una cuadrícula.","img":"/assets/vocab-images/ordered-pair.svg","alt":"Illustration of Ordered pair: Two numbers (x, y) that tell where a point is on a grid."},{"term":"Origin","termEs":"Origen","def":"The point (0, 0) where the two grid lines cross.","defEs":"El punto (0, 0) donde se cruzan las dos líneas de la cuadrícula.","img":"/assets/vocab-images/origin.svg","alt":"Illustration of Origin: The point (0, 0) where the two grid lines cross."},{"term":"Quadrant","termEs":"Cuadrante","def":"One of the four parts of a coordinate grid, numbered I to IV.","defEs":"Una de las cuatro partes de una cuadrícula de coordenadas, numeradas I a IV.","img":"/assets/vocab-images/quadrant.svg","alt":"Illustration of Quadrant: One of the four parts of a coordinate grid, numbered I to IV."},{"term":"Reflection","termEs":"Reflexión","def":"A flipped, mirror image across a line.","defEs":"Una imagen reflejada al otro lado de una línea.","img":"/assets/vocab-images/reflection.svg","alt":"Illustration of Reflection: A flipped, mirror image across a line."},{"term":"Integer","termEs":"Número entero","def":"Whole numbers and their opposites, like -2, -1, 0, 1, 2.","defEs":"Números enteros y sus opuestos, como -2, -1, 0, 1, 2.","img":"/assets/vocab-images/integer.svg","alt":"Illustration of Integer: Whole numbers and their opposites, like -2, -1, 0, 1, 2."},{"term":"x-coordinate","termEs":"Coordenada x","def":"The first number in an ordered pair; how far right or left.","defEs":"El primer número de un par ordenado; cuánto hacia la derecha o la izquierda.","img":"/assets/vocab-images/ordered-pair.svg","alt":"Illustration of x-coordinate: The first number in an ordered pair; how far right or left."},{"term":"x-axis","termEs":"Eje x","def":"The horizontal number line through the origin.","defEs":"La recta numérica horizontal que pasa por el origen.","img":"/assets/vocab-images/axis.svg","alt":"Illustration of x-axis: The horizontal number line through the origin."},{"term":"y-axis","termEs":"Eje y","def":"The vertical number line through the origin.","defEs":"La recta numérica vertical que pasa por el origen.","img":"/assets/vocab-images/axis.svg","alt":"Illustration of y-axis: The vertical number line through the origin."}]</script>
+      <script type="application/json" id="vocab_quiz_data">[{"term":"Graph on the Coordinate Plane","termEs":"Representar en el plano de coordenadas","def":"Mark a point: go across first, then up or down.","defEs":"Marcar un punto: primero a lo ancho, luego arriba o abajo.","img":"/assets/vocab-images/concept-graph-on-the-coordinate-plane.svg","alt":"Illustration of Graph on the Coordinate Plane: Mark a point: go across first, then up or down."},{"term":"Coordinate plane","termEs":"Plano cartesiano","def":"A flat grid for placing points with two numbers.","defEs":"Una cuadrícula plana para ubicar puntos con dos números.","img":"/assets/vocab-images/coordinate-plane.svg","alt":"Illustration of Coordinate plane: A flat grid for placing points with two numbers."},{"term":"Ordered pair","termEs":"Par ordenado","def":"Two numbers (x, y) that tell where a point is.","defEs":"Dos números (x, y) que dicen dónde está un punto.","img":"/assets/vocab-images/ordered-pair.svg","alt":"Illustration of Ordered pair: Two numbers (x, y) that tell where a point is."},{"term":"Origin","termEs":"Origen","def":"The point (0, 0), where the two number lines cross.","defEs":"El punto (0, 0), donde se cruzan las dos rectas numéricas.","img":"/assets/vocab-images/origin.svg","alt":"Illustration of Origin: The point (0, 0), where the two number lines cross."},{"term":"Quadrant","termEs":"Cuadrante","def":"One of the four parts of a coordinate grid.","defEs":"Una de las cuatro partes de una cuadrícula de coordenadas.","img":"/assets/vocab-images/quadrant.svg","alt":"Illustration of Quadrant: One of the four parts of a coordinate grid."},{"term":"Reflection","termEs":"Reflexión","def":"A flip of a shape across a line.","defEs":"Una figura volteada al otro lado de una línea.","img":"/assets/vocab-images/reflection.svg","alt":"Illustration of Reflection: A flip of a shape across a line."},{"term":"Integer","termEs":"Número entero","def":"A whole number or its opposite, like 2 and −2.","defEs":"Un número de contar, su opuesto o el cero, como 2, −2 y 0.","img":"/assets/vocab-images/integer.svg","alt":"Illustration of Integer: A whole number or its opposite, like 2 and −2."},{"term":"x-coordinate","termEs":"Coordenada x","def":"The first number in a pair. It tells left or right.","defEs":"El primer número de un par. Dice cuánto a la derecha o izquierda.","img":"/assets/vocab-images/ordered-pair.svg","alt":"Illustration of x-coordinate: The first number in a pair. It tells left or right."},{"term":"x-axis","termEs":"Eje x","def":"The number line that goes left to right.","defEs":"La recta numérica que va de izquierda a derecha.","img":"/assets/vocab-images/axis.svg","alt":"Illustration of x-axis: The number line that goes left to right."},{"term":"y-axis","termEs":"Eje y","def":"The number line that goes up and down.","defEs":"La recta numérica que va hacia arriba y abajo.","img":"/assets/vocab-images/axis.svg","alt":"Illustration of y-axis: The number line that goes up and down."}]</script>
     </div>
 
     <div class="vocab-game-shell card-ish" id="vocab_match_shell" data-vocab-total="10">
@@ -1588,44 +1613,44 @@ header.homework-header,
         <div class="vocab-match-col col-defs" aria-label="Vocabulary definitions">
 
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="9" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">The vertical number line through the origin.</span>
-              <span class="chip-label-es" lang="es">La recta numérica vertical que pasa por el origen.</span>
+              <span class="chip-label-en">The number line that goes up and down.</span>
+              <span class="chip-label-es" lang="es">La recta numérica que va hacia arriba y abajo.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="0" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">Plot a point by moving horizontally to its x-coordinate and vertically to its y-coordinate.</span>
-              <span class="chip-label-es" lang="es">Ubicar un punto moviéndose horizontalmente hasta su coordenada x y verticalmente hasta su coordenada y.</span>
+              <span class="chip-label-en">Mark a point: go across first, then up or down.</span>
+              <span class="chip-label-es" lang="es">Marcar un punto: primero a lo ancho, luego arriba o abajo.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="1" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A grid with a line going across and a line going up to plot points.</span>
-              <span class="chip-label-es" lang="es">Una cuadrícula con una línea horizontal y una vertical para marcar puntos.</span>
+              <span class="chip-label-en">A flat grid for placing points with two numbers.</span>
+              <span class="chip-label-es" lang="es">Una cuadrícula plana para ubicar puntos con dos números.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="2" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">Two numbers (x, y) that tell where a point is on a grid.</span>
-              <span class="chip-label-es" lang="es">Dos números (x, y) que dicen dónde está un punto en una cuadrícula.</span>
+              <span class="chip-label-en">Two numbers (x, y) that tell where a point is.</span>
+              <span class="chip-label-es" lang="es">Dos números (x, y) que dicen dónde está un punto.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="3" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">The point (0, 0) where the two grid lines cross.</span>
-              <span class="chip-label-es" lang="es">El punto (0, 0) donde se cruzan las dos líneas de la cuadrícula.</span>
+              <span class="chip-label-en">The point (0, 0), where the two number lines cross.</span>
+              <span class="chip-label-es" lang="es">El punto (0, 0), donde se cruzan las dos rectas numéricas.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="4" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">One of the four parts of a coordinate grid, numbered I to IV.</span>
-              <span class="chip-label-es" lang="es">Una de las cuatro partes de una cuadrícula de coordenadas, numeradas I a IV.</span>
+              <span class="chip-label-en">One of the four parts of a coordinate grid.</span>
+              <span class="chip-label-es" lang="es">Una de las cuatro partes de una cuadrícula de coordenadas.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="5" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A flipped, mirror image across a line.</span>
-              <span class="chip-label-es" lang="es">Una imagen reflejada al otro lado de una línea.</span>
+              <span class="chip-label-en">A flip of a shape across a line.</span>
+              <span class="chip-label-es" lang="es">Una figura volteada al otro lado de una línea.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="6" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">Whole numbers and their opposites, like -2, -1, 0, 1, 2.</span>
-              <span class="chip-label-es" lang="es">Números enteros y sus opuestos, como -2, -1, 0, 1, 2.</span>
+              <span class="chip-label-en">A whole number or its opposite, like 2 and −2.</span>
+              <span class="chip-label-es" lang="es">Un número de contar, su opuesto o el cero, como 2, −2 y 0.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="7" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">The first number in an ordered pair; how far right or left.</span>
-              <span class="chip-label-es" lang="es">El primer número de un par ordenado; cuánto hacia la derecha o la izquierda.</span>
+              <span class="chip-label-en">The first number in a pair. It tells left or right.</span>
+              <span class="chip-label-es" lang="es">El primer número de un par. Dice cuánto a la derecha o izquierda.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="8" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">The horizontal number line through the origin.</span>
-              <span class="chip-label-es" lang="es">La recta numérica horizontal que pasa por el origen.</span>
+              <span class="chip-label-en">The number line that goes left to right.</span>
+              <span class="chip-label-es" lang="es">La recta numérica que va de izquierda a derecha.</span>
             </button>
         </div>
       </div>
@@ -1655,29 +1680,24 @@ header.homework-header,
 
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
       <p class="quick-check-time bilingual-block">
-        <span class="lang-en">Complete the <span id="hw_check_problem_count">12</span> problems below.<span class="quick-check-extra-copy"> The extra practice at the bottom is optional.</span></span>
-        <span class="lang-es" lang="es">Completa los <span id="hw_check_problem_count_es">12</span> problemas de abajo.<span class="quick-check-extra-copy"> La práctica extra al final es opcional.</span></span>
-      </p>
-      <p class="bilingual-block">
-        <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
-        <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+        <span class="lang-en">Start with <strong>Basics</strong>. Each problem has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong> and a <strong>space for your work</strong>. Tap <strong>Check This Problem</strong> for instant help.<span class="quick-check-extra-copy"> The extra practice at the bottom is optional.</span></span>
+        <span class="lang-es" lang="es">Empiecen con las <strong>Básicas</strong>. Cada problema tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para su trabajo</strong>. Toquen <strong>Revisar esta pregunta</strong> para recibir ayuda al instante.<span class="quick-check-extra-copy"> La práctica extra al final es opcional.</span></span>
       </p>
 
 
-    <div class="stars-to-win-bar">
-      <div class="stars-to-win-title">
-        <span>⭐</span>
-        <div>
-          <span class="lang-en"><strong>Tonight's goal:</strong> finish the <span id="hw_goal_count">12</span> problems below. Stop any time — your work saves itself.</span>
-          <span class="lang-es" lang="es"><strong>La meta de hoy:</strong> terminar los <span id="hw_goal_count_es">12</span> problemas de abajo. Pueden parar cuando quieran: el trabajo se guarda solo.</span>
-        </div>
-      </div>
-      <div class="stars-milestone-chips" aria-hidden="true">
-        <span class="star-chip">🧱 Basics</span>
-        <span class="star-chip">🌱 Warm-Up ★</span>
-        <span class="star-chip">🚀 Level-Up ★★</span>
-        <span class="star-chip">🏆 Victory ★★★</span>
-      </div>
+    <div class="hw-goal-card">
+      <span class="hw-pips " role="img" aria-label="Tonight's goal progress"></span>
+      <p>
+        <span class="lang-en"><strong>Tonight's goal: any <span data-hw-goal-count>4</span> problems.</strong> There are <span data-hw-goal-avail>12</span> here, so pick the ones you like. Stop any time. Your work saves itself.</span>
+        <span class="lang-es" lang="es"><strong>La meta de hoy: cualquier <span data-hw-goal-count>4</span> problemas.</strong> Aquí hay <span data-hw-goal-avail>12</span>, así que escojan los que prefieran. Pueden parar cuando quieran. El trabajo se guarda solo.</span>
+      </p>
+      <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
+    </div>
+    <div class="stars-milestone-chips" aria-hidden="true">
+      <span class="star-chip">🧱 Basics</span>
+      <span class="star-chip">🌱 Warm-Up ★</span>
+      <span class="star-chip">🚀 Level-Up ★★</span>
+      <span class="star-chip">🏆 Victory ★★★</span>
     </div>
 
     <div class="live-streak-banner" id="hw_streak_banner" hidden>
@@ -1700,9 +1720,12 @@ header.homework-header,
         <strong><span class="lang-en">That's tonight's goal — done!</span><span class="lang-es" lang="es">¡Esa es la meta de hoy: completa!</span></strong>
         <p><span class="lang-en">Great work. Keep going with the extra practice if you want more, or head to <strong>Done</strong> to finish or choose optional extras.</span><span class="lang-es" lang="es">Buen trabajo. Sigan con la práctica extra si quieren más, o vayan a <strong>Listo</strong> para terminar o elegir extras opcionales.</span></p>
       </div>
-      <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
-        <span class="lang-en">Claim Certificate ➔</span><span class="lang-es" lang="es">Reclamar Certificado ➔</span>
-      </button>
+      <div class="goal-actions">
+        <button type="button" class="btn btn-sm btn-secondary hw-banner-mystery" hidden onclick="hwOpenMystery()"><span class="lang-en">🔓 Open the mystery challenge</span><span class="lang-es" lang="es">🔓 Abrir el reto misterioso</span></button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
+          <span class="lang-en">Teach it back, then claim your certificate ➔</span><span class="lang-es" lang="es">Enséñalo y reclama tu certificado ➔</span>
+        </button>
+      </div>
     </div>
 
       <section class="practice-tier practice-tier-basic" aria-label="Basic practice">
@@ -4414,7 +4437,7 @@ header.homework-header,
     </div>
 
     <div class="fam-game-break card-ish" id="fam_game_break">
-      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"(3, 2) from the origin","b":"Right 3, up 2"},{"a":"(−1, 4) lives in…","b":"Quadrant II"},{"a":"(0, 0) is called…","b":"The origin"},{"a":"(2, −5) lives in…","b":"Quadrant IV"}],"tf":[{"en":"(3, 2) and (2, 3) are the same point.","es":"(3, 2) y (2, 3) son el mismo punto.","answer":false,"whyEn":"Order matters: (3, 2) is right 3 up 2; (2, 3) is right 2 up 3. Two different spots!","whyEs":"El orden importa: (3, 2) es 3 a la derecha y 2 arriba; (2, 3) es 2 a la derecha y 3 arriba. ¡Dos lugares distintos!"},{"en":"The first number in an ordered pair tells you how far to move left or right.","es":"El primer número de un par ordenado dice cuánto moverse a la izquierda o derecha.","answer":true,"whyEn":"x first (across), y second (up/down) — 'you crawl before you climb.'","whyEs":"Primero x (horizontal), luego y (vertical): 'primero caminas, luego subes'."},{"en":"(0, 0) is called the origin.","es":"(0, 0) se llama el origen.","answer":true,"whyEn":"It's where the two axes cross — every trip starts there.","whyEs":"Es donde se cruzan los dos ejes: todo viaje empieza allí."},{"en":"(−1, 4) is in Quadrant IV.","es":"(−1, 4) está en el cuadrante IV.","answer":false,"whyEn":"Negative x, positive y → Quadrant II (upper left). Quadrant IV is +x, −y.","whyEs":"x negativa, y positiva → cuadrante II (arriba a la izquierda). El IV es +x, −y."},{"en":"The four quadrants are numbered going counterclockwise.","es":"Los cuatro cuadrantes se numeran en sentido contrario a las manecillas.","answer":true,"whyEn":"I (top right) → II (top left) → III (bottom left) → IV (bottom right).","whyEs":"I (arriba derecha) → II (arriba izquierda) → III (abajo izquierda) → IV (abajo derecha)."}],"sort":{"a":{"en":"Quadrant II (left, up)","es":"Cuadrante II (izquierda, arriba)"},"b":{"en":"Not in Quadrant II","es":"No está en el cuadrante II"},"cards":[{"t":"(−3, 5)","bucket":0,"en":"Negative x, positive y.","es":"x negativa, y positiva."},{"t":"(3, 5)","bucket":1,"en":"Both positive — Quadrant I.","es":"Ambas positivas: cuadrante I."},{"t":"(−1, 2)","bucket":0,"en":"Left and up.","es":"Izquierda y arriba."},{"t":"(−4, −2)","bucket":1,"en":"Both negative — Quadrant III.","es":"Ambas negativas: cuadrante III."},{"t":"(−6, 1)","bucket":0,"en":"Left and up again.","es":"Otra vez izquierda y arriba."},{"t":"(2, −5)","bucket":1,"en":"Right and down — Quadrant IV.","es":"Derecha y abajo: cuadrante IV."}]},"wyr":[{"a":{"en":"Meet a friend at (3, 4)","es":"Ver a un amigo en (3, 4)"},"b":{"en":"Meet a friend at (4, 3)","es":"Ver a un amigo en (4, 3)"},"en":"Different corners! Order matters: (3,4) is right 3 up 4; (4,3) is right 4 up 3.","es":"¡Esquinas distintas! El orden importa: (3,4) es 3 a la derecha y 4 arriba; (4,3) al revés."},{"a":{"en":"Give directions as 'go left a lot'","es":"Dar indicaciones como 've mucho a la izquierda'"},"b":{"en":"Give directions as (−6, 2)","es":"Dar indicaciones como (−6, 2)"},"en":"Coordinates — that is the whole reason the plane exists: exactness.","es":"Las coordenadas: para eso existe el plano, para la exactitud."}]};</script>
+      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"(3, 2) from the origin","b":"Right 3, up 2","aEs":"(3, 2) desde el origen","bEs":"Derecha 3, arriba 2"},{"a":"(−1, 4) lives in…","b":"Quadrant II","aEs":"(−1, 4) está en…","bEs":"Cuadrante II"},{"a":"(0, 0) is called…","b":"The origin","aEs":"(0, 0) se llama…","bEs":"El origen"},{"a":"(2, −5) lives in…","b":"Quadrant IV","aEs":"(2, −5) está en…","bEs":"Cuadrante IV"}],"tf":[{"en":"(3, 2) and (2, 3) are the same point.","es":"(3, 2) y (2, 3) son el mismo punto.","answer":false,"whyEn":"Order matters: (3, 2) is right 3 up 2; (2, 3) is right 2 up 3. Two different spots!","whyEs":"El orden importa: (3, 2) es 3 a la derecha y 2 arriba; (2, 3) es 2 a la derecha y 3 arriba. ¡Dos lugares distintos!"},{"en":"The first number in an ordered pair tells you how far to move left or right.","es":"El primer número de un par ordenado dice cuánto moverse a la izquierda o derecha.","answer":true,"whyEn":"x first (across), y second (up/down) — 'you crawl before you climb.'","whyEs":"Primero x (horizontal), luego y (vertical): 'primero caminas, luego subes'."},{"en":"(0, 0) is called the origin.","es":"(0, 0) se llama el origen.","answer":true,"whyEn":"It's where the two axes cross — every trip starts there.","whyEs":"Es donde se cruzan los dos ejes: todo viaje empieza allí."},{"en":"(−1, 4) is in Quadrant IV.","es":"(−1, 4) está en el cuadrante IV.","answer":false,"whyEn":"Negative x, positive y → Quadrant II (upper left). Quadrant IV is +x, −y.","whyEs":"x negativa, y positiva → cuadrante II (arriba a la izquierda). El IV es +x, −y."},{"en":"The four quadrants are numbered going counterclockwise.","es":"Los cuatro cuadrantes se numeran en sentido contrario a las manecillas.","answer":true,"whyEn":"I (top right) → II (top left) → III (bottom left) → IV (bottom right).","whyEs":"I (arriba derecha) → II (arriba izquierda) → III (abajo izquierda) → IV (abajo derecha)."}],"sort":{"a":{"en":"Quadrant II (left, up)","es":"Cuadrante II (izquierda, arriba)"},"b":{"en":"Not in Quadrant II","es":"No está en el cuadrante II"},"cards":[{"t":"(−3, 5)","bucket":0,"en":"Negative x, positive y.","es":"x negativa, y positiva."},{"t":"(3, 5)","bucket":1,"en":"Both positive — Quadrant I.","es":"Ambas positivas: cuadrante I."},{"t":"(−1, 2)","bucket":0,"en":"Left and up.","es":"Izquierda y arriba."},{"t":"(−4, −2)","bucket":1,"en":"Both negative — Quadrant III.","es":"Ambas negativas: cuadrante III."},{"t":"(−6, 1)","bucket":0,"en":"Left and up again.","es":"Otra vez izquierda y arriba."},{"t":"(2, −5)","bucket":1,"en":"Right and down — Quadrant IV.","es":"Derecha y abajo: cuadrante IV."}]},"wyr":[{"a":{"en":"Meet a friend at (3, 4)","es":"Ver a un amigo en (3, 4)"},"b":{"en":"Meet a friend at (4, 3)","es":"Ver a un amigo en (4, 3)"},"en":"Different corners! Order matters: (3,4) is right 3 up 4; (4,3) is right 4 up 3.","es":"¡Esquinas distintas! El orden importa: (3,4) es 3 a la derecha y 4 arriba; (4,3) al revés."},{"a":{"en":"Give directions as 'go left a lot'","es":"Dar indicaciones como 've mucho a la izquierda'"},"b":{"en":"Give directions as (−6, 2)","es":"Dar indicaciones como (−6, 2)"},"en":"Coordinates — that is the whole reason the plane exists: exactness.","es":"Las coordenadas: para eso existe el plano, para la exactitud."}]};</script>
       <div class="fam-game-head">
         <span class="fam-game-badge">🎮 <span class="lang-en">FAMILY ARCADE</span><span class="lang-es" lang="es">SALA DE JUEGOS EN FAMILIA</span></span>
         <p class="fam-game-lead">
@@ -4602,7 +4625,40 @@ header.homework-header,
     </div>
 <div class="tab-panel-inner" data-tab-panel="done" id="hw_panel_done" role="tabpanel" hidden>
       <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
-      <p class="family-explain-finish"><span class="lang-en">Explain one answer aloud or on paper: “I got ___ because ___. I checked by ___.” Include your strategy and units. Then you are done.</span><span class="lang-es" lang="es">Explica una respuesta en voz alta o en papel: “Obtuve ___ porque ___. Comprobé usando ___.” Incluye tu estrategia y las unidades. Después termina.</span></p>
+
+      <section class="hw-teach" aria-labelledby="hw_teach_title">
+        <p class="hw-eyebrow hw-inline"><span class="lang-en">The last step</span><span class="lang-es" lang="es">El último paso</span></p>
+        <h3 id="hw_teach_title"><span class="lang-en">Teach it to someone</span><span class="lang-es" lang="es">Enséñaselo a alguien</span></h3>
+        <ol class="hw-teach-steps">
+          <li><span class="lang-en">Pick one problem you solved.</span><span class="lang-es" lang="es">Elige un problema que resolviste.</span></li>
+          <li><span class="lang-en">Explain it out loud. Use any language first.</span><span class="lang-es" lang="es">Explícalo en voz alta. Usa primero el idioma que prefieras.</span></li>
+          <li><span class="lang-en">Say it again with the English math words:</span><span class="lang-es" lang="es">Dilo otra vez con las palabras de matemáticas en inglés:</span><ul class="hw-teach-words" aria-label="Words to use"><li><strong>Graph on the Coordinate Plane</strong><span class="lang-es" lang="es"> · Representar en el plano de coordenadas</span></li><li><strong>Coordinate plane</strong><span class="lang-es" lang="es"> · Plano cartesiano</span></li><li><strong>Ordered pair</strong><span class="lang-es" lang="es"> · Par ordenado</span></li></ul></li>
+          <li><span class="lang-en">Your partner asks: “How do you know?” Answer with: “I got ___ because ___. I checked by ___.”</span><span class="lang-es" lang="es">Tu acompañante pregunta: “¿Cómo lo sabes?” Responde: “Obtuve ___ porque ___. Comprobé usando ___.”</span></li>
+        </ol>
+      </section>
+
+      <section class="hw-confidence" id="hw_conf_after" data-conf-phase="after" aria-labelledby="hw_conf_after_title">
+        <h3 id="hw_conf_after_title"><span class="lang-en">How sure do you feel now?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes ahora?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_after_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="after" onclick="hwSetConfidence('after', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="after" onclick="hwSetConfidence('after', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="after" onclick="hwSetConfidence('after', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Compare it with how you felt at the start.</span><span class="lang-es" lang="es">Compáralo con cómo te sentías al empezar.</span></p>
+        <p class="hw-conf-growth" id="hw_conf_growth" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="hw-nights" id="hw_nights" aria-labelledby="hw_nights_title">
+        <h3 id="hw_nights_title"><span class="lang-en">Our family math nights</span><span class="lang-es" lang="es">Nuestras noches de matemáticas en familia</span></h3>
+        <ol class="hw-nights-week" id="hw_nights_week" aria-label="This week"></ol>
+        <p class="hw-nights-streak" id="hw_nights_streak" role="status" aria-live="polite"></p>
+        <p class="hw-nights-note"><span class="lang-en">Weekends never break it. Saved only on this device.</span><span class="lang-es" lang="es">Los fines de semana no la interrumpen. Se guarda solo en este dispositivo.</span></p>
+      </section>
       <div class="done-summary" id="hw_done_summary" role="status" aria-live="polite"></div>
       <ol class="done-problem-list" id="hw_done_problems" aria-label="Problems / Problemas"></ol>
       <p class="celebrate-text lang-en">Name one strategy that helped, or one question to ask next time. You can stop here; no adult signature is needed.</p>
@@ -4612,9 +4668,16 @@ header.homework-header,
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
 
+
+      <div class="hw-share">
+        <button type="button" class="btn btn-secondary hw-share-win" onclick="hwShareWin()">
+          🎉 <span class="lang-en">Share our win</span><span class="lang-es" lang="es">Compartir nuestro logro</span>
+        </button>
+        <p class="hw-share-note"><span class="lang-en">Shares only the lesson name and a link. No answers, no names.</span><span class="lang-es" lang="es">Comparte solo el nombre de la lección y un enlace. Sin respuestas ni nombres.</span></p>
+      </div>
       <div class="homework-message-action">
         <a class="btn btn-primary" href="https://home.classdojo.com/" target="_blank" rel="noopener"><span class="lang-en">Open ClassDojo to message Mr. Neft</span><span class="lang-es" lang="es">Abrir ClassDojo para escribir al Sr. Neft</span></a>
-        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicia sesión con tu cuenta familiar, abre Mensajes y elige al Sr. Neft. Incluye el número de esta lección y tu pregunta.</span></p>
+        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicien sesión con su cuenta familiar, abran Mensajes y elijan al Sr. Neft. Incluyan el número de esta lección y su pregunta.</span></p>
       </div>
       <section class="homework-optional-extras" aria-labelledby="homework_extras_title">
       <h3 id="homework_extras_title"><span class="lang-en">Want to do more?</span><span class="lang-es" lang="es">¿Quieren hacer más?</span></h3>
@@ -5083,32 +5146,19 @@ header.homework-header,
           </span>
           <span class="ai-lab-arrow" aria-hidden="true">↓</span>
         </a>
-        <p class="bilingual-block">
-          <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
-          <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
+
+        <p class="bilingual-block external-resource-claim">
+          <span class="lang-en">These links go to <strong>specific</strong> videos about tonight's topic — not general math pages.</span>
+          <span class="lang-es" lang="es">Estos enlaces van a videos <strong>específicos</strong> sobre el tema de hoy — no a páginas generales.</span>
         </p>
         <ul class="external-resource-list">
-
             <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-negative-number-topics/cc-6th-negative-numbers-intro/v/negative-numbers-introduction" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Negative numbers and opposites</span>
-                <span class="ext-title-es" lang="es">Números negativos y opuestos</span>
-              </a>
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/x0267d782:coordinate-plane/cc-6th-coordinate-plane/v/plot-ordered-pairs" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-en"><span class="ext-source">Khan Academy</span><span class="ext-title-en">Plotting a point (ordered pair)</span></a>
+              <a href="https://es.khanacademy.org/math/cc-sixth-grade-math/x0267d782:coordinate-plane/cc-6th-coordinate-plane/v/plot-ordered-pairs" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-es" lang="es"><span class="ext-source">Khan Academy en español</span><span class="ext-title-es">Ubicar un punto (par ordenado)</span></a>
             </li>
             <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-negative-number/cc-6th-coordinate-plane/v/the-coordinate-plane" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Coordinate plane basics</span>
-                <span class="ext-title-es" lang="es">Plano coordenado básico</span>
-              </a>
-            </li>
-            <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-negative-number/cc-6th-coordinate-plane/v/coordinate-plane-word-problems-exercise" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Distance between points</span>
-                <span class="ext-title-es" lang="es">Distancia entre puntos</span>
-              </a>
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/x0267d782:coordinate-plane/cc-6th-coordinate-plane/v/quadrants-of-coordinate-plane" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-en"><span class="ext-source">Khan Academy</span><span class="ext-title-en">Quadrants of the coordinate plane</span></a>
+              <a href="https://es.khanacademy.org/math/cc-sixth-grade-math/x0267d782:coordinate-plane/cc-6th-coordinate-plane/v/quadrants-of-coordinate-plane" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-es" lang="es"><span class="ext-source">Khan Academy en español</span><span class="ext-title-es">Los cuadrantes del plano de coordenadas</span></a>
             </li>
         </ul>
       </section>
@@ -5206,6 +5256,17 @@ header.homework-header,
       </div>
     </div>
 
+<div class="hw-toast" id="hw_toast" aria-hidden="true" hidden></div><div class="hw-sr-only" id="hw_toast_live" role="status" aria-live="polite"></div>
+<dialog class="hw-dialog" id="hw_dialog" aria-labelledby="hw_dialog_text">
+  <form method="dialog">
+    <p id="hw_dialog_text"></p>
+    <div class="hw-dialog-actions">
+      <button type="submit" value="no" class="btn btn-secondary" id="hw_dialog_no"></button>
+      <button type="submit" value="yes" class="btn btn-primary" id="hw_dialog_yes"></button>
+    </div>
+  </form>
+</dialog>
+
 <section class="hw-answer-sheet" aria-hidden="true">
   <h2><span class="lang-en">Answer sheet</span><span class="lang-es" lang="es">Hoja de respuestas</span> · Represent Rational Numbers on the Coordinate Plane</h2>
   <p><span class="lang-en">Check the work after trying each problem. Talk about why each answer makes sense.</span><span class="lang-es" lang="es">Revisen el trabajo después de intentar cada problema. Hablen de por qué cada respuesta tiene sentido.</span></p>
@@ -5245,8 +5306,10 @@ header.homework-header,
 
     <div class="score-progress-container">
       <div class="score-text">
-        <span class="lang-en">Progress:</span><span class="lang-es" lang="es">Progreso:</span>
-        <span id="progress_text">0 / 12</span>
+        <span class="hw-stack hw-goal-label"><span class="lang-en">Tonight's goal</span><span class="lang-es" lang="es">Meta de hoy</span></span>
+        <span id="progress_text">0 / 4</span>
+        <span class="hw-pips hw-pips-bar" role="img" aria-label="Tonight's goal progress"></span>
+        <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -5254,8 +5317,8 @@ header.homework-header,
     </div>
 
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
-      <button class="btn btn-primary" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
+      <button class="btn btn-secondary hw-stack" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
+      <button class="btn btn-primary hw-stack" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
     </div>
   </div>
 </div>
@@ -5263,18 +5326,19 @@ header.homework-header,
 <script>
 window.LESSON_ID = "7-5";
 window.LESSON_TITLE = "Represent Rational Numbers on the Coordinate Plane";
+window.LESSON_TITLE_ES = "Representar números racionales en el plano de coordenadas";
 /* The number of core problems, so the celebration fires on the goal the page
    actually states. It was hardcoded to 3 while the page showed 6 and the status
    bar counted to 6: a family could hit "Goal Reached! 3 Stars Earned!" and read
    "0 / 6 Completed" in the same glance. */
 window.HW_CORE_COUNT = 12;
-window.__HW_VOCAB__ = [{"term":"Graph on the Coordinate Plane","termEs":"Representar en el plano de coordenadas","def":"Plot a point by moving horizontally to its x-coordinate and vertically to its y-coordinate.","defEs":"Ubicar un punto moviéndose horizontalmente hasta su coordenada x y verticalmente hasta su coordenada y.","example":"For (3, −2), move right 3 and down 2.","img":"/assets/vocab-images/concept-graph-on-the-coordinate-plane.svg","imgAlt":"Illustration of Graph on the Coordinate Plane: Plot a point by moving horizontally to its x-coordinate and vertically to its y-coordinate.","cs":false},{"term":"Coordinate plane","termEs":"Plano cartesiano","def":"A grid with a line going across and a line going up to plot points.","defEs":"Una cuadrícula con una línea horizontal y una vertical para marcar puntos.","example":"A grid with a horizontal line (x-axis) crossing a vertical line (y-axis), making four sections","img":"/assets/vocab-images/coordinate-plane.svg","imgAlt":"Illustration of Coordinate plane: A grid with a line going across and a line going up to plot points.","cs":false},{"term":"Ordered pair","termEs":"Par ordenado","def":"Two numbers (x, y) that tell where a point is on a grid.","defEs":"Dos números (x, y) que dicen dónde está un punto en una cuadrícula.","example":"(3, 5) means move right 3 from the origin, then up 5","img":"/assets/vocab-images/ordered-pair.svg","imgAlt":"Illustration of Ordered pair: Two numbers (x, y) that tell where a point is on a grid.","cs":false},{"term":"Origin","termEs":"Origen","def":"The point (0, 0) where the two grid lines cross.","defEs":"El punto (0, 0) donde se cruzan las dos líneas de la cuadrícula.","example":"The starting point at the center where both axes cross — (0, 0)","img":"/assets/vocab-images/origin.svg","imgAlt":"Illustration of Origin: The point (0, 0) where the two grid lines cross.","cs":false},{"term":"Quadrant","termEs":"Cuadrante","def":"One of the four parts of a coordinate grid, numbered I to IV.","defEs":"Una de las cuatro partes de una cuadrícula de coordenadas, numeradas I a IV.","example":"I (+,+) top-right, II (-,+) top-left, III (-,-) bottom-left, IV (+,-) bottom-right","img":"/assets/vocab-images/quadrant.svg","imgAlt":"Illustration of Quadrant: One of the four parts of a coordinate grid, numbered I to IV.","cs":false},{"term":"Reflection","termEs":"Reflexión","def":"A flipped, mirror image across a line.","defEs":"Una imagen reflejada al otro lado de una línea.","example":"(3, 2) reflected over the x-axis becomes (3, -2) — same x, opposite y","img":"/assets/vocab-images/reflection.svg","imgAlt":"Illustration of Reflection: A flipped, mirror image across a line.","cs":false},{"term":"Integer","termEs":"Número entero","def":"Whole numbers and their opposites, like -2, -1, 0, 1, 2.","defEs":"Números enteros y sus opuestos, como -2, -1, 0, 1, 2.","example":"..., -3, -2, -1, 0, 1, 2, 3, ...","img":"/assets/vocab-images/integer.svg","imgAlt":"Illustration of Integer: Whole numbers and their opposites, like -2, -1, 0, 1, 2.","cs":false},{"term":"x-coordinate","termEs":"Coordenada x","def":"The first number in an ordered pair; how far right or left.","defEs":"El primer número de un par ordenado; cuánto hacia la derecha o la izquierda.","example":"In (−3, 4), the x-coordinate is −3.","img":"/assets/vocab-images/ordered-pair.svg","imgAlt":"Illustration of x-coordinate: The first number in an ordered pair; how far right or left.","cs":false},{"term":"x-axis","termEs":"Eje x","def":"The horizontal number line through the origin.","defEs":"La recta numérica horizontal que pasa por el origen.","example":"Runs left and right.","img":"/assets/vocab-images/axis.svg","imgAlt":"Illustration of x-axis: The horizontal number line through the origin.","cs":false},{"term":"y-axis","termEs":"Eje y","def":"The vertical number line through the origin.","defEs":"La recta numérica vertical que pasa por el origen.","example":"Runs up and down.","img":"/assets/vocab-images/axis.svg","imgAlt":"Illustration of y-axis: The vertical number line through the origin.","cs":false}];
+window.__HW_VOCAB__ = [{"term":"Graph on the Coordinate Plane","termEs":"Representar en el plano de coordenadas","def":"Mark a point: go across first, then up or down.","defEs":"Marcar un punto: primero a lo ancho, luego arriba o abajo.","example":"(3, 2): 3 across, 2 up","img":"/assets/vocab-images/concept-graph-on-the-coordinate-plane.svg","imgAlt":"Illustration of Graph on the Coordinate Plane: Mark a point: go across first, then up or down.","cs":false,"formal":"Plot a point by moving horizontally to its x-coordinate and vertically to its y-coordinate.","formalEs":"Ubicar un punto moviéndose horizontalmente hasta su coordenada x y verticalmente hasta su coordenada y.","exampleEs":"(3, 2): 3 a la derecha, 2 arriba","exampleFormal":"For (3, −2), move right 3 and down 2."},{"term":"Coordinate plane","termEs":"Plano cartesiano","def":"A flat grid for placing points with two numbers.","defEs":"Una cuadrícula plana para ubicar puntos con dos números.","example":"A grid with a horizontal line (x-axis) crossing a vertical line (y-axis), making four sections","img":"/assets/vocab-images/coordinate-plane.svg","imgAlt":"Illustration of Coordinate plane: A flat grid for placing points with two numbers.","cs":false,"formal":"A grid with a line going across and a line going up to plot points.","formalEs":"Una cuadrícula con una línea horizontal y una vertical para marcar puntos."},{"term":"Ordered pair","termEs":"Par ordenado","def":"Two numbers (x, y) that tell where a point is.","defEs":"Dos números (x, y) que dicen dónde está un punto.","example":"(3, 5) means move right 3 from the origin, then up 5","img":"/assets/vocab-images/ordered-pair.svg","imgAlt":"Illustration of Ordered pair: Two numbers (x, y) that tell where a point is.","cs":false,"formal":"Two numbers (x, y) that tell where a point is on a grid.","formalEs":"Dos números (x, y) que dicen dónde está un punto en una cuadrícula."},{"term":"Origin","termEs":"Origen","def":"The point (0, 0), where the two number lines cross.","defEs":"El punto (0, 0), donde se cruzan las dos rectas numéricas.","example":"The starting point at the center where both axes cross — (0, 0)","img":"/assets/vocab-images/origin.svg","imgAlt":"Illustration of Origin: The point (0, 0), where the two number lines cross.","cs":false,"formal":"The point (0, 0) where the two grid lines cross.","formalEs":"El punto (0, 0) donde se cruzan las dos líneas de la cuadrícula."},{"term":"Quadrant","termEs":"Cuadrante","def":"One of the four parts of a coordinate grid.","defEs":"Una de las cuatro partes de una cuadrícula de coordenadas.","example":"I (+,+) top-right, II (-,+) top-left, III (-,-) bottom-left, IV (+,-) bottom-right","img":"/assets/vocab-images/quadrant.svg","imgAlt":"Illustration of Quadrant: One of the four parts of a coordinate grid.","cs":false,"formal":"One of the four parts of a coordinate grid, numbered I to IV.","formalEs":"Una de las cuatro partes de una cuadrícula de coordenadas, numeradas I a IV."},{"term":"Reflection","termEs":"Reflexión","def":"A flip of a shape across a line.","defEs":"Una figura volteada al otro lado de una línea.","example":"(3, 2) reflected over the x-axis becomes (3, -2) — same x, opposite y","img":"/assets/vocab-images/reflection.svg","imgAlt":"Illustration of Reflection: A flip of a shape across a line.","cs":false,"formal":"A flipped, mirror image across a line.","formalEs":"Una imagen reflejada al otro lado de una línea."},{"term":"Integer","termEs":"Número entero","def":"A whole number or its opposite, like 2 and −2.","defEs":"Un número de contar, su opuesto o el cero, como 2, −2 y 0.","example":"..., -3, -2, -1, 0, 1, 2, 3, ...","img":"/assets/vocab-images/integer.svg","imgAlt":"Illustration of Integer: A whole number or its opposite, like 2 and −2.","cs":false,"formal":"Whole numbers and their opposites, like -2, -1, 0, 1, 2.","formalEs":"Números enteros y sus opuestos, como -2, -1, 0, 1, 2."},{"term":"x-coordinate","termEs":"Coordenada x","def":"The first number in a pair. It tells left or right.","defEs":"El primer número de un par. Dice cuánto a la derecha o izquierda.","example":"In (3, 2), the x is 3","img":"/assets/vocab-images/ordered-pair.svg","imgAlt":"Illustration of x-coordinate: The first number in a pair. It tells left or right.","cs":false,"formal":"The first number in an ordered pair; how far right or left.","formalEs":"El primer número de un par ordenado; cuánto hacia la derecha o la izquierda.","exampleEs":"En (3, 2), la x es 3","exampleFormal":"In (−3, 4), the x-coordinate is −3."},{"term":"x-axis","termEs":"Eje x","def":"The number line that goes left to right.","defEs":"La recta numérica que va de izquierda a derecha.","example":"Runs left and right.","img":"/assets/vocab-images/axis.svg","imgAlt":"Illustration of x-axis: The number line that goes left to right.","cs":false,"formal":"The horizontal number line through the origin.","formalEs":"La recta numérica horizontal que pasa por el origen."},{"term":"y-axis","termEs":"Eje y","def":"The number line that goes up and down.","defEs":"La recta numérica que va hacia arriba y abajo.","example":"Runs up and down.","img":"/assets/vocab-images/axis.svg","imgAlt":"Illustration of y-axis: The number line that goes up and down.","cs":false,"formal":"The vertical number line through the origin.","formalEs":"La recta numérica vertical que pasa por el origen."}];
 window.__HW_VOCAB_SKIP__ = [38,41,42,212,314,387,388,389];
 window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Numerical\\s+Expressions\\s+with\\s+Exponents(?:es|s)?|Solve\\s+One-Step\\s+Addition\\s+and\\s+Subtraction\\s+Equations(?:es|s)?|Determine\\s+the\\s+Whole\\s+Given\\s+the\\s+Part\\s+and\\s+Percent(?:es|s)?|Convert\\s+Measurements\\s+within\\s+the\\s+Same\\s+System(?:es|s)?|Percents\\s+Greater\\s+Than\\s+100%\\s+and\\s+Less\\s+Than\\s+1%(?:es|s)?|Solve\\s+Multiplication\\s+and\\s+Division\\s+Equations(?:es|s)?|Equations\\s+and\\s+Inequalities\\s+Problem\\s+Solving(?:es|s)?|Convert\\s+Measurements\\s+Between\\s+Systems(?:es|s)?|Multiplication\\s+Property\\s+of\\s+Equalit(?:y|ies)|Ordered\\s+Pairs\\s+in\\s+All\\s+Four\\s+Quadrants(?:es|s)?|Rational\\s+Numbers\\s+on\\s+the\\s+Number\\s+Line(?:es|s)?|Describe\\s+the\\s+Data\\s+Using\\s+the\\s+Median(?:es|s)?|Divide\\s+Whole\\s+Numbers\\s+by\\s+Fractions(?:es|s)?|Fraction\\s+Division\\s+Problem\\s+Solving(?:es|s)?|Fractions,\\s+Decimals,\\s+and\\s+Percents(?:es|s)?|Distance\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Subtraction\\s+Property\\s+of\\s+Equalit(?:y|ies)|Appropriate\\s+Measures\\s+of\\s+Center(?:es|s)?|Ratio\\s+and\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|Simplify\\s+Algebraic\\s+Expressions(?:es|s)?|Statistical\\s+Questions\\s+and\\s+Data(?:es|s)?|Volume\\s+with\\s+Whole-Number\\s+Edges(?:es|s)?|Graph\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Addition\\s+Property\\s+of\\s+Equalit(?:y|ies)|Division\\s+Property\\s+of\\s+Equalit(?:y|ies)|Range\\s+and\\s+Interquartile\\s+Range(?:es|s)?|Display\\s+Data\\s+with\\s+Histograms(?:es|s)?|Greatest\\s+common\\s+factor\\s+\\(GCF\\)(?:es|s)?|Solve\\s+and\\s+Graph\\s+Inequalities(?:es|s)?|Volume\\s+of\\s+Rectangular\\s+Prisms(?:es|s)?|Display\\s+Data\\s+with\\s+Box\\s+Plots(?:es|s)?|Integers\\s+and\\s+Absolute\\s+Value(?:es|s)?|Least\\s+common\\s+multiple\\s+\\(LCM\\)(?:es|s)?|Shape\\s+of\\s+Data\\s+Distributions(?:es|s)?|Write\\s+Algebraic\\s+Expressions(?:es|s)?|Compare\\s+and\\s+Order\\s+Integers(?:es|s)?|Decimal\\s+Division\\s+Algorithm(?:es|s)?|Divide\\s+Multi-Digit\\s+Numbers(?:es|s)?|Find\\s+Factors\\s+and\\s+Multiples(?:es|s)?|Reflect\\s+Points\\s+Across\\s+Axes(?:es|s)?|Add\\s+and\\s+Subtract\\s+Decimals(?:es|s)?|Area\\s+of\\s+Composite\\s+Figures(?:es|s)?|Convert\\s+Measurement\\s+Units(?:es|s)?|distance\\s+between\\s+vertices(?:es|s)?|The\\s+Distributive\\s+Propert(?:y|ies)|Unit\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|least\\s+common\\s+denominator(?:es|s)?|Area\\s+of\\s+Regular\\s+Polygons(?:es|s)?|Non-statistical\\s+Question(?:es|s)?|Opposite\\s+of\\s+the\\s+opposite(?:es|s)?|Properties\\s+of\\s+Operations(?:es|s)?|Surface\\s+Area\\s+of\\s+Pyramids(?:es|s)?|mean\\s+absolute\\s+deviation(?:es|s)?|make\\s+sense\\s+of\\s+a\\s+problem(?:es|s)?|Percent\\s+Problem\\s+Solving(?:es|s)?|Repeated\\s+multiplication(?:es|s)?|Surface\\s+Area\\s+Using\\s+Nets(?:es|s)?|greatest\\s+common\\s+factor(?:es|s)?|Area\\s+of\\s+Parallelograms(?:es|s)?|Mean,\\s+Median,\\s+and\\s+Mode(?:es|s)?|Multiplicative\\s+inverse(?:es|s)?|Surface\\s+Area\\s+of\\s+Prisms(?:es|s)?|least\\s+common\\s+multiple(?:es|s)?|equivalent\\s+expression(?:es|s)?|Distributive\\s+Propert(?:y|ies)|Division\\s+of\\s+Fractions(?:es|s)?|Length,\\s+width,\\s+height(?:es|s)?|algebraic\\s+expression(?:es|s)?|Associative\\s+Propert(?:y|ies)|Commutative\\s+Propert(?:y|ies)|define\\s+the\\s+variables(?:es|s)?|Divide\\s+Mixed\\s+Numbers(?:es|s)?|Evaluate\\s+Expressions(?:es|s)?|Factor\\s+an\\s+expression(?:es|s)?|independent\\s+variable(?:es|s)?|Measure\\s+of\\s+variation(?:es|s)?|Numerical\\s+expression(?:es|s)?|Powers\\s+and\\s+Exponents(?:es|s)?|Rates\\s+and\\s+Unit\\s+Rates(?:es|s)?|Statistical\\s+Question(?:es|s)?|prime\\s+factorization(?:es|s)?|interquartile\\s+range(?:es|s)?|equivalent\\s+fraction(?:es|s)?|community\\s+agreement(?:es|s)?|Equivalent\\s+division(?:es|s)?|Five-number\\s+summar(?:y|ies)|Horizontal\\s+distance(?:es|s)?|Negative\\s+coordinate(?:es|s)?|Order\\s+of\\s+operations(?:es|s)?|Percent\\s+of\\s+a\\s+Number(?:es|s)?|Area\\s+of\\s+a\\s+Triangle(?:es|s)?|Area\\s+of\\s+Trapezoids(?:es|s)?|At\\s+least\\s+/\\s+At\\s+most(?:es|s)?|bilateral\\s+symmetr(?:y|ies)|Common\\s+denominator(?:es|s)?|compatible\\s+numbers(?:es|s)?|dependent\\s+variable(?:es|s)?|Double\\s+number\\s+line(?:es|s)?|Graph\\s+Inequalities(?:es|s)?|Graph\\s+Ratio\\s+Tables(?:es|s)?|Keep,\\s+Change,\\s+Flip(?:es|s)?|Measurement\\s+system(?:es|s)?|Multi-step\\s+problem(?:es|s)?|Understand\\s+Percent(?:es|s)?|Write\\s+Inequalities(?:es|s)?|improper\\s+fraction(?:es|s)?|conversion\\s+factor(?:es|s)?|benchmark\\s+percent(?:es|s)?|Data\\s+distribution(?:es|s)?|Greater\\s+than\\s+100%(?:es|s)?|Identity\\s+Propert(?:y|ies)|Inverse\\s+operation(?:es|s)?|Measure\\s+of\\s+center(?:es|s)?|Multiply\\s+Decimals(?:es|s)?|One-step\\s+equation(?:es|s)?|Rectangular\\s+prism(?:es|s)?|Shape\\s+of\\s+the\\s+data(?:es|s)?|Understand\\s+Ratios(?:es|s)?|Vertical\\s+distance(?:es|s)?|Coordinate\\s+plane(?:es|s)?|keep-change-flip(?:es|s)?|equivalent\\s+ratio(?:es|s)?|Additive\\s+pattern(?:es|s)?|Composite\\s+figure(?:es|s)?|Composite\\s+number(?:es|s)?|Customary\\s+system(?:es|s)?|Divide\\s+Fractions(?:es|s)?|Grouping\\s+symbols(?:es|s)?|line\\s+of\\s+symmetr(?:y|ies)|Negative\\s+integer(?:es|s)?|Triangular\\s+prism(?:es|s)?|common\\s+multiple(?:es|s)?|Customary\\s+units(?:es|s)?|Divide\\s+Decimals(?:es|s)?|Frequency\\s+table(?:es|s)?|Negative\\s+number(?:es|s)?|Positive\\s+number(?:es|s)?|Problem\\s+solving(?:es|s)?|Ratio\\s+Reasoning(?:es|s)?|Rational\\s+number(?:es|s)?|Regular\\s+Polygon(?:es|s)?|Right\\s+trapezoid(?:es|s)?|table\\s+of\\s+values(?:es|s)?|Two-dimensional(?:es|s)?|Unit\\s+rate\\s+point(?:es|s)?|Write\\s+Equations(?:es|s)?|absolute\\s+value(?:es|s)?|Boundary\\s+point(?:es|s)?|Colon\\s+notation(?:es|s)?|Compare\\s+Ratios(?:es|s)?|counterexample(?:es|s)?|Cross-multipl(?:y|ies)|Decimal\\s+places(?:es|s)?|generalization(?:es|s)?|Linear\\s+pattern(?:es|s)?|math\\s+biograph(?:y|ies)|predictabilit(?:y|ies)|Rate\\s+of\\s+change(?:es|s)?|reasonableness(?:es|s)?|representation(?:es|s)?|True\\s+statement(?:es|s)?|long\\s+division(?:es|s)?|decimal\\s+point(?:es|s)?|parallelogram(?:es|s)?|common\\s+factor(?:es|s)?|Approximatel(?:y|ies)|Balance\\s+point(?:es|s)?|Closed\\s+circle(?:es|s)?|Expanded\\s+form(?:es|s)?|Extreme\\s+value(?:es|s)?|Halfway\\s+value(?:es|s)?|Metric\\s+system(?:es|s)?|Part-to-whole(?:es|s)?|Perpendicular(?:es|s)?|Simplest\\s+form(?:es|s)?|Skip\\s+counting(?:es|s)?|Unit\\s+fraction(?:es|s)?|Work\\s+backward(?:es|s)?|Ordered\\s+pair(?:es|s)?|x-coordinate(?:es|s)?|mixed\\s+number(?:es|s)?|surface\\s+area(?:es|s)?|line\\s+segment(?:es|s)?|distribution(?:es|s)?|scale\\s+factor(?:es|s)?|prime\\s+factor(?:es|s)?|Annex\\s+a\\s+zero(?:es|s)?|Decimal\\s+grid(?:es|s)?|doer\\s+of\\s+math(?:es|s)?|Lateral\\s+area(?:es|s)?|Lateral\\s+face(?:es|s)?|Less\\s+than\\s+1%(?:es|s)?|Metric\\s+units(?:es|s)?|mirror\\s+image(?:es|s)?|No\\s+more\\s+than(?:es|s)?|Part-to-part(?:es|s)?|pattern\\s+rule(?:es|s)?|pattern\\s+unit(?:es|s)?|Power\\s+of\\s+ten(?:es|s)?|Prime\\s+number(?:es|s)?|Proportional(?:es|s)?|relationship(?:es|s)?|Slant\\s+height(?:es|s)?|Slanted\\s+side(?:es|s)?|Solution\\s+set(?:es|s)?|tape\\s+diagram(?:es|s)?|Target\\s+total(?:es|s)?|Distributive(?:es|s)?|multi-digit(?:es|s)?|place\\s+value(?:es|s)?|denominator(?:es|s)?|coefficient(?:es|s)?|Annex\\s+zeros(?:es|s)?|Base\\s+1\\s+\\(b1\\)(?:es|s)?|Base\\s+2\\s+\\(b2\\)(?:es|s)?|Common\\s+form(?:es|s)?|Coordinates(?:es|s)?|Factor\\s+pair(?:es|s)?|Factor\\s+tree(?:es|s)?|Middle\\s+half(?:es|s)?|Number\\s+line(?:es|s)?|Open\\s+circle(?:es|s)?|Per\\s+hundred(?:es|s)?|Ratio\\s+table(?:es|s)?|Side\\s+length(?:es|s)?|Target\\s+mean(?:es|s)?|Total\\s+parts(?:es|s)?|Total\\s+price(?:es|s)?|Variabilit(?:y|ies)|Associative(?:es|s)?|Commutative(?:es|s)?|Reflection(?:es|s)?|bring\\s+down(?:es|s)?|equivalent(?:es|s)?|reciprocal(?:es|s)?|hundredths(?:es|s)?|proportion(?:es|s)?|expression(?:es|s)?|substitute(?:es|s)?|inequalit(?:y|ies)|like\\s+terms(?:es|s)?|Better\\s+Buy(?:es|s)?|Comparison(?:es|s)?|confidence(?:es|s)?|conjecture(?:es|s)?|Constraint(?:es|s)?|cubic\\s+unit(?:es|s)?|depends\\s+on(?:es|s)?|Dimensions(?:es|s)?|Equal\\s+sign(?:es|s)?|math\\s+stor(?:y|ies)|profession(?:es|s)?|reasonable(?:es|s)?|repetition(?:es|s)?|round\\s+trip(?:es|s)?|Unit\\s+price(?:es|s)?|Unit\\s+ratio(?:es|s)?|remainder(?:es|s)?|algorithm(?:es|s)?|numerator(?:es|s)?|unit\\s+rate(?:es|s)?|perimeter(?:es|s)?|rectangle(?:es|s)?|trapezoid(?:es|s)?|histogram(?:es|s)?|frequenc(?:y|ies)|Base\\s+area(?:es|s)?|Benchmark(?:es|s)?|communit(?:y|ies)|Composite(?:es|s)?|Congruent(?:es|s)?|decompose(?:es|s)?|Deviation(?:es|s)?|Divisible(?:es|s)?|ingenuit(?:y|ies)|Interpret(?:es|s)?|inventor(?:y|ies)|Magnitude(?:es|s)?|persevere(?:es|s)?|represent(?:es|s)?|symmetric(?:es|s)?|the\\s+whole(?:es|s)?|Unit\\s+cube(?:es|s)?|Variation(?:es|s)?|Quadrant(?:es|s)?|quotient(?:es|s)?|exponent(?:es|s)?|estimate(?:es|s)?|simplif(?:y|ies)|variable(?:es|s)?|evaluate(?:es|s)?|opposite(?:es|s)?|triangle(?:es|s)?|box\\s+plot(?:es|s)?|dot\\s+plot(?:es|s)?|quartile(?:es|s)?|argument(?:es|s)?|at\\s+least(?:es|s)?|Constant(?:es|s)?|critique(?:es|s)?|Data\\s+set(?:es|s)?|Diagonal(?:es|s)?|Discount(?:es|s)?|Distance(?:es|s)?|Dividend(?:es|s)?|Interval(?:es|s)?|Negative(?:es|s)?|organize(?:es|s)?|Parallel(?:es|s)?|Per\\s+Unit(?:es|s)?|Positive(?:es|s)?|Propert(?:y|ies)|quantit(?:y|ies)|rotation(?:es|s)?|Solution(?:es|s)?|strateg(?:y|ies)|strength(?:es|s)?|Symmetr(?:y|ies)|Identit(?:y|ies)|Rational(?:es|s)?|Integer(?:es|s)?|product(?:es|s)?|regroup(?:es|s)?|decimal(?:es|s)?|percent(?:es|s)?|rhombus(?:es|s)?|polygon(?:es|s)?|pyramid(?:es|s)?|segment(?:es|s)?|outlier(?:es|s)?|cluster(?:es|s)?|Average(?:es|s)?|balance(?:es|s)?|Convert(?:es|s)?|Divisor(?:es|s)?|Formula(?:es|s)?|Isolate(?:es|s)?|justif(?:y|ies)|portion(?:es|s)?|reflect(?:es|s)?|Squared(?:es|s)?|Unknown(?:es|s)?|Whisker(?:es|s)?|Origin(?:es|s)?|x-axis(?:es|s)?|y-axis(?:es|s)?|factor(?:es|s)?|tenths(?:es|s)?|volume(?:es|s)?|vertex(?:es|s)?|median(?:es|s)?|Expand(?:es|s)?|growth(?:es|s)?|Markup(?:es|s)?|Output(?:es|s)?|puzzle(?:es|s)?|rhythm(?:es|s)?|Skewed(?:es|s)?|Spread(?:es|s)?|Survey(?:es|s)?|digit(?:es|s)?|ratio(?:es|s)?|prism(?:es|s)?|Cubed(?:es|s)?|Input(?:es|s)?|Order(?:es|s)?|Range(?:es|s)?|Scale(?:es|s)?|Solve(?:es|s)?|Prime(?:es|s)?|area(?:es|s)?|edge(?:es|s)?|data(?:es|s)?|Apex(?:es|s)?|Axis(?:es|s)?|Base(?:es|s)?|Face(?:es|s)?|gear(?:es|s)?|Mode(?:es|s)?|Peak(?:es|s)?|net(?:es|s)?|LCM(?:es|s)?|MCM(?:es|s)?|GCF(?:es|s)?|MCD(?:es|s)?|GCD(?:es|s)?|LCD(?:es|s)?|IQR(?:es|s)?|RIC(?:es|s)?|MAD(?:es|s)?|DMA(?:es|s)?|DAM(?:es|s)?|KCF(?:es|s)?|MCI(?:es|s)?|Gap(?:es|s)?|Tax(?:es|s)?|Tip(?:es|s)?|SA(?:es|s)?)\\b","lookup":{"graph on the coordinate plane":0,"coordinate plane":1,"ordered pair":2,"origin":3,"quadrant":4,"reflection":5,"integer":6,"x-coordinate":7,"x-axi":8,"y-axi":9,"product":10,"quotient":11,"factor":12,"remainder":13,"digit":14,"multi-digit":15,"prime factorization":16,"greatest common factor":17,"least common multiple":18,"exponent":19,"algorithm":20,"long division":21,"bring down":22,"regroup":23,"place value":24,"estimate":25,"decimal point":26,"numerator":27,"denominator":28,"equivalent":29,"reciprocal":30,"mixed number":31,"decimal":32,"tenth":33,"hundredth":34,"improper fraction":35,"simplify":36,"ratio":37,"unit rate":38,"percent":39,"proportion":40,"variable":41,"expression":42,"coefficient":43,"substitute":44,"inequality":45,"evaluate":46,"like term":47,"absolute value":48,"opposite":49,"perimeter":50,"volume":51,"surface area":52,"area":53,"triangle":54,"rectangle":55,"parallelogram":56,"trapezoid":57,"rhombu":58,"polygon":59,"prism":60,"pyramid":61,"net":62,"vertex":63,"edge":64,"segment":65,"line segment":66,"median":67,"outlier":68,"interquartile range":69,"mean absolute deviation":70,"keep-change-flip":71,"data":72,"histogram":73,"box plot":74,"dot plot":75,"quartile":76,"frequency":77,"distribution":78,"cluster":79,"scale factor":80,"equivalent ratio":81,"equivalent expression":82,"equivalent fraction":83,"common factor":84,"common multiple":85,"least common denominator":86,"prime factor":87,"conversion factor":88,"algebraic expression":89,"lcm":90,"mcm":91,"gcf":92,"mcd":93,"gcd":94,"lcd":95,"iqr":96,"ric":97,"mad":98,"dma":99,"dam":100,"sa":101,"kcf":102,"mci":103,"add and subtract decimal":104,"addition property of equality":105,"additive pattern":106,"annex a zero":107,"annex zero":108,"apex":109,"appropriate measures of center":110,"approximately":111,"area of a triangle":112,"area of composite figure":113,"area of parallelogram":114,"area of regular polygon":115,"area of trapezoid":116,"argument":117,"associative property":118,"at least":119,"at least / at most":120,"average":121,"axi":122,"balance":123,"balance point":124,"base":125,"base 1 (b1)":126,"base 2 (b2)":127,"base area":128,"benchmark":129,"benchmark percent":130,"better buy":131,"bilateral symmetry":132,"boundary point":133,"closed circle":134,"colon notation":135,"common denominator":136,"common form":137,"community":138,"community agreement":139,"commutative property":140,"compare and order integer":141,"compare ratio":142,"comparison":143,"compatible number":144,"composite":145,"composite figure":146,"composite number":147,"confidence":148,"congruent":149,"conjecture":150,"constant":151,"constraint":152,"convert":153,"convert measurement unit":154,"convert measurements between system":155,"convert measurements within the same system":156,"coordinate":157,"counterexample":158,"critique":159,"cross-multiply":160,"cubed":161,"cubic unit":162,"customary system":163,"customary unit":164,"data distribution":165,"data set":166,"decimal division algorithm":167,"decimal grid":168,"decimal place":169,"decompose":170,"define the variable":171,"dependent variable":172,"depends on":173,"describe the data using the median":174,"determine the whole given the part and percent":175,"deviation":176,"diagonal":177,"dimension":178,"discount":179,"display data with box plot":180,"display data with histogram":181,"distance":182,"distance between vertice":183,"distance on the coordinate plane":184,"distributive property":185,"divide decimal":186,"divide fraction":187,"divide mixed number":188,"divide multi-digit number":189,"divide whole numbers by fraction":190,"dividend":191,"divisible":192,"division of fraction":193,"division property of equality":194,"divisor":195,"doer of math":196,"double number line":197,"equal sign":198,"equations and inequalities problem solving":199,"equivalent division":200,"evaluate expression":201,"expand":202,"expanded form":203,"extreme value":204,"face":205,"factor an expression":206,"factor pair":207,"factor tree":208,"find factors and multiple":209,"five-number summary":210,"formula":211,"fraction division problem solving":212,"fractions, decimals, and percent":213,"frequency table":214,"gap":215,"gear":216,"generalization":217,"graph inequality":218,"graph ratio table":219,"greater than 100%":220,"greatest common factor (gcf)":221,"grouping symbol":222,"growth":223,"halfway value":224,"horizontal distance":225,"identity property":226,"independent variable":227,"ingenuity":228,"input":229,"integers and absolute value":230,"interpret":231,"interval":232,"inventory":233,"inverse operation":234,"isolate":235,"justify":236,"keep, change, flip":237,"lateral area":238,"lateral face":239,"least common multiple (lcm)":240,"length, width, height":241,"less than 1%":242,"line of symmetry":243,"linear pattern":244,"magnitude":245,"make sense of a problem":246,"markup":247,"math biography":248,"math story":249,"mean, median, and mode":250,"measure of center":251,"measure of variation":252,"measurement system":253,"metric system":254,"metric unit":255,"middle half":256,"mirror image":257,"mode":258,"multi-step problem":259,"multiplication property of equality":260,"multiplicative inverse":261,"multiply decimal":262,"negative":263,"negative coordinate":264,"negative integer":265,"negative number":266,"no more than":267,"non-statistical question":268,"number line":269,"numerical expression":270,"one-step equation":271,"open circle":272,"opposite of the opposite":273,"order":274,"order of operation":275,"ordered pairs in all four quadrant":276,"organize":277,"output":278,"parallel":279,"part-to-part":280,"part-to-whole":281,"pattern rule":282,"pattern unit":283,"peak":284,"per hundred":285,"per unit":286,"percent of a number":287,"percent problem solving":288,"percents greater than 100% and less than 1%":289,"perpendicular":290,"persevere":291,"portion":292,"positive":293,"positive number":294,"power of ten":295,"powers and exponent":296,"predictability":297,"prime number":298,"problem solving":299,"profession":300,"properties of operation":301,"property":302,"proportional":303,"puzzle":304,"quantity":305,"range":306,"range and interquartile range":307,"rate of change":308,"rates and unit rate":309,"ratio and rate problem solving":310,"ratio reasoning":311,"ratio table":312,"rational number":313,"rational numbers on the number line":314,"reasonable":315,"reasonablenes":316,"rectangular prism":317,"reflect":318,"reflect points across axe":319,"regular polygon":320,"relationship":321,"repeated multiplication":322,"repetition":323,"represent":324,"representation":325,"rhythm":326,"right trapezoid":327,"rotation":328,"round trip":329,"scale":330,"shape of data distribution":331,"shape of the data":332,"side length":333,"simplest form":334,"simplify algebraic expression":335,"skewed":336,"skip counting":337,"slant height":338,"slanted side":339,"solution":340,"solution set":341,"solve":342,"solve and graph inequality":343,"solve multiplication and division equation":344,"solve one-step addition and subtraction equation":345,"spread":346,"squared":347,"statistical question":348,"statistical questions and data":349,"strategy":350,"strength":351,"subtraction property of equality":352,"surface area of prism":353,"surface area of pyramid":354,"surface area using net":355,"survey":356,"symmetric":357,"symmetry":358,"table of value":359,"tape diagram":360,"target mean":361,"target total":362,"tax":363,"the distributive property":364,"the whole":365,"tip":366,"total part":367,"total price":368,"triangular prism":369,"true statement":370,"two-dimensional":371,"understand percent":372,"understand ratio":373,"unit cube":374,"unit fraction":375,"unit price":376,"unit rate point":377,"unit rate problem solving":378,"unit ratio":379,"unknown":380,"variability":381,"variation":382,"vertical distance":383,"volume of rectangular prism":384,"volume with whole-number edge":385,"whisker":386,"work backward":387,"write algebraic expression":388,"write and evaluate numerical expressions with exponent":389,"write equation":390,"write inequality":391,"associative":118,"commutative":140,"distributive":185,"identity":226,"prime":298,"rational":313}};
 window.__HW_WORKED__ = {"title":"Watch me","titleEs":"Mírame","lines":["I will plot the point (5, 4). The 5 is the x-coordinate, and the 4 is the y-coordinate.","I start at the origin, which is (0, 0).","First I move 5 units to the right along the x-axis.","Then I move 4 units up. I place my dot. That is the point (5, 4)."],"linesEs":["Voy a marcar el punto (5, 4). El 5 es la coordenada x, y el 4 es la coordenada y.","Empiezo en el origen, que es (0, 0).","Primero me muevo 5 unidades a la derecha por el eje x.","Luego me muevo 4 unidades hacia arriba. Coloco mi punto. Ese es el punto (5, 4)."]};
 </script>
-<script src="/assets/homework/homework-vocab-3da9690d66.bundle.js"></script>
-<script src="/assets/homework/homework-core-e12f28ae0a.bundle.js"></script>
+<script src="/assets/homework/homework-vocab-12619585d8.bundle.js"></script>
+<script src="/assets/homework/homework-core-4eeaa5cadb.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

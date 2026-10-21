@@ -42,6 +42,24 @@ Proposed next release:
 - Review sensitive real-world scenarios, especially dosage and health contexts,
   so activities cannot be mistaken for real-world instructions.
 
+### Version 2 shipped: the weekly hub (`/curriculum/family-connections/`)
+
+- One name: the page is "Family Math Studio" / "Estudio familiar de matemáticas"
+  with an English | Spanish switch at the top that also writes `hw_lang_mode`,
+  so every lesson page opens in the family's language.
+- Each posted night has a time chooser: "Start Family Math Studio · 20–30 min"
+  (the recommended route, per Joel's decision), then "Quick · 5–10 min" and
+  "Learn & practice · 15–20 min". The third route is called "Full Studio".
+  Nights use the lesson pages' words: "Session 1: Concept Launch" and
+  "Session 2: Compare & Apply".
+- When nothing is posted the hub shows "Tonight anyway": Daily Boost, practice
+  any lesson, and catch up on last week. No dead end, no new network calls.
+- "A note from Mr. Neft": an optional per-week text and captioned-video card
+  from `data/family-welcome.json`, guarded by `validate:family-welcome`; script
+  template in `docs/family-welcome-script.md`.
+- Phone layout at 390px: first-time class picker, 44px targets, 14px minimum
+  text, room reserved under the fixed Learning supports button.
+
 ## Version 3 — Family learning companion
 
 Proposed later release:

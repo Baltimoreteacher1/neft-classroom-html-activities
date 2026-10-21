@@ -87,7 +87,7 @@ export const PRINT_CSS = `
   /* Interactive-only chrome never reaches paper */
   ${SHEET} .hw-hero, ${SHEET} .homework-tab-chrome, ${SHEET} .hw-rail, ${SHEET} .hw-listen-bar,
   ${SHEET} .btn-read-aloud, ${SHEET} .btn-listen-prob, ${SHEET} .hw-listen, ${SHEET} .bridge-listen,
-  ${SHEET} .lang-selector-card, ${SHEET} .stars-to-win-bar, ${SHEET} .live-streak-banner,
+  ${SHEET} .lang-selector-card, ${SHEET} .live-streak-banner,
   ${SHEET} .goal-reached-banner, ${SHEET} .scratchpad-inline-toggle, ${SHEET} .interactive-scratchpad,
   ${SHEET} .hw-stepper-bar, ${SHEET} .problem-hint-row, ${SHEET} .problem-coach-ladder,
   ${SHEET} .problem-check-row, ${SHEET} .problem-check-result, ${SHEET} .feedback,

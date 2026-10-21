@@ -21,6 +21,8 @@ import {
   resolveKitchenTableActivity,
 } from "../scripts/homework-guided-notes.mjs";
 import { VISUAL_LABS_JS } from "../scripts/homework-visual-labs.mjs";
+import { renderExperienceDialogs } from "../scripts/lib/homework-experience.mjs";
+import { EXPERIENCE_JS } from "../scripts/lib/homework-experience-js.mjs";
 import { lessonPath, loadLessonConfig } from "./lib/curriculum-source.mjs";
 
 const config = loadLessonConfig;
@@ -33,7 +35,8 @@ function runtime(query = "") {
         '</div><div class="practice-tier-challenge"></div>' +
         renderDoneTab(config("3-2"), "3-2"),
     ) +
-    '<a id="hw_text_link"></a><a id="hw_email_link"></a>';
+    '<a id="hw_text_link"></a><a id="hw_email_link"></a>' +
+    renderExperienceDialogs();
   const dom = new JSDOM(markup, {
     url: "https://eduwonderlab.com/lessons/3-2/homework" + query,
     runScripts: "outside-only",
@@ -41,9 +44,10 @@ function runtime(query = "") {
   // Load the real runtime without its unrelated canvas/camera startup.
   dom.window.document.addEventListener = () => {};
   dom.window.eval(HOMEWORK_TABS_JS);
+  dom.window.eval(EXPERIENCE_JS);
   dom.window.LESSON_ID = "3-2";
-  dom.window.alerts = [];
-  dom.window.alert = (msg) => dom.window.alerts.push(msg);
+  // Notices are in-page toasts now (a native alert() can be blocked and only spoke English).
+  dom.window.notice = () => dom.window.document.getElementById("hw_toast").textContent;
   dom.window.HTMLElement.prototype.scrollIntoView = () => {};
   return dom;
 }
@@ -476,7 +480,7 @@ test("local reflection never implies a network send, can save without a guardian
   });
   w.saveParentSignoff();
   assert.equal(w.document.getElementById("signoff_confirmed_wrapper").hidden, true);
-  assert.match(w.alerts.at(-1), /could not be saved/);
+  assert.match(w.notice(), /could not be saved/);
   dom.window.close();
 });
 
@@ -487,7 +491,7 @@ test("paper practice invokes a real print flow and makes no offline-download cla
   w.print = () => printed++;
   w.preparePaperPractice();
   assert.equal(printed, 1);
-  assert.match(w.alerts[0], /has not downloaded an offline copy/);
+  assert.match(w.notice(), /has not downloaded an offline copy/);
   assert.equal(w.localStorage.getItem("hw_offline_pack_3-2"), null);
   dom.window.close();
 });

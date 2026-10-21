@@ -188,7 +188,7 @@ export function mergeHomework(inputLessons, overrides = {}) {
         ...lesson,
         title: cleanText(override.title, 120) || lesson.title,
         directions: cleanText(override.directions, 600) || DEFAULT_DIRECTIONS,
-        estimatedTime: cleanText(override.estimatedTime, 40) || "15-20 minutes",
+        estimatedTime: cleanText(override.estimatedTime, 40) || "20-30 minutes",
         materials: cleanText(override.materials, 180) || "Paper, pencil, and lesson notes",
         languageSupport:
           cleanText(override.languageSupport, 500) ||

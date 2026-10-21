@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Help Your Student — Lesson 2-1: Understand Statistical Questions</title>
+<title>Family Math Studio — Lesson 2-1: Understand Statistical Questions</title>
 <link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/homework/homework-base-0d2a228add.css">
 <style>
@@ -114,26 +114,6 @@ header.homework-header,
   user-select: none;
 }
 
-/* 3 Stars Milestone Bar on Quick Check */
-.stars-to-win-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, var(--teal-light) 0%, #ffffff 100%);
-  border: 1.5px solid var(--teal);
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  margin-bottom: 20px;
-}
-.stars-to-win-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 14.5px;
-  color: var(--navy);
-}
 .stars-milestone-chips {
   display: flex;
   flex-wrap: wrap;
@@ -152,16 +132,7 @@ header.homework-header,
   flex: 0 0 auto;
   white-space: nowrap;
 }
-/* On a phone the goal sentence and the three milestone chips do not fit on one
-   line, so they stack instead of fighting for the same 400px. */
-@media (max-width: 620px) {
-  .stars-to-win-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .stars-milestone-chips { width: 100%; }
-}
+.stars-milestone-chips { width: 100%; }
 
 /* Rotated Huddle Activity Card */
 .huddle-hook-banner {
@@ -333,7 +304,7 @@ header.homework-header,
   margin-bottom: 3px;
 }
 </style>
-<link rel="stylesheet" href="/assets/homework/homework-layer-205c995f26.css">
+<link rel="stylesheet" href="/assets/homework/homework-layer-992d934c32.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -347,16 +318,17 @@ header.homework-header,
   <link rel="apple-touch-icon" href="/assets/favicon.svg">
   <meta name="theme-color" content="#12355b">
   <link rel="canonical" href="https://eduwonderlab.com/lessons/2-1/homework.html">
-  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 2-1: Understand Statistical Questions.">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 2-1: Understand Statistical Questions.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Neft Teacher">
-  <meta property="og:title" content="Help Your Student — Lesson 2-1: Understand Statistical Questions">
-  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 2-1: Understand Statistical Questions.">
+  <meta property="og:title" content="Family Math Studio — Lesson 2-1: Understand Statistical Questions">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 2-1: Understand Statistical Questions.">
   <meta property="og:url" content="https://eduwonderlab.com/lessons/2-1/homework.html">
   <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
   <!-- enthead-injected:end -->
 </head>
 <body>
+<a class="hw-skip" href="#hw_tab_panels" onclick="startHomework(); return false;"><span class="lang-en">Skip to tonight's math</span><span class="lang-es" lang="es">Ir a la matemática de hoy</span></a>
 
 <script>
 /* Language mode, BEFORE first paint. restoreParentSignoff sets the same class
@@ -365,10 +337,29 @@ header.homework-header,
    whole document. Same rule as the boot script below it: fail toward showing
    something readable, which here is English. */
 (function () {
-  var mode = 'en';
+  /* Blocked site data makes every localStorage access throw, which would stop the
+     page's own startup. Fall back to storage that lasts for this visit. */
   try {
+    window.localStorage.getItem('hw_probe');
+  } catch (blocked) {
+    var memory = {};
+    var stand = {
+      getItem: function (k) { return Object.prototype.hasOwnProperty.call(memory, k) ? memory[k] : null; },
+      setItem: function (k, v) { memory[k] = String(v); },
+      removeItem: function (k) { delete memory[k]; },
+      clear: function () { memory = {}; },
+      key: function (i) { return Object.keys(memory)[i] || null; },
+      get length() { return Object.keys(memory).length; }
+    };
+    try { Object.defineProperty(window, 'localStorage', { configurable: true, get: function () { return stand; } }); } catch (unsupported) {}
+  }
+  var mode = 'bilingual';
+  try {
+    var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
+    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
+      mode = requested;
+    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)
@@ -423,6 +414,23 @@ header.homework-header,
     <header class="hw-hero" aria-label="Family Math Night welcome">
       <div class="hw-hero-glow" aria-hidden="true"></div>
       <div class="hw-hero-body">
+        <div class="hw-hero-controls">
+          <div class="lang-selector-card">
+            <span class="lang-selector-title">Language / Idioma</span>
+            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
+              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
+                🇺🇸🇪🇸 <span class="lang-btn-long">Bilingual / Bilingüe</span><span class="lang-btn-short">EN + ES</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
+                🇺🇸 <span>English</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
+                🇪🇸 <span>Español</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <p class="hw-hero-kicker">
           <span class="hw-hero-kicker-icon" aria-hidden="true">📘</span>
           <span class="lang-en">Unit 2 · Understanding the World Around Us Through Statistics</span>
@@ -443,39 +451,25 @@ header.homework-header,
         </p>
 
         <nav class="hw-session-banner" aria-label="Two-session lesson" data-session="1">
-    <ol class="hw-session-steps"><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span></span></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-next"><a class="hw-session-chip" href="/lessons/2-1-part2/homework.html"><span class="hw-session-mark" aria-hidden="true">○</span><span class="hw-session-name"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span></a></li></ol>
+    <ol class="hw-session-steps"><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span><span class="hw-session-short"><span class="lang-en">Session 1</span><span class="lang-es" lang="es">Sesión 1</span></span></span></span></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-next"><a class="hw-session-chip" href="/lessons/2-1-part2/homework.html"><span class="hw-session-mark" aria-hidden="true">○</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span><span class="hw-session-short"><span class="lang-en">Session 2</span><span class="lang-es" lang="es">Sesión 2</span></span></span></a></li></ol>
     <p class="hw-session-sentence"><strong><span class="lang-en">Coming up next:</span><span class="lang-es" lang="es">Lo que sigue:</span></strong> <span class="lang-en">In Session 2, we take the answers collected from a statistical question and draw them as a dot plot, then describe the shape the dots make.</span><span class="lang-es" lang="es">En la Sesión 2, tomamos las respuestas recogidas de una pregunta estadística y las dibujamos como un diagrama de puntos, y luego describimos la forma que hacen los puntos.</span> <span class="lang-en">It builds on today’s model. Open it when it is assigned.</span><span class="lang-es" lang="es">Se basa en el modelo de hoy. Ábranla cuando se las asignen.</span></p>
   </nav>
 
         <p class="hw-hero-bigidea" aria-label="Big idea">
-          <span class="hw-hero-bigidea-label"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
+          <span class="hw-hero-bigidea-label hw-inline"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
           <span class="lang-en">Tonight we learn to tell the difference between a statistical question and a question with just one fixed answer.</span><span class="lang-es" lang="es">Esta noche aprendemos a notar la diferencia entre una pregunta estadística y una pregunta con una sola respuesta fija.</span>
         </p>
-
-        <div class="hw-hero-controls">
-          <div class="lang-selector-card">
-            <span class="lang-selector-title">Language / Idioma</span>
-            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
-              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
-                🇺🇸🇪🇸 <span>Bilingual / Bilingüe</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
-                🇺🇸 <span>English</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
-                🇪🇸 <span>Español</span>
-              </button>
-            </div>
-          </div>
-        </div>
 
         <p class="hw-hero-lead">
           <span class="lang-en">Optional, ungraded practice. Work with someone or on your own; no adult signature is needed.</span>
           <span class="lang-es" lang="es">Práctica opcional, sin calificación. Trabaja con alguien o a solas; no necesitas la firma de un adulto.</span>
         </p>
 
-        <ul class="hw-hero-stats" aria-label="What tonight looks like">
-          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">5</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">5</span> paradas</span></li>
+
+        <ul class="hw-tonight hw-inline" aria-label="Tonight at a glance">
+          <li><span aria-hidden="true">⏱</span> <strong><span data-hw-tonight-time>20–30</span> min</strong></li>
+          <li><span aria-hidden="true">✏️</span> <span class="lang-en">Pencil and paper</span><span class="lang-es" lang="es">Lápiz y papel</span></li>
+          <li><span aria-hidden="true">🎯</span> <span class="lang-en">Goal:</span><span class="lang-es" lang="es">Meta:</span> <strong><span data-hw-goal-count>4</span> <span class="lang-en">problems</span><span class="lang-es" lang="es">problemas</span></strong></li>
         </ul>
 
 
@@ -483,30 +477,31 @@ header.homework-header,
         <div class="hw-route-heading">
           <span class="hw-route-icon" aria-hidden="true">🧭</span>
           <div>
-            <h2 id="hw_route_title"><span class="lang-en">Choose a practice path</span><span class="lang-es" lang="es">Elige una ruta de práctica</span></h2>
-            <p><span class="lang-en">All practice is optional and ungraded. Choose the time that works for your family; your route choice is saved on this device.</span><span class="lang-es" lang="es">Toda la práctica es opcional y no lleva calificación. Elijan el tiempo que les funcione; la ruta queda guardada en este dispositivo.</span></p>
+            <h2 id="hw_route_title" class="hw-inline"><span class="lang-en">How much time do you have tonight?</span><span class="lang-es" lang="es">¿Cuánto tiempo tienen esta noche?</span></h2>
+            <p class="hw-inline"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
           </div>
         </div>
-        <div class="hw-route-options" role="group" aria-label="Choose a practice path" data-aria-en="Choose a practice path" data-aria-es="Elige una ruta de práctica">
+        <div class="hw-route-options" role="group" aria-label="How much time do you have tonight?" data-aria-en="How much time do you have tonight?" data-aria-es="¿Cuánto tiempo tienen esta noche?">
           <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
-            <span class="hw-route-time">5–10 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Quick practice</span><span class="lang-es" lang="es">Práctica breve</span></strong><small><span class="lang-en">One example, 2 problems, and one explanation.</span><span class="lang-es" lang="es">Un ejemplo, 2 problemas y una explicación.</span></small></span>
+            <span class="hw-route-time">5–10 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Quick</span><span class="lang-es" lang="es">Rápida</span></strong><small><span class="lang-en">One example and 2 problems.</span><span class="lang-es" lang="es">Un ejemplo y 2 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
-            <span class="hw-route-time">15–20 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Learn, explore key words, practice <span data-hw-core-count>6</span> problems, and explain.</span><span class="lang-es" lang="es">Aprende, explora palabras clave, practica <span data-hw-core-count>6</span> problemas y explica.</span></small></span>
+            <span class="hw-route-time">15–20 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Key words, then practice. Goal: 4 problems.</span><span class="lang-es" lang="es">Palabras clave y práctica. Meta: 4 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option is-active" data-route-mode="full" aria-pressed="true" onclick="setHomeworkRoute('full')">
-            <span class="hw-route-time">20–30 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Family Math Studio</span><span class="lang-es" lang="es">Estudio familiar de matemáticas</span></strong><small><span class="lang-en">Add one home mission and one math game. Go at your own pace.</span><span class="lang-es" lang="es">Agrega una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span></small></span>
+            <span class="hw-route-time">20–30 <small>min</small></span>
+            <span class="hw-route-badge"><span aria-hidden="true">★</span><span class="hw-sr-only"><span class="lang-en">Recommended</span><span class="lang-es" lang="es">Recomendada</span></span></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Full Studio</span><span class="lang-es" lang="es">Estudio completo</span></strong><small><span class="lang-en">Everything, plus a home mission and a game.</span><span class="lang-es" lang="es">Todo, más una misión en casa y un juego.</span></small></span>
           </button>
         </div>
         <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Family Math Studio selected: <span data-hw-core-count>6</span> problems, key words, one home mission, and one math game. Go at your own pace.</span>
-          <span class="lang-es" lang="es">Estudio familiar seleccionado: <span data-hw-core-count>6</span> problemas, palabras clave, una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span>
+          <span class="lang-en">Full Studio (recommended): everything, plus one home mission and one game. Everything is optional.</span>
+          <span class="lang-es" lang="es">Estudio completo (recomendada): todo, más una misión en casa y un juego. Todo es opcional.</span>
         </p>
         <p id="hw_resume_note" role="status" aria-live="polite"></p>
-        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start this path</span><span class="lang-es" lang="es">Empezar esta ruta</span></button>
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
       </section>
 
         <details class="hw-tools-menu"><summary><span class="lang-en">Tools: scratchpad, share, print &amp; standard</span><span class="lang-es" lang="es">Herramientas: pizarra, compartir, imprimir y estándar</span></summary>
@@ -659,15 +654,39 @@ header.homework-header,
           <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Preguntas estadísticas y datos</li><li>Pregunta estadística</li><li>Pregunta no estadística</li></ul></div>
         </div>
       </div>
-
-      <div class="parent-quick-card">
-        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
-        <ul>
-          <li><span aria-hidden="true">💬</span> <strong><span class="lang-en">If they get stuck, ask:</span><span class="lang-es" lang="es">Si se atora, pregunten:</span></strong> <span class="lang-en">What data would answer this question, and why might those answers vary?</span><span class="lang-es" lang="es">¿Qué datos responderían esta pregunta y por qué podrían variar esas respuestas?</span></li>
-          <li><span aria-hidden="true">🚫</span> <strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">Use a rule before checking what this question asks.</span><span class="lang-es" lang="es">Usa una regla sin revisar qué pide esta pregunta.</span></li>
-        </ul>
-      </div>
     </div>
+
+      <section class="hw-confidence" id="hw_conf_before" data-conf-phase="before" aria-labelledby="hw_conf_before_title">
+        <h3 id="hw_conf_before_title"><span class="lang-en">How sure do you feel about today&#039;s math?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes con la matemática de hoy?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_before_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="before" onclick="hwSetConfidence('before', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="before" onclick="hwSetConfidence('before', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="before" onclick="hwSetConfidence('before', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Just for you. It stays on this device. We ask again at the end.</span><span class="lang-es" lang="es">Solo para ti. Se queda en este dispositivo. Preguntamos otra vez al final.</span></p>
+
+      </section>
+
+      <section class="hw-mystery" id="hw_mystery" data-problem="problem_11" aria-labelledby="hw_mystery_title">
+        <span class="hw-mystery-lock" id="hw_mystery_lock" aria-hidden="true">🔒</span>
+        <div class="hw-mystery-body">
+          <p class="hw-eyebrow hw-inline"><span class="lang-en">Tonight&#039;s mystery challenge</span><span class="lang-es" lang="es">El reto misterioso de hoy</span></p>
+          <h3 id="hw_mystery_title"><span class="lang-en">Can you crack this before tonight is over?</span><span class="lang-es" lang="es">¿Puedes resolver esto antes de terminar hoy?</span></h3>
+          <p class="hw-mystery-stem"><span class="lang-en">Why does the question &quot;How many minutes did each athlete warm up before the game?&quot; count as a statistical question?</span><span class="lang-es" lang="es">¿Por qué la pregunta «¿Cuántos minutos calentó cada atleta antes del partido?» cuenta como una pregunta estadística?</span></p>
+          <p class="hw-mystery-status" id="hw_mystery_status" role="status" aria-live="polite">
+            <span class="lang-en">Locked. Finish <span data-hw-goal-count>4</span> problems and it opens.</span>
+            <span class="lang-es" lang="es">Bloqueado. Termina <span data-hw-goal-count>4</span> problemas y se abre.</span>
+          </p>
+          <button type="button" class="hw-mystery-open" id="hw_mystery_open" hidden onclick="hwOpenMystery()">
+            <span class="lang-en">Open the mystery challenge ➔</span><span class="lang-es" lang="es">Abrir el reto misterioso ➔</span>
+          </button>
+        </div>
+      </section>
       <div class="learn-big-idea-block" id="hw_learn_idea">
 
       <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span> <button type="button" class="btn-listen-concept" onclick="speakBigIdea(&quot;One shelf has one count. Counting each shelf gives 4, 7, and 10 books: varied answers worth collecting.&quot;, &quot;Un estante tiene una sola cantidad. Al contar cada estante obtenemos 4, 7 y 10 libros: respuestas variadas que podemos recopilar.&quot;)" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button></h2>
@@ -771,18 +790,24 @@ header.homework-header,
 
 
       <div class="learn-extended-block" id="hw_learn_quick">
-    <details class="parent-coaching-drawer">
-      <summary class="parent-coaching-summary">
-        <span class="summary-left">
-          <span class="summary-icon">💡</span>
-          <span class="summary-text">
-            <strong><span class="lang-en">Parent Coaching Tips &amp; Real-World Connection</span><span class="lang-es" lang="es">Consejos para Padres y Conexión Real</span></strong>
-            <small><span class="lang-en">Tap to view coaching questions, common traps &amp; everyday examples</span><span class="lang-es" lang="es">Toca para ver preguntas guía, errores comunes y ejemplos</span></small>
-          </span>
+    <details class="hw-grownup" id="hw_grownup">
+      <summary>
+        <span class="hw-grownup-icon" aria-hidden="true">👪</span>
+        <span class="hw-grownup-text hw-stack">
+          <strong class="hw-stack"><span class="lang-en">For the grown-up · 1 minute</span><span class="lang-es" lang="es">Para el adulto · 1 minuto</span></strong>
+          <small class="hw-stack"><span class="lang-en">Ask: What data would answer this question, and why might those answers vary?</span><span class="lang-es" lang="es">Pregunta: ¿Qué datos responderían esta pregunta y por qué podrían variar esas respuestas?</span></small>
         </span>
-        <span class="summary-chevron" aria-hidden="true">▾</span>
+        <span class="hw-grownup-chev" aria-hidden="true">▾</span>
       </summary>
-      <div class="parent-coaching-content">
+      <div class="hw-grownup-body">
+
+      <div class="parent-quick-card">
+        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
+        <ul>
+          <li><span aria-hidden="true">💬</span> <strong><span class="lang-en">If they get stuck, ask:</span><span class="lang-es" lang="es">Si se atora, pregunten:</span></strong> <span class="lang-en">What data would answer this question, and why might those answers vary?</span><span class="lang-es" lang="es">¿Qué datos responderían esta pregunta y por qué podrían variar esas respuestas?</span></li>
+          <li><span aria-hidden="true">🚫</span> <strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">Use a rule before checking what this question asks.</span><span class="lang-es" lang="es">Usa una regla sin revisar qué pide esta pregunta.</span></li>
+        </ul>
+      </div>
 
     <div class="real-world-spotlight card-ish">
       <div class="spotlight-badge"><span class="spotlight-icon" aria-hidden="true">🏡</span> <span><span class="lang-en">WHY THIS MATTERS</span><span class="lang-es" lang="es">¿POR QUÉ IMPORTA?</span></span></div>
@@ -960,7 +985,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Statistical Questions and Data&quot;, &quot;Preguntas estadísticas y datos&quot;)" title="Listen / Escuchar" aria-label="Pronounce Statistical Questions and Data">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/concept-statistical-questions-and-data.svg" alt="Illustration of Statistical Questions and Data: A statistical question expects varied answers that can be collected as data." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/concept-statistical-questions-and-data.svg" alt="Illustration of Statistical Questions and Data: Questions that have many answers, and the facts you collect." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -986,8 +1011,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Preguntas estadísticas y datos</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A statistical question expects varied answers that can be collected as data.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una pregunta estadística espera respuestas variadas que se pueden recopilar como datos.</p>
+                    <p class="vocab-def">Questions that have many answers, and the facts you collect.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Preguntas con muchas respuestas, y los datos que reúnes.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>How many minutes do students in our class read each night?</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1008,7 +1033,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Statistical Question&quot;, &quot;Pregunta estadística&quot;)" title="Listen / Escuchar" aria-label="Pronounce Statistical Question">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/data.svg" alt="Illustration of Statistical Question: A question answered with data that are expected to vary." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/data.svg" alt="Illustration of Statistical Question: A question with answers that change from person to person." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1034,8 +1059,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Pregunta estadística</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A question answered with data that are expected to vary.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una pregunta que se responde con datos que se espera que varíen.</p>
+                    <p class="vocab-def">A question with answers that change from person to person.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una pregunta cuyas respuestas cambian de una persona a otra.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>“How tall are the players on the team?” → answers vary: 60 in, 63 in, 58 in, 65 in</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1056,7 +1081,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Non-statistical Question&quot;, &quot;Pregunta no estadística&quot;)" title="Listen / Escuchar" aria-label="Pronounce Non-statistical Question">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/concept-non-statistical-question.svg" alt="Illustration of Non-statistical Question: A question that does not anticipate variability in the data used to answer it. It may ask for one fact or measurement." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/concept-non-statistical-question.svg" alt="Illustration of Non-statistical Question: A question with only one answer." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1082,8 +1107,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Pregunta no estadística</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A question that does not anticipate variability in the data used to answer it. It may ask for one fact or measurement.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una pregunta que no anticipa variabilidad en los datos usados para responderla. Puede pedir un solo dato o una medición.</p>
+                    <p class="vocab-def">A question with only one answer.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una pregunta con una sola respuesta.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>“How tall am I?” → one answer: 60 in. Everyone who measures gets the same number.</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1104,7 +1129,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Data&quot;, &quot;Datos&quot;)" title="Listen / Escuchar" aria-label="Pronounce Data">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/data.svg" alt="Illustration of Data: Facts and numbers you collect, like answers to a survey." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/data.svg" alt="Illustration of Data: Facts and numbers you collect." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1130,8 +1155,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Datos</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">Facts and numbers you collect, like answers to a survey.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Datos y números que recoges, como respuestas a una encuesta.</p>
+                    <p class="vocab-def">Facts and numbers you collect.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Información y números que reúnes, como respuestas de una encuesta.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>Player heights: 60 in, 63 in, 58 in, 65 in — four different measurements</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1152,7 +1177,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Variability&quot;, &quot;Variabilidad&quot;)" title="Listen / Escuchar" aria-label="Pronounce Variability">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/spread.svg" alt="Illustration of Variability: How spread out the numbers are." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/spread.svg" alt="Illustration of Variability: How far apart the numbers are." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1178,7 +1203,7 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Variabilidad</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">How spread out the numbers are.</p>
+                    <p class="vocab-def">How far apart the numbers are.</p>
                     <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Qué tan separados están los números.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>Scores 10, 12, 11 are close together (low variability); scores 2, 15, 30 are far apart (high variability)</span></div>
                   </div>
@@ -1200,7 +1225,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Survey&quot;, &quot;Encuesta&quot;)" title="Listen / Escuchar" aria-label="Pronounce Survey">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/data.svg" alt="Illustration of Survey: Collecting facts by asking people questions." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/data.svg" alt="Illustration of Survey: Ask people questions to get facts." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1226,8 +1251,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Encuesta</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">Collecting facts by asking people questions.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Recoger datos haciendo preguntas a las personas.</p>
+                    <p class="vocab-def">Ask people questions to get facts.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Hacer preguntas a las personas para reunir datos.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>Asking 50 students &#039;What is your favorite sport?&#039; and recording the answers</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1248,7 +1273,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Data distribution&quot;, &quot;Distribución de datos&quot;)" title="Listen / Escuchar" aria-label="Pronounce Data distribution">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: How the data looks: where it sits and how spread out it is." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/distribution.svg" alt="Illustration of Data distribution: Where the values sit and how far apart they are." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1274,8 +1299,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Distribución de datos</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">How the data looks: where it sits and how spread out it is.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Cómo se ven los datos: dónde están y qué tan separados están.</p>
+                    <p class="vocab-def">Where the values sit and how far apart they are.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Dónde están los valores y qué tan separados están.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>A distribution is symmetric when its left and right sides have approximately matching shapes around the center.</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1296,7 +1321,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Dot plot&quot;, &quot;Diagrama de puntos&quot;)" title="Listen / Escuchar" aria-label="Pronounce Dot plot">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/data.svg" alt="Illustration of Dot plot: A number line with one dot for each data value." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/data.svg" alt="Illustration of Dot plot: A number line with one dot for each value." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1322,8 +1347,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Diagrama de puntos</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A number line with one dot for each data value.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una recta numérica con un punto por cada valor de los datos.</p>
+                    <p class="vocab-def">A number line with one dot for each value.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una recta numérica con un punto por cada valor.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>One dot for each answer, stacked above its value on the line.</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1357,7 +1382,7 @@ header.homework-header,
         <p class="vq-done-score"><span class="lang-en">First-try stars:</span><span class="lang-es" lang="es">Estrellas al primer intento:</span> <strong id="vocab_quiz_score"></strong></p>
         <button type="button" class="btn btn-secondary" onclick="startVocabQuiz()"><span class="lang-en">Play again 🔄</span><span class="lang-es" lang="es">Jugar de nuevo 🔄</span></button>
       </div>
-      <script type="application/json" id="vocab_quiz_data">[{"term":"Statistical Questions and Data","termEs":"Preguntas estadísticas y datos","def":"A statistical question expects varied answers that can be collected as data.","defEs":"Una pregunta estadística espera respuestas variadas que se pueden recopilar como datos.","img":"/assets/vocab-images/concept-statistical-questions-and-data.svg","alt":"Illustration of Statistical Questions and Data: A statistical question expects varied answers that can be collected as data."},{"term":"Statistical Question","termEs":"Pregunta estadística","def":"A question answered with data that are expected to vary.","defEs":"Una pregunta que se responde con datos que se espera que varíen.","img":"/assets/vocab-images/data.svg","alt":"Illustration of Statistical Question: A question answered with data that are expected to vary."},{"term":"Non-statistical Question","termEs":"Pregunta no estadística","def":"A question that does not anticipate variability in the data used to answer it. It may ask for one fact or measurement.","defEs":"Una pregunta que no anticipa variabilidad en los datos usados para responderla. Puede pedir un solo dato o una medición.","img":"/assets/vocab-images/concept-non-statistical-question.svg","alt":"Illustration of Non-statistical Question: A question that does not anticipate variability in the data used to answer it. It may ask for one fact or measurement."},{"term":"Data","termEs":"Datos","def":"Facts and numbers you collect, like answers to a survey.","defEs":"Datos y números que recoges, como respuestas a una encuesta.","img":"/assets/vocab-images/data.svg","alt":"Illustration of Data: Facts and numbers you collect, like answers to a survey."},{"term":"Variability","termEs":"Variabilidad","def":"How spread out the numbers are.","defEs":"Qué tan separados están los números.","img":"/assets/vocab-images/spread.svg","alt":"Illustration of Variability: How spread out the numbers are."},{"term":"Survey","termEs":"Encuesta","def":"Collecting facts by asking people questions.","defEs":"Recoger datos haciendo preguntas a las personas.","img":"/assets/vocab-images/data.svg","alt":"Illustration of Survey: Collecting facts by asking people questions."},{"term":"Data distribution","termEs":"Distribución de datos","def":"How the data looks: where it sits and how spread out it is.","defEs":"Cómo se ven los datos: dónde están y qué tan separados están.","img":"/assets/vocab-images/distribution.svg","alt":"Illustration of Data distribution: How the data looks: where it sits and how spread out it is."},{"term":"Dot plot","termEs":"Diagrama de puntos","def":"A number line with one dot for each data value.","defEs":"Una recta numérica con un punto por cada valor de los datos.","img":"/assets/vocab-images/data.svg","alt":"Illustration of Dot plot: A number line with one dot for each data value."}]</script>
+      <script type="application/json" id="vocab_quiz_data">[{"term":"Statistical Questions and Data","termEs":"Preguntas estadísticas y datos","def":"Questions that have many answers, and the facts you collect.","defEs":"Preguntas con muchas respuestas, y los datos que reúnes.","img":"/assets/vocab-images/concept-statistical-questions-and-data.svg","alt":"Illustration of Statistical Questions and Data: Questions that have many answers, and the facts you collect."},{"term":"Statistical Question","termEs":"Pregunta estadística","def":"A question with answers that change from person to person.","defEs":"Una pregunta cuyas respuestas cambian de una persona a otra.","img":"/assets/vocab-images/data.svg","alt":"Illustration of Statistical Question: A question with answers that change from person to person."},{"term":"Non-statistical Question","termEs":"Pregunta no estadística","def":"A question with only one answer.","defEs":"Una pregunta con una sola respuesta.","img":"/assets/vocab-images/concept-non-statistical-question.svg","alt":"Illustration of Non-statistical Question: A question with only one answer."},{"term":"Data","termEs":"Datos","def":"Facts and numbers you collect.","defEs":"Información y números que reúnes, como respuestas de una encuesta.","img":"/assets/vocab-images/data.svg","alt":"Illustration of Data: Facts and numbers you collect."},{"term":"Variability","termEs":"Variabilidad","def":"How far apart the numbers are.","defEs":"Qué tan separados están los números.","img":"/assets/vocab-images/spread.svg","alt":"Illustration of Variability: How far apart the numbers are."},{"term":"Survey","termEs":"Encuesta","def":"Ask people questions to get facts.","defEs":"Hacer preguntas a las personas para reunir datos.","img":"/assets/vocab-images/data.svg","alt":"Illustration of Survey: Ask people questions to get facts."},{"term":"Data distribution","termEs":"Distribución de datos","def":"Where the values sit and how far apart they are.","defEs":"Dónde están los valores y qué tan separados están.","img":"/assets/vocab-images/distribution.svg","alt":"Illustration of Data distribution: Where the values sit and how far apart they are."},{"term":"Dot plot","termEs":"Diagrama de puntos","def":"A number line with one dot for each value.","defEs":"Una recta numérica con un punto por cada valor.","img":"/assets/vocab-images/data.svg","alt":"Illustration of Dot plot: A number line with one dot for each value."}]</script>
     </div>
 
     <div class="vocab-game-shell card-ish" id="vocab_match_shell" data-vocab-total="8">
@@ -1421,36 +1446,36 @@ header.homework-header,
         <div class="vocab-match-col col-defs" aria-label="Vocabulary definitions">
 
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="7" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A number line with one dot for each data value.</span>
-              <span class="chip-label-es" lang="es">Una recta numérica con un punto por cada valor de los datos.</span>
+              <span class="chip-label-en">A number line with one dot for each value.</span>
+              <span class="chip-label-es" lang="es">Una recta numérica con un punto por cada valor.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="0" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A statistical question expects varied answers that can be collected as data.</span>
-              <span class="chip-label-es" lang="es">Una pregunta estadística espera respuestas variadas que se pueden recopilar como datos.</span>
+              <span class="chip-label-en">Questions that have many answers, and the facts you collect.</span>
+              <span class="chip-label-es" lang="es">Preguntas con muchas respuestas, y los datos que reúnes.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="1" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A question answered with data that are expected to vary.</span>
-              <span class="chip-label-es" lang="es">Una pregunta que se responde con datos que se espera que varíen.</span>
+              <span class="chip-label-en">A question with answers that change from person to person.</span>
+              <span class="chip-label-es" lang="es">Una pregunta cuyas respuestas cambian de una persona a otra.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="2" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A question that does not anticipate variability in the data used to answer it. It may ask for one fact or measurement.</span>
-              <span class="chip-label-es" lang="es">Una pregunta que no anticipa variabilidad en los datos usados para responderla. Puede pedir un solo dato o una medición.</span>
+              <span class="chip-label-en">A question with only one answer.</span>
+              <span class="chip-label-es" lang="es">Una pregunta con una sola respuesta.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="3" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">Facts and numbers you collect, like answers to a survey.</span>
-              <span class="chip-label-es" lang="es">Datos y números que recoges, como respuestas a una encuesta.</span>
+              <span class="chip-label-en">Facts and numbers you collect.</span>
+              <span class="chip-label-es" lang="es">Información y números que reúnes, como respuestas de una encuesta.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="4" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">How spread out the numbers are.</span>
+              <span class="chip-label-en">How far apart the numbers are.</span>
               <span class="chip-label-es" lang="es">Qué tan separados están los números.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="5" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">Collecting facts by asking people questions.</span>
-              <span class="chip-label-es" lang="es">Recoger datos haciendo preguntas a las personas.</span>
+              <span class="chip-label-en">Ask people questions to get facts.</span>
+              <span class="chip-label-es" lang="es">Hacer preguntas a las personas para reunir datos.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="6" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">How the data looks: where it sits and how spread out it is.</span>
-              <span class="chip-label-es" lang="es">Cómo se ven los datos: dónde están y qué tan separados están.</span>
+              <span class="chip-label-en">Where the values sit and how far apart they are.</span>
+              <span class="chip-label-es" lang="es">Dónde están los valores y qué tan separados están.</span>
             </button>
         </div>
       </div>
@@ -1480,29 +1505,24 @@ header.homework-header,
 
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
       <p class="quick-check-time bilingual-block">
-        <span class="lang-en">Complete the <span id="hw_check_problem_count">12</span> problems below.<span class="quick-check-extra-copy"> The extra practice at the bottom is optional.</span></span>
-        <span class="lang-es" lang="es">Completa los <span id="hw_check_problem_count_es">12</span> problemas de abajo.<span class="quick-check-extra-copy"> La práctica extra al final es opcional.</span></span>
-      </p>
-      <p class="bilingual-block">
-        <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
-        <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+        <span class="lang-en">Start with <strong>Basics</strong>. Each problem has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong> and a <strong>space for your work</strong>. Tap <strong>Check This Problem</strong> for instant help.<span class="quick-check-extra-copy"> The extra practice at the bottom is optional.</span></span>
+        <span class="lang-es" lang="es">Empiecen con las <strong>Básicas</strong>. Cada problema tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para su trabajo</strong>. Toquen <strong>Revisar esta pregunta</strong> para recibir ayuda al instante.<span class="quick-check-extra-copy"> La práctica extra al final es opcional.</span></span>
       </p>
 
 
-    <div class="stars-to-win-bar">
-      <div class="stars-to-win-title">
-        <span>⭐</span>
-        <div>
-          <span class="lang-en"><strong>Tonight's goal:</strong> finish the <span id="hw_goal_count">12</span> problems below. Stop any time — your work saves itself.</span>
-          <span class="lang-es" lang="es"><strong>La meta de hoy:</strong> terminar los <span id="hw_goal_count_es">12</span> problemas de abajo. Pueden parar cuando quieran: el trabajo se guarda solo.</span>
-        </div>
-      </div>
-      <div class="stars-milestone-chips" aria-hidden="true">
-        <span class="star-chip">🧱 Basics</span>
-        <span class="star-chip">🌱 Warm-Up ★</span>
-        <span class="star-chip">🚀 Level-Up ★★</span>
-        <span class="star-chip">🏆 Victory ★★★</span>
-      </div>
+    <div class="hw-goal-card">
+      <span class="hw-pips " role="img" aria-label="Tonight's goal progress"></span>
+      <p>
+        <span class="lang-en"><strong>Tonight's goal: any <span data-hw-goal-count>4</span> problems.</strong> There are <span data-hw-goal-avail>12</span> here, so pick the ones you like. Stop any time. Your work saves itself.</span>
+        <span class="lang-es" lang="es"><strong>La meta de hoy: cualquier <span data-hw-goal-count>4</span> problemas.</strong> Aquí hay <span data-hw-goal-avail>12</span>, así que escojan los que prefieran. Pueden parar cuando quieran. El trabajo se guarda solo.</span>
+      </p>
+      <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
+    </div>
+    <div class="stars-milestone-chips" aria-hidden="true">
+      <span class="star-chip">🧱 Basics</span>
+      <span class="star-chip">🌱 Warm-Up ★</span>
+      <span class="star-chip">🚀 Level-Up ★★</span>
+      <span class="star-chip">🏆 Victory ★★★</span>
     </div>
 
     <div class="live-streak-banner" id="hw_streak_banner" hidden>
@@ -1525,9 +1545,12 @@ header.homework-header,
         <strong><span class="lang-en">That's tonight's goal — done!</span><span class="lang-es" lang="es">¡Esa es la meta de hoy: completa!</span></strong>
         <p><span class="lang-en">Great work. Keep going with the extra practice if you want more, or head to <strong>Done</strong> to finish or choose optional extras.</span><span class="lang-es" lang="es">Buen trabajo. Sigan con la práctica extra si quieren más, o vayan a <strong>Listo</strong> para terminar o elegir extras opcionales.</span></p>
       </div>
-      <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
-        <span class="lang-en">Claim Certificate ➔</span><span class="lang-es" lang="es">Reclamar Certificado ➔</span>
-      </button>
+      <div class="goal-actions">
+        <button type="button" class="btn btn-sm btn-secondary hw-banner-mystery" hidden onclick="hwOpenMystery()"><span class="lang-en">🔓 Open the mystery challenge</span><span class="lang-es" lang="es">🔓 Abrir el reto misterioso</span></button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
+          <span class="lang-en">Teach it back, then claim your certificate ➔</span><span class="lang-es" lang="es">Enséñalo y reclama tu certificado ➔</span>
+        </button>
+      </div>
     </div>
 
       <section class="practice-tier practice-tier-basic" aria-label="Basic practice">
@@ -4264,7 +4287,7 @@ header.homework-header,
     </div>
 
     <div class="fam-game-break card-ish" id="fam_game_break">
-      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"Median of 3, 5, 7","b":"5"},{"a":"Mode of 2, 2, 9","b":"2"},{"a":"Mean of 1, 2, 3, 4","b":"2.5"},{"a":"Range from 3 to 11","b":"8"}],"tf":[{"en":"A statistical question is one whose answers can vary.","es":"Una pregunta estadística es una cuyas respuestas pueden variar.","answer":true,"whyEn":"'How old are the people in our building?' varies. 'How old am I?' has one answer.","whyEs":"'¿Cuántos años tienen los vecinos?' varía. '¿Cuántos años tengo?' tiene una sola respuesta."},{"en":"The median of 3, 5, 7 is 5.","es":"La mediana de 3, 5, 7 es 5.","answer":true,"whyEn":"Line the data up in order; the median is the middle value.","whyEs":"Ordenen los datos; la mediana es el valor del medio."},{"en":"The mean and the median are always the same number.","es":"La media y la mediana siempre son el mismo número.","answer":false,"whyEn":"For 1, 2, 9: median is 2, mean is 4. One big value drags the mean, not the median.","whyEs":"Para 1, 2, 9: la mediana es 2, la media es 4. Un valor grande arrastra la media, no la mediana."},{"en":"An outlier is a data value that sits far from the rest.","es":"Un valor atípico es un dato que queda lejos de los demás.","answer":true,"whyEn":"Like one cousin who sleeps 12 hours in a family of 8-hour sleepers — it has a story!","whyEs":"Como un primo que duerme 12 horas en una familia que duerme 8: ¡tiene su historia!"},{"en":"To find the median you must first put the data in order.","es":"Para hallar la mediana primero hay que ordenar los datos.","answer":true,"whyEn":"The middle of an unordered list is meaningless — order first, then find the center.","whyEs":"El medio de una lista desordenada no significa nada: primero ordenar, luego buscar el centro."}],"sort":{"a":{"en":"Statistical question","es":"Pregunta estadística"},"b":{"en":"Not statistical","es":"No es estadística"},"cards":[{"t":"How tall are the students in my class?","bucket":0,"en":"Answers vary from person to person.","es":"Las respuestas varían de persona a persona."},{"t":"How tall am I?","bucket":1,"en":"One fixed answer.","es":"Una sola respuesta fija."},{"t":"How many minutes do people sleep?","bucket":0,"en":"Varies across people.","es":"Varía entre personas."},{"t":"What is my shoe size?","bucket":1,"en":"One answer about one person.","es":"Una respuesta sobre una persona."},{"t":"How long is the bus ride for riders?","bucket":0,"en":"Different riders, different times.","es":"Distintos pasajeros, distintos tiempos."},{"t":"How many days are in June?","bucket":1,"en":"Always 30.","es":"Siempre 30."}]},"wyr":[{"a":{"en":"Be judged on your MEAN score","es":"Que te evalúen por tu media"},"b":{"en":"Be judged on your MEDIAN score","es":"Que te evalúen por tu mediana"},"en":"The median, if you had one terrible day — one low outlier drags the mean, not the median.","es":"La mediana, si tuviste un mal día: un valor atípico bajo arrastra la media, no la mediana."},{"a":{"en":"Ask 5 people a survey question","es":"Preguntar a 5 personas"},"b":{"en":"Ask 500 people the same question","es":"Preguntar a 500 personas lo mismo"},"en":"500 — more data means the shape of the answer is far more trustworthy.","es":"500: más datos hacen que la forma de la respuesta sea mucho más confiable."}]};</script>
+      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"Median of 3, 5, 7","b":"5","aEs":"Mediana de 3, 5, 7","bEs":""},{"a":"Mode of 2, 2, 9","b":"2","aEs":"Moda de 2, 2, 9","bEs":""},{"a":"Mean of 1, 2, 3, 4","b":"2.5","aEs":"Media de 1, 2, 3, 4","bEs":""},{"a":"Range from 3 to 11","b":"8","aEs":"Rango de 3 a 11","bEs":""}],"tf":[{"en":"A statistical question is one whose answers can vary.","es":"Una pregunta estadística es una cuyas respuestas pueden variar.","answer":true,"whyEn":"'How old are the people in our building?' varies. 'How old am I?' has one answer.","whyEs":"'¿Cuántos años tienen los vecinos?' varía. '¿Cuántos años tengo?' tiene una sola respuesta."},{"en":"The median of 3, 5, 7 is 5.","es":"La mediana de 3, 5, 7 es 5.","answer":true,"whyEn":"Line the data up in order; the median is the middle value.","whyEs":"Ordenen los datos; la mediana es el valor del medio."},{"en":"The mean and the median are always the same number.","es":"La media y la mediana siempre son el mismo número.","answer":false,"whyEn":"For 1, 2, 9: median is 2, mean is 4. One big value drags the mean, not the median.","whyEs":"Para 1, 2, 9: la mediana es 2, la media es 4. Un valor grande arrastra la media, no la mediana."},{"en":"An outlier is a data value that sits far from the rest.","es":"Un valor atípico es un dato que queda lejos de los demás.","answer":true,"whyEn":"Like one cousin who sleeps 12 hours in a family of 8-hour sleepers — it has a story!","whyEs":"Como un primo que duerme 12 horas en una familia que duerme 8: ¡tiene su historia!"},{"en":"To find the median you must first put the data in order.","es":"Para hallar la mediana primero hay que ordenar los datos.","answer":true,"whyEn":"The middle of an unordered list is meaningless — order first, then find the center.","whyEs":"El medio de una lista desordenada no significa nada: primero ordenar, luego buscar el centro."}],"sort":{"a":{"en":"Statistical question","es":"Pregunta estadística"},"b":{"en":"Not statistical","es":"No es estadística"},"cards":[{"t":"How tall are the students in my class?","bucket":0,"en":"Answers vary from person to person.","es":"Las respuestas varían de persona a persona."},{"t":"How tall am I?","bucket":1,"en":"One fixed answer.","es":"Una sola respuesta fija."},{"t":"How many minutes do people sleep?","bucket":0,"en":"Varies across people.","es":"Varía entre personas."},{"t":"What is my shoe size?","bucket":1,"en":"One answer about one person.","es":"Una respuesta sobre una persona."},{"t":"How long is the bus ride for riders?","bucket":0,"en":"Different riders, different times.","es":"Distintos pasajeros, distintos tiempos."},{"t":"How many days are in June?","bucket":1,"en":"Always 30.","es":"Siempre 30."}]},"wyr":[{"a":{"en":"Be judged on your MEAN score","es":"Que te evalúen por tu media"},"b":{"en":"Be judged on your MEDIAN score","es":"Que te evalúen por tu mediana"},"en":"The median, if you had one terrible day — one low outlier drags the mean, not the median.","es":"La mediana, si tuviste un mal día: un valor atípico bajo arrastra la media, no la mediana."},{"a":{"en":"Ask 5 people a survey question","es":"Preguntar a 5 personas"},"b":{"en":"Ask 500 people the same question","es":"Preguntar a 500 personas lo mismo"},"en":"500 — more data means the shape of the answer is far more trustworthy.","es":"500: más datos hacen que la forma de la respuesta sea mucho más confiable."}]};</script>
       <div class="fam-game-head">
         <span class="fam-game-badge">🎮 <span class="lang-en">FAMILY ARCADE</span><span class="lang-es" lang="es">SALA DE JUEGOS EN FAMILIA</span></span>
         <p class="fam-game-lead">
@@ -4487,7 +4510,40 @@ header.homework-header,
     </div>
 <div class="tab-panel-inner" data-tab-panel="done" id="hw_panel_done" role="tabpanel" hidden>
       <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
-      <p class="family-explain-finish"><span class="lang-en">Explain one answer aloud or on paper: “I got ___ because ___. I checked by ___.” Include your strategy and units. Then you are done.</span><span class="lang-es" lang="es">Explica una respuesta en voz alta o en papel: “Obtuve ___ porque ___. Comprobé usando ___.” Incluye tu estrategia y las unidades. Después termina.</span></p>
+
+      <section class="hw-teach" aria-labelledby="hw_teach_title">
+        <p class="hw-eyebrow hw-inline"><span class="lang-en">The last step</span><span class="lang-es" lang="es">El último paso</span></p>
+        <h3 id="hw_teach_title"><span class="lang-en">Teach it to someone</span><span class="lang-es" lang="es">Enséñaselo a alguien</span></h3>
+        <ol class="hw-teach-steps">
+          <li><span class="lang-en">Pick one problem you solved.</span><span class="lang-es" lang="es">Elige un problema que resolviste.</span></li>
+          <li><span class="lang-en">Explain it out loud. Use any language first.</span><span class="lang-es" lang="es">Explícalo en voz alta. Usa primero el idioma que prefieras.</span></li>
+          <li><span class="lang-en">Say it again with the English math words:</span><span class="lang-es" lang="es">Dilo otra vez con las palabras de matemáticas en inglés:</span><ul class="hw-teach-words" aria-label="Words to use"><li><strong>Statistical Questions and Data</strong><span class="lang-es" lang="es"> · Preguntas estadísticas y datos</span></li><li><strong>Statistical Question</strong><span class="lang-es" lang="es"> · Pregunta estadística</span></li><li><strong>Non-statistical Question</strong><span class="lang-es" lang="es"> · Pregunta no estadística</span></li></ul></li>
+          <li><span class="lang-en">Your partner asks: “How do you know?” Answer with: “I got ___ because ___. I checked by ___.”</span><span class="lang-es" lang="es">Tu acompañante pregunta: “¿Cómo lo sabes?” Responde: “Obtuve ___ porque ___. Comprobé usando ___.”</span></li>
+        </ol>
+      </section>
+
+      <section class="hw-confidence" id="hw_conf_after" data-conf-phase="after" aria-labelledby="hw_conf_after_title">
+        <h3 id="hw_conf_after_title"><span class="lang-en">How sure do you feel now?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes ahora?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_after_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="after" onclick="hwSetConfidence('after', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="after" onclick="hwSetConfidence('after', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="after" onclick="hwSetConfidence('after', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Compare it with how you felt at the start.</span><span class="lang-es" lang="es">Compáralo con cómo te sentías al empezar.</span></p>
+        <p class="hw-conf-growth" id="hw_conf_growth" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="hw-nights" id="hw_nights" aria-labelledby="hw_nights_title">
+        <h3 id="hw_nights_title"><span class="lang-en">Our family math nights</span><span class="lang-es" lang="es">Nuestras noches de matemáticas en familia</span></h3>
+        <ol class="hw-nights-week" id="hw_nights_week" aria-label="This week"></ol>
+        <p class="hw-nights-streak" id="hw_nights_streak" role="status" aria-live="polite"></p>
+        <p class="hw-nights-note"><span class="lang-en">Weekends never break it. Saved only on this device.</span><span class="lang-es" lang="es">Los fines de semana no la interrumpen. Se guarda solo en este dispositivo.</span></p>
+      </section>
       <div class="done-summary" id="hw_done_summary" role="status" aria-live="polite"></div>
       <ol class="done-problem-list" id="hw_done_problems" aria-label="Problems / Problemas"></ol>
       <p class="celebrate-text lang-en">Name one strategy that helped, or one question to ask next time. You can stop here; no adult signature is needed.</p>
@@ -4497,9 +4553,16 @@ header.homework-header,
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
 
+
+      <div class="hw-share">
+        <button type="button" class="btn btn-secondary hw-share-win" onclick="hwShareWin()">
+          🎉 <span class="lang-en">Share our win</span><span class="lang-es" lang="es">Compartir nuestro logro</span>
+        </button>
+        <p class="hw-share-note"><span class="lang-en">Shares only the lesson name and a link. No answers, no names.</span><span class="lang-es" lang="es">Comparte solo el nombre de la lección y un enlace. Sin respuestas ni nombres.</span></p>
+      </div>
       <div class="homework-message-action">
         <a class="btn btn-primary" href="https://home.classdojo.com/" target="_blank" rel="noopener"><span class="lang-en">Open ClassDojo to message Mr. Neft</span><span class="lang-es" lang="es">Abrir ClassDojo para escribir al Sr. Neft</span></a>
-        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicia sesión con tu cuenta familiar, abre Mensajes y elige al Sr. Neft. Incluye el número de esta lección y tu pregunta.</span></p>
+        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicien sesión con su cuenta familiar, abran Mensajes y elijan al Sr. Neft. Incluyan el número de esta lección y su pregunta.</span></p>
       </div>
       <section class="homework-optional-extras" aria-labelledby="homework_extras_title">
       <h3 id="homework_extras_title"><span class="lang-en">Want to do more?</span><span class="lang-es" lang="es">¿Quieren hacer más?</span></h3>
@@ -4968,25 +5031,15 @@ header.homework-header,
           </span>
           <span class="ai-lab-arrow" aria-hidden="true">↓</span>
         </a>
-        <p class="bilingual-block">
-          <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
-          <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
+
+        <p class="bilingual-block external-resource-claim">
+          <span class="lang-en">These links go to <strong>specific</strong> videos about tonight's topic — not general math pages.</span>
+          <span class="lang-es" lang="es">Estos enlaces van a videos <strong>específicos</strong> sobre el tema de hoy — no a páginas generales.</span>
         </p>
         <ul class="external-resource-list">
-
             <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-data-statistics/cc-6th-mean-median/v/calculating-the-mean" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Mean, median, and mode</span>
-                <span class="ext-title-es" lang="es">Media, mediana y moda</span>
-              </a>
-            </li>
-            <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-data-statistics/cc-6th-box-plot/v/constructing-a-box-and-whisker-plot" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Box plots</span>
-                <span class="ext-title-es" lang="es">Diagramas de caja</span>
-              </a>
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-data-statistics/cc-6-statistical-questions/v/understanding-statistical-questions" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-en"><span class="ext-source">Khan Academy</span><span class="ext-title-en">Statistical questions</span></a>
+              <a href="https://es.khanacademy.org/math/cc-sixth-grade-math/cc-6th-data-statistics/cc-6-statistical-questions/v/understanding-statistical-questions" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-es" lang="es"><span class="ext-source">Khan Academy en español</span><span class="ext-title-es">Preguntas estadísticas</span></a>
             </li>
         </ul>
       </section>
@@ -5084,6 +5137,17 @@ header.homework-header,
       </div>
     </div>
 
+<div class="hw-toast" id="hw_toast" aria-hidden="true" hidden></div><div class="hw-sr-only" id="hw_toast_live" role="status" aria-live="polite"></div>
+<dialog class="hw-dialog" id="hw_dialog" aria-labelledby="hw_dialog_text">
+  <form method="dialog">
+    <p id="hw_dialog_text"></p>
+    <div class="hw-dialog-actions">
+      <button type="submit" value="no" class="btn btn-secondary" id="hw_dialog_no"></button>
+      <button type="submit" value="yes" class="btn btn-primary" id="hw_dialog_yes"></button>
+    </div>
+  </form>
+</dialog>
+
 <section class="hw-answer-sheet" aria-hidden="true">
   <h2><span class="lang-en">Answer sheet</span><span class="lang-es" lang="es">Hoja de respuestas</span> · Understand Statistical Questions</h2>
   <p><span class="lang-en">Check the work after trying each problem. Talk about why each answer makes sense.</span><span class="lang-es" lang="es">Revisen el trabajo después de intentar cada problema. Hablen de por qué cada respuesta tiene sentido.</span></p>
@@ -5123,8 +5187,10 @@ header.homework-header,
 
     <div class="score-progress-container">
       <div class="score-text">
-        <span class="lang-en">Progress:</span><span class="lang-es" lang="es">Progreso:</span>
-        <span id="progress_text">0 / 12</span>
+        <span class="hw-stack hw-goal-label"><span class="lang-en">Tonight's goal</span><span class="lang-es" lang="es">Meta de hoy</span></span>
+        <span id="progress_text">0 / 4</span>
+        <span class="hw-pips hw-pips-bar" role="img" aria-label="Tonight's goal progress"></span>
+        <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -5132,8 +5198,8 @@ header.homework-header,
     </div>
 
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
-      <button class="btn btn-primary" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
+      <button class="btn btn-secondary hw-stack" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
+      <button class="btn btn-primary hw-stack" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
     </div>
   </div>
 </div>
@@ -5141,18 +5207,19 @@ header.homework-header,
 <script>
 window.LESSON_ID = "2-1";
 window.LESSON_TITLE = "Understand Statistical Questions";
+window.LESSON_TITLE_ES = "Comprender las preguntas estadísticas";
 /* The number of core problems, so the celebration fires on the goal the page
    actually states. It was hardcoded to 3 while the page showed 6 and the status
    bar counted to 6: a family could hit "Goal Reached! 3 Stars Earned!" and read
    "0 / 6 Completed" in the same glance. */
 window.HW_CORE_COUNT = 12;
-window.__HW_VOCAB__ = [{"term":"Statistical Questions and Data","termEs":"Preguntas estadísticas y datos","def":"A statistical question expects varied answers that can be collected as data.","defEs":"Una pregunta estadística espera respuestas variadas que se pueden recopilar como datos.","example":"How many minutes do students in our class read each night?","img":"/assets/vocab-images/concept-statistical-questions-and-data.svg","imgAlt":"Illustration of Statistical Questions and Data: A statistical question expects varied answers that can be collected as data.","cs":false},{"term":"Statistical Question","termEs":"Pregunta estadística","def":"A question answered with data that are expected to vary.","defEs":"Una pregunta que se responde con datos que se espera que varíen.","example":"“How tall are the players on the team?” → answers vary: 60 in, 63 in, 58 in, 65 in","img":"/assets/vocab-images/data.svg","imgAlt":"Illustration of Statistical Question: A question answered with data that are expected to vary.","cs":false},{"term":"Non-statistical Question","termEs":"Pregunta no estadística","def":"A question that does not anticipate variability in the data used to answer it. It may ask for one fact or measurement.","defEs":"Una pregunta que no anticipa variabilidad en los datos usados para responderla. Puede pedir un solo dato o una medición.","example":"“How tall am I?” → one answer: 60 in. Everyone who measures gets the same number.","img":"/assets/vocab-images/concept-non-statistical-question.svg","imgAlt":"Illustration of Non-statistical Question: A question that does not anticipate variability in the data used to answer it. It may ask for one fact or measurement.","cs":false},{"term":"Data","termEs":"Datos","def":"Facts and numbers you collect, like answers to a survey.","defEs":"Datos y números que recoges, como respuestas a una encuesta.","example":"Player heights: 60 in, 63 in, 58 in, 65 in — four different measurements","img":"/assets/vocab-images/data.svg","imgAlt":"Illustration of Data: Facts and numbers you collect, like answers to a survey.","cs":false},{"term":"Variability","termEs":"Variabilidad","def":"How spread out the numbers are.","defEs":"Qué tan separados están los números.","example":"Scores 10, 12, 11 are close together (low variability); scores 2, 15, 30 are far apart (high variability)","img":"/assets/vocab-images/spread.svg","imgAlt":"Illustration of Variability: How spread out the numbers are.","cs":false},{"term":"Survey","termEs":"Encuesta","def":"Collecting facts by asking people questions.","defEs":"Recoger datos haciendo preguntas a las personas.","example":"Asking 50 students 'What is your favorite sport?' and recording the answers","img":"/assets/vocab-images/data.svg","imgAlt":"Illustration of Survey: Collecting facts by asking people questions.","cs":false},{"term":"Data distribution","termEs":"Distribución de datos","def":"How the data looks: where it sits and how spread out it is.","defEs":"Cómo se ven los datos: dónde están y qué tan separados están.","example":"A distribution is symmetric when its left and right sides have approximately matching shapes around the center.","img":"/assets/vocab-images/distribution.svg","imgAlt":"Illustration of Data distribution: How the data looks: where it sits and how spread out it is.","cs":false},{"term":"Dot plot","termEs":"Diagrama de puntos","def":"A number line with one dot for each data value.","defEs":"Una recta numérica con un punto por cada valor de los datos.","example":"One dot for each answer, stacked above its value on the line.","img":"/assets/vocab-images/data.svg","imgAlt":"Illustration of Dot plot: A number line with one dot for each data value.","cs":false}];
+window.__HW_VOCAB__ = [{"term":"Statistical Questions and Data","termEs":"Preguntas estadísticas y datos","def":"Questions that have many answers, and the facts you collect.","defEs":"Preguntas con muchas respuestas, y los datos que reúnes.","example":"How many minutes do students in our class read each night?","img":"/assets/vocab-images/concept-statistical-questions-and-data.svg","imgAlt":"Illustration of Statistical Questions and Data: Questions that have many answers, and the facts you collect.","cs":false,"formal":"A statistical question expects varied answers that can be collected as data.","formalEs":"Una pregunta estadística espera respuestas variadas que se pueden recopilar como datos."},{"term":"Statistical Question","termEs":"Pregunta estadística","def":"A question with answers that change from person to person.","defEs":"Una pregunta cuyas respuestas cambian de una persona a otra.","example":"“How tall are the players on the team?” → answers vary: 60 in, 63 in, 58 in, 65 in","img":"/assets/vocab-images/data.svg","imgAlt":"Illustration of Statistical Question: A question with answers that change from person to person.","cs":false,"formal":"A question answered with data that are expected to vary.","formalEs":"Una pregunta que se responde con datos que se espera que varíen."},{"term":"Non-statistical Question","termEs":"Pregunta no estadística","def":"A question with only one answer.","defEs":"Una pregunta con una sola respuesta.","example":"“How tall am I?” → one answer: 60 in. Everyone who measures gets the same number.","img":"/assets/vocab-images/concept-non-statistical-question.svg","imgAlt":"Illustration of Non-statistical Question: A question with only one answer.","cs":false,"formal":"A question that does not anticipate variability in the data used to answer it. It may ask for one fact or measurement.","formalEs":"Una pregunta que no anticipa variabilidad en los datos usados para responderla. Puede pedir un solo dato o una medición."},{"term":"Data","termEs":"Datos","def":"Facts and numbers you collect.","defEs":"Información y números que reúnes, como respuestas de una encuesta.","example":"Player heights: 60 in, 63 in, 58 in, 65 in — four different measurements","img":"/assets/vocab-images/data.svg","imgAlt":"Illustration of Data: Facts and numbers you collect.","cs":false,"formal":"Facts and numbers you collect, like answers to a survey.","formalEs":"Datos y números que recoges, como respuestas a una encuesta."},{"term":"Variability","termEs":"Variabilidad","def":"How far apart the numbers are.","defEs":"Qué tan separados están los números.","example":"Scores 10, 12, 11 are close together (low variability); scores 2, 15, 30 are far apart (high variability)","img":"/assets/vocab-images/spread.svg","imgAlt":"Illustration of Variability: How far apart the numbers are.","cs":false,"formal":"How spread out the numbers are."},{"term":"Survey","termEs":"Encuesta","def":"Ask people questions to get facts.","defEs":"Hacer preguntas a las personas para reunir datos.","example":"Asking 50 students 'What is your favorite sport?' and recording the answers","img":"/assets/vocab-images/data.svg","imgAlt":"Illustration of Survey: Ask people questions to get facts.","cs":false,"formal":"Collecting facts by asking people questions.","formalEs":"Recoger datos haciendo preguntas a las personas."},{"term":"Data distribution","termEs":"Distribución de datos","def":"Where the values sit and how far apart they are.","defEs":"Dónde están los valores y qué tan separados están.","example":"A distribution is symmetric when its left and right sides have approximately matching shapes around the center.","img":"/assets/vocab-images/distribution.svg","imgAlt":"Illustration of Data distribution: Where the values sit and how far apart they are.","cs":false,"formal":"How the data looks: where it sits and how spread out it is.","formalEs":"Cómo se ven los datos: dónde están y qué tan separados están."},{"term":"Dot plot","termEs":"Diagrama de puntos","def":"A number line with one dot for each value.","defEs":"Una recta numérica con un punto por cada valor.","example":"Values 2, 3, 3: two dots stack above 3","img":"/assets/vocab-images/data.svg","imgAlt":"Illustration of Dot plot: A number line with one dot for each value.","cs":false,"formal":"A number line with one dot for each data value.","formalEs":"Una recta numérica con un punto por cada valor de los datos.","exampleEs":"Valores 2, 3, 3: dos puntos juntos sobre el 3","exampleFormal":"One dot for each answer, stacked above its value on the line."}];
 window.__HW_VOCAB_SKIP__ = [65,68,158,262,343,344,351,376];
 window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Numerical\\s+Expressions\\s+with\\s+Exponents(?:es|s)?|Solve\\s+One-Step\\s+Addition\\s+and\\s+Subtraction\\s+Equations(?:es|s)?|Determine\\s+the\\s+Whole\\s+Given\\s+the\\s+Part\\s+and\\s+Percent(?:es|s)?|Convert\\s+Measurements\\s+within\\s+the\\s+Same\\s+System(?:es|s)?|Percents\\s+Greater\\s+Than\\s+100%\\s+and\\s+Less\\s+Than\\s+1%(?:es|s)?|Solve\\s+Multiplication\\s+and\\s+Division\\s+Equations(?:es|s)?|Equations\\s+and\\s+Inequalities\\s+Problem\\s+Solving(?:es|s)?|Convert\\s+Measurements\\s+Between\\s+Systems(?:es|s)?|Multiplication\\s+Property\\s+of\\s+Equalit(?:y|ies)|Ordered\\s+Pairs\\s+in\\s+All\\s+Four\\s+Quadrants(?:es|s)?|Rational\\s+Numbers\\s+on\\s+the\\s+Number\\s+Line(?:es|s)?|Describe\\s+the\\s+Data\\s+Using\\s+the\\s+Median(?:es|s)?|Divide\\s+Whole\\s+Numbers\\s+by\\s+Fractions(?:es|s)?|Fraction\\s+Division\\s+Problem\\s+Solving(?:es|s)?|Fractions,\\s+Decimals,\\s+and\\s+Percents(?:es|s)?|Distance\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Subtraction\\s+Property\\s+of\\s+Equalit(?:y|ies)|Statistical\\s+Questions\\s+and\\s+Data(?:es|s)?|Appropriate\\s+Measures\\s+of\\s+Center(?:es|s)?|Ratio\\s+and\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|Simplify\\s+Algebraic\\s+Expressions(?:es|s)?|Volume\\s+with\\s+Whole-Number\\s+Edges(?:es|s)?|Addition\\s+Property\\s+of\\s+Equalit(?:y|ies)|Division\\s+Property\\s+of\\s+Equalit(?:y|ies)|Graph\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Range\\s+and\\s+Interquartile\\s+Range(?:es|s)?|Display\\s+Data\\s+with\\s+Histograms(?:es|s)?|Greatest\\s+common\\s+factor\\s+\\(GCF\\)(?:es|s)?|Solve\\s+and\\s+Graph\\s+Inequalities(?:es|s)?|Volume\\s+of\\s+Rectangular\\s+Prisms(?:es|s)?|Display\\s+Data\\s+with\\s+Box\\s+Plots(?:es|s)?|Integers\\s+and\\s+Absolute\\s+Value(?:es|s)?|Least\\s+common\\s+multiple\\s+\\(LCM\\)(?:es|s)?|Shape\\s+of\\s+Data\\s+Distributions(?:es|s)?|Write\\s+Algebraic\\s+Expressions(?:es|s)?|Compare\\s+and\\s+Order\\s+Integers(?:es|s)?|Decimal\\s+Division\\s+Algorithm(?:es|s)?|Divide\\s+Multi-Digit\\s+Numbers(?:es|s)?|Find\\s+Factors\\s+and\\s+Multiples(?:es|s)?|Reflect\\s+Points\\s+Across\\s+Axes(?:es|s)?|Add\\s+and\\s+Subtract\\s+Decimals(?:es|s)?|Area\\s+of\\s+Composite\\s+Figures(?:es|s)?|Convert\\s+Measurement\\s+Units(?:es|s)?|distance\\s+between\\s+vertices(?:es|s)?|The\\s+Distributive\\s+Propert(?:y|ies)|Unit\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|Non-statistical\\s+Question(?:es|s)?|least\\s+common\\s+denominator(?:es|s)?|Area\\s+of\\s+Regular\\s+Polygons(?:es|s)?|Opposite\\s+of\\s+the\\s+opposite(?:es|s)?|Properties\\s+of\\s+Operations(?:es|s)?|Surface\\s+Area\\s+of\\s+Pyramids(?:es|s)?|mean\\s+absolute\\s+deviation(?:es|s)?|make\\s+sense\\s+of\\s+a\\s+problem(?:es|s)?|Percent\\s+Problem\\s+Solving(?:es|s)?|Repeated\\s+multiplication(?:es|s)?|Surface\\s+Area\\s+Using\\s+Nets(?:es|s)?|greatest\\s+common\\s+factor(?:es|s)?|Area\\s+of\\s+Parallelograms(?:es|s)?|Mean,\\s+Median,\\s+and\\s+Mode(?:es|s)?|Multiplicative\\s+inverse(?:es|s)?|Surface\\s+Area\\s+of\\s+Prisms(?:es|s)?|least\\s+common\\s+multiple(?:es|s)?|equivalent\\s+expression(?:es|s)?|Distributive\\s+Propert(?:y|ies)|Division\\s+of\\s+Fractions(?:es|s)?|Length,\\s+width,\\s+height(?:es|s)?|Statistical\\s+Question(?:es|s)?|algebraic\\s+expression(?:es|s)?|Associative\\s+Propert(?:y|ies)|Commutative\\s+Propert(?:y|ies)|define\\s+the\\s+variables(?:es|s)?|Divide\\s+Mixed\\s+Numbers(?:es|s)?|Evaluate\\s+Expressions(?:es|s)?|Factor\\s+an\\s+expression(?:es|s)?|independent\\s+variable(?:es|s)?|Measure\\s+of\\s+variation(?:es|s)?|Numerical\\s+expression(?:es|s)?|Powers\\s+and\\s+Exponents(?:es|s)?|Rates\\s+and\\s+Unit\\s+Rates(?:es|s)?|prime\\s+factorization(?:es|s)?|interquartile\\s+range(?:es|s)?|equivalent\\s+fraction(?:es|s)?|community\\s+agreement(?:es|s)?|Equivalent\\s+division(?:es|s)?|Five-number\\s+summar(?:y|ies)|Horizontal\\s+distance(?:es|s)?|Negative\\s+coordinate(?:es|s)?|Order\\s+of\\s+operations(?:es|s)?|Percent\\s+of\\s+a\\s+Number(?:es|s)?|Area\\s+of\\s+a\\s+Triangle(?:es|s)?|Area\\s+of\\s+Trapezoids(?:es|s)?|At\\s+least\\s+/\\s+At\\s+most(?:es|s)?|bilateral\\s+symmetr(?:y|ies)|Common\\s+denominator(?:es|s)?|compatible\\s+numbers(?:es|s)?|dependent\\s+variable(?:es|s)?|Double\\s+number\\s+line(?:es|s)?|Graph\\s+Inequalities(?:es|s)?|Graph\\s+Ratio\\s+Tables(?:es|s)?|Keep,\\s+Change,\\s+Flip(?:es|s)?|Measurement\\s+system(?:es|s)?|Multi-step\\s+problem(?:es|s)?|Understand\\s+Percent(?:es|s)?|Write\\s+Inequalities(?:es|s)?|Data\\s+distribution(?:es|s)?|improper\\s+fraction(?:es|s)?|conversion\\s+factor(?:es|s)?|benchmark\\s+percent(?:es|s)?|Greater\\s+than\\s+100%(?:es|s)?|Identity\\s+Propert(?:y|ies)|Inverse\\s+operation(?:es|s)?|Measure\\s+of\\s+center(?:es|s)?|Multiply\\s+Decimals(?:es|s)?|One-step\\s+equation(?:es|s)?|Rectangular\\s+prism(?:es|s)?|Shape\\s+of\\s+the\\s+data(?:es|s)?|Understand\\s+Ratios(?:es|s)?|Vertical\\s+distance(?:es|s)?|coordinate\\s+plane(?:es|s)?|keep-change-flip(?:es|s)?|equivalent\\s+ratio(?:es|s)?|Additive\\s+pattern(?:es|s)?|Composite\\s+figure(?:es|s)?|Composite\\s+number(?:es|s)?|Customary\\s+system(?:es|s)?|Divide\\s+Fractions(?:es|s)?|Grouping\\s+symbols(?:es|s)?|line\\s+of\\s+symmetr(?:y|ies)|Negative\\s+integer(?:es|s)?|Triangular\\s+prism(?:es|s)?|common\\s+multiple(?:es|s)?|Customary\\s+units(?:es|s)?|Divide\\s+Decimals(?:es|s)?|Frequency\\s+table(?:es|s)?|Negative\\s+number(?:es|s)?|Positive\\s+number(?:es|s)?|Problem\\s+solving(?:es|s)?|Ratio\\s+Reasoning(?:es|s)?|Rational\\s+number(?:es|s)?|Regular\\s+Polygon(?:es|s)?|Right\\s+trapezoid(?:es|s)?|table\\s+of\\s+values(?:es|s)?|Two-dimensional(?:es|s)?|Unit\\s+rate\\s+point(?:es|s)?|Write\\s+Equations(?:es|s)?|absolute\\s+value(?:es|s)?|Boundary\\s+point(?:es|s)?|Colon\\s+notation(?:es|s)?|Compare\\s+Ratios(?:es|s)?|counterexample(?:es|s)?|Cross-multipl(?:y|ies)|Decimal\\s+places(?:es|s)?|generalization(?:es|s)?|Linear\\s+pattern(?:es|s)?|math\\s+biograph(?:y|ies)|predictabilit(?:y|ies)|Rate\\s+of\\s+change(?:es|s)?|reasonableness(?:es|s)?|representation(?:es|s)?|True\\s+statement(?:es|s)?|long\\s+division(?:es|s)?|decimal\\s+point(?:es|s)?|parallelogram(?:es|s)?|common\\s+factor(?:es|s)?|Approximatel(?:y|ies)|Balance\\s+point(?:es|s)?|Closed\\s+circle(?:es|s)?|Expanded\\s+form(?:es|s)?|Extreme\\s+value(?:es|s)?|Halfway\\s+value(?:es|s)?|Metric\\s+system(?:es|s)?|Part-to-whole(?:es|s)?|Perpendicular(?:es|s)?|Simplest\\s+form(?:es|s)?|Skip\\s+counting(?:es|s)?|Unit\\s+fraction(?:es|s)?|Work\\s+backward(?:es|s)?|mixed\\s+number(?:es|s)?|ordered\\s+pair(?:es|s)?|surface\\s+area(?:es|s)?|line\\s+segment(?:es|s)?|distribution(?:es|s)?|scale\\s+factor(?:es|s)?|prime\\s+factor(?:es|s)?|Annex\\s+a\\s+zero(?:es|s)?|Decimal\\s+grid(?:es|s)?|doer\\s+of\\s+math(?:es|s)?|Lateral\\s+area(?:es|s)?|Lateral\\s+face(?:es|s)?|Less\\s+than\\s+1%(?:es|s)?|Metric\\s+units(?:es|s)?|mirror\\s+image(?:es|s)?|No\\s+more\\s+than(?:es|s)?|Part-to-part(?:es|s)?|pattern\\s+rule(?:es|s)?|pattern\\s+unit(?:es|s)?|Power\\s+of\\s+ten(?:es|s)?|Prime\\s+number(?:es|s)?|Proportional(?:es|s)?|relationship(?:es|s)?|Slant\\s+height(?:es|s)?|Slanted\\s+side(?:es|s)?|Solution\\s+set(?:es|s)?|tape\\s+diagram(?:es|s)?|Target\\s+total(?:es|s)?|x-coordinate(?:es|s)?|Distributive(?:es|s)?|Variabilit(?:y|ies)|multi-digit(?:es|s)?|place\\s+value(?:es|s)?|denominator(?:es|s)?|coefficient(?:es|s)?|Annex\\s+zeros(?:es|s)?|Base\\s+1\\s+\\(b1\\)(?:es|s)?|Base\\s+2\\s+\\(b2\\)(?:es|s)?|Common\\s+form(?:es|s)?|Coordinates(?:es|s)?|Factor\\s+pair(?:es|s)?|Factor\\s+tree(?:es|s)?|Middle\\s+half(?:es|s)?|Number\\s+line(?:es|s)?|Open\\s+circle(?:es|s)?|Per\\s+hundred(?:es|s)?|Ratio\\s+table(?:es|s)?|Side\\s+length(?:es|s)?|Target\\s+mean(?:es|s)?|Total\\s+parts(?:es|s)?|Total\\s+price(?:es|s)?|Associative(?:es|s)?|Commutative(?:es|s)?|bring\\s+down(?:es|s)?|equivalent(?:es|s)?|reciprocal(?:es|s)?|hundredths(?:es|s)?|proportion(?:es|s)?|expression(?:es|s)?|substitute(?:es|s)?|inequalit(?:y|ies)|like\\s+terms(?:es|s)?|Better\\s+Buy(?:es|s)?|Comparison(?:es|s)?|confidence(?:es|s)?|conjecture(?:es|s)?|Constraint(?:es|s)?|cubic\\s+unit(?:es|s)?|depends\\s+on(?:es|s)?|Dimensions(?:es|s)?|Equal\\s+sign(?:es|s)?|math\\s+stor(?:y|ies)|profession(?:es|s)?|reasonable(?:es|s)?|Reflection(?:es|s)?|repetition(?:es|s)?|round\\s+trip(?:es|s)?|Unit\\s+price(?:es|s)?|Unit\\s+ratio(?:es|s)?|remainder(?:es|s)?|algorithm(?:es|s)?|numerator(?:es|s)?|unit\\s+rate(?:es|s)?|perimeter(?:es|s)?|rectangle(?:es|s)?|trapezoid(?:es|s)?|histogram(?:es|s)?|frequenc(?:y|ies)|Base\\s+area(?:es|s)?|Benchmark(?:es|s)?|communit(?:y|ies)|Composite(?:es|s)?|Congruent(?:es|s)?|decompose(?:es|s)?|Deviation(?:es|s)?|Divisible(?:es|s)?|ingenuit(?:y|ies)|Interpret(?:es|s)?|inventor(?:y|ies)|Magnitude(?:es|s)?|persevere(?:es|s)?|represent(?:es|s)?|symmetric(?:es|s)?|the\\s+whole(?:es|s)?|Unit\\s+cube(?:es|s)?|Variation(?:es|s)?|Dot\\s+plot(?:es|s)?|quotient(?:es|s)?|exponent(?:es|s)?|estimate(?:es|s)?|simplif(?:y|ies)|variable(?:es|s)?|evaluate(?:es|s)?|opposite(?:es|s)?|triangle(?:es|s)?|box\\s+plot(?:es|s)?|quartile(?:es|s)?|argument(?:es|s)?|at\\s+least(?:es|s)?|Constant(?:es|s)?|critique(?:es|s)?|Data\\s+set(?:es|s)?|Diagonal(?:es|s)?|Discount(?:es|s)?|Distance(?:es|s)?|Dividend(?:es|s)?|Interval(?:es|s)?|Negative(?:es|s)?|organize(?:es|s)?|Parallel(?:es|s)?|Per\\s+Unit(?:es|s)?|Positive(?:es|s)?|Propert(?:y|ies)|quantit(?:y|ies)|rotation(?:es|s)?|Solution(?:es|s)?|strateg(?:y|ies)|strength(?:es|s)?|Symmetr(?:y|ies)|Identit(?:y|ies)|Rational(?:es|s)?|product(?:es|s)?|regroup(?:es|s)?|decimal(?:es|s)?|percent(?:es|s)?|integer(?:es|s)?|rhombus(?:es|s)?|polygon(?:es|s)?|pyramid(?:es|s)?|segment(?:es|s)?|outlier(?:es|s)?|cluster(?:es|s)?|Average(?:es|s)?|balance(?:es|s)?|Convert(?:es|s)?|Divisor(?:es|s)?|Formula(?:es|s)?|Isolate(?:es|s)?|justif(?:y|ies)|portion(?:es|s)?|reflect(?:es|s)?|Squared(?:es|s)?|Unknown(?:es|s)?|Whisker(?:es|s)?|Survey(?:es|s)?|factor(?:es|s)?|tenths(?:es|s)?|volume(?:es|s)?|vertex(?:es|s)?|median(?:es|s)?|Expand(?:es|s)?|growth(?:es|s)?|Markup(?:es|s)?|Output(?:es|s)?|puzzle(?:es|s)?|rhythm(?:es|s)?|Skewed(?:es|s)?|Spread(?:es|s)?|x-axis(?:es|s)?|y-axis(?:es|s)?|digit(?:es|s)?|ratio(?:es|s)?|prism(?:es|s)?|Cubed(?:es|s)?|Input(?:es|s)?|Order(?:es|s)?|Range(?:es|s)?|Scale(?:es|s)?|Solve(?:es|s)?|Prime(?:es|s)?|Data(?:es|s)?|area(?:es|s)?|edge(?:es|s)?|Apex(?:es|s)?|Axis(?:es|s)?|Base(?:es|s)?|Face(?:es|s)?|gear(?:es|s)?|Mode(?:es|s)?|Peak(?:es|s)?|net(?:es|s)?|LCM(?:es|s)?|MCM(?:es|s)?|GCF(?:es|s)?|MCD(?:es|s)?|GCD(?:es|s)?|LCD(?:es|s)?|IQR(?:es|s)?|RIC(?:es|s)?|MAD(?:es|s)?|DMA(?:es|s)?|DAM(?:es|s)?|KCF(?:es|s)?|MCI(?:es|s)?|Gap(?:es|s)?|Tax(?:es|s)?|Tip(?:es|s)?|SA(?:es|s)?)\\b","lookup":{"statistical questions and data":0,"statistical question":1,"non-statistical question":2,"data":3,"variability":4,"survey":5,"data distribution":6,"dot plot":7,"product":8,"quotient":9,"factor":10,"remainder":11,"digit":12,"multi-digit":13,"prime factorization":14,"greatest common factor":15,"least common multiple":16,"exponent":17,"algorithm":18,"long division":19,"bring down":20,"regroup":21,"place value":22,"estimate":23,"decimal point":24,"numerator":25,"denominator":26,"equivalent":27,"reciprocal":28,"mixed number":29,"decimal":30,"tenth":31,"hundredth":32,"improper fraction":33,"simplify":34,"ratio":35,"unit rate":36,"percent":37,"proportion":38,"variable":39,"expression":40,"coefficient":41,"substitute":42,"inequality":43,"evaluate":44,"like term":45,"integer":46,"absolute value":47,"opposite":48,"coordinate plane":49,"ordered pair":50,"perimeter":51,"volume":52,"surface area":53,"area":54,"triangle":55,"rectangle":56,"parallelogram":57,"trapezoid":58,"rhombu":59,"polygon":60,"prism":61,"pyramid":62,"net":63,"vertex":64,"edge":65,"segment":66,"line segment":67,"median":68,"outlier":69,"interquartile range":70,"mean absolute deviation":71,"keep-change-flip":72,"histogram":73,"box plot":74,"quartile":75,"frequency":76,"distribution":77,"cluster":78,"scale factor":79,"equivalent ratio":80,"equivalent expression":81,"equivalent fraction":82,"common factor":83,"common multiple":84,"least common denominator":85,"prime factor":86,"conversion factor":87,"algebraic expression":88,"lcm":89,"mcm":90,"gcf":91,"mcd":92,"gcd":93,"lcd":94,"iqr":95,"ric":96,"mad":97,"dma":98,"dam":99,"sa":100,"kcf":101,"mci":102,"add and subtract decimal":103,"addition property of equality":104,"additive pattern":105,"annex a zero":106,"annex zero":107,"apex":108,"appropriate measures of center":109,"approximately":110,"area of a triangle":111,"area of composite figure":112,"area of parallelogram":113,"area of regular polygon":114,"area of trapezoid":115,"argument":116,"associative property":117,"at least":118,"at least / at most":119,"average":120,"axi":121,"balance":122,"balance point":123,"base":124,"base 1 (b1)":125,"base 2 (b2)":126,"base area":127,"benchmark":128,"benchmark percent":129,"better buy":130,"bilateral symmetry":131,"boundary point":132,"closed circle":133,"colon notation":134,"common denominator":135,"common form":136,"community":137,"community agreement":138,"commutative property":139,"compare and order integer":140,"compare ratio":141,"comparison":142,"compatible number":143,"composite":144,"composite figure":145,"composite number":146,"confidence":147,"congruent":148,"conjecture":149,"constant":150,"constraint":151,"convert":152,"convert measurement unit":153,"convert measurements between system":154,"convert measurements within the same system":155,"coordinate":156,"counterexample":157,"critique":158,"cross-multiply":159,"cubed":160,"cubic unit":161,"customary system":162,"customary unit":163,"data set":164,"decimal division algorithm":165,"decimal grid":166,"decimal place":167,"decompose":168,"define the variable":169,"dependent variable":170,"depends on":171,"describe the data using the median":172,"determine the whole given the part and percent":173,"deviation":174,"diagonal":175,"dimension":176,"discount":177,"display data with box plot":178,"display data with histogram":179,"distance":180,"distance between vertice":181,"distance on the coordinate plane":182,"distributive property":183,"divide decimal":184,"divide fraction":185,"divide mixed number":186,"divide multi-digit number":187,"divide whole numbers by fraction":188,"dividend":189,"divisible":190,"division of fraction":191,"division property of equality":192,"divisor":193,"doer of math":194,"double number line":195,"equal sign":196,"equations and inequalities problem solving":197,"equivalent division":198,"evaluate expression":199,"expand":200,"expanded form":201,"extreme value":202,"face":203,"factor an expression":204,"factor pair":205,"factor tree":206,"find factors and multiple":207,"five-number summary":208,"formula":209,"fraction division problem solving":210,"fractions, decimals, and percent":211,"frequency table":212,"gap":213,"gear":214,"generalization":215,"graph inequality":216,"graph on the coordinate plane":217,"graph ratio table":218,"greater than 100%":219,"greatest common factor (gcf)":220,"grouping symbol":221,"growth":222,"halfway value":223,"horizontal distance":224,"identity property":225,"independent variable":226,"ingenuity":227,"input":228,"integers and absolute value":229,"interpret":230,"interval":231,"inventory":232,"inverse operation":233,"isolate":234,"justify":235,"keep, change, flip":236,"lateral area":237,"lateral face":238,"least common multiple (lcm)":239,"length, width, height":240,"less than 1%":241,"line of symmetry":242,"linear pattern":243,"magnitude":244,"make sense of a problem":245,"markup":246,"math biography":247,"math story":248,"mean, median, and mode":249,"measure of center":250,"measure of variation":251,"measurement system":252,"metric system":253,"metric unit":254,"middle half":255,"mirror image":256,"mode":257,"multi-step problem":258,"multiplication property of equality":259,"multiplicative inverse":260,"multiply decimal":261,"negative":262,"negative coordinate":263,"negative integer":264,"negative number":265,"no more than":266,"number line":267,"numerical expression":268,"one-step equation":269,"open circle":270,"opposite of the opposite":271,"order":272,"order of operation":273,"ordered pairs in all four quadrant":274,"organize":275,"output":276,"parallel":277,"part-to-part":278,"part-to-whole":279,"pattern rule":280,"pattern unit":281,"peak":282,"per hundred":283,"per unit":284,"percent of a number":285,"percent problem solving":286,"percents greater than 100% and less than 1%":287,"perpendicular":288,"persevere":289,"portion":290,"positive":291,"positive number":292,"power of ten":293,"powers and exponent":294,"predictability":295,"prime number":296,"problem solving":297,"profession":298,"properties of operation":299,"property":300,"proportional":301,"puzzle":302,"quantity":303,"range":304,"range and interquartile range":305,"rate of change":306,"rates and unit rate":307,"ratio and rate problem solving":308,"ratio reasoning":309,"ratio table":310,"rational number":311,"rational numbers on the number line":312,"reasonable":313,"reasonablenes":314,"rectangular prism":315,"reflect":316,"reflect points across axe":317,"reflection":318,"regular polygon":319,"relationship":320,"repeated multiplication":321,"repetition":322,"represent":323,"representation":324,"rhythm":325,"right trapezoid":326,"rotation":327,"round trip":328,"scale":329,"shape of data distribution":330,"shape of the data":331,"side length":332,"simplest form":333,"simplify algebraic expression":334,"skewed":335,"skip counting":336,"slant height":337,"slanted side":338,"solution":339,"solution set":340,"solve":341,"solve and graph inequality":342,"solve multiplication and division equation":343,"solve one-step addition and subtraction equation":344,"spread":345,"squared":346,"strategy":347,"strength":348,"subtraction property of equality":349,"surface area of prism":350,"surface area of pyramid":351,"surface area using net":352,"symmetric":353,"symmetry":354,"table of value":355,"tape diagram":356,"target mean":357,"target total":358,"tax":359,"the distributive property":360,"the whole":361,"tip":362,"total part":363,"total price":364,"triangular prism":365,"true statement":366,"two-dimensional":367,"understand percent":368,"understand ratio":369,"unit cube":370,"unit fraction":371,"unit price":372,"unit rate point":373,"unit rate problem solving":374,"unit ratio":375,"unknown":376,"variation":377,"vertical distance":378,"volume of rectangular prism":379,"volume with whole-number edge":380,"whisker":381,"work backward":382,"write algebraic expression":383,"write and evaluate numerical expressions with exponent":384,"write equation":385,"write inequality":386,"x-axi":387,"x-coordinate":388,"y-axi":389,"associative":117,"commutative":139,"distributive":183,"identity":225,"prime":296,"rational":311}};
 window.__HW_WORKED__ = {"title":"Watch me","titleEs":"Mírame","lines":["Question 1: \"How many points did our top player score last night?\" There is one player and one game, so there is one fixed answer, like 18 points.","One answer, no variety, so this is NOT a statistical question.","Question 2: \"How many points does each player score per game?\" The answers vary: 8, 12, 12, 15, 18, 20, 22.","Because the answers are different for different players, I must collect data. This IS a statistical question."],"linesEs":["Pregunta 1: «¿Cuántos puntos anotó anoche nuestro mejor jugador?» Hay un jugador y un partido, así que hay una sola respuesta fija, como 18 puntos.","Una sola respuesta, sin variación, así que esta no es una pregunta estadística.","Pregunta 2: «¿Cuántos puntos anota cada jugador por partido?» Las respuestas varían: 8, 12, 12, 15, 18, 20, 22.","Como las respuestas son distintas para distintos jugadores, tengo que reunir datos. Esta sí es una pregunta estadística."]};
 </script>
-<script src="/assets/homework/homework-vocab-3da9690d66.bundle.js"></script>
-<script src="/assets/homework/homework-core-e12f28ae0a.bundle.js"></script>
+<script src="/assets/homework/homework-vocab-12619585d8.bundle.js"></script>
+<script src="/assets/homework/homework-core-4eeaa5cadb.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

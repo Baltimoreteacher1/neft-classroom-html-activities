@@ -76,8 +76,11 @@ assert.equal(card.querySelector("h4").textContent, "Unit 3 Test Review");
 assert.match(card.querySelector(".eyebrow").textContent, /^Unit 3 Review ·/);
 assert.equal(
   card.querySelector("a.button").getAttribute("href"),
-  "/curriculum/unit-3-test-review/?route=core&lang=en&section=all-families",
+  "/curriculum/unit-3-test-review/?lang=en&section=all-families",
 );
+// A unit review has no routes, so it never carries ?route= (and says "Open homework", not a time chooser).
+assert.equal(card.querySelectorAll("a").length, 1);
+assert.equal(card.querySelector("a.button").textContent, "Open homework");
 renderHomeworkHub(root, snapshot, input, "all-families", "es", { now });
 const cardEs = [...root.querySelectorAll(".homework-card")].find((item) => item.querySelector("h4"));
 assert.equal(cardEs.querySelector("h4").textContent, "Repaso para el examen de la Unidad 3");

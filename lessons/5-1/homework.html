@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Help Your Student — Lesson 5-1: Determine the Area of Parallelograms and Rhombuses</title>
+<title>Family Math Studio — Lesson 5-1: Determine the Area of Parallelograms and Rhombuses</title>
 <link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet">
 <link rel="stylesheet" href="/assets/homework/homework-base-0d2a228add.css">
 <style>
@@ -114,26 +114,6 @@ header.homework-header,
   user-select: none;
 }
 
-/* 3 Stars Milestone Bar on Quick Check */
-.stars-to-win-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, var(--teal-light) 0%, #ffffff 100%);
-  border: 1.5px solid var(--teal);
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  margin-bottom: 20px;
-}
-.stars-to-win-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 14.5px;
-  color: var(--navy);
-}
 .stars-milestone-chips {
   display: flex;
   flex-wrap: wrap;
@@ -152,16 +132,7 @@ header.homework-header,
   flex: 0 0 auto;
   white-space: nowrap;
 }
-/* On a phone the goal sentence and the three milestone chips do not fit on one
-   line, so they stack instead of fighting for the same 400px. */
-@media (max-width: 620px) {
-  .stars-to-win-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .stars-milestone-chips { width: 100%; }
-}
+.stars-milestone-chips { width: 100%; }
 
 /* Rotated Huddle Activity Card */
 .huddle-hook-banner {
@@ -333,7 +304,7 @@ header.homework-header,
   margin-bottom: 3px;
 }
 </style>
-<link rel="stylesheet" href="/assets/homework/homework-layer-205c995f26.css">
+<link rel="stylesheet" href="/assets/homework/homework-layer-992d934c32.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -347,16 +318,17 @@ header.homework-header,
   <link rel="apple-touch-icon" href="/assets/favicon.svg">
   <meta name="theme-color" content="#12355b">
   <link rel="canonical" href="https://eduwonderlab.com/lessons/5-1/homework.html">
-  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 5-1: Determine the Area of Parallelograms and Rhombuses.">
+  <meta name="description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 5-1: Determine the Area of Parallelograms and Rhombuses.">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Neft Teacher">
-  <meta property="og:title" content="Help Your Student — Lesson 5-1: Determine the Area of Parallelograms and Rhombuses">
-  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Help Your Student — Lesson 5-1: Determine the Area of Parallelograms and Rhombuses.">
+  <meta property="og:title" content="Family Math Studio — Lesson 5-1: Determine the Area of Parallelograms and Rhombuses">
+  <meta property="og:description" content="Neft Teacher Grade 6 Reveal Math resource — Family Math Studio — Lesson 5-1: Determine the Area of Parallelograms and Rhombuses.">
   <meta property="og:url" content="https://eduwonderlab.com/lessons/5-1/homework.html">
   <meta property="og:image" content="https://eduwonderlab.com/assets/og-curriculum.png">
   <!-- enthead-injected:end -->
 </head>
 <body>
+<a class="hw-skip" href="#hw_tab_panels" onclick="startHomework(); return false;"><span class="lang-en">Skip to tonight's math</span><span class="lang-es" lang="es">Ir a la matemática de hoy</span></a>
 
 <script>
 /* Language mode, BEFORE first paint. restoreParentSignoff sets the same class
@@ -365,10 +337,29 @@ header.homework-header,
    whole document. Same rule as the boot script below it: fail toward showing
    something readable, which here is English. */
 (function () {
-  var mode = 'en';
+  /* Blocked site data makes every localStorage access throw, which would stop the
+     page's own startup. Fall back to storage that lasts for this visit. */
   try {
+    window.localStorage.getItem('hw_probe');
+  } catch (blocked) {
+    var memory = {};
+    var stand = {
+      getItem: function (k) { return Object.prototype.hasOwnProperty.call(memory, k) ? memory[k] : null; },
+      setItem: function (k, v) { memory[k] = String(v); },
+      removeItem: function (k) { delete memory[k]; },
+      clear: function () { memory = {}; },
+      key: function (i) { return Object.keys(memory)[i] || null; },
+      get length() { return Object.keys(memory).length; }
+    };
+    try { Object.defineProperty(window, 'localStorage', { configurable: true, get: function () { return stand; } }); } catch (unsupported) {}
+  }
+  var mode = 'bilingual';
+  try {
+    var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
+    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
+      mode = requested;
+    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)
@@ -423,6 +414,23 @@ header.homework-header,
     <header class="hw-hero" aria-label="Family Math Night welcome">
       <div class="hw-hero-glow" aria-hidden="true"></div>
       <div class="hw-hero-body">
+        <div class="hw-hero-controls">
+          <div class="lang-selector-card">
+            <span class="lang-selector-title">Language / Idioma</span>
+            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
+              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
+                🇺🇸🇪🇸 <span class="lang-btn-long">Bilingual / Bilingüe</span><span class="lang-btn-short">EN + ES</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
+                🇺🇸 <span>English</span>
+              </button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
+                🇪🇸 <span>Español</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <p class="hw-hero-kicker">
           <span class="hw-hero-kicker-icon" aria-hidden="true">📘</span>
           <span class="lang-en">Unit 5 · Solve Area, Surface Area, and Volume Problems</span>
@@ -443,39 +451,25 @@ header.homework-header,
         </p>
 
         <nav class="hw-session-banner" aria-label="Two-session lesson" data-session="1">
-    <ol class="hw-session-steps"><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span></span></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-next"><a class="hw-session-chip" href="/lessons/5-1-part2/homework.html"><span class="hw-session-mark" aria-hidden="true">○</span><span class="hw-session-name"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span></a></li></ol>
+    <ol class="hw-session-steps"><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span><span class="hw-session-short"><span class="lang-en">Session 1</span><span class="lang-es" lang="es">Sesión 1</span></span></span></span></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-next"><a class="hw-session-chip" href="/lessons/5-1-part2/homework.html"><span class="hw-session-mark" aria-hidden="true">○</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span><span class="hw-session-short"><span class="lang-en">Session 2</span><span class="lang-es" lang="es">Sesión 2</span></span></span></a></li></ol>
     <p class="hw-session-sentence"><strong><span class="lang-en">Coming up next:</span><span class="lang-es" lang="es">Lo que sigue:</span></strong> <span class="lang-en">In Session 2, we find the area of a rhombus — and see why the parallelogram formula we learned in Part 1 still works on it.</span><span class="lang-es" lang="es">En la Sesión 2, hallamos el área de un rombo — y vemos por qué la fórmula del paralelogramo que aprendimos en la Parte 1 sigue funcionando.</span> <span class="lang-en">It builds on today’s model. Open it when it is assigned.</span><span class="lang-es" lang="es">Se basa en el modelo de hoy. Ábranla cuando se las asignen.</span></p>
   </nav>
 
         <p class="hw-hero-bigidea" aria-label="Big idea">
-          <span class="hw-hero-bigidea-label"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
+          <span class="hw-hero-bigidea-label hw-inline"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
           <span class="lang-en">Tonight we find the area of a parallelogram. A parallelogram is a slanted four-sided shape, like a leaning rectangle. We use the rule: area = base × height.</span><span class="lang-es" lang="es">Esta noche hallamos el área de un paralelogramo. Un paralelogramo es una figura inclinada de cuatro lados, como un rectángulo recostado. Usamos la regla: área = base × altura.</span>
         </p>
-
-        <div class="hw-hero-controls">
-          <div class="lang-selector-card">
-            <span class="lang-selector-title">Language / Idioma</span>
-            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
-              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
-                🇺🇸🇪🇸 <span>Bilingual / Bilingüe</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
-                🇺🇸 <span>English</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
-                🇪🇸 <span>Español</span>
-              </button>
-            </div>
-          </div>
-        </div>
 
         <p class="hw-hero-lead">
           <span class="lang-en">Optional, ungraded practice. Work with someone or on your own; no adult signature is needed.</span>
           <span class="lang-es" lang="es">Práctica opcional, sin calificación. Trabaja con alguien o a solas; no necesitas la firma de un adulto.</span>
         </p>
 
-        <ul class="hw-hero-stats" aria-label="What tonight looks like">
-          <li class="hw-stat"><span aria-hidden="true">🗺️</span><span class="lang-en"><span id="hw_hero_stop_count">5</span> stops</span><span class="lang-es" lang="es"><span id="hw_hero_stop_count_es">5</span> paradas</span></li>
+
+        <ul class="hw-tonight hw-inline" aria-label="Tonight at a glance">
+          <li><span aria-hidden="true">⏱</span> <strong><span data-hw-tonight-time>20–30</span> min</strong></li>
+          <li><span aria-hidden="true">✏️</span> <span class="lang-en">Pencil and paper</span><span class="lang-es" lang="es">Lápiz y papel</span></li>
+          <li><span aria-hidden="true">🎯</span> <span class="lang-en">Goal:</span><span class="lang-es" lang="es">Meta:</span> <strong><span data-hw-goal-count>4</span> <span class="lang-en">problems</span><span class="lang-es" lang="es">problemas</span></strong></li>
         </ul>
 
 
@@ -483,30 +477,31 @@ header.homework-header,
         <div class="hw-route-heading">
           <span class="hw-route-icon" aria-hidden="true">🧭</span>
           <div>
-            <h2 id="hw_route_title"><span class="lang-en">Choose a practice path</span><span class="lang-es" lang="es">Elige una ruta de práctica</span></h2>
-            <p><span class="lang-en">All practice is optional and ungraded. Choose the time that works for your family; your route choice is saved on this device.</span><span class="lang-es" lang="es">Toda la práctica es opcional y no lleva calificación. Elijan el tiempo que les funcione; la ruta queda guardada en este dispositivo.</span></p>
+            <h2 id="hw_route_title" class="hw-inline"><span class="lang-en">How much time do you have tonight?</span><span class="lang-es" lang="es">¿Cuánto tiempo tienen esta noche?</span></h2>
+            <p class="hw-inline"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
           </div>
         </div>
-        <div class="hw-route-options" role="group" aria-label="Choose a practice path" data-aria-en="Choose a practice path" data-aria-es="Elige una ruta de práctica">
+        <div class="hw-route-options" role="group" aria-label="How much time do you have tonight?" data-aria-en="How much time do you have tonight?" data-aria-es="¿Cuánto tiempo tienen esta noche?">
           <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
-            <span class="hw-route-time">5–10 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Quick practice</span><span class="lang-es" lang="es">Práctica breve</span></strong><small><span class="lang-en">One example, 2 problems, and one explanation.</span><span class="lang-es" lang="es">Un ejemplo, 2 problemas y una explicación.</span></small></span>
+            <span class="hw-route-time">5–10 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Quick</span><span class="lang-es" lang="es">Rápida</span></strong><small><span class="lang-en">One example and 2 problems.</span><span class="lang-es" lang="es">Un ejemplo y 2 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
-            <span class="hw-route-time">15–20 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Learn, explore key words, practice <span data-hw-core-count>6</span> problems, and explain.</span><span class="lang-es" lang="es">Aprende, explora palabras clave, practica <span data-hw-core-count>6</span> problemas y explica.</span></small></span>
+            <span class="hw-route-time">15–20 <small>min</small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Key words, then practice. Goal: 4 problems.</span><span class="lang-es" lang="es">Palabras clave y práctica. Meta: 4 problemas.</span></small></span>
           </button>
           <button type="button" class="hw-route-option is-active" data-route-mode="full" aria-pressed="true" onclick="setHomeworkRoute('full')">
-            <span class="hw-route-time">20–30 <small><span class="lang-en">min</span><span class="lang-es" lang="es">min</span></small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Family Math Studio</span><span class="lang-es" lang="es">Estudio familiar de matemáticas</span></strong><small><span class="lang-en">Add one home mission and one math game. Go at your own pace.</span><span class="lang-es" lang="es">Agrega una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span></small></span>
+            <span class="hw-route-time">20–30 <small>min</small></span>
+            <span class="hw-route-badge"><span aria-hidden="true">★</span><span class="hw-sr-only"><span class="lang-en">Recommended</span><span class="lang-es" lang="es">Recomendada</span></span></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Full Studio</span><span class="lang-es" lang="es">Estudio completo</span></strong><small><span class="lang-en">Everything, plus a home mission and a game.</span><span class="lang-es" lang="es">Todo, más una misión en casa y un juego.</span></small></span>
           </button>
         </div>
         <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Family Math Studio selected: <span data-hw-core-count>6</span> problems, key words, one home mission, and one math game. Go at your own pace.</span>
-          <span class="lang-es" lang="es">Estudio familiar seleccionado: <span data-hw-core-count>6</span> problemas, palabras clave, una misión en casa y un juego de matemáticas. Avancen a su ritmo.</span>
+          <span class="lang-en">Full Studio (recommended): everything, plus one home mission and one game. Everything is optional.</span>
+          <span class="lang-es" lang="es">Estudio completo (recomendada): todo, más una misión en casa y un juego. Todo es opcional.</span>
         </p>
         <p id="hw_resume_note" role="status" aria-live="polite"></p>
-        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start this path</span><span class="lang-es" lang="es">Empezar esta ruta</span></button>
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
       </section>
 
         <details class="hw-tools-menu"><summary><span class="lang-en">Tools: scratchpad, share, print &amp; standard</span><span class="lang-es" lang="es">Herramientas: pizarra, compartir, imprimir y estándar</span></summary>
@@ -659,15 +654,39 @@ header.homework-header,
           <div class="learning-words"><span class="learning-words-label">Palabras clave</span><ul class="learning-word-chips" aria-label="Palabras clave"><li>Área de paralelogramos</li><li>Lado inclinado</li><li>Paralelogramo</li></ul></div>
         </div>
       </div>
-
-      <div class="parent-quick-card">
-        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
-        <ul>
-          <li><span aria-hidden="true">💬</span> <strong><span class="lang-en">If they get stuck, ask:</span><span class="lang-es" lang="es">Si se atora, pregunten:</span></strong> <span class="lang-en">Which measurement is the height: the slanted side or the straight-up distance? How do you know?</span><span class="lang-es" lang="es">¿Cuál medida es la altura: el lado inclinado o la distancia en línea recta hacia arriba? ¿Cómo lo sabes?</span></li>
-          <li><span aria-hidden="true">🚫</span> <strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">Use the slanted side as the height.</span><span class="lang-es" lang="es">Usa el lado inclinado como la altura.</span></li>
-        </ul>
-      </div>
     </div>
+
+      <section class="hw-confidence" id="hw_conf_before" data-conf-phase="before" aria-labelledby="hw_conf_before_title">
+        <h3 id="hw_conf_before_title"><span class="lang-en">How sure do you feel about today&#039;s math?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes con la matemática de hoy?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_before_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="before" onclick="hwSetConfidence('before', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="before" onclick="hwSetConfidence('before', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="before" onclick="hwSetConfidence('before', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Just for you. It stays on this device. We ask again at the end.</span><span class="lang-es" lang="es">Solo para ti. Se queda en este dispositivo. Preguntamos otra vez al final.</span></p>
+
+      </section>
+
+      <section class="hw-mystery" id="hw_mystery" data-problem="problem_10" aria-labelledby="hw_mystery_title">
+        <span class="hw-mystery-lock" id="hw_mystery_lock" aria-hidden="true">🔒</span>
+        <div class="hw-mystery-body">
+          <p class="hw-eyebrow hw-inline"><span class="lang-en">Tonight&#039;s mystery challenge</span><span class="lang-es" lang="es">El reto misterioso de hoy</span></p>
+          <h3 id="hw_mystery_title"><span class="lang-en">Can you crack this before tonight is over?</span><span class="lang-es" lang="es">¿Puedes resolver esto antes de terminar hoy?</span></h3>
+          <p class="hw-mystery-stem"><span class="lang-en">A blueprint parallelogram has a base of 8 ft, a height of 5 ft, and a slanted side of 7 ft. What is its area?</span><span class="lang-es" lang="es">Un paralelogramo de un plano tiene una base de 8 ft, una altura de 5 ft y un lado inclinado de 7 ft. ¿Cuál es su área?</span></p>
+          <p class="hw-mystery-status" id="hw_mystery_status" role="status" aria-live="polite">
+            <span class="lang-en">Locked. Finish <span data-hw-goal-count>4</span> problems and it opens.</span>
+            <span class="lang-es" lang="es">Bloqueado. Termina <span data-hw-goal-count>4</span> problemas y se abre.</span>
+          </p>
+          <button type="button" class="hw-mystery-open" id="hw_mystery_open" hidden onclick="hwOpenMystery()">
+            <span class="lang-en">Open the mystery challenge ➔</span><span class="lang-es" lang="es">Abrir el reto misterioso ➔</span>
+          </button>
+        </div>
+      </section>
       <div class="learn-big-idea-block" id="hw_learn_idea">
 
       <h2 class="section-title">🎯 <span class="lang-en">The big idea</span><span class="lang-es" lang="es">La idea principal</span> <button type="button" class="btn-listen-concept" onclick="speakBigIdea(&quot;To find the area, multiply the base by the height. The height is the straight-up distance, not the slanted side.&quot;, &quot;Para hallar el área, multiplica la base por la altura. La altura es la distancia recta hacia arriba, no el lado inclinado.&quot;)" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button></h2>
@@ -791,18 +810,24 @@ header.homework-header,
 
 
       <div class="learn-extended-block" id="hw_learn_quick">
-    <details class="parent-coaching-drawer">
-      <summary class="parent-coaching-summary">
-        <span class="summary-left">
-          <span class="summary-icon">💡</span>
-          <span class="summary-text">
-            <strong><span class="lang-en">Parent Coaching Tips &amp; Real-World Connection</span><span class="lang-es" lang="es">Consejos para Padres y Conexión Real</span></strong>
-            <small><span class="lang-en">Tap to view coaching questions, common traps &amp; everyday examples</span><span class="lang-es" lang="es">Toca para ver preguntas guía, errores comunes y ejemplos</span></small>
-          </span>
+    <details class="hw-grownup" id="hw_grownup">
+      <summary>
+        <span class="hw-grownup-icon" aria-hidden="true">👪</span>
+        <span class="hw-grownup-text hw-stack">
+          <strong class="hw-stack"><span class="lang-en">For the grown-up · 1 minute</span><span class="lang-es" lang="es">Para el adulto · 1 minuto</span></strong>
+          <small class="hw-stack"><span class="lang-en">Ask: Which measurement is the height: the slanted side or the straight-up distance? How do you know?</span><span class="lang-es" lang="es">Pregunta: ¿Cuál medida es la altura: el lado inclinado o la distancia en línea recta hacia arriba? ¿Cómo lo sabes?</span></small>
         </span>
-        <span class="summary-chevron" aria-hidden="true">▾</span>
+        <span class="hw-grownup-chev" aria-hidden="true">▾</span>
       </summary>
-      <div class="parent-coaching-content">
+      <div class="hw-grownup-body">
+
+      <div class="parent-quick-card">
+        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
+        <ul>
+          <li><span aria-hidden="true">💬</span> <strong><span class="lang-en">If they get stuck, ask:</span><span class="lang-es" lang="es">Si se atora, pregunten:</span></strong> <span class="lang-en">Which measurement is the height: the slanted side or the straight-up distance? How do you know?</span><span class="lang-es" lang="es">¿Cuál medida es la altura: el lado inclinado o la distancia en línea recta hacia arriba? ¿Cómo lo sabes?</span></li>
+          <li><span aria-hidden="true">🚫</span> <strong><span class="lang-en">Try not to say:</span><span class="lang-es" lang="es">Eviten decir:</span></strong> <span class="lang-en">Use the slanted side as the height.</span><span class="lang-es" lang="es">Usa el lado inclinado como la altura.</span></li>
+        </ul>
+      </div>
 
     <div class="real-world-spotlight card-ish">
       <div class="spotlight-badge"><span class="spotlight-icon" aria-hidden="true">📐</span> <span><span class="lang-en">WHY THIS MATTERS</span><span class="lang-es" lang="es">¿POR QUÉ IMPORTA?</span></span></div>
@@ -980,7 +1005,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Area of Parallelograms&quot;, &quot;Área de paralelogramos&quot;)" title="Listen / Escuchar" aria-label="Pronounce Area of Parallelograms">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/area-of-parallelograms.svg" alt="Illustration of Area of Parallelograms: The space inside a parallelogram. Formula: A = b × h, using the perpendicular height." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/area-of-parallelograms.svg" alt="Illustration of Area of Parallelograms: Base times height. Measure the height straight up." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1006,8 +1031,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Área de paralelogramos</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">The space inside a parallelogram. Formula: A = b × h, using the perpendicular height.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> El espacio dentro de un paralelogramo. Fórmula: A = b × h, usando la altura perpendicular.</p>
+                    <p class="vocab-def">Base times height. Measure the height straight up.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Base por altura. Mide la altura en línea recta hacia arriba.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>A = b × h; if b = 10 cm and h = 6 cm, A = 60 cm².</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1028,7 +1053,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Slanted side&quot;, &quot;Lado inclinado&quot;)" title="Listen / Escuchar" aria-label="Pronounce Slanted side">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/slanted-side.svg" alt="Illustration of Slanted side: A side that leans instead of going straight up and down. It is not the perpendicular height." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/slanted-side.svg" alt="Illustration of Slanted side: A side that leans. It is not the straight-up height." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1054,8 +1079,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Lado inclinado</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A side that leans instead of going straight up and down. It is not the perpendicular height.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un lado que está inclinado en vez de subir y bajar verticalmente. No es la altura perpendicular.</p>
+                    <p class="vocab-def">A side that leans. It is not the straight-up height.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un lado que se inclina. No es la altura en línea recta.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>In a leaning parallelogram, use the dashed 90° height—not the slanted side—in A = b × h.</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1076,7 +1101,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Parallelogram&quot;, &quot;Paralelogramo&quot;)" title="Listen / Escuchar" aria-label="Pronounce Parallelogram">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/parallelogram.svg" alt="Illustration of Parallelogram: A four-sided shape with two pairs of parallel sides." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/parallelogram.svg" alt="Illustration of Parallelogram: A shape with four sides. Opposite sides are parallel." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1102,8 +1127,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Paralelogramo</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A four-sided shape with two pairs of parallel sides.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una figura de cuatro lados con dos pares de lados paralelos.</p>
+                    <p class="vocab-def">A shape with four sides. Opposite sides are parallel.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una figura de cuatro lados. Los lados opuestos son paralelos.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>Think of a leaning door — the top and bottom are parallel, and the two sides are parallel, like a slanted rectangle</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1124,7 +1149,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Parallel&quot;, &quot;Paralelas&quot;)" title="Listen / Escuchar" aria-label="Pronounce Parallel">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/parallel.svg" alt="Illustration of Parallel: Two lines or sides that stay the same distance apart and never meet." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/parallel.svg" alt="Illustration of Parallel: Lines that stay the same distance apart and never meet." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1150,8 +1175,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Paralelas</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">Two lines or sides that stay the same distance apart and never meet.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Dos líneas o lados que se mantienen a la misma distancia y nunca se cruzan.</p>
+                    <p class="vocab-def">Lines that stay the same distance apart and never meet.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Líneas que siempre están a la misma distancia y nunca se cruzan.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>The top and bottom of a parallelogram never get closer together — matching arrowheads (›) mark one parallel pair, double arrowheads (››) mark the other.</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1172,7 +1197,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Base&quot;, &quot;Base&quot;)" title="Listen / Escuchar" aria-label="Pronounce Base">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/base-parallelogram.svg" alt="Illustration of Base: Any side of a parallelogram can be the base. Once you pick a base, the height must be measured perpendicular (at a 90° angle) to it." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/base-parallelogram.svg" alt="Illustration of Base: The side you pick to measure height from." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1198,8 +1223,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Base</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">Any side of a parallelogram can be the base. Once you pick a base, the height must be measured perpendicular (at a 90° angle) to it.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Cualquier lado de un paralelogramo puede ser la base. Una vez que eliges la base, la altura debe medirse perpendicular (en un ángulo de 90°) a ella.</p>
+                    <p class="vocab-def">The side you pick to measure height from.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> El lado que eliges para medir la altura.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>Any side can be the base: choose the 10 cm side and b = 10 cm, then draw the height at 90° to that side in A = b × h</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1220,7 +1245,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Height&quot;, &quot;Altura&quot;)" title="Listen / Escuchar" aria-label="Pronounce Height">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/height-parallelogram.svg" alt="Illustration of Height: The straight-up distance from the base to the top." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/height-parallelogram.svg" alt="Illustration of Height: How tall it is, measured straight up from the base." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1246,8 +1271,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Altura</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">The straight-up distance from the base to the top.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> La distancia recta hacia arriba desde la base hasta la parte de arriba.</p>
+                    <p class="vocab-def">How tall it is, measured straight up from the base.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Qué tan alta es, medida en línea recta hacia arriba desde la base.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>A dashed vertical line from the top side straight down to the base, forming a 90° angle — NOT the slanted side</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1268,7 +1293,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Perpendicular&quot;, &quot;Perpendicular&quot;)" title="Listen / Escuchar" aria-label="Pronounce Perpendicular">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/perpendicular.svg" alt="Illustration of Perpendicular: Two lines that meet to make a square corner (90 degrees)." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/perpendicular.svg" alt="Illustration of Perpendicular: Lines that meet at a square corner (90°)." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1294,8 +1319,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Perpendicular</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">Two lines that meet to make a square corner (90 degrees).</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Dos líneas que se cruzan formando una esquina cuadrada (90 grados).</p>
+                    <p class="vocab-def">Lines that meet at a square corner (90°).</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Líneas que se cruzan en una esquina cuadrada (90°).</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>The dashed height meets the base at a square corner — the small 90° box is what makes it perpendicular, not slanted.</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1316,7 +1341,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Area&quot;, &quot;Área&quot;)" title="Listen / Escuchar" aria-label="Pronounce Area">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/area.svg" alt="Illustration of Area: How much space is inside a flat shape." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/area.svg" alt="Illustration of Area: How much flat space a shape covers." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1342,8 +1367,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Área</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">How much space is inside a flat shape.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Cuánto espacio hay dentro de una figura plana.</p>
+                    <p class="vocab-def">How much flat space a shape covers.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Cuánto espacio plano cubre una figura.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>A 3 cm × 4 cm rectangle covers 12 square centimeters — imagine 12 tiny 1×1 squares inside it</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1364,7 +1389,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Composite figure&quot;, &quot;Figura compuesta&quot;)" title="Listen / Escuchar" aria-label="Pronounce Composite figure">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/composite-figure.svg" alt="Illustration of Composite figure: A shape made by putting two or more simple shapes together." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/composite-figure.svg" alt="Illustration of Composite figure: A shape made of simple shapes joined together." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1390,8 +1415,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Figura compuesta</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A shape made by putting two or more simple shapes together.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una figura formada al juntar dos o más figuras simples.</p>
+                    <p class="vocab-def">A shape made of simple shapes joined together.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una figura hecha de figuras simples juntas.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>An L-shaped room = a 10×8 rectangle joined to a 4×5 rectangle; total area = 80 + 20 = 100 sq ft</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1412,7 +1437,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Formula&quot;, &quot;Fórmula&quot;)" title="Listen / Escuchar" aria-label="Pronounce Formula">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/area-of-parallelograms.svg" alt="Illustration of Formula: A math rule written with symbols." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/area-of-parallelograms.svg" alt="Illustration of Formula: A rule written with letters and numbers." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1438,8 +1463,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Fórmula</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A math rule written with symbols.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una regla matemática escrita con símbolos.</p>
+                    <p class="vocab-def">A rule written with letters and numbers.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una regla escrita con letras y números.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>A = b × h means Area equals base times height; for a parallelogram with b = 6 and h = 4, A = 24</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1460,7 +1485,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Rhombus&quot;, &quot;Rombo&quot;)" title="Listen / Escuchar" aria-label="Pronounce Rhombus">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/rhombus.svg" alt="Illustration of Rhombus: A parallelogram with four sides of the same length." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/rhombus.svg" alt="Illustration of Rhombus: A shape with four sides that are all the same length." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1486,8 +1511,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Rombo</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A parallelogram with four sides of the same length.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un paralelogramo con cuatro lados de la misma longitud.</p>
+                    <p class="vocab-def">A shape with four sides that are all the same length.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una figura de cuatro lados que miden lo mismo.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>All 4 sides equal, with two diagonals that cross at right angles.</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1508,7 +1533,7 @@ header.homework-header,
                     <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(&quot;Diagonal&quot;, &quot;Diagonal&quot;)" title="Listen / Escuchar" aria-label="Pronounce Diagonal">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
-                    <img class="vocab-thumb" src="/assets/vocab-images/rhombus.svg" alt="Illustration of Diagonal: A segment that joins two corners that are not next to each other." loading="lazy" width="260" height="195" />
+                    <img class="vocab-thumb" src="/assets/vocab-images/rhombus.svg" alt="Illustration of Diagonal: A line between two corners that are not side by side." loading="lazy" width="260" height="195" />
                   </div>
                   <div class="vocab-front-body">
                     <h3 class="vocab-term term-text">
@@ -1534,8 +1559,8 @@ header.homework-header,
                     <p class="vocab-back-term-es" lang="es">Diagonal</p>
                   </div>
                   <div class="vocab-back-content">
-                    <p class="vocab-def">A segment that joins two corners that are not next to each other.</p>
-                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Un segmento que une dos esquinas que no están una junto a la otra.</p>
+                    <p class="vocab-def">A line between two corners that are not side by side.</p>
+                    <p class="vocab-def-es" lang="es"><span class="lang-tag">ES</span> Una línea entre dos esquinas que no están una al lado de la otra.</p>
                     <div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>Corner to opposite corner.</span></div>
                   </div>
                   <div class="vocab-card-back-actions">
@@ -1569,7 +1594,7 @@ header.homework-header,
         <p class="vq-done-score"><span class="lang-en">First-try stars:</span><span class="lang-es" lang="es">Estrellas al primer intento:</span> <strong id="vocab_quiz_score"></strong></p>
         <button type="button" class="btn btn-secondary" onclick="startVocabQuiz()"><span class="lang-en">Play again 🔄</span><span class="lang-es" lang="es">Jugar de nuevo 🔄</span></button>
       </div>
-      <script type="application/json" id="vocab_quiz_data">[{"term":"Area of Parallelograms","termEs":"Área de paralelogramos","def":"The space inside a parallelogram. Formula: A = b × h, using the perpendicular height.","defEs":"El espacio dentro de un paralelogramo. Fórmula: A = b × h, usando la altura perpendicular.","img":"/assets/vocab-images/area-of-parallelograms.svg","alt":"Illustration of Area of Parallelograms: The space inside a parallelogram. Formula: A = b × h, using the perpendicular height."},{"term":"Slanted side","termEs":"Lado inclinado","def":"A side that leans instead of going straight up and down. It is not the perpendicular height.","defEs":"Un lado que está inclinado en vez de subir y bajar verticalmente. No es la altura perpendicular.","img":"/assets/vocab-images/slanted-side.svg","alt":"Illustration of Slanted side: A side that leans instead of going straight up and down. It is not the perpendicular height."},{"term":"Parallelogram","termEs":"Paralelogramo","def":"A four-sided shape with two pairs of parallel sides.","defEs":"Una figura de cuatro lados con dos pares de lados paralelos.","img":"/assets/vocab-images/parallelogram.svg","alt":"Illustration of Parallelogram: A four-sided shape with two pairs of parallel sides."},{"term":"Parallel","termEs":"Paralelas","def":"Two lines or sides that stay the same distance apart and never meet.","defEs":"Dos líneas o lados que se mantienen a la misma distancia y nunca se cruzan.","img":"/assets/vocab-images/parallel.svg","alt":"Illustration of Parallel: Two lines or sides that stay the same distance apart and never meet."},{"term":"Base","termEs":"Base","def":"Any side of a parallelogram can be the base. Once you pick a base, the height must be measured perpendicular (at a 90° angle) to it.","defEs":"Cualquier lado de un paralelogramo puede ser la base. Una vez que eliges la base, la altura debe medirse perpendicular (en un ángulo de 90°) a ella.","img":"/assets/vocab-images/base-parallelogram.svg","alt":"Illustration of Base: Any side of a parallelogram can be the base. Once you pick a base, the height must be measured perpendicular (at a 90° angle) to it."},{"term":"Height","termEs":"Altura","def":"The straight-up distance from the base to the top.","defEs":"La distancia recta hacia arriba desde la base hasta la parte de arriba.","img":"/assets/vocab-images/height-parallelogram.svg","alt":"Illustration of Height: The straight-up distance from the base to the top."},{"term":"Perpendicular","termEs":"Perpendicular","def":"Two lines that meet to make a square corner (90 degrees).","defEs":"Dos líneas que se cruzan formando una esquina cuadrada (90 grados).","img":"/assets/vocab-images/perpendicular.svg","alt":"Illustration of Perpendicular: Two lines that meet to make a square corner (90 degrees)."},{"term":"Area","termEs":"Área","def":"How much space is inside a flat shape.","defEs":"Cuánto espacio hay dentro de una figura plana.","img":"/assets/vocab-images/area.svg","alt":"Illustration of Area: How much space is inside a flat shape."},{"term":"Composite figure","termEs":"Figura compuesta","def":"A shape made by putting two or more simple shapes together.","defEs":"Una figura formada al juntar dos o más figuras simples.","img":"/assets/vocab-images/composite-figure.svg","alt":"Illustration of Composite figure: A shape made by putting two or more simple shapes together."},{"term":"Formula","termEs":"Fórmula","def":"A math rule written with symbols.","defEs":"Una regla matemática escrita con símbolos.","img":"/assets/vocab-images/area-of-parallelograms.svg","alt":"Illustration of Formula: A math rule written with symbols."},{"term":"Rhombus","termEs":"Rombo","def":"A parallelogram with four sides of the same length.","defEs":"Un paralelogramo con cuatro lados de la misma longitud.","img":"/assets/vocab-images/rhombus.svg","alt":"Illustration of Rhombus: A parallelogram with four sides of the same length."},{"term":"Diagonal","termEs":"Diagonal","def":"A segment that joins two corners that are not next to each other.","defEs":"Un segmento que une dos esquinas que no están una junto a la otra.","img":"/assets/vocab-images/rhombus.svg","alt":"Illustration of Diagonal: A segment that joins two corners that are not next to each other."}]</script>
+      <script type="application/json" id="vocab_quiz_data">[{"term":"Area of Parallelograms","termEs":"Área de paralelogramos","def":"Base times height. Measure the height straight up.","defEs":"Base por altura. Mide la altura en línea recta hacia arriba.","img":"/assets/vocab-images/area-of-parallelograms.svg","alt":"Illustration of Area of Parallelograms: Base times height. Measure the height straight up."},{"term":"Slanted side","termEs":"Lado inclinado","def":"A side that leans. It is not the straight-up height.","defEs":"Un lado que se inclina. No es la altura en línea recta.","img":"/assets/vocab-images/slanted-side.svg","alt":"Illustration of Slanted side: A side that leans. It is not the straight-up height."},{"term":"Parallelogram","termEs":"Paralelogramo","def":"A shape with four sides. Opposite sides are parallel.","defEs":"Una figura de cuatro lados. Los lados opuestos son paralelos.","img":"/assets/vocab-images/parallelogram.svg","alt":"Illustration of Parallelogram: A shape with four sides. Opposite sides are parallel."},{"term":"Parallel","termEs":"Paralelas","def":"Lines that stay the same distance apart and never meet.","defEs":"Líneas que siempre están a la misma distancia y nunca se cruzan.","img":"/assets/vocab-images/parallel.svg","alt":"Illustration of Parallel: Lines that stay the same distance apart and never meet."},{"term":"Base","termEs":"Base","def":"The side you pick to measure height from.","defEs":"El lado que eliges para medir la altura.","img":"/assets/vocab-images/base-parallelogram.svg","alt":"Illustration of Base: The side you pick to measure height from."},{"term":"Height","termEs":"Altura","def":"How tall it is, measured straight up from the base.","defEs":"Qué tan alta es, medida en línea recta hacia arriba desde la base.","img":"/assets/vocab-images/height-parallelogram.svg","alt":"Illustration of Height: How tall it is, measured straight up from the base."},{"term":"Perpendicular","termEs":"Perpendicular","def":"Lines that meet at a square corner (90°).","defEs":"Líneas que se cruzan en una esquina cuadrada (90°).","img":"/assets/vocab-images/perpendicular.svg","alt":"Illustration of Perpendicular: Lines that meet at a square corner (90°)."},{"term":"Area","termEs":"Área","def":"How much flat space a shape covers.","defEs":"Cuánto espacio plano cubre una figura.","img":"/assets/vocab-images/area.svg","alt":"Illustration of Area: How much flat space a shape covers."},{"term":"Composite figure","termEs":"Figura compuesta","def":"A shape made of simple shapes joined together.","defEs":"Una figura hecha de figuras simples juntas.","img":"/assets/vocab-images/composite-figure.svg","alt":"Illustration of Composite figure: A shape made of simple shapes joined together."},{"term":"Formula","termEs":"Fórmula","def":"A rule written with letters and numbers.","defEs":"Una regla escrita con letras y números.","img":"/assets/vocab-images/area-of-parallelograms.svg","alt":"Illustration of Formula: A rule written with letters and numbers."},{"term":"Rhombus","termEs":"Rombo","def":"A shape with four sides that are all the same length.","defEs":"Una figura de cuatro lados que miden lo mismo.","img":"/assets/vocab-images/rhombus.svg","alt":"Illustration of Rhombus: A shape with four sides that are all the same length."},{"term":"Diagonal","termEs":"Diagonal","def":"A line between two corners that are not side by side.","defEs":"Una línea entre dos esquinas que no están una al lado de la otra.","img":"/assets/vocab-images/rhombus.svg","alt":"Illustration of Diagonal: A line between two corners that are not side by side."}]</script>
     </div>
 
     <div class="vocab-game-shell card-ish" id="vocab_match_shell" data-vocab-total="12">
@@ -1649,52 +1674,52 @@ header.homework-header,
         <div class="vocab-match-col col-defs" aria-label="Vocabulary definitions">
 
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="11" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A segment that joins two corners that are not next to each other.</span>
-              <span class="chip-label-es" lang="es">Un segmento que une dos esquinas que no están una junto a la otra.</span>
+              <span class="chip-label-en">A line between two corners that are not side by side.</span>
+              <span class="chip-label-es" lang="es">Una línea entre dos esquinas que no están una al lado de la otra.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="0" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">The space inside a parallelogram. Formula: A = b × h, using the perpendicular height.</span>
-              <span class="chip-label-es" lang="es">El espacio dentro de un paralelogramo. Fórmula: A = b × h, usando la altura perpendicular.</span>
+              <span class="chip-label-en">Base times height. Measure the height straight up.</span>
+              <span class="chip-label-es" lang="es">Base por altura. Mide la altura en línea recta hacia arriba.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="1" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A side that leans instead of going straight up and down. It is not the perpendicular height.</span>
-              <span class="chip-label-es" lang="es">Un lado que está inclinado en vez de subir y bajar verticalmente. No es la altura perpendicular.</span>
+              <span class="chip-label-en">A side that leans. It is not the straight-up height.</span>
+              <span class="chip-label-es" lang="es">Un lado que se inclina. No es la altura en línea recta.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="2" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A four-sided shape with two pairs of parallel sides.</span>
-              <span class="chip-label-es" lang="es">Una figura de cuatro lados con dos pares de lados paralelos.</span>
+              <span class="chip-label-en">A shape with four sides. Opposite sides are parallel.</span>
+              <span class="chip-label-es" lang="es">Una figura de cuatro lados. Los lados opuestos son paralelos.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="3" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">Two lines or sides that stay the same distance apart and never meet.</span>
-              <span class="chip-label-es" lang="es">Dos líneas o lados que se mantienen a la misma distancia y nunca se cruzan.</span>
+              <span class="chip-label-en">Lines that stay the same distance apart and never meet.</span>
+              <span class="chip-label-es" lang="es">Líneas que siempre están a la misma distancia y nunca se cruzan.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="4" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">Any side of a parallelogram can be the base. Once you pick a base, the height must be measured perpendicular (at a 90° angle) to it.</span>
-              <span class="chip-label-es" lang="es">Cualquier lado de un paralelogramo puede ser la base. Una vez que eliges la base, la altura debe medirse perpendicular (en un ángulo de 90°) a ella.</span>
+              <span class="chip-label-en">The side you pick to measure height from.</span>
+              <span class="chip-label-es" lang="es">El lado que eliges para medir la altura.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="5" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">The straight-up distance from the base to the top.</span>
-              <span class="chip-label-es" lang="es">La distancia recta hacia arriba desde la base hasta la parte de arriba.</span>
+              <span class="chip-label-en">How tall it is, measured straight up from the base.</span>
+              <span class="chip-label-es" lang="es">Qué tan alta es, medida en línea recta hacia arriba desde la base.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="6" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">Two lines that meet to make a square corner (90 degrees).</span>
-              <span class="chip-label-es" lang="es">Dos líneas que se cruzan formando una esquina cuadrada (90 grados).</span>
+              <span class="chip-label-en">Lines that meet at a square corner (90°).</span>
+              <span class="chip-label-es" lang="es">Líneas que se cruzan en una esquina cuadrada (90°).</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="7" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">How much space is inside a flat shape.</span>
-              <span class="chip-label-es" lang="es">Cuánto espacio hay dentro de una figura plana.</span>
+              <span class="chip-label-en">How much flat space a shape covers.</span>
+              <span class="chip-label-es" lang="es">Cuánto espacio plano cubre una figura.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="8" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A shape made by putting two or more simple shapes together.</span>
-              <span class="chip-label-es" lang="es">Una figura formada al juntar dos o más figuras simples.</span>
+              <span class="chip-label-en">A shape made of simple shapes joined together.</span>
+              <span class="chip-label-es" lang="es">Una figura hecha de figuras simples juntas.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="9" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A math rule written with symbols.</span>
-              <span class="chip-label-es" lang="es">Una regla matemática escrita con símbolos.</span>
+              <span class="chip-label-en">A rule written with letters and numbers.</span>
+              <span class="chip-label-es" lang="es">Una regla escrita con letras y números.</span>
             </button>
             <button type="button" class="vocab-match-chip chip-def" data-vocab-id="10" data-side="def" onclick="selectVocabMatchChip(this)">
-              <span class="chip-label-en">A parallelogram with four sides of the same length.</span>
-              <span class="chip-label-es" lang="es">Un paralelogramo con cuatro lados de la misma longitud.</span>
+              <span class="chip-label-en">A shape with four sides that are all the same length.</span>
+              <span class="chip-label-es" lang="es">Una figura de cuatro lados que miden lo mismo.</span>
             </button>
         </div>
       </div>
@@ -1724,29 +1749,24 @@ header.homework-header,
 
       <h2 class="section-title">✅ <span class="lang-en">Quick check</span><span class="lang-es" lang="es">Repaso rápido</span></h2>
       <p class="quick-check-time bilingual-block">
-        <span class="lang-en">Complete the <span id="hw_check_problem_count">12</span> problems below.<span class="quick-check-extra-copy"> The extra practice at the bottom is optional.</span></span>
-        <span class="lang-es" lang="es">Completa los <span id="hw_check_problem_count_es">12</span> problemas de abajo.<span class="quick-check-extra-copy"> La práctica extra al final es opcional.</span></span>
-      </p>
-      <p class="bilingual-block">
-        <span class="lang-en">A few problems to practice together. Each one has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong>, and a <strong>space to show your work</strong>. Use <strong>Check This Problem</strong> for instant feedback — no need to finish everything at once.</span>
-        <span class="lang-es" lang="es">Unos problemas para practicar juntos. Cada uno tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para mostrar el trabajo</strong>. Usen <strong>Revisar esta pregunta</strong> para retroalimentación al instante — no tienen que terminar todo de una vez.</span>
+        <span class="lang-en">Start with <strong>Basics</strong>. Each problem has a <strong>step-by-step guide</strong>, a <strong>picture to draw on</strong> and a <strong>space for your work</strong>. Tap <strong>Check This Problem</strong> for instant help.<span class="quick-check-extra-copy"> The extra practice at the bottom is optional.</span></span>
+        <span class="lang-es" lang="es">Empiecen con las <strong>Básicas</strong>. Cada problema tiene una <strong>guía paso a paso</strong>, un <strong>dibujo para trabajar</strong> y un <strong>espacio para su trabajo</strong>. Toquen <strong>Revisar esta pregunta</strong> para recibir ayuda al instante.<span class="quick-check-extra-copy"> La práctica extra al final es opcional.</span></span>
       </p>
 
 
-    <div class="stars-to-win-bar">
-      <div class="stars-to-win-title">
-        <span>⭐</span>
-        <div>
-          <span class="lang-en"><strong>Tonight's goal:</strong> finish the <span id="hw_goal_count">12</span> problems below. Stop any time — your work saves itself.</span>
-          <span class="lang-es" lang="es"><strong>La meta de hoy:</strong> terminar los <span id="hw_goal_count_es">12</span> problemas de abajo. Pueden parar cuando quieran: el trabajo se guarda solo.</span>
-        </div>
-      </div>
-      <div class="stars-milestone-chips" aria-hidden="true">
-        <span class="star-chip">🧱 Basics</span>
-        <span class="star-chip">🌱 Warm-Up ★</span>
-        <span class="star-chip">🚀 Level-Up ★★</span>
-        <span class="star-chip">🏆 Victory ★★★</span>
-      </div>
+    <div class="hw-goal-card">
+      <span class="hw-pips " role="img" aria-label="Tonight's goal progress"></span>
+      <p>
+        <span class="lang-en"><strong>Tonight's goal: any <span data-hw-goal-count>4</span> problems.</strong> There are <span data-hw-goal-avail>12</span> here, so pick the ones you like. Stop any time. Your work saves itself.</span>
+        <span class="lang-es" lang="es"><strong>La meta de hoy: cualquier <span data-hw-goal-count>4</span> problemas.</strong> Aquí hay <span data-hw-goal-avail>12</span>, así que escojan los que prefieran. Pueden parar cuando quieran. El trabajo se guarda solo.</span>
+      </p>
+      <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
+    </div>
+    <div class="stars-milestone-chips" aria-hidden="true">
+      <span class="star-chip">🧱 Basics</span>
+      <span class="star-chip">🌱 Warm-Up ★</span>
+      <span class="star-chip">🚀 Level-Up ★★</span>
+      <span class="star-chip">🏆 Victory ★★★</span>
     </div>
 
     <div class="live-streak-banner" id="hw_streak_banner" hidden>
@@ -1769,9 +1789,12 @@ header.homework-header,
         <strong><span class="lang-en">That's tonight's goal — done!</span><span class="lang-es" lang="es">¡Esa es la meta de hoy: completa!</span></strong>
         <p><span class="lang-en">Great work. Keep going with the extra practice if you want more, or head to <strong>Done</strong> to finish or choose optional extras.</span><span class="lang-es" lang="es">Buen trabajo. Sigan con la práctica extra si quieren más, o vayan a <strong>Listo</strong> para terminar o elegir extras opcionales.</span></p>
       </div>
-      <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
-        <span class="lang-en">Claim Certificate ➔</span><span class="lang-es" lang="es">Reclamar Certificado ➔</span>
-      </button>
+      <div class="goal-actions">
+        <button type="button" class="btn btn-sm btn-secondary hw-banner-mystery" hidden onclick="hwOpenMystery()"><span class="lang-en">🔓 Open the mystery challenge</span><span class="lang-es" lang="es">🔓 Abrir el reto misterioso</span></button>
+        <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
+          <span class="lang-en">Teach it back, then claim your certificate ➔</span><span class="lang-es" lang="es">Enséñalo y reclama tu certificado ➔</span>
+        </button>
+      </div>
     </div>
 
       <section class="practice-tier practice-tier-basic" aria-label="Basic practice">
@@ -4124,7 +4147,7 @@ header.homework-header,
     </div>
 
     <div class="fam-game-break card-ish" id="fam_game_break">
-      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"Rectangle 6 by 4","b":"24 square units"},{"a":"Triangle b = 6, h = 4","b":"12 square units"},{"a":"Parallelogram b = 5, h = 3","b":"15 square units"},{"a":"Square with side 5","b":"25 square units"}],"tf":[{"en":"Area is measured in square units.","es":"El área se mide en unidades cuadradas.","answer":true,"whyEn":"Area counts the unit squares that cover a surface.","whyEs":"El área cuenta los cuadrados unitarios que cubren una superficie."},{"en":"The area of a parallelogram uses the slanted side times the base.","es":"El área de un paralelogramo usa el lado inclinado por la base.","answer":false,"whyEn":"It uses the straight-up HEIGHT. Cut the triangle off one end, slide it over — it's a rectangle of base × height.","whyEs":"Usa la ALTURA vertical. Corten el triángulo de un extremo y deslícenlo: queda un rectángulo de base × altura."},{"en":"A triangle's area is half the area of its matching rectangle.","es":"El área de un triángulo es la mitad del área de su rectángulo correspondiente.","answer":true,"whyEn":"Break a rectangular cracker corner to corner: two equal triangles. Area = ½ × base × height.","whyEs":"Partan una galleta rectangular de esquina a esquina: dos triángulos iguales. Área = ½ × base × altura."},{"en":"A rectangle 6 by 4 has area 10.","es":"Un rectángulo de 6 por 4 tiene área 10.","answer":false,"whyEn":"10 is the half-perimeter trap! Area multiplies: 6 × 4 = 24 square units.","whyEs":"¡10 es la trampa del semiperímetro! El área multiplica: 6 × 4 = 24 unidades cuadradas."},{"en":"Two rooms can have different shapes but the same area.","es":"Dos cuartos pueden tener formas diferentes y la misma área.","answer":true,"whyEn":"A 6 × 4 room and an 8 × 3 room both cover 24 square units.","whyEs":"Un cuarto de 6 × 4 y uno de 8 × 3 cubren 24 unidades cuadradas cada uno."}],"sort":{"a":{"en":"Measured in square units","es":"Se mide en unidades cuadradas"},"b":{"en":"NOT measured in square units","es":"NO se mide en unidades cuadradas"},"cards":[{"t":"Carpet for a floor","bucket":0,"en":"Covering a surface is area.","es":"Cubrir una superficie es área."},{"t":"Fence around a yard","bucket":1,"en":"Distance around is perimeter — plain units.","es":"La distancia alrededor es perímetro: unidades simples."},{"t":"Paint for one wall","bucket":0,"en":"Covering a surface again.","es":"Otra vez cubrir una superficie."},{"t":"Ribbon around a gift","bucket":1,"en":"A length, not a covering.","es":"Un largo, no una cobertura."},{"t":"Base × height of a parallelogram","bucket":0,"en":"Two lengths multiplied give square units.","es":"Dos largos multiplicados dan unidades cuadradas."},{"t":"How tall a triangle is","bucket":1,"en":"One measurement — a length.","es":"Una sola medida: un largo."}]},"wyr":[{"a":{"en":"A 6 ft by 4 ft rug","es":"Un tapete de 6 pies por 4"},"b":{"en":"A 5 ft by 5 ft rug","es":"Un tapete de 5 pies por 5"},"en":"The square one: 25 sq ft versus 24. Same perimeter, more floor covered.","es":"El cuadrado: 25 pies² contra 24. Mismo perímetro, más piso cubierto."},{"a":{"en":"A triangle with base 10, height 4","es":"Un triángulo de base 10 y altura 4"},"b":{"en":"A rectangle 4 by 4","es":"Un rectángulo de 4 por 4"},"en":"The triangle: ½ × 10 × 4 = 20 square units, against the rectangle's 16.","es":"El triángulo: ½ × 10 × 4 = 20 unidades cuadradas, contra 16 del rectángulo."}]};</script>
+      <script>window.__HW_FAMGAMES__ = {"pairs":[{"a":"Rectangle 6 by 4","b":"24 square units","aEs":"Rectángulo de 6 por 4","bEs":"24 unidades cuadradas"},{"a":"Triangle b = 6, h = 4","b":"12 square units","aEs":"Triángulo b = 6, h = 4","bEs":"12 unidades cuadradas"},{"a":"Parallelogram b = 5, h = 3","b":"15 square units","aEs":"Paralelogramo b = 5, h = 3","bEs":"15 unidades cuadradas"},{"a":"Square with side 5","b":"25 square units","aEs":"Cuadrado con lado 5","bEs":"25 unidades cuadradas"}],"tf":[{"en":"Area is measured in square units.","es":"El área se mide en unidades cuadradas.","answer":true,"whyEn":"Area counts the unit squares that cover a surface.","whyEs":"El área cuenta los cuadrados unitarios que cubren una superficie."},{"en":"The area of a parallelogram uses the slanted side times the base.","es":"El área de un paralelogramo usa el lado inclinado por la base.","answer":false,"whyEn":"It uses the straight-up HEIGHT. Cut the triangle off one end, slide it over — it's a rectangle of base × height.","whyEs":"Usa la ALTURA vertical. Corten el triángulo de un extremo y deslícenlo: queda un rectángulo de base × altura."},{"en":"A triangle's area is half the area of its matching rectangle.","es":"El área de un triángulo es la mitad del área de su rectángulo correspondiente.","answer":true,"whyEn":"Break a rectangular cracker corner to corner: two equal triangles. Area = ½ × base × height.","whyEs":"Partan una galleta rectangular de esquina a esquina: dos triángulos iguales. Área = ½ × base × altura."},{"en":"A rectangle 6 by 4 has area 10.","es":"Un rectángulo de 6 por 4 tiene área 10.","answer":false,"whyEn":"10 is the half-perimeter trap! Area multiplies: 6 × 4 = 24 square units.","whyEs":"¡10 es la trampa del semiperímetro! El área multiplica: 6 × 4 = 24 unidades cuadradas."},{"en":"Two rooms can have different shapes but the same area.","es":"Dos cuartos pueden tener formas diferentes y la misma área.","answer":true,"whyEn":"A 6 × 4 room and an 8 × 3 room both cover 24 square units.","whyEs":"Un cuarto de 6 × 4 y uno de 8 × 3 cubren 24 unidades cuadradas cada uno."}],"sort":{"a":{"en":"Measured in square units","es":"Se mide en unidades cuadradas"},"b":{"en":"NOT measured in square units","es":"NO se mide en unidades cuadradas"},"cards":[{"t":"Carpet for a floor","bucket":0,"en":"Covering a surface is area.","es":"Cubrir una superficie es área."},{"t":"Fence around a yard","bucket":1,"en":"Distance around is perimeter — plain units.","es":"La distancia alrededor es perímetro: unidades simples."},{"t":"Paint for one wall","bucket":0,"en":"Covering a surface again.","es":"Otra vez cubrir una superficie."},{"t":"Ribbon around a gift","bucket":1,"en":"A length, not a covering.","es":"Un largo, no una cobertura."},{"t":"Base × height of a parallelogram","bucket":0,"en":"Two lengths multiplied give square units.","es":"Dos largos multiplicados dan unidades cuadradas."},{"t":"How tall a triangle is","bucket":1,"en":"One measurement — a length.","es":"Una sola medida: un largo."}]},"wyr":[{"a":{"en":"A 6 ft by 4 ft rug","es":"Un tapete de 6 pies por 4"},"b":{"en":"A 5 ft by 5 ft rug","es":"Un tapete de 5 pies por 5"},"en":"The square one: 25 sq ft versus 24. Same perimeter, more floor covered.","es":"El cuadrado: 25 pies² contra 24. Mismo perímetro, más piso cubierto."},{"a":{"en":"A triangle with base 10, height 4","es":"Un triángulo de base 10 y altura 4"},"b":{"en":"A rectangle 4 by 4","es":"Un rectángulo de 4 por 4"},"en":"The triangle: ½ × 10 × 4 = 20 square units, against the rectangle's 16.","es":"El triángulo: ½ × 10 × 4 = 20 unidades cuadradas, contra 16 del rectángulo."}]};</script>
       <div class="fam-game-head">
         <span class="fam-game-badge">🎮 <span class="lang-en">FAMILY ARCADE</span><span class="lang-es" lang="es">SALA DE JUEGOS EN FAMILIA</span></span>
         <p class="fam-game-lead">
@@ -4312,7 +4335,40 @@ header.homework-header,
     </div>
 <div class="tab-panel-inner" data-tab-panel="done" id="hw_panel_done" role="tabpanel" hidden>
       <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
-      <p class="family-explain-finish"><span class="lang-en">Explain one answer aloud or on paper: “I got ___ because ___. I checked by ___.” Include your strategy and units. Then you are done.</span><span class="lang-es" lang="es">Explica una respuesta en voz alta o en papel: “Obtuve ___ porque ___. Comprobé usando ___.” Incluye tu estrategia y las unidades. Después termina.</span></p>
+
+      <section class="hw-teach" aria-labelledby="hw_teach_title">
+        <p class="hw-eyebrow hw-inline"><span class="lang-en">The last step</span><span class="lang-es" lang="es">El último paso</span></p>
+        <h3 id="hw_teach_title"><span class="lang-en">Teach it to someone</span><span class="lang-es" lang="es">Enséñaselo a alguien</span></h3>
+        <ol class="hw-teach-steps">
+          <li><span class="lang-en">Pick one problem you solved.</span><span class="lang-es" lang="es">Elige un problema que resolviste.</span></li>
+          <li><span class="lang-en">Explain it out loud. Use any language first.</span><span class="lang-es" lang="es">Explícalo en voz alta. Usa primero el idioma que prefieras.</span></li>
+          <li><span class="lang-en">Say it again with the English math words:</span><span class="lang-es" lang="es">Dilo otra vez con las palabras de matemáticas en inglés:</span><ul class="hw-teach-words" aria-label="Words to use"><li><strong>Area of Parallelograms</strong><span class="lang-es" lang="es"> · Área de paralelogramos</span></li><li><strong>Slanted side</strong><span class="lang-es" lang="es"> · Lado inclinado</span></li><li><strong>Parallelogram</strong><span class="lang-es" lang="es"> · Paralelogramo</span></li></ul></li>
+          <li><span class="lang-en">Your partner asks: “How do you know?” Answer with: “I got ___ because ___. I checked by ___.”</span><span class="lang-es" lang="es">Tu acompañante pregunta: “¿Cómo lo sabes?” Responde: “Obtuve ___ porque ___. Comprobé usando ___.”</span></li>
+        </ol>
+      </section>
+
+      <section class="hw-confidence" id="hw_conf_after" data-conf-phase="after" aria-labelledby="hw_conf_after_title">
+        <h3 id="hw_conf_after_title"><span class="lang-en">How sure do you feel now?</span><span class="lang-es" lang="es">¿Qué tan seguro o segura te sientes ahora?</span></h3>
+        <div class="hw-conf-row" role="group" aria-labelledby="hw_conf_after_title"><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="1" data-conf-phase="after" onclick="hwSetConfidence('after', 1)">
+            <span class="hw-conf-icon" aria-hidden="true">🌱</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Just starting</span><span class="lang-es" lang="es">Empezando</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="2" data-conf-phase="after" onclick="hwSetConfidence('after', 2)">
+            <span class="hw-conf-icon" aria-hidden="true">🌿</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">Getting there</span><span class="lang-es" lang="es">Casi lo logro</span></span>
+          </button><button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="3" data-conf-phase="after" onclick="hwSetConfidence('after', 3)">
+            <span class="hw-conf-icon" aria-hidden="true">🌳</span>
+            <span class="hw-conf-label hw-stack"><span class="lang-en">I could teach it</span><span class="lang-es" lang="es">Lo puedo explicar</span></span>
+          </button></div>
+        <p class="hw-conf-note"><span class="lang-en">Compare it with how you felt at the start.</span><span class="lang-es" lang="es">Compáralo con cómo te sentías al empezar.</span></p>
+        <p class="hw-conf-growth" id="hw_conf_growth" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="hw-nights" id="hw_nights" aria-labelledby="hw_nights_title">
+        <h3 id="hw_nights_title"><span class="lang-en">Our family math nights</span><span class="lang-es" lang="es">Nuestras noches de matemáticas en familia</span></h3>
+        <ol class="hw-nights-week" id="hw_nights_week" aria-label="This week"></ol>
+        <p class="hw-nights-streak" id="hw_nights_streak" role="status" aria-live="polite"></p>
+        <p class="hw-nights-note"><span class="lang-en">Weekends never break it. Saved only on this device.</span><span class="lang-es" lang="es">Los fines de semana no la interrumpen. Se guarda solo en este dispositivo.</span></p>
+      </section>
       <div class="done-summary" id="hw_done_summary" role="status" aria-live="polite"></div>
       <ol class="done-problem-list" id="hw_done_problems" aria-label="Problems / Problemas"></ol>
       <p class="celebrate-text lang-en">Name one strategy that helped, or one question to ask next time. You can stop here; no adult signature is needed.</p>
@@ -4322,9 +4378,16 @@ header.homework-header,
         <span class="lang-es" lang="es">Las respuestas se guardan solas en este dispositivo. Toquen <strong>Revisar esta pregunta</strong> cuando quieran.</span>
       </p>
 
+
+      <div class="hw-share">
+        <button type="button" class="btn btn-secondary hw-share-win" onclick="hwShareWin()">
+          🎉 <span class="lang-en">Share our win</span><span class="lang-es" lang="es">Compartir nuestro logro</span>
+        </button>
+        <p class="hw-share-note"><span class="lang-en">Shares only the lesson name and a link. No answers, no names.</span><span class="lang-es" lang="es">Comparte solo el nombre de la lección y un enlace. Sin respuestas ni nombres.</span></p>
+      </div>
       <div class="homework-message-action">
         <a class="btn btn-primary" href="https://home.classdojo.com/" target="_blank" rel="noopener"><span class="lang-en">Open ClassDojo to message Mr. Neft</span><span class="lang-es" lang="es">Abrir ClassDojo para escribir al Sr. Neft</span></a>
-        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicia sesión con tu cuenta familiar, abre Mensajes y elige al Sr. Neft. Incluye el número de esta lección y tu pregunta.</span></p>
+        <p><span class="lang-en">Sign in to your family account, open Messages, and choose Mr. Neft. Include this lesson number and your question.</span><span class="lang-es" lang="es">Inicien sesión con su cuenta familiar, abran Mensajes y elijan al Sr. Neft. Incluyan el número de esta lección y su pregunta.</span></p>
       </div>
       <section class="homework-optional-extras" aria-labelledby="homework_extras_title">
       <h3 id="homework_extras_title"><span class="lang-en">Want to do more?</span><span class="lang-es" lang="es">¿Quieren hacer más?</span></h3>
@@ -4793,25 +4856,19 @@ header.homework-header,
           </span>
           <span class="ai-lab-arrow" aria-hidden="true">↓</span>
         </a>
-        <p class="bilingual-block">
-          <span class="lang-en">These links go to <strong>specific</strong> videos and lessons about tonight's topic — not general math pages.</span>
-          <span class="lang-es" lang="es">Estos enlaces van a videos y lecciones <strong>específicas</strong> sobre el tema de hoy — no páginas generales.</span>
+
+        <p class="bilingual-block external-resource-claim">
+          <span class="lang-en">These links go to <strong>specific</strong> videos about tonight's topic — not general math pages.</span>
+          <span class="lang-es" lang="es">Estos enlaces van a videos <strong>específicos</strong> sobre el tema de hoy — no a páginas generales.</span>
         </p>
         <ul class="external-resource-list">
-
             <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-geometry/cc-6th-area/v/area-of-parallelogram" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Area of parallelograms</span>
-                <span class="ext-title-es" lang="es">Área de paralelogramos</span>
-              </a>
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/x0267d782:cc-6th-plane-figures/cc-6th-parallelogram-area/v/intuition-for-area-of-a-parallelogram" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-en"><span class="ext-source">Khan Academy</span><span class="ext-title-en">Area of a parallelogram</span></a>
+              <a href="https://es.khanacademy.org/math/cc-sixth-grade-math/x0267d782:cc-6th-plane-figures/cc-6th-parallelogram-area/v/intuition-for-area-of-a-parallelogram" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-es" lang="es"><span class="ext-source">Khan Academy en español</span><span class="ext-title-es">Área de un paralelogramo</span></a>
             </li>
             <li>
-              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/cc-6th-geometry/cc-6th-area/v/area-of-triangle" target="_blank" rel="noopener noreferrer" class="external-resource-link">
-                <span class="ext-source">Khan Academy</span>
-                <span class="ext-title-en">Area of triangles</span>
-                <span class="ext-title-es" lang="es">Área de triángulos</span>
-              </a>
+              <a href="https://www.khanacademy.org/math/cc-sixth-grade-math/x0267d782:cc-6th-plane-figures/cc-6th-parallelogram-area/v/finding-height-of-a-parallelogram" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-en"><span class="ext-source">Khan Academy</span><span class="ext-title-en">Finding the height of a parallelogram</span></a>
+              <a href="https://es.khanacademy.org/math/cc-sixth-grade-math/x0267d782:cc-6th-plane-figures/cc-6th-parallelogram-area/v/finding-height-of-a-parallelogram" target="_blank" rel="noopener noreferrer" class="external-resource-link lang-es" lang="es"><span class="ext-source">Khan Academy en español</span><span class="ext-title-es">Hallar la altura de un paralelogramo</span></a>
             </li>
         </ul>
       </section>
@@ -4909,6 +4966,17 @@ header.homework-header,
       </div>
     </div>
 
+<div class="hw-toast" id="hw_toast" aria-hidden="true" hidden></div><div class="hw-sr-only" id="hw_toast_live" role="status" aria-live="polite"></div>
+<dialog class="hw-dialog" id="hw_dialog" aria-labelledby="hw_dialog_text">
+  <form method="dialog">
+    <p id="hw_dialog_text"></p>
+    <div class="hw-dialog-actions">
+      <button type="submit" value="no" class="btn btn-secondary" id="hw_dialog_no"></button>
+      <button type="submit" value="yes" class="btn btn-primary" id="hw_dialog_yes"></button>
+    </div>
+  </form>
+</dialog>
+
 <section class="hw-answer-sheet" aria-hidden="true">
   <h2><span class="lang-en">Answer sheet</span><span class="lang-es" lang="es">Hoja de respuestas</span> · Determine the Area of Parallelograms and Rhombuses</h2>
   <p><span class="lang-en">Check the work after trying each problem. Talk about why each answer makes sense.</span><span class="lang-es" lang="es">Revisen el trabajo después de intentar cada problema. Hablen de por qué cada respuesta tiene sentido.</span></p>
@@ -4948,8 +5016,10 @@ header.homework-header,
 
     <div class="score-progress-container">
       <div class="score-text">
-        <span class="lang-en">Progress:</span><span class="lang-es" lang="es">Progreso:</span>
-        <span id="progress_text">0 / 12</span>
+        <span class="hw-stack hw-goal-label"><span class="lang-en">Tonight's goal</span><span class="lang-es" lang="es">Meta de hoy</span></span>
+        <span id="progress_text">0 / 4</span>
+        <span class="hw-pips hw-pips-bar" role="img" aria-label="Tonight's goal progress"></span>
+        <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
       </div>
       <div class="progress-bar-outer">
         <div class="progress-bar-inner" id="progress_bar"></div>
@@ -4957,8 +5027,8 @@ header.homework-header,
     </div>
 
     <div class="action-buttons">
-      <button class="btn btn-secondary" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
-      <button class="btn btn-primary" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
+      <button class="btn btn-secondary hw-stack" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
+      <button class="btn btn-primary hw-stack" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
     </div>
   </div>
 </div>
@@ -4966,18 +5036,19 @@ header.homework-header,
 <script>
 window.LESSON_ID = "5-1";
 window.LESSON_TITLE = "Determine the Area of Parallelograms and Rhombuses";
+window.LESSON_TITLE_ES = "Determinar el área de paralelogramos y rombos";
 /* The number of core problems, so the celebration fires on the goal the page
    actually states. It was hardcoded to 3 while the page showed 6 and the status
    bar counted to 6: a family could hit "Goal Reached! 3 Stars Earned!" and read
    "0 / 6 Completed" in the same glance. */
 window.HW_CORE_COUNT = 12;
-window.__HW_VOCAB__ = [{"term":"Area of Parallelograms","termEs":"Área de paralelogramos","def":"The space inside a parallelogram. Formula: A = b × h, using the perpendicular height.","defEs":"El espacio dentro de un paralelogramo. Fórmula: A = b × h, usando la altura perpendicular.","example":"A = b × h; if b = 10 cm and h = 6 cm, A = 60 cm².","img":"/assets/vocab-images/area-of-parallelograms.svg","imgAlt":"Illustration of Area of Parallelograms: The space inside a parallelogram. Formula: A = b × h, using the perpendicular height.","cs":false},{"term":"Slanted side","termEs":"Lado inclinado","def":"A side that leans instead of going straight up and down. It is not the perpendicular height.","defEs":"Un lado que está inclinado en vez de subir y bajar verticalmente. No es la altura perpendicular.","example":"In a leaning parallelogram, use the dashed 90° height—not the slanted side—in A = b × h.","img":"/assets/vocab-images/slanted-side.svg","imgAlt":"Illustration of Slanted side: A side that leans instead of going straight up and down. It is not the perpendicular height.","cs":false},{"term":"Parallelogram","termEs":"Paralelogramo","def":"A four-sided shape with two pairs of parallel sides.","defEs":"Una figura de cuatro lados con dos pares de lados paralelos.","example":"Think of a leaning door — the top and bottom are parallel, and the two sides are parallel, like a slanted rectangle","img":"/assets/vocab-images/parallelogram.svg","imgAlt":"Illustration of Parallelogram: A four-sided shape with two pairs of parallel sides.","cs":false},{"term":"Parallel","termEs":"Paralelas","def":"Two lines or sides that stay the same distance apart and never meet.","defEs":"Dos líneas o lados que se mantienen a la misma distancia y nunca se cruzan.","example":"The top and bottom of a parallelogram never get closer together — matching arrowheads (›) mark one parallel pair, double arrowheads (››) mark the other.","img":"/assets/vocab-images/parallel.svg","imgAlt":"Illustration of Parallel: Two lines or sides that stay the same distance apart and never meet.","cs":false},{"term":"Base","termEs":"Base","def":"Any side of a parallelogram can be the base. Once you pick a base, the height must be measured perpendicular (at a 90° angle) to it.","defEs":"Cualquier lado de un paralelogramo puede ser la base. Una vez que eliges la base, la altura debe medirse perpendicular (en un ángulo de 90°) a ella.","example":"Any side can be the base: choose the 10 cm side and b = 10 cm, then draw the height at 90° to that side in A = b × h","img":"/assets/vocab-images/base-parallelogram.svg","imgAlt":"Illustration of Base: Any side of a parallelogram can be the base. Once you pick a base, the height must be measured perpendicular (at a 90° angle) to it.","cs":false},{"term":"Height","termEs":"Altura","def":"The straight-up distance from the base to the top.","defEs":"La distancia recta hacia arriba desde la base hasta la parte de arriba.","example":"A dashed vertical line from the top side straight down to the base, forming a 90° angle — NOT the slanted side","img":"/assets/vocab-images/height-parallelogram.svg","imgAlt":"Illustration of Height: The straight-up distance from the base to the top.","cs":false},{"term":"Perpendicular","termEs":"Perpendicular","def":"Two lines that meet to make a square corner (90 degrees).","defEs":"Dos líneas que se cruzan formando una esquina cuadrada (90 grados).","example":"The dashed height meets the base at a square corner — the small 90° box is what makes it perpendicular, not slanted.","img":"/assets/vocab-images/perpendicular.svg","imgAlt":"Illustration of Perpendicular: Two lines that meet to make a square corner (90 degrees).","cs":false},{"term":"Area","termEs":"Área","def":"How much space is inside a flat shape.","defEs":"Cuánto espacio hay dentro de una figura plana.","example":"A 3 cm × 4 cm rectangle covers 12 square centimeters — imagine 12 tiny 1×1 squares inside it","img":"/assets/vocab-images/area.svg","imgAlt":"Illustration of Area: How much space is inside a flat shape.","cs":false},{"term":"Composite figure","termEs":"Figura compuesta","def":"A shape made by putting two or more simple shapes together.","defEs":"Una figura formada al juntar dos o más figuras simples.","example":"An L-shaped room = a 10×8 rectangle joined to a 4×5 rectangle; total area = 80 + 20 = 100 sq ft","img":"/assets/vocab-images/composite-figure.svg","imgAlt":"Illustration of Composite figure: A shape made by putting two or more simple shapes together.","cs":false},{"term":"Formula","termEs":"Fórmula","def":"A math rule written with symbols.","defEs":"Una regla matemática escrita con símbolos.","example":"A = b × h means Area equals base times height; for a parallelogram with b = 6 and h = 4, A = 24","img":"/assets/vocab-images/area-of-parallelograms.svg","imgAlt":"Illustration of Formula: A math rule written with symbols.","cs":false},{"term":"Rhombus","termEs":"Rombo","def":"A parallelogram with four sides of the same length.","defEs":"Un paralelogramo con cuatro lados de la misma longitud.","example":"All 4 sides equal, with two diagonals that cross at right angles.","img":"/assets/vocab-images/rhombus.svg","imgAlt":"Illustration of Rhombus: A parallelogram with four sides of the same length.","cs":false},{"term":"Diagonal","termEs":"Diagonal","def":"A segment that joins two corners that are not next to each other.","defEs":"Un segmento que une dos esquinas que no están una junto a la otra.","example":"Corner to opposite corner.","img":"/assets/vocab-images/rhombus.svg","imgAlt":"Illustration of Diagonal: A segment that joins two corners that are not next to each other.","cs":false}];
+window.__HW_VOCAB__ = [{"term":"Area of Parallelograms","termEs":"Área de paralelogramos","def":"Base times height. Measure the height straight up.","defEs":"Base por altura. Mide la altura en línea recta hacia arriba.","example":"Base 5, height 3: area is 15","img":"/assets/vocab-images/area-of-parallelograms.svg","imgAlt":"Illustration of Area of Parallelograms: Base times height. Measure the height straight up.","cs":false,"formal":"The space inside a parallelogram. Formula: A = b × h, using the perpendicular height.","formalEs":"El espacio dentro de un paralelogramo. Fórmula: A = b × h, usando la altura perpendicular.","exampleEs":"Base 5, altura 3: el área es 15","exampleFormal":"A = b × h; if b = 10 cm and h = 6 cm, A = 60 cm²."},{"term":"Slanted side","termEs":"Lado inclinado","def":"A side that leans. It is not the straight-up height.","defEs":"Un lado que se inclina. No es la altura en línea recta.","example":"In a leaning parallelogram, use the dashed 90° height—not the slanted side—in A = b × h.","img":"/assets/vocab-images/slanted-side.svg","imgAlt":"Illustration of Slanted side: A side that leans. It is not the straight-up height.","cs":false,"formal":"A side that leans instead of going straight up and down. It is not the perpendicular height.","formalEs":"Un lado que está inclinado en vez de subir y bajar verticalmente. No es la altura perpendicular."},{"term":"Parallelogram","termEs":"Paralelogramo","def":"A shape with four sides. Opposite sides are parallel.","defEs":"Una figura de cuatro lados. Los lados opuestos son paralelos.","example":"Think of a leaning door — the top and bottom are parallel, and the two sides are parallel, like a slanted rectangle","img":"/assets/vocab-images/parallelogram.svg","imgAlt":"Illustration of Parallelogram: A shape with four sides. Opposite sides are parallel.","cs":false,"formal":"A four-sided shape with two pairs of parallel sides.","formalEs":"Una figura de cuatro lados con dos pares de lados paralelos."},{"term":"Parallel","termEs":"Paralelas","def":"Lines that stay the same distance apart and never meet.","defEs":"Líneas que siempre están a la misma distancia y nunca se cruzan.","example":"The top and bottom of a parallelogram never get closer together — matching arrowheads (›) mark one parallel pair, double arrowheads (››) mark the other.","img":"/assets/vocab-images/parallel.svg","imgAlt":"Illustration of Parallel: Lines that stay the same distance apart and never meet.","cs":false,"formal":"Two lines or sides that stay the same distance apart and never meet.","formalEs":"Dos líneas o lados que se mantienen a la misma distancia y nunca se cruzan."},{"term":"Base","termEs":"Base","def":"The side you pick to measure height from.","defEs":"El lado que eliges para medir la altura.","example":"Any side can be the base: choose the 10 cm side and b = 10 cm, then draw the height at 90° to that side in A = b × h","img":"/assets/vocab-images/base-parallelogram.svg","imgAlt":"Illustration of Base: The side you pick to measure height from.","cs":false,"formal":"Any side of a parallelogram can be the base. Once you pick a base, the height must be measured perpendicular (at a 90° angle) to it.","formalEs":"Cualquier lado de un paralelogramo puede ser la base. Una vez que eliges la base, la altura debe medirse perpendicular (en un ángulo de 90°) a ella."},{"term":"Height","termEs":"Altura","def":"How tall it is, measured straight up from the base.","defEs":"Qué tan alta es, medida en línea recta hacia arriba desde la base.","example":"A triangle 4 units tall has height 4","img":"/assets/vocab-images/height-parallelogram.svg","imgAlt":"Illustration of Height: How tall it is, measured straight up from the base.","cs":false,"formal":"The straight-up distance from the base to the top.","formalEs":"La distancia recta hacia arriba desde la base hasta la parte de arriba.","exampleEs":"Un triángulo de 4 unidades de alto tiene altura 4","exampleFormal":"A dashed vertical line from the top side straight down to the base, forming a 90° angle — NOT the slanted side"},{"term":"Perpendicular","termEs":"Perpendicular","def":"Lines that meet at a square corner (90°).","defEs":"Líneas que se cruzan en una esquina cuadrada (90°).","example":"The dashed height meets the base at a square corner — the small 90° box is what makes it perpendicular, not slanted.","img":"/assets/vocab-images/perpendicular.svg","imgAlt":"Illustration of Perpendicular: Lines that meet at a square corner (90°).","cs":false,"formal":"Two lines that meet to make a square corner (90 degrees).","formalEs":"Dos líneas que se cruzan formando una esquina cuadrada (90 grados)."},{"term":"Area","termEs":"Área","def":"How much flat space a shape covers.","defEs":"Cuánto espacio plano cubre una figura.","example":"A 3 by 4 rectangle covers 12 square units","img":"/assets/vocab-images/area.svg","imgAlt":"Illustration of Area: How much flat space a shape covers.","cs":false,"formal":"How much space is inside a flat shape.","formalEs":"Cuánto espacio hay dentro de una figura plana.","exampleEs":"Un rectángulo de 3 por 4 cubre 12 unidades cuadradas","exampleFormal":"A 3 cm × 4 cm rectangle covers 12 square centimeters — imagine 12 tiny 1×1 squares inside it"},{"term":"Composite figure","termEs":"Figura compuesta","def":"A shape made of simple shapes joined together.","defEs":"Una figura hecha de figuras simples juntas.","example":"An L-shaped room = a 10×8 rectangle joined to a 4×5 rectangle; total area = 80 + 20 = 100 sq ft","img":"/assets/vocab-images/composite-figure.svg","imgAlt":"Illustration of Composite figure: A shape made of simple shapes joined together.","cs":false,"formal":"A shape made by putting two or more simple shapes together.","formalEs":"Una figura formada al juntar dos o más figuras simples."},{"term":"Formula","termEs":"Fórmula","def":"A rule written with letters and numbers.","defEs":"Una regla escrita con letras y números.","example":"A = 5 × 3 = 15","img":"/assets/vocab-images/area-of-parallelograms.svg","imgAlt":"Illustration of Formula: A rule written with letters and numbers.","cs":false,"formal":"A math rule written with symbols.","formalEs":"Una regla matemática escrita con símbolos.","exampleEs":"A = 5 × 3 = 15","exampleFormal":"A = b × h means Area equals base times height; for a parallelogram with b = 6 and h = 4, A = 24"},{"term":"Rhombus","termEs":"Rombo","def":"A shape with four sides that are all the same length.","defEs":"Una figura de cuatro lados que miden lo mismo.","example":"All 4 sides equal, with two diagonals that cross at right angles.","img":"/assets/vocab-images/rhombus.svg","imgAlt":"Illustration of Rhombus: A shape with four sides that are all the same length.","cs":false,"formal":"A parallelogram with four sides of the same length.","formalEs":"Un paralelogramo con cuatro lados de la misma longitud."},{"term":"Diagonal","termEs":"Diagonal","def":"A line between two corners that are not side by side.","defEs":"Una línea entre dos esquinas que no están una al lado de la otra.","example":"Corner to opposite corner.","img":"/assets/vocab-images/rhombus.svg","imgAlt":"Illustration of Diagonal: A line between two corners that are not side by side.","cs":false,"formal":"A segment that joins two corners that are not next to each other.","formalEs":"Un segmento que une dos esquinas que no están una junto a la otra."}];
 window.__HW_VOCAB_SKIP__ = [46,49,51,107,118,139,170,204,273,284,334];
 window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Numerical\\s+Expressions\\s+with\\s+Exponents(?:es|s)?|Solve\\s+One-Step\\s+Addition\\s+and\\s+Subtraction\\s+Equations(?:es|s)?|Determine\\s+the\\s+Whole\\s+Given\\s+the\\s+Part\\s+and\\s+Percent(?:es|s)?|Convert\\s+Measurements\\s+within\\s+the\\s+Same\\s+System(?:es|s)?|Percents\\s+Greater\\s+Than\\s+100%\\s+and\\s+Less\\s+Than\\s+1%(?:es|s)?|Solve\\s+Multiplication\\s+and\\s+Division\\s+Equations(?:es|s)?|Equations\\s+and\\s+Inequalities\\s+Problem\\s+Solving(?:es|s)?|Convert\\s+Measurements\\s+Between\\s+Systems(?:es|s)?|Multiplication\\s+Property\\s+of\\s+Equalit(?:y|ies)|Ordered\\s+Pairs\\s+in\\s+All\\s+Four\\s+Quadrants(?:es|s)?|Rational\\s+Numbers\\s+on\\s+the\\s+Number\\s+Line(?:es|s)?|Describe\\s+the\\s+Data\\s+Using\\s+the\\s+Median(?:es|s)?|Divide\\s+Whole\\s+Numbers\\s+by\\s+Fractions(?:es|s)?|Fraction\\s+Division\\s+Problem\\s+Solving(?:es|s)?|Fractions,\\s+Decimals,\\s+and\\s+Percents(?:es|s)?|Distance\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Subtraction\\s+Property\\s+of\\s+Equalit(?:y|ies)|Appropriate\\s+Measures\\s+of\\s+Center(?:es|s)?|Ratio\\s+and\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|Simplify\\s+Algebraic\\s+Expressions(?:es|s)?|Statistical\\s+Questions\\s+and\\s+Data(?:es|s)?|Volume\\s+with\\s+Whole-Number\\s+Edges(?:es|s)?|Addition\\s+Property\\s+of\\s+Equalit(?:y|ies)|Division\\s+Property\\s+of\\s+Equalit(?:y|ies)|Graph\\s+on\\s+the\\s+Coordinate\\s+Plane(?:es|s)?|Range\\s+and\\s+Interquartile\\s+Range(?:es|s)?|Display\\s+Data\\s+with\\s+Histograms(?:es|s)?|Greatest\\s+common\\s+factor\\s+\\(GCF\\)(?:es|s)?|Solve\\s+and\\s+Graph\\s+Inequalities(?:es|s)?|Volume\\s+of\\s+Rectangular\\s+Prisms(?:es|s)?|Display\\s+Data\\s+with\\s+Box\\s+Plots(?:es|s)?|Integers\\s+and\\s+Absolute\\s+Value(?:es|s)?|Least\\s+common\\s+multiple\\s+\\(LCM\\)(?:es|s)?|Shape\\s+of\\s+Data\\s+Distributions(?:es|s)?|Write\\s+Algebraic\\s+Expressions(?:es|s)?|Compare\\s+and\\s+Order\\s+Integers(?:es|s)?|Decimal\\s+Division\\s+Algorithm(?:es|s)?|Divide\\s+Multi-Digit\\s+Numbers(?:es|s)?|Find\\s+Factors\\s+and\\s+Multiples(?:es|s)?|Reflect\\s+Points\\s+Across\\s+Axes(?:es|s)?|Add\\s+and\\s+Subtract\\s+Decimals(?:es|s)?|Area\\s+of\\s+Composite\\s+Figures(?:es|s)?|Convert\\s+Measurement\\s+Units(?:es|s)?|distance\\s+between\\s+vertices(?:es|s)?|The\\s+Distributive\\s+Propert(?:y|ies)|Unit\\s+Rate\\s+Problem\\s+Solving(?:es|s)?|least\\s+common\\s+denominator(?:es|s)?|Area\\s+of\\s+Regular\\s+Polygons(?:es|s)?|Non-statistical\\s+Question(?:es|s)?|Opposite\\s+of\\s+the\\s+opposite(?:es|s)?|Properties\\s+of\\s+Operations(?:es|s)?|Surface\\s+Area\\s+of\\s+Pyramids(?:es|s)?|mean\\s+absolute\\s+deviation(?:es|s)?|make\\s+sense\\s+of\\s+a\\s+problem(?:es|s)?|Percent\\s+Problem\\s+Solving(?:es|s)?|Repeated\\s+multiplication(?:es|s)?|Surface\\s+Area\\s+Using\\s+Nets(?:es|s)?|Area\\s+of\\s+Parallelograms(?:es|s)?|greatest\\s+common\\s+factor(?:es|s)?|Mean,\\s+Median,\\s+and\\s+Mode(?:es|s)?|Multiplicative\\s+inverse(?:es|s)?|Surface\\s+Area\\s+of\\s+Prisms(?:es|s)?|least\\s+common\\s+multiple(?:es|s)?|equivalent\\s+expression(?:es|s)?|Distributive\\s+Propert(?:y|ies)|Division\\s+of\\s+Fractions(?:es|s)?|Length,\\s+width,\\s+height(?:es|s)?|algebraic\\s+expression(?:es|s)?|Associative\\s+Propert(?:y|ies)|Commutative\\s+Propert(?:y|ies)|define\\s+the\\s+variables(?:es|s)?|Divide\\s+Mixed\\s+Numbers(?:es|s)?|Evaluate\\s+Expressions(?:es|s)?|Factor\\s+an\\s+expression(?:es|s)?|independent\\s+variable(?:es|s)?|Measure\\s+of\\s+variation(?:es|s)?|Numerical\\s+expression(?:es|s)?|Powers\\s+and\\s+Exponents(?:es|s)?|Rates\\s+and\\s+Unit\\s+Rates(?:es|s)?|Statistical\\s+Question(?:es|s)?|prime\\s+factorization(?:es|s)?|interquartile\\s+range(?:es|s)?|equivalent\\s+fraction(?:es|s)?|community\\s+agreement(?:es|s)?|Equivalent\\s+division(?:es|s)?|Five-number\\s+summar(?:y|ies)|Horizontal\\s+distance(?:es|s)?|Negative\\s+coordinate(?:es|s)?|Order\\s+of\\s+operations(?:es|s)?|Percent\\s+of\\s+a\\s+Number(?:es|s)?|Area\\s+of\\s+a\\s+Triangle(?:es|s)?|Area\\s+of\\s+Trapezoids(?:es|s)?|At\\s+least\\s+/\\s+At\\s+most(?:es|s)?|bilateral\\s+symmetr(?:y|ies)|Common\\s+denominator(?:es|s)?|compatible\\s+numbers(?:es|s)?|dependent\\s+variable(?:es|s)?|Double\\s+number\\s+line(?:es|s)?|Graph\\s+Inequalities(?:es|s)?|Graph\\s+Ratio\\s+Tables(?:es|s)?|Keep,\\s+Change,\\s+Flip(?:es|s)?|Measurement\\s+system(?:es|s)?|Multi-step\\s+problem(?:es|s)?|Understand\\s+Percent(?:es|s)?|Write\\s+Inequalities(?:es|s)?|improper\\s+fraction(?:es|s)?|conversion\\s+factor(?:es|s)?|benchmark\\s+percent(?:es|s)?|Data\\s+distribution(?:es|s)?|Greater\\s+than\\s+100%(?:es|s)?|Identity\\s+Propert(?:y|ies)|Inverse\\s+operation(?:es|s)?|Measure\\s+of\\s+center(?:es|s)?|Multiply\\s+Decimals(?:es|s)?|One-step\\s+equation(?:es|s)?|Rectangular\\s+prism(?:es|s)?|Shape\\s+of\\s+the\\s+data(?:es|s)?|Understand\\s+Ratios(?:es|s)?|Vertical\\s+distance(?:es|s)?|Composite\\s+figure(?:es|s)?|coordinate\\s+plane(?:es|s)?|keep-change-flip(?:es|s)?|equivalent\\s+ratio(?:es|s)?|Additive\\s+pattern(?:es|s)?|Composite\\s+number(?:es|s)?|Customary\\s+system(?:es|s)?|Divide\\s+Fractions(?:es|s)?|Grouping\\s+symbols(?:es|s)?|line\\s+of\\s+symmetr(?:y|ies)|Negative\\s+integer(?:es|s)?|Triangular\\s+prism(?:es|s)?|common\\s+multiple(?:es|s)?|Customary\\s+units(?:es|s)?|Divide\\s+Decimals(?:es|s)?|Frequency\\s+table(?:es|s)?|Negative\\s+number(?:es|s)?|Positive\\s+number(?:es|s)?|Problem\\s+solving(?:es|s)?|Ratio\\s+Reasoning(?:es|s)?|Rational\\s+number(?:es|s)?|Regular\\s+Polygon(?:es|s)?|Right\\s+trapezoid(?:es|s)?|table\\s+of\\s+values(?:es|s)?|Two-dimensional(?:es|s)?|Unit\\s+rate\\s+point(?:es|s)?|Write\\s+Equations(?:es|s)?|absolute\\s+value(?:es|s)?|Boundary\\s+point(?:es|s)?|Colon\\s+notation(?:es|s)?|Compare\\s+Ratios(?:es|s)?|counterexample(?:es|s)?|Cross-multipl(?:y|ies)|Decimal\\s+places(?:es|s)?|generalization(?:es|s)?|Linear\\s+pattern(?:es|s)?|math\\s+biograph(?:y|ies)|predictabilit(?:y|ies)|Rate\\s+of\\s+change(?:es|s)?|reasonableness(?:es|s)?|representation(?:es|s)?|True\\s+statement(?:es|s)?|Parallelogram(?:es|s)?|Perpendicular(?:es|s)?|long\\s+division(?:es|s)?|decimal\\s+point(?:es|s)?|common\\s+factor(?:es|s)?|Approximatel(?:y|ies)|Balance\\s+point(?:es|s)?|Closed\\s+circle(?:es|s)?|Expanded\\s+form(?:es|s)?|Extreme\\s+value(?:es|s)?|Halfway\\s+value(?:es|s)?|Metric\\s+system(?:es|s)?|Part-to-whole(?:es|s)?|Simplest\\s+form(?:es|s)?|Skip\\s+counting(?:es|s)?|Unit\\s+fraction(?:es|s)?|Work\\s+backward(?:es|s)?|Slanted\\s+side(?:es|s)?|mixed\\s+number(?:es|s)?|ordered\\s+pair(?:es|s)?|surface\\s+area(?:es|s)?|line\\s+segment(?:es|s)?|distribution(?:es|s)?|scale\\s+factor(?:es|s)?|prime\\s+factor(?:es|s)?|Annex\\s+a\\s+zero(?:es|s)?|Decimal\\s+grid(?:es|s)?|doer\\s+of\\s+math(?:es|s)?|Lateral\\s+area(?:es|s)?|Lateral\\s+face(?:es|s)?|Less\\s+than\\s+1%(?:es|s)?|Metric\\s+units(?:es|s)?|mirror\\s+image(?:es|s)?|No\\s+more\\s+than(?:es|s)?|Part-to-part(?:es|s)?|pattern\\s+rule(?:es|s)?|pattern\\s+unit(?:es|s)?|Power\\s+of\\s+ten(?:es|s)?|Prime\\s+number(?:es|s)?|Proportional(?:es|s)?|relationship(?:es|s)?|Slant\\s+height(?:es|s)?|Solution\\s+set(?:es|s)?|tape\\s+diagram(?:es|s)?|Target\\s+total(?:es|s)?|x-coordinate(?:es|s)?|Distributive(?:es|s)?|multi-digit(?:es|s)?|place\\s+value(?:es|s)?|denominator(?:es|s)?|coefficient(?:es|s)?|Annex\\s+zeros(?:es|s)?|Base\\s+1\\s+\\(b1\\)(?:es|s)?|Base\\s+2\\s+\\(b2\\)(?:es|s)?|Common\\s+form(?:es|s)?|Coordinates(?:es|s)?|Factor\\s+pair(?:es|s)?|Factor\\s+tree(?:es|s)?|Middle\\s+half(?:es|s)?|Number\\s+line(?:es|s)?|Open\\s+circle(?:es|s)?|Per\\s+hundred(?:es|s)?|Ratio\\s+table(?:es|s)?|Side\\s+length(?:es|s)?|Target\\s+mean(?:es|s)?|Total\\s+parts(?:es|s)?|Total\\s+price(?:es|s)?|Variabilit(?:y|ies)|Associative(?:es|s)?|Commutative(?:es|s)?|bring\\s+down(?:es|s)?|equivalent(?:es|s)?|reciprocal(?:es|s)?|hundredths(?:es|s)?|proportion(?:es|s)?|expression(?:es|s)?|substitute(?:es|s)?|inequalit(?:y|ies)|like\\s+terms(?:es|s)?|Better\\s+Buy(?:es|s)?|Comparison(?:es|s)?|confidence(?:es|s)?|conjecture(?:es|s)?|Constraint(?:es|s)?|cubic\\s+unit(?:es|s)?|depends\\s+on(?:es|s)?|Dimensions(?:es|s)?|Equal\\s+sign(?:es|s)?|math\\s+stor(?:y|ies)|profession(?:es|s)?|reasonable(?:es|s)?|Reflection(?:es|s)?|repetition(?:es|s)?|round\\s+trip(?:es|s)?|Unit\\s+price(?:es|s)?|Unit\\s+ratio(?:es|s)?|remainder(?:es|s)?|algorithm(?:es|s)?|numerator(?:es|s)?|unit\\s+rate(?:es|s)?|perimeter(?:es|s)?|rectangle(?:es|s)?|trapezoid(?:es|s)?|histogram(?:es|s)?|frequenc(?:y|ies)|Base\\s+area(?:es|s)?|Benchmark(?:es|s)?|communit(?:y|ies)|Composite(?:es|s)?|Congruent(?:es|s)?|decompose(?:es|s)?|Deviation(?:es|s)?|Divisible(?:es|s)?|ingenuit(?:y|ies)|Interpret(?:es|s)?|inventor(?:y|ies)|Magnitude(?:es|s)?|persevere(?:es|s)?|represent(?:es|s)?|symmetric(?:es|s)?|the\\s+whole(?:es|s)?|Unit\\s+cube(?:es|s)?|Variation(?:es|s)?|Parallel(?:es|s)?|Diagonal(?:es|s)?|quotient(?:es|s)?|exponent(?:es|s)?|estimate(?:es|s)?|simplif(?:y|ies)|variable(?:es|s)?|evaluate(?:es|s)?|opposite(?:es|s)?|triangle(?:es|s)?|box\\s+plot(?:es|s)?|dot\\s+plot(?:es|s)?|quartile(?:es|s)?|argument(?:es|s)?|at\\s+least(?:es|s)?|Constant(?:es|s)?|critique(?:es|s)?|Data\\s+set(?:es|s)?|Discount(?:es|s)?|Distance(?:es|s)?|Dividend(?:es|s)?|Interval(?:es|s)?|Negative(?:es|s)?|organize(?:es|s)?|Per\\s+Unit(?:es|s)?|Positive(?:es|s)?|Propert(?:y|ies)|quantit(?:y|ies)|rotation(?:es|s)?|Solution(?:es|s)?|strateg(?:y|ies)|strength(?:es|s)?|Symmetr(?:y|ies)|Identit(?:y|ies)|Rational(?:es|s)?|Formula(?:es|s)?|Rhombus(?:es|s)?|product(?:es|s)?|regroup(?:es|s)?|decimal(?:es|s)?|percent(?:es|s)?|integer(?:es|s)?|polygon(?:es|s)?|pyramid(?:es|s)?|segment(?:es|s)?|outlier(?:es|s)?|cluster(?:es|s)?|Average(?:es|s)?|balance(?:es|s)?|Convert(?:es|s)?|Divisor(?:es|s)?|Isolate(?:es|s)?|justif(?:y|ies)|portion(?:es|s)?|reflect(?:es|s)?|Squared(?:es|s)?|Unknown(?:es|s)?|Whisker(?:es|s)?|Height(?:es|s)?|factor(?:es|s)?|tenths(?:es|s)?|volume(?:es|s)?|vertex(?:es|s)?|median(?:es|s)?|Expand(?:es|s)?|growth(?:es|s)?|Markup(?:es|s)?|Output(?:es|s)?|puzzle(?:es|s)?|rhythm(?:es|s)?|Skewed(?:es|s)?|Spread(?:es|s)?|Survey(?:es|s)?|x-axis(?:es|s)?|y-axis(?:es|s)?|digit(?:es|s)?|ratio(?:es|s)?|prism(?:es|s)?|Cubed(?:es|s)?|Input(?:es|s)?|Order(?:es|s)?|Range(?:es|s)?|Scale(?:es|s)?|Solve(?:es|s)?|Prime(?:es|s)?|Base(?:es|s)?|Area(?:es|s)?|edge(?:es|s)?|data(?:es|s)?|Apex(?:es|s)?|Axis(?:es|s)?|Face(?:es|s)?|gear(?:es|s)?|Mode(?:es|s)?|Peak(?:es|s)?|net(?:es|s)?|LCM(?:es|s)?|MCM(?:es|s)?|GCF(?:es|s)?|MCD(?:es|s)?|GCD(?:es|s)?|LCD(?:es|s)?|IQR(?:es|s)?|RIC(?:es|s)?|MAD(?:es|s)?|DMA(?:es|s)?|DAM(?:es|s)?|KCF(?:es|s)?|MCI(?:es|s)?|Gap(?:es|s)?|Tax(?:es|s)?|Tip(?:es|s)?|SA(?:es|s)?)\\b","lookup":{"area of parallelogram":0,"slanted side":1,"parallelogram":2,"parallel":3,"base":4,"height":5,"perpendicular":6,"area":7,"composite figure":8,"formula":9,"rhombu":10,"diagonal":11,"product":12,"quotient":13,"factor":14,"remainder":15,"digit":16,"multi-digit":17,"prime factorization":18,"greatest common factor":19,"least common multiple":20,"exponent":21,"algorithm":22,"long division":23,"bring down":24,"regroup":25,"place value":26,"estimate":27,"decimal point":28,"numerator":29,"denominator":30,"equivalent":31,"reciprocal":32,"mixed number":33,"decimal":34,"tenth":35,"hundredth":36,"improper fraction":37,"simplify":38,"ratio":39,"unit rate":40,"percent":41,"proportion":42,"variable":43,"expression":44,"coefficient":45,"substitute":46,"inequality":47,"evaluate":48,"like term":49,"integer":50,"absolute value":51,"opposite":52,"coordinate plane":53,"ordered pair":54,"perimeter":55,"volume":56,"surface area":57,"triangle":58,"rectangle":59,"trapezoid":60,"polygon":61,"prism":62,"pyramid":63,"net":64,"vertex":65,"edge":66,"segment":67,"line segment":68,"median":69,"outlier":70,"interquartile range":71,"mean absolute deviation":72,"keep-change-flip":73,"data":74,"histogram":75,"box plot":76,"dot plot":77,"quartile":78,"frequency":79,"distribution":80,"cluster":81,"scale factor":82,"equivalent ratio":83,"equivalent expression":84,"equivalent fraction":85,"common factor":86,"common multiple":87,"least common denominator":88,"prime factor":89,"conversion factor":90,"algebraic expression":91,"lcm":92,"mcm":93,"gcf":94,"mcd":95,"gcd":96,"lcd":97,"iqr":98,"ric":99,"mad":100,"dma":101,"dam":102,"sa":103,"kcf":104,"mci":105,"add and subtract decimal":106,"addition property of equality":107,"additive pattern":108,"annex a zero":109,"annex zero":110,"apex":111,"appropriate measures of center":112,"approximately":113,"area of a triangle":114,"area of composite figure":115,"area of regular polygon":116,"area of trapezoid":117,"argument":118,"associative property":119,"at least":120,"at least / at most":121,"average":122,"axi":123,"balance":124,"balance point":125,"base 1 (b1)":126,"base 2 (b2)":127,"base area":128,"benchmark":129,"benchmark percent":130,"better buy":131,"bilateral symmetry":132,"boundary point":133,"closed circle":134,"colon notation":135,"common denominator":136,"common form":137,"community":138,"community agreement":139,"commutative property":140,"compare and order integer":141,"compare ratio":142,"comparison":143,"compatible number":144,"composite":145,"composite number":146,"confidence":147,"congruent":148,"conjecture":149,"constant":150,"constraint":151,"convert":152,"convert measurement unit":153,"convert measurements between system":154,"convert measurements within the same system":155,"coordinate":156,"counterexample":157,"critique":158,"cross-multiply":159,"cubed":160,"cubic unit":161,"customary system":162,"customary unit":163,"data distribution":164,"data set":165,"decimal division algorithm":166,"decimal grid":167,"decimal place":168,"decompose":169,"define the variable":170,"dependent variable":171,"depends on":172,"describe the data using the median":173,"determine the whole given the part and percent":174,"deviation":175,"dimension":176,"discount":177,"display data with box plot":178,"display data with histogram":179,"distance":180,"distance between vertice":181,"distance on the coordinate plane":182,"distributive property":183,"divide decimal":184,"divide fraction":185,"divide mixed number":186,"divide multi-digit number":187,"divide whole numbers by fraction":188,"dividend":189,"divisible":190,"division of fraction":191,"division property of equality":192,"divisor":193,"doer of math":194,"double number line":195,"equal sign":196,"equations and inequalities problem solving":197,"equivalent division":198,"evaluate expression":199,"expand":200,"expanded form":201,"extreme value":202,"face":203,"factor an expression":204,"factor pair":205,"factor tree":206,"find factors and multiple":207,"five-number summary":208,"fraction division problem solving":209,"fractions, decimals, and percent":210,"frequency table":211,"gap":212,"gear":213,"generalization":214,"graph inequality":215,"graph on the coordinate plane":216,"graph ratio table":217,"greater than 100%":218,"greatest common factor (gcf)":219,"grouping symbol":220,"growth":221,"halfway value":222,"horizontal distance":223,"identity property":224,"independent variable":225,"ingenuity":226,"input":227,"integers and absolute value":228,"interpret":229,"interval":230,"inventory":231,"inverse operation":232,"isolate":233,"justify":234,"keep, change, flip":235,"lateral area":236,"lateral face":237,"least common multiple (lcm)":238,"length, width, height":239,"less than 1%":240,"line of symmetry":241,"linear pattern":242,"magnitude":243,"make sense of a problem":244,"markup":245,"math biography":246,"math story":247,"mean, median, and mode":248,"measure of center":249,"measure of variation":250,"measurement system":251,"metric system":252,"metric unit":253,"middle half":254,"mirror image":255,"mode":256,"multi-step problem":257,"multiplication property of equality":258,"multiplicative inverse":259,"multiply decimal":260,"negative":261,"negative coordinate":262,"negative integer":263,"negative number":264,"no more than":265,"non-statistical question":266,"number line":267,"numerical expression":268,"one-step equation":269,"open circle":270,"opposite of the opposite":271,"order":272,"order of operation":273,"ordered pairs in all four quadrant":274,"organize":275,"output":276,"part-to-part":277,"part-to-whole":278,"pattern rule":279,"pattern unit":280,"peak":281,"per hundred":282,"per unit":283,"percent of a number":284,"percent problem solving":285,"percents greater than 100% and less than 1%":286,"persevere":287,"portion":288,"positive":289,"positive number":290,"power of ten":291,"powers and exponent":292,"predictability":293,"prime number":294,"problem solving":295,"profession":296,"properties of operation":297,"property":298,"proportional":299,"puzzle":300,"quantity":301,"range":302,"range and interquartile range":303,"rate of change":304,"rates and unit rate":305,"ratio and rate problem solving":306,"ratio reasoning":307,"ratio table":308,"rational number":309,"rational numbers on the number line":310,"reasonable":311,"reasonablenes":312,"rectangular prism":313,"reflect":314,"reflect points across axe":315,"reflection":316,"regular polygon":317,"relationship":318,"repeated multiplication":319,"repetition":320,"represent":321,"representation":322,"rhythm":323,"right trapezoid":324,"rotation":325,"round trip":326,"scale":327,"shape of data distribution":328,"shape of the data":329,"side length":330,"simplest form":331,"simplify algebraic expression":332,"skewed":333,"skip counting":334,"slant height":335,"solution":336,"solution set":337,"solve":338,"solve and graph inequality":339,"solve multiplication and division equation":340,"solve one-step addition and subtraction equation":341,"spread":342,"squared":343,"statistical question":344,"statistical questions and data":345,"strategy":346,"strength":347,"subtraction property of equality":348,"surface area of prism":349,"surface area of pyramid":350,"surface area using net":351,"survey":352,"symmetric":353,"symmetry":354,"table of value":355,"tape diagram":356,"target mean":357,"target total":358,"tax":359,"the distributive property":360,"the whole":361,"tip":362,"total part":363,"total price":364,"triangular prism":365,"true statement":366,"two-dimensional":367,"understand percent":368,"understand ratio":369,"unit cube":370,"unit fraction":371,"unit price":372,"unit rate point":373,"unit rate problem solving":374,"unit ratio":375,"unknown":376,"variability":377,"variation":378,"vertical distance":379,"volume of rectangular prism":380,"volume with whole-number edge":381,"whisker":382,"work backward":383,"write algebraic expression":384,"write and evaluate numerical expressions with exponent":385,"write equation":386,"write inequality":387,"x-axi":388,"x-coordinate":389,"y-axi":390,"associative":119,"commutative":140,"distributive":183,"identity":224,"prime":294,"rational":309}};
 window.__HW_WORKED__ = {"title":"Watch me","titleEs":"Mírame","lines":["I have a parallelogram with a base of 14 feet and a height of 9 feet.","I write the formula: A = base × height.","I put in the numbers: A = 14 × 9.","I multiply: 14 × 9 = 126.","So the area is 126 square feet. I used the height of 9, not the slanted side."],"linesEs":["Tengo un paralelogramo con base de 14 pies y altura de 9 pies.","Escribo la fórmula: A = base × altura.","Sustituyo los números: A = 14 × 9.","Multiplico: 14 × 9 = 126.","Entonces el área es 126 pies cuadrados. Usé la altura de 9, no el lado inclinado."]};
 </script>
-<script src="/assets/homework/homework-vocab-3da9690d66.bundle.js"></script>
-<script src="/assets/homework/homework-core-e12f28ae0a.bundle.js"></script>
+<script src="/assets/homework/homework-vocab-12619585d8.bundle.js"></script>
+<script src="/assets/homework/homework-core-4eeaa5cadb.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
