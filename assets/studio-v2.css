@@ -33,18 +33,6 @@
   font-size: 1.6rem;
   line-height: 1;
 }
-.mission-card > summary small {
-  margin-left: auto;
-  font-family: var(--font-sans);
-  font-weight: 700;
-  color: var(--ink-light);
-}
-.mission-card[open] > summary small::after {
-  content: " ▾";
-}
-.mission-card:not([open]) > summary small::after {
-  content: " ▸";
-}
 .mission-card .mission-body {
   padding: 0 20px 18px;
 }
@@ -216,13 +204,6 @@
   font-weight: 800;
   color: var(--sun-ink);
   flex: 1 1 240px;
-}
-.banner-actions {
-  display: inline-flex;
-  gap: 10px;
-  margin-left: 14px;
-  flex-wrap: wrap;
-  vertical-align: middle;
 }
 .complete-banner .btn {
   min-height: 44px;
@@ -437,9 +418,14 @@ body[data-chrome="cards"] .tab-list::before,
 body[data-chrome="cards"] .tab-list::after {
   display: none;
 }
+/* no trail line under these two navigators, so the label needs no mask */
+body[data-chrome="steps"] .tab-text,
+body[data-chrome="cards"] .tab-text {
+  background: transparent;
+}
 body[data-chrome="steps"] .tab-list {
   gap: 8px;
-  padding: 12px 16px;
+  padding: 6px 16px;
 }
 body[data-chrome="steps"] .tab-btn {
   flex-direction: row;
@@ -449,28 +435,28 @@ body[data-chrome="steps"] .tab-btn {
   background: var(--surface-soft);
   border: 2px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 8px 10px;
+  padding: 2px 8px;
 }
 body[data-chrome="steps"] .tab-btn[aria-selected="true"] {
   background: var(--brand-tint);
   border-color: var(--brand);
 }
 body[data-chrome="steps"] .tab-badge {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   font-size: 0.9rem;
   transform: none !important;
   box-shadow: none !important;
 }
 body[data-chrome="cards"] .tab-list {
   gap: 10px;
-  padding: 14px 16px 12px;
+  padding: 7px 16px 9px;
 }
 body[data-chrome="cards"] .tab-btn {
   background: var(--surface);
   border: 3px solid var(--border-strong);
   border-radius: var(--radius-lg);
-  padding: 10px 6px 12px;
+  padding: 2px 6px;
   box-shadow: 0 4px 0 var(--border-strong);
   transition: transform 0.15s ease;
 }

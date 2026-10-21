@@ -33,7 +33,7 @@
 
       const cardBtn = (/** @type {number} */ i, /** @type {string} */ cls) => {
         const c = it.cards[i];
-        return `<button type="button" class="sort-card ${cls}${sel === i ? " selected" : ""}" data-card="${i}"${locked.includes(i) ? " disabled" : ""} aria-pressed="${sel === i}"><span>${esc(c.t)}${es(c.tEs)}</span></button>`;
+        return `<button type="button" class="sort-card ${cls}${sel === i ? " selected" : ""}" data-card="${i}"${locked.includes(i) ? " disabled" : ""} aria-pressed="${sel === i}"><span>${U().tx(c.t)}${U().txEs(c.tEs)}</span></button>`;
       };
       const draw = () => {
         const pool = it.cards
@@ -55,13 +55,14 @@
                 .join("")}</div></div>`,
           )
           .join("");
-        ctx.host.innerHTML = `${U().viz(it)}<p class="item-q">${esc(it.q)}${es(it.qEs)}</p>
+        ctx.host.innerHTML = `${U().viz(it)}<p class="item-q">${U().stem(it.q, it.qEs)}</p>
           <p class="item-sub">Tap a card, then tap the group where it belongs. Tap a card in a group to take it back.${es("Toca una tarjeta y luego el grupo donde va. Toca una tarjeta de un grupo para sacarla.")}</p>
           <div class="answer-zone"><div class="sort-pool" aria-label="Cards to sort">${pool.map((/** @type {number} */ i) => cardBtn(i, "")).join("") || '<p class="item-sub">All cards are placed.</p>'}</div>
           <div class="sort-bins" style="--bins:${it.bins.length}">${bins}</div>
           ${ctx.solved || Object.keys(placed).length < it.cards.length ? "" : '<div class="item-actions"><button type="button" class="btn btn-primary btn-sm" data-check-sort>Check my sorting</button></div>'}</div>
           ${ctx.hintBlock()}<div class="item-fb feedback-box" role="status"></div>`;
-        if (ctx.solved) return ctx.showSolved(`<strong>Sorted.</strong> ${esc(it.x)}${es(it.xEs)}`);
+        if (ctx.solved)
+          return ctx.showSolved(`<strong>Sorted.</strong> ${U().tx(it.x)}${U().txEs(it.xEs)}`);
         wire();
       };
       const wire = () => {
@@ -101,7 +102,7 @@
           st.ticks[it.id] = locked;
           if (!wrong.length) {
             draw();
-            return ctx.solve(`<strong>Sorted.</strong> ${esc(it.x)}${es(it.xEs)}`);
+            return ctx.solve(`<strong>Sorted.</strong> ${U().tx(it.x)}${U().txEs(it.xEs)}`);
           }
           for (const i of wrong) delete placed[i];
           st.sorts[it.id] = placed;
@@ -148,7 +149,7 @@
         const L = it.pairs
           .map(
             (/** @type {any} */ p, /** @type {number} */ i) =>
-              `<button type="button" class="match-item${made[i] !== undefined ? " paired" : ""}${sel?.side === "l" && sel.i === i ? " selected" : ""}${locked.includes(i) ? " locked" : ""}" data-l="${i}"${locked.includes(i) ? " disabled" : ""}>${badge(i)}<span>${esc(p.l)}${es(p.lEs)}</span></button>`,
+              `<button type="button" class="match-item${made[i] !== undefined ? " paired" : ""}${sel?.side === "l" && sel.i === i ? " selected" : ""}${locked.includes(i) ? " locked" : ""}" data-l="${i}"${locked.includes(i) ? " disabled" : ""}>${badge(i)}<span>${U().tx(p.l)}${U().txEs(p.lEs)}</span></button>`,
           )
           .join("");
         const R = order
@@ -156,16 +157,16 @@
             const left = Object.keys(made)
               .map(Number)
               .find((/** @type {number} */ l) => made[l] === j);
-            return `<button type="button" class="match-item${left !== undefined ? " paired" : ""}${sel?.side === "r" && sel.i === j ? " selected" : ""}${left !== undefined && locked.includes(left) ? " locked" : ""}" data-r="${j}"${left !== undefined && locked.includes(left) ? " disabled" : ""}>${left !== undefined ? badge(left) : ""}<span>${esc(it.pairs[j].r)}${es(it.pairs[j].rEs)}</span></button>`;
+            return `<button type="button" class="match-item${left !== undefined ? " paired" : ""}${sel?.side === "r" && sel.i === j ? " selected" : ""}${left !== undefined && locked.includes(left) ? " locked" : ""}" data-r="${j}"${left !== undefined && locked.includes(left) ? " disabled" : ""}>${left !== undefined ? badge(left) : ""}<span>${U().tx(it.pairs[j].r)}${U().txEs(it.pairs[j].rEs)}</span></button>`;
           })
           .join("");
-        ctx.host.innerHTML = `${U().viz(it)}<p class="item-q">${esc(it.q)}${es(it.qEs)}</p>
+        ctx.host.innerHTML = `${U().viz(it)}<p class="item-q">${U().stem(it.q, it.qEs)}</p>
           <p class="item-sub">Tap one item on the left, then the item on the right that goes with it. Matching pairs get the same number.${es("Toca un elemento de la izquierda y luego el de la derecha que le corresponde. Las parejas llevan el mismo número.")}</p>
           <div class="answer-zone"><div class="match-board"><div class="match-col" aria-label="Left side">${L}</div><div class="match-col" aria-label="Right side">${R}</div></div>
           ${ctx.solved || Object.keys(made).length < n ? "" : '<div class="item-actions"><button type="button" class="btn btn-primary btn-sm" data-check-match>Check my matches</button></div>'}</div>
           ${ctx.hintBlock()}<div class="item-fb feedback-box" role="status"></div>`;
         if (ctx.solved)
-          return ctx.showSolved(`<strong>All matched.</strong> ${esc(it.x)}${es(it.xEs)}`);
+          return ctx.showSolved(`<strong>All matched.</strong> ${U().tx(it.x)}${U().txEs(it.xEs)}`);
         wire();
       };
       const pair = (/** @type {number} */ l, /** @type {number} */ r) => {
@@ -210,7 +211,7 @@
           st.ticks[it.id] = locked;
           if (!wrong.length) {
             draw();
-            return ctx.solve(`<strong>All matched.</strong> ${esc(it.x)}${es(it.xEs)}`);
+            return ctx.solve(`<strong>All matched.</strong> ${U().tx(it.x)}${U().txEs(it.xEs)}`);
           }
           for (const l of wrong) delete made[l];
           st.matches[it.id] = made;
@@ -242,7 +243,7 @@
         );
       const have = ctx.solved ? it.a : st.lines[it.id];
       const val = have === undefined ? (it.min + it.max) / 2 : have;
-      ctx.host.innerHTML = `${U().viz(it)}<p class="item-q">${esc(it.q)}${es(it.qEs)}</p>
+      ctx.host.innerHTML = `${U().viz(it)}<p class="item-q">${U().stem(it.q, it.qEs)}</p>
         <div class="answer-zone"><div class="nline-wrap"><svg viewBox="0 0 600 96" width="100%" role="img" aria-label="Number line from ${nowrap(it.min)} to ${nowrap(it.max)}" style="max-width:640px;height:auto"><line x1="24" x2="576" y1="62" y2="62" stroke="var(--ink,#1B2733)" stroke-width="3" stroke-linecap="round"/>${ticks.join("")}
           <g class="nline-pt" ${have === undefined ? 'style="display:none"' : ""}><circle cx="${X(val)}" cy="30" r="12" fill="var(--sun,#F0BD4F)" stroke="var(--brand-dark,#1B2C3F)" stroke-width="3"/><line x1="${X(val)}" x2="${X(val)}" y1="42" y2="62" stroke="var(--brand-dark,#1B2C3F)" stroke-width="3"/></g></svg>
           <label class="sr-only" for="nl-${esc(it.id)}">Point position</label>
@@ -251,7 +252,9 @@
           ${ctx.solved ? "" : '<div class="item-actions"><button type="button" class="btn btn-primary btn-sm" data-check-line>Check my point</button></div>'}</div></div>
         ${ctx.hintBlock()}<div class="item-fb feedback-box" role="status"></div>`;
       if (ctx.solved)
-        return ctx.showSolved(`<strong>That is the spot.</strong> ${esc(it.x)}${es(it.xEs)}`);
+        return ctx.showSolved(
+          `<strong>That is the spot.</strong> ${U().tx(it.x)}${U().txEs(it.xEs)}`,
+        );
       const range = /** @type {HTMLInputElement} */ (ctx.host.querySelector(".nline-range"));
       const pt = /** @type {SVGGElement} */ (ctx.host.querySelector(".nline-pt"));
       const read = /** @type {HTMLElement} */ (ctx.host.querySelector(".nline-read"));
@@ -276,7 +279,7 @@
         if (Math.abs(v - it.a) <= (Number.isFinite(it.tol) ? it.tol : 1e-9)) {
           range.setAttribute("disabled", "");
           ctx.host.querySelector("[data-check-line]")?.remove();
-          ctx.solve(`<strong>That is the spot.</strong> ${esc(it.x)}${es(it.xEs)}`);
+          ctx.solve(`<strong>That is the spot.</strong> ${U().tx(it.x)}${U().txEs(it.xEs)}`);
         } else {
           const side =
             ctx.misses() >= 1
@@ -297,7 +300,7 @@
     mount(/** @type {any} */ ctx) {
       const it = ctx.it;
       const def = W.StudioAct.registry[it.kind];
-      ctx.host.innerHTML = `<p class="item-q">${esc(it.q)}${es(it.qEs)}</p>
+      ctx.host.innerHTML = `<p class="item-q">${U().stem(it.q, it.qEs)}</p>
         <div class="answer-zone"><div class="act-host" data-act="${esc(it.kind)}"></div></div>
         ${ctx.hintBlock()}<div class="item-fb feedback-box" role="status"></div>`;
       const host = /** @type {HTMLElement} */ (ctx.host.querySelector(".act-host"));
@@ -314,7 +317,7 @@
           submit() {},
         });
       };
-      const explain = () => `<strong>Built it.</strong> ${esc(it.x)}${es(it.xEs)}`;
+      const explain = () => `<strong>Built it.</strong> ${U().tx(it.x)}${U().txEs(it.xEs)}`;
       if (ctx.solved) {
         finish(ctx.state.acts[it.id] ?? def.solution(it));
         return ctx.showSolved(explain());

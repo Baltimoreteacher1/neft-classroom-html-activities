@@ -31,6 +31,12 @@
   const misses = {};
 
   const bi = (/** @type {Bi} */ t) => `${t.en}<span class="es-text">${t.es}</span>`;
+  /** A short label in both languages; body.show-es picks one (assets/studio/clarity.css). */
+  const tag = (/** @type {string} */ en, /** @type {string} */ es) =>
+    `<span class="t-en">${en}</span><span class="t-es" lang="es">${es}</span>`;
+  /** Feedback anatomy shared with the generated studios: confirm, then why it works (right) or one guiding line (wrong). */
+  const okHtml = (/** @type {Bi} */ explain) =>
+    `<p class="fb-line fb-confirm"><strong>${bi({ en: "Correct!", es: "¡Correcto!" })}</strong></p><div class="fb-line fb-why"><span class="fb-label">${tag("Why it works", "Por qué funciona")}<span class="sr-only">: </span></span> ${bi(explain)}</div>`;
   const key = (/** @type {number} */ n) => String(Math.round(n * 1e6) / 1e6);
   const unitOf = (/** @type {any} */ u) => (typeof u === "string" ? { en: u, es: u } : u);
   const same = (/** @type {number} */ a, /** @type {number} */ b) =>
@@ -64,10 +70,10 @@
       <div class="story-fields">${rows}</div>
       <div class="item-actions">
         <button type="button" class="btn btn-primary" data-story-check ${solved ? "disabled" : ""}>${bi({ en: "Check answer", es: "Comprobar" })}</button>
-        ${solved ? "" : `<button type="button" class="btn" data-story-hint>💡 ${bi({ en: "Hint", es: "Pista" })}</button>`}
+        ${solved ? "" : `<button type="button" class="btn hint-btn" data-story-hint></button><span class="hint-left" data-story-left></span>`}
       </div>
       <div class="story-hints" data-story-hints aria-live="polite"></div>
-      <div class="feedback-box${solved ? " show ok" : ""}" data-story-fb aria-live="polite">${solved ? `${bi({ en: "Correct!", es: "¡Correcto!" })} ${bi(item.explain)}` : ""}</div>`;
+      <div class="feedback-box${solved ? " show ok" : ""}" data-story-fb aria-live="polite">${solved ? okHtml(item.explain) : ""}</div>`;
 
     const fb = host.querySelector("[data-story-fb]");
     const hintBox = host.querySelector("[data-story-hints]");
@@ -82,18 +88,38 @@
     };
     host.querySelector("[data-story-speak]").addEventListener("click", speakAll);
 
+    const total = item.hints.length;
+    const leftNote = host.querySelector("[data-story-left]");
+    /** The button names the next rung ("Hint 2 of 3") and how many follow it. */
+    const label = () => {
+      if (!hintBtn) return;
+      const left = total - shown - 1;
+      hintBtn.innerHTML = `💡 ${tag(`Hint ${shown + 1} of ${total}`, `Pista ${shown + 1} de ${total}`)}`;
+      if (leftNote)
+        leftNote.innerHTML =
+          left > 0
+            ? tag(
+                `${left} more after this one`,
+                `${left === 1 ? "queda 1 más" : `quedan ${left} más`} después de esta`,
+              )
+            : tag("last hint", "última pista");
+    };
     /** Show hints up to `n` (1-based), keep the button honest about whether more remain. */
     const showHints = (/** @type {number} */ n) => {
-      shown = Math.max(shown, Math.min(n, item.hints.length));
+      shown = Math.max(shown, Math.min(n, total));
       hintBox.innerHTML = item.hints
         .slice(0, shown)
         .map(
           (/** @type {Bi} */ h, /** @type {number} */ i) =>
-            `<p class="story-hint"><strong>${bi({ en: `Hint ${i + 1}`, es: `Pista ${i + 1}` })}</strong>${bi(h)}</p>`,
+            `<p class="story-hint"><strong>${tag(`Hint ${i + 1} of ${total}`, `Pista ${i + 1} de ${total}`)}</strong>${bi(h)}</p>`,
         )
         .join("");
-      if (hintBtn && shown >= item.hints.length) hintBtn.remove();
+      if (hintBtn && shown >= total) {
+        hintBtn.remove();
+        leftNote?.remove();
+      } else label();
     };
+    label();
     if (hintBtn) hintBtn.addEventListener("click", () => showHints(shown + 1));
     if (!solved && (misses[item.id] || 0) > 0) showHints(misses[item.id]);
 
@@ -123,9 +149,10 @@
           i.classList.add("ok");
         });
         fb.className = "feedback-box show ok";
-        fb.innerHTML = `${bi({ en: "Correct!", es: "¡Correcto!" })} ${bi(item.explain)}`;
+        fb.innerHTML = okHtml(item.explain);
         host.querySelector("[data-story-check]").setAttribute("disabled", "");
         if (hintBtn) hintBtn.remove();
+        leftNote?.remove();
         o.onSolve(fb);
         return;
       }
@@ -139,7 +166,7 @@
           : `<div>${bi(msg)}</div>`;
       });
       fb.className = "feedback-box show err";
-      fb.innerHTML = lines.join("");
+      fb.innerHTML = `<p class="fb-line fb-confirm"><strong>${bi({ en: "Not yet.", es: "Todavía no." })}</strong></p><div class="fb-line fb-guide">${lines.join("")}</div>`;
       showHints(misses[item.id]);
     };
     host.querySelector("[data-story-check]").addEventListener("click", check);

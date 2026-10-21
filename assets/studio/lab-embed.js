@@ -70,23 +70,7 @@
           it.k === "mission" ? "Challenge mission" : "Lab bench task",
         );
         host.append(slot);
-        const hintHtml = () => {
-          const hs = it.h || [];
-          if (!hs.length) return "";
-          const shown = Math.min(hs.length, state.hints[it.id] || 0);
-          const list = hs
-            .slice(0, shown)
-            .map(
-              (/** @type {string} */ h, /** @type {number} */ i) =>
-                `<li>${esc(h)}${es((it.hEs || [])[i])}</li>`,
-            )
-            .join("");
-          return `<div class="hint-area"><ol class="hint-list">${list}</ol>${
-            shown < hs.length
-              ? `<button type="button" class="btn btn-sm" data-hint>💡 ${shown ? "Another hint" : "Give me a hint"}</button>`
-              : ""
-          }</div>`;
-        };
+        const hintHtml = () => RT.util.ladder(it, state.hints[it.id] || 0);
         const ctx = {
           it,
           tab: 0,
@@ -114,7 +98,7 @@
           },
           solve(/** @type {string} */ html) {
             state.solved[it.id] = true;
-            ctx.fb("ok", `<strong>Nice.</strong> ${html}`);
+            ctx.fb("ok", RT.util.fbOk(RT.util.bi("Nice.", "¡Bien!"), html));
             ctx.say("Correct");
             save();
             refresh();
@@ -123,7 +107,11 @@
             const text = m.say || "Look again at what the task asks, then try again.";
             ctx.fb(
               m.kind || "err",
-              `${m.noLead ? "" : "<strong>Not yet.</strong> "}${esc(text)}${es(m.sayEs || "")}`,
+              RT.util.fbMiss(
+                m.noLead ? "" : RT.util.bi("Not yet.", "Todavía no."),
+                "",
+                `${esc(text)}${es(m.sayEs || "")}`,
+              ),
             );
             ctx.say("Not yet");
           },

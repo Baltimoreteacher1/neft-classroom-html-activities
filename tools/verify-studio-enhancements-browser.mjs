@@ -54,6 +54,13 @@ async function solveCurrent(page, host = "body", tab = 0) {
     await page.locator(`${host} .btn-go, ${host} button:has-text("Check")`).first().click();
   }
 }
+/** Header controls live in the studio Menu (assets/studio/clarity.js): open it first when the control is inside it. */
+async function reach(page, sel) {
+  await page.locator(sel).waitFor({ state: "attached" });
+  if ((await page.locator(sel).isHidden()) && (await page.locator("#studio-menu-btn").count()))
+    await page.locator("#studio-menu-btn").click();
+  return page.locator(sel);
+}
 const spy = (page) =>
   page.addInitScript(() => {
     const t = setInterval(() => {
@@ -85,8 +92,7 @@ try {
     const ctx = await browser.newContext({ viewport: { width: 375, height: 800 } });
     const page = await ctx.newPage();
     await page.goto(origin + url);
-    await page.locator("#comfort-btn").waitFor();
-    await page.locator("#comfort-btn").click();
+    await (await reach(page, "#comfort-btn")).click();
     // a fresh visitor sees every switch at its usual setting
     assert.equal(
       await page.locator('[data-toggle="contrast"]').isChecked(),
@@ -116,7 +122,7 @@ try {
     assert.equal(attrs.comfortCalm, "on");
     await page.locator("[data-close]").click();
     await page.reload();
-    await page.locator("#comfort-btn").waitFor();
+    await page.locator("#comfort-btn").waitFor({ state: "attached" });
     assert.equal(
       await page.evaluate(() => document.documentElement.dataset.comfortSize),
       "3",
@@ -146,7 +152,7 @@ try {
     const page = await ctx.newPage();
     await spy(page);
     await page.goto(`${origin}/math/practice-studio/3-5/`);
-    await page.locator("#quest-btn").click();
+    await (await reach(page, "#quest-btn")).click();
     assert.match(await page.locator("#studio-quest").innerText(), /Start the quest/);
     await page.locator("[data-start]").click();
     let questions = 0;

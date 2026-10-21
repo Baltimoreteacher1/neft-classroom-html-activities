@@ -197,7 +197,8 @@
         <p><button type="button" class="btn btn-go" data-start>Start the quest</button></p>`;
       $("[data-start]", body)?.addEventListener("click", () => run(body, dlg));
     });
-    actions.insertBefore(b, $("#think-btn") || $("#toggle-es-btn") || null);
+    const ref = $("#think-btn") || $("#toggle-es-btn");
+    actions.insertBefore(b, ref?.parentNode === actions ? ref : null);
   }
   W.StudioQuest = { init, skillsOf };
   init();

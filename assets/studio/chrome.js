@@ -200,13 +200,14 @@
               : resolve(null) === "dark"
                 ? "Dark"
                 : "Light";
-      b.textContent = `◐ ${label}`;
+      const es = { Auto: "Automático", Light: "Claro", Dark: "Oscuro" }[label];
+      b.innerHTML = `<span aria-hidden="true">◐</span> <span class="t-en">Theme: ${label}</span><span class="t-es" lang="es">Tema: ${es}</span>`;
       b.setAttribute("aria-label", `Theme: ${label}. Press to change.`);
     }
   }
 
-  /* ---- status bar ------------------------------------------------------------------------------------------------ */
-  const title = (document.querySelector(".brand-title")?.childNodes[0]?.textContent || "").trim();
+  /* ---- status bar: the pathway sits in the header; accuracy, streak and theme are header controls that
+     assets/studio/clarity.js gathers into the Menu with the others ------------------------------------------------ */
   const PATHS = [
     { id: 1, name: "Foundational", es: "Fundamental" },
     { id: 2, name: "On-grade", es: "Del grado" },
@@ -215,26 +216,33 @@
   function buildBar() {
     const header = document.querySelector(".app-header");
     if (!header || document.getElementById("ewl-hud")) return;
+    const actions = header.querySelector(".header-actions");
     const bar = document.createElement("div");
     bar.id = "ewl-hud";
     bar.className = "ewl-hud";
     bar.setAttribute("role", "region");
     bar.setAttribute("aria-label", "Activity status");
-    const esc = (/** @type {string} */ s) =>
-      s.replace(
-        /[&<>"]/g,
-        (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[/** @type {"&"} */ (c)],
-      );
-    bar.innerHTML = `
-      <span class="ewl-hud-id"><strong>${data.lesson === "0-0" ? "Daily Boost" : `Lesson ${esc(data.lesson)}`}</strong><span class="ewl-hud-title"> · ${esc(title)}</span></span>
-      <div class="ewl-hud-path" role="radiogroup" aria-label="Pathway">${PATHS.map(
-        (p) =>
-          `<button type="button" role="radio" class="ewl-hud-opt" data-path="${p.id}" aria-checked="${p.id === pathway.id}" tabindex="${p.id === pathway.id ? 0 : -1}">${p.name}<span class="es-text" lang="es">${p.es}</span></button>`,
-      ).join("")}</div>
-      <span class="ewl-hud-stat" id="ewl-acc" title="Right on the first try">Accuracy <strong>—</strong></span>
-      <span class="ewl-hud-stat" id="ewl-streak" title="Right on the first try, in a row">Streak <strong>0</strong></span>
-      <button type="button" class="ewl-hud-btn" id="ewl-theme-btn"></button>`;
-    header.after(bar);
+    bar.innerHTML = `<div class="ewl-hud-path" role="radiogroup" aria-label="Pathway">${PATHS.map(
+      (p) =>
+        `<button type="button" role="radio" class="ewl-hud-opt" data-path="${p.id}" aria-checked="${p.id === pathway.id}" tabindex="${p.id === pathway.id ? 0 : -1}">${p.name}<span class="es-text" lang="es">${p.es}</span></button>`,
+    ).join("")}</div>`;
+    const stats = document.createElement("div");
+    stats.id = "ewl-stats";
+    stats.className = "ewl-hud-stats";
+    stats.setAttribute("data-menu", "");
+    stats.innerHTML = `<span class="ewl-hud-stat" id="ewl-acc" title="Right on the first try">Accuracy <strong>—</strong></span>
+      <span class="ewl-hud-stat" id="ewl-streak" title="Right on the first try, in a row">Streak <strong>0</strong></span>`;
+    const theme = document.createElement("button");
+    theme.type = "button";
+    theme.className = "top-btn ewl-hud-btn";
+    theme.id = "ewl-theme-btn";
+    if (actions) {
+      actions.prepend(bar);
+      actions.append(stats, theme);
+    } else {
+      bar.append(stats, theme);
+      header.after(bar);
+    }
     document.body.classList.add("ewl-hud-on");
     const foot = document.querySelector(".footer-wrap");
     if (foot && !foot.querySelector(".ewl-brand")) {

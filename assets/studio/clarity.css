@@ -1,0 +1,334 @@
+/* Practice Studio clarity layer (assets/studio/clarity.js) — shared by the generated studios and the hand-built Unit 4
+   pages. Problem-first layout: one slim header row (title, pathway, stars/progress, Menu), a context row of small chips
+   (I can…, Mission, Word bank) and the section heading with its problem dots on one line. Tokens only, so every world
+   and both themes recolour it; text pairs reuse the reading pairs already proven in studio-worlds.css. */
+
+/* bilingual labels for the hand-built pages too (studio-v2.css has the same rule for the generated ones) */
+.t-es {
+  display: none;
+}
+body.show-es .t-es {
+  display: inline;
+}
+body.show-es .t-en {
+  display: none;
+}
+
+/* the trail is sticky: anything scrolled or tabbed into view lands below it, never under it (WCAG 2.4.11) */
+html { scroll-padding-top: 72px; }
+
+/* ---- header: the Menu disclosure ---------------------------------------------------------------------------- */
+.studio-menu-wrap {
+  position: relative;
+}
+.studio-menu-btn {
+  white-space: nowrap;
+}
+.studio-menu-btn[aria-expanded="true"] {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: #fff;
+}
+.studio-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 120;
+  min-width: 240px;
+  max-width: min(320px, calc(100vw - 24px));
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: 0 14px 34px -12px rgba(0, 0, 0, 0.45);
+}
+.studio-menu[hidden] {
+  display: none;
+}
+.studio-menu .studio-menu-item.top-btn,
+.studio-menu #comfort-btn.top-btn {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--ink);
+  border: 2px solid transparent;
+  border-radius: var(--radius-sm, 8px);
+  min-height: 44px;
+  padding: 6px 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  box-shadow: none;
+  font-family: inherit;
+}
+.studio-menu .studio-menu-item.top-btn:hover {
+  background: var(--brand-tint);
+  border-color: var(--brand-line);
+}
+.studio-menu .studio-menu-item.top-btn[aria-pressed="true"] {
+  background: var(--brand-tint);
+  border-color: var(--brand);
+  color: var(--ink);
+}
+.studio-menu .studio-menu-item.bonus-btn {
+  color: var(--ink);
+}
+.studio-menu #reset-all-btn {
+  border-top-color: var(--border);
+  border-radius: 0 0 var(--radius-sm, 8px) var(--radius-sm, 8px);
+  margin-top: 4px;
+}
+.studio-menu .ewl-hud-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  padding: 6px 10px 8px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+}
+.studio-menu .ewl-hud-stats strong {
+  color: var(--ink);
+}
+#think-btn.studio-menu-item[data-count]:not([data-count=""])::after {
+  position: static;
+  margin-left: auto;
+}
+
+/* the pathway is a segmented control in the dark header (chrome.js puts #ewl-hud there) */
+.header-actions .ewl-hud {
+  display: flex;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: #fff;
+  font-size: 0.88rem;
+}
+.header-actions .ewl-hud-path {
+  gap: 0;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.header-actions .ewl-hud-opt {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #fff;
+  min-height: 40px;
+  padding: 4px 12px;
+}
+.header-actions .ewl-hud-opt + .ewl-hud-opt {
+  border-left: 2px solid rgba(255, 255, 255, 0.3);
+}
+.header-actions .ewl-hud-opt[aria-checked="true"] {
+  background: var(--sun);
+  color: var(--brand-dark);
+}
+.header-actions .ewl-hud-opt:focus-visible {
+  outline-offset: -4px;
+}
+.show-es .header-actions .ewl-hud-opt .es-text {
+  font-size: 0.72rem;
+  color: inherit;
+  margin-top: 0;
+}
+.header-actions .score-pill {
+  padding: 6px 12px;
+}
+.header-actions .top-btn.stars-btn {
+  box-shadow: 0 3px 0 var(--sun-deep);
+}
+
+/* ---- the context row: small chips that open in place ---------------------------------------------------------- */
+.studio-context {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+.studio-context > .mission-card,
+.studio-context > .glossary {
+  margin: 0;
+  flex: 0 1 auto;
+  box-shadow: none;
+}
+.studio-context > .mission-card > summary,
+.studio-context > .glossary > summary {
+  min-height: 44px;
+  padding: 6px 14px;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+.studio-context > .mission-card {
+  border-left-width: 6px;
+}
+.studio-context > .mission-card > summary .world-glyph {
+  font-size: 1.2rem;
+}
+.studio-context > details[open] {
+  flex: 1 1 100%;
+  order: 10;
+}
+.studio-context > details > summary::after {
+  content: "▸";
+  margin-left: 6px;
+  font-size: 0.8em;
+  color: var(--ink-light);
+}
+.studio-context > details[open] > summary::after {
+  content: "▾";
+}
+.studio-context > .glossary > summary {
+  list-style: none;
+}
+.studio-context > .glossary > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* the lesson's "I can…" target: always shown, never clamped; it takes the room the chips leave */
+.target-chip {
+  flex: 1 1 340px; display: flex; align-items: flex-start; gap: 8px; margin: 0; min-height: 44px;
+  padding: 9px 14px; border-left: 5px solid var(--brand); border-radius: var(--radius-md);
+  background: var(--brand-tint); color: var(--ink); font-size: 0.95rem; font-weight: 700; line-height: 1.35;
+}
+.target-chip .target-icon { flex: 0 0 auto; line-height: 1.35; }
+.target-chip .target-text { min-width: 0; overflow-wrap: anywhere; }
+
+/* ---- the section heading carries its problem dots (generated studios) ------------------------------------------ */
+.topic-strip > .stepper-bar {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  flex: 0 1 auto;
+}
+.topic-strip > .stepper-bar .step-dot {
+  min-width: 40px;
+  height: 40px;
+}
+
+@media (max-width: 840px) {
+  .header-actions .ewl-hud-opt {
+    padding: 4px 9px;
+  }
+}
+@media print {
+  .studio-menu-wrap,
+  .studio-context > .mission-card {
+    display: none !important;
+  }
+}
+
+/* one header row on a laptop: the title wraps inside its own column instead of pushing the controls to a second row */
+@media (min-width: 1000px) {
+  .header-wrap { flex-wrap: nowrap; max-width: 1240px; }
+  .header-wrap > .brand { flex: 1 1 auto; }
+  .header-wrap > .header-actions { flex: 0 0 auto; flex-wrap: nowrap; }
+}
+
+/* ---- Word bank chip: size and a preview of the first terms ------------------------------------------------------ */
+.glossary > summary .wb-count {
+  margin-left: 8px; padding: 1px 8px; border-radius: 999px; background: var(--brand-tint); color: var(--ink);
+  font-size: 0.8rem; font-weight: 800; white-space: nowrap;
+}
+.glossary > summary .wb-preview {
+  margin-left: 8px; color: var(--ink-muted); font-weight: 600; font-size: 0.88rem;
+  max-width: 34ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.glossary[open] > summary .wb-preview { display: none; }
+@media (max-width: 600px) {
+  .glossary > summary .wb-preview { display: none; }
+}
+
+/* ---- hint ladder: "Hint k of n" on every rung, the next rung and how many follow on the button ------------------- */
+.hint-list { list-style: none; padding-left: 0; display: grid; gap: 6px; }
+.hint-tag {
+  display: inline-block; margin-right: 6px; padding: 0 8px; border-radius: 999px;
+  background: var(--sun-tint); color: var(--sun-ink); border: 1px solid var(--sun);
+  font-size: 0.8rem; font-weight: 800; white-space: nowrap;
+}
+.hint-left { margin-left: 10px; color: var(--ink-muted); font-size: 0.88rem; font-weight: 600; }
+.story-hint strong .t-en, .story-hint strong .t-es { margin-right: 6px; }
+
+/* ---- feedback anatomy: confirm · why it works · watch for / confirm · trap · guiding line --------------------------- */
+.feedback-box .fb-line { margin: 0; }
+.feedback-box .fb-line + .fb-line { margin-top: 6px; }
+.feedback-box .fb-label {
+  display: inline-block; margin-right: 6px; font-size: 0.78rem; font-weight: 800;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.feedback-box .fb-confirm .es-text { display: none; }
+body.show-es .feedback-box .fb-confirm .es-text { display: inline; margin-left: 6px; }
+.feedback-box .fb-trap strong { font-weight: 800; }
+.feedback-box .next-btn { margin-top: 10px; }
+
+/* ---- context vs ask: the setup reads quietly, the question stands out (assets/studio/typeset.js) ------------------ */
+.item-q .q-context { color: var(--ink-muted); font-weight: 600; }
+.item-q .q-ask { display: block; margin-top: 4px; color: var(--brand); font-weight: 800; }
+.item-q .es-text .q-ask { margin-top: 2px; }
+
+/* ---- stacked fractions: digit over digit, the words for screen readers live beside them in .sr-only ---------------- */
+.frac { display: inline-flex; align-items: center; gap: 0.15em; vertical-align: middle; white-space: nowrap; margin: 0 0.05em; }
+.frac-v {
+  display: inline-flex; flex-direction: column; align-items: center; line-height: 1;
+  font-size: 0.9em; font-variant-numeric: tabular-nums;
+}
+.frac-n { padding: 0 0.12em 0.08em; border-bottom: 0.09em solid currentColor; }
+.frac-d { padding: 0.08em 0.12em 0; }
+.frac-w { font-size: 1em; }
+@media (forced-colors: active) {
+  .frac-n { border-bottom-color: CanvasText; }
+}
+
+/* ---- exit card: what you can do now · how it went · one next step ------------------------------------------------ */
+.complete-banner:has(.exit-card) {
+  display: block; padding: 18px 22px; text-align: left; background: var(--surface); color: var(--ink);
+  border: 3px solid var(--ok); font-family: inherit; font-size: 1rem; font-weight: 400;
+}
+.complete-banner:has(.exit-card)[hidden] { display: none; }
+.exit-banner { margin: 0 0 8px; }
+.exit-card .exit-title { margin: 0 0 8px; font-size: 1.25rem; color: var(--brand); }
+.exit-card .exit-title:focus { outline: none; }
+.exit-card .exit-title:focus-visible { outline: 3px solid var(--sun-deep); outline-offset: 3px; }
+.exit-card .exit-target { margin: 0 0 10px; font-weight: 700; color: var(--ink); }
+.exit-card .exit-sections {
+  list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 8px;
+}
+.exit-card .exit-sections li {
+  padding: 2px 10px; border-radius: 999px; background: var(--ok-tint); border: 1px solid var(--ok-line);
+  color: var(--ink); font-weight: 700; font-size: 0.9rem;
+}
+.exit-card .exit-tally { margin: 0 0 12px; color: var(--ink); }
+.exit-card .exit-step { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0; }
+.exit-card .exit-step-label {
+  font-size: 0.78rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-muted);
+}
+.exit-card .exit-next { text-decoration: none; }
+
+/* ---- tighter vertical rhythm above the first problem ------------------------------------------------------------ */
+.main-container { padding-top: 10px; }
+.studio-context { margin-bottom: 10px; }
+.topic-strip { margin-bottom: 10px; }
+.glossary > summary .wb-preview { max-width: 18ch; }
+/* the first-visit briefing reads as one short paragraph: the world's tagline runs into its story */
+.studio-context > .mission-card .mission-body { padding: 0 16px 12px; }
+.studio-context > .mission-card .mission-body p { display: inline; margin: 0; font-size: 0.98rem; }
+.studio-context > .mission-card .mission-body p + p { margin-left: 0.35em; }
+.studio-context > .mission-card .mission-body .es-text { display: none; }
+body.show-es .studio-context > .mission-card .mission-body .es-text { display: block; margin: 6px 0 0; }
+
+/* ---- phone: stage tabs wrap to rows of three so a name never splits mid-word ------------------------------------- */
+@media (max-width: 560px) {
+  .tab-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .tab-name, .tab-desc { overflow-wrap: break-word; hyphens: manual; }
+}

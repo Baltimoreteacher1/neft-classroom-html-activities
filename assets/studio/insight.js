@@ -314,6 +314,14 @@
         copy(shareText(), /** @type {HTMLElement} */ (e.currentTarget)),
       );
   }
+  /** Straight into the redemption round (the exit card's "replay" next step); the thinking map when nothing is left. */
+  function replay() {
+    openThinking();
+    /** @type {HTMLElement|null} */ (
+      document.querySelector("#studio-think [data-redeem]")
+    )?.click();
+  }
+
   function updateThinkBadge() {
     const b = $("#think-btn");
     if (!b || !rt) return;
@@ -325,11 +333,18 @@
   let speaking = false;
   function stageText(/** @type {HTMLElement} */ stage, /** @type {boolean} */ spanish) {
     const parts = [];
+    // Spanish reads every Spanish piece in order (stacked .es-text lines and .t-es labels); English drops both. Glyphs a
+    // screen reader skips (aria-hidden: a stacked fraction's digits) are skipped here too; their sr-only words are read.
     const take = (/** @type {HTMLElement} */ n) => {
-      const e = n.querySelector(".es-text");
-      if (spanish && e) return e.textContent || "";
       const c = /** @type {HTMLElement} */ (n.cloneNode(true));
-      for (const x of c.querySelectorAll(".es-text,.choice-letter")) x.remove();
+      for (const x of c.querySelectorAll('[aria-hidden="true"],.choice-letter')) x.remove();
+      if (spanish && c.querySelector(".es-text")) {
+        const bits = [...c.querySelectorAll(".es-text, .t-es")].filter(
+          (x) => !x.parentElement?.closest(".es-text, .t-es"),
+        );
+        return bits.map((x) => x.textContent || "").join(" ");
+      }
+      for (const x of c.querySelectorAll(spanish ? ".t-en" : ".es-text,.t-es")) x.remove();
       return c.textContent || "";
     };
     const title = stage.querySelector(".viz-host svg title");
@@ -429,16 +444,22 @@
         b.className = "top-btn";
         b.innerHTML = "🧭 My thinking";
         b.addEventListener("click", openThinking);
-        actions.insertBefore(b, $("#toggle-es-btn") || null);
+        const es = $("#toggle-es-btn");
+        actions.insertBefore(b, es?.parentNode === actions ? es : null);
       }
       if (!window.speechSynthesis)
         for (const r of document.querySelectorAll("[data-read]")) r.setAttribute("hidden", "");
       document.addEventListener("click", (e) => {
-        if (/** @type {HTMLElement} */ (e.target).closest("[data-open-think]")) openThinking();
+        const t = /** @type {HTMLElement} */ (e.target);
+        if (t.closest("[data-open-think]")) openThinking();
+        if (t.closest("[data-replay]")) replay();
       });
       updateThinkBadge();
     },
     read,
+    replay,
+    /** Problems waiting in the redemption round (the exit card offers "replay" when there are some). */
+    toRedo: () => rt?.api?.state?.missLog?.length || 0,
     shareText: () => shareText(),
     signature,
     /** What Read speaks for a stage (exposed for tools/studio-insight-names.test.mjs). */

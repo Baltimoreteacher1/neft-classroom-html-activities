@@ -126,7 +126,7 @@
   // (and do the task on paper), and the item stays open for the next visit.
   const failed = (/** @type {any} */ ctx, /** @type {any} */ error) => {
     console.warn("Studio lab item could not load", ctx.it.id, error);
-    ctx.host.innerHTML = `<p class="item-q">${esc(ctx.it.q)}${es(ctx.it.qEs)}</p><div class="item-fb feedback-box" role="status"></div>${twinHtml(ctx.it).replace('class="lab-twin"', 'class="lab-twin lab-twin-shown"')}`;
+    ctx.host.innerHTML = `<p class="item-q">${U().stem(ctx.it.q, ctx.it.qEs)}</p><div class="item-fb feedback-box" role="status"></div>${twinHtml(ctx.it).replace('class="lab-twin"', 'class="lab-twin lab-twin-shown"')}`;
     ctx.showSolved(
       `${b("The interactive model could not load. Check your connection and reload, or do this task on paper below.", "El modelo interactivo no pudo cargar. Revisa tu conexión y recarga, o haz esta tarea en papel abajo.")}`,
     );
@@ -142,7 +142,7 @@
       mem.tests = mem.tests || [];
       st.calib = st.calib || {};
       const lang = () => (ctx.es() ? "es" : "en");
-      ctx.host.innerHTML = `<p class="item-q">${esc(it.q)}${es(it.qEs)}</p>
+      ctx.host.innerHTML = `<p class="item-q">${U().stem(it.q, it.qEs)}</p>
         <p class="item-sub lab-show"></p>
         <div class="lab-goalbar"><p class="item-sub lab-goal">${goalLine(it)}</p>
         ${ctx.solved ? "" : `<div class="item-actions"><button type="button" class="btn btn-primary btn-sm" data-check-lab>${b("Check my model", "Revisar mi modelo")}</button></div>`}</div>
@@ -275,7 +275,7 @@
             return r.pass === goal.pass;
           };
           const explain = () =>
-            `<strong>${b("Target reached.", "Meta lograda.")}</strong> ${esc(it.x)}${es(it.xEs)}`;
+            `<strong>${b("Target reached.", "Meta lograda.")}</strong> ${U().tx(it.x)}${U().txEs(it.xEs)}`;
           if (ctx.solved) return ctx.showSolved(explain());
 
           // "How sure are you?" once, before the first check: the studio's own calibration record, so My thinking can show certain-but-missed.
@@ -370,13 +370,13 @@
       const mem = (ctx.state.acts[it.id] = ctx.state.acts[it.id] || {});
       const twin = `<div class="lab-twin"><h4>${b("On paper", "En papel")}</h4><p>${esc(it.q)}${es(it.qEs)}</p>
         <table class="lab-twin-table"><thead><tr><th>${b("Stop", "Parada")}</th><th>${b("Goal", "Meta")}</th><th>${b("My plan", "Mi plan")}</th><th>${b("Test 1", "Prueba 1")}</th><th>${b("Test 2", "Prueba 2")}</th><th>${b("It worked because…", "Funcionó porque…")}</th></tr></thead><tbody>${[1, 2, 3].map((n) => `<tr><td>${n}</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>`).join("")}</tbody></table></div>`;
-      ctx.host.innerHTML = `<p class="item-q">${esc(it.q)}${es(it.qEs)}</p>
+      ctx.host.innerHTML = `<p class="item-q">${U().stem(it.q, it.qEs)}</p>
         <p class="item-sub">${b("Plan each build before you test it. Hints and retries are free, and nothing here is timed.", "Planea cada construcción antes de probarla. Las pistas y los reintentos son gratis, y nada tiene tiempo.")}</p>
         <div class="answer-zone"><div class="lab-mission"></div></div><div class="item-fb feedback-box" role="status"></div>${twin}`;
       const mount = /** @type {HTMLElement} */ (ctx.host.querySelector(".lab-mission"));
       const finish = () =>
         ctx.solve(
-          `<strong>${b("Mission complete.", "Misión completa.")}</strong> ${esc(it.x)}${es(it.xEs)}`,
+          `<strong>${b("Mission complete.", "Misión completa.")}</strong> ${U().tx(it.x)}${U().txEs(it.xEs)}`,
         );
       lib()
         .then(async (L) => {
@@ -398,7 +398,7 @@
           });
           if (ctx.solved)
             ctx.showSolved(
-              `<strong>${b("Mission complete.", "Misión completa.")}</strong> ${esc(it.x)}${es(it.xEs)}`,
+              `<strong>${b("Mission complete.", "Misión completa.")}</strong> ${U().tx(it.x)}${U().txEs(it.xEs)}`,
             );
         })
         .catch((e) => failed(ctx, e));

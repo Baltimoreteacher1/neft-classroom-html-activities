@@ -71,10 +71,93 @@
     }
     return false;
   };
-  RT.util = { esc, es, viz, value, same, canon, cellOk };
+  /** A label in both languages; body.show-es picks which one shows (and which one a screen reader hears). */
+  const bi = (/** @type {string} */ en, /** @type {string} */ sp) =>
+    `<span class="t-en">${en}</span><span class="t-es" lang="es">${sp}</span>`;
+
+  /**
+   * The hint ladder: every shown rung is labelled "Hint k of n", and the button names the next rung and how many follow it.
+   * `extra` is appended inside the area (the runtime's tutor button). Shared by the studios and the Unit 4 lab bench.
+   */
+  const ladder = (/** @type {any} */ it, /** @type {number} */ shown, extra = "") => {
+    const hs = it.h || [];
+    if (!hs.length) return "";
+    const n = hs.length;
+    const k = Math.min(n, Math.max(0, shown));
+    const list = hs
+      .slice(0, k)
+      .map(
+        (/** @type {string} */ h, /** @type {number} */ i) =>
+          `<li><span class="hint-tag">${bi(`Hint ${i + 1} of ${n}`, `Pista ${i + 1} de ${n}`)}</span> ${esc(h)}${es((it.hEs || [])[i])}</li>`,
+      )
+      .join("");
+    const left = n - k - 1;
+    const more =
+      k < n
+        ? `<button type="button" class="btn btn-sm hint-btn" data-hint>💡 ${bi(`Hint ${k + 1} of ${n}`, `Pista ${k + 1} de ${n}`)}</button><span class="hint-left">${
+            left > 0
+              ? bi(
+                  `${left} more after this one`,
+                  `${left === 1 ? "queda 1 más" : `quedan ${left} más`} después de esta`,
+                )
+              : bi("last hint", "última pista")
+          }</span>`
+        : "";
+    return `<div class="hint-area"><ol class="hint-list">${list}</ol>${more}${extra}</div>`;
+  };
+
+  /**
+   * Feedback anatomy. Right: confirm, why it works, and (when the item names a trap) what to watch for.
+   * Wrong: the trap's name when the misconception taxonomy has it, then one guiding line. Neither ever prints the answer
+   * on a miss: the guiding line is the item's own authored feedback, the trap's fix, or a generic nudge.
+   */
+  const fbOk = (/** @type {string} */ lead, /** @type {string} */ why, watch = "") =>
+    `<p class="fb-line fb-confirm"><strong>${lead}</strong></p> ${
+      why
+        ? `<div class="fb-line fb-why"><span class="fb-label">${bi("Why it works", "Por qué funciona")}<span class="sr-only">: </span></span> ${why}</div>`
+        : ""
+    }${watch ? `<p class="fb-line fb-watch"><span class="fb-label">${bi("Watch for", "Cuidado con")}<span class="sr-only">: </span></span> ${watch}</p>` : ""}`;
+  const fbMiss = (
+    /** @type {string} */ lead,
+    /** @type {string} */ trap,
+    /** @type {string} */ guide,
+  ) =>
+    `${lead ? `<p class="fb-line fb-confirm"><strong>${lead}</strong></p>` : ""}${
+      trap
+        ? `<p class="fb-line fb-trap"><span class="fb-label">${bi("Trap", "Trampa")}<span class="sr-only">: </span></span> ${trap}</p>`
+        : ""
+    }<div class="fb-line fb-guide">${guide}</div>`;
+
+  /** Typeset text (assets/studio/typeset.js): clean fractions stack, stems split into setup and ask. Plain when absent. */
+  const T = () => W.StudioType;
+  const tx = (/** @type {any} */ s) => (T() ? T().frac(esc(s), "en") : esc(s));
+  /** A choice with no Spanish twin (a bare number): its fraction words follow the page language. */
+  const txBoth = (/** @type {any} */ s) => (T() ? T().frac(esc(s), "both") : esc(s));
+  const txEs = (/** @type {any} */ s) =>
+    s ? `<span class="es-text" lang="es">${T() ? T().frac(esc(s), "es") : esc(s)}</span>` : "";
+  const stem = (/** @type {any} */ en, /** @type {any} */ sp) =>
+    T() ? T().stem(String(en ?? ""), sp ? String(sp) : "", esc) : `${esc(en)}${es(sp)}`;
+
+  RT.util = {
+    esc,
+    es,
+    bi,
+    tx,
+    txBoth,
+    txEs,
+    stem,
+    viz,
+    value,
+    same,
+    canon,
+    cellOk,
+    ladder,
+    fbOk,
+    fbMiss,
+  };
 
   const done = (/** @type {any} */ it) =>
-    `<strong>${esc(it.x ? "" : "")}</strong>${esc(it.x)}${es(it.xEs)}`;
+    `<strong>${esc(it.x ? "" : "")}</strong>${tx(it.x)}${txEs(it.xEs)}`;
 
   /* ---- multiple choice ----------------------------------------------------------------------- */
   K.mc = {
@@ -92,10 +175,10 @@
             : chosen === i
               ? "wrong"
               : "";
-          return `<button type="button" class="choice-btn ${cls}" data-mc="${i}"${ctx.solved ? " disabled" : ""}><span>${esc(c)}${es((it.cEs || [])[i])}</span></button>`;
+          return `<button type="button" class="choice-btn ${cls}" data-mc="${i}"${ctx.solved ? " disabled" : ""}><span>${(it.cEs || [])[i] ? tx(c) : txBoth(c)}${txEs((it.cEs || [])[i])}</span></button>`;
         })
         .join("");
-      ctx.host.innerHTML = `${viz(it)}<p class="item-q">${esc(it.q)}${es(it.qEs)}</p>
+      ctx.host.innerHTML = `${viz(it)}<p class="item-q">${stem(it.q, it.qEs)}</p>
         <div class="answer-zone"><div class="choice-stack" role="group" aria-label="Answer choices">${rows}</div></div>
         ${ctx.hintBlock()}<div class="item-fb feedback-box" role="status"></div>`;
       if (ctx.solved) return ctx.showSolved(done(it));
@@ -126,7 +209,7 @@
     mount(/** @type {any} */ ctx) {
       const it = ctx.it;
       const typed = ctx.solved ? it.a : (ctx.state.notes[it.id] ?? "");
-      ctx.host.innerHTML = `${viz(it)}<p class="item-q">${esc(it.q)}${es(it.qEs)}</p>
+      ctx.host.innerHTML = `${viz(it)}<p class="item-q">${stem(it.q, it.qEs)}</p>
         <div class="answer-zone"><div class="num-row">
           <label class="sr-only" for="num-${esc(it.id)}">Your answer</label>
           <input class="num-input${ctx.solved ? " ok" : ""}" id="num-${esc(it.id)}" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(typed)}"${ctx.solved ? " readonly" : ""} placeholder="?">
@@ -180,7 +263,7 @@
 
   /* ---- find the error ------------------------------------------------------------------------- */
   const errDone = (/** @type {any} */ it) =>
-    `<strong>Yes, that is the step.</strong> ${esc(it.fix)}${es(it.fixEs)} ${esc(it.x)}${es(it.xEs)}`;
+    `<strong>Yes, that is the step.</strong> ${tx(it.fix)}${txEs(it.fixEs)} ${tx(it.x)}${txEs(it.xEs)}`;
   K.err = {
     mount(/** @type {any} */ ctx) {
       const it = ctx.it;
@@ -192,7 +275,7 @@
           return `<li><button type="button" class="choice-btn err-step ${cls}" data-err="${i}"${ctx.solved ? " disabled" : ""}><span class="choice-letter" aria-hidden="true">${i + 1}</span><span><strong>${esc(s.l)}</strong>: ${esc(s.w)}${s.wEs ? `<span class="es-text" lang="es">${esc(s.lEs || s.l)}: ${esc(s.wEs)}</span>` : ""}</span></button></li>`;
         })
         .join("");
-      ctx.host.innerHTML = `${viz(it)}<p class="item-q">${esc(it.t)}${es(it.tEs)}</p>
+      ctx.host.innerHTML = `${viz(it)}<p class="item-q">${stem(it.t, it.tEs)}</p>
         <p class="item-sub">One step has a mistake. Tap the step where it first goes wrong.${es("Un paso tiene un error. Toca el paso donde se equivoca primero.")}</p>
         <div class="answer-zone"><ol class="err-steps">${steps}</ol></div>${ctx.hintBlock()}<div class="item-fb feedback-box" role="status"></div>`;
       if (ctx.solved) return ctx.showSolved(errDone(it));
@@ -238,12 +321,12 @@
               .join("")}</tr>`,
         )
         .join("");
-      ctx.host.innerHTML = `${viz(it)}<p class="item-q">${esc(it.t)}${es(it.tEs)}</p>
+      ctx.host.innerHTML = `${viz(it)}<p class="item-q">${stem(it.t, it.tEs)}</p>
         <div class="answer-zone"><div class="table-wrap"><table class="data-table"><thead><tr>${it.hd.map((/** @type {string} */ h, /** @type {number} */ i) => `<th scope="col">${esc(h)}${es((it.hdEs || [])[i])}</th>`).join("")}</tr></thead><tbody>${body}</tbody></table></div>
         ${ctx.solved ? "" : '<div class="item-actions"><button type="button" class="btn btn-primary btn-sm" data-check-table>Check my table</button></div>'}</div>
         ${ctx.hintBlock()}<div class="item-fb feedback-box" role="status"></div>`;
       if (ctx.solved)
-        return ctx.showSolved(`<strong>Table complete.</strong> ${esc(it.x)}${es(it.xEs)}`);
+        return ctx.showSolved(`<strong>Table complete.</strong> ${tx(it.x)}${txEs(it.xEs)}`);
       const inputs = /** @type {HTMLInputElement[]} */ ([
         ...ctx.host.querySelectorAll("[data-cell]"),
       ]);
@@ -275,7 +358,7 @@
         if (right === inputs.length) {
           for (const i of inputs) i.setAttribute("readonly", "");
           ctx.host.querySelector("[data-check-table]")?.remove();
-          ctx.solve(`<strong>Table complete.</strong> ${esc(it.x)}${es(it.xEs)}`);
+          ctx.solve(`<strong>Table complete.</strong> ${tx(it.x)}${txEs(it.xEs)}`);
         } else
           ctx.miss({
             tag: "table-cell",
@@ -304,7 +387,7 @@
           `<li><label><input type="checkbox" data-rubric="${i}"${ticks[i] ? " checked" : ""}${lock ? " disabled" : ""}> ${esc(r)}${es((it.rubricEs || [])[i])}</label></li>`,
       )
       .join("");
-    return `<div class="wr-review"><p><strong>Compare your answer with this model.${es("Compara tu respuesta con este modelo.")}</strong> ${esc(it.x)}${es(it.xEs)}</p>
+    return `<div class="wr-review"><p><strong>Compare your answer with this model.${es("Compara tu respuesta con este modelo.")}</strong> ${tx(it.x)}${txEs(it.xEs)}</p>
       ${kw.length ? `<p class="item-sub">Words to look for in your answer: ${kw.join(" · ")}${es("Palabras que debes buscar en tu respuesta (en español o inglés).")}</p>` : ""}
       <p class="item-sub"><strong>Check yourself.${es("Revísate.")}</strong> Tick what your answer really did:${es("Marca lo que tu respuesta realmente hizo:")}</p><ul class="rubric-list">${rows}</ul>
       ${lock ? "" : `<div class="item-actions"><button type="button" class="btn btn-go btn-sm" data-rubric-done>I checked my answer${es("Revisé mi respuesta")}</button></div>`}</div>`;
@@ -316,7 +399,7 @@
       // The Foundational pathway asks for a shorter piece of writing: the idea matters more than the length.
       const min = W.EWLChrome?.pathway?.scaffold ? Math.max(30, Math.round(it.min * 0.6)) : it.min;
       const reviewed = ctx.solved || ctx.state.rubric[it.id] !== undefined;
-      ctx.host.innerHTML = `${viz(it)}<p class="item-q">${esc(it.p)}${es(it.pEs)}</p>
+      ctx.host.innerHTML = `${viz(it)}<p class="item-q">${stem(it.p, it.pEs)}</p>
         ${it.fr ? `<p class="item-sub"><strong>Sentence frame:${es("Marco de oración:")}</strong> ${esc(it.fr)}${es(it.frEs)}</p>` : ""}
         <p class="item-sub">You can write in English, Spanish, or both.${es("Puedes escribir en inglés, en español o en ambos.")}</p>
         <label class="write-label" for="wr-${esc(it.id)}">Your explanation${es("Tu explicación")}</label>

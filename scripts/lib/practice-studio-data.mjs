@@ -213,6 +213,20 @@ const count = (a, n, where, p) => {
 };
 
 /** Problems with a whole lesson file. */
+/**
+ * The studio's "I can…" target is the lesson config's contentObjective (English, the single source); its Spanish is authored
+ * here as `targetEs`, a whole "Puedo …" sentence, never a word-by-word gloss. Shared with scripts/inject-u4-lab-bench.mjs.
+ * @param {string} id @param {any} es @returns {string[]}
+ */
+export function targetEsProblems(id, es) {
+  if (typeof es !== "string" || !/^Puedo \S/.test(es) || !/\.$/.test(es) || es.length > 320)
+    return [
+      `${id}: targetEs must be one Spanish "Puedo …" sentence ending in a period (≤ 320 characters)`,
+    ];
+  if (/\b(I can|the|and|with|using)\b/.test(es)) return [`${id}: targetEs still has English words`];
+  return [];
+}
+
 export function validateLessonData(id, data, worlds = null) {
   const p = [];
   if (!data || typeof data !== "object") return [`${id}: file is not an object`];
@@ -220,6 +234,7 @@ export function validateLessonData(id, data, worlds = null) {
   if (data.lesson !== id) p.push(`${id}: lesson field must be "${id}"`);
   for (const f of ["story", "storyEs", "challengeStory", "challengeStoryEs"])
     if (!str(data[f], 30) || data[f].length > 360) p.push(`${id}: ${f} must be 30-360 characters`);
+  p.push(...targetEsProblems(id, data.targetEs));
   if (worlds && !WORLD_IDS.has(worlds.lessons?.[id]))
     p.push(`${id}: no world assigned in worlds.json`);
 

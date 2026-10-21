@@ -51,23 +51,12 @@
       Core.record(store, e.gen, (e.tries || 1) === 1 && !(e.hints > 0), today(), e.lesson);
       save(store);
     });
+    // a finished Boost counts the day; the way INTO the Boost is the exit card's next step on a finished Challenge
     bus.on("complete", (/** @type {any} */ e) => {
-      const banner = document.getElementById("complete-banner");
-      const actions = banner?.querySelector(".banner-actions");
-      if (e.lesson === "0-0") {
-        const store = load();
-        if (!store.days.includes(today())) store.days = [...store.days, today()].slice(-90);
-        save(store);
-        return;
-      }
-      if (actions && !actions.querySelector("[data-boost-link]")) {
-        const a = document.createElement("a");
-        a.className = "btn btn-sm";
-        a.href = "/math/practice-studio/boost/";
-        a.setAttribute("data-boost-link", "");
-        a.textContent = "⚡ Keep it fresh: Daily Boost";
-        actions.append(a);
-      }
+      if (e.lesson !== "0-0") return;
+      const store = load();
+      if (!store.days.includes(today())) store.days = [...store.days, today()].slice(-90);
+      save(store);
     });
   }
 

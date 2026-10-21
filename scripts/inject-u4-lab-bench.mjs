@@ -9,6 +9,11 @@
  * Source: data/practice-studio-u4/<lesson>.json  { v, lesson, bench }  — the same `bench` contract (docs/specs/practice-studio-v2.md
  * section 10), validated by scripts/lib/practice-studio-bench.mjs. The card is appended to the page's fourth section and runs
  * assets/studio/lab-embed.js, which gives the shared item kinds a small ctx of their own: no stars, no change to the page's state.
+ *
+ * The same run also keeps the pages on the studios' shared clarity layer (assets/studio/clarity.{css,js}: the header Menu, the
+ * context chips), injected into <head> between their own sentinels, and the lesson's "I can…" target chip at the top of <main>
+ * (English from lessons/<id>/config.json, Spanish `targetEs` from the same data file), so the ten hand-built pages and the
+ * generated studios share one implementation.
  */
 import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -17,6 +22,8 @@ import { pathToFileURL } from "node:url";
 import { REPO_ROOT } from "../tools/lib/curriculum-source.mjs";
 import { UNIT4 } from "./generate-practice-studios.mjs";
 import { benchItems, benchProblems } from "./lib/practice-studio-bench.mjs";
+import { targetEsProblems } from "./lib/practice-studio-data.mjs";
+import { targetChip } from "./lib/practice-studio-pages.mjs";
 
 const read = (/** @type {string} */ rel) => readFileSync(join(REPO_ROOT, rel), "utf8");
 const BEGIN = "<!-- u4-lab-bench:begin (scripts/inject-u4-lab-bench.mjs) -->";
@@ -28,8 +35,33 @@ const esc = (/** @type {string} */ s) =>
 const bi = (/** @type {string} */ en, /** @type {string} */ es) =>
   `<span>${esc(en)}</span><span class="es-text" lang="es">${esc(es)}</span>`;
 
-const SCRIPTS = ["kinds-basic", "kinds-lab", "lab-embed"].map((f) => `assets/studio/${f}.js`);
+const SCRIPTS = ["typeset", "kinds-basic", "kinds-lab", "lab-embed"].map(
+  (f) => `assets/studio/${f}.js`,
+);
 const STYLE = "assets/studio/lab-embed.css";
+const CLARITY = ["assets/studio/clarity.css", "assets/studio/clarity.js"];
+const HEAD_BEGIN = "<!-- u4-clarity:begin (scripts/inject-u4-lab-bench.mjs) -->";
+const HEAD_BLOCK = /\n?[ \t]*<!-- u4-clarity:begin[\s\S]*?<!-- u4-clarity:end -->/g;
+const TARGET_BLOCK = /\n?[ \t]*<!-- u4-target:begin[\s\S]*?<!-- u4-target:end -->/g;
+const MAIN = '<main class="main-container">';
+
+/** The context row with the lesson's target, placed first in <main>. */
+function targetBlock(/** @type {string} */ id, /** @type {any} */ ld) {
+  const problems = targetEsProblems(id, ld.targetEs);
+  if (problems.length) throw new Error(problems.join("; "));
+  const cfg = JSON.parse(read(`lessons/${id}/config.json`));
+  if (!/^I can\b/.test(cfg.contentObjective || ""))
+    throw new Error(`lessons/${id}/config.json: contentObjective is not an "I can" statement`);
+  return `\n    <!-- u4-target:begin (scripts/inject-u4-lab-bench.mjs) -->\n    <div class="studio-context">${targetChip(cfg.contentObjective, ld.targetEs)}</div>\n    <!-- u4-target:end -->`;
+}
+
+/** The shared clarity layer for <head>, stamped with a hash of its own files. */
+function headBlock() {
+  const h = createHash("sha1");
+  for (const f of CLARITY) h.update(read(f));
+  const v = h.digest("hex").slice(0, 10);
+  return `\n  ${HEAD_BEGIN}\n  <link rel="stylesheet" href="/${CLARITY[0]}?v=${v}">\n  <script src="/${CLARITY[1]}?v=${v}" defer></script>\n  <!-- u4-clarity:end -->`;
+}
 
 function stamps() {
   const h = createHash("sha1");
@@ -100,7 +132,13 @@ export function outputs() {
       ["challenge", challenge],
     ])) {
       const rel = `math/unit-4/${slug}/index.html`;
-      const page = read(rel).replace(BLOCK, "\n");
+      let page = read(rel).replace(BLOCK, "\n").replace(HEAD_BLOCK, "").replace(TARGET_BLOCK, "");
+      const main = page.indexOf(MAIN);
+      if (main < 0) throw new Error(`${rel} has no ${MAIN}`);
+      page = `${page.slice(0, main + MAIN.length)}${targetBlock(id, ld)}${page.slice(main + MAIN.length)}`;
+      const head = page.indexOf("</head>");
+      if (head < 0) throw new Error(`${rel} has no </head>`);
+      page = `${page.slice(0, head).trimEnd()}${headBlock()}\n${page.slice(head)}`;
       const at = page.lastIndexOf("</body>");
       if (at < 0) throw new Error(`${rel} has no </body>`);
       files.set(rel, `${page.slice(0, at)}${blockFor(id, mode, ld.bench, st)}${page.slice(at)}`);

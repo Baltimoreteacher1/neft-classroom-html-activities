@@ -286,7 +286,8 @@
     if (actions) {
       b.className = "top-btn";
       b.innerHTML = '<span aria-hidden="true">Aa</span> Comfort';
-      actions.insertBefore(b, document.getElementById("toggle-es-btn") || actions.firstChild);
+      const es = document.getElementById("toggle-es-btn");
+      actions.insertBefore(b, es?.parentNode === actions ? es : actions.firstChild);
     } else document.body.append(b);
     if (s.ruler) ruler();
   }

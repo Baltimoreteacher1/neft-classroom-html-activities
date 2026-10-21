@@ -37,10 +37,30 @@ function printList(/** @type {any[]} */ items) {
   return `<ol class="print-only">${rows.join("")}${fresh ? `<li><em>${fresh} fresh problem${fresh > 1 ? "s" : ""} with new numbers each time (interactive only).</em></li>` : ""}</ol>`;
 }
 
+/**
+ * The lesson's "I can…" target, first in the context row: English from the lesson config (contentObjective), Spanish authored
+ * in the studio file (targetEs). Shared with scripts/inject-u4-lab-bench.mjs so the Unit 4 pages carry the same chip.
+ */
+export function targetChip(/** @type {string} */ en, /** @type {string} */ es) {
+  if (!en || !es) return "";
+  return `<p class="target-chip"><span class="target-icon" aria-hidden="true">🎯</span><span class="target-text"><span class="t-en">${esc(en)}</span><span class="t-es" lang="es">${esc(es)}</span></span></p>`;
+}
+
 const bi = (/** @type {string} */ en, /** @type {string} */ es) =>
   es
     ? `<span class="t-en">${esc(en)}</span><span class="t-es" lang="es">${esc(es)}</span>`
     : esc(en);
+
+/** The Word bank chip: its size and the first terms, so a student can see what is inside before opening it. */
+function wordBankSummary(/** @type {any[]} */ terms) {
+  const n = terms.length;
+  const first = (/** @type {string} */ k) =>
+    terms
+      .slice(0, 3)
+      .map((g) => g[k] || g.t)
+      .join(", ") + (n > 3 ? ", …" : "");
+  return `${bi("Word bank", "Banco de palabras")} <span class="wb-count">${bi(`${n} ${n === 1 ? "word" : "words"}`, `${n} ${n === 1 ? "palabra" : "palabras"}`)}</span><span class="wb-preview">${bi(first("t"), first("tEs"))}</span>`;
+}
 
 /** The misconception names (EN + ES) and quick fixes for every trap a page's multiple-choice items name, in id order. */
 function trapNames(/** @type {any[]} */ sections, /** @type {Record<string, any>} */ traps) {
@@ -94,7 +114,6 @@ export function pageFor({
     mode,
     storageKey: `neft_studio_${id}_${mode}_v2`,
     otherUrl,
-    otherLabel: challenge ? "Back to Practice" : "Try the Challenge →",
     bannerText: challenge
       ? `Boss cleared! You finished the Challenge for ${title}.`
       : `You finished every section of ${title}!`,
@@ -118,8 +137,9 @@ export function pageFor({
     )
     .join("");
   const label = challenge ? "Challenge Studio" : "Interactive Practice Studio";
-  const missionCard = `<details class="mission-card" open>
-        <summary><span class="world-glyph" aria-hidden="true">${world.emoji}</span><span class="mission-title">${bi(world.name, world.nameEs)} · ${challenge ? bi("night shift", "turno de noche") : bi("mission briefing", "informe de la misión")}</span><small>${bi("Briefing", "Informe")}</small></summary>
+  // Closed in the markup: assets/studio/clarity.js opens it on a student's first visit, and it is a small chip after that.
+  const missionCard = `<details class="mission-card">
+        <summary><span class="world-glyph" aria-hidden="true">${world.emoji}</span><span class="mission-title">${bi("Mission", "Misión")} · ${bi(world.name, world.nameEs)}${challenge ? ` · ${bi("night shift", "turno de noche")}` : ""}</span></summary>
         <div class="mission-body"><p class="mission-tag">${esc(world.tag)}<span class="es-text" lang="es">${esc(world.tagEs)}</span></p><p>${esc(story)}</p><p class="es-text" lang="es">${esc(storyEs)}</p></div>
     </details>`;
   const tabs = sections
@@ -139,9 +159,8 @@ export function pageFor({
         s,
         i,
       ) => `    <section id="panel-${i + 1}" class="tab-panel${i === 0 ? " active" : ""}" role="tabpanel" aria-labelledby="tab-${i + 1}">
-      ${i === 0 ? missionCard : ""}
-      <div class="topic-strip"><div><h2>${i + 1}. ${esc(s.h)}</h2><p>${esc(s.p)}</p><p class="es-text" lang="es">${esc(s.pEs)}</p></div></div>
-      <div class="stepper-bar"><div class="dots-row" id="dots-${i + 1}" role="group" aria-label="${esc(s.name)} problems"></div></div>
+      <div class="topic-strip"><div><h2>${i + 1}. ${esc(s.h)}</h2><p>${esc(s.p)}</p><p class="es-text" lang="es">${esc(s.pEs)}</p></div>
+        <div class="stepper-bar"><div class="dots-row" id="dots-${i + 1}" role="group" aria-label="${esc(s.name)} problems"></div></div></div>
       <div class="stage-card" id="stage-${i + 1}"></div>
       ${printList(s.items)}
     </section>`,
@@ -191,7 +210,11 @@ ${tabs}
   <main class="main-container">
     <div id="complete-banner" class="complete-banner" role="status" hidden></div>
 
-${glossary ? `    <details class="glossary"><summary>${bi("Word bank", "Banco de palabras")}</summary><dl>${glossary}</dl></details>\n` : ""}
+    <div class="studio-context">
+      ${targetChip(/^I can\b/.test(cfg.contentObjective || "") ? cfg.contentObjective : "", ld.targetEs)}
+      ${missionCard}
+${glossary ? `      <details class="glossary"><summary>${wordBankSummary(ld.glossary)}</summary><dl>${glossary}</dl></details>\n` : ""}    </div>
+
 ${panels}
   </main>
 
@@ -272,7 +295,6 @@ export function boostPage(
       ' · <a href="/math/practice-studio/">All practice studios</a>',
     )
     .replaceAll("/math/practice-studio/0-0/challenge/", "/math/practice-studio/")
-    .replace("Try the Challenge →", "All practice studios")
     .replace(
       "</body>",
       `  <script type="application/json" id="boost-catalog">${json(catalog)}</script>\n</body>`,

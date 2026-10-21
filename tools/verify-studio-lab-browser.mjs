@@ -144,6 +144,14 @@ async function openItem(page, spec, unit4) {
   await page.waitForTimeout(250);
 }
 
+/** Español lives in the studio Menu (assets/studio/clarity.js) on every studio page: open the menu when it is closed. */
+async function toggleSpanish(page) {
+  const es = page.locator("#toggle-es-btn");
+  if ((await es.isHidden()) && (await page.locator("#studio-menu-btn").count()))
+    await page.locator("#studio-menu-btn").click();
+  await es.click();
+}
+
 // run code with the item's shadow root (model or mission) in hand
 const inShadow = (page, spec, sel, fn, arg) =>
   page.evaluate(
@@ -444,7 +452,7 @@ try {
         if (over > 1) fail(where, `horizontal overflow of ${over}px at 375px wide`);
         // Spanish: the stack shows
         await page.setViewportSize({ width: 1366, height: 768 });
-        await page.locator("#toggle-es-btn").click();
+        await toggleSpanish(page);
         plan = await planOf(page, unit4); // Unit 4 redraws its bench on the language change
         first = plan[0];
         await openItem(page, first, unit4);
@@ -475,7 +483,7 @@ try {
           if (!/Lab bench: .*mission 3 of 3/.test(share))
             fail(where, `share text carries no lab bench line: ${share.slice(-160)}`);
         }
-        await page.locator("#toggle-es-btn").click();
+        await toggleSpanish(page);
         plan = await planOf(page, unit4); // Unit 4 redraws its bench on the language change
         first = plan[0];
         // accessibility on one bench item per page (after the feedback fade-in settles: axe samples a mid-fade colour)

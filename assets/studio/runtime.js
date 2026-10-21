@@ -126,19 +126,21 @@
     const hs = it.h || [];
     if (!hs.length) return "";
     const shown = Math.min(hs.length, (state.hints[it.id] || 0) + (PATH.scaffold ? 1 : 0));
-    const list = hs
-      .slice(0, shown)
-      .map(
-        (/** @type {string} */ h, /** @type {number} */ i) =>
-          `<li>${esc(h)}${es((it.hEs || [])[i])}</li>`,
-      )
-      .join("");
-    const more = shown < hs.length;
     const tutor =
-      !more && W.StudioTutor
+      shown >= hs.length && W.StudioTutor
         ? `<button type="button" class="btn btn-sm" data-tutor="${esc(it.id)}">Ask for help</button>`
         : "";
-    return `<div class="hint-area"><ol class="hint-list">${list}</ol>${more ? `<button type="button" class="btn btn-sm" data-hint="${esc(it.id)}">💡 ${shown ? "Another hint" : "Give me a hint"}</button>` : ""}${tutor}</div>`;
+    return RT.util.ladder(it, shown, tutor);
+  }
+
+  /** "Watch for": the name of the first trap this item's wrong answers are tagged with, when the taxonomy has it. */
+  function watchFor(/** @type {any} */ it) {
+    const tags = [
+      ...(Array.isArray(it.tag) ? it.tag : []),
+      ...(it.fw || []).map((/** @type {any} */ w) => w?.tag),
+    ];
+    const t = tags.map((x) => x && data.traps?.[x]).find(Boolean);
+    return t ? `<strong>${esc(t.n)}</strong>${es(t.nEs)}` : "";
   }
 
   function wireHints(/** @type {any} */ it, /** @type {HTMLElement} */ host) {
@@ -178,6 +180,11 @@
       else {
         render(tab);
         document.getElementById("complete-banner")?.scrollIntoView({ block: "center" });
+        /** @type {HTMLElement|null} */ (
+          document.querySelector("#complete-banner .exit-title")
+        )?.focus({
+          preventScroll: true,
+        });
       }
     });
     fb.append(b);
@@ -227,7 +234,7 @@
         if (rep) state.stats.reps++;
         const cal = state.calib[it.id];
         if (cal && cal.ok === null) cal.ok = first;
-        fb("ok", `<strong>${voice("ok", it.id)}</strong> ${html}`);
+        fb("ok", RT.util.fbOk(voice("ok", it.id), html, watchFor(it)));
         say("Correct");
         if (redeem) {
           o.onSolved?.();
@@ -276,16 +283,25 @@
         state.stats.streak = 0;
         const cal = state.calib[it.id];
         if (cal && cal.ok === null) cal.ok = false;
+        const trap = (m.tag && data.traps?.[m.tag]) || null;
+        // the guiding line: the item's own feedback for this answer, else the trap's fix, else a generic nudge
         const text =
-          m.say || m.generic || "Look again at what the question asks, then try another choice.";
-        const textEs = m.sayEs || (m.say ? "" : m.genericEs) || "";
+          m.say ||
+          trap?.fix ||
+          m.generic ||
+          "Look again at what the question asks, then try another choice.";
+        const textEs = m.sayEs || (m.say ? "" : trap?.fixEs || m.genericEs) || "";
         const nudge =
           tries[it.id] >= 2 && (it.h || []).length > (state.hints[it.id] || 0)
             ? `<p class="item-sub">Stuck? Open a hint below.${es("¿Atascado? Abre una pista abajo.")}</p>`
             : "";
         fb(
           m.kind || "err",
-          `${m.noLead ? "" : `<strong>${voice("retry", it.id)}</strong> `}${esc(text)}${es(textEs)}${nudge}`,
+          RT.util.fbMiss(
+            m.noLead ? "" : voice("retry", it.id),
+            trap ? `<strong>${esc(trap.n)}</strong>${es(trap.nEs)}` : "",
+            `${RT.util.tx(text)}${RT.util.txEs(textEs)}${nudge}`,
+          ),
         );
         say("Not yet");
         W.StudioBus.emit("answer", {
@@ -496,6 +512,51 @@
     );
   }
 
+  /**
+   * The exit card: the lesson target and the sections done, the first-try count, and ONE next step — the redemption
+   * round when misses are waiting and first tries ran under 70%, else the Challenge (from Practice), the Daily Boost
+   * (from a Challenge), or every studio (from the Boost).
+   */
+  function exitHtml() {
+    const s = state.stats;
+    const first = Math.min(s.first, total);
+    const redo = W.StudioInsight?.toRedo?.() || 0;
+    const boost = data.lesson === "0-0";
+    /** @type {{en: string, es: string, href?: string, attr?: string}} */
+    const next =
+      redo && first < 0.7 * total
+        ? {
+            en: `Replay the ${Math.min(redo, 5)} you missed →`,
+            es: `Repite ${Math.min(redo, 5) === 1 ? "la que fallaste" : `las ${Math.min(redo, 5)} que fallaste`} →`,
+            attr: "data-replay",
+          }
+        : boost
+          ? {
+              en: "Pick a lesson studio →",
+              es: "Elige un estudio de lección →",
+              href: "/math/practice-studio/",
+            }
+          : data.mode === "practice"
+            ? { en: "Take the Challenge →", es: "Haz el Reto →", href: data.otherUrl }
+            : {
+                en: "Keep it fresh: Daily Boost →",
+                es: "Repaso diario →",
+                href: "/math/practice-studio/boost/",
+              };
+    const card = W.StudioClarity?.exitCard;
+    if (!card) return `<strong>${esc(data.bannerText)}</strong>${es(data.bannerTextEs)}`;
+    return `<p class="exit-banner"><strong>${esc(data.bannerText)}</strong>${es(data.bannerTextEs)}</p>${card(
+      {
+        sections: SECTIONS.map((/** @type {any} */ x) => ({ en: x.name, es: x.nameEs })),
+        tally: {
+          en: `You solved ${first} of ${total} on the first try.`,
+          es: `Resolviste ${first} de ${total} al primer intento.`,
+        },
+        next,
+      },
+    )}`;
+  }
+
   function progress() {
     const counts = TABS.map((t) => Object.keys(solvedMap(t)).length);
     const done = counts.reduce((a, b) => a + b, 0);
@@ -513,7 +574,7 @@
       banner.toggleAttribute("hidden", !every);
       if (every && !banner.dataset.built) {
         banner.dataset.built = "1";
-        banner.innerHTML = `<strong>${esc(data.bannerText)}</strong>${es(data.bannerTextEs)}<span class="banner-actions"><button type="button" class="btn btn-sm" data-open-think>See my thinking map</button>${data.otherUrl ? `<a class="btn btn-go btn-sm" href="${esc(data.otherUrl)}">${esc(data.otherLabel)}</a>` : ""}</span>`;
+        banner.innerHTML = exitHtml();
         W.StudioBus.emit("complete", { lesson: data.lesson, mode: data.mode });
       }
     }
@@ -551,6 +612,8 @@
     counted.clear();
     W.U4Studio?.reset();
     W.StudioStore.clear(KEY);
+    const banner = $("#complete-banner");
+    if (banner) delete banner.dataset.built;
     TABS.forEach(render);
     progress();
     hud();

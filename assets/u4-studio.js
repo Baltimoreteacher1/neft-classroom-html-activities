@@ -331,13 +331,14 @@
       if (!S.announce) continue;
       const all = TABS.every((x) => p.done[x]);
       if (all) {
-        showToast(
-          bilingual(
-            "<strong>Every section is complete!</strong> Check your stars.",
-            "¡Terminaste todas las secciones! Mira tus estrellas.",
-          ),
-          { label: "My stars", run: openStars },
-        );
+        if (!showExit())
+          showToast(
+            bilingual(
+              "<strong>Every section is complete!</strong> Check your stars.",
+              "¡Terminaste todas las secciones! Mira tus estrellas.",
+            ),
+            { label: "My stars", run: openStars },
+          );
       } else {
         const n = TABS.find((x) => x > t && !p.done[x]);
         showToast(
@@ -347,6 +348,56 @@
       }
       break;
     }
+  }
+
+  /**
+   * Every section done: the shared exit card (assets/studio/clarity.js) at the top of the page — the lesson target, the
+   * sections, the stars earned, and one next step (the Challenge from Practice, the Daily Boost from a Challenge).
+   * Returns false when the shared layer is absent, so the caller falls back to the toast.
+   */
+  function showExit() {
+    // the generated studios draw the same card in their own #complete-banner (assets/studio/runtime.js)
+    if ($("#complete-banner")) return true;
+    const card = W.StudioClarity?.exitCard;
+    const main = $(".main-container");
+    if (!card || !main) return false;
+    const stars = totalStars();
+    const challenge = /-challenging\/?$/.test(location.pathname);
+    let host = /** @type {HTMLElement|null} */ ($("#u4-exit"));
+    if (!host) {
+      host = el("section", "complete-banner u4-exit");
+      host.id = "u4-exit";
+      host.setAttribute("role", "status");
+      const ctx = main.querySelector(".studio-context");
+      if (ctx) ctx.after(host);
+      else main.prepend(host);
+    }
+    host.innerHTML = card({
+      sections: [...document.querySelectorAll(".tab-name")].map((n) => ({
+        en: n.textContent || "",
+        es: n.textContent || "",
+      })),
+      tally: {
+        en: `You earned ${stars} ${stars === 1 ? "star" : "stars"}.`,
+        es: `Ganaste ${stars} ${stars === 1 ? "estrella" : "estrellas"}.`,
+      },
+      next: challenge
+        ? {
+            en: "Keep it fresh: Daily Boost →",
+            es: "Repaso diario →",
+            href: "/math/practice-studio/boost/",
+          }
+        : {
+            en: "Take the Challenge →",
+            es: "Haz el Reto →",
+            href: location.pathname.replace(/(index\.html)?$/, "").replace(/\/?$/, "-challenging/"),
+          },
+    });
+    host.scrollIntoView({ block: "start" });
+    /** @type {HTMLElement|null} */ (host.querySelector(".exit-title"))?.focus({
+      preventScroll: true,
+    });
+    return true;
   }
 
   /* ---- My Stars dialog ----------------------------------------------------- */

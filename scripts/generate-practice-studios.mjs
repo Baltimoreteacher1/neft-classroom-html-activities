@@ -74,10 +74,17 @@ function assetPlan(/** @type {Map<string, string>} */ built) {
     ...vizAll.filter((f) => f === "studio-viz.js"),
     ...vizAll.filter((f) => f !== "studio-viz.js"),
   ].map((f) => `assets/${f}`);
-  const runtime = ["store", "kinds-basic", "kinds-hands", "kinds-lab", "insight", "runtime"].map(
-    (f) => `assets/studio/${f}.js`,
-  );
+  const runtime = [
+    "store",
+    "typeset",
+    "kinds-basic",
+    "kinds-hands",
+    "kinds-lab",
+    "insight",
+    "runtime",
+  ].map((f) => `assets/studio/${f}.js`);
   const scripts = [
+    "assets/studio/clarity.js",
     "assets/u4-studio.js",
     "assets/studio-comfort.js",
     "assets/studio/store.js",
@@ -95,6 +102,7 @@ function assetPlan(/** @type {Map<string, string>} */ built) {
     "assets/u4-studio.css",
     "assets/studio-v2.css",
     "assets/studio-worlds.css",
+    "assets/studio/clarity.css",
     "assets/studio-comfort.css",
   ];
   const h = createHash("sha1");
