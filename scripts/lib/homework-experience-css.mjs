@@ -200,6 +200,8 @@ dialog.hw-dialog p { margin: 0 0 16px; font-size: 18px; line-height: 1.45; }
 .pwrlab-field span, .pctlab-field span, .stepslv-problabel, .atx-badge, .tdl-fill, .hglab-datalabel, .hglab-tip,
 .ldl-alabel, .dp-hint, .clt-step-num { font-size: 13px !important; }
 .vq-stars { flex-wrap: wrap; }
+/* Engine visuals set their label rows inline at .8rem (12.8px). */
+.interactive-visual [style*="font-size:.8rem"] { font-size: 13px !important; }
 
 /* Nothing may be wider than the phone. Buttons wrap their two languages instead of running off
    the screen, link rows wrap, and wide tables and diagrams scroll inside their own frame. */
