@@ -364,7 +364,19 @@ function hwWrapLanguage() {
   setLanguageMode.hwWrapped = true;
 }
 
+/* The site-wide i18n script resets <html lang> to "en" on lessons that load it, which makes a
+   screen reader read Spanish with English pronunciation. The page's language mode is the
+   authority, so put it back whenever something else changes it. */
+function hwHoldDocumentLanguage() {
+  if (typeof MutationObserver !== 'function') return;
+  new MutationObserver(function () {
+    var want = document.body.classList.contains('lang-mode-es') ? 'es' : 'en';
+    if (document.documentElement.lang !== want) document.documentElement.lang = want;
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+}
+
 document.addEventListener('DOMContentLoaded', function () {
+  hwHoldDocumentLanguage();
   hwRestoreSolved();
   hwWrapLanguage();
   hwRenderTonight();

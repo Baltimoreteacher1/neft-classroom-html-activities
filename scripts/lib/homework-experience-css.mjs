@@ -192,6 +192,14 @@ dialog.hw-dialog p { margin: 0 0 16px; font-size: 18px; line-height: 1.45; }
 .fam-game-badge, .hw-hero-bigidea-label, .lang-selector-title, .lang-tag, .tab-en, .tab-es,
 .hw-hero-lesson-meta, .section-title .lang-es, .powerup-letter, .coach-step-number, .fam-act-step-num { font-size: 13px !important; }
 .hw-hero-lesson-meta { font-size: 14px !important; }
+/* Control and data labels inside the visual labs (percent, equation, unit-rate, dot plot, ...)
+   were authored at 10.9-12.8px. They are read on a phone, so they get the label floor. The
+   browser sweep (validate:family-experience-browser) names any new lab label that is under it. */
+.urlab-badge, .bplab-leg, .sdlab-mlabel, .fdiv-step-num, .cpl-chip, .urlab-field span, .sdlab-datalabel,
+.ldl-field span, .eqlab-field span, .tdl-rowlab, .pki-cb-field label, .nlex-tip, .ldl-cycle, .bplab-datalabel,
+.pwrlab-field span, .pctlab-field span, .stepslv-problabel, .atx-badge, .tdl-fill, .hglab-datalabel, .hglab-tip,
+.ldl-alabel, .dp-hint, .clt-step-num { font-size: 13px !important; }
+.vq-stars { flex-wrap: wrap; }
 
 /* Nothing may be wider than the phone. Buttons wrap their two languages instead of running off
    the screen, link rows wrap, and wide tables and diagrams scroll inside their own frame. */

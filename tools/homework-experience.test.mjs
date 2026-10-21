@@ -393,3 +393,20 @@ test("a full device frees old photos and voice notes and keeps the written refle
     "tonight's lesson keeps its own media",
   );
 });
+
+test("another script resetting <html lang> to en does not undo Spanish mode", async () => {
+  const w = page();
+  w.document.body.className = "lang-mode-es";
+  w.hwHoldDocumentLanguage();
+  w.document.documentElement.lang = "en"; // what the site-wide i18n script does after load
+  await new Promise((resolve) => setTimeout(resolve, 20));
+  assert.equal(w.document.documentElement.lang, "es");
+  w.document.body.className = "lang-mode-bilingual";
+  w.document.documentElement.lang = "es";
+  await new Promise((resolve) => setTimeout(resolve, 20));
+  assert.equal(
+    w.document.documentElement.lang,
+    "en",
+    "bilingual stays en, as setLanguageMode does",
+  );
+});
