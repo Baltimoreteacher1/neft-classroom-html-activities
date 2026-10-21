@@ -2017,17 +2017,32 @@ function renderStudentFriendlyExplanation(item, copy) {
   if (!item) return `<p>${escapeHtml(copy)}</p>`;
   const q = item.question || "";
   let visualSvg = "";
-  let goal = "Solve accurately by identifying the operation and numbers.";
-  let tip = item.hint || "Work from right to left or multiply straight across.";
+  let goal = "Solve accurately by identifying the core relationship.";
+  let tip = item.hint || "Take your time: make a friendly estimate first.";
+  let suggestedTool = null;
+  let toolLabel = "";
 
   const divFrac = q.match(/(\d+)\/(\d+)\s*[÷/]\s*(\d+)\/(\d+)/);
+  const addSubFrac = q.match(/(\d+)\/(\d+)\s*([+−\-])\s*(\d+)\/(\d+)/);
+  const mulMatch = q.match(/(\d+)\s*[×*]\s*(\d+)/);
+  const divMatch = q.match(/(\d+)\s*[÷/]\s*(\d+)/);
+  const addMatch = q.match(/(\d+)\s*[+]\s*(\d+)/);
+  const subMatch = q.match(/(\d+)\s*[−\-]\s*(\d+)/);
+  const intMatch = q.match(/(-?\d+)\s*([+−\-])\s*(-?\d+)/);
+  const eqMatch = q.match(/([a-zA-Z]|\?|\b[xy]\b)\s*([+−\-×÷=])/);
+  const isDecimal = /\d+\.\d+/.test(q);
+  const isTensOnes = /tens|ones|place value|digit in the/i.test(q);
+  const isPercent = /%|percent/i.test(q);
+
   if (divFrac) {
     const [, a, b, c, d] = divFrac;
     goal = `Divide fractions using Keep, Change, Flip!`;
-    tip = `Never divide fractions directly. Always multiply by the reciprocal (the flip) of the second fraction!`;
+    tip = `Never divide fractions directly. Multiply by the reciprocal (the flip) of the second fraction!`;
+    suggestedTool = "fractions";
+    toolLabel = "Fraction Wall";
     visualSvg = `
       <div class="student-expl-visual">
-        <svg width="380" height="90" viewBox="0 0 380 90" style="background:#ffffff; border-radius:10px" role="img" aria-label="Keep Change Flip Visual Diagram">
+        <svg width="380" height="90" viewBox="0 0 380 90" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Keep Change Flip Visual Diagram">
           <rect x="15" y="15" width="85" height="60" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
           <text x="57" y="38" text-anchor="middle" font-size="11" font-weight="800" fill="#1e40af">KEEP</text>
           <text x="57" y="60" text-anchor="middle" font-size="15" font-weight="900" fill="#1e3a8a">${a}/${b}</text>
@@ -2036,23 +2051,225 @@ function renderStudentFriendlyExplanation(item, copy) {
           <text x="152" y="38" text-anchor="middle" font-size="11" font-weight="800" fill="#7e22ce">CHANGE</text>
           <text x="152" y="62" text-anchor="middle" font-size="18" font-weight="900" fill="#6b21a8">×</text>
           
-          <rect x="205" y="15" width="85" height="60" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="2"/>
-          <text x="247" y="38" text-anchor="middle" font-size="11" font-weight="800" fill="#15803d">FLIP</text>
-          <text x="247" y="60" text-anchor="middle" font-size="15" font-weight="900" fill="#14532d">${d}/${c}</text>
+          <rect x="205" y="8" width="85" height="74" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="2"/>
+          <text x="247" y="32" text-anchor="middle" font-size="11" font-weight="800" fill="#15803d">FLIP</text>
+          <text x="247" y="52" text-anchor="middle" font-size="15" font-weight="900" fill="#14532d">${d}/${c}</text>
+          <text x="247" y="70" text-anchor="middle" font-size="9" font-weight="700" fill="#166534">Reciprocal</text>
 
-          <text x="310" y="52" font-size="16" font-weight="900" fill="#0f172a">➔</text>
+          <text x="308" y="52" font-size="16" font-weight="900" fill="#0f172a">➔</text>
           <text x="345" y="52" text-anchor="middle" font-size="14" font-weight="900" fill="#0369a1">${item.displayAnswer}</text>
         </svg>
       </div>`;
-  } else if (/find the lcm of/i.test(q)) {
-    goal = `Find the Least Common Multiple (the smallest number both numbers divide into).`;
-    tip = `Prime Factorization Secret: Find the prime factors of both numbers, then multiply the highest power of each prime!`;
-  } else if (/\d+\.\d+/.test(q)) {
-    goal = `Line up the decimal points like buttons on a coat so each place value matches!`;
-    tip = `Always check the reasonable size of your answer.`;
-  } else if (/how many/i.test(q)) {
-    goal = `Convert between units using the core conversion fact.`;
-    tip = `Going from bigger units to smaller units (like feet to inches)? Multiply!`;
+  } else if (addSubFrac) {
+    const [, a, b, op, c, d] = addSubFrac;
+    goal = `Make like denominators so pieces are the same size before combining!`;
+    tip = `The denominator names the size of the slice. Only add or subtract the top numerators!`;
+    suggestedTool = "fractions";
+    toolLabel = "Fraction Wall";
+    visualSvg = `
+      <div class="student-expl-visual">
+        <svg width="380" height="90" viewBox="0 0 380 90" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Fraction Like Denominators Model">
+          <rect x="20" y="18" width="140" height="26" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+          <text x="90" y="36" text-anchor="middle" font-size="12" font-weight="800" fill="#1e40af">${a}/${b}</text>
+          
+          <text x="180" y="36" text-anchor="middle" font-size="16" font-weight="900" fill="#0f172a">${op}</text>
+          
+          <rect x="200" y="18" width="140" height="26" rx="4" fill="#fdf4ff" stroke="#a855f7" stroke-width="1.5"/>
+          <text x="270" y="36" text-anchor="middle" font-size="12" font-weight="800" fill="#7e22ce">${c}/${d}</text>
+          
+          <line x1="20" y1="56" x2="360" y2="56" stroke="#cbd5e1" stroke-dasharray="3,3"/>
+          <text x="190" y="74" text-anchor="middle" font-size="12" font-weight="800" fill="#0369a1">Match Denominators ➔ Result = ${item.displayAnswer}</text>
+        </svg>
+      </div>`;
+  } else if (mulMatch) {
+    const a = Number(mulMatch[1]);
+    const b = Number(mulMatch[2]);
+    goal = `Think of ${a} equal groups of ${b}.`;
+    tip = a <= 12 && b <= 12 ? `Break hard facts into easy 5-facts and 2-facts you know!` : `Use partial products: multiply tens first, then ones!`;
+    suggestedTool = "multigrid";
+    toolLabel = "10×10 Grid";
+    const totalDots = Math.min(24, Math.max(1, a * b));
+    visualSvg = `
+      <div class="student-expl-visual">
+        <svg width="380" height="90" viewBox="0 0 380 90" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Multiplication Array Representation">
+          <rect x="15" y="12" width="160" height="66" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+          <text x="95" y="35" text-anchor="middle" font-size="11" font-weight="800" fill="#15803d">${a} equal rows of ${b}</text>
+          <text x="95" y="58" text-anchor="middle" font-size="18" font-weight="900" fill="#166534">${a} × ${b} = ${a * b}</text>
+          
+          <line x1="195" y1="15" x2="195" y2="75" stroke="#e2e8f0" stroke-width="2"/>
+          
+          <text x="285" y="35" text-anchor="middle" font-size="12" font-weight="700" fill="#64748b">Repeated Addition:</text>
+          <text x="285" y="58" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">${b} + ${b}${a > 2 ? ` + ... (${a} times)` : ""}</text>
+        </svg>
+      </div>`;
+  } else if (divMatch) {
+    const a = Number(divMatch[1]);
+    const b = Number(divMatch[2]);
+    const quot = b > 0 ? a / b : 0;
+    goal = `Division asks: How many groups of ${b} fit in ${a}?`;
+    tip = `Think backwards using multiplication: ${b} × ? = ${a}.`;
+    suggestedTool = "numberline";
+    toolLabel = "Number Line";
+    visualSvg = `
+      <div class="student-expl-visual">
+        <svg width="380" height="90" viewBox="0 0 380 90" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Division Equal Groups Model">
+          <rect x="20" y="15" width="340" height="34" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+          <text x="190" y="37" text-anchor="middle" font-size="14" font-weight="900" fill="#1e3a8a">Total: ${a}</text>
+          
+          <text x="190" y="70" text-anchor="middle" font-size="12" font-weight="800" fill="#0369a1">Split into equal groups of ${b} ➔ Makes ${quot} groups!</text>
+        </svg>
+      </div>`;
+  } else if (addMatch && !isDecimal) {
+    const a = Number(addMatch[1]);
+    const b = Number(addMatch[2]);
+    goal = `Start at ${Math.max(a, b)} and jump forward by friendly parts!`;
+    tip = `Always start with the larger number—it requires fewer jumps!`;
+    suggestedTool = "numberline";
+    toolLabel = "Number Line";
+    const startVal = Math.max(a, b);
+    const jumpVal = Math.min(a, b);
+    const endVal = startVal + jumpVal;
+    visualSvg = `
+      <div class="student-expl-visual">
+        <svg width="380" height="85" viewBox="0 0 380 85" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Addition Open Number Line Jump">
+          <line x1="25" y1="55" x2="355" y2="55" stroke="#334155" stroke-width="2.5"/>
+          <polygon points="360,55 350,50 350,60" fill="#334155"/>
+          
+          <circle cx="70" cy="55" r="5" fill="#2563eb"/>
+          <text x="70" y="75" text-anchor="middle" font-size="13" font-weight="900" fill="#1e293b">${startVal}</text>
+          
+          <path d="M 70 50 Q 190 10 310 50" fill="none" stroke="#2563eb" stroke-width="2.5"/>
+          <polygon points="310,50 302,42 300,52" fill="#2563eb"/>
+          <text x="190" y="24" text-anchor="middle" font-size="13" font-weight="900" fill="#1d4ed8">+${jumpVal}</text>
+          
+          <circle cx="310" cy="55" r="5" fill="#16a34a"/>
+          <text x="310" y="75" text-anchor="middle" font-size="14" font-weight="900" fill="#15803d">${endVal}</text>
+        </svg>
+      </div>`;
+  } else if (subMatch && !isDecimal) {
+    const a = Number(subMatch[1]);
+    const b = Number(subMatch[2]);
+    goal = `Start at ${a} and jump back ${b} to find the difference!`;
+    tip = `Think of subtraction as distance on a number line or counting down in friendly hops.`;
+    suggestedTool = "numberline";
+    toolLabel = "Number Line";
+    const endVal = a - b;
+    visualSvg = `
+      <div class="student-expl-visual">
+        <svg width="380" height="85" viewBox="0 0 380 85" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Subtraction Number Line Jump Back">
+          <line x1="25" y1="55" x2="355" y2="55" stroke="#334155" stroke-width="2.5"/>
+          <polygon points="20,55 30,50 30,60" fill="#334155"/>
+          
+          <circle cx="310" cy="55" r="5" fill="#dc2626"/>
+          <text x="310" y="75" text-anchor="middle" font-size="13" font-weight="900" fill="#1e293b">${a}</text>
+          
+          <path d="M 310 50 Q 190 10 70 50" fill="none" stroke="#dc2626" stroke-width="2.5"/>
+          <polygon points="70,50 78,42 80,52" fill="#dc2626"/>
+          <text x="190" y="24" text-anchor="middle" font-size="13" font-weight="900" fill="#b91c1c">−${b}</text>
+          
+          <circle cx="70" cy="55" r="5" fill="#16a34a"/>
+          <text x="70" y="75" text-anchor="middle" font-size="14" font-weight="900" fill="#15803d">${endVal}</text>
+        </svg>
+      </div>`;
+  } else if (isTensOnes) {
+    goal = `Separate numbers into groups of 10 and leftover single 1s.`;
+    tip = `Every 2-digit number has Tens on the left and Ones on the right!`;
+    suggestedTool = "tenframe";
+    toolLabel = "Ten-Frame";
+    visualSvg = `
+      <div class="student-expl-visual">
+        <svg width="380" height="80" viewBox="0 0 380 80" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Base Ten Blocks Representation">
+          <rect x="40" y="15" width="18" height="50" rx="3" fill="#3b82f6"/>
+          <rect x="65" y="15" width="18" height="50" rx="3" fill="#3b82f6"/>
+          <text x="61" y="75" text-anchor="middle" font-size="11" font-weight="800" fill="#1e40af">Tens Rods</text>
+          
+          <line x1="140" y1="12" x2="140" y2="68" stroke="#cbd5e1" stroke-width="2"/>
+          
+          <rect x="180" y="32" width="16" height="16" rx="2" fill="#eab308"/>
+          <rect x="202" y="32" width="16" height="16" rx="2" fill="#eab308"/>
+          <rect x="224" y="32" width="16" height="16" rx="2" fill="#eab308"/>
+          <text x="210" y="75" text-anchor="middle" font-size="11" font-weight="800" fill="#a16207">Ones Units</text>
+          
+          <text x="320" y="45" text-anchor="middle" font-size="14" font-weight="900" fill="#0369a1">${item.displayAnswer}</text>
+        </svg>
+      </div>`;
+  } else if (isDecimal) {
+    goal = `Line up the decimal points like buttons on a coat so matching place values add correctly!`;
+    tip = `Always check the reasonable size of your answer before finalizing.`;
+    suggestedTool = "numberline";
+    toolLabel = "Number Line";
+    visualSvg = `
+      <div class="student-expl-visual">
+        <svg width="380" height="85" viewBox="0 0 380 85" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Decimal Alignment Visual">
+          <rect x="30" y="12" width="320" height="60" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+          <text x="90" y="32" text-anchor="middle" font-size="11" font-weight="800" fill="#64748b">Ones</text>
+          <text x="140" y="32" text-anchor="middle" font-size="14" font-weight="900" fill="#dc2626">•</text>
+          <text x="190" y="32" text-anchor="middle" font-size="11" font-weight="800" fill="#64748b">Tenths</text>
+          <text x="260" y="32" text-anchor="middle" font-size="11" font-weight="800" fill="#64748b">Hundredths</text>
+          
+          <text x="190" y="58" text-anchor="middle" font-size="14" font-weight="900" fill="#0f172a">Decimal points stay aligned in the answer!</text>
+        </svg>
+      </div>`;
+  } else if (intMatch && (q.includes("−") || q.includes("-") || q.includes("negative") || q.includes("integer"))) {
+    goal = `Combine positive and negative integer counters. Zero pairs cancel out!`;
+    tip = `Subtracting a negative is the exact same as adding a positive!`;
+    suggestedTool = "numberline";
+    toolLabel = "Number Line";
+    visualSvg = `
+      <div class="student-expl-visual">
+        <svg width="380" height="80" viewBox="0 0 380 80" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Integer Zero Pair Chips">
+          <circle cx="60" cy="35" r="16" fill="#3b82f6"/>
+          <text x="60" y="41" text-anchor="middle" font-size="18" font-weight="900" fill="#ffffff">+</text>
+          <text x="100" y="40" text-anchor="middle" font-size="16" font-weight="900" fill="#334155">+</text>
+          <circle cx="140" cy="35" r="16" fill="#ef4444"/>
+          <text x="140" y="41" text-anchor="middle" font-size="18" font-weight="900" fill="#ffffff">−</text>
+          
+          <text x="195" y="40" text-anchor="middle" font-size="18" font-weight="900" fill="#64748b">=</text>
+          
+          <rect x="230" y="18" width="120" height="36" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-dasharray="3,3"/>
+          <text x="290" y="41" text-anchor="middle" font-size="12" font-weight="800" fill="#475569">0 (Zero Pair!)</text>
+        </svg>
+      </div>`;
+  } else if (eqMatch) {
+    goal = `Keep the scale balanced! Whatever you do to one side, you must do to the other side.`;
+    tip = `Use inverse operations: undo addition with subtraction, and undo multiplication with division!`;
+    suggestedTool = "numberline";
+    toolLabel = "Number Line";
+    visualSvg = `
+      <div class="student-expl-visual">
+        <svg width="380" height="85" viewBox="0 0 380 85" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Algebra Balance Scale Model">
+          <polygon points="190,45 175,75 205,75" fill="#475569"/>
+          <line x1="70" y1="45" x2="310" y2="45" stroke="#1e293b" stroke-width="4"/>
+          
+          <rect x="85" y="20" width="50" height="25" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+          <text x="110" y="37" text-anchor="middle" font-size="12" font-weight="900" fill="#1e40af">Left Side</text>
+          
+          <rect x="245" y="20" width="50" height="25" rx="4" fill="#f0fdf4" stroke="#22c55e" stroke-width="2"/>
+          <text x="270" y="37" text-anchor="middle" font-size="12" font-weight="900" fill="#15803d">Right Side</text>
+          
+          <text x="190" y="24" text-anchor="middle" font-size="14" font-weight="900" fill="#0f172a">=</text>
+        </svg>
+      </div>`;
+  } else if (/find the lcm of/i.test(q) || /gcf|greatest common factor/i.test(q)) {
+    goal = `Break numbers into prime factors to find shared and combined multipliers.`;
+    tip = `For LCM, take the highest power of each prime. For GCF, multiply only the shared primes!`;
+    suggestedTool = "multigrid";
+    toolLabel = "10×10 Grid";
+  } else if (isPercent) {
+    goal = `Percent means "out of 100". Convert to a fraction or decimal to find the amount.`;
+    tip = `Friendly landmarks: 10% is dividing by 10, 50% is dividing by 2!`;
+    suggestedTool = "fractions";
+    toolLabel = "Fraction Wall";
+    visualSvg = `
+      <div class="student-expl-visual">
+        <svg width="380" height="75" viewBox="0 0 380 75" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Percent Bar Model">
+          <rect x="25" y="20" width="330" height="26" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+          <rect x="25" y="20" width="165" height="26" rx="6" fill="#3b82f6"/>
+          <text x="25" y="62" text-anchor="middle" font-size="10" font-weight="800" fill="#64748b">0%</text>
+          <text x="190" y="62" text-anchor="middle" font-size="11" font-weight="900" fill="#1e40af">50% (Half)</text>
+          <text x="355" y="62" text-anchor="middle" font-size="10" font-weight="800" fill="#64748b">100%</text>
+        </svg>
+      </div>`;
   }
 
   const stepsList = item.steps && item.steps.length > 1
@@ -2064,6 +2281,14 @@ function renderStudentFriendlyExplanation(item, copy) {
       </div>`
     : `<p class="student-expl-goal">${escapeHtml(copy)}</p>`;
 
+  const toolCallout = suggestedTool
+    ? `<div class="student-expl-tool-callout">
+        <button type="button" class="expl-tool-launcher" data-open-tool="${suggestedTool}">
+          <span>🧮</span> Try It on the Interactive ${escapeHtml(toolLabel)}
+        </button>
+      </div>`
+    : "";
+
   return `
     <div class="student-expl-card">
       <div class="student-expl-header">
@@ -2073,6 +2298,7 @@ function renderStudentFriendlyExplanation(item, copy) {
       ${visualSvg}
       ${stepsList}
       <div class="student-expl-tip"><strong>💡 Pro Tip:</strong> ${escapeHtml(tip)}</div>
+      ${toolCallout}
     </div>
   `;
 }
@@ -3251,6 +3477,21 @@ function buildFluencyProfileSummary(session, accuracyPercent, nextRecommendation
 }
 
 document.addEventListener("click", (event) => {
+  const launcher = event.target.closest(".expl-tool-launcher");
+  if (launcher) {
+    const tool = launcher.dataset.openTool;
+    const drawer = document.querySelector("#drill-toolbox");
+    if (drawer) {
+      drawer.open = true;
+      if (typeof InteractiveDrillToolbox !== "undefined") {
+        InteractiveDrillToolbox.activeTool = tool;
+        drawer.querySelectorAll(".tool-btn").forEach((btn) => btn.classList.toggle("active", btn.dataset.tool === tool));
+        InteractiveDrillToolbox.render(document.querySelector("#drill-tool-viewport"));
+      }
+      drawer.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+    return;
+  }
   const tokenBtn = event.target.closest("[data-copy-teacher-token]");
   if (tokenBtn) {
     const token = tokenBtn.dataset.copyTeacherToken || "";
