@@ -36,6 +36,9 @@
       <nav aria-label="Page controls">
         <label class="profile-control" for="profile-select">Learner<select id="profile-select"></select></label>
         <button id="add-profile" class="quiet-button" type="button" data-i18n>Add learner</button>
+        <button id="open-print-center" class="quiet-button print-center-btn" type="button" aria-label="Open Teacher Print Center">
+          <span aria-hidden="true">🖨️</span> <span>Print Center</span>
+        </button>
         <div class="settings-menu-container">
           <button id="settings-toggle" class="quiet-button settings-btn" type="button" aria-expanded="false" aria-controls="header-settings-popover" aria-label="Display and sound settings">
             <span aria-hidden="true">⚙️</span> <span data-i18n>Settings</span>
@@ -415,6 +418,34 @@
 
         <div class="vocab-modal-actions">
           <button type="button" class="vocab-gotit-btn" id="vocab-confirm-btn">Got it! · ¡Entendido!</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Teacher Print Center Modal (TpT Gold Standard Printables) -->
+    <div id="tpt-print-modal" class="tpt-print-modal" hidden role="dialog" aria-modal="true" aria-labelledby="tpt-modal-title">
+      <div class="tpt-modal-overlay" data-close-print-center></div>
+      <div class="tpt-modal-card">
+        <header class="tpt-modal-header">
+          <div>
+            <span class="tpt-modal-badge">TEACHERS PRINT CENTER · GOLD STANDARD TOOLKIT</span>
+            <h2 id="tpt-modal-title" class="tpt-modal-title">🖨️ Math Fluency Printables</h2>
+            <p class="tpt-modal-subtitle">Zero-prep printable companions, IEP scaffolds, and center rotation tools</p>
+          </div>
+          <button type="button" class="tpt-modal-close-btn" data-close-print-center aria-label="Close Print Center">✕</button>
+        </header>
+
+        <nav class="tpt-modal-tabs" role="tablist" aria-label="Printable resource categories">
+          <button type="button" class="tpt-tab-btn active" data-tpt-tab="mats" role="tab" aria-selected="true">📝 Recording Mats</button>
+          <button type="button" class="tpt-tab-btn" data-tpt-tab="exits" role="tab" aria-selected="false">🎫 3-Tier Exit Tickets</button>
+          <button type="button" class="tpt-tab-btn" data-tpt-tab="anchors" role="tab" aria-selected="false">📌 Desk Helpers &amp; Posters</button>
+          <button type="button" class="tpt-tab-btn" data-tpt-tab="passports" role="tab" aria-selected="false">🎖️ Passports &amp; Badges</button>
+          <button type="button" class="tpt-tab-btn" data-tpt-tab="stations" role="tab" aria-selected="false">🎪 Stations &amp; Coaching</button>
+          <button type="button" class="tpt-tab-btn" data-tpt-tab="parents" role="tab" aria-selected="false">🏠 "Fridge Math" Guide</button>
+        </nav>
+
+        <div id="tpt-modal-viewport" class="tpt-modal-viewport">
+          <!-- Rendered dynamically by TeacherPrintCenter.renderTab() -->
         </div>
       </div>
     </div>

@@ -1197,6 +1197,470 @@ function printPracticeSheet() {
   `);
 }
 
+function printStudentRecordingMat() {
+  const s = state.skill || { title: "Math Fluency Practice", grade: state.grade || 1 };
+  const learner = PROFILE_NAMES[activeProfile] || "";
+  printHtml(`
+    <article class="tpt-print-page">
+      <div class="tpt-header-row">
+        <div>
+          <h1>📝 Student Math Fluency Recording Mat</h1>
+          <p style="margin:2px 0 0; font-size:10pt; color:#475569">Skill: <strong>${escapeHtml(s.title)}</strong> (Grade ${s.grade}) · Strategy-First Dry-Erase Mat</p>
+        </div>
+        <div class="tpt-header-fields">
+          <span>Name: <strong class="tpt-field-line">${escapeHtml(learner)}</strong></span>
+          <span>Date: <span class="tpt-field-line"></span></span>
+          <span>Goal: <strong>100% Mastery</strong></span>
+        </div>
+      </div>
+
+      <div class="tpt-mat-container">
+        ${[1, 2, 3].map((num) => `
+          <div class="tpt-mat-problem-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #cbd5e1; padding-bottom:4px">
+              <span style="font-weight:900; font-size:11pt">Problem #${num}</span>
+              <span style="font-size:9pt; color:#64748b">Copy from screen: ____________________</span>
+              <span style="font-size:9pt; font-weight:700">Tool Used: [ ] Number Line [ ] Chips [ ] Balance [ ] Grid</span>
+            </div>
+            <div class="tpt-mat-grid">
+              <div class="tpt-mat-sketch-area">
+                <span class="tpt-mat-sketch-label">🎨 Hands-On Visual Workspace (Draw your chips, scale, or number line hops)</span>
+                <div style="height:1.1in; border:1px dashed #e2e8f0; margin-top:4px; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:9pt">
+                  Draw strategy here
+                </div>
+              </div>
+              <div class="tpt-mat-answer-area">
+                <div>
+                  <span class="tpt-mat-sketch-label">🎯 My Action Step &amp; Answer</span>
+                  <div style="margin-top:8px; font-size:10pt; line-height:1.6">
+                    Step: __________________<br/>
+                    Answer: <strong style="display:inline-block; border-bottom:2px solid #000; min-width:0.8in; text-align:center"></strong>
+                  </div>
+                </div>
+                <div class="tpt-mat-reflection">
+                  <span>Self-Check:</span>
+                  <span>😃 Confident</span>
+                  <span>😐 Used Hint</span>
+                  <span>🤔 Review</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+
+      <footer style="margin-top:0.15in; display:flex; justify-content:space-between; font-size:8pt; color:#64748b; border-top:1px solid #cbd5e1; padding-top:4px">
+        <span>EduWonderLab Math Fluency Lab · Classroom Accountability Mat</span>
+        <span>Tip: Slip this page into a clear plastic sleeve for reusable dry-erase practice!</span>
+        <span>eduwonderlab.com/math/fluency-lab</span>
+      </footer>
+    </article>
+  `);
+}
+
+function printTieredExitTickets() {
+  const s = state.skill || { title: "Target Math Skill", grade: state.grade || 1, learn: { rule: "Use inverse operations and visual models." } };
+  const rng = seededRandom(Date.now() % 99999);
+  const p1 = generateProblem(s, rng);
+  const p2 = generateProblem(s, rng);
+  const p3 = generateProblem(s, rng);
+
+  printHtml(`
+    <article class="tpt-print-page">
+      <div style="text-align:center; margin-bottom:0.15in">
+        <h1 style="margin:0; font-size:15pt">🎫 Differentiated 3-Tier Exit Tickets · 1-Page Cut-Outs</h1>
+        <p style="margin:2px 0 0; font-size:9pt; color:#475569">Skill: <strong>${escapeHtml(s.title)}</strong> (Grade ${s.grade}) · Cut along dashed lines for fast formative assessment</p>
+      </div>
+
+      <!-- Tier 1: Mild / Scaffolded -->
+      <div class="tpt-exit-cut-line">✂️ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ✂️</div>
+      <div class="tpt-exit-ticket">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px">
+          <span class="tpt-tier-badge" style="background:#dcfce7; color:#166534">🟢 Level 1: Mild (Guided Support)</span>
+          <span style="font-size:9pt">Name: ____________________ Date: ________</span>
+        </div>
+        <p style="margin:0 0 6px; font-weight:800; font-size:11pt">1. Solve: <strong>${mathText(p1.question)}</strong></p>
+        <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:0.15in">
+          <div style="border:1px dashed #94a3b8; border-radius:6px; padding:6px; font-size:8pt">
+            <strong>Guided Frame:</strong> ${escapeHtml(p1.hint || s.learn?.rule || "Break into friendly parts or use counters.")}
+            <div style="height:0.45in; border-bottom:1px solid #ccc; margin-top:4px">Sketch model:</div>
+          </div>
+          <div style="border:1px solid #0f172a; border-radius:6px; padding:6px; text-align:center">
+            <span style="font-size:9pt; font-weight:700">My Answer:</span>
+            <div style="height:0.4in; font-size:14pt; font-weight:900; margin-top:4px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tier 2: Medium / On-Grade Target -->
+      <div class="tpt-exit-cut-line">✂️ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ✂️</div>
+      <div class="tpt-exit-ticket">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px">
+          <span class="tpt-tier-badge" style="background:#fef3c7; color:#92400e">🟡 Level 2: Medium (Target Fluency)</span>
+          <span style="font-size:9pt">Name: ____________________ Date: ________</span>
+        </div>
+        <p style="margin:0 0 6px; font-weight:800; font-size:11pt">1. Solve: <strong>${mathText(p2.question)}</strong></p>
+        <div style="display:grid; grid-template-columns:1.5fr 1fr; gap:0.15in">
+          <div style="border:1px solid #cbd5e1; border-radius:6px; padding:6px; font-size:8.5pt">
+            <strong>Show Strategy / Thinking:</strong>
+            <div style="height:0.5in"></div>
+          </div>
+          <div style="border:1px solid #0f172a; border-radius:6px; padding:6px; text-align:center">
+            <span style="font-size:9pt; font-weight:700">Final Answer:</span>
+            <div style="height:0.4in; font-size:14pt; font-weight:900; margin-top:4px"></div>
+          </div>
+        </div>
+        <p style="margin:4px 0 0; font-size:8pt; color:#475569">Sentence Stem: I solved this by __________________________________________________.</p>
+      </div>
+
+      <!-- Tier 3: Spicy / Error Analysis & Extension -->
+      <div class="tpt-exit-cut-line">✂️ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ✂️</div>
+      <div class="tpt-exit-ticket">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px">
+          <span class="tpt-tier-badge" style="background:#fee2e2; color:#991b1b">🌶️ Level 3: Spicy (Error Analysis)</span>
+          <span style="font-size:9pt">Name: ____________________ Date: ________</span>
+        </div>
+        <p style="margin:0 0 4px; font-weight:800; font-size:10pt">Problem: <strong>${mathText(p3.question)}</strong></p>
+        <p style="margin:0 0 6px; font-size:9pt; color:#7f1d1d"><strong>⚠️ Maya says the answer is "${mathText(String(Number(p3.answers[0]) + 2))}".</strong></p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.15in">
+          <div style="border:1px solid #cbd5e1; border-radius:6px; padding:6px; font-size:8pt">
+            <strong>What was Maya's mistake in thinking?</strong>
+            <div style="height:0.45in"></div>
+          </div>
+          <div style="border:1px solid #0f172a; border-radius:6px; padding:6px; font-size:8pt">
+            <strong>Prove the correct answer:</strong>
+            <div style="height:0.45in; text-align:center; font-size:13pt; font-weight:900; padding-top:4px"></div>
+          </div>
+        </div>
+      </div>
+    </article>
+  `);
+}
+
+function printDeskHelperStrips() {
+  printHtml(`
+    <article class="tpt-print-page">
+      <div style="text-align:center; margin-bottom:0.12in">
+        <h1 style="margin:0; font-size:15pt">📌 Desk Helper &amp; Math Strategy Cheat Strips</h1>
+        <p style="margin:2px 0 0; font-size:9pt; color:#475569">Print on cardstock, cut along dashed borders, and laminate or tape to student desks</p>
+      </div>
+
+      ${[1, 2, 3].map(() => `
+        <div class="tpt-exit-cut-line">✂️ - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ✂️</div>
+        <div class="tpt-desk-strip">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid #0f172a; padding-bottom:4px; margin-bottom:6px">
+            <span style="font-weight:900; font-size:11pt">⭐ MATH FLUENCY STRATEGY HELPER</span>
+            <span style="font-size:9pt; font-weight:700">Student Name: ____________________</span>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:0.1in; text-align:center; font-size:8pt">
+            <div style="border:1px solid #cbd5e1; border-radius:6px; padding:4px; background:#eff6ff">
+              <strong style="color:#1d4ed8; font-size:8.5pt">🔵🔴 Zero Pairs</strong><br/>
+              (+1) + (−1) = <strong>0</strong><br/>
+              <span style="color:#475569">Subtracting a negative is adding a positive!</span>
+            </div>
+            <div style="border:1px solid #cbd5e1; border-radius:6px; padding:4px; background:#f0fdf4">
+              <strong style="color:#15803d; font-size:8.5pt">🍕 Keep-Change-Flip</strong><br/>
+              Keep 1st fraction<br/>
+              Change ÷ to ×<br/>
+              Flip 2nd to reciprocal!
+            </div>
+            <div style="border:1px solid #cbd5e1; border-radius:6px; padding:4px; background:#fffbeb">
+              <strong style="color:#b45309; font-size:8.5pt">⚖️ Balance Rule</strong><br/>
+              Keep both pans level!<br/>
+              <span style="color:#78350f">Whatever you do to one side, you MUST do to both!</span>
+            </div>
+            <div style="border:1px solid #cbd5e1; border-radius:6px; padding:4px; background:#fdf2f8">
+              <strong style="color:#be185d; font-size:8.5pt">🔄 Inverses</strong><br/>
+              + undoes −<br/>
+              − undoes +<br/>
+              × undoes ÷<br/>
+              ÷ undoes ×
+            </div>
+          </div>
+        </div>
+      `).join("")}
+    </article>
+  `);
+}
+
+function printStrategyAnchorCharts() {
+  const s = state.skill || { title: "Visual Problem Solving", grade: state.grade || 1, learn: { rule: "Make equal jumps and balance both sides." } };
+  printHtml(`
+    <article class="tpt-print-page" style="padding:0.2in">
+      <div style="border:6px double #0f172a; border-radius:14px; padding:0.25in; text-align:center">
+        <span style="font-size:10pt; font-weight:800; letter-spacing:0.15em; text-transform:uppercase; color:#1d4ed8">EduWonderLab Classroom Anchor Poster</span>
+        <h1 style="font-size:24pt; font-weight:900; margin:0.1in 0">${escapeHtml(s.title)}</h1>
+        <p style="font-size:12pt; font-weight:700; color:#334155; margin:0 0 0.2in">Grade ${s.grade} · Core Strategy Anchor Chart</p>
+
+        <div style="background:#f8fafc; border:2px solid #cbd5e1; border-radius:10px; padding:0.15in; margin-bottom:0.2in">
+          <h2 style="font-size:14pt; margin:0 0 6px; color:#15803d">🎯 The Golden Mathematical Rule:</h2>
+          <p style="font-size:14pt; font-weight:800; margin:0; line-height:1.4">“${escapeHtml(s.learn?.rule || "Break numbers into friendly parts and keep both sides balanced!")}”</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.2in; text-align:left; margin-bottom:0.2in">
+          <div style="border:2px solid #0f172a; border-radius:8px; padding:0.15in">
+            <h3 style="margin:0 0 8px; font-size:12pt; font-weight:800">🪜 3-Step Action Plan:</h3>
+            <ol style="margin:0; padding-left:0.2in; font-size:11pt; line-height:1.6">
+              <li><strong>Model It:</strong> Draw the problem (chips, scale, hops).</li>
+              <li><strong>Isolate / Solve:</strong> Use friendly inverses or landmarks.</li>
+              <li><strong>Sanity Check:</strong> Does your answer make sense?</li>
+            </ol>
+          </div>
+          <div style="border:2px solid #dc2626; border-radius:8px; padding:0.15in; background:#fff5f5">
+            <h3 style="margin:0 0 8px; font-size:12pt; font-weight:800; color:#991b1b">⚠️ Common Mistake Alert:</h3>
+            <p style="margin:0; font-size:10.5pt; color:#7f1d1d; line-height:1.5">
+              ${escapeHtml(s.learn?.commonMistake?.what || "Don't rush to guess. If you divide or subtract, make sure you apply it equally to all parts!")}
+            </p>
+          </div>
+        </div>
+
+        <footer style="border-top:1.5px solid #0f172a; padding-top:0.1in; display:flex; justify-content:space-between; font-size:9pt; font-weight:700">
+          <span>EduWonderLab Math Fluency Lab</span>
+          <span>Post this on your Classroom Math Wall!</span>
+          <span>eduwonderlab.com</span>
+        </footer>
+      </div>
+    </article>
+  `);
+}
+
+function printFluencyPassport() {
+  const learner = PROFILE_NAMES[activeProfile] || "Explorer";
+  printHtml(`
+    <article class="tpt-print-page">
+      <div style="text-align:center; margin-bottom:0.15in">
+        <h1 style="margin:0; font-size:15pt">🎖️ Official Math Fluency Passport · 4-Quadrant Booklet</h1>
+        <p style="margin:2px 0 0; font-size:9pt; color:#475569">Fold into quarters to create a pocket-sized student passport. Stamp or sticker as skills are mastered!</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:0.2in; min-height:8in">
+        <!-- Quadrant 1: Cover -->
+        <div style="border:3px double #1e3a8a; border-radius:12px; padding:0.2in; text-align:center; background:#f0f9ff">
+          <div style="font-size:24pt">📘</div>
+          <h2 style="margin:6px 0; font-size:14pt; color:#1e3a8a">PASSPORT</h2>
+          <p style="font-size:9pt; font-weight:800; color:#0369a1; text-transform:uppercase; margin:0">EduWonderLab Math Fluency</p>
+          <div style="width:1in; height:1.1in; border:1.5px dashed #0284c7; margin:0.15in auto; display:flex; align-items:center; justify-content:center; font-size:8pt; color:#64748b">
+            Photo / Avatar
+          </div>
+          <p style="font-size:10pt; font-weight:800; margin:4px 0">Learner: ${escapeHtml(learner)}</p>
+          <p style="font-size:9pt; margin:0">Issued: ${new Date().toLocaleDateString()}</p>
+        </div>
+
+        <!-- Quadrant 2: Primary Grades Visas -->
+        <div style="border:2px dashed #0f172a; border-radius:12px; padding:0.15in">
+          <h3 style="margin:0 0 6px; font-size:10pt; text-align:center">VISAS: FOUNDATIONS (Grades 1–4)</h3>
+          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; text-align:center">
+            ${[1, 2, 3, 4].map((g) => `
+              <div style="border:1px solid #cbd5e1; border-radius:6px; padding:4px; font-size:7pt">
+                <strong>Grade ${g}</strong>
+                <div style="width:26px; height:26px; border:1px solid #94a3b8; border-radius:50%; margin:4px auto"></div>
+                <span>Initial</span>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+
+        <!-- Quadrant 3: Middle Grades Visas -->
+        <div style="border:2px dashed #0f172a; border-radius:12px; padding:0.15in">
+          <h3 style="margin:0 0 6px; font-size:10pt; text-align:center">VISAS: ADVANCED MASTERY (Grades 5–8)</h3>
+          <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; text-align:center">
+            ${[5, 6, 7, 8].map((g) => `
+              <div style="border:1px solid #cbd5e1; border-radius:6px; padding:4px; font-size:7pt">
+                <strong>Grade ${g}</strong>
+                <div style="width:26px; height:26px; border:1px solid #94a3b8; border-radius:50%; margin:4px auto"></div>
+                <span>Initial</span>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+
+        <!-- Quadrant 4: Mathematician Pledge -->
+        <div style="border:3px double #15803d; border-radius:12px; padding:0.2in; text-align:center; background:#f0fdf4">
+          <div style="font-size:20pt">⭐</div>
+          <h3 style="margin:4px 0; font-size:11pt; color:#15803d">MATHEMATICIAN PLEDGE</h3>
+          <p style="font-size:8pt; line-height:1.5; color:#166534; font-style:italic">
+            “I promise to embrace challenges, learn from mistakes, use models when stuck, and celebrate every fluency milestone!”
+          </p>
+          <div style="margin-top:0.15in; border-top:1px solid #166534; padding-top:4px; font-size:8pt; font-weight:700">
+            Student Signature: ____________________
+          </div>
+        </div>
+      </div>
+    </article>
+  `);
+}
+
+function printBragTags() {
+  const tags = [
+    { icon: "⚖️", title: "Balance Master", desc: "Keeps both sides equal!" },
+    { icon: "🔵🔴", title: "Zero Pair Ninja", desc: "Cancels integers cleanly!" },
+    { icon: "📏", title: "Double Line Pro", desc: "Ratios scaled up & down!" },
+    { icon: "⚡", title: "Lightning Facts", desc: "Automatic fact recall!" },
+    { icon: "🎯", title: "100% Accuracy", desc: "Flawless fluency check!" },
+    { icon: "🪜", title: "Step-by-Step Solver", desc: "Shows strategic steps!" },
+    { icon: "🍕", title: "Fraction Flak", desc: "Conquered Keep-Change-Flip!" },
+    { icon: "🧠", title: "Growth Mindset", desc: "Turned mistakes into insight!" },
+    { icon: "🏆", title: "Fluency Champion", desc: "Gold standard mastery!" }
+  ];
+
+  printHtml(`
+    <article class="tpt-print-page">
+      <div style="text-align:center; margin-bottom:0.15in">
+        <h1 style="margin:0; font-size:15pt">🎖️ Collectible Math Brag Tags (9-Up Printable Sheet)</h1>
+        <p style="margin:2px 0 0; font-size:9pt; color:#475569">Punch hole at top circle for necklace rings or binder chains</p>
+      </div>
+
+      <div class="tpt-tags-grid">
+        ${Array.from({ length: 9 }, (_, i) => {
+          const t = tags[i % tags.length];
+          return `
+            <div class="tpt-brag-tag">
+              <div class="tpt-brag-hole"></div>
+              <div style="font-size:24pt; margin-top:0.12in">${t.icon}</div>
+              <strong style="font-size:10pt; color:#0f172a">${t.title}</strong>
+              <p style="font-size:8pt; color:#475569; margin:4px 0">${t.desc}</p>
+              <span style="font-size:7pt; color:#94a3b8; font-weight:700">EduWonderLab Math Fluency</span>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    </article>
+  `);
+}
+
+function printStationTentCards() {
+  const stations = [
+    { num: 1, name: "Digital Fluency Station", icon: "💻", step1: "Log on to eduwonderlab.com/math/fluency-lab", step2: "Pick your grade & focus skill", step3: "Complete 10 problems with 80%+ accuracy" },
+    { num: 2, name: "Hands-On Manipulatives Station", icon: "🧮", step1: "Get your dry-erase Recording Mat", step2: "Use chips, balance, or number lines to model 5 problems", step3: "Self-reflect with the 3 smiley badges" },
+    { num: 3, name: "Peer Flashcard & Coaching Table", icon: "🤝", step1: "Take turns drawing flashcards with a partner", step2: "Prompt with: 'Why did that step work?'", step3: "Initial your partner's passport after 5 correct facts" }
+  ];
+
+  printHtml(`
+    <article class="tpt-print-page">
+      <div style="text-align:center; margin-bottom:0.15in">
+        <h1 style="margin:0; font-size:15pt">🎪 Math Workshop Station Tent Cards · Fold &amp; Display</h1>
+        <p style="margin:2px 0 0; font-size:9pt; color:#475569">Fold each card along center dashed line to stand up on station tables</p>
+      </div>
+
+      ${stations.map((st) => `
+        <div class="tpt-tent-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #0f172a; padding-bottom:6px">
+            <span style="font-size:16pt; font-weight:900">STATION ${st.num}: ${st.name}</span>
+            <span style="font-size:22pt">${st.icon}</span>
+          </div>
+          <div class="tpt-fold-line">-------------------- FOLD HERE TO CREATE TABLE TENT --------------------</div>
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:0.15in; text-align:center; font-size:9pt">
+            <div style="border:1px solid #cbd5e1; border-radius:6px; padding:6px; background:#f8fafc">
+              <strong>Step 1</strong><br/>${st.step1}
+            </div>
+            <div style="border:1px solid #cbd5e1; border-radius:6px; padding:6px; background:#f8fafc">
+              <strong>Step 2</strong><br/>${st.step2}
+            </div>
+            <div style="border:1px solid #cbd5e1; border-radius:6px; padding:6px; background:#f8fafc">
+              <strong>Step 3</strong><br/>${st.step3}
+            </div>
+          </div>
+        </div>
+      `).join("")}
+    </article>
+  `);
+}
+
+function printSmallGroupCoachingCueSheet() {
+  const s = state.skill || { title: "Target Math Concept", grade: state.grade || 1, strand: "Core Number", learn: { rule: "Maintain mathematical balance and invert operations." } };
+  printHtml(`
+    <article class="tpt-print-page">
+      <div class="tpt-header-row">
+        <div>
+          <h1>📋 Teacher Small Group Coaching Cue Sheet</h1>
+          <p style="margin:2px 0 0; font-size:10pt; color:#475569">Skill: <strong>${escapeHtml(s.title)}</strong> (Grade ${s.grade} · ${escapeHtml(s.strand)})</p>
+        </div>
+        <div style="font-size:9pt; font-weight:700">EduWonderLab Tier 2 Guided Math</div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:0.15in">
+        <div style="border:1.5px solid #0f172a; border-radius:8px; padding:0.12in">
+          <h3 style="margin:0 0 4px; font-size:11pt; color:#1e3a8a">🎯 Target Concept &amp; Standard</h3>
+          <p style="margin:0; font-size:10pt">Rule: “${escapeHtml(s.learn?.rule || "Model the mathematical structure and isolate unknowns using inverses.")}”</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.15in">
+          <div style="border:1.5px solid #b91c1c; border-radius:8px; padding:0.12in; background:#fef2f2">
+            <h3 style="margin:0 0 6px; font-size:11pt; color:#991b1b">⚠️ Common Student Misconceptions</h3>
+            <ul style="margin:0; padding-left:0.15in; font-size:9pt; line-height:1.5; color:#7f1d1d">
+              <li>Applies the operation to only one side of the equation.</li>
+              <li>Treats subtracting a negative as regular subtraction.</li>
+              <li>Adds denominators together when adding fractions.</li>
+              <li>Rushes without sketching visual landmarks first.</li>
+            </ul>
+          </div>
+          <div style="border:1.5px solid #15803d; border-radius:8px; padding:0.12in; background:#f0fdf4">
+            <h3 style="margin:0 0 6px; font-size:11pt; color:#166534">🗣️ Scaffolded Teacher Prompting Stems</h3>
+            <ul style="margin:0; padding-left:0.15in; font-size:9pt; line-height:1.5; color:#14532d">
+              <li><em>“What is this problem actually asking us to find?”</em></li>
+              <li><em>“If we take away 3 from the left pan, what happens to the right?”</em></li>
+              <li><em>“Can you show me that with two-color counter chips?”</em></li>
+              <li><em>“How can you prove your answer makes sense?”</em></li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="border:1.5px solid #475569; border-radius:8px; padding:0.12in">
+          <h3 style="margin:0 0 6px; font-size:11pt">♿ Differentiation &amp; Accommodations</h3>
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:0.1in; font-size:8.5pt">
+            <div><strong>ESOL/ELL:</strong> Provide the bilingual Spanish flashcard and visual SVG printout.</div>
+            <div><strong>IEP/504:</strong> Reduce task to 3 problems with dry-erase recording mat.</div>
+            <div><strong>Challenge/GT:</strong> Have student create an error-analysis puzzle for peers.</div>
+          </div>
+        </div>
+      </div>
+    </article>
+  `);
+}
+
+function printFridgeMathGuide() {
+  printHtml(`
+    <article class="tpt-print-page">
+      <div style="border:4px double #1e3a8a; border-radius:14px; padding:0.25in">
+        <div style="text-align:center; border-bottom:2px solid #1e3a8a; padding-bottom:0.15in; margin-bottom:0.15in">
+          <span style="font-size:9pt; font-weight:800; letter-spacing:0.1em; color:#0369a1; text-transform:uppercase">EduWonderLab Family Connection</span>
+          <h1 style="margin:4px 0; font-size:18pt; color:#1e3a8a">🏠 “Fridge Math” Family Guide</h1>
+          <p style="margin:0; font-size:10.5pt; color:#475569">Why does math look different now? A parent’s cheat sheet to modern visual models!</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.2in; margin-bottom:0.2in">
+          <div style="border:1.5px solid #cbd5e1; border-radius:8px; padding:0.12in; background:#f8fafc">
+            <h3 style="margin:0 0 6px; font-size:11pt; color:#0f172a">🔵🔴 Why Red &amp; Blue Chips for Negatives?</h3>
+            <p style="margin:0; font-size:9pt; line-height:1.5; color:#334155">
+              Instead of memorizing confusing rules like "minus a minus is a plus", students pair a positive chip (+1) with a negative chip (-1) to make a <strong>Zero Pair</strong>. When you remove negatives, the overall value increases!
+            </p>
+          </div>
+          <div style="border:1.5px solid #cbd5e1; border-radius:8px; padding:0.12in; background:#f8fafc">
+            <h3 style="margin:0 0 6px; font-size:11pt; color:#0f172a">⚖️ Why a Balance Scale for Algebra?</h3>
+            <p style="margin:0; font-size:9pt; line-height:1.5; color:#334155">
+              The equals sign ($=$) means <em>balance</em>, not "the answer comes next". By imagining a physical balance scale, students see why they must perform the identical operation on both sides to isolate $x$.
+            </p>
+          </div>
+        </div>
+
+        <div style="border:2px solid #15803d; border-radius:10px; padding:0.15in; background:#f0fdf4; margin-bottom:0.2in">
+          <h3 style="margin:0 0 6px; font-size:12pt; color:#166534">💬 3 Easy Questions to Ask at Dinner (Instead of "What's the answer?"):</h3>
+          <ol style="margin:0; padding-left:0.2in; font-size:9.5pt; line-height:1.6; color:#14532d">
+            <li><em>“Can you sketch a picture or number line of what that problem looks like?”</em></li>
+            <li><em>“Is your answer going to be bigger or smaller than where you started?”</em></li>
+            <li><em>“What's another friendly number close by that makes this easier?”</em></li>
+          </ol>
+        </div>
+
+        <footer style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #cbd5e1; padding-top:0.1in; font-size:8.5pt; color:#64748b">
+          <span>Free Student Practice at: <strong>eduwonderlab.com/math/fluency-lab</strong></span>
+          <span>Hang this on your refrigerator! 🧲</span>
+        </footer>
+      </div>
+    </article>
+  `);
+}
+
 const gcd = (a, b) => { let x = Math.abs(a), y = Math.abs(b); while (y) [x, y] = [y, x % y]; return x || 1; };
 const lcm = (a, b) => Math.abs(a * b) / gcd(a, b);
 
@@ -2678,7 +3142,7 @@ function finishSession() {
   const next = recommendations(state.tutor, state.grade)[0];
   const foundations = prerequisites(next.skill);
   const profileBrief = buildFluencyProfileSummary(session, accuracyPercent, next);
-  els.summaryNext.innerHTML = `<h4>A useful next step</h4><p>${escapeHtml(next.reason)}: ${escapeHtml(next.skill.title)}.</p><div class="button-row"><button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">Explore the visual lesson</button><button class="outline-action" data-view="path">See my learning path</button></div><div class="drill-again-actions button-row" style="margin-top:0.75rem"><button class="outline-action" type="button" data-start-quick-drill>⚡ Drill 5 more</button><button class="outline-action flashcard-btn" type="button" data-start-flashcard-drill>🃏 Flashcards</button><button class="outline-action" type="button" data-start-streak-drill>🔥 10 in a row challenge</button><button class="outline-action" type="button" data-print-flashcards>🖨️ Print Flashcards</button><button class="outline-action" type="button" data-print-practice-sheet>🖨️ Practice Sheet</button>${streakComplete(session) || accuracyPercent === 100 ? `<button class="outline-action" type="button" data-print-cert>🏆 Print Certificate</button>` : ''}</div>${session.mode === 'diagnostic' && foundations.length ? `<p>Helpful foundation: <button class="text-action" data-open-key="${tutorSkillKey(foundations[0])}" data-open-mode="visual">${escapeHtml(foundations[0].title)} (Grade ${foundations[0].grade})</button></p>` : ''}${state.skill ? `<p class="teach-back-prompt">${escapeHtml(transferPrompt(state.skill))}</p>` : ''}${profileBrief}`;
+  els.summaryNext.innerHTML = `<h4>A useful next step</h4><p>${escapeHtml(next.reason)}: ${escapeHtml(next.skill.title)}.</p><div class="button-row"><button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">Explore the visual lesson</button><button class="outline-action" data-view="path">See my learning path</button></div><div class="drill-again-actions button-row" style="margin-top:0.75rem"><button class="outline-action" type="button" data-start-quick-drill>⚡ Drill 5 more</button><button class="outline-action flashcard-btn" type="button" data-start-flashcard-drill>🃏 Flashcards</button><button class="outline-action" type="button" data-start-streak-drill>🔥 10 in a row challenge</button><button class="outline-action" type="button" data-print-flashcards>🖨️ Print Flashcards</button><button class="outline-action" type="button" data-print-practice-sheet>🖨️ Practice Sheet</button><button class="outline-action" type="button" data-open-print-center>🖨️ Print Center</button>${streakComplete(session) || accuracyPercent === 100 ? `<button class="outline-action" type="button" data-print-cert>🏆 Print Certificate</button>` : ''}</div>${session.mode === 'diagnostic' && foundations.length ? `<p>Helpful foundation: <button class="text-action" data-open-key="${tutorSkillKey(foundations[0])}" data-open-mode="visual">${escapeHtml(foundations[0].title)} (Grade ${foundations[0].grade})</button></p>` : ''}${state.skill ? `<p class="teach-back-prompt">${escapeHtml(transferPrompt(state.skill))}</p>` : ''}${profileBrief}`;
   saveProgress(); renderOverallStats();
   announce("Practice saved for this learner on this device.");
 }
@@ -4011,6 +4475,10 @@ els.summary?.addEventListener("click", (event) => {
     printMasteryCertificate();
     return;
   }
+  if (event.target.closest("[data-open-print-center]")) {
+    TeacherPrintCenter.open();
+    return;
+  }
 });
 
 els.toggleSolver?.addEventListener("click", () => {
@@ -4297,6 +4765,201 @@ document.addEventListener("keydown", (event) => {
         nextProblem();
       }
     }
+  }
+});
+
+const TeacherPrintCenter = {
+  activeTab: "mats",
+
+  open(tab = "mats") {
+    const modal = document.querySelector("#tpt-print-modal");
+    if (!modal) return;
+    this.activeTab = tab;
+    modal.hidden = false;
+    this.renderTab(this.activeTab);
+  },
+
+  close() {
+    const modal = document.querySelector("#tpt-print-modal");
+    if (modal) modal.hidden = true;
+  },
+
+  renderTab(tab) {
+    const viewport = document.querySelector("#tpt-modal-viewport");
+    const tabs = document.querySelectorAll("[data-tpt-tab]");
+    tabs.forEach((b) => {
+      const isActive = b.dataset.tptTab === tab;
+      b.classList.toggle("active", isActive);
+      b.setAttribute("aria-selected", isActive ? "true" : "false");
+    });
+    if (!viewport) return;
+
+    if (tab === "mats") {
+      viewport.innerHTML = `
+        <div class="tpt-preview-card">
+          <div class="tpt-preview-header">
+            <div class="tpt-preview-info">
+              <h3>📝 Dry-Erase Student Recording Mats</h3>
+              <p>Turn screen practice into tactile writing. Slip into clear plastic sleeves for daily dry-erase center rotations.</p>
+            </div>
+            <button type="button" class="tpt-print-action-btn" data-tpt-print="mat">🖨️ Print Recording Mat (8.5×11)</button>
+          </div>
+          <div class="tpt-preview-mockup">
+            <strong>Included on this printable:</strong>
+            <ul class="tpt-feature-bullets" style="margin-top:6px">
+              <li>Header for Student Name, Date, and 100% Goal</li>
+              <li>3 Problem Workspace Boxes with Hand-Drawn Model Areas</li>
+              <li>Tool Tracker: Number Line, Chips, Balance, Grid</li>
+              <li>Self-Reflection Checkpoint (😃 😐 🤔) for each problem</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    } else if (tab === "exits") {
+      viewport.innerHTML = `
+        <div class="tpt-preview-card">
+          <div class="tpt-preview-header">
+            <div class="tpt-preview-info">
+              <h3>🎫 Differentiated 3-Tier Exit Tickets</h3>
+              <p>Formative assessment in 1-page format. 3 tiered slips per sheet (Mild · Medium · Spicy) with easy scissor cut lines.</p>
+            </div>
+            <button type="button" class="tpt-print-action-btn" data-tpt-print="exits">🖨️ Print 3-Tier Exit Tickets</button>
+          </div>
+          <div class="tpt-preview-mockup">
+            <strong>Tiers Included:</strong>
+            <ul class="tpt-feature-bullets" style="margin-top:6px">
+              <li>🟢 Level 1 (Mild): Scaffolded with strategy prompts and visual hints</li>
+              <li>🟡 Level 2 (Medium): Grade-level fluency with written sentence frame</li>
+              <li>🌶️ Level 3 (Spicy): Rigorous Error Analysis ("Find Maya's mistake")</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    } else if (tab === "anchors") {
+      viewport.innerHTML = `
+        <div class="tpt-preview-card">
+          <div class="tpt-preview-header">
+            <div class="tpt-preview-info">
+              <h3>📌 Desk Helper Strips &amp; Classroom Anchor Posters</h3>
+              <p>Visual aids for IEP/504 accommodations, desk reference, and classroom math bulletin boards.</p>
+            </div>
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap">
+              <button type="button" class="tpt-print-action-btn" data-tpt-print="desk">🖨️ Print Desk Strips (3-Up)</button>
+              <button type="button" class="tpt-print-action-btn" data-tpt-print="anchor" style="background:#0284c7; border-color:#0369a1">🖨️ Print Anchor Poster</button>
+            </div>
+          </div>
+          <div class="tpt-preview-mockup">
+            <strong>Features:</strong>
+            <ul class="tpt-feature-bullets" style="margin-top:6px">
+              <li>3" × 8" laminated desk strips with 4 core strategy rules</li>
+              <li>Full 8.5" × 11" Anchor Chart with Golden Rule &amp; Misconception Alert</li>
+              <li>High-contrast pedagogical graphics suitable for black &amp; white copiers</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    } else if (tab === "passports") {
+      viewport.innerHTML = `
+        <div class="tpt-preview-card">
+          <div class="tpt-preview-header">
+            <div class="tpt-preview-info">
+              <h3>🎖️ Fluency Passports &amp; Collectible Brag Tags</h3>
+              <p>Gamify mathematical mastery with pocket booklets and wearable brag tags that motivate learners.</p>
+            </div>
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap">
+              <button type="button" class="tpt-print-action-btn" data-tpt-print="passport">🖨️ Print Fluency Passport</button>
+              <button type="button" class="tpt-print-action-btn" data-tpt-print="brag" style="background:#7c3aed; border-color:#6d28d9">🖨️ Print Brag Tags (9-Up)</button>
+            </div>
+          </div>
+          <div class="tpt-preview-mockup">
+            <strong>Features:</strong>
+            <ul class="tpt-feature-bullets" style="margin-top:6px">
+              <li>4-Quadrant Foldable Passport with Visa Stamp Circles for Grades 1–8</li>
+              <li>Mathematician Mindset Oath &amp; Signature Line</li>
+              <li>9 Collectible Badges: Balance Master, Zero Pair Ninja, Double Line Pro, etc.</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    } else if (tab === "stations") {
+      viewport.innerHTML = `
+        <div class="tpt-preview-card">
+          <div class="tpt-preview-header">
+            <div class="tpt-preview-info">
+              <h3>🎪 Math Workshop Station Tents &amp; Teacher Cue Sheet</h3>
+              <p>Turnkey materials for small group guided math and independent station rotations.</p>
+            </div>
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap">
+              <button type="button" class="tpt-print-action-btn" data-tpt-print="tent">🖨️ Print Table Tents (3 Stations)</button>
+              <button type="button" class="tpt-print-action-btn" data-tpt-print="coaching" style="background:#b45309; border-color:#92400e">🖨️ Print Teacher Cue Sheet</button>
+            </div>
+          </div>
+          <div class="tpt-preview-mockup">
+            <strong>Features:</strong>
+            <ul class="tpt-feature-bullets" style="margin-top:6px">
+              <li>Folding Table Tents for Stations 1, 2, and 3 with icon step guides</li>
+              <li>Teacher Table Cue Sheet with Common Misconceptions &amp; Prompting Stems</li>
+              <li>Specific accommodations for ESOL, IEP, and Challenge learners</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    } else if (tab === "parents") {
+      viewport.innerHTML = `
+        <div class="tpt-preview-card">
+          <div class="tpt-preview-header">
+            <div class="tpt-preview-info">
+              <h3>🏠 “Fridge Math” Parent &amp; Family Guide</h3>
+              <p>Demystify modern visual strategies so parents can support math homework without frustration.</p>
+            </div>
+            <button type="button" class="tpt-print-action-btn" data-tpt-print="parent">🖨️ Print Fridge Math Guide</button>
+          </div>
+          <div class="tpt-preview-mockup">
+            <strong>Included in Parent Guide:</strong>
+            <ul class="tpt-feature-bullets" style="margin-top:6px">
+              <li>Why we use zero pairs (two-color counters) for negative numbers</li>
+              <li>Why we use pan balance scales for equations instead of rote rules</li>
+              <li>3 dinner-table questions parents can ask instead of "What's the answer?"</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    }
+  }
+};
+
+document.querySelector("#open-print-center")?.addEventListener("click", () => {
+  TeacherPrintCenter.open();
+});
+
+document.addEventListener("click", (event) => {
+  if (event.target.closest("[data-open-print-center]")) {
+    TeacherPrintCenter.open();
+    return;
+  }
+  if (event.target.closest("[data-close-print-center]")) {
+    TeacherPrintCenter.close();
+    return;
+  }
+  const tabBtn = event.target.closest("[data-tpt-tab]");
+  if (tabBtn) {
+    TeacherPrintCenter.activeTab = tabBtn.dataset.tptTab;
+    TeacherPrintCenter.renderTab(TeacherPrintCenter.activeTab);
+    return;
+  }
+  const printAction = event.target.closest("[data-tpt-print]");
+  if (printAction) {
+    const act = printAction.dataset.tptPrint;
+    if (act === "mat") printStudentRecordingMat();
+    else if (act === "exits") printTieredExitTickets();
+    else if (act === "desk") printDeskHelperStrips();
+    else if (act === "anchor") printStrategyAnchorCharts();
+    else if (act === "passport") printFluencyPassport();
+    else if (act === "brag") printBragTags();
+    else if (act === "tent") printStationTentCards();
+    else if (act === "coaching") printSmallGroupCoachingCueSheet();
+    else if (act === "parent") printFridgeMathGuide();
+    return;
   }
 });
 
