@@ -30,6 +30,7 @@ html {
   background: var(--paper);
   color: var(--ink);
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 html.large-text {
@@ -40,6 +41,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
   background:
     linear-gradient(90deg, transparent 0 31px, rgba(209, 79, 122, 0.14) 31px 33px, transparent 33px),
     repeating-linear-gradient(0deg, transparent 0 39px, rgba(60, 111, 182, 0.07) 39px 40px),
@@ -83,7 +85,10 @@ button {
   top: 0.5rem;
   z-index: 100;
   transform: translateY(-150%);
-  padding: 0.7rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0.7rem 1.2rem;
   border-radius: 8px;
   background: #fff;
   color: var(--navy);
@@ -173,8 +178,9 @@ button {
 .quiet-button {
   display: inline-flex;
   align-items: center;
-  min-height: 42px;
-  padding: 0.55rem 0.8rem;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.65rem 0.9rem;
   border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 8px;
   background: transparent;
@@ -280,9 +286,12 @@ main {
 .open-skill,
 .back-button,
 .icon-button {
-  min-height: 46px;
+  min-height: 48px;
   border-radius: 9px;
   font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .primary-action {
@@ -451,8 +460,11 @@ main {
 }
 
 .filter-chip {
-  min-height: 42px;
-  padding: 0.5rem 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.65rem 1.1rem;
   border: 1px solid var(--line-strong);
   border-radius: 999px;
   background: #fff;
@@ -1296,12 +1308,18 @@ main {
   .library-actions {
     align-items: stretch;
     flex-direction: column;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   .strand-filters {
+    display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
     padding-bottom: 0.35rem;
+    scrollbar-width: thin;
   }
 
   .filter-chip {
@@ -1846,6 +1864,7 @@ body.focus-mode .focus-orbit-ring {
 
 .skill-search-field input[type="search"] {
   width: 100%;
+  min-height: 48px;
   padding: 0.65rem 0.85rem 0.65rem 2.4rem;
   border: 1.5px solid var(--line);
   border-radius: 8px;
@@ -1861,7 +1880,16 @@ body.focus-mode .focus-orbit-ring {
   box-shadow: 0 0 0 3px rgba(23, 52, 95, 0.12);
 }
 
+.skill-jump-top {
+  flex: 1 1 240px;
+  max-width: 100%;
+  min-width: 0;
+}
+
 .skill-jump-top select {
+  width: 100%;
+  max-width: 100%;
+  min-height: 48px;
   padding: 0.65rem 0.85rem;
   border: 1.5px solid var(--line);
   border-radius: 8px;
@@ -1870,6 +1898,9 @@ body.focus-mode .focus-orbit-ring {
   font-size: 0.92rem;
   font-weight: 600;
   cursor: pointer;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .skill-jump-top select:focus {
