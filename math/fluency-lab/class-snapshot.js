@@ -79,8 +79,10 @@ export function summarizeReports(reports) {
 export function snapshotHtml(summary) {
   const strategyRows = Object.entries(summary.strategies).sort((a, b) => b[1] - a[1]);
   const skills = summary.skills || [];
+  const troubleSpots = skills.filter((row) => row.stuck > 0).sort((a, b) => b.stuck - a.stuck || a.key.localeCompare(b.key));
   return `<h3>Class snapshot</h3><p>${summary.students} learner report${summary.students === 1 ? "" : "s"} read on this device. Nothing was uploaded.</p>
     ${summary.facts.length ? `<ol class="snap-facts">${summary.facts.map(([key, n]) => `<li><b>${escapeHtml(factLabel(key))}</b> <span>${n} of ${summary.students} learners still finding this tricky</span></li>`).join("")}</ol>` : skills.length ? "" : "<p>No tricky facts showed up in these reports.</p>"}
+    ${troubleSpots.length ? `<section class="snap-trouble"><h4>Skills to revisit</h4><p>These skills were marked stuck in at least one report. Open a skill to plan a short review.</p><ul>${troubleSpots.slice(0, 8).map((row) => `<li><span><strong>${escapeHtml(factLabel(row.key))}</strong><small>${row.stuck} of ${summary.students} learners marked stuck</small></span><button type="button" class="outline-action" data-snapshot-skill="${escapeHtml(row.key.slice(6))}">Open skill</button></li>`).join("")}</ul></section>` : ""}
     ${skills.length ? `<h4>Skills</h4><table class="snap-skills"><thead><tr><th scope="col">Skill</th><th scope="col">Stuck</th><th scope="col">Still growing</th><th scope="col">Remembered</th></tr></thead><tbody>${skills.map((row) => `<tr><th scope="row">${escapeHtml(factLabel(row.key))}</th><td>${row.stuck}</td><td>${row.growing}</td><td>${row.secure}</td></tr>`).join("")}</tbody></table>` : ""}
     ${strategyRows.length ? `<h4>How learners say they think</h4><ul class="snap-strategies">${strategyRows.map(([id, n]) => `<li>${STRATEGIES[id].icon} ${escapeHtml(STRATEGIES[id].label)}: ${n}</li>`).join("")}</ul>` : ""}`;
 }
@@ -131,7 +133,7 @@ async function readReports(files) {
   return reports;
 }
 
-export function mountSnapshot(container) {
+export function mountSnapshot(container, { onOpenSkill = null } = {}) {
   container.innerHTML = `<section class="class-snapshot" aria-labelledby="snap-title"><h3 id="snap-title">Class snapshot</h3><p>Ask learners to use “Download my facts report” on the practice page, then open several of their files here. Each report lists tricky facts and how each skill in its grade is going. The reports hold no names.</p><label class="outline-action file-button">Open facts reports<input id="snap-files" type="file" multiple accept="application/json,.json"/></label><div id="snap-result" aria-live="polite"></div>
     <h3>Compare two weeks</h3><p>Open last week\u2019s reports, then this week\u2019s, to see which facts got easier.</p>
     <div class="button-row"><label class="outline-action file-button">Earlier reports<input id="snap-before" type="file" multiple accept="application/json,.json"/></label><span id="snap-before-count" aria-live="polite"></span><label class="outline-action file-button">Newer reports<input id="snap-after" type="file" multiple accept="application/json,.json"/></label><span id="snap-after-count" aria-live="polite"></span></div><div id="snap-compare-result" aria-live="polite"></div></section>`;
@@ -139,6 +141,10 @@ export function mountSnapshot(container) {
     const reports = await readReports(event.target.files);
     container.querySelector("#snap-result").innerHTML = reports.length ? snapshotHtml(summarizeReports(reports)) : "<p>None of those files were Fluency Lab facts reports.</p>";
     event.target.value = "";
+  });
+  container.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-snapshot-skill]");
+    if (button) onOpenSkill?.(button.dataset.snapshotSkill);
   });
   const sets = { before: [], after: [] };
   for (const which of ["before", "after"]) {

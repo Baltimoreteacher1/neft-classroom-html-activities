@@ -240,7 +240,9 @@ export function dailyPlan(tutor, grade, now = Date.now()) {
   const reviewPool = review.length ? review : ranked.slice(1);
   const refresh = Array.from({ length: 3 }, (_, i) => reviewPool[(Math.floor(rng() * reviewPool.length) + i) % reviewPool.length]);
   return [focus, refresh[0], focus, newSkill, refresh[1], focus, newSkill, refresh[2], focus, ranked[1]].map((entry, index) => ({
-    key: skillKey(entry.skill), purpose: [0, 2, 5, 8].includes(index) ? "Build confidence" : [3, 6].includes(index) ? "Connect a new idea" : index === 9 ? "Finish independently" : "Remember it again",
+    key: skillKey(entry.skill),
+    purpose: [0, 2, 5, 8].includes(index) ? "Build confidence" : [3, 6].includes(index) ? "Connect a new idea" : index === 9 ? "Finish independently" : "Remember it again",
+    reason: entry.reason,
   }));
 }
 

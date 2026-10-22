@@ -145,6 +145,8 @@ const summary = summarizeReports([parsed, parsed]);
 assert.equal(summary.skills[0].key, "skill:6:gcf");
 assert.equal(summary.skills[0].stuck, 2);
 assert.match(snapshotHtml(summary), /Grade 6: Greatest common factor/);
+assert.match(snapshotHtml(summary), /Skills to revisit/);
+assert.match(snapshotHtml(summary), /data-snapshot-skill="6:gcf"/);
 
 // 5. The learner belongs to the tab: another tab switching learners does not move this one.
 const tabA = win.sessionStorage;

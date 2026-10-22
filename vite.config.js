@@ -91,6 +91,18 @@ function copyStandaloneHtml() {
         const dest = resolve(__dirname, "dist", file);
         if (existsSync(src)) cpSync(src, dest);
       }
+      // The standalone Fluency Lab app keeps a direct relative import to this
+      // shared helper. The rest of engine/ stays excluded from the public copy.
+      const fluencySharedModule = "engine/core/instructional-intelligence.js";
+      const fluencySharedSource = resolve(__dirname, fluencySharedModule);
+      const fluencySharedDest = resolve(__dirname, "dist", fluencySharedModule);
+      if (!existsSync(fluencySharedSource)) {
+        throw new Error(
+          `copy-standalone-html: required Fluency Lab module is missing: ${fluencySharedModule}`,
+        );
+      }
+      mkdirSync(dirname(fluencySharedDest), { recursive: true });
+      cpSync(fluencySharedSource, fluencySharedDest);
       // lessons/ is skipped above (its index.html files are Rollup entries), but
       // the generated guided-notes are plain static HTML that must be copied.
       const lessonsDir = resolve(__dirname, "lessons");

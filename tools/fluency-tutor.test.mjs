@@ -226,6 +226,10 @@ for (let grade = 1; grade <= 8; grade++) {
     `Grade ${grade}: daily plan interleaves skills`,
   );
   check(
+    plan.every((entry) => typeof entry.reason === "string" && entry.reason.length > 0),
+    `Grade ${grade}: daily plan explains why each skill was selected`,
+  );
+  check(
     new Set(diagnosticPlan(grade).map((entry) => entry.key)).size === 10,
     `Grade ${grade}: diagnostic samples every skill exactly once`,
   );

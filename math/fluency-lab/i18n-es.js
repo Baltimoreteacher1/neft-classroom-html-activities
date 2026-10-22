@@ -3,6 +3,20 @@
 import { ES_LANGUAGE } from "./i18n-es-language.js";
 
 export const ES = {
+  "Suggested for you": "Sugerencia para ti",
+  "Suggested because": "Sugerida porque",
+  "Preview a sample question": "Ver un ejemplo de pregunta",
+  "Show sample answer": "Mostrar la respuesta del ejemplo",
+  "Standard": "Estándar",
+  "Builds on": "Se basa en",
+  "Can lead to": "Puede llevar a",
+  "This skill was suggested because": "Esta destreza se sugirió porque",
+  "Revisit a tricky idea": "Repasa una idea difícil",
+  "Time for a memory refresh": "Es hora de repasar",
+  "A useful next step from your checkup": "Un paso útil según tu revisión inicial",
+  "Explore something new": "Explora algo nuevo",
+  "Keep this skill fresh": "Mantén fresca esta destreza",
+  "Build independent confidence": "Desarrolla confianza al resolver por tu cuenta",
   "Settings": "Configuración",
   "Display & Sound": "Pantalla y sonido",
   "Skill Library": "Biblioteca de destrezas",

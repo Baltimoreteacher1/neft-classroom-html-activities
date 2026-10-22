@@ -349,7 +349,8 @@ function renderLibrary() {
     )
     .join("");
   const filtered = grade.skills.filter((skill) => state.strand === "All" || skill.strand === state.strand);
-  els.skillGrid.innerHTML = filtered.map(renderSkillCard).join("");
+  const suggested = new Map(recommendations(state.tutor, state.grade).slice(0, 3).map((entry) => [tutorSkillKey(entry.skill), entry]));
+  els.skillGrid.innerHTML = filtered.map((skill) => renderSkillCard(skill, suggested.get(tutorSkillKey(skill)))).join("");
   if (els.skillSearchInput?.value) filterSkillsBySearch();
   const gradeRecords = grade.skills.map(recordFor);
   const fluent = grade.skills.filter((skill) => evidence(state.tutor, skill).secure).length;
@@ -365,11 +366,32 @@ function renderLibrary() {
   document.title = `${grade.label} Math Fluency Lab | EduWonderLab`;
 }
 
-function renderSkillCard(skill) {
+function skillPreviewSeed(skill) {
+  let seed = 2166136261;
+  for (const char of `${skill.grade}:${skill.id}`) seed = Math.imul(seed ^ char.charCodeAt(0), 16777619);
+  return seed >>> 0;
+}
+
+function displayRecommendationReason(reason) {
+  const translated = {
+    "Revisit a tricky idea": t("Revisit a tricky idea"),
+    "Time for a memory refresh": t("Time for a memory refresh"),
+    "A useful next step from your checkup": t("A useful next step from your checkup"),
+    "Explore something new": t("Explore something new"),
+    "Keep this skill fresh": t("Keep this skill fresh"),
+    "Build independent confidence": t("Build independent confidence"),
+  };
+  return translated[reason] || reason;
+}
+
+function renderSkillCard(skill, recommendation = null) {
   const status = evidence(state.tutor, skill);
   const level = status.secure ? 3 : status.independent >= 4 ? 2 : status.recent.length || status.lessonCompleted ? 1 : 0;
   const label = ["New", "Practicing", "Getting strong", "I know it"][level];
   const icon = STRAND_ICONS[skill.strand] || "✏️";
+  const sample = generateProblem(skill, seededRandom(skillPreviewSeed(skill)));
+  const foundations = prerequisites(skill).slice(0, 2);
+  const nextSkills = ALL_SKILLS.filter((candidate) => candidate.grade <= skill.grade + 1 && prerequisites(candidate).some((foundation) => tutorSkillKey(foundation) === tutorSkillKey(skill))).slice(0, 2);
   return `
     <article class="skill-card" data-level="${level}">
       <div class="skill-card-top">
@@ -378,6 +400,16 @@ function renderSkillCard(skill) {
       </div>
       <h3>${escapeHtml(skill.title)}</h3>
       <p>${escapeHtml(skill.learn.rule)}</p>
+      ${recommendation ? `<p class="skill-recommendation"><strong>${t("Suggested for you")}</strong> · ${escapeHtml(displayRecommendationReason(recommendation.reason))}</p>` : ""}
+      <details class="skill-preview">
+        <summary>${t("Preview a sample question")}</summary>
+        <div class="skill-preview-content">
+          <p><strong>${t("Standard")}: ${escapeHtml(skill.standard)}</strong> · ${escapeHtml(skill.strand)}</p>
+          <p class="skill-preview-question">${escapeHtml(sample.question)}</p>
+          <details class="sample-answer"><summary>${t("Show sample answer")}</summary><p>${escapeHtml(sample.displayAnswer)}</p></details>
+          ${foundations.length || nextSkills.length ? `<div class="skill-connections">${foundations.length ? `<p><strong>${t("Builds on")}</strong> ${foundations.map((related) => escapeHtml(related.title)).join(" · ")}</p>` : ""}${nextSkills.length ? `<p><strong>${t("Can lead to")}</strong> ${nextSkills.map((related) => escapeHtml(related.title)).join(" · ")}</p>` : ""}</div>` : ""}
+        </div>
+      </details>
       <div class="skill-card-actions">
         <button class="open-skill primary-action" data-skill="${skill.id}">Practice &amp; Learn</button>
         <div class="skill-action-row">
@@ -684,7 +716,8 @@ function nextProblem(restoredItem = null) {
   formatProblemArena(state.item);
   els.topic.textContent = `${skill.title} · Grade ${skill.grade}`;
   document.querySelector("#problem-language-support").innerHTML = state.session.mode === "diagnostic" ? spanishPeekHtml(state.item) : problemSupportHtml(skill, state.item);
-  els.insight.textContent = state.session.mode === "diagnostic" ? "One sample per skill. Choose “I’m not sure yet” whenever you need to." : state.session.queue?.[state.session.answered]?.purpose || (state.initialSupport ? "A smaller step with coaching. We’ll build back toward independent work." : adapting && level === 2 ? "Your recent answers were strong. Try this one independently, then explain a check." : adapting ? "Work at your pace. Help is here when you need it." : "");
+  const queueEntry = state.session.queue?.[state.session.answered];
+  els.insight.textContent = state.session.mode === "diagnostic" ? "One sample per skill. Choose “I’m not sure yet” whenever you need to." : queueEntry?.reason ? `${queueEntry.purpose}. ${t("This skill was suggested because")}: ${displayRecommendationReason(queueEntry.reason)}.` : queueEntry?.purpose || (state.initialSupport ? "A smaller step with coaching. We’ll build back toward independent work." : adapting && level === 2 ? "Your recent answers were strong. Try this one independently, then explain a check." : adapting ? "Work at your pace. Help is here when you need it." : "");
   const activityEvidence = readInstructionalEvidence(instructionalEvidenceState).filter((entry) => entry.activity === tutorSkillKey(skill));
   const priorSupport = activityEvidence.some((entry) => entry.condition === "supported");
   const recoveredIndependently = priorSupport && independentRecoveryCount(activityEvidence, tutorSkillKey(skill)) > 0;
@@ -7137,7 +7170,7 @@ function renderDashboard() {
   const genome = calculateFluencyGenome(activeProfile);
   els.dashboard.innerHTML = `
     ${renderFluencyGenomeCard(genome)}
-    <div class="next-step-card"><p class="section-label">${escapeHtml(PROFILE_NAMES[activeProfile])}’s next step</p><h3>${escapeHtml(next.skill.title)}</h3><p>${escapeHtml(next.reason)}. Start with the visual idea or go straight to practice.</p><div class="button-row"><button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">See the idea</button><button class="outline-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="adaptive">Practice this skill</button></div></div>
+    <div class="next-step-card"><p class="section-label">${escapeHtml(PROFILE_NAMES[activeProfile])}’s next step</p><h3>${escapeHtml(next.skill.title)}</h3><p><strong>${t("Suggested because")}</strong>: ${escapeHtml(displayRecommendationReason(next.reason))}. Start with the visual idea or go straight to practice.</p><div class="button-row"><button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">See the idea</button><button class="outline-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="adaptive">Practice this skill</button></div></div>
     <div class="checkup-card"><h3>Find my starting point</h3><p>Try one question from each skill in Grade ${state.grade}. Skip what you haven’t learned yet.</p><button class="outline-action" data-start-checkup>${state.tutor.diagnostics[state.grade] ? 'Try the checkup again' : 'Start a 10-question checkup'}</button><p class="checkup-note">A quick guide, not a placement test.</p></div>
     <div class="daily-progress"><strong>${today} problems completed today</strong><span>${due ? `${due} skills ready for a memory refresh` : 'A small amount of thoughtful practice adds up.'}</span><button class="text-action" data-start-daily>Open my daily practice</button></div>
     ${saved?.version === 2 && saved.session && !saved.session.finished ? `<div class="resume-banner"><div><strong>Your practice is waiting.</strong><p>${escapeHtml(saved.item?.skill?.title || 'Practice set')} · ${saved.session.answered} completed</p></div><button class="primary-action" data-resume-practice>Continue saved practice</button></div>` : ''}`;
@@ -7150,7 +7183,7 @@ function openHubView(view) {
   if (view === "path") renderPath();
   if (view === "notebook") renderNotebook();
   if (view === "games") { cleanupGames?.(); cleanupGames = mountGames(els.games, { grade: state.grade, autostart: state.autoGame, assignedStop: state.autoStop }); state.autoGame = null; state.autoStop = null; }
-  if (view === "teacher") mountTeacherStudio(els.teacher, { grade: state.grade, onLaunch: launchAssignment, onPrint: printHtml, announce, games: GAMES, stopsFor, stopOptions, snapshot: (host, studioGrade) => { mountSnapshot(host); mountPaperGames(host, { grade: studioGrade, stopsFor, onPrint: printHtml }); } });
+  if (view === "teacher") mountTeacherStudio(els.teacher, { grade: state.grade, onLaunch: launchAssignment, onPrint: printHtml, announce, games: GAMES, stopsFor, stopOptions, snapshot: (host, studioGrade) => { mountSnapshot(host, { onOpenSkill: (key) => { const skill = findSkill(key); if (skill) openSkill(skill.id, "adaptive", skill.grade); } }); mountPaperGames(host, { grade: studioGrade, stopsFor, onPrint: printHtml }); } });
   document.title = `${{ teacher: 'Teacher studio', path: 'My learning path', games: 'Game Room' }[view] || 'Mistake notebook'} | Math Fluency Lab`;
   setUrl();
   document.querySelector(`#${view}-view`)?.scrollIntoView({ behavior: "smooth", block: "start" });
