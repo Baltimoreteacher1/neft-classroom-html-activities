@@ -159,7 +159,7 @@ export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, o
     const token = encodeAssignment(assignment);
     const url = new URL("https://eduwonderlab.com/math/fluency-lab/"); url.hash = `assignment=${token}`;
     const result = container.querySelector("#assignment-result"); result.hidden = false;
-    result.innerHTML = `<h3>${escapeHtml(label)}</h3><p>Grade ${grade} · ${selected.size ? `${selected.size} skill${selected.size === 1 ? '' : 's'} · ${count} problems each visit` : 'game only'}${assignment.game ? ` · Game: ${escapeHtml(games.find((g) => g.id === assignment.game)?.name || assignment.game)}` : ''}. New numbers are generated each time.</p><label for="assignment-link">Student link<input id="assignment-link" readonly value="${escapeHtml(url.href)}"/></label><div class="button-row"><button class="primary-action" type="button" data-launch-assignment>Try this assignment</button><button class="outline-action" type="button" data-copy-assignment>Copy student link</button><button class="outline-action" type="button" data-print-packet>Print a five-day packet</button></div><label class="inline-check"><input type="checkbox" id="packet-key"/> Add a separate teacher answer-key page to the printed packet</label><p class="family-message">At home: open the link, choose your local profile, and complete a set. Use “See it & build it” when you need a visual explanation. Tell someone one strategy you used.</p>`;
+    result.innerHTML = `<h3>${escapeHtml(label)}</h3><p>Grade ${grade} · ${selected.size ? `${selected.size} skill${selected.size === 1 ? '' : 's'} · ${count} problems each visit` : 'game only'}${assignment.game ? ` · Game: ${escapeHtml(games.find((g) => g.id === assignment.game)?.name || assignment.game)}` : ''}. New numbers are generated each time.</p><label for="assignment-link">Student link<input id="assignment-link" readonly value="${escapeHtml(url.href)}"/></label><div class="button-row"><button class="primary-action" type="button" data-launch-assignment>Try this assignment</button><button class="outline-action" type="button" data-copy-assignment>Copy student link</button><button class="outline-action" type="button" data-print-packet>Print a five-day packet</button></div><div class="lms-share-row" style="margin-top:0.75rem; padding-top:0.75rem; border-top:1px dashed #cbd5e1; display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center"><a class="outline-action lms-share-btn" href="https://classroom.google.com/share?url=${encodeURIComponent(url.href)}&title=${encodeURIComponent(label)}" target="_blank" rel="noopener" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; font-weight:700">🏫 Google Classroom</a><button class="outline-action lms-embed-btn" type="button" data-copy-lms-embed style="font-weight:700">📋 Copy Canvas / LMS Card</button><button class="outline-action qr-toggle-btn" type="button" data-toggle-qr style="font-weight:700">📱 Project QR Code</button></div><div id="assignment-qr-box" class="assignment-qr-box" hidden style="margin-top:0.75rem; background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:12px; text-align:center; max-width:280px"><img class="assignment-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(url.href)}" alt="QR Code for ${escapeHtml(label)}" width="180" height="180" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"/><p class="qr-offline-msg" style="display:none; color:#64748b; font-size:0.85rem">QR code image requires internet. Use student link above.</p><p style="margin:6px 0 0; font-size:0.8rem; color:#475569; font-weight:600">Scan with tablet/Chromebook camera</p></div><label class="inline-check" style="margin-top:0.75rem"><input type="checkbox" id="packet-key"/> Add a separate teacher answer-key page to the printed packet</label><p class="family-message">At home: open the link, choose your local profile, and complete a set. Use “See it & build it” when you need a visual explanation. Tell someone one strategy you used.</p>`;
     result.scrollIntoView({ behavior: "smooth", block: "start" });
   };
   container.onclick = async (event) => {
@@ -177,6 +177,32 @@ export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, o
       const input = container.querySelector("#assignment-link");
       try { await navigator.clipboard.writeText(input.value); announce("Assignment link copied."); }
       catch { input.focus(); input.select(); announce("Select and copy the student link."); }
+    }
+    if (event.target.closest("[data-toggle-qr]")) {
+      const qrBox = container.querySelector("#assignment-qr-box");
+      if (qrBox) {
+        qrBox.hidden = !qrBox.hidden;
+        if (!qrBox.hidden) qrBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+      return;
+    }
+    if (event.target.closest("[data-copy-lms-embed]") && assignment) {
+      const token = encodeAssignment(assignment);
+      const url = new URL("https://eduwonderlab.com/math/fluency-lab/"); url.hash = `assignment=${token}`;
+      const embedHtml = `<div style="font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; max-width:520px; border:2px solid #2563eb; border-radius:12px; padding:18px 20px; background:#f8fafc; color:#0f172a; margin:16px auto; box-shadow:0 4px 12px rgba(0,0,0,0.06)"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px"><span style="background:#2563eb; color:#ffffff; font-size:11px; font-weight:800; padding:3px 10px; border-radius:12px; text-transform:uppercase; letter-spacing:0.5px">Grade ${grade} · Math Fluency Lab</span><span style="font-size:13px; color:#475569; font-weight:600">${count} Problems</span></div><h3 style="margin:0 0 8px 0; font-size:18px; color:#1e293b; font-weight:800">${escapeHtml(label)}</h3><p style="margin:0 0 14px 0; font-size:14px; line-height:1.5; color:#334155">${selected.size ? `Practice session focusing on ${selected.size} core mathematical standard${selected.size === 1 ? '' : 's'} with adaptive visual models and immediate feedback.` : 'Interactive mathematical game challenge.'}</p><div style="text-align:center; margin-bottom:12px"><a href="${escapeHtml(url.href)}" target="_blank" rel="noopener" style="display:inline-block; background:#2563eb; color:#ffffff; font-weight:800; font-size:15px; text-decoration:none; padding:10px 22px; border-radius:8px; box-shadow:0 2px 6px rgba(37,99,235,0.3)">🚀 Start Fluency Lab Practice</a></div><div style="border-top:1px solid #cbd5e1; padding-top:8px; font-size:12px; color:#64748b; text-align:center">Zero-login access · Works on Chromebooks, tablets &amp; mobile · “See it &amp; build it” steps open when needed.</div></div>`;
+      try {
+        await navigator.clipboard.writeText(embedHtml);
+        announce("Canvas / Schoology embed HTML card copied to clipboard.");
+        const btn = container.querySelector("[data-copy-lms-embed]");
+        if (btn) {
+          const original = btn.textContent;
+          btn.textContent = "✓ Card HTML Copied!";
+          window.setTimeout(() => { btn.textContent = original; }, 2500);
+        }
+      } catch {
+        announce("Unable to access clipboard. Use student link above.");
+      }
+      return;
     }
   };
   render();

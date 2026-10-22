@@ -2717,6 +2717,1550 @@ const NUMBER_TALKS = [
         "«¿Cómo demuestra la forma expandida de Maya por qué la regla de Mason siempre funciona?»"
       ]
     }
+  },
+  // Grade 1 additional routines
+  {
+    id: "nt-g1-3",
+    grade: 1,
+    title: "Make 10 & Near Doubles",
+    standard: "1.OA.C.6",
+    problem: "7 + 5 = ?",
+    silentPrompt: {
+      en: "Fist to chest: show a thumb when you have one way to combine 7 and 5.",
+      es: "Pulgar al pecho: muestra un pulgar cuando tengas una forma de combinar 7 y 5."
+    },
+    noticeWonder: {
+      en: [
+        "7 is 3 away from 10.",
+        "5 decomposes into 3 and 2.",
+        "Both numbers are odd, so their sum must be even."
+      ],
+      es: [
+        "Al 7 le faltan 3 para llegar a 10.",
+        "El 5 se descompone en 3 y 2.",
+        "Ambos números son impares, así que su suma es par."
+      ]
+    },
+    strategies: [
+      {
+        student: "Carlos",
+        name: { en: "Make a Friendly 10", es: "Formar un 10 amigable" },
+        steps: "7 + 5 = 7 + (3 + 2) = 10 + 2 = 12",
+        explanation: {
+          en: "Take 3 from 5 to make 10 with 7, then add the 2 left over.",
+          es: "Toma 3 del 5 para formar 10 con el 7, luego suma los 2 que sobran."
+        }
+      },
+      {
+        student: "Maya",
+        name: { en: "Doubles Plus 2", es: "Dobles más 2" },
+        steps: "5 + 5 = 10, then 10 + 2 = 12",
+        explanation: {
+          en: "Use known double 5 + 5 = 10, then add the remaining 2 from the 7.",
+          es: "Usa el doble conocido 5 + 5 = 10 y luego añade los 2 que faltaban del 7."
+        }
+      },
+      {
+        student: "Liam",
+        name: { en: "Count On on Number Line", es: "Contar hacia adelante en la recta" },
+        steps: "Start at 7... +3 gives 10, +2 gives 12",
+        explanation: {
+          en: "Jump 3 to land on 10, then jump 2 more to land on 12.",
+          es: "Salta 3 para caer en el 10, luego salta 2 más para llegar al 12."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“How did Carlos and Maya both decompose a number to make friendly groups?”",
+        "“Why is landing on 10 so helpful for mental math?”",
+        "“Who used Liam’s number line jump strategy in their head?”"
+      ],
+      es: [
+        "«¿Cómo descompusieron números Carlos y Maya para formar grupos amigables?»",
+        "«¿Por qué llegar al 10 ayuda tanto en el cálculo mental?»",
+        "«¿Quién usó la estrategia de saltos en la recta como Liam?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g1-4",
+    grade: 1,
+    title: "Subtracting Back Through 10",
+    standard: "1.OA.B.4",
+    problem: "13 − 5 = ?",
+    silentPrompt: {
+      en: "Fist to chest: how can breaking 5 apart help you subtract back to 10?",
+      es: "Pulgar al pecho: ¿cómo descomponer el 5 te ayuda a restar pasando por el 10?"
+    },
+    noticeWonder: {
+      en: [
+        "13 is 3 more than 10.",
+        "5 can be split into 3 and 2.",
+        "Subtracting 3 first reaches an exact ten."
+      ],
+      es: [
+        "13 es 3 más que 10.",
+        "El 5 se separa en 3 y 2.",
+        "Restar 3 primero nos lleva exactamente al diez."
+      ]
+    },
+    strategies: [
+      {
+        student: "Noah",
+        name: { en: "Subtract Back Through 10", es: "Restar pasando por el 10" },
+        steps: "13 − 3 = 10, then 10 − 2 = 8",
+        explanation: {
+          en: "Remove 3 ones to reach 10, then take away the other 2 from 10.",
+          es: "Quita 3 unidades para llegar al 10, luego quita las otras 2 del 10."
+        }
+      },
+      {
+        student: "Aaliyah",
+        name: { en: "Think Addition (Missing Addend)", es: "Pensar en suma (sumando que falta)" },
+        steps: "5 + ? = 13 → 5 + 5 = 10, 10 + 3 = 13, so 5 + 3 = 8",
+        explanation: {
+          en: "Ask: what adds to 5 to make 13? 5 + 8 = 13, so the answer is 8.",
+          es: "Pregunta: ¿qué le sumo a 5 para llegar a 13? 5 + 8 = 13, así que es 8."
+        }
+      },
+      {
+        student: "Lucas",
+        name: { en: "Over-Subtract & Compensate", es: "Restar de más y compensar" },
+        steps: "13 − 10 = 3, then 3 + 5 = 8",
+        explanation: {
+          en: "Take away 10 instead of 5, then add back the 5 extra that were removed.",
+          es: "Resta 10 en vez de 5 y luego vuelve a sumar los 5 que quitaste de más."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“How does Noah's two-step jump connect to the ten-frame model?”",
+        "“Why does thinking of addition help when subtraction feels tricky?”",
+        "“What did Aaliyah see in common between 5 and 13?”"
+      ],
+      es: [
+        "«¿Cómo se conecta el salto en dos pasos de Noah con el marco de diez?»",
+        "«¿Por qué pensar en una suma ayuda cuando restar parece difícil?»",
+        "«¿Qué relación vio Aaliyah entre el 5 y el 13?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g1-5",
+    grade: 1,
+    title: "Compensation & Near Doubles",
+    standard: "1.OA.C.6",
+    problem: "9 + 8 = ?",
+    silentPrompt: {
+      en: "Fist to chest: can you solve 9 + 8 without counting one by one?",
+      es: "Pulgar al pecho: ¿puedes resolver 9 + 8 sin contar de uno en uno?"
+    },
+    noticeWonder: {
+      en: [
+        "9 is just 1 less than 10.",
+        "8 and 9 are consecutive neighbors.",
+        "It is very close to the double 8 + 8 or 9 + 9."
+      ],
+      es: [
+        "9 es solo 1 menos que 10.",
+        "8 y 9 son números vecinos consecutivos.",
+        "Está muy cerca del doble 8 + 8 o 9 + 9."
+      ]
+    },
+    strategies: [
+      {
+        student: "Zara",
+        name: { en: "Make a 10 with 9", es: "Formar un 10 con el 9" },
+        steps: "9 + 1 = 10, 8 − 1 = 7, so 10 + 7 = 17",
+        explanation: {
+          en: "Move 1 from the 8 over to the 9 to create 10 + 7 = 17.",
+          es: "Pasa 1 del 8 al 9 para crear 10 + 7 = 17."
+        }
+      },
+      {
+        student: "Ethan",
+        name: { en: "Doubles Plus 1", es: "Dobles más 1" },
+        steps: "8 + 8 = 16, then 16 + 1 = 17",
+        explanation: {
+          en: "Use known double 8 + 8 = 16, then add 1 more since 9 is 8 + 1.",
+          es: "Usa el doble 8 + 8 = 16 y suma 1 más porque 9 es 8 + 1."
+        }
+      },
+      {
+        student: "Mia",
+        name: { en: "Doubles Minus 1", es: "Dobles menos 1" },
+        steps: "9 + 9 = 18, then 18 − 1 = 17",
+        explanation: {
+          en: "Double the 9 to get 18, then subtract 1 because we only had 8.",
+          es: "Duplica el 9 para obtener 18 y resta 1 porque solo teníamos 8."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“How do Ethan and Mia use the same double concept from opposite directions?”",
+        "“Why is Zara’s make-10 move so efficient when a 9 appears?”",
+        "“Which strategy feels easiest to explain to a partner?”"
+      ],
+      es: [
+        "«¿Cómo usan Ethan y Mia la idea del doble pero desde direcciones opuestas?»",
+        "«¿Por qué el movimiento de Zara de formar 10 es tan rápido cuando hay un 9?»",
+        "«¿Cuál estrategia te resulta más fácil de explicarle a tu compañero?»"
+      ]
+    }
+  },
+  // Grade 2 additional routines
+  {
+    id: "nt-g2-3",
+    grade: 2,
+    title: "Friendly 50 Compensation",
+    standard: "2.NBT.B.5",
+    problem: "48 + 37 = ?",
+    silentPrompt: {
+      en: "Fist to chest: what landmark number is 48 close to?",
+      es: "Pulgar al pecho: ¿a qué número de referencia está cerca el 48?"
+    },
+    noticeWonder: {
+      en: [
+        "48 is only 2 away from 50.",
+        "37 can easily give 2 to 48.",
+        "50 plus any number is quick mental addition."
+      ],
+      es: [
+        "48 está a solo 2 unidades de 50.",
+        "El 37 puede prestarle 2 al 48 fácilmente.",
+        "50 más cualquier número se suma mentalmente al instante."
+      ]
+    },
+    strategies: [
+      {
+        student: "Ben",
+        name: { en: "Give and Take (Compensation)", es: "Compensar / Dar y quitar" },
+        steps: "(48 + 2) + (37 − 2) = 50 + 35 = 85",
+        explanation: {
+          en: "Shift 2 from 37 to 48 to turn it into 50 + 35 = 85.",
+          es: "Pasa 2 del 37 al 48 para convertirlo en 50 + 35 = 85."
+        }
+      },
+      {
+        student: "Layla",
+        name: { en: "Split Tens and Ones", es: "Separar decenas y unidades" },
+        steps: "40 + 30 = 70, 8 + 7 = 15, then 70 + 15 = 85",
+        explanation: {
+          en: "Add the tens (40 + 30 = 70) and ones (8 + 7 = 15), then combine to get 85.",
+          es: "Suma las decenas (40 + 30 = 70) y unidades (8 + 7 = 15), luego junta: 85."
+        }
+      },
+      {
+        student: "Owen",
+        name: { en: "Add 50 and Subtract 2", es: "Sumar 50 y restar 2" },
+        steps: "50 + 37 = 87, then 87 − 2 = 85",
+        explanation: {
+          en: "Treat 48 as 50 − 2. Add 50 + 37 = 87, then subtract the extra 2.",
+          es: "Trata al 48 como 50 − 2. Suma 50 + 37 = 87 y resta el 2 de más."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why does shifting 2 not change the total sum in Ben’s method?”",
+        "“How does Layla’s tens and ones decomposition make 8 + 7 easier?”",
+        "“When would you choose Ben’s compensation over Owen’s over-addition?”"
+      ],
+      es: [
+        "«¿Por qué mover 2 no cambia la suma total en el método de Ben?»",
+        "«¿Cómo facilita la separación en decenas y unidades el cálculo de 8 + 7?»",
+        "«¿Cuándo preferirías la compensación de Ben frente a sumar 50 de Owen?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g2-4",
+    grade: 2,
+    title: "Constant Difference (Shift Method)",
+    standard: "2.NBT.B.5",
+    problem: "73 − 28 = ?",
+    silentPrompt: {
+      en: "Fist to chest: can you make the number being subtracted end in 0?",
+      es: "Pulgar al pecho: ¿puedes hacer que el número restado termine en 0?"
+    },
+    noticeWonder: {
+      en: [
+        "28 is 2 away from 30.",
+        "Subtracting 30 is much easier than subtracting 28.",
+        "The distance between two numbers stays identical if both shift by 2."
+      ],
+      es: [
+        "28 está a 2 unidades de 30.",
+        "Restar 30 es mucho más fácil que restar 28.",
+        "La distancia entre dos números no cambia si ambos se desplazan 2 unidades."
+      ]
+    },
+    strategies: [
+      {
+        student: "Amir",
+        name: { en: "Constant Difference Shift", es: "Diferencia constante (desplazamiento)" },
+        steps: "(73 + 2) − (28 + 2) = 75 − 30 = 45",
+        explanation: {
+          en: "Add 2 to both numbers. The difference between 75 and 30 is identical: 45.",
+          es: "Suma 2 a ambos números. La diferencia entre 75 y 30 es idéntica: 45."
+        }
+      },
+      {
+        student: "Chloe",
+        name: { en: "Add Up on Number Line", es: "Sumar hacia adelante en la recta" },
+        steps: "28 + 2 = 30, 30 + 40 = 70, 70 + 3 = 73 → 2 + 40 + 3 = 45",
+        explanation: {
+          en: "Count up from 28 to 73 in friendly hops: +2 to 30, +40 to 70, +3 to 73.",
+          es: "Avanza de 28 a 73 en saltos amigables: +2 a 30, +40 a 70, +3 a 73."
+        }
+      },
+      {
+        student: "Leo",
+        name: { en: "Decompose Subtrahend", es: "Descomponer el sustraendo" },
+        steps: "73 − 20 = 53, 53 − 3 = 50, 50 − 5 = 45",
+        explanation: {
+          en: "Subtract 20 first (53), then take away 3 to reach 50, then take 5 more.",
+          es: "Resta 20 primero (53), luego quita 3 para llegar a 50 y quita 5 más."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why is the difference between 75 and 30 exactly the same as 73 and 28?”",
+        "“How does Chloe’s adding-up strategy remove the need for borrowing?”",
+        "“Which strategy would you use if the problem were 84 − 39?”"
+      ],
+      es: [
+        "«¿Por qué la distancia entre 75 y 30 es exactamente la misma que entre 73 y 28?»",
+        "«¿Cómo elimina la estrategia de Chloe la necesidad de reagrupar/pedir prestado?»",
+        "«¿Qué estrategia usarías si el problema fuera 84 − 39?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g2-5",
+    grade: 2,
+    title: "Quarters & Landmark 25s",
+    standard: "2.NBT.B.6",
+    problem: "25 + 26 + 25 + 24 = ?",
+    silentPrompt: {
+      en: "Fist to chest: look for benchmark numbers or friendly pairs.",
+      es: "Pulgar al pecho: busca números de referencia o parejas amigables."
+    },
+    noticeWonder: {
+      en: [
+        "There are four addends all close to 25.",
+        "26 is 1 more than 25, while 24 is 1 less.",
+        "Four quarters make 100."
+      ],
+      es: [
+        "Hay cuatro sumandos todos cercanos a 25.",
+        "26 es 1 más que 25, y 24 es 1 menos.",
+        "Cuatro monedas de 25 centavos forman 100."
+      ]
+    },
+    strategies: [
+      {
+        student: "Daniel",
+        name: { en: "Balance to Four 25s", es: "Equilibrar a cuatro 25s" },
+        steps: "Move 1 from 26 to 24 → 25 + 25 + 25 + 25 = 100",
+        explanation: {
+          en: "Take 1 from 26 and give it to 24. Now you have 4 groups of 25 = 100.",
+          es: "Quita 1 al 26 y dáselo al 24. Ahora tienes 4 grupos de 25 = 100."
+        }
+      },
+      {
+        student: "Harper",
+        name: { en: "Pair into 50s", es: "Emparejar en 50s" },
+        steps: "(25 + 25 = 50) and (26 + 24 = 50) → 50 + 50 = 100",
+        explanation: {
+          en: "Group the two 25s together (50), and pair 26 with 24 (50). 50 + 50 = 100.",
+          es: "Agrupa los dos 25 juntos (50), y junta 26 con 24 (50). 50 + 50 = 100."
+        }
+      },
+      {
+        student: "Sam",
+        name: { en: "Add Tens then Ones", es: "Sumar decenas y luego unidades" },
+        steps: "20 × 4 = 80, 5 + 6 + 5 + 4 = 20 → 80 + 20 = 100",
+        explanation: {
+          en: "Add the four tens (80), then sum 5 + 6 + 5 + 4 = 20. 80 + 20 = 100.",
+          es: "Suma las cuatro decenas (80) y luego las unidades (20). 80 + 20 = 100."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“How does Daniel’s balance method connect to money and coins?”",
+        "“What property of addition allows Harper to reorder the terms?”",
+        "“Which approach helped you see 100 the fastest?”"
+      ],
+      es: [
+        "«¿Cómo se conecta el método de Daniel con las monedas de 25 centavos?»",
+        "«¿Qué propiedad de la suma le permite a Harper cambiar el orden de los números?»",
+        "«¿Qué método te hizo ver el 100 más rápidamente?»"
+      ]
+    }
+  },
+  // Grade 3 additional routines
+  {
+    id: "nt-g3-3",
+    grade: 3,
+    title: "Ten Times Minus One Group",
+    standard: "3.OA.B.5",
+    problem: "9 × 7 = ?",
+    silentPrompt: {
+      en: "Fist to chest: how can multiplying by 10 help you find 9 times 7?",
+      es: "Pulgar al pecho: ¿cómo multiplicar por 10 te ayuda a encontrar 9 por 7?"
+    },
+    noticeWonder: {
+      en: [
+        "9 groups is 1 less group than 10 groups.",
+        "Multiplying by 10 is easy: 10 × 7 = 70.",
+        "Subtracting one group of 7 gives the answer."
+      ],
+      es: [
+        "9 grupos es 1 grupo menos que 10 grupos.",
+        "Multiplicar por 10 es fácil: 10 × 7 = 70.",
+        "Restar un grupo de 7 nos da la respuesta exacta."
+      ]
+    },
+    strategies: [
+      {
+        student: "Priya",
+        name: { en: "10 Groups Minus 1 Group", es: "10 grupos menos 1 grupo" },
+        steps: "10 × 7 = 70, then 70 − 7 = 63",
+        explanation: {
+          en: "Find 10 groups of 7 (70), then remove 1 group of 7 to get 63.",
+          es: "Calcula 10 grupos de 7 (70) y resta 1 grupo de 7 para obtener 63."
+        }
+      },
+      {
+        student: "Julian",
+        name: { en: "Split into 5s and 4s", es: "Separar en 5s y 4s" },
+        steps: "(5 × 7 = 35) + (4 × 7 = 28) → 35 + 28 = 63",
+        explanation: {
+          en: "Decompose 9 into 5 + 4. Multiply 5 × 7 = 35 and 4 × 7 = 28, then sum.",
+          es: "Descompón 9 en 5 + 4. Multiplica 5 × 7 = 35 y 4 × 7 = 28, luego suma: 63."
+        }
+      },
+      {
+        student: "Grace",
+        name: { en: "Nines Digit Pattern", es: "Patrón de los dígitos del 9" },
+        steps: "Tens digit is 7 − 1 = 6; ones digit is 9 − 6 = 3 → 63",
+        explanation: {
+          en: "In the 9s table, the digits sum to 9 (6 + 3 = 9) and tens is 7 − 1 = 6.",
+          es: "En la tabla del 9, los dígitos suman 9 (6 + 3 = 9) y las decenas son 7 − 1 = 6."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why is Priya’s strategy an example of the distributive property: (10 − 1) × 7?”",
+        "“How can Julian’s split strategy work for ANY multiplication fact?”",
+        "“Which way would you teach to a second grader learning facts?”"
+      ],
+      es: [
+        "«¿Por qué la estrategia de Priya es un ejemplo de la propiedad distributiva: (10 − 1) × 7?»",
+        "«¿Cómo sirve la descomposición de Julian para CUALQUIER tabla de multiplicar?»",
+        "«¿Cuál método le enseñarías a un estudiante más pequeño?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g3-4",
+    grade: 3,
+    title: "Double and Double Again",
+    standard: "3.OA.B.5",
+    problem: "16 × 4 = ?",
+    silentPrompt: {
+      en: "Fist to chest: how can multiplying by 4 be thought of as two doubles?",
+      es: "Pulgar al pecho: ¿cómo multiplicar por 4 puede verse como dos dobles?"
+    },
+    noticeWonder: {
+      en: [
+        "4 is 2 × 2.",
+        "Doubling a number twice is the same as multiplying by 4.",
+        "16 can also be decomposed into 10 and 6."
+      ],
+      es: [
+        "4 es 2 × 2.",
+        "Duplicar dos veces es lo mismo que multiplicar por 4.",
+        "16 también se descompone fácilmente en 10 y 6."
+      ]
+    },
+    strategies: [
+      {
+        student: "Zion",
+        name: { en: "Double-Double", es: "Doble y luego doble" },
+        steps: "Double 16 = 32, double 32 = 64",
+        explanation: {
+          en: "Since 4 = 2 × 2, double 16 once to get 32, then double 32 to get 64.",
+          es: "Como 4 = 2 × 2, duplica 16 una vez (32) y luego duplica 32 para llegar a 64."
+        }
+      },
+      {
+        student: "Emma",
+        name: { en: "Distribute by Place Value", es: "Distribuir por valor posicional" },
+        steps: "(10 × 4 = 40) + (6 × 4 = 24) → 40 + 24 = 64",
+        explanation: {
+          en: "Break 16 into 10 + 6. Multiply 10 × 4 = 40 and 6 × 4 = 24, then add.",
+          es: "Separa 16 en 10 + 6. Multiplica 10 × 4 = 40 y 6 × 4 = 24, luego suma."
+        }
+      },
+      {
+        student: "Kai",
+        name: { en: "Double and Halve", es: "Duplicar y dividir a la mitad" },
+        steps: "(16 ÷ 2) × (4 × 2) = 8 × 8 = 64",
+        explanation: {
+          en: "Halve 16 to 8 and double 4 to 8. Known square fact: 8 × 8 = 64.",
+          es: "Divide 16 entre 2 (8) y duplica 4 (8). Hecho conocido: 8 × 8 = 64."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why did Kai’s double-and-halve strategy turn the problem into a perfect square?”",
+        "“How do Zion and Emma show that breaking factors apart preserves the area?”",
+        "“Which strategy is fastest when one factor is a multiple of 4?”"
+      ],
+      es: [
+        "«¿Por qué el método de Kai convirtió el problema en un cuadrado perfecto (8 × 8)?»",
+        "«¿Cómo demuestran Zion y Emma que descomponer factores conserva el área?»",
+        "«¿Cuál estrategia es más rápida cuando un factor es múltiplo de 4?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g3-5",
+    grade: 3,
+    title: "Think Multiplication for Division",
+    standard: "3.OA.B.6",
+    problem: "48 ÷ 6 = ?",
+    silentPrompt: {
+      en: "Fist to chest: what multiplication fact connects 6 to 48?",
+      es: "Pulgar al pecho: ¿qué hecho de multiplicación conecta el 6 con el 48?"
+    },
+    noticeWonder: {
+      en: [
+        "48 is an even number.",
+        "6 × 5 = 30 is a helpful landmark.",
+        "We need to find how many groups of 6 make 48."
+      ],
+      es: [
+        "48 es un número par.",
+        "6 × 5 = 30 es un punto de referencia muy útil.",
+        "Buscamos cuántos grupos de 6 forman 48."
+      ]
+    },
+    strategies: [
+      {
+        student: "Maya",
+        name: { en: "Missing Factor", es: "Factor desconocido" },
+        steps: "6 × ? = 48 → 6 × 8 = 48, so 48 ÷ 6 = 8",
+        explanation: {
+          en: "Think of division as finding the missing dimension of a 6 by ? rectangle.",
+          es: "Piensa en la división como buscar la dimensión que falta en un rectángulo de 6 por ?."
+        }
+      },
+      {
+        student: "Elijah",
+        name: { en: "Chunking with Friendly 5s", es: "Partición con el 5 amigable" },
+        steps: "6 × 5 = 30, remaining 48 − 30 = 18. 6 × 3 = 18. 5 + 3 = 8",
+        explanation: {
+          en: "Take out 5 groups of 6 (30). 18 is left, which is 3 groups of 6. Total = 8.",
+          es: "Toma 5 grupos de 6 (30). Quedan 18, que son 3 grupos de 6. Total = 8."
+        }
+      },
+      {
+        student: "Camila",
+        name: { en: "Halve Both Numbers", es: "Dividir ambos entre 2" },
+        steps: "48 ÷ 6 = 24 ÷ 3 = 8",
+        explanation: {
+          en: "Halve both the dividend (24) and divisor (3). 24 ÷ 3 = 8.",
+          es: "Saca la mitad al dividendo (24) y al divisor (3). 24 ÷ 3 = 8."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why did Camila’s trick of halving both numbers give the exact same answer?”",
+        "“How does Elijah’s chunking prepare us for long division in 4th grade?”",
+        "“Who can restate the inverse connection between multiplication and division?”"
+      ],
+      es: [
+        "«¿Por qué el truco de Camila de sacar la mitad a ambos dio exactamente el mismo resultado?»",
+        "«¿Cómo prepara el método de partes de Elijah para la división larga en 4.° grado?»",
+        "«¿Quién puede explicar la relación inversa entre multiplicar y dividir?»"
+      ]
+    }
+  },
+  // Grade 4 additional routines
+  {
+    id: "nt-g4-3",
+    grade: 4,
+    title: "Double and Halve with Quarters",
+    standard: "4.NBT.B.5",
+    problem: "25 × 16 = ?",
+    silentPrompt: {
+      en: "Fist to chest: can you make one of the factors into 100?",
+      es: "Pulgar al pecho: ¿puedes transformar uno de los factores en 100?"
+    },
+    noticeWonder: {
+      en: [
+        "25 multiplied by 4 equals 100.",
+        "16 is 4 × 4.",
+        "Four quarters equal 1 dollar ($1.00)."
+      ],
+      es: [
+        "25 multiplicado por 4 es 100.",
+        "16 es 4 × 4.",
+        "Cuatro monedas de 25 centavos equivalen a 1 dólar ($1.00)."
+      ]
+    },
+    strategies: [
+      {
+        student: "Gabe",
+        name: { en: "Factor Out 4 to Make 100", es: "Factorizar 4 para formar 100" },
+        steps: "25 × (4 × 4) = (25 × 4) × 4 = 100 × 4 = 400",
+        explanation: {
+          en: "Split 16 into 4 × 4. Combine 25 × 4 to get 100, then 100 × 4 = 400.",
+          es: "Separa 16 en 4 × 4. Junta 25 × 4 para formar 100, luego 100 × 4 = 400."
+        }
+      },
+      {
+        student: "Elena",
+        name: { en: "Double and Halve Twice", es: "Duplicar y dividir a la mitad dos veces" },
+        steps: "25 × 16 = 50 × 8 = 100 × 4 = 400",
+        explanation: {
+          en: "Double 25 (50) and halve 16 (8). Double 50 (100) and halve 8 (4). 100 × 4 = 400.",
+          es: "Duplica 25 (50) y saca mitad a 16 (8). Vuelve a duplicar (100) y mitad (4) = 400."
+        }
+      },
+      {
+        student: "Marcus",
+        name: { en: "Area Model Decomposition", es: "Descomposición en modelo de área" },
+        steps: "25 × 10 = 250, 25 × 6 = 150 → 250 + 150 = 400",
+        explanation: {
+          en: "Split 16 into 10 + 6. 25 × 10 = 250 and 25 × 6 = 150. Sum is 400.",
+          es: "Separa 16 en 10 + 6. 25 × 10 = 250 y 25 × 6 = 150. La suma es 400."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why did Elena’s double-and-halve strategy keep the total area identical?”",
+        "“How is Gabe’s method like counting quarters in money?”",
+        "“Which strategy would you use to solve 25 × 28?”"
+      ],
+      es: [
+        "«¿Por qué la estrategia de duplicar y sacar mitad de Elena mantuvo el área idéntica?»",
+        "«¿Cómo se parece el método de Gabe a contar monedas de 25 centavos?»",
+        "«¿Qué estrategia usarías para resolver 25 × 28?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g4-4",
+    grade: 4,
+    title: "Fraction Unit Iteration",
+    standard: "4.NF.B.3",
+    problem: "3/8 + 4/8 = ?",
+    silentPrompt: {
+      en: "Fist to chest: what unit are we counting when we add eighths?",
+      es: "Pulgar al pecho: ¿qué unidad estamos contando al sumar octavos?"
+    },
+    noticeWonder: {
+      en: [
+        "Both fractions share the same denominator (eighths).",
+        "3 eighths and 4 eighths can be counted like objects.",
+        "The sum is only 1 eighth away from 1 whole (8/8)."
+      ],
+      es: [
+        "Ambas fracciones tienen el mismo denominador (octavos).",
+        "3 octavos y 4 octavos se pueden contar como objetos.",
+        "La suma está a solo 1 octavo de formar 1 entero (8/8)."
+      ]
+    },
+    strategies: [
+      {
+        student: "Siddharth",
+        name: { en: "Count the Unit Fractions", es: "Contar fracciones unitarias" },
+        steps: "(3 × 1/8) + (4 × 1/8) = (3 + 4) × 1/8 = 7/8",
+        explanation: {
+          en: "Think of 1/8 as the unit. 3 of that unit plus 4 of that unit is 7 of that unit (7/8).",
+          es: "Piensa en 1/8 como la unidad. 3 unidades más 4 unidades son 7 unidades (7/8)."
+        }
+      },
+      {
+        student: "Isabella",
+        name: { en: "Distance to 1 Whole", es: "Distancia al entero" },
+        steps: "4/8 is 1/2. 3/8 more leaves only 1/8 until 8/8 (1 whole) → 7/8",
+        explanation: {
+          en: "Use benchmark 1/2 (4/8). Add 3/8 to reach 7/8, noticing only 1/8 remains.",
+          es: "Usa el punto de referencia 1/2 (4/8). Suma 3/8 para llegar a 7/8, a 1/8 del entero."
+        }
+      },
+      {
+        student: "Tyler",
+        name: { en: "Number Line Jump", es: "Salto en la recta numérica" },
+        steps: "Start at 3/8, jump 4 eighths forward: 4/8, 5/8, 6/8, 7/8",
+        explanation: {
+          en: "Walk forward on an eighths number line from 3/8 to 7/8.",
+          es: "Avanza en una recta dividida en octavos desde 3/8 hasta 7/8."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why did the denominator (8) stay 8 instead of becoming 16?”",
+        "“How does Siddharth’s unit-counting explain why we only add numerators?”",
+        "“What visual model would you draw to prove 7/8 is correct?”"
+      ],
+      es: [
+        "«¿Por qué el denominador (8) se mantuvo en 8 en lugar de sumar a 16?»",
+        "«¿Cómo explica el conteo de unidades de Siddharth por qué solo sumamos los numeradores?»",
+        "«¿Qué modelo visual dibujarías para demostrar que 7/8 es correcto?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g4-5",
+    grade: 4,
+    title: "Over-Multiply by 100 & Compensate",
+    standard: "4.NBT.B.5",
+    problem: "99 × 6 = ?",
+    silentPrompt: {
+      en: "Fist to chest: what landmark number is 99 very close to?",
+      es: "Pulgar al pecho: ¿a qué número de referencia está muy cerca el 99?"
+    },
+    noticeWonder: {
+      en: [
+        "99 is 1 less than 100.",
+        "100 × 6 is very easy to calculate (600).",
+        "We have 1 extra group of 6 that must be subtracted."
+      ],
+      es: [
+        "99 es 1 menos que 100.",
+        "100 × 6 es muy fácil de calcular (600).",
+        "Tenemos 1 grupo extra de 6 que debemos restar."
+      ]
+    },
+    strategies: [
+      {
+        student: "Hannah",
+        name: { en: "100 Times Minus 1 Group", es: "100 veces menos 1 grupo" },
+        steps: "(100 × 6) − (1 × 6) = 600 − 6 = 594",
+        explanation: {
+          en: "Calculate 100 groups of 6 (600), then subtract the 1 extra group of 6 to get 594.",
+          es: "Calcula 100 grupos de 6 (600) y resta el grupo extra de 6: 594."
+        }
+      },
+      {
+        student: "Victor",
+        name: { en: "Expanded Place Value", es: "Valor posicional expandido" },
+        steps: "(90 × 6 = 540) + (9 × 6 = 54) → 540 + 54 = 594",
+        explanation: {
+          en: "Split 99 into 90 + 9. 90 × 6 = 540 and 9 × 6 = 54. 540 + 54 = 594.",
+          es: "Separa 99 en 90 + 9. 90 × 6 = 540 y 9 × 6 = 54. 540 + 54 = 594."
+        }
+      },
+      {
+        student: "Aria",
+        name: { en: "Half of 99 × 12", es: "Mitad de 99 × 12" },
+        steps: "99 × 6 = (100 − 1) × 6 = 600 − 6 = 594",
+        explanation: {
+          en: "Think algebraically: (100 − 1) × 6 = 600 − 6 = 594.",
+          es: "Pensamiento algebraico: (100 − 1) × 6 = 600 − 6 = 594."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why is Hannah’s subtraction of 6 so much faster than traditional vertical columns?”",
+        "“How do Hannah and Victor both arrive at 594 using different representations?”",
+        "“How would you apply Hannah’s method to solve 99 × 8?”"
+      ],
+      es: [
+        "«¿Por qué restar 6 como Hannah es mucho más veloz que el algoritmo tradicional en columnas?»",
+        "«¿Cómo llegan Hannah y Victor a 594 usando representaciones distintas?»",
+        "«¿Cómo aplicarías el método de Hannah para resolver 99 × 8?»"
+      ]
+    }
+  },
+  // Grade 5 additional routines
+  {
+    id: "nt-g5-3",
+    grade: 5,
+    title: "Double and Halve with Decimals",
+    standard: "5.NBT.B.7",
+    problem: "3.5 × 14 = ?",
+    silentPrompt: {
+      en: "Fist to chest: how can doubling 3.5 eliminate the decimal entirely?",
+      es: "Pulgar al pecho: ¿cómo duplicar 3.5 elimina el decimal por completo?"
+    },
+    noticeWonder: {
+      en: [
+        "3.5 doubled is a whole number (7).",
+        "14 is an even number that can be halved to 7.",
+        "The problem transforms into a basic fact: 7 × 7!"
+      ],
+      es: [
+        "El doble de 3.5 es un número entero (7).",
+        "14 es un número par cuya mitad es 7.",
+        "¡El problema se convierte en un hecho básico: 7 × 7!"
+      ]
+    },
+    strategies: [
+      {
+        student: "Lucas",
+        name: { en: "Double and Halve", es: "Duplicar y sacar mitad" },
+        steps: "(3.5 × 2) × (14 ÷ 2) = 7 × 7 = 49",
+        explanation: {
+          en: "Double 3.5 to get whole number 7, and halve 14 to get 7. 7 × 7 = 49.",
+          es: "Duplica 3.5 para obtener el entero 7 y saca mitad a 14 (7). 7 × 7 = 49."
+        }
+      },
+      {
+        student: "Kendra",
+        name: { en: "Decompose Decimals", es: "Descomponer decimales" },
+        steps: "(3 × 14 = 42) + (0.5 × 14 = 7) → 42 + 7 = 49",
+        explanation: {
+          en: "Multiply 3 × 14 = 42, and half of 14 is 7. 42 + 7 = 49.",
+          es: "Multiplica 3 × 14 = 42, y la mitad de 14 es 7. 42 + 7 = 49."
+        }
+      },
+      {
+        student: "Julian",
+        name: { en: "Scale by 10 and Adjust", es: "Escalar por 10 y ajustar" },
+        steps: "35 × 14 = 35 × (10 + 4) = 350 + 140 = 490. Then 490 ÷ 10 = 49",
+        explanation: {
+          en: "Multiply as integers (35 × 14 = 490), then shift place value back one tenth: 49.",
+          es: "Multiplica como enteros (35 × 14 = 490) y luego ajusta un décimo: 49."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why did doubling one factor and halving the other keep the product identical?”",
+        "“How does Kendra’s 'half of 14' strategy connect to the meaning of 0.5?”",
+        "“Which strategy would you use for 4.5 × 18?”"
+      ],
+      es: [
+        "«¿Por qué duplicar un factor y reducir a la mitad el otro mantiene el producto idéntico?»",
+        "«¿Cómo se conecta la 'mitad de 14' de Kendra con el significado de 0.5?»",
+        "«¿Qué estrategia usarías para 4.5 × 18?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g5-4",
+    grade: 5,
+    title: "Whole Number Divided by Unit Fraction",
+    standard: "5.NF.B.7",
+    problem: "5 ÷ 1/4 = ?",
+    silentPrompt: {
+      en: "Fist to chest: interpret this as 'How many one-fourths fit inside 5 wholes?'",
+      es: "Pulgar al pecho: interprétalo como '¿Cuántos cuartos caben dentro de 5 enteros?'"
+    },
+    noticeWonder: {
+      en: [
+        "There are 4 fourths in each single whole.",
+        "Dividing by a fraction smaller than 1 makes the answer GREATER than 5.",
+        "Each of the 5 wholes contributes 4 pieces."
+      ],
+      es: [
+        "Hay 4 cuartos en cada entero individual.",
+        "Dividir entre una fracción menor que 1 hace que la respuesta sea MAYOR que 5.",
+        "Cada uno de los 5 enteros aporta 4 pedazos."
+      ]
+    },
+    strategies: [
+      {
+        student: "Naomi",
+        name: { en: "Measurement Model (Pieces per Whole)", es: "Modelo de medida (piezas por entero)" },
+        steps: "Each whole has 4 fourths. 5 wholes × 4 fourths = 20 fourths",
+        explanation: {
+          en: "In 1 whole there are 4 quarters. In 5 wholes there are 5 × 4 = 20 quarters.",
+          es: "En 1 entero hay 4 cuartos. En 5 enteros hay 5 × 4 = 20 cuartos."
+        }
+      },
+      {
+        student: "Jackson",
+        name: { en: "Multiply by Reciprocal", es: "Multiplicar por el recíproco" },
+        steps: "5 ÷ (1/4) = 5 × (4/1) = 20",
+        explanation: {
+          en: "Dividing by 1/4 is mathematically equivalent to multiplying by its reciprocal 4.",
+          es: "Dividir entre 1/4 es matemáticamente equivalente a multiplicar por su recíproco 4."
+        }
+      },
+      {
+        student: "Zoe",
+        name: { en: "Number Line Hops", es: "Saltos en la recta numérica" },
+        steps: "0 to 1 has 4 jumps of 1/4. To get to 5: 5 × 4 jumps = 20 jumps",
+        explanation: {
+          en: "Draw jumps of size 1/4 along a number line from 0 to 5. There are 20 hops.",
+          es: "Da saltos de tamaño 1/4 en la recta desde 0 hasta 5. Son 20 saltos en total."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why is the quotient (20) bigger than the starting number (5)?”",
+        "“How does Naomi’s pizza slice visualization explain Jackson’s reciprocal rule?”",
+        "“How would you describe 6 ÷ 1/3 using the same language?”"
+      ],
+      es: [
+        "«¿Por qué el cociente (20) es más grande que el número inicial (5)?»",
+        "«¿Cómo explica el modelo de rebanadas de Naomi la regla del recíproco de Jackson?»",
+        "«¿Cómo describirías 6 ÷ 1/3 usando este mismo lenguaje?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g5-5",
+    grade: 5,
+    title: "Clock Face & Common Denominators",
+    standard: "5.NF.A.1",
+    problem: "1 1/4 − 2/3 = ?",
+    silentPrompt: {
+      en: "Fist to chest: can you think of a clock face where 1/4 and 1/3 have natural minute values?",
+      es: "Pulgar al pecho: ¿puedes pensar en un reloj donde 1/4 y 1/3 tienen valores en minutos?"
+    },
+    noticeWonder: {
+      en: [
+        "12 is a common multiple of 4 and 3.",
+        "On a clock, 1/4 hour is 15 minutes and 1/3 hour is 20 minutes.",
+        "1 1/4 is 5/4 or 75 minutes."
+      ],
+      es: [
+        "12 es un múltiplo común de 4 y 3.",
+        "En un reloj, 1/4 de hora son 15 minutos y 1/3 de hora son 20 minutos.",
+        "1 1/4 son 5/4 o 75 minutos."
+      ]
+    },
+    strategies: [
+      {
+        student: "Andre",
+        name: { en: "Clock Minute Model (Twelfths)", es: "Modelo de reloj (doceavos)" },
+        steps: "1 hr 15 min (75 min) − 40 min (2/3 hr) = 35 min = 35/60 = 7/12",
+        explanation: {
+          en: "Convert to minutes: 1 1/4 hr = 75 min. 2/3 hr = 40 min. 75 − 40 = 35 min = 7/12 hr.",
+          es: "Pasa a minutos: 1 1/4 h = 75 min. 2/3 h = 40 min. 75 − 40 = 35 min = 7/12 h."
+        }
+      },
+      {
+        student: "Chloe",
+        name: { en: "Common Denominator 12ths", es: "Denominador común 12avos" },
+        steps: "1 3/12 − 8/12 = 15/12 − 8/12 = 7/12",
+        explanation: {
+          en: "Convert to 12ths: 1 3/12 becomes 15/12. Subtract 8/12 to leave 7/12.",
+          es: "Convierte a 12avos: 1 3/12 se convierte en 15/12. Resta 8/12 para dejar 7/12."
+        }
+      },
+      {
+        student: "Liam",
+        name: { en: "Subtract Through 1 Whole", es: "Restar pasando por el entero" },
+        steps: "(1 − 2/3 = 1/3) + 1/4 = 4/12 + 3/12 = 7/12",
+        explanation: {
+          en: "Subtract 2/3 from the 1 whole to leave 1/3. Then add the extra 1/4: 1/3 + 1/4 = 7/12.",
+          es: "Resta 2/3 al entero 1 para dejar 1/3. Luego suma el 1/4 restante: 4/12 + 3/12 = 7/12."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why is the clock face such an intuitive model for twelfths?”",
+        "“How does Liam’s subtraction through 1 simplify regrouping fractions?”",
+        "“Can someone explain Chloe’s fraction conversion in their own words?”"
+      ],
+      es: [
+        "«¿Por qué el reloj es un modelo tan intuitivo para los doceavos?»",
+        "«¿Cómo simplifica la resta de Liam pasando por el 1 la reagrupación de fracciones?»",
+        "«¿Quién puede explicar la conversión de fracciones de Chloe en sus propias palabras?»"
+      ]
+    }
+  },
+  // Grade 6 additional routines
+  {
+    id: "nt-g6-3",
+    grade: 6,
+    title: "Benchmark Percents (10% and 5%)",
+    standard: "6.RP.A.3.c",
+    problem: "15% of 80 = ?",
+    silentPrompt: {
+      en: "Fist to chest: what is 10% of 80, and how does that give you 5%?",
+      es: "Pulgar al pecho: ¿cuánto es el 10% de 80 y cómo eso te da el 5%?"
+    },
+    noticeWonder: {
+      en: [
+        "10% of any number is found by shifting place value one position left (÷ 10).",
+        "5% is exactly half of 10%.",
+        "15% is simply 10% + 5%."
+      ],
+      es: [
+        "El 10% de cualquier número se halla moviendo el punto decimal un lugar (÷ 10).",
+        "El 5% es exactamente la mitad del 10%.",
+        "El 15% es simplemente 10% + 5%."
+      ]
+    },
+    strategies: [
+      {
+        student: "Jasmine",
+        name: { en: "10% + Half of 10%", es: "10% + mitad del 10%" },
+        steps: "10% of 80 = 8. 5% is half of 8 = 4. 8 + 4 = 12",
+        explanation: {
+          en: "Find 10% (8), then take half for 5% (4). Sum them to find 15%: 8 + 4 = 12.",
+          es: "Halla el 10% (8) y la mitad para el 5% (4). Suma ambos para el 15%: 8 + 4 = 12."
+        }
+      },
+      {
+        student: "Mateo",
+        name: { en: "Fraction Equivalent (3/20)", es: "Fracción equivalente (3/20)" },
+        steps: "15% = 15/100 = 3/20. (80 ÷ 20) × 3 = 4 × 3 = 12",
+        explanation: {
+          en: "Simplify 15% to 3/20. 80 divided into 20 parts is 4. 3 of those parts is 12.",
+          es: "Simplifica 15% a 3/20. 80 dividido en 20 partes da 4. 3 de esas partes son 12."
+        }
+      },
+      {
+        student: "Sophie",
+        name: { en: "1% Unit Rate", es: "Tasa unitaria del 1%" },
+        steps: "1% of 80 = 0.8. 15 × 0.8 = 15 × 8 ÷ 10 = 120 ÷ 10 = 12",
+        explanation: {
+          en: "Find 1% (0.8), then scale up by 15: 15 × 0.8 = 12.",
+          es: "Halla el 1% (0.8) y escala por 15: 15 × 0.8 = 12."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why is the 10% + 5% benchmark strategy so popular in real-world tipping?”",
+        "“How do Jasmine’s mental chunks relate to Mateo’s simplified fraction 3/20?”",
+        "“How would you quickly calculate a 20% tip on $80 using these ideas?”"
+      ],
+      es: [
+        "«¿Por qué la estrategia del 10% + 5% se usa tanto en propinas de la vida real?»",
+        "«¿Cómo se relacionan las partes de Jasmine con la fracción simplificada 3/20 de Mateo?»",
+        "«¿Cómo calcularías rápidamente una propina del 20% sobre $80 con estas ideas?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g6-4",
+    grade: 6,
+    title: "Patterns of Integer Multiplication",
+    standard: "6.NS.C.5",
+    problem: "(-6) × (-5) = ?",
+    silentPrompt: {
+      en: "Fist to chest: why is the product of two negative numbers positive?",
+      es: "Pulgar al pecho: ¿por qué el producto de dos números negativos es positivo?"
+    },
+    noticeWonder: {
+      en: [
+        "6 × 5 = 30.",
+        "(-6) × 5 = -30 because it is 5 groups of -6.",
+        "Negating the second factor reverses the direction again, making it +30."
+      ],
+      es: [
+        "6 × 5 = 30.",
+        "(-6) × 5 = -30 porque son 5 grupos de -6.",
+        "Negar el segundo factor vuelve a invertir la dirección, dando +30."
+      ]
+    },
+    strategies: [
+      {
+        student: "Devon",
+        name: { en: "Pattern Decrease Table", es: "Tabla de patrones decrecientes" },
+        steps: "(-6) × 2 = -12, (-6) × 1 = -6, (-6) × 0 = 0, (-6) × (-1) = +6 ... (-6) × (-5) = +30",
+        explanation: {
+          en: "Notice each step adds 6 as the multiplier decreases by 1. Continuing down to -5 yields +30.",
+          es: "Observa que cada paso suma 6 al bajar el multiplicador en 1. Al llegar a -5 da +30."
+        }
+      },
+      {
+        student: "Elena",
+        name: { en: "Opposite of an Opposite", es: "El opuesto de un opuesto" },
+        steps: "Opposite of (6 × -5 = -30) is -(-30) = +30",
+        explanation: {
+          en: "A negative sign means 'take the opposite'. The opposite of -30 is positive 30.",
+          es: "El signo negativo significa 'el opuesto de'. El opuesto de -30 es positivo 30."
+        }
+      },
+      {
+        student: "Malik",
+        name: { en: "Zero Pairs on the Mat", es: "Pares cero en el tablero" },
+        steps: "Start with zero. Remove 5 groups of -6. Removing 30 negatives leaves +30",
+        explanation: {
+          en: "Think of -5 as 'remove 5 groups'. Removing 30 negative counters leaves 30 positive counters.",
+          es: "Piensa en -5 como 'quitar 5 grupos'. Quitar 30 fichas negativas deja 30 fichas positivas."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“How does Devon’s pattern table prove that negative times negative MUST be positive?”",
+        "“What physical meaning does Malik give to 'taking away negative chips'?”",
+        "“Why is saying 'two minuses make a plus' less helpful than understanding opposites?”"
+      ],
+      es: [
+        "«¿Cómo demuestra la tabla de Devon que negativo por negativo TIENE que ser positivo?»",
+        "«¿Qué significado físico le da Malik a 'quitar fichas negativas'?»",
+        "«¿Por qué decir 'dos menos dan más' es menos útil que entender los opuestos?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g6-5",
+    grade: 6,
+    title: "Area Model with Variables",
+    standard: "6.EE.A.3",
+    problem: "4(2x + 5) = ?",
+    silentPrompt: {
+      en: "Fist to chest: picture an area model divided into two rooms.",
+      es: "Pulgar al pecho: imagina un modelo de área dividido en dos habitaciones."
+    },
+    noticeWonder: {
+      en: [
+        "The 4 is outside multiplying the entire group (2x + 5).",
+        "2x and 5 cannot be combined directly because they are not like terms.",
+        "Each term inside receives the factor of 4."
+      ],
+      es: [
+        "El 4 está afuera multiplicando a todo el grupo (2x + 5).",
+        "2x y 5 no se pueden sumar directamente porque no son términos semejantes.",
+        "Cada término interior recibe el factor 4."
+      ]
+    },
+    strategies: [
+      {
+        student: "Carlos",
+        name: { en: "Geometric Area Model", es: "Modelo de área geométrica" },
+        steps: "Rectangle with height 4, width split into 2x and 5. Room 1: 4 × 2x = 8x. Room 2: 4 × 5 = 20. Total = 8x + 20",
+        explanation: {
+          en: "Draw a rectangle: Room 1 has area 4 × 2x = 8x. Room 2 has area 4 × 5 = 20. Total area = 8x + 20.",
+          es: "Dibuja un rectángulo: Sala 1 tiene área 4 × 2x = 8x. Sala 2 tiene área 4 × 5 = 20. Total = 8x + 20."
+        }
+      },
+      {
+        student: "Zoe",
+        name: { en: "Repeated Addition", es: "Suma repetida" },
+        steps: "(2x + 5) + (2x + 5) + (2x + 5) + (2x + 5) = (2x + 2x + 2x + 2x) + (5 + 5 + 5 + 5) = 8x + 20",
+        explanation: {
+          en: "Write out 4 copies of (2x + 5). Group the four 2x terms (8x) and the four 5s (20).",
+          es: "Escribe 4 copias de (2x + 5). Agrupa los cuatro 2x (8x) y los cuatro 5 (20): 8x + 20."
+        }
+      },
+      {
+        student: "Marcus",
+        name: { en: "Distributive Multiplication", es: "Multiplicación distributiva" },
+        steps: "4 × 2x = 8x; 4 × 5 = 20 → 8x + 20",
+        explanation: {
+          en: "Distribute 4 to each term: 4 times 2x is 8x, and 4 times 5 is 20.",
+          es: "Distribuye el 4 a cada término: 4 por 2x son 8x, y 4 por 5 son 20."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why can we NOT write 28x as the final answer?”",
+        "“How does Zoe’s repeated addition prove that Marcus’s distributive step works?”",
+        "“How would the area model look if the problem were 4(2x − 5)?”"
+      ],
+      es: [
+        "«¿Por qué NO podemos escribir 28x como la respuesta final?»",
+        "«¿Cómo demuestra la suma repetida de Zoe que la regla distributiva de Marcus es correcta?»",
+        "«¿Cómo cambiaría el modelo de área si el problema fuera 4(2x − 5)?»"
+      ]
+    }
+  },
+  // Grade 7 additional routines
+  {
+    id: "nt-g7-3",
+    grade: 7,
+    title: "Subtracting Negatives & Distance",
+    standard: "7.NS.A.1",
+    problem: "-18 − (-7) = ?",
+    silentPrompt: {
+      en: "Fist to chest: interpret subtraction as the directed distance from -7 to -18.",
+      es: "Pulgar al pecho: interpreta la resta como la distancia dirigida desde -7 hasta -18."
+    },
+    noticeWonder: {
+      en: [
+        "Both numbers are negative.",
+        "Subtracting a negative means removing negative debt.",
+        "Removing negatives makes the total LESS negative (closer to zero)."
+      ],
+      es: [
+        "Ambos números son negativos.",
+        "Restar un negativo significa eliminar deuda negativa.",
+        "Quitar negativos hace que el total sea MENOS negativo (más cerca de cero)."
+      ]
+    },
+    strategies: [
+      {
+        student: "Aaliyah",
+        name: { en: "Add the Opposite", es: "Sumar el opuesto" },
+        steps: "-18 − (-7) = -18 + 7 = -11",
+        explanation: {
+          en: "Subtracting -7 is identical to adding +7. Starting at -18 and adding 7 moves right to -11.",
+          es: "Restar -7 es igual a sumar +7. Empezando en -18 y sumando 7 avanzas a -11."
+        }
+      },
+      {
+        student: "Tariq",
+        name: { en: "Removing Negative Chips", es: "Quitar fichas negativas" },
+        steps: "You have 18 negative chips. Take away 7 negative chips. 11 negative chips remain = -11",
+        explanation: {
+          en: "Physical model: if you have 18 negatives and remove 7 negatives, you simply have 11 negatives left.",
+          es: "Modelo físico: si tienes 18 negativos y quitas 7 negativos, te quedan 11 negativos (-11)."
+        }
+      },
+      {
+        student: "Sarah",
+        name: { en: "Number Line Distance", es: "Distancia en la recta numérica" },
+        steps: "Distance from -7 to -18: moving left by 11 units → -11",
+        explanation: {
+          en: "Find how far -18 is from -7. It is 11 units in the negative direction, so -11.",
+          es: "Calcula qué tan lejos está -18 de -7: 11 unidades hacia la izquierda (-11)."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why is Tariq’s chip removal explanation so clean when both numbers are negative?”",
+        "“How does Aaliyah’s 'add the opposite' connect to debts and payments in real life?”",
+        "“What would happen if the problem were -7 − (-18) instead?”"
+      ],
+      es: [
+        "«¿Por qué la explicación de Tariq de quitar fichas es tan clara cuando ambos son negativos?»",
+        "«¿Cómo se conecta 'sumar el opuesto' de Aaliyah con deudas y pagos en la vida real?»",
+        "«¿Qué pasaría si el problema fuera al revés: -7 − (-18)?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g7-4",
+    grade: 7,
+    title: "Two-Step Equation Balance",
+    standard: "7.EE.B.4.a",
+    problem: "3x − 8 = 19",
+    silentPrompt: {
+      en: "Fist to chest: what was done to x last, and how do we undo it first?",
+      es: "Pulgar al pecho: ¿qué se le hizo a x al final y cómo lo deshacemos primero?"
+    },
+    noticeWonder: {
+      en: [
+        "x was multiplied by 3, then 8 was subtracted.",
+        "The inverse of subtracting 8 is adding 8.",
+        "19 + 8 is 27, which is a multiple of 3!"
+      ],
+      es: [
+        "A x se le multiplicó por 3 y luego se le restó 8.",
+        "Lo inverso de restar 8 es sumar 8.",
+        "¡19 + 8 es 27, que es múltiplo de 3!"
+      ]
+    },
+    strategies: [
+      {
+        student: "Brandon",
+        name: { en: "Inverse Operations (Unwrapping)", es: "Operaciones inversas (desenvolver)" },
+        steps: "Add 8 to both sides: 3x = 27. Divide both sides by 3: x = 9",
+        explanation: {
+          en: "Undo the −8 first by adding 8 to both sides: 3x = 27. Then divide by 3: x = 9.",
+          es: "Deshaz el −8 sumando 8 a ambos lados: 3x = 27. Luego divide entre 3: x = 9."
+        }
+      },
+      {
+        student: "Kendra",
+        name: { en: "Cover-Up / Working Backwards", es: "Método de tapar / Hacia atrás" },
+        steps: "Cover 3x: [something] − 8 = 19 → [something] must be 27. 3 × ? = 27 → x = 9",
+        explanation: {
+          en: "Cover the 3x block. What minus 8 gives 19? 27. Now 3 times what gives 27? 9.",
+          es: "Tapa el bloque 3x. ¿Qué número menos 8 da 19? 27. Ahora 3 por cuánto da 27? 9."
+        }
+      },
+      {
+        student: "Diego",
+        name: { en: "Balance Scale", es: "Balanza de platillos" },
+        steps: "Add 8 units to both pans to level out: 3x = 27. Split each pan into 3 piles: x = 9",
+        explanation: {
+          en: "Picture a scale: put 8 on each side to cancel the minus 8. 3x balances 27. Divide into 3 equal piles: x = 9.",
+          es: "Imagina la balanza: pon 8 en cada platillo para equilibrar. 3x pesa 27. Reparte en 3 pilas: x = 9."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why must we undo addition/subtraction BEFORE dividing by the coefficient 3?”",
+        "“How does Kendra’s cover-up method prove Brandon’s algebraic steps?”",
+        "“How can you substitute x = 9 back into the original equation to verify?”"
+      ],
+      es: [
+        "«¿Por qué debemos deshacer la suma/resta ANTES de dividir entre el coeficiente 3?»",
+        "«¿Cómo confirma el método de tapar de Kendra los pasos algebraicos de Brandon?»",
+        "«¿Cómo puedes sustituir x = 9 en la ecuación original para verificar?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g7-5",
+    grade: 7,
+    title: "Mental Multi-Step Percent Discount",
+    standard: "7.RP.A.3",
+    problem: "20% Discount on $65 = ?",
+    silentPrompt: {
+      en: "Fist to chest: what is 10% of $65, and how does double that give the discount?",
+      es: "Pulgar al pecho: ¿cuánto es el 10% de $65 y cómo su doble te da el descuento?"
+    },
+    noticeWonder: {
+      en: [
+        "10% of $65 is $6.50.",
+        "20% is exactly double 10%.",
+        "The sale price is original price minus discount ($65 − discount)."
+      ],
+      es: [
+        "El 10% de $65 es $6.50.",
+        "El 20% es exactamente el doble del 10%.",
+        "El precio final es el precio original menos el descuento ($65 − descuento)."
+      ]
+    },
+    strategies: [
+      {
+        student: "Liam",
+        name: { en: "Double 10%", es: "Duplicar el 10%" },
+        steps: "10% of $65 = $6.50. 20% = 2 × $6.50 = $13.00 discount. Sale price = $65 − $13 = $52",
+        explanation: {
+          en: "Find 10% ($6.50), double it to find 20% ($13.00 discount). Sale price is $65 − $13 = $52.",
+          es: "Halla el 10% ($6.50) y duplícalo para el 20% ($13 de descuento). Precio final: $65 − $13 = $52."
+        }
+      },
+      {
+        student: "Mia",
+        name: { en: "Pay 80% (Complement)", es: "Pagar el 80% (complemento)" },
+        steps: "A 20% discount means paying 80%. 0.80 × 65 = 8 × 6.5 = $52",
+        explanation: {
+          en: "Think from the buyer's side: you pay 80% of the price. 8 × $6.50 = $52.00 directly.",
+          es: "Piensa como comprador: pagas el 80% del valor. 8 × $6.50 = $52.00 directamente."
+        }
+      },
+      {
+        student: "Noah",
+        name: { en: "One-Fifth Fraction", es: "Un quinto en fracción" },
+        steps: "20% = 1/5. $65 ÷ 5 = $13 discount. $65 − $13 = $52",
+        explanation: {
+          en: "20% is 1/5. Divide $65 by 5 to get $13 discount. $65 − $13 = $52.",
+          es: "20% es 1/5. Divide $65 entre 5 para hallar $13 de descuento. $65 − $13 = $52."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why does Mia’s complement method (paying 80%) skip the subtraction step entirely?”",
+        "“How are Liam’s 10% chunks and Noah’s 1/5 fraction saying the exact same thing?”",
+        "“How would you find a 30% discount on the same item?”"
+      ],
+      es: [
+        "«¿Por qué el método de Mia de pagar el 80% se salta la resta por completo?»",
+        "«¿Cómo dicen exactamente lo mismo las partes de 10% de Liam y la fracción 1/5 de Noah?»",
+        "«¿Cómo hallarías un descuento del 30% en este mismo artículo?»"
+      ]
+    }
+  },
+  // Grade 8 additional routines
+  {
+    id: "nt-g8-3",
+    grade: 8,
+    title: "Variables on Both Sides",
+    standard: "8.EE.C.7",
+    problem: "4x + 6 = x + 21",
+    silentPrompt: {
+      en: "Fist to chest: how can you remove x from one side to simplify the balance?",
+      es: "Pulgar al pecho: ¿cómo puedes quitar x de un lado para simplificar la balanza?"
+    },
+    noticeWonder: {
+      en: [
+        "There are x terms on both the left and right sides.",
+        "Subtracting 1x from both sides keeps the scale balanced.",
+        "After removing 1x, it becomes a simple two-step equation: 3x + 6 = 21."
+      ],
+      es: [
+        "Hay términos con x en ambos lados (izquierdo y derecho).",
+        "Restar 1x a ambos lados mantiene la balanza en equilibrio.",
+        "Tras quitar 1x, queda una ecuación simple de dos pasos: 3x + 6 = 21."
+      ]
+    },
+    strategies: [
+      {
+        student: "Harper",
+        name: { en: "Balance Removal", es: "Eliminación en balanza" },
+        steps: "Subtract x from both sides: 3x + 6 = 21. Subtract 6: 3x = 15. Divide by 3: x = 5",
+        explanation: {
+          en: "Remove 1x from both sides to get 3x + 6 = 21. Subtract 6 (3x = 15). Divide by 3 to find x = 5.",
+          es: "Quita 1x de ambos lados: 3x + 6 = 21. Resta 6 (3x = 15). Divide entre 3: x = 5."
+        }
+      },
+      {
+        student: "Leo",
+        name: { en: "Constants First", es: "Constantes primero" },
+        steps: "Subtract 6 from both sides: 4x = x + 15. Subtract x: 3x = 15. x = 5",
+        explanation: {
+          en: "Clear the constant 6 first: 4x = x + 15. Then remove the variable x: 3x = 15, so x = 5.",
+          es: "Despeja el 6 primero: 4x = x + 15. Luego resta la variable x: 3x = 15, dando x = 5."
+        }
+      },
+      {
+        student: "Maya",
+        name: { en: "Reasoning on Difference", es: "Razonamiento sobre la diferencia" },
+        steps: "The left side has 3 more x's. The right side has 15 more units. So 3x must equal 15 → x = 5",
+        explanation: {
+          en: "Compare: Left has 3 extra x's; Right has 15 extra units (21 − 6). Therefore 3x = 15, so x = 5.",
+          es: "Compara: la izquierda tiene 3 x de más; la derecha tiene 15 unidades de más. Así 3x = 15, x = 5."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why did Harper choose to subtract x rather than subtract 4x?”",
+        "“How does Maya’s comparison reasoning avoid algebraic notation while being mathematically rigorous?”",
+        "“What check confirms that x = 5 is truly the solution?”"
+      ],
+      es: [
+        "«¿Por qué Harper eligió restar x en vez de restar 4x?»",
+        "«¿Cómo evita el razonamiento de Maya la notación algebraica sin perder rigor matemático?»",
+        "«¿Qué comprobación confirma que x = 5 es verdaderamente la solución?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g8-4",
+    grade: 8,
+    title: "Quotient of Powers Rule",
+    standard: "8.EE.A.1",
+    problem: "10⁷ ÷ 10³ = ?",
+    silentPrompt: {
+      en: "Fist to chest: how many factors of 10 cancel when you divide?",
+      es: "Pulgar al pecho: ¿cuántos factores de 10 se cancelan al dividir?"
+    },
+    noticeWonder: {
+      en: [
+        "Both powers have the same base of 10.",
+        "10⁷ has 7 factors of 10, and 10³ has 3 factors of 10.",
+        "Division cancels matching factors top and bottom."
+      ],
+      es: [
+        "Ambas potencias tienen la misma base 10.",
+        "10⁷ tiene 7 factores de 10, y 10³ tiene 3 factores de 10.",
+        "La división cancela factores coincidentes arriba y abajo."
+      ]
+    },
+    strategies: [
+      {
+        student: "Devon",
+        name: { en: "Quotient of Powers Rule", es: "Regla del cociente de potencias" },
+        steps: "10^(7 − 3) = 10⁴ = 10,000",
+        explanation: {
+          en: "When dividing powers with identical bases, subtract the exponents: 7 − 3 = 4.",
+          es: "Al dividir potencias de la misma base, resta los exponentes: 7 − 3 = 4."
+        }
+      },
+      {
+        student: "Sofia",
+        name: { en: "Expanded Factor Cancellation", es: "Cancelación de factores expandidos" },
+        steps: "(10×10×10×10×10×10×10) / (10×10×10) = 10×10×10×10 = 10⁴ = 10,000",
+        explanation: {
+          en: "Write out all factors. Cancel the 3 tens in the denominator with 3 in the numerator. 4 tens remain.",
+          es: "Escribe los factores. Cancela 3 dieces del denominador con 3 del numerador. Quedan 4 dieces."
+        }
+      },
+      {
+        student: "Gabe",
+        name: { en: "Place Value Zero Counting", es: "Conteo de ceros en valor posicional" },
+        steps: "10,000,000 ÷ 1,000 = remove 3 zeros = 10,000 = 10⁴",
+        explanation: {
+          en: "10 million divided by 1 thousand. Dividing by 1,000 removes 3 zeros from 7 zeros: leaves 4 zeros.",
+          es: "10 millones entre 1 mil. Dividir entre 1,000 quita 3 ceros a 7 ceros: quedan 4 ceros (10,000)."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“How does Sofia’s expanded form prove why we subtract exponents?”",
+        "“What would happen if the exponents were reversed: 10³ ÷ 10⁷?”",
+        "“How does Gabe’s zero-counting connect exponents to metric scientific notation?”"
+      ],
+      es: [
+        "«¿Cómo demuestra la forma expandida de Sofia por qué restamos exponentes?»",
+        "«¿Qué pasaría si los exponentes estuvieran invertidos: 10³ ÷ 10⁷?»",
+        "«¿Cómo conecta el conteo de ceros de Gabe los exponentes con la notación científica?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g8-5",
+    grade: 8,
+    title: "Estimating Square Roots Between Benchmarks",
+    standard: "8.NS.A.2",
+    problem: "√60 ≈ ?",
+    silentPrompt: {
+      en: "Fist to chest: which two perfect squares is 60 trapped between?",
+      es: "Pulgar al pecho: ¿entre cuáles dos cuadrados perfectos está atrapado el 60?"
+    },
+    noticeWonder: {
+      en: [
+        "7² = 49 and 8² = 64.",
+        "60 is between 49 and 64, so √60 must be between 7 and 8.",
+        "60 is much closer to 64 (distance 4) than to 49 (distance 11)."
+      ],
+      es: [
+        "7² = 49 y 8² = 64.",
+        "60 está entre 49 y 64, por lo que √60 debe estar entre 7 y 8.",
+        "60 está mucho más cerca de 64 (distancia 4) que de 49 (distancia 11)."
+      ]
+    },
+    strategies: [
+      {
+        student: "Elena",
+        name: { en: "Perfect Square Boundaries", es: "Límites de cuadrados perfectos" },
+        steps: "√49 < √60 < √64 → 7 < √60 < 8. Since 60 is closer to 64, √60 ≈ 7.7 or 7.8",
+        explanation: {
+          en: "Trap 60 between 49 and 64. Since 60 is close to 64 (only 4 away), the root is around 7.7 or 7.8.",
+          es: "Atrapa al 60 entre 49 y 64. Como está a solo 4 de 64, la raíz está cerca de 7.7 o 7.8."
+        }
+      },
+      {
+        student: "Lucas",
+        name: { en: "Linear Interpolation Approximation", es: "Aproximación por interpolación lineal" },
+        steps: "Total distance from 49 to 64 is 15. Distance from 49 to 60 is 11. 11/15 ≈ 0.73 → 7 + 0.73 ≈ 7.7",
+        explanation: {
+          en: "60 is 11/15ths of the way from 49 to 64. 11 ÷ 15 is about 0.73, so √60 ≈ 7.7.",
+          es: "60 recorre 11 de los 15 pasos entre 49 y 64. 11 ÷ 15 ≈ 0.73, así que √60 ≈ 7.7."
+        }
+      },
+      {
+        student: "Zoe",
+        name: { en: "Trial and Check Squaring", es: "Prueba y verificación al cuadrado" },
+        steps: "7.7² = 59.29; 7.8² = 60.84. 60 is between 59.29 and 60.84 → √60 ≈ 7.75",
+        explanation: {
+          en: "Test square: 7.7² is 59.29 (slightly low), 7.8² is 60.84 (slightly high). √60 is about 7.75.",
+          es: "Prueba al cuadrado: 7.7² = 59.29 (bajo), 7.8² = 60.84 (alto). √60 es aprox. 7.75."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why can we be 100% certain that √60 is an irrational non-terminating decimal?”",
+        "“How does Elena’s benchmark distance explain why the decimal part is greater than 0.5?”",
+        "“How would you estimate √30 using the exact same strategy?”"
+      ],
+      es: [
+        "«¿Por qué podemos estar 100% seguros de que √60 es un decimal irracional infinito?»",
+        "«¿Cómo explica la distancia de Elena por qué la parte decimal es mayor que 0.5?»",
+        "«¿Cómo estimarías √30 usando exactamente esta misma estrategia?»"
+      ]
+    }
   }
 ];
 
@@ -6107,7 +7651,7 @@ function getCognitivePrescription(entry, skill) {
     return {
       root: "Place-Value Quotient Partitioning",
       rootBadge: "🩺 Rx: Long Division Solver Workout",
-      tool: "lcm",
+      tool: "longdivision",
       toolName: "Division Solver",
       diagnostic: "Lost place-value alignment during multi-step quotient regrouping or subtraction difference.",
       prescription: "Work through each column in the vertical division tower: Divide → Multiply → Subtract → Bring Down."
@@ -7111,8 +8655,43 @@ const InteractiveDrillToolbox = {
   tapeA: 3,
   tapeB: 2,
   tapeUnit: 5,
+  tapeMode: "unit",
+  tapeTotal: 40,
+  tapeDiff: 4,
   tapeLabelA: "Apples",
   tapeLabelB: "Oranges",
+  divDividend: 432,
+  divDivisor: 12,
+
+  computeLongDivisionSteps(dividend, divisor) {
+    dividend = Math.max(1, Math.floor(Number(dividend) || 432));
+    divisor = Math.max(1, Math.floor(Number(divisor) || 12));
+    const digits = String(dividend).split("").map(Number);
+    const quotient = Math.floor(dividend / divisor);
+    const steps = [];
+    let cur = 0;
+    let started = false;
+    for (let i = 0; i < digits.length; i++) {
+      cur = cur * 10 + digits[i];
+      const qDigit = Math.floor(cur / divisor);
+      if (qDigit > 0 || started || i === digits.length - 1) {
+        started = true;
+        const prod = qDigit * divisor;
+        const rem = cur - prod;
+        steps.push({
+          pos: i,
+          digit: digits[i],
+          cur,
+          qDigit,
+          prod,
+          rem,
+          nextDigit: i < digits.length - 1 ? digits[i + 1] : null
+        });
+        cur = rem;
+      }
+    }
+    return { dividend, divisor, quotient, remainder: cur, digits, steps };
+  },
 
   syncFromProblem(item) {
     if (!item) return;
@@ -7153,6 +8732,13 @@ const InteractiveDrillToolbox = {
       this.integersNeg = Math.max(0, Math.min(12, neg || 0));
     }
 
+    // Long Division
+    const divMatch = q.match(/(\d+)\s*[÷/]\s*(\d+)/);
+    if (divMatch && !fracPair && !fracSingle) {
+      this.divDividend = Math.max(1, Number(divMatch[1]));
+      this.divDivisor = Math.max(1, Number(divMatch[2]));
+    }
+
     // Multiplication / Splitter
     const mulMatch = q.match(/(\d+)\s*[×*]\s*(\d+)/);
     if (mulMatch) {
@@ -7191,7 +8777,7 @@ const InteractiveDrillToolbox = {
 
     // Addition / Subtraction within 20
     const addSubMatch = q.match(/(\d+)\s*([+−\-])\s*(\d+)/);
-    if (addSubMatch && !fracSingle && !mulMatch) {
+    if (addSubMatch && !fracSingle && !mulMatch && !divMatch) {
       const a = Number(addSubMatch[1]);
       this.numberLinePos = Math.min(20, Math.max(0, a));
       this.tenFrameCount = Math.min(20, Math.max(0, a));
@@ -7200,7 +8786,92 @@ const InteractiveDrillToolbox = {
 
   render(container) {
     if (!container) return;
-    if (this.activeTool === "numberline") {
+    if (this.activeTool === "longdivision") {
+      const { dividend, divisor, quotient, remainder, digits, steps } = this.computeLongDivisionSteps(this.divDividend, this.divDivisor);
+      container.innerHTML = `
+        <div class="tool-content longdivision-tool-container">
+          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem; align-items:center">
+            <span>Problem: <strong>${dividend} ÷ ${divisor}</strong></span>
+            <span style="color:#64748b">| Presets:</span>
+            <button type="button" class="mini-tool-btn" data-ld-preset="432:12">432 ÷ 12</button>
+            <button type="button" class="mini-tool-btn" data-ld-preset="625:5">625 ÷ 5</button>
+            <button type="button" class="mini-tool-btn" data-ld-preset="156:4">156 ÷ 4</button>
+            <button type="button" class="mini-tool-btn" data-ld-preset="782:6">782 ÷ 6</button>
+            <button type="button" class="mini-tool-btn" data-ld-preset="3840:16">3,840 ÷ 16</button>
+            <button type="button" class="mini-tool-btn" data-ld-preset="84:3">84 ÷ 3</button>
+            <span style="color:#64748b">| Custom:</span>
+            <input type="number" id="ld-in-divisor" value="${divisor}" min="1" max="999" style="width:54px; padding:2px 6px; border:1px solid #cbd5e1; border-radius:4px" title="Divisor" />
+            <span style="font-weight:700">)</span>
+            <input type="number" id="ld-in-dividend" value="${dividend}" min="1" max="99999" style="width:72px; padding:2px 6px; border:1px solid #cbd5e1; border-radius:4px" title="Dividend" />
+            <button type="button" class="mini-tool-btn" id="ld-btn-load" style="font-weight:700">Set</button>
+            <button type="button" class="mini-tool-btn" id="ld-btn-reveal" style="background:#fef3c7; color:#92400e; border-color:#fde68a; font-weight:700">💡 Reveal Next Step</button>
+            <button type="button" class="mini-tool-btn" id="ld-btn-reset">🔄 Reset</button>
+          </div>
+          <div class="long-div-interactive-layout" style="display:flex; gap:1.25rem; flex-wrap:wrap; margin-top:0.75rem; align-items:flex-start">
+            <div class="long-div-tower-card" style="background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; padding:16px 20px; box-shadow:0 2px 6px rgba(0,0,0,0.04)">
+              <!-- Quotient Row -->
+              <div class="ld-row ld-q-row" style="display:flex; align-items:center; margin-bottom:4px">
+                <span class="ld-spacer" style="width:58px"></span>
+                <div class="ld-q-boxes" style="display:flex; gap:6px">
+                  ${digits.map((_, idx) => {
+                    const s = steps.find((st) => st.pos === idx);
+                    if (!s) return `<span class="ld-cell-placeholder" style="width:34px; height:34px; display:inline-block"></span>`;
+                    return `<input type="text" class="ld-cell ld-q-cell" inputmode="numeric" maxlength="1" data-ld-type="q" data-ld-target="${s.qDigit}" data-ld-step="${s.pos}" placeholder="?" title="Quotient digit for column ${idx + 1}" />`;
+                  }).join("")}
+                </div>
+              </div>
+              <!-- Dividend Bracket Row -->
+              <div class="ld-row ld-bracket-row" style="display:flex; align-items:center">
+                <span class="ld-divisor-label" style="width:40px; text-align:right; font-size:1.15rem; font-weight:800; color:#1e293b; padding-right:6px">${divisor}</span>
+                <span class="ld-bracket-char" style="font-size:1.4rem; font-weight:300; color:#475569; line-height:1; margin-right:4px">)</span>
+                <div class="ld-dividend-line" style="display:flex; gap:6px; border-top:2px solid #1e293b; padding-top:4px">
+                  ${digits.map((d) => `<span class="ld-digit-val" style="width:34px; height:28px; display:inline-flex; align-items:center; justify-content:center; font-size:1.15rem; font-weight:800; color:#1e293b">${d}</span>`).join("")}
+                </div>
+              </div>
+              <!-- Step-by-Step Vertical Work Tower -->
+              <div class="ld-work-tower" style="margin-left:54px; margin-top:8px">
+                ${steps.map((st, sIdx) => {
+                  const shiftPx = st.pos * 40;
+                  return `
+                    <div class="ld-step-group" data-ld-step-group="${sIdx}" style="margin-left:${shiftPx}px">
+                      <div class="ld-multiply-line" style="display:flex; align-items:center; gap:6px">
+                        <span style="font-size:1rem; font-weight:800; color:#dc2626; width:14px">−</span>
+                        <input type="text" class="ld-cell ld-prod-cell" inputmode="numeric" data-ld-type="prod" data-ld-target="${st.prod}" data-ld-step-idx="${sIdx}" placeholder="?" title="Multiply: ${st.qDigit} × ${divisor} = ${st.prod}" />
+                      </div>
+                      <div class="ld-sub-rule" style="height:2px; background:#475569; margin:4px 0 4px 18px; width:72px"></div>
+                      <div class="ld-subtract-line" style="display:flex; align-items:center; gap:6px; margin-left:18px">
+                        <input type="text" class="ld-cell ld-diff-cell" inputmode="numeric" data-ld-type="diff" data-ld-target="${st.nextDigit !== null ? `${st.rem}${st.nextDigit}` : `${st.rem}`}" data-ld-step-idx="${sIdx}" placeholder="?" title="${st.nextDigit !== null ? `Subtract (${st.cur} - ${st.prod} = ${st.rem}) and bring down ${st.nextDigit}` : `Final remainder = ${st.rem}`}" />
+                        ${st.nextDigit !== null ? `<span style="font-size:0.85rem; font-weight:800; color:#2563eb">↓</span>` : ""}
+                      </div>
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+              <!-- Status & Final Result Banner -->
+              <div id="ld-tower-status" class="ld-tower-status" style="margin-top:12px; font-size:0.95rem; font-weight:700; color:#475569; text-align:center">
+                Fill each box in the division tower: Divide → Multiply → Subtract → Bring Down.
+              </div>
+            </div>
+            <!-- Instructional Steps Guide Card -->
+            <div class="long-div-guide-card" style="flex:1; min-width:240px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:14px 16px">
+              <h4 style="margin:0 0 8px 0; font-size:0.95rem; color:#1e293b; font-weight:800">📋 Standard Algorithm Cycle</h4>
+              <ol style="margin:0; padding-left:18px; font-size:0.85rem; line-height:1.6; color:#334155">
+                <li><strong>Divide:</strong> How many times does the divisor fit into the current working value?</li>
+                <li><strong>Multiply:</strong> Multiply that quotient digit by the divisor.</li>
+                <li><strong>Subtract:</strong> Subtract the product from the current value to find the difference.</li>
+                <li><strong>Bring Down:</strong> Bring down the next digit from the dividend and repeat.</li>
+              </ol>
+              <div style="margin-top:12px; padding:10px; background:#ffffff; border:1px solid #e2e8f0; border-radius:8px">
+                <span style="font-size:0.8rem; font-weight:800; color:#64748b; text-transform:uppercase">Expected Result:</span>
+                <p style="margin:4px 0 0; font-size:1.05rem; font-weight:800; color:#0f172a">
+                  ${dividend} ÷ ${divisor} = <span style="color:#2563eb">${quotient}</span>${remainder > 0 ? ` <span style="color:#dc2626">R ${remainder}</span>` : ""}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (this.activeTool === "numberline") {
       const pos = this.numberLinePos;
       const ticks = Array.from({ length: 21 }, (_, i) => {
         const isCurrent = i === pos;
@@ -7327,24 +8998,18 @@ const InteractiveDrillToolbox = {
             <button type="button" class="mini-tool-btn" data-bal-reset>Reset</button>
           </div>
           <svg width="100%" height="110" viewBox="0 0 420 110" style="background:#f8fafc; border-radius:8px; border:1px solid #cbd5e1" role="img" aria-label="Visual Pan Balance showing equation ${lx}x + ${lc} = ${rv}">
-            <!-- Base and fulcrum -->
             <polygon points="210,50 198,85 222,85" fill="#475569"/>
             <rect x="180" y="85" width="60" height="6" rx="2" fill="#334155"/>
-            <!-- Beam -->
             <line x1="30" y1="50" x2="390" y2="50" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
             <circle cx="210" cy="50" r="5" fill="#0f172a"/>
-            <!-- Left Pan strings and plate -->
             <line x1="35" y1="50" x2="70" y2="78" stroke="#64748b" stroke-width="1.5"/>
             <line x1="165" y1="50" x2="130" y2="78" stroke="#64748b" stroke-width="1.5"/>
             <rect x="35" y="78" width="130" height="6" rx="3" fill="#0284c7"/>
-            <!-- Right Pan strings and plate -->
             <line x1="255" y1="50" x2="290" y2="78" stroke="#64748b" stroke-width="1.5"/>
             <line x1="385" y1="50" x2="350" y2="78" stroke="#64748b" stroke-width="1.5"/>
             <rect x="255" y="78" width="130" height="6" rx="3" fill="#0284c7"/>
-            <!-- Items on pans -->
             <g transform="translate(0, 58)">${xBoxes}${leftCubes}</g>
             <g transform="translate(0, 50)">${rightCubes}</g>
-            <!-- Labels -->
             <text x="100" y="102" text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">Left: ${lx > 0 ? (lx > 1 ? lx : "") + "x" : ""}${lc > 0 ? (lx > 0 ? " + " : "") + lc : ""}</text>
             <text x="320" y="102" text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">Right: ${rv}</text>
           </svg>
@@ -7401,6 +9066,7 @@ const InteractiveDrillToolbox = {
       const unitB = this.dnlMultiplierB;
       const labelA = this.dnlLabelA || "Miles";
       const labelB = this.dnlLabelB || "Hours";
+      const k = (unitA / unitB).toFixed(2).replace(/\.00$/, "");
 
       const maxSteps = 5;
       const ticksA = [];
@@ -7409,42 +9075,46 @@ const InteractiveDrillToolbox = {
 
       for (let i = 0; i <= maxSteps; i++) {
         const x = 35 + i * 70;
-        const valA = i * unitA;
-        const valB = i * unitB;
+        const valA = Number((i * unitA).toFixed(2));
+        const valB = Number((i * unitB).toFixed(2));
         const isSelected = i === step;
 
         ticksA.push(`
-          <g class="dnl-tick" data-dnl-step="${i}" style="cursor:pointer">
+          <g class="dnl-tick" data-dnl-step="${i}" style="cursor:pointer" title="Click step ${i}: ${valA} ${labelA}">
             <line x1="${x}" y1="28" x2="${x}" y2="38" stroke="${isSelected ? "#2563eb" : "#475569"}" stroke-width="${isSelected ? "3" : "1.5"}"/>
             <text x="${x}" y="22" text-anchor="middle" font-size="${isSelected ? "12" : "10"}" font-weight="${isSelected ? "900" : "600"}" fill="${isSelected ? "#1d4ed8" : "#334155"}">${valA}</text>
+            ${isSelected ? `<circle cx="${x}" cy="10" r="3" fill="#2563eb"/>` : ""}
           </g>
         `);
 
         ticksB.push(`
-          <g class="dnl-tick" data-dnl-step="${i}" style="cursor:pointer">
+          <g class="dnl-tick" data-dnl-step="${i}" style="cursor:pointer" title="Click step ${i}: ${valB} ${labelB}">
             <line x1="${x}" y1="72" x2="${x}" y2="82" stroke="${isSelected ? "#2563eb" : "#475569"}" stroke-width="${isSelected ? "3" : "1.5"}"/>
             <text x="${x}" y="96" text-anchor="middle" font-size="${isSelected ? "12" : "10"}" font-weight="${isSelected ? "900" : "600"}" fill="${isSelected ? "#1d4ed8" : "#334155"}">${valB}</text>
+            ${isSelected ? `<circle cx="${x}" cy="100" r="3" fill="#059669"/>` : ""}
           </g>
         `);
 
         if (i > 0) {
           connectors.push(`
-            <line x1="${x}" y1="38" x2="${x}" y2="72" stroke="${isSelected ? "#2563eb" : "#cbd5e1"}" stroke-width="${isSelected ? "2" : "1"}" stroke-dasharray="${isSelected ? "none" : "3,3"}"/>
+            <line x1="${x}" y1="38" x2="${x}" y2="72" stroke="${isSelected ? "#2563eb" : "#cbd5e1"}" stroke-width="${isSelected ? "2.5" : "1"}" stroke-dasharray="${isSelected ? "none" : "3,3"}"/>
           `);
         }
       }
 
       container.innerHTML = `
         <div class="tool-content dnl-tool-container">
-          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem">
-            <span>Rate: <strong>${step * unitA} ${labelA}</strong> in <strong>${step * unitB} ${labelB}</strong> (Unit rate: ${unitA} ${labelA} per 1 ${labelB})</span>
+          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem; align-items:center">
+            <span>Rate: <strong>${(step * unitA).toFixed(2).replace(/\.00$/, "")} ${labelA}</strong> in <strong>${(step * unitB).toFixed(2).replace(/\.00$/, "")} ${labelB}</strong></span>
+            <span style="color:#64748b">| Multipliers:</span>
+            ${[1, 2, 3, 4, 5].map((m) => `<button type="button" class="mini-tool-btn ${step === m ? "active" : ""}" data-dnl-set-step="${m}">×${m}</button>`).join("")}
+            <span style="color:#64748b">| Presets:</span>
             <button type="button" class="mini-tool-btn" data-dnl-preset="speed">🚗 35 mph</button>
             <button type="button" class="mini-tool-btn" data-dnl-preset="cost">💵 $4.50 / Item</button>
             <button type="button" class="mini-tool-btn" data-dnl-preset="percent">📊 25% of 100</button>
-            <button type="button" class="mini-tool-btn" data-dnl-step-inc="-1" ${step <= 0 ? "disabled" : ""}>Step −1</button>
-            <button type="button" class="mini-tool-btn" data-dnl-step-inc="1" ${step >= maxSteps ? "disabled" : ""}>Step +1</button>
+            <button type="button" class="mini-tool-btn" data-dnl-preset="recipe">🥣 3:2 Recipe</button>
           </div>
-          <svg width="100%" height="110" viewBox="0 0 420 110" style="background:#ffffff; border-radius:8px; border:1px solid #cbd5e1" role="img" aria-label="Double Number Line for ${labelA} and ${labelB}">
+          <svg width="100%" height="110" viewBox="0 0 420 110" style="background:#ffffff; border-radius:8px; border:1px solid #cbd5e1; margin-top:6px" role="img" aria-label="Double Number Line for ${labelA} and ${labelB}">
             <!-- Line A -->
             <line x1="20" y1="33" x2="395" y2="33" stroke="#1e293b" stroke-width="2"/>
             <polygon points="400,33 392,29 392,37" fill="#1e293b"/>
@@ -7453,12 +9123,15 @@ const InteractiveDrillToolbox = {
             <line x1="20" y1="77" x2="395" y2="77" stroke="#1e293b" stroke-width="2"/>
             <polygon points="400,77 392,73 392,81" fill="#1e293b"/>
             <text x="25" y="105" font-size="10" font-weight="800" fill="#059669">${labelB}</text>
-            <!-- Connectors -->
+            <!-- Connectors & Ticks -->
             ${connectors.join("")}
-            <!-- Ticks -->
             ${ticksA.join("")}
             ${ticksB.join("")}
           </svg>
+          <div class="dnl-rate-card" style="margin-top:8px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:8px; padding:8px 12px; font-size:0.85rem; color:#334155; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem">
+            <span>📐 Unit Rate: <strong>${unitA} ${labelA}</strong> per <strong>1 ${labelB}</strong> (Constant of Proportionality <em>k = ${k}</em>)</span>
+            <span>Step ${step}: <em>(${unitA} × ${step}) / (${unitB} × ${step}) = ${(step * unitA).toFixed(2).replace(/\.00$/, "")} / ${(step * unitB).toFixed(2).replace(/\.00$/, "")}</em></span>
+          </div>
         </div>
       `;
     } else if (this.activeTool === "pizza") {
@@ -7538,39 +9211,63 @@ const InteractiveDrillToolbox = {
     } else if (this.activeTool === "tape") {
       const a = this.tapeA;
       const b = this.tapeB;
-      const u = this.tapeUnit;
+      const mode = this.tapeMode || "unit";
+      let u = this.tapeUnit;
+      if (mode === "total") {
+        u = Math.max(1, Math.round(this.tapeTotal / (a + b)));
+      } else if (mode === "diff") {
+        const diffBoxes = Math.abs(a - b) || 1;
+        u = Math.max(1, Math.round(this.tapeDiff / diffBoxes));
+      }
       const labelA = this.tapeLabelA || "Part A";
       const labelB = this.tapeLabelB || "Part B";
       const totA = a * u;
       const totB = b * u;
       const grandTot = totA + totB;
+      const diffVal = Math.abs(totA - totB);
 
-      const cellsA = Array.from({ length: a }, () => `<div class="tape-cell a">${u}</div>`).join("");
-      const cellsB = Array.from({ length: b }, () => `<div class="tape-cell b">${u}</div>`).join("");
+      const cellsA = Array.from({ length: a }, () => `<div class="tape-cell a" style="flex:1; height:36px; display:inline-flex; align-items:center; justify-content:center; background:#dbeafe; border:1px solid #3b82f6; border-radius:4px; font-weight:800; color:#1e40af; font-size:0.95rem">${u}</div>`).join("");
+      const cellsB = Array.from({ length: b }, () => `<div class="tape-cell b" style="flex:1; height:36px; display:inline-flex; align-items:center; justify-content:center; background:#d1fae5; border:1px solid #10b981; border-radius:4px; font-weight:800; color:#065f46; font-size:0.95rem">${u}</div>`).join("");
 
       container.innerHTML = `
         <div class="tool-content tape-tool-container">
-          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem">
-            <span>Ratio <strong>${a} : ${b}</strong> · Total: <strong>${grandTot}</strong> (Unit Value: ${u})</span>
+          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem; align-items:center">
+            <span>Ratio <strong>${a} : ${b}</strong> · Total: <strong>${grandTot}</strong> (1 Box = ${u})</span>
+            <span style="color:#64748b">| Presets:</span>
             <button type="button" class="mini-tool-btn" data-tape-preset="3:2">3:2</button>
             <button type="button" class="mini-tool-btn" data-tape-preset="4:1">4:1</button>
             <button type="button" class="mini-tool-btn" data-tape-preset="5:3">5:3</button>
-            <span style="color:#64748b">| Unit:</span>
-            ${[1, 2, 5, 10].map((val) => `<button type="button" class="mini-tool-btn ${val === u ? "active" : ""}" data-tape-unit="${val}">${val}</button>`).join("")}
+            <button type="button" class="mini-tool-btn" data-tape-preset="2:5">2:5</button>
+            <span style="color:#64748b">| Mode:</span>
+            <button type="button" class="mini-tool-btn ${mode === "unit" ? "active" : ""}" data-tape-mode="unit">Unit Known</button>
+            <button type="button" class="mini-tool-btn ${mode === "total" ? "active" : ""}" data-tape-mode="total">Total Known</button>
+            <button type="button" class="mini-tool-btn ${mode === "diff" ? "active" : ""}" data-tape-mode="diff">Difference Known</button>
+            ${mode === "unit" ? `
+              <span style="color:#64748b">| Box Value:</span>
+              ${[1, 2, 5, 10, 12].map((val) => `<button type="button" class="mini-tool-btn ${val === u ? "active" : ""}" data-tape-unit="${val}">${val}</button>`).join("")}
+            ` : mode === "total" ? `
+              <span style="color:#64748b">| Total:</span>
+              <input type="number" id="tape-in-total" value="${this.tapeTotal}" min="${a + b}" step="${a + b}" style="width:60px; padding:2px 4px; border:1px solid #cbd5e1; border-radius:4px" />
+              <button type="button" class="mini-tool-btn" id="tape-set-total">Apply Total</button>
+            ` : `
+              <span style="color:#64748b">| Difference:</span>
+              <input type="number" id="tape-in-diff" value="${this.tapeDiff}" min="1" style="width:54px; padding:2px 4px; border:1px solid #cbd5e1; border-radius:4px" />
+              <button type="button" class="mini-tool-btn" id="tape-set-diff">Apply Diff</button>
+            `}
           </div>
-          <div style="display:flex; flex-direction:column; gap:0.6rem; padding:0.5rem">
-            <div style="display:flex; align-items:center; gap:0.5rem">
-              <strong style="width:65px; font-size:0.85rem; color:#2563eb">${labelA}:</strong>
-              <div class="tape-bar-strip" style="flex:1">${cellsA}</div>
-              <strong style="width:45px; text-align:right; font-size:1.05rem; color:#1d4ed8">${totA}</strong>
+          <div style="display:flex; flex-direction:column; gap:0.75rem; padding:0.75rem; background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; margin-top:8px">
+            <div style="display:flex; align-items:center; gap:0.75rem">
+              <strong style="width:75px; font-size:0.9rem; color:#1d4ed8">${labelA} (${a}):</strong>
+              <div class="tape-bar-strip" style="flex:1; display:flex; gap:4px">${cellsA}</div>
+              <strong style="width:55px; text-align:right; font-size:1.15rem; color:#1d4ed8">${totA}</strong>
             </div>
-            <div style="display:flex; align-items:center; gap:0.5rem">
-              <strong style="width:65px; font-size:0.85rem; color:#059669">${labelB}:</strong>
-              <div class="tape-bar-strip" style="flex:1">${cellsB}</div>
-              <strong style="width:45px; text-align:right; font-size:1.05rem; color:#047857">${totB}</strong>
+            <div style="display:flex; align-items:center; gap:0.75rem">
+              <strong style="width:75px; font-size:0.9rem; color:#047857">${labelB} (${b}):</strong>
+              <div class="tape-bar-strip" style="flex:1; display:flex; gap:4px">${cellsB}</div>
+              <strong style="width:55px; text-align:right; font-size:1.15rem; color:#047857">${totB}</strong>
             </div>
-            <div style="font-size:0.85rem; color:#475569; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:6px 10px; margin-top:4px">
-              💡 <em>If 1 block represents ${u}, then ${labelA} has ${a} blocks (${totA}) and ${labelB} has ${b} blocks (${totB}). Total = ${grandTot}.</em>
+            <div style="font-size:0.85rem; color:#334155; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:8px 12px; margin-top:4px">
+              💡 <em>${mode === "total" ? `Total is ${this.tapeTotal} split into ${a + b} equal units. Each block is ${this.tapeTotal} ÷ ${a + b} = ${u}.` : mode === "diff" ? `Difference between ${labelA} and ${labelB} is ${diffVal} across ${Math.abs(a - b)} block(s). Each block is ${u}.` : `Each block represents ${u}. ${labelA} has ${a} blocks (${totA}) and ${labelB} has ${b} blocks (${totB}). Combined Total = ${grandTot}.`}</em>
             </div>
           </div>
         </div>
@@ -7587,6 +9284,51 @@ const InteractiveDrillToolbox = {
         this.render(document.querySelector("#drill-tool-viewport"));
         return;
       }
+
+      // Long Division handlers
+      const ldPreset = event.target.closest("[data-ld-preset]");
+      if (ldPreset) {
+        const parts = ldPreset.dataset.ldPreset.split(":").map(Number);
+        this.divDividend = parts[0];
+        this.divDivisor = parts[1];
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("#ld-btn-load")) {
+        const dIn = container.querySelector("#ld-in-dividend");
+        const vIn = container.querySelector("#ld-in-divisor");
+        if (dIn && vIn) {
+          this.divDividend = Math.max(1, Number(dIn.value) || 432);
+          this.divDivisor = Math.max(1, Number(vIn.value) || 12);
+          this.render(document.querySelector("#drill-tool-viewport"));
+        }
+        return;
+      }
+      if (event.target.closest("#ld-btn-reset")) {
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("#ld-btn-reveal")) {
+        const cells = [...container.querySelectorAll(".ld-cell:not(.is-ok)")];
+        if (cells.length > 0) {
+          const next = cells[0];
+          next.value = next.dataset.ldTarget;
+          next.classList.add("is-ok");
+          chime("step");
+          if (cells.length > 1) cells[1].focus();
+          else {
+            const status = container.querySelector("#ld-tower-status");
+            if (status) {
+              const { dividend, divisor, quotient, remainder } = this.computeLongDivisionSteps(this.divDividend, this.divDivisor);
+              status.textContent = `🎉 Solved! ${dividend} ÷ ${divisor} = ${quotient}${remainder > 0 ? ` R ${remainder}` : ""}`;
+              status.style.color = "#15803d";
+            }
+            chime("good");
+          }
+        }
+        return;
+      }
+
       const nlStep = event.target.closest("[data-nl-step]");
       if (nlStep) {
         this.numberLinePos = Math.max(0, Math.min(20, this.numberLinePos + Number(nlStep.dataset.nlStep)));
@@ -7724,9 +9466,9 @@ const InteractiveDrillToolbox = {
         this.render(document.querySelector("#drill-tool-viewport"));
         return;
       }
-      const dnlInc = event.target.closest("[data-dnl-step-inc]");
-      if (dnlInc) {
-        this.dnlStep = Math.max(0, Math.min(5, this.dnlStep + Number(dnlInc.dataset.dnlStepInc)));
+      const dnlSetStep = event.target.closest("[data-dnl-set-step]");
+      if (dnlSetStep) {
+        this.dnlStep = Number(dnlSetStep.dataset.dnlSetStep);
         this.render(document.querySelector("#drill-tool-viewport"));
         return;
       }
@@ -7748,6 +9490,11 @@ const InteractiveDrillToolbox = {
           this.dnlMultiplierB = 25;
           this.dnlLabelA = "Part";
           this.dnlLabelB = "Percent (%)";
+        } else if (preset === "recipe") {
+          this.dnlMultiplierA = 3;
+          this.dnlMultiplierB = 2;
+          this.dnlLabelA = "Cups Flour";
+          this.dnlLabelB = "Cups Sugar";
         }
         this.dnlStep = 2;
         this.render(document.querySelector("#drill-tool-viewport"));
@@ -7822,10 +9569,32 @@ const InteractiveDrillToolbox = {
         this.render(document.querySelector("#drill-tool-viewport"));
         return;
       }
+      const tapeMode = event.target.closest("[data-tape-mode]");
+      if (tapeMode) {
+        this.tapeMode = tapeMode.dataset.tapeMode;
+        this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
       const tapeUnit = event.target.closest("[data-tape-unit]");
       if (tapeUnit) {
         this.tapeUnit = Number(tapeUnit.dataset.tapeUnit);
         this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+      if (event.target.closest("#tape-set-total")) {
+        const tIn = container.querySelector("#tape-in-total");
+        if (tIn) {
+          this.tapeTotal = Math.max(this.tapeA + this.tapeB, Number(tIn.value) || 40);
+          this.render(document.querySelector("#drill-tool-viewport"));
+        }
+        return;
+      }
+      if (event.target.closest("#tape-set-diff")) {
+        const dIn = container.querySelector("#tape-in-diff");
+        if (dIn) {
+          this.tapeDiff = Math.max(1, Number(dIn.value) || 4);
+          this.render(document.querySelector("#drill-tool-viewport"));
+        }
         return;
       }
     });
@@ -7836,6 +9605,38 @@ const InteractiveDrillToolbox = {
         this.splitLeft = Number(slider.value);
         this.splitRight = this.splitTarget - this.splitLeft;
         this.render(document.querySelector("#drill-tool-viewport"));
+        return;
+      }
+
+      // Long Division cell validation & auto-advance
+      const ldCell = event.target.closest(".ld-cell");
+      if (ldCell) {
+        const val = ldCell.value.trim();
+        const target = ldCell.dataset.ldTarget;
+        if (val === target) {
+          ldCell.classList.add("is-ok");
+          ldCell.classList.remove("is-wrong");
+          chime("step");
+          const allLdCells = [...container.querySelectorAll(".ld-cell")];
+          const nextIncomplete = allLdCells.find((c) => !c.classList.contains("is-ok"));
+          if (nextIncomplete) {
+            nextIncomplete.focus();
+          } else {
+            const status = container.querySelector("#ld-tower-status");
+            if (status) {
+              const { dividend, divisor, quotient, remainder } = this.computeLongDivisionSteps(this.divDividend, this.divDivisor);
+              status.textContent = `🎉 Solved! ${dividend} ÷ ${divisor} = ${quotient}${remainder > 0 ? ` R ${remainder}` : ""}`;
+              status.style.color = "#15803d";
+            }
+            chime("good");
+          }
+        } else if (val.length >= target.length) {
+          ldCell.classList.remove("is-ok");
+          ldCell.classList.add("is-wrong");
+        } else {
+          ldCell.classList.remove("is-ok");
+          ldCell.classList.remove("is-wrong");
+        }
       }
     });
   }
