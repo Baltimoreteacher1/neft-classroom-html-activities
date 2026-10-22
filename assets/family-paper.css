@@ -1,0 +1,80 @@
+/* Family paper system: the one source of truth for the look of every family-facing
+   page (hub, lesson guide, homework, practice library). Warm-white paper, ink navy,
+   one hue per unit. The unit hues match --unit-N in curriculum-system.css, except Unit 4: family pages
+   never use purple there (a standing rule), so it is cocoa (pinned by tools/family-paper.test.mjs). Hues are decorative; text and buttons use
+   --fp-unit-ink, which clears 7:1 on the paper. Set data-unit="N" on <html>. */
+:root {
+  --fp-paper: #fffdf8;
+  --fp-page: #ffffff;
+  --fp-ink: #1b2a49;
+  --fp-ink-soft: #3b4863;
+  --fp-muted: #566175;
+  --fp-rule: #e4dece;
+  --fp-wash: #f6f2e8;
+  --fp-note: #fff4cf;
+  --fp-note-ink: #6b4a00;
+  --fp-serif: "Fraunces", Georgia, "Iowan Old Style", serif;
+  --fp-sans: "Hanken Grotesk", system-ui, sans-serif;
+  --fp-unit: #316f62;
+  --fp-unit-ink: #2a5e53;
+  --fp-unit-tint: #ecf2f1;
+}
+[data-unit="1"] {
+  --fp-unit: #316f62;
+  --fp-unit-ink: #2a5e53;
+  --fp-unit-tint: #ecf2f1;
+}
+[data-unit="2"] {
+  --fp-unit: #2f6fa3;
+  --fp-unit-ink: #265b85;
+  --fp-unit-tint: #ecf2f7;
+}
+[data-unit="3"] {
+  --fp-unit: #b5562b;
+  --fp-unit-ink: #884120;
+  --fp-unit-tint: #f8f0ec;
+}
+[data-unit="4"] {
+  --fp-unit: #8a6444;
+  --fp-unit-ink: #705137;
+  --fp-unit-tint: #f4f1ee;
+}
+[data-unit="5"] {
+  --fp-unit: #2f8a8a;
+  --fp-unit-ink: #216060;
+  --fp-unit-tint: #ecf4f4;
+}
+[data-unit="6"] {
+  --fp-unit: #a8792a;
+  --fp-unit-ink: #70501c;
+  --fp-unit-tint: #f7f3ec;
+}
+[data-unit="7"] {
+  --fp-unit: #3f6db5;
+  --fp-unit-ink: #31558e;
+  --fp-unit-tint: #eef2f8;
+}
+[data-unit="8"] {
+  --fp-unit: #a34a6b;
+  --fp-unit-ink: #8a3f5b;
+  --fp-unit-tint: #f7eff2;
+}
+[data-unit="9"] {
+  --fp-unit: #557a2f;
+  --fp-unit-ink: #435f25;
+  --fp-unit-tint: #f0f3ec;
+}
+[data-unit="10"] {
+  --fp-unit: #5b6470;
+  --fp-unit-ink: #515863;
+  --fp-unit-tint: #f0f1f2;
+}
+
+/* Family pages that sit inside the curriculum shell trade its blue-grey wall for paper.
+   Load this file BEFORE curriculum-system.css so that sheet's high-contrast rules still win. */
+.curriculum-product.fp-surface {
+  --course-paper: var(--fp-paper);
+  --course-border: var(--fp-rule);
+  --course-ink: var(--fp-ink);
+  --course-muted: var(--fp-muted);
+}

@@ -1,11 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-unit="2">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex" />
 <title>Family Math Studio · Lesson guide — Unit 2 Lesson 1: Understand Statistical Questions</title>
 <!-- generated:support-page kind=family lesson=2-1 — regenerate: npm run generate-support-pages -->
+<link rel="stylesheet" href="/assets/fonts/fraunces-hanken-grotesk-e8a3b5.css" />
 <style>
 :root{--navy:#12355b;--teal:#1fa6a2;--teal-light:#dff2ee;--amber:#f2c15b;
   --amber-light:#fef0d8;--cream:#f7f4ec;--ink:#21313f;--muted:#5f6f80;--line:#d7e2ed;}
@@ -43,57 +44,166 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 .muted-note{color:var(--muted);font-size:14px;margin:6px 0 0;}
 @media print{.crumbs,footer{display:none;}body{background:#fff;}section{break-inside:avoid;border-color:#bbb;}
   .tool-section{display:none;}}
+/* Family paper system: the one source of truth for the look of every family-facing
+   page (hub, lesson guide, homework, practice library). Warm-white paper, ink navy,
+   one hue per unit. The unit hues match --unit-N in curriculum-system.css, except Unit 4: family pages
+   never use purple there (a standing rule), so it is cocoa (pinned by tools/family-paper.test.mjs). Hues are decorative; text and buttons use
+   --fp-unit-ink, which clears 7:1 on the paper. Set data-unit="N" on <html>. */
+:root {
+  --fp-paper: #fffdf8;
+  --fp-page: #ffffff;
+  --fp-ink: #1b2a49;
+  --fp-ink-soft: #3b4863;
+  --fp-muted: #566175;
+  --fp-rule: #e4dece;
+  --fp-wash: #f6f2e8;
+  --fp-note: #fff4cf;
+  --fp-note-ink: #6b4a00;
+  --fp-serif: "Fraunces", Georgia, "Iowan Old Style", serif;
+  --fp-sans: "Hanken Grotesk", system-ui, sans-serif;
+  --fp-unit: #316f62;
+  --fp-unit-ink: #2a5e53;
+  --fp-unit-tint: #ecf2f1;
+}
+[data-unit="1"] {
+  --fp-unit: #316f62;
+  --fp-unit-ink: #2a5e53;
+  --fp-unit-tint: #ecf2f1;
+}
+[data-unit="2"] {
+  --fp-unit: #2f6fa3;
+  --fp-unit-ink: #265b85;
+  --fp-unit-tint: #ecf2f7;
+}
+[data-unit="3"] {
+  --fp-unit: #b5562b;
+  --fp-unit-ink: #884120;
+  --fp-unit-tint: #f8f0ec;
+}
+[data-unit="4"] {
+  --fp-unit: #8a6444;
+  --fp-unit-ink: #705137;
+  --fp-unit-tint: #f4f1ee;
+}
+[data-unit="5"] {
+  --fp-unit: #2f8a8a;
+  --fp-unit-ink: #216060;
+  --fp-unit-tint: #ecf4f4;
+}
+[data-unit="6"] {
+  --fp-unit: #a8792a;
+  --fp-unit-ink: #70501c;
+  --fp-unit-tint: #f7f3ec;
+}
+[data-unit="7"] {
+  --fp-unit: #3f6db5;
+  --fp-unit-ink: #31558e;
+  --fp-unit-tint: #eef2f8;
+}
+[data-unit="8"] {
+  --fp-unit: #a34a6b;
+  --fp-unit-ink: #8a3f5b;
+  --fp-unit-tint: #f7eff2;
+}
+[data-unit="9"] {
+  --fp-unit: #557a2f;
+  --fp-unit-ink: #435f25;
+  --fp-unit-tint: #f0f3ec;
+}
+[data-unit="10"] {
+  --fp-unit: #5b6470;
+  --fp-unit-ink: #515863;
+  --fp-unit-tint: #f0f1f2;
+}
 
-body { background: #f1f5f9; font-family: "Outfit", system-ui, sans-serif; }
-.wrap { max-width: 800px; padding: 0 0 64px 0; background: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.06); border-radius: 0 0 32px 32px; overflow: hidden; margin: 0 auto; }
+/* Family pages that sit inside the curriculum shell trade its blue-grey wall for paper.
+   Load this file BEFORE curriculum-system.css so that sheet's high-contrast rules still win. */
+.curriculum-product.fp-surface {
+  --course-paper: var(--fp-paper);
+  --course-border: var(--fp-rule);
+  --course-ink: var(--fp-ink);
+  --course-muted: var(--fp-muted);
+}
 
-/* The new Hero header */
-.hero-header { background: linear-gradient(135deg, var(--navy), #1a4f8a); padding: 56px 32px; color: #fff; text-align: center; }
-.hero-header .eyebrow { color: var(--teal-light); font-size: 16px; margin-bottom: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
-.hero-header h1 { color: #fff; font-size: 44px; margin: 0; line-height: 1.1; font-weight: 800; }
-.hero-header .eyebrow .es { text-transform: none; letter-spacing: 0; font-weight: 600; opacity: .85; }
-.hero-header .std { display: block; background: none; border: 0; color: rgba(255,255,255,0.72); margin: 14px 0 0; padding: 0; font-size: 13px; font-weight: 500; }
+:root { --navy: var(--fp-ink); --teal: var(--fp-unit); --teal-ink: var(--fp-unit-ink); --teal-light: var(--fp-unit-tint);
+  --cream: var(--fp-paper); --line: var(--fp-rule); --muted: var(--fp-muted); --ink: var(--fp-ink-soft); }
+body { background: var(--fp-paper); color: var(--fp-ink-soft); font-family: var(--fp-sans); font-size: 19px; }
+h1, section h2 { font-family: var(--fp-serif); color: var(--fp-ink); }
+a { color: var(--fp-unit-ink); }
+.wrap { max-width: 1040px; padding: 0 24px 64px; background: transparent; box-shadow: none; border-radius: 0; overflow: visible; margin: 0 auto; }
+main { display: grid; grid-template-columns: minmax(0, 1fr); column-gap: 40px; }
+main > * { grid-column: 1; min-width: 0; }
 
-/* Upgrade sections to look like cards */
-section { padding: 40px 32px; border: none; margin: 0; border-bottom: 1px solid #edf1f5; }
-section h2 { font-size: 30px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
-section h2::before { content: "✨"; font-size: 28px; }
+/* Letter head: ink title on paper, one unit-coloured rule. */
+.hero-header { background: none; padding: 40px 0 24px; border-top: 6px solid var(--fp-unit); border-bottom: 1px solid var(--fp-rule); text-align: left; color: var(--fp-ink); }
+.hero-header .eyebrow { color: var(--fp-unit-ink); font-size: 16px; font-weight: 600; letter-spacing: 0; text-transform: none; margin: 0 0 8px; }
+.hero-header .eyebrow .es { font-weight: 500; color: var(--fp-muted); }
+.hero-header h1 { color: var(--fp-ink); font-size: clamp(30px, 4.4vw, 42px); font-weight: 700; line-height: 1.15; margin: 0; max-width: 24ch; text-wrap: balance; }
+.hero-header .std { display: inline-block; background: var(--fp-unit-tint); border: 0; color: var(--fp-unit-ink); margin: 14px 0 0; padding: 3px 12px; font-size: 14px; font-weight: 600; }
 
-/* Specific icons for sections */
-.section-learning h2::before { content: "💡"; }
-.section-mission h2::before { content: "🏠"; }
-.section-tool h2::before { content: "🕹️"; }
-.section-vocab h2::before { content: "💬"; }
-.section-example h2::before { content: "🏫"; }
-.section-practice h2::before { content: "✏️"; }
-.section-stuck h2::before { content: "🆘"; }
+section { padding: 32px 0; border: 0; border-bottom: 1px solid var(--fp-rule); }
+section h2 { font-size: 26px; font-weight: 650; display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px; margin: 0 0 16px; }
+section h2 .es { font-family: var(--fp-sans); font-size: 16px; font-weight: 500; color: var(--fp-muted); }
+section h2::before { content: ""; width: 26px; height: 26px; flex: none; background: var(--fp-unit-ink);
+  -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat; }
+.section-learning h2 { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M9%2018h6M10%2021h4M12%203a6%206%200%200%200-4%2010.5c.8.8%201%201.5%201%202.5h6c0-1%20.2-1.7%201-2.5A6%206%200%200%200%2012%203z'%2F%3E%3C%2Fsvg%3E"); }
+.section-mission h2 { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M3%2011l9-8%209%208M5%2010v10h14V10M10%2020v-6h4v6'%2F%3E%3C%2Fsvg%3E"); }
+.section-tool h2 { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M4%207h9M17%207h3M4%2012h3M11%2012h9M4%2017h11M19%2017h1M15%205v4M8%2010v4M17%2015v4'%2F%3E%3C%2Fsvg%3E"); }
+.section-vocab h2 { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M4%205h16v11H9l-5%204z'%2F%3E%3C%2Fsvg%3E"); }
+.section-example h2 { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M4%205h16v11H4zM8%2020h8M12%2016v4'%2F%3E%3C%2Fsvg%3E"); }
+.section-practice h2 { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M4%2020l1-5L16%204l4%204L9%2019zM14%206l4%204'%2F%3E%3C%2Fsvg%3E"); }
+.section-stuck h2 { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Ccircle%20cx%3D'12'%20cy%3D'12'%20r%3D'9'%2F%3E%3Ccircle%20cx%3D'12'%20cy%3D'12'%20r%3D'3.5'%2F%3E%3Cpath%20d%3D'M5.6%205.6l3.9%203.9M14.5%2014.5l3.9%203.9M18.4%205.6l-3.9%203.9M9.5%2014.5l-3.9%203.9'%2F%3E%3C%2Fsvg%3E"); }
+.section-frames h2 { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M5%207h14M5%2012h14M5%2017h9'%2F%3E%3C%2Fsvg%3E"); }
 
-.glossary{margin:0;}
-.gloss-item{padding:14px 0;border-bottom:1px solid #edf1f5;}
-.gloss-item:last-child{border-bottom:0;}
-.gloss-item dt{font-size:22px;}
-.gloss-item .gloss-es{color:var(--muted);font-weight:600;}
-.gloss-item .gloss-es::before{content:"· ";}
-.gloss-item dd{margin:4px 0 0;font-size:19px;}
-.gloss-item dd.es-text{font-size:18px;}
+/* Spanish sits on its own tinted line, not grey italics. */
+.es-text { font-style: normal; color: var(--fp-ink-soft); background: var(--fp-unit-tint); border-left: 3px solid var(--fp-unit); border-radius: 0 6px 6px 0; padding: 4px 12px; }
+span.es-text { display: block; margin-top: 8px; }
 
-ol.choices{margin:16px 0 8px;list-style:none;padding-left:0;}
-ol.choices li{background: #f8fafc; border:2px solid #e2e8f0;border-radius:16px;padding:16px 20px;margin-bottom:12px;font-weight:600; font-size: 20px; cursor: pointer; transition: all 0.2s; color: var(--navy); }
-ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); }
+.glossary { margin: 0; }
+.gloss-item { padding: 14px 0; border-bottom: 1px solid var(--fp-rule); }
+.gloss-item:last-child { border-bottom: 0; }
+.gloss-item dt { font-size: 21px; }
+.gloss-item .gloss-es { color: var(--fp-muted); font-weight: 600; }
+.gloss-item .gloss-es::before { content: "· "; }
+.gloss-item dd { margin: 4px 0 0; font-size: 18px; }
+.gloss-item dd.es-text { font-size: 17px; margin-top: 8px; }
 
-.welcome-note{background:var(--teal-light);border:none;border-radius:20px;padding:24px 32px;margin-bottom:0; text-align: left; }
-.welcome-note strong{display:block;font-size:26px;font-weight: 800; color:var(--navy);margin-bottom:8px;}
-.welcome-note p{margin:0;color:var(--navy);font-size:20px; line-height: 1.5; }
+/* Three surfaces only: plain card, unit-tint key idea, one highlight for the grown-up note. */
+.callout { border: 1px solid var(--fp-rule); border-radius: 10px; padding: 18px 22px; background: var(--fp-page); font-size: 20px; line-height: 1.55; }
+.callout--key { background: var(--fp-unit-tint); border-color: transparent; border-left: 5px solid var(--fp-unit); border-radius: 4px 10px 10px 4px; font-size: 22px; }
+.callout--note { background: var(--fp-note); border-color: transparent; border-left: 5px solid var(--fp-note-ink); border-radius: 4px 10px 10px 4px; color: var(--fp-note-ink); }
+.callout--note .es-text { background: transparent; border-left-color: var(--fp-note-ink); color: var(--fp-note-ink); }
+.callout--work { background: var(--fp-wash); border-color: var(--fp-rule); }
+.callout--work p.problem { font-size: 22px; color: var(--fp-ink); margin: 12px 0; }
+.callout--work details { margin-top: 20px; font-size: 18px; }
+.callout--work summary { cursor: pointer; color: var(--fp-unit-ink); font-weight: 600; }
+.callout--work details p { margin: 12px 0 0; }
+.answer { background: var(--fp-unit-tint); border: 1px solid var(--fp-unit); color: var(--fp-ink); font-size: 20px; }
+.frame { background: var(--fp-wash); border: 0; border-bottom: 1px solid var(--fp-rule); border-radius: 0; padding: 12px 14px; margin: 0; font-family: var(--fp-serif); color: var(--fp-ink); }
 
-.callout { border: none; border-radius: 20px; padding: 24px 32px; background: #f8fafc; font-size: 22px; line-height: 1.5; }
+ol.choices { margin: 16px 0 8px; list-style: none; padding-left: 0; }
+ol.choices li { background: var(--fp-page); border: 1px solid var(--fp-rule); border-radius: 10px; padding: 14px 18px; margin-bottom: 10px; font-weight: 600; font-size: 19px; color: var(--fp-ink); }
 
-/* Phone: the desktop type scale wrapped the title to four lines and left a
-   heading and its hint each on a line of their own. */
+.welcome-note { background: var(--fp-unit-tint); border: 0; border-radius: 10px; padding: 20px 24px; }
+.welcome-note strong { display: block; font-family: var(--fp-serif); font-size: 24px; color: var(--fp-ink); margin-bottom: 6px; }
+.welcome-note p { margin: 0; color: var(--fp-ink); font-size: 19px; line-height: 1.5; }
+
+footer { color: var(--fp-muted); }
+a:focus-visible, summary:focus-visible { outline: 3px solid var(--fp-unit-ink); outline-offset: 3px; }
+
+/* Wide screens: the "if they get stuck" note moves to the right margin, like a family letter. */
+@media (min-width: 980px) {
+  main { grid-template-columns: minmax(0, 1fr) 280px; }
+  main > .hero-header { grid-column: 1 / -1; }
+  main > .section-stuck { grid-column: 2; grid-row: 2 / span 7; align-self: start; position: sticky; top: 16px; border-bottom: 0; padding-top: 32px; }
+  main > .section-stuck h2 { font-size: 20px; }
+  main > .section-stuck .callout { font-size: 17px; padding: 16px 18px; }
+}
 @media (max-width: 560px) {
-  .hero-header { padding: 36px 20px; }
-  .hero-header h1 { font-size: 30px; }
-  section { padding: 28px 20px; }
-  section h2 { font-size: 24px; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .wrap { padding: 0 18px 48px; }
+  .hero-header { padding: 28px 0 20px; }
+  section { padding: 26px 0; }
+  section h2 { font-size: 23px; }
 }
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -115,7 +225,7 @@ ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); 
 
 <section class="section-learning">
   <h2>What students are learning <span class="es">Qué aprenden</span></h2>
-  <p class="callout" style="font-size:22px;"><strong>Key idea:</strong> A statistical question has answers that change from person to person, so you collect data to answer it. A question with only one fixed answer is not a statistical question. For example, &quot;How tall is each student in the class?&quot; is statistical, but &quot;How many days are in a week?&quot; is not.<br><span class="es-text" lang="es" style="font-size:18px;">Idea clave: Una pregunta estadística tiene respuestas que cambian de una persona a otra, así que reúnes datos para responderla. Una pregunta con una sola respuesta fija no es estadística. Por ejemplo, «¿Cuánto mide cada estudiante de la clase?» es estadística, pero «¿Cuántos días tiene una semana?» no lo es.</span></p>
+  <p class="callout callout--key"><strong>Key idea:</strong> A statistical question has answers that change from person to person, so you collect data to answer it. A question with only one fixed answer is not a statistical question. For example, &quot;How tall is each student in the class?&quot; is statistical, but &quot;How many days are in a week?&quot; is not.<span class="es-text" lang="es">Idea clave: Una pregunta estadística tiene respuestas que cambian de una persona a otra, así que reúnes datos para responderla. Una pregunta con una sola respuesta fija no es estadística. Por ejemplo, «¿Cuánto mide cada estudiante de la clase?» es estadística, pero «¿Cuántos días tiene una semana?» no lo es.</span></p>
 </section>
 
 
@@ -132,29 +242,29 @@ ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); 
 </section>
 <section class="section-example">
   <h2>How we did it in class today <span class="es">Cómo lo hicimos hoy en clase</span></h2>
-  <div class="callout" style="background:#fff;border-color:var(--line);"><ol><li>Question 1: &quot;How many points did our top player score last night?&quot; There is one player and one game, so there is one fixed answer, like 18 points.</li><li>One answer, no variety, so this is NOT a statistical question.</li><li>Question 2: &quot;How many points does each player score per game?&quot; The answers vary: 8, 12, 12, 15, 18, 20, 22.</li><li>Because the answers are different for different players, I must collect data. This IS a statistical question.</li></ol></div>
+  <div class="callout"><ol><li>Question 1: &quot;How many points did our top player score last night?&quot; There is one player and one game, so there is one fixed answer, like 18 points.</li><li>One answer, no variety, so this is NOT a statistical question.</li><li>Question 2: &quot;How many points does each player score per game?&quot; The answers vary: 8, 12, 12, 15, 18, 20, 22.</li><li>Because the answers are different for different players, I must collect data. This IS a statistical question.</li></ol></div>
 </section>
 <section class="section-practice">
   <h2>Try this together <span class="es">Inténtenlo juntos</span></h2>
   <p class="sub" style="margin-top:-6px;">Pick one question to talk about. You don't need to do them all!</p>
-  <div class="callout" style="background:var(--cream);border-color:var(--line); padding-bottom:16px;">
+  <div class="callout callout--work">
          
-         <p style="font-size:22px;color:var(--navy);margin:12px 0;">Maya wants to learn about the families on her street. Which of these is a statistical question?</p>
+         <p class="problem">Maya wants to learn about the families on her street. Which of these is a statistical question?</p>
          <ol class="choices"><li>How many legs does a dog have?</li><li>How many pets does each family on Maya's street have?</li><li>What time does the library close on Saturdays?</li><li>How many houses are on Maya's street?</li></ol>
-         <details style="margin-top: 20px; font-size: 18px;">
-           <summary style="cursor: pointer; color: var(--teal-ink); font-weight: 600;">Check the answer</summary>
-           <p style="margin-top: 12px; margin-bottom:0;">The answer is: <strong class="answer" style="font-size:20px;">How many pets does each family on Maya's street have?</strong></p>
+         <details>
+           <summary>Check the answer</summary>
+           <p>The answer is: <strong class="answer">How many pets does each family on Maya's street have?</strong></p>
          </details>
        </div>
 </section>
 <section class="section-stuck">
   <h2>If they get stuck... <span class="es">Si se traban...</span></h2>
-  <div class="callout" style="border-left: 6px solid #ff9800; background: #fff8e1;">
+  <div class="callout callout--note">
     <p style="margin-top:0;"><strong>Watch out for this:</strong> A common mistake in Statistical Questions and Data is judging a question by its topic or its numbers instead of its variability. Students see a question about ONE player, ONE game, or ONE fixed fact — like &quot;How many points does the team need to win a game?&quot; — and call it statistical just because it has a number or is about sports. Or they see a question about a single player's whole season, like &quot;How many touchdowns did the quarterback throw this season?&quot;, and call it NOT statistical because only one player is named, forgetting that a season covers many games with a different result each time. Both errors skip the real test: will the answers actually differ from case to case (game to game, player to player)? If yes, it is a statistical question; if there is one fixed answer, it is not.</p>
     <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"<br><span class="es-text" lang="es">Pregunte: «¿Puedes mostrarme cómo lo hiciste? ¿Nos saltamos algún paso?» Hablar de las matemáticas en voz alta ayuda mucho.</span></p>
   </div>
 </section>
-<section>
+<section class="section-frames">
   <h2>Sentence starters <span class="es">Frases para empezar</span></h2>
   <p class="frame">I know ___ because ___.</p><p class="frame">First, I ___. Then, I ___.</p><p class="frame">The answer is ___, so ___.</p>
 </section>

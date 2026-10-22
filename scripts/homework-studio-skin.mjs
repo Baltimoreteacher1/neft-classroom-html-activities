@@ -11,7 +11,15 @@
  * cascades last and ships in the hashed shared assets like the rest.
  */
 
-export const STUDIO_SKIN_CSS = `
+import { readFileSync } from "node:fs";
+
+// Paper, ink and the per-unit hue: the one source every family surface shares.
+const FAMILY_PAPER_CSS = readFileSync(
+  new URL("../assets/family-paper.css", import.meta.url),
+  "utf8",
+);
+
+export const STUDIO_SKIN_CSS = `${FAMILY_PAPER_CSS}
 /* ============================================================
    STUDIO SKIN — navy / teal / warm paper, serif headings
    ============================================================ */
@@ -310,6 +318,48 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
   .hw-stepper-bar { display: none !important; }
   .problems-container.hw-stepped .problem-section:not(.is-step-current) { display: block; }
 }
+
+/* ============================================================
+   FAMILY PAPER — one paper, one ink, one hue per unit.
+   Remaps the unit theme onto assets/family-paper.css so every
+   lesson reads as the same product; three surfaces only:
+   white card, unit-tint key idea, one grown-up highlight.
+   ============================================================ */
+:root {
+  --navy: var(--fp-ink);
+  --navy-light: var(--fp-ink-soft);
+  --teal: var(--fp-unit);
+  --teal-ink: var(--fp-unit-ink);
+  --teal-light: var(--fp-unit-tint);
+  --amber-light: var(--fp-note);
+  --st-paper: var(--fp-paper);
+  --st-soft: var(--fp-wash);
+  --st-navy: var(--fp-ink);
+  --st-navy-tint: var(--fp-wash);
+  --st-teal: var(--fp-unit-ink);
+  --st-teal-bright: var(--fp-unit);
+  --st-teal-tint: var(--fp-unit-tint);
+  --st-teal-line: var(--fp-unit);
+  --st-border: var(--fp-rule);
+  --st-serif: var(--fp-serif);
+}
+.hw-hero {
+  background: var(--fp-unit-ink) !important;
+  border: 0 !important;
+  border-bottom: 5px solid var(--fp-unit) !important;
+}
+.hw-hero-emoji { background: rgba(255, 255, 255, 0.16) !important; }
+.hw-hero-kicker { color: #fff !important; opacity: 0.88; }
+.hw-hero .lang-selector-title, .hw-hero-lesson-meta, .hw-hero-lesson-meta .lang-en, .hw-hero-lesson-meta .lang-es { color: #f6f1ea !important; }
+.btn-primary { background: var(--fp-unit-ink) !important; border-color: var(--fp-unit-ink) !important; }
+.hw-route-chooser, .hw-session-banner, .hw-mystery, .pctlab-stage { background: var(--fp-page) !important; border-color: var(--fp-rule) !important; }
+.hw-route-option.is-active { background: var(--fp-unit-tint) !important; border-color: var(--fp-unit) !important; }
+.hw-grownup, .hw-huddle { background: var(--fp-note) !important; border-color: var(--fp-note-ink) !important; color: var(--fp-note-ink); }
+.family-big-idea-piece, .bridge-row.bridge-class, .homework-tab-extra { background: var(--fp-unit-tint) !important; }
+.pctlab-chip, .hw-session-chip, .hw-conf-btn { background: var(--fp-wash); border-color: var(--fp-rule); }
+.visual-representation-model { background: var(--fp-unit-tint); }
+.visual-representation-math { background: var(--fp-note); }
+.visual-representation-words { background: var(--fp-wash); }
 `;
 
 export const STUDIO_SKIN_JS = `

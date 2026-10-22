@@ -1303,11 +1303,11 @@ function generateHtml(lessonId, config) {
   const unit4NoPurpleCss =
     unitNum === 4
       ? `
-body[data-family-style] .powerup-tag { color:#405b78 !important; background:#e8eef2 !important; }
-body[data-family-style] .powerup-choice-btn:hover:not(:disabled) { border-color:#66859b !important; background:#f3f6f7 !important; }
-body[data-family-style] .tile-6 { background:#64748b !important; }
-body[data-family-style] .frame-stars { border-color:#8091a2 !important; }
-body[data-family-style] .frame-stars .pb-frame-header { background:#8091a2 !important; }
+body[data-family-style] .powerup-tag { color:var(--fp-unit-ink) !important; background:var(--fp-unit-tint) !important; }
+body[data-family-style] .powerup-choice-btn:hover:not(:disabled) { border-color:var(--fp-unit) !important; background:var(--fp-wash) !important; }
+body[data-family-style] .tile-6 { background:var(--fp-unit-ink) !important; }
+body[data-family-style] .frame-stars { border-color:var(--fp-unit) !important; }
+body[data-family-style] .frame-stars .pb-frame-header { background:var(--fp-unit-ink) !important; }
 `
       : "";
   const familyBigIdeaCss =
@@ -1363,34 +1363,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 .hw-experience-description { margin:2px 0 0; color:#f2f6fb; font-size:14px; line-height:1.4; }
 .hw-experience-banner .lang-es { color:inherit; }
 @media (max-width:550px) { .hw-experience-banner { align-items:flex-start; padding:10px 12px; } .hw-experience-description { font-size:13px; } }
-` +
-        ({
-          arcade: `
-body[data-family-style="arcade"] { --navy:#24364b; --navy-light:#405b78; --teal:#66859b; --teal-ink:#3e5d73; --teal-light:#e8eef2; --amber:#8c7442; --amber-light:#f5f1e8; }
-body[data-family-style="arcade"] .hw-hero { background:linear-gradient(135deg,#25364a 0%,#405b78 64%,#687d8a 100%) !important; border:1px solid #c6d0d5; }
-body[data-family-style="arcade"] .hw-hero-glow { background:radial-gradient(circle,rgba(226,233,237,.18) 0%,transparent 70%); }
-body[data-family-style="arcade"] .card, body[data-family-style="arcade"] .practice-tier { border-color:#cbd6dc; border-radius:20px; }
-body[data-family-style="arcade"] .homework-tab-btn.is-active { box-shadow:inset 0 -3px #8c7442; }
-body[data-family-style="arcade"] .hw-experience-banner { border-style:dashed; border-width:2px; }
-`,
-          "case-file": `
-body[data-family-style="case-file"] { --navy:#174338; --navy-light:#245b4e; --teal:#26866f; --teal-ink:#16634f; --teal-light:#e4f3eb; --amber:#a16207; --amber-light:#fff8dc; }
-body[data-family-style="case-file"] .hw-hero { background:linear-gradient(135deg,#173c3a 0%,#245b4e 60%,#765b24 100%) !important; border:2px solid #d6b85a; }
-body[data-family-style="case-file"] .hw-hero-glow { background:radial-gradient(circle,rgba(245,217,125,.24) 0%,transparent 70%); }
-body[data-family-style="case-file"] .family-guide, body[data-family-style="case-file"] .try-at-home { border-left:5px solid #6c8c58; }
-body[data-family-style="case-file"] .problem-section { border-left:4px solid #d6b85a; }
-body[data-family-style="case-file"] .homework-tab-btn.is-active { box-shadow:inset 0 -3px #d6b85a; }
-body[data-family-style="case-file"] .hw-experience-banner { border-left:5px solid #e5c75a; }
-`,
-          unlock: `
-body[data-family-style="unlock"] { --navy:#293b34; --navy-light:#496456; --teal:#718c78; --teal-ink:#496653; --teal-light:#e8eee8; --amber:#927d55; --amber-light:#f4f0e7; }
-body[data-family-style="unlock"] .hw-hero { background:linear-gradient(135deg,#293b34 0%,#496456 64%,#788477 100%) !important; border:1px solid #ccd4ca; }
-body[data-family-style="unlock"] .hw-hero-glow { background:radial-gradient(circle,rgba(230,234,221,.18) 0%,transparent 70%); }
-body[data-family-style="unlock"] .card, body[data-family-style="unlock"] .practice-tier { border-top:3px solid #a6b4a5; border-radius:16px; }
-body[data-family-style="unlock"] .homework-tab-btn.is-active { box-shadow:inset 0 -3px #927d55; }
-body[data-family-style="unlock"] .hw-experience-banner { border:1px solid #ccd4ca; background:rgba(255,255,255,.14); }
-`,
-        }[familyStyle] || "");
+`;
 
   const mystery = pickMystery(challenge, basic.length + warmup.length);
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
@@ -1488,12 +1461,13 @@ body[data-family-style="unlock"] .hw-experience-banner { border:1px solid #ccd4c
   );
 
   return `<!doctype html>
-<html lang="en">
+<html lang="en" data-unit="${unitNum}">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Family Math Studio — ${esc(homeworkPageLabel(lessonId))}: ${esc(title)}</title>
 <link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet">
+<link href="/assets/fonts/fraunces-hanken-grotesk-e8a3b5.css" rel="stylesheet">
 <style>
 ${EDITORIAL_FONT_IMPORT}
 :root {

@@ -7590,6 +7590,86 @@ body {
   font-size: 22px !important;
   line-height: 1.6 !important;
 }
+/* Family paper system: the one source of truth for the look of every family-facing
+   page (hub, lesson guide, homework, practice library). Warm-white paper, ink navy,
+   one hue per unit. The unit hues match --unit-N in curriculum-system.css, except Unit 4: family pages
+   never use purple there (a standing rule), so it is cocoa (pinned by tools/family-paper.test.mjs). Hues are decorative; text and buttons use
+   --fp-unit-ink, which clears 7:1 on the paper. Set data-unit="N" on <html>. */
+:root {
+  --fp-paper: #fffdf8;
+  --fp-page: #ffffff;
+  --fp-ink: #1b2a49;
+  --fp-ink-soft: #3b4863;
+  --fp-muted: #566175;
+  --fp-rule: #e4dece;
+  --fp-wash: #f6f2e8;
+  --fp-note: #fff4cf;
+  --fp-note-ink: #6b4a00;
+  --fp-serif: "Fraunces", Georgia, "Iowan Old Style", serif;
+  --fp-sans: "Hanken Grotesk", system-ui, sans-serif;
+  --fp-unit: #316f62;
+  --fp-unit-ink: #2a5e53;
+  --fp-unit-tint: #ecf2f1;
+}
+[data-unit="1"] {
+  --fp-unit: #316f62;
+  --fp-unit-ink: #2a5e53;
+  --fp-unit-tint: #ecf2f1;
+}
+[data-unit="2"] {
+  --fp-unit: #2f6fa3;
+  --fp-unit-ink: #265b85;
+  --fp-unit-tint: #ecf2f7;
+}
+[data-unit="3"] {
+  --fp-unit: #b5562b;
+  --fp-unit-ink: #884120;
+  --fp-unit-tint: #f8f0ec;
+}
+[data-unit="4"] {
+  --fp-unit: #8a6444;
+  --fp-unit-ink: #705137;
+  --fp-unit-tint: #f4f1ee;
+}
+[data-unit="5"] {
+  --fp-unit: #2f8a8a;
+  --fp-unit-ink: #216060;
+  --fp-unit-tint: #ecf4f4;
+}
+[data-unit="6"] {
+  --fp-unit: #a8792a;
+  --fp-unit-ink: #70501c;
+  --fp-unit-tint: #f7f3ec;
+}
+[data-unit="7"] {
+  --fp-unit: #3f6db5;
+  --fp-unit-ink: #31558e;
+  --fp-unit-tint: #eef2f8;
+}
+[data-unit="8"] {
+  --fp-unit: #a34a6b;
+  --fp-unit-ink: #8a3f5b;
+  --fp-unit-tint: #f7eff2;
+}
+[data-unit="9"] {
+  --fp-unit: #557a2f;
+  --fp-unit-ink: #435f25;
+  --fp-unit-tint: #f0f3ec;
+}
+[data-unit="10"] {
+  --fp-unit: #5b6470;
+  --fp-unit-ink: #515863;
+  --fp-unit-tint: #f0f1f2;
+}
+
+/* Family pages that sit inside the curriculum shell trade its blue-grey wall for paper.
+   Load this file BEFORE curriculum-system.css so that sheet's high-contrast rules still win. */
+.curriculum-product.fp-surface {
+  --course-paper: var(--fp-paper);
+  --course-border: var(--fp-rule);
+  --course-ink: var(--fp-ink);
+  --course-muted: var(--fp-muted);
+}
 
 /* ============================================================
    STUDIO SKIN — navy / teal / warm paper, serif headings
@@ -7889,6 +7969,48 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
   .hw-stepper-bar { display: none !important; }
   .problems-container.hw-stepped .problem-section:not(.is-step-current) { display: block; }
 }
+
+/* ============================================================
+   FAMILY PAPER — one paper, one ink, one hue per unit.
+   Remaps the unit theme onto assets/family-paper.css so every
+   lesson reads as the same product; three surfaces only:
+   white card, unit-tint key idea, one grown-up highlight.
+   ============================================================ */
+:root {
+  --navy: var(--fp-ink);
+  --navy-light: var(--fp-ink-soft);
+  --teal: var(--fp-unit);
+  --teal-ink: var(--fp-unit-ink);
+  --teal-light: var(--fp-unit-tint);
+  --amber-light: var(--fp-note);
+  --st-paper: var(--fp-paper);
+  --st-soft: var(--fp-wash);
+  --st-navy: var(--fp-ink);
+  --st-navy-tint: var(--fp-wash);
+  --st-teal: var(--fp-unit-ink);
+  --st-teal-bright: var(--fp-unit);
+  --st-teal-tint: var(--fp-unit-tint);
+  --st-teal-line: var(--fp-unit);
+  --st-border: var(--fp-rule);
+  --st-serif: var(--fp-serif);
+}
+.hw-hero {
+  background: var(--fp-unit-ink) !important;
+  border: 0 !important;
+  border-bottom: 5px solid var(--fp-unit) !important;
+}
+.hw-hero-emoji { background: rgba(255, 255, 255, 0.16) !important; }
+.hw-hero-kicker { color: #fff !important; opacity: 0.88; }
+.hw-hero .lang-selector-title, .hw-hero-lesson-meta, .hw-hero-lesson-meta .lang-en, .hw-hero-lesson-meta .lang-es { color: #f6f1ea !important; }
+.btn-primary { background: var(--fp-unit-ink) !important; border-color: var(--fp-unit-ink) !important; }
+.hw-route-chooser, .hw-session-banner, .hw-mystery, .pctlab-stage { background: var(--fp-page) !important; border-color: var(--fp-rule) !important; }
+.hw-route-option.is-active { background: var(--fp-unit-tint) !important; border-color: var(--fp-unit) !important; }
+.hw-grownup, .hw-huddle { background: var(--fp-note) !important; border-color: var(--fp-note-ink) !important; color: var(--fp-note-ink); }
+.family-big-idea-piece, .bridge-row.bridge-class, .homework-tab-extra { background: var(--fp-unit-tint) !important; }
+.pctlab-chip, .hw-session-chip, .hw-conf-btn { background: var(--fp-wash); border-color: var(--fp-rule); }
+.visual-representation-model { background: var(--fp-unit-tint); }
+.visual-representation-math { background: var(--fp-note); }
+.visual-representation-words { background: var(--fp-wash); }
 
 
 .bridge-card { margin-top: 10px; border-top: 1.5px dashed #c9d8ea; padding-top: 8px; }

@@ -32,12 +32,13 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { interactiveVisualHost } from "@eduwonderlab/engine/core/interactive-visual.js";
 import { familyFieldProblems } from "./lib/family-content.mjs";
+import { FAMILY_LETTER_CSS, FAMILY_PAPER } from "./lib/family-paper-css.mjs";
 import { withPlainDefinitions } from "./lib/family-plain-definitions.mjs";
 import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-import { LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
+import { DATA_DIR, LESSONS_DIR as lessonsDir } from "../tools/lib/curriculum-source.mjs";
 
 const notesDir = join(__dirname, "..", "data", "family-homework-notes");
 
@@ -260,72 +261,54 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
   .tool-section{display:none;}}
 `;
 
-// Family-page-only rules (choice lists, hero, sections). Kept out of PALETTE so
-// the teacher-notes and student-help pages do not churn for styles they never use.
+// Family-page-only rules. Kept out of PALETTE so the teacher-notes and student-help
+// pages do not churn for styles they never use. The tokens (paper, ink, unit hue)
+// come from assets/family-paper.css, the one source for every family surface.
+// Guide-only rules: the letter layout (text column + right-margin note), glossary,
+// answer choices and welcome note. The shared look is scripts/lib/family-paper-css.mjs.
 const FAMILY_CSS = `
-body { background: #f1f5f9; font-family: "Outfit", system-ui, sans-serif; }
-.wrap { max-width: 800px; padding: 0 0 64px 0; background: #fff; box-shadow: 0 10px 40px rgba(0,0,0,0.06); border-radius: 0 0 32px 32px; overflow: hidden; margin: 0 auto; }
+main { display: grid; grid-template-columns: minmax(0, 1fr); column-gap: 40px; }
+main > * { min-width: 0; }
+main > * { grid-column: 1; }
 
-/* The new Hero header */
-.hero-header { background: linear-gradient(135deg, var(--navy), #1a4f8a); padding: 56px 32px; color: #fff; text-align: center; }
-.hero-header .eyebrow { color: var(--teal-light); font-size: 16px; margin-bottom: 12px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; }
-.hero-header h1 { color: #fff; font-size: 44px; margin: 0; line-height: 1.1; font-weight: 800; }
-.hero-header .eyebrow .es { text-transform: none; letter-spacing: 0; font-weight: 600; opacity: .85; }
-.hero-header .std { display: block; background: none; border: 0; color: rgba(255,255,255,0.72); margin: 14px 0 0; padding: 0; font-size: 13px; font-weight: 500; }
+.more-practice { margin: 20px 0 0; font-weight: 600; }
+.glossary { margin: 0; }
+.gloss-item { padding: 14px 0; border-bottom: 1px solid var(--fp-rule); }
+.gloss-item:last-child { border-bottom: 0; }
+.gloss-item dt { font-size: 21px; }
+.gloss-item .gloss-es { color: var(--fp-muted); font-weight: 600; }
+.gloss-item .gloss-es::before { content: "· "; }
+.gloss-item dd { margin: 4px 0 0; font-size: 18px; }
+.gloss-item dd.es-text { font-size: 17px; margin-top: 8px; }
+.frame { background: var(--fp-wash); border: 0; border-bottom: 1px solid var(--fp-rule); border-radius: 0; padding: 12px 14px; margin: 0; font-family: var(--fp-serif); color: var(--fp-ink); }
 
-/* Upgrade sections to look like cards */
-section { padding: 40px 32px; border: none; margin: 0; border-bottom: 1px solid #edf1f5; }
-section h2 { font-size: 30px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
-section h2::before { content: "✨"; font-size: 28px; }
+ol.choices { margin: 16px 0 8px; list-style: none; padding-left: 0; }
+ol.choices li { background: var(--fp-page); border: 1px solid var(--fp-rule); border-radius: 10px; padding: 14px 18px; margin-bottom: 10px; font-weight: 600; font-size: 19px; color: var(--fp-ink); }
 
-/* Specific icons for sections */
-.section-learning h2::before { content: "💡"; }
-.section-mission h2::before { content: "🏠"; }
-.section-tool h2::before { content: "🕹️"; }
-.section-vocab h2::before { content: "💬"; }
-.section-example h2::before { content: "🏫"; }
-.section-practice h2::before { content: "✏️"; }
-.section-stuck h2::before { content: "🆘"; }
+.welcome-note { background: var(--fp-unit-tint); border: 0; border-radius: 10px; padding: 20px 24px; }
+.welcome-note strong { display: block; font-family: var(--fp-serif); font-size: 24px; color: var(--fp-ink); margin-bottom: 6px; }
+.welcome-note p { margin: 0; color: var(--fp-ink); font-size: 19px; line-height: 1.5; }
 
-.glossary{margin:0;}
-.gloss-item{padding:14px 0;border-bottom:1px solid #edf1f5;}
-.gloss-item:last-child{border-bottom:0;}
-.gloss-item dt{font-size:22px;}
-.gloss-item .gloss-es{color:var(--muted);font-weight:600;}
-.gloss-item .gloss-es::before{content:"· ";}
-.gloss-item dd{margin:4px 0 0;font-size:19px;}
-.gloss-item dd.es-text{font-size:18px;}
-
-ol.choices{margin:16px 0 8px;list-style:none;padding-left:0;}
-ol.choices li{background: #f8fafc; border:2px solid #e2e8f0;border-radius:16px;padding:16px 20px;margin-bottom:12px;font-weight:600; font-size: 20px; cursor: pointer; transition: all 0.2s; color: var(--navy); }
-ol.choices li:hover { border-color: var(--teal); background: var(--teal-light); }
-
-.welcome-note{background:var(--teal-light);border:none;border-radius:20px;padding:24px 32px;margin-bottom:0; text-align: left; }
-.welcome-note strong{display:block;font-size:26px;font-weight: 800; color:var(--navy);margin-bottom:8px;}
-.welcome-note p{margin:0;color:var(--navy);font-size:20px; line-height: 1.5; }
-
-.callout { border: none; border-radius: 20px; padding: 24px 32px; background: #f8fafc; font-size: 22px; line-height: 1.5; }
-
-/* Phone: the desktop type scale wrapped the title to four lines and left a
-   heading and its hint each on a line of their own. */
-@media (max-width: 560px) {
-  .hero-header { padding: 36px 20px; }
-  .hero-header h1 { font-size: 30px; }
-  section { padding: 28px 20px; }
-  section h2 { font-size: 24px; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+/* Wide screens: the "if they get stuck" note moves to the right margin, like a family letter. */
+@media (min-width: 980px) {
+  main { grid-template-columns: minmax(0, 1fr) 280px; }
+  main > .hero-header { grid-column: 1 / -1; }
+  main > .section-stuck { grid-column: 2; grid-row: 2 / span 7; align-self: start; position: sticky; top: 16px; border-bottom: 0; padding-top: 32px; }
+  main > .section-stuck h2 { font-size: 20px; }
+  main > .section-stuck .callout { font-size: 17px; padding: 16px 18px; }
 }
 `;
 
 function page({ title, kind, head, body, id, scripts = "" }) {
   return `<!doctype html>
-<html lang="en">
+<html lang="en"${kind === "family" ? ` data-unit="${Number.parseInt(id, 10)}"` : ""}>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex" />
 <title>${esc(title)}</title>
 <!-- generated:support-page kind=${kind} lesson=${id} — regenerate: npm run generate-support-pages -->
-<style>${PALETTE}${kind === "family" ? FAMILY_CSS : ""}</style>
+${kind === "family" ? `<link rel="stylesheet" href="/assets/fonts/fraunces-hanken-grotesk-e8a3b5.css" />\n` : ""}<style>${PALETTE}${kind === "family" ? FAMILY_PAPER + FAMILY_LETTER_CSS + FAMILY_CSS : ""}</style>
 </head>
 <body>
 <div class="wrap">
@@ -377,6 +360,14 @@ function missionSection(corner) {
 </section>`;
 }
 
+/** A lesson with an authored word-problem set links to it from its family guide. */
+function wordProblemsLink(id) {
+  const file = join(DATA_DIR, "family-word-problems", `${id}.json`);
+  if (!existsSync(file)) return "";
+  const { title } = JSON.parse(readFileSync(file, "utf8"));
+  return `<p class="more-practice"><a href="/lessons/${esc(id)}/family/word-problems/">More practice: ${esc(title.en)}</a> <span class="es-text" lang="es"><a href="/lessons/${esc(id)}/family/word-problems/">Más práctica: ${esc(title.es)}</a></span></p>`;
+}
+
 function familyPage(id, cfg, unit, lesson) {
   const problems0 = familyFieldProblems(cfg);
   if (problems0.length)
@@ -397,7 +388,7 @@ function familyPage(id, cfg, unit, lesson) {
   const keyIdeaEs = cfg.familyKeyIdea ? cfg.familyKeyIdeaEs || "" : "";
 
   const exampleHtml = example.length
-    ? `<div class="callout" style="background:#fff;border-color:var(--line);"><ol>${example.map((l) => `<li>${esc(l)}</li>`).join("")}</ol></div>`
+    ? `<div class="callout"><ol>${example.map((l) => `<li>${esc(l)}</li>`).join("")}</ol></div>`
     : `<p>Open the guided notes for a worked example.</p>`;
 
   const dirLine = directions ? `<p><strong>${esc(directions)}</strong></p>` : "";
@@ -406,13 +397,13 @@ function familyPage(id, cfg, unit, lesson) {
       ? `<ol class="choices">${p.choices.map((c) => `<li>${esc(c)}</li>`).join("")}</ol>`
       : "";
   const practiceHtml = problems.length
-    ? `<div class="callout" style="background:var(--cream);border-color:var(--line); padding-bottom:16px;">
+    ? `<div class="callout callout--work">
          ${dirLine}
-         <p style="font-size:22px;color:var(--navy);margin:12px 0;">${esc(problems[0].q)}</p>
+         <p class="problem">${esc(problems[0].q)}</p>
          ${choiceList(problems[0])}
-         <details style="margin-top: 20px; font-size: 18px;">
-           <summary style="cursor: pointer; color: var(--teal-ink); font-weight: 600;">Check the answer</summary>
-           <p style="margin-top: 12px; margin-bottom:0;">The answer is: <strong class="answer" style="font-size:20px;">${esc(problems[0].a)}</strong></p>
+         <details>
+           <summary>Check the answer</summary>
+           <p>The answer is: <strong class="answer">${esc(problems[0].a)}</strong></p>
          </details>
        </div>`
     : `<p>Use the homework for practice problems.</p>`;
@@ -433,7 +424,7 @@ function familyPage(id, cfg, unit, lesson) {
   const body = `
 <section class="section-learning">
   <h2>What students are learning <span class="es">Qué aprenden</span></h2>
-  <p class="callout" style="font-size:22px;"><strong>Key idea:</strong> ${esc(keyIdea)}${keyIdeaEs ? `<br><span class="es-text" lang="es" style="font-size:18px;">Idea clave: ${esc(keyIdeaEs)}</span>` : ""}</p>
+  <p class="callout callout--key"><strong>Key idea:</strong> ${esc(keyIdea)}${keyIdeaEs ? `<span class="es-text" lang="es">Idea clave: ${esc(keyIdeaEs)}</span>` : ""}</p>
 </section>
 ${missionSection(corner)}
 ${familyToolSection(model)}
@@ -449,15 +440,16 @@ ${familyToolSection(model)}
   <h2>Try this together <span class="es">Inténtenlo juntos</span></h2>
   <p class="sub" style="margin-top:-6px;">Pick one question to talk about. You don't need to do them all!</p>
   ${practiceHtml}
+  ${wordProblemsLink(id)}
 </section>
 <section class="section-stuck">
   <h2>If they get stuck... <span class="es">Si se traban...</span></h2>
-  <div class="callout" style="border-left: 6px solid #ff9800; background: #fff8e1;">
+  <div class="callout callout--note">
     <p style="margin-top:0;"><strong>Watch out for this:</strong> ${watchOut}</p>
     <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"<br><span class="es-text" lang="es">Pregunte: «¿Puedes mostrarme cómo lo hiciste? ¿Nos saltamos algún paso?» Hablar de las matemáticas en voz alta ayuda mucho.</span></p>
   </div>
 </section>
-<section>
+<section class="section-frames">
   <h2>Sentence starters <span class="es">Frases para empezar</span></h2>
   ${SENTENCE_FRAMES.map((f) => `<p class="frame">${esc(f)}</p>`).join("")}
 </section>`;

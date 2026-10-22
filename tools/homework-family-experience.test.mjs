@@ -531,17 +531,23 @@ test("Unit 4 family pages keep the tab route while rotating their visual experie
     new URL("../scripts/generate-homework-html.mjs", import.meta.url),
     "utf8",
   );
-  assert.match(styles, /#25364a 0%,#405b78 64%,#687d8a 100%/, "arcade uses a muted slate palette");
-  assert.match(styles, /#293b34 0%,#496456 64%,#788477 100%/, "unlock uses a muted green palette");
+  assert.doesNotMatch(
+    styles,
+    /body\[data-family-style="(arcade|case-file|unlock)"\]/,
+    "the three lesson styles no longer carry their own palettes; every lesson wears the family paper system",
+  );
   assert.doesNotMatch(styles, /#7c3aed|#5b21b6|#ede9fe|#312e81|#4c3d7e|#7653b7|#f0eafd/);
   assert.match(
     styles,
-    /body\[data-family-style\] \.powerup-tag \{ color:#405b78 !important; background:#e8eef2 !important; \}/,
+    /body\[data-family-style\] \.powerup-tag \{ color:var\(--fp-unit-ink\) !important; background:var\(--fp-unit-tint\) !important; \}/,
   );
-  assert.match(styles, /body\[data-family-style\] \.tile-6 \{ background:#64748b !important; \}/);
   assert.match(
     styles,
-    /body\[data-family-style\] \.frame-stars \.pb-frame-header \{ background:#8091a2 !important; \}/,
+    /body\[data-family-style\] \.tile-6 \{ background:var\(--fp-unit-ink\) !important; \}/,
+  );
+  assert.match(
+    styles,
+    /body\[data-family-style\] \.frame-stars \.pb-frame-header \{ background:var\(--fp-unit-ink\) !important; \}/,
   );
 });
 
