@@ -216,7 +216,7 @@
       r.streak += 1;
       r.best = Math.max(r.best, r.streak);
       r.level = Math.max(r.level, Number(e.genLevel) || 1);
-      if (e.redeem) r.repaired += 1;
+      if (e.redeem && /^r[pd]_/.test(String(e.itemId || ""))) r.repaired += 1;
     } else {
       r.helped += 1;
       r.streak = 0;

@@ -85,6 +85,7 @@ function assetPlan(/** @type {Map<string, string>} */ built) {
     "repair",
     "reflect",
     "trapbook",
+    "worked",
     "runtime",
   ].map((f) => `assets/studio/${f}.js`);
   const scripts = [

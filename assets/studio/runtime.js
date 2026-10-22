@@ -394,7 +394,7 @@
     return `<div class="item-head"><span class="item-count">Problem ${state.idx[tab] + 1} of ${n}</span>
       ${it.skill ? `<span class="chip chip-skill">${esc(lang && it.skillEs ? it.skillEs : it.skill)}</span>` : ""}
       ${it.lvl ? `<span class="chip chip-level" role="img" aria-label="Level ${it.lvl} of 4">${stars(it.lvl)}</span>` : ""}
-      <span class="item-tools">${it.reroll ? `<button type="button" class="tool-btn" data-reroll>🎲 ${lang ? "Números nuevos" : "New numbers"}</button>` : ""}<button type="button" class="tool-btn" data-read aria-label="Read this problem aloud">🔊 ${lang ? "Leer" : "Read"}</button></span></div>`;
+      <span class="item-tools">${it.gen ? `<button type="button" class="tool-btn" data-example>👀 ${lang ? "Ejemplo resuelto" : "Worked example"}</button>` : ""}${it.reroll ? `<button type="button" class="tool-btn" data-reroll>🎲 ${lang ? "Números nuevos" : "New numbers"}</button>` : ""}<button type="button" class="tool-btn" data-read aria-label="Read this problem aloud">🔊 ${lang ? "Leer" : "Read"}</button></span></div>`;
   }
 
   const CONF = [
@@ -481,6 +481,7 @@
     stage.innerHTML = `${headHtml(tab, it)}<div class="item-body"></div>`;
     const host = $(".item-body", stage);
     mountItem({ tab, it, host });
+    W.StudioWorked?.decorate(tab, it, host);
     if ((it.k === "mc" || it.k === "num") && !isSolved(tab, it))
       (sec.conf ? confRow : confChips)(it, host);
     dots(tab);
@@ -707,5 +708,6 @@
   W.StudioSeals?.init(RT);
   W.StudioRepair?.init(RT);
   W.StudioReflect?.init(RT);
+  W.StudioWorked?.init(RT);
   W.StudioTrapBook?.init(RT);
 })();

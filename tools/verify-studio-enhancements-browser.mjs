@@ -696,6 +696,115 @@ try {
     );
   }
 
+  // W3b (docs/specs/studio-v3-w3.md), on every generated page with a generated item: a skill the student has not met offers a
+  // worked example; the example is a different problem of the same skill with three steps and the answer; "try one" opens step 1
+  // on a fresh item; and none of it changes section progress or counts as a repair.
+  {
+    const ids = readdirSync(join(REPO_ROOT, "math/practice-studio")).filter((d) =>
+      /^\d+-\d+$/.test(d),
+    );
+    let checked = 0;
+    for (const id of ids)
+      for (const url of [
+        `/math/practice-studio/${id}/`,
+        `/math/practice-studio/${id}/challenge/`,
+      ]) {
+        const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+        const page = await ctx.newPage();
+        if (process.env.VERBOSE) console.error(url);
+        await spy(page);
+        await page.goto(origin + url);
+        await page.locator(".tab-btn").first().waitFor();
+        const at = await page.evaluate(() => {
+          const a = /** @type {any} */ (window).StudioRT.api;
+          for (let t = 1; t <= a.sections.length; t++) {
+            const i = a.sections[t - 1].items.findIndex((/** @type {any} */ x) => x.k === "gen");
+            if (i >= 0) return { tab: t, i };
+          }
+          return null;
+        });
+        if (!at) {
+          await ctx.close();
+          continue;
+        }
+        checked++;
+        await page
+          .locator(".tab-btn")
+          .nth(at.tab - 1)
+          .click();
+        await page.evaluate(({ tab, i }) => {
+          const a = /** @type {any} */ (window).StudioRT.api;
+          a.state.idx[tab] = i;
+          a.render(tab);
+        }, at);
+        const stage = `#stage-${at.tab}`;
+        const mine = (await page.locator(`${stage} .item-q`).first().innerText()).trim();
+        assert.ok(
+          await page.locator(`${stage} .example-offer [data-example]`).count(),
+          `${url}: a new skill offers a worked example`,
+        );
+        await page.locator(`${stage} .example-offer [data-example]`).click();
+        const card = page.locator(`${stage} .example-card`);
+        await card.waitFor();
+        const steps = await card.locator(".example-steps > li").count();
+        assert.ok(
+          steps === 2 || steps === 3,
+          `${url}: the example shows the generator's two or three steps (${steps})`,
+        );
+        assert.ok(
+          /Answer:\s*\S/.test(await card.locator(".example-answer").innerText()),
+          `${url}: the example shows its answer`,
+        );
+        const theirs = (await card.locator(".item-q").innerText()).trim();
+        assert.notEqual(theirs, mine, `${url}: the example is not the student's own problem`);
+        assert.equal(
+          await page.locator(`${stage} .example-offer`).count(),
+          0,
+          `${url}: the offer goes away once the example is open`,
+        );
+        const before = await page.evaluate(
+          ({ tab }) =>
+            Object.keys(/** @type {any} */ (window).StudioRT.api.state[`solved${tab}`]).length,
+          at,
+        );
+        await card.locator("[data-example-try]").click();
+        await page.locator(`${stage} .example-try-stage .hint-area`).waitFor();
+        assert.ok(
+          (await page.locator(`${stage} .example-try-stage .hint-area li`).count()) >= 1,
+          `${url}: the fresh item opens with step 1 shown`,
+        );
+        await solveCurrent(page, `${stage} .example-try-stage`);
+        await page.locator(`${stage} .example-try-stage .item-fb.show`).waitFor();
+        const after = await page.evaluate(({ tab }) => {
+          const w = /** @type {any} */ (window);
+          return {
+            solved: Object.keys(w.StudioRT.api.state[`solved${tab}`]).length,
+            repaired: Object.values(w.StudioLearner.all()).reduce(
+              (n, r) => n + /** @type {any} */ (r).repaired,
+              0,
+            ),
+          };
+        }, at);
+        assert.equal(
+          after.solved,
+          before,
+          `${url}: practice after an example never changes section progress`,
+        );
+        assert.equal(after.repaired, 0, `${url}: practice after an example is not a repair`);
+        await card.locator("[data-example-close]").click();
+        assert.equal(
+          await page.locator(`${stage} .example-card`).count(),
+          0,
+          `${url}: the example can be hidden`,
+        );
+        await ctx.close();
+      }
+    assert.ok(checked >= 60, `worked examples checked on ${checked} generated pages`);
+    ok(
+      `W3b: worked example (its steps, answer, a different problem) then a fresh try with step 1 shown, on ${checked} generated pages`,
+    );
+  }
+
   // Unit 4: a wrong pick on the Mastery Check shows that choice's own help, is recorded as a named miss, and appears in
   // "My thinking" under the trap's name — on all ten hand-built pages.
   {

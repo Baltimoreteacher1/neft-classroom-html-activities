@@ -18,13 +18,16 @@ page, and `tamed`. A trap is **Tamed** after three dodges in a row (`TAME_AFTER`
 `studio:trap` fires once for the toast. The book lists spotted traps (untamed first, then by count) with counts, the quick fix, the
 lessons where it came up, and in words how many more clean answers tame it.
 
-## W3b — worked examples with fading (planned)
+## W3b — worked examples with fading (built, `assets/studio/worked.js`)
 
 Derived from the generators, no new authoring: a generated item already carries a computed answer `a`, a hint ladder `h` (steps that
 never state the answer) and a full explanation `x` (EN + ES). A **worked example** is a fresh seed of the item's own skill shown as
 question + the ladder as numbered steps + `x`, marked "Example, not your problem". **Fading:** example → the same skill with the first
 step already shown and the rest as hints → the normal item. Offered first to a skill with no seal; always available as a tool.
-Never a formula before the lesson that teaches it (the example uses only the skill's own steps).
+Never a formula before the lesson that teaches it (the example uses only the skill's own steps). The example's question always differs from the
+student's own (a different seed, redrawn until the text differs), it never changes section progress, and practice after it is not a repair
+(only `rp_`/`rd_` redeem items count as repaired in the learner model). Every generator has a two- or three-step ladder and a full
+explanation in both languages, so every generated item can show one.
 
 ## W3c — "Which move?" (planned)
 
@@ -35,6 +38,7 @@ carries a trap tag and a named help line (the `unit4-mc-contract` shape). Author
 ## Gates
 
 `tools/studio-learner.test.mjs` (traps: spotted, dodged, tamed once and sticky, confirmed, per lesson).
-`validate:studio-enhancements-browser`: on every generated page, a wrong pick on an item that offers two traps shows tier two, a tap is
+`validate:studio-enhancements-browser`: on every generated page with a generated item, the offer, the example (a different problem, its steps, the
+answer), and the fresh try with step 1 open leave progress untouched; and on every generated page, a wrong pick on an item that offers two traps shows tier two, a tap is
 saved as confirmed, and the Trap Book lists the trap; a page whose items offer one trap shows no tier two; three clean dodges tame a trap
 (toast, `✓ Tamed` in the book).

@@ -97,15 +97,21 @@ const answer = (o = {}) => ({
   assert.equal(L.get("gen:pow-eval").streak, 0, "a streak ends quietly");
 }
 
-// a miss alone is not an attempt; a fresh-numbers repair that is clean is counted as repaired
+// a miss alone is not an attempt; a fresh-numbers repair that is clean is counted as repaired, a worked-example try is not
 {
   const { L } = load();
   L.record(answer({ ok: false, tag: "t" }));
   assert.equal(L.get("gen:pow-eval").seen, 0);
-  L.record(answer({ redeem: true }));
+  L.record(answer({ redeem: true, itemId: "rp_x_1" }));
   assert.equal(L.get("gen:pow-eval").repaired, 1);
-  L.record(answer({ redeem: true, tries: 2 }));
+  L.record(answer({ redeem: true, tries: 2, itemId: "rp_x_2" }));
   assert.equal(L.get("gen:pow-eval").repaired, 1, "a repair that needed help is not a repair");
+  L.record(answer({ redeem: true, itemId: "ex_x_1" }));
+  assert.equal(
+    L.get("gen:pow-eval").repaired,
+    1,
+    "practice after a worked example is not a repair",
+  );
 }
 
 // confidence: how often each level of sureness was right on the first try
