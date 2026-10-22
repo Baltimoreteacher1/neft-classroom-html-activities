@@ -258,7 +258,7 @@ const COVERAGE = [
   // (init called, sync inside updateProgressHeader, no retired token, no call to
   // an undefined quiz-results function).
   [
-    /^(assets\/u4-studio[^/]*\.(js|css)|assets\/studio\/lab-embed\.(js|css)|math\/unit-4\/[^/]*practice-studio[^/]*\/index\.html|tools\/unit4-studio\.test\.mjs)$/,
+    /^(assets\/u4-studio[^/]*\.(js|css)|assets\/studio\/lab-embed\.(js|css)|math\/unit-4\/[^/]*practice-studio[^/]*\/index\.html|tools\/unit4-(studio|mc-contract)\.test\.mjs|tools\/lib\/u4-mc-items\.mjs|scripts\/lib\/u4-traps\.mjs)$/,
     [
       "test",
       "validate:studio-enhancements-browser",

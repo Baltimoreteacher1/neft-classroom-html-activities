@@ -21,9 +21,10 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { REPO_ROOT } from "../tools/lib/curriculum-source.mjs";
 import { UNIT4 } from "./generate-practice-studios.mjs";
+import { withPlainDefinitions } from "./lib/family-plain-definitions.mjs";
 import { benchItems, benchProblems } from "./lib/practice-studio-bench.mjs";
 import { targetEsProblems } from "./lib/practice-studio-data.mjs";
-import { targetChip } from "./lib/practice-studio-pages.mjs";
+import { glossaryBlock, targetChip } from "./lib/practice-studio-pages.mjs";
 import { usedTraps } from "./lib/u4-traps.mjs";
 
 const read = (/** @type {string} */ rel) => readFileSync(join(REPO_ROOT, rel), "utf8");
@@ -42,6 +43,7 @@ const SCRIPTS = ["typeset", "kinds-basic", "kinds-lab", "lab-embed"].map(
 const STYLE = "assets/studio/lab-embed.css";
 const CLARITY = ["assets/studio/clarity.css", "assets/studio/clarity.js"];
 const THINKING = "assets/u4-studio-thinking.js";
+const TYPE = "assets/u4-studio-type.js";
 const HEAD_BEGIN = "<!-- u4-clarity:begin (scripts/inject-u4-lab-bench.mjs) -->";
 const HEAD_BLOCK = /\n?[ \t]*<!-- u4-clarity:begin[\s\S]*?<!-- u4-clarity:end -->/g;
 const TARGET_BLOCK = /\n?[ \t]*<!-- u4-target:begin[\s\S]*?<!-- u4-target:end -->/g;
@@ -54,7 +56,12 @@ function targetBlock(/** @type {string} */ id, /** @type {any} */ ld) {
   const cfg = JSON.parse(read(`lessons/${id}/config.json`));
   if (!/^I can\b/.test(cfg.contentObjective || ""))
     throw new Error(`lessons/${id}/config.json: contentObjective is not an "I can" statement`);
-  return `\n    <!-- u4-target:begin (scripts/inject-u4-lab-bench.mjs) -->\n    <div class="studio-context">${targetChip(cfg.contentObjective, ld.targetEs)}</div>\n    <!-- u4-target:end -->`;
+  // The Word bank is the lesson's own vocabulary with its plain EN/ES definitions; the entry named for the lesson itself is
+  // the title, not a word.
+  const terms = withPlainDefinitions(cfg.vocabulary || [], id)
+    .filter((v) => String(v.term).toLowerCase() !== String(cfg.title).toLowerCase())
+    .map((v) => ({ t: v.term, tEs: v.termEs, d: v.definition, dEs: v.definitionEs }));
+  return `\n    <!-- u4-target:begin (scripts/inject-u4-lab-bench.mjs) -->\n    <div class="studio-context">${targetChip(cfg.contentObjective, ld.targetEs)}${glossaryBlock(terms)}</div>\n    <!-- u4-target:end -->`;
 }
 
 /**
@@ -68,9 +75,9 @@ const THEME_BOOT =
 /** The shared clarity layer and the "My thinking" panel for <head>, stamped with a hash of their own files. */
 function headBlock(/** @type {string} */ slug) {
   const h = createHash("sha1");
-  for (const f of [...CLARITY, THINKING]) h.update(read(f));
+  for (const f of [...CLARITY, THINKING, TYPE]) h.update(read(f));
   const v = h.digest("hex").slice(0, 10);
-  return `\n  ${HEAD_BEGIN}\n  ${THEME_BOOT}\n  <link rel="stylesheet" href="/${CLARITY[0]}?v=${v}">\n  <script src="/${CLARITY[1]}?v=${v}" defer></script>\n  <script type="application/json" id="u4-traps">${json(usedTraps(slug))}</script>\n  <script src="/${THINKING}?v=${v}" defer></script>\n  <!-- u4-clarity:end -->`;
+  return `\n  ${HEAD_BEGIN}\n  ${THEME_BOOT}\n  <link rel="stylesheet" href="/${CLARITY[0]}?v=${v}">\n  <script src="/${CLARITY[1]}?v=${v}" defer></script>\n  <script type="application/json" id="u4-traps">${json(usedTraps(slug))}</script>\n  <script src="/${THINKING}?v=${v}" defer></script>\n  <script src="/${TYPE}?v=${v}" defer></script>\n  <!-- u4-clarity:end -->`;
 }
 
 function stamps() {

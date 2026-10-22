@@ -72,6 +72,21 @@ function wordBankSummary(/** @type {any[]} */ terms) {
   return `${bi("Word bank", "Banco de palabras")} <span class="wb-count">${bi(`${n} ${n === 1 ? "word" : "words"}`, `${n} ${n === 1 ? "palabra" : "palabras"}`)}</span><span class="wb-preview">${bi(first("t"), first("tEs"))}</span>`;
 }
 
+/**
+ * The Word bank: a closed <details> chip (size and first terms in the summary) that opens to every term with its plain
+ * definition, in both languages. `terms` are { t, tEs, d, dEs }. Shared with scripts/inject-u4-lab-bench.mjs.
+ */
+export function glossaryBlock(/** @type {any[]} */ terms) {
+  if (!terms.length) return "";
+  const dl = terms
+    .map(
+      (g) =>
+        `<dt>${esc(g.t)}<span class="es-text" lang="es">${esc(g.tEs)}</span></dt><dd>${esc(g.d)}<span class="es-text" lang="es">${esc(g.dEs)}</span></dd>`,
+    )
+    .join("");
+  return `<details class="glossary"><summary>${wordBankSummary(terms)}</summary><dl>${dl}</dl></details>`;
+}
+
 /** The misconception names (EN + ES) and quick fixes for every trap a page's multiple-choice items name, in id order. */
 function trapNames(/** @type {any[]} */ sections, /** @type {Record<string, any>} */ traps) {
   const used = new Set();
@@ -140,12 +155,6 @@ export function pageFor({
   };
   const story = challenge ? ld.challengeStory : ld.story;
   const storyEs = challenge ? ld.challengeStoryEs : ld.storyEs;
-  const glossary = (ld.glossary || [])
-    .map(
-      (/** @type {any} */ g) =>
-        `<dt>${esc(g.t)}<span class="es-text" lang="es">${esc(g.tEs)}</span></dt><dd>${esc(g.d)}<span class="es-text" lang="es">${esc(g.dEs)}</span></dd>`,
-    )
-    .join("");
   const label = challenge ? "Challenge Studio" : "Interactive Practice Studio";
   // Closed in the markup: assets/studio/clarity.js opens it on a student's first visit, and it is a small chip after that.
   const missionCard = `<details class="mission-card">
@@ -225,7 +234,7 @@ ${tabs}
     <div class="studio-context">
       ${targetChip(/^I can\b/.test(cfg.contentObjective || "") ? cfg.contentObjective : "", ld.targetEs)}
       ${missionCard}
-${glossary ? `      <details class="glossary"><summary>${wordBankSummary(ld.glossary)}</summary><dl>${glossary}</dl></details>\n` : ""}    </div>
+${ld.glossary?.length ? `      ${glossaryBlock(ld.glossary)}\n` : ""}    </div>
 
 ${panels}
   </main>

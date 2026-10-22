@@ -420,6 +420,15 @@ try {
         return list.some((h) => h && text.includes(dec(h).slice(0, 30)));
       }, helps);
       assert.ok(shown, `${slug}: the picked choice's own help is shown`);
+      assert.ok(
+        (await page.locator(".glossary dt").count()) >= 3,
+        `${slug}: the Word bank lists the lesson's words`,
+      );
+      if (slug === "4-2-practice-studio")
+        assert.ok(
+          (await page.locator(".frac").count()) > 0,
+          `${slug}: digit/digit fractions are stacked`,
+        );
       await page.click(".studio-menu-btn");
       await page.click("#u4-think-btn");
       const panel = await page.locator("#u4-think .u4-dialog-body").innerText();
