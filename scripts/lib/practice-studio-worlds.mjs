@@ -73,9 +73,11 @@ function day(/** @type {string} */ id, /** @type {any} */ w) {
   return `body[data-world="${id}"] {
   --brand: ${hsl(h, s, 30)}; --brand-dark: ${hsl(h, s * 0.6, 15)}; --brand-tint: ${hsl(h, s * 0.55, 93)}; --brand-line: ${hsl(h, s * 0.35, 78)};
   --sun: ${hsl(a, 92, sunL)}; --sun-deep: ${hsl(a, 85, 33)}; --sun-tint: ${hsl(a, 90, 92)}; --sun-ink: ${hsl(a, 75, 20)};
+  --on-brand: #FFFFFF; --on-sun: ${hsl(h, s * 0.6, 15)};
   --paper: ${hsl(h, 30, 96)}; --well: ${hsl(h, 25, 91)}; --surface: #FFFFFF; --surface-soft: ${hsl(h, 35, 97.5)};
   --border: ${hsl(h, 18, 84)}; --border-strong: ${hsl(h, 14, 47)};
-  --ink: ${hsl(h, 35, 13)}; --ink-muted: ${hsl(h, 18, 27)}; --ink-light: ${hsl(h, 12, 37)};
+  --ink: ${hsl(h, 6, 13)}; --ink-muted: ${hsl(h, 5, 27)}; --ink-light: ${hsl(h, 4, 37)};
+  --hue: ${h}; --hue-accent: ${a};
   --font-display: ${FONTS[/** @type {keyof typeof FONTS} */ (w.font)]};
   --radius-sm: ${Math.round(r * 0.6)}px; --radius-md: ${r}px; --radius-lg: ${Math.round(r * 1.4)}px;
   --motif: ${motifUrl(w.motif)};
@@ -88,18 +90,17 @@ function night(/** @type {string} */ id, /** @type {any} */ w) {
   return `body[data-world="${id}"][data-theme="dark"] {
   --brand: ${hsl(h, Math.min(80, s + 10), 72)}; --brand-dark: ${hsl(h, s * 0.6, 10)}; --brand-tint: ${hsl(h, s * 0.5, 21)}; --brand-line: ${hsl(h, s * 0.4, 36)};
   --sun: ${hsl(a, 92, 62)}; --sun-deep: ${hsl(a, 88, 68)}; --sun-tint: ${hsl(a, 45, 17)}; --sun-ink: ${hsl(a, 90, 82)};
-  --paper: ${hsl(h, 40, 8)}; --well: ${hsl(h, 30, 17)}; --surface: ${hsl(h, 32, 13)}; --surface-soft: ${hsl(h, 30, 16)};
+  --paper: ${hsl(h, 30, 7)}; --well: ${hsl(h, 28, 10)}; --surface: ${hsl(h, 28, 13)}; --surface-soft: ${hsl(h, 26, 17)};
   --border: ${hsl(h, 22, 27)}; --border-strong: ${hsl(h, 16, 58)};
-  --ink: ${hsl(h, 25, 94)}; --ink-muted: ${hsl(h, 14, 81)}; --ink-light: ${hsl(h, 10, 71)};
+  --ink: ${hsl(h, 6, 93)}; --ink-muted: ${hsl(h, 5, 80)}; --ink-light: ${hsl(h, 4, 70)};
+  --on-brand: ${hsl(h, s * 0.6, 10)}; --on-sun: ${hsl(h, s * 0.6, 10)}; --on-ok: hsl(152, 60%, 8%); --on-bad: hsl(5, 60%, 8%);
+  --ok-ink: hsl(148, 70%, 88%); --bad-ink: hsl(5, 100%, 90%); --warn-ink: hsl(42, 100%, 82%);
   --ok: hsl(152, 55%, 55%); --ok-tint: hsl(152, 38%, 15%); --ok-line: hsl(152, 40%, 34%);
   --bad: hsl(5, 80%, 66%); --bad-tint: hsl(5, 40%, 17%); --bad-line: hsl(5, 45%, 40%);
   --warn: hsl(42, 95%, 72%); --warn-tint: hsl(42, 45%, 15%); --warn-line: hsl(42, 60%, 38%);
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.35);
   color-scheme: dark;
-}
-body[data-world="${id}"][data-theme="dark"] .feedback-box::before { color: #06150E; }
-body[data-world="${id}"][data-theme="dark"] .choice-btn.correct:not(:has(.choice-letter))::before { color: #06281A; }
-body[data-world="${id}"][data-theme="dark"] .choice-btn.wrong:not(:has(.choice-letter))::before { color: #2A0905; }`;
+}`;
 }
 
 export function worldsCss(/** @type {any} */ worlds) {

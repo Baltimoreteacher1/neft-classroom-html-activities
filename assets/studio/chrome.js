@@ -177,15 +177,11 @@
 
   /* ---- theme ---------------------------------------------------------------------------------------------------- */
   const THEMES = ["auto", "light", "dark"];
-  const nativeTheme = data.mode === "challenge" ? "dark" : "light";
+  const deviceTheme = () => (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  /* Practice follows the device until the student picks Light or Dark; Challenge is night until they choose. */
+  const nativeTheme = () => (data.mode === "challenge" ? "dark" : deviceTheme());
   const resolve = (/** @type {string|null} */ t) =>
-    t === "light" || t === "dark"
-      ? t
-      : t === "auto"
-        ? matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light"
-        : nativeTheme;
+    t === "light" || t === "dark" ? t : t === "auto" ? deviceTheme() : nativeTheme();
   function applyTheme() {
     document.body.dataset.theme = resolve(rec.theme);
     const b = document.getElementById("ewl-theme-btn");
@@ -274,12 +270,15 @@
       });
     });
     document.getElementById("ewl-theme-btn")?.addEventListener("click", () => {
-      const at = THEMES.indexOf(rec.theme || (nativeTheme === "dark" ? "dark" : "light"));
+      const at = THEMES.indexOf(rec.theme || nativeTheme());
       rec.theme = THEMES[(at + 1) % THEMES.length];
       writeRec();
       applyTheme();
     });
     applyTheme();
+    matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => {
+      if (!rec.theme || rec.theme === "auto") applyTheme();
+    });
   }
 
   function refreshStats() {

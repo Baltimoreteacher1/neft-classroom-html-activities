@@ -38,6 +38,16 @@ function printList(/** @type {any[]} */ items) {
 }
 
 /**
+ * Sets body[data-theme] before first paint so a student whose device is in dark mode never sees a light flash. Mirrors
+ * resolve() in assets/studio/chrome.js: a saved Light/Dark wins, "auto" or nothing saved follows the device on Practice,
+ * and Challenge is night unless the student chose otherwise.
+ */
+export function themeBoot(/** @type {string} */ unit, /** @type {string} */ id, challenge = false) {
+  const key = `ewl_u${unit}_l${String(id).split("-")[1]}_v2`;
+  return `<script>(function(){try{var t=null;try{t=JSON.parse(localStorage.getItem("${key}")).theme}catch(e){}var m=matchMedia("(prefers-color-scheme: dark)").matches;document.body.dataset.theme=t==="light"||t==="dark"?t:t==="auto"?(m?"dark":"light"):${challenge ? '"dark"' : '(m?"dark":"light")'}}catch(e){}})()</script>`;
+}
+
+/**
  * The lesson's "I can…" target, first in the context row: English from the lesson config (contentObjective), Spanish authored
  * in the studio file (targetEs). Shared with scripts/inject-u4-lab-bench.mjs so the Unit 4 pages carry the same chip.
  */
@@ -174,12 +184,14 @@ export function pageFor({
   <title>${esc(title)} · ${label} (Grade 6)</title>
   <meta name="description" content="${esc(`${challenge ? "Challenge" : "Interactive"} Grade 6 practice for lesson ${id}: ${cfg.contentObjective || title}`)}">
   <meta name="theme-color" content="#1B2C3F">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="${FAVICON(world.emoji)}">
 ${assets.styles.map((u) => `  <link rel="stylesheet" href="${u}">`).join("\n")}
 ${NSR_HEAD}
 ${assets.scripts.map((u) => `  <script src="${u}" defer></script>`).join("\n")}
 </head>
 <body data-world="${esc(world.id)}" data-mode="${mode}" data-theme="${challenge ? "dark" : "light"}" data-chrome="${esc(world.chrome)}" data-features="insight readaloud passport calibration share">
+  ${themeBoot(unit, id, challenge)}
   <header class="app-header">
     <div class="header-wrap">
       <div class="brand">
