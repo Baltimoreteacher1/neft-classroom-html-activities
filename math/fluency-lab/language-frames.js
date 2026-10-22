@@ -52,7 +52,7 @@ const FRAMES = {
     check: [
       [
         "I can check by ___. My check shows ___.",
-        "Puedo comprobarlo con ___. Mi comprobación muestra ___.",
+        "Para comprobarlo, puedo ___. Mi comprobación muestra que ___.",
       ],
     ],
     fix: [
@@ -66,7 +66,7 @@ const FRAMES = {
     notice: [
       [
         "I noticed that ___, which tells me ___.",
-        "Me di cuenta de que ___, lo cual me dice que ___.",
+        "Me di cuenta de que ___, y eso me dice que ___.",
       ],
     ],
     explain: [
@@ -148,3 +148,7 @@ export function startingFunction({ correct, count = 0 }) {
   if (!correct) return "fix";
   return ["explain", "notice", "check", "compare"][Math.abs(Number(count) || 0) % 4];
 }
+
+// Every frame in both languages, for recognizing text that is only a template and for finding what a learner added.
+export const allFrameTexts = () => [1, 2, 3].flatMap((level) => FUNCTIONS.flatMap((fn) => framesFor(level, fn.id).flatMap((frame) => [frame.en, frame.es])));
+export const isFrameText = (text) => allFrameTexts().includes(String(text).trim());

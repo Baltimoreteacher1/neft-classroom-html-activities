@@ -31,7 +31,7 @@ import { cleanPlay, exportPlay, importPlay } from "./play-backup.js";
 import { VOCAB_BILINGUAL_DB, highlightVocab, initVocabSystem, openVocabModal } from "./vocab.js";
 import { canSpeak, speak, spoken, spokenEs } from "./speech.js";
 import { languagePromptHtml } from "./language-bridge.js";
-import { explainCardHtml, initLanguage, journalHtml, journalPrintHtml, lookupCount, problemSupportHtml, spanishPeekHtml, wordStripHtml } from "./language-card.js";
+import { captureDraft, explainCardHtml, initLanguage, journalHtml, journalPrintHtml, lookupCount, problemSupportHtml, restoreDraft, spanishPeekHtml, wordStripHtml } from "./language-card.js";
 import { languageEvidence, loadJournal } from "./language-journal.js";
 import { setLanguageProfile } from "./language-settings.js";
 import { questionEs } from "./question-es.js";
@@ -98,6 +98,7 @@ const els = {
   nextButton: document.querySelector("#next-problem"),
   hintButton: document.querySelector("#show-hint"),
   feedback: document.querySelector("#feedback"),
+  languageSlot: document.querySelector("#language-slot"),
   feedbackTitle: document.querySelector("#feedback-title"),
   feedbackCopy: document.querySelector("#feedback-copy"),
   scratchpad: document.querySelector("#scratchpad"),
@@ -649,6 +650,7 @@ function nextProblem(restoredItem = null) {
   state.itemDone = false;
   state.firstAnswerCorrect = null;
   state.hintBeforeFirst = false;
+  if (els.languageSlot) els.languageSlot.innerHTML = "";
   state.initialSupport = state.session.mode === "guided" || (adapting && level === 0) || (state.session.mode === "assignment" && state.assignment?.mode === "guided");
   state.guidedStepsShown = state.session.mode === "guided" ? 1 : 0;
   els.feedback.hidden = true;
@@ -6769,7 +6771,6 @@ function renderStudentFriendlyExplanation(item, copy) {
       <div class="student-expl-tip"><strong>💡 Pro Tip:</strong> ${escapeHtml(tip)}</div>
       ${toolCallout}
       ${renderMultiStrategyComparison(item)}
-      ${explainCardHtml({ skill: item.skill, skillKey: tutorSkillKey(item.skill), grade: item.skill?.grade || state.grade, correct: false, day: localDay() })}
     </div>
   `;
 }
@@ -7197,11 +7198,26 @@ function showFeedback(title, copy, type) {
     lightStepPlayers(els.feedbackCopy);
     wireExplanationWidgets(els.feedbackCopy, state.item);
   } else if (type === "correct" && state.item) {
-    els.feedbackCopy.innerHTML = `<p>${escapeHtml(copy)}</p>${renderTransferChallengeButton(state.item)}${state.session?.mode === "diagnostic" ? "" : explainCardHtml({ skill: state.item.skill, skillKey: tutorSkillKey(state.item.skill), grade: state.item.skill?.grade || state.grade, correct: true, count: state.session?.answered || 0, day: localDay() })}`;
+    els.feedbackCopy.innerHTML = `<p>${escapeHtml(copy)}</p>${renderTransferChallengeButton(state.item)}`;
   } else {
     els.feedbackCopy.textContent = copy;
   }
+  if (type === "correct" || type === "incorrect") renderLanguageSlot(type === "correct");
   if (type === "correct") chime("good");
+}
+
+// The explain card sits beside the feedback, not inside it: the feedback is a live region, and a screen reader would
+// read the whole card aloud. A half-written explanation survives a redraw for the same problem.
+function renderLanguageSlot(correct) {
+  const slot = els.languageSlot;
+  if (!slot) return;
+  if (!state.item || state.session?.mode === "diagnostic") {
+    slot.innerHTML = "";
+    return;
+  }
+  const draft = captureDraft(slot);
+  slot.innerHTML = explainCardHtml({ skill: state.item.skill, skillKey: tutorSkillKey(state.item.skill), grade: state.item.skill?.grade || state.grade, correct, count: state.session?.answered || 0, day: localDay(), itemKey: String(state.item.question) });
+  restoreDraft(slot, draft);
 }
 
 function updateSessionHeader() {
@@ -7236,6 +7252,7 @@ function finishSession() {
   document.querySelector(".problem-stage").hidden = true;
   els.answerForm.hidden = true;
   els.feedback.hidden = true;
+  if (els.languageSlot) els.languageSlot.innerHTML = "";
   els.summary.hidden = false;
   const accuracyPercent = session.answered ? Math.round((session.correct / session.answered) * 100) : 0;
   els.summaryTitle.textContent =
@@ -7427,7 +7444,8 @@ function renderFluencyGenomeSvg(genome) {
   const vRecall = genome.recall / 100;
   const vStrategy = genome.strategy / 100;
   const vResilience = genome.resilience / 100;
-  const vLanguage = genome.language / 100;
+  const vLanguage = (genome.language ?? 0) / 100;
+  const languageLabel = genome.language === null ? "not enough evidence yet" : `${genome.language}%`;
 
   const pTop = `${cx},${cy - r * vRecall}`;
   const pRight = `${cx + r * vStrategy},${cy}`;
@@ -7435,7 +7453,7 @@ function renderFluencyGenomeSvg(genome) {
   const pLeft = `${cx - r * vLanguage},${cy}`;
 
   return `
-    <svg width="260" height="220" viewBox="0 0 260 220" class="genome-radar-svg" role="img" aria-label="Learner Genome Radar Chart: Recall ${genome.recall}%, Strategy ${genome.strategy}%, Resilience ${genome.resilience}%, Language ${genome.language}%">
+    <svg width="260" height="220" viewBox="0 0 260 220" class="genome-radar-svg" role="img" aria-label="Learner Genome Radar Chart: Recall ${genome.recall}%, Strategy ${genome.strategy}%, Resilience ${genome.resilience}%, Language ${languageLabel}">
       <defs>
         <radialGradient id="genomeGrad" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stop-color="#818cf8" stop-opacity="0.45" />
@@ -7466,7 +7484,7 @@ function renderFluencyGenomeSvg(genome) {
       <text x="${cx}" y="18" text-anchor="middle" font-size="10" font-weight="800" fill="#1e293b">⚡ Recall (${genome.recall}%)</text>
       <text x="${cx + r + 6}" y="${cy + 4}" text-anchor="start" font-size="10" font-weight="800" fill="#047857">🧠 Strategy (${genome.strategy}%)</text>
       <text x="${cx}" y="${cy + r + 18}" text-anchor="middle" font-size="10" font-weight="800" fill="#b45309">🛡️ Resilience (${genome.resilience}%)</text>
-      <text x="${cx - r - 6}" y="${cy + 4}" text-anchor="end" font-size="10" font-weight="800" fill="#6d28d9">🗣️ Language (${genome.language}%)</text>
+      <text x="${cx - r - 6}" y="${cy + 4}" text-anchor="end" font-size="10" font-weight="800" fill="#6d28d9">🗣️ Language (${genome.language === null ? "—" : `${genome.language}%`})</text>
     </svg>
   `;
 }
@@ -10527,6 +10545,10 @@ renderLibrary();
 initVoiceControl();
 initVocabSystem();
 initLanguage();
+// Opening a word meaning before the first answer is help, like a hint, so it does not count as independent.
+document.addEventListener("toggle", (event) => {
+  if (event.target.matches?.("[data-lang-hint]") && event.target.open && state.item && !state.itemDone && state.itemAttempts === 0) state.hintBeforeFirst = true;
+}, true);
 window.addEventListener("fluency-language-print", () => printHtml(journalPrintHtml({ name: PROFILE_NAMES[activeProfile], grade: state.grade })));
 MathWordWall.wire();
 window.NumberTalkRoutine = NumberTalkRoutine;

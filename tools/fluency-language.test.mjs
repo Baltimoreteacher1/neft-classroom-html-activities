@@ -27,6 +27,7 @@ const spanish = await import(`${lab}question-es.js`);
 const { storyFor } = await import(`${lab}story-problems.js`);
 const card = await import(`${lab}language-card.js`);
 const play = await import(`${lab}play-backup.js`);
+const pack = await import(`${lab}language-pack.js`);
 const i18n = await import(`${lab}i18n.js`);
 const { ES } = await import(`${lab}i18n-es.js`);
 
@@ -131,6 +132,7 @@ for (const skill of ALL_SKILLS) {
       ok(digits(es) === digits(item.question), `numbers changed: ${item.question} -> ${es}`);
       ok(!/\b1 (horas|minutos|pies|yardas|metros|gramos)\b/.test(es), `singular needed: ${es}`);
       ok(!ENGLISH.test(es), `English left in: ${es}`);
+      ok(!/[,.;:]{2}|\s[,.;:?]/.test(es), `punctuation slip: ${es}`);
     } else {
       ok(es === null, `a bare expression should have no Spanish: ${item.question}`);
     }
@@ -158,7 +160,7 @@ for (const op of ["+", "−", "×", "÷"]) {
       digits(story.questionEs.replaceAll(",", "")) === digits(story.question.replaceAll(",", "")),
       `story numbers: ${story.questionEs}`,
     );
-    ok(!ENGLISH.test(story.questionEs) && story.clueEs, `story Spanish: ${story.questionEs}`);
+    ok(!ENGLISH.test(story.questionEs), `story Spanish: ${story.questionEs}`);
     ok(storyFor(base, seededRandom(seed)).question === story.question, "story is deterministic");
   }
 }
@@ -186,20 +188,49 @@ ok(
   "nothing in, nothing found",
 );
 ok(journal.languageEvidence([], 0) === null, "no evidence, no score");
-ok(
-  journal.languageEvidence([], 3) > 0 && journal.languageEvidence([], 3) < 20,
-  "lookups alone give a small score",
-);
+ok(journal.languageEvidence([], 9) === null, "word lookups alone never make a score");
 const strong = {
-  text: "First I used the denominator because both parts match, then I checked.",
+  text: "First I used the denominator because both parts match, then I checked it with an estimate.",
   at: 1,
 };
+const scaffoldOnly = { text: "First I made a ratio table. Then I checked.", at: 1 };
 ok(
-  journal.languageEvidence([strong, strong], 0) >
-    journal.languageEvidence([{ text: "I did it today", at: 1 }], 0),
+  journal.ownWordCount(scaffoldOnly.text) < journal.OWN_WORDS,
+  "a filled frame plus a chip adds no words of its own",
+);
+ok(journal.ownWordCount(strong.text) >= journal.OWN_WORDS, "real writing counts");
+ok(
+  journal.ownWordCount("I notice the rows grow together and the ratio stays the same") >=
+    journal.OWN_WORDS,
+  "blanks the learner filled count",
+);
+ok(journal.languageEvidence([strong, strong], 5) === null, "two entries are not enough evidence");
+const three = journal.languageEvidence([strong, strong, strong], 0);
+ok(three > 30 && three <= 100, `three real entries show a figure (${three})`);
+ok(
+  journal.languageEvidence([scaffoldOnly, scaffoldOnly, scaffoldOnly], 10) < 15,
+  "tapping scaffolds alone earns almost nothing",
+);
+ok(
+  journal.languageEvidence([strong, strong, strong], 0) >
+    journal.languageEvidence([{ text: "I did it today fine", at: 1 }, strong, strong], 0),
   "richer writing scores higher",
 );
 ok(journal.languageEvidence(Array(40).fill(strong), 99) <= 100, "score is capped");
+ok(
+  terms.termsInText("What does it mean? The base of the cake, a factory, the total number")
+    .length === 0,
+  "everyday words are not math words",
+);
+ok(
+  terms.termsInText("la razón es que el resultado cambia").length === 0,
+  "Spanish everyday words are not math words",
+);
+ok(
+  terms.termsInText("The ratios and denominators were estimated").sort().join() ===
+    "denominator,estimate,ratio",
+  "plain plurals and past tense count",
+);
 const dirty = journal.cleanJournal([
   {
     text: "x".repeat(900) + " denominator",
@@ -260,6 +291,16 @@ ok(
 );
 settings.setLanguageProfile(0);
 ok(journal.loadJournal().length === 0, "slot 0 does not see slot 1's writing");
+const realSet = localStorage.setItem;
+localStorage.setItem = () => {
+  throw new Error("quota");
+};
+ok(
+  journal.addEntry({ text: "I counted the tens and ones carefully", skill: "1:time", grade: 1 }) ===
+    null,
+  "a failed write is reported, not hidden",
+);
+localStorage.setItem = realSet;
 settings.setLanguageProfile(1);
 const exported = play.exportPlay();
 ok(
@@ -280,6 +321,12 @@ ok(
   hostile.language.level === 2 && !hostile.language.journal[0].id.includes("/"),
   "hostile backup is cleaned",
 );
+ok(
+  play.cleanPlay({ trail: {}, rewards: {} }).language === null,
+  "an older backup has no language section",
+);
+play.importPlay(play.cleanPlay({ trail: {}, rewards: {} }));
+ok(journal.loadJournal().length === 1, "restoring an older backup leaves the journal alone");
 store.clear();
 play.importPlay(roundTrip);
 ok(
@@ -357,9 +404,58 @@ ok(es.includes("Primero ___") && es.includes("Yo ___ porque"), "Spanish page sho
 ok(es.includes("Di cómo lo sabes"), "Spanish card title");
 i18n.setLang("en");
 ok(card.journalHtml().includes("Nothing saved yet"), "empty journal says so");
-ok(card.languageScore() === null, "score is null with no evidence");
+ok(card.lookupCount() === 0, "no lookups yet");
+const practiceStrip = card.wordStripHtml(skill, { practice: true });
+ok(
+  practiceStrip.includes("data-lang-hint") &&
+    practiceStrip.includes('aria-label="Hear ratio in English"'),
+  "practice meanings count as help and audio buttons are named",
+);
+ok(!card.wordStripHtml(skill).includes("data-lang-hint"), "the Learn tab shows meanings freely");
+ok(
+  !card
+    .problemSupportHtml(skill, { question: "Find the GCF of 12 and 18." })
+    .includes("The biggest number"),
+  "no definition is shown in practice until it is opened",
+);
+settings.setLevel(1);
+const starterCompare = card.explainCardHtml({ skill, correct: true, count: 3 });
+ok(
+  /data-lang-fn="explain"\s+aria-pressed="true"/.test(starterCompare) &&
+    !starterCompare.includes('data-lang-fn="compare"'),
+  "Starter never lands on a move it does not offer",
+);
+settings.setLevel(2);
+const fakeCard = {
+  dataset: { langCard: "lc-none", langItem: "k" },
+  open: true,
+  querySelector: () => ({ value: "x" }),
+};
+ok(card.captureDraft({ querySelector: () => fakeCard }) === null, "no draft for an unknown card");
 
-// 9. Every word on the new screens has Spanish.
+// 9. The teacher's printable language pack: one page per skill plus a teacher page, bilingual, no digits from problems.
+const everyKey = ALL_SKILLS.map((entry) => `${entry.grade}:${entry.id}`);
+const bundle = pack.languagePackHtml(everyKey);
+ok(
+  (bundle.match(/language-pack-page/g) || []).length === ALL_SKILLS.length,
+  "one pack page per skill",
+);
+ok(
+  bundle.includes("Teacher notes") && bundle.includes("not placements or proficiency scores"),
+  "teacher page explains the levels honestly",
+);
+ok(
+  pack.languagePackHtml([]) === "" && pack.languagePackHtml(["9:nope"]) === "",
+  "empty or unknown skills print nothing",
+);
+ok(!/<script|onerror/i.test(bundle), "pack has no markup injection");
+ok(
+  pack.languagePackHtml(["6:gcf"]).includes("máximo común divisor") &&
+    pack.languagePackHtml(["6:gcf"]).includes("Starter"),
+  "pack shows words and levels",
+);
+
+// 10. Every word on the new screens has Spanish.
 const shown = [
   ...frames.LEVELS.flatMap((l) => [l.name, l.blurb]),
   ...frames.FUNCTIONS.map((f) => f.en),

@@ -52,6 +52,7 @@ const files = [
   "tutor.css",
   "trail.css",
   "games.css",
+  "language.css",
 ];
 for (const file of files) copyFileSync(join(source, file), join(destination, file));
 let html = readFileSync(join(source, "index.html"), "utf8")
@@ -73,11 +74,14 @@ const bundled = (Array.isArray(bundleResult) ? bundleResult : [bundleResult])
   .flatMap((result) => result.output)
   .find((output) => output.type === "chunk");
 if (!bundled) throw new Error("The standalone application bundle was not generated.");
-const css = ["styles.css", "tutor.css", "trail.css", "games.css"]
+const css = ["styles.css", "tutor.css", "trail.css", "games.css", "language.css"]
   .map((file) => readFileSync(join(source, file), "utf8"))
   .join("\n");
 html = html
-  .replace(/\s*<link rel="stylesheet" href="\.\/(?:styles|tutor|trail|games)\.css"\s*\/>/g, "")
+  .replace(
+    /\s*<link rel="stylesheet" href="\.\/(?:styles|tutor|trail|games|language)\.css"\s*\/>/g,
+    "",
+  )
   .replace(/\s*<script type="module" src="\.\/app\.js"><\/script>/, "")
   .replaceAll('href="./index.html"', 'href="./Math Fluency Lab.html"')
   .replace("</head>", `<style>${css}</style></head>`)

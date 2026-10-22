@@ -4,10 +4,10 @@
 import { getLang, t } from "./i18n.js";
 import {
   LEVELS,
-  blanks,
   connectors,
   framesFor,
   functionsFor,
+  isFrameText,
   levelById,
   promptFor,
   startingFunction,
@@ -15,7 +15,6 @@ import {
 import {
   addEntry,
   analyze,
-  languageEvidence,
   loadJournal,
   removeEntry,
   summarize,
@@ -56,21 +55,23 @@ const noteLookup = (id) => {
   if (id && !seen.includes(id)) writeJson(LOOKUP_KEY, [...seen, id].slice(-200));
 };
 
-// "Words for this problem": a few bilingual word cards. Level 1 and 2 learners see them open.
+// "Words for this problem": a few bilingual word cards. In practice (`practice: true`) a card shows the word in
+// both languages with audio, and its meaning sits behind a "Meaning" toggle that counts as help, because some
+// meanings describe a method. On the Learn tab the meanings are always shown.
 export function wordStripHtml(
   skill,
-  { heading = t("Words for this problem"), open = getLevel() <= 3 } = {},
+  { heading = t("Words for this problem"), open = getLevel() <= 3, practice = false } = {},
 ) {
   const { terms } = languageProfile(skill);
   const both = getLevel() <= 2;
   const es = getLang() === "es";
+  const meanings = (term) =>
+    `<p class="lang-def">${esc(es ? term.defEs : term.defEn)}</p>${both ? `<p class="lang-def lang-def-other" lang="${es ? "en" : "es"}">${esc(es ? term.defEn : term.defEs)}</p>` : ""}`;
   const cards = terms
     .map(
-      (
-        term,
-      ) => `<li class="lang-term"><div class="lang-term-head"><strong lang="en">${esc(term.en)}</strong> <span lang="es" class="lang-es">${esc(term.es)}</span>${term.cognate ? `<span class="lang-cognate" title="${esc(t("These words look alike in English and Spanish."))}">🔗 ${esc(t("looks alike"))}</span>` : ""}</div>
-      <p class="lang-def">${esc(es ? term.defEs : term.defEn)}</p>${both ? `<p class="lang-def lang-def-other" lang="${es ? "en" : "es"}">${esc(es ? term.defEn : term.defEs)}</p>` : ""}
-      <div class="lang-term-actions"><button type="button" class="lang-mini" data-lang-term="${term.id}" data-lang-voice="en">🔊 English</button><button type="button" class="lang-mini" data-lang-term="${term.id}" data-lang-voice="es">🔊 Español</button></div></li>`,
+      (term) => `<li class="lang-term"><div class="lang-term-head"><strong lang="en">${esc(term.en)}</strong> <span lang="es" class="lang-es">${esc(term.es)}</span>${term.cognate ? `<span class="lang-cognate" title="${esc(t("These words look alike in English and Spanish."))}">🔗 ${esc(t("looks alike"))}</span>` : ""}</div>
+      ${practice ? `<details class="lang-meaning" data-lang-hint><summary>${esc(t("Meaning"))}</summary>${meanings(term)}</details>` : meanings(term)}
+      <div class="lang-term-actions"><button type="button" class="lang-mini" data-lang-term="${term.id}" data-lang-voice="en" aria-label="${esc(t("Hear {word} in English", { word: term.en }))}">🔊 English</button><button type="button" class="lang-mini" data-lang-term="${term.id}" data-lang-voice="es" aria-label="${esc(t("Hear {word} in Spanish", { word: term.es }))}">🔊 Español</button></div></li>`,
     )
     .join("");
   return `<details class="lang-words"${open ? " open" : ""}><summary>${esc(heading)}</summary><ul class="lang-term-list">${cards}</ul></details>`;
@@ -88,7 +89,7 @@ export function spanishPeekHtml(item) {
 
 // During practice the words stay closed (the problem comes first) unless the learner chose Starter.
 export const problemSupportHtml = (skill, item) =>
-  `${spanishPeekHtml(item)}${wordStripHtml(skill, { open: getLevel() === 1 })}`;
+  `${spanishPeekHtml(item)}${wordStripHtml(skill, { open: getLevel() === 1, practice: true })}`;
 
 const checklistHtml = (read, level) =>
   `<ul class="lang-checklist" data-lang-checklist aria-label="${esc(t("Ideas in your writing"))}">${Object.entries(
@@ -107,19 +108,21 @@ function cardInner(ctx) {
   const { family, terms } = languageProfile(ctx.skill);
   const writing = ctx.writing;
   const fns = functionsFor(level);
+  // A level may not offer the move the card was on (Starter has no "compare"); fall back to "explain".
+  if (!fns.some((fn) => fn.id === ctx.fn)) ctx.fn = "explain";
   const frames = framesFor(level >= 4 ? 3 : level, ctx.fn);
   const prompt = promptFor(ctx.fn);
   const pick = (pair) => esc(writing === "es" ? pair.es : pair.en);
   const frameButtons = frames
     .map(
       (frame, index) =>
-        `<button type="button" class="lang-frame" data-lang-frame="${index}">${pick(frame)}</button>`,
+        `<button type="button" class="lang-frame" lang="${writing}" data-lang-frame="${index}">${pick(frame)}</button>`,
     )
     .join("");
   const bank = terms
     .map(
       (term) =>
-        `<button type="button" class="lang-chip" data-lang-chip="fill" data-text="${esc(writing === "es" ? term.es : term.en)}">${esc(writing === "es" ? term.es : term.en)} <small>${esc(writing === "es" ? term.en : term.es)}</small></button>`,
+        `<button type="button" class="lang-chip" lang="${writing}" data-lang-chip="fill" data-text="${esc(writing === "es" ? term.es : term.en)}">${esc(writing === "es" ? term.es : term.en)} <small>${esc(writing === "es" ? term.en : term.es)}</small></button>`,
     )
     .join("");
   const did =
@@ -127,7 +130,7 @@ function cardInner(ctx) {
       ? doneMoves(family)
           .map(
             (move) =>
-              `<button type="button" class="lang-chip" data-lang-chip="fill" data-text="${esc(writing === "es" ? move.es : move.en)}">${esc(writing === "es" ? move.es : move.en)}</button>`,
+              `<button type="button" class="lang-chip" lang="${writing}" data-lang-chip="fill" data-text="${esc(writing === "es" ? move.es : move.en)}">${esc(writing === "es" ? move.es : move.en)}</button>`,
           )
           .join("")
       : "";
@@ -136,7 +139,7 @@ function cardInner(ctx) {
       ? checkMoves(family)
           .map(
             (move) =>
-              `<button type="button" class="lang-chip" data-lang-chip="add" data-text="${esc(writing === "es" ? move.es : move.en)}">${esc(writing === "es" ? move.es : move.en)}</button>`,
+              `<button type="button" class="lang-chip" lang="${writing}" data-lang-chip="add" data-text="${esc(writing === "es" ? move.es : move.en)}">${esc(writing === "es" ? move.es : move.en)}</button>`,
           )
           .join("")
       : "";
@@ -145,7 +148,7 @@ function cardInner(ctx) {
       ? connectors()
           .map(
             (word) =>
-              `<button type="button" class="lang-chip lang-join" data-lang-chip="word" data-text="${esc(writing === "es" ? word.es : word.en)}">${esc(writing === "es" ? word.es : word.en)}</button>`,
+              `<button type="button" class="lang-chip lang-join" lang="${writing}" data-lang-chip="word" data-text="${esc(writing === "es" ? word.es : word.en)}">${esc(writing === "es" ? word.es : word.en)}</button>`,
           )
           .join("")
       : "";
@@ -163,7 +166,7 @@ function cardInner(ctx) {
     ${did ? `<p class="lang-label">${esc(t("What I did"))}</p><div class="lang-chips">${did}</div>` : ""}${checks ? `<p class="lang-label">${esc(t("Ways to check"))}</p><div class="lang-chips">${checks}</div>` : ""}
     ${joins ? `<p class="lang-label">${esc(t("Joining words"))}</p><div class="lang-chips">${joins}</div>` : ""}
     <label class="lang-label" for="${ctx.id}-text">${esc(t("Your words"))}</label>
-    <textarea id="${ctx.id}-text" class="lang-text" rows="3" maxlength="400" data-lang-text placeholder="${esc(t("Tap a sentence above, say it with the microphone, or type."))}"></textarea>
+    <textarea id="${ctx.id}-text" class="lang-text" lang="${writing}" rows="3" maxlength="400" data-lang-text placeholder="${esc(t("Tap a sentence above, say it with the microphone, or type."))}"></textarea>
     <div class="lang-row"><button type="button" class="lang-mini" data-lang-mic>🎙️ ${esc(t("Say it"))}</button><button type="button" class="lang-mini" data-lang-hear>🔊 ${esc(t("Hear it"))}</button><span class="lang-status" data-lang-status role="status" aria-live="polite"></span></div>
     ${checklistHtml(null, level)}
     <div class="lang-row"><button type="button" class="primary-action lang-save" data-lang-save>${esc(t("Save to my math journal"))}</button><span class="lang-note">${esc(t("Saved on this device only. You can skip this and go on."))}</span></div>
@@ -185,6 +188,7 @@ export function explainCardHtml({
   correct = true,
   count = 0,
   day = "",
+  itemKey = "",
   open,
 }) {
   const id = `lc${++serial}`;
@@ -198,11 +202,12 @@ export function explainCardHtml({
     correct,
     fn: startingFunction({ correct, count }),
     writing: getLang(),
+    itemKey,
   };
   registry.set(id, ctx);
   if (registry.size > 40) registry.delete(registry.keys().next().value);
   const title = correct ? t("Say how you know") : t("Talk about the slip");
-  return `<details class="lang-card" data-lang-card="${id}"${opens ? " open" : ""}><summary><span aria-hidden="true">🗣️</span> ${esc(title)} <span class="lang-pill">${esc(t(levelById(getLevel()).name))}</span></summary><div data-lang-host>${cardInner(ctx)}</div></details>`;
+  return `<details class="lang-card" data-lang-card="${id}" data-lang-item="${esc(itemKey)}"${opens ? " open" : ""}><summary><span aria-hidden="true">🗣️</span> ${esc(title)} <span class="lang-pill">${esc(t(levelById(getLevel()).name))}</span></summary><div data-lang-host>${cardInner(ctx)}</div></details>`;
 }
 
 const updateChecklist = (card) => {
@@ -230,20 +235,44 @@ function setStatus(card, message) {
   if (status) status.textContent = message;
 }
 
-function rerender(card, ctx) {
+// Redraws the card for a new level, move or language. Text the learner has started is kept; only an untouched
+// frame is replaced. Keyboard focus returns to the control that was pressed.
+function rerender(card, ctx, focus = "") {
   const area = card.querySelector("[data-lang-text]");
   const keep = area?.value || "";
   card.querySelector("[data-lang-host]").innerHTML = cardInner(ctx);
   const next = card.querySelector("[data-lang-text]");
-  if (next && keep && !keep.includes("___")) next.value = keep;
+  if (next && keep.trim() && !isFrameText(keep)) next.value = keep;
   const pill = card.querySelector(".lang-pill");
   if (pill) pill.textContent = t(levelById(getLevel()).name);
   updateChecklist(card);
+  if (focus) card.querySelector(focus)?.focus();
+}
+
+// Keeps a half-written explanation when the feedback around the card is drawn again for the same problem.
+export function captureDraft(host) {
+  const card = host?.querySelector("[data-lang-card]");
+  const ctx = card && registry.get(card.dataset.langCard);
+  if (!card || !ctx) return null;
+  return { item: card.dataset.langItem, open: card.open, text: card.querySelector("[data-lang-text]")?.value || "", fn: ctx.fn, writing: ctx.writing };
+}
+export function restoreDraft(host, draft) {
+  const card = host?.querySelector("[data-lang-card]");
+  const ctx = card && registry.get(card.dataset.langCard);
+  if (!card || !ctx || !draft || draft.item !== card.dataset.langItem) return;
+  ctx.fn = draft.fn;
+  ctx.writing = draft.writing;
+  card.open = draft.open || card.open;
+  rerender(card, ctx);
+  const area = card.querySelector("[data-lang-text]");
+  if (area && draft.text) {
+    area.value = draft.text;
+    updateChecklist(card);
+  }
 }
 
 function toggleMic(card, ctx) {
   const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const area = card.querySelector("[data-lang-text]");
   if (!Rec) return setStatus(card, t("This browser cannot listen. You can type instead."));
   if (recognition) {
     try {
@@ -256,6 +285,7 @@ function toggleMic(card, ctx) {
   }
   try {
     const rec = new Rec();
+    let failed = false;
     rec.lang = ctx.writing === "es" ? "es-ES" : "en-US";
     rec.interimResults = false;
     rec.onstart = () => setStatus(card, t("Listening… say your idea."));
@@ -264,14 +294,17 @@ function toggleMic(card, ctx) {
         .map((result) => result[0]?.transcript)
         .filter(Boolean)
         .join(" ");
-      if (heard) insertText(area, heard, "add");
+      const area = card.querySelector("[data-lang-text]");
+      if (heard && area) insertText(area, heard, "add");
       updateChecklist(card);
     };
-    rec.onerror = () =>
+    rec.onerror = () => {
+      failed = true;
       setStatus(card, t("The microphone is not available. You can type instead."));
+    };
     rec.onend = () => {
       recognition = null;
-      setStatus(card, t("Got it. Check your words, then save."));
+      if (!failed) setStatus(card, t("Got it. Check your words, then save."));
     };
     recognition = rec;
     rec.start();
@@ -285,6 +318,7 @@ function save(card, ctx) {
   const area = card.querySelector("[data-lang-text]");
   const read = analyze(area.value);
   if (read.unfilled) return setStatus(card, t("Fill in the blanks (___) first."));
+  if (read.words < 3) return setStatus(card, t("Write a little more: a short sentence is enough."));
   const entry = addEntry({
     text: area.value,
     skill: ctx.skillKey,
@@ -293,7 +327,7 @@ function save(card, ctx) {
     level: getLevel(),
     day: ctx.day,
   });
-  if (!entry) return setStatus(card, t("Write a little more: a short sentence is enough."));
+  if (!entry) return setStatus(card, t("This browser could not save. Your words are still here."));
   area.value = "";
   const got = Object.entries(entry.moves)
     .filter(([, on]) => on)
@@ -308,6 +342,12 @@ function save(card, ctx) {
   window.dispatchEvent(new CustomEvent("fluency-language-saved"));
 }
 
+// Redraws the journal on the progress page, when it is showing, after an entry is saved or removed.
+function refreshJournal() {
+  const shown = document.querySelector(".lang-journal");
+  if (shown) shown.outerHTML = journalHtml();
+}
+
 // One set of listeners for every card and word strip on the page.
 export function initLanguage() {
   document.addEventListener("click", (event) => {
@@ -317,8 +357,8 @@ export function initLanguage() {
       const term = termById(voice.dataset.langTerm);
       if (term) {
         noteLookup(term.id);
-        if (voice.dataset.langVoice === "es") speak(`${term.es}. ${term.defEs}`, "es");
-        else speak(`${term.en}. ${term.defEn}`, "en");
+        if (voice.dataset.langVoice === "es") speak(`${term.es}. ${term.defEs}`, "es", { raw: true });
+        else speak(`${term.en}. ${term.defEn}`, "en", { raw: true });
       }
       return;
     }
@@ -330,17 +370,17 @@ export function initLanguage() {
       const level = target.closest("[data-lang-level]");
       if (level) {
         setLevel(Number(level.dataset.langLevel));
-        return rerender(card, ctx);
+        return rerender(card, ctx, `[data-lang-level="${level.dataset.langLevel}"]`);
       }
       const fn = target.closest("[data-lang-fn]");
       if (fn) {
         ctx.fn = fn.dataset.langFn;
-        return rerender(card, ctx);
+        return rerender(card, ctx, `[data-lang-fn="${fn.dataset.langFn}"]`);
       }
       const write = target.closest("[data-lang-write]");
       if (write) {
         ctx.writing = write.dataset.langWrite;
-        return rerender(card, ctx);
+        return rerender(card, ctx, `[data-lang-write="${write.dataset.langWrite}"]`);
       }
       const frame = target.closest("[data-lang-frame]");
       if (frame) {
@@ -359,7 +399,7 @@ export function initLanguage() {
       if (target.closest("[data-lang-hear]")) {
         const text = card.querySelector("[data-lang-text]").value.trim();
         return text
-          ? speak(text, ctx.writing)
+          ? speak(text, ctx.writing, { raw: true })
           : setStatus(card, t("Choose or write a sentence first."));
       }
       if (target.closest("[data-lang-save]")) return save(card, ctx);
@@ -375,9 +415,10 @@ export function initLanguage() {
     const del = target.closest("[data-lang-delete]");
     if (del) {
       removeEntry(del.dataset.langDelete);
-      del.closest(".lang-entry")?.remove();
+      refreshJournal();
     }
   });
+  window.addEventListener("fluency-language-saved", refreshJournal);
   document.addEventListener("input", (event) => {
     const card = event.target.closest?.("[data-lang-card]");
     if (card && event.target.matches("[data-lang-text]")) updateChecklist(card);
@@ -388,18 +429,15 @@ export function initLanguage() {
 export function journalHtml() {
   const entries = loadJournal();
   const sum = summarize(entries);
-  const stats = STAT_LABELS    .map(
+  const stats = STAT_LABELS.map(
       ([move, label]) =>
         `<div><strong>${sum.moves[move]}</strong><span>${esc(t(label))}</span></div>`,
     )
     .join("");
-  const rows = entries
-    .slice(0, 12)
-    .map(
-      (entry) =>
-        `<li class="lang-entry"><p>${esc(entry.text)}</p><small>${esc(entry.day || "")} · ${esc(t(MOVE_FN[entry.fn] || "Explain"))}</small><button type="button" class="lang-mini" data-lang-delete="${esc(entry.id)}" aria-label="${esc(t("Delete this entry"))}">✕</button></li>`,
-    )
-    .join("");
+  const row = (entry) =>
+    `<li class="lang-entry"><p>${esc(entry.text)}</p><small>${esc(entry.day || "")} · ${esc(t(MOVE_FN[entry.fn] || "Explain"))}</small><button type="button" class="lang-mini" data-lang-delete="${esc(entry.id)}" aria-label="${esc(t("Delete this entry"))}">✕</button></li>`;
+  const older = entries.slice(12);
+  const rows = `${entries.slice(0, 12).map(row).join("")}${older.length ? `<li><details><summary>${esc(t("Show older entries ({n})", { n: older.length }))}</summary><ul class="lang-entries">${older.map(row).join("")}</ul></details></li>` : ""}`;
   return `<section class="lang-journal" aria-labelledby="lang-journal-title"><h3 id="lang-journal-title">${esc(t("My math talk"))}</h3>
     <p class="lang-note">${esc(t("Your explanations stay on this device. Counts show what your writing already does."))}</p>
     <div class="lang-row" role="group" aria-label="${esc(t("Talk & write help"))}"><span class="lang-label">${esc(t("Talk & write help"))}</span>${LEVELS.map((entry) => `<button type="button" class="lang-tab" data-lang-set-level="${entry.id}" aria-pressed="${entry.id === getLevel()}">${esc(t(entry.name))}</button>`).join("")}</div>
@@ -424,5 +462,3 @@ export function journalPrintHtml({ name, grade }) {
     .join("");
   return `<article class="family-print"><h1>${esc(t("{name}’s Math Journal", { name }))}</h1><p>${esc(t("Grade {n}", { n: grade }))} · ${new Date().toLocaleDateString()}</p><ol class="lang-print-list">${rows || `<li>${esc(t("Nothing saved yet."))}</li>`}</ol></article>`;
 }
-
-export const languageScore = () => languageEvidence(loadJournal(), lookupCount());

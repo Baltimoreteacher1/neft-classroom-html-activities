@@ -35,7 +35,18 @@ The packaging command creates both a browser-served folder and a self-contained 
 
 ## Español
 
-The page header has an English / Español button. Spanish covers the page tabs, the trail (stop names, ideas, rewards, boss round, strategy tips, teach-back), the whole Game Room, stickers, and the family summary. Math problems, skill titles, and worked-example steps stay in English. Spanish text lives in `i18n-es.js` (English text is the key); `tools/fluency-i18n.test.mjs` fails if a learner-facing string has no Spanish entry or its placeholders differ.
+The page header has an English / Español button. Spanish covers the page tabs, the trail (stop names, ideas, rewards, boss round, strategy tips, teach-back), the whole Game Room, stickers, the family summary, and the language layer below. Math problems are not replaced: the English stays on screen as the practice, and a "See it in Spanish" peek (plus the Spanish read-aloud button) shows the same question in Spanish. Skill titles and worked-example steps stay in English. Spanish text lives in `i18n-es.js` and `i18n-es-language.js` (English text is the key); `tools/fluency-i18n.test.mjs` fails if a learner-facing string has no Spanish entry or its placeholders differ.
+
+## Language layer (math, language, writing)
+
+Every learner picks a **Talk & write help** level (Starter, Building, Growing, On my own; saved per learner on the device, changeable any time). It changes how much of a sentence is given, never the math, and it is not a proficiency score.
+
+- **Words** (`language-terms.js`): a bilingual word bank (English, Español, a plain meaning in both, a "looks alike" flag) mapped to all 80 skills. Meanings contain no digits, so a word card cannot echo an answer. The Learn tab and Starter-level practice show the skill's words with read-aloud in both languages.
+- **Explain card** (`language-card.js`, `language-frames.js`): after an answer (right or wrong) a card offers four moves (notice, explain, compare, check) plus "fix it" after a slip, with sentence frames at the learner's level in English or Español, word-bank chips, joining words, and a microphone. The writing is read for four ideas (a math word, a reason, a first-then order, a way to check) and shown as a checklist, never as a mark.
+- **Math journal** (`language-journal.js`): saved explanations stay on the device, print as a one-page journal, and travel in the JSON backup (`play-backup.js`). The family summary shows counts only, with a bilingual starter to try at home.
+- **Academic Language** on the progress card is evidence-based: it reads "Not enough yet" until the learner has written or looked up words, then blends the four ideas in the last 20 entries, the variety of math words, and word lookups.
+- **Spanish stems** (`question-es.js`, `story-problems.js`): every generated question stem has a Spanish version with the same numbers; story problems carry Spanish wording. `tools/fluency-language.test.mjs` generates thousands of questions across all 80 skills and fails on any wordy stem without a Spanish rule or a changed number.
+- **Teacher**: the teacher studio's "Print the language pack" prints, for the chosen skills, the words in both languages, the frames at each level, a partner-talk task, and a teacher page that explains the levels (with WIDA ELD Standard 3 language functions, no placement).
 
 ## Buddy and weekly goal
 

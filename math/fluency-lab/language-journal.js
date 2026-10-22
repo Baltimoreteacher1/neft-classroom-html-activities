@@ -1,11 +1,16 @@
 // The learner's math journal: short explanations they wrote or said, kept on this device. The page reads the
 // writing for four language moves (a math word, a reason, a sequence word, a way to check) and counts them.
 // Nothing here marks writing wrong, grades it, or labels a learner; it only shows what the writing already does.
-import { termsInText } from "./language-terms.js";
+import { allFrameTexts } from "./language-frames.js";
+import { allMovePhrases, termsInText } from "./language-terms.js";
 import { readJson, writeJson } from "./language-settings.js";
 
 export const MAX_ENTRIES = 120;
 export const MAX_TEXT = 400;
+// A writing sample must hold at least this many words the learner added beyond the frame and chips to earn credit.
+export const OWN_WORDS = 4;
+// The progress card shows no figure until the journal holds at least this many entries.
+export const MIN_ENTRIES = 3;
 const KEY = "ewl-language-journal-v1";
 const FUNCTION_IDS = ["notice", "explain", "compare", "check", "fix"];
 
@@ -21,7 +26,56 @@ const REASON =
 const SEQUENCE =
   / (first|then|next|after|finally|last|primero|luego|despues|finalmente|por ultimo) /;
 const CHECK =
-  / (check|checked|verify|verified|estimate|estimated|inverse|opposite|comprob\w*|verific\w*|revis\w*|estim\w*|opuest\w*) /;
+  / (check|checked|verify|verified|estimate|estimated|inverse|inversa|opposite|comprob\w*|verific\w*|revis\w*|estim\w*|opuest\w*) /;
+
+// Words the learner added beyond the sentence frame and the "what I did" / "ways to check" chips. A filled-in frame
+// keeps only its blanks, and a chip phrase counts for nothing, so tapping scaffolds alone earns no credit.
+let scaffold = null;
+const scaffoldPatterns = () => {
+  if (scaffold) return scaffold;
+  const split = (value) => plain(value).trim().split(" ").filter(Boolean);
+  scaffold = {
+    frames: allFrameTexts().map((text) => text.split("___").map(split).filter((part) => part.length)),
+    phrases: allMovePhrases().map(split).filter((part) => part.length),
+  };
+  return scaffold;
+};
+const find = (words, part, from) => {
+  for (let at = from; at + part.length <= words.length; at += 1) if (part.every((word, k) => words[at + k] === word)) return at;
+  return -1;
+};
+const without = (words, part, from = 0, mustStart = false) => {
+  const at = find(words, part, from);
+  if (at < 0 || (mustStart && at !== 0)) return null;
+  return { at, rest: [...words.slice(0, at), ...words.slice(at + part.length)] };
+};
+export function ownWordCount(text) {
+  const { frames, phrases } = scaffoldPatterns();
+  let words = plain(text).trim().split(" ").filter(Boolean);
+  for (const frame of frames) {
+    let rest = words;
+    let from = 0;
+    let ok = true;
+    frame.forEach((part, index) => {
+      if (!ok) return;
+      const cut = without(rest, part, from, index === 0);
+      if (!cut) ok = false;
+      else {
+        rest = cut.rest;
+        from = cut.at;
+      }
+    });
+    if (ok) {
+      words = rest;
+      break;
+    }
+  }
+  for (const part of phrases) {
+    const cut = without(words, part);
+    if (cut) words = cut.rest;
+  }
+  return words.length;
+}
 
 export function analyze(text) {
   const clean = String(text || "").trim();
@@ -52,7 +106,7 @@ const cleanEntry = (entry) => {
   const read = analyze(text);
   const at = Number.isFinite(entry.at) ? Math.floor(entry.at) : 0;
   return {
-    id: /^[\w-]{1,40}$/.test(String(entry.id)) ? entry.id : `e${at}`,
+    id: typeof entry.id === "string" && /^[\w-]{1,40}$/.test(entry.id) ? entry.id : `e${at}`,
     at,
     day: /^\d{4}-\d{2}-\d{2}$/.test(String(entry.day)) ? entry.day : "",
     grade: Number.isInteger(entry.grade) && entry.grade >= 1 && entry.grade <= 8 ? entry.grade : 0,
@@ -62,6 +116,7 @@ const cleanEntry = (entry) => {
     text,
     terms: read.terms,
     moves: read.moves,
+    own: ownWordCount(text),
   };
 };
 
@@ -83,8 +138,7 @@ export function addEntry({ text, skill, grade, fn, level, day }) {
     text,
   });
   if (!entry || entry.text.split(" ").length < 3) return null;
-  saveJournal([entry, ...loadJournal()]);
-  return entry;
+  return saveJournal([entry, ...loadJournal()]) ? entry : null;
 }
 
 export function removeEntry(id) {
@@ -102,17 +156,18 @@ export function summarize(entries) {
   return { total: list.length, moves: count, wordsUsed: terms.size, termIds: [...terms] };
 }
 
-// The "Academic Language" figure on the progress card is evidence, not a starting score: no writing and no word
-// lookups means no figure. It blends how many of the four moves the last 20 entries carried (70%), how many
-// different math words were used (20%), and Word Wall lookups (10%). Returns null until there is evidence.
+// The "Academic Language" figure on the progress card is evidence, not a starting score. It stays empty until the
+// journal holds MIN_ENTRIES entries. Then it blends how many of the four moves the last 20 entries carried (70%),
+// how many different math words they used (20%), and word lookups (10%). An entry earns credit for its moves only
+// when the learner added OWN_WORDS or more words beyond the sentence frame and chips.
 export function languageEvidence(entries, lookups = 0) {
   const recent = cleanJournal(entries).slice(0, 20);
-  if (!recent.length && !lookups) return null;
-  const moves = recent.length
-    ? recent.reduce((sum, entry) => sum + Object.values(entry.moves).filter(Boolean).length, 0) /
-      (recent.length * 4)
-    : 0;
-  const variety = Math.min(1, summarize(recent).wordsUsed / 12);
+  if (recent.length < MIN_ENTRIES) return null;
+  // Only entries with real added words earn credit for the four moves.
+  const earned = (entry) => (entry.own >= OWN_WORDS ? Object.values(entry.moves).filter(Boolean).length : 0);
+  const moves = recent.reduce((sum, entry) => sum + earned(entry), 0) / (recent.length * 4);
+  const credited = recent.filter((entry) => entry.own >= OWN_WORDS);
+  const variety = Math.min(1, summarize(credited).wordsUsed / 12);
   const looked = Math.min(1, lookups / 10);
   return Math.round(100 * (0.7 * moves + 0.2 * variety + 0.1 * looked));
 }

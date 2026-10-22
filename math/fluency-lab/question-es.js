@@ -76,9 +76,9 @@ const RULES = [
   ],
   [
     /^What time is (\d+) minutes after (\d+:\d+)\?$/,
-    (m) => `¿Qué hora es ${m[1]} minutos después de las ${m[2]}?`,
+    (m) => `¿Qué hora será ${m[1]} minutos después de ${m[2].startsWith("1:") ? "la" : "las"} ${m[2]}?`,
   ],
-  [/^Is (.+) even or odd\?$/, (m) => `¿${m[1]} es par o impar?`],
+  [/^Is (.+) even or odd\?$/, (m) => `¿Es ${m[1]} par o impar?`],
   [
     /^(\d+) quarters \+ (\d+) dimes \+ (\d+) nickels \+ (\d+) pennies = how many cents\?$/,
     (m) =>
@@ -98,16 +98,16 @@ const RULES = [
   ],
   [
     /^What is the (\d+)(?:st|nd|rd|th) multiple of (.+)\?$/,
-    (m) => `¿Cuál es el múltiplo número ${m[1]} de ${m[2]}?`,
+    (m) => `¿Cuál es el ${m[1]}.º múltiplo de ${m[2]}?`,
   ],
-  [/^Is (.+) a factor of (.+)\?$/, (m) => `¿${m[1]} es factor de ${m[2]}?`],
+  [/^Is (.+) a factor of (.+)\?$/, (m) => `¿Es ${m[1]} un factor de ${m[2]}?`],
   [/^How many factors does (.+) have\?$/, (m) => `¿Cuántos factores tiene ${m[1]}?`],
-  [/^Is (.+) prime or composite\?$/, (m) => `¿${m[1]} es primo o compuesto?`],
-  [/^Is (.+) a multiple of (.+)\?$/, (m) => `¿${m[1]} es múltiplo de ${m[2]}?`],
+  [/^Is (.+) prime or composite\?$/, (m) => `¿Es ${m[1]} primo o compuesto?`],
+  [/^Is (.+) a multiple of (.+)\?$/, (m) => `¿Es ${m[1]} múltiplo de ${m[2]}?`],
   [new RegExp(`^What is (\\d+/\\d+) of (${VAL})\\?$`), (m) => `¿Cuánto es ${m[1]} de ${m[2]}?`],
   [
     /^Volume of a rectangular prism: (.+)\?$/,
-    (m) => `¿Cuál es el volumen de un prisma rectangular: ${m[1]}?`,
+    (m) => `Prisma rectangular: ${m[1]}. ¿Cuál es su volumen?`,
   ],
   [
     /^Find the GCF of (.+) and (.+)\.$/,
@@ -119,26 +119,26 @@ const RULES = [
   ],
   [
     /^(.+) for (.+) items\. How much for (.+) item\?$/,
-    (m) => `${m[1]} por ${m[2]} artículos. ¿Cuánto por ${m[3]} artículo?`,
+    (m) => `${m[2]} artículos cuestan ${m[1]}. ¿Cuánto cuesta ${m[3]} artículo?`,
   ],
   [
     /^(.+) ([a-z]+) = how many ([a-z]+)\?$/,
     (m) => `${m[1]} ${unitWord(m[2], m[1])} = ¿${how(m[3])} ${unitWord(m[3])}?`,
   ],
-  [/^What is (.+)% of (.+)\?$/, (m) => `¿Cuánto es ${m[1]}% de ${m[2]}?`],
+  [/^What is (.+)% of (.+)\?$/, (m) => `¿Cuánto es el ${m[1]}% de ${m[2]}?`],
   [/^Evaluate (.+) when ([a-z]) = (.+)\.$/, (m) => `Evalúa ${m[1]} cuando ${m[2]} = ${m[3]}.`],
-  [/^(.+) and (.+)\. Find ([a-z])\.$/, (m) => `${m[1]} junto con ${m[2]}. Halla ${m[3]}.`],
+  [/^(.+) and (.+)\. Find ([a-z])\.$/, (m) => `Primera ecuación: ${m[1]}. Segunda ecuación: ${m[2]}. Halla ${m[3]}.`],
   [/^(.+)\. Find ([a-z])\.$/, (m) => `${m[1]}. Halla ${m[2]}.`],
   [/^Which quadrant contains (\(.+\))\?$/, (m) => `¿En qué cuadrante está ${m[1]}?`],
   [
     /^(.+) with a (.+)% (increase|decrease) equals what\?$/,
     (m) =>
-      `${m[1]} con ${m[3] === "increase" ? "un aumento" : "una disminución"} de ${m[2]}% es igual a ¿qué?`,
+      `Si ${m[1]} tiene ${m[3] === "increase" ? "un aumento" : "una disminución"} del ${m[2]}%, ¿cuál es el nuevo valor?`,
   ],
-  [/^Is (.+) a solution to (.+)\?$/, (m) => `¿${m[1]} es una solución de ${m[2]}?`],
+  [/^Is (.+) a solution to (.+)\?$/, (m) => `¿Es ${m[1]} una solución de ${m[2]}?`],
   [
     /^A circle has radius (.+)\. What number multiplies π to give its area\?$/,
-    (m) => `Un círculo tiene radio ${m[1]}. ¿Por qué número se multiplica π para obtener su área?`,
+    (m) => `Un círculo tiene un radio de ${m[1]}. ¿Qué número se multiplica por π para obtener su área?`,
   ],
   [
     /^(.+) of (.+) equal sections are winning sections\. What is P\(win\)\?$/,
@@ -153,7 +153,7 @@ const RULES = [
     (m) => `Halla la pendiente de la recta que pasa por ${m[1]} y ${m[2]}.`,
   ],
   [
-    /^If (.+) find ([a-z]) when ([a-z]) = (.+)\.$/,
+    /^If ([^,]+?),? find ([a-z]) when ([a-z]) = (.+)\.$/,
     (m) => `Si ${m[1]}, halla ${m[2]} cuando ${m[3]} = ${m[4]}.`,
   ],
   [
@@ -168,7 +168,7 @@ const RULES = [
   [
     /^A data table has x-values (.+) and y-values (.+)\. Which association best describes the data\?$/,
     (m) =>
-      `Una tabla de datos tiene valores de x ${m[1]} y valores de y ${m[2]}. ¿Qué asociación describe mejor los datos?`,
+      `En una tabla de datos, los valores de x son ${m[1]}. Los valores de y son ${m[2]}. ¿Qué asociación describe mejor los datos?`,
   ],
 ];
 
@@ -190,11 +190,6 @@ const CHOICES = {
   even: "par", odd: "impar", yes: "sí", no: "no", prime: "primo", composite: "compuesto",
   positive: "positiva", negative: "negativa", none: "ninguna",
 };
-const UNIT_NAMES = {
-  "square units": "unidades cuadradas", "cubic units": "unidades cúbicas", units: "unidades", "π square units": "π unidades cuadradas",
-  centimeters: "centímetros", inches: "pulgadas", minutes: "minutos", grams: "gramos", feet: "pies",
-};
-
 // Spanish for the word choices on a multiple-choice item ("even", "odd", ...); symbols and numbers pass through.
 export function choicesEs(item) {
   const labels = (item?.choices || []).map((choice) => (typeof choice === "string" ? choice : choice?.label || choice?.text || ""));
@@ -202,4 +197,3 @@ export function choicesEs(item) {
   return labels.map((label) => CHOICES[String(label).toLowerCase()] || label);
 }
 
-export const unitEs = (unit) => UNIT_NAMES[unit] || null;

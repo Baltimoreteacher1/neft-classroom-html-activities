@@ -3,7 +3,12 @@
 export const ES_LANGUAGE = {
   "Math talk": "Conversación matemática",
   "{n} explanations written and {w} different math words so far.": "Hasta ahora: {n} explicaciones escritas y {w} palabras de matemáticas distintas.",
-  "Explaining in any language is real math thinking. Try this starter together, in Spanish or English: “I know ___ because ___.”": "Explicar en cualquier idioma es pensar de verdad en matemáticas. Prueben juntos este comienzo, en español o en inglés: «Sé que ___ porque ___».",
+  "Explaining in any language is real math thinking. Try this starter together, in Spanish or English: “I know ___ because ___.”": "Explicar en cualquier idioma es pensar de verdad en matemáticas. Prueben juntos esta frase para empezar, en español o en inglés: «Sé que ___ porque ___».",
+  Meaning: "Significado",
+  "Hear {word} in English": "Escuchar {word} en inglés",
+  "Hear {word} in Spanish": "Escuchar {word} en español",
+  "This browser could not save. Your words are still here.": "Este navegador no pudo guardar. Tus palabras siguen aquí.",
+  "Show older entries ({n})": "Ver entradas anteriores ({n})",
   "Words to know": "Palabras que debes conocer",
   "Words for this problem": "Palabras para este problema",
   "These words look alike in English and Spanish.":
@@ -11,7 +16,7 @@ export const ES_LANGUAGE = {
   "looks alike": "se parece",
   "See it in Spanish": "Míralo en español",
   "Ideas in your writing": "Ideas en tu escritura",
-  "Need a starter?": "¿Necesitas un comienzo?",
+  "Need a starter?": "¿Necesitas una frase para empezar?",
   "Talk & write help": "Ayuda para hablar y escribir",
   "What to say": "Qué decir",
   "Math words": "Palabras de matemáticas",
@@ -34,7 +39,7 @@ export const ES_LANGUAGE = {
   "The microphone is not available. You can type instead.":
     "El micrófono no está disponible. Puedes escribir.",
   "Got it. Check your words, then save.": "Listo. Revisa tus palabras y luego guarda.",
-  "Fill in the blanks (___) first.": "Primero llena los espacios (___).",
+  "Fill in the blanks (___) first.": "Primero completa los espacios en blanco (___).",
   "Write a little more: a short sentence is enough.":
     "Escribe un poco más: una oración corta es suficiente.",
   "Saved. Your writing has {ideas}.": "Guardado. Tu escritura tiene {ideas}.",
@@ -55,15 +60,15 @@ export const ES_LANGUAGE = {
   Starter: "Inicial",
   "Pick words and finish a short sentence. You can point, draw, or start in your home language.":
     "Elige palabras y termina una oración corta. Puedes señalar, dibujar o empezar en tu idioma del hogar.",
-  Building: "En construcción",
+  Building: "Construyendo",
   "Finish sentences that have two blanks and a joining word.":
     "Termina oraciones que tienen dos espacios y una palabra de enlace.",
-  Growing: "En crecimiento",
+  Growing: "Creciendo",
   "Start from a sentence beginning and add your own ideas.":
-    "Empieza con el comienzo de una oración y agrega tus propias ideas.",
+    "Empieza con el principio de una oración y agrega tus propias ideas.",
   "On my own": "Por mi cuenta",
   "Answer a question in your own words. Starters are there if you want one.":
-    "Responde una pregunta con tus propias palabras. Hay comienzos si quieres uno.",
+    "Responde una pregunta con tus propias palabras. Si quieres, hay frases para empezar.",
   Notice: "Observar",
   Explain: "Explicar",
   Compare: "Comparar",

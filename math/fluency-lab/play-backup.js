@@ -26,7 +26,7 @@ export function cleanPlay(value) {
   return {
     trail: { stations, facts, recent: cleanRecent(value.trail?.recent) },
     rewards: cleanRewards(value.rewards || {}),
-    language: { journal: cleanJournal(value.language?.journal), level: [1, 2, 3, 4].includes(value.language?.level) ? value.language.level : 2 },
+    language: value.language && typeof value.language === "object" ? { journal: cleanJournal(value.language.journal), level: [1, 2, 3, 4].includes(value.language.level) ? value.language.level : 2 } : null,
   };
 }
 
@@ -34,6 +34,8 @@ export function importPlay(clean) {
   if (!clean) return;
   saveTrail(clean.trail);
   saveRewards(clean.rewards);
-  saveJournal(clean.language?.journal || []);
-  setLevel(clean.language?.level);
+  // A backup made before the language layer has no journal; leave the learner's own journal alone.
+  if (!clean.language) return;
+  saveJournal(clean.language.journal);
+  setLevel(clean.language.level);
 }
