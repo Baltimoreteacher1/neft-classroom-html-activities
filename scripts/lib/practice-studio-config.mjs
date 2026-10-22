@@ -631,6 +631,9 @@ export function buildSections(
       // AFTER the rest are stamped, so a student's saved progress on the existing items keeps its keys.
       const bench = ld.bench ? benchItems(ld.bench)[mode] : null;
       const benched = bench && i === (mode === "practice" ? 3 : 2);
+      // Explore first: in Practice the lab's explore-and-write items open the studio (section 1) instead of waiting in section 4;
+      // the mission stays in section 4. Their ids are unchanged, so saved progress keeps its keys.
+      const opener = bench && mode === "practice" && i === 0 ? bench.before : [];
       // The "Which move?" item joins Practice section 3 and Challenge section 4, after the stamped items, with a fixed id.
       const move =
         ld.moves?.[mode] && i === (mode === "practice" ? 2 : 3)
@@ -646,7 +649,11 @@ export function buildSections(
         p: g.p,
         pEs: g.pEs,
         ...(sec.conf ? { conf: true } : {}),
-        items: benched ? [...bench.before, ...items, ...bench.after] : [...items, ...move],
+        items: benched
+          ? mode === "practice"
+            ? [...items, ...bench.after]
+            : [...bench.before, ...items, ...bench.after]
+          : [...opener, ...items, ...move],
         ...(sec.pool ? { pool: stamp(sec.pool, i + 1) } : {}),
       };
     });

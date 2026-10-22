@@ -167,19 +167,42 @@ for (const id of ids) {
     assert.ok(existsSync(join(REPO_ROOT, rel)), `${rel} exists`);
     const data = pageData(rel);
     assert.ok(data.labV, `${rel} ships the lab content stamp`);
-    const sec = data.sections[mode === "practice" ? 3 : 2];
-    const want = [...items[mode].before, ...items[mode].after].map((it) => it.id);
-    const got = sec.items.filter((it) => /^lab-/.test(it.id || "")).map((it) => it.id);
-    assert.deepEqual(got, want, `${id} ${mode}: the bench items sit in the right section`);
+    // Practice opens with the explore items (section 1, "explore first") and keeps the mission in section 4; Challenge keeps all
+    // of its bench in section 3
+    const labIds = (/** @type {number} */ n) =>
+      data.sections[n].items.filter((it) => /^lab-/.test(it.id || "")).map((it) => it.id);
+    const wantAt =
+      mode === "practice"
+        ? {
+            0: items.practice.before.map((it) => it.id),
+            3: items.practice.after.map((it) => it.id),
+          }
+        : { 2: [...items.challenge.before, ...items.challenge.after].map((it) => it.id) };
+    for (const [n, want] of Object.entries(wantAt))
+      assert.deepEqual(
+        labIds(Number(n)),
+        want,
+        `${id} ${mode}: the bench items sit in the right section`,
+      );
+    const total = data.sections.reduce((a, s) => a + labIds(data.sections.indexOf(s)).length, 0);
+    assert.equal(
+      total,
+      Object.values(wantAt).flat().length,
+      `${id} ${mode}: no bench item sits anywhere else`,
+    );
+    // the section the bench leads (Practice 1, Challenge 3): existing items keep their ids, the bench is added around them
+    const sec = data.sections[mode === "practice" ? 0 : 2];
     const gen = sec.items.filter((it) => !/^lab-/.test(it.id || ""));
     assert.ok(
       gen.every((it) => !/^lab-/.test(it.id)),
       "no generated item takes a bench id",
     );
-    // existing items keep their ids: the bench is added around them, never in the middle
     const first = sec.items.findIndex((it) => !/^lab-/.test(it.id));
-    assert.equal(first, items[mode].before.length, `${id} ${mode}: bench items lead the section`);
-    for (const it of sec.items.filter((x) => x.k === "lab" || x.k === "mission"))
+    const lead = mode === "practice" ? items.practice.before.length : items.challenge.before.length;
+    assert.equal(first, lead, `${id} ${mode}: bench items lead the section`);
+    for (const it of data.sections
+      .flatMap((x) => x.items)
+      .filter((x) => x.k === "lab" || x.k === "mission"))
       assert.ok(it.model?.kind && it.lab, `${id} ${mode} ${it.id} carries its lab and model`);
   }
 }

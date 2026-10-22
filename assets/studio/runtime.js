@@ -392,6 +392,7 @@
     const n = SECTIONS[tab - 1].items.length;
     const lang = state.showEs;
     return `<div class="item-head"><span class="item-count">Problem ${state.idx[tab] + 1} of ${n}</span>
+      ${it.id === "lab-explore" ? `<span class="chip chip-explore">Explore first${es("Explora primero")}</span>` : ""}
       ${it.skill ? `<span class="chip chip-skill">${esc(lang && it.skillEs ? it.skillEs : it.skill)}</span>` : ""}
       ${it.lvl ? `<span class="chip chip-level" role="img" aria-label="Level ${it.lvl} of 4">${stars(it.lvl)}</span>` : ""}
       <span class="item-tools">${it.gen ? `<button type="button" class="tool-btn" data-example>👀 ${lang ? "Ejemplo resuelto" : "Worked example"}</button>` : ""}${it.reroll ? `<button type="button" class="tool-btn" data-reroll>🎲 ${lang ? "Números nuevos" : "New numbers"}</button>` : ""}<button type="button" class="tool-btn" data-read aria-label="Read this problem aloud">🔊 ${lang ? "Leer" : "Read"}</button></span></div>`;

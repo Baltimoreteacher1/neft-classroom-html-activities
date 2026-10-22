@@ -224,6 +224,14 @@ try {
     await spy(page);
     await page.goto(`${origin}/math/practice-studio/3-5/`);
     await page.locator(".item-q").first().waitFor();
+    // Practice opens with the lab's explore items (W4a); the streak is built on the plain questions after them
+    await page.evaluate(() => {
+      const a = /** @type {any} */ (window).StudioRT.api;
+      a.state.idx[1] = a.sections[0].items.findIndex(
+        (/** @type {any} */ x) => !/^lab-/.test(x.id || ""),
+      );
+      a.render(1);
+    });
     for (let i = 0; i < 3; i++) {
       await solveCurrent(page, "#stage-1", 1);
       await page.locator("#stage-1 .next-btn").click();
