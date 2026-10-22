@@ -137,5 +137,57 @@ export function buildIndex(root = CONTENT_DIR) {
       minutes: sections.reduce((n, s) => n + (Number(s.estMinutes) || 8), 0),
     });
   }
+  index.studio = buildStudioIndex(root);
   return index;
+}
+
+/** Chooser-sized summaries of the studio content (speaking, writing, missions, detective). Details load on demand. */
+export function buildStudioIndex(root = CONTENT_DIR) {
+  const read = (rel) => {
+    const file = join(root, rel);
+    return existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : null;
+  };
+  const pick = (t, extra) => ({
+    id: t.id,
+    title: t.title,
+    band: t.band,
+    keyUse: t.keyUse,
+    contentArea: t.contentArea,
+    time: t.time,
+    ...extra(t),
+  });
+  const missionDir = join(root, "missions");
+  const missions = existsSync(missionDir)
+    ? readdirSync(missionDir)
+        .filter((f) => f.endsWith(".json"))
+        .sort()
+        .map((f) => JSON.parse(readFileSync(join(missionDir, f), "utf8")))
+        .map((m) => ({
+          id: m.id,
+          title: m.title,
+          subtitle: m.subtitle,
+          band: m.band,
+          role: m.role,
+          icon: m.icon,
+          theme: m.theme,
+          contentArea: m.contentArea,
+          keyUses: m.keyUses,
+          minutes: m.minutes,
+          summary: m.summary,
+        }))
+    : [];
+  return {
+    speaking: (read("studio/speaking.json")?.tasks || []).map((t) =>
+      pick(t, (x) => ({ taskType: x.taskType, seconds: x.targetSeconds })),
+    ),
+    writing: (read("studio/writing.json")?.tasks || []).map((t) =>
+      pick(t, (x) => ({ form: x.form, words: x.expected })),
+    ),
+    missions,
+    patterns: Object.entries(read("detective/patterns.json")?.patterns || {}).map(([id, p]) => ({
+      id,
+      name: p.name,
+      category: p.category,
+    })),
+  };
 }

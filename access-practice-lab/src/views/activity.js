@@ -20,13 +20,15 @@ import {
   isCorrect,
   wordGoal,
 } from "../grade.js";
-import { evidenceLabel, strategyFor, taskCriteria, wordBank } from "../learning.js";
+import { evidenceLabel, purposeOf, strategyFor, taskCriteria, wordBank } from "../learning.js";
 import { choiceTarget, inputHTML, reduceAnswer, seedAnswer } from "../items.js";
 import { visualsHTML } from "../media.js";
 import { isRecording, takesFor } from "../recorder.js";
 import { answerOf, loadRecord, saveRecord } from "../store.js";
 import { invalidateActivity, startIndependentAttempt, updateActivityAnswer } from "../attempts.js";
-import { analyzeLanguage, compareRevisions } from "../coach.js";
+import { analyzeResponse, compareDrafts } from "../lang/analyze.js";
+import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
+import { feedbackHTML as coachCardHTML } from "../studio-ui.js";
 import { speak, stop as stopSpeech } from "../speech.js";
 import {
   BASE,
@@ -97,6 +99,10 @@ async function resolve(ctx) {
   };
 }
 
+const KLU = { inform: "Inform", narrate: "Narrate", explain: "Explain", argue: "Argue" };
+const keyUseOf = (a) => KLU[purposeOf(a)] || "Inform";
+const coachOptions = (a) => ({ keyUse: keyUseOf(a), modality: cur.domain === "Speaking" ? "speaking" : "writing", wordBank: wordBank(a), stage: mode === "independent" ? "independent" : "supported", expected: { minWords: Math.round(wordGoal(cur.level) * 0.6), maxWords: wordGoal(cur.level) * 2 } });
+
 const isListening = (domain, a) => domain === "Listening" || a.listening;
 const save = () => saveRecord(cur.band, cur.domain, cur.level, cur.record);
 
@@ -158,7 +164,7 @@ function interactiveHTML(a) {
   const c = checked.get(a.id);
   const answer = answerOf(cur.record, a.id);
   const reveal = c ? (c.ok ? "mark" : c.reveal || "mark") : "none";
-  return html`${inputHTML(a, answer, { reveal })}
+  return html`${cur.domain === "Speaking" ? html`<p class="fine warmup-note">🎤 <strong>Warm-up.</strong> This builds ideas and words. Speaking ability is shown by speaking — when you are ready, <a href="${BASE}/speak?grades=${cur.band}">open the Speaking Studio</a>.</p>` : ""}${inputHTML(a, answer, { reveal })}
   ${!c ? html`<button type="button" class="btn btn-primary btn-check" data-check ${isAnswered(a, answer ?? seedAnswer(a)) ? "" : raw("disabled")}>Check my answer</button>` : ""}
   ${feedbackHTML(a)}
   ${cur.domain === "Speaking" && c?.ok ? recorderHTML(a.id, { level: cur.level, recording: isRecording(a.id) }) : ""}`;
@@ -239,23 +245,13 @@ ${text}</textarea>
     <div class="row-actions">
       <button type="button" class="btn btn-primary" data-check-writing>Check my writing</button>
       <button type="button" class="btn btn-secondary" data-ask-coach>
-        🤖 Ask AI Language Coach
+        🔎 Language Coach
       </button>
       <button type="button" class="ghost" data-read-writing data-say="${text || "Write something first."}">
         🔊 Read my writing to me
       </button>
     </div>
-    ${
-      coachFeedback
-        ? html`<div class="coach-card panel" role="status">
-            <span class="badge" style="background:#1f766f; color:white">AI Language Coach</span>
-            <h4>Discourse & Complexity Feedback</h4>
-            <p><strong>Complexity:</strong> ${coachFeedback.complexityRating} · ${coachFeedback.words} words across ${coachFeedback.sentenceCount} sentence(s)</p>
-            ${coachFeedback.strengths.length ? html`<div class="coach-strengths"><strong>Strengths:</strong><ul>${coachFeedback.strengths.map((s) => html`<li>✓ ${s}</li>`)}</ul></div>` : ""}
-            ${coachFeedback.recommendations.length ? html`<div class="coach-recs"><strong>Fading Scaffolds (Next Steps):</strong><ul>${coachFeedback.recommendations.map((r) => html`<li><strong>${r.title}:</strong> ${r.prompt}<br><em>Frame: ${r.frame}</em></li>`)}</ul></div>` : ""}
-          </div>`
-        : ""
-    }
+    ${coachFeedback ? coachCardHTML(coachFeedback, text, { patternHref: (id) => `${BASE}/detective/${id}?grades=${cur.band}` }) : ""}
     ${
       result
         ? html`<div class="feedback ${result.met >= 3 ? "is-right" : "is-hint"}" role="status">
@@ -282,7 +278,7 @@ ${text}</textarea>
                   ? html`<div class="revision-coach-card card">
                       <h4>📈 Revision Growth Summary</h4>
                       <ul>
-                        ${compareRevisions(cur.record.drafts[a.id].first, text).changes.map((ch) => html`<li>⭐ ${ch}</li>`)}
+                        ${compareDrafts(cur.record.drafts[a.id].first, text, coachOptions(a)).changes.map((c) => html`<li>⭐ ${c.label}: ${c.from} → ${c.to}</li>`)}
                       </ul>
                     </div>`
                   : ""
@@ -508,13 +504,14 @@ export function onClick(e, ctx) {
       return true;
     }
     validation = "";
-    coachFeedback = analyzeLanguage(text, {
-      prompt: a.prompt,
-      wordBank: wordBank(a),
-      keyUse: a.wida?.[0] || "Explain",
-    });
+    coachFeedback = analyzeResponse(text, coachOptions(a));
+    const ledger = loadLedger();
+    const first = !ledger.entries.some((x) => x.task === a.id && x.src === "writing");
+    const used = Boolean(helpUsed.has(a.id) || cur.record.supportUsed?.[a.id]);
+    appendEntry(ledger, { src: "writing", task: a.id, band: cur.band, domain: cur.domain, use: keyUseOf(a), stage: mode === "independent" && !used ? "independent" : "supported", kind: first ? "first" : "revision", supports: { bank: mode !== "independent", help: used, coach: !first }, m: coachFeedback.ledger });
+    saveLedger(ledger);
     ctx.rerender({ keepFocus: true });
-    announce("AI Language Coach analyzed your draft.");
+    announce("The Language Coach looked at your draft.");
     return true;
   }
 

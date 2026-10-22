@@ -15,6 +15,10 @@ import {
   raw,
 } from "../util.js";
 import { estimateMinutes } from "../learning.js";
+import { loadStudioIndex } from "../content.js";
+import { recommendTasks } from "../lang/adapt.js";
+import { loadLedger } from "../lang/ledger.js";
+import { loadStudio } from "../lang/studio.js";
 import { buildPracticePlan } from "../practice-plan.js";
 import { currentWeek } from "./road.js";
 
@@ -56,6 +60,17 @@ export async function render(ctx) {
     .reduce((n, r) => n + r.record.complete.length, 0);
   const streak = weekStreak();
   const win = shared.testWindow;
+  const ledger = loadLedger();
+  const studio = loadStudio();
+  const open = Object.entries(studio.missions).find(([, m]) => m.started && !m.done);
+  let next = null;
+  if (open) next = { href: `${BASE}/missions/${open[0]}?grades=${band}`, title: "Continue your mission", why: "Pick up where you left off." };
+  else {
+    const idx = await loadStudioIndex().catch(() => null);
+    const pool = [...(idx?.speaking || []), ...(idx?.writing || [])].filter((t) => t.band === band);
+    const rec = recommendTasks(pool, ledger.entries, { band, n: 1 })[0];
+    if (rec) next = { href: `${BASE}/${rec.task.taskType ? "speak" : "write"}/${rec.task.id}?grades=${band}`, title: rec.task.title, why: `${rec.task.taskType ? "Speaking" : "Writing"} · ${rec.why}` };
+  }
   const windowPhase = testingWindowPhase(win);
 
   const tiles = CORE_DOMAINS.filter((d) => domains[d]).map((d) => {
@@ -109,6 +124,19 @@ export async function render(ctx) {
               </aside>`
             : ""
         }
+      </section>
+
+      <section class="studios" aria-labelledby="studiosTitle">
+        <h2 id="studiosTitle" class="section-title">Start here</h2>
+        <p class="fine">Choose a mission, prepare, do real language tasks, get specific feedback, revise, try it on your own, and watch your growth.</p>
+        ${next ? html`<a class="next-step panel" href="${next.href}"><span class="eyebrow">Your next step</span><strong>${next.title}</strong><span class="fine">${next.why}</span></a>` : ""}
+        <div class="studio-grid">
+          <a class="studio-card" style="--room:#3b28cc" href="${BASE}/missions?grades=${band}"><span aria-hidden="true">🚀</span><strong>Academic missions</strong><span>Listen, read, decide, speak and write in one investigation.</span></a>
+          <a class="studio-card" style="--room:#8e4b10" href="${BASE}/speak?grades=${band}"><span aria-hidden="true">🎤</span><strong>Speaking Studio</strong><span>Plan, record, listen back, and say it better.</span></a>
+          <a class="studio-card" style="--room:#2a6f97" href="${BASE}/write?grades=${band}"><span aria-hidden="true">✍️</span><strong>Writing Studio</strong><span>Use sources, draft, get feedback, revise.</span></a>
+          <a class="studio-card" style="--room:#6a4c93" href="${BASE}/detective?grades=${band}"><span aria-hidden="true">🔎</span><strong>Error Detective</strong><span>Find a pattern in your work and fix it for good.</span></a>
+          <a class="studio-card" style="--room:#1f766f" href="${BASE}/growth?grades=${band}"><span aria-hidden="true">🗺️</span><strong>My growth</strong><span>Evidence from your own work, with the help you used.</span></a>
+        </div>
       </section>
 
       <section class="session-plan panel" aria-labelledby="sessionTitle">
@@ -168,51 +196,20 @@ export async function render(ctx) {
           : ""
       }
 
-      <section class="door-grid" aria-label="More">
-        <a class="door" href="${BASE}/missions?grades=${band}"
-          ><span aria-hidden="true">🚀</span><strong>Academic missions</strong
-          ><span>Story-driven cross-domain investigations: Watershed, Newsroom, Space Colony.</span></a
-        >
-        <a class="door" href="${BASE}/construction?grades=${band}"
-          ><span aria-hidden="true">🧱</span><strong>Language Construction Lab</strong
-          ><span>Sentence expansion workbench and academic register transformer.</span></a
-        >
-        <a class="door" href="${BASE}/conversation?grades=${band}"
-          ><span aria-hidden="true">💬</span><strong>Conversation Simulator</strong
-          ><span>Realistic academic dialogue, oral rehearsal, and peer discussion.</span></a
-        >
-        <a class="door" href="${BASE}/evidence?grades=${band}"
-          ><span aria-hidden="true">📊</span><strong>Evidence Studio</strong
-          ><span>Transform scientific charts and data into academic explanations.</span></a
-        >
-        <a class="door" href="${BASE}/growth?grades=${band}"
-          ><span aria-hidden="true">🗺️</span><strong>Language Growth Map</strong
-          ><span>Evidence-based WIDA dimensions: Discourse, Sentence, and Word levels.</span></a
-        >
-        <a class="door" href="${BASE}/tests?grades=${band}"
-          ><span aria-hidden="true">🧪</span><strong>Practice tests</strong
-          ><span>Full tests and short minis, with practice tools.</span></a
-        >
-        <a class="door" href="${BASE}/passport?grades=${band}"
-          ><span aria-hidden="true">🛂</span><strong>My Passport</strong
-          ><span
-            >${stamps}
-            stamp${stamps === 1 ? "" : "s"}${streak ? ` · ${streak}-week streak` : ""}</span
-          ></a
-        >
-        <a class="door" href="${BASE}/road?grades=${band}"
-          ><span aria-hidden="true">🗺️</span><strong>Road to ACCESS</strong
-          ><span>A 12-week plan, one short stop a week.</span></a
-        >
-        <a class="door" href="${BASE}/family?grades=${band}"
-          ><span aria-hidden="true">🏠</span><strong>Families · Familias</strong
-          ><span>How to help at home, in English and Spanish.</span></a
-        >
-        <a class="door" href="${BASE}/tools?grades=${band}"
-          ><span aria-hidden="true">🧰</span><strong>Test tools warm-up</strong
-          ><span>Explore classroom practice tools and the official WIDA demo.</span></a
-        >
-      </section>
+      <details class="more-tools">
+        <summary>More practice and tools</summary>
+        <section class="door-grid" aria-label="More">
+          <a class="door" href="${BASE}/tests?grades=${band}"><span aria-hidden="true">🧪</span><strong>Practice tests</strong><span>Full tests and short minis, with practice tools.</span></a>
+          <a class="door" href="${BASE}/library?grades=${band}"><span aria-hidden="true">📚</span><strong>Find an activity</strong><span>Search every quick-practice activity.</span></a>
+          <a class="door" href="${BASE}/road?grades=${band}"><span aria-hidden="true">🛣️</span><strong>Road to ACCESS</strong><span>A 12-week plan, one short stop a week.</span></a>
+          <a class="door" href="${BASE}/construction?grades=${band}"><span aria-hidden="true">🧱</span><strong>Language Construction Lab</strong><span>Expand sentences and shift register.</span></a>
+          <a class="door" href="${BASE}/conversation?grades=${band}"><span aria-hidden="true">💬</span><strong>Conversation Simulator</strong><span>Academic dialogue and oral rehearsal.</span></a>
+          <a class="door" href="${BASE}/evidence?grades=${band}"><span aria-hidden="true">📊</span><strong>Evidence Studio</strong><span>Turn charts into explanations.</span></a>
+          <a class="door" href="${BASE}/passport?grades=${band}"><span aria-hidden="true">🛂</span><strong>My Passport</strong><span>${stamps} stamp${stamps === 1 ? "" : "s"}${streak ? ` · ${streak}-week streak` : ""}; send work to your teacher.</span></a>
+          <a class="door" href="${BASE}/family?grades=${band}"><span aria-hidden="true">🏠</span><strong>Families · Familias</strong><span>How to help at home, in English and Spanish.</span></a>
+          <a class="door" href="${BASE}/tools?grades=${band}"><span aria-hidden="true">🧰</span><strong>Test tools warm-up</strong><span>Audio check and the official WIDA demo.</span></a>
+        </section>
+      </details>
       <p class="disclaimer">
         Original classroom practice inspired by WIDA ACCESS. It is not an official WIDA test, score,
         or placement. Teachers: <a href="/access-teacher/">open the Teacher Hub</a>.

@@ -1,5 +1,7 @@
 # ACCESS Practice Lab — content contract
 
+Studio content (missions, speaking, writing, detective) has its own contract: `STUDIO-CONTENT.md`; architecture and rules: `PLATFORM.md`.
+
 All lab content lives in `access-practice-lab/content/` as JSON. The app, the
 printable packets, the inventory, and the validator all read these files and
 nothing else. `node tools/validate-access-lab.mjs` enforces every rule below;

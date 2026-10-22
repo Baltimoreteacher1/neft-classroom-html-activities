@@ -22,6 +22,16 @@ export const loadIndex = () => getJson("index.json");
 export const loadShared = () => getJson("shared.json");
 export const loadRoad = () => getJson("road.json").catch(() => ({}));
 export const loadFamily = () => getJson("family.json").catch(() => null);
+export const loadStudioIndex = async () => (await loadIndex()).studio || { speaking: [], writing: [], missions: [], patterns: [] };
+export const loadSpeakingTasks = () => getJson("studio/speaking.json");
+export const loadWritingTasks = () => getJson("studio/writing.json");
+export const loadExemplars = async () => {
+  const [s, w] = await Promise.all([getJson("studio/exemplars-speaking.json"), getJson("studio/exemplars-writing.json")]);
+  return [...(s.exemplars || []), ...(w.exemplars || [])];
+};
+export const loadBlueprint = () => getJson("blueprints.json");
+export const loadPatterns = () => getJson("detective/patterns.json");
+export const loadMission = (id) => getJson(`missions/${encodeURIComponent(id)}.json`);
 export const loadTest = (id) => getJson(`tests/${encodeURIComponent(id)}.json`);
 
 /** Activities in teaching order: category strands first, then any unlisted ones.

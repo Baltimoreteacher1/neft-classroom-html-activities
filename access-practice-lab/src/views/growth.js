@@ -1,144 +1,222 @@
-// Language Growth Map: Evidence-based visual development across domains, Key Language Uses,
-// and WIDA Dimensions (Discourse, Sentence, Word/Phrase).
-import { crumbsHTML, ringHTML } from "../components.js";
-import { allRecords, loadRecord } from "../store.js";
-import { BASE, CORE_DOMAINS, DOMAIN_META, LEVEL_KEYS, TIERS, bandLabel, html } from "../util.js";
+// Language Growth Map: what the learner's own work shows, by WIDA language dimension, with the
+// supports they used kept visibly separate. Every number comes from the evidence ledger; nothing is
+// estimated from how many activities were finished, and there is no composite or "% developed" score.
+import { crumbsHTML } from "../components.js";
+import {
+  focusAreas,
+  buildProfile,
+  featureValue,
+  firstAttempts,
+  loadLedger,
+  MIN_POINTS,
+} from "../lang/ledger.js";
+import { allRecords } from "../store.js";
+import { BASE, CORE_DOMAINS, DOMAIN_META, html } from "../util.js";
+
+const WORD = { improving: "going up", steady: "steady", slipping: "going down" };
+const DIM_BLURB = {
+  Discourse:
+    "Organizing a whole response: moves of the genre, linking ideas, evidence from sources.",
+  Sentence: "Building sentences: more than one idea in a sentence, and control of patterns.",
+  "Word/Phrase": "Choosing words: precise subject words and academic vocabulary.",
+};
+const COMP_SKILL = {
+  "main-idea": "Main idea",
+  detail: "Detail",
+  inference: "Inference",
+  evidence: "Evidence",
+  vocabulary: "Vocabulary",
+  purpose: "Purpose",
+  synthesis: "Synthesis",
+};
+
+function spark(values, label) {
+  if (values.length < 2) return "";
+  const w = 120;
+  const h = 28;
+  const lo = Math.min(...values);
+  const hi = Math.max(...values);
+  const pts = values
+    .map(
+      (v, i) =>
+        `${Math.round((i / (values.length - 1)) * w)},${Math.round(h - 3 - ((v - lo) / (hi - lo || 1)) * (h - 6))}`,
+    )
+    .join(" ");
+  return html`<svg
+    class="spark"
+    viewBox="0 0 ${w} ${h}"
+    role="img"
+    aria-label="${label}: ${values.map((v) => Math.round(v * 10) / 10).join(", ")}"
+  >
+    <polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="2" />
+  </svg>`;
+}
+
+function featureCard(key, f, entries) {
+  const series = firstAttempts(entries)
+    .map((e) => featureValue(e, key))
+    .filter((v) => v != null);
+  const t = f.all;
+  const dep = f.dependence;
+  return html`<div class="card dim-card">
+    <h4>${f.label}</h4>
+    ${series.length ? spark(series, f.label) : ""}
+    <p class="fine">
+      ${t.status === "ok" ? html`Across your first attempts this is <strong>${WORD[t.direction]}</strong> (${series.length} attempts).` : `Not enough evidence yet — ${t.n} of ${MIN_POINTS} first attempts.`}
+    </p>
+    ${dep.status === "ok" ? html`<p class="fine ${dep.dependent ? "todo" : "ok"}">${dep.dependent ? "Lower when you work without supports — keep practicing it on your own." : "Similar with and without supports."} (on your own: ${Math.round(dep.independent * 10) / 10}, with supports: ${Math.round(dep.supported * 10) / 10})</p>` : html`<p class="fine">Support check needs ${MIN_POINTS}+ attempts with and without help.</p>`}
+  </div>`;
+}
 
 export async function render(ctx) {
   const band = ctx.band;
+  const ledger = loadLedger();
+  const entries = ledger.entries.filter((e) => e.band === band);
+  const p = buildProfile(entries, { band });
+  const focus = focusAreas(p);
   const records = allRecords().filter((r) => r.band === band);
-
-  // Compute metrics across dimensions
-  let totalCompleted = 0;
-  let totalSpeakingTakes = 0;
-  let totalWritingWords = 0;
-  let totalRevisions = 0;
-  const domainStats = {};
-
-  for (const d of CORE_DOMAINS) {
-    domainStats[d] = { completed: 0, attempted: 0 };
-  }
-
-  for (const rec of records) {
-    const domain = rec.domain;
-    if (domainStats[domain]) {
-      const doneCount = rec.record.complete?.length || 0;
-      domainStats[domain].completed += doneCount;
-      totalCompleted += doneCount;
-    }
-    // Count spoken attempts
-    if (domain === "Speaking") {
-      for (const takes of Object.values(rec.record.attempts || {})) {
-        if (Array.isArray(takes)) totalSpeakingTakes += takes.length;
-      }
-    }
-    // Count writing volume and revisions
-    if (domain === "Writing") {
-      for (const note of Object.values(rec.record.notes || {})) {
-        if (typeof note === "string") totalWritingWords += note.trim().split(/\s+/).filter(Boolean).length;
-      }
-      for (const ref of Object.values(rec.record.reflections || {})) {
-        if (ref) totalRevisions++;
-      }
-    }
-  }
-
-  // WIDA Dimensions Mastery Estimation
-  const discourseScore = Math.min(100, Math.round(totalCompleted * 3.5 + totalRevisions * 8));
-  const sentenceScore = Math.min(100, Math.round(totalCompleted * 3.0 + totalSpeakingTakes * 5));
-  const wordScore = Math.min(100, Math.round(totalCompleted * 3.2 + (totalWritingWords > 50 ? 25 : 10)));
-
-  const breadcrumbs = [
-    ["Lab", `${BASE}/?grades=${ctx.band}`],
-    ["Passport", `${BASE}/passport?grades=${ctx.band}`],
-    ["Language Growth Map", null],
-  ];
-
+  const stamps = Object.fromEntries(
+    CORE_DOMAINS.map((d) => [
+      d,
+      records
+        .filter((r) => r.domain === d)
+        .reduce((n, r) => n + (r.record.complete?.length || 0), 0),
+    ]),
+  );
+  const dims = ["Discourse", "Sentence", "Word/Phrase"];
+  const sp = p.speaking;
   return {
     title: "Language Growth Map",
-    html: html`${crumbsHTML(breadcrumbs)}
+    html: html`${crumbsHTML([
+        ["Lab", `${BASE}/?grades=${band}`],
+        ["Passport", `${BASE}/passport?grades=${band}`],
+        ["Language Growth Map", null],
+      ])}
       <section class="room-hero" style="--room:#1f766f">
         <div>
-          <span class="badge" style="background:#1f766f; color:white">Evidence-Based WIDA ELD Progression</span>
+          <span class="badge">Evidence from your own work</span>
           <h1 tabindex="-1">🗺️ Language Growth Map</h1>
-          <p class="lead">Visualize your progress across domains, sentence complexity, and academic discourse features.</p>
+          <p class="lead">
+            What your writing, speaking and missions show — and which kind of help you used. No
+            scores: only evidence and next steps.
+          </p>
         </div>
       </section>
-
-      <section class="panel growth-dimensions-panel">
-        <h2>Language Dimensions Progression</h2>
-        <p class="fine">Development tracked across student work, revisions, and recorded evidence (WIDA 2020 Standards Framework).</p>
-
-        <div class="dimension-bars">
-          <div class="card dim-card">
-            <div class="dim-head">
-              <h3>Discourse Dimension</h3>
-              <span class="badge">${discourseScore}% Developed</span>
-            </div>
-            <p class="fine">Cohesion, organization of ideas, claim-evidence-reasoning structures, and transitions.</p>
-            <div class="progress-track"><div class="progress-fill" style="width:${discourseScore}%; background:#1f766f"></div></div>
+      <section class="panel">
+        <h2>Your evidence so far</h2>
+        <dl class="pp-stats">
+          <div>
+            <dt>First attempts</dt>
+            <dd>${p.firstAttempts}</dd>
           </div>
-
-          <div class="card dim-card">
-            <div class="dim-head">
-              <h3>Sentence Dimension</h3>
-              <span class="badge">${sentenceScore}% Developed</span>
-            </div>
-            <p class="fine">Sentence variety, subordinate causal clauses (because, although, whereas), and syntactic expansion.</p>
-            <div class="progress-track"><div class="progress-fill" style="width:${sentenceScore}%; background:#2a6f97"></div></div>
+          <div>
+            <dt>On your own</dt>
+            <dd>${p.independentFirstAttempts}</dd>
           </div>
-
-          <div class="card dim-card">
-            <div class="dim-head">
-              <h3>Word/Phrase Dimension</h3>
-              <span class="badge">${wordScore}% Developed</span>
-            </div>
-            <p class="fine">Tier 2/3 academic vocabulary, domain-specific terminology, expanded noun phrases, and cognates.</p>
-            <div class="progress-track"><div class="progress-fill" style="width:${wordScore}%; background:#6a4c93"></div></div>
+          <div>
+            <dt>Revisions</dt>
+            <dd>${p.revisions}</dd>
           </div>
-        </div>
+          <div>
+            <dt>Detective tries</dt>
+            <dd>${p.detective}</dd>
+          </div>
+        </dl>
+        ${p.firstAttempts === 0 ? html`<p>No studio work yet. Try the <a href="${BASE}/write?grades=${band}">Writing Studio</a>, <a href="${BASE}/speak?grades=${band}">Speaking Studio</a> or a <a href="${BASE}/missions?grades=${band}">mission</a> and your growth map will start to fill in.</p>` : html`<p class="fine">A trend appears after ${MIN_POINTS} first attempts. “On your own” means no frames, word bank or model were open.</p>`}
       </section>
-
-      <section class="panel domain-breakdown-panel">
-        <h2>Domain Engagement & Evidence Tracking</h2>
+      ${
+        focus.length
+          ? html`<section class="panel">
+              <h2>Where to focus next</h2>
+              <ol>
+                ${focus.map((f) => html`<li>${f.reason} ${f.kind === "pattern" ? html`<a href="${BASE}/detective/${f.id}?grades=${band}">Practice this pattern</a>` : ""}</li>`)}
+              </ol>
+            </section>`
+          : ""
+      }
+      ${dims.map(
+        (d) =>
+          html`<section class="panel growth-dimensions-panel">
+            <h2>${d}</h2>
+            <p class="fine">${DIM_BLURB[d]}</p>
+            <div class="dimension-bars">
+              ${Object.entries(p.features)
+                .filter(([, f]) => f.dimension === d)
+                .map(([k, f]) => featureCard(k, f, entries))}
+            </div>
+          </section>`,
+      )}
+      <section class="panel">
+        <h2>Patterns in your language</h2>
+        ${
+          p.errors.length
+            ? html`<ul class="evidence-list">
+                ${p.errors.slice(0, 6).map((e) => html`<li><a href="${BASE}/detective/${e.id}?grades=${band}">${e.id}</a><span>${e.mastered ? "✓ Used correctly on your own in new writing" : `in ${e.drafts} recent piece${e.drafts === 1 ? "" : "s"}`}${e.transfer ? ` · ${e.transfer.transferIndependent} independent transfer${e.transfer.transferIndependent === 1 ? "" : "s"}` : ""}</span></li>`)}
+              </ul>`
+            : html`<p>No repeating pattern errors found in your recent work.</p>`
+        }
+      </section>
+      ${
+        p.comprehension.total
+          ? html`<section class="panel">
+              <h2>Listening and reading questions</h2>
+              <ul class="evidence-list">
+                ${Object.entries(p.comprehension.bySkill).map(([k, v]) => html`<li><span>${COMP_SKILL[k] || k}</span><span>${v.ok} of ${v.n} right on the first try${v.independentN ? ` · ${v.independentOk} of ${v.independentN} without help` : ""}</span></li>`)}
+              </ul>
+              ${p.comprehension.topTrap ? html`<p class="fine">Wrong answers you chose most: the “${p.comprehension.topTrap.type}” kind (${p.comprehension.topTrap.count}). Reread the question, then find the sentence that proves your answer.</p>` : ""}
+            </section>`
+          : ""
+      }
+      ${
+        sp.n
+          ? html`<section class="panel">
+              <h2>Speaking</h2>
+              <p class="fine">
+                From ${sp.n} recorded first attempt${sp.n === 1 ? "" : "s"}, measured on this device
+                (time speaking and pauses — not pronunciation).
+              </p>
+              <ul class="evidence-list">
+                <li>
+                  <span>Time speaking</span
+                  ><span
+                    >${sp.speechSeconds.status === "ok" ? WORD[sp.speechSeconds.direction] : `not enough evidence yet (${sp.speechSeconds.n} of ${MIN_POINTS})`}</span
+                  >
+                </li>
+                <li>
+                  <span>Longest stretch without pausing</span
+                  ><span
+                    >${sp.longestRun.status === "ok" ? WORD[sp.longestRun.direction] : "not enough evidence yet"}</span
+                  >
+                </li>
+                <li>
+                  <span>Pauses per 30 seconds</span
+                  ><span
+                    >${sp.pausesPer30.status === "ok" ? WORD[sp.pausesPer30.direction] : "not enough evidence yet"}</span
+                  >
+                </li>
+              </ul>
+            </section>`
+          : ""
+      }
+      <section class="panel">
+        <h2>Practice volume</h2>
+        <p class="fine">
+          Activities finished in each skill room. This shows how much you practiced, not how well.
+        </p>
         <div class="domain-grid">
-          ${CORE_DOMAINS.map((d) => {
-            const meta = DOMAIN_META[d];
-            const stat = domainStats[d] || { completed: 0 };
-            return html`<div class="card domain-growth-card" style="--dcolor:${meta.color}">
-              <div class="card-head">
-                <span class="glyph" aria-hidden="true">${meta.glyph}</span>
-                <h3>${meta.room}</h3>
-              </div>
-              <p><strong>${stat.completed}</strong> activities mastered with evidence</p>
-              ${d === "Speaking" ? html`<p class="fine">🎙️ ${totalSpeakingTakes} oral rehearsal takes recorded</p>` : ""}
-              ${d === "Writing" ? html`<p class="fine">✍️ ${totalWritingWords} academic words written · ${totalRevisions} revisions</p>` : ""}
-              <a href="${BASE}/${d}/A?grades=${band}" class="btn ghost small">Continue ${d} Practice →</a>
-            </div>`;
-          })}
+          ${CORE_DOMAINS.map(
+            (d) =>
+              html`<div class="card domain-growth-card">
+                <h3>${DOMAIN_META[d].glyph} ${DOMAIN_META[d].room}</h3>
+                <p><strong>${stamps[d]}</strong> activities finished</p>
+                <a href="${BASE}/${d}/A?grades=${band}" class="btn ghost small">Continue ${d}</a>
+              </div>`,
+          )}
         </div>
       </section>
-
-      <section class="panel key-uses-panel">
-        <h2>Key Language Uses Mastery</h2>
-        <div class="key-uses-grid">
-          <div class="card use-card">
-            <h3>📖 Narrate</h3>
-            <p>Sequencing events, temporal transitions (first, subsequently, after), and sensory details.</p>
-          </div>
-          <div class="card use-card">
-            <h3>💡 Inform</h3>
-            <p>Categorizing, defining concepts, expanding noun phrases, and presenting factual summaries.</p>
-          </div>
-          <div class="card use-card">
-            <h3>🔬 Explain</h3>
-            <p>Causal connectors (because, consequently, due to), scientific mechanisms, and process flows.</p>
-          </div>
-          <div class="card use-card">
-            <h3>⚖️ Argue</h3>
-            <p>Stating claims, evaluating counterarguments, citing evidence, and justifying recommendations.</p>
-          </div>
-        </div>
-      </section>`,
+      <p class="disclaimer">
+        Classroom practice evidence. It is not a WIDA proficiency level or an ACCESS score, and it
+        only describes what these tasks showed.
+      </p>`,
   };
 }

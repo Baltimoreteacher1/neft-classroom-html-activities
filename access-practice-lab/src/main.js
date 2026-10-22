@@ -29,8 +29,11 @@ import * as conversationView from "./views/conversation.js";
 import * as constructionView from "./views/construction.js";
 import * as evidenceView from "./views/evidence.js";
 import * as growthView from "./views/growth.js";
+import * as speakView from "./views/speak.js";
+import * as writeView from "./views/write.js";
+import * as detectiveView from "./views/detective.js";
 
-export const BUILD = "2026.10.22";
+export const BUILD = "2026.10.22.2";
 const VIEWS = {
   home: homeView,
   library: libraryView,
@@ -49,6 +52,9 @@ const VIEWS = {
   construction: constructionView,
   evidence: evidenceView,
   growth: growthView,
+  speak: speakView,
+  write: writeView,
+  detective: detectiveView,
 };
 const DOMAINS = ["Listening", "Reading", "Speaking", "Writing", "Model-Test"];
 
@@ -63,7 +69,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   const [a, b, c, d] = parts;
   if (!a) return r;
   if (a === "test") return { ...r, view: "test", testId: b || "" };
-  if (["tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth"].includes(a)) {
+  if (["tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective"].includes(a)) {
     return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
   }
   if (a === "road") return { ...r, view: "road", week: Number(b) || 0 };

@@ -1,0 +1,1071 @@
+{
+  "version": 1,
+  "id": "space-colony",
+  "title": "Space Colony Ecosystem Architect",
+  "subtitle": "Bio-Regenerative Life Support Mission",
+  "band": "6-8",
+  "role": "Astro-Biologist",
+  "icon": "🚀",
+  "theme": "#3b28cc",
+  "contentArea": "Science",
+  "summary": "On Lunar Habitat Base Artemis, carbon dioxide is rising unexpectedly in Biodome 3 while the wheat makes less oxygen. Listen to telemetry, analyze the overnight log, choose which hypothesis to test, brief the commander, and write engineering orders.",
+  "keyUses": [
+    "Explain",
+    "Inform"
+  ],
+  "standards": [
+    "ELD-SC",
+    "ELD-LA"
+  ],
+  "minutes": 45,
+  "briefing": {
+    "scene": "At oh-six-hundred, alarms sounded on Lunar Habitat Base Artemis. Biodome 3, which grows dwarf wheat and supplies about forty percent of the base's oxygen, is out of balance. Eleven crew members are depending on you.",
+    "goal": "Find the root cause of the oxygen drop, decide which hypothesis to test first, explain the chain of cause and effect to the commander, and write maintenance orders the next shift can follow."
+  },
+  "sources": {
+    "comms": {
+      "kind": "audio",
+      "title": "Audio Comms: Habitat Control, Artemis Base",
+      "turns": [
+        {
+          "speaker": "Commander Chen",
+          "voice": "f",
+          "text": "Artemis Habitat Control to Science Officer. At oh-six-hundred, sensor array B reported carbon dioxide climbing past one thousand parts per million in Biodome 3. Normal for that dome is about four hundred."
+        },
+        {
+          "speaker": "Dr. Okoye",
+          "voice": "f",
+          "text": "I checked the dwarf wheat an hour ago. The leaves look green and healthy, but oxygen production has dropped twenty-three percent overnight."
+        },
+        {
+          "speaker": "Engineer Soto",
+          "voice": "m",
+          "text": "The LED lights are running at their normal settings, and the water pumps are fine. The only odd reading is the humidity gauge, which says ninety-two percent."
+        },
+        {
+          "speaker": "Commander Chen",
+          "voice": "f",
+          "text": "Biodome 3 supplies about forty percent of our oxygen for eleven crew members. If carbon dioxide keeps climbing, we will have to switch to the emergency chemical scrubbers within thirty-six hours."
+        },
+        {
+          "speaker": "Commander Chen",
+          "voice": "f",
+          "text": "Science Officer, find out why the wheat is not using the carbon dioxide, and tell me what to fix before the end of the shift."
+        }
+      ]
+    },
+    "report": {
+      "kind": "passage",
+      "title": "Biodome 3 Diagnostics Report",
+      "text": [
+        "Dwarf wheat and other crops in a closed-loop life support system turn carbon dioxide into oxygen by photosynthesis: carbon dioxide plus water plus light energy makes sugar and oxygen. Carbon dioxide enters the leaves through tiny pores called stomata, and oxygen leaves through the same pores.",
+        "Plants also lose water vapor through their stomata. This process, called transpiration, pulls water and nutrients up from the roots and cools the leaves, much as sweating cools skin. Transpiration works best when moving air carries humid air away from each leaf.",
+        "Diagnostics show that condensation jammed the fan in air duct 4B. Humidity in the wheat canopy climbed to 92 percent and the air stopped moving. With no way to evaporate water, the leaves could not cool, and leaf temperature rose from 22 to 31 degrees Celsius. Above about 30 degrees, wheat closes many of its stomata to save water, so less carbon dioxide enters and less oxygen is released."
+      ]
+    },
+    "log": {
+      "kind": "table",
+      "title": "Biodome 3 Overnight Log",
+      "table": {
+        "caption": "Biodome 3 overnight log",
+        "headers": [
+          "Time",
+          "Humidity (%)",
+          "Leaf temperature (°C)",
+          "Airflow in duct 4B (m/s)",
+          "CO2 (ppm)",
+          "Oxygen output (% of normal)"
+        ],
+        "rows": [
+          [
+            "22:00",
+            "61",
+            "22.1",
+            "1.8",
+            "420",
+            "100"
+          ],
+          [
+            "00:00",
+            "74",
+            "24.3",
+            "0.9",
+            "510",
+            "96"
+          ],
+          [
+            "02:00",
+            "85",
+            "27.4",
+            "0.3",
+            "690",
+            "88"
+          ],
+          [
+            "04:00",
+            "90",
+            "29.8",
+            "0.1",
+            "870",
+            "82"
+          ],
+          [
+            "06:00",
+            "92",
+            "31.0",
+            "0.0",
+            "1040",
+            "77"
+          ]
+        ]
+      }
+    },
+    "domes": {
+      "kind": "chart",
+      "title": "Oxygen Output Across the Four Biodomes",
+      "chart": {
+        "kind": "bar",
+        "title": "Oxygen output at 06:00, by biodome",
+        "unit": "percent of normal",
+        "data": [
+          {
+            "label": "Biodome 1",
+            "value": 99
+          },
+          {
+            "label": "Biodome 2",
+            "value": 101
+          },
+          {
+            "label": "Biodome 3",
+            "value": 77
+          },
+          {
+            "label": "Biodome 4",
+            "value": 98
+          }
+        ]
+      }
+    },
+    "ductcam": {
+      "kind": "passage",
+      "title": "Duct Inspection Report",
+      "summary": "Engineer Soto's camera found ice-like condensation packed around the fan blades in duct 4B. Airflow reads 0.0 meters per second, which confirms the jammed fan.",
+      "text": [
+        "Engineer Soto sent a camera down duct 4B at 07:10. The fan blades were coated in a layer of frozen condensation about two centimeters thick, and the motor was drawing power but could not turn.",
+        "Airflow past the fan read 0.0 meters per second. Without moving air, humid air stayed packed around the wheat leaves, which matches the humidity of 92 percent and the leaf temperature of 31 degrees Celsius in the overnight log.",
+        "Soto warmed the duct with a heating strip. Within twelve minutes, the fan began to turn and airflow rose to 0.6 meters per second."
+      ]
+    },
+    "roots": {
+      "kind": "table",
+      "title": "Root-Zone Test Results",
+      "summary": "The nutrient solution tested normal: root-zone oxygen 7.9 mg/L, pH 5.9, and white, firm roots. That rules out a root or bacterial problem and points back to the air around the leaves.",
+      "table": {
+        "caption": "Root-zone readings from the three wheat trays in Biodome 3",
+        "headers": [
+          "Tray",
+          "Root-zone oxygen (mg/L)",
+          "pH",
+          "Solution temperature (°C)",
+          "Root condition"
+        ],
+        "rows": [
+          [
+            "Tray 3A",
+            "7.9",
+            "5.9",
+            "20.1",
+            "White and firm"
+          ],
+          [
+            "Tray 3B",
+            "8.1",
+            "5.8",
+            "20.3",
+            "White and firm"
+          ],
+          [
+            "Tray 3C",
+            "7.8",
+            "6.0",
+            "20.0",
+            "White and firm"
+          ]
+        ]
+      }
+    },
+    "lights": {
+      "kind": "chart",
+      "title": "Light at the Wheat Canopy",
+      "summary": "Light intensity at the canopy was steady at about 400 micromoles per square meter per second on all four nights, so a lighting problem is ruled out.",
+      "chart": {
+        "kind": "bar",
+        "title": "Light intensity at the canopy",
+        "unit": "micromoles of light per square meter per second",
+        "data": [
+          {
+            "label": "Night 1",
+            "value": 402
+          },
+          {
+            "label": "Night 2",
+            "value": 399
+          },
+          {
+            "label": "Night 3",
+            "value": 401
+          },
+          {
+            "label": "Tonight",
+            "value": 400
+          }
+        ]
+      }
+    }
+  },
+  "phases": [
+    {
+      "id": "p1",
+      "skill": "Listening",
+      "title": "Audio Comms: Habitat Control",
+      "instructions": "Listen to the radio traffic. Notice which systems are normal and which readings are odd. Then answer two questions and pin the best evidence to your board.",
+      "uses": [
+        "comms"
+      ],
+      "tasks": [
+        {
+          "id": "p1-q1",
+          "kind": "question",
+          "tier": "core",
+          "q": "Why did Commander Chen contact the Science Officer?",
+          "options": [
+            {
+              "id": "a",
+              "text": "The LED lights in Biodome 3 failed during the night and cut oxygen production.",
+              "distractor": "opposite"
+            },
+            {
+              "id": "b",
+              "text": "The water pumps stopped, so the wheat has no water.",
+              "distractor": "unsupported"
+            },
+            {
+              "id": "c",
+              "text": "Sensor array B reported that humidity passed one thousand.",
+              "distractor": "detail-trap"
+            },
+            {
+              "id": "d",
+              "text": "Carbon dioxide is rising in Biodome 3 while the wheat makes less oxygen."
+            }
+          ],
+          "answer": "d",
+          "explain": "Commander Chen reports that \"carbon dioxide [is] climbing past one thousand parts per million in Biodome 3\" and Dr. Okoye adds that \"oxygen production has dropped twenty-three percent overnight.\" The lights and pumps are normal, and the one thousand figure is carbon dioxide, not humidity.",
+          "skill": "main-idea"
+        },
+        {
+          "id": "p1-q2",
+          "kind": "question",
+          "tier": "core",
+          "q": "What can the Science Officer infer from Engineer Soto's report?",
+          "options": [
+            {
+              "id": "a",
+              "text": "The humidity reading must be a sensor error.",
+              "distractor": "unsupported"
+            },
+            {
+              "id": "b",
+              "text": "The problem is probably not a lighting or water-pump failure."
+            },
+            {
+              "id": "c",
+              "text": "The wheat plants have already died.",
+              "distractor": "opposite"
+            },
+            {
+              "id": "d",
+              "text": "Every system in Biodome 3 is working normally, so the alarm is probably a false one.",
+              "distractor": "overgeneralized"
+            }
+          ],
+          "answer": "b",
+          "explain": "Soto says the lights \"are running at their normal settings, and the water pumps are fine,\" so those are unlikely causes. But he also calls the humidity gauge \"odd,\" which means not everything is normal, and Dr. Okoye says the leaves still look green and healthy.",
+          "skill": "inference"
+        },
+        {
+          "id": "p1-ev",
+          "kind": "evidence",
+          "q": "Choose the statements that support this claim: \"The situation in Biodome 3 is urgent.\"",
+          "from": "comms",
+          "pool": [
+            {
+              "id": "p1-ev-e1",
+              "text": "The LED lights are running at their normal settings",
+              "supports": false
+            },
+            {
+              "id": "p1-ev-e2",
+              "text": "oxygen production has dropped twenty-three percent overnight",
+              "supports": true
+            },
+            {
+              "id": "p1-ev-e3",
+              "text": "The leaves look green and healthy",
+              "supports": false
+            },
+            {
+              "id": "p1-ev-e4",
+              "text": "Biodome 3 supplies about forty percent of our oxygen",
+              "supports": true
+            },
+            {
+              "id": "p1-ev-e5",
+              "text": "the water pumps are fine",
+              "supports": false
+            },
+            {
+              "id": "p1-ev-e6",
+              "text": "we will have to switch to the emergency chemical scrubbers within thirty-six hours",
+              "supports": true
+            }
+          ],
+          "boardLabel": "Urgency"
+        }
+      ]
+    },
+    {
+      "id": "p2",
+      "skill": "Reading",
+      "title": "Diagnostics Report, Overnight Log, and Dome Chart",
+      "instructions": "Read the report, then compare the overnight log with what you know. Look for a chain of cause and effect.",
+      "uses": [
+        "report",
+        "log",
+        "domes"
+      ],
+      "tasks": [
+        {
+          "id": "p2-q1",
+          "kind": "question",
+          "tier": "core",
+          "q": "According to the report, what caused the air around the wheat to stop moving?",
+          "options": [
+            {
+              "id": "a",
+              "text": "A leak in the water pump flooded the wheat canopy.",
+              "distractor": "unsupported"
+            },
+            {
+              "id": "b",
+              "text": "Leaf temperature rose from 22 to 31 degrees Celsius.",
+              "distractor": "true-not-asked"
+            },
+            {
+              "id": "c",
+              "text": "Condensation jammed the fan in air duct 4B."
+            },
+            {
+              "id": "d",
+              "text": "Moving air carried humid air away from the leaves.",
+              "distractor": "opposite"
+            }
+          ],
+          "answer": "c",
+          "explain": "The report states, \"Diagnostics show that condensation jammed the fan in air duct 4B,\" and then \"the air stopped moving.\" The temperature rise is a result of the stalled air, not its cause, and moving air is what the wheat needed but did not get.",
+          "skill": "detail"
+        },
+        {
+          "id": "p2-q2",
+          "kind": "question",
+          "tier": "core",
+          "q": "In the report, what is \"transpiration\"?",
+          "options": [
+            {
+              "id": "a",
+              "text": "the loss of water vapor through the stomata, which cools the leaves"
+            },
+            {
+              "id": "b",
+              "text": "the process that turns carbon dioxide and water into sugar and oxygen",
+              "distractor": "detail-trap"
+            },
+            {
+              "id": "c",
+              "text": "the movement of air through a duct",
+              "distractor": "unsupported"
+            },
+            {
+              "id": "d",
+              "text": "the tiny pores on the surface of a leaf",
+              "distractor": "partial"
+            }
+          ],
+          "answer": "a",
+          "explain": "The report says, \"Plants also lose water vapor through their stomata. This process, called transpiration, pulls water and nutrients up from the roots and cools the leaves.\" The sugar-making process is photosynthesis, and the pores are the stomata.",
+          "skill": "vocabulary"
+        },
+        {
+          "id": "p2-q3",
+          "kind": "question",
+          "tier": "core",
+          "q": "The LED lights were working normally. Why did oxygen output fall anyway?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Plants cannot make oxygen at all when the humidity in the air is above 50 percent.",
+              "distractor": "overgeneralized"
+            },
+            {
+              "id": "b",
+              "text": "The lights were too bright and burned the wheat.",
+              "distractor": "unsupported"
+            },
+            {
+              "id": "c",
+              "text": "The plants made more oxygen, but the fan pulled it out of the dome.",
+              "distractor": "opposite"
+            },
+            {
+              "id": "d",
+              "text": "Hot leaves closed many stomata, so less carbon dioxide could enter to be used."
+            }
+          ],
+          "answer": "d",
+          "explain": "The report explains that with no airflow the leaves \"could not cool,\" and \"above about 30 degrees, wheat closes many of its stomata,\" so \"less carbon dioxide enters and less oxygen is released.\" Light was never the limit, and the log shows oxygen output falling, not rising.",
+          "skill": "inference"
+        },
+        {
+          "id": "p2-q4",
+          "kind": "question",
+          "tier": "core",
+          "q": "Which statement is supported by BOTH the overnight log and the diagnostics report?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Carbon dioxide rose because the wheat began absorbing more of it.",
+              "distractor": "opposite"
+            },
+            {
+              "id": "b",
+              "text": "Airflow fell to 0.0 m/s while leaves warmed to 31.0 degrees; the report explains why."
+            },
+            {
+              "id": "c",
+              "text": "Biodome 3 is the only dome with a jammed fan, as the oxygen chart clearly shows.",
+              "distractor": "overgeneralized"
+            },
+            {
+              "id": "d",
+              "text": "Oxygen output fell only after carbon dioxide passed 1000 ppm at six in the morning, according to the log.",
+              "distractor": "detail-trap"
+            }
+          ],
+          "answer": "b",
+          "explain": "The log shows airflow dropping from 1.8 to 0.0 m/s while leaf temperature rose from 22.1 to 31.0, and the report explains that stalled air means \"the leaves could not cool.\" Oxygen output was already down to 96 percent when carbon dioxide was only 510 ppm.",
+          "skill": "synthesis"
+        },
+        {
+          "id": "p2-q5",
+          "kind": "question",
+          "tier": "stretch",
+          "q": "A crew member suggests, \"Replace all the LED lights in Biodome 3.\" Which evidence best shows that this fix would not solve the problem?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Oxygen output was 99 percent of normal in Biodome 1 and 101 percent in Biodome 2.",
+              "distractor": "true-not-asked"
+            },
+            {
+              "id": "b",
+              "text": "The wheat leaves still look green and healthy, so the lights must be working fine.",
+              "distractor": "partial"
+            },
+            {
+              "id": "c",
+              "text": "Soto found normal LED settings, and the log shows leaves warming as airflow fell."
+            },
+            {
+              "id": "d",
+              "text": "Carbon dioxide was only about 420 ppm at 22:00, before the trouble started.",
+              "distractor": "detail-trap"
+            }
+          ],
+          "answer": "c",
+          "explain": "Normal LED settings rule out a lighting fault, and the log shows the real pattern: airflow in duct 4B fell while leaf temperature rose and oxygen output fell. Healthy-looking leaves and the other domes do not show what is wrong inside Biodome 3.",
+          "skill": "evidence"
+        },
+        {
+          "id": "p2-ev",
+          "kind": "evidence",
+          "q": "Choose the sentences from the report that support this claim: \"Poor airflow in duct 4B caused the drop in oxygen.\"",
+          "from": "report",
+          "pool": [
+            {
+              "id": "p2-ev-e1",
+              "text": "Plants also lose water vapor through their stomata.",
+              "supports": false
+            },
+            {
+              "id": "p2-ev-e2",
+              "text": "Diagnostics show that condensation jammed the fan in air duct 4B.",
+              "supports": true
+            },
+            {
+              "id": "p2-ev-e3",
+              "text": "Carbon dioxide enters the leaves through tiny pores called stomata, and oxygen leaves through the same pores.",
+              "supports": false
+            },
+            {
+              "id": "p2-ev-e4",
+              "text": "Transpiration works best when moving air carries humid air away from each leaf.",
+              "supports": true
+            },
+            {
+              "id": "p2-ev-e5",
+              "text": "the leaves could not cool, and leaf temperature rose from 22 to 31 degrees Celsius",
+              "supports": true
+            },
+            {
+              "id": "p2-ev-e6",
+              "text": "Dwarf wheat and other crops in a closed-loop life support system turn carbon dioxide into oxygen by photosynthesis",
+              "supports": false
+            }
+          ],
+          "boardLabel": "Cause evidence"
+        }
+      ]
+    },
+    {
+      "id": "p3",
+      "skill": "Decision",
+      "title": "Choose Which Hypothesis to Test",
+      "instructions": "You can run only one test before the next shift report. Your choice unlocks new evidence. The other tests are summarized for you, so your briefing and directive work whichever test you run.",
+      "uses": [
+        "log"
+      ],
+      "tasks": [],
+      "decision": {
+        "q": "You have time for one test before the next shift report. Which hypothesis do you check first?",
+        "options": [
+          {
+            "id": "d1",
+            "text": "Inspect the fans and air ducts",
+            "consequence": "Soto's camera shows frozen condensation packed around the fan blades in duct 4B and airflow at 0.0 m/s. This confirms the jammed fan, and warming the duct restarts it within twelve minutes.",
+            "unlocks": [
+              "ductcam"
+            ],
+            "board": [
+              {
+                "id": "b-duct",
+                "label": "Confirmed",
+                "text": "Frozen condensation jammed the fan in duct 4B; heating the duct restarted it in 12 minutes."
+              }
+            ],
+            "flag": "tested-duct"
+          },
+          {
+            "id": "d2",
+            "text": "Test the nutrient solution and the wheat roots",
+            "consequence": "Root-zone oxygen is 7.9 mg/L, pH is 5.9, and the roots are white and firm. That rules out a root or bacterial problem and points back to the air around the leaves.",
+            "unlocks": [
+              "roots"
+            ],
+            "board": [
+              {
+                "id": "b-roots",
+                "label": "Ruled out",
+                "text": "Root zone is healthy: oxygen 7.9 mg/L, pH 5.9, firm white roots."
+              }
+            ],
+            "flag": "tested-roots"
+          },
+          {
+            "id": "d3",
+            "text": "Re-run the LED brightness and spectrum test",
+            "consequence": "Canopy light was steady at about 400 micromoles on all four nights. That rules out a lighting problem and leaves airflow and humidity as the main suspects.",
+            "unlocks": [
+              "lights"
+            ],
+            "board": [
+              {
+                "id": "b-lights",
+                "label": "Ruled out",
+                "text": "Canopy light stayed at about 400 micromoles per square meter per second; lighting is normal."
+              }
+            ],
+            "flag": "tested-lights"
+          }
+        ]
+      }
+    },
+    {
+      "id": "p4",
+      "skill": "Speaking",
+      "title": "Crew Transmission: Technical Explanation",
+      "instructions": "Plan your transmission with the four planner slots, then record 45 to 90 seconds. Connect the cause and effects in order.",
+      "uses": [],
+      "tasks": [
+        {
+          "id": "p4-say",
+          "kind": "speak",
+          "task": {
+            "id": "space-colony-crew-transmission",
+            "band": "6-8",
+            "title": "Report to Commander Chen",
+            "taskType": "explain",
+            "keyUse": "Explain",
+            "standards": [
+              "ELD-SC"
+            ],
+            "dimensions": [
+              "Discourse",
+              "Sentence"
+            ],
+            "contentArea": "Science",
+            "time": "6 min",
+            "scenario": "You are on the radio with Commander Chen. The crew is waiting, and Chen needs a clear technical explanation before deciding whether to switch on the emergency scrubbers.",
+            "prompt": "Explain why the wheat in Biodome 3 stopped making oxygen. Connect duct 4B, humidity, leaf temperature, and the stomata in a chain of cause and effect, and use at least two numbers from the log.",
+            "stimulus": {
+              "kind": "table",
+              "table": {
+                "caption": "Biodome 3 overnight log",
+                "headers": [
+                  "Time",
+                  "Humidity (%)",
+                  "Leaf temperature (°C)",
+                  "Airflow in duct 4B (m/s)",
+                  "CO2 (ppm)",
+                  "Oxygen output (% of normal)"
+                ],
+                "rows": [
+                  [
+                    "22:00",
+                    "61",
+                    "22.1",
+                    "1.8",
+                    "420",
+                    "100"
+                  ],
+                  [
+                    "00:00",
+                    "74",
+                    "24.3",
+                    "0.9",
+                    "510",
+                    "96"
+                  ],
+                  [
+                    "02:00",
+                    "85",
+                    "27.4",
+                    "0.3",
+                    "690",
+                    "88"
+                  ],
+                  [
+                    "04:00",
+                    "90",
+                    "29.8",
+                    "0.1",
+                    "870",
+                    "82"
+                  ],
+                  [
+                    "06:00",
+                    "92",
+                    "31.0",
+                    "0.0",
+                    "1040",
+                    "77"
+                  ]
+                ]
+              },
+              "text": [
+                "Board note: when leaves get too hot, wheat closes many stomata and takes in less carbon dioxide."
+              ]
+            },
+            "planner": [
+              {
+                "id": "claim",
+                "label": "My main finding",
+                "hint": "State the root cause in one sentence."
+              },
+              {
+                "id": "chain",
+                "label": "The chain of events",
+                "hint": "Put four events in order: duct, humidity, leaves, stomata."
+              },
+              {
+                "id": "data",
+                "label": "The numbers",
+                "hint": "Give two log readings, such as airflow and leaf temperature."
+              },
+              {
+                "id": "fix",
+                "label": "What to fix",
+                "hint": "Tell the commander the first action."
+              }
+            ],
+            "targetSeconds": [
+              45,
+              90
+            ],
+            "sourceTerms": [
+              "humidity",
+              "duct 4B",
+              "leaf temperature",
+              "stomata"
+            ],
+            "vocab": [
+              {
+                "term": "stomata",
+                "def": "tiny pores on leaves that let gases in and out",
+                "es": "estomas: poros pequeños de las hojas por donde entran y salen los gases"
+              },
+              {
+                "term": "transpiration",
+                "def": "loss of water vapor from a plant's leaves",
+                "es": "transpiración: pérdida de vapor de agua por las hojas de una planta"
+              },
+              {
+                "term": "humidity",
+                "def": "the amount of water vapor in the air",
+                "es": "humedad: cantidad de vapor de agua que hay en el aire"
+              },
+              {
+                "term": "condensation",
+                "def": "water vapor turning into liquid",
+                "es": "condensación: vapor de agua que se convierte en líquido"
+              }
+            ],
+            "stages": {
+              "guided": {
+                "frames": [
+                  "Commander Chen, the root cause is ___.",
+                  "First, ___ in duct 4B, so the air ___. As a result, humidity ___.",
+                  "The log shows that airflow fell to ___ and leaf temperature rose to ___.",
+                  "Because the leaves were too hot, the wheat ___ its stomata, which means ___.",
+                  "I recommend that we ___ first."
+                ],
+                "bank": [
+                  "condensation",
+                  "humidity",
+                  "transpiration",
+                  "stomata",
+                  "as a result",
+                  "consequently"
+                ],
+                "model": "Commander Chen, the root cause is a jammed fan in duct 4B. First, condensation jammed the fan, so the air stopped moving. As a result, humidity climbed to 92 percent. The log shows that airflow fell to 0.0 meters per second and leaf temperature rose to 31 degrees. Because the leaves were too hot, the wheat closed its stomata, which means less carbon dioxide entered and less oxygen was released. I recommend that we clear duct 4B first."
+              },
+              "supported": {
+                "bank": [
+                  "condensation",
+                  "humidity",
+                  "transpiration",
+                  "stomata",
+                  "as a result",
+                  "consequently"
+                ]
+              },
+              "independent": {}
+            },
+            "successCriteria": [
+              "I name the root cause before I explain the effects.",
+              "I put at least four events in the correct order.",
+              "I use two numbers from the log.",
+              "I use connecting words such as because, so, or as a result."
+            ],
+            "teacher": {
+              "listenFor": [
+                "A causal chain in order: jammed fan, still air, hot leaves, closed stomata, less oxygen",
+                "Correct use of humidity and transpiration",
+                "Numbers paired with the variable they measure"
+              ],
+              "followUp": "Why would replacing the LED lights not have fixed the problem?"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "p5",
+      "skill": "Writing",
+      "title": "Engineering Remediation Directive",
+      "instructions": "Write a short directive for the maintenance crew. Name the root cause, explain the chain to the oxygen drop, and order three actions.",
+      "uses": [],
+      "tasks": [
+        {
+          "id": "p5-write",
+          "kind": "write",
+          "task": {
+            "id": "space-colony-remediation-directive",
+            "band": "6-8",
+            "title": "Engineering Remediation Directive",
+            "form": "report",
+            "keyUse": "Inform",
+            "standards": [
+              "ELD-SC",
+              "ELD-LA"
+            ],
+            "dimensions": [
+              "Discourse",
+              "Sentence",
+              "Word/Phrase"
+            ],
+            "contentArea": "Science",
+            "time": "20 min",
+            "scenario": "Commander Chen will paste your directive into the base log and send it to the maintenance crew on the next shift. The crew needs to know what failed, why it matters, and what to do in what order.",
+            "prompt": "Write a short engineering directive. State the root cause, explain how it reduced oxygen production, and order at least three specific maintenance actions. Use evidence from the log and the report.",
+            "sources": [
+              {
+                "id": "s1",
+                "kind": "table",
+                "title": "Biodome 3 overnight log",
+                "table": {
+                  "caption": "Biodome 3 overnight log",
+                  "headers": [
+                    "Time",
+                    "Humidity (%)",
+                    "Leaf temperature (°C)",
+                    "Airflow in duct 4B (m/s)",
+                    "CO2 (ppm)",
+                    "Oxygen output (% of normal)"
+                  ],
+                  "rows": [
+                    [
+                      "22:00",
+                      "61",
+                      "22.1",
+                      "1.8",
+                      "420",
+                      "100"
+                    ],
+                    [
+                      "00:00",
+                      "74",
+                      "24.3",
+                      "0.9",
+                      "510",
+                      "96"
+                    ],
+                    [
+                      "02:00",
+                      "85",
+                      "27.4",
+                      "0.3",
+                      "690",
+                      "88"
+                    ],
+                    [
+                      "04:00",
+                      "90",
+                      "29.8",
+                      "0.1",
+                      "870",
+                      "82"
+                    ],
+                    [
+                      "06:00",
+                      "92",
+                      "31.0",
+                      "0.0",
+                      "1040",
+                      "77"
+                    ]
+                  ]
+                }
+              },
+              {
+                "id": "s2",
+                "kind": "quote",
+                "title": "From the diagnostics report",
+                "text": [
+                  "Transpiration works best when moving air carries humid air away from each leaf. Without moving air, the leaves could not cool, and leaf temperature rose from 22 to 31 degrees Celsius."
+                ]
+              },
+              {
+                "id": "s3",
+                "kind": "quote",
+                "title": "Commander Chen",
+                "text": [
+                  "Biodome 3 supplies about forty percent of our oxygen for eleven crew members."
+                ]
+              }
+            ],
+            "organizer": [
+              {
+                "id": "cause",
+                "label": "Root cause",
+                "hint": "What failed first?"
+              },
+              {
+                "id": "effect",
+                "label": "How it reduced oxygen",
+                "hint": "Explain the chain from the failure to less oxygen."
+              },
+              {
+                "id": "evidence",
+                "label": "Evidence",
+                "hint": "Two numbers from the log."
+              },
+              {
+                "id": "actions",
+                "label": "Ordered actions",
+                "hint": "Three steps, with a reason for the first one."
+              }
+            ],
+            "expected": {
+              "minWords": 90,
+              "maxWords": 180,
+              "paragraphs": 2
+            },
+            "sourceTerms": [
+              "duct 4B",
+              "transpiration",
+              "leaf temperature",
+              "forty percent",
+              "airflow"
+            ],
+            "vocab": [
+              {
+                "term": "directive",
+                "def": "an official order that tells people what to do",
+                "es": "directiva: orden oficial que dice a las personas qué hacer"
+              },
+              {
+                "term": "root cause",
+                "def": "the first problem that started a chain of problems",
+                "es": "causa raíz: el primer problema que inició una cadena de problemas"
+              },
+              {
+                "term": "maintenance",
+                "def": "work done to keep equipment running",
+                "es": "mantenimiento: trabajo para que el equipo siga funcionando"
+              },
+              {
+                "term": "consequently",
+                "def": "as a result",
+                "es": "por consiguiente: como resultado"
+              }
+            ],
+            "stages": {
+              "guided": {
+                "frames": [
+                  "Root cause: ___ in duct 4B caused ___.",
+                  "As a result, ___ stopped, so leaf temperature rose from ___ to ___.",
+                  "Consequently, the wheat ___, and oxygen output fell to ___.",
+                  "Required actions: First, ___. Second, ___. Third, ___."
+                ],
+                "bank": [
+                  "directive",
+                  "root cause",
+                  "maintenance",
+                  "transpiration",
+                  "consequently",
+                  "airflow"
+                ],
+                "model": "Root cause: condensation in duct 4B jammed the fan and stopped the airflow. As a result, transpiration stopped, so leaf temperature rose from 22.1 to 31.0 degrees Celsius. Consequently, the wheat closed many of its stomata, and oxygen output fell to 77 percent of normal. This matters because Biodome 3 supplies about forty percent of the base's oxygen.\n\nRequired actions: First, warm and clear duct 4B so the fan can turn. Second, check that airflow returns to at least 1.8 meters per second. Third, inspect the dehumidifier and duct heaters so condensation cannot jam the fan again."
+              },
+              "supported": {
+                "bank": [
+                  "directive",
+                  "root cause",
+                  "maintenance",
+                  "transpiration",
+                  "consequently",
+                  "airflow"
+                ]
+              },
+              "independent": {}
+            },
+            "revisionPrompts": [
+              {
+                "focus": "precision",
+                "prompt": "Replace words such as 'fix it' with an exact action and a measurable goal."
+              },
+              {
+                "focus": "evidence",
+                "prompt": "Add one number from the log and name the column it came from."
+              },
+              {
+                "focus": "cohesion",
+                "prompt": "Use First, Second, and Third so the maintenance crew can follow the order."
+              }
+            ],
+            "successCriteria": [
+              "My first sentence names the root cause.",
+              "I explain the chain from the failure to the oxygen drop.",
+              "I give three actions in a logical order.",
+              "I use at least two numbers from the sources."
+            ],
+            "teacher": {
+              "lookFor": [
+                "Root cause stated before effects",
+                "Ordered, specific actions",
+                "Evidence tied to the log"
+              ],
+              "commonIssues": [
+                "Blaming the lights even though the data rule them out",
+                "Listing symptoms (high carbon dioxide) as the root cause",
+                "Vague actions such as 'check everything'"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "debrief": {
+    "teacherQuestions": [
+      "Which hypothesis did you test first, and what did it rule in or out? How would a different test have changed your next step?",
+      "Explain the chain from the jammed fan to less oxygen. Which step is the root cause, and which steps are effects?",
+      "Why was the carbon dioxide reading a symptom rather than the cause?",
+      "How is a closed-loop life support system like an ecosystem on Earth? What happens when one part fails?"
+    ],
+    "connections": "Connects to photosynthesis and plant structure in life science, to systems and feedback in engineering, and to the claim-evidence-reasoning pattern in the Watershed and Newsroom missions."
+  },
+  "vocab": [
+    {
+      "term": "photosynthesis",
+      "def": "how plants use light to make sugar and oxygen",
+      "es": "fotosíntesis: proceso por el que las plantas usan luz para producir azúcar y oxígeno"
+    },
+    {
+      "term": "stomata",
+      "def": "tiny pores on leaves that let gases in and out",
+      "es": "estomas: poros pequeños de las hojas por donde entran y salen los gases"
+    },
+    {
+      "term": "transpiration",
+      "def": "loss of water vapor from a plant's leaves",
+      "es": "transpiración: pérdida de vapor de agua por las hojas de una planta"
+    },
+    {
+      "term": "humidity",
+      "def": "the amount of water vapor in the air",
+      "es": "humedad: cantidad de vapor de agua que hay en el aire"
+    },
+    {
+      "term": "condensation",
+      "def": "water vapor turning into liquid",
+      "es": "condensación: vapor de agua que se convierte en líquido"
+    },
+    {
+      "term": "closed-loop",
+      "def": "a system that recycles its own resources",
+      "es": "circuito cerrado: sistema que recicla sus propios recursos"
+    },
+    {
+      "term": "canopy",
+      "def": "the top layer of leaves on plants",
+      "es": "dosel: capa superior de hojas de las plantas"
+    },
+    {
+      "term": "scrubber",
+      "def": "a device that removes harmful gases from air",
+      "es": "depurador: aparato que elimina gases dañinos del aire"
+    }
+  ]
+}

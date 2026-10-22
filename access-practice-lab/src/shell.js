@@ -71,9 +71,9 @@ export function mountShell(ctx) {
         <div class="lab-utilities-body">
           <a href="${BASE}/?grades=${ctx.band}">${T("Lab home", "Inicio del laboratorio")}</a>
           <a href="${BASE}/missions?grades=${ctx.band}">${T("Academic missions", "Misiones académicas")}</a>
-          <a href="${BASE}/construction?grades=${ctx.band}">${T("Language construction lab", "Laboratorio de construcción")}</a>
-          <a href="${BASE}/conversation?grades=${ctx.band}">${T("Conversation simulator", "Simulador de conversación")}</a>
-          <a href="${BASE}/evidence?grades=${ctx.band}">${T("Evidence studio", "Taller de evidencia")}</a>
+          <a href="${BASE}/speak?grades=${ctx.band}">${T("Speaking Studio", "Estudio de expresión oral")}</a>
+          <a href="${BASE}/write?grades=${ctx.band}">${T("Writing Studio", "Estudio de escritura")}</a>
+          <a href="${BASE}/detective?grades=${ctx.band}">${T("Language Error Detective", "Detective de errores del lenguaje")}</a>
           <a href="${BASE}/growth?grades=${ctx.band}">${T("Language growth map", "Mapa de progreso lingüístico")}</a>
           <a href="${BASE}/library?grades=${ctx.band}">${T("Find practice", "Buscar práctica")}</a>
           <a href="${BASE}/tests?grades=${ctx.band}">${T("Practice tests", "Pruebas de práctica")}</a>

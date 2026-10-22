@@ -4,6 +4,7 @@
 const takes = new Map(); // key → [{ url, seconds }]
 let active = null; // { key, recorder, stream, chunks, started, raf, ctx }
 let requestGeneration = 0;
+export const ENVELOPE_FPS = 20;
 
 export const canRecord = () =>
   Boolean(navigator.mediaDevices?.getUserMedia && window.MediaRecorder);
@@ -27,7 +28,7 @@ export async function start(key, { onLevel, onStop } = {}) {
     throw error;
   }
   const chunks = [];
-  const state = { key, recorder, stream, chunks, started: Date.now(), raf: 0, ctx: null };
+  const state = { key, recorder, stream, chunks, started: Date.now(), raf: 0, ctx: null, env: [], lastEnv: 0 };
   let finishStop;
   state.stopped = new Promise((resolve) => { finishStop = resolve; });
   recorder.addEventListener("dataavailable", (e) => e.data.size && chunks.push(e.data));
@@ -38,9 +39,14 @@ export async function start(key, { onLevel, onStop } = {}) {
     const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
     const list = takes.get(key) || [];
     if (blob.size) list.push({
+      id: `t${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`,
       url: URL.createObjectURL(blob),
+      blob,
       extension: blob.type.includes("mp4") ? "m4a" : blob.type.includes("ogg") ? "ogg" : "webm",
       seconds: Math.round((Date.now() - state.started) / 1000),
+      // Loudness envelope at ENVELOPE_FPS, used for on-device pause/length analysis. Never uploaded.
+      env: state.env.slice(0, ENVELOPE_FPS * 240),
+      fps: ENVELOPE_FPS,
     });
     // Keep the three most recent takes so a student can compare tries.
     while (list.length > 3) URL.revokeObjectURL(list.shift().url);
@@ -51,7 +57,7 @@ export async function start(key, { onLevel, onStop } = {}) {
   });
   try {
     const Ctx = window.AudioContext || window.webkitAudioContext;
-    if (Ctx && onLevel) {
+    if (Ctx) {
       state.ctx = new Ctx();
       const analyser = state.ctx.createAnalyser();
       analyser.fftSize = 512;
@@ -61,7 +67,13 @@ export async function start(key, { onLevel, onStop } = {}) {
         analyser.getByteTimeDomainData(buf);
         let peak = 0;
         for (const v of buf) peak = Math.max(peak, Math.abs(v - 128));
-        onLevel(Math.min(1, peak / 64), Math.round((Date.now() - state.started) / 1000));
+        const level = Math.min(1, peak / 64);
+        const now = Date.now();
+        if (now - state.lastEnv >= 1000 / ENVELOPE_FPS) {
+          state.lastEnv = now;
+          state.env.push(Math.round(level * 100) / 100);
+        }
+        onLevel?.(level, Math.round((now - state.started) / 1000));
         state.raf = requestAnimationFrame(tick);
       };
       tick();

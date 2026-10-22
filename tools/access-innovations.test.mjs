@@ -1,12 +1,7 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
+import { readdirSync, readFileSync } from "node:fs";
 import test from "node:test";
-
-import {
-  analyzeLanguage,
-  compareRevisions,
-  splitSentences,
-} from "../access-practice-lab/src/coach.js";
 import {
   ACADEMIC_COGNATES,
   FALSE_FRIENDS,
@@ -23,65 +18,9 @@ import {
 } from "../access-practice-lab/src/views/construction.js";
 import { SCENARIOS } from "../access-practice-lab/src/views/conversation.js";
 import { EVIDENCE_SETS } from "../access-practice-lab/src/views/evidence.js";
-import { MISSIONS } from "../access-practice-lab/src/views/missions.js";
 
-test("coach: sentence splitting correctly handles standard and irregular punctuation", () => {
-  const text =
-    "Glaciers are retreating rapidly. Because carbon emissions trap heat, temperatures climb! What will happen next?";
-  const sentences = splitSentences(text);
-  assert.equal(sentences.length, 3);
-  assert.equal(sentences[0], "Glaciers are retreating rapidly.");
-  assert.equal(sentences[1], "Because carbon emissions trap heat, temperatures climb!");
-  assert.equal(sentences[2], "What will happen next?");
-});
-
-test("coach: discourse and complexity analysis recognizes subordinating clauses and academic connectors", () => {
-  const text =
-    "According to the ecological survey, elk populations decreased significantly because apex wolves returned to the national park. Consequently, willow trees along the riverbank grew taller.";
-  const analysis = analyzeLanguage(text, {
-    wordBank: ["ecological", "populations", "willow"],
-    keyUse: "Explain",
-  });
-
-  assert.equal(analysis.sentenceCount, 2);
-  assert.ok(
-    analysis.complexCount >= 1,
-    "Should identify 'because' as subordinating complex clause",
-  );
-  assert.ok(
-    analysis.totalConnectors >= 2,
-    "Should identify 'according to', 'because', and 'consequently'",
-  );
-  assert.equal(analysis.bankMatched.length, 3, "Should match all word bank terms");
-  assert.equal(analysis.complexityRating, "Expanding");
-  assert.ok(analysis.strengths.length > 0, "Should generate positive academic feedback");
-});
-
-test("coach: 3-tier fading scaffolds provide actionable hints without revealing answers", () => {
-  const shortText = "The fish died.";
-  const analysis = analyzeLanguage(shortText, { keyUse: "Explain" });
-  assert.ok(
-    analysis.recommendations.some((r) => r.tier === 1),
-    "Should suggest expanding short draft",
-  );
-
-  const runonText =
-    "The temperature rose so the ice melted and the water went up and everything flooded in the town because of the rain.";
-  const runonAnalysis = analyzeLanguage(runonText, { keyUse: "Explain" });
-  assert.ok(runonAnalysis.recommendations.length > 0);
-});
-
-test("coach: compareRevisions calculates exact word, sentence, and connector improvements", () => {
-  const draft1 = "The plants died.";
-  const draft2 =
-    "The crops experienced severe mortality because excessive humidity caused plant stomata to close. Consequently, oxygen production dropped.";
-  const comparison = compareRevisions(draft1, draft2);
-
-  assert.ok(comparison.wordDelta > 10, "Should record positive word expansion");
-  assert.equal(comparison.sentenceDelta, 1, "Should show an added sentence");
-  assert.ok(comparison.connectorDelta >= 2, "Should record added connectors");
-  assert.ok(comparison.changes.some((c) => c.includes("academic connecting word")));
-});
+// The old keyword-based coach tests were replaced by tools/access-language-engine.test.mjs
+// (explainable analysis, no composite rating, stage-gated scaffolds).
 
 test("multilingual: academic cognate detection identifies Tier 2/3 Spanish-English pairs", () => {
   const sample =
@@ -108,15 +47,22 @@ test("speech: voice options and personas resolve correctly across system configu
   assert.ok(defaultVoice === null || typeof defaultVoice === "object");
 });
 
-test("missions: cross-domain missions contain all 4 aligned language phases", () => {
-  assert.equal(MISSIONS.length, 3, "Should include 3 authentic cross-domain missions");
-  for (const m of MISSIONS) {
-    assert.equal(m.phases.length, 4, `Mission ${m.id} must have exactly 4 phases (L, R, S, W)`);
-    assert.equal(m.phases[0].skill, "Listening");
-    assert.equal(m.phases[1].skill, "Reading");
-    assert.equal(m.phases[2].skill, "Speaking");
-    assert.equal(m.phases[3].skill, "Writing");
-    assert.ok(m.phases[3].wordBank.length >= 5, "Writing phase must have rich word bank");
+const MISSION_DIR = new URL("../access-practice-lab/content/missions/", import.meta.url);
+const missions = readdirSync(MISSION_DIR)
+  .filter((f) => f.endsWith(".json"))
+  .map((f) => JSON.parse(readFileSync(new URL(f, MISSION_DIR), "utf8")));
+
+test("missions: content-driven missions cover all four skills plus a consequential decision", () => {
+  assert.ok(missions.length >= 6, "six authored missions ship");
+  for (const m of missions) {
+    const skills = m.phases.map((p) => p.skill);
+    for (const k of ["Listening", "Reading", "Decision", "Speaking", "Writing"])
+      assert.ok(skills.includes(k), `${m.id} has a ${k} phase`);
+    const decision = m.phases.find((p) => p.skill === "Decision").decision;
+    assert.ok(
+      decision.options.some((o) => (o.unlocks || []).length || (o.board || []).length),
+      `${m.id}: a decision changes what the learner learns`,
+    );
   }
 });
 

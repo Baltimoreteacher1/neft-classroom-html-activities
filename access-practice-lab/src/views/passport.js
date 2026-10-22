@@ -3,6 +3,11 @@
 import { crumbsHTML, domainGlyph, ringHTML } from "../components.js";
 import { isActivityComplete } from "../attempts.js";
 import { evidenceLabel } from "../learning.js";
+import * as audioStore from "../audio-store.js";
+import { buildShare, encodeShare } from "../lang/share.js";
+import { loadLedger } from "../lang/ledger.js";
+import { loadStudio } from "../lang/studio.js";
+import { downloadText } from "../studio-ui.js";
 import { bandDomains, bandRows } from "../content.js";
 import {
   clearAll,
@@ -29,7 +34,7 @@ import {
 
 const IGN = raw("data-nsr-ignore");
 
-function badges(stats, streak, days) {
+function badges(stats, streak, days, extra) {
   const total = stats.reduce((n, s) => n + s.done, 0);
   const all4 = stats.every((s) => s.done > 0);
   return [
@@ -44,11 +49,16 @@ function badges(stats, streak, days) {
       how: "Practice three weeks in a row.",
     },
     {
-      on: stats.find((s) => s.domain === "Speaking")?.done >= 5,
+      on: extra.recordings >= 3,
       icon: "🎤",
       name: "Brave speaker",
-      how: "Finish 5 speaking activities.",
+      how: "Record yourself speaking and check your language in 3 Speaking Studio tries.",
     },
+    { on: extra.revised, icon: "🔁", name: "Reviser", how: "Get feedback on a draft, change it, and ask again." },
+    { on: extra.independentWriting, icon: "🧗", name: "On my own", how: "Write or speak a first attempt with no frames, word bank or model." },
+    { on: extra.sourceUse, icon: "📎", name: "Evidence user", how: "Use at least two pieces of evidence from a source in your own writing." },
+    { on: extra.patternClosed, icon: "🔎", name: "Case closed", how: "Fix a pattern, then use it correctly in new writing." },
+    { on: extra.missionDone, icon: "🚀", name: "Mission complete", how: "Finish all phases of an academic mission." },
     {
       on: stats.find((s) => s.domain === "Writing")?.done >= 5,
       icon: "✍️",
@@ -120,7 +130,19 @@ export async function render(ctx) {
   const evidence = (await bandRows(band)).map((row) => ({ ...row, result: loadRecord(band, row.domain, row.level).results[row.id] })).filter((row) => row.result?.date && row.result.meaningful !== false && row.result.words !== 0 && row.result.practiced !== false).sort((a,b) => b.result.date.localeCompare(a.result.date));
   const days = practiceDays();
   const streak = weekStreak(days);
-  const list = badges(stats, streak, days);
+  const ledger = loadLedger();
+  const studio = loadStudio();
+  const mine = ledger.entries.filter((e) => e.band === band);
+  const extra = {
+    recordings: mine.filter((e) => e.src === "speaking").length,
+    revised: mine.some((e) => e.kind === "revision"),
+    independentWriting: mine.some((e) => e.kind === "first" && e.stage === "independent" && ["writing", "speaking"].includes(e.src)),
+    sourceUse: mine.some((e) => (e.m?.cites || 0) >= 2),
+    patternClosed: mine.some((e) => e.src === "detective" && e.kind === "transfer" && e.m?.ok),
+    missionDone: Object.values(studio.missions).some((m) => m.done),
+  };
+  const kept = await audioStore.list();
+  const list = badges(stats, streak, days, extra);
   const name = getStudentName();
   return {
     title: "My Passport",
@@ -197,6 +219,16 @@ export async function render(ctx) {
           <a class="btn" href="${BASE}/passport?grades=${band}&portfolio=1">Review and print my portfolio</a>
         </div>
       </section>
+      <section class="panel no-print" aria-labelledby="shareTitle">
+        <h2 id="shareTitle">Send my work to my teacher</h2>
+        <p>Choose what to share. The code contains your writing, speaking transcripts, mission and detective results, and which supports you used. It has no email, school ID or recordings. Only your alias is included.</p>
+        <label class="field"><span>My alias (initials or a class nickname)</span><input type="text" data-share-alias value="${name}" maxlength="40" autocomplete="off" ${IGN} /></label>
+        <div class="share-options">${[["writing", "Writing drafts and reflections"], ["speaking", "Speaking transcripts and reviews"], ["missions", "Mission results"], ["detective", "Error Detective results"]].map(([k, l]) => html`<label><input type="checkbox" data-share-opt="${k}" checked ${IGN} /> ${l}</label>`)}</div>
+        <div class="row-actions"><button type="button" class="btn btn-primary" data-share-copy>Copy share code</button><button type="button" class="btn" data-share-file>Download share file</button></div>
+        <p class="fine" data-share-status role="status"></p>
+        <h3>Recordings kept on this device</h3>
+        ${kept.length ? html`<ul class="evidence-list">${kept.map((k) => html`<li><span>${k.task} · ${k.seconds}s · ${String(k.t).slice(0, 10)}</span><button type="button" class="ghost danger small" data-del-audio="${k.id}">Delete</button></li>`)}</ul><button type="button" class="ghost danger small" data-del-audio-all>Delete all recordings</button>` : html`<p class="fine">None. Recordings are only kept if you press “Keep for my teacher” in the Speaking Studio. You can always download a recording instead.</p>`}
+      </section>
       <section class="panel no-print">
         <h2>Use another computer</h2>
         <p>
@@ -227,8 +259,43 @@ export function onInput(e) {
   if (e.target.matches("[data-name]")) setStudentName(e.target.value.trim());
 }
 
+function shareBundle(ctx) {
+  const alias = document.querySelector("[data-share-alias]")?.value || "";
+  const include = Object.fromEntries([...document.querySelectorAll("[data-share-opt]")].map((el) => [el.dataset.shareOpt, el.checked]));
+  return buildShare({ alias, band: ctx.band, include });
+}
+
 export async function onClick(e, ctx) {
   const t = e.target;
+  const status = document.querySelector("[data-share-status]");
+  if (t.closest("[data-share-copy]")) {
+    const code = encodeShare(shareBundle(ctx));
+    try {
+      await navigator.clipboard.writeText(code);
+      if (status) status.textContent = `Share code copied (${Math.ceil(code.length / 1000)} KB). Paste it into your teacher's dashboard or message.`;
+    } catch {
+      if (status) status.textContent = "Copy failed. Use “Download share file” instead.";
+    }
+    return true;
+  }
+  if (t.closest("[data-share-file]")) {
+    downloadText("my-work-for-my-teacher.json", JSON.stringify(shareBundle(ctx)), "application/json");
+    if (status) status.textContent = "File downloaded. Give it to your teacher.";
+    return true;
+  }
+  const del = t.closest("[data-del-audio]");
+  if (del) {
+    await audioStore.remove(del.dataset.delAudio);
+    announce("Recording deleted.");
+    ctx.rerender();
+    return true;
+  }
+  if (t.closest("[data-del-audio-all]")) {
+    await audioStore.clearAll();
+    announce("All kept recordings deleted.");
+    ctx.rerender();
+    return true;
+  }
   if (t.closest("[data-export]")) {
     const code = exportCode();
     try {
@@ -262,6 +329,7 @@ export async function onClick(e, ctx) {
     )
       return;
     clearAll();
+    await audioStore.clearAll();
     announce("Progress cleared.");
     ctx.rerender();
   }

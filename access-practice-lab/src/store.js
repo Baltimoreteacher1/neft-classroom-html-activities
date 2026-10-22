@@ -6,6 +6,8 @@
 // namespaced `accessPracticeLab:v1:g3-5:<Domain>:<Level>`. Older records stored
 // answers in per-type maps (selected/multi/cloze/hot/order/sortAnswers); they are
 // read transparently and new answers are written to `answers`.
+import { mergeLedgers } from "./lang/ledger.js";
+import { mergeStudio, validStudio } from "./lang/studio.js";
 import { safeJson, storage, todayISO } from "./util.js";
 
 export const PREFIX = "accessPracticeLab:v1";
@@ -96,7 +98,7 @@ export function allRecords() {
       band = "3-5";
       rest.shift();
     }
-    if (rest.length !== 2 || ["test", "prefs", "studentName", "pathway"].includes(rest[0]))
+    if (rest.length !== 2 || ["test", "prefs", "studentName", "pathway", "ledger", "studio", "missions"].includes(rest[0]))
       continue;
     const [domain, level] = rest;
     out.push({ band, domain, level, record: loadRecord(band, domain, level) });
@@ -179,8 +181,22 @@ export function importProgressData(data) {
     if (!key.startsWith(`${PREFIX}:`) || typeof value !== "string") continue;
     const suffix = key.slice(PREFIX.length + 1);
     const progress = isProgressKey(key);
-    if (!progress && !/^(?:prefs|studentName|pathway|test:[a-zA-Z0-9_-]+)$/.test(suffix)) continue;
+    if (!progress && !/^(?:prefs|studentName|pathway|ledger|studio|test:[a-zA-Z0-9_-]+)$/.test(suffix)) continue;
     const current = storage.get(key);
+    if (suffix === "ledger" || suffix === "studio") {
+      const incoming = safeJson(value, null);
+      if (!isObject(incoming) || (suffix === "ledger" && !Array.isArray(incoming.entries)) || (suffix === "studio" && !validStudio(incoming)))
+        throw new Error("That backup has an invalid practice record. Nothing was loaded.");
+      if (current === null) {
+        writes.push([key, value]);
+        continue;
+      }
+      const local = safeJson(current, null);
+      if (!isObject(local)) continue;
+      const merged = JSON.stringify(suffix === "ledger" ? mergeLedgers({ entries: local.entries || [] }, incoming) : mergeStudio(local, incoming));
+      if (merged !== current) writes.push([key, merged]);
+      continue;
+    }
     if (progress || suffix === "prefs" || suffix.startsWith("test:")) {
       const incoming = safeJson(value, null);
       if (!isObject(incoming)) throw new Error("That backup has an invalid progress record. Nothing was loaded.");
