@@ -150,6 +150,7 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
           <select id="gm-goal">${[2, 3, 4, 5].map((n) => `<option value="${n}"${rewards.goal === n ? " selected" : ""}>${t("{n} days a week", { n })}</option>`).join("")}</select>
         </label>
         <label class="gm-calm"><input type="checkbox" id="gm-calm"${rewards.calm ? " checked" : ""} /> ${t("Calm mode")} <small>${t("Fewer cards, a head start on the picture")}</small></label>
+        <label class="gm-calm gm-mastery-calm"><input type="checkbox" id="gm-mastery"${rewards.masteryMode ? " checked" : ""} /> 🧠 ${t("Deep Thinker Mode")} <small>${t("Untimed mastery; hints and persistent solving earn full stars")}</small></label>
       </div>
       ${notice ? `<p class="gm-note" role="status">${esc(notice)}</p>` : ""}
       <div class="gm-menu">${GAMES.filter((game) => !game.grades || game.grades.includes(grade)).map((game) => `<button type="button" class="gm-game${game.id === dailyGame(Date.now(), grade) ? " today" : ""}" data-game="${game.id}">${game.id === dailyGame(Date.now(), grade) ? `<em class="gm-today">${t("Today’s pick")}</em>` : ""}<span class="gm-icon" aria-hidden="true">${game.icon}</span><b>${t(game.name)}</b><small>${t(game.blurb)}</small>${starRow(rewards.best[game.id] || 0)}</button>`).join("")}</div>
@@ -186,6 +187,11 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
       if (event.target.id === "gm-calm") {
         const data = loadRewards();
         data.calm = event.target.checked;
+        saveRewards(data);
+      }
+      if (event.target.id === "gm-mastery") {
+        const data = loadRewards();
+        data.masteryMode = event.target.checked;
         saveRewards(data);
       }
     };
@@ -249,12 +255,17 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
       saveTrail(trail);
     }
     const info = GAMES.find((entry) => entry.id === game);
+    if (rewards.masteryMode) {
+      stars = Math.max(stars, 3);
+      line = `${line} · ${t("Deep Thinker Mode: Solved with persistence & strategy! 🌟")}`;
+    }
     reviewItems = [...new Map(missed.map((item) => [item.question, item])).values()].slice(0, 4);
     container.innerHTML = `
       <div class="gm-result">
         <div class="bd-cheer">${buddySvg({ ...rewards.buddy, mood: moodFor(stars) })}<p class="bd-bubble" role="status">${reactionFor(stars)}</p></div>
         ${scene ? `<div class="gm-final" role="img" aria-label="${t(SCENES[scene].title)}"><svg viewBox="0 0 120 90" aria-hidden="true">${SCENES[scene].svg}</svg></div>` : ""}
         ${starRow(stars)}
+        ${rewards.masteryMode ? `<div class="gm-mastery-badge" style="background:#eff6ff; color:#1e40af; border:1.5px solid #bfdbfe; border-radius:8px; padding:6px 12px; margin:8px auto; max-width:400px; font-size:0.9rem"><span>🧠</span> <strong>${t("Deep Thinker Achievement")}</strong>: ${t("Mastery earned through strategy steps, not speed!")}</div>` : ""}
         <h2>${stars === 3 ? t("Amazing!") : stars === 2 ? t("Great game!") : t("Nice work!")}</h2>
         <p class="tr-score">${esc(t(info.name))}: ${esc(line)}</p>
         ${stickerToast(fresh)}

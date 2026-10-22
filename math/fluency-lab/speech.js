@@ -1,6 +1,6 @@
 // Read-aloud for math text, shared by trail rounds and the Game Room.
 export const spoken = (text) =>
-  text
+  String(text || "")
     .replaceAll("×", " times ")
     .replaceAll("÷", " divided by ")
     .replaceAll("−", " minus ")
@@ -8,12 +8,31 @@ export const spoken = (text) =>
     .replace(/\^(\d+)/g, " to the power of $1")
     .replaceAll("√", "the square root of ");
 
+export const spokenEs = (text) =>
+  String(text || "")
+    .replaceAll("×", " por ")
+    .replaceAll("*", " por ")
+    .replaceAll("÷", " entre ")
+    .replaceAll("/", " entre ")
+    .replaceAll("−", " menos ")
+    .replaceAll("-", " menos ")
+    .replaceAll("+", " más ")
+    .replaceAll("= ?", " ¿es igual a qué?")
+    .replaceAll("=", " es igual a ")
+    .replace(/(\d+)\/(\d+)/g, "$1 sobre $2")
+    .replace(/\^(\d+)/g, " elevado a la $1")
+    .replaceAll("√", "la raíz cuadrada de ");
+
 export const canSpeak = () => "speechSynthesis" in window;
 
-export function speak(text) {
+export function speak(text, lang = "en") {
   if (!canSpeak()) return;
   speechSynthesis.cancel();
-  speechSynthesis.speak(new SpeechSynthesisUtterance(spoken(text)));
+  const isEs = lang === "es";
+  const processed = isEs ? spokenEs(text) : spoken(text);
+  const utterance = new SpeechSynthesisUtterance(processed);
+  utterance.lang = isEs ? "es-ES" : "en-US";
+  speechSynthesis.speak(utterance);
 }
 
 // One live region that is never re-created, so screen readers announce every game message reliably.

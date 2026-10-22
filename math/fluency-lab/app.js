@@ -29,7 +29,7 @@ import { mountPaperGames } from "./paper-games.js";
 import { stopOptions, stopsFor } from "./game-pool.js";
 import { cleanPlay, exportPlay, importPlay } from "./play-backup.js";
 import { VOCAB_BILINGUAL_DB, highlightVocab, initVocabSystem, openVocabModal } from "./vocab.js";
-import { canSpeak, speak } from "./speech.js";
+import { canSpeak, speak, spoken, spokenEs } from "./speech.js";
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
@@ -102,6 +102,7 @@ const els = {
   independentPractice: document.querySelector("#independent-practice"),
   backLibrary: document.querySelector("#back-library"),
   hearButton: document.querySelector("#hear-problem"),
+  hearButtonEs: document.querySelector("#hear-problem-es"),
   printButton: document.querySelector("#print-set"),
   printButtonSecondary: document.querySelector("#print-set-secondary"),
   dailyButton: document.querySelector("#daily-ten"),
@@ -2132,8 +2133,8 @@ const InteractiveSolver = {
 
         container.innerHTML = `
           <div class="solver-header">
-            <strong>➗ Interactive Standard Algorithm Bracket: Divide → Multiply → Subtract → Bring Down</strong>
-            <span class="solver-hint-tag">Fill each quotient digit above</span>
+            <strong>➗ Interactive Standard Algorithm: Fill Every Step!</strong>
+            <span class="solver-hint-tag">Divide → Multiply → Subtract → Bring Down</span>
           </div>
           <div class="long-div-workspace">
             <div class="long-div-bracket-box">
@@ -2152,18 +2153,51 @@ const InteractiveSolver = {
                   ${digits.map((d) => `<span class="long-div-col">${d}</span>`).join("")}
                 </div>
               </div>
+
+              <!-- Interactive Step-by-Step Vertical Work Rows -->
+              <div class="long-div-tower-work" style="margin-left:58px">
+                ${steps.map((st, sIdx) => `
+                  <div class="long-div-sub-row">
+                    <span class="long-div-op">−</span>
+                    <input type="text" class="long-div-tower-input" inputmode="numeric" data-target="${st.prod}" data-kind="prod" data-step-idx="${sIdx}" placeholder="?" title="Multiply: ${st.qDigit} × ${divisor}" />
+                  </div>
+                  <div class="long-div-rule"></div>
+                  <div class="long-div-sub-row">
+                    <span class="long-div-op"> </span>
+                    <input type="text" class="long-div-tower-input" inputmode="numeric" data-target="${sIdx < steps.length - 1 ? `${st.rem}${steps[sIdx + 1].digit}` : `${st.rem}`}" data-kind="${sIdx < steps.length - 1 ? "diff-bring" : "rem"}" data-step-idx="${sIdx}" placeholder="?" title="${sIdx < steps.length - 1 ? `Subtract (${st.cur} - ${st.prod} = ${st.rem}) and bring down ${steps[sIdx + 1].digit}` : `Final remainder: ${st.rem}`}" />
+                  </div>
+                `).join("")}
+              </div>
             </div>
+
             <div class="long-div-steps-guide">
               ${steps.map((st, sIdx) => `
                 <div class="long-div-step-card" data-step-card="${st.pos}">
                   <span class="step-num-pill">Step ${sIdx + 1}</span>
-                  <div class="step-line"><strong>Divide:</strong> How many times does <strong>${divisor}</strong> go into <strong>${st.cur}</strong>? → <strong>${st.qDigit}</strong></div>
-                  <div class="step-line"><strong>Multiply:</strong> ${st.qDigit} × ${divisor} = <strong>${st.prod}</strong></div>
-                  <div class="step-line"><strong>Subtract:</strong> ${st.cur} − ${st.prod} = <strong>${st.rem}</strong></div>
-                  ${sIdx < steps.length - 1 ? `<div class="step-line bring-down"><strong>Bring Down:</strong> Next digit ${steps[sIdx + 1].digit} → ${st.rem}${steps[sIdx + 1].digit}</div>` : `<div class="step-line final-rem">Remainder: <strong>${st.rem}</strong></div>`}
+                  <div class="step-line">
+                    <strong>Divide:</strong> How many times does <strong>${divisor}</strong> go into <strong>${st.cur}</strong>?
+                    <input type="text" class="long-div-step-input" inputmode="numeric" data-target="${st.qDigit}" data-kind="q" data-step-idx="${sIdx}" placeholder="?" />
+                  </div>
+                  <div class="step-line">
+                    <strong>Multiply:</strong> ${st.qDigit} × ${divisor} =
+                    <input type="text" class="long-div-step-input" inputmode="numeric" data-target="${st.prod}" data-kind="prod" data-step-idx="${sIdx}" placeholder="?" />
+                  </div>
+                  <div class="step-line">
+                    <strong>Subtract:</strong> ${st.cur} − ${st.prod} =
+                    <input type="text" class="long-div-step-input" inputmode="numeric" data-target="${st.rem}" data-kind="diff" data-step-idx="${sIdx}" placeholder="?" />
+                  </div>
+                  ${sIdx < steps.length - 1 ? `
+                    <div class="step-line bring-down">
+                      <strong>Bring Down:</strong> Next digit ${steps[sIdx + 1].digit} →
+                      <input type="text" class="long-div-step-input" inputmode="numeric" data-target="${st.rem}${steps[sIdx + 1].digit}" data-kind="diff-bring" data-step-idx="${sIdx}" placeholder="?" />
+                    </div>
+                  ` : `
+                    <div class="step-line final-rem">Remainder: <strong>${st.rem}</strong></div>
+                  `}
                 </div>
               `).join("")}
             </div>
+
             <div class="solver-calc-row" style="margin-top:0.75rem">
               <span>Full Quotient: <strong>${dividend} ÷ ${divisor} =</strong></span>
               <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${quotient}" data-group="div-final" style="width:78px" placeholder="Quotient" />
@@ -2172,16 +2206,44 @@ const InteractiveSolver = {
           </div>
         `;
 
-        const qInputs = [...container.querySelectorAll(".long-div-q-input")];
+        const allDivInputs = [...container.querySelectorAll(".long-div-q-input, .long-div-tower-input, .long-div-step-input")];
         const finalInp = container.querySelector('[data-group="div-final"]');
 
-        qInputs.forEach((qi, i) => {
-          qi.addEventListener("input", () => {
-            if (qi.value.trim() === qi.dataset.target) {
-              qi.classList.add("is-ok");
+        allDivInputs.forEach((inp) => {
+          inp.addEventListener("input", () => {
+            const val = inp.value.trim();
+            if (val === inp.dataset.target) {
+              inp.classList.add("is-ok");
               chime("step");
-              if (i + 1 < qInputs.length) qInputs[i + 1].focus();
-              if (qInputs.every((q) => q.classList.contains("is-ok"))) {
+
+              // Sync matching peer input if present
+              const stepIdx = inp.dataset.stepIdx;
+              const kind = inp.dataset.kind;
+              if (stepIdx !== undefined && kind) {
+                container.querySelectorAll(`[data-step-idx="${stepIdx}"][data-kind="${kind}"]`).forEach((peer) => {
+                  peer.value = val;
+                  peer.classList.add("is-ok");
+                });
+              }
+              if (inp.classList.contains("long-div-q-input")) {
+                const stepPos = inp.dataset.step;
+                const matchStep = steps.findIndex((s) => String(s.pos) === stepPos);
+                if (matchStep !== -1) {
+                  const peerStep = container.querySelector(`[data-kind="q"][data-step-idx="${matchStep}"]`);
+                  if (peerStep) {
+                    peerStep.value = val;
+                    peerStep.classList.add("is-ok");
+                  }
+                }
+              }
+
+              // Advance focus to next incomplete box
+              const nextEmpty = allDivInputs.find((box) => !box.classList.contains("is-ok"));
+              if (nextEmpty) nextEmpty.focus();
+
+              // Check if all quotient inputs are complete
+              const qBoxes = [...container.querySelectorAll(".long-div-q-input")];
+              if (qBoxes.every((q) => q.classList.contains("is-ok"))) {
                 if (finalInp) {
                   finalInp.value = String(quotient);
                   finalInp.classList.add("is-ok");
@@ -3083,7 +3145,7 @@ function renderStudentFriendlyExplanation(item, copy) {
     ? `<div class="student-expl-steps-wrap">
         <p class="student-expl-steps-heading"><strong>🪜 Clear Action Steps:</strong></p>
         <ol class="student-expl-steps-list">
-          ${item.steps.map((st) => `<li>${mathText(st)}</li>`).join("")}
+          ${item.steps.map((st) => `<li><span class="step-text">${mathText(st)}</span> <button type="button" class="step-audio-btn" data-speak-step="${escapeHtml(st)}" aria-label="Listen to step" title="Read step aloud">🔊</button></li>`).join("")}
         </ol>
       </div>`
     : `<p class="student-expl-goal">${escapeHtml(copy)}</p>`;
@@ -3621,11 +3683,23 @@ function retryMissed() {
   startRepair(state.session.missed.map((entry) => tutorSkillKey(entry.skill)));
 }
 
-function speakProblem() {
+function speakProblem(lang = "en") {
   if (!state.item || !("speechSynthesis" in window)) return;
   speechSynthesis.cancel();
-  const text = state.item.question.replaceAll("×", " times ").replaceAll("÷", " divided by ").replaceAll("−", " minus ");
-  speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+  const rawQ = state.item.question || "";
+  if (lang === "es") {
+    const text = spokenEs(rawQ);
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "es-ES";
+    speechSynthesis.speak(utterance);
+    announce("Leyendo problema en español.");
+  } else {
+    const text = spoken(rawQ);
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    speechSynthesis.speak(utterance);
+    announce("Reading problem aloud in English.");
+  }
 }
 
 function printPracticeSet() {
@@ -4148,7 +4222,8 @@ els.guidedNextStep.addEventListener("click", () => {
   saveActiveSession();
   if (step) announce(`${step.label} step opened.`);
 });
-els.hearButton.addEventListener("click", speakProblem);
+els.hearButton?.addEventListener("click", () => speakProblem("en"));
+els.hearButtonEs?.addEventListener("click", () => speakProblem("es"));
 els.printButton.addEventListener("click", printPracticeSet);
 els.printButtonSecondary.addEventListener("click", printPracticeSet);
 els.backLibrary.addEventListener("click", renderLibrary);
@@ -4786,6 +4861,12 @@ document.addEventListener("click", (event) => {
         setTimeout(() => { hint.textContent = ""; }, 2500);
       }
     }
+    return;
+  }
+  const speakStepBtn = event.target.closest("[data-speak-step]");
+  if (speakStepBtn) {
+    const txt = speakStepBtn.dataset.speakStep || "";
+    if (txt) speak(txt, state.lang === "es" ? "es" : "en");
     return;
   }
   const tokenBtn = event.target.closest("[data-copy-teacher-token]");

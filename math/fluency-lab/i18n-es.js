@@ -594,4 +594,9 @@ export const ES = {
   "Reading font: Off": "Letra de lectura: No",
   "Sound: On": "Sonido: Sí",
   "Sound: Off": "Sonido: No",
+  "Deep Thinker Mode": "Modo Pensador Profundo",
+  "Untimed mastery; hints and persistent solving earn full stars": "Dominio sin tiempo; las pistas y la persistencia ganan estrellas completas",
+  "Deep Thinker Mode: Solved with persistence & strategy! 🌟": "Modo Pensador Profundo: ¡Resuelto con persistencia y estrategia! 🌟",
+  "Deep Thinker Achievement": "Logro de Pensador Profundo",
+  "Mastery earned through strategy steps, not speed!": "¡Dominio obtenido mediante pasos estratégicos, no por velocidad!",
 };

@@ -213,6 +213,7 @@ export function cleanRewards(saved = {}) {
     seen: Array.isArray(saved.seen) ? saved.seen.filter((id) => STICKERS.some((sticker) => sticker.id === id)) : [],
     strategies,
     calm: saved.calm === true,
+    masteryMode: saved.masteryMode === true,
     buddy: cleanBuddy(saved.buddy),
     goal: [2, 3, 4, 5].includes(saved.goal) ? saved.goal : 3,
     retired: num(saved.retired),
