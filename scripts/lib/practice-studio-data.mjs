@@ -41,6 +41,49 @@ const num = (v) => {
   return /^-?(\d+\.?\d*|\.\d+)$/.test(t);
 };
 
+/**
+ * "Which move?" items (docs/specs/studio-v3-w3.md, W3c): `moves: { practice, challenge }` in a lesson's studio file. Each is a
+ * multiple-choice item (3-4 moves, the best one right, every wrong move tagged and explained without naming the best) plus
+ * `work` / `workEs`: the 1-5 lines of work so far that the question is about. They join one section per page (Practice 3,
+ * Challenge 4) after the existing items, with the explicit ids `mv-p` and `mv-c`.
+ */
+export function moveProblems(id, moves) {
+  const p = [];
+  if (!moves || typeof moves !== "object")
+    return [`${id}.moves: required (practice and challenge)`];
+  for (const mode of ["practice", "challenge"]) {
+    const where = `${id}.moves.${mode}`;
+    const it = moves[mode];
+    if (!it || typeof it !== "object") {
+      p.push(`${where}: required`);
+      continue;
+    }
+    p.push(...itemProblems({ ...it, k: "mc" }, where, { needViz: false }));
+    if (Array.isArray(it.c) && (it.c.length < 3 || it.c.length > 4))
+      p.push(`${where}: needs 3-4 moves`);
+    if (
+      !Array.isArray(it.work) ||
+      it.work.length < 1 ||
+      it.work.length > 5 ||
+      it.work.some((l) => !str(l, 3))
+    )
+      p.push(`${where}: work[] needs 1-5 lines of work so far`);
+    else if (
+      !Array.isArray(it.workEs) ||
+      it.workEs.length !== it.work.length ||
+      it.workEs.some((l) => !str(l, 3))
+    )
+      p.push(`${where}: workEs[] must align with work[]`);
+    if (it.work?.some((l) => String(l).length > 120))
+      p.push(`${where}: a line of work is over 120 characters`);
+    if (!Array.isArray(it.tag) || it.tag.some((t, i) => (i === it.a ? t != null : !t)))
+      p.push(`${where}: tag[] needs a trap id for every wrong move and null for the best`);
+  }
+  if (moves.practice && moves.challenge && moves.practice.a === moves.challenge.a)
+    p.push(`${id}.moves: practice and challenge put the best move in the same position`);
+  return p;
+}
+
 /** Problems with one authored item. */
 export function itemProblems(it, where, { needViz = true } = {}) {
   const p = [];

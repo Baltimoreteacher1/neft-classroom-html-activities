@@ -28,7 +28,7 @@ import {
 import { typographizeItems } from "./lib/math-typography.mjs";
 import { benchProblems } from "./lib/practice-studio-bench.mjs";
 import { buildSections } from "./lib/practice-studio-config.mjs";
-import { validateLessonData } from "./lib/practice-studio-data.mjs";
+import { moveProblems, validateLessonData } from "./lib/practice-studio-data.mjs";
 import { boostPage, indexPage, pageFor } from "./lib/practice-studio-pages.mjs";
 import { TRAPS_JS, trapsJs } from "./lib/practice-studio-traps.mjs";
 import { worldsCss } from "./lib/practice-studio-worlds.mjs";
@@ -194,6 +194,7 @@ export function outputs(opts = {}) {
     const problems = [
       ...validateLessonData(id, ld, worlds),
       ...(ld.bench ? benchProblems(id, ld.bench, labs) : []),
+      ...(ld.moves ? moveProblems(id, ld.moves) : []),
     ];
     if (problems.length)
       throw new Error(`${dataFile} is invalid:\n  ${problems.slice(0, 8).join("\n  ")}`);

@@ -29,15 +29,17 @@ student's own (a different seed, redrawn until the text differs), it never chang
 (only `rp_`/`rd_` redeem items count as repaired in the learner model). Every generator has a two- or three-step ladder and a full
 explanation in both languages, so every generated item can show one.
 
-## W3c — "Which move?" (planned)
+## W3c — "Which move?" (built)
 
-A multiple-choice kind where the question shows work so far and asks for the best next move; the choices are moves, each wrong move
-carries a trap tag and a named help line (the `unit4-mc-contract` shape). Authored per lesson in `data/practice-studio/<id>.json`
-(practice and challenge), bilingual, held by the existing content contract.
+A multiple-choice item (`k: "mc"` plus `work` / `workEs`, 1-5 lines) that shows the work so far and asks for the best next move; the choices
+are moves, each wrong move carries a trap tag and a named help line that never names the best move. Because it is an ordinary mc item, tier two, the
+Trap Book, the learner model and every content check apply unchanged. Authored per lesson under `moves.practice` / `moves.challenge` in
+`data/practice-studio/<id>.json` (all 67 lessons, 134 items), joined to Practice section 3 and Challenge section 4 with the ids `mv-p` / `mv-c`.
+`tools/studio-moves.test.mjs` holds the whole fleet: shape, tags, no leak of the best move, real Spanish, and the best move spread 18-32% across A-D.
 
 ## Gates
 
-`tools/studio-learner.test.mjs` (traps: spotted, dodged, tamed once and sticky, confirmed, per lesson).
+`tools/studio-moves.test.mjs` (all 134 moves items). `tools/studio-learner.test.mjs` (traps: spotted, dodged, tamed once and sticky, confirmed, per lesson).
 `validate:studio-enhancements-browser`: on every generated page with a generated item, the offer, the example (a different problem, its steps, the
 answer), and the fresh try with step 1 open leave progress untouched; and on every generated page, a wrong pick on an item that offers two traps shows tier two, a tap is
 saved as confirmed, and the Trap Book lists the trap; a page whose items offer one trap shows no tier two; three clean dodges tame a trap

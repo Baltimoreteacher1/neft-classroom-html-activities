@@ -178,7 +178,16 @@
           return `<button type="button" class="choice-btn ${cls}" data-mc="${i}"${ctx.solved ? " disabled" : ""}><span>${(it.cEs || [])[i] ? tx(c) : txBoth(c)}${txEs((it.cEs || [])[i])}</span></button>`;
         })
         .join("");
-      ctx.host.innerHTML = `${viz(it)}<p class="item-q">${stem(it.q, it.qEs)}</p>
+      // "Which move?": the work so far, shown above the question it is about
+      const work = Array.isArray(it.work)
+        ? `<div class="move-work" role="group" aria-label="Work so far"><p class="move-label">Work so far${es("Trabajo hasta ahora")}</p><ol class="move-lines">${it.work
+            .map(
+              (/** @type {string} */ l, /** @type {number} */ i) =>
+                `<li>${tx(l)}${txEs((it.workEs || [])[i])}</li>`,
+            )
+            .join("")}</ol></div>`
+        : "";
+      ctx.host.innerHTML = `${viz(it)}${work}<p class="item-q">${stem(it.q, it.qEs)}</p>
         <div class="answer-zone"><div class="choice-stack" role="group" aria-label="Answer choices">${rows}</div></div>
         ${ctx.hintBlock()}<div class="item-fb feedback-box" role="status"></div>`;
       if (ctx.solved) return ctx.showSolved(done(it));

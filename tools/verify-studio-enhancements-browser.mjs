@@ -805,6 +805,83 @@ try {
     );
   }
 
+  // W3c (docs/specs/studio-v3-w3.md): every generated page carries its "Which move?" item with the work so far; a wrong move shows
+  // that move's own help (and never the best move), the best move solves it and counts toward the section.
+  {
+    const ids = readdirSync(join(REPO_ROOT, "math/practice-studio")).filter((d) =>
+      /^\d+-\d+$/.test(d),
+    );
+    let checked = 0;
+    for (const id of ids)
+      for (const [url, mid] of [
+        [`/math/practice-studio/${id}/`, "mv-p"],
+        [`/math/practice-studio/${id}/challenge/`, "mv-c"],
+      ]) {
+        const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+        const page = await ctx.newPage();
+        await page.goto(origin + url);
+        await page.locator(".tab-btn").first().waitFor();
+        const at = await page.evaluate((m) => {
+          const a = /** @type {any} */ (window).StudioRT.api;
+          for (let t = 1; t <= a.sections.length; t++) {
+            const i = a.sections[t - 1].items.findIndex((/** @type {any} */ x) => x.id === m);
+            if (i >= 0) {
+              const x = a.expand(t, i);
+              return { tab: t, i, a: x.a, f: x.f, c: x.c, work: x.work.length };
+            }
+          }
+          return null;
+        }, mid);
+        assert.ok(at, `${url}: has its Which move? item (${mid})`);
+        checked++;
+        await page
+          .locator(".tab-btn")
+          .nth(at.tab - 1)
+          .click();
+        await page.evaluate(({ tab, i }) => {
+          const a = /** @type {any} */ (window).StudioRT.api;
+          a.state.idx[tab] = i;
+          a.render(tab);
+        }, at);
+        const stage = `#stage-${at.tab}`;
+        assert.equal(
+          await page.locator(`${stage} .move-lines > li`).count(),
+          at.work,
+          `${url}: shows the work so far`,
+        );
+        const wrong = at.c.findIndex(
+          (/** @type {any} */ _c, /** @type {number} */ k) => k !== at.a,
+        );
+        const need = page.locator(`${stage} .conf-row:not(.conf-optional) [data-conf="2"]`);
+        if (await need.count()) await need.click();
+        await page.locator(`${stage} .choice-btn:visible`).nth(wrong).click();
+        const help = await page.locator(`${stage} .item-fb`).innerText();
+        // a fraction in the help is typeset (stacked), so compare the plain words it contains
+        const lead = String(at.f[wrong])
+          .match(/[A-Za-z' ,]{14,}/)?.[0]
+          .slice(0, 30);
+        assert.ok(lead, `${url}: the wrong move's help opens with plain words`);
+        assert.ok(
+          help.replace(/\s+/g, " ").includes(lead),
+          `${url}: the wrong move shows its own help`,
+        );
+        assert.ok(!help.includes(at.c[at.a]), `${url}: the help never prints the best move`);
+        await page.locator(`${stage} .choice-btn:visible`).nth(at.a).click();
+        await page.locator(`${stage} .choice-btn.correct`).waitFor();
+        assert.ok(
+          await page.evaluate(
+            ({ tab, m }) => !!(/** @type {any} */ (window).StudioRT.api.state[`solved${tab}`][m]),
+            { tab: at.tab, m: mid },
+          ),
+          `${url}: the best move solves it`,
+        );
+        await ctx.close();
+      }
+    ok(
+      `W3c: a "Which move?" item with its work so far, named help and a solve, on ${checked} generated pages (every page)`,
+    );
+  }
+
   // Unit 4: a wrong pick on the Mastery Check shows that choice's own help, is recorded as a named miss, and appears in
   // "My thinking" under the trap's name — on all ten hand-built pages.
   {
