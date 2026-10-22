@@ -1,5 +1,7 @@
 // Spanish for the learner-facing Game Room, trail, rewards and family summary. The English text is the key.
 // Math problems, skill titles, and worked-example steps are not translated here.
+import { ES_LANGUAGE } from "./i18n-es-language.js";
+
 export const ES = {
   "Settings": "Configuración",
   "Display & Sound": "Pantalla y sonido",
@@ -623,21 +625,9 @@ export const ES = {
   "How does the model show your calculation?": "¿Cómo muestra el modelo tu cálculo?",
   "Which strategy did you use, and why did it help?": "¿Qué estrategia usaste y por qué te ayudó?",
   "How could a model, related fact, or different method check your claim?": "¿Cómo podrían un modelo, un dato relacionado o otro método comprobar tu afirmación?",
-  "compare": "comparar",
-  "equivalent": "equivalente",
-  "because": "porque",
-  "variable": "variable",
-  "equal": "igual",
-  "check": "comprobar",
-  "model": "modelo",
-  "unit": "unidad",
-  "measure": "medir",
-  "pattern": "patrón",
-  "strategy": "estrategia",
   "Math language support": "Apoyo de lenguaje matemático",
   "Talk or think about the math": "Habla o piensa sobre la matemática",
   "Pause, notice, and explain": "Pausa, observa y explica",
-  "Talk, draw, or write a strategy": "Habla, dibuja o escribe una estrategia",
   "Game talk: notice, explain, check": "Charla del juego: observa, explica, comprueba",
   "Tell someone how you knew": "Cuéntale a alguien cómo lo supiste",
   "Talk about this strategy": "Habla sobre esta estrategia",
@@ -650,6 +640,7 @@ export const ES = {
   "Check:": "Comprueba:",
   "Try a start:": "Prueba un comienzo:",
   "Useful words:": "Palabras útiles:",
-  "“I notice ___.” “I used ___ because ___.” “I can check with ___.”": "“Noto ___.” “Usé ___ porque ___.” “Puedo comprobar con ___.”",
   "Point, draw, speak, or write. You may think in a home language first and then try English. Ask a partner: “How do you know?”": "Señala, dibuja, habla o escribe. Puedes pensar primero en tu idioma del hogar y luego probar en inglés. Pregúntale a un compañero: “¿Cómo lo sabes?”",
 };
+
+Object.assign(ES, ES_LANGUAGE);

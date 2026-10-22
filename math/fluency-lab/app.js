@@ -30,7 +30,11 @@ import { stopOptions, stopsFor } from "./game-pool.js";
 import { cleanPlay, exportPlay, importPlay } from "./play-backup.js";
 import { VOCAB_BILINGUAL_DB, highlightVocab, initVocabSystem, openVocabModal } from "./vocab.js";
 import { canSpeak, speak, spoken, spokenEs } from "./speech.js";
-import { languagePromptHtml, languageExpectation, languageMoves } from "./language-bridge.js";
+import { languagePromptHtml } from "./language-bridge.js";
+import { explainCardHtml, initLanguage, journalHtml, journalPrintHtml, lookupCount, problemSupportHtml, spanishPeekHtml, wordStripHtml } from "./language-card.js";
+import { languageEvidence, loadJournal } from "./language-journal.js";
+import { setLanguageProfile } from "./language-settings.js";
+import { questionEs } from "./question-es.js";
 import { handleStepPlayerClick, handleStepPlayerSolved, lightStepPlayers, stepPlayer } from "./step-player.js";
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
@@ -42,6 +46,7 @@ const initialParams = new URLSearchParams(location.search);
 let activeProfile = profiles().active;
 // Pin this tab to its learner now, so another tab switching learners later cannot move this one.
 selectProfile(activeProfile);
+setLanguageProfile(activeProfile);
 let cleanupVisual = null;
 let cleanupTrail = null;
 let cleanupGames = null;
@@ -512,6 +517,7 @@ function renderLearn() {
         </div>
       </div>
       <p class="learn-watch"><strong>Watch out:</strong> ${highlightVocab(escapeHtml(skill.learn.watch))}</p>
+      ${wordStripHtml(skill, { heading: t("Words to know") })}
       ${languagePromptHtml(skill, { heading: t("Pause, notice, and explain") })}
       <div class="learn-actions">
         <button class="primary-action" data-start-guided>Try 5 with help</button>
@@ -659,7 +665,7 @@ function nextProblem(restoredItem = null) {
   els.problemNumber.textContent = state.session.mode === "streak" ? `Problem ${state.session.answered + 1}` : `Problem ${state.session.answered + 1} of ${state.session.target}`;
   formatProblemArena(state.item);
   els.topic.textContent = `${skill.title} · Grade ${skill.grade}`;
-  document.querySelector("#problem-language-support").innerHTML = state.session.mode === "diagnostic" ? "" : languagePromptHtml(skill, { compact: true, heading: t("Talk, draw, or write a strategy") });
+  document.querySelector("#problem-language-support").innerHTML = state.session.mode === "diagnostic" ? spanishPeekHtml(state.item) : problemSupportHtml(skill, state.item);
   els.insight.textContent = state.session.mode === "diagnostic" ? "One sample per skill. Choose “I’m not sure yet” whenever you need to." : state.session.queue?.[state.session.answered]?.purpose || (state.initialSupport ? "A smaller step with coaching. We’ll build back toward independent work." : adapting && level === 2 ? "Your recent answers were strong. Try this one independently, then explain a check." : adapting ? "Work at your pace. Help is here when you need it." : "");
   els.guidedCoach.hidden = !state.initialSupport;
   if (state.initialSupport) state.guidedStepsShown = 1;
@@ -6158,233 +6164,6 @@ const InteractiveSolver = {
   }
 };
 
-let widaSpeechRecognition = null;
-function toggleWidaSpeech(btn) {
-  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const wrap = btn.closest(".wida-composer-row");
-  const textarea = wrap?.querySelector("#wida-reasoning-input");
-  const statusEl = wrap?.querySelector(".wida-mic-status");
-
-  if (!SpeechRec) {
-    if (statusEl) {
-      statusEl.textContent = "🎙️ Voice recognition not supported in this browser. Type your math justification!";
-      setTimeout(() => { if (statusEl) statusEl.textContent = ""; }, 4000);
-    }
-    return;
-  }
-
-  if (widaSpeechRecognition) {
-    try {
-      widaSpeechRecognition.stop();
-    } catch (_) {}
-    widaSpeechRecognition = null;
-    btn.classList.remove("recording");
-    if (statusEl) statusEl.textContent = "";
-    return;
-  }
-
-  try {
-    const rec = new SpeechRec();
-    rec.continuous = false;
-    rec.interimResults = false;
-    rec.lang = state.lang === "es" ? "es-ES" : "en-US";
-
-    rec.onstart = () => {
-      btn.classList.add("recording");
-      if (statusEl) statusEl.textContent = "Listening... Speak your math thinking! 🎙️";
-    };
-
-    rec.onresult = (ev) => {
-      const transcript = Array.from(ev.results)
-        .map((r) => r[0]?.transcript)
-        .filter(Boolean)
-        .join(" ");
-      if (transcript && textarea) {
-        const cur = textarea.value.trim();
-        textarea.value = cur ? `${cur} ${transcript}` : transcript;
-        scanAndHighlightAcademicLanguage(textarea);
-      }
-    };
-
-    rec.onerror = () => {
-      btn.classList.remove("recording");
-      widaSpeechRecognition = null;
-      if (statusEl) {
-        statusEl.textContent = "Microphone paused or unavailable. Type your reasoning directly!";
-        setTimeout(() => { if (statusEl) statusEl.textContent = ""; }, 3500);
-      }
-    };
-
-    rec.onend = () => {
-      btn.classList.remove("recording");
-      widaSpeechRecognition = null;
-      if (statusEl) {
-        statusEl.textContent = "Math speech captured! Review or edit below. ✨";
-        setTimeout(() => { if (statusEl) statusEl.textContent = ""; }, 3000);
-      }
-    };
-
-    widaSpeechRecognition = rec;
-    rec.start();
-  } catch (err) {
-    btn.classList.remove("recording");
-    widaSpeechRecognition = null;
-    if (statusEl) statusEl.textContent = "Could not activate microphone.";
-  }
-}
-
-function scanAndHighlightAcademicLanguage(textarea) {
-  if (!textarea) return;
-  const text = (textarea.value || "").toLowerCase();
-  const row = textarea.closest(".wida-composer-row")?.querySelector("#wida-detected-vocab-row");
-  if (!row) return;
-  const list = row.querySelector(".vocab-badges-list");
-  if (!list) return;
-
-  const found = [];
-  const dbEntries = Object.values(VOCAB_BILINGUAL_DB || {});
-  for (const entry of dbEntries) {
-    const kws = [entry.id, ...(entry.keywords || [])];
-    for (const kw of kws) {
-      if (kw.length >= 3 && text.includes(kw.toLowerCase())) {
-        if (!found.some((f) => f.id === entry.id)) {
-          found.push(entry);
-        }
-        break;
-      }
-    }
-  }
-
-  const commonRoots = [
-    { id: "decompose", label: "Decompose / Descomponer" },
-    { id: "inverse", label: "Inverse / Inverso" },
-    { id: "distributive", label: "Distributive / Distributiva" },
-    { id: "estimate", label: "Estimate / Estimar" },
-    { id: "equal", label: "Equal Groups / Grupos Iguales" }
-  ];
-  for (const root of commonRoots) {
-    if (text.includes(root.id) && !found.some((f) => f.id === root.id)) {
-      found.push({ id: root.id, enTitle: root.label });
-    }
-  }
-
-  if (found.length > 0) {
-    row.hidden = false;
-    list.innerHTML = found.map((item) => `
-      <span class="vocab-badge-pill" title="Vocabulary noticed in your explanation">
-        ${escapeHtml(item.enTitle || item.id)}
-      </span>
-    `).join("");
-  } else {
-    row.hidden = true;
-    list.innerHTML = "";
-  }
-}
-
-function renderWidaStudio(item) {
-  if (!item) return "";
-  const q = item.question || "";
-  const moves = languageMoves(item.skill);
-  const expectation = languageExpectation(item.skill?.grade || state.grade);
-
-  let wordsEn = ["Strategy", "Reasoning", "Estimate", "Solution", "Check"];
-  let wordsEs = ["Estrategia", "Razonamiento", "Estimar", "Solución", "Verificar"];
-
-  if (/(\d+)\/(\d+)/.test(q)) {
-    wordsEn = ["Numerator", "Denominator", "Equal parts", "Common denominator", "Reciprocal", "Equivalent"];
-    wordsEs = ["Numerador", "Denominador", "Partes iguales", "Denominador común", "Recíproco", "Equivalente"];
-  } else if (/\b[xy]\b|[=]/.test(q) && /solve|equation|linear/i.test(item.skill?.id || "")) {
-    wordsEn = ["Variable", "Equation", "Coefficient", "Inverse operation", "Balance both sides", "Isolate"];
-    wordsEs = ["Variable", "Ecuación", "Coeficiente", "Operación inversa", "Balancear ambos lados", "Aislar"];
-  } else if (/[-−]\d+/.test(q) || /integer/i.test(item.skill?.id || "")) {
-    wordsEn = ["Positive", "Negative", "Zero pair", "Opposite", "Number line", "Absolute value"];
-    wordsEs = ["Positivo", "Negativo", "Par cero", "Opuesto", "Recta numérica", "Valor absoluto"];
-  } else if (/[×*÷/]/.test(q) || /mul|div|factor/i.test(item.skill?.id || "")) {
-    wordsEn = ["Factor", "Product", "Quotient", "Equal groups", "Array", "Decompose"];
-    wordsEs = ["Factor", "Producto", "Cociente", "Grupos iguales", "Matriz", "Descomponer"];
-  } else if (/%|ratio|rate|proportion/i.test(q) || /ratio|rate/i.test(item.skill?.id || "")) {
-    wordsEn = ["Ratio", "Rate", "Unit rate", "Proportion", "Scale factor", "Per unit"];
-    wordsEs = ["Razón", "Tasa", "Tasa unitaria", "Proporción", "Factor de escala", "Por unidad"];
-  } else if (/[+−\-]/.test(q)) {
-    wordsEn = ["Addend", "Sum", "Difference", "Tens and ones", "Regroup", "Friendly numbers"];
-    wordsEs = ["Sumando", "Suma", "Diferencia", "Decenas y unidades", "Reagrupar", "Números amigables"];
-  }
-
-  const cleanQ = q.replace("= ?", "").trim();
-
-  const framesEn = [
-    { type: "Notice", text: `In ${cleanQ}, I notice ___ .` },
-    { type: "Explain", text: `I used ___ because ___ .` },
-    { type: "Compare", text: `Another way is ___ . Both ways show ___ .` },
-    { type: "Justify", text: `I can check my answer with ___ . This shows ___ .` },
-  ];
-
-  const framesEs = [
-    { type: "Observar", text: `En ${cleanQ}, noto ___ .` },
-    { type: "Explicar", text: `Usé ___ porque ___ .` },
-    { type: "Comparar", text: `Otra manera es ___ . Las dos muestran ___ .` },
-    { type: "Justificar", text: `Puedo comprobar mi respuesta con ___ . Esto muestra ___ .` },
-  ];
-
-  return `
-    <details class="wida-studio-wrap">
-      <summary class="wida-studio-summary">
-        <span>🗣️</span> <strong>Explain your math · WIDA ELD Standard 3</strong>
-        <span class="wida-pill">${escapeHtml(expectation.code)}</span>
-      </summary>
-      <div class="wida-studio-body">
-        <p class="wida-instruction">${escapeHtml(moves.explain)} ${escapeHtml(moves.argue)} Draw, speak, or write; complete a starter in your own words.</p>
-        <div class="wida-lang-toggle-bar">
-          <span class="wida-subheading">Scaffold Language:</span>
-          <button type="button" class="wida-lang-chip active" data-wida-toggle="en">English</button>
-          <button type="button" class="wida-lang-chip" data-wida-toggle="es">Español</button>
-        </div>
-        
-        <div class="wida-frames-group" data-wida-lang-group="en">
-          <p class="wida-instruction"><strong>Choose an unfinished sentence starter:</strong></p>
-          <div class="wida-chip-row">
-            ${framesEn.map((f) => `<button type="button" class="wida-frame-btn" data-wida-insert="${escapeHtml(f.text)}"><span class="wida-badge-type">${f.type}</span> ${escapeHtml(f.text)}</button>`).join("")}
-          </div>
-          <p class="wida-instruction"><strong>Academic Vocabulary &amp; Cognates:</strong></p>
-          <div class="wida-chip-row">
-            ${wordsEn.map((w, idx) => `<button type="button" class="wida-word-btn" data-wida-word="${escapeHtml(w)}">${escapeHtml(w)} <small class="wida-cognate">(${escapeHtml(wordsEs[idx])})</small></button>`).join("")}
-          </div>
-        </div>
-
-        <div class="wida-frames-group" data-wida-lang-group="es" hidden>
-          <p class="wida-instruction"><strong>Elige una oración para completar:</strong></p>
-          <div class="wida-chip-row">
-            ${framesEs.map((f) => `<button type="button" class="wida-frame-btn" data-wida-insert="${escapeHtml(f.text)}"><span class="wida-badge-type">${f.type}</span> ${escapeHtml(f.text)}</button>`).join("")}
-          </div>
-          <p class="wida-instruction"><strong>Vocabulario Académico y Cognados:</strong></p>
-          <div class="wida-chip-row">
-            ${wordsEs.map((w, idx) => `<button type="button" class="wida-word-btn" data-wida-word="${escapeHtml(w)}">${escapeHtml(w)} <small class="wida-cognate">(${escapeHtml(wordsEn[idx])})</small></button>`).join("")}
-          </div>
-        </div>
-
-        <div class="wida-composer-row">
-          <label for="wida-reasoning-input" class="wida-sr">Your Math Justification</label>
-          <div class="wida-input-actions-bar">
-            <button type="button" class="wida-mic-btn" data-wida-mic-btn title="Speak your math into your microphone">
-              <span class="mic-icon">🎙️</span> <span class="mic-label">Speak Your Math</span>
-            </button>
-            <span class="wida-mic-status" aria-live="polite"></span>
-          </div>
-          <textarea id="wida-reasoning-input" class="wida-textarea" rows="2" placeholder="Tap a sentence starter above, speak your math, or type..."></textarea>
-          <div class="wida-detected-vocab-row" id="wida-detected-vocab-row" hidden>
-            <span class="vocab-lead">🌟 Academic Words Used:</span>
-            <div class="vocab-badges-list"></div>
-          </div>
-          <div class="wida-action-bar">
-            <button type="button" class="wida-speech-btn" data-wida-speak-btn>🔊 Read Aloud / Escuchar</button>
-            <span class="wida-feedback-hint" aria-live="polite"></span>
-          </div>
-        </div>
-      </div>
-    </details>
-  `;
-}
-
 function renderMultiStrategyComparison(item) {
   if (!item) return "";
   const q = String(item.question || item.expr || "").replaceAll(",", "");
@@ -6990,7 +6769,7 @@ function renderStudentFriendlyExplanation(item, copy) {
       <div class="student-expl-tip"><strong>💡 Pro Tip:</strong> ${escapeHtml(tip)}</div>
       ${toolCallout}
       ${renderMultiStrategyComparison(item)}
-      ${renderWidaStudio(item)}
+      ${explainCardHtml({ skill: item.skill, skillKey: tutorSkillKey(item.skill), grade: item.skill?.grade || state.grade, correct: false, day: localDay() })}
     </div>
   `;
 }
@@ -7418,7 +7197,7 @@ function showFeedback(title, copy, type) {
     lightStepPlayers(els.feedbackCopy);
     wireExplanationWidgets(els.feedbackCopy, state.item);
   } else if (type === "correct" && state.item) {
-    els.feedbackCopy.innerHTML = `<p>${escapeHtml(copy)}</p>${renderTransferChallengeButton(state.item)}`;
+    els.feedbackCopy.innerHTML = `<p>${escapeHtml(copy)}</p>${renderTransferChallengeButton(state.item)}${state.session?.mode === "diagnostic" ? "" : explainCardHtml({ skill: state.item.skill, skillKey: tutorSkillKey(state.item.skill), grade: state.item.skill?.grade || state.grade, correct: true, count: state.session?.answered || 0, day: localDay() })}`;
   } else {
     els.feedbackCopy.textContent = copy;
   }
@@ -7527,7 +7306,7 @@ function speakProblem(lang = "en") {
   speechSynthesis.cancel();
   const rawQ = state.item.question || "";
   if (lang === "es") {
-    const text = spokenEs(rawQ);
+    const text = spokenEs(questionEs(state.item) || rawQ);
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "es-ES";
     speechSynthesis.speak(utterance);
@@ -7623,10 +7402,8 @@ function calculateFluencyGenome(profile = activeProfile) {
   resilience = Math.min(98, Math.max(40, resilience));
 
   // 4. Academic Math Language (0 - 100)
-  const esAudioCount = state.tutor?.esAudioCount || 0;
   const wordWallHistory = loadJson(profileKey("ewl-word-wall-history", profile), []);
-  let language = Math.round(55 + Math.min(25, wordWallHistory.length * 5) + Math.min(18, esAudioCount * 3));
-  language = Math.min(98, Math.max(40, language));
+  const language = languageEvidence(loadJournal(), wordWallHistory.length + lookupCount());
 
   return {
     recall,
@@ -7637,7 +7414,7 @@ function calculateFluencyGenome(profile = activeProfile) {
       recall: recall >= 85 ? "Rapid fact retrieval & automaticity" : recall >= 65 ? "Steady retrieval with thoughtful pacing" : "Building foundational recall",
       strategy: strategy >= 80 ? "Multi-model reasoning & flexible representations" : strategy >= 60 ? "Active visual lesson & model exploration" : "Connecting concrete models to symbols",
       resilience: resilience >= 85 ? "High Fix-It Garage recovery rate & growth mindset" : resilience >= 65 ? "Steady persistence through tricky problems" : "Beginning mistake analysis",
-      language: language >= 80 ? "Rich WIDA discourse & precise bilingual vocabulary" : language >= 60 ? "Developing mathematical terminology" : "Foundational vocabulary access"
+      language: language === null ? "Not enough yet: explain a problem in your own words to start" : language >= 70 ? "Explains with math words, reasons, and checks" : language >= 40 ? "Using math words and some reasons" : "Starting to explain in words"
     }
   };
 }
@@ -7727,8 +7504,8 @@ function renderFluencyGenomeCard(genome) {
             <p class="gm-desc">${escapeHtml(genome.qualitative.resilience)}</p>
           </div>
           <div class="genome-metric-item">
-            <div class="gm-top"><span class="gm-title">🗣️ Academic Language</span><strong class="gm-val" style="color:#7c3aed">${genome.language}%</strong></div>
-            <div class="gm-bar"><div class="gm-bar-fill" style="width:${genome.language}%; background:#7c3aed"></div></div>
+            <div class="gm-top"><span class="gm-title">🗣️ Academic Language</span><strong class="gm-val" style="color:#7c3aed">${genome.language === null ? "—" : `${genome.language}%`}</strong></div>
+            <div class="gm-bar"><div class="gm-bar-fill" style="width:${genome.language ?? 0}%; background:#7c3aed"></div></div>
             <p class="gm-desc">${escapeHtml(genome.qualitative.language)}</p>
           </div>
         </div>
@@ -7779,7 +7556,7 @@ function renderPath() {
       const status = evidence(state.tutor, skill); const foundation = prerequisites(skill)[0];
       const checkup = state.tutor.diagnostics[state.grade]?.results?.[tutorSkillKey(skill)];
       return `<article class="path-skill ${status.secure ? 'secure' : ''}"><div><p class="section-label">${escapeHtml(skill.strand)}</p><h3>${escapeHtml(skill.title)}</h3><p class="path-status">${status.label}</p><p>${status.independent ? `${status.successes} of ${status.independent} recent independent checks correct` : 'No independent evidence yet'}${status.supportedTotal ? ` · ${status.supportedTotal} coached attempts` : ''}</p>${status.dueAt ? `<p>${status.due ? 'Ready to revisit' : `Next memory refresh: ${new Date(status.dueAt).toLocaleDateString()}`}</p>` : ''}${checkup !== undefined ? `<p class="small-copy">Starting-point sample: ${checkup ? 'solved' : 'worth exploring'}. More practice will tell us more.</p>` : ''}${foundation ? `<p class="foundation-link">Helpful foundation: <button class="text-action" data-open-key="${tutorSkillKey(foundation)}" data-open-mode="visual">${escapeHtml(foundation.title)}</button></p>` : ''}</div><div class="button-row"><button class="outline-action" data-open-key="${tutorSkillKey(skill)}" data-open-mode="visual">Visual lesson</button><button class="primary-action" data-open-key="${tutorSkillKey(skill)}" data-open-mode="adaptive">Practice</button></div></article>`;
-    }).join("")}</div><section class="family-guide"><h3>For families: five useful minutes</h3><ol><li>Let your child choose one developing skill.</li><li>Ask, “What do you notice?” before giving a method.</li><li>Use the visual lesson together when a step feels unclear.</li><li>Let your child try a few fresh questions independently.</li><li>Ask, “How could you check that?” Celebrate a useful strategy or a repaired mistake.</li></ol><p>Fresh problems are generated each visit. A familiar topic can be practiced again tomorrow without repeating a fixed worksheet.</p></section>`;
+    }).join("")}</div>${journalHtml()}<section class="family-guide"><h3>For families: five useful minutes</h3><ol><li>Let your child choose one developing skill.</li><li>Ask, “What do you notice?” before giving a method.</li><li>Use the visual lesson together when a step feels unclear.</li><li>Let your child try a few fresh questions independently.</li><li>Ask, “How could you check that?” Celebrate a useful strategy or a repaired mistake.</li></ol><p>Fresh problems are generated each visit. A familiar topic can be practiced again tomorrow without repeating a fixed worksheet.</p></section>`;
 }
 
 const DETECTIVE_STORAGE_KEY = "ewl-detective-cases-v1";
@@ -8175,7 +7952,7 @@ function renderProfiles() {
 }
 
 function switchProfile(id) {
-  saveActiveSession(); saveSettings(); selectProfile(id); activeProfile = id;
+  saveActiveSession(); saveSettings(); selectProfile(id); activeProfile = id; setLanguageProfile(id);
   state.session = null; state.item = null;
   state.progress = cleanProgress(loadJson(STORAGE_KEY, {})); state.tutor = sanitizeTutor(loadJson(TUTOR_KEY, emptyTutor()));
   state.settings = loadJson(SETTINGS_KEY, { largeText: false }); state.grade = Number(loadJson(`${SETTINGS_KEY}:grade`, 1)) || 1;
@@ -8807,48 +8584,6 @@ document.addEventListener("click", (event) => {
     }
     return;
   }
-  const widaLangBtn = event.target.closest("[data-wida-toggle]");
-  if (widaLangBtn) {
-    const lang = widaLangBtn.dataset.widaToggle;
-    const card = widaLangBtn.closest(".wida-studio-wrap");
-    if (card) {
-      card.querySelectorAll("[data-wida-toggle]").forEach((b) => b.classList.toggle("active", b.dataset.widaToggle === lang));
-      card.querySelectorAll("[data-wida-lang-group]").forEach((g) => {
-        g.hidden = g.dataset.widaLangGroup !== lang;
-      });
-    }
-    return;
-  }
-  const widaInsertBtn = event.target.closest("[data-wida-insert]");
-  if (widaInsertBtn) {
-    const text = widaInsertBtn.dataset.widaInsert;
-    const card = widaInsertBtn.closest(".wida-studio-wrap");
-    const textarea = card?.querySelector("#wida-reasoning-input");
-    if (textarea) {
-      textarea.value = text;
-      scanAndHighlightAcademicLanguage(textarea);
-      textarea.focus();
-    }
-    return;
-  }
-  const widaWordBtn = event.target.closest("[data-wida-word]");
-  if (widaWordBtn) {
-    const word = widaWordBtn.dataset.widaWord;
-    const card = widaWordBtn.closest(".wida-studio-wrap");
-    const textarea = card?.querySelector("#wida-reasoning-input");
-    if (textarea) {
-      const val = textarea.value.trim();
-      textarea.value = val ? `${val} ${word}` : word;
-      scanAndHighlightAcademicLanguage(textarea);
-      textarea.focus();
-    }
-    return;
-  }
-  const widaMicBtn = event.target.closest("[data-wida-mic-btn]");
-  if (widaMicBtn) {
-    toggleWidaSpeech(widaMicBtn);
-    return;
-  }
   const caseBtn = event.target.closest("[data-solve-case]");
   if (caseBtn) {
     const caseId = caseBtn.dataset.solveCase;
@@ -8917,26 +8652,6 @@ document.addEventListener("click", (event) => {
       chime("bad");
       transferChoiceBtn.disabled = true;
       transferChoiceBtn.style.opacity = "0.6";
-    }
-    return;
-  }
-  const widaSpeakBtn = event.target.closest("[data-wida-speak-btn]");
-  if (widaSpeakBtn) {
-    const card = widaSpeakBtn.closest(".wida-studio-wrap");
-    const textarea = card?.querySelector("#wida-reasoning-input");
-    const hint = card?.querySelector(".wida-feedback-hint");
-    const content = textarea?.value?.trim() || "";
-    if (content) {
-      speak(content);
-      if (hint) {
-        hint.textContent = "Speaking explanation... 🔊";
-        setTimeout(() => { hint.textContent = ""; }, 2500);
-      }
-    } else {
-      if (hint) {
-        hint.textContent = "Please select or type a sentence starter first!";
-        setTimeout(() => { hint.textContent = ""; }, 2500);
-      }
     }
     return;
   }
@@ -10806,17 +10521,13 @@ const MathWordWall = {
   }
 };
 
-document.addEventListener("input", (event) => {
-  if (event.target && event.target.id === "wida-reasoning-input") {
-    scanAndHighlightAcademicLanguage(event.target);
-  }
-});
-
 populateQuickSkillDropdown();
 applySettings();
 renderLibrary();
 initVoiceControl();
 initVocabSystem();
+initLanguage();
+window.addEventListener("fluency-language-print", () => printHtml(journalPrintHtml({ name: PROFILE_NAMES[activeProfile], grade: state.grade })));
 MathWordWall.wire();
 window.NumberTalkRoutine = NumberTalkRoutine;
 window.TeacherPrintCenter = TeacherPrintCenter;

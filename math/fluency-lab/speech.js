@@ -10,6 +10,7 @@ export const spoken = (text) =>
 
 export const spokenEs = (text) =>
   String(text || "")
+    .replace(/(\d+)\/(\d+)/g, "$1 sobre $2")
     .replaceAll("×", " por ")
     .replaceAll("*", " por ")
     .replaceAll("÷", " entre ")
@@ -19,7 +20,6 @@ export const spokenEs = (text) =>
     .replaceAll("+", " más ")
     .replaceAll("= ?", " ¿es igual a qué?")
     .replaceAll("=", " es igual a ")
-    .replace(/(\d+)\/(\d+)/g, "$1 sobre $2")
     .replace(/\^(\d+)/g, " elevado a la $1")
     .replaceAll("√", "la raíz cuadrada de ");
 

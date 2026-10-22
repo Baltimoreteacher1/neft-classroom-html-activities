@@ -6,6 +6,7 @@ import { GAMES_BY_ID_NAME } from "./game-names.js";
 import { dailyGame, earnedIds, loadRewards, rankFor, summarize } from "./rewards.js";
 import { bandFor } from "./fact-trail.js";
 import { getLang, t } from "./i18n.js";
+import { loadJournal, summarize as summarizeJournal } from "./language-journal.js";
 import { tipOfDay } from "./strategies.js";
 
 const esc = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
@@ -23,6 +24,7 @@ export function familySummaryHtml({ grade, name }) {
   const done = stops.filter((entry) => (trail.stations[`${grade}:${entry.id}`]?.stars || 0) >= 2).length;
   const tricky = factsReport(grade).tricky.sort((a, b) => b.missed - a.missed).slice(0, 6);
   const tip = tipOfDay(bandFor(grade));
+  const talk = summarizeJournal(loadJournal());
   return `<article class="family-print"><h1>${t("{name}’s Math Fluency Summary", { name: esc(name) })}</h1>
     <p>${t("Grade {n}", { n: grade })} · ${new Date().toLocaleDateString()} · ${t("Rank")}: ${esc(rank.name)}</p>
     <h2>${t("This week")}</h2>
@@ -31,6 +33,9 @@ export function familySummaryHtml({ grade, name }) {
     ${tricky.length ? `<ul>${tricky.map((fact) => `<li><b>${esc(factLabel(fact.key))}</b> — ${esc(t(FACT_TIPS[fact.key.split(":")[0]]))}</li>`).join("")}</ul>` : `<p>${t("No tricky facts right now. Keep practicing a little each day.")}</p>`}
     <h2>${t("Ask your child")}</h2>
     <ul><li>${t("“Show me how you solved one. What did you do first?”")}</li><li>${t("“How could you check that answer?”")}</li><li>${t("“Which strategy helped most today?”")}</li></ul>
+    <h2>${t("Math talk")}</h2>
+    <p>${t("{n} explanations written and {w} different math words so far.", { n: `<b>${talk.total}</b>`, w: `<b>${talk.wordsUsed}</b>` })}</p>
+    <p>${t("Explaining in any language is real math thinking. Try this starter together, in Spanish or English: “I know ___ because ___.”")}</p>
     <h2>${t("Strategy of the day")}: ${esc(t(tip.title))}</h2><p>${esc(t(tip.tip))}</p>
     <h2>${t("Play together")}</h2><p>${t("Try {game} in the Game Room at eduwonderlab.com/math/fluency-lab/. There are no timers.", { game: `<b>${esc(t(GAMES_BY_ID_NAME[dailyGame()]))}</b>` })}</p>
     <p class="family-note">${t("Progress lives on this device only. Nothing was uploaded to make this page.")}</p></article>`;

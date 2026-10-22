@@ -16,6 +16,8 @@ const { RANKS, STICKERS } = await import("../math/fluency-lab/rewards.js");
 const { GAMES_BY_ID_NAME } = await import("../math/fluency-lab/game-names.js");
 const { SCENES } = await import("../math/fluency-lab/scenes.js");
 const { ITEMS } = await import("../math/fluency-lab/buddy-items.js");
+const { LEVELS, FUNCTIONS } = await import("../math/fluency-lab/language-frames.js");
+const { MOVE_FN, MOVE_LABELS, STAT_LABELS } = await import("../math/fluency-lab/language-card.js");
 
 const failures = [];
 const keys = new Set();
@@ -68,6 +70,17 @@ for (const item of ITEMS) {
 for (const word of ["Blue", "Green", "Pink", "Orange", "Purple", "Teal", "Hat", "Face", "Back"])
   keys.add(word);
 keys.add("Everything on my trail");
+for (const level of LEVELS) {
+  keys.add(level.name);
+  keys.add(level.blurb);
+}
+for (const fn of FUNCTIONS) keys.add(fn.en);
+for (const label of [
+  ...Object.values(MOVE_FN),
+  ...Object.values(MOVE_LABELS),
+  ...STAT_LABELS.map(([, label]) => label),
+])
+  keys.add(label);
 keys.add("Grade");
 
 const holes = (text) =>

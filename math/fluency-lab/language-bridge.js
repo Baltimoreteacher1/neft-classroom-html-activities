@@ -1,6 +1,9 @@
 // WIDA 2020 ELD Standard 3: language used to make sense of mathematics.
 // These are instructional prompts, never answers or a language proficiency score.
-import { t } from "./i18n.js";
+import { getLang, t } from "./i18n.js";
+import { framesFor } from "./language-frames.js";
+import { getLevel } from "./language-settings.js";
+import { languageProfile } from "./language-terms.js";
 
 const escapeHtml = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
@@ -26,7 +29,7 @@ export function languageMoves(skill) {
   const compare = /compare|fraction|ratio|rate|percent|decimal|proportion|probability|data|association/.test(strand);
   const equation = /equation|expression|function|system|balance|inequal/.test(strand);
   const geometry = /area|volume|perimeter|geometry|slope|transform/.test(strand);
-  const vocabulary = compare ? [t("compare"), t("equivalent"), t("because")] : equation ? [t("variable"), t("equal"), t("check")] : geometry ? [t("model"), t("unit"), t("measure")] : [t("pattern"), t("strategy"), t("check")];
+  const vocabulary = languageProfile(skill).terms.map((term) => (getLang() === "es" ? term.es : term.en));
   return {
     topic,
     vocabulary,
@@ -36,8 +39,17 @@ export function languageMoves(skill) {
   };
 }
 
+// One starter each for notice, explain and check, at the learner's chosen level, in the page language.
+const starters = (level) =>
+  ["notice", "explain", "check"]
+    .map((fn) => framesFor(level >= 4 ? 3 : level, fn)[0])
+    .filter(Boolean)
+    .map((frame) => `“${escapeHtml(getLang() === "es" ? frame.es : frame.en)}”`)
+    .join(" ");
+
 export function languagePromptHtml(skill, { compact = false, heading = t("Talk or think about the math") } = {}) {
   const grade = skill?.grade || 6;
+  const level = getLevel();
   const standard = languageExpectation(grade);
   const moves = languageMoves(skill);
   return `<aside class="language-bridge${compact ? " language-bridge-compact" : ""}" aria-label="${escapeHtml(t("Math language support"))}">
@@ -50,7 +62,7 @@ export function languagePromptHtml(skill, { compact = false, heading = t("Talk o
           <li><strong>${escapeHtml(grade === 1 ? t("Describe:") : t("Explain:"))}</strong> ${escapeHtml(moves.explain)}</li>
           <li><strong>${escapeHtml(t("Check:"))}</strong> ${escapeHtml(moves.argue)}</li>
         </ol>
-        <p class="language-bridge-frames"><strong>${escapeHtml(t("Try a start:"))}</strong> ${escapeHtml(t("“I notice ___.” “I used ___ because ___.” “I can check with ___.”"))}</p>
+        <p class="language-bridge-frames"><strong>${escapeHtml(t("Try a start:"))}</strong> ${starters(level)}</p>
         <p class="language-bridge-support">${escapeHtml(t("Point, draw, speak, or write. You may think in a home language first and then try English. Ask a partner: “How do you know?”"))}</p>
         <p class="language-bridge-vocab"><strong>${escapeHtml(t("Useful words:"))}</strong> ${moves.vocabulary.map(escapeHtml).join(" · ")}</p>
       </div>
