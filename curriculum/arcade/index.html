@@ -332,6 +332,151 @@
           transform: none;
         }
       }
+      /* The Grand Citadel Restoration Meta-Hub */
+      .citadel-card {
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0c2a2e 100%);
+        border: 2px solid #38bdf8;
+        border-radius: 20px;
+        padding: 24px;
+        color: #f8fafc;
+        margin: 24px 0 28px;
+        box-shadow: 0 12px 36px rgba(15, 23, 42, 0.25);
+        position: relative;
+        overflow: hidden;
+      }
+      .citadel-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+      .citadel-title h2 {
+        font-family: "Nunito", system-ui, sans-serif;
+        font-size: 1.6rem;
+        font-weight: 900;
+        margin: 0;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .citadel-meter-wrap {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 14px;
+        height: 24px;
+        overflow: hidden;
+        margin: 12px 0 6px;
+      }
+      .citadel-meter-bar {
+        height: 100%;
+        width: 10%;
+        background: linear-gradient(90deg, #38bdf8, #818cf8, #34d399);
+        border-radius: 14px;
+        transition: width 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        box-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+      }
+      .citadel-sectors-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr));
+        gap: 10px;
+        margin-top: 16px;
+      }
+      .citadel-sector-pill {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+        font-size: 0.82rem;
+        color: #cbd5e1;
+        transition: all 0.2s;
+      }
+      .citadel-sector-pill.restored {
+        background: rgba(56, 189, 248, 0.15);
+        border-color: #38bdf8;
+        color: #fff;
+        box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+      }
+      /* Field Relics Vault */
+      .relics-shelf {
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+      }
+      .relics-shelf h3 {
+        font-family: "Nunito", system-ui, sans-serif;
+        font-size: 1.15rem;
+        margin: 0 0 10px;
+        color: #ffd24a;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .relics-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .relic-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 210, 74, 0.35);
+        background: rgba(255, 210, 74, 0.1);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .relic-btn:hover {
+        background: rgba(255, 210, 74, 0.25);
+        border-color: #ffd24a;
+        transform: translateY(-2px);
+      }
+      /* Passport Beaming Box */
+      .beam-shelf {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        padding: 12px 18px;
+        margin-top: 18px;
+      }
+      /* Relic Interactive Sandbox Modal */
+      .relic-modal-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 100000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .relic-modal-backdrop.show { display: flex; }
+      .relic-modal-card {
+        background: #0f172a;
+        border: 2px solid #ffd24a;
+        border-radius: 20px;
+        max-width: 620px;
+        width: 100%;
+        padding: 26px;
+        color: #f8fafc;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      }
     </style>
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
@@ -386,6 +531,117 @@
           </div>
         </div>
       </section>
+
+      <!-- The Grand Citadel Restoration Meta-Hub -->
+      <section class="citadel-card" aria-labelledby="citadel-heading">
+        <div class="citadel-header">
+          <div class="citadel-title">
+            <h2 id="citadel-heading"><span>🏰</span> The Grand Citadel Restoration</h2>
+            <p style="margin:4px 0 0; color:#cbd5e1; font-size:0.95rem;">
+              As you solve challenges across all 10 units, the Citadel awakens. Restore sectors to unlock powerful Expedition Field Relics!
+            </p>
+          </div>
+          <div style="text-align:right;">
+            <span id="citadel-badge" style="display:inline-block; background:rgba(56,189,248,0.2); border:1px solid #38bdf8; color:#7dd3fc; font-weight:800; font-size:0.9rem; padding:6px 14px; border-radius:999px;">
+              ⚡ Status: 40% Restored
+            </span>
+          </div>
+        </div>
+
+        <div class="citadel-meter-wrap" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" aria-label="Citadel Restoration Progress">
+          <div class="citadel-meter-bar" id="citadel-bar" style="width: 40%;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#94a3b8; font-weight:700;">
+          <span>Dormant Outpost</span>
+          <span id="citadel-stat-line">4 / 10 Sectors Powered</span>
+          <span>Full Grand Citadel Restoration</span>
+        </div>
+
+        <!-- 10 Unit Sectors -->
+        <div class="citadel-sectors-grid" id="citadel-sectors">
+          <div class="citadel-sector-pill restored" data-unit="1"><span>🔥 U1 Core</span> <span style="margin-left:auto;">✓</span></div>
+          <div class="citadel-sector-pill restored" data-unit="2"><span>🌊 U2 Aquifer</span> <span style="margin-left:auto;">✓</span></div>
+          <div class="citadel-sector-pill restored" data-unit="3"><span>🌴 U3 Oasis</span> <span style="margin-left:auto;">✓</span></div>
+          <div class="citadel-sector-pill restored" data-unit="4"><span>⚡ U4 Grid</span> <span style="margin-left:auto;">✓</span></div>
+          <div class="citadel-sector-pill" data-unit="5"><span>🏛️ U5 Terraces</span></div>
+          <div class="citadel-sector-pill" data-unit="6"><span>🚂 U6 Switchyard</span></div>
+          <div class="citadel-sector-pill" data-unit="7"><span>🔭 U7 Observatory</span></div>
+          <div class="citadel-sector-pill" data-unit="8"><span>🌉 U8 Frostbridge</span></div>
+          <div class="citadel-sector-pill" data-unit="9"><span>🦌 U9 Signal</span></div>
+          <div class="citadel-sector-pill" data-unit="10"><span>🛰️ U10 Orbit</span></div>
+        </div>
+
+        <!-- Expedition Field Relics Vault -->
+        <div class="relics-shelf">
+          <h3><span>✨</span> Unlocked Expedition Field Relics</h3>
+          <p style="margin:0 0 12px; font-size:0.88rem; color:#cbd5e1;">
+            These interactive mathematical tools were recovered from restored worlds. Click to open a live sandbox tool!
+          </p>
+          <div class="relics-grid">
+            <button type="button" class="relic-btn" onclick="openRelicModal('sieve')">🧮 Prime Sieve Scanner</button>
+            <button type="button" class="relic-btn" onclick="openRelicModal('fraction')">🍕 Fraction Bar Splitter</button>
+            <button type="button" class="relic-btn" onclick="openRelicModal('ratio')">⚖️ Double-Line Balancer</button>
+            <button type="button" class="relic-btn" onclick="openRelicModal('percent')">💯 Percent Grid Matrix</button>
+            <button type="button" class="relic-btn" onclick="openRelicModal('radar')">🧭 Coordinate Radar</button>
+          </div>
+        </div>
+
+        <!-- Passport Beamer & Peer Challenge Launcher -->
+        <div class="beam-shelf">
+          <div>
+            <strong style="color:#ffd24a; font-size:0.95rem; display:block;">📱 Zero-Account Passport Beamer</strong>
+            <span style="font-size:0.85rem; color:#cbd5e1;">Take your stars, Citadel progress, and unlocked relics home on any device with zero logins.</span>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-solid" style="padding:8px 16px; font-size:0.9rem;" onclick="openPassportBeamer()">📱 Beam via QR Code</button>
+            <button type="button" class="btn btn-outline" style="padding:8px 16px; font-size:0.9rem;" onclick="openTokenImporter()">📥 Restore from Code</button>
+          </div>
+        </div>
+
+        <div style="margin-top:14px; padding-top:12px; border-top:1px dashed rgba(255,255,255,0.15); display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
+          <label for="peer-code-input" style="font-size:0.86rem; font-weight:700; color:#38bdf8;">🎮 Got a Peer Challenge Link or Code?</label>
+          <input type="text" id="peer-code-input" placeholder="Paste link or code here" style="flex:1 1 200px; padding:8px 12px; border-radius:8px; border:1px solid #38bdf8; background:#07201f; color:#fff; font-size:0.9rem;">
+          <button type="button" class="btn btn-solid" style="padding:8px 14px; font-size:0.9rem;" onclick="launchPeerCode()">Launch Puzzle →</button>
+        </div>
+      </section>
+
+      <!-- Relic Interactive Sandbox Modal -->
+      <div class="relic-modal-backdrop" id="relic-modal" role="dialog" aria-modal="true" aria-labelledby="relic-modal-title">
+        <div class="relic-modal-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h3 id="relic-modal-title" style="margin:0; font-size:1.35rem; color:#ffd24a; display:flex; align-items:center; gap:8px;">
+              <span>🧮</span> Interactive Field Relic
+            </h3>
+            <button type="button" onclick="closeRelicModal()" style="background:transparent; border:none; color:#cbd5e1; font-size:1.4rem; cursor:pointer;">✕</button>
+          </div>
+          <div id="relic-modal-body" style="background:#071e21; border-radius:12px; padding:18px; margin-bottom:16px;">
+            <!-- Injected dynamically -->
+          </div>
+          <div style="display:flex; justify-content:flex-end;">
+            <button type="button" class="btn btn-solid" onclick="closeRelicModal()">Done Exploring ✓</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Passport Beaming QR Modal -->
+      <div class="relic-modal-backdrop" id="beamer-modal" role="dialog" aria-modal="true" aria-labelledby="beamer-modal-title">
+        <div class="relic-modal-card" style="max-width:480px; text-align:center;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h3 id="beamer-modal-title" style="margin:0; font-size:1.3rem; color:#38bdf8;">
+              📱 Passport QR Beamer
+            </h3>
+            <button type="button" onclick="closePassportBeamer()" style="background:transparent; border:none; color:#cbd5e1; font-size:1.4rem; cursor:pointer;">✕</button>
+          </div>
+          <p style="font-size:0.88rem; color:#cbd5e1; margin-top:-6px; margin-bottom:14px;">
+            Scan this QR code with a phone or home tablet camera to resume your stars and Citadel restoration instantly without any account.
+          </p>
+          <div id="beamer-qr-display" style="background:#fff; border-radius:16px; padding:18px; display:inline-block; margin-bottom:14px;">
+            <!-- Injected QR SVG -->
+          </div>
+          <p style="font-size:0.8rem; color:#94a3b8; margin:0 0 6px;">Or copy your 1-line portable token:</p>
+          <input type="text" id="beamer-token-input" readonly style="width:100%; padding:8px 12px; border-radius:8px; border:1px solid #38bdf8; background:#07201f; color:#fff; font-family:monospace; font-size:0.82rem;" />
+        </div>
+      </div>
 
       <h2 class="section-label" id="by-unit">Games by unit</h2>
       <p class="section-sub">Units are listed in book order. Choose your unit, or search for a skill.</p>
@@ -663,6 +919,200 @@
         });
         input.addEventListener("input", apply);
         apply();
+
+        // ── CITADEL RESTORATION PROGRESS CALCULATION ──
+        function syncCitadelRestoration() {
+          var restoredCount = 0;
+          for (var u = 1; u <= 10; u++) {
+            var unitPlayed = false;
+            // Check play records
+            for (var key in records) {
+              if (key.indexOf("unit=" + u) !== -1 || key.indexOf("unit" + u) !== -1 || key.indexOf("u" + u + "-") !== -1) {
+                unitPlayed = true;
+                break;
+              }
+            }
+            // Defaults: Give learner starter empowerment if fresh
+            if (u <= 3 || unitPlayed) {
+              restoredCount++;
+              var pill = document.querySelector('.citadel-sector-pill[data-unit="' + u + '"]');
+              if (pill) {
+                pill.classList.add("restored");
+                if (!pill.innerHTML.includes("✓")) pill.innerHTML += ' <span style="margin-left:auto;">✓</span>';
+              }
+            }
+          }
+          var pct = Math.round((restoredCount / 10) * 100);
+          var bar = document.getElementById("citadel-bar");
+          var badge = document.getElementById("citadel-badge");
+          var statLine = document.getElementById("citadel-stat-line");
+          if (bar) bar.style.width = pct + "%";
+          if (badge) badge.textContent = "⚡ Status: " + pct + "% Restored";
+          if (statLine) statLine.textContent = restoredCount + " / 10 Sectors Powered";
+        }
+        syncCitadelRestoration();
+
+        // ── EXPEDITION FIELD RELICS MODALS ──
+        window.openRelicModal = function(type) {
+          var modal = document.getElementById("relic-modal");
+          var title = document.getElementById("relic-modal-title");
+          var body = document.getElementById("relic-modal-body");
+          if (!modal || !title || !body) return;
+
+          if (type === 'sieve') {
+            title.innerHTML = '<span>🧮</span> Prime Sieve Scanner (Unit 1 Relic)';
+            body.innerHTML = `
+              <p style="margin:0 0 10px; font-size:0.9rem; color:#cbd5e1;">Click a prime number (2, 3, 5, 7) to filter out composite multiples across the first 30 numbers:</p>
+              <div id="sieve-grid" style="display:grid; grid-template-columns:repeat(6, 1fr); gap:6px; max-width:360px; margin:0 auto;">
+                ${Array.from({length:30}, (_, i) => `<button type="button" class="sieve-cell" data-n="${i+1}" onclick="filterSieve(${i+1})" style="padding:8px; border-radius:6px; border:1px solid #38bdf8; background:#0c2a2e; color:#fff; font-weight:800; cursor:pointer;">${i+1}</button>`).join('')}
+              </div>
+              <p id="sieve-status" style="margin:10px 0 0; text-align:center; font-size:0.85rem; color:#8ff0d8;">Tap 2, 3, or 5 to see composite leaves fade.</p>
+            `;
+          } else if (type === 'fraction') {
+            title.innerHTML = '<span>🍕</span> Fraction Bar Splitter (Unit 2 Relic)';
+            body.innerHTML = `
+              <p style="margin:0 0 10px; font-size:0.9rem; color:#cbd5e1;">Partition the whole bar into parts. How many 1/4 parts fit into 1/2?</p>
+              <div style="background:#0c2a2e; padding:12px; border-radius:8px; border:1px solid #34d399;">
+                <div style="font-size:0.85rem; color:#6ee7b7; margin-bottom:4px;">Whole Unit (1.0):</div>
+                <div style="height:32px; background:#1f8a6b; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800;">1 WHOLE</div>
+                <div style="font-size:0.85rem; color:#6ee7b7; margin:8px 0 4px;">Halves (1/2):</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; height:32px;">
+                  <div style="background:#0284c7; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800;">1/2</div>
+                  <div style="background:#0369a1; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800;">1/2</div>
+                </div>
+                <div style="font-size:0.85rem; color:#6ee7b7; margin:8px 0 4px;">Fourths (1/4):</div>
+                <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:4px; height:32px;">
+                  <div style="background:#10b981; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800;">1/4</div>
+                  <div style="background:#10b981; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800;">1/4</div>
+                  <div style="background:#059669; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800;">1/4</div>
+                  <div style="background:#059669; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800;">1/4</div>
+                </div>
+              </div>
+              <p style="margin:10px 0 0; text-align:center; font-size:0.9rem; color:#ffd24a; font-weight:700;">1/2 ÷ 1/4 = 2 (two 1/4 bars fill exactly one 1/2 bar)</p>
+            `;
+          } else if (type === 'ratio') {
+            title.innerHTML = '<span>⚖️</span> Double-Line Balancer (Unit 3 Relic)';
+            body.innerHTML = `
+              <p style="margin:0 0 10px; font-size:0.9rem; color:#cbd5e1;">Scale ratio 2 : 3 across a double number line:</p>
+              <div style="background:#0c2a2e; padding:12px; border-radius:8px; border:1px solid #38bdf8;">
+                <div style="display:flex; justify-content:space-between; font-weight:800; color:#38bdf8; font-family:monospace; padding-bottom:4px; border-bottom:2px solid #38bdf8;">
+                  <span>0</span><span>2</span><span>4</span><span>6</span><span>8</span><span>10</span>
+                </div>
+                <div style="text-align:center; color:#8ff0d8; font-size:0.8rem; margin:6px 0;">↕ EQUIVALENT RATIO MULTIPLIERS (×1, ×2, ×3, ×4, ×5) ↕</div>
+                <div style="display:flex; justify-content:space-between; font-weight:800; color:#34d399; font-family:monospace; padding-top:4px; border-top:2px solid #34d399;">
+                  <span>0</span><span>3</span><span>6</span><span>9</span><span>12</span><span>15</span>
+                </div>
+              </div>
+              <p style="margin:8px 0 0; text-align:center; font-size:0.88rem; color:#cbd5e1;">Every vertical pair maintains the constant rate 2/3.</p>
+            `;
+          } else if (type === 'percent') {
+            title.innerHTML = '<span>💯</span> Percent Grid Matrix (Unit 4 Relic)';
+            body.innerHTML = `
+              <p style="margin:0 0 10px; font-size:0.9rem; color:#cbd5e1;">Interactive 10×10 Hundredths Grid (Click squares to shade):</p>
+              <div id="pct-grid" style="display:grid; grid-template-columns:repeat(10, 1fr); gap:2px; max-width:260px; margin:0 auto; background:#07201f; padding:6px; border-radius:6px;">
+                ${Array.from({length:100}, (_, i) => `<div class="pct-cell" onclick="togglePctCell(this)" style="height:22px; background:${i < 40 ? '#38bdf8' : 'rgba(255,255,255,0.08)'}; border-radius:2px; cursor:pointer;"></div>`).join('')}
+              </div>
+              <p id="pct-readout" style="margin:10px 0 0; text-align:center; font-weight:800; color:#ffd24a; font-size:1.05rem;">40% Shaded = 0.40 = 2/5</p>
+            `;
+          } else {
+            title.innerHTML = '<span>🧭</span> Coordinate Radar (Unit 9 Relic)';
+            body.innerHTML = `
+              <p style="margin:0 0 10px; font-size:0.9rem; color:#cbd5e1;">Four-Quadrant Coordinate Radar (Origin at center):</p>
+              <svg viewBox="-60 -60 120 120" style="width:100%; max-width:280px; height:200px; display:block; margin:0 auto; background:#071e21; border-radius:8px;">
+                <circle cx="0" cy="0" r="50" fill="none" stroke="rgba(56,189,248,0.2)" stroke-width="1" />
+                <circle cx="0" cy="0" r="30" fill="none" stroke="rgba(56,189,248,0.3)" stroke-width="1" />
+                <line x1="-55" y1="0" x2="55" y2="0" stroke="#38bdf8" stroke-width="1.5" />
+                <line x1="0" y1="-55" x2="0" y2="55" stroke="#38bdf8" stroke-width="1.5" />
+                <circle cx="24" cy="-30" r="5" fill="#ffd24a" stroke="#fff" stroke-width="1.5" />
+                <text x="28" y="-32" fill="#ffd24a" font-size="7" font-weight="bold">(+4, +5) Quadrant I</text>
+                <circle cx="-30" cy="20" r="5" fill="#34d399" stroke="#fff" stroke-width="1.5" />
+                <text x="-54" y="30" fill="#34d399" font-size="7" font-weight="bold">(-5, -3) Quadrant III</text>
+              </svg>
+              <p style="margin:8px 0 0; text-align:center; font-size:0.85rem; color:#8ff0d8;">Ordered pairs (x, y) plot distance horizontally, then vertically.</p>
+            `;
+          }
+          modal.classList.add("show");
+        };
+
+        window.filterSieve = function(n) {
+          document.querySelectorAll('.sieve-cell').forEach(function(el) {
+            var val = parseInt(el.getAttribute('data-n'), 10);
+            if (val > n && val % n === 0) {
+              el.style.opacity = '0.2';
+              el.style.background = '#334155';
+            }
+          });
+          var st = document.getElementById('sieve-status');
+          if (st) st.textContent = 'Multiples of ' + n + ' removed! Remaining numbers are prime candidates.';
+        };
+
+        window.togglePctCell = function(el) {
+          var isShaded = el.style.background.includes('56, 189, 248') || el.style.background.includes('#38bdf8');
+          el.style.background = isShaded ? 'rgba(255,255,255,0.08)' : '#38bdf8';
+          var count = document.querySelectorAll('.pct-cell').filter ? 
+            document.querySelectorAll('.pct-cell').filter(function(c) { return c.style.background.includes('38bdf8'); }).length :
+            Array.from(document.querySelectorAll('.pct-cell')).filter(function(c) { return c.style.background.includes('38bdf8') || c.style.background.includes('56, 189, 248'); }).length;
+          var ro = document.getElementById('pct-readout');
+          if (ro) ro.textContent = count + '% Shaded = ' + (count / 100).toFixed(2) + ' = ' + count + '/100';
+        };
+
+        window.closeRelicModal = function() {
+          var modal = document.getElementById("relic-modal");
+          if (modal) modal.classList.remove("show");
+        };
+
+        // ── PASSPORT QR BEAMER ──
+        window.openPassportBeamer = function() {
+          var modal = document.getElementById("beamer-modal");
+          var display = document.getElementById("beamer-qr-display");
+          var tokenInput = document.getElementById("beamer-token-input");
+          if (!modal || !display) return;
+
+          var passportData = {
+            v: 1,
+            time: Date.now(),
+            records: records,
+            stars: 36
+          };
+          var token = btoa(JSON.stringify(passportData));
+          if (tokenInput) tokenInput.value = token;
+
+          var qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent("https://eduwonderlab.com/curriculum/arcade/#import=" + token);
+          display.innerHTML = '<img src="' + qrUrl + '" width="200" height="200" alt="QR Code to beam passport" style="border-radius:8px; display:block;" />';
+          modal.classList.add("show");
+        };
+
+        window.closePassportBeamer = function() {
+          var modal = document.getElementById("beamer-modal");
+          if (modal) modal.classList.remove("show");
+        };
+
+        window.openTokenImporter = function() {
+          var token = prompt("Paste your Passport Token to restore your stars and Citadel status:");
+          if (token) {
+            try {
+              var data = JSON.parse(atob(token));
+              if (data && data.records) {
+                localStorage.setItem("ewl-studio-play-record", JSON.stringify(data.records));
+                alert("🎉 Passport Restored! Citadel updated.");
+                location.reload();
+              }
+            } catch(e) {
+              alert("⚠️ Invalid token format.");
+            }
+          }
+        };
+
+        window.launchPeerCode = function() {
+          var input = document.getElementById("peer-code-input");
+          if (!input || !input.value.trim()) return;
+          var val = input.value.trim();
+          if (val.startsWith("http")) {
+            window.location.href = val;
+          } else {
+            window.location.href = "/math/games/u3-ratio-rush/#challenge=" + encodeURIComponent(val);
+          }
+        };
       })();
     </script>
   <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>

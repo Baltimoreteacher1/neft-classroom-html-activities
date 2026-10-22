@@ -141,6 +141,176 @@
     <link rel="stylesheet" href="/math/games/shared/cabinet-adventure.css?v=20261007">
     <script src="/math/games/shared/cabinet-worlds.js?v=20261007"></script>
     <script src="/math/games/shared/cabinet-adventure.js?v=20261015"></script>
+    <script src="/math/games/shared/arcade-fx-engine.js"></script>
+    <style>
+      /* Next-Gen Arcade Enhancements Toolbar */
+      .rr-pro-toolbar {
+        position: relative;
+        z-index: 20;
+        max-width: 820px;
+        margin: 8px auto 4px;
+        padding: 8px 14px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        background: rgba(12, 42, 46, 0.92);
+        border: 1px solid rgba(107, 224, 192, 0.28);
+        border-radius: 14px;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+      }
+      .rr-pro-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .rr-pro-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(107, 224, 192, 0.4);
+        background: rgba(10, 51, 56, 0.8);
+        color: #bfe6da;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .rr-pro-btn:hover {
+        background: rgba(31, 138, 107, 0.4);
+        border-color: #6be0c0;
+        color: #fff;
+        transform: translateY(-1px);
+      }
+      .rr-pro-btn.active {
+        background: #1f8a6b;
+        color: #fff;
+        border-color: #8ff0d8;
+        box-shadow: 0 0 12px rgba(107, 224, 192, 0.4);
+      }
+      /* Two-Seat Co-Op HUD Pill */
+      .rr-coop-hud {
+        display: none;
+        max-width: 820px;
+        margin: 4px auto;
+        padding: 8px 14px;
+        background: linear-gradient(90deg, rgba(30, 58, 138, 0.85), rgba(6, 78, 59, 0.85));
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        border-radius: 12px;
+        color: #fff;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        font-size: 0.86rem;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 20;
+        position: relative;
+      }
+      .rr-coop-hud.show {
+        display: flex;
+      }
+      .rr-pilot-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 800;
+        padding: 4px 10px;
+        border-radius: 999px;
+      }
+      .rr-pilot-1 { background: rgba(56, 189, 248, 0.25); color: #7dd3fc; border: 1px solid #38bdf8; }
+      .rr-pilot-2 { background: rgba(52, 211, 153, 0.25); color: #6ee7b7; border: 1px solid #34d399; }
+
+      /* Linked Multi-Representation Drawer */
+      .rr-representations-drawer {
+        display: none;
+        max-width: 820px;
+        margin: 6px auto;
+        padding: 14px;
+        background: #0a2327;
+        border: 1px solid rgba(107, 224, 192, 0.3);
+        border-radius: 14px;
+        color: #bfe6da;
+        z-index: 20;
+        position: relative;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      }
+      .rr-representations-drawer.show {
+        display: block;
+      }
+      .rr-reps-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      @media (max-width: 650px) {
+        .rr-reps-grid { grid-template-columns: 1fr; }
+      }
+      .rr-rep-card {
+        background: rgba(12, 42, 46, 0.8);
+        border: 1px solid rgba(107, 224, 192, 0.2);
+        border-radius: 10px;
+        padding: 10px;
+      }
+      .rr-rep-title {
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #6be0c0;
+        margin-bottom: 6px;
+      }
+
+      /* Peer Challenge Modal */
+      .rr-modal-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(7, 32, 31, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 99999;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+      .rr-modal-backdrop.show {
+        display: flex;
+      }
+      .rr-modal-card {
+        background: #0c2a2e;
+        border: 2px solid #6be0c0;
+        border-radius: 20px;
+        max-width: 520px;
+        width: 100%;
+        padding: 24px;
+        color: #fff;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+      }
+      .rr-form-group {
+        margin-bottom: 14px;
+      }
+      .rr-form-group label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #9fe6cf;
+        margin-bottom: 4px;
+      }
+      .rr-form-input, .rr-form-select {
+        width: 100%;
+        padding: 10px 12px;
+        background: #07201f;
+        border: 1px solid rgba(107, 224, 192, 0.4);
+        border-radius: 8px;
+        color: #fff;
+        font-size: 0.95rem;
+      }
+    </style>
 </head>
   <body>
 
@@ -150,6 +320,144 @@
     </div>
     <!-- Screen-reader live region: mirrors the current problem + result. -->
     <div id="rr-sr" role="status" aria-live="polite"></div>
+
+    <!-- Next-Gen Arcade Enhancements Toolbar -->
+    <div class="rr-pro-toolbar" role="toolbar" aria-label="Game enhancement controls">
+      <div class="rr-pro-group">
+        <button type="button" class="rr-pro-btn" id="rr-btn-coop" onclick="toggleCoOpMode()" aria-pressed="false">
+          👥 <span>Two-Seat Co-Op</span>
+        </button>
+        <button type="button" class="rr-pro-btn" id="rr-btn-reps" onclick="toggleRepresentations()" aria-expanded="false">
+          📐 <span>Linked Views</span>
+        </button>
+        <button type="button" class="rr-pro-btn" id="rr-btn-builder" onclick="openChallengeBuilder()">
+          🛠️ <span>Build Challenge</span>
+        </button>
+      </div>
+      <div class="rr-pro-group">
+        <button type="button" class="rr-pro-btn" id="rr-btn-ambient" onclick="toggleAmbientMusic()" aria-pressed="false">
+          🎵 <span>Calm Chords: OFF</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Two-Seat Co-Op Partner HUD -->
+    <div class="rr-coop-hud" id="rr-coop-hud">
+      <div class="rr-pilot-badge rr-pilot-1">
+        <span>🚀 Pilot 1 (Top Line):</span> <span id="rr-p1-keys">Keys A / D</span>
+      </div>
+      <span style="font-size:0.8rem; color:#93c5fd; font-weight:700;">🤝 Partner Flight: Coordinate before Lock In!</span>
+      <div class="rr-pilot-badge rr-pilot-2">
+        <span>🛠️ Pilot 2 (Bottom Line):</span> <span id="rr-p2-keys">Keys ← / →</span>
+      </div>
+    </div>
+
+    <!-- Linked Multi-Representations Drawer -->
+    <div class="rr-representations-drawer" id="rr-reps-drawer">
+      <div class="rr-reps-grid">
+        <div class="rr-rep-card">
+          <div class="rr-rep-title">📈 Dynamic Coordinate Graph (y = kx)</div>
+          <svg id="rr-graph-svg" viewBox="0 0 240 140" style="width:100%; height:130px; background:#071e21; border-radius:8px;">
+            <!-- Grid Lines -->
+            <line x1="30" y1="120" x2="230" y2="120" stroke="#1f4a5b" stroke-width="2" />
+            <line x1="30" y1="10" x2="30" y2="120" stroke="#1f4a5b" stroke-width="2" />
+            <!-- Theoretical Line -->
+            <line id="rr-svg-line" x1="30" y1="120" x2="210" y2="30" stroke="#38bdf8" stroke-dasharray="4,4" stroke-width="2" />
+            <!-- Live Point -->
+            <circle id="rr-svg-point" cx="30" cy="120" r="6" fill="#ffd24a" stroke="#fff" stroke-width="2" />
+            <text id="rr-svg-coord" x="40" y="25" fill="#8ff0d8" font-size="12" font-family="monospace">(0, 0)</text>
+          </svg>
+          <p style="margin:4px 0 0; font-size:0.75rem; color:#7fc4b3;">Equivalent pairs lie on the same straight ray starting at (0,0).</p>
+        </div>
+        <div class="rr-rep-card">
+          <div class="rr-rep-title">🧪 Visual Ratio Beaker Mix</div>
+          <div style="display:flex; align-items:center; justify-content:space-around; height:120px; background:#071e21; border-radius:8px; padding:10px;">
+            <div style="text-align:center;">
+              <div style="width:36px; height:80px; border:2px solid #38bdf8; border-radius:0 0 8px 8px; position:relative; background:rgba(56,189,248,0.1); overflow:hidden; margin:0 auto;">
+                <div id="rr-beaker-a" style="position:absolute; bottom:0; width:100%; height:20%; background:#38bdf8; transition:height 0.2s;"></div>
+              </div>
+              <span id="rr-beaker-label-a" style="font-size:0.75rem; color:#7dd3fc; display:block; margin-top:4px;">Top: 0</span>
+            </div>
+            <div style="font-size:1.4rem; color:#6be0c0; font-weight:800;">:</div>
+            <div style="text-align:center;">
+              <div style="width:36px; height:80px; border:2px solid #34d399; border-radius:0 0 8px 8px; position:relative; background:rgba(52,211,153,0.1); overflow:hidden; margin:0 auto;">
+                <div id="rr-beaker-b" style="position:absolute; bottom:0; width:100%; height:30%; background:#34d399; transition:height 0.2s;"></div>
+              </div>
+              <span id="rr-beaker-label-b" style="font-size:0.75rem; color:#6ee7b7; display:block; margin-top:4px;">Bot: 0</span>
+            </div>
+          </div>
+          <p style="margin:4px 0 0; font-size:0.75rem; color:#7fc4b3;">Relative volume proportions match the number line ratio.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Peer Challenge / Reverse Puzzle Builder Modal -->
+    <div class="rr-modal-backdrop" id="rr-challenge-modal" role="dialog" aria-modal="true" aria-labelledby="rr-modal-title">
+      <div class="rr-modal-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h3 id="rr-modal-title" style="margin:0; font-size:1.3rem; color:#6be0c0; display:flex; align-items:center; gap:8px;">
+            <span>🛠️</span> Build a Peer Challenge
+          </h3>
+          <button type="button" onclick="closeChallengeBuilder()" style="background:transparent; border:none; color:#9fe6cf; font-size:1.4rem; cursor:pointer;">✕</button>
+        </div>
+        <p style="font-size:0.9rem; color:#bfe6da; margin-top:-8px; margin-bottom:14px;">
+          Create a custom ratio puzzle for your classmates. When they open your link, your custom prompt and numbers will launch!
+        </p>
+
+        <div class="rr-form-group">
+          <label for="rr-input-creator">Your Name / Agent Call-Sign:</label>
+          <input type="text" id="rr-input-creator" class="rr-form-input" placeholder="e.g. Maya or Rover-7" value="Oasis Explorer" maxlength="24">
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="rr-form-group">
+            <label for="rr-input-a">Base Ratio Term A:</label>
+            <select id="rr-input-a" class="rr-form-select">
+              <option value="1">1</option>
+              <option value="2" selected>2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+          </div>
+          <div class="rr-form-group">
+            <label for="rr-input-b">Base Ratio Term B:</label>
+            <select id="rr-input-b" class="rr-form-select">
+              <option value="2">2</option>
+              <option value="3" selected>3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="rr-form-group">
+          <label for="rr-input-context">Context / Items:</label>
+          <select id="rr-input-context" class="rr-form-select">
+            <option value="Berry Juice : Mango Puree">Berry Juice : Mango Puree (Cups)</option>
+            <option value="Solar Cells : Battery Packs">Solar Cells : Battery Packs (Units)</option>
+            <option value="Water Pumps : Tree Saplings">Water Pumps : Tree Saplings (Basin)</option>
+            <option value="Miles Traveled : Minutes Elapsed">Miles Traveled : Minutes Elapsed (Speed)</option>
+          </select>
+        </div>
+
+        <div class="rr-form-group">
+          <label for="rr-input-custom-msg">Custom Challenge Message:</label>
+          <input type="text" id="rr-input-custom-msg" class="rr-form-input" placeholder="e.g. Can you scale this to feed the canal?" value="Can you balance the oasis reservoir?">
+        </div>
+
+        <div id="rr-share-output" style="display:none; margin-top:14px; background:rgba(31,138,107,0.25); border:1px solid #6be0c0; border-radius:10px; padding:12px;">
+          <p style="margin:0 0 6px; font-size:0.85rem; font-weight:700; color:#8ff0d8;">✅ Share Link Generated!</p>
+          <input type="text" id="rr-share-link" readonly style="width:100%; background:#07201f; border:1px solid #34d399; color:#fff; padding:6px 10px; border-radius:6px; font-size:0.85rem; font-family:monospace;" />
+          <p style="margin:6px 0 0; font-size:0.78rem; color:#bfe6da;">Send this URL to a friend or classmate on their Chromebook.</p>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
+          <button type="button" class="rr-pro-btn" onclick="generateChallengeLink()">🔗 Copy Share Link</button>
+          <button type="button" class="rr-pro-btn active" onclick="playCustomChallengeNow()">▶️ Play Now</button>
+        </div>
+      </div>
+    </div>
     <script>
       // Decorative spark-field builder (reduced-motion safe; pointer-neutral).
       (function () {
@@ -213,6 +521,169 @@
       })();
     </script>
     <script>
+      // ── NEXT-GEN ARCADE PRO CONTROLS & PEER REVERSE-PUZZLES ──
+      let rrCoOpActive = false;
+      let rrLinkedViewsActive = false;
+      let rrAmbientActive = false;
+
+      function toggleCoOpMode() {
+        rrCoOpActive = !rrCoOpActive;
+        const btn = document.getElementById("rr-btn-coop");
+        const hud = document.getElementById("rr-coop-hud");
+        if (btn) {
+          btn.classList.toggle("active", rrCoOpActive);
+          btn.setAttribute("aria-pressed", String(rrCoOpActive));
+        }
+        if (hud) hud.classList.toggle("show", rrCoOpActive);
+        if (window.ArcadeFX && window.ArcadeFX.playSFX) window.ArcadeFX.playSFX("click");
+      }
+
+      function toggleRepresentations() {
+        rrLinkedViewsActive = !rrLinkedViewsActive;
+        const btn = document.getElementById("rr-btn-reps");
+        const drawer = document.getElementById("rr-reps-drawer");
+        if (btn) {
+          btn.classList.toggle("active", rrLinkedViewsActive);
+          btn.setAttribute("aria-expanded", String(rrLinkedViewsActive));
+        }
+        if (drawer) drawer.classList.toggle("show", rrLinkedViewsActive);
+        if (window.ArcadeFX && window.ArcadeFX.playSFX) window.ArcadeFX.playSFX("click");
+      }
+
+      function toggleAmbientMusic() {
+        if (!window.ArcadeFX) return;
+        rrAmbientActive = !rrAmbientActive;
+        const btn = document.getElementById("rr-btn-ambient");
+        if (rrAmbientActive) {
+          window.ArcadeFX.startAmbient();
+          if (btn) {
+            btn.classList.add("active");
+            btn.setAttribute("aria-pressed", "true");
+            btn.innerHTML = "🎵 <span>Calm Chords: ON</span>";
+          }
+        } else {
+          window.ArcadeFX.stopAmbient();
+          if (btn) {
+            btn.classList.remove("active");
+            btn.setAttribute("aria-pressed", "false");
+            btn.innerHTML = "🎵 <span>Calm Chords: OFF</span>";
+          }
+        }
+      }
+
+      function updateLinkedRepresentations(topVal, botVal, problem) {
+        if (!rrLinkedViewsActive) return;
+        // Update SVG Graph
+        const pt = document.getElementById("rr-svg-point");
+        const coord = document.getElementById("rr-svg-coord");
+        const svgLine = document.getElementById("rr-svg-line");
+        if (pt && coord) {
+          const sx = 30 + (topVal / 10) * 180;
+          const sy = 120 - (botVal / 10) * 90;
+          pt.setAttribute("cx", sx);
+          pt.setAttribute("cy", sy);
+          coord.textContent = "(" + topVal + ", " + botVal + ")";
+        }
+        if (svgLine && problem) {
+          const endX = 210;
+          const endY = 120 - ((problem.b / problem.a) * (10 / 10)) * 90;
+          svgLine.setAttribute("x2", endX);
+          svgLine.setAttribute("y2", Math.max(10, Math.min(130, endY)));
+        }
+        // Update Liquid Beakers
+        const bkA = document.getElementById("rr-beaker-a");
+        const bkB = document.getElementById("rr-beaker-b");
+        const lbA = document.getElementById("rr-beaker-label-a");
+        const lbB = document.getElementById("rr-beaker-label-b");
+        if (bkA && bkB) {
+          bkA.style.height = Math.min(100, (topVal / 10) * 100) + "%";
+          bkB.style.height = Math.min(100, (botVal / 10) * 100) + "%";
+          if (lbA) lbA.textContent = "Top: " + topVal;
+          if (lbB) lbB.textContent = "Bot: " + botVal;
+        }
+      }
+
+      function openChallengeBuilder() {
+        const modal = document.getElementById("rr-challenge-modal");
+        if (modal) modal.classList.add("show");
+        if (window.ArcadeFX && window.ArcadeFX.playSFX) window.ArcadeFX.playSFX("click");
+      }
+
+      function closeChallengeBuilder() {
+        const modal = document.getElementById("rr-challenge-modal");
+        if (modal) modal.classList.remove("show");
+      }
+
+      function generateChallengeLink() {
+        const creator = document.getElementById("rr-input-creator").value || "Classmate";
+        const a = parseInt(document.getElementById("rr-input-a").value, 10) || 2;
+        const b = parseInt(document.getElementById("rr-input-b").value, 10) || 3;
+        const ctxStr = document.getElementById("rr-input-context").value || "Units : Parts";
+        const parts = ctxStr.split(" : ");
+        const nameA = parts[0] || "Item A";
+        const nameB = parts[1] || "Item B";
+        const customMsg = document.getElementById("rr-input-custom-msg").value || "Match this ratio!";
+
+        const payload = {
+          a: a,
+          b: b,
+          nameA: nameA,
+          nameB: nameB,
+          creator: creator,
+          prompt: customMsg,
+          kind: "full"
+        };
+
+        const encoded = encodeURIComponent(JSON.stringify(payload));
+        const url = window.location.origin + window.location.pathname + "#challenge=" + encoded;
+        const outBox = document.getElementById("rr-share-output");
+        const linkInp = document.getElementById("rr-share-link");
+        if (outBox && linkInp) {
+          linkInp.value = url;
+          outBox.style.display = "block";
+          linkInp.select();
+          try {
+            navigator.clipboard.writeText(url);
+          } catch(e) {}
+        }
+        if (window.ArcadeFX && window.ArcadeFX.playSFX) window.ArcadeFX.playSFX("powerup");
+      }
+
+      function playCustomChallengeNow() {
+        const a = parseInt(document.getElementById("rr-input-a").value, 10) || 2;
+        const b = parseInt(document.getElementById("rr-input-b").value, 10) || 3;
+        const ctxStr = document.getElementById("rr-input-context").value || "Units : Parts";
+        const parts = ctxStr.split(" : ");
+        const nameA = parts[0] || "Item A";
+        const nameB = parts[1] || "Item B";
+        const creator = document.getElementById("rr-input-creator").value || "You";
+        const customMsg = document.getElementById("rr-input-custom-msg").value || "Match this ratio!";
+
+        window.customPeerChallenge = {
+          a: a,
+          b: b,
+          nameA: nameA,
+          nameB: nameB,
+          creator: creator,
+          prompt: customMsg,
+          kind: "full"
+        };
+        closeChallengeBuilder();
+        if (window.gameInstance) {
+          window.gameInstance.scene.start("Game");
+        } else {
+          location.reload();
+        }
+      }
+
+      // Check URL Hash for Challenge
+      try {
+        if (location.hash && location.hash.startsWith("#challenge=")) {
+          const raw = decodeURIComponent(location.hash.slice(11));
+          window.customPeerChallenge = JSON.parse(raw);
+        }
+      } catch(e) {}
+
       // ── RATIO RUSH — DOUBLE NUMBER LINE ──
       // Phaser 3 — Grade 6 Math — Equivalent ratios, ratio tables, unit rate.
       // Mechanic (math-as-mechanic, no reflex/timer): TWO aligned number lines
@@ -438,6 +909,25 @@
       }
 
       function makeProblem(level, track) {
+        if (window.customPeerChallenge) {
+          const ch = window.customPeerChallenge;
+          return {
+            kind: ch.kind || "full",
+            a: ch.a,
+            b: ch.b,
+            nameA: ch.nameA || "parts A",
+            nameB: ch.nameB || "parts B",
+            topFixed: null,
+            botFixed: null,
+            startTop: ch.a,
+            startBot: Math.min(MAXV, ch.b + 1),
+            targetTop: 2 * ch.a,
+            targetBot: 2 * ch.b,
+            label: "Peer Challenge from " + (ch.creator || "Classmate"),
+            prompt: ch.prompt || ("Build an equivalent ratio to " + ch.a + ":" + ch.b + "!"),
+            why: ch.a + ":" + ch.b + " = " + (2 * ch.a) + ":" + (2 * ch.b) + " (both parts × 2)."
+          };
+        }
         const kind = kindForTrack(track, level);
         const ctx = pick(CONTEXTS);
         if (kind === "unit") {
@@ -1299,6 +1789,12 @@
         refs.knobVal.x = tickX(val);
         refs.knobVal.setText(String(val));
         this.refreshReadout();
+        if (typeof updateLinkedRepresentations === "function") {
+          updateLinkedRepresentations(this.topVal, this.botVal, this.problem);
+        }
+        if (window.ArcadeFX && window.ArcadeFX.tactileSnap) {
+          window.ArcadeFX.tactileSnap();
+        }
       };
 
       GameScene.prototype.refreshReadout = function () {
@@ -1503,6 +1999,21 @@
           this.chipText.setText("Equivalent ✓ — " + why).setColor("#8ff0d8");
           this.chipBg.setFillStyle(0x12463a);
           srSay("Correct. " + why);
+          if (window.ArcadeFX && window.ArcadeFX.tactileSuccess) {
+            window.ArcadeFX.tactileSuccess(W / 2, 230, gained > 0 ? "+" + gained : "⭐ LOCKED IN!");
+          }
+          if (this.solved % 3 === 0 && window.ArcadeFX && window.ArcadeFX.showMathTalkPrompt) {
+            setTimeout(() => {
+              window.ArcadeFX.showMathTalkPrompt({
+                titleEn: "Partner Talk: Equivalent Ratio Scaling",
+                titleEs: "Charla con tu Pareja: Escala de Razones Equivalentes",
+                questionEn: "Turn to your partner: How does the double number line show that both quantities scaled by the exact same multiplier?",
+                questionEs: "Pregunta a tu compañero: ¿Cómo demuestra la recta numérica doble que ambas cantidades aumentaron por el mismo multiplicador?",
+                stemEn: "Sentence Stem: 'The relationship stays equivalent because both lines were scaled by ×" + (c / p.a || 2) + "...'",
+                stemEs: "Estructura: 'La relación sigue siendo equivalente porque ambas rectas se multiplicaron por ×" + (c / p.a || 2) + "...'"
+              });
+            }, 600);
+          }
           this.afterAttempt(true);
           return;
         }
@@ -1511,6 +2022,17 @@
         JUICE.shake(this, 0.008);
         this.streak = 0;
         this.attemptsThis = (this.attemptsThis || 0) + 1;
+        if (window.ArcadeFX && window.ArcadeFX.detectMisconception) {
+          const mis = window.ArcadeFX.detectMisconception('ratio', {
+            baseA: p.a,
+            baseB: p.b,
+            chosenA: c,
+            chosenB: d
+          });
+          if (mis) {
+            window.ArcadeFX.showMisconceptionNotice(mis);
+          }
+        }
         // Keep the model editable; feedback supports another mathematical revision.
         // Miss 1 = Tier 1 (method only). Miss 2 = Tier 2 (a concrete step
         // with this problem's numbers + the paired multiples drawn on the
