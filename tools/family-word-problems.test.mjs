@@ -150,3 +150,38 @@ test("each page is dressed as its lesson's homework page", () => {
     assert.match(html, /class="problem-section card/);
   }
 });
+
+test("each page uses the homework tab bar: one stop per group between Learn and Done", () => {
+  for (const s of sets) {
+    const html = readFileSync(
+      lessonPath(s.lessonId, "family", "word-problems", "index.html"),
+      "utf8",
+    );
+    const stops = [...html.matchAll(/<button type="button" role="tab" id="wp_tab_([a-z-]+)"/g)].map(
+      (m) => m[1],
+    );
+    assert.deepEqual(stops, ["learn", ...s.groups.map((g) => g.id), "done"]);
+    for (const id of stops)
+      assert.match(html, new RegExp(`data-tab-panel="${id}" id="wp_panel_${id}" role="tabpanel"`));
+    assert.equal(
+      (
+        html.match(
+          /data-tab-panel="[a-z-]+" id="wp_panel_[a-z-]+" role="tabpanel"[^>]* hidden>/g,
+        ) ?? []
+      ).length,
+      stops.length - 1,
+      "only Learn starts open",
+    );
+    for (const g of s.groups) {
+      assert.ok(
+        g.tab.en.length <= 7,
+        `${g.id} tab "${g.tab.en}" is too long to fit five tabs on a phone`,
+      );
+      assert.ok(
+        g.tab.es.length <= 8,
+        `${g.id} tab "${g.tab.es}" is too long to fit five tabs on a phone`,
+      );
+      assert.ok(g.emoji, `${g.id} needs a tab emoji`);
+    }
+  }
+});

@@ -349,21 +349,20 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 </style>
 <link rel="stylesheet" href="/assets/homework/homework-layer-ca2ac01bc1.css">
 <style>
-.wp-group { margin: 28px 0 0; }
-.wp-group > h2 { margin: 0; font: 700 26px/1.25 var(--fp-serif); color: var(--fp-ink); }
-.wp-group > h2 .lang-es { display: block; font: 500 18px var(--fp-sans); color: var(--fp-muted); margin-top: 2px; }
-.wp-group > p { margin: 6px 0 14px; color: var(--fp-ink-soft); }
+.wp-blurb { margin: 6px 0 14px; color: var(--fp-ink-soft); }
 .wp-problem { margin-top: 16px; break-inside: avoid; }
 .wp-tip-label, .family-problem-tip p { margin: 0; }
 .wp-tip-label { margin-bottom: 4px !important; }
 .wp-hint p { margin: 10px 0 0; padding: 0 4px 10px; }
 .wp-problem .hw-work { margin-top: 14px; }
 .wp-tip-label .lang-en, .wp-tip-label .lang-es { margin-left: 4px; }
-.wp-links { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; margin: 28px 0 0; }
+.wp-links { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; margin: 22px 0 0; }
 .wp-links a { color: var(--fp-unit-ink); font-weight: 700; }
+.wp-links button .lang-en, .wp-links button .lang-es { color: inherit; }
 .wp-links button { font: inherit; font-weight: 700; color: #fff; background: var(--fp-unit-ink); border: 0; border-radius: 12px; padding: 10px 18px; min-height: 44px; cursor: pointer; }
 @media print {
-  .hw-hero-controls, .wp-links, .wp-hint, .hw-answer-key { display: none !important; }
+  .hw-hero-controls, .homework-tab-chrome, .tab-flow-nav, .wp-links, .wp-hint, .hw-answer-key { display: none !important; }
+  [data-tab-panel][hidden] { display: block !important; }
   .wp-problem .hw-work-input { min-height: 120px; }
 }
 </style>
@@ -430,12 +429,53 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </ul>
     </div>
   </header>
-  <section class="card wp-intro">
-    <p><span class="lang-en">These word problems use the same ideas as the 4-4 homework: find a percent of a number, find a discount and a sale price, and compare deals. Pick a few to talk through together. They are optional and ungraded.</span><span class="lang-es" lang="es">Estos problemas verbales usan las mismas ideas de la tarea 4-4: hallar el porcentaje de un número, hallar un descuento y un precio de oferta, y comparar ofertas. Elijan algunos para conversar juntos. Son opcionales y sin calificación.</span></p>
-  </section>
-<section class="wp-group" aria-label="Find the part">
-  <h2><span class="lang-en">Find the part</span><span class="lang-es" lang="es">Halla la parte</span></h2>
-  <p><span class="lang-en">Read the problem, name the whole, then find the percent of it.</span><span class="lang-es" lang="es">Lee el problema, nombra el total y halla el porcentaje de ese total.</span></p>
+  <div class="homework-tabs-shell" data-tab-count="5">
+    <div class="homework-tab-chrome">
+      <nav class="homework-tab-bar" role="tablist" aria-label="Today's path" data-aria-en="Today's path" data-aria-es="Ruta de hoy">
+<button type="button" role="tab" id="wp_tab_learn" class="homework-tab-btn is-active" aria-selected="true" aria-controls="wp_panel_learn" aria-label="Learn — stop 1 of 5" data-aria-en="Learn — stop 1 of 5" data-aria-es="Aprender — parada 1 de 5" data-tab="learn" data-stop="1">
+  <span class="tab-step" aria-hidden="true">1</span>
+  <span class="tab-icon" aria-hidden="true">📖</span>
+  <span class="tab-label"><span class="tab-en">Learn</span><span class="tab-es" lang="es">Aprender</span></span>
+  <span class="tab-done" aria-hidden="true">✓</span>
+</button>
+<button type="button" role="tab" id="wp_tab_find" class="homework-tab-btn" aria-selected="false" aria-controls="wp_panel_find" aria-label="Parts — stop 2 of 5" data-aria-en="Parts — stop 2 of 5" data-aria-es="Partes — parada 2 de 5" data-tab="find" data-stop="2">
+  <span class="tab-step" aria-hidden="true">2</span>
+  <span class="tab-icon" aria-hidden="true">🧮</span>
+  <span class="tab-label"><span class="tab-en">Parts</span><span class="tab-es" lang="es">Partes</span></span>
+  <span class="tab-done" aria-hidden="true">✓</span>
+</button>
+<button type="button" role="tab" id="wp_tab_sale" class="homework-tab-btn" aria-selected="false" aria-controls="wp_panel_sale" aria-label="Sales — stop 3 of 5" data-aria-en="Sales — stop 3 of 5" data-aria-es="Rebajas — parada 3 de 5" data-tab="sale" data-stop="3">
+  <span class="tab-step" aria-hidden="true">3</span>
+  <span class="tab-icon" aria-hidden="true">🏷️</span>
+  <span class="tab-label"><span class="tab-en">Sales</span><span class="tab-es" lang="es">Rebajas</span></span>
+  <span class="tab-done" aria-hidden="true">✓</span>
+</button>
+<button type="button" role="tab" id="wp_tab_deal" class="homework-tab-btn" aria-selected="false" aria-controls="wp_panel_deal" aria-label="Deals — stop 4 of 5" data-aria-en="Deals — stop 4 of 5" data-aria-es="Ofertas — parada 4 de 5" data-tab="deal" data-stop="4">
+  <span class="tab-step" aria-hidden="true">4</span>
+  <span class="tab-icon" aria-hidden="true">🔎</span>
+  <span class="tab-label"><span class="tab-en">Deals</span><span class="tab-es" lang="es">Ofertas</span></span>
+  <span class="tab-done" aria-hidden="true">✓</span>
+</button>
+<button type="button" role="tab" id="wp_tab_done" class="homework-tab-btn" aria-selected="false" aria-controls="wp_panel_done" aria-label="Done — stop 5 of 5" data-aria-en="Done — stop 5 of 5" data-aria-es="Listo — parada 5 de 5" data-tab="done" data-stop="5">
+  <span class="tab-step" aria-hidden="true">5</span>
+  <span class="tab-icon" aria-hidden="true">🎉</span>
+  <span class="tab-label"><span class="tab-en">Done</span><span class="tab-es" lang="es">Listo</span></span>
+  <span class="tab-done" aria-hidden="true">✓</span>
+</button>
+      </nav>
+      <div class="homework-tab-track" aria-hidden="true"><span class="homework-tab-track-fill" id="hw_tab_track_fill"></span></div>
+    </div>
+    <div class="homework-tab-panels" id="hw_tab_panels">
+<div class="tab-panel-inner" data-tab-panel="learn" id="wp_panel_learn" role="tabpanel" aria-labelledby="wp_tab_learn">
+  <h2 class="section-title">📖 <span class="lang-en">Learn</span><span class="lang-es" lang="es">Aprender</span></h2>
+  <section class="card wp-intro"><p><span class="lang-en">These word problems use the same ideas as the 4-4 homework: find a percent of a number, find a discount and a sale price, and compare deals. Pick a few to talk through together. They are optional and ungraded.</span><span class="lang-es" lang="es">Estos problemas verbales usan las mismas ideas de la tarea 4-4: hallar el porcentaje de un número, hallar un descuento y un precio de oferta, y comparar ofertas. Elijan algunos para conversar juntos. Son opcionales y sin calificación.</span></p></section>
+  <div class="tab-flow-nav">
+  <button type="button" class="btn btn-primary flow-next-btn" data-next="find"><span class="lang-en">Continue ➔</span><span class="lang-es" lang="es">Continuar ➔</span></button>
+</div>
+</div>
+<div class="tab-panel-inner" data-tab-panel="find" id="wp_panel_find" role="tabpanel" aria-labelledby="wp_tab_find" hidden>
+  <h2 class="section-title">🧮 <span class="lang-en">Find the part</span><span class="lang-es" lang="es">Halla la parte</span></h2>
+  <p class="wp-blurb"><span class="lang-en">Read the problem, name the whole, then find the percent of it.</span><span class="lang-es" lang="es">Lee el problema, nombra el total y halla el porcentaje de ese total.</span></p>
 <section class="problem-section card wp-problem" id="find-1">
   <div class="problem-header-row">
     <div class="problem-number-badge hw-inline"><span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 1</div>
@@ -560,10 +600,13 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
     </div>
   </details>
 </section>
-</section>
-<section class="wp-group" aria-label="Discounts and sale prices">
-  <h2><span class="lang-en">Discounts and sale prices</span><span class="lang-es" lang="es">Descuentos y precios de oferta</span></h2>
-  <p><span class="lang-en">Find how much you save. Then subtract to find what you pay.</span><span class="lang-es" lang="es">Halla cuánto ahorras. Luego resta para hallar cuánto pagas.</span></p>
+  <div class="tab-flow-nav">
+  <button type="button" class="btn btn-primary flow-next-btn" data-next="sale"><span class="lang-en">Continue ➔</span><span class="lang-es" lang="es">Continuar ➔</span></button>
+</div>
+</div>
+<div class="tab-panel-inner" data-tab-panel="sale" id="wp_panel_sale" role="tabpanel" aria-labelledby="wp_tab_sale" hidden>
+  <h2 class="section-title">🏷️ <span class="lang-en">Discounts and sale prices</span><span class="lang-es" lang="es">Descuentos y precios de oferta</span></h2>
+  <p class="wp-blurb"><span class="lang-en">Find how much you save. Then subtract to find what you pay.</span><span class="lang-es" lang="es">Halla cuánto ahorras. Luego resta para hallar cuánto pagas.</span></p>
 <section class="problem-section card wp-problem" id="sale-1">
   <div class="problem-header-row">
     <div class="problem-number-badge hw-inline"><span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 5</div>
@@ -657,10 +700,13 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
     </div>
   </details>
 </section>
-</section>
-<section class="wp-group" aria-label="Which deal wins?">
-  <h2><span class="lang-en">Which deal wins?</span><span class="lang-es" lang="es">¿Qué oferta conviene?</span></h2>
-  <p><span class="lang-en">Find the evidence for each deal, then explain your choice.</span><span class="lang-es" lang="es">Halla la evidencia de cada oferta y luego explica tu elección.</span></p>
+  <div class="tab-flow-nav">
+  <button type="button" class="btn btn-primary flow-next-btn" data-next="deal"><span class="lang-en">Continue ➔</span><span class="lang-es" lang="es">Continuar ➔</span></button>
+</div>
+</div>
+<div class="tab-panel-inner" data-tab-panel="deal" id="wp_panel_deal" role="tabpanel" aria-labelledby="wp_tab_deal" hidden>
+  <h2 class="section-title">🔎 <span class="lang-en">Which deal wins?</span><span class="lang-es" lang="es">¿Qué oferta conviene?</span></h2>
+  <p class="wp-blurb"><span class="lang-en">Find the evidence for each deal, then explain your choice.</span><span class="lang-es" lang="es">Halla la evidencia de cada oferta y luego explica tu elección.</span></p>
 <section class="problem-section card wp-problem" id="deal-1">
   <div class="problem-header-row">
     <div class="problem-number-badge hw-inline"><span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 8</div>
@@ -723,12 +769,28 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
     </div>
   </details>
 </section>
-</section>
+  <div class="tab-flow-nav">
+  <button type="button" class="btn btn-primary flow-next-btn" data-next="done"><span class="lang-en">Continue ➔</span><span class="lang-es" lang="es">Continuar ➔</span></button>
+</div>
+</div>
+<div class="tab-panel-inner" data-tab-panel="done" id="wp_panel_done" role="tabpanel" aria-labelledby="wp_tab_done" hidden>
+  <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
+  <section class="hw-teach">
+    <h3><span class="lang-en">Teach it to someone</span><span class="lang-es" lang="es">Enséñaselo a alguien</span></h3>
+    <ol class="hw-teach-steps">
+      <li><span class="lang-en">Pick one problem you solved.</span><span class="lang-es" lang="es">Elige un problema que resolviste.</span></li>
+      <li><span class="lang-en">Explain it out loud. Use any language first.</span><span class="lang-es" lang="es">Explícalo en voz alta. Usa primero el idioma que prefieras.</span></li>
+      <li><span class="lang-en">Your partner asks: “How do you know?” Answer with: “I got ___ because ___. I checked by ___.”</span><span class="lang-es" lang="es">Tu acompañante pregunta: “¿Cómo lo sabes?” Responde: “Obtuve ___ porque ___. Comprobé usando ___.”</span></li>
+    </ol>
+  </section>
   <p class="wp-links">
     <button type="button" onclick="window.print()"><span class="lang-en">Print this page</span><span class="lang-es" lang="es">Imprimir esta página</span></button>
     <a href="/lessons/4-4/homework.html"><span class="lang-en">Lesson 4-4 homework</span><span class="lang-es" lang="es">Tarea de la lección 4-4</span></a>
     <a href="/lessons/4-4/family/"><span class="lang-en">Lesson 4-4 family guide</span><span class="lang-es" lang="es">Guía para familias de la lección 4-4</span></a>
   </p>
+</div>
+    </div>
+  </div>
 </div>
 <script>
 (function () {
@@ -754,6 +816,47 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
     });
   });
   show(document.body.className.match(/lang-mode-(bilingual|en|es)/)[1]);
+})();
+(function () {
+  var KEY = 'wp_tab_4-4';
+  var tabs = [].slice.call(document.querySelectorAll('.homework-tab-btn'));
+  var panels = [].slice.call(document.querySelectorAll('[data-tab-panel]'));
+  var fill = document.getElementById('hw_tab_track_fill');
+  var ids = tabs.map(function (t) { return t.dataset.tab; });
+  function show(id, scroll) {
+    if (ids.indexOf(id) < 0) id = ids[0];
+    tabs.forEach(function (t, i) {
+      var on = t.dataset.tab === id;
+      t.classList.toggle('is-active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+      if (on) {
+        t.setAttribute('aria-current', 'step');
+        if (fill) fill.style.width = ((i + 1) / tabs.length) * 100 + '%';
+      } else t.removeAttribute('aria-current');
+    });
+    panels.forEach(function (p) { p.hidden = p.dataset.tabPanel !== id; });
+    try { localStorage.setItem(KEY, id); } catch (e) {}
+    var bar = document.querySelector('.homework-tab-chrome');
+    if (scroll && bar) bar.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () { show(t.dataset.tab, false); });
+    t.addEventListener('keydown', function (e) {
+      var i = ids.indexOf(t.dataset.tab);
+      var j = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? ids.length - 1 : -1;
+      if (j < 0 || j >= ids.length) return;
+      e.preventDefault();
+      show(ids[j], false);
+      tabs[j].focus();
+    });
+  });
+  [].slice.call(document.querySelectorAll('[data-next]')).forEach(function (b) {
+    b.addEventListener('click', function () { show(b.dataset.next, true); });
+  });
+  var start = location.hash.slice(1);
+  if (ids.indexOf(start) < 0) { try { start = localStorage.getItem(KEY); } catch (e) { start = null; } }
+  show(start, false);
 })();
 </script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

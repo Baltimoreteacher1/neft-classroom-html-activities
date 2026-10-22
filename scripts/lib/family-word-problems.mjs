@@ -221,24 +221,67 @@ const LANGUAGE_TOGGLE = `(function () {
   show(document.body.className.match(/lang-mode-(bilingual|en|es)/)[1]);
 })();`;
 
+// The homework's tab bar, minus its lesson state: one stop shows at a time, the family's last
+// stop is remembered per lesson, and #<stop id> opens a stop directly.
+const tabScript = (lessonId) => `(function () {
+  var KEY = 'wp_tab_${lessonId}';
+  var tabs = [].slice.call(document.querySelectorAll('.homework-tab-btn'));
+  var panels = [].slice.call(document.querySelectorAll('[data-tab-panel]'));
+  var fill = document.getElementById('hw_tab_track_fill');
+  var ids = tabs.map(function (t) { return t.dataset.tab; });
+  function show(id, scroll) {
+    if (ids.indexOf(id) < 0) id = ids[0];
+    tabs.forEach(function (t, i) {
+      var on = t.dataset.tab === id;
+      t.classList.toggle('is-active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+      if (on) {
+        t.setAttribute('aria-current', 'step');
+        if (fill) fill.style.width = ((i + 1) / tabs.length) * 100 + '%';
+      } else t.removeAttribute('aria-current');
+    });
+    panels.forEach(function (p) { p.hidden = p.dataset.tabPanel !== id; });
+    try { localStorage.setItem(KEY, id); } catch (e) {}
+    var bar = document.querySelector('.homework-tab-chrome');
+    if (scroll && bar) bar.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () { show(t.dataset.tab, false); });
+    t.addEventListener('keydown', function (e) {
+      var i = ids.indexOf(t.dataset.tab);
+      var j = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? ids.length - 1 : -1;
+      if (j < 0 || j >= ids.length) return;
+      e.preventDefault();
+      show(ids[j], false);
+      tabs[j].focus();
+    });
+  });
+  [].slice.call(document.querySelectorAll('[data-next]')).forEach(function (b) {
+    b.addEventListener('click', function () { show(b.dataset.next, true); });
+  });
+  var start = location.hash.slice(1);
+  if (ids.indexOf(start) < 0) { try { start = localStorage.getItem(KEY); } catch (e) { start = null; } }
+  show(start, false);
+})();`;
+
 // Only what the homework stylesheet has no rule for: the group headings, the hint body,
 // the link row and the print sheet. Cards, hero, badges and answer keys are the homework's own.
 const WORD_PROBLEM_CSS = `
-.wp-group { margin: 28px 0 0; }
-.wp-group > h2 { margin: 0; font: 700 26px/1.25 var(--fp-serif); color: var(--fp-ink); }
-.wp-group > h2 .lang-es { display: block; font: 500 18px var(--fp-sans); color: var(--fp-muted); margin-top: 2px; }
-.wp-group > p { margin: 6px 0 14px; color: var(--fp-ink-soft); }
+.wp-blurb { margin: 6px 0 14px; color: var(--fp-ink-soft); }
 .wp-problem { margin-top: 16px; break-inside: avoid; }
 .wp-tip-label, .family-problem-tip p { margin: 0; }
 .wp-tip-label { margin-bottom: 4px !important; }
 .wp-hint p { margin: 10px 0 0; padding: 0 4px 10px; }
 .wp-problem .hw-work { margin-top: 14px; }
 .wp-tip-label .lang-en, .wp-tip-label .lang-es { margin-left: 4px; }
-.wp-links { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; margin: 28px 0 0; }
+.wp-links { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; margin: 22px 0 0; }
 .wp-links a { color: var(--fp-unit-ink); font-weight: 700; }
+.wp-links button .lang-en, .wp-links button .lang-es { color: inherit; }
 .wp-links button { font: inherit; font-weight: 700; color: #fff; background: var(--fp-unit-ink); border: 0; border-radius: 12px; padding: 10px 18px; min-height: 44px; cursor: pointer; }
 @media print {
-  .hw-hero-controls, .wp-links, .wp-hint, .hw-answer-key { display: none !important; }
+  .hw-hero-controls, .homework-tab-chrome, .tab-flow-nav, .wp-links, .wp-hint, .hw-answer-key { display: none !important; }
+  [data-tab-panel][hidden] { display: block !important; }
   .wp-problem .hw-work-input { min-height: 120px; }
 }
 `;
@@ -249,15 +292,62 @@ export function wordProblemsPage(data, chrome) {
   const id = esc(data.lessonId);
   const total = data.groups.reduce((sum, g) => sum + g.problems.length, 0);
   let n = 0;
-  const groups = data.groups
-    .map(
-      (g) => `<section class="wp-group" aria-label="${esc(g.title.en)}">
-  <h2>${both(g.title)}</h2>
-  <p>${both(g.blurb)}</p>
-${g.problems.map((p) => problemHtml(p, ++n)).join("\n")}
-</section>`,
-    )
+  const stops = [
+    { id: "learn", label: { en: "Learn", es: "Aprender" }, emoji: "📖" },
+    ...data.groups.map((g) => ({ id: g.id, label: g.tab, emoji: g.emoji })),
+    { id: "done", label: { en: "Done", es: "Listo" }, emoji: "🎉" },
+  ];
+  const tabButtons = stops
+    .map((t, i) => {
+      const of = {
+        en: `${t.label.en} — stop ${i + 1} of ${stops.length}`,
+        es: `${t.label.es} — parada ${i + 1} de ${stops.length}`,
+      };
+      return `<button type="button" role="tab" id="wp_tab_${esc(t.id)}" class="homework-tab-btn${i === 0 ? " is-active" : ""}" aria-selected="${i === 0}" aria-controls="wp_panel_${esc(t.id)}" aria-label="${esc(of.en)}" data-aria-en="${esc(of.en)}" data-aria-es="${esc(of.es)}" data-tab="${esc(t.id)}" data-stop="${i + 1}">
+  <span class="tab-step" aria-hidden="true">${i + 1}</span>
+  <span class="tab-icon" aria-hidden="true">${t.emoji}</span>
+  <span class="tab-label"><span class="tab-en">${esc(t.label.en)}</span><span class="tab-es" lang="es">${esc(t.label.es)}</span></span>
+  <span class="tab-done" aria-hidden="true">✓</span>
+</button>`;
+    })
     .join("\n");
+  const next = (to) => `<div class="tab-flow-nav">
+  <button type="button" class="btn btn-primary flow-next-btn" data-next="${esc(to)}"><span class="lang-en">Continue ➔</span><span class="lang-es" lang="es">Continuar ➔</span></button>
+</div>`;
+  const panel = (stop, body) =>
+    `<div class="tab-panel-inner" data-tab-panel="${esc(stop.id)}" id="wp_panel_${esc(stop.id)}" role="tabpanel" aria-labelledby="wp_tab_${esc(stop.id)}"${stop.id === "learn" ? "" : " hidden"}>
+  <h2 class="section-title">${stop.emoji} ${both(stop.title ?? stop.label)}</h2>
+${body}
+</div>`;
+  const panels = stops.map((stop, i) => {
+    if (stop.id === "learn")
+      return panel(
+        stop,
+        `  <section class="card wp-intro"><p>${both(data.intro)}</p></section>\n  ${next(stops[i + 1].id)}`,
+      );
+    if (stop.id === "done")
+      return panel(
+        { ...stop, title: { en: "Finished for today", es: "Terminaste por hoy" } },
+        `  <section class="hw-teach">
+    <h3>${both({ en: "Teach it to someone", es: "Enséñaselo a alguien" })}</h3>
+    <ol class="hw-teach-steps">
+      <li>${both({ en: "Pick one problem you solved.", es: "Elige un problema que resolviste." })}</li>
+      <li>${both({ en: "Explain it out loud. Use any language first.", es: "Explícalo en voz alta. Usa primero el idioma que prefieras." })}</li>
+      <li>${both({ en: "Your partner asks: “How do you know?” Answer with: “I got ___ because ___. I checked by ___.”", es: "Tu acompañante pregunta: “¿Cómo lo sabes?” Responde: “Obtuve ___ porque ___. Comprobé usando ___.”" })}</li>
+    </ol>
+  </section>
+  <p class="wp-links">
+    <button type="button" onclick="window.print()">${both({ en: "Print this page", es: "Imprimir esta página" })}</button>
+    <a href="/lessons/${id}/homework.html">${both({ en: `Lesson ${data.lessonId} homework`, es: `Tarea de la lección ${data.lessonId}` })}</a>
+    <a href="/lessons/${id}/family/">${both({ en: `Lesson ${data.lessonId} family guide`, es: `Guía para familias de la lección ${data.lessonId}` })}</a>
+  </p>`,
+      );
+    const g = data.groups.find((q) => q.id === stop.id);
+    return panel(
+      { ...stop, title: g.title },
+      `  <p class="wp-blurb">${both(g.blurb)}</p>\n${g.problems.map((p) => problemHtml(p, ++n)).join("\n")}\n  ${next(stops[i + 1].id)}`,
+    );
+  });
   return `<!doctype html>
 <html lang="en" data-unit="${unit}">
 <head>
@@ -307,18 +397,21 @@ ${LANGUAGE_BOOT}
       </ul>
     </div>
   </header>
-  <section class="card wp-intro">
-    <p>${both(data.intro)}</p>
-  </section>
-${groups}
-  <p class="wp-links">
-    <button type="button" onclick="window.print()">${both({ en: "Print this page", es: "Imprimir esta página" })}</button>
-    <a href="/lessons/${id}/homework.html">${both({ en: `Lesson ${data.lessonId} homework`, es: `Tarea de la lección ${data.lessonId}` })}</a>
-    <a href="/lessons/${id}/family/">${both({ en: `Lesson ${data.lessonId} family guide`, es: `Guía para familias de la lección ${data.lessonId}` })}</a>
-  </p>
+  <div class="homework-tabs-shell" data-tab-count="${stops.length}">
+    <div class="homework-tab-chrome">
+      <nav class="homework-tab-bar" role="tablist" aria-label="Today's path" data-aria-en="Today's path" data-aria-es="Ruta de hoy">
+${tabButtons}
+      </nav>
+      <div class="homework-tab-track" aria-hidden="true"><span class="homework-tab-track-fill" id="hw_tab_track_fill"></span></div>
+    </div>
+    <div class="homework-tab-panels" id="hw_tab_panels">
+${panels.join("\n")}
+    </div>
+  </div>
 </div>
 <script>
 ${LANGUAGE_TOGGLE}
+${tabScript(data.lessonId)}
 </script>
 </body>
 </html>
