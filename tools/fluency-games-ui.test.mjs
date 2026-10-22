@@ -158,7 +158,14 @@ await toMenu();
 click('[data-game="mistake"]');
 await wait();
 for (let round = 0; round < 5; round += 1) {
-  if ($(".gm-steps")) {
+  if (/student solved this/.test($(".gm-ask")?.textContent || "")) {
+    // "A student solved this" round: tap each step until the error is found, then name the slip and pick the repair.
+    for (let i = 0; i < 4; i += 1) if (!$("[data-slip]")) $(`[data-pick="${i}"]`)?.click();
+    assert.equal($$("[data-slip]").length, 3, "Finding the wrong step opens three named slips");
+    for (let i = 0; i < 3; i += 1) if (!$("[data-fix]")) $$("[data-slip]")[i]?.click();
+    assert.equal($$("[data-fix]").length, 3, "Naming the slip opens three repairs");
+    for (let i = 0; i < 3; i += 1) $(`[data-fix="${i}"]`)?.click();
+  } else if ($(".gm-steps")) {
     const steps = $$(".gm-step").map((b) => b.textContent.replace(/^\d+\s*/, "").trim());
     let bad = -1;
     let truth = 0;
