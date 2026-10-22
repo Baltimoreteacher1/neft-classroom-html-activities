@@ -13,8 +13,7 @@ Implementation rules:
 - Keep hints supportive without revealing answers immediately.
 
 Verification commands:
-- `npm run validate`
-- `scripts/codex/codex-verify.sh`
+- Run the relevant math/content validator, then `scripts/codex/codex-verify.sh` once for local verification. An immediately following guarded `ship` runs the pre-push gate on the assembled commit.
 - Manual content check documented in final response.
 
 Final response format:

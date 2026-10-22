@@ -13,8 +13,7 @@ Implementation rules:
 - Separate content findings from UI findings.
 
 Verification commands:
-- `npm run validate`
-- `scripts/codex/codex-verify.sh`
+- Run the relevant activity check, then `scripts/codex/codex-verify.sh` once when fixes were made. An immediately following guarded `ship` runs the pre-push gate on the assembled commit.
 
 Final response format:
 - Findings first if reviewing only.
