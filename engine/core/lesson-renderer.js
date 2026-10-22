@@ -68,6 +68,13 @@ import {
   t,
 } from "./i18n.js";
 import { attachImageZoom, isLightboxOpen, observeContentImageZoom } from "./image-zoom.js";
+import {
+  analyzeEvidence,
+  decideInstruction,
+  independentRecoveryCount,
+  readInstructionalEvidence,
+  recordInstructionalEvidence,
+} from "./instructional-intelligence.js";
 import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-visual.js";
 import { mountLevel3Launch } from "./level3-launch.js";
 import { getLevel, levelOverride, mountLevelSelector } from "./levels.js";
@@ -4888,6 +4895,75 @@ function renderSkillPractice(host, config, state) {
   enableWordProblemAnnotation(card);
 }
 
+/** Ask for the learner's own signal when a wrong answer has no supported
+ * misconception. This is self-report, not an inference about language or skill. */
+function mountPracticeClarification(container, problem, state, activity) {
+  const card = document.createElement("section");
+  card.className = "practice-clarify";
+  card.setAttribute("aria-labelledby", "practice-clarify-title");
+  const title = document.createElement("h5");
+  title.id = "practice-clarify-title";
+  title.textContent = "What would help you take the next step?";
+  card.append(title);
+  const actions = document.createElement("div");
+  actions.className = "practice-clarify-actions";
+  const status = document.createElement("p");
+  status.className = "practice-clarify-status";
+  status.setAttribute("role", "status");
+  status.setAttribute("aria-live", "polite");
+  const translation = problem.stemEs || problem.promptEs || "";
+  const choices = [
+    ["calculation-check", "I understand the strategy; I want to check my calculation."],
+    ["strategy-clarification", "I am not sure which strategy fits yet."],
+  ];
+  if (translation) choices.push(["language-access", "Show the question in Spanish."]);
+  for (const [signal, label] of choices) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "btn btn-secondary";
+    button.textContent = label;
+    button.addEventListener("click", () => {
+      const languageAccess = signal === "language-access" ? "learner-requested" : "none";
+      const saved = recordInstructionalEvidence(state, {
+        activity,
+        correct: false,
+        learnerSignal: signal,
+        languageAccess,
+      });
+      const move = decideInstruction(
+        saved ||
+          analyzeEvidence({
+            activity,
+            correct: false,
+            learnerSignal: signal,
+            languageAccess,
+          }),
+        { hasAuthoredTranslation: Boolean(translation) },
+      );
+      actions.querySelectorAll("button").forEach((option) => {
+        option.disabled = true;
+      });
+      status.textContent =
+        signal === "calculation-check"
+          ? "Try estimating or checking with an inverse operation as you work through the feedback below."
+          : signal === "strategy-clarification"
+            ? "First name what the question asks you to find. Then connect that quantity to a model or operation."
+            : move.offerTranslation
+              ? "Here is the authored Spanish wording. The math goal stays the same."
+              : "Use the read-aloud support in the lesson tools, then continue with the same math task.";
+      if (signal === "language-access" && move.offerTranslation) {
+        const translated = document.createElement("p");
+        translated.lang = "es";
+        translated.textContent = translation;
+        status.append(translated);
+      }
+    });
+    actions.append(button);
+  }
+  card.append(actions, status);
+  container.append(card);
+}
+
 // Caption for a practice lab: the tool's canonical name and what it is for,
 // bilingual when the catalog carries Spanish. Returns "" for an uncatalogued
 // kind so the lab still renders rather than showing a title-cased slug.
@@ -5016,6 +5092,7 @@ function renderPracticePhase(el, state, ctx, config, opts = {}) {
   renderRevealSlides(el, config, "practice");
 
   const seq = createAdaptiveSequence(config, state);
+  const evidenceActivity = `${String(config.lessonId || config.standard || "lesson").slice(0, 80)}:practice`;
   let totalCorrect = 0,
     totalAttempts = 0,
     shown = 0,
@@ -5127,7 +5204,9 @@ function renderPracticePhase(el, state, ctx, config, opts = {}) {
     // Level 1 items get an always-visible scaffold hint. Uses an authored
     // scaffold/hint when present, otherwise derives a short, type-aware,
     // non-answer-giving nudge so every support item is scaffolded.
-    if (prob.tier === "level1") {
+    const fadingEligible =
+      independentRecoveryCount(readInstructionalEvidence(state), evidenceActivity) >= 2;
+    if (prob.tier === "level1" && !fadingEligible) {
       const scaffoldText = deriveScaffold(prob);
       if (scaffoldText) {
         const hint = document.createElement("details");
@@ -5138,10 +5217,19 @@ function renderPracticePhase(el, state, ctx, config, opts = {}) {
       }
     }
 
+    const hintsAtPresentation = Number(state.get()?.hintsUsed) || 0;
     renderComponent(
       area,
       prob,
       (isCorrect, misconception) => {
+        const evidence = recordInstructionalEvidence(state, {
+          activity: evidenceActivity,
+          itemId: `${evidenceActivity}:${shown}`,
+          correct: isCorrect,
+          misconception,
+          independent:
+            prob.tier !== "level1" && (Number(state.get()?.hintsUsed) || 0) === hintsAtPresentation,
+        });
         totalAttempts++;
         if (isCorrect) {
           // Strong resolution: this item was served BECAUSE it traps the error
@@ -5200,6 +5288,14 @@ function renderPracticePhase(el, state, ctx, config, opts = {}) {
           const remSlot = document.createElement("div");
           remSlot.className = "mt-4";
           area.append(remSlot);
+          if (!misconception && evidence) {
+            const decision = decideInstruction(evidence, {
+              hasAuthoredTranslation: Boolean(prob.stemEs || prob.promptEs),
+            });
+            if (decision.move === "ask-learner-what-would-help") {
+              mountPracticeClarification(remSlot, prob, state, evidenceActivity);
+            }
+          }
           renderRemediation(remSlot, {
             question: prob,
             state,

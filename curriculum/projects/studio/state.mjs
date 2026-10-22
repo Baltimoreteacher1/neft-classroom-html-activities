@@ -1,4 +1,5 @@
 import { fieldsFor, model, matches } from "./math.mjs";
+import { analyzeEvidence } from "../../../engine/core/instructional-intelligence.js";
 export const VERSION = 1;
 export const keyFor = (id) => `ewl-project-studio:v${VERSION}:${id}`;
 export function fresh(project) {
@@ -11,6 +12,8 @@ export function fresh(project) {
     vision: "",
     answers: {},
     checked: {},
+    supportSignals: {},
+    instructionalEvidence: { version: 1, events: [] },
     evidence: ["", "", ""],
     critique: "",
     revision: "",
@@ -47,6 +50,33 @@ export function clean(project, input) {
     out.answers[q.id] = short(input.answers?.[q.id], 100);
     if (input.checked?.[q.id] === true && matches(out.answers[q.id], q.answer))
       out.checked[q.id] = true;
+  }
+  for (const q of m.checks) {
+    const signal = input.supportSignals?.[q.id];
+    if (["calculation-check", "strategy-clarification", "language-access"].includes(signal))
+      out.supportSignals[q.id] = signal;
+  }
+  const savedEvents = input.instructionalEvidence;
+  if (savedEvents?.version === 1 && Array.isArray(savedEvents.events)) {
+    out.instructionalEvidence.events = savedEvents.events.slice(-40).map((event) =>
+      analyzeEvidence({
+        activity: typeof event?.activity === "string" && event.activity.startsWith(`project-studio:${project.id}:`)
+          ? event.activity
+          : `project-studio:${project.id}`,
+        itemId: typeof event?.itemId === "string" ? event.itemId : null,
+        correct: event?.kind === "correct",
+        misconception: event?.kind === "misconception" ? event.misconception : "",
+        computationalSlip: event?.kind === "computational-slip",
+        independent: event?.condition !== "supported",
+        languageAccess: ["learner-requested", "authored-translation"].includes(event?.languageAccess)
+          ? event.languageAccess
+          : "none",
+        learnerSignal: ["calculation-check", "strategy-clarification", "language-access"].includes(event?.learnerSignal)
+          ? event.learnerSignal
+          : null,
+        at: Number.isFinite(event?.at) ? event.at : undefined,
+      }),
+    );
   }
   if (input.baseline && typeof input.baseline === "object") {
     const design = {};

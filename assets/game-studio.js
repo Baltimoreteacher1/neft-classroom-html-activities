@@ -83,6 +83,81 @@
   let previousFocus;
   const listeners = new EventTarget();
 
+  // Optional local enrichment. The bridge is a stable Vite entry in production
+  // and a normal ESM source module in dev; failures never affect gameplay.
+  let instructionalEnginePromise;
+  function recordInstructionalFeedback(detail) {
+    if (typeof detail?.correct !== "boolean") return;
+    instructionalEnginePromise ||= import("/assets/game-studio-intelligence.js").catch(() => null);
+    instructionalEnginePromise.then((engine) => {
+      if (!engine?.recordInstructionalEvidence) return;
+      const state = {
+        get() {
+          try {
+            const data = JSON.parse(localStorage.getItem(KEY_V2) || "{}");
+            return data?.games?.[location.pathname] || {};
+          } catch {
+            return {};
+          }
+        },
+        set(patch) {
+          try {
+            const data = JSON.parse(localStorage.getItem(KEY_V2) || "{}");
+            if (!data || typeof data !== "object" || Array.isArray(data)) return;
+            data.games = data.games && typeof data.games === "object" ? data.games : {};
+            const path = location.pathname || "/";
+            data.games[path] = { ...(data.games[path] || {}), ...patch };
+            localStorage.setItem(KEY_V2, JSON.stringify(data));
+          } catch {}
+        },
+      };
+      const tag = typeof detail.misconception === "string" ? detail.misconception.trim() : "";
+      const evidence = engine.recordInstructionalEvidence(state, {
+        activity: location.pathname || "game",
+        correct: detail.correct,
+        // Only explicit authored tags or explicit calculation flags count as
+        // categorical evidence. A generic wrong answer stays unclear.
+        misconception: /^[a-z0-9][a-z0-9._-]{0,59}$/i.test(tag) ? tag : null,
+        computationalSlip: detail.computationalSlip === true,
+        supported: detail.supported === true || detail.hintUsed === true,
+        learnerSignal: detail.learnerSignal,
+        languageAccess: detail.languageAccess,
+      });
+      if (!evidence || typeof engine.decideInstruction !== "function") return;
+      const decision = engine.decideInstruction(evidence, {
+        hasAuthoredTranslation: detail.hasAuthoredTranslation === true,
+        nextIndependent: false,
+      });
+      if (evidence.kind === "correct") return;
+      const prompt =
+        decision.move === "check-the-calculation"
+          ? T(
+              "Recheck one operation at a time. Can the model confirm your result?",
+              "Revisa una operación a la vez. ¿El modelo confirma tu resultado?",
+            )
+          : decision.move === "targeted-repair"
+            ? T(
+                "Use the visual model to revisit this idea. What does each part represent?",
+                "Usa el modelo visual para revisar esta idea. ¿Qué representa cada parte?",
+              )
+            : decision.move === "ask-targeted-math-question"
+              ? T(
+                  "Look at the quantities. What changes, and what stays the same?",
+                  "Observa las cantidades. ¿Qué cambia y qué permanece igual?",
+                )
+              : decision.move === "language-access"
+                ? T(
+                    "Read the prompt in your chosen language, then explain or show your next step.",
+                    "Lee la pregunta en el idioma que prefieras y explica o muestra el siguiente paso.",
+                  )
+                : T(
+                    "This check does not show your strategy yet. Would a calculation check or a visual model help?",
+                    "Esta revisión todavía no muestra tu estrategia. ¿Te ayudaría revisar el cálculo o ver un modelo visual?",
+                  );
+      announce(prompt, "coach");
+    });
+  }
+
   // ── Central Disposable Registry (Zero Memory Leaks) ──────────────────────
   const disposables = {
     rafs: new Set(),
@@ -716,6 +791,9 @@
         completedRounds: (Number(prevGame.completedRounds) || 0) + (extra.completedRound ? 1 : 0),
         accuracy,
         streakBadges: badges,
+        ...(prevGame.instructionalEvidence
+          ? { instructionalEvidence: prevGame.instructionalEvidence }
+          : {}),
         checkpoint: {
           level: session.level,
           correct: session.correct,
@@ -1610,6 +1688,7 @@
   });
   document.addEventListener("game:feedback", (event) => {
     const detail = /** @type {CustomEvent} */ (event).detail || {};
+    recordInstructionalFeedback(detail);
     const objective = noteFeedback(detail);
     if (detail.message) announce(detail.message, detail.correct ? "good" : "coach");
     if (objective)

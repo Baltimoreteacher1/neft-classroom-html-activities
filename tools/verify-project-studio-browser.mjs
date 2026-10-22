@@ -113,6 +113,26 @@ try {
     await page.locator("[data-answer]").first().fill("999999");
     await page.locator("[data-check] button").first().click();
     assert.match(await page.locator(".feedback").first().innerText(), /Not yet/);
+    const firstCheck = model(project, project.defaults).checks[0];
+    const helpButton = page.locator(
+      `[data-diagnostic="${firstCheck.id}"][data-signal="language-access"]`,
+    );
+    await helpButton.click();
+    assert.match(
+      await page.locator(`#diagnostic-${firstCheck.id}`).innerText(),
+      /not evidence that your math understanding is weak/i,
+    );
+    const evidence = await page.evaluate(
+      (id) => JSON.parse(localStorage.getItem(`ewl-project-studio:v1:${id}`)),
+      project.id,
+    );
+    assert.equal(evidence.instructionalEvidence.events.at(-1).languageAccess, "learner-requested");
+    assert.equal("answer" in evidence.instructionalEvidence.events.at(-1), false);
+    await page.reload();
+    assert.match(
+      await page.locator(`#diagnostic-${firstCheck.id}`).innerText(),
+      /You asked for language access/,
+    );
     await checkAll(page, project, project.defaults);
     await page.reload();
     await page.locator(".checkpoint-meter").waitFor();

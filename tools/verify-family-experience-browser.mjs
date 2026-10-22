@@ -222,10 +222,24 @@ async function sweepPhone(browser, lesson) {
     );
     wrong.click();
     window.checkProblem(idx(sections[0]));
+    await new Promise((resolve) => setTimeout(resolve, 150));
     const afterWrong = {
       text: document.getElementById("progress_text").textContent,
       banner: !document.getElementById("goal_reached_banner").hidden,
+      intelligenceVisible: !document.getElementById("problem_intelligence_" + idx(sections[0]))
+        .hidden,
+      intelligenceText: document.getElementById("problem_intelligence_" + idx(sections[0]))
+        .innerText,
+      evidence: window.__HW_INSTRUCTIONAL_EVIDENCE__,
     };
+    const languageButton = document.querySelector(
+      "#problem_intelligence_" + idx(sections[0]) + " [onclick*=language-access]",
+    );
+    if (languageButton) languageButton.click();
+    const spanishGuidance =
+      document.querySelector(
+        "#problem_intelligence_" + idx(sections[0]) + " [data-intelligence-guidance] .lang-es",
+      )?.textContent || "";
     const steps = [];
     for (let i = 0; i < 4 && i < sections.length; i++) {
       const s = sections[i];
@@ -234,10 +248,14 @@ async function sweepPhone(browser, lesson) {
       ).click();
       window.checkProblem(idx(s));
       steps.push(document.getElementById("progress_text").textContent);
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
     return {
       afterWrong,
+      spanishGuidance,
+      spanishMode: document.body.classList.contains("lang-mode-es"),
       steps,
+      transferText: sections[1]?.querySelector("[data-intelligence-guidance]")?.innerText || "",
       banner: !document.getElementById("goal_reached_banner").hidden,
       unlocked: document.getElementById("hw_mystery").classList.contains("is-unlocked"),
       available: sections.length,
@@ -246,6 +264,18 @@ async function sweepPhone(browser, lesson) {
   if (run.afterWrong.banner) fail(where, "a wrong answer showed the goal banner");
   if (run.afterWrong.text !== "0 / 4")
     fail(where, `after one wrong answer progress reads ${run.afterWrong.text}`);
+  if (!run.afterWrong.intelligenceVisible)
+    fail(where, "a checked answer did not open the shared math feedback card");
+  if (!/strategy yet/i.test(run.afterWrong.intelligenceText))
+    fail(where, "an unclassified wrong answer did not receive uncertainty-aware guidance");
+  if (run.afterWrong.evidence?.events?.at(-1)?.kind !== "unclear")
+    fail(where, "a wrong answer without specific evidence was assigned a diagnosis");
+  if (run.afterWrong.evidence?.events?.at(-1)?.condition !== "independent")
+    fail(where, "the first unsupported answer was incorrectly marked as supported");
+  if (!run.spanishGuidance)
+    fail(where, "the language-access action did not expose the Spanish guidance");
+  if (!run.spanishMode)
+    fail(where, "the language-access action did not switch the existing language picker");
   if (run.available >= 4) {
     if (run.steps.at(-1) !== "4 / 4") fail(where, `four right answers read ${run.steps.at(-1)}`);
     if (!run.banner) fail(where, "goal banner did not appear at four");
@@ -257,9 +287,14 @@ async function sweepPhone(browser, lesson) {
     const again = await page.evaluate(() => ({
       text: document.getElementById("progress_text").textContent,
       toast: !document.getElementById("hw_toast").hidden,
+      evidenceCount: window.__HW_INSTRUCTIONAL_EVIDENCE__?.events?.length || 0,
     }));
     if (again.text !== "4 / 4") fail(where, `after reload progress reads ${again.text}`);
     if (again.toast) fail(where, "goal celebrated again after reload");
+    if (again.evidenceCount < 5)
+      fail(where, "categorical math evidence did not survive save/resume");
+    if (!/new problem/i.test(run.transferText))
+      fail(where, "an independent success after support did not route to transfer feedback");
   }
 
   // Reset is an in-page bilingual dialog, never a native one.

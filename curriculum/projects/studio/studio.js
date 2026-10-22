@@ -2,6 +2,11 @@ import { PROJECTS, UNIT_NAMES, getProject, studioURL } from "./projects.mjs";
 import { FAMILY, fieldsFor, model, matches, format, workedExampleFor } from "./math.mjs";
 import { fresh, clean, keyFor, progress } from "./state.mjs";
 import { visualMarkup } from "./visuals.mjs";
+import {
+  decideInstruction,
+  readInstructionalEvidence,
+  recordInstructionalEvidence,
+} from "../../../engine/core/instructional-intelligence.js";
 const $ = (s) => document.querySelector(s);
 const esc = (s) =>
   String(s ?? "")
@@ -23,6 +28,50 @@ const frame = (s) =>
   `<details class="support" ${state?.supports ? "open" : ""}><summary>Need a starting point?</summary><p>${esc(s)}</p></details>`;
 function textField(key, label, value, help = "") {
   return `<div class="evidence-field"><label for="${key}">${esc(label)}</label>${help ? `<p class="hint" id="${key}-help">${esc(help)}</p>` : ""}<textarea id="${key}" name="${key}" data-text="${key}" maxlength="6000" ${help ? `aria-describedby="${key}-help"` : ""}>${esc(value)}</textarea></div>`;
+}
+const evidenceStore = {
+  get: () => state,
+  set: (patch) => {
+    state = { ...state, ...patch };
+  },
+};
+function checkActivity(checkId) {
+  return `project-studio:${project.id}:${checkId}`;
+}
+function recordCheck(checkId, correct, signal = null) {
+  recordInstructionalEvidence(evidenceStore, {
+    activity: checkActivity(checkId),
+    itemId: checkId,
+    correct,
+    independent: signal === null,
+    learnerSignal: signal,
+    languageAccess: signal === "language-access" ? "learner-requested" : "none",
+  });
+}
+function diagnostic(checkId) {
+  const events = readInstructionalEvidence(evidenceStore);
+  const evidence = [...events].reverse().find((event) => event.activity === checkActivity(checkId));
+  if (!evidence || evidence.kind !== "unclear") return "";
+  const decision = decideInstruction(evidence, { hasAuthoredTranslation: true });
+  const chosenSignal = state.supportSignals[checkId];
+  if (chosenSignal) return `<p class="notice">${esc(supportText(checkId, chosenSignal))}</p>`;
+  const options = [
+    ["calculation-check", "Help me check the calculation"],
+    ["strategy-clarification", "Help me think about a strategy"],
+    ["language-access", "Help me understand the question"],
+  ];
+  const prompt = decision.move === "ask-learner-what-would-help"
+    ? "An answer alone does not show what was difficult. What kind of help would you like?"
+    : "Choose a kind of help. Your answer does not tell us why it was difficult.";
+  return `<div class="notice diagnostic" role="group" aria-label="Choose a kind of math support"><p>${esc(prompt)}</p>${options.map(([signal, label]) => `<button type="button" class="secondary small" data-diagnostic="${checkId}" data-signal="${signal}">${label}</button>`).join(" ")}</div>`;
+}
+function supportText(checkId, signal) {
+  const check = model(project, state.design).checks.find((item) => item.id === checkId);
+  if (signal === "calculation-check")
+    return `You asked to check the calculation. Check the units and estimate first. ${check?.hint || "Does your result fit the quantities in the model?"}`;
+  if (signal === "strategy-clarification")
+    return `You asked for help with a strategy. What relationship connects the known quantities to the quantity asked for? ${check?.hint || "Try a drawing, table, or equation to show that relationship."}`;
+  return "You asked for language access. You can use Read question aloud, the vocabulary and bilingual frames, or rehearse the question in your strongest language. This request is not evidence that your math understanding is weak.";
 }
 function catalog() {
   document.title = "Choose your mission — Project Studio";
@@ -127,7 +176,7 @@ function stageContent() {
   if (state.stage === 2) {
     if (m.errors.length)
       return `<div class="notice">Fix the design inputs before checking the math. ${action("build", "Return to Build")}</div>`;
-    return `<div class="checkpoint-meter"><progress value="${p.passed}" max="6" aria-label="Math checks completed"></progress><strong>${p.passed} of 6 checks match your current design</strong></div><p>Work on paper first. Enter a number, fraction or mixed number. Round to hundredths unless the prompt says otherwise. Use the hints whenever they help.</p>${m.checks.map((q, i) => `<section class="card check-card ${state.checked[q.id] ? "passed" : ""}" id="card-${q.id}"><h3>${i + 1}. ${esc(q.prompt)}</h3><form data-check="${q.id}"><div class="answer-row"><label for="answer-${q.id}">Your answer${q.unit ? ` (${esc(q.unit)})` : ""}<input type="text" inputmode="decimal" name="answer" id="answer-${q.id}" data-answer="${q.id}" value="${esc(state.answers[q.id] || "")}" aria-describedby="feedback-${q.id}" maxlength="100"></label><button type="submit">Check answer ${i + 1}</button></div></form><p id="feedback-${q.id}" class="feedback ${state.checked[q.id] ? "correct" : ""}" role="status">${state.checked[q.id] ? "Matches this design. " + esc(q.reason) : ""}</p>${frame(q.hint)}<button type="button" class="secondary small" data-action="read-check" data-check-id="${q.id}">Read question ${i + 1} aloud</button></section>`).join("")}<section class="card accent"><h3>Make your thinking visible</h3>${project.evidence.map((e, i) => textField(`evidence-${i}`, e, state.evidence[i], "Describe your reasoning here. Keep drawings or physical models with your report.")).join("")}${frame("I represented ___ with ___. The calculation ___ shows ___. This makes sense because ___.")}</section>`;
+    return `<div class="checkpoint-meter"><progress value="${p.passed}" max="6" aria-label="Math checks completed"></progress><strong>${p.passed} of 6 checks match your current design</strong></div><p>Work on paper first. Enter a number, fraction or mixed number. Round to hundredths unless the prompt says otherwise. Use the hints whenever they help.</p>${m.checks.map((q, i) => `<section class="card check-card ${state.checked[q.id] ? "passed" : ""}" id="card-${q.id}"><h3>${i + 1}. ${esc(q.prompt)}</h3><form data-check="${q.id}"><div class="answer-row"><label for="answer-${q.id}">Your answer${q.unit ? ` (${esc(q.unit)})` : ""}<input type="text" inputmode="decimal" name="answer" id="answer-${q.id}" data-answer="${q.id}" value="${esc(state.answers[q.id] || "")}" aria-describedby="feedback-${q.id}" maxlength="100"></label><button type="submit">Check answer ${i + 1}</button></div></form><p id="feedback-${q.id}" class="feedback ${state.checked[q.id] ? "correct" : ""}" role="status">${state.checked[q.id] ? "Matches this design. " + esc(q.reason) : ""}</p><div id="diagnostic-${q.id}">${diagnostic(q.id)}</div>${frame(q.hint)}<button type="button" class="secondary small" data-action="read-check" data-check-id="${q.id}">Read question ${i + 1} aloud</button></section>`).join("")}<section class="card accent"><h3>Make your thinking visible</h3>${project.evidence.map((e, i) => textField(`evidence-${i}`, e, state.evidence[i], "Describe your reasoning here. Keep drawings or physical models with your report.")).join("")}${frame("I represented ___ with ___. The calculation ___ shows ___. This makes sense because ___.")}</section>`;
   }
   if (state.stage === 3)
     return `<section class="card accent"><p class="eyebrow">Design update</p><h3>${esc(project.twist)}</h3><p>1. Save your first tested design.<br>2. Return to Build and change at least one input.<br>3. Recheck the new math, then explain the tradeoff here.</p>${state.baseline ? '<p class="notice good">Your first design is saved for comparison. It stays fixed while you revise.</p>' : action("baseline", "Save my tested first design", false)}<p id="baseline-status" role="status"></p><div class="actions compact">${action("build", "Change my design")}${action("test", "Recheck the math")}</div>${comparison(p)}${textField("critique", "Ask a partner—or be your own skeptical reviewer. What should be checked?", state.critique, "Try: Which assumption is weakest? Which unit could be confused? Would the design still work with different numbers?")}${frame("I can follow ___. I want to check ___ because ___. An example that would test it is ___.")}${textField("revision", "What changed, what happened, and why is the revised design better—or a useful tradeoff?", state.revision, "Use at least two before-and-after values. A revision can reveal that your first design was better; explain the evidence.")}${frame("I changed ___ from ___ to ___. As a result, ___ changed from ___ to ___. I gained ___ but gave up ___.")}</section><section class="card"><h3>Optional stretch: convince a skeptic</h3><p>Find a different design that works. Is yours always better, or only under your assumptions? Support your answer with a counterexample or a general argument.</p></section>`;
@@ -233,6 +282,17 @@ function bind() {
       refreshMeter();
     }),
   );
+  $("#stage-panel")?.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-diagnostic]");
+      if (!button) return;
+      const checkId = button.dataset.diagnostic;
+      const signal = button.dataset.signal;
+      state.supportSignals[checkId] = signal;
+      recordCheck(checkId, false, signal);
+      const target = $(`#diagnostic-${checkId}`);
+      if (target) target.innerHTML = `<p class="notice" role="status">${esc(supportText(checkId, signal))}</p>`;
+      save();
+    });
   document.querySelectorAll("[data-check]").forEach((form) =>
     form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -240,12 +300,16 @@ function bind() {
       if (!q) return;
       const good = matches(state.answers[q.id], q.answer);
       state.checked[q.id] = good;
+      const signal = state.supportSignals[q.id] || null;
+      recordCheck(q.id, good, signal);
       const feedback = $(`#feedback-${q.id}`);
       feedback.textContent = good
         ? `Matches this design. ${q.reason}`
         : `Not yet. ${q.hint} Try again; your work stays here.`;
       feedback.className = `feedback ${good ? "correct" : "retry"}`;
       $(`#card-${q.id}`).classList.toggle("passed", good);
+      const diagnosticPanel = $(`#diagnostic-${q.id}`);
+      if (diagnosticPanel) diagnosticPanel.innerHTML = good ? "" : diagnostic(q.id);
       save();
       refreshMeter();
     }),

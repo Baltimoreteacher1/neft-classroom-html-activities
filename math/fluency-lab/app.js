@@ -28,6 +28,7 @@ import { familySummaryDocument, familySummaryHtml } from "./family-page.js";
 import { mountPaperGames } from "./paper-games.js";
 import { stopOptions, stopsFor } from "./game-pool.js";
 import { cleanPlay, exportPlay, importPlay } from "./play-backup.js";
+import { decideInstruction, independentRecoveryCount, readInstructionalEvidence, recordInstructionalEvidence } from "../../engine/core/instructional-intelligence.js";
 import { VOCAB_BILINGUAL_DB, highlightVocab, initVocabSystem, openVocabModal } from "./vocab.js";
 import { canSpeak, speak, spoken, spokenEs } from "./speech.js";
 import { languagePromptHtml } from "./language-bridge.js";
@@ -41,6 +42,7 @@ const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
 const TUTOR_KEY = "ewl-fluency-tutor-v2";
 const SESSION_KEY = "ewl-fluency-session-v2";
+const INTELLIGENCE_KEY = "ewl-fluency-instructional-evidence-v1";
 const STREAK_GOAL = 10;
 const initialParams = new URLSearchParams(location.search);
 let activeProfile = profiles().active;
@@ -176,6 +178,14 @@ const state = {
   recentQuestions: [],
   view: "library",
   assignment: decodeAssignment(new URLSearchParams(location.hash.slice(1)).get("assignment")),
+  instructionalSignal: null,
+};
+
+// This adapter stores only bounded evidence categories. Answers and written work stay in the
+// existing local tutor/session flow and are never copied into the shared intelligence record.
+const instructionalEvidenceState = {
+  get: () => ({ instructionalEvidence: readLocal(profileKey(INTELLIGENCE_KEY, activeProfile), { version: 1, events: [] }) }),
+  set: ({ instructionalEvidence }) => writeLocal(profileKey(INTELLIGENCE_KEY, activeProfile), instructionalEvidence),
 };
 
 if (!GRADES.some((grade) => grade.grade === state.grade)) state.grade = 1;
@@ -669,6 +679,15 @@ function nextProblem(restoredItem = null) {
   els.topic.textContent = `${skill.title} · Grade ${skill.grade}`;
   document.querySelector("#problem-language-support").innerHTML = state.session.mode === "diagnostic" ? spanishPeekHtml(state.item) : problemSupportHtml(skill, state.item);
   els.insight.textContent = state.session.mode === "diagnostic" ? "One sample per skill. Choose “I’m not sure yet” whenever you need to." : state.session.queue?.[state.session.answered]?.purpose || (state.initialSupport ? "A smaller step with coaching. We’ll build back toward independent work." : adapting && level === 2 ? "Your recent answers were strong. Try this one independently, then explain a check." : adapting ? "Work at your pace. Help is here when you need it." : "");
+  const activityEvidence = readInstructionalEvidence(instructionalEvidenceState).filter((entry) => entry.activity === tutorSkillKey(skill));
+  const priorSupport = activityEvidence.some((entry) => entry.condition === "supported");
+  const recoveredIndependently = priorSupport && independentRecoveryCount(activityEvidence, tutorSkillKey(skill)) > 0;
+  if (recoveredIndependently && !state.session.queue?.[state.session.answered]?.purpose) {
+    const move = decideInstruction(activityEvidence.at(-1), { nextIndependent: true }).move;
+    if (move === "independent-transfer") {
+      els.insight.textContent = "You solved one independently after using support. Try this new problem with the same mathematical idea.";
+    }
+  }
   els.guidedCoach.hidden = !state.initialSupport;
   if (state.initialSupport) state.guidedStepsShown = 1;
   renderGuidedCoach();
@@ -6967,6 +6986,19 @@ function submitAnswer(value) {
   if (state.itemDone) return;
   state.itemAttempts += 1;
   const correct = validateAnswer(value, state.item);
+  const responseInput = {
+    activity: tutorSkillKey(state.item.skill),
+    itemId: `${state.session.id}:${state.session.answered}`,
+    correct,
+    independent: !state.initialSupport && !state.hintBeforeFirst && state.itemAttempts === 1,
+    learnerSignal: state.instructionalSignal,
+    languageAccess: state.instructionalSignal === "language-access" ? "learner-requested" : "none",
+  };
+  // This contract contains answer categories only. The submitted value and any written work
+  // remain outside this evidence record.
+  const savedEvidence = recordInstructionalEvidence(instructionalEvidenceState, responseInput);
+  state.instructionalDecision = decideInstruction(savedEvidence, { hasAuthoredTranslation: false });
+  state.instructionalSignal = null;
   if (state.itemAttempts === 1) {
     state.firstAnswerCorrect = correct;
     if (!correct) {
@@ -6983,18 +7015,29 @@ function submitAnswer(value) {
   if (state.initialSupport && state.itemAttempts < 3) {
     const nextStep = revealGuidedStep() || guidedStepContent().at(-1);
     showFeedback("Let's use the next step", `${feedbackFor(state.item.skill, state.item, value)} ${nextStep.copy}`, "try");
+    addInstructionalChoices();
     saveActiveSession();
     if (!state.item.choices) els.answerInput.select();
     return;
   }
   if (state.itemAttempts === 1) {
     showFeedback("Try once more", feedbackFor(state.item.skill, state.item, value), "try");
+    addInstructionalChoices();
     els.repair.hidden = false;
     saveActiveSession();
     els.answerInput.select();
     return;
   }
   finalizeProblem(false);
+}
+
+function addInstructionalChoices() {
+  if (!els.feedbackCopy || !state.instructionalDecision) return;
+  const choices = document.createElement("div");
+  choices.className = "instructional-next-steps";
+  choices.setAttribute("aria-label", "Choose a kind of help");
+  choices.innerHTML = '<p>What would help you think it through?</p><button type="button" class="outline-action" data-instructional-signal="calculation-check">Check my calculation</button> <button type="button" class="outline-action" data-instructional-signal="strategy-clarification">Help me think about the strategy</button> <button type="button" class="outline-action" data-instructional-signal="language-access">Help me read the math words</button>';
+  els.feedbackCopy.append(choices);
 }
 
 function finalizeProblem(correct) {
@@ -8076,6 +8119,19 @@ els.answerForm.addEventListener("submit", (event) => {
 els.choiceAnswers.addEventListener("click", (event) => {
   const button = event.target.closest("[data-answer]");
   if (button) submitAnswer(button.dataset.answer);
+});
+
+els.feedback.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-instructional-signal]");
+  if (!button) return;
+  state.instructionalSignal = button.dataset.instructionalSignal;
+  const prompts = {
+    "calculation-check": "Try estimating first, then check each operation or place value.",
+    "strategy-clarification": "Use the model or scratchpad to show what each number means. The same mathematical goal still applies.",
+    "language-access": "Read the problem aloud, point to the quantities, or use the math language support above. A partner or familiar-language explanation can help you make sense of the words.",
+  };
+  const choices = button.closest(".instructional-next-steps");
+  if (choices) choices.innerHTML = `<p role="status">${prompts[state.instructionalSignal]}</p>`;
 });
 
 els.hintButton.addEventListener("click", () => {

@@ -58,6 +58,7 @@ function copyStandaloneHtml() {
     "assets/nt-web-vitals.js",
     "assets/class-investigation/engine-tools.js",
     "assets/learning-supports/engine-speech.js",
+    "assets/game-studio-intelligence.js",
   ];
 
   // Rollup-built HTML entries that live INSIDE a directory the static copy walks.
@@ -449,6 +450,7 @@ export default defineConfig({
         "homework-lesson-models": resolve(__dirname, "engine/homework-lesson-models.js"),
         "nt-web-vitals": resolve(__dirname, "assets/nt-web-vitals.js"),
         "learning-supports-speech": resolve(__dirname, "assets/learning-supports/engine-speech.js"),
+        "game-studio-intelligence": resolve(__dirname, "assets/game-studio-intelligence.js"),
         "class-investigation-engine": resolve(
           __dirname,
           "assets/class-investigation/engine-tools.js",
@@ -468,6 +470,9 @@ export default defineConfig({
           }
           if (chunk.name === "learning-supports-speech") {
             return "assets/learning-supports/engine-speech.js";
+          }
+          if (chunk.name === "game-studio-intelligence") {
+            return "assets/game-studio-intelligence.js";
           }
           return chunk.name === "homework-lesson-models" || chunk.name === "nt-web-vitals"
             ? `assets/${chunk.name}.js`

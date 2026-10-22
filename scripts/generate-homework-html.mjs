@@ -827,7 +827,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
         <p class="problem-stem"${esMissing(stem, stemEs) ? ' data-es-missing="stem"' : ""}>${bi(stem, stemEs)}</p>
         ${visualWrap}
         ${renderFamilyTip("multiple-choice")}
-        <div class="mc-options" data-correct="${correctIdx}" data-explanation="${esc(explanation)}"${explanationEs ? ` data-explanation-es="${esc(explanationEs)}"` : ""} data-choice-feedback='${esc(JSON.stringify(it.choiceFeedback || []))}' data-choice-feedback-es='${esc(JSON.stringify(spanishChoiceFeedback(it)))}' data-topic="${esc(topic)}">
+        <div class="mc-options" data-correct="${correctIdx}" data-explanation="${esc(explanation)}"${explanationEs ? ` data-explanation-es="${esc(explanationEs)}"` : ""} data-choice-feedback='${esc(JSON.stringify(it.choiceFeedback || []))}' data-choice-feedback-es='${esc(JSON.stringify(spanishChoiceFeedback(it)))}' data-choice-evidence='${esc(JSON.stringify(it.choiceEvidence || []))}' data-topic="${esc(topic)}">
           ${shuffleSteps(
             choices.map((_, index) => index),
             [],
@@ -1172,7 +1172,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     visualSvg,
   };
   return `
-    <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
+    <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}" data-topic="${esc(it.topic || it.skill || it.standard || topic)}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">${esc(opts.badgeEn || "Quick Check")}</span><span class="lang-es" lang="es">${esc(opts.badgeEs || opts.badgeEn || "Quick Check")}</span> ${opts.num || pIdx + 1}</div>
         <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_${pIdx} .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_${pIdx} .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
@@ -1187,6 +1187,17 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
         </button>
         <div class="problem-check-result" id="problem_result_${pIdx}" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
+      <aside class="hw-intelligence-card" id="problem_intelligence_${pIdx}" aria-live="polite" hidden>
+        <p data-intelligence-guidance></p>
+        <p class="hw-intelligence-frame" data-intelligence-frame hidden></p>
+        <p data-intelligence-coach hidden></p>
+        <div class="hw-intelligence-actions" data-intelligence-diagnostics hidden>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="hwChooseHelp(${pIdx}, 'calculation-check')"><span class="lang-en">Check my calculation</span><span class="lang-es" lang="es">Revisar mi cálculo</span></button>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="hwChooseHelp(${pIdx}, 'strategy-clarification')"><span class="lang-en">See a model</span><span class="lang-es" lang="es">Ver un modelo</span></button>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="hwChooseHelp(${pIdx}, 'language-access')"><span class="lang-en">Read in Spanish</span><span class="lang-es" lang="es">Leer en español</span></button>
+        </div>
+        <button type="button" class="btn btn-sm btn-primary" data-intelligence-next onclick="hwGoToNextPractice(${pIdx})" hidden></button>
+      </aside>
       ${renderAnswerKey(it, pIdx, solvedVisualSvg)}
     </section>
   `;
@@ -2513,6 +2524,12 @@ body.lang-mode-es .vocab-card:not(:has(.vocab-def-es)) .vocab-def {
   border-color: var(--amber);
   color: var(--hint);
 }
+
+.hw-intelligence-card { margin-top:10px; padding:12px; border:1px solid var(--line); border-left:4px solid var(--teal); border-radius:var(--radius-sm); background:var(--cream); }
+.hw-intelligence-card p { margin:4px 0 8px; line-height:1.45; }
+.hw-intelligence-actions { display:flex; flex-wrap:wrap; gap:8px; }
+.hw-intelligence-card button { min-height:40px; }
+.hw-intelligence-frame { padding:8px 10px; border-radius:8px; background:#fff; }
 
 .problem-header-row {
   display: flex;
@@ -5255,8 +5272,11 @@ function saveState() {
     state.orderPositions[probIdx] = Array.from(list.querySelectorAll(".drag-order-row")).map((row) => row.dataset.stepText);
   });
 
-  const json = JSON.stringify(state);
+  let json = JSON.stringify(state);
   try {
+    const previous = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    if (previous && previous.instructionalEvidence) state.instructionalEvidence = previous.instructionalEvidence;
+    json = JSON.stringify(state);
     localStorage.setItem(STORAGE_KEY, json);
   } catch (e) {
     /* Photos and voice notes from earlier nights are the bulk of what is stored.
@@ -5275,6 +5295,7 @@ function loadState() {
   if (!raw) return;
   try {
     const state = JSON.parse(raw);
+    window.__HW_INSTRUCTIONAL_EVIDENCE__ = state.instructionalEvidence || null;
 
     // Restore text inputs, selects, textareas
     if (state.inputs) {
@@ -5394,6 +5415,189 @@ function setProblemCheckResult(idx, isCorrect, message, tone) {
   if (message) {
     resultEl.classList.add(tone || (isCorrect ? "is-correct" : "is-incorrect"));
   }
+}
+
+// Shared, local-only evidence enrichment. It loads only when a family checks
+// work and degrades silently if the production bridge is unavailable.
+const hwPendingHelp = Object.create(null);
+let hwInstructionalEnginePromise;
+function hwEvidenceState() {
+  return {
+    get() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch (e) { return {}; }
+    },
+    set(patch) {
+      try {
+        const saved = this.get();
+        const next = { ...saved, ...patch };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+        window.__HW_INSTRUCTIONAL_EVIDENCE__ = next.instructionalEvidence || null;
+      } catch (e) { /* optional evidence cannot interrupt homework save/resume */ }
+    },
+  };
+}
+
+function hwChoiceEvidence(section) {
+  const selected = section?.querySelector(".mc-options input[type='radio']:checked");
+  if (!selected) return {};
+  try {
+    const entries = JSON.parse(section.querySelector(".mc-options")?.dataset.choiceEvidence || "[]");
+    const item = entries[Number(selected.value)];
+    const tag = typeof item?.misconception === "string" ? item.misconception.trim() : "";
+    return {
+      misconception: /^[a-z0-9][a-z0-9._-]{0,59}$/i.test(tag) ? tag : null,
+      computationalSlip: item?.computationalSlip === true,
+    };
+  } catch (e) { return {}; }
+}
+
+function hwEvidenceActivity(section) {
+  const topic = String(section?.dataset.topic || "lesson").toLowerCase().replace(/[^a-z0-9._-]+/g, "-").slice(0, 80);
+  return "family-homework-" + String(window.LESSON_ID || "lesson") + ":" + (topic || "lesson");
+}
+
+function hwShowInstructionalFeedback(idx, evidence, move) {
+  const card = document.getElementById("problem_intelligence_" + idx);
+  const section = document.getElementById("problem_" + idx);
+  if (!card || !section) return;
+  card.hidden = false;
+  const guidance = card.querySelector("[data-intelligence-guidance]");
+  const frame = card.querySelector("[data-intelligence-frame]");
+  const coach = card.querySelector("[data-intelligence-coach]");
+  const diagnostics = card.querySelector("[data-intelligence-diagnostics]");
+  const next = card.querySelector("[data-intelligence-next]");
+  const miss = evidence.kind !== "correct";
+  card.dataset.nextLane = move.move === "targeted-repair" || miss ? "support" : move.move === "independent-transfer" ? "challenge" : "same-type";
+
+  if (move.move === "check-the-calculation") {
+    guidance.innerHTML = '<span class="lang-en">Check each operation and estimate whether the result makes sense.</span><span class="lang-es" lang="es">Revisa cada operación y estima si el resultado tiene sentido.</span>';
+  } else if (move.move === "targeted-repair") {
+    guidance.innerHTML = '<span class="lang-en">Use the model below to revisit this idea, then try a new problem.</span><span class="lang-es" lang="es">Usa el modelo de abajo para revisar esta idea y después intenta otro problema.</span>';
+  } else if (move.move === "language-access") {
+    guidance.innerHTML = '<span class="lang-en">Read the question in Spanish, then explain or show how you chose your step.</span><span class="lang-es" lang="es">Lee la pregunta en español y explica o muestra cómo elegiste el paso.</span>';
+  } else if (move.move === "ask-targeted-math-question") {
+    guidance.innerHTML = '<span class="lang-en">Look at the quantities. What changes, and what stays the same?</span><span class="lang-es" lang="es">Observa las cantidades. ¿Qué cambia y qué permanece igual?</span>';
+  } else if (miss) {
+    guidance.innerHTML = '<span class="lang-en">This check does not show your strategy yet. Choose the kind of help that would move you forward.</span><span class="lang-es" lang="es">Esta revisión todavía no muestra tu estrategia. Elige la ayuda que te serviría para avanzar.</span>';
+  } else if (move.move === "independent-transfer") {
+    guidance.innerHTML = '<span class="lang-en">You used the idea independently on a new problem. Try it again with a different example.</span><span class="lang-es" lang="es">Usaste la idea sin ayuda en un problema nuevo. Inténtalo otra vez con otro ejemplo.</span>';
+  } else {
+    guidance.innerHTML = '<span class="lang-en">You solved this one. Choose another problem when you are ready.</span><span class="lang-es" lang="es">Resolviste este problema. Elige otro cuando estés listo.</span>';
+  }
+
+  frame.hidden = !miss;
+  frame.innerHTML = '<span class="lang-en">I noticed ___ . I chose ___ because ___.</span><span class="lang-es" lang="es">Noté ___ . Elegí ___ porque ___.</span>';
+  coach.hidden = !miss;
+  coach.innerHTML = '<strong><span class="lang-en">Family coach:</span><span class="lang-es" lang="es">Guía para familias:</span></strong> <span class="lang-en">Ask, “What do you notice in the model or the question?” Let the learner do the explaining.</span><span class="lang-es" lang="es">Pregunta: “¿Qué notas en el modelo o en la pregunta?” Deja que el estudiante explique.</span>';
+  diagnostics.hidden = !miss || !!evidence.learnerSignal;
+  next.hidden = false;
+  next.innerHTML = '<span class="lang-en">' + (miss ? "Try another problem" : "Go to the next problem") + '</span><span class="lang-es" lang="es">' + (miss ? "Intentar otro problema" : "Ir al siguiente problema") + '</span>';
+}
+
+function hwRecordInstructionalEvidence(idx, section, correct, priorAttempts = 0) {
+  const type = section.dataset.problemType;
+  // Written explanations and self-review tables are not machine-judged as math.
+  if (type === "open-response" || type === "error-analysis" || section.querySelector('[data-self-review="true"]')) return;
+  hwInstructionalEnginePromise ||= import("/assets/game-studio-intelligence.js").catch(() => null);
+  const authored = type === "multiple-choice" ? hwChoiceEvidence(section) : {};
+  const supported = priorAttempts > 0 || revealForced[idx] === true;
+  const activity = hwEvidenceActivity(section);
+  const itemId = "problem-" + String(idx);
+  const help = hwPendingHelp[idx] || {};
+  delete hwPendingHelp[idx];
+  hwInstructionalEnginePromise.then((engine) => {
+    if (!engine?.recordInstructionalEvidence || !engine?.decideInstruction) return;
+    const evidence = engine.recordInstructionalEvidence(hwEvidenceState(), {
+      activity,
+      itemId,
+      correct: correct === true,
+      misconception: authored.misconception,
+      computationalSlip: authored.computationalSlip === true,
+      supported,
+      learnerSignal: help.signal,
+      languageAccess: help.signal === "language-access" ? "learner-requested" : "none",
+    });
+    if (!evidence) return;
+    const stemEs = section.querySelector(".problem-stem .lang-es")?.textContent.trim() || "";
+    const stemEn = section.querySelector(".problem-stem .lang-en")?.textContent.trim() || "";
+    const priorRepair = engine.readInstructionalEvidence(hwEvidenceState()).some((event) =>
+      event.activity === activity && event.itemId !== itemId &&
+      (event.condition === "supported" || event.kind === "misconception" || event.kind === "computational-slip"),
+    );
+    const move = engine.decideInstruction(evidence, {
+      hasAuthoredTranslation: !!stemEs && stemEs !== stemEn,
+      nextIndependent: evidence.kind === "correct" && evidence.condition === "independent" && priorRepair,
+    });
+    hwShowInstructionalFeedback(idx, evidence, move);
+  });
+}
+
+function hwRestoreInstructionalFeedback() {
+  const savedEvents = hwEvidenceState().get()?.instructionalEvidence?.events;
+  if (!Array.isArray(savedEvents) || !savedEvents.length) return;
+  hwInstructionalEnginePromise ||= import("/assets/game-studio-intelligence.js").catch(() => null);
+  hwInstructionalEnginePromise.then((engine) => {
+    if (!engine?.decideInstruction) return;
+    const prefix = "family-homework-" + String(window.LESSON_ID || "lesson") + ":";
+    const events = engine.readInstructionalEvidence(hwEvidenceState()).filter((event) => event.activity.startsWith(prefix));
+    const latest = events.slice().reverse().find((event) => {
+      const match = /^problem-(\d+)$/.exec(event.itemId || "");
+      const section = match && document.getElementById("problem_" + match[1]);
+      return section && hwEvidenceActivity(section) === event.activity;
+    });
+    const match = /^problem-(\d+)$/.exec(latest?.itemId || "");
+    if (!match) return;
+    const section = document.getElementById("problem_" + match[1]);
+    const priorRepair = events.some((event) =>
+      event.activity === latest.activity && event.itemId !== latest.itemId &&
+      (event.condition === "supported" || event.kind === "misconception" || event.kind === "computational-slip"),
+    );
+    const move = engine.decideInstruction(latest, {
+      nextIndependent: latest.kind === "correct" && latest.condition === "independent" && priorRepair,
+    });
+    hwShowInstructionalFeedback(Number(match[1]), latest, move);
+  });
+}
+
+function hwChooseHelp(idx, signal) {
+  if (!["calculation-check", "strategy-clarification", "language-access"].includes(signal)) return;
+  hwPendingHelp[idx] = { signal };
+  const section = document.getElementById("problem_" + idx);
+  if (signal === "strategy-clarification") {
+    const workspace = section?.querySelector(".hw-workspace-toggle");
+    if (workspace) workspace.open = true;
+  }
+  const guidance = document.querySelector("#problem_intelligence_" + idx + " [data-intelligence-guidance]");
+  if (!guidance) return;
+  if (signal === "calculation-check") guidance.innerHTML = '<span class="lang-en">Recheck one operation at a time. Does your estimate agree?</span><span class="lang-es" lang="es">Revisa una operación a la vez. ¿Coincide con tu estimación?</span>';
+  else if (signal === "strategy-clarification") guidance.innerHTML = '<span class="lang-en">Use the visual workspace. What does each part represent?</span><span class="lang-es" lang="es">Usa el espacio visual. ¿Qué representa cada parte?</span>';
+  else {
+    document.querySelector('[data-lang-mode="es"]')?.click();
+    guidance.innerHTML = '<span class="lang-en">Read the authored Spanish version and use the sentence frame to explain your thinking.</span><span class="lang-es" lang="es">Lee la versión en español y usa el marco de oración para explicar tu razonamiento.</span>';
+  }
+}
+
+function hwGoToNextPractice(idx) {
+  const current = document.getElementById("problem_" + idx);
+  if (!current) return;
+  const all = [...document.querySelectorAll(".problem-section")];
+  const available = all.filter((item) => item !== current && !item.classList.contains("correct") && !item.classList.contains("reviewed"));
+  const sameType = available.filter((item) => item.dataset.problemType === current.dataset.problemType);
+  const lane = document.getElementById("problem_intelligence_" + idx)?.dataset.nextLane;
+  const next = lane === "support"
+    ? sameType.find((item) => item.closest(".practice-tier-basic, .practice-tier-warmup")) || sameType[0] || available[0]
+    : lane === "challenge"
+      ? sameType.find((item) => item.closest(".practice-tier-challenge, .more-practice"))
+      : sameType[0] || available[0];
+  if (!next) {
+    switchHomeworkTab("play");
+    document.querySelector('[data-tab-panel="play"] button, [data-tab-panel="play"] a')?.focus({ preventScroll: true });
+    return;
+  }
+  const bonus = next.closest(".more-practice");
+  if (bonus) bonus.open = true;
+  next.scrollIntoView({ behavior: "smooth", block: "start" });
+  next.querySelector("input, select, button")?.focus({ preventScroll: true });
 }
 
 function playCheckSound(isCorrect) {
@@ -5765,6 +5969,7 @@ function updateCertParentName(val) {
 
 function checkProblem(idx, options) {
   const silent = options && options.silent;
+  const priorAttempts = problemAttempts[idx] || 0;
   const section = document.getElementById("problem_" + idx);
   if (!section) return { correct: false, message: "" };
 
@@ -6200,6 +6405,20 @@ function checkProblem(idx, options) {
     }
   }
 
+  const shouldRecord = !silent || (options && options.recordEvidence === true);
+  const hasScoredResponse = type === "multiple-choice"
+    ? !!section.querySelector(".mc-options input[type='radio']:checked")
+    : type === "matching-game"
+      ? Array.from(section.querySelectorAll(".matching-select")).some((input) => input.value !== "")
+      : type === "fill-table"
+        ? Array.from(section.querySelectorAll(".table-input")).some((input) => input.value.trim() !== "")
+        : type === "drag-sort"
+          ? hasRealAttempt(section, type)
+          : false;
+  if (shouldRecord && hasScoredResponse && !reviewOnly) {
+    hwRecordInstructionalEvidence(idx, section, isProblemCorrect, priorAttempts);
+  }
+
   setProblemCheckResult(idx, isProblemCorrect, feedbackMessage);
 
   if (!silent) {
@@ -6224,7 +6443,7 @@ function checkWorksheet() {
   problems.forEach((section) => {
     const idx = parseInt((section.id || "").replace("problem_", ""), 10);
     if (Number.isNaN(idx)) return;
-    const result = checkProblem(idx, { silent: true });
+    const result = checkProblem(idx, { silent: true, recordEvidence: true });
     if (result.correct || result.done) correctCount++;
   });
 
@@ -6249,6 +6468,9 @@ function resetWorksheet() {
 
 function resetWorksheetNow() {
   localStorage.removeItem(STORAGE_KEY);
+  window.__HW_INSTRUCTIONAL_EVIDENCE__ = null;
+  Object.keys(hwPendingHelp).forEach((idx) => delete hwPendingHelp[idx]);
+  document.querySelectorAll(".hw-intelligence-card").forEach((card) => { card.hidden = true; });
   hwClearProgress();
   Object.keys(problemAttempts).forEach((k) => delete problemAttempts[k]);
   Object.keys(revealForced).forEach((k) => delete revealForced[k]);
@@ -6617,6 +6839,7 @@ var NeftGraph = (function () {
 function initializeHomeworkState() {
   const hadSavedState = !!localStorage.getItem(STORAGE_KEY);
   loadState();
+  hwRestoreInstructionalFeedback();
   if (!hadSavedState) {
     document.querySelectorAll(".drag-order-workspace").forEach((workspace) => {
       const probIdx = workspace.id.replace("dragorder_", "");
