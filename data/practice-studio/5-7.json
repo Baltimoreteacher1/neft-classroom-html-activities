@@ -859,26 +859,21 @@
     "lab": "wrap-lab",
     "model": {
       "kind": "solid",
-      "mode": "surface",
+      "mode": "tri-prism",
       "values": [
-        7,
-        2,
+        6,
         3
       ]
     },
     "labels": {
       "controls": {
         "0": {
-          "en": "Length (units)",
-          "es": "Largo (unidades)"
+          "en": "Triangle height (units)",
+          "es": "Altura del triángulo (unidades)"
         },
         "1": {
-          "en": "Width (units)",
-          "es": "Ancho (unidades)"
-        },
-        "2": {
-          "en": "Height (units)",
-          "es": "Altura (unidades)"
+          "en": "Prism length (units)",
+          "es": "Largo del prisma (unidades)"
         }
       },
       "readout": {
@@ -887,88 +882,90 @@
       }
     },
     "explore": {
-      "q": "A planter box is 7 long and 3 tall. It needs stain on all six faces, 122 square units in all. Change ONLY the width until the surface area is 122.",
-      "qEs": "Una jardinera mide 7 de largo y 3 de alto. Necesita tinte en las seis caras, 122 unidades cuadradas en total. Cambia SOLO el ancho hasta que el área de superficie sea 122.",
+      "q": "A wedge-shaped time capsule is a triangular prism. Its triangle end is 6 high, with sides 6, 8 and 10. All five faces need paint, 240 square units in all. Change ONLY the prism length until the surface area is 240.",
+      "qEs": "Una cápsula del tiempo en forma de cuña es un prisma triangular. Su extremo triangular mide 6 de altura, con lados de 6, 8 y 10. Las cinco caras necesitan pintura, 240 unidades cuadradas en total. Cambia SOLO el largo del prisma hasta que el área de superficie sea 240.",
       "goal": {
-        "target": 122,
+        "target": 240,
         "free": 1
       },
-      "miss": "Surface area adds all six faces. The two faces that use only the length and height do not change with the width. Subtract them first, then see what each unit of width adds.",
-      "missEs": "El área de superficie suma las seis caras. Las dos caras que usan solo el largo y la altura no cambian con el ancho. Réstalas primero y luego mira cuánto agrega cada unidad de ancho.",
-      "x": "The front and back faces are 2 × (7 × 3) = 42, and they do not use the width. That leaves 122 − 42 = 80 for the top, bottom and two sides. Each unit of width adds 2 × 7 + 2 × 3 = 20, so the width is 80 ÷ 20 = 4. Check: 2 × (7 × 4 + 7 × 3 + 4 × 3) = 122 square units.",
-      "xEs": "El frente y la parte de atrás son 2 × (7 × 3) = 42, y no usan el ancho. Quedan 122 − 42 = 80 para la tapa, el fondo y los dos lados. Cada unidad de ancho agrega 2 × 7 + 2 × 3 = 20, así que el ancho es 80 ÷ 20 = 4. Comprobación: 2 × (7 × 4 + 7 × 3 + 4 × 3) = 122 unidades cuadradas.",
+      "miss": "Surface area adds all five faces. The two triangles do not change with the length. Subtract them first, then see how much area each unit of length adds to the three rectangles.",
+      "missEs": "El área de superficie suma las cinco caras. Los dos triángulos no cambian con el largo. Réstalos primero y luego mira cuánta área agrega cada unidad de largo a los tres rectángulos.",
+      "x": "Each triangle is ½ × 8 × 6 = 24, so the two triangles are 48. That leaves 240 − 48 = 192 for the three rectangles. Each unit of length adds 6 + 8 + 10 = 24, one strip along each side of the triangle, so the length is 192 ÷ 24 = 8. Check: 48 + 24 × 8 = 240 square units.",
+      "xEs": "Cada triángulo es ½ × 8 × 6 = 24, así que los dos triángulos suman 48. Quedan 240 − 48 = 192 para los tres rectángulos. Cada unidad de largo agrega 6 + 8 + 10 = 24, una franja a lo largo de cada lado del triángulo, así que el largo es 192 ÷ 24 = 8. Comprobación: 48 + 24 × 8 = 240 unidades cuadradas.",
       "h": [
-        "Surface area is the area of every face added together, not the space inside.",
-        "Find the pair of faces that never touches the width. Subtract that pair.",
-        "The remaining faces each have the width as one side. See how much one unit of width adds to them."
+        "A triangular prism has five faces: two triangles and three rectangles.",
+        "The two triangles never use the length. Find their total area and subtract it.",
+        "Each rectangle is as long as the prism. Find how much area one unit of length adds to all three."
       ],
       "hEs": [
-        "El área de superficie es el área de todas las caras sumadas, no el espacio dentro.",
-        "Halla el par de caras que nunca toca el ancho. Resta ese par.",
-        "Las caras que quedan tienen el ancho como un lado. Mira cuánto les agrega una unidad de ancho."
+        "Un prisma triangular tiene cinco caras: dos triángulos y tres rectángulos.",
+        "Los dos triángulos no usan el largo. Halla su área total y réstala.",
+        "Cada rectángulo es tan largo como el prisma. Halla cuánta área agrega una unidad de largo a los tres."
       ]
     },
     "investigate": {
-      "p": "A box is 7 long and 2 wide. Predict what happens to its volume and its surface area if you double ONLY the height from 1 to 2. Work it out on paper, then test both heights in the model. Does surface area double like volume does?",
-      "pEs": "Una caja mide 7 de largo y 2 de ancho. Predice qué pasa con su volumen y su área de superficie si duplicas SOLO la altura de 1 a 2. Hazlo en papel y luego prueba las dos alturas en el modelo. ¿El área de superficie se duplica como el volumen?",
-      "fr": "I predicted the ___ would double. Before, the volume was ___ and the surface area was ___. After, the volume was ___ and the surface area was ___. The surface area did not double because ___.",
-      "frEs": "Predije que el ___ se duplicaría. Antes, el volumen era ___ y el área de superficie era ___. Después, el volumen era ___ y el área de superficie era ___. El área de superficie no se duplicó porque ___.",
+      "p": "A triangular prism has a right-triangle end 6 high, with sides 6, 8 and 10, and the prism is 3 long. Predict its surface area by writing the area of the two triangles and of each rectangle. Then check in the model. Next, make the prism 5 long. Which faces changed, and which stayed the same?",
+      "pEs": "Un prisma triangular tiene un extremo de triángulo rectángulo de 6 de altura, con lados de 6, 8 y 10, y el prisma mide 3 de largo. Predice su área de superficie escribiendo el área de los dos triángulos y de cada rectángulo. Luego comprueba en el modelo. Después haz el prisma de 5 de largo. ¿Qué caras cambiaron y cuáles quedaron igual?",
+      "fr": "The two triangles are ___ each and the rectangles are ___, ___ and ___. The surface area is ___. When the length grew, the ___ stayed the same because ___.",
+      "frEs": "Los dos triángulos miden ___ cada uno y los rectángulos miden ___, ___ y ___. El área de superficie es ___. Cuando creció el largo, ___ quedó igual porque ___.",
       "min": 80,
       "kw": [
+        "triangular prism",
+        "face",
         "surface area",
-        "volume",
-        "faces",
-        "square units"
+        "rectangle"
       ],
       "kwEs": [
+        "prisma triangular",
+        "cara",
         "área de superficie",
-        "volumen",
-        "caras",
-        "unidades cuadradas"
+        "rectángulo"
       ],
       "rubric": [
-        "I made a prediction about both measures before testing.",
-        "I found surface area by adding the areas of all the faces.",
-        "I used the evidence to explain why the two measures behave differently."
+        "I predicted the surface area before I checked the model.",
+        "I found the area of both triangles and all three rectangles and added the five faces.",
+        "I said which faces changed when the length changed, and why."
       ],
       "rubricEs": [
-        "Hice una predicción sobre ambas medidas antes de probar.",
-        "Hallé el área de superficie sumando las áreas de todas las caras.",
-        "Usé la evidencia para explicar por qué las dos medidas se comportan distinto."
+        "Predije el área de superficie antes de revisar el modelo.",
+        "Hallé el área de los dos triángulos y de los tres rectángulos y sumé las cinco caras.",
+        "Dije qué caras cambiaron cuando cambió el largo, y por qué."
       ],
-      "x": "Height 1: volume 7 × 2 × 1 = 14 cubic units, surface area 2 × (14 + 7 + 2) = 46 square units. Height 2: volume 7 × 2 × 2 = 28, surface area 2 × (14 + 14 + 4) = 64. The volume doubled, but 64 is not 92. The top and bottom faces did not grow, so surface area measures faces, not space inside.",
-      "xEs": "Altura 1: volumen 7 × 2 × 1 = 14 unidades cúbicas, área de superficie 2 × (14 + 7 + 2) = 46 unidades cuadradas. Altura 2: volumen 7 × 2 × 2 = 28, área de superficie 2 × (14 + 14 + 4) = 64. El volumen se duplicó, pero 64 no es 92. La tapa y el fondo no crecieron, así que el área de superficie mide caras, no el espacio dentro.",
+      "x": "Each triangle is ½ × 8 × 6 = 24, so the two triangles are 48. At length 3 the rectangles are 6 × 3 = 18, 8 × 3 = 24 and 10 × 3 = 30, which total 72. Surface area: 48 + 72 = 120 square units. At length 5 the triangles stay 48, because they do not use the length. The rectangles become 30, 40 and 50, which total 120, so the surface area is 168.",
+      "xEs": "Cada triángulo es ½ × 8 × 6 = 24, así que los dos triángulos suman 48. Con largo 3 los rectángulos son 6 × 3 = 18, 8 × 3 = 24 y 10 × 3 = 30, que suman 72. Área de superficie: 48 + 72 = 120 unidades cuadradas. Con largo 5 los triángulos siguen en 48, porque no usan el largo. Los rectángulos pasan a 30, 40 y 50, que suman 120, así que el área de superficie es 168.",
       "h": [
-        "Find the volume and the surface area of the first box before you change anything.",
-        "Double only the height, then find both measures again.",
-        "Compare the new numbers with double the old ones."
+        "Find the area of one triangle, then double it for the two ends.",
+        "Each rectangle has one side from the triangle and one side equal to the length.",
+        "After the length changes, ask which faces use the length as a side."
       ],
       "hEs": [
-        "Halla el volumen y el área de superficie de la primera caja antes de cambiar nada.",
-        "Duplica solo la altura y vuelve a hallar ambas medidas.",
-        "Compara los números nuevos con el doble de los anteriores."
+        "Halla el área de un triángulo y luego duplícala para los dos extremos.",
+        "Cada rectángulo tiene un lado del triángulo y otro lado igual al largo.",
+        "Cuando cambie el largo, pregunta qué caras usan el largo como un lado."
       ]
     },
     "stretch": {
-      "q": "A prism-shaped gift box is 7 long and 2 wide. Its four lateral faces need 108 square units of wrap, and the top and bottom need wrap too. Change ONLY the height until the surface area is the total wrap for all six faces.",
-      "qEs": "Una caja de regalo con forma de prisma mide 7 de largo y 2 de ancho. Sus cuatro caras laterales necesitan 108 unidades cuadradas de papel, y la tapa y el fondo también necesitan papel. Cambia SOLO la altura hasta que el área de superficie sea el papel total de las seis caras.",
+      "q": "A triangular prism has a right-triangle end with area 54 square units. Its three rectangles have a total area of 180 square units. Find the triangle height and the prism length, and set both.",
+      "qEs": "Un prisma triangular tiene un extremo de triángulo rectángulo con área 54 unidades cuadradas. Sus tres rectángulos tienen un área total de 180 unidades cuadradas. Halla la altura del triángulo y el largo del prisma, y ajusta ambos.",
       "goal": {
-        "target": 136,
-        "free": 2
+        "match": {
+          "0": 9,
+          "1": 5
+        }
       },
-      "miss": "The lateral faces are only four of the six faces. Find the area of the top and bottom pair, add it to the lateral area, then work backward to the height.",
-      "missEs": "Las caras laterales son solo cuatro de las seis caras. Halla el área del par de la tapa y el fondo, súmala al área lateral y luego trabaja hacia atrás hasta la altura.",
-      "x": "The top and bottom are 2 × (7 × 2) = 28. The total wrap is 28 + 108 = 136 square units. The four lateral faces use 2 × 7 + 2 × 2 = 18 for every unit of height, so the height is 108 ÷ 18 = 6. Check: 28 + 18 × 6 = 136.",
-      "xEs": "La tapa y el fondo son 2 × (7 × 2) = 28. El papel total es 28 + 108 = 136 unidades cuadradas. Las cuatro caras laterales usan 2 × 7 + 2 × 2 = 18 por cada unidad de altura, así que la altura es 108 ÷ 18 = 6. Comprobación: 28 + 18 × 6 = 136.",
+      "miss": "The triangle ends and the rectangles are separate parts of the surface. Use the triangle area to find which triangle it is, then use the rectangles' total to find how long the prism is.",
+      "missEs": "Los extremos triangulares y los rectángulos son partes separadas de la superficie. Usa el área del triángulo para hallar cuál es el triángulo y luego usa el total de los rectángulos para hallar qué tan largo es el prisma.",
+      "x": "A triangle with area 54 has ½ × base × height = 54. In the model, the triangle with height 9 has base 12, and ½ × 12 × 9 = 54. Its sides 9, 12 and 15 add to 36, so each unit of length adds 36 to the rectangles. Then 180 ÷ 36 = 5, so the length is 5. Check: 54 + 54 + 180 = 288 square units.",
+      "xEs": "Un triángulo con área 54 cumple ½ × base × altura = 54. En el modelo, el triángulo con altura 9 tiene base 12, y ½ × 12 × 9 = 54. Sus lados 9, 12 y 15 suman 36, así que cada unidad de largo agrega 36 a los rectángulos. Entonces 180 ÷ 36 = 5, así que el largo es 5. Comprobación: 54 + 54 + 180 = 288 unidades cuadradas.",
       "h": [
-        "Lateral faces are the faces around the sides. The top and bottom are not lateral.",
-        "Find the top and bottom pair and add it to the lateral area for the total.",
-        "The lateral faces grow by the same amount for each unit of height. Divide to find how many units."
+        "Try the triangles in the model. Which one has an area of 54 square units?",
+        "Each rectangle is as long as the prism. Add the three triangle sides to see what one unit of length adds.",
+        "Divide the total area of the rectangles by what one unit of length adds."
       ],
       "hEs": [
-        "Las caras laterales son las que rodean los lados. La tapa y el fondo no son laterales.",
-        "Halla el par de la tapa y el fondo y súmalo al área lateral para el total.",
-        "Las caras laterales crecen lo mismo por cada unidad de altura. Divide para hallar cuántas unidades."
+        "Prueba los triángulos del modelo. ¿Cuál tiene un área de 54 unidades cuadradas?",
+        "Cada rectángulo es tan largo como el prisma. Suma los tres lados del triángulo para ver cuánto agrega una unidad de largo.",
+        "Divide el área total de los rectángulos entre lo que agrega una unidad de largo."
       ]
     },
     "create": {

@@ -1,3 +1,4 @@
+import { registered } from './models/index.mjs';
 // Direct manipulation for the live models: tap, drag or shade the picture itself.
 // Pure geometry: grab() picks which quantity a pointer is holding, move() turns the pointer position into new
 // values. Both mirror the drawing in model.mjs (same viewBox units), and every result is snapped to the model's
@@ -83,6 +84,8 @@ export function directHint(model) {
 
 /** Which models can be handled directly. */
 export function isDirect(model) {
+  // A registered model draws its own picture, which the kind-keyed drag handlers do not know; it is changed by its controls.
+  if (registered(model)) return false;
   if (model.kind === 'data') return true;
   if (model.kind === 'area') return true;
   return ['percent', 'array', 'ratio', 'fraction', 'line', 'inequality', 'coordinates', 'growth', 'balance', 'expression', 'decimal', 'division', 'rate', 'conversion', 'factors', 'power', 'solid'].includes(model.kind);

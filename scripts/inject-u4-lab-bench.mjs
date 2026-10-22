@@ -84,9 +84,9 @@ function stamps() {
   const h = createHash("sha1");
   for (const f of [...SCRIPTS, STYLE]) h.update(read(f));
   const lh = createHash("sha1");
-  const dir = "curriculum/learning-labs/shared";
-  for (const f of readdirSync(join(REPO_ROOT, dir)).sort())
-    if (/\.(mjs|css)$/.test(f)) lh.update(read(`${dir}/${f}`));
+  for (const dir of ["curriculum/learning-labs/shared", "curriculum/learning-labs/shared/models"])
+    for (const f of readdirSync(join(REPO_ROOT, dir)).sort())
+      if (/\.(mjs|css)$/.test(f)) lh.update(read(`${dir}/${f}`));
   return { v: h.digest("hex").slice(0, 10), labV: lh.digest("hex").slice(0, 10) };
 }
 

@@ -1,21 +1,10 @@
 // Pure mathematical contracts shared by the model, puzzle game, and tests.
-export const fmt = (n) => Number.isInteger(n) ? String(n) : Number(n.toFixed(4)).toLocaleString('en-US', { maximumFractionDigits: 4 });
-export const gcd = (a, b) => b ? gcd(b, a % b) : Math.abs(a);
-export const median = (values) => {
-  const s = [...values].sort((a, b) => a - b), n = s.length;
-  return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2;
-};
-export function statistics(values) {
-  const sorted = [...values].sort((a, b) => a - b);
-  const mean = sorted.reduce((a, b) => a + b, 0) / sorted.length;
-  const q1 = median(sorted.slice(0, Math.floor(sorted.length / 2)));
-  const q3 = median(sorted.slice(Math.ceil(sorted.length / 2)));
-  return { sorted, mean, median: median(sorted), min: sorted[0], max: sorted.at(-1), q1, q3,
-    range: sorted.at(-1) - sorted[0], iqr: q3 - q1,
-    mad: sorted.reduce((s, x) => s + Math.abs(x - mean), 0) / sorted.length };
-}
-const control = (label, min, max, step = 1) => ({ label, min, max, step });
+import { fmt, gcd, median, statistics, control } from './models/util.mjs';
+import { registered } from './models/index.mjs';
+export { fmt, gcd, median, statistics };
 export function controls(model) {
+  const plug = registered(model);
+  if (plug) return plug.controls(model);
   switch (model.kind) {
     case 'array': return [control('Rows', 1, 12), control('Seats or tiles in each row', 1, 12)];
     case 'data': return model.values.map((_, i) => control(`Observation ${i + 1}`, 0, 50));
@@ -40,6 +29,12 @@ export function controls(model) {
   }
 }
 export function evaluate(model, values = model.values, options = {}) {
+  const plug = registered(model);
+  if (plug) {
+    const r = plug.evaluate(model, values, options);
+    if (!Number.isFinite(r.value)) throw new Error('The model needs finite numerical inputs.');
+    return r;
+  }
   const [a, b, c, d] = values;
   let value, label, unit = '', equation, note, extra = {};
   switch (model.kind) {
@@ -119,18 +114,23 @@ const withSetting = (values, i, v) => values.map((x, j) => (j === i ? v : x));
 // Constructible puzzles: targets are derived from valid hidden control settings.
 // A solution is checked against the mathematical relationship, never a click count.
 export function puzzle(model, round, level) {
-  const base = [...model.values], fields = controls(model);
-  let free = model.kind === 'data' ? 3 : model.kind === 'balance' ? 2 : model.kind === 'growth' ? 2 : model.kind === 'coordinates' ? 2 : model.kind === 'inequality' ? 1 : 0;
+  const base = [...model.values], fields = controls(model), plug = registered(model);
+  let free = plug ? (plug.free ?? 0) : model.kind === 'data' ? 3 : model.kind === 'balance' ? 2 : model.kind === 'growth' ? 2 : model.kind === 'coordinates' ? 2 : model.kind === 'inequality' ? 1 : 0;
   let goal = [...base];
   const f = fields[free], steps = Math.round((f.max - f.min) / f.step);
   goal[free] = Number((f.min + ((round * 3 + level * 2 + 3) % (steps + 1)) * f.step).toFixed(6));
+  // A registered model may set up its own round (start, goal, free control); it then owns plannability, so the generic search below is skipped.
+  if (plug?.round) {
+    const r = plug.round(model, round, level);
+    base.splice(0, base.length, ...r.base); goal = [...r.goal]; free = r.free;
+  }
   if (model.kind === 'balance') {
     goal[free] = 4 + round * 2 + level;
     // The right-side control stops at its maximum, so a large coefficient must not push the product past it.
     if (model.mode !== 'add') { const room = Math.max(1, Math.floor(fields[1].max / goal[0])); goal[free] = ((goal[free] - 1) % room) + 1; }
     base[1] = goal[1] = model.mode === 'add' ? goal[2] + goal[0] : goal[2] * goal[0];
   }
-  if (model.kind === 'data') { free = model.mode === 'histogram' ? 7 : 3; goal[free] = 2 + 3 * round + level; }
+  if (model.kind === 'data' && !plug) { free = model.mode === 'histogram' ? 7 : 3; goal[free] = 2 + 3 * round + level; }
   if (model.kind === 'coordinates' && model.mode === 'distance') base[3] = goal[3] = base[1];
   if (model.kind === 'coordinates' && ['reflect', 'symmetry'].includes(model.mode)) {
     free = round % 2 ? 1 : 0;
@@ -141,7 +141,7 @@ export function puzzle(model, round, level) {
   // A target a student can PLAN is one they can reach by reasoning: a terminating decimal, not already where the model starts, and
   // reached by few settings of the free control (a median that ignores the free value is a coin flip, not a puzzle). The first
   // candidate above is only the default; look outward from it for one that qualifies, and keep it if none does.
-  if (!['balance', 'inequality'].includes(model.kind) && !(model.kind === 'coordinates' && ['reflect', 'symmetry'].includes(model.mode))) {
+  if (!['balance', 'inequality'].includes(model.kind) && !plug?.round && !(model.kind === 'coordinates' && ['reflect', 'symmetry'].includes(model.mode))) {
     const plannable = (v) => {
       const trial = withSetting(goal, free, v), t = evaluate(model, trial).value;
       if (!Number.isFinite(t) || Math.abs(t * 100 - Math.round(t * 100)) > 1e-6) return false;

@@ -120,8 +120,9 @@ function assetPlan(/** @type {Map<string, string>} */ built) {
   // and a studio-only change does not churn the lab URLs.
   const labDir = "curriculum/learning-labs/shared";
   const lh = createHash("sha1");
-  for (const f of readdirSync(join(REPO_ROOT, labDir)).sort())
-    if (/\.(mjs|css)$/.test(f)) lh.update(read(`${labDir}/${f}`));
+  for (const dir of [labDir, `${labDir}/models`])
+    for (const f of readdirSync(join(REPO_ROOT, dir)).sort())
+      if (/\.(mjs|css)$/.test(f)) lh.update(read(`${dir}/${f}`));
   return {
     styles: styles.map(url),
     scripts: scripts.map(url),

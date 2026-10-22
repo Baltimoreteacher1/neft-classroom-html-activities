@@ -4,6 +4,7 @@
 // The mathematics is the labs' own: every goal is checked against curriculum/learning-labs/shared/math.mjs, the same
 // module the page runs, by SEARCH — a goal that no setting of its free control reaches fails here, not in a classroom.
 import { controls, evaluate, puzzle } from "../../curriculum/learning-labs/shared/math.mjs";
+import { registered } from "../../curriculum/learning-labs/shared/models/index.mjs";
 import { itemProblems } from "./practice-studio-data.mjs";
 
 const str = (v, min = 2) => typeof v === "string" && v.trim().length >= min;
@@ -233,6 +234,7 @@ export function missionProblems(model, where) {
       // a regular polygon's area is irrational for every side count but 4: the page says "approximately" and the lesson rounds
       if (
         !(model.kind === "area" && model.mode === "polygon") &&
+        !registered(model)?.approx &&
         Math.abs(q.target * 100 - Math.round(q.target * 100)) > 1e-6
       )
         p.push(`${tag}: the target ${q.target} is a repeating decimal a student cannot plan`);

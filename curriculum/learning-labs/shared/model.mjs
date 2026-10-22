@@ -3,17 +3,13 @@ import { mountLens } from './lens.mjs';
 import { attachDirect, directHint, isDirect } from './direct.mjs';
 import { play } from './sound.mjs';
 import { esLabel } from './labels-es.mjs';
-export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const line = (x1, y1, x2, y2, cls = '') => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${cls}"/>`;
-const text = (x, y, t, anchor = 'middle') => `<text x="${x}" y="${y}" text-anchor="${anchor}">${esc(t)}</text>`;
-const rect = (x, y, w, h, cls = 'shape') => `<rect x="${x}" y="${y}" width="${w}" height="${h}" class="${cls}" rx="3"/>`;
-const dot = (x, y, label, cls = 'point') => `<circle cx="${x}" cy="${y}" r="7" class="${cls}"/>${label ? text(x, y - 12, label) : ''}`;
-const svg = (body, label, viewBox = '0 0 600 300') => {
-  const parts = viewBox.split(/\s+/);
-  return `<svg role="img" aria-label="${esc(label)}" width="${parts[2] || 600}" height="${parts[3] || 300}" viewBox="${viewBox}" style="background:#FFFFFF" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
-};
+import { esc, line, text, rect, dot, svg } from './models/draw.mjs';
+import { registered } from './models/index.mjs';
+export { esc };
 
 export function visual(model, values, result) {
+  const plug = registered(model);
+  if (plug) return svg(plug.visual(values, result, model), `${result.equation}. ${result.note}`, plug.viewBox || '0 0 600 300');
   const [a, b, c, d] = values;
   let body = '';
   const k = model.kind;
@@ -161,7 +157,7 @@ export function mountModel(host, model, { initial = model.values, free = null, o
   const spanish = () => lang() === 'es';
   // A lesson may name its controls in its own words (bench.labels); otherwise the model's generic names and their Spanish apply.
   const nameEn = (field, i) => labels?.controls?.[i]?.en || field.label;
-  const nameEs = (field, i) => labels?.controls?.[i]?.es || esLabel(field.label);
+  const nameEs = (field, i) => labels?.controls?.[i]?.es || field.labelEs || esLabel(field.label);
   const labelHtml = (field, i) => `${esc(nameEn(field, i))}${spanish() && nameEs(field, i) ? `<span class="es-line" lang="es">${esc(nameEs(field, i))}</span>` : ''}`;
   const lockedNote = free !== null ? `<p class="model-locked" id="${prefix}-locked">${esc(`Only “${nameEn(fields[free], free)}” can change in this task.`)}${spanish() ? `<span class="es-line" lang="es">${esc(`En esta tarea solo puede cambiar “${nameEs(fields[free], free) || nameEn(fields[free], free)}”.`)}</span>` : ''}</p>` : '';
   host.innerHTML = `<div class="model-workspace"><div class="model-picture"></div><div class="model-controls">${lockedNote}${fields.map((field, i) => field.label === 'Unused' ? '' : `<label for="${prefix}-${i}">${labelHtml(field, i)}<input id="${prefix}-${i}" data-control="${i}" type="number" min="${field.min}" max="${field.max}" step="${field.step}" value="${values[i]}" ${field.min === field.max || free !== null && free !== i ? `readonly aria-describedby="${prefix}-locked"` : ''}></label>`).join('')}${model.kind === 'inequality' ? `<label for="${prefix}-symbol">Rule<select id="${prefix}-symbol" data-symbol><option value=">=">At least (≥)</option><option value=">">More than (&gt;)</option><option value="<=">At most (≤)</option><option value="<">Less than (&lt;)</option></select></label>` : ''}<button type="button" class="quiet" data-reset>${spanish() ? 'Reset model<span class="es-line" lang="es">Reiniciar el modelo</span>' : 'Reset model'}</button></div></div><p class="model-error" id="${prefix}-err" role="status"></p><div class="model-readout" aria-live="polite" aria-atomic="true"></div>`;
@@ -272,6 +268,8 @@ const watch = {
   'inequality': ['The highlighted ray shows every value that satisfies the rule. An open circle excludes the boundary; a closed circle includes it.', 'Test the boundary value itself and explain whether it qualifies.'],
 };
 export function guidance(model) {
+  const plug = registered(model);
+  if (plug) return { show: plug.guidance[0], tip: plug.guidance[1] };
   let [show, tip] = watch[`${model.kind}:${model.mode}`] || watch[model.kind] || ['The picture updates as you change the controls.', 'Change one quantity at a time and record what the readout shows.'];
   if (model.kind === 'fraction') { const n = portionNoun(model.mode); show = show.replace(/portion/g, n); tip = tip.replace(/portion/g, n); }
   return { show, tip };
