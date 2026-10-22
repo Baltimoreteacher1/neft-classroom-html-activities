@@ -8,7 +8,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { DATA_DIR, lessonPath, loadLessonConfig } from "../tools/lib/curriculum-source.mjs";
-import { wordProblemsPage } from "./lib/family-word-problems.mjs";
+import { wordProblemsPage } from "./lib/family-word-problems-page.mjs";
 import { homeworkChrome } from "./lib/homework-chrome.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 import { studentPage } from "./lib/student-word-problems.mjs";

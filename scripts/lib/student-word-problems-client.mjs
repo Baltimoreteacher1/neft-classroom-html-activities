@@ -1,5 +1,8 @@
+import { ENGINE_JS } from "./word-problems-engine.mjs";
+
 /**
- * The student word-problems page's own styles and script, as strings the page builder inlines.
+ * The student word-problems page's own styles and script (tabs, header, progress), as strings the
+ * page builder inlines; the shared problem engine comes from word-problems-engine.mjs.
  * Look and feel come from assets/u4-studio.css (the Unit 4 practice studios); only what that
  * sheet has no rule for lives here. The script reads the page's #wp-data JSON, which the
  * generator computes, so no answer is typed in by hand.
@@ -45,116 +48,21 @@ body.show-es .wp-target .t-es { display: block; }
 }
 `;
 
-export const STUDENT_JS = `
+export const STUDENT_JS = `${ENGINE_JS}
 (function () {
   var DATA = JSON.parse(document.getElementById('wp-data').textContent);
-  var state = { solved: {}, es: false };
+  var state = { solved: {}, first: {}, es: false };
   try {
     var saved = JSON.parse(localStorage.getItem(DATA.key) || 'null');
     if (saved && typeof saved === 'object') {
       state.solved = saved.solved && typeof saved.solved === 'object' ? saved.solved : {};
+      state.first = saved.first && typeof saved.first === 'object' ? saved.first : {};
       state.es = !!saved.es;
     }
   } catch (e) {}
   function save() { try { localStorage.setItem(DATA.key, JSON.stringify(state)); } catch (e) {} }
-  function $(sel, root) { return (root || document).querySelector(sel); }
-  function $$(sel, root) { return [].slice.call((root || document).querySelectorAll(sel)); }
-  function make(tag, cls, text) {
-    var n = document.createElement(tag);
-    if (cls) n.className = cls;
-    if (text !== undefined) n.textContent = text;
-    return n;
-  }
-  function problem(id) { return DATA.problems.filter(function (p) { return p.id === id; })[0]; }
-
-  /* Feedback: English, then the Spanish line that shows when Español is on. */
-  function say(card, kind, msg, steps) {
-    var box = $('.feedback-box', card);
-    box.className = 'feedback-box show ' + kind;
-    box.textContent = '';
-    box.appendChild(make('div', '', msg.en));
-    box.appendChild(make('div', 'es-text', msg.es));
-    if (steps) {
-      ['en', 'es'].forEach(function (lang) {
-        var list = make('ol', lang === 'es' ? 'es-text' : '');
-        steps[lang].forEach(function (line) { list.appendChild(make('li', '', line)); });
-        box.appendChild(list);
-      });
-    }
-  }
-
-  function parseNum(v) {
-    var t = String(v).replace(/[$,\\s]/g, '');
-    if (t === '') return NaN;
-    var n = Number(t);
-    return isFinite(n) ? n : NaN;
-  }
-
-  function lock(card) {
-    $$('input, .choice-btn', card).forEach(function (el) { el.disabled = true; });
-    $$('.wp-actions .btn', card).forEach(function (b) { b.hidden = true; });
-    card.classList.add('wp-solved');
-  }
-
-  function solved(card, P) {
-    state.solved[P.id] = true;
-    save();
-    lock(card);
-    say(card, 'ok', DATA.ui.correct, P.steps);
-    refresh();
-  }
-
-  function miss(card, P, msg) {
-    var tries = (Number(card.dataset.tries) || 0) + 1;
-    card.dataset.tries = String(tries);
-    say(card, 'err', msg);
-    $('.hint-btn', card).hidden = false;
-    if (tries >= 2) $('.steps-btn', card).hidden = false;
-  }
-
-  function checkNumbers(card, P) {
-    var inputs = $$('input.num-input', card);
-    var vals = inputs.map(function (i) { return parseNum(i.value); });
-    if (vals.some(function (v) { return isNaN(v); })) { say(card, 'warn', DATA.ui.fill); return; }
-    var wrong = -1;
-    inputs.forEach(function (inp, i) {
-      var ok = Math.abs(vals[i] - P.fields[i].answer) < 0.005;
-      inp.classList.toggle('ok', ok);
-      inp.classList.toggle('err', !ok);
-      if (!ok && wrong < 0) wrong = i;
-    });
-    if (wrong < 0) { solved(card, P); return; }
-    var field = P.fields[wrong];
-    var msg = field.generic;
-    field.wrong.forEach(function (w) { if (Math.abs(w.value - vals[wrong]) < 0.005) msg = w.msg; });
-    miss(card, P, msg);
-  }
-
-  function choose(card, P, btn) {
-    var q = P.questions[Number(btn.dataset.q)];
-    var i = Number(btn.dataset.i);
-    var group = $$('.choice-btn[data-q="' + btn.dataset.q + '"]', card);
-    if (i === q.correct) {
-      group.forEach(function (b) { b.disabled = true; });
-      btn.classList.add('correct');
-      card.dataset['q' + btn.dataset.q] = 'ok';
-      var all = P.questions.every(function (_, k) { return card.dataset['q' + k] === 'ok'; });
-      if (all) solved(card, P); else say(card, 'ok', DATA.ui.next);
-      return;
-    }
-    btn.classList.add('wrong');
-    btn.disabled = true;
-    miss(card, P, q.wrong[i]);
-  }
-
-  function restore(card, P) {
-    $$('input.num-input', card).forEach(function (inp, i) { inp.value = String(P.fields[i].answer); inp.classList.add('ok'); });
-    $$('.choice-btn', card).forEach(function (b) {
-      if (P.questions[Number(b.dataset.q)].correct === Number(b.dataset.i)) b.classList.add('correct');
-    });
-    lock(card);
-    say(card, 'ok', DATA.ui.correct, P.steps);
-  }
+  function $(sel) { return document.querySelector(sel); }
+  function $$(sel) { return [].slice.call(document.querySelectorAll(sel)); }
 
   /* Progress: header count and a check on every tab whose problems are all solved. */
   function refresh() {
@@ -166,6 +74,7 @@ export const STUDENT_JS = `
       $('#tab-' + tab).classList.toggle('tab-complete', all);
     });
   }
+  wpEngine(DATA, state, { save: save, changed: refresh, speakSpanish: function () { return state.es; } });
 
   /* Tabs. */
   var tabs = $$('.tab-btn');
@@ -192,42 +101,6 @@ export const STUDENT_JS = `
     b.addEventListener('click', function () { show(b.dataset.goto, false); window.scrollTo({ top: 0, behavior: 'smooth' }); });
   });
 
-  /* Cards. */
-  $$('.wp-card').forEach(function (card) {
-    var P = problem(card.dataset.id);
-    $('.check-btn', card) && $('.check-btn', card).addEventListener('click', function () { checkNumbers(card, P); });
-    $$('input.num-input', card).forEach(function (inp) {
-      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') checkNumbers(card, P); });
-    });
-    $$('.choice-btn', card).forEach(function (b) { b.addEventListener('click', function () { choose(card, P, b); }); });
-    $('.hint-btn', card).addEventListener('click', function () { var h = $('.wp-hint-text', card); h.hidden = !h.hidden; });
-    $('.steps-btn', card).addEventListener('click', function () {
-      var box = $('.wp-steps-box', card);
-      if (!box.firstChild) {
-        ['en', 'es'].forEach(function (lang) {
-          var list = make('ol', lang === 'es' ? 'es-text' : '');
-          P.steps[lang].forEach(function (line) { list.appendChild(make('li', '', line)); });
-          box.appendChild(list);
-        });
-      }
-      box.hidden = !box.hidden;
-    });
-    var speak = $('.speak-btn', card);
-    if (!('speechSynthesis' in window)) speak.hidden = true;
-    else speak.addEventListener('click', function () {
-      window.speechSynthesis.cancel();
-      var say1 = new SpeechSynthesisUtterance($('.wp-stem', card).textContent);
-      say1.lang = 'en-US';
-      window.speechSynthesis.speak(say1);
-      if (state.es) {
-        var say2 = new SpeechSynthesisUtterance($('.wp-stem-es', card).textContent);
-        say2.lang = 'es-US';
-        window.speechSynthesis.speak(say2);
-      }
-    });
-    if (state.solved[P.id]) restore(card, P);
-  });
-
   /* Header actions. */
   var esBtn = $('#toggle-es-btn');
   function setEs(on) {
@@ -247,6 +120,7 @@ export const STUDENT_JS = `
       return;
     }
     state.solved = {};
+    state.first = {};
     save();
     location.reload();
   });

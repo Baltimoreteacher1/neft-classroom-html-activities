@@ -349,21 +349,96 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 </style>
 <link rel="stylesheet" href="/assets/homework/homework-layer-ca2ac01bc1.css">
 <style>
-.wp-blurb { margin: 6px 0 14px; color: var(--fp-ink-soft); }
-.wp-problem { margin-top: 16px; break-inside: avoid; }
-.wp-tip-label, .family-problem-tip p { margin: 0; }
-.wp-tip-label { margin-bottom: 4px !important; }
-.wp-hint p { margin: 10px 0 0; padding: 0 4px 10px; }
-.wp-problem .hw-work { margin-top: 14px; }
-.wp-tip-label .lang-en, .wp-tip-label .lang-es { margin-left: 4px; }
+:root { --wp-ok: #0b6b3d; --wp-ok-tint: #e4f4ea; --wp-bad: #a3231a; --wp-bad-tint: #fdeceb; }
+.wp-card { margin-top: 18px; break-inside: avoid; }
+.wp-card .problem-number-badge { display: inline-flex; align-items: center; gap: 8px; }
+.wp-emoji { font-size: 1.6rem; line-height: 1; }
+.wp-card .problem-header-row { align-items: center; gap: 10px; flex-wrap: wrap; }
+.wp-card .problem-stem { font-size: 1.3rem; line-height: 1.45; }
+.wp-fields { display: flex; flex-wrap: wrap; gap: 14px 26px; margin: 16px 0 0; }
+.wp-field label { display: block; font-weight: 800; color: var(--fp-unit-ink); margin-bottom: 4px; }
+.wp-field-row { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.3rem; color: var(--fp-unit-ink); }
+.wp-card .num-input { width: 150px; min-height: 52px; font: 800 1.35rem var(--fp-sans); color: var(--fp-ink); text-align: center; background: #fff; border: 3px solid var(--fp-unit); border-radius: 14px; padding: 6px 10px; }
+.wp-card .num-input:focus { outline: 3px solid var(--fp-note); outline-offset: 2px; border-color: var(--fp-unit-ink); }
+.wp-card .num-input.ok { border-color: var(--wp-ok); background: var(--wp-ok-tint); color: var(--wp-ok); }
+.wp-card .num-input.err { border-color: var(--wp-bad); background: var(--wp-bad-tint); color: var(--wp-bad); }
+.wp-question { margin: 16px 0 0; }
+.wp-question > p { margin: 0 0 8px; font-weight: 800; color: var(--fp-unit-ink); }
+.choice-stack { display: grid; gap: 10px; counter-reset: wpc; }
+.choice-btn { appearance: none; display: flex; align-items: center; gap: 12px; text-align: left; font: 700 1.1rem var(--fp-sans); color: var(--fp-ink); background: #fff; border: 3px solid var(--fp-rule); border-radius: 14px; padding: 10px 16px; min-height: 56px; cursor: pointer; }
+.choice-btn::before { counter-increment: wpc; content: counter(wpc, upper-alpha); flex: 0 0 34px; height: 34px; border-radius: 50%; background: var(--fp-unit-tint); color: var(--fp-unit-ink); font-weight: 800; display: grid; place-items: center; }
+.choice-btn:hover:not([disabled]) { border-color: var(--fp-unit); background: var(--fp-unit-tint); }
+.choice-btn.correct { border-color: var(--wp-ok); background: var(--wp-ok-tint); color: #064e2b; }
+.choice-btn.correct::before { content: "\2713"; background: var(--wp-ok); color: #fff; }
+.choice-btn.wrong { border-color: var(--wp-bad); background: var(--wp-bad-tint); color: #7d1a13; }
+.choice-btn.wrong::before { content: "\2715"; background: var(--wp-bad); color: #fff; }
+.wp-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 0; }
+.wp-actions .btn[hidden], .wp-hint-text[hidden], .wp-steps-box[hidden] { display: none; }
+.wp-hint-text, .wp-steps-box { margin: 12px 0 0; padding: 12px 16px; border-radius: 12px; background: var(--fp-note); color: var(--fp-note-ink); }
+.feedback-box { display: none; margin: 14px 0 0; padding: 12px 16px; border-radius: 12px; font-weight: 600; }
+.feedback-box.show { display: block; }
+.feedback-box.ok { background: var(--wp-ok-tint); border: 2px solid var(--wp-ok); color: #064e2b; }
+.feedback-box.err { background: var(--wp-bad-tint); border: 2px solid var(--wp-bad); color: #7d1a13; }
+.feedback-box.warn { background: var(--fp-note); border: 2px solid #d9a400; color: var(--fp-note-ink); }
+.feedback-box ol { margin: 8px 0 0; padding-left: 22px; font-weight: 500; }
+.wp-corner, .wp-picture { margin-top: 12px; border: 2px solid var(--fp-rule); border-radius: 14px; background: #fff; }
+.wp-corner summary, .wp-picture summary { cursor: pointer; font-weight: 800; color: var(--fp-unit-ink); padding: 12px 16px; min-height: 44px; }
+.wp-corner > div, .wp-picture > div { padding: 0 16px 14px; }
+.wp-corner p { margin: 8px 0 0; }
+.wp-corner ul { margin: 6px 0 0; padding-left: 22px; }
+.wp-bar { height: 30px; border: 2px solid var(--fp-unit-ink); border-radius: 10px; overflow: hidden; background: #fff repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), var(--fp-rule) calc(10% - 1px) 10%); margin: 6px 0; }
+.wp-bar-fill { display: block; height: 100%; background: var(--fp-unit); }
+.wp-pic-label { margin: 10px 0 0; font-weight: 700; }
+.wp-pic-note { margin: 4px 0 0; color: var(--fp-ink-soft); }
+.wp-team { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); margin: 14px 0 0; padding: 0; list-style: none; }
+.wp-team li { background: #fff; border: 2px solid var(--fp-rule); border-radius: 16px; padding: 14px 16px; }
+.wp-team .wp-role-emoji { font-size: 2rem; display: block; }
+.wp-team h3 { margin: 4px 0 2px; font-size: 1.1rem; color: var(--fp-unit-ink); }
+.wp-team p { margin: 0; }
+.wp-explorer { margin-top: 18px; }
+.wp-explorer h3 { margin: 0 0 4px; }
+.wp-explorer-controls { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: end; margin: 12px 0 0; }
+.wp-range-row { display: flex; align-items: center; gap: 12px; font-size: 1.2rem; color: var(--fp-unit-ink); }
+.wp-explorer-controls label { display: block; font-weight: 800; color: var(--fp-unit-ink); margin-bottom: 4px; }
+.wp-explorer input[type=range] { width: min(320px, 100%); accent-color: var(--fp-unit); min-height: 32px; }
+.wp-explorer input[type=number] { width: 130px; min-height: 48px; font: 800 1.2rem var(--fp-sans); border: 3px solid var(--fp-unit); border-radius: 12px; padding: 4px 10px; text-align: center; }
+.wp-cells { display: grid; grid-template-columns: repeat(20, 1fr); gap: 2px; margin: 14px 0 6px; }
+.wp-cells span { height: 34px; border-radius: 4px; background: #fff; border: 1px solid var(--fp-rule); }
+.wp-cells span.on { background: var(--fp-unit); border-color: var(--fp-unit-ink); }
+.wp-bar-out { font-size: 1.2rem; font-weight: 800; color: var(--fp-unit-ink); margin: 6px 0 0; }
+.wp-bar-out small { display: block; font-size: 1rem; font-weight: 600; color: var(--fp-ink-soft); }
+.wp-stars { font-weight: 800; }
+.wp-meter { height: 12px; border-radius: 99px; background: rgba(255,255,255,.3); overflow: hidden; margin: 10px 0 0; }
+.wp-meter > span { display: block; height: 100%; width: 0; background: #ffd34d; transition: width .4s ease; }
+.homework-tab-btn.wp-tab-complete .tab-label::after { content: " \2713"; font-weight: 800; }
+.wp-cert-wrap { margin-top: 18px; }
+.wp-cert { position: relative; text-align: center; padding: 28px 22px; border: 6px double var(--fp-unit-ink); border-radius: 18px; background: #fffdf8; }
+.wp-cert.locked { opacity: .45; filter: grayscale(.6); }
+.wp-cert h3 { margin: 0; font: 700 1.7rem var(--fp-serif); color: var(--fp-unit-ink); }
+.wp-cert .wp-cert-star { font-size: 2.4rem; }
+.wp-cert input { font: 700 1.5rem var(--fp-serif); text-align: center; border: 0; border-bottom: 3px solid var(--fp-unit); background: transparent; width: min(420px, 100%); color: var(--fp-ink); padding: 6px; }
+.wp-cert p { margin: 10px 0 0; }
+.wp-celebrate-msg { margin: 14px 0 0; padding: 14px 18px; border-radius: 14px; background: var(--wp-ok-tint); border: 2px solid var(--wp-ok); font-weight: 700; color: #064e2b; }
+.wp-hunt { margin-top: 18px; }
 .wp-links { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; margin: 22px 0 0; }
 .wp-links a { color: var(--fp-unit-ink); font-weight: 700; }
-.wp-links button .lang-en, .wp-links button .lang-es { color: inherit; }
-.wp-links button { font: inherit; font-weight: 700; color: #fff; background: var(--fp-unit-ink); border: 0; border-radius: 12px; padding: 10px 18px; min-height: 44px; cursor: pointer; }
+#wp-confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 9999; }
+.wp-confetti { position: absolute; top: -20px; width: 10px; height: 16px; border-radius: 2px; }
+@media (prefers-reduced-motion: no-preference) {
+  .wp-card.wp-pop { animation: wp-pop .5s ease; }
+  .wp-confetti { animation: wp-fall 2.6s ease-in forwards; }
+  .homework-tab-btn.wp-pulse { animation: wp-pulse 1s ease 3; }
+}
+@keyframes wp-pop { 0% { transform: scale(1); } 40% { transform: scale(1.015); box-shadow: 0 0 0 6px var(--wp-ok-tint); } 100% { transform: scale(1); } }
+@keyframes wp-fall { to { transform: translateY(110vh) rotate(540deg); opacity: .9; } }
+@keyframes wp-pulse { 50% { box-shadow: 0 0 0 6px #ffd34d; } }
 @media print {
-  .hw-hero-controls, .homework-tab-chrome, .tab-flow-nav, .wp-links, .wp-hint, .hw-answer-key { display: none !important; }
+  .hw-hero-controls, .homework-tab-chrome, .tab-flow-nav, .wp-links, .wp-actions, .wp-hint-text, .wp-steps-box, .hw-answer-key, .wp-explorer-controls, #wp-confetti { display: none !important; }
   [data-tab-panel][hidden] { display: block !important; }
-  .wp-problem .hw-work-input { min-height: 120px; }
+  .wp-card .hw-work-input { min-height: 120px; }
+  body.wp-print-cert * { visibility: hidden; }
+  body.wp-print-cert #wp-cert, body.wp-print-cert #wp-cert * { visibility: visible; }
+  body.wp-print-cert #wp-cert { position: absolute; left: 0; top: 0; width: 100%; opacity: 1; filter: none; }
 }
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -389,6 +464,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
   document.documentElement.lang = mode === 'es' ? 'es' : 'en';
 })();
 </script>
+<div id="wp-confetti" aria-hidden="true"></div>
 <div class="container" role="main">
   <header class="hw-hero" aria-label="Family Math Studio">
     <div class="hw-hero-glow" aria-hidden="true"></div>
@@ -423,10 +499,13 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         <span class="hw-hero-bigidea-label hw-inline"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
         <span class="lang-en">Part = Percent × Whole. Change the percent to a decimal, then multiply.</span><span class="lang-es" lang="es">Parte = Porcentaje × Total. Cambia el porcentaje a decimal y luego multiplica.</span>
       </p>
+      <p class="hw-hero-lead"><span class="lang-en">Team up: one student and one grown-up. No grades. Any language.</span><span class="lang-es" lang="es">Trabajen en equipo: un estudiante y un adulto. Sin calificaciones. En cualquier idioma.</span></p>
       <ul class="hw-tonight hw-inline" aria-label="At a glance">
         <li><span aria-hidden="true">✏️</span> <span class="lang-en">Pencil and paper</span><span class="lang-es" lang="es">Lápiz y papel</span></li>
         <li><span aria-hidden="true">🎯</span> <strong>9</strong> <span class="lang-en">word problems</span><span class="lang-es" lang="es">problemas verbales</span></li>
+        <li class="wp-stars"><span aria-hidden="true">⭐</span> <strong id="wp-stars">0</strong> / 9 <span class="lang-en">solved</span><span class="lang-es" lang="es">resueltos</span></li>
       </ul>
+      <div class="wp-meter" aria-hidden="true"><span id="wp-meter-fill"></span></div>
     </div>
   </header>
   <div class="homework-tabs-shell" data-tab-count="5">
@@ -469,6 +548,21 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 <div class="tab-panel-inner" data-tab-panel="learn" id="wp_panel_learn" role="tabpanel" aria-labelledby="wp_tab_learn">
   <h2 class="section-title">📖 <span class="lang-en">Learn</span><span class="lang-es" lang="es">Aprender</span></h2>
   <section class="card wp-intro"><p><span class="lang-en">These word problems use the same ideas as the 4-4 homework: find a percent of a number, find a discount and a sale price, and compare deals. Pick a few to talk through together. They are optional and ungraded.</span><span class="lang-es" lang="es">Estos problemas verbales usan las mismas ideas de la tarea 4-4: hallar el porcentaje de un número, hallar un descuento y un precio de oferta, y comparar ofertas. Elijan algunos para conversar juntos. Son opcionales y sin calificación.</span></p></section>
+  <section class="card wp-team-card">
+    <h3><span class="lang-en">Team up</span><span class="lang-es" lang="es">Trabajen en equipo</span></h3>
+    <p><span class="lang-en">One student and one grown-up make a team. You do not need to be a math person. The page checks every answer and gives hints.</span><span class="lang-es" lang="es">Un estudiante y un adulto forman un equipo. No necesitan ser expertos en matemáticas. La página revisa cada respuesta y da pistas.</span></p>
+    <ul class="wp-team"><li><span class="wp-role-emoji" aria-hidden="true">👀</span><h3><span class="lang-en">Read it together</span><span class="lang-es" lang="es">Léanlo juntos</span></h3><p><span class="lang-en">Take turns reading the problem out loud. Use any language you like.</span><span class="lang-es" lang="es">Túrnense para leer el problema en voz alta. Usen el idioma que prefieran.</span></p></li><li><span class="wp-role-emoji" aria-hidden="true">✋</span><h3><span class="lang-en">Let them try first</span><span class="lang-es" lang="es">Que lo intenten primero</span></h3><p><span class="lang-en">Wait before you help. A wrong first try is part of learning.</span><span class="lang-es" lang="es">Esperen antes de ayudar. Un primer intento incorrecto es parte de aprender.</span></p></li><li><span class="wp-role-emoji" aria-hidden="true">❓</span><h3><span class="lang-en">Ask, don’t tell</span><span class="lang-es" lang="es">Pregunten, no digan</span></h3><p><span class="lang-en">Open the Grown-up corner on each problem for a question to ask.</span><span class="lang-es" lang="es">Abran el Rincón del adulto en cada problema para ver una pregunta que pueden hacer.</span></p></li></ul>
+  </section>
+  <section class="card wp-explorer">
+    <h3>📊 <span class="lang-en">Try the percent bar</span><span class="lang-es" lang="es">Prueba la barra de porcentajes</span></h3>
+    <p><span class="lang-en">Move the slider and change the whole. Watch how much of the bar is shaded.</span><span class="lang-es" lang="es">Mueve el control y cambia el total. Observa cuánto de la barra está sombreada.</span></p>
+    <div class="wp-explorer-controls">
+      <div><label class="hw-inline" for="wp-bar-percent"><span class="lang-en">Percent</span><span class="lang-es" lang="es">Porcentaje</span></label><div class="wp-range-row"><input type="range" id="wp-bar-percent" min="5" max="100" step="5" value="25"><strong id="wp-bar-pct">25%</strong></div></div>
+      <div><label class="hw-inline" for="wp-bar-whole"><span class="lang-en">Whole</span><span class="lang-es" lang="es">Total</span></label><input type="number" id="wp-bar-whole" value="80" min="0" step="any" inputmode="decimal"></div>
+    </div>
+    <div class="wp-cells" id="wp-cells" aria-hidden="true"></div>
+    <div class="wp-bar-out" id="wp-bar-out" role="status" aria-live="polite"></div>
+  </section>
   <div class="tab-flow-nav">
   <button type="button" class="btn btn-primary flow-next-btn" data-next="find"><span class="lang-en">Continue ➔</span><span class="lang-es" lang="es">Continuar ➔</span></button>
 </div>
@@ -476,124 +570,172 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 <div class="tab-panel-inner" data-tab-panel="find" id="wp_panel_find" role="tabpanel" aria-labelledby="wp_tab_find" hidden>
   <h2 class="section-title">🧮 <span class="lang-en">Find the part</span><span class="lang-es" lang="es">Halla la parte</span></h2>
   <p class="wp-blurb"><span class="lang-en">Read the problem, name the whole, then find the percent of it.</span><span class="lang-es" lang="es">Lee el problema, nombra el total y halla el porcentaje de ese total.</span></p>
-<section class="problem-section card wp-problem" id="find-1">
+<section class="problem-section card wp-card wp-problem" id="find-1" data-id="find-1">
   <div class="problem-header-row">
-    <div class="problem-number-badge hw-inline"><span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 1</div>
+    <div class="problem-number-badge hw-inline"><span class="wp-emoji" aria-hidden="true">🚗</span> <span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 1</div>
+    <button type="button" class="btn btn-sm btn-outline-secondary speak-btn">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
     <div class="problem-type-badge"><span class="lang-en">Find the part</span><span class="lang-es" lang="es">Halla la parte</span></div>
   </div>
   <div class="problem-body">
-    <p class="problem-stem"><span class="lang-en">A family is driving 300 miles to visit relatives. They have driven 40% of the trip so far. How many miles have they driven?</span><span class="lang-es" lang="es">Una familia va manejando 300 millas para visitar a unos parientes. Hasta ahora ha recorrido el 40% del viaje. ¿Cuántas millas ha recorrido?</span></p>
-    <div class="family-problem-tip">
-      <p class="wp-tip-label hw-inline"><span aria-hidden="true">👪</span> <strong><span class="lang-en">Ask your student</span><span class="lang-es" lang="es">Pregunta a tu estudiante</span></strong></p>
-      <p><span class="lang-en">What is the whole in this problem? How do you know?</span><span class="lang-es" lang="es">¿Cuál es el total en este problema? ¿Cómo lo sabes?</span></p>
+    <p class="problem-stem"><span class="lang-en wp-stem">A family is driving 300 miles to visit relatives. They have driven 40% of the trip so far. How many miles have they driven?</span><span class="lang-es wp-stem-es" lang="es">Una familia va manejando 300 millas para visitar a unos parientes. Hasta ahora ha recorrido el 40% del viaje. ¿Cuántas millas ha recorrido?</span></p>
+    <div class="wp-fields"><div class="wp-field">
+      <label class="hw-inline" for="in-find-1-0"><span class="lang-en">Answer</span><span class="lang-es" lang="es">Respuesta</span></label>
+      <div class="wp-field-row"><input id="in-find-1-0" class="num-input" type="text" inputmode="decimal" autocomplete="off"><span class="hw-inline"><span class="lang-en">miles</span><span class="lang-es" lang="es">millas</span></span></div>
+    </div></div>
+    <div class="wp-actions">
+      <button type="button" class="btn btn-primary check-btn">✓ <span class="lang-en">Check answer</span><span class="lang-es" lang="es">Comprobar respuesta</span></button>
+      <button type="button" class="btn btn-outline-secondary hint-btn" hidden>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
+      <button type="button" class="btn btn-outline-secondary steps-btn" hidden><span class="lang-en">Show the worked steps</span><span class="lang-es" lang="es">Ver los pasos resueltos</span></button>
     </div>
-    <details class="problem-coach-ladder wp-hint">
-      <summary><span>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></span></summary>
-      <p><span class="lang-en">40% means 40 out of every 100. Change 40% to a decimal, then multiply by 300.</span><span class="lang-es" lang="es">40% significa 40 de cada 100. Cambia 40% a decimal y luego multiplica por 300.</span></p>
-    </details>
+    <div class="feedback-box" role="status" aria-live="polite"></div>
+    <div class="wp-hint-text" hidden><span class="lang-en">40% means 40 out of every 100. Change 40% to a decimal, then multiply by 300.</span><span class="lang-es" lang="es">40% significa 40 de cada 100. Cambia 40% a decimal y luego multiplica por 300.</span></div>
+    <div class="wp-steps-box" hidden></div>
+    <details class="wp-picture"><summary>🖼️ <span class="lang-en">Show a picture</span><span class="lang-es" lang="es">Ver un dibujo</span></summary><div><p class="wp-pic-label"><span class="lang-en">The whole is 300 miles.</span><span class="lang-es" lang="es">El total es 300 millas.</span></p><div class="wp-bar" role="img" aria-label="40%"><span class="wp-bar-fill" style="width:40%"></span></div><p class="wp-pic-note"><span class="lang-en">The shaded part is 40% of the whole.</span><span class="lang-es" lang="es">La parte sombreada es el 40% del total.</span></p></div></details>
     <div class="hw-work">
       <label class="hw-work-label hw-inline" for="work_find-1"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-      <textarea id="work_find-1" name="work_find-1" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
+      <textarea id="work_find-1" name="work_find-1" class="custom-textarea hw-work-input" rows="3" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
     </div>
+    <details class="wp-corner">
+      <summary>👪 <span class="lang-en">Grown-up corner</span><span class="lang-es" lang="es">Rincón del adulto</span></summary>
+      <div>
+        <p><strong><span class="lang-en">Ask your student:</span><span class="lang-es" lang="es">Pregunta a tu estudiante:</span></strong> <span class="lang-en">What is the whole in this problem? How do you know?</span><span class="lang-es" lang="es">¿Cuál es el total en este problema? ¿Cómo lo sabes?</span></p>
+        <p><strong><span class="lang-en">Listen for:</span><span class="lang-es" lang="es">Escuchen si:</span></strong> <span class="lang-en">They say which number is the whole before they multiply.</span><span class="lang-es" lang="es">Escuchen si dicen cuál número es el total antes de multiplicar.</span></p>
+        <p><strong><span class="lang-en">Sentence starters:</span><span class="lang-es" lang="es">Frases para empezar:</span></strong></p>
+        <ul><li><span class="lang-en">The whole is ___.</span><span class="lang-es" lang="es">El total es ___.</span></li><li><span class="lang-en">___% as a decimal is ___.</span><span class="lang-es" lang="es">___% como decimal es ___.</span></li><li><span class="lang-en">So the part is ___.</span><span class="lang-es" lang="es">Entonces la parte es ___.</span></li></ul>
+      </div>
+    </details>
   </div>
   <details class="hw-answer-key">
-    <summary>
-      <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
-      <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
-    </summary>
+    <summary><span class="hw-answer-key-icon" aria-hidden="true">🔑</span> <span class="lang-en">Grown-up: show the answer</span><span class="lang-es" lang="es">Adulto: ver la respuesta</span></summary>
     <div class="hw-answer-key-body">
       <p class="hw-answer-key-try"><span class="lang-en">Not tried yet? Close this and give it one try first. A wrong first try still helps.</span><span class="lang-es" lang="es">¿Todavía no lo intentaron? Ciérrenla y hagan un intento primero. Un primer intento incorrecto también ayuda.</span></p>
       <ul class="hw-answer-key-lines"><li><span class="lang-en">Change the percent to a decimal: 40% = 0.40.</span><span class="lang-es" lang="es">Cambia el porcentaje a decimal: 40% = 0.40.</span></li><li><span class="lang-en">Multiply: 0.40 × 300 = 120.</span><span class="lang-es" lang="es">Multiplica: 0.40 × 300 = 120.</span></li><li><span class="lang-en">Answer: 120 miles.</span><span class="lang-es" lang="es">Respuesta: 120 millas.</span></li></ul>
     </div>
   </details>
 </section>
-<section class="problem-section card wp-problem" id="find-2">
+<section class="problem-section card wp-card wp-problem" id="find-2" data-id="find-2">
   <div class="problem-header-row">
-    <div class="problem-number-badge hw-inline"><span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 2</div>
+    <div class="problem-number-badge hw-inline"><span class="wp-emoji" aria-hidden="true">🐾</span> <span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 2</div>
+    <button type="button" class="btn btn-sm btn-outline-secondary speak-btn">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
     <div class="problem-type-badge"><span class="lang-en">Find the part</span><span class="lang-es" lang="es">Halla la parte</span></div>
   </div>
   <div class="problem-body">
-    <p class="problem-stem"><span class="lang-en">Maya has 64 stickers. 25% of them are animal stickers. How many animal stickers does Maya have?</span><span class="lang-es" lang="es">Maya tiene 64 calcomanías. El 25% de ellas son calcomanías de animales. ¿Cuántas calcomanías de animales tiene Maya?</span></p>
-    <div class="family-problem-tip">
-      <p class="wp-tip-label hw-inline"><span aria-hidden="true">👪</span> <strong><span class="lang-en">Ask your student</span><span class="lang-es" lang="es">Pregunta a tu estudiante</span></strong></p>
-      <p><span class="lang-en">Is the answer more or less than 64? Make a guess before you calculate.</span><span class="lang-es" lang="es">¿La respuesta es mayor o menor que 64? Haz una estimación antes de calcular.</span></p>
+    <p class="problem-stem"><span class="lang-en wp-stem">Maya has 64 stickers. 25% of them are animal stickers. How many animal stickers does Maya have?</span><span class="lang-es wp-stem-es" lang="es">Maya tiene 64 calcomanías. El 25% de ellas son calcomanías de animales. ¿Cuántas calcomanías de animales tiene Maya?</span></p>
+    <div class="wp-fields"><div class="wp-field">
+      <label class="hw-inline" for="in-find-2-0"><span class="lang-en">Answer</span><span class="lang-es" lang="es">Respuesta</span></label>
+      <div class="wp-field-row"><input id="in-find-2-0" class="num-input" type="text" inputmode="decimal" autocomplete="off"><span class="hw-inline"><span class="lang-en">animal stickers</span><span class="lang-es" lang="es">calcomanías de animales</span></span></div>
+    </div></div>
+    <div class="wp-actions">
+      <button type="button" class="btn btn-primary check-btn">✓ <span class="lang-en">Check answer</span><span class="lang-es" lang="es">Comprobar respuesta</span></button>
+      <button type="button" class="btn btn-outline-secondary hint-btn" hidden>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
+      <button type="button" class="btn btn-outline-secondary steps-btn" hidden><span class="lang-en">Show the worked steps</span><span class="lang-es" lang="es">Ver los pasos resueltos</span></button>
     </div>
-    <details class="problem-coach-ladder wp-hint">
-      <summary><span>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></span></summary>
-      <p><span class="lang-en">25% is the same as one fourth. You can divide 64 by 4, or multiply 0.25 × 64.</span><span class="lang-es" lang="es">25% es lo mismo que un cuarto. Puedes dividir 64 entre 4 o multiplicar 0.25 × 64.</span></p>
-    </details>
+    <div class="feedback-box" role="status" aria-live="polite"></div>
+    <div class="wp-hint-text" hidden><span class="lang-en">25% is the same as one fourth. You can divide 64 by 4, or multiply 0.25 × 64.</span><span class="lang-es" lang="es">25% es lo mismo que un cuarto. Puedes dividir 64 entre 4 o multiplicar 0.25 × 64.</span></div>
+    <div class="wp-steps-box" hidden></div>
+    <details class="wp-picture"><summary>🖼️ <span class="lang-en">Show a picture</span><span class="lang-es" lang="es">Ver un dibujo</span></summary><div><p class="wp-pic-label"><span class="lang-en">The whole is 64 animal stickers.</span><span class="lang-es" lang="es">El total es 64 calcomanías de animales.</span></p><div class="wp-bar" role="img" aria-label="25%"><span class="wp-bar-fill" style="width:25%"></span></div><p class="wp-pic-note"><span class="lang-en">The shaded part is 25% of the whole.</span><span class="lang-es" lang="es">La parte sombreada es el 25% del total.</span></p></div></details>
     <div class="hw-work">
       <label class="hw-work-label hw-inline" for="work_find-2"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-      <textarea id="work_find-2" name="work_find-2" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
+      <textarea id="work_find-2" name="work_find-2" class="custom-textarea hw-work-input" rows="3" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
     </div>
+    <details class="wp-corner">
+      <summary>👪 <span class="lang-en">Grown-up corner</span><span class="lang-es" lang="es">Rincón del adulto</span></summary>
+      <div>
+        <p><strong><span class="lang-en">Ask your student:</span><span class="lang-es" lang="es">Pregunta a tu estudiante:</span></strong> <span class="lang-en">Is the answer more or less than 64? Make a guess before you calculate.</span><span class="lang-es" lang="es">¿La respuesta es mayor o menor que 64? Haz una estimación antes de calcular.</span></p>
+        <p><strong><span class="lang-en">Listen for:</span><span class="lang-es" lang="es">Escuchen si:</span></strong> <span class="lang-en">They say which number is the whole before they multiply.</span><span class="lang-es" lang="es">Escuchen si dicen cuál número es el total antes de multiplicar.</span></p>
+        <p><strong><span class="lang-en">Sentence starters:</span><span class="lang-es" lang="es">Frases para empezar:</span></strong></p>
+        <ul><li><span class="lang-en">The whole is ___.</span><span class="lang-es" lang="es">El total es ___.</span></li><li><span class="lang-en">___% as a decimal is ___.</span><span class="lang-es" lang="es">___% como decimal es ___.</span></li><li><span class="lang-en">So the part is ___.</span><span class="lang-es" lang="es">Entonces la parte es ___.</span></li></ul>
+      </div>
+    </details>
   </div>
   <details class="hw-answer-key">
-    <summary>
-      <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
-      <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
-    </summary>
+    <summary><span class="hw-answer-key-icon" aria-hidden="true">🔑</span> <span class="lang-en">Grown-up: show the answer</span><span class="lang-es" lang="es">Adulto: ver la respuesta</span></summary>
     <div class="hw-answer-key-body">
       <p class="hw-answer-key-try"><span class="lang-en">Not tried yet? Close this and give it one try first. A wrong first try still helps.</span><span class="lang-es" lang="es">¿Todavía no lo intentaron? Ciérrenla y hagan un intento primero. Un primer intento incorrecto también ayuda.</span></p>
       <ul class="hw-answer-key-lines"><li><span class="lang-en">Change the percent to a decimal: 25% = 0.25.</span><span class="lang-es" lang="es">Cambia el porcentaje a decimal: 25% = 0.25.</span></li><li><span class="lang-en">Multiply: 0.25 × 64 = 16.</span><span class="lang-es" lang="es">Multiplica: 0.25 × 64 = 16.</span></li><li><span class="lang-en">Answer: 16 animal stickers.</span><span class="lang-es" lang="es">Respuesta: 16 calcomanías de animales.</span></li></ul>
     </div>
   </details>
 </section>
-<section class="problem-section card wp-problem" id="find-3">
+<section class="problem-section card wp-card wp-problem" id="find-3" data-id="find-3">
   <div class="problem-header-row">
-    <div class="problem-number-badge hw-inline"><span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 3</div>
+    <div class="problem-number-badge hw-inline"><span class="wp-emoji" aria-hidden="true">🔵</span> <span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 3</div>
+    <button type="button" class="btn btn-sm btn-outline-secondary speak-btn">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
     <div class="problem-type-badge"><span class="lang-en">Find the part</span><span class="lang-es" lang="es">Halla la parte</span></div>
   </div>
   <div class="problem-body">
-    <p class="problem-stem"><span class="lang-en">A bag has 150 marbles. 20% of the marbles are blue. How many blue marbles are in the bag?</span><span class="lang-es" lang="es">Una bolsa tiene 150 canicas. El 20% de las canicas son azules. ¿Cuántas canicas azules hay en la bolsa?</span></p>
-    <div class="family-problem-tip">
-      <p class="wp-tip-label hw-inline"><span aria-hidden="true">👪</span> <strong><span class="lang-en">Ask your student</span><span class="lang-es" lang="es">Pregunta a tu estudiante</span></strong></p>
-      <p><span class="lang-en">Could you find 10% first? What would 20% be?</span><span class="lang-es" lang="es">¿Podrías hallar el 10% primero? ¿Cuánto sería el 20%?</span></p>
+    <p class="problem-stem"><span class="lang-en wp-stem">A bag has 150 marbles. 20% of the marbles are blue. How many blue marbles are in the bag?</span><span class="lang-es wp-stem-es" lang="es">Una bolsa tiene 150 canicas. El 20% de las canicas son azules. ¿Cuántas canicas azules hay en la bolsa?</span></p>
+    <div class="wp-fields"><div class="wp-field">
+      <label class="hw-inline" for="in-find-3-0"><span class="lang-en">Answer</span><span class="lang-es" lang="es">Respuesta</span></label>
+      <div class="wp-field-row"><input id="in-find-3-0" class="num-input" type="text" inputmode="decimal" autocomplete="off"><span class="hw-inline"><span class="lang-en">blue marbles</span><span class="lang-es" lang="es">canicas azules</span></span></div>
+    </div></div>
+    <div class="wp-actions">
+      <button type="button" class="btn btn-primary check-btn">✓ <span class="lang-en">Check answer</span><span class="lang-es" lang="es">Comprobar respuesta</span></button>
+      <button type="button" class="btn btn-outline-secondary hint-btn" hidden>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
+      <button type="button" class="btn btn-outline-secondary steps-btn" hidden><span class="lang-en">Show the worked steps</span><span class="lang-es" lang="es">Ver los pasos resueltos</span></button>
     </div>
-    <details class="problem-coach-ladder wp-hint">
-      <summary><span>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></span></summary>
-      <p><span class="lang-en">10% of 150 is 15. Then 20% is double that. Or multiply 0.20 × 150.</span><span class="lang-es" lang="es">El 10% de 150 es 15. El 20% es el doble. O multiplica 0.20 × 150.</span></p>
-    </details>
+    <div class="feedback-box" role="status" aria-live="polite"></div>
+    <div class="wp-hint-text" hidden><span class="lang-en">10% of 150 is 15. Then 20% is double that. Or multiply 0.20 × 150.</span><span class="lang-es" lang="es">El 10% de 150 es 15. El 20% es el doble. O multiplica 0.20 × 150.</span></div>
+    <div class="wp-steps-box" hidden></div>
+    <details class="wp-picture"><summary>🖼️ <span class="lang-en">Show a picture</span><span class="lang-es" lang="es">Ver un dibujo</span></summary><div><p class="wp-pic-label"><span class="lang-en">The whole is 150 blue marbles.</span><span class="lang-es" lang="es">El total es 150 canicas azules.</span></p><div class="wp-bar" role="img" aria-label="20%"><span class="wp-bar-fill" style="width:20%"></span></div><p class="wp-pic-note"><span class="lang-en">The shaded part is 20% of the whole.</span><span class="lang-es" lang="es">La parte sombreada es el 20% del total.</span></p></div></details>
     <div class="hw-work">
       <label class="hw-work-label hw-inline" for="work_find-3"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-      <textarea id="work_find-3" name="work_find-3" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
+      <textarea id="work_find-3" name="work_find-3" class="custom-textarea hw-work-input" rows="3" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
     </div>
+    <details class="wp-corner">
+      <summary>👪 <span class="lang-en">Grown-up corner</span><span class="lang-es" lang="es">Rincón del adulto</span></summary>
+      <div>
+        <p><strong><span class="lang-en">Ask your student:</span><span class="lang-es" lang="es">Pregunta a tu estudiante:</span></strong> <span class="lang-en">Could you find 10% first? What would 20% be?</span><span class="lang-es" lang="es">¿Podrías hallar el 10% primero? ¿Cuánto sería el 20%?</span></p>
+        <p><strong><span class="lang-en">Listen for:</span><span class="lang-es" lang="es">Escuchen si:</span></strong> <span class="lang-en">They say which number is the whole before they multiply.</span><span class="lang-es" lang="es">Escuchen si dicen cuál número es el total antes de multiplicar.</span></p>
+        <p><strong><span class="lang-en">Sentence starters:</span><span class="lang-es" lang="es">Frases para empezar:</span></strong></p>
+        <ul><li><span class="lang-en">The whole is ___.</span><span class="lang-es" lang="es">El total es ___.</span></li><li><span class="lang-en">___% as a decimal is ___.</span><span class="lang-es" lang="es">___% como decimal es ___.</span></li><li><span class="lang-en">So the part is ___.</span><span class="lang-es" lang="es">Entonces la parte es ___.</span></li></ul>
+      </div>
+    </details>
   </div>
   <details class="hw-answer-key">
-    <summary>
-      <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
-      <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
-    </summary>
+    <summary><span class="hw-answer-key-icon" aria-hidden="true">🔑</span> <span class="lang-en">Grown-up: show the answer</span><span class="lang-es" lang="es">Adulto: ver la respuesta</span></summary>
     <div class="hw-answer-key-body">
       <p class="hw-answer-key-try"><span class="lang-en">Not tried yet? Close this and give it one try first. A wrong first try still helps.</span><span class="lang-es" lang="es">¿Todavía no lo intentaron? Ciérrenla y hagan un intento primero. Un primer intento incorrecto también ayuda.</span></p>
       <ul class="hw-answer-key-lines"><li><span class="lang-en">Change the percent to a decimal: 20% = 0.20.</span><span class="lang-es" lang="es">Cambia el porcentaje a decimal: 20% = 0.20.</span></li><li><span class="lang-en">Multiply: 0.20 × 150 = 30.</span><span class="lang-es" lang="es">Multiplica: 0.20 × 150 = 30.</span></li><li><span class="lang-en">Answer: 30 blue marbles.</span><span class="lang-es" lang="es">Respuesta: 30 canicas azules.</span></li></ul>
     </div>
   </details>
 </section>
-<section class="problem-section card wp-problem" id="find-4">
+<section class="problem-section card wp-card wp-problem" id="find-4" data-id="find-4">
   <div class="problem-header-row">
-    <div class="problem-number-badge hw-inline"><span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 4</div>
+    <div class="problem-number-badge hw-inline"><span class="wp-emoji" aria-hidden="true">💰</span> <span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 4</div>
+    <button type="button" class="btn btn-sm btn-outline-secondary speak-btn">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
     <div class="problem-type-badge"><span class="lang-en">Find the part</span><span class="lang-es" lang="es">Halla la parte</span></div>
   </div>
   <div class="problem-body">
-    <p class="problem-stem"><span class="lang-en">Jordan earned $200 at a summer job and put 35% of it in the bank. How much money did Jordan put in the bank?</span><span class="lang-es" lang="es">Jordan ganó $200 en un trabajo de verano y puso el 35% en el banco. ¿Cuánto dinero puso Jordan en el banco?</span></p>
-    <div class="family-problem-tip">
-      <p class="wp-tip-label hw-inline"><span aria-hidden="true">👪</span> <strong><span class="lang-en">Ask your student</span><span class="lang-es" lang="es">Pregunta a tu estudiante</span></strong></p>
-      <p><span class="lang-en">Is the bank amount more or less than half of $200? Why?</span><span class="lang-es" lang="es">¿La cantidad del banco es mayor o menor que la mitad de $200? ¿Por qué?</span></p>
+    <p class="problem-stem"><span class="lang-en wp-stem">Jordan earned $200 at a summer job and put 35% of it in the bank. How much money did Jordan put in the bank?</span><span class="lang-es wp-stem-es" lang="es">Jordan ganó $200 en un trabajo de verano y puso el 35% en el banco. ¿Cuánto dinero puso Jordan en el banco?</span></p>
+    <div class="wp-fields"><div class="wp-field">
+      <label class="hw-inline" for="in-find-4-0"><span class="lang-en">Answer</span><span class="lang-es" lang="es">Respuesta</span></label>
+      <div class="wp-field-row"><span>$</span><input id="in-find-4-0" class="num-input" type="text" inputmode="decimal" autocomplete="off"></div>
+    </div></div>
+    <div class="wp-actions">
+      <button type="button" class="btn btn-primary check-btn">✓ <span class="lang-en">Check answer</span><span class="lang-es" lang="es">Comprobar respuesta</span></button>
+      <button type="button" class="btn btn-outline-secondary hint-btn" hidden>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
+      <button type="button" class="btn btn-outline-secondary steps-btn" hidden><span class="lang-en">Show the worked steps</span><span class="lang-es" lang="es">Ver los pasos resueltos</span></button>
     </div>
-    <details class="problem-coach-ladder wp-hint">
-      <summary><span>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></span></summary>
-      <p><span class="lang-en">Change 35% to 0.35. Multiply 0.35 × 200.</span><span class="lang-es" lang="es">Cambia 35% a 0.35. Multiplica 0.35 × 200.</span></p>
-    </details>
+    <div class="feedback-box" role="status" aria-live="polite"></div>
+    <div class="wp-hint-text" hidden><span class="lang-en">Change 35% to 0.35. Multiply 0.35 × 200.</span><span class="lang-es" lang="es">Cambia 35% a 0.35. Multiplica 0.35 × 200.</span></div>
+    <div class="wp-steps-box" hidden></div>
+    <details class="wp-picture"><summary>🖼️ <span class="lang-en">Show a picture</span><span class="lang-es" lang="es">Ver un dibujo</span></summary><div><p class="wp-pic-label"><span class="lang-en">The whole is $200.</span><span class="lang-es" lang="es">El total es $200.</span></p><div class="wp-bar" role="img" aria-label="35%"><span class="wp-bar-fill" style="width:35%"></span></div><p class="wp-pic-note"><span class="lang-en">The shaded part is 35% of the whole.</span><span class="lang-es" lang="es">La parte sombreada es el 35% del total.</span></p></div></details>
     <div class="hw-work">
       <label class="hw-work-label hw-inline" for="work_find-4"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-      <textarea id="work_find-4" name="work_find-4" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
+      <textarea id="work_find-4" name="work_find-4" class="custom-textarea hw-work-input" rows="3" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
     </div>
+    <details class="wp-corner">
+      <summary>👪 <span class="lang-en">Grown-up corner</span><span class="lang-es" lang="es">Rincón del adulto</span></summary>
+      <div>
+        <p><strong><span class="lang-en">Ask your student:</span><span class="lang-es" lang="es">Pregunta a tu estudiante:</span></strong> <span class="lang-en">Is the bank amount more or less than half of $200? Why?</span><span class="lang-es" lang="es">¿La cantidad del banco es mayor o menor que la mitad de $200? ¿Por qué?</span></p>
+        <p><strong><span class="lang-en">Listen for:</span><span class="lang-es" lang="es">Escuchen si:</span></strong> <span class="lang-en">They say which number is the whole before they multiply.</span><span class="lang-es" lang="es">Escuchen si dicen cuál número es el total antes de multiplicar.</span></p>
+        <p><strong><span class="lang-en">Sentence starters:</span><span class="lang-es" lang="es">Frases para empezar:</span></strong></p>
+        <ul><li><span class="lang-en">The whole is ___.</span><span class="lang-es" lang="es">El total es ___.</span></li><li><span class="lang-en">___% as a decimal is ___.</span><span class="lang-es" lang="es">___% como decimal es ___.</span></li><li><span class="lang-en">So the part is ___.</span><span class="lang-es" lang="es">Entonces la parte es ___.</span></li></ul>
+      </div>
+    </details>
   </div>
   <details class="hw-answer-key">
-    <summary>
-      <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
-      <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
-    </summary>
+    <summary><span class="hw-answer-key-icon" aria-hidden="true">🔑</span> <span class="lang-en">Grown-up: show the answer</span><span class="lang-es" lang="es">Adulto: ver la respuesta</span></summary>
     <div class="hw-answer-key-body">
       <p class="hw-answer-key-try"><span class="lang-en">Not tried yet? Close this and give it one try first. A wrong first try still helps.</span><span class="lang-es" lang="es">¿Todavía no lo intentaron? Ciérrenla y hagan un intento primero. Un primer intento incorrecto también ayuda.</span></p>
       <ul class="hw-answer-key-lines"><li><span class="lang-en">Change the percent to a decimal: 35% = 0.35.</span><span class="lang-es" lang="es">Cambia el porcentaje a decimal: 35% = 0.35.</span></li><li><span class="lang-en">Multiply: 0.35 × $200 = $70.</span><span class="lang-es" lang="es">Multiplica: 0.35 × $200 = $70.</span></li><li><span class="lang-en">Answer: $70.</span><span class="lang-es" lang="es">Respuesta: $70.</span></li></ul>
@@ -607,93 +749,138 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 <div class="tab-panel-inner" data-tab-panel="sale" id="wp_panel_sale" role="tabpanel" aria-labelledby="wp_tab_sale" hidden>
   <h2 class="section-title">🏷️ <span class="lang-en">Discounts and sale prices</span><span class="lang-es" lang="es">Descuentos y precios de oferta</span></h2>
   <p class="wp-blurb"><span class="lang-en">Find how much you save. Then subtract to find what you pay.</span><span class="lang-es" lang="es">Halla cuánto ahorras. Luego resta para hallar cuánto pagas.</span></p>
-<section class="problem-section card wp-problem" id="sale-1">
+<section class="problem-section card wp-card wp-problem" id="sale-1" data-id="sale-1">
   <div class="problem-header-row">
-    <div class="problem-number-badge hw-inline"><span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 5</div>
+    <div class="problem-number-badge hw-inline"><span class="wp-emoji" aria-hidden="true">🎒</span> <span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 5</div>
+    <button type="button" class="btn btn-sm btn-outline-secondary speak-btn">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
     <div class="problem-type-badge"><span class="lang-en">Discount</span><span class="lang-es" lang="es">Descuento</span></div>
   </div>
   <div class="problem-body">
-    <p class="problem-stem"><span class="lang-en">A backpack costs $48. This week it is 25% off. How much do you save? What is the sale price?</span><span class="lang-es" lang="es">Una mochila cuesta $48. Esta semana tiene 25% de descuento. ¿Cuánto ahorras? ¿Cuál es el precio de oferta?</span></p>
-    <div class="family-problem-tip">
-      <p class="wp-tip-label hw-inline"><span aria-hidden="true">👪</span> <strong><span class="lang-en">Ask your student</span><span class="lang-es" lang="es">Pregunta a tu estudiante</span></strong></p>
-      <p><span class="lang-en">What is the whole here? Is the sale price more or less than $48?</span><span class="lang-es" lang="es">¿Cuál es el total aquí? ¿El precio de oferta es mayor o menor que $48?</span></p>
+    <p class="problem-stem"><span class="lang-en wp-stem">A backpack costs $48. This week it is 25% off. How much do you save? What is the sale price?</span><span class="lang-es wp-stem-es" lang="es">Una mochila cuesta $48. Esta semana tiene 25% de descuento. ¿Cuánto ahorras? ¿Cuál es el precio de oferta?</span></p>
+    <div class="wp-fields"><div class="wp-field">
+      <label class="hw-inline" for="in-sale-1-0"><span class="lang-en">You save</span><span class="lang-es" lang="es">Ahorras</span></label>
+      <div class="wp-field-row"><span>$</span><input id="in-sale-1-0" class="num-input" type="text" inputmode="decimal" autocomplete="off"></div>
+    </div><div class="wp-field">
+      <label class="hw-inline" for="in-sale-1-1"><span class="lang-en">Sale price</span><span class="lang-es" lang="es">Precio de oferta</span></label>
+      <div class="wp-field-row"><span>$</span><input id="in-sale-1-1" class="num-input" type="text" inputmode="decimal" autocomplete="off"></div>
+    </div></div>
+    <div class="wp-actions">
+      <button type="button" class="btn btn-primary check-btn">✓ <span class="lang-en">Check answer</span><span class="lang-es" lang="es">Comprobar respuesta</span></button>
+      <button type="button" class="btn btn-outline-secondary hint-btn" hidden>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
+      <button type="button" class="btn btn-outline-secondary steps-btn" hidden><span class="lang-en">Show the worked steps</span><span class="lang-es" lang="es">Ver los pasos resueltos</span></button>
     </div>
-    <details class="problem-coach-ladder wp-hint">
-      <summary><span>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></span></summary>
-      <p><span class="lang-en">First find 25% of $48. That is the discount. Then subtract it from $48.</span><span class="lang-es" lang="es">Primero halla el 25% de $48. Ese es el descuento. Luego réstalo de $48.</span></p>
-    </details>
+    <div class="feedback-box" role="status" aria-live="polite"></div>
+    <div class="wp-hint-text" hidden><span class="lang-en">First find 25% of $48. That is the discount. Then subtract it from $48.</span><span class="lang-es" lang="es">Primero halla el 25% de $48. Ese es el descuento. Luego réstalo de $48.</span></div>
+    <div class="wp-steps-box" hidden></div>
+    <details class="wp-picture"><summary>🖼️ <span class="lang-en">Show a picture</span><span class="lang-es" lang="es">Ver un dibujo</span></summary><div><p class="wp-pic-label"><span class="lang-en">The price is $48.</span><span class="lang-es" lang="es">El precio es $48.</span></p><div class="wp-bar" role="img" aria-label="25%"><span class="wp-bar-fill" style="width:25%"></span></div><p class="wp-pic-note"><span class="lang-en">The shaded part is the 25% discount. You pay the other 75%.</span><span class="lang-es" lang="es">La parte sombreada es el descuento del 25%. Pagas el otro 75%.</span></p></div></details>
     <div class="hw-work">
       <label class="hw-work-label hw-inline" for="work_sale-1"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-      <textarea id="work_sale-1" name="work_sale-1" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
+      <textarea id="work_sale-1" name="work_sale-1" class="custom-textarea hw-work-input" rows="3" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
     </div>
+    <details class="wp-corner">
+      <summary>👪 <span class="lang-en">Grown-up corner</span><span class="lang-es" lang="es">Rincón del adulto</span></summary>
+      <div>
+        <p><strong><span class="lang-en">Ask your student:</span><span class="lang-es" lang="es">Pregunta a tu estudiante:</span></strong> <span class="lang-en">What is the whole here? Is the sale price more or less than $48?</span><span class="lang-es" lang="es">¿Cuál es el total aquí? ¿El precio de oferta es mayor o menor que $48?</span></p>
+        <p><strong><span class="lang-en">Listen for:</span><span class="lang-es" lang="es">Escuchen si:</span></strong> <span class="lang-en">They tell the savings and the sale price apart. The savings is what comes off. The sale price is what you pay.</span><span class="lang-es" lang="es">Escuchen si distinguen el ahorro del precio de oferta. El ahorro es lo que se quita. El precio de oferta es lo que se paga.</span></p>
+        <p><strong><span class="lang-en">Sentence starters:</span><span class="lang-es" lang="es">Frases para empezar:</span></strong></p>
+        <ul><li><span class="lang-en">I save ___ because ___% of ___ is ___.</span><span class="lang-es" lang="es">Ahorro ___ porque el ___% de ___ es ___.</span></li><li><span class="lang-en">I pay ___ because ___ − ___ = ___.</span><span class="lang-es" lang="es">Pago ___ porque ___ − ___ = ___.</span></li></ul>
+      </div>
+    </details>
   </div>
   <details class="hw-answer-key">
-    <summary>
-      <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
-      <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
-    </summary>
+    <summary><span class="hw-answer-key-icon" aria-hidden="true">🔑</span> <span class="lang-en">Grown-up: show the answer</span><span class="lang-es" lang="es">Adulto: ver la respuesta</span></summary>
     <div class="hw-answer-key-body">
       <p class="hw-answer-key-try"><span class="lang-en">Not tried yet? Close this and give it one try first. A wrong first try still helps.</span><span class="lang-es" lang="es">¿Todavía no lo intentaron? Ciérrenla y hagan un intento primero. Un primer intento incorrecto también ayuda.</span></p>
       <ul class="hw-answer-key-lines"><li><span class="lang-en">Change the percent to a decimal: 25% = 0.25.</span><span class="lang-es" lang="es">Cambia el porcentaje a decimal: 25% = 0.25.</span></li><li><span class="lang-en">Savings: 0.25 × $48 = $12.</span><span class="lang-es" lang="es">Ahorro: 0.25 × $48 = $12.</span></li><li><span class="lang-en">Sale price: $48 − $12 = $36.</span><span class="lang-es" lang="es">Precio de oferta: $48 − $12 = $36.</span></li><li><span class="lang-en">You save $12 and pay $36.</span><span class="lang-es" lang="es">Ahorras $12 y pagas $36.</span></li></ul>
     </div>
   </details>
 </section>
-<section class="problem-section card wp-problem" id="sale-2">
+<section class="problem-section card wp-card wp-problem" id="sale-2" data-id="sale-2">
   <div class="problem-header-row">
-    <div class="problem-number-badge hw-inline"><span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 6</div>
+    <div class="problem-number-badge hw-inline"><span class="wp-emoji" aria-hidden="true">👟</span> <span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 6</div>
+    <button type="button" class="btn btn-sm btn-outline-secondary speak-btn">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
     <div class="problem-type-badge"><span class="lang-en">Discount</span><span class="lang-es" lang="es">Descuento</span></div>
   </div>
   <div class="problem-body">
-    <p class="problem-stem"><span class="lang-en">Sneakers cost $90 and are on sale for 20% off. How much money do you save? What do you pay?</span><span class="lang-es" lang="es">Unos tenis cuestan $90 y están en oferta con 20% de descuento. ¿Cuánto dinero ahorras? ¿Cuánto pagas?</span></p>
-    <div class="family-problem-tip">
-      <p class="wp-tip-label hw-inline"><span aria-hidden="true">👪</span> <strong><span class="lang-en">Ask your student</span><span class="lang-es" lang="es">Pregunta a tu estudiante</span></strong></p>
-      <p><span class="lang-en">How could you check your sale price by adding?</span><span class="lang-es" lang="es">¿Cómo podrías comprobar el precio de oferta con una suma?</span></p>
+    <p class="problem-stem"><span class="lang-en wp-stem">Sneakers cost $90 and are on sale for 20% off. How much money do you save? What do you pay?</span><span class="lang-es wp-stem-es" lang="es">Unos tenis cuestan $90 y están en oferta con 20% de descuento. ¿Cuánto dinero ahorras? ¿Cuánto pagas?</span></p>
+    <div class="wp-fields"><div class="wp-field">
+      <label class="hw-inline" for="in-sale-2-0"><span class="lang-en">You save</span><span class="lang-es" lang="es">Ahorras</span></label>
+      <div class="wp-field-row"><span>$</span><input id="in-sale-2-0" class="num-input" type="text" inputmode="decimal" autocomplete="off"></div>
+    </div><div class="wp-field">
+      <label class="hw-inline" for="in-sale-2-1"><span class="lang-en">Sale price</span><span class="lang-es" lang="es">Precio de oferta</span></label>
+      <div class="wp-field-row"><span>$</span><input id="in-sale-2-1" class="num-input" type="text" inputmode="decimal" autocomplete="off"></div>
+    </div></div>
+    <div class="wp-actions">
+      <button type="button" class="btn btn-primary check-btn">✓ <span class="lang-en">Check answer</span><span class="lang-es" lang="es">Comprobar respuesta</span></button>
+      <button type="button" class="btn btn-outline-secondary hint-btn" hidden>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
+      <button type="button" class="btn btn-outline-secondary steps-btn" hidden><span class="lang-en">Show the worked steps</span><span class="lang-es" lang="es">Ver los pasos resueltos</span></button>
     </div>
-    <details class="problem-coach-ladder wp-hint">
-      <summary><span>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></span></summary>
-      <p><span class="lang-en">Find 20% of $90 first. Then subtract.</span><span class="lang-es" lang="es">Halla primero el 20% de $90. Luego resta.</span></p>
-    </details>
+    <div class="feedback-box" role="status" aria-live="polite"></div>
+    <div class="wp-hint-text" hidden><span class="lang-en">Find 20% of $90 first. Then subtract.</span><span class="lang-es" lang="es">Halla primero el 20% de $90. Luego resta.</span></div>
+    <div class="wp-steps-box" hidden></div>
+    <details class="wp-picture"><summary>🖼️ <span class="lang-en">Show a picture</span><span class="lang-es" lang="es">Ver un dibujo</span></summary><div><p class="wp-pic-label"><span class="lang-en">The price is $90.</span><span class="lang-es" lang="es">El precio es $90.</span></p><div class="wp-bar" role="img" aria-label="20%"><span class="wp-bar-fill" style="width:20%"></span></div><p class="wp-pic-note"><span class="lang-en">The shaded part is the 20% discount. You pay the other 80%.</span><span class="lang-es" lang="es">La parte sombreada es el descuento del 20%. Pagas el otro 80%.</span></p></div></details>
     <div class="hw-work">
       <label class="hw-work-label hw-inline" for="work_sale-2"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-      <textarea id="work_sale-2" name="work_sale-2" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
+      <textarea id="work_sale-2" name="work_sale-2" class="custom-textarea hw-work-input" rows="3" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
     </div>
+    <details class="wp-corner">
+      <summary>👪 <span class="lang-en">Grown-up corner</span><span class="lang-es" lang="es">Rincón del adulto</span></summary>
+      <div>
+        <p><strong><span class="lang-en">Ask your student:</span><span class="lang-es" lang="es">Pregunta a tu estudiante:</span></strong> <span class="lang-en">How could you check your sale price by adding?</span><span class="lang-es" lang="es">¿Cómo podrías comprobar el precio de oferta con una suma?</span></p>
+        <p><strong><span class="lang-en">Listen for:</span><span class="lang-es" lang="es">Escuchen si:</span></strong> <span class="lang-en">They tell the savings and the sale price apart. The savings is what comes off. The sale price is what you pay.</span><span class="lang-es" lang="es">Escuchen si distinguen el ahorro del precio de oferta. El ahorro es lo que se quita. El precio de oferta es lo que se paga.</span></p>
+        <p><strong><span class="lang-en">Sentence starters:</span><span class="lang-es" lang="es">Frases para empezar:</span></strong></p>
+        <ul><li><span class="lang-en">I save ___ because ___% of ___ is ___.</span><span class="lang-es" lang="es">Ahorro ___ porque el ___% de ___ es ___.</span></li><li><span class="lang-en">I pay ___ because ___ − ___ = ___.</span><span class="lang-es" lang="es">Pago ___ porque ___ − ___ = ___.</span></li></ul>
+      </div>
+    </details>
   </div>
   <details class="hw-answer-key">
-    <summary>
-      <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
-      <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
-    </summary>
+    <summary><span class="hw-answer-key-icon" aria-hidden="true">🔑</span> <span class="lang-en">Grown-up: show the answer</span><span class="lang-es" lang="es">Adulto: ver la respuesta</span></summary>
     <div class="hw-answer-key-body">
       <p class="hw-answer-key-try"><span class="lang-en">Not tried yet? Close this and give it one try first. A wrong first try still helps.</span><span class="lang-es" lang="es">¿Todavía no lo intentaron? Ciérrenla y hagan un intento primero. Un primer intento incorrecto también ayuda.</span></p>
       <ul class="hw-answer-key-lines"><li><span class="lang-en">Change the percent to a decimal: 20% = 0.20.</span><span class="lang-es" lang="es">Cambia el porcentaje a decimal: 20% = 0.20.</span></li><li><span class="lang-en">Savings: 0.20 × $90 = $18.</span><span class="lang-es" lang="es">Ahorro: 0.20 × $90 = $18.</span></li><li><span class="lang-en">Sale price: $90 − $18 = $72.</span><span class="lang-es" lang="es">Precio de oferta: $90 − $18 = $72.</span></li><li><span class="lang-en">You save $18 and pay $72.</span><span class="lang-es" lang="es">Ahorras $18 y pagas $72.</span></li></ul>
     </div>
   </details>
 </section>
-<section class="problem-section card wp-problem" id="sale-3">
+<section class="problem-section card wp-card wp-problem" id="sale-3" data-id="sale-3">
   <div class="problem-header-row">
-    <div class="problem-number-badge hw-inline"><span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 7</div>
+    <div class="problem-number-badge hw-inline"><span class="wp-emoji" aria-hidden="true">🎮</span> <span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 7</div>
+    <button type="button" class="btn btn-sm btn-outline-secondary speak-btn">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
     <div class="problem-type-badge"><span class="lang-en">Discount</span><span class="lang-es" lang="es">Descuento</span></div>
   </div>
   <div class="problem-body">
-    <p class="problem-stem"><span class="lang-en">A video game costs $40. A coupon takes 30% off. How much does the coupon save? What is the final price?</span><span class="lang-es" lang="es">Un videojuego cuesta $40. Un cupón le quita el 30%. ¿Cuánto ahorra el cupón? ¿Cuál es el precio final?</span></p>
-    <div class="family-problem-tip">
-      <p class="wp-tip-label hw-inline"><span aria-hidden="true">👪</span> <strong><span class="lang-en">Ask your student</span><span class="lang-es" lang="es">Pregunta a tu estudiante</span></strong></p>
-      <p><span class="lang-en">Would a 50% coupon save more or less? Estimate before you calculate.</span><span class="lang-es" lang="es">¿Un cupón de 50% ahorraría más o menos? Estima antes de calcular.</span></p>
+    <p class="problem-stem"><span class="lang-en wp-stem">A video game costs $40. A coupon takes 30% off. How much does the coupon save? What is the final price?</span><span class="lang-es wp-stem-es" lang="es">Un videojuego cuesta $40. Un cupón le quita el 30%. ¿Cuánto ahorra el cupón? ¿Cuál es el precio final?</span></p>
+    <div class="wp-fields"><div class="wp-field">
+      <label class="hw-inline" for="in-sale-3-0"><span class="lang-en">You save</span><span class="lang-es" lang="es">Ahorras</span></label>
+      <div class="wp-field-row"><span>$</span><input id="in-sale-3-0" class="num-input" type="text" inputmode="decimal" autocomplete="off"></div>
+    </div><div class="wp-field">
+      <label class="hw-inline" for="in-sale-3-1"><span class="lang-en">Sale price</span><span class="lang-es" lang="es">Precio de oferta</span></label>
+      <div class="wp-field-row"><span>$</span><input id="in-sale-3-1" class="num-input" type="text" inputmode="decimal" autocomplete="off"></div>
+    </div></div>
+    <div class="wp-actions">
+      <button type="button" class="btn btn-primary check-btn">✓ <span class="lang-en">Check answer</span><span class="lang-es" lang="es">Comprobar respuesta</span></button>
+      <button type="button" class="btn btn-outline-secondary hint-btn" hidden>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
+      <button type="button" class="btn btn-outline-secondary steps-btn" hidden><span class="lang-en">Show the worked steps</span><span class="lang-es" lang="es">Ver los pasos resueltos</span></button>
     </div>
-    <details class="problem-coach-ladder wp-hint">
-      <summary><span>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></span></summary>
-      <p><span class="lang-en">Change 30% to 0.30 and multiply by 40. Then subtract the result from 40.</span><span class="lang-es" lang="es">Cambia 30% a 0.30 y multiplica por 40. Luego réstalo de 40.</span></p>
-    </details>
+    <div class="feedback-box" role="status" aria-live="polite"></div>
+    <div class="wp-hint-text" hidden><span class="lang-en">Change 30% to 0.30 and multiply by 40. Then subtract the result from 40.</span><span class="lang-es" lang="es">Cambia 30% a 0.30 y multiplica por 40. Luego réstalo de 40.</span></div>
+    <div class="wp-steps-box" hidden></div>
+    <details class="wp-picture"><summary>🖼️ <span class="lang-en">Show a picture</span><span class="lang-es" lang="es">Ver un dibujo</span></summary><div><p class="wp-pic-label"><span class="lang-en">The price is $40.</span><span class="lang-es" lang="es">El precio es $40.</span></p><div class="wp-bar" role="img" aria-label="30%"><span class="wp-bar-fill" style="width:30%"></span></div><p class="wp-pic-note"><span class="lang-en">The shaded part is the 30% discount. You pay the other 70%.</span><span class="lang-es" lang="es">La parte sombreada es el descuento del 30%. Pagas el otro 70%.</span></p></div></details>
     <div class="hw-work">
       <label class="hw-work-label hw-inline" for="work_sale-3"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-      <textarea id="work_sale-3" name="work_sale-3" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
+      <textarea id="work_sale-3" name="work_sale-3" class="custom-textarea hw-work-input" rows="3" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
     </div>
+    <details class="wp-corner">
+      <summary>👪 <span class="lang-en">Grown-up corner</span><span class="lang-es" lang="es">Rincón del adulto</span></summary>
+      <div>
+        <p><strong><span class="lang-en">Ask your student:</span><span class="lang-es" lang="es">Pregunta a tu estudiante:</span></strong> <span class="lang-en">Would a 50% coupon save more or less? Estimate before you calculate.</span><span class="lang-es" lang="es">¿Un cupón de 50% ahorraría más o menos? Estima antes de calcular.</span></p>
+        <p><strong><span class="lang-en">Listen for:</span><span class="lang-es" lang="es">Escuchen si:</span></strong> <span class="lang-en">They tell the savings and the sale price apart. The savings is what comes off. The sale price is what you pay.</span><span class="lang-es" lang="es">Escuchen si distinguen el ahorro del precio de oferta. El ahorro es lo que se quita. El precio de oferta es lo que se paga.</span></p>
+        <p><strong><span class="lang-en">Sentence starters:</span><span class="lang-es" lang="es">Frases para empezar:</span></strong></p>
+        <ul><li><span class="lang-en">I save ___ because ___% of ___ is ___.</span><span class="lang-es" lang="es">Ahorro ___ porque el ___% de ___ es ___.</span></li><li><span class="lang-en">I pay ___ because ___ − ___ = ___.</span><span class="lang-es" lang="es">Pago ___ porque ___ − ___ = ___.</span></li></ul>
+      </div>
+    </details>
   </div>
   <details class="hw-answer-key">
-    <summary>
-      <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
-      <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
-    </summary>
+    <summary><span class="hw-answer-key-icon" aria-hidden="true">🔑</span> <span class="lang-en">Grown-up: show the answer</span><span class="lang-es" lang="es">Adulto: ver la respuesta</span></summary>
     <div class="hw-answer-key-body">
       <p class="hw-answer-key-try"><span class="lang-en">Not tried yet? Close this and give it one try first. A wrong first try still helps.</span><span class="lang-es" lang="es">¿Todavía no lo intentaron? Ciérrenla y hagan un intento primero. Un primer intento incorrecto también ayuda.</span></p>
       <ul class="hw-answer-key-lines"><li><span class="lang-en">Change the percent to a decimal: 30% = 0.30.</span><span class="lang-es" lang="es">Cambia el porcentaje a decimal: 30% = 0.30.</span></li><li><span class="lang-en">Savings: 0.30 × $40 = $12.</span><span class="lang-es" lang="es">Ahorro: 0.30 × $40 = $12.</span></li><li><span class="lang-en">Sale price: $40 − $12 = $28.</span><span class="lang-es" lang="es">Precio de oferta: $40 − $12 = $28.</span></li><li><span class="lang-en">You save $12 and pay $28.</span><span class="lang-es" lang="es">Ahorras $12 y pagas $28.</span></li></ul>
@@ -707,62 +894,92 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 <div class="tab-panel-inner" data-tab-panel="deal" id="wp_panel_deal" role="tabpanel" aria-labelledby="wp_tab_deal" hidden>
   <h2 class="section-title">🔎 <span class="lang-en">Which deal wins?</span><span class="lang-es" lang="es">¿Qué oferta conviene?</span></h2>
   <p class="wp-blurb"><span class="lang-en">Find the evidence for each deal, then explain your choice.</span><span class="lang-es" lang="es">Halla la evidencia de cada oferta y luego explica tu elección.</span></p>
-<section class="problem-section card wp-problem" id="deal-1">
+<section class="problem-section card wp-card wp-problem" id="deal-1" data-id="deal-1">
   <div class="problem-header-row">
-    <div class="problem-number-badge hw-inline"><span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 8</div>
+    <div class="problem-number-badge hw-inline"><span class="wp-emoji" aria-hidden="true">🧥</span> <span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 8</div>
+    <button type="button" class="btn btn-sm btn-outline-secondary speak-btn">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
     <div class="problem-type-badge"><span class="lang-en">Compare deals</span><span class="lang-es" lang="es">Compara ofertas</span></div>
   </div>
   <div class="problem-body">
-    <p class="problem-stem"><span class="lang-en">Store A sells a jacket for $80 and takes 25% off. Store B sells a different jacket for $60 and takes 30% off. Which store takes more dollars off? Which jacket costs less after the discount?</span><span class="lang-es" lang="es">La tienda A vende una chaqueta en $80 y le quita el 25%. La tienda B vende otra chaqueta en $60 y le quita el 30%. ¿Qué tienda quita más dólares? ¿Qué chaqueta cuesta menos después del descuento?</span></p>
-    <div class="family-problem-tip">
-      <p class="wp-tip-label hw-inline"><span aria-hidden="true">👪</span> <strong><span class="lang-en">Ask your student</span><span class="lang-es" lang="es">Pregunta a tu estudiante</span></strong></p>
-      <p><span class="lang-en">Does a bigger percent always mean more money saved? What did you find?</span><span class="lang-es" lang="es">¿Un porcentaje más grande siempre significa más dinero ahorrado? ¿Qué descubriste?</span></p>
+    <p class="problem-stem"><span class="lang-en wp-stem">Store A sells a jacket for $80 and takes 25% off. Store B sells a different jacket for $60 and takes 30% off. Which store takes more dollars off? Which jacket costs less after the discount?</span><span class="lang-es wp-stem-es" lang="es">La tienda A vende una chaqueta en $80 y le quita el 25%. La tienda B vende otra chaqueta en $60 y le quita el 30%. ¿Qué tienda quita más dólares? ¿Qué chaqueta cuesta menos después del descuento?</span></p>
+    <div class="wp-question">
+      <p><span class="lang-en">Which discount takes off more?</span><span class="lang-es" lang="es">¿Cuál descuento quita más?</span></p>
+      <div class="choice-stack"><button type="button" class="choice-btn" data-q="0" data-i="0"><span class="lang-en">Store A</span><span class="lang-es" lang="es">Tienda A</span></button><button type="button" class="choice-btn" data-q="0" data-i="1"><span class="lang-en">Store B</span><span class="lang-es" lang="es">Tienda B</span></button><button type="button" class="choice-btn" data-q="0" data-i="2"><span class="lang-en">They take off the same amount</span><span class="lang-es" lang="es">Quitan la misma cantidad</span></button></div>
+    </div><div class="wp-question">
+      <p><span class="lang-en">Which one costs less after the discount?</span><span class="lang-es" lang="es">¿Cuál cuesta menos después del descuento?</span></p>
+      <div class="choice-stack"><button type="button" class="choice-btn" data-q="1" data-i="0"><span class="lang-en">Store A</span><span class="lang-es" lang="es">Tienda A</span></button><button type="button" class="choice-btn" data-q="1" data-i="1"><span class="lang-en">Store B</span><span class="lang-es" lang="es">Tienda B</span></button></div>
     </div>
-    <details class="problem-coach-ladder wp-hint">
-      <summary><span>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></span></summary>
-      <p><span class="lang-en">Find the discount for each store first. Then find each sale price.</span><span class="lang-es" lang="es">Halla primero el descuento de cada tienda. Luego halla el precio de oferta de cada una.</span></p>
-    </details>
+    <div class="wp-actions">
+      
+      <button type="button" class="btn btn-outline-secondary hint-btn" hidden>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
+      <button type="button" class="btn btn-outline-secondary steps-btn" hidden><span class="lang-en">Show the worked steps</span><span class="lang-es" lang="es">Ver los pasos resueltos</span></button>
+    </div>
+    <div class="feedback-box" role="status" aria-live="polite"></div>
+    <div class="wp-hint-text" hidden><span class="lang-en">Find the discount for each store first. Then find each sale price.</span><span class="lang-es" lang="es">Halla primero el descuento de cada tienda. Luego halla el precio de oferta de cada una.</span></div>
+    <div class="wp-steps-box" hidden></div>
+    <details class="wp-picture"><summary>🖼️ <span class="lang-en">Show a picture</span><span class="lang-es" lang="es">Ver un dibujo</span></summary><div><p class="wp-pic-label"><span class="lang-en">Store A: $80, 25% off.</span><span class="lang-es" lang="es">Tienda A: $80, 25% de descuento.</span></p><div class="wp-bar" role="img" aria-label="25%"><span class="wp-bar-fill" style="width:25%"></span></div><p class="wp-pic-label"><span class="lang-en">Store B: $60, 30% off.</span><span class="lang-es" lang="es">Tienda B: $60, 30% de descuento.</span></p><div class="wp-bar" role="img" aria-label="30%"><span class="wp-bar-fill" style="width:30%"></span></div></div></details>
     <div class="hw-work">
       <label class="hw-work-label hw-inline" for="work_deal-1"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-      <textarea id="work_deal-1" name="work_deal-1" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
+      <textarea id="work_deal-1" name="work_deal-1" class="custom-textarea hw-work-input" rows="3" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
     </div>
+    <details class="wp-corner">
+      <summary>👪 <span class="lang-en">Grown-up corner</span><span class="lang-es" lang="es">Rincón del adulto</span></summary>
+      <div>
+        <p><strong><span class="lang-en">Ask your student:</span><span class="lang-es" lang="es">Pregunta a tu estudiante:</span></strong> <span class="lang-en">Does a bigger percent always mean more money saved? What did you find?</span><span class="lang-es" lang="es">¿Un porcentaje más grande siempre significa más dinero ahorrado? ¿Qué descubriste?</span></p>
+        <p><strong><span class="lang-en">Listen for:</span><span class="lang-es" lang="es">Escuchen si:</span></strong> <span class="lang-en">They compare the amounts, not just the percents. A bigger percent can still cost more.</span><span class="lang-es" lang="es">Escuchen si comparan las cantidades y no solo los porcentajes. Un porcentaje mayor puede costar más.</span></p>
+        <p><strong><span class="lang-en">Sentence starters:</span><span class="lang-es" lang="es">Frases para empezar:</span></strong></p>
+        <ul><li><span class="lang-en">The first one takes off ___. The second one takes off ___.</span><span class="lang-es" lang="es">El primero quita ___. El segundo quita ___.</span></li><li><span class="lang-en">___ costs less because ___.</span><span class="lang-es" lang="es">___ cuesta menos porque ___.</span></li></ul>
+      </div>
+    </details>
   </div>
   <details class="hw-answer-key">
-    <summary>
-      <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
-      <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
-    </summary>
+    <summary><span class="hw-answer-key-icon" aria-hidden="true">🔑</span> <span class="lang-en">Grown-up: show the answer</span><span class="lang-es" lang="es">Adulto: ver la respuesta</span></summary>
     <div class="hw-answer-key-body">
       <p class="hw-answer-key-try"><span class="lang-en">Not tried yet? Close this and give it one try first. A wrong first try still helps.</span><span class="lang-es" lang="es">¿Todavía no lo intentaron? Ciérrenla y hagan un intento primero. Un primer intento incorrecto también ayuda.</span></p>
       <ul class="hw-answer-key-lines"><li><span class="lang-en">Store A takes off 0.25 × $80 = $20.</span><span class="lang-es" lang="es">Tienda A quita 0.25 × $80 = $20.</span></li><li><span class="lang-en">Store B takes off 0.30 × $60 = $18.</span><span class="lang-es" lang="es">Tienda B quita 0.30 × $60 = $18.</span></li><li><span class="lang-en">Store A takes more off.</span><span class="lang-es" lang="es">Tienda A quita más.</span></li><li><span class="lang-en">Store A costs $80 − $20 = $60.</span><span class="lang-es" lang="es">Tienda A cuesta $80 − $20 = $60.</span></li><li><span class="lang-en">Store B costs $60 − $18 = $42.</span><span class="lang-es" lang="es">Tienda B cuesta $60 − $18 = $42.</span></li><li><span class="lang-en">Store B costs less after the discount.</span><span class="lang-es" lang="es">Tienda B cuesta menos después del descuento.</span></li></ul>
     </div>
   </details>
 </section>
-<section class="problem-section card wp-problem" id="deal-2">
+<section class="problem-section card wp-card wp-problem" id="deal-2" data-id="deal-2">
   <div class="problem-header-row">
-    <div class="problem-number-badge hw-inline"><span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 9</div>
+    <div class="problem-number-badge hw-inline"><span class="wp-emoji" aria-hidden="true">🎟️</span> <span class="lang-en">Problem</span><span class="lang-es" lang="es">Problema</span> 9</div>
+    <button type="button" class="btn btn-sm btn-outline-secondary speak-btn">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
     <div class="problem-type-badge"><span class="lang-en">Compare deals</span><span class="lang-es" lang="es">Compara ofertas</span></div>
   </div>
   <div class="problem-body">
-    <p class="problem-stem"><span class="lang-en">At the arcade, Prize A costs 120 tickets and is 25% off. Prize B costs 150 tickets and is 20% off. How many tickets does each discount take off? Which prize costs fewer tickets after the discount?</span><span class="lang-es" lang="es">En el arcade, el Premio A cuesta 120 boletos y tiene 25% de descuento. El Premio B cuesta 150 boletos y tiene 20% de descuento. ¿Cuántos boletos quita cada descuento? ¿Qué premio cuesta menos boletos después del descuento?</span></p>
-    <div class="family-problem-tip">
-      <p class="wp-tip-label hw-inline"><span aria-hidden="true">👪</span> <strong><span class="lang-en">Ask your student</span><span class="lang-es" lang="es">Pregunta a tu estudiante</span></strong></p>
-      <p><span class="lang-en">Both discounts take off the same number of tickets. Why can the final prices still be different?</span><span class="lang-es" lang="es">Los dos descuentos quitan la misma cantidad de boletos. ¿Por qué los precios finales pueden ser distintos?</span></p>
+    <p class="problem-stem"><span class="lang-en wp-stem">At the arcade, Prize A costs 120 tickets and is 25% off. Prize B costs 150 tickets and is 20% off. How many tickets does each discount take off? Which prize costs fewer tickets after the discount?</span><span class="lang-es wp-stem-es" lang="es">En el arcade, el Premio A cuesta 120 boletos y tiene 25% de descuento. El Premio B cuesta 150 boletos y tiene 20% de descuento. ¿Cuántos boletos quita cada descuento? ¿Qué premio cuesta menos boletos después del descuento?</span></p>
+    <div class="wp-question">
+      <p><span class="lang-en">Which discount takes off more?</span><span class="lang-es" lang="es">¿Cuál descuento quita más?</span></p>
+      <div class="choice-stack"><button type="button" class="choice-btn" data-q="0" data-i="0"><span class="lang-en">Prize A</span><span class="lang-es" lang="es">Premio A</span></button><button type="button" class="choice-btn" data-q="0" data-i="1"><span class="lang-en">Prize B</span><span class="lang-es" lang="es">Premio B</span></button><button type="button" class="choice-btn" data-q="0" data-i="2"><span class="lang-en">They take off the same amount</span><span class="lang-es" lang="es">Quitan la misma cantidad</span></button></div>
+    </div><div class="wp-question">
+      <p><span class="lang-en">Which one costs less after the discount?</span><span class="lang-es" lang="es">¿Cuál cuesta menos después del descuento?</span></p>
+      <div class="choice-stack"><button type="button" class="choice-btn" data-q="1" data-i="0"><span class="lang-en">Prize A</span><span class="lang-es" lang="es">Premio A</span></button><button type="button" class="choice-btn" data-q="1" data-i="1"><span class="lang-en">Prize B</span><span class="lang-es" lang="es">Premio B</span></button></div>
     </div>
-    <details class="problem-coach-ladder wp-hint">
-      <summary><span>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></span></summary>
-      <p><span class="lang-en">Find the discount for each prize. Then subtract it from that prize's price.</span><span class="lang-es" lang="es">Halla el descuento de cada premio. Luego réstalo del precio de ese premio.</span></p>
-    </details>
+    <div class="wp-actions">
+      
+      <button type="button" class="btn btn-outline-secondary hint-btn" hidden>🪜 <span class="lang-en">Hint</span><span class="lang-es" lang="es">Pista</span></button>
+      <button type="button" class="btn btn-outline-secondary steps-btn" hidden><span class="lang-en">Show the worked steps</span><span class="lang-es" lang="es">Ver los pasos resueltos</span></button>
+    </div>
+    <div class="feedback-box" role="status" aria-live="polite"></div>
+    <div class="wp-hint-text" hidden><span class="lang-en">Find the discount for each prize. Then subtract it from that prize's price.</span><span class="lang-es" lang="es">Halla el descuento de cada premio. Luego réstalo del precio de ese premio.</span></div>
+    <div class="wp-steps-box" hidden></div>
+    <details class="wp-picture"><summary>🖼️ <span class="lang-en">Show a picture</span><span class="lang-es" lang="es">Ver un dibujo</span></summary><div><p class="wp-pic-label"><span class="lang-en">Prize A: 120 tickets, 25% off.</span><span class="lang-es" lang="es">Premio A: 120 boletos, 25% de descuento.</span></p><div class="wp-bar" role="img" aria-label="25%"><span class="wp-bar-fill" style="width:25%"></span></div><p class="wp-pic-label"><span class="lang-en">Prize B: 150 tickets, 20% off.</span><span class="lang-es" lang="es">Premio B: 150 boletos, 20% de descuento.</span></p><div class="wp-bar" role="img" aria-label="20%"><span class="wp-bar-fill" style="width:20%"></span></div></div></details>
     <div class="hw-work">
       <label class="hw-work-label hw-inline" for="work_deal-2"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-      <textarea id="work_deal-2" name="work_deal-2" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
+      <textarea id="work_deal-2" name="work_deal-2" class="custom-textarea hw-work-input" rows="3" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
     </div>
+    <details class="wp-corner">
+      <summary>👪 <span class="lang-en">Grown-up corner</span><span class="lang-es" lang="es">Rincón del adulto</span></summary>
+      <div>
+        <p><strong><span class="lang-en">Ask your student:</span><span class="lang-es" lang="es">Pregunta a tu estudiante:</span></strong> <span class="lang-en">Both discounts take off the same number of tickets. Why can the final prices still be different?</span><span class="lang-es" lang="es">Los dos descuentos quitan la misma cantidad de boletos. ¿Por qué los precios finales pueden ser distintos?</span></p>
+        <p><strong><span class="lang-en">Listen for:</span><span class="lang-es" lang="es">Escuchen si:</span></strong> <span class="lang-en">They compare the amounts, not just the percents. A bigger percent can still cost more.</span><span class="lang-es" lang="es">Escuchen si comparan las cantidades y no solo los porcentajes. Un porcentaje mayor puede costar más.</span></p>
+        <p><strong><span class="lang-en">Sentence starters:</span><span class="lang-es" lang="es">Frases para empezar:</span></strong></p>
+        <ul><li><span class="lang-en">The first one takes off ___. The second one takes off ___.</span><span class="lang-es" lang="es">El primero quita ___. El segundo quita ___.</span></li><li><span class="lang-en">___ costs less because ___.</span><span class="lang-es" lang="es">___ cuesta menos porque ___.</span></li></ul>
+      </div>
+    </details>
   </div>
   <details class="hw-answer-key">
-    <summary>
-      <span class="hw-answer-key-icon" aria-hidden="true">🔑</span>
-      <span class="lang-en">Show the answer</span><span class="lang-es" lang="es">Ver la respuesta</span>
-    </summary>
+    <summary><span class="hw-answer-key-icon" aria-hidden="true">🔑</span> <span class="lang-en">Grown-up: show the answer</span><span class="lang-es" lang="es">Adulto: ver la respuesta</span></summary>
     <div class="hw-answer-key-body">
       <p class="hw-answer-key-try"><span class="lang-en">Not tried yet? Close this and give it one try first. A wrong first try still helps.</span><span class="lang-es" lang="es">¿Todavía no lo intentaron? Ciérrenla y hagan un intento primero. Un primer intento incorrecto también ayuda.</span></p>
       <ul class="hw-answer-key-lines"><li><span class="lang-en">Prize A takes off 0.25 × 120 tickets = 30 tickets.</span><span class="lang-es" lang="es">Premio A quita 0.25 × 120 boletos = 30 boletos.</span></li><li><span class="lang-en">Prize B takes off 0.20 × 150 tickets = 30 tickets.</span><span class="lang-es" lang="es">Premio B quita 0.20 × 150 boletos = 30 boletos.</span></li><li><span class="lang-en">Both discounts take off 30 tickets.</span><span class="lang-es" lang="es">Los dos descuentos quitan 30 boletos.</span></li><li><span class="lang-en">Prize A costs 120 tickets − 30 tickets = 90 tickets.</span><span class="lang-es" lang="es">Premio A cuesta 120 boletos − 30 boletos = 90 boletos.</span></li><li><span class="lang-en">Prize B costs 150 tickets − 30 tickets = 120 tickets.</span><span class="lang-es" lang="es">Premio B cuesta 150 boletos − 30 boletos = 120 boletos.</span></li><li><span class="lang-en">Prize A costs less after the discount.</span><span class="lang-es" lang="es">Premio A cuesta menos después del descuento.</span></li></ul>
@@ -775,6 +992,20 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 </div>
 <div class="tab-panel-inner" data-tab-panel="done" id="wp_panel_done" role="tabpanel" aria-labelledby="wp_tab_done" hidden>
   <h2 class="section-title">🎉 <span class="lang-en">Finished for today</span><span class="lang-es" lang="es">Terminaste por hoy</span></h2>
+<p id="wp-cert-locked" class="wp-celebrate-msg" style="background:var(--fp-note);border-color:#d9a400;color:var(--fp-note-ink)"><span class="lang-en">Solve every word problem to unlock your certificate.</span><span class="lang-es" lang="es">Resuelvan todos los problemas verbales para desbloquear su certificado.</span></p>
+  <p id="wp-cert-done" class="wp-celebrate-msg" hidden><span class="lang-en">You did it together! Every word problem is solved. Print your certificate and put it on the fridge.</span><span class="lang-es" lang="es">¡Lo lograron juntos! Resolvieron todos los problemas verbales. Impriman su certificado y péguenlo en el refrigerador.</span></p>
+  <p class="hw-inline">⭐ <span class="lang-en">Solved on the first try:</span><span class="lang-es" lang="es">Resueltos a la primera:</span> <strong id="wp-first">0</strong></p>
+  <div class="wp-cert-wrap">
+    <section class="wp-cert locked" id="wp-cert" aria-label="Certificate">
+      <div class="wp-cert-star" aria-hidden="true">🏆</div>
+      <h3><span class="lang-en">Family Math Team Certificate</span><span class="lang-es" lang="es">Certificado del equipo familiar de matemáticas</span></h3>
+      <p><span class="lang-en">Awarded to</span><span class="lang-es" lang="es">Se otorga a</span></p>
+      <input id="wp-name" type="text" maxlength="60" placeholder="Name · Nombre" aria-label="Name · Nombre">
+      <p><span class="lang-en">for solving the Lesson 4-4 word problems together with their family.</span><span class="lang-es" lang="es">por resolver juntos en familia los problemas verbales de la lección 4-4.</span></p>
+      <p id="wp-cert-date"></p>
+    </section>
+    <p><button type="button" class="btn btn-primary" id="wp-print-cert" disabled>🖨️ <span class="lang-en">Print certificate</span><span class="lang-es" lang="es">Imprimir certificado</span></button></p>
+  </div>
   <section class="hw-teach">
     <h3><span class="lang-en">Teach it to someone</span><span class="lang-es" lang="es">Enséñaselo a alguien</span></h3>
     <ol class="hw-teach-steps">
@@ -783,45 +1014,262 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       <li><span class="lang-en">Your partner asks: “How do you know?” Answer with: “I got ___ because ___. I checked by ___.”</span><span class="lang-es" lang="es">Tu acompañante pregunta: “¿Cómo lo sabes?” Responde: “Obtuve ___ porque ___. Comprobé usando ___.”</span></li>
     </ol>
   </section>
+  <section class="card wp-hunt">
+    <h3>🔎 <span class="lang-en">Percent hunt at home</span><span class="lang-es" lang="es">Búsqueda de porcentajes en casa</span></h3>
+    <p><span class="lang-en">Find a sale sign or a price tag in real life. Write the price and the percent off. Work out the discount and the sale price together.</span><span class="lang-es" lang="es">Busquen un letrero de oferta o una etiqueta de precio en la vida real. Escriban el precio y el porcentaje de descuento. Calculen juntos el descuento y el precio de oferta.</span></p>
+  </section>
   <p class="wp-links">
-    <button type="button" onclick="window.print()"><span class="lang-en">Print this page</span><span class="lang-es" lang="es">Imprimir esta página</span></button>
+    <button type="button" class="btn btn-primary" onclick="window.print()"><span class="lang-en">Print this page</span><span class="lang-es" lang="es">Imprimir esta página</span></button>
     <a href="/lessons/4-4/homework.html"><span class="lang-en">Lesson 4-4 homework</span><span class="lang-es" lang="es">Tarea de la lección 4-4</span></a>
     <a href="/lessons/4-4/family/"><span class="lang-en">Lesson 4-4 family guide</span><span class="lang-es" lang="es">Guía para familias de la lección 4-4</span></a>
+    <button type="button" class="btn btn-sm btn-outline-secondary" id="wp-reset">↻ Start over · Empezar de nuevo</button>
   </p>
 </div>
     </div>
   </div>
 </div>
+<script type="application/json" id="wp-data">{"key":"neft_fam_44_wp_v1","ui":{"fill":{"en":"Fill in every box first.","es":"Llena todas las casillas primero."},"correct":{"en":"Nice work, team! Here is how it works:","es":"¡Buen trabajo, equipo! Así funciona:"},"firstTry":{"en":"First try! Great teamwork. Here is how it works:","es":"¡A la primera! Gran trabajo en equipo. Así funciona:"},"next":{"en":"Correct. Now answer the next question.","es":"Correcto. Ahora responde la siguiente pregunta."},"reset":"↻ Start over · Empezar de nuevo","resetSure":"Click again to erase your progress · Haz clic otra vez para borrar"},"tabs":{"find":["find-1","find-2","find-3","find-4"],"sale":["sale-1","sale-2","sale-3"],"deal":["deal-1","deal-2"]},"problems":[{"id":"find-1","fields":[{"answer":120,"generic":{"en":"Not yet. Change 40% to a decimal, then multiply it by the whole.","es":"Todavía no. Cambia 40% a decimal y multiplícalo por el total."},"wrong":[{"value":40,"msg":{"en":"40 is the percent itself. The question asks for 40% of 300 miles: change the percent to a decimal, then multiply.","es":"40 es el porcentaje mismo. La pregunta pide el 40% de 300 millas: cambia el porcentaje a decimal y luego multiplica."}},{"value":180,"msg":{"en":"180 miles is what is left after taking away the 40%. The question asks for the 40% part itself.","es":"180 millas es lo que queda después de quitar el 40%. La pregunta pide la parte del 40%."}}]}],"steps":{"en":["Change the percent to a decimal: 40% = 0.40.","Multiply: 0.40 × 300 = 120.","Answer: 120 miles."],"es":["Cambia el porcentaje a decimal: 40% = 0.40.","Multiplica: 0.40 × 300 = 120.","Respuesta: 120 millas."]}},{"id":"find-2","fields":[{"answer":16,"generic":{"en":"Not yet. Change 25% to a decimal, then multiply it by the whole.","es":"Todavía no. Cambia 25% a decimal y multiplícalo por el total."},"wrong":[{"value":25,"msg":{"en":"25 is the percent itself. The question asks for 25% of 64 animal stickers: change the percent to a decimal, then multiply.","es":"25 es el porcentaje mismo. La pregunta pide el 25% de 64 calcomanías de animales: cambia el porcentaje a decimal y luego multiplica."}},{"value":48,"msg":{"en":"48 animal stickers is what is left after taking away the 25%. The question asks for the 25% part itself.","es":"48 calcomanías de animales es lo que queda después de quitar el 25%. La pregunta pide la parte del 25%."}}]}],"steps":{"en":["Change the percent to a decimal: 25% = 0.25.","Multiply: 0.25 × 64 = 16.","Answer: 16 animal stickers."],"es":["Cambia el porcentaje a decimal: 25% = 0.25.","Multiplica: 0.25 × 64 = 16.","Respuesta: 16 calcomanías de animales."]}},{"id":"find-3","fields":[{"answer":30,"generic":{"en":"Not yet. Change 20% to a decimal, then multiply it by the whole.","es":"Todavía no. Cambia 20% a decimal y multiplícalo por el total."},"wrong":[{"value":20,"msg":{"en":"20 is the percent itself. The question asks for 20% of 150 blue marbles: change the percent to a decimal, then multiply.","es":"20 es el porcentaje mismo. La pregunta pide el 20% de 150 canicas azules: cambia el porcentaje a decimal y luego multiplica."}},{"value":120,"msg":{"en":"120 blue marbles is what is left after taking away the 20%. The question asks for the 20% part itself.","es":"120 canicas azules es lo que queda después de quitar el 20%. La pregunta pide la parte del 20%."}}]}],"steps":{"en":["Change the percent to a decimal: 20% = 0.20.","Multiply: 0.20 × 150 = 30.","Answer: 30 blue marbles."],"es":["Cambia el porcentaje a decimal: 20% = 0.20.","Multiplica: 0.20 × 150 = 30.","Respuesta: 30 canicas azules."]}},{"id":"find-4","fields":[{"answer":70,"generic":{"en":"Not yet. Change 35% to a decimal, then multiply it by the whole.","es":"Todavía no. Cambia 35% a decimal y multiplícalo por el total."},"wrong":[{"value":35,"msg":{"en":"35 is the percent itself. The question asks for 35% of $200: change the percent to a decimal, then multiply.","es":"35 es el porcentaje mismo. La pregunta pide el 35% de $200: cambia el porcentaje a decimal y luego multiplica."}},{"value":130,"msg":{"en":"$130 is what is left after taking away the 35%. The question asks for the 35% part itself.","es":"$130 es lo que queda después de quitar el 35%. La pregunta pide la parte del 35%."}}]}],"steps":{"en":["Change the percent to a decimal: 35% = 0.35.","Multiply: 0.35 × $200 = $70.","Answer: $70."],"es":["Cambia el porcentaje a decimal: 35% = 0.35.","Multiplica: 0.35 × $200 = $70.","Respuesta: $70."]}},{"id":"sale-1","fields":[{"answer":12,"generic":{"en":"Not yet. Savings = 25% × the price. Change 25% to a decimal, then multiply.","es":"Todavía no. Ahorro = 25% × el precio. Cambia 25% a decimal y multiplica."},"wrong":[{"value":36,"msg":{"en":"$36 is the sale price. “How much do you save?” asks for the amount taken off: percent × price.","es":"$36 es el precio de oferta. “¿Cuánto ahorras?” pide la cantidad que se quita: porcentaje × precio."}}]},{"answer":36,"generic":{"en":"Not yet. Find the savings first, then subtract it from the price.","es":"Todavía no. Halla primero el ahorro y luego réstalo del precio."},"wrong":[{"value":12,"msg":{"en":"$12 is the amount you save. The sale price is what you pay: subtract the savings from the price.","es":"$12 es lo que ahorras. El precio de oferta es lo que pagas: resta el ahorro del precio."}},{"value":48,"msg":{"en":"$48 is the price before the discount. Subtract the savings to get the sale price.","es":"$48 es el precio antes del descuento. Resta el ahorro para hallar el precio de oferta."}}]}],"steps":{"en":["Change the percent to a decimal: 25% = 0.25.","Savings: 0.25 × $48 = $12.","Sale price: $48 − $12 = $36.","You save $12 and pay $36."],"es":["Cambia el porcentaje a decimal: 25% = 0.25.","Ahorro: 0.25 × $48 = $12.","Precio de oferta: $48 − $12 = $36.","Ahorras $12 y pagas $36."]}},{"id":"sale-2","fields":[{"answer":18,"generic":{"en":"Not yet. Savings = 20% × the price. Change 20% to a decimal, then multiply.","es":"Todavía no. Ahorro = 20% × el precio. Cambia 20% a decimal y multiplica."},"wrong":[{"value":72,"msg":{"en":"$72 is the sale price. “How much do you save?” asks for the amount taken off: percent × price.","es":"$72 es el precio de oferta. “¿Cuánto ahorras?” pide la cantidad que se quita: porcentaje × precio."}}]},{"answer":72,"generic":{"en":"Not yet. Find the savings first, then subtract it from the price.","es":"Todavía no. Halla primero el ahorro y luego réstalo del precio."},"wrong":[{"value":18,"msg":{"en":"$18 is the amount you save. The sale price is what you pay: subtract the savings from the price.","es":"$18 es lo que ahorras. El precio de oferta es lo que pagas: resta el ahorro del precio."}},{"value":90,"msg":{"en":"$90 is the price before the discount. Subtract the savings to get the sale price.","es":"$90 es el precio antes del descuento. Resta el ahorro para hallar el precio de oferta."}}]}],"steps":{"en":["Change the percent to a decimal: 20% = 0.20.","Savings: 0.20 × $90 = $18.","Sale price: $90 − $18 = $72.","You save $18 and pay $72."],"es":["Cambia el porcentaje a decimal: 20% = 0.20.","Ahorro: 0.20 × $90 = $18.","Precio de oferta: $90 − $18 = $72.","Ahorras $18 y pagas $72."]}},{"id":"sale-3","fields":[{"answer":12,"generic":{"en":"Not yet. Savings = 30% × the price. Change 30% to a decimal, then multiply.","es":"Todavía no. Ahorro = 30% × el precio. Cambia 30% a decimal y multiplica."},"wrong":[{"value":28,"msg":{"en":"$28 is the sale price. “How much do you save?” asks for the amount taken off: percent × price.","es":"$28 es el precio de oferta. “¿Cuánto ahorras?” pide la cantidad que se quita: porcentaje × precio."}}]},{"answer":28,"generic":{"en":"Not yet. Find the savings first, then subtract it from the price.","es":"Todavía no. Halla primero el ahorro y luego réstalo del precio."},"wrong":[{"value":12,"msg":{"en":"$12 is the amount you save. The sale price is what you pay: subtract the savings from the price.","es":"$12 es lo que ahorras. El precio de oferta es lo que pagas: resta el ahorro del precio."}},{"value":40,"msg":{"en":"$40 is the price before the discount. Subtract the savings to get the sale price.","es":"$40 es el precio antes del descuento. Resta el ahorro para hallar el precio de oferta."}}]}],"steps":{"en":["Change the percent to a decimal: 30% = 0.30.","Savings: 0.30 × $40 = $12.","Sale price: $40 − $12 = $28.","You save $12 and pay $28."],"es":["Cambia el porcentaje a decimal: 30% = 0.30.","Ahorro: 0.30 × $40 = $12.","Precio de oferta: $40 − $12 = $28.","Ahorras $12 y pagas $28."]}},{"id":"deal-1","questions":[{"correct":0,"wrong":[{"en":"Find each discount first (percent × price for each one), then compare the two amounts.","es":"Halla primero cada descuento (porcentaje × precio de cada una) y luego compara las dos cantidades."},{"en":"Find each discount first (percent × price for each one), then compare the two amounts.","es":"Halla primero cada descuento (porcentaje × precio de cada una) y luego compara las dos cantidades."},{"en":"Find each discount first (percent × price for each one), then compare the two amounts.","es":"Halla primero cada descuento (porcentaje × precio de cada una) y luego compara las dos cantidades."}]},{"correct":1,"wrong":[{"en":"Subtract each discount from its own price, then compare the two sale prices.","es":"Resta cada descuento de su propio precio y luego compara los dos precios de oferta."},{"en":"Subtract each discount from its own price, then compare the two sale prices.","es":"Resta cada descuento de su propio precio y luego compara los dos precios de oferta."}]}],"steps":{"en":["Store A takes off 0.25 × $80 = $20.","Store B takes off 0.30 × $60 = $18.","Store A takes more off.","Store A costs $80 − $20 = $60.","Store B costs $60 − $18 = $42.","Store B costs less after the discount."],"es":["Tienda A quita 0.25 × $80 = $20.","Tienda B quita 0.30 × $60 = $18.","Tienda A quita más.","Tienda A cuesta $80 − $20 = $60.","Tienda B cuesta $60 − $18 = $42.","Tienda B cuesta menos después del descuento."]}},{"id":"deal-2","questions":[{"correct":2,"wrong":[{"en":"Find each discount first (percent × price for each one), then compare the two amounts.","es":"Halla primero cada descuento (porcentaje × precio de cada una) y luego compara las dos cantidades."},{"en":"Find each discount first (percent × price for each one), then compare the two amounts.","es":"Halla primero cada descuento (porcentaje × precio de cada una) y luego compara las dos cantidades."},{"en":"Find each discount first (percent × price for each one), then compare the two amounts.","es":"Halla primero cada descuento (porcentaje × precio de cada una) y luego compara las dos cantidades."}]},{"correct":0,"wrong":[{"en":"Subtract each discount from its own price, then compare the two sale prices.","es":"Resta cada descuento de su propio precio y luego compara los dos precios de oferta."},{"en":"Subtract each discount from its own price, then compare the two sale prices.","es":"Resta cada descuento de su propio precio y luego compara los dos precios de oferta."}]}],"steps":{"en":["Prize A takes off 0.25 × 120 tickets = 30 tickets.","Prize B takes off 0.20 × 150 tickets = 30 tickets.","Both discounts take off 30 tickets.","Prize A costs 120 tickets − 30 tickets = 90 tickets.","Prize B costs 150 tickets − 30 tickets = 120 tickets.","Prize A costs less after the discount."],"es":["Premio A quita 0.25 × 120 boletos = 30 boletos.","Premio B quita 0.20 × 150 boletos = 30 boletos.","Los dos descuentos quitan 30 boletos.","Premio A cuesta 120 boletos − 30 boletos = 90 boletos.","Premio B cuesta 150 boletos − 30 boletos = 120 boletos.","Premio A cuesta menos después del descuento."]}}]}</script>
 <script>
+
+function wpEngine(DATA, state, hooks) {
+  if (!state.first) state.first = {};
+  var ui = DATA.ui;
+  function $(sel, root) { return (root || document).querySelector(sel); }
+  function $$(sel, root) { return [].slice.call((root || document).querySelectorAll(sel)); }
+  function make(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+  function problem(id) { return DATA.problems.filter(function (p) { return p.id === id; })[0]; }
+
+  /* Feedback: English, then the Spanish line that shows when Spanish is on. */
+  function say(card, kind, msg, steps) {
+    var box = $('.feedback-box', card);
+    box.className = 'feedback-box show ' + kind;
+    box.textContent = '';
+    box.appendChild(make('div', 'wp-fb-en', msg.en));
+    box.appendChild(make('div', 'wp-fb-es es-text lang-es', msg.es));
+    box.lastChild.lang = 'es';
+    if (steps) {
+      ['en', 'es'].forEach(function (lang) {
+        var list = make('ol', lang === 'es' ? 'es-text lang-es' : 'lang-en');
+        if (lang === 'es') list.lang = 'es';
+        steps[lang].forEach(function (line) { list.appendChild(make('li', '', line)); });
+        box.appendChild(list);
+      });
+    }
+  }
+
+  function parseNum(v) {
+    var t = String(v).replace(/[$,\s]/g, '');
+    if (t === '') return NaN;
+    var n = Number(t);
+    return isFinite(n) ? n : NaN;
+  }
+
+  function lock(card) {
+    $$('input, .choice-btn', card).forEach(function (el) { el.disabled = true; });
+    $$('.wp-actions .btn', card).forEach(function (b) { b.hidden = true; });
+    card.classList.add('wp-solved');
+  }
+
+  function solved(card, P) {
+    var firstTry = !Number(card.dataset.tries);
+    state.solved[P.id] = true;
+    if (firstTry) state.first[P.id] = true;
+    hooks.save();
+    lock(card);
+    say(card, 'ok', (firstTry && ui.firstTry) || ui.correct, P.steps);
+    hooks.changed(card, P);
+  }
+
+  function miss(card, P, msg) {
+    var tries = (Number(card.dataset.tries) || 0) + 1;
+    card.dataset.tries = String(tries);
+    say(card, 'err', msg);
+    $('.hint-btn', card).hidden = false;
+    if (tries >= 2) $('.steps-btn', card).hidden = false;
+  }
+
+  function checkNumbers(card, P) {
+    var inputs = $$('input.num-input', card);
+    var vals = inputs.map(function (i) { return parseNum(i.value); });
+    if (vals.some(function (v) { return isNaN(v); })) { say(card, 'warn', ui.fill); return; }
+    var wrong = -1;
+    inputs.forEach(function (inp, i) {
+      var ok = Math.abs(vals[i] - P.fields[i].answer) < 0.005;
+      inp.classList.toggle('ok', ok);
+      inp.classList.toggle('err', !ok);
+      if (!ok && wrong < 0) wrong = i;
+    });
+    if (wrong < 0) { solved(card, P); return; }
+    var field = P.fields[wrong];
+    var msg = field.generic;
+    field.wrong.forEach(function (w) { if (Math.abs(w.value - vals[wrong]) < 0.005) msg = w.msg; });
+    miss(card, P, msg);
+  }
+
+  function choose(card, P, btn) {
+    var q = P.questions[Number(btn.dataset.q)];
+    var i = Number(btn.dataset.i);
+    var group = $$('.choice-btn[data-q="' + btn.dataset.q + '"]', card);
+    if (i === q.correct) {
+      group.forEach(function (b) { b.disabled = true; });
+      btn.classList.add('correct');
+      card.dataset['q' + btn.dataset.q] = 'ok';
+      var all = P.questions.every(function (_, k) { return card.dataset['q' + k] === 'ok'; });
+      if (all) solved(card, P); else say(card, 'ok', ui.next);
+      return;
+    }
+    btn.classList.add('wrong');
+    btn.disabled = true;
+    miss(card, P, q.wrong[i]);
+  }
+
+  function restore(card, P) {
+    $$('input.num-input', card).forEach(function (inp, i) { inp.value = String(P.fields[i].answer); inp.classList.add('ok'); });
+    $$('.choice-btn', card).forEach(function (b) {
+      if (P.questions[Number(b.dataset.q)].correct === Number(b.dataset.i)) b.classList.add('correct');
+    });
+    lock(card);
+    say(card, 'ok', ui.correct, P.steps);
+  }
+
+  $$('.wp-card').forEach(function (card) {
+    var P = problem(card.dataset.id);
+    var check = $('.check-btn', card);
+    if (check) check.addEventListener('click', function () { checkNumbers(card, P); });
+    $$('input.num-input', card).forEach(function (inp) {
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') checkNumbers(card, P); });
+    });
+    $$('.choice-btn', card).forEach(function (b) { b.addEventListener('click', function () { choose(card, P, b); }); });
+    $('.hint-btn', card).addEventListener('click', function () { var h = $('.wp-hint-text', card); h.hidden = !h.hidden; });
+    $('.steps-btn', card).addEventListener('click', function () {
+      var box = $('.wp-steps-box', card);
+      if (!box.firstChild) {
+        ['en', 'es'].forEach(function (lang) {
+          var list = make('ol', lang === 'es' ? 'es-text lang-es' : 'lang-en');
+          if (lang === 'es') list.lang = 'es';
+          P.steps[lang].forEach(function (line) { list.appendChild(make('li', '', line)); });
+          box.appendChild(list);
+        });
+      }
+      box.hidden = !box.hidden;
+    });
+    var speak = $('.speak-btn', card);
+    if (speak) {
+      if (!('speechSynthesis' in window)) speak.hidden = true;
+      else speak.addEventListener('click', function () {
+        window.speechSynthesis.cancel();
+        var en = new SpeechSynthesisUtterance($('.wp-stem', card).textContent);
+        en.lang = 'en-US';
+        window.speechSynthesis.speak(en);
+        if (hooks.speakSpanish()) {
+          var es = new SpeechSynthesisUtterance($('.wp-stem-es', card).textContent);
+          es.lang = 'es-US';
+          window.speechSynthesis.speak(es);
+        }
+      });
+    }
+    if (state.solved[P.id]) restore(card, P);
+  });
+}
+
 (function () {
-  var buttons = document.querySelectorAll('.lang-toggle-btn');
-  function show(mode) {
+  var DATA = JSON.parse(document.getElementById('wp-data').textContent);
+  var state = { solved: {}, first: {}, name: '', celebrated: false };
+  try {
+    var saved = JSON.parse(localStorage.getItem(DATA.key) || 'null');
+    if (saved && typeof saved === 'object') {
+      state.solved = saved.solved && typeof saved.solved === 'object' ? saved.solved : {};
+      state.first = saved.first && typeof saved.first === 'object' ? saved.first : {};
+      state.name = typeof saved.name === 'string' ? saved.name : '';
+      state.celebrated = !!saved.celebrated;
+    }
+  } catch (e) {}
+  function save() { try { localStorage.setItem(DATA.key, JSON.stringify(state)); } catch (e) {} }
+  function $(sel) { return document.querySelector(sel); }
+  function $$(sel) { return [].slice.call(document.querySelectorAll(sel)); }
+  var motionOk = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var total = DATA.problems.length;
+
+  /* Language: same storage key and body classes as the homework page. */
+  var langButtons = $$('.lang-toggle-btn');
+  function showLang(mode) {
     document.body.classList.remove('lang-mode-bilingual', 'lang-mode-en', 'lang-mode-es');
     document.body.classList.add('lang-mode-' + mode);
     document.documentElement.lang = mode === 'es' ? 'es' : 'en';
-    document.querySelectorAll('[data-aria-en]').forEach(function (el) {
+    $$('[data-aria-en]').forEach(function (el) {
       el.setAttribute('aria-label', mode === 'es' ? el.dataset.ariaEs : el.dataset.ariaEn);
     });
-    buttons.forEach(function (b) {
+    langButtons.forEach(function (b) {
       var on = b.getAttribute('data-lang-mode') === mode;
       b.classList.toggle('active', on);
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
   }
-  buttons.forEach(function (b) {
+  langButtons.forEach(function (b) {
     b.addEventListener('click', function () {
       var mode = b.getAttribute('data-lang-mode');
       try { localStorage.setItem('hw_lang_mode', mode); } catch (e) {}
-      show(mode);
+      showLang(mode);
     });
   });
-  show(document.body.className.match(/lang-mode-(bilingual|en|es)/)[1]);
-})();
-(function () {
-  var KEY = 'wp_tab_4-4';
-  var tabs = [].slice.call(document.querySelectorAll('.homework-tab-btn'));
-  var panels = [].slice.call(document.querySelectorAll('[data-tab-panel]'));
-  var fill = document.getElementById('hw_tab_track_fill');
+  showLang(document.body.className.match(/lang-mode-(bilingual|en|es)/)[1]);
+
+  /* Confetti: skipped when the family has asked their device for less motion. */
+  function confetti() {
+    if (!motionOk) return;
+    var box = $('#wp-confetti');
+    var colors = ['#ffd34d', '#ff7a59', '#4cc3a5', '#5b8def', '#e86aa6'];
+    for (var i = 0; i < 40; i++) {
+      var piece = document.createElement('span');
+      piece.className = 'wp-confetti';
+      piece.style.left = Math.random() * 100 + '%';
+      piece.style.background = colors[i % colors.length];
+      piece.style.animationDelay = Math.random() * 0.8 + 's';
+      box.appendChild(piece);
+    }
+    setTimeout(function () { box.textContent = ''; }, 4200);
+  }
+
+  /* Progress: stars, the hero meter, a check on finished tabs, and the certificate. */
+  function refresh() {
+    var done = DATA.problems.filter(function (p) { return state.solved[p.id]; }).length;
+    $('#wp-stars').textContent = String(done);
+    $('#wp-meter-fill').style.width = (done / total) * 100 + '%';
+    Object.keys(DATA.tabs).forEach(function (tab) {
+      var ids = DATA.tabs[tab];
+      $('#wp_tab_' + tab).classList.toggle('wp-tab-complete', ids.every(function (id) { return state.solved[id]; }));
+    });
+    var all = done === total;
+    $('#wp-cert').classList.toggle('locked', !all);
+    $('#wp-print-cert').disabled = !all;
+    $('#wp-cert-locked').hidden = all;
+    $('#wp-cert-done').hidden = !all;
+    $('#wp-first').textContent = String(Object.keys(state.first).filter(function (id) { return state.solved[id]; }).length);
+    if (all && !state.celebrated) {
+      state.celebrated = true;
+      save();
+      confetti();
+      $('#wp_tab_done').classList.add('wp-pulse');
+    }
+  }
+  wpEngine(DATA, state, {
+    save: save,
+    changed: function (card) {
+      if (card && motionOk) { card.classList.remove('wp-pop'); void card.offsetWidth; card.classList.add('wp-pop'); }
+      refresh();
+    },
+    speakSpanish: function () { return !document.body.classList.contains('lang-mode-en'); }
+  });
+
+  /* Tabs: one stop at a time, #<stop> opens a stop, the last stop is remembered. */
+  var tabs = $$('.homework-tab-btn');
+  var panels = $$('[data-tab-panel]');
+  var fill = $('#hw_tab_track_fill');
   var ids = tabs.map(function (t) { return t.dataset.tab; });
   function show(id, scroll) {
     if (ids.indexOf(id) < 0) id = ids[0];
@@ -832,13 +1280,14 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       t.tabIndex = on ? 0 : -1;
       if (on) {
         t.setAttribute('aria-current', 'step');
+        t.classList.remove('wp-pulse');
         if (fill) fill.style.width = ((i + 1) / tabs.length) * 100 + '%';
       } else t.removeAttribute('aria-current');
     });
     panels.forEach(function (p) { p.hidden = p.dataset.tabPanel !== id; });
-    try { localStorage.setItem(KEY, id); } catch (e) {}
-    var bar = document.querySelector('.homework-tab-chrome');
-    if (scroll && bar) bar.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    try { localStorage.setItem(DATA.key + '_tab', id); } catch (e) {}
+    var bar = $('.homework-tab-chrome');
+    if (scroll && bar) bar.scrollIntoView({ block: 'start', behavior: motionOk ? 'smooth' : 'auto' });
   }
   tabs.forEach(function (t) {
     t.addEventListener('click', function () { show(t.dataset.tab, false); });
@@ -851,13 +1300,84 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       tabs[j].focus();
     });
   });
-  [].slice.call(document.querySelectorAll('[data-next]')).forEach(function (b) {
+  $$('[data-next]').forEach(function (b) {
     b.addEventListener('click', function () { show(b.dataset.next, true); });
   });
+
+  /* Percent-bar explorer. */
+  var range = $('#wp-bar-percent');
+  var whole = $('#wp-bar-whole');
+  function trim(n) { return String(Math.round(n * 100) / 100); }
+  function drawBar() {
+    var p = Number(range.value);
+    var w = Number(whole.value);
+    if (!isFinite(w) || w < 0) w = 0;
+    $('#wp-bar-pct').textContent = p + '%';
+    var cells = $('#wp-cells');
+    cells.textContent = '';
+    for (var i = 0; i < 20; i++) {
+      var c = document.createElement('span');
+      if (i < p / 5) c.className = 'on';
+      cells.appendChild(c);
+    }
+    var part = (p * w) / 100;
+    var dec = trim(p / 100);
+    var out = $('#wp-bar-out');
+    out.textContent = '';
+    var en = document.createElement('span');
+    en.className = 'lang-en';
+    en.innerHTML = '<span></span><small></small>';
+    en.firstChild.textContent = p + '% of ' + trim(w) + ' = ' + trim(part);
+    en.lastChild.textContent = 'As a decimal, ' + p + '% = ' + dec + ', so ' + dec + ' × ' + trim(w) + ' = ' + trim(part) + '.';
+    var es = document.createElement('span');
+    es.className = 'lang-es';
+    es.lang = 'es';
+    es.innerHTML = '<span></span><small></small>';
+    es.firstChild.textContent = p + '% de ' + trim(w) + ' = ' + trim(part);
+    es.lastChild.textContent = 'Como decimal, ' + p + '% = ' + dec + ', así que ' + dec + ' × ' + trim(w) + ' = ' + trim(part) + '.';
+    out.appendChild(en);
+    out.appendChild(es);
+  }
+  range.addEventListener('input', drawBar);
+  whole.addEventListener('input', drawBar);
+  drawBar();
+
+  /* Certificate. */
+  var nameBox = $('#wp-name');
+  nameBox.value = state.name;
+  function stamp() {
+    $('#wp-cert-date').textContent = new Date().toLocaleDateString(document.documentElement.lang === 'es' ? 'es-US' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+  nameBox.addEventListener('input', function () { state.name = nameBox.value; save(); stamp(); });
+  $('#wp-print-cert').addEventListener('click', function () {
+    stamp();
+    document.body.classList.add('wp-print-cert');
+    window.print();
+  });
+  window.addEventListener('afterprint', function () { document.body.classList.remove('wp-print-cert'); });
+  stamp();
+
+  $('#wp-reset').addEventListener('click', function () {
+    var btn = $('#wp-reset');
+    if (!btn.dataset.armed) {
+      btn.dataset.armed = '1';
+      btn.textContent = DATA.ui.resetSure;
+      setTimeout(function () { delete btn.dataset.armed; btn.textContent = DATA.ui.reset; }, 4000);
+      return;
+    }
+    state.solved = {};
+    state.first = {};
+    state.celebrated = false;
+    save();
+    location.reload();
+  });
+
+  refresh();
   var start = location.hash.slice(1);
-  if (ids.indexOf(start) < 0) { try { start = localStorage.getItem(KEY); } catch (e) { start = null; } }
+  if (ids.indexOf(start) < 0) { try { start = localStorage.getItem(DATA.key + '_tab'); } catch (e) { start = null; } }
   show(start, false);
 })();
+
 </script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
