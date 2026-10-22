@@ -107,14 +107,16 @@ assert.ok(
 }
 
 /* ---- the taxonomy ---- */
-problems.push(...taxonomyProblems(traps, new Set(Object.keys(MISCONCEPTIONS)), STUDIO_UNITS));
+problems.push(
+  ...taxonomyProblems(traps, new Set(Object.keys(MISCONCEPTIONS)), [...STUDIO_UNITS, 4]),
+);
 problems.push(
   ...generatorTrapProblems(JSON.parse(read("data/practice-studio/generator-traps.json")), traps),
 );
 const count = Object.keys(traps).length;
 assert.ok(
-  count >= 40 && count <= 190,
-  `misconceptions.json should hold 40-190 traps, has ${count}`,
+  count >= 40 && count <= 260,
+  `misconceptions.json should hold 40-260 traps, has ${count}`,
 );
 
 /* ---- every rendered multiple-choice item ---- */

@@ -18,8 +18,10 @@
   <!-- nsr-injected:end -->
   <!-- u4-clarity:begin (scripts/inject-u4-lab-bench.mjs) -->
   <script>(function(){try{var t=localStorage.getItem("neft_u4_theme_v1"),m=matchMedia("(prefers-color-scheme: dark)").matches,c=/-challenging/.test(location.pathname),d=t==="light"||t==="dark"?t:t==="auto"||!c?(m?"dark":"light"):"dark";new MutationObserver(function(_,o){if(document.body){document.body.dataset.theme=d;o.disconnect()}}).observe(document.documentElement,{childList:true})}catch(e){}})()</script>
-  <link rel="stylesheet" href="/assets/studio/clarity.css?v=be0288a64f">
-  <script src="/assets/studio/clarity.js?v=be0288a64f" defer></script>
+  <link rel="stylesheet" href="/assets/studio/clarity.css?v=325a912e68">
+  <script src="/assets/studio/clarity.js?v=325a912e68" defer></script>
+  <script type="application/json" id="u4-traps">{"compare-direction-reversed":{"name":"Flipped the comparison","nameEs":"Invertí la comparación","fix":"After you calculate, compare the two amounts again and say which one is greater in words.","fixEs":"Después de calcular, vuelve a comparar las dos cantidades y di con palabras cuál es mayor."},"decimal-place-value":{"name":"Decimal point in the wrong place","nameEs":"Punto decimal en lugar equivocado","fix":"Estimate with whole numbers first. Then place the decimal point so the answer is close to your estimate.","fixEs":"Estima primero con números enteros. Luego coloca el punto decimal para que la respuesta quede cerca de tu estimación."},"op-added-instead-of-multiplied":{"name":"Added instead of multiplied","nameEs":"Sumé en vez de multiplicar","fix":"Look for 'each', 'per' or 'times as many'. Equal groups mean multiply.","fixEs":"Busca 'cada', 'por' o 'veces más'. Grupos iguales significan multiplicar."},"percent-base-not-100":{"name":"Used a base other than 100","nameEs":"Usé una base distinta de 100","fix":"Say it out loud: percent means out of 100. Picture the 100-square grid.","fixEs":"Dilo en voz alta: porcentaje significa de cada 100. Imagina la cuadrícula de 100 cuadrados."},"percent-conversion-skipped":{"name":"Skipped the ×100 or ÷100","nameEs":"Salté el ×100 o ÷100","fix":"Percent means per 100. Going from a percent to a decimal divides by 100; the other way multiplies by 100.","fixEs":"Porcentaje significa por cada 100. De porcentaje a decimal se divide entre 100; al revés se multiplica por 100."},"percent-extra-part-only":{"name":"Gave only the extra part","nameEs":"Di solo la parte extra","fix":"Over one whole means the whole plus the extra. Count both pieces.","fixEs":"Más de un entero es el entero más la parte extra. Cuenta las dos."},"percent-over-100-denied":{"name":"Thought percent stops at 100","nameEs":"Creí que el máximo es 100%","fix":"100% is one whole. More than one whole is more than 100%, like 1.5 wholes.","fixEs":"100% es un entero. Más de un entero es más de 100%, como 1.5 enteros."},"percent-part-count-as-percent":{"name":"Used the part as the percent","nameEs":"Usé la parte como porcentaje","fix":"A percent is out of 100. Rewrite the ratio so the whole is 100, then read the part.","fixEs":"Un porcentaje es de cada 100. Reescribe la razón para que el total sea 100 y luego lee la parte."},"percent-sign-as-operation":{"name":"Thought percent means adding","nameEs":"Pensé que porcentaje es sumar","fix":"A percent is a ratio out of 100. It names a part of a whole, not an operation.","fixEs":"Un porcentaje es una razón de cada 100. Nombra una parte de un entero, no una operación."},"percent-total-as-percent":{"name":"Used the total as the percent","nameEs":"Usé el total como porcentaje","fix":"The whole is the group you compare to. The percent tells how many out of 100 are the part.","fixEs":"El entero es el grupo con el que comparas. El porcentaje dice cuántos de cada 100 son la parte."},"percent-whole-benchmark-missed":{"name":"Didn’t compare to 100%","nameEs":"No comparé con 100%","fix":"100% is exactly one whole. Compare the percent to 100% first.","fixEs":"100% es exactamente un entero. Compara primero el porcentaje con 100%."},"percent-wrong-part-named":{"name":"Answered for the other part","nameEs":"Respondí por la otra parte","fix":"Underline which part the question asks about before you calculate.","fixEs":"Subraya qué parte pide la pregunta antes de calcular."},"percent-wrong-whole-used":{"name":"Used the wrong whole","nameEs":"Usé el entero equivocado","fix":"Name the whole in the story first. It is the amount the percent is taken of.","fixEs":"Nombra primero el entero de la historia. Es la cantidad de la que se toma el porcentaje."},"ratio-as-difference":{"name":"Compared by subtracting","nameEs":"Comparé restando","fix":"A ratio compares by how many times, not how many more. Write it as a : b and look for the scale factor.","fixEs":"Una razón compara cuántas veces, no cuántos más. Escríbela como a : b y busca el factor de escala."},"ratio-scaled-additively":{"name":"Added to scale a ratio","nameEs":"Sumé para ampliar una razón","fix":"Equivalent ratios come from multiplying or dividing both parts by the same number. Check with a table.","fixEs":"Las razones equivalentes salen de multiplicar o dividir ambas partes por el mismo número. Compruébalo con una tabla."}}</script>
+  <script src="/assets/u4-studio-thinking.js?v=325a912e68" defer></script>
   <!-- u4-clarity:end -->
 </head>
 <body>
@@ -760,6 +762,13 @@
             'Sumar 100 a un número'
           ],
           correct: 1,
+          tags: ['percent-base-not-100', null, 'percent-base-not-100', 'percent-sign-as-operation'],
+          why: [
+            { en: 'Out of 10 describes tenths. Count the squares in one whole grid on the left. Does that total match out of 10?', es: 'De cada 10 describe décimas. Cuenta los cuadrados de una cuadrícula entera a la izquierda. ¿Ese total coincide con de cada 10?' },
+            null,
+            { en: 'Out of 1,000 is much bigger than this grid. Count all the squares in one whole grid and compare that total to 1,000.', es: 'De cada 1,000 es mucho más grande que esta cuadrícula. Cuenta todos los cuadrados de una cuadrícula entera y compara ese total con 1,000.' },
+            { en: 'The % sign does not tell you to add anything. It tells how many parts out of a fixed number of equal parts. Look at the grid for that fixed number.', es: 'El signo % no te dice que sumes. Dice cuántas partes hay de un número fijo de partes iguales. Mira la cuadrícula para ver ese número fijo.' },
+          ],
           hint: 'Look at the total number of squares in the 10 × 10 grid on the left.',
           hintEs: 'Mira el número total de cuadrados en la cuadrícula de 10 × 10 a la izquierda.',
           explain: 'Correct! Percent means “per hundred” or “out of 100.” One whole grid of 100 squares is 100%.',
@@ -908,6 +917,12 @@
             'Un porcentaje nunca puede ser mayor que 100%.'
           ],
           correct: 1,
+          tags: ['compare-direction-reversed', null, 'percent-over-100-denied'],
+          why: [
+            { en: 'Check each percent against 100%, the whole. Less than 100% is less than the whole, and more than 100% is more. Does this statement have them the right way round?', es: 'Compara cada porcentaje con 100%, el entero. Menos de 100% es menos que el entero y más de 100% es más. ¿Esta afirmación los tiene en el orden correcto?' },
+            null,
+            { en: 'Look again at the 150% picture. It uses one full grid and part of a second grid. Can a percent stay at or under 100% if it needs two grids?', es: 'Mira otra vez el dibujo del 150%. Usa una cuadrícula llena y parte de una segunda. ¿Puede un porcentaje quedarse en 100% o menos si necesita dos cuadrículas?' },
+          ],
           hint: 'Compare each number to 100%: under 100% is part of a whole; over 100% is more than one whole.',
           hintEs: 'Compara cada número con 100%: menos de 100% es parte de un entero; más de 100% es más de un entero.',
           explain: 'You got it! 40% < 1 whole, 100% = 1 whole, and 150% > 1 whole (1 whole plus half of another).',
@@ -1039,7 +1054,8 @@
                 btn.classList.add('wrong');
                 fb.className = 'feedback-box show err';
                 const hintTxt = state.showEs && task.hintEs ? `${task.hint} (${task.hintEs})` : task.hint;
-                fb.textContent = `Not quite. Hint: ${hintTxt}`;
+                const help = U4Studio.miss(task, idx, { tab: 1 });
+                fb.innerHTML = help ? `${help}<span style="display:block; margin-top:6px;">Hint: ${hintTxt}</span>` : `Not quite. Hint: ${hintTxt}`;
               }
             });
           });
@@ -2960,17 +2976,18 @@ ${step3Html}
           choices: ['Per ten', 'Per thousand', 'Per hundred', 'Per part'],
           choicesEs: ['Por diez', 'Por mil', 'Por ciento (de cada 100)', 'Por parte'],
           correct: 2,
+          tags: ['percent-base-not-100', 'percent-base-not-100', null, 'percent-base-not-100'],
           feedback: [
-            'Per ten describes tenths, not percent.',
-            'Per thousand is ten times too large.',
+            'Per ten describes tenths, a whole split into 10 parts. Think of the grid: into how many equal parts is the whole grid split?',
+            'Per thousand means a whole split into 1,000 parts. That is far more than the squares in one grid. Count the squares in a whole grid.',
             'Correct! Percent means “per hundred” (out of 100).',
-            'A percent specifically compares a number to 100.'
+            'A percent compares a part to a whole with a fixed number of equal parts. “Per part” does not say how many. Think about the squares in a whole grid.',
           ],
           feedbackEs: [
-            'Por diez describe décimas, no porcentaje.',
-            'Por mil es diez veces demasiado grande.',
+            'Por diez describe décimas: un entero dividido en 10 partes. Piensa en la cuadrícula: ¿en cuántas partes iguales está dividida la cuadrícula entera?',
+            'Por mil es un entero dividido en 1,000 partes. Eso es mucho más que los cuadrados de una cuadrícula. Cuenta los cuadrados de una cuadrícula entera.',
             '¡Correcto! Porcentaje significa “por ciento” (de cada 100).',
-            'Un porcentaje compara específicamente un número con 100.'
+            'Un porcentaje compara una parte con un entero que tiene un número fijo de partes iguales. “Por parte” no dice cuántas. Piensa en los cuadrados de una cuadrícula entera.',
           ]
         },
         {
@@ -2980,17 +2997,18 @@ ${step3Html}
           stemEs: '3 de cada 10 jugadores alcanzan el nivel de bonificación. ¿Qué porcentaje es?',
           choices: ['3%', '10%', '13%', '30%'],
           correct: 3,
+          tags: ['percent-part-count-as-percent', 'percent-total-as-percent', 'op-added-instead-of-multiplied', null],
           feedback: [
-            '3% means 3 out of 100. Multiply both terms of 3/10 by 10!',
-            '10 is the whole, not the percent.',
-            'Multiply both terms by 10 instead of adding 3 + 10.',
-            'Correct! 3/10 × 10/10 = 30/100 = 30%.'
+            '3% means 3 out of every 100, but you started with 3 out of every 10. The whole has to become 100 first. What can you multiply 10 by to make 100, and what do you do to the 3?',
+            '10 is the size of the whole group, not the percent. A percent tells how many out of 100. Rewrite 3 out of 10 as a ratio out of 100.',
+            'You added 3 + 10. Adding does not keep a ratio equal. Multiply both numbers by the same factor so the whole becomes 100.',
+            'Correct! 3/10 × 10/10 = 30/100 = 30%.',
           ],
           feedbackEs: [
-            '3% significa 3 de 100. ¡Multiplica ambos términos de 3/10 por 10!',
-            '10 es el entero, no el porcentaje.',
-            'Multiplica ambos términos por 10 en lugar de sumar 3 + 10.',
-            '¡Correcto! 3/10 × 10/10 = 30/100 = 30%.'
+            '3% significa 3 de cada 100, pero empezaste con 3 de cada 10. Primero el entero debe ser 100. ¿Por qué número multiplicas 10 para obtener 100, y qué haces con el 3?',
+            '10 es el tamaño del grupo entero, no el porcentaje. Un porcentaje dice cuántos de cada 100. Reescribe 3 de cada 10 como una razón de cada 100.',
+            'Sumaste 3 + 10. Sumar no mantiene igual una razón. Multiplica ambos números por el mismo factor para que el entero sea 100.',
+            '¡Correcto! 3/10 × 10/10 = 30/100 = 30%.',
           ]
         },
         {
@@ -3000,17 +3018,18 @@ ${step3Html}
           stemEs: 'Una cuadrícula tiene 100 cuadrados y 65 están sombreados. ¿Qué porcentaje está sombreado?',
           choices: ['6.5%', '35%', '65%', '100%'],
           correct: 2,
+          tags: ['decimal-place-value', 'percent-wrong-part-named', null, 'percent-total-as-percent'],
           feedback: [
-            '6.5% would be 6 and a half squares.',
-            '35% is the unshaded part. The question asks for the shaded percent.',
+            '6.5% would be just over 6 squares out of 100. Check how many squares are shaded in the problem and see if that fits.',
+            'Check which squares that count is about. The question asks for the shaded part, not the squares left unshaded.',
             'Correct! 65 shaded squares out of 100 is 65%.',
-            '100% is the entire grid.'
+            'That is the percent for shading every square in the grid. Only some squares are shaded here. Use the number that are shaded out of the 100.',
           ],
           feedbackEs: [
-            '6.5% serían 6 cuadrados y medio.',
-            '35% es la parte no sombreada. La pregunta pide el porcentaje sombreado.',
+            '6.5% serían poco más de 6 cuadrados de 100. Revisa cuántos cuadrados están sombreados en el problema y mira si encaja.',
+            'Fíjate de qué cuadrados es esa cantidad. La pregunta pide la parte sombreada, no los cuadrados que quedaron sin sombrear.',
             '¡Correcto! 65 cuadrados sombreados de 100 es 65%.',
-            '100% es toda la cuadrícula.'
+            'Ese es el porcentaje si se sombrearan todos los cuadrados. Aquí solo algunos están sombreados. Usa el número de sombreados de los 100.',
           ]
         },
         {
@@ -3020,17 +3039,18 @@ ${step3Html}
           stemEs: '¿Qué porcentaje significa MÁS de un entero?',
           choices: ['0.8%', '80%', '100%', '120%'],
           correct: 3,
+          tags: ['percent-whole-benchmark-missed', 'percent-whole-benchmark-missed', 'percent-whole-benchmark-missed', null],
           feedback: [
-            '0.8% is less than 1 square out of 100.',
-            '80% is less than one whole (100%).',
-            '100% is exactly one whole.',
-            'Correct! Any percent greater than 100% (such as 120%) is more than one whole.'
+            '0.8% is less than 1 square out of 100, a tiny part of the whole. Compare it with 100%, which is one whole. Is it past one whole?',
+            '80 is a big number, but 100% is one whole. Compare 80% with 100%. Is it past the whole, or still inside it?',
+            '100% equals one whole, so it is exactly one whole, not more. What would a percent need to do to be more than the whole?',
+            'Correct! Any percent greater than 100% (such as 120%) is more than one whole.',
           ],
           feedbackEs: [
-            '0.8% es menos de 1 cuadrado de 100.',
-            '80% es menos de un entero (100%).',
-            '100% es exactamente un entero.',
-            '¡Correcto! Cualquier porcentaje mayor que 100% (como 120%) es más de un entero.'
+            '0.8% es menos de 1 cuadrado de 100, una parte diminuta del entero. Compáralo con 100%, que es un entero. ¿Pasa de un entero?',
+            '80 es un número grande, pero 100% es un entero. Compara 80% con 100%. ¿Pasa del entero o sigue dentro de él?',
+            '100% es igual a un entero, o sea exactamente un entero, no más. ¿Qué tendría que pasar con un porcentaje para ser más que el entero?',
+            '¡Correcto! Cualquier porcentaje mayor que 100% (como 120%) es más de un entero.',
           ]
         },
         {
@@ -3040,17 +3060,18 @@ ${step3Html}
           stemEs: 'El gatito naranja pesa 1.5 veces lo que pesa el gatito gris. ¿Qué porcentaje es?',
           choices: ['1.5%', '15%', '50%', '150%'],
           correct: 3,
+          tags: ['percent-conversion-skipped', 'decimal-place-value', 'percent-extra-part-only', null],
           feedback: [
-            'Since 1 whole = 100%, multiply 1.5 × 100%.',
-            'Check place value: 1.5 × 100% = 150%, not 15%.',
-            '50% is half of the weight; 1.5 times is 100% + 50%.',
-            'Correct! 1.5 wholes × 100% = 150%.'
+            'You wrote 1.5 and added a % sign. But 1.5 times means 1.5 wholes, and one whole is worth 100%. How much are 1.5 wholes worth?',
+            'Your digits are right, but check the decimal point. One whole is 100%, so 1.5 wholes is worth more than one whole. Does 15% show that?',
+            '50% is only the extra half. The orange kitten weighs a whole gray kitten plus that extra half. What percent covers both pieces?',
+            'Correct! 1.5 wholes × 100% = 150%.',
           ],
           feedbackEs: [
-            'Como 1 entero = 100%, multiplica 1.5 × 100%.',
-            'Revisa el valor posicional: 1.5 × 100% = 150%, no 15%.',
-            '50% es la mitad del peso; 1.5 veces es 100% + 50%.',
-            '¡Correcto! 1.5 enteros × 100% = 150%.'
+            'Escribiste 1.5 y le pusiste el signo %. Pero 1.5 veces significa 1.5 enteros, y un entero vale 100%. ¿Cuánto valen 1.5 enteros?',
+            'Tus dígitos están bien, pero revisa el punto decimal. Un entero es 100%, así que 1.5 enteros valen más que un entero. ¿Lo muestra el 15%?',
+            '50% es solo la mitad extra. El gatito naranja pesa un gatito gris entero más esa mitad extra. ¿Qué porcentaje cubre las dos partes?',
+            '¡Correcto! 1.5 enteros × 100% = 150%.',
           ]
         },
         {
@@ -3060,17 +3081,18 @@ ${step3Html}
           stemEs: 'En un museo, 9 de cada 25 visitantes son estudiantes. ¿Qué porcentaje son estudiantes?',
           choices: ['9%', '25%', '36%', '84%'],
           correct: 2,
+          tags: ['percent-part-count-as-percent', 'percent-total-as-percent', null, 'ratio-scaled-additively'],
           feedback: [
-            '9 is out of 25, not out of 100. Multiply both terms by 4!',
-            '25 is the original denominator, not the percent.',
+            '9 is out of 25, not out of 100. A percent needs the whole to be 100. What do you multiply 25 by to get 100, and what do you do to the 9?',
+            '25 is how many visitors are in the group, the whole. A percent is the part out of 100. Scale 9 out of 25 so the whole is 100.',
             'Correct! 9/25 × 4/4 = 36/100 = 36%.',
-            '84 comes from adding 75 instead of multiplying by 4.'
+            'Adding the same number to both terms changes the ratio. To keep a ratio equal, multiply both terms by the same factor.',
           ],
           feedbackEs: [
-            '9 es de 25, no de 100. ¡Multiplica ambos términos por 4!',
-            '25 es el denominador original, no el porcentaje.',
+            '9 es de 25, no de 100. Un porcentaje necesita que el entero sea 100. ¿Por qué número multiplicas 25 para obtener 100, y qué haces con el 9?',
+            '25 es cuántos visitantes hay en el grupo, el entero. Un porcentaje es la parte de cada 100. Escala 9 de 25 para que el entero sea 100.',
             '¡Correcto! 9/25 × 4/4 = 36/100 = 36%.',
-            '84 viene de sumar 75 en lugar de multiplicar por 4.'
+            'Sumar el mismo número a ambos términos cambia la razón. Para mantener igual una razón, multiplica ambos términos por el mismo factor.',
           ]
         },
         {
@@ -3080,17 +3102,18 @@ ${step3Html}
           stemEs: 'De cada 50 estudiantes de sexto grado, 33 usan tenis con cordones. ¿Qué porcentaje es?',
           choices: ['33%', '50%', '66%', '83%'],
           correct: 2,
+          tags: ['percent-part-count-as-percent', 'percent-total-as-percent', null, 'op-added-instead-of-multiplied'],
           feedback: [
-            'Scale 33/50 so the denominator is 100 by multiplying by 2.',
-            '50 is the original whole.',
+            '33 is out of 50, not out of 100. A percent needs the whole to be 100. What can you multiply 50 by to get 100, and what do you do to the 33?',
+            '50 is the size of the whole group, not the percent. Rewrite 33 out of 50 as a ratio out of 100.',
             'Correct! 33/50 × 2/2 = 66/100 = 66%.',
-            'Multiply by 2 instead of adding 33 + 50.'
+            'You added 33 + 50. Adding two numbers does not scale a ratio. Multiply both numbers by the same factor so the whole becomes 100.',
           ],
           feedbackEs: [
-            'Escala 33/50 para que el denominador sea 100 multiplicando por 2.',
-            '50 es el entero original.',
+            '33 es de 50, no de 100. Un porcentaje necesita que el entero sea 100. ¿Por qué número puedes multiplicar 50 para obtener 100, y qué haces con el 33?',
+            '50 es el tamaño del grupo entero, no el porcentaje. Reescribe 33 de cada 50 como una razón de cada 100.',
             '¡Correcto! 33/50 × 2/2 = 66/100 = 66%.',
-            'Multiplica por 2 en lugar de sumar 33 + 50.'
+            'Sumaste 33 + 50. Sumar dos números no escala una razón. Multiplica ambos números por el mismo factor para que el entero sea 100.',
           ]
         },
         {
@@ -3100,17 +3123,18 @@ ${step3Html}
           stemEs: 'Un equipo terminó 9 de 12 retos. ¿Qué porcentaje de los retos terminó?',
           choices: ['9%', '12%', '75%', '90%'],
           correct: 2,
+          tags: ['percent-part-count-as-percent', 'percent-total-as-percent', null, 'percent-base-not-100'],
           feedback: [
-            '9 is out of 12, not 100.',
-            '12 is the total number of challenges.',
+            '9 is out of 12, not out of 100. Make an equivalent ratio with 100 as the whole before you name the percent.',
+            '12 is the total number of challenges, the whole. A percent tells how many out of every 100. Rewrite 9 out of 12 as a ratio out of 100.',
             'Correct! 9/12 simplifies (÷3) to 3/4, and 3/4 × 25/25 = 75/100 = 75%.',
-            '90% would be 9 out of 10, not 9 out of 12.'
+            'That would mean 9 out of every 10, but the team finished 9 out of 12. The whole here is 12, not 10. Find an equivalent ratio out of 100.',
           ],
           feedbackEs: [
-            '9 es de 12, no de 100.',
-            '12 es el número total de retos.',
+            '9 es de 12, no de 100. Haz una razón equivalente con 100 como entero antes de nombrar el porcentaje.',
+            '12 es el total de retos, el entero. Un porcentaje dice cuántos de cada 100. Reescribe 9 de cada 12 como una razón de cada 100.',
             '¡Correcto! 9/12 se simplifica (÷3) a 3/4, y 3/4 × 25/25 = 75/100 = 75%.',
-            '90% sería 9 de 10, no 9 de 12.'
+            'Eso significaría 9 de cada 10, pero el equipo terminó 9 de 12. El entero aquí es 12, no 10. Busca una razón equivalente de cada 100.',
           ]
         },
         {
@@ -3120,17 +3144,18 @@ ${step3Html}
           stemEs: 'En un mercado, 11 de cada 20 compradores (55%) usaron un cupón. ¿Qué porcentaje NO usó un cupón?',
           choices: ['9%', '45%', '55%', '89%'],
           correct: 1,
+          tags: ['percent-part-count-as-percent', null, 'percent-wrong-part-named', 'percent-part-count-as-percent'],
           feedback: [
-            '9 out of 20 did not use a coupon, which scales (×5) to 45%, not 9%.',
+            'You found a count, not a percent. 9% means 9 out of every 100, but these shoppers come in groups of 20. Scale the group to 100 before you name the percent.',
             'Correct! 100% − 55% = 45% (or 9/20 × 5/5 = 45/100 = 45%).',
-            '55% is the percent who USED a coupon.',
-            'Subtract 55% from 100%, not 11 from 100.'
+            '55% is the percent who DID use a coupon. The question asks about shoppers who did NOT. Think about what is left of the whole 100%.',
+            '11 is a count out of 20, not a percent, so taking 11 away from 100 mixes two different things. Start from the percent given in the problem.',
           ],
           feedbackEs: [
-            '9 de 20 no usaron cupón, lo cual escala (×5) a 45%, no 9%.',
+            'Hallaste una cantidad, no un porcentaje. 9% significa 9 de cada 100, pero estos compradores vienen en grupos de 20. Escala el grupo a 100 antes de nombrar el porcentaje.',
             '¡Correcto! 100% − 55% = 45% (o 9/20 × 5/5 = 45/100 = 45%).',
-            '55% es el porcentaje que SÍ usó un cupón.',
-            'Resta 55% de 100%, no 11 de 100.'
+            '55% es el porcentaje que SÍ usó un cupón. La pregunta es sobre los compradores que NO lo usaron. Piensa en qué queda del 100% completo.',
+            '11 es una cantidad de 20, no un porcentaje, así que restar 11 de 100 mezcla dos cosas distintas. Empieza con el porcentaje que da el problema.',
           ]
         },
         {
@@ -3151,17 +3176,18 @@ ${step3Html}
             'Sumar 750 + 500 da 1,250%.'
           ],
           correct: 2,
+          tags: ['ratio-as-difference', 'percent-wrong-whole-used', null, 'op-added-instead-of-multiplied'],
           feedback: [
-            'Subtracting finds the extra dollars, not the ratio per 100.',
-            'The whole goal is $500, and $750 is more than the whole.',
+            'Subtracting finds how many dollars more, but a percent compares an amount to the goal, per 100. Compare the money collected with the goal as a ratio.',
+            'That treats $1,000 as the whole, but the whole in this story is the club’s goal. Which amount is the 100%?',
             'Correct! 750/500 scales down (÷5) to 150/100 = 150%.',
-            'Percents compare the part to the whole by scaling, not adding.'
+            'Adding the two amounts does not compare them. A percent compares the part to the whole by scaling both numbers by the same factor.',
           ],
           feedbackEs: [
-            'Restar halla los dólares extra, no la razón por 100.',
-            'La meta entera es $500, y $750 es más que el entero.',
+            'Restar halla cuántos dólares más, pero un porcentaje compara una cantidad con la meta, por cada 100. Compara el dinero recaudado con la meta como una razón.',
+            'Eso toma $1,000 como el entero, pero el entero de esta historia es la meta del club. ¿Cuál cantidad es el 100%?',
             '¡Correcto! 750/500 se reduce (÷5) a 150/100 = 150%.',
-            'Los porcentajes comparan la parte con el entero escalando, no sumando.'
+            'Sumar las dos cantidades no las compara. Un porcentaje compara la parte con el entero escalando ambos números por el mismo factor.',
           ]
         }
       ];
@@ -3212,6 +3238,14 @@ ${step3Html}
         if (scroll) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
 
+      // The bilingual help for a wrong pick. A pick made just now was already recorded by U4Studio.miss; one restored from a save is only read.
+      let freshMiss = null;
+      function missHtml(q, i) {
+        if (freshMiss && freshMiss.id === q.id && freshMiss.choice === i) return freshMiss.html;
+        const h = U4Studio.helpFor(q, i);
+        return h ? `${h.en}<span class="es-text">${h.es}</span>` : '';
+      }
+
       function renderT5Question() {
         const q = QUIZ_QUESTIONS[state.idx5];
         const chosen = state.quizChoice[q.id];
@@ -3239,9 +3273,8 @@ ${step3Html}
 
         const hasChoice = chosen !== undefined;
         const isOk = chosen === q.correct;
-        const fbMsg = hasChoice
-          ? (state.showEs && q.feedbackEs && q.feedbackEs[chosen] ? `${q.feedback[chosen]} (${q.feedbackEs[chosen]})` : q.feedback[chosen])
-          : '';
+        const okMsg = state.showEs && q.feedbackEs && q.feedbackEs[chosen] ? `${q.feedback[chosen]} (${q.feedbackEs[chosen]})` : q.feedback[chosen];
+        const fbMsg = hasChoice ? (isOk ? okMsg : missHtml(q, chosen)) : '';
 
         stage.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px;">
@@ -3264,6 +3297,7 @@ ${step3Html}
             const cIdx = Number(btn.dataset.qChoice);
             if (!(q.id in state.quizFirst)) state.quizFirst[q.id] = (cIdx === q.correct);
             if (cIdx === q.correct) justSolved = true;
+            else freshMiss = { id: q.id, choice: cIdx, html: U4Studio.miss(q, cIdx, { tab: 5 }) };
             state.quizChoice[q.id] = cIdx;
             state.solved5[q.id] = (cIdx === q.correct);
             updateProgressHeader();

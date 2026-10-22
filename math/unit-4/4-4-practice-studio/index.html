@@ -17,8 +17,10 @@
   <!-- nsr-injected:end -->
   <!-- u4-clarity:begin (scripts/inject-u4-lab-bench.mjs) -->
   <script>(function(){try{var t=localStorage.getItem("neft_u4_theme_v1"),m=matchMedia("(prefers-color-scheme: dark)").matches,c=/-challenging/.test(location.pathname),d=t==="light"||t==="dark"?t:t==="auto"||!c?(m?"dark":"light"):"dark";new MutationObserver(function(_,o){if(document.body){document.body.dataset.theme=d;o.disconnect()}}).observe(document.documentElement,{childList:true})}catch(e){}})()</script>
-  <link rel="stylesheet" href="/assets/studio/clarity.css?v=be0288a64f">
-  <script src="/assets/studio/clarity.js?v=be0288a64f" defer></script>
+  <link rel="stylesheet" href="/assets/studio/clarity.css?v=325a912e68">
+  <script src="/assets/studio/clarity.js?v=325a912e68" defer></script>
+  <script type="application/json" id="u4-traps">{"compare-assumed-equal":{"name":"Called them equal too soon","nameEs":"Dije que eran iguales muy pronto","fix":"Close is not equal. Work out each value exactly, then compare.","fixEs":"Parecido no es igual. Calcula cada valor exactamente y después compara."},"compare-thought-impossible":{"name":"Thought it could not be done","nameEs":"Pensé que no se podía","fix":"Look for a step that puts both on the same footing: the same unit, the amount for one, or smaller pieces.","fixEs":"Busca un paso que ponga las dos cosas en igualdad: la misma unidad, la cantidad para uno o piezas más pequeñas."},"fraction-part-whole-misread":{"name":"Mixed up part and whole","nameEs":"Confundí la parte y el entero","fix":"Say what each number counts: the bottom number is how many equal parts make one whole, the top is how many parts you have.","fixEs":"Di qué cuenta cada número: el de abajo es cuántas partes iguales forman un entero y el de arriba es cuántas partes tienes."},"op-added-instead-of-subtracted":{"name":"Added instead of subtracted","nameEs":"Sumé en vez de restar","fix":"Difference, distance and 'how many more' all mean subtract. Check that your answer is smaller than the larger amount.","fixEs":"Diferencia, distancia y '¿cuántos más?' significan restar. Revisa que tu respuesta sea menor que la cantidad mayor."},"percent-used-as-whole-number":{"name":"Used the percent as a number","nameEs":"Usé el porcentaje como número","fix":"A percent means out of 100. Write it as a fraction or decimal before you use it.","fixEs":"Un porcentaje significa de cada 100. Escríbelo como fracción o decimal antes de usarlo."},"pof-compared-percents-only":{"name":"Compared only the percents","nameEs":"Comparó solo los porcentajes","fix":"A percent is a part of its own whole. Work out each amount first, then compare the amounts.","fixEs":"Un porcentaje es una parte de su propio total. Halla primero cada cantidad y luego compara las cantidades."},"pof-compared-wholes-only":{"name":"Compared only the wholes","nameEs":"Comparó solo los totales","fix":"A bigger whole does not always give a bigger part. Take the percent of each whole, then compare.","fixEs":"Un total mayor no siempre da una parte mayor. Toma el porcentaje de cada total y luego compara."},"pof-divided-by-percent-number":{"name":"Divided by the percent number","nameEs":"Dividió entre el número del porcentaje","fix":"A percent of a number is a multiplication by the percent written as a decimal.","fixEs":"Un porcentaje de un número es una multiplicación por el porcentaje escrito como decimal."},"pof-guessed-close-not-exact":{"name":"Guessed close, not exact","nameEs":"Adivinó cerca, no exacto","fix":"Turn the percent into a fraction or decimal, then find the exact part. Close is not the same as exact.","fixEs":"Convierte el porcentaje en fracción o decimal y halla la parte exacta. Cerca no es lo mismo que exacto."},"pof-percent-step-slip":{"name":"Slipped on a calculation step","nameEs":"Error en un paso del cálculo","fix":"Write each step on its own line, say what each number means, and check each step before moving on.","fixEs":"Escribe cada paso en su propia línea, di qué significa cada número y revisa cada paso antes de seguir."},"pof-percent-wrong-decimal":{"name":"Percent turned into wrong decimal","nameEs":"Porcentaje en decimal equivocado","fix":"Percent means out of 100. Divide the percent number by 100 to get the decimal, and check the size of your answer.","fixEs":"Por ciento significa de cada 100. Divide el número del porcentaje entre 100 para obtener el decimal y revisa el tamaño de tu respuesta."},"pof-whole-given-as-part":{"name":"Gave the whole, not a part","nameEs":"Dio el total, no una parte","fix":"A percent under 100% gives a part smaller than the whole. Check your answer against the whole.","fixEs":"Un porcentaje menor que 100% da una parte menor que el total. Compara tu respuesta con el total."},"read-question-missed-key-word":{"name":"Answered a different question","nameEs":"Respondí otra pregunta","fix":"Underline what the question asks for before you choose. Check that your choice answers exactly that.","fixEs":"Subraya lo que pide la pregunta antes de elegir. Revisa que tu opción responda exactamente eso."}}</script>
+  <script src="/assets/u4-studio-thinking.js?v=325a912e68" defer></script>
   <!-- u4-clarity:end -->
 </head>
 <body>
@@ -703,11 +705,12 @@
           unit: 'games',
           question: 'Which team won MORE games?',
           choices: [
-            { text: 'Team Lightning won more games because 70% is greater than 60%.', correct: false },
+            { text: 'Team Lightning won more games because 70% is greater than 60%.', correct: false, why: { en: 'Thunder and Lightning played different numbers of games, so the bigger percent does not decide it. Find how many games each team won, then compare those numbers.', es: 'Thunder y Lightning jugaron números distintos de juegos, así que el porcentaje mayor no decide. Halla cuántos juegos ganó cada equipo y compara esos números.' } },
             { text: 'Team Thunder won more games.', correct: true },
-            { text: 'Both teams won the same number of games.', correct: false }
+            { text: 'Both teams won the same number of games.', correct: false, why: { en: 'Do not decide the teams won the same number without checking. Multiply each percent by its own number of games, then compare.', es: 'No decidas que los equipos ganaron lo mismo sin comprobar. Multiplica cada porcentaje por su propio número de juegos y luego compara.' } }
           ],
-          explain: 'Team Thunder: 0.60 × 50 = 30 games. Team Lightning: 0.70 × 40 = 28 games. Thunder won more!'
+          explain: 'Team Thunder: 0.60 × 50 = 30 games. Team Lightning: 0.70 × 40 = 28 games. Thunder won more!',
+          tags: ['pof-compared-percents-only', null, 'compare-assumed-equal']
         },
         {
           id: 't3_2',
@@ -719,11 +722,12 @@
           unit: 'students',
           question: 'Which school has more students in band?',
           choices: [
-            { text: 'School B has more band students because 50% is greater than 40%.', correct: false },
-            { text: 'The two schools have the same number of band students.', correct: false },
+            { text: 'School B has more band students because 50% is greater than 40%.', correct: false, why: { en: 'School B has the bigger percent, but the schools have different numbers of students. Find how many students are in band at each school, then compare those numbers.', es: 'La Escuela B tiene el porcentaje mayor, pero las escuelas tienen números distintos de estudiantes. Halla cuántos estudiantes de banda hay en cada escuela y compara esos números.' } },
+            { text: 'The two schools have the same number of band students.', correct: false, why: { en: 'Do not decide the schools match without checking. Multiply each percent by its own number of students, then compare.', es: 'No decidas que las escuelas son iguales sin comprobar. Multiplica cada porcentaje por su propio número de estudiantes y luego compara.' } },
             { text: 'School A has more band students.', correct: true }
           ],
-          explain: 'School A: 0.40 × 600 = 240. School B: 0.50 × 450 = 225. 240 > 225.'
+          explain: 'School A: 0.40 × 600 = 240. School B: 0.50 × 450 = 225. 240 > 225.',
+          tags: ['pof-compared-percents-only', 'compare-assumed-equal', null]
         },
         {
           id: 't3_3',
@@ -736,10 +740,11 @@
           question: 'Which section has more checked-out books?',
           choices: [
             { text: 'Section 2 has more books.', correct: true },
-            { text: 'Section 1 has more books because 30% is greater than 25%.', correct: false },
-            { text: 'Both sections have the same number of books.', correct: false }
+            { text: 'Section 1 has more books because 30% is greater than 25%.', correct: false, why: { en: 'Section 1 has the bigger percent, but the sections start with different numbers of books. Find how many books each section has, then compare those numbers.', es: 'La Sección 1 tiene el porcentaje mayor, pero las secciones empiezan con números distintos de libros. Halla cuántos libros tiene cada sección y compara esos números.' } },
+            { text: 'Both sections have the same number of books.', correct: false, why: { en: 'Do not decide the sections match without checking. Multiply each percent by its own number of books, then compare.', es: 'No decidas que las secciones son iguales sin comprobar. Multiplica cada porcentaje por su propio número de libros y luego compara.' } }
           ],
-          explain: 'Section 1: 0.30 × 180 = 54. Section 2: 0.25 × 220 = 55. Section 2 is higher by 1 book.'
+          explain: 'Section 1: 0.30 × 180 = 54. Section 2: 0.25 × 220 = 55. Section 2 is higher by 1 book.',
+          tags: [null, 'pof-compared-percents-only', 'compare-assumed-equal']
         },
         {
           id: 't3_4',
@@ -751,11 +756,12 @@
           unit: 'apples',
           question: 'Which stand has more ripe apples?',
           choices: [
-            { text: 'Both stands have the same number of ripe apples.', correct: false },
+            { text: 'Both stands have the same number of ripe apples.', correct: false, why: { en: 'Do not decide the stands match without checking. Multiply each percent by its own number of apples, then compare.', es: 'No decidas que los puestos son iguales sin comprobar. Multiplica cada porcentaje por su propio número de manzanas y luego compara.' } },
             { text: 'Stand Y has more ripe apples.', correct: true },
-            { text: 'Stand X has more ripe apples because 80% is greater than 75%.', correct: false }
+            { text: 'Stand X has more ripe apples because 80% is greater than 75%.', correct: false, why: { en: 'Stand X has the bigger percent, but the stands have different numbers of apples. Find how many ripe apples each stand has, then compare those numbers.', es: 'El puesto X tiene el porcentaje mayor, pero los puestos tienen números distintos de manzanas. Halla cuántas manzanas maduras tiene cada puesto y compara esos números.' } }
           ],
-          explain: 'Stand X: 0.80 × 90 = 72. Stand Y: 0.75 × 100 = 75. Stand Y has more!'
+          explain: 'Stand X: 0.80 × 90 = 72. Stand Y: 0.75 × 100 = 75. Stand Y has more!',
+          tags: ['compare-assumed-equal', null, 'pof-compared-percents-only']
         },
         {
           id: 't3_5',
@@ -767,11 +773,12 @@
           unit: 'points',
           question: 'Which quiz resulted in higher earned points?',
           choices: [
-            { text: 'Both quizzes earned the same number of points.', correct: false },
-            { text: 'Quiz A earned more points because 85% is greater than 70%.', correct: false },
+            { text: 'Both quizzes earned the same number of points.', correct: false, why: { en: 'Do not decide the quizzes match without checking. Multiply each percent by its own number of points, then compare.', es: 'No decidas que las pruebas son iguales sin comprobar. Multiplica cada porcentaje por su propio número de puntos y luego compara.' } },
+            { text: 'Quiz A earned more points because 85% is greater than 70%.', correct: false, why: { en: 'Quiz A has the bigger percent, but the quizzes are out of different numbers of points. Find the points earned on each quiz, then compare those numbers.', es: 'La prueba A tiene el porcentaje mayor, pero las pruebas valen puntos distintos. Halla los puntos obtenidos en cada prueba y compara esos números.' } },
             { text: 'Quiz B earned more points.', correct: true }
           ],
-          explain: 'Quiz A: 0.85 × 40 = 34. Quiz B: 0.70 × 50 = 35. Quiz B has 35 points.'
+          explain: 'Quiz A: 0.85 × 40 = 34. Quiz B: 0.70 × 50 = 35. Quiz B has 35 points.',
+          tags: ['compare-assumed-equal', 'pof-compared-percents-only', null]
         },
         {
           id: 't3_6',
@@ -784,10 +791,11 @@
           question: 'Which deal gives a LARGER dollar discount?',
           choices: [
             { text: 'Deal 2 saves more money.', correct: true },
-            { text: 'Deal 1 saves more money because 30% is greater than 20%.', correct: false },
-            { text: 'Both deals save the same amount.', correct: false }
+            { text: 'Deal 1 saves more money because 30% is greater than 20%.', correct: false, why: { en: 'Deal 1 has the bigger percent, but the two shoes cost different amounts. Find the dollars each deal saves, then compare those amounts.', es: 'La oferta 1 tiene el porcentaje mayor, pero los dos zapatos cuestan distinto. Halla los dólares que ahorra cada oferta y compara esas cantidades.' } },
+            { text: 'Both deals save the same amount.', correct: false, why: { en: 'Do not decide the deals save the same amount without checking. Multiply each percent by its own price, then compare.', es: 'No decidas que las ofertas ahorran lo mismo sin comprobar. Multiplica cada porcentaje por su propio precio y luego compara.' } }
           ],
-          explain: 'Deal 1 discount: 0.30 × 90 = $27. Deal 2 discount: 0.20 × 140 = $28. Deal 2 saves $1 more.'
+          explain: 'Deal 1 discount: 0.30 × 90 = $27. Deal 2 discount: 0.20 × 140 = $28. Deal 2 saves $1 more.',
+          tags: [null, 'pof-compared-percents-only', 'compare-assumed-equal']
         },
         {
           id: 't3_7',
@@ -799,11 +807,12 @@
           unit: 'dollars pledged',
           question: 'Compare the dollar donations from both donors:',
           choices: [
-            { text: 'Donor A gives more because 15% is greater than 12%.', correct: false },
+            { text: 'Donor A gives more because 15% is greater than 12%.', correct: false, why: { en: 'Donor A pledges the bigger percent, but the donors start from different amounts. Find the dollars each donor pledges, then compare those amounts.', es: 'El donante A promete el porcentaje mayor, pero cada donante parte de una cantidad distinta. Halla los dólares que promete cada donante y compara esas cantidades.' } },
             { text: 'Both donors give the same amount.', correct: true },
-            { text: 'Donor B gives more because $500 is greater than $400.', correct: false }
+            { text: 'Donor B gives more because $500 is greater than $400.', correct: false, why: { en: 'Donor B starts from the bigger amount, but a percent takes only a part of it. Find the dollars each donor pledges, then compare those amounts.', es: 'El donante B parte de la cantidad mayor, pero un porcentaje toma solo una parte. Halla los dólares que promete cada donante y compara esas cantidades.' } }
           ],
-          explain: 'Donor A: 0.15 × 400 = $60. Donor B: 0.12 × 500 = $60. They are equal!'
+          explain: 'Donor A: 0.15 × 400 = $60. Donor B: 0.12 × 500 = $60. They are equal!',
+          tags: ['pof-compared-percents-only', null, 'pof-compared-wholes-only']
         },
         {
           id: 't3_8',
@@ -815,11 +824,12 @@
           unit: 'kWh',
           question: 'Which solar array generates more kilowatt-hours?',
           choices: [
-            { text: 'Array 2 generates more because 50% is greater than 45%.', correct: false },
-            { text: 'Both arrays generate the same number of kilowatt-hours.', correct: false },
+            { text: 'Array 2 generates more because 50% is greater than 45%.', correct: false, why: { en: 'Array 2 has the bigger percent, but the arrays start from different numbers of kWh. Find the kWh each array generates, then compare those numbers.', es: 'El conjunto 2 tiene el porcentaje mayor, pero los conjuntos parten de números distintos de kWh. Halla los kWh que genera cada conjunto y compara esos números.' } },
+            { text: 'Both arrays generate the same number of kilowatt-hours.', correct: false, why: { en: 'Do not decide the arrays match without checking. Multiply each percent by its own number of kWh, then compare.', es: 'No decidas que los conjuntos son iguales sin comprobar. Multiplica cada porcentaje por sus propios kWh y luego compara.' } },
             { text: 'Array 1 generates more.', correct: true }
           ],
-          explain: 'Array 1: 0.45 × 800 = 360 kWh. Array 2: 0.50 × 700 = 350 kWh. Array 1 generates more.'
+          explain: 'Array 1: 0.45 × 800 = 360 kWh. Array 2: 0.50 × 700 = 350 kWh. Array 1 generates more.',
+          tags: ['pof-compared-percents-only', 'compare-assumed-equal', null]
         }
       ];
 
@@ -972,8 +982,7 @@ function renderT3() {
         playSound("wrong");
         btn.classList.add("wrong");
         fb.className = "feedback-box show err";
-        fb.textContent =
-          "Check your two parts again: compare the actual numbers, not just the percents.";
+        fb.innerHTML = U4Studio.miss(c, idx, { tab: 3 });
       }
       saveState();
     });
@@ -1264,70 +1273,138 @@ function renderT3() {
           q: 'What is 30% of 90?',
           choices: ['2.7', '27', '30', '270'],
           correct: 1,
-          explain: '0.30 × 90 = 27.'
+          explain: '0.30 × 90 = 27.',
+          tags: ['pof-percent-wrong-decimal', null, 'percent-used-as-whole-number', 'pof-percent-wrong-decimal'],
+          why: [
+            { en: '30% is 30 out of every 100, so as a decimal it has only two places. Check that your decimal has the right number of places before you multiply.', es: '30% es 30 de cada 100, así que como decimal tiene solo dos lugares. Revisa que tu decimal tenga la cantidad correcta de lugares antes de multiplicar.' },
+            null,
+            { en: 'You used 30 as if it were the amount, but 30% means 30 out of every 100. Write 30% as a decimal first, then take that part of 90.', es: 'Usaste 30 como si fuera la cantidad, pero 30% significa 30 de cada 100. Primero escribe 30% como decimal y luego toma esa parte de 90.' },
+            { en: 'Your result is bigger than 90, the whole. A percent less than 100% takes only part of the whole, so write 30% as a decimal less than 1 before you multiply.', es: 'Tu resultado es mayor que 90, el total. Un porcentaje menor que 100% toma solo una parte del total; escribe 30% como un decimal menor que 1 antes de multiplicar.' }
+          ]
         },
         {
           id: 't5_2',
           q: 'To find 6% of 50 using an equation, which multiplication is correct?',
           choices: ['0.6 × 50', '0.06 × 50', '6 × 50', '0.006 × 50'],
           correct: 1,
-          explain: '6% = 6/100 = 0.06.'
+          explain: '6% = 6/100 = 0.06.',
+          tags: ['pof-percent-wrong-decimal', null, 'percent-used-as-whole-number', 'pof-percent-wrong-decimal'],
+          why: [
+            { en: 'Read 0.6 aloud: six tenths, which is 60 out of 100. Does that match 6%? Think about what percent means: out of 100.', es: 'Lee 0.6 en voz alta: seis décimas, es decir, 60 de cada 100. ¿Coincide con 6%? Piensa en lo que significa por ciento: de cada 100.' },
+            null,
+            { en: 'You used 6 as if it were the amount, but 6% means 6 out of every 100. Write 6% as a decimal before you multiply by 50.', es: 'Usaste 6 como si fuera la cantidad, pero 6% significa 6 de cada 100. Escribe 6% como decimal antes de multiplicar por 50.' },
+            { en: 'Read 0.006 aloud: six thousandths. A percent is out of 100, so check how many decimal places 6% needs.', es: 'Lee 0.006 en voz alta: seis milésimas. Un porcentaje es de cada 100, así que revisa cuántos lugares decimales necesita 6%.' }
+          ]
         },
         {
           id: 't5_3',
           q: 'What is 75% of 48?',
           choices: ['32', '36', '40', '42'],
           correct: 1,
-          explain: '3/4 of 48 = 36.'
+          explain: '3/4 of 48 = 36.',
+          tags: ['pof-guessed-close-not-exact', null, 'pof-guessed-close-not-exact', 'pof-guessed-close-not-exact'],
+          why: [
+            { en: '32 is two-thirds of 48, which is not 75%. Write 75% as a fraction with 4 on the bottom, then find that part of 48.', es: '32 es dos tercios de 48, y eso no es 75%. Escribe 75% como una fracción con 4 abajo y luego halla esa parte de 48.' },
+            null,
+            { en: '40 is five-sixths of 48, which is a different percent than 75%. Write 75% as a fraction, split 48 into equal parts, and take the right number of parts.', es: '40 es cinco sextos de 48, y eso es un porcentaje distinto de 75%. Escribe 75% como fracción, divide 48 en partes iguales y toma la cantidad correcta de partes.' },
+            { en: '42 is seven-eighths of 48, which is a different percent than 75%. Write 75% as a fraction, split 48 into equal parts, and count the parts you need.', es: '42 es siete octavos de 48, y eso es un porcentaje distinto de 75%. Escribe 75% como fracción, divide 48 en partes iguales y cuenta las partes que necesitas.' }
+          ]
         },
         {
           id: 't5_4',
           q: 'School Green has 50% of 120 students in art. School Blue has 40% of 160 students in art. Which school has more art students?',
           choices: ['School Blue (64 > 60)', 'School Green (60 > 64)', 'Both have 60', 'Neither has any'],
           correct: 0,
-          explain: 'Green: 0.50 × 120 = 60. Blue: 0.40 × 160 = 64. Blue has more.'
+          explain: 'Green: 0.50 × 120 = 60. Blue: 0.40 × 160 = 64. Blue has more.',
+          tags: [null, 'pof-compared-percents-only', 'compare-assumed-equal', 'compare-thought-impossible'],
+          why: [
+            null,
+            { en: 'Green has the bigger percent, but the two schools have different numbers of students. Find how many art students each school has, then compare those numbers.', es: 'Green tiene el porcentaje mayor, pero las escuelas tienen números distintos de estudiantes. Halla cuántos estudiantes de arte tiene cada escuela y compara esos números.' },
+            { en: 'Blue has its own percent and its own total. Work out Blue\'s number by itself instead of using Green\'s.', es: 'Blue tiene su propio porcentaje y su propio total. Halla el número de Blue por separado en vez de usar el de Green.' },
+            { en: 'Each school has a percent of its students in art, and both percents are more than 0%. Find each school\'s number, then compare.', es: 'Cada escuela tiene un porcentaje de estudiantes en arte, y los dos son mayores que 0%. Halla el número de cada escuela y luego compara.' }
+          ]
         },
         {
           id: 't5_5',
           q: 'What is 10% of 350?',
           choices: ['3.5', '35', '350', '0.35'],
           correct: 1,
-          explain: '350 ÷ 10 = 35.'
+          explain: '350 ÷ 10 = 35.',
+          tags: ['pof-percent-wrong-decimal', null, 'pof-whole-given-as-part', 'pof-percent-wrong-decimal'],
+          why: [
+            { en: 'A percent is out of 100, so 10% is 10 out of every 100. Check how many places you moved the decimal point when you wrote 10% as a decimal.', es: 'Un porcentaje es de cada 100, así que 10% es 10 de cada 100. Revisa cuántos lugares moviste el punto decimal al escribir 10% como decimal.' },
+            null,
+            { en: '350 is the whole amount. A percent less than 100% is only a part of the whole, so the answer must be smaller than the whole.', es: '350 es la cantidad completa. Un porcentaje menor que 100% es solo una parte del total, así que la respuesta debe ser menor que el total.' },
+            { en: '0.35 is much smaller than 10% of 350 should be. Check how you wrote 10% as a decimal and how the decimal point moved.', es: '0.35 es mucho menor de lo que debe ser el 10% de 350. Revisa cómo escribiste 10% como decimal y cómo se movió el punto decimal.' }
+          ]
         },
         {
           id: 't5_6',
           q: 'A skateboard originally priced at $80 is discounted 25%. What is the discount amount?',
           choices: ['$15', '$20', '$25', '$60'],
           correct: 1,
-          explain: '0.25 × 80 = $20.'
+          explain: '0.25 × 80 = $20.',
+          tags: ['pof-percent-step-slip', null, 'percent-used-as-whole-number', 'read-question-missed-key-word'],
+          why: [
+            { en: 'Check how you found $15. The discount is 25% of the original price, so write 25% as a decimal and multiply it by the price the skateboard started at.', es: 'Revisa cómo hallaste $15. El descuento es el 25% del precio original, así que escribe 25% como decimal y multiplícalo por el precio con que empezó la patineta.' },
+            null,
+            { en: 'You used 25 as if it were dollars, but 25% means 25 out of every 100 of the price. Write 25% as a decimal, then take that part of $80.', es: 'Usaste 25 como si fueran dólares, pero 25% significa 25 de cada 100 del precio. Escribe 25% como decimal y luego toma esa parte de $80.' },
+            { en: 'Reread what the question asks for. It wants the amount taken off, so check whether your number is the discount or the price after the discount.', es: 'Vuelve a leer lo que pide la pregunta. Pide la cantidad que se quita; revisa si tu número es el descuento o el precio después del descuento.' }
+          ]
         },
         {
           id: 't5_7',
           q: 'What is the final sale price of the $80 skateboard with a $20 discount?',
           choices: ['$50', '$60', '$70', '$100'],
           correct: 1,
-          explain: '$80 - $20 = $60.'
+          explain: '$80 - $20 = $60.',
+          tags: ['pof-percent-step-slip', null, 'pof-percent-step-slip', 'op-added-instead-of-subtracted'],
+          why: [
+            { en: 'Check your subtraction. The sale price takes away exactly the discount amount, not more than that. Write the subtraction out and check it.', es: 'Revisa tu resta. El precio de oferta quita exactamente el monto del descuento, no más. Escribe la resta y revísala.' },
+            null,
+            { en: 'Check how much you took off. The sale price takes away the full discount, not just part of it. Write the subtraction out again.', es: 'Revisa cuánto quitaste. El precio de oferta quita todo el descuento, no solo una parte. Escribe la resta otra vez.' },
+            { en: 'A discount makes the price go down. Check whether you added the discount to the price instead of taking it away.', es: 'Un descuento hace que el precio baje. Revisa si sumaste el descuento al precio en lugar de quitarlo.' }
+          ]
         },
         {
           id: 't5_8',
           q: 'A battery has 5 equal bars. 3 bars remain. What percent of battery is left?',
           choices: ['30%', '50%', '60%', '75%'],
           correct: 2,
-          explain: '3/5 = 60/100 = 60%.'
+          explain: '3/5 = 60/100 = 60%.',
+          tags: ['fraction-part-whole-misread', 'fraction-part-whole-misread', null, 'fraction-part-whole-misread'],
+          why: [
+            { en: '30% is 3 out of 10. Count how many equal bars make up the whole battery, then write the bars that remain as a fraction of that whole.', es: '30% es 3 de 10. Cuenta cuántas barras iguales forman toda la batería y escribe las barras que quedan como fracción de ese total.' },
+            { en: '50% is exactly half of the battery. Check whether 3 bars out of the bars in the whole battery is exactly half.', es: '50% es exactamente la mitad de la batería. Comprueba si 3 barras del total de barras de la batería son exactamente la mitad.' },
+            null,
+            { en: '75% is 3 out of 4. Count the bars in the whole battery again before you write the fraction.', es: '75% es 3 de 4. Vuelve a contar las barras de toda la batería antes de escribir la fracción.' }
+          ]
         },
         {
           id: 't5_9',
           q: 'What is 5% of 60?',
           choices: ['3', '6', '12', '30'],
           correct: 0,
-          explain: '0.05 × 60 = 3.'
+          explain: '0.05 × 60 = 3.',
+          tags: [null, 'pof-percent-wrong-decimal', 'pof-divided-by-percent-number', 'pof-percent-wrong-decimal'],
+          why: [
+            null,
+            { en: '6 is what you get from 10 out of every 100, not 5. Check how you wrote 5% as a decimal before you multiplied by 60.', es: '6 sale de 10 de cada 100, no de 5. Revisa cómo escribiste 5% como decimal antes de multiplicar por 60.' },
+            { en: '12 comes from splitting 60 into 5 equal groups, which is one fifth. But 5% is 5 out of every 100, not one fifth. Write 5% as a decimal and multiply.', es: '12 sale de dividir 60 en 5 grupos iguales, que es un quinto. Pero 5% es 5 de cada 100, no un quinto. Escribe 5% como decimal y multiplica.' },
+            { en: '30 is half of 60, which is 50 out of every 100. Check what decimal you used for 5%.', es: '30 es la mitad de 60, que es 50 de cada 100. Revisa qué decimal usaste para 5%.' }
+          ]
         },
         {
           id: 't5_10',
           q: 'True or False: A higher percent ALWAYS results in a higher quantity, regardless of the whole.',
           choices: ['True', 'False — the whole determines the final quantity'],
           correct: 1,
-          explain: 'False: 90% of 10 is 9, but 20% of 100 is 20.'
+          explain: 'False: 90% of 10 is 9, but 20% of 100 is 20.',
+          tags: ['pof-compared-percents-only', null],
+          why: [
+            { en: 'Percents can look bigger than they are. Try 90% of a small number and 20% of a big number, then compare the two amounts, not just the percents.', es: 'Los porcentajes pueden parecer mayores de lo que son. Prueba 90% de un número pequeño y 20% de un número grande, y compara las dos cantidades, no solo los porcentajes.' },
+            null
+          ]
         }
       ];
 
@@ -1392,7 +1469,7 @@ function renderT3() {
               playSound('wrong');
               btn.classList.add('wrong');
               fb.className = 'feedback-box show err';
-              fb.textContent = 'Take your time and apply the percent equation or model.';
+              fb.innerHTML = U4Studio.miss(q, idx, { tab: 5 });
             }
             saveState();
           });

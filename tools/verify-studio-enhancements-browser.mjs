@@ -7,6 +7,7 @@ import { createServer } from "node:http";
 import { extname, join, resolve } from "node:path";
 import { chromium } from "playwright";
 import { REPO_ROOT } from "./lib/curriculum-source.mjs";
+import { U4_PAGES, u4McItems } from "./lib/u4-mc-items.mjs";
 
 const types = {
   ".html": "text/html",
@@ -370,6 +371,64 @@ try {
     }
     ok(
       `fixed chrome: launcher label >= 4.5:1 and star spark >= 3:1 in ${pairs} world/theme checks; launchers and toasts cover nothing at 1280x800 and 1366x768`,
+    );
+  }
+
+  // Unit 4: a wrong pick on the Mastery Check shows that choice's own help, is recorded as a named miss, and appears in
+  // "My thinking" under the trap's name — on all ten hand-built pages.
+  {
+    const spanish = [];
+    const traps = JSON.parse(
+      readFileSync(join(REPO_ROOT, "data/practice-studio/misconceptions.json"), "utf8"),
+    ).traps;
+    for (const slug of U4_PAGES) {
+      // The quiz may order or sample its questions, so the check does not assume which one opens: click choices until one
+      // is wrong, then require that choice's own help (any authored help line on the page) and its tag.
+      const items = u4McItems(slug);
+      const helps = items.flatMap((m) =>
+        m.texts.map((_t, i) => {
+          const h = m.item.why?.[i] ?? m.item.choices?.[i]?.why ?? m.item.feedback?.[i];
+          return i === m.correct || !h ? "" : typeof h === "string" ? h : h.en;
+        }),
+      );
+      assert.ok(helps.some(Boolean), `${slug}: has authored help`);
+      // a right pick locks its question, so every attempt starts from a fresh page and a fresh store
+      /** @type {any[]} */ let misses = [];
+      /** @type {any} */ let ctx;
+      /** @type {any} */ let page;
+      for (let i = 0; i < 4 && !misses.length; i++) {
+        ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+        page = await ctx.newPage();
+        await page.goto(`${origin}/math/unit-4/${slug}/`);
+        await page.locator(".tab-btn").nth(4).click();
+        await page.locator(".choice-btn:visible").nth(i).click();
+        misses = await page.evaluate(() => /** @type {any} */ (window).U4Studio.misses());
+        if (!misses.length) await ctx.close();
+      }
+      assert.equal(misses.length, 1, `${slug}: a wrong pick is recorded`);
+      assert.ok(
+        traps[misses[0].tag],
+        `${slug}: the miss carries a misconception id (${misses[0].tag})`,
+      );
+      const shown = await page.locator(".feedback-box.show").evaluateAll((els, list) => {
+        const dec = (/** @type {string} */ t) => {
+          const a = document.createElement("textarea");
+          a.innerHTML = t;
+          return a.value;
+        };
+        const text = els.map((e) => e.textContent).join(" ");
+        return list.some((h) => h && text.includes(dec(h).slice(0, 30)));
+      }, helps);
+      assert.ok(shown, `${slug}: the picked choice's own help is shown`);
+      await page.click(".studio-menu-btn");
+      await page.click("#u4-think-btn");
+      const panel = await page.locator("#u4-think .u4-dialog-body").innerText();
+      assert.ok(panel.includes(traps[misses[0].tag].name), `${slug}: My thinking names the trap`);
+      spanish.push(slug);
+      await ctx.close();
+    }
+    ok(
+      `unit 4 named misses: ${spanish.length} pages show a wrong pick's own help, record its tag and list it in My thinking`,
     );
   }
 } finally {

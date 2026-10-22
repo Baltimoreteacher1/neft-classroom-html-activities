@@ -17,8 +17,10 @@
   <!-- nsr-injected:end -->
   <!-- u4-clarity:begin (scripts/inject-u4-lab-bench.mjs) -->
   <script>(function(){try{var t=localStorage.getItem("neft_u4_theme_v1"),m=matchMedia("(prefers-color-scheme: dark)").matches,c=/-challenging/.test(location.pathname),d=t==="light"||t==="dark"?t:t==="auto"||!c?(m?"dark":"light"):"dark";new MutationObserver(function(_,o){if(document.body){document.body.dataset.theme=d;o.disconnect()}}).observe(document.documentElement,{childList:true})}catch(e){}})()</script>
-  <link rel="stylesheet" href="/assets/studio/clarity.css?v=be0288a64f">
-  <script src="/assets/studio/clarity.js?v=be0288a64f" defer></script>
+  <link rel="stylesheet" href="/assets/studio/clarity.css?v=325a912e68">
+  <script src="/assets/studio/clarity.js?v=325a912e68" defer></script>
+  <script type="application/json" id="u4-traps">{"decimal-place-value":{"name":"Decimal point in the wrong place","nameEs":"Punto decimal en lugar equivocado","fix":"Estimate with whole numbers first. Then place the decimal point so the answer is close to your estimate.","fixEs":"Estima primero con números enteros. Luego coloca el punto decimal para que la respuesta quede cerca de tu estimación."},"estimate-rounded-poorly":{"name":"Rounded to the wrong number","nameEs":"Redondeé al número equivocado","fix":"Round each number to the nearest friendly number (5 or more rounds up). Keep the same operation and the same divisor.","fixEs":"Redondea cada número al número cómodo más cercano (5 o más sube). Mantén la misma operación y el mismo divisor."},"multi-step-stopped-early":{"name":"Stopped one step early","nameEs":"Me detuve un paso antes","fix":"Reread the question. Ask: does my number answer exactly what it asks, for every item?","fixEs":"Vuelve a leer la pregunta. Pregúntate: ¿mi número responde exactamente lo que pide, para todos los artículos?"},"op-divided-instead-of-multiplied":{"name":"Divided instead of multiplied","nameEs":"Dividí en vez de multiplicar","fix":"If you know the size of each group and the number of groups, multiply to get the total.","fixEs":"Si sabes el tamaño de cada grupo y cuántos grupos hay, multiplica para obtener el total."},"op-multiplied-instead-of-divided":{"name":"Multiplied instead of divided","nameEs":"Multipliqué en vez de dividir","fix":"Sharing, splitting and 'how many groups' mean divide. Estimate: should the answer be smaller?","fixEs":"Repartir, separar y '¿cuántos grupos?' significan dividir. Estima: ¿la respuesta debe ser menor?"},"percent-used-as-whole-number":{"name":"Used the percent as a number","nameEs":"Usé el porcentaje como número","fix":"A percent means out of 100. Write it as a fraction or decimal before you use it.","fixEs":"Un porcentaje significa de cada 100. Escríbelo como fracción o decimal antes de usarlo."},"pest-benchmark-parts-miscombined":{"name":"Built the percent from wrong pieces","nameEs":"Armé el porcentaje con partes equivocadas","fix":"Add or subtract your benchmark pieces and check that they total the exact percent you need.","fixEs":"Suma o resta tus porcentajes de referencia y comprueba que den exactamente el porcentaje que necesitas."},"pest-benchmark-percent-mixed":{"name":"Mixed up 10% and 1%","nameEs":"Confundí el 10% con el 1%","fix":"10% is one tenth (divide by 10). 1% is one hundredth (divide by 100). Say which one the question needs before you divide.","fixEs":"El 10% es una décima parte (divide entre 10). El 1% es una centésima parte (divide entre 100). Di cuál necesita la pregunta antes de dividir."},"pest-benchmark-scaled-wrongly":{"name":"Scaled a benchmark wrongly","nameEs":"Escalé mal la referencia","fix":"Write the percent as a sum of benchmark pieces, like 15% = 10% + 5%, and count the pieces before you calculate.","fixEs":"Escribe el porcentaje como suma de referencias, como 15% = 10% + 5%, y cuenta las partes antes de calcular."},"pest-discount-ignored":{"name":"Left out the discount","nameEs":"Dejé fuera el descuento","fix":"Find what you will really pay: estimate the discount, take it off the price, and then compare.","fixEs":"Halla lo que de verdad vas a pagar: estima el descuento, réstalo del precio y luego compara."},"pest-percent-fraction-mismatch":{"name":"Wrong fraction for the percent","nameEs":"Fracción equivocada para el porcentaje","fix":"Turn a fraction into a percent by dividing 100 by its bottom number. Then check that it matches the percent you need.","fixEs":"Convierte una fracción en porcentaje dividiendo 100 entre su número de abajo. Luego comprueba que coincida con el porcentaje que necesitas."},"pest-rounding-direction-ignored":{"name":"Missed which way I rounded","nameEs":"No vi hacia dónde redondeé","fix":"Compare each rounded number with its original: up or down? Then think about what that does to the result.","fixEs":"Compara cada número redondeado con su original: ¿subió o bajó? Luego piensa qué efecto tiene en el resultado."},"pest-size-unchecked":{"name":"Skipped a size check","nameEs":"No revisé el tamaño","fix":"Do a quick benchmark check, like 10% of a friendly number, to see if the size is believable.","fixEs":"Haz una revisión rápida con una referencia, como el 10% de un número fácil, para ver si el tamaño es creíble."},"pest-whole-given-as-part":{"name":"Gave the whole, not the part","nameEs":"Di el total, no la parte","fix":"A percent less than 100% of a number is smaller than that number. Check that your answer is smaller than the whole.","fixEs":"Un porcentaje menor que 100% de un número es menor que ese número. Comprueba que tu respuesta sea menor que el total."},"pest-whole-rounded-poorly":{"name":"Rounded the whole badly","nameEs":"Redondeé mal el total","fix":"Round each number on its own to the friendly number closest to it. Check both.","fixEs":"Redondea cada número por separado al número fácil más cercano. Revisa los dos."}}</script>
+  <script src="/assets/u4-studio-thinking.js?v=325a912e68" defer></script>
   <!-- u4-clarity:end -->
 </head>
 <body>
@@ -1043,6 +1045,7 @@
             }
           ],
           correct: 2,
+          tags: ['percent-used-as-whole-number', 'estimate-rounded-poorly', null, 'pest-rounding-direction-ignored'],
           explain: { en: 'Both numbers went up (28% to 30%, and 52 to 60), so the estimate of 18 is higher than the real value, about 14.6. Rounding 52 to 50 gives 30% of 50 = 15, which is much closer.', es: 'Los dos números subieron (28% a 30%, y 52 a 60), así que la estimación de 18 es mayor que el valor real, alrededor de 14.6. Redondear 52 a 50 da 30% de 50 = 15, que está mucho más cerca.' }
         },
         {
@@ -1071,6 +1074,7 @@
             }
           ],
           correct: 3,
+          tags: ['op-multiplied-instead-of-divided', 'decimal-place-value', 'pest-size-unchecked', null],
           explain: { en: '10% means ÷ 10, so 10% of $350 is $35. Chloe divided by 100, which finds 1%: $350 ÷ 100 = $3.50.', es: 'El 10% significa ÷ 10, así que el 10% de $350 es $35. Chloe dividió entre 100, lo que halla el 1%: $350 ÷ 100 = $3.50.' }
         },
         {
@@ -1100,6 +1104,7 @@
             }
           ],
           correct: 1,
+          tags: ['pest-discount-ignored', null, 'estimate-rounded-poorly', 'pest-size-unchecked'],
           explain: { en: '19% is about 20% and $29 is about $30. 20% of $30 is $6, so the sale price is about $30 − $6 = $24. That is less than $25, so Maya has enough.', es: '19% es alrededor de 20% y $29 es alrededor de $30. El 20% de $30 es $6, así que el precio de oferta es alrededor de $30 − $6 = $24. Eso es menos que $25, así que a Maya le alcanza.' }
         }
       ];
@@ -1186,7 +1191,7 @@
               btn.classList.add('wrong');
               btn.disabled = true;
               fb.className = 'feedback-box show err';
-              fb.innerHTML = `<strong>${letters[idx]}.</strong> ${t4bi(p.choices[idx].why)}`;
+              fb.innerHTML = `<strong>${letters[idx]}.</strong> ${U4Studio.miss(p, idx, { tab: 4 })}`;
             }
             saveState();
           });
@@ -1209,6 +1214,8 @@
           q: 'What is 10% of 150?',
           choices: ['1.5', '15', '150', '0.15'],
           correct: 1,
+          tags: ['pest-benchmark-percent-mixed', null, 'pest-whole-given-as-part', 'decimal-place-value'],
+          why: [{ en: 'That is what you get when you divide by 100, which finds 1%. Ask yourself how many equal parts you split a number into to find 10%.', es: 'Eso sale al dividir entre 100, que halla el 1%. Pregúntate en cuántas partes iguales se divide un número para hallar el 10%.' }, null, { en: 'That is the whole amount, or 100%. The question asks for only 10% of it, a small part, so the answer should be smaller than the whole.', es: 'Esa es la cantidad completa, o sea el 100%. La pregunta pide solo el 10%, una parte pequeña, así que la respuesta debe ser menor que el total.' }, { en: 'The decimal point slid too far to the left. 10% is one tenth of a number, so think about how many places the point should move.', es: 'El punto decimal se corrió demasiado a la izquierda. El 10% es una décima parte del número, así que piensa cuántos lugares debe moverse el punto.' }],
           explain: '150 &divide; 10 = 15.'
         },
         {
@@ -1216,6 +1223,8 @@
           q: 'Which is the best compatible number estimate for 49% of 78?',
           choices: ['50% of 80 = 40', '40% of 70 = 28', '50% of 70 = 35', '60% of 80 = 48'],
           correct: 0,
+          tags: [null, 'estimate-rounded-poorly', 'pest-whole-rounded-poorly', 'estimate-rounded-poorly'],
+          why: [null, { en: '40% is a long way from 49%, and 70 is not the friendly number nearest to 78. Round each number to the closest friendly one.', es: 'El 40% está lejos del 49%, y 70 no es el número fácil más cercano a 78. Redondea cada número al número fácil más cercano.' }, { en: 'That percent is a good match for 49%. Check the other number: which friendly number is closest to 78?', es: 'Ese porcentaje se parece bien al 49%. Revisa el otro número: ¿cuál es el número fácil más cercano a 78?' }, { en: '60% is farther from 49% than another benchmark percent is. Pick the friendly percent that is closest to 49%.', es: 'El 60% está más lejos del 49% que otro porcentaje de referencia. Elige el porcentaje fácil más cercano al 49%.' }],
           explain: '49% &approx; 50% and 78 &approx; 80. 50% of 80 is 40.'
         },
         {
@@ -1223,6 +1232,8 @@
           q: 'Estimate a 15% tip on a $38 restaurant bill.',
           choices: ['$4', '$6', '$8', '$12'],
           correct: 1,
+          tags: ['multi-step-stopped-early', null, 'pest-benchmark-scaled-wrongly', 'pest-benchmark-scaled-wrongly'],
+          why: [{ en: 'That is only 10% of the bill. A 15% tip is more than 10%, so there is another piece to find and add on.', es: 'Eso es solo el 10% de la cuenta. Una propina del 15% es más del 10%, así que falta hallar otra parte y sumarla.' }, null, { en: 'That is double the 10% amount, which is a 20% tip. A 15% tip is a smaller percent than 20%.', es: 'Eso es el doble del 10%, o sea una propina del 20%. Una propina del 15% es un porcentaje menor que el 20%.' }, { en: 'That is about a 30% tip, twice as much as 15%. Build 15% from a 10% piece and a smaller piece.', es: 'Eso es una propina de más o menos el 30%, el doble del 15%. Arma el 15% con una parte del 10% y una parte más pequeña.' }],
           explain: 'Round $38 to $40. 10% is $4. 5% is $2. $4 + $2 = $6.'
         },
         {
@@ -1230,6 +1241,8 @@
           q: 'What is 25% of 160?',
           choices: ['40', '32', '50', '80'],
           correct: 0,
+          tags: [null, 'pest-percent-fraction-mismatch', 'pest-percent-fraction-mismatch', 'pest-percent-fraction-mismatch'],
+          why: [null, { en: 'That is one fifth of 160, which matches 20%. Think about which fraction is the same as 25 out of every 100.', es: 'Eso es un quinto de 160, que equivale al 20%. Piensa qué fracción es lo mismo que 25 de cada 100.' }, { en: 'That is about one third of 160. Does 25 out of every 100 match one third? Check which fraction it matches.', es: 'Eso es más o menos un tercio de 160. ¿25 de cada 100 equivale a un tercio? Revisa con qué fracción coincide.' }, { en: 'That is half of 160, which matches 50%. 25% is a smaller part than half of a number.', es: 'Eso es la mitad de 160, que equivale al 50%. El 25% es una parte menor que la mitad de un número.' }],
           explain: '25% = 1/4. 160 &divide; 4 = 40.'
         },
         {
@@ -1237,6 +1250,8 @@
           q: 'What is 1% of 340?',
           choices: ['34', '3.4', '0.34', '340'],
           correct: 1,
+          tags: ['pest-benchmark-percent-mixed', null, 'decimal-place-value', 'pest-whole-given-as-part'],
+          why: [{ en: 'That is 10% of 340, found by dividing by 10. Finding 1% means splitting the number into more equal parts than that.', es: 'Eso es el 10% de 340, que se halla dividiendo entre 10. Para hallar el 1% hay que partir el número en más partes iguales.' }, null, { en: 'The decimal point went one place too far. 1% is one hundredth of a number, so count the places carefully.', es: 'El punto decimal se movió un lugar de más. El 1% es una centésima parte del número, así que cuenta bien los lugares.' }, { en: 'That is the whole number, or 100%. The question asks for just 1% of it, a tiny part.', es: 'Ese es el número completo, o sea el 100%. La pregunta pide solo el 1%, una parte muy pequeña.' }],
           explain: '340 &divide; 100 = 3.4.'
         },
         {
@@ -1244,6 +1259,8 @@
           q: 'Estimate 21% of 89.',
           choices: ['9', '18', '27', '36'],
           correct: 1,
+          tags: ['multi-step-stopped-early', null, 'estimate-rounded-poorly', 'estimate-rounded-poorly'],
+          why: [{ en: 'That is about 10% of the number. The question asks for 21%, which is more than 10%, so there is more to find.', es: 'Eso es más o menos el 10% del número. La pregunta pide el 21%, que es más del 10%, así que falta hallar más.' }, null, { en: 'That is about 30% of the number. 21% is closer to a different friendly percent. Which benchmark is nearest to 21%?', es: 'Eso es más o menos el 30% del número. El 21% está más cerca de otro porcentaje fácil. ¿Qué porcentaje de referencia está más cerca del 21%?' }, { en: 'That is about 40% of the number, nearly double what 21% should give. Check how close your benchmark is to 21%.', es: 'Eso es más o menos el 40% del número, casi el doble de lo que debe dar el 21%. Revisa qué tan cerca está tu porcentaje de referencia del 21%.' }],
           explain: '20% of 90 = 2 &times; 9 = 18.'
         },
         {
@@ -1251,6 +1268,8 @@
           q: 'Which mental math strategy works best for 35% of a number?',
           choices: ['25% + 10%', '50% - 10%', '3 × 1%', 'Divide by 35'],
           correct: 0,
+          tags: [null, 'pest-benchmark-parts-miscombined', 'pest-benchmark-parts-miscombined', 'percent-used-as-whole-number'],
+          why: [null, { en: '50% − 10% makes 40%, not 35%. Add or subtract your pieces and check that they make exactly the percent you need.', es: '50% − 10% da 40%, no 35%. Suma o resta tus partes y comprueba que den justo el porcentaje que necesitas.' }, { en: '3 × 1% makes only 3%. Check that your pieces add up to the percent you need.', es: '3 × 1% da solo 3%. Comprueba que tus partes sumen el porcentaje que necesitas.' }, { en: '35% means 35 out of every 100, not 35 equal parts. Dividing by 35 would split the number into 35 pieces.', es: '35% significa 35 de cada 100, no 35 partes iguales. Dividir entre 35 partiría el número en 35 pedazos.' }],
           explain: '25% (divide by 4) + 10% (divide by 10) = 35%.'
         },
         {
@@ -1258,6 +1277,8 @@
           q: 'Estimate 74% of 404.',
           choices: ['200', '250', '300', '350'],
           correct: 2,
+          tags: ['estimate-rounded-poorly', 'estimate-rounded-poorly', null, 'estimate-rounded-poorly'],
+          why: [{ en: 'That is half of 400, or 50%. 74% is a lot more than half, so use a benchmark that is closer to 74%.', es: 'Eso es la mitad de 400, o sea el 50%. El 74% es mucho más que la mitad, así que elige una referencia más cercana al 74%.' }, { en: 'That is about 60% of 404. 74% is closer to a different benchmark. Which friendly percent is nearest to 74%?', es: 'Eso es más o menos el 60% de 404. El 74% está más cerca de otra referencia. ¿Qué porcentaje fácil está más cerca del 74%?' }, null, { en: 'That is more than 85% of 404, which is too high for 74%. Check which friendly percent is the closest to 74%.', es: 'Eso es más del 85% de 404, demasiado alto para el 74%. Revisa qué porcentaje fácil está más cerca del 74%.' }],
           explain: '75% of 400 = 3/4 &times; 400 = 300.'
         },
         {
@@ -1265,6 +1286,8 @@
           q: 'If 10% of a number is 14, what is 20% of that number?',
           choices: ['7', '28', '140', '280'],
           correct: 1,
+          tags: ['op-divided-instead-of-multiplied', null, 'pest-whole-given-as-part', 'pest-benchmark-scaled-wrongly'],
+          why: [{ en: '20% is more than 10%, so its amount should be bigger than the 10% amount. Dividing makes a number smaller.', es: 'El 20% es más que el 10%, así que su cantidad debe ser mayor que la del 10%. Dividir hace el número más pequeño.' }, null, { en: 'That is the whole number, which is 100%. The question asks for 20%, only a part of the whole.', es: 'Ese es el número completo, o sea el 100%. La pregunta pide el 20%, solo una parte del total.' }, { en: 'That is double the whole number, or 200%. Think about how many 10% pieces make 20%, then use that many.', es: 'Eso es el doble del número completo, o sea el 200%. Piensa cuántas partes de 10% forman el 20% y usa esa cantidad.' }],
           explain: '20% is twice 10%: 2 &times; 14 = 28.'
         },
         {
@@ -1272,6 +1295,8 @@
           q: 'A phone battery shows 29% remaining of 500 hours standby. Estimate the remaining standby hours.',
           choices: ['100 hours', '150 hours', '200 hours', '250 hours'],
           correct: 1,
+          tags: ['estimate-rounded-poorly', null, 'estimate-rounded-poorly', 'estimate-rounded-poorly'],
+          why: [{ en: '100 hours is 20% of 500. 29% is closer to a different benchmark percent. Which one is nearest to 29%?', es: '100 horas es el 20% de 500. El 29% está más cerca de otro porcentaje de referencia. ¿Cuál es el más cercano al 29%?' }, null, { en: '200 hours is 40% of 500, which is too far above 29%. Choose the benchmark percent that is closest to 29%.', es: '200 horas es el 40% de 500, que está demasiado arriba del 29%. Elige el porcentaje de referencia más cercano al 29%.' }, { en: '250 hours is half of 500. 29% is well under half, so use a benchmark percent that is closer to 29%.', es: '250 horas es la mitad de 500. El 29% está muy por debajo de la mitad, así que elige un porcentaje de referencia más cercano al 29%.' }],
           explain: '30% of 500 = 3 &times; 50 = 150 hours.'
         }
       ];
@@ -1336,7 +1361,7 @@
             } else {
               btn.classList.add('wrong');
               fb.className = 'feedback-box show err';
-              fb.textContent = `Not quite. Think about compatible numbers and benchmark percents.`;
+              fb.innerHTML = U4Studio.miss(q, idx, { tab: 5 });
             }
             saveState();
           });

@@ -17,8 +17,10 @@
   <!-- nsr-injected:end -->
   <!-- u4-clarity:begin (scripts/inject-u4-lab-bench.mjs) -->
   <script>(function(){try{var t=localStorage.getItem("neft_u4_theme_v1"),m=matchMedia("(prefers-color-scheme: dark)").matches,c=/-challenging/.test(location.pathname),d=t==="light"||t==="dark"?t:t==="auto"||!c?(m?"dark":"light"):"dark";new MutationObserver(function(_,o){if(document.body){document.body.dataset.theme=d;o.disconnect()}}).observe(document.documentElement,{childList:true})}catch(e){}})()</script>
-  <link rel="stylesheet" href="/assets/studio/clarity.css?v=be0288a64f">
-  <script src="/assets/studio/clarity.js?v=be0288a64f" defer></script>
+  <link rel="stylesheet" href="/assets/studio/clarity.css?v=325a912e68">
+  <script src="/assets/studio/clarity.js?v=325a912e68" defer></script>
+  <script type="application/json" id="u4-traps">{"decimal-place-value":{"name":"Decimal point in the wrong place","nameEs":"Punto decimal en lugar equivocado","fix":"Estimate with whole numbers first. Then place the decimal point so the answer is close to your estimate.","fixEs":"Estima primero con números enteros. Luego coloca el punto decimal para que la respuesta quede cerca de tu estimación."},"op-reversed-division":{"name":"Divided in the wrong order","nameEs":"Dividí en el orden equivocado","fix":"Say it as a question: how many of the divisor fit into the dividend? The amount being shared goes first.","fixEs":"Dilo como pregunta: ¿cuántas veces cabe el divisor en el dividendo? La cantidad que se reparte va primero."},"percent-used-as-whole-number":{"name":"Used the percent as a number","nameEs":"Usé el porcentaje como número","fix":"A percent means out of 100. Write it as a fraction or decimal before you use it.","fixEs":"Un porcentaje significa de cada 100. Escríbelo como fracción o decimal antes de usarlo."},"ratio-scale-factor-wrong":{"name":"Scaled by the wrong factor","nameEs":"Multipliqué por el factor equivocado","fix":"Find the factor first by dividing the target by the matching amount, check it, then multiply the other amount by that same factor.","fixEs":"Primero encuentra el factor dividiendo la cantidad buscada entre la cantidad que le corresponde, compruébalo y luego multiplica la otra cantidad por ese mismo factor."},"whole-answer-not-checked":{"name":"Did not check the answer back","nameEs":"No comprobó la respuesta","fix":"Check backward: take the percent of your whole. If you do not get the part, the whole is not right yet.","fixEs":"Comprueba hacia atrás: saca el porcentaje de tu total. Si no obtienes la parte, el total todavía no es correcto."},"whole-percent-added-to-part":{"name":"Added the percent to the part","nameEs":"Sumó el porcentaje a la parte","fix":"The part already is a percent of the whole. Write part = percent × whole, then undo the multiplying by dividing. Check by taking the percent of your whole.","fixEs":"La parte ya es un porcentaje del total. Escribe parte = porcentaje × total y deshaz la multiplicación dividiendo. Comprueba sacando el porcentaje de tu total."},"whole-percent-decimal-misplaced":{"name":"Wrote the percent decimal wrong","nameEs":"Decimal del porcentaje mal escrito","fix":"Percent means out of 100, so move the decimal point two places left. Then check that your whole makes sense for the percent.","fixEs":"Porcentaje significa de cada 100, así que mueve el punto decimal dos lugares a la izquierda. Luego revisa que tu total tenga sentido para el porcentaje."},"whole-percent-taken-of-part":{"name":"Took the percent of the part","nameEs":"Sacó el porcentaje de la parte","fix":"Ask: is this number the part or the whole? A part that is less than 100% comes from a bigger whole, so undo the percent by dividing.","fixEs":"Pregunta: ¿este número es la parte o el total? Una parte menor que el 100% viene de un total mayor, así que deshaz el porcentaje dividiendo."},"whole-smaller-than-part":{"name":"Whole came out smaller than part","nameEs":"Total menor que la parte","fix":"Compare the percent with 100%. Less than 100% means the whole is bigger than the part; more than 100% means it is smaller.","fixEs":"Compara el porcentaje con el 100%. Menos del 100% significa que el total es mayor que la parte; más del 100% significa que es menor."}}</script>
+  <script src="/assets/u4-studio-thinking.js?v=325a912e68" defer></script>
   <!-- u4-clarity:end -->
 </head>
 <body>
@@ -1092,70 +1094,140 @@
           q: '12 is 25% of what number?',
           choices: ['3', '24', '48', '60'],
           correct: 2,
-          explain: '12 ÷ 0.25 = 48 (or 4 × 12 = 48).'
+          explain: '12 ÷ 0.25 = 48 (or 4 × 12 = 48).',
+          tags: ["whole-percent-taken-of-part", "ratio-scale-factor-wrong", null, "ratio-scale-factor-wrong"],
+          why: [
+            {"en": "You found 25% of 12. But 12 already is the 25%, and the whole has to be bigger than its part. Try undoing the percent by dividing instead.", "es": "Calculaste el 25% de 12. Pero 12 ya es ese 25%, y el total debe ser mayor que su parte. Intenta deshacer el porcentaje dividiendo."},
+            {"en": "Doubling the part works only when the part is half of the whole. Is 25% half of 100%? Ask how many 25% pieces it takes to build 100%.", "es": "Duplicar la parte solo sirve cuando la parte es la mitad del total. ¿El 25% es la mitad del 100%? Piensa cuántas partes de 25% se necesitan para formar el 100%."},
+            null,
+            {"en": "Multiplying by 5 would fit a part that is 20% of the whole. Here the part is 25%. Ask how many 25% pieces it takes to build 100%.", "es": "Multiplicar por 5 serviría si la parte fuera el 20% del total. Aquí la parte es el 25%. Piensa cuántas partes de 25% se necesitan para formar el 100%."}
+          ]
         },
         {
           id: 't5_2',
           q: '30 is 50% of what number?',
           choices: ['15', '60', '90', '150'],
           correct: 1,
-          explain: '30 ÷ 0.50 = 60.'
+          explain: '30 ÷ 0.50 = 60.',
+          tags: ["whole-percent-taken-of-part", null, "ratio-scale-factor-wrong", "whole-percent-decimal-misplaced"],
+          why: [
+            {"en": "You found 50% of 30, a smaller piece. But 30 already is the 50%, so the whole must be bigger. Undo the percent by dividing.", "es": "Calculaste el 50% de 30, un pedazo más pequeño. Pero 30 ya es ese 50%, así que el total debe ser mayor. Deshaz el porcentaje dividiendo."},
+            null,
+            {"en": "Multiplying by 3 would fit a part that is about a third of the whole. Check what fraction of the whole 50% is, then use it to build the whole.", "es": "Multiplicar por 3 serviría si la parte fuera como un tercio del total. Fíjate qué fracción del total es el 50% y úsala para formar el total."},
+            {"en": "Look at how you wrote 50% as a decimal. Percent means out of 100, so the decimal point moves two places left. Does your decimal match that?", "es": "Mira cómo escribiste el 50% como decimal. Porcentaje significa de cada 100, así que el punto decimal se mueve dos lugares a la izquierda. ¿Tu decimal coincide?"}
+          ]
         },
         {
           id: 't5_3',
           q: 'Which equation correctly solves: "18 is 40% of what whole w"?',
           choices: ['w = 18 × 0.40', 'w = 18 ÷ 0.40', 'w = 0.40 ÷ 18', 'w = 18 + 40'],
           correct: 1,
-          explain: 'Whole = Part ÷ Percent: w = 18 ÷ 0.40.'
+          explain: 'Whole = Part ÷ Percent: w = 18 ÷ 0.40.',
+          tags: ["whole-percent-taken-of-part", null, "op-reversed-division", "percent-used-as-whole-number"],
+          why: [
+            {"en": "This finds 40% of 18. But 18 already is the 40%, and w is the whole it came from. Think about which operation undoes taking a percent.", "es": "Esto calcula el 40% de 18. Pero 18 ya es ese 40%, y w es el total del que salió. Piensa qué operación deshace sacar un porcentaje."},
+            null,
+            {"en": "The numbers are right, but the order is flipped. The amount being split goes first. Which one is being split: the part 18 or the percent 0.40?", "es": "Los números están bien, pero el orden está al revés. Lo que se reparte va primero. ¿Qué se reparte: la parte 18 o el porcentaje 0.40?"},
+            {"en": "40 here is a percent, not 40 things. A percent means out of 100, so it can't be added to 18 like a count. Write 40% as a decimal first.", "es": "Aquí 40 es un porcentaje, no 40 cosas. Porcentaje significa de cada 100, así que no se suma a 18 como si fuera una cantidad. Primero escribe el 40% como decimal."}
+          ]
         },
         {
           id: 't5_4',
           q: '45 is 90% of what number?',
           choices: ['40.5', '50', '55', '90'],
           correct: 1,
-          explain: '45 ÷ 0.90 = 50.'
+          explain: '45 ÷ 0.90 = 50.',
+          tags: ["whole-percent-taken-of-part", null, "whole-percent-added-to-part", "percent-used-as-whole-number"],
+          why: [
+            {"en": "You found 90% of 45. But 45 already is the 90%, so the whole has to be bigger than 45. Undo the percent by dividing.", "es": "Calculaste el 90% de 45. Pero 45 ya es ese 90%, así que el total debe ser mayor que 45. Deshaz el porcentaje dividiendo."},
+            null,
+            {"en": "Adding to 45 treats the missing 10% like 10 more things. But 45 is already 90% of the whole. Try dividing by the percent written as a decimal.", "es": "Sumar a 45 trata el 10% que falta como 10 cosas más. Pero 45 ya es el 90% del total. Prueba dividiendo entre el porcentaje escrito como decimal."},
+            {"en": "90 here is the percent, not a number of items. A percent means out of 100. Ask yourself what 45 stands for: the part or the whole?", "es": "Aquí 90 es el porcentaje, no una cantidad de cosas. Porcentaje significa de cada 100. Pregúntate qué representa 45: ¿la parte o el total?"}
+          ]
         },
         {
           id: 't5_5',
           q: '7 is 10% of what number?',
           choices: ['0.7', '70', '700', '17'],
           correct: 1,
-          explain: '7 × 10 = 70.'
+          explain: '7 × 10 = 70.',
+          tags: ["whole-percent-taken-of-part", null, "whole-percent-decimal-misplaced", "percent-used-as-whole-number"],
+          why: [
+            {"en": "You found 10% of 7, a much smaller number. But 7 already is the 10%, so the whole has to be bigger than 7. Undo the percent by dividing.", "es": "Calculaste el 10% de 7, un número mucho menor. Pero 7 ya es ese 10%, así que el total debe ser mayor que 7. Deshaz el porcentaje dividiendo."},
+            null,
+            {"en": "Check how you wrote 10% as a decimal. Percent means out of 100, so the decimal point moves two places left. Count the places and see if yours matches.", "es": "Revisa cómo escribiste el 10% como decimal. Porcentaje significa de cada 100, así que el punto decimal se mueve dos lugares a la izquierda. Cuenta los lugares y compara."},
+            {"en": "10 is a percent, not 10 more items, so adding it to 7 mixes two different kinds of numbers. Write 10% as a decimal or fraction first.", "es": "10 es un porcentaje, no 10 cosas más, así que sumarlo a 7 mezcla dos tipos de números distintos. Primero escribe el 10% como decimal o fracción."}
+          ]
         },
         {
           id: 't5_6',
           q: 'In a school cafeteria, 60 students chose pizza, which was 20% of all students. How many students voted?',
           choices: ['120', '200', '300', '400'],
           correct: 2,
-          explain: '60 ÷ 0.20 = 300 students.'
+          explain: '60 ÷ 0.20 = 300 students.',
+          tags: ["ratio-scale-factor-wrong", "whole-answer-not-checked", null, "whole-answer-not-checked"],
+          why: [
+            {"en": "Doubling the part works only when the part is half of the whole. Is 20% half of 100%? Ask how many 20% pieces it takes to build 100%.", "es": "Duplicar la parte solo sirve cuando la parte es la mitad del total. ¿El 20% es la mitad del 100%? Piensa cuántas partes de 20% se necesitan para formar el 100%."},
+            {"en": "Test your number: find 20% of it. Does it come back to 60 students? If not, the whole needs another look.", "es": "Prueba tu número: calcula el 20% de él. ¿Te da otra vez 60 estudiantes? Si no, hay que revisar el total."},
+            null,
+            {"en": "Before you move on, check backward. Take 20% of your number. If you do not get 60, the whole is not right yet.", "es": "Antes de seguir, comprueba hacia atrás. Saca el 20% de tu número. Si no obtienes 60, el total todavía no es correcto."}
+          ]
         },
         {
           id: 't5_7',
           q: '21 is 75% of what number?',
           choices: ['14', '28', '35', '42'],
           correct: 1,
-          explain: '21 ÷ 0.75 = 28.'
+          explain: '21 ÷ 0.75 = 28.',
+          tags: ["whole-smaller-than-part", null, "whole-answer-not-checked", "ratio-scale-factor-wrong"],
+          why: [
+            {"en": "75% is less than 100%, so the whole must be bigger than its part. Is your number bigger than 21? Check which number is the part and which is the whole.", "es": "El 75% es menos que el 100%, así que el total debe ser mayor que su parte. ¿Tu número es mayor que 21? Fíjate cuál número es la parte y cuál es el total."},
+            null,
+            {"en": "Check backward. Find 75% of your number and see if it gives 21. If it does not, the whole needs another try.", "es": "Comprueba hacia atrás. Calcula el 75% de tu número y mira si da 21. Si no, hay que intentar de nuevo con el total."},
+            {"en": "Doubling the part works only when the part is half of the whole. Is 75% half of 100%? Think about how much of the whole is still missing.", "es": "Duplicar la parte solo sirve cuando la parte es la mitad del total. ¿El 75% es la mitad del 100%? Piensa cuánto del total todavía falta."}
+          ]
         },
         {
           id: 't5_8',
           q: 'If 1% of a number is 3.5, what is the whole 100%?',
           choices: ['35', '350', '3,500', '0.35'],
           correct: 1,
-          explain: '3.5 × 100 = 350.'
+          explain: '3.5 × 100 = 350.',
+          tags: ["decimal-place-value", null, "decimal-place-value", "whole-smaller-than-part"],
+          why: [
+            {"en": "Think about 1%: it is one small piece out of 100 equal pieces. How many of those pieces make the whole 100%? Check that your whole is big enough.", "es": "Piensa en el 1%: es un pedacito de 100 partes iguales. ¿Cuántos de esos pedacitos forman el total del 100%? Revisa que tu total sea lo bastante grande."},
+            null,
+            {"en": "Count again: 1% is one piece out of 100 equal pieces. Does your number use more pieces than the whole has? Check that your whole is not too big.", "es": "Cuenta otra vez: el 1% es un pedacito de 100 partes iguales. ¿Tu número usa más pedacitos de los que tiene el total? Revisa que tu total no sea demasiado grande."},
+            {"en": "1% is a small piece of the whole, so the whole has to be bigger than 3.5. Is your number bigger? Build the piece up, not down.", "es": "El 1% es un pedacito del total, así que el total debe ser mayor que 3.5. ¿Tu número es mayor? Hay que hacer crecer el pedacito, no achicarlo."}
+          ]
         },
         {
           id: 't5_9',
           q: 'A phone battery has 1 bar left out of 5 (20%), representing 3 hours remaining. What is the full battery capacity in hours?',
           choices: ['12 hours', '15 hours', '18 hours', '20 hours'],
           correct: 1,
-          explain: '3 ÷ 0.20 = 15 hours.'
+          explain: '3 ÷ 0.20 = 15 hours.',
+          tags: ["ratio-scale-factor-wrong", null, "ratio-scale-factor-wrong", "percent-used-as-whole-number"],
+          why: [
+            {"en": "Multiplying by 4 fits a part that is 25% of the whole. Is the part 25% here? Check that your multiplier matches the percent in the problem.", "es": "Multiplicar por 4 sirve cuando la parte es el 25% del total. ¿Aquí la parte es el 25%? Revisa que tu multiplicador coincida con el porcentaje del problema."},
+            null,
+            {"en": "Multiplying by 6 would fit a part that is about 17% of the whole. Is 20% the same? Match your multiplier to the percent in the problem.", "es": "Multiplicar por 6 serviría si la parte fuera cerca del 17% del total. ¿El 20% es igual? Haz que tu multiplicador coincida con el porcentaje del problema."},
+            {"en": "20 is the percent, not the hours. The 3 hours is the part, and 20% tells you what share of the whole it is. Write 20% as a decimal to find the whole.", "es": "20 es el porcentaje, no las horas. Las 3 horas son la parte, y el 20% dice qué porción del total es. Escribe el 20% como decimal para hallar el total."}
+          ]
         },
         {
           id: 't5_10',
           q: '16 is 32% of what number?',
           choices: ['32', '40', '50', '64'],
           correct: 2,
-          explain: '16 ÷ 0.32 = 50.'
+          explain: '16 ÷ 0.32 = 50.',
+          tags: ["percent-used-as-whole-number", "whole-answer-not-checked", null, "ratio-scale-factor-wrong"],
+          why: [
+            {"en": "32 is the percent, not the amount. Percent means out of 100. Ask which number in the problem is the part, and write 32% as a decimal before you use it.", "es": "32 es el porcentaje, no la cantidad. Porcentaje significa de cada 100. Pregúntate cuál número del problema es la parte y escribe el 32% como decimal antes de usarlo."},
+            {"en": "Check backward: take 32% of your number. Do you get 16? If not, the whole is not right yet.", "es": "Comprueba hacia atrás: saca el 32% de tu número. ¿Obtienes 16? Si no, el total todavía no es correcto."},
+            null,
+            {"en": "Multiplying by 4 fits a part that is 25% of the whole. Is the part 25% here? Check that your multiplier matches the percent in the problem.", "es": "Multiplicar por 4 sirve cuando la parte es el 25% del total. ¿Aquí la parte es el 25%? Revisa que tu multiplicador coincida con el porcentaje del problema."}
+          ]
         }
       ];
 
@@ -1220,7 +1292,7 @@
               playSound('wrong');
               btn.classList.add('wrong');
               fb.className = 'feedback-box show err';
-              fb.textContent = 'Remember: to find the whole, divide the part by the percent decimal.';
+              fb.innerHTML = U4Studio.miss(q, idx, { tab: 5 });
             }
             saveState();
           });

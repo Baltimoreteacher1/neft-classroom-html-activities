@@ -17,8 +17,10 @@
   <!-- nsr-injected:end -->
   <!-- u4-clarity:begin (scripts/inject-u4-lab-bench.mjs) -->
   <script>(function(){try{var t=localStorage.getItem("neft_u4_theme_v1"),m=matchMedia("(prefers-color-scheme: dark)").matches,c=/-challenging/.test(location.pathname),d=t==="light"||t==="dark"?t:t==="auto"||!c?(m?"dark":"light"):"dark";new MutationObserver(function(_,o){if(document.body){document.body.dataset.theme=d;o.disconnect()}}).observe(document.documentElement,{childList:true})}catch(e){}})()</script>
-  <link rel="stylesheet" href="/assets/studio/clarity.css?v=be0288a64f">
-  <script src="/assets/studio/clarity.js?v=be0288a64f" defer></script>
+  <link rel="stylesheet" href="/assets/studio/clarity.css?v=325a912e68">
+  <script src="/assets/studio/clarity.js?v=325a912e68" defer></script>
+  <script type="application/json" id="u4-traps">{"estimate-rounded-poorly":{"name":"Rounded to the wrong number","nameEs":"Redondeé al número equivocado","fix":"Round each number to the nearest friendly number (5 or more rounds up). Keep the same operation and the same divisor.","fixEs":"Redondea cada número al número cómodo más cercano (5 o más sube). Mantén la misma operación y el mismo divisor."},"percent-used-as-whole-number":{"name":"Used the percent as a number","nameEs":"Usé el porcentaje como número","fix":"A percent means out of 100. Write it as a fraction or decimal before you use it.","fixEs":"Un porcentaje significa de cada 100. Escríbelo como fracción o decimal antes de usarlo."},"ratio-scale-factor-wrong":{"name":"Scaled by the wrong factor","nameEs":"Multipliqué por el factor equivocado","fix":"Find the factor first by dividing the target by the matching amount, check it, then multiply the other amount by that same factor.","fixEs":"Primero encuentra el factor dividiendo la cantidad buscada entre la cantidad que le corresponde, compruébalo y luego multiplica la otra cantidad por ese mismo factor."},"reason-misses-the-math":{"name":"Reason misses the math","nameEs":"La razón no explica la matemática","fix":"A good reason names the math idea that makes the answer true. Ask: does this reason explain why?","fixEs":"Una buena razón nombra la idea matemática que hace verdadera la respuesta. Pregúntate: ¿esta razón explica por qué?"},"whole-answer-not-checked":{"name":"Did not check the answer back","nameEs":"No comprobó la respuesta","fix":"Check backward: take the percent of your whole. If you do not get the part, the whole is not right yet.","fixEs":"Comprueba hacia atrás: saca el porcentaje de tu total. Si no obtienes la parte, el total todavía no es correcto."},"whole-part-treated-as-whole":{"name":"Called the part the whole","nameEs":"Llamó total a la parte","fix":"Label the given number as part or whole, and say which percent goes with it. The number that matches the percent is the part.","fixEs":"Marca el número dado como parte o total y di qué porcentaje le corresponde. El número que va con el porcentaje es la parte."},"whole-percent-added-to-part":{"name":"Added the percent to the part","nameEs":"Sumó el porcentaje a la parte","fix":"The part already is a percent of the whole. Write part = percent × whole, then undo the multiplying by dividing. Check by taking the percent of your whole.","fixEs":"La parte ya es un porcentaje del total. Escribe parte = porcentaje × total y deshaz la multiplicación dividiendo. Comprueba sacando el porcentaje de tu total."},"whole-percent-decimal-misplaced":{"name":"Wrote the percent decimal wrong","nameEs":"Decimal del porcentaje mal escrito","fix":"Percent means out of 100, so move the decimal point two places left. Then check that your whole makes sense for the percent.","fixEs":"Porcentaje significa de cada 100, así que mueve el punto decimal dos lugares a la izquierda. Luego revisa que tu total tenga sentido para el porcentaje."},"whole-percent-taken-of-part":{"name":"Took the percent of the part","nameEs":"Sacó el porcentaje de la parte","fix":"Ask: is this number the part or the whole? A part that is less than 100% comes from a bigger whole, so undo the percent by dividing.","fixEs":"Pregunta: ¿este número es la parte o el total? Una parte menor que el 100% viene de un total mayor, así que deshaz el porcentaje dividiendo."}}</script>
+  <script src="/assets/u4-studio-thinking.js?v=325a912e68" defer></script>
   <!-- u4-clarity:end -->
 </head>
 <body class="theme-challenge">
@@ -659,10 +661,13 @@
           prompt: 'After a 20% discount, a pair of winter boots sells for $48. What was the ORIGINAL price before the sale?',
           choices: [
             { text: '$60 ($48 is 80% of original: $48 ÷ 0.80 = $60)', correct: true },
-            { text: '$57.60 (Adding 20% of $48 to $48)', correct: false },
-            { text: '$68', correct: false }
+            { text: '$57.60 (Adding 20% of $48 to $48)', correct: false,
+              why: {"en": "Adding 20% of $48 to $48 treats the discount like it came off $48. The discount came off the original price, and $48 is what is left. What percent of the original is left?", "es": "Sumar el 20% de $48 a $48 trata el descuento como si se hubiera quitado de $48. El descuento se quitó del precio original y $48 es lo que queda. ¿Qué porcentaje del original queda?"} },
+            { text: '$68', correct: false,
+              why: {"en": "20 here is a percent, not 20 dollars. You can't add it to $48 like money. Write the percent as a decimal and think about what part of the original price you pay.", "es": "Aquí 20 es un porcentaje, no 20 dólares. No se suma a $48 como si fuera dinero. Escribe el porcentaje como decimal y piensa qué parte del precio original pagas."} }
           ],
-          explain: 'A 20% discount means the customer pays 100% - 20% = 80%. Original = $48 ÷ 0.80 = $60.'
+          explain: 'A 20% discount means the customer pays 100% - 20% = 80%. Original = $48 ÷ 0.80 = $60.',
+          tags: [null, "whole-percent-added-to-part", "percent-used-as-whole-number"]
         },
         {
           id: 't3_2',
@@ -670,10 +675,13 @@
           prompt: 'After a 15% state and federal tax deduction, an employee takes home $850. What was their GROSS pay before taxes?',
           choices: [
             { text: '$1,000 ($850 represents 85% of gross pay: $850 ÷ 0.85 = $1,000)', correct: true },
-            { text: '$977.50 (Adding 15% of $850)', correct: false },
-            { text: '$1,150', correct: false }
+            { text: '$977.50 (Adding 15% of $850)', correct: false,
+              why: {"en": "Adding 15% of $850 to $850 treats the tax like it came off $850. The tax came off the gross pay, and $850 is what is left. What percent of gross pay is left?", "es": "Sumar el 15% de $850 a $850 trata el impuesto como si se hubiera quitado de $850. El impuesto se quitó del pago bruto y $850 es lo que queda. ¿Qué porcentaje del pago bruto queda?"} },
+            { text: '$1,150', correct: false,
+              why: {"en": "Check backward: take 15% off your gross pay. Do you land on $850? If not, the gross pay is not right yet.", "es": "Comprueba hacia atrás: réstale el 15% a tu pago bruto. ¿Llegas a $850? Si no, el pago bruto todavía no es correcto."} }
           ],
-          explain: 'Take home is 85% of gross pay: Gross = $850 ÷ 0.85 = $1,000.'
+          explain: 'Take home is 85% of gross pay: Gross = $850 ÷ 0.85 = $1,000.',
+          tags: [null, "whole-percent-added-to-part", "whole-answer-not-checked"]
         },
         {
           id: 't3_3',
@@ -681,10 +689,13 @@
           prompt: 'A jacket marked 30% off sells for $84. What was the original price tag?',
           choices: [
             { text: '$120 ($84 represents 70%: $84 ÷ 0.70 = $120)', correct: true },
-            { text: '$109.20', correct: false },
-            { text: '$114', correct: false }
+            { text: '$109.20', correct: false,
+              why: {"en": "Adding 30% of $84 to $84 treats the markdown like it came off $84. It came off the tag price, and $84 is what is left. What percent of the tag price is left?", "es": "Sumar el 30% de $84 a $84 trata la rebaja como si se hubiera quitado de $84. Se quitó del precio de etiqueta y $84 es lo que queda. ¿Qué porcentaje del precio de etiqueta queda?"} },
+            { text: '$114', correct: false,
+              why: {"en": "30 here is a percent, not 30 dollars. Adding it to $84 mixes a percent with money. Write the percent as a decimal and think about what part of the tag price you pay.", "es": "Aquí 30 es un porcentaje, no 30 dólares. Sumarlo a $84 mezcla un porcentaje con dinero. Escribe el porcentaje como decimal y piensa qué parte del precio de etiqueta pagas."} }
           ],
-          explain: '100% - 30% = 70%. Original = $84 ÷ 0.70 = $120.'
+          explain: '100% - 30% = 70%. Original = $84 ÷ 0.70 = $120.',
+          tags: [null, "whole-percent-added-to-part", "percent-used-as-whole-number"]
         },
         {
           id: 't3_4',
@@ -692,10 +703,13 @@
           prompt: 'A game console is marked down 25% to a sale price of $225. What was its regular price?',
           choices: [
             { text: '$300 ($225 represents 75%: $225 ÷ 0.75 = $300)', correct: true },
-            { text: '$281.25', correct: false },
-            { text: '$325', correct: false }
+            { text: '$281.25', correct: false,
+              why: {"en": "Adding 25% of $225 to $225 treats the markdown like it came off $225. It came off the regular price, and $225 is what is left. What percent of the regular price is left?", "es": "Sumar el 25% de $225 a $225 trata la rebaja como si se hubiera quitado de $225. Se quitó del precio regular y $225 es lo que queda. ¿Qué porcentaje del precio regular queda?"} },
+            { text: '$325', correct: false,
+              why: {"en": "Check backward: take 25% off your regular price. Do you land on $225? If not, the regular price is not right yet.", "es": "Comprueba hacia atrás: réstale el 25% a tu precio regular. ¿Llegas a $225? Si no, el precio regular todavía no es correcto."} }
           ],
-          explain: '$225 ÷ 0.75 = $300 regular price.'
+          explain: '$225 ÷ 0.75 = $300 regular price.',
+          tags: [null, "whole-percent-added-to-part", "whole-answer-not-checked"]
         },
         {
           id: 't3_5',
@@ -703,10 +717,13 @@
           prompt: 'A water tank loses 40% of its volume to evaporation, leaving 180 gallons. What was the tank’s initial water volume?',
           choices: [
             { text: '300 gallons (180 gallons is 60%: 180 ÷ 0.60 = 300)', correct: true },
-            { text: '252 gallons', correct: false },
-            { text: '360 gallons', correct: false }
+            { text: '252 gallons', correct: false,
+              why: {"en": "Adding 40% of 180 to 180 treats the loss like it came off 180 gallons. The 40% was lost from the starting volume, and 180 is what is left. What percent of the start is left?", "es": "Sumar el 40% de 180 a 180 trata la pérdida como si se hubiera quitado de 180 galones. El 40% se perdió del volumen inicial y 180 es lo que queda. ¿Qué porcentaje del inicial queda?"} },
+            { text: '360 gallons', correct: false,
+              why: {"en": "Doubling the leftover works only when half of the water is left. Did exactly half evaporate? Match your multiplier to the percent that is left.", "es": "Duplicar lo que queda solo sirve cuando queda la mitad del agua. ¿Se evaporó exactamente la mitad? Haz que tu multiplicador coincida con el porcentaje que queda."} }
           ],
-          explain: '100% - 40% = 60%. Initial = 180 ÷ 0.60 = 300 gallons.'
+          explain: '100% - 40% = 60%. Initial = 180 ÷ 0.60 = 300 gallons.',
+          tags: [null, "whole-percent-added-to-part", "ratio-scale-factor-wrong"]
         },
         {
           id: 't3_6',
@@ -714,10 +731,13 @@
           prompt: 'After a busy morning, a phone has lost 65% of its charge, leaving 1,400 mAh. What is full capacity?',
           choices: [
             { text: '4,000 mAh (1,400 mAh is 35%: 1,400 ÷ 0.35 = 4,000)', correct: true },
-            { text: '3,500 mAh', correct: false },
-            { text: '4,500 mAh', correct: false }
+            { text: '3,500 mAh', correct: false,
+              why: {"en": "Check backward: take away 65% of your capacity. Do you have 1,400 mAh left? If not, the full capacity is not right yet.", "es": "Comprueba hacia atrás: quítale el 65% a tu capacidad. ¿Te quedan 1,400 mAh? Si no, la capacidad completa todavía no es correcta."} },
+            { text: '4,500 mAh', correct: false,
+              why: {"en": "A round number can feel right, but the capacity must fit the percent exactly. Remove 65% of your number and see if 1,400 mAh remains.", "es": "Un número redondo parece correcto, pero la capacidad debe ajustarse exactamente al porcentaje. Quítale el 65% a tu número y mira si quedan 1,400 mAh."} }
           ],
-          explain: 'Remaining is 35%: 1,400 ÷ 0.35 = 4,000 mAh.'
+          explain: 'Remaining is 35%: 1,400 ÷ 0.35 = 4,000 mAh.',
+          tags: [null, "whole-answer-not-checked", "whole-answer-not-checked"]
         },
         {
           id: 't3_7',
@@ -725,10 +745,13 @@
           prompt: 'Why does adding 20% to a sale price NOT restore the original price of a 20% off item?',
           choices: [
             { text: 'Because 20% of the smaller sale price is less money than 20% of the larger original price.', correct: true },
-            { text: 'Because sales tax interferes with the math.', correct: false },
-            { text: 'Because coupons can only be subtracted, never added.', correct: false }
+            { text: 'Because sales tax interferes with the math.', correct: false,
+              why: {"en": "Sales tax is not part of this problem, so it can't explain the gap. The reason is in the math itself. Look closely at what each 20% is taken from.", "es": "El impuesto a las ventas no es parte de este problema, así que no explica la diferencia. La razón está en la matemática. Fíjate bien de qué cantidad se toma cada 20%."} },
+            { text: 'Because coupons can only be subtracted, never added.', correct: false,
+              why: {"en": "Adding a percent is allowed in math, so this is not a rule about coupons. Compare the two 20% amounts and think about the amounts they are calculated from.", "es": "En matemáticas sí se puede sumar un porcentaje, así que no es una regla de los cupones. Compara las dos cantidades del 20% y piensa en las cantidades de las que se calculan."} }
           ],
-          explain: 'Percentages depend on their base. 20% of $80 is $16, which only brings it to $96, not the original $100!'
+          explain: 'Percentages depend on their base. 20% of $80 is $16, which only brings it to $96, not the original $100!',
+          tags: [null, "reason-misses-the-math", "reason-misses-the-math"]
         },
         {
           id: 't3_8',
@@ -736,10 +759,13 @@
           prompt: 'After selling 88% of tickets, 96 seats remain unsold. What is the total arena capacity?',
           choices: [
             { text: '800 seats (96 seats represents 12%: 96 ÷ 0.12 = 800)', correct: true },
-            { text: '750 seats', correct: false },
-            { text: '900 seats', correct: false }
+            { text: '750 seats', correct: false,
+              why: {"en": "Check backward: if your capacity is right, 88% of it sold and some seats are left. Do exactly 96 seats remain? If not, the capacity is not right yet.", "es": "Comprueba hacia atrás: si tu capacidad es correcta, se vendió el 88% y quedan asientos. ¿Quedan exactamente 96? Si no, la capacidad todavía no es correcta."} },
+            { text: '900 seats', correct: false,
+              why: {"en": "A round number can feel right, but the capacity must fit the percent exactly. Take away 88% of your number and see if 96 seats remain.", "es": "Un número redondo parece correcto, pero la capacidad debe ajustarse exactamente al porcentaje. Quítale el 88% a tu número y mira si quedan 96 asientos."} }
           ],
-          explain: '100% - 88% = 12% unsold. Capacity = 96 ÷ 0.12 = 800 seats.'
+          explain: '100% - 88% = 12% unsold. Capacity = 96 ÷ 0.12 = 800 seats.',
+          tags: [null, "whole-answer-not-checked", "whole-answer-not-checked"]
         }
       ];
 
@@ -807,7 +833,7 @@
               playSound('wrong');
               btn.classList.add('wrong');
               fb.className = 'feedback-box show err';
-              fb.textContent = 'Careful: The sale price represents (100% - discount%). Divide the sale price by that remaining percentage.';
+              fb.innerHTML = U4Studio.miss(r, idx, { tab: 3 });
             }
             saveState();
           });
@@ -1178,70 +1204,140 @@
           q: '150 is 125% of what number?',
           choices: ['100', '120', '125', '187.5'],
           correct: 1,
-          explain: '150 ÷ 1.25 = 120.'
+          explain: '150 ÷ 1.25 = 120.',
+          tags: ["whole-answer-not-checked", null, "percent-used-as-whole-number", "whole-percent-taken-of-part"],
+          why: [
+            {"en": "Check backward: take 125% of your number. Do you get 150? If not, the whole is not right yet.", "es": "Comprueba hacia atrás: saca el 125% de tu número. ¿Obtienes 150? Si no, el total todavía no es correcto."},
+            null,
+            {"en": "125 is the percent, not the amount. Percent means out of 100. Ask which number is the part, then write 125% as a decimal before you use it.", "es": "125 es el porcentaje, no la cantidad. Porcentaje significa de cada 100. Pregúntate cuál número es la parte y luego escribe el 125% como decimal antes de usarlo."},
+            {"en": "You found 125% of 150. But 150 already is the 125%, so you need to undo the percent, not take it again. Which operation undoes multiplying?", "es": "Calculaste el 125% de 150. Pero 150 ya es ese 125%, así que hay que deshacer el porcentaje, no sacarlo otra vez. ¿Qué operación deshace una multiplicación?"}
+          ]
         },
         {
           id: 't5_2',
           q: '4 is 0.5% of what number?',
           choices: ['20', '200', '800', '2,000'],
           correct: 2,
-          explain: '4 ÷ 0.005 = 800.'
+          explain: '4 ÷ 0.005 = 800.',
+          tags: ["whole-percent-decimal-misplaced", "whole-percent-decimal-misplaced", null, "whole-percent-decimal-misplaced"],
+          why: [
+            {"en": "Think about size: 0.5% is less than 1%, so 4 is a tiny piece of the whole. Check that your decimal is less than 0.01, then divide again.", "es": "Piensa en el tamaño: el 0.5% es menos que el 1%, así que 4 es un pedacito del total. Revisa que tu decimal sea menor que 0.01 y vuelve a dividir."},
+            {"en": "Check the zeros in your decimal. Is 0.5% as big as 0.02? Remember 1% is 0.01 and 0.5% is smaller than that. Rewrite it carefully, then divide again.", "es": "Revisa los ceros de tu decimal. ¿El 0.5% es tan grande como 0.02? Recuerda que el 1% es 0.01 y el 0.5% es menor. Reescríbelo con cuidado y vuelve a dividir."},
+            null,
+            {"en": "Your decimal may be too small. 0.5% is half of 1%, and 1% is 0.01. Does your decimal show half of that? Compare, fix the zeros, then divide again.", "es": "Tu decimal quizás es demasiado pequeño. El 0.5% es la mitad del 1%, y el 1% es 0.01. ¿Tu decimal muestra la mitad de eso? Compara, arregla los ceros y vuelve a dividir."}
+          ]
         },
         {
           id: 't5_3',
           q: 'After a 25% discount, a backpack costs $45. What was its original price?',
           choices: ['$55', '$60', '$65', '$75'],
           correct: 1,
-          explain: '$45 represents 75%: $45 ÷ 0.75 = $60.'
+          explain: '$45 represents 75%: $45 ÷ 0.75 = $60.',
+          tags: ["whole-percent-added-to-part", null, "whole-answer-not-checked", "percent-used-as-whole-number"],
+          why: [
+            {"en": "Adding 25% of $45 to $45 is a common idea, but the 25% came off the original price, not off $45. What percent of the original is left after the discount?", "es": "Sumar el 25% de $45 a $45 es una idea común, pero el 25% se descontó del precio original, no de $45. ¿Qué porcentaje del original queda después del descuento?"},
+            null,
+            {"en": "Check backward: take 25% off your price. Do you land on $45? If not, the original price is not right yet.", "es": "Comprueba hacia atrás: réstale el 25% a tu precio. ¿Llegas a $45? Si no, el precio original todavía no es correcto."},
+            {"en": "75 here is the percent paid, not a dollar amount. The $45 is what that percent of the original price comes to. Write the percent as a decimal and divide.", "es": "Aquí 75 es el porcentaje que se paga, no una cantidad de dólares. Los $45 son lo que da ese porcentaje del precio original. Escribe el porcentaje como decimal y divide."}
+          ]
         },
         {
           id: 't5_4',
           q: 'A toy store sells all 300-piece and 500-piece puzzles (representing 60% of all puzzles) totaling 90 puzzles. What was the total puzzle inventory?',
           choices: ['120', '150', '180', '200'],
           correct: 1,
-          explain: '90 ÷ 0.60 = 150 puzzles.'
+          explain: '90 ÷ 0.60 = 150 puzzles.',
+          tags: ["whole-answer-not-checked", null, "ratio-scale-factor-wrong", "whole-answer-not-checked"],
+          why: [
+            {"en": "Check backward: take 60% of your total. Do you get 90 puzzles? If not, the total is not right yet.", "es": "Comprueba hacia atrás: saca el 60% de tu total. ¿Obtienes 90 rompecabezas? Si no, el total todavía no es correcto."},
+            null,
+            {"en": "Doubling the part works only when the part is half of the whole. Is 60% half of 100%? Match your multiplier to the percent in the problem.", "es": "Duplicar la parte solo sirve cuando la parte es la mitad del total. ¿El 60% es la mitad del 100%? Haz que tu multiplicador coincida con el porcentaje del problema."},
+            {"en": "Test your number: find 60% of it. Does it match 90? A friendly round number can feel right, so always check it against the part.", "es": "Prueba tu número: calcula el 60% de él. ¿Coincide con 90? Un número redondo puede parecer correcto, así que siempre compáralo con la parte."}
+          ]
         },
         {
           id: 't5_5',
           q: 'If 200% of a number is 84, what is the number?',
           choices: ['42', '84', '168', '200'],
           correct: 0,
-          explain: '84 ÷ 2.0 = 42.'
+          explain: '84 ÷ 2.0 = 42.',
+          tags: [null, "whole-part-treated-as-whole", "whole-percent-taken-of-part", "percent-used-as-whole-number"],
+          why: [
+            null,
+            {"en": "84 is what 200% of the number comes to, so it is the part, not the whole. Ask whether the whole is bigger or smaller than the part when the percent is over 100%.", "es": "84 es lo que da el 200% del número, así que es la parte, no el total. Pregúntate si el total es mayor o menor que la parte cuando el porcentaje pasa de 100%."},
+            {"en": "You found 200% of 84. But 84 already is the 200%, so you need to undo the percent, not take it again. Which operation undoes multiplying?", "es": "Calculaste el 200% de 84. Pero 84 ya es ese 200%, así que hay que deshacer el porcentaje, no sacarlo otra vez. ¿Qué operación deshace una multiplicación?"},
+            {"en": "200 is the percent, not the amount. Percent means out of 100. Write 200% as a decimal, then use it with the part, 84.", "es": "200 es el porcentaje, no la cantidad. Porcentaje significa de cada 100. Escribe el 200% como decimal y luego úsalo con la parte, 84."}
+          ]
         },
         {
           id: 't5_6',
           q: 'An employee pays 20% in taxes and takes home $640. What was their gross pay?',
           choices: ['$720', '$768', '$800', '$850'],
           correct: 2,
-          explain: '$640 ÷ 0.80 = $800.'
+          explain: '$640 ÷ 0.80 = $800.',
+          tags: ["percent-used-as-whole-number", "whole-percent-added-to-part", null, "whole-answer-not-checked"],
+          why: [
+            {"en": "A percent cannot be added to dollars like a count. The $640 is a percent of the gross pay, so that percent has to be a decimal before you use it.", "es": "Un porcentaje no se suma a los dólares como si fuera una cantidad. Los $640 son un porcentaje del pago bruto, así que ese porcentaje debe ser un decimal antes de usarlo."},
+            {"en": "Adding 20% of $640 to $640 treats the tax like it came off $640. The tax came off the gross pay, and $640 is what is left. What percent of gross pay is left?", "es": "Sumar el 20% de $640 a $640 trata el impuesto como si se hubiera quitado de $640. El impuesto se quitó del pago bruto y $640 es lo que queda. ¿Qué porcentaje del pago bruto queda?"},
+            null,
+            {"en": "Check backward: take 20% off your gross pay. Do you land on $640? If not, the gross pay is not right yet.", "es": "Comprueba hacia atrás: réstale el 20% a tu pago bruto. ¿Llegas a $640? Si no, el pago bruto todavía no es correcto."}
+          ]
         },
         {
           id: 't5_7',
           q: '5 is 0.25% of what number?',
           choices: ['200', '500', '2,000', '20,000'],
           correct: 2,
-          explain: '5 ÷ 0.0025 = 2,000.'
+          explain: '5 ÷ 0.0025 = 2,000.',
+          tags: ["whole-percent-decimal-misplaced", "whole-percent-decimal-misplaced", null, "whole-percent-decimal-misplaced"],
+          why: [
+            {"en": "Think about size: 0.25% is a tiny percent. Compare your decimal with 0.01, which is 1%. Is yours smaller? Fix the zeros, then divide again.", "es": "Piensa en el tamaño: el 0.25% es un porcentaje muy pequeño. Compara tu decimal con 0.01, que es el 1%. ¿El tuyo es menor? Arregla los ceros y vuelve a dividir."},
+            {"en": "Dividing by 0.01 treats the percent as 1%. But 0.25% is a smaller percent than that. Rewrite 0.25% as a decimal with the right number of zeros, then divide again.", "es": "Dividir entre 0.01 trata el porcentaje como 1%. Pero el 0.25% es un porcentaje menor. Reescribe el 0.25% como decimal con la cantidad correcta de ceros y vuelve a dividir."},
+            null,
+            {"en": "Your decimal may be too small. Percent means out of 100, so the point moves two places left from 0.25. Count the zeros carefully, then divide again.", "es": "Tu decimal quizás es demasiado pequeño. Porcentaje significa de cada 100, así que el punto se mueve dos lugares a la izquierda desde 0.25. Cuenta los ceros con cuidado y vuelve a dividir."}
+          ]
         },
         {
           id: 't5_8',
           q: '36 is 18% of what number?',
           choices: ['180', '200', '250', '360'],
           correct: 1,
-          explain: '36 ÷ 0.18 = 200.'
+          explain: '36 ÷ 0.18 = 200.',
+          tags: ["estimate-rounded-poorly", null, "whole-answer-not-checked", "ratio-scale-factor-wrong"],
+          why: [
+            {"en": "Rounding 18% to a friendly percent is a fine way to estimate, but it gives a near answer, not the exact whole. Use 18% exactly, written as a decimal, and divide.", "es": "Redondear el 18% a un porcentaje fácil sirve para estimar, pero da un valor cercano, no el total exacto. Usa el 18% exacto, escrito como decimal, y divide."},
+            null,
+            {"en": "Check backward: take 18% of your number. Do you get 36? If not, the whole is not right yet.", "es": "Comprueba hacia atrás: saca el 18% de tu número. ¿Obtienes 36? Si no, el total todavía no es correcto."},
+            {"en": "Multiplying by 10 fits a part that is 10% of the whole. Is the part here 10%? Match your multiplier to the percent in the problem.", "es": "Multiplicar por 10 sirve cuando la parte es el 10% del total. ¿Aquí la parte es el 10%? Haz que tu multiplicador coincida con el porcentaje del problema."}
+          ]
         },
         {
           id: 't5_9',
           q: 'In a survey, 40% liked dogs, 35% liked cats, and 25% liked birds. If 150 students liked dogs and birds combined (65%), what was the total survey size?',
           choices: ['200', '225', '230.77', '250'],
           correct: 2,
-          explain: '150 ÷ 0.65 ≈ 230.77 (or 40% + 25% = 65%).'
+          explain: '150 ÷ 0.65 ≈ 230.77 (or 40% + 25% = 65%).',
+          tags: ["whole-answer-not-checked", "whole-answer-not-checked", null, "whole-answer-not-checked"],
+          why: [
+            {"en": "A round number can feel safe, but the whole must fit the percent exactly. Find 65% of your number and see if it gives 150 students.", "es": "Un número redondo parece seguro, pero el total debe ajustarse exactamente al porcentaje. Calcula el 65% de tu número y mira si da 150 estudiantes."},
+            {"en": "Check backward. Take 65% of your total and compare it with 150. Rounding along the way can move you off, so keep the exact decimal until the end.", "es": "Comprueba hacia atrás. Saca el 65% de tu total y compáralo con 150. Redondear en el camino puede desviarte, así que guarda el decimal exacto hasta el final."},
+            null,
+            {"en": "Check the percent you divided by. It must be the percent for the dogs-and-birds group together, written exactly as a decimal. Then test your total against 150.", "es": "Revisa el porcentaje entre el que dividiste. Debe ser el porcentaje del grupo de perros y pájaros juntos, escrito exactamente como decimal. Luego prueba tu total con 150."}
+          ]
         },
         {
           id: 't5_10',
           q: 'A smartphone battery displays 15% charge remaining, with 45 minutes of screen time left. How many total minutes does a full 100% battery provide?',
           choices: ['250 min', '300 min (5 hours)', '350 min', '400 min'],
           correct: 1,
-          explain: '45 ÷ 0.15 = 300 minutes (5 hours).'
+          explain: '45 ÷ 0.15 = 300 minutes (5 hours).',
+          tags: ["whole-answer-not-checked", null, "whole-answer-not-checked", "whole-answer-not-checked"],
+          why: [
+            {"en": "Check backward: take 15% of your total. Do you get 45 minutes? If not, the total is not right yet.", "es": "Comprueba hacia atrás: saca el 15% de tu total. ¿Obtienes 45 minutos? Si no, el total todavía no es correcto."},
+            null,
+            {"en": "Test your number: find 15% of it. Does it match 45? Nearby round numbers are easy to mix up, so check each one against the part.", "es": "Prueba tu número: calcula el 15% de él. ¿Coincide con 45? Los números redondos cercanos se confunden fácil, así que revisa cada uno con la parte."},
+            {"en": "A number that looks neat is not always right. Take 15% of it and compare with 45 minutes. If they differ, set up part ÷ percent again.", "es": "Un número que se ve ordenado no siempre es correcto. Saca el 15% de él y compáralo con 45 minutos. Si no coinciden, plantea otra vez parte ÷ porcentaje."}
+          ]
         }
       ];
 
@@ -1306,7 +1402,7 @@
               playSound('wrong');
               btn.classList.add('wrong');
               fb.className = 'feedback-box show err';
-              fb.textContent = 'Divide the part by the percent decimal to determine the whole.';
+              fb.innerHTML = U4Studio.miss(q, idx, { tab: 5 });
             }
             saveState();
           });

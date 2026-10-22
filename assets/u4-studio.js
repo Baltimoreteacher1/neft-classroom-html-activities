@@ -188,6 +188,31 @@
     }
   }
 
+  /* ---- Named wrong-answer help ---------------------------------------------------------------------------------------
+     An item authors one help line per wrong choice, in one of the three shapes the pages already use: `why[i]` ({en, es}),
+     `choices[i].why`, `feedback[i]` ({en, es}), or `feedback[i]` + `feedbackEs[i]`. Each wrong choice also names a misconception in `tags[i]` (an id
+     in data/practice-studio/misconceptions.json). The line explains the mistake and never prints the right answer;
+     tools/unit4-mc-contract.test.mjs holds every item to that. */
+  S.misses = [];
+  function helpFor(/** @type {any} */ item, /** @type {number} */ i) {
+    const w = item.why?.[i] ?? item.choices?.[i]?.why ?? null;
+    if (w) return typeof w === "string" ? { en: w, es: "" } : { en: w.en, es: w.es || "" };
+    const f = item.feedback?.[i];
+    if (f)
+      return typeof f === "string"
+        ? { en: f, es: item.feedbackEs?.[i] || "" }
+        : { en: f.en, es: f.es || "" };
+    return null;
+  }
+  /** Records the miss and returns the bilingual help for it, ready for a feedback box. "" when the item has none. */
+  function miss(/** @type {any} */ item, /** @type {number} */ i, ctx = {}) {
+    const h = helpFor(item, i);
+    const m = { id: item.id ?? null, choice: i, tag: item.tags?.[i] ?? null, ...ctx };
+    S.misses.push(m);
+    document.dispatchEvent(new CustomEvent("u4:miss", { detail: m }));
+    return h ? bilingual(h.en, h.es) : "";
+  }
+
   /* ---- Theme: Practice follows the device until a student picks Light or Dark; Challenge is night until they choose.
      The head script the injector writes (scripts/inject-u4-lab-bench.mjs) applies the same rule before first paint. -- */
   const THEME_KEY = "neft_u4_theme_v1";
@@ -654,5 +679,8 @@
     bonusBest: (/** @type {number} */ round) => play().bonus[round] || 0,
     burst,
     say,
+    helpFor,
+    miss,
+    misses: () => S.misses,
   };
 })();

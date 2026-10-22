@@ -7,7 +7,7 @@ Every core lesson in Units 2-9 (67 lessons) has **two** student-facing HTML stud
 | Practice  | `/math/practice-studio/<id>/`           | Learn-by-doing: warm-up, two levels, fresh problems, mastery check      |
 | Challenge | `/math/practice-studio/<id>/challenge/` | Stretch: skill climb, multi-step missions, a lab, detective, boss level |
 
-Unit 4 keeps its hand-built pages (`/math/unit-4/...`) and receives the shared-layer upgrades only.
+Unit 4 keeps its hand-built pages (`/math/unit-4/...`), because their ten tasks are bespoke interactive renderers that the item kinds cannot express 1:1; they receive the shared-layer upgrades instead: the clarity layer, the night palette and Theme control (`assets/u4-studio.css`, `assets/u4-studio.js`), and the same wrong-answer contract. Every multiple-choice item on the ten pages carries `tags[]` (misconception ids) and one bilingual help line per wrong choice, shown through `U4Studio.miss()`; `tools/unit4-mc-contract.test.mjs` holds that, and `assets/u4-studio-thinking.js` is their "My thinking" panel.
 
 Design rules (non-negotiable, from Joel's standing decisions):
 

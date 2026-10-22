@@ -17,9 +17,9 @@ Rebuilt 2026-10-21 from the build brief after the original scratchpad roadmap wa
 | ---- | ----- | ------ |
 | W0 | P0 defect fixes | LIVE |
 | W1a | Content intelligence: misconception taxonomy (`data/practice-studio/misconceptions.json`), every MC distractor tagged in Units 2, 3, 5-9, generated and converted distractors named | LIVE |
-| W1b | Clarity: problem-first layout, "I can" target, Context/Ask styling, "Hint 1 of 3" labels, feedback anatomy, exit card, header Menu, word-bank preview, typeset fractions | built; shipping |
-| W1c | Visual system v2 / dark theme: neutral reading text, stepped surfaces, per-world hue families, `prefers-color-scheme` default, on-accent tokens, contrast test for 12 worlds x light/dark | next |
-| W-U4 | Bring Unit 4's 10 hand-built pages (`math/unit-4/`, `assets/u4-studio.{js,css}`) to parity incl. taxonomy tags. Migrate to `data/practice-studio/4-x.json` only if every item, figure and story card is kept 1:1; otherwise port into u4-studio. Never lose content | |
+| W1b | Clarity: problem-first layout, "I can" target, Context/Ask styling, "Hint 1 of 3" labels, feedback anatomy, exit card, header Menu, word-bank preview, typeset fractions | LIVE |
+| W1c | Visual system v2 / dark theme: neutral reading text, stepped surfaces, per-world hue families, `prefers-color-scheme` default, on-accent tokens, contrast test for 12 worlds x light/dark | LIVE |
+| W-U4 | Bring Unit 4's 10 hand-built pages (`math/unit-4/`, `assets/u4-studio.{js,css}`) to parity incl. taxonomy tags. Migrate to `data/practice-studio/4-x.json` only if every item, figure and story card is kept 1:1; otherwise port into u4-studio. Never lose content. Decision: ported into u4-studio, not migrated (bespoke renderers). Dark theme + Theme control LIVE; taxonomy tags, named wrong-answer help and My thinking for all 466 wrong choices built; Context/Ask stems, stacked fractions, hint ladders on T1-T3/T5, word bank and mission card still open | in progress |
 | W2 | Learner model, rewards v2, repair loop, confidence tap, seals | |
 | W3 | Worked examples + fading, "Which move?" kind, two-tier diagnostic, Trap Book UI | |
 | W4 | Explore-first opener, linked-representations workbench, models for the 13 lessons in AUDIT_REPORT.md | |

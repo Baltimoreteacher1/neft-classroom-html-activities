@@ -17,8 +17,10 @@
   <!-- nsr-injected:end -->
   <!-- u4-clarity:begin (scripts/inject-u4-lab-bench.mjs) -->
   <script>(function(){try{var t=localStorage.getItem("neft_u4_theme_v1"),m=matchMedia("(prefers-color-scheme: dark)").matches,c=/-challenging/.test(location.pathname),d=t==="light"||t==="dark"?t:t==="auto"||!c?(m?"dark":"light"):"dark";new MutationObserver(function(_,o){if(document.body){document.body.dataset.theme=d;o.disconnect()}}).observe(document.documentElement,{childList:true})}catch(e){}})()</script>
-  <link rel="stylesheet" href="/assets/studio/clarity.css?v=be0288a64f">
-  <script src="/assets/studio/clarity.js?v=be0288a64f" defer></script>
+  <link rel="stylesheet" href="/assets/studio/clarity.css?v=325a912e68">
+  <script src="/assets/studio/clarity.js?v=325a912e68" defer></script>
+  <script type="application/json" id="u4-traps">{"compare-assumed-equal":{"name":"Called them equal too soon","nameEs":"Dije que eran iguales muy pronto","fix":"Close is not equal. Work out each value exactly, then compare.","fixEs":"Parecido no es igual. Calcula cada valor exactamente y después compara."},"compare-direction-reversed":{"name":"Flipped the comparison","nameEs":"Invertí la comparación","fix":"After you calculate, compare the two amounts again and say which one is greater in words.","fixEs":"Después de calcular, vuelve a comparar las dos cantidades y di con palabras cuál es mayor."},"compare-thought-impossible":{"name":"Thought it could not be done","nameEs":"Pensé que no se podía","fix":"Look for a step that puts both on the same footing: the same unit, the amount for one, or smaller pieces.","fixEs":"Busca un paso que ponga las dos cosas en igualdad: la misma unidad, la cantidad para uno o piezas más pequeñas."},"multi-step-stopped-early":{"name":"Stopped one step early","nameEs":"Me detuve un paso antes","fix":"Reread the question. Ask: does my number answer exactly what it asks, for every item?","fixEs":"Vuelve a leer la pregunta. Pregúntate: ¿mi número responde exactamente lo que pide, para todos los artículos?"},"percent-used-as-whole-number":{"name":"Used the percent as a number","nameEs":"Usé el porcentaje como número","fix":"A percent means out of 100. Write it as a fraction or decimal before you use it.","fixEs":"Un porcentaje significa de cada 100. Escríbelo como fracción o decimal antes de usarlo."},"pof-compared-percents-only":{"name":"Compared only the percents","nameEs":"Comparó solo los porcentajes","fix":"A percent is a part of its own whole. Work out each amount first, then compare the amounts.","fixEs":"Un porcentaje es una parte de su propio total. Halla primero cada cantidad y luego compara las cantidades."},"pof-compared-wholes-only":{"name":"Compared only the wholes","nameEs":"Comparó solo los totales","fix":"A bigger whole does not always give a bigger part. Take the percent of each whole, then compare.","fixEs":"Un total mayor no siempre da una parte mayor. Toma el porcentaje de cada total y luego compara."},"pof-outputs-misread":{"name":"Misread the amounts you found","nameEs":"Leyó mal las cantidades halladas","fix":"Line the amounts up in a list, then read them from greatest to least before you choose.","fixEs":"Pon las cantidades en una lista y léelas de mayor a menor antes de elegir."},"pof-percent-changes-cancel":{"name":"Thought up and down cancel out","nameEs":"Creyó que el cambio se anula","fix":"Ask what amount each percent is taken from. After a change, the next percent uses the new amount.","fixEs":"Pregunta de qué cantidad se toma cada porcentaje. Después de un cambio, el siguiente porcentaje usa la cantidad nueva."},"pof-percent-of-wrong-whole":{"name":"Used the wrong whole for percent","nameEs":"Usó el total equivocado","fix":"Say which whole the percent is about. Divide the part by that whole to find the percent.","fixEs":"Di de qué total habla el porcentaje. Divide la parte entre ese total para hallar el porcentaje."},"pof-percent-over-100-misread":{"name":"Misread a percent over 100","nameEs":"Leyó mal un porcentaje sobre 100","fix":"A percent over 100 is more than the whole. Write it as a decimal greater than 1 and multiply.","fixEs":"Un porcentaje mayor que 100 es más que el total. Escríbelo como decimal mayor que 1 y multiplica."},"pof-percent-step-slip":{"name":"Slipped on a calculation step","nameEs":"Error en un paso del cálculo","fix":"Write each step on its own line, say what each number means, and check each step before moving on.","fixEs":"Escribe cada paso en su propia línea, di qué significa cada número y revisa cada paso antes de seguir."},"pof-percent-wrong-decimal":{"name":"Percent turned into wrong decimal","nameEs":"Porcentaje en decimal equivocado","fix":"Percent means out of 100. Divide the percent number by 100 to get the decimal, and check the size of your answer.","fixEs":"Por ciento significa de cada 100. Divide el número del porcentaje entre 100 para obtener el decimal y revisa el tamaño de tu respuesta."},"pof-second-percent-from-original":{"name":"Used the starting amount again","nameEs":"Usó otra vez la cantidad inicial","fix":"Find the new amount after each step, then take the next percent of that new amount.","fixEs":"Halla la cantidad nueva después de cada paso y toma el siguiente porcentaje de esa cantidad nueva."},"pof-successive-percents-added":{"name":"Added the percents together","nameEs":"Sumó los porcentajes","fix":"The second percent applies to the new amount, not the starting one. Do one step at a time.","fixEs":"El segundo porcentaje se aplica a la cantidad nueva, no a la inicial. Haz un paso a la vez."},"rate-wrong-count-or-rate":{"name":"Used the wrong count or rate","nameEs":"Usé otro conteo u otra tasa","fix":"Find the rate for one unit and the exact count the question asks about, then multiply them. Check against a row you already know.","fixEs":"Halla la tasa de una unidad y el número exacto que pide la pregunta, y multiplícalos. Compara con una fila que ya conoces."},"read-question-missed-key-word":{"name":"Answered a different question","nameEs":"Respondí otra pregunta","fix":"Underline what the question asks for before you choose. Check that your choice answers exactly that.","fixEs":"Subraya lo que pide la pregunta antes de elegir. Revisa que tu opción responda exactamente eso."}}</script>
+  <script src="/assets/u4-studio-thinking.js?v=325a912e68" defer></script>
   <!-- u4-clarity:end -->
 </head>
 <body class="theme-challenge">
@@ -509,11 +511,12 @@
           ],
           question: 'Which dealership sold the GREATEST total number of electric cars?',
           choices: [
-            { text: 'Dealership A', correct: false },
+            { text: 'Dealership A', correct: false, why: { en: 'Line up the outputs you found for the three dealerships and look for the greatest number of cars. Compare the output numbers, not the order of the rows.', es: 'Alinea los resultados que hallaste para las tres concesionarias y busca el mayor número de autos. Compara los números de resultado, no el orden de las filas.' } },
             { text: 'Dealership C', correct: true },
-            { text: 'Dealership B', correct: false }
+            { text: 'Dealership B', correct: false, why: { en: 'Dealership B has the biggest percent, but the dealerships start from different totals. Compare the cars each one sold, not the percents.', es: 'La concesionaria B tiene el porcentaje mayor, pero las concesionarias parten de totales distintos. Compara los autos que vendió cada una, no los porcentajes.' } }
           ],
-          explain: 'A: 0.45 × 120 = 54. B: 0.60 × 85 = 51. C: 0.35 × 160 = 56. Dealership C sold the most!'
+          explain: 'A: 0.45 × 120 = 54. B: 0.60 × 85 = 51. C: 0.35 × 160 = 56. Dealership C sold the most!',
+          tags: ['pof-outputs-misread', null, 'pof-compared-percents-only']
         },
         {
           id: 't2_2',
@@ -526,10 +529,11 @@
           question: 'Which school collected the most pounds of recyclables?',
           choices: [
             { text: 'School 3', correct: true },
-            { text: 'School 1', correct: false },
-            { text: 'School 2', correct: false }
+            { text: 'School 1', correct: false, why: { en: 'Line up the pounds you found for each school and look for the greatest amount. Compare the outputs, not the order of the schools.', es: 'Alinea las libras que hallaste para cada escuela y busca la mayor cantidad. Compara los resultados, no el orden de las escuelas.' } },
+            { text: 'School 2', correct: false, why: { en: 'School 2 has the biggest percent, but the schools have different totals. Compare the pounds each school collected, not the percents.', es: 'La Escuela 2 tiene el porcentaje mayor, pero las escuelas tienen totales distintos. Compara las libras que recogió cada escuela, no los porcentajes.' } }
           ],
-          explain: 'School 1: 180 lbs. School 2: 176 lbs. School 3: 0.65 × 280 = 182 lbs.'
+          explain: 'School 1: 180 lbs. School 2: 176 lbs. School 3: 0.65 × 280 = 182 lbs.',
+          tags: [null, 'pof-outputs-misread', 'pof-compared-percents-only']
         },
         {
           id: 't2_3',
@@ -541,11 +545,12 @@
           ],
           question: 'Which division selected the MOST players?',
           choices: [
-            { text: 'Division North', correct: false },
-            { text: 'Division East', correct: false },
+            { text: 'Division North', correct: false, why: { en: 'Division North has the biggest percent, but the divisions have different numbers of players. Compare how many players each division selected, not the percents.', es: 'La división North tiene el porcentaje mayor, pero las divisiones tienen números distintos de jugadores. Compara cuántos jugadores seleccionó cada división, no los porcentajes.' } },
+            { text: 'Division East', correct: false, why: { en: 'Line up the numbers of players you found for the three divisions and look for the greatest. Compare the outputs, not the order of the rows.', es: 'Alinea los números de jugadores que hallaste para las tres divisiones y busca el mayor. Compara los resultados, no el orden de las filas.' } },
             { text: 'Division West', correct: true }
           ],
-          explain: 'East = 45, West = 0.25 × 184 = 46, North = 44. Division West selected 46.'
+          explain: 'East = 45, West = 0.25 × 184 = 46, North = 44. Division West selected 46.',
+          tags: ['pof-compared-percents-only', 'pof-outputs-misread', null]
         },
         {
           id: 't2_4',
@@ -557,11 +562,12 @@
           ],
           question: 'Which grade had the highest raw number of students attending?',
           choices: [
-            { text: 'Grade 6', correct: false },
+            { text: 'Grade 6', correct: false, why: { en: 'Grade 6 has the biggest percent, but the grades have different numbers of students. Compare how many students attended, not the percents.', es: 'El grado 6 tiene el porcentaje mayor, pero los grados tienen números distintos de estudiantes. Compara cuántos estudiantes asistieron, no los porcentajes.' } },
             { text: 'Grade 8', correct: true },
-            { text: 'Grade 7', correct: false }
+            { text: 'Grade 7', correct: false, why: { en: 'Line up the numbers of students you found for each grade and look for the highest raw number. Compare the outputs, not the percents or the order.', es: 'Alinea los números de estudiantes que hallaste para cada grado y busca el número más alto. Compara los resultados, no los porcentajes ni el orden.' } }
           ],
-          explain: 'Grade 8 had 56 students (0.70 × 80 = 56).'
+          explain: 'Grade 8 had 56 students (0.70 × 80 = 56).',
+          tags: ['pof-compared-percents-only', null, 'pof-outputs-misread']
         },
         {
           id: 't2_5',
@@ -573,11 +579,12 @@
           ],
           question: 'Which server cluster has the highest active nodes?',
           choices: [
-            { text: 'Clusters Alpha and Gamma tie for the most active nodes.', correct: false },
+            { text: 'Clusters Alpha and Gamma tie for the most active nodes.', correct: false, why: { en: 'Check all three outputs against each other, not just two of them, before you decide which cluster has the most.', es: 'Compara los tres resultados entre sí, no solo dos, antes de decidir qué clúster tiene más.' } },
             { text: 'Cluster Beta has the most active nodes.', correct: true },
-            { text: 'All three clusters have the same number of active nodes.', correct: false }
+            { text: 'All three clusters have the same number of active nodes.', correct: false, why: { en: 'Do not decide all three match without checking. Compare the three outputs digit by digit.', es: 'No decidas que los tres son iguales sin comprobar. Compara los tres resultados dígito por dígito.' } }
           ],
-          explain: 'Beta: 0.60 × 170 = 102 nodes. Alpha & Gamma have 100 nodes each.'
+          explain: 'Beta: 0.60 × 170 = 102 nodes. Alpha & Gamma have 100 nodes each.',
+          tags: ['pof-outputs-misread', null, 'compare-assumed-equal']
         },
         {
           id: 't2_6',
@@ -590,10 +597,11 @@
           question: 'Which library branch had the most readers complete the program?',
           choices: [
             { text: 'Branch C', correct: true },
-            { text: 'Branch A', correct: false },
-            { text: 'Branch B', correct: false }
+            { text: 'Branch A', correct: false, why: { en: 'Line up the number of readers you found for each branch and look for the greatest. Compare the outputs, not the order of the branches.', es: 'Alinea el número de lectores que hallaste para cada sucursal y busca el mayor. Compara los resultados, no el orden de las sucursales.' } },
+            { text: 'Branch B', correct: false, why: { en: 'Branch B has the biggest percent, but the branches have different numbers of readers. Compare how many readers completed the program, not the percents.', es: 'La sucursal B tiene el porcentaje mayor, pero las sucursales tienen números distintos de lectores. Compara cuántos lectores completaron el programa, no los porcentajes.' } }
           ],
-          explain: 'Branch C: 0.45 × 260 = 117 readers.'
+          explain: 'Branch C: 0.45 × 260 = 117 readers.',
+          tags: [null, 'pof-outputs-misread', 'pof-compared-percents-only']
         },
         {
           id: 't2_7',
@@ -605,11 +613,12 @@
           ],
           question: 'What is true regarding Room Y and Room Z?',
           choices: [
-            { text: 'Room Z won more items because 30% is greater than 15%.', correct: false },
-            { text: 'Room Y won more items because 620 is greater than 310.', correct: false },
+            { text: 'Room Z won more items because 30% is greater than 15%.', correct: false, why: { en: 'Room Z has the bigger percent, but the two rooms start from different numbers of bids. Compare the items each room won, not the percents.', es: 'La sala Z tiene el porcentaje mayor, pero las dos salas parten de números distintos de ofertas. Compara los artículos que ganó cada sala, no los porcentajes.' } },
+            { text: 'Room Y won more items because 620 is greater than 310.', correct: false, why: { en: 'Room Y starts from the bigger number of bids, but a percent takes only a part of it. Compare the items each room won, not the starting numbers.', es: 'La sala Y parte del mayor número de ofertas, pero un porcentaje toma solo una parte. Compara los artículos que ganó cada sala, no los números de partida.' } },
             { text: 'Rooms Y and Z won the same number of items.', correct: true }
           ],
-          explain: 'Room Y: 0.15 × 620 = 93. Room Z: 0.30 × 310 = 93. Both tied!'
+          explain: 'Room Y: 0.15 × 620 = 93. Room Z: 0.30 × 310 = 93. Both tied!',
+          tags: ['pof-compared-percents-only', 'pof-compared-wholes-only', null]
         },
         {
           id: 't2_8',
@@ -621,11 +630,12 @@
           ],
           question: 'Rank trails by sightings from greatest to least:',
           choices: [
-            { text: 'Trail 2, then Trail 1, then Trail 3', correct: false },
+            { text: 'Trail 2, then Trail 1, then Trail 3', correct: false, why: { en: 'That order follows the percents. The trails have different totals, so rank the sightings you found, not the percents.', es: 'Ese orden sigue los porcentajes. Los senderos tienen totales distintos, así que ordena los avistamientos que hallaste, no los porcentajes.' } },
             { text: 'Trail 3, then Trail 2, then Trail 1', correct: true },
-            { text: 'Trail 1, then Trail 2, then Trail 3', correct: false }
+            { text: 'Trail 1, then Trail 2, then Trail 3', correct: false, why: { en: 'Reread the direction in the question: greatest to least. Check which number should be at the start of your list.', es: 'Vuelve a leer la dirección de la pregunta: de mayor a menor. Revisa qué número debe ir al principio de tu lista.' } }
           ],
-          explain: 'Trail 3 (45) > Trail 2 (42) > Trail 1 (40).'
+          explain: 'Trail 3 (45) > Trail 2 (42) > Trail 1 (40).',
+          tags: ['pof-compared-percents-only', null, 'compare-direction-reversed']
         }
       ];
 
@@ -793,8 +803,7 @@ function renderT2() {
         playSound("wrong");
         btn.classList.add("wrong");
         fb.className = "feedback-box show err";
-        fb.textContent =
-          "Check your outputs again and compare the actual numbers.";
+        fb.innerHTML = U4Studio.miss(m, idx, { tab: 2 });
       }
       saveState();
     });
@@ -823,10 +832,11 @@ function renderT2() {
           question: 'A jacket costs $100. It is 20% off, and you have an extra 10% coupon off the sale price. What is the final price?',
           choices: [
             { text: '$72 (20% takes off $20 &rarr; $80; 10% of $80 takes off $8 &rarr; $72)', correct: true },
-            { text: '$70 (20% + 10% = 30% off $100)', correct: false },
-            { text: '$68', correct: false }
+            { text: '$70 (20% + 10% = 30% off $100)', correct: false, why: { en: 'Taking 20% and then another 10% is not the same as taking 30% once. The 10% comes off the price after the first discount, which is a smaller price.', es: 'Quitar 20% y luego otro 10% no es lo mismo que quitar 30% de una vez. El 10% se quita del precio después del primer descuento, que es un precio menor.' } },
+            { text: '$68', correct: false, why: { en: 'Check each step with its own price. What is the price after the first discount, and what is 10% of that price?', es: 'Revisa cada paso con su propio precio. ¿Cuál es el precio después del primer descuento y cuánto es el 10% de ese precio?' } }
           ],
-          explain: 'Coupons apply sequentially: 10% of $80 is $8, not $10. Final price is $72 (a 28% total savings, not 30%).'
+          explain: 'Coupons apply sequentially: 10% of $80 is $8, not $10. Final price is $72 (a 28% total savings, not 30%).',
+          tags: [null, 'pof-successive-percents-added', 'pof-percent-step-slip']
         },
         {
           id: 't3_2',
@@ -840,10 +850,11 @@ function renderT2() {
           question: '$200 headphones are marked 25% off. At checkout, an employee discount takes 20% off the markdown price. Final price?',
           choices: [
             { text: '$120 (25% off leaves $150; 20% off $150 saves $30 &rarr; $120)', correct: true },
-            { text: '$110 (45% off $200 = $90 off)', correct: false },
-            { text: '$130', correct: false }
+            { text: '$110 (45% off $200 = $90 off)', correct: false, why: { en: 'The employee discount takes 20% of the markdown price, not of $200, so 25% and 20% do not simply add up. Work out the price after each step.', es: 'El descuento de empleado quita 20% del precio rebajado, no de $200, así que 25% y 20% no se suman sin más. Halla el precio después de cada paso.' } },
+            { text: '$130', correct: false, why: { en: 'You may have taken $20 off, but 20% means 20 out of every 100 of the markdown price. Find 20% of that price in dollars first.', es: 'Quizá quitaste $20, pero 20% significa 20 de cada 100 del precio rebajado. Primero halla el 20% de ese precio en dólares.' } }
           ],
-          explain: '$200 - $50 = $150. Then 20% of $150 = $30. $150 - $30 = $120.'
+          explain: '$200 - $50 = $150. Then 20% of $150 = $30. $150 - $30 = $120.',
+          tags: [null, 'pof-successive-percents-added', 'percent-used-as-whole-number']
         },
         {
           id: 't3_3',
@@ -857,10 +868,11 @@ function renderT2() {
           question: 'A sign says: "50% off clearance, plus take an extra 50% off at register!" Are the shoes free?',
           choices: [
             { text: 'No, they cost $20 (50% of $80 = $40; 50% of $40 = $20).', correct: true },
-            { text: 'Yes, 50% + 50% = 100% off so they are $0.', correct: false },
-            { text: 'No, they cost $10.', correct: false }
+            { text: 'Yes, 50% + 50% = 100% off so they are $0.', correct: false, why: { en: 'The second 50% comes off the price after the first discount, not off the starting price. Work out each step with its own price.', es: 'El segundo 50% se quita del precio después del primer descuento, no del precio inicial. Halla cada paso con su propio precio.' } },
+            { text: 'No, they cost $10.', correct: false, why: { en: 'Check how many times you took 50% off. Each discount is used once, on the price left after the step before.', es: 'Revisa cuántas veces quitaste 50%. Cada descuento se usa una vez, sobre el precio que queda después del paso anterior.' } }
           ],
-          explain: '50% of $40 is $20. You still pay $20 (75% total discount).'
+          explain: '50% of $40 is $20. You still pay $20 (75% total discount).',
+          tags: [null, 'pof-successive-percents-added', 'pof-percent-step-slip']
         },
         {
           id: 't3_4',
@@ -873,10 +885,11 @@ function renderT2() {
           question: 'A $300 tablet has a 10% discount. 8% sales tax is added to the discounted price. What is the total cost?',
           choices: [
             { text: '$291.60 (Sale price $270; tax is 0.08 × $270 = $21.60)', correct: true },
-            { text: '$294.00 (Tax calculated on $300)', correct: false },
-            { text: '$280.00', correct: false }
+            { text: '$294.00 (Tax calculated on $300)', correct: false, why: { en: 'Tax is added to the price you actually pay, which is the sale price. Find 8% of that price, not 8% of the starting price.', es: 'El impuesto se suma al precio que de verdad pagas, que es el precio de oferta. Halla el 8% de ese precio, no del precio inicial.' } },
+            { text: '$280.00', correct: false, why: { en: 'Work in two steps. First find the price after the discount. Then find the tax on that price and add it on.', es: 'Trabaja en dos pasos. Primero halla el precio después del descuento. Luego halla el impuesto sobre ese precio y súmalo.' } }
           ],
-          explain: '10% off $300 leaves $270. Tax is 8% of $270 = $21.60. $270 + $21.60 = $291.60.'
+          explain: '10% off $300 leaves $270. Tax is 8% of $270 = $21.60. $270 + $21.60 = $291.60.',
+          tags: [null, 'pof-second-percent-from-original', 'pof-percent-step-slip']
         },
         {
           id: 't3_5',
@@ -885,10 +898,11 @@ function renderT2() {
           question: 'Which deal gives a lower price on a $50 backpack?',
           choices: [
             { text: 'Option A: Straight 30% off ($35 final price)', correct: true },
-            { text: 'Option B: 15% off followed by another 15% off ($36.13 final price)', correct: false },
-            { text: 'Both options yield the exact same price', correct: false }
+            { text: 'Option B: 15% off followed by another 15% off ($36.13 final price)', correct: false, why: { en: 'The question asks for the lower price. Compare the two final prices and decide which number is smaller.', es: 'La pregunta pide el precio más bajo. Compara los dos precios finales y decide cuál número es menor.' } },
+            { text: 'Both options yield the exact same price', correct: false, why: { en: 'Two 15% discounts in a row are not the same as 30% off once, because the second 15% comes off a smaller price. Compare the final prices.', es: 'Dos descuentos de 15% seguidos no son lo mismo que 30% de descuento una vez, porque el segundo 15% se quita de un precio menor. Compara los precios finales.' } }
           ],
-          explain: 'A straight 30% discount leaves $35. Sequential 15% discounts leave $50 × 0.85 × 0.85 = $36.13. Option A is cheaper!'
+          explain: 'A straight 30% discount leaves $35. Sequential 15% discounts leave $50 × 0.85 × 0.85 = $36.13. Option A is cheaper!',
+          tags: [null, 'read-question-missed-key-word', 'pof-successive-percents-added']
         },
         {
           id: 't3_6',
@@ -897,10 +911,11 @@ function renderT2() {
           question: 'Buy One Get One 50% Off on two identical $40 board games. What is the effective overall percent discount on both?',
           choices: [
             { text: '25% total savings ($20 saved on an $80 total purchase)', correct: true },
-            { text: '50% total savings', correct: false },
-            { text: '35% total savings', correct: false }
+            { text: '50% total savings', correct: false, why: { en: 'The 50% off applies to only one of the two games. Add up the dollars saved, then ask what part of the full price of both games that is.', es: 'El 50% de descuento se aplica a solo uno de los dos juegos. Suma los dólares ahorrados y pregunta qué parte del precio completo de los dos juegos representa.' } },
+            { text: '35% total savings', correct: false, why: { en: 'Check your savings against what both games cost with no sale. Divide the dollars saved by that regular total to get the percent.', es: 'Compara tu ahorro con lo que cuestan los dos juegos sin oferta. Divide los dólares ahorrados entre ese total normal para hallar el porcentaje.' } }
           ],
-          explain: 'Total regular cost = $80. You pay $40 + $20 = $60. Savings = $20 ÷ $80 = 25%.'
+          explain: 'Total regular cost = $80. You pay $40 + $20 = $60. Savings = $20 ÷ $80 = 25%.',
+          tags: [null, 'pof-percent-of-wrong-whole', 'pof-percent-of-wrong-whole']
         },
         {
           id: 't3_7',
@@ -909,10 +924,11 @@ function renderT2() {
           question: 'Store A offers 25% off $120. Store B offers $35 off $120. Which store saves you more money?',
           choices: [
             { text: 'Store B saves more ($35 vs. $30)', correct: true },
-            { text: 'Store A saves more ($30 vs. $35)', correct: false },
-            { text: 'They save the same', correct: false }
+            { text: 'Store A saves more ($30 vs. $35)', correct: false, why: { en: 'Look at the two savings you found. Saving more money is better, so check which dollar amount is greater.', es: 'Mira los dos ahorros que hallaste. Ahorrar más dinero es mejor, así que revisa cuál cantidad de dólares es mayor.' } },
+            { text: 'They save the same', correct: false, why: { en: 'A percent off and a dollar amount off are different kinds of savings. Change the percent to dollars, then compare.', es: 'Un porcentaje de descuento y una cantidad de dólares de descuento son tipos distintos de ahorro. Convierte el porcentaje a dólares y luego compara.' } }
           ],
-          explain: 'Store A discount: 0.25 × 120 = $30. Store B discount: $35. Store B saves $5 more.'
+          explain: 'Store A discount: 0.25 × 120 = $30. Store B discount: $35. Store B saves $5 more.',
+          tags: [null, 'compare-direction-reversed', 'compare-assumed-equal']
         },
         {
           id: 't3_8',
@@ -921,10 +937,11 @@ function renderT2() {
           question: 'A stock rises 10% in value, then falls 10% the next day. Is it back at its original $100 price?',
           choices: [
             { text: 'No, it is at $99 (10% of $110 is $11, so $110 - $11 = $99).', correct: true },
-            { text: 'Yes, +10% and -10% cancel out to exactly $100.', correct: false },
-            { text: 'No, it is at $101.', correct: false }
+            { text: 'Yes, +10% and -10% cancel out to exactly $100.', correct: false, why: { en: 'Check which price each 10% is taken from. The rise uses the first price. What price does the fall use?', es: 'Revisa de qué precio se toma cada 10%. La subida usa el primer precio. ¿Qué precio usa la bajada?' } },
+            { text: 'No, it is at $101.', correct: false, why: { en: 'Work out the price after the rise first. Then take 10% of that new price off and check your subtraction.', es: 'Primero halla el precio después de la subida. Luego quita el 10% de ese precio nuevo y revisa tu resta.' } }
           ],
-          explain: '$100 + $10 = $110. Then 10% of $110 is $11 loss: $110 - $11 = $99.'
+          explain: '$100 + $10 = $110. Then 10% of $110 is $11 loss: $110 - $11 = $99.',
+          tags: [null, 'pof-percent-changes-cancel', 'pof-percent-step-slip']
         }
       ];
 
@@ -992,7 +1009,7 @@ function renderT2() {
               playSound('wrong');
               btn.classList.add('wrong');
               fb.className = 'feedback-box show err';
-              fb.textContent = 'Carefully calculate step 1 first, then apply the second percentage to the new amount!';
+              fb.innerHTML = U4Studio.miss(d, idx, { tab: 3 });
             }
             saveState();
           });
@@ -1226,70 +1243,139 @@ function renderT2() {
           q: 'What is 125% of 80?',
           choices: ['80', '90', '100', '125'],
           correct: 2,
-          explain: '1.25 × 80 = 100.'
+          explain: '1.25 × 80 = 100.',
+          tags: ['pof-percent-over-100-misread', 'pof-percent-step-slip', null, 'percent-used-as-whole-number'],
+          why: [
+            { en: 'A percent over 100% is more than the whole amount. Write 125% as a decimal greater than 1 and multiply by 80.', es: 'Un porcentaje mayor que 100% es más que la cantidad completa. Escribe 125% como decimal mayor que 1 y multiplica por 80.' },
+            { en: 'Check how you got 90. Think of 125% as 100% plus an extra part, and find each part carefully.', es: 'Revisa cómo obtuviste 90. Piensa en 125% como 100% más una parte extra, y halla cada parte con cuidado.' },
+            null,
+            { en: 'You used 125 as if it were the amount, but 125% means 125 out of every hundred of 80. Write 125% as a decimal first.', es: 'Usaste 125 como si fuera la cantidad, pero 125% significa 125 de cada cien de 80. Primero escribe 125% como decimal.' }
+          ]
         },
         {
           id: 't5_2',
           q: 'What is 0.5% of 2,400?',
           choices: ['1.2', '12', '120', '1,200'],
           correct: 1,
-          explain: '0.005 × 2,400 = 12.'
+          explain: '0.005 × 2,400 = 12.',
+          tags: ['pof-percent-wrong-decimal', null, 'pof-percent-wrong-decimal', 'pof-percent-wrong-decimal'],
+          why: [
+            { en: 'Check how many places the decimal point moved when you wrote 0.5% as a decimal. Percent means out of 100.', es: 'Revisa cuántos lugares se movió el punto decimal cuando escribiste 0.5% como decimal. Por ciento significa de cada 100.' },
+            null,
+            { en: 'Look at the percent again: it has a decimal point, so it is less than 1%. Check that your decimal matches 0.5%, not a bigger percent.', es: 'Mira otra vez el porcentaje: tiene un punto decimal, así que es menor que 1%. Revisa que tu decimal sea el de 0.5% y no el de un porcentaje mayor.' },
+            { en: 'Multiplying by 0.5 takes half of 2,400. But 0.5% is half of one percent, which is half of 1 out of every 100. Rewrite 0.5% as a decimal.', es: 'Multiplicar por 0.5 toma la mitad de 2,400. Pero 0.5% es la mitad de un por ciento, que es la mitad de 1 de cada 100. Reescribe 0.5% como decimal.' }
+          ]
         },
         {
           id: 't5_3',
           q: 'Store X: 30% off $80. Store Y: 40% off $65. Which store gives a bigger dollar discount?',
           choices: ['Store Y saves more ($26 vs. $24)', 'Store X saves more ($24 vs. $26)', 'Both save $25', 'Cannot tell'],
           correct: 0,
-          explain: 'Store X discount = $24. Store Y discount = 0.40 × 65 = $26. Store Y saves more.'
+          explain: 'Store X discount = $24. Store Y discount = 0.40 × 65 = $26. Store Y saves more.',
+          tags: [null, 'compare-direction-reversed', 'compare-assumed-equal', 'compare-thought-impossible'],
+          why: [
+            null,
+            { en: 'Compare the dollar discount from each store and say in words which one is greater before you choose.', es: 'Compara el descuento en dólares de cada tienda y di con palabras cuál es mayor antes de elegir.' },
+            { en: 'Each store has its own percent and its own price, so work out each discount separately. Do not use an average.', es: 'Cada tienda tiene su propio porcentaje y su propio precio, así que halla cada descuento por separado. No uses un promedio.' },
+            { en: 'You have a percent and a price for each store, so you can find each discount in dollars. Then compare the two amounts.', es: 'Tienes un porcentaje y un precio para cada tienda, así que puedes hallar cada descuento en dólares. Luego compara las dos cantidades.' }
+          ]
         },
         {
           id: 't5_4',
           q: 'A $100 coat has 20% off. An extra 20% coupon is applied to the sale price. What is the final price?',
           choices: ['$60', '$64', '$68', '$80'],
           correct: 1,
-          explain: '20% off $100 = $80. 20% off $80 = $16 off. $80 - $16 = $64.'
+          explain: '20% off $100 = $80. 20% off $80 = $16 off. $80 - $16 = $64.',
+          tags: ['pof-successive-percents-added', null, 'pof-percent-step-slip', 'multi-step-stopped-early'],
+          why: [
+            { en: 'The second 20% comes off the sale price, not the starting price, so 20% and 20% do not simply make 40%. Work out the price after each step.', es: 'El segundo 20% se quita del precio rebajado, no del precio inicial, así que 20% y 20% no suman 40% sin más. Halla el precio después de cada paso.' },
+            null,
+            { en: 'Check each step with its own price. What is the price after the first discount, and what is 20% of that price?', es: 'Revisa cada paso con su propio precio. ¿Cuál es el precio después del primer descuento y cuánto es el 20% de ese precio?' },
+            { en: 'That is the price after only the first discount. The coupon is a second step, so keep going after the sale price.', es: 'Ese es el precio después de solo el primer descuento. El cupón es un segundo paso, así que sigue después del precio de oferta.' }
+          ]
         },
         {
           id: 't5_5',
           q: 'What is 250% of 16?',
           choices: ['32', '40', '48', '50'],
           correct: 1,
-          explain: '2.5 × 16 = 40.'
+          explain: '2.5 × 16 = 40.',
+          tags: ['pof-percent-over-100-misread', null, 'pof-percent-over-100-misread', 'pof-percent-step-slip'],
+          why: [
+            { en: '32 is 2 times 16, which is 200%. Look at 250% again: how much more than 200% is it? Use all of it.', es: '32 es 2 veces 16, que es 200%. Mira otra vez 250%: ¿cuánto más que 200% es? Usa todo el porcentaje.' },
+            null,
+            { en: '48 is 3 times 16, which is 300%. Write 250% as a decimal and use that exact number to multiply.', es: '48 es 3 veces 16, que es 300%. Escribe 250% como decimal y usa ese número exacto para multiplicar.' },
+            { en: 'Check where 50 came from. 250% means 250 out of every 100, so write it as a decimal before you multiply by 16.', es: 'Revisa de dónde salió 50. 250% significa 250 de cada 100, así que escríbelo como decimal antes de multiplicar por 16.' }
+          ]
         },
         {
           id: 't5_6',
           q: 'A car salesperson sells a car for $30,000 with a 3.5% commission rate. What is the commission?',
           choices: ['$1,050', '$1,005', '$3,500', '$105'],
           correct: 0,
-          explain: '0.035 × 30,000 = $1,050.'
+          explain: '0.035 × 30,000 = $1,050.',
+          tags: [null, 'pof-percent-step-slip', 'pof-percent-wrong-decimal', 'pof-percent-wrong-decimal'],
+          why: [
+            null,
+            { en: 'Check your multiplication step by step. Breaking 30,000 into friendlier parts can help you see where a digit slipped.', es: 'Revisa tu multiplicación paso por paso. Separar 30,000 en partes más fáciles puede ayudarte a ver dónde se te escapó un dígito.' },
+            { en: '$3,500 is far more than 3.5% of $30,000 should be. 3.5% is less than 4 out of every 100, so check the decimal you used.', es: '$3,500 es mucho más de lo que debe ser el 3.5% de $30,000. 3.5% es menos de 4 de cada 100, así que revisa el decimal que usaste.' },
+            { en: 'Check the decimal you used for 3.5%. One zero too many makes the answer far too small. Percent means out of 100.', es: 'Revisa el decimal que usaste para 3.5%. Un cero de más hace la respuesta mucho menor. Por ciento significa de cada 100.' }
+          ]
         },
         {
           id: 't5_7',
           q: 'An electric vehicle battery has 5 equal charge segments (each 20%). If 4 segments are depleted, what percent remains?',
           choices: ['20%', '40%', '60%', '80%'],
           correct: 0,
-          explain: '100% - (4 × 20%) = 20% remaining.'
+          explain: '100% - (4 × 20%) = 20% remaining.',
+          tags: [null, 'pof-percent-step-slip', 'pof-percent-step-slip', 'multi-step-stopped-early'],
+          why: [
+            null,
+            { en: '40% is 2 of the 5 segments. Count the depleted segments again, then count what is left.', es: '40% es 2 de los 5 segmentos. Cuenta otra vez los segmentos agotados y luego cuenta los que quedan.' },
+            { en: '60% is 3 of the 5 segments. Recount the segments that are still charged, and use what each segment is worth.', es: '60% es 3 de los 5 segmentos. Vuelve a contar los segmentos que siguen cargados y usa lo que vale cada segmento.' },
+            { en: 'Check what your number counts. The question asks about the part still left in the battery, so make sure you finish all the steps.', es: 'Revisa qué cuenta tu número. La pregunta es sobre la parte que aún queda en la batería, así que asegúrate de terminar todos los pasos.' }
+          ]
         },
         {
           id: 't5_8',
           q: 'What is 0.2% of 5,000?',
           choices: ['1', '10', '100', '1,000'],
           correct: 1,
-          explain: '0.002 × 5,000 = 10.'
+          explain: '0.002 × 5,000 = 10.',
+          tags: ['pof-percent-wrong-decimal', null, 'pof-percent-wrong-decimal', 'pof-percent-wrong-decimal'],
+          why: [
+            { en: 'Check how you wrote 0.2% as a decimal. It is less than 1%, so be careful how many places the decimal point moves.', es: 'Revisa cómo escribiste 0.2% como decimal. Es menos de 1%, así que cuida cuántos lugares se mueve el punto decimal.' },
+            null,
+            { en: 'Look at the percent again: 0.2% is less than 1%. Check that your decimal is not for a bigger percent.', es: 'Mira otra vez el porcentaje: 0.2% es menos de 1%. Revisa que tu decimal no sea el de un porcentaje mayor.' },
+            { en: 'Multiplying 5,000 by 0.2 takes a fifth of it, which is 20%. Check that the decimal you used is for 0.2%.', es: 'Multiplicar 5,000 por 0.2 toma un quinto, que es 20%. Revisa que el decimal que usaste sea el de 0.2%.' }
+          ]
         },
         {
           id: 't5_9',
           q: 'Option 1: 50% of 90. Option 2: 90% of 50. How do these compare?',
           choices: ['They are exactly equal (both = 45)', 'Option 1 is larger', 'Option 2 is larger'],
           correct: 0,
-          explain: 'a% of b = b% of a: 0.50 × 90 = 45, and 0.90 × 50 = 45.'
+          explain: 'a% of b = b% of a: 0.50 × 90 = 45, and 0.90 × 50 = 45.',
+          tags: [null, 'pof-compared-wholes-only', 'pof-compared-percents-only'],
+          why: [
+            null,
+            { en: 'Option 1 starts from the bigger whole, but its percent is smaller. Work out both amounts before you decide which is larger.', es: 'La opción 1 parte del total mayor, pero su porcentaje es menor. Halla las dos cantidades antes de decidir cuál es mayor.' },
+            { en: 'Option 2 has the bigger percent, but it takes that percent of a smaller whole. Work out both amounts before you decide which is larger.', es: 'La opción 2 tiene el porcentaje mayor, pero toma ese porcentaje de un total menor. Halla las dos cantidades antes de decidir cuál es mayor.' }
+          ]
         },
         {
           id: 't5_10',
           q: 'A phone drops from 80% to 20% battery in 3 hours. What is the average percent drain per hour?',
           choices: ['15% per hour', '20% per hour', '25% per hour', '30% per hour'],
           correct: 1,
-          explain: '80% - 20% = 60% drained. 60% ÷ 3 hours = 20% per hour.'
+          explain: '80% - 20% = 60% drained. 60% ÷ 3 hours = 20% per hour.',
+          tags: ['rate-wrong-count-or-rate', null, 'pof-percent-step-slip', 'rate-wrong-count-or-rate'],
+          why: [
+            { en: 'Check how many hours you divided by. Use the time in the story exactly, not an extra hour.', es: 'Revisa entre cuántas horas dividiste. Usa el tiempo del cuento exactamente, sin una hora de más.' },
+            null,
+            { en: 'First find how many percent points the battery lost in all. Then share that loss evenly across the hours.', es: 'Primero halla cuántos puntos porcentuales perdió la batería en total. Luego reparte esa pérdida en partes iguales entre las horas.' },
+            { en: 'Check how many hours you divided by. Use the time in the story exactly, not one hour fewer.', es: 'Revisa entre cuántas horas dividiste. Usa el tiempo del cuento exactamente, sin una hora de menos.' }
+          ]
         }
       ];
 
@@ -1354,7 +1440,7 @@ function renderT2() {
               playSound('wrong');
               btn.classList.add('wrong');
               fb.className = 'feedback-box show err';
-              fb.textContent = 'Take your time to write the percent as a decimal and calculate carefully.';
+              fb.innerHTML = U4Studio.miss(q, idx, { tab: 5 });
             }
             saveState();
           });
