@@ -52,12 +52,26 @@ check(
 for (const key of ["2:add-1000", "4:add-large", "4:subtract-large"]) {
   const current = findSkill(key);
   const model = createLesson(current).model;
-  check(model.start >= current.config.min, `${key}: visual model uses the skill's number size`);
+  // Addition and subtraction visuals are stacked columns (no number-line jumps): the first number sets the size.
+  check(
+    (model.type === "vertical" && model.op === "+") ||
+      (model.type === "vertical" && model.op === "-"),
+    `${key}: stacked column model`,
+  );
+  check(
+    Number(model.terms[0]) >= current.config.min,
+    `${key}: visual model uses the skill's number size`,
+  );
 }
-check(
-  createLesson(findSkill("1:subtract-20")).model.start > 10,
-  "Subtraction within 20 models crossing ten",
-);
+{
+  // The model is the stacked columns (no number-line jumps); "crossing ten" means the ones digit must be regrouped.
+  const model = createLesson(findSkill("1:subtract-20")).model;
+  const [x, y] = model.terms.map(Number);
+  check(
+    model.type === "vertical" && x > 10 && y > x % 10,
+    "Subtraction within 20 models crossing ten",
+  );
+}
 for (let i = 0; i < 10; i++)
   recordAnswer(tutor, skill, { correct: true, independent: false, level: 1 }, now + i);
 check(!evidence(tutor, skill, now).secure, "Coached answers cannot establish independent mastery");
@@ -145,6 +159,13 @@ for (const current of ALL_SKILLS) {
             model.start + model.jumps.reduce((x, y) => x + y, 0) === answer,
             `${current.id}: number line lands on the answer`,
           );
+        if (model.type === "vertical") {
+          const [x, y] = model.terms.map(Number);
+          check(
+            (model.op === "+" ? x + y : x - y) === answer,
+            `${current.id}: stacked columns show the question's numbers`,
+          );
+        }
         if (model.type === "counters")
           check(model.shown === answer, `${current.id}: counters show the answer`);
         if (model.type === "array")

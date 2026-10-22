@@ -1,4 +1,5 @@
 import { t } from "./i18n.js";
+import { columnSpec, verticalHtml } from "./vertical-columns.js";
 import { fillKey, isSolved, peekFill, register, splitFill, tryFill } from "./step-fill.js";
 import { whyFor } from "./step-whys.js";
 // Static, student-facing pictures for the Fact Trail. Each one is drawn from the problem's own
@@ -81,6 +82,7 @@ function numberLine(model) {
 // Returns "" when the problem has no picture; callers then show only the one-sentence tip.
 export function trailPicture(model, { reveal = false } = {}) {
   if (!model) return "";
+  if (model.type === "vertical") return verticalModel(model);
   let body = "";
   if (model.type === "counters") body = tenFrames(model);
   else if (model.type === "array") body = dotArray(model);
@@ -141,6 +143,9 @@ function tapArray(model) {
     const tone = r < model.split ? "row-a" : "row-b";
     return `<button type="button" class="tp-row ${tone}" data-row="${r}" aria-label="Row ${r + 1}">${Array.from({ length: model.b }, () => `<span class="tp-dot">${model.unit ? model.unit : ""}</span>`).join("")}</button>`;
   }).join("");
+  // Sharing (division): the rows start empty and the learner deals the total out, so the size of each row is theirs to find.
+  if (model.share)
+    return `<div class="tp-live" data-live="share" data-rows-total="${model.a}" data-share="${model.share}"><p class="tp-prompt">${esc(t("Share {total} equally into {rows} rows. Tap Deal to give every row one more.", { total: model.share, rows: model.a }))}</p><div class="tp-array tp-share">${Array.from({ length: model.a }, (_, r) => `<div class="tp-row row-a" data-share-row="${r}" aria-label="${esc(t("Row {n}", { n: r + 1 }))}"></div>`).join("")}</div><p class="tp-readout">${esc(t("Dealt so far:"))} <b data-dealt>0</b> / ${model.share}</p><div class="tp-hop-row"><button type="button" class="tp-hop-btn" data-deal>${esc(t("Deal one to each row"))}</button></div></div>`;
   const each = model.unit ? `${model.b} tens` : model.b;
   return `<div class="tp-live" data-live="array"><p class="tp-prompt">${model.a} rows of ${esc(each)}. Tap each row as you count it.</p><div class="tp-array${model.unit ? " tens" : ""}">${rows}</div><p class="tp-readout">Rows counted: <b data-rows>0</b> of ${model.a}</p></div>`;
 }
@@ -507,8 +512,16 @@ function chainModel(model) {
   return `<div class="tp-live" data-live="chain"><p class="tp-prompt">${esc(model.prompt)}</p>${model.picture ? picture(model.picture, model) : ""}${rows}</div>`;
 }
 
+// Addition and subtraction use the stacked column method: the problem's numbers lined up by place value,
+// with empty boxes for the answer digits and for the regrouping above each column (vertical-columns.js).
+function verticalModel(model) {
+  const spec = columnSpec(model.op, model.terms);
+  return spec ? `<div class="tp-live tp-vertical" data-live="vertical"><p class="tp-prompt">${esc(t("Line up the places. Fill each box, one column at a time."))}</p>${verticalHtml(spec)}</div>` : "";
+}
+
 export function interactivePicture(model) {
   if (!model) return "";
+  if (model.type === "vertical") return verticalModel(model);
   if (model.type === "counters" && model.kind) return countFrames(model);
   if (model.type === "array") return tapArray(model);
   if (model.type === "numberline") return tapLine(model);
@@ -662,6 +675,17 @@ export function handleModelTap(target) {
       cell.classList.contains("filled")
     )
       cell.classList.toggle("filled");
+    return true;
+  }
+  if (target.closest("[data-deal]")) {
+    const rows = [...live.querySelectorAll("[data-share-row]")];
+    const total = Number(live.dataset.share);
+    const dealt = Number(live.querySelector("[data-dealt]").textContent);
+    if (dealt + rows.length <= total) {
+      for (const r of rows) r.insertAdjacentHTML("beforeend", '<span class="tp-dot"></span>');
+      live.querySelector("[data-dealt]").textContent = dealt + rows.length;
+    }
+    if (dealt + rows.length * 2 > total) target.closest("button").disabled = true;
     return true;
   }
   const row = target.closest("[data-row]");
@@ -939,7 +963,7 @@ function miniBar(parts, take) {
 
 function miniHops(values) {
   const shown = values.slice(0, 12);
-  return `<span class="sv sv-hops" aria-hidden="true">${shown.map((value, i) => `<b class="${i === shown.length - 1 ? "last" : ""}">${value.toLocaleString("en-US")}</b>`).join("")}</span>`;
+  return `<span class="sv sv-hops" aria-hidden="true">${shown.map((value, i) => `<b class="${i === shown.length - 1 ? "last" : ""}">${typeof value === "number" ? value.toLocaleString("en-US") : value}</b>`).join("")}</span>`;
 }
 
 export function stepVisual(line) {
@@ -951,11 +975,8 @@ export function stepVisual(line) {
   const start = text.match(/^Start at (-?\d+)$/);
   if (start) return miniHops([Number(start[1])]);
   const move = text.match(/^Start at (-?\d+)\. Move (\d+) (left|right)$/);
-  if (move)
-    return miniHops([
-      Number(move[1]),
-      Number(move[1]) + (move[3] === "right" ? 1 : -1) * Number(move[2]),
-    ]);
+  // The landing point is the learner's to find, so only the start is drawn.
+  if (move) return miniHops([Number(move[1]), "?"]);
   const missing = text.match(/^(\d+) \+ \? = (\d+)$/);
   if (missing && Number(missing[2]) <= 20)
     return `<span class="sv sv-count" aria-hidden="true">${dots(Number(missing[1]))}${dots(Number(missing[2]) - Number(missing[1]), "ghost")}</span>`;

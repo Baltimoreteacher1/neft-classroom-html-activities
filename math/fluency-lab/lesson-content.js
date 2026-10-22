@@ -48,7 +48,7 @@ export function createLesson(skill, variant = 0) {
       const a = config.min >= 1000 ? 5263 + k : large ? 63 + k : config.maxResult === 20 ? 14 + k : 9;
       const b = config.min >= 1000 ? 1287 : large ? 28 : config.maxResult === 20 ? 6 + k : 4 + k % 3;
       const part = config.min >= 1000 ? 1000 : large ? 20 : config.maxResult === 20 ? a - 10 : 1;
-      return lesson("Subtract in friendly jumps", "Take away one part at a time, then use addition to check.", { type: "numberline", start: a, jumps: [-part, -(b - part)], caption: `${a} − ${b}` }, [step(`First take away ${part} from ${a}. Where do you land?`, a - part, "Move left for subtraction.", `${a} − ${part} = ${a - part}.`), step(`Take away the remaining ${b - part}. Where do you land?`, a - b, "Continue from your first landing point.", `${a - part} − ${b - part} = ${a - b}.`), step(`Check: ${a - b} + ${b} = ?`, a, "Add back what you took away.", `You return to ${a}, so the difference is ${a - b}.`)]);
+      return lesson("Subtract by place value", "Line up the places and take away one part at a time, then use addition to check.", { type: "vertical", op: "-", terms: [String(a), String(b)], caption: `${a} − ${b}` }, [step(`First take away ${part} from ${a}. What is left?`, a - part, "Subtract the larger place first.", `${a} − ${part} = ${a - part}.`), step(`Take away the remaining ${b - part}. What is left?`, a - b, "Continue from what was left.", `${a - part} − ${b - part} = ${a - b}.`), step(`Check: ${a - b} + ${b} = ?`, a, "Add back what you took away.", `You return to ${a}, so the difference is ${a - b}.`)]);
     }
     if (grade <= 2 && config.max <= 10) {
       const a = 6 + k % 3; const b = config.maxResult === 10 ? 10 - a : 6;
@@ -60,7 +60,7 @@ export function createLesson(skill, variant = 0) {
     const place = config.min >= 1000 ? 1000 : config.min >= 100 ? 100 : 10;
     const placeName = place === 1000 ? "thousands" : place === 100 ? "hundreds" : "tens";
     const part = Math.floor(b / place) * place;
-    return lesson("Add by place value", `Break an addend into ${placeName} and the remaining amount. Each jump keeps the total in view.`, { type: "numberline", start: a, jumps: [part, b - part], caption: `${a} + ${b}` }, [step(`How much is the ${placeName} part of ${b}?`, part, `Keep the ${placeName} and replace the smaller places with zero.`, `${b} = ${part} + ${b - part}.`), step(`Add ${part} to ${a}.`, a + part, `Add the ${placeName} first.`, `${a} + ${part} = ${a + part}.`), step(`Add the remaining ${b - part}. What is the total?`, a + b, "Continue from the last total.", `${a + part} + ${b - part} = ${a + b}.`)]);
+    return lesson("Add by place value", `Break an addend into ${placeName} and the remaining amount. Then line up the places to check.`, { type: "vertical", op: "+", terms: [String(a), String(b)], caption: `${a} + ${b}` }, [step(`How much is the ${placeName} part of ${b}?`, part, `Keep the ${placeName} and replace the smaller places with zero.`, `${b} = ${part} + ${b - part}.`), step(`Add ${part} to ${a}.`, a + part, `Add the ${placeName} first.`, `${a} + ${part} = ${a + part}.`), step(`Add the remaining ${b - part}. What is the total?`, a + b, "Continue from the last total.", `${a + part} + ${b - part} = ${a + b}.`)]);
   }
   if (["makeTarget", "missingAddend"].includes(gen)) {
     const total = gen === "makeTarget" ? config.target : 12 + k;
@@ -69,7 +69,7 @@ export function createLesson(skill, variant = 0) {
   }
   if (gen === "sequence") {
     const jump = config.steps[k % config.steps.length]; const start = 10 + k;
-    return lesson("Follow equal jumps", "A counting pattern repeats the same change each time.", { type: "numberline", start, jumps: [jump, jump, jump], caption: "Equal jumps" }, [step(`From ${start} to ${start + jump}, how large is the jump?`, jump, "Find the difference.", `Each jump is +${jump}.`), step(`What comes after ${start + jump}?`, start + jump * 2, "Use the same jump again.", `${start + jump} + ${jump} = ${start + jump * 2}.`), step(`Continue: what comes after ${start + jump * 2}?`, start + jump * 3, "Continue from the latest number.", `The pattern reaches ${start + jump * 3}.`)]);
+    return lesson("Follow the pattern", "A counting pattern repeats the same change each time.", { type: "table", headers: ["Term", "1", "2", "3", "4"], rows: [["Value", String(start), String(start + jump), "?", "?"]], caption: "Equal changes" }, [step(`From ${start} to ${start + jump}, how large is the jump?`, jump, "Find the difference.", `Each jump is +${jump}.`), step(`What comes after ${start + jump}?`, start + jump * 2, "Use the same jump again.", `${start + jump} + ${jump} = ${start + jump * 2}.`), step(`Continue: what comes after ${start + jump * 2}?`, start + jump * 3, "Continue from the latest number.", `The pattern reaches ${start + jump * 3}.`)]);
   }
   if (["placeValue", "decimalPlace", "compare"].includes(gen)) {
     if (gen === "compare") {

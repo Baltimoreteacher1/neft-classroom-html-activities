@@ -61,6 +61,13 @@ for (const grade of [1, 2, 3, 4, 5, 6, 7, 8]) {
           `${grade}/${station.id}: array does not show ${item.question}.`,
         );
       }
+      if (model?.type === "vertical") {
+        const [x, y] = model.terms.map(Number);
+        check(
+          Math.abs((model.op === "+" ? x + y : x - y) - number(answer)) < 1e-9,
+          `${grade}/${station.id}: stacked columns do not show the numbers of ${item.question}.`,
+        );
+      }
       if (model?.type === "numberline") {
         const end = model.start + model.jumps.reduce((sum, jump) => sum + jump, 0);
         check(

@@ -1,8 +1,10 @@
 // English / Spanish for the learner-facing Game Room and trail. English text is the key, so a string with no
 // Spanish entry simply stays in English. Placeholders look like {name} and are filled from `vars`.
-import { ES } from "./i18n-es.js";
+import { ES as ES_BASE } from "./i18n-es.js";
+import { ES_MODELS } from "./i18n-es-models.js";
 import { readLocal, writeLocal } from "./school-tools.js";
 
+const ES = { ...ES_BASE, ...ES_MODELS };
 const KEY = "ewl-fluency-lang-v1";
 let lang = null;
 

@@ -15,6 +15,12 @@ import { handleModelInput, handleModelTap, interactivePicture, mathText, openFil
 import { PROFILE_NAMES, assignmentQueue, cleanProgress, decodeAssignment, downloadFile, makeBackup, mountTeacherStudio, parseBackup, profileKey, profiles, progressReport, readLocal, selectProfile, writeLocal } from "./school-tools.js";
 import { mountWorkbench } from "./workbench.js";
 import { createWorkbenchState } from "./workbench-state.js";
+import { answerStillHidden, liveHelpHtml } from "./live-help.js";
+import { bareText, drawerSeed, extractProblem, plainProduct } from "./problem-numbers.js";
+import { clean as cleanDigits, columnSpec, verticalHtml } from "./vertical-columns.js";
+import { canMultiply, multiplyHtml, wireMultiply } from "./vertical-multiply.js";
+import { createDrillToolbox } from "./drill-toolbox.js";
+import { StandardLongDivisionModel } from "./long-division-model.js";
 import { mountTrail } from "./trail-view.js";
 import { GAMES, mountGames } from "./games.js";
 import { getLang, setLang, t, translatePage } from "./i18n.js";
@@ -706,13 +712,15 @@ function nextProblem(restoredItem = null) {
     els.checkButton.textContent = "Check";
   }
   if (els.toggleSolver) {
-    els.toggleSolver.hidden = !InteractiveSolver.canSolve(state.item);
+    els.toggleSolver.hidden = state.session.mode === "diagnostic" || !InteractiveSolver.canSolve(state.item);
     els.toggleSolver.setAttribute("aria-expanded", "false");
   }
   if (els.solverWorkspace) {
     els.solverWorkspace.hidden = true;
     els.solverWorkspace.innerHTML = "";
   }
+  // The Math Tool Drawer opens with this problem's numbers.
+  InteractiveDrillToolbox.onProblem(state.item);
   document.querySelector("#kinetic-decomposer-host")?.remove();
   const isFlashcard = state.session.mode === "flashcard";
   if (els.flashcardStage) els.flashcardStage.hidden = !isFlashcard;
@@ -721,8 +729,20 @@ function nextProblem(restoredItem = null) {
   if (arenaEl) arenaEl.hidden = isFlashcard;
   const actionsBar = document.querySelector(".problem-actions-bar");
   if (actionsBar) actionsBar.hidden = isFlashcard;
-  if (els.problemVisualScaffold) els.problemVisualScaffold.hidden = isFlashcard;
-  if (els.toggleProblemVisual) els.toggleProblemVisual.hidden = isFlashcard;
+  const drawerEl = document.querySelector("#drill-toolbox");
+  if (drawerEl) drawerEl.hidden = state.session.mode === "diagnostic";
+  // A problem with no model leaves the panel empty, so the panel and its button stay hidden.
+  const hasModel = Boolean(els.problemVisualScaffold?.innerHTML.trim());
+  if (els.problemVisualScaffold) {
+    els.problemVisualScaffold.hidden = isFlashcard || !hasModel;
+    delete els.problemVisualScaffold.dataset.hiddenBySolver;
+  }
+  if (els.toggleProblemVisual) {
+    els.toggleProblemVisual.hidden = isFlashcard || !hasModel;
+    // The model is showing, so the button offers to hide it.
+    els.toggleProblemVisual.setAttribute("aria-expanded", String(!els.problemVisualScaffold?.hidden));
+    els.toggleProblemVisual.textContent = els.problemVisualScaffold?.hidden ? "Show the model" : "Hide the model";
+  }
   if (isFlashcard) {
     els.answerForm.hidden = true;
     renderFlashcardProblem();
@@ -828,7 +848,9 @@ function formatProblemArena(item) {
   } else if (isPureEquation) {
     if (arena) arena.classList.add("has-equation");
     els.question.classList.add("is-equation");
-    let expr = rawQ.replace(/\s*[=?_]+\s*$/, "").trim();
+    // "5,337 + 90,679 = ?" has a space between the equals sign and the question mark; strip both.
+    const expr = rawQ.replace(/(?:\s*[=?_]+)+\s*$/, "").trim();
+    if (expr.length > 13) els.question.classList.add("is-long");
     els.question.innerHTML = `${mathText(expr)} <span class="arena-eq-symbol">=</span>`;
   } else {
     if (arena) arena.classList.add("has-sentence");
@@ -5054,255 +5076,15 @@ function printPartnerGame(gameType = "war", grade = state.grade || 4) {
 const gcd = (a, b) => { let x = Math.abs(a), y = Math.abs(b); while (y) [x, y] = [y, x % y]; return x || 1; };
 const lcm = (a, b) => Math.abs(a * b) / gcd(a, b);
 
-const StandardLongDivisionModel = {
-  computeSteps(dividend, divisor) {
-    dividend = Math.max(1, Math.floor(Number(dividend) || 432));
-    divisor = Math.max(1, Math.floor(Number(divisor) || 12));
-    const digits = String(dividend).split("").map(Number);
-    const quotient = Math.floor(dividend / divisor);
-    const steps = [];
-    let cur = 0;
-    let started = false;
-    for (let i = 0; i < digits.length; i++) {
-      cur = cur * 10 + digits[i];
-      const qDigit = Math.floor(cur / divisor);
-      if (qDigit > 0 || started || i === digits.length - 1) {
-        started = true;
-        const prod = qDigit * divisor;
-        const rem = cur - prod;
-        steps.push({
-          pos: i,
-          digit: digits[i],
-          cur,
-          qDigit,
-          prod,
-          rem,
-          nextDigit: i < digits.length - 1 ? digits[i + 1] : null
-        });
-        cur = rem;
-      }
-    }
-    return { dividend, divisor, quotient, remainder: cur, digits, steps };
-  },
-
-  renderHtml(dividend, divisor, opts = {}) {
-    const { isSolver = false } = opts;
-    const { quotient, remainder, digits, steps } = this.computeSteps(dividend, divisor);
-    const colPitch = 42;
-
-    return `
-      <div class="ld-model-container">
-        <!-- Standard Algorithm Cycle Breadcrumbs -->
-        <div class="ld-cycle-tracker" aria-label="Standard Algorithm Cycle">
-          <div class="ld-cycle-step is-active" data-ld-phase="divide">
-            <span class="ld-cycle-icon">➗</span>
-            <span class="ld-cycle-text">1. Divide</span>
-          </div>
-          <span class="ld-cycle-arrow">→</span>
-          <div class="ld-cycle-step" data-ld-phase="multiply">
-            <span class="ld-cycle-icon">✖️</span>
-            <span class="ld-cycle-text">2. Multiply</span>
-          </div>
-          <span class="ld-cycle-arrow">→</span>
-          <div class="ld-cycle-step" data-ld-phase="subtract">
-            <span class="ld-cycle-icon">➖</span>
-            <span class="ld-cycle-text">3. Subtract</span>
-          </div>
-          <span class="ld-cycle-arrow">→</span>
-          <div class="ld-cycle-step" data-ld-phase="bringdown">
-            <span class="ld-cycle-icon">⬇️</span>
-            <span class="ld-cycle-text">4. Bring Down</span>
-          </div>
-          <span class="ld-cycle-arrow">→</span>
-          <div class="ld-cycle-step" data-ld-phase="repeat">
-            <span class="ld-cycle-icon">🔁</span>
-            <span class="ld-cycle-text">5. Repeat / Remainder</span>
-          </div>
-        </div>
-
-        <!-- The Classic Standard Algorithm Bracket Board -->
-        <div class="ld-bracket-board">
-          <!-- Quotient Row (above the bar) -->
-          <div class="ld-row ld-row-quotient">
-            <div class="ld-spacer-divisor"></div>
-            <div class="ld-digits-strip">
-              ${digits.map((_, idx) => {
-                const s = steps.find((st) => st.pos === idx);
-                if (!s) return `<div class="ld-col-box ld-col-empty"></div>`;
-                return `
-                  <div class="ld-col-box">
-                    <input type="text" class="ld-cell ld-q-cell" inputmode="numeric" maxlength="1" data-ld-target="${s.qDigit}" data-ld-phase="divide" data-ld-step="${s.pos}" placeholder="?" title="Divide: Enter quotient digit for column ${idx + 1}" />
-                  </div>
-                `;
-              }).join("")}
-            </div>
-          </div>
-
-          <!-- Dividend Bracket Row -->
-          <div class="ld-row ld-row-dividend">
-            <div class="ld-divisor-box">${divisor}</div>
-            <div class="ld-bracket-arc">)</div>
-            <div class="ld-dividend-strip">
-              ${digits.map((d) => `<div class="ld-col-box ld-digit-cell">${d}</div>`).join("")}
-            </div>
-          </div>
-
-          <!-- Tower Work Steps -->
-          <div class="ld-tower-body">
-            ${steps.map((st, sIdx) => {
-              const prodStr = String(st.prod);
-              const remStr = String(st.rem);
-              const prodStartCol = Math.max(0, st.pos - prodStr.length + 1);
-              const prodOffsetPx = prodStartCol * colPitch;
-              const prodWidthPx = Math.max(42, prodStr.length * 20 + 20);
-              const ruleWidthPx = Math.max(prodStr.length, (st.nextDigit !== null ? remStr.length + 1 : remStr.length)) * colPitch;
-              const diffStartCol = Math.max(0, st.pos - remStr.length + 1);
-              const diffOffsetPx = diffStartCol * colPitch;
-              const diffWidthPx = Math.max(42, remStr.length * 20 + 20);
-
-              return `
-                <div class="ld-step-section" data-ld-step-idx="${sIdx}">
-                  <!-- Multiply Row: − [ prod ] -->
-                  <div class="ld-work-row ld-row-multiply" style="margin-left:${prodOffsetPx}px">
-                    <span class="ld-sub-sign">−</span>
-                    <input type="text" class="ld-cell ld-prod-cell" inputmode="numeric" style="width:${prodWidthPx}px" data-ld-target="${st.prod}" data-ld-phase="multiply" data-ld-step-idx="${sIdx}" placeholder="?" title="Multiply: ${st.qDigit} × ${divisor} = ${st.prod}" />
-                  </div>
-                  <!-- Subtraction Rule Line -->
-                  <div class="ld-rule-bar" style="margin-left:${prodOffsetPx + 16}px; width:${ruleWidthPx}px"></div>
-                  <!-- Subtract & Bring Down Row -->
-                  <div class="ld-work-row ld-row-diff" style="margin-left:${diffOffsetPx}px">
-                    <span class="ld-spacer-sign"> </span>
-                    <input type="text" class="ld-cell ld-diff-cell" inputmode="numeric" style="width:${diffWidthPx}px" data-ld-target="${st.rem}" data-ld-phase="subtract" data-ld-step-idx="${sIdx}" placeholder="?" title="Subtract: ${st.cur} − ${st.prod} = ${st.rem}" />
-                    ${st.nextDigit !== null ? `
-                      <div class="ld-bring-indicator" title="Bring down next digit ${st.nextDigit}">
-                        <span class="ld-bring-arrow">↓</span>
-                        <span class="ld-bring-val">${st.nextDigit}</span>
-                      </div>
-                    ` : `
-                      <span class="ld-rem-pill">${st.rem === 0 ? "✓ Remainder: 0" : `Remainder: ${st.rem}`}</span>
-                    `}
-                  </div>
-                </div>
-              `;
-            }).join("")}
-          </div>
-
-          <!-- Bottom Action Controls & Status Banner -->
-          <div style="display:flex; gap:0.5rem; justify-content:center; align-items:center; margin-top:0.75rem; flex-wrap:wrap">
-            <button type="button" class="mini-tool-btn ld-btn-reveal" style="background:#fef3c7; color:#92400e; border-color:#fde68a; font-weight:700">💡 Reveal Next Step</button>
-            <button type="button" class="mini-tool-btn ld-btn-reset">🔄 Reset</button>
-          </div>
-
-          <div class="ld-status-banner">
-            <span class="ld-status-text">Follow the standard algorithm: <strong>Divide</strong> → <strong>Multiply</strong> → <strong>Subtract</strong> → <strong>Bring Down</strong> → <strong>Repeat</strong>.</span>
-          </div>
-        </div>
-
-        ${isSolver ? `
-          <div class="solver-calc-row" style="margin-top:0.75rem">
-            <span>Full Quotient: <strong>${dividend} ÷ ${divisor} =</strong></span>
-            <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${quotient}" data-group="div-final" style="width:78px" placeholder="Quotient" />
-            ${remainder > 0 ? `<span style="font-size:0.9rem; font-weight:700; color:#dc2626">R ${remainder}</span>` : ""}
-            <button type="button" class="outline-action" id="div-copy-ans" style="display:none">Copy to Answer</button>
-          </div>
-        ` : ""}
-      </div>
-    `;
-  },
-
-  wireEvents(container, dividend, divisor, onSolved) {
-    if (!container) return;
-    const { quotient, remainder } = this.computeSteps(dividend, divisor);
-    const allCells = [...container.querySelectorAll(".ld-cell")];
-    const trackerSteps = [...container.querySelectorAll(".ld-cycle-step")];
-    const statusBanner = container.querySelector(".ld-status-banner");
-    const revealBtn = container.querySelector(".ld-btn-reveal");
-    const resetBtn = container.querySelector(".ld-btn-reset");
-
-    const updatePhase = (phase) => {
-      trackerSteps.forEach((s) => s.classList.toggle("is-active", s.dataset.ldPhase === phase));
-    };
-
-    const checkComplete = () => {
-      const allDone = allCells.every((c) => c.classList.contains("is-ok"));
-      if (allDone) {
-        updatePhase("repeat");
-        if (statusBanner) {
-          statusBanner.innerHTML = `<span style="color:#15803d; font-size:1.05rem; font-weight:800">🎉 Solved! ${dividend} ÷ ${divisor} = ${quotient}${remainder > 0 ? ` R ${remainder}` : ""}</span>`;
-        }
-        if (typeof chime === "function") chime("good");
-        if (typeof onSolved === "function") onSolved({ quotient, remainder });
-        return true;
-      }
-      return false;
-    };
-
-    allCells.forEach((cell) => {
-      cell.addEventListener("input", () => {
-        const val = cell.value.trim();
-        const target = cell.dataset.ldTarget;
-        if (val === target) {
-          cell.classList.add("is-ok");
-          cell.classList.remove("is-wrong");
-          if (typeof chime === "function") chime("step");
-
-          if (!checkComplete()) {
-            const nextIncomplete = allCells.find((c) => !c.classList.contains("is-ok"));
-            if (nextIncomplete) {
-              updatePhase(nextIncomplete.dataset.ldPhase);
-              nextIncomplete.focus();
-            }
-          }
-        } else if (val.length >= target.length) {
-          cell.classList.remove("is-ok");
-          cell.classList.add("is-wrong");
-        } else {
-          cell.classList.remove("is-ok");
-          cell.classList.remove("is-wrong");
-        }
-      });
-    });
-
-    revealBtn?.addEventListener("click", () => {
-      const incomplete = allCells.find((c) => !c.classList.contains("is-ok"));
-      if (incomplete) {
-        incomplete.value = incomplete.dataset.ldTarget;
-        incomplete.classList.add("is-ok");
-        incomplete.classList.remove("is-wrong");
-        if (typeof chime === "function") chime("step");
-        if (!checkComplete()) {
-          const next = allCells.find((c) => !c.classList.contains("is-ok"));
-          if (next) {
-            updatePhase(next.dataset.ldPhase);
-            next.focus();
-          }
-        }
-      }
-    });
-
-    resetBtn?.addEventListener("click", () => {
-      allCells.forEach((c) => {
-        c.value = "";
-        c.classList.remove("is-ok", "is-wrong");
-      });
-      updatePhase("divide");
-      if (statusBanner) {
-        statusBanner.innerHTML = `<span class="ld-status-text">Follow the standard algorithm: <strong>Divide</strong> → <strong>Multiply</strong> → <strong>Subtract</strong> → <strong>Bring Down</strong> → <strong>Repeat</strong>.</span>`;
-      }
-      if (allCells.length > 0) allCells[0].focus();
-    });
-  }
-};
-
 const InteractiveSolver = {
   canSolve(item) {
     if (!item) return false;
-    const q = item.question ? item.question.replaceAll(",", "").trim() : "";
+    const q = bareText(item);
     if (/find the lcm of \d+ and \d+/i.test(q)) return true;
     if (/find the gcf of \d+ and \d+/i.test(q)) return true;
 
     // Multi-digit whole number division (Standard Algorithm):
-    const divMatch = q.replace(/\s*=\s*\?.*$/, "").match(/(\d+)\s*[÷/]\s*(\d+)/);
+    const divMatch = q.replace(/\s*=\s*\?.*$/, "").match(/(?<![\d.])(\d+)\s*[÷/]\s*(\d+)(?![\d.])/);
     if (divMatch && !q.includes("/")) {
       const a = Number(divMatch[1]);
       const b = Number(divMatch[2]);
@@ -5323,50 +5105,27 @@ const InteractiveSolver = {
       if (a < 0 || b < 0 || (intMatch[2] === "-" && a < b)) return true;
     }
 
-    // Multi-digit addition with carry (at least one number >= 10 and generates carry):
-    const addMatch = q.match(/^(\d+)\s*\+\s*(\d+)/);
-    if (addMatch) {
-      const a = Number(addMatch[1]);
-      const b = Number(addMatch[2]);
-      if (a >= 10 || b >= 10) {
-        const strA = String(a);
-        const strB = String(b);
-        const maxLen = Math.max(strA.length, strB.length);
-        const padA = strA.padStart(maxLen, "0");
-        const padB = strB.padStart(maxLen, "0");
-        let carry = 0;
-        let hasCarry = false;
-        for (let i = maxLen - 1; i >= 0; i--) {
-          const s = Number(padA[i]) + Number(padB[i]) + carry;
-          if (s >= 10) { hasCarry = true; carry = 1; } else { carry = 0; }
-        }
-        if (hasCarry) return true;
-      }
-    }
-
-    // Multi-digit subtraction with borrow:
-    const subMatch = q.match(/^(\d+)\s*[−-]\s*(\d+)/);
-    if (subMatch) {
-      const a = Number(subMatch[1]);
-      const b = Number(subMatch[2]);
-      if (a >= 10 && a > b) {
-        const strA = String(a);
-        const strB = String(b).padStart(strA.length, "0");
-        for (let i = strA.length - 1; i >= 0; i--) {
-          if (Number(strA[i]) < Number(strB[i])) return true;
-        }
-      }
+    // Stacked addition and subtraction of whole numbers and decimals (vertical-columns.js).
+    const stacked = extractProblem(item);
+    if (stacked?.kind === "binary" && ["+", "-"].includes(stacked.op)) {
+      const spec = columnSpec(stacked.op, [stacked.aText, stacked.bText]);
+      if (spec && spec.terms.some((x) => x.replace(".", "").length >= 2)) return true;
     }
 
     // Fraction division: Keep, Change, Flip
-    if (/(\d+)\/(\d+)\s*[÷/]\s*(\d+)\/(\d+)/.test(q)) return true;
+    if (/(\d+)\/(\d+)\s*[×*÷/]\s*(\d+)\/(\d+)/.test(q)) return true;
+
+    // Multi-digit whole-number multiplication (partial products).
+    const product = plainProduct(q);
+    if (product && canMultiply(product[0], product[1])) return true;
 
     return false;
   },
 
   render(item, container) {
     if (!container || !item) return;
-    const q = item.question.replaceAll(",", "").trim();
+    const q = bareText(item);
+    const live = () => answerStillHidden(state.item, state.itemDone);
 
     // 1. Grade 6 LCM Prime Factorization Workspace
     const lcmMatch = q.match(/find the lcm of (\d+) and (\d+)/i);
@@ -5429,132 +5188,38 @@ const InteractiveSolver = {
       return;
     }
 
-    // 2. Vertical Addition with Regrouping / Carry Boxes
-    const addMatch = q.match(/^(\d+)\s*\+\s*(\d+)/);
-    if (addMatch) {
-      const a = Number(addMatch[1]);
-      const b = Number(addMatch[2]);
-      const sum = a + b;
-      const strA = String(a);
-      const strB = String(b);
-      const maxLen = Math.max(strA.length, strB.length);
-      const padA = strA.padStart(maxLen, " ");
-      const padB = strB.padStart(maxLen, " ");
-
-      const carries = Array(maxLen + 1).fill(0);
-      let c = 0;
-      for (let i = 0; i < maxLen; i++) {
-        const da = Number(padA[maxLen - 1 - i]) || 0;
-        const db = Number(padB[maxLen - 1 - i]) || 0;
-        const colSum = da + db + c;
-        c = Math.floor(colSum / 10);
-        carries[maxLen - 1 - i] = c;
-      }
-
+    // 2. Stacked addition / subtraction: the problem's numbers lined up by place value, empty boxes to fill.
+    const stacked = extractProblem(item);
+    const stackedSpec = stacked?.kind === "binary" && ["+", "-"].includes(stacked.op) ? columnSpec(stacked.op, [stacked.aText, stacked.bText]) : null;
+    if (stackedSpec) {
+      const adding = stackedSpec.op === "+";
       container.innerHTML = `
         <div class="solver-header">
-          <strong>🧮 Interactive Vertical Addition &amp; Regrouping</strong>
-          <span class="solver-hint-tag">Type carries &amp; digits right to left</span>
+          <strong>🧮 ${adding ? t("Add in columns") : t("Subtract in columns")}</strong>
+          <span class="solver-hint-tag">${t("Fill the regrouping boxes and the answer boxes, right to left")}</span>
         </div>
-        <div style="display:flex; justify-content:center">
-          <div class="vertical-algorithm-grid">
-            <div class="algo-carry-row">
-              <span class="algo-col" style="font-size:0.75rem; color:#b45309">Regroup:</span>
-              ${carries.slice(0, maxLen).map((cr) => `<input type="text" class="algo-carry-box" inputmode="numeric" maxlength="1" data-carry="${cr}" placeholder="${cr ? "1" : ""}" title="Regroup / carry box" />`).join("")}
-            </div>
-            <div class="algo-num-row">
-              <span class="algo-col"></span>
-              ${padA.split("").map((ch) => `<span class="algo-col">${ch === " " ? "" : ch}</span>`).join("")}
-            </div>
-            <div class="algo-num-row">
-              <span class="algo-col">+</span>
-              ${padB.split("").map((ch) => `<span class="algo-col">${ch === " " ? "" : ch}</span>`).join("")}
-            </div>
-            <div class="algo-divider"></div>
-            <div class="algo-ans-row">
-              ${String(sum).split("").map((digit, idx) => `<input type="text" class="algo-digit-input" inputmode="numeric" maxlength="1" data-ans-digit="${digit}" data-pos="${idx}" placeholder="?" />`).join("")}
-            </div>
-          </div>
-        </div>
+        ${verticalHtml(stackedSpec)}
       `;
-
-      const digitInputs = [...container.querySelectorAll(".algo-digit-input")];
-      const carryInputs = [...container.querySelectorAll(".algo-carry-box")];
-
-      carryInputs.forEach((ci) => {
-        ci.addEventListener("input", () => {
-          if (ci.value.trim() === ci.dataset.carry) ci.classList.add("is-ok");
-        });
-      });
-
-      digitInputs.forEach((di, idx) => {
-        di.addEventListener("input", () => {
-          if (di.value.trim() === di.dataset.ansDigit) {
-            di.classList.add("is-ok");
-            chime("step");
-            if (idx > 0) digitInputs[idx - 1].focus();
-            if (digitInputs.every((d) => d.classList.contains("is-ok"))) {
-              els.answerInput.value = String(sum);
-              chime("good");
-            }
-          }
-        });
-      });
       return;
     }
 
-    // 3. Vertical Subtraction with Borrowing / Regrouping
-    const subMatch = q.match(/^(\d+)\s*[−-]\s*(\d+)/);
-    if (subMatch) {
-      const a = Number(subMatch[1]);
-      const b = Number(subMatch[2]);
-      const diff = a - b;
-      const strA = String(a);
-      const strB = String(b);
-      const maxLen = Math.max(strA.length, strB.length);
-      const padA = strA.padStart(maxLen, " ");
-      const padB = strB.padStart(maxLen, " ");
-
+    // 3b. Standard-algorithm multiplication (partial products), loaded with the problem's own two numbers.
+    const product = plainProduct(q);
+    if (product && canMultiply(product[0], product[1])) {
+      const [a, b] = product;
       container.innerHTML = `
         <div class="solver-header">
-          <strong>🧮 Interactive Vertical Subtraction &amp; Regrouping</strong>
-          <span class="solver-hint-tag">Borrow from tens when top is smaller</span>
+          <strong>✖️ ${t("Multiply with the standard algorithm")}</strong>
+          <span class="solver-hint-tag">${t("Multiply by each digit of the bottom number, then add the rows")}</span>
         </div>
-        <div style="display:flex; justify-content:center">
-          <div class="vertical-algorithm-grid">
-            <div class="algo-carry-row">
-              <span class="algo-col" style="font-size:0.75rem; color:#b91c1c">Regroup:</span>
-              ${padA.split("").map(() => `<input type="text" class="algo-borrow-box" inputmode="numeric" placeholder="?" title="Regroup / borrow box" />`).join("")}
-            </div>
-            <div class="algo-num-row">
-              <span class="algo-col"></span>
-              ${padA.split("").map((ch) => `<span class="algo-col">${ch === " " ? "" : ch}</span>`).join("")}
-            </div>
-            <div class="algo-num-row">
-              <span class="algo-col">−</span>
-              ${padB.split("").map((ch) => `<span class="algo-col">${ch === " " ? "" : ch}</span>`).join("")}
-            </div>
-            <div class="algo-divider"></div>
-            <div class="algo-ans-row">
-              ${String(diff).split("").map((digit, idx) => `<input type="text" class="algo-digit-input" inputmode="numeric" maxlength="1" data-ans-digit="${digit}" data-pos="${idx}" placeholder="?" />`).join("")}
-            </div>
-          </div>
-        </div>
+        ${multiplyHtml(a, b)}
       `;
-
-      const digitInputs = [...container.querySelectorAll(".algo-digit-input")];
-      digitInputs.forEach((di, idx) => {
-        di.addEventListener("input", () => {
-          if (di.value.trim() === di.dataset.ansDigit) {
-            di.classList.add("is-ok");
-            chime("step");
-            if (idx > 0) digitInputs[idx - 1].focus();
-            if (digitInputs.every((d) => d.classList.contains("is-ok"))) {
-              els.answerInput.value = String(diff);
-              chime("good");
-            }
-          }
-        });
+      wireMultiply(container, a, b, {
+        onStep: () => chime("step"),
+        onSolved: (product) => {
+          els.answerInput.value = String(product);
+          chime("good");
+        },
       });
       return;
     }
@@ -5586,20 +5251,20 @@ const InteractiveSolver = {
               <span>Keep: <strong>${a}/${b}</strong></span>
               <span>×</span>
               <span>Flip: </span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${d}" style="width:48px" placeholder="${d}" title="Flipped numerator" />
+              <input type="text" class="lcm-prime-input" data-frac-target="${d}" style="width:48px" placeholder="?" title="Flipped numerator" />
               <span>/</span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${c}" style="width:48px" placeholder="${c}" title="Flipped denominator" />
+              <input type="text" class="lcm-prime-input" data-frac-target="${c}" style="width:48px" placeholder="?" title="Flipped denominator" />
             </div>
             <div style="display:flex; align-items:center; gap:0.6rem">
               <span>Multiply: </span>
               <span>(${a} × ${d}) / (${b} × ${c}) = </span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${top}" style="width:58px" placeholder="${top}" />
+              <input type="text" class="lcm-prime-input" data-frac-target="${top}" style="width:58px" placeholder="?" />
               <span>/</span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${bot}" style="width:58px" placeholder="${bot}" />
+              <input type="text" class="lcm-prime-input" data-frac-target="${bot}" style="width:58px" placeholder="?" />
             </div>
             <div style="display:flex; align-items:center; gap:0.6rem">
               <span>Simplified Final Answer: </span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${finalAns}" style="width:84px" placeholder="${finalAns}" />
+              <input type="text" class="lcm-prime-input" data-frac-target="${finalAns}" style="width:84px" placeholder="?" />
             </div>
           </div>
         `;
@@ -5619,15 +5284,15 @@ const InteractiveSolver = {
           <div style="display:flex; flex-direction:column; gap:0.75rem; align-items:center; font-size:1.25rem; font-weight:800">
             <div style="display:flex; align-items:center; gap:0.6rem">
               <span>Multiply Numerators: ${a} × ${c} = </span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${top}" style="width:58px" placeholder="${top}" />
+              <input type="text" class="lcm-prime-input" data-frac-target="${top}" style="width:58px" placeholder="?" />
             </div>
             <div style="display:flex; align-items:center; gap:0.6rem">
               <span>Multiply Denominators: ${b} × ${d} = </span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${bot}" style="width:58px" placeholder="${bot}" />
+              <input type="text" class="lcm-prime-input" data-frac-target="${bot}" style="width:58px" placeholder="?" />
             </div>
             <div style="display:flex; align-items:center; gap:0.6rem">
               <span>Simplified Final Answer: </span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${finalAns}" style="width:84px" placeholder="${finalAns}" />
+              <input type="text" class="lcm-prime-input" data-frac-target="${finalAns}" style="width:84px" placeholder="?" />
             </div>
           </div>
         `;
@@ -5731,7 +5396,7 @@ const InteractiveSolver = {
     }
 
     // 6. Grades 4-5 Standard Algorithm Long Division Bracket
-    const divMatch = q.replace(/\s*=\s*\?.*$/, "").match(/(\d+)\s*[÷/]\s*(\d+)/);
+    const divMatch = q.replace(/\s*=\s*\?.*$/, "").match(/(?<![\d.])(\d+)\s*[÷/]\s*(\d+)(?![\d.])/);
     if (divMatch && !q.includes("/")) {
       const dividend = Number(divMatch[1]);
       const divisor = Number(divMatch[2]);
@@ -5742,7 +5407,7 @@ const InteractiveSolver = {
             <strong>➗ Interactive Standard Algorithm Long Division</strong>
             <span class="solver-hint-tag">Divide → Multiply → Subtract → Bring Down → Repeat</span>
           </div>
-          ${StandardLongDivisionModel.renderHtml(dividend, divisor, { isSolver: true })}
+          ${StandardLongDivisionModel.renderHtml(dividend, divisor, { isSolver: true, hideAnswer: live() })}
         `;
 
         const finalInp = container.querySelector('[data-group="div-final"]');
@@ -5760,7 +5425,7 @@ const InteractiveSolver = {
           }
         };
 
-        StandardLongDivisionModel.wireEvents(container, dividend, divisor, markSolverSolved);
+        StandardLongDivisionModel.wireEvents(container, dividend, divisor, markSolverSolved, { hideAnswer: live() });
 
         finalInp?.addEventListener("input", () => {
           if (finalInp.value.trim() === String(quotient)) {
@@ -5917,83 +5582,33 @@ const InteractiveSolver = {
       const finalInp = container.querySelector('[data-group="eq-final"]');
       const undoABtn = container.querySelector('[data-eq-action="undo-a"]');
 
-      container.querySelector('[data-eq-action="undo-b"]')?.addEventListener("click", () => {
+      // The scale carries out the learner's choice but never works out the number: the new right side is shown
+      // as the sum the learner still has to do, and they type the result in the box below.
+      const lhs = a === 1 ? "x" : `${a}x`;
+      const showStep = (right, left, message) => {
         if (beamGroup) beamGroup.style.transform = "rotate(0deg)";
-        if (rightLabel) rightLabel.textContent = String(c - b);
-        if (leftLabel) leftLabel.textContent = a === 1 ? "x" : `${a}x`;
+        if (rightLabel) rightLabel.textContent = right;
+        if (leftLabel) leftLabel.textContent = left;
         if (scaleStatus) {
           scaleStatus.className = "eq-balance-status-banner balanced";
-          scaleStatus.textContent = `✅ Undid ${b > 0 ? `+${b}` : `−${Math.abs(b)}`}! Subtracted ${b} from BOTH sides. Balance maintained: ${a === 1 ? "x" : `${a}x`} = ${c - b}.`;
+          scaleStatus.textContent = message;
         }
-        if (step1Inp) {
-          step1Inp.value = String(c - b);
-          step1Inp.classList.add("is-ok");
-        }
-        if (undoABtn) undoABtn.disabled = false;
         chime("step");
-        if (a === 1) {
-          if (finalInp) {
-            finalInp.value = String(solution);
-            finalInp.classList.add("is-ok");
-          }
-          els.answerInput.value = String(solution);
-          chime("good");
-          const copyBtn = container.querySelector("#eq-copy-ans");
-          if (copyBtn) {
-            copyBtn.style.display = "inline-block";
-            copyBtn.textContent = "✓ Copied to answer!";
-          }
-        }
+      };
+      container.querySelector('[data-eq-action="undo-b"]')?.addEventListener("click", () => {
+        const sum = `${c} ${b > 0 ? "−" : "+"} ${Math.abs(b)}`;
+        showStep(sum, lhs, t("Both sides changed the same way: {left} = {right}. Work out the right side and type it below.", { left: lhs, right: sum }));
+        if (undoABtn) undoABtn.disabled = false;
       });
 
       container.querySelector('[data-eq-action="undo-a"]')?.addEventListener("click", () => {
-        if (beamGroup) beamGroup.style.transform = "rotate(0deg)";
-        if (rightLabel) rightLabel.textContent = String(solution);
-        if (leftLabel) leftLabel.textContent = "x";
-        if (scaleStatus) {
-          scaleStatus.className = "eq-balance-status-banner balanced";
-          scaleStatus.textContent = `🎉 Solved! Divided both sides by ${a}. Isolated variable: x = ${solution}!`;
-        }
-        if (step2Inp) {
-          step2Inp.value = String(solution);
-          step2Inp.classList.add("is-ok");
-        }
-        if (finalInp) {
-          finalInp.value = String(solution);
-          finalInp.classList.add("is-ok");
-        }
-        els.answerInput.value = String(solution);
-        chime("good");
-        const copyBtn = container.querySelector("#eq-copy-ans");
-        if (copyBtn) {
-          copyBtn.style.display = "inline-block";
-          copyBtn.textContent = "✓ Copied to answer!";
-        }
+        const sum = `(${c}${b ? ` ${b > 0 ? "−" : "+"} ${Math.abs(b)}` : ""}) ÷ ${a}`;
+        showStep(sum, "x", t("Divided both sides by {a}: x = {right}. Work it out and type x below.", { a, right: sum }));
       });
 
       container.querySelector('[data-eq-action="undo-div"]')?.addEventListener("click", () => {
-        if (beamGroup) beamGroup.style.transform = "rotate(0deg)";
-        if (rightLabel) rightLabel.textContent = String(solution);
-        if (leftLabel) leftLabel.textContent = "x";
-        if (scaleStatus) {
-          scaleStatus.className = "eq-balance-status-banner balanced";
-          scaleStatus.textContent = `🎉 Solved! Multiplied both sides by ${a}. Isolated variable: x = ${solution}!`;
-        }
-        if (step2Inp) {
-          step2Inp.value = String(solution);
-          step2Inp.classList.add("is-ok");
-        }
-        if (finalInp) {
-          finalInp.value = String(solution);
-          finalInp.classList.add("is-ok");
-        }
-        els.answerInput.value = String(solution);
-        chime("good");
-        const copyBtn = container.querySelector("#eq-copy-ans");
-        if (copyBtn) {
-          copyBtn.style.display = "inline-block";
-          copyBtn.textContent = "✓ Copied to answer!";
-        }
+        const sum = `${c} × ${a}`;
+        showStep(sum, "x", t("Multiplied both sides by {a}: x = {right}. Work it out and type x below.", { a, right: sum }));
       });
 
       container.querySelector('[data-eq-action="tilt-left"]')?.addEventListener("click", () => {
@@ -6143,19 +5758,9 @@ const InteractiveSolver = {
           }
         });
         cancelBtn.disabled = true;
+        // The board cancels the pairs; counting what is left (and its sign) is the learner's step.
         if (statusSpan) {
-          statusSpan.innerHTML = `✓ <strong>${zeroPairs} zero pair(s) cancelled</strong>! Net remaining = <strong>${ans}</strong>`;
-        }
-        if (intFinalInp) {
-          intFinalInp.value = String(ans);
-          intFinalInp.classList.add("is-ok");
-          els.answerInput.value = String(ans);
-          chime("good");
-          const copyBtn = container.querySelector("#int-copy-ans");
-          if (copyBtn) {
-            copyBtn.style.display = "inline-block";
-            copyBtn.textContent = "✓ Copied to answer!";
-          }
+          statusSpan.innerHTML = `✓ <strong>${t("{n} zero pair(s) cancelled", { n: zeroPairs })}</strong>. ${t("Count the chips that are left and type the result below.")}`;
         }
       });
 
@@ -6187,7 +5792,7 @@ const InteractiveSolver = {
 
 function renderMultiStrategyComparison(item) {
   if (!item) return "";
-  const q = String(item.question || item.expr || "").replaceAll(",", "");
+  const q = String(item.expr || item.question || "").replaceAll(",", "");
 
   let stratAName = "Decomposition & Friendly Numbers";
   let stratAIcon = "🧩";
@@ -6316,7 +5921,9 @@ function renderMultiStrategyComparison(item) {
 
 function renderStudentFriendlyExplanation(item, copy) {
   if (!item) return `<p>${escapeHtml(copy)}</p>`;
-  const q = String(item.question || item.expr || "").replaceAll(",", "");
+  // Before the answer is earned, only capped steps and the model-with-my-numbers button show (live-help.js).
+  if (answerStillHidden(item, state.itemDone)) return liveHelpHtml(item, copy);
+  const q = String(item.expr || item.question || "").replaceAll(",", "");
   let visualWidget = "";
   let goal = "Break the problem into friendly parts you already know!";
   let tip = item.hint || "Take your time: make a friendly estimate first.";
@@ -6631,84 +6238,26 @@ function renderStudentFriendlyExplanation(item, copy) {
         </div>
       </div>
     `;
-  } else if (addMatch && !isDecimal) {
-    const a = Number(addMatch[1]);
-    const b = Number(addMatch[2]);
-    const maxVal = Math.max(a, b);
-    const minVal = Math.min(a, b);
-    const endVal = maxVal + minVal;
-    goal = `Start at ${maxVal} and jump forward in friendly hops!`;
-    tip = `Always start with the bigger number—it takes fewer jumps!`;
-    suggestedTool = "numberline";
-    toolLabel = "Number Line";
+  } else if ((addMatch || subMatch) && !isDecimal) {
+    const adding = Boolean(addMatch);
+    const [, x, y] = adding ? addMatch : subMatch;
+    const spec = columnSpec(adding ? "+" : "-", [x, y]);
+    goal = adding ? "Line up the places and add one column at a time!" : "Line up the places and subtract one column at a time!";
+    tip = adding ? "Ones go under ones, tens under tens. Regroup a ten into the next column when a column adds to 10 or more." : "Ones go under ones, tens under tens. Regroup from the next column when the top digit is too small.";
+    suggestedTool = "vertical";
+    toolLabel = "Column Method";
 
-    visualWidget = `
-      <div class="expl-interactive-widget" data-widget-type="add-line">
+    visualWidget = spec
+      ? `
+      <div class="expl-interactive-widget" data-widget-type="columns">
         <div class="expl-widget-header">
-          <span class="expl-widget-title">🦘 Open Number Line Hops</span>
+          <span class="expl-widget-title">🧮 ${adding ? "Add in columns" : "Subtract in columns"}</span>
           <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
         </div>
-        <div class="expl-action-bar">
-          <button type="button" class="expl-action-btn is-active" data-expl-jump="all">🦘 Play Friendly Jumps</button>
-          <button type="button" class="expl-action-btn" data-expl-jump="tens">1️⃣ Jump Tens</button>
-          <button type="button" class="expl-action-btn" data-expl-jump="ones">2️⃣ Jump Ones</button>
-        </div>
-        <div class="expl-visual-stage">
-          <svg width="100%" height="85" viewBox="0 0 380 85" style="background:#ffffff; border-radius:8px" role="img" aria-label="Number line hop">
-            <line x1="25" y1="55" x2="355" y2="55" stroke="#334155" stroke-width="2.5"/>
-            <polygon points="360,55 350,50 350,60" fill="#334155"/>
-            <circle cx="70" cy="55" r="5" fill="#2563eb"/>
-            <text x="70" y="75" text-anchor="middle" font-size="13" font-weight="900" fill="#1e293b">${maxVal}</text>
-            <path d="M 70 50 Q 190 10 310 50" fill="none" stroke="#2563eb" stroke-width="2.5"/>
-            <polygon points="310,50 302,42 300,52" fill="#2563eb"/>
-            <text x="190" y="24" text-anchor="middle" font-size="13" font-weight="900" fill="#1d4ed8">+${minVal}</text>
-            <circle cx="310" cy="55" r="5" fill="#16a34a"/>
-            <text x="310" y="75" text-anchor="middle" font-size="14" font-weight="900" fill="#15803d">${endVal}</text>
-          </svg>
-        </div>
-        <div class="expl-caption-box" role="status">
-          <strong>Friendly Jumps:</strong> Start at the bigger number ${maxVal}. Jump forward by ${minVal} to land directly on ${endVal}!
-        </div>
+        <div class="expl-visual-stage">${verticalHtml(spec)}</div>
       </div>
-    `;
-  } else if (subMatch && !isDecimal) {
-    const a = Number(subMatch[1]);
-    const b = Number(subMatch[2]);
-    const endVal = a - b;
-    goal = `Start at ${a} and jump back ${b} in friendly hops!`;
-    tip = `Think of subtraction as jumping backwards or finding the distance between the two numbers.`;
-    suggestedTool = "numberline";
-    toolLabel = "Number Line";
-
-    visualWidget = `
-      <div class="expl-interactive-widget" data-widget-type="sub-line">
-        <div class="expl-widget-header">
-          <span class="expl-widget-title">⏪ Open Number Line Jump Back</span>
-          <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
-        </div>
-        <div class="expl-action-bar">
-          <button type="button" class="expl-action-btn is-active" data-expl-jump="all">⏪ Jump Back ${b}</button>
-          <button type="button" class="expl-action-btn" data-expl-jump="tens">1️⃣ Jump Back Tens</button>
-          <button type="button" class="expl-action-btn" data-expl-jump="ones">2️⃣ Jump Back Ones</button>
-        </div>
-        <div class="expl-visual-stage">
-          <svg width="100%" height="85" viewBox="0 0 380 85" style="background:#ffffff; border-radius:8px" role="img" aria-label="Subtraction Jump Back">
-            <line x1="25" y1="55" x2="355" y2="55" stroke="#334155" stroke-width="2.5"/>
-            <polygon points="20,55 30,50 30,60" fill="#334155"/>
-            <circle cx="310" cy="55" r="5" fill="#dc2626"/>
-            <text x="310" y="75" text-anchor="middle" font-size="13" font-weight="900" fill="#1e293b">${a}</text>
-            <path d="M 310 50 Q 190 10 70 50" fill="none" stroke="#dc2626" stroke-width="2.5"/>
-            <polygon points="70,50 78,42 80,52" fill="#dc2626"/>
-            <text x="190" y="24" text-anchor="middle" font-size="13" font-weight="900" fill="#b91c1c">−${b}</text>
-            <circle cx="70" cy="55" r="5" fill="#16a34a"/>
-            <text x="70" y="75" text-anchor="middle" font-size="14" font-weight="900" fill="#15803d">${endVal}</text>
-          </svg>
-        </div>
-        <div class="expl-caption-box" role="status">
-          <strong>Jump Back:</strong> Start at ${a} and jump backwards ${b} steps to land on the difference ${endVal}!
-        </div>
-      </div>
-    `;
+    `
+      : "";
   } else if (isDecimal || isTensOnes) {
     goal = `Line up matching place value columns so like units add or subtract correctly!`;
     tip = `Decimal points must line up like buttons on a coat.`;
@@ -6796,7 +6345,7 @@ function renderStudentFriendlyExplanation(item, copy) {
 
 function wireExplanationWidgets(root, item) {
   if (!root) return;
-  const q = String(item?.question || item?.expr || "").replaceAll(",", "");
+  const q = String(item?.expr || item?.question || "").replaceAll(",", "");
   const divMatch = q.match(/(\d+)\s*[÷/]\s*(\d+)/);
   if (divMatch) {
     const a = Number(divMatch[1]);
@@ -6829,13 +6378,15 @@ function mountProblemModel(show, collapsed = true) {
   }
 
   const isMultiplication = state.item?.skill?.strand === "Multiplication" || state.item?.skill?.op === "mul";
-  if (isMultiplication && state.item?.model?.type === "array") {
+  // A dot grid shows every dot, so it is only honest for small arrays (the 144-dot cap used to print "79 rows of 41").
+  const arrayFits = state.item?.model?.type === "array" && (state.item.model.a || 1) <= 12 && (state.item.model.b || 1) <= 12;
+  if (isMultiplication && arrayFits) {
     const a = state.item.model.a || 1;
     const b = state.item.model.b || 1;
     const total = a * b;
     host.innerHTML = `
       <div class="publisher-model-card">
-        <p class="pub-model-title">Visual Grid: <strong>${a} rows of ${b}</strong> (${a} × ${b} = ${total})</p>
+        <p class="pub-model-title">Visual Grid: <strong>${a} rows of ${b}</strong> (${a} × ${b})</p>
         <div class="pub-grid-dots" style="--cols: ${b}">
           ${Array.from({ length: Math.min(total, 144) }, (_, i) => `<span class="pub-dot" aria-hidden="true"></span>`).join("")}
         </div>
@@ -6965,6 +6516,7 @@ function submitAnswer(value) {
     if (isFixed) {
       state.isFixing = false;
       state.itemDone = true;
+      InteractiveDrillToolbox.refresh();
       els.answerInput.disabled = true;
       els.checkButton.hidden = true;
       if (els.fixAnswerBtn) els.fixAnswerBtn.hidden = true;
@@ -7044,6 +6596,7 @@ function finalizeProblem(correct) {
   const session = state.session;
   if (!session || session.finished || state.itemDone) return;
   state.itemDone = true;
+  InteractiveDrillToolbox.refresh();
   session.answered += 1;
   if (correct) {
     session.correct += 1;
@@ -7132,7 +6685,7 @@ function updateSkillRecord(skill, correct, mode) {
 
 function generateTransferChallenge(item) {
   if (!item) return null;
-  const q = String(item.question || item.expr || "").replaceAll(",", "");
+  const q = String(item.expr || item.question || "").replaceAll(",", "");
 
   const mulMatch = q.match(/(\d+)\s*[×*]\s*(\d+)/);
   const divMatch = q.match(/(\d+)\s*[÷/]\s*(\d+)/);
@@ -7826,7 +7379,7 @@ function getCognitivePrescription(entry, skill) {
       prescription: "Model the equation on the balance scale. Use inverse operations simultaneously to isolate x while maintaining equilibrium."
     };
   }
-  if (q.includes("−") || q.includes("-") || /integer|negative/i.test(strand) || /negative/i.test(q)) {
+  if (/(^|[\s(])[−-]\d/.test(q) || /integer|negative/i.test(strand) || /negative/i.test(q)) {
     return {
       root: "Zero Pair & Sign Reversal Confusion",
       rootBadge: "🩺 Rx: Integer Counters Mat Workout",
@@ -7857,12 +7410,12 @@ function getCognitivePrescription(entry, skill) {
     };
   }
   return {
-    root: "Mental Number Line Landmark Slip",
-    rootBadge: "🩺 Rx: Number Line Jumps Workout",
-    tool: "numberline",
-    toolName: "Number Line",
-    diagnostic: "Attempted direct mental jump without anchoring to friendly multiples of 10 or benchmark markers.",
-    prescription: "Make landmark jumps on the number line: leap to the nearest multiple of 10 first, then bridge the remaining distance."
+    root: "Place-Value Alignment & Regrouping Slip",
+    rootBadge: "🩺 Rx: Column Method Workout",
+    tool: "vertical",
+    toolName: "Column Method",
+    diagnostic: "Lost track of place value or of a regrouped ten while adding or subtracting.",
+    prescription: "Line the numbers up by place value and work one column at a time, writing each regrouped ten above the next column."
   };
 }
 
@@ -8762,890 +8315,8 @@ window.FlowPacerEngine = FlowPacerEngine;
 window.FluencyTelemetryHUD = FluencyTelemetryHUD;
 window.SpacedZPDEngine = SpacedZPDEngine;
 
-const InteractiveDrillToolbox = {
-  activeTool: "numberline",
-  openTool(toolName, syncItem = null) {
-    const drawer = document.querySelector("#drill-toolbox");
-    if (!drawer) return;
-    drawer.open = true;
-    this.activeTool = toolName;
-    if (syncItem) this.syncFromProblem(syncItem);
-    drawer.querySelectorAll(".tool-btn").forEach((btn) => btn.classList.toggle("active", btn.dataset.tool === this.activeTool));
-    this.render(document.querySelector("#drill-tool-viewport"));
-    drawer.scrollIntoView({ behavior: "smooth", block: "center" });
-  },
-  tenFrameCount: 0,
-  numberLinePos: 5,
-  multRow: 6,
-  multCol: 7,
-  balanceLeftX: 1,
-  balanceLeftConst: 3,
-  balanceRightVal: 9,
-  integersPos: 5,
-  integersNeg: 3,
-  dnlStep: 2,
-  dnlMultiplierA: 35,
-  dnlMultiplierB: 1,
-  dnlLabelA: "Miles",
-  dnlLabelB: "Hours",
-  pizzaSlices: 8,
-  pizzaEaten: [0, 1, 2],
-  splitTarget: 14,
-  splitLeft: 10,
-  splitRight: 4,
-  tapeA: 3,
-  tapeB: 2,
-  tapeUnit: 5,
-  tapeMode: "unit",
-  tapeTotal: 40,
-  tapeDiff: 4,
-  tapeLabelA: "Apples",
-  tapeLabelB: "Oranges",
-  divDividend: 432,
-  divDivisor: 12,
-
-  computeLongDivisionSteps(dividend, divisor) {
-    return StandardLongDivisionModel.computeSteps(dividend, divisor);
-  },
-
-  syncFromProblem(item) {
-    if (!item) return;
-    const q = String(item.question || item.expr || "").replaceAll(",", "");
-
-    // Fractions
-    const fracPair = q.match(/(\d+)\/(\d+)\s*([+−\-])\s*(\d+)\/(\d+)/);
-    const fracSingle = q.match(/(\d+)\/(\d+)/);
-    if (fracPair) {
-      const den = Math.min(12, Math.max(2, Number(fracPair[2])));
-      const numA = Math.min(den, Math.max(0, Number(fracPair[1])));
-      const numB = Math.min(den, Math.max(0, Number(fracPair[4])));
-      this.pizzaSlices = den;
-      this.pizzaEaten = Array.from({ length: Math.min(den, numA + (fracPair[3] === "+" ? numB : 0)) }, (_, i) => i);
-    } else if (fracSingle) {
-      const den = Math.min(12, Math.max(2, Number(fracSingle[2])));
-      const num = Math.min(den, Math.max(0, Number(fracSingle[1])));
-      this.pizzaSlices = den;
-      this.pizzaEaten = Array.from({ length: num }, (_, i) => i);
-    }
-
-    // Integers
-    const intPair = q.match(/(-?\d+)\s*([+−\-])\s*\((-?\d+)\)/) || q.match(/(-?\d+)\s*([+−\-])\s*(-?\d+)/);
-    if (intPair && (q.includes("-") || q.includes("−") || /integer/i.test(item.skill?.id || ""))) {
-      const a = Number(intPair[1].replace("−", "-"));
-      const b = Number(intPair[3].replace("−", "-"));
-      const op = intPair[2];
-      let pos = 0;
-      let neg = 0;
-      if (a >= 0) pos += Math.min(10, a);
-      else neg += Math.min(10, Math.abs(a));
-
-      const effectiveB = op === "−" || op === "-" ? -b : b;
-      if (effectiveB >= 0) pos += Math.min(10, effectiveB);
-      else neg += Math.min(10, Math.abs(effectiveB));
-
-      this.integersPos = Math.max(1, Math.min(12, pos || 3));
-      this.integersNeg = Math.max(0, Math.min(12, neg || 0));
-    }
-
-    // Long Division
-    const divMatch = q.match(/(\d+)\s*[÷/]\s*(\d+)/);
-    if (divMatch && !fracPair && !fracSingle) {
-      this.divDividend = Math.max(1, Number(divMatch[1]));
-      this.divDivisor = Math.max(1, Number(divMatch[2]));
-      if (this.divDividend >= 10 && this.divDivisor >= 2 && this.divDividend > this.divDivisor) {
-        this.activeTool = "longdivision";
-      }
-    }
-
-    // Multiplication / Splitter
-    const mulMatch = q.match(/(\d+)\s*[×*]\s*(\d+)/);
-    if (mulMatch) {
-      const a = Number(mulMatch[1]);
-      const b = Number(mulMatch[2]);
-      const big = Math.max(a, b);
-      const small = Math.min(a, b);
-      this.splitTarget = Math.max(2, big);
-      if (big > 10) {
-        this.splitLeft = Math.floor(big / 10) * 10;
-        this.splitRight = big - this.splitLeft;
-      } else {
-        this.splitLeft = Math.floor(big / 2);
-        this.splitRight = big - this.splitLeft;
-      }
-      this.multRow = Math.min(10, Math.max(1, small));
-      this.multCol = Math.min(10, Math.max(1, big));
-    }
-
-    // Equations / Balance
-    const eqMatch = q.match(/(\d*)([a-zA-Z]|\?|\bx\b)\s*([+−\-])\s*(\d+)\s*=\s*(\d+)/);
-    if (eqMatch) {
-      this.balanceLeftX = Number(eqMatch[1]) || 1;
-      this.balanceLeftConst = Number(eqMatch[4]) || 0;
-      this.balanceRightVal = Number(eqMatch[5]) || 10;
-    }
-
-    // Ratios & Rates
-    const ratioMatch = q.match(/(\d+)\s*(?:to|:)\s*(\d+)/);
-    if (ratioMatch) {
-      this.tapeA = Math.min(8, Math.max(1, Number(ratioMatch[1])));
-      this.tapeB = Math.min(8, Math.max(1, Number(ratioMatch[2])));
-      this.dnlMultiplierA = Number(ratioMatch[1]) || 1;
-      this.dnlMultiplierB = Number(ratioMatch[2]) || 1;
-    }
-
-    // Addition / Subtraction within 20
-    const addSubMatch = q.match(/(\d+)\s*([+−\-])\s*(\d+)/);
-    if (addSubMatch && !fracSingle && !mulMatch && !divMatch) {
-      const a = Number(addSubMatch[1]);
-      this.numberLinePos = Math.min(20, Math.max(0, a));
-      this.tenFrameCount = Math.min(20, Math.max(0, a));
-    }
-  },
-
-  render(container) {
-    if (!container) return;
-    if (this.activeTool === "longdivision") {
-      const dividend = this.divDividend;
-      const divisor = this.divDivisor;
-      container.innerHTML = `
-        <div class="tool-content longdivision-tool-container">
-          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem; align-items:center">
-            <span>Problem: <strong>${dividend} ÷ ${divisor}</strong></span>
-            <span style="color:#64748b">| 1-Digit:</span>
-            <button type="button" class="mini-tool-btn" data-ld-preset="84:3">84 ÷ 3</button>
-            <button type="button" class="mini-tool-btn" data-ld-preset="156:4">156 ÷ 4</button>
-            <button type="button" class="mini-tool-btn" data-ld-preset="625:5">625 ÷ 5</button>
-            <button type="button" class="mini-tool-btn" data-ld-preset="782:6">782 ÷ 6</button>
-            <span style="color:#64748b">| 2-Digit:</span>
-            <button type="button" class="mini-tool-btn" data-ld-preset="432:12">432 ÷ 12</button>
-            <button type="button" class="mini-tool-btn" data-ld-preset="750:25">750 ÷ 25</button>
-            <button type="button" class="mini-tool-btn" data-ld-preset="3840:16">3,840 ÷ 16</button>
-            <span style="color:#64748b">| Custom:</span>
-            <input type="number" id="ld-in-divisor" value="${divisor}" min="1" max="999" style="width:54px; padding:2px 6px; border:1px solid #cbd5e1; border-radius:4px" title="Divisor" />
-            <span style="font-weight:700">)</span>
-            <input type="number" id="ld-in-dividend" value="${dividend}" min="1" max="99999" style="width:72px; padding:2px 6px; border:1px solid #cbd5e1; border-radius:4px" title="Dividend" />
-            <button type="button" class="mini-tool-btn" id="ld-btn-load" style="font-weight:700">Set</button>
-          </div>
-          ${StandardLongDivisionModel.renderHtml(dividend, divisor, { isSolver: false })}
-        </div>
-      `;
-      StandardLongDivisionModel.wireEvents(container, dividend, divisor);
-      return;
-    } else if (this.activeTool === "numberline") {
-      const pos = this.numberLinePos;
-      const ticks = Array.from({ length: 21 }, (_, i) => {
-        const isCurrent = i === pos;
-        return `<g class="nl-tick" data-val="${i}" style="cursor:pointer">
-          <line x1="${25 + i * 18}" y1="35" x2="${25 + i * 18}" y2="${isCurrent ? "12" : "24"}" stroke="${isCurrent ? "#17345f" : "#64748b"}" stroke-width="${isCurrent ? "3" : "1.5"}"/>
-          <text x="${25 + i * 18}" y="52" text-anchor="middle" font-size="${isCurrent ? "12" : "10"}" font-weight="${isCurrent ? "800" : "600"}" fill="${isCurrent ? "#17345f" : "#475569"}">${i}</text>
-          ${isCurrent ? `<circle cx="${25 + i * 18}" cy="18" r="5" fill="#17345f"/>` : ""}
-        </g>`;
-      }).join("");
-      container.innerHTML = `
-        <div class="tool-content">
-          <div class="tool-controls">
-            <span>Position: <strong>${pos}</strong></span>
-            <button type="button" class="mini-tool-btn" data-nl-step="-1">−1</button>
-            <button type="button" class="mini-tool-btn" data-nl-step="1">+1</button>
-            <button type="button" class="mini-tool-btn" data-nl-step="-5">−5</button>
-            <button type="button" class="mini-tool-btn" data-nl-step="5">+5</button>
-            <button type="button" class="mini-tool-btn" data-nl-reset>Reset</button>
-          </div>
-          <svg width="100%" height="68" viewBox="0 0 420 68" style="background:#ffffff; border-radius:8px; border:1px solid #cbd5e1" role="img" aria-label="Interactive number line 0 to 20 at position ${pos}">
-            <line x1="15" y1="35" x2="400" y2="35" stroke="#1e293b" stroke-width="2"/>
-            <polygon points="405,35 397,31 397,39" fill="#1e293b"/>
-            ${ticks}
-          </svg>
-        </div>
-      `;
-    } else if (this.activeTool === "tenframe") {
-      const count = this.tenFrameCount;
-      const slots = Array.from({ length: 20 }, (_, i) => {
-        const filled = i < count;
-        const isTen = i < 10;
-        return `<div class="tf-slot ${filled ? (isTen ? "red" : "blue") : "empty"}" data-slot="${i}" role="button" aria-label="Slot ${i + 1} ${filled ? "filled" : "empty"}" tabindex="0">
-          ${filled ? `<span class="counter-dot"></span>` : ""}
-        </div>`;
-      });
-      container.innerHTML = `
-        <div class="tool-content">
-          <div class="tool-controls">
-            <span>Counters: <strong>${count} of 20</strong> (${Math.min(10, count)} in first frame${count > 10 ? `, ${count - 10} in second` : ""})</span>
-            <button type="button" class="mini-tool-btn" data-tf-add="1">+1</button>
-            <button type="button" class="mini-tool-btn" data-tf-sub="1">−1</button>
-            <button type="button" class="mini-tool-btn" data-tf-clear>Clear</button>
-          </div>
-          <div class="ten-frame-double-grid">
-            <div class="ten-frame-box" aria-label="First Ten-Frame">${slots.slice(0, 10).join("")}</div>
-            <div class="ten-frame-box" aria-label="Second Ten-Frame">${slots.slice(10, 20).join("")}</div>
-          </div>
-        </div>
-      `;
-    } else if (this.activeTool === "multigrid") {
-      const r = this.multRow;
-      const c = this.multCol;
-      const rows = Array.from({ length: 10 }, (_, rowIdx) => {
-        const rowNum = rowIdx + 1;
-        const cells = Array.from({ length: 10 }, (_, colIdx) => {
-          const colNum = colIdx + 1;
-          const active = rowNum <= r && colNum <= c;
-          const isTarget = rowNum === r && colNum === c;
-          return `<button type="button" class="mg-cell ${active ? "active" : ""} ${isTarget ? "target" : ""}" data-row="${rowNum}" data-col="${colNum}" title="${rowNum} × ${colNum} = ${rowNum * colNum}">${rowNum * colNum}</button>`;
-        }).join("");
-        return `<div class="mg-row"><span class="mg-head">${rowNum}</span>${cells}</div>`;
-      }).join("");
-      const head = `<div class="mg-row head-row"><span>×</span>${Array.from({ length: 10 }, (_, i) => `<span>${i + 1}</span>`).join("")}</div>`;
-      container.innerHTML = `
-        <div class="tool-content">
-          <div class="tool-controls">
-            <span>Current Array: <strong>${r} × ${c} = ${r * c}</strong></span>
-          </div>
-          <div class="mult-grid-table">${head}${rows}</div>
-        </div>
-      `;
-    } else if (this.activeTool === "fractions") {
-      const denoms = [1, 2, 3, 4, 5, 6, 8, 10, 12];
-      const rows = denoms.map((d) => {
-        const parts = Array.from({ length: d }, (_, i) => `<div class="fw-part" style="width:${100 / d}%">1/${d}</div>`).join("");
-        return `<div class="fw-row" aria-label="Denominator ${d}"><span class="fw-label">1/${d}</span><div class="fw-strip">${parts}</div></div>`;
-      }).join("");
-      container.innerHTML = `
-        <div class="tool-content">
-          <div class="tool-controls">
-            <span>Fraction Strips Wall · Compare equivalent lengths</span>
-          </div>
-          <div class="fraction-wall-container">${rows}</div>
-        </div>
-      `;
-    } else if (this.activeTool === "balance") {
-      const lx = this.balanceLeftX;
-      const lc = this.balanceLeftConst;
-      const rv = this.balanceRightVal;
-      const isSolved = lx === 1 && lc === 0;
-      const xBoxes = Array.from({ length: lx }, (_, i) =>
-        `<g transform="translate(${40 + i * 22}, 0)">
-           <rect x="0" y="0" width="18" height="18" rx="3" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5"/>
-           <text x="9" y="13" text-anchor="middle" font-size="11" font-weight="900" fill="#ffffff">x</text>
-         </g>`
-      ).join("");
-      const leftCubes = Array.from({ length: lc }, (_, i) =>
-        `<g transform="translate(${40 + (lx * 22) + i * 16}, 2)">
-           <rect x="0" y="0" width="14" height="14" rx="2" fill="#eab308" stroke="#ca8a04" stroke-width="1.5"/>
-           <text x="7" y="11" text-anchor="middle" font-size="9" font-weight="800" fill="#713f12">1</text>
-         </g>`
-      ).join("");
-      const rightCubes = Array.from({ length: rv }, (_, i) => {
-        const col = i % 8;
-        const row = Math.floor(i / 8);
-        return `<g transform="translate(${250 + col * 16}, ${row * 16})">
-           <rect x="0" y="0" width="14" height="14" rx="2" fill="#22c55e" stroke="#16a34a" stroke-width="1.5"/>
-           <text x="7" y="11" text-anchor="middle" font-size="9" font-weight="800" fill="#14532d">1</text>
-         </g>`;
-      }).join("");
-
-      container.innerHTML = `
-        <div class="tool-content balance-container">
-          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem">
-            <span class="balance-status-badge ${isSolved ? "balanced" : "unbalanced"}">
-              ${isSolved ? `🎉 Solved: <strong>x = ${rv}</strong>` : `Equation: <strong>${lx > 1 ? lx : ""}x + ${lc} = ${rv}</strong>`}
-            </span>
-            <button type="button" class="mini-tool-btn" data-bal-add-x="1">+1 x</button>
-            <button type="button" class="mini-tool-btn" data-bal-sub-x="1" ${lx <= 1 ? "disabled" : ""}>−1 x</button>
-            <button type="button" class="mini-tool-btn" data-bal-add-lc="1">+1 Left</button>
-            <button type="button" class="mini-tool-btn" data-bal-sub-lc="1" ${lc <= 0 ? "disabled" : ""}>−1 Left</button>
-            <button type="button" class="mini-tool-btn" data-bal-sub-both ${lc > 0 && rv >= lc ? "" : "disabled"}>Subtract ${lc} From Both Sides</button>
-            ${lx > 1 && lc === 0 && rv % lx === 0 ? `<button type="button" class="mini-tool-btn" data-bal-div-both="1" style="background:#dcfce7; color:#15803d; border-color:#86efac; font-weight:700">Divide Both Sides by ${lx}</button>` : ""}
-            <button type="button" class="mini-tool-btn" data-bal-reset>Reset</button>
-          </div>
-          <svg width="100%" height="110" viewBox="0 0 420 110" style="background:#f8fafc; border-radius:8px; border:1px solid #cbd5e1" role="img" aria-label="Visual Pan Balance showing equation ${lx}x + ${lc} = ${rv}">
-            <polygon points="210,50 198,85 222,85" fill="#475569"/>
-            <rect x="180" y="85" width="60" height="6" rx="2" fill="#334155"/>
-            <line x1="30" y1="50" x2="390" y2="50" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
-            <circle cx="210" cy="50" r="5" fill="#0f172a"/>
-            <line x1="35" y1="50" x2="70" y2="78" stroke="#64748b" stroke-width="1.5"/>
-            <line x1="165" y1="50" x2="130" y2="78" stroke="#64748b" stroke-width="1.5"/>
-            <rect x="35" y="78" width="130" height="6" rx="3" fill="#0284c7"/>
-            <line x1="255" y1="50" x2="290" y2="78" stroke="#64748b" stroke-width="1.5"/>
-            <line x1="385" y1="50" x2="350" y2="78" stroke="#64748b" stroke-width="1.5"/>
-            <rect x="255" y="78" width="130" height="6" rx="3" fill="#0284c7"/>
-            <g transform="translate(0, 58)">${xBoxes}${leftCubes}</g>
-            <g transform="translate(0, 50)">${rightCubes}</g>
-            <text x="100" y="102" text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">Left: ${lx > 0 ? (lx > 1 ? lx : "") + "x" : ""}${lc > 0 ? (lx > 0 ? " + " : "") + lc : ""}</text>
-            <text x="320" y="102" text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">Right: ${rv}</text>
-          </svg>
-        </div>
-      `;
-    } else if (this.activeTool === "integers") {
-      const pos = this.integersPos;
-      const neg = this.integersNeg;
-      const net = pos - neg;
-      const zeroPairs = Math.min(pos, neg);
-      const remainingPos = pos - zeroPairs;
-      const remainingNeg = neg - zeroPairs;
-
-      const pairsHtml = Array.from({ length: zeroPairs }, () =>
-        `<div class="chip-zero-pair" title="Zero Pair: (+1) + (-1) = 0">
-           <div class="chip-circle pos">+</div>
-           <div class="chip-circle neg">−</div>
-           <span style="font-size:0.75rem; font-weight:800; color:#15803d; margin-left:2px">= 0</span>
-         </div>`
-      ).join("");
-
-      const posChipsHtml = Array.from({ length: remainingPos }, () =>
-        `<div class="chip-circle pos" title="Positive 1">+</div>`
-      ).join("");
-
-      const negChipsHtml = Array.from({ length: remainingNeg }, () =>
-        `<div class="chip-circle neg" title="Negative 1">−</div>`
-      ).join("");
-
-      container.innerHTML = `
-        <div class="tool-content chips-mat-container">
-          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem">
-            <span>Net Value: <strong style="font-size:1.1rem; color:${net > 0 ? "#2563eb" : net < 0 ? "#dc2626" : "#15803d"}">${net > 0 ? "+" + net : net}</strong></span>
-            <span style="color:#64748b; font-size:0.85rem">(${pos} positive, ${neg} negative · ${zeroPairs} zero pair${zeroPairs === 1 ? "" : "s"})</span>
-            <button type="button" class="mini-tool-btn" data-int-add-pos="+1">+1 (+)</button>
-            <button type="button" class="mini-tool-btn" data-int-sub-pos="1" ${pos <= 0 ? "disabled" : ""}>−1 (+)</button>
-            <button type="button" class="mini-tool-btn" data-int-add-neg="+1">+1 (−)</button>
-            <button type="button" class="mini-tool-btn" data-int-sub-neg="1" ${neg <= 0 ? "disabled" : ""}>−1 (−)</button>
-            <button type="button" class="mini-tool-btn" data-int-add-pair>+ Zero Pair</button>
-            <button type="button" class="mini-tool-btn" data-int-cancel-pairs ${zeroPairs <= 0 ? "disabled" : ""}>Cancel Zero Pairs</button>
-            <button type="button" class="mini-tool-btn" data-int-clear>Clear</button>
-          </div>
-          <div class="chips-board" aria-label="Integer chip workspace">
-            ${pos === 0 && neg === 0 ? `<span style="color:#94a3b8; font-size:0.9rem; margin:auto">Click buttons above to add positive (+) or negative (−) chips</span>` : ""}
-            ${pairsHtml}
-            ${posChipsHtml}
-            ${negChipsHtml}
-          </div>
-        </div>
-      `;
-    } else if (this.activeTool === "doublenumberline") {
-      const step = this.dnlStep;
-      const unitA = this.dnlMultiplierA;
-      const unitB = this.dnlMultiplierB;
-      const labelA = this.dnlLabelA || "Miles";
-      const labelB = this.dnlLabelB || "Hours";
-      const k = (unitA / unitB).toFixed(2).replace(/\.00$/, "");
-
-      const maxSteps = 5;
-      const ticksA = [];
-      const ticksB = [];
-      const connectors = [];
-
-      for (let i = 0; i <= maxSteps; i++) {
-        const x = 35 + i * 70;
-        const valA = Number((i * unitA).toFixed(2));
-        const valB = Number((i * unitB).toFixed(2));
-        const isSelected = i === step;
-
-        ticksA.push(`
-          <g class="dnl-tick" data-dnl-step="${i}" style="cursor:pointer" title="Click step ${i}: ${valA} ${labelA}">
-            <line x1="${x}" y1="28" x2="${x}" y2="38" stroke="${isSelected ? "#2563eb" : "#475569"}" stroke-width="${isSelected ? "3" : "1.5"}"/>
-            <text x="${x}" y="22" text-anchor="middle" font-size="${isSelected ? "12" : "10"}" font-weight="${isSelected ? "900" : "600"}" fill="${isSelected ? "#1d4ed8" : "#334155"}">${valA}</text>
-            ${isSelected ? `<circle cx="${x}" cy="10" r="3" fill="#2563eb"/>` : ""}
-          </g>
-        `);
-
-        ticksB.push(`
-          <g class="dnl-tick" data-dnl-step="${i}" style="cursor:pointer" title="Click step ${i}: ${valB} ${labelB}">
-            <line x1="${x}" y1="72" x2="${x}" y2="82" stroke="${isSelected ? "#2563eb" : "#475569"}" stroke-width="${isSelected ? "3" : "1.5"}"/>
-            <text x="${x}" y="96" text-anchor="middle" font-size="${isSelected ? "12" : "10"}" font-weight="${isSelected ? "900" : "600"}" fill="${isSelected ? "#1d4ed8" : "#334155"}">${valB}</text>
-            ${isSelected ? `<circle cx="${x}" cy="100" r="3" fill="#059669"/>` : ""}
-          </g>
-        `);
-
-        if (i > 0) {
-          connectors.push(`
-            <line x1="${x}" y1="38" x2="${x}" y2="72" stroke="${isSelected ? "#2563eb" : "#cbd5e1"}" stroke-width="${isSelected ? "2.5" : "1"}" stroke-dasharray="${isSelected ? "none" : "3,3"}"/>
-          `);
-        }
-      }
-
-      container.innerHTML = `
-        <div class="tool-content dnl-tool-container">
-          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem; align-items:center">
-            <span>Rate: <strong>${(step * unitA).toFixed(2).replace(/\.00$/, "")} ${labelA}</strong> in <strong>${(step * unitB).toFixed(2).replace(/\.00$/, "")} ${labelB}</strong></span>
-            <span style="color:#64748b">| Multipliers:</span>
-            ${[1, 2, 3, 4, 5].map((m) => `<button type="button" class="mini-tool-btn ${step === m ? "active" : ""}" data-dnl-set-step="${m}">×${m}</button>`).join("")}
-            <span style="color:#64748b">| Presets:</span>
-            <button type="button" class="mini-tool-btn" data-dnl-preset="speed">🚗 35 mph</button>
-            <button type="button" class="mini-tool-btn" data-dnl-preset="cost">💵 $4.50 / Item</button>
-            <button type="button" class="mini-tool-btn" data-dnl-preset="percent">📊 25% of 100</button>
-            <button type="button" class="mini-tool-btn" data-dnl-preset="recipe">🥣 3:2 Recipe</button>
-          </div>
-          <svg width="100%" height="110" viewBox="0 0 420 110" style="background:#ffffff; border-radius:8px; border:1px solid #cbd5e1; margin-top:6px" role="img" aria-label="Double Number Line for ${labelA} and ${labelB}">
-            <!-- Line A -->
-            <line x1="20" y1="33" x2="395" y2="33" stroke="#1e293b" stroke-width="2"/>
-            <polygon points="400,33 392,29 392,37" fill="#1e293b"/>
-            <text x="25" y="16" font-size="10" font-weight="800" fill="#2563eb">${labelA}</text>
-            <!-- Line B -->
-            <line x1="20" y1="77" x2="395" y2="77" stroke="#1e293b" stroke-width="2"/>
-            <polygon points="400,77 392,73 392,81" fill="#1e293b"/>
-            <text x="25" y="105" font-size="10" font-weight="800" fill="#059669">${labelB}</text>
-            <!-- Connectors & Ticks -->
-            ${connectors.join("")}
-            ${ticksA.join("")}
-            ${ticksB.join("")}
-          </svg>
-          <div class="dnl-rate-card" style="margin-top:8px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:8px; padding:8px 12px; font-size:0.85rem; color:#334155; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem">
-            <span>📐 Unit Rate: <strong>${unitA} ${labelA}</strong> per <strong>1 ${labelB}</strong> (Constant of Proportionality <em>k = ${k}</em>)</span>
-            <span>Step ${step}: <em>(${unitA} × ${step}) / (${unitB} × ${step}) = ${(step * unitA).toFixed(2).replace(/\.00$/, "")} / ${(step * unitB).toFixed(2).replace(/\.00$/, "")}</em></span>
-          </div>
-        </div>
-      `;
-    } else if (this.activeTool === "pizza") {
-      const n = this.pizzaSlices;
-      const eaten = this.pizzaEaten;
-      const r = 52;
-      const cx = 210;
-      const cy = 60;
-      const slicesSvg = Array.from({ length: n }, (_, i) => {
-        const a1 = (i * 2 * Math.PI) / n - Math.PI / 2;
-        const a2 = ((i + 1) * 2 * Math.PI) / n - Math.PI / 2;
-        const x1 = cx + r * Math.cos(a1);
-        const y1 = cy + r * Math.sin(a1);
-        const x2 = cx + r * Math.cos(a2);
-        const y2 = cy + r * Math.sin(a2);
-        const isEaten = eaten.includes(i);
-        const d = `M ${cx},${cy} L ${x1},${y1} A ${r},${r} 0 0,1 ${x2},${y2} Z`;
-        const midA = (a1 + a2) / 2;
-        const px = cx + (r * 0.6) * Math.cos(midA);
-        const py = cy + (r * 0.6) * Math.sin(midA);
-        return `
-          <g class="pizza-slice-path" data-slice="${i}" role="button" aria-label="Slice ${i + 1} of ${n} ${isEaten ? "eaten" : "remaining"}">
-            <path d="${d}" fill="${isEaten ? "#fed7aa" : "#f1f5f9"}" stroke="${isEaten ? "#ea580c" : "#94a3b8"}" stroke-width="${isEaten ? "2" : "1.5"}" stroke-dasharray="${isEaten ? "none" : "3,3"}"/>
-            ${isEaten ? `<circle cx="${px}" cy="${py}" r="3.5" fill="#dc2626"/>` : ""}
-          </g>
-        `;
-      }).join("");
-
-      container.innerHTML = `
-        <div class="tool-content pizza-tool-container">
-          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem">
-            <span>Pizza Slices: <strong style="font-size:1.1rem; color:#ea580c">${eaten.length}/${n} Eaten</strong> (${n - eaten.length}/${n} Remaining)</span>
-            <span style="color:#64748b">| Slices:</span>
-            ${[2, 3, 4, 6, 8, 12].map((s) => `<button type="button" class="mini-tool-btn ${s === n ? "active" : ""}" data-pizza-set="${s}">${s}</button>`).join("")}
-            <button type="button" class="mini-tool-btn" data-pizza-eat-one>+1 Eat</button>
-            <button type="button" class="mini-tool-btn" data-pizza-reset>Reset</button>
-          </div>
-          <svg width="100%" height="120" viewBox="0 0 420 120" style="background:#ffffff; border-radius:8px; border:1px solid #cbd5e1" role="img" aria-label="Pizza Fraction Slicer showing ${eaten.length} of ${n} slices">
-            <circle cx="${cx}" cy="${cy}" r="${r + 5}" fill="#fde68a" stroke="#d97706" stroke-width="3"/>
-            ${slicesSvg}
-          </svg>
-        </div>
-      `;
-    } else if (this.activeTool === "splitter") {
-      const t = this.splitTarget;
-      const l = this.splitLeft;
-      const r = this.splitRight;
-      container.innerHTML = `
-        <div class="tool-content splitter-tool-container">
-          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem">
-            <span>Decompose: <strong>${t} = ${l} + ${r}</strong></span>
-            <button type="button" class="mini-tool-btn" data-split-preset="14">14</button>
-            <button type="button" class="mini-tool-btn" data-split-preset="25">25</button>
-            <button type="button" class="mini-tool-btn" data-split-preset="48">48</button>
-            <button type="button" class="mini-tool-btn" data-split-preset="85">85</button>
-            <button type="button" class="mini-tool-btn" data-split-mode="tens">Tens &amp; Ones</button>
-            <button type="button" class="mini-tool-btn" data-split-mode="halves">Half &amp; Half</button>
-          </div>
-          <div style="display:flex; flex-direction:column; align-items:center; gap:0.75rem; padding:0.5rem">
-            <div class="splitter-bubble target" title="Target Number">${t}</div>
-            <div style="font-size:1.1rem; color:#64748b; font-weight:800">↓ ✂️ Decompose ↓</div>
-            <div style="display:flex; align-items:center; gap:1.2rem">
-              <div class="splitter-bubble left" title="Left Part">${l}</div>
-              <span style="font-size:1.4rem; font-weight:900; color:#334155">+</span>
-              <div class="splitter-bubble right" title="Right Part">${r}</div>
-              <span style="font-size:1.4rem; font-weight:900; color:#334155">=</span>
-              <span style="font-size:1.3rem; font-weight:900; color:#0284c7">${t}</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:0.5rem; width:100%; max-width:320px">
-              <span style="font-size:0.8rem; font-weight:700">1</span>
-              <input type="range" class="splitter-slider" min="1" max="${t - 1}" value="${l}" style="flex:1" data-split-slider/>
-              <span style="font-size:0.8rem; font-weight:700">${t - 1}</span>
-            </div>
-          </div>
-        </div>
-      `;
-    } else if (this.activeTool === "tape") {
-      const a = this.tapeA;
-      const b = this.tapeB;
-      const mode = this.tapeMode || "unit";
-      let u = this.tapeUnit;
-      if (mode === "total") {
-        u = Math.max(1, Math.round(this.tapeTotal / (a + b)));
-      } else if (mode === "diff") {
-        const diffBoxes = Math.abs(a - b) || 1;
-        u = Math.max(1, Math.round(this.tapeDiff / diffBoxes));
-      }
-      const labelA = this.tapeLabelA || "Part A";
-      const labelB = this.tapeLabelB || "Part B";
-      const totA = a * u;
-      const totB = b * u;
-      const grandTot = totA + totB;
-      const diffVal = Math.abs(totA - totB);
-
-      const cellsA = Array.from({ length: a }, () => `<div class="tape-cell a" style="flex:1; height:36px; display:inline-flex; align-items:center; justify-content:center; background:#dbeafe; border:1px solid #3b82f6; border-radius:4px; font-weight:800; color:#1e40af; font-size:0.95rem">${u}</div>`).join("");
-      const cellsB = Array.from({ length: b }, () => `<div class="tape-cell b" style="flex:1; height:36px; display:inline-flex; align-items:center; justify-content:center; background:#d1fae5; border:1px solid #10b981; border-radius:4px; font-weight:800; color:#065f46; font-size:0.95rem">${u}</div>`).join("");
-
-      container.innerHTML = `
-        <div class="tool-content tape-tool-container">
-          <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem; align-items:center">
-            <span>Ratio <strong>${a} : ${b}</strong> · Total: <strong>${grandTot}</strong> (1 Box = ${u})</span>
-            <span style="color:#64748b">| Presets:</span>
-            <button type="button" class="mini-tool-btn" data-tape-preset="3:2">3:2</button>
-            <button type="button" class="mini-tool-btn" data-tape-preset="4:1">4:1</button>
-            <button type="button" class="mini-tool-btn" data-tape-preset="5:3">5:3</button>
-            <button type="button" class="mini-tool-btn" data-tape-preset="2:5">2:5</button>
-            <span style="color:#64748b">| Mode:</span>
-            <button type="button" class="mini-tool-btn ${mode === "unit" ? "active" : ""}" data-tape-mode="unit">Unit Known</button>
-            <button type="button" class="mini-tool-btn ${mode === "total" ? "active" : ""}" data-tape-mode="total">Total Known</button>
-            <button type="button" class="mini-tool-btn ${mode === "diff" ? "active" : ""}" data-tape-mode="diff">Difference Known</button>
-            ${mode === "unit" ? `
-              <span style="color:#64748b">| Box Value:</span>
-              ${[1, 2, 5, 10, 12].map((val) => `<button type="button" class="mini-tool-btn ${val === u ? "active" : ""}" data-tape-unit="${val}">${val}</button>`).join("")}
-            ` : mode === "total" ? `
-              <span style="color:#64748b">| Total:</span>
-              <input type="number" id="tape-in-total" value="${this.tapeTotal}" min="${a + b}" step="${a + b}" style="width:60px; padding:2px 4px; border:1px solid #cbd5e1; border-radius:4px" />
-              <button type="button" class="mini-tool-btn" id="tape-set-total">Apply Total</button>
-            ` : `
-              <span style="color:#64748b">| Difference:</span>
-              <input type="number" id="tape-in-diff" value="${this.tapeDiff}" min="1" style="width:54px; padding:2px 4px; border:1px solid #cbd5e1; border-radius:4px" />
-              <button type="button" class="mini-tool-btn" id="tape-set-diff">Apply Diff</button>
-            `}
-          </div>
-          <div style="display:flex; flex-direction:column; gap:0.75rem; padding:0.75rem; background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; margin-top:8px">
-            <div style="display:flex; align-items:center; gap:0.75rem">
-              <strong style="width:75px; font-size:0.9rem; color:#1d4ed8">${labelA} (${a}):</strong>
-              <div class="tape-bar-strip" style="flex:1; display:flex; gap:4px">${cellsA}</div>
-              <strong style="width:55px; text-align:right; font-size:1.15rem; color:#1d4ed8">${totA}</strong>
-            </div>
-            <div style="display:flex; align-items:center; gap:0.75rem">
-              <strong style="width:75px; font-size:0.9rem; color:#047857">${labelB} (${b}):</strong>
-              <div class="tape-bar-strip" style="flex:1; display:flex; gap:4px">${cellsB}</div>
-              <strong style="width:55px; text-align:right; font-size:1.15rem; color:#047857">${totB}</strong>
-            </div>
-            <div style="font-size:0.85rem; color:#334155; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:6px; padding:8px 12px; margin-top:4px">
-              💡 <em>${mode === "total" ? `Total is ${this.tapeTotal} split into ${a + b} equal units. Each block is ${this.tapeTotal} ÷ ${a + b} = ${u}.` : mode === "diff" ? `Difference between ${labelA} and ${labelB} is ${diffVal} across ${Math.abs(a - b)} block(s). Each block is ${u}.` : `Each block represents ${u}. ${labelA} has ${a} blocks (${totA}) and ${labelB} has ${b} blocks (${totB}). Combined Total = ${grandTot}.`}</em>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-  },
-  wire(container) {
-    if (!container) return;
-    container.addEventListener("click", (event) => {
-      const toolTab = event.target.closest("[data-tool]");
-      if (toolTab) {
-        this.activeTool = toolTab.dataset.tool;
-        container.querySelectorAll(".tool-btn").forEach((btn) => btn.classList.toggle("active", btn.dataset.tool === this.activeTool));
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-
-      // Long Division handlers
-      const ldPreset = event.target.closest("[data-ld-preset]");
-      if (ldPreset) {
-        const parts = ldPreset.dataset.ldPreset.split(":").map(Number);
-        this.divDividend = parts[0];
-        this.divDivisor = parts[1];
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("#ld-btn-load")) {
-        const dIn = container.querySelector("#ld-in-dividend");
-        const vIn = container.querySelector("#ld-in-divisor");
-        if (dIn && vIn) {
-          this.divDividend = Math.max(1, Number(dIn.value) || 432);
-          this.divDivisor = Math.max(1, Number(vIn.value) || 12);
-          this.render(document.querySelector("#drill-tool-viewport"));
-        }
-        return;
-      }
-
-      const nlStep = event.target.closest("[data-nl-step]");
-      if (nlStep) {
-        this.numberLinePos = Math.max(0, Math.min(20, this.numberLinePos + Number(nlStep.dataset.nlStep)));
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-nl-reset]")) {
-        this.numberLinePos = 0;
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      const tick = event.target.closest(".nl-tick");
-      if (tick) {
-        this.numberLinePos = Number(tick.dataset.val);
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-tf-add]")) {
-        this.tenFrameCount = Math.min(20, this.tenFrameCount + 1);
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-tf-sub]")) {
-        this.tenFrameCount = Math.max(0, this.tenFrameCount - 1);
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-tf-clear]")) {
-        this.tenFrameCount = 0;
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      const tfSlot = event.target.closest("[data-slot]");
-      if (tfSlot) {
-        const idx = Number(tfSlot.dataset.slot);
-        this.tenFrameCount = idx + 1 === this.tenFrameCount ? idx : idx + 1;
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      const mgCell = event.target.closest(".mg-cell");
-      if (mgCell) {
-        this.multRow = Number(mgCell.dataset.row);
-        this.multCol = Number(mgCell.dataset.col);
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-
-      // Balance Scale controls
-      if (event.target.closest("[data-bal-add-x]")) {
-        this.balanceLeftX = Math.min(5, this.balanceLeftX + 1);
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-bal-sub-x]")) {
-        this.balanceLeftX = Math.max(1, this.balanceLeftX - 1);
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-bal-add-lc]")) {
-        this.balanceLeftConst = Math.min(20, this.balanceLeftConst + 1);
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-bal-sub-lc]")) {
-        this.balanceLeftConst = Math.max(0, this.balanceLeftConst - 1);
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-bal-sub-both]")) {
-        const sub = this.balanceLeftConst;
-        this.balanceRightVal = Math.max(0, this.balanceRightVal - sub);
-        this.balanceLeftConst = 0;
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-bal-div-both]")) {
-        this.balanceRightVal = Math.floor(this.balanceRightVal / this.balanceLeftX);
-        this.balanceLeftX = 1;
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-bal-reset]")) {
-        this.balanceLeftX = 1;
-        this.balanceLeftConst = 3;
-        this.balanceRightVal = 9;
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-
-      // Integer Chips Mat controls
-      if (event.target.closest("[data-int-add-pos]")) {
-        this.integersPos = Math.min(15, this.integersPos + 1);
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-int-sub-pos]")) {
-        this.integersPos = Math.max(0, this.integersPos - 1);
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-int-add-neg]")) {
-        this.integersNeg = Math.min(15, this.integersNeg + 1);
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-int-sub-neg]")) {
-        this.integersNeg = Math.max(0, this.integersNeg - 1);
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-int-add-pair]")) {
-        this.integersPos = Math.min(15, this.integersPos + 1);
-        this.integersNeg = Math.min(15, this.integersNeg + 1);
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-int-cancel-pairs]")) {
-        const pairs = Math.min(this.integersPos, this.integersNeg);
-        this.integersPos -= pairs;
-        this.integersNeg -= pairs;
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-int-clear]")) {
-        this.integersPos = 0;
-        this.integersNeg = 0;
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-
-      // Double Number Line controls
-      const dnlTick = event.target.closest("[data-dnl-step]");
-      if (dnlTick) {
-        this.dnlStep = Number(dnlTick.dataset.dnlStep);
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      const dnlSetStep = event.target.closest("[data-dnl-set-step]");
-      if (dnlSetStep) {
-        this.dnlStep = Number(dnlSetStep.dataset.dnlSetStep);
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      const dnlPreset = event.target.closest("[data-dnl-preset]");
-      if (dnlPreset) {
-        const preset = dnlPreset.dataset.dnlPreset;
-        if (preset === "speed") {
-          this.dnlMultiplierA = 35;
-          this.dnlMultiplierB = 1;
-          this.dnlLabelA = "Miles";
-          this.dnlLabelB = "Hours";
-        } else if (preset === "cost") {
-          this.dnlMultiplierA = 4.5;
-          this.dnlMultiplierB = 1;
-          this.dnlLabelA = "Dollars ($)";
-          this.dnlLabelB = "Items";
-        } else if (preset === "percent") {
-          this.dnlMultiplierA = 25;
-          this.dnlMultiplierB = 25;
-          this.dnlLabelA = "Part";
-          this.dnlLabelB = "Percent (%)";
-        } else if (preset === "recipe") {
-          this.dnlMultiplierA = 3;
-          this.dnlMultiplierB = 2;
-          this.dnlLabelA = "Cups Flour";
-          this.dnlLabelB = "Cups Sugar";
-        }
-        this.dnlStep = 2;
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-
-      // Pizza Fraction Slicer
-      const sliceEl = event.target.closest("[data-slice]");
-      if (sliceEl) {
-        const idx = Number(sliceEl.dataset.slice);
-        if (this.pizzaEaten.includes(idx)) {
-          this.pizzaEaten = this.pizzaEaten.filter((i) => i !== idx);
-        } else {
-          this.pizzaEaten.push(idx);
-        }
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      const pizzaSet = event.target.closest("[data-pizza-set]");
-      if (pizzaSet) {
-        this.pizzaSlices = Number(pizzaSet.dataset.pizzaSet);
-        this.pizzaEaten = [0];
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-pizza-eat-one]")) {
-        for (let i = 0; i < this.pizzaSlices; i++) {
-          if (!this.pizzaEaten.includes(i)) {
-            this.pizzaEaten.push(i);
-            break;
-          }
-        }
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("[data-pizza-reset]")) {
-        this.pizzaEaten = [];
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-
-      // Number Splitter
-      const splitPreset = event.target.closest("[data-split-preset]");
-      if (splitPreset) {
-        this.splitTarget = Number(splitPreset.dataset.splitPreset);
-        this.splitLeft = Math.floor(this.splitTarget / 2);
-        this.splitRight = this.splitTarget - this.splitLeft;
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      const splitMode = event.target.closest("[data-split-mode]");
-      if (splitMode) {
-        const mode = splitMode.dataset.splitMode;
-        if (mode === "tens") {
-          const ones = this.splitTarget % 10;
-          this.splitLeft = this.splitTarget - ones;
-          this.splitRight = ones;
-        } else if (mode === "halves") {
-          this.splitLeft = Math.floor(this.splitTarget / 2);
-          this.splitRight = this.splitTarget - this.splitLeft;
-        }
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-
-      // Tape Diagram
-      const tapePreset = event.target.closest("[data-tape-preset]");
-      if (tapePreset) {
-        const parts = tapePreset.dataset.tapePreset.split(":").map(Number);
-        this.tapeA = parts[0];
-        this.tapeB = parts[1];
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      const tapeMode = event.target.closest("[data-tape-mode]");
-      if (tapeMode) {
-        this.tapeMode = tapeMode.dataset.tapeMode;
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      const tapeUnit = event.target.closest("[data-tape-unit]");
-      if (tapeUnit) {
-        this.tapeUnit = Number(tapeUnit.dataset.tapeUnit);
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("#tape-set-total")) {
-        const tIn = container.querySelector("#tape-in-total");
-        if (tIn) {
-          this.tapeTotal = Math.max(this.tapeA + this.tapeB, Number(tIn.value) || 40);
-          this.render(document.querySelector("#drill-tool-viewport"));
-        }
-        return;
-      }
-      if (event.target.closest("#tape-set-diff")) {
-        const dIn = container.querySelector("#tape-in-diff");
-        if (dIn) {
-          this.tapeDiff = Math.max(1, Number(dIn.value) || 4);
-          this.render(document.querySelector("#drill-tool-viewport"));
-        }
-        return;
-      }
-    });
-
-    container.addEventListener("input", (event) => {
-      const slider = event.target.closest("[data-split-slider]");
-      if (slider) {
-        this.splitLeft = Number(slider.value);
-        this.splitRight = this.splitTarget - this.splitLeft;
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-    });
-  }
-};
+// The drawer loads the problem on screen into every tool (drill-toolbox.js, numbers from problem-numbers.js).
+const InteractiveDrillToolbox = createDrillToolbox({ getState: () => state, longDivision: StandardLongDivisionModel });
 
 const drillToolbox = document.querySelector("#drill-toolbox");
 if (drillToolbox) {
@@ -9690,10 +8361,32 @@ els.summary?.addEventListener("click", (event) => {
   }
 });
 
+// A finished column board (solver, model or drawer) copies the learner's own typed result into the answer box,
+// but only for this problem's numbers and only when no digit was opened for them by repeated misses.
+document.addEventListener("vc-complete", (event) => {
+  const { value, opened } = event.detail || {};
+  const board = event.target;
+  if (opened || !state.item || state.itemDone || !board.closest?.("#interactive-solver-workspace, #problem-visual-scaffold, #drill-tool-viewport")) return;
+  const spec = JSON.parse(board.dataset.vc || "{}");
+  const given = extractProblem(state.item);
+  if (given?.kind !== "binary" || given.op !== spec.op || cleanDigits(given.aText) !== spec.terms?.[0] || cleanDigits(given.bText) !== spec.terms?.[1]) return;
+  els.answerInput.value = value;
+  chime("good");
+});
+
+// Using a model, solver, or tool before the first answer is help: it never counts as independent practice.
+function markHelp() {
+  if (state.item && !state.itemDone && state.itemAttempts === 0 && !state.hintBeforeFirst) {
+    state.hintBeforeFirst = true;
+    saveActiveSession();
+  }
+}
+
 els.toggleSolver?.addEventListener("click", () => {
   if (!els.solverWorkspace || !state.item) return;
   const isHidden = els.solverWorkspace.hidden;
   if (isHidden) {
+    markHelp();
     InteractiveSolver.render(state.item, els.solverWorkspace);
     els.solverWorkspace.hidden = false;
     els.toggleSolver.setAttribute("aria-expanded", "true");
@@ -9701,7 +8394,26 @@ els.toggleSolver?.addEventListener("click", () => {
     els.solverWorkspace.hidden = true;
     els.toggleSolver.setAttribute("aria-expanded", "false");
   }
+  hideDuplicateColumnModel(!els.solverWorkspace.hidden);
 });
+
+// The stacked-column board is both the solver and the model for add and subtract. With the solver open, the model
+// panel would repeat the same boxes, so it steps aside and comes back when the solver closes.
+function hideDuplicateColumnModel(solverOpen) {
+  const host = els.problemVisualScaffold;
+  if (!host) return;
+  if (solverOpen && els.solverWorkspace.querySelector(".vc") && host.querySelector(".vc")) {
+    host.dataset.hiddenBySolver = "1";
+    host.hidden = true;
+  } else if (host.dataset.hiddenBySolver) {
+    delete host.dataset.hiddenBySolver;
+    host.hidden = false;
+  }
+  if (els.toggleProblemVisual) {
+    els.toggleProblemVisual.setAttribute("aria-expanded", String(!host.hidden));
+    els.toggleProblemVisual.textContent = host.hidden ? "Show the model" : "Hide the model";
+  }
+}
 
 els.fixAnswerBtn?.addEventListener("click", () => {
   state.isFixing = true;
@@ -10178,7 +8890,7 @@ function handleExplanationInteraction(event) {
     return true;
   }
 
-  const btn = event.target.closest("[data-expl-action], [data-expl-step], [data-expl-ld-step], [data-expl-mul], [data-expl-area], [data-expl-kcf], [data-expl-frac], [data-expl-int], [data-expl-sign], [data-expl-bal], [data-expl-pct], [data-expl-jump], [data-expl-pv]");
+  const btn = event.target.closest("[data-expl-action], [data-expl-step], [data-expl-ld-step], [data-expl-mul], [data-expl-area], [data-expl-kcf], [data-expl-frac], [data-expl-int], [data-expl-sign], [data-expl-bal], [data-expl-pct], [data-expl-pv]");
   if (!btn) return false;
 
   const widget = btn.closest(".expl-interactive-widget");
@@ -10342,20 +9054,6 @@ function handleExplanationInteraction(event) {
     return true;
   }
 
-  // Number Line Jumps
-  if (btn.hasAttribute("data-expl-jump")) {
-    const jump = btn.dataset.explJump;
-    if (jump === "tens") {
-      if (captionEl) captionEl.innerHTML = `<strong>Step 1:</strong> Hop forward or backward the tens first! It makes much larger, friendly leaps.`;
-    } else if (jump === "ones") {
-      if (captionEl) captionEl.innerHTML = `<strong>Step 2:</strong> Hop the leftover ones to land on the exact target number!`;
-    } else {
-      if (captionEl) captionEl.innerHTML = `<strong>Full Jump:</strong> Hop tens first, then hop ones for fast mental math!`;
-    }
-    if (typeof chime === "function") chime("step");
-    return true;
-  }
-
   // Place Value Alignment
   if (btn.hasAttribute("data-expl-pv")) {
     const pv = btn.dataset.explPv;
@@ -10394,7 +9092,7 @@ document.addEventListener("click", (event) => {
   const explToolBtn = event.target.closest("[data-open-tool]");
   if (explToolBtn) {
     const tool = explToolBtn.dataset.openTool;
-    InteractiveDrillToolbox.openTool(tool, { question: state.item?.question, skill: state.item?.skill });
+    InteractiveDrillToolbox.openTool(tool, state.item || { skill: state.item?.skill });
     announce(`Opened ${tool} manipulative workout in the strategy drawer.`);
     return;
   }
@@ -10602,9 +9300,15 @@ initVoiceControl();
 initVocabSystem();
 initLanguage();
 // Opening a word meaning before the first answer is help, like a hint, so it does not count as independent.
-document.addEventListener("toggle", (event) => {
-  if (event.target.matches?.("[data-lang-hint]") && event.target.open && state.item && !state.itemDone && state.itemAttempts === 0) state.hintBeforeFirst = true;
-}, true);
+document.addEventListener(
+  "toggle",
+  (event) => {
+    if (event.target.matches?.("[data-lang-hint], #drill-toolbox") && event.target.open) markHelp();
+  },
+  true,
+);
+// A column-board box that missed or was opened for the learner is help too.
+document.addEventListener("vc-help", markHelp);
 window.addEventListener("fluency-language-print", () => printHtml(journalPrintHtml({ name: PROFILE_NAMES[activeProfile], grade: state.grade })));
 MathWordWall.wire();
 window.NumberTalkRoutine = NumberTalkRoutine;

@@ -2087,6 +2087,43 @@ body.focus-mode .focus-orbit-ring {
   border-color: var(--navy);
 }
 
+.tool-problem-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+  margin-bottom: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--blue-soft);
+  font-size: 0.9rem;
+}
+
+.tool-problem-bar .mini-tool-btn[aria-pressed="true"] {
+  background: var(--navy);
+  color: #fff;
+}
+
+.tool-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+
+.tool-hidden {
+  display: inline-block;
+  min-width: 1.6em;
+  border-bottom: 2px dashed var(--line-strong);
+  text-align: center;
+  font-weight: 800;
+}
+
+.fw-yours .fw-label {
+  font-weight: 900;
+  color: var(--navy);
+}
+
 /* Ten-Frame double grid */
 .ten-frame-double-grid {
   display: flex;
@@ -3478,6 +3515,7 @@ body.focus-mode .focus-orbit-ring {
 }
 
 .problem-arena.has-equation {
+  flex-wrap: wrap;
   justify-content: center;
   gap: clamp(1rem, 2.5vw, 2rem);
 }
@@ -3500,7 +3538,14 @@ body.focus-mode .focus-orbit-ring {
 }
 
 .problem-arena.has-equation .problem-question-zone {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+
+/* A long expression such as 5,337 + 90,679 would run past the card at the full size. */
+.problem-question-zone .question.is-long {
+  font-size: clamp(1.9rem, 4.2vw, 2.9rem);
+  overflow-wrap: anywhere;
 }
 
 .problem-question-zone .question {
@@ -3913,6 +3958,119 @@ body.focus-mode .focus-orbit-ring {
   background: #dcfce7;
   border-color: #16a34a;
   color: #15803d;
+}
+
+/* Partial-product multiplication board (vertical-multiply.js). The row labels sit at the left of their boxes
+   and the board scrolls sideways on a phone instead of running past the card. */
+.vm-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.vm-grid {
+  margin: 0 auto;
+}
+.vm-row {
+  gap: 0.35rem;
+}
+.vm-label {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 5.5rem;
+  margin-right: auto;
+  padding-right: 0.5rem;
+  justify-content: flex-start;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.vm-cell {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+}
+
+/* Stacked column model (vertical-columns.js): the problem's numbers lined up by place value, with empty
+   regrouping boxes above and empty answer boxes below. States: ok (right), no (try again), shown (opened). */
+.vc {
+  max-width: 100%;
+}
+.vc-scroll {
+  overflow-x: auto;
+  padding: 0.25rem 0;
+}
+.vc-grid {
+  min-width: min-content;
+}
+.vc-row {
+  gap: 0.35rem;
+}
+.vc-col {
+  flex: 0 0 auto;
+}
+.vc-point {
+  width: 1rem;
+}
+.vc-cell {
+  box-sizing: border-box;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 2px solid var(--line-strong);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-align: center;
+}
+.vc-carry,
+.vc-regroup {
+  border-style: dashed;
+  font-size: 1.25rem;
+}
+.vc-carry {
+  border-color: #f59e0b;
+  background: #fffbeb;
+  color: #b45309;
+}
+.vc-regroup {
+  border-color: #ef4444;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+.vc-cell:focus-visible {
+  outline: 3px solid var(--navy);
+  outline-offset: 2px;
+}
+.vc-cell.ok {
+  border-style: solid;
+  border-color: var(--good);
+  background: var(--good-soft);
+  color: var(--good);
+}
+.vc-cell.no {
+  border-style: solid;
+  border-color: var(--bad);
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+.vc-cell.shown {
+  border-style: solid;
+  border-color: var(--warn);
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+.vc-note {
+  max-width: 28rem;
+  margin: 0.6rem 0 0;
+}
+@media (forced-colors: active) {
+  .vc-cell.ok,
+  .vc-cell.shown {
+    border-width: 4px;
+  }
 }
 
 .algo-divider {

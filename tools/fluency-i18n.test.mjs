@@ -8,7 +8,9 @@ Object.defineProperty(globalThis, "localStorage", {
 });
 Object.defineProperty(globalThis, "window", { configurable: true, value: globalThis });
 const dir = new URL("../math/fluency-lab/", import.meta.url);
-const { ES } = await import("../math/fluency-lab/i18n-es.js");
+const { ES: ES_BASE } = await import("../math/fluency-lab/i18n-es.js");
+const { ES_MODELS } = await import("../math/fluency-lab/i18n-es-models.js");
+const ES = { ...ES_BASE, ...ES_MODELS };
 const { setLang, t } = await import("../math/fluency-lab/i18n.js");
 const { TRAILS, BANDS } = await import("../math/fluency-lab/fact-trail.js");
 const { STRATEGIES, TIPS } = await import("../math/fluency-lab/strategies.js");
@@ -21,7 +23,7 @@ const { MOVE_FN, MOVE_LABELS, STAT_LABELS } = await import("../math/fluency-lab/
 
 const failures = [];
 const keys = new Set();
-for (const file of readdirSync(dir).filter((f) => f.endsWith(".js") && f !== "i18n-es.js")) {
+for (const file of readdirSync(dir).filter((f) => f.endsWith(".js") && !f.startsWith("i18n-es"))) {
   const source = readFileSync(new URL(file, dir), "utf8");
   for (const match of source.matchAll(/\bt\("((?:[^"\\]|\\.)*)"/g))
     keys.add(match[1].replace(/\\"/g, '"'));

@@ -31,15 +31,17 @@ function problemLine(question) {
     .join("");
 }
 
-export function stepPlayer(item, { start = 1 } = {}) {
+// `cap` limits how many steps can ever open (live help passes peekCap so the answer step stays shut).
+export function stepPlayer(item, { start = 1, cap = Infinity } = {}) {
   const steps = item?.steps || [];
   if (steps.length < 2) return "";
   const id = `sp-${++counter}`;
-  players.set(id, { steps, shown: Math.min(start, steps.length), active: null });
+  const limit = Math.min(cap, steps.length);
+  players.set(id, { steps, shown: Math.min(start, limit), active: null, cap: limit });
   return `<section class="step-player" data-step-player="${id}" aria-label="${esc(t("Step by step"))}">
     <p class="sp-problem"><span class="sp-label">${esc(t("Problem"))}</span> <span class="sp-q">${problemLine(item.question)}</span></p>
     <p class="sp-hint">${esc(t("Tap a step to see it in the problem. Tap Next step to keep going."))}</p>
-    <div class="sp-steps" data-sp-steps>${stepsBlock(steps, Math.min(start, steps.length), { id })}</div>
+    <div class="sp-steps" data-sp-steps>${stepsBlock(steps, Math.min(start, limit), { id, cap: limit })}</div>
     <p class="sp-live tr-sr" role="status" aria-live="polite"></p>
   </section>`;
 }
@@ -109,7 +111,7 @@ function light(section) {
     );
   section.querySelector(".sp-live").textContent = t("Step {n} of {total}", {
     n: index + 1,
-    total: entry.steps.length,
+    total: entry.cap ?? entry.steps.length,
   });
 }
 
@@ -128,6 +130,7 @@ export function handleStepPlayerClick(target) {
     entry.active = null;
     section.querySelector("[data-sp-steps]").innerHTML = stepsBlock(entry.steps, entry.shown, {
       id: section.dataset.stepPlayer,
+      cap: entry.cap,
     });
     light(section);
     section.querySelector("button.tr-step-next")?.focus();

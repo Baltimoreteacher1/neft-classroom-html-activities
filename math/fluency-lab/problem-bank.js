@@ -1,5 +1,5 @@
 import { detailSteps } from "./detail-steps.js";
-import { peekCap } from "./step-leak.js";
+import { leakCap } from "./step-leak.js";
 import { workedSteps } from "./step-builders.js";
 
 const whole = new Intl.NumberFormat("en-US", { maximumFractionDigits: 6 });
@@ -217,8 +217,8 @@ function factModel(op, a, b, answer, config) {
   if (op === "add" && a + b <= 20) return { type: "counters", total: 20, kind: "join", filled: a, target: a + b, shown: a + b, caption: `${a} + ${b} on a double ten-frame` };
   if (op === "sub" && a <= 20) return { type: "counters", total: 20, kind: "takeAway", filled: Math.max(0, a - b), target: a, shown: Math.max(0, a - b), caption: `Start with ${a}, take away ${b}` };
   if (op === "add" || op === "sub") {
-    const jumps = friendlyJumps(a, b, op === "add" ? 1 : -1);
-    return { type: "numberline", start: a, jumps, caption: `${whole.format(a)} ${FACT_SYMBOL[op]} ${whole.format(b)} in friendly jumps` };
+    // The stacked column method, with the two numbers lined up by place value.
+    return { type: "vertical", op: op === "add" ? "+" : "-", terms: [String(a), String(b)], caption: `${whole.format(a)} ${FACT_SYMBOL[op]} ${whole.format(b)}, stacked by place value` };
   }
   if (op === "mul") {
     if (config.tens && a <= 12 && b / 10 <= 12) return { type: "array", a, b: b / 10, split: a, unit: 10, caption: `${a} rows of ${b / 10} tens` };
@@ -238,8 +238,7 @@ function factModel(op, a, b, answer, config) {
     }
     return null;
   }
-  if (b >= 2 && b <= 12 && answer >= 1 && answer <= 12) return { type: "array", a: b, b: answer, split: b, caption: `${whole.format(a)} shared equally into ${b} rows` };
-  if (op === "div" && b >= 2 && b <= 99 && answer > 12 && answer <= 999) return { type: "numberline", start: 0, jumps: [a], group: b, caption: `Groups of ${b} up to ${whole.format(a)}` };
+  if (b >= 2 && b <= 12 && answer >= 1 && answer <= 12) return { type: "array", a: b, b: answer, split: b, share: a, caption: `${whole.format(a)} shared equally into ${b} rows` };
   return null;
 }
 
@@ -435,7 +434,6 @@ const generators = {
     return problem(`${terms.join(", ")}, ___`, start + step * 4, {
       hint: `The pattern changes by ${step} each time.`,
       explanation: `Add ${step} to ${terms[3]} to get ${start + step * 4}.`,
-      model: { type: "numberline", start: terms[3], jumps: [step], caption: `Count on by ${step}` },
     });
   },
 
@@ -645,7 +643,7 @@ const generators = {
       steps: op === "div" ? [...decimalDivisionSteps(shownA, shownB), `${shownA} ${symbol} ${shownB} = ${shownAnswer}.`] : undefined,
       model:
         op === "add" || op === "sub"
-          ? { type: "numberline", start: Number(shownA), jumps: [op === "add" ? Number(shownB) : -Number(shownB)] }
+          ? { type: "vertical", op: op === "add" ? "+" : "-", terms: [shownA, shownB] }
           : op === "mul"
             ? {
                 type: "chain",
@@ -1390,7 +1388,7 @@ export function generateProblem(skill, rng = Math.random) {
   let item = drawProblem(skill, generator, rng);
   // Some numbers make an early step state the answer by coincidence (the answer equals a place value, a coin
   // value, a factor). Draw again rather than show a hint that gives it away.
-  for (let attempt = 0; attempt < 12 && peekCap(item) < item.steps.length - 1; attempt += 1) {
+  for (let attempt = 0; attempt < 12 && leakCap(item) < item.steps.length - 1; attempt += 1) {
     item = drawProblem(skill, generator, rng);
   }
   return item;

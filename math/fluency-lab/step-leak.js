@@ -29,9 +29,21 @@ export function stepLeaks(step, item) {
   return answerForms(item).some((form) => !shows(item.question || "", form) && holds(step, form));
 }
 
-export function peekCap(item) {
+// The generator redraws a problem when a step before the last one states its answer. This is that test: how many
+// steps can open before one states the answer.
+export function leakCap(item) {
   const steps = item.steps || [];
   const limit = Math.max(0, steps.length - 1);
   for (let i = 0; i < limit; i += 1) if (stepLeaks(steps[i], item)) return i;
   return limit;
+}
+
+// A division framed as "b × ? = a" and then split into tens and ones ("b × 30", "b × 4") has already told the
+// learner the parts of the quotient, so only the framing step may show.
+const isDivisionSplit = (steps) => /^[\d,]+ × \? = [\d,]+/.test(plain(steps[0] || "")) && steps.length > 2;
+
+// How many steps a learner may be shown before answering. Every screen that opens hint steps uses this.
+export function peekCap(item) {
+  const cap = leakCap(item);
+  return isDivisionSplit(item.steps || []) ? Math.min(1, cap) : cap;
 }

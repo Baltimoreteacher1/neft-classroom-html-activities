@@ -1,5 +1,6 @@
 import { createLesson, transferPrompt } from "./lesson-content.js";
 import { validateAnswer } from "./problem-bank.js";
+import { columnSpec, verticalHtml } from "./vertical-columns.js";
 
 const esc = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 const svg = (body, label, viewBox = "0 0 540 240") => `<svg class="math-model-svg" viewBox="${viewBox}" role="img" aria-label="${esc(label)}">${body}</svg>`;
@@ -11,6 +12,10 @@ export function renderModel(model, { counters, counterPositions, partitions = 1,
     const filled = counters ?? model.filled;
     const isFilled = (i) => counterPositions ? counterPositions.has(i) : i < filled;
     return `${caption}<p>Tap a space to add or remove a counter. Keep the original ${model.filled} dark counters.</p><div class="counter-board">${Array.from({ length: model.total }, (_, i) => `<button type="button" class="counter-cell ${isFilled(i) ? "filled" : ""} ${i < model.filled ? "fixed" : ""}" data-counter="${i}" aria-label="Space ${i + 1}${i < model.filled ? ', original counter' : ''}" aria-pressed="${isFilled(i)}" ${i < model.filled ? "disabled" : ""}><span aria-hidden="true">${isFilled(i) ? "●" : "○"}</span></button>`).join("")}</div><p class="model-count" aria-live="polite">${filled} counters · ${Math.max(0, filled - model.filled)} added</p>`;
+  }
+  if (model.type === "vertical") {
+    const spec = columnSpec(model.op, model.terms);
+    return spec ? `${caption}${verticalHtml(spec)}` : caption;
   }
   if (model.type === "pairs") return `${caption}<div class="pair-board">${Array.from({ length: Math.ceil(model.total / 2) }, (_, i) => `<span class="counter-pair" aria-label="${i * 2 + 1 < model.total ? '2 counters' : '1 counter'}">● ${i * 2 + 1 < model.total ? "●" : "○"}</span>`).join("")}</div>`;
   if (model.type === "fractions") {

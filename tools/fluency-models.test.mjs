@@ -26,7 +26,24 @@ ok(
   [...ins].every((i) => i.classList.contains("ok")),
   "area boxes check",
 );
-// number line 364 + 107: landing hidden until typed
+// stacked columns (addition and subtraction): the numbers are lined up, every box starts empty, and the
+// answer digits are not in the page until the student types them (two misses open a box)
+h.innerHTML = m.interactivePicture({ type: "vertical", op: "+", terms: ["364", "107"] });
+ok(h.querySelectorAll(".vc-result").length === 3, "one answer box per column");
+ok(h.querySelectorAll(".vc-carry").length === 2, "a regrouping box above each column but the ones");
+ok(
+  [...h.querySelectorAll(".vc-cell")].every((i) => i.value === ""),
+  "every box starts empty",
+);
+ok(!h.innerHTML.includes("471"), "stacked columns leak the total");
+h.innerHTML = m.interactivePicture({ type: "vertical", op: "-", terms: ["503", "168"] });
+ok(
+  h.querySelectorAll(".vc-regroup").length === 3,
+  "a regrouping box above every column when subtracting",
+);
+ok(!h.innerHTML.includes("335"), "stacked subtraction leaks the difference");
+// number line (kept for integers, where jumps on the line are the model; addition and subtraction use columns).
+// 364 + 107 here exercises the renderer only: landing hidden until typed
 h.innerHTML = m.interactivePicture({ type: "numberline", start: 364, jumps: [100, 7] });
 tap('[data-hop-size="100"]');
 ok(!h.querySelector("svg").textContent.includes("464"), "line leaks landing");
