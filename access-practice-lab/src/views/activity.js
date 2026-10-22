@@ -3,7 +3,9 @@ import {
   crumbsHTML,
   listenPlayerHTML,
   modelLadderHTML,
+  readingToolbarHTML,
   recorderHTML,
+  renderPassageSentences,
   speakingChecksHTML,
   transcriptHTML,
   vocabHTML,
@@ -24,6 +26,8 @@ import { visualsHTML } from "../media.js";
 import { isRecording, takesFor } from "../recorder.js";
 import { answerOf, loadRecord, saveRecord } from "../store.js";
 import { invalidateActivity, startIndependentAttempt, updateActivityAnswer } from "../attempts.js";
+import { analyzeLanguage, compareRevisions } from "../coach.js";
+import { speak, stop as stopSpeech } from "../speech.js";
 import {
   BASE,
   DOMAIN_META,
@@ -49,6 +53,8 @@ let validation = "";
 let renderGeneration = 0;
 let loading = false;
 let cur = null; // { band, domain, level, activity, list, index, record, playlist }
+let showCognates = false;
+let coachFeedback = null;
 
 async function resolve(ctx) {
   const r = ctx.route;
@@ -102,8 +108,15 @@ function stimulusHTML(a, ctx) {
   ${listening && a.script && answeredOnce ? transcriptHTML(a.id, a.script) : ""} ${visualsHTML(a)}
   ${
     !listening && asList(a.passage).length
-      ? html`<article class="passage">
-          ${a.passageTitle ? html`<h3>${a.passageTitle}</h3>` : ""}${asList(a.passage).map((p) => html`<p>${p}</p>`)}
+      ? html`
+        ${readingToolbarHTML(a.id, asList(a.passage), {
+          rate: ctx.prefs.rate,
+          voiceURI: ctx.prefs.readingVoice,
+          showCognates,
+        })}
+        <article class="passage" data-reading-passage="${a.id}">
+          ${a.passageTitle ? html`<h3>${a.passageTitle}</h3>` : ""}
+          ${renderPassageSentences(asList(a.passage), { showCognates })}
         </article>`
       : ""
   }
@@ -225,10 +238,24 @@ ${text}</textarea>
     </p>
     <div class="row-actions">
       <button type="button" class="btn btn-primary" data-check-writing>Check my writing</button>
+      <button type="button" class="btn btn-secondary" data-ask-coach>
+        🤖 Ask AI Language Coach
+      </button>
       <button type="button" class="ghost" data-read-writing data-say="${text || "Write something first."}">
         🔊 Read my writing to me
       </button>
     </div>
+    ${
+      coachFeedback
+        ? html`<div class="coach-card panel" role="status">
+            <span class="badge" style="background:#1f766f; color:white">AI Language Coach</span>
+            <h4>Discourse & Complexity Feedback</h4>
+            <p><strong>Complexity:</strong> ${coachFeedback.complexityRating} · ${coachFeedback.words} words across ${coachFeedback.sentenceCount} sentence(s)</p>
+            ${coachFeedback.strengths.length ? html`<div class="coach-strengths"><strong>Strengths:</strong><ul>${coachFeedback.strengths.map((s) => html`<li>✓ ${s}</li>`)}</ul></div>` : ""}
+            ${coachFeedback.recommendations.length ? html`<div class="coach-recs"><strong>Fading Scaffolds (Next Steps):</strong><ul>${coachFeedback.recommendations.map((r) => html`<li><strong>${r.title}:</strong> ${r.prompt}<br><em>Frame: ${r.frame}</em></li>`)}</ul></div>` : ""}
+          </div>`
+        : ""
+    }
     ${
       result
         ? html`<div class="feedback ${result.met >= 3 ? "is-right" : "is-hint"}" role="status">
@@ -247,7 +274,20 @@ ${text}</textarea>
             </div>
             <label class="field"><span>What did you improve, or what did you check?</span><textarea data-reflection rows="2" data-nsr-ignore>${cur.record.reflections[a.id] || ""}</textarea></label>
             <button type="button" class="btn btn-primary" data-finish-writing>Save my reviewed writing</button>
-            <details class="draft-history"><summary>Compare my first and current draft</summary><h3>First draft</h3><p>${cur.record.drafts[a.id]?.first || text}</p><h3>Current draft</h3><p>${text}</p></details>
+            <details class="draft-history"><summary>Compare my first and current draft</summary>
+              <h3>First draft</h3><p>${cur.record.drafts[a.id]?.first || text}</p>
+              <h3>Current draft</h3><p>${text}</p>
+              ${
+                cur.record.drafts[a.id]?.first && cur.record.drafts[a.id]?.first !== text
+                  ? html`<div class="revision-coach-card card">
+                      <h4>📈 Revision Growth Summary</h4>
+                      <ul>
+                        ${compareRevisions(cur.record.drafts[a.id].first, text).changes.map((ch) => html`<li>⭐ ${ch}</li>`)}
+                      </ul>
+                    </div>`
+                  : ""
+              }
+            </details>
             ${a.models && mode === "supported" ? modelLadderHTML(a.models, cur.level, a) : ""}`
         : ""
     }`;
@@ -326,6 +366,7 @@ export async function render(ctx) {
     tries.clear();
     helpUsed.clear();
     validation = "";
+    coachFeedback = null;
   }
   const a = cur.activity;
   mode = requestedMode === "independent" ? "independent" : "supported";
@@ -420,6 +461,63 @@ export function onClick(e, ctx) {
   if (!cur || loading) return;
   const a = cur.activity;
   const t = e.target;
+
+  // Reading Audio Toolbar - Read Passage
+  const readPassage = t.closest("[data-read-passage]");
+  if (readPassage) {
+    const passageKey = readPassage.dataset.readPassage;
+    const sentences = [...document.querySelectorAll(`[data-reading-passage="${CSS.escape(passageKey)}"] .reading-sentence`)];
+    if (sentences.length) {
+      const texts = sentences.map((el) => el.textContent.trim());
+      readPassage.classList.add("is-playing");
+      speak(texts, {
+        rate: ctx.prefs.rate || 0.9,
+        voiceURI: ctx.prefs.readingVoice,
+        onSegment: (idx) => {
+          sentences.forEach((el, i) => {
+            el.classList.toggle("is-active-reading-sentence", i === idx);
+            if (i === idx) el.setAttribute("aria-current", "true");
+            else el.removeAttribute("aria-current");
+          });
+        },
+      }).then(() => {
+        readPassage.classList.remove("is-playing");
+        sentences.forEach((el) => {
+          el.classList.remove("is-active-reading-sentence");
+          el.removeAttribute("aria-current");
+        });
+      });
+      return true;
+    }
+  }
+
+  // Reading - Toggle Spanish Cognates
+  if (t.closest("[data-toggle-cognates]")) {
+    showCognates = !showCognates;
+    announce(showCognates ? "Cognate highlighting active." : "Cognate highlighting off.");
+    ctx.rerender({ keepFocus: true });
+    return true;
+  }
+
+  // Writing - Ask AI Language Coach
+  if (t.closest("[data-ask-coach]")) {
+    const text = cur.record.notes[a.id] || "";
+    if (!wordCount(text)) {
+      validation = "Write your answer or a complete draft first before asking the Language Coach.";
+      ctx.rerender();
+      return true;
+    }
+    validation = "";
+    coachFeedback = analyzeLanguage(text, {
+      prompt: a.prompt,
+      wordBank: wordBank(a),
+      keyUse: a.wida?.[0] || "Explain",
+    });
+    ctx.rerender({ keepFocus: true });
+    announce("AI Language Coach analyzed your draft.");
+    return true;
+  }
+
   const choice = !checked.get(a.id) && choiceTarget(e);
   if (choice) {
     setAnswer(a, reduceAnswer(a, answerOf(cur.record, a.id), choice), ctx);
@@ -532,6 +630,12 @@ export function onChange(e, ctx) {
   if (!cur || loading) return;
   const a = cur.activity;
   const t = e.target;
+  if (t.matches("[data-select-voice]")) {
+    ctx.setPrefs({ readingVoice: t.value });
+    announce("Reading voice updated.");
+    ctx.rerender({ keepFocus: true });
+    return;
+  }
   if (t.matches("[data-mode]")) {
     const url = new URL(location.href); url.searchParams.set("mode", t.value); url.searchParams.set("grades", cur.band);
     ctx.navigate(url.pathname + url.search, { replace: true }); return;
@@ -599,8 +703,20 @@ export function onInput(e) {
 export function mount(root) {
   const owner = cur;
   for (const details of root.querySelectorAll(".helpers, .strategy, .ladder, .transcript, .writing-starters")) {
-    details.addEventListener("toggle", () => { if (details.open && details.isConnected && cur === owner) { helpUsed.add(cur.activity.id); cur.record.supportUsed ||= {}; cur.record.supportUsed[cur.activity.id] = true; save(); } });
+    details.addEventListener("toggle", () => {
+      if (details.open && details.isConnected && cur === owner) {
+        helpUsed.add(cur.activity.id);
+        cur.record.supportUsed ||= {};
+        cur.record.supportUsed[cur.activity.id] = true;
+        save();
+      }
+    });
   }
 }
 
-export function unmount() { renderGeneration++; loading = true; }
+export function unmount() {
+  renderGeneration++;
+  loading = true;
+  coachFeedback = null;
+  stopSpeech();
+}

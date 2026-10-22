@@ -24,8 +24,13 @@ import * as roomView from "./views/room.js";
 import * as testView from "./views/test.js";
 import * as testsView from "./views/tests.js";
 import * as toolsView from "./views/tools.js";
+import * as missionsView from "./views/missions.js";
+import * as conversationView from "./views/conversation.js";
+import * as constructionView from "./views/construction.js";
+import * as evidenceView from "./views/evidence.js";
+import * as growthView from "./views/growth.js";
 
-export const BUILD = "2026.10.04";
+export const BUILD = "2026.10.22";
 const VIEWS = {
   home: homeView,
   library: libraryView,
@@ -38,6 +43,12 @@ const VIEWS = {
   family: familyView,
   passport: passportView,
   tools: toolsView,
+  missions: missionsView,
+  mission: missionsView,
+  conversation: conversationView,
+  construction: constructionView,
+  evidence: evidenceView,
+  growth: growthView,
 };
 const DOMAINS = ["Listening", "Reading", "Speaking", "Writing", "Model-Test"];
 
@@ -52,7 +63,9 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   const [a, b, c, d] = parts;
   if (!a) return r;
   if (a === "test") return { ...r, view: "test", testId: b || "" };
-  if (["tests", "family", "passport", "tools", "library"].includes(a)) return { ...r, view: a };
+  if (["tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth"].includes(a)) {
+    return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
+  }
   if (a === "road") return { ...r, view: "road", week: Number(b) || 0 };
   if (a === "play")
     return {
@@ -234,7 +247,7 @@ async function common(e) {
     return true;
   }
   const say = t.closest("[data-say]");
-  if (say) return (speak(say.dataset.say, { rate: app.prefs.rate }), true);
+  if (say) return (speak(say.dataset.say, { rate: app.prefs.rate, voiceURI: app.prefs.readingVoice }), true);
   const sayEs = t.closest("[data-say-es]");
   if (sayEs) return (speak(sayEs.dataset.sayEs, { lang: "es-US", rate: 0.9 }), true);
   const listen = t.closest("[data-listen]");
@@ -332,13 +345,23 @@ function interceptLink(e) {
   return true;
 }
 
-document.addEventListener("click", (e) => {
+document.addEventListener("click", async (e) => {
   if (interceptLink(e)) return;
   // Views run first and synchronously, so they can preventDefault (answer cards).
   if (app.view?.onClick?.(e, ctx) === true) return;
+  if (app.view?.onMissionEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }
+  if (app.view?.onConversationEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }
+  if (app.view?.onConstructionEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }
+  if (app.view?.onEvidenceEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }
   common(e);
 });
-document.addEventListener("change", (e) => app.view?.onChange?.(e, ctx));
+document.addEventListener("change", (e) => {
+  if (app.view?.onMissionEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }
+  if (app.view?.onConversationEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }
+  if (app.view?.onConstructionEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }
+  if (app.view?.onEvidenceEvent?.(e.target, ctx) === true) { render({ keepFocus: true }); return; }
+  app.view?.onChange?.(e, ctx);
+});
 document.addEventListener("input", (e) => app.view?.onInput?.(e, ctx));
 document.addEventListener("keydown", (e) => app.view?.onKey?.(e, ctx));
 window.addEventListener("popstate", () => render({ scroll: true }));

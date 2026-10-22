@@ -61,6 +61,18 @@ function badges(stats, streak, days) {
       name: "Ten practice days",
       how: "Practice on 10 different days.",
     },
+    {
+      on: total >= 15,
+      icon: "🗺️",
+      name: "Language Navigator",
+      how: "Progress across 15 activities and consult your Language Growth Map.",
+    },
+    {
+      on: stats.find((s) => s.domain === "Reading")?.done >= 5,
+      icon: "🎧",
+      name: "Active Reader",
+      how: "Finish 5 reading activities using audio or evidence annotations.",
+    },
   ];
 }
 
@@ -180,6 +192,7 @@ export async function render(ctx) {
         </ul>
         ${days.length ? html`<p class="fine">Last practice: ${formatDate(days[0], { weekday: "long", month: "long", day: "numeric" })}</p>` : ""}
         <div class="row-actions no-print">
+          <a class="btn btn-secondary" href="${BASE}/growth?grades=${band}">🗺️ View Language Growth Map</a>
           <button type="button" class="btn btn-primary" data-print>🖨️ Print my passport</button>
           <a class="btn" href="${BASE}/passport?grades=${band}&portfolio=1">Review and print my portfolio</a>
         </div>

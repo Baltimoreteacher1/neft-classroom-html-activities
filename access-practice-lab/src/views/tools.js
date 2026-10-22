@@ -92,6 +92,23 @@ export async function render(ctx) {
             >
 ${state.typed}</textarea>`,
         )}
+        ${step(
+          6,
+          "Teacher Hub & Differentiated Instructional Grouping",
+          html`<p>Actionable language development tools for educators. Analyze evidence, plan small-group interventions, and access printable materials.</p>
+            <div class="card teacher-grouping-card">
+              <h3>Targeted Language Interventions</h3>
+              <ul>
+                <li><strong>Group A (Discourse & Cohesion):</strong> Focus on cause-and-effect transitions (<em>because, consequently, therefore</em>) and multi-paragraph structures. Use the <a href="${BASE}/construction">Language Construction Lab</a>.</li>
+                <li><strong>Group B (Evidence & Scientific Claims):</strong> Focus on data interpretation and citing specific textual evidence. Use the <a href="${BASE}/evidence">Evidence Studio</a>.</li>
+                <li><strong>Group C (Oral Fluency & Discourse):</strong> Focus on academic dialogue turn-taking and spoken elaboration. Use the <a href="${BASE}/conversation">Conversation Simulator</a>.</li>
+              </ul>
+              <div class="row-actions">
+                <a class="btn ghost small" href="/access-teacher/">Open Full Teacher Dashboard →</a>
+                <a class="btn ghost small" href="${BASE}/passport?portfolio=1">View Student Practice Portfolios →</a>
+              </div>
+            </div>`,
+        )}
       </ol>
       <div class="row-actions">
         <a class="btn btn-primary" href="${BASE}/tests">I'm ready — go to practice tests →</a>

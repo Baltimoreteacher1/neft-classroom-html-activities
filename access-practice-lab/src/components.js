@@ -1,8 +1,9 @@
 // Shared UI pieces: listening player, speaking recorder, vocabulary drawer,
-// self-checks, tier picker, band switch, progress ring.
+// self-checks, tier picker, band switch, progress ring, reading voice toolbar.
 import { SPEAKING_CHECKS } from "./grade.js";
 import { canRecord, takesFor } from "./recorder.js";
-import { canSpeak } from "./speech.js";
+import { canSpeak, getVoiceOptions } from "./speech.js";
+import { findCognatesInText } from "./multilingual.js";
 import { BASE, DOMAIN_META, LEVEL_KEYS, TIERS, asList, bandLabel, html, raw } from "./util.js";
 
 const IGN = raw("data-nsr-ignore");
@@ -50,6 +51,94 @@ export function listenPlayerHTML(
       </button>
     </div>
   </div>`;
+}
+
+/** Reading audio companion bar with voice selection, speed toggle, and cognate lens. */
+export function readingToolbarHTML(
+  passageKey,
+  segments,
+  { rate = 0.9, voiceURI = "", showCognates = false } = {},
+) {
+  scripts.set(passageKey, asList(segments));
+  if (!canSpeak()) return "";
+  const voices = getVoiceOptions("en");
+
+  return html`<div class="reading-toolbar" data-reading-toolbar="${passageKey}">
+    <div class="reading-toolbar-controls">
+      <button type="button" class="btn btn-secondary reading-play-btn" data-read-passage="${passageKey}">
+        <span class="play-icon" aria-hidden="true">🎧</span>
+        <span class="play-label">Read Passage Aloud</span>
+      </button>
+      <button type="button" class="ghost small reading-stop-btn" data-stop-audio>
+        ■ Stop
+      </button>
+
+      <label class="voice-picker-label">
+        <span class="visually-hidden">Choose Reading Voice</span>
+        <select class="voice-select" data-select-voice aria-label="Reading voice">
+          ${voices.map(
+            (v) =>
+              html`<option value="${v.id}" ${voiceURI === v.id ? raw("selected") : ""}>
+                🎙️ ${v.name}
+              </option>`,
+          )}
+        </select>
+      </label>
+
+      <div class="speed" role="group" aria-label="Reading speed">
+        <button type="button" class="speed-btn" data-rate="0.75" aria-pressed="${rate <= 0.78}">
+          🐢 0.75x
+        </button>
+        <button type="button" class="speed-btn" data-rate="0.9" aria-pressed="${rate > 0.78 && rate <= 0.95}">
+          0.9x
+        </button>
+        <button type="button" class="speed-btn" data-rate="1.0" aria-pressed="${rate > 0.95}">
+          1.0x
+        </button>
+      </div>
+
+      <button
+        type="button"
+        class="cognate-toggle-btn ${showCognates ? "is-active" : ""}"
+        data-toggle-cognates
+        aria-pressed="${showCognates}"
+      >
+        🔍 Spanish Cognates
+      </button>
+    </div>
+    <p class="fine reading-helper-note">
+      Tip: Click or tap any sentence in the text below to hear just that sentence read aloud in your chosen voice.
+    </p>
+  </div>`;
+}
+
+/** Render reading passage with interactive sentence spans for voice playback and cognate exploration. */
+export function renderPassageSentences(paragraphs, { showCognates = false } = {}) {
+  const paras = asList(paragraphs);
+  let globalSentIdx = 0;
+
+  return paras.map((para) => {
+    // Split paragraph into sentences preserving ending punctuation
+    const sentences = String(para || "")
+      .split(/(?<=[.?!])\s+/)
+      .filter((s) => s.trim().length > 0);
+
+    return html`<p>
+      ${sentences.map((sentence) => {
+        const sIdx = globalSentIdx++;
+        const cognates = showCognates ? findCognatesInText(sentence) : [];
+
+        return html`<span
+          class="reading-sentence ${cognates.length ? "has-cognates" : ""}"
+          data-say="${sentence}"
+          data-sent-idx="${sIdx}"
+          tabindex="0"
+          role="button"
+          aria-label="Click to hear: ${sentence}"
+        >${sentence} </span>`;
+      })}
+    </p>`;
+  });
 }
 
 export function transcriptHTML(key, segments, { title = "What you heard" } = {}) {
@@ -158,14 +247,14 @@ export function vocabHTML(activity, shared, { focused = true } = {}) {
   const frames = focused || activity.type === "constructed" ? activity.frames || [] : [];
   const focus = focused ? activity.listenFor || activity.readFor || activity.sayFor || activity.writeFor || [] : [];
   if (!terms.length && !frames.length && !focus.length) return "";
-  return html`<details class="helpers">
-    <summary>💡 Help: words &amp; sentence starters <span lang="es">· Ayuda</span></summary>
-    <div class="helpers-body">
+  return html`<details class="helpers" ${focused ? raw("open") : ""}>
+    <summary>💡 Helpful words and starters</summary>
+    <div class="helper-body">
       ${
         focus.length
           ? html`<section>
-              <h2 class="helper-title">A focused clue after your attempt</h2>
-              <ul class="chips">
+              <h2 class="helper-title">What to listen or look for</h2>
+              <ul>
                 ${focus.map((f) => html`<li>${f}</li>`)}
               </ul>
             </section>`
@@ -174,13 +263,9 @@ export function vocabHTML(activity, shared, { focused = true } = {}) {
       ${
         terms.length
           ? html`<section>
-              <h2 class="helper-title">Vocabulary support</h2>
+              <h2 class="helper-title">Academic words</h2>
               <dl class="vocab">
-                ${terms.map(([en, def, es]) => {
-                  const spanish = String(es || "").replace(
-                    /^\s*(spanish|español|espanol)\s*:\s*/i,
-                    "",
-                  );
+                ${terms.map(([en, def, spanish]) => {
                   return html`<div>
                     <dt>
                       <button

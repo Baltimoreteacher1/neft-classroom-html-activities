@@ -169,6 +169,26 @@ export async function render(ctx) {
       }
 
       <section class="door-grid" aria-label="More">
+        <a class="door" href="${BASE}/missions?grades=${band}"
+          ><span aria-hidden="true">🚀</span><strong>Academic missions</strong
+          ><span>Story-driven cross-domain investigations: Watershed, Newsroom, Space Colony.</span></a
+        >
+        <a class="door" href="${BASE}/construction?grades=${band}"
+          ><span aria-hidden="true">🧱</span><strong>Language Construction Lab</strong
+          ><span>Sentence expansion workbench and academic register transformer.</span></a
+        >
+        <a class="door" href="${BASE}/conversation?grades=${band}"
+          ><span aria-hidden="true">💬</span><strong>Conversation Simulator</strong
+          ><span>Realistic academic dialogue, oral rehearsal, and peer discussion.</span></a
+        >
+        <a class="door" href="${BASE}/evidence?grades=${band}"
+          ><span aria-hidden="true">📊</span><strong>Evidence Studio</strong
+          ><span>Transform scientific charts and data into academic explanations.</span></a
+        >
+        <a class="door" href="${BASE}/growth?grades=${band}"
+          ><span aria-hidden="true">🗺️</span><strong>Language Growth Map</strong
+          ><span>Evidence-based WIDA dimensions: Discourse, Sentence, and Word levels.</span></a
+        >
         <a class="door" href="${BASE}/tests?grades=${band}"
           ><span aria-hidden="true">🧪</span><strong>Practice tests</strong
           ><span>Full tests and short minis, with practice tools.</span></a
