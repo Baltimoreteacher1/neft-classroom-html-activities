@@ -96,7 +96,7 @@ export function analyze(text) {
   };
 }
 
-const cleanEntry = (entry) => {
+const cleanEntry = (entry, index = 0) => {
   if (!entry || typeof entry !== "object") return null;
   const text = String(entry.text || "")
     .replace(/\s+/g, " ")
@@ -106,7 +106,7 @@ const cleanEntry = (entry) => {
   const read = analyze(text);
   const at = Number.isFinite(entry.at) ? Math.floor(entry.at) : 0;
   return {
-    id: typeof entry.id === "string" && /^[\w-]{1,40}$/.test(entry.id) ? entry.id : `e${at}`,
+    id: typeof entry.id === "string" && /^[\w-]{1,40}$/.test(entry.id) ? entry.id : `e${at}-${index}`,
     at,
     day: /^\d{4}-\d{2}-\d{2}$/.test(String(entry.day)) ? entry.day : "",
     grade: Number.isInteger(entry.grade) && entry.grade >= 1 && entry.grade <= 8 ? entry.grade : 0,
@@ -159,13 +159,16 @@ export function summarize(entries) {
 // The "Academic Language" figure on the progress card is evidence, not a starting score. It stays empty until the
 // journal holds MIN_ENTRIES entries. Then it blends how many of the four moves the last 20 entries carried (70%),
 // how many different math words they used (20%), and word lookups (10%). An entry earns credit for its moves only
-// when the learner added OWN_WORDS or more words beyond the sentence frame and chips.
+// when the learner added OWN_WORDS or more words beyond the sentence frame and chips, and the moves part is
+// scaled by min(1, entries / 5) so a few entries cannot reach the top band.
 export function languageEvidence(entries, lookups = 0) {
   const recent = cleanJournal(entries).slice(0, 20);
   if (recent.length < MIN_ENTRIES) return null;
   // Only entries with real added words earn credit for the four moves.
   const earned = (entry) => (entry.own >= OWN_WORDS ? Object.values(entry.moves).filter(Boolean).length : 0);
-  const moves = recent.reduce((sum, entry) => sum + earned(entry), 0) / (recent.length * 4);
+  // A short journal cannot reach the top band: the moves count in full only once five entries are in.
+  const moves =
+    (Math.min(1, recent.length / 5) * recent.reduce((sum, entry) => sum + earned(entry), 0)) / (recent.length * 4);
   const credited = recent.filter((entry) => entry.own >= OWN_WORDS);
   const variety = Math.min(1, summarize(credited).wordsUsed / 12);
   const looked = Math.min(1, lookups / 10);

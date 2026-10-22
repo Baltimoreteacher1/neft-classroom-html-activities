@@ -218,6 +218,11 @@ ok(
 );
 ok(journal.languageEvidence(Array(40).fill(strong), 99) <= 100, "score is capped");
 ok(
+  journal.languageEvidence([strong, strong, strong], 0) <
+    journal.languageEvidence([strong, strong, strong, strong, strong], 0),
+  "a short journal cannot reach the top band",
+);
+ok(
   terms.termsInText("What does it mean? The base of the cake, a factory, the total number")
     .length === 0,
   "everyday words are not math words",
@@ -254,6 +259,12 @@ const dirty = journal.cleanJournal([
   },
 ]);
 ok(dirty.length === 2, "blank-filled and junk entries dropped");
+const idless = journal.cleanJournal([
+  { text: "one two three", at: 7 },
+  { text: "four five six", at: 7, id: 42 },
+  { text: "seven eight nine", at: 7, id: undefined },
+]);
+ok(new Set(idless.map((entry) => entry.id)).size === 3, "entries without an id get unique ids");
 ok(
   dirty[0].text.length === 400 &&
     dirty[0].fn === "explain" &&
@@ -352,6 +363,21 @@ const html = (level, extra = {}) => {
 };
 const level1 = html(1);
 const level4 = html(4);
+for (const count of [0, 1, 2, 3, 4, 7]) {
+  const starter = html(1, { count });
+  ok(
+    !starter.includes('data-lang-fn="compare"') &&
+      /data-lang-fn="(explain|notice|check)"\s+aria-pressed="true"/.test(starter),
+    `Starter never lands on a move it does not offer (count ${count})`,
+  );
+}
+ok(level1.includes('aria-live="off"'), "the explain card is not read aloud as a whole");
+settings.setLevel(1);
+const support = card.problemSupportHtml(skill, { q: "x", kind: "number" });
+ok(
+  !/lang-words"[^>]*\sopen/.test(support) && support.includes("data-lang-hint"),
+  "practice-time word strip starts closed and counts as help when opened",
+);
 ok(
   level1.includes('data-lang-level="1"') && level1.includes('aria-pressed="true"'),
   "level buttons render",
@@ -432,6 +458,25 @@ const fakeCard = {
   querySelector: () => ({ value: "x" }),
 };
 ok(card.captureDraft({ querySelector: () => fakeCard }) === null, "no draft for an unknown card");
+
+settings.setLanguageProfile(2);
+store.set(
+  "ewl-language-journal-v1:profile-2",
+  JSON.stringify(
+    Array.from({ length: 30 }, (_, n) => ({
+      text: `entry number ${n} here`,
+      at: n + 1,
+      id: `x${n}`,
+    })),
+  ),
+);
+const journalScreen = card.journalHtml();
+ok(
+  (journalScreen.match(/class="lang-entry"/g) || []).length === 30 &&
+    journalScreen.includes('class="lang-entries lang-entries-scroll" tabindex="0"'),
+  "the journal shows every entry in a keyboard-reachable scroll list",
+);
+settings.setLanguageProfile(0);
 
 // 9. The teacher's printable language pack: one page per skill plus a teacher page, bilingual, no digits from problems.
 const everyKey = ALL_SKILLS.map((entry) => `${entry.grade}:${entry.id}`);

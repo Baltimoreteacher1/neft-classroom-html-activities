@@ -8,7 +8,7 @@ export const ES_LANGUAGE = {
   "Hear {word} in English": "Escuchar {word} en inglés",
   "Hear {word} in Spanish": "Escuchar {word} en español",
   "This browser could not save. Your words are still here.": "Este navegador no pudo guardar. Tus palabras siguen aquí.",
-  "Show older entries ({n})": "Ver entradas anteriores ({n})",
+  "Saved explanations": "Explicaciones guardadas",
   "Words to know": "Palabras que debes conocer",
   "Words for this problem": "Palabras para este problema",
   "These words look alike in English and Spanish.":

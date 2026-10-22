@@ -74,7 +74,7 @@ export function wordStripHtml(
       <div class="lang-term-actions"><button type="button" class="lang-mini" data-lang-term="${term.id}" data-lang-voice="en" aria-label="${esc(t("Hear {word} in English", { word: term.en }))}">🔊 English</button><button type="button" class="lang-mini" data-lang-term="${term.id}" data-lang-voice="es" aria-label="${esc(t("Hear {word} in Spanish", { word: term.es }))}">🔊 Español</button></div></li>`,
     )
     .join("");
-  return `<details class="lang-words"${open ? " open" : ""}><summary>${esc(heading)}</summary><ul class="lang-term-list">${cards}</ul></details>`;
+  return `<details class="lang-words"${practice ? " data-lang-hint" : ""}${open ? " open" : ""}><summary>${esc(heading)}</summary><ul class="lang-term-list">${cards}</ul></details>`;
 }
 
 // The Spanish peek for a problem: the English stays the learner's practice; this is a bridge, never the question.
@@ -87,9 +87,10 @@ export function spanishPeekHtml(item) {
     <button type="button" class="lang-mini" data-lang-speak-es="${esc(text)}">🔊 Escuchar</button></details>`;
 }
 
-// During practice the words stay closed (the problem comes first) unless the learner chose Starter.
+// During practice the words stay closed (the problem comes first). Opening the strip before the first answer
+// counts as help (app.js reads [data-lang-hint]), so opening is always a deliberate act.
 export const problemSupportHtml = (skill, item) =>
-  `${spanishPeekHtml(item)}${wordStripHtml(skill, { open: getLevel() === 1, practice: true })}`;
+  `${spanishPeekHtml(item)}${wordStripHtml(skill, { open: false, practice: true })}`;
 
 const checklistHtml = (read, level) =>
   `<ul class="lang-checklist" data-lang-checklist aria-label="${esc(t("Ideas in your writing"))}">${Object.entries(
@@ -207,7 +208,7 @@ export function explainCardHtml({
   registry.set(id, ctx);
   if (registry.size > 40) registry.delete(registry.keys().next().value);
   const title = correct ? t("Say how you know") : t("Talk about the slip");
-  return `<details class="lang-card" data-lang-card="${id}" data-lang-item="${esc(itemKey)}"${opens ? " open" : ""}><summary><span aria-hidden="true">🗣️</span> ${esc(title)} <span class="lang-pill">${esc(t(levelById(getLevel()).name))}</span></summary><div data-lang-host>${cardInner(ctx)}</div></details>`;
+  return `<details class="lang-card" aria-live="off" data-lang-card="${id}" data-lang-item="${esc(itemKey)}"${opens ? " open" : ""}><summary><span aria-hidden="true">🗣️</span> ${esc(title)} <span class="lang-pill">${esc(t(levelById(getLevel()).name))}</span></summary><div data-lang-host>${cardInner(ctx)}</div></details>`;
 }
 
 const updateChecklist = (card) => {
@@ -436,12 +437,11 @@ export function journalHtml() {
     .join("");
   const row = (entry) =>
     `<li class="lang-entry"><p>${esc(entry.text)}</p><small>${esc(entry.day || "")} · ${esc(t(MOVE_FN[entry.fn] || "Explain"))}</small><button type="button" class="lang-mini" data-lang-delete="${esc(entry.id)}" aria-label="${esc(t("Delete this entry"))}">✕</button></li>`;
-  const older = entries.slice(12);
-  const rows = `${entries.slice(0, 12).map(row).join("")}${older.length ? `<li><details><summary>${esc(t("Show older entries ({n})", { n: older.length }))}</summary><ul class="lang-entries">${older.map(row).join("")}</ul></details></li>` : ""}`;
+  const rows = entries.map(row).join("");
   return `<section class="lang-journal" aria-labelledby="lang-journal-title"><h3 id="lang-journal-title">${esc(t("My math talk"))}</h3>
     <p class="lang-note">${esc(t("Your explanations stay on this device. Counts show what your writing already does."))}</p>
     <div class="lang-row" role="group" aria-label="${esc(t("Talk & write help"))}"><span class="lang-label">${esc(t("Talk & write help"))}</span>${LEVELS.map((entry) => `<button type="button" class="lang-tab" data-lang-set-level="${entry.id}" aria-pressed="${entry.id === getLevel()}">${esc(t(entry.name))}</button>`).join("")}</div>
-    ${entries.length ? `<div class="lang-stats"><div><strong>${sum.total}</strong><span>${esc(t("explanations saved"))}</span></div><div><strong>${sum.wordsUsed}</strong><span>${esc(t("different math words"))}</span></div>${stats}</div><ul class="lang-entries">${rows}</ul><button type="button" class="outline-action" data-lang-print-journal>${esc(t("Print my math journal"))}</button>` : `<p>${esc(t("Nothing saved yet. After a problem, open “Say how you know”."))}</p>`}</section>`;
+    ${entries.length ? `<div class="lang-stats"><div><strong>${sum.total}</strong><span>${esc(t("explanations saved"))}</span></div><div><strong>${sum.wordsUsed}</strong><span>${esc(t("different math words"))}</span></div>${stats}</div><ul class="lang-entries lang-entries-scroll" tabindex="0" aria-label="${esc(t("Saved explanations"))}">${rows}</ul><button type="button" class="outline-action" data-lang-print-journal>${esc(t("Print my math journal"))}</button>` : `<p>${esc(t("Nothing saved yet. After a problem, open “Say how you know”."))}</p>`}</section>`;
 }
 
 export const MOVE_FN = {
