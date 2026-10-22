@@ -48,6 +48,55 @@ body.show-es .wp-target .t-es { display: block; }
   .tab-panel { display: block !important; }
   .wp-card { break-inside: avoid; }
 }
+/* Problem Workspace (assets/workspace/problem-workspace.js): pad, notes and optional guide under a practice problem. */
+.fw > summary { min-height: 44px; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.fw-title { flex: 1 1 auto; }
+.fw-saved { font-size: 13px; font-weight: 800; }
+.fw-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 8px; }
+.fw-pens { display: inline-flex; gap: 4px; }
+.fw-btn { font-family: var(--font-display, inherit); font-size: 14px; font-weight: 700; min-height: 44px; min-width: 44px; padding: 6px 12px; background: #fff; color: var(--navy, #15487f); border: 1.5px solid var(--line, #cbd5e1); border-radius: 10px; cursor: pointer; }
+.fw-btn:hover { border-color: var(--teal, #0284c7); }
+.fw-btn:focus-visible, .fw-select:focus-visible { outline: 3px solid var(--teal, #0284c7); outline-offset: 2px; }
+.fw-btn[aria-pressed="true"], .fw-btn.is-on { border-color: var(--navy, #15487f); box-shadow: inset 0 0 0 2px var(--navy, #15487f); }
+.fw-pen { padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+.fw-dot { width: 22px; height: 22px; border-radius: 50%; background: var(--pen); display: block; }
+.fw-backdrop { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--navy, #15487f); }
+.fw-select { font: inherit; font-size: 14px; min-height: 44px; border: 1.5px solid var(--line, #cbd5e1); border-radius: 10px; padding: 4px 8px; background: #fff; color: inherit; max-width: 100%; }
+.fw-stage { position: relative; aspect-ratio: 2 / 1; min-height: 170px; padding: 0; overflow: hidden; background: #fff; }
+.fw-stage.is-big { aspect-ratio: 4 / 3; min-height: 320px; }
+.fw-model { position: absolute; inset: 0; }
+.fw-model > svg { width: 100%; height: 100%; max-height: none; }
+.fw-canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+.fw-stage:not([data-fw-bg="model"]) .fw-model { display: none; }
+.fw-stage[data-fw-bg="grid"] { background-color: #fff; background-image: linear-gradient(rgba(150,170,190,.55) 1px, transparent 1px), linear-gradient(90deg, rgba(150,170,190,.55) 1px, transparent 1px); background-size: 24px 24px; }
+.fw-stage[data-fw-bg="dots"] { background: #fff radial-gradient(circle, rgba(18,53,91,.45) 1.5px, transparent 2px) 0 0 / 24px 24px; }
+.fw-stage[data-fw-bg="stamp"][data-fw-stamp="doubleline"] { background: #fff url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20400%20100'%20preserveAspectRatio%3D'none'%3E%3Cline%20x1%3D'10'%20y1%3D'32'%20x2%3D'390'%20y2%3D'32'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2.5'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'10'%20y1%3D'72'%20x2%3D'390'%20y2%3D'72'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2.5'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'20'%20y1%3D'24'%20x2%3D'20'%20y2%3D'40'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'20'%20y1%3D'64'%20x2%3D'20'%20y2%3D'80'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'56'%20y1%3D'24'%20x2%3D'56'%20y2%3D'40'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'56'%20y1%3D'64'%20x2%3D'56'%20y2%3D'80'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'92'%20y1%3D'24'%20x2%3D'92'%20y2%3D'40'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'92'%20y1%3D'64'%20x2%3D'92'%20y2%3D'80'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'128'%20y1%3D'24'%20x2%3D'128'%20y2%3D'40'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'128'%20y1%3D'64'%20x2%3D'128'%20y2%3D'80'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'164'%20y1%3D'24'%20x2%3D'164'%20y2%3D'40'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'164'%20y1%3D'64'%20x2%3D'164'%20y2%3D'80'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'200'%20y1%3D'24'%20x2%3D'200'%20y2%3D'40'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'200'%20y1%3D'64'%20x2%3D'200'%20y2%3D'80'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'236'%20y1%3D'24'%20x2%3D'236'%20y2%3D'40'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'236'%20y1%3D'64'%20x2%3D'236'%20y2%3D'80'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'272'%20y1%3D'24'%20x2%3D'272'%20y2%3D'40'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'272'%20y1%3D'64'%20x2%3D'272'%20y2%3D'80'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'308'%20y1%3D'24'%20x2%3D'308'%20y2%3D'40'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'308'%20y1%3D'64'%20x2%3D'308'%20y2%3D'80'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'344'%20y1%3D'24'%20x2%3D'344'%20y2%3D'40'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'344'%20y1%3D'64'%20x2%3D'344'%20y2%3D'80'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'380'%20y1%3D'24'%20x2%3D'380'%20y2%3D'40'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'380'%20y1%3D'64'%20x2%3D'380'%20y2%3D'80'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3C%2Fsvg%3E") center / 100% 100% no-repeat; }
+.fw-stage[data-fw-bg="stamp"][data-fw-stamp="percent"] { background: #fff url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%20preserveAspectRatio%3D'xMidYMid%20meet'%3E%3Cline%20x1%3D'0'%20y1%3D'0'%20x2%3D'0'%20y2%3D'100'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2.5'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'0'%20x2%3D'100'%20y2%3D'0'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2.5'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'10'%20y1%3D'0'%20x2%3D'10'%20y2%3D'100'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'10'%20x2%3D'100'%20y2%3D'10'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'20'%20y1%3D'0'%20x2%3D'20'%20y2%3D'100'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'20'%20x2%3D'100'%20y2%3D'20'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'30'%20y1%3D'0'%20x2%3D'30'%20y2%3D'100'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'30'%20x2%3D'100'%20y2%3D'30'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'40'%20y1%3D'0'%20x2%3D'40'%20y2%3D'100'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'40'%20x2%3D'100'%20y2%3D'40'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'50'%20y1%3D'0'%20x2%3D'50'%20y2%3D'100'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'50'%20x2%3D'100'%20y2%3D'50'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'60'%20y1%3D'0'%20x2%3D'60'%20y2%3D'100'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'60'%20x2%3D'100'%20y2%3D'60'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'70'%20y1%3D'0'%20x2%3D'70'%20y2%3D'100'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'70'%20x2%3D'100'%20y2%3D'70'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'80'%20y1%3D'0'%20x2%3D'80'%20y2%3D'100'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'80'%20x2%3D'100'%20y2%3D'80'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'90'%20y1%3D'0'%20x2%3D'90'%20y2%3D'100'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'90'%20x2%3D'100'%20y2%3D'90'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'100'%20y1%3D'0'%20x2%3D'100'%20y2%3D'100'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2.5'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'100'%20x2%3D'100'%20y2%3D'100'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2.5'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3C%2Fsvg%3E") center / contain no-repeat; }
+.fw-stage[data-fw-bg="stamp"][data-fw-stamp="plane"] { background: #fff url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20200%20200'%20preserveAspectRatio%3D'xMidYMid%20meet'%3E%3Cline%20x1%3D'0'%20y1%3D'0'%20x2%3D'0'%20y2%3D'200'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'0'%20x2%3D'200'%20y2%3D'0'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'20'%20y1%3D'0'%20x2%3D'20'%20y2%3D'200'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'20'%20x2%3D'200'%20y2%3D'20'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'40'%20y1%3D'0'%20x2%3D'40'%20y2%3D'200'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'40'%20x2%3D'200'%20y2%3D'40'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'60'%20y1%3D'0'%20x2%3D'60'%20y2%3D'200'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'60'%20x2%3D'200'%20y2%3D'60'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'80'%20y1%3D'0'%20x2%3D'80'%20y2%3D'200'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'80'%20x2%3D'200'%20y2%3D'80'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'120'%20y1%3D'0'%20x2%3D'120'%20y2%3D'200'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'120'%20x2%3D'200'%20y2%3D'120'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'140'%20y1%3D'0'%20x2%3D'140'%20y2%3D'200'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'140'%20x2%3D'200'%20y2%3D'140'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'160'%20y1%3D'0'%20x2%3D'160'%20y2%3D'200'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'160'%20x2%3D'200'%20y2%3D'160'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'180'%20y1%3D'0'%20x2%3D'180'%20y2%3D'200'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'180'%20x2%3D'200'%20y2%3D'180'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'200'%20y1%3D'0'%20x2%3D'200'%20y2%3D'200'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'200'%20x2%3D'200'%20y2%3D'200'%20stroke%3D'rgb(150%2C170%2C190)'%20stroke-width%3D'1'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'100'%20y1%3D'0'%20x2%3D'100'%20y2%3D'200'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2.5'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3Cline%20x1%3D'0'%20y1%3D'100'%20x2%3D'200'%20y2%3D'100'%20stroke%3D'rgb(18%2C53%2C91)'%20stroke-width%3D'2.5'%20vector-effect%3D'non-scaling-stroke'%2F%3E%3C%2Fsvg%3E") center / contain no-repeat; }
+.fw-guide { margin: 10px 0 0; border: 1.5px dashed var(--teal, #0284c7); border-radius: 12px; background: var(--teal-light, #e0f2fe); }
+.fw-guide > summary { min-height: 44px; display: flex; align-items: center; padding: 6px 12px; font-weight: 800; font-size: 14px; color: var(--navy, #15487f); cursor: pointer; }
+.fw-guide-body { padding: 0 12px 12px; font-size: 14px; line-height: 1.5; }
+.fw-tip { margin: 0 0 8px; }
+.fw-steps { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 8px; }
+.fw-step { display: grid; gap: 4px; }
+.fw-add { text-align: left; font-weight: 600; }
+.fw-add em { font-style: normal; font-weight: 800; }
+@media print { .fw-tools, .fw-guide, .fw-saved { display: none !important; } .fw-stage { border-color: #888; } }
+@media (prefers-reduced-motion: no-preference) { .fw-btn { transition: border-color .15s ease; } }
+/* Standalone hosts (the Practice Studios) do not carry the homework page's workspace rules. */
+.fw { margin: 12px 0 4px; border: 1.5px dashed var(--line, #9bb6cf); border-radius: 12px; padding: 4px 10px 10px; background: transparent; }
+.fw > summary { cursor: pointer; font-weight: 800; font-size: 14px; }
+.fw .hw-workspace { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin: 10px 0 4px; }
+@media (min-width: 640px) { .fw .hw-workspace { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; } }
+.fw .hw-visual-caption, .fw .hw-work-label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+.fw .hw-work-input { width: 100%; min-height: 110px; resize: vertical; line-height: 28px; font: inherit; font-size: 16px; color: #0f2b4c; background-color: #fbfdff; background-image: repeating-linear-gradient(#fbfdff 0, #fbfdff 27px, #d6e2ee 27px, #d6e2ee 28px); border: 1.5px solid #9bb6cf; border-radius: 10px; padding: 4px 10px; box-sizing: border-box; }
+.fw .fw-stage { border: 1.5px solid #9bb6cf; border-radius: 12px; }
+.fw .fw-guide, .fw .fw-guide * { color: #0f2b4c; }
+.fw .fw-guide { background: #e0f2fe; }
+.fw .fw-guide .fw-btn { background: #fff; }
+.fw-saved { color: #0369a1; }
+.fw .fw-backdrop { color: inherit; }
+.fw .fw-btn { color: #12355b; }
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -166,6 +215,25 @@ body.show-es .wp-target .t-es { display: block; }
   <div class="wp-hint-text" hidden>40% means 40 out of every 100. Change 40% to a decimal, then multiply by 300.<div class="es-text" lang="es">40% significa 40 de cada 100. Cambia 40% a decimal y luego multiplica por 300.</div></div>
   <div class="wp-steps-box" hidden></div>
   <div class="feedback-box" role="status" aria-live="polite"></div>
+  
+      <details class="fw" data-fw="find-1" data-fw-lazy data-fw-dialect="studio" data-fw-model="0" data-fw-stamp-key="percent" data-fw-stamp-en="100 grid" data-fw-stamp-es="Cuadrícula de 100" data-fw-tip-en="Draw a bar for the whole. Split it into 10 equal parts. Shade the parts the percent asks for." data-fw-tip-es="Dibuja una barra para el total. Pártela en 10 partes iguales. Sombrea las partes que pide el porcentaje." open>
+        <summary><span class="fw-title">✏️ Workspace: draw, type, or get a guided start<span class="es-text" lang="es"> ✏️ Espacio de trabajo: dibuja, escribe o empieza con guía</span></span> <span class="fw-saved" hidden>● saved<span class="es-text" lang="es"> ● guardado</span></span></summary>
+      <div class="hw-workspace fw-body">
+        <div class="hw-visual fw-draw">
+          <div class="hw-visual-caption">✏️ Draw or write your work here:<span class="es-text" lang="es"> ✏️ Dibuja o escribe tu trabajo aquí:</span></div>
+          
+        <div class="hw-visual-frame fw-stage" data-fw-bg="grid" data-fw-stamp="percent">
+          
+          <canvas class="fw-canvas" role="img" aria-label="Drawing area. Draw with a finger, stylus or mouse. The notes box works with a keyboard. / Área de dibujo. Dibuja con el dedo, un lápiz óptico o el ratón. La caja de notas funciona con teclado."></canvas>
+        </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_find-1">📝 Show your work<span class="es-text" lang="es"> 📝 Muestra tu trabajo</span></label>
+          <textarea id="work_find-1" name="work_find-1" class="custom-textarea hw-work-input fw-notes" rows="5" placeholder="Step 1...  Step 2...  Step 3..." data-fw-persist></textarea>
+        </div>
+      </div>
+      
+      </details>
 </article>
 <article class="stage-card wp-card" id="wp-find-2" data-id="find-2">
   <div class="wp-card-head">
@@ -188,6 +256,25 @@ body.show-es .wp-target .t-es { display: block; }
   <div class="wp-hint-text" hidden>25% is the same as one fourth. You can divide 64 by 4, or multiply 0.25 × 64.<div class="es-text" lang="es">25% es lo mismo que un cuarto. Puedes dividir 64 entre 4 o multiplicar 0.25 × 64.</div></div>
   <div class="wp-steps-box" hidden></div>
   <div class="feedback-box" role="status" aria-live="polite"></div>
+  
+      <details class="fw" data-fw="find-2" data-fw-lazy data-fw-dialect="studio" data-fw-model="0" data-fw-stamp-key="percent" data-fw-stamp-en="100 grid" data-fw-stamp-es="Cuadrícula de 100" data-fw-tip-en="Draw a bar for the whole. Split it into 10 equal parts. Shade the parts the percent asks for." data-fw-tip-es="Dibuja una barra para el total. Pártela en 10 partes iguales. Sombrea las partes que pide el porcentaje." open>
+        <summary><span class="fw-title">✏️ Workspace: draw, type, or get a guided start<span class="es-text" lang="es"> ✏️ Espacio de trabajo: dibuja, escribe o empieza con guía</span></span> <span class="fw-saved" hidden>● saved<span class="es-text" lang="es"> ● guardado</span></span></summary>
+      <div class="hw-workspace fw-body">
+        <div class="hw-visual fw-draw">
+          <div class="hw-visual-caption">✏️ Draw or write your work here:<span class="es-text" lang="es"> ✏️ Dibuja o escribe tu trabajo aquí:</span></div>
+          
+        <div class="hw-visual-frame fw-stage" data-fw-bg="grid" data-fw-stamp="percent">
+          
+          <canvas class="fw-canvas" role="img" aria-label="Drawing area. Draw with a finger, stylus or mouse. The notes box works with a keyboard. / Área de dibujo. Dibuja con el dedo, un lápiz óptico o el ratón. La caja de notas funciona con teclado."></canvas>
+        </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_find-2">📝 Show your work<span class="es-text" lang="es"> 📝 Muestra tu trabajo</span></label>
+          <textarea id="work_find-2" name="work_find-2" class="custom-textarea hw-work-input fw-notes" rows="5" placeholder="Step 1...  Step 2...  Step 3..." data-fw-persist></textarea>
+        </div>
+      </div>
+      
+      </details>
 </article>
 <article class="stage-card wp-card" id="wp-find-3" data-id="find-3">
   <div class="wp-card-head">
@@ -210,6 +297,25 @@ body.show-es .wp-target .t-es { display: block; }
   <div class="wp-hint-text" hidden>10% of 150 is 15. Then 20% is double that. Or multiply 0.20 × 150.<div class="es-text" lang="es">El 10% de 150 es 15. El 20% es el doble. O multiplica 0.20 × 150.</div></div>
   <div class="wp-steps-box" hidden></div>
   <div class="feedback-box" role="status" aria-live="polite"></div>
+  
+      <details class="fw" data-fw="find-3" data-fw-lazy data-fw-dialect="studio" data-fw-model="0" data-fw-stamp-key="percent" data-fw-stamp-en="100 grid" data-fw-stamp-es="Cuadrícula de 100" data-fw-tip-en="Draw a bar for the whole. Split it into 10 equal parts. Shade the parts the percent asks for." data-fw-tip-es="Dibuja una barra para el total. Pártela en 10 partes iguales. Sombrea las partes que pide el porcentaje." open>
+        <summary><span class="fw-title">✏️ Workspace: draw, type, or get a guided start<span class="es-text" lang="es"> ✏️ Espacio de trabajo: dibuja, escribe o empieza con guía</span></span> <span class="fw-saved" hidden>● saved<span class="es-text" lang="es"> ● guardado</span></span></summary>
+      <div class="hw-workspace fw-body">
+        <div class="hw-visual fw-draw">
+          <div class="hw-visual-caption">✏️ Draw or write your work here:<span class="es-text" lang="es"> ✏️ Dibuja o escribe tu trabajo aquí:</span></div>
+          
+        <div class="hw-visual-frame fw-stage" data-fw-bg="grid" data-fw-stamp="percent">
+          
+          <canvas class="fw-canvas" role="img" aria-label="Drawing area. Draw with a finger, stylus or mouse. The notes box works with a keyboard. / Área de dibujo. Dibuja con el dedo, un lápiz óptico o el ratón. La caja de notas funciona con teclado."></canvas>
+        </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_find-3">📝 Show your work<span class="es-text" lang="es"> 📝 Muestra tu trabajo</span></label>
+          <textarea id="work_find-3" name="work_find-3" class="custom-textarea hw-work-input fw-notes" rows="5" placeholder="Step 1...  Step 2...  Step 3..." data-fw-persist></textarea>
+        </div>
+      </div>
+      
+      </details>
 </article>
 <article class="stage-card wp-card" id="wp-find-4" data-id="find-4">
   <div class="wp-card-head">
@@ -232,6 +338,25 @@ body.show-es .wp-target .t-es { display: block; }
   <div class="wp-hint-text" hidden>Change 35% to 0.35. Multiply 0.35 × 200.<div class="es-text" lang="es">Cambia 35% a 0.35. Multiplica 0.35 × 200.</div></div>
   <div class="wp-steps-box" hidden></div>
   <div class="feedback-box" role="status" aria-live="polite"></div>
+  
+      <details class="fw" data-fw="find-4" data-fw-lazy data-fw-dialect="studio" data-fw-model="0" data-fw-stamp-key="percent" data-fw-stamp-en="100 grid" data-fw-stamp-es="Cuadrícula de 100" data-fw-tip-en="Draw a bar for the whole. Split it into 10 equal parts. Shade the parts the percent asks for." data-fw-tip-es="Dibuja una barra para el total. Pártela en 10 partes iguales. Sombrea las partes que pide el porcentaje." open>
+        <summary><span class="fw-title">✏️ Workspace: draw, type, or get a guided start<span class="es-text" lang="es"> ✏️ Espacio de trabajo: dibuja, escribe o empieza con guía</span></span> <span class="fw-saved" hidden>● saved<span class="es-text" lang="es"> ● guardado</span></span></summary>
+      <div class="hw-workspace fw-body">
+        <div class="hw-visual fw-draw">
+          <div class="hw-visual-caption">✏️ Draw or write your work here:<span class="es-text" lang="es"> ✏️ Dibuja o escribe tu trabajo aquí:</span></div>
+          
+        <div class="hw-visual-frame fw-stage" data-fw-bg="grid" data-fw-stamp="percent">
+          
+          <canvas class="fw-canvas" role="img" aria-label="Drawing area. Draw with a finger, stylus or mouse. The notes box works with a keyboard. / Área de dibujo. Dibuja con el dedo, un lápiz óptico o el ratón. La caja de notas funciona con teclado."></canvas>
+        </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_find-4">📝 Show your work<span class="es-text" lang="es"> 📝 Muestra tu trabajo</span></label>
+          <textarea id="work_find-4" name="work_find-4" class="custom-textarea hw-work-input fw-notes" rows="5" placeholder="Step 1...  Step 2...  Step 3..." data-fw-persist></textarea>
+        </div>
+      </div>
+      
+      </details>
 </article>
     </section>
     <section id="panel-sale" class="tab-panel" role="tabpanel" aria-labelledby="tab-sale">
@@ -267,6 +392,25 @@ body.show-es .wp-target .t-es { display: block; }
   <div class="wp-hint-text" hidden>First find 25% of $48. That is the discount. Then subtract it from $48.<div class="es-text" lang="es">Primero halla el 25% de $48. Ese es el descuento. Luego réstalo de $48.</div></div>
   <div class="wp-steps-box" hidden></div>
   <div class="feedback-box" role="status" aria-live="polite"></div>
+  
+      <details class="fw" data-fw="sale-1" data-fw-lazy data-fw-dialect="studio" data-fw-model="0" data-fw-stamp-key="percent" data-fw-stamp-en="100 grid" data-fw-stamp-es="Cuadrícula de 100" data-fw-tip-en="Draw a bar for the full price. Mark how much comes off, then label what is left." data-fw-tip-es="Dibuja una barra para el precio completo. Marca cuánto se descuenta y rotula lo que queda." open>
+        <summary><span class="fw-title">✏️ Workspace: draw, type, or get a guided start<span class="es-text" lang="es"> ✏️ Espacio de trabajo: dibuja, escribe o empieza con guía</span></span> <span class="fw-saved" hidden>● saved<span class="es-text" lang="es"> ● guardado</span></span></summary>
+      <div class="hw-workspace fw-body">
+        <div class="hw-visual fw-draw">
+          <div class="hw-visual-caption">✏️ Draw or write your work here:<span class="es-text" lang="es"> ✏️ Dibuja o escribe tu trabajo aquí:</span></div>
+          
+        <div class="hw-visual-frame fw-stage" data-fw-bg="grid" data-fw-stamp="percent">
+          
+          <canvas class="fw-canvas" role="img" aria-label="Drawing area. Draw with a finger, stylus or mouse. The notes box works with a keyboard. / Área de dibujo. Dibuja con el dedo, un lápiz óptico o el ratón. La caja de notas funciona con teclado."></canvas>
+        </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_sale-1">📝 Show your work<span class="es-text" lang="es"> 📝 Muestra tu trabajo</span></label>
+          <textarea id="work_sale-1" name="work_sale-1" class="custom-textarea hw-work-input fw-notes" rows="5" placeholder="Step 1...  Step 2...  Step 3..." data-fw-persist></textarea>
+        </div>
+      </div>
+      
+      </details>
 </article>
 <article class="stage-card wp-card" id="wp-sale-2" data-id="sale-2">
   <div class="wp-card-head">
@@ -292,6 +436,25 @@ body.show-es .wp-target .t-es { display: block; }
   <div class="wp-hint-text" hidden>Find 20% of $90 first. Then subtract.<div class="es-text" lang="es">Halla primero el 20% de $90. Luego resta.</div></div>
   <div class="wp-steps-box" hidden></div>
   <div class="feedback-box" role="status" aria-live="polite"></div>
+  
+      <details class="fw" data-fw="sale-2" data-fw-lazy data-fw-dialect="studio" data-fw-model="0" data-fw-stamp-key="percent" data-fw-stamp-en="100 grid" data-fw-stamp-es="Cuadrícula de 100" data-fw-tip-en="Draw a bar for the full price. Mark how much comes off, then label what is left." data-fw-tip-es="Dibuja una barra para el precio completo. Marca cuánto se descuenta y rotula lo que queda." open>
+        <summary><span class="fw-title">✏️ Workspace: draw, type, or get a guided start<span class="es-text" lang="es"> ✏️ Espacio de trabajo: dibuja, escribe o empieza con guía</span></span> <span class="fw-saved" hidden>● saved<span class="es-text" lang="es"> ● guardado</span></span></summary>
+      <div class="hw-workspace fw-body">
+        <div class="hw-visual fw-draw">
+          <div class="hw-visual-caption">✏️ Draw or write your work here:<span class="es-text" lang="es"> ✏️ Dibuja o escribe tu trabajo aquí:</span></div>
+          
+        <div class="hw-visual-frame fw-stage" data-fw-bg="grid" data-fw-stamp="percent">
+          
+          <canvas class="fw-canvas" role="img" aria-label="Drawing area. Draw with a finger, stylus or mouse. The notes box works with a keyboard. / Área de dibujo. Dibuja con el dedo, un lápiz óptico o el ratón. La caja de notas funciona con teclado."></canvas>
+        </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_sale-2">📝 Show your work<span class="es-text" lang="es"> 📝 Muestra tu trabajo</span></label>
+          <textarea id="work_sale-2" name="work_sale-2" class="custom-textarea hw-work-input fw-notes" rows="5" placeholder="Step 1...  Step 2...  Step 3..." data-fw-persist></textarea>
+        </div>
+      </div>
+      
+      </details>
 </article>
 <article class="stage-card wp-card" id="wp-sale-3" data-id="sale-3">
   <div class="wp-card-head">
@@ -317,6 +480,25 @@ body.show-es .wp-target .t-es { display: block; }
   <div class="wp-hint-text" hidden>Change 30% to 0.30 and multiply by 40. Then subtract the result from 40.<div class="es-text" lang="es">Cambia 30% a 0.30 y multiplica por 40. Luego réstalo de 40.</div></div>
   <div class="wp-steps-box" hidden></div>
   <div class="feedback-box" role="status" aria-live="polite"></div>
+  
+      <details class="fw" data-fw="sale-3" data-fw-lazy data-fw-dialect="studio" data-fw-model="0" data-fw-stamp-key="percent" data-fw-stamp-en="100 grid" data-fw-stamp-es="Cuadrícula de 100" data-fw-tip-en="Draw a bar for the full price. Mark how much comes off, then label what is left." data-fw-tip-es="Dibuja una barra para el precio completo. Marca cuánto se descuenta y rotula lo que queda." open>
+        <summary><span class="fw-title">✏️ Workspace: draw, type, or get a guided start<span class="es-text" lang="es"> ✏️ Espacio de trabajo: dibuja, escribe o empieza con guía</span></span> <span class="fw-saved" hidden>● saved<span class="es-text" lang="es"> ● guardado</span></span></summary>
+      <div class="hw-workspace fw-body">
+        <div class="hw-visual fw-draw">
+          <div class="hw-visual-caption">✏️ Draw or write your work here:<span class="es-text" lang="es"> ✏️ Dibuja o escribe tu trabajo aquí:</span></div>
+          
+        <div class="hw-visual-frame fw-stage" data-fw-bg="grid" data-fw-stamp="percent">
+          
+          <canvas class="fw-canvas" role="img" aria-label="Drawing area. Draw with a finger, stylus or mouse. The notes box works with a keyboard. / Área de dibujo. Dibuja con el dedo, un lápiz óptico o el ratón. La caja de notas funciona con teclado."></canvas>
+        </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_sale-3">📝 Show your work<span class="es-text" lang="es"> 📝 Muestra tu trabajo</span></label>
+          <textarea id="work_sale-3" name="work_sale-3" class="custom-textarea hw-work-input fw-notes" rows="5" placeholder="Step 1...  Step 2...  Step 3..." data-fw-persist></textarea>
+        </div>
+      </div>
+      
+      </details>
 </article>
     </section>
     <section id="panel-deal" class="tab-panel" role="tabpanel" aria-labelledby="tab-deal">
@@ -352,6 +534,25 @@ body.show-es .wp-target .t-es { display: block; }
   <div class="wp-hint-text" hidden>Find the discount for each store first. Then find each sale price.<div class="es-text" lang="es">Halla primero el descuento de cada tienda. Luego halla el precio de oferta de cada una.</div></div>
   <div class="wp-steps-box" hidden></div>
   <div class="feedback-box" role="status" aria-live="polite"></div>
+  
+      <details class="fw" data-fw="deal-1" data-fw-lazy data-fw-dialect="studio" data-fw-model="0" data-fw-stamp-key="percent" data-fw-stamp-en="100 grid" data-fw-stamp-es="Cuadrícula de 100" data-fw-tip-en="Work out each deal in its own column, one step at a time. Then compare the two." data-fw-tip-es="Resuelve cada oferta en su propia columna, un paso a la vez. Luego compara las dos." open>
+        <summary><span class="fw-title">✏️ Workspace: draw, type, or get a guided start<span class="es-text" lang="es"> ✏️ Espacio de trabajo: dibuja, escribe o empieza con guía</span></span> <span class="fw-saved" hidden>● saved<span class="es-text" lang="es"> ● guardado</span></span></summary>
+      <div class="hw-workspace fw-body">
+        <div class="hw-visual fw-draw">
+          <div class="hw-visual-caption">✏️ Draw or write your work here:<span class="es-text" lang="es"> ✏️ Dibuja o escribe tu trabajo aquí:</span></div>
+          
+        <div class="hw-visual-frame fw-stage" data-fw-bg="grid" data-fw-stamp="percent">
+          
+          <canvas class="fw-canvas" role="img" aria-label="Drawing area. Draw with a finger, stylus or mouse. The notes box works with a keyboard. / Área de dibujo. Dibuja con el dedo, un lápiz óptico o el ratón. La caja de notas funciona con teclado."></canvas>
+        </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_deal-1">📝 Show your work<span class="es-text" lang="es"> 📝 Muestra tu trabajo</span></label>
+          <textarea id="work_deal-1" name="work_deal-1" class="custom-textarea hw-work-input fw-notes" rows="5" placeholder="Step 1...  Step 2...  Step 3..." data-fw-persist></textarea>
+        </div>
+      </div>
+      
+      </details>
 </article>
 <article class="stage-card wp-card" id="wp-deal-2" data-id="deal-2">
   <div class="wp-card-head">
@@ -377,6 +578,25 @@ body.show-es .wp-target .t-es { display: block; }
   <div class="wp-hint-text" hidden>Find the discount for each prize. Then subtract it from that prize's price.<div class="es-text" lang="es">Halla el descuento de cada premio. Luego réstalo del precio de ese premio.</div></div>
   <div class="wp-steps-box" hidden></div>
   <div class="feedback-box" role="status" aria-live="polite"></div>
+  
+      <details class="fw" data-fw="deal-2" data-fw-lazy data-fw-dialect="studio" data-fw-model="0" data-fw-stamp-key="percent" data-fw-stamp-en="100 grid" data-fw-stamp-es="Cuadrícula de 100" data-fw-tip-en="Work out each deal in its own column, one step at a time. Then compare the two." data-fw-tip-es="Resuelve cada oferta en su propia columna, un paso a la vez. Luego compara las dos." open>
+        <summary><span class="fw-title">✏️ Workspace: draw, type, or get a guided start<span class="es-text" lang="es"> ✏️ Espacio de trabajo: dibuja, escribe o empieza con guía</span></span> <span class="fw-saved" hidden>● saved<span class="es-text" lang="es"> ● guardado</span></span></summary>
+      <div class="hw-workspace fw-body">
+        <div class="hw-visual fw-draw">
+          <div class="hw-visual-caption">✏️ Draw or write your work here:<span class="es-text" lang="es"> ✏️ Dibuja o escribe tu trabajo aquí:</span></div>
+          
+        <div class="hw-visual-frame fw-stage" data-fw-bg="grid" data-fw-stamp="percent">
+          
+          <canvas class="fw-canvas" role="img" aria-label="Drawing area. Draw with a finger, stylus or mouse. The notes box works with a keyboard. / Área de dibujo. Dibuja con el dedo, un lápiz óptico o el ratón. La caja de notas funciona con teclado."></canvas>
+        </div>
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="work_deal-2">📝 Show your work<span class="es-text" lang="es"> 📝 Muestra tu trabajo</span></label>
+          <textarea id="work_deal-2" name="work_deal-2" class="custom-textarea hw-work-input fw-notes" rows="5" placeholder="Step 1...  Step 2...  Step 3..." data-fw-persist></textarea>
+        </div>
+      </div>
+      
+      </details>
 </article>
     </section>
   </main>
@@ -618,6 +838,558 @@ function wpEngine(DATA, state, hooks) {
   if (!$('#tab-' + start)) { try { start = localStorage.getItem(DATA.key + '_tab'); } catch (e) { start = null; } }
   show($('#tab-' + start) ? start : 'plan', false);
 })();
+
+/**
+ * Problem Workspace: one drawing pad and one notes box under a practice problem, with optional
+ * guidance a student or family can open when they do not know how to start.
+ *
+ * One file serves every surface. The server-side generators (family homework, family and student
+ * word problems) load it in Node to write the markup, and inline it for the page; the Practice
+ * Studios and the Unit 4 studios load it as a script and call NTWorkspace.html() themselves.
+ *
+ * Guidance never carries an answer. The five steps are the same on every problem; the one tip
+ * line is authored per problem or per kind of problem by the host. A step's starter sentence is
+ * added to the notes in one tap, or all five at once.
+ *
+ * The pad stores strokes (not pixels) in localStorage per page and problem, so a reload keeps the
+ * work, undo is exact and a resize never blurs the ink. Nothing a student draws or types leaves
+ * the device. The toolbar and the guide are built on the first open of a lean server-written shell
+ * (`data-fw-lazy`), so a page with twenty problems does not carry twenty copies of them.
+ */
+(function (host) {
+  "use strict";
+
+  /** @param {any} s */
+  const esc = (s) =>
+    String(s ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+
+  /**
+   * Two languages in the host's own markup. "pair": the family pages' language-mode spans.
+   * "studio": English with a Spanish span the studio's Español switch shows.
+   * @param {string} dialect
+   * @param {string} en
+   * @param {string} es
+   */
+  const bi = (dialect, en, es) =>
+    dialect === "studio"
+      ? `${en}<span class="es-text" lang="es"> ${es}</span>`
+      : `<span class="lang-en">${en}</span><span class="lang-es" lang="es">${es}</span>`;
+  /**
+   * @param {string} dialect
+   * @param {{en: string, es: string}} pair
+   */
+  const biPair = (dialect, pair) => bi(dialect, esc(pair.en), esc(pair.es));
+
+  /** The five steps of the guide: a question, and a sentence starter to add to the notes. */
+  const GUIDE_STEPS = [
+    {
+      name: { en: "Know", es: "Datos" },
+      ask: {
+        en: "What do I know? Underline the numbers and the words that matter.",
+        es: "¿Qué sé? Subraya los números y las palabras importantes.",
+      },
+      starter: { en: "I know ___.", es: "Sé que ___." },
+    },
+    {
+      name: { en: "Find", es: "Pregunta" },
+      ask: {
+        en: "What is the question asking me to find?",
+        es: "¿Qué me pide encontrar la pregunta?",
+      },
+      starter: { en: "I need to find ___.", es: "Necesito hallar ___." },
+    },
+    {
+      name: { en: "Plan", es: "Plan" },
+      ask: {
+        en: "Which picture or operation fits? Say your plan out loud first.",
+        es: "¿Qué dibujo u operación sirve? Di tu plan en voz alta primero.",
+      },
+      starter: { en: "My plan is to ___.", es: "Mi plan es ___." },
+    },
+    {
+      name: { en: "Solve", es: "Resolver" },
+      ask: {
+        en: "Do one step at a time. Write each step so someone could follow it.",
+        es: "Haz un paso a la vez. Escribe cada paso para que otra persona lo siga.",
+      },
+      starter: { en: "Step 1: ___", es: "Paso 1: ___" },
+    },
+    {
+      name: { en: "Check", es: "Comprobar" },
+      ask: {
+        en: "Does my answer make sense? Try it another way.",
+        es: "¿Tiene sentido mi respuesta? Pruébala de otra manera.",
+      },
+      starter: { en: "I checked by ___.", es: "Comprobé usando ___." },
+    },
+  ];
+
+  const PENS = [
+    { color: "#12355b", en: "Navy pen", es: "Lápiz azul marino" },
+    { color: "#0f8a86", en: "Teal pen", es: "Lápiz verde azulado" },
+    { color: "#b45309", en: "Amber pen", es: "Lápiz ámbar" },
+    { color: "#c2410c", en: "Coral pen", es: "Lápiz coral" },
+  ];
+
+  const BACKDROPS = [
+    { key: "blank", en: "Blank", es: "En blanco" },
+    { key: "grid", en: "Grid", es: "Cuadrícula" },
+    { key: "dots", en: "Dots", es: "Puntos" },
+  ];
+
+  /** Reveal unit → the blank stamp that unit's mathematics lives on (drawn in problem-workspace.css). */
+  const STAMPS = {
+    3: { key: "doubleline", en: "Double number line", es: "Recta numérica doble" },
+    4: { key: "percent", en: "100 grid", es: "Cuadrícula de 100" },
+    7: { key: "plane", en: "Coordinate plane", es: "Plano de coordenadas" },
+  };
+
+  /** @param {any} unit */
+  const stampForUnit = (unit) => /** @type {any} */ (STAMPS)[Number(unit)] || null;
+
+  /**
+   * @param {string} d dialect
+   * @param {boolean} hasModel
+   * @param {any} stamp
+   */
+  function toolsHtml(d, hasModel, stamp) {
+    const options = [
+      ...(hasModel ? [{ key: "model", en: "Model", es: "Modelo" }] : []),
+      ...BACKDROPS,
+      ...(stamp ? [{ key: "stamp", en: stamp.en, es: stamp.es }] : []),
+    ];
+    /** @param {string} act @param {string} icon @param {string} en @param {string} es @param {string} [extra] */
+    const tool = (act, icon, en, es, extra = "") =>
+      `<button type="button" class="fw-btn" data-fw-act="${act}" ${extra}>${icon} ${bi(d, en, es)}</button>`;
+    return `<div class="fw-tools" role="toolbar" aria-label="Drawing tools / Herramientas de dibujo">
+          <span class="fw-pens" role="group" aria-label="Pen color / Color del lápiz">${PENS.map(
+            (pen, i) =>
+              `<button type="button" class="fw-btn fw-pen${i === 0 ? " is-on" : ""}" data-fw-pen="${pen.color}" aria-pressed="${i === 0}" style="--pen:${pen.color}" aria-label="${esc(pen.en)} / ${esc(pen.es)}"><span class="fw-dot" aria-hidden="true"></span></button>`,
+          ).join("")}</span>
+          ${tool("eraser", "🧽", "Eraser", "Borrador", 'aria-pressed="false"')}
+          ${tool("undo", "↩️", "Undo", "Deshacer")}
+          ${tool("clear", "🗑️", "Clear", "Borrar")}
+          ${tool("big", "⤢", "Bigger", "Más grande", 'aria-pressed="false"')}
+          <label class="fw-backdrop"><span class="fw-backdrop-label">${bi(d, "Page", "Página")}</span>
+            <select class="fw-select" data-fw-backdrop aria-label="Page style / Estilo de página">${options
+              .map((o) => `<option value="${o.key}">${esc(o.en)} · ${esc(o.es)}</option>`)
+              .join("")}</select></label>
+        </div>`;
+  }
+
+  /**
+   * @param {string} d dialect
+   * @param {{en: string, es: string} | null} tip
+   */
+  function guideHtml(d, tip) {
+    const steps = GUIDE_STEPS.map(
+      (step, i) => `<li class="fw-step">
+        <div><strong>${i + 1}. ${biPair(d, step.name)}</strong> ${biPair(d, step.ask)}</div>
+        <button type="button" class="fw-btn fw-add" data-fw-add data-en="${esc(step.starter.en)}" data-es="${esc(step.starter.es)}">＋ ${bi(d, "Add to my notes:", "Agregar a mis notas:")} <em>${esc(step.starter.en)}</em></button>
+      </li>`,
+    ).join("");
+    return `<details class="fw-guide">
+      <summary>💡 ${bi(d, "Need a start? Guide me (optional)", "¿Necesitas ayuda para empezar? Guíame (opcional)")}</summary>
+      <div class="fw-guide-body">
+        ${tip ? `<p class="fw-tip"><strong>${bi(d, "Try this:", "Prueba esto:")}</strong> ${biPair(d, tip)}</p>` : ""}
+        <ol class="fw-steps">${steps}</ol>
+        <button type="button" class="fw-btn fw-frame" data-fw-frame>📋 ${bi(d, "Put all five steps in my notes", "Poner los cinco pasos en mis notas")}</button>
+      </div>
+    </details>`;
+  }
+
+  /**
+   * The workspace markup.
+   *   key        unique on the page; names the saved work
+   *   notesId    id and name of the notes textarea
+   *   notesAttr  extra attributes for the textarea (a host's own save hook)
+   *   caption    {en, es} shown over the pad
+   *   tip        {en, es} the one problem-specific line in the guide, or null
+   *   model      an SVG drawn under the pad (the problem's own picture), or ""
+   *   stamp      {key, en, es} the unit's blank stamp (stampForUnit), or null
+   *   padHtml    replaces the drawing pad (the tap-to-graph widgets keep their own surface)
+   *   open       start open (a short page with few problems), otherwise closed to keep the page short
+   *   dialect    "pair" (family pages, the default) or "studio"
+   *   lazy       write only the shell; the toolbar and guide are built on first open
+   *   hostClass  extra class on the outer element (the homework page's own workspace styling)
+   * @param {any} o
+   */
+  function html(o) {
+    const d = o.dialect || "pair";
+    const hasModel = Boolean(o.model);
+    const stamp = o.stamp || null;
+    const tip = o.tip || null;
+    const pad = o.padHtml
+      ? o.padHtml
+      : `${o.lazy ? "" : toolsHtml(d, hasModel, stamp)}
+        <div class="hw-visual-frame fw-stage" data-fw-bg="${hasModel ? "model" : "grid"}"${stamp ? ` data-fw-stamp="${stamp.key}"` : ""}>
+          ${hasModel ? `<div class="fw-model">${o.model}</div>` : ""}
+          <canvas class="fw-canvas" role="img" aria-label="Drawing area. Draw with a finger, stylus or mouse. The notes box works with a keyboard. / Área de dibujo. Dibuja con el dedo, un lápiz óptico o el ratón. La caja de notas funciona con teclado."></canvas>
+        </div>`;
+    const lazy = Boolean(o.lazy);
+    const data = lazy
+      ? ` data-fw-lazy data-fw-dialect="${d}" data-fw-model="${hasModel ? 1 : 0}"${stamp ? ` data-fw-stamp-key="${stamp.key}" data-fw-stamp-en="${esc(stamp.en)}" data-fw-stamp-es="${esc(stamp.es)}"` : ""}${tip ? ` data-fw-tip-en="${esc(tip.en)}" data-fw-tip-es="${esc(tip.es)}"` : ""}`
+      : "";
+    return `
+      <details class="${o.hostClass ? `${o.hostClass} ` : ""}fw" data-fw="${esc(o.key)}"${data}${o.open ? " open" : ""}>
+        <summary><span class="fw-title">${bi(d, "✏️ Workspace: draw, type, or get a guided start", "✏️ Espacio de trabajo: dibuja, escribe o empieza con guía")}</span> <span class="fw-saved" hidden>${bi(d, "● saved", "● guardado")}</span></summary>
+      <div class="hw-workspace fw-body">
+        <div class="hw-visual fw-draw">
+          <div class="hw-visual-caption">${biPair(d, o.caption)}</div>
+          ${pad}
+        </div>
+        <div class="hw-work">
+          <label class="hw-work-label" for="${esc(o.notesId)}">${bi(d, "📝 Show your work", "📝 Muestra tu trabajo")}</label>
+          <textarea id="${esc(o.notesId)}" name="${esc(o.notesId)}" class="custom-textarea hw-work-input fw-notes" rows="5" placeholder="Step 1...  Step 2...  Step 3..."${o.notesAttr ? ` ${o.notesAttr}` : ""}></textarea>
+        </div>
+      </div>
+      ${lazy ? "" : guideHtml(d, tip)}
+      </details>`;
+  }
+
+  host.NTWorkspace = { GUIDE_STEPS, STAMPS, stampForUnit, html };
+
+  if (typeof document === "undefined") return;
+
+  /* ---- behavior, in the browser only ------------------------------------------------------------ */
+  const MAX_SAVED = 90000;
+  /** @type {WeakMap<any, any>} */
+  const pads = new WeakMap();
+
+  /** @param {string} key */
+  const prefix = (key) => `fw:${location.pathname}:${key}`;
+  /** @param {string} key */
+  function read(key) {
+    try {
+      return JSON.parse(localStorage.getItem(prefix(key)) || "null");
+    } catch (_e) {
+      return null;
+    }
+  }
+  /** @param {string} key @param {any} value */
+  function write(key, value) {
+    try {
+      localStorage.setItem(prefix(key), JSON.stringify(value));
+    } catch (_e) {}
+  }
+  const esLang = () =>
+    document.body.classList.contains("lang-mode-es") || document.body.classList.contains("show-es");
+
+  /** @returns {any} */
+  const q = (/** @type {any} */ el, /** @type {string} */ sel) => el.querySelector(sel);
+  /** @returns {any[]} */
+  const qa = (/** @type {any} */ el, /** @type {string} */ sel) => [...el.querySelectorAll(sel)];
+
+  /** @param {any} root */
+  function showSaved(root) {
+    const pad = pads.get(root);
+    const notes = q(root, ".fw-notes");
+    const has = (pad && pad.strokes.length) || (notes && notes.value.trim());
+    const tag = q(root, ".fw-saved");
+    if (tag) tag.hidden = !has;
+  }
+
+  /** @param {any} pad */
+  function fit(pad) {
+    const r = pad.stage.getBoundingClientRect();
+    if (r.width < 2 || r.height < 2) return;
+    const ratio = Math.min(window.devicePixelRatio || 1, 2);
+    const w = Math.round(r.width * ratio);
+    const h = Math.round(r.height * ratio);
+    if (w !== pad.canvas.width || h !== pad.canvas.height) {
+      pad.canvas.width = w;
+      pad.canvas.height = h;
+    }
+    redraw(pad);
+  }
+
+  /** @param {any} pad @param {any} stroke */
+  function paint(pad, stroke) {
+    const c = pad.ctx;
+    const w = pad.canvas.width;
+    const h = pad.canvas.height;
+    const p = stroke.p;
+    if (!p.length) return;
+    const unit = w / Math.max(pad.stage.getBoundingClientRect().width, 1);
+    c.lineCap = "round";
+    c.lineJoin = "round";
+    c.globalCompositeOperation = stroke.c === "e" ? "destination-out" : "source-over";
+    c.strokeStyle = stroke.c === "e" ? "#000" : stroke.c;
+    c.lineWidth = (stroke.c === "e" ? 18 : 3.5) * unit;
+    c.beginPath();
+    c.moveTo((p[0] / 1000) * w, (p[1] / 1000) * h);
+    if (p.length === 2) c.lineTo((p[0] / 1000) * w + 0.1, (p[1] / 1000) * h);
+    for (let i = 2; i < p.length; i += 2) c.lineTo((p[i] / 1000) * w, (p[i + 1] / 1000) * h);
+    c.stroke();
+  }
+
+  /** @param {any} pad */
+  function redraw(pad) {
+    pad.ctx.clearRect(0, 0, pad.canvas.width, pad.canvas.height);
+    for (const s of pad.strokes) paint(pad, s);
+  }
+
+  /** @param {any} pad @param {any} e */
+  function point(pad, e) {
+    const r = pad.canvas.getBoundingClientRect();
+    const x = Math.min(1000, Math.max(0, Math.round(((e.clientX - r.left) / r.width) * 1000)));
+    const y = Math.min(1000, Math.max(0, Math.round(((e.clientY - r.top) / r.height) * 1000)));
+    return [x, y];
+  }
+
+  /** @param {any} pad */
+  function store(pad) {
+    const data = { s: pad.strokes, b: pad.stage.dataset.fwBg };
+    if (JSON.stringify(data).length <= MAX_SAVED) write(pad.root.dataset.fw, data);
+    showSaved(pad.root);
+  }
+
+  /** @param {any} pad @param {any} e */
+  function down(pad, e) {
+    e.preventDefault();
+    fit(pad);
+    try {
+      pad.canvas.setPointerCapture(e.pointerId);
+    } catch (_err) {}
+    pad.current = { c: pad.eraser ? "e" : pad.color, p: point(pad, e) };
+    pad.strokes.push(pad.current);
+    pad.cleared = null;
+    paint(pad, pad.current);
+  }
+
+  /** @param {any} pad @param {any} e */
+  function move(pad, e) {
+    if (!pad.current) return;
+    e.preventDefault();
+    const pt = point(pad, e);
+    const p = pad.current.p;
+    if (pt[0] === p[p.length - 2] && pt[1] === p[p.length - 1]) return;
+    p.push(pt[0], pt[1]);
+    redraw(pad);
+  }
+
+  /** @param {any} pad */
+  function up(pad) {
+    if (!pad.current) return;
+    pad.current = null;
+    store(pad);
+  }
+
+  /** @param {any} pad @param {string} value @param {boolean} [quiet] */
+  function setBackdrop(pad, value, quiet) {
+    const select = q(pad.root, "[data-fw-backdrop]");
+    if (!select || !q(select, `option[value="${value}"]`)) return;
+    pad.stage.dataset.fwBg = value;
+    select.value = value;
+    if (!quiet) store(pad);
+  }
+
+  /** @param {any} btn @param {boolean} on */
+  const press = (btn, on) => btn.setAttribute("aria-pressed", on ? "true" : "false");
+
+  /** @param {any} root */
+  function makePad(root) {
+    const stage = q(root, ".fw-stage");
+    const canvas = stage && q(stage, ".fw-canvas");
+    if (!canvas) return null;
+    const saved = read(root.dataset.fw) || {};
+    const pad = {
+      root,
+      stage,
+      canvas,
+      ctx: canvas.getContext("2d"),
+      strokes: Array.isArray(saved.s) ? saved.s : [],
+      cleared: null,
+      color: "#12355b",
+      eraser: false,
+      current: null,
+    };
+    const select = q(root, "[data-fw-backdrop]");
+    if (select) select.value = saved.b || stage.dataset.fwBg;
+    if (saved.b) setBackdrop(pad, saved.b, true);
+    pads.set(root, pad);
+    canvas.addEventListener("pointerdown", (/** @type {any} */ e) => down(pad, e));
+    canvas.addEventListener("pointermove", (/** @type {any} */ e) => move(pad, e));
+    canvas.addEventListener("pointerup", () => up(pad));
+    canvas.addEventListener("pointercancel", () => up(pad));
+    canvas.addEventListener("lostpointercapture", () => up(pad));
+    if (window.ResizeObserver) new ResizeObserver(() => fit(pad)).observe(stage);
+    fit(pad);
+    return pad;
+  }
+
+  /** Build the toolbar and the guide a lean shell left out. @param {any} root */
+  function hydrate(root) {
+    if (!root.hasAttribute("data-fw-lazy")) return;
+    root.removeAttribute("data-fw-lazy");
+    const d = root.dataset.fwDialect || "pair";
+    const stamp = root.dataset.fwStampKey
+      ? { key: root.dataset.fwStampKey, en: root.dataset.fwStampEn, es: root.dataset.fwStampEs }
+      : null;
+    const tip = root.dataset.fwTipEn
+      ? { en: root.dataset.fwTipEn, es: root.dataset.fwTipEs || root.dataset.fwTipEn }
+      : null;
+    const probe = document.createElement("div");
+    probe.innerHTML = html({
+      key: "x",
+      notesId: "x",
+      caption: { en: "", es: "" },
+      model: root.dataset.fwModel === "1" ? "x" : "",
+      stamp,
+      tip,
+      dialect: d,
+    });
+    const tools = q(probe, ".fw-tools");
+    const stage = q(root, ".fw-stage");
+    if (tools && stage) stage.parentNode.insertBefore(tools, stage);
+    const guide = q(probe, ".fw-guide");
+    if (guide) root.appendChild(guide);
+  }
+
+  /** @param {any} root */
+  function wake(root) {
+    if (pads.has(root) || root.dataset.fwReady) return;
+    root.dataset.fwReady = "1";
+    hydrate(root);
+    makePad(root);
+    showSaved(root);
+  }
+
+  /** @param {any} pad @param {any} btn */
+  function act(pad, btn) {
+    const name = btn.dataset.fwAct;
+    if (name === "eraser") {
+      pad.eraser = !pad.eraser;
+      press(btn, pad.eraser);
+      for (const p of qa(pad.root, ".fw-pen")) {
+        const on = !pad.eraser && p.dataset.fwPen === pad.color;
+        p.classList.toggle("is-on", on);
+        press(p, on);
+      }
+    }
+    if (name === "undo") {
+      if (pad.strokes.length) pad.strokes.pop();
+      else if (pad.cleared) {
+        pad.strokes = pad.cleared;
+        pad.cleared = null;
+      }
+      redraw(pad);
+      store(pad);
+    }
+    if (name === "clear" && pad.strokes.length) {
+      pad.cleared = pad.strokes;
+      pad.strokes = [];
+      redraw(pad);
+      store(pad);
+    }
+    if (name === "big") press(btn, pad.stage.classList.toggle("is-big"));
+  }
+
+  /** @param {any} root @param {string} text */
+  function addToNotes(root, text) {
+    const box = q(root, ".fw-notes");
+    if (!box) return;
+    box.value = box.value ? `${box.value.replace(/\s*$/, "")}\n${text}` : text;
+    box.focus();
+    box.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+
+  /** @param {any} el */
+  const starter = (el) => (esLang() && el.dataset.es ? el.dataset.es : el.dataset.en);
+
+  document.addEventListener(
+    "toggle",
+    (/** @type {any} */ e) => {
+      if (e.target.matches?.("details.fw") && e.target.open) wake(e.target);
+    },
+    true,
+  );
+
+  document.addEventListener("click", (/** @type {any} */ e) => {
+    const btn = e.target.closest?.(".fw .fw-btn");
+    if (!btn) return;
+    const root = btn.closest(".fw");
+    const pad = pads.get(root);
+    if (btn.dataset.fwPen && pad) {
+      pad.color = btn.dataset.fwPen;
+      pad.eraser = false;
+      for (const p of qa(root, ".fw-pen")) {
+        p.classList.toggle("is-on", p === btn);
+        press(p, p === btn);
+      }
+      const er = q(root, '[data-fw-act="eraser"]');
+      if (er) press(er, false);
+    } else if (btn.dataset.fwAct && pad) act(pad, btn);
+    else if (btn.hasAttribute("data-fw-add")) addToNotes(root, starter(btn));
+    else if (btn.hasAttribute("data-fw-frame"))
+      addToNotes(
+        root,
+        qa(root, "[data-fw-add]")
+          .map((b, i) => `${i + 1}. ${starter(b)}`)
+          .join("\n"),
+      );
+  });
+
+  document.addEventListener("change", (/** @type {any} */ e) => {
+    const select = e.target.closest?.("[data-fw-backdrop]");
+    if (!select) return;
+    const pad = pads.get(select.closest(".fw"));
+    if (pad) setBackdrop(pad, select.value);
+  });
+
+  document.addEventListener("input", (/** @type {any} */ e) => {
+    const box = e.target.closest?.(".fw-notes[data-fw-persist]");
+    if (!box) return;
+    const root = box.closest(".fw");
+    write(`${root.dataset.fw}:notes`, box.value);
+    showSaved(root);
+  });
+
+  /** Wake every workspace under `scope`: open ones, and any with saved work (which opens them). @param {any} [scope] */
+  function mount(scope) {
+    for (const root of qa(scope || document, "details.fw")) {
+      const box = q(root, ".fw-notes");
+      if (box?.hasAttribute("data-fw-persist")) {
+        const text = read(`${root.dataset.fw}:notes`);
+        if (typeof text === "string" && !box.value) box.value = text;
+      }
+      const saved = read(root.dataset.fw);
+      const drawn = saved && Array.isArray(saved.s) && saved.s.length;
+      if (drawn || box?.value.trim()) root.open = true;
+      if (root.open || drawn) wake(root);
+    }
+  }
+  /**
+   * Remove saved work: one problem's (a re-rolled problem is a new problem), or every workspace on this page
+   * (a studio's "start over"). Open pads are left as they are on screen until the host re-renders them.
+   * @param {string} [key]
+   */
+  function forget(key) {
+    try {
+      if (key) {
+        localStorage.removeItem(prefix(key));
+        localStorage.removeItem(prefix(`${key}:notes`));
+        return;
+      }
+      for (const name of Object.keys(localStorage))
+        if (name.startsWith(prefix(""))) localStorage.removeItem(name);
+    } catch (_e) {}
+  }
+  host.NTWorkspace.forget = forget;
+  host.NTWorkspace.mount = mount;
+  host.NTWorkspace.wake = wake;
+
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", () => mount());
+  else mount();
+  window.addEventListener("beforeprint", () => {
+    for (const root of qa(document, "details.fw")) wake(root);
+  });
+})(typeof window !== "undefined" ? /** @type {any} */ (window) : /** @type {any} */ (globalThis));
 </script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>

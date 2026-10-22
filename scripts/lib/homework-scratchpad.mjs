@@ -120,7 +120,7 @@ export function renderScratchpadHtml(unit) {
 
 export const SCRATCHPAD_CSS = `
 .scratchpad-canvas { display: block; width: 100%; height: 220px; background: transparent; touch-action: none; }
-.scratchpad-canvas-wrap.scratchpad-bg-graph { background: #fff linear-gradient(rgba(150,170,190,.55) 1px, transparent 1px) 0 0 / 24px 24px, linear-gradient(90deg, rgba(150,170,190,.55) 1px, transparent 1px) 0 0 / 24px 24px; }
+.scratchpad-canvas-wrap.scratchpad-bg-graph { background-color: #fff; background-image: linear-gradient(rgba(150,170,190,.55) 1px, transparent 1px), linear-gradient(90deg, rgba(150,170,190,.55) 1px, transparent 1px); background-size: 24px 24px; }
 .scratchpad-canvas-wrap.scratchpad-bg-dots { background: #fff radial-gradient(circle, rgba(18,53,91,.45) 1.5px, transparent 2px) 0 0 / 24px 24px; }
 .scratchpad-canvas-wrap.scratchpad-bg-doubleline { background: #fff ${doubleLine} center / 100% 100% no-repeat; }
 .scratchpad-canvas-wrap.scratchpad-bg-percent { background: #fff ${percentGrid} center / contain no-repeat; }

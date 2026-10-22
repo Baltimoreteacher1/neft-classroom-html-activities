@@ -176,7 +176,7 @@ dialog.hw-dialog p { margin: 0 0 16px; font-size: 18px; line-height: 1.45; }
 
 /* Type floor: reading text and controls are 14px or more; uppercase labels and tab names are 13px.
    The browser sweep (tools/validate-family-experience-browser.mjs) fails the build below this. */
-.btn-sm, .btn-read-aloud, .hw-listen, .btn-listen-prob, .vocab-speak-btn, .vocab-btn-label, .hw-draw-clear,
+.btn-sm, .btn-read-aloud, .hw-listen, .btn-listen-prob, .vocab-speak-btn, .vocab-btn-label,
 .btn-feeling, .help-pop-btn, .flip-prompt, .flip-back-prompt, .vocab-visual-hint, .vocab-back-visual, .vocab-def-es,
 .coach-ladder-step, .problem-coach-ladder, .parent-coach-prompt, .family-problem-tip, .fam-act-materials, .fam-act-time,
 .fam-mission-complete, .visual-coach-box, .high-five-labels, .achieve-name, .done-problem-chip, .streak-text,

@@ -5,7 +5,15 @@
  * so the family page, this page and the tests all share one calculation.
  * Authored text that only this page needs lives in data/student-word-problems/<id>.json.
  */
-import { amount, answerFor, esc, solve } from "./family-word-problems.mjs";
+import {
+  amount,
+  answerFor,
+  esc,
+  solve,
+  WORKSPACE_CAPTION,
+  WORKSPACE_TIP,
+} from "./family-word-problems.mjs";
+import { stampForUnit, WORKSPACE_CSS, WORKSPACE_JS, workspaceHtml } from "./family-workspace.mjs";
 import { STUDENT_CSS, STUDENT_JS } from "./student-word-problems-client.mjs";
 import { clientProblem, M, text } from "./word-problems-check.mjs";
 
@@ -44,7 +52,7 @@ function questionsHtml(problem) {
   return ask(0, text("whichMore"), [...names, text("same")]) + ask(1, text("whichCheaper"), names);
 }
 
-function cardHtml(problem, number) {
+function cardHtml(problem, number, unit) {
   const label = (key) =>
     `<span>${esc(M.en[key])}</span><span class="es-text" lang="es">${esc(M.es[key])}</span>`;
   return `<article class="stage-card wp-card" id="wp-${esc(problem.id)}" data-id="${esc(problem.id)}">
@@ -65,6 +73,16 @@ function cardHtml(problem, number) {
   <div class="wp-hint-text" hidden>${esc(problem.hint.en)}<div class="es-text" lang="es">${esc(problem.hint.es)}</div></div>
   <div class="wp-steps-box" hidden></div>
   <div class="feedback-box" role="status" aria-live="polite"></div>
+  ${workspaceHtml({
+    key: problem.id,
+    notesId: `work_${problem.id}`,
+    notesAttr: "data-fw-persist",
+    caption: WORKSPACE_CAPTION,
+    tip: WORKSPACE_TIP[problem.kind],
+    stamp: stampForUnit(unit),
+    dialect: "studio",
+    open: true,
+  })}
 </article>`;
 }
 
@@ -160,7 +178,7 @@ ${student.plan.steps.map((s) => `        <li class="plan-step"><div><h3>${esc(s.
         g,
       ) => `<section id="panel-${esc(g.id)}" class="tab-panel" role="tabpanel" aria-labelledby="tab-${esc(g.id)}">
       ${strip(g.title, g.blurb, student.tabs[g.id].pill)}
-${g.problems.map((p) => cardHtml(p, ++n)).join("\n")}
+${g.problems.map((p) => cardHtml(p, ++n, unit)).join("\n")}
     </section>`,
     )
     .join("\n    ");
@@ -183,7 +201,7 @@ ${g.problems.map((p) => cardHtml(p, ++n)).join("\n")}
   <link rel="stylesheet" href="/assets/u4-studio.css">
   <link rel="stylesheet" href="/assets/studio-comfort.css">
   <script src="/assets/studio-comfort.js" defer></script>
-  <style>${STUDENT_CSS}</style>
+  <style>${STUDENT_CSS}${WORKSPACE_CSS}</style>
 </head>
 <body>
 
@@ -225,7 +243,8 @@ ${g.problems.map((p) => cardHtml(p, ++n)).join("\n")}
   </footer>
 
   <script type="application/json" id="wp-data">${dataJson}</script>
-  <script>${STUDENT_JS}</script>
+  <script>${STUDENT_JS}
+${WORKSPACE_JS}</script>
 </body>
 </html>
 `;

@@ -53,6 +53,12 @@ import { getUnitTheme, renderUnitThemeCss } from "./homework-themes.mjs";
 import { renderVisualMathLab, VISUAL_LABS_CSS, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
 import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import { vocabKey, withPlainDefinitions } from "./lib/family-plain-definitions.mjs";
+import {
+  stampForUnit,
+  WORKSPACE_CSS,
+  WORKSPACE_JS,
+  workspaceHtml,
+} from "./lib/family-workspace.mjs";
 import { BRIDGE_CSS } from "./lib/homework-bridge.mjs";
 import { CONFUSED_GROWNUP_CSS, CONFUSED_GROWNUP_JS } from "./lib/homework-confused-grownup.mjs";
 import { DOMINO_DUO_CSS, DOMINO_DUO_JS } from "./lib/homework-domino-duo.mjs";
@@ -657,7 +663,7 @@ function lessonConfigs() {
 const SVG_GRID = `<svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/>${Array.from({ length: 14 }, (_, i) => `<line x1="${10 + (i + 1) * 20}" y1="10" x2="${10 + (i + 1) * 20}" y2="150" stroke="#d6e2ee" stroke-width="1"/>`).join("")}${Array.from({ length: 6 }, (_, i) => `<line x1="10" y1="${10 + (i + 1) * 20}" x2="310" y2="${10 + (i + 1) * 20}" stroke="#d6e2ee" stroke-width="1"/>`).join("")}</svg>`;
 
 // Visual model + "show your work" space. Persists (saveState) and prints with lines.
-function renderWorkspace(pIdx, g, topic, customVisual = null) {
+function renderWorkspace(pIdx, g, topic, customVisual = null, unit = 0) {
   const visual = customVisual || SVG_GRID;
   // Restore the graphing surfaces while keeping the corrected question-specific
   // coaching. Do not use number lines for fraction division or statistics.
@@ -672,7 +678,7 @@ function renderWorkspace(pIdx, g, topic, customVisual = null) {
   // Interactive graphing topics (number line, coordinate plane, grid): the static
   // SVG is hydrated into a tap-to-graph widget by NeftGraph. A hidden input lets
   // the answer persist through the existing saveState()/loadState() pipeline.
-  const visualBlock = itype
+  const interactivePad = itype
     ? `<div class="hw-visual-frame hw-interactive" data-interactive="${itype}" data-pidx="${pIdx}">
             ${visual}
             <div class="hw-graph-controls" data-graph-controls></div>
@@ -680,33 +686,28 @@ function renderWorkspace(pIdx, g, topic, customVisual = null) {
             <div class="hw-graph-readout" data-graph-readout role="status" aria-live="polite"></div>
             <input type="hidden" class="custom-input" name="graph_${pIdx}" data-graph-state value="" />
           </div>`
-    : `<div class="hw-visual-frame hw-drawable" data-draw-frame>
-            ${visual}
-            <canvas class="hw-draw-canvas" data-draw-canvas role="img" aria-label="Drawing area — draw your model here"></canvas>
-            <button type="button" class="hw-draw-clear" data-draw-clear><span class="lang-en">🧽 Clear</span><span class="lang-es" lang="es">🧽 Borrar</span></button>
-          </div>`;
+    : "";
 
   const caption = itype
-    ? `<span class="lang-en">👆 Tap to graph: ${esc(g.draw)}</span><span class="lang-es" lang="es">👆 Toca para graficar: ${esc(g.drawEs)}</span>`
-    : `<span class="lang-en">✏️ Draw your model: ${esc(g.draw)}</span><span class="lang-es" lang="es">✏️ Dibuja tu modelo: ${esc(g.drawEs)}</span>`;
+    ? { en: `👆 Tap to graph: ${g.draw}`, es: `👆 Toca para graficar: ${g.drawEs}` }
+    : { en: `✏️ Draw your model: ${g.draw}`, es: `✏️ Dibuja tu modelo: ${g.drawEs}` };
 
   /* Closed by default. Every problem used to carry an open drawing grid AND a
      work box under it, which is most of why the Check stop ran ~15 phone
-     screens for "about 7 minutes". One tap opens both; saved work reopens it. */
-  return `
-      <details class="hw-workspace-toggle">
-        <summary><span class="lang-en">✏️ Show my work: drawing pad and notes</span><span class="lang-es" lang="es">✏️ Mostrar mi trabajo: dibujo y notas</span></summary>
-      <div class="hw-workspace">
-        <div class="hw-visual">
-          <div class="hw-visual-caption">${caption}</div>
-          ${visualBlock}
-        </div>
-        <div class="hw-work">
-          <label class="hw-work-label" for="work_${pIdx}"><span class="lang-en">📝 Show your work</span><span class="lang-es" lang="es">📝 Muestra tu trabajo</span></label>
-          <textarea id="work_${pIdx}" name="work_${pIdx}" class="custom-textarea hw-work-input" rows="4" placeholder="Step 1...  Step 2...  Step 3..." oninput="saveState();"></textarea>
-        </div>
-      </div>
-      </details>`;
+     screens for "about 7 minutes". One tap opens the whole workspace (pad,
+     notes and the optional guide); saved work reopens it. The workspace is
+     one component shared with the family word-problems page. */
+  return workspaceHtml({
+    key: `p${pIdx}`,
+    notesId: `work_${pIdx}`,
+    notesAttr: 'oninput="saveState();"',
+    caption,
+    tip: g.coach ? { en: g.coach, es: g.coachEs } : null,
+    model: customVisual || "",
+    stamp: stampForUnit(unit),
+    padHtml: itype ? interactivePad : "",
+    hostClass: "hw-workspace-toggle",
+  });
 }
 
 /* The family answer key. Every practice problem ends with a closed
@@ -1156,14 +1157,8 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
 
   const displayType = problemSubtype || type;
   const typeChip = renderProblemTypeChip(displayType);
-  const computational = [
-    "multiple-choice",
-    "fill-table",
-    "error-analysis",
-    "open-response",
-  ].includes(type);
   const guide = questionGuide(it, topic);
-  const scaffold = computational ? renderWorkspace(pIdx, guide, topic, workspaceSvg) : "";
+  const scaffold = renderWorkspace(pIdx, guide, topic, workspaceSvg, opts.unit);
   const coachLadder = {
     strategyEn: guide.coach,
     strategyEs: guide.coachEs,
@@ -1385,6 +1380,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         badgeEn: "Basic practice",
         badgeEs: "Práctica básica",
         num: idx + 1,
+        unit: unitNum,
       }),
     )
     .join("\n");
@@ -1394,6 +1390,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         badgeEn: "Warm-up",
         badgeEs: "Calentamiento",
         num: idx + 1,
+        unit: unitNum,
       }),
     )
     .join("\n");
@@ -1403,6 +1400,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         badgeEn: "Level up",
         badgeEs: "Reto",
         num: idx + 1,
+        unit: unitNum,
       }),
     )
     .join("\n");
@@ -1412,6 +1410,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         badgeEn: "Bonus",
         badgeEs: "Más",
         num: idx + 1,
+        unit: unitNum,
       }),
     )
     .join("\n");
@@ -2629,21 +2628,6 @@ body.lang-mode-es .vocab-card:not(:has(.vocab-def-es)) .vocab-def {
 .hw-percent-bar-svg { width: 100%; height: auto; max-width: 540px; display: block; margin: 0 auto; }
 .hw-answer-key-visual { margin: 12px 0; text-align: center; }
 .coach-step-visual { margin: 10px 0; text-align: center; }
-/* Drawable model area: students draw directly on the grid (mouse/touch/stylus). */
-.hw-visual-frame.hw-drawable { position: relative; }
-.hw-draw-canvas {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  touch-action: none; cursor: crosshair; border-radius: 12px;
-}
-.hw-draw-clear {
-  position: absolute; top: 6px; right: 6px; z-index: 2;
-  font-family: var(--font-display); font-size: 12px; font-weight: 700;
-  background: #ffffff; color: var(--navy);
-  border: 1px solid var(--line); border-radius: 8px; padding: 3px 9px; cursor: pointer;
-}
-.hw-draw-clear:hover { border-color: var(--teal); }
-@media print { .hw-draw-clear { display: none; } }
-
 /* Interactive tap-to-graph widgets (number line, coordinate plane, grid) */
 .hw-visual-frame.hw-interactive { position: relative; }
 .hw-interactive .hw-visual-svg { touch-action: manipulation; -webkit-user-select: none; user-select: none; }
@@ -4143,6 +4127,7 @@ ${STUDIO_SKIN_CSS}
 ${BRIDGE_CSS}
 ${CONFUSED_GROWNUP_CSS}
 ${SCRATCHPAD_CSS}
+${WORKSPACE_CSS}
 ${SESSION_FLOW_CSS}
 ${EXPERIENCE_CSS}
 ${DOMINO_DUO_CSS}
@@ -4309,6 +4294,7 @@ ${HOMEWORK_GAME_JS}
 ${VOICE_JS}
 ${CONFUSED_GROWNUP_JS}
 ${SCRATCHPAD_JS}
+${WORKSPACE_JS}
 ${SESSION_FLOW_JS}
 ${EXPERIENCE_JS}
 ${DOMINO_DUO_JS}

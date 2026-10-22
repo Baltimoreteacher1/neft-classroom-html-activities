@@ -473,6 +473,32 @@
     delete tries[id];
   }
 
+  /** The kinds a student works out on paper; the hands-on kinds and the labs are their own work surface. */
+  const WORKSPACE_KINDS = new Set(["mc", "num", "err", "tbl", "wr"]);
+  const WORKSPACE_CAPTION = {
+    en: "✏️ Draw or write your work here:",
+    es: "✏️ Dibuja o escribe tu trabajo aquí:",
+  };
+
+  /** One workspace under the item, saved per item id. */
+  function mountWorkspace(/** @type {HTMLElement} */ stage, /** @type {any} */ it) {
+    const WS = W.NTWorkspace;
+    if (!WS || !WORKSPACE_KINDS.has(it.k)) return;
+    stage.insertAdjacentHTML(
+      "beforeend",
+      `<div class="item-workspace">${WS.html({
+        key: it.id,
+        notesId: `work_${it.id}`,
+        notesAttr: "data-fw-persist",
+        caption: WORKSPACE_CAPTION,
+        stamp: WS.stampForUnit(Number.parseInt(String(data.lesson), 10)),
+        dialect: "studio",
+        lazy: true,
+      })}</div>`,
+    );
+    WS.mount(stage);
+  }
+
   function render(/** @type {number} */ tab) {
     const sec = SECTIONS[tab - 1];
     const i = state.idx[tab];
@@ -483,6 +509,7 @@
     const host = $(".item-body", stage);
     mountItem({ tab, it, host });
     W.StudioWorked?.decorate(tab, it, host);
+    mountWorkspace(stage, it);
     if ((it.k === "mc" || it.k === "num") && !isSolved(tab, it))
       (sec.conf ? confRow : confChips)(it, host);
     dots(tab);
@@ -493,6 +520,7 @@
         const cur = state.seeds[id] ?? (isPool ? 0 : baseSeed(id));
         state.seeds[id] = isPool ? cur + 1 : cur + 1 + Math.floor(Math.random() * 997);
         wipeItem(id);
+        W.NTWorkspace?.forget(id);
         save();
         render(tab);
         W.StudioBus.emit("reroll", { lesson: data.lesson, mode: data.mode, itemId: id });
@@ -654,6 +682,7 @@
     for (const k of Object.keys(tries)) delete tries[k];
     counted.clear();
     W.U4Studio?.reset();
+    W.NTWorkspace?.forget();
     W.StudioStore.clear(KEY);
     const banner = $("#complete-banner");
     if (banner) delete banner.dataset.built;

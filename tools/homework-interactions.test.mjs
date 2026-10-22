@@ -133,14 +133,18 @@ test("tap sorting keeps its selection, moves to the chosen column, and accepts t
   }
 });
 
-test("drawing uses the displayed canvas size and stops after pointer cancellation", async () => {
+test("workspace pad draws at the displayed size, stops after cancel, saves strokes and undoes", async () => {
   const { dom, w, d, draws } = await homework();
   try {
-    const canvas = d.querySelector("[data-draw-canvas]");
+    const root = d.querySelector("details.fw[data-fw]");
+    const canvas = root.querySelector(".fw-canvas");
     canvas.getBoundingClientRect = () => ({ left: 10, top: 20, width: 600, height: 300 });
-    canvas.closest("[data-draw-frame]").getBoundingClientRect = () => ({ width: 600, height: 300 });
-    // Not measurable at boot (jsdom has no layout), so it starts on first touch.
-    assert.equal(canvas.dataset.ready, undefined);
+    root.querySelector(".fw-stage").getBoundingClientRect = () => ({ width: 600, height: 300 });
+    // Closed workspaces start nothing; the first open wakes the pad.
+    assert.equal(root.dataset.fwReady, undefined);
+    root.open = true;
+    root.dispatchEvent(new w.Event("toggle"));
+    assert.equal(root.dataset.fwReady, "1");
     const pointer = (type, x, y) =>
       canvas.dispatchEvent(new w.MouseEvent(type, { clientX: x, clientY: y, bubbles: true }));
     pointer("pointerdown", 310, 170);
@@ -150,6 +154,31 @@ test("drawing uses the displayed canvas size and stops after pointer cancellatio
     const count = draws.length;
     pointer("pointermove", 500, 260);
     assert.equal(draws.length, count);
+    const key = `fw:${w.location.pathname}:${root.dataset.fw}`;
+    assert.equal(JSON.parse(w.localStorage.getItem(key)).s.length, 1);
+    root.querySelector('[data-fw-act="undo"]').click();
+    assert.equal(JSON.parse(w.localStorage.getItem(key)).s.length, 0);
+  } finally {
+    dom.window.close();
+  }
+});
+
+test("workspace guide adds sentence starters to the notes and never carries an answer slot", async () => {
+  const { dom, w, d } = await homework();
+  try {
+    const root = d.querySelector("details.fw[data-fw]");
+    const notes = root.querySelector(".fw-notes");
+    // The shell is lean; the first open builds the toolbar and the guide.
+    assert.equal(root.querySelector("[data-fw-add]"), null);
+    root.open = true;
+    root.dispatchEvent(new w.Event("toggle"));
+    assert.equal(root.querySelectorAll("[data-fw-add]").length, 5);
+    root.querySelector("[data-fw-add]").click();
+    assert.equal(notes.value, "I know ___.");
+    root.querySelector("[data-fw-frame]").click();
+    assert.equal(notes.value.split("\n").length, 6);
+    assert.match(notes.value, /5\. I checked by ___\./);
+    assert.equal(root.querySelectorAll("[data-fw-add]").length, 5);
   } finally {
     dom.window.close();
   }

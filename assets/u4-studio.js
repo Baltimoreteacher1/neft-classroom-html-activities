@@ -368,9 +368,67 @@
     document.head.append(tag);
   }
 
+  /* ---- Per-problem workspace ---------------------------------------------------- */
+  /**
+   * The hand-built studios redraw a problem's card on every answer, so the workspace lives beside the card and
+   * follows the problem: one workspace per (section, active step dot), rebuilt only when the problem changes.
+   * The component (assets/workspace/problem-workspace.js) is the one the Practice Studios and family pages use.
+   */
+  function loadWorkspace() {
+    if (W.NTWorkspace || S.wsLoading) return;
+    S.wsLoading = true;
+    const css = document.createElement("link");
+    css.rel = "stylesheet";
+    css.href = "/assets/workspace/problem-workspace.css";
+    document.head.append(css);
+    const tag = document.createElement("script");
+    tag.src = "/assets/workspace/problem-workspace.js";
+    tag.onload = workspaces;
+    document.head.append(tag);
+  }
+
+  function workspaces() {
+    // The generated Practice Studios draw their own workspace under each item (assets/studio/runtime.js).
+    if (document.getElementById("studio-data")) return;
+    const WS = W.NTWorkspace;
+    if (!WS) return loadWorkspace();
+    for (const dots of /** @type {HTMLElement[]} */ ([...document.querySelectorAll(".dots-row")])) {
+      const panel = dots.closest(".tab-panel");
+      const card = panel?.querySelector(".stage-card");
+      if (!panel || !card) continue;
+      const step = [...dots.querySelectorAll(".step-dot")].findIndex((d) =>
+        d.classList.contains("active"),
+      );
+      if (step < 0) continue;
+      const key = `u4:${panel.id}:${step}`;
+      let host = /** @type {HTMLElement|null} */ (panel.querySelector(".item-workspace"));
+      if (!host) {
+        host = document.createElement("div");
+        host.className = "item-workspace";
+        card.after(host);
+      }
+      if (host.dataset.key === key) continue;
+      host.dataset.key = key;
+      host.innerHTML = WS.html({
+        key,
+        notesId: `work_${key.replace(/\W/g, "_")}`,
+        notesAttr: "data-fw-persist",
+        caption: {
+          en: "✏️ Draw or write your work here:",
+          es: "✏️ Dibuja o escribe tu trabajo aquí:",
+        },
+        stamp: WS.stampForUnit(4),
+        dialect: "studio",
+        lazy: true,
+      });
+      WS.mount(host);
+    }
+  }
+
   /** Award stars for newly solved items and announce finished sections. */
   function sync() {
     if (!S.ready) return;
+    workspaces();
     const p = play();
     let fresh = 0;
     for (const t of TABS) {

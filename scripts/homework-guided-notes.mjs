@@ -10826,7 +10826,6 @@ function initHomeworkPage() {
   var start = document.getElementById('hw_start_button');
   if (start && document.body.dataset.activeTab !== 'learn') setBiText(start, 'Continue this path', 'Continuar esta ruta');
   restoreFamilyMission();
-  initDrawCanvases();
   initHomeworkVocabPopups();
   // Family games initialize when Play is opened.
   // Entrance motion is opt-in and only after boot: its start state is
@@ -11065,71 +11064,6 @@ function initHomeworkVocabPopups() {
     if (Number.isInteger(idx)) openPopup(list[idx]);
   };
   container.addEventListener('click', container.__hwTermClick);
-}
-
-// Make every "Draw your model" grid an actual drawable surface (mouse + touch + stylus).
-/* Canvases set up lazily: a page carries up to 14 drawing frames, mostly in
-   closed <details> or inactive tabs. Visible frames start at boot; any other
-   frame starts on its first touch, through the capture-phase listener below,
-   which runs before the canvas's own pointerdown listener is consulted. */
-function initDrawCanvases() {
-  document.querySelectorAll('[data-draw-frame]').forEach(function(frame) {
-    const r = frame.getBoundingClientRect();
-    if (r.width && r.height) initDrawFrame(frame);
-  });
-}
-document.addEventListener('pointerdown', function(event) {
-  const canvas = event.target.closest && event.target.closest('[data-draw-canvas]');
-  const frame = canvas && canvas.closest('[data-draw-frame]');
-  if (frame) initDrawFrame(frame);
-}, true);
-
-function initDrawFrame(frame) {
-  const canvas = frame.querySelector('[data-draw-canvas]');
-  if (!canvas || canvas.dataset.ready) return;
-  canvas.dataset.ready = '1';
-  const ctx = canvas.getContext('2d');
-  let drawing = false, last = null;
-  function resize() {
-    const r = frame.getBoundingClientRect();
-    if (!r.width) return;
-    const width = Math.round(r.width), height = Math.round(r.height);
-    if (!width || !height || (canvas.width === width && canvas.height === height)) return;
-    const prev = document.createElement('canvas');
-    prev.width = canvas.width; prev.height = canvas.height;
-    prev.getContext('2d').drawImage(canvas, 0, 0);
-    canvas.width = width; canvas.height = height;
-    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 2.5; ctx.strokeStyle = '#12355b';
-    ctx.drawImage(prev, 0, 0, width, height);
-  }
-  function pos(e) {
-    const r = canvas.getBoundingClientRect();
-    const t = e.touches ? e.touches[0] : e;
-    return { x: (t.clientX - r.left) * canvas.width / r.width,
-      y: (t.clientY - r.top) * canvas.height / r.height };
-  }
-  function start(e) {
-    resize();
-    drawing = true; last = pos(e); e.preventDefault();
-    if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
-  }
-  function move(e) {
-    if (!drawing) return;
-    const p = pos(e);
-    ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
-    last = p; e.preventDefault();
-  }
-  function end() { drawing = false; }
-  canvas.addEventListener('pointerdown', start);
-  canvas.addEventListener('pointermove', move);
-  window.addEventListener('pointerup', end);
-  canvas.addEventListener('pointercancel', end);
-  canvas.addEventListener('lostpointercapture', end);
-  const clearBtn = frame.querySelector('[data-draw-clear]');
-  if (clearBtn) clearBtn.addEventListener('click', function(){ ctx.clearRect(0,0,canvas.width,canvas.height); });
-  resize();
-  window.addEventListener('resize', resize);
-  if (window.ResizeObserver) new ResizeObserver(resize).observe(frame);
 }
 
 /* ── Photobooth Studio with Math Work ─────────────────────────────────── */

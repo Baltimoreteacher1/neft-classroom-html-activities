@@ -5,13 +5,21 @@
  * Problems, hints and coaching text are authored in data/family-word-problems/<id>.json; every
  * answer comes from answerFor()/solve() in family-word-problems.mjs, so nothing is typed twice.
  */
-import { amount, answerFor, esc, solve } from "./family-word-problems.mjs";
+import {
+  amount,
+  answerFor,
+  esc,
+  solve,
+  WORKSPACE_CAPTION,
+  WORKSPACE_TIP,
+} from "./family-word-problems.mjs";
 import {
   FAMILY_CSS,
   FAMILY_JS,
   LANGUAGE_BOOT,
   LANGUAGE_SELECTOR,
 } from "./family-word-problems-client.mjs";
+import { stampForUnit, WORKSPACE_CSS, WORKSPACE_JS, workspaceHtml } from "./family-workspace.mjs";
 import { clientProblem, text } from "./word-problems-check.mjs";
 
 /** One sentence in both languages, in the markup the homework pages use for language mode. */
@@ -30,7 +38,6 @@ const T = {
   stems: { en: "Sentence starters:", es: "Frases para empezar:" },
   corner: { en: "Grown-up corner", es: "Rincón del adulto" },
   picture: { en: "Show a picture", es: "Ver un dibujo" },
-  work: { en: "📝 Show your work", es: "📝 Muestra tu trabajo" },
   key: { en: "Grown-up: show the answer", es: "Adulto: ver la respuesta" },
   keyTry: {
     en: "Not tried yet? Close this and give it one try first. A wrong first try still helps.",
@@ -154,7 +161,7 @@ function answerKeyHtml(problem) {
   </details>`;
 }
 
-function cardHtml(problem, number, coach) {
+function cardHtml(problem, number, coach, unit) {
   const id = esc(problem.id);
   return `<section class="problem-section card wp-card wp-problem" id="${id}" data-id="${id}">
   <div class="problem-header-row">
@@ -174,10 +181,15 @@ function cardHtml(problem, number, coach) {
     <div class="wp-hint-text" hidden>${both(problem.hint)}</div>
     <div class="wp-steps-box" hidden></div>
     <details class="wp-picture"><summary>🖼️ ${both(T.picture)}</summary><div>${pictureHtml(problem)}</div></details>
-    <div class="hw-work">
-      <label class="hw-work-label hw-inline" for="work_${id}">${both(T.work)}</label>
-      <textarea id="work_${id}" name="work_${id}" class="custom-textarea hw-work-input" rows="3" placeholder="Step 1...  Step 2...  Step 3..."></textarea>
-    </div>
+    ${workspaceHtml({
+      key: id,
+      notesId: `work_${id}`,
+      notesAttr: "data-fw-persist",
+      caption: WORKSPACE_CAPTION,
+      tip: WORKSPACE_TIP[problem.kind],
+      stamp: stampForUnit(unit),
+      open: true,
+    })}
     ${coachHtml(problem, coach)}
   </div>
   ${answerKeyHtml(problem)}
@@ -293,7 +305,7 @@ ${body}
     return panel(
       stop,
       g.title,
-      `  <p class="wp-blurb">${both(g.blurb)}</p>\n${g.problems.map((p) => cardHtml(p, ++n, data.coach)).join("\n")}\n  ${next(stops[i + 1].id)}`,
+      `  <p class="wp-blurb">${both(g.blurb)}</p>\n${g.problems.map((p) => cardHtml(p, ++n, data.coach, unit)).join("\n")}\n  ${next(stops[i + 1].id)}`,
     );
   });
   const clientData = {
@@ -317,7 +329,7 @@ ${chrome.fonts}
 ${chrome.theme}
 </style>
 <link rel="stylesheet" href="${chrome.layer}">
-<style>${FAMILY_CSS}</style>
+<style>${FAMILY_CSS}${WORKSPACE_CSS}</style>
 </head>
 <body data-family-style="${esc(chrome.bodyStyle)}">
 <script>
@@ -371,6 +383,7 @@ ${panels.join("\n")}
 <script type="application/json" id="wp-data">${dataJson}</script>
 <script>
 ${FAMILY_JS}
+${WORKSPACE_JS}
 </script>
 </body>
 </html>

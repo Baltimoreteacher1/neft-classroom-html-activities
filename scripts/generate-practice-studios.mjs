@@ -97,6 +97,7 @@ function assetPlan(/** @type {Map<string, string>} */ built) {
     ...viz,
     ...gen,
     ...act,
+    "assets/workspace/problem-workspace.js",
     "assets/studio/boost-core.js",
     "assets/studio/boost.js",
     "assets/studio/chrome.js",
@@ -109,6 +110,7 @@ function assetPlan(/** @type {Map<string, string>} */ built) {
     "assets/studio-v2.css",
     "assets/studio-worlds.css",
     "assets/studio/clarity.css",
+    "assets/workspace/problem-workspace.css",
     "assets/studio-comfort.css",
   ];
   const h = createHash("sha1");

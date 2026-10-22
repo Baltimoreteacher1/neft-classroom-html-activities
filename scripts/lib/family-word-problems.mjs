@@ -131,3 +131,24 @@ export function solve(problem, lang) {
     t.lessCost(rows[ans.cheaper].name),
   ];
 }
+
+/** The workspace's one caption line and one guidance line per kind of problem: a way to start, never an answer. */
+export const WORKSPACE_CAPTION = {
+  en: "✏️ Draw or write your work here:",
+  es: "✏️ Dibuja o escribe tu trabajo aquí:",
+};
+
+export const WORKSPACE_TIP = {
+  "percent-of": {
+    en: "Draw a bar for the whole. Split it into 10 equal parts. Shade the parts the percent asks for.",
+    es: "Dibuja una barra para el total. Pártela en 10 partes iguales. Sombrea las partes que pide el porcentaje.",
+  },
+  discount: {
+    en: "Draw a bar for the full price. Mark how much comes off, then label what is left.",
+    es: "Dibuja una barra para el precio completo. Marca cuánto se descuenta y rotula lo que queda.",
+  },
+  deal: {
+    en: "Work out each deal in its own column, one step at a time. Then compare the two.",
+    es: "Resuelve cada oferta en su propia columna, un paso a la vez. Luego compara las dos.",
+  },
+};
