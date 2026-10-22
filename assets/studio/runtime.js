@@ -260,6 +260,7 @@
           skill: it.skill || null,
           skillEs: it.skillEs || null,
           conf: state.calib[it.id]?.c ?? null,
+          traps: Array.isArray(it.tag) ? it.tag.filter(Boolean) : null,
           redeem,
         });
         W.StudioBus.emit("solved", {
@@ -324,6 +325,7 @@
           skill: it.skill || null,
           skillEs: it.skillEs || null,
           conf: state.calib[it.id]?.c ?? null,
+          traps: Array.isArray(it.tag) ? it.tag.filter(Boolean) : null,
           tab,
           redeem,
         });
@@ -704,4 +706,6 @@
   W.StudioInsight?.init(RT);
   W.StudioSeals?.init(RT);
   W.StudioRepair?.init(RT);
+  W.StudioReflect?.init(RT);
+  W.StudioTrapBook?.init(RT);
 })();

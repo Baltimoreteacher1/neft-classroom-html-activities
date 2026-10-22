@@ -533,6 +533,169 @@ try {
     );
   }
 
+  // W3a (docs/specs/studio-v3-w3.md), on every generated page: a wrong pick on a multiple-choice item that offers two or more
+  // different traps shows the optional tier-two question, a tap is saved as a confirmed trap, and the Trap Book lists it.
+  {
+    let checked = 0;
+    let single = 0;
+    const ids = readdirSync(join(REPO_ROOT, "math/practice-studio")).filter((d) =>
+      /^\d+-\d+$/.test(d),
+    );
+    for (const id of ids)
+      for (const url of [
+        `/math/practice-studio/${id}/`,
+        `/math/practice-studio/${id}/challenge/`,
+      ]) {
+        const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+        const page = await ctx.newPage();
+        if (process.env.VERBOSE) console.error(url);
+        await page.goto(origin + url);
+        await page.locator(".tab-btn").first().waitFor();
+        const at = await page.evaluate(() => {
+          const a = /** @type {any} */ (window).StudioRT.api;
+          for (let t = 1; t <= a.sections.length; t++)
+            for (let i = 0; i < a.sections[t - 1].items.length; i++) {
+              const x = a.expand(t, i);
+              const tags = Array.isArray(x.tag) ? x.tag.filter(Boolean) : [];
+              if (x.k === "mc" && new Set(tags).size >= 2)
+                return {
+                  tab: t,
+                  i,
+                  wrong: x.tag.findIndex((/** @type {any} */ g) => g),
+                  tag: x.tag[x.tag.findIndex((/** @type {any} */ g) => g)],
+                };
+            }
+          return null;
+        });
+        if (!at) {
+          // an item that offers only one trap has nothing to ask: tier two stays out of the way
+          const one = await page.evaluate(() => {
+            const a = /** @type {any} */ (window).StudioRT.api;
+            for (let t = 1; t <= a.sections.length; t++)
+              for (let i = 0; i < a.sections[t - 1].items.length; i++) {
+                const x = a.expand(t, i);
+                if (x.k === "mc" && Array.isArray(x.tag) && x.tag.some(Boolean))
+                  return { tab: t, i, wrong: x.tag.findIndex((/** @type {any} */ g) => g) };
+              }
+            return null;
+          });
+          assert.ok(one, `${url}: has a tagged multiple-choice item`);
+          await page
+            .locator(".tab-btn")
+            .nth(one.tab - 1)
+            .click();
+          await page.evaluate(({ tab, i }) => {
+            const a = /** @type {any} */ (window).StudioRT.api;
+            a.state.idx[tab] = i;
+            a.render(tab);
+          }, one);
+          const needOne = page.locator(
+            `#stage-${one.tab} .conf-row:not(.conf-optional) [data-conf="2"]`,
+          );
+          if (await needOne.count()) await needOne.click();
+          await page.locator(`#stage-${one.tab} .choice-btn:visible`).nth(one.wrong).click();
+          await page.locator(`#stage-${one.tab} .item-fb.show`).waitFor();
+          assert.equal(
+            await page.locator(`#stage-${one.tab} .reflect-row`).count(),
+            0,
+            `${url}: one trap, so no tier two`,
+          );
+          single++;
+          await ctx.close();
+          continue;
+        }
+        checked++;
+        await page
+          .locator(".tab-btn")
+          .nth(at.tab - 1)
+          .click();
+        await page.evaluate(({ tab, i }) => {
+          const a = /** @type {any} */ (window).StudioRT.api;
+          a.state.idx[tab] = i;
+          a.render(tab);
+        }, at);
+        const stage = `#stage-${at.tab}`;
+        // Boss items keep the blocking confidence row: say how sure first
+        const need = page.locator(`${stage} .conf-row:not(.conf-optional) [data-conf="2"]`);
+        if (await need.count()) await need.click();
+        await page.locator(`${stage} .choice-btn:visible`).nth(at.wrong).click();
+        const row = page.locator(`${stage} .reflect-row`);
+        await row.waitFor();
+        const buttons = await row.locator("[data-reflect]").count();
+        assert.ok(
+          buttons >= 3 && buttons <= 4,
+          `${url}: tier two offers 2-3 traps and "I guessed" (${buttons})`,
+        );
+        const pick = row.locator('[data-reflect]:not([data-reflect=""])').first();
+        const tag = await pick.getAttribute("data-reflect");
+        await pick.click();
+        await page.locator(`${stage} .reflect-thanks`).waitFor();
+        const rec = await page.evaluate(
+          (t) => /** @type {any} */ (window).StudioLearner.trap(t),
+          tag,
+        );
+        assert.ok(rec && rec.confirmed === 1, `${url}: the tap is saved as a confirmed trap`);
+        const spotted = await page.evaluate(
+          (t) => /** @type {any} */ (window).StudioLearner.trap(t)?.n,
+          at.tag,
+        );
+        assert.ok(spotted >= 1, `${url}: the wrong pick spotted its trap`);
+        await page.locator("#studio-menu-btn").click();
+        await page.locator("#trapbook-btn").click();
+        const text = await page.locator("#studio-trapbook .u4-dialog-body").innerText();
+        const name = await page.evaluate(
+          (t) => /** @type {any} */ (window).StudioLearner.trap(t).name,
+          at.tag,
+        );
+        assert.ok(name && text.includes(name), `${url}: the Trap Book lists "${name}"`);
+        await ctx.close();
+      }
+    // a trap is Tamed after three clean answers in a row on questions that offered it; a toast says so and the book shows it
+    {
+      const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+      const page = await ctx.newPage();
+      await page.goto(`${origin}/math/practice-studio/3-5/`);
+      await page.locator(".tab-btn").first().waitFor();
+      await page.evaluate(() => {
+        const bus = /** @type {any} */ (window).StudioBus;
+        const base = { lesson: "3-5", mode: "practice", kind: "mc", gen: null, skill: null };
+        bus.emit("answer", {
+          ...base,
+          itemId: "x1",
+          ok: false,
+          tries: 1,
+          hints: 0,
+          tag: "ratio-as-difference",
+        });
+        for (let n = 0; n < 3; n++)
+          bus.emit("answer", {
+            ...base,
+            itemId: `x${n + 2}`,
+            ok: true,
+            tries: 1,
+            hints: 0,
+            tag: null,
+            traps: ["ratio-as-difference", "ratio-inverted"],
+          });
+      });
+      await page.locator("#comfort-toast.show").waitFor();
+      assert.ok(
+        /Trap tamed/.test(await page.locator("#comfort-toast").innerText()),
+        "a toast says a trap was tamed",
+      );
+      await page.locator("#studio-menu-btn").click();
+      await page.locator("#trapbook-btn").click();
+      assert.ok(
+        /✓ Tamed/.test(await page.locator("#studio-trapbook .u4-dialog-body").innerText()),
+        "the Trap Book marks it tamed",
+      );
+      await ctx.close();
+    }
+    ok(
+      `W3a: tier-two question, confirmed trap and Trap Book on ${checked} generated pages, and ${single} more offer one trap so tier two stays out of the way; three dodges tame a trap`,
+    );
+  }
+
   // Unit 4: a wrong pick on the Mastery Check shows that choice's own help, is recorded as a named miss, and appears in
   // "My thinking" under the trap's name — on all ten hand-built pages.
   {

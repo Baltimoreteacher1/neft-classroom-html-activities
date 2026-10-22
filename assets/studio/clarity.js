@@ -23,6 +23,7 @@
     "u4-bonus-btn",
     "think-btn",
     "seals-btn",
+    "trapbook-btn",
     "comfort-btn",
     "toggle-es-btn",
     "ewl-theme-btn",

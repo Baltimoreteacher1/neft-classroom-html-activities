@@ -27,6 +27,7 @@
   const blank = () => ({
     v: 1,
     skills: {},
+    traps: {},
     conf: { 1: { n: 0, ok: 0 }, 2: { n: 0, ok: 0 }, 3: { n: 0, ok: 0 } },
   });
   /** @returns {any} */
@@ -123,9 +124,83 @@
     });
   }
 
+  /* ---- the Trap Book: every misconception this student has met, across lessons ------------------------------------------ */
+  const TAME_AFTER = 3;
+
+  function trapRec(/** @type {string} */ tag) {
+    rec.traps ||= {};
+    const t = (rec.traps[tag] ||= {
+      tag,
+      name: "",
+      nameEs: "",
+      fix: "",
+      fixEs: "",
+      n: 0,
+      dodged: 0,
+      since: 0,
+      confirmed: 0,
+      first: today(),
+      last: "",
+      lessons: {},
+      tamed: false,
+    });
+    // names travel with the record so the book reads on any page, even one that never uses this trap
+    const d = W.StudioRT?.api?.data?.traps?.[tag] || W.StudioGen?.traps?.names?.[tag];
+    if (d && !t.name) {
+      t.name = d.n || d.name || "";
+      t.nameEs = d.nEs || d.nameEs || "";
+      t.fix = d.fix || "";
+      t.fixEs = d.fixEs || "";
+    }
+    return t;
+  }
+
+  /** A trap is spotted by a miss that names it, dodged by a clean answer on an item that offered it, tamed after three dodges in a row. */
+  function trackTraps(/** @type {any} */ e) {
+    if (!e.ok && e.tag) {
+      const t = trapRec(e.tag);
+      t.n += 1;
+      t.since = 0;
+      t.last = today();
+      if (e.lesson) t.lessons[e.lesson] = (t.lessons[e.lesson] || 0) + 1;
+      return;
+    }
+    if (e.ok && e.tries === 1 && !e.hints && Array.isArray(e.traps))
+      for (const tag of new Set(e.traps)) {
+        const t = rec.traps?.[tag];
+        if (!t || !t.n) continue;
+        t.dodged += 1;
+        t.since += 1;
+        if (!t.tamed && t.since >= TAME_AFTER) {
+          t.tamed = true;
+          W.StudioBus?.emit("trap", {
+            tag,
+            name: t.name,
+            nameEs: t.nameEs,
+            tamed: true,
+            lesson: e.lesson,
+          });
+        }
+      }
+  }
+
+  /** The student said "this sounds like my thinking" (tier two of a wrong answer). */
+  function confirm(/** @type {string} */ tag, /** @type {string} */ lesson) {
+    const t = trapRec(tag);
+    t.confirmed += 1;
+    t.last = today();
+    if (lesson) t.lessons[lesson] = t.lessons[lesson] || 0;
+    save();
+    return t;
+  }
+
   function record(/** @type {any} */ e) {
+    trackTraps(e);
     const key = keyOf(e);
-    if (!key) return { key: null, rose: 0 };
+    if (!key) {
+      save();
+      return { key: null, rose: 0 };
+    }
     const r = skillFor(key, e);
     if (e.skillEs && !r.labelEs) r.labelEs = e.skillEs;
     if (!e.ok) {
@@ -174,6 +249,10 @@
     earned,
     nextStep,
     keyOf,
+    confirm,
+    traps: () => rec.traps || {},
+    trap: (/** @type {string} */ tag) => rec.traps?.[tag] || null,
+    TAME_AFTER,
     get: (/** @type {string} */ key) => rec.skills[key] || null,
     all: () => rec.skills,
     confidence: () => rec.conf,

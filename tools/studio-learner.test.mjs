@@ -141,6 +141,37 @@ const answer = (o = {}) => ({
   assert.equal(L.forLesson("9-9").length, 0);
 }
 
+// Trap Book: a miss spots a trap, three clean answers on items that offered it tame it (once, sticky), tier two confirms one
+{
+  const { L, emitted } = load();
+  const miss = (o = {}) =>
+    answer({ ok: false, tag: "pct-as-whole", gen: null, skill: null, kind: "mc", ...o });
+  const clean = (o = {}) =>
+    answer({ gen: null, skill: null, kind: "mc", traps: ["pct-as-whole", "other-trap"], ...o });
+  clean(); // never missed: nothing to dodge
+  L.record(clean());
+  assert.equal(L.trap("pct-as-whole"), null, "a trap never missed is not in the book");
+  L.record(miss());
+  assert.equal(L.trap("pct-as-whole").n, 1);
+  L.record(clean());
+  L.record(clean({ tries: 2 })); // a helped answer is not a dodge
+  L.record(clean());
+  assert.equal(L.trap("pct-as-whole").dodged, 2);
+  assert.equal(L.trap("pct-as-whole").tamed, false);
+  L.record(clean());
+  assert.equal(L.trap("pct-as-whole").tamed, true, "three dodges in a row tame it");
+  assert.equal(emitted.filter((e) => e[0] === "trap").length, 1, "announced once");
+  L.record(clean());
+  assert.equal(emitted.filter((e) => e[0] === "trap").length, 1, "and not again");
+  L.record(miss());
+  assert.equal(L.trap("pct-as-whole").tamed, true, "tamed is sticky");
+  assert.equal(L.trap("pct-as-whole").since, 0, "but the run restarts after a miss");
+  assert.equal(L.trap("pct-as-whole").lessons["6-3"], 2, "counted per lesson");
+  L.confirm("other-trap", "6-3");
+  assert.equal(L.trap("other-trap").confirmed, 1, "a confirmed trap enters the book");
+  assert.equal(Object.keys(L.traps()).length, 2);
+}
+
 // nothing timed: the model keeps no clocks of its own beyond the day of last use
 {
   const src = readFileSync("assets/studio/learner.js", "utf8");

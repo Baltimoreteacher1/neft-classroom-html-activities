@@ -195,6 +195,13 @@
       tone("quest");
     }
   });
+  window.addEventListener("studio:trap", (/** @type {any} */ e) => {
+    const d = e.detail || {};
+    if (d.tamed) {
+      toast(`🪤 Trap tamed: ${d.name || "a trap"}`);
+      tone("quest");
+    }
+  });
   window.addEventListener("studio:repair", () => {
     toast("🔁 Repaired! You fixed that one.");
     tone("streak");
