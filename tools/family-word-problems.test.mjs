@@ -9,8 +9,9 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
 import { solve, wordProblemsPage } from "../scripts/lib/family-word-problems.mjs";
+import { homeworkChrome } from "../scripts/lib/homework-chrome.mjs";
 import { isGeneratedFresh } from "../scripts/lib/preserve-injected.mjs";
-import { DATA_DIR, lessonPath, loadLessonConfig } from "./lib/curriculum-source.mjs";
+import { DATA_DIR, lessonPath } from "./lib/curriculum-source.mjs";
 
 const dir = join(DATA_DIR, "family-word-problems");
 const sets = readdirSync(dir)
@@ -116,7 +117,7 @@ test("each page is current and the family guide links to it", () => {
   for (const s of sets) {
     const out = lessonPath(s.lessonId, "family", "word-problems", "index.html");
     assert.ok(
-      isGeneratedFresh(out, wordProblemsPage(s, loadLessonConfig(s.lessonId))),
+      isGeneratedFresh(out, wordProblemsPage(s, homeworkChrome(s.lessonId))),
       `${s.lessonId} word-problems page is stale`,
     );
     const guide = readFileSync(lessonPath(s.lessonId, "family", "index.html"), "utf8");
@@ -129,5 +130,23 @@ test("each page is current and the family guide links to it", () => {
       html,
       new RegExp(`<html lang="en" data-unit="${Number.parseInt(s.lessonId, 10)}">`),
     );
+  }
+});
+
+test("each page is dressed as its lesson's homework page", () => {
+  for (const s of sets) {
+    const chrome = homeworkChrome(s.lessonId);
+    const html = readFileSync(
+      lessonPath(s.lessonId, "family", "word-problems", "index.html"),
+      "utf8",
+    );
+    const homework = readFileSync(lessonPath(s.lessonId, "homework.html"), "utf8");
+    assert.ok(homework.includes(chrome.layer), "homework still loads the layer it is dressed with");
+    for (const href of [chrome.base, chrome.layer])
+      assert.ok(html.includes(href), `${s.lessonId} word problems lose ${href}`);
+    assert.match(html, /<header class="hw-hero"/);
+    assert.match(html, /data-lang-mode="es"/);
+    assert.match(html, /hw_lang_mode/, "shares the homework language choice");
+    assert.match(html, /class="problem-section card/);
   }
 });
