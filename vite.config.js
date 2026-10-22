@@ -463,6 +463,13 @@ export default defineConfig({
         "nt-web-vitals": resolve(__dirname, "assets/nt-web-vitals.js"),
         "learning-supports-speech": resolve(__dirname, "assets/learning-supports/engine-speech.js"),
         "game-studio-intelligence": resolve(__dirname, "assets/game-studio-intelligence.js"),
+        // The Fluency Lab is a plain copied static page that imports this module by its
+        // source path (../../engine/core/...). engine/ is never copied, so publish the
+        // one module at that same path or the whole app fails to load.
+        "published-instructional-intelligence": resolve(
+          __dirname,
+          "engine/core/instructional-intelligence.js",
+        ),
         "class-investigation-engine": resolve(
           __dirname,
           "assets/class-investigation/engine-tools.js",
@@ -485,6 +492,9 @@ export default defineConfig({
           }
           if (chunk.name === "game-studio-intelligence") {
             return "assets/game-studio-intelligence.js";
+          }
+          if (chunk.name === "published-instructional-intelligence") {
+            return "engine/core/instructional-intelligence.js";
           }
           return chunk.name === "homework-lesson-models" || chunk.name === "nt-web-vitals"
             ? `assets/${chunk.name}.js`
