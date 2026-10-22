@@ -6389,12 +6389,14 @@ function renderMultiStrategyComparison(item) {
   if (!item) return "";
   const q = String(item.question || item.expr || "").replaceAll(",", "");
 
-  let stratAName = "Decomposition / Friendly Numbers";
-  let stratADesc = "Break numbers into parts (like 10s and 1s or 5-facts) that are easy to compute mentally.";
+  let stratAName = "Decomposition & Friendly Numbers";
+  let stratAIcon = "🧩";
+  let stratADesc = "Break numbers into parts (like tens, ones, or friendly 5s) that are easy to compute mentally.";
   let stratAMath = "Decompose into friendly parts";
 
-  let stratBName = "Visual Representation / Inverse Check";
-  let stratBDesc = "Use an interactive representation (number line, array, balance scale, or chip mat) to prove the result.";
+  let stratBName = "Visual Model & Number Line";
+  let stratBIcon = "📐";
+  let stratBDesc = "Use an interactive representation (number line, array grid, or chips) to prove the result.";
   let stratBMath = "Verify with visual model";
 
   const mulMatch = q.match(/(\d+)\s*[×*]\s*(\d+)/);
@@ -6408,70 +6410,86 @@ function renderMultiStrategyComparison(item) {
   if (mulMatch) {
     const a = Number(mulMatch[1]);
     const b = Number(mulMatch[2]);
-    stratAName = "Partial Products / Distributive Splitting";
-    stratADesc = `Split the larger number (${Math.max(a, b)}) into tens and ones or friendly 5s.`;
-    const split = Math.max(a, b) > 10 ? 10 : 5;
-    const rem = Math.max(a, b) - split;
-    stratAMath = `${Math.min(a, b)} × ${Math.max(a, b)} = (${Math.min(a, b)} × ${split}) + (${Math.min(a, b)} × ${rem})`;
+    const maxVal = Math.max(a, b);
+    const minVal = Math.min(a, b);
+    const split = maxVal > 10 ? 10 : 5;
+    const rem = maxVal - split;
+    stratAName = "Distributive Splitting (Friendly 5s & 10s)";
+    stratAIcon = "✂️";
+    stratADesc = `Split ${maxVal} into ${split} + ${rem}. Multiply ${minVal} by each part!`;
+    stratAMath = `${minVal} × ${maxVal} = (${minVal} × ${split}) + (${minVal} × ${rem}) = ${minVal * split} + ${minVal * rem} = ${a * b}`;
 
-    stratBName = "Array Area Model & Doubling";
-    stratBDesc = "Represent the product as an array grid of rows and columns, or halve one factor and double the other.";
+    stratBName = "Area Model / Array Rows";
+    stratBIcon = "📦";
+    stratBDesc = "Picture an array grid of rows and columns, or double/halve the factors.";
     stratBMath = `${a} rows of ${b} units = ${a * b} total units`;
   } else if (divMatch) {
     const a = Number(divMatch[1]);
     const b = Number(divMatch[2]);
     stratAName = "Think Multiplication Backwards";
+    stratAIcon = "🧠";
     stratADesc = `Ask: What factor times ${b} equals ${a}?`;
-    stratAMath = `${b} × ? = ${a}`;
+    stratAMath = `${b} × ? = ${a} ➔ ? = ${b > 0 ? Math.floor(a / b) : 0}`;
 
-    stratBName = "Equal Groups Partitioning";
-    stratBDesc = `Distribute the total of ${a} into ${b} equal groups on a number line or bar model.`;
-    stratBMath = `${a} partitioned into ${b} groups = ${b > 0 ? a / b : 0} in each`;
+    stratBName = "Standard Algorithm Cycle";
+    stratBIcon = "➗";
+    stratBDesc = "Divide, Multiply, Subtract, Bring Down, and Repeat for each place value.";
+    stratBMath = `${b} ) ${a} ➔ ${b > 0 ? Math.floor(a / b) : 0}${a % b ? ` R${a % b}` : ""}`;
   } else if (fracMatch) {
     const [, a, b, op, c, d] = fracMatch;
-    stratAName = "Like Denominator Model";
-    stratADesc = "Find a common denominator so all pieces have equal size before combining.";
-    stratAMath = `Convert ${a}/${b} and ${c}/${d} to matching denominator parts`;
+    stratAName = "Common Denominator Grid";
+    stratAIcon = "🧩";
+    stratADesc = "Cut both fraction bars into matching slice sizes so you can combine them.";
+    stratAMath = `Convert ${a}/${b} and ${c}/${d} to like denominator slices`;
 
-    stratBName = "Benchmarking & Number Line";
-    stratBDesc = "Compare fractions against 0, 1/2, and 1 to estimate the size on an open line.";
-    stratBMath = `Locate relative to 1/2 benchmark on line`;
+    stratBName = "Benchmark Estimation";
+    stratBIcon = "⚖️";
+    stratBDesc = "Compare fractions against 0, 1/2, and 1 to estimate the size before calculating.";
+    stratBMath = `Compare relative to 1/2 benchmark on number line`;
   } else if (addMatch) {
     const a = Number(addMatch[1]);
     const b = Number(addMatch[2]);
-    stratAName = "Make a Ten / Place Value Hop";
-    stratADesc = `Take parts from the smaller addend to round the larger addend to the nearest ten.`;
-    stratAMath = `Jump to nearest 10, then add remainder`;
+    stratAName = "Make a Ten Strategy";
+    stratAIcon = "🔟";
+    stratADesc = `Take from the smaller number to round the bigger number (${Math.max(a, b)}) up to the next ten.`;
+    stratAMath = `Round to nearest 10, then add leftover`;
 
     stratBName = "Open Number Line Jump";
-    stratBDesc = `Start at ${Math.max(a, b)} on a number line and leap forward by ${Math.min(a, b)}.`;
+    stratBIcon = "🦘";
+    stratBDesc = `Start at ${Math.max(a, b)} and jump forward by ${Math.min(a, b)} in friendly hops.`;
     stratBMath = `${Math.max(a, b)} + ${Math.min(a, b)} = ${a + b}`;
   } else if (subMatch) {
     const a = Number(subMatch[1]);
     const b = Number(subMatch[2]);
-    stratAName = "Counting Up (Distance Strategy)";
-    stratADesc = `Start at the smaller number (${b}) and count up to ${a} to find the gap.`;
-    stratAMath = `${b} + ? = ${a}`;
+    stratAName = "Counting Up (Distance)";
+    stratAIcon = "📏";
+    stratADesc = `Start at the smaller number (${b}) and count up to ${a} to find the distance.`;
+    stratAMath = `${b} + ? = ${a} ➔ Distance = ${a - b}`;
 
-    stratBName = "Decompose Subtrahend";
-    stratADesc = `Subtract the tens first, then subtract the remaining ones.`;
-    stratBMath = `Subtract in friendly place-value hops`;
+    stratBName = "Jump Back in Friendly Hops";
+    stratBIcon = "⏪";
+    stratBDesc = `Start at ${a}, jump back tens, then jump back leftover ones.`;
+    stratBMath = `Jump back tens first, then remaining ones`;
   } else if (intMatch && (q.includes("-") || q.includes("−"))) {
     stratAName = "Zero-Pair Chips Cancellation";
-    stratADesc = "Pair up positive and negative units. Each (+1) and (-1) cancel to zero!";
-    stratAMath = "Zero pairs cancel out (+1 + -1 = 0)";
+    stratAIcon = "⚡";
+    stratADesc = "Pair up positive and negative chips. Each (+1) and (-1) cancel out to 0!";
+    stratAMath = "(+1) + (-1) = 0 (Zero Pair)";
 
     stratBName = "Number Line Direction Walk";
-    stratBDesc = "Walk right for positive quantities and walk left for negative quantities.";
-    stratBMath = "Opposite signs reverse movement direction";
+    stratBIcon = "🚶";
+    stratBDesc = "Face right for positive, face left for negative; walk forward for addition, backward for subtraction.";
+    stratBMath = "Opposite signs reverse direction";
   } else if (eqMatch) {
     stratAName = "Pan Balance Equilibrium";
-    stratADesc = "Perform identical inverse operations on both sides to keep the scale balanced.";
-    stratAMath = "Undo operations on both left and right sides";
+    stratAIcon = "⚖️";
+    stratADesc = "Whatever you do to one side of the scale, do the exact same thing to the other side.";
+    stratAMath = "Undo operations symmetrically on both sides";
 
-    stratBName = "Working Backwards (Cover-Up Method)";
-    stratBDesc = "Cover the variable expression and determine what value is needed to make the statement true.";
-    stratBMath = "Isolate unknown by reversing steps";
+    stratBName = "Cover-Up / Working Backwards";
+    stratBIcon = "🔍";
+    stratBDesc = "Cover the variable with your finger and ask what value is needed to make the statement true.";
+    stratBMath = "Isolate unknown by reversing operations";
   }
 
   return `
@@ -6482,12 +6500,12 @@ function renderMultiStrategyComparison(item) {
       </summary>
       <div class="multi-strategy-grid">
         <div class="strategy-card strat-a">
-          <div class="strat-card-badge">Strategy A: ${escapeHtml(stratAName)}</div>
+          <div class="strat-card-badge">${stratAIcon} Strategy A: ${escapeHtml(stratAName)}</div>
           <p class="strat-desc">${escapeHtml(stratADesc)}</p>
           <div class="strat-math-highlight">${escapeHtml(stratAMath)}</div>
         </div>
         <div class="strategy-card strat-b">
-          <div class="strat-card-badge">Strategy B: ${escapeHtml(stratBName)}</div>
+          <div class="strat-card-badge">${stratBIcon} Strategy B: ${escapeHtml(stratBName)}</div>
           <p class="strat-desc">${escapeHtml(stratBDesc)}</p>
           <div class="strat-math-highlight">${escapeHtml(stratBMath)}</div>
         </div>
@@ -6498,19 +6516,19 @@ function renderMultiStrategyComparison(item) {
 
 function renderStudentFriendlyExplanation(item, copy) {
   if (!item) return `<p>${escapeHtml(copy)}</p>`;
-  const q = item.question || "";
-  let visualSvg = "";
-  let goal = "Solve accurately by identifying the core relationship.";
+  const q = String(item.question || item.expr || "").replaceAll(",", "");
+  let visualWidget = "";
+  let goal = "Break the problem into friendly parts you already know!";
   let tip = item.hint || "Take your time: make a friendly estimate first.";
   let suggestedTool = null;
   let toolLabel = "";
 
-  const divFrac = q.match(/(\d+)\/(\d+)\s*[÷/]\s*(\d+)\/(\d+)/);
+  const divFrac = q.match(/(\d+)\/(\d+)\s*[÷/]\s*(\d+)/) || q.match(/(\d+)\/(\d+)\s*[÷/]\s*(\d+)\/(\d+)/);
   const addSubFrac = q.match(/(\d+)\/(\d+)\s*([+−\-])\s*(\d+)\/(\d+)/);
-  const mulMatch = q.match(/(\d+)\s*[×*]\s*(\d+)/);
-  const divMatch = q.match(/(\d+)\s*[÷/]\s*(\d+)/);
-  const addMatch = q.match(/(\d+)\s*[+]\s*(\d+)/);
-  const subMatch = q.match(/(\d+)\s*[−\-]\s*(\d+)/);
+  const mulMatch = q.match(/(\d+)\s*[×*]\s*(\d+)/) || (item.skill?.op === "mul" || item.skill?.strand === "Multiplication" ? q.match(/(\d+)[^\d]+(\d+)/) : null);
+  const divMatch = q.match(/(\d+)\s*[÷/]\s*(\d+)/) || (item.skill?.op === "div" || item.skill?.strand === "Division" ? q.match(/(\d+)[^\d]+(\d+)/) : null);
+  const addMatch = q.match(/(\d+)\s*[+]\s*(\d+)/) || (item.skill?.op === "add" || item.skill?.strand === "Addition" ? q.match(/(\d+)[^\d]+(\d+)/) : null);
+  const subMatch = q.match(/(\d+)\s*[−\-]\s*(\d+)/) || (item.skill?.op === "sub" || item.skill?.strand === "Subtraction" ? q.match(/(\d+)[^\d]+(\d+)/) : null);
   const intMatch = q.match(/(-?\d+)\s*([+−\-])\s*(-?\d+)/);
   const eqMatch = q.match(/([a-zA-Z]|\?|\b[xy]\b)\s*([+−\-×÷=])/);
   const isDecimal = /\d+\.\d+/.test(q);
@@ -6518,241 +6536,434 @@ function renderStudentFriendlyExplanation(item, copy) {
   const isPercent = /%|percent/i.test(q);
 
   if (divFrac) {
-    const [, a, b, c, d] = divFrac;
-    goal = `Divide fractions using Keep, Change, Flip!`;
-    tip = `Never divide fractions directly. Multiply by the reciprocal (the flip) of the second fraction!`;
+    let a = Number(divFrac[1]), b = Number(divFrac[2]), c, d;
+    if (divFrac[4] !== undefined) {
+      c = Number(divFrac[3]);
+      d = Number(divFrac[4]);
+    } else {
+      c = Number(divFrac[3]);
+      d = 1;
+    }
+    goal = "Divide fractions using Keep, Change, Flip!";
+    tip = "Never divide fractions directly. Multiply by the reciprocal (the flip) of the second fraction!";
     suggestedTool = "fractions";
     toolLabel = "Fraction Wall";
-    visualSvg = `
-      <div class="student-expl-visual">
-        <svg width="380" height="90" viewBox="0 0 380 90" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Keep Change Flip Visual Diagram">
-          <rect x="15" y="15" width="85" height="60" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
-          <text x="57" y="38" text-anchor="middle" font-size="11" font-weight="800" fill="#1e40af">KEEP</text>
-          <text x="57" y="60" text-anchor="middle" font-size="15" font-weight="900" fill="#1e3a8a">${a}/${b}</text>
-          
-          <rect x="120" y="15" width="65" height="60" rx="8" fill="#fdf4ff" stroke="#a855f7" stroke-width="2"/>
-          <text x="152" y="38" text-anchor="middle" font-size="11" font-weight="800" fill="#7e22ce">CHANGE</text>
-          <text x="152" y="62" text-anchor="middle" font-size="18" font-weight="900" fill="#6b21a8">×</text>
-          
-          <rect x="205" y="8" width="85" height="74" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="2"/>
-          <text x="247" y="32" text-anchor="middle" font-size="11" font-weight="800" fill="#15803d">FLIP</text>
-          <text x="247" y="52" text-anchor="middle" font-size="15" font-weight="900" fill="#14532d">${d}/${c}</text>
-          <text x="247" y="70" text-anchor="middle" font-size="9" font-weight="700" fill="#166534">Reciprocal</text>
 
-          <text x="308" y="52" font-size="16" font-weight="900" fill="#0f172a">➔</text>
-          <text x="345" y="52" text-anchor="middle" font-size="14" font-weight="900" fill="#0369a1">${item.displayAnswer}</text>
-        </svg>
-      </div>`;
+    visualWidget = `
+      <div class="expl-interactive-widget" data-widget-type="kcf">
+        <div class="expl-widget-header">
+          <span class="expl-widget-title">🔄 Keep, Change, Flip Reciprocal Model</span>
+          <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
+        </div>
+        <div class="expl-nav-bar" role="tablist">
+          <button type="button" class="expl-step-pill is-active" data-expl-kcf="all">👀 All 3 Steps</button>
+          <button type="button" class="expl-step-pill" data-expl-kcf="keep">1. Keep ${a}/${b}</button>
+          <button type="button" class="expl-step-pill" data-expl-kcf="change">2. Change ÷ to ×</button>
+          <button type="button" class="expl-step-pill" data-expl-kcf="flip">3. Flip ${c}/${d} to ${d}/${c}</button>
+          <button type="button" class="expl-step-pill" data-expl-kcf="solve">4. Multiply Across</button>
+        </div>
+        <div class="expl-visual-stage">
+          <div class="expl-kcf-row">
+            <div class="expl-kcf-card card-keep" data-kcf-card="keep">
+              <span class="expl-kcf-label">KEEP</span>
+              <span class="expl-kcf-val">${a}/${b}</span>
+              <span class="expl-kcf-sub">First fraction</span>
+            </div>
+            <div class="expl-kcf-card card-change" data-kcf-card="change">
+              <span class="expl-kcf-label">CHANGE</span>
+              <span class="expl-kcf-val">×</span>
+              <span class="expl-kcf-sub">÷ becomes ×</span>
+            </div>
+            <div class="expl-kcf-card card-flip" data-kcf-card="flip">
+              <span class="expl-kcf-label">FLIP</span>
+              <span class="expl-kcf-val">${d}/${c}</span>
+              <span class="expl-kcf-sub">🔄 Reciprocal</span>
+            </div>
+            <div class="expl-kcf-card" style="background:#f8fafc; border:2px dashed #cbd5e1" data-kcf-card="result">
+              <span class="expl-kcf-label">RESULT</span>
+              <span class="expl-kcf-val" style="color:#0369a1">${escapeHtml(item.displayAnswer)}</span>
+              <span class="expl-kcf-sub">(${a}×${d})/(${b}×${c})</span>
+            </div>
+          </div>
+        </div>
+        <div class="expl-caption-box" role="status">
+          <strong>Keep, Change, Flip:</strong> Keep ${a}/${b}, change ÷ to ×, and flip ${c}/${d} to its reciprocal ${d}/${c}. Then multiply across: (${a} × ${d}) / (${b} × ${c}) = ${a * d}/${b * c}.
+        </div>
+      </div>
+    `;
   } else if (addSubFrac) {
-    const [, a, b, op, c, d] = addSubFrac;
-    goal = `Make like denominators so pieces are the same size before combining!`;
-    tip = `The denominator names the size of the slice. Only add or subtract the top numerators!`;
+    const [, aStr, bStr, op, cStr, dStr] = addSubFrac;
+    const [a, b, c, d] = [Number(aStr), Number(bStr), Number(cStr), Number(dStr)];
+    goal = "Make common denominators so all slices are the same size before combining!";
+    tip = "The denominator names the size of each slice. When the denominators match, add or subtract only the top numerators!";
     suggestedTool = "fractions";
     toolLabel = "Fraction Wall";
-    visualSvg = `
-      <div class="student-expl-visual">
-        <svg width="380" height="90" viewBox="0 0 380 90" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Fraction Like Denominators Model">
-          <rect x="20" y="18" width="140" height="26" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
-          <text x="90" y="36" text-anchor="middle" font-size="12" font-weight="800" fill="#1e40af">${a}/${b}</text>
-          
-          <text x="180" y="36" text-anchor="middle" font-size="16" font-weight="900" fill="#0f172a">${op}</text>
-          
-          <rect x="200" y="18" width="140" height="26" rx="4" fill="#fdf4ff" stroke="#a855f7" stroke-width="1.5"/>
-          <text x="270" y="36" text-anchor="middle" font-size="12" font-weight="800" fill="#7e22ce">${c}/${d}</text>
-          
-          <line x1="20" y1="56" x2="360" y2="56" stroke="#cbd5e1" stroke-dasharray="3,3"/>
-          <text x="190" y="74" text-anchor="middle" font-size="12" font-weight="800" fill="#0369a1">Match Denominators ➔ Result = ${item.displayAnswer}</text>
-        </svg>
-      </div>`;
-  } else if (mulMatch) {
-    const a = Number(mulMatch[1]);
-    const b = Number(mulMatch[2]);
-    goal = `Think of ${a} equal groups of ${b}.`;
-    tip = a <= 12 && b <= 12 ? `Break hard facts into easy 5-facts and 2-facts you know!` : `Use partial products: multiply tens first, then ones!`;
-    suggestedTool = "multigrid";
-    toolLabel = "10×10 Grid";
-    const totalDots = Math.min(24, Math.max(1, a * b));
-    visualSvg = `
-      <div class="student-expl-visual">
-        <svg width="380" height="90" viewBox="0 0 380 90" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Multiplication Array Representation">
-          <rect x="15" y="12" width="160" height="66" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
-          <text x="95" y="35" text-anchor="middle" font-size="11" font-weight="800" fill="#15803d">${a} equal rows of ${b}</text>
-          <text x="95" y="58" text-anchor="middle" font-size="18" font-weight="900" fill="#166534">${a} × ${b} = ${a * b}</text>
-          
-          <line x1="195" y1="15" x2="195" y2="75" stroke="#e2e8f0" stroke-width="2"/>
-          
-          <text x="285" y="35" text-anchor="middle" font-size="12" font-weight="700" fill="#64748b">Repeated Addition:</text>
-          <text x="285" y="58" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">${b} + ${b}${a > 2 ? ` + ... (${a} times)` : ""}</text>
-        </svg>
-      </div>`;
+
+    const commonDen = Math.abs(b * d) / gcd(b, d);
+    const m1 = commonDen / b;
+    const m2 = commonDen / d;
+    const eq1 = a * m1;
+    const eq2 = c * m2;
+    const resNum = op === "+" ? eq1 + eq2 : eq1 - eq2;
+
+    visualWidget = `
+      <div class="expl-interactive-widget" data-widget-type="frac-addsub">
+        <div class="expl-widget-header">
+          <span class="expl-widget-title">🧩 Common Denominator Fraction Bars</span>
+          <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
+        </div>
+        <div class="expl-action-bar">
+          <button type="button" class="expl-action-btn" data-expl-frac="different">⚠️ Slices Don't Match (${b} vs ${d})</button>
+          <button type="button" class="expl-action-btn is-active" data-expl-frac="cut" data-lcd="${commonDen}" data-e1="${eq1}" data-e2="${eq2}" data-op="${op}">🧩 Cut into Equal Slices (LCD = ${commonDen})</button>
+          <button type="button" class="expl-action-btn" data-expl-frac="combine" data-res="${resNum}" data-lcd="${commonDen}">➕ Combine Matching Slices</button>
+        </div>
+        <div class="expl-visual-stage">
+          <div class="expl-frac-bars-wrap">
+            <div class="expl-frac-bar-row">
+              <span class="expl-frac-bar-label">${a}/${b} = ${eq1}/${commonDen}</span>
+              <div class="expl-frac-bar-track">
+                ${Array.from({ length: Math.min(30, commonDen) }, (_, i) => `<div class="expl-frac-bar-slice ${i < eq1 ? "slice-active" : "slice-empty"}" style="width:${(100 / Math.min(30, commonDen)).toFixed(2)}%"></div>`).join("")}
+              </div>
+            </div>
+            <div class="expl-frac-bar-row">
+              <span class="expl-frac-bar-label">${c}/${d} = ${eq2}/${commonDen}</span>
+              <div class="expl-frac-bar-track">
+                ${Array.from({ length: Math.min(30, commonDen) }, (_, i) => `<div class="expl-frac-bar-slice ${i < eq2 ? "slice-active-2" : "slice-empty"}" style="width:${(100 / Math.min(30, commonDen)).toFixed(2)}%"></div>`).join("")}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="expl-caption-box" role="status">
+          <strong>Equal Slices:</strong> We cut both bars so all slices are equal ${commonDen}ths! Now combine the top slices: ${eq1} ${op} ${eq2} = ${resNum}/${commonDen} = ${escapeHtml(item.displayAnswer)}.
+        </div>
+      </div>
+    `;
   } else if (divMatch) {
     const a = Number(divMatch[1]);
     const b = Number(divMatch[2]);
-    const quot = b > 0 ? a / b : 0;
-    goal = `Division asks: How many groups of ${b} fit in ${a}?`;
-    tip = `Think backwards using multiplication: ${b} × ? = ${a}.`;
-    suggestedTool = "numberline";
-    toolLabel = "Number Line";
-    visualSvg = `
-      <div class="student-expl-visual">
-        <svg width="380" height="90" viewBox="0 0 380 90" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Division Equal Groups Model">
-          <rect x="20" y="15" width="340" height="34" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
-          <text x="190" y="37" text-anchor="middle" font-size="14" font-weight="900" fill="#1e3a8a">Total: ${a}</text>
-          
-          <text x="190" y="70" text-anchor="middle" font-size="12" font-weight="800" fill="#0369a1">Split into equal groups of ${b} ➔ Makes ${quot} groups!</text>
-        </svg>
-      </div>`;
+    goal = `Divide using the standard algorithm: Divide, Multiply, Subtract, Bring Down, Repeat!`;
+    tip = `Think of division like sharing ${a} fairly into ${b} equal piles. Work through one digit at a time from left to right.`;
+    suggestedTool = "longdivision";
+    toolLabel = "Long Division Solver";
+
+    const quot = b > 0 ? Math.floor(a / b) : 0;
+    const rem = b > 0 ? a % b : 0;
+
+    visualWidget = `
+      <div class="expl-interactive-widget" data-widget-type="longdivision">
+        <div class="expl-widget-header">
+          <span class="expl-widget-title">➗ Standard Algorithm Explorer</span>
+          <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
+        </div>
+        <div class="expl-nav-bar" role="tablist">
+          <button type="button" class="expl-step-pill is-active" data-expl-ld-step="divide">➗ 1. Divide</button>
+          <button type="button" class="expl-step-pill" data-expl-ld-step="multiply">✖️ 2. Multiply</button>
+          <button type="button" class="expl-step-pill" data-expl-ld-step="subtract">➖ 3. Subtract</button>
+          <button type="button" class="expl-step-pill" data-expl-ld-step="bringdown">⬇️ 4. Bring Down</button>
+          <button type="button" class="expl-step-pill" data-expl-ld-step="repeat">🔁 5. Repeat</button>
+        </div>
+        <div class="expl-visual-stage" style="padding: 0.5rem 0.2rem">
+          ${b > 0 && typeof StandardLongDivisionModel !== "undefined"
+            ? StandardLongDivisionModel.renderHtml(a, b, { isSolver: false })
+            : `<div style="font-size:1.3rem; font-weight:900; color:#15803d">${a} ÷ ${b} = ${quot}${rem ? ` R${rem}` : ""}</div>`}
+        </div>
+        <div class="expl-caption-box" role="status">
+          <strong>1. Divide:</strong> How many times does ${b} fit into the first part of ${a}? Find the biggest whole number of times. Result is ${quot}${rem ? ` with remainder ${rem}` : ""}.
+        </div>
+      </div>
+    `;
+  } else if (mulMatch) {
+    const a = Number(mulMatch[1]);
+    const b = Number(mulMatch[2]);
+    goal = `Break ${a} × ${b} into friendly parts you already know!`;
+    tip = a <= 12 && b <= 12 ? `Break hard facts into easy 5-facts and 2-facts you know!` : `Use partial products: multiply tens first, then ones!`;
+    suggestedTool = "multigrid";
+    toolLabel = "10×10 Grid";
+
+    const big = Math.max(a, b);
+    const small = Math.min(a, b);
+    const s1 = big > 5 ? 5 : Math.floor(big / 2) || 1;
+    const s2 = big - s1;
+    const p1 = small * s1;
+    const p2 = small * s2;
+    const total = small * big;
+
+    visualWidget = `
+      <div class="expl-interactive-widget" data-widget-type="multiplication">
+        <div class="expl-widget-header">
+          <span class="expl-widget-title">📦 Partitioned Area Box Model</span>
+          <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
+        </div>
+        <div class="expl-action-bar">
+          <button type="button" class="expl-action-btn is-active" data-expl-mul="split" data-small="${small}" data-big="${big}" data-s1="${s1}" data-s2="${s2}" data-p1="${p1}" data-p2="${p2}">✂️ Split into Friendly ${s1}s & ${s2}s</button>
+          <button type="button" class="expl-action-btn" data-expl-mul="grid" data-small="${small}" data-big="${big}">📦 Full Array (${small} × ${big})</button>
+          <button type="button" class="expl-action-btn" data-expl-mul="add" data-p1="${p1}" data-p2="${p2}" data-tot="${total}">➕ Add Parts (${p1} + ${p2})</button>
+        </div>
+        <div class="expl-visual-stage">
+          <svg width="100%" height="90" viewBox="0 0 380 90" style="background:#ffffff; border-radius:8px" role="img" aria-label="Area Model Decomposition">
+            <rect x="25" y="15" width="200" height="60" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="2"/>
+            <text x="125" y="42" text-anchor="middle" font-size="12" font-weight="800" fill="#15803d">${small} × ${s1} (Friendly 5s)</text>
+            <text x="125" y="62" text-anchor="middle" font-size="16" font-weight="900" fill="#166534">= ${p1}</text>
+            
+            <rect x="235" y="15" width="120" height="60" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+            <text x="295" y="42" text-anchor="middle" font-size="12" font-weight="800" fill="#1e40af">${small} × ${s2}</text>
+            <text x="295" y="62" text-anchor="middle" font-size="16" font-weight="900" fill="#1e3a8a">= ${p2}</text>
+          </svg>
+        </div>
+        <div class="expl-caption-box" role="status">
+          <strong>Friendly Split:</strong> Think of ${big} as (${s1} + ${s2})! ${small} × ${s1} = ${p1}, and ${small} × ${s2} = ${p2}. Add them together: ${p1} + ${p2} = ${total}!
+        </div>
+      </div>
+    `;
+  } else if (intMatch && (q.includes("-") || q.includes("−") || q.includes("negative") || q.includes("integer"))) {
+    const a = Number(intMatch[1]);
+    const op = intMatch[2];
+    const b = Number(intMatch[3]);
+    goal = `Combine positive and negative integer counters. Zero pairs cancel out!`;
+    tip = `Every positive counter (+1) and negative counter (−1) cancel each other out to zero!`;
+    suggestedTool = "integers";
+    toolLabel = "Integer Chips Mat";
+
+    const v1 = a;
+    const v2 = (op === "-" || op === "−") ? -b : b;
+    const total = v1 + v2;
+    const pos = (v1 > 0 ? v1 : 0) + (v2 > 0 ? v2 : 0);
+    const neg = (v1 < 0 ? -v1 : 0) + (v2 < 0 ? -v2 : 0);
+    const pairs = Math.min(pos, neg);
+    const rem = total;
+
+    visualWidget = `
+      <div class="expl-interactive-widget" data-widget-type="integers">
+        <div class="expl-widget-header">
+          <span class="expl-widget-title">⚡ Zero Pairs Counter Board</span>
+          <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
+        </div>
+        <div class="expl-action-bar">
+          <button type="button" class="expl-action-btn is-active" data-expl-int="cancel" data-pairs="${pairs}" data-rem="${rem}">⚡ Pair & Cancel Zero Pairs</button>
+          <button type="button" class="expl-action-btn" data-expl-int="reset">🔄 Show All Counters</button>
+        </div>
+        <div class="expl-visual-stage">
+          <div class="expl-chips-board">
+            <div class="expl-chips-row">
+              <span style="font-size:0.85rem; font-weight:800; min-width:80px; color:#1e40af">Positives (+):</span>
+              ${Array.from({ length: Math.min(10, pos) }, () => `<span class="expl-chip expl-chip-pos">+</span>`).join("")}
+              ${pos > 10 ? `<span style="font-weight:800; color:#1e40af">+${pos - 10} more</span>` : ""}
+            </div>
+            <div class="expl-chips-row">
+              <span style="font-size:0.85rem; font-weight:800; min-width:80px; color:#b91c1c">Negatives (−):</span>
+              ${Array.from({ length: Math.min(10, neg) }, () => `<span class="expl-chip expl-chip-neg">−</span>`).join("")}
+              ${neg > 10 ? `<span style="font-weight:800; color:#b91c1c">+${neg - 10} more</span>` : ""}
+            </div>
+          </div>
+        </div>
+        <div class="expl-caption-box" role="status">
+          <strong>Zero Pairs:</strong> ${pairs} positive and ${pairs} negative chips cancel out to 0! What remains is ${Math.abs(rem)} ${rem >= 0 ? "positive (+)" : "negative (−)"} chips, so the final answer is ${total}.
+        </div>
+      </div>
+    `;
+  } else if (eqMatch) {
+    goal = `Keep the scale balanced! Whatever you do to one side, do the exact same thing to the other side.`;
+    tip = `Undo operations in reverse order: subtract the extra numbers first, then divide into equal piles!`;
+    suggestedTool = "balance";
+    toolLabel = "Pan Balance Scale";
+
+    visualWidget = `
+      <div class="expl-interactive-widget" data-widget-type="balance">
+        <div class="expl-widget-header">
+          <span class="expl-widget-title">⚖️ Interactive Pan Balance Scale</span>
+          <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
+        </div>
+        <div class="expl-nav-bar" role="tablist">
+          <button type="button" class="expl-step-pill is-active" data-expl-bal="step1">1. Undo Constant</button>
+          <button type="button" class="expl-step-pill" data-expl-bal="step2">2. Divide Equal Piles</button>
+          <button type="button" class="expl-step-pill" data-expl-bal="check">3. Check Balance</button>
+        </div>
+        <div class="expl-visual-stage">
+          <svg width="100%" height="90" viewBox="0 0 380 90" style="background:#ffffff; border-radius:8px" role="img" aria-label="Balance Scale Model">
+            <polygon points="190,50 175,80 205,80" fill="#475569"/>
+            <line x1="70" y1="50" x2="310" y2="50" stroke="#1e293b" stroke-width="4"/>
+            <rect x="85" y="24" width="60" height="26" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+            <text x="115" y="42" text-anchor="middle" font-size="12" font-weight="900" fill="#1e40af">Left Pan</text>
+            <rect x="235" y="24" width="60" height="26" rx="4" fill="#f0fdf4" stroke="#22c55e" stroke-width="2"/>
+            <text x="265" y="42" text-anchor="middle" font-size="12" font-weight="900" fill="#15803d">Right Pan</text>
+            <text x="190" y="32" text-anchor="middle" font-size="16" font-weight="900" fill="#0f172a">=</text>
+          </svg>
+        </div>
+        <div class="expl-caption-box" role="status">
+          <strong>Keep Balanced:</strong> Whatever you remove from the left pan, remove the exact same amount from the right pan to keep the scale level!
+        </div>
+      </div>
+    `;
+  } else if (isPercent || /ratio|rate|per hour/i.test(q)) {
+    goal = `Use friendly benchmark percents (10%, 25%, 50%) to solve mentally!`;
+    tip = `50% is half, 25% is half of that, and 10% is dividing by 10.`;
+    suggestedTool = "doublenumberline";
+    toolLabel = "Double Number Line";
+
+    visualWidget = `
+      <div class="expl-interactive-widget" data-widget-type="percent">
+        <div class="expl-widget-header">
+          <span class="expl-widget-title">📊 Benchmark Percent &amp; Ratio Bar</span>
+          <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
+        </div>
+        <div class="expl-action-bar">
+          <button type="button" class="expl-action-btn" data-expl-pct="10">10% (÷10)</button>
+          <button type="button" class="expl-action-btn" data-expl-pct="25">25% (Half of half)</button>
+          <button type="button" class="expl-action-btn" data-expl-pct="50">50% (Half)</button>
+          <button type="button" class="expl-action-btn is-active" data-expl-pct="target">🎯 Answer: ${escapeHtml(item.displayAnswer)}</button>
+        </div>
+        <div class="expl-visual-stage">
+          <div class="expl-pct-track-wrap">
+            <div class="expl-pct-track">
+              <div class="expl-pct-fill" style="width: 50%"></div>
+            </div>
+            <div class="expl-pct-ticks">
+              <span>0%</span>
+              <span>10%</span>
+              <span>25%</span>
+              <span>50%</span>
+              <span>100%</span>
+            </div>
+          </div>
+        </div>
+        <div class="expl-caption-box" role="status">
+          <strong>Friendly Benchmarks:</strong> Use easy benchmarks to find the amount! 50% is half, 25% is half of that, and 10% is dividing by 10.
+        </div>
+      </div>
+    `;
   } else if (addMatch && !isDecimal) {
     const a = Number(addMatch[1]);
     const b = Number(addMatch[2]);
-    goal = `Start at ${Math.max(a, b)} and jump forward by friendly parts!`;
-    tip = `Always start with the larger number—it requires fewer jumps!`;
+    const maxVal = Math.max(a, b);
+    const minVal = Math.min(a, b);
+    const endVal = maxVal + minVal;
+    goal = `Start at ${maxVal} and jump forward in friendly hops!`;
+    tip = `Always start with the bigger number—it takes fewer jumps!`;
     suggestedTool = "numberline";
     toolLabel = "Number Line";
-    const startVal = Math.max(a, b);
-    const jumpVal = Math.min(a, b);
-    const endVal = startVal + jumpVal;
-    visualSvg = `
-      <div class="student-expl-visual">
-        <svg width="380" height="85" viewBox="0 0 380 85" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Addition Open Number Line Jump">
-          <line x1="25" y1="55" x2="355" y2="55" stroke="#334155" stroke-width="2.5"/>
-          <polygon points="360,55 350,50 350,60" fill="#334155"/>
-          
-          <circle cx="70" cy="55" r="5" fill="#2563eb"/>
-          <text x="70" y="75" text-anchor="middle" font-size="13" font-weight="900" fill="#1e293b">${startVal}</text>
-          
-          <path d="M 70 50 Q 190 10 310 50" fill="none" stroke="#2563eb" stroke-width="2.5"/>
-          <polygon points="310,50 302,42 300,52" fill="#2563eb"/>
-          <text x="190" y="24" text-anchor="middle" font-size="13" font-weight="900" fill="#1d4ed8">+${jumpVal}</text>
-          
-          <circle cx="310" cy="55" r="5" fill="#16a34a"/>
-          <text x="310" y="75" text-anchor="middle" font-size="14" font-weight="900" fill="#15803d">${endVal}</text>
-        </svg>
-      </div>`;
+
+    visualWidget = `
+      <div class="expl-interactive-widget" data-widget-type="add-line">
+        <div class="expl-widget-header">
+          <span class="expl-widget-title">🦘 Open Number Line Hops</span>
+          <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
+        </div>
+        <div class="expl-action-bar">
+          <button type="button" class="expl-action-btn is-active" data-expl-jump="all">🦘 Play Friendly Jumps</button>
+          <button type="button" class="expl-action-btn" data-expl-jump="tens">1️⃣ Jump Tens</button>
+          <button type="button" class="expl-action-btn" data-expl-jump="ones">2️⃣ Jump Ones</button>
+        </div>
+        <div class="expl-visual-stage">
+          <svg width="100%" height="85" viewBox="0 0 380 85" style="background:#ffffff; border-radius:8px" role="img" aria-label="Number line hop">
+            <line x1="25" y1="55" x2="355" y2="55" stroke="#334155" stroke-width="2.5"/>
+            <polygon points="360,55 350,50 350,60" fill="#334155"/>
+            <circle cx="70" cy="55" r="5" fill="#2563eb"/>
+            <text x="70" y="75" text-anchor="middle" font-size="13" font-weight="900" fill="#1e293b">${maxVal}</text>
+            <path d="M 70 50 Q 190 10 310 50" fill="none" stroke="#2563eb" stroke-width="2.5"/>
+            <polygon points="310,50 302,42 300,52" fill="#2563eb"/>
+            <text x="190" y="24" text-anchor="middle" font-size="13" font-weight="900" fill="#1d4ed8">+${minVal}</text>
+            <circle cx="310" cy="55" r="5" fill="#16a34a"/>
+            <text x="310" y="75" text-anchor="middle" font-size="14" font-weight="900" fill="#15803d">${endVal}</text>
+          </svg>
+        </div>
+        <div class="expl-caption-box" role="status">
+          <strong>Friendly Jumps:</strong> Start at the bigger number ${maxVal}. Jump forward by ${minVal} to land directly on ${endVal}!
+        </div>
+      </div>
+    `;
   } else if (subMatch && !isDecimal) {
     const a = Number(subMatch[1]);
     const b = Number(subMatch[2]);
-    goal = `Start at ${a} and jump back ${b} to find the difference!`;
-    tip = `Think of subtraction as distance on a number line or counting down in friendly hops.`;
-    suggestedTool = "numberline";
-    toolLabel = "Number Line";
     const endVal = a - b;
-    visualSvg = `
-      <div class="student-expl-visual">
-        <svg width="380" height="85" viewBox="0 0 380 85" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Subtraction Number Line Jump Back">
-          <line x1="25" y1="55" x2="355" y2="55" stroke="#334155" stroke-width="2.5"/>
-          <polygon points="20,55 30,50 30,60" fill="#334155"/>
-          
-          <circle cx="310" cy="55" r="5" fill="#dc2626"/>
-          <text x="310" y="75" text-anchor="middle" font-size="13" font-weight="900" fill="#1e293b">${a}</text>
-          
-          <path d="M 310 50 Q 190 10 70 50" fill="none" stroke="#dc2626" stroke-width="2.5"/>
-          <polygon points="70,50 78,42 80,52" fill="#dc2626"/>
-          <text x="190" y="24" text-anchor="middle" font-size="13" font-weight="900" fill="#b91c1c">−${b}</text>
-          
-          <circle cx="70" cy="55" r="5" fill="#16a34a"/>
-          <text x="70" y="75" text-anchor="middle" font-size="14" font-weight="900" fill="#15803d">${endVal}</text>
-        </svg>
-      </div>`;
-  } else if (isTensOnes) {
-    goal = `Separate numbers into groups of 10 and leftover single 1s.`;
-    tip = `Every 2-digit number has Tens on the left and Ones on the right!`;
-    suggestedTool = "tenframe";
-    toolLabel = "Ten-Frame";
-    visualSvg = `
-      <div class="student-expl-visual">
-        <svg width="380" height="80" viewBox="0 0 380 80" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Base Ten Blocks Representation">
-          <rect x="40" y="15" width="18" height="50" rx="3" fill="#3b82f6"/>
-          <rect x="65" y="15" width="18" height="50" rx="3" fill="#3b82f6"/>
-          <text x="61" y="75" text-anchor="middle" font-size="11" font-weight="800" fill="#1e40af">Tens Rods</text>
-          
-          <line x1="140" y1="12" x2="140" y2="68" stroke="#cbd5e1" stroke-width="2"/>
-          
-          <rect x="180" y="32" width="16" height="16" rx="2" fill="#eab308"/>
-          <rect x="202" y="32" width="16" height="16" rx="2" fill="#eab308"/>
-          <rect x="224" y="32" width="16" height="16" rx="2" fill="#eab308"/>
-          <text x="210" y="75" text-anchor="middle" font-size="11" font-weight="800" fill="#a16207">Ones Units</text>
-          
-          <text x="320" y="45" text-anchor="middle" font-size="14" font-weight="900" fill="#0369a1">${item.displayAnswer}</text>
-        </svg>
-      </div>`;
-  } else if (isDecimal) {
-    goal = `Line up the decimal points like buttons on a coat so matching place values add correctly!`;
-    tip = `Always check the reasonable size of your answer before finalizing.`;
+    goal = `Start at ${a} and jump back ${b} in friendly hops!`;
+    tip = `Think of subtraction as jumping backwards or finding the distance between the two numbers.`;
     suggestedTool = "numberline";
     toolLabel = "Number Line";
-    visualSvg = `
-      <div class="student-expl-visual">
-        <svg width="380" height="85" viewBox="0 0 380 85" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Decimal Alignment Visual">
-          <rect x="30" y="12" width="320" height="60" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
-          <text x="90" y="32" text-anchor="middle" font-size="11" font-weight="800" fill="#64748b">Ones</text>
-          <text x="140" y="32" text-anchor="middle" font-size="14" font-weight="900" fill="#dc2626">•</text>
-          <text x="190" y="32" text-anchor="middle" font-size="11" font-weight="800" fill="#64748b">Tenths</text>
-          <text x="260" y="32" text-anchor="middle" font-size="11" font-weight="800" fill="#64748b">Hundredths</text>
-          
-          <text x="190" y="58" text-anchor="middle" font-size="14" font-weight="900" fill="#0f172a">Decimal points stay aligned in the answer!</text>
-        </svg>
-      </div>`;
-  } else if (intMatch && (q.includes("−") || q.includes("-") || q.includes("negative") || q.includes("integer"))) {
-    goal = `Combine positive and negative integer counters. Zero pairs cancel out!`;
-    tip = `Subtracting a negative is the exact same as adding a positive!`;
-    suggestedTool = "integers";
-    toolLabel = "Integer Chips Mat";
-    visualSvg = `
-      <div class="student-expl-visual">
-        <svg width="380" height="80" viewBox="0 0 380 80" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Integer Zero Pair Chips">
-          <circle cx="60" cy="35" r="16" fill="#3b82f6"/>
-          <text x="60" y="41" text-anchor="middle" font-size="18" font-weight="900" fill="#ffffff">+</text>
-          <text x="100" y="40" text-anchor="middle" font-size="16" font-weight="900" fill="#334155">+</text>
-          <circle cx="140" cy="35" r="16" fill="#ef4444"/>
-          <text x="140" y="41" text-anchor="middle" font-size="18" font-weight="900" fill="#ffffff">−</text>
-          
-          <text x="195" y="40" text-anchor="middle" font-size="18" font-weight="900" fill="#64748b">=</text>
-          
-          <rect x="230" y="18" width="120" height="36" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-dasharray="3,3"/>
-          <text x="290" y="41" text-anchor="middle" font-size="12" font-weight="800" fill="#475569">0 (Zero Pair!)</text>
-        </svg>
-      </div>`;
-  } else if (eqMatch) {
-    goal = `Keep the scale balanced! Whatever you do to one side, you must do to the other side.`;
-    tip = `Use inverse operations: undo addition with subtraction, and undo multiplication with division!`;
-    suggestedTool = "balance";
-    toolLabel = "Interactive Pan Balance";
-    visualSvg = `
-      <div class="student-expl-visual">
-        <svg width="380" height="85" viewBox="0 0 380 85" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Algebra Balance Scale Model">
-          <polygon points="190,45 175,75 205,75" fill="#475569"/>
-          <line x1="70" y1="45" x2="310" y2="45" stroke="#1e293b" stroke-width="4"/>
-          
-          <rect x="85" y="20" width="50" height="25" rx="4" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
-          <text x="110" y="37" text-anchor="middle" font-size="12" font-weight="900" fill="#1e40af">Left Side</text>
-          
-          <rect x="245" y="20" width="50" height="25" rx="4" fill="#f0fdf4" stroke="#22c55e" stroke-width="2"/>
-          <text x="270" y="37" text-anchor="middle" font-size="12" font-weight="900" fill="#15803d">Right Side</text>
-          
-          <text x="190" y="24" text-anchor="middle" font-size="14" font-weight="900" fill="#0f172a">=</text>
-        </svg>
-      </div>`;
-  } else if (/find the lcm of/i.test(q) || /gcf|greatest common factor/i.test(q)) {
-    goal = `Break numbers into prime factors to find shared and combined multipliers.`;
-    tip = `For LCM, take the highest power of each prime. For GCF, multiply only the shared primes!`;
-    suggestedTool = "multigrid";
-    toolLabel = "10×10 Grid";
-  } else if (isPercent || /ratio|rate|per hour|per mile|per minute|speed|scale/i.test(q)) {
-    goal = `Percent and ratios compare parts to wholes or scale at constant rates!`;
-    tip = `Use a double number line to scale both quantities up or down together.`;
-    suggestedTool = "doublenumberline";
-    toolLabel = "Double Number Line";
-    visualSvg = `
-      <div class="student-expl-visual">
-        <svg width="380" height="75" viewBox="0 0 380 75" style="background:#ffffff; border-radius:10px; border:1px solid #e2e8f0" role="img" aria-label="Percent and Ratio Bar Model">
-          <rect x="25" y="20" width="330" height="26" rx="6" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
-          <rect x="25" y="20" width="165" height="26" rx="6" fill="#3b82f6"/>
-          <text x="25" y="62" text-anchor="middle" font-size="10" font-weight="800" fill="#64748b">0%</text>
-          <text x="190" y="62" text-anchor="middle" font-size="11" font-weight="900" fill="#1e40af">50% (Half)</text>
-          <text x="355" y="62" text-anchor="middle" font-size="10" font-weight="800" fill="#64748b">100%</text>
-        </svg>
-      </div>`;
+
+    visualWidget = `
+      <div class="expl-interactive-widget" data-widget-type="sub-line">
+        <div class="expl-widget-header">
+          <span class="expl-widget-title">⏪ Open Number Line Jump Back</span>
+          <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
+        </div>
+        <div class="expl-action-bar">
+          <button type="button" class="expl-action-btn is-active" data-expl-jump="all">⏪ Jump Back ${b}</button>
+          <button type="button" class="expl-action-btn" data-expl-jump="tens">1️⃣ Jump Back Tens</button>
+          <button type="button" class="expl-action-btn" data-expl-jump="ones">2️⃣ Jump Back Ones</button>
+        </div>
+        <div class="expl-visual-stage">
+          <svg width="100%" height="85" viewBox="0 0 380 85" style="background:#ffffff; border-radius:8px" role="img" aria-label="Subtraction Jump Back">
+            <line x1="25" y1="55" x2="355" y2="55" stroke="#334155" stroke-width="2.5"/>
+            <polygon points="20,55 30,50 30,60" fill="#334155"/>
+            <circle cx="310" cy="55" r="5" fill="#dc2626"/>
+            <text x="310" y="75" text-anchor="middle" font-size="13" font-weight="900" fill="#1e293b">${a}</text>
+            <path d="M 310 50 Q 190 10 70 50" fill="none" stroke="#dc2626" stroke-width="2.5"/>
+            <polygon points="70,50 78,42 80,52" fill="#dc2626"/>
+            <text x="190" y="24" text-anchor="middle" font-size="13" font-weight="900" fill="#b91c1c">−${b}</text>
+            <circle cx="70" cy="55" r="5" fill="#16a34a"/>
+            <text x="70" y="75" text-anchor="middle" font-size="14" font-weight="900" fill="#15803d">${endVal}</text>
+          </svg>
+        </div>
+        <div class="expl-caption-box" role="status">
+          <strong>Jump Back:</strong> Start at ${a} and jump backwards ${b} steps to land on the difference ${endVal}!
+        </div>
+      </div>
+    `;
+  } else if (isDecimal || isTensOnes) {
+    goal = `Line up matching place value columns so like units add or subtract correctly!`;
+    tip = `Decimal points must line up like buttons on a coat.`;
+    suggestedTool = "tenframe";
+    toolLabel = "Place Value Chart";
+
+    visualWidget = `
+      <div class="expl-interactive-widget" data-widget-type="place-value">
+        <div class="expl-widget-header">
+          <span class="expl-widget-title">🏷️ Place Value &amp; Decimal Columns</span>
+          <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
+        </div>
+        <div class="expl-action-bar">
+          <button type="button" class="expl-action-btn is-active" data-expl-pv="align">↕️ Line Up Decimal Points</button>
+          <button type="button" class="expl-action-btn" data-expl-pv="places">🏷️ Compare Place Values</button>
+        </div>
+        <div class="expl-visual-stage">
+          <svg width="100%" height="85" viewBox="0 0 380 85" style="background:#ffffff; border-radius:8px" role="img" aria-label="Decimal place alignment">
+            <rect x="30" y="12" width="320" height="60" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+            <text x="90" y="32" text-anchor="middle" font-size="11" font-weight="800" fill="#64748b">Tens</text>
+            <text x="140" y="32" text-anchor="middle" font-size="11" font-weight="800" fill="#64748b">Ones</text>
+            <text x="180" y="32" text-anchor="middle" font-size="14" font-weight="900" fill="#dc2626">•</text>
+            <text x="220" y="32" text-anchor="middle" font-size="11" font-weight="800" fill="#64748b">Tenths</text>
+            <text x="280" y="32" text-anchor="middle" font-size="11" font-weight="800" fill="#64748b">Hundredths</text>
+            <text x="190" y="58" text-anchor="middle" font-size="14" font-weight="900" fill="#0f172a">Decimal points stay aligned in the answer: ${escapeHtml(item.displayAnswer)}</text>
+          </svg>
+        </div>
+        <div class="expl-caption-box" role="status">
+          <strong>Place Value Alignment:</strong> Keep like units in matching columns so each place value combines correctly!
+        </div>
+      </div>
+    `;
+  } else {
+    // Universal Fallback Visual Model
+    visualWidget = `
+      <div class="expl-interactive-widget" data-widget-type="generic">
+        <div class="expl-widget-header">
+          <span class="expl-widget-title">💡 Step-by-Step Solution Model</span>
+          <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
+        </div>
+        <div class="expl-action-bar">
+          <button type="button" class="expl-action-btn is-active" data-expl-step="1">1️⃣ Notice Problem</button>
+          <button type="button" class="expl-action-btn" data-expl-step="2">2️⃣ Solve Strategy</button>
+          <button type="button" class="expl-action-btn" data-expl-step="3">3️⃣ Final Answer</button>
+        </div>
+        <div class="expl-visual-stage">
+          <div style="font-size:1.3rem; font-weight:900; color:#0369a1; padding:0.5rem">
+            ${escapeHtml(item.question)} ➔ <span style="color:#15803d">${escapeHtml(item.displayAnswer)}</span>
+          </div>
+        </div>
+        <div class="expl-caption-box" role="status">
+          <strong>Solution:</strong> ${escapeHtml(copy || item.explanation || item.displayAnswer)}
+        </div>
+      </div>
+    `;
   }
 
   const stepsList = item.steps && item.steps.length > 1
@@ -6762,7 +6973,7 @@ function renderStudentFriendlyExplanation(item, copy) {
   const toolCallout = suggestedTool
     ? `<div class="student-expl-tool-callout">
         <button type="button" class="expl-tool-launcher" data-open-tool="${suggestedTool}">
-          <span>🧮</span> Try It on the Interactive ${escapeHtml(toolLabel)}
+          <span>🧮</span> Practice on the Interactive ${escapeHtml(toolLabel)}
         </button>
       </div>`
     : "";
@@ -6771,9 +6982,10 @@ function renderStudentFriendlyExplanation(item, copy) {
     <div class="student-expl-card">
       <div class="student-expl-header">
         <span class="student-expl-badge">💡 Strategy &amp; Solution Guide</span>
+        <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
       </div>
       <p class="student-expl-goal"><strong>🎯 Goal:</strong> ${escapeHtml(goal)}</p>
-      ${visualSvg}
+      ${visualWidget}
       ${stepsList}
       <div class="student-expl-tip"><strong>💡 Pro Tip:</strong> ${escapeHtml(tip)}</div>
       ${toolCallout}
@@ -6781,6 +6993,22 @@ function renderStudentFriendlyExplanation(item, copy) {
       ${renderWidaStudio(item)}
     </div>
   `;
+}
+
+function wireExplanationWidgets(root, item) {
+  if (!root) return;
+  const q = String(item?.question || item?.expr || "").replaceAll(",", "");
+  const divMatch = q.match(/(\d+)\s*[÷/]\s*(\d+)/);
+  if (divMatch) {
+    const a = Number(divMatch[1]);
+    const b = Number(divMatch[2]);
+    if (b > 0 && typeof StandardLongDivisionModel !== "undefined") {
+      const ldContainer = root.querySelector(".ld-model-container");
+      if (ldContainer) {
+        StandardLongDivisionModel.wireEvents(ldContainer, a, b);
+      }
+    }
+  }
 }
 
 // Every practice problem carries its own model: the interactive picture of these numbers, or,
@@ -7188,6 +7416,7 @@ function showFeedback(title, copy, type) {
   if (type !== "correct" && state.item) {
     els.feedbackCopy.innerHTML = renderStudentFriendlyExplanation(state.item, copy);
     lightStepPlayers(els.feedbackCopy);
+    wireExplanationWidgets(els.feedbackCopy, state.item);
   } else if (type === "correct" && state.item) {
     els.feedbackCopy.innerHTML = `<p>${escapeHtml(copy)}</p>${renderTransferChallengeButton(state.item)}`;
   } else {
@@ -10149,11 +10378,237 @@ const TeacherPrintCenter = {
   }
 };
 
+function handleExplanationInteraction(event) {
+  const speakBtn = event.target.closest("[data-speak-expl]");
+  if (speakBtn) {
+    const card = speakBtn.closest(".student-expl-card");
+    const goal = card?.querySelector(".student-expl-goal")?.textContent || "";
+    const caption = card?.querySelector(".expl-caption-box")?.textContent || "";
+    const tip = card?.querySelector(".student-expl-tip")?.textContent || "";
+    speak(`${goal}. ${caption}. ${tip}`);
+    return true;
+  }
+
+  const btn = event.target.closest("[data-expl-action], [data-expl-step], [data-expl-ld-step], [data-expl-mul], [data-expl-area], [data-expl-kcf], [data-expl-frac], [data-expl-int], [data-expl-sign], [data-expl-bal], [data-expl-pct], [data-expl-jump], [data-expl-pv]");
+  if (!btn) return false;
+
+  const widget = btn.closest(".expl-interactive-widget");
+  if (!widget) return false;
+
+  const bar = btn.closest(".expl-nav-bar, .expl-action-bar");
+  if (bar) {
+    bar.querySelectorAll(".expl-step-pill, .expl-action-btn").forEach((p) => p.classList.remove("is-active"));
+    btn.classList.add("is-active");
+  }
+
+  const captionEl = widget.querySelector(".expl-caption-box");
+
+  // Long Division Standard Algorithm Step Pills
+  if (btn.hasAttribute("data-expl-ld-step")) {
+    const phase = btn.dataset.explLdStep;
+    const tracker = widget.querySelector(".ld-cycle-tracker");
+    if (tracker) {
+      tracker.querySelectorAll(".ld-cycle-step").forEach((st) => {
+        st.classList.toggle("is-active", st.dataset.ldPhase === phase);
+      });
+    }
+    const msgs = {
+      divide: "1. Divide: How many times does the divisor fit into the current number? Find the biggest whole number of times.",
+      multiply: "2. Multiply: Multiply the quotient digit by the divisor. Write the product below the number.",
+      subtract: "3. Subtract: Subtract the product from the number to find what is left over.",
+      bringdown: "4. Bring Down: Bring down the next digit from the dividend to form the next number to divide.",
+      repeat: "5. Repeat / Remainder: Continue the cycle until all digits are used. Any leftover amount is the remainder!",
+    };
+    if (captionEl) captionEl.innerHTML = `<strong>${msgs[phase] || "Continue the standard algorithm cycle!"}</strong>`;
+    if (typeof chime === "function") chime("step");
+    return true;
+  }
+
+  // Multiplication: Friendly Split vs Full Array
+  if (btn.hasAttribute("data-expl-mul")) {
+    const act = btn.dataset.explMul;
+    const small = Number(btn.dataset.small) || 6;
+    const big = Number(btn.dataset.big) || 7;
+    const s1 = Number(btn.dataset.s1) || 5;
+    const s2 = Number(btn.dataset.s2) || (big - s1);
+    const p1 = Number(btn.dataset.p1) || (small * s1);
+    const p2 = Number(btn.dataset.p2) || (small * s2);
+    const tot = Number(btn.dataset.tot) || (small * big);
+
+    if (act === "split") {
+      if (captionEl) captionEl.innerHTML = `<strong>Friendly Split:</strong> Break ${big} into friendly parts (${s1} + ${s2})! ${small} × ${s1} = ${p1}, and ${small} × ${s2} = ${p2}. Total = ${tot}!`;
+    } else if (act === "grid") {
+      if (captionEl) captionEl.innerHTML = `<strong>Full Grid:</strong> ${small} equal rows with ${big} units in each row makes ${tot} total units in the array.`;
+    } else if (act === "add") {
+      if (captionEl) captionEl.innerHTML = `<strong>Add Partial Products:</strong> ${p1} (green box) + ${p2} (blue box) = ${tot} total units!`;
+    }
+    if (typeof chime === "function") chime("step");
+    return true;
+  }
+
+  // Fraction Division: Keep, Change, Flip
+  if (btn.hasAttribute("data-expl-kcf")) {
+    const phase = btn.dataset.explKcf;
+    const cards = widget.querySelectorAll("[data-kcf-card]");
+    cards.forEach((c) => {
+      c.style.transform = "";
+      c.style.boxShadow = "";
+    });
+    if (phase === "keep") {
+      const c = widget.querySelector('[data-kcf-card="keep"]');
+      if (c) { c.style.transform = "scale(1.08)"; c.style.boxShadow = "0 0 0 3px #3b82f6"; }
+      if (captionEl) captionEl.innerHTML = `<strong>1. KEEP:</strong> Leave the first fraction exactly as it is!`;
+    } else if (phase === "change") {
+      const c = widget.querySelector('[data-kcf-card="change"]');
+      if (c) { c.style.transform = "scale(1.08)"; c.style.boxShadow = "0 0 0 3px #a855f7"; }
+      if (captionEl) captionEl.innerHTML = `<strong>2. CHANGE:</strong> Change the division sign (÷) into a multiplication sign (×)!`;
+    } else if (phase === "flip") {
+      const c = widget.querySelector('[data-kcf-card="flip"]');
+      if (c) { c.style.transform = "scale(1.08) rotate(180deg)"; c.style.boxShadow = "0 0 0 3px #22c55e"; }
+      if (captionEl) captionEl.innerHTML = `<strong>3. FLIP:</strong> Flip the second fraction upside down to get its reciprocal!`;
+    } else {
+      if (captionEl) captionEl.innerHTML = `<strong>4. MULTIPLY:</strong> Multiply numerators straight across and denominators straight across!`;
+    }
+    if (typeof chime === "function") chime("step");
+    return true;
+  }
+
+  // Fraction Addition/Subtraction: Common Denominators
+  if (btn.hasAttribute("data-expl-frac")) {
+    const act = btn.dataset.explFrac;
+    const lcd = Number(btn.dataset.lcd) || 12;
+    const res = btn.dataset.res;
+    if (act === "different") {
+      if (captionEl) captionEl.innerHTML = `<strong>Unequal Slices:</strong> The slices are different sizes! We must find a common denominator before combining.`;
+    } else if (act === "cut") {
+      if (captionEl) captionEl.innerHTML = `<strong>Equal Slices:</strong> Both fraction bars are cut into equal ${lcd}ths so all slices match!`;
+    } else if (act === "combine") {
+      if (captionEl) captionEl.innerHTML = `<strong>Combine Slices:</strong> Keep the bottom denominator (${lcd}) and combine the top slices = ${res}/${lcd}!`;
+    }
+    if (typeof chime === "function") chime("step");
+    return true;
+  }
+
+  // Integer Zero Pairs
+  if (btn.hasAttribute("data-expl-int")) {
+    const act = btn.dataset.explInt;
+    const chips = widget.querySelectorAll(".expl-chip");
+    const pairs = Number(btn.dataset.pairs) || 0;
+    const rem = Number(btn.dataset.rem) || 0;
+    if (act === "cancel") {
+      let posLeft = pairs;
+      let negLeft = pairs;
+      chips.forEach((ch) => {
+        if (ch.classList.contains("expl-chip-pos") && posLeft > 0) {
+          ch.classList.add("is-canceled");
+          posLeft--;
+        } else if (ch.classList.contains("expl-chip-neg") && negLeft > 0) {
+          ch.classList.add("is-canceled");
+          negLeft--;
+        } else {
+          ch.classList.remove("is-canceled");
+        }
+      });
+      if (captionEl) captionEl.innerHTML = `<strong>Zero Pairs Cancelled:</strong> ${pairs} positive and ${pairs} negative chips cancel out to 0! What remains is ${Math.abs(rem)} ${rem >= 0 ? "positive (+)" : "negative (−)"} chips.`;
+    } else {
+      chips.forEach((ch) => ch.classList.remove("is-canceled"));
+      if (captionEl) captionEl.innerHTML = `<strong>All Counters:</strong> Here are all starting counters before cancelling zero pairs.`;
+    }
+    if (typeof chime === "function") chime("step");
+    return true;
+  }
+
+  // Pan Balance Scale
+  if (btn.hasAttribute("data-expl-bal")) {
+    const step = btn.dataset.explBal;
+    if (step === "step1") {
+      if (captionEl) captionEl.innerHTML = `<strong>Step 1:</strong> Subtract the extra constant from BOTH pans so the scale stays level!`;
+    } else if (step === "step2") {
+      if (captionEl) captionEl.innerHTML = `<strong>Step 2:</strong> Divide the remaining weights into equal piles to find the value of 1 variable!`;
+    } else {
+      if (captionEl) captionEl.innerHTML = `<strong>Step 3:</strong> Plug the answer back in to verify both pans balance perfectly!`;
+    }
+    if (typeof chime === "function") chime("step");
+    return true;
+  }
+
+  // Percent Benchmarks
+  if (btn.hasAttribute("data-expl-pct")) {
+    const pct = btn.dataset.explPct;
+    const track = widget.querySelector(".expl-pct-fill");
+    if (pct === "10") {
+      if (track) track.style.width = "10%";
+      if (captionEl) captionEl.innerHTML = `<strong>10% Benchmark:</strong> Move the decimal point one place to the left (divide by 10)!`;
+    } else if (pct === "25") {
+      if (track) track.style.width = "25%";
+      if (captionEl) captionEl.innerHTML = `<strong>25% Benchmark:</strong> Take half, then take half again (divide by 4)!`;
+    } else if (pct === "50") {
+      if (track) track.style.width = "50%";
+      if (captionEl) captionEl.innerHTML = `<strong>50% Benchmark:</strong> 50% is simply half of the whole amount!`;
+    } else {
+      if (track) track.style.width = "100%";
+      if (captionEl) captionEl.innerHTML = `<strong>Target Answer:</strong> Use your benchmarks to find the final target amount!`;
+    }
+    if (typeof chime === "function") chime("step");
+    return true;
+  }
+
+  // Number Line Jumps
+  if (btn.hasAttribute("data-expl-jump")) {
+    const jump = btn.dataset.explJump;
+    if (jump === "tens") {
+      if (captionEl) captionEl.innerHTML = `<strong>Step 1:</strong> Hop forward or backward the tens first! It makes much larger, friendly leaps.`;
+    } else if (jump === "ones") {
+      if (captionEl) captionEl.innerHTML = `<strong>Step 2:</strong> Hop the leftover ones to land on the exact target number!`;
+    } else {
+      if (captionEl) captionEl.innerHTML = `<strong>Full Jump:</strong> Hop tens first, then hop ones for fast mental math!`;
+    }
+    if (typeof chime === "function") chime("step");
+    return true;
+  }
+
+  // Place Value Alignment
+  if (btn.hasAttribute("data-expl-pv")) {
+    const pv = btn.dataset.explPv;
+    if (pv === "align") {
+      if (captionEl) captionEl.innerHTML = `<strong>Decimal Points Aligned:</strong> Decimal points stay locked in line like buttons on a coat!`;
+    } else {
+      if (captionEl) captionEl.innerHTML = `<strong>Compare Place Values:</strong> Always compare or add like units: Tens with Tens, Ones with Ones, Tenths with Tenths!`;
+    }
+    if (typeof chime === "function") chime("step");
+    return true;
+  }
+
+  // Generic Step Pills
+  if (btn.hasAttribute("data-expl-step")) {
+    const s = btn.dataset.explStep;
+    if (s === "1") {
+      if (captionEl) captionEl.innerHTML = `<strong>1. Notice the Problem:</strong> Identify what the question asks and the key numbers given.`;
+    } else if (s === "2") {
+      if (captionEl) captionEl.innerHTML = `<strong>2. Solve Strategy:</strong> Break numbers into friendly parts or apply the matching mathematical relationship.`;
+    } else {
+      if (captionEl) captionEl.innerHTML = `<strong>3. Final Answer:</strong> Verify your answer is reasonable before moving on!`;
+    }
+    if (typeof chime === "function") chime("step");
+    return true;
+  }
+
+  return false;
+}
+
 document.querySelector("#open-print-center")?.addEventListener("click", () => {
   TeacherPrintCenter.open();
 });
 
 document.addEventListener("click", (event) => {
+  if (handleExplanationInteraction(event)) return;
+  const explToolBtn = event.target.closest("[data-open-tool]");
+  if (explToolBtn) {
+    const tool = explToolBtn.dataset.openTool;
+    InteractiveDrillToolbox.openTool(tool, { question: state.item?.question, skill: state.item?.skill });
+    announce(`Opened ${tool} manipulative workout in the strategy drawer.`);
+    return;
+  }
   if (event.target.closest("[data-open-print-center]")) {
     const targetTab = event.target.closest("[data-open-print-center]").dataset.targetTab || "mats";
     TeacherPrintCenter.open(targetTab);
