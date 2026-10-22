@@ -1669,6 +1669,1813 @@ function printFridgeMathGuide() {
   `);
 }
 
+/* ==========================================================================
+   Classroom Number Talks Bank (Grades 1–8 Standards-Aligned)
+   ========================================================================== */
+const NUMBER_TALKS = [
+  // Grade 1
+  {
+    id: "nt-g1-1",
+    grade: 1,
+    title: "Making 10 & Doubles",
+    standard: "1.OA.C.6",
+    problem: "8 + 6 = ?",
+    silentPrompt: {
+      en: "Think silently: put a thumb up against your chest when you have one way to solve it.",
+      es: "Piensa en silencio: pon un pulgar en el pecho cuando tengas una manera de resolverlo."
+    },
+    noticeWonder: {
+      en: [
+        "Both numbers are even.",
+        "8 is only 2 away from making a friendly 10.",
+        "6 can be decomposed into 2 and 4, or 3 and 3."
+      ],
+      es: [
+        "Ambos números son pares.",
+        "El 8 está a solo 2 unidades de formar un 10 amigable.",
+        "El 6 se puede descomponer en 2 y 4, o en 3 y 3."
+      ]
+    },
+    strategies: [
+      {
+        student: "Elena",
+        name: { en: "Make a Friendly 10", es: "Formar un 10 amigable" },
+        steps: "8 + 6 = 8 + (2 + 4) = 10 + 4 = 14",
+        explanation: {
+          en: "Take 2 from 6 to make 10 with 8, then add the remaining 4.",
+          es: "Toma 2 del 6 para formar 10 con el 8, luego suma los 4 que quedan."
+        }
+      },
+      {
+        student: "Mateo",
+        name: { en: "Doubles Plus 2", es: "Dobles más 2" },
+        steps: "6 + 6 = 12, then 12 + 2 = 14",
+        explanation: {
+          en: "Think of 8 as 6 + 2. Use known double 6 + 6 = 12, then add 2 more.",
+          es: "Piensa en 8 como 6 + 2. Usa el doble 6 + 6 = 12 y suma 2 más."
+        }
+      },
+      {
+        student: "Sofia",
+        name: { en: "Over-Add & Adjust (Compensation)", es: "Compensación / Sumar de más" },
+        steps: "10 + 6 = 16, then 16 − 2 = 14",
+        explanation: {
+          en: "Add 10 instead of 8 because 10 is easy, then subtract the 2 extra.",
+          es: "Suma 10 en vez de 8 porque es fácil, luego resta los 2 de más."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Who can explain Elena’s strategy in their own words?”",
+        "“How does Mateo’s double connect to Sofia’s compensation strategy?”",
+        "“Which strategy felt most efficient for your brain today?”"
+      ],
+      es: [
+        "«¿Quién puede explicar la estrategia de Elena en sus propias palabras?»",
+        "«¿Cómo se conecta el doble de Mateo con la compensación de Sofia?»",
+        "«¿Qué estrategia fue más eficiente para tu mente hoy?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g1-2",
+    grade: 1,
+    title: "Think Addition for Subtraction",
+    standard: "1.OA.B.4",
+    problem: "15 − 7 = ?",
+    silentPrompt: {
+      en: "Fist to chest: how can addition help you solve this subtraction problem?",
+      es: "Pulgar al pecho: ¿cómo puede ayudarte la suma a resolver esta resta?"
+    },
+    noticeWonder: {
+      en: [
+        "15 is 10 plus 5 ones.",
+        "7 is close to 8, another known double.",
+        "Subtracting 7 leaves more than half of 15."
+      ],
+      es: [
+        "15 es 10 más 5 unidades.",
+        "7 está cerca de 8, otro doble conocido.",
+        "Restar 7 deja más de la mitad de 15."
+      ]
+    },
+    strategies: [
+      {
+        student: "Lucas",
+        name: { en: "Think Addition (Count Up)", es: "Pensar en suma (Contar hacia arriba)" },
+        steps: "7 + 3 = 10, then 10 + 5 = 15, so 3 + 5 = 8",
+        explanation: {
+          en: "Ask: what adds to 7 to reach 15? Jump 3 to 10, then 5 to 15. Total jump is 8.",
+          es: "Pregunta: ¿cuánto sumo a 7 para llegar a 15? Salta 3 al 10 y 5 al 15. Salto total: 8."
+        }
+      },
+      {
+        student: "Maya",
+        name: { en: "Back Through 10", es: "Retroceder pasando por el 10" },
+        steps: "15 − 5 = 10, then 10 − 2 = 8",
+        explanation: {
+          en: "Take away 5 first to land on friendly 10, then take away the other 2.",
+          es: "Quita primero 5 para llegar al 10, luego quita los otros 2."
+        }
+      },
+      {
+        student: "Jordan",
+        name: { en: "Take From 10", es: "Quitar del 10" },
+        steps: "15 is 10 + 5. Take 7 from 10: 10 − 7 = 3. Add 3 + 5 = 8",
+        explanation: {
+          en: "Decompose 15 into 10 and 5. Subtract 7 from the 10, then add the 5 ones back.",
+          es: "Descompón 15 en 10 y 5. Resta 7 del 10 y vuelve a sumar los 5."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Where did Lucas get the 3 and 5 in his addition jumps?”",
+        "“Why did Maya choose to subtract 5 first instead of subtracting 7 all at once?”",
+        "“How are Maya and Jordan using the benchmark 10 differently?”"
+      ],
+      es: [
+        "«¿De dónde sacó Lucas el 3 y el 5 en sus saltos de suma?»",
+        "«¿Por qué Maya decidió restar 5 primero en vez de restar 7 de golpe?»",
+        "«¿Cómo están usando Maya y Jordan el número 10 de formas distintas?»"
+      ]
+    }
+  },
+
+  // Grade 2
+  {
+    id: "nt-g2-1",
+    grade: 2,
+    title: "Compensation & Friendly Tens",
+    standard: "2.NBT.B.5",
+    problem: "28 + 35 = ?",
+    silentPrompt: {
+      en: "Silent think time: look for numbers close to friendly multiples of 10.",
+      es: "Tiempo en silencio: busca números cercanos a múltiplos amigables de 10."
+    },
+    noticeWonder: {
+      en: [
+        "28 is only 2 away from 30.",
+        "35 ends in 5, making it friendly to partition.",
+        "The sum will be more than 60."
+      ],
+      es: [
+        "28 está a solo 2 de llegar a 30.",
+        "35 termina en 5, lo que facilita descomponerlo.",
+        "La suma será mayor que 60."
+      ]
+    },
+    strategies: [
+      {
+        student: "Aisha",
+        name: { en: "Compensation (Give & Take)", es: "Compensación (Dar y quitar)" },
+        steps: "28 + 2 = 30, then 35 − 2 = 33, so 30 + 33 = 63",
+        explanation: {
+          en: "Shift 2 from 35 to 28 to make a friendly 30, then add 33.",
+          es: "Pasa 2 del 35 al 28 para hacer 30, luego suma 33."
+        }
+      },
+      {
+        student: "David",
+        name: { en: "Tens then Ones Decomposition", es: "Decenas luego unidades" },
+        steps: "20 + 30 = 50, then 8 + 5 = 13, so 50 + 13 = 63",
+        explanation: {
+          en: "Add the tens columns first, then add the ones, and combine.",
+          es: "Suma las decenas primero (50), luego las unidades (13), y combina."
+        }
+      },
+      {
+        student: "Nia",
+        name: { en: "Friendly 25s & 5s", es: "Grupos de 25 y 5" },
+        steps: "25 + 35 = 60, then add remaining 3: 60 + 3 = 63",
+        explanation: {
+          en: "Split 28 into 25 + 3. Add 25 + 35 = 60, then add 3.",
+          es: "Divide 28 en 25 + 3. Suma 25 + 35 = 60, luego suma 3."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why did Aisha subtract 2 from 35 after adding 2 to 28?”",
+        "“How can you prove Aisha and David got the same answer using mental pictures?”",
+        "“When would Aisha’s compensation strategy be easier than column addition?”"
+      ],
+      es: [
+        "«¿Por qué Aisha restó 2 al 35 después de sumar 2 al 28?»",
+        "«¿Cómo puedes demostrar que Aisha y David llegaron a la misma respuesta?»",
+        "«¿Cuándo es más fácil la compensación que sumar en columnas?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g2-2",
+    grade: 2,
+    title: "Constant Difference Subtraction",
+    standard: "2.NBT.B.5",
+    problem: "62 − 28 = ?",
+    silentPrompt: {
+      en: "How can keeping the distance constant make subtraction much simpler?",
+      es: "¿Cómo mantener la distancia constante hace que la resta sea más sencilla?"
+    },
+    noticeWonder: {
+      en: [
+        "28 has 8 ones, which requires regrouping from 62.",
+        "Adding 2 to 28 makes an easy 30.",
+        "The gap between two numbers stays identical if both shift by the same amount."
+      ],
+      es: [
+        "28 tiene 8 unidades, lo que pediría reagrupar del 62.",
+        "Sumar 2 al 28 produce un fácil 30.",
+        "La distancia entre dos números no cambia si ambos se desplazan igual."
+      ]
+    },
+    strategies: [
+      {
+        student: "Leo",
+        name: { en: "Constant Difference Shift", es: "Diferencia constante" },
+        steps: "(62 + 2) − (28 + 2) = 64 − 30 = 34",
+        explanation: {
+          en: "Add 2 to both numbers. The difference stays identical, but subtracting 30 requires zero regrouping!",
+          es: "Suma 2 a ambos números. La diferencia se mantiene, ¡pero restar 30 no requiere reagrupar!"
+        }
+      },
+      {
+        student: "Zara",
+        name: { en: "Number Line Landmark Jumps", es: "Saltos en la recta numérica" },
+        steps: "28 + 2 = 30, 30 + 30 = 60, 60 + 2 = 62 → 2 + 30 + 2 = 34",
+        explanation: {
+          en: "Start at 28 and jump up to landmarks: 2 to 30, 30 to 60, and 2 to 62.",
+          es: "Empieza en 28 y salta a números clave: 2 al 30, 30 al 60 y 2 al 62. Total: 34."
+        }
+      },
+      {
+        student: "Carlos",
+        name: { en: "Subtract Friendly Tens First", es: "Restar decenas amigables primero" },
+        steps: "62 − 20 = 42, then 42 − 8 = 34",
+        explanation: {
+          en: "Subtract 20 from 62 to get 42, then subtract the remaining 8 ones.",
+          es: "Resta 20 del 62 para obtener 42, luego resta las 8 unidades restantes."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why is 64 − 30 mathematically identical to 62 − 28?”",
+        "“Where can you see Zara’s three jumps on an open number line?”",
+        "“Why is constant difference one of the most powerful mental subtraction tools?”"
+      ],
+      es: [
+        "«¿Por qué 64 − 30 es matemáticamente idéntico a 62 − 28?»",
+        "«¿Dónde ves los tres saltos de Zara en una recta numérica?»",
+        "«¿Por qué la diferencia constante es tan poderosa para calcular mentalmente?»"
+      ]
+    }
+  },
+
+  // Grade 3
+  {
+    id: "nt-g3-1",
+    grade: 3,
+    title: "Array Decomposition (5s & 2s)",
+    standard: "3.OA.B.5",
+    problem: "7 × 8 = ?",
+    silentPrompt: {
+      en: "Fist to chest: what smaller multiplication facts can you combine?",
+      es: "Pulgar al pecho: ¿qué multiplicaciones más pequeñas puedes combinar?"
+    },
+    noticeWonder: {
+      en: [
+        "7 can be decomposed into friendly 5 and 2.",
+        "8 is an even number that can be halved or doubled.",
+        "Multiplication distributes across addition."
+      ],
+      es: [
+        "7 se puede descomponer en 5 y 2 amigables.",
+        "8 es un número par que se puede duplicar.",
+        "La multiplicación se distribuye sobre la suma."
+      ]
+    },
+    strategies: [
+      {
+        student: "Aaliyah",
+        name: { en: "Distributive Split: 5s and 2s", es: "Descomposición en 5 y 2" },
+        steps: "7 × 8 = (5 × 8) + (2 × 8) = 40 + 16 = 56",
+        explanation: {
+          en: "7 groups of 8 is 5 groups of 8 (40) plus 2 groups of 8 (16). 40 + 16 = 56.",
+          es: "7 grupos de 8 son 5 grupos de 8 (40) más 2 grupos de 8 (16). 40 + 16 = 56."
+        }
+      },
+      {
+        student: "Marcus",
+        name: { en: "Double, Double, Double", es: "Duplicar tres veces" },
+        steps: "7 × 2 = 14, 14 × 2 = 28, 28 × 2 = 56",
+        explanation: {
+          en: "Multiplying by 8 is doubling three times: double 7 is 14, double 14 is 28, double 28 is 56.",
+          es: "Multiplicar por 8 es duplicar 3 veces: 7 a 14, 14 a 28, y 28 a 56."
+        }
+      },
+      {
+        student: "Mateo",
+        name: { en: "Compensation from 10 Groups", es: "Compensar desde 10 grupos" },
+        steps: "(10 × 8) − (3 × 8) = 80 − 24 = 56",
+        explanation: {
+          en: "Take 10 groups of 8 (80) and remove the 3 extra groups of 8 (24) = 56.",
+          es: "Toma 10 grupos de 8 (80) y quita los 3 grupos extra de 8 (24) = 56."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why is splitting 7 into 5 and 2 easier than splitting it into 4 and 3?”",
+        "“How does Marcus’s doubling method prove that multiplication is associative?”",
+        "“Can someone explain how Aaliyah’s work matches an area model?”"
+      ],
+      es: [
+        "«¿Por qué dividir 7 en 5 y 2 es más fácil que dividirlo en 4 y 3?»",
+        "«¿Cómo demuestra el método de Marcus que la multiplicación es asociativa?»",
+        "«¿Cómo se relaciona el trabajo de Aaliyah con un modelo de área?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g3-2",
+    grade: 3,
+    title: "Nines Strategy (Ten Minus One)",
+    standard: "3.OA.B.5",
+    problem: "9 × 6 = ?",
+    silentPrompt: {
+      en: "How does 10 help you calculate any multiplication fact with 9?",
+      es: "¿Cómo te ayuda el 10 a calcular cualquier tabla del 9?"
+    },
+    noticeWonder: {
+      en: [
+        "9 is 1 group less than 10.",
+        "The digits of products of 9 always sum to 9 (5 + 4 = 9).",
+        "Tens digit is 1 less than the factor being multiplied (6 − 1 = 5)."
+      ],
+      es: [
+        "9 es 1 grupo menos que 10.",
+        "Los dígitos del producto del 9 siempre suman 9 (5 + 4 = 9).",
+        "La cifra de las decenas es 1 menos que el factor (6 − 1 = 5)."
+      ]
+    },
+    strategies: [
+      {
+        student: "Priya",
+        name: { en: "10 Groups Minus 1 Group", es: "10 grupos menos 1 grupo" },
+        steps: "(10 × 6) − (1 × 6) = 60 − 6 = 54",
+        explanation: {
+          en: "Calculate 10 × 6 = 60, then take away one group of 6 to get 54.",
+          es: "Calcula 10 × 6 = 60, luego quita un grupo de 6 para obtener 54."
+        }
+      },
+      {
+        student: "Noah",
+        name: { en: "Split into 5s and 4s", es: "Dividir en 5 y 4" },
+        steps: "(5 × 6) + (4 × 6) = 30 + 24 = 54",
+        explanation: {
+          en: "5 groups of 6 is 30, 4 groups of 6 is 24. 30 + 24 = 54.",
+          es: "5 grupos de 6 son 30, 4 grupos de 6 son 24. 30 + 24 = 54."
+        }
+      },
+      {
+        student: "Layla",
+        name: { en: "Halving the Other Factor", es: "Partir el otro factor a la mitad" },
+        steps: "9 × 3 = 27, then double it: 27 + 27 = 54",
+        explanation: {
+          en: "Split 6 into 3 and 3. 9 × 3 = 27, and double 27 is 54.",
+          es: "Divide 6 en 3 y 3. 9 × 3 = 27, y el doble de 27 es 54."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why does Priya’s strategy work for any number multiplied by 9?”",
+        "“What pattern do you notice in the digits 5 and 4?”",
+        "“How can Layla’s halving strategy help you with larger numbers?”"
+      ],
+      es: [
+        "«¿Por qué la estrategia de Priya funciona para cualquier número multiplicado por 9?»",
+        "«¿Qué patrón observas en los dígitos 5 y 4?»",
+        "«¿Cómo te ayuda partir a la mitad cuando multiplicas números mayores?»"
+      ]
+    }
+  },
+
+  // Grade 4
+  {
+    id: "nt-g4-1",
+    grade: 4,
+    title: "Halve & Double / Quarters",
+    standard: "4.NBT.B.5",
+    problem: "16 × 25 = ?",
+    silentPrompt: {
+      en: "Silent think: 25 is related to money (quarters) and 100. How does that help?",
+      es: "Piensa en silencio: 25 se relaciona con 100 (cuartos). ¿Cómo te ayuda eso?"
+    },
+    noticeWonder: {
+      en: [
+        "4 quarters makes 1 dollar ($1.00 = 100).",
+        "16 has a factor of 4 (4 × 4 = 16).",
+        "Both numbers have factors of 2 and 5."
+      ],
+      es: [
+        "4 monedas de 25 centavos hacen 100.",
+        "16 contiene el factor 4 (4 × 4 = 16).",
+        "Ambos números tienen factores de 2 y 5."
+      ]
+    },
+    strategies: [
+      {
+        student: "Jayden",
+        name: { en: "Factor Out Groups of 100", es: "Factorizar grupos de 100" },
+        steps: "16 × 25 = (4 × 4) × 25 = 4 × (4 × 25) = 4 × 100 = 400",
+        explanation: {
+          en: "Group 4 with 25 to make 100, then multiply 4 × 100 = 400.",
+          es: "Agrupa 4 con 25 para hacer 100, luego multiplica 4 × 100 = 400."
+        }
+      },
+      {
+        student: "Chloe",
+        name: { en: "Halve and Double", es: "Mitad y doble" },
+        steps: "16 × 25 = 8 × 50 = 4 × 100 = 400",
+        explanation: {
+          en: "Halve 16 and double 25 repeatedly until you reach friendly numbers.",
+          es: "Saca la mitad de 16 y duplica 25 sucesivamente: 8 × 50 = 4 × 100 = 400."
+        }
+      },
+      {
+        student: "Kevin",
+        name: { en: "Distributive Property (Tens & Ones)", es: "Propiedad distributiva" },
+        steps: "(10 × 25) + (6 × 25) = 250 + 150 = 400",
+        explanation: {
+          en: "10 groups of 25 is 250. 6 groups of 25 is 150. 250 + 150 = 400.",
+          es: "10 grupos de 25 son 250. 6 grupos de 25 son 150. 250 + 150 = 400."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why does halving one factor and doubling the other leave the product unchanged?”",
+        "“How did Jayden see 100 inside 16 × 25?”",
+        "“Which method would you use if the problem was 18 × 25?”"
+      ],
+      es: [
+        "«¿Por qué sacar la mitad a un factor y duplicar el otro no cambia el producto?»",
+        "«¿Cómo descubrió Jayden el 100 dentro de 16 × 25?»",
+        "«¿Qué método usarías si el problema fuera 18 × 25?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g4-2",
+    grade: 4,
+    title: "Large Multi-Digit Compensation",
+    standard: "4.NBT.B.4",
+    problem: "348 + 199 = ?",
+    silentPrompt: {
+      en: "Fist to chest: 199 is very close to what landmark number?",
+      es: "Pulgar al pecho: ¿a qué número clave está extremadamente cerca el 199?"
+    },
+    noticeWonder: {
+      en: [
+        "199 is exactly 1 away from 200.",
+        "Adding 200 to 348 can be done instantly mentally.",
+        "Adjusting by 1 at the end gives the exact sum."
+      ],
+      es: [
+        "199 está a exactamente 1 unidad de 200.",
+        "Sumar 200 a 348 se hace mentalmente al instante.",
+        "Ajustar restando 1 al final da la suma exacta."
+      ]
+    },
+    strategies: [
+      {
+        student: "Sam",
+        name: { en: "Add 200 & Compensate 1", es: "Sumar 200 y compensar 1" },
+        steps: "348 + 200 = 548, then 548 − 1 = 547",
+        explanation: {
+          en: "Add 200 first, then subtract the 1 extra you added.",
+          es: "Suma 200 primero y luego resta el 1 extra que agregaste."
+        }
+      },
+      {
+        student: "Maya",
+        name: { en: "Shift 1 Unit (Give & Take)", es: "Trasladar 1 unidad" },
+        steps: "(348 − 1) + (199 + 1) = 347 + 200 = 547",
+        explanation: {
+          en: "Take 1 from 348 and give it to 199 to make 347 + 200 = 547.",
+          es: "Quita 1 de 348 y dáselo a 199 para formar 347 + 200 = 547."
+        }
+      },
+      {
+        student: "Tyrell",
+        name: { en: "Expanded Form Partial Sums", es: "Sumas parciales por valor posicional" },
+        steps: "300 + 100 = 400, 40 + 90 = 130, 8 + 9 = 17 → 400 + 130 + 17 = 547",
+        explanation: {
+          en: "Decompose by hundreds, tens, and ones: 400 + 130 + 17 = 547.",
+          es: "Descompón en centenas, decenas y unidades: 400 + 130 + 17 = 547."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Compare Sam’s subtraction of 1 to Maya’s shifting of 1. How are they related?”",
+        "“Why is mental compensation faster and less prone to slips than standard vertical addition here?”",
+        "“How would this work for 456 + 298?”"
+      ],
+      es: [
+        "«Compara la resta de 1 de Sam con el traslado de 1 de Maya. ¿En qué se parecen?»",
+        "«¿Por qué la compensación mental es más rápida y segura que el algoritmo vertical aquí?»",
+        "«¿Cómo funcionaría esto para 456 + 298?»"
+      ]
+    }
+  },
+
+  // Grade 5
+  {
+    id: "nt-g5-1",
+    grade: 5,
+    title: "Decimal Alignment & Benchmarks",
+    standard: "5.NBT.B.7",
+    problem: "2.4 + 1.85 = ?",
+    silentPrompt: {
+      en: "Fist to chest: be careful with place value columns! What does 2.4 really mean?",
+      es: "Pulgar al pecho: ¡cuidado con las columnas posicionales! ¿Qué significa 2.4 en centésimas?"
+    },
+    noticeWonder: {
+      en: [
+        "2.4 has 4 tenths, which is 40 hundredths (2.40).",
+        "1.85 is only 0.15 away from 2.00.",
+        "The total will be between 4 and 5."
+      ],
+      es: [
+        "2.4 tiene 4 décimas, que equivale a 40 centésimas (2.40).",
+        "1.85 está a solo 0.15 de llegar a 2.00.",
+        "El total estará entre 4 y 5."
+      ]
+    },
+    strategies: [
+      {
+        student: "Maya",
+        name: { en: "Align Columns (2.40 + 1.85)", es: "Alinear columnas (2.40 + 1.85)" },
+        steps: "2.40 + 1.85 = (2 + 1) + (0.40 + 0.85) = 3 + 1.25 = 4.25",
+        explanation: {
+          en: "Write 2.4 as 2.40. Add wholes (3) and hundredths (1.25) to get 4.25.",
+          es: "Escribe 2.4 como 2.40. Suma enteros (3) y centésimas (1.25) para obtener 4.25."
+        }
+      },
+      {
+        student: "Julian",
+        name: { en: "Benchmark Compensation to 2.00", es: "Compensar al entero 2.00" },
+        steps: "2.40 + 2.00 = 4.40, then 4.40 − 0.15 = 4.25",
+        explanation: {
+          en: "Round 1.85 up to 2.00, add to get 4.40, then subtract the 0.15 you added.",
+          es: "Redondea 1.85 a 2.00, suma para obtener 4.40 y resta las 0.15 agregadas."
+        }
+      },
+      {
+        student: "Amara",
+        name: { en: "Number Line Hops", es: "Saltos en la recta decimal" },
+        steps: "2.4 + 1.0 = 3.4, 3.4 + 0.6 = 4.0, 4.0 + 0.25 = 4.25",
+        explanation: {
+          en: "Leap 1 to 3.4, bridge 0.6 to landmark 4.0, then add the last 0.25.",
+          es: "Salta 1 hasta 3.4, suma 0.6 para llegar al 4.0 y agrega los 0.25 finales."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“What common misconception did Maya avoid by writing 2.40 instead of thinking 4 + 85 = 89?”",
+        "“Where did Julian find the 0.15 in his compensation strategy?”",
+        "“Why is thinking of money ($2.40 + $1.85) a helpful visual check?”"
+      ],
+      es: [
+        "«¿Qué error común evitó Maya al escribir 2.40 en vez de pensar 4 + 85 = 89?»",
+        "«¿De dónde sacó Julian el 0.15 en su compensación?»",
+        "«¿Por qué pensar en dinero ($2.40 + $1.85) ayuda a verificar el resultado?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g5-2",
+    grade: 5,
+    title: "Multiplying by Decimals (Whole & Half)",
+    standard: "5.NBT.B.7",
+    problem: "12 × 1.5 = ?",
+    silentPrompt: {
+      en: "What does 1.5 mean in terms of whole groups and partial groups?",
+      es: "¿Qué significa 1.5 en términos de grupos enteros y partes de grupo?"
+    },
+    noticeWonder: {
+      en: [
+        "1.5 is 1 and a half.",
+        "12 is an even number with an easy half (6).",
+        "The product will be larger than 12 but smaller than 24."
+      ],
+      es: [
+        "1.5 es 1 entero y medio.",
+        "12 es un número par con una mitad fácil (6).",
+        "El producto será mayor que 12 pero menor que 24."
+      ]
+    },
+    strategies: [
+      {
+        student: "Leo",
+        name: { en: "One Group Plus Half a Group", es: "Un grupo más medio grupo" },
+        steps: "(12 × 1) + (12 × 0.5) = 12 + 6 = 18",
+        explanation: {
+          en: "12 times 1 is 12. 12 times a half is 6. 12 + 6 = 18.",
+          es: "12 por 1 es 12. 12 por un medio es 6. 12 + 6 = 18."
+        }
+      },
+      {
+        student: "Nora",
+        name: { en: "Halve and Double", es: "Mitad y doble" },
+        steps: "Halve 12 to 6, double 1.5 to 3: 6 × 3 = 18",
+        explanation: {
+          en: "Take half of 12 (6) and double 1.5 (3). 6 × 3 = 18.",
+          es: "Saca la mitad de 12 (6) y duplica 1.5 (3). 6 × 3 = 18."
+        }
+      },
+      {
+        student: "Ethan",
+        name: { en: "Improper Fraction Conversion", es: "Conversión a fracción impropia" },
+        steps: "12 × (3/2) = (12 ÷ 2) × 3 = 6 × 3 = 18",
+        explanation: {
+          en: "1.5 is 3 halves. Divide 12 by 2 (6), then multiply by 3 = 18.",
+          es: "1.5 es 3 medios. Divide 12 entre 2 (6) y multiplica por 3 = 18."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why did Nora’s halve-and-double move make the problem instant?”",
+        "“How are Leo’s decomposition and Ethan’s fraction approach mathematically identical?”",
+        "“How would you solve 14 × 1.5 using Leo’s method?”"
+      ],
+      es: [
+        "«¿Por qué el método de mitad y doble de Nora resolvió el problema al instante?»",
+        "«¿Cómo son matemáticamente idénticos el método de Leo y la fracción de Ethan?»",
+        "«¿Cómo resolverías 14 × 1.5 usando el método de Leo?»"
+      ]
+    }
+  },
+
+  // Grade 6
+  {
+    id: "nt-g6-1",
+    grade: 6,
+    title: "Fraction Division Meaning",
+    standard: "6.NS.A.1",
+    problem: "3/4 ÷ 1/2 = ?",
+    silentPrompt: {
+      en: "Measurement division asks: 'How many halves fit inside three-fourths?'",
+      es: "La división de medida pregunta: '¿Cuántos medios caben dentro de tres cuartos?'"
+    },
+    noticeWonder: {
+      en: [
+        "1/2 is equivalent to 2/4.",
+        "3/4 is larger than 1/2, so the answer must be greater than 1.",
+        "Inside 3/4, there is one full 1/2, plus half of another 1/2."
+      ],
+      es: [
+        "1/2 equivale a 2/4.",
+        "3/4 es mayor que 1/2, así que la respuesta debe ser mayor que 1.",
+        "Dentro de 3/4 hay un 1/2 entero más la mitad de otro 1/2."
+      ]
+    },
+    strategies: [
+      {
+        student: "Nia",
+        name: { en: "Common Denominators Method", es: "Método de común denominador" },
+        steps: "3/4 ÷ 2/4 = 3 ÷ 2 = 3/2 = 1 1/2",
+        explanation: {
+          en: "Rewrite with like denominators: 3 fourths divided by 2 fourths is 3 divided by 2 = 1 1/2.",
+          es: "Reescribe con igual denominador: 3 cuartos entre 2 cuartos es 3 entre 2 = 1 1/2."
+        }
+      },
+      {
+        student: "Caleb",
+        name: { en: "Visual Tape Diagram", es: "Diagrama de cinta visual" },
+        steps: "1/2 = 2 fourths. 3 fourths has one full group of 2 fourths + 1 fourth left = 1 1/2",
+        explanation: {
+          en: "One full 1/2 takes 2 fourths. The 1 fourth left over is half of another 1/2 group.",
+          es: "Un 1/2 completo usa 2 cuartos. El cuarto que sobra es la mitad de otro grupo de 1/2."
+        }
+      },
+      {
+        student: "Zoe",
+        name: { en: "Multiply by the Reciprocal", es: "Multiplicar por el recíproco" },
+        steps: "3/4 × 2/1 = 6/4 = 3/2 = 1 1/2",
+        explanation: {
+          en: "Dividing by 1/2 is identical to doubling (multiplying by 2/1). 3/4 × 2 = 6/4 = 1 1/2.",
+          es: "Dividir entre 1/2 equivale a duplicar (por 2/1). 3/4 × 2 = 6/4 = 1 1/2."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why is Nia’s common denominator strategy so intuitive?”",
+        "“In Caleb’s diagram, why is the leftover piece worth 1/2 of a group instead of 1/4?”",
+        "“Why does dividing by 1/2 make a number twice as big?”"
+      ],
+      es: [
+        "«¿Por qué la estrategia de común denominador de Nia es tan intuitiva?»",
+        "«En el diagrama de Caleb, ¿por qué la parte sobrante vale 1/2 de grupo en vez de 1/4?»",
+        "«¿Por qué dividir entre 1/2 hace que un número sea el doble de grande?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g6-2",
+    grade: 6,
+    title: "Percent Benchmarks (10% & 50%)",
+    standard: "6.RP.A.3",
+    problem: "40% of 75 = ?",
+    silentPrompt: {
+      en: "Fist to chest: what easy benchmark percent can you find first?",
+      es: "Pulgar al pecho: ¿qué porcentaje de referencia fácil puedes calcular primero?"
+    },
+    noticeWonder: {
+      en: [
+        "40% is four 10% chunks.",
+        "40% is also 50% minus 10%.",
+        "40% is equivalent to the simplified fraction 2/5."
+      ],
+      es: [
+        "40% equivale a cuatro bloques de 10%.",
+        "40% también es 50% menos 10%.",
+        "40% equivale a la fracción simplificada 2/5."
+      ]
+    },
+    strategies: [
+      {
+        student: "Diego",
+        name: { en: "10% Building Block", es: "Bloque base del 10%" },
+        steps: "10% of 75 = 7.5. Then 4 × 7.5 = 2 × 15 = 30",
+        explanation: {
+          en: "Find 10% by shifting decimal (7.5). Multiply by 4: double 7.5 is 15, double 15 is 30.",
+          es: "Halla 10% corriendo el punto (7.5). Multiplica por 4: el doble de 7.5 es 15, el doble de 15 es 30."
+        }
+      },
+      {
+        student: "Mia",
+        name: { en: "50% Minus 10%", es: "50% menos 10%" },
+        steps: "50% of 75 = 37.5. 10% of 75 = 7.5. 37.5 − 7.5 = 30",
+        explanation: {
+          en: "Half of 75 is 37.5. Subtract 10% (7.5) to leave exactly 40% = 30.",
+          es: "La mitad de 75 es 37.5. Resta el 10% (7.5) para obtener exactamente 40% = 30."
+        }
+      },
+      {
+        student: "Kai",
+        name: { en: "Fraction Equivalent (2/5)", es: "Fracción equivalente (2/5)" },
+        steps: "40% = 2/5. 75 ÷ 5 = 15, then 15 × 2 = 30",
+        explanation: {
+          en: "Divide 75 into 5 equal parts (15), then take 2 parts = 30.",
+          es: "Divide 75 en 5 partes iguales (15) y toma 2 partes = 30."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why did Mia’s subtraction (37.5 − 7.5) come out so cleanly to a whole number?”",
+        "“How can Diego’s 10% strategy be applied to find tips or sales tax in daily life?”",
+        "“Which strategy would you use to calculate 60% of 75?”"
+      ],
+      es: [
+        "«¿Por qué la resta de Mia (37.5 − 7.5) dio un número entero tan exacto?»",
+        "«¿Cómo se puede aplicar la estrategia del 10% de Diego para calcular propinas o impuestos?»",
+        "«¿Qué estrategia usarías para calcular el 60% de 75?»"
+      ]
+    }
+  },
+
+  // Grade 7
+  {
+    id: "nt-g7-1",
+    grade: 7,
+    title: "Subtracting Signed Integers",
+    standard: "7.NS.A.1",
+    problem: "−8 − (−12) = ?",
+    silentPrompt: {
+      en: "Fist to chest: think of subtraction as distance on a number line.",
+      es: "Pulgar al pecho: piensa en la resta como la distancia en una recta numérica."
+    },
+    noticeWonder: {
+      en: [
+        "Both numbers are negative.",
+        "Subtracting a negative means removing negative quantity.",
+        "The distance from −12 up to −8 is positive."
+      ],
+      es: [
+        "Ambos números son negativos.",
+        "Restar un negativo significa quitar cantidad negativa.",
+        "La distancia desde −12 hasta −8 es positiva."
+      ]
+    },
+    strategies: [
+      {
+        student: "Lucas",
+        name: { en: "Number Line Distance (From-To)", es: "Distancia en la recta (Desde-Hasta)" },
+        steps: "Distance from −12 to −8: move right 4 units = +4",
+        explanation: {
+          en: "Subtraction asks: 'How far is it from −12 to −8?' Jump right 4 steps = +4.",
+          es: "La resta pregunta: '¿Cuánto hay de −12 a −8?' Salta a la derecha 4 pasos = +4."
+        }
+      },
+      {
+        student: "Jade",
+        name: { en: "Add the Opposite", es: "Sumar el opuesto" },
+        steps: "−8 − (−12) = −8 + 12 = +4",
+        explanation: {
+          en: "Subtracting −12 is equivalent to adding its opposite (+12). 12 − 8 = 4.",
+          es: "Restar −12 equivale a sumar su opuesto (+12). 12 − 8 = 4."
+        }
+      },
+      {
+        student: "Tomas",
+        name: { en: "Zero Pair Counters", es: "Fichas de pares cero" },
+        steps: "Start with 8 negatives. Add 4 zero pairs (+4, −4) to get 12 negatives. Remove 12 negatives: +4 remains.",
+        explanation: {
+          en: "To take away 12 negatives when you only have 8, introduce zero pairs. Taking 12 negatives away leaves 4 positives.",
+          es: "Para quitar 12 negativos teniendo solo 8, agrega pares cero. Al quitar 12 negativos quedan 4 positivos."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why does removing cold air or debts leave you with a higher value?”",
+        "“How does Tomas’s zero-pair model explain why Jade’s 'add the opposite' rule is true?”",
+        "“Why is the answer positive 4 instead of negative 20?”"
+      ],
+      es: [
+        "«¿Por qué quitar deuda o frío resulta en un valor más alto?»",
+        "«¿Cómo explica el modelo de pares cero de Tomas por qué funciona la regla de Jade?»",
+        "«¿Por qué el resultado es positivo 4 y no negativo 20?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g7-2",
+    grade: 7,
+    title: "Negative Times Negative Product",
+    standard: "7.NS.A.2",
+    problem: "−6 × (−4) = ?",
+    silentPrompt: {
+      en: "Why is a negative times a negative positive? What pattern proves it?",
+      es: "¿Por qué un negativo por un negativo es positivo? ¿Qué patrón lo demuestra?"
+    },
+    noticeWonder: {
+      en: [
+        "6 × 4 = 24.",
+        "6 × (−4) = −24.",
+        "The negative sign in −6 means the opposite direction of −24."
+      ],
+      es: [
+        "6 × 4 = 24.",
+        "6 × (−4) = −24.",
+        "El signo negativo en −6 indica la dirección opuesta a −24."
+      ]
+    },
+    strategies: [
+      {
+        student: "Emma",
+        name: { en: "Opposite of the Opposite", es: "El opuesto del opuesto" },
+        steps: "6 × (−4) = −24. The opposite of −24 is −(−24) = +24",
+        explanation: {
+          en: "Think of −6 as −(6). 6 × (−4) is −24, and the opposite of that is +24.",
+          es: "Piensa en −6 como el opuesto de 6. 6 × (−4) es −24, y su opuesto es +24."
+        }
+      },
+      {
+        student: "Liam",
+        name: { en: "Distributive Property with Zero", es: "Propiedad distributiva con cero" },
+        steps: "−6 × (4 + (−4)) = −6 × 0 = 0. Since (−6 × 4) + (−6 × −4) = 0, −24 + ? = 0 → ? = +24",
+        explanation: {
+          en: "Because multiplication must distribute, the product must cancel with −24 to equal 0.",
+          es: "Como la multiplicación se distribuye, el producto debe cancelarse con −24 para dar 0."
+        }
+      },
+      {
+        student: "Ava",
+        name: { en: "Pattern Countdown Sequence", es: "Secuencia de patrones" },
+        steps: "2 × (−4) = −8, 1 × (−4) = −4, 0 × (−4) = 0, −1 × (−4) = +4 → continues up to +24",
+        explanation: {
+          en: "Each step back adds 4. Counting down past zero increases by 4 each time.",
+          es: "Cada paso hacia atrás suma 4. Al pasar de cero hacia negativos, los valores aumentan de 4 en 4."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“How does Ava’s pattern sequence prove mathematics never breaks its own rules?”",
+        "“Why did Liam use zero pairs (4 + (−4)) to prove the sign?”",
+        "“How would you explain why negative times negative is positive to a 5th grader?”"
+      ],
+      es: [
+        "«¿Cómo demuestra la secuencia de Ava que las matemáticas nunca rompen sus propias reglas?»",
+        "«¿Por qué Liam usó pares cero (4 + (−4)) para demostrar el signo?»",
+        "«¿Cómo le explicarías a un estudiante de 5.º grado por qué negativo por negativo es positivo?»"
+      ]
+    }
+  },
+
+  // Grade 8
+  {
+    id: "nt-g8-1",
+    grade: 8,
+    title: "Algebraic Cover-Up & Inverse Steps",
+    standard: "8.EE.C.7",
+    problem: "3x + 12 = 36",
+    silentPrompt: {
+      en: "Fist to chest: cover up 3x with your thumb. What does that quantity have to be?",
+      es: "Pulgar al pecho: tapa 3x con tu pulgar. ¿Qué valor tiene que tener esa cantidad?"
+    },
+    noticeWonder: {
+      en: [
+        "All terms (3, 12, 36) are divisible by 3.",
+        "Something plus 12 equals 36.",
+        "x must be a single positive value."
+      ],
+      es: [
+        "Todos los términos (3, 12, 36) son divisibles entre 3.",
+        "Algo más 12 es igual a 36.",
+        "x debe ser un valor positivo único."
+      ]
+    },
+    strategies: [
+      {
+        student: "Carlos",
+        name: { en: "Cover-Up Reasoning", es: "Razonamiento de tapar la incógnita" },
+        steps: "Cover 3x: [ ? ] + 12 = 36 → [ ? ] = 24. Since 3x = 24, x = 8",
+        explanation: {
+          en: "What plus 12 equals 36? 24! If 3 times x is 24, then x must be 8.",
+          es: "¿Qué número más 12 da 36? ¡24! Si 3 por x es 24, entonces x debe ser 8."
+        }
+      },
+      {
+        student: "Harper",
+        name: { en: "Balance Scale Inverse Operations", es: "Operaciones inversas en balanza" },
+        steps: "Subtract 12 both sides: 3x = 24. Divide both sides by 3: x = 8",
+        explanation: {
+          en: "Keep the balance scale level: undo addition with subtraction, then undo multiplication with division.",
+          es: "Mantén la balanza en equilibrio: deshaz la suma restando 12, luego divide entre 3: x = 8."
+        }
+      },
+      {
+        student: "Owen",
+        name: { en: "Divide All Terms by 3 First", es: "Dividir todos los términos entre 3 primero" },
+        steps: "(3x + 12) ÷ 3 = 36 ÷ 3 → x + 4 = 12 → x = 8",
+        explanation: {
+          en: "Notice 3, 12, and 36 are all multiples of 3. Divide every term by 3 to get x + 4 = 12, so x = 8.",
+          es: "Nota que 3, 12 y 36 son múltiplos de 3. Divide todo entre 3 para obtener x + 4 = 12, así x = 8."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why did Owen’s decision to divide by 3 first work so smoothly?”",
+        "“How does Harper’s balance scale method ensure you never make an algebra mistake?”",
+        "“What would happen if you subtracted 12 from only one side of the equation?”"
+      ],
+      es: [
+        "«¿Por qué la idea de Owen de dividir entre 3 primero funcionó tan bien?»",
+        "«¿Cómo garantiza la balanza de Harper que nunca cometas un error de álgebra?»",
+        "«¿Qué pasaría si restaras 12 solo de un lado de la ecuación?»"
+      ]
+    }
+  },
+  {
+    id: "nt-g8-2",
+    grade: 8,
+    title: "Laws of Exponents (Repeated Factors)",
+    standard: "8.EE.A.1",
+    problem: "2⁵ × 2³ = ?",
+    silentPrompt: {
+      en: "What does an exponent truly represent? How many 2s are being multiplied?",
+      es: "¿Qué representa realmente un exponente? ¿Cuántos factores 2 se están multiplicando?"
+    },
+    noticeWonder: {
+      en: [
+        "Both factors share the same base (2).",
+        "2⁵ has five factors of 2.",
+        "2³ has three factors of 2.",
+        "We are multiplying them together, not adding them."
+      ],
+      es: [
+        "Ambos factores comparten la misma base (2).",
+        "2⁵ tiene cinco factores de 2.",
+        "2³ tiene tres factores de 2.",
+        "Se están multiplicando entre sí, no sumando."
+      ]
+    },
+    strategies: [
+      {
+        student: "Maya",
+        name: { en: "Expanded Form Factor Count", es: "Contar factores expandidos" },
+        steps: "(2 × 2 × 2 × 2 × 2) × (2 × 2 × 2) = 8 factors of 2 = 2⁸ = 256",
+        explanation: {
+          en: "Write out all repeated factors. Count the total 2s: 5 + 3 = 8 factors = 2⁸.",
+          es: "Escribe todos los factores repetidos. Cuenta los doses: 5 + 3 = 8 factores = 2⁸."
+        }
+      },
+      {
+        student: "Mason",
+        name: { en: "Product of Powers Rule", es: "Regla del producto de potencias" },
+        steps: "Same base: 2^(5 + 3) = 2⁸ = 256",
+        explanation: {
+          en: "When multiplying terms with identical bases, add the exponents: 5 + 3 = 8.",
+          es: "Al multiplicar potencias de igual base, suma los exponentes: 5 + 3 = 8."
+        }
+      },
+      {
+        student: "Ruby",
+        name: { en: "Evaluate Known Powers First", es: "Evaluar potencias conocidas" },
+        steps: "2⁵ = 32 and 2³ = 8. Then 32 × 8 = (30 × 8) + (2 × 8) = 240 + 16 = 256",
+        explanation: {
+          en: "Compute known powers: 32 × 8. Use distributive splitting: 240 + 16 = 256.",
+          es: "Calcula potencias conocidas: 32 × 8. Descompón: 240 + 16 = 256."
+        }
+      }
+    ],
+    teacherStems: {
+      en: [
+        "“Why do we add exponents when multiplying powers with the same base?”",
+        "“What common mistake occurs if someone multiplies the bases (2 × 2 = 4)?”",
+        "“How does Maya’s expanded form prove why Mason’s rule is always true?”"
+      ],
+      es: [
+        "«¿Por qué sumamos los exponentes al multiplicar potencias de la misma base?»",
+        "«¿Qué error común ocurre si alguien multiplica las bases (2 × 2 = 4)?»",
+        "«¿Cómo demuestra la forma expandida de Maya por qué la regla de Mason siempre funciona?»"
+      ]
+    }
+  }
+];
+
+const NumberTalkRoutine = {
+  activeGrade: 3,
+  activeIndex: 0,
+  activePhase: "think",
+  lang: "en",
+
+  open(grade = state.grade || 3) {
+    const modal = document.querySelector("#number-talk-modal");
+    if (!modal) return;
+    this.activeGrade = Math.max(1, Math.min(8, Number(grade) || 3));
+    this.activeIndex = 0;
+    this.activePhase = "think";
+    modal.hidden = false;
+    document.body.classList.add("nt-modal-open");
+    this.render();
+  },
+
+  close() {
+    const modal = document.querySelector("#number-talk-modal");
+    if (!modal) return;
+    modal.hidden = true;
+    document.body.classList.remove("nt-modal-open");
+  },
+
+  toggleLang() {
+    this.lang = this.lang === "en" ? "es" : "en";
+    const btn = document.querySelector("#nt-toggle-lang");
+    if (btn) btn.textContent = this.lang === "en" ? "🌐 Español" : "🌐 English";
+    this.render();
+  },
+
+  getCurrentTalks() {
+    return NUMBER_TALKS.filter((t) => t.grade === this.activeGrade);
+  },
+
+  getCurrentTalk() {
+    const talks = this.getCurrentTalks();
+    return talks[this.activeIndex % talks.length] || talks[0] || NUMBER_TALKS[0];
+  },
+
+  setPhase(phase) {
+    this.activePhase = phase;
+    this.render();
+  },
+
+  setGrade(g) {
+    this.activeGrade = g;
+    this.activeIndex = 0;
+    this.render();
+  },
+
+  prevTalk() {
+    const talks = this.getCurrentTalks();
+    this.activeIndex = (this.activeIndex - 1 + talks.length) % talks.length;
+    this.render();
+  },
+
+  nextTalk() {
+    const talks = this.getCurrentTalks();
+    this.activeIndex = (this.activeIndex + 1) % talks.length;
+    this.render();
+  },
+
+  render() {
+    const viewport = document.querySelector("#number-talk-viewport");
+    if (!viewport) return;
+    const talk = this.getCurrentTalk();
+    const talks = this.getCurrentTalks();
+    const isEs = this.lang === "es";
+
+    viewport.innerHTML = `
+      <div class="nt-container">
+        <!-- Grade & Problem Carousel Bar -->
+        <div class="nt-toolbar">
+          <div class="nt-grade-pills">
+            ${[1, 2, 3, 4, 5, 6, 7, 8].map((g) => `
+              <button type="button" class="nt-grade-btn ${g === this.activeGrade ? 'active' : ''}" data-nt-grade="${g}">
+                Gr ${g}
+              </button>
+            `).join("")}
+          </div>
+          <div class="nt-nav-controls">
+            <button type="button" class="outline-action" data-nt-prev ${talks.length <= 1 ? 'disabled' : ''}>◄ ${isEs ? "Anterior" : "Previous"}</button>
+            <span class="nt-counter">${this.activeIndex + 1} of ${talks.length}</span>
+            <button type="button" class="outline-action" data-nt-next ${talks.length <= 1 ? 'disabled' : ''}>${isEs ? "Siguiente" : "Next"} ►</button>
+          </div>
+        </div>
+
+        <!-- Routine Phase Navigation -->
+        <nav class="nt-phase-tabs" role="tablist">
+          <button type="button" class="nt-phase-btn ${this.activePhase === 'think' ? 'active' : ''}" data-nt-phase="think">
+            🤫 1. ${isEs ? "Tiempo en Silencio" : "Silent Thinking"}
+          </button>
+          <button type="button" class="nt-phase-btn ${this.activePhase === 'notice' ? 'active' : ''}" data-nt-phase="notice">
+            👁️ 2. ${isEs ? "Notar y Preguntar" : "Notice & Wonder"}
+          </button>
+          <button type="button" class="nt-phase-btn ${this.activePhase === 'strategies' ? 'active' : ''}" data-nt-phase="strategies">
+            🗣️ 3. ${isEs ? "Estrategias de Alumnos" : "Strategy Showcase"}
+          </button>
+          <button type="button" class="nt-phase-btn ${this.activePhase === 'stems' ? 'active' : ''}" data-nt-phase="stems">
+            📋 4. ${isEs ? "Preguntas Docentes" : "Teacher Facilitation"}
+          </button>
+        </nav>
+
+        <!-- Projector Main Problem Banner -->
+        <div class="nt-projector-stage">
+          <span class="nt-standard-tag">${escapeHtml(talk.standard)} · Grade ${talk.grade} · ${escapeHtml(talk.title)}</span>
+          <div class="nt-hero-problem">${escapeHtml(talk.problem)}</div>
+        </div>
+
+        <!-- Dynamic Phase Content -->
+        <div class="nt-phase-body">
+          ${this.renderPhaseBody(talk, isEs)}
+        </div>
+      </div>
+    `;
+  },
+
+  renderPhaseBody(talk, isEs) {
+    if (this.activePhase === "think") {
+      return `
+        <div class="nt-think-panel">
+          <div class="nt-fist-cue">
+            <div class="nt-fist-icon">✊</div>
+            <div class="nt-fist-text">
+              <h3>${isEs ? "Pulgar al Pecho (Señal Silenciosa)" : "Fist to Chest Silent Cue"}</h3>
+              <p>${escapeHtml(isEs ? talk.silentPrompt.es : talk.silentPrompt.en)}</p>
+              <p style="font-size:0.9rem; color:#64748b; margin-top:4px">${isEs ? "Levanta un dedo adicional por cada estrategia diferente que encuentres." : "Put up an extra finger for each additional strategy your brain finds."}</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    if (this.activePhase === "notice") {
+      const items = isEs ? talk.noticeWonder.es : talk.noticeWonder.en;
+      return `
+        <div class="nt-notice-panel">
+          <h3 style="margin:0 0 8px; font-size:1.15rem; color:#0f172a">${isEs ? "Antes de calcular, ¿qué observas en estos números?" : "Before calculating, what do you notice about these numbers?"}</h3>
+          <div class="nt-notice-grid">
+            ${items.map((item) => `
+              <div class="nt-notice-item">
+                <span class="nt-bullet-icon">💡</span>
+                <p>${escapeHtml(item)}</p>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+    if (this.activePhase === "strategies") {
+      return `
+        <div class="nt-strategies-panel">
+          <h3 style="margin:0 0 8px; font-size:1.15rem; color:#0f172a">${isEs ? "3 Formas Diferentes de Razonar este Problema" : "3 Different Mental Math Reasoning Pathways"}</h3>
+          <div class="nt-strategy-cards-grid">
+            ${talk.strategies.map((strat, i) => `
+              <div class="nt-strategy-card">
+                <div class="nt-strat-head">
+                  <span class="nt-avatar">${['👩🏽‍🎓', '👨🏾‍🎓', '👩🏻‍🎓'][i % 3]}</span>
+                  <div>
+                    <strong>${escapeHtml(strat.student)}</strong>
+                    <div style="font-size:0.8rem; color:#64748b">${escapeHtml(isEs ? strat.name.es : strat.name.en)}</div>
+                  </div>
+                </div>
+                <div class="nt-strat-steps">${escapeHtml(strat.steps)}</div>
+                <p class="nt-strat-expl">${escapeHtml(isEs ? strat.explanation.es : strat.explanation.en)}</p>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+    if (this.activePhase === "stems") {
+      const stems = isEs ? talk.teacherStems.es : talk.teacherStems.en;
+      return `
+        <div class="nt-stems-panel">
+          <h3 style="margin:0 0 8px; font-size:1.15rem; color:#0f172a">${isEs ? "Preguntas Clave para el Diálogo Matemático" : "Teacher Facilitation Prompts"}</h3>
+          <ul class="nt-stem-list">
+            ${stems.map((stem) => `<li>${escapeHtml(stem)}</li>`).join("")}
+          </ul>
+        </div>
+      `;
+    }
+    return "";
+  }
+};
+
+function printNumberTalkRoutine(talk) {
+  if (!talk) talk = NumberTalkRoutine.getCurrentTalk();
+  printHtml(`
+    <article class="tpt-print-page">
+      <div class="tpt-header-row">
+        <div>
+          <h1>📽️ Classroom Number Talk Routine Card</h1>
+          <p style="margin:2px 0 0; font-size:10pt; color:#475569">Grade ${talk.grade} · Standard: <strong>${escapeHtml(talk.standard)}</strong> · Focus: <strong>${escapeHtml(talk.title)}</strong></p>
+        </div>
+        <div class="tpt-header-fields">
+          <span>Date: <span class="tpt-field-line"></span></span>
+          <span>Room: <span class="tpt-field-line"></span></span>
+        </div>
+      </div>
+
+      <div style="text-align:center; padding:0.3in 0; background:#f8fafc; border:2px solid #cbd5e1; border-radius:10px; margin:0.15in 0">
+        <span style="font-size:11pt; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.05em">Daily Mental Math Problem</span>
+        <div style="font-size:36pt; font-weight:900; color:#0f172a; margin-top:4px">${escapeHtml(talk.problem)}</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.15in; margin-bottom:0.15in">
+        <div style="border:1.5px solid #cbd5e1; border-radius:8px; padding:0.12in; background:#ffffff">
+          <h3 style="margin:0 0 6px; font-size:11pt; color:#0f172a">🤫 Phase 1: Silent Thinking &amp; Notice</h3>
+          <p style="margin:0 0 4px; font-size:9pt; color:#334155"><strong>Silent Cue:</strong> Fist to chest, thumb up when ready.</p>
+          <ul style="margin:4px 0 0; padding-left:0.2in; font-size:8.5pt; color:#475569">
+            ${talk.noticeWonder.en.map((n) => `<li>${escapeHtml(n)}</li>`).join("")}
+          </ul>
+        </div>
+
+        <div style="border:1.5px solid #cbd5e1; border-radius:8px; padding:0.12in; background:#ffffff">
+          <h3 style="margin:0 0 6px; font-size:11pt; color:#0f172a">📋 Phase 4: Bilingual Teacher Stems</h3>
+          <ul style="margin:0; padding-left:0.2in; font-size:8.5pt; color:#334155; line-height:1.5">
+            ${talk.teacherStems.en.map((s, idx) => `
+              <li><strong>${escapeHtml(s)}</strong><br/><em style="color:#64748b">${escapeHtml(talk.teacherStems.es[idx])}</em></li>
+            `).join("")}
+          </ul>
+        </div>
+      </div>
+
+      <div style="border:1.5px solid #4f46e5; border-radius:8px; padding:0.12in; background:#f5f3ff">
+        <h3 style="margin:0 0 8px; font-size:11pt; color:#3730a3">🗣️ Phase 3: Strategy Showcase (Anticipated Approaches)</h3>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:0.1in">
+          ${talk.strategies.map((strat) => `
+            <div style="background:#ffffff; border:1px solid #c7d2fe; border-radius:6px; padding:0.08in">
+              <strong style="font-size:9.5pt; color:#1e1b4b">${escapeHtml(strat.student)}: ${escapeHtml(strat.name.en)}</strong>
+              <div style="font-family:monospace; font-weight:700; font-size:9pt; margin:4px 0; color:#4338ca">${escapeHtml(strat.steps)}</div>
+              <p style="margin:0; font-size:8pt; color:#475569">${escapeHtml(strat.explanation.en)}</p>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <footer style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #cbd5e1; padding-top:0.1in; margin-top:0.15in; font-size:8pt; color:#64748b">
+        <span>EduWonderLab Math Fluency Lab · Daily Number Talks</span>
+        <span>eduwonderlab.com/math/fluency-lab/</span>
+      </footer>
+    </article>
+  `);
+}
+
+/* ==========================================================================
+   Dynamic Printable Partner Games (Grades 1–8 Bilingual EN / ES)
+   ========================================================================== */
+function printFractionWar(grade = 4) {
+  const learner = PROFILE_NAMES[activeProfile] || "Student";
+  const fractions = [
+    { n: 1, d: 2, label: "1/2" },
+    { n: 2, d: 3, label: "2/3" },
+    { n: 3, d: 4, label: "3/4" },
+    { n: 1, d: 4, label: "1/4" },
+    { n: 3, d: 5, label: "3/5" },
+    { n: 4, d: 5, label: "4/5" },
+    { n: 5, d: 6, label: "5/6" },
+    { n: 1, d: 6, label: "1/6" },
+    { n: 3, d: 8, label: "3/8" },
+    { n: 5, d: 8, label: "5/8" },
+    { n: 7, d: 8, label: "7/8" },
+    { n: 2, d: 4, label: "2/4" },
+    { n: 4, d: 6, label: "4/6" },
+    { n: 6, d: 8, label: "6/8" },
+    { n: 5, d: 10, label: "5/10" },
+    { n: 1, d: 3, label: "1/3" }
+  ];
+
+  printHtml(`
+    <article class="tpt-print-page">
+      <div class="tpt-header-row">
+        <div>
+          <h1>🎲 Partner Math Game: Fraction War</h1>
+          <p style="margin:2px 0 0; font-size:10pt; color:#475569">La Guerra de Fracciones · Grades 3–5 · Visual Fraction Comparison</p>
+        </div>
+        <div class="tpt-header-fields">
+          <span>Player 1: <strong class="tpt-field-line">${escapeHtml(learner)}</strong></span>
+          <span>Player 2: <span class="tpt-field-line"></span></span>
+          <span>Date: <span class="tpt-field-line"></span></span>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.15in; margin:0.12in 0">
+        <div style="border:1.5px solid #cbd5e1; border-radius:8px; padding:0.1in; background:#f8fafc">
+          <h3 style="margin:0 0 4px; font-size:10pt; color:#0f172a">📜 Game Rules (English)</h3>
+          <ol style="margin:0; padding-left:0.18in; font-size:8pt; line-height:1.45; color:#334155">
+            <li>Cut out the 16 cards on Page 2. Shuffle and deal 8 cards face down to each player.</li>
+            <li>Both players flip their top card simultaneously.</li>
+            <li>Compare fractions! The player with the <strong>greater fraction</strong> wins both cards.</li>
+            <li><strong>TIE BREAKER (WAR!):</strong> If fractions are equal (e.g. 1/2 and 2/4), declare "WAR!" Place 2 cards face down and flip the 3rd to decide the winner of all cards!</li>
+            <li>Player with the most cards after 8 rounds wins!</li>
+          </ol>
+        </div>
+
+        <div style="border:1.5px solid #cbd5e1; border-radius:8px; padding:0.1in; background:#f8fafc">
+          <h3 style="margin:0 0 4px; font-size:10pt; color:#0f172a">📜 Reglas del Juego (Español)</h3>
+          <ol style="margin:0; padding-left:0.18in; font-size:8pt; line-height:1.45; color:#334155">
+            <li>Corta las 16 cartas de la Página 2. Reparte 8 cartas boca abajo a cada jugador.</li>
+            <li>Ambos voltean su carta superior al mismo tiempo.</li>
+            <li>¡Compara! El jugador con la <strong>fracción mayor</strong> se lleva ambas cartas.</li>
+            <li><strong>¡GUERRA!:</strong> Si son equivalentes (ej. 1/2 y 2/4), pon 2 cartas boca abajo y voltea la 3.ª para decidir quién gana todo el montón.</li>
+            <li>¡Gana quien tenga más cartas tras 8 rondas!</li>
+          </ol>
+        </div>
+      </div>
+
+      <div style="border:1.5px solid #0284c7; border-radius:8px; padding:0.1in; background:#f0f9ff; margin-bottom:0.12in">
+        <h3 style="margin:0 0 4px; font-size:9.5pt; color:#0369a1">💬 Partner Talk Sentence Stems / Frases para el Diálogo</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.1in; font-size:8pt; color:#0c4a6e">
+          <div>
+            • <em>“My fraction is greater because its parts are larger…”</em><br/>
+            • <em>“These two are equal because 2/4 simplifies to 1/2…”</em>
+          </div>
+          <div>
+            • <em>«Mi fracción es mayor porque sus partes son más grandes…»</em><br/>
+            • <em>«Estas son equivalentes porque 2/4 se simplifica a 1/2…»</em>
+          </div>
+        </div>
+      </div>
+
+      <div style="border:1.5px solid #cbd5e1; border-radius:8px; padding:0.1in; background:#ffffff">
+        <h3 style="margin:0 0 6px; font-size:10pt; color:#0f172a">🏆 Match Record Ledger / Registro de Rondas</h3>
+        <table style="width:100%; border-collapse:collapse; font-size:8pt; text-align:center">
+          <thead>
+            <tr style="background:#f1f5f9; border-bottom:1.5px solid #cbd5e1">
+              <th style="padding:4px; border:1px solid #cbd5e1">Round</th>
+              <th style="padding:4px; border:1px solid #cbd5e1">Player 1 Fraction</th>
+              <th style="padding:4px; border:1px solid #cbd5e1">Comparison (&gt;, &lt;, =)</th>
+              <th style="padding:4px; border:1px solid #cbd5e1">Player 2 Fraction</th>
+              <th style="padding:4px; border:1px solid #cbd5e1">Round Winner</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${[1, 2, 3, 4, 5, 6, 7, 8].map((r) => `
+              <tr style="border-bottom:1px solid #e2e8f0; height:24px">
+                <td style="border:1px solid #cbd5e1; font-weight:700">R${r}</td>
+                <td style="border:1px solid #cbd5e1"></td>
+                <td style="border:1px solid #cbd5e1"></td>
+                <td style="border:1px solid #cbd5e1"></td>
+                <td style="border:1px solid #cbd5e1"></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+
+      <footer style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #cbd5e1; padding-top:0.08in; margin-top:0.1in; font-size:8pt; color:#64748b">
+        <span>EduWonderLab Math Fluency Lab · Partner Games</span>
+        <span>Page 1 of 2 (Turn over for game cards)</span>
+      </footer>
+    </article>
+
+    <article class="tpt-print-page">
+      <div class="tpt-header-row">
+        <div>
+          <h1>✂️ Fraction War Cut-and-Play Cards</h1>
+          <p style="margin:2px 0 0; font-size:9.5pt; color:#475569">Cut along the dotted lines. 16 high-contrast fraction cards with visual bar models.</p>
+        </div>
+        <div class="tpt-header-fields">
+          <span>Deck: <strong>16 Cards</strong></span>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:0.1in; margin-top:0.1in">
+        ${fractions.map((f) => `
+          <div style="border:1.5px dashed #475569; border-radius:6px; padding:0.1in; text-align:center; background:#ffffff">
+            <span style="font-size:7.5pt; font-weight:800; color:#64748b; letter-spacing:0.05em">FRACTION WAR</span>
+            <div style="font-size:22pt; font-weight:900; color:#0f172a; margin:4px 0">${f.label}</div>
+            <svg width="100%" height="22" viewBox="0 0 100 22" style="margin:4px auto; display:block">
+              <rect x="0" y="0" width="100" height="22" rx="3" fill="#f8fafc" stroke="#0f172a" stroke-width="1.5" />
+              ${Array.from({ length: f.d }, (_, i) => {
+                const w = 100 / f.d;
+                const isShaded = i < f.n;
+                return `<rect x="${i * w}" y="0" width="${w}" height="22" fill="${isShaded ? "#334155" : "none"}" stroke="#0f172a" stroke-width="1" />`;
+              }).join("")}
+            </svg>
+            <span style="font-size:7pt; color:#475569">${f.n} of ${f.d} equal parts shaded</span>
+          </div>
+        `).join("")}
+      </div>
+
+      <footer style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #cbd5e1; padding-top:0.08in; margin-top:0.12in; font-size:8pt; color:#64748b">
+        <span>EduWonderLab Math Fluency Lab · Fraction War Cards</span>
+        <span>Page 2 of 2</span>
+      </footer>
+    </article>
+  `);
+}
+
+function printIntegerTugOfWar(grade = 7) {
+  const learner = PROFILE_NAMES[activeProfile] || "Student";
+  const cards = [
+    { val: "+3", type: "pos" }, { val: "-3", type: "neg" },
+    { val: "+4", type: "pos" }, { val: "-4", type: "neg" },
+    { val: "+5", type: "pos" }, { val: "-5", type: "neg" },
+    { val: "+2", type: "pos" }, { val: "-2", type: "neg" },
+    { val: "+6", type: "pos" }, { val: "-6", type: "neg" },
+    { val: "+1", type: "pos" }, { val: "-1", type: "neg" },
+    { val: "+7", type: "pos" }, { val: "-7", type: "neg" },
+    { val: "+2 (Bonus)", type: "pos" }, { val: "-2 (Bonus)", type: "neg" },
+    { val: "Zero Pair (0)", type: "zero" }, { val: "Zero Pair (0)", type: "zero" },
+    { val: "Reverse (+/-)", type: "special" }, { val: "+5 Mega Pull", type: "pos" }
+  ];
+
+  printHtml(`
+    <article class="tpt-print-page">
+      <div class="tpt-header-row">
+        <div>
+          <h1>🎲 Partner Math Game: Integer Tug-of-War</h1>
+          <p style="margin:2px 0 0; font-size:10pt; color:#475569">Tiro a la Cuerda con Enteros · Grades 6–7 · Number Line Net Charge</p>
+        </div>
+        <div class="tpt-header-fields">
+          <span>Blue (+): <strong class="tpt-field-line">${escapeHtml(learner)}</strong></span>
+          <span>Red (−): <span class="tpt-field-line"></span></span>
+          <span>Date: <span class="tpt-field-line"></span></span>
+        </div>
+      </div>
+
+      <!-- Tug-of-War Number Line Track -->
+      <div style="border:2px solid #0f172a; border-radius:10px; padding:0.12in; background:#ffffff; margin:0.1in 0">
+        <div style="display:flex; justify-content:space-between; font-weight:800; font-size:8.5pt; margin-bottom:4px">
+          <span style="color:#dc2626">🚩 RED TEAM WIN ZONE (−10)</span>
+          <span style="color:#475569">⚖️ START (0)</span>
+          <span style="color:#2563eb">🚩 BLUE TEAM WIN ZONE (+10)</span>
+        </div>
+        <svg width="100%" height="65" viewBox="0 0 500 65">
+          <!-- Track base -->
+          <rect x="10" y="25" width="480" height="14" rx="7" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5" />
+          <rect x="10" y="25" width="240" height="14" fill="#fee2e2" />
+          <rect x="250" y="25" width="240" height="14" fill="#dbeafe" />
+          <line x1="250" y1="12" x2="250" y2="52" stroke="#0f172a" stroke-width="3" />
+          <!-- Ticks from -10 to +10 -->
+          ${Array.from({ length: 21 }, (_, i) => {
+            const val = i - 10;
+            const x = 20 + i * 23;
+            const isZero = val === 0;
+            return `
+              <line x1="${x}" y1="${isZero ? 14 : 22}" x2="${x}" y2="${isZero ? 50 : 42}" stroke="#0f172a" stroke-width="${isZero ? 2.5 : 1}" />
+              <text x="${x}" y="60" text-anchor="middle" font-size="8" font-weight="${isZero ? 900 : 700}" fill="${val < 0 ? "#dc2626" : val > 0 ? "#2563eb" : "#0f172a"}">${val > 0 ? `+${val}` : val}</text>
+            `;
+          }).join("")}
+        </svg>
+        <p style="text-align:center; font-size:7.5pt; color:#64748b; margin:2px 0 0">Place a coin or counter on 0. Draw cards to move left (−) or right (+)!</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.12in; margin-bottom:0.1in">
+        <div style="border:1.5px solid #cbd5e1; border-radius:8px; padding:0.08in; background:#f8fafc">
+          <h3 style="margin:0 0 3px; font-size:9.5pt; color:#0f172a">📜 Rules (English)</h3>
+          <ol style="margin:0; padding-left:0.16in; font-size:7.5pt; line-height:1.4; color:#334155">
+            <li>Place marker on 0. Shuffle the 20 Integer Cards on Page 2.</li>
+            <li>Take turns drawing 1 card. Add the card's value to the current position.</li>
+            <li>Positive (+) moves right towards Blue (+10). Negative (−) moves left towards Red (−10).</li>
+            <li>First player to pull the marker to their 10-goal wins the match!</li>
+          </ol>
+        </div>
+
+        <div style="border:1.5px solid #cbd5e1; border-radius:8px; padding:0.08in; background:#f8fafc">
+          <h3 style="margin:0 0 3px; font-size:9.5pt; color:#0f172a">📜 Reglas (Español)</h3>
+          <ol style="margin:0; padding-left:0.16in; font-size:7.5pt; line-height:1.4; color:#334155">
+            <li>Coloca una ficha en 0. Baraja las 20 Cartas de la Página 2.</li>
+            <li>Por turnos, saquen 1 carta. Suma el valor a la posición actual.</li>
+            <li>Positivo (+) mueve a la derecha (Azul +10). Negativo (−) a la izquierda (Rojo −10).</li>
+            <li>¡Gana el primero en arrastrar la ficha hasta su meta de 10!</li>
+          </ol>
+        </div>
+      </div>
+
+      <div style="border:1.5px solid #cbd5e1; border-radius:8px; padding:0.08in; background:#ffffff">
+        <h3 style="margin:0 0 4px; font-size:9.5pt; color:#0f172a">🏆 Game Turn Ledger / Registro de Jugadas</h3>
+        <table style="width:100%; border-collapse:collapse; font-size:7.5pt; text-align:center">
+          <thead>
+            <tr style="background:#f1f5f9; border-bottom:1.5px solid #cbd5e1">
+              <th style="padding:3px; border:1px solid #cbd5e1">Turn</th>
+              <th style="padding:3px; border:1px solid #cbd5e1">Player</th>
+              <th style="padding:3px; border:1px solid #cbd5e1">Start Pos</th>
+              <th style="padding:3px; border:1px solid #cbd5e1">Card Drawn</th>
+              <th style="padding:3px; border:1px solid #cbd5e1">Equation (Start + Card)</th>
+              <th style="padding:3px; border:1px solid #cbd5e1">New Pos</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${[1, 2, 3, 4, 5, 6, 7, 8].map((t) => `
+              <tr style="border-bottom:1px solid #e2e8f0; height:20px">
+                <td style="border:1px solid #cbd5e1; font-weight:700">T${t}</td>
+                <td style="border:1px solid #cbd5e1"></td>
+                <td style="border:1px solid #cbd5e1"></td>
+                <td style="border:1px solid #cbd5e1"></td>
+                <td style="border:1px solid #cbd5e1"></td>
+                <td style="border:1px solid #cbd5e1"></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+
+      <footer style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #cbd5e1; padding-top:0.08in; margin-top:0.08in; font-size:8pt; color:#64748b">
+        <span>EduWonderLab Math Fluency Lab · Integer Tug-of-War</span>
+        <span>Page 1 of 2</span>
+      </footer>
+    </article>
+
+    <article class="tpt-print-page">
+      <div class="tpt-header-row">
+        <div>
+          <h1>✂️ Integer Tug-of-War Action Cards</h1>
+          <p style="margin:2px 0 0; font-size:9.5pt; color:#475569">Cut along dotted lines. 20 movement cards for positive and negative integers.</p>
+        </div>
+        <div class="tpt-header-fields">
+          <span>Deck: <strong>20 Cards</strong></span>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:0.08in; margin-top:0.1in">
+        ${cards.map((c) => `
+          <div style="border:1.5px dashed #475569; border-radius:6px; padding:0.08in; text-align:center; background:#ffffff">
+            <span style="font-size:7pt; font-weight:800; color:#64748b; letter-spacing:0.05em">INTEGER TUG</span>
+            <div style="font-size:18pt; font-weight:900; color:${c.type === "pos" ? "#2563eb" : c.type === "neg" ? "#dc2626" : "#0f172a"}; margin:4px 0">${c.val}</div>
+            <span style="font-size:7pt; color:#475569">
+              ${c.type === "pos" ? "Move RIGHT (+)" : c.type === "neg" ? "Move LEFT (−)" : "Stay at 0"}
+            </span>
+          </div>
+        `).join("")}
+      </div>
+
+      <footer style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #cbd5e1; padding-top:0.08in; margin-top:0.1in; font-size:8pt; color:#64748b">
+        <span>EduWonderLab Math Fluency Lab · Tug-of-War Cards</span>
+        <span>Page 2 of 2</span>
+      </footer>
+    </article>
+  `);
+}
+
+function printFactorCapture(grade = 5) {
+  const learner = PROFILE_NAMES[activeProfile] || "Student";
+  const factorGuide = [
+    "1: 1", "2: 1", "3: 1", "4: 1, 2", "5: 1", "6: 1, 2, 3", "7: 1", "8: 1, 2, 4", "9: 1, 3", "10: 1, 2, 5",
+    "11: 1", "12: 1, 2, 3, 4, 6", "13: 1", "14: 1, 2, 7", "15: 1, 3, 5", "16: 1, 2, 4, 8", "17: 1", "18: 1, 2, 3, 6, 9", "19: 1", "20: 1, 2, 4, 5, 10",
+    "21: 1, 3, 7", "22: 1, 2, 11", "23: 1", "24: 1, 2, 3, 4, 6, 8, 12", "25: 1, 5", "26: 1, 2, 13", "27: 1, 3, 9", "28: 1, 2, 4, 7, 14", "29: 1", "30: 1, 2, 3, 5, 6, 10, 15",
+    "31: 1", "32: 1, 2, 4, 8, 16", "33: 1, 3, 11", "34: 1, 2, 17", "35: 1, 5, 7", "36: 1, 2, 3, 4, 6, 9, 12, 18", "37: 1", "38: 1, 2, 19", "39: 1, 3, 13", "40: 1, 2, 4, 5, 8, 10, 20",
+    "41: 1", "42: 1, 2, 3, 6, 7, 14, 21", "43: 1", "44: 1, 2, 4, 11, 22", "45: 1, 3, 5, 9, 15", "46: 1, 2, 23", "47: 1", "48: 1, 2, 3, 4, 6, 8, 12, 16, 24", "49: 1, 7", "50: 1, 2, 5, 10, 25"
+  ];
+
+  printHtml(`
+    <article class="tpt-print-page">
+      <div class="tpt-header-row">
+        <div>
+          <h1>🎲 Partner Math Game: Factor Capture</h1>
+          <p style="margin:2px 0 0; font-size:10pt; color:#475569">Captura de Factores · Grades 4–6 · Prime &amp; Composite Strategy</p>
+        </div>
+        <div class="tpt-header-fields">
+          <span>Player 1: <strong class="tpt-field-line">${escapeHtml(learner)}</strong></span>
+          <span>Player 2: <span class="tpt-field-line"></span></span>
+          <span>Date: <span class="tpt-field-line"></span></span>
+        </div>
+      </div>
+
+      <!-- 1-50 Game Grid -->
+      <div style="border:2px solid #0f172a; border-radius:10px; padding:0.12in; background:#ffffff; margin:0.1in 0">
+        <h3 style="margin:0 0 6px; font-size:10pt; text-align:center; color:#0f172a">🎯 Factor Capture Game Board (1 to 50)</h3>
+        <div style="display:grid; grid-template-columns:repeat(10, 1fr); gap:4px">
+          ${Array.from({ length: 50 }, (_, i) => {
+            const num = i + 1;
+            return `
+              <div style="border:1.5px solid #cbd5e1; border-radius:6px; padding:6px 2px; text-align:center; background:#f8fafc">
+                <span style="font-size:13pt; font-weight:900; color:#0f172a; display:block">${num}</span>
+                <span style="font-size:6.5pt; color:#94a3b8">[ ]</span>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.12in; margin-bottom:0.1in">
+        <div style="border:1.5px solid #cbd5e1; border-radius:8px; padding:0.08in; background:#f8fafc">
+          <h3 style="margin:0 0 3px; font-size:9.5pt; color:#0f172a">📜 Rules (English)</h3>
+          <ol style="margin:0; padding-left:0.16in; font-size:7.5pt; line-height:1.4; color:#334155">
+            <li>Player A circles any available number and scores that number.</li>
+            <li>Player B must cross out ALL remaining available factors of Player A's number and scores the <strong>sum of those factors</strong>.</li>
+            <li>Switch roles each turn! If you choose a number with no available factors left, you forfeit your points for that turn.</li>
+            <li>Game ends when no numbers with factors remain. Highest total score wins!</li>
+          </ol>
+        </div>
+
+        <div style="border:1.5px solid #cbd5e1; border-radius:8px; padding:0.08in; background:#f8fafc">
+          <h3 style="margin:0 0 3px; font-size:9.5pt; color:#0f172a">📜 Reglas (Español)</h3>
+          <ol style="margin:0; padding-left:0.16in; font-size:7.5pt; line-height:1.4; color:#334155">
+            <li>Jugador A encierra cualquier número libre y anota ese valor.</li>
+            <li>Jugador B tacha TODOS los factores libres de ese número y anota la <strong>suma de esos factores</strong>.</li>
+            <li>¡Se turnan! Si eliges un número sin factores disponibles, pierdes tus puntos en ese turno.</li>
+            <li>El juego termina cuando no quedan jugadas válidas. ¡Gana la mayor puntuación!</li>
+          </ol>
+        </div>
+      </div>
+
+      <footer style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #cbd5e1; padding-top:0.08in; font-size:8pt; color:#64748b">
+        <span>EduWonderLab Math Fluency Lab · Factor Capture</span>
+        <span>Page 1 of 2</span>
+      </footer>
+    </article>
+
+    <article class="tpt-print-page">
+      <div class="tpt-header-row">
+        <div>
+          <h1>🏆 Factor Capture Score Sheet &amp; Factor Guide</h1>
+          <p style="margin:2px 0 0; font-size:9.5pt; color:#475569">Record scores round-by-round. Check factors with the reference guide below.</p>
+        </div>
+      </div>
+
+      <div style="border:1.5px solid #cbd5e1; border-radius:8px; padding:0.1in; background:#ffffff; margin:0.1in 0">
+        <h3 style="margin:0 0 4px; font-size:9.5pt; color:#0f172a">Score Tracking Ledger (10 Turns)</h3>
+        <table style="width:100%; border-collapse:collapse; font-size:7.5pt; text-align:center">
+          <thead>
+            <tr style="background:#f1f5f9; border-bottom:1.5px solid #cbd5e1">
+              <th style="padding:4px; border:1px solid #cbd5e1">Turn</th>
+              <th style="padding:4px; border:1px solid #cbd5e1">Chooser</th>
+              <th style="padding:4px; border:1px solid #cbd5e1">Number Chosen</th>
+              <th style="padding:4px; border:1px solid #cbd5e1">Chooser Points</th>
+              <th style="padding:4px; border:1px solid #cbd5e1">Factors Captured</th>
+              <th style="padding:4px; border:1px solid #cbd5e1">Catcher Points (Sum)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((t) => `
+              <tr style="border-bottom:1px solid #e2e8f0; height:20px">
+                <td style="border:1px solid #cbd5e1; font-weight:700">T${t}</td>
+                <td style="border:1px solid #cbd5e1"></td>
+                <td style="border:1px solid #cbd5e1"></td>
+                <td style="border:1px solid #cbd5e1"></td>
+                <td style="border:1px solid #cbd5e1"></td>
+                <td style="border:1px solid #cbd5e1"></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+
+      <div style="border:1.5px solid #64748b; border-radius:8px; padding:0.1in; background:#f8fafc">
+        <h3 style="margin:0 0 4px; font-size:9pt; color:#0f172a">🔍 Quick Factor Verification Guide (Proper Factors for 1 to 50)</h3>
+        <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:4px; font-size:6.5pt; color:#334155; line-height:1.3">
+          ${factorGuide.map((g) => `<div><strong>${escapeHtml(g)}</strong></div>`).join("")}
+        </div>
+      </div>
+
+      <footer style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #cbd5e1; padding-top:0.08in; margin-top:0.1in; font-size:8pt; color:#64748b">
+        <span>EduWonderLab Math Fluency Lab · Factor Capture Ledger</span>
+        <span>Page 2 of 2</span>
+      </footer>
+    </article>
+  `);
+}
+
+function printRollAndSplitArray(grade = 3) {
+  const learner = PROFILE_NAMES[activeProfile] || "Student";
+  printHtml(`
+    <article class="tpt-print-page">
+      <div class="tpt-header-row">
+        <div>
+          <h1>🎲 Partner Math Game: Roll &amp; Split Array</h1>
+          <p style="margin:2px 0 0; font-size:10pt; color:#475569">Tira y Divide la Cuadrícula · Grades 1–3 · Distributive Property Array Capture</p>
+        </div>
+        <div class="tpt-header-fields">
+          <span>Player 1 (Blue): <strong class="tpt-field-line">${escapeHtml(learner)}</strong></span>
+          <span>Player 2 (Red): <span class="tpt-field-line"></span></span>
+          <span>Date: <span class="tpt-field-line"></span></span>
+        </div>
+      </div>
+
+      <!-- 20x10 Shared Territory Grid -->
+      <div style="border:2px solid #0f172a; border-radius:10px; padding:0.12in; background:#ffffff; margin:0.1in 0">
+        <h3 style="margin:0 0 4px; font-size:9.5pt; text-align:center; color:#0f172a">Shared Array Grid (20 Columns × 10 Rows = 200 Squares)</h3>
+        <svg width="100%" height="220" viewBox="0 0 440 220" style="margin:auto; display:block">
+          <!-- 20 cols x 10 rows grid -->
+          ${Array.from({ length: 11 }, (_, r) => `
+            <line x1="20" y1="${10 + r * 20}" x2="420" y2="${10 + r * 20}" stroke="${r === 0 || r === 10 ? '#0f172a' : '#cbd5e1'}" stroke-width="${r === 0 || r === 10 ? 2 : 1}" />
+          `).join("")}
+          ${Array.from({ length: 21 }, (_, c) => `
+            <line x1="${20 + c * 20}" y1="10" x2="${20 + c * 20}" y2="210" stroke="${c === 0 || c === 10 || c === 20 ? '#0f172a' : '#cbd5e1'}" stroke-width="${c === 10 ? 2 : 1}" />
+            ${c < 20 ? `<text x="${30 + c * 20}" y="8" font-size="6.5" font-weight="700" text-anchor="middle" fill="#64748b">${c + 1}</text>` : ''}
+          `).join("")}
+          ${Array.from({ length: 10 }, (_, r) => `
+            <text x="14" y="${24 + r * 20}" font-size="6.5" font-weight="700" text-anchor="end" fill="#64748b">${r + 1}</text>
+          `).join("")}
+        </svg>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.12in; margin-bottom:0.1in">
+        <div style="border:1.5px solid #cbd5e1; border-radius:8px; padding:0.08in; background:#f8fafc">
+          <h3 style="margin:0 0 3px; font-size:9.5pt; color:#0f172a">📜 Rules (English)</h3>
+          <ol style="margin:0; padding-left:0.16in; font-size:7.5pt; line-height:1.4; color:#334155">
+            <li>Roll two dice (or draw 2 numbers, e.g. 6 and 7).</li>
+            <li>Use the Distributive Property to split into two friendly chunks: e.g. 6 × 7 = (6 × 5) + (6 × 2) = 30 + 12 = 42 squares.</li>
+            <li>Color both rectangular chunks on the shared grid using your player color.</li>
+            <li>Player who captures the most total squares wins!</li>
+          </ol>
+        </div>
+
+        <div style="border:1.5px solid #cbd5e1; border-radius:8px; padding:0.08in; background:#f8fafc">
+          <h3 style="margin:0 0 3px; font-size:9.5pt; color:#0f172a">📜 Reglas (Español)</h3>
+          <ol style="margin:0; padding-left:0.16in; font-size:7.5pt; line-height:1.4; color:#334155">
+            <li>Lanza dos dados (o toma 2 números, ej. 6 y 7).</li>
+            <li>Usa la propiedad distributiva: 6 × 7 = (6 × 5) + (6 × 2) = 30 + 12 = 42 casillas.</li>
+            <li>Colorea ambos rectángulos en la cuadrícula con tu color.</li>
+            <li>¡Gana quien capture más casillas totales!</li>
+          </ol>
+        </div>
+      </div>
+
+      <footer style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #cbd5e1; padding-top:0.08in; font-size:8pt; color:#64748b">
+        <span>EduWonderLab Math Fluency Lab · Roll &amp; Split Array</span>
+        <span>Page 1 of 2</span>
+      </footer>
+    </article>
+
+    <article class="tpt-print-page">
+      <div class="tpt-header-row">
+        <div>
+          <h1>📝 Distributive Property Equation Ledger</h1>
+          <p style="margin:2px 0 0; font-size:9.5pt; color:#475569">Record your multiplication splits for each round below.</p>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.1in; margin-top:0.1in">
+        ${[1, 2, 3, 4, 5, 6, 7, 8].map((r) => `
+          <div style="border:1.5px solid #cbd5e1; border-radius:8px; padding:0.1in; background:#ffffff">
+            <div style="display:flex; justify-content:space-between; font-weight:800; font-size:9pt; margin-bottom:4px">
+              <span>Round ${r}</span>
+              <span style="color:#64748b">Player: [ ] 1  [ ] 2</span>
+            </div>
+            <p style="margin:0 0 4px; font-size:8pt; color:#475569">Dice Rolled: <strong>___ × ___</strong></p>
+            <div style="font-family:monospace; font-weight:700; font-size:9pt; background:#f8fafc; padding:6px; border-radius:4px; border:1px dashed #cbd5e1">
+              ( ___ × 5 ) + ( ___ × ___ ) = ___ + ___ = <strong>___ squares</strong>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+
+      <div style="border:1.5px solid #16a34a; border-radius:8px; padding:0.1in; background:#f0fdf4; margin-top:0.15in">
+        <h3 style="margin:0 0 4px; font-size:9.5pt; color:#166534">💬 Partner Math Talk</h3>
+        <p style="margin:0; font-size:8pt; color:#14532d; line-height:1.4">
+          <em>“I split 7 into 5 and 2 because 5s and 2s are friendly facts I know instantly. My array has 30 squares in the first chunk and 12 in the second chunk for 42 total squares.”</em>
+        </p>
+      </div>
+
+      <footer style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #cbd5e1; padding-top:0.08in; margin-top:0.1in; font-size:8pt; color:#64748b">
+        <span>EduWonderLab Math Fluency Lab · Distributive Ledger</span>
+        <span>Page 2 of 2</span>
+      </footer>
+    </article>
+  `);
+}
+
+function printPartnerGame(gameType = "war", grade = state.grade || 4) {
+  if (gameType === "war") printFractionWar(grade);
+  else if (gameType === "tug") printIntegerTugOfWar(grade);
+  else if (gameType === "capture") printFactorCapture(grade);
+  else if (gameType === "array") printRollAndSplitArray(grade);
+}
+
 const gcd = (a, b) => { let x = Math.abs(a), y = Math.abs(b); while (y) [x, y] = [y, x % y]; return x || 1; };
 const lcm = (a, b) => Math.abs(a * b) / gcd(a, b);
 
@@ -2313,28 +4120,58 @@ const InteractiveSolver = {
       container.innerHTML = `
         <div class="solver-header">
           <strong>⚖️ Interactive Equation Balance Scale</strong>
-          <span class="solver-hint-tag">Apply inverse operations to both sides</span>
+          <span class="solver-hint-tag">Apply inverse operations to both sides to maintain equilibrium</span>
         </div>
         <div class="eq-balance-scaffold">
+          <div class="eq-balance-action-bar">
+            ${b !== 0 ? `
+              <button type="button" class="mini-tool-btn eq-action-btn" data-eq-action="undo-b" style="background:#dbeafe; border-color:#93c5fd; color:#1e40af; font-weight:800">
+                ${b > 0 ? `➖ Subtract ${b} From Both Sides` : `➕ Add ${Math.abs(b)} To Both Sides`}
+              </button>
+            ` : ""}
+            ${a > 1 && !isDiv ? `
+              <button type="button" class="mini-tool-btn eq-action-btn" data-eq-action="undo-a" ${b !== 0 ? "disabled" : ""} style="background:#dcfce7; border-color:#86efac; color:#166534; font-weight:800">
+                ➗ Divide Both Sides by ${a}
+              </button>
+            ` : ""}
+            ${isDiv ? `
+              <button type="button" class="mini-tool-btn eq-action-btn" data-eq-action="undo-div" style="background:#dcfce7; border-color:#86efac; color:#166534; font-weight:800">
+                ✖️ Multiply Both Sides by ${a}
+              </button>
+            ` : ""}
+            <button type="button" class="mini-tool-btn" data-eq-action="tilt-left" title="Demonstrate what happens if you change only one side">
+              ⚠️ Change Left Only (Tilt!)
+            </button>
+            <button type="button" class="mini-tool-btn" data-eq-action="reset">
+              ↺ Reset Scale
+            </button>
+          </div>
+
+          <div class="eq-balance-status-banner balanced" id="eq-scale-status">
+            ⚖️ Scale in Equilibrium: ${a === 1 ? "x" : `${a}x`}${b ? (b > 0 ? ` + ${b}` : ` − ${Math.abs(b)}`) : ""} = ${c}
+          </div>
+
           <div class="balance-scale-svg-wrap">
             <svg class="balance-scale-svg" viewBox="0 0 400 160" aria-label="Balance scale illustration">
               <!-- Base and Fulcrum -->
               <polygon points="185,150 215,150 200,90" fill="#64748b" />
               <circle cx="200" cy="90" r="7" fill="#0f172a" />
-              <!-- Level Beam -->
-              <line x1="60" y1="90" x2="340" y2="90" stroke="#0f172a" stroke-width="5" stroke-linecap="round" />
-              <!-- Left Chains & Pan -->
-              <line x1="75" y1="90" x2="50" y2="125" stroke="#94a3b8" stroke-width="2" />
-              <line x1="75" y1="90" x2="100" y2="125" stroke="#94a3b8" stroke-width="2" />
-              <path d="M 40,125 Q 75,145 110,125 Z" fill="#3b82f6" opacity="0.85" />
-              <!-- Right Chains & Pan -->
-              <line x1="325" y1="90" x2="300" y2="125" stroke="#94a3b8" stroke-width="2" />
-              <line x1="325" y1="90" x2="350" y2="125" stroke="#94a3b8" stroke-width="2" />
-              <path d="M 290,125 Q 325,145 360,125 Z" fill="#10b981" opacity="0.85" />
-              <!-- Left Pan Label -->
-              <text x="75" y="120" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a" id="scale-left-label">${isDiv ? `x ÷ ${a}` : `${a === 1 ? "x" : `${a}x`}${b ? (b > 0 ? ` + ${b}` : ` − ${Math.abs(b)}`) : ""}`}</text>
-              <!-- Right Pan Label -->
-              <text x="325" y="120" text-anchor="middle" font-size="14" font-weight="bold" fill="#065f46" id="scale-right-label">${c}</text>
+              <!-- Level Beam with Animated Rotate -->
+              <g id="scale-beam-group" style="transform-origin: 200px 90px; transform: rotate(0deg); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                <line x1="60" y1="90" x2="340" y2="90" stroke="#0f172a" stroke-width="5" stroke-linecap="round" />
+                <!-- Left Chains & Pan -->
+                <line x1="75" y1="90" x2="50" y2="125" stroke="#94a3b8" stroke-width="2" />
+                <line x1="75" y1="90" x2="100" y2="125" stroke="#94a3b8" stroke-width="2" />
+                <path d="M 40,125 Q 75,145 110,125 Z" fill="#3b82f6" opacity="0.85" />
+                <!-- Right Chains & Pan -->
+                <line x1="325" y1="90" x2="300" y2="125" stroke="#94a3b8" stroke-width="2" />
+                <line x1="325" y1="90" x2="350" y2="125" stroke="#94a3b8" stroke-width="2" />
+                <path d="M 290,125 Q 325,145 360,125 Z" fill="#10b981" opacity="0.85" />
+                <!-- Left Pan Label -->
+                <text x="75" y="120" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a" id="scale-left-label">${isDiv ? `x ÷ ${a}` : `${a === 1 ? "x" : `${a}x`}${b ? (b > 0 ? ` + ${b}` : ` − ${Math.abs(b)}`) : ""}`}</text>
+                <!-- Right Pan Label -->
+                <text x="325" y="120" text-anchor="middle" font-size="14" font-weight="bold" fill="#065f46" id="scale-right-label">${c}</text>
+              </g>
             </svg>
           </div>
           <div class="eq-steps-workspace">
@@ -2376,9 +4213,114 @@ const InteractiveSolver = {
 
       const rightLabel = container.querySelector("#scale-right-label");
       const leftLabel = container.querySelector("#scale-left-label");
+      const beamGroup = container.querySelector("#scale-beam-group");
+      const scaleStatus = container.querySelector("#eq-scale-status");
       const step1Inp = container.querySelector('[data-group="eq-step1"]');
       const step2Inp = container.querySelector('[data-group="eq-step2"]');
       const finalInp = container.querySelector('[data-group="eq-final"]');
+      const undoABtn = container.querySelector('[data-eq-action="undo-a"]');
+
+      container.querySelector('[data-eq-action="undo-b"]')?.addEventListener("click", () => {
+        if (beamGroup) beamGroup.style.transform = "rotate(0deg)";
+        if (rightLabel) rightLabel.textContent = String(c - b);
+        if (leftLabel) leftLabel.textContent = a === 1 ? "x" : `${a}x`;
+        if (scaleStatus) {
+          scaleStatus.className = "eq-balance-status-banner balanced";
+          scaleStatus.textContent = `✅ Undid ${b > 0 ? `+${b}` : `−${Math.abs(b)}`}! Subtracted ${b} from BOTH sides. Balance maintained: ${a === 1 ? "x" : `${a}x`} = ${c - b}.`;
+        }
+        if (step1Inp) {
+          step1Inp.value = String(c - b);
+          step1Inp.classList.add("is-ok");
+        }
+        if (undoABtn) undoABtn.disabled = false;
+        chime("step");
+        if (a === 1) {
+          if (finalInp) {
+            finalInp.value = String(solution);
+            finalInp.classList.add("is-ok");
+          }
+          els.answerInput.value = String(solution);
+          chime("good");
+          const copyBtn = container.querySelector("#eq-copy-ans");
+          if (copyBtn) {
+            copyBtn.style.display = "inline-block";
+            copyBtn.textContent = "✓ Copied to answer!";
+          }
+        }
+      });
+
+      container.querySelector('[data-eq-action="undo-a"]')?.addEventListener("click", () => {
+        if (beamGroup) beamGroup.style.transform = "rotate(0deg)";
+        if (rightLabel) rightLabel.textContent = String(solution);
+        if (leftLabel) leftLabel.textContent = "x";
+        if (scaleStatus) {
+          scaleStatus.className = "eq-balance-status-banner balanced";
+          scaleStatus.textContent = `🎉 Solved! Divided both sides by ${a}. Isolated variable: x = ${solution}!`;
+        }
+        if (step2Inp) {
+          step2Inp.value = String(solution);
+          step2Inp.classList.add("is-ok");
+        }
+        if (finalInp) {
+          finalInp.value = String(solution);
+          finalInp.classList.add("is-ok");
+        }
+        els.answerInput.value = String(solution);
+        chime("good");
+        const copyBtn = container.querySelector("#eq-copy-ans");
+        if (copyBtn) {
+          copyBtn.style.display = "inline-block";
+          copyBtn.textContent = "✓ Copied to answer!";
+        }
+      });
+
+      container.querySelector('[data-eq-action="undo-div"]')?.addEventListener("click", () => {
+        if (beamGroup) beamGroup.style.transform = "rotate(0deg)";
+        if (rightLabel) rightLabel.textContent = String(solution);
+        if (leftLabel) leftLabel.textContent = "x";
+        if (scaleStatus) {
+          scaleStatus.className = "eq-balance-status-banner balanced";
+          scaleStatus.textContent = `🎉 Solved! Multiplied both sides by ${a}. Isolated variable: x = ${solution}!`;
+        }
+        if (step2Inp) {
+          step2Inp.value = String(solution);
+          step2Inp.classList.add("is-ok");
+        }
+        if (finalInp) {
+          finalInp.value = String(solution);
+          finalInp.classList.add("is-ok");
+        }
+        els.answerInput.value = String(solution);
+        chime("good");
+        const copyBtn = container.querySelector("#eq-copy-ans");
+        if (copyBtn) {
+          copyBtn.style.display = "inline-block";
+          copyBtn.textContent = "✓ Copied to answer!";
+        }
+      });
+
+      container.querySelector('[data-eq-action="tilt-left"]')?.addEventListener("click", () => {
+        if (beamGroup) beamGroup.style.transform = "rotate(10deg)";
+        if (scaleStatus) {
+          scaleStatus.className = "eq-balance-status-banner unbalanced";
+          scaleStatus.textContent = `⚠️ Unbalanced! Left side changed without changing right. In algebra, always do the same thing to BOTH sides!`;
+        }
+        chime("step");
+      });
+
+      container.querySelector('[data-eq-action="reset"]')?.addEventListener("click", () => {
+        if (beamGroup) beamGroup.style.transform = "rotate(0deg)";
+        if (leftLabel) leftLabel.textContent = isDiv ? `x ÷ ${a}` : `${a === 1 ? "x" : `${a}x`}${b ? (b > 0 ? ` + ${b}` : ` − ${Math.abs(b)}`) : ""}`;
+        if (rightLabel) rightLabel.textContent = String(c);
+        if (scaleStatus) {
+          scaleStatus.className = "eq-balance-status-banner balanced";
+          scaleStatus.textContent = `⚖️ Scale in Equilibrium: ${a === 1 ? "x" : `${a}x`}${b ? (b > 0 ? ` + ${b}` : ` − ${Math.abs(b)}`) : ""} = ${c}`;
+        }
+        if (step1Inp) { step1Inp.value = ""; step1Inp.classList.remove("is-ok"); }
+        if (step2Inp) { step2Inp.value = ""; step2Inp.classList.remove("is-ok"); }
+        if (finalInp) { finalInp.value = ""; finalInp.classList.remove("is-ok"); }
+        if (undoABtn) undoABtn.disabled = b !== 0;
+      });
 
       step1Inp?.addEventListener("input", () => {
         if (step1Inp.value.trim() === String(c - b)) {
@@ -3745,13 +5687,169 @@ function showArea(view) {
   });
 }
 
+/* ==========================================================================
+   Multidimensional Learner Genome (4-Axis Growth Engine)
+   ========================================================================== */
+function calculateFluencyGenome(profile = activeProfile) {
+  const sessions = (state.tutor.sessions || []).filter((s) => s.grade === state.grade);
+  const hudStats = FluencyTelemetryHUD?.getStats?.() || { arr: 0, de: 0 };
+  const allMistakes = (state.tutor.mistakes || []).filter((m) => findSkill(m.key)?.grade === state.grade);
+  const repairedMistakes = allMistakes.filter((m) => m.resolvedAt);
+  const gradeSkills = getGrade(state.grade).skills;
+  const exploredLessons = gradeSkills.filter((s) => evidence(state.tutor, s).lessonCompleted).length;
+  const detectiveCases = getSolvedDetectiveCases();
+
+  // 1. Automatic Recall (0 - 100)
+  let recall = hudStats.arr > 0 ? hudStats.arr : 75;
+  if (sessions.length > 0) {
+    const totalAns = sessions.reduce((sum, s) => sum + (s.answered || 0), 0);
+    const totalCorr = sessions.reduce((sum, s) => sum + (s.correct || 0), 0);
+    if (totalAns > 0) {
+      recall = Math.round((totalCorr / totalAns) * 100);
+    }
+  }
+  recall = Math.min(98, Math.max(30, recall));
+
+  // 2. Conceptual Strategy (0 - 100)
+  const lessonPct = (exploredLessons / Math.max(1, gradeSkills.length)) * 50;
+  const detecBonus = Math.min(30, detectiveCases.length * 10);
+  let strategy = Math.round(35 + lessonPct + detecBonus);
+  strategy = Math.min(98, Math.max(35, strategy));
+
+  // 3. Resilience & Repair (0 - 100)
+  let resilience = 80;
+  if (allMistakes.length > 0) {
+    resilience = Math.round(40 + (repairedMistakes.length / allMistakes.length) * 55);
+  } else {
+    resilience = 85;
+  }
+  resilience = Math.min(98, Math.max(40, resilience));
+
+  // 4. Academic Math Language (0 - 100)
+  const esAudioCount = state.tutor?.esAudioCount || 0;
+  const wordWallHistory = loadJson(profileKey("ewl-word-wall-history", profile), []);
+  let language = Math.round(55 + Math.min(25, wordWallHistory.length * 5) + Math.min(18, esAudioCount * 3));
+  language = Math.min(98, Math.max(40, language));
+
+  return {
+    recall,
+    strategy,
+    resilience,
+    language,
+    qualitative: {
+      recall: recall >= 85 ? "Rapid fact retrieval & automaticity" : recall >= 65 ? "Steady retrieval with thoughtful pacing" : "Building foundational recall",
+      strategy: strategy >= 80 ? "Multi-model reasoning & flexible representations" : strategy >= 60 ? "Active visual lesson & model exploration" : "Connecting concrete models to symbols",
+      resilience: resilience >= 85 ? "High Fix-It Garage recovery rate & growth mindset" : resilience >= 65 ? "Steady persistence through tricky problems" : "Beginning mistake analysis",
+      language: language >= 80 ? "Rich WIDA discourse & precise bilingual vocabulary" : language >= 60 ? "Developing mathematical terminology" : "Foundational vocabulary access"
+    }
+  };
+}
+
+function renderFluencyGenomeSvg(genome) {
+  const cx = 130;
+  const cy = 110;
+  const r = 70;
+
+  const vRecall = genome.recall / 100;
+  const vStrategy = genome.strategy / 100;
+  const vResilience = genome.resilience / 100;
+  const vLanguage = genome.language / 100;
+
+  const pTop = `${cx},${cy - r * vRecall}`;
+  const pRight = `${cx + r * vStrategy},${cy}`;
+  const pBottom = `${cx},${cy + r * vResilience}`;
+  const pLeft = `${cx - r * vLanguage},${cy}`;
+
+  return `
+    <svg width="260" height="220" viewBox="0 0 260 220" class="genome-radar-svg" role="img" aria-label="Learner Genome Radar Chart: Recall ${genome.recall}%, Strategy ${genome.strategy}%, Resilience ${genome.resilience}%, Language ${genome.language}%">
+      <defs>
+        <radialGradient id="genomeGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#818cf8" stop-opacity="0.45" />
+          <stop offset="100%" stop-color="#4f46e5" stop-opacity="0.15" />
+        </radialGradient>
+      </defs>
+
+      <!-- Concentric Grid Diamonds (25%, 50%, 75%, 100%) -->
+      <polygon points="${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}" fill="none" stroke="#e2e8f0" stroke-width="1.5" />
+      <polygon points="${cx},${cy - r * 0.75} ${cx + r * 0.75},${cy} ${cx},${cy + r * 0.75} ${cx - r * 0.75},${cy}" fill="none" stroke="#f1f5f9" stroke-width="1" />
+      <polygon points="${cx},${cy - r * 0.5} ${cx + r * 0.5},${cy} ${cx},${cy + r * 0.5} ${cx - r * 0.5},${cy}" fill="none" stroke="#e2e8f0" stroke-width="1" />
+      <polygon points="${cx},${cy - r * 0.25} ${cx + r * 0.25},${cy} ${cx},${cy + r * 0.25} ${cx - r * 0.25},${cy}" fill="none" stroke="#f1f5f9" stroke-width="1" />
+
+      <!-- Axis Spokes -->
+      <line x1="${cx}" y1="${cy - r - 4}" x2="${cx}" y2="${cy + r + 4}" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,3" />
+      <line x1="${cx - r - 4}" y1="${cy}" x2="${cx + r + 4}" y2="${cy}" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,3" />
+
+      <!-- Radar Shape -->
+      <polygon points="${pTop} ${pRight} ${pBottom} ${pLeft}" fill="url(#genomeGrad)" stroke="#4f46e5" stroke-width="2.5" stroke-linejoin="round" />
+
+      <!-- Nodes -->
+      <circle cx="${cx}" cy="${cy - r * vRecall}" r="4.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2" />
+      <circle cx="${cx + r * vStrategy}" cy="${cy}" r="4.5" fill="#10b981" stroke="#ffffff" stroke-width="2" />
+      <circle cx="${cx}" cy="${cy + r * vResilience}" r="4.5" fill="#f59e0b" stroke="#ffffff" stroke-width="2" />
+      <circle cx="${cx - r * vLanguage}" cy="${cy}" r="4.5" fill="#8b5cf6" stroke="#ffffff" stroke-width="2" />
+
+      <!-- Axis Labels -->
+      <text x="${cx}" y="18" text-anchor="middle" font-size="10" font-weight="800" fill="#1e293b">⚡ Recall (${genome.recall}%)</text>
+      <text x="${cx + r + 6}" y="${cy + 4}" text-anchor="start" font-size="10" font-weight="800" fill="#047857">🧠 Strategy (${genome.strategy}%)</text>
+      <text x="${cx}" y="${cy + r + 18}" text-anchor="middle" font-size="10" font-weight="800" fill="#b45309">🛡️ Resilience (${genome.resilience}%)</text>
+      <text x="${cx - r - 6}" y="${cy + 4}" text-anchor="end" font-size="10" font-weight="800" fill="#6d28d9">🗣️ Language (${genome.language}%)</text>
+    </svg>
+  `;
+}
+
+function renderFluencyGenomeCard(genome) {
+  return `
+    <article class="learner-genome-card" id="learner-genome-card">
+      <div class="genome-header">
+        <div>
+          <span class="genome-badge">🧬 MULTIDIMENSIONAL LEARNER GENOME</span>
+          <h3 style="margin:2px 0; font-size:1.2rem; color:#0f172a">Growth Across 4 Pillars of Fluency</h3>
+          <p style="margin:0; font-size:0.85rem; color:#64748b">Holistic mathematical development tracking automaticity, conceptual reasoning, error repair, and academic language.</p>
+        </div>
+        <span class="genome-profile-tag">${escapeHtml(PROFILE_NAMES[activeProfile])} · Grade ${state.grade}</span>
+      </div>
+
+      <div class="genome-body">
+        <div class="genome-radar-wrap">
+          ${renderFluencyGenomeSvg(genome)}
+        </div>
+        <div class="genome-metrics-grid">
+          <div class="genome-metric-item">
+            <div class="gm-top"><span class="gm-title">⚡ Automatic Recall</span><strong class="gm-val" style="color:#2563eb">${genome.recall}%</strong></div>
+            <div class="gm-bar"><div class="gm-bar-fill" style="width:${genome.recall}%; background:#2563eb"></div></div>
+            <p class="gm-desc">${escapeHtml(genome.qualitative.recall)}</p>
+          </div>
+          <div class="genome-metric-item">
+            <div class="gm-top"><span class="gm-title">🧠 Conceptual Strategy</span><strong class="gm-val" style="color:#059669">${genome.strategy}%</strong></div>
+            <div class="gm-bar"><div class="gm-bar-fill" style="width:${genome.strategy}%; background:#059669"></div></div>
+            <p class="gm-desc">${escapeHtml(genome.qualitative.strategy)}</p>
+          </div>
+          <div class="genome-metric-item">
+            <div class="gm-top"><span class="gm-title">🛡️ Resilience &amp; Repair</span><strong class="gm-val" style="color:#d97706">${genome.resilience}%</strong></div>
+            <div class="gm-bar"><div class="gm-bar-fill" style="width:${genome.resilience}%; background:#d97706"></div></div>
+            <p class="gm-desc">${escapeHtml(genome.qualitative.resilience)}</p>
+          </div>
+          <div class="genome-metric-item">
+            <div class="gm-top"><span class="gm-title">🗣️ Academic Language</span><strong class="gm-val" style="color:#7c3aed">${genome.language}%</strong></div>
+            <div class="gm-bar"><div class="gm-bar-fill" style="width:${genome.language}%; background:#7c3aed"></div></div>
+            <p class="gm-desc">${escapeHtml(genome.qualitative.language)}</p>
+          </div>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
 function renderDashboard() {
   const ranked = recommendations(state.tutor, state.grade);
   const next = ranked[0];
   const saved = loadJson(SESSION_KEY, null);
   const today = state.tutor.sessions.filter((session) => localDay(session.at) === localDay()).reduce((sum, session) => sum + session.answered, 0);
   const due = ranked.filter((entry) => entry.status.due).length;
-  els.dashboard.innerHTML = `<div class="next-step-card"><p class="section-label">${escapeHtml(PROFILE_NAMES[activeProfile])}’s next step</p><h3>${escapeHtml(next.skill.title)}</h3><p>${escapeHtml(next.reason)}. Start with the visual idea or go straight to practice.</p><div class="button-row"><button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">See the idea</button><button class="outline-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="adaptive">Practice this skill</button></div></div>
+  const genome = calculateFluencyGenome(activeProfile);
+  els.dashboard.innerHTML = `
+    ${renderFluencyGenomeCard(genome)}
+    <div class="next-step-card"><p class="section-label">${escapeHtml(PROFILE_NAMES[activeProfile])}’s next step</p><h3>${escapeHtml(next.skill.title)}</h3><p>${escapeHtml(next.reason)}. Start with the visual idea or go straight to practice.</p><div class="button-row"><button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">See the idea</button><button class="outline-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="adaptive">Practice this skill</button></div></div>
     <div class="checkup-card"><h3>Find my starting point</h3><p>Try one question from each skill in Grade ${state.grade}. Skip what you haven’t learned yet.</p><button class="outline-action" data-start-checkup>${state.tutor.diagnostics[state.grade] ? 'Try the checkup again' : 'Start a 10-question checkup'}</button><p class="checkup-note">A quick guide, not a placement test.</p></div>
     <div class="daily-progress"><strong>${today} problems completed today</strong><span>${due ? `${due} skills ready for a memory refresh` : 'A small amount of thoughtful practice adds up.'}</span><button class="text-action" data-start-daily>Open my daily practice</button></div>
     ${saved?.version === 2 && saved.session && !saved.session.finished ? `<div class="resume-banner"><div><strong>Your practice is waiting.</strong><p>${escapeHtml(saved.item?.skill?.title || 'Practice set')} · ${saved.session.answered} completed</p></div><button class="primary-action" data-resume-practice>Continue saved practice</button></div>` : ''}`;
@@ -3966,6 +6064,73 @@ function renderDetectiveSection(currentGrade) {
   `;
 }
 
+/* ==========================================================================
+   Targeted Cognitive Repair Prescriptions for Fix-It Garage
+   ========================================================================== */
+function getCognitivePrescription(entry, skill) {
+  const q = String(entry.question || "").replaceAll(",", "").toLowerCase();
+  const strand = skill?.strand || "";
+
+  if (q.includes("/") || /fraction/i.test(strand) || /fraction/i.test(skill?.id || "")) {
+    return {
+      root: "Fraction Part-Whole / Denominator Inversion",
+      rootBadge: "🩺 Rx: Fraction Wall Workout",
+      tool: "fractions",
+      toolName: "Fraction Strips Wall",
+      diagnostic: "Observed difficulty comparing fraction sizes or adding unlike denominators without common partitioning.",
+      prescription: "Compare identical length strips on the Fraction Wall to prove the common denominator before combining numerators."
+    };
+  }
+  if ((q.includes("x") && q.includes("=")) || /equation|algebra/i.test(strand)) {
+    return {
+      root: "Algebraic Isolation & Balance Equilibrium",
+      rootBadge: "🩺 Rx: Pan Balance Scale Workout",
+      tool: "balance",
+      toolName: "Pan Balance Scale",
+      diagnostic: "Attempted to move a term without applying the identical inverse operation to both sides.",
+      prescription: "Model the equation on the balance scale. Use inverse operations simultaneously to isolate x while maintaining equilibrium."
+    };
+  }
+  if (q.includes("−") || q.includes("-") || /integer|negative/i.test(strand) || /negative/i.test(q)) {
+    return {
+      root: "Zero Pair & Sign Reversal Confusion",
+      rootBadge: "🩺 Rx: Integer Counters Mat Workout",
+      tool: "integers",
+      toolName: "Integer Counters Mat",
+      diagnostic: "Applied rote signs rules (like 'minus a minus is a plus') without physical zero-pair cancellation.",
+      prescription: "Place positive and negative counters on the mat. Form zero pairs [(+1) + (-1) = 0] to see the net charge."
+    };
+  }
+  if (q.includes("÷") || /division/i.test(strand) || /division/i.test(skill?.id || "")) {
+    return {
+      root: "Place-Value Quotient Partitioning",
+      rootBadge: "🩺 Rx: Long Division Solver Workout",
+      tool: "lcm",
+      toolName: "Division Solver",
+      diagnostic: "Lost place-value alignment during multi-step quotient regrouping or subtraction difference.",
+      prescription: "Work through each column in the vertical division tower: Divide → Multiply → Subtract → Bring Down."
+    };
+  }
+  if (q.includes("×") || /multiplication|area/i.test(strand)) {
+    return {
+      root: "Distributive Property & Array Splitting",
+      rootBadge: "🩺 Rx: Number Splitter Workout",
+      tool: "splitter",
+      toolName: "Number Splitter",
+      diagnostic: "Multiplied the tens place but forgot the remaining ones chunk, or misapplied partial products.",
+      prescription: "Decompose the tricky factor into friendly tens and ones (e.g., 12 = 10 + 2). Multiply both parts, then sum."
+    };
+  }
+  return {
+    root: "Mental Number Line Landmark Slip",
+    rootBadge: "🩺 Rx: Number Line Jumps Workout",
+    tool: "numberline",
+    toolName: "Number Line",
+    diagnostic: "Attempted direct mental jump without anchoring to friendly multiples of 10 or benchmark markers.",
+    prescription: "Make landmark jumps on the number line: leap to the nearest multiple of 10 first, then bridge the remaining distance."
+  };
+}
+
 function renderNotebook() {
   const entries = state.tutor.mistakes.filter((entry) => findSkill(entry.key)?.grade === state.grade);
   const open = entries.filter((entry) => !entry.resolvedAt);
@@ -3974,13 +6139,14 @@ function renderNotebook() {
       <div>
         <span class="garage-badge">🔧 THE FIX-IT GARAGE</span>
         <h2 style="margin:4px 0 2px; font-size:1.6rem; color:#fff">Tune Up Your Tricky Skills</h2>
-        <p style="margin:0; font-size:0.95rem; color:#94a3b8">Every mistake is a vehicle in the shop. Tune it up with tools, then solve 2 fresh problems to roll out with green lights!</p>
+        <p style="margin:0; font-size:0.95rem; color:#94a3b8">Every mistake is a vehicle in the shop. Tune it up with targeted manipulative workouts, then solve 2 fresh problems to roll out with green lights!</p>
       </div>
       ${open.length ? '<button class="primary-action" data-repair-all style="background:#f59e0b; color:#78350f; font-weight:900; border:none; padding:10px 16px; border-radius:8px; cursor:pointer">⚡ Tune Up All (' + open.length + ')</button>' : ''}
     </div>
     ${entries.length ? `<div class="mistake-list">${entries.map((entry) => {
       const skill = findSkill(entry.key);
       const isRepaired = !!entry.resolvedAt;
+      const rx = getCognitivePrescription(entry, skill);
       return `
         <article class="mistake-entry ${isRepaired ? 'repaired' : ''}">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
@@ -3992,6 +6158,17 @@ function renderNotebook() {
           <h3>${escapeHtml(skill.title)}</h3>
           <p class="mistake-question" style="font-size:1.4rem; font-weight:900; margin:8px 0">${escapeHtml(entry.question)}</p>
           <p>Your previous answer: <strong style="color:#dc2626">${escapeHtml(entry.submitted)}</strong></p>
+
+          <!-- Targeted Cognitive Repair Prescription -->
+          <div class="repair-prescription-card">
+            <div class="rx-header">
+              <span class="rx-pill">${escapeHtml(rx.rootBadge)}</span>
+              <span class="rx-status-note">${isRepaired ? '✅ Workout Repaired' : '🏋️ Workout Recommended'}</span>
+            </div>
+            <p class="rx-diagnostic"><strong>Mechanic’s Diagnostic:</strong> ${escapeHtml(rx.diagnostic)}</p>
+            <p class="rx-prescription"><strong>Targeted Workout:</strong> ${escapeHtml(rx.prescription)}</p>
+          </div>
+
           <details style="margin:10px 0; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px">
             <summary style="font-weight:700; cursor:pointer">🔍 Peek at the Mechanic's Blueprint</summary>
             <p style="margin:6px 0 4px"><strong>Strategy Hint:</strong> ${escapeHtml(entry.hint)}</p>
@@ -3999,7 +6176,8 @@ function renderNotebook() {
             <p style="margin:4px 0; color:#b45309"><strong>Watch Out:</strong> ${escapeHtml(skill.learn.watch)}</p>
           </details>
           <div class="button-row">
-            <button class="outline-action" data-open-key="${entry.key}" data-open-mode="visual">🛠️ Build with Tools</button>
+            <button class="outline-action rx-workout-btn" type="button" data-launch-workout="${rx.tool}" data-skill-key="${entry.key}">🏋️ Launch ${rx.toolName} Workout</button>
+            <button class="outline-action" data-open-key="${entry.key}" data-open-mode="visual">🛠️ Visual Lesson</button>
             <button class="primary-action" data-repair-key="${entry.key}">⚡ Test Drive Fresh Problems</button>
           </div>
         </article>`;
@@ -4897,6 +7075,16 @@ window.SpacedZPDEngine = SpacedZPDEngine;
 
 const InteractiveDrillToolbox = {
   activeTool: "numberline",
+  openTool(toolName, syncItem = null) {
+    const drawer = document.querySelector("#drill-toolbox");
+    if (!drawer) return;
+    drawer.open = true;
+    this.activeTool = toolName;
+    if (syncItem) this.syncFromProblem(syncItem);
+    drawer.querySelectorAll(".tool-btn").forEach((btn) => btn.classList.toggle("active", btn.dataset.tool === this.activeTool));
+    this.render(document.querySelector("#drill-tool-viewport"));
+    drawer.scrollIntoView({ behavior: "smooth", block: "center" });
+  },
   tenFrameCount: 0,
   numberLinePos: 5,
   multRow: 6,
@@ -6026,6 +8214,36 @@ const TeacherPrintCenter = {
           </div>
         </div>
       `;
+    } else if (tab === "partner") {
+      viewport.innerHTML = `
+        <div class="tpt-preview-card">
+          <div class="tpt-preview-header">
+            <div class="tpt-preview-info">
+              <h3>🎲 Dynamic Printable Partner Games (Grades 1–8)</h3>
+              <p>Zero-prep, two-player printable math games customized to grade and skill. Complete with bilingual rules, visual game boards, printable cards, and math talk sentence stems.</p>
+            </div>
+          </div>
+          <div class="partner-game-picker-row" style="display:flex; gap:0.75rem; flex-wrap:wrap; margin:1rem 0; background:#f8fafc; padding:0.75rem; border-radius:8px; border:1px solid #e2e8f0; align-items:center">
+            <label style="font-weight:700; font-size:0.9rem">Select Partner Game:
+              <select id="partner-game-select" style="margin-left:0.4rem; padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; font-weight:700">
+                <option value="war" selected>Fraction War · Compare &amp; Capture (Grades 3–5)</option>
+                <option value="tug">Integer Tug-of-War · Net Charge Track (Grades 6–7)</option>
+                <option value="capture">Factor Capture · Prime &amp; Factor Chase (Grades 4–6)</option>
+                <option value="array">Roll &amp; Split Array · Distributive Property (Grades 1–3)</option>
+              </select>
+            </label>
+            <button type="button" class="tpt-print-action-btn" id="print-selected-partner-game" style="background:#4f46e5; border-color:#4338ca">🖨️ Print 2-Player Game Sheet (2 Pages)</button>
+          </div>
+          <div class="tpt-preview-mockup">
+            <strong>Game Highlights:</strong>
+            <ul class="tpt-feature-bullets" style="margin-top:6px">
+              <li><strong>Page 1:</strong> Full High-Contrast Game Board, Bilingual Rules (EN &amp; ES), and Partner Talk Prompts</li>
+              <li><strong>Page 2:</strong> Cut-and-Play Game Cards / Verification Grid and Round Recording Table</li>
+              <li><strong>Zero Prep:</strong> Just print, grab two colored pencils or counters, and play immediately in stations</li>
+            </ul>
+          </div>
+        </div>
+      `;
     } else if (tab === "exits") {
       viewport.innerHTML = `
         <div class="tpt-preview-card">
@@ -6145,7 +8363,57 @@ document.querySelector("#open-print-center")?.addEventListener("click", () => {
 
 document.addEventListener("click", (event) => {
   if (event.target.closest("[data-open-print-center]")) {
-    TeacherPrintCenter.open();
+    const targetTab = event.target.closest("[data-open-print-center]").dataset.targetTab || "mats";
+    TeacherPrintCenter.open(targetTab);
+    return;
+  }
+  if (event.target.closest("#print-selected-partner-game")) {
+    const sel = document.querySelector("#partner-game-select")?.value || "war";
+    printPartnerGame(sel, state.grade);
+    return;
+  }
+  if (event.target.closest("#open-number-talk-btn")) {
+    NumberTalkRoutine.open(state.grade);
+    return;
+  }
+  if (event.target.closest("[data-close-number-talk]")) {
+    NumberTalkRoutine.close();
+    return;
+  }
+  if (event.target.closest("#nt-toggle-lang")) {
+    NumberTalkRoutine.toggleLang();
+    return;
+  }
+  if (event.target.closest("#nt-print-routine")) {
+    printNumberTalkRoutine();
+    return;
+  }
+  const ntGradeBtn = event.target.closest("[data-nt-grade]");
+  if (ntGradeBtn) {
+    NumberTalkRoutine.setGrade(Number(ntGradeBtn.dataset.ntGrade));
+    return;
+  }
+  const ntPhaseBtn = event.target.closest("[data-nt-phase]");
+  if (ntPhaseBtn) {
+    NumberTalkRoutine.setPhase(ntPhaseBtn.dataset.ntPhase);
+    return;
+  }
+  if (event.target.closest("[data-nt-prev]")) {
+    NumberTalkRoutine.prevTalk();
+    return;
+  }
+  if (event.target.closest("[data-nt-next]")) {
+    NumberTalkRoutine.nextTalk();
+    return;
+  }
+  const rxBtn = event.target.closest("[data-launch-workout]");
+  if (rxBtn) {
+    const tool = rxBtn.dataset.launchWorkout;
+    const skillKey = rxBtn.dataset.skillKey;
+    const skill = findSkill(skillKey);
+    const entry = state.tutor.mistakes.find((m) => m.key === skillKey);
+    InteractiveDrillToolbox.openTool(tool, entry ? { question: entry.question, skill } : { skill });
+    announce(`Opened ${tool} manipulative workout in the strategy drawer.`);
     return;
   }
   if (event.target.closest("[data-close-print-center]")) {
@@ -6303,6 +8571,8 @@ renderLibrary();
 initVoiceControl();
 initVocabSystem();
 MathWordWall.wire();
+window.NumberTalkRoutine = NumberTalkRoutine;
+window.TeacherPrintCenter = TeacherPrintCenter;
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", registerSharedSaveResume, { once: true });
 } else {
