@@ -13,8 +13,7 @@ Implementation rules:
 - Preserve student progress and navigation.
 
 Verification commands:
-- `npm run validate`
-- `scripts/codex/codex-verify.sh`
+- Run the relevant accessibility check, then `scripts/codex/codex-verify.sh` once for local verification. An immediately following guarded `ship` runs the pre-push gate on the assembled commit.
 - Browser console and responsive smoke test when UI changed.
 
 Final response format:

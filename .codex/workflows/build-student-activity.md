@@ -15,9 +15,8 @@ Implementation rules:
 - Keep answer keys out of student-facing pages.
 
 Verification commands:
-- `npm run validate`
-- `npm run build` when build output or deployable routes are affected.
-- `scripts/codex/codex-verify.sh`
+- Run the narrowest relevant validator and browser check while editing.
+- Run `scripts/codex/codex-verify.sh` once for local verification, or let an immediately following guarded `ship` run its pre-push gate. The gate adds `build` when selected checks need `dist/`.
 
 Final response format:
 - Changed

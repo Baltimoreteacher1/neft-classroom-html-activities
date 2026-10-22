@@ -68,7 +68,7 @@ Preserve existing student-facing routes. This repo is live-classroom oriented: c
 3. Identify whether the change belongs to standalone HTML, the Vite build, engine components, generated lesson assets, Cloudflare Functions, or Apps Script tools.
 4. Make the smallest complete change in the primary codepath.
 5. Avoid changing generated outputs unless the task is about generated artifacts or the repo's existing workflow requires it.
-6. Run the narrowest relevant verification first, then `npm run qa:fast` (or `scripts/codex/codex-verify.sh`). Do not manually run `npm run qa:loop` right before `npm run ship`, as `pre-push` runs the gate automatically during `ship`.
+6. Run the narrowest relevant verification first. For local work that is not immediately shipping, run `npm run qa:fast` (or `scripts/codex/codex-verify.sh`). When shipping, the `ship` pre-push hook runs `npm run qa:fast -- --push` on the assembled commit; do not repeat the same gate or run the serial `npm run validate` just before `ship`.
 7. Review changed files before final response.
 
 ## Definition Of Done
@@ -126,8 +126,8 @@ Preserve existing student-facing routes. This repo is live-classroom oriented: c
 
 ## QA Expectations
 
-- Run `npm run qa:fast` (or `scripts/codex/codex-verify.sh`) after changes to verify all affected validators in parallel.
-- Run `npm run build` when Vite/build behavior or `dist/`-dependent surfaces change.
+- Run `npm run qa:fast` (or `scripts/codex/codex-verify.sh`) after changes unless the immediately following guarded `ship` will run its pre-push gate on the same work.
+- Run `npm run build` when Vite/build behavior or `dist/`-dependent surfaces change and the selected QA gate does not already include `build`.
 - Reserve `npm run qa:loop` (or `QA_FULL=1 git push`) for when a full 120+ check sweep is explicitly needed.
 - Verify no broken local links/assets, placeholder text in newly touched student pages, hidden answer keys, fake save/export features, or console-breaking scripts.
 - For Apps Script, verify valid platform APIs and provide run/setup instructions; do not create triggers or deploy scripts without approval.
