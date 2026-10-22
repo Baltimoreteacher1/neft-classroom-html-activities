@@ -29,10 +29,10 @@
   --frac: #3A6AA3;
   --frac-tint: #E6EEF7;
   --frac-line: #B7CBE2;
-  --dec: #1F7A72;
+  --dec: #1C7169;
   --dec-tint: #E0F1EE;
   --dec-line: #A3D2CC;
-  --pct: #B4531C;
+  --pct: #A94C16;
   --pct-tint: #FBEBDF;
   --pct-line: #EBC3A6;
 
@@ -49,6 +49,10 @@
   --on-brand: #FFFFFF;
   --on-sun: var(--brand-dark);
   --on-ok: #FFFFFF;
+  --on-warn: #FFFFFF;
+  --on-frac: #FFFFFF;
+  --on-dec: #FFFFFF;
+  --on-pct: #FFFFFF;
   --on-bad: #FFFFFF;
   --ok-ink: #064E33;
   --bad-ink: #8A1C13;
@@ -59,7 +63,7 @@
   --ink-light: #566475;
 
   --border: #D5DCE5;
-  --border-strong: #8393A6;
+  --border-strong: #7A8B9F;
 
   --font-display: "Avenir Next Rounded", "Arial Rounded MT Bold", "Nunito", "Varela Round", ui-rounded, "Trebuchet MS", system-ui, sans-serif;
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -249,7 +253,7 @@ body.show-es .es-text { display: block; }
 .num-input {
   font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; text-align: center;
   padding: 8px 12px; min-height: 54px; border: 3px solid var(--border-strong); border-radius: var(--radius-md);
-  background: #FFFFFF; color: var(--brand-dark); transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  background: var(--surface-soft); color: var(--ink); transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .num-input:focus { border-color: var(--brand); outline: none; box-shadow: 0 0 0 4px var(--sun); }
 .num-input.ok { border-color: var(--ok); background: var(--ok-tint); color: var(--ok); }
@@ -345,6 +349,27 @@ body.show-es .es-text { display: block; }
 .u4-spark.k-star { color: var(--sun-ink); background: var(--sun); border-color: var(--sun-deep); }
 /* Night worlds lighten --sun-ink for text on dark tints; on the bright --sun pill it fell to 1.1-1.6:1.
    The chips sit on the dark --surface, where the daylight fraction/decimal/percent hues are too dim. */
+/* ---- night: the whole Unit 4 palette, for a student who picks Dark or whose device is in dark mode (Challenge pages
+   start here). Lessons 2-3 and 5-9 get the same treatment per world from assets/studio-worlds.css, which is more specific
+   and wins there. tools/studio-contrast.test.mjs holds every text pair below to WCAG AA. ---- */
+body[data-theme="dark"] {
+  --paper: hsl(210, 30%, 7%); --well: hsl(210, 28%, 10%); --surface: hsl(210, 28%, 13%); --surface-soft: hsl(210, 26%, 17%);
+  --brand: hsl(210, 55%, 74%); --brand-dark: hsl(210, 28%, 10%); --brand-tint: hsl(210, 24%, 21%); --brand-line: hsl(210, 20%, 36%);
+  --sun: hsl(41, 85%, 62%); --sun-deep: hsl(41, 88%, 68%); --sun-tint: hsl(41, 45%, 17%); --sun-ink: hsl(41, 90%, 82%);
+  --frac: #8DB4E2; --frac-tint: hsl(212, 35%, 20%); --frac-line: hsl(212, 30%, 38%);
+  --dec: #6FCFC4; --dec-tint: hsl(174, 30%, 17%); --dec-line: hsl(174, 28%, 36%);
+  --pct: #F2A77A; --pct-tint: hsl(22, 40%, 19%); --pct-line: hsl(22, 35%, 38%);
+  --ok: hsl(152, 55%, 55%); --ok-tint: hsl(152, 38%, 15%); --ok-line: hsl(152, 40%, 34%);
+  --bad: hsl(5, 80%, 66%); --bad-tint: hsl(5, 40%, 17%); --bad-line: hsl(5, 45%, 40%);
+  --warn: hsl(42, 95%, 72%); --warn-tint: hsl(42, 45%, 15%); --warn-line: hsl(42, 60%, 38%);
+  --ink: hsl(210, 6%, 93%); --ink-muted: hsl(210, 5%, 80%); --ink-light: hsl(210, 4%, 70%);
+  --border: hsl(210, 22%, 27%); --border-strong: hsl(210, 16%, 58%);
+  --on-brand: hsl(210, 28%, 10%); --on-sun: hsl(210, 28%, 10%); --on-ok: hsl(152, 60%, 8%); --on-warn: hsl(42, 80%, 8%); --on-bad: hsl(5, 60%, 8%);
+  --on-frac: hsl(210, 28%, 10%); --on-dec: hsl(210, 28%, 10%); --on-pct: hsl(210, 28%, 10%);
+  --ok-ink: hsl(148, 70%, 88%); --bad-ink: hsl(5, 100%, 90%); --warn-ink: hsl(42, 100%, 82%);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
 body[data-theme="dark"] .u4-spark.k-star { color: hsl(22, 80%, 12%); }
 body[data-theme="dark"] .u4-spark.k-frac { color: #8DB4E2; }
 body[data-theme="dark"] .u4-spark.k-dec { color: #6FCFC4; }
@@ -420,8 +445,10 @@ dialog.u4-dialog::backdrop { background: rgba(15, 26, 38, 0.62); }
 .u4-tile.k-b { border-left: 10px solid var(--dec); }
 .u4-tile.k-c { border-left: 10px solid var(--pct); }
 .u4-tile[disabled] { cursor: default; }
-.u4-tile.is-matched { color: #FFFFFF; border-color: transparent; border-left-width: 3px; }
-.u4-tile.is-matched small { color: #FFFFFF; }
+.u4-tile.is-matched { color: var(--on-frac); border-color: transparent; border-left-width: 3px; }
+.u4-tile.is-matched small { color: inherit; }
+.u4-tile.is-matched.set-1 { color: var(--on-dec); }
+.u4-tile.is-matched.set-2 { color: var(--on-pct); }
 .u4-tile.is-matched.set-0 { background: var(--frac); }
 .u4-tile.is-matched.set-1 { background: var(--dec); }
 .u4-tile.is-matched.set-2 { background: var(--pct); }
@@ -487,7 +514,7 @@ dialog.u4-dialog::backdrop { background: rgba(15, 26, 38, 0.62); }
 
 /* ---- Data tables (4-4 and 4-5 challenge) ------------------------------- */
 .data-table, .matrix-table {
-  width: 100%; border-collapse: collapse; margin: 14px 0; background: #FFFFFF; border-radius: var(--radius-sm);
+  width: 100%; border-collapse: collapse; margin: 14px 0; background: var(--surface); border-radius: var(--radius-sm);
   overflow: hidden; border: 2px solid var(--border);
 }
 .data-table th, .data-table td, .matrix-table th, .matrix-table td {
@@ -503,7 +530,7 @@ body.theme-challenge .brand-icon { background: #D9822B; box-shadow: 0 4px 0 #A86
 /* ---- Equivalent-ratio machine (4-1 and 4-2): part/whole, scale arrows, per-100 ------------ */
 .scaling-visual-card { background: var(--surface-soft); border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 22px; margin: 18px 0; }
 .ratio-machine { display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; margin-bottom: 20px; }
-.big-fraction { background: #FFFFFF; border: 2px solid var(--brand); border-radius: var(--radius-md); padding: 12px 20px; display: flex; flex-direction: column; align-items: center; min-width: 110px; box-shadow: var(--shadow-card); }
+.big-fraction { background: var(--surface); border: 2px solid var(--brand); border-radius: var(--radius-md); padding: 12px 20px; display: flex; flex-direction: column; align-items: center; min-width: 110px; box-shadow: var(--shadow-card); }
 .big-fraction .num, .big-fraction .den { font-family: var(--font-display); font-size: 1.65rem; font-weight: 800; color: var(--brand); line-height: 1.2; }
 .big-fraction .f-bar { width: 100%; height: 3px; background: var(--brand); margin: 6px 0; border-radius: 2px; }
 .big-fraction .role-tag { font-size: 0.72rem; font-weight: 700; color: var(--ink-light); }
@@ -584,7 +611,7 @@ body[data-theme="dark"] #nsr-root { --nsr-accent-fg: var(--paper); }
 .table-wrap { overflow-x: auto; margin: 8px 0 12px; }
 .table-wrap .num-input { width: 100%; min-width: 5.5em; }
 .write-label { display: block; font-weight: 800; color: var(--brand); margin: 8px 0 4px; }
-.write-box { width: 100%; padding: 12px 14px; font: inherit; line-height: 1.5; border: 2px solid var(--border-strong); border-radius: var(--radius-md); background: #fff; color: var(--ink); resize: vertical; }
+.write-box { width: 100%; padding: 12px 14px; font: inherit; line-height: 1.5; border: 2px solid var(--border-strong); border-radius: var(--radius-md); background: var(--surface-soft); color: var(--ink); resize: vertical; }
 .write-box:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px var(--sun); }
 .hint-area { margin: 10px 0 4px; }
 .hint-list { margin: 0 0 8px; padding-left: 1.3em; color: var(--ink); line-height: 1.5; }

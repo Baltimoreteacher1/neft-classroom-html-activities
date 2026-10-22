@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <!-- u4-clarity:begin (scripts/inject-u4-lab-bench.mjs) -->
+  <script>(function(){try{var t=localStorage.getItem("neft_u4_theme_v1"),m=matchMedia("(prefers-color-scheme: dark)").matches,c=/-challenging/.test(location.pathname),d=t==="light"||t==="dark"?t:t==="auto"||!c?(m?"dark":"light"):"dark";new MutationObserver(function(_,o){if(document.body){document.body.dataset.theme=d;o.disconnect()}}).observe(document.documentElement,{childList:true})}catch(e){}})()</script>
   <link rel="stylesheet" href="/assets/studio/clarity.css?v=be0288a64f">
   <script src="/assets/studio/clarity.js?v=be0288a64f" defer></script>
   <!-- u4-clarity:end -->
@@ -97,7 +98,7 @@
     <div class="studio-context"><p class="target-chip"><span class="target-icon" aria-hidden="true">🎯</span><span class="target-text"><span class="t-en">I can write equivalent fractions, decimals, and percents for the same value.</span><span class="t-es" lang="es">Puedo escribir fracciones, decimales y porcentajes equivalentes para el mismo valor.</span></span></p></div>
     <!-- u4-target:end -->
 
-    <section id="print-summary-sheet" class="print-only" aria-label="Printable student progress summary" style="border: 2px solid var(--brand); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; background: #FFFFFF;">
+    <section id="print-summary-sheet" class="print-only" aria-label="Printable student progress summary" style="border: 2px solid var(--brand); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; background: var(--surface);">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--border); padding-bottom: 10px; margin-bottom: 12px; gap: 16px; flex-wrap: wrap;">
         <div>
           <h2 style="margin: 0; font-family: var(--font-display); font-size: 1.35rem; color: var(--brand);">Relate Fractions, Decimals, &amp; Percents · Practice Summary</h2>
@@ -136,12 +137,12 @@
             <span style="font-size: 0.82rem; color: var(--brand); font-weight: 700;">Drag Slider or Pick Fraction</span>
           </div>
 
-          <svg id="t1-model-svg" viewBox="0 0 320 220" width="320" height="220" style="background:white; border: 1.5px solid var(--border); border-radius: 8px; width: 100%; height: auto;" role="img" aria-label="Visual Fraction Decimal Percent meter">
+          <svg id="t1-model-svg" viewBox="0 0 320 220" width="320" height="220" style="background:var(--surface); border: 1.5px solid var(--border); border-radius: 8px; width: 100%; height: auto;" role="img" aria-label="Visual Fraction Decimal Percent meter">
             <!-- Background Bars -->
             <rect x="20" y="30" width="280" height="24" fill="var(--well)" stroke="var(--border)" rx="4"/>
             <rect id="t1-bar-fill" x="20" y="30" width="140" height="24" fill="var(--frac)" rx="4"/>
             <text x="20" y="22" font-size="11" font-weight="700" fill="var(--brand)">Fraction Bar (Whole = 1)</text>
-            <text id="t1-bar-txt" x="160" y="46" font-size="12" font-weight="800" fill="#FFFFFF" text-anchor="middle">50%</text>
+            <text id="t1-bar-txt" x="160" y="46" font-size="12" font-weight="800" fill="var(--on-brand)" text-anchor="middle">50%</text>
 
             <!-- 10-Tenths Ticks -->
             <line x1="20" y1="58" x2="300" y2="58" stroke="var(--brand)" stroke-width="1.5"/>
@@ -159,7 +160,7 @@
 
             <!-- 100-Grid Mini -->
             <g transform="translate(110, 95)">
-              <rect x="0" y="0" width="100" height="100" fill="#FFFFFF" stroke="var(--brand)" stroke-width="2"/>
+              <rect x="0" y="0" width="100" height="100" fill="var(--surface)" stroke="var(--brand)" stroke-width="2"/>
               <g id="t1-mini-grid"></g>
             </g>
             <text x="160" y="210" font-size="11" font-weight="700" fill="var(--brand)" text-anchor="middle">100-Grid Equivalent</text>
@@ -604,7 +605,7 @@
             rect.setAttribute('y', String(r * 10));
             rect.setAttribute('width', '10');
             rect.setAttribute('height', '10');
-            rect.setAttribute('fill', '#FFFFFF');
+            rect.setAttribute('fill', 'var(--surface)');
             rect.setAttribute('stroke', 'var(--border)');
             rect.setAttribute('stroke-width', '0.5');
             rect.dataset.gridIndex = String(r * 10 + c + 1);
@@ -646,7 +647,7 @@
         if (t1MiniGrid) {
           t1MiniGrid.querySelectorAll('rect').forEach((r) => {
             const idx = Number(r.dataset.gridIndex);
-            r.setAttribute('fill', idx <= p ? 'var(--pct)' : '#FFFFFF');
+            r.setAttribute('fill', idx <= p ? 'var(--pct)' : 'var(--surface)');
           });
         }
       }
@@ -1063,8 +1064,8 @@
               <div style="font-size: 1.8rem; font-weight: 800; color: var(--brand);">=</div>
 
               <div class="big-fraction" style="background: var(--brand); border-color: var(--brand);">
-                <span class="role-tag" style="color: var(--border);">Percent</span>
-                <span class="num" id="t2-live-pct" style="color: #FFFFFF; font-size: 1.9rem;">${isDone ? targetPct + '%' : '?%'}</span>
+                <span class="role-tag" style="color: var(--on-brand);">Percent</span>
+                <span class="num" id="t2-live-pct" style="color: var(--on-brand); font-size: 1.9rem;">${isDone ? targetPct + '%' : '?%'}</span>
               </div>
 
               <div class="big-fraction">
@@ -2349,17 +2350,17 @@ ${showPct ? `            <span class="trio-arrow">&harr;</span>
   <!-- nsr-injected:end -->
   
 <!-- u4-lab-bench:begin (scripts/inject-u4-lab-bench.mjs) -->
-<link rel="stylesheet" href="/assets/studio/lab-embed.css?v=7d62c696f2">
+<link rel="stylesheet" href="/assets/studio/lab-embed.css?v=16c619a26e">
 <section class="lab-embed" id="u4-lab-bench" aria-labelledby="u4-lab-title">
   <h2 id="u4-lab-title">🧪 <span>Lab bench</span><span class="es-text" lang="es">Banco de laboratorio</span> <span data-lab-count></span></h2>
   <p><span>Test the idea with a live model, write what you notice, then take the mission. Nothing here is timed.</span><span class="es-text" lang="es">Prueba la idea con un modelo en vivo, escribe lo que notes y luego haz la misión. Nada tiene tiempo.</span></p>
   <div id="u4-lab-host"></div>
 </section>
 <script type="application/json" id="u4-lab-data">{"items":[{"k":"lab","id":"lab-explore","lab":"hundred-square-studio","model":{"kind":"percent","mode":"grid","values":[50,100]},"labels":{"controls":{"0":{"en":"Percent (%)","es":"Porcentaje (%)"},"1":{"en":"Squares in the whole grid","es":"Cuadros en toda la cuadrícula"}},"readout":{"en":"Shaded squares","es":"Cuadros sombreados"}},"level":"core","q":"A game screen shows a level that is 9/25 complete. The grid has 100 squares. Change ONLY the percent until the shaded squares show the same value as the fraction.","qEs":"La pantalla de un juego muestra que un nivel está 9/25 completo. La cuadrícula tiene 100 cuadros. Cambia SOLO el porcentaje hasta que los cuadros sombreados muestren el mismo valor que la fracción.","goal":{"target":36,"free":0},"x":"Percent means out of 100. Since 25 × 4 = 100, multiply the top by 4 too: 9 × 4 = 36. So 9/25 = 36/100 = 0.36 = 36%. The fraction, the decimal and the percent name the same value.","xEs":"Porcentaje significa de 100. Como 25 × 4 = 100, multiplica también el numerador por 4: 9 × 4 = 36. Así que 9/25 = 36/100 = 0.36 = 36%. La fracción, el decimal y el porcentaje nombran el mismo valor.","h":["The denominator of the fraction must become 100.","Find what 25 is multiplied by to reach 100.","Multiply the numerator by that same number, then read the hundredths as a percent."],"hEs":["El denominador de la fracción debe convertirse en 100.","Halla por cuánto se multiplica 25 para llegar a 100.","Multiplica el numerador por ese mismo número y lee los centésimos como porcentaje."],"miss":"To compare with 100 you need an equivalent fraction with denominator 100. Multiply the top and the bottom of 9/25 by the same number.","missEs":"Para comparar con 100 necesitas una fracción equivalente con denominador 100. Multiplica el numerador y el denominador de 9/25 por el mismo número."},{"k":"wr","id":"lab-investigate","p":"Predict how many squares of the hundred grid 0.4 fills and how many 4% fills. Test both on the model. Then explain why the two forms are not equivalent.","pEs":"Predice cuántos cuadros de la cuadrícula de cien llena 0.4 y cuántos llena 4%. Prueba ambos en el modelo. Luego explica por qué las dos formas no son equivalentes.","fr":"I predict 0.4 fills ___ squares and 4% fills ___ squares. The grid shows ___. They are not equivalent because 0.4 is ___ hundredths and 4% is ___ hundredths.","frEs":"Predigo que 0.4 llena ___ cuadros y 4% llena ___ cuadros. La cuadrícula muestra ___. No son equivalentes porque 0.4 son ___ centésimos y 4% son ___ centésimos.","min":70,"kw":["decimal","percent","hundredths","equivalent"],"kwEs":["decimal","porcentaje","centésimos","equivalente"],"rubric":["I predicted the squares for 0.4 before testing.","I tested 4% on the model and recorded the result.","I converted 0.4 to a percent by moving the decimal point two places.","I explained why the two forms name different values."],"rubricEs":["Predije los cuadros de 0.4 antes de probar.","Probé 4% en el modelo y anoté el resultado.","Convertí 0.4 a porcentaje moviendo el punto decimal dos lugares.","Expliqué por qué las dos formas nombran valores distintos."],"x":"Sample: 0.4 = 0.40 = 40 hundredths, so it fills 40 squares and equals 40%. 4% is only 4 hundredths, so it fills 4 squares. The decimal 0.4 is ten times as large as 4%, so they are not equivalent. The equivalent decimal for 4% is 0.04.","xEs":"Ejemplo: 0.4 = 0.40 = 40 centésimos, así que llena 40 cuadros y es igual a 40%. 4% son solo 4 centésimos, así que llena 4 cuadros. El decimal 0.4 es diez veces mayor que 4%, por eso no son equivalentes. El decimal equivalente de 4% es 0.04.","h":["Write 0.4 with two decimal places so you can read the hundredths.","Multiply a decimal by 100 to turn it into a percent.","Set the percent on the model and count shaded squares to check your prediction."],"hEs":["Escribe 0.4 con dos lugares decimales para poder leer los centésimos.","Multiplica un decimal por 100 para convertirlo en porcentaje.","Pon el porcentaje en el modelo y cuenta los cuadros sombreados para comprobar tu predicción."]},{"k":"mission","id":"lab-mission","lab":"hundred-square-studio","model":{"kind":"percent","mode":"grid","values":[50,100]},"labels":{"controls":{"0":{"en":"Percent (%)","es":"Porcentaje (%)"},"1":{"en":"Squares in the whole grid","es":"Cuadros en toda la cuadrícula"}},"readout":{"en":"Shaded squares","es":"Cuadros sombreados"}},"level":"core","finale":"Pixel Passport","q":"At each stop, plan the one unlocked control so the model reaches the target, then test your build.","qEs":"En cada parada, planea el único control desbloqueado para que el modelo llegue a la meta y luego prueba tu construcción.","x":"You planned each build from the relationship, tested it, and revised your plan when a test missed.","xEs":"Planeaste cada construcción a partir de la relación, la probaste y revisaste tu plan cuando una prueba falló."}],"key":"neft_u4lab_4-2_practice_v1","labV":"55769da5c6"}</script>
-<script src="/assets/studio/typeset.js?v=7d62c696f2"></script>
-<script src="/assets/studio/kinds-basic.js?v=7d62c696f2"></script>
-<script src="/assets/studio/kinds-lab.js?v=7d62c696f2"></script>
-<script src="/assets/studio/lab-embed.js?v=7d62c696f2"></script>
+<script src="/assets/studio/typeset.js?v=16c619a26e"></script>
+<script src="/assets/studio/kinds-basic.js?v=16c619a26e"></script>
+<script src="/assets/studio/kinds-lab.js?v=16c619a26e"></script>
+<script src="/assets/studio/lab-embed.js?v=16c619a26e"></script>
 <script>
 (function () {
   var panel = document.getElementById("panel-4");

@@ -83,24 +83,50 @@ const PAIRS = [
 ];
 
 const rootVars = rule(base, ":root");
+const u4Dark = rule(base, 'body[data-theme="dark"]');
 const failures = /** @type {string[]} */ ([]);
 let checks = 0;
-for (const id of Object.keys(worlds)) {
-  for (const theme of ["light", "dark"]) {
-    const vars = {
-      ...rootVars,
-      ...rule(worldsCss, `body[data-world="${id}"]`),
-      ...(theme === "dark" ? rule(worldsCss, `body[data-world="${id}"][data-theme="dark"]`) : {}),
-    };
-    for (const [fg, bg, min] of PAIRS) {
+// Unit 4 has no world: its light palette is :root, its night palette is the body[data-theme="dark"] block. The three
+// quantity colours (fraction, decimal, percent) are also used as text, and each carries its own on-colour.
+const U4_PAIRS = [
+  ...PAIRS,
+  ...SURFACES.flatMap((s) => ["frac", "dec", "pct"].map((q) => [q, s, 4.5])),
+  ["on-frac", "frac", 4.5],
+  ["on-dec", "dec", 4.5],
+  ["on-pct", "pct", 4.5],
+  ["on-warn", "warn", 4.5],
+];
+// Cascade order on a generated page: :root, the Unit 4 night block, the world's day block, then its night block.
+const palettes = [
+  ...["light", "dark"].map((theme) => ({
+    label: `unit-4/${theme}`,
+    pairs: U4_PAIRS,
+    vars: { ...rootVars, ...(theme === "dark" ? u4Dark : {}) },
+  })),
+  ...Object.keys(worlds).flatMap((id) =>
+    ["light", "dark"].map((theme) => ({
+      label: `${id}/${theme}`,
+      pairs: PAIRS,
+      vars: {
+        ...rootVars,
+        ...(theme === "dark" ? u4Dark : {}),
+        ...rule(worldsCss, `body[data-world="${id}"]`),
+        ...(theme === "dark" ? rule(worldsCss, `body[data-world="${id}"][data-theme="dark"]`) : {}),
+      },
+    })),
+  ),
+];
+for (const { label, pairs, vars } of palettes) {
+  {
+    for (const [fg, bg, min] of pairs) {
       checks += 1;
       if (!vars[`--${fg}`] || !vars[`--${bg}`]) {
-        failures.push(`${id}/${theme}: --${fg} or --${bg} is not defined`);
+        failures.push(`${label}: --${fg} or --${bg} is not defined`);
         continue;
       }
       const got = ratio(parse(vars[`--${fg}`], vars), parse(vars[`--${bg}`], vars));
       if (got < min)
-        failures.push(`${id}/${theme}: --${fg} on --${bg} is ${got.toFixed(2)}:1, needs ${min}:1`);
+        failures.push(`${label}: --${fg} on --${bg} is ${got.toFixed(2)}:1, needs ${min}:1`);
     }
   }
 }
@@ -150,5 +176,5 @@ for (let i = 0; i < hues.length; i++)
   }
 
 console.log(
-  `studio contrast: ${Object.keys(worlds).length} worlds x light/dark, ${checks} pair checks — all clear.`,
+  `studio contrast: Unit 4 + ${Object.keys(worlds).length} worlds x light/dark, ${checks} pair checks — all clear.`,
 );

@@ -188,6 +188,67 @@
     }
   }
 
+  /* ---- Theme: Practice follows the device until a student picks Light or Dark; Challenge is night until they choose.
+     The head script the injector writes (scripts/inject-u4-lab-bench.mjs) applies the same rule before first paint. -- */
+  const THEME_KEY = "neft_u4_theme_v1";
+  const THEMES = ["auto", "light", "dark"];
+  const THEME_ES = { auto: "Automático", light: "Claro", dark: "Oscuro" };
+  const deviceTheme = () => (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  function savedTheme() {
+    try {
+      const t = localStorage.getItem(THEME_KEY);
+      return THEMES.includes(/** @type {string} */ (t)) ? t : null;
+    } catch (_e) {
+      return null;
+    }
+  }
+  const resolveTheme = (/** @type {string|null} */ t) =>
+    t === "light" || t === "dark"
+      ? t
+      : t === "auto" || !document.body.classList.contains("theme-challenge")
+        ? deviceTheme()
+        : "dark";
+  function applyTheme() {
+    const t = savedTheme();
+    document.body.dataset.theme = resolveTheme(t);
+    const b = $("#ewl-theme-btn");
+    if (!b) return;
+    const shown = t || resolveTheme(null);
+    const name = shown.charAt(0).toUpperCase() + shown.slice(1);
+    b.innerHTML = bilingual(
+      `<span aria-hidden="true">◐</span> Theme: ${name}`,
+      `Tema: ${THEME_ES[/** @type {"auto"|"light"|"dark"} */ (shown)]}`,
+    );
+    b.setAttribute("aria-label", `Theme: ${name}. Press to change.`);
+  }
+  function injectTheme() {
+    const actions = $(".header-actions");
+    if (!actions) return;
+    const b = el("button", "top-btn");
+    b.type = "button";
+    b.id = "ewl-theme-btn";
+    b.setAttribute("data-menu", "");
+    b.addEventListener("click", () => {
+      const next = THEMES[(THEMES.indexOf(savedTheme() || resolveTheme(null)) + 1) % THEMES.length];
+      try {
+        localStorage.setItem(THEME_KEY, next);
+      } catch (_e) {
+        /* a blocked store only means the choice is not remembered */
+      }
+      applyTheme();
+    });
+    actions.append(b);
+    matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => {
+      if (!savedTheme() || savedTheme() === "auto") applyTheme();
+    });
+    applyTheme();
+    /* paper is white: print on the light palette, then go back to whatever the student chose */
+    addEventListener("beforeprint", () => {
+      document.body.dataset.theme = "light";
+    });
+    addEventListener("afterprint", applyTheme);
+  }
+
   function injectLayers() {
     const fx = el("div", "");
     fx.id = "u4-fx";
@@ -544,6 +605,7 @@
     setFx(readFx());
     injectLayers();
     injectHeader();
+    injectTheme();
     S.ready = true;
     rebase();
     S.announce = true;

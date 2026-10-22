@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <!-- u4-clarity:begin (scripts/inject-u4-lab-bench.mjs) -->
+  <script>(function(){try{var t=localStorage.getItem("neft_u4_theme_v1"),m=matchMedia("(prefers-color-scheme: dark)").matches,c=/-challenging/.test(location.pathname),d=t==="light"||t==="dark"?t:t==="auto"||!c?(m?"dark":"light"):"dark";new MutationObserver(function(_,o){if(document.body){document.body.dataset.theme=d;o.disconnect()}}).observe(document.documentElement,{childList:true})}catch(e){}})()</script>
   <link rel="stylesheet" href="/assets/studio/clarity.css?v=be0288a64f">
   <script src="/assets/studio/clarity.js?v=be0288a64f" defer></script>
   <!-- u4-clarity:end -->
@@ -104,7 +105,7 @@
     <div class="studio-context"><p class="target-chip"><span class="target-icon" aria-hidden="true">🎯</span><span class="target-text"><span class="t-en">I can explain a percent as a rate per 100, model it on a decimal grid or tape diagram, and interpret percents greater than 100%.</span><span class="t-es" lang="es">Puedo explicar un porcentaje como una tasa por cada 100, representarlo en una cuadrícula decimal o un diagrama de cinta e interpretar porcentajes mayores que 100%.</span></span></p></div>
     <!-- u4-target:end -->
 
-    <section id="print-summary-sheet" class="print-only" aria-label="Printable student progress summary" style="border: 2px solid var(--brand); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; background: #FFFFFF;">
+    <section id="print-summary-sheet" class="print-only" aria-label="Printable student progress summary" style="border: 2px solid var(--brand); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; background: var(--surface);">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--border); padding-bottom: 10px; margin-bottom: 12px; gap: 16px; flex-wrap: wrap;">
         <div>
           <h2 style="margin: 0; font-family: var(--font-display); font-size: 1.35rem; color: var(--brand);">Understand Percent &amp; Equivalent Ratios · Practice Summary</h2>
@@ -145,7 +146,7 @@
             <button type="button" class="btn btn-sm" id="t1-tenths-btn" aria-pressed="true">10 Columns: ON</button>
           </div>
 
-          <svg id="t1-grid-svg" class="hundredths-svg" viewBox="0 0 200 200" style="background:white" width="260" height="260" role="img" aria-label="10 by 10 hundredths grid"></svg>
+          <svg id="t1-grid-svg" class="hundredths-svg" viewBox="0 0 200 200" style="background:var(--surface)" width="260" height="260" role="img" aria-label="10 by 10 hundredths grid"></svg>
 
           <div style="width: 100%;">
             <div style="display: flex; justify-content: space-between; font-size: 0.86rem; font-weight: 700; color: var(--brand); margin-bottom: 4px;">
@@ -874,7 +875,7 @@
           stemEs: 'Como 100% es 1 entero, ¿cuál afirmación es verdadera sobre 40%, 100% y 150%?',
           type: 'mc',
           visualSvg: `
-            <svg viewBox="0 0 580 112" width="580" height="112" style="background:white; width:100%; max-width:580px; height:auto; display:block; margin:12px auto 4px; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="Visual comparison of 40 percent, 100 percent, and 150 percent on 100-square grids">
+            <svg viewBox="0 0 580 112" width="580" height="112" style="background:var(--surface); width:100%; max-width:580px; height:auto; display:block; margin:12px auto 4px; border:1px solid var(--border); border-radius:8px;" role="img" aria-label="Visual comparison of 40 percent, 100 percent, and 150 percent on 100-square grids">
               <g transform="translate(18, 12)">
                 <text x="35" y="12" text-anchor="middle" font-size="11.5" font-weight="800" fill="var(--brand)">40% (&lt; 1 whole)</text>
                 <rect x="0" y="18" width="70" height="70" fill="var(--well)" stroke="var(--brand)" stroke-width="1.5"/>
@@ -1288,13 +1289,13 @@
               <div style="font-size: 1.8rem; font-weight: 800; color: var(--brand);">=</div>
 
               <div class="big-fraction" style="background: var(--brand); border-color: var(--brand);">
-                <span class="role-tag" style="color: var(--border);">Percent</span>
-                <span class="num" id="t2-live-pct" style="color: #FFFFFF; font-size: 1.9rem;">${isDone ? targetPct + '%' : '?%'}</span>
+                <span class="role-tag" style="color: var(--on-brand);">Percent</span>
+                <span class="num" id="t2-live-pct" style="color: var(--on-brand); font-size: 1.9rem;">${isDone ? targetPct + '%' : '?%'}</span>
               </div>
             </div>
 
             <!-- Clean Single Partitioned Percent Bar -->
-            <svg viewBox="0 0 600 92" width="600" height="92" style="background:white; width: 100%; max-width: 640px; height: auto; display: block; margin: 0 auto; border: 1px solid var(--border); border-radius: 8px;" role="img" aria-label="Visual fraction bar model">
+            <svg viewBox="0 0 600 92" width="600" height="92" style="background:var(--surface); width: 100%; max-width: 640px; height: auto; display: block; margin: 0 auto; border: 1px solid var(--border); border-radius: 8px;" role="img" aria-label="Visual fraction bar model">
               <text x="40" y="20" font-size="12" font-weight="700" fill="var(--brand)">Shaded Part: ${p.part} out of ${p.whole}</text>
               <text x="560" y="20" text-anchor="end" font-size="12" font-weight="700" fill="var(--brand)">Whole Bar = ${p.whole} = 100%</text>
               ${rectsHtml}
@@ -1654,7 +1655,7 @@ ${step3Html}
             const tickId = i === 0 ? 'id="t3-svg-tick-one"' : (i + 1 === p.shadedBlocks ? 'id="t3-svg-tick-fin"' : '');
             blocksSvg += `
               <rect x="${x}" y="42" width="${bw}" height="42" fill="${shaded ? 'var(--pct)' : 'var(--well)'}" stroke="var(--brand)" stroke-width="2"/>
-              <text x="${x + bw / 2}" y="68" text-anchor="middle" font-size="13" font-weight="800" fill="${shaded ? '#FFFFFF' : 'var(--ink-muted)'}">${p.oneBlockQty}</text>
+              <text x="${x + bw / 2}" y="68" text-anchor="middle" font-size="13" font-weight="800" fill="${shaded ? 'var(--on-pct)' : 'var(--ink-muted)'}">${p.oneBlockQty}</text>
               ${tickLabel ? `<text ${tickId} x="${x + bw}" y="106" text-anchor="middle" font-size="12" font-weight="800" fill="${i + 1 === p.shadedBlocks ? 'var(--sun-deep)' : 'var(--brand)'}">${tickLabel}</text>` : ''}
             `;
           }
@@ -1669,7 +1670,7 @@ ${step3Html}
 
             <!-- Crystal-Clear Segmented Percent Bar -->
             <div class="scaling-visual-card" style="padding: 18px;">
-              <svg viewBox="0 0 620 124" width="620" height="124" style="background:white; width: 100%; max-width: 680px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" role="img" aria-label="Segmented percent bar">
+              <svg viewBox="0 0 620 124" width="620" height="124" style="background:var(--surface); width: 100%; max-width: 680px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" role="img" aria-label="Segmented percent bar">
                 <text x="40" y="26" font-size="12.5" font-weight="800" fill="var(--brand)">Shaded: ${p.shadedBlocks} blocks = ${p.part}</text>
                 <text x="580" y="26" text-anchor="end" font-size="12.5" font-weight="800" fill="var(--brand)">Whole (${p.blocks} blocks) = ${p.whole}</text>
                 <text x="40" y="106" text-anchor="middle" font-size="12" font-weight="700" fill="var(--brand)">0%</text>
@@ -1786,7 +1787,7 @@ ${step3Html}
             const x = 40 + i * bw;
             bridgeRects += `
               <rect x="${x}" y="30" width="${bw}" height="32" fill="${shaded ? 'var(--pct)' : 'var(--well)'}" stroke="var(--brand)" stroke-width="1.8"/>
-              <text x="${x + bw / 2}" y="51" text-anchor="middle" font-size="11.5" font-weight="800" fill="${shaded ? '#FFFFFF' : 'var(--ink-muted)'}">${p.divBy}</text>
+              <text x="${x + bw / 2}" y="51" text-anchor="middle" font-size="11.5" font-weight="800" fill="${shaded ? 'var(--on-pct)' : 'var(--ink-muted)'}">${p.divBy}</text>
             `;
           }
 
@@ -1800,7 +1801,7 @@ ${step3Html}
 
             <!-- Companion Percent Bar showing how dividing by ${p.divBy} creates ${p.midWhole} equal blocks -->
             <div class="scaling-visual-card" style="padding: 14px 18px; margin-bottom: 14px;">
-              <svg viewBox="0 0 600 88" width="600" height="88" style="background:white; width: 100%; max-width: 640px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" role="img" aria-label="Simplified block bar">
+              <svg viewBox="0 0 600 88" width="600" height="88" style="background:var(--surface); width: 100%; max-width: 640px; height: auto; display: block; margin: 0 auto; border-radius: 8px; border: 1px solid var(--border);" role="img" aria-label="Simplified block bar">
                 <text id="t3-br-svg-mid" x="40" y="20" font-size="12" font-weight="800" fill="var(--brand)">Grouped by ${p.divBy}s: ${p.part} is ${isDone ? p.midPart : '?'} blocks out of ${p.midWhole} blocks</text>
                 <text x="560" y="20" text-anchor="end" font-size="12" font-weight="800" fill="var(--brand)">Whole = ${p.whole} (${p.midWhole} blocks of ${p.divBy}) = 100%</text>
                 ${bridgeRects}
@@ -2814,8 +2815,8 @@ ${step3Html}
       ];
 
       const T4_BAR_TONES = {
-        a: "background:var(--pct); color:#FFFFFF;",
-        b: "background:var(--brand); color:#FFFFFF;",
+        a: "background:var(--pct); color:var(--on-pct);",
+        b: "background:var(--brand); color:var(--on-brand);",
         c: "background:var(--well); color:var(--brand);",
         q: "background:var(--sun-tint); color:var(--warn); border-style:dashed;",
       };
@@ -3426,17 +3427,17 @@ ${step3Html}
   <!-- nsr-injected:end -->
   
 <!-- u4-lab-bench:begin (scripts/inject-u4-lab-bench.mjs) -->
-<link rel="stylesheet" href="/assets/studio/lab-embed.css?v=7d62c696f2">
+<link rel="stylesheet" href="/assets/studio/lab-embed.css?v=16c619a26e">
 <section class="lab-embed" id="u4-lab-bench" aria-labelledby="u4-lab-title">
   <h2 id="u4-lab-title">🧪 <span>Lab bench</span><span class="es-text" lang="es">Banco de laboratorio</span> <span data-lab-count></span></h2>
   <p><span>Test the idea with a live model, write what you notice, then take the mission. Nothing here is timed.</span><span class="es-text" lang="es">Prueba la idea con un modelo en vivo, escribe lo que notes y luego haz la misión. Nada tiene tiempo.</span></p>
   <div id="u4-lab-host"></div>
 </section>
 <script type="application/json" id="u4-lab-data">{"items":[{"k":"lab","id":"lab-explore","lab":"hundred-square-studio","model":{"kind":"percent","mode":"grid","values":[20,100]},"labels":{"controls":{"0":{"en":"Percent (%)","es":"Porcentaje (%)"},"1":{"en":"Squares in the whole grid","es":"Cuadros en toda la cuadrícula"}},"readout":{"en":"Shaded squares","es":"Cuadros sombreados"}},"level":"core","q":"At the school crosswalk, 9 out of every 20 students walk to school. The hundred grid has 100 squares. Change ONLY the percent until the shaded squares show the same comparison out of 100.","qEs":"En el cruce de la escuela, 9 de cada 20 estudiantes caminan a la escuela. La cuadrícula de cien tiene 100 cuadros. Cambia SOLO el porcentaje hasta que los cuadros sombreados muestren la misma comparación sobre 100.","goal":{"target":45,"free":0},"x":"Percent means per hundred. To turn 9 out of 20 into a ratio out of 100, multiply both terms by 5: 9 × 5 = 45 and 20 × 5 = 100. So 9 out of 20 is 45 out of 100, or 45%. Each shaded square is 1%.","xEs":"Porcentaje significa por cada cien. Para convertir 9 de 20 en una razón sobre 100, multiplica ambos términos por 5: 9 × 5 = 45 y 20 × 5 = 100. Así que 9 de 20 es 45 de 100, o sea 45%. Cada cuadro sombreado es 1%.","h":["The second number of the ratio must become 100.","Find the factor that takes 20 to 100.","Use that same factor on the first number, then count the shaded squares to check."],"hEs":["El segundo número de la razón debe convertirse en 100.","Halla el factor que lleva 20 a 100.","Usa ese mismo factor en el primer número y luego cuenta los cuadros sombreados para comprobar."],"miss":"A percent compares to 100, so BOTH numbers in 9 out of 20 must be scaled by the same factor. Check what 20 must be multiplied by to reach 100.","missEs":"Un porcentaje compara con 100, así que AMBOS números de 9 de 20 se escalan por el mismo factor. Revisa por cuánto hay que multiplicar 20 para llegar a 100."},{"k":"wr","id":"lab-investigate","p":"Predict how many squares you must shade to show 6 out of every 10 voters. Test it on the grid. Then explain why 6 out of 10 is not 6%.","pEs":"Predice cuántos cuadros debes sombrear para mostrar 6 de cada 10 votantes. Pruébalo en la cuadrícula. Luego explica por qué 6 de 10 no es 6%.","fr":"I predict ___ squares because I multiply both 6 and 10 by ___. The grid shows ___ out of 100, which is ___%. It is not 6% because ___.","frEs":"Predigo ___ cuadros porque multiplico 6 y 10 por ___. La cuadrícula muestra ___ de 100, que es ___%. No es 6% porque ___.","min":70,"kw":["percent","per hundred","equivalent ratio","grid"],"kwEs":["porcentaje","por cada cien","razón equivalente","cuadrícula"],"rubric":["I made a prediction before I tested it on the grid.","I multiplied both numbers of the ratio by the same factor.","I used the grid as evidence.","I explained why 6% shades far fewer squares."],"rubricEs":["Hice una predicción antes de probarla en la cuadrícula.","Multipliqué ambos números de la razón por el mismo factor.","Usé la cuadrícula como evidencia.","Expliqué por qué 6% sombrea muchos menos cuadros."],"x":"Sample: 6 out of 10 becomes 60 out of 100 when both terms are multiplied by 10, so 60 squares are shaded and the percent is 60%. Setting the grid to 6% shades only 6 squares, which is exactly one tenth of the 60 squares. Percent compares to 100, so both terms must be scaled.","xEs":"Ejemplo: 6 de 10 se convierte en 60 de 100 al multiplicar ambos términos por 10, así que se sombrean 60 cuadros y el porcentaje es 60%. Con 6% la cuadrícula sombrea solo 6 cuadros, exactamente una décima parte de los 60 cuadros. El porcentaje compara con 100, por eso se escalan ambos términos.","h":["Write 6 out of 10 as a ratio first.","What do you multiply 10 by to get 100? Do the same to the 6.","Set the percent to your prediction and count the shaded squares."],"hEs":["Primero escribe 6 de 10 como una razón.","¿Por cuánto multiplicas 10 para obtener 100? Haz lo mismo con el 6.","Pon el porcentaje de tu predicción y cuenta los cuadros sombreados."]},{"k":"mission","id":"lab-mission","lab":"hundred-square-studio","model":{"kind":"percent","mode":"grid","values":[20,100]},"labels":{"controls":{"0":{"en":"Percent (%)","es":"Porcentaje (%)"},"1":{"en":"Squares in the whole grid","es":"Cuadros en toda la cuadrícula"}},"readout":{"en":"Shaded squares","es":"Cuadros sombreados"}},"level":"core","finale":"Pixel Passport","q":"At each stop, plan the one unlocked control so the model reaches the target, then test your build.","qEs":"En cada parada, planea el único control desbloqueado para que el modelo llegue a la meta y luego prueba tu construcción.","x":"You planned each build from the relationship, tested it, and revised your plan when a test missed.","xEs":"Planeaste cada construcción a partir de la relación, la probaste y revisaste tu plan cuando una prueba falló."}],"key":"neft_u4lab_4-1_practice_v1","labV":"55769da5c6"}</script>
-<script src="/assets/studio/typeset.js?v=7d62c696f2"></script>
-<script src="/assets/studio/kinds-basic.js?v=7d62c696f2"></script>
-<script src="/assets/studio/kinds-lab.js?v=7d62c696f2"></script>
-<script src="/assets/studio/lab-embed.js?v=7d62c696f2"></script>
+<script src="/assets/studio/typeset.js?v=16c619a26e"></script>
+<script src="/assets/studio/kinds-basic.js?v=16c619a26e"></script>
+<script src="/assets/studio/kinds-lab.js?v=16c619a26e"></script>
+<script src="/assets/studio/lab-embed.js?v=16c619a26e"></script>
 <script>
 (function () {
   var panel = document.getElementById("panel-4");

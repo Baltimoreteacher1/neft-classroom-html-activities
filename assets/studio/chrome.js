@@ -279,6 +279,11 @@
     matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => {
       if (!rec.theme || rec.theme === "auto") applyTheme();
     });
+    /* paper is white: print on the light palette, then go back to whatever the student chose */
+    addEventListener("beforeprint", () => {
+      document.body.dataset.theme = "light";
+    });
+    addEventListener("afterprint", applyTheme);
   }
 
   function refreshStats() {

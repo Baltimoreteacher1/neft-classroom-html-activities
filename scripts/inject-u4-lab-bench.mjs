@@ -55,12 +55,20 @@ function targetBlock(/** @type {string} */ id, /** @type {any} */ ld) {
   return `\n    <!-- u4-target:begin (scripts/inject-u4-lab-bench.mjs) -->\n    <div class="studio-context">${targetChip(cfg.contentObjective, ld.targetEs)}</div>\n    <!-- u4-target:end -->`;
 }
 
+/**
+ * Sets body[data-theme] before first paint (the body does not exist yet, so a MutationObserver waits for it). Same rule as
+ * resolveTheme() in assets/u4-studio.js: a saved Light/Dark wins, "auto" or nothing saved follows the device, and the
+ * Challenge pages are night until the student chooses.
+ */
+const THEME_BOOT =
+  '<script>(function(){try{var t=localStorage.getItem("neft_u4_theme_v1"),m=matchMedia("(prefers-color-scheme: dark)").matches,c=/-challenging/.test(location.pathname),d=t==="light"||t==="dark"?t:t==="auto"||!c?(m?"dark":"light"):"dark";new MutationObserver(function(_,o){if(document.body){document.body.dataset.theme=d;o.disconnect()}}).observe(document.documentElement,{childList:true})}catch(e){}})()</script>';
+
 /** The shared clarity layer for <head>, stamped with a hash of its own files. */
 function headBlock() {
   const h = createHash("sha1");
   for (const f of CLARITY) h.update(read(f));
   const v = h.digest("hex").slice(0, 10);
-  return `\n  ${HEAD_BEGIN}\n  <link rel="stylesheet" href="/${CLARITY[0]}?v=${v}">\n  <script src="/${CLARITY[1]}?v=${v}" defer></script>\n  <!-- u4-clarity:end -->`;
+  return `\n  ${HEAD_BEGIN}\n  ${THEME_BOOT}\n  <link rel="stylesheet" href="/${CLARITY[0]}?v=${v}">\n  <script src="/${CLARITY[1]}?v=${v}" defer></script>\n  <!-- u4-clarity:end -->`;
 }
 
 function stamps() {
