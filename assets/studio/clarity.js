@@ -22,6 +22,7 @@
     "quest-btn",
     "u4-bonus-btn",
     "think-btn",
+    "seals-btn",
     "comfort-btn",
     "toggle-es-btn",
     "ewl-theme-btn",
@@ -143,7 +144,7 @@
   /**
    * The completion card that replaces the old link banner. Shared by the generated studios (runtime.js) and the Unit 4
    * pages (u4-studio.js).
-   * @param {{sections: {en: string, es: string}[], tally?: {en: string, es: string}, next: {en: string, es: string, href?: string, attr?: string}}} o
+   * @param {{sections: {en: string, es: string}[], tally?: {en: string, es: string}, seals?: {name: string, nameEs: string, label: string, labelEs: string}[], next: {en: string, es: string, href?: string, attr?: string}}} o
    */
   function exitCard(o) {
     const target = document.querySelector(".target-chip .target-text");
@@ -164,6 +165,7 @@
       ${can}
       <ul class="exit-sections" aria-label="Sections completed">${done}</ul>
       ${o.tally ? `<p class="exit-tally">${bi(o.tally.en, o.tally.es)}</p>` : ""}
+      ${o.seals?.length ? `<p class="exit-seals"><span aria-hidden="true">🏅</span> ${bi("Seals earned today:", "Sellos ganados hoy:")} ${o.seals.map((s) => bi(escHtml(`${s.name} · ${s.label}`), escHtml(`${s.nameEs} · ${s.labelEs || s.label}`))).join(", ")}</p>` : ""}
       <p class="exit-step"><span class="exit-step-label">${bi("Next step", "Siguiente paso")}</span> ${next}</p>
     </div>`;
   }

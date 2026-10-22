@@ -2,7 +2,7 @@
 // and the fixed chrome (launcher/spark contrast in every world and theme; launchers and toasts never cover the work).
 // Explicitly invoked (npm run validate:studio-enhancements-browser); never starts on ordinary site builds.
 import assert from "node:assert/strict";
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, resolve } from "node:path";
 import { chromium } from "playwright";
@@ -371,6 +371,165 @@ try {
     }
     ok(
       `fixed chrome: launcher label >= 4.5:1 and star spark >= 3:1 in ${pairs} world/theme checks; launchers and toasts cover nothing at 1280x800 and 1366x768`,
+    );
+  }
+
+  // W2 (docs/specs/studio-v3-w2.md), on every generated page that has a generated item: the optional confidence tap is there and
+  // remembered, a miss then a solve offers "Try a fresh one", a clean fresh answer is a Repair the learner model counts, and the
+  // fresh item never touched section progress.
+  {
+    const ids = readdirSync(join(REPO_ROOT, "math/practice-studio")).filter((d) =>
+      /^\d+-\d+$/.test(d),
+    );
+    let checked = 0;
+    for (const id of ids)
+      for (const url of [
+        `/math/practice-studio/${id}/`,
+        `/math/practice-studio/${id}/challenge/`,
+      ]) {
+        const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+        const page = await ctx.newPage();
+        await spy(page);
+        await page.goto(origin + url);
+        await page.locator(".tab-btn").first().waitFor();
+        const at = await page.evaluate(() => {
+          const a = /** @type {any} */ (window).StudioRT.api;
+          for (let t = 0; t < a.sections.length; t++) {
+            const i = a.sections[t].items.findIndex((/** @type {any} */ x) => x.k === "gen");
+            if (i >= 0) return { tab: t + 1, i };
+          }
+          return null;
+        });
+        if (!at) {
+          await ctx.close();
+          continue;
+        }
+        checked++;
+        await page
+          .locator(".tab-btn")
+          .nth(at.tab - 1)
+          .click();
+        await page.evaluate(({ tab, i }) => {
+          const a = /** @type {any} */ (window).StudioRT.api;
+          a.state.idx[tab] = i;
+          a.render(tab);
+        }, at);
+        const it = await page.evaluate(({ tab }) => {
+          const a = /** @type {any} */ (window).StudioRT.api;
+          const x = a.expand(tab, a.state.idx[tab]);
+          return { k: x.k, a: x.a };
+        }, at);
+        const stage = `#stage-${at.tab}`;
+        const chips = page.locator(`${stage} .conf-optional [data-conf="2"]`);
+        if (await chips.count()) {
+          await chips.click();
+          assert.equal(
+            await chips.getAttribute("aria-pressed"),
+            "true",
+            `${url}: the confidence tap is remembered`,
+          );
+        }
+        const doneBefore = await page.evaluate(
+          () => /** @type {any} */ (window).StudioRT.api.state.stats.tries,
+        );
+        // a miss, then the right answer
+        if (it.k === "mc") {
+          const wrong = it.a === 0 ? 1 : 0;
+          await page.locator(`${stage} .choice-btn:visible`).nth(wrong).click();
+          await page.locator(`${stage} .choice-btn:visible`).nth(it.a).click();
+        } else {
+          const box = page.locator(`${stage} input:visible`).first();
+          await box.fill("999991");
+          await page
+            .locator(`${stage} .btn-go:visible, ${stage} button:visible:has-text("Check")`)
+            .first()
+            .click();
+          await box.fill(String(it.a));
+          await page
+            .locator(`${stage} .btn-go:visible, ${stage} button:visible:has-text("Check")`)
+            .first()
+            .click();
+        }
+        await page.locator(`${stage} [data-repair]`).click();
+        await page.locator(`${stage} .repair-stage`).waitFor();
+        const solvedBefore = await page.evaluate(
+          ({ tab }) =>
+            Object.keys(/** @type {any} */ (window).StudioRT.api.state[`solved${tab}`]).length,
+          at,
+        );
+        await solveCurrent(page, `${stage} .repair-stage`);
+        await page.locator(`${stage} .repair-note strong`).waitFor();
+        assert.equal(
+          await page.evaluate(
+            ({ tab }) =>
+              Object.keys(/** @type {any} */ (window).StudioRT.api.state[`solved${tab}`]).length,
+            at,
+          ),
+          solvedBefore,
+          `${url}: a repair never changes section progress`,
+        );
+        assert.equal(
+          await page.evaluate(() => {
+            const L = /** @type {any} */ (window).StudioLearner;
+            return Object.values(L.all()).reduce((n, r) => n + /** @type {any} */ (r).repaired, 0);
+          }),
+          1,
+          `${url}: the learner model counts the repair`,
+        );
+        void doneBefore;
+        await ctx.close();
+      }
+    assert.ok(checked >= 60, `repair loop checked on ${checked} generated pages`);
+    ok(
+      `W2: confidence tap, miss -> fresh one -> Repaired, on ${checked} generated pages (every page with a generated item)`,
+    );
+
+    // seals: three clean answers earn Bronze, announced once, listed in My seals with a ring and a word, and kept after a reload
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    const page = await ctx.newPage();
+    await spy(page);
+    await page.goto(`${origin}/math/practice-studio/3-5/`);
+    await page.locator(".tab-btn").nth(3).click();
+    await page.evaluate(() => {
+      const a = /** @type {any} */ (window).StudioRT.api;
+      a.state.idx[4] = 2;
+      a.render(4);
+      /** @type {any} */ (window).__seals = [];
+      window.addEventListener("studio:seal", (e) =>
+        /** @type {any} */ (window).__seals.push(/** @type {any} */ (e).detail.seal),
+      );
+    });
+    for (let n = 0; n < 3; n++) {
+      await solveCurrent(page, "#stage-4", 4);
+      if (n < 2) await page.locator("#stage-4 [data-reroll]").click();
+    }
+    assert.deepEqual(
+      await page.evaluate(() => /** @type {any} */ (window).__seals),
+      [1],
+      "Bronze is announced once, on the third answer",
+    );
+    await page.locator("#studio-menu-btn").click();
+    await page.locator("#seals-btn").click();
+    const text = await page.locator("#studio-seals .u4-dialog-body").innerText();
+    assert.ok(
+      /Bronze · Tried/.test(text) &&
+        /more answers? toward Silver|Answer one at a higher level/.test(text),
+      `My seals shows the seal and what is next: ${text.slice(0, 160)}`,
+    );
+    assert.ok(
+      await page.locator("#studio-seals .seal-ring.seal-1").count(),
+      "the seal is a ring with a word, not a colour",
+    );
+    await page.reload();
+    await page.locator("#studio-menu-btn").click();
+    await page.locator("#seals-btn").click();
+    assert.ok(
+      /Bronze/.test(await page.locator("#studio-seals .u4-dialog-body").innerText()),
+      "the seal is still there after a reload",
+    );
+    await ctx.close();
+    ok(
+      "W2 seals: Bronze after three clean answers, announced once, listed in My seals, kept after a reload",
     );
   }
 

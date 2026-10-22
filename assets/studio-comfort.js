@@ -187,6 +187,18 @@
     tone("done");
     confetti();
   });
+  window.addEventListener("studio:seal", (/** @type {any} */ e) => {
+    const d = e.detail || {};
+    const name = W.StudioLearner?.SEALS?.[d.seal]?.name;
+    if (name) {
+      toast(`🏅 ${name} seal: ${d.label}`);
+      tone("quest");
+    }
+  });
+  window.addEventListener("studio:repair", () => {
+    toast("🔁 Repaired! You fixed that one.");
+    tone("streak");
+  });
   window.addEventListener("studio:quest", (/** @type {any} */ e) => {
     const stars = e.detail?.stars || 0;
     if (stars > 0) {

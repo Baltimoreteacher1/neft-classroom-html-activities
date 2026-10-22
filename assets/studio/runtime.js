@@ -235,6 +235,7 @@
         const cal = state.calib[it.id];
         if (cal && cal.ok === null) cal.ok = first;
         fb("ok", RT.util.fbOk(voice("ok", it.id), html, watchFor(it)));
+        $(".conf-optional", host)?.remove();
         say("Correct");
         if (redeem) {
           o.onSolved?.();
@@ -257,6 +258,8 @@
           hints: state.hints[it.id] || 0,
           tag: null,
           skill: it.skill || null,
+          skillEs: it.skillEs || null,
+          conf: state.calib[it.id]?.c ?? null,
           redeem,
         });
         W.StudioBus.emit("solved", {
@@ -319,6 +322,8 @@
           sayEs: textEs,
           wrong: m.wrongText ?? null,
           skill: it.skill || null,
+          skillEs: it.skillEs || null,
+          conf: state.calib[it.id]?.c ?? null,
           tab,
           redeem,
         });
@@ -419,6 +424,33 @@
     });
   }
 
+  /**
+   * The optional confidence tap for every item that is not a Boss item: the same three chips, never blocking. A student who skips
+   * it loses nothing; a tap is remembered in state.calib (My thinking's calibration summary and the learner model read it).
+   */
+  function confChips(/** @type {any} */ it, /** @type {HTMLElement} */ host) {
+    const zone = $(".answer-zone", host);
+    if (!zone) return;
+    const now = state.calib[it.id]?.c;
+    const row = document.createElement("div");
+    row.className = "conf-row conf-optional";
+    row.setAttribute("role", "group");
+    row.setAttribute("aria-label", "How sure are you? (optional)");
+    row.innerHTML = `<span class="conf-q">How sure are you? <span class="conf-opt">(optional)</span>${es("¿Qué tan seguro estás? (opcional)")}</span>${CONF.map((c, i) => `<button type="button" class="btn btn-sm conf-btn" data-conf="${i + 1}" aria-pressed="${now === i + 1}">${c[0]}${es(c[1])}</button>`).join("")}`;
+    zone.before(row);
+    row.addEventListener("click", (e) => {
+      const b = /** @type {HTMLElement|null} */ (
+        /** @type {HTMLElement} */ (e.target).closest("[data-conf]")
+      );
+      if (!b) return;
+      const c = Number(b.dataset.conf);
+      state.calib[it.id] = { c, ok: null };
+      for (const x of row.querySelectorAll("[data-conf]"))
+        x.setAttribute("aria-pressed", String(x === b));
+      save();
+    });
+  }
+
   /** Forget everything saved for one item id so a fresh problem starts clean. */
   function wipeItem(/** @type {string} */ id) {
     for (const k of [
@@ -447,7 +479,8 @@
     stage.innerHTML = `${headHtml(tab, it)}<div class="item-body"></div>`;
     const host = $(".item-body", stage);
     mountItem({ tab, it, host });
-    if (sec.conf && (it.k === "mc" || it.k === "num") && !isSolved(tab, it)) confRow(it, host);
+    if ((it.k === "mc" || it.k === "num") && !isSolved(tab, it))
+      (sec.conf ? confRow : confChips)(it, host);
     dots(tab);
     for (const b of /** @type {HTMLElement[]} */ ([...stage.querySelectorAll("[data-reroll]")]))
       b.addEventListener("click", () => {
@@ -552,6 +585,12 @@
           en: `You solved ${first} of ${total} on the first try.`,
           es: `Resolviste ${first} de ${total} al primer intento.`,
         },
+        seals: (W.StudioSeals?.earnedThisVisit?.() || []).map((/** @type {any} */ x) => ({
+          name: W.StudioLearner.SEALS[x.seal].name,
+          nameEs: W.StudioLearner.SEALS[x.seal].nameEs,
+          label: x.label,
+          labelEs: x.labelEs,
+        })),
         next,
       },
     )}`;
@@ -663,4 +702,6 @@
   progress();
   hud();
   W.StudioInsight?.init(RT);
+  W.StudioSeals?.init(RT);
+  W.StudioRepair?.init(RT);
 })();

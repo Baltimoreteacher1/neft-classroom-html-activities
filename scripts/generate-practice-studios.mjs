@@ -81,6 +81,8 @@ function assetPlan(/** @type {Map<string, string>} */ built) {
     "kinds-hands",
     "kinds-lab",
     "insight",
+    "seals",
+    "repair",
     "runtime",
   ].map((f) => `assets/studio/${f}.js`);
   const scripts = [
@@ -88,6 +90,7 @@ function assetPlan(/** @type {Map<string, string>} */ built) {
     "assets/u4-studio.js",
     "assets/studio-comfort.js",
     "assets/studio/store.js",
+    "assets/studio/learner.js",
     ...viz,
     ...gen,
     ...act,
