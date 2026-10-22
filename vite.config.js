@@ -276,7 +276,7 @@ function copyStandaloneHtml() {
           }
           // Generated lesson support pages (static index.html folders) linked
           // from the curriculum hub: family / teacher-notes / student-help.
-          for (const sub of ["family", "teacher-notes", "student-help"]) {
+          for (const sub of ["family", "teacher-notes", "student-help", "word-problems"]) {
             const supportDir = resolve(lessonsDir, dir.name, sub);
             if (existsSync(supportDir)) {
               const destDir = resolve(__dirname, "dist", "lessons", dir.name, sub);

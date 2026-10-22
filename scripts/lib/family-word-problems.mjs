@@ -7,7 +7,7 @@
 
 export const LANGS = ["en", "es"];
 
-const esc = (s) =>
+export const esc = (s) =>
   String(s)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -66,58 +66,70 @@ const T = {
   },
 };
 
+/**
+ * What a problem's answer is made of, computed once from the numbers it declares. The worked
+ * steps below and the student page both read this, so neither can disagree with the other.
+ */
+export function answerFor(problem) {
+  if (problem.kind === "percent-of") {
+    return { kind: problem.kind, part: partOf(problem.percent, problem.whole) };
+  }
+  if (problem.kind === "discount") {
+    const saved = partOf(problem.percent, problem.price);
+    return { kind: problem.kind, saved, pay: problem.price - saved };
+  }
+  if (problem.kind === "deal") {
+    const rows = problem.options.map((o) => {
+      const saved = partOf(o.percent, o.price);
+      return { name: o.name, percent: o.percent, price: o.price, saved, pay: o.price - saved };
+    });
+    const [x, y] = rows;
+    if (x.pay === y.pay)
+      throw new Error(`${problem.id}: final prices tie, the question would be ambiguous`);
+    return {
+      kind: problem.kind,
+      rows,
+      moreOff: x.saved === y.saved ? null : x.saved > y.saved ? 0 : 1,
+      cheaper: x.pay < y.pay ? 0 : 1,
+    };
+  }
+  throw new Error(`${problem.id}: unknown kind ${problem.kind}`);
+}
+
 /** Worked answer for one problem in one language: an array of lines, the last is the answer. */
 export function solve(problem, lang) {
   const t = T[lang];
   const unit = problem.unit;
   const a = (n) => amount(n, unit, lang);
-  if (problem.kind === "percent-of") {
-    const part = partOf(problem.percent, problem.whole);
+  const ans = answerFor(problem);
+  if (ans.kind === "percent-of") {
     return [
       t.toDecimal(problem.percent),
       t.multiply(
         problem.percent,
         unit === "$" ? a(problem.whole) : num(problem.whole),
-        unit === "$" ? a(part) : num(part),
+        unit === "$" ? a(ans.part) : num(ans.part),
       ),
-      t.answer(a(part)),
+      t.answer(a(ans.part)),
     ];
   }
-  if (problem.kind === "discount") {
-    const saved = partOf(problem.percent, problem.price);
-    const pay = problem.price - saved;
+  if (ans.kind === "discount") {
     return [
       t.toDecimal(problem.percent),
-      t.savings(problem.percent, a(problem.price), a(saved)),
-      t.pays(a(problem.price), a(saved), a(pay)),
-      t.saveAndPay(a(saved), a(pay)),
+      t.savings(problem.percent, a(problem.price), a(ans.saved)),
+      t.pays(a(problem.price), a(ans.saved), a(ans.pay)),
+      t.saveAndPay(a(ans.saved), a(ans.pay)),
     ];
   }
-  if (problem.kind === "deal") {
-    const rows = problem.options.map((o) => {
-      const saved = partOf(o.percent, o.price);
-      return {
-        name: o.name[lang],
-        percent: o.percent,
-        price: o.price,
-        saved,
-        pay: o.price - saved,
-      };
-    });
-    const [x, y] = rows;
-    if (x.pay === y.pay)
-      throw new Error(`${problem.id}: final prices tie, the question would be ambiguous`);
-    const cheaper = x.pay < y.pay ? x : y;
-    const offLine =
-      x.saved === y.saved ? t.sameOff(a(x.saved)) : t.moreOff((x.saved > y.saved ? x : y).name);
-    return [
-      ...rows.map((r) => t.optionOff(r.name, r.percent, a(r.price), a(r.saved))),
-      offLine,
-      ...rows.map((r) => t.optionPays(r.name, a(r.price), a(r.saved), a(r.pay))),
-      t.lessCost(cheaper.name),
-    ];
-  }
-  throw new Error(`${problem.id}: unknown kind ${problem.kind}`);
+  const rows = ans.rows.map((r) => ({ ...r, name: r.name[lang] }));
+  const offLine =
+    ans.moreOff === null ? t.sameOff(a(rows[0].saved)) : t.moreOff(rows[ans.moreOff].name);
+  return [
+    ...rows.map((r) => t.optionOff(r.name, r.percent, a(r.price), a(r.saved))),
+    offLine,
+    ...rows.map((r) => t.optionPays(r.name, a(r.price), a(r.saved), a(r.pay))),
+    t.lessCost(rows[ans.cheaper].name),
+  ];
 }
 
 /** One sentence in both languages, in the markup the homework pages use for language mode. */
