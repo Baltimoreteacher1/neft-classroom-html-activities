@@ -5027,6 +5027,246 @@ function printPartnerGame(gameType = "war", grade = state.grade || 4) {
 const gcd = (a, b) => { let x = Math.abs(a), y = Math.abs(b); while (y) [x, y] = [y, x % y]; return x || 1; };
 const lcm = (a, b) => Math.abs(a * b) / gcd(a, b);
 
+const StandardLongDivisionModel = {
+  computeSteps(dividend, divisor) {
+    dividend = Math.max(1, Math.floor(Number(dividend) || 432));
+    divisor = Math.max(1, Math.floor(Number(divisor) || 12));
+    const digits = String(dividend).split("").map(Number);
+    const quotient = Math.floor(dividend / divisor);
+    const steps = [];
+    let cur = 0;
+    let started = false;
+    for (let i = 0; i < digits.length; i++) {
+      cur = cur * 10 + digits[i];
+      const qDigit = Math.floor(cur / divisor);
+      if (qDigit > 0 || started || i === digits.length - 1) {
+        started = true;
+        const prod = qDigit * divisor;
+        const rem = cur - prod;
+        steps.push({
+          pos: i,
+          digit: digits[i],
+          cur,
+          qDigit,
+          prod,
+          rem,
+          nextDigit: i < digits.length - 1 ? digits[i + 1] : null
+        });
+        cur = rem;
+      }
+    }
+    return { dividend, divisor, quotient, remainder: cur, digits, steps };
+  },
+
+  renderHtml(dividend, divisor, opts = {}) {
+    const { isSolver = false } = opts;
+    const { quotient, remainder, digits, steps } = this.computeSteps(dividend, divisor);
+    const colPitch = 42;
+
+    return `
+      <div class="ld-model-container">
+        <!-- Standard Algorithm Cycle Breadcrumbs -->
+        <div class="ld-cycle-tracker" aria-label="Standard Algorithm Cycle">
+          <div class="ld-cycle-step is-active" data-ld-phase="divide">
+            <span class="ld-cycle-icon">➗</span>
+            <span class="ld-cycle-text">1. Divide</span>
+          </div>
+          <span class="ld-cycle-arrow">→</span>
+          <div class="ld-cycle-step" data-ld-phase="multiply">
+            <span class="ld-cycle-icon">✖️</span>
+            <span class="ld-cycle-text">2. Multiply</span>
+          </div>
+          <span class="ld-cycle-arrow">→</span>
+          <div class="ld-cycle-step" data-ld-phase="subtract">
+            <span class="ld-cycle-icon">➖</span>
+            <span class="ld-cycle-text">3. Subtract</span>
+          </div>
+          <span class="ld-cycle-arrow">→</span>
+          <div class="ld-cycle-step" data-ld-phase="bringdown">
+            <span class="ld-cycle-icon">⬇️</span>
+            <span class="ld-cycle-text">4. Bring Down</span>
+          </div>
+          <span class="ld-cycle-arrow">→</span>
+          <div class="ld-cycle-step" data-ld-phase="repeat">
+            <span class="ld-cycle-icon">🔁</span>
+            <span class="ld-cycle-text">5. Repeat / Remainder</span>
+          </div>
+        </div>
+
+        <!-- The Classic Standard Algorithm Bracket Board -->
+        <div class="ld-bracket-board">
+          <!-- Quotient Row (above the bar) -->
+          <div class="ld-row ld-row-quotient">
+            <div class="ld-spacer-divisor"></div>
+            <div class="ld-digits-strip">
+              ${digits.map((_, idx) => {
+                const s = steps.find((st) => st.pos === idx);
+                if (!s) return `<div class="ld-col-box ld-col-empty"></div>`;
+                return `
+                  <div class="ld-col-box">
+                    <input type="text" class="ld-cell ld-q-cell" inputmode="numeric" maxlength="1" data-ld-target="${s.qDigit}" data-ld-phase="divide" data-ld-step="${s.pos}" placeholder="?" title="Divide: Enter quotient digit for column ${idx + 1}" />
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+
+          <!-- Dividend Bracket Row -->
+          <div class="ld-row ld-row-dividend">
+            <div class="ld-divisor-box">${divisor}</div>
+            <div class="ld-bracket-arc">)</div>
+            <div class="ld-dividend-strip">
+              ${digits.map((d) => `<div class="ld-col-box ld-digit-cell">${d}</div>`).join("")}
+            </div>
+          </div>
+
+          <!-- Tower Work Steps -->
+          <div class="ld-tower-body">
+            ${steps.map((st, sIdx) => {
+              const prodStr = String(st.prod);
+              const remStr = String(st.rem);
+              const prodStartCol = Math.max(0, st.pos - prodStr.length + 1);
+              const prodOffsetPx = prodStartCol * colPitch;
+              const prodWidthPx = Math.max(42, prodStr.length * 20 + 20);
+              const ruleWidthPx = Math.max(prodStr.length, (st.nextDigit !== null ? remStr.length + 1 : remStr.length)) * colPitch;
+              const diffStartCol = Math.max(0, st.pos - remStr.length + 1);
+              const diffOffsetPx = diffStartCol * colPitch;
+              const diffWidthPx = Math.max(42, remStr.length * 20 + 20);
+
+              return `
+                <div class="ld-step-section" data-ld-step-idx="${sIdx}">
+                  <!-- Multiply Row: − [ prod ] -->
+                  <div class="ld-work-row ld-row-multiply" style="margin-left:${prodOffsetPx}px">
+                    <span class="ld-sub-sign">−</span>
+                    <input type="text" class="ld-cell ld-prod-cell" inputmode="numeric" style="width:${prodWidthPx}px" data-ld-target="${st.prod}" data-ld-phase="multiply" data-ld-step-idx="${sIdx}" placeholder="?" title="Multiply: ${st.qDigit} × ${divisor} = ${st.prod}" />
+                  </div>
+                  <!-- Subtraction Rule Line -->
+                  <div class="ld-rule-bar" style="margin-left:${prodOffsetPx + 16}px; width:${ruleWidthPx}px"></div>
+                  <!-- Subtract & Bring Down Row -->
+                  <div class="ld-work-row ld-row-diff" style="margin-left:${diffOffsetPx}px">
+                    <span class="ld-spacer-sign"> </span>
+                    <input type="text" class="ld-cell ld-diff-cell" inputmode="numeric" style="width:${diffWidthPx}px" data-ld-target="${st.rem}" data-ld-phase="subtract" data-ld-step-idx="${sIdx}" placeholder="?" title="Subtract: ${st.cur} − ${st.prod} = ${st.rem}" />
+                    ${st.nextDigit !== null ? `
+                      <div class="ld-bring-indicator" title="Bring down next digit ${st.nextDigit}">
+                        <span class="ld-bring-arrow">↓</span>
+                        <span class="ld-bring-val">${st.nextDigit}</span>
+                      </div>
+                    ` : `
+                      <span class="ld-rem-pill">${st.rem === 0 ? "✓ Remainder: 0" : `Remainder: ${st.rem}`}</span>
+                    `}
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+
+          <!-- Bottom Action Controls & Status Banner -->
+          <div style="display:flex; gap:0.5rem; justify-content:center; align-items:center; margin-top:0.75rem; flex-wrap:wrap">
+            <button type="button" class="mini-tool-btn ld-btn-reveal" style="background:#fef3c7; color:#92400e; border-color:#fde68a; font-weight:700">💡 Reveal Next Step</button>
+            <button type="button" class="mini-tool-btn ld-btn-reset">🔄 Reset</button>
+          </div>
+
+          <div class="ld-status-banner">
+            <span class="ld-status-text">Follow the standard algorithm: <strong>Divide</strong> → <strong>Multiply</strong> → <strong>Subtract</strong> → <strong>Bring Down</strong> → <strong>Repeat</strong>.</span>
+          </div>
+        </div>
+
+        ${isSolver ? `
+          <div class="solver-calc-row" style="margin-top:0.75rem">
+            <span>Full Quotient: <strong>${dividend} ÷ ${divisor} =</strong></span>
+            <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${quotient}" data-group="div-final" style="width:78px" placeholder="Quotient" />
+            ${remainder > 0 ? `<span style="font-size:0.9rem; font-weight:700; color:#dc2626">R ${remainder}</span>` : ""}
+            <button type="button" class="outline-action" id="div-copy-ans" style="display:none">Copy to Answer</button>
+          </div>
+        ` : ""}
+      </div>
+    `;
+  },
+
+  wireEvents(container, dividend, divisor, onSolved) {
+    if (!container) return;
+    const { quotient, remainder } = this.computeSteps(dividend, divisor);
+    const allCells = [...container.querySelectorAll(".ld-cell")];
+    const trackerSteps = [...container.querySelectorAll(".ld-cycle-step")];
+    const statusBanner = container.querySelector(".ld-status-banner");
+    const revealBtn = container.querySelector(".ld-btn-reveal");
+    const resetBtn = container.querySelector(".ld-btn-reset");
+
+    const updatePhase = (phase) => {
+      trackerSteps.forEach((s) => s.classList.toggle("is-active", s.dataset.ldPhase === phase));
+    };
+
+    const checkComplete = () => {
+      const allDone = allCells.every((c) => c.classList.contains("is-ok"));
+      if (allDone) {
+        updatePhase("repeat");
+        if (statusBanner) {
+          statusBanner.innerHTML = `<span style="color:#15803d; font-size:1.05rem; font-weight:800">🎉 Solved! ${dividend} ÷ ${divisor} = ${quotient}${remainder > 0 ? ` R ${remainder}` : ""}</span>`;
+        }
+        if (typeof chime === "function") chime("good");
+        if (typeof onSolved === "function") onSolved({ quotient, remainder });
+        return true;
+      }
+      return false;
+    };
+
+    allCells.forEach((cell) => {
+      cell.addEventListener("input", () => {
+        const val = cell.value.trim();
+        const target = cell.dataset.ldTarget;
+        if (val === target) {
+          cell.classList.add("is-ok");
+          cell.classList.remove("is-wrong");
+          if (typeof chime === "function") chime("step");
+
+          if (!checkComplete()) {
+            const nextIncomplete = allCells.find((c) => !c.classList.contains("is-ok"));
+            if (nextIncomplete) {
+              updatePhase(nextIncomplete.dataset.ldPhase);
+              nextIncomplete.focus();
+            }
+          }
+        } else if (val.length >= target.length) {
+          cell.classList.remove("is-ok");
+          cell.classList.add("is-wrong");
+        } else {
+          cell.classList.remove("is-ok");
+          cell.classList.remove("is-wrong");
+        }
+      });
+    });
+
+    revealBtn?.addEventListener("click", () => {
+      const incomplete = allCells.find((c) => !c.classList.contains("is-ok"));
+      if (incomplete) {
+        incomplete.value = incomplete.dataset.ldTarget;
+        incomplete.classList.add("is-ok");
+        incomplete.classList.remove("is-wrong");
+        if (typeof chime === "function") chime("step");
+        if (!checkComplete()) {
+          const next = allCells.find((c) => !c.classList.contains("is-ok"));
+          if (next) {
+            updatePhase(next.dataset.ldPhase);
+            next.focus();
+          }
+        }
+      }
+    });
+
+    resetBtn?.addEventListener("click", () => {
+      allCells.forEach((c) => {
+        c.value = "";
+        c.classList.remove("is-ok", "is-wrong");
+      });
+      updatePhase("divide");
+      if (statusBanner) {
+        statusBanner.innerHTML = `<span class="ld-status-text">Follow the standard algorithm: <strong>Divide</strong> → <strong>Multiply</strong> → <strong>Subtract</strong> → <strong>Bring Down</strong> → <strong>Repeat</strong>.</span>`;
+      }
+      if (allCells.length > 0) allCells[0].focus();
+    });
+  }
+};
+
 const InteractiveSolver = {
   canSolve(item) {
     if (!item) return false;
@@ -5034,12 +5274,12 @@ const InteractiveSolver = {
     if (/find the lcm of \d+ and \d+/i.test(q)) return true;
     if (/find the gcf of \d+ and \d+/i.test(q)) return true;
 
-    // Multi-digit whole number division:
-    const divMatch = q.replace(/\s*=\s*\?.*$/, "").match(/^(\d+)\s*[÷/]\s*(\d+)$/);
+    // Multi-digit whole number division (Standard Algorithm):
+    const divMatch = q.replace(/\s*=\s*\?.*$/, "").match(/(\d+)\s*[÷/]\s*(\d+)/);
     if (divMatch && !q.includes("/")) {
       const a = Number(divMatch[1]);
       const b = Number(divMatch[2]);
-      if (a >= 20 && b >= 2 && a > b) return true;
+      if (a >= 10 && b >= 2 && a > b) return true;
     }
 
     // Two-step or one-step algebra linear equations:
@@ -5464,169 +5704,51 @@ const InteractiveSolver = {
     }
 
     // 6. Grades 4-5 Standard Algorithm Long Division Bracket
-    const divMatch = q.replace(/\s*=\s*\?.*$/, "").match(/^(\d+)\s*[÷/]\s*(\d+)$/);
+    const divMatch = q.replace(/\s*=\s*\?.*$/, "").match(/(\d+)\s*[÷/]\s*(\d+)/);
     if (divMatch && !q.includes("/")) {
       const dividend = Number(divMatch[1]);
       const divisor = Number(divMatch[2]);
-      if (dividend >= 20 && divisor >= 2 && dividend > divisor) {
-        const quotient = Math.floor(dividend / divisor);
-        const digits = String(dividend).split("").map(Number);
-        const steps = [];
-        let cur = 0;
-        let started = false;
-        for (let i = 0; i < digits.length; i++) {
-          cur = cur * 10 + digits[i];
-          const qDigit = Math.floor(cur / divisor);
-          if (qDigit > 0 || started || i === digits.length - 1) {
-            started = true;
-            const prod = qDigit * divisor;
-            const rem = cur - prod;
-            steps.push({ pos: i, digit: digits[i], cur, qDigit, prod, rem });
-            cur = rem;
-          }
-        }
-
+      if (dividend >= 10 && divisor >= 2 && dividend > divisor) {
+        const { quotient } = StandardLongDivisionModel.computeSteps(dividend, divisor);
         container.innerHTML = `
           <div class="solver-header">
-            <strong>➗ Interactive Standard Algorithm: Fill Every Step!</strong>
-            <span class="solver-hint-tag">Divide → Multiply → Subtract → Bring Down</span>
+            <strong>➗ Interactive Standard Algorithm Long Division</strong>
+            <span class="solver-hint-tag">Divide → Multiply → Subtract → Bring Down → Repeat</span>
           </div>
-          <div class="long-div-workspace">
-            <div class="long-div-bracket-box">
-              <div class="long-div-quotient-row">
-                <span class="long-div-spacer"></span>
-                ${digits.map((_, idx) => {
-                  const s = steps.find((st) => st.pos === idx);
-                  if (!s) return `<span class="long-div-q-col"></span>`;
-                  return `<input type="text" class="long-div-q-input" inputmode="numeric" maxlength="1" data-target="${s.qDigit}" data-step="${s.pos}" placeholder="?" title="Quotient digit" />`;
-                }).join("")}
-              </div>
-              <div class="long-div-dividend-row">
-                <span class="long-div-divisor">${divisor}</span>
-                <span class="long-div-bracket">)</span>
-                <div class="long-div-overbar">
-                  ${digits.map((d) => `<span class="long-div-col">${d}</span>`).join("")}
-                </div>
-              </div>
-
-              <!-- Interactive Step-by-Step Vertical Work Rows -->
-              <div class="long-div-tower-work" style="margin-left:58px">
-                ${steps.map((st, sIdx) => `
-                  <div class="long-div-sub-row">
-                    <span class="long-div-op">−</span>
-                    <input type="text" class="long-div-tower-input" inputmode="numeric" data-target="${st.prod}" data-kind="prod" data-step-idx="${sIdx}" placeholder="?" title="Multiply: ${st.qDigit} × ${divisor}" />
-                  </div>
-                  <div class="long-div-rule"></div>
-                  <div class="long-div-sub-row">
-                    <span class="long-div-op"> </span>
-                    <input type="text" class="long-div-tower-input" inputmode="numeric" data-target="${sIdx < steps.length - 1 ? `${st.rem}${steps[sIdx + 1].digit}` : `${st.rem}`}" data-kind="${sIdx < steps.length - 1 ? "diff-bring" : "rem"}" data-step-idx="${sIdx}" placeholder="?" title="${sIdx < steps.length - 1 ? `Subtract (${st.cur} - ${st.prod} = ${st.rem}) and bring down ${steps[sIdx + 1].digit}` : `Final remainder: ${st.rem}`}" />
-                  </div>
-                `).join("")}
-              </div>
-            </div>
-
-            <div class="long-div-steps-guide">
-              ${steps.map((st, sIdx) => `
-                <div class="long-div-step-card" data-step-card="${st.pos}">
-                  <span class="step-num-pill">Step ${sIdx + 1}</span>
-                  <div class="step-line">
-                    <strong>Divide:</strong> How many times does <strong>${divisor}</strong> go into <strong>${st.cur}</strong>?
-                    <input type="text" class="long-div-step-input" inputmode="numeric" data-target="${st.qDigit}" data-kind="q" data-step-idx="${sIdx}" placeholder="?" />
-                  </div>
-                  <div class="step-line">
-                    <strong>Multiply:</strong> ${st.qDigit} × ${divisor} =
-                    <input type="text" class="long-div-step-input" inputmode="numeric" data-target="${st.prod}" data-kind="prod" data-step-idx="${sIdx}" placeholder="?" />
-                  </div>
-                  <div class="step-line">
-                    <strong>Subtract:</strong> ${st.cur} − ${st.prod} =
-                    <input type="text" class="long-div-step-input" inputmode="numeric" data-target="${st.rem}" data-kind="diff" data-step-idx="${sIdx}" placeholder="?" />
-                  </div>
-                  ${sIdx < steps.length - 1 ? `
-                    <div class="step-line bring-down">
-                      <strong>Bring Down:</strong> Next digit ${steps[sIdx + 1].digit} →
-                      <input type="text" class="long-div-step-input" inputmode="numeric" data-target="${st.rem}${steps[sIdx + 1].digit}" data-kind="diff-bring" data-step-idx="${sIdx}" placeholder="?" />
-                    </div>
-                  ` : `
-                    <div class="step-line final-rem">Remainder: <strong>${st.rem}</strong></div>
-                  `}
-                </div>
-              `).join("")}
-            </div>
-
-            <div class="solver-calc-row" style="margin-top:0.75rem">
-              <span>Full Quotient: <strong>${dividend} ÷ ${divisor} =</strong></span>
-              <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${quotient}" data-group="div-final" style="width:78px" placeholder="Quotient" />
-              <button type="button" class="outline-action" id="div-copy-ans" style="display:none">Copy to Answer</button>
-            </div>
-          </div>
+          ${StandardLongDivisionModel.renderHtml(dividend, divisor, { isSolver: true })}
         `;
 
-        const allDivInputs = [...container.querySelectorAll(".long-div-q-input, .long-div-tower-input, .long-div-step-input")];
         const finalInp = container.querySelector('[data-group="div-final"]');
+        const copyBtn = container.querySelector("#div-copy-ans");
 
-        allDivInputs.forEach((inp) => {
-          inp.addEventListener("input", () => {
-            const val = inp.value.trim();
-            if (val === inp.dataset.target) {
-              inp.classList.add("is-ok");
-              chime("step");
+        const markSolverSolved = () => {
+          if (finalInp) {
+            finalInp.value = String(quotient);
+            finalInp.classList.add("is-ok");
+          }
+          els.answerInput.value = String(quotient);
+          if (copyBtn) {
+            copyBtn.style.display = "inline-block";
+            copyBtn.textContent = "✓ Solved & Copied to Answer!";
+          }
+        };
 
-              // Sync matching peer input if present
-              const stepIdx = inp.dataset.stepIdx;
-              const kind = inp.dataset.kind;
-              if (stepIdx !== undefined && kind) {
-                container.querySelectorAll(`[data-step-idx="${stepIdx}"][data-kind="${kind}"]`).forEach((peer) => {
-                  peer.value = val;
-                  peer.classList.add("is-ok");
-                });
-              }
-              if (inp.classList.contains("long-div-q-input")) {
-                const stepPos = inp.dataset.step;
-                const matchStep = steps.findIndex((s) => String(s.pos) === stepPos);
-                if (matchStep !== -1) {
-                  const peerStep = container.querySelector(`[data-kind="q"][data-step-idx="${matchStep}"]`);
-                  if (peerStep) {
-                    peerStep.value = val;
-                    peerStep.classList.add("is-ok");
-                  }
-                }
-              }
-
-              // Advance focus to next incomplete box
-              const nextEmpty = allDivInputs.find((box) => !box.classList.contains("is-ok"));
-              if (nextEmpty) nextEmpty.focus();
-
-              // Check if all quotient inputs are complete
-              const qBoxes = [...container.querySelectorAll(".long-div-q-input")];
-              if (qBoxes.every((q) => q.classList.contains("is-ok"))) {
-                if (finalInp) {
-                  finalInp.value = String(quotient);
-                  finalInp.classList.add("is-ok");
-                }
-                els.answerInput.value = String(quotient);
-                chime("good");
-                const copyBtn = container.querySelector("#div-copy-ans");
-                if (copyBtn) {
-                  copyBtn.style.display = "inline-block";
-                  copyBtn.textContent = "✓ Copied to answer!";
-                }
-              }
-            }
-          });
-        });
+        StandardLongDivisionModel.wireEvents(container, dividend, divisor, markSolverSolved);
 
         finalInp?.addEventListener("input", () => {
           if (finalInp.value.trim() === String(quotient)) {
             finalInp.classList.add("is-ok");
-            els.answerInput.value = String(quotient);
-            chime("good");
-            const copyBtn = container.querySelector("#div-copy-ans");
-            if (copyBtn) {
-              copyBtn.style.display = "inline-block";
-              copyBtn.textContent = "✓ Copied to answer!";
-            }
+            markSolverSolved();
+            if (typeof chime === "function") chime("good");
           }
         });
+
+        copyBtn?.addEventListener("click", () => {
+          els.answerInput.value = String(quotient);
+          if (typeof chime === "function") chime("good");
+          copyBtn.textContent = "✓ Copied to Answer!";
+        });
+
         return;
       }
     }
@@ -8617,6 +8739,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 window.InteractiveSolver = InteractiveSolver;
+window.StandardLongDivisionModel = StandardLongDivisionModel;
 window.FlowPacerEngine = FlowPacerEngine;
 window.FluencyTelemetryHUD = FluencyTelemetryHUD;
 window.SpacedZPDEngine = SpacedZPDEngine;
@@ -8664,33 +8787,7 @@ const InteractiveDrillToolbox = {
   divDivisor: 12,
 
   computeLongDivisionSteps(dividend, divisor) {
-    dividend = Math.max(1, Math.floor(Number(dividend) || 432));
-    divisor = Math.max(1, Math.floor(Number(divisor) || 12));
-    const digits = String(dividend).split("").map(Number);
-    const quotient = Math.floor(dividend / divisor);
-    const steps = [];
-    let cur = 0;
-    let started = false;
-    for (let i = 0; i < digits.length; i++) {
-      cur = cur * 10 + digits[i];
-      const qDigit = Math.floor(cur / divisor);
-      if (qDigit > 0 || started || i === digits.length - 1) {
-        started = true;
-        const prod = qDigit * divisor;
-        const rem = cur - prod;
-        steps.push({
-          pos: i,
-          digit: digits[i],
-          cur,
-          qDigit,
-          prod,
-          rem,
-          nextDigit: i < digits.length - 1 ? digits[i + 1] : null
-        });
-        cur = rem;
-      }
-    }
-    return { dividend, divisor, quotient, remainder: cur, digits, steps };
+    return StandardLongDivisionModel.computeSteps(dividend, divisor);
   },
 
   syncFromProblem(item) {
@@ -8737,6 +8834,9 @@ const InteractiveDrillToolbox = {
     if (divMatch && !fracPair && !fracSingle) {
       this.divDividend = Math.max(1, Number(divMatch[1]));
       this.divDivisor = Math.max(1, Number(divMatch[2]));
+      if (this.divDividend >= 10 && this.divDivisor >= 2 && this.divDividend > this.divDivisor) {
+        this.activeTool = "longdivision";
+      }
     }
 
     // Multiplication / Splitter
@@ -8787,90 +8887,32 @@ const InteractiveDrillToolbox = {
   render(container) {
     if (!container) return;
     if (this.activeTool === "longdivision") {
-      const { dividend, divisor, quotient, remainder, digits, steps } = this.computeLongDivisionSteps(this.divDividend, this.divDivisor);
+      const dividend = this.divDividend;
+      const divisor = this.divDivisor;
       container.innerHTML = `
         <div class="tool-content longdivision-tool-container">
           <div class="tool-controls" style="flex-wrap:wrap; gap:0.5rem; align-items:center">
             <span>Problem: <strong>${dividend} ÷ ${divisor}</strong></span>
-            <span style="color:#64748b">| Presets:</span>
-            <button type="button" class="mini-tool-btn" data-ld-preset="432:12">432 ÷ 12</button>
-            <button type="button" class="mini-tool-btn" data-ld-preset="625:5">625 ÷ 5</button>
-            <button type="button" class="mini-tool-btn" data-ld-preset="156:4">156 ÷ 4</button>
-            <button type="button" class="mini-tool-btn" data-ld-preset="782:6">782 ÷ 6</button>
-            <button type="button" class="mini-tool-btn" data-ld-preset="3840:16">3,840 ÷ 16</button>
+            <span style="color:#64748b">| 1-Digit:</span>
             <button type="button" class="mini-tool-btn" data-ld-preset="84:3">84 ÷ 3</button>
+            <button type="button" class="mini-tool-btn" data-ld-preset="156:4">156 ÷ 4</button>
+            <button type="button" class="mini-tool-btn" data-ld-preset="625:5">625 ÷ 5</button>
+            <button type="button" class="mini-tool-btn" data-ld-preset="782:6">782 ÷ 6</button>
+            <span style="color:#64748b">| 2-Digit:</span>
+            <button type="button" class="mini-tool-btn" data-ld-preset="432:12">432 ÷ 12</button>
+            <button type="button" class="mini-tool-btn" data-ld-preset="750:25">750 ÷ 25</button>
+            <button type="button" class="mini-tool-btn" data-ld-preset="3840:16">3,840 ÷ 16</button>
             <span style="color:#64748b">| Custom:</span>
             <input type="number" id="ld-in-divisor" value="${divisor}" min="1" max="999" style="width:54px; padding:2px 6px; border:1px solid #cbd5e1; border-radius:4px" title="Divisor" />
             <span style="font-weight:700">)</span>
             <input type="number" id="ld-in-dividend" value="${dividend}" min="1" max="99999" style="width:72px; padding:2px 6px; border:1px solid #cbd5e1; border-radius:4px" title="Dividend" />
             <button type="button" class="mini-tool-btn" id="ld-btn-load" style="font-weight:700">Set</button>
-            <button type="button" class="mini-tool-btn" id="ld-btn-reveal" style="background:#fef3c7; color:#92400e; border-color:#fde68a; font-weight:700">💡 Reveal Next Step</button>
-            <button type="button" class="mini-tool-btn" id="ld-btn-reset">🔄 Reset</button>
           </div>
-          <div class="long-div-interactive-layout" style="display:flex; gap:1.25rem; flex-wrap:wrap; margin-top:0.75rem; align-items:flex-start">
-            <div class="long-div-tower-card" style="background:#ffffff; border:1px solid #cbd5e1; border-radius:10px; padding:16px 20px; box-shadow:0 2px 6px rgba(0,0,0,0.04)">
-              <!-- Quotient Row -->
-              <div class="ld-row ld-q-row" style="display:flex; align-items:center; margin-bottom:4px">
-                <span class="ld-spacer" style="width:58px"></span>
-                <div class="ld-q-boxes" style="display:flex; gap:6px">
-                  ${digits.map((_, idx) => {
-                    const s = steps.find((st) => st.pos === idx);
-                    if (!s) return `<span class="ld-cell-placeholder" style="width:34px; height:34px; display:inline-block"></span>`;
-                    return `<input type="text" class="ld-cell ld-q-cell" inputmode="numeric" maxlength="1" data-ld-type="q" data-ld-target="${s.qDigit}" data-ld-step="${s.pos}" placeholder="?" title="Quotient digit for column ${idx + 1}" />`;
-                  }).join("")}
-                </div>
-              </div>
-              <!-- Dividend Bracket Row -->
-              <div class="ld-row ld-bracket-row" style="display:flex; align-items:center">
-                <span class="ld-divisor-label" style="width:40px; text-align:right; font-size:1.15rem; font-weight:800; color:#1e293b; padding-right:6px">${divisor}</span>
-                <span class="ld-bracket-char" style="font-size:1.4rem; font-weight:300; color:#475569; line-height:1; margin-right:4px">)</span>
-                <div class="ld-dividend-line" style="display:flex; gap:6px; border-top:2px solid #1e293b; padding-top:4px">
-                  ${digits.map((d) => `<span class="ld-digit-val" style="width:34px; height:28px; display:inline-flex; align-items:center; justify-content:center; font-size:1.15rem; font-weight:800; color:#1e293b">${d}</span>`).join("")}
-                </div>
-              </div>
-              <!-- Step-by-Step Vertical Work Tower -->
-              <div class="ld-work-tower" style="margin-left:54px; margin-top:8px">
-                ${steps.map((st, sIdx) => {
-                  const shiftPx = st.pos * 40;
-                  return `
-                    <div class="ld-step-group" data-ld-step-group="${sIdx}" style="margin-left:${shiftPx}px">
-                      <div class="ld-multiply-line" style="display:flex; align-items:center; gap:6px">
-                        <span style="font-size:1rem; font-weight:800; color:#dc2626; width:14px">−</span>
-                        <input type="text" class="ld-cell ld-prod-cell" inputmode="numeric" data-ld-type="prod" data-ld-target="${st.prod}" data-ld-step-idx="${sIdx}" placeholder="?" title="Multiply: ${st.qDigit} × ${divisor} = ${st.prod}" />
-                      </div>
-                      <div class="ld-sub-rule" style="height:2px; background:#475569; margin:4px 0 4px 18px; width:72px"></div>
-                      <div class="ld-subtract-line" style="display:flex; align-items:center; gap:6px; margin-left:18px">
-                        <input type="text" class="ld-cell ld-diff-cell" inputmode="numeric" data-ld-type="diff" data-ld-target="${st.nextDigit !== null ? `${st.rem}${st.nextDigit}` : `${st.rem}`}" data-ld-step-idx="${sIdx}" placeholder="?" title="${st.nextDigit !== null ? `Subtract (${st.cur} - ${st.prod} = ${st.rem}) and bring down ${st.nextDigit}` : `Final remainder = ${st.rem}`}" />
-                        ${st.nextDigit !== null ? `<span style="font-size:0.85rem; font-weight:800; color:#2563eb">↓</span>` : ""}
-                      </div>
-                    </div>
-                  `;
-                }).join("")}
-              </div>
-              <!-- Status & Final Result Banner -->
-              <div id="ld-tower-status" class="ld-tower-status" style="margin-top:12px; font-size:0.95rem; font-weight:700; color:#475569; text-align:center">
-                Fill each box in the division tower: Divide → Multiply → Subtract → Bring Down.
-              </div>
-            </div>
-            <!-- Instructional Steps Guide Card -->
-            <div class="long-div-guide-card" style="flex:1; min-width:240px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:14px 16px">
-              <h4 style="margin:0 0 8px 0; font-size:0.95rem; color:#1e293b; font-weight:800">📋 Standard Algorithm Cycle</h4>
-              <ol style="margin:0; padding-left:18px; font-size:0.85rem; line-height:1.6; color:#334155">
-                <li><strong>Divide:</strong> How many times does the divisor fit into the current working value?</li>
-                <li><strong>Multiply:</strong> Multiply that quotient digit by the divisor.</li>
-                <li><strong>Subtract:</strong> Subtract the product from the current value to find the difference.</li>
-                <li><strong>Bring Down:</strong> Bring down the next digit from the dividend and repeat.</li>
-              </ol>
-              <div style="margin-top:12px; padding:10px; background:#ffffff; border:1px solid #e2e8f0; border-radius:8px">
-                <span style="font-size:0.8rem; font-weight:800; color:#64748b; text-transform:uppercase">Expected Result:</span>
-                <p style="margin:4px 0 0; font-size:1.05rem; font-weight:800; color:#0f172a">
-                  ${dividend} ÷ ${divisor} = <span style="color:#2563eb">${quotient}</span>${remainder > 0 ? ` <span style="color:#dc2626">R ${remainder}</span>` : ""}
-                </p>
-              </div>
-            </div>
-          </div>
+          ${StandardLongDivisionModel.renderHtml(dividend, divisor, { isSolver: false })}
         </div>
       `;
+      StandardLongDivisionModel.wireEvents(container, dividend, divisor);
+      return;
     } else if (this.activeTool === "numberline") {
       const pos = this.numberLinePos;
       const ticks = Array.from({ length: 21 }, (_, i) => {
@@ -9304,30 +9346,6 @@ const InteractiveDrillToolbox = {
         }
         return;
       }
-      if (event.target.closest("#ld-btn-reset")) {
-        this.render(document.querySelector("#drill-tool-viewport"));
-        return;
-      }
-      if (event.target.closest("#ld-btn-reveal")) {
-        const cells = [...container.querySelectorAll(".ld-cell:not(.is-ok)")];
-        if (cells.length > 0) {
-          const next = cells[0];
-          next.value = next.dataset.ldTarget;
-          next.classList.add("is-ok");
-          chime("step");
-          if (cells.length > 1) cells[1].focus();
-          else {
-            const status = container.querySelector("#ld-tower-status");
-            if (status) {
-              const { dividend, divisor, quotient, remainder } = this.computeLongDivisionSteps(this.divDividend, this.divDivisor);
-              status.textContent = `🎉 Solved! ${dividend} ÷ ${divisor} = ${quotient}${remainder > 0 ? ` R ${remainder}` : ""}`;
-              status.style.color = "#15803d";
-            }
-            chime("good");
-          }
-        }
-        return;
-      }
 
       const nlStep = event.target.closest("[data-nl-step]");
       if (nlStep) {
@@ -9606,37 +9624,6 @@ const InteractiveDrillToolbox = {
         this.splitRight = this.splitTarget - this.splitLeft;
         this.render(document.querySelector("#drill-tool-viewport"));
         return;
-      }
-
-      // Long Division cell validation & auto-advance
-      const ldCell = event.target.closest(".ld-cell");
-      if (ldCell) {
-        const val = ldCell.value.trim();
-        const target = ldCell.dataset.ldTarget;
-        if (val === target) {
-          ldCell.classList.add("is-ok");
-          ldCell.classList.remove("is-wrong");
-          chime("step");
-          const allLdCells = [...container.querySelectorAll(".ld-cell")];
-          const nextIncomplete = allLdCells.find((c) => !c.classList.contains("is-ok"));
-          if (nextIncomplete) {
-            nextIncomplete.focus();
-          } else {
-            const status = container.querySelector("#ld-tower-status");
-            if (status) {
-              const { dividend, divisor, quotient, remainder } = this.computeLongDivisionSteps(this.divDividend, this.divDivisor);
-              status.textContent = `🎉 Solved! ${dividend} ÷ ${divisor} = ${quotient}${remainder > 0 ? ` R ${remainder}` : ""}`;
-              status.style.color = "#15803d";
-            }
-            chime("good");
-          }
-        } else if (val.length >= target.length) {
-          ldCell.classList.remove("is-ok");
-          ldCell.classList.add("is-wrong");
-        } else {
-          ldCell.classList.remove("is-ok");
-          ldCell.classList.remove("is-wrong");
-        }
       }
     });
   }
