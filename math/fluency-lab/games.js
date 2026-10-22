@@ -29,6 +29,7 @@ import {
 import { t } from "./i18n.js";
 import { peekCap } from "./step-leak.js";
 import { mathText, stepsBlock } from "./trail-pictures.js";
+import { languagePromptHtml } from "./language-bridge.js";
 
 export const GAMES = [
   {
@@ -139,6 +140,7 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
         <div><p class="section-label">${t("Grade {n}", { n: grade })}: ${esc(t(TRAILS[grade].focus))}</p><h2>${t("Game Room")}</h2><p>${t("No timers. Think it through, and play as long as you like. Facts you missed lately come back in mixed play.")}</p></div>
         <p class="gm-rank"><b aria-hidden="true">${rank.icon}</b><span>${rank.name}<small>${rank.next ? t("{n} more points to {rank}", { n: rank.next.at - rank.score, rank: rank.next.name }) : t("Top rank reached")}</small></span></p>
       </header>
+      ${languagePromptHtml({ grade, name: TRAILS[grade].focus }, { compact: true, heading: t("Game talk: notice, explain, check") })}
       <div class="gm-options">
         <label class="gm-stop">${t("Practice which facts?")}
           <select id="gm-stop">${stopOptions(stops, stop)}</select>
@@ -268,6 +270,7 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
         ${rewards.masteryMode ? `<div class="gm-mastery-badge" style="background:#eff6ff; color:#1e40af; border:1.5px solid #bfdbfe; border-radius:8px; padding:6px 12px; margin:8px auto; max-width:400px; font-size:0.9rem"><span>🧠</span> <strong>${t("Deep Thinker Achievement")}</strong>: ${t("Mastery earned through strategy steps, not speed!")}</div>` : ""}
         <h2>${stars === 3 ? t("Amazing!") : stars === 2 ? t("Great game!") : t("Nice work!")}</h2>
         <p class="tr-score">${esc(t(info.name))}: ${esc(line)}</p>
+        ${languagePromptHtml({ grade, name: TRAILS[grade].focus }, { compact: true, heading: t("Tell someone how you knew") })}
         ${stickerToast(fresh)}
         ${reviewItems.length ? `<section class="gm-review"><h3>${t("Facts to look at again")}</h3><p>${t("Tap “Next step” to work through each one. Try to finish it before the last step.")}</p><div>${reviewItems.map((item, i) => `<article data-review="${i}">${reviewBody(item, `gm-review-${i}`, Math.max(1, peekCap(item)))}</article>`).join("")}</div></section>` : `<p class="tr-perfect">${t("No misses this game.")}</p>`}
         <div class="tr-done-actions">

@@ -24,6 +24,7 @@ import { canSpeak, speak } from "./speech.js";
 import { likelyMistake } from "./mistake-notes.js";
 import { peekCap } from "./step-leak.js";
 import { handleModelInput, handleModelTap, interactivePicture, mathText, stepsBlock, trailPicture } from "./trail-pictures.js";
+import { languagePromptHtml } from "./language-bridge.js";
 
 const ROUND = 10;
 const esc = (value) =>
@@ -194,6 +195,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
           <p class="tr-kicker">${esc(t(entry.name))}</p>
         </div>
         <h2 class="tr-idea">${esc(t(entry.idea))}</h2>
+        ${languagePromptHtml({ grade, name: entry.name }, { compact: true, heading: t("Talk about this strategy") })}
         <div class="tr-lesson">
           <div class="tr-example">
             <p class="tr-example-fact">${mathText(example.question)}</p>
@@ -283,6 +285,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
         <div class="tr-play">
           <div class="tr-main">
             <p class="tr-q" id="tr-q">${mathText(item.question)}</p>
+            ${languagePromptHtml({ grade, name: round.entry.name }, { compact: true, heading: t("How could you show your thinking?") })}
             <form class="tr-answer" autocomplete="off">
               <label class="tr-sr" for="tr-input">${t("Your answer")}</label>
               <input id="tr-input" class="tr-input" aria-describedby="tr-q" inputmode="${bandFor(grade) === "upper" ? "text" : "numeric"}" enterkeyhint="done" spellcheck="false" />
@@ -380,6 +383,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
         ${starRow(stars, "big")}
         <h2 id="tr-done-title" tabindex="-1" aria-describedby="tr-done-score">${round.entry.boss ? (stars >= 2 ? t("Boss defeated!") : t("Good try on the boss!")) : stars === 3 ? t("Amazing round!") : stars === 2 ? t("Great round!") : t("Good practice!")}</h2>
         <p class="tr-score" id="tr-done-score">${t("You got {n} on the first try.", { n: `<b>${t("{a} of {b}", { a: round.firstTry, b: ROUND })}</b>` })}</p>
+        ${languagePromptHtml({ grade, name: round.entry.name }, { compact: true, heading: t("Explain one strategy from this round") })}
         ${stickerToast(fresh)}
         ${teachBack()}
         ${practice.length ? `<div class="tr-review"><p>${t("Facts to practice again:")}</p><ul>${practice.map((fact) => `<li>${mathText(fact)}</li>`).join("")}</ul></div>` : `<p class="tr-perfect">${t("Every fact on the first try.")}</p>`}

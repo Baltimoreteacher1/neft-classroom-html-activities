@@ -30,6 +30,8 @@ import { stopOptions, stopsFor } from "./game-pool.js";
 import { cleanPlay, exportPlay, importPlay } from "./play-backup.js";
 import { VOCAB_BILINGUAL_DB, highlightVocab, initVocabSystem, openVocabModal } from "./vocab.js";
 import { canSpeak, speak, spoken, spokenEs } from "./speech.js";
+import { languagePromptHtml, languageExpectation, languageMoves } from "./language-bridge.js";
+import { handleStepPlayerClick, handleStepPlayerSolved, lightStepPlayers, stepPlayer } from "./step-player.js";
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
@@ -510,6 +512,7 @@ function renderLearn() {
         </div>
       </div>
       <p class="learn-watch"><strong>Watch out:</strong> ${highlightVocab(escapeHtml(skill.learn.watch))}</p>
+      ${languagePromptHtml(skill, { heading: t("Pause, notice, and explain") })}
       <div class="learn-actions">
         <button class="primary-action" data-start-guided>Try 5 with help</button>
         <button class="primary-action" data-start-independent>Practice 10</button>
@@ -656,6 +659,7 @@ function nextProblem(restoredItem = null) {
   els.problemNumber.textContent = state.session.mode === "streak" ? `Problem ${state.session.answered + 1}` : `Problem ${state.session.answered + 1} of ${state.session.target}`;
   formatProblemArena(state.item);
   els.topic.textContent = `${skill.title} · Grade ${skill.grade}`;
+  document.querySelector("#problem-language-support").innerHTML = state.session.mode === "diagnostic" ? "" : languagePromptHtml(skill, { compact: true, heading: t("Talk, draw, or write a strategy") });
   els.insight.textContent = state.session.mode === "diagnostic" ? "One sample per skill. Choose “I’m not sure yet” whenever you need to." : state.session.queue?.[state.session.answered]?.purpose || (state.initialSupport ? "A smaller step with coaching. We’ll build back toward independent work." : adapting && level === 2 ? "Your recent answers were strong. Try this one independently, then explain a check." : adapting ? "Work at your pace. Help is here when you need it." : "");
   els.guidedCoach.hidden = !state.initialSupport;
   if (state.initialSupport) state.guidedStepsShown = 1;
@@ -4601,8 +4605,8 @@ function scanAndHighlightAcademicLanguage(textarea) {
   if (found.length > 0) {
     row.hidden = false;
     list.innerHTML = found.map((item) => `
-      <span class="vocab-badge-pill" title="Academic language recognized!">
-        ✨ ${escapeHtml(item.enTitle || item.id)} <small>+10 XP</small>
+      <span class="vocab-badge-pill" title="Vocabulary noticed in your explanation">
+        ${escapeHtml(item.enTitle || item.id)}
       </span>
     `).join("");
   } else {
@@ -4614,7 +4618,8 @@ function scanAndHighlightAcademicLanguage(textarea) {
 function renderWidaStudio(item) {
   if (!item) return "";
   const q = item.question || "";
-  const ans = item.displayAnswer || (item.answers && item.answers[0]) || "";
+  const moves = languageMoves(item.skill);
+  const expectation = languageExpectation(item.skill?.grade || state.grade);
 
   let wordsEn = ["Strategy", "Reasoning", "Estimate", "Solution", "Check"];
   let wordsEs = ["Estrategia", "Razonamiento", "Estimar", "Solución", "Verificar"];
@@ -4642,26 +4647,27 @@ function renderWidaStudio(item) {
   const cleanQ = q.replace("= ?", "").trim();
 
   const framesEn = [
-    { type: "Explain", text: `I solved ${cleanQ} by decomposing into friendly parts because it makes calculation simpler.` },
-    { type: "Explain", text: `First I identified the core operation in ${cleanQ}, and then I calculated step-by-step.` },
-    { type: "Argue", text: `My answer of ${ans} is reasonable because the visual model and estimation verify it.` },
-    { type: "Argue", text: `I can prove this solution is correct using inverse operations to check the result.` },
+    { type: "Notice", text: `In ${cleanQ}, I notice ___ .` },
+    { type: "Explain", text: `I used ___ because ___ .` },
+    { type: "Compare", text: `Another way is ___ . Both ways show ___ .` },
+    { type: "Justify", text: `I can check my answer with ___ . This shows ___ .` },
   ];
 
   const framesEs = [
-    { type: "Explicar", text: `Resolví ${cleanQ} descomponiendo en partes amigables porque simplifica el cálculo.` },
-    { type: "Explicar", text: `Primero identifiqué la operación clave en ${cleanQ}, y luego calculé paso a paso.` },
-    { type: "Argumentar", text: `Mi respuesta de ${ans} es razonable porque el modelo visual y la estimación lo verifican.` },
-    { type: "Argumentar", text: `Puedo demostrar que esta solución es correcta usando operaciones inversas para comprobar.` },
+    { type: "Observar", text: `En ${cleanQ}, noto ___ .` },
+    { type: "Explicar", text: `Usé ___ porque ___ .` },
+    { type: "Comparar", text: `Otra manera es ___ . Las dos muestran ___ .` },
+    { type: "Justificar", text: `Puedo comprobar mi respuesta con ___ . Esto muestra ___ .` },
   ];
 
   return `
     <details class="wida-studio-wrap">
       <summary class="wida-studio-summary">
-        <span>🗣️</span> <strong>Math Language Studio · WIDA ELD Standard 3</strong>
-        <span class="wida-pill">Dual-Language Scaffolds</span>
+        <span>🗣️</span> <strong>Explain your math · WIDA ELD Standard 3</strong>
+        <span class="wida-pill">${escapeHtml(expectation.code)}</span>
       </summary>
       <div class="wida-studio-body">
+        <p class="wida-instruction">${escapeHtml(moves.explain)} ${escapeHtml(moves.argue)} Draw, speak, or write; complete a starter in your own words.</p>
         <div class="wida-lang-toggle-bar">
           <span class="wida-subheading">Scaffold Language:</span>
           <button type="button" class="wida-lang-chip active" data-wida-toggle="en">English</button>
@@ -4669,7 +4675,7 @@ function renderWidaStudio(item) {
         </div>
         
         <div class="wida-frames-group" data-wida-lang-group="en">
-          <p class="wida-instruction"><strong>Select a Sentence Starter (Explain &amp; Argue):</strong></p>
+          <p class="wida-instruction"><strong>Choose an unfinished sentence starter:</strong></p>
           <div class="wida-chip-row">
             ${framesEn.map((f) => `<button type="button" class="wida-frame-btn" data-wida-insert="${escapeHtml(f.text)}"><span class="wida-badge-type">${f.type}</span> ${escapeHtml(f.text)}</button>`).join("")}
           </div>
@@ -4680,7 +4686,7 @@ function renderWidaStudio(item) {
         </div>
 
         <div class="wida-frames-group" data-wida-lang-group="es" hidden>
-          <p class="wida-instruction"><strong>Selecciona una estructura de oración (Explicar y Argumentar):</strong></p>
+          <p class="wida-instruction"><strong>Elige una oración para completar:</strong></p>
           <div class="wida-chip-row">
             ${framesEs.map((f) => `<button type="button" class="wida-frame-btn" data-wida-insert="${escapeHtml(f.text)}"><span class="wida-badge-type">${f.type}</span> ${escapeHtml(f.text)}</button>`).join("")}
           </div>
@@ -5084,12 +5090,7 @@ function renderStudentFriendlyExplanation(item, copy) {
   }
 
   const stepsList = item.steps && item.steps.length > 1
-    ? `<div class="student-expl-steps-wrap">
-        <p class="student-expl-steps-heading"><strong>🪜 Clear Action Steps:</strong></p>
-        <ol class="student-expl-steps-list">
-          ${item.steps.map((st) => `<li><span class="step-text">${mathText(st)}</span> <button type="button" class="step-audio-btn" data-speak-step="${escapeHtml(st)}" aria-label="Listen to step" title="Read step aloud">🔊</button></li>`).join("")}
-        </ol>
-      </div>`
+    ? stepPlayer(item)
     : `<p class="student-expl-goal">${escapeHtml(copy)}</p>`;
 
   const toolCallout = suggestedTool
@@ -5520,6 +5521,7 @@ function showFeedback(title, copy, type) {
   els.feedbackTitle.textContent = title;
   if (type !== "correct" && state.item) {
     els.feedbackCopy.innerHTML = renderStudentFriendlyExplanation(state.item, copy);
+    lightStepPlayers(els.feedbackCopy);
   } else if (type === "correct" && state.item) {
     els.feedbackCopy.innerHTML = `<p>${escapeHtml(copy)}</p>${renderTransferChallengeButton(state.item)}`;
   } else {
@@ -6552,6 +6554,7 @@ els.toggleProblemVisual?.addEventListener("click", () => {
 els.problemVisualScaffold?.addEventListener("click", (event) => handleModelTap(event.target));
 els.problemVisualScaffold?.addEventListener("input", (event) => handleModelInput(event.target));
 els.learnPanel.addEventListener("input", (event) => handleModelInput(event.target));
+els.feedback.addEventListener("fluency-fill-solved", (event) => handleStepPlayerSolved(event.target));
 
 document.querySelector("#brand-home")?.addEventListener("click", () => {
   renderLibrary();
@@ -6892,6 +6895,7 @@ function buildFluencyProfileSummary(session, accuracyPercent, nextRecommendation
 }
 
 document.addEventListener("click", (event) => {
+  if (handleStepPlayerClick(event.target)) return;
   const launcher = event.target.closest(".expl-tool-launcher");
   if (launcher) {
     const tool = launcher.dataset.openTool;
