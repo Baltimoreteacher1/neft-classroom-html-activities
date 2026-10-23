@@ -12,6 +12,9 @@
   <script src="/assets/studio-comfort.js" defer></script>
   <script src="/assets/u4-studio.js"></script>
   <script src="/assets/u4-studio-bonus.js"></script>
+  <script src="/assets/studio/attempts.js"></script>
+  <script src="/assets/u4-studio-twin.js"></script>
+  <script src="/assets/u4-studio-guess.js"></script>
   <script src="/assets/u4-studio-story.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -1093,6 +1096,7 @@
                 appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
               } else {
                 const n = bumpMiss(task.id);
+                U4Studio.wrong(1);
                 fb.className = 'feedback-box show err';
                 fb.textContent = n < 2
                   ? 'Not quite yet—look closely at the 100-square grid on the left and try again.'
@@ -1125,6 +1129,7 @@
                 appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
               } else {
                 const n = bumpMiss(task.id);
+                U4Studio.wrong(1);
                 fb.className = 'feedback-box show err';
                 fb.textContent = exB && okA && !okB
                   ? 'Read each sentence slowly. A percent always means “out of every 100.”'
@@ -1159,6 +1164,7 @@
                 appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
               } else {
                 const n = bumpMiss(task.id);
+                U4Studio.wrong(1);
                 fb.className = 'feedback-box show err';
                 if (!okB && parseNum(inpB.value) === Number(task.ansA)) {
                   fb.textContent = 'Careful on Box 2 (Decimal): 23 hundredths is written with a decimal point as 0.23, not 23.';
@@ -1432,6 +1438,7 @@ ${step3Html}
 
           // Nudge first; the worked numbers wait for repeat misses.
           const n = bumpMiss(p.id);
+          U4Studio.wrong(2);
           fb.className = 'feedback-box show err';
           if (pVal === p.part && p.whole !== 100) {
             fb.textContent = `Careful! ${p.part} is out of ${p.whole}, not out of 100. Scale the whole to 100 first, then scale the part by the same factor.`;
@@ -1763,6 +1770,7 @@ ${step3Html}
             } else {
               const empty = !inpOne.value.trim() && !inpFin.value.trim();
               const n = empty ? 0 : bumpMiss(p.id);
+              if (!empty) U4Studio.wrong(3);
               fb.className = 'feedback-box show err';
               if (empty) {
                 fb.textContent = 'Type a number in each box, then check.';
@@ -1924,6 +1932,7 @@ ${step3Html}
             } else {
               const empty = !inpMid.value.trim() && !inpFin.value.trim() && !(inpPct ? inpPct.value.trim() : examine && U4Studio.examinePicked('t3b') >= 0);
               const n = empty ? 0 : bumpMiss(p.id);
+              if (!empty) U4Studio.wrong(3);
               fb.className = 'feedback-box show err';
               if (empty) {
                 fb.textContent = 'Type a number in each box, then check.';
@@ -2072,6 +2081,7 @@ ${step3Html}
               announce('Correct! Camp Ratio Table complete.');
             } else {
               const n = anyTyped ? bumpMiss(p.id) : 0;
+              if (anyTyped) U4Studio.wrong(3);
               fb.className = 'feedback-box show err';
               if (!anyTyped && U4Studio.examinePicked('t3a') < 0) fb.textContent = 'Type a number in each box and choose a sentence for Archery and Crafts, then check.';
               else if (allNumbersOk && (!okA || !okC)) fb.textContent = 'Examine Archery and Crafts: read each sentence slowly. A percent always means “out of every 100.”';

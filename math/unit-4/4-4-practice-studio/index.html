@@ -11,6 +11,9 @@
   <script src="/assets/studio-comfort.js" defer></script>
   <script src="/assets/u4-studio.js"></script>
   <script src="/assets/u4-studio-bonus.js"></script>
+  <script src="/assets/studio/attempts.js"></script>
+  <script src="/assets/u4-studio-twin.js"></script>
+  <script src="/assets/u4-studio-guess.js"></script>
   <script src="/assets/u4-studio-story.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -536,6 +539,7 @@
             saveState();
           } else {
             playSound('wrong');
+            U4Studio.wrong(1);
             fb.className = 'feedback-box show warn';
             fb.innerHTML = `Check the blocks: each block has value ${m.unitVal}. Multiply ${m.unitVal} by the number of shaded blocks.`;
             document.getElementById('t1-in').classList.add('err');
@@ -678,6 +682,7 @@
             appendNext(fb, 2, T2_PROBLEMS.length, renderT2);
           } else {
             playSound('wrong');
+            U4Studio.wrong(2);
             fb.className = 'feedback-box show warn';
             fb.textContent = `Remember: to turn a percent to a decimal, divide by 100 (move decimal 2 places left). Then multiply by ${p.whole}.`;
           }
@@ -948,6 +953,7 @@ function renderT3() {
       }
       playSound("wrong");
       t3Misses[c.id] = (t3Misses[c.id] || 0) + 1;
+      U4Studio.wrong(3);
       fb.className = "feedback-box show err";
       fb.textContent = t3MissHelp(c, !okA, !okB, t3Misses[c.id]);
     };

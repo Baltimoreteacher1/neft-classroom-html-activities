@@ -110,6 +110,7 @@ const GATE = [
   "validate:practice",
   "validate:lesson-boot",
   "validate:studio-guess-browser",
+  "validate:u4-whole-check-browser",
   "audit",
   "audit:curriculum",
   "audit:homework",
@@ -175,6 +176,7 @@ const EXCLUSIVE = new Set([
   "validate:studio-enhancements-browser",
   "validate:studio-lab-browser",
   "validate:studio-guess-browser",
+  "validate:u4-whole-check-browser",
   "validate:math-workbench-browser",
   "smoke:injection",
   "validate:visibility",
@@ -266,11 +268,12 @@ const COVERAGE = [
   // (init called, sync inside updateProgressHeader, no retired token, no call to
   // an undefined quiz-results function).
   [
-    /^(assets\/u4-studio[^/]*\.(js|css)|assets\/studio\/lab-embed\.(js|css)|math\/unit-4\/[^/]*practice-studio[^/]*\/index\.html|tools\/unit4-(studio|mc-contract)\.test\.mjs|tools\/lib\/u4-mc-items\.mjs|scripts\/lib\/u4-traps\.mjs)$/,
+    /^(assets\/u4-studio[^/]*\.(js|css)|assets\/studio\/lab-embed\.(js|css)|math\/unit-4\/[^/]*practice-studio[^/]*\/index\.html|tools\/(unit4-(studio|mc-contract|guess)|u4-whole-check)\.test\.mjs|tools\/verify-u4-whole-check-browser\.mjs|tools\/lib\/u4-(mc-items|page-dom)\.mjs|scripts\/lib\/u4-traps\.mjs)$/,
     [
       "test",
       "validate:studio-enhancements-browser",
       "validate:studio-lab-browser",
+      "validate:u4-whole-check-browser",
       "validate:save-resume",
       "validate:js-syntax",
       "validate:css-integrity",

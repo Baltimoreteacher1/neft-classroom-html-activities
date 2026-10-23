@@ -12,6 +12,9 @@
   <script src="/assets/studio-comfort.js" defer></script>
   <script src="/assets/u4-studio.js"></script>
   <script src="/assets/u4-studio-bonus.js"></script>
+  <script src="/assets/studio/attempts.js"></script>
+  <script src="/assets/u4-studio-twin.js"></script>
+  <script src="/assets/u4-studio-guess.js"></script>
   <script src="/assets/u4-studio-story.js"></script>
   <style>
     .visual-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin: 12px 0 6px;
@@ -2801,7 +2804,7 @@ function renderSection(n) {
         btn.classList.add("wrong");
         const cnt = (misses[p.id] = (misses[p.id] || 0) + 1);
         fb.className = "feedback-box show err";
-        const help = U4Studio.miss(p, i, { tab: 1 });
+        const help = U4Studio.miss(p, i, { tab: n });
         fb.innerHTML = help
           ? `${help}${cnt >= 2 ? `<span style="display:block; margin-top:6px;">Hint: ${esc(hintText())}</span>` : ""}`
           : `${esc(p.feedback[i])}${cnt >= 2 ? ` Hint: ${esc(hintText())}` : ""}`;
@@ -2831,6 +2834,7 @@ function renderSection(n) {
         inputs[i + 1].focus();
       } else if (!ok) {
         const cnt = (misses[p.id] = (misses[p.id] || 0) + 1);
+        U4Studio.wrong(n);
         const trap = (p.traps || []).find((t) => t.i === i && fieldMatches({ kind: p.fields[i].kind, ans: t.v }, inputs[i].value.trim()));
         fb.className = "feedback-box show warn";
         fb.textContent = trap ? trap.msg : `Step ${i + 1} needs another try. ${cnt >= 2 ? `Hint: ${hintText()}` : i === 0 ? "Start with the Read and Plan steps above." : "Use your earlier correct steps."}`;
@@ -2860,6 +2864,7 @@ function renderSection(n) {
       return;
     }
     const cnt = (misses[p.id] = (misses[p.id] || 0) + 1);
+    U4Studio.wrong(n);
     const trap = (p.traps || []).find(
       (t) =>
         !oks[t.i] &&
@@ -2954,7 +2959,7 @@ function detectiveCard(host, p, pos, len, done, onSolve) {
     const text = [
       ...p.facts.map(t),
       t(p.q),
-      ...p.choices.map((c, i) => `${letters[i]}. ${t(c)}`),
+      ...U4Studio.order(document.getElementById("panel-4"), p.choices.length).map((oi, pos) => `${letters[pos]}. ${t(p.choices[oi])}`),
     ].join(". ");
     speak(text, text);
   });

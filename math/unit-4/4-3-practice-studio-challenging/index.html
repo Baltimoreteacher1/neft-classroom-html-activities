@@ -11,6 +11,9 @@
   <script src="/assets/studio-comfort.js" defer></script>
   <script src="/assets/u4-studio.js"></script>
   <script src="/assets/u4-studio-bonus.js"></script>
+  <script src="/assets/studio/attempts.js"></script>
+  <script src="/assets/u4-studio-twin.js"></script>
+  <script src="/assets/u4-studio-guess.js"></script>
   <style>
     .scratchpad-wrap { margin-top: 20px; border-top: 1px dashed var(--border); padding-top: 14px;
     }
@@ -519,6 +522,7 @@
             saveState();
           } else {
             playSound('wrong');
+            U4Studio.wrong(1);
             fb.className = 'feedback-box show warn';
             fb.innerHTML = `Close, but look at the strategy breakdown. Try using compatible benchmark numbers.`;
             document.getElementById('t1-in').classList.add('err');
@@ -874,6 +878,7 @@
             appendNext(fb, 3, T3_PROBLEMS.length, renderT3);
           } else {
             playSound('wrong');
+            U4Studio.wrong(3);
             fb.className = 'feedback-box show warn';
             fb.textContent = `Check your values: A multiple easily divisible by the denominator works best!`;
           }
@@ -1111,7 +1116,8 @@
               btn.classList.add('wrong');
               btn.disabled = true;
               fb.className = 'feedback-box show err';
-              fb.innerHTML = `<strong>${letters[idx]}.</strong> ${U4Studio.miss(p, idx, { tab: 4 })}`;
+              const help = U4Studio.miss(p, idx, { tab: 4 });
+              fb.innerHTML = `<strong>${U4Studio.letterOf(btn, letters[idx])}.</strong> ${help}`;
             }
             saveState();
           });

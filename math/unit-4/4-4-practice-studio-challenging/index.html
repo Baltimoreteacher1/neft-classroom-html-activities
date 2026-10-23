@@ -11,6 +11,9 @@
   <script src="/assets/studio-comfort.js" defer></script>
   <script src="/assets/u4-studio.js"></script>
   <script src="/assets/u4-studio-bonus.js"></script>
+  <script src="/assets/studio/attempts.js"></script>
+  <script src="/assets/u4-studio-twin.js"></script>
+  <script src="/assets/u4-studio-guess.js"></script>
   <script src="/assets/u4-studio-story.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -484,6 +487,7 @@
             appendNext(fb, 1, T1_PROBLEMS.length, renderT1);
           } else {
             playSound('wrong');
+            U4Studio.wrong(1);
             fb.className = 'feedback-box show warn';
             fb.textContent = `Watch your decimal placement: divide ${p.percent} by 100 to get the exact decimal factor.`;
           }
@@ -769,6 +773,7 @@ function renderT2() {
       playSound("wrong");
       t2Misses[m.id] = (t2Misses[m.id] || 0) + 1;
       const fb = document.getElementById("t2-fb");
+      U4Studio.wrong(2);
       fb.className = "feedback-box show err";
       fb.textContent = t2MissHelp(m, bad, t2Misses[m.id]);
     };

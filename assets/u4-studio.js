@@ -71,10 +71,27 @@
     return p;
   }
 
-  /** Solved ids in a section. Random extra-practice items ("rand…") earn no stars. */
+  /**
+   * Solved ids in a section. Random extra-practice items ("rand…") earn no stars, and neither does a saved choice
+   * (`<id>_choice` stores which button was picked, right or wrong). A guessed answer that still owes its fresh problem
+   * (assets/u4-studio-guess.js) is not counted as solved yet.
+   */
   function solvedIds(/** @type {number} */ tab) {
     const map = (S.cfg.solvedMap ? S.cfg.solvedMap(tab) : S.cfg.state[`solved${tab}`]) || {};
-    return Object.keys(map).filter((k) => map[k] && !k.startsWith("rand"));
+    const guess = W.U4Guess;
+    return Object.keys(map).filter(
+      (k) =>
+        map[k] &&
+        !k.startsWith("rand") &&
+        !k.endsWith("_choice") &&
+        !(guess && guess.pending(tab, k)),
+    );
+  }
+
+  /** Solved ids that may earn the star: not a guessed answer, shown or not (a released one never earns it). */
+  function starIds(/** @type {number} */ tab) {
+    const guess = W.U4Guess;
+    return solvedIds(tab).filter((id) => !(guess && guess.noStar(tab, id)));
   }
 
   const need = (/** @type {number} */ tab) => (S.cfg.need || S.cfg.totals)[tab];
@@ -429,10 +446,11 @@
   function sync() {
     if (!S.ready) return;
     workspaces();
+    if (W.U4Guess) W.U4Guess.assign();
     const p = play();
     let fresh = 0;
     for (const t of TABS) {
-      for (const id of solvedIds(t)) {
+      for (const id of starIds(t)) {
         const key = `t${t}:${id}`;
         if (!p.stars[key]) {
           p.stars[key] = 1;
@@ -465,6 +483,7 @@
     S.lastRank = rank.idx;
     passportStamp();
     announceSections();
+    if (W.U4Guess) W.U4Guess.schedule();
   }
 
   function announceSections() {
@@ -699,7 +718,7 @@
   function rebase() {
     const p = play();
     for (const t of TABS) {
-      for (const id of solvedIds(t)) p.stars[`t${t}:${id}`] = 1;
+      for (const id of starIds(t)) p.stars[`t${t}:${id}`] = 1;
       if (solvedIds(t).length >= need(t)) p.done[t] = 1;
     }
     const r = refresh();

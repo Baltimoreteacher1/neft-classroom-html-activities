@@ -11,6 +11,9 @@
   <script src="/assets/studio-comfort.js" defer></script>
   <script src="/assets/u4-studio.js"></script>
   <script src="/assets/u4-studio-bonus.js"></script>
+  <script src="/assets/studio/attempts.js"></script>
+  <script src="/assets/u4-studio-twin.js"></script>
+  <script src="/assets/u4-studio-guess.js"></script>
   <script src="/assets/u4-studio-story.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -483,6 +486,7 @@
             appendNext(fb, 1, T1_PROBLEMS.length, renderT1);
           } else {
             playSound('wrong');
+            U4Studio.wrong(1);
             fb.className = 'feedback-box show warn';
             fb.textContent = `Double check: ${p.percent}% as a decimal is ${p.percent} ÷ 100. Then compute ${p.part} ÷ decimal.`;
           }
@@ -638,6 +642,7 @@
             appendNext(fb, 2, T2_PUZZLES.length, renderT2);
           } else {
             playSound('wrong');
+            U4Studio.wrong(2);
             fb.className = 'feedback-box show warn';
             fb.textContent = `Check your values: Add the percentages of the sold groups together, then divide the number sold by that combined decimal rate.`;
           }
@@ -1511,6 +1516,7 @@
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
   <!-- nsr-injected:end -->
   
+<script src="/assets/u4-studio-whole-check.js?v=studio-v4"></script>
 <!-- u4-lab-bench:begin (scripts/inject-u4-lab-bench.mjs) -->
 <link rel="stylesheet" href="/assets/studio/lab-embed.css?v=c23df8fea7">
 <section class="lab-embed" id="u4-lab-bench" aria-labelledby="u4-lab-title">

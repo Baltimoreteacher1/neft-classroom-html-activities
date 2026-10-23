@@ -11,6 +11,9 @@
   <script src="/assets/studio-comfort.js" defer></script>
   <script src="/assets/u4-studio.js"></script>
   <script src="/assets/u4-studio-bonus.js"></script>
+  <script src="/assets/studio/attempts.js"></script>
+  <script src="/assets/u4-studio-twin.js"></script>
+  <script src="/assets/u4-studio-guess.js"></script>
 <script src="/assets/u4-studio-story.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -664,6 +667,7 @@
                   updateProgressHeader();
                   appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
                 } else {
+                  U4Studio.wrong(1);
                   fb.className = 'feedback-box show err'; fb.innerHTML = `Hint: ${t.hint}`;
                 }
               } else if (t.type === 'dual') {
@@ -682,6 +686,7 @@
                   updateProgressHeader();
                   appendNext(document.getElementById('t1-fb'), 1, T1_TASKS.length, renderT1Task);
                 } else {
+                  U4Studio.wrong(1);
                   fb.className = 'feedback-box show err'; fb.innerHTML = `Hint: ${t.hint}`;
                 }
               }
@@ -791,6 +796,7 @@
             updateProgressHeader();
             appendNext(document.getElementById('t2-fb'), 2, T2_PROBLEMS.length, renderT2Problem);
           } else {
+            U4Studio.wrong(2);
             fb.className = 'feedback-box show err';
             fb.innerHTML = `Divide ${p.num} ÷ ${p.den}. Make sure to carry division to enough decimal places.`;
           }
@@ -904,6 +910,7 @@
             updateProgressHeader();
             appendNext(document.getElementById('t3-fb'), 3, T3_PROBLEMS.length, renderT3Problem);
           } else {
+            U4Studio.wrong(3);
             fb.className = 'feedback-box show err';
             fb.innerHTML = 'Check your values. If writing a fraction, make sure it is in lowest terms (e.g. 7/4 or 1/200).';
           }
@@ -1218,7 +1225,7 @@
         document.getElementById('t4-speak').addEventListener('click', () => {
           const es = state.showEs;
           const t = (x) => (es ? x.es : x.en);
-          const letters = p.choices.map((c, i) => `${'ABCD'[i]}. ${t(c)}`);
+          const letters = U4Studio.order(document.getElementById('panel-4'), p.choices.length).map((oi, pos) => `${'ABCD'[pos]}. ${t(p.choices[oi])}`);
           const text = [...p.facts.map(t), t(p.q), ...letters].join('. ');
           speak(text, text);
         });
