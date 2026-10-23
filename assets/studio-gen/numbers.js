@@ -869,14 +869,493 @@
     },
   };
 
+  /* ================================ problem shapes (studio v4): reverse and equivalent ================================ */
+  /* make(rng, level, shape) of longDivision, decimalDivision, decimalAddSub and decimalMultiply hands any shape other
+     than "forward" to NUM_SHAPES[id][shape]; check() does the same through item.meta.shape. Reverse problems start from
+     the result and ask for the input; check() verifies by running the operation forward again. */
+  // biome-ignore format: item nouns with their Spanish gender
+  const ITEMS6 = [
+  ["pencils", "lápices", "m"],
+  ["stickers", "calcomanías", "f"],
+  ["beads", "cuentas", "f"],
+  ["markers", "marcadores", "m"],
+  ["seeds", "semillas", "f"],
+  ["cards", "tarjetas", "f"],
+];
+  const SH_FB = {
+    keptRemainder: [
+      "You multiplied the divisor and the quotient but did not add the remainder back. The remainder is part of the number.",
+      "Multiplicaste el divisor y el cociente, pero no sumaste el residuo. El residuo es parte del número.",
+    ],
+    rolesSwapped: [
+      "The quotient and the remainder swapped jobs. The divisor multiplies the quotient, and the remainder is added.",
+      "El cociente y el residuo cambiaron de papel. El divisor multiplica al cociente y el residuo se suma.",
+    ],
+    addedAll: [
+      "You added all three numbers. Undo a division with multiplication, then add the remainder.",
+      "Sumaste los tres números. Para deshacer una división, multiplica y luego suma el residuo.",
+    ],
+    tookAwayRemainder: [
+      "The remainder is what was left over, so it goes back on. It is not taken away.",
+      "El residuo es lo que sobró, así que se suma de nuevo. No se quita.",
+    ],
+    opUndo: [
+      "You used the same operation as the problem. Undo what was done to the unknown number with the opposite operation.",
+      "Usaste la misma operación del problema. Deshaz lo que se le hizo al número desconocido con la operación contraria.",
+    ],
+    columns: [
+      "The digits were lined up on the right instead of by place value. Line up the decimal points first.",
+      "Los dígitos se alinearon a la derecha en vez de por valor posicional. Alinea primero los puntos decimales.",
+    ],
+    pointSlip: [
+      "The digits are right but the decimal point is in the wrong place. Check the size with a rounded estimate.",
+      "Los dígitos están bien, pero el punto decimal está mal puesto. Revisa el tamaño con una estimación redondeada.",
+    ],
+  };
+
+  const divReverse = (
+    /** @type {any} */ rng,
+    /** @type {number} */ level,
+    /** @type {string} */ shape,
+  ) => {
+    const [dlo, dhi, qlo, qhi] = [
+      [3, 9, 6, 25],
+      [11, 19, 12, 60],
+      [12, 35, 25, 150],
+      [14, 48, 100, 450],
+    ][level - 1];
+    const D = rng.int(dlo, dhi);
+    const Q = rng.int(qlo, qhi);
+    const R = rng.int(1, D - 1);
+    const N = D * Q + R;
+    const [it, itEs, g] = rng.pick(ITEMS6);
+    const name = rng.pick(NAMES);
+    const q =
+      level === 1
+        ? [
+            `When a number is divided by ${D}, the quotient is ${Q} and the remainder is ${R}. What is the number?`,
+            `Cuando un número se divide entre ${D}, el cociente es ${Q} y el residuo es ${R}. ¿Cuál es el número?`,
+          ]
+        : [
+            `${name} packs ${it} into boxes of ${D}. ${name} fills ${Q} boxes and has ${R} ${it} left over. How many ${it} did ${name} have?`,
+            `${name} guarda ${itEs} en cajas de ${D}. Llena ${Q} cajas y le sobran ${R} ${itEs}. ¿${gn(g, "Cuántos", "Cuántas")} ${itEs} tenía ${name}?`,
+          ];
+    return numB(
+      {},
+      {
+        q,
+        a: N,
+        w: [
+          [D * Q, "remainder-dropped", SH_FB.keptRemainder],
+          [D * R + Q, "division-parts-misnamed", SH_FB.rolesSwapped],
+          [D + Q + R, "op-added-instead-of-divided", SH_FB.addedAll],
+          [D * Q - R, "check-subtracts-remainder", SH_FB.tookAwayRemainder],
+        ],
+        x: [
+          `Undo the division: multiply the divisor and the quotient, then add the remainder. ${D} × ${Q} = ${D * Q}, and ${D * Q} + ${R} = ${N}.`,
+          `Deshaz la división: multiplica el divisor por el cociente y luego suma el residuo. ${D} × ${Q} = ${D * Q}, y ${D * Q} + ${R} = ${N}.`,
+        ],
+        h: [
+          [
+            "A division fact can be checked with multiplication: quotient × divisor, plus the remainder.",
+            "Un hecho de división se comprueba con multiplicación: cociente × divisor, más el residuo.",
+          ],
+          [
+            "Think of equal groups. How many are in the full groups? Then the leftovers are added.",
+            "Piensa en grupos iguales. ¿Cuántos hay en los grupos llenos? Luego se suman los sobrantes.",
+          ],
+          [
+            "Multiply the number of full groups by the size of a group. Then decide what to do with the remainder.",
+            "Multiplica la cantidad de grupos llenos por el tamaño de un grupo. Luego decide qué hacer con el residuo.",
+          ],
+        ],
+        meta: { shape, kind: "dividend", D, Q, R },
+      },
+    );
+  };
+  const checkDivReverse = (/** @type {any} */ it) => {
+    const { D, Q, R } = it.meta;
+    const N = G.value(it.a);
+    return (
+      (Math.floor(N / D) === Q && N - D * Math.floor(N / D) === R) ||
+      `key ${it.a} does not divide by ${D} into ${Q} R ${R}`
+    );
+  };
+
+  /** n with dp decimal places, shifted k places to the right: the digits and decimal places of n * 10^k */
+  const shiftDec = (
+    /** @type {number} */ n,
+    /** @type {number} */ dp,
+    /** @type {number} */ k,
+  ) => ({
+    n: n * 10 ** Math.max(0, k - dp),
+    dp: Math.max(0, dp - k),
+  });
+  const showDec = (/** @type {{n:number, dp:number}} */ x) => dt(x.n, x.dp);
+  const divEquivalent = (
+    /** @type {any} */ rng,
+    /** @type {number} */ level,
+    /** @type {string} */ shape,
+  ) => {
+    const db = level <= 2 ? level : rng.int(1, 2);
+    const extra = level >= 3 ? 1 : 0; // the dividend has one more decimal place than the divisor
+    const da = db + extra;
+    const B = draw(
+      () => rng.int(2, level === 4 ? 39 : 19),
+      (v) => v % 10 !== 0,
+      60,
+    );
+    const A = draw(
+      () => B * (extra ? rng.int(11, 95) : rng.int(2, 15)),
+      (v) => !extra || v % 10 !== 0,
+      60,
+    );
+    const k = db;
+    const right = [shiftDec(A, da, k), shiftDec(B, db, k)];
+    const wDiv = [shiftDec(A, da, k), { n: B, dp: db }]; // moved the dividend only
+    const wSor = [{ n: A, dp: da }, shiftDec(B, db, k)]; // moved the divisor only
+    const wDif = [shiftDec(A, da, k + 1), shiftDec(B, db, k)]; // moved them by different amounts
+    const show = (/** @type {any[]} */ p) => `${showDec(p[0])} ÷ ${showDec(p[1])}`;
+    const orig = `${dt(A, da)} ÷ ${dt(B, db)}`;
+    return mcB(
+      rng,
+      {},
+      {
+        q: [
+          `Which division has the same quotient as ${orig}?`,
+          `¿Cuál división tiene el mismo cociente que ${orig}?`,
+        ],
+        a: show(right),
+        w: [
+          [
+            show(wSor),
+            "moved-divisor-only",
+            [
+              "Here only the divisor was moved. Moving one number and not the other changes the quotient.",
+              "Aquí solo se movió el divisor. Mover un número y no el otro cambia el cociente.",
+            ],
+          ],
+          [
+            show(wDiv),
+            "moved-dividend-only",
+            [
+              "Here only the dividend was moved. Moving one number and not the other changes the quotient.",
+              "Aquí solo se movió el dividendo. Mover un número y no el otro cambia el cociente.",
+            ],
+          ],
+          [
+            show(wDif),
+            "moved-different-amounts",
+            [
+              "The two numbers moved by different amounts. Both decimal points must move the same number of places.",
+              "Los dos números se movieron distinto. Los dos puntos decimales deben moverse el mismo número de lugares.",
+            ],
+          ],
+        ],
+        x: [
+          `Move both decimal points ${k} ${k === 1 ? "place" : "places"} to the right, which multiplies both numbers by ${10 ** k}. The quotient stays the same: ${show(right)}.`,
+          `Mueve los dos puntos decimales ${k} ${k === 1 ? "lugar" : "lugares"} a la derecha, lo que multiplica los dos números por ${10 ** k}. El cociente no cambia: ${show(right)}.`,
+        ],
+        h: [
+          [
+            "Multiplying the dividend and the divisor by the same power of 10 does not change the quotient.",
+            "Multiplicar el dividendo y el divisor por la misma potencia de 10 no cambia el cociente.",
+          ],
+          [
+            "Both numbers must be multiplied by the same power of 10. Count the places for each.",
+            "Los dos números deben multiplicarse por la misma potencia de 10. Cuenta los lugares de cada uno.",
+          ],
+          [
+            "Make the divisor a whole number. Then move the dividend the same number of places.",
+            "Haz que el divisor sea un número entero. Luego mueve el dividendo el mismo número de lugares.",
+          ],
+        ],
+        meta: { shape, kind: "equivalent", A, da, B, db },
+      },
+    );
+  };
+  const checkDivEquivalent = (/** @type {any} */ it) => {
+    const m = it.meta;
+    const want = m.A / 10 ** m.da / (m.B / 10 ** m.db);
+    const val = (/** @type {string} */ c) => {
+      const [x, y] = c.split(" ÷ ").map((t) => G.value(t));
+      return x / y;
+    };
+    if (Math.abs(val(it.c[it.a]) - want) > 1e-9) return `key ${it.c[it.a]} does not match ${want}`;
+    const dup = it.c.findIndex(
+      (/** @type {string} */ c, /** @type {number} */ i) =>
+        i !== it.a && Math.abs(val(c) - want) < 1e-9,
+    );
+    return dup < 0 || `choice ${dup} also has the same quotient`;
+  };
+
+  const addReverse = (
+    /** @type {any} */ rng,
+    /** @type {number} */ level,
+    /** @type {string} */ shape,
+  ) => {
+    const dpa = level === 1 ? 1 : rng.pick([1, 2]);
+    const dps = level === 1 ? 1 : rng.pick([1, 2]);
+    const mx = Math.max(dpa, dps);
+    const scale = (/** @type {number} */ n, /** @type {number} */ dp) => n * 10 ** (mx - dp);
+    const pick = (/** @type {number} */ dp, /** @type {number} */ lo, /** @type {number} */ hi) => {
+      const n = rng.int(Math.ceil(lo * 10 ** dp), Math.floor(hi * 10 ** dp));
+      return dp && n % 10 === 0 ? n + rng.int(1, 9) : n;
+    };
+    const minus = level === 2 || level === 3 ? rng.chance(0.5) : false;
+    const a = pick(dpa, 1, level === 1 ? 9 : 14);
+    const b = level === 4 ? pick(dpa, 1, 9) : null;
+    const s = pick(dps, a / 10 ** dpa + 2, level === 1 ? 20 : 40);
+    const fm = (/** @type {number} */ n, /** @type {number} */ dp) => dt(n, dp).replace(/,/g, "");
+    const aStr = fm(a, dpa);
+    const sStr = fm(s, dps);
+    const S = scale(s, dps);
+    const Aa = scale(a, dpa);
+    let ans;
+    let q;
+    let x;
+    let w;
+    if (level === 4) {
+      const Bb = scale(/** @type {number} */ (b), dpa);
+      const bStr = fm(/** @type {number} */ (b), dpa);
+      ans = S - Aa + Bb;
+      q = [
+        `A number plus ${aStr}, minus ${bStr}, equals ${sStr}. What is the number?`,
+        `Un número más ${aStr}, menos ${bStr}, es igual a ${sStr}. ¿Cuál es el número?`,
+      ];
+      x = [
+        `Undo each step in the opposite order. Undo "minus ${bStr}" by adding ${bStr}, and undo "plus ${aStr}" by subtracting ${aStr}: ${sStr} + ${bStr} − ${aStr} = ${fm(ans, mx)}.`,
+        `Deshaz cada paso en orden contrario. Deshaz "menos ${bStr}" sumando ${bStr}, y deshaz "más ${aStr}" restando ${aStr}: ${sStr} + ${bStr} − ${aStr} = ${fm(ans, mx)}.`,
+      ];
+      w = [
+        [fm(S + Aa - Bb, mx), "op-reversed-subtraction", SH_FB.opUndo],
+        [fm(S - Aa - Bb, mx), "op-subtracted-instead-of-added", SH_FB.opUndo],
+        [fm(S + Aa + Bb, mx), "op-added-instead-of-subtracted", SH_FB.opUndo],
+      ];
+    } else if (minus) {
+      ans = S - Aa;
+      q = [
+        `${sStr} minus a number is ${aStr}. What is the number? (${sStr} − ? = ${aStr})`,
+        `${sStr} menos un número es ${aStr}. ¿Cuál es el número? (${sStr} − ? = ${aStr})`,
+      ];
+      x = [
+        `The number is the part taken away, so subtract: ${sStr} − ${aStr} = ${fm(ans, mx)}. Check: ${sStr} − ${fm(ans, mx)} = ${aStr}.`,
+        `El número es la parte que se quitó, así que resta: ${sStr} − ${aStr} = ${fm(ans, mx)}. Comprueba: ${sStr} − ${fm(ans, mx)} = ${aStr}.`,
+      ];
+      w = [
+        [fm(S + Aa, mx), "op-added-instead-of-subtracted", SH_FB.opUndo],
+        [fm(Math.abs(s - a), mx), "decimal-columns", SH_FB.columns],
+        [fm(ans * 10, mx), "digits-shifted", SH_FB.pointSlip],
+        [fm(ans, mx + 1), "digits-shifted", SH_FB.pointSlip],
+      ];
+    } else {
+      ans = S - Aa;
+      q = [
+        `A number plus ${aStr} is ${sStr}. What is the number? (? + ${aStr} = ${sStr})`,
+        `Un número más ${aStr} es ${sStr}. ¿Cuál es el número? (? + ${aStr} = ${sStr})`,
+      ];
+      x = [
+        `Undo the addition with subtraction: ${sStr} − ${aStr} = ${fm(ans, mx)}. Check: ${fm(ans, mx)} + ${aStr} = ${sStr}.`,
+        `Deshaz la suma con resta: ${sStr} − ${aStr} = ${fm(ans, mx)}. Comprueba: ${fm(ans, mx)} + ${aStr} = ${sStr}.`,
+      ];
+      w = [
+        [fm(S + Aa, mx), "op-added-instead-of-subtracted", SH_FB.opUndo],
+        [fm(Math.abs(s - a), mx), "decimal-columns", SH_FB.columns],
+        [fm(ans * 10, mx), "digits-shifted", SH_FB.pointSlip],
+        [fm(ans, mx + 1), "digits-shifted", SH_FB.pointSlip],
+      ];
+    }
+    return numB(
+      {},
+      {
+        q,
+        a: pv(ans, mx),
+        w,
+        x,
+        h: [
+          [
+            "Think about which operation undoes the one in the problem.",
+            "Piensa qué operación deshace la del problema.",
+          ],
+          [
+            "Line up the decimal points before you add or subtract.",
+            "Alinea los puntos decimales antes de sumar o restar.",
+          ],
+          [
+            "Use the opposite operation on the numbers you know, then check your answer by doing the problem forward.",
+            "Usa la operación contraria con los números que conoces y comprueba tu respuesta haciendo el problema hacia adelante.",
+          ],
+        ],
+        meta: {
+          shape,
+          kind: level === 4 ? "two-step" : minus ? "minus" : "plus",
+          a,
+          dpa,
+          s,
+          dps,
+          b,
+          dpb: dpa,
+        },
+      },
+    );
+  };
+  const checkAddReverse = (/** @type {any} */ it) => {
+    const m = it.meta;
+    const N = G.value(it.a);
+    const a = m.a / 10 ** m.dpa;
+    const s = m.s / 10 ** m.dps;
+    const b = m.b == null ? 0 : m.b / 10 ** m.dpb;
+    const forward = m.kind === "minus" ? s - N : m.kind === "two-step" ? N + a - b : N + a;
+    const want = m.kind === "minus" ? a : s;
+    return (
+      Math.abs(forward - want) < 1e-9 ||
+      `${it.a} put back into the problem gives ${forward}, not ${want}`
+    );
+  };
+
+  const mulExpression = (
+    /** @type {any} */ rng,
+    /** @type {number} */ level,
+    /** @type {string} */ shape,
+  ) => {
+    const PAIRS = [
+      [[0, 1]],
+      [
+        [1, 1],
+        [0, 2],
+      ],
+      [
+        [1, 2],
+        [2, 1],
+        [2, 2],
+      ],
+      [
+        [2, 2],
+        [1, 3],
+        [3, 1],
+      ],
+    ];
+    const [d1, d2] = rng.pick(PAIRS[level - 1]);
+    const lim = level === 1 ? [2, 9] : level === 2 ? [3, 19] : [12, 49];
+    const mk = (/** @type {number} */ dp) => {
+      let n = rng.int(lim[0], lim[1]);
+      if (dp && n % 10 === 0) n += 1;
+      return n;
+    };
+    const F1 = mk(d1);
+    const F2 = mk(d2);
+    const P = F1 * F2;
+    const dpP = d1 + d2;
+    const shown = (/** @type {number} */ n, /** @type {number} */ dp) =>
+      dp >= 0 ? dt(n, dp) : dt(n * 10 ** -dp, 0);
+    const expr = (
+      /** @type {number} */ n1,
+      /** @type {number} */ e1,
+      /** @type {number} */ n2,
+      /** @type {number} */ e2,
+    ) => `${shown(n1, e1)} × ${shown(n2, e2)}`;
+    const target = dt(P, dpP);
+    const bigFb = (/** @type {string} */ prod) => [
+      `This expression has a product of ${prod}, which is 10 times as big as ${target}. Count the decimal places in both factors.`,
+      `Esta expresión tiene un producto de ${prod}, que es 10 veces más grande que ${target}. Cuenta los lugares decimales de los dos factores.`,
+    ];
+    const smallFb = (/** @type {string} */ prod) => [
+      `This expression has a product of ${prod}, which is one tenth of ${target}. Count the decimal places in both factors.`,
+      `Esta expresión tiene un producto de ${prod}, que es una décima parte de ${target}. Cuenta los lugares decimales de los dos factores.`,
+    ];
+    const cands = rng.shuffle([
+      [expr(F1, d1 - 1, F2, d2), "product-too-large", bigFb(dt(P, dpP - 1))],
+      [expr(F1, d1, F2, d2 - 1), "product-too-large", bigFb(dt(P, dpP - 1))],
+      [expr(F1, d1 + 1, F2, d2), "product-too-small", smallFb(dt(P, dpP + 1))],
+      [expr(F1, d1, F2, d2 + 1), "product-too-small", smallFb(dt(P, dpP + 1))],
+    ]);
+    return mcB(
+      rng,
+      {},
+      {
+        q: [
+          `Which multiplication has a product of ${target}?`,
+          `¿Cuál multiplicación tiene un producto de ${target}?`,
+        ],
+        a: expr(F1, d1, F2, d2),
+        w: cands,
+        x: [
+          `Multiply as if there were no decimal points: ${F1} × ${F2} = ${P}. The factors have ${d1} and ${d2} decimal places, so the product has ${dpP}: ${target}.`,
+          `Multiplica como si no hubiera puntos decimales: ${F1} × ${F2} = ${P}. Los factores tienen ${d1} y ${d2} lugares decimales, así que el producto tiene ${dpP}: ${target}.`,
+        ],
+        h: [
+          [
+            "The number of decimal places in the product is the number of decimal places in both factors added together.",
+            "El número de lugares decimales del producto es la suma de los lugares decimales de los dos factores.",
+          ],
+          [
+            "Try each expression: multiply the digits as whole numbers, then count the decimal places.",
+            "Prueba cada expresión: multiplica los dígitos como números enteros y luego cuenta los lugares decimales.",
+          ],
+          [
+            "Compare each product with the target. Is it 10 times too big, or one tenth too small?",
+            "Compara cada producto con el valor buscado. ¿Es 10 veces más grande o una décima parte más pequeño?",
+          ],
+        ],
+        meta: { shape, kind: "expression", F1, d1, F2, d2, P, dpP },
+      },
+    );
+  };
+  const checkMulExpression = (/** @type {any} */ it) => {
+    const m = it.meta;
+    const want = m.P / 10 ** m.dpP;
+    const prod = (/** @type {string} */ c) => {
+      const [x, y] = c.split(" × ").map((t) => G.value(t));
+      return (Math.round(x * 1e6) * Math.round(y * 1e6)) / 1e12;
+    };
+    if (Math.abs(prod(it.c[it.a]) - want) > 1e-9)
+      return `key ${it.c[it.a]} gives ${prod(it.c[it.a])}, not ${want}`;
+    const dup = it.c.findIndex(
+      (/** @type {string} */ c, /** @type {number} */ i) =>
+        i !== it.a && Math.abs(prod(c) - want) < 1e-9,
+    );
+    return dup < 0 || `choice ${dup} also has the product ${want}`;
+  };
+
+  const NUM_SHAPES = {
+    longDivision: {
+      reverse: {
+        make: (/** @type {any} */ r, /** @type {number} */ l) => divReverse(r, l, "reverse"),
+        check: checkDivReverse,
+      },
+    },
+    decimalDivision: {
+      equivalent: {
+        make: (/** @type {any} */ r, /** @type {number} */ l) => divEquivalent(r, l, "equivalent"),
+        check: checkDivEquivalent,
+      },
+    },
+    decimalAddSub: {
+      reverse: {
+        make: (/** @type {any} */ r, /** @type {number} */ l) => addReverse(r, l, "reverse"),
+        check: checkAddReverse,
+      },
+    },
+    decimalMultiply: {
+      expression: {
+        make: (/** @type {any} */ r, /** @type {number} */ l) => mulExpression(r, l, "expression"),
+        check: checkMulExpression,
+      },
+    },
+  };
+
   G.register("longDivision", {
     title: "Long division",
     titleEs: "División larga",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "reverse"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return NUM_SHAPES.longDivision[shape].make(rng, level);
       return longDivTypes[rng.pick(LD_TYPES[level])](rng, level);
     },
     check(item) {
+      const sh = item.meta && item.meta.shape;
+      if (sh && sh !== "forward") return NUM_SHAPES.longDivision[sh].check(item);
       const m = item.meta;
       const { q, r } = m.dividend
         ? paperDiv(m.dividend, m.divisor)
@@ -1296,10 +1775,14 @@
     title: "Divide decimals",
     titleEs: "Dividir decimales",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "equivalent"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return NUM_SHAPES.decimalDivision[shape].make(rng, level);
       return decDivTypes[rng.pick(DD_TYPES[level])](rng, level);
     },
     check(item) {
+      const sh = item.meta && item.meta.shape;
+      if (sh && sh !== "forward") return NUM_SHAPES.decimalDivision[sh].check(item);
       const m = item.meta;
       const q =
         m.kind === "dividend" || m.kind === "which"
@@ -1694,10 +2177,14 @@
     title: "Add and subtract decimals",
     titleEs: "Sumar y restar decimales",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "reverse"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return NUM_SHAPES.decimalAddSub[shape].make(rng, level);
       return addSubTypes[rng.pick(AS_TYPES[level])](rng, level);
     },
     check(item) {
+      const sh = item.meta && item.meta.shape;
+      if (sh && sh !== "forward") return NUM_SHAPES.decimalAddSub[sh].check(item);
       const m = item.meta;
       switch (m.kind) {
         case "calc": {
@@ -2056,10 +2543,14 @@
     title: "Multiply decimals",
     titleEs: "Multiplicar decimales",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "expression"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return NUM_SHAPES.decimalMultiply[shape].make(rng, level);
       return mulTypes[rng.pick(MM_TYPES[level])](rng, level);
     },
     check(item) {
+      const sh = item.meta && item.meta.shape;
+      if (sh && sh !== "forward") return NUM_SHAPES.decimalMultiply[sh].check(item);
       const m = item.meta;
       switch (m.kind) {
         case "prod": {
@@ -2428,12 +2919,107 @@
       });
     },
   };
+
+  /* ---- orderOfOps shapes: reverse, which-input, compare, ties ------------------------------------------------- */
+  Object.assign(FB, {
+    "order-of-operations-tie-broken-wrong": [
+      "It looks like a tie was broken the wrong way. × and ÷ share a tier, and so do + and −, so those pairs are worked from left to right, not by picking one operation as stronger.",
+      "Parece que un empate se resolvió al revés. × y ÷ comparten un nivel, y también + y −, así que esas parejas se hacen de izquierda a derecha, sin elegir una operación como más fuerte.",
+    ],
+  });
+  /** a tie expression: the printed text, the right value and the value a wrongly broken tie gives */
+  const tieExpr = (/** @type {any} */ rng, /** @type {number} */ level) => {
+    const forms =
+      level >= 3 ? ["divmul", "subadd", "divdiv", "subsub", "divmulplus"] : ["divmul", "subadd"];
+    return draw(
+      () => {
+        const f = rng.pick(forms);
+        const [b, c, d] = [
+          rng.int(2, level >= 3 ? 9 : 6),
+          rng.int(2, level >= 3 ? 9 : 6),
+          rng.int(2, 9),
+        ];
+        const m = rng.int(2, level >= 3 ? 6 : 4);
+        if (f === "divmul") return { f, s: `${b * c * m} ÷ ${b} × ${c}`, slip: m };
+        if (f === "divmulplus") return { f, s: `${b * c * m} ÷ ${b} × ${c} + ${d}`, slip: m + d };
+        if (f === "divdiv")
+          return { f, s: `${b * c * m} ÷ ${b} ÷ ${c}`, slip: (b * c * m * c) / b };
+        const a = b + c + rng.int(1, level >= 3 ? 20 : 10);
+        if (f === "subadd") return { f, s: `${a} − ${b} + ${c}`, slip: a - (b + c) };
+        return { f, s: `${a} − ${b} − ${c}`, slip: a - (b - c) };
+      },
+      (e) =>
+        e.s.match(/\d+/g).every((x) => Number(x) <= 400) &&
+        Number.isInteger(evalStr(e.s)) &&
+        e.slip !== evalStr(e.s) &&
+        Number.isInteger(e.slip) &&
+        e.slip >= 0 &&
+        e.f.length > 0 &&
+        !/(\d+) .* \1$/.test(e.s),
+    );
+  };
+  opTypes.tie = (/** @type {any} */ rng, /** @type {number} */ level) => {
+    const e = tieExpr(rng, level);
+    const val = evalStr(e.s);
+    const first = evalStr(e.s, { partial: true });
+    const V = { s: e.s };
+    // prettier-ignore
+    // biome-ignore format: bilingual spec
+    return mcB(rng, V, {
+      q: ["Evaluate {s}. Operations in the same tier are worked from left to right.", "Evalúa {s}. Las operaciones del mismo nivel se hacen de izquierda a derecha."], a: String(val),
+      w: [[String(e.slip), "order-of-operations-tie-broken-wrong"], [String(first), "stopped-after-first-operation"], [String(evalStr(e.s, { sumAll: true })), "treated-all-operations-alike"]].filter(([v], i, arr) => arr.findIndex((x) => x[0] === v) === i && v !== String(val)),
+      x: [`× and ÷ share a tier, and + and − share a tier, so work each tie from left to right. {s} = ${val}.`, `× y ÷ comparten un nivel, y + y − comparten un nivel, así que cada empate se resuelve de izquierda a derecha. {s} = ${val}.`],
+      h: [["Find the operations that are in the same tier.", "Busca las operaciones que están en el mismo nivel."], ["When two operations share a tier, work the one on the left first.", "Cuando dos operaciones comparten un nivel, haz primero la de la izquierda."], ["Rewrite the expression after each single step.", "Reescribe la expresión después de cada paso."]],
+      meta: { kind: "tie", s: e.s, slip: e.slip },
+    });
+  };
+  opTypes.cmp = (/** @type {any} */ rng) => {
+    const [a, b, c] = [rng.int(2, 9), rng.int(2, 9), rng.int(2, 9)];
+    const form = rng.pick([0, 1, 2]);
+    const [s1, s2] =
+      form === 0
+        ? [`${a} + ${b} × ${c}`, `(${a} + ${b}) × ${c}`]
+        : form === 1
+          ? [`${a} × ${b} + ${c}`, `${a} × (${b} + ${c})`]
+          : [`${a}² + ${b}`, `(${a} + ${b})²`];
+    const swap = rng.chance(0.5);
+    const [x, y] = swap ? [s2, s1] : [s1, s2];
+    const ask = rng.pick(["greater", "less"]);
+    const [vx, vy] = [evalStr(x), evalStr(y)];
+    const best = ask === "greater" ? (vx > vy ? x : y) : vx < vy ? x : y;
+    const other = best === x ? y : x;
+    const V = { x, y, ask };
+    // prettier-ignore
+    // biome-ignore format: bilingual spec
+    return mcB(rng, V, {
+      q: [`Which has the ${ask} value, {x} or {y}?`, `¿Cuál tiene el valor ${ask === "greater" ? "mayor" : "menor"}, {x} o {y}?`], a: best,
+      w: [[other, "parentheses-ignored"], ["They have the same value", "order-of-operations-left-to-right"], ["It depends on the numbers", "treated-all-operations-alike"]],
+      x: [`${x} = ${vx} and ${y} = ${vy}. The parentheses change which operation is done first, so the values are different.`, `${x} = ${vx} y ${y} = ${vy}. Los paréntesis cambian qué operación se hace primero, así que los valores son diferentes.`],
+      h: [["Evaluate each expression by itself, following the order of operations.", "Evalúa cada expresión por separado, siguiendo el orden de las operaciones."], ["Parentheses make the operation inside happen first.", "Los paréntesis hacen que la operación de adentro se haga primero."], ["Compare the two values you found.", "Compara los dos valores que hallaste."]],
+      meta: { kind: "cmp", x, y, ask },
+    });
+  };
+  const OPS_SHAPES = {
+    reverse: { 1: ["missing"], 2: ["missing"], 3: ["missing"], 4: ["missing"] },
+    "which-input": {
+      1: ["parens"],
+      2: ["parens", "write"],
+      3: ["write", "parens"],
+      4: ["diagnose", "write"],
+    },
+    compare: { 1: ["cmp"], 2: ["cmp"], 3: ["cmp", "diagnose"], 4: ["cmp"] },
+    ties: { 1: ["tie"], 2: ["tie"], 3: ["tie"], 4: ["tie"] },
+  };
   G.register("orderOfOps", {
     title: "Order of operations",
     titleEs: "Orden de las operaciones",
     levels: 4,
-    make(rng, level) {
-      return opTypes[rng.pick(OPS_TYPES[level])](rng, level);
+    shapes: ["forward", "reverse", "which-input", "compare", "ties"],
+    make(rng, level, shape) {
+      return opTypes[rng.pick(/** @type {any} */ (OPS_SHAPES)[shape]?.[level] || OPS_TYPES[level])](
+        rng,
+        level,
+      );
     },
     check(item) {
       const m = item.meta;
@@ -2468,6 +3054,15 @@
             (b) => b[0] !== m.bug && evalStr(m.s, b[1]) === m.got,
           );
           return others.length ? "another bug gives the same answer" : agree(item, bug[3]);
+        }
+        case "tie":
+          return agree(item, evalStr(m.s)) === true && m.slip !== evalStr(m.s)
+            ? true
+            : "tie value disagrees";
+        case "cmp": {
+          const [vx, vy] = [evalStr(m.x), evalStr(m.y)];
+          const want = m.ask === "greater" ? (vx > vy ? m.x : m.y) : vx < vy ? m.x : m.y;
+          return vx !== vy && item.c[item.a] === want ? true : `compare: ${vx} vs ${vy}`;
         }
         default:
           return `unknown kind ${m.kind}`;
@@ -2802,12 +3397,31 @@
     },
   };
 
+  const EX_SHAPES = {
+    reverse: {
+      1: ["missingExp"],
+      2: ["missingExp", "missingBase"],
+      3: ["missingBase", "missingExp"],
+      4: ["storyN", "missingBase", "missingExp"],
+    },
+    "which-input": {
+      1: ["toPower", "parts"],
+      2: ["tenPow", "toPower"],
+      3: ["asPower"],
+      4: ["asPower", "toPower"],
+    },
+    compare: { 1: ["greatest"], 2: ["greatest"], 3: ["greatest"], 4: ["greatest"] },
+  };
   G.register("exponentEval", {
     title: "Powers and exponents",
     titleEs: "Potencias y exponentes",
     levels: 4,
-    make(rng, level) {
-      return expTypes[rng.pick(EX_TYPES[level])](rng, level);
+    shapes: ["forward", "reverse", "which-input", "compare"],
+    make(rng, level, shape) {
+      return expTypes[rng.pick(/** @type {any} */ (EX_SHAPES)[shape]?.[level] || EX_TYPES[level])](
+        rng,
+        level,
+      );
     },
     check(item) {
       const m = item.meta;
@@ -3142,12 +3756,62 @@
       });
     },
   };
+  const FM_FROM_TAGS = {
+    multiple: [
+      "That number has the listed numbers as factors, but it also has more factors than the list shows. The list must be ALL of its factors.",
+      "Ese número tiene los números de la lista como factores, pero tiene más factores de los que muestra la lista. La lista debe tener TODOS sus factores.",
+    ],
+    small: [
+      "That number is missing one of the listed numbers as a factor. Every number in the list must divide it evenly.",
+      "A ese número le falta uno de los números de la lista como factor. Todos los números de la lista deben dividirlo exactamente.",
+    ],
+  };
+  fmTypes.fromFactors = (/** @type {any} */ rng) => {
+    const facs = (/** @type {number} */ n) =>
+      [...Array(n)].map((_, i) => i + 1).filter((d) => n % d === 0);
+    const e = draw(
+      () => ({ n: rng.int(10, 60) }),
+      (v) =>
+        facs(v.n).length >= 4 && facs(v.n).length <= 8 && facs(v.n * 2).length !== facs(v.n).length,
+    );
+    const fl = facs(e.n);
+    const cands = [
+      e.n * 2,
+      fl[fl.length - 2] * 3 === e.n ? e.n + fl[1] : e.n - fl[1],
+      e.n + 2,
+      e.n * 3,
+    ].filter((c, i, a) => c > 1 && c !== e.n && a.indexOf(c) === i && facs(c).join() !== fl.join());
+    const V = { fl: fl.join(", ") };
+    // prettier-ignore
+    // biome-ignore format: bilingual spec
+    return mcB(rng, V, {
+      q: ["Which number has EXACTLY these factors: {fl}?", "¿Qué número tiene EXACTAMENTE estos factores: {fl}?"], a: String(e.n),
+      w: cands.slice(0, 3).map((c, i) => [String(c), i === 0 ? "factors-multiples-confused" : "divisibility-misjudged", i === 0 ? FM_FROM_TAGS.multiple : FM_FROM_TAGS.small]),
+      x: [`The factors of ${e.n} are ${fl.join(", ")}. No other number has exactly that list.`, `Los factores de ${e.n} son ${fl.join(", ")}. Ningún otro número tiene exactamente esa lista.`],
+      h: [["The biggest factor of a number is the number itself.", "El factor más grande de un número es el número mismo."], ["Look at the last number in the list.", "Mira el último número de la lista."], ["Check that your choice is divisible by every number in the list and by nothing else.", "Comprueba que tu opción sea divisible entre todos los números de la lista y entre ningún otro."]],
+      meta: { kind: "fromFactors", n: e.n, fl },
+    });
+  };
+  const FM_SHAPES = {
+    reverse: {
+      1: ["fromFactors"],
+      2: ["fromFactors", "riddle"],
+      3: ["fromFactors", "riddle"],
+      4: ["fromFactors", "riddle"],
+    },
+    "which-input": { 1: ["isMult"], 2: ["isMult", "common"], 3: ["common"], 4: ["four"] },
+    compare: { 1: ["fm"], 2: ["fm"], 3: ["fm", "countCommon"], 4: ["fm", "four"] },
+  };
   G.register("factorsMultiples", {
     title: "Factors and multiples",
     titleEs: "Factores y múltiplos",
     levels: 4,
-    make(rng, level) {
-      return fmTypes[rng.pick(FMTYPES[level])](rng, level);
+    shapes: ["forward", "reverse", "which-input", "compare"],
+    make(rng, level, shape) {
+      return fmTypes[rng.pick(/** @type {any} */ (FM_SHAPES)[shape]?.[level] || FMTYPES[level])](
+        rng,
+        level,
+      );
     },
     check(item) {
       const m = item.meta;
@@ -3202,6 +3866,17 @@
           return ok.filter(Boolean).length === 1 && ok[item.a]
             ? true
             : "not exactly one number with 4 factors";
+        }
+        case "fromFactors": {
+          const facs = (/** @type {number} */ n) =>
+            [...Array(n)]
+              .map((_, i) => i + 1)
+              .filter((d) => n % d === 0)
+              .join();
+          const hits = item.c.map((/** @type {string} */ c) => facs(Number(c)) === m.fl.join());
+          return hits.filter(Boolean).length === 1 && hits[item.a]
+            ? true
+            : "not exactly one number with those factors";
         }
         default:
           return `unknown kind ${m.kind}`;
@@ -3442,12 +4117,75 @@
       "Esos dos números comparten un factor mayor que 1.",
     ],
   });
+  const GCF_CMP_TAGS = {
+    size: [
+      "That pair has the bigger numbers, but the question is about the greatest number that divides BOTH numbers of a pair.",
+      "Esa pareja tiene los números más grandes, pero la pregunta es por el mayor número que divide a LOS DOS números de una pareja.",
+    ],
+    same: [
+      "Find the greatest common factor of each pair first. They are not the same.",
+      "Primero halla el máximo común divisor de cada pareja. No son iguales.",
+    ],
+  };
+  gcfTypes.cmp = (/** @type {any} */ rng) => {
+    const e = draw(
+      () => {
+        const [g1, g2] = [rng.int(2, 12), rng.int(2, 12)];
+        const co = () => {
+          const m1 = rng.int(2, 7);
+          const m2 = rng.int(2, 7);
+          return [m1, m2];
+        };
+        return { g1, g2, m: co(), n: co() };
+      },
+      (v) =>
+        v.g1 !== v.g2 &&
+        v.m[0] !== v.m[1] &&
+        v.n[0] !== v.n[1] &&
+        gcfByTrial(v.m) === 1 &&
+        gcfByTrial(v.n) === 1,
+    );
+    const p1 = e.m.map((/** @type {number} */ x) => x * e.g1);
+    const p2 = e.n.map((/** @type {number} */ x) => x * e.g2);
+    const t1 = `${p1[0]} and ${p1[1]}`;
+    const t2 = `${p2[0]} and ${p2[1]}`;
+    const t1Es = `${p1[0]} y ${p1[1]}`;
+    const t2Es = `${p2[0]} y ${p2[1]}`;
+    const [g1, g2] = [gcfByTrial(p1), gcfByTrial(p2)];
+    const right = g1 > g2 ? [t1, t1Es] : [t2, t2Es];
+    const other = g1 > g2 ? [t2, t2Es] : [t1, t1Es];
+    const V = { t1, t2 };
+    const bigger = p1[0] + p1[1] > p2[0] + p2[1] === g1 > g2 ? null : 1;
+    void bigger;
+    // prettier-ignore
+    // biome-ignore format: bilingual spec
+    return mcB(rng, V, {
+      q: ["Which pair has the greater greatest common factor: {t1}, or {t2}?", "¿Cuál pareja tiene el mayor máximo común divisor: {t1}, o {t2}?"], a: right,
+      w: [[other, "gcf-lcm-confused", GCF_CMP_TAGS.size], ["They have the same GCF", "divisibility-misjudged", GCF_CMP_TAGS.same], ["Not enough information", "divisibility-misjudged", GCF_CMP_TAGS.same]],
+      x: [`The GCF of ${t1} is ${g1} and the GCF of ${t2} is ${g2}, so ${right[0]} has the greater one.`, `El máximo común divisor de ${t1Es} es ${g1} y el de ${t2Es} es ${g2}, así que ${right[1]} tiene el mayor.`],
+      h: [["Find the greatest common factor of each pair on its own.", "Halla por separado el máximo común divisor de cada pareja."], ["List the factors of both numbers in a pair and find the largest one they share.", "Haz la lista de los factores de los dos números de una pareja y halla el mayor que comparten."], ["Compare the two greatest common factors.", "Compara los dos máximos comunes divisores."]],
+      meta: { kind: "gcfCmp", p1, p2 },
+    });
+  };
+  const GCF_SHAPES = {
+    reverse: { 1: ["reverse"], 2: ["reverse"], 3: ["reverse"], 4: ["reverse"] },
+    "which-input": {
+      1: ["greatestOf"],
+      2: ["greatestOf", "each"],
+      3: ["coprime", "factorOut"],
+      4: ["coprime", "factorOut"],
+    },
+    compare: { 1: ["cmp"], 2: ["cmp"], 3: ["cmp"], 4: ["cmp"] },
+  };
   G.register("gcfFind", {
     title: "Greatest common factor",
     titleEs: "Máximo común divisor",
     levels: 4,
-    make(rng, level) {
-      return gcfTypes[rng.pick(GCF_TYPES[level])](rng, level);
+    shapes: ["forward", "reverse", "which-input", "compare"],
+    make(rng, level, shape) {
+      return gcfTypes[
+        rng.pick(/** @type {any} */ (GCF_SHAPES)[shape]?.[level] || GCF_TYPES[level])
+      ](rng, level);
     },
     check(item) {
       const m = item.meta;
@@ -3471,6 +4209,13 @@
           return ok.filter(Boolean).length === 1 && ok[item.a]
             ? true
             : "not exactly one coprime pair";
+        }
+        case "gcfCmp": {
+          const [g1, g2] = [gcfByTrial(m.p1), gcfByTrial(m.p2)];
+          const t = (/** @type {number[]} */ p) => `${p[0]} and ${p[1]}`;
+          return g1 !== g2 && item.c[item.a] === (g1 > g2 ? t(m.p1) : t(m.p2))
+            ? true
+            : `gcf compare ${g1} vs ${g2}`;
         }
         default:
           return `unknown kind ${m.kind}`;
@@ -3679,12 +4424,52 @@
       "Esa es la cantidad de artículos, no de paquetes.",
     ],
   });
+  lcmTypes.cmp = (/** @type {any} */ rng) => {
+    const e = draw(
+      () => ({ a: [rng.int(2, 9), rng.int(2, 9)], b: [rng.int(2, 9), rng.int(2, 9)] }),
+      (v) =>
+        v.a[0] !== v.a[1] &&
+        v.b[0] !== v.b[1] &&
+        lcmByCount(v.a) !== lcmByCount(v.b) &&
+        lcmByCount(v.a) <= 72 &&
+        lcmByCount(v.b) <= 72,
+    );
+    const [l1, l2] = [lcmByCount(e.a), lcmByCount(e.b)];
+    const t1 = `${e.a[0]} and ${e.a[1]}`;
+    const t2 = `${e.b[0]} and ${e.b[1]}`;
+    const es = (/** @type {string} */ t) => t.replace(" and ", " y ");
+    const right = l1 > l2 ? t1 : t2;
+    const other = l1 > l2 ? t2 : t1;
+    const V = { t1, t2 };
+    // prettier-ignore
+    // biome-ignore format: bilingual spec
+    return mcB(rng, V, {
+      q: ["Which pair has the greater least common multiple: {t1}, or {t2}?", "¿Cuál pareja tiene el mayor mínimo común múltiplo: {t1}, o {t2}?"], a: [right, es(right)],
+      w: [[[other, es(other)], "gcf-lcm-confused", ["The numbers in that pair may look bigger, but the LCM is the first multiple the two numbers share.", "Los números de esa pareja pueden verse más grandes, pero el mcm es el primer múltiplo que comparten los dos números."]], ["They have the same LCM", "lcm-not-common-to-both", ["Find the least common multiple of each pair first. They are not the same.", "Primero halla el mínimo común múltiplo de cada pareja. No son iguales."]], ["Not enough information", "lcm-not-common-to-both", ["Find the least common multiple of each pair first. They are not the same.", "Primero halla el mínimo común múltiplo de cada pareja. No son iguales."]]],
+      x: [`The LCM of ${t1} is ${l1} and the LCM of ${t2} is ${l2}, so ${right} has the greater one.`, `El mcm de ${es(t1)} es ${l1} y el de ${es(t2)} es ${l2}, así que ${es(right)} tiene el mayor.`],
+      h: [["Find the least common multiple of each pair on its own.", "Halla por separado el mínimo común múltiplo de cada pareja."], ["List multiples of both numbers until they match, for each pair.", "Haz la lista de los múltiplos de los dos números hasta que coincidan, para cada pareja."], ["Compare the two least common multiples.", "Compara los dos mínimos comunes múltiplos."]],
+      meta: { kind: "lcmCmp", a: e.a, b: e.b },
+    });
+  };
+  const LCM_SHAPES = {
+    reverse: { 1: ["reverse"], 2: ["reverse"], 3: ["reverse"], 4: ["reverse"] },
+    "which-input": {
+      1: ["lists", "between"],
+      2: ["between"],
+      3: ["between", "clock"],
+      4: ["packs"],
+    },
+    compare: { 1: ["cmp"], 2: ["cmp"], 3: ["cmp"], 4: ["cmp"] },
+  };
   G.register("lcmFind", {
     title: "Least common multiple",
     titleEs: "Mínimo común múltiplo",
     levels: 4,
-    make(rng, level) {
-      return lcmTypes[rng.pick(LCM_TYPES[level])](rng, level);
+    shapes: ["forward", "reverse", "which-input", "compare"],
+    make(rng, level, shape) {
+      return lcmTypes[
+        rng.pick(/** @type {any} */ (LCM_SHAPES)[shape]?.[level] || LCM_TYPES[level])
+      ](rng, level);
     },
     check(item) {
       const m = item.meta;
@@ -3706,6 +4491,13 @@
           return ok.filter(Boolean).length === 1 && ok[item.a]
             ? true
             : "not exactly one number with that LCM";
+        }
+        case "lcmCmp": {
+          const [l1, l2] = [lcmByCount(m.a), lcmByCount(m.b)];
+          const t = (/** @type {number[]} */ p) => `${p[0]} and ${p[1]}`;
+          return l1 !== l2 && item.c[item.a] === (l1 > l2 ? t(m.a) : t(m.b))
+            ? true
+            : `lcm compare ${l1} vs ${l2}`;
         }
         default:
           return `unknown kind ${m.kind}`;
@@ -4010,12 +4802,26 @@
       });
     },
   };
+  const PF_SHAPES = {
+    reverse: { 1: ["product"], 2: ["product"], 3: ["product"], 4: ["product"] },
+    "which-input": {
+      1: ["whichPrime", "whichComposite"],
+      2: ["whichPrime", "whichComposite"],
+      3: ["whichPrime", "whichComposite"],
+      4: ["build", "whichPrime", "whichComposite"],
+    },
+    compare: { 1: ["compare"], 2: ["compare"], 3: ["compare"], 4: ["compare"] },
+  };
   G.register("primeFactorization", {
     title: "Prime factorization",
     titleEs: "Factorización prima",
     levels: 4,
-    make(rng, level) {
-      return pfTypes[rng.pick(PF_TYPES[level])](rng, level);
+    shapes: ["forward", "reverse", "which-input", "compare"],
+    make(rng, level, shape) {
+      return pfTypes[rng.pick(/** @type {any} */ (PF_SHAPES)[shape]?.[level] || PF_TYPES[level])](
+        rng,
+        level,
+      );
     },
     check(item) {
       const m = item.meta;

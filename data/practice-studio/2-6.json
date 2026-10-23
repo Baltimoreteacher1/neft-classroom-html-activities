@@ -26,7 +26,8 @@
     {
       "k": "gen",
       "g": "longDivision",
-      "level": 2
+      "level": 2,
+      "shape": "reverse"
     },
     {
       "k": "gen",
@@ -36,7 +37,8 @@
     {
       "k": "gen",
       "g": "longDivision",
-      "level": 3
+      "level": 3,
+      "shape": "reverse"
     },
     {
       "k": "act",
@@ -55,8 +57,8 @@
         "level": 2
       },
       {
-        "k": "gen",
-        "g": "longDivision",
+        "k": "act",
+        "kind": "chipsort",
         "level": 2
       },
       {
@@ -67,12 +69,14 @@
       {
         "k": "gen",
         "g": "longDivision",
-        "level": 3
+        "level": 3,
+        "shape": "reverse"
       },
       {
         "k": "gen",
         "g": "longDivision",
-        "level": 4
+        "level": 4,
+        "shape": "reverse"
       },
       {
         "k": "gen",
@@ -303,11 +307,8 @@
       },
       {
         "k": "act",
-        "kind": "ldiv",
-        "level": 4,
-        "p": {
-          "decimal": false
-        }
+        "kind": "chipsort",
+        "level": 3
       },
       {
         "k": "sort",
@@ -509,13 +510,13 @@
         "qEs": "Un transbordador lleva 6 aprendices. Hay 89 aprendices. Kwame dice que alcanzan 14 transbordadores porque 89 ÷ 6 = 14 R5. Mei-Ling dice que se necesitan 15. ¿Quién tiene razón?",
         "c": [
           "Kwame, because the quotient is 14",
-          "Mei-Ling, because the 5 left over trainees need another shuttle",
+          "Mei-Ling: 15 shuttles cover all 89.",
           "Kwame, because 14 × 6 = 84 is close to 89",
           "Neither, because 89 ÷ 6 should be 15 R−1"
         ],
         "cEs": [
           "Kwame, porque el cociente es 14",
-          "Mei-Ling, porque los 5 aprendices que sobran necesitan otro transbordador",
+          "Mei-Ling: 15 transbordadores llevan a los 89.",
           "Kwame, porque 14 × 6 = 84 está cerca de 89",
           "Ninguno, porque 89 ÷ 6 debería ser 15 R−1"
         ],
@@ -834,16 +835,16 @@
       "q": "In 253 ÷ 12 = 21 R1, what does the remainder 1 tell you?",
       "qEs": "En 253 ÷ 12 = 21 R1, ¿qué te dice el residuo 1?",
       "c": [
-        "There are 21 items in each group, plus 1 extra group",
-        "The divisor is 1",
-        "After making 21 equal groups of 12, 1 item is left over",
-        "The answer is 22"
+        "There are 21 full groups of 12",
+        "There are 12 groups of 21",
+        "One item is left over",
+        "The quotient is 22"
       ],
       "cEs": [
-        "Hay 21 elementos en cada grupo, más 1 grupo extra",
-        "El divisor es 1",
-        "Después de formar 21 grupos iguales de 12, sobra 1",
-        "La respuesta es 22"
+        "Hay 21 grupos completos de 12",
+        "Hay 12 grupos de 21",
+        "Sobra 1 artículo",
+        "El cociente es 22"
       ],
       "a": 2,
       "f": [
@@ -921,8 +922,8 @@
       ]
     },
     "explore": {
-      "q": "Orbit Station packs filters in shipments of 12. It must send exactly 11 full shipments with nothing left over. Change ONLY the total items until the quotient is 11.",
-      "qEs": "La Estación Orbit empaca filtros en envíos de 12. Debe enviar exactamente 11 envíos completos sin que sobre nada. Cambia SOLO el total de artículos hasta que el cociente sea 11.",
+      "q": "Orbit Station packs filters in shipments of 12. It must send exactly 11 full shipments with nothing left over. Change ONLY the total items until the quotient is 11. This model shows the quotient as a decimal, so it cannot show a remainder.",
+      "qEs": "La Estación Orbit empaca filtros en envíos de 12. Debe enviar exactamente 11 envíos completos sin que sobre nada. Cambia SOLO el total de artículos hasta que el cociente sea 11. Este modelo muestra el cociente como decimal, así que no puede mostrar un residuo.",
       "goal": {
         "target": 11,
         "free": 0
@@ -986,8 +987,8 @@
       ]
     },
     "stretch": {
-      "q": "Orbit Station has 168 filters. The crew wants exactly 56 equal shipments. Change ONLY the items in each shipment until the quotient is 56.",
-      "qEs": "La Estación Orbit tiene 168 filtros. La tripulación quiere exactamente 56 envíos iguales. Cambia SOLO los artículos en cada envío hasta que el cociente sea 56.",
+      "q": "Orbit Station has 168 filters. The crew wants exactly 56 equal shipments. Change ONLY the items in each shipment until the quotient is 56. The model shows a decimal quotient, not a remainder.",
+      "qEs": "La Estación Orbit tiene 168 filtros. La tripulación quiere exactamente 56 envíos iguales. Cambia SOLO los artículos en cada envío hasta que el cociente sea 56. El modelo muestra un cociente decimal, no un residuo.",
       "goal": {
         "target": 56,
         "free": 1
@@ -1067,8 +1068,8 @@
         }
       },
       "readout": {
-        "en": "Quotient (shipments)",
-        "es": "Cociente (envíos)"
+        "en": "Quotient as a decimal (shipments)",
+        "es": "Cociente como decimal (envíos)"
       }
     }
   },
@@ -1166,13 +1167,13 @@
       ],
       "c": [
         "Divide 6 by 4, the first digit.",
-        "Divide 6 into the first two digits, 43, because 4 is too small.",
+        "Divide 43 by 6; 4 is too small.",
         "Bring down the 3 before dividing anything.",
         "Multiply 6 × 4,368 to start."
       ],
       "cEs": [
         "Divide 6 entre 4, el primer dígito.",
-        "Divide 43, los dos primeros dígitos, entre 6, porque 4 es muy pequeño.",
+        "Divide 43 entre 6; 4 es muy pequeño.",
         "Baja el 3 antes de dividir nada.",
         "Multiplica 6 × 4,368 para empezar."
       ],

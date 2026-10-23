@@ -7,7 +7,7 @@
  * returns the same problem (progress saves a seed, not a question).
  *
  * Contract (docs/specs/practice-studio-v2.md):
- *   StudioGen.register(id, { title, titleEs, levels: 4, make(rng, level) -> item, check(item) -> true | string })
+ *   StudioGen.register(id, { title, titleEs, levels: 4, shapes?: ["forward", ...], make(rng, level, shape) -> item, check(item) -> true | string })
  *   item.meta carries the raw numbers; check() recomputes the answer from meta by a DIFFERENT route than
  *   make() used, and tools/studio-gen.test.mjs fails any generator whose check disagrees.
  *
@@ -231,17 +231,22 @@
     /** @type {string} */ id,
     /** @type {number} */ level,
     /** @type {number|string} */ seed,
+    /** @type {string} [shape] a problem shape the generator lists in `shapes` (default: its first, "forward") */
+    shape,
   ) => {
     const def = G.registry[id];
     if (!def) throw new Error(`StudioGen: unknown generator "${id}"`);
     const lv = Math.max(1, Math.min(def.levels, Number(level) || 1));
-    const rng = G.rng(`${id}|${lv}|${seed}`);
-    const item = tidy(def.make(rng, lv));
+    const shapes = Array.isArray(def.shapes) && def.shapes.length ? def.shapes : ["forward"];
+    const sh = shapes.includes(shape) ? shape : shapes[0];
+    // the default shape keeps its original seed key, so every saved problem and every existing test stays identical
+    const rng = G.rng(sh === shapes[0] ? `${id}|${lv}|${seed}` : `${id}|${lv}|${seed}|${sh}`);
+    const item = tidy(def.make(rng, lv, sh));
     item.k = item.k || (item.c ? "mc" : "num");
     if (Array.isArray(item.tag))
       item.tag = item.tag.map((/** @type {string} */ t) => G.trapOf(id, t));
     for (const w of Array.isArray(item.fw) ? item.fw : []) if (w.tag) w.tag = G.trapOf(id, w.tag);
-    item.gen = { id, level: lv, seed };
+    item.gen = { id, level: lv, seed, shape: sh };
     return item;
   };
   /** Independent recomputation; true when the item's key agrees. */

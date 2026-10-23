@@ -4,7 +4,7 @@
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { grab, isDirect, move } from "../curriculum/learning-labs/shared/direct.mjs";
-import { controls, evaluate } from "../curriculum/learning-labs/shared/math.mjs";
+import { controls, evaluate, puzzle } from "../curriculum/learning-labs/shared/math.mjs";
 
 const root = "curriculum/learning-labs";
 const labs = readdirSync(root).filter((d) => existsSync(`${root}/${d}/content.json`));
@@ -113,6 +113,13 @@ assert.deepEqual(
 // histogram: dragging a bar up pulls observations in from other bins, total unchanged; down pushes them out
 {
   const hist = { kind: "data", mode: "histogram", values: [2, 4, 7, 8, 12, 13, 17, 22] };
+  const mission = puzzle(hist, 2, 1);
+  assert.deepEqual(
+    mission.goal.filter((_, i) => i !== mission.free),
+    mission.start.filter((_, i) => i !== mission.free),
+    "a histogram mission target depends only on its unlocked observation",
+  );
+  assert.equal(evaluate(hist, mission.goal).value, mission.target);
   const f = controls(hist);
   const binsOf = (v) => {
     const b = Array(5).fill(0);

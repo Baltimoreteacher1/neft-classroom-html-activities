@@ -3,7 +3,7 @@
   "lesson": "2-5",
   "targetEs": "Puedo hallar el rango y el rango intercuartílico de un conjunto de datos y usarlos para describir qué tan dispersos están los datos.",
   "story": "The Rooftop Garden is full of sunflowers, beans and tomatoes! Measure how spread out each bed is with the range and the IQR, and help the crew decide which bed grows most evenly.",
-  "storyEs": "¡El Jardín de la Azotea está lleno de girasoles, frijoles y tomates! Mide qué tan dispersa está cada cama con el rango y el RIC, y ayuda al equipo a decidir cuál cama crece de forma más pareja.",
+  "storyEs": "¡El Jardín del Techo está lleno de girasoles, frijoles y tomates! Mide qué tan dispersa está cada cama con el rango y el RIC, y ayuda al equipo a decidir cuál cama crece de forma más uniforme.",
   "challengeStory": "Dusk settles over the garden and the grow-lights flicker on. One strange plant is far taller than the rest, and only a careful gardener can tell which measure of spread can be trusted.",
   "challengeStoryEs": "Atardece en el jardín y se encienden las luces de cultivo. Una planta extraña es mucho más alta que las demás, y solo un jardinero atento puede decir en qué medida de dispersión se puede confiar.",
   "getReady": null,
@@ -26,7 +26,8 @@
     {
       "k": "gen",
       "g": "rangeIqr",
-      "level": 2
+      "level": 2,
+      "shape": "reverse"
     },
     {
       "k": "gen",
@@ -36,14 +37,15 @@
     {
       "k": "gen",
       "g": "rangeIqr",
-      "level": 3
+      "level": 3,
+      "shape": "reverse"
     },
     {
       "k": "act",
-      "kind": "chartbuild",
-      "level": 2,
+      "kind": "boxtwins",
+      "level": 1,
       "p": {
-        "mode": "box"
+        "mode": "iqr"
       }
     }
   ],
@@ -67,12 +69,14 @@
       {
         "k": "gen",
         "g": "rangeIqr",
-        "level": 3
+        "level": 3,
+        "shape": "reverse"
       },
       {
         "k": "gen",
         "g": "rangeIqr",
-        "level": 4
+        "level": 4,
+        "shape": "reverse"
       },
       {
         "k": "gen",
@@ -84,7 +88,7 @@
       {
         "k": "tbl",
         "t": "The rooftop garden measured 11 sunflowers. Heights in centimeters: 48, 62, 55, 71, 39, 66, 58, 44, 80, 52, 60. Fill in each measure. Use this rule: Q1 and Q3 are the medians of the lower and upper halves, and the median is left out of both halves when the count is odd.",
-        "tEs": "El jardín de la azotea midió 11 girasoles. Alturas en centímetros: 48, 62, 55, 71, 39, 66, 58, 44, 80, 52, 60. Completa cada medida. Usa esta regla: Q1 y Q3 son las medianas de las mitades inferior y superior, y la mediana se deja fuera de ambas mitades cuando la cantidad es impar.",
+        "tEs": "El jardín del techo midió 11 girasoles. Alturas en centímetros: 48, 62, 55, 71, 39, 66, 58, 44, 80, 52, 60. Completa cada medida. Usa esta regla: Q1 y Q3 son las medianas de las mitades inferior y superior, y la mediana se deja fuera de ambas mitades cuando la cantidad es impar.",
         "hd": [
           "Measure",
           "Value (cm)"
@@ -223,13 +227,13 @@
         "c": [
           "Bed A has both the larger range and the larger IQR",
           "Bed B has both the larger range and the larger IQR",
-          "Bed B has the larger range (80 grams), but Bed A has the larger IQR (16 grams)",
+          "B's range is 80 g; A's middle half spreads 16 g.",
           "The two beds are equally spread out because their medians match"
         ],
         "cEs": [
           "La Cama A tiene el rango mayor y el RIC mayor",
           "La Cama B tiene el rango mayor y el RIC mayor",
-          "La Cama B tiene el rango mayor (80 gramos), pero la Cama A tiene el RIC mayor (16 gramos)",
+          "B tiene rango 80 g; la mitad central de A se dispersa 16 g.",
           "Las dos camas están igual de dispersas porque sus medianas coinciden"
         ],
         "a": 2,
@@ -381,10 +385,10 @@
       },
       {
         "k": "act",
-        "kind": "chartbuild",
-        "level": 4,
+        "kind": "boxtwins",
+        "level": 3,
         "p": {
-          "mode": "box"
+          "mode": "iqr"
         }
       },
       {
@@ -691,7 +695,7 @@
       {
         "k": "mc",
         "q": "The box plots show the heights of plants from two seed packets. Which packet gives more even plants, with a smaller IQR?",
-        "qEs": "Los diagramas de caja muestran las alturas de plantas de dos paquetes de semillas. ¿Cuál paquete da plantas más parejas, con un RIC menor?",
+        "qEs": "Los diagramas de caja muestran las alturas de plantas de dos paquetes de semillas. ¿Cuál paquete da plantas más uniformes, con un RIC menor?",
         "viz": {
           "t": "box",
           "plots": [
@@ -750,7 +754,7 @@
           "read-question-missed-key-word"
         ],
         "x": "Packet X: IQR = 40 − 20 = 20. Packet Y: IQR = 33 − 27 = 6. The smaller IQR means more even plants.",
-        "xEs": "Paquete X: RIC = 40 − 20 = 20. Paquete Y: RIC = 33 − 27 = 6. El RIC menor significa plantas más parejas.",
+        "xEs": "Paquete X: RIC = 40 − 20 = 20. Paquete Y: RIC = 33 − 27 = 6. El RIC menor significa plantas más uniformes.",
         "h": [
           "The IQR is the length of each box.",
           "Read Q1 and Q3 for each packet.",
@@ -768,13 +772,13 @@
         "qEs": "¿Puede el RIC de un conjunto de datos ser mayor que su rango?",
         "c": [
           "Yes, if the data have an extreme value",
-          "No, because the middle half is only part of the whole spread",
+          "No; the IQR is part of the range.",
           "Yes, because Q3 + Q1 is bigger than the maximum",
           "Yes, when the median is large"
         ],
         "cEs": [
           "Sí, si los datos tienen un valor extremo",
-          "No, porque la mitad central es solo una parte de toda la dispersión",
+          "No; el RIC es parte del rango.",
           "Sí, porque Q3 + Q1 es mayor que el máximo",
           "Sí, cuando la mediana es grande"
         ],
@@ -852,15 +856,15 @@
         "kw": [
           "range",
           "quartile",
-          "interquartile range",
-          "vary",
+          "interquartile",
+          "spread",
           "median"
         ],
         "kwEs": [
           "rango",
           "cuartil",
-          "rango intercuartílico",
-          "varían",
+          "intercuart",
+          "dispers",
           "mediana"
         ],
         "rubric": [
@@ -1023,7 +1027,7 @@
     },
     "explore": {
       "q": "The Rooftop Garden measured 8 bean plants, in centimeters: 5, 8, 10, 12, 16, 18, 21, 30. The IQR is the spread of the middle half. Change ONLY Plant height 6 until the IQR is 12.5.",
-      "qEs": "El Jardín de la Azotea midió 8 plantas de frijol, en centímetros: 5, 8, 10, 12, 16, 18, 21, 30. El rango intercuartílico es la dispersión de la mitad central. Cambia SOLO la altura de la planta 6 hasta que el rango intercuartílico sea 12.5.",
+      "qEs": "El Jardín del Techo midió 8 plantas de frijol, en centímetros: 5, 8, 10, 12, 16, 18, 21, 30. El rango intercuartílico es la dispersión de la mitad central. Cambia SOLO la altura de la planta 6 hasta que el rango intercuartílico sea 12.5.",
       "goal": {
         "target": 12.5,
         "free": 5
@@ -1051,13 +1055,13 @@
       "min": 80,
       "kw": [
         "range",
-        "interquartile range",
+        "interquartile",
         "quartile",
         "variability"
       ],
       "kwEs": [
         "rango",
-        "rango intercuartílico",
+        "intercuart",
         "cuartil",
         "variabilidad"
       ],
@@ -1114,14 +1118,14 @@
       "min": 100,
       "kw": [
         "range",
-        "interquartile range",
+        "interquartile",
         "quartile",
         "variability",
         "consistent"
       ],
       "kwEs": [
         "rango",
-        "rango intercuartílico",
+        "intercuart",
         "cuartil",
         "variabilidad",
         "consistente"

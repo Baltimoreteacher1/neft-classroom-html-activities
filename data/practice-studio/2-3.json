@@ -26,7 +26,8 @@
     {
       "k": "gen",
       "g": "medianFind",
-      "level": 2
+      "level": 2,
+      "shape": "reverse"
     },
     {
       "k": "gen",
@@ -36,15 +37,13 @@
     {
       "k": "gen",
       "g": "medianFind",
-      "level": 3
+      "level": 3,
+      "shape": "reverse"
     },
     {
       "k": "act",
-      "kind": "chartbuild",
-      "level": 2,
-      "p": {
-        "mode": "dot"
-      }
+      "kind": "countoff",
+      "level": 1
     }
   ],
   "challenge": {
@@ -67,16 +66,18 @@
       {
         "k": "gen",
         "g": "medianFind",
-        "level": 3
+        "level": 3,
+        "shape": "reverse"
       },
       {
         "k": "gen",
         "g": "medianFind",
-        "level": 4
+        "level": 4,
+        "shape": "reverse"
       },
       {
-        "k": "gen",
-        "g": "medianFind",
+        "k": "act",
+        "kind": "countoff",
         "level": 4
       }
     ],
@@ -158,13 +159,13 @@
         "q": "A suspect’s six alibi checks took 31, 28, 33, 30, 29, 95 minutes. One check, 95, was far longer than the rest. Which statement best describes a typical check time?",
         "qEs": "Las seis verificaciones de la coartada de un sospechoso tomaron 31, 28, 33, 30, 29, 95 minutos. Una, la de 95, fue mucho más larga que las demás. ¿Qué afirmación describe mejor un tiempo típico?",
         "c": [
-          "The median, 30.5 minutes, because the long check barely moves the middle",
+          "Median 30.5 min: one long check shifts it little.",
           "The mean, 41 minutes, because it uses every time",
           "The largest time, 95 minutes, because it stands out",
           "The median, 30 minutes, the lower middle value"
         ],
         "cEs": [
-          "La mediana, 30.5 minutos, porque la verificación larga casi no mueve el centro",
+          "Mediana 30.5 min; un dato largo cambia poco.",
           "La media, 41 minutos, porque usa todos los tiempos",
           "El tiempo mayor, 95 minutos, porque destaca",
           "La mediana, 30 minutos, el valor del medio menor"
@@ -245,11 +246,8 @@
       },
       {
         "k": "act",
-        "kind": "dotbalance",
-        "level": 4,
-        "p": {
-          "goal": "outlier"
-        }
+        "kind": "faultymed",
+        "level": 2
       },
       {
         "k": "sort",
@@ -315,7 +313,7 @@
       {
         "k": "err",
         "t": "Hiro finds the median of the clue counts 18, 5, 9, 20, 12 collected from five rooms.",
-        "tEs": "Hiro halla la mediana de los conteos de pistas 18, 5, 9, 20, 12 reunidos en cinco cuartos.",
+        "tEs": "Hiro halla la mediana de los conteos de pistas 18, 5, 9, 20, 12 reunidos en cinco habitaciones.",
         "s": [
           {
             "l": "Step 1",
@@ -333,7 +331,7 @@
             "l": "Step 3",
             "w": "So a typical room has about 9 clues.",
             "lEs": "Paso 3",
-            "wEs": "Así que un cuarto típico tiene unas 9 pistas."
+            "wEs": "Así que una habitación típica tiene unas 9 pistas."
           }
         ],
         "e": 1,
@@ -663,13 +661,13 @@
         "c": [
           "Most detectives took exactly 12 minutes",
           "All the times add up to 12 times the number of detectives",
-          "At least half of the times are 12 or less, and at least half are 12 or more",
+          "At least half took 12 min or less; half took 12 min or more.",
           "No detective took more than 12 minutes"
         ],
         "cEs": [
           "La mayoría de los detectives tardó exactamente 12 minutos",
           "Todos los tiempos suman 12 veces la cantidad de detectives",
-          "Al menos la mitad de los tiempos es 12 o menos, y al menos la mitad es 12 o más",
+          "La mitad tardó 12 min o menos; la mitad, 12 min o más.",
           "Ningún detective tardó más de 12 minutos"
         ],
         "a": 2,
@@ -946,7 +944,7 @@
       "hEs": [
         "Quita el número de testigo 1 y ordena los otros siete números.",
         "Tu número nuevo se une a ellos, así que la mediana es la media del 4.º y el 5.º número.",
-        "Una mediana de 7.5 es menor que la mediana inicial. Decide qué pareja de números podría quedar en el medio."
+        "Una mediana de 7.5 es menor que la mediana inicial. Decide qué par de números podría quedar en el medio."
       ]
     },
     "create": {
@@ -1184,13 +1182,13 @@
         "Hay 6 puntajes, así que ningún puntaje queda solo en el medio."
       ],
       "c": [
-        "Find the number halfway between the two middle scores.",
+        "Average the two middle scores.",
         "Add the two middle scores and use that sum.",
         "Take the 3rd score, 18, as the median.",
         "Add all six scores and divide by 6."
       ],
       "cEs": [
-        "Halla el número que está a la mitad entre los dos puntajes del medio.",
+        "Promedia los dos puntajes centrales.",
         "Suma los dos puntajes del medio y usa esa suma.",
         "Toma el 3.er puntaje, 18, como la mediana.",
         "Suma los seis puntajes y divide entre 6."

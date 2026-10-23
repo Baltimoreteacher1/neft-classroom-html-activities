@@ -555,15 +555,15 @@
     ),
     "stat-bigger-mean-more-spread": pair(
       "The size of the mean does not show the spread. Compare the MADs.",
-      "El tamaño de la media no muestra la dispersión. Compara las DMA.",
+      "El tamaño de la media no muestra la dispersión. Compara las DAM.",
     ),
     "stat-same-mean-same-spread": pair(
       "Two data sets can have the same mean and different spread. Compare the MADs.",
-      "Dos conjuntos de datos pueden tener la misma media y distinta dispersión. Compara las DMA.",
+      "Dos conjuntos de datos pueden tener la misma media y distinta dispersión. Compara las DAM.",
     ),
     "stat-range-for-mad": pair(
       "The range uses only the two end values. The MAD uses every value's distance from the mean.",
-      "El rango usa solo los dos valores de los extremos. La DMA usa la distancia de cada valor a la media.",
+      "El rango usa solo los dos valores de los extremos. La DAM usa la distancia de cada valor a la media.",
     ),
     "stat-mad-as-total-distance": pair(
       "That adds the distances but does not average them. Divide by how many values there are.",
@@ -584,7 +584,7 @@
     ),
     "stat-pairing-mixup": pair(
       "Pair the mean with the MAD, and the median with the IQR. Each pair uses the same kind of center.",
-      "Empareja la media con la DMA, y la mediana con el RIC. Cada pareja usa el mismo tipo de centro.",
+      "Empareja la media con la DAM, y la mediana con el RIC. Cada pareja usa el mismo tipo de centro.",
     ),
     "stat-mean-always": pair(
       "Using every value does not make the mean best. One far-away value can pull it away from where most of the data are.",
@@ -596,7 +596,7 @@
     ),
     "stat-mad-with-outlier": pair(
       "The MAD uses the mean, and an outlier pulls the mean away. Use the median and IQR for data with an outlier.",
-      "La DMA usa la media y un valor atípico la aleja. Usa la mediana y el RIC cuando hay un valor atípico.",
+      "La DAM usa la media y un valor atípico la aleja. Usa la mediana y el RIC cuando hay un valor atípico.",
     ),
     "stat-median-no-reason": pair(
       "Compare the data: with no outlier and a balanced shape, the mean describes the center well, so a reason about outliers does not fit.",
@@ -1918,7 +1918,9 @@
     title: "Read a histogram",
     titleEs: "Leer un histograma",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "reverse"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPES.histogramRead[shape].make(rng, level);
       const kind4 = level === 4 ? rng.pick(["claim", "tie", "complement"]) : "";
       const kind3 = level === 3 ? rng.pick(["percent", "diff"]) : "";
       const total =
@@ -2425,6 +2427,8 @@
       return it;
     },
     check(it) {
+      const sh = it.meta && it.meta.shape;
+      if (sh && sh !== "forward") return SHAPES.histogramRead[sh].check(it);
       const m = it.meta;
       const bins = m.bins;
       const inBins = (p) => bins.filter(p).reduce((s, b) => s + b.n, 0);
@@ -2553,7 +2557,9 @@
     title: "Find the median",
     titleEs: "Hallar la mediana",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "reverse"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPES.medianFind[shape].make(rng, level);
       const c = rng.pick(CTX);
       const meta = (kind, extra) => ({ kind, ...extra });
 
@@ -2850,6 +2856,8 @@
       });
     },
     check(it) {
+      const sh = it.meta && it.meta.shape;
+      if (sh && sh !== "forward") return SHAPES.medianFind[sh].check(it);
       const m = it.meta;
       if (m.kind === "list") return verdict(it, medC(m.data), "median");
       if (m.kind === "added")
@@ -2983,7 +2991,9 @@
     title: "Find the mean",
     titleEs: "Hallar la media",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "reverse"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPES.meanFind[shape].make(rng, level);
       const c = rng.pick(CTX);
       const meta = (kind, extra) => ({ kind, ...extra });
       const clean = (n, lo, hi, sp) => {
@@ -3295,6 +3305,8 @@
       });
     },
     check(it) {
+      const sh = it.meta && it.meta.shape;
+      if (sh && sh !== "forward") return SHAPES.meanFind[sh].check(it);
       const m = it.meta;
       switch (m.kind) {
         case "list":
@@ -3317,7 +3329,9 @@
     title: "Find the missing value",
     titleEs: "Hallar el valor que falta",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "reverse"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPES.meanMissing[shape].make(rng, level);
       const meta = (kind, extra) => ({ kind, ...extra });
       const st = rng.pick(MSTORY);
       const [o1, op] = st.obs[0];
@@ -3578,6 +3592,8 @@
       });
     },
     check(it) {
+      const sh = it.meta && it.meta.shape;
+      if (sh && sh !== "forward") return SHAPES.meanMissing[sh].check(it);
       const m = it.meta;
       const find = (build, t) => {
         const hits = [];
@@ -3728,7 +3744,9 @@
     title: "Range and interquartile range",
     titleEs: "Rango y rango intercuartílico",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "reverse"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPES.rangeIqr[shape].make(rng, level);
       const c = rng.pick(CTX);
       const meta = (kind, extra) => ({ kind, ...extra });
       const spreadList = (n) =>
@@ -4069,6 +4087,8 @@
       return it;
     },
     check(it) {
+      const sh = it.meta && it.meta.shape;
+      if (sh && sh !== "forward") return SHAPES.rangeIqr[sh].check(it);
       const m = it.meta;
       const ends = (a) => Math.max(...a) - Math.min(...a);
       switch (m.kind) {
@@ -4111,7 +4131,9 @@
     title: "Read a box plot",
     titleEs: "Leer un diagrama de caja",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "compare"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPES.boxplotRead[shape].make(rng, level);
       const bc = rng.pick(BOXCTX);
       const meta = (kind, extra) => ({ kind, ...extra });
       const plot = boxPlot(rng, bc, rGaps(rng, 1, 4));
@@ -4332,20 +4354,20 @@
       const vk = wFirst ? "B" : "A";
       const sentences = {
         T: pair(
-          `${V[0]} has the higher median and the longer box, but ${W[0]} stretches farther from one end of its whiskers to the other.`,
-          `${V[1]} tiene la mediana más alta y la caja más larga, pero ${W[1]} se extiende más de un extremo de sus bigotes al otro.`,
+          `${V[0]}: higher median and wider box; ${W[0]}: greater range.`,
+          `${V[1]}: mediana y caja mayores; ${W[1]}: rango mayor.`,
         ),
         F1: pair(
-          `${W[0]} has the higher median, because its whisker reaches farther.`,
-          `${W[1]} tiene la mediana más alta, porque su bigote llega más lejos.`,
+          `${W[0]}: higher median because its whisker reaches farther.`,
+          `${W[1]}: mediana mayor porque su bigote llega más lejos.`,
         ),
         F2: pair(
-          `${W[0]} has the longer box, because its whiskers stretch farther.`,
-          `${W[1]} tiene la caja más larga, porque sus bigotes se extienden más.`,
+          `${W[0]}: wider box because its whiskers reach farther.`,
+          `${W[1]}: caja más ancha porque sus bigotes llegan más lejos.`,
         ),
         F3: pair(
-          `${V[0]} stretches farther from end to end, because its box is longer.`,
-          `${V[1]} se extiende más de un extremo al otro, porque su caja es más larga.`,
+          `${V[0]}: greater range because its box is wider.`,
+          `${V[1]}: rango mayor porque su caja es más ancha.`,
         ),
       };
       for (const k of Object.keys(sentences)) sentences[k] = upP(sentences[k]);
@@ -4398,6 +4420,8 @@
       return it;
     },
     check(it) {
+      const sh = it.meta && it.meta.shape;
+      if (sh && sh !== "forward") return SHAPES.boxplotRead[sh].check(it);
       const m = it.meta;
       const ends = (p) => p.max - p.min;
       const box = (p) => p.q3 - p.q1;
@@ -4442,7 +4466,9 @@
     title: "Mean absolute deviation",
     titleEs: "Desviación absoluta media",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "reverse"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPES.madCalc[shape].make(rng, level);
       const c = rng.pick(CTX.filter((x) => x.hi - x.lo >= 9));
       const meta = (kind, extra) => ({ kind, ...extra });
       /** n whole numbers with a whole-number mean and a MAD that ends within one decimal place. */
@@ -4465,7 +4491,7 @@
       const madHints = [
         pair(
           "The MAD is the average distance of the values from the mean. Start with the mean.",
-          "La DMA es la distancia promedio de los valores a la media. Empieza con la media.",
+          "La DAM es la distancia promedio de los valores a la media. Empieza con la media.",
         ),
         pair(
           "Find how far each value is from the mean. Distances are never negative.",
@@ -4487,7 +4513,7 @@
             ctxList(c, v, false),
             pair(
               "To find the MAD, the first step is the mean. What is the mean of these values?",
-              "Para hallar la DMA, el primer paso es la media. ¿Cuál es la media de estos valores?",
+              "Para hallar la DAM, el primer paso es la media. ¿Cuál es la media de estos valores?",
             ),
           ),
           right: f(m),
@@ -4605,7 +4631,7 @@
             ctxList(c, v, false),
             pair(
               "Find the mean absolute deviation (MAD).",
-              "Halla la desviación absoluta media (DMA).",
+              "Halla la desviación absoluta media (DAM).",
             ),
           ),
           a: f(mad(v)),
@@ -4660,7 +4686,7 @@
             Wr,
             "stat-compared-by-range",
             "Compare the MADs. The set with the smaller MAD has values closer to the mean.",
-            "Compara las DMA. El conjunto con la DMA menor tiene valores más cerca de la media.",
+            "Compara las DAM. El conjunto con la DAM menor tiene valores más cerca de la media.",
           ),
           bad(
             pair("They are equally spread out", "Están igual de dispersos"),
@@ -4670,12 +4696,12 @@
             pair("It cannot be told", "No se puede saber"),
             "stat-no-comparison",
             "You have all the values, so you can find each MAD and compare.",
-            "Tienes todos los valores, así que puedes hallar cada DMA y compararlas.",
+            "Tienes todos los valores, así que puedes hallar cada DAM y compararlas.",
           ),
         ],
         x: pair(
           `${A[0].replace(/^./, (s) => s.toUpperCase())} has a MAD of ${f(mad(va))} and ${B[0]} has a MAD of ${f(mad(vb))}. A bigger MAD means more spread out; a smaller MAD means more consistent.`,
-          `${A[1].replace(/^./, (s) => s.toUpperCase())} tiene una DMA de ${f(mad(va))} y ${B[1]} tiene una DMA de ${f(mad(vb))}. Una DMA mayor significa más dispersión; una DMA menor significa más consistencia.`,
+          `${A[1].replace(/^./, (s) => s.toUpperCase())} tiene una DAM de ${f(mad(va))} y ${B[1]} tiene una DAM de ${f(mad(vb))}. Una DAM mayor significa más dispersión; una DAM menor significa más consistencia.`,
         ),
         h: [
           pair(
@@ -4684,17 +4710,19 @@
           ),
           pair(
             "Find the MAD of each set: distances from the mean, added, then divided by how many.",
-            "Halla la DMA de cada conjunto: distancias a la media, sumadas y divididas entre cuántas hay.",
+            "Halla la DAM de cada conjunto: distancias a la media, sumadas y divididas entre cuántas hay.",
           ),
           pair(
             "A smaller MAD means the values stay closer to the mean.",
-            "Una DMA menor significa que los valores se quedan más cerca de la media.",
+            "Una DAM menor significa que los valores se quedan más cerca de la media.",
           ),
         ],
         meta: meta("compare", { a: va, b: vb, spread, names: [up(A[0]), up(B[0])] }),
       });
     },
     check(it) {
+      const sh = it.meta && it.meta.shape;
+      if (sh && sh !== "forward") return SHAPES.madCalc[sh].check(it);
       const m = it.meta;
       switch (m.kind) {
         case "mean":
@@ -4842,12 +4870,14 @@
     title: "Choose the best measure",
     titleEs: "Elegir la mejor medida",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "reverse"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPES.chooseMeasure[shape].make(rng, level);
       const o = rng.pick(level === 2 ? OUT.filter((x) => x.dir > 0) : OUT);
       const meta = (kind, extra) => ({ kind, ...extra });
       const why = pair(
         "An outlier pulls the mean toward it, but the median stays near the middle of most of the data. When there is an outlier, use the median and the IQR. When the data is balanced with no outlier, use the mean and the MAD.",
-        "Un valor atípico jala la media hacia él, pero la mediana se queda cerca del medio de la mayoría de los datos. Cuando hay un valor atípico, usa la mediana y el RIC. Cuando los datos están balanceados y no hay valor atípico, usa la media y la DMA.",
+        "Un valor atípico jala la media hacia él, pero la mediana se queda cerca del medio de la mayoría de los datos. Cuando hay un valor atípico, usa la mediana y el RIC. Cuando los datos están balanceados y no hay valor atípico, usa la media y la DAM.",
       );
 
       /* L1: spot the outlier, or name the center that is not fooled by it */
@@ -5037,7 +5067,7 @@
         const n = rng.pick([7, 9]);
         const skew = rng.chance(0.5);
         const v = skew ? outlierSet(rng, o, n, false) : symmetricSet(rng, o, n);
-        const MM = pair("Mean and MAD", "Media y DMA");
+        const MM = pair("Mean and MAD", "Media y DAM");
         const MI = pair("Median and IQR", "Mediana y RIC");
         return MC(rng, {
           q: cat(
@@ -5052,11 +5082,11 @@
             ? [
                 bad(MM, "stat-mean-skewed-by-outlier"),
                 bad(pair("Mean and IQR", "Media y RIC"), "stat-pairing-mixup"),
-                bad(pair("Median and MAD", "Mediana y DMA"), "stat-pairing-mixup"),
+                bad(pair("Median and MAD", "Mediana y DAM"), "stat-pairing-mixup"),
               ]
             : [
                 bad(pair("Mean and IQR", "Media y RIC"), "stat-pairing-mixup"),
-                bad(pair("Median and MAD", "Mediana y DMA"), "stat-pairing-mixup"),
+                bad(pair("Median and MAD", "Mediana y DAM"), "stat-pairing-mixup"),
                 bad(pair("Mode and range", "Moda y rango"), "stat-range-for-center"),
               ],
           x: skew
@@ -5075,11 +5105,11 @@
             ),
             pair(
               "The mean goes with the MAD, because both use the mean. The median goes with the IQR, because both use the order of the data.",
-              "La media va con la DMA, porque las dos usan la media. La mediana va con el RIC, porque las dos usan el orden de los datos.",
+              "La media va con la DAM, porque las dos usan la media. La mediana va con el RIC, porque las dos usan el orden de los datos.",
             ),
             pair(
               "An outlier ruins the mean and the MAD. Pick the pair that matches your decision.",
-              "Un valor atípico arruina la media y la DMA. Elige la pareja que corresponde a tu decisión.",
+              "Un valor atípico arruina la media y la DAM. Elige la pareja que corresponde a tu decisión.",
             ),
           ],
           meta: meta("pair", { data: v }),
@@ -5138,6 +5168,8 @@
       });
     },
     check(it) {
+      const sh = it.meta && it.meta.shape;
+      if (sh && sh !== "forward") return SHAPES.chooseMeasure[sh].check(it);
       const m = it.meta;
       const fe = m.data ? fence(m.data) : null;
       switch (m.kind) {
@@ -5182,4 +5214,1025 @@
       }
     },
   });
+  /* ======================================================================================== */
+  /* Problem shapes (studio v4). make(rng, level, shape) of medianFind, meanFind, meanMissing,   */
+  /* rangeIqr, boxplotRead, histogramRead, madCalc and chooseMeasure hands any shape other than  */
+  /* "forward" to SHAPES[id][shape].make; check() does the same by item.meta.shape. Reverse =   */
+  /* "which data gives this statistic", compare = "which group has more". Wrong choices are      */
+  /* named slips; check() recounts each list by rank counting (medC, fiveC, meanC).              */
+  /* ======================================================================================== */
+  const LNOUN = [
+    pair("quiz scores", "puntajes de pruebas"),
+    pair("minutes of practice", "minutos de práctica"),
+    pair("points in a game", "puntos en un juego"),
+    pair("pages read", "páginas leídas"),
+    pair("pets owned", "mascotas"),
+    pair("laps run", "vueltas corridas"),
+  ];
+  const STAT = {
+    median: (s) => midOf(asc(s)),
+    mean: (s) => mean(s),
+    range: (s) => Math.max(...s) - Math.min(...s),
+    iqr: (s) => {
+      const q = five(s);
+      return q.q3 - q.q1;
+    },
+    written: (s) => s[s.length >> 1],
+    midrange: (s) => (Math.min(...s) + Math.max(...s)) / 2,
+    mode: (s) => modeOfList(s),
+    iqrKept: (s) => {
+      const k = fiveKept(s);
+      return k.q3 - k.q1;
+    },
+    upperMid: (s) => asc(s)[s.length >> 1],
+    maxv: (s) => Math.max(...s),
+    ends: (s) => Math.max(...s) + Math.min(...s),
+  };
+  const STATC = {
+    median: medC,
+    mean: meanC,
+    range: (a) => Math.max(...a) - Math.min(...a),
+    iqr: (a) => {
+      const q = fiveC(a);
+      return q.q3 - q.q1;
+    },
+  };
+  const PHRASE = {
+    median: pair("a median of", "una mediana de"),
+    mean: pair("a mean of", "una media de"),
+    range: pair("a range of", "un rango de"),
+    iqr: pair("an IQR of", "un RIC de"),
+  };
+  const STATWORD = {
+    median: pair("median", "mediana"),
+    mean: pair("mean", "media"),
+    range: pair("range", "rango"),
+    iqr: pair("IQR", "RIC"),
+    written: pair("middle number as written", "número del medio tal como está escrito"),
+    midrange: pair(
+      "number halfway between the least and the greatest",
+      "número a la mitad entre el menor y el mayor",
+    ),
+    mode: pair("most common number", "número más común"),
+    iqrKept: pair(
+      "IQR with the median kept in both halves",
+      "RIC con la mediana incluida en las dos mitades",
+    ),
+    upperMid: pair("upper middle number", "número del medio de arriba"),
+    maxv: pair("greatest number", "número mayor"),
+    ends: pair("greatest and least added together", "el mayor y el menor sumados"),
+  };
+  /** The one-line reason a decoy list is wrong, from what it really has. */
+  const ART = { median: "la", mean: "la", range: "el", iqr: "el", ends: "la" };
+  const decoyFb = (target, trap, X, D) => {
+    const tv = STAT[target](D);
+    const [te, ts] = STATWORD[target];
+    const [we, ws] = STATWORD[trap];
+    const extra = {
+      written: [
+        " The numbers are not in order, so the middle of the list as written is not the median.",
+        " Los números no están en orden, así que el medio de la lista tal como está escrita no es la mediana.",
+      ],
+      mean:
+        target === "median"
+          ? [
+              " The median is the middle of the ordered list, not the total shared equally.",
+              " La mediana es el medio de la lista ordenada, no el total repartido en partes iguales.",
+            ]
+          : ["", ""],
+      range:
+        target === "iqr"
+          ? [
+              " The IQR is Q3 − Q1, not the greatest minus the least.",
+              " El RIC es Q3 − Q1, no el mayor menos el menor.",
+            ]
+          : ["", ""],
+      iqrKept: [
+        " Quartiles are the medians of the lower and upper halves, and the median is left out of both halves when the count is odd.",
+        " Los cuartiles son las medianas de las mitades de abajo y de arriba, y la mediana queda fuera de las dos mitades cuando la cantidad es impar.",
+      ],
+    }[trap] || ["", ""];
+    return pair(
+      `In this list the ${we} is ${f(X)}, but the ${te} is ${f(tv, 2)}.${extra[0]}`,
+      `En esta lista ${ART[trap] || "el"} ${ws} es ${f(X)}, pero ${ART[target]} ${ts} es ${f(tv, 2)}.${extra[1]}`,
+    );
+  };
+  const listKey = (a) => a.join(", ");
+
+  /** Build one decoy list whose `trap` statistic is X while its `target` statistic is not. null when none was found. */
+  const makeDecoy = (rng, target, trap, X, n, lo, hi, R) => {
+    const win = hi - lo;
+    const base = () => Array.from({ length: n }, () => rng.int(lo, hi));
+    const gens = {
+      mean: () => withMean(rng, n, X, Math.max(2, win >> 1), lo, hi),
+      median: () => {
+        const h = n >> 1;
+        const low = Array.from({ length: h }, () => rng.int(lo, Math.max(lo, X)));
+        const up = Array.from({ length: h }, () => rng.int(Math.min(hi, X), hi));
+        return [...low, ...(n % 2 ? [X] : [X, X]).slice(0, n - 2 * h), ...up];
+      },
+      mode: () => {
+        const d = base();
+        const k = rng.int(2, 3);
+        rng
+          .shuffle(d.map((_v, i) => i))
+          .slice(0, k)
+          .forEach((i) => {
+            d[i] = X;
+          });
+        return d;
+      },
+      midrange: () => {
+        const a = rng.int(2, Math.max(2, win >> 1));
+        const d = Array.from({ length: n - 2 }, () =>
+          rng.int(Math.max(lo, X - a), Math.min(hi, X + a)),
+        );
+        return [X - a, ...d, X + a];
+      },
+      written: () => {
+        const d = base();
+        d[rng.int(0, n - 1)] = X;
+        return d;
+      },
+      upperMid: () => {
+        const s = asc(base());
+        s[n >> 1] = X;
+        return asc(s);
+      },
+      range: () => {
+        const m = rng.int(lo, Math.max(lo, hi - X));
+        const d = Array.from({ length: n - 2 }, () => m + rng.int(0, X));
+        return [m, ...d, m + X];
+      },
+      iqrKept: () => base(),
+      maxv: () => {
+        const d = Array.from({ length: n - 1 }, () => rng.int(lo, Math.max(lo, X - 1)));
+        return [...d, X];
+      },
+      ends: () => {
+        const a = rng.int(lo, Math.max(lo, X >> 1));
+        return [a, ...Array.from({ length: n - 2 }, () => rng.int(a, Math.max(a, X - a))), X - a];
+      },
+      iqr: () => base(),
+    };
+    const ok = (d) =>
+      d.length === n &&
+      d.every((v) => Number.isInteger(v) && v >= 0) &&
+      near(STAT[trap](d), X) &&
+      !near(STAT[target](d), X) &&
+      listKey(asc(d)) !== listKey(asc(R)) &&
+      (trap !== "written" || d[n >> 1] === X);
+    const make = () => {
+      const d = gens[trap]();
+      if (trap === "written") {
+        const i = d.indexOf(X);
+        if (i >= 0) [d[n >> 1], d[i]] = [d[i], d[n >> 1]];
+        return d;
+      }
+      return rng.shuffle(d);
+    };
+    const d = until(make, ok, 900);
+    return ok(d) ? d : null;
+  };
+
+  /**
+   * "Which list has <statistic> X?" One list is right, three are the lists a student would pick by mixing up the
+   * statistic. Level 1 shows every list in order from least to greatest, so only the statistic itself is tested.
+   */
+  const whichList = (rng, level, target, specs, shape) => {
+    const [noun, nounEs] = rng.pick(LNOUN);
+    const n = { median: [5, 7, 6, 9], mean: [4, 5, 6, 6], iqr: [8, 9, 10, 12] }[
+      target === "range" ? "iqr" : target
+    ][level - 1];
+    const lo = rng.int(2, 12);
+    const hi = lo + { median: 14, mean: 12, iqr: 24 }[target === "range" ? "iqr" : target];
+    const ordered = level === 1;
+    let R = until(
+      () => {
+        if (target === "mean") return withMean(rng, n, rng.int(lo + 4, hi - 4), 5, lo, hi);
+        return Array.from({ length: n }, () => rng.int(lo, hi));
+      },
+      (d) => {
+        const X = STAT[target](d);
+        const s = asc(d);
+        if (!Number.isInteger(X) || new Set(d).size < Math.min(n - 1, 5)) return false;
+        if (target === "median")
+          return (
+            !near(mean(d), X) &&
+            (n % 2 || s[n / 2 - 1] !== s[n / 2]) &&
+            d.filter((v) => v === X).length <= 2
+          );
+        if (target === "iqr")
+          return X >= 4 && X < STAT.range(d) - 2 && (n % 2 === 0 || !near(STAT.iqrKept(d), X));
+        if (target === "range") return X >= 6;
+        return true;
+      },
+      1500,
+    );
+    const X = STAT[target](R);
+    if (!ordered && target === "median") R = scramble(rng, R, X);
+    const dec = [];
+    const seen = new Set([listKey(asc(R))]);
+    for (const [trap, tag] of specs) {
+      if (ordered && trap === "written") continue;
+      const D = makeDecoy(rng, target, trap, X, n, lo, hi + 6, R);
+      if (!D || seen.has(listKey(asc(D)))) continue;
+      seen.add(listKey(asc(D)));
+      dec.push([D, trap, tag]);
+    }
+    const show = (d) => listKey(ordered ? asc(d) : d);
+    const fb = (d, trap) => decoyFb(target, trap, X, d);
+    const word = PHRASE[target];
+    const xpl = {
+      median: pair(
+        `Put each list in order and find its middle. The right list in order is ${list(asc(R))}, so its median is ${f(X)}.`,
+        `Ordena cada lista y busca su medio. La lista correcta en orden es ${list(asc(R))}, así que su mediana es ${f(X)}.`,
+      ),
+      mean: pair(
+        `Add the numbers of each list and divide by how many there are. The right list adds to ${sum(R)}, and ${sum(R)} ÷ ${n} = ${f(X)}.`,
+        `Suma los números de cada lista y divide entre cuántos hay. La lista correcta suma ${sum(R)}, y ${sum(R)} ÷ ${n} = ${f(X)}.`,
+      ),
+      iqr: pair(
+        `Order each list, then find Q1 and Q3 from the lower and upper halves. The right list in order is ${list(asc(R))}. Its IQR is ${f(X)}.`,
+        `Ordena cada lista y halla Q1 y Q3 con las mitades de abajo y de arriba. La lista correcta en orden es ${list(asc(R))}. Su RIC es ${f(X)}.`,
+      ),
+      range: pair(
+        `The range is the greatest number minus the least number. The right list in order is ${list(asc(R))}, so its range is ${f(X)}.`,
+        `El rango es el número mayor menos el número menor. La lista correcta en orden es ${list(asc(R))}, así que su rango es ${f(X)}.`,
+      ),
+    }[target];
+    const hints = {
+      median: [
+        pair(
+          "Check one list at a time. Put its numbers in order first.",
+          "Revisa una lista a la vez. Ordena primero sus números.",
+        ),
+        pair(
+          "The median is the middle number of the ordered list. With an even count it is halfway between the two middle numbers.",
+          "La mediana es el número del medio de la lista ordenada. Con una cantidad par está a la mitad entre los dos números del medio.",
+        ),
+        pair(
+          "Cross off one number from each end until the middle is left.",
+          "Tacha un número de cada extremo hasta que quede el medio.",
+        ),
+      ],
+      mean: [
+        pair("Check one list at a time.", "Revisa una lista a la vez."),
+        pair(
+          "The mean is the total shared equally: add the numbers, then divide by how many there are.",
+          "La media es el total repartido en partes iguales: suma los números y divide entre cuántos hay.",
+        ),
+        pair(
+          "Find the total of a list first. Does the total divided by the count give the number you want?",
+          "Halla primero el total de una lista. ¿El total entre la cantidad da el número que buscas?",
+        ),
+      ],
+      iqr: [
+        pair(
+          "Check one list at a time. Put its numbers in order first.",
+          "Revisa una lista a la vez. Ordena primero sus números.",
+        ),
+        pair(
+          "Q1 is the median of the lower half. Q3 is the median of the upper half. The IQR is Q3 − Q1.",
+          "Q1 es la mediana de la mitad de abajo. Q3 es la mediana de la mitad de arriba. El RIC es Q3 − Q1.",
+        ),
+        pair(
+          "With an odd count, leave the median out of both halves.",
+          "Con una cantidad impar, deja la mediana fuera de las dos mitades.",
+        ),
+      ],
+      range: [
+        pair("Check one list at a time.", "Revisa una lista a la vez."),
+        pair(
+          "The range uses only the greatest and the least number.",
+          "El rango usa solo el número mayor y el menor.",
+        ),
+        pair(
+          "Subtract the least number from the greatest number.",
+          "Resta el número menor del número mayor.",
+        ),
+      ],
+    }[target];
+    const asTarget = target === "range" ? "range" : target;
+    return MC(rng, {
+      q: pair(
+        `Each list has ${n} numbers (${noun}). Which list has ${word[0]} ${f(X)}?`,
+        `Cada lista tiene ${n} números (${nounEs}). ¿Cuál lista tiene ${word[1]} ${f(X)}?`,
+      ),
+      right: show(R),
+      wrong: dec.map(([D, trap, tag]) => [show(D), tag, fb(D, trap)]),
+      x: xpl,
+      h: hints,
+      meta: { shape, kind: "which", target: asTarget, X, n },
+    });
+  };
+  const parseList = (s) =>
+    String(s)
+      .split(",")
+      .map((v) => Number(v.trim()));
+  const checkWhich = (it) => {
+    const m = it.meta;
+    const fn = STATC[m.target];
+    const key = parseList(it.c[it.a]);
+    if (!near(fn(key), m.X)) return `key list has ${m.target} ${f(fn(key), 3)}, not ${m.X}`;
+    const dup = it.c.findIndex((c, i) => i !== it.a && near(fn(parseList(c)), m.X));
+    return dup < 0 || `choice ${dup} also has ${m.target} ${m.X}`;
+  };
+
+  /* typed "reverse" problems about a mean ------------------------------------------------------ */
+  const badV = (v, tag, en, es) => [v, tag, pair(en, es)];
+  const meanReverse = (rng, level, shape) => {
+    const c = rng.pick(LNOUN);
+    const N = level === 1 ? rng.int(4, 6) : level === 2 ? rng.int(5, 8) : rng.int(5, 9);
+    const M = rng.int(6, 24);
+    const T = N * M;
+    let q;
+    let a;
+    let fw;
+    let x;
+    let kind;
+    if (level === 1) {
+      kind = "total";
+      a = T;
+      q = pair(
+        `The mean of ${N} numbers (${c[0]}) is ${M}. What is the total of the ${N} numbers?`,
+        `La media de ${N} números (${c[1]}) es ${M}. ¿Cuál es el total de los ${N} números?`,
+      );
+      fw = [
+        badV(
+          M,
+          "stat-mean-total-confused",
+          "That is the mean, not the total. The mean is the total shared equally among the numbers.",
+          "Esa es la media, no el total. La media es el total repartido en partes iguales entre los números.",
+        ),
+        badV(
+          N + M,
+          "stat-mean-total-confused",
+          "You added the mean and the count. The total is the mean taken once for each number.",
+          "Sumaste la media y la cantidad. El total es la media tomada una vez por cada número.",
+        ),
+        badV(
+          T - N,
+          "stat-miscount",
+          "Close, but the total is the mean times the count.",
+          "Casi, pero el total es la media por la cantidad.",
+        ),
+      ];
+      x = pair(
+        `The mean is the total shared equally, so the total is the mean times the count: ${M} × ${N} = ${T}.`,
+        `La media es el total repartido en partes iguales, así que el total es la media por la cantidad: ${M} × ${N} = ${T}.`,
+      );
+    } else if (level === 2) {
+      kind = "removed";
+      const V = rng.int(Math.max(1, M - 6), M + 8);
+      a = T - V;
+      q = pair(
+        `The mean of ${N} numbers (${c[0]}) is ${M}. One of the numbers, ${V}, is taken away. What is the total of the other ${N - 1} numbers?`,
+        `La media de ${N} números (${c[1]}) es ${M}. Se quita uno de los números, ${V}. ¿Cuál es el total de los otros ${N - 1} números?`,
+      );
+      fw = [
+        badV(
+          T,
+          "stat-mean-total-confused",
+          "That is the total of all the numbers. One number was taken away.",
+          "Ese es el total de todos los números. Se quitó un número.",
+        ),
+        badV(
+          M * (N - 1),
+          "stat-mean-total-confused",
+          "That treats every number as the mean. The number that was taken away is not the mean.",
+          "Eso trata cada número como si fuera la media. El número que se quitó no es la media.",
+        ),
+        badV(
+          T + V,
+          "stat-miscount",
+          "Taking a number away makes the total smaller, not larger.",
+          "Quitar un número hace el total más pequeño, no más grande.",
+        ),
+      ];
+      x = pair(
+        `The total of all ${N} numbers is ${M} × ${N} = ${T}. Take away ${V}: ${T} − ${V} = ${a}.`,
+        `El total de los ${N} números es ${M} × ${N} = ${T}. Quita ${V}: ${T} − ${V} = ${a}.`,
+      );
+    } else if (level === 3) {
+      kind = "meanOthers";
+      let V;
+      let ok = false;
+      for (let t = 0; t < 200 && !ok; t++) {
+        V = rng.int(Math.max(1, M - 12), M + 12);
+        ok = V !== M && (T - V) % (N - 1) === 0;
+      }
+      a = (T - V) / (N - 1);
+      q = pair(
+        `The mean of ${N} numbers (${c[0]}) is ${M}. One of the numbers, ${V}, is taken away. What is the mean of the other ${N - 1} numbers?`,
+        `La media de ${N} números (${c[1]}) es ${M}. Se quita uno de los números, ${V}. ¿Cuál es la media de los otros ${N - 1} números?`,
+      );
+      fw = [
+        badV(
+          M,
+          "stat-mean-total-confused",
+          "The mean does not stay the same when a number that is not the mean is taken away.",
+          "La media no se queda igual cuando se quita un número que no es la media.",
+        ),
+        badV(
+          T - V,
+          "stat-mean-total-confused",
+          "That is the total of the other numbers. Divide it by how many numbers are left.",
+          "Ese es el total de los otros números. Divídelo entre cuántos números quedan.",
+        ),
+        badV(
+          f((T - V) / N, 2),
+          "stat-summed-instead-of-averaged",
+          "You divided by the old count. Only the numbers that are left count now.",
+          "Dividiste entre la cantidad anterior. Ahora solo cuentan los números que quedan.",
+        ),
+      ];
+      x = pair(
+        `The total of all ${N} numbers is ${T}. Without ${V} the total is ${T - V}, shared among ${N - 1} numbers: ${T - V} ÷ ${N - 1} = ${a}.`,
+        `El total de los ${N} números es ${T}. Sin ${V} el total es ${T - V}, repartido entre ${N - 1} números: ${T - V} ÷ ${N - 1} = ${a}.`,
+      );
+      void V;
+    } else {
+      kind = "leftOut";
+      const M2 = rng.int(Math.max(2, M - 4), M + 4);
+      const V = N * M - (N - 1) * M2;
+      a = V;
+      q = pair(
+        `The mean of ${N} numbers (${c[0]}) is ${M}. When one number is left out, the mean of the other ${N - 1} numbers is ${M2}. What number was left out?`,
+        `La media de ${N} números (${c[1]}) es ${M}. Cuando se deja fuera un número, la media de los otros ${N - 1} números es ${M2}. ¿Qué número se dejó fuera?`,
+      );
+      fw = [
+        badV(
+          M - M2,
+          "stat-mean-total-confused",
+          "That is how much the mean changed, not the number that was left out.",
+          "Eso es cuánto cambió la media, no el número que se dejó fuera.",
+        ),
+        badV(
+          N * M - M2,
+          "stat-mean-total-confused",
+          "Subtract the total of the other numbers, not their mean.",
+          "Resta el total de los otros números, no su media.",
+        ),
+        badV(
+          M * (N - 1) - M2 * (N - 1),
+          "stat-mean-total-confused",
+          "That is the change in the mean times the smaller count. Compare the two totals instead.",
+          "Eso es el cambio de la media por la cantidad menor. Compara mejor los dos totales.",
+        ),
+      ];
+      x = pair(
+        `All ${N} numbers add to ${M} × ${N} = ${N * M}. The other ${N - 1} add to ${M2} × ${N - 1} = ${(N - 1) * M2}. The number left out is ${N * M} − ${(N - 1) * M2} = ${a}.`,
+        `Los ${N} números suman ${M} × ${N} = ${N * M}. Los otros ${N - 1} suman ${M2} × ${N - 1} = ${(N - 1) * M2}. El número que se dejó fuera es ${N * M} − ${(N - 1) * M2} = ${a}.`,
+      );
+    }
+    const hints = [
+      pair(
+        "The mean is the total shared equally. Total = mean × how many numbers.",
+        "La media es el total repartido en partes iguales. Total = media × cuántos números.",
+      ),
+      pair(
+        "Work with totals, not means: find the total each statement gives.",
+        "Trabaja con totales, no con medias: halla el total que da cada enunciado.",
+      ),
+      pair(
+        "Write down each total, then use subtraction or division to reach what the question asks.",
+        "Escribe cada total y usa resta o división para llegar a lo que pide la pregunta.",
+      ),
+    ];
+    return NUM({
+      q,
+      a: String(a),
+      fw,
+      x,
+      h: hints,
+      meta: { shape, kind, N, M, a, q: q[0] },
+    });
+  };
+  const checkMeanReverse = (it) => {
+    const m = it.meta;
+    const t = m.N * m.M;
+    const nums = (m.q.match(/\d+/g) || []).map(Number);
+    let want;
+    if (m.kind === "total") want = t;
+    else if (m.kind === "removed") want = t - nums[2];
+    else if (m.kind === "meanOthers") want = (t - nums[2]) / (m.N - 1);
+    else want = t - (m.N - 1) * nums[3];
+    return near(G.value(it.a), want) || `key ${it.a} but the totals give ${want}`;
+  };
+
+  /* madCalc: the total distance and the MAD ------------------------------------------------------ */
+  const madReverse = (rng, level, shape) => {
+    const c = rng.pick(LNOUN);
+    const n = level === 1 ? rng.int(4, 9) : level === 2 ? rng.int(5, 10) : rng.int(5, 9);
+    const d =
+      level === 1
+        ? rng.int(2, 9)
+        : level === 2
+          ? rng.int(2, 12)
+          : rng.int(2, 6) + (rng.chance(0.5) ? 0.5 : 0);
+    const total = d * n;
+    let q;
+    let a;
+    let fw;
+    let x;
+    let kind;
+    if (level <= 2) {
+      kind = "total";
+      a = total;
+      q = pair(
+        `A set of ${n} numbers (${c[0]}) has a MAD of ${f(d)}. What is the total distance of the numbers from the mean?`,
+        `Un conjunto de ${n} números (${c[1]}) tiene una DAM de ${f(d)}. ¿Cuál es la distancia total de los números a la media?`,
+      );
+      fw = [
+        badV(
+          f(d),
+          "stat-summed-instead-of-averaged",
+          "That is the MAD itself, the average distance. The total distance is the average distance for every number.",
+          "Esa es la DAM misma, la distancia promedio. La distancia total es la distancia promedio por cada número.",
+        ),
+        badV(
+          f(d + n),
+          "stat-mad-misread",
+          "You added the MAD and the count. Think of the MAD as a distance shared equally among the numbers.",
+          "Sumaste la DAM y la cantidad. Piensa en la DAM como una distancia repartida en partes iguales entre los números.",
+        ),
+        badV(
+          f(total / 2),
+          "stat-mad-misread",
+          "Check the count: the total distance is the MAD times how many numbers there are.",
+          "Revisa la cantidad: la distancia total es la DAM por cuántos números hay.",
+        ),
+      ];
+      x = pair(
+        `MAD is the total distance divided by the count, so the total distance is the MAD times the count: ${f(d)} × ${n} = ${f(total)}.`,
+        `La DAM es la distancia total dividida entre la cantidad, así que la distancia total es la DAM por la cantidad: ${f(d)} × ${n} = ${f(total)}.`,
+      );
+    } else {
+      kind = "missing";
+      const dists = Array.from({ length: n - 1 }, () => 0);
+      let rest = total;
+      for (let i = 0; i < n - 1; i++) {
+        const maxv = Math.max(1, Math.floor(rest - (n - 1 - i) * 0.5));
+        const v =
+          i === n - 2
+            ? Math.min(maxv, Math.max(1, Math.round(rest / 2)))
+            : Math.max(1, Math.min(rng.int(1, Math.max(1, Math.ceil(total / n) + 3)), maxv));
+        dists[i] = v;
+        rest -= v;
+      }
+      const known = sum(dists);
+      a = total - known;
+      if (a < 0.5) {
+        dists[0] = Math.max(1, dists[0] + Math.floor(a) - 1);
+        a = total - sum(dists);
+      }
+      q = pair(
+        `A set of ${n} numbers (${c[0]}) has a MAD of ${f(d)}. The distances of ${n - 1} of the numbers from the mean are ${list(dists)}. What is the distance of the last number from the mean?`,
+        `Un conjunto de ${n} números (${c[1]}) tiene una DAM de ${f(d)}. Las distancias de ${n - 1} de los números a la media son ${list(dists)}. ¿Cuál es la distancia del último número a la media?`,
+      );
+      fw = [
+        badV(
+          f(d),
+          "stat-summed-instead-of-averaged",
+          "That is the average distance, not the last distance. The distances must add to the MAD times the count.",
+          "Esa es la distancia promedio, no la última distancia. Las distancias deben sumar la DAM por la cantidad.",
+        ),
+        badV(
+          f(d - sum(dists)),
+          "stat-mad-misread",
+          "You subtracted from the MAD. The MAD is an average; use the total distance instead.",
+          "Restaste de la DAM. La DAM es un promedio; usa mejor la distancia total.",
+        ),
+        badV(
+          f(total),
+          "stat-mad-misread",
+          "That is the total distance of all the numbers. Subtract the distances you already know.",
+          "Esa es la distancia total de todos los números. Resta las distancias que ya conoces.",
+        ),
+      ];
+      x = pair(
+        `The distances must add to ${f(d)} × ${n} = ${f(total)}. The known distances add to ${f(known)}, so the last distance is ${f(total)} − ${f(known)} = ${f(a)}.`,
+        `Las distancias deben sumar ${f(d)} × ${n} = ${f(total)}. Las distancias conocidas suman ${f(known)}, así que la última distancia es ${f(total)} − ${f(known)} = ${f(a)}.`,
+      );
+      void known;
+    }
+    const hints = [
+      pair(
+        "MAD is the mean absolute deviation: the average distance from the mean.",
+        "La DAM es la desviación absoluta media: la distancia promedio a la media.",
+      ),
+      pair(
+        "An average times the count gives the total: MAD × count = total distance.",
+        "Un promedio por la cantidad da el total: DAM × cantidad = distancia total.",
+      ),
+      pair(
+        "Write the total distance first. Then decide whether to use it directly or to subtract.",
+        "Escribe primero la distancia total. Luego decide si usarla directamente o restar.",
+      ),
+    ];
+    return NUM({
+      q,
+      a: String(f(a)),
+      fw,
+      x,
+      h: hints,
+      meta: { shape, kind, n, d, q: q[0] },
+    });
+  };
+  const checkMadReverse = (it) => {
+    const m = it.meta;
+    const total = m.d * m.n;
+    if (m.kind === "total")
+      return near(G.value(it.a), total) || `key ${it.a} but total distance is ${total}`;
+    const nums = (m.q.match(/\d+(?:\.\d+)?/g) || []).map(Number);
+    const known = nums.slice(-(m.n - 1) - 0).slice(0, m.n - 1);
+    const want = total - sum(nums.slice(nums.length - m.n + 1));
+    void known;
+    return near(G.value(it.a), want) || `key ${it.a} but the distances give ${want}`;
+  };
+
+  /* boxplotRead: compare two box plots ------------------------------------------------------------ */
+  const boxCompare = (rng, level, shape) => {
+    const bc = rng.pick(BOXCTX);
+    const names = rng.pick(NAMES);
+    const [A, B] = (() => {
+      for (let t = 0; t < 400; t++) {
+        const a = boxPlot(rng, bc, rGaps(rng, 1, 4));
+        const b = boxPlot(rng, bc, rGaps(rng, 1, 4));
+        const ia = a.q3 - a.q1;
+        const ib = b.q3 - b.q1;
+        if (ia === ib) continue;
+        const bigA = ia > ib;
+        const rangeSwap = a.max - a.min > b.max - b.min !== bigA && a.max - a.min !== b.max - b.min;
+        const medSwap = a.med > b.med !== bigA && a.med !== b.med;
+        if (level >= 2 && !rangeSwap) continue;
+        if (level >= 3 && !medSwap) continue;
+        return [a, b];
+      }
+      return [boxPlot(rng, bc, [1, 1, 2, 3]), boxPlot(rng, bc, [2, 2, 1, 1])];
+    })();
+    const iqrA = A.q3 - A.q1;
+    const iqrB = B.q3 - B.q1;
+    const win = iqrA > iqrB ? 0 : 1;
+    const nm = [names[0], names[1]];
+    const cap = (p) => pair(up(p[0]), up(p[1]));
+    const other = 1 - win;
+    const rangeOf = (p) => p.max - p.min;
+    const plots = [A, B];
+    const wrongTag =
+      rangeOf(plots[other]) > rangeOf(plots[win]) ? "stat-range-for-iqr" : "stat-box-plot-misread";
+    return MC(rng, {
+      q: pair(
+        `The box plots show ${bc.desc[0]} for ${nm[0][0]} and ${nm[1][0]}. Which group has the greater IQR?`,
+        `Los diagramas de caja muestran ${bc.desc[1]} de ${nm[0][1]} y ${nm[1][1]}. ¿Cuál grupo tiene el RIC mayor?`,
+      ),
+      right: cap(nm[win]),
+      wrong: [
+        [
+          cap(nm[other]),
+          wrongTag,
+          pair(
+            wrongTag === "stat-range-for-iqr"
+              ? `That group has the longer whiskers, so a greater range. The IQR is only the width of the box, from Q1 to Q3.`
+              : `Compare the width of the boxes, from Q1 to Q3. That group's box is not the wider one.`,
+            wrongTag === "stat-range-for-iqr"
+              ? `Ese grupo tiene los bigotes más largos, así que un rango mayor. El RIC es solo el ancho de la caja, de Q1 a Q3.`
+              : `Compara el ancho de las cajas, de Q1 a Q3. La caja de ese grupo no es la más ancha.`,
+          ),
+        ],
+        [
+          pair("The IQRs are the same", "Los RIC son iguales"),
+          "stat-spread-misjudged",
+          pair(
+            "The boxes are not the same width. Compare Q3 − Q1 for each group.",
+            "Las cajas no tienen el mismo ancho. Compara Q3 − Q1 de cada grupo.",
+          ),
+        ],
+        [
+          pair("You cannot tell from a box plot", "No se puede saber con un diagrama de caja"),
+          "stat-box-plot-misread",
+          pair(
+            "A box plot shows Q1 and Q3, so you can find each IQR and compare them.",
+            "Un diagrama de caja muestra Q1 y Q3, así que puedes hallar cada RIC y compararlos.",
+          ),
+        ],
+      ],
+      viz: boxViz(
+        bc,
+        plots,
+        nm.map((p) => cap(p)),
+      ),
+      x: pair(
+        `The IQR is Q3 − Q1. ${up(nm[0][0])}: ${A.q3} − ${A.q1} = ${iqrA}. ${up(nm[1][0])}: ${B.q3} − ${B.q1} = ${iqrB}. ${up(nm[win][0])} has the greater IQR.`,
+        `El RIC es Q3 − Q1. ${up(nm[0][1])}: ${A.q3} − ${A.q1} = ${iqrA}. ${up(nm[1][1])}: ${B.q3} − ${B.q1} = ${iqrB}. ${up(nm[win][1])} tiene el RIC mayor.`,
+      ),
+      h: [
+        pair("The IQR is the width of the box.", "El RIC es el ancho de la caja."),
+        pair(
+          "Read Q1 and Q3 for each group from the scale.",
+          "Lee Q1 y Q3 de cada grupo en la escala.",
+        ),
+        pair(
+          "Subtract Q1 from Q3 for each group, then compare.",
+          "Resta Q1 de Q3 en cada grupo y luego compara.",
+        ),
+      ],
+      meta: { shape, kind: "compare", plots, names: nm.map((p) => up(p[0])) },
+    });
+  };
+  const checkBoxCompare = (it) => {
+    const m = it.meta;
+    const iq = m.plots.map((p) => p.q3 - p.q1);
+    const win = iq[0] > iq[1] ? 0 : 1;
+    if (iq[0] === iq[1]) return "equal IQRs";
+    return it.c[it.a] === m.names[win] || `key ${it.c[it.a]} but the wider box is ${m.names[win]}`;
+  };
+
+  /* histogramRead: which frequency table matches the list ----------------------------------------- */
+  const tableOf = (data, w, start, cnt) => {
+    const top = Math.max(...data);
+    const bins = [];
+    for (let s = start; s <= top; s += w) bins.push(s);
+    return bins
+      .map(
+        (s, i) =>
+          `${s}–${s + w - 1}: ${cnt ? cnt[i] : data.filter((v) => v >= s && v < s + w).length}`,
+      )
+      .join(", ");
+  };
+  const histTable = (rng, level, shape) => {
+    const [noun, nounEs] = rng.pick(LNOUN);
+    const w = level <= 2 ? 5 : 10;
+    const n = rng.int(10, 14);
+    const base = rng.pick([0, 10, 20]);
+    const data = until(
+      () =>
+        Array.from(
+          { length: n },
+          () => base + Math.floor(((rng.next() + rng.next()) / 2) * w * rng.int(3, 4)),
+        ),
+      (d) =>
+        new Set(d).size >= 6 &&
+        Math.floor((Math.max(...d) - base) / w) >= 2 &&
+        d.every((v) => v % w !== w - 1 || true),
+    );
+    const startAt = base;
+    const right = tableOf(data, w, startAt);
+    const countsOf = (arr, s) => tableOf(arr, w, s);
+    const shifted = countsOf(
+      data.map((v) => v + 1),
+      startAt,
+    );
+    const drop = [...data];
+    drop.splice(rng.int(0, n - 1), 1);
+    const dropped = countsOf(drop, startAt);
+    const more = [...data, data[rng.int(0, n - 1)]];
+    const extra = countsOf(more, startAt);
+    const cnt = right.split(", ").map((t) => Number(t.split(": ")[1]));
+    const swapped = tableOf(data, w, startAt, cnt.slice().reverse());
+    return MC(rng, {
+      q: pair(
+        `${n} students gave ${noun}: ${list(rng.shuffle(data))}. Which table shows them in intervals of ${w}?`,
+        `${n} estudiantes dieron ${nounEs}: ${list(rng.shuffle(data))}. ¿Cuál tabla los muestra en intervalos de ${w}?`,
+      ),
+      right,
+      wrong: [
+        [
+          shifted,
+          "stat-histogram-bin-misread",
+          pair(
+            "Some values sit on an interval boundary and landed in the next interval. Check which interval each value belongs in; the first number of an interval is included.",
+            "Algunos valores están en el borde de un intervalo y cayeron en el siguiente. Revisa en qué intervalo va cada valor; el primer número de un intervalo sí se incluye.",
+          ),
+        ],
+        [
+          dropped,
+          "stat-data-miscounted",
+          pair(
+            `These counts add up to ${n - 1}. There are ${n} values, so one value was not counted.`,
+            `Estas cantidades suman ${n - 1}. Hay ${n} valores, así que un valor no se contó.`,
+          ),
+        ],
+        [
+          extra,
+          "stat-data-miscounted",
+          pair(
+            `These counts add up to ${n + 1}. There are only ${n} values, so one value was counted twice.`,
+            `Estas cantidades suman ${n + 1}. Solo hay ${n} valores, así que un valor se contó dos veces.`,
+          ),
+        ],
+        [
+          swapped,
+          "stat-frequency-vs-value",
+          pair(
+            "The counts are in the wrong order. Each interval gets its own count; the first interval is the least values.",
+            "Las cantidades están en el orden equivocado. Cada intervalo tiene su propia cantidad; el primer intervalo tiene los valores menores.",
+          ),
+        ],
+      ],
+      x: pair(
+        `Put each value in its interval, counting the first number of an interval as inside it. That gives ${right}. The counts add to ${n}.`,
+        `Pon cada valor en su intervalo, y cuenta el primer número de un intervalo como parte de él. Eso da ${right}. Las cantidades suman ${n}.`,
+      ),
+      h: [
+        pair(
+          "Decide which interval each value belongs in.",
+          "Decide en qué intervalo va cada valor.",
+        ),
+        pair(
+          "Make a tally for each interval. The first number of an interval is inside it.",
+          "Haz una marca de conteo para cada intervalo. El primer número de un intervalo está dentro de él.",
+        ),
+        pair(
+          "Check that the counts add to the number of values.",
+          "Revisa que las cantidades sumen el número de valores.",
+        ),
+      ],
+      meta: { shape, kind: "table", data, w, start: startAt, n },
+    });
+  };
+  const checkHistTable = (it) => {
+    const m = it.meta;
+    const bins = [];
+    for (let s = m.start; s <= Math.max(...m.data); s += m.w) bins.push(s);
+    const want = bins
+      .map((s) => `${s}–${s + m.w - 1}: ${m.data.filter((v) => v - s >= 0 && v - s < m.w).length}`)
+      .join(", ");
+    return it.c[it.a] === want || `key "${it.c[it.a]}" but the data give "${want}"`;
+  };
+
+  /* chooseMeasure: which list is better described by the median ------------------------------------ */
+  const outlierBy = (a) => {
+    const q = fiveC(a);
+    const iqr = q.q3 - q.q1;
+    return Math.max(...a) > q.q3 + 1.5 * iqr || Math.min(...a) < q.q1 - 1.5 * iqr;
+  };
+  const measureWhich = (rng, level, shape) => {
+    const [noun, nounEs] = rng.pick(LNOUN);
+    const n = level + 5;
+    const lo = rng.int(4, 14);
+    const mk = (spike) =>
+      until(
+        () => {
+          const d = Array.from({ length: n - (spike ? 1 : 0) }, () => lo + rng.int(0, 7));
+          if (spike) d.push(lo + 7 + rng.int(12, 24));
+          return rng.shuffle(d);
+        },
+        (d) => outlierBy(d) === spike && new Set(d).size >= 4,
+        1200,
+      );
+    const right = mk(true);
+    const decoys = [];
+    const seen = new Set([listKey(asc(right))]);
+    for (let t = 0; decoys.length < 3 && t < 40; t++) {
+      const d = mk(false);
+      if (seen.has(listKey(asc(d)))) continue;
+      seen.add(listKey(asc(d)));
+      decoys.push(d);
+    }
+    const stat = (d) => `mean ${f(mean(d), 1)}, median ${f(midOf(asc(d)), 1)}`;
+    const statEs = (d) => `media ${f(mean(d), 1)}, mediana ${f(midOf(asc(d)), 1)}`;
+    return MC(rng, {
+      q: pair(
+        `Each list has ${n} numbers (${noun}). Which list is described better by its median than by its mean?`,
+        `Cada lista tiene ${n} números (${nounEs}). ¿Cuál lista se describe mejor con su mediana que con su media?`,
+      ),
+      right: listKey(right),
+      wrong: decoys.map((d) => [
+        listKey(d),
+        "stat-mean-vs-median",
+        pair(
+          `This list has no number far away from the rest (${stat(d)}), so its mean and median tell almost the same story. No outlier is pulling the mean.`,
+          `Esta lista no tiene ningún número lejos de los demás (${statEs(d)}), así que su media y su mediana cuentan casi lo mismo. Ningún valor atípico jala la media.`,
+        ),
+      ]),
+      x: pair(
+        `One number in ${list(asc(right))} is far from the others. It pulls the mean up to ${f(mean(right), 1)}, while the median stays at ${f(midOf(asc(right)), 1)}. With an outlier, the median describes a typical value better.`,
+        `Un número de ${list(asc(right))} está lejos de los demás. Jala la media hasta ${f(mean(right), 1)}, mientras la mediana se queda en ${f(midOf(asc(right)), 1)}. Con un valor atípico, la mediana describe mejor un valor típico.`,
+      ),
+      h: [
+        pair(
+          "Look for a number that is far from all the others.",
+          "Busca un número que esté lejos de todos los demás.",
+        ),
+        pair(
+          "A number far from the rest pulls the mean toward it, but the median hardly moves.",
+          "Un número lejos de los demás jala la media hacia él, pero la mediana casi no se mueve.",
+        ),
+        pair(
+          "Compare the mean and the median of a list. Do they tell the same story?",
+          "Compara la media y la mediana de una lista. ¿Cuentan lo mismo?",
+        ),
+      ],
+      meta: { shape, kind: "outlier", n },
+    });
+  };
+  const checkMeasureWhich = (it) => {
+    const key = parseList(it.c[it.a]);
+    if (!outlierBy(key)) return "key list has no outlier";
+    const dup = it.c.findIndex((c, i) => i !== it.a && outlierBy(parseList(c)));
+    return dup < 0 || `choice ${dup} also has an outlier`;
+  };
+
+  const SHAPES = {
+    medianFind: {
+      reverse: {
+        make: (r, l) =>
+          whichList(
+            r,
+            l,
+            "median",
+            [
+              ["mean", "stat-mean-vs-median"],
+              ["written", "stat-no-order"],
+              ["midrange", "stat-midrange"],
+              ["mode", "stat-mode-vs-median"],
+              ["upperMid", "stat-one-middle"],
+            ],
+            "reverse",
+          ),
+        check: checkWhich,
+      },
+    },
+    meanFind: {
+      reverse: {
+        make: (r, l) =>
+          whichList(
+            r,
+            l,
+            "mean",
+            [
+              ["median", "stat-mean-vs-median"],
+              ["mode", "stat-mode-mixup"],
+              ["midrange", "stat-midrange"],
+              ["written", "stat-no-order"],
+            ],
+            "reverse",
+          ),
+        check: checkWhich,
+      },
+    },
+    meanMissing: {
+      reverse: {
+        make: (r, l) => meanReverse(r, l, "reverse"),
+        check: checkMeanReverse,
+      },
+    },
+    rangeIqr: {
+      reverse: {
+        make: (r, l) =>
+          l === 1
+            ? whichList(
+                r,
+                l,
+                "range",
+                [
+                  ["maxv", "stat-range-misfound"],
+                  ["ends", "stat-range-misfound"],
+                  ["iqr", "stat-range-for-iqr"],
+                  ["midrange", "stat-range-misfound"],
+                ],
+                "reverse",
+              )
+            : whichList(
+                r,
+                l,
+                "iqr",
+                [
+                  ["range", "stat-range-for-iqr"],
+                  ["iqrKept", "stat-spread-misjudged"],
+                  ["range", "stat-range-for-iqr"],
+                  ["median", "stat-spread-misjudged"],
+                ],
+                "reverse",
+              ),
+        check: checkWhich,
+      },
+    },
+    boxplotRead: {
+      compare: {
+        make: (r, l) => boxCompare(r, l, "compare"),
+        check: checkBoxCompare,
+      },
+    },
+    histogramRead: {
+      reverse: {
+        make: (r, l) => histTable(r, l, "reverse"),
+        check: checkHistTable,
+      },
+    },
+    madCalc: {
+      reverse: {
+        make: (r, l) => madReverse(r, l, "reverse"),
+        check: checkMadReverse,
+      },
+    },
+    chooseMeasure: {
+      reverse: {
+        make: (r, l) => measureWhich(r, l, "reverse"),
+        check: checkMeasureWhich,
+      },
+    },
+  };
 })();

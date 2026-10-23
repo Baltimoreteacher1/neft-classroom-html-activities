@@ -130,7 +130,11 @@ export function puzzle(model, round, level) {
     if (model.mode !== 'add') { const room = Math.max(1, Math.floor(fields[1].max / goal[0])); goal[free] = ((goal[free] - 1) % room) + 1; }
     base[1] = goal[1] = model.mode === 'add' ? goal[2] + goal[0] : goal[2] * goal[0];
   }
-  if (model.kind === 'data' && !plug) { free = model.mode === 'histogram' ? 7 : 3; goal[free] = 2 + 3 * round + level; }
+  if (model.kind === 'data' && !plug) {
+    free = model.mode === 'histogram' ? 7 : 3;
+    goal = [...base];
+    goal[free] = 2 + 3 * round + level;
+  }
   if (model.kind === 'coordinates' && model.mode === 'distance') base[3] = goal[3] = base[1];
   if (model.kind === 'coordinates' && ['reflect', 'symmetry'].includes(model.mode)) {
     free = round % 2 ? 1 : 0;
