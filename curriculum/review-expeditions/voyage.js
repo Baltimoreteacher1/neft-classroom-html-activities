@@ -98,6 +98,8 @@
       ? { ...destination, name: 'The Lost Compass · ' + destination.name, vehicle: 'airship', item: 'compass fragments' }
       : isPlacement ? destination : WORLDS[unit] || WORLDS[1];
     const art = WORLD_ART[artUnit] || WORLD_ART[1];
+    document.body.classList.add('has-voyage-environment');
+    document.body.style.setProperty('--voyage-environment-art', `url("${art}")`);
     const es = isSpanish();
     const world = es ? { ...baseWorld, ...(WORLD_ES[artUnit] || {}) } : baseWorld;
     const done = Math.min(total, Math.max(0, Number(state.completed) || 0));

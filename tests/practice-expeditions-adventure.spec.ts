@@ -61,6 +61,8 @@ for (let unit = 2; unit <= 9; unit++) {
     expect(await page.evaluate(() => JSON.stringify((window as any).RX.State.load().current.voyage))).toBe(checkpoint);
     await page.locator('[data-tile="8,2"]').click();
     await page.locator('.voyage-enter').click();
+    await expect(page.locator('body')).toHaveClass(/has-voyage-environment/);
+    expect(await page.locator('body').evaluate(el => getComputedStyle(el).getPropertyValue('--voyage-environment-art'))).toContain(worldArt[unit]);
     await solveFirstQuestion(page);
     await page.locator('#btn-next').click();
     await expect(page.locator('.voyage-kicker').first()).toContainText('SECTOR 2');
@@ -130,6 +132,8 @@ test('Practice Arcade: route checkpoint survives reload and opens the original l
   await page.locator('.voyage-enter').click();
   await expect(page.locator('#pa-stage')).toBeVisible();
   await expect(page.locator('.practice-native-prompt')).not.toBeEmpty();
+  await expect(page.locator('body')).toHaveClass(/has-voyage-environment/);
+  expect(await page.locator('body').evaluate(el => getComputedStyle(el).getPropertyValue('--voyage-environment-art'))).toContain('oasis-engineers.webp');
   expect(await page.evaluate(() => (window as any).paGame.scene.getScene('Play').idx)).toBe(0);
 });
 
