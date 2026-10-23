@@ -397,6 +397,9 @@ function renderSkillCard(skill, recommendation = null) {
   const sample = generateProblem(skill, seededRandom(skillPreviewSeed(skill)));
   const foundations = prerequisites(skill).slice(0, 2);
   const nextSkills = ALL_SKILLS.filter((candidate) => candidate.grade <= skill.grade + 1 && prerequisites(candidate).some((foundation) => tutorSkillKey(foundation) === tutorSkillKey(skill))).slice(0, 2);
+  const quickIcon = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M11.8 1.8 4.5 10h4.1l-.5 8.2 7.4-9h-4.2l.5-7.4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>';
+  const cardsIcon = '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="6" y="3" width="10" height="13" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4 6H3.5A1.5 1.5 0 0 0 2 7.5v9A1.5 1.5 0 0 0 3.5 18h8" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 7h4m-4 3h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
+  const ideaIcon = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.3 13.2a6 6 0 1 1 7.4 0c-.8.6-1.2 1.2-1.3 2H7.6c-.1-.8-.5-1.4-1.3-2Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7.8 17h4.4m-3.7 1.5h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
   return `
     <article class="skill-card" data-level="${level}">
       <div class="skill-card-top">
@@ -418,9 +421,9 @@ function renderSkillCard(skill, recommendation = null) {
       <div class="skill-card-actions">
         <button class="open-skill primary-action" data-skill="${skill.id}">Practice &amp; Learn</button>
         <div class="skill-action-row">
-          <button type="button" class="outline-action quick-drill-btn" data-quick-skill="${skill.id}">⚡ Quick 5</button>
-          <button type="button" class="outline-action flashcard-btn" data-flashcard-skill="${skill.id}">🃏 Flashcards</button>
-          <button type="button" class="outline-action learn-btn" data-visual-skill="${skill.id}">💡 See Idea</button>
+          <button type="button" class="outline-action quick-drill-btn" data-quick-skill="${skill.id}">${quickIcon}<span>Quick 5</span></button>
+          <button type="button" class="outline-action flashcard-btn" data-flashcard-skill="${skill.id}">${cardsIcon}<span>Flashcards</span></button>
+          <button type="button" class="outline-action learn-btn" data-visual-skill="${skill.id}">${ideaIcon}<span>See idea</span></button>
         </div>
       </div>
     </article>`;
@@ -7145,7 +7148,7 @@ function renderPath() {
   const remembered = ranked.filter((entry) => entry.status.secure).length;
   const repaired = state.tutor.mistakes.filter((entry) => entry.resolvedAt && findSkill(entry.key)?.grade === state.grade).length;
   els.path.innerHTML = `<div class="section-heading"><div><p class="section-label">Grade ${state.grade} · ${escapeHtml(PROFILE_NAMES[activeProfile])}</p><h2>See what is growing.</h2><p>Independent first tries, coached practice, and learning over time tell different parts of the story.</p></div><button class="outline-action" data-print-report>Print family progress</button></div>
-    <div class="learning-milestones"><div><strong>${explored}/10</strong><span>visual lessons explored</span></div><div><strong>${remembered}/10</strong><span>remembered independently</span></div><div><strong>${repaired}</strong><span>mistakes revisited successfully</span></div><div><strong>${new Set(sessions.map((session) => localDay(session.at))).size}</strong><span>practice days</span></div></div>
+    <div class="learning-milestones"><div><strong>${explored}/${skills.length}</strong><span>visual lessons explored</span></div><div><strong>${remembered}/${skills.length}</strong><span>remembered independently</span></div><div><strong>${repaired}</strong><span>mistakes revisited successfully</span></div><div><strong>${new Set(sessions.map((session) => localDay(session.at))).size}</strong><span>practice days</span></div></div>
     <div class="path-explainer"><h3>What “remembered” means here</h3><p>At least eight recent independent checks, 85% correct, and successful practice on two different days. Coached examples and easier support problems help you learn; they do not establish independent mastery.</p></div>
     <div class="learning-map">${skills.map((skill) => {
       const status = evidence(state.tutor, skill); const foundation = prerequisites(skill)[0];

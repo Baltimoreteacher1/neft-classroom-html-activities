@@ -250,6 +250,7 @@ assert.ok(
 );
 click('[data-view="path"]');
 assert.equal(win.document.querySelectorAll(".path-skill").length, 11);
+assert.match($(".learning-milestones").textContent, /0\/11/);
 assert.match($("#path-view").textContent, /two different days/);
 
 // Streak mode: untimed, 10 correct in a row, a miss restarts the count, no clock anywhere.
