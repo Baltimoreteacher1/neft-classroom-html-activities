@@ -47,6 +47,23 @@
     }
   }
 
+  // The generated small-group practice set is page-sized for printing. Give its
+  // existing HTML an interactive, saveable screen layout with digital inputs,
+  // audio read-aloud, and scratchpad without altering paper dimensions.
+  if (document.querySelector(".sp-page") && !document.querySelector("[data-practice-screen]")) {
+    var spScreen = document.createElement("link");
+    spScreen.rel = "stylesheet";
+    spScreen.href = "/assets/practice-screen.css";
+    spScreen.media = "all";
+    spScreen.setAttribute("data-practice-screen", "1");
+    document.head.appendChild(spScreen);
+    if (document.documentElement.getAttribute("data-support-audience") !== "teacher") {
+      var spWork = document.createElement("script");
+      spWork.src = "/assets/practice-work.js";
+      document.head.appendChild(spWork);
+    }
+  }
+
   var LESSON_ID = document.documentElement.getAttribute("data-ewl-supports-lesson") || "";
   var AUDIENCE =
     document.documentElement.getAttribute("data-support-audience") === "teacher"

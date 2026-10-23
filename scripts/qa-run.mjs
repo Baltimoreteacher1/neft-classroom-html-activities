@@ -228,7 +228,7 @@ const COVERAGE = [
     ["validate:game-transformation-browser", "validate:game-rules", "test"],
   ],
   [
-    /^(tools\/verify-html-experiences-browser\.mjs|assets\/worksheet-(screen\.css|work\.js)|engine\/homework-lesson-models\.js)$/,
+    /^(tools\/verify-html-experiences-browser\.mjs|assets\/(worksheet|practice)-(screen\.css|work\.js)|engine\/homework-lesson-models\.js)$/,
     ["validate:html-experiences-browser", "validate:static", "validate:css-integrity"],
   ],
   // LESSON FLOW — the forward control, the act step strip and the fixed chrome
