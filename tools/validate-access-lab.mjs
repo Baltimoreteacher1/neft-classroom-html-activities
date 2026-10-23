@@ -234,13 +234,26 @@ function checkActivity(where, a, domain, band) {
   if (band === "3-5" && !String(a.id).startsWith("g35-"))
     err(where, "grades 3–5 ids must start with g35-");
   if (!/^[a-z0-9][a-z0-9-]*$/.test(a.id || "")) err(where, `id "${a.id}" is not kebab-case`);
-  if (band === "3-5") {
-    // Full contract for new content; legacy 6–8 content predates it and is held to keys/integrity only.
+  if (a.type !== "worksheet") {
+    // All interactive activities share the same response, feedback, support, and teacher-use contract.
     for (const f of ["correct", "hint", "support", "extension", "teacher"])
       if (!a[f]) err(where, `missing ${f}`);
     if ((a.vocabulary || []).length < 2) err(where, "needs ≥ 2 vocabulary entries");
     if (!(a.frames || []).length) err(where, "needs ≥ 1 sentence frame");
   }
+  const teacherFields = ["use", "function", "lower", "onLevel", "challenge", "noTech", "prompt"];
+  for (const f of teacherFields) if (!a.teacher?.[f]) err(where, `missing teacher.${f}`);
+  if (!Array.isArray(a.wida) || !a.wida.length)
+    err(where, "needs ≥ 1 task-specific language focus tag");
+  if (
+    (a.wida || []).some((label) =>
+      /\b(Entering|Emerging|Developing|Expanding|Bridging|Reaching)\s*:/i.test(label),
+    )
+  )
+    err(
+      where,
+      "wida task-focus tags must not present task demands as WIDA proficiency-level labels",
+    );
   for (const v of a.vocabulary || [])
     if (!Array.isArray(v) || v.length < 3 || !v[2])
       err(where, `vocabulary "${v?.[0]}" lacks a Spanish gloss`);

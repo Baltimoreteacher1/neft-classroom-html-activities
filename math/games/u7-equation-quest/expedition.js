@@ -90,6 +90,7 @@
     const r = ctx.restored;
     const play = ctx.mode === "play";
     kit.sky(0x0b0a22, kit.mix(0x2a2346, 0x3c4f78, r), "eq-sky-" + Math.round(r * 10));
+    kit.illustration(play ? 0.82 : 0.95);
     kit.glow(150, 120, 260, 0xe8e2ff, play ? 0.18 : 0.34, -98);
     scene.add.circle(150, 120, 26, 0xf3efff, 0.85).setDepth(-97);
     kit.stars(46, 13, 0xe6e0ff);
@@ -130,7 +131,7 @@
     kit.motes(r > 0.3 ? 0xb8ffc8 : 0xc8b9ff, 22);
     if (play) {
       const veil = scene.add.graphics().setDepth(-60);
-      veil.fillStyle(0x05040e, 0.5).fillRect(0, 0, W, H);
+      veil.fillStyle(0x05040e, 0.24).fillRect(0, 0, W, H);
     }
   }
 
@@ -141,6 +142,7 @@
 
   const def = {
     id: "u7-equation-quest",
+    art: "/math/games/shared/art/bridgekeepers.webp",
     title: L("Bridgekeepers", "Guardianes del Puente"),
     accent: "#c8b9ff",
     music: { root: 174.6, mode: "dorian", bpm: 72 },

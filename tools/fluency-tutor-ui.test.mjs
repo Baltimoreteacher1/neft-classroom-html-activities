@@ -44,6 +44,54 @@ const solveCurrent = () => {
   }
 };
 
+click('[data-view="library"]');
+assert.equal(
+  $("#page-title").textContent,
+  "Your Math Journey",
+  "The student route opens on the journey home",
+);
+assert.match($("#personal-dashboard").textContent, /Continue learning/);
+assert.match($("#personal-dashboard").textContent, /Play a game/);
+assert.match($("#personal-dashboard").textContent, /Explore skills/);
+assert.ok(
+  $(".journey-continue [data-open-key]"),
+  "First-time visitors get a real recommended next step",
+);
+assert.equal(
+  $(".site-header #open-print-center"),
+  null,
+  "Teacher print tools stay out of the student header",
+);
+assert.ok(
+  $(".journey-explore a[href='#subnav-skills']"),
+  "Explore skills links to the actual skill library",
+);
+
+click('[data-view="games"]');
+assert.equal($("#games-view").hidden, false, "The Play a game card reaches the live game room");
+assert.equal($("#page-title").textContent, "Play with math");
+assert.ok($("#games-view [data-game]"), "The game room renders playable game choices");
+click('[data-view="teacher"]');
+assert.equal($("#page-title").textContent, "Teacher resources");
+assert.ok(win.document.body.classList.contains("teacher-resources"));
+assert.ok($("#teacher-studio .teacher-layout"), "Teacher studio mounts into its own workspace");
+assert.ok(
+  $("#open-print-center") && $("#open-word-wall-btn") && $("#open-number-talk-btn"),
+  "Teacher quick tools survive studio rendering",
+);
+assert.equal($("#studio-launch-nt"), null, "The Number Talk projector has one teacher entry point");
+click('[data-view="library"]');
+assert.ok(!win.document.body.classList.contains("teacher-resources"));
+click("#lang-toggle");
+assert.equal(
+  $("#page-title").textContent,
+  "Tu camino en matemáticas",
+  "The journey home follows the language selection",
+);
+click("#lang-toggle");
+fill("#quick-skill-select", "4:division");
+$("#quick-skill-select").dispatchEvent(new win.Event("change", { bubbles: true }));
+
 assert.equal(
   $("#workspace-title").textContent,
   "Whole-number division",
@@ -205,6 +253,7 @@ assert.ok(
 );
 click('[data-view="path"]');
 assert.equal(win.document.querySelectorAll(".path-skill").length, 11);
+assert.match($(".learning-milestones").textContent, /0\/11/);
 assert.match($("#path-view").textContent, /two different days/);
 
 // Streak mode: untimed, 10 correct in a row, a miss restarts the count, no clock anywhere.

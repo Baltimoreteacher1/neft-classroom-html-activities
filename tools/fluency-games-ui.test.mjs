@@ -80,7 +80,11 @@ const toMenu = async () => {
 
 await wait();
 assert.ok($(".gm-menu"), "The Game Room opens from ?view=games");
-assert.equal($$("[data-game]").length, 9, "Nine games are offered to Grade 3");
+assert.equal(
+  $$("[data-game]").length,
+  12,
+  "Twelve games, including three model games, are offered to Grade 3",
+);
 assert.ok($("#bd-view svg"), "The buddy panel shows a buddy");
 assert.match(
   $("#gm-goal-progress").textContent,
@@ -361,10 +365,83 @@ click('[data-buddy-color="green"]');
   assert.ok($("#bd-view").innerHTML.includes("M60 4l-20 38"), "The buddy picture shows the hat");
 }
 
+// ---- Model games: move the representation, solve five rounds, and verify revisions.
+const setRange = (selector, value) => {
+  $(selector).value = String(value);
+  $(selector).dispatchEvent(new win.Event("input", { bubbles: true }));
+};
+for (const id of ["numberquest", "arrayarchitect", "fractionforge"]) {
+  click(`[data-game="${id}"]`);
+  for (let round = 0; round < 5; round += 1) {
+    if (id === "numberquest") {
+      const target = Number($("[data-target-number]").dataset.targetNumber);
+      const near = Math.round(target / 10) * 10;
+      setRange("[data-number-position]", target);
+      click(`[data-benchmark="${near}"]`);
+    } else if (id === "arrayarchitect") {
+      const target = Number($("[data-array-target]").dataset.arrayTarget);
+      const rows = Array.from({ length: 9 }, (_, index) => index + 2).find(
+        (count) => target % count === 0 && target / count <= 10,
+      );
+      assert.ok(rows, "Every generated array has a valid factor pair in the control range");
+      setRange("[data-array-rows]", rows);
+      setRange("[data-array-columns]", target / rows);
+      assert.match(
+        $(".sig-equation").textContent,
+        new RegExp(`${target} tiles`),
+        "The array and equation update together",
+      );
+    } else {
+      const [numerator, denominator] = $("[data-fraction-target]")
+        .dataset.fractionTarget.split("/")
+        .map(Number);
+      if (round === 0) {
+        click("[data-check]");
+        assert.equal(
+          $("[data-feedback]").dataset.state,
+          "retry",
+          "An unequal fraction invites revision",
+        );
+        click("[data-hint]");
+        assert.equal(
+          $("[data-hint-copy]").hidden,
+          false,
+          "The fraction hint is optional and visible when requested",
+        );
+      }
+      setRange("[data-fraction-denominator-input]", denominator * 2);
+      setRange("[data-fraction-numerator-input]", numerator * 2);
+      assert.equal(
+        Number($("[data-fraction-numerator]").textContent) * denominator,
+        numerator * Number($("[data-fraction-denominator]").textContent),
+      );
+    }
+    click("[data-check]");
+    assert.equal(
+      $("[data-feedback]").dataset.state,
+      "right",
+      `${id} accepts a mathematically valid model`,
+    );
+    await wait(750);
+  }
+  assert.ok($(".gm-result"), `${id} reaches a completion screen`);
+  assert.match(
+    $(".tr-score").textContent,
+    id === "fractionforge"
+      ? /4 of 5 challenges solved independently/
+      : /5 of 5 challenges solved independently/,
+  );
+  results.push([id, true]);
+  await toMenu();
+}
+
 // ---- Everything above is remembered
 const rewards = JSON.parse(win.localStorage.getItem("ewl-fluency-rewards-v1"));
-assert.equal(rewards.plays, 9, "Nine finished games are recorded");
+assert.equal(rewards.plays, 12, "Twelve finished games are recorded");
 for (const game of [
+  "numberquest",
+  "arrayarchitect",
+  "fractionforge",
   "match",
   "hunt",
   "sort",
@@ -386,6 +463,13 @@ assert.equal(win.document.documentElement.lang, "es", "The page language becomes
 assert.equal($("#lang-toggle").textContent, "English", "The toggle offers English once in Spanish");
 assert.match($(".gm-head h2").textContent, /Sala de juegos/, "The Game Room heading is Spanish");
 assert.match($('[data-view="games"]').textContent, /Juegos/, "The page tabs are Spanish");
+click('[data-game="numberquest"]');
+assert.match(
+  $(".sig-head h2").textContent,
+  /Ubica/,
+  "The number-line game presents its challenge in Spanish",
+);
+await toMenu();
 click("#lang-toggle");
 await wait();
 assert.equal(win.document.documentElement.lang, "en", "English returns");

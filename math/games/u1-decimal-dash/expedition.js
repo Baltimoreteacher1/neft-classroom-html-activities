@@ -37,6 +37,7 @@
       kit.mix(0x2b3046, 0xf0a271, r),
       "dd-sky-" + Math.round(r * 10),
     );
+    kit.illustration(play ? 0.82 : 0.95);
     kit.stars(46, 5);
     kit.glow(W / 2, H - 40, 700, 0xffbe86, 0.12 + 0.35 * r, -98);
     // Aurora ribbons strengthen as the network comes back.
@@ -185,7 +186,7 @@
     });
     if (play) {
       const veil = scene.add.graphics().setDepth(-60);
-      veil.fillStyle(0x02070c, 0.5).fillRect(0, 0, W, H);
+      veil.fillStyle(0x02070c, 0.24).fillRect(0, 0, W, H);
     }
   }
 
@@ -196,6 +197,7 @@
 
   const def = {
     id: "u1-decimal-dash",
+    art: "/math/games/shared/art/cloudline-courier.webp",
     title: L("Cloudline Courier", "Mensajería Línea de Nubes"),
     accent: "#75e0ff",
     music: { root: 220, mode: "major", bpm: 80 },

@@ -117,6 +117,7 @@
       kit.mix(0x15122a, 0x3b1e58, r),
       "pp-sky-" + Math.round(r * 10),
     );
+    kit.illustration(play ? 0.82 : 0.95);
     kit.stars(50, 13, 0xdfe6ff);
     kit.glow(W / 2, 600, 900, kit.mix(0x22184a, 0xff7fb0, r), 0.18 + 0.3 * r, -98);
     kit.glow(640, 110, 160, 0xf3f0d0, play ? 0.18 : 0.35, -97);
@@ -176,7 +177,7 @@
     kit.motes(r > 0.3 ? GOLD : 0x8a90c0, 20, { top: 300, bottom: 600 });
     if (play) {
       const veil = scene.add.graphics().setDepth(-60);
-      veil.fillStyle(0x02030a, 0.5).fillRect(0, 0, W, H);
+      veil.fillStyle(0x02030a, 0.24).fillRect(0, 0, W, H);
     }
   }
 
@@ -187,6 +188,7 @@
 
   const def = {
     id: "u4-percent-power",
+    art: "/math/games/shared/art/neon-grid.webp",
     title: L("Neon Grid", "Red de Neón"),
     accent: "#f8d877",
     music: { root: 220, mode: "minor", bpm: 80 },

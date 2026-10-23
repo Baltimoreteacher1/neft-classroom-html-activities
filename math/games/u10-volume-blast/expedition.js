@@ -105,6 +105,7 @@
     const r = ctx.restored;
     const play = ctx.mode === "play";
     kit.sky(0x02040c, kit.mix(0x0b1028, 0x173a66, r), "vb-sky-" + Math.round(r * 10));
+    kit.illustration(play ? 0.84 : 0.96);
     kit.stars(110, 41, 0xdfe9ff);
     kit.glow(170, 150, 420, 0x7a5cff, 0.14 + 0.1 * r, -97);
     kit.glow(700, 120, 340, 0xa1c3ff, 0.14 + 0.16 * r, -97);
@@ -150,7 +151,7 @@
     });
     if (play) {
       const veil = scene.add.graphics().setDepth(-60);
-      veil.fillStyle(0x02050c, 0.62).fillRect(0, 0, W, H);
+      veil.fillStyle(0x02050c, 0.25).fillRect(0, 0, W, H);
     }
   }
 
@@ -170,6 +171,7 @@
   });
   const def = {
     id: "u10-volume-blast",
+    art: "/math/games/shared/art/orbital-builders.webp",
     title: L("Orbital Builders", "Constructores Orbitales"),
     accent: "#a1c3ff",
     music: { root: 196, mode: "major", bpm: 70 },

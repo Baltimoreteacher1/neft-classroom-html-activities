@@ -1,0 +1,86 @@
+/* Arcade archipelago: illustrated navigation with a complete text route below it. */
+.arcade-worlds {
+  --arcade-deep: #061e32;
+  --arcade-panel: #071c31;
+  --arcade-cream: #f5f8fb;
+  --arcade-gold: #ffe1a1;
+  --arcade-sea: #8ce5e0;
+}
+.arcade-worlds {
+  background: var(--arcade-deep);
+  color: var(--arcade-cream);
+}
+.arcade-worlds .wrap { max-width: 1320px; }
+.arcade-worlds .hero { margin: 8px 0 18px; }
+.arcade-worlds .hero h1 { font-size: clamp(2.2rem, 5vw, 4rem); letter-spacing: -.035em; }
+.arcade-worlds .hero p { font-size: clamp(1rem, 1.8vw, 1.2rem); color: #d3e9f1; opacity: 1; }
+.world-map {
+  border: 1px solid #87d5dc7a;
+  border-radius: 24px;
+  overflow: hidden;
+  margin: 0 0 26px;
+  background: #082c49;
+  box-shadow: 0 30px 80px #020d1bb0, 0 0 0 5px #6bbed01c;
+}
+.world-map-intro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 20px;
+  padding: 15px 22px;
+  background: #071c31;
+}
+.world-map-intro h2 { font-size: 1.2rem; margin: 0; color: var(--arcade-gold); }
+.world-map-intro p { margin: 0; color: #d3e9f1; flex: 1 1 230px; }
+.world-map-intro a { color: #fff1c4; font-weight: 800; text-underline-offset: 4px; }
+.world-map-scroll-hint { display: none; }
+.world-map-scroll { overflow-x: auto; }
+.world-map-art { position: relative; min-width: 760px; aspect-ratio: 16 / 9; isolation: isolate; }
+.world-map-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(0deg, #03162c44, transparent 22%);
+  pointer-events: none;
+}
+.world-map-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.island {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  transform: translate(-50%, -50%);
+  min-width: 112px;
+  min-height: 48px;
+  padding: 6px 11px;
+  display: grid;
+  place-content: center;
+  border: 1px solid #fff3c5;
+  border-radius: 12px;
+  background: #06243ee8;
+  box-shadow: 0 3px 0 #d9aa56, 0 6px 16px #001223b9;
+  color: #ffe8b5;
+  font-size: clamp(.76rem, 1.1vw, .96rem);
+  line-height: 1.15;
+  font-weight: 900;
+  text-align: center;
+  text-decoration: none;
+  transition: transform .16s ease, background-color .16s ease;
+}
+.island span { display: block; color: white; font-weight: 700; }
+.island:hover, .island:focus-visible {
+  transform: translate(-50%, -55%);
+  background: #174b69;
+  color: #fff;
+}
+.island:focus-visible, .world-map-intro a:focus-visible { outline: 3px solid #ffdf70; outline-offset: 4px; }
+#lesson-list-title { font-size: clamp(1.5rem, 2vw, 2rem); margin: 0 0 12px; }
+.arcade-worlds .world { scroll-margin-top: 18px; }
+.arcade-worlds .world:focus { outline: 3px solid #ffdf70; outline-offset: 4px; }
+@media (max-width: 800px) {
+  .world-map-scroll-hint { display: block; margin: 0; padding: 7px 14px; color: #d3e9f1; background: #0d3855; font-size: .9rem; }
+  .world-map-scroll { scrollbar-color: #8ce5e0 #092a47; }
+  .world-map-art { min-width: 850px; }
+  .island { font-size: .82rem; min-width: 96px; }
+}
+@media (prefers-reduced-motion: reduce) { .island { transition: none; } }

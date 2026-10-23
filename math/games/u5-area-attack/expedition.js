@@ -29,6 +29,7 @@
     const play = ctx.mode === "play";
     const done = (i) => !!ctx.state && chapterDone(def.chapters[i], ctx.state);
     kit.sky(kit.mix(0x1b1430, 0x0f2a3a, r), kit.mix(0x8a5a3a, 0xbfe3a0, r), "aa-sky-" + Math.round(r * 10));
+    kit.illustration(play ? 0.82 : 0.95);
     kit.glow(150, 120, 380, 0xffd38a, play ? 0.2 : 0.45, -98);
     kit.stars(30, 5, 0xfff4d6);
     kit.ridge(kit.mix(0x3b3346, 0x2f5a5a, r), 280, 60, 13, { parallax: 0.12, depth: -95 });
@@ -128,7 +129,7 @@
     kit.motes(r > 0.3 ? 0xeaffb0 : 0xffd9a0, 22);
     if (play) {
       const veil = scene.add.graphics().setDepth(-60);
-      veil.fillStyle(0x02070c, 0.5).fillRect(0, 0, W, H);
+      veil.fillStyle(0x02070c, 0.24).fillRect(0, 0, W, H);
     }
   }
 
@@ -148,6 +149,7 @@
   });
   const def = {
     id: "u5-area-attack",
+    art: "/math/games/shared/art/terrace-architects.webp",
     title: L("Terrace Architects", "Arquitectos de Terrazas"),
     accent: "#ccf589",
     music: { root: 220, mode: "major", bpm: 72 },

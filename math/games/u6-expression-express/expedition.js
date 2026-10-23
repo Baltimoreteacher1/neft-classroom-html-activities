@@ -94,6 +94,7 @@
     const r = ctx.restored;
     const play = ctx.mode === "play";
     kit.sky(0x0b0820, kit.mix(0x2a1838, 0xd9826a, r * 0.8), "ee-sky-" + Math.round(r * 10));
+    kit.illustration(play ? 0.82 : 0.95);
     kit.glow(600, 330, 520, 0xffb795, 0.18 + 0.32 * r, -98);
     kit.stars(48, 13, 0xffe9d6);
     const far = mesas(scene, kit, kit.mix(0x241a34, 0x5a3148, r), 360, 5, -94);
@@ -146,7 +147,7 @@
     kit.motes(r > 0.3 ? 0xffd2a8 : 0xb9a0c8, 22);
     if (play) {
       const veil = scene.add.graphics().setDepth(-60);
-      veil.fillStyle(0x07040c, 0.5).fillRect(0, 0, W, H);
+      veil.fillStyle(0x07040c, 0.24).fillRect(0, 0, W, H);
     }
   }
 
@@ -157,6 +158,7 @@
 
   const def = {
     id: "u6-expression-express",
+    art: "/math/games/shared/art/switchyard-odyssey.webp",
     title: L("Switchyard Odyssey", "Odisea del Patio de Maniobras"),
     accent: "#ffb795",
     music: { root: 196, mode: "major", bpm: 84 },

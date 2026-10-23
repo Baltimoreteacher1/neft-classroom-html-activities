@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/assets/fonts/small-group.css" />
     <link rel="stylesheet" href="./styles.css" />
     <link rel="stylesheet" href="./tutor.css" />
+    <link rel="stylesheet" href="./journey.css" />
     <link rel="stylesheet" href="./trail.css" />
     <link rel="stylesheet" href="./games.css" />
     <link rel="stylesheet" href="./language.css" />
@@ -37,9 +38,6 @@
       <nav aria-label="Page controls">
         <label class="profile-control" for="profile-select">Learner<select id="profile-select"></select></label>
         <button id="add-profile" class="quiet-button" type="button" data-i18n>Add learner</button>
-        <button id="open-print-center" class="quiet-button print-center-btn" type="button" aria-label="Open Teacher Print Center">
-          <span aria-hidden="true">🖨️</span> <span>Print Center</span>
-        </button>
         <div class="settings-menu-container">
           <button id="settings-toggle" class="quiet-button settings-btn" type="button" aria-expanded="false" aria-controls="header-settings-popover" aria-label="Display and sound settings">
             <span aria-hidden="true">⚙️</span> <span data-i18n>Settings</span>
@@ -60,16 +58,15 @@
           </div>
         </div>
         <button id="lang-toggle" class="quiet-button" type="button" lang="es">Español</button>
-        <button id="open-word-wall-btn" class="quiet-button word-wall-btn" type="button" title="Interactive Math Word Wall">📖 Word Wall</button>
-        <button id="open-number-talk-btn" class="quiet-button number-talk-btn" type="button" title="Classroom Number Talk Projector">📽️ Number Talk</button>
       </nav>
     </header>
 
     <main id="main">
       <section class="intro" aria-labelledby="page-title">
         <div class="intro-copy">
-          <h1 id="page-title">Math Fluency Lab</h1>
-          <p data-i18n>Pick your grade. Follow your trail. Take your time: there are no timers here.</p>
+          <p class="intro-kicker">EDUWONDERLAB · MATH FLUENCY</p>
+          <h1 id="page-title" data-i18n>Your Math Journey</h1>
+          <p id="intro-description" data-i18n>Choose a next step, explore a skill, or play with an idea. Your progress stays on this device.</p>
           <div id="overall-stats" class="overall-stats" aria-label="Saved practice progress"></div>
         </div>
       </section>
@@ -77,7 +74,7 @@
       <div id="storage-warning" class="storage-warning" role="status" hidden>Progress cannot be saved in this browser right now. Download a backup before closing the page.</div>
       <section id="assignment-banner" class="assignment-banner" aria-label="Your assignment" hidden></section>
       <nav id="hub-tabs" class="hub-tabs" aria-label="Fluency Lab areas">
-        <button type="button" data-view="library" aria-current="page" data-i18n>Practice</button>
+        <button type="button" data-view="library" aria-current="page" data-i18n>Your journey</button>
         <button type="button" data-view="games" data-i18n>Games</button>
         <button type="button" data-view="path" data-i18n>My progress</button>
         <button type="button" data-view="notebook" data-i18n>Fix my mistakes</button>
@@ -91,6 +88,7 @@
       </section>
 
       <section id="library-view" class="library" aria-labelledby="page-title">
+        <section id="personal-dashboard" class="personal-dashboard" aria-label="Your Math Journey"></section>
         <nav class="practice-subnav" aria-label="Practice view selection" role="tablist">
           <button type="button" id="subnav-skills" class="subnav-tab active" data-subview="skills" role="tab" aria-selected="true">
             <span aria-hidden="true">📚</span> <span data-i18n>Skill Library</span>
@@ -139,7 +137,6 @@
               <button id="daily-ten" class="primary-action" type="button">Start today’s 10</button>
               <button id="start-mission" class="outline-action" type="button">Try a 5-step learning mission</button>
             </aside>
-            <section id="personal-dashboard" class="personal-dashboard" aria-label="Your next steps"></section>
           </div>
         </div>
       </section>
@@ -147,7 +144,17 @@
       <section id="path-view" class="hub-panel" aria-label="My learning path" hidden></section>
       <section id="games-view" class="hub-panel gm-room" aria-label="Game Room" hidden></section>
       <section id="notebook-view" class="hub-panel" aria-label="Mistake notebook" hidden></section>
-      <section id="teacher-view" class="hub-panel" aria-label="Teacher studio" hidden></section>
+      <section id="teacher-view" class="hub-panel" aria-label="Teacher studio" hidden>
+        <div class="teacher-quick-tools" aria-label="Teacher resources">
+          <div><p class="section-label">EDUWONDERLAB · TEACHER RESOURCES</p><h2 data-i18n>Plan, print, and project</h2><p data-i18n>Classroom materials and math talk tools are gathered here, away from the student journey.</p></div>
+          <div class="button-row">
+            <button id="open-print-center" class="outline-action print-center-btn" type="button" data-i18n>Print Center</button>
+            <button id="open-word-wall-btn" class="outline-action word-wall-btn" type="button" title="Interactive Math Word Wall" data-i18n>Word Wall</button>
+            <button id="open-number-talk-btn" class="outline-action number-talk-btn" type="button" title="Classroom Number Talk Projector" data-i18n>Number Talk</button>
+          </div>
+        </div>
+        <div id="teacher-studio"></div>
+      </section>
       <section id="workspace-view" class="workspace" aria-labelledby="workspace-title" hidden>
         <button id="back-library" class="back-button" type="button">← Back to my trail</button>
 

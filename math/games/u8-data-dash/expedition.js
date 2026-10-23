@@ -49,6 +49,7 @@
     const play = ctx.mode === "play";
     const done = (i) => !!ctx.state && chapterDone(def.chapters[i], ctx.state);
     kit.sky(0x050d1c, kit.mix(0x2c2840, 0x1d5650, r), "dd-sky-" + Math.round(r * 10));
+    kit.illustration(play ? 0.82 : 0.95);
     // Signal aurora: the network's data streams light the sky as stations come online.
     const aur = scene.add.graphics().setDepth(-97);
     for (let k = 0; k < 4; k++) {
@@ -138,7 +139,7 @@
     kit.motes(r > 0.3 ? 0xd8ff9a : 0xbfd4e0, 22, { top: 260, bottom: 560 });
     if (play) {
       const veil = scene.add.graphics().setDepth(-60);
-      veil.fillStyle(0x02070c, 0.5).fillRect(0, 0, W, H);
+      veil.fillStyle(0x02070c, 0.24).fillRect(0, 0, W, H);
     }
   }
 
@@ -151,6 +152,7 @@
   const mission = (id, type, skillId, tier, name, brief, extra) => ({ id, type, skill: skillId, tier, name, brief, ...extra });
   const def = {
     id: "u8-data-dash",
+    art: "/math/games/shared/art/data-marsh.webp",
     title: L("Wildlife Signal", "Señal Silvestre"),
     accent: "#a4dfb0",
     music: { root: 220, mode: "dorian", bpm: 72 },
