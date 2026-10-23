@@ -25,8 +25,8 @@ const failures = [];
 const keys = new Set();
 for (const file of readdirSync(dir).filter((f) => f.endsWith(".js") && !f.startsWith("i18n-es"))) {
   const source = readFileSync(new URL(file, dir), "utf8");
-  for (const match of source.matchAll(/\bt\("((?:[^"\\]|\\.)*)"/g))
-    keys.add(match[1].replace(/\\"/g, '"'));
+  for (const match of source.matchAll(/\bt\((?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)')/g))
+    keys.add((match[1] ?? match[2]).replace(/\\["']/g, (escaped) => escaped.slice(1)));
   for (const match of source.matchAll(/\bt\(`((?:[^`\\]|\\.)*)`/g))
     if (!match[1].includes("${")) keys.add(match[1]);
   if (file === "family-page.js")

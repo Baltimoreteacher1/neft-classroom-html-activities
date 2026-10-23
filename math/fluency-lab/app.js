@@ -134,6 +134,7 @@ const els = {
   notebook: document.querySelector("#notebook-view"),
   games: document.querySelector("#games-view"),
   teacher: document.querySelector("#teacher-view"),
+  teacherStudio: document.querySelector("#teacher-studio"),
   insight: document.querySelector("#session-insight"),
   topic: document.querySelector("#problem-topic"),
   skip: document.querySelector("#skip-checkup"),
@@ -7022,6 +7023,22 @@ function applySettings() {
 
 function showArea(view) {
   state.view = view;
+  const intro = {
+    library: ["Your Math Journey", t("Your Math Journey"), "Choose a next step, explore a skill, or play with an idea. Your progress stays on this device.", t("Choose a next step, explore a skill, or play with an idea. Your progress stays on this device.")],
+    workspace: ["Practice a skill", t("Practice a skill"), "Use a model, try a strategy, and revise your thinking as you go.", t("Use a model, try a strategy, and revise your thinking as you go.")],
+    path: ["My progress", t("My progress"), "See what you have practiced and what is ready to revisit.", t("See what you have practiced and what is ready to revisit.")],
+    notebook: ["Fix my mistakes", t("Fix my mistakes"), "Revisit mistakes and try a related problem independently.", t("Revisit mistakes and try a related problem independently.")],
+    games: ["Play with math", t("Play with math"), "Play without a timer. Use models and explain your thinking.", t("Play without a timer. Use models and explain your thinking.")],
+    teacher: ["Teacher resources", t("Teacher resources"), "Plan assignments, print materials, and project math talk tools.", t("Plan assignments, print materials, and project math talk tools.")],
+  }[view];
+  if (intro) {
+    const title = document.querySelector("#page-title");
+    const description = document.querySelector("#intro-description");
+    title.dataset.i18nEn = intro[0];
+    title.textContent = intro[1];
+    description.dataset.i18nEn = intro[2];
+    description.textContent = intro[3];
+  }
   for (const [name, element] of [["library", els.library], ["workspace", els.workspace], ["path", els.path], ["notebook", els.notebook], ["games", els.games], ["teacher", els.teacher]]) element.hidden = name !== view;
   if (view !== "games") { cleanupGames?.(); cleanupGames = null; }
   document.body.classList.toggle("working-on-skill", view === "workspace");
@@ -7076,12 +7093,35 @@ function renderDashboard() {
   const today = state.tutor.sessions.filter((session) => localDay(session.at) === localDay()).reduce((sum, session) => sum + session.answered, 0);
   const due = ranked.filter((entry) => entry.status.due).length;
   const progress = calculateProgressEvidence();
+  const hasSavedSession = saved?.version === 2 && saved.session && !saved.session.finished;
+  const skillStatus = next.status;
+  const progressValue = skillStatus.independent ? Math.round(skillStatus.ratio * 100) : 0;
+  const savedSkill = saved?.item?.skill?.title || "your practice set";
+  const completedToday = today === 1 ? t("{n} problem completed today", { n: today }) : t("{n} problems completed today", { n: today });
+  const refresh = due === 1 ? t("{n} skill ready for a memory refresh.", { n: due }) : t("{n} skills ready for a memory refresh.", { n: due });
   els.dashboard.innerHTML = `
-    ${renderProgressEvidenceCard(progress)}
-    <div class="next-step-card"><p class="section-label">${escapeHtml(PROFILE_NAMES[activeProfile])}’s next step</p><h3>${escapeHtml(next.skill.title)}</h3><p><strong>${t("Suggested because")}</strong>: ${escapeHtml(displayRecommendationReason(next.reason))}. Start with the visual idea or go straight to practice.</p><div class="button-row"><button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">See the idea</button><button class="outline-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="adaptive">Practice this skill</button></div></div>
-    <div class="checkup-card"><h3>Find my starting point</h3><p>Try one question from each skill in Grade ${state.grade}. Skip what you haven’t learned yet.</p><button class="outline-action" data-start-checkup>${state.tutor.diagnostics[state.grade] ? 'Try the checkup again' : `Start a ${getGrade(state.grade).skills.length}-question checkup`}</button><p class="checkup-note">A quick guide, not a placement test.</p></div>
-    <div class="daily-progress"><strong>${today} problems completed today</strong><span>${due ? `${due} skills ready for a memory refresh` : 'A small amount of thoughtful practice adds up.'}</span><button class="text-action" data-start-daily>Open my daily practice</button></div>
-    ${saved?.version === 2 && saved.session && !saved.session.finished ? `<div class="resume-banner"><div><strong>Your practice is waiting.</strong><p>${escapeHtml(saved.item?.skill?.title || 'Practice set')} · ${saved.session.answered} completed</p></div><button class="primary-action" data-resume-practice>Continue saved practice</button></div>` : ''}`;
+    <div class="journey-heading">
+      <div><p class="section-label">${t("Grade {n} · {name}", { n: state.grade, name: escapeHtml(PROFILE_NAMES[activeProfile]) })}</p><h2>${t("What would you like to do?")}</h2><p>${t("Pick up where you left off, play with a math idea, or choose something new.")}</p></div>
+      <button class="journey-checkup" type="button" data-start-checkup aria-label="${state.tutor.diagnostics[state.grade] ? t('Try the starting-point check again') : t('Find a starting point')}"><span class="journey-checkup-icon" aria-hidden="true">↗</span><span><strong>${state.tutor.diagnostics[state.grade] ? t('Check my starting point') : t('New here?')}</strong><small>${state.tutor.diagnostics[state.grade] ? t('Update your learning snapshot') : t('Find a comfortable place to begin')}</small></span></button>
+    </div>
+    <div class="journey-cards">
+      <article class="journey-card journey-continue">
+        <div class="journey-art journey-art-continue" aria-hidden="true"><svg viewBox="0 0 220 150" role="presentation"><path d="M25 120c38-8 43-72 88-62 29 7 38 40 82 18" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-dasharray="1 13"/><circle cx="35" cy="116" r="13"/><circle cx="111" cy="59" r="16"/><circle cx="186" cy="76" r="13"/><path d="m157 40 7 17 18-5-14 13 8 17-17-10-13 12 4-18-16-10 19 1z" fill="currentColor" opacity=".48"/></svg></div>
+        <div class="journey-card-copy"><p class="journey-overline">${hasSavedSession ? t('Ready when you are') : t('A good next step')}</p><h3>${t('Continue learning')}</h3><p class="journey-skill">${escapeHtml(hasSavedSession ? savedSkill : next.skill.title)}</p><p>${hasSavedSession ? t('{n} problems already completed. Your work is saved on this device.', { n: saved.session.answered }) : `${escapeHtml(displayRecommendationReason(next.reason))}. ${t('Begin with a visual lesson, then try it on your own.')}`}</p>
+          ${skillStatus.independent ? `<div class="journey-progress"><div><span>${t('Independent practice')}</span><strong>${progressValue}%</strong></div><progress max="100" value="${progressValue}" aria-label="${t('{percent}% independent accuracy for {skill}', { percent: progressValue, skill: escapeHtml(next.skill.title) })}">${progressValue}%</progress><small>${t('{n} independent attempts · {status}', { n: skillStatus.independent, status: escapeHtml(t(skillStatus.label)) })}</small></div>` : `<div class="journey-progress journey-progress-new"><span class="journey-progress-dot" aria-hidden="true"></span><span>${t('New skill · no score yet')}</span></div>`}
+          <div class="button-row journey-actions">${hasSavedSession ? `<button class="primary-action" data-resume-practice>${t('Continue my practice')} <span aria-hidden="true">→</span></button>` : `<button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">${t('Explore this skill')} <span aria-hidden="true">→</span></button><button class="journey-text-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="adaptive">${t('Practice independently')}</button>`}</div></div>
+      </article>
+      <button type="button" class="journey-card journey-game" data-view="games">
+        <span class="journey-card-art journey-art-game" aria-hidden="true"><svg viewBox="0 0 160 124" role="presentation"><path d="M34 75h92a15 15 0 0 1 14 20l-6 15a11 11 0 0 1-17 5l-16-13H59l-16 13a11 11 0 0 1-17-5l-6-15a15 15 0 0 1 14-20Z" fill="currentColor" opacity=".18" stroke="currentColor" stroke-width="4"/><path d="M43 87v15m-8-7h16m37-4h.1m15 12h.1" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M66 56c0-12 9-22 21-22s21 10 21 22" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="m87 17 4 9 10 1-8 7 3 10-9-5-9 5 3-10-8-7 10-1z" fill="currentColor"/></svg></span>
+        <span class="journey-card-copy"><span class="journey-overline">${t('Untimed · think and play')}</span><strong class="journey-card-title">${t('Play a game')}</strong><span>${t('Build, compare, and solve with the Game Room activities.')}</span><span class="journey-card-link">${t('Choose a game')} <span aria-hidden="true">→</span></span></span>
+      </button>
+      <article class="journey-card journey-explore">
+        <span class="journey-card-art journey-art-explore" aria-hidden="true"><svg viewBox="0 0 160 124" role="presentation"><rect x="28" y="24" width="104" height="76" rx="12" fill="none" stroke="currentColor" stroke-width="4"/><path d="M54 24v76m26-76v76m26-76v76M28 49h104M28 75h104" stroke="currentColor" stroke-width="2" opacity=".5"/><path d="M45 64h12m16 19h12m16-39h12m14 37h8" stroke="currentColor" stroke-width="10" stroke-linecap="round"/><circle cx="51" cy="39" r="5" fill="currentColor"/></svg></span>
+        <div class="journey-card-copy"><p class="journey-overline">${t('Grades 1–8 · many ways in')}</p><h3>${t('Explore skills')}</h3><p>${t('Browse the grade-level library by topic. Every skill includes a lesson, practice, and ways to check your thinking.')}</p><a class="journey-card-link" href="#subnav-skills">${t('Browse {count} Grade {grade} skills', { count: getGrade(state.grade).skills.length, grade: state.grade })} <span aria-hidden="true">→</span></a></div>
+      </article>
+    </div>
+    <div class="journey-today"><span class="journey-today-icon" aria-hidden="true">✓</span><strong>${completedToday}</strong><span>${due ? refresh : t('A little practice over time helps ideas stick.')}</span><button type="button" data-start-daily>${t('Open today’s practice')} <span aria-hidden="true">→</span></button></div>
+    <div class="journey-evidence">${renderProgressEvidenceCard(progress)}</div>`;
 }
 
 function openHubView(view) {
@@ -7091,7 +7131,7 @@ function openHubView(view) {
   if (view === "path") renderPath();
   if (view === "notebook") renderNotebook();
   if (view === "games") { cleanupGames?.(); cleanupGames = mountGames(els.games, { grade: state.grade, autostart: state.autoGame, assignedStop: state.autoStop }); state.autoGame = null; state.autoStop = null; }
-  if (view === "teacher") mountTeacherStudio(els.teacher, { grade: state.grade, onLaunch: launchAssignment, onPrint: printHtml, announce, games: GAMES, stopsFor, stopOptions, snapshot: (host, studioGrade) => { mountSnapshot(host, { onOpenSkill: (key) => { const skill = findSkill(key); if (skill) openSkill(skill.id, "adaptive", skill.grade); } }); mountPaperGames(host, { grade: studioGrade, stopsFor, onPrint: printHtml }); } });
+  if (view === "teacher") mountTeacherStudio(els.teacherStudio, { grade: state.grade, onLaunch: launchAssignment, onPrint: printHtml, announce, games: GAMES, stopsFor, stopOptions, snapshot: (host, studioGrade) => { mountSnapshot(host, { onOpenSkill: (key) => { const skill = findSkill(key); if (skill) openSkill(skill.id, "adaptive", skill.grade); } }); mountPaperGames(host, { grade: studioGrade, stopsFor, onPrint: printHtml }); } });
   document.title = `${{ teacher: 'Teacher studio', path: 'My learning path', games: 'Game Room' }[view] || 'Mistake notebook'} | Math Fluency Lab`;
   setUrl();
   document.querySelector(`#${view}-view`)?.scrollIntoView({ behavior: "smooth", block: "start" });

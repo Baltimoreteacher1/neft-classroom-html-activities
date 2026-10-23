@@ -152,6 +152,31 @@ check(cleanPlay(null) === null, "cleanPlay(null) is null.");
 // Teacher side: assignments may name a game, and facts reports summarize without names.
 const gameOnly = validateAssignment({ version: 1, grade: 3, keys: [], game: "hunt", stop: "x6-7" });
 check(gameOnly?.game === "hunt" && gameOnly.stop === "x6-7", "A game-only assignment is valid.");
+const modelGame = validateAssignment({
+  version: 1,
+  grade: 3,
+  keys: [],
+  game: "fractionforge",
+  stop: "x6-7",
+});
+check(
+  modelGame?.game === "fractionforge" && !modelGame.stop,
+  "A model game assignment does not pretend to use a fact stop.",
+);
+check(
+  validateAssignment({ version: 1, grade: 1, keys: [], game: "fractionforge" }) === null,
+  "A model game cannot be assigned below its supported grade.",
+);
+check(
+  validateAssignment({ version: 1, grade: 1, keys: [], game: "numberquest" })?.game ===
+    "numberquest",
+  "The 0–20 number-line game is available in Grade 1.",
+);
+check(
+  cleanRewards({ best: { numberquest: 3, arrayarchitect: 2, fractionforge: 1 } }).best
+    .fractionforge === 1,
+  "Signature game best scores survive storage cleaning.",
+);
 check(
   validateAssignment({ version: 1, grade: 3, keys: [], game: "nope" }) === null,
   "An unknown game with no skills is not an assignment.",
