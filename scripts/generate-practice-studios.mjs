@@ -78,6 +78,8 @@ function assetPlan(/** @type {Map<string, string>} */ built) {
     "store",
     "typeset",
     "attempts",
+    "pulse-core",
+    "pulse",
     "kinds-basic",
     "kinds-hands",
     "kinds-lab",

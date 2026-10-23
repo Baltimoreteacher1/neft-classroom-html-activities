@@ -537,6 +537,7 @@
             href: location.pathname.replace(/(index\.html)?$/, "").replace(/\/?$/, "-challenging/"),
           },
     });
+    W.U4Thinking?.exitHtml && host.insertAdjacentHTML("beforeend", W.U4Thinking.exitHtml());
     host.scrollIntoView({ block: "start" });
     /** @type {HTMLElement|null} */ (host.querySelector(".exit-title"))?.focus({
       preventScroll: true,

@@ -740,7 +740,7 @@
         })),
         next,
       },
-    )}`;
+    )}${W.StudioPulse?.slotHtml?.() || '<div class="pulse-slot" data-pulse-slot></div>'}`;
   }
 
   function progress() {
@@ -862,4 +862,5 @@
   W.StudioReflect?.init(RT);
   W.StudioWorked?.init(RT);
   W.StudioTrapBook?.init(RT);
+  W.StudioPulse?.init(RT);
 })();
