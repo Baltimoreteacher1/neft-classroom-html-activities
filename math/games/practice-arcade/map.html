@@ -256,6 +256,7 @@
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
   <link rel="stylesheet" href="/shared/arcade-enhanced-styles.css">
+  <link rel="stylesheet" href="/math/games/practice-arcade/world-art.css?v=20261023">
 <style>.arcade-worlds .world{border:1px solid #ffffff55;box-shadow:0 12px 30px #02061733}.arcade-worlds .wname{font-size:22px;line-height:1.25}.arcade-worlds .lesson{min-height:48px;font-size:16px}.arcade-worlds .review{font-size:17px;min-height:48px}.arcade-worlds [hidden]{display:none!important}.arcade-worlds :is(a,button,input):focus-visible{outline:3px solid #fde68a;outline-offset:3px}.map-search-label{display:block;font-size:17px;font-weight:700;margin-bottom:8px}#map-search{width:100%;min-height:48px;background:#162846;color:#fff;border:1px solid #7a95bc;border-radius:12px;font:17px system-ui;padding:12px 16px}#map-search::placeholder{color:#c1d1ea}#map-results{min-height:24px;font-size:16px}.arcade-worlds button.btn{font:inherit;cursor:pointer}</style>
 </head>
   <body class="arcade-worlds">
@@ -264,14 +265,33 @@
         <button class="btn" id="langBtn" type="button">EN · es</button>
       </div>
       <header class="hero">
-        <h1>🗺️ Arcade World Map</h1>
-        <p id="tagline">Pick your world. Every unit is its own level — collect ⭐ as you go.</p>
+        <h1>Arcade World Map</h1>
+        <p id="tagline">Explore the islands. Choose your unit and enter a lesson directly.</p>
       </header>
+      <section class="world-map" aria-labelledby="world-map-title">
+        <div class="world-map-intro"><h2 id="world-map-title">Choose an island</h2><p>Follow a route into your unit, or use the lesson list below.</p></div>
+        <p class="world-map-scroll-hint">Swipe across the map to see every island. The full unit list follows below.</p>
+        <div class="world-map-scroll" role="group" aria-label="Illustrated islands. The unit links are also listed below.">
+          <div class="world-map-art">
+            <img src="/math/games/shared/art/arcade-archipelago.webp" width="1600" height="900" alt="Illustrated ocean archipelago with routes connecting ten distinct math islands" fetchpriority="high" />
+            <a class="island" style="--x:17%;--y:15%" href="#unit-3">Unit 3 <span>Ratio Reef</span></a>
+            <a class="island" style="--x:52%;--y:14%" href="#unit-1">Unit 1 <span>Number Nebula</span></a>
+            <a class="island" style="--x:84%;--y:17%" href="#unit-4">Unit 4 <span>Percent Peaks</span></a>
+            <a class="island" style="--x:16%;--y:42%" href="#unit-6">Unit 6 <span>Formula Forest</span></a>
+            <a class="island" style="--x:46%;--y:43%" href="#unit-2">Unit 2 <span>Data Dunes</span></a>
+            <a class="island" style="--x:77%;--y:42%" href="#unit-5">Unit 5 <span>Ember Expanse</span></a>
+            <a class="island" style="--x:16%;--y:74%" href="#unit-10">Unit 10 <span>Math in My World</span></a>
+            <a class="island" style="--x:43%;--y:76%" href="#unit-9">Unit 9 <span>Variable Valley</span></a>
+            <a class="island" style="--x:70%;--y:77%" href="#unit-7">Unit 7 <span>Integer Isles</span></a>
+            <a class="island" style="--x:88%;--y:60%" href="#unit-8">Unit 8 <span>Equation Escape</span></a>
+          </div>
+        </div>
+      </section>
       <div class="mission-brief" id="missionBrief">
         <div class="tag" id="missionTag">Start here</div>
         <p id="missionText">Find your unit, then tap the lesson your class is on. Want a mix? Tap ▶ Play Unit Review. No timers — every miss gives you a hint.</p>
       </div>
-      <label class="map-search-label" for="map-search">Find a lesson or math skill</label><input id="map-search" type="search" placeholder="Try fractions, decimal, or graph…"><p id="map-results" role="status" aria-live="polite"></p><div class="grid" id="grid"></div>
+      <h2 id="lesson-list-title">All units and lessons</h2><label class="map-search-label" for="map-search">Find a lesson or math skill</label><input id="map-search" type="search" placeholder="Try fractions, decimal, or graph…"><p id="map-results" role="status" aria-live="polite"></p><div class="grid" id="grid" aria-labelledby="lesson-list-title"></div>
       <div id="status">Loading worlds…</div>
     </div>
 
@@ -298,7 +318,7 @@
         if (sv === "es" || sv === "en") lang = sv;
       } catch (e) {}
       var STR = {
-        title: { en: "🗺️ Arcade World Map", es: "🗺️ Mapa del Arcade" },
+        title: { en: "Arcade World Map", es: "Mapa del Arcade" },
         tagline: {
           en: "Pick your world. Every unit is its own level — collect ⭐ as you go.",
           es: "Elige tu mundo. Cada unidad es su propio nivel — colecciona ⭐ mientras juegas.",
@@ -308,7 +328,6 @@
           en: "Find your unit, then tap the lesson your class is on. Want a mix? Tap ▶ Play Unit Review. No timers — every miss gives you a hint.",
           es: "Busca tu unidad y toca la lección que estudia tu clase. ¿Quieres una mezcla? Toca ▶ Repaso de Unidad. Sin cronómetro — cada error te da una pista.",
         },
-        back: { en: "← Curriculum", es: "← Currículo" },
         review: { en: "▶ Play Unit Review", es: "▶ Repaso de Unidad" },
         lessonsWord: { en: "lessons played", es: "lecciones jugadas" },
         loadFail: {
@@ -341,7 +360,6 @@
       document.getElementById("tagline").textContent = t("tagline");
       document.getElementById("missionTag").textContent = t("missionTag");
       document.getElementById("missionText").textContent = t("missionText");
-      document.querySelector(".topbar .btn").textContent = t("back");
       document.getElementById("langBtn").addEventListener("click", function (e) {
         e.preventDefault();
         lang = lang === "es" ? "en" : "es";
@@ -363,6 +381,8 @@
           var pct = lessons.length ? Math.round((played / lessons.length) * 100) : 0;
           var card = document.createElement("section");
           card.className = "world";
+          card.id = "unit-" + u;
+          card.tabIndex = -1;
           card.dataset.unit = u;
           card.setAttribute("aria-label", "Unit " + u + ": " + w.name);
           card.style.background = "linear-gradient(160deg," + w.top + "," + w.bot + ")";
@@ -413,7 +433,18 @@
           grid.appendChild(card);
         });
         document.getElementById("status").textContent = "";
+        if (location.hash && /^#unit-(?:10|[1-9])$/.test(location.hash)) {
+          var target = document.getElementById(location.hash.slice(1));
+          if (target) target.focus({ preventScroll: true });
+        }
       }
+
+      document.querySelectorAll(".island").forEach(function (link) {
+        link.addEventListener("click", function () {
+          var target = document.getElementById(link.hash.slice(1));
+          if (target) setTimeout(function () { target.focus({ preventScroll: true }); }, 0);
+        });
+      });
 
       document.getElementById("map-search").addEventListener("input", function(event) {
         var query = event.target.value.trim().toLowerCase(); var matches = 0;

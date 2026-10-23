@@ -61,6 +61,7 @@
     const r = ctx.restored;
     const play = ctx.mode === "play";
     kit.sky(kit.mix(0x24505c, 0x1aa0b8, r), 0x03121c, "ff-sky-" + Math.round(r * 10));
+    kit.illustration(play ? 0.82 : 0.95);
     // Light from the surface.
     kit.glow(W / 2, -40, 700, 0xbff6ff, play ? 0.18 : 0.32, -98);
     const rays = scene.add.graphics().setDepth(-97).setBlendMode(Phaser.BlendModes.ADD);
@@ -147,7 +148,7 @@
     kit.motes(0xbff6ff, 24, { speedY: { min: -26, max: -10 } });
     if (play) {
       const veil = scene.add.graphics().setDepth(-60);
-      veil.fillStyle(0x02101a, 0.5).fillRect(0, 0, W, H);
+      veil.fillStyle(0x02101a, 0.24).fillRect(0, 0, W, H);
     }
   }
 
@@ -158,6 +159,7 @@
 
   const def = {
     id: "u2-fraction-frenzy",
+    art: "/math/games/shared/art/reef-rescue.webp",
     title: L("Reef Rescue", "Rescate del Arrecife"),
     accent: "#63eed8",
     music: { root: 174.6, mode: "dorian", bpm: 70 },

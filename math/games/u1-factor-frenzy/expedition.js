@@ -91,6 +91,7 @@
     const play = ctx.mode === "play";
     const done = (i) => !!ctx.state && chapterDone(def.chapters[i], ctx.state);
     kit.sky(0x0e0a1c, kit.mix(0x2a1620, 0x6a3420, r), "pk-sky-" + Math.round(r * 10));
+    kit.illustration(play ? 0.82 : 0.95);
     kit.stars(46, 13, 0xffe6d0);
     kit.glow(W / 2, 360, 520, 0xff8a3c, 0.12 + 0.4 * r, -98);
     kit.ridge(kit.mix(0x221a30, 0x34223a, r), 330, 110, 5, { parallax: 0.12, depth: -95 });
@@ -143,7 +144,7 @@
     kit.motes(0xffa860, 12 + Math.round(r * 24), { speedY: { min: -26, max: -8 }, top: 200 });
     if (play) {
       const veil = scene.add.graphics().setDepth(-60);
-      veil.fillStyle(0x07040a, 0.55).fillRect(0, 0, W, H);
+      veil.fillStyle(0x07040a, 0.24).fillRect(0, 0, W, H);
     }
   }
 
@@ -154,6 +155,7 @@
 
   const def = {
     id: "u1-factor-frenzy",
+    art: "/math/games/shared/art/primekeeper.webp",
     title: L("The Primekeeper", "El Guardián de los Primos"),
     accent: "#ffc779",
     music: { root: 174.6, mode: "dorian", bpm: 72 },

@@ -452,6 +452,12 @@
       lang,
       reduced: reducedMotion,
       sfx: Audio.sfx,
+      /** Optional original environment art, placed behind mathematical world objects. */
+      illustration(alpha = 1) {
+        const key = `ewl-world-${def.id}`;
+        if (!scene.textures.exists(key)) return null;
+        return scene.add.image(W / 2, H / 2, key).setDisplaySize(W, H).setDepth(-97).setAlpha(alpha);
+      },
       /** Vertical sky gradient drawn into a canvas texture (crisp, one draw call). */
       sky(top, bottom, key = "ewl-sky-" + def.id) {
         if (!scene.textures.exists(key)) {
@@ -982,6 +988,10 @@
       constructor() {
         super({ key: "ExpeditionMap" });
       }
+      preload() {
+        if (def.art && !this.textures.exists(`ewl-world-${def.id}`))
+          this.load.image(`ewl-world-${def.id}`, def.art);
+      }
       create() {
         const kit = (this.kit = makeKit(this, def));
         const state = (this.state = load(def.id));
@@ -1299,6 +1309,10 @@
         this.demoed = false;
         this.busy = false;
         this.finished = false;
+      }
+      preload() {
+        if (def.art && !this.textures.exists(`ewl-world-${def.id}`))
+          this.load.image(`ewl-world-${def.id}`, def.art);
       }
       create() {
         const kit = (this.kit = makeKit(this, def));

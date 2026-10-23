@@ -115,6 +115,10 @@
       }
     });
     const field = scene.add.graphics().setDepth(21);
+    const canal = scene.add.graphics().setDepth(25);
+    const canalLabel = kit.text(600, 484, "", 13, "#d8f5ff", {
+      weight: "800", depth: 26, wrap: 365,
+    });
     function drawField(color, lush) {
       field.clear();
       field.fillStyle(PANEL, 0.85).fillRoundedRect(600, 150, 190, 300, 14);
@@ -154,6 +158,19 @@
         g.strokeRoundedRect(tk.x - 46, TOP - 6, 92, BOT - TOP + 12, 12);
         labels[i].setText(`${v} ${api.t(tk.unit)}`);
       });
+      // Water reaches the field only in complete recipe batches. Extra parts
+      // stay in the tanks; the visual is driven by the current ratio, not a check.
+      const complete = Math.floor(Math.min(n / a, w / b));
+      const needed = mode === "total" ? T / (a + b) : k;
+      const reach = Math.min(1, complete / needed);
+      canal.clear();
+      canal.lineStyle(14, 0x163c48, 1).lineBetween(400, 458, 600, 458);
+      canal.lineStyle(9, WATER, 0.95).lineBetween(400, 458, 400 + 200 * reach, 458);
+      canal.fillStyle(0xffd76a, 1).fillCircle(400 + 200 * reach, 458, 5);
+      canalLabel.setText(api.t(L(
+        `${complete} complete ${complete === 1 ? "batch" : "batches"} can flow · goal ${needed}`,
+        `${complete} ${complete === 1 ? "tanda completa" : "tandas completas"} pueden fluir · meta ${needed}`,
+      )));
     }
     function bump(i, d) {
       sel = i;

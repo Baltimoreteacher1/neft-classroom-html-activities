@@ -82,6 +82,7 @@
       kit.mix(0x8a4424, 0x4a2c4c, r),
       "cq-sky-" + Math.round(r * 10),
     );
+    kit.illustration(play ? 0.82 : 0.95);
     kit.stars(Math.round(14 + 70 * r), 19, 0xffeadb);
     // Ringed giant planet, hidden by dust until the storm clears.
     const gg = scene.add.graphics().setDepth(-96);
@@ -128,7 +129,7 @@
     });
     if (play) {
       const veil = scene.add.graphics().setDepth(-60);
-      veil.fillStyle(0x07040a, 0.55).fillRect(0, 0, W, H);
+      veil.fillStyle(0x07040a, 0.24).fillRect(0, 0, W, H);
     }
   }
 
@@ -149,6 +150,7 @@
   });
   const def = {
     id: "u9-coordinate-quest",
+    art: "/math/games/shared/art/atlas-rover.webp",
     title: L("Atlas Rover", "Róver Atlas"),
     accent: "#ffb681",
     music: { root: 174.61, mode: "dorian", bpm: 72 },

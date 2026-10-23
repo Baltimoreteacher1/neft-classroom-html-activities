@@ -35,6 +35,7 @@
     const r = ctx.restored;
     const play = ctx.mode === "play";
     kit.sky(0x081b2e, kit.mix(0x5a4630, 0x2c5a55, r), "rr-sky-" + Math.round(r * 10));
+    kit.illustration(play ? 0.78 : 0.92);
     kit.glow(660, 150, 420, 0xffc46b, play ? 0.22 : 0.42, -98);
     kit.stars(36, 7);
     kit.ridge(kit.mix(0x3a3a46, 0x2b4d58, r), 300, 70, 11, { parallax: 0.15, depth: -94 });
@@ -88,7 +89,7 @@
     kit.motes(r > 0.3 ? 0xd9ff9a : 0xffd9a0, 22);
     if (play) {
       const veil = scene.add.graphics().setDepth(-60);
-      veil.fillStyle(0x02070c, 0.45).fillRect(0, 0, W, H);
+      veil.fillStyle(0x02070c, 0.22).fillRect(0, 0, W, H);
     }
   }
 
@@ -100,6 +101,7 @@
   const L33 = "3-3";
   const def = {
     id: "u3-ratio-rush",
+    art: "/math/games/shared/art/oasis-engineers.webp",
     title: L("Oasis Engineers", "Ingenieros del Oasis"),
     accent: "#a8ef93",
     music: { root: 196, mode: "dorian", bpm: 76 },
