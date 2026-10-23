@@ -1,6 +1,6 @@
 // Every interactive model in the Fluency Lab opens with THE PROBLEM'S OWN numbers and shows no answer the
 // learner has not earned. Reads the givens through math/fluency-lab/problem-numbers.js for a seeded sample of
-// all 80 skills (plain and story versions) and checks:
+// all 88 skills (plain and story versions) and checks:
 //   1. the numbers read out are exactly the numbers written in the problem;
 //   2. every number a Math Tool Drawer seed loads is one of those givens (so no seed can hold a result);
 //   3. each drawer tool, drawn locked, never prints the answer; the multiplication algorithm board and the
@@ -35,7 +35,7 @@ const sample = (skill, count, seed) => {
 const items = ALL_SKILLS.flatMap((skill, i) =>
   sample(skill, 18, 1000 + i * 7).map((item) => ({ skill, item })),
 );
-assert.equal(ALL_SKILLS.length, 80, "80 skills");
+assert.equal(ALL_SKILLS.length, 88, "88 skills");
 
 // 0. Known shapes: the numbers come out as written, story wording reads through `expr`.
 const known = [

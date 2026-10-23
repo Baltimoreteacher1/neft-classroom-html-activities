@@ -3,7 +3,7 @@
 // Pure: no DOM, no state. A story problem keeps its bare expression in `item.expr`, so that is read first.
 //
 // Only the problem's own givens come out of here. Nothing in this file computes an answer, so a model
-// seeded from it cannot show one (tools/fluency-model-inputs.test.mjs pins that for all 80 skills).
+// seeded from it cannot show one (tools/fluency-model-inputs.test.mjs pins that for all 88 skills).
 
 import { columnSpec } from "./vertical-columns.js";
 

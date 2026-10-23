@@ -6648,7 +6648,7 @@ body.vocab-modal-open {
 }
 
 /* ==========================================================================
-   Multidimensional Learner Genome (4-Axis Fluency Radar)
+   Evidence-based learner progress
    ========================================================================== */
 .learner-genome-card {
   background: #ffffff;
@@ -6658,6 +6658,37 @@ body.vocab-modal-open {
   margin-bottom: 1.25rem;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
+
+.unit-ruler {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 84px;
+  margin: 1rem .25rem;
+  padding: 0 0 1.4rem;
+  border-bottom: 3px solid #334155;
+  isolation: isolate;
+}
+.ruler-tick { position: relative; flex: 1; height: 52px; border-left: 1px solid #94a3b8; color: #334155; }
+.ruler-tick:last-child { border-right: 1px solid #94a3b8; }
+.ruler-tick i { position: absolute; bottom: 0; left: -1px; height: 17px; border-left: 2px solid #334155; }
+.ruler-tick.measured { background: #dbeafe; }
+.ruler-tick small { position: absolute; bottom: -1.35rem; left: 0; transform: translateX(-50%); font-size: .75rem; }
+.ruler-strip { position: absolute; z-index: -1; bottom: 1.45rem; height: 14px; background: #60a5fa; border: 1px solid #2563eb; border-radius: 3px; }
+.data-model { max-width: 34rem; margin: .75rem auto; }
+.data-model td:last-child, .data-model th:last-child { text-align: right; }
+.unit-fraction-whole { display: flex; max-width: 34rem; min-height: 3.25rem; margin: .75rem auto; border: 2px solid #334155; }
+.unit-fraction-part { flex: 1; border-right: 1px solid #64748b; background: #f8fafc; }
+.unit-fraction-part:last-child { border-right: 0; }
+.unit-fraction-part.selected-part { background: #dbeafe; padding: .25rem; }
+.unit-fraction-shares { display: flex; height: 100%; min-height: 2.5rem; }
+.unit-fraction-shares span { flex: 1; border-right: 1px dashed #1d4ed8; background: #bfdbfe; }
+.unit-fraction-shares span:last-child { border-right: 0; }
+.grade-scope { margin-top: .65rem; max-width: 56rem; color: #334155; font-size: .9rem; }
+.grade-scope details { border: 1px solid #cbd5e1; border-radius: .65rem; background: #f8fafc; padding: .55rem .75rem; }
+.grade-scope summary { color: #1e3a8a; font-weight: 800; cursor: pointer; }
+.grade-scope ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: .35rem 1.25rem; margin: .6rem 0; padding-left: 1.25rem; }
+.grade-scope p { margin: .45rem 0 0; }
 
 .genome-header {
   display: flex;
@@ -6690,34 +6721,6 @@ body.vocab-modal-open {
   padding: 4px 10px;
   border-radius: 9999px;
   border: 1px solid #cbd5e1;
-}
-
-.genome-body {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 1.5rem;
-  align-items: center;
-}
-
-@media (max-width: 768px) {
-  .genome-body {
-    grid-template-columns: 1fr;
-  }
-}
-
-.genome-radar-wrap {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 0.5rem;
-  border: 1px solid #e2e8f0;
-}
-
-.genome-radar-svg {
-  max-width: 100%;
-  height: auto;
 }
 
 .genome-metrics-grid {
@@ -6763,12 +6766,6 @@ body.vocab-modal-open {
   border-radius: 9999px;
   overflow: hidden;
   margin-bottom: 6px;
-}
-
-.gm-bar-fill {
-  height: 100%;
-  border-radius: 9999px;
-  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .gm-desc {

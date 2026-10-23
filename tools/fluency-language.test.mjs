@@ -37,7 +37,7 @@ const ok = (condition, message) => {
   assert.ok(condition, message);
 };
 
-// 1. Every one of the 80 skills has a family and focus words that exist.
+// 1. Every one of the 88 skills has a family and focus words that exist.
 const skillIdsInBank = new Set(terms.skillIds());
 for (const skill of ALL_SKILLS) {
   ok(skillIdsInBank.has(skill.id), `skill ${skill.id} has no language profile`);

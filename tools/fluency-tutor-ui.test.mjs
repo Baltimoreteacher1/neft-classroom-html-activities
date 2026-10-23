@@ -169,13 +169,13 @@ assert.match($("#mastery-label").textContent, /of \d+ recent checks correct/);
 click('[data-view="library"]');
 const recordsBefore = JSON.stringify(savedTutor().records);
 click("[data-start-checkup]");
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 11; i++) {
   click("#skip-checkup");
   click("#next-problem");
 }
 assert.equal(
   Object.keys(savedTutor().diagnostics[4].results).length,
-  10,
+  11,
   "Checkup records every skill once",
 );
 assert.equal(JSON.stringify(savedTutor().records), recordsBefore, "Checkups do not award mastery");
@@ -194,7 +194,7 @@ assert.ok(
   "Fresh independent success repairs notebook entries",
 );
 click('[data-view="path"]');
-assert.equal(win.document.querySelectorAll(".path-skill").length, 10);
+assert.equal(win.document.querySelectorAll(".path-skill").length, 11);
 assert.match($("#path-view").textContent, /two different days/);
 
 // Streak mode: untimed, 10 correct in a row, a miss restarts the count, no clock anywhere.

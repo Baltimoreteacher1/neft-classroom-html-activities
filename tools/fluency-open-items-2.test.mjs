@@ -77,14 +77,16 @@ for (const skill of ALL_SKILLS) {
   }
   assert.match(
     skill.standard,
-    new RegExp(`^${skill.grade}\\.(NOS|AT|GR|DS)\\.\\d+$`),
+    new RegExp(`^${skill.grade}\\.(NOS|AT|GR|DS)(?:\\.[A-D])?\\.\\d+$`),
     `${skill.id}: ${skill.standard}`,
   );
-  assert.match(
-    skill.formerStandard,
-    /^\d\.(OA|NBT|NF|MD|G|RP|EE|NS|F|SP)\.[A-D]\.\d+$/,
-    `${skill.id} keeps its former code`,
-  );
+  if (skill.formerStandard) {
+    assert.match(
+      skill.formerStandard,
+      /^\d\.(OA|NBT|NF|MD|G|RP|EE|NS|F|SP)\.[A-D]\.\d+$/,
+      `${skill.id} keeps its former code`,
+    );
+  }
 }
 assert.equal(getSkill(6, "unit-rates").standard, "6.AT.2");
 assert.equal(getSkill(6, "integers").standard, "6.NOS.8");

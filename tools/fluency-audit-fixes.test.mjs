@@ -40,7 +40,7 @@ assert.equal(frac("11/4", "1 1/4"), false, "1 1/4 is 5/4");
 assert.equal(frac("-17/12", "−1 5/12"), true);
 assert.equal(frac("3/4", "6/8"), true);
 
-// 2. A peek never reaches a step that states the answer (all 80 skills).
+// 2. A peek never reaches a step that states the answer (all 88 skills).
 let capped = 0;
 for (const skill of ALL_SKILLS) {
   for (let i = 0; i < 60; i += 1) {

@@ -113,29 +113,13 @@ export function primeFactors(n) {
 // GCF/LCM steps: LCM uses the student-friendly prime factorization method.
 function gcfLcmSteps(find, a, b, answer) {
   if (find === "gcf") {
-    const [fa, fb] = [factorsOf(a), factorsOf(b)];
-    return [`Factors of ${a}: ${listed(fa)}`, `Factors of ${b}: ${listed(fb)}`, "Which factors are on both lists? Look for the ones that match.", `The greatest shared factor is ${answer}.`];
-  }
-  const pa = primeFactors(a);
-  const pb = primeFactors(b);
-  const countPrimes = (list) => {
-    const map = {};
-    for (const p of list) map[p] = (map[p] || 0) + 1;
-    return map;
-  };
-  const ca = countPrimes(pa);
-  const cb = countPrimes(pb);
-  const allPrimes = [...new Set([...pa, ...pb])].sort((x, y) => x - y);
-  const maxParts = [];
-  for (const p of allPrimes) {
-    const maxCount = Math.max(ca[p] || 0, cb[p] || 0);
-    for (let i = 0; i < maxCount; i += 1) maxParts.push(p);
+    return [`Find factor pairs for ${a}. Record the factors that divide it evenly.`, `Find factor pairs for ${b}. Record the factors that divide it evenly.`, "Compare the two factor lists. Which factors are shared?", `Choose the greatest shared factor: ${answer}. Check that it divides both numbers evenly.`];
   }
   return [
-    `Prime factors of ${a}: ${pa.join(" × ")}.`,
-    `Prime factors of ${b}: ${pb.join(" × ")}.`,
-    `Take the highest power of each prime: ${maxParts.join(" × ")}.`,
-    `Multiply them together to get the LCM: ${maxParts.join(" × ")} = ${answer}.`,
+    `Write the prime factorization of ${a}.`,
+    `Write the prime factorization of ${b}.`,
+    "For each prime, keep the greatest number of copies that appears in either factorization.",
+    "Multiply the selected prime factors and check that the product is a multiple of both numbers.",
   ];
 }
 
@@ -472,6 +456,47 @@ const generators = {
     });
   },
 
+  lengthMeasure(config, rng) {
+    const length = randInt(3, 12, rng);
+    const start = randInt(0, 4, rng);
+    const end = start + length;
+    return problem(`A strip starts at ${start} cm and ends at ${end} cm on a ruler. How long is the strip?`, length, {
+      hint: "Measure the space between the two marks. Count the 1-centimeter intervals, not the number of marks.",
+      explanation: `The strip covers ${end} − ${start} = ${length} equal 1-centimeter intervals.`,
+      model: { type: "unitMeasure", start, end, unit: "cm", caption: "Each interval is 1 centimeter" },
+    });
+  },
+
+  dataDisplay(config, rng) {
+    const names = ["apples", "bananas", "oranges", "pears"];
+    const values = [];
+    while (values.length < names.length) {
+      const value = randInt(2, 17, rng);
+      if (!values.includes(value)) values.push(value);
+    }
+    for (let i = values.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(rng() * (i + 1));
+      [values[i], values[j]] = [values[j], values[i]];
+    }
+    const rows = names.map((name, i) => [name, String(values[i])]);
+    const answer = names[values.indexOf(Math.max(...values))];
+    return problem(`A class vote shows ${rows.map(([name, count]) => `${name}: ${count}`).join(", ")}. Which fruit got the most votes?`, answer, {
+      kind: "choice", choices: names, hint: "Compare the counts in the display. Find the greatest number.",
+      explanation: `${answer} got the most votes because ${Math.max(...values)} is the greatest count.`,
+      model: { type: "dataTable", headers: ["Fruit", "Votes"], rows, caption: "Class vote" },
+    });
+  },
+
+  scaleDrawing(config, rng) {
+    const scale = pick([2, 3, 4, 5], rng);
+    const drawing = randInt(2, 8, rng);
+    return problem(`A scale drawing uses 1 cm to represent ${scale} m. A wall is ${drawing} cm long in the drawing. How long is the real wall in meters?`, drawing * scale, {
+      hint: `Each drawing centimeter represents ${scale} meters. Multiply the drawing length by the scale amount.`,
+      explanation: `${drawing} × ${scale} = ${drawing * scale} meters.`,
+      unit: "m", model: { type: "table", headers: ["Drawing (cm)", "Real length (m)"], rows: [["1", String(scale)], [String(drawing), "?"]], caption: "Equivalent lengths" },
+    });
+  },
+
   money(config, rng) {
     const quarters = randInt(0, config.maxCoins ?? 4, rng);
     const dimes = randInt(0, config.maxCoins ?? 4, rng);
@@ -525,6 +550,16 @@ const generators = {
   },
 
   fractionOp(config, rng) {
+    if (config.unitFractionDivision) {
+      const d = randInt(2, 10, rng);
+      const whole = randInt(2, 8, rng);
+      const divideUnitByWhole = rng() < 0.5;
+      const question = divideUnitByWhole
+        ? `A ribbon that is 1/${d} meter long is shared equally by ${whole} students. What length of ribbon does each student get?`
+        : `A jug holds ${whole} liters. How many 1/${d}-liter servings can it fill?`;
+      const answer = divideUnitByWhole ? `1/${d * whole}` : String(whole * d);
+      return problem(question, answer, { kind: divideUnitByWhole ? "fraction" : "number", unit: divideUnitByWhole ? "m" : "servings", hint: divideUnitByWhole ? `Share one ${d}th of a meter into ${whole} equal groups.` : `Count how many ${d}th-liter servings fit into ${whole} liters.`, explanation: divideUnitByWhole ? `1/${d} ÷ ${whole} = ${answer} meter for each student.` : `${whole} ÷ 1/${d} = ${answer} servings.` });
+    }
     const op = config.op || "add";
     const signed = Boolean(config.signed);
     let d1 = randInt(2, config.maxDenominator ?? 12, rng);
@@ -686,7 +721,7 @@ const generators = {
       return problem(`What is the ${ordinal(m)} multiple of ${f}?`, f * m, {
         hint: `Count by ${f}s, or multiply ${f} by ${m}.`,
         explanation: `The ${ordinal(m)} multiple of ${f} is ${f} × ${m} = ${f * m}.`,
-        steps: [`Multiples of ${f} come from counting by ${f}s: ${f}, ${2 * f}, ${3 * f}, …`, `The ${ordinal(m)} multiple is ${m} jumps of ${f}, which is ${f} × ${m}.`, `The ${ordinal(m)} multiple of ${f} is ${f} × ${m} = ${f * m}.`],
+        steps: [`The first multiple of ${f} is ${f} × 1. Each new multiple adds one more group of ${f}.`, `The ${ordinal(m)} multiple is ${m} jumps of ${f}. Write that as ${f} × ${m}.`, `The ${ordinal(m)} multiple of ${f} is ${f} × ${m} = ${f * m}.`],
       });
     }
     if (form === "countFactors") {
@@ -1026,7 +1061,16 @@ const generators = {
       return problem(`Perimeter of a rectangle with length ${a} and width ${b}?`, 2 * (a + b), { hint: "Add all four sides, or use 2(length + width).", explanation: `2(${a} + ${b}) = ${2 * (a + b)} units.`, unit: "units", model: { type: "shape", shape: "rectangle", a, b, allSides: true, caption: `Rectangle ${a} by ${b}: add all four sides` } });
     if (shape === "triangleArea") {
       const base = a % 2 === 0 ? a : a + 1;
-      return problem(`Area of a triangle with base ${base} and height ${b}?`, (base * b) / 2, { hint: "Area = 1/2 × base × height.", explanation: `1/2 × ${base} × ${b} = ${(base * b) / 2} square units.`, unit: "square units" });
+      return problem(`Area of a triangle with base ${base} and height ${b}?`, (base * b) / 2, { hint: "Area = 1/2 × base × height.", explanation: `1/2 × ${base} × ${b} = ${(base * b) / 2} square units.`, unit: "square units", model: { type: "triangleArea", base, height: b, caption: "The perpendicular height meets the base at a right angle" } });
+    }
+    if (shape === "angleRelations") {
+      const relation = pick(["supplementary", "complementary", "vertical"], rng);
+      const total = relation === "complementary" ? 90 : relation === "supplementary" ? 180 : null;
+      const known = randInt(25, relation === "complementary" ? 65 : 150, rng);
+      const answer = total === null ? known : total - known;
+      const wording = relation === "complementary" ? "complementary" : relation === "supplementary" ? "supplementary" : "vertical";
+      const question = relation === "vertical" ? `One of two vertical angles measures ${known}°. What is the measure of the other angle?` : `Two ${wording} angles include one angle that measures ${known}°. What is the other angle?`;
+      return problem(question, answer, { hint: relation === "complementary" ? "Complementary angles add to 90°." : relation === "supplementary" ? "Supplementary angles add to 180°." : "Vertical angles have equal measures.", explanation: relation === "vertical" ? `Vertical angles are equal, so the other angle is ${known}°.` : `${total}° − ${known}° = ${answer}°.`, unit: "°", model: { type: "anglePair", relation, known, caption: "Angle relationship (diagram not to scale)" } });
     }
     if (shape === "volume")
       return problem(`Volume of a rectangular prism: ${a} × ${b} × ${c}?`, a * b * c, { hint: "Volume = length × width × height.", explanation: `${a} × ${b} × ${c} = ${a * b * c} cubic units.`, model: c <= 12 ? { type: "layers", a, b, height: c } : null, unit: "cubic units" });
@@ -1169,6 +1213,7 @@ export const GRADES = [
       S("subtract-20", "Subtraction facts within 20", "Subtraction", "fact", { op: "sub", max: 10, maxResult: 20 }, "1.OA.C.6", L("Think of subtraction as take-away or a missing addend.", ["Ask what plus the smaller number makes the larger.", "Count up in useful jumps.", "Check with addition."], "14 − 8 = 6 because 8 + 6 = 14.", "The answer is the difference, not the number counted to.")),
       S("missing-addend", "Find the missing addend", "Addition", "missingAddend", { maxTotal: 20 }, "1.OA.D.8", L("A missing-addend equation asks for the unknown part.", ["Start at the known part.", "Count on to the total.", "The count-on amount is the missing part."], "7 + □ = 12, so □ = 5.", "Do not add the total and the known part.")),
       S("time", "Tell time and find later times", "Measurement", "timeAdd", { elapsed: [30, 60] }, "1.MD.B.3", L("A clock groups 60 minutes into each hour.", ["Read the hour.", "Read the minutes.", "Add the elapsed minutes."], "30 minutes after 2:00 is 2:30.", "When minutes reach 60, move to the next hour.")),
+      S("measure-length", "Measure length with equal units", "Measurement", "lengthMeasure", {}, "1.GR.A.2", L("Length measures how many equal units cover an object without gaps or overlaps.", ["Line up the object with the zero mark.", "Count the spaces between marks.", "Name the unit you used."], "A strip from 2 cm to 8 cm is 6 centimeters long.", "Count intervals, not ruler marks.")),
     ],
   },
   {
@@ -1187,6 +1232,7 @@ export const GRADES = [
       S("add-1000", "Add within 1,000", "Addition", "fact", { op: "add", min: 100, max: 499, maxResult: 999 }, "2.NBT.B.7", L("Line up equal place values before adding.", ["Add ones.", "Add tens and regroup if needed.", "Add hundreds and check reasonableness."], "247 + 135 = 382", "Misaligned digits change the value of the numbers.")),
       S("even-odd", "Even and odd numbers", "Number sense", "evenOdd", { max: 200 }, "2.OA.C.3", L("Even numbers form pairs with none left over.", ["Look at the ones digit.", "0, 2, 4, 6, and 8 are even endings.", "Other endings are odd."], "146 is even because it ends in 6.", "Only the ones digit decides even or odd.")),
       S("coins", "Count mixed coins", "Money", "money", { maxCoins: 4 }, "2.MD.C.8", L("Count coins by their values, not by the number of coins.", ["Count quarters first.", "Add dimes and nickels.", "Add pennies last."], "2 quarters + 1 dime = 60 cents.", "Four coins do not necessarily equal four cents.")),
+      S("interpret-data", "Read and compare a data display", "Data", "dataDisplay", {}, "2.DS.A.1", L("A data display organizes counts so categories can be compared.", ["Read the category labels.", "Compare the counts.", "Use the display to answer the question."], "A table shows 8 votes for apples and 12 for pears. Pears have more votes.", "Compare the data values, not the lengths of the labels.")),
     ],
   },
   {
@@ -1207,6 +1253,7 @@ export const GRADES = [
       S("fraction-compare", "Compare fractions", "Fractions", "fractionCompare", { maxDenominator: 10 }, "3.NF.A.3", L("Compare fractions using common parts, benchmarks, or cross products.", ["Notice whether denominators or numerators match.", "Choose a comparison strategy.", "State <, =, or >."], "3/4 > 2/3 because 9/12 > 8/12.", "A larger denominator means smaller pieces when numerators match.")),
       S("area", "Rectangle area", "Geometry", "geometry", { shape: "rectangleArea", max: 10 }, "3.MD.C.7", L("Area counts square units covering a surface.", ["Identify length and width.", "Multiply the side lengths.", "Label square units."], "A 7 by 4 rectangle has area 28 square units.", "Area uses multiplication; perimeter adds side lengths.")),
       S("perimeter", "Rectangle perimeter", "Geometry", "geometry", { shape: "perimeter", max: 20 }, "3.MD.D.8", L("Perimeter is the distance around a shape.", ["List every outside side.", "Add the side lengths.", "Label linear units."], "A 7 by 4 rectangle has perimeter 22 units.", "Do not multiply length × width when finding perimeter.")),
+      S("elapsed-time", "Solve time intervals in minutes", "Measurement", "timeAdd", { elapsed: [10, 15, 20, 25, 35, 40, 45, 50], startMinutes: [5, 10, 15, 20, 25, 35, 40, 45, 50, 55] }, "3.GR.A.2", L("An elapsed-time problem asks how much time passes from a start to an end.", ["Mark the starting time.", "Count forward in friendly jumps.", "Combine the jumps and label minutes."], "From 2:45 to 3:20 is 15 + 20 = 35 minutes.", "Crossing an hour does not change the number of minutes in each jump.")),
     ],
   },
   {
@@ -1225,6 +1272,7 @@ export const GRADES = [
       S("factors", "Factors and multiples", "Number theory", "factorMultiple", { max: 100 }, "4.OA.B.4", L("Factors divide a number evenly; multiples come from repeated multiplication.", ["List factor pairs, or check whether dividing leaves a remainder.", "Count by the number to list its multiples.", "A prime number has only two factors: 1 and itself."], "Factors of 12: 1, 2, 3, 4, 6, 12. Multiples of 4: 4, 8, 12, 16.", "A factor is not the same as a multiple.")),
       S("fraction-equiv", "Generate equivalent fractions", "Fractions", "fractionEquivalent", { maxDenominator: 12, maxFactor: 8 }, "4.NF.A.1", L("Scale numerator and denominator by the same nonzero number.", ["Find the scale factor.", "Apply it to both parts.", "Check that the value stayed equal."], "3/5 = 12/20 using ×4.", "Adding the same number to both parts does not preserve a fraction.")),
       S("fraction-compare", "Compare fractions", "Fractions", "fractionCompare", { maxDenominator: 12 }, "4.NF.A.2", L("Fractions need a common whole before they can be compared.", ["Use a benchmark or common denominator.", "Compare equal-sized parts.", "Write the correct symbol."], "5/8 > 3/5 because 25/40 > 24/40.", "Do not compare denominators by themselves.")),
+      S("unit-conversion", "Convert within a measurement system", "Measurement", "conversion", { conversions: [["meters", "centimeters", 100], ["kilograms", "grams", 1000], ["liters", "milliliters", 1000], ["hours", "minutes", 60]], maxAmount: 12 }, "4.GR.A.1", L("Equivalent measurements name the same amount in different units.", ["Identify the units and their relationship.", "Choose multiply or divide based on unit size.", "Check that the answer is reasonable."], "3 meters = 300 centimeters because 1 meter = 100 centimeters.", "A smaller unit takes a greater number to name the same length.")),
     ],
   },
   {
@@ -1243,6 +1291,7 @@ export const GRADES = [
       S("fraction-mul", "Multiply fractions", "Fractions", "fractionOp", { op: "mul", maxDenominator: 12 }, "5.NF.B.4", L("Multiplying fractions finds a part of a part.", ["Multiply numerators.", "Multiply denominators.", "Simplify, or cross-cancel first."], "2/3 × 3/5 = 6/15 = 2/5", "Multiplication does not require common denominators.")),
       S("fraction-of", "Find a fraction of a whole", "Fractions", "fractionOf", { maxDenominator: 10 }, "5.NF.B.4", L("Find one equal part, then take the needed number of parts.", ["Divide the whole by the denominator.", "Multiply by the numerator.", "Check the answer is reasonable."], "3/4 of 20: 20 ÷ 4 × 3 = 15", "The denominator tells how many equal parts.")),
       S("volume", "Rectangular prism volume", "Geometry", "geometry", { shape: "volume", max: 15 }, "5.MD.C.5", L("Volume counts unit cubes filling a solid.", ["Find the base area.", "Multiply by the height.", "Label cubic units."], "4 × 3 × 8 = 96 cubic units.", "Volume uses three dimensions and cubic units.")),
+      S("unit-fraction-division", "Divide unit fractions and whole numbers", "Fractions", "fractionOp", { unitFractionDivision: true }, "5.NOS.D.16", L("Division can ask how many groups fit or how much is in each equal share.", ["Decide whether the question is sharing or measuring groups.", "Use a fraction model or multiplication relationship.", "Check by multiplying the quotient by the divisor."], "1/3 ÷ 2 = 1/6; 2 ÷ 1/3 = 6.", "These two expressions use the same numbers but ask different questions.")),
     ],
   },
   {
@@ -1261,6 +1310,7 @@ export const GRADES = [
       S("evaluate", "Evaluate expressions", "Expressions", "expression", {}, "6.EE.A.2", L("Evaluation replaces a variable with its given value.", ["Substitute using parentheses.", "Follow order of operations.", "Simplify carefully."], "3x + 2 when x = 4 is 3(4) + 2 = 14.", "Substitution changes the variable, not the operation signs.")),
       S("one-step", "Solve one-step equations", "Equations", "solve", { oneStep: true, nonNegative: true }, "6.EE.B.7", L("An equation stays balanced when the same operation is used on both sides.", ["Identify the operation on x.", "Use its inverse on both sides.", "Substitute to check."], "x + 7 = 19, so x = 12.", "The goal is to isolate the variable, not move symbols without meaning.")),
       S("integers", "Absolute value and the coordinate plane", "Number system", "numberPlane", { min: -100, max: 100 }, "6.NS.C.7", L("Absolute value is a number's distance from zero.", ["Locate the number relative to zero.", "Count the distance.", "Write the distance as nonnegative."], "|−18| = 18", "Absolute value is not the same as making every number positive in an equation.")),
+      S("triangle-area", "Find area of triangles and polygons", "Geometry", "geometry", { shape: "triangleArea", max: 18 }, "6.GR.A.1", L("A triangle's area is half the area of a matching rectangle.", ["Identify a base and its perpendicular height.", "Multiply base × height.", "Take half and label square units."], "A triangle with base 8 and height 5 has area 20 square units.", "The height must meet the base at a right angle.")),
     ],
   },
   {
@@ -1279,6 +1329,7 @@ export const GRADES = [
       S("inequalities", "Test inequality solutions", "Equations", "inequality", {}, "7.EE.B.4", L("A solution makes an inequality statement true.", ["Substitute the test value.", "Compare the two sides.", "Answer yes or no."], "8 is a solution to x > 5 because 8 > 5.", "The open side of the symbol faces the greater value.")),
       S("circle-area", "Circle area fluency", "Geometry", "geometry", { shape: "circle" }, "7.G.B.4", L("A circle's area is π times the square of its radius.", ["Identify the radius.", "Square the radius.", "Multiply by π or leave the answer in terms of π."], "r = 6 gives A = 36π.", "Square the radius, not πr.")),
       S("probability", "Probability and measures of center", "Statistics", "dataChance", { maxTotal: 24 }, "7.SP.C.7", L("Probability compares favorable outcomes with all possible outcomes.", ["Count favorable outcomes.", "Count total outcomes.", "Write and simplify the fraction."], "3 winning sections out of 8 gives P(win) = 3/8.", "The denominator counts all equally likely outcomes.")),
+      S("scale-drawing", "Use scale drawings", "Geometry", "scaleDrawing", {}, "7.GR.A.1", L("A scale factor relates a drawing length to a real length.", ["Read what one drawing unit represents.", "Match corresponding lengths.", "Multiply or divide by the scale factor."], "At 1 cm : 4 m, a 6 cm drawing length represents 24 m.", "Keep drawing units and real units in their correct columns.")),
     ],
   },
   {
@@ -1294,7 +1345,8 @@ export const GRADES = [
       S("slope", "Find slope from two points", "Linear relationships", "slope", {}, "8.EE.B.6", L("Slope is vertical change divided by horizontal change.", ["Subtract y-values in one order.", "Subtract x-values in the same order.", "Simplify rise/run."], "From (1, 2) to (4, 8), slope = 6/3 = 2.", "Mixing subtraction orders changes the sign incorrectly.")),
       S("functions", "Evaluate linear functions", "Functions", "functionRule", {}, "8.F.A.1", L("A function gives exactly one output for each input.", ["Substitute the input for x.", "Multiply by the rate of change.", "Add the starting value."], "For y = 3x + 2 and x = 4, y = 14.", "The input replaces x everywhere it appears.")),
       S("systems", "Solve simple systems", "Systems", "system", {}, "8.EE.C.8", L("A system solution makes both equations true.", ["Add or subtract equations to eliminate a variable.", "Solve the remaining equation.", "Substitute to find or check the other variable."], "x + y = 10 and x − y = 2 gives 2x = 12, so x = 6.", "A solution is an ordered pair, not two unrelated answers.")),
-      S("transformations", "Coordinate reflections", "Geometry", "transform", {}, "8.G.A.3", L("A reflection flips a point across a line while keeping equal distance.", ["Identify the mirror line.", "Keep the coordinate parallel to the line.", "Change the sign of the perpendicular coordinate."], "Across the y-axis, (4, −2) becomes (−4, −2).", "Reflecting across the x-axis changes y, not x.")),
+      S("angle-relations", "Solve angle relationship problems", "Geometry", "geometry", { shape: "angleRelations" }, "8.GR.A.1", L("Complementary angles total 90°, supplementary angles total 180°, and vertical angles are equal.", ["Name the relationship.", "Use its total or equality.", "Solve and check the angle measure."], "A supplementary angle paired with 65° measures 115°.", "Adjacent angles are not automatically complementary or supplementary.")),
+      S("transformations", "Coordinate reflections (extension)", "Geometry extension", "transform", {}, "8.G.A.3", L("A reflection flips a point across a line while keeping equal distance.", ["Identify the mirror line.", "Keep the coordinate parallel to the line.", "Change the sign of the perpendicular coordinate."], "Across the y-axis, (4, −2) becomes (−4, −2).", "This is an extension topic; Maryland places transformations in Integrated Algebra, not the 2025 Grade 8 standards.")),
       S("pythagorean", "Pythagorean theorem", "Geometry", "pythagorean", {}, "8.G.B.7", L("In a right triangle, the legs satisfy a² + b² = c².", ["Square both leg lengths.", "Add the squares.", "Take the square root for the hypotenuse."], "Legs 6 and 8 give c² = 36 + 64 = 100, so c = 10.", "The hypotenuse is opposite the right angle and is the longest side.")),
       S("association", "Identify bivariate association", "Data", "association", {}, "8.SP.A.1", L("Bivariate data show how two variables may change together.", ["Read each ordered pair from left to right.", "Track what y does as x increases.", "Classify the overall direction as positive, negative, or none."], "When x increases from 1 to 5 while y increases from 4 to 12, the association is positive.", "Association describes an overall pattern; it does not prove that one variable caused the other.")),
     ],

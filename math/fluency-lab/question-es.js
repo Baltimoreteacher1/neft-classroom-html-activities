@@ -2,7 +2,7 @@
 // read aloud while the English stays on screen, so the English is still what they practice. Only the words
 // change: every number, symbol and variable is copied from the English question. A stem with no words in it
 // (for example "34 + 50 = ?") has no Spanish and returns null. tools/fluency-language.test.mjs generates
-// thousands of questions across all 80 skills and fails on any wordy stem that has no rule here.
+// thousands of questions across all 88 skills and fails on any wordy stem that has no rule here.
 const NUM = String.raw`[-−]?\d[\d,]*(?:\.\d+)?`;
 const VAL = String.raw`(?:${NUM}(?: \d+/\d+)?|\d+/\d+)`;
 const PAIR = String.raw`\([^)]*\)`;
@@ -78,6 +78,11 @@ const RULES = [
     /^What time is (\d+) minutes after (\d+:\d+)\?$/,
     (m) => `¿Qué hora será ${m[1]} minutos después de ${m[2].startsWith("1:") ? "la" : "las"} ${m[2]}?`,
   ],
+  [/^A strip starts at (\d+) cm and ends at (\d+) cm on a ruler\. How long is the strip\?$/, (m) => `Una tira empieza en ${m[1]} cm y termina en ${m[2]} cm en una regla. ¿Cuánto mide la tira?`],
+  [/^A class vote shows apples: (\d+), bananas: (\d+), oranges: (\d+), pears: (\d+)\. Which fruit got the most votes\?$/, (m) => `Una votación de la clase muestra manzanas: ${m[1]}, plátanos: ${m[2]}, naranjas: ${m[3]}, peras: ${m[4]}. ¿Qué fruta obtuvo más votos?`],
+  [/^A scale drawing uses 1 cm to represent (\d+) m\. A wall is (\d+) cm long in the drawing\. How long is the real wall in meters\?$/, (m) => `En un dibujo a escala, 1 cm representa ${m[1]} m. Una pared mide ${m[2]} cm en el dibujo. ¿Cuánto mide la pared real en metros?`],
+  [/^One of two vertical angles measures (\d+)°\. What is the measure of the other angle\?$/, (m) => `Uno de dos ángulos opuestos por el vértice mide ${m[1]}°. ¿Cuánto mide el otro ángulo?`],
+  [/^Two (complementary|supplementary) angles include one angle that measures (\d+)°\. What is the other angle\?$/, (m) => `Dos ángulos ${m[1] === "complementary" ? "complementarios" : "suplementarios"} incluyen uno que mide ${m[2]}°. ¿Cuánto mide el otro ángulo?`],
   [/^Is (.+) even or odd\?$/, (m) => `¿Es ${m[1]} par o impar?`],
   [
     /^(\d+) quarters \+ (\d+) dimes \+ (\d+) nickels \+ (\d+) pennies = how many cents\?$/,
@@ -92,6 +97,9 @@ const RULES = [
     new RegExp(`^Area of a rectangle with length (.+) and width (.+)\\?$`),
     (m) => `¿Cuál es el área de un rectángulo con largo ${m[1]} y ancho ${m[2]}?`,
   ],
+  [/^Area of a triangle with base (.+) and height (.+)\?$/, (m) => `¿Cuál es el área de un triángulo con base ${m[1]} y altura ${m[2]}?`],
+  [/^A ribbon that is 1\/(\d+) meter long is shared equally by (\d+) students\. What length of ribbon does each student get\?$/, (m) => `Una cinta de 1/${m[1]} metro de largo se reparte por igual entre ${m[2]} estudiantes. ¿Cuánto mide la parte que recibe cada estudiante?`],
+  [/^A jug holds (\d+) liters\. How many 1\/(\d+)-liter servings can it fill\?$/, (m) => `Una jarra contiene ${m[1]} litros. ¿Cuántas porciones de 1/${m[2]} litro se pueden servir?`],
   [
     new RegExp(`^Perimeter of a rectangle with length (.+) and width (.+)\\?$`),
     (m) => `¿Cuál es el perímetro de un rectángulo con largo ${m[1]} y ancho ${m[2]}?`,

@@ -91,5 +91,5 @@ for (let grade = 1; grade <= 8; grade += 1)
   }
 assert.ok(fills > 20, `fill-in steps appear across the skills (${fills})`);
 console.log(
-  `fluency-step-fill: typed partial results, nudges, auto-open after two misses, reasons; ${fills} fill-ins across 80 skills`,
+  `fluency-step-fill: typed partial results, nudges, auto-open after two misses, reasons; ${fills} fill-ins across 88 skills`,
 );

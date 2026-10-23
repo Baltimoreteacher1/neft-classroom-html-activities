@@ -25,10 +25,10 @@ check(
   GRADES.map((grade) => grade.grade).join(",") === "1,2,3,4,5,6,7,8",
   "Grades must run consecutively from 1 through 8.",
 );
-check(ALL_SKILLS.length === 80, `Expected 80 skills; found ${ALL_SKILLS.length}.`);
+check(ALL_SKILLS.length === 88, `Expected 88 skills; found ${ALL_SKILLS.length}.`);
 
 for (const grade of GRADES) {
-  check(grade.skills.length === 10, `${grade.label} must contain 10 skills.`);
+  check(grade.skills.length === 11, `${grade.label} must contain 11 skills.`);
   const ids = new Set(grade.skills.map((skill) => skill.id));
   check(ids.size === grade.skills.length, `${grade.label} contains duplicate skill IDs.`);
 

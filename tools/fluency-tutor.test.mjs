@@ -230,7 +230,8 @@ for (let grade = 1; grade <= 8; grade++) {
     `Grade ${grade}: daily plan explains why each skill was selected`,
   );
   check(
-    new Set(diagnosticPlan(grade).map((entry) => entry.key)).size === 10,
+    new Set(diagnosticPlan(grade).map((entry) => entry.key)).size ===
+      ALL_SKILLS.filter((skill) => skill.grade === grade).length,
     `Grade ${grade}: diagnostic samples every skill exactly once`,
   );
 }
@@ -303,5 +304,5 @@ assert.deepEqual(
   ["60", "4", "64"],
 );
 console.log(
-  `Fluency tutor: ${checks} checks passed; 80 visual lessons × 5 variants; 24,000 adaptive problems.`,
+  `Fluency tutor: ${checks} checks passed; ${ALL_SKILLS.length} visual lessons × 5 variants; 24,000 adaptive problems.`,
 );

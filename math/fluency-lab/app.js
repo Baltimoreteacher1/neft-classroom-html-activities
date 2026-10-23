@@ -38,7 +38,7 @@ import { decideInstruction, independentRecoveryCount, readInstructionalEvidence,
 import { VOCAB_BILINGUAL_DB, highlightVocab, initVocabSystem, openVocabModal } from "./vocab.js";
 import { canSpeak, speak, spoken, spokenEs } from "./speech.js";
 import { languagePromptHtml } from "./language-bridge.js";
-import { captureDraft, explainCardHtml, initLanguage, journalHtml, journalPrintHtml, lookupCount, problemSupportHtml, restoreDraft, spanishPeekHtml, wordStripHtml } from "./language-card.js";
+import { captureDraft, explainCardHtml, initLanguage, journalHtml, journalPrintHtml, problemSupportHtml, restoreDraft, spanishPeekHtml, wordStripHtml } from "./language-card.js";
 import { languageEvidence, loadJournal } from "./language-journal.js";
 import { setLanguageProfile } from "./language-settings.js";
 import { questionEs } from "./question-es.js";
@@ -339,6 +339,9 @@ function renderLibrary() {
   });
   els.gradeHeading.textContent = `More ${grade.label} practice`;
   els.gradePromise.textContent = grade.promise;
+  const strandsCovered = [...new Set(grade.skills.map((skill) => skill.strand))];
+  const scope = document.querySelector("#grade-scope");
+  if (scope) scope.innerHTML = `<details><summary>${t("What this lab covers in {grade}", { grade: grade.label })}</summary><p>${t("Practice is available in these strands: {strands}.", { strands: strandsCovered.map(escapeHtml).join(", ") })}</p><ul>${grade.skills.map((skill) => `<li><strong>${skill.standardNote ? `${escapeHtml(t("Extension reference"))}: ` : ""}${escapeHtml(skill.standard)}</strong> · ${escapeHtml(skill.title)}${skill.standardNote ? ` · ${escapeHtml(skill.standardNote)}` : ""}</li>`).join("")}</ul><p>${t("This is a focused practice collection, not a complete yearlong curriculum or a standards mastery assessment.")}</p></details>`;
   renderGradeTabs();
   const strands = ["All", ...new Set(grade.skills.map((skill) => skill.strand))];
   if (!strands.includes(state.strand)) state.strand = "All";
@@ -404,7 +407,7 @@ function renderSkillCard(skill, recommendation = null) {
       <details class="skill-preview">
         <summary>${t("Preview a sample question")}</summary>
         <div class="skill-preview-content">
-          <p><strong>${t("Standard")}: ${escapeHtml(skill.standard)}</strong> · ${escapeHtml(skill.strand)}</p>
+          <p><strong>${skill.standardNote ? t("Extension reference") : t("Standard")}: ${escapeHtml(skill.standard)}</strong> · ${escapeHtml(skill.strand)}${skill.standardNote ? ` · ${escapeHtml(skill.standardNote)}` : ""}</p>
           <p class="skill-preview-question">${escapeHtml(sample.question)}</p>
           <details class="sample-answer"><summary>${t("Show sample answer")}</summary><p>${escapeHtml(sample.displayAnswer)}</p></details>
           ${foundations.length || nextSkills.length ? `<div class="skill-connections">${foundations.length ? `<p><strong>${t("Builds on")}</strong> ${foundations.map((related) => escapeHtml(related.title)).join(" · ")}</p>` : ""}${nextSkills.length ? `<p><strong>${t("Can lead to")}</strong> ${nextSkills.map((related) => escapeHtml(related.title)).join(" · ")}</p>` : ""}</div>` : ""}
@@ -660,7 +663,7 @@ function beginSession(mode, target, queue = null) {
                 ? "Mixed review"
                 : "Practice 10";
   if (mode === "adaptive") els.sessionType.textContent = "Adaptive practice · 10";
-  if (mode === "diagnostic") els.sessionType.textContent = "Starting-point checkup · 10";
+  if (mode === "diagnostic") els.sessionType.textContent = `Starting-point checkup · ${getGrade(state.grade).skills.length}`;
   if (mode === "repair") els.sessionType.textContent = "Repair practice";
   if (mode === "assignment") els.sessionType.textContent = state.assignment.label;
   nextProblem();
@@ -7009,156 +7012,42 @@ function showArea(view) {
   });
 }
 
-/* ==========================================================================
-   Multidimensional Learner Genome (4-Axis Growth Engine)
-   ========================================================================== */
-function calculateFluencyGenome(profile = activeProfile) {
-  const sessions = (state.tutor.sessions || []).filter((s) => s.grade === state.grade);
-  const hudStats = FluencyTelemetryHUD?.getStats?.() || { arr: 0, de: 0 };
-  const allMistakes = (state.tutor.mistakes || []).filter((m) => findSkill(m.key)?.grade === state.grade);
-  const repairedMistakes = allMistakes.filter((m) => m.resolvedAt);
+/* Progress cards report observations and denominators instead of inferred learner traits. */
+function calculateProgressEvidence() {
+  const sessions = (state.tutor.sessions || []).filter((session) => session.grade === state.grade);
+  const answered = sessions.reduce((sum, session) => sum + (session.answered || 0), 0);
+  const correct = sessions.reduce((sum, session) => sum + (session.correct || 0), 0);
   const gradeSkills = getGrade(state.grade).skills;
-  const exploredLessons = gradeSkills.filter((s) => evidence(state.tutor, s).lessonCompleted).length;
-  const detectiveCases = getSolvedDetectiveCases();
-
-  // 1. Automatic Recall (0 - 100)
-  let recall = hudStats.arr > 0 ? hudStats.arr : 75;
-  if (sessions.length > 0) {
-    const totalAns = sessions.reduce((sum, s) => sum + (s.answered || 0), 0);
-    const totalCorr = sessions.reduce((sum, s) => sum + (s.correct || 0), 0);
-    if (totalAns > 0) {
-      recall = Math.round((totalCorr / totalAns) * 100);
-    }
-  }
-  recall = Math.min(98, Math.max(30, recall));
-
-  // 2. Conceptual Strategy (0 - 100)
-  const lessonPct = (exploredLessons / Math.max(1, gradeSkills.length)) * 50;
-  const detecBonus = Math.min(30, detectiveCases.length * 10);
-  let strategy = Math.round(35 + lessonPct + detecBonus);
-  strategy = Math.min(98, Math.max(35, strategy));
-
-  // 3. Resilience & Repair (0 - 100)
-  let resilience = 80;
-  if (allMistakes.length > 0) {
-    resilience = Math.round(40 + (repairedMistakes.length / allMistakes.length) * 55);
-  } else {
-    resilience = 85;
-  }
-  resilience = Math.min(98, Math.max(40, resilience));
-
-  // 4. Academic Math Language (0 - 100)
-  const wordWallHistory = loadJson(profileKey("ewl-word-wall-history", profile), []);
-  const language = languageEvidence(loadJournal(), wordWallHistory.length + lookupCount());
-
+  const lessons = gradeSkills.filter((skill) => evidence(state.tutor, skill).lessonCompleted).length;
+  const mistakes = (state.tutor.mistakes || []).filter((entry) => findSkill(entry.key)?.grade === state.grade);
+  const repaired = mistakes.filter((entry) => entry.resolvedAt).length;
+  const journal = loadJournal().filter((entry) => entry.grade === state.grade);
   return {
-    recall,
-    strategy,
-    resilience,
-    language,
-    qualitative: {
-      recall: recall >= 85 ? "Rapid fact retrieval & automaticity" : recall >= 65 ? "Steady retrieval with thoughtful pacing" : "Building foundational recall",
-      strategy: strategy >= 80 ? "Multi-model reasoning & flexible representations" : strategy >= 60 ? "Active visual lesson & model exploration" : "Connecting concrete models to symbols",
-      resilience: resilience >= 85 ? "High Fix-It Garage recovery rate & growth mindset" : resilience >= 65 ? "Steady persistence through tricky problems" : "Beginning mistake analysis",
-      language: language === null ? "Not enough yet: explain a problem in your own words to start" : language >= 70 ? "Explains with math words, reasons, and checks" : language >= 40 ? "Using math words and some reasons" : "Starting to explain in words"
-    }
+    recall: answered ? Math.round((correct / answered) * 100) : null,
+    answered, correct, lessons, skillCount: gradeSkills.length,
+    repaired, mistakes: mistakes.length,
+    language: languageEvidence(journal, 0), journalEntries: journal.length,
   };
 }
 
-function renderFluencyGenomeSvg(genome) {
-  const cx = 130;
-  const cy = 110;
-  const r = 70;
-
-  const vRecall = genome.recall / 100;
-  const vStrategy = genome.strategy / 100;
-  const vResilience = genome.resilience / 100;
-  const vLanguage = (genome.language ?? 0) / 100;
-  const languageLabel = genome.language === null ? "not enough evidence yet" : `${genome.language}%`;
-
-  const pTop = `${cx},${cy - r * vRecall}`;
-  const pRight = `${cx + r * vStrategy},${cy}`;
-  const pBottom = `${cx},${cy + r * vResilience}`;
-  const pLeft = `${cx - r * vLanguage},${cy}`;
-
-  return `
-    <svg width="260" height="220" viewBox="0 0 260 220" class="genome-radar-svg" role="img" aria-label="Learner Genome Radar Chart: Recall ${genome.recall}%, Strategy ${genome.strategy}%, Resilience ${genome.resilience}%, Language ${languageLabel}">
-      <defs>
-        <radialGradient id="genomeGrad" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#818cf8" stop-opacity="0.45" />
-          <stop offset="100%" stop-color="#4f46e5" stop-opacity="0.15" />
-        </radialGradient>
-      </defs>
-
-      <!-- Concentric Grid Diamonds (25%, 50%, 75%, 100%) -->
-      <polygon points="${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}" fill="none" stroke="#e2e8f0" stroke-width="1.5" />
-      <polygon points="${cx},${cy - r * 0.75} ${cx + r * 0.75},${cy} ${cx},${cy + r * 0.75} ${cx - r * 0.75},${cy}" fill="none" stroke="#f1f5f9" stroke-width="1" />
-      <polygon points="${cx},${cy - r * 0.5} ${cx + r * 0.5},${cy} ${cx},${cy + r * 0.5} ${cx - r * 0.5},${cy}" fill="none" stroke="#e2e8f0" stroke-width="1" />
-      <polygon points="${cx},${cy - r * 0.25} ${cx + r * 0.25},${cy} ${cx},${cy + r * 0.25} ${cx - r * 0.25},${cy}" fill="none" stroke="#f1f5f9" stroke-width="1" />
-
-      <!-- Axis Spokes -->
-      <line x1="${cx}" y1="${cy - r - 4}" x2="${cx}" y2="${cy + r + 4}" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,3" />
-      <line x1="${cx - r - 4}" y1="${cy}" x2="${cx + r + 4}" y2="${cy}" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3,3" />
-
-      <!-- Radar Shape -->
-      <polygon points="${pTop} ${pRight} ${pBottom} ${pLeft}" fill="url(#genomeGrad)" stroke="#4f46e5" stroke-width="2.5" stroke-linejoin="round" />
-
-      <!-- Nodes -->
-      <circle cx="${cx}" cy="${cy - r * vRecall}" r="4.5" fill="#3b82f6" stroke="#ffffff" stroke-width="2" />
-      <circle cx="${cx + r * vStrategy}" cy="${cy}" r="4.5" fill="#10b981" stroke="#ffffff" stroke-width="2" />
-      <circle cx="${cx}" cy="${cy + r * vResilience}" r="4.5" fill="#f59e0b" stroke="#ffffff" stroke-width="2" />
-      <circle cx="${cx - r * vLanguage}" cy="${cy}" r="4.5" fill="#8b5cf6" stroke="#ffffff" stroke-width="2" />
-
-      <!-- Axis Labels -->
-      <text x="${cx}" y="18" text-anchor="middle" font-size="10" font-weight="800" fill="#1e293b">⚡ Recall (${genome.recall}%)</text>
-      <text x="${cx + r + 6}" y="${cy + 4}" text-anchor="start" font-size="10" font-weight="800" fill="#047857">🧠 Strategy (${genome.strategy}%)</text>
-      <text x="${cx}" y="${cy + r + 18}" text-anchor="middle" font-size="10" font-weight="800" fill="#b45309">🛡️ Resilience (${genome.resilience}%)</text>
-      <text x="${cx - r - 6}" y="${cy + 4}" text-anchor="end" font-size="10" font-weight="800" fill="#6d28d9">🗣️ Language (${genome.language === null ? "—" : `${genome.language}%`})</text>
-    </svg>
-  `;
+function progressMeasure(title, value, detail) {
+  return `<div class="genome-metric-item"><div class="gm-top"><span class="gm-title">${escapeHtml(title)}</span><strong class="gm-val">${escapeHtml(value)}</strong></div><p class="gm-desc">${escapeHtml(detail)}</p></div>`;
 }
 
-function renderFluencyGenomeCard(genome) {
+function renderProgressEvidenceCard(progress) {
   return `
-    <article class="learner-genome-card" id="learner-genome-card">
-      <div class="genome-header">
-        <div>
-          <span class="genome-badge">🧬 MULTIDIMENSIONAL LEARNER GENOME</span>
-          <h3 style="margin:2px 0; font-size:1.2rem; color:#0f172a">Growth Across 4 Pillars of Fluency</h3>
-          <p style="margin:0; font-size:0.85rem; color:#64748b">Holistic mathematical development tracking automaticity, conceptual reasoning, error repair, and academic language.</p>
-        </div>
-        <span class="genome-profile-tag">${escapeHtml(PROFILE_NAMES[activeProfile])} · Grade ${state.grade}</span>
+    <article class="learner-genome-card" id="learner-genome-card" aria-labelledby="progress-profile-heading">
+      <div class="genome-header"><div><span class="genome-badge">${escapeHtml(t("YOUR GRADE {grade} PROGRESS", { grade: state.grade }))}</span>
+        <h3 id="progress-profile-heading" style="margin:2px 0;font-size:1.2rem;color:#0f172a">${escapeHtml(t("A profile built from your work"))}</h3>
+        <p style="margin:0;font-size:.85rem;color:#475569">${escapeHtml(t("Counts show what this browser has recorded. A blank means there is not enough evidence yet."))}</p>
+      </div><span class="genome-profile-tag">${escapeHtml(PROFILE_NAMES[activeProfile])}</span></div>
+      <div class="genome-metrics-grid">
+        ${progressMeasure(t("Practice accuracy"), progress.recall === null ? "—" : `${progress.recall}%`, progress.answered ? t("{correct} correct out of {answered} recorded answers in this grade", { correct: progress.correct, answered: progress.answered }) : t("Complete practice to start an accuracy record"))}
+        ${progressMeasure(t("Visual lessons completed"), `${progress.lessons} / ${progress.skillCount}`, t("A lesson is counted after its completion check"))}
+        ${progressMeasure(t("Mistakes repaired"), progress.mistakes ? `${progress.repaired} / ${progress.mistakes}` : "—", progress.mistakes ? t("Recorded mistakes with a completed repair") : t("No mistake-repair evidence recorded yet"))}
+        ${progressMeasure(t("Math language"), progress.language === null ? t("Getting started") : `${progress.language}%`, t("{entries} written explanations for this grade. The indicator appears after at least 3.", { entries: progress.journalEntries }))}
       </div>
-
-      <div class="genome-body">
-        <div class="genome-radar-wrap">
-          ${renderFluencyGenomeSvg(genome)}
-        </div>
-        <div class="genome-metrics-grid">
-          <div class="genome-metric-item">
-            <div class="gm-top"><span class="gm-title">⚡ Automatic Recall</span><strong class="gm-val" style="color:#2563eb">${genome.recall}%</strong></div>
-            <div class="gm-bar"><div class="gm-bar-fill" style="width:${genome.recall}%; background:#2563eb"></div></div>
-            <p class="gm-desc">${escapeHtml(genome.qualitative.recall)}</p>
-          </div>
-          <div class="genome-metric-item">
-            <div class="gm-top"><span class="gm-title">🧠 Conceptual Strategy</span><strong class="gm-val" style="color:#059669">${genome.strategy}%</strong></div>
-            <div class="gm-bar"><div class="gm-bar-fill" style="width:${genome.strategy}%; background:#059669"></div></div>
-            <p class="gm-desc">${escapeHtml(genome.qualitative.strategy)}</p>
-          </div>
-          <div class="genome-metric-item">
-            <div class="gm-top"><span class="gm-title">🛡️ Resilience &amp; Repair</span><strong class="gm-val" style="color:#d97706">${genome.resilience}%</strong></div>
-            <div class="gm-bar"><div class="gm-bar-fill" style="width:${genome.resilience}%; background:#d97706"></div></div>
-            <p class="gm-desc">${escapeHtml(genome.qualitative.resilience)}</p>
-          </div>
-          <div class="genome-metric-item">
-            <div class="gm-top"><span class="gm-title">🗣️ Academic Language</span><strong class="gm-val" style="color:#7c3aed">${genome.language === null ? "—" : `${genome.language}%`}</strong></div>
-            <div class="gm-bar"><div class="gm-bar-fill" style="width:${genome.language ?? 0}%; background:#7c3aed"></div></div>
-            <p class="gm-desc">${escapeHtml(genome.qualitative.language)}</p>
-          </div>
-        </div>
-      </div>
-    </article>
-  `;
+    </article>`;
 }
 
 function renderDashboard() {
@@ -7167,11 +7056,11 @@ function renderDashboard() {
   const saved = loadJson(SESSION_KEY, null);
   const today = state.tutor.sessions.filter((session) => localDay(session.at) === localDay()).reduce((sum, session) => sum + session.answered, 0);
   const due = ranked.filter((entry) => entry.status.due).length;
-  const genome = calculateFluencyGenome(activeProfile);
+  const progress = calculateProgressEvidence();
   els.dashboard.innerHTML = `
-    ${renderFluencyGenomeCard(genome)}
+    ${renderProgressEvidenceCard(progress)}
     <div class="next-step-card"><p class="section-label">${escapeHtml(PROFILE_NAMES[activeProfile])}’s next step</p><h3>${escapeHtml(next.skill.title)}</h3><p><strong>${t("Suggested because")}</strong>: ${escapeHtml(displayRecommendationReason(next.reason))}. Start with the visual idea or go straight to practice.</p><div class="button-row"><button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">See the idea</button><button class="outline-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="adaptive">Practice this skill</button></div></div>
-    <div class="checkup-card"><h3>Find my starting point</h3><p>Try one question from each skill in Grade ${state.grade}. Skip what you haven’t learned yet.</p><button class="outline-action" data-start-checkup>${state.tutor.diagnostics[state.grade] ? 'Try the checkup again' : 'Start a 10-question checkup'}</button><p class="checkup-note">A quick guide, not a placement test.</p></div>
+    <div class="checkup-card"><h3>Find my starting point</h3><p>Try one question from each skill in Grade ${state.grade}. Skip what you haven’t learned yet.</p><button class="outline-action" data-start-checkup>${state.tutor.diagnostics[state.grade] ? 'Try the checkup again' : `Start a ${getGrade(state.grade).skills.length}-question checkup`}</button><p class="checkup-note">A quick guide, not a placement test.</p></div>
     <div class="daily-progress"><strong>${today} problems completed today</strong><span>${due ? `${due} skills ready for a memory refresh` : 'A small amount of thoughtful practice adds up.'}</span><button class="text-action" data-start-daily>Open my daily practice</button></div>
     ${saved?.version === 2 && saved.session && !saved.session.finished ? `<div class="resume-banner"><div><strong>Your practice is waiting.</strong><p>${escapeHtml(saved.item?.skill?.title || 'Practice set')} · ${saved.session.answered} completed</p></div><button class="primary-action" data-resume-practice>Continue saved practice</button></div>` : ''}`;
 }
@@ -7521,7 +7410,7 @@ function openPlanned(mode, queue) {
   els.workspaceGrade.textContent = `Grade ${state.grade}`;
   els.workspaceTitle.textContent = mode === "daily" ? "Today's 10, chosen for you" : mode === "diagnostic" ? "Find my starting point" : mode === "assignment" ? state.assignment.label : "Turn a mistake into a strategy";
   document.title = `${els.workspaceTitle.textContent} | Math Fluency Lab`;
-  els.workspaceStandard.textContent = mode === "diagnostic" ? "Ten samples to help you choose your next step" : "Fresh problems from your selected skills";
+  els.workspaceStandard.textContent = mode === "diagnostic" ? `${getGrade(state.grade).skills.length} samples to help you choose your next step` : "Fresh problems from your selected skills";
   els.masteryMeter.value = 0; els.masteryLabel.textContent = "Learning across skills";
   els.modeTabs.innerHTML = `<button role="tab" aria-selected="true" aria-controls="drill-panel">${mode === 'diagnostic' ? 'Checkup' : mode === 'daily' ? "Today's 10" : mode === 'assignment' ? 'Class practice' : 'Repair practice'}</button>`;
   beginSession(mode, queue.length, queue); setUrl();

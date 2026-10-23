@@ -154,6 +154,6 @@ for (const skill of ALL_SKILLS) {
 }
 
 console.log(
-  `fluency-explanations: successfully verified ${skillsTested} problem models across all 80 skills! ✅`,
+  `fluency-explanations: successfully verified ${skillsTested} problem models across all 88 skills! ✅`,
 );
 console.log("fluency-explanations: all interactive explanation tests passed successfully! ✅");
