@@ -181,6 +181,7 @@ const state = {
   firstAnswerCorrect: null,
   hintBeforeFirst: false,
   initialSupport: false,
+  forceIndependentFirst: false,
   recentQuestions: [],
   view: "library",
   assignment: decodeAssignment(new URLSearchParams(location.hash.slice(1)).get("assignment")),
@@ -684,7 +685,7 @@ function nextProblem(restoredItem = null) {
   }
   const skill = problemSkill();
   state.session.problemSkills.push(skill);
-  const adapting = ["adaptive", "daily", "repair", "assignment"].includes(state.session.mode);
+  const adapting = state.session.mode !== "diagnostic";
   const level = adapting ? difficulty(state.tutor, skill) : 1;
   if (restoredItem) state.item = restoredItem;
   else {
@@ -702,7 +703,8 @@ function nextProblem(restoredItem = null) {
   state.firstAnswerCorrect = null;
   state.hintBeforeFirst = false;
   if (els.languageSlot) els.languageSlot.innerHTML = "";
-  state.initialSupport = state.session.mode === "guided" || (adapting && level === 0) || (state.session.mode === "assignment" && state.assignment?.mode === "guided");
+  state.initialSupport = state.session.mode === "guided" || (adapting && level === 0 && !state.forceIndependentFirst) || (state.session.mode === "assignment" && state.assignment?.mode === "guided");
+  state.forceIndependentFirst = false;
   state.guidedStepsShown = state.session.mode === "guided" ? 1 : 0;
   els.feedback.hidden = true;
   els.nextButton.hidden = true;
@@ -766,7 +768,9 @@ function nextProblem(restoredItem = null) {
   const actionsBar = document.querySelector(".problem-actions-bar");
   if (actionsBar) actionsBar.hidden = isFlashcard;
   const drawerEl = document.querySelector("#drill-toolbox");
-  if (drawerEl) drawerEl.hidden = state.session.mode === "diagnostic";
+  if (drawerEl)
+    drawerEl.hidden =
+      state.session.mode === "diagnostic" || InteractiveDrillToolbox.availableTools.length === 0;
   // A problem with no model leaves the panel empty, so the panel and its button stay hidden.
   const hasModel = Boolean(els.problemVisualScaffold?.innerHTML.trim());
   if (els.problemVisualScaffold) {
@@ -886,7 +890,7 @@ function formatProblemArena(item) {
     els.question.classList.add("is-equation");
     // "5,337 + 90,679 = ?" has a space between the equals sign and the question mark; strip both.
     const expr = rawQ.replace(/(?:\s*[=?_]+)+\s*$/, "").trim();
-    if (expr.length > 13) els.question.classList.add("is-long");
+    if (expr.length >= 13) els.question.classList.add("is-long");
     els.question.innerHTML = `${mathText(expr)} <span class="arena-eq-symbol">=</span>`;
   } else {
     if (arena) arena.classList.add("has-sentence");
@@ -7593,7 +7597,10 @@ els.learnPanel.addEventListener("click", (event) => {
   }
   if (event.target.closest("[data-start-visual]")) setMode("visual");
   if (event.target.closest("[data-start-guided]")) setMode("guided");
-  if (event.target.closest("[data-start-independent]")) setMode("practice");
+  if (event.target.closest("[data-start-independent]")) {
+    state.forceIndependentFirst = true;
+    setMode("practice");
+  }
 });
 
 els.answerForm.addEventListener("submit", (event) => {
@@ -7705,7 +7712,25 @@ function applyLang() {
   const spanish = getLang() === "es";
   toggle.textContent = spanish ? "English" : "Español";
   toggle.lang = spanish ? "en" : "es";
+  document.querySelector("#scratchpad-backgrounds")?.setAttribute("aria-label", t("Scratchpad backgrounds"));
+  document.querySelector("#drill-toolbox [role='tablist']")?.setAttribute("aria-label", t("Relevant tools for this problem"));
+  if (els.scratchpad)
+    els.scratchpad.placeholder = t("Write a step, draw with keyboard symbols, or keep track of partial work.");
 }
+
+document.querySelector("#scratchpad-backgrounds")?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-scratchpad-bg]");
+  if (!button || !els.scratchpad) return;
+  const background = button.dataset.scratchpadBg;
+  if (!["blank", "lined", "numberline", "coordinate"].includes(background)) return;
+  els.scratchpad.className = `scratchpad-background-${background}`;
+  els.scratchpad.dataset.background = background;
+  document.querySelectorAll("[data-scratchpad-bg]").forEach((option) => {
+    const selected = option === button;
+    option.classList.toggle("active", selected);
+    option.setAttribute("aria-pressed", String(selected));
+  });
+});
 document.querySelector("#lang-toggle").addEventListener("click", () => {
   setLang(getLang() === "es" ? "en" : "es");
   applyLang();
@@ -8258,8 +8283,7 @@ if (drillToolbox) {
   InteractiveDrillToolbox.render(document.querySelector("#drill-tool-viewport"));
   drillToolbox.addEventListener("toggle", () => {
     if (drillToolbox.open && state.item) {
-      InteractiveDrillToolbox.syncFromProblem(state.item);
-      InteractiveDrillToolbox.render(document.querySelector("#drill-tool-viewport"));
+      InteractiveDrillToolbox.onProblem(state.item);
     }
   });
 }

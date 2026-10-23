@@ -28,6 +28,7 @@ export function createDrillToolbox({ getState, longDivision }) {
     s: defaults(),
     mode: "free",
     syncedItem: null,
+    availableTools: [],
     viewport: null,
 
     isLocked() {
@@ -42,6 +43,7 @@ export function createDrillToolbox({ getState, longDivision }) {
 
     applySeed(seed) {
       const s = (this.s = defaults());
+      if (seed.nl) s.nl = { ...s.nl, ...seed.nl };
       if (seed.vertical) s.vertical = { op: seed.vertical.op, terms: seed.vertical.terms };
       if (seed.tenFrame != null) s.tenFrame = seed.tenFrame;
       else if (seed.problem?.kind === "binary") s.tenFrame = 0;
@@ -99,8 +101,10 @@ export function createDrillToolbox({ getState, longDivision }) {
       const seed = drawerSeed(item);
       this.syncedItem = item;
       this.mode = "problem";
+      this.availableTools = seed.tools || (seed.tool ? [seed.tool] : []);
       this.applySeed(seed);
-      if (pickTool && seed.tool) this.activeTool = seed.tool;
+      if (seed.tool && (pickTool || !this.availableTools.includes(this.activeTool)))
+        this.activeTool = seed.tool;
     },
 
     /** A new problem was shown: load it, and redraw if the drawer is open. */
@@ -115,15 +119,28 @@ export function createDrillToolbox({ getState, longDivision }) {
       drawer.open = true;
       if (syncItem) this.syncFromProblem(syncItem, { pickTool: false });
       this.activeTool = toolName;
+      if (this.mode === "problem" && !this.availableTools.includes(toolName))
+        this.availableTools = [...this.availableTools, toolName];
       this.refresh();
       drawer.scrollIntoView({ behavior: "smooth", block: "center" });
     },
 
     refresh() {
       const drawer = document.querySelector("#drill-toolbox");
-      drawer
-        ?.querySelectorAll(".tool-btn")
-        .forEach((btn) => btn.classList.toggle("active", btn.dataset.tool === this.activeTool));
+      const picker = drawer?.querySelector(".drill-tool-picker");
+      picker?.setAttribute(
+        "aria-label",
+        t("Math tools for this problem"),
+      );
+      picker?.querySelectorAll(".tool-btn").forEach((btn) => {
+        const selected = btn.dataset.tool === this.activeTool;
+        btn.hidden = this.mode === "problem" && !this.availableTools.includes(btn.dataset.tool);
+        btn.setAttribute("role", "tab");
+        btn.setAttribute("aria-controls", "drill-tool-viewport");
+        btn.setAttribute("aria-selected", String(selected));
+        btn.tabIndex = selected ? 0 : -1;
+        btn.classList.toggle("active", selected);
+      });
       this.render(this.viewport || document.querySelector("#drill-tool-viewport"));
     },
 
@@ -166,19 +183,16 @@ export function createDrillToolbox({ getState, longDivision }) {
         const tab = hit("[data-tool]");
         if (tab) {
           this.activeTool = tab.dataset.tool;
-          container
-            .querySelectorAll(".tool-btn")
-            .forEach((btn) => btn.classList.toggle("active", btn.dataset.tool === this.activeTool));
-          return done();
+          return this.refresh();
         }
         if (hit("[data-use-problem]")) {
           this.syncFromProblem(this.syncedItem, { pickTool: false });
-          return done();
+          return this.refresh();
         }
         if (hit("[data-free-numbers]")) {
           this.mode = "free";
           this.s = defaults();
-          return done();
+          return this.refresh();
         }
         // Long division
         const preset = hit("[data-ld-preset]");
@@ -340,6 +354,23 @@ export function createDrillToolbox({ getState, longDivision }) {
             done()
           );
         return false;
+      });
+
+      container.addEventListener("keydown", (event) => {
+        if (!event.target.matches?.(".tool-btn")) return;
+        if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+        const tabs = [...container.querySelectorAll(".tool-btn:not([hidden])")];
+        const index = tabs.indexOf(event.target);
+        if (index < 0 || !tabs.length) return;
+        event.preventDefault();
+        const next =
+          event.key === "Home"
+            ? 0
+            : event.key === "End"
+              ? tabs.length - 1
+              : (index + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+        tabs[next].click();
+        tabs[next].focus();
       });
 
       container.addEventListener("input", (event) => {

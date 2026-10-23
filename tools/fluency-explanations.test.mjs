@@ -78,7 +78,7 @@ assert.match(
 );
 
 // Finish the problem with two misses; now the worked explanation and its interactive widget appear.
-for (let i = 0; i < 2; i += 1) {
+for (let i = 0; i < 3; i += 1) {
   $("#answer-input").disabled = false;
   $("#answer-input").value = "-1";
   $("#answer-form").dispatchEvent(new win.Event("submit", { cancelable: true, bubbles: true }));

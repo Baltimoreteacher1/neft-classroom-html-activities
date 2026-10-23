@@ -95,15 +95,27 @@ export function evidence(tutor, skill, now = Date.now()) {
 
 export function difficulty(tutor, skill) {
   const recent = evidence(tutor, skill).recent.slice(-4);
+  if (!recent.length) return 0;
   if (recent.length >= 2 && recent.slice(-2).every((item) => item.correct && !item.independent)) return 1;
   if (recent.length >= 2 && recent.slice(-2).every((item) => !item.correct || !item.independent)) return 0;
-  if (recent.length >= 4 && recent.every((item) => item.correct && item.independent)) return 2;
+  if (
+    recent.length >= 2 &&
+    recent.slice(-2).every((item) => item.correct && item.level === 0)
+  )
+    return 1;
+  if (
+    recent.length >= 4 &&
+    recent.every((item) => item.correct && item.independent && item.level >= 1)
+  )
+    return 2;
+  if (recent.at(-1).level === 0) return 0;
   return 1;
 }
 
 export function adaptiveProblem(skill, rng = Math.random, level = 1) {
   const config = { ...resolveOp(skill.config, rng) };
   if (level === 0) {
+    config.scaffolded = true;
     // Reduce number size while preserving the operation and the intended topic.
     const limits = { maxDenominator: 5, maxFactor: 3, maxPart: 5, maxCount: 5, maxRate: 10,
       maxCoefficient: 3, maxRoot: 12, maxBase: 5, maxExponent: 3, maxGroups: 5,
@@ -124,9 +136,141 @@ export function adaptiveProblem(skill, rng = Math.random, level = 1) {
         if (!config.factors) config.maxA = minA >= 10 ? Math.min(config.maxA ?? minA * 4 - 1, minA * 4 - 1) : Math.max(minA, Math.min(config.maxA ?? 10, 12));
       }
     }
-    if (skill.generator === "solve") { config.minX = 1; config.maxX = 6; config.maxCoefficient = 3; }
-    if (skill.generator === "decimalOp") { config.maxScaled = 100; config.maxA = 20; config.maxB = 10; }
+    if (skill.generator === "solve") {
+      config.minX = 1;
+      config.maxX = 6;
+      config.maxCoefficient = 3;
+      config.maxConstant = 6;
+      config.maxQuotient = 6;
+    }
+    if (skill.generator === "decimalOp") {
+      config.places = 1;
+      config.maxScaled = 90;
+      config.maxA = 20;
+      config.maxB = 10;
+    }
     if (skill.generator === "integerOp") { config.min = -8; config.max = 8; }
+    if (skill.generator === "sequence") {
+      config.maxStart = Math.min(config.maxStart ?? 50, 20);
+      config.steps = (config.steps || [2, 5, 10]).slice(0, 2);
+    }
+    if (skill.generator === "compare") {
+      const min = config.min ?? 0;
+      config.max = Math.min(config.max ?? 100, min + (min >= 1000 ? 999 : min >= 100 ? 99 : 20));
+    }
+    if (skill.generator === "placeValue") {
+      const min = config.min ?? 10;
+      config.max = Math.min(config.max ?? 999, min + (min >= 1000 ? 999 : min >= 100 ? 99 : 20));
+      config.places = (config.places || [1, 10, 100]).slice(0, 2);
+    }
+    if (skill.generator === "missingAddend") config.maxTotal = Math.min(config.maxTotal ?? 20, 10);
+    if (skill.generator === "round") {
+      config.places = (config.places || [10, 100]).slice(0, 1);
+      config.max = Math.min(config.max ?? 999, 99);
+    }
+    if (skill.generator === "timeAdd") {
+      config.elapsed = (config.elapsed || [15, 20, 25, 30, 35, 45, 60]).slice(0, 2);
+      config.startMinutes = (config.startMinutes || [0, 30]).slice(0, 1);
+    }
+    if (skill.generator === "lengthMeasure") {
+      config.minLength = 1;
+      config.maxLength = 6;
+      config.maxStart = 2;
+    }
+    if (skill.generator === "dataDisplay") {
+      config.minCount = 1;
+      config.maxCount = 8;
+      config.choiceCount = 3;
+    }
+    if (skill.generator === "evenOdd") config.max = Math.min(config.max ?? 200, 20);
+    if (skill.generator === "money") {
+      config.maxCoins = Math.min(config.maxCoins ?? 4, 2);
+      config.maxPennies = 4;
+    }
+    if (skill.generator === "scaleDrawing") {
+      config.maxScale = 3;
+      config.maxDrawing = 7;
+    }
+    if (skill.generator === "decimalPlace") config.places = 1;
+    if (skill.generator === "fractionOp") {
+      config.maxDenominator = Math.min(config.maxDenominator ?? 10, 4);
+      config.maxWhole = 4;
+    }
+    if (skill.generator === "fractionOf") {
+      config.maxDenominator = Math.min(config.maxDenominator ?? 10, 4);
+      config.maxGroups = 4;
+    }
+    if (skill.generator === "gcfLcm") config.max = Math.min(config.max ?? 60, 12);
+    if (skill.generator === "factorMultiple") config.max = Math.min(config.max ?? 100, 20);
+    if (skill.generator === "percent") {
+      config.percents = (config.percents || [10, 20, 25, 50, 75]).slice(0, 4);
+      config.maxMultiplier = 6;
+    }
+    if (skill.generator === "percentChange") {
+      config.percents = [10, 25];
+      config.maxMultiplier = 6;
+    }
+    if (skill.generator === "expression") {
+      config.minX = -3;
+      config.maxX = 3;
+      config.maxCoefficient = 3;
+      config.maxConstant = 5;
+    }
+    if (skill.generator === "numberPlane") {
+      config.min = -5;
+      config.max = 5;
+    }
+    if (skill.generator === "inequality") {
+      config.min = -5;
+      config.max = 5;
+    }
+    if (skill.generator === "dataChance") {
+      config.maxTotal = 10;
+      config.scaffolded = true;
+    }
+    if (skill.generator === "geometry") {
+      config.max = Math.min(config.max ?? 18, 6);
+      config.maxHeight = 4;
+      config.maxKnown = 60;
+      if (config.shape === "angleRelations") config.relations = ["vertical", "complementary"];
+    }
+    if (skill.generator === "slope") {
+      config.minCoordinate = -3;
+      config.maxCoordinate = 3;
+      config.maxRun = 2;
+    }
+    if (skill.generator === "functionRule") {
+      config.minX = 0;
+      config.maxX = 4;
+      config.maxMultiplier = 3;
+      config.maxConstant = 4;
+    }
+    if (skill.generator === "system") {
+      config.minValue = 1;
+      config.maxValue = 4;
+    }
+    if (skill.generator === "transform") {
+      config.minCoordinate = -4;
+      config.maxCoordinate = 4;
+      config.axes = ["x-axis", "y-axis"];
+    }
+    if (skill.generator === "powerTen") {
+      config.minPower = -1;
+      config.maxPower = 2;
+    }
+    if (skill.generator === "association") config.scaffolded = true;
+    if (skill.generator === "proportion") {
+      config.maxPart = 5;
+      config.maxFactor = 3;
+    }
+    if (skill.generator === "rateConversion") {
+      config.maxAmount = 5;
+      config.maxCount = 5;
+      config.maxRate = 10;
+      config.conversions = [["yards", "feet", 3], ["feet", "inches", 12]];
+    }
+    if (skill.generator === "powerTen") config.maxCoefficient = 30;
+    if (skill.generator === "pythagorean") config.scaffolded = true;
   }
   // A stretch keeps grade-level content, but asks students to work without a model.
   return { ...generateProblem({ ...skill, config }, rng), skill, level };

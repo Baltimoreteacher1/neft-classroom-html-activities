@@ -206,7 +206,7 @@ export function givenNumbers(item) {
 /** Which drawer tool suits this problem, and the givens to load into it. Only operands, never results. */
 export function drawerSeed(item) {
   const p = extractProblem(item);
-  const seed = { problem: p, tool: null };
+  const seed = { problem: p, tool: null, tools: [] };
   if (!p) return seed;
   if (p.kind === "binary" && ["+", "-"].includes(p.op)) {
     const { op, a, b } = p;
@@ -288,6 +288,36 @@ export function drawerSeed(item) {
   ) {
     seed.grid = { rows: Math.min(p.length, p.width), cols: Math.max(p.length, p.width) };
     seed.tool = "multigrid";
+  }
+  if (p.kind === "round") {
+    const place = ({ ten: 10, hundred: 100, thousand: 1000 })[p.place] || 10;
+    const step = place / 10;
+    const min = Math.floor(p.n / place) * place - place;
+    seed.nl = { min, max: min + 20 * step, step, pos: p.n };
+    seed.tool = "numberline";
+  }
+  if (p.kind === "sequence" && p.terms.length >= 2) {
+    const step = p.terms.at(-1) - p.terms.at(-2);
+    if (step !== 0) {
+      seed.nl = { min: p.terms[0], max: p.terms[0] + step * 20, step, pos: p.terms.at(-1) };
+      seed.tool = "numberline";
+    }
+  }
+  if (p.kind === "gcflcm") {
+    // GCF/LCM have a dedicated solver with an interactive factor or multiples chart.
+    seed.tool = null;
+  }
+  if (seed.tool) {
+    const alternatives = {
+      integers: ["integers", "numberline"],
+      tenframe: ["tenframe", "numberline"],
+      multigrid: ["multigrid", "splitter"],
+      pizza: seed.denominators?.length ? ["pizza", "fractions"] : ["pizza"],
+      doublenumberline: seed.tape ? ["doublenumberline", "tape"] : ["doublenumberline"],
+    };
+    seed.tools = alternatives[seed.tool] || [seed.tool];
+  } else {
+    seed.tools = [];
   }
   return seed;
 }

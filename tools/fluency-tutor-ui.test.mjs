@@ -84,6 +84,16 @@ assert.ok(
 );
 click("[data-visual-practice]");
 assert.equal(savedSession().session.mode, "adaptive");
+assert.equal(savedSession().item.level, 0, "A new skill starts with a smaller first problem");
+assert.equal($("#guided-coach").hidden, false, "The first problem includes coached support");
+assert.deepEqual(
+  Array.from(
+    win.document.querySelectorAll(".tool-btn:not([hidden])"),
+    (button) => button.dataset.tool,
+  ),
+  ["longdivision"],
+  "The drawer only offers a tool that fits the current division problem",
+);
 const originalQuestion = $("#question").textContent;
 submit("#answer-form");
 assert.equal(savedSession().itemAttempts, 0, "Empty input does not spend an attempt");
@@ -99,13 +109,13 @@ solveCurrent();
 let record = savedTutor().records["4:division"];
 assert.equal(
   record.recent.at(-1).correct,
-  false,
-  "A corrected answer does not become first-try success",
+  true,
+  "The coached problem is ultimately recorded as solved",
 );
 assert.equal(
   record.recent.at(-1).independent,
-  true,
-  "The initial independent miss remains evidence",
+  false,
+  "The initial coached miss is not counted as independent evidence",
 );
 click("#next-problem");
 fill("#answer-input", -999);
@@ -279,7 +289,20 @@ assert.ok(
   $(".solver-reference-chart [data-chips] b"),
   "Multiples chart accepts and checks entries",
 );
+click(".scratchpad-wrap summary");
+fill("#scratchpad", "Keep this working.");
+for (const background of ["blank", "lined", "numberline", "coordinate"]) {
+  click(`[data-scratchpad-bg="${background}"]`);
+  assert.equal($("#scratchpad").dataset.background, background);
+  assert.ok($("#scratchpad").classList.contains(`scratchpad-background-${background}`));
+  assert.equal(
+    $("#scratchpad").value,
+    "Keep this working.",
+    "Changing backgrounds preserves writing",
+  );
+  assert.equal($(`[data-scratchpad-bg="${background}"]`).getAttribute("aria-pressed"), "true");
+}
 win.close();
 console.log(
-  "Fluency UI: deep links, visual lessons, wrong-answer recovery, resume, adaptive support, profile isolation, teacher assignments, checkups, repair, factor/multiples charts, and daily plans passed.",
+  "Fluency UI: deep links, visual lessons, wrong-answer recovery, resume, adaptive support, profile isolation, teacher assignments, checkups, repair, relevant tools, scratchpad backgrounds, factor/multiples charts, and daily plans passed.",
 );

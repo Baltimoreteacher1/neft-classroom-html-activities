@@ -90,6 +90,12 @@ check(
 check(!evidence(tutor, skill, now + DAY).due, "A just-refreshed skill is not immediately due");
 check(evidence(tutor, skill, now + DAY * 4).due, "Spaced review becomes due");
 const support = emptyTutor();
+const firstLook = emptyTutor();
+check(difficulty(firstLook, skill) === 0, "A new skill starts with an easier coached problem");
+recordAnswer(firstLook, skill, { correct: true, independent: true, level: 0 }, now);
+check(difficulty(firstLook, skill) === 0, "One easy success keeps the scaffold in place");
+recordAnswer(firstLook, skill, { correct: true, independent: true, level: 0 }, now + 1);
+check(difficulty(firstLook, skill) === 1, "Two easy successes move practice to grade-level work");
 recordAnswer(support, skill, { correct: false, independent: true, level: 1 }, now);
 recordAnswer(support, skill, { correct: false, independent: true, level: 1 }, now + 1);
 check(difficulty(support, skill) === 0, "Repeated difficulty introduces scaffolding");

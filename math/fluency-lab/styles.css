@@ -1153,6 +1153,37 @@ main {
   font-weight: 800;
 }
 
+.scratchpad-backgrounds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+}
+
+.scratchpad-bg-btn {
+  min-height: 40px;
+  padding: 0.45rem 0.7rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--surface, #fff);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.scratchpad-bg-btn.active,
+.scratchpad-bg-btn[aria-pressed="true"] {
+  border-color: var(--navy);
+  background: var(--blue-soft);
+  color: var(--navy);
+}
+
+.scratchpad-bg-btn:focus-visible {
+  outline: 3px solid #d97706;
+  outline-offset: 2px;
+}
+
 .scratchpad-wrap label {
   display: block;
   margin: 0.8rem 0 0.35rem;
@@ -1165,9 +1196,38 @@ main {
   padding: 0.8rem;
   border: 2px solid var(--line-strong);
   border-radius: 8px;
-  background: repeating-linear-gradient(#fff 0 31px, #dce7f5 31px 32px);
+  background-color: #fff;
+  background-image: repeating-linear-gradient(#fff 0 31px, #dce7f5 31px 32px);
   color: var(--ink);
   line-height: 2;
+}
+
+.scratchpad-wrap textarea.scratchpad-background-blank {
+  background-image: none;
+  line-height: 1.5;
+}
+
+.scratchpad-wrap textarea.scratchpad-background-lined {
+  background-image: repeating-linear-gradient(#fff 0 31px, #dce7f5 31px 32px);
+}
+
+.scratchpad-wrap textarea.scratchpad-background-numberline {
+  background-image:
+    linear-gradient(transparent calc(50% - 1px), #64748b calc(50% - 1px), #64748b calc(50% + 1px), transparent calc(50% + 1px)),
+    repeating-linear-gradient(90deg, transparent 0 38px, #94a3b8 38px 40px, transparent 40px 80px);
+  background-size: 100% 100%, 100% 18px;
+  background-position: 0 0, 0 calc(50% - 9px);
+  background-repeat: no-repeat, repeat-x;
+  line-height: 1.5;
+}
+
+.scratchpad-wrap textarea.scratchpad-background-coordinate {
+  background-image:
+    linear-gradient(90deg, transparent calc(50% - 1px), #64748b calc(50% - 1px), #64748b calc(50% + 1px), transparent calc(50% + 1px)),
+    linear-gradient(transparent calc(50% - 1px), #64748b calc(50% - 1px), #64748b calc(50% + 1px), transparent calc(50% + 1px)),
+    repeating-linear-gradient(0deg, transparent 0 23px, #e2e8f0 23px 24px),
+    repeating-linear-gradient(90deg, transparent 0 23px, #e2e8f0 23px 24px);
+  line-height: 1.5;
 }
 
 .session-summary {

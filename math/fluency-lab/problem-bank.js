@@ -457,8 +457,8 @@ const generators = {
   },
 
   lengthMeasure(config, rng) {
-    const length = randInt(3, 12, rng);
-    const start = randInt(0, 4, rng);
+    const length = randInt(config.minLength ?? 3, config.maxLength ?? 12, rng);
+    const start = randInt(config.minStart ?? 0, config.maxStart ?? 4, rng);
     const end = start + length;
     return problem(`A strip starts at ${start} cm and ends at ${end} cm on a ruler. How long is the strip?`, length, {
       hint: "Measure the space between the two marks. Count the 1-centimeter intervals, not the number of marks.",
@@ -470,26 +470,27 @@ const generators = {
   dataDisplay(config, rng) {
     const names = ["apples", "bananas", "oranges", "pears"];
     const values = [];
-    while (values.length < names.length) {
-      const value = randInt(2, 17, rng);
+    const choices = names.slice(0, config.choiceCount ?? names.length);
+    while (values.length < choices.length) {
+      const value = randInt(config.minCount ?? 2, config.maxCount ?? 17, rng);
       if (!values.includes(value)) values.push(value);
     }
     for (let i = values.length - 1; i > 0; i -= 1) {
       const j = Math.floor(rng() * (i + 1));
       [values[i], values[j]] = [values[j], values[i]];
     }
-    const rows = names.map((name, i) => [name, String(values[i])]);
-    const answer = names[values.indexOf(Math.max(...values))];
+    const rows = choices.map((name, i) => [name, String(values[i])]);
+    const answer = choices[values.indexOf(Math.max(...values))];
     return problem(`A class vote shows ${rows.map(([name, count]) => `${name}: ${count}`).join(", ")}. Which fruit got the most votes?`, answer, {
-      kind: "choice", choices: names, hint: "Compare the counts in the display. Find the greatest number.",
+      kind: "choice", choices, hint: "Compare the counts in the display. Find the greatest number.",
       explanation: `${answer} got the most votes because ${Math.max(...values)} is the greatest count.`,
       model: { type: "dataTable", headers: ["Fruit", "Votes"], rows, caption: "Class vote" },
     });
   },
 
   scaleDrawing(config, rng) {
-    const scale = pick([2, 3, 4, 5], rng);
-    const drawing = randInt(2, 8, rng);
+    const scale = pick([2, 3, 4, 5].filter((n) => n <= (config.maxScale ?? 5)), rng);
+    const drawing = randInt(2, config.maxDrawing ?? 8, rng);
     return problem(`A scale drawing uses 1 cm to represent ${scale} m. A wall is ${drawing} cm long in the drawing. How long is the real wall in meters?`, drawing * scale, {
       hint: `Each drawing centimeter represents ${scale} meters. Multiply the drawing length by the scale amount.`,
       explanation: `${drawing} × ${scale} = ${drawing * scale} meters.`,
@@ -501,7 +502,7 @@ const generators = {
     const quarters = randInt(0, config.maxCoins ?? 4, rng);
     const dimes = randInt(0, config.maxCoins ?? 4, rng);
     const nickels = randInt(0, config.maxCoins ?? 4, rng);
-    const pennies = randInt(0, 9, rng);
+    const pennies = randInt(0, config.maxPennies ?? 9, rng);
     const answer = quarters * 25 + dimes * 10 + nickels * 5 + pennies;
     return problem(
       `${quarters} quarters + ${dimes} dimes + ${nickels} nickels + ${pennies} pennies = how many cents?`,
@@ -551,8 +552,8 @@ const generators = {
 
   fractionOp(config, rng) {
     if (config.unitFractionDivision) {
-      const d = randInt(2, 10, rng);
-      const whole = randInt(2, 8, rng);
+      const d = randInt(2, config.maxDenominator ?? 10, rng);
+      const whole = randInt(2, config.maxWhole ?? 8, rng);
       const divideUnitByWhole = rng() < 0.5;
       const question = divideUnitByWhole
         ? `A ribbon that is 1/${d} meter long is shared equally by ${whole} students. What length of ribbon does each student get?`
@@ -693,31 +694,37 @@ const generators = {
   },
 
   factorMultiple(config, rng) {
-    const form = pick(["isFactor", "isMultiple", "nthMultiple", "countFactors", "primeComposite"], rng);
+    const form = pick(
+      config.scaffolded
+        ? ["isFactor", "isMultiple", "nthMultiple", "primeComposite"]
+        : ["isFactor", "isMultiple", "nthMultiple", "countFactors", "primeComposite"],
+      rng,
+    );
     const yesNo = (question, yes, hint, explanation, steps) =>
       problem(question, yes ? "yes" : "no", { kind: "choice", choices: ["yes", "no"], hint, explanation, steps: [...steps, explanation] });
     if (form === "isFactor") {
-      const n = randInt(12, config.max ?? 100, rng);
-      const dividers = factorsOf(n).filter((f) => f >= 2 && f <= 12);
+      const n = randInt(config.scaffolded ? 6 : 12, config.max ?? 100, rng);
+      const dividers = factorsOf(n).filter((f) => f >= 2 && f <= (config.scaffolded ? 5 : 12));
       const yes = dividers.length > 0 && rng() < 0.5;
-      const f = yes ? pick(dividers, rng) : pick(Array.from({ length: 11 }, (_, i) => i + 2).filter((v) => n % v), rng);
+      const dividerMax = config.scaffolded ? 5 : 12;
+      const f = yes ? pick(dividers, rng) : pick(Array.from({ length: dividerMax - 1 }, (_, i) => i + 2).filter((v) => n % v), rng);
       return yesNo(`Is ${f} a factor of ${n}?`, yes, "A factor divides the number evenly, with no remainder.", yes ? `${n} ÷ ${f} = ${n / f} with nothing left over, so ${f} is a factor of ${n}.` : `${n} ÷ ${f} leaves a remainder of ${n % f}, so ${f} is not a factor of ${n}.`, [
         `A factor of ${n} divides it evenly, with nothing left over. So check whether ${n} ÷ ${f} comes out even.`,
         `Another way: count up by ${f}s toward ${n} and see whether you land exactly on it.`,
       ]);
     }
     if (form === "isMultiple") {
-      const f = randInt(2, 12, rng);
+      const f = randInt(2, config.scaffolded ? 5 : 12, rng);
       const yes = rng() < 0.5;
-      const n = f * randInt(2, Math.floor(100 / f), rng) + (yes ? 0 : randInt(1, f - 1, rng));
+      const n = f * randInt(2, Math.floor((config.scaffolded ? 30 : 100) / f), rng) + (yes ? 0 : randInt(1, f - 1, rng));
       return yesNo(`Is ${n} a multiple of ${f}?`, yes, `A multiple of ${f} is what you get counting by ${f}s.`, yes ? `${f} × ${n / f} = ${n}, so ${n} is a multiple of ${f}.` : `${n} is between ${f * Math.floor(n / f)} and ${f * Math.ceil(n / f)}, which are multiples of ${f}, so it is not one.`, [
         `Multiples of ${f} come from counting by ${f}s: ${f}, ${2 * f}, ${3 * f}, and so on.`,
         `Ask whether ${n} is on that list, or check whether ${n} ÷ ${f} comes out even.`,
       ]);
     }
     if (form === "nthMultiple") {
-      const f = randInt(2, 9, rng);
-      const m = randInt(3, 10, rng);
+      const f = randInt(2, config.scaffolded ? 5 : 9, rng);
+      const m = randInt(config.scaffolded ? 2 : 3, config.scaffolded ? 5 : 10, rng);
       return problem(`What is the ${ordinal(m)} multiple of ${f}?`, f * m, {
         hint: `Count by ${f}s, or multiply ${f} by ${m}.`,
         explanation: `The ${ordinal(m)} multiple of ${f} is ${f} × ${m} = ${f * m}.`,
@@ -738,7 +745,9 @@ const generators = {
       });
     }
     const prime = rng() < 0.4;
-    const pool = Array.from({ length: 88 }, (_, i) => i + 11).filter((v) => (factorsOf(v).length === 2) === prime);
+    const low = config.scaffolded ? 2 : 11;
+    const high = config.scaffolded ? 20 : 98;
+    const pool = Array.from({ length: high - low + 1 }, (_, i) => i + low).filter((v) => (factorsOf(v).length === 2) === prime);
     const n = pick(pool, rng);
     const divider = factorsOf(n).find((f) => f > 1);
     return problem(`Is ${n} prime or composite?`, prime ? "prime" : "composite", {
@@ -862,9 +871,10 @@ const generators = {
   },
 
   orderOps(config, rng) {
-    const a = randInt(2, 12, rng);
-    const b = randInt(2, 12, rng);
-    const c = randInt(2, 9, rng);
+    const max = config.scaffolded ? 5 : 12;
+    const a = randInt(2, config.maxTerm ?? max, rng);
+    const b = randInt(2, config.maxTerm ?? max, rng);
+    const c = randInt(2, config.maxMultiplier ?? (config.scaffolded ? 4 : 9), rng);
     const grouped = rng() > 0.5;
     const answer = grouped ? (a + b) * c : a + b * c;
     return problem(grouped ? `(${a} + ${b}) × ${c} = ?` : `${a} + ${b} × ${c} = ?`, answer, {
@@ -897,7 +907,8 @@ const generators = {
   evaluate(config, rng) {
     const x = randInt(config.minX ?? -5, config.maxX ?? 12, rng);
     const a = randInt(2, config.maxCoefficient ?? 9, rng);
-    const b = randInt(-9, 12, rng);
+    const maxConstant = config.maxConstant ?? 12;
+    const b = randInt(-maxConstant, maxConstant, rng);
     const answer = a * x + b;
     return problem(`Evaluate ${a}x ${b < 0 ? "−" : "+"} ${Math.abs(b)} when x = ${x}.`, answer, {
       hint: `Replace x with ${x}, then multiply before adding or subtracting.`,
@@ -909,8 +920,8 @@ const generators = {
     // A one-step skill covers adding, subtracting, multiplying and dividing: x + 3 = 9, x − 4 = 2, 3x = 12, x ÷ 4 = 5.
     const form = config.oneStep ? pick(["shift", "shift", "mul", "div"], rng) : "two";
     if (form === "mul" || form === "div") {
-      const k = randInt(2, 9, rng);
-      const quotient = randInt(2, 12, rng);
+      const k = randInt(2, config.maxCoefficient ?? 9, rng);
+      const quotient = randInt(2, config.maxQuotient ?? 12, rng);
       const [x, c] = form === "mul" ? [quotient, k * quotient] : [k * quotient, quotient];
       const verb = form === "mul" ? "multiplied" : "divided";
       const undo = form === "mul" ? "divide" : "multiply";
@@ -927,7 +938,8 @@ const generators = {
     const x = config.nonNegative ? randInt(1, config.maxX ?? 20, rng) : randInt(config.minX ?? -10, config.maxX ?? 20, rng);
     const a = config.oneStep ? 1 : randInt(2, config.maxCoefficient ?? 9, rng);
     // nonNegative keeps every number in the equation at or above zero (grade 6 works with nonnegative values).
-    const b = config.nonNegative ? (rng() < 0.5 ? randInt(1, 15, rng) : -randInt(1, Math.min(12, x), rng)) : randInt(-12, 15, rng);
+    const maxConstant = config.maxConstant ?? 15;
+    const b = config.nonNegative ? (rng() < 0.5 ? randInt(1, maxConstant, rng) : -randInt(1, Math.min(12, x), rng)) : randInt(-maxConstant, maxConstant, rng);
     const c = a * x + b;
     return problem(`${a === 1 ? "x" : `${a}x`} ${b < 0 ? "−" : "+"} ${Math.abs(b)} = ${c}. Find x.`, x, {
       hint: `Undo ${b < 0 ? `subtracting ${Math.abs(b)}` : `adding ${b}`} first${a === 1 ? "." : `, then divide by ${a}.`}`,
@@ -936,8 +948,8 @@ const generators = {
   },
 
   inequality(config, rng) {
-    const boundary = randInt(-10, 20, rng);
-    const test = randInt(-10, 20, rng);
+    const boundary = randInt(config.min ?? -10, config.max ?? 20, rng);
+    const test = randInt(config.min ?? -10, config.max ?? 20, rng);
     const symbol = pick([">", "<", "≥", "≤"], rng);
     const trueValue = symbol === ">" ? test > boundary : symbol === "<" ? test < boundary : symbol === "≥" ? test >= boundary : test <= boundary;
     return problem(`Is ${test} a solution to x ${symbol} ${boundary}?`, trueValue ? "yes" : "no", {
@@ -961,7 +973,7 @@ const generators = {
   },
 
   powerTen(config, rng) {
-    const coefficient = randInt(1, 99, rng) / 10;
+    const coefficient = randInt(10, config.maxCoefficient ?? 99, rng) / 10;
     const power = randInt(config.minPower ?? -3, config.maxPower ?? 5, rng);
     const answer = coefficient * 10 ** power;
     return problem(`${decimalText(coefficient, 1)} × 10^${power} = ?`, decimalText(answer, 8), {
@@ -984,10 +996,10 @@ const generators = {
   },
 
   slope(config, rng) {
-    const x1 = randInt(-5, 4, rng);
-    const run = pick([1, 2, 3, 4], rng);
-    const slope = pick([-3, -2, -1, 1, 2, 3], rng);
-    const y1 = randInt(-8, 8, rng);
+    const x1 = randInt(config.minCoordinate ?? -5, Math.min(config.maxCoordinate ?? 4, 4), rng);
+    const run = pick((config.scaffolded ? [1, 2] : [1, 2, 3, 4]).filter((n) => n <= (config.maxRun ?? 4)), rng);
+    const slope = pick(config.scaffolded ? [-1, 1] : [-3, -2, -1, 1, 2, 3], rng);
+    const y1 = randInt(config.minCoordinate ?? -8, config.maxCoordinate ?? 8, rng);
     const x2 = x1 + run;
     const y2 = y1 + slope * run;
     return problem(`Find the slope through (${x1}, ${y1}) and (${x2}, ${y2}).`, slope, {
@@ -998,9 +1010,9 @@ const generators = {
   },
 
   functionRule(config, rng) {
-    const x = randInt(-5, 10, rng);
-    const m = randInt(-4, 5, rng) || 2;
-    const b = randInt(-8, 8, rng);
+    const x = randInt(config.minX ?? -5, config.maxX ?? 10, rng);
+    const m = randInt(config.minMultiplier ?? -4, config.maxMultiplier ?? 5, rng) || 2;
+    const b = randInt(-(config.maxConstant ?? 8), config.maxConstant ?? 8, rng);
     const y = m * x + b;
     return problem(`If y = ${m}x ${b < 0 ? "−" : "+"} ${Math.abs(b)}, find y when x = ${x}.`, y, {
       hint: `Substitute ${x} for x, multiply, then combine the constant.`,
@@ -1009,8 +1021,8 @@ const generators = {
   },
 
   system(config, rng) {
-    const x = randInt(-6, 10, rng);
-    const y = randInt(-6, 10, rng);
+    const x = randInt(config.minValue ?? -6, config.maxValue ?? 10, rng);
+    const y = randInt(config.minValue ?? -6, config.maxValue ?? 10, rng);
     const sum = x + y;
     const difference = x - y;
     return problem(`x + y = ${sum} and x − y = ${difference}. Find x.`, x, {
@@ -1021,8 +1033,8 @@ const generators = {
   },
 
   coordinate(config, rng) {
-    let x = randInt(-9, 9, rng);
-    let y = randInt(-9, 9, rng);
+    let x = randInt(config.minCoordinate ?? -9, config.maxCoordinate ?? 9, rng);
+    let y = randInt(config.minCoordinate ?? -9, config.maxCoordinate ?? 9, rng);
     if (x === 0) x = 1;
     if (y === 0) y = -1;
     const answer = x > 0 && y > 0 ? "I" : x < 0 && y > 0 ? "II" : x < 0 && y < 0 ? "III" : "IV";
@@ -1037,9 +1049,9 @@ const generators = {
   },
 
   transform(config, rng) {
-    const x = randInt(-8, 8, rng) || 3;
-    const y = randInt(-8, 8, rng) || -2;
-    const axis = pick(["x-axis", "y-axis", "origin"], rng);
+    const x = randInt(config.minCoordinate ?? -8, config.maxCoordinate ?? 8, rng) || 3;
+    const y = randInt(config.minCoordinate ?? -8, config.maxCoordinate ?? 8, rng) || -2;
+    const axis = pick(config.axes || ["x-axis", "y-axis", "origin"], rng);
     const result = axis === "x-axis" ? [x, -y] : axis === "y-axis" ? [-x, y] : [-x, -y];
     return problem(`Reflect (${x}, ${y}) across the ${axis}.`, `(${result[0]},${result[1]})`, {
       kind: "text",
@@ -1054,7 +1066,7 @@ const generators = {
     const shape = config.shape || "rectangleArea";
     const a = randInt(2, config.max ?? 20, rng);
     const b = randInt(2, config.max ?? 20, rng);
-    const c = randInt(2, config.max ?? 12, rng);
+    const c = randInt(2, config.maxHeight ?? config.max ?? 12, rng);
     if (shape === "rectangleArea")
       return problem(`Area of a rectangle with length ${a} and width ${b}?`, a * b, { hint: "Area = length × width.", explanation: `${a} × ${b} = ${a * b} square units.`, unit: "square units", model: a <= 12 && b <= 12 ? { type: "array", a: b, b: a, split: b, caption: `${a} by ${b} rectangle: ${b} rows of ${a} square units` } : { type: "shape", shape: "rectangle", a, b, caption: `Rectangle ${a} by ${b}` } });
     if (shape === "perimeter")
@@ -1064,9 +1076,9 @@ const generators = {
       return problem(`Area of a triangle with base ${base} and height ${b}?`, (base * b) / 2, { hint: "Area = 1/2 × base × height.", explanation: `1/2 × ${base} × ${b} = ${(base * b) / 2} square units.`, unit: "square units", model: { type: "triangleArea", base, height: b, caption: "The perpendicular height meets the base at a right angle" } });
     }
     if (shape === "angleRelations") {
-      const relation = pick(["supplementary", "complementary", "vertical"], rng);
+      const relation = pick(config.relations || ["supplementary", "complementary", "vertical"], rng);
       const total = relation === "complementary" ? 90 : relation === "supplementary" ? 180 : null;
-      const known = randInt(25, relation === "complementary" ? 65 : 150, rng);
+      const known = randInt(25, Math.min(relation === "complementary" ? 65 : 150, config.maxKnown ?? 150), rng);
       const answer = total === null ? known : total - known;
       const wording = relation === "complementary" ? "complementary" : relation === "supplementary" ? "supplementary" : "vertical";
       const question = relation === "vertical" ? `One of two vertical angles measures ${known}°. What is the measure of the other angle?` : `Two ${wording} angles include one angle that measures ${known}°. What is the other angle?`;
@@ -1075,7 +1087,7 @@ const generators = {
     if (shape === "volume")
       return problem(`Volume of a rectangular prism: ${a} × ${b} × ${c}?`, a * b * c, { hint: "Volume = length × width × height.", explanation: `${a} × ${b} × ${c} = ${a * b * c} cubic units.`, model: c <= 12 ? { type: "layers", a, b, height: c } : null, unit: "cubic units" });
     if (shape === "circle") {
-      const radius = randInt(1, 12, rng);
+      const radius = randInt(1, config.maxRadius ?? 12, rng);
       const answer = radius * radius;
       return problem(`A circle has radius ${radius}. What number multiplies π to give its area?`, answer, { hint: "Area = πr². Square the radius.", explanation: `r² = ${radius}² = ${answer}, so the area is ${answer}π.`, unit: "π square units", model: { type: "chain", picture: "circle", r: radius, prompt: "Area = π × r × r. Square the radius." } });
     }
@@ -1106,28 +1118,31 @@ const generators = {
   stats(config, rng) {
     const type = config.type || pick(["mean", "median", "range"], rng);
     if (type === "mean") {
-      const mean = randInt(5, 20, rng);
-      const d1 = randInt(1, 5, rng);
-      const d2 = randInt(1, 5, rng);
+      const mean = randInt(5, config.scaffolded ? 10 : 20, rng);
+      const d1 = randInt(1, config.scaffolded ? 2 : 5, rng);
+      const d2 = randInt(1, config.scaffolded ? 2 : 5, rng);
       const values = [mean - d1, mean + d1, mean - d2, mean + d2];
       return problem(`Find the mean: ${values.join(", ")}.`, mean, { hint: "Add the values, then divide by how many values there are.", explanation: `The sum is ${mean * 4}; ${mean * 4} ÷ 4 = ${mean}.`, steps: [`Add the values: ${values.join(" + ")} = ${mean * 4}.`, "There are 4 values, so share the sum equally among 4: divide by 4.", `${mean * 4} ÷ 4 = ${mean}.`] });
     }
     if (type === "median") {
       // Shown unordered: putting the values in order is the first step of finding a median.
-      const shown = Array.from({ length: 5 }, () => randInt(1, 30, rng));
+      const count = config.scaffolded ? 3 : 5;
+      const shown = Array.from({ length: count }, () => randInt(1, config.scaffolded ? 10 : 30, rng));
       const values = [...shown].sort((a, b) => a - b);
-      return problem(`Find the median: ${shown.join(", ")}.`, values[2], { hint: "Put values in order and choose the middle one.", explanation: `${values[2]} is the middle value.`, steps: [`Put the values in order: ${values.join(", ")}.`, "There are 5 values, so the middle one is the 3rd: two values sit on each side of it.", `The median is ${values[2]}.`] });
+      const middle = values[Math.floor(values.length / 2)];
+      const ordinal = values.length === 3 ? "2nd" : "3rd";
+      return problem(`Find the median: ${shown.join(", ")}.`, middle, { hint: "Put values in order and choose the middle one.", explanation: `${middle} is the middle value.`, steps: [`Put the values in order: ${values.join(", ")}.`, `There are ${values.length} values, so the middle one is the ${ordinal}.`, `The median is ${middle}.`] });
     }
-    const values = Array.from({ length: 5 }, () => randInt(1, 40, rng));
+    const values = Array.from({ length: config.scaffolded ? 3 : 5 }, () => randInt(1, config.scaffolded ? 10 : 40, rng));
     const answer = Math.max(...values) - Math.min(...values);
     return problem(`Find the range: ${values.join(", ")}.`, answer, { hint: "Range = greatest value − least value.", explanation: `${Math.max(...values)} − ${Math.min(...values)} = ${answer}.`, steps: [`The greatest value is ${Math.max(...values)}.`, `The least value is ${Math.min(...values)}.`, `${Math.max(...values)} − ${Math.min(...values)} = ${answer}.`] });
   },
 
-  association(_config, rng) {
-    const type = pick(["positive", "negative", "none"], rng);
-    const xValues = [1, 2, 3, 4, 5];
-    const start = randInt(4, 18, rng);
-    const step = randInt(2, 5, rng);
+  association(config, rng) {
+    const type = pick(config.scaffolded ? ["positive", "negative"] : ["positive", "negative", "none"], rng);
+    const xValues = config.scaffolded ? [1, 2, 3] : [1, 2, 3, 4, 5];
+    const start = randInt(2, config.scaffolded ? 6 : 18, rng);
+    const step = randInt(1, config.scaffolded ? 2 : 5, rng);
     const yValues =
       type === "positive"
         ? xValues.map((x) => start + step * x)
@@ -1165,9 +1180,9 @@ const generators = {
   },
 
   proportion(config, rng) {
-    const a = randInt(1, 12, rng);
-    const b = randInt(2, 12, rng);
-    const factor = randInt(2, 9, rng);
+    const a = randInt(1, config.maxPart ?? 12, rng);
+    const b = randInt(2, config.maxPart ?? 12, rng);
+    const factor = randInt(2, config.maxFactor ?? 9, rng);
     return problem(`${a}/${b} = x/${b * factor}. Find x.`, a * factor, {
       hint: `The denominator was multiplied by ${factor}; multiply the numerator by ${factor}, too.`,
       explanation: `x = ${a} × ${factor} = ${a * factor}.`,
@@ -1176,7 +1191,7 @@ const generators = {
 
   pythagorean(config, rng) {
     const triples = [[3, 4, 5], [5, 12, 13], [6, 8, 10], [8, 15, 17], [9, 12, 15]];
-    const [a, b, c] = pick(triples, rng);
+    const [a, b, c] = pick(config.scaffolded ? triples.slice(0, 2) : triples, rng);
     return problem(`A right triangle has legs ${a} and ${b}. Find the hypotenuse.`, c, {
       hint: "Use a² + b² = c², then take the square root.",
       explanation: `${a}² + ${b}² = ${a * a + b * b}; √${a * a + b * b} = ${c}.`,

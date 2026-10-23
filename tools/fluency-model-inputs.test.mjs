@@ -273,6 +273,31 @@ assert.notEqual(
   "no number-line jumps for addition",
 );
 assert.deepEqual(seededTool("7 × 6 = ?").box.s.mult, { row: 6, col: 7 });
+assert.deepEqual(
+  seededTool("236 + 728 = ?").seed.tools,
+  ["vertical"],
+  "column addition offers only columns",
+);
+assert.deepEqual(
+  seededTool("7 × 6 = ?").seed.tools,
+  ["multigrid", "splitter"],
+  "multiplication offers arrays and splitting",
+);
+assert.deepEqual(
+  seededTool("84 ÷ 7 = ?").seed.tools,
+  ["longdivision"],
+  "division offers long division",
+);
+assert.deepEqual(
+  seededTool("6x − 11 = 91. Find x.").seed.tools,
+  ["balance"],
+  "equations offer the balance model",
+);
+assert.deepEqual(
+  seededTool("Find the GCF of 12 and 18.").seed.tools,
+  [],
+  "GCF uses its dedicated chart workspace",
+);
 assert.deepEqual(seededTool("84 ÷ 7 = ?").box.s.div, { dividend: 84, divisor: 7 });
 assert.deepEqual(seededTool("6x − 11 = 91. Find x.").box.s.balance, {
   lx: 6,
