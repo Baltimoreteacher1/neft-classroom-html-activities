@@ -168,6 +168,7 @@
       st.quest
         ? `Skill Quest: best ${"★".repeat(st.quest.best)}${"☆".repeat(3 - st.quest.best)} in ${st.quest.runs} run${st.quest.runs === 1 ? "" : "s"}`
         : "",
+      ...(W.StudioPulse?.shareLines?.() || []),
     ]
       .filter(Boolean)
       .join("\n");
@@ -288,7 +289,8 @@
       ${calibrationHtml()}
       <h3>Your numbers</h3><p>First-try accuracy: <strong>${st.stats.tries ? Math.round((100 * st.stats.first) / st.stats.tries) : 0}%</strong> · Best streak: <strong>${st.stats.best}</strong> · Hints used: <strong>${st.stats.hints}</strong> · Extra reps: <strong>${st.stats.reps}</strong></p>
       <h3>Done on this computer?</h3><p class="item-sub">This page keeps your work only on this computer: your stars, solved problems, notes and the map above. Nothing is sent anywhere. If another class uses this computer next, clear yours first.</p><p><button type="button" class="btn btn-sm" data-handoff>I am finished on this computer</button></p>
-      ${has("share") ? '<p><button type="button" class="btn btn-sm" data-copy>Copy my results</button> <span class="item-sub">A short note with no name. Paste it to your teacher or family.</span></p>' : ""}`;
+      ${has("share") ? '<p><button type="button" class="btn btn-sm" data-copy>Copy my results</button> <span class="item-sub">A short note with no name. Paste it to your teacher or family.</span></p>' : ""}
+      ${W.StudioPulse?.boxHtml?.() || ""}`;
     body.querySelector("[data-redeem]")?.addEventListener("click", () => redemption(body, dlg));
     body.querySelector("[data-handoff]")?.addEventListener("click", () => {
       if (

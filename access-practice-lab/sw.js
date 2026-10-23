@@ -11,13 +11,13 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "54bd23e34fb2";
+const BUILD_HASH = "4ded2e034bed";
 const PRECACHE_CORE = [
-  "/access-practice-lab/styles.css?v=9db290dc9a92",
+  "/access-practice-lab/styles.css?v=bbb375cee627",
   "/access-practice-lab/library.css?v=50b712adeeb8",
   "/access-practice-lab/session-plan.css?v=f7eed42e57d1",
-  "/access-practice-lab/audit.css?v=ad973aa08869",
-  "/access-practice-lab/studio.css?v=2e8593c8c746",
+  "/access-practice-lab/audit.css?v=68b74ee5c74a",
+  "/access-practice-lab/studio.css?v=8dd83b16d878",
   "/access-practice-lab/src/attempts.js?v=9ad8ee9e3283",
   "/access-practice-lab/src/audio-store.js?v=d05edac67707",
   "/access-practice-lab/src/components.js?v=71eb39c2d66e",
@@ -54,24 +54,24 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/studio-ui.js?v=52534befb588",
   "/access-practice-lab/src/sync.js?v=b3e398476cee",
   "/access-practice-lab/src/util.js?v=5fbdef684724",
-  "/access-practice-lab/src/views/activity.js?v=ac5fab02d415",
+  "/access-practice-lab/src/views/activity.js?v=fae8c842511d",
   "/access-practice-lab/src/views/construction.js?v=8e107f13259a",
   "/access-practice-lab/src/views/conversation.js?v=51b123303ff0",
   "/access-practice-lab/src/views/detective.js?v=24c98ff43e25",
   "/access-practice-lab/src/views/evidence.js?v=7483c77cd140",
   "/access-practice-lab/src/views/family.js?v=493eb17898e2",
   "/access-practice-lab/src/views/growth.js?v=b2a851f6cced",
-  "/access-practice-lab/src/views/home.js?v=952d5d886d83",
+  "/access-practice-lab/src/views/home.js?v=e5ab0e7d2230",
   "/access-practice-lab/src/views/library.js?v=2ad35e7fa59a",
   "/access-practice-lab/src/views/missions.js?v=b399c493f14a",
   "/access-practice-lab/src/views/passport.js?v=3e2f4f4581e9",
   "/access-practice-lab/src/views/road.js?v=47ecec4284e8",
-  "/access-practice-lab/src/views/room.js?v=2d073c073736",
-  "/access-practice-lab/src/views/speak.js?v=d30293ff06ad",
+  "/access-practice-lab/src/views/room.js?v=4307b4cbb0d4",
+  "/access-practice-lab/src/views/speak.js?v=fc7269f672ff",
   "/access-practice-lab/src/views/test.js?v=c2d0d6520d1b",
   "/access-practice-lab/src/views/tests.js?v=96613c5ea5f3",
   "/access-practice-lab/src/views/tools.js?v=1a8c9f219961",
-  "/access-practice-lab/src/views/write.js?v=7225d1e7b3ce",
+  "/access-practice-lab/src/views/write.js?v=b749d744ee84",
 ];
 const PRECACHE_MORE = [
   "/access-practice-lab/content/blueprints.json",
@@ -202,6 +202,8 @@ const PRECACHE_MORE = [
   "/access-practice-lab/pictures/68c-hillside-erosion.svg",
   "/access-practice-lab/pictures/68c-seasons.svg",
   "/access-practice-lab/pictures/68c-water-filter.svg",
+  "/access-practice-lab/pictures/lab-icons.svg",
+  "/access-practice-lab/pictures/lab-investigation.svg",
   "/access-practice-lab/pictures/shape-circle.svg",
   "/access-practice-lab/pictures/shape-rectangle.svg",
   "/access-practice-lab/pictures/shape-triangle.svg",

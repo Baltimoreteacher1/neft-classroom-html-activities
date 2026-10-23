@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Class Pulse · Neft Teacher</title>
+    <meta
+      name="description"
+      content="Paste the class codes students copy from a Practice or Challenge studio and get tomorrow's pull list, a misconception heat table for each lesson, and printable hinge-question cards."
+    />
+    <link rel="icon" href="/assets/favicon.svg" />
+    <link rel="stylesheet" href="class-pulse.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#codes">Skip to the code box</a>
+
+    <header class="cp-header">
+      <nav aria-label="Breadcrumb">
+        <ol class="crumbs">
+          <li><a href="/teacher-tools/">Teacher Tools</a></li>
+          <li aria-current="page">Class Pulse</li>
+        </ol>
+      </nav>
+      <h1>Class Pulse</h1>
+      <p class="lede">
+        After a Practice or Challenge studio, a student can copy a short
+        <strong>class code</strong>. Paste the codes here, one per line, to see who to pull tomorrow
+        and why, which misconceptions are heating up in each lesson, and who needs you. A code holds
+        no name and no email.
+      </p>
+    </header>
+
+    <main>
+      <section class="cp-panel cp-input" aria-labelledby="input-h">
+        <h2 id="input-h">Paste class codes</h2>
+        <label for="codes"
+          >One code per line (up to 60). A pasted <em>Class code:</em> line from a student's copied
+          results works too.</label
+        >
+        <textarea
+          id="codes"
+          rows="7"
+          spellcheck="false"
+          autocomplete="off"
+          autocapitalize="characters"
+          placeholder="7K3QM-4TXA9-..."
+        ></textarea>
+        <div class="cp-actions">
+          <button class="btn btn-primary" id="btn-read" type="button">Read codes</button>
+          <button class="btn" id="btn-demo" type="button">Try an example</button>
+          <button class="btn" id="btn-clear" type="button">Clear</button>
+        </div>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+        <ul class="cp-problems" id="problems" hidden></ul>
+      </section>
+
+      <div id="results" hidden>
+        <section class="cp-panel" aria-labelledby="results-h">
+          <h2 id="results-h" tabindex="-1">What the codes say</h2>
+          <p class="demo-note" id="demo-note" hidden>
+            This is made-up example data, not your class.
+          </p>
+          <dl class="cp-stats" id="stats"></dl>
+          <details class="cp-roster">
+            <summary>Label the students (optional)</summary>
+            <p class="hint">
+              Students are numbered in the order you pasted them. Type a name or a seat to keep
+              track. Labels stay on this page only: nothing is saved or sent, and they are gone when
+              you leave.
+            </p>
+            <ul id="roster" class="roster-list"></ul>
+          </details>
+          <p class="cp-actions no-print">
+            <button class="btn" id="btn-print" type="button">Print this view</button>
+          </p>
+        </section>
+
+        <section class="cp-panel" aria-labelledby="pull-h">
+          <h2 id="pull-h">Pull list for tomorrow</h2>
+          <p class="hint">
+            Students grouped by the same misconception, with practice that targets it. A link opens
+            that studio at the problem.
+          </p>
+          <div id="pull"></div>
+        </section>
+
+        <section class="cp-panel" aria-labelledby="look-h">
+          <h2 id="look-h">Who needs a look</h2>
+          <div id="look"></div>
+        </section>
+
+        <section class="cp-panel" aria-labelledby="heat-h">
+          <h2 id="heat-h">Misconception heat by lesson</h2>
+          <p class="hint">Students who met each misconception, and how many times in all.</p>
+          <div id="heat"></div>
+        </section>
+
+        <section class="cp-panel" aria-labelledby="progress-h">
+          <h2 id="progress-h">Progress</h2>
+          <div id="progress"></div>
+        </section>
+      </div>
+
+      <section class="cp-panel" id="cards-section" aria-labelledby="cards-h">
+        <h2 id="cards-h">Hinge-question cards</h2>
+        <p class="hint">
+          One A/B/C/D question per lesson. Every wrong option is a named misconception, so the
+          letter a student picks tells you what they think. The key is for you.
+        </p>
+        <div class="cp-actions no-print">
+          <div class="ctl">
+            <label for="card-lesson">Lesson</label>
+            <select id="card-lesson"></select>
+          </div>
+          <button class="btn" id="btn-card-add" type="button">Add card</button>
+          <button class="btn" id="btn-card-class" type="button" disabled>
+            Add cards for these codes
+          </button>
+          <button class="btn" id="btn-card-clear" type="button">Clear cards</button>
+          <label class="check"
+            ><input type="checkbox" id="card-key" checked /> Show the key on printed cards</label
+          >
+          <button class="btn btn-primary" id="btn-card-print" type="button">Print cards</button>
+        </div>
+        <div id="cards" class="hc-list"></div>
+      </section>
+    </main>
+
+    <footer class="cp-footer">
+      <p>
+        Everything runs in this browser. Pasted codes and labels are never stored or sent anywhere,
+        and this page works without a network once it has loaded.
+      </p>
+    </footer>
+
+    <script src="/assets/studio/pulse-core.js"></script>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

@@ -5788,6 +5788,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/teacher-tools/class-pulse/",
+    title: "Class Pulse",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/teacher-tools/class-roster/",
     title: "Class Roster Links",
     category: "Tool",

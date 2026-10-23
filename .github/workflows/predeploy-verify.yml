@@ -94,7 +94,9 @@ jobs:
   validate-and-build:
     name: Required quality gate
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    # Full repository validation plus the production build and browser journeys
+    # can exceed 25 minutes on ubuntu-latest; keep the complete gate running.
+    timeout-minutes: 40
     permissions:
       contents: read
     steps:

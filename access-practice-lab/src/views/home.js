@@ -79,9 +79,9 @@ export async function render(ctx) {
     const tier = tierFor(ctx, d, levels);
     const { done, total, next } = nextActivity(band, d, tier, levels[tier].activities);
     const href = next ? `${BASE}/${d}/${tier}/${next[0]}?grades=${band}` : `${BASE}/${d}/${tier}?grades=${band}`;
-    return html`<article class="room-tile" style="--room:${domains[d].color}">
+    return html`<article class="room-tile domain-${d.toLowerCase()}" style="--room:${domains[d].color}">
       <a class="room-head" href="${BASE}/${d}/${tier}?grades=${band}">
-        <span class="room-glyph" aria-hidden="true">${meta.glyph}</span>
+        <span class="room-glyph" aria-hidden="true"><svg><use href="${BASE}/pictures/lab-icons.svg#${d.toLowerCase()}"></use></svg></span>
         <span class="room-name"
           ><strong>${meta.room}</strong
           ><span>${TIERS[tier]?.name || tier} · ${done}/${total} done</span></span
@@ -94,7 +94,7 @@ export async function render(ctx) {
               ><span class="btn-kicker">Next up</span>${next[1]}</a
             >`
           : html`<a class="btn btn-room" href="${BASE}/${d}/${tier}?grades=${band}"
-              >⭐ Level complete — choose another</a
+              >Level complete — choose another</a
             >`
       }
     </article>`;
@@ -124,19 +124,6 @@ export async function render(ctx) {
               </aside>`
             : ""
         }
-      </section>
-
-      <section class="studios" aria-labelledby="studiosTitle">
-        <h2 id="studiosTitle" class="section-title">Start here</h2>
-        <p class="fine">Choose a mission, prepare, do real language tasks, get specific feedback, revise, try it on your own, and watch your growth.</p>
-        ${next ? html`<a class="next-step panel" href="${next.href}"><span class="eyebrow">Your next step</span><strong>${next.title}</strong><span class="fine">${next.why}</span></a>` : ""}
-        <div class="studio-grid">
-          <a class="studio-card" style="--room:#3b28cc" href="${BASE}/missions?grades=${band}"><span aria-hidden="true">🚀</span><strong>Academic missions</strong><span>Listen, read, decide, speak and write in one investigation.</span></a>
-          <a class="studio-card" style="--room:#8e4b10" href="${BASE}/speak?grades=${band}"><span aria-hidden="true">🎤</span><strong>Speaking Studio</strong><span>Plan, record, listen back, and say it better.</span></a>
-          <a class="studio-card" style="--room:#2a6f97" href="${BASE}/write?grades=${band}"><span aria-hidden="true">✍️</span><strong>Writing Studio</strong><span>Use sources, draft, get feedback, revise.</span></a>
-          <a class="studio-card" style="--room:#6a4c93" href="${BASE}/detective?grades=${band}"><span aria-hidden="true">🔎</span><strong>Error Detective</strong><span>Find a pattern in your work and fix it for good.</span></a>
-          <a class="studio-card" style="--room:#1f766f" href="${BASE}/growth?grades=${band}"><span aria-hidden="true">🗺️</span><strong>My growth</strong><span>Evidence from your own work, with the help you used.</span></a>
-        </div>
       </section>
 
       <section class="session-plan panel" aria-labelledby="sessionTitle">
@@ -176,6 +163,29 @@ export async function render(ctx) {
         </ol>
         </details>
         <div class="row-actions"><a href="${BASE}/passport?grades=${band}">See my saved progress</a><a href="${BASE}/library?grades=${band}">Explore all activities</a></div>
+      </section>
+
+      <section class="feature-banner" aria-labelledby="featureTitle">
+        <div class="feature-copy">
+          <p class="eyebrow">Explore a real question</p>
+          <h2 id="featureTitle">Follow the evidence. Find your voice.</h2>
+          <p>Every mission brings academic sources, visual evidence, and your own explanation together.</p>
+          <a class="feature-link" href="${BASE}/missions?grades=${band}">Explore academic missions <span aria-hidden="true">↗</span></a>
+        </div>
+        <img src="${BASE}/pictures/lab-investigation.svg" width="760" height="530" alt="Illustrated river investigation with a map, notes, graph, and voice recording" loading="lazy" decoding="async">
+      </section>
+
+      <section class="studios" aria-labelledby="studiosTitle">
+        <h2 id="studiosTitle" class="section-title">Start here</h2>
+        <p class="fine">Choose a mission, prepare, do real language tasks, get specific feedback, revise, try it on your own, and watch your growth.</p>
+        ${next ? html`<a class="next-step panel" href="${next.href}"><span class="eyebrow">Your next step</span><strong>${next.title}</strong><span class="fine">${next.why}</span></a>` : ""}
+        <div class="studio-grid">
+          <a class="studio-card" style="--room:#6272b9" href="${BASE}/missions?grades=${band}"><span class="studio-icon" aria-hidden="true"><svg><use href="${BASE}/pictures/lab-icons.svg#mission"></use></svg></span><strong>Academic missions</strong><span>Listen, read, decide, speak and write in one investigation.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
+          <a class="studio-card" style="--room:#b96c57" href="${BASE}/speak?grades=${band}"><span class="studio-icon" aria-hidden="true"><svg><use href="${BASE}/pictures/lab-icons.svg#speaking"></use></svg></span><strong>Speaking Studio</strong><span>Plan, record, listen back, and say it better.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
+          <a class="studio-card" style="--room:#4285a1" href="${BASE}/write?grades=${band}"><span class="studio-icon" aria-hidden="true"><svg><use href="${BASE}/pictures/lab-icons.svg#writing"></use></svg></span><strong>Writing Studio</strong><span>Use sources, draft, get feedback, revise.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
+          <a class="studio-card" style="--room:#8771a4" href="${BASE}/detective?grades=${band}"><span class="studio-icon" aria-hidden="true"><svg><use href="${BASE}/pictures/lab-icons.svg#detective"></use></svg></span><strong>Error Detective</strong><span>Find a pattern in your work and fix it for good.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
+          <a class="studio-card" style="--room:#2e8e82" href="${BASE}/growth?grades=${band}"><span class="studio-icon" aria-hidden="true"><svg><use href="${BASE}/pictures/lab-icons.svg#growth"></use></svg></span><strong>My growth</strong><span>Evidence from your own work, with the help you used.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
+        </div>
       </section>
 
       <section aria-labelledby="roomsTitle">

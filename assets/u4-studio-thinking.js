@@ -90,7 +90,63 @@
         })
         .join("")}</ul>`;
     }
+    body.insertAdjacentHTML("beforeend", exitHtml());
     d.showModal();
+  }
+
+  const lessonId = () => {
+    const m = /\/(\d)-(\d)-practice-studio/.exec(location.pathname);
+    return m ? `${m[1]}-${m[2]}` : "4-1";
+  };
+  const loadScript = (/** @type {string} */ src) =>
+    new Promise((resolve) => {
+      const s = document.createElement("script");
+      s.src = src;
+      s.onload = () => resolve(true);
+      s.onerror = () => resolve(false);
+      document.head.append(s);
+    });
+  /** @type {Promise<boolean> | null} */
+  let pulseReady = null;
+  function snapshot() {
+    const done = [1, 2, 3, 4, 5].map(
+      (t) =>
+        W.U4Studio?.withCfg?.(
+          (/** @type {any} */ c) =>
+            Object.entries((c.solvedMap ? c.solvedMap(t) : c.state?.[`solved${t}`]) || {}).filter(
+              ([k, v]) => v && !k.startsWith("rand"),
+            ).length,
+        ) || 0,
+    );
+    return {
+      lesson: lessonId(),
+      mode: /-challenging\/?$/.test(location.pathname) ? "challenge" : "practice",
+      u4: true,
+      done,
+      misses: Object.fromEntries(
+        summary()
+          .filter((g) => traps[g.tag])
+          .map((g) => [g.tag, { n: g.n }]),
+      ),
+    };
+  }
+  function pulse() {
+    pulseReady ||= (async () => {
+      if (!W.StudioPulseCore && !(await loadScript("/assets/studio/pulse-core.js"))) return false;
+      if (!W.StudioPulse && !(await loadScript("/assets/studio/pulse.js"))) return false;
+      W.StudioPulse.attach({
+        snapshot,
+        misses: () => snapshot().misses,
+        trapOf: (/** @type {string} */ tag) =>
+          traps[tag] ? { fix: traps[tag].fix, fixEs: traps[tag].fixEs } : null,
+      });
+      return true;
+    })();
+    return pulseReady;
+  }
+  function exitHtml() {
+    pulse().then((ok) => ok && W.StudioPulse.fillSlots());
+    return '<div class="pulse-slot" data-pulse-slot></div>';
   }
 
   document.addEventListener("u4:miss", (e) => {
@@ -118,5 +174,5 @@
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
   else mount();
-  W.U4Thinking = { summary, open };
+  W.U4Thinking = { summary, open, exitHtml, snapshot };
 })();
