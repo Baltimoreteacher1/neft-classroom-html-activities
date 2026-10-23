@@ -285,6 +285,17 @@ for (const [percent, grids, shaded] of [
 }
 assert.throws(() => evaluate({ kind: "percent", mode: "whole", values: [0, 18] }), /0%/);
 check("area", "triangle", [8, 5, 4], 20);
+check("area", "parallelogram", [8, 5, 12], 40);
+const para = evaluate({ kind: "area", mode: "parallelogram", values: [8, 5, 12] });
+assert.equal(para.slantedSide, 13);
+assert.deepEqual(
+  controls({ kind: "area", mode: "parallelogram", values: [8, 5, 12] }).map((f) => f.label),
+  ["Base", "Perpendicular height", "Horizontal shift"],
+);
+const paraSvg = new JSDOM(
+  visual({ kind: "area", mode: "parallelogram", values: [8, 5, 12] }, [8, 5, 12], para),
+).window.document;
+assert.equal(paraSvg.querySelector("polygon").getAttribute("points").split(" ").length, 4);
 check("area", "trapezoid", [10, 6, 4], 32);
 check("area", "polygon", [4, 6, 3], 36);
 check("solid", "net", [4, 3, 2], 24);

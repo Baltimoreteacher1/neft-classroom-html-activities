@@ -77,6 +77,11 @@ export function visual(model, values, result) {
       body += `<polygon points="${points.map(p => p.join(',')).join(' ')}" class="shape-light"/>`;
       points.forEach(p => { body += line(300, 135, ...p); });
       body += text(300, 271, `${a} congruent triangles · side ${b} · apothem ≈ ${fmt(result.apothem)}`);
+    } else if (model.mode === 'parallelogram') {
+      const baseScale = 360 / Math.max(a + c, 12), width = a * baseScale, shift = c * baseScale, height = b * 16, x = 90, bottom = 235;
+      body += `<polygon points="${x},${bottom} ${x+width},${bottom} ${x+width+shift},${bottom-height} ${x+shift},${bottom-height}" class="shape-light"/>`;
+      body += line(x + shift, bottom, x + shift, bottom - height, 'dashed');
+      body += text(x + shift + 38, bottom - height / 2, `h = ${b}`) + text(x + width / 2, bottom + 22, `Base ${a}`) + text(x + width + shift - 20, bottom - height / 2 - 12, `Side ${fmt(result.slantedSide)}`);
     } else {
       const baseScale = 360 / Math.max(a, b, 12), h = (model.mode === 'trapezoid' ? c : b) * 16;
       if (model.mode === 'trapezoid') body += `<polygon points="${300-a*baseScale/2},235 ${300+a*baseScale/2},235 ${300+b*baseScale/2},${235-h} ${300-b*baseScale/2},${235-h}" class="shape-light"/>`;
@@ -251,6 +256,7 @@ const watch = {
   'percent:grid': ['Each hundred grid is one whole: one square is 1%. Values over 100% need a second whole. The readout applies the percent to the whole amount.', 'Predict what 150% will look like, then change the percent to 150 and compare the two grids.'],
   'percent:whole': ['The grid shows the percent. The readout works backward from a known part to recover the whole.', 'Check the recovered whole: multiply it by the percent as a decimal to get the part back.'],
   'area': ['The dashed segment is the perpendicular height. Area uses base and height, not slanted sides.', 'Double the height and predict whether the area doubles.'],
+  'area:parallelogram': ['The dashed segment is the perpendicular height. The slanted side and horizontal shift change the shape, not the area.', 'Change the horizontal shift while keeping the base and height fixed. Does the area change?'],
   'area:trapezoid': ['The two horizontal sides are the parallel bases. The dashed segment is the perpendicular height.', 'Swap the two bases. Does the area change?'],
   'area:polygon': ['The regular polygon is split into congruent triangles meeting at the center. The apothem is each triangle’s height.', 'Add sides while keeping the side length and watch the area grow.'],
   'solid': ['The net shows all faces of the box laid flat. Volume counts the unit cubes that fill it.', 'Change one dimension and predict the new volume before reading it.'],

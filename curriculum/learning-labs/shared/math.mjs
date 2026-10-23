@@ -15,7 +15,10 @@ export function controls(model) {
     case 'conversion': return [control(model.mode === 'scale' ? 'Length (feet)' : 'Length (inches)', 1, 12), control(model.mode === 'scale' ? 'Inches per foot (fixed)' : 'Centimeters per inch (fixed)', model.values[1], model.values[1])];
     case 'growth': return [control(model.mode === 'ratio-graph' ? 'Passengers per carriage' : 'Increase per step', 1, 8), control('Starting amount', 0, model.mode === 'ratio-graph' ? 0 : 12), control(model.mode === 'ratio-graph' ? 'Carriages' : 'Input / step', 1, 12)];
     case 'percent': return [control('Percent', model.mode === 'whole' ? 1 : 0, model.mode === 'grid' ? 200 : 100), control(model.mode === 'whole' ? 'Known part' : 'Whole amount', 1, 120)];
-    case 'area': return model.mode === 'polygon' ? [control('Number of equal sides', 3, 8), control('Length of each side', 1, 12), control('Unused', 3, 3)] : [control(model.mode === 'trapezoid' ? 'First parallel base' : 'Base', 1, 12), control(model.mode === 'trapezoid' ? 'Second parallel base' : 'Perpendicular height', 1, 12), control(model.mode === 'trapezoid' ? 'Perpendicular height' : 'Unused', model.mode === 'trapezoid' ? 1 : 4, model.mode === 'trapezoid' ? 12 : 4)];
+    case 'area':
+      if (model.mode === 'polygon') return [control('Number of equal sides', 3, 8), control('Length of each side', 1, 12), control('Unused', 3, 3)];
+      if (model.mode === 'parallelogram') return [control('Base', 1, 12), control('Perpendicular height', 1, 12), control('Horizontal shift', 0, 12)];
+      return [control(model.mode === 'trapezoid' ? 'First parallel base' : 'Base', 1, 12), control(model.mode === 'trapezoid' ? 'Second parallel base' : 'Perpendicular height', 1, 12), control(model.mode === 'trapezoid' ? 'Perpendicular height' : 'Unused', model.mode === 'trapezoid' ? 1 : 4, model.mode === 'trapezoid' ? 12 : 4)];
     case 'solid': return [control('Length', 1, 10), control('Width', 1, 10), control('Height', 1, 10)];
     case 'fraction': return [control('Supply (whole units)', 0.5, 8, 0.5), control('Serving-size numerator', 1, 5), control('Serving-size denominator', 2, 8)];
     case 'power': return [control('Base', 2, 5), control('Exponent', 1, 5), control('Amount added after the power', 0, 12)];
@@ -64,8 +67,11 @@ export function evaluate(model, values = model.values, options = {}) {
     case 'area':
       if (model.mode === 'trapezoid') { value = (a + b) * c / 2; equation = `(${a} + ${b}) × ${c} ÷ 2 = ${fmt(value)}`; }
       else if (model.mode === 'polygon') { extra.apothem = b / (2 * Math.tan(Math.PI / a)); value = a * b * extra.apothem / 2; equation = `${a} × ${b} × ${fmt(extra.apothem)} ÷ 2 ≈ ${fmt(value)}`; }
+      else if (model.mode === 'parallelogram') { value = a * b; extra.slantedSide = Math.hypot(b, c); equation = `${a} × ${b} = ${fmt(value)}`; }
       else { value = a * b / 2; equation = `${a} × ${b} ÷ 2 = ${fmt(value)}`; }
-      label = 'Area'; unit = 'square units'; note = model.mode === 'polygon' ? 'Apothem is the perpendicular distance from center to a side. Values are rounded where needed.' : model.mode === 'trapezoid' ? 'Average the two parallel bases, then multiply by perpendicular height.' : `A parallelogram with this base and height has area ${a * b}. The triangle has half as much area.`; break;
+      label = model.mode === 'parallelogram' ? 'Parallelogram area' : model.mode === 'triangle' ? 'Triangle area' : 'Area';
+      unit = 'square units';
+      note = model.mode === 'polygon' ? 'Apothem is the perpendicular distance from center to a side. Values are rounded where needed.' : model.mode === 'trapezoid' ? 'Average the two parallel bases, then multiply by perpendicular height.' : model.mode === 'parallelogram' ? `Use the perpendicular height, not the slanted side. The slanted side measures ${fmt(extra.slantedSide)} units; changing the horizontal shift does not change the area.` : `A parallelogram with this base and height has area ${a * b}. The triangle has half as much area.`; break;
     case 'solid':
       extra = { volume: a * b * c, prismArea: 2 * (a * b + a * c + b * c), pyramidArea: a * a + 2 * a * c };
       value = model.mode === 'surface' ? extra.prismArea : extra.volume; label = model.mode === 'surface' ? 'Prism surface area' : 'Volume'; unit = model.mode === 'surface' ? 'square units' : 'cubic units';
