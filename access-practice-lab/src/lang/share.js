@@ -2,7 +2,7 @@
 // uses. No accounts and no uploads — the learner copies a code or downloads a file and hands it over
 // (LMS, email, USB), exactly like the existing ACCESS1 progress code, which the reader also accepts.
 // Only an alias is included; there is no email, no school ID, no device ID.
-import { PREFIX } from "../store.js";
+import { PREFIX, allRecords } from "../store.js";
 import { loadLedger } from "./ledger.js";
 import { loadStudio } from "./studio.js";
 
@@ -11,13 +11,19 @@ const b64 = (s) => btoa(unescape(encodeURIComponent(s)));
 const unb64 = (s) => decodeURIComponent(escape(atob(s)));
 const isObj = (v) => v && typeof v === "object" && !Array.isArray(v);
 
-/** @param {{alias?:string, band?:string, include?:{writing?:boolean,speaking?:boolean,missions?:boolean,detective?:boolean}}} o */
-export function buildShare({ alias = "", band = "6-8", include = {} } = {}, ledger = loadLedger(), studio = loadStudio()) {
-  const inc = { writing: true, speaking: true, missions: true, detective: true, ...include };
+/** @param {{alias?:string, band?:string, include?:{writing?:boolean,speaking?:boolean,missions?:boolean,detective?:boolean,readingListening?:boolean}}} o */
+export function buildShare({ alias = "", band = "6-8", include = {} } = {}, ledger = loadLedger(), studio = loadStudio(), records = allRecords()) {
+  const inc = { writing: true, speaking: true, missions: true, detective: true, readingListening: true, ...include };
   const keep = (obj, on) => (on ? obj : {});
   const speaking = Object.fromEntries(
     Object.entries(inc.speaking ? studio.speaking : {}).map(([id, s]) => [id, { stage: s.stage, used: s.used, takes: s.takes.map(({ id: tid, t, seconds, audio, transcript, selfReview, teacherReview, finished }) => ({ id: tid, t, seconds, audio, transcript, selfReview, teacherReview, finished })) }]),
   );
+  const practice = {};
+  if (inc.readingListening) for (const row of records) {
+    if (row.band !== band || !["Listening", "Reading"].includes(row.domain)) continue;
+    const results = Object.fromEntries(Object.entries(row.record?.results || {}).filter(([, r]) => typeof r?.ok === "boolean" && r.meaningful !== false).map(([id, r]) => [id, { skill: String(r.skill || "").slice(0, 80), ok: r.ok, supportUsed: Boolean(r.supportUsed), date: String(r.date || "").slice(0, 40) }]));
+    if (Object.keys(results).length) practice[`${row.band === "3-5" ? "g3-5:" : ""}${row.domain}:${row.level}`] = { band: row.band, domain: row.domain, level: row.level, results };
+  }
   return {
     v: 1,
     kind: "share",
@@ -25,6 +31,7 @@ export function buildShare({ alias = "", band = "6-8", include = {} } = {}, ledg
     alias: String(alias || "").trim().slice(0, 40) || "Student",
     band,
     ledger: { entries: ledger.entries.filter((e) => e.band === band) },
+    records: practice,
     studio: { v: 1, writing: keep(studio.writing, inc.writing), speaking, missions: keep(studio.missions, inc.missions), detective: keep(studio.detective, inc.detective), portfolio: studio.portfolio },
   };
 }
@@ -73,11 +80,19 @@ const safe = (v) => {
 export function normalize(o) {
   const entries = Array.isArray(o.ledger?.entries) ? o.ledger.entries.filter((e) => e && typeof e.t === "string" && typeof e.src === "string") : [];
   const s = isObj(o.studio) ? o.studio : {};
+  const records = {};
+  if (isObj(o.records)) for (const [key, row] of Object.entries(o.records)) {
+    if (!/^(?:g3-5:)?(?:Listening|Reading):[ABC]$/.test(key) || !isObj(row) || !isObj(row.results)) continue;
+    const domain = key.includes("Listening:") ? "Listening" : "Reading";
+    const results = Object.fromEntries(Object.entries(row.results).filter(([, r]) => isObj(r) && typeof r.ok === "boolean").slice(0, 1000).map(([id, r]) => [String(id).slice(0, 100), { skill: String(r.skill || "").slice(0, 80), ok: r.ok, supportUsed: Boolean(r.supportUsed), date: String(r.date || "").slice(0, 40) }]));
+    if (Object.keys(results).length) records[key] = { band: key.startsWith("g3-5:") ? "3-5" : "6-8", domain, level: key.split(":").at(-1), results };
+  }
   return {
     alias: String(o.alias || "Student").slice(0, 40),
     band: o.band === "3-5" ? "3-5" : "6-8",
     created: String(o.created || ""),
     ledger: { entries },
+    records,
     studio: { writing: isObj(s.writing) ? s.writing : {}, speaking: isObj(s.speaking) ? s.speaking : {}, missions: isObj(s.missions) ? s.missions : {}, detective: isObj(s.detective) ? s.detective : {} },
   };
 }

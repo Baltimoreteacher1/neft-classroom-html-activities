@@ -16,7 +16,7 @@ const { appendEntry, loadLedger, saveLedger, LEDGER_KEY } = await import(
 const { loadStudio, saveStudio, STUDIO_KEY, writingState, addVersion } = await import(
   "../access-practice-lab/src/lang/studio.js"
 );
-const { buildShare, encodeShare, decodeShare } = await import(
+const { buildShare, encodeShare, decodeShare, normalize } = await import(
   "../access-practice-lab/src/lang/share.js"
 );
 const { classSummary, groupSuggestions, interventionsFor, samplesFor, toCSV } = await import(
@@ -73,6 +73,60 @@ test("share: bundle carries an alias, never contact details, and round-trips thr
   assert.equal(back.alias, "River 7");
   assert.equal(back.ledger.entries.length, 1);
   assert.equal(samplesFor(back)[0].first, "My first draft about recycling.");
+});
+
+test("share: reading/listening includes only answer outcome, skill tag, support and date", () => {
+  const bundle = buildShare(
+    { alias: "River", band: "6-8" },
+    { entries: [] },
+    { writing: {}, speaking: {}, missions: {}, detective: {}, portfolio: { picks: [] } },
+    [
+      {
+        band: "6-8",
+        domain: "Reading",
+        level: "A",
+        record: {
+          results: {
+            item1: {
+              ok: true,
+              skill: "Main idea",
+              supportUsed: false,
+              date: "2026-10-22T10:00:00Z",
+              response: "private",
+            },
+          },
+        },
+      },
+      {
+        band: "6-8",
+        domain: "Writing",
+        level: "A",
+        record: { results: { item2: { ok: true, skill: "Evidence" } } },
+      },
+    ],
+  );
+  assert.deepEqual(Object.keys(bundle.records), ["Reading:A"]);
+  assert.deepEqual(bundle.records["Reading:A"].results.item1, {
+    skill: "Main idea",
+    ok: true,
+    supportUsed: false,
+    date: "2026-10-22T10:00:00Z",
+  });
+  assert.ok(!JSON.stringify(bundle).includes("private"));
+  const safe = normalize({
+    ...bundle,
+    records: {
+      ...bundle.records,
+      "Listening:B": {
+        domain: "Listening",
+        results: { x: { ok: true, skill: "Sequence", answer: "private" } },
+      },
+      "Writing:A": { domain: "Writing", results: { x: { ok: true } } },
+    },
+  });
+  assert.ok(safe.records["Listening:B"]);
+  assert.equal(safe.records["Writing:A"], undefined);
+  assert.ok(!JSON.stringify(safe).includes("private"));
 });
 
 test("share: the full ACCESS1 progress code is also readable by the teacher dashboard", () => {

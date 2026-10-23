@@ -221,9 +221,9 @@ export async function render(ctx) {
       </section>
       <section class="panel no-print" aria-labelledby="shareTitle">
         <h2 id="shareTitle">Send my work to my teacher</h2>
-        <p>Choose what to share. The code contains your writing, speaking transcripts, mission and detective results, and which supports you used. It has no email, school ID or recordings. Only your alias is included.</p>
+        <p>Choose what to share. The code may contain your writing, speaking transcripts, mission and detective results, and reading/listening practice results. It has no email, school ID or recordings. Only your alias is included. Keep the code private and give it only to your teacher.</p>
         <label class="field"><span>My alias for my teacher (initials or a class nickname, not my full name)</span><input type="text" data-share-alias value="${name}" maxlength="40" autocomplete="off" ${IGN} /></label>
-        <div class="share-options">${[["writing", "Writing drafts and reflections"], ["speaking", "Speaking transcripts and reviews"], ["missions", "Mission results"], ["detective", "Error Detective results"]].map(([k, l]) => html`<label><input type="checkbox" data-share-opt="${k}" checked ${IGN} /> ${l}</label>`)}</div>
+        <div class="share-options">${[["writing", "Writing drafts and reflections"], ["speaking", "Speaking transcripts and reviews"], ["missions", "Mission results"], ["detective", "Error Detective results"], ["readingListening", "Reading and listening practice results"]].map(([k, l]) => html`<label><input type="checkbox" data-share-opt="${k}" checked ${IGN} /> ${l}</label>`)}</div>
         <div class="row-actions"><button type="button" class="btn btn-primary" data-share-copy>Copy share code</button><button type="button" class="btn" data-share-file>Download share file</button></div>
         <p class="fine" data-share-status role="status"></p>
         <h3>Recordings kept on this device</h3>
