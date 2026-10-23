@@ -53,8 +53,28 @@
     if (el) el.textContent = text;
   }
 
+  function handleReset() {
+    if (window.confirm("Are you sure you want to clear your saved answers on this sheet?")) {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (_e) {}
+      window.location.reload();
+    }
+  }
+
   /* ---- 1. Top Classroom Toolbar ---- */
   function mountToolbar() {
+    const existing = document.querySelector(".sp-work-toolbar");
+    if (existing) {
+      const scratchBtn = existing.querySelector("#sp-scratchpad-btn");
+      if (scratchBtn) scratchBtn.onclick = toggleScratchpad;
+      const toolsBtn = existing.querySelector("#sp-tools-btn");
+      if (toolsBtn) toolsBtn.onclick = toggleMathTools;
+      const resetBtn = existing.querySelector("#sp-reset-btn");
+      if (resetBtn) resetBtn.onclick = handleReset;
+      return;
+    }
+
     const firstPage = document.querySelector(".sp-page");
     if (!firstPage) return;
 
@@ -81,6 +101,7 @@
     const scratchBtn = document.createElement("button");
     scratchBtn.type = "button";
     scratchBtn.className = "sp-tool-btn";
+    scratchBtn.id = "sp-scratchpad-btn";
     scratchBtn.innerHTML = "✏️ Scratchpad";
     scratchBtn.title = "Open drawing canvas for math scratch work";
     scratchBtn.addEventListener("click", toggleScratchpad);
@@ -89,6 +110,7 @@
     const toolsBtn = document.createElement("button");
     toolsBtn.type = "button";
     toolsBtn.className = "sp-tool-btn";
+    toolsBtn.id = "sp-tools-btn";
     toolsBtn.innerHTML = "📐 Math Tools";
     toolsBtn.title = "Multiplication table and fraction references";
     toolsBtn.addEventListener("click", toggleMathTools);
@@ -97,16 +119,10 @@
     const resetBtn = document.createElement("button");
     resetBtn.type = "button";
     resetBtn.className = "sp-tool-btn";
+    resetBtn.id = "sp-reset-btn";
     resetBtn.innerHTML = "🔄 Reset";
     resetBtn.title = "Clear saved work and start fresh";
-    resetBtn.addEventListener("click", () => {
-      if (window.confirm("Are you sure you want to clear your saved answers on this sheet?")) {
-        try {
-          localStorage.removeItem(STORAGE_KEY);
-        } catch (_e) {}
-        window.location.reload();
-      }
-    });
+    resetBtn.addEventListener("click", handleReset);
 
     actions.append(printBtn, scratchBtn, toolsBtn, resetBtn);
     toolbar.append(left, actions);
@@ -182,45 +198,53 @@
   function setupWrittenInputs() {
     const lineBlocks = document.querySelectorAll(".sp-lines");
     lineBlocks.forEach((lines, index) => {
-      const wrap = document.createElement("div");
-      wrap.className = "sp-digital-input-wrap";
+      let wrap = lines.previousElementSibling;
+      let textarea =
+        wrap && wrap.classList && wrap.classList.contains("sp-digital-input-wrap")
+          ? wrap.querySelector(".sp-digital-input")
+          : null;
 
-      const textarea = document.createElement("textarea");
-      textarea.className = "sp-digital-input";
-      textarea.rows = 2;
-      textarea.placeholder = "Type your explanation or thinking here...";
+      if (!textarea) {
+        wrap = document.createElement("div");
+        wrap.className = "sp-digital-input-wrap";
+        textarea = document.createElement("textarea");
+        textarea.className = "sp-digital-input";
+        textarea.rows = 2;
+        textarea.placeholder = "Type your explanation or thinking here...";
+        wrap.appendChild(textarea);
+        lines.parentNode.insertBefore(wrap, lines);
+      }
+
       textarea.value = store.answers[index] || "";
-
       textarea.addEventListener("input", () => {
         store.answers[index] = textarea.value;
         saveStore();
       });
-
-      wrap.appendChild(textarea);
-      lines.parentNode.insertBefore(wrap, lines);
     });
 
     // Also support "Show your work" boxes
     const workBoxes = document.querySelectorAll(".sp-work");
     workBoxes.forEach((box, index) => {
       const boxKey = `work_${index}`;
-      const wrap = document.createElement("div");
-      wrap.className = "sp-digital-input-wrap";
+      let textarea = box.querySelector(".sp-digital-input");
 
-      const textarea = document.createElement("textarea");
-      textarea.className = "sp-digital-input";
-      textarea.rows = 3;
-      textarea.placeholder =
-        "Write your calculation steps or reasoning here (or use Scratchpad)...";
+      if (!textarea) {
+        const wrap = document.createElement("div");
+        wrap.className = "sp-digital-input-wrap";
+        textarea = document.createElement("textarea");
+        textarea.className = "sp-digital-input";
+        textarea.rows = 3;
+        textarea.placeholder =
+          "Write your calculation steps or reasoning here (or use Scratchpad)...";
+        wrap.appendChild(textarea);
+        box.appendChild(wrap);
+      }
+
       textarea.value = store.answers[boxKey] || "";
-
       textarea.addEventListener("input", () => {
         store.answers[boxKey] = textarea.value;
         saveStore();
       });
-
-      wrap.appendChild(textarea);
-      box.appendChild(wrap);
     });
   }
 
@@ -324,18 +348,35 @@
   function setupTtsButtons() {
     // Stems
     document.querySelectorAll(".sp-stem").forEach((stem) => {
-      const btn = createTtsButton(stem.textContent);
-      stem.appendChild(btn);
+      let btn = stem.querySelector(".sp-tts-btn");
+      if (!btn) {
+        btn = createTtsButton(stem.textContent);
+        stem.appendChild(btn);
+      } else {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          speakText(stem.textContent, btn);
+        };
+      }
     });
 
     // Model Header
     const modelH = document.querySelector(".sp-model-h");
     if (modelH) {
+      let btn = modelH.querySelector(".sp-tts-btn");
       const stepsText = Array.from(document.querySelectorAll(".sp-model-steps li"))
         .map((li, i) => `Step ${i + 1}: ${li.textContent}`)
         .join(". ");
-      const btn = createTtsButton(`${modelH.textContent}. ${stepsText}`);
-      modelH.appendChild(btn);
+      const textToRead = `${modelH.textContent}. ${stepsText}`;
+      if (!btn) {
+        btn = createTtsButton(textToRead);
+        modelH.appendChild(btn);
+      } else {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          speakText(textToRead, btn);
+        };
+      }
     }
   }
 
@@ -346,29 +387,35 @@
       const stem = task.querySelector(".sp-stem");
       if (!stem) return;
 
-      const hintBtn = document.createElement("button");
-      hintBtn.type = "button";
-      hintBtn.className = "sp-hint-btn";
-      hintBtn.innerHTML = "💡 Hint";
-      hintBtn.title = "View step-by-step thinking guidance";
+      let hintBtn = stem.querySelector(".sp-hint-btn");
+      let ladder = task.querySelector(".sp-hint-ladder");
 
-      const frameText = task.querySelector(".sp-frame")?.textContent || "";
-
-      const ladder = document.createElement("div");
-      ladder.className = "sp-hint-ladder";
-      ladder.innerHTML = `
+      if (!ladder) {
+        const frameText = task.querySelector(".sp-frame")?.textContent || "";
+        ladder = document.createElement("div");
+        ladder.className = "sp-hint-ladder";
+        ladder.innerHTML = `
         <div class="sp-hint-step"><span class="sp-hint-badge">Step 1 · Anchor</span><span>Look back at the Worked Model in Part 1. Does the problem match Example 1?</span></div>
         ${frameText ? `<div class="sp-hint-step"><span class="sp-hint-badge">Step 2 · Sentence</span><span>Use this frame: <em>${frameText}</em></span></div>` : ""}
         <div class="sp-hint-step"><span class="sp-hint-badge">Step 3 · Self-Check</span><span>Ask yourself: What rule decides which answer is right?</span></div>
       `;
+        stem.parentNode.insertBefore(ladder, stem.nextSibling);
+      }
 
-      hintBtn.addEventListener("click", () => {
+      if (!hintBtn) {
+        hintBtn = document.createElement("button");
+        hintBtn.type = "button";
+        hintBtn.className = "sp-hint-btn";
+        hintBtn.innerHTML = "💡 Hint";
+        hintBtn.title = "View step-by-step thinking guidance";
+        stem.appendChild(hintBtn);
+      }
+
+      hintBtn.onclick = (e) => {
+        e.stopPropagation();
         const isOpen = ladder.classList.toggle("is-open");
         hintBtn.innerHTML = isOpen ? "💡 Close Hint" : "💡 Hint";
-      });
-
-      stem.appendChild(hintBtn);
-      stem.parentNode.insertBefore(ladder, stem.nextSibling);
+      };
     });
   }
 

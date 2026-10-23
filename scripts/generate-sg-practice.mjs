@@ -62,9 +62,18 @@ const esc = (s) =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 
-const lines = (n = 2) => `<div class="sp-lines">${'<span class="sp-line"></span>'.repeat(n)}</div>`;
-const work = (label = "Show your work", tall = false) =>
-  `<div class="sp-work${tall ? " sp-work-tall" : ""}"><span class="sp-work-label">${esc(label)}</span></div>`;
+const lines = (n = 2, key = false, isExcluded = false) => {
+  const printLines = `<div class="sp-lines">${'<span class="sp-line"></span>'.repeat(n)}</div>`;
+  if (key || isExcluded) return printLines;
+  return `<div class="sp-digital-input-wrap"><textarea class="sp-digital-input" rows="${Math.max(2, n)}" placeholder="Type your explanation or thinking here..."></textarea></div>${printLines}`;
+};
+
+const work = (label = "Show your work", tall = false, key = false, isExcluded = false) => {
+  if (key || isExcluded) {
+    return `<div class="sp-work${tall ? " sp-work-tall" : ""}"><span class="sp-work-label">${esc(label)}</span></div>`;
+  }
+  return `<div class="sp-work${tall ? " sp-work-tall" : ""}"><span class="sp-work-label">${esc(label)}</span><div class="sp-digital-input-wrap"><textarea class="sp-digital-input" rows="${tall ? 4 : 3}" placeholder="Write your calculation steps or reasoning here (or use Scratchpad)..."></textarea></div></div>`;
+};
 
 /**
  * The first sentence or two of a `commonMistake`, which is authored as TEACHER
@@ -159,7 +168,15 @@ function baseTitle(base) {
  * option A correct on every item.
  */
 function mcTask(n, item, opts) {
-  const { key, tag = "", justify = "", frame = "", watch = "", justifyRows = 2 } = opts;
+  const {
+    key,
+    tag = "",
+    justify = "",
+    frame = "",
+    watch = "",
+    justifyRows = 2,
+    isExcluded = false,
+  } = opts;
   const answerIndex = typeof item.answer === "number" ? item.answer : item.correctIndex;
   const choices = (item.choices || [])
     .map((c, i) => {
@@ -168,7 +185,8 @@ function mcTask(n, item, opts) {
       // were pasted out of. This sheet draws the letter bubble itself, so
       // printing both gives a student option A reading "B) How many hours…".
       const text = String(c ?? "").replace(/^\s*[A-H][).]\s+/, "");
-      return `<li class="sp-opt${right ? " ws-correct" : ""}"><span class="sp-bub">${LETTERS[i]}</span>${esc(text)}</li>`;
+      const tabAttr = !key && !isExcluded ? ' tabindex="0"' : "";
+      return `<li class="sp-opt${right ? " ws-correct" : ""}"${tabAttr}><span class="sp-bub">${LETTERS[i]}</span>${esc(text)}</li>`;
     })
     .join("");
   const tagHtml = tag ? `<span class="sp-tag">${esc(tag)}</span>` : "";
@@ -176,30 +194,46 @@ function mcTask(n, item, opts) {
   if (justify) {
     tail += `<p class="sp-stem" style="margin-top:8px;font-weight:600;">${esc(justify)}</p>`;
     tail += frame ? `<p class="sp-frame">${esc(frame)}</p>` : "";
-    tail += key ? "" : lines(justifyRows);
+    tail += key ? "" : lines(justifyRows, key, isExcluded);
   }
   if (key) {
     if (item.explanation) tail += `<p class="ws-keynote">${esc(item.explanation)}</p>`;
     if (watch) tail += `<p class="sp-watch"><b>Watch for:</b> ${esc(watch)}</p>`;
   }
-  return task(n, `${tagHtml}${esc(item.stem)}`, `<ol class="sp-opts">${choices}</ol>${tail}`);
+  return task(n, `${tagHtml}${esc(item.stem)}`, `<ol class="sp-opts">${choices}</ol>${tail}`, {
+    key,
+    isExcluded,
+  });
 }
 
 /** One written task: a prompt, an optional frame, then ruled lines or the key. */
 function writtenTask(n, prompt, opts) {
-  const { key, tag = "", frame = "", answer = "", rows = 3, box = false } = opts;
+  const {
+    key,
+    tag = "",
+    frame = "",
+    answer = "",
+    rows = 3,
+    box = false,
+    isExcluded = false,
+  } = opts;
   const tagHtml = tag ? `<span class="sp-tag">${esc(tag)}</span>` : "";
   const frameHtml = frame ? `<p class="sp-frame">${esc(frame)}</p>` : "";
   const space = key
     ? `<p class="ws-keynote">${esc(answer || "Answers vary — look for correct reasoning stated in the student's own words.")}</p>`
     : box
-      ? work()
-      : lines(rows);
-  return task(n, `${tagHtml}${esc(prompt)}`, `${frameHtml}${space}`);
+      ? work("Show your work", false, key, isExcluded)
+      : lines(rows, key, isExcluded);
+  return task(n, `${tagHtml}${esc(prompt)}`, `${frameHtml}${space}`, { key, isExcluded });
 }
 
-function task(n, stemHtml, bodyHtml) {
-  return `<li class="sp-task"><span class="sp-num">${n}</span><div class="sp-body"><p class="sp-stem">${stemHtml}</p>${bodyHtml}</div></li>`;
+function task(n, stemHtml, bodyHtml, opts = {}) {
+  const { key = false, isExcluded = false } = opts;
+  const buttons =
+    !key && !isExcluded
+      ? ` <button type="button" class="sp-tts-btn" aria-label="Read stem aloud">🔊 Listen</button> <button type="button" class="sp-hint-btn" aria-label="Need a hint?">💡 Hint</button>`
+      : "";
+  return `<li class="sp-task"><span class="sp-num">${n}</span><div class="sp-body"><p class="sp-stem">${stemHtml}${buttons}</p>${bodyHtml}</div></li>`;
 }
 
 /* ---------- page furniture ----------------------------------------------- */
@@ -284,8 +318,9 @@ function pageOne(ctx, counter, key) {
       }${
         key
           ? `<p class="ws-keynote">Look for the model's steps carried through on the student's own numbers, in the model's order — not the answer alone.</p>`
-          : work("Show your work", true)
+          : work("Show your work", true, key, ctx.isExcluded)
       }`,
+      { key, isExcluded: ctx.isExcluded },
     ),
   );
 
@@ -297,6 +332,7 @@ function pageOne(ctx, counter, key) {
         tag: "Warm restart",
         justify: level.supported ? "" : "How do you know?",
         watch: q.explanation ? "" : cfg.practice?.commonMistake || "",
+        isExcluded: ctx.isExcluded,
       }),
     );
   }
@@ -332,6 +368,7 @@ function pageTwo(ctx, counter, key) {
         justify: level.supported ? ask.supported : ask.challenge,
         justifyRows: level.supported ? 2 : 3,
         frame: level.supported ? "I chose ___ because ___ ." : "",
+        isExcluded: ctx.isExcluded,
       }),
     );
   });
@@ -351,6 +388,7 @@ function pageTwo(ctx, counter, key) {
         answer: (discourse.keywords || talk.keywords || []).length
           ? `Look for: ${(discourse.keywords || talk.keywords).join(", ")}.`
           : talk.kernel || "",
+        isExcluded: ctx.isExcluded,
       }),
     );
   }
@@ -409,8 +447,9 @@ function pageThree(ctx, counter, key) {
         `<div class="sp-mistake"><b>The mistake:</b> ${esc(shown)}</div>${
           key
             ? `<p class="ws-keynote">The full note above is the teacher's — the student sheet shows only the misconception, not the correction. A correct answer names the step that went wrong, states the rule it broke, and shows the fixed work.</p><p class="sp-watch"><b>Watch for:</b> a student who repeats the mistake back without naming why it is wrong.</p>`
-            : lines(3)
+            : lines(3, key, ctx.isExcluded)
         }`,
+        { key, isExcluded: ctx.isExcluded },
       ),
     );
   }
@@ -425,6 +464,7 @@ function pageThree(ctx, counter, key) {
         rows: 4,
         frame: level.supported ? (say.stems || []).map((s) => s.en).find(Boolean) || "" : "",
         answer: say.kernel || "",
+        isExcluded: ctx.isExcluded,
       }),
     );
   }
@@ -444,6 +484,7 @@ function pageThree(ctx, counter, key) {
         answer: level.supported
           ? "Answers vary. Look for exactly one number changed and the model's steps carried through correctly on the new numbers."
           : "Answers vary. Look for a problem that actually requires this lesson's move, plus a worked solution that matches the problem as the student wrote it.",
+        isExcluded: ctx.isExcluded,
       },
     ),
   );
@@ -471,6 +512,7 @@ function pageFour(ctx, counter, key) {
         tag: "Show what you know",
         justify: "Explain your choice.",
         frame: level.supported ? "I know it is ___ because ___ ." : "",
+        isExcluded: ctx.isExcluded,
       }),
     );
   }
@@ -481,6 +523,7 @@ function pageFour(ctx, counter, key) {
         key,
         tag: carry.tag,
         justify: level.supported ? "" : "How do you know?",
+        isExcluded: ctx.isExcluded,
       }),
     );
   }
@@ -507,7 +550,7 @@ function pageFour(ctx, counter, key) {
 
   const ask = `<div class="sp-ask">
     <p class="sp-ask-h">One question I want to ask my group next time</p>
-    ${lines(2)}
+    ${lines(2, key, ctx.isExcluded)}
   </div>`;
 
   const reteach = key ? reteachTable(ctx) : "";
@@ -607,6 +650,7 @@ function reteachTable(ctx) {
 function buildDocument(ctx, { key }) {
   let n = 0;
   const counter = () => ++n;
+  const isExcluded = ctx.isExcluded;
   const pages = [
     pageOne(ctx, counter, key),
     pageTwo(ctx, counter, key),
@@ -614,7 +658,9 @@ function buildDocument(ctx, { key }) {
     pageFour(ctx, counter, key),
   ].join("\n");
   const suffix = key ? "Practice Set — Answer Key" : "Practice Set";
-  return `<!DOCTYPE html>
+
+  if (isExcluded) {
+    return `<!DOCTYPE html>
 <html lang="en" data-ewl-supports-lesson="${esc(ctx.cfg.lessonId || ctx.id)}" data-support-audience="${key ? "teacher" : "student"}">
 <head>
 <meta charset="UTF-8" />
@@ -635,6 +681,46 @@ ${pages}
 <script src="/shared/supports/print-supports.js" defer></script>
 </body>
 </html>`;
+  }
+
+  const toolbarHtml = key
+    ? ""
+    : `<aside class="sp-work-toolbar" aria-label="Practice sheet tools">
+  <div class="sp-toolbar-title">
+    <span>✏️ Interactive Practice Lab</span> · <span id="sp-save-indicator" class="sp-save-status">● Saved locally</span>
+  </div>
+  <div class="sp-toolbar-actions">
+    <button type="button" class="sp-tool-btn sp-tool-btn--accent" title="Print sheet with your typed answers included" onclick="window.print()">🖨️ Print My Work</button>
+    <button type="button" class="sp-tool-btn" id="sp-scratchpad-btn" title="Open drawing canvas for math scratch work">✏️ Scratchpad</button>
+    <button type="button" class="sp-tool-btn" id="sp-tools-btn" title="Multiplication chart and vocabulary helper">📐 Math Tools</button>
+    <button type="button" class="sp-tool-btn" id="sp-reset-btn" title="Clear answers on this page">🔄 Reset</button>
+  </div>
+</aside>
+`;
+
+  return `<!DOCTYPE html>
+<html lang="en" data-ewl-supports-lesson="${esc(ctx.cfg.lessonId || ctx.id)}" data-support-audience="${key ? "teacher" : "student"}">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>${esc(ctx.cfg.title || ctx.id)} — ${suffix}</title>
+<link href="/assets/fonts/worksheet-pages.css" rel="stylesheet" />
+<link href="/assets/practice-screen.css" rel="stylesheet" />
+<style>
+${SG_PRACTICE_CSS}
+${EDITORIAL_OVERRIDES}
+</style>
+</head>
+<body>
+<main data-support-slot="practice">
+${toolbarHtml}${pages}
+</main>
+<!-- Same effective support configuration as the interactive lesson; see
+     shared/supports/print-supports.js. Inert until supports are configured. -->
+<script src="/shared/supports/print-supports.js" defer></script>
+<script src="/assets/practice-work.js" defer></script>
+</body>
+</html>`;
 }
 
 /* ---------- main ---------------------------------------------------------- */
@@ -652,10 +738,14 @@ function main() {
     const track = tracks[row.variant];
     const at = track.indexOf(row);
     const prev = at > 0 ? track[at - 1] : null;
+    const unitMatch = row.id.match(/^(\d+)-/);
+    const unitNum = unitMatch ? parseInt(unitMatch[1], 10) : (row.cfg.unit ?? 0);
+    const isExcluded = unitNum === 1 || unitNum === 10;
     const ctx = {
       id: row.id,
       cfg: row.cfg,
       level: LEVELS[row.variant],
+      isExcluded,
       // A group variant is headed by its base lesson's title; a catch-up spans
       // a band ("1.1–1.3 Catch-Up") and its own title is the only honest one.
       headline:
