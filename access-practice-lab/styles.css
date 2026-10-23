@@ -2297,6 +2297,93 @@ details[open] > summary {
   gap: 0.5rem;
 }
 
+/* Product foundation: a restrained academic palette and one visual language across views. */
+:root {
+  --bg: #f2f5f5;
+  --surface: #ffffff;
+  --surface-2: #edf4f3;
+  --ink: #142d3c;
+  --ink-2: #465e6b;
+  --line: #cddcdd;
+  --brand: #137a80;
+  --brand-ink: #0b626a;
+  --brand-soft: #dff3f1;
+  --accent: #d99469;
+  --radius: 20px;
+  --radius-sm: 12px;
+  --shadow: 0 3px 10px rgb(15 44 59 / 5%), 0 18px 42px rgb(15 44 59 / 6%);
+}
+body { background: linear-gradient(#e8f1f1, var(--bg) 31rem); }
+.lab-top {
+  background: #102b3e;
+  color: #fff;
+  border-bottom: 1px solid #386170;
+  box-shadow: 0 5px 24px rgb(8 32 47 / 15%);
+}
+.lab-brand, .lab-top .top-link { color: #f8fcfc; }
+.lab-logo { background: #48c6ba; color: #092c39; box-shadow: 0 0 0 3px rgb(255 255 255 / 12%); }
+.lab-top .top-link:hover { background: #294b5b; }
+.lab-main { width: min(1260px, 100%); }
+.home-hero {
+  position: relative;
+  padding: clamp(1.5rem, 4vw, 3.1rem);
+  border-radius: 28px;
+  background: radial-gradient(circle at 70% 0, #246f79 0, #143e52 45%, #0f2e43 100%);
+  color: #f6fcfb;
+  box-shadow: 0 23px 50px rgb(12 42 59 / 18%);
+  overflow: hidden;
+}
+.home-hero::after {
+  content: "";
+  position: absolute;
+  width: 24rem;
+  height: 24rem;
+  border: 1px solid rgb(200 250 241 / 14%);
+  border-radius: 50%;
+  right: -6rem;
+  bottom: -19rem;
+  box-shadow: 0 0 0 5rem rgb(200 250 241 / 4%), 0 0 0 11rem rgb(200 250 241 / 3%);
+  pointer-events: none;
+}
+.home-hero > * { position: relative; z-index: 1; }
+.home-hero .eyebrow { color: #8fe2d9; }
+.home-hero h1 { font-size: clamp(2.35rem, 2rem + 2.5vw, 4.2rem); letter-spacing: -.045em; line-height: 1.05; max-width: 15ch; }
+.home-hero .lead { color: #d6ecec; font-size: clamp(1.06rem, 1rem + .4vw, 1.3rem); }
+.home-hero .band-switch { background: rgb(2 25 38 / 42%); border-color: #517b83; }
+.home-hero .band-btn { color: #ecf9f8; }
+.home-hero .band-btn[aria-pressed="true"] { color: #0d3945; background: #c8f0e9; }
+.home-hero .window-card { background: rgb(6 31 45 / 70%); color: #f0fbfa; border: 1px solid #52818a; }
+.home-hero .window-card a { color: #9fecdf; }
+.feature-banner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: clamp(1rem, 4vw, 3rem);
+  align-items: center;
+  margin: 1.5rem 0 2rem;
+  padding: clamp(1rem, 2.7vw, 2rem);
+  border-radius: 24px;
+  color: #f8fcfb;
+  background: #103749;
+  overflow: hidden;
+}
+.feature-copy { padding-inline: clamp(.4rem, 2vw, 1.5rem); }
+.feature-copy .eyebrow { color: #7ad7cc; }
+.feature-copy h2 { font-size: clamp(1.6rem, 1.3rem + 1.4vw, 2.55rem); letter-spacing: -.03em; line-height: 1.14; }
+.feature-copy p:not(.eyebrow) { color: #d0e7e9; max-width: 45ch; }
+.feature-link { display: inline-flex; gap: .8rem; align-items: center; min-height: 48px; color: #b8efe4; font-weight: 800; text-underline-offset: .25em; }
+.feature-banner img { display: block; width: 100%; height: auto; border-radius: 16px; }
+.section-title { font-size: clamp(1.42rem, 1.2rem + .75vw, 1.9rem); letter-spacing: -.025em; }
+.room-tile { border-top: 0; border-color: var(--line); padding: 1.25rem; transition: transform .2s ease, box-shadow .2s ease; }
+.room-tile:hover { transform: translateY(-3px); box-shadow: 0 18px 36px rgb(15 44 59 / 13%); }
+.room-glyph { display: grid; place-items: center; width: 3.5rem; height: 3.5rem; flex: none; border-radius: 16px; color: var(--room); background: color-mix(in srgb, var(--room) 13%, white); }
+.room-glyph svg, .domain-icon { width: 2rem; height: 2rem; }
+.room-name strong { font-size: 1.12rem; }
+.room-hero { min-height: 11rem; border-radius: 24px; border-width: 1px; background: linear-gradient(115deg, color-mix(in srgb, var(--room) 19%, white), color-mix(in srgb, var(--room) 7%, white)); }
+.room-hero h1 svg { width: 1.6em; height: 1.6em; vertical-align: -.35em; color: var(--room); }
+.btn, button, summary { touch-action: manipulation; }
+@media (max-width: 760px) { .feature-banner { grid-template-columns: 1fr; } .feature-banner img { max-height: 270px; object-fit: cover; } }
+@media (max-width: 480px) { .home-hero { border-radius: 20px; } .feature-banner { border-radius: 18px; } }
+
 /* ── print ────────────────────────────────────────────────────────────── */
 @media print {
   :root {

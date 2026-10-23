@@ -11,13 +11,13 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "b01e1defef60";
+const BUILD_HASH = "f24338b6e9b8";
 const PRECACHE_CORE = [
-  "/access-practice-lab/styles.css?v=9db290dc9a92",
+  "/access-practice-lab/styles.css?v=0d1a65c3e6d3",
   "/access-practice-lab/library.css?v=50b712adeeb8",
   "/access-practice-lab/session-plan.css?v=f7eed42e57d1",
-  "/access-practice-lab/audit.css?v=ad973aa08869",
-  "/access-practice-lab/studio.css?v=da5c230c5a64",
+  "/access-practice-lab/audit.css?v=68b74ee5c74a",
+  "/access-practice-lab/studio.css?v=da01e8142bb2",
   "/access-practice-lab/src/attempts.js?v=9ad8ee9e3283",
   "/access-practice-lab/src/audio-store.js?v=d05edac67707",
   "/access-practice-lab/src/components.js?v=71eb39c2d66e",
@@ -58,12 +58,12 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/views/evidence.js?v=7483c77cd140",
   "/access-practice-lab/src/views/family.js?v=493eb17898e2",
   "/access-practice-lab/src/views/growth.js?v=d41e8fc6c204",
-  "/access-practice-lab/src/views/home.js?v=952d5d886d83",
+  "/access-practice-lab/src/views/home.js?v=e5ab0e7d2230",
   "/access-practice-lab/src/views/library.js?v=2ad35e7fa59a",
   "/access-practice-lab/src/views/missions.js?v=b399c493f14a",
   "/access-practice-lab/src/views/passport.js?v=5f7a07987ff5",
   "/access-practice-lab/src/views/road.js?v=47ecec4284e8",
-  "/access-practice-lab/src/views/room.js?v=2d073c073736",
+  "/access-practice-lab/src/views/room.js?v=4307b4cbb0d4",
   "/access-practice-lab/src/views/speak.js?v=ac0af103f7b7",
   "/access-practice-lab/src/views/test.js?v=c2d0d6520d1b",
   "/access-practice-lab/src/views/tests.js?v=96613c5ea5f3",
@@ -199,6 +199,8 @@ const PRECACHE_MORE = [
   "/access-practice-lab/pictures/68c-hillside-erosion.svg",
   "/access-practice-lab/pictures/68c-seasons.svg",
   "/access-practice-lab/pictures/68c-water-filter.svg",
+  "/access-practice-lab/pictures/lab-icons.svg",
+  "/access-practice-lab/pictures/lab-investigation.svg",
   "/access-practice-lab/pictures/shape-circle.svg",
   "/access-practice-lab/pictures/shape-rectangle.svg",
   "/access-practice-lab/pictures/shape-triangle.svg",

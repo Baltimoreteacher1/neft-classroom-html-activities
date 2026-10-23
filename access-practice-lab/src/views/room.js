@@ -100,7 +100,7 @@ export async function render(ctx) {
           <p class="eyebrow">
             ${bandLabel(band)} · ${tier ? `${tier.name} (${tier.range})` : L.displayLabel || level}
           </p>
-          <h1 tabindex="-1"><span aria-hidden="true">${meta.glyph}</span> ${meta.room}</h1>
+          <h1 tabindex="-1"><svg aria-hidden="true"><use href="${BASE}/pictures/lab-icons.svg#${domain === "Model-Test" ? "test" : domain.toLowerCase()}"></use></svg> ${meta.room}</h1>
           <p class="lead">${L.info?.headline || L.studentGoal || data.description}</p>
         </div>
         ${ringHTML(doneCount, list.length, { size: 84, label: `${doneCount} of ${list.length} done` })}
