@@ -5,7 +5,7 @@ export const GEN_IDS = new Set(
   `dotplotRead histogramRead medianFind meanFind meanMissing rangeIqr boxplotRead madCalc chooseMeasure
 longDivision decimalDivision decimalAddSub decimalMultiply factorsMultiples lcmFind gcfFind primeFactorization exponentEval orderOfOps
 fracDivWhole fracDivMixed wholeDivFrac mixedDivide fracDivWord
-ratioWrite unitRate eqRatioTable ratioGraphRead compareRatios convertUnits convertBetween unitRateWord eqRatioMissing
+ratioWrite unitRate eqRatioTable ratioGraphRead compareRatios convertUnits convertBetween unitRateWord eqRatioMissing convertFactor
 areaParallelogram areaTriangle areaTrapezoid areaComposite volumePrism volumePrismWhole volumePrismFrac surfaceAreaPrism surfaceAreaPyramid areaRegularPolygon
 evalExpression equivalentExpr combineLikeTerms distribute simplifyExpr solutionCheck solveAddSub solveMulDiv writeInequality
 ineqSolutionCheck solveInequality writeEquationWord twoVarTable graphRelationship twoVarProblem
@@ -14,7 +14,7 @@ integerOpposites rationalNumberLine absoluteValue compareOrder quadrantId coordD
   ),
 );
 export const ACT_KINDS = new Set(
-  "plot nline ineq sizer areabox barcut ldiv dotbalance chartbuild ratiomix convchain balance ftree hops tiles powers plug faces askdots skewsculptor countoff boxtwins chipsort madtwins headlinecourt receipt faultymed".split(
+  "plot nline ineq sizer areabox barcut ldiv dotbalance chartbuild ratiomix convchain balance ftree hops tiles powers plug faces askdots skewsculptor countoff boxtwins chipsort madtwins headlinecourt receipt faultymed tagtape addrider cancelit barcompare".split(
     " ",
   ),
 );
@@ -357,7 +357,13 @@ export function validateLessonData(id, data, worlds = null) {
   }
 
   if (data.mastery !== undefined) {
-    if (!Array.isArray(data.mastery) || data.mastery.length > 2) p.push(`${id}.mastery: 0-2 items`);
+    const unit3Depth = /^3-(?:[7-9]|10)$/.test(id);
+    const validLength =
+      Array.isArray(data.mastery) &&
+      (unit3Depth
+        ? data.mastery.length >= 4 && data.mastery.length <= 6
+        : data.mastery.length <= 2);
+    if (!validLength) p.push(`${id}.mastery: ${unit3Depth ? "4-6" : "0-2"} items`);
     else data.mastery.forEach((it, i) => p.push(...itemProblems(it, `${id}.mastery[${i}]`)));
   }
   if (!Array.isArray(data.glossary) || data.glossary.length < 3 || data.glossary.length > 5)

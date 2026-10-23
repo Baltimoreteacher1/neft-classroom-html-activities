@@ -3,6 +3,8 @@
 import dataMedian from './data-median.mjs';
 import decimalColumns from './decimal-columns.mjs';
 import ratioUnitRate from './ratio-unit-rate.mjs';
+import ratioTape from './ratio-tape.mjs';
+import ratioPatterns from './ratio-patterns.mjs';
 import percentBenchmark from './percent-benchmark.mjs';
 import percentTape from './percent-tape.mjs';
 import percentFindWhole from './percent-find-whole.mjs';
@@ -13,8 +15,9 @@ import areaApothem from './area-apothem.mjs';
 import factorsRegroup from './factors-regroup.mjs';
 import inequalityGraph from './inequality-graph.mjs';
 import growthTable from './growth-table.mjs';
+import growthRider from './growth-rider.mjs';
 
-export const MODELS = [dataMedian, decimalColumns, ratioUnitRate, percentBenchmark, percentTape, percentFindWhole, solidFaces, solidTriPrism, solidPyramidNet, areaApothem, factorsRegroup, inequalityGraph, growthTable];
+export const MODELS = [dataMedian, decimalColumns, ratioUnitRate, ratioTape, ratioPatterns, percentBenchmark, percentTape, percentFindWhole, solidFaces, solidTriPrism, solidPyramidNet, areaApothem, factorsRegroup, inequalityGraph, growthTable, growthRider];
 const byKey = new Map(MODELS.map((m) => [`${m.kind}:${m.mode}`, m]));
 if (byKey.size !== MODELS.length) throw new Error('two models share a kind:mode');
 

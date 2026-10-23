@@ -220,6 +220,9 @@
    * A generator = levels of "forms". form = { kind, make(rng) -> item, check(item) }. The kind is stamped into
    * meta so check() finds its form again.
    */
+  /** shape registrars by generator id: SUITES[id](shape, levels) adds a problem shape (see the end of this file) */
+  const SUITES =
+    /** @type {Record<string, (shape: string, lv: Record<number, any[]>) => void>} */ ({});
   function suite(
     /** @type {string} */ id,
     /** @type {string} */ title,
@@ -228,14 +231,31 @@
   ) {
     const byKind = /** @type {Record<string, any>} */ ({});
     for (const l of Object.values(levels)) for (const f of l) byKind[f.kind] = f;
+    const shapeLevels = /** @type {Record<string, Record<number, any[]>>} */ ({});
+    const shapes = ["forward"];
     G.register(id, {
       title,
       titleEs,
       levels: 4,
-      make(/** @type {any} */ rng, /** @type {number} */ level) {
+      shapes,
+      make(/** @type {any} */ rng, /** @type {number} */ level, /** @type {string} */ shape) {
+        const pool = (shapeLevels[shape] || levels)[level] || levels[level];
         return draw(() => {
-          const f = rng.pick(levels[level]);
-          const it = f.make(rng);
+          const f = rng.pick(pool);
+          const it = f.make(rng, level);
+          // guess resistance: the right choice may not be the one longest choice (redraw those, keep every other seed as it was)
+          if (it.k === "mc" || it.c) {
+            for (const arr of [it.c, it.cEs || it.c]) {
+              const L = arr.map((/** @type {any} */ s) => String(s).length);
+              const mx = Math.max(...L);
+              if (
+                mx > 6 &&
+                L[it.a] === mx &&
+                L.filter((/** @type {number} */ x) => x === mx).length === 1
+              )
+                redo();
+            }
+          }
           it.meta = { kind: f.kind, ...it.meta };
           return it;
         });
@@ -245,6 +265,13 @@
         return f ? f.check(item) : `unknown form ${item.meta && item.meta.kind}`;
       },
     });
+    SUITES[id] = (shape, lv) => {
+      for (const l of Object.values(lv)) for (const f of l) byKind[f.kind] = f;
+      for (let n = 1; n <= 4; n++)
+        if (!lv[n]) throw new Error(`ratio.js: ${id}/${shape} needs forms for level ${n}`);
+      shapeLevels[shape] = lv;
+      shapes.push(shape);
+    };
   }
   const form = (/** @type {string} */ kind, /** @type {any} */ make, /** @type {any} */ check) => ({
     kind,
@@ -1632,6 +1659,7 @@
       A: Q("dollar", "dollars", "dólar", "dólares"),
       B: Q("granola bar", "granola bars", "barra de granola", "barras de granola"),
       money: true,
+      whole: true, // sold in whole boxes: a "least to pay for N" order would price part of a box
       ent: "box",
       better: "low",
       lo: 50,
@@ -3368,7 +3396,7 @@
         },
         {
           v: "None of the pairs",
-          vEs: "Ninguna de las parejas",
+          vEs: "Ninguno de los pares",
           tag: "ratio-not-checked",
           f: T(
             "Check y ÷ x for each point. Two of them match.",
@@ -4387,7 +4415,7 @@
   const SCENES = {
     len: [
       ["A rope is {X} long.", "Una cuerda mide {X}."],
-      ["A ribbon is {X} long.", "Un listón mide {X}."],
+      ["A ribbon is {X} long.", "Una cinta mide {X}."],
       ["A board is {X} long.", "Una tabla mide {X}."],
       ["A path is {X} long.", "Un camino mide {X}."],
     ],
@@ -4418,7 +4446,7 @@
     len: (/** @type {any} */ d, /** @type {any} */ X) =>
       T(
         "Mia cuts {d} ribbons. Each ribbon is {X} long.",
-        "Mia corta {d} listones. Cada listón mide {X}.",
+        "Mia corta {d} cintas. Cada cinta mide {X}.",
         { d, X },
       ),
     mass: (/** @type {any} */ d, /** @type {any} */ X) =>
@@ -5561,7 +5589,7 @@
 
   /** L3: which store, and what is the least to pay for a bigger order */
   const uwBest = (/** @type {any} */ rng) => {
-    const c = rng.pick(RATES.filter((r) => r.money && r.better === "low"));
+    const c = rng.pick(RATES.filter((r) => r.money && r.better === "low" && !r.whole));
     const [e1, e2] = entsOf(rng, c);
     const who = rng.pick(NAMES);
     const p1 = drawRate(rng, c, 5);
@@ -6296,4 +6324,1358 @@
       4: [form("servings", emServings, emServingsCheck), form("two", emTwo, emTwoCheck)],
     },
   );
+  /* ===================================================================================================
+   * Problem shapes (studio v4): "reverse", "which-input" and "compare" versions of the unit-3 generators, plus convertFactor
+   * (3-10: conversion factors written as fractions so the units cancel). Every form below is registered through SUITES, so the
+   * default shape (forward) keeps its seeds. Each check() re-derives the key by a different route (cross-multiplying, counting unit
+   * exponents, rebuilding the arithmetic), never by repeating make().
+   * =================================================================================================== */
+  /** the right choice may not be the unique longest, and choices stay within about a quarter of each other (EN and ES) */
+  const balanced = (/** @type {any} */ it) => {
+    for (const arr of [it.c, it.cEs || it.c]) {
+      const L = arr.map((/** @type {any} */ s) => String(s).length);
+      const mx = Math.max(...L);
+      const mn = Math.min(...L);
+      if (L[it.a] === mx && L.filter((/** @type {number} */ x) => x === mx).length === 1) redo();
+      if ((mx - mn) / mn > 0.25 && mx - mn > 4) redo();
+    }
+    return it;
+  };
+  const nums2 = (/** @type {string} */ s) =>
+    (String(s).match(/\d[\d,]*(?:\.\d+)?/g) || []).map((t) => Number(t.replace(/,/g, "")));
+
+  /** redraw a draw whose wrong choices accidentally pass the independent test (never hides a wrong key) */
+  const guard =
+    (/** @type {any} */ make, /** @type {any} */ check) =>
+    (/** @type {any} */ rng, /** @type {number} */ level) => {
+      const it = make(rng, level);
+      const r = check({ ...it, meta: { ...it.meta } });
+      if (typeof r === "string" && /^([2-9]|\d\d+) (choices pass|strongest|cheapest)/.test(r))
+        redo();
+      return it;
+    };
+
+  /* ---- ratioWrite / reverse: which group matches the ratio -------------------------------------------- */
+  const rwRev = (/** @type {any} */ rng, /** @type {number} */ level) => {
+    const c = rng.pick(COLL);
+    const [a, b] = coprimePair(rng, 2, 3 + level * 2);
+    if (a === b) redo();
+    const whole = level >= 2 && rng.chance(0.5);
+    const mode = rng.pick(["colon", "to"]);
+    const R = whole ? ratioText(a, a + b, mode) : ratioText(a, b, mode);
+    const grp = (/** @type {number} */ x, /** @type {number} */ y) => {
+      const A = np(c.a, x);
+      const B = np(c.b, y);
+      return { v: `${A[0]} and ${B[0]}`, vEs: `${A[1]} y ${B[1]}` };
+    };
+    const wr = (
+      /** @type {number} */ x,
+      /** @type {number} */ y,
+      /** @type {any} */ f,
+      /** @type {string} */ tag,
+    ) => ({
+      ...grp(x, y),
+      f,
+      tag,
+    });
+    return balanced(
+      mcB(rng, {
+        q: whole
+          ? T(
+              "The ratio of {A} to all the {all} is {R}. Which group of {all} matches?",
+              "La razón de {A} al total de {all} es {R}. ¿Qué grupo de {all} coincide?",
+              { A: c.a.p, all: c.all, R },
+            )
+          : T(
+              "The ratio of {A} to {B} is {R}. Which group of {all} matches?",
+              "La razón de {A} a {B} es {R}. ¿Qué grupo de {all} coincide?",
+              { A: c.a.p, B: c.b.p, all: c.all, R },
+            ),
+        right: grp(a, b),
+        wrong: [
+          wr(
+            b,
+            a,
+            T(
+              "The numbers are in the other order. The first number must match the first group named.",
+              "Los números están en el otro orden. El primer número debe coincidir con el primer grupo que se nombra.",
+            ),
+            "ratio-inverted",
+          ),
+          wr(
+            a,
+            a + b,
+            whole
+              ? T(
+                  "That group has {t} of the second kind, so the whole is not {a} plus {t}. Count each kind, then add them for the whole.",
+                  "Ese grupo tiene {t} del segundo tipo, así que el todo no es {a} más {t}. Cuenta cada tipo y luego suma para el todo.",
+                  { a, t: a + b },
+                )
+              : T(
+                  "Here the second number is the whole group. A part-to-part ratio uses the count of the second kind.",
+                  "Aquí el segundo número es el grupo completo. Una razón de parte a parte usa la cantidad del segundo tipo.",
+                ),
+            "part-whole-mixup",
+          ),
+          wr(
+            a + b,
+            b,
+            T(
+              "That group has the wrong count of the first kind. Match each kind to its own number in the ratio.",
+              "Ese grupo tiene una cantidad equivocada del primer tipo. Une cada tipo con su propio número de la razón.",
+            ),
+            "wrong-group",
+          ),
+        ],
+        x: whole
+          ? T(
+              "{a} of the first kind and {b} of the second make {t} in all, so the ratio of the first kind to the whole is {a} to {t}.",
+              "{a} del primer tipo y {b} del segundo suman {t} en total, así que la razón del primer tipo al todo es {a} a {t}.",
+              { a, b, t: a + b },
+            )
+          : T(
+              "The first kind has {a} and the second kind has {b}, so the ratio of the first kind to the second is {a} to {b}.",
+              "El primer tipo tiene {a} y el segundo tipo tiene {b}, así que la razón del primero al segundo es {a} a {b}.",
+              { a, b },
+            ),
+        h: [
+          T(
+            "A ratio names the groups in an order. The first number goes with the first group named.",
+            "Una razón nombra los grupos en un orden. El primer número va con el primer grupo que se nombra.",
+          ),
+          whole
+            ? T(
+                "A part-to-whole ratio puts the total of both groups second. Find each group's total for the whole.",
+                "Una razón de parte a todo pone el total de ambos grupos en segundo lugar. Halla el total de cada grupo.",
+              )
+            : T(
+                "A part-to-part ratio compares the count of one kind with the count of the other kind.",
+                "Una razón de parte a parte compara la cantidad de un tipo con la cantidad del otro tipo.",
+              ),
+          T(
+            "Check each group: read its two counts and write the ratio in the same order.",
+            "Revisa cada grupo: lee sus dos cantidades y escribe la razón en el mismo orden.",
+          ),
+        ],
+        meta: { a, b, whole },
+      }),
+    );
+  };
+  const rwRevCheck = (/** @type {any} */ it) => {
+    const { a, b, whole } = it.meta;
+    return pickOne(it, (txt) => {
+      const [x, y] = nums2(txt);
+      return whole ? x * (a + b) === a * (x + y) : x * b === y * a;
+    });
+  };
+
+  /* ---- unitRate / reverse: which deal has this unit rate ---------------------------------------------- */
+  const urRev = (/** @type {any} */ rng, /** @type {number} */ level) => {
+    const c = rng.pick(RATES.filter((r) => r.id !== "laps"));
+    const r = drawRate(rng, c, MONEY_STEP[level - 1]);
+    const n = rng.int(c.bl + 1, c.bh + level);
+    const unit = c.money ? 100 : 1;
+    const deal = (
+      /** @type {number} */ t,
+      /** @type {number} */ k,
+      /** @type {any} */ f,
+      /** @type {string} */ tag,
+    ) => {
+      const A = showA(c, t);
+      const B = showB(c, k);
+      return { v: `${A[0]} for ${B[0]}`, vEs: `${A[1]} por ${B[1]}`, f, tag };
+    };
+    const more = rng.int(1, 3);
+    return balanced(
+      mcB(rng, {
+        q: T("Which one has a unit rate of {rate}?", "¿Cuál tiene una tasa unitaria de {rate}?", {
+          rate: showRate(c, r),
+        }),
+        right: deal(r * n, n),
+        wrong: [
+          deal(
+            r + n * unit,
+            n,
+            T(
+              "That adds the rate and the count. A unit rate comes from dividing the first amount by the second.",
+              "Eso suma la tasa y la cantidad. Una tasa unitaria sale de dividir la primera cantidad entre la segunda.",
+            ),
+            "op-added-instead-of-multiplied",
+          ),
+          deal(
+            r * n,
+            n + more,
+            T(
+              "Divide the first amount by the second. This deal gives less than that rate for 1.",
+              "Divide la primera cantidad entre la segunda. Esta oferta da menos que esa tasa por 1.",
+            ),
+            "rate-not-per-one",
+          ),
+          deal(
+            r * (n + more),
+            n,
+            T(
+              "Divide the first amount by the second. This deal gives more than that rate for 1.",
+              "Divide la primera cantidad entre la segunda. Esta oferta da más que esa tasa por 1.",
+            ),
+            "rate-not-per-one",
+          ),
+        ],
+        x: T(
+          "A unit rate is the first amount for 1 of the second. The right deal gives {rate}.",
+          "Una tasa unitaria es la primera cantidad por 1 de la segunda. La oferta correcta da {rate}.",
+          { rate: showRate(c, r) },
+        ),
+        h: [
+          T(
+            "A unit rate tells how much for exactly 1.",
+            "Una tasa unitaria dice cuánto es por exactamente 1.",
+          ),
+          T(
+            "For each choice, divide the first amount by the second amount.",
+            "Para cada opción, divide la primera cantidad entre la segunda.",
+          ),
+          T(
+            "Keep the choice whose quotient matches the rate in the question.",
+            "Quédate con la opción cuyo cociente coincide con la tasa de la pregunta.",
+          ),
+        ],
+        meta: { id: c.id, r, n, more },
+      }),
+    );
+  };
+  const urRevCheck = (/** @type {any} */ it) => {
+    const { r } = it.meta;
+    return pickOne(it, (txt) => {
+      const [total, count] = nums2(txt);
+      const cents = txt.startsWith("$") ? Math.round(total * 100) : total;
+      return count > 0 && same(cents, r * count, 1e-6);
+    });
+  };
+
+  /* ---- eqRatioTable / reverse: which table belongs to this ratio -------------------------------------- */
+  const etRev = (/** @type {any} */ rng, /** @type {number} */ level) => {
+    const [a, b] = coprimePair(rng, 2, 3 + level * 2);
+    const rows = (/** @type {(k: number) => number[]} */ f) =>
+      [1, 2, 3].map((k) => f(k).join(":")).join(", ");
+    const d = rng.int(1, 3);
+    const t = (/** @type {string} */ v, /** @type {any} */ f, /** @type {string} */ tag) => ({
+      v,
+      vEs: v,
+      f,
+      tag,
+    });
+    return balanced(
+      mcB(rng, {
+        q: T(
+          "A ratio table starts with the ratio {a}:{b}. Which table is correct?",
+          "Una tabla de razones empieza con la razón {a}:{b}. ¿Qué tabla es correcta?",
+          { a, b },
+        ),
+        right: {
+          v: rows((k) => [a * k, b * k]),
+          vEs: rows((k) => [a * k, b * k]),
+        },
+        wrong: [
+          t(
+            rows((k) => [a + d * (k - 1), b + d * (k - 1)]),
+            T(
+              "Adding the same amount to both numbers changes the ratio. Multiply both numbers by the same factor instead.",
+              "Sumar la misma cantidad a ambos números cambia la razón. Multiplica ambos números por el mismo factor.",
+            ),
+            "ratio-scaled-additively",
+          ),
+          t(
+            rows((k) => [a * k, b]),
+            T(
+              "Only the first number grows here. Both numbers must be multiplied by the same factor.",
+              "Aquí solo crece el primer número. Ambos números deben multiplicarse por el mismo factor.",
+            ),
+            "ratio-one-term-scaled",
+          ),
+          t(
+            rows((k) => [b * k, a * k]),
+            T(
+              "The numbers are in the other order in every row. The first column must stay the first quantity.",
+              "Los números están en el otro orden en cada fila. La primera columna debe seguir siendo la primera cantidad.",
+            ),
+            "ratio-inverted",
+          ),
+        ],
+        x: T(
+          "Each row multiplies both {a} and {b} by the same factor, so every row is the same ratio, {a}:{b}.",
+          "Cada fila multiplica tanto {a} como {b} por el mismo factor, así que todas las filas son la misma razón, {a}:{b}.",
+          { a, b },
+        ),
+        h: [
+          T(
+            "Rows of a ratio table are equivalent ratios, made by multiplying both numbers by the same factor.",
+            "Las filas de una tabla de razones son razones equivalentes, que se hacen multiplicando ambos números por el mismo factor.",
+          ),
+          T(
+            "Check the second row of each table: did both numbers change by the same factor?",
+            "Revisa la segunda fila de cada tabla: ¿ambos números cambiaron por el mismo factor?",
+          ),
+          T(
+            "The first row must also be the ratio in the question, in the same order.",
+            "La primera fila también debe ser la razón de la pregunta, en el mismo orden.",
+          ),
+        ],
+        meta: { a, b, d },
+      }),
+    );
+  };
+  const etRevCheck = (/** @type {any} */ it) => {
+    const { a, b } = it.meta;
+    return pickOne(it, (txt) => {
+      const rowsOf = txt.split(", ").map((r) => r.split(":").map(Number));
+      return (
+        rowsOf.length === 3 &&
+        rowsOf[0][0] === a &&
+        rowsOf[0][1] === b &&
+        rowsOf.every(([x, y]) => x * b === y * a)
+      );
+    });
+  };
+
+  /* ---- ratioGraphRead / reverse: which points belong to the graph ------------------------------------- */
+  const GR_CTX = [
+    ["batches of bread", "cups of flour", "tandas de pan", "tazas de harina"],
+    ["hours of biking", "miles ridden", "horas en bicicleta", "millas recorridas"],
+    ["packs of seeds", "seeds planted", "paquetes de semillas", "semillas plantadas"],
+    ["rows of chairs", "chairs in all", "filas de sillas", "sillas en total"],
+    ["gallons of paint", "rooms painted", "galones de pintura", "habitaciones pintadas"],
+    ["boxes of fruit", "pounds of fruit", "cajas de fruta", "libras de fruta"],
+  ];
+  const grRev = (/** @type {any} */ rng, /** @type {number} */ level) => {
+    const [a, b] = coprimePair(rng, 1, 2 + level);
+    const ctx = rng.pick(GR_CTX);
+    const s = rng.int(1, 2);
+    const pts = (/** @type {(k: number) => number[]} */ f) =>
+      [1, 2, 3].map((k) => `(${f(k).join(", ")})`).join(", ");
+    const t = (/** @type {string} */ v, /** @type {any} */ f, /** @type {string} */ tag) => ({
+      v,
+      vEs: v,
+      f,
+      tag,
+    });
+    return balanced(
+      mcB(rng, {
+        q: T(
+          "A graph shows {X} (x) and {Y} (y). The ratio of {X} to {Y} is {a} to {b}. Which points are on the graph?",
+          "Una gráfica muestra {Xe} (x) y {Ye} (y). La razón de {Xe} a {Ye} es {a} a {b}. ¿Qué puntos están en la gráfica?",
+          { X: ctx[0], Y: ctx[1], Xe: ctx[2], Ye: ctx[3], a, b },
+        ),
+        right: { v: pts((k) => [a * k, b * k]), vEs: pts((k) => [a * k, b * k]) },
+        wrong: [
+          t(
+            pts((k) => [a * k, b * k + s]),
+            T(
+              "These points are in a straight line, but the line misses (0, 0). Equal ratios need y ÷ x to stay the same.",
+              "Estos puntos están en una recta, pero la recta no pasa por (0, 0). Las razones equivalentes necesitan que y ÷ x no cambie.",
+            ),
+            "origin-misread",
+          ),
+          t(
+            pts((k) => [b * k, a * k]),
+            T(
+              "The coordinates are reversed. The first number is x ({X}) and the second is y ({Y}).",
+              "Las coordenadas están al revés. El primer número es x y el segundo es y.",
+              { X: ctx[0], Y: ctx[1] },
+            ),
+            "coord-xy-swapped",
+          ),
+          t(
+            pts((k) => [a + (k - 1), b + (k - 1)]),
+            T(
+              "Adding 1 to both numbers each time does not keep the ratio. Multiply both numbers by the same factor.",
+              "Sumar 1 a ambos números cada vez no conserva la razón. Multiplica ambos números por el mismo factor.",
+            ),
+            "ratio-scaled-additively",
+          ),
+        ],
+        x: T(
+          "For equal ratios, every point has y ÷ x equal to {b} ÷ {a}. The points are (x, y) with {a} {X} matched to {b} {Y}, then 2 and 3 times as many.",
+          "En razones equivalentes, todos los puntos tienen y ÷ x igual a {b} ÷ {a}. Los puntos son (x, y) con {a} de {Xe} unidos a {b} de {Ye}, y luego el doble y el triple.",
+          { a, b, X: ctx[0], Y: ctx[1], Xe: ctx[2], Ye: ctx[3] },
+        ),
+        h: [
+          T(
+            "Each point is (x, y). Use the order of the question.",
+            "Cada punto es (x, y). Usa el orden de la pregunta.",
+          ),
+          T(
+            "Points on a graph of equal ratios all give the same y ÷ x.",
+            "Los puntos de una gráfica de razones equivalentes dan el mismo y ÷ x.",
+          ),
+          T(
+            "Divide y by x for every point in a choice. The choice where every quotient matches is the graph.",
+            "Divide y entre x en cada punto de una opción. La opción donde todos los cocientes coinciden es la gráfica.",
+          ),
+        ],
+        meta: { a, b, s },
+        loose: true,
+      }),
+    );
+  };
+  const grRevCheck = (/** @type {any} */ it) => {
+    const { a, b } = it.meta;
+    return pickOne(it, (txt) => {
+      const ps = [...txt.matchAll(/\((\d+), (\d+)\)/g)].map((m) => [Number(m[1]), Number(m[2])]);
+      return ps.length === 3 && ps.every(([x, y]) => y * a === x * b);
+    });
+  };
+
+  /* ---- compareRatios / compare-four: which of four mixes is strongest --------------------------------- */
+  const crFour = (/** @type {any} */ rng, /** @type {number} */ level) => {
+    const w0 = rng.int(3, 6 + level * 2);
+    const mixes = [];
+    for (let i = 0; i < 4; i++) {
+      const w = level === 1 ? w0 : rng.int(3, 6 + level * 3);
+      const j = level === 2 ? 0 : 1;
+      mixes.push([rng.int(2 + j, 3 + w + level), w]);
+    }
+    if (level === 2) {
+      const jw = rng.int(4, 9);
+      for (const m of mixes) m[0] = jw;
+    }
+    const rate = (/** @type {number[]} */ m) => m[0] / m[1];
+    const order = mixes.map(rate);
+    if (new Set(order.map((x) => x.toFixed(6))).size !== 4) redo();
+    const best = order.indexOf(Math.max(...order));
+    const names = ["A", "B", "C", "D"];
+    const uniqueAt = (/** @type {number[]} */ xs, /** @type {number} */ pick) =>
+      xs.filter((x) => x === pick).length === 1 ? xs.indexOf(pick) : -1;
+    const mostJuice = uniqueAt(
+      mixes.map((/** @type {number[]} */ m) => m[0]),
+      Math.max(...mixes.map((/** @type {number[]} */ m) => m[0])),
+    );
+    const leastWater = uniqueAt(
+      mixes.map((/** @type {number[]} */ m) => m[1]),
+      Math.min(...mixes.map((/** @type {number[]} */ m) => m[1])),
+    );
+    const f = (/** @type {number} */ i) => {
+      if (i === mostJuice)
+        return [
+          T(
+            "That mix has the most juice, but it also has more water. Compare the juice for the same amount of water.",
+            "Esa mezcla tiene más jugo, pero también más agua. Compara el jugo para la misma cantidad de agua.",
+          ),
+          "ratio-compared-without-common-basis",
+        ];
+      if (i === leastWater)
+        return [
+          T(
+            "That mix has the least water, but it also has less juice. Compare the juice for the same amount of water.",
+            "Esa mezcla tiene menos agua, pero también menos jugo. Compara el jugo para la misma cantidad de agua.",
+          ),
+          "ratio-compared-without-common-basis",
+        ];
+      return [
+        T(
+          "Scale this mix and the strongest one to the same amount of water. This mix has less juice for that water.",
+          "Escala esta mezcla y la más fuerte a la misma cantidad de agua. Esta mezcla tiene menos jugo para esa agua.",
+        ),
+        "ratio-not-checked",
+      ];
+    };
+    const list = mixes.map((m, i) => ({ i, m }));
+    return mcB(rng, {
+      q: T(
+        "{lines} Which mix tastes the most like juice?",
+        "{lines} ¿Qué mezcla sabe más a jugo?",
+        {
+          lines: [
+            list
+              .map(
+                ({ i, m }) => `Mix ${names[i]}: ${m[0]} cups of juice and ${m[1]} cups of water.`,
+              )
+              .join(" "),
+            list
+              .map(
+                ({ i, m }) => `Mezcla ${names[i]}: ${m[0]} tazas de jugo y ${m[1]} tazas de agua.`,
+              )
+              .join(" "),
+          ],
+        },
+      ),
+      right: { v: `Mix ${names[best]}`, vEs: `Mezcla ${names[best]}` },
+      wrong: list
+        .filter(({ i }) => i !== best)
+        .map(({ i }) => {
+          const [ff, tag] = f(i);
+          return { v: `Mix ${names[i]}`, vEs: `Mezcla ${names[i]}`, f: ff, tag };
+        }),
+      x: T(
+        "Compare the juice for the same water. Mix {n} has the most juice for each cup of water.",
+        "Compara el jugo para la misma agua. La mezcla {n} tiene más jugo por cada taza de agua.",
+        { n: names[best] },
+      ),
+      h: [
+        T(
+          "Do not compare only the juice or only the water. Compare juice for the same amount of water.",
+          "No compares solo el jugo ni solo el agua. Compara el jugo para la misma cantidad de agua.",
+        ),
+        T(
+          "Find the juice for 1 cup of water in each mix, or scale all four to the same water.",
+          "Halla el jugo por 1 taza de agua en cada mezcla, o escala las cuatro a la misma agua.",
+        ),
+        T(
+          "Pick the mix with the most juice for the same water.",
+          "Elige la mezcla con más jugo para la misma agua.",
+        ),
+      ],
+      meta: { mixes },
+      loose: true,
+    });
+  };
+  const crFourCheck = (/** @type {any} */ it) => {
+    const { mixes } = it.meta;
+    const names = ["A", "B", "C", "D"];
+    // cross-multiply: mix i beats mix j when ji * wj > jj * wi
+    const beats = (/** @type {number} */ i, /** @type {number} */ j) =>
+      mixes[i][0] * mixes[j][1] > mixes[j][0] * mixes[i][1];
+    const winners = mixes
+      .map((_m, i) => i)
+      .filter((i) => mixes.every((_n, j) => j === i || beats(i, j)));
+    if (winners.length !== 1) return `${winners.length} strongest mixes`;
+    return pickOne(
+      it,
+      (txt) => txt === `Mix ${names[winners[0]]}` || txt === `Mezcla ${names[winners[0]]}`,
+    );
+  };
+
+  /* ---- convertUnits / reverse: which measurement equals this one ------------------------------------- */
+  const cuRev = (/** @type {any} */ rng, /** @type {number} */ level) => {
+    const [big, small, k, sys] = rng.pick(FACTS);
+    const up = rng.chance(0.5);
+    const m = rng.int(2, 4 + level * 2);
+    const [from, to] = up ? [big, small] : [small, big];
+    const v = up ? m : m * k;
+    const ans = up ? m * k : m;
+    const meas = (/** @type {number} */ n) => {
+      const p = np(to, n);
+      return { v: p[0], vEs: p[1] };
+    };
+    const w = (/** @type {number} */ n, /** @type {any} */ f, /** @type {string} */ tag) => ({
+      ...meas(n),
+      f,
+      tag,
+    });
+    return balanced(
+      mcB(rng, {
+        q: T("{fact}. Which measurement equals {from}?", "{fact}. ¿Qué medida es igual a {from}?", {
+          fact: factTxt(big, small, k),
+          from: np(from, v),
+        }),
+        right: meas(ans),
+        wrong: [
+          w(
+            up ? v / k : v * k,
+            up ? dirTag.divInstead : dirTag.mulInstead,
+            up ? "op-divided-instead-of-multiplied" : "op-multiplied-instead-of-divided",
+          ),
+          w(v + k, dirTag.add, "op-added-instead-of-multiplied"),
+          w(
+            up ? v * 10 : v / 10,
+            T(
+              "That uses a factor of 10. This fact uses {k}.",
+              "Eso usa un factor de 10. Este dato usa {k}.",
+              { k: show(k) },
+            ),
+            "unit-mismatch",
+          ),
+        ],
+        x: T("{fact}. So {v} {fp} = {a} {tp}.", "{fact}. Así que {v} {fp} = {a} {tp}.", {
+          fact: factTxt(big, small, k),
+          v,
+          a: ans,
+          fp: from.p,
+          tp: to.p,
+        }),
+        h: [
+          T(
+            "Decide first: is the new unit bigger or smaller?",
+            "Decide primero: ¿la unidad nueva es mayor o menor?",
+          ),
+          T(
+            "A smaller unit needs more of them. A bigger unit needs fewer.",
+            "Una unidad menor necesita más. Una unidad mayor necesita menos.",
+          ),
+          T(
+            "Use the fact to multiply or divide, then match the answer.",
+            "Usa el dato para multiplicar o dividir y luego busca la respuesta.",
+          ),
+        ],
+        meta: { v, k, up, sys },
+        loose: true,
+      }),
+    );
+  };
+  const cuRevCheck = (/** @type {any} */ it) => {
+    const { v, k, up } = it.meta;
+    return pickOne(it, (txt) => {
+      const n = nums2(txt)[0];
+      return up ? n === v * k : n * k === v;
+    });
+  };
+
+  /* ---- convertBetween / reverse: which measurement is about equal -------------------------------------- */
+  const cbRev = (/** @type {any} */ rng, /** @type {number} */ level) => {
+    const [from, to, f1000, exact, sys] = rng.pick(XF);
+    const f = f1000 / 1000;
+    const place = exact ? 1 : 0;
+    const v = rng.int(3, 8 + level * 6);
+    const raw = v * f;
+    const ans = Number(raw.toFixed(place));
+    if (same(ans, raw, 1e-9) && !exact) redo();
+    const meas = (/** @type {number} */ n) => ({
+      v: `${fmt(n)} ${n === 1 ? to.s[0] : to.p[0]}`,
+      vEs: `${fmt(n)} ${n === 1 ? to.s[1] : to.p[1]}`,
+    });
+    const w = (/** @type {number} */ n, /** @type {any} */ fb, /** @type {string} */ tag) => ({
+      ...meas(n),
+      f: fb,
+      tag,
+    });
+    const back = Number((v / f).toFixed(place));
+    const added = Number((v + f).toFixed(place));
+    const off = Number((raw * 10).toFixed(place));
+    return balanced(
+      mcB(rng, {
+        q: T(
+          "Use {fact}{about}. About how much is {from} in {to}? Round to the nearest {pl}.",
+          "Usa {fact}{about}. ¿Cuánto es aproximadamente {from} en {to}? Redondea a la {plEs} más cercana.",
+          {
+            fact: [
+              `1 ${from.s[0]} = ${fmt(f)} ${to.p[0]}`,
+              `1 ${from.s[1]} = ${fmt(f)} ${to.p[1]}`,
+            ],
+            about: exact ? "" : [" (about)", " (aproximadamente)"],
+            from: np(from, v),
+            to: to.p,
+            pl: place ? "tenth" : "whole number",
+            plEs: place ? "décima" : "unidad",
+          },
+        ),
+        right: meas(ans),
+        wrong: [
+          w(back, dirTag.divInstead, "op-divided-instead-of-multiplied"),
+          w(added, dirTag.add, "op-added-instead-of-multiplied"),
+          w(
+            off,
+            T(
+              "That is ten times too big. Check where the decimal point goes.",
+              "Eso es diez veces demasiado grande. Revisa dónde va el punto decimal.",
+            ),
+            "rounded-wrong-place",
+          ),
+        ],
+        x: T(
+          "{v} × {f} = {raw}, which rounds to {ans}.",
+          "{v} × {f} = {raw}, que se redondea a {ans}.",
+          { v, f: fmt(f), raw: fmt(Number(raw.toFixed(4))), ans: fmt(ans) },
+        ),
+        h: [
+          T(
+            "Is the new unit smaller or bigger than the starting unit?",
+            "¿La unidad nueva es menor o mayor que la inicial?",
+          ),
+          T(
+            "Multiply by the fact when you go to a smaller unit.",
+            "Multiplica por el dato cuando pasas a una unidad menor.",
+          ),
+          T(
+            "Round last, to the place the question names.",
+            "Redondea al final, al lugar que nombra la pregunta.",
+          ),
+        ],
+        meta: { v, f1000, place, sys },
+        loose: true,
+      }),
+    );
+  };
+  const cbRevCheck = (/** @type {any} */ it) => {
+    const { v, f1000, place } = it.meta;
+    const exactTimes = v * f1000; // thousandths of the exact product
+    const unit = 10 ** (3 - place); // thousandths per rounding step
+    const rounded = Math.round(exactTimes / unit) * unit;
+    return pickOne(it, (txt) => {
+      const n = value(txt.split(" ")[0]);
+      return same(Math.round(n * 1000), rounded, 1e-6);
+    });
+  };
+
+  /* ---- unitRateWord / compare: which deal costs the least for one ------------------------------------- */
+  const uwCmp = (/** @type {any} */ rng, /** @type {number} */ level) => {
+    const c = rng.pick(RATES.filter((r) => r.money && r.better === "low"));
+    const deals = [];
+    const step = MONEY_STEP[level - 1];
+    for (let i = 0; i < 4; i++) {
+      const n = rng.int(c.bl, c.bh + level);
+      deals.push({ p: drawRate(rng, c, step), n });
+    }
+    const unitP = deals.map((d) => d.p);
+    if (new Set(unitP).size !== 4) redo();
+    const totals = deals.map((d) => d.p * d.n);
+    if (new Set(totals).size !== 4) redo();
+    const best = unitP.indexOf(Math.min(...unitP));
+    const lowTotal = totals.indexOf(Math.min(...totals));
+    if (best === lowTotal) redo();
+    const names = ["A", "B", "C", "D"];
+    const line = (/** @type {number} */ i, /** @type {number} */ lg) =>
+      `${lg ? "Oferta" : "Deal"} ${names[i]}: ${usd(totals[i])} ${lg ? "por" : "for"} ${np(c.B, deals[i].n)[lg]}.`;
+    return mcB(rng, {
+      q: T(
+        "{lines} Which deal has the lowest price for 1 {Bs}?",
+        "{lines} ¿Qué oferta tiene el precio más bajo por 1 {Bs}?",
+        {
+          lines: [
+            deals.map((_d, i) => line(i, 0)).join(" "),
+            deals.map((_d, i) => line(i, 1)).join(" "),
+          ],
+          Bs: c.B.s,
+        },
+      ),
+      right: { v: `Deal ${names[best]}`, vEs: `Oferta ${names[best]}` },
+      wrong: names
+        .map((nm, i) => ({ nm, i }))
+        .filter(({ i }) => i !== best)
+        .map(({ nm, i }) => ({
+          v: `Deal ${nm}`,
+          vEs: `Oferta ${nm}`,
+          f:
+            i === lowTotal
+              ? T(
+                  "That deal has the lowest total, but it also buys the fewest. Compare the price for 1.",
+                  "Esa oferta tiene el total más bajo, pero también compra menos. Compara el precio por 1.",
+                )
+              : T(
+                  "Divide this deal's price by its number and compare with the best one. This one costs more for 1.",
+                  "Divide el precio de esta oferta entre su cantidad y compara con la mejor. Esta cuesta más por 1.",
+                ),
+          tag: i === lowTotal ? "ratio-compared-without-common-basis" : "compared-wrong-direction",
+        })),
+      x: T(
+        "Divide each price by its number to get the price for 1. Deal {n} costs {p} for 1, the lowest.",
+        "Divide cada precio entre su cantidad para hallar el precio por 1. La oferta {n} cuesta {p} por 1, el más bajo.",
+        { n: names[best], p: usd(unitP[best]) },
+      ),
+      h: [
+        T(
+          "Totals cannot be compared when the numbers are different.",
+          "No se pueden comparar los totales cuando las cantidades son distintas.",
+        ),
+        T(
+          "Find the price for 1 in every deal by dividing.",
+          "Halla el precio por 1 en cada oferta dividiendo.",
+        ),
+        T(
+          "The lowest price for 1 is the better deal.",
+          "El precio más bajo por 1 es la mejor oferta.",
+        ),
+      ],
+      meta: { totals, counts: deals.map((d) => d.n) },
+      loose: true,
+    });
+  };
+  const uwCmpCheck = (/** @type {any} */ it) => {
+    const { totals, counts } = it.meta;
+    const names = ["A", "B", "C", "D"];
+    // deal i is cheapest for 1 when totals[i] * counts[j] < totals[j] * counts[i] for every other j
+    const win = totals
+      .map((_t, i) => i)
+      .filter((i) =>
+        totals.every((_u, j) => j === i || totals[i] * counts[j] < totals[j] * counts[i]),
+      );
+    if (win.length !== 1) return `${win.length} cheapest deals`;
+    return pickOne(
+      it,
+      (txt) => txt === `Deal ${names[win[0]]}` || txt === `Oferta ${names[win[0]]}`,
+    );
+  };
+
+  /* ---- eqRatioMissing / reverse: which pair of ratios is equivalent ----------------------------------- */
+  const emRev = (/** @type {any} */ rng, /** @type {number} */ level) => {
+    const [a, b] = coprimePair(rng, 2, 3 + level * 2);
+    const k = rng.int(2, 3 + level);
+    const d = rng.int(1, 3);
+    const eq = (
+      /** @type {number} */ p,
+      /** @type {number} */ q,
+      /** @type {number} */ r,
+      /** @type {number} */ s,
+    ) => `${p}:${q} = ${r}:${s}`;
+    const t = (/** @type {string} */ v, /** @type {any} */ f, /** @type {string} */ tag) => ({
+      v,
+      vEs: v,
+      f,
+      tag,
+    });
+    return balanced(
+      mcB(rng, {
+        q: T("Which pair of ratios is equivalent?", "¿Qué par de razones es equivalente?"),
+        right: { v: eq(a, b, a * k, b * k), vEs: eq(a, b, a * k, b * k) },
+        wrong: [
+          t(
+            eq(a, b, a + d * k, b + d * k),
+            T(
+              "Adding the same amount to both numbers changes the ratio. Multiply both by the same factor.",
+              "Sumar la misma cantidad a ambos números cambia la razón. Multiplica ambos por el mismo factor.",
+            ),
+            "ratio-scaled-additively",
+          ),
+          t(
+            eq(a, b, a * k, b),
+            T(
+              "Only the first number was multiplied. Both must use the same factor.",
+              "Solo se multiplicó el primer número. Ambos deben usar el mismo factor.",
+            ),
+            "ratio-one-term-scaled",
+          ),
+          t(
+            eq(a, b, b * k, a * k),
+            T(
+              "The numbers are in the other order on the right. The first number must match the first quantity.",
+              "Los números están en el otro orden a la derecha. El primer número debe coincidir con la primera cantidad.",
+            ),
+            "ratio-inverted",
+          ),
+        ],
+        x: T(
+          "{a}:{b} and {c}:{d} use the same factor, {k}, on both numbers: {a} × {k} = {c} and {b} × {k} = {d}.",
+          "{a}:{b} y {c}:{d} usan el mismo factor, {k}, en ambos números: {a} × {k} = {c} y {b} × {k} = {d}.",
+          { a, b, c: a * k, d: b * k, k },
+        ),
+        h: [
+          T(
+            "Equivalent ratios come from multiplying both numbers by the same factor.",
+            "Las razones equivalentes salen de multiplicar ambos números por el mismo factor.",
+          ),
+          T(
+            "For each pair, find what the first number was multiplied by.",
+            "En cada par, halla por cuánto se multiplicó el primer número.",
+          ),
+          T(
+            "Then check that the second number used the same factor.",
+            "Luego comprueba que el segundo número usó el mismo factor.",
+          ),
+        ],
+        meta: { a, b, k, d },
+        loose: true,
+      }),
+    );
+  };
+  const emRevCheck = (/** @type {any} */ it) =>
+    pickOne(it, (txt) => {
+      const [p, q, r, s] = nums2(txt);
+      return p * s === q * r && p === it.meta.a && q === it.meta.b;
+    });
+
+  /* ---- convertFactor (3-10): conversion factors as fractions, the units cancel ------------------------ */
+  const AB = new Map([
+    [U.yard, "yd"],
+    [U.foot, "ft"],
+    [U.inch, "in"],
+    [U.meter, "m"],
+    [U.cm, "cm"],
+    [U.km, "km"],
+    [U.pound, "lb"],
+    [U.ounce, "oz"],
+    [U.kg, "kg"],
+    [U.gram, "g"],
+    [U.mg, "mg"],
+    [U.gallon, "gal"],
+    [U.quart, "qt"],
+    [U.pint, "pt"],
+    [U.cup, "cup"],
+    [U.liter, "L"],
+    [U.ml, "mL"],
+    [U.hour, "h"],
+    [U.minute, "min"],
+    [U.second, "s"],
+    [U.day, "day"],
+    [U.week, "wk"],
+    [U.mile, "mi"],
+  ]);
+  const ab = (/** @type {any} */ q) => /** @type {string} */ (AB.get(q));
+  const FACTOR_FACTS = FACTS.filter((f) => f[3] !== "time");
+  const FACTOR_CHAINS = CHAINS.filter((c) => c[5] !== "time");
+  /** "3 ft / 1 yd" */
+  const fr = (
+    /** @type {number} */ n1,
+    /** @type {string} */ u1,
+    /** @type {number} */ n2,
+    /** @type {string} */ u2,
+  ) => `${n1} ${u1} / ${n2} ${u2}`;
+  const frParse = (/** @type {string} */ s) => {
+    const m = s.match(/^(\d+) (\S+) \/ (\d+) (\S+)$/);
+    return m ? { n1: Number(m[1]), u1: m[2], n2: Number(m[3]), u2: m[4] } : null;
+  };
+  const noFix = T(
+    "Units cancel only when the unit you are leaving is on the bottom of the fraction and the unit you want is on top.",
+    "Las unidades se cancelan solo cuando la unidad que dejas está abajo en la fracción y la unidad que quieres está arriba.",
+  );
+
+  /** L1: pick the factor whose units cancel */
+  const cfPick = (/** @type {any} */ rng) => {
+    const [big, small, k] = rng.pick(FACTOR_FACTS);
+    const down = rng.chance(0.5);
+    const [from, to] = down ? [big, small] : [small, big];
+    const f = ab(from);
+    const t = ab(to);
+    const v = rng.int(2, 9) * (down ? 1 : k);
+    const right = down ? fr(k, t, 1, f) : fr(1, t, k, f);
+    const wrong = down
+      ? [fr(1, f, k, t), fr(k, f, 1, t), fr(1, t, k, f)]
+      : [fr(k, f, 1, t), fr(k, t, 1, f), fr(1, f, k, t)];
+    const tags = ["unit-mismatch", "op-divided-instead-of-multiplied", "ratio-not-checked"];
+    const fbs = [
+      T(
+        "That fraction is upside down: {f} is on top, so it does not cancel. " + noFix[0],
+        "Esa fracción está al revés: {f} está arriba, así que no se cancela. " + noFix[1],
+        { f },
+      ),
+      T(
+        "That fraction pairs the numbers with the wrong units. Read the fact again.",
+        "Esa fracción une los números con las unidades equivocadas. Lee otra vez el dato.",
+        {},
+      ),
+      T(
+        "That fraction does not use the right number. Check the fact.",
+        "Esa fracción no usa el número correcto. Revisa el dato.",
+        {},
+      ),
+    ];
+    return balanced(
+      mcB(rng, {
+        q: T(
+          "You start with {v} {from} and want {to}. {fact}. Which conversion factor makes the {fromAb} cancel?",
+          "Empiezas con {v} {from} y quieres {to}. {fact}. ¿Qué factor de conversión hace que {fromAb} se cancele?",
+          { v, from: from.p, to: to.p, fact: factTxt(big, small, k), fromAb: f },
+        ),
+        right: { v: right, vEs: right },
+        wrong: wrong.map((w, i) => ({ v: w, vEs: w, f: fbs[i], tag: tags[i] })),
+        x: T(
+          "Put {f} on the bottom so it cancels with the {f} you start with, and {t} on top: {r}.",
+          "Pon {f} abajo para que se cancele con el {f} con que empiezas, y {t} arriba: {r}.",
+          { f, t, r: right },
+        ),
+        h: [
+          T(
+            "A conversion factor is a fraction that equals 1, like 12 in / 1 ft.",
+            "Un factor de conversión es una fracción igual a 1, como 12 in / 1 ft.",
+          ),
+          T(
+            "The unit you start with must be on the bottom of the fraction.",
+            "La unidad con que empiezas debe estar abajo en la fracción.",
+          ),
+          T(
+            "The unit you want goes on top, with its number from the fact.",
+            "La unidad que quieres va arriba, con su número del dato.",
+          ),
+        ],
+        meta: { k, down, f, t, v },
+        loose: true,
+      }),
+    );
+  };
+  const cfPickCheck = (/** @type {any} */ it) => {
+    const { k, down, f, t } = it.meta;
+    return pickOne(it, (txt) => {
+      const p = frParse(txt);
+      if (!p) return false;
+      // cancels: bottom unit is what we start with, top unit is what we want, and top/bottom numbers give the fact
+      const ratio = down ? k : 1 / k;
+      return p.u2 === f && p.u1 === t && same(p.n1 / p.n2, ratio, 1e-9);
+    });
+  };
+
+  /** L2: use one factor written as a fraction */
+  const cfApply = (/** @type {any} */ rng) => {
+    const [big, small, k] = rng.pick(FACTOR_FACTS);
+    const down = rng.chance(0.5);
+    const [from, to] = down ? [big, small] : [small, big];
+    const m = rng.int(2, 14);
+    const v = down ? (rng.chance(0.5) ? m + 0.5 : m) : m * k;
+    const ans = down ? v * k : v / k;
+    if (!Number.isFinite(ans) || ans !== Math.round(ans * 100) / 100) redo();
+    const f = ab(from);
+    const t = ab(to);
+    const fac = down ? fr(k, t, 1, f) : fr(1, t, k, f);
+    return numB({
+      q: T(
+        "Use the conversion factor ({fac}). {v} {f} × ({fac}) = ? {t}",
+        "Usa el factor de conversión ({fac}). {v} {f} × ({fac}) = ? {t}",
+        { fac, v: fmt(v), f, t },
+      ),
+      a: fmt(ans),
+      unit: t,
+      fw: [
+        {
+          v: down ? fmt(v / k) : fmt(v * k),
+          f: T(
+            "That divides when it should multiply, or the other way round. Multiply by the top number and divide by the bottom number.",
+            "Eso divide cuando debía multiplicar, o al revés. Multiplica por el número de arriba y divide entre el de abajo.",
+          ),
+          tag: down ? "op-divided-instead-of-multiplied" : "op-multiplied-instead-of-divided",
+        },
+        { v: fmt(v + k), f: dirTag.add, tag: "op-added-instead-of-multiplied" },
+      ],
+      x: T(
+        "The {f} on top and bottom cancel, so the answer is in {t}: {v} × {top} ÷ {bottom} = {ans} {t}.",
+        "El {f} de arriba y de abajo se cancelan, así que la respuesta está en {t}: {v} × {top} ÷ {bottom} = {ans} {t}.",
+        {
+          f,
+          t,
+          v: fmt(v),
+          top: down ? k : 1,
+          bottom: down ? 1 : k,
+          ans: fmt(ans),
+        },
+      ),
+      h: [
+        T(
+          "Cancel the unit that is on both the top and the bottom.",
+          "Cancela la unidad que está arriba y abajo.",
+        ),
+        T(
+          "Multiply the number by the top of the fraction.",
+          "Multiplica el número por el de arriba de la fracción.",
+        ),
+        T(
+          "Then divide by the bottom of the fraction.",
+          "Luego divide entre el de abajo de la fracción.",
+        ),
+      ],
+      meta: { v, k, down },
+    });
+  };
+  const cfApplyCheck = (/** @type {any} */ it) => {
+    const { v, k, down } = it.meta;
+    if (down) {
+      let acc = 0;
+      for (let i = 0; i < k; i++) acc += v; // k copies of v
+      return wantNum(it, acc);
+    }
+    let groups = 0;
+    for (let rest = v; rest >= k; rest -= k) groups++; // how many groups of k fit
+    return groups * k === v ? wantNum(it, groups) : "v is not a whole number of groups";
+  };
+
+  /** L3: which unit is left over when a tile is flipped */
+  const cfLeft = (/** @type {any} */ rng) => {
+    const [a, b, c, k1, k2] = rng.pick(FACTOR_CHAINS);
+    const A = ab(a);
+    const B = ab(b);
+    const C = ab(c);
+    const flipSecond = rng.chance(0.65);
+    const v = rng.int(2, 9);
+    const chain = `${v} ${A} × (${fr(k1, B, 1, A)}) × (${flipSecond ? fr(1, B, k2, C) : fr(k2, C, 1, B)})`;
+    const left = flipSecond ? `${B}²/${C}` : C;
+    const opts = flipSecond
+      ? [`${B}²/${C}`, `${B}/${C}`, `${C}²/${B}`, `${A}/${B}`]
+      : [C, `${B}²/${C}`, B, A];
+    const wrongF = T(
+      "Not quite. Cross out any unit that appears on the top and the bottom, then see what is left.",
+      "No del todo. Tacha cada unidad que aparece arriba y abajo y mira qué queda.",
+    );
+    return balanced(
+      mcB(rng, {
+        q: T(
+          "After the units cancel, what unit is left in this chain? {chain}",
+          "Cuando las unidades se cancelan, ¿qué unidad queda en esta cadena? {chain}",
+          { chain },
+        ),
+        right: { v: left, vEs: left },
+        wrong: opts
+          .filter((o) => o !== left)
+          .map((o, i) => ({
+            v: o,
+            vEs: o,
+            f: wrongF,
+            tag: i === 0 ? "ratio-not-checked" : i === 1 ? "unit-mismatch" : "stopped-early",
+          })),
+        x: flipSecond
+          ? T(
+              "The first fraction cancels {A} and leaves {B}. The second fraction has {B} on top too, so {B} does not cancel. What is left is {left}.",
+              "La primera fracción cancela {A} y deja {B}. La segunda fracción también tiene {B} arriba, así que {B} no se cancela. Lo que queda es {left}.",
+              { A, B, left },
+            )
+          : T(
+              "The first fraction cancels {A} and leaves {B}. The second cancels {B} and leaves {C}. Only {C} is left.",
+              "La primera fracción cancela {A} y deja {B}. La segunda cancela {B} y deja {C}. Solo queda {C}.",
+              { A, B, C },
+            ),
+        h: [
+          T(
+            "Write the chain as one long fraction of units.",
+            "Escribe la cadena como una fracción larga de unidades.",
+          ),
+          T(
+            "A unit on the top and the bottom cancels. A unit twice on top does not.",
+            "Una unidad arriba y abajo se cancela. Una unidad dos veces arriba no.",
+          ),
+          T(
+            "Read what is left after you cross out every pair.",
+            "Lee lo que queda después de tachar cada par.",
+          ),
+        ],
+        meta: { v, a: A, b: B, c: C, flipSecond },
+        loose: true,
+      }),
+    );
+  };
+
+  const cfLeftCheck = (/** @type {any} */ it) => {
+    const { a, b, c, flipSecond } = it.meta;
+    // exponents of each unit: start +1 for a; tile 1 is b over a; tile 2 is c over b (right) or b over c (flipped)
+    /** @type {Record<string, number>} */
+    const e = { [a]: 1 };
+    const mul = (/** @type {string} */ top, /** @type {string} */ bottom) => {
+      e[top] = (e[top] || 0) + 1;
+      e[bottom] = (e[bottom] || 0) - 1;
+    };
+    mul(b, a);
+    if (flipSecond) mul(b, c);
+    else mul(c, b);
+    const left = Object.entries(e).filter(([, n]) => n !== 0);
+    const text = left
+      .sort((x, y) => y[1] - x[1])
+      .map(([u, n]) => (n === 2 ? `${u}²` : n === 1 ? u : ""))
+      .join("");
+    const bottom = left
+      .filter(([, n]) => n < 0)
+      .map(([u]) => u)
+      .join("");
+    const want = bottom ? `${text}/${bottom}` : text;
+    return pickOne(it, (txt) => txt === want);
+  };
+
+  /** L4: which chain is set up so only the wanted unit is left */
+  const cfChain = (/** @type {any} */ rng) => {
+    const [a, b, c, k1, k2] = rng.pick(FACTOR_CHAINS);
+    const A = ab(a);
+    const B = ab(b);
+    const C = ab(c);
+    const down = rng.chance(0.6);
+    const v = rng.int(2, 9) * (down ? 1 : k1 * k2);
+    const from = down ? A : C;
+    const mid = B;
+    const to = down ? C : A;
+    const t1 = down ? fr(k1, B, 1, A) : fr(1, B, k2, C);
+    const t1x = down ? fr(1, A, k1, B) : fr(k2, C, 1, B);
+    const t2 = down ? fr(k2, C, 1, B) : fr(1, A, k1, B);
+    const t2x = down ? fr(1, B, k2, C) : fr(k1, B, 1, A);
+    const mk = (/** @type {string} */ x, /** @type {string} */ y) =>
+      `${v} ${from} × (${x}) × (${y})`;
+    const good = mk(t1, t2);
+    const opts = [good, mk(t1x, t2), mk(t1, t2x), mk(t1x, t2x)];
+    return balanced(
+      mcB(rng, {
+        q: T(
+          "Which chain changes {v} {from} to {to}, with every other unit cancelling?",
+          "¿Qué cadena cambia {v} {from} a {to}, con todas las otras unidades cancelándose?",
+          { v, from, to },
+        ),
+        right: { v: good, vEs: good },
+        wrong: [
+          { v: opts[1], vEs: opts[1], f: noFix, tag: "ratio-not-checked" },
+          { v: opts[2], vEs: opts[2], f: noFix, tag: "unit-mismatch" },
+          {
+            v: opts[3],
+            vEs: opts[3],
+            f: T(
+              "Both fractions are upside down. Each one leaves a unit on the bottom that nothing cancels.",
+              "Las dos fracciones están al revés. Cada una deja una unidad abajo que nada cancela.",
+            ),
+            tag: "ratio-not-checked",
+          },
+        ],
+        x: T(
+          "In the right chain, {from} cancels with the first fraction, {mid} cancels with the second, and only {to} is left.",
+          "En la cadena correcta, {from} se cancela con la primera fracción, {mid} se cancela con la segunda y solo queda {to}.",
+          { from, mid, to },
+        ),
+        h: [
+          T(
+            "Cancel one unit at a time, left to right.",
+            "Cancela una unidad a la vez, de izquierda a derecha.",
+          ),
+          T(
+            "After the first fraction, the unit left must be on top of the next fraction's bottom.",
+            "Después de la primera fracción, la unidad que queda debe estar abajo en la siguiente.",
+          ),
+          T(
+            "Only the unit you want may be left at the end.",
+            "Solo la unidad que quieres puede quedar al final.",
+          ),
+        ],
+        meta: { v, from, mid, to, opts, k: [k1, k2], down },
+        loose: true,
+      }),
+    );
+  };
+  const cfChainCheck = (/** @type {any} */ it) =>
+    pickOne(it, (txt) => {
+      // parse "v unit × (n u / n u) × (...)" and cancel units by exponent counting
+      const m = txt.match(/^(\d+) (\S+) × \((.+?)\) × \((.+?)\)$/);
+      if (!m) return false;
+      /** @type {Record<string, number>} */
+      const e = { [m[2]]: 1 };
+      const ps = [frParse(m[3]), frParse(m[4])];
+      for (const p of ps) {
+        if (!p) return false;
+        e[p.u1] = (e[p.u1] || 0) + 1;
+        e[p.u2] = (e[p.u2] || 0) - 1;
+      }
+      const left = Object.entries(e).filter(([, n]) => n !== 0);
+      const top = ps[0].n1 * ps[1].n1;
+      const bottom = ps[0].n2 * ps[1].n2;
+      const [k1, k2] = it.meta.k;
+      const numbersOk = it.meta.down ? top === k1 * k2 * bottom : top * k1 * k2 === bottom;
+      return left.length === 1 && left[0][1] === 1 && left[0][0] === it.meta.to && numbersOk;
+    });
+
+  /** which-input: the chain and the end amount are given; find the amount you started with */
+  const cfBack = (/** @type {any} */ rng, /** @type {number} */ level) => {
+    let A;
+    let B;
+    let C;
+    let factor;
+    let tiles;
+    if (level >= 3) {
+      const [a, b, c, k1, k2] = rng.pick(FACTOR_CHAINS);
+      A = ab(a);
+      B = ab(b);
+      C = ab(c);
+      factor = k1 * k2;
+      tiles = `× (${fr(k1, B, 1, A)}) × (${fr(k2, C, 1, B)})`;
+    } else {
+      const [big, small, k] = rng.pick(FACTOR_FACTS);
+      A = ab(big);
+      B = ab(small);
+      C = B;
+      factor = k;
+      tiles = `× (${fr(k, B, 1, A)})`;
+    }
+    const start = rng.int(2, 60);
+    const end = start * factor;
+    return numB({
+      q: T(
+        "A chain starts with an unknown amount of {A}: ? {A} {tiles} = {end} {C}. How many {A} did it start with?",
+        "Una cadena empieza con una cantidad desconocida de {A}: ? {A} {tiles} = {end} {C}. ¿Con cuántos {A} empezó?",
+        { A, tiles, end: show(end), C },
+      ),
+      a: String(start),
+      unit: A,
+      fw: [
+        {
+          v: String(end * factor),
+          f: T(
+            "That multiplies again. The chain already multiplied the start; work backward by dividing.",
+            "Eso multiplica otra vez. La cadena ya multiplicó el inicio; trabaja hacia atrás dividiendo.",
+          ),
+          tag: "op-multiplied-instead-of-divided",
+        },
+        { v: String(end - factor), f: dirTag.add, tag: "op-added-instead-of-multiplied" },
+      ],
+      x: T(
+        "The chain multiplies by {top} to get {end} {C}. Work backward: {end} ÷ {top} = {start} {A}.",
+        "La cadena multiplica por {top} para llegar a {end} {C}. Trabaja hacia atrás: {end} ÷ {top} = {start} {A}.",
+        { top: show(factor), end: show(end), C, start, A },
+      ),
+      h: [
+        T(
+          "The tiles multiplied the start to make the end. Undo them.",
+          "Los mosaicos multiplicaron el inicio para formar el final. Deshazlos.",
+        ),
+        T(
+          "Find the number the whole chain multiplies by.",
+          "Halla el número por el que multiplica toda la cadena.",
+        ),
+        T("Divide the end amount by that number.", "Divide la cantidad final entre ese número."),
+      ],
+      meta: { start, factor, end },
+    });
+  };
+
+  const cfBackCheck = (/** @type {any} */ it) => {
+    const { factor, end } = it.meta;
+    let s = 0;
+    // count how many whole chains of size `factor` fit in `end`
+    while ((s + 1) * factor <= end) s++;
+    return wantNum(it, s) === true && s * factor === end
+      ? true
+      : "the end amount is not a whole number of chains";
+  };
+
+  suite("convertFactor", "Use conversion factors", "Usar factores de conversión", {
+    1: [form("pick", cfPick, cfPickCheck)],
+    2: [form("apply", cfApply, cfApplyCheck)],
+    3: [form("left", cfLeft, cfLeftCheck)],
+    4: [form("chain", cfChain, cfChainCheck)],
+  });
+
+  /* ---- shapes wired into the generators ---------------------------------------------------------------- */
+  SUITES.ratioWrite("reverse", {
+    1: [form("rev", guard(rwRev, rwRevCheck), rwRevCheck)],
+    2: [form("rev", guard(rwRev, rwRevCheck), rwRevCheck)],
+    3: [form("rev", guard(rwRev, rwRevCheck), rwRevCheck)],
+    4: [form("rev", guard(rwRev, rwRevCheck), rwRevCheck)],
+  });
+  SUITES.unitRate("reverse", {
+    1: [form("rev", guard(urRev, urRevCheck), urRevCheck)],
+    2: [form("rev", guard(urRev, urRevCheck), urRevCheck)],
+    3: [form("rev", guard(urRev, urRevCheck), urRevCheck)],
+    4: [form("rev", guard(urRev, urRevCheck), urRevCheck)],
+  });
+  SUITES.eqRatioTable("reverse", {
+    1: [form("rev", guard(etRev, etRevCheck), etRevCheck)],
+    2: [form("rev", guard(etRev, etRevCheck), etRevCheck)],
+    3: [form("rev", guard(etRev, etRevCheck), etRevCheck)],
+    4: [form("rev", guard(etRev, etRevCheck), etRevCheck)],
+  });
+  SUITES.ratioGraphRead("reverse", {
+    1: [form("rev", guard(grRev, grRevCheck), grRevCheck)],
+    2: [form("rev", guard(grRev, grRevCheck), grRevCheck)],
+    3: [form("rev", guard(grRev, grRevCheck), grRevCheck)],
+    4: [form("rev", guard(grRev, grRevCheck), grRevCheck)],
+  });
+  SUITES.compareRatios("compare-four", {
+    1: [form("four", guard(crFour, crFourCheck), crFourCheck)],
+    2: [form("four", guard(crFour, crFourCheck), crFourCheck)],
+    3: [form("four", guard(crFour, crFourCheck), crFourCheck)],
+    4: [form("four", guard(crFour, crFourCheck), crFourCheck)],
+  });
+  SUITES.convertUnits("reverse", {
+    1: [form("rev", guard(cuRev, cuRevCheck), cuRevCheck)],
+    2: [form("rev", guard(cuRev, cuRevCheck), cuRevCheck)],
+    3: [form("rev", guard(cuRev, cuRevCheck), cuRevCheck)],
+    4: [form("rev", guard(cuRev, cuRevCheck), cuRevCheck)],
+  });
+  SUITES.convertBetween("reverse", {
+    1: [form("rev", guard(cbRev, cbRevCheck), cbRevCheck)],
+    2: [form("rev", guard(cbRev, cbRevCheck), cbRevCheck)],
+    3: [form("rev", guard(cbRev, cbRevCheck), cbRevCheck)],
+    4: [form("rev", guard(cbRev, cbRevCheck), cbRevCheck)],
+  });
+  SUITES.unitRateWord("compare", {
+    1: [form("cmp", guard(uwCmp, uwCmpCheck), uwCmpCheck)],
+    2: [form("cmp", guard(uwCmp, uwCmpCheck), uwCmpCheck)],
+    3: [form("cmp", guard(uwCmp, uwCmpCheck), uwCmpCheck)],
+    4: [form("cmp", guard(uwCmp, uwCmpCheck), uwCmpCheck)],
+  });
+  SUITES.eqRatioMissing("reverse", {
+    1: [form("rev", guard(emRev, emRevCheck), emRevCheck)],
+    2: [form("rev", guard(emRev, emRevCheck), emRevCheck)],
+    3: [form("rev", guard(emRev, emRevCheck), emRevCheck)],
+    4: [form("rev", guard(emRev, emRevCheck), emRevCheck)],
+  });
+  SUITES.convertFactor("which-input", {
+    1: [form("back", cfBack, cfBackCheck)],
+    2: [form("back", cfBack, cfBackCheck)],
+    3: [form("back", cfBack, cfBackCheck)],
+    4: [form("back", cfBack, cfBackCheck)],
+  });
 })();

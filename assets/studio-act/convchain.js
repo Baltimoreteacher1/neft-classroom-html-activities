@@ -37,7 +37,7 @@
     lb: "pounds|libras",
     oz: "ounces|onzas",
     gal: "gallons|galones",
-    qt: "quarts|cuartos",
+    qt: "quarts|cuartos de galón",
     pt: "pints|pintas",
     cup: "cups|tazas",
     hr: "hours|horas",
@@ -264,6 +264,7 @@
         .replace(/^feet$/, "foot")
         .replace(/^inches$/, "inch")
         .replace(/^pies$/, "pie")
+        .replace(/^cuartos de galón$/, "cuarto de galón")
         .replace(/s$/, "");
     const init = () => ({ steps: [{ op: null, f: null }], round: null });
     let st = api.restore ? JSON.parse(JSON.stringify(api.restore)) : init();

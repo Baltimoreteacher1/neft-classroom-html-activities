@@ -11,74 +11,77 @@
   "fresh": [
     {
       "k": "gen",
-      "g": "convertUnits",
+      "g": "convertFactor",
       "level": 1
     },
     {
       "k": "gen",
-      "g": "convertUnits",
-      "level": 1
+      "g": "convertFactor",
+      "level": 1,
+      "shape": "which-input"
     },
     {
       "k": "gen",
-      "g": "convertUnits",
+      "g": "convertFactor",
       "level": 2
     },
     {
       "k": "gen",
-      "g": "convertUnits",
-      "level": 2
+      "g": "convertFactor",
+      "level": 2,
+      "shape": "which-input"
     },
     {
       "k": "gen",
-      "g": "convertUnits",
+      "g": "convertFactor",
       "level": 3
     },
     {
       "k": "gen",
-      "g": "convertUnits",
-      "level": 3
+      "g": "convertFactor",
+      "level": 3,
+      "shape": "which-input"
     },
     {
       "k": "act",
-      "kind": "convchain",
-      "level": 2,
-      "p": {
-        "system": "same"
-      }
+      "kind": "cancelit",
+      "level": 2
     }
   ],
   "challenge": {
     "climb": [
       {
         "k": "gen",
-        "g": "convertUnits",
+        "g": "convertFactor",
         "level": 2
       },
       {
         "k": "gen",
-        "g": "convertUnits",
-        "level": 2
+        "g": "convertFactor",
+        "level": 2,
+        "shape": "which-input"
       },
       {
         "k": "gen",
-        "g": "convertUnits",
+        "g": "convertFactor",
         "level": 3
       },
       {
         "k": "gen",
-        "g": "convertUnits",
-        "level": 3
+        "g": "convertFactor",
+        "level": 3,
+        "shape": "which-input"
       },
       {
         "k": "gen",
-        "g": "convertUnits",
+        "g": "convertFactor",
         "level": 4
       },
       {
         "k": "gen",
-        "g": "convertUnits",
-        "level": 4
+        "g": "convertFactor",
+        "level": 4,
+        "shape": "which-input"
       }
     ],
     "missions": [
@@ -271,19 +274,13 @@
     "lab": [
       {
         "k": "act",
-        "kind": "convchain",
-        "level": 3,
-        "p": {
-          "system": "same"
-        }
+        "kind": "cancelit",
+        "level": 3
       },
       {
         "k": "act",
-        "kind": "convchain",
-        "level": 4,
-        "p": {
-          "system": "same"
-        }
+        "kind": "cancelit",
+        "level": 4
       },
       {
         "k": "match",
@@ -418,42 +415,48 @@
       },
       {
         "k": "err",
-        "t": "Nia changes the 3.4-kilometer cross-country course to meters with 1 km = 1,000 m. Tap the first step where her work goes wrong.",
-        "tEs": "Nia cambia el circuito de campo traviesa de 3.4 kilómetros a metros con 1 km = 1,000 m. Toca el primer paso donde su trabajo se equivoca.",
+        "t": "In 1999 NASA lost the Mars Climate Orbiter because one team's numbers were in pound-force seconds (lbf·s) and the other team's software expected newton-seconds (N·s). Use 1 lbf ≈ 4.45 N. Here is a made-up check of an engine push of 100 lbf·s. Tap the first step where the work goes wrong.",
+        "tEs": "En 1999 la NASA perdió la sonda Mars Climate Orbiter porque los números de un equipo estaban en libras-fuerza por segundo (lbf·s) y el programa del otro equipo esperaba newtons por segundo (N·s). Usa 1 lbf ≈ 4.45 N. Aquí hay una revisión inventada de un empuje de motor de 100 lbf·s. Toca el primer paso donde el trabajo se equivoca.",
         "s": [
           {
             "l": "Step 1",
             "lEs": "Paso 1",
-            "w": "Meters are smaller than kilometers, so I multiply.",
-            "wEs": "Los metros son más pequeños que los kilómetros, así que multiplico."
+            "w": "The push is 100 lbf·s. The software needs N·s.",
+            "wEs": "El empuje es 100 lbf·s. El programa necesita N·s."
           },
           {
             "l": "Step 2",
             "lEs": "Paso 2",
-            "w": "3.4 × 100 = 340.",
-            "wEs": "3.4 × 100 = 340."
+            "w": "The conversion factor is 4.45 N / 1 lbf.",
+            "wEs": "El factor de conversión es 4.45 N / 1 lbf."
           },
           {
             "l": "Step 3",
             "lEs": "Paso 3",
-            "w": "The course is 340 meters.",
-            "wEs": "El circuito mide 340 metros."
+            "w": "I skip the factor and send 100 as N·s.",
+            "wEs": "Me salto el factor y envío 100 como N·s."
+          },
+          {
+            "l": "Step 4",
+            "lEs": "Paso 4",
+            "w": "The software uses 100 N·s as the push.",
+            "wEs": "El programa usa 100 N·s como el empuje."
           }
         ],
-        "e": 1,
-        "fix": "A kilometer is 1,000 m, not 100 m. Multiply by 1,000: 3.4 × 1,000 = 3,400 m.",
-        "fixEs": "Un kilómetro son 1,000 m, no 100 m. Multiplica por 1,000: 3.4 × 1,000 = 3,400 m.",
-        "x": "The direction was right but the factor was not. 340 m is under half a kilometer, so it cannot be a 3.4-km course.",
-        "xEs": "La dirección era correcta pero el factor no. 340 m es menos de medio kilómetro, así que no puede ser un circuito de 3.4 km.",
+        "e": 2,
+        "fix": "The factor must be used so the lbf cancels. 100 lbf·s × (4.45 N / 1 lbf) = 445 N·s.",
+        "fixEs": "Hay que usar el factor para que se cancele lbf. 100 lbf·s × (4.45 N / 1 lbf) = 445 N·s.",
+        "x": "The lbf cancels with the factor and leaves N·s. Sending 100 as N·s left out the factor, so the software believed the push was much smaller than it was. A unit mix-up like this lost a real spacecraft.",
+        "xEs": "El lbf se cancela con el factor y deja N·s. Enviar 100 como N·s dejó fuera el factor, así que el programa creyó que el empuje era mucho menor de lo que era. Una confusión de unidades como esta perdió una nave espacial de verdad.",
         "h": [
-          "Check the conversion factor given in the problem.",
-          "How many meters are in 1 km?",
-          "Would 340 m be longer or shorter than 1 km?"
+          "Which unit does the software need?",
+          "Which fraction cancels lbf?",
+          "Look at the step where the number goes into the software. Did the units change?"
         ],
         "hEs": [
-          "Revisa el factor de conversión del problema.",
-          "¿Cuántos metros hay en 1 km?",
-          "¿340 m serían más largos o más cortos que 1 km?"
+          "¿Qué unidad necesita el programa?",
+          "¿Qué fracción cancela lbf?",
+          "Mira el paso donde el número entra al programa. ¿Cambiaron las unidades?"
         ]
       },
       {
@@ -461,16 +464,16 @@
         "q": "A sign says the discus throw went 300 cm. Ana says to find meters you multiply by 100. Ben says you divide by 100. Who is right?",
         "qEs": "Un letrero dice que el lanzamiento de disco fue de 300 cm. Ana dice que para hallar metros se multiplica por 100. Ben dice que se divide entre 100. ¿Quién tiene razón?",
         "c": [
-          "Ana, because you always multiply by the factor.",
-          "Ben, because a meter is bigger than a centimeter, so there are fewer meters.",
-          "Both, because each one uses the factor 100.",
-          "Neither, because you add 100."
+          "Ana, because you always multiply when you convert units.",
+          "Ben: a meter is bigger, so there are fewer meters.",
+          "Both, because each one uses the factor 100 to convert.",
+          "Neither, because you add 100 to change the unit."
         ],
         "cEs": [
-          "Ana, porque siempre se multiplica por el factor.",
-          "Ben, porque un metro es más grande que un centímetro, así que hay menos metros.",
-          "Los dos, porque cada uno usa el factor 100.",
-          "Ninguno, porque se suma 100."
+          "Ana, porque siempre se multiplica al convertir unidades.",
+          "Ben: un metro es más grande, así que hay menos metros.",
+          "Los dos, porque cada uno usa el factor 100 al convertir.",
+          "Ninguno, porque para cambiar de unidad se suma 100."
         ],
         "a": 1,
         "f": [
@@ -547,16 +550,16 @@
         "q": "Three jumpers cleared these heights: Ravi 2 yd, Sol 5 ft, Tam 70 in. Use 1 yd = 3 ft and 1 ft = 12 in. Who jumped the highest?",
         "qEs": "Tres saltadores superaron estas alturas: Ravi 2 yd, Sol 5 pies, Tam 70 pulg. Usa 1 yd = 3 pies y 1 pie = 12 pulg. ¿Quién saltó más alto?",
         "c": [
-          "Sol",
-          "Tam",
-          "Ravi",
-          "They all jumped the same height"
+          "Sol, with 5 feet",
+          "Tam, with 70 inches",
+          "Ravi, with 2 yards",
+          "All three are equal"
         ],
         "cEs": [
-          "Sol",
-          "Tam",
-          "Ravi",
-          "Todos saltaron la misma altura"
+          "Sol, con 5 pies",
+          "Tam, con 70 pulg",
+          "Ravi, con 2 yd",
+          "Todas son iguales"
         ],
         "a": 2,
         "f": [
@@ -1026,16 +1029,16 @@
         "Escribe la medida sobre 1: 8 ft / 1"
       ],
       "c": [
-        "Multiply by 1 ft / 12 in.",
+        "Multiply by 1 ft / 12 in, so the inches cancel.",
         "Multiply by 12 in / 1 ft, so the feet cancel.",
-        "Add 12 to the 8 and write 20 in.",
-        "Multiply by 3 ft / 1 yd."
+        "Add 12 to the 8 and write 20 in as the answer.",
+        "Multiply by 3 ft / 1 yd, to change the feet."
       ],
       "cEs": [
-        "Multiplica por 1 ft / 12 in.",
+        "Multiplica por 1 ft / 12 in, para que se cancelen las pulgadas.",
         "Multiplica por 12 in / 1 ft, para que se cancelen los pies.",
-        "Suma 12 al 8 y escribe 20 in.",
-        "Multiplica por 3 ft / 1 yd."
+        "Suma 12 al 8 y escribe 20 in como la respuesta final.",
+        "Multiplica por 3 ft / 1 yd, para cambiar los pies a yardas."
       ],
       "a": 1,
       "f": [
@@ -1079,16 +1082,16 @@
         "2 h × (60 min / 1 h) = 120 min"
       ],
       "c": [
-        "Stop here, because 120 is the answer.",
-        "Multiply by 60 min / 1 h again, to be sure.",
-        "Multiply by 1 min / 60 s.",
-        "Multiply by 60 s / 1 min, so the minutes cancel."
+        "Stop here, because 120 is the final answer now.",
+        "Multiply by 60 min / 1 h again, just to be sure.",
+        "Multiply by 1 min / 60 s, so the seconds cancel.",
+        "Multiply by 60 s / 1 min, to cancel the minutes."
       ],
       "cEs": [
-        "Detente aquí, porque 120 es la respuesta.",
+        "Detente aquí, porque 120 ya es la respuesta final.",
         "Multiplica otra vez por 60 min / 1 h, para estar seguro.",
-        "Multiplica por 1 min / 60 s.",
-        "Multiplica por 60 s / 1 min, para que se cancelen los minutos."
+        "Multiplica por 1 min / 60 s, para cancelar los segundos.",
+        "Multiplica por 60 s / 1 min, para cancelar los minutos."
       ],
       "a": 3,
       "f": [
@@ -1120,5 +1123,161 @@
         "Elige la siguiente razón de modo que la unidad que tienes ahora se cancele."
       ]
     }
-  }
+  },
+  "mastery": [
+    {
+      "k": "mc",
+      "q": "You start with 8 yards and want feet. Use 1 yd = 3 ft. Which conversion factor makes the yards cancel?",
+      "qEs": "Empiezas con 8 yardas y quieres pies. Usa 1 yd = 3 ft. ¿Qué factor de conversión hace que las yardas se cancelen?",
+      "c": [
+        "1 ft / 3 yd",
+        "3 ft / 1 yd",
+        "3 yd / 1 ft",
+        "1 yd / 3 ft"
+      ],
+      "cEs": [
+        "1 pie / 3 yd",
+        "3 pies / 1 yd",
+        "3 yd / 1 pie",
+        "1 yd / 3 pies"
+      ],
+      "a": 1,
+      "f": [
+        "The yards are on the bottom here, but the numbers are in the wrong places. Read the fact again: 1 yd is 3 ft.",
+        "",
+        "That puts the yards on top, so they do not cancel with the yards you start with.",
+        "That puts the yards on top, so they do not cancel with the yards you start with."
+      ],
+      "fEs": [
+        "Aquí las yardas están abajo, pero los números están en lugares equivocados. Lee otra vez el dato: 1 yd es 3 ft.",
+        "",
+        "Eso pone las yardas arriba, así que no se cancelan con las yardas con que empiezas.",
+        "Eso pone las yardas arriba, así que no se cancelan con las yardas con que empiezas."
+      ],
+      "tag": [
+        "unit-conversion-direction",
+        null,
+        "unit-conversion-direction",
+        "unit-conversion-direction"
+      ],
+      "x": "The yards you start with must be on the bottom, and the feet you want on top: 3 ft / 1 yd. Then 8 yd × (3 ft / 1 yd) leaves feet.",
+      "xEs": "Las yardas con que empiezas deben estar abajo, y los pies que quieres arriba: 3 pies / 1 yd. Entonces 8 yd × (3 pies / 1 yd) deja pies.",
+      "h": [
+        "A conversion factor is a fraction that equals 1.",
+        "Put the unit you start with on the bottom of the fraction."
+      ],
+      "hEs": [
+        "Un factor de conversión es una fracción igual a 1.",
+        "Pon la unidad con que empiezas abajo en la fracción."
+      ]
+    },
+    {
+      "k": "num",
+      "q": "Finish the chain: 2.5 yd × (3 ft / 1 yd) × (12 in / 1 ft) = ? in",
+      "qEs": "Termina la cadena: 2.5 yd × (3 pies / 1 yd) × (12 pulg / 1 pie) = ? pulg",
+      "a": "90",
+      "unit": "in",
+      "fw": [
+        {
+          "v": "7.5",
+          "f": "That stops after the first tile, so the answer is still in feet. Use the second tile too.",
+          "fEs": "Eso se detiene en el primer mosaico, así que la respuesta sigue en pies. Usa también el segundo mosaico.",
+          "tag": "multi-step-stopped-early"
+        },
+        {
+          "v": "30",
+          "f": "That skips the first tile. Multiply by both numbers on top of the tiles.",
+          "fEs": "Eso se salta el primer mosaico. Multiplica por los dos números de arriba de los mosaicos.",
+          "tag": "multi-step-stopped-early"
+        }
+      ],
+      "x": "The yards and the feet cancel, so only inches are left: 2.5 × 3 × 12 = 90 in.",
+      "xEs": "Las yardas y los pies se cancelan, así que solo quedan pulgadas: 2.5 × 3 × 12 = 90 pulg.",
+      "h": [
+        "Cross out the yd and the ft that appear on top and bottom.",
+        "Multiply the numbers on top, then divide by the numbers on the bottom."
+      ],
+      "hEs": [
+        "Tacha los yd y los pies que aparecen arriba y abajo.",
+        "Multiplica los números de arriba y luego divide entre los números de abajo."
+      ]
+    },
+    {
+      "k": "mc",
+      "q": "After the units cancel, what unit is left in this chain? 6 qt × (2 pt / 1 qt) × (1 pt / 2 cup)",
+      "qEs": "Cuando las unidades se cancelan, ¿qué unidad queda en esta cadena? 6 qt × (2 pt / 1 qt) × (1 pt / 2 taza)",
+      "c": [
+        "cup²/pt",
+        "pt²/cup",
+        "pt/cup",
+        "qt²/pt"
+      ],
+      "cEs": [
+        "taza²/pt",
+        "pt²/taza",
+        "pt/taza",
+        "qt²/pt"
+      ],
+      "a": 1,
+      "f": [
+        "That has the cups on top. Check which unit is on top in both tiles.",
+        "",
+        "Pints are on top in both tiles, so pints do not cancel once. They stay squared.",
+        "The quarts cancel with the first tile. Check the second tile for what stays."
+      ],
+      "fEs": [
+        "Eso tiene las tazas arriba. Revisa qué unidad está arriba en los dos mosaicos.",
+        "",
+        "Las pintas están arriba en los dos mosaicos, así que no se cancelan una vez. Quedan al cuadrado.",
+        "Los cuartos de galón se cancelan con el primer mosaico. Revisa el segundo mosaico para ver qué queda."
+      ],
+      "tag": [
+        "unit-conversion-direction",
+        null,
+        "multi-step-stopped-early",
+        "unit-conversion-direction"
+      ],
+      "x": "The first tile cancels qt and leaves pt. The second tile has pt on top too, so the pt does not cancel. The units left are pt²/cup, which means the second tile is upside down.",
+      "xEs": "El primer mosaico cancela qt y deja pt. El segundo mosaico también tiene pt arriba, así que pt no se cancela. Las unidades que quedan son pt²/taza, lo que significa que el segundo mosaico está al revés.",
+      "h": [
+        "Cross out any unit that is on top in one tile and on the bottom in another.",
+        "Look at what is left after crossing out each pair."
+      ],
+      "hEs": [
+        "Tacha cada unidad que está arriba en un mosaico y abajo en otro.",
+        "Mira qué queda después de tachar cada par."
+      ]
+    },
+    {
+      "k": "num",
+      "q": "A banner is 144 in long. Finish the chain: 144 in × (1 ft / 12 in) × (1 yd / 3 ft) = ? yd",
+      "qEs": "Una pancarta mide 144 pulg. Termina la cadena: 144 pulg × (1 pie / 12 pulg) × (1 yd / 3 pies) = ? yd",
+      "a": "4",
+      "unit": "yd",
+      "fw": [
+        {
+          "v": "12",
+          "f": "That stops after the first tile, so the answer is still in feet. Use the second tile too.",
+          "fEs": "Eso se detiene en el primer mosaico, así que la respuesta sigue en pies. Usa también el segundo mosaico.",
+          "tag": "multi-step-stopped-early"
+        },
+        {
+          "v": "5184",
+          "f": "That multiplies by the numbers on the bottom. The numbers on the bottom divide.",
+          "fEs": "Eso multiplica por los números de abajo. Los números de abajo dividen.",
+          "tag": "unit-conversion-direction"
+        }
+      ],
+      "x": "The inches and the feet cancel, so only yards are left: 144 ÷ 12 ÷ 3 = 4 yd.",
+      "xEs": "Las pulgadas y los pies se cancelan, así que solo quedan yardas: 144 ÷ 12 ÷ 3 = 4 yd.",
+      "h": [
+        "Multiply by the numbers on top and divide by the numbers on the bottom.",
+        "Do the first tile, then the second tile."
+      ],
+      "hEs": [
+        "Multiplica por los números de arriba y divide entre los números de abajo.",
+        "Haz el primer mosaico y luego el segundo."
+      ]
+    }
+  ]
 }
