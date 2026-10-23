@@ -180,6 +180,12 @@ const EXCLUSIVE = new Set([
   // member of the set — it opens two pages per lesson (one to read the taught
   // sequence, one to walk it clean) and drives ~10 navigations on each.
   "validate:flow-walk",
+  // `validate:injection` joined them on 2026-10-22, for a different reason: it scans the working tree, and
+  // `tools/gate-mutation.test.mjs` (inside `test`) briefly plants `lessons/zz-gate-mutation.html` there to prove
+  // that very check can fail. Run side by side, the scan sometimes saw the planted file and failed the push
+  // ("1 unbalanced") while passing on its own; on 2026-10-22 it failed four ship attempts in a row. ALONE it runs
+  // after everything else has finished, so it can only ever see the real tree.
+  "validate:injection",
 ]);
 
 /* --------------------------------------------------------------------------
