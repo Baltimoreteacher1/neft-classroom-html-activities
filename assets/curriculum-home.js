@@ -334,35 +334,72 @@
   }
 
   // "Pick up where you left off": the most recent unfinished Save / Resume
-  // record on this device (shared/save-resume stores them as nsr:rec:<code>).
+  // record on this device (shared/save-resume stores them as nsr:rec:<code>,
+  // and core lesson state is saved as rma_<lessonId>).
   // Only same-site paths are linked, and "Not me" hides it for shared devices.
   const CONTINUE_DISMISSED = "nt-hub-continue-dismissed";
   const CONTINUE_MAX_DAYS = 30;
   function latestUnfinished() {
     let best = null;
     try {
+      const plan = /** @type {any} */ (window).__NT_PACING_DAYS;
+      const lessonTitles = plan?.lessons || {};
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (!key || !key.startsWith("nsr:rec:")) continue;
-        let rec = null;
-        try {
-          rec = JSON.parse(localStorage.getItem(key) || "null");
-        } catch {}
-        if (!rec || typeof rec.url !== "string" || !/^\/(?!\/)/.test(rec.url)) continue;
-        if (rec.url === "/curriculum/") continue;
-        const pct = Number(rec.progressPercent) || 0;
-        const when = Date.parse(rec.updatedAt);
-        if (!rec.activityTitle || pct >= 100 || !Number.isFinite(when)) continue;
-        if (Date.now() - when > CONTINUE_MAX_DAYS * 86400000) continue;
-        if (!best || when > best.when)
-          best = {
-            code: rec.saveCode,
-            url: rec.url,
-            title: String(rec.activityTitle),
-            step: rec.currentStepLabel || rec.phase || "",
-            pct,
-            when,
-          };
+        if (!key) continue;
+        if (key.startsWith("nsr:rec:")) {
+          let rec = null;
+          try {
+            rec = JSON.parse(localStorage.getItem(key) || "null");
+          } catch {}
+          if (!rec || typeof rec.url !== "string" || !/^\/(?!\/)/.test(rec.url)) continue;
+          if (rec.url === "/curriculum/") continue;
+          const pct = Number(rec.progressPercent) || 0;
+          const when = Date.parse(rec.updatedAt);
+          if (!rec.activityTitle || pct >= 100 || !Number.isFinite(when)) continue;
+          if (Date.now() - when > CONTINUE_MAX_DAYS * 86400000) continue;
+          if (!best || when > best.when)
+            best = {
+              code: rec.saveCode,
+              url: rec.url,
+              title: String(rec.activityTitle),
+              step: rec.currentStepLabel || rec.phase || "",
+              pct,
+              when,
+            };
+        } else if (key.startsWith("rma_") && !key.endsWith("_ana")) {
+          let rec = null;
+          try {
+            rec = JSON.parse(localStorage.getItem(key) || "null");
+          } catch {}
+          if (!rec || !rec.lessonId || !Array.isArray(rec.phases) || rec.phases.length === 0)
+            continue;
+          const total = rec.phases.length;
+          const done = rec.phases.filter((p) => p && p.status === "completed").length;
+          const pct = Math.round((done / total) * 100);
+          if (pct >= 100) continue;
+          const when = Number(rec.lastSavedAt) || 0;
+          if (!Number.isFinite(when) || when <= 0) continue;
+          if (Date.now() - when > CONTINUE_MAX_DAYS * 86400000) continue;
+          if (!best || when > best.when) {
+            const lessonInfo = lessonTitles[rec.lessonId];
+            const titleStr = lessonInfo
+              ? `Lesson ${rec.lessonId} · ${lessonInfo[0]}`
+              : `Lesson ${rec.lessonId}`;
+            const stepLabel =
+              typeof rec.currentPhase === "number" && rec.phases[rec.currentPhase]?.id
+                ? `Phase ${rec.currentPhase + 1} of ${total}`
+                : `Phase ${Math.min(done + 1, total)} of ${total}`;
+            best = {
+              code: rec.studentId || "",
+              url: `/lessons/${rec.lessonId}/`,
+              title: titleStr,
+              step: stepLabel,
+              pct,
+              when,
+            };
+          }
+        }
       }
       if (best && localStorage.getItem(CONTINUE_DISMISSED) === `${best.code}@${best.when}`)
         return null;
@@ -533,7 +570,24 @@
     input.addEventListener("focus", loadVocabulary, { once: true });
     input.addEventListener("input", search);
     input.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") list.querySelector("a")?.click();
+      if (event.key === "Enter") {
+        const topHit = list.querySelector("a");
+        if (topHit && list.children.length === 1) {
+          topHit.click();
+        } else if (input.value.trim()) {
+          window.location.href = `/curriculum/units/?q=${encodeURIComponent(input.value.trim())}`;
+        }
+      }
+    });
+    box.addEventListener("click", (event) => {
+      const chip = event.target instanceof Element ? event.target.closest(".hub-find__chip") : null;
+      if (!chip) return;
+      const topic = chip.getAttribute("data-topic");
+      if (!topic) return;
+      input.value = topic;
+      loadVocabulary();
+      input.focus();
+      search();
     });
     // "/" jumps to the finder from anywhere on the page, like most search boxes.
     document.addEventListener("keydown", (event) => {
