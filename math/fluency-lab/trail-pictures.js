@@ -385,11 +385,15 @@ function ratioTableHtml(cols, labels, pending = null) {
 
 // GCF: the student types factors (each one brings its partner). LCM: the student types the next multiple.
 function factorLists(model) {
+  const prompt =
+    model.find === "gcf"
+      ? t("Type factors of each number. Factors both numbers share light up.")
+      : t("Type the multiples of each number in order. Multiples both share light up.");
   const row = (n) =>
     model.find === "gcf"
-      ? `<div class="tp-list-row"><span class="tp-list-name">Factors of ${n}</span><span class="tp-chips" data-chips="${n}"></span><input class="tp-in wide" data-factor-of="${n}" aria-label="A factor of ${n}" inputmode="numeric" autocomplete="off"><button type="button" class="tp-hop-btn" data-add-factor="${n}">Add</button></div>`
-      : `<div class="tp-list-row"><span class="tp-list-name">Multiples of ${n}</span><span class="tp-chips" data-chips="${n}"></span>${box(n, `the first multiple of ${n}`, `data-then="multiple" data-multiple-of="${n}"`)}</div>`;
-  return `<div class="tp-live" data-live="lists" data-find="${model.find}"><p class="tp-prompt">${model.find === "gcf" ? "Type factors of each number. Factors both numbers share light up." : "Type the multiples of each number in order. Multiples both share light up."}</p>${row(model.a)}${row(model.b)}<p class="tp-readout" data-list-note></p></div>`;
+      ? `<div class="tp-list-row"><span class="tp-list-name">${t("Factors of {n}", { n })}</span><span class="tp-chips" data-chips="${n}"></span><input class="tp-in wide" data-factor-of="${n}" aria-label="${t("A factor of {n}", { n })}" inputmode="numeric" autocomplete="off"><button type="button" class="tp-hop-btn" data-add-factor="${n}">${t("Add")}</button></div>`
+      : `<div class="tp-list-row"><span class="tp-list-name">${t("Multiples of {n}", { n })}</span><span class="tp-chips" data-chips="${n}"></span>${box(n, t("the first multiple of {n}", { n }), `data-then="multiple" data-multiple-of="${n}"`)}</div>`;
+  return `<div class="tp-live" data-live="lists" data-find="${model.find}"><p class="tp-prompt">${prompt}</p>${row(model.a)}${row(model.b)}<p class="tp-readout" data-list-note></p></div>`;
 }
 
 // Powers: the student types each running product.
@@ -623,7 +627,7 @@ export function handleModelInput(target) {
         "afterend",
         box(
           expect + n,
-          `the next multiple of ${n}`,
+          t("the next multiple of {n}", { n }),
           `data-then="multiple" data-multiple-of="${n}"`,
         ),
       );

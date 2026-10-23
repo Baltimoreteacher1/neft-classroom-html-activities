@@ -4154,9 +4154,50 @@ body.focus-mode .focus-orbit-ring {
 
 /* LCM Prime Factorization Interactive Scaffold */
 .lcm-prime-scaffold {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(240px, 0.9fr);
+  align-items: start;
+  gap: 1rem;
+}
+
+.lcm-prime-work {
   display: flex;
+  min-width: 0;
   flex-direction: column;
   gap: 1rem;
+}
+
+.solver-reference-chart {
+  min-width: 0;
+  padding: 0.9rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+.solver-reference-chart h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+
+.solver-reference-chart > p {
+  margin: 0 0 0.7rem;
+  color: #475569;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 720px) {
+  .lcm-prime-scaffold,
+  .gcf-venn-scaffold {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .gcf-factors-summary,
+  .gcf-venn-scaffold > .solver-calc-row {
+    grid-column: 1;
+  }
 }
 
 .lcm-row {
@@ -4314,10 +4355,15 @@ body.focus-mode .focus-orbit-ring {
    GCF Venn Diagram Interactive Scaffold
    ========================================================================== */
 .gcf-venn-scaffold {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(240px, 0.9fr);
   align-items: center;
+  gap: 1rem;
+}
+
+.gcf-factors-summary,
+.gcf-venn-scaffold > .solver-calc-row {
+  grid-column: 1 / -1;
 }
 
 .gcf-factors-summary {

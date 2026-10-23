@@ -5178,6 +5178,7 @@ const InteractiveSolver = {
           <span class="solver-hint-tag">Grade 6 Essential Standard</span>
         </div>
         <div class="lcm-prime-scaffold">
+          <div class="lcm-prime-work">
           <div class="lcm-row">
             <span>1) Factor <strong>${a}</strong> into primes:</span>
             ${pa.map((p, idx) => `<input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${p}" data-group="a" aria-label="Prime factor ${idx + 1} of ${a}" placeholder="?" />${idx < pa.length - 1 ? " × " : ""}`).join("")}
@@ -5197,6 +5198,11 @@ const InteractiveSolver = {
             <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${ans}" data-group="lcm-final" style="width:72px" placeholder="LCM" />
             <button type="button" class="outline-action" id="lcm-copy-ans" style="display:none">Copy to Answer</button>
           </div>
+          </div>
+          <aside class="solver-reference-chart" aria-label="${t("Multiples chart")}">
+            <h3>${t("Multiples chart")}</h3>
+            ${interactivePicture({ type: "lists", a, b, find: "lcm" })}
+          </aside>
         </div>
       `;
 
@@ -5407,6 +5413,10 @@ const InteractiveSolver = {
               </div>
             </div>
           </div>
+          <aside class="solver-reference-chart" aria-label="${t("Factors chart")}">
+            <h3>${t("Factors chart")}</h3>
+            ${interactivePicture({ type: "lists", a, b, find: "gcf" })}
+          </aside>
           <div class="solver-calc-row">
             <span>Multiply the shared prime factors: <strong>GCF(${a}, ${b}) =</strong></span>
             <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${ans}" data-group="gcf-final" style="width:72px" placeholder="GCF" />
@@ -7774,6 +7784,8 @@ els.toggleProblemVisual?.addEventListener("click", () => {
 });
 els.problemVisualScaffold?.addEventListener("click", (event) => handleModelTap(event.target));
 els.problemVisualScaffold?.addEventListener("input", (event) => handleModelInput(event.target));
+els.solverWorkspace?.addEventListener("click", (event) => handleModelTap(event.target));
+els.solverWorkspace?.addEventListener("input", (event) => handleModelInput(event.target));
 els.learnPanel.addEventListener("input", (event) => handleModelInput(event.target));
 els.feedback.addEventListener("fluency-fill-solved", (event) => handleStepPlayerSolved(event.target));
 
@@ -8316,15 +8328,19 @@ els.toggleSolver?.addEventListener("click", () => {
     els.solverWorkspace.hidden = true;
     els.toggleSolver.setAttribute("aria-expanded", "false");
   }
-  hideDuplicateColumnModel(!els.solverWorkspace.hidden);
+  hideDuplicateModel(!els.solverWorkspace.hidden);
 });
 
 // The stacked-column board is both the solver and the model for add and subtract. With the solver open, the model
 // panel would repeat the same boxes, so it steps aside and comes back when the solver closes.
-function hideDuplicateColumnModel(solverOpen) {
+function hideDuplicateModel(solverOpen) {
   const host = els.problemVisualScaffold;
   if (!host) return;
-  if (solverOpen && els.solverWorkspace.querySelector(".vc") && host.querySelector(".vc")) {
+  const duplicateColumnBoard = els.solverWorkspace.querySelector(".vc") && host.querySelector(".vc");
+  const duplicateListChart =
+    els.solverWorkspace.querySelector('.solver-reference-chart .tp-live[data-live="lists"]') &&
+    host.querySelector('.tp-live[data-live="lists"]');
+  if (solverOpen && (duplicateColumnBoard || duplicateListChart)) {
     host.dataset.hiddenBySolver = "1";
     host.hidden = true;
   } else if (host.dataset.hiddenBySolver) {

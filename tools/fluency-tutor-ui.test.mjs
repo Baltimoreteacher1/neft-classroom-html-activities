@@ -245,7 +245,41 @@ click("[data-start-daily]");
 assert.equal(savedSession().session.queue.length, 10);
 assert.ok(new Set(savedSession().session.queue.map((entry) => entry.key)).size >= 2);
 click("#back-library");
+
+// The GCF and LCM workspaces include a usable, side-by-side list chart.
+click("#lang-toggle");
+click('[data-grade="6"]');
+click('.open-skill[data-skill="gcf"]');
+click('[data-mode="practice"]');
+click("#toggle-interactive-solver");
+assert.ok($(".solver-reference-chart[aria-label='Tabla de factores']"));
+assert.equal($(".solver-reference-chart h3").textContent, "Tabla de factores");
+assert.match($(".solver-reference-chart .tp-prompt").textContent, /Escribe los factores/);
+assert.equal(
+  $(
+    ".solver-reference-chart .tp-live[data-find='gcf'] .tp-list-row",
+  )?.parentElement?.querySelectorAll(".tp-list-row").length,
+  2,
+);
+fill(".solver-reference-chart [data-factor-of]", 1);
+$(".solver-reference-chart [data-add-factor]").click();
+assert.ok($(".solver-reference-chart [data-chips] b"), "Factor chart accepts and checks entries");
+
+click('[data-view="library"]');
+click("#lang-toggle");
+click('.open-skill[data-skill="lcm"]');
+click('[data-mode="practice"]');
+click("#toggle-interactive-solver");
+assert.ok($(".solver-reference-chart[aria-label='Multiples chart']"));
+const multipleInput = $(".solver-reference-chart [data-then='multiple']");
+assert.ok(multipleInput, "Multiples chart starts with a next-multiple entry");
+multipleInput.value = multipleInput.dataset.expect;
+multipleInput.dispatchEvent(new win.Event("input", { bubbles: true }));
+assert.ok(
+  $(".solver-reference-chart [data-chips] b"),
+  "Multiples chart accepts and checks entries",
+);
 win.close();
 console.log(
-  "Fluency UI: deep links, visual lessons, wrong-answer recovery, resume, adaptive support, profile isolation, teacher assignments, checkups, repair, and daily plans passed.",
+  "Fluency UI: deep links, visual lessons, wrong-answer recovery, resume, adaptive support, profile isolation, teacher assignments, checkups, repair, factor/multiples charts, and daily plans passed.",
 );
