@@ -15,6 +15,34 @@
     10: { name: 'Atlas Frontier', biome: 'forest', color: '#b5df94', ground: '#526c4c', mode: 'bridge', vehicle: 'walker', item: 'atlas pages', signal: 'frontier beacon', switchName: 'Trail bridge', rule: 'Align the trail bridge for a shortcut, or explore the lower forest for lost atlas pages.', story: 'The last pages of the Atlas are scattered beyond the frontier. Rebuild the trail and bring the map home.' },
     placement: { name: 'The Lost Compass', biome: 'space', color: '#f4d58d', ground: '#435474', mode: 'relay', vehicle: 'airship', item: 'compass fragments', signal: 'compass station', switchName: 'Wind relay', rule: 'Switch on the wind relay to open an air lane. Explore either route; every station reveals one math topic.', story: 'Eleven compass stations have drifted off course. Pilot the survey ship, chart your strengths, and discover your next destination.' },
   };
+  const WORLD_ART = {
+    1: '/math/games/shared/art/cloudline-courier.webp',
+    2: '/math/games/shared/art/reef-rescue.webp',
+    3: '/math/games/shared/art/oasis-engineers.webp',
+    4: '/math/games/shared/art/neon-grid.webp',
+    5: '/math/games/shared/art/terrace-architects.webp',
+    6: '/math/games/shared/art/switchyard-odyssey.webp',
+    7: '/math/games/shared/art/atlas-rover.webp',
+    8: '/math/games/shared/art/bridgekeepers.webp',
+    9: '/math/games/shared/art/orbital-builders.webp',
+    10: '/math/games/shared/art/arcade-archipelago.webp',
+  };
+  const WORLD_ES = {
+    1: { item: 'fragmentos de estrella', signal: 'matriz de navegación', switchName: 'Enlace satelital', rule: 'Activa el enlace satelital para abrir el atajo.' },
+    2: { item: 'muestras de coral', signal: 'boya de estudio', switchName: 'Control de mareas', rule: 'Baja la marea en el control para cruzar. El canal del sur siempre está abierto.' },
+    3: { item: 'marcadores de ruta', signal: 'observatorio', switchName: 'Campamento de suministros', rule: 'Recoge un suministro en el campamento. El paso de montaña cuesta uno; la ruta del valle es gratis.' },
+    4: { item: 'fragmentos de farol', signal: 'torre de faroles', switchName: 'Santuario de chispas', rule: 'Recoge una chispa en el santuario. La puerta oscura cuesta una; el camino del jardín siempre está abierto.' },
+    5: { item: 'piezas del plano', signal: 'sello de la bóveda', switchName: 'Manivela del puente', rule: 'Gira la manivela para alinear el puente. Elige el puente alto o explora las ruinas bajas.' },
+    6: { item: 'piezas de máquina', signal: 'núcleo de energía', switchName: 'Palanca de engranajes', rule: 'Mueve la palanca para activar la cinta hacia el este. El túnel de servicio evita la cinta.' },
+    7: { item: 'cápsulas de investigación', signal: 'baliza de rescate', switchName: 'Estación de agarre', rule: 'El hielo te desliza una casilla más. Visita la estación para detenerte donde elijas.' },
+    8: { item: 'cristales de equilibrio', signal: 'motor de equilibrio', switchName: 'Muelle de contrapesos', rule: 'Lleva un contrapeso para abrir el puente. Déjalo en el muelle para cerrarlo otra vez.' },
+    9: { item: 'chips de señal', signal: 'antena de retransmisión', switchName: 'Interruptor de señal', rule: 'Activa la señal local para abrir el enlace rápido. La ruta de la calle sigue abierta.' },
+    10: { item: 'páginas del atlas', signal: 'baliza de frontera', switchName: 'Puente del sendero', rule: 'Alinea el puente para un atajo o explora el bosque bajo para encontrar páginas.' },
+  };
+  function isSpanish() {
+    try { return localStorage.getItem('nt-lang') === 'es' || localStorage.getItem('pa-lang') === 'es'; }
+    catch { return false; }
+  }
   const esc = value => String(value).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
   const ICONS = {
     gem: '<path d="m12 2 8 7-8 13L4 9Z"/><path d="m4 9 8 3 8-3M12 2v20"/>',
@@ -64,14 +92,23 @@
   function mount({ host, unit, stage, total, title, state, onSave, onEnter, focus = true }) {
     const placementStops = [1, 10, 6, 3, 4, 5, 6, 8, 2, 7, 5];
     const destination = WORLDS[placementStops[stage % placementStops.length]];
-    const world = unit === 'placement'
+    const isPlacement = unit === 'placement' || unit === 0;
+    const artUnit = isPlacement ? placementStops[stage % placementStops.length] : Number(unit) || 1;
+    const baseWorld = unit === 'placement'
       ? { ...destination, name: 'The Lost Compass · ' + destination.name, vehicle: 'airship', item: 'compass fragments' }
-      : WORLDS[unit] || WORLDS[1];
+      : isPlacement ? destination : WORLDS[unit] || WORLDS[1];
+    const art = WORLD_ART[artUnit] || WORLD_ART[1];
+    const es = isSpanish();
+    const world = es ? { ...baseWorld, ...(WORLD_ES[artUnit] || {}) } : baseWorld;
+    const done = Math.min(total, Math.max(0, Number(state.completed) || 0));
+    const progress = total > 0 ? done / total : 0;
     prepare(state, stage);
     const map = terrain(state, world);
-    let message = `Reach the ${world.signal}. Explore for ${world.item} and rescue the scout.`;
+    let message = es ? `Llega a ${world.signal}. Busca ${world.item} y rescata al explorador.` : `Reach the ${world.signal}. Explore for ${world.item} and rescue the scout.`;
     let destroyed = false;
-    host.innerHTML = `<section class="voyage" style="--voyage-accent:${world.color};--voyage-ground:${world.ground}" aria-label="${esc(world.name)} expedition"><header class="voyage-header"><div><p class="voyage-kicker">FIELD EXPEDITION / SECTOR ${stage+1} OF ${total}</p><h2>${esc(world.name)}</h2><p>${esc(title || world.story)}</p></div><div class="voyage-inventory" aria-label="Expedition inventory"></div></header><div class="voyage-playfield">${sceneArt(world, stage)}<div class="voyage-grid" role="group" aria-label="Travel map. Choose a tile to travel along a safe path. Use arrow keys for one step." tabindex="0"></div><div class="voyage-sector" aria-hidden="true">${String(stage+1).padStart(2,'0')}<small>${esc(world.biome.toUpperCase())}</small></div></div><div class="voyage-lower"><div class="voyage-mission"><span class="voyage-kicker">YOUR NEXT MOVE</span><p class="voyage-message" role="status" aria-live="polite"></p><p class="voyage-rule">${esc(world.rule)}</p></div><div class="voyage-controls"><button type="button" data-move="0,-1" aria-label="Move north">↑</button><button type="button" data-move="-1,0" aria-label="Move west">←</button><button type="button" data-move="0,1" aria-label="Move south">↓</button><button type="button" data-move="1,0" aria-label="Move east">→</button></div></div><div class="voyage-footer"><span class="voyage-help">Click a tile to travel · arrow keys to step · progress saves locally</span><button type="button" class="voyage-enter" disabled>Reach the ${esc(world.signal)}</button><button type="button" class="voyage-focus">Focus on math</button></div></section>`;
+    const progressLabel = es ? 'Retos matemáticos completados' : 'Math challenges completed';
+    const routeFrame = es ? 'Elegí esta ruta porque me permitió ____.' : 'I chose this route because it let me ____. ';
+    host.innerHTML = `<section class="voyage" style="--voyage-accent:${world.color};--voyage-ground:${world.ground};--voyage-progress:${progress};--voyage-art-opacity:${0.30 + progress * 0.22};--voyage-art-brightness:${0.80 + progress * 0.16}" aria-label="${esc(world.name)} ${es ? 'expedición' : 'expedition'}"><header class="voyage-header"><div class="voyage-heading"><p class="voyage-kicker">${es ? 'EXPEDICIÓN DE CAMPO' : 'FIELD EXPEDITION'} / SECTOR ${stage+1} ${es ? 'DE' : 'OF'} ${total}</p><h2>${esc(world.name)}</h2><p>${esc(title || world.story)}</p><div class="voyage-restoration"><div><span>${progressLabel}</span><strong>${done} / ${total}</strong></div><progress max="${total}" value="${done}" aria-label="${progressLabel}"></progress></div></div><div class="voyage-inventory" aria-label="${es ? 'Inventario de expedición' : 'Expedition inventory'}"></div></header><div class="voyage-playfield"><img class="voyage-background" src="${art}" width="1600" height="900" alt="" aria-hidden="true" fetchpriority="high">${sceneArt(world, stage)}<div class="voyage-grid" role="group" aria-label="${es ? 'Mapa de viaje. Elige una casilla para avanzar por una ruta segura. Usa las flechas para moverte un paso.' : 'Travel map. Choose a tile to travel along a safe path. Use arrow keys for one step.'}" tabindex="0"></div><div class="voyage-sector" aria-hidden="true">${String(stage+1).padStart(2,'0')}<small>${esc(world.biome.toUpperCase())}</small></div></div><div class="voyage-lower"><div class="voyage-mission"><span class="voyage-kicker">${es ? 'SIGUIENTE PASO' : 'YOUR NEXT MOVE'}</span><p class="voyage-message" role="status" aria-live="polite"></p><p class="voyage-rule">${esc(world.rule)}</p></div><div class="voyage-controls"><button type="button" data-move="0,-1" aria-label="${es ? 'Mover al norte' : 'Move north'}">↑</button><button type="button" data-move="-1,0" aria-label="${es ? 'Mover al oeste' : 'Move west'}">←</button><button type="button" data-move="0,1" aria-label="${es ? 'Mover al sur' : 'Move south'}">↓</button><button type="button" data-move="1,0" aria-label="${es ? 'Mover al este' : 'Move east'}">→</button></div></div><div class="voyage-footer"><span class="voyage-help">${es ? 'Elige una casilla o usa las flechas · el progreso se guarda en este dispositivo' : 'Choose a tile or use arrow keys · progress saves on this device'}</span><details class="voyage-frame"><summary>${es ? 'Explica tu estrategia' : 'Explain your strategy'}</summary><p>${routeFrame}</p></details><button type="button" class="voyage-enter" disabled>${es ? 'Llega a' : 'Reach the'} ${esc(world.signal)}</button><button type="button" class="voyage-focus">${es ? 'Ir al reto de matemáticas' : 'Focus on math'}</button></div></section>`;
     const root = host.querySelector('.voyage');
     const grid = root.querySelector('.voyage-grid');
     const tileButtons = new Map();
@@ -89,42 +126,42 @@
       if (destroyed) return;
       const player = `${state.x},${state.y}`;
       for (const [key, button] of tileButtons) {
-        let type = '', label = 'Trail', text = '';
-        if (key === '0,2') { type='flag'; label='Landing'; }
-        if (key===map.switchAt) {type='switch';label=world.switchName+(state.on?' · active':'');}
-        if (key===map.gateAt) {type='gate';label=gateOpen(state,world)?'Shortcut open':'Shortcut closed';}
+        let type = '', label = es ? 'Sendero' : 'Trail', text = '';
+        if (key === '0,2') { type='flag'; label=es?'Llegada':'Landing'; }
+        if (key===map.switchAt) {type='switch';label=world.switchName+(state.on?(es?' · activo':' · active'):'');}
+        if (key===map.gateAt) {type='gate';label=gateOpen(state,world)?(es?'Atajo abierto':'Shortcut open'):(es?'Atajo cerrado':'Shortcut closed');}
         if (map.gems.includes(key) && !state.collected.includes(key)) {type='gem';label=world.item;}
-        if (key===map.rescueAt && !state.rescued.includes(stage)) {type='rescue';label='Scout shelter';}
-        if (key===map.signalAt) {type='beacon';label=world.signal;text='GOAL';}
-        if (map.ice.includes(key)) label='Ice · slides one extra step';
+        if (key===map.rescueAt && !state.rescued.includes(stage)) {type='rescue';label=es?'Refugio del explorador':'Scout shelter';}
+        if (key===map.signalAt) {type='beacon';label=world.signal;text=es?'META':'GOAL';}
+        if (map.ice.includes(key)) label=es?'Hielo · desliza un paso más':'Ice · slides one extra step';
         button.className = `voyage-tile${state.visited.includes(key)?' is-visited':''}${type?' is-'+type:''}${key===map.gateAt&&!gateOpen(state,world)?' is-closed':''}${key===player?' is-player':''}${map.ice.includes(key)?' is-ice':''}`;
         button.innerHTML = `${type?icon(type):'<span class="voyage-track"></span>'}${text?`<small>${text}</small>`:''}${key===player?`<span class="voyage-player">${icon(world.vehicle)}</span>`:''}`;
-        button.setAttribute('aria-label', `${label}, column ${Number(key[0])+1}, row ${Number(key[2])+1}${key===player?', your location':''}`);
+        button.setAttribute('aria-label', es ? `${label}, columna ${Number(key[0])+1}, fila ${Number(key[2])+1}${key===player?', tu ubicación':''}` : `${label}, column ${Number(key[0])+1}, row ${Number(key[2])+1}${key===player?', your location':''}`);
         button.setAttribute('aria-current', key===player?'location':'false');
       }
-      root.querySelector('.voyage-inventory').innerHTML = `<span>${icon('gem')} <b>${state.awards.length+state.collected.length}</b> finds</span><span>${icon('rescue')} <b>${state.rescued.length}</b> rescues</span><span><b>${state.moves}</b> moves</span>`;
+      root.querySelector('.voyage-inventory').innerHTML = `<span>${icon('gem')} <b>${state.awards.length+state.collected.length}</b> ${es?'hallazgos':'finds'}</span><span>${icon('rescue')} <b>${state.rescued.length}</b> ${es?'rescates':'rescues'}</span><span><b>${state.moves}</b> ${es?'movimientos':'moves'}</span>`;
       root.querySelector('.voyage-message').textContent = message;
       const enter = root.querySelector('.voyage-enter');
       enter.disabled = player!==map.signalAt;
-      enter.textContent = player===map.signalAt ? `Activate ${world.signal} →` : `Reach the ${world.signal}`;
+      enter.textContent = player===map.signalAt ? `${es?'Activar':'Activate'} ${world.signal} →` : `${es?'Llega a':'Reach the'} ${world.signal}`;
     }
     function canStep(x,y) { const key=`${x},${y}`; return map.path.has(key) && (key!==map.gateAt || gateOpen(state,world)); }
     function arrive(x,y,dx,dy,slide=true) {
       if (window.GameStudio?.paused) return false;
-      if (!canStep(x,y)) { message=`The shortcut is closed. Visit the ${world.switchName.toLowerCase()} or take the lower trail.`; draw(); return false; }
+      if (!canStep(x,y)) { message=es?`El atajo está cerrado. Visita ${world.switchName.toLowerCase()} o toma el sendero de abajo.`:`The shortcut is closed. Visit the ${world.switchName.toLowerCase()} or take the lower trail.`; draw(); return false; }
       state.x=x; state.y=y; state.moves++; state.totalMoves++;
       const key=`${x},${y}`;
       if (!state.visited.includes(key)) state.visited.push(key);
-      message=`Charting the route to the ${world.signal}.`;
+      message=es?`Trazando la ruta hacia ${world.signal}.`:`Charting the route to the ${world.signal}.`;
       if (key===map.switchAt) {
-        if (['supply','light'].includes(world.mode)) { state.supply=1; state.on=true; message=`${world.mode==='light'?'Spark':'Supply'} collected. The shortcut is ready.`; }
-        else { state.on=true; message=`${world.switchName}: ${state.on?'active':'reset'}. ${world.mode==='ice'?(state.on?'Grip enabled. You now stop on ice.':'Grip disabled. Ice slides one extra tile.'):(state.on?'The shortcut is open.':'Use the lower route, or visit again to reopen it.')}`; }
+        if (['supply','light'].includes(world.mode)) { state.supply=1; state.on=true; message=es?`${world.mode==='light'?'Chispa':'Suministro'} recogido. El atajo está listo.`:`${world.mode==='light'?'Spark':'Supply'} collected. The shortcut is ready.`; }
+        else { state.on=true; message=es?`${world.switchName}: ${state.on?'activado':'reiniciado'}. ${world.mode==='ice'?(state.on?'El agarre está activo. Ahora te detienes en el hielo.':'El agarre está desactivado. El hielo te desliza un paso más.'):(state.on?'El atajo está abierto.':'Usa el sendero de abajo o vuelve para abrirlo otra vez.')}`:`${world.switchName}: ${state.on?'active':'reset'}. ${world.mode==='ice'?(state.on?'Grip enabled. You now stop on ice.':'Grip disabled. Ice slides one extra tile.'):(state.on?'The shortcut is open.':'Use the lower route, or visit again to reopen it.')}`; }
       }
-      if (key===map.gateAt && ['supply','light'].includes(world.mode) && state.supply>0) { state.supply--; message='Supply used. You secured the crossing for this sector.'; }
-      if (map.gems.includes(key) && !state.collected.includes(key)) { state.collected.push(key); message=`Found ${world.item}! Both optional finds earn an Explorer seal.`; }
-      if (key===map.rescueAt && !state.rescued.includes(stage)) { state.rescued.push(stage); message='Scout rescued. The rescue is recorded in your expedition journal.'; }
-      if (key===map.signalAt) message=`Signal reached. Activate the ${world.signal} with your next math challenge.`;
-      if (slide && map.ice.includes(key) && !state.on && canStep(x+dx,y+dy)) { arrive(x+dx,y+dy,dx,dy,false); message='The ice carried you one extra tile. The grip station gives you precise control.'; }
+      if (key===map.gateAt && ['supply','light'].includes(world.mode) && state.supply>0) { state.supply--; message=es?'Usaste el suministro. Cruzaste esta zona.':'Supply used. You secured the crossing for this sector.'; }
+      if (map.gems.includes(key) && !state.collected.includes(key)) { state.collected.push(key); message=es?`¡Encontraste ${world.item}! Los dos hallazgos opcionales dan un sello de explorador.`:`Found ${world.item}! Both optional finds earn an Explorer seal.`; }
+      if (key===map.rescueAt && !state.rescued.includes(stage)) { state.rescued.push(stage); message=es?'Rescataste al explorador. El rescate quedó registrado en tu diario.':'Scout rescued. The rescue is recorded in your expedition journal.'; }
+      if (key===map.signalAt) message=es?`Llegaste a la señal. Activa ${world.signal} con tu próximo reto de matemáticas.`:`Signal reached. Activate the ${world.signal} with your next math challenge.`;
+      if (slide && map.ice.includes(key) && !state.on && canStep(x+dx,y+dy)) { arrive(x+dx,y+dy,dx,dy,false); message=es?'El hielo te deslizó una casilla más. La estación de agarre te permite detenerte con precisión.':'The ice carried you one extra tile. The grip station gives you precise control.'; }
       save(); draw(); return true;
     }
     function travel(x,y) {
@@ -132,7 +169,7 @@
       if (x===state.x&&y===state.y) {
         if (`${x},${y}`===map.signalAt) enter();
         else if (`${x},${y}`===map.switchAt && !['supply','light'].includes(world.mode)) {
-          state.on=!state.on; message=world.switchName+': '+(state.on?'active.':'reset. Choose the lower trail or switch on again.'); save();draw();
+          state.on=!state.on; message=world.switchName+': '+(state.on?(es?'activado.':'active.'):(es?'reiniciado. Usa el sendero de abajo o vuelve a activarlo.':'reset. Choose the lower trail or switch on again.')); save();draw();
         }
         return;
       }
@@ -140,7 +177,7 @@
       while(queue.length) { const [px,py,steps]=queue.shift(); if(px===x&&py===y) {route=steps;break;}
         for(const [dx,dy] of [[1,0],[0,-1],[0,1],[-1,0]]) {const nx=px+dx,ny=py+dy,key=`${nx},${ny}`;if(!seen.has(key)&&canStep(nx,ny)){seen.add(key);queue.push([nx,ny,steps.concat([[nx,ny,dx,dy]])]);}}
       }
-      if(!route) {message=`No open path yet. Use the ${world.switchName.toLowerCase()} or choose the lower trail.`;draw();return;}
+      if(!route) {message=es?`Todavía no hay un camino abierto. Usa ${world.switchName.toLowerCase()} o elige el sendero de abajo.`:`No open path yet. Use the ${world.switchName.toLowerCase()} or choose the lower trail.`;draw();return;}
       // Route navigation follows the selected trail exactly. Ice physics apply to manual steps.
       for(const [nx,ny,dx,dy] of route) {if(!arrive(nx,ny,dx,dy,false))break;}
     }

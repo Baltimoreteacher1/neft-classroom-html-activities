@@ -1,6 +1,16 @@
 import { test, expect, type Page } from '@playwright/test';
 
 const worlds = ['Tidewater Survey', 'Expedition Meridian', 'The Hundred Lanterns', 'The Architect’s Vault', 'The Clockwork Foundry', 'Polar Station Zero', 'The Balance Keepers', 'Skyline Relay'];
+const worldArt: Record<number, string> = {
+  2: '/math/games/shared/art/reef-rescue.webp',
+  3: '/math/games/shared/art/oasis-engineers.webp',
+  4: '/math/games/shared/art/neon-grid.webp',
+  5: '/math/games/shared/art/terrace-architects.webp',
+  6: '/math/games/shared/art/switchyard-odyssey.webp',
+  7: '/math/games/shared/art/atlas-rover.webp',
+  8: '/math/games/shared/art/bridgekeepers.webp',
+  9: '/math/games/shared/art/orbital-builders.webp',
+};
 
 async function firstReviewMission(page: Page, unit: number) {
   await page.goto(`/curriculum/unit-${unit}-adventure-review/`);
@@ -37,6 +47,9 @@ for (let unit = 2; unit <= 9; unit++) {
   test(`Unit ${unit}: travel, recover, resume, solve and advance`, async ({ page }) => {
     await firstReviewMission(page, unit);
     await expect(page.locator('.voyage h2')).toHaveText(worlds[unit - 2]);
+    await expect(page.locator('.voyage-background')).toHaveAttribute('src', worldArt[unit]);
+    await expect(page.locator('.voyage-background')).toHaveJSProperty('naturalWidth', 1600);
+    await expect(page.locator('.voyage-restoration progress')).toHaveAttribute('value', '0');
     await page.locator('[data-tile="3,0"]').click();
     await page.locator('[data-tile="6,4"]').click();
     await page.locator('[data-tile="7,1"]').click();
@@ -51,6 +64,7 @@ for (let unit = 2; unit <= 9; unit++) {
     await solveFirstQuestion(page);
     await page.locator('#btn-next').click();
     await expect(page.locator('.voyage-kicker').first()).toContainText('SECTOR 2');
+    await expect(page.locator('.voyage-restoration progress')).toHaveAttribute('value', '1');
     expect(await page.evaluate(() => {
       const s = (window as any).RX.State.load();
       return { correct: s.stats.correct, stage: s.current.voyage.stage, seals: s.current.voyage.seals.length };
@@ -105,8 +119,11 @@ test('Practice Arcade: route checkpoint survives reload and opens the original l
   await page.goto('/math/games/practice-arcade/?lesson=3-1');
   await page.locator('#pa-phone-start').click();
   await expect(page.locator('.voyage h2')).toHaveText('Expedition Meridian');
+  await expect(page.locator('.voyage-background')).toHaveAttribute('src', '/math/games/shared/art/oasis-engineers.webp');
+  await expect(page.locator('.voyage-background')).toHaveJSProperty('naturalWidth', 1600);
+  await expect(page.locator('.voyage-restoration progress')).toHaveAttribute('value', '0');
   await page.locator('[data-tile="3,0"]').click();
-  await page.reload();
+  await page.reload({ waitUntil: 'domcontentloaded' });
   await page.locator('#practice-resume').click();
   await expect(page.locator('.voyage-inventory')).toContainText('1 finds');
   await page.locator('[data-tile="8,2"]').click();
@@ -114,6 +131,19 @@ test('Practice Arcade: route checkpoint survives reload and opens the original l
   await expect(page.locator('#pa-stage')).toBeVisible();
   await expect(page.locator('.practice-native-prompt')).not.toBeEmpty();
   expect(await page.evaluate(() => (window as any).paGame.scene.getScene('Play').idx)).toBe(0);
+});
+
+test('Practice Arcade route frame follows the saved English or Spanish language', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.addInitScript(() => localStorage.setItem('nt-lang', 'es'));
+  await page.goto('/math/games/practice-arcade/?lesson=3-1');
+  await page.locator('#pa-phone-start').click();
+  const frame = page.locator('.voyage-frame');
+  await expect(page.locator('.voyage-rule')).toContainText('Recoge un suministro');
+  await expect(frame.locator('summary')).toHaveText('Explica tu estrategia');
+  await frame.locator('summary').click();
+  await expect(frame.locator('p')).toContainText('Elegí esta ruta');
+  await expect(page.locator('.voyage-restoration progress')).toHaveAttribute('aria-label', 'Retos matemáticos completados');
 });
 
 test('Review Atlas uses the same in-mission exploration without changing unit content', async ({ page }) => {

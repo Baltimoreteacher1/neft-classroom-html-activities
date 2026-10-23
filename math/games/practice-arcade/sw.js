@@ -6,7 +6,7 @@
    only. Content updates flow through automatically (network-first); bump CACHE only when this worker itself changes.
    Modeled on math/intervention/sw.js.
    ========================================================================== */
-const CACHE = "pa-off-v4";
+const CACHE = "pa-off-v5";
 const SCOPE = "/math/games/practice-arcade/";
 // Shared multi-day Save/Resume widget injected on the arcade page. It lives
 // outside SCOPE (at /shared/), so it must be explicitly precached +
@@ -29,8 +29,18 @@ const CORE = [
   SCOPE + "map.html",
   SCOPE + "studio.js",
   SCOPE + "studio.css",
-  "/curriculum/review-expeditions/voyage.js?v=20261007",
-  "/curriculum/review-expeditions/voyage.css?v=20261007",
+  "/curriculum/review-expeditions/voyage.js?v=20261023",
+  "/curriculum/review-expeditions/voyage.css?v=20261023",
+  "/math/games/shared/art/cloudline-courier.webp",
+  "/math/games/shared/art/reef-rescue.webp",
+  "/math/games/shared/art/oasis-engineers.webp",
+  "/math/games/shared/art/neon-grid.webp",
+  "/math/games/shared/art/terrace-architects.webp",
+  "/math/games/shared/art/switchyard-odyssey.webp",
+  "/math/games/shared/art/atlas-rover.webp",
+  "/math/games/shared/art/bridgekeepers.webp",
+  "/math/games/shared/art/orbital-builders.webp",
+  "/math/games/shared/art/arcade-archipelago.webp",
   "/assets/game-studio.js?v=20261016",
   "/assets/game-studio.css?v=20261002",
   "/data/curriculum-manifest.json",
