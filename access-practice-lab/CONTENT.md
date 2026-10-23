@@ -35,8 +35,8 @@ pictures/<name>.svg          scene illustrations referenced by `picture.src`
       "categories": [{ "id": "kebab", "title": "…", "desc": "…", "activityIds": ["…"] }],
       "activities": [/* activity objects */]
     },
-    "B": { "tier": { "name": "Growing", "range": "WIDA 2.5–3.5" } },
-    "C": { "tier": { "name": "Expanding", "range": "WIDA 3.6–4.5+" } }
+    "B": { "tier": { "name": "Growing", "range": "Classroom support choice; not a WIDA proficiency level" } },
+    "C": { "tier": { "name": "Expanding", "range": "Classroom support choice; not a WIDA proficiency level" } }
   }
 }
 ```
@@ -77,6 +77,22 @@ grades 3–5 ids start with `g35-`), `title`, `skill`, `time` (`"6 min"`), `type
   `sayFor` (what a good answer includes) and, for `constructed` items, `models`
   with one sample answer per level so students can hear how answers grow.
 - **Writing** — give `writeFor` and a `wordBank`.
+
+### WIDA alignment and support labels
+
+`wida` is a set of task-specific language-function or language-focus tags. It is
+not a WIDA proficiency level, score, placement, or claim that an activity is an
+official Language Expectation. Do not prefix task goals with proficiency-level
+labels such as Entering, Emerging, Developing, or Expanding. Write observable
+task demands instead. A/B/C describe local support choices and do not map to
+WIDA levels. The local grades 3–5 band spans WIDA grade clusters 2–3 and 4–5;
+do not imply that one band label is an official WIDA grade cluster.
+
+When a task is explicitly crosswalked to the WIDA ELD Standards Framework,
+record the verified grade cluster, ELD Standard(s), Key Language Use,
+communication mode, and Language Expectation in teacher-facing metadata. A
+Key Language Use or domain tag alone is not a full Language Expectation
+alignment. Do not invent expectation codes or proficiency-descriptor mappings.
 
 ### Pictures, charts, tables (enforced)
 
