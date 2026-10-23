@@ -73,7 +73,7 @@ function chooserHTML(ctx, index, entries) {
     <section class="room-hero" style="--room:#8e4b10">
       <div>
         <span class="badge">Speaking Studio</span>
-        <h1 tabindex="-1">🎤 Speaking Studio</h1>
+        <h1 tabindex="-1"><svg aria-hidden="true"><use href="${BASE}/pictures/lab-icons.svg#speaking"></use></svg> Speaking Studio</h1>
         <p class="lead">
           Plan, say it out loud, listen back, and say it better. You show your speaking by speaking.
         </p>
@@ -408,7 +408,7 @@ export async function render(ctx) {
       <article class="activity speak-studio" style="--room:#8e4b10">
         <header class="act-head">
           <p class="eyebrow">
-            🎤 ${dirLabel[task.taskType]} · ${task.keyUse} · ${task.contentArea}
+            <svg aria-hidden="true"><use href="${BASE}/pictures/lab-icons.svg#speaking"></use></svg> ${dirLabel[task.taskType]} · ${task.keyUse} · ${task.contentArea}
           </p>
           <h1 tabindex="-1">${task.title}</h1>
         ${purposeBadgeHTML(S.stage)}

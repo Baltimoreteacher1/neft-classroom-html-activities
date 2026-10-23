@@ -388,7 +388,7 @@ export async function render(ctx) {
       <article class="activity" style="--room:${cur.data.color || "#1f766f"}">
         <header class="act-head">
           <p class="eyebrow">
-            <span aria-hidden="true">${meta.glyph}</span> ${meta.room} · ${tier?.name || cur.level}
+            <svg aria-hidden="true"><use href="${BASE}/pictures/lab-icons.svg#${cur.domain === "Model-Test" ? "test" : cur.domain.toLowerCase()}"></use></svg> ${meta.room} · ${tier?.name || cur.level}
             · ${bandLabel(cur.band)}${cur.playlist?.title ? ` · ${cur.playlist.title}` : ""}
           </p>
           <h1 tabindex="-1">

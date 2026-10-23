@@ -87,7 +87,7 @@ function chooserHTML(ctx, index, entries) {
     <section class="room-hero" style="--room:#2a6f97">
       <div>
         <span class="badge">Writing Growth Studio</span>
-        <h1 tabindex="-1">✍️ Writing Studio</h1>
+        <h1 tabindex="-1"><svg aria-hidden="true"><use href="${BASE}/pictures/lab-icons.svg#writing"></use></svg> Writing Studio</h1>
         <p class="lead">
           Read sources, collect evidence, write, get specific feedback, and revise. Your first draft
           is kept so you can see how you grew.
@@ -349,7 +349,7 @@ export async function render(ctx) {
     html: html`${crumbsHTML([["Lab", `${BASE}/?grades=${ctx.band}`], mission ? [mission.title, `${BASE}/missions/${mission.id}?grades=${ctx.band}`] : ["Writing Studio", `${BASE}/write?grades=${ctx.band}`], [task.title, null]])}
       <article class="activity write-studio" style="--room:#2a6f97">
         <header class="act-head">
-          <p class="eyebrow">✍️ ${FORM[task.form]} · ${task.keyUse} · ${task.contentArea}</p>
+          <p class="eyebrow"><svg aria-hidden="true"><use href="${BASE}/pictures/lab-icons.svg#writing"></use></svg> ${FORM[task.form]} · ${task.keyUse} · ${task.contentArea}</p>
           <h1 tabindex="-1">${task.title}</h1>
         ${purposeBadgeHTML(S.stage)}
           <div class="directions">
