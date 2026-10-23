@@ -4,13 +4,9 @@
 // `npm test`; the browser walk is tools/access-lab-e2e.mjs.
 import assert from "node:assert/strict";
 import test from "node:test";
-import {
-  analyzeWriting,
-  correctAnswerText,
-  isAnswered,
-  isCorrect,
-} from "../access-practice-lab/src/grade.js";
+import { correctAnswerText, isAnswered, isCorrect } from "../access-practice-lab/src/grade.js";
 import { initialOrder, reduceAnswer } from "../access-practice-lab/src/items.js";
+import { analyzeResponse, bankWordsUsed } from "../access-practice-lab/src/lang/analyze.js";
 import { bandOfId } from "../access-practice-lab/src/util.js";
 import { allActivities, buildIndex, orderedActivities } from "./lib/access-lab-content.mjs";
 
@@ -120,14 +116,12 @@ test("sort chips set one category per item", () => {
 });
 
 test("writing feedback counts, never grades", () => {
-  const r = analyzeWriting(
-    "First we plant seeds. Then they grow because of sun and water.",
-    { wordBank: ["seeds", "grow"] },
-    "A",
-  );
-  assert.ok(r.usedWords.includes("seeds"));
-  assert.ok(r.connectors.includes("because"));
-  assert.equal(r.checks.length, 4);
+  const text = "First we plant seeds. Then they grow because of sun and water.";
+  assert.ok(bankWordsUsed(text, ["seeds", "grow"]).includes("seeds"));
+  const r = analyzeResponse(text, { wordBank: ["seeds", "grow"] });
+  assert.ok(r.cohesion.devices.some((d) => /because/i.test(d.text)));
+  assert.equal(r.composite, undefined);
+  assert.equal(r.score, undefined);
 });
 
 test("band is decided by id prefix", () => {

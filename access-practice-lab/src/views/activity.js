@@ -13,7 +13,6 @@ import {
 import { findActivity, loadDomain, loadShared, ordered } from "../content.js";
 import {
   SPEAKING_CHECKS,
-  analyzeWriting,
   band,
   correctAnswerText,
   isAnswered,
@@ -26,7 +25,7 @@ import { visualsHTML } from "../media.js";
 import { isRecording, takesFor } from "../recorder.js";
 import { answerOf, loadRecord, saveRecord } from "../store.js";
 import { invalidateActivity, startIndependentAttempt, updateActivityAnswer } from "../attempts.js";
-import { analyzeResponse, compareDrafts } from "../lang/analyze.js";
+import { analyzeResponse, bankKey, bankWordsUsed, compareDrafts } from "../lang/analyze.js";
 import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
 import { feedbackHTML as coachCardHTML } from "../studio-ui.js";
 import { speak, stop as stopSpeech } from "../speech.js";
@@ -207,7 +206,7 @@ function writingHTML(a) {
   const goal = wordGoal(cur.level);
   const bank = mode === "supported" ? wordBank(a).slice(0, 12) : [];
   const result = writingChecks.get(a.id);
-  const usedWords = new Set(analyzeWriting(text, a, cur.level).usedWords);
+  const usedWords = new Set(bankWordsUsed(text, wordBank(a)).map(bankKey));
   return html`${mode === "supported" && (bank.length || (a.frames || []).length) ? raw('<details class="writing-starters"><summary>Writing starters</summary>') : ""}${
       bank.length
         ? html`<ul class="wordbank" aria-label="Word bank">
@@ -254,16 +253,13 @@ ${text}</textarea>
     ${coachFeedback ? coachCardHTML(coachFeedback, text, { patternHref: (id) => `${BASE}/detective/${id}?grades=${cur.band}` }) : ""}
     ${
       result
-        ? html`<div class="feedback ${result.met >= 3 ? "is-right" : "is-hint"}" role="status">
+        ? html`<div class="feedback is-hint" role="status">
               <p class="fb-title">Review your meaning first</p>
               <ul>${taskCriteria(a).map((c) => html`<li>${c}</li>`)}</ul>
-              <p><strong>One next step:</strong> ${result.checks.find((c) => !c.ok)?.tip || "Read your answer aloud. Keep only details that help answer the question."}</p>
-              <details><summary>Optional surface checks</summary>
-              <ul class="checks">
-                ${result.checks.map((c) => html`<li class="${c.ok ? "ok" : "todo"}">${c.ok ? "✓" : "○"} ${c.ok ? c.label : c.tip}</li>`)}
-              </ul>
-              </details>
-              ${result.usedWords.length ? html`<p class="fine">Word-bank words you used: ${result.usedWords.join(", ")}</p>` : ""}
+              <p><strong>One next step:</strong> ${result.nextMoves[0] ? `${result.nextMoves[0].title}. ${result.nextMoves[0].ask}` : "Read your answer aloud. Keep only details that help answer the question."}</p>
+              ${result.strengths.length ? html`<details><summary>What the checker noticed</summary>
+              <ul class="checks">${result.strengths.slice(0, 4).map((x) => html`<li class="ok">✓ ${x.text}</li>`)}</ul></details>` : ""}
+              ${mode === "supported" && result.word.bankUsed.length ? html`<p class="fine">Word-bank words you used: ${result.word.bankUsed.join(", ")}</p>` : ""}
               <p class="fine">
                 These checks notice surface features, not meaning or a score. Did you answer every part and include a specific detail? Ask your teacher for feedback.
               </p>
@@ -551,7 +547,7 @@ export function onClick(e, ctx) {
       ctx.rerender(); return;
     }
     const revised = cur.record.drafts[a.id]?.first?.trim() !== text.trim();
-    writingChecks.set(a.id, analyzeWriting(text, a, cur.level));
+    writingChecks.set(a.id, analyzeResponse(text, coachOptions(a)));
     cur.record.results[a.id] = { words: wordCount(text), meaningful: true, evidence: revised ? "revised" : "writing", mode, supportUsed: (helpUsed.has(a.id) || Boolean(cur.record.supportUsed?.[a.id])), date: new Date().toISOString() };
     if (!cur.record.complete.includes(a.id)) cur.record.complete.push(a.id);
     validation = ""; save(); announce(storage.isVolatile ? "Reviewed writing kept in this tab. Export a Passport code before leaving." : "Reviewed writing saved. This is practice evidence, not a score."); ctx.rerender(); return;
@@ -566,7 +562,7 @@ export function onClick(e, ctx) {
     }
     validation = "";
     cur.record.drafts[a.id] ||= { first: text };
-    const result = analyzeWriting(text, a, cur.level);
+    const result = analyzeResponse(text, coachOptions(a));
     writingChecks.set(a.id, result);
     cur.record.results[a.id] = {
       meaningful: true,
@@ -691,7 +687,7 @@ export function onInput(e) {
     meter.textContent = `${n} / about ${goal} words`;
     const bar = document.querySelector(".meter-bar > span");
     if (bar) bar.style.width = `${Math.min(100, Math.round((n / goal) * 100))}%`;
-    const usedWords = new Set(analyzeWriting(e.target.value, a, cur.level).usedWords);
+    const usedWords = new Set(bankWordsUsed(e.target.value, wordBank(a)).map(bankKey));
     for (const li of document.querySelectorAll(".wordbank li"))
       li.classList.toggle("is-used", usedWords.has(li.textContent.split("/")[0].trim().toLowerCase()));
   }

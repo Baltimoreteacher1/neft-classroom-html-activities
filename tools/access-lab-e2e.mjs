@@ -294,8 +294,13 @@ try {
   );
   await page.click("[data-check-writing]");
   ok(await page.isVisible(".feedback"), "writing check gives feedback");
-  await page.getByText("Optional surface checks", { exact: true }).click();
-  ok(await page.isVisible(".feedback .checks"), "optional surface checks can be opened");
+  ok(await page.getByText("One next step:").isVisible(), "writing check names one next step");
+  await page.getByText("What the checker noticed", { exact: true }).click();
+  ok(await page.isVisible(".feedback .checks"), "what the checker noticed can be opened");
+  ok(
+    !(await page.locator(".feedback").innerText()).match(/proficien|WIDA level|score:/i),
+    "writing feedback claims no level or score",
+  );
 
   // Speaking constructed: practiced + checklist → saved
   const speaking = await page.evaluate(async () => {
@@ -331,6 +336,98 @@ try {
     ),
     "results do not predict a WIDA level",
   );
+
+  // Practice composite: weighted like ACCESS Overall, withheld until Speaking and Writing are rated, never a level.
+  await go("/test/model-form-a");
+  await page.evaluate(() =>
+    localStorage.setItem(
+      "accessPracticeLab:v1:test:model-form-a",
+      JSON.stringify({
+        phase: "results",
+        index: 0,
+        answers: {},
+        flags: [],
+        results: {
+          sections: [
+            {
+              domain: "Listening",
+              title: "Listening",
+              correct: 5,
+              total: 6,
+              attempted: 6,
+              open: 0,
+              openDone: 0,
+            },
+            {
+              domain: "Reading",
+              title: "Reading",
+              correct: 4,
+              total: 6,
+              attempted: 6,
+              open: 0,
+              openDone: 0,
+            },
+            {
+              domain: "Writing",
+              title: "Writing",
+              correct: 0,
+              total: 0,
+              attempted: 0,
+              open: 2,
+              openDone: 2,
+            },
+            {
+              domain: "Speaking",
+              title: "Speaking",
+              correct: 0,
+              total: 0,
+              attempted: 0,
+              open: 2,
+              openDone: 2,
+            },
+          ],
+          correct: 9,
+          total: 12,
+          meaningful: true,
+          date: new Date().toISOString(),
+          studentName: "",
+        },
+      }),
+    ),
+  );
+  await go("/test/model-form-a");
+  await page.waitForSelector(".composite");
+  const comp = () => page.locator(".composite").innerText();
+  ok(
+    /Practice comprehension[\s\S]*72\s*\/ 100 practice points/.test(await comp()),
+    "comprehension composite is 15:35 weighted (72)",
+  );
+  ok(
+    /Practice overall needs all four skills/.test(await comp()),
+    "overall is withheld until Speaking and Writing are rated",
+  );
+  for (const c of ["lc", "vu", "lctl"])
+    await page.check(`[data-rating="Speaking"][data-rating-crit="${c}"][value="strong"]`);
+  for (const c of ["lc", "vu", "lctl"])
+    await page.check(`[data-rating="Writing"][data-rating-crit="${c}"][value="building"]`);
+  await page.check('[data-rating-by="Writing"][value="teacher"]');
+  ok(
+    /Practice overall[\s\S]*74\s*\/ 100 practice points/.test(await comp()),
+    "overall composite appears after both ratings (74)",
+  );
+  ok(
+    await page.evaluate(() => document.activeElement?.matches('[data-rating-by="Writing"]')),
+    "focus stays on the control just changed",
+  );
+  ok(/rated by both you and your teacher/.test(await comp()), "the report says who rated");
+  ok(
+    !/\bLevel \d|proficiency level \d|WIDA level \d|your (ACCESS|WIDA) (score|level)|will (score|reach|exit)|on track/i.test(
+      await page.textContent(".composite"),
+    ),
+    "composite never shows a level or prediction",
+  );
+  await go("/test/model-form-a");
+  ok((await page.locator(".composite").innerText()).includes("74"), "ratings survive a reload");
 
   // A paused timed test retains its position and cannot keep ticking on another route.
   await go("/test/g35-listening-mini");

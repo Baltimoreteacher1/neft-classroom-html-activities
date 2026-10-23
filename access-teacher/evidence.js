@@ -1,7 +1,7 @@
 // Teacher Intelligence Dashboard — class language evidence for the ACCESS Practice Lab.
 // Students send a share code or file (their alias only); this page reads them in the browser and keeps
 // the roster on this teacher device. Nothing is uploaded. Every statement traces to ledger entries or
-// to the learner's own words, and no screen shows a proficiency level or a composite score.
+// to the learner's own words, and no screen shows a proficiency level or combines evidence into one number.
 import {
   loadBlueprint,
   loadExemplars,

@@ -1,6 +1,6 @@
 // Language Growth Map: what the learner's own work shows, by WIDA language dimension, with the
 // supports they used kept visibly separate. Every number comes from the evidence ledger; nothing is
-// estimated from how many activities were finished, and there is no composite or "% developed" score.
+// estimated from how many activities were finished, and nothing here is combined into one number or turned into a percentage of "development".
 import { crumbsHTML } from "../components.js";
 import {
   focusAreas,

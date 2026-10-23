@@ -9,7 +9,8 @@
 //  * trends need ≥ MIN_POINTS first attempts; fewer → "not enough evidence yet", never a guess.
 //  * a first attempt made WITHOUT supports ("independent") is never mixed with supported ones.
 //  * a revision after feedback is "supported by feedback" even if the stage was independent.
-//  * there is no composite score and no proficiency label anywhere in the output.
+//  * nothing here is combined into one number, and there is no proficiency label anywhere in the output.
+//    (The only combined number in the lab is the Practice Composite on practice-test results.)
 import { safeJson, storage } from "../util.js";
 
 export const LEDGER_KEY = "accessPracticeLab:v1:ledger";

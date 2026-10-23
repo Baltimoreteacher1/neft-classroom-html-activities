@@ -66,6 +66,38 @@ export function positionShare(items) {
   return { n, top: n ? top / n : 0, counts };
 }
 
+/**
+ * Is the key evenly spread over the positions? Items are grouped by option count (a 3-option item can only
+ * key A-C, so mixing them with 4-option items hides a D that is never used), and each group of 20 or more
+ * is compared with a uniform spread by chi-square at p < .05. A single "top position share" cap cannot see
+ * a key that favours one end: 45% on D passed a 50% cap while A-C each held about 17%.
+ */
+const CHI_CRITICAL = { 2: 5.99, 3: 7.81 };
+export function positionUniformity(items, minGroup = 20) {
+  const groups = {};
+  for (const it of items) {
+    const c = optionCues(it);
+    const k = asList(it.options).length;
+    if (c.keyIdx.length !== 1 || !CHI_CRITICAL[k - 1]) continue;
+    (groups[k] ||= Array(k).fill(0))[c.keyIdx[0]]++;
+  }
+  const out = [];
+  for (const [k, counts] of Object.entries(groups)) {
+    const n = counts.reduce((a, b) => a + b, 0);
+    if (n < minGroup) continue;
+    const expected = n / counts.length;
+    const chi = counts.reduce((sum, c) => sum + (c - expected) ** 2 / expected, 0);
+    out.push({
+      options: Number(k),
+      n,
+      counts,
+      chi: Math.round(chi * 100) / 100,
+      skewed: chi > CHI_CRITICAL[k - 1],
+    });
+  }
+  return out;
+}
+
 // self-tests
 {
   const good = {
@@ -103,6 +135,16 @@ export function positionShare(items) {
   };
   if (!optionCues(long).longestCorrect) throw new Error("self-test: length cue not caught");
   if (positionShare([good, good, good]).top !== 1) throw new Error("self-test: position share");
+  const keyed = (i) => ({
+    type: "multipleChoice",
+    options: ["a", "b", "c", "d"].map((id) => ({ id, text: id + i })),
+    answer: ["a", "b", "c", "d"][i % 4],
+  });
+  const lopsided = Array.from({ length: 24 }, (_, n) => keyed(n < 20 ? 3 : n % 4));
+  if (!positionUniformity(lopsided)[0]?.skewed)
+    throw new Error("self-test: a key that favours D must be flagged");
+  if (positionUniformity(Array.from({ length: 24 }, (_, n) => keyed(n)))[0]?.skewed)
+    throw new Error("self-test: an even key must pass");
 }
 
 // ── gather the selected-response pool ─────────────────────────────────────────
@@ -165,6 +207,12 @@ else {
       positions: pos.counts,
       absolutes: abs,
     };
+    for (const g of positionUniformity(items))
+      if (g.skewed)
+        fail(
+          name,
+          `answer positions are not evenly spread over ${g.options}-option items: ${g.counts.join("/")} (n=${g.n}, chi-square ${g.chi})`,
+        );
     if (pos.n >= 12 && pos.top > q.maxCorrectPositionShare)
       fail(
         name,
@@ -173,6 +221,16 @@ else {
     if (abs)
       advisories.push(`${name}: ${abs} item(s) whose wrong options all rely on absolute words`);
   }
+  // The activity bank as a whole: per-domain pools of 12-32 items hide a skew that the whole bank shows.
+  const bankAll = ["Listening", "Reading", "Speaking", "Writing", "Model-Test"].flatMap(
+    (d) => pools[d],
+  );
+  for (const g of positionUniformity(bankAll))
+    if (g.skewed)
+      fail(
+        "bank",
+        `answer positions are not evenly spread over ${g.options}-option items across the whole bank: ${g.counts.join("/")} (n=${g.n}, chi-square ${g.chi})`,
+      );
   const share = mcTotal ? longestTotal / mcTotal : 0;
   stats.corpus = { items: mcTotal, longestCorrectShare: Math.round(share * 100) / 100 };
   if (share > q.maxLongestCorrectShare)

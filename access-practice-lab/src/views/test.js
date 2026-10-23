@@ -4,8 +4,17 @@
 // test at 0:00 with whatever was answered).
 import { listenPlayerHTML, recorderHTML, transcriptHTML } from "../components.js";
 import { loadTest } from "../content.js";
-import { band as bandOf, correctAnswerText, isAnswered, isAuto, isCorrect } from "../grade.js";
+import { correctAnswerText, isAnswered, isAuto, isCorrect } from "../grade.js";
 import { choiceTarget, inputHTML, reduceAnswer, seedAnswer } from "../items.js";
+import {
+  BAND_POINTS,
+  LIMITS,
+  METHOD,
+  MIN_ITEMS,
+  WEIGHTS,
+  practiceComposite,
+} from "../lang/composite.js";
+import { CRITERIA, PRACTICE_BANDS } from "../lang/rubrics.js";
 import { visualsHTML } from "../media.js";
 import { clear as clearTake, isRecording, stop as stopRecording, takesFor } from "../recorder.js";
 import { stop as stopSpeech } from "../speech.js";
@@ -37,10 +46,14 @@ export function responseDone(item, domain, answer, oralPractice = false, hasTake
     ? Boolean(oralPractice || hasTake)
     : isAnswered(item, answer);
 }
-const done = (f) => responseDone(
-  f.item, f.section.domain, T.rec.answers[f.item.id],
-  T.rec.oralPractice?.[f.item.id], takesFor(`${T.test.id}:${f.item.id}`).length > 0,
-);
+const done = (f) =>
+  responseDone(
+    f.item,
+    f.section.domain,
+    T.rec.answers[f.item.id],
+    T.rec.oralPractice?.[f.item.id],
+    takesFor(`${T.test.id}:${f.item.id}`).length > 0,
+  );
 
 /** Pause on any route departure, including browser Back and same-view test changes. */
 export function unmount() {
@@ -58,8 +71,7 @@ export function invalidate() {
   clearInterval(timerId);
   T = null;
 }
-const answered = () =>
-  T.flat.filter(done).length;
+const answered = () => T.flat.filter(done).length;
 
 function grade() {
   const sections = (T.test.sections || []).map((s, si) => {
@@ -69,9 +81,14 @@ function grade() {
       isCorrect(it, T.rec.answers[it.id] ?? seedAnswer(it)),
     ).length;
     const open = items.filter((it) => !isAuto(it));
-    const openDone = open.filter(
-      (it) => responseDone(it, s.domain, T.rec.answers[it.id], T.rec.oralPractice?.[it.id],
-        takesFor(`${T.test.id}:${it.id}`).length > 0),
+    const openDone = open.filter((it) =>
+      responseDone(
+        it,
+        s.domain,
+        T.rec.answers[it.id],
+        T.rec.oralPractice?.[it.id],
+        takesFor(`${T.test.id}:${it.id}`).length > 0,
+      ),
     ).length;
     return {
       domain: s.domain,
@@ -90,7 +107,6 @@ function grade() {
     meaningful: sections.some((s) => s.attempted > 0 || s.openDone > 0),
     correct: c,
     total: t,
-    pct: t ? Math.round((c / t) * 100) : null,
     date: new Date().toISOString(),
     studentName: getStudentName(),
   };
@@ -119,9 +135,7 @@ function introHTML() {
   const test = T.test;
   const inProgress = Boolean(T.rec.startedAt || Object.keys(T.rec.answers || {}).length);
   return html`<section class="panel test-intro">
-    <p class="eyebrow">
-      Classroom practice · ${bandLabel(test.band)}
-    </p>
+    <p class="eyebrow">Classroom practice · ${bandLabel(test.band)}</p>
     <h1 tabindex="-1">${test.title}</h1>
     ${test.overview ? html`<p class="lead">${test.overview}</p>` : ""}
     <ol class="section-list">
@@ -151,9 +165,11 @@ function introHTML() {
     </div>
     <p class="disclaimer">
       Original classroom practice, not an official WIDA test or score. Actual ACCESS Online adapts
-      Listening and Reading and uses those results for Speaking and Writing tier placement.
-      This fixed practice set does not reproduce its difficulty, scoring, timing, or routing.
-      Use the <a href="https://wbte.drcedirect.com/WIDA" target="_blank" rel="noopener">official WIDA demo</a>
+      Listening and Reading and uses those results for Speaking and Writing tier placement. This
+      fixed practice set does not reproduce its difficulty, scoring, timing, or routing. Use the
+      <a href="https://wbte.drcedirect.com/WIDA" target="_blank" rel="noopener"
+        >official WIDA demo</a
+      >
       to learn the actual testing interface.
     </p>
   </section>`;
@@ -186,12 +202,20 @@ function inputFor(f) {
       return html`${recorderHTML(key, { prompt: item.prompt, recording: isRecording(key) })}<label
           class="field"
           ><span>Planning notes (optional)</span
-          ><textarea rows="3" data-test-note ${IGN}>${a || ""}</textarea>
-        </label><label class="timer-opt"><input type="checkbox" data-test-oral
-          ${T.rec.oralPractice?.[item.id] ? raw("checked") : ""} ${IGN} />
-          I said my answer aloud to a teacher or partner.</label>
-        <p class="fine">Planning notes do not count as a spoken answer. Recordings stay in this tab;
-          ask your teacher to listen before closing or reloading it.</p>`;
+          ><textarea rows="3" data-test-note ${IGN}>${a || ""}</textarea></label
+        ><label class="timer-opt"
+          ><input
+            type="checkbox"
+            data-test-oral
+            ${T.rec.oralPractice?.[item.id] ? raw("checked") : ""}
+            ${IGN}
+          />
+          I said my answer aloud to a teacher or partner.</label
+        >
+        <p class="fine">
+          Planning notes do not count as a spoken answer. Recordings stay in this tab; ask your
+          teacher to listen before closing or reloading it.
+        </p>`;
     return html`${
         item.wordBank?.length
           ? html`<ul class="wordbank">
@@ -299,12 +323,135 @@ function reviewHTML() {
   </section>`;
 }
 
+const ratingId = (domain, crit, band) => `rate-${domain}-${crit}-${band}`;
+
+/** Speaking and Writing cannot be machine-scored, so the composite waits for a practice-rubric rating. */
+function ratingHTML(r) {
+  const rated = r.sections.filter(
+    (s) => (s.domain === "Speaking" || s.domain === "Writing") && s.openDone > 0,
+  );
+  if (!rated.length) return "";
+  return html`<section class="rate-panel" aria-labelledby="rateTitle">
+    <h2 id="rateTitle">Rate your speaking and writing</h2>
+    <p class="fine">
+      Use the practice rubric to rate each response. A teacher rating is a different kind of
+      evidence than a self-rating, so say who rated. Ratings are saved on this device.
+    </p>
+    ${rated.map((s) => {
+      const cur = T.rec.ratings?.[s.domain] || {};
+      return html`<fieldset class="rate-domain">
+        <legend>${s.domain}</legend>
+        ${CRITERIA.map(
+          (c) =>
+            html`<fieldset class="rate-crit">
+              <legend>${c.name} <span class="fine">· ${c.dimension}</span></legend>
+              ${PRACTICE_BANDS.map(
+                (b) =>
+                  html`<label class="rate-opt">
+                    <input
+                      type="radio"
+                      id="${ratingId(s.domain, c.id, b.id)}"
+                      name="rate-${s.domain}-${c.id}"
+                      value="${b.id}"
+                      data-rating="${s.domain}"
+                      data-rating-crit="${c.id}"
+                      ${cur[c.id] === b.id ? raw("checked") : ""}
+                      ${IGN}
+                    />
+                    <span><strong>${b.label}</strong> — ${c.student[b.id]}</span>
+                  </label>`,
+              )}
+            </fieldset>`,
+        )}
+        <fieldset class="rate-crit">
+          <legend>Who rated this?</legend>
+          ${["me", "teacher"].map(
+            (who) =>
+              html`<label class="rate-opt">
+                <input
+                  type="radio"
+                  id="rate-${s.domain}-by-${who}"
+                  name="rate-${s.domain}-by"
+                  value="${who}"
+                  data-rating-by="${s.domain}"
+                  ${(cur.by || "me") === who ? raw("checked") : ""}
+                  ${IGN}
+                />
+                <span>${who === "me" ? "I rated my own work" : "My teacher rated it"}</span>
+              </label>`,
+          )}
+        </fieldset>
+      </fieldset>`;
+    })}
+  </section>`;
+}
+
+/** The Practice Composite: weighted, never filled in, never a WIDA score or level. See lang/composite.js. */
+function compositeHTML(r) {
+  const c = practiceComposite(r.sections, T.rec.ratings);
+  const points = (m) => (m.status === "ok" ? `${Math.round(m.value)}` : "—");
+  const card = (label, sub, v) =>
+    html`<article class="comp-card">
+      <h3>${label} <span class="fine">${sub}</span></h3>
+      ${
+        v
+          ? html`<p class="comp-num">
+                <strong>${v.value}</strong> <span>/ 100 practice points</span>
+              </p>
+              ${v.small ? html`<p class="fine">Small sample: fewer than 12 questions in a skill. Treat this as a rough picture.</p>` : ""}`
+          : html`<p class="fine">Not shown yet.</p>`
+      }
+    </article>`;
+  return html`<section class="composite" aria-labelledby="compTitle">
+    <h2 id="compTitle">Practice composite</h2>
+    <div class="comp-grid">
+      ${card("Practice comprehension", "Listening + Reading", c.comprehension)}
+      ${card("Practice overall", "all four skills", c.overall)}
+    </div>
+    ${c.withheld ? html`<p class="fine">${c.withheld}</p>` : ""}
+    ${c.overall ? html`<p class="fine">Speaking and Writing ${c.overall.raters.length > 1 ? "were rated by both you and your teacher" : c.overall.raters[0] === "teacher" ? "were rated by your teacher" : "are your own ratings"}.</p>` : ""}
+    <table class="comp-table">
+      <caption>
+        How each skill counts
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col">Skill</th>
+          <th scope="col">Weight</th>
+          <th scope="col">Practice points</th>
+          <th scope="col">Based on</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${c.measures.map(
+          (m) =>
+            html`<tr>
+              <th scope="row">${m.domain}</th>
+              <td>${Math.round(WEIGHTS[m.domain] * 100)}%</td>
+              <td>${points(m)}</td>
+              <td>${m.why}</td>
+            </tr>`,
+        )}
+      </tbody>
+    </table>
+    <details class="comp-method">
+      <summary>How this is calculated, and what it is not</summary>
+      <p>${METHOD}</p>
+      <p>${LIMITS}</p>
+      <p class="fine">
+        A skill needs at least ${MIN_ITEMS} answered questions to count. Rubric points: early
+        ${BAND_POINTS.early}, building ${BAND_POINTS.building}, strong ${BAND_POINTS.strong}.
+      </p>
+    </details>
+  </section>`;
+}
+
 function resultsHTML() {
   const r = T.rec.results;
   return html`<section class="panel results">
       <p class="eyebrow">Practice report${r.studentName ? ` · ${r.studentName}` : ""}</p>
       <h1 tabindex="-1">${T.test.title}</h1>
-      ${r.pct != null ? html`<p class="big-score"><strong>${r.correct}/${r.total}</strong> questions right · ${bandOf(r.correct, r.total)}</p>` : ""}
+      ${r.total ? html`<p class="big-score"><strong>${r.correct}/${r.total}</strong> scored questions right</p>` : ""}
       <div class="result-grid">
         ${r.sections.map(
           (s) =>
@@ -322,6 +469,7 @@ function resultsHTML() {
             </article>`,
         )}
       </div>
+      ${ratingHTML(r)} ${compositeHTML(r)}
       <p class="disclaimer">
         This is practice feedback, not a WIDA ACCESS score or level. Speaking and writing are best
         judged by your teacher.
@@ -476,6 +624,16 @@ export function onChange(e, ctx) {
     if (t.checked && T.rec.remaining == null) T.rec.remaining = T.minutes * 60;
     persist();
     return;
+  }
+  if (T.rec.phase === "results" && (t.matches("[data-rating]") || t.matches("[data-rating-by]"))) {
+    const domain = t.dataset.rating || t.dataset.ratingBy;
+    T.rec.ratings ||= {};
+    const cur = (T.rec.ratings[domain] ||= {});
+    if (t.dataset.rating) cur[t.dataset.ratingCrit] = t.value;
+    else cur.by = t.value;
+    persist();
+    const id = t.id;
+    return ctx.rerender().then(() => document.getElementById(id)?.focus({ preventScroll: true }));
   }
   const f = T.flat[T.rec.index];
   if (T.rec.phase !== "running" || !f) return;

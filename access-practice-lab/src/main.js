@@ -387,6 +387,26 @@ document.addEventListener("keydown", (e) => app.view?.onKey?.(e, ctx));
 window.addEventListener("popstate", () => render({ scroll: true }));
 window.addEventListener("pagehide", () => { app.view?.unmount?.(); stopSpeech(); rec.stop(); });
 
+function watchNetwork() {
+  const note = $("#labNet");
+  const show = (offline) => {
+    if (note) note.hidden = !offline;
+  };
+  window.addEventListener("online", () => show(false));
+  window.addEventListener("offline", () => show(true));
+  show(navigator.onLine === false);
+}
+
+/** Offline copy of the lab (sw.js). Driven browsers skip it unless the URL says ?sw=1, so tests never see a stale cache. */
+function registerOffline() {
+  if (!("serviceWorker" in navigator)) return;
+  if (navigator.webdriver && !/[?&]sw=1\b/.test(location.search)) return;
+  const register = () =>
+    navigator.serviceWorker.register(`${BASE}/sw.js`, { scope: `${BASE}/` }).catch(() => {});
+  if (document.readyState === "complete") register();
+  else window.addEventListener("load", register, { once: true });
+}
+
 async function boot() {
   document.documentElement.style.setProperty("--lab-scale", String(app.prefs.textSize || 1));
   try {
@@ -398,5 +418,7 @@ async function boot() {
   if (stamp) stamp.textContent = `ACCESS Practice Lab · build ${BUILD}`;
   await render({ scroll: false });
   document.documentElement.classList.add("lab-ready");
+  watchNetwork();
+  registerOffline();
 }
 boot();

@@ -34,10 +34,19 @@ show it independently → watch growth. Direct activity links and the quick-prac
 
 ## Rules that must keep holding
 
-1. **No invented proficiency.** There is no composite score, "% developed", or WIDA level anywhere. The Growth Map
-   and dashboard show trends from first attempts, and say "not enough evidence" under three. Exemplars use the
-   practice bands *early / building / strong*. `tools/lib/access-studio-rules.mjs` (`SCORE_CLAIM`) is enforced over
+1. **No invented proficiency.** There is no "% developed", WIDA level, scale score or exit prediction anywhere. The
+   Growth Map and dashboard show trends from first attempts, and say "not enough evidence" under three. Exemplars use
+   the practice bands *early / building / strong*. `tools/lib/access-studio-rules.mjs` (`SCORE_CLAIM`) is enforced over
    all studio content.
+   **One exception, decided by Joel on 2026-10-23 (`data/product-decisions.json`): the Practice Composite** on
+   practice-test results (`src/lang/composite.js`, shown only by `views/test.js`; `tools/access-composite.test.mjs`
+   enforces both). It follows the expert guidance for a practice composite: WIDA's published Overall weighting
+   (Listening 15%, Speaking 15%, Reading 35%, Writing 35%; WIDA TR-2019-3); each skill needs at least 6 answered
+   questions; a missing or unrated skill withholds the overall number and is never filled in or reweighted; Speaking and
+   Writing enter only through an explicit practice-rubric rating that records who rated (self or teacher); a skill with
+   fewer than 12 questions is flagged as a small sample; the parts, the method and the limits are always on screen;
+   and it is called "practice points", never a WIDA score, level, placement or prediction. No other surface may show a
+   composite.
 2. **Scaffolds cannot contaminate independent results.** "On my own" renders no frames, bank, model or Spanish
    bridges; feedback appears only after a submission; the ledger stage becomes *supported* if any support was
    opened. A revision after feedback is a *revision*, never a first attempt.

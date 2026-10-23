@@ -2,7 +2,7 @@
 //
 // Contract:
 //  * Every observation carries the span(s) of the learner's text that produced it.
-//  * No composite score, no proficiency label. The output is "what is on the page" plus the next
+//  * Nothing is combined into one number and there is no proficiency label. The output is "what is on the page" plus the next
 //    teachable moves, chosen by stated rules (see nextMoves). Meaning and truth are NOT judged here.
 //  * Scaffold exposure is a function of the stage: independent attempts get questions only —
 //    no frames, no word suggestions — so feedback can never leak help into an independent result.
@@ -95,11 +95,25 @@ function evidence(text, { sourceText = "", sourceTerms = [] }) {
   };
 }
 
+/** The key a bank entry matches on: its first form ("rain/rains" matches "rain"), lower-cased. */
+export const bankKey = (w) => String(w).split("/")[0].trim().toLowerCase();
+
+/** Bank words that appear as whole words or phrases in the text (never inside another word); duplicates collapse. */
+export function bankWordsUsed(text, bank) {
+  const seen = new Set();
+  return (bank || []).map(String).filter((w) => {
+    const key = bankKey(w);
+    if (!key || seen.has(key) || !findPhrase(text, key).length) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 function wordLevel(text, toks, { wordBank = [] }) {
   const academic = toks.filter((t) => t.lower.length > 4 && (ACADEMIC_STEMS.has(stem(t.lower)) || ACADEMIC.has(t.lower)));
   const domain = toks.filter((t) => DOMAIN_STEMS.has(stem(t.lower)));
   const bank = wordBank.map(String).filter(Boolean);
-  const used = bank.filter((w) => findPhrase(text, w.split("/")[0].trim()).length);
+  const used = bankWordsUsed(text, bank);
   const vague = [];
   for (const w of Object.keys(VAGUE)) for (const h of findPhrase(text, w)) if (!(w === "very" && /^\s+much\b/i.test(text.slice(h.end)))) vague.push({ ...h, word: w });
   const content = toks.filter((t) => !isStop(t.lower));

@@ -8,6 +8,24 @@
 // build does this via tools/sync-access-shell.mjs). It previously drifted to a
 // stale "6 activities" build with an empty panel while the hub was current.
 
+/**
+ * A module or stylesheet requested as `?v=<hash>` is addressed by the hash of its own bytes
+ * (tools/sync-access-shell.mjs writes the hash; tools/access-module-cache.test.mjs pins it), so the URL
+ * changes whenever the file does and the browser may keep it for a year without asking. Anything without a
+ * version keeps the Pages default (revalidate on every load): an unhashed URL is not content-addressed.
+ */
+function withImmutableCaching(url, response) {
+  if (!response.ok || !url.searchParams.has("v") || !/\.(?:js|css)$/i.test(url.pathname))
+    return response;
+  const headers = new Headers(response.headers);
+  headers.set("Cache-Control", "public, max-age=31536000, immutable");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export async function onRequest(context) {
   const { request, env } = context;
   const url = new URL(request.url);
@@ -18,7 +36,8 @@ export async function onRequest(context) {
     /\.[a-z0-9]+$/i.test(url.pathname) ||
     url.pathname.startsWith("/access-practice-lab/printables/")
   ) {
-    return env.ASSETS.fetch(request);
+    const asset = await env.ASSETS.fetch(request);
+    return withImmutableCaching(url, asset);
   }
 
   const shellUrl = new URL("/access-practice-lab/app-shell", url.origin);
