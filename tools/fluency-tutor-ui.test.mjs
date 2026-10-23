@@ -73,12 +73,15 @@ assert.equal($("#page-title").textContent, "Play with math");
 assert.ok($("#games-view [data-game]"), "The game room renders playable game choices");
 click('[data-view="teacher"]');
 assert.equal($("#page-title").textContent, "Teacher resources");
+assert.ok(win.document.body.classList.contains("teacher-resources"));
 assert.ok($("#teacher-studio .teacher-layout"), "Teacher studio mounts into its own workspace");
 assert.ok(
   $("#open-print-center") && $("#open-word-wall-btn") && $("#open-number-talk-btn"),
   "Teacher quick tools survive studio rendering",
 );
+assert.equal($("#studio-launch-nt"), null, "The Number Talk projector has one teacher entry point");
 click('[data-view="library"]');
+assert.ok(!win.document.body.classList.contains("teacher-resources"));
 click("#lang-toggle");
 assert.equal(
   $("#page-title").textContent,

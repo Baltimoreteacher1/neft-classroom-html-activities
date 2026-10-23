@@ -130,7 +130,7 @@ export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, o
   function render() {
     const skills = ALL_SKILLS.filter((skill) => skill.grade === grade);
     if (game && grade < (MODEL_GAME_MIN_GRADE[game] || 1)) game = "";
-    container.innerHTML = `<div class="section-heading"><div><p class="section-label">Teacher studio</p><h2>One useful assignment. Fresh practice every time.</h2><p>Choose the skills your class needs. Share the link through your classroom system, project it, or send it home.</p></div><div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center"><button type="button" class="primary-action" id="studio-launch-nt" style="background:#4f46e5; border-color:#4338ca; padding:8px 14px; font-weight:800">📽️ Number Talk Projector</button><button type="button" class="outline-action" id="studio-open-partner" style="padding:8px 14px; font-weight:700">🎲 Partner Games</button></div></div>
+    container.innerHTML = `<div class="section-heading"><div><p class="section-label">Teacher studio</p><h2>One useful assignment. Fresh practice every time.</h2><p>Choose the skills your class needs. Share the link through your classroom system, project it, or send it home.</p></div><div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center"><button type="button" class="outline-action" id="studio-open-partner" style="padding:8px 14px; font-weight:700">🎲 Partner Games</button></div></div>
       <div class="teacher-layout"><form id="assignment-builder"><label for="assignment-label">Assignment title<input id="assignment-label" maxlength="80" value="${escapeHtml(label)}"/></label><div class="form-row"><label for="assignment-grade">Grade<select id="assignment-grade">${GRADES.map((g) => `<option value="${g.grade}" ${g.grade === grade ? 'selected' : ''}>${g.label}</option>`).join("")}</select></label><label for="assignment-count">Problems per visit<select id="assignment-count">${[5, 10, 15, 20].map((n) => `<option ${n === count ? 'selected' : ''}>${n}</option>`).join("")}</select></label></div>
       <label for="assignment-mode">Support level<select id="assignment-mode"><option value="adaptive" ${mode === 'adaptive' ? 'selected' : ''}>Adaptive: help when needed</option><option value="guided" ${mode === 'guided' ? 'selected' : ''}>Coached: strategy steps always open</option></select></label>
       <div class="form-row"><label for="assignment-game">Add a game (optional)<select id="assignment-game"><option value="">No game</option>${games.filter((g) => !g.grades || g.grades.includes(grade)).map((g) => `<option value="${g.id}" ${g.id === game ? 'selected' : ''}>${escapeHtml(g.name)}</option>`).join("")}</select></label><label for="assignment-stop">Game facts (fact games only)<select id="assignment-stop">${stopOptions(stopsFor(grade), stop, "Everything on the grade’s trail")}</select></label></div>
@@ -171,10 +171,6 @@ export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, o
     result.scrollIntoView({ behavior: "smooth", block: "start" });
   };
   container.onclick = async (event) => {
-    if (event.target.closest("#studio-launch-nt")) {
-      window.NumberTalkRoutine?.open(grade);
-      return;
-    }
     if (event.target.closest("#studio-open-partner")) {
       window.TeacherPrintCenter?.open("partner");
       return;

@@ -7045,6 +7045,7 @@ function showArea(view) {
   for (const [name, element] of [["library", els.library], ["workspace", els.workspace], ["path", els.path], ["notebook", els.notebook], ["games", els.games], ["teacher", els.teacher]]) element.hidden = name !== view;
   if (view !== "games") { cleanupGames?.(); cleanupGames = null; }
   document.body.classList.toggle("working-on-skill", view === "workspace");
+  document.body.classList.toggle("teacher-resources", view === "teacher");
   document.querySelectorAll("#hub-tabs button").forEach((button) => {
     if (button.dataset.view === view || (view === "workspace" && button.dataset.view === "library")) button.setAttribute("aria-current", "page");
     else button.removeAttribute("aria-current");
