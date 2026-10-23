@@ -12,6 +12,7 @@ import * as rec from "./recorder.js";
 import { stop as stopSpeech, speak } from "./speech.js";
 import { getPrefs, setPrefs } from "./store.js";
 import { mountShell } from "./shell.js";
+import { mountGloss } from "./glossary.js";
 import { registerSaveResume } from "./sync.js";
 import { $, BASE, announce, bandOfId, copyText, toHtml } from "./util.js";
 import * as activityView from "./views/activity.js";
@@ -266,10 +267,12 @@ async function common(e) {
   const listen = t.closest("[data-listen]");
   if (listen) {
     const key = listen.dataset.listen;
+    if (app.view?.canListen && !app.view.canListen(key)) return true;
     const startedAt = app.location;
     const player = listen.closest(".listen-player");
     player?.classList.add("is-playing");
     notePlay(key);
+    app.view?.onListen?.(key);
     const done = await speak(scripts.get(key) || [], { rate: app.prefs.rate });
     player?.classList.remove("is-playing");
     if (done && app.location === startedAt) render({ keepFocus: true });
@@ -413,6 +416,7 @@ async function boot() {
     await loadIndex();
     app.bands = await availableBands();
   } catch {}
+  mountGloss();
   registerSaveResume(() => render({ keepFocus: true }));
   const stamp = $("#labBuild");
   if (stamp) stamp.textContent = `ACCESS Practice Lab · build ${BUILD}`;

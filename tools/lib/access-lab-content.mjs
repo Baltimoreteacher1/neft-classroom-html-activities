@@ -191,3 +191,25 @@ export function buildStudioIndex(root = CONTENT_DIR) {
     })),
   };
 }
+
+/**
+ * The tap-a-word glossary: every vocabulary entry ever authored in the bank, one per word (first definition wins,
+ * in band then domain order). Generated, never hand-edited: `node tools/access-lab-index.mjs`.
+ * Spanish arrives as "término: definición" and is split here so the app never parses it.
+ */
+export function buildGlossary(root = CONTENT_DIR) {
+  const byTerm = new Map();
+  for (const { activity } of allActivities(root))
+    for (const [term, def, es] of activity.vocabulary || []) {
+      const key = String(term).trim().toLowerCase();
+      if (!key || byTerm.has(key)) continue;
+      const m = /^([^:]+):\s*(.+)$/.exec(String(es || ""));
+      byTerm.set(key, {
+        term: key,
+        def: String(def),
+        es: m ? m[1].trim() : "",
+        esDef: m ? m[2].trim() : "",
+      });
+    }
+  return { schema: 1, terms: [...byTerm.values()].sort((a, b) => a.term.localeCompare(b.term)) };
+}

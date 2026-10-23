@@ -10,7 +10,8 @@ import {
   transcriptHTML,
   vocabHTML,
 } from "../components.js";
-import { findActivity, loadDomain, loadShared, ordered } from "../content.js";
+import { findActivity, loadDomain, loadGlossary, loadShared, ordered } from "../content.js";
+import { glossInline, glossList, glossListHTML, openGloss } from "../glossary.js";
 import {
   SPEAKING_CHECKS,
   band,
@@ -49,6 +50,7 @@ const checked = new Map();
 const writingChecks = new Map();
 const tries = new Map(); // id → checks this visit (2nd miss reveals the answer)
 const helpUsed = new Set();
+let glossary = null; // tap-a-word help; only offered in supported mode
 let mode = "supported";
 let validation = "";
 let renderGeneration = 0;
@@ -103,6 +105,15 @@ const keyUseOf = (a) => KLU[purposeOf(a)] || "Inform";
 const coachOptions = (a) => ({ keyUse: keyUseOf(a), modality: cur.domain === "Speaking" ? "speaking" : "writing", wordBank: wordBank(a), stage: mode === "independent" ? "independent" : "supported", expected: { minWords: Math.round(wordGoal(cur.level) * 0.6), maxWords: wordGoal(cur.level) * 2 } });
 
 const isListening = (domain, a) => domain === "Listening" || a.listening;
+/** Tap-a-word help is a support, so "on my own" never gets it. */
+const wordHelp = () => (mode === "supported" ? glossary : null);
+/** Opening any help counts as help used, so an independent result can never be contaminated. */
+function noteHelp(id) {
+  helpUsed.add(id);
+  cur.record.supportUsed ||= {};
+  cur.record.supportUsed[id] = true;
+  save();
+}
 const save = () => saveRecord(cur.band, cur.domain, cur.level, cur.record);
 
 function stimulusHTML(a, ctx) {
@@ -121,18 +132,19 @@ function stimulusHTML(a, ctx) {
         })}
         <article class="passage" data-reading-passage="${a.id}">
           ${a.passageTitle ? html`<h3>${a.passageTitle}</h3>` : ""}
-          ${renderPassageSentences(asList(a.passage), { showCognates })}
+          ${renderPassageSentences(asList(a.passage), { showCognates, glossary: wordHelp() })}
         </article>`
       : ""
   }
   ${
     a.prompt
       ? html`<div class="prompt">
-          <p class="prompt-text">${a.prompt}</p>
+          <p class="prompt-text">${wordHelp() ? glossInline(a.prompt, wordHelp()) : a.prompt}</p>
           ${cur.domain !== "Reading" ? html`<button type="button" class="ghost small" data-say="${a.prompt}" aria-label="Read the question aloud">🔊 Hear question</button>` : ""}
         </div>`
       : ""
-  }`;
+  }
+  ${wordHelp() ? glossListHTML(glossList([...asList(a.passage), a.prompt || ""], wordHelp())) : ""}`;
 }
 
 function feedbackHTML(a) {
@@ -339,6 +351,7 @@ export async function render(ctx) {
   const requestedMode = new URLSearchParams(location.search).get("mode");
   const found = await resolve(snapshot);
   const shared = await loadShared().catch(() => null);
+  glossary = await loadGlossary();
   if (generation !== renderGeneration) return { title: "", html: "" };
   loading = false;
   if (!found?.activity)
@@ -453,6 +466,13 @@ export function onClick(e, ctx) {
   if (!cur || loading) return;
   const a = cur.activity;
   const t = e.target;
+
+  // Tap-a-word help (passage and question words, or the Word help list)
+  const gloss = t.closest("[data-gloss]");
+  if (gloss && wordHelp()) {
+    if (openGloss(gloss.dataset.gloss, glossary, gloss)) noteHelp(a.id);
+    return true;
+  }
 
   // Reading Audio Toolbar - Read Passage
   const readPassage = t.closest("[data-read-passage]");

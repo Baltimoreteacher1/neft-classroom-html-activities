@@ -1,4 +1,4 @@
-// Multilingual Scaffolds: Academic Cognate Network, False Friends, and Multilingual Directions.
+// Multilingual scaffolds: Academic Cognate Network and False Friends (English and Spanish only).
 // Supports home-language asset bridging for English Learners (WIDA ELD Standard 1).
 
 export const ACADEMIC_COGNATES = [
@@ -80,69 +80,6 @@ export const FALSE_FRIENDS = [
     warning: "'Recordar' in Spanish means to remember; 'record' in English means to capture audio, video, or data."
   }
 ];
-
-export const MULTILINGUAL_DIRECTIONS = {
-  es: {
-    name: "Español",
-    listen: "Escucha el audio atentamente antes de responder.",
-    read: "Lee el pasaje y busca evidencia para apoyar tus ideas.",
-    speak: "Graba tu voz explicando tu respuesta con detalles académicos.",
-    write: "Escribe tu respuesta usando oraciones completas y vocabulario específico.",
-    check: "Revisa tu trabajo y añade un detalle adicional si es necesario.",
-    retry: "Inténtalo de nuevo. Piensa en qué evidencia puedes añadir.",
-    hint: "¿Necesitas una pista? Observa la gráfica o el texto con atención."
-  },
-  vi: {
-    name: "Tiếng Việt",
-    listen: "Lắng nghe cẩn thận trước khi trả lời.",
-    read: "Đọc đoạn văn và tìm bằng chứng để giải thích.",
-    speak: "Ghi âm giọng nói của bạn, giải thích bằng từ ngữ học thuật.",
-    write: "Viết câu trả lời của bạn bằng các câu hoàn chỉnh.",
-    check: "Kiểm tra lại câu trả lời và thêm chi tiết nếu cần.",
-    retry: "Thử lại lần nữa. Xem xét bằng chứng cụ thể hơn.",
-    hint: "Cần gợi ý? Hãy nhìn kỹ vào biểu đồ hoặc bài đọc."
-  },
-  ar: {
-    name: "العربية",
-    listen: "استمع إلى المقطع الصوتي بعناية قبل الإجابة.",
-    read: "اقرأ النص وابحث عن الأدلة لدعم فكرتك.",
-    speak: "سجّل صوتك وأنت تشرح إجابتك باستخدام مصطلحات أكاديمية.",
-    write: "اكتب إجابتك في جمل كاملة ومنظمة.",
-    check: "راجع إجابتك وأضف تفصيلاً آخر إذا لزم الأمر.",
-    retry: "حاول مرة أخرى وفكّر في الدليل المناسب.",
-    hint: "هل تحتاج إلى تلميح؟ انظر إلى الرسم البياني أو النص بعناية."
-  },
-  pt: {
-    name: "Português",
-    listen: "Ouça o áudio com atenção antes de responder.",
-    read: "Leia o texto e encontre evidências para apoiar sua resposta.",
-    speak: "Grave sua voz explicando sua resposta com detalhes acadêmicos.",
-    write: "Escreva sua resposta em frases completas.",
-    check: "Revise seu trabalho e adicione detalhes se necessário.",
-    retry: "Tente novamente. Pense em quais evidências você pode usar.",
-    hint: "Precisa de uma dica? Observe o gráfico ou texto com atenção."
-  },
-  zh: {
-    name: "中文",
-    listen: "在回答之前请仔细聆听音频。",
-    read: "阅读短文并寻找支持你观点的证据。",
-    speak: "录下你的声音，用学术词汇解释你的想法。",
-    write: "用完整的句子写出你的回答。",
-    check: "检查你的答案，必要时添加更多细节。",
-    retry: "再试一次，思考你可以添加哪些证据。",
-    hint: "需要提示吗？仔细查看图表或文章。"
-  },
-  fr: {
-    name: "Français",
-    listen: "Écoutez attentivement l'audio avant de répondre.",
-    read: "Lisez le texte et trouvez des preuves pour appuyer votre réponse.",
-    speak: "Enregistrez votre voix en expliquant avec des termes académiques.",
-    write: "Rédigez votre réponse en phrases complètes et structurées.",
-    check: "Relisez votre travail et ajoutez un détail si nécessaire.",
-    retry: "Réessayez. Réfléchissez aux preuves à ajouter.",
-    hint: "Besoin d'un indice ? Observez attentivement le graphique ou le texte."
-  }
-};
 
 /**
  * Find cognates appearing in a given text string.

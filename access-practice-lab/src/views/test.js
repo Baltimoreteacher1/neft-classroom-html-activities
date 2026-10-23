@@ -131,6 +131,20 @@ function startTimer() {
   }, 1000);
 }
 
+/** Plays allowed per recording under test conditions: once, or twice with the replay accommodation. */
+const maxPlays = () => (T?.rec.replay ? 2 : 1);
+
+/** Hooks the app calls around the Listen button (main.js). Under test conditions the count lives in the saved test, so a reload cannot reset it. */
+export function canListen(key) {
+  return !T?.rec.conditions || (T.rec.plays?.[key] || 0) < maxPlays();
+}
+export function onListen(key) {
+  if (!T?.rec.conditions) return;
+  T.rec.plays ||= {};
+  T.rec.plays[key] = (T.rec.plays[key] || 0) + 1;
+  persist();
+}
+
 function introHTML() {
   const test = T.test;
   const inProgress = Boolean(T.rec.startedAt || Object.keys(T.rec.answers || {}).length);
@@ -146,12 +160,35 @@ function introHTML() {
       <li>
         Use <strong>Next</strong> and <strong>Back</strong>. Flag a question to come back to it.
       </li>
-      <li>Listening: press <strong>▶ Listen</strong>. You may listen more than once.</li>
+      ${
+        T.rec.conditions
+          ? html`<li>Listening: press <strong>▶ Play</strong>. Each recording plays ${maxPlays() === 1 ? "one time" : "up to two times"} and cannot be paused or stopped.</li>`
+          : html`<li>Listening: press <strong>▶ Listen</strong>. You may listen more than once.</li>`
+      }
       <li>
         Speaking: record your answer or say it to a teacher or partner. Writing: type your answer.
         For Grade 3 ACCESS preparation, also practice handwriting on paper with your teacher.
       </li>
     </ul>
+    <fieldset class="test-mode">
+      <legend>How do you want to practice?</legend>
+      <label class="rate-opt"
+        ><input type="radio" name="test-mode" value="learning" data-conditions ${T.rec.conditions ? "" : raw("checked")} ${IGN} />
+        <span><strong>Learning mode</strong> — listen as often as you like.</span></label
+      >
+      <label class="rate-opt"
+        ><input type="radio" name="test-mode" value="test" data-conditions ${T.rec.conditions ? raw("checked") : ""} ${IGN} />
+        <span><strong>Test conditions</strong> — each recording plays once and cannot be paused, like a real testing session.</span></label
+      >
+      ${
+        T.rec.conditions
+          ? html`<label class="timer-opt"
+              ><input type="checkbox" data-replay ${T.rec.replay ? raw("checked") : ""} ${IGN} /> My plan allows one replay
+              of each recording. <span class="fine">On the real test, replay is an accommodation that your school sets up in advance. Check the current WIDA accommodations manual or ask your teacher.</span></label
+            >`
+          : ""
+      }
+    </fieldset>
     <label class="timer-opt"
       ><input type="checkbox" data-timer ${T.rec.timer ? raw("checked") : ""} ${IGN} /> Practice
       with a timer (about ${T.minutes} minutes). It will never end your test.</label
@@ -182,7 +219,7 @@ function stimulus(f, ctx) {
   const script = listening
     ? [...asList(item.script), ...(item.questionAudio ? [item.questionAudio] : [])]
     : null;
-  return html`${listening && script.length ? listenPlayerHTML(key, script, { rate: ctx.prefs.rate, test: true }) : ""}
+  return html`${listening && script.length ? listenPlayerHTML(key, script, T.rec.conditions ? { rate: ctx.prefs.rate, test: true, maxPlays: maxPlays(), played: T.rec.plays?.[key] || 0 } : { rate: ctx.prefs.rate, test: true }) : ""}
   ${visualsHTML(item)}
   ${
     !listening && asList(item.passage).length
@@ -451,6 +488,7 @@ function resultsHTML() {
   return html`<section class="panel results">
       <p class="eyebrow">Practice report${r.studentName ? ` · ${r.studentName}` : ""}</p>
       <h1 tabindex="-1">${T.test.title}</h1>
+      ${T.rec.conditions ? html`<p class="fine">Taken under test conditions: each recording played ${maxPlays() === 1 ? "once" : "up to twice"} and could not be paused.</p>` : ""}
       ${r.total ? html`<p class="big-score"><strong>${r.correct}/${r.total}</strong> scored questions right</p>` : ""}
       <div class="result-grid">
         ${r.sections.map(
@@ -521,7 +559,7 @@ export async function render(ctx) {
       savedSnapshot: JSON.stringify(saved),
       flat: flatten(test),
       minutes: (test.sections || []).reduce((n, s) => n + (Number(s.estMinutes) || 8), 0),
-      rec: { phase: "intro", index: 0, answers: {}, flags: [], ...rec },
+      rec: { phase: "intro", index: 0, answers: {}, flags: [], conditions: Boolean(test.conditionsDefault), ...rec },
     };
     if (T.rec.results) T.rec.phase = "results";
     if (T.rec.phase === "running") T.rec.phase = "intro"; // resume from the intro screen
@@ -634,6 +672,12 @@ export function onChange(e, ctx) {
     persist();
     const id = t.id;
     return ctx.rerender().then(() => document.getElementById(id)?.focus({ preventScroll: true }));
+  }
+  if (T.rec.phase === "intro" && (t.matches("[data-conditions]") || t.matches("[data-replay]"))) {
+    if (t.matches("[data-conditions]")) T.rec.conditions = t.value === "test";
+    else T.rec.replay = t.checked;
+    persist();
+    return ctx.rerender().then(() => document.querySelector(`[data-conditions][value="${T.rec.conditions ? "test" : "learning"}"], [data-replay]`)?.focus({ preventScroll: true }));
   }
   const f = T.flat[T.rec.index];
   if (T.rec.phase !== "running" || !f) return;

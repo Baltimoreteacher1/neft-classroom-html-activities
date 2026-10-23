@@ -4,6 +4,7 @@ import { SPEAKING_CHECKS } from "./grade.js";
 import { canRecord, takesFor } from "./recorder.js";
 import { canSpeak, getVoiceOptions } from "./speech.js";
 import { findCognatesInText } from "./multilingual.js";
+import { glossInline } from "./glossary.js";
 import { BASE, DOMAIN_META, LEVEL_KEYS, TIERS, asList, bandLabel, html, raw } from "./util.js";
 
 const IGN = raw("data-nsr-ignore");
@@ -19,10 +20,11 @@ export const notePlay = (key) => plays.set(key, playCount(key) + 1);
 export function listenPlayerHTML(
   key,
   segments,
-  { label = "Listen", rate = 0.9, test = false } = {},
+  { label = "Listen", rate = 0.9, test = false, maxPlays = Number.POSITIVE_INFINITY, played = null } = {},
 ) {
   scripts.set(key, asList(segments));
-  const n = playCount(key);
+  const limited = Number.isFinite(maxPlays);
+  const n = played ?? playCount(key);
   if (!canSpeak())
     return html`<div class="listen-player is-unavailable" role="note">
       <p>
@@ -30,6 +32,19 @@ export function listenPlayerHTML(
         listening part to you.
       </p>
     </div>`;
+  if (limited) {
+    const left = Math.max(0, maxPlays - n);
+    return html`<div class="listen-player is-limited" data-player="${key}">
+    <button type="button" class="listen-btn" data-listen="${key}" aria-describedby="lp-${key}" ${left ? "" : raw("disabled")}>
+      <span class="listen-icon" aria-hidden="true">▶</span>
+      <span class="listen-label">${left ? (n ? "Play once more" : "Play") : "Played"}</span>
+    </button>
+    <div class="listen-meta" id="lp-${key}" role="status">
+      <span class="listen-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+      <span>${left ? `Test conditions: you can play this recording ${left === 1 ? "one more time" : `${left} times`}. It cannot be paused.` : "Test conditions: this recording has been played. Choose your answer."}</span>
+    </div>
+  </div>`;
+  }
   return html`<div class="listen-player" data-player="${key}">
     <button type="button" class="listen-btn" data-listen="${key}" aria-describedby="lp-${key}">
       <span class="listen-icon" aria-hidden="true">▶</span>
@@ -113,8 +128,9 @@ export function readingToolbarHTML(
 }
 
 /** Render reading passage with interactive sentence spans for voice playback and cognate exploration. */
-export function renderPassageSentences(paragraphs, { showCognates = false } = {}) {
+export function renderPassageSentences(paragraphs, { showCognates = false, glossary = null } = {}) {
   const paras = asList(paragraphs);
+  const seen = new Set();
   let globalSentIdx = 0;
 
   return paras.map((para) => {
@@ -135,7 +151,7 @@ export function renderPassageSentences(paragraphs, { showCognates = false } = {}
           tabindex="0"
           role="button"
           aria-label="Click to hear: ${sentence}"
-        >${sentence} </span>`;
+        >${glossary ? glossInline(sentence, glossary, seen) : sentence} </span>`;
       })}
     </p>`;
   });

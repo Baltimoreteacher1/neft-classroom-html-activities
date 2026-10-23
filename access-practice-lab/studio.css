@@ -464,3 +464,84 @@ del {
   margin-top: 0.1rem;
   flex: none;
 }
+
+/* Tap-a-word help (src/glossary.js). Glossed words are spans for pointer users; the Word help list is the keyboard path. */
+.gloss-word {
+  border-bottom: 2px dotted var(--brand);
+  cursor: help;
+}
+.gloss-word:hover {
+  background: var(--brand-soft);
+}
+.gloss-list {
+  margin: 0.75rem 0;
+}
+.gloss-list summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 700;
+}
+.gloss-list ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gloss-chip {
+  min-height: 44px;
+  padding: 0.4rem 0.9rem;
+  border: 1.5px solid var(--brand);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+.gloss-card {
+  position: fixed;
+  z-index: 60;
+  left: 50%;
+  bottom: 1rem;
+  width: min(34rem, calc(100vw - 2rem));
+  transform: translateX(-50%);
+  padding: 1rem 1.25rem;
+  border: 2px solid var(--brand);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+}
+.gloss-card h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+}
+.gloss-card p {
+  margin: 0.25rem 0 0.75rem;
+}
+@media print {
+  .gloss-card {
+    display: none;
+  }
+  .gloss-word {
+    border-bottom: 0;
+  }
+}
+
+/* Test-conditions choice on the practice-test intro (src/views/test.js). */
+.test-mode {
+  margin: 0.75rem 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.test-mode > legend {
+  font-weight: 700;
+}
+.listen-player.is-limited .listen-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

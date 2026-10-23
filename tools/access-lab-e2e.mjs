@@ -280,6 +280,51 @@ try {
   await go("/Model-Test/6-8/A/model-68-a-reading-2");
   ok(await page.isVisible(".lab-chart svg"), "chart drawn from data");
 
+  // Tap-a-word help: glossed words in a passage open a card with the Spanish; "on my own" gets none.
+  const readingWithPassage = await page.evaluate(async () => {
+    const d = await (await fetch("/access-practice-lab/content/g6-8/Reading.json")).json();
+    return d.levels.B.activities.find((a) => a.passage?.length && a.vocabulary?.length)?.id;
+  });
+  await go(`/Reading/B/${readingWithPassage}`);
+  ok(
+    (await page.locator(".passage .gloss-word").count()) > 0,
+    "passage words are glossed in supported mode",
+  );
+  ok(
+    (await page.locator(".gloss-chip").count()) > 0,
+    "the Word help list has a real button per word",
+  );
+  await page.locator(".gloss-list summary").click();
+  await page.locator(".gloss-chip").first().click();
+  ok(await page.isVisible("#glossCard"), "tapping a word opens the glossary card");
+  ok(
+    (await page.locator("#glossCard [lang=es]").innerText()).trim().length > 3,
+    "the card shows Spanish",
+  );
+  ok(
+    await page.evaluate(() => document.activeElement?.matches("[data-gloss-close]")),
+    "focus moves into the card",
+  );
+  await page.keyboard.press("Escape");
+  ok(!(await page.isVisible("#glossCard")), "Escape closes the card");
+  ok(
+    await page.evaluate((id) => {
+      const key = Object.keys(localStorage).find(
+        (k) => k.includes(":Reading:B") || k.includes("Reading"),
+      );
+      return (
+        /supportUsed/.test(localStorage.getItem(key) || "") &&
+        localStorage.getItem(key).includes(id)
+      );
+    }, readingWithPassage),
+    "opening a word counts as help used",
+  );
+  await go(`/Reading/B/${readingWithPassage}?mode=independent`);
+  ok(
+    (await page.locator(".gloss-word, .gloss-chip").count()) === 0,
+    "on my own offers no word help",
+  );
+
   // Writing
   const writing = await page.evaluate(async () => {
     const idx = await (await fetch("/access-practice-lab/content/index.json")).json();
@@ -428,6 +473,49 @@ try {
   );
   await go("/test/model-form-a");
   ok((await page.locator(".composite").innerText()).includes("74"), "ratings survive a reload");
+
+  // Test conditions: each recording plays once, and a reload cannot reset the count.
+  await go("/test/g35-listening-mini");
+  await page.evaluate(() =>
+    localStorage.removeItem("accessPracticeLab:v1:test:g35-listening-mini"),
+  );
+  await go("/test/g35-listening-mini");
+  await page.check('[data-conditions][value="test"]');
+  ok(await page.isVisible("[data-replay]"), "test conditions offer the replay accommodation");
+  await page.click("[data-start]");
+  await page.waitForSelector("#qTitle");
+  ok(await page.isVisible(".listen-player.is-limited"), "test conditions use the limited player");
+  ok(
+    !(await page.isVisible("[data-stop-audio]")),
+    "a recording cannot be paused or stopped under test conditions",
+  );
+  await page.evaluate(() => {
+    window.__spoken = [];
+    window.speechSynthesis.speak = (u) => {
+      window.__spoken.push(u.text);
+      setTimeout(() => u.onend?.({}), 20);
+    };
+  });
+  await page.click("[data-listen]");
+  await page.waitForFunction(() => document.querySelector("[data-listen]")?.disabled, null, {
+    timeout: 5000,
+  });
+  ok((await page.evaluate(() => window.__spoken.length)) >= 1, "the recording played once");
+  ok(
+    await page.evaluate(() => document.querySelector("[data-listen]").disabled),
+    "the Play button is spent after one play",
+  );
+  await page.reload();
+  await page.click("[data-start]"); // a reload pauses the test at its intro; resume it
+  await page.waitForSelector("#qTitle");
+  ok(
+    await page.evaluate(() => document.querySelector("[data-listen]").disabled),
+    "a reload does not give the recording back",
+  );
+  await go("/test/g35-listening-mini");
+  await page.evaluate(() =>
+    localStorage.removeItem("accessPracticeLab:v1:test:g35-listening-mini"),
+  );
 
   // A paused timed test retains its position and cannot keep ticking on another route.
   await go("/test/g35-listening-mini");
