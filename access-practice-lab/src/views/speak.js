@@ -9,7 +9,7 @@ import { analyzeResponse, compareDrafts } from "../lang/analyze.js";
 import { describeSpeech, summarizeEnvelope } from "../lang/audio.js";
 import { appendEntry, buildProfile, loadLedger, saveLedger, suggestStage } from "../lang/ledger.js";
 import { emptyReview, reviewComplete } from "../lang/rubrics.js";
-import { addTake, loadStudio, missionState, saveStudio, speakingState } from "../lang/studio.js";
+import { addTake, choiceEffects, loadStudio, missionState, saveStudio, speakingState } from "../lang/studio.js";
 import * as audioStore from "../audio-store.js";
 import { canRecord, isRecording, takesFor } from "../recorder.js";
 import { canSpeak, speak, speakDialogue, stop as stopSpeech } from "../speech.js";
@@ -123,7 +123,7 @@ function stimulusHTML(task) {
 function plannerHTML(task, state) {
   return html`<section class="panel planner">
     <h3>1 · Plan what you will say</h3>
-    ${task.planner.map((slot) => html`<label class="field"><span>${slot.label}</span><input type="text" data-plan="${slot.id}" value="${state.plan[slot.id] || ""}" ${S.stage === "independent" ? "" : html`placeholder="${slot.hint}"`} ${IGN} /></label>`)}
+    ${task.planner.map((slot) => html`<label class="field"><span>${slot.label}</span><input type="text" data-plan="${slot.id}" value="${state.plan[slot.id] || ""}" ${S.stage === "independent" ? "" : html`placeholder="${S.fx.hints[slot.id] || slot.hint}"`} ${IGN} /></label>`)}
     <label class="practiced"
       ><input type="checkbox" data-rehearsed ${state.rehearsed ? raw("checked") : ""} ${IGN} /> I
       said my plan quietly out loud once.</label
@@ -169,13 +169,15 @@ function recorderBlock(task, state) {
   const key = task.id;
   const rec = isRecording(key);
   const takes = takesFor(key);
+  const manual = state.takes.some((t) => t.manual);
   if (!canRecord())
     return html`<section class="panel">
       <h3>2 · Say it</h3>
       <p>
-        <strong>This browser cannot record.</strong> Say your answer to a partner or your teacher,
-        then type what you said below.
+        <strong>This browser cannot record.</strong> Say your answer to a partner or your teacher
+        out loud. Then press the button and type what you said.
       </p>
+      ${manual ? "" : html`<button type="button" class="btn btn-primary" data-manual-take>I said it out loud</button>`}
     </section>`;
   const [lo, hi] = task.targetSeconds;
   return html`<section
@@ -203,6 +205,7 @@ function recorderBlock(task, state) {
       } <button type="button" class="ghost" data-say="${task.prompt}">🔊 Hear the task</button>
     </div>
     <p class="rec-error" data-rec-error="${key}" role="status"></p>
+    ${manual || rec ? "" : html`<p class="fine">No microphone, or it is not working? <button type="button" class="ghost small" data-manual-take>I said it out loud (no recording)</button></p>`}
     ${
       takes.length
         ? html`<ol class="takes">
@@ -213,14 +216,26 @@ function recorderBlock(task, state) {
   </section>`;
 }
 
+/** A typed transcript that is much longer or shorter than the speaking measured is probably not a match. */
+function transcriptCheck(take) {
+  const words = wordCount(take.transcript);
+  const seconds = take.audio?.ok ? take.audio.speechSeconds : 0;
+  if (!words || !seconds) return "";
+  const rate = words / seconds;
+  if (rate > 4.5) return html`<p class="fine todo">You typed ${words} words for ${seconds} seconds of speaking. That is more than most people say that fast — check that you typed only what you said.</p>`;
+  if (rate < 0.7 && seconds >= 8) return html`<p class="fine todo">You typed ${words} words for ${seconds} seconds of speaking. Did you leave parts out?</p>`;
+  return "";
+}
+
 function analysisHTML(task, state, take) {
   if (!take) return "";
   const sum = take.audio;
   return html`<section class="panel">
     <h3>3 · Listen back, then type what you said</h3>
     <p class="fine">
-      Listen to your take. Then type what you said — leave out "um" and false starts. The Language
-      Coach can only look at words you type; it cannot hear them.
+      ${take.manual ? "Type what you said." : "Listen to your take. Then type what you said."} Type
+      it exactly as you said it, including mistakes — the Language Coach can only look at the words
+      you type, so a "cleaned-up" version would hide what to work on. It cannot hear your voice.
     </p>
     ${
       sum
@@ -229,8 +244,9 @@ function analysisHTML(task, state, take) {
           </ul>`
         : ""
     }
+    ${transcriptCheck(take)}
     <label class="field"
-      ><span>What I said</span
+      ><span>What I said (exactly)</span
       ><textarea id="spk-transcript" rows="5" data-transcript ${IGN}>
 ${take.transcript || ""}</textarea>
     </label>
@@ -369,6 +385,7 @@ export async function render(ctx) {
   const { task, mission } = found;
   S.task = task;
   S.mission = mission;
+  S.fx = choiceEffects(task, mission, S.studio);
   S.state = speakingState(S.studio, task.id);
   S.profile = buildProfile(entries, { band: ctx.band });
   const hasTake = S.state.takes.length > 0;
@@ -397,7 +414,7 @@ export async function render(ctx) {
         ${purposeBadgeHTML(S.stage)}
           <div class="directions">
             <p><strong>Situation:</strong> ${task.scenario}</p>
-            <p><strong>Your task:</strong> ${task.prompt}</p>
+            <p><strong>Your task:</strong> ${task.prompt}${S.fx.promptAdd.map((x) => html` <span class="path-add">${x}</span>`)}</p>
           </div>
         </header>
         ${
@@ -515,13 +532,19 @@ export function onChange(e, ctx) {
 
 function analyze(ctx) {
   const take = S.state.takes.at(-1);
+  if (take.analyzedText === take.transcript && take.analyzedAt) {
+    announce("Your transcript has not changed since the last check.");
+    return;
+  }
   lockStage();
+  S.state.attemptId ||= `a${Date.now().toString(36)}`;
   const first = !S.ledger.entries.some(
-    (x) => x.task === S.task.id && x.src === "speaking" && x.kind === "first",
+    (x) => x.task === S.task.id && x.src === "speaking" && x.kind === "first" && x.attempt === S.state.attemptId,
   );
   const a = analyzeResponse(take.transcript, optsFor(S.task));
+  take.analyzedText = take.transcript;
   take.analyzedAt = new Date().toISOString(); // the analysis is recomputed from the transcript, never stored
-  const supports = { ...stageSupports(), coach: !first };
+  const supports = { ...stageSupports(), coach: !first, noRecording: Boolean(take.manual) };
   const m = {
     ...a.ledger,
     spk: take.audio?.ok
@@ -540,6 +563,7 @@ function analyze(ctx) {
     use: S.task.keyUse,
     stage: S.stage,
     kind: first ? "first" : "revision",
+    attempt: S.state.attemptId,
     supports,
     m,
   });
@@ -554,6 +578,14 @@ function analyze(ctx) {
 export function onClick(e, ctx) {
   if (!S?.task) return false;
   const t = e.target;
+  if (t.closest("[data-manual-take]")) {
+    lockStage();
+    addTake(S.state, { id: `m${Date.now().toString(36)}`, seconds: 0, audio: null, extra: { manual: true } });
+    save();
+    announce("Now type what you said.");
+    ctx.rerender();
+    return true;
+  }
   if (t.closest("[data-analyze]")) {
     analyze(ctx);
     return true;
@@ -605,6 +637,7 @@ export function onClick(e, ctx) {
   }
   if (t.closest("[data-new-attempt]")) {
     S.state.stage = "";
+    S.state.attemptId = "";
     S.state.takes = [];
     S.state.plan = {};
     S.state.used = {};

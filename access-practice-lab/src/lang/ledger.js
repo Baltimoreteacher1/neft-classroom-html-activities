@@ -66,6 +66,7 @@ export function makeEntry(partial) {
         ? "supported"
         : partial.stage || (used ? "supported" : "independent"),
     kind: partial.kind || "first",
+    attempt: partial.attempt || "",
     supports,
     m: partial.m || {},
   };
@@ -181,9 +182,15 @@ export function supportDependence(entries, key, better = "higher") {
 
 /** Pattern errors: how often each shows up in the learner's recent work, and which are fixed on transfer. */
 export function errorPatterns(entries, { recent = 12 } = {}) {
-  const writing = entries
-    .filter((e) => ["writing", "speaking", "mission"].includes(e.src) && e.m?.errs)
-    .slice(-recent);
+  // One piece of work counts once, in its latest state: a pattern fixed in the final version is no longer
+  // "recurring", and revising a draft three times is not three drafts with the error.
+  const latest = new Map();
+  for (const e of entries.filter((x) => ["writing", "speaking", "mission"].includes(x.src) && x.m?.errs)) {
+    const key = `${e.src}:${e.task}`;
+    latest.delete(key);
+    latest.set(key, e);
+  }
+  const writing = [...latest.values()].slice(-recent);
   const counts = {};
   const seenIn = {};
   writing.forEach((e, i) => {
@@ -201,10 +208,22 @@ export function errorPatterns(entries, { recent = 12 } = {}) {
       transferTried: 0,
       transferIndependent: 0,
       transferWithHelp: 0,
+      days: 0,
+      _days: new Set(),
+      _prompts: new Set(),
     });
     if (e.kind === "transfer") {
       t.transferTried++;
-      if (e.m.ok) e.stage === "independent" ? t.transferIndependent++ : t.transferWithHelp++;
+      if (e.m.ok) {
+        if (e.stage === "independent") {
+          // credit independent passes only when they are on different days and different prompts
+          const day = String(e.t).slice(0, 10);
+          if (!t._days.has(day) || !t._prompts.has(e.m.prompt || "")) t.transferIndependent++;
+          t._days.add(day);
+          t._prompts.add(e.m.prompt || "");
+          t.days = t._days.size;
+        } else t.transferWithHelp++;
+      }
     } else t.practiced++;
   }
   return Object.entries(counts)
@@ -213,7 +232,7 @@ export function errorPatterns(entries, { recent = 12 } = {}) {
       count: n,
       drafts: seenIn[id].size,
       transfer: transfer[id] || null,
-      mastered: (transfer[id]?.transferIndependent || 0) >= 2 && n < 2,
+      mastered: (transfer[id]?.transferIndependent || 0) >= 2 && (transfer[id]?.days || 0) >= 2 && n < 2,
     }))
     .sort((a, b) => b.drafts - a.drafts || b.count - a.count);
 }

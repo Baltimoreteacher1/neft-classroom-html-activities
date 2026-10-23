@@ -62,10 +62,10 @@ export function vocabListHTML(vocab = []) {
 
 export function chartHTML(chart) {
   const max = Math.max(...chart.data.map((d) => d.value), 1);
-  return html`<figure class="mini-chart"><figcaption>${chart.title}</figcaption>${chart.data.map((d) => html`<div class="bar-row"><span class="bar-label">${d.label}</span><span class="bar" style="width:${Math.max(4, (d.value / max) * 100)}%" role="img" aria-label="${d.label}: ${d.value} ${chart.unit || ""}"></span><span class="bar-val">${d.value}${chart.kind === "pictograph" && chart.icon ? html` ${chart.icon}` : ""}</span></div>`)}</figure>`;
+  return html`<figure class="mini-chart"><figcaption>${chart.title}</figcaption>${chart.data.map((d) => html`<div class="bar-row"><span class="bar-label">${d.label}</span><span class="bar" aria-hidden="true" style="width:${d.value ? Math.max(4, (d.value / max) * 100) : 0}%"></span><span class="bar-val">${d.value}<span class="visually-hidden"> ${chart.unit || ""}</span>${chart.kind === "pictograph" && chart.icon ? html` ${chart.icon}` : ""}</span></div>`)}</figure>`;
 }
 export function tableHTML(t) {
-  return html`<div class="lab-table-wrap"><table class="data-table"><caption>${t.caption}</caption><thead><tr>${t.headers.map((h) => html`<th scope="col">${h}</th>`)}</tr></thead><tbody>${t.rows.map((r) => html`<tr>${r.map((c, i) => (i === 0 ? html`<th scope="row">${c}</th>` : html`<td>${c}</td>`))}</tr>`)}</tbody></table></div>`;
+  return html`<div class="lab-table-wrap" tabindex="0" role="region" aria-label="${t.caption}"><table class="data-table"><caption>${t.caption}</caption><thead><tr>${t.headers.map((h) => html`<th scope="col">${h}</th>`)}</tr></thead><tbody>${t.rows.map((r) => html`<tr>${r.map((c, i) => (i === 0 ? html`<th scope="row">${c}</th>` : html`<td>${c}</td>`))}</tr>`)}</tbody></table></div>`;
 }
 
 /** A source (passage / table / chart) shown to the learner. Audio is played, not printed. */

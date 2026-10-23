@@ -172,6 +172,13 @@ function focusKey(el) {
       return `[${attr}="${CSS.escape(el.getAttribute(attr))}"]${extra ? `[data-${el.dataset.cat ? "cat" : el.dataset.dir ? "dir" : "rate"}="${CSS.escape(extra)}"]` : ""}`;
     }
   }
+  // Any other control the studios render: key it by its first data-* attribute (and value) so keyboard
+  // and screen-reader users keep their place after a re-render instead of landing on <body>.
+  const dataAttr = [...(el.attributes || [])].find((a) => a.name.startsWith("data-") && !["data-nsr-ignore", "data-stage"].includes(a.name));
+  if (dataAttr && el.matches?.("button, input, select, textarea, a")) {
+    const value = dataAttr.value ? `[${dataAttr.name}="${CSS.escape(dataAttr.value)}"]` : `[${dataAttr.name}]`;
+    if (document.querySelectorAll(value).length === 1) return value;
+  }
   if (el.name && el.value != null && (el.type === "radio" || el.type === "checkbox"))
     return `input[name="${CSS.escape(el.name)}"][value="${CSS.escape(el.value)}"]`;
   if (el.id) return `#${CSS.escape(el.id)}`;
@@ -295,12 +302,19 @@ async function common(e) {
           const s = $(".rec-time");
           if (s) s.textContent = `${secs}s`;
         },
-        onStop: () => {
+        onStop: async () => {
           owner?.onRecorded?.(key, ctx);
-          if (app.location === startedAt) render({ keepFocus: true });
+          if (app.location !== startedAt) return;
+          await render({ keepFocus: true });
+          // Move to the next thing the learner does: type or review what they said.
+          document.querySelector("[data-transcript], [data-rec-start]")?.focus({ preventScroll: false });
         },
       });
-      if (recording && app.location === startedAt) render({ keepFocus: true });
+      if (recording && app.location === startedAt) {
+        await render({ keepFocus: true });
+        document.querySelector("[data-rec-stop]")?.focus();
+        announce("Recording. Press Stop when you are done.");
+      }
     } catch {
       if (app.location !== startedAt) return true;
       const message = "The microphone is unavailable. Check browser permission and your microphone, or practice aloud with a partner. You can continue without recording.";

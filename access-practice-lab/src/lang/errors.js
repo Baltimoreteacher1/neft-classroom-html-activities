@@ -7,7 +7,7 @@
 //
 // The pattern ids are a contract with content/detective/patterns.json (lessons, practice, transfer);
 // tools/validate-access-studio.mjs runs these detectors over every authored practice sentence.
-import { COMMON_VERBS, IRREGULAR, NUMBER_WORDS, COUNTABLE, UNCOUNTABLE, VAGUE } from "./lexicon.js";
+import { ADJECTIVES, COMMON_VERBS, IRREGULAR, NUMBER_WORDS, COUNTABLE, UNCOUNTABLE, VAGUE } from "./lexicon.js";
 import { sentences as splitSentences, tokenize } from "./text.js";
 
 const PRON = new Set(["i", "you", "he", "she", "it", "we", "they"]);
@@ -17,6 +17,11 @@ const MODALS = new Set(["can", "could", "will", "would", "should", "must", "may"
 const SAME_PAST = new Set(["read", "put", "set", "cut", "hit", "let", "hurt", "cost", "shut", "spread"]);
 const PAST_FORMS = new Set(Object.entries(IRREGULAR).filter(([b, [p]]) => p !== b).map(([, [p]]) => p));
 const BASE_VERBS = new Set([...COMMON_VERBS, ...Object.keys(IRREGULAR)]);
+const NOUN_SUBJECTS = new Set([
+  ...COUNTABLE,
+  ...UNCOUNTABLE,
+  ..."mulch soil rain wind plant energy heat ice air government city country water oxygen sunlight erosion runoff pollution community student teacher scientist farmer leader author narrator character".split(" "),
+]);
 const CAUSE_OF = /^(it|he|she|they|we|i|there)$/;
 
 const P = (re, s, flags = "gi") => [...s.matchAll(new RegExp(re, flags))].map((m) => ({ start: m.index, end: m.index + m[0].length }));
@@ -63,12 +68,16 @@ export const DETECTORS = [
         const w = t[i].lower;
         const nx = t[i + 1].lower;
         const prev = t[i - 1]?.lower;
-        const subj = THIRD.has(w) || (["the", "my", "his", "her", "our", "their", "a"].includes(prev) && COUNTABLE.has(w) && !["time", "way"].includes(w));
-        const det = ["the", "my", "his", "her", "our", "their", "a"].includes(prev);
+        const DETS = ["the", "my", "his", "her", "our", "their", "a", "this", "that"];
+        // a noun subject follows a determiner, optionally with one adjective between ("the bare soil")
+        const det = DETS.includes(prev) || (DETS.includes(t[i - 2]?.lower) && ADJECTIVES.has(prev));
+        const subj = THIRD.has(w) || (det && NOUN_SUBJECTS.has(w) && !["time", "way"].includes(w));
         if (AUX.has(prev) || (det && AUX.has(t[i - 2]?.lower))) continue;
         if (!subj || ["make", "makes", "let", "help", "helps", "watch", "see", "saw", "hear", "heard", "how", "way", "to", "that", "where", "when", "what", "of", "for", "with", "at", "on", "in", "by", "from"].includes(prev)) continue;
         if (THIRD.has(w) && ["make", "let", "help", "watch", "see", "saw", "hear", "heard", "had", "get", "got", "have", "want", "wants", "told", "tell", "ask", "asked"].includes(prev)) continue;
-        if (BASE_VERBS.has(nx) && !SAME_PAST.has(nx) && !AUX.has(nx) || ["do", "have"].includes(nx) && THIRD.has(w)) out.push(span(t, i, i + 1));
+        const noun = !THIRD.has(w);
+        const plainVerb = BASE_VERBS.has(nx) && !SAME_PAST.has(nx) && (!AUX.has(nx) || (noun && ["have", "do"].includes(nx)));
+        if (plainVerb || (["do", "have"].includes(nx) && THIRD.has(w))) out.push(span(t, i, i + 1));
       }
       return out;
     },
@@ -222,6 +231,8 @@ export const DETECTORS = [
       for (let i = 0; i < t.length; i++) {
         const w = t[i].lower;
         if (THIRD.has(w) && ["don't"].includes(t[i + 1]?.lower)) out.push(span(t, i, i + 1));
+        // "the water not take", "we not know": a plain verb after "not" with no do/does/did/be/modal before it
+        if (t[i + 1]?.lower === "not" && !AUX.has(w) && w !== "cannot" && (PRON.has(w) || NOUN_SUBJECTS.has(w)) && BASE_VERBS.has(t[i + 2]?.lower || "") && !AUX.has(t[i + 2].lower)) out.push(span(t, i, i + 2));
         if (THIRD.has(w) && t[i + 1]?.lower === "do" && t[i + 2]?.lower === "not") out.push(span(t, i, i + 2));
         if (["does", "doesn't"].includes(w)) {
           let j = i + 1;

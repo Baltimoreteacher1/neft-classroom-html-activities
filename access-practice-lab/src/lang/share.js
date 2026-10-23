@@ -35,6 +35,7 @@ export const encodeShare = (bundle) => `${SHARE_PREFIX}${b64(JSON.stringify(bund
 export function decodeShare(text) {
   const raw = String(text || "").trim();
   if (!raw) throw new Error("Paste a code or choose a file first.");
+  if (raw.length > 8_000_000) throw new Error("That file is too large to be a student share file.");
   let obj;
   try {
     if (raw.startsWith(SHARE_PREFIX)) obj = JSON.parse(unb64(raw.slice(SHARE_PREFIX.length)));
@@ -78,6 +79,5 @@ export function normalize(o) {
     created: String(o.created || ""),
     ledger: { entries },
     studio: { writing: isObj(s.writing) ? s.writing : {}, speaking: isObj(s.speaking) ? s.speaking : {}, missions: isObj(s.missions) ? s.missions : {}, detective: isObj(s.detective) ? s.detective : {} },
-    records: isObj(o.records) ? o.records : {},
   };
 }

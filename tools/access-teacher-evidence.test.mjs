@@ -242,3 +242,71 @@ test("scaffolds: word parts and cognates are conservative and bilingual", () => 
   assert.ok(cognates.some((c) => c.es === "analizar"));
   assert.ok(warnings.some((w) => w.en === "embarrassed"));
 });
+
+test("teacher: large groups are split evenly with every name shown; stale and thin evidence is triaged", async () => {
+  const { triage } = await import("../access-practice-lab/src/lang/teacher.js");
+  const students = Array.from({ length: 7 }, (_, i) =>
+    seedStudent(`S${i}`, { errs: { "be-agree": 2 } }),
+  );
+  const g = groupSuggestions(students, {}).find((x) => x.kind === "pattern");
+  assert.equal(g.members.length, 7, "no member is hidden");
+  assert.deepEqual(
+    g.chunks.map((c) => c.length),
+    [4, 3],
+  );
+  const rows = classSummary([seedStudent("Old", { n: 4 }), seedStudent("Thin", { n: 1 })]);
+  rows[0].lastActive = "2020-01-01T00:00:00Z";
+  const t = triage(rows, { now: Date.parse("2026-10-22") });
+  assert.deepEqual(
+    t.stale.map((r) => r.alias),
+    ["Old"],
+  );
+  assert.deepEqual(
+    t.thin.map((r) => r.alias),
+    ["Thin"],
+  );
+});
+
+test("teacher: one malformed student file cannot break the class summary", () => {
+  const rows = classSummary([seedStudent("Fine"), { alias: "Bad", band: "6-8", ledger: null }]);
+  assert.equal(rows.length, 2);
+  assert.equal(rows[1].broken, true);
+  assert.equal(rows[0].broken, undefined);
+});
+
+test("teacher: pattern ids from untrusted files cannot reach object prototype properties", () => {
+  const students = ["A", "B"].map((a) => seedStudent(a, { errs: { constructor: 2 } }));
+  assert.doesNotThrow(() => groupSuggestions(students, {}));
+  assert.doesNotThrow(() => interventionsFor(classSummary(students)[0], {}));
+});
+
+test("studio: mission decisions add to the later task only on the path the learner chose", async () => {
+  const {
+    choiceEffects,
+    loadStudio: load,
+    missionState,
+  } = await import("../access-practice-lab/src/lang/studio.js");
+  const studio = load(() => null);
+  const mission = { id: "m1" };
+  const task = {
+    byFlag: {
+      a: {
+        promptAdd: "Bring in the drain reading.",
+        plannerHint: { claim: "Start with the drain." },
+        revisionPrompt: "Where is the drain data?",
+      },
+      b: { promptAdd: "Bring in the lawn survey.", revisionPrompt: "Where is the survey?" },
+    },
+  };
+  assert.deepEqual(choiceEffects(task, mission, studio).promptAdd, []);
+  missionState(studio, "m1").flags.push("a");
+  const fx = choiceEffects(task, mission, studio);
+  assert.deepEqual(fx.promptAdd, ["Bring in the drain reading."]);
+  assert.equal(fx.hints.claim, "Start with the drain.");
+  assert.deepEqual(fx.revise, ["Where is the drain data?"]);
+  assert.deepEqual(
+    choiceEffects({}, mission, studio).promptAdd,
+    [],
+    "tasks without byFlag are unaffected",
+  );
+});

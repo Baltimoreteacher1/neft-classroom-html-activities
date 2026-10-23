@@ -41,12 +41,15 @@ show it independently → watch growth. Direct activity links and the quick-prac
 2. **Scaffolds cannot contaminate independent results.** "On my own" renders no frames, bank, model or Spanish
    bridges; feedback appears only after a submission; the ledger stage becomes *supported* if any support was
    opened. A revision after feedback is a *revision*, never a first attempt.
-3. **Privacy.** Everything runs on the device. No student text or audio is sent anywhere. Recordings live in memory
+3. **Privacy and retention.** Everything runs on the device. No student text or audio is sent anywhere. Recordings live in memory
    unless the learner presses "Keep for my teacher" (IndexedDB, deletable in Passport). A share code carries an
-   alias, never contact details, and never audio.
+   alias, never contact details, and never audio. Kept recordings expire after 30 days. The teacher roster lives in the
+   teacher's browser only (sections, per-student removal, "Remove everything" also clears saved scores, a visible
+   warning when storage is nearly full or a save fails).
 4. **Not official.** WIDA scores Speaking and Writing with trained raters and its current rubrics; Listening and
-   Reading are machine-scored selected response. The lab's rubrics are modeled on the long-standing three criteria
-   (Linguistic Complexity, Vocabulary Usage, Language Control) but are the lab's own descriptors.
+   Reading are machine-scored selected response. WIDA revises its scoring rubrics (Writing changed for 2025–26), so the
+   lab's practice rubrics are its own descriptors, organized by the three WIDA language dimensions (Discourse,
+   Sentence, Word/Phrase) — never WIDA's rubric text.
 
 ## Quality gates
 
@@ -66,3 +69,11 @@ show it independently → watch growth. Direct activity links and the quick-prac
    both directions.
 3. Run `node tools/access-lab-index.mjs` (regenerates `content/index.json`) and `node tools/sync-access-shell.mjs`
    (module versions) after editing source.
+
+## Ledger semantics (what the numbers mean)
+
+- A **first attempt** is the first feedback request of an *attempt*; "Start a new attempt" begins a new one, so growth
+  can be measured across attempts. Asking again without changing the text logs nothing.
+- A pattern counts **once per piece of work, in its latest state**: fixed in the final version means no longer recurring.
+- A pattern is **mastered** only after independent transfer passes on at least two different days and prompts.
+- Mission choices (`byFlag`) change the later speaking/writing prompt, planner hints and revision question.

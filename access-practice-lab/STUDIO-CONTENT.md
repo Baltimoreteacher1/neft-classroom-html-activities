@@ -294,3 +294,20 @@ Keyed by the detector ids implemented in `src/lang/errors.js` (see that file for
 
 `practice[].broken` MUST be flagged by that pattern's detector and no `fixed[]` string may be flagged
 by ANY detector (the validator runs the real detectors). 6 practice items + 2 transfer prompts per pattern.
+
+## Mission choices that change the later tasks (`byFlag`)
+
+Inline `speak` and `write` tasks inside a mission MUST carry `byFlag`: one entry for EVERY `flag` that the mission's
+Decision phase can set. When a learner made that decision, the task shows the extra prompt, the planner hints and a
+revision question that fit their path. The core task (and its `sourceTerms`) never changes, so any path stays
+completable and comparable.
+
+```jsonc
+"byFlag": {
+  "chose-drain": {
+    "promptAdd": "One sentence that tells the council what you learned at the storm drain.",   // appended to the prompt, ≤ 30 words
+    "plannerHint": { "evidence": "Start with the drain reading you gathered." },               // optional; keys are planner/organizer slot ids
+    "revisionPrompt": "Does your evidence use the drain data you chose to gather? Where?"      // a question, never an answer
+  }
+}
+```

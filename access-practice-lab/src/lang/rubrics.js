@@ -1,10 +1,9 @@
-// Practice rubrics for speaking and writing. They are modeled on the three criteria long used in WIDA's
-// Speaking and Writing scoring rubrics (Linguistic Complexity, Vocabulary Usage, Language Control) and on the
-// WIDA ELD language dimensions (Discourse, Sentence, Word/Phrase). WIDA revises its rubrics (the Writing rubric
-// changed for 2025-26), so these descriptors are this lab's own plain-language practice anchors, NOT WIDA's
+// Practice rubrics for speaking and writing, organised by the three language DIMENSIONS of the WIDA ELD
+// Standards Framework 2020 (Discourse, Sentence, Word/Phrase). WIDA revises its scoring rubrics (the Writing
+// rubric changed for 2025-26), so these are this lab's own plain-language practice descriptors, NOT WIDA's
 // rubrics. They produce no WIDA score or proficiency level. Teachers who score for reporting must use WIDA's
 // current rubrics and training. Practice bands are named early / building / strong so they are never mistaken
-// for WIDA's six proficiency levels.
+// for WIDA's six proficiency levels. (Criterion ids lc / vu / lctl are kept so saved reviews still load.)
 export const PRACTICE_BANDS = [
   { id: "early", label: "Early", short: "Getting started" },
   { id: "building", label: "Building", short: "Connecting ideas" },
@@ -14,7 +13,7 @@ export const PRACTICE_BANDS = [
 export const CRITERIA = [
   {
     id: "lc",
-    name: "Linguistic Complexity",
+    name: "Organizing and developing ideas",
     dimension: "Discourse",
     question: { speaking: "How well did I organize, connect and develop my ideas?", writing: "How well did I organize, connect and develop my ideas?" },
     student: {
@@ -28,7 +27,7 @@ export const CRITERIA = [
   },
   {
     id: "vu",
-    name: "Vocabulary Usage",
+    name: "Choosing precise words",
     dimension: "Word/Phrase",
     question: { speaking: "How precisely did I choose words for this topic?", writing: "How precisely did I choose words for this topic?" },
     student: {
@@ -42,7 +41,7 @@ export const CRITERIA = [
   },
   {
     id: "lctl",
-    name: "Language Control",
+    name: "Building clear sentences",
     dimension: "Sentence",
     question: { speaking: "How clear was my English for a listener?", writing: "How clear was my writing for a reader?" },
     student: {

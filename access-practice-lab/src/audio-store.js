@@ -49,10 +49,14 @@ export async function remove(id) {
     return false;
   }
 }
+const MAX_AGE_MS = 30 * 864e5;
 export async function list() {
   try {
     const rows = await tx("readonly", (s) => s.getAll());
-    return (rows || []).map(({ blob, ...meta }) => meta);
+    // Kept recordings are a child's voice: they expire after 30 days unless the learner keeps them again.
+    const old = (rows || []).filter((r) => Date.now() - Date.parse(r.t) > MAX_AGE_MS);
+    for (const r of old) await remove(r.id);
+    return (rows || []).filter((r) => !old.includes(r)).map(({ blob, ...meta }) => meta);
   } catch {
     return [];
   }

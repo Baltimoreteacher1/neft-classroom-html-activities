@@ -145,15 +145,22 @@ export function testingWindowPhase(win, today = todayISO()) {
 let toastTimer = 0;
 export function announce(message) {
   const live = document.getElementById("labLive");
-  if (live) live.textContent = message;
+  if (live) {
+    // Clear first: assistive tech ignores a repeated identical string ("Not yet." twice in a row).
+    live.textContent = "";
+    setTimeout(() => {
+      live.textContent = message;
+    }, 40);
+  }
   const toast = document.getElementById("labToast");
   if (!toast) return;
   toast.textContent = message;
   toast.hidden = false;
   clearTimeout(toastTimer);
+  // Long messages (a microphone error) need time to be read.
   toastTimer = setTimeout(() => {
     toast.hidden = true;
-  }, 2600);
+  }, Math.max(2600, 70 * String(message).length));
 }
 
 export async function copyText(text) {

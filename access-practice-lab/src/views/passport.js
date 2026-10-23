@@ -75,13 +75,13 @@ function badges(stats, streak, days, extra) {
       on: total >= 15,
       icon: "🗺️",
       name: "Language Navigator",
-      how: "Progress across 15 activities and consult your Language Growth Map.",
+      how: "Finish 15 activities.",
     },
     {
       on: stats.find((s) => s.domain === "Reading")?.done >= 5,
       icon: "🎧",
       name: "Active Reader",
-      how: "Finish 5 reading activities using audio or evidence annotations.",
+      how: "Finish 5 reading activities.",
     },
   ];
 }
@@ -156,7 +156,7 @@ export async function render(ctx) {
             <p class="eyebrow">ACCESS Practice Passport · ${bandLabel(band)}</p>
             <h1 tabindex="-1">🛂 ${name ? `${name}'s` : "My"} Passport</h1>
             <label class="field inline"
-              ><span>My name or initials</span
+              ><span>My nickname or initials (not my full name)</span
               ><input
                 type="text"
                 data-name
@@ -222,7 +222,7 @@ export async function render(ctx) {
       <section class="panel no-print" aria-labelledby="shareTitle">
         <h2 id="shareTitle">Send my work to my teacher</h2>
         <p>Choose what to share. The code contains your writing, speaking transcripts, mission and detective results, and which supports you used. It has no email, school ID or recordings. Only your alias is included.</p>
-        <label class="field"><span>My alias (initials or a class nickname)</span><input type="text" data-share-alias value="${name}" maxlength="40" autocomplete="off" ${IGN} /></label>
+        <label class="field"><span>My alias for my teacher (initials or a class nickname, not my full name)</span><input type="text" data-share-alias value="${name}" maxlength="40" autocomplete="off" ${IGN} /></label>
         <div class="share-options">${[["writing", "Writing drafts and reflections"], ["speaking", "Speaking transcripts and reviews"], ["missions", "Mission results"], ["detective", "Error Detective results"]].map(([k, l]) => html`<label><input type="checkbox" data-share-opt="${k}" checked ${IGN} /> ${l}</label>`)}</div>
         <div class="row-actions"><button type="button" class="btn btn-primary" data-share-copy>Copy share code</button><button type="button" class="btn" data-share-file>Download share file</button></div>
         <p class="fine" data-share-status role="status"></p>
@@ -279,7 +279,10 @@ export async function onClick(e, ctx) {
     return true;
   }
   if (t.closest("[data-share-file]")) {
-    downloadText("my-work-for-my-teacher.json", JSON.stringify(shareBundle(ctx)), "application/json");
+    {
+      const b = shareBundle(ctx);
+      downloadText(`access-${b.alias.replace(/[^A-Za-z0-9_-]+/g, "-").slice(0, 24)}-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(b), "application/json");
+    }
     if (status) status.textContent = "File downloaded. Give it to your teacher.";
     return true;
   }

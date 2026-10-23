@@ -193,6 +193,19 @@ ok(
 );
 ok(wr[1]?.kind === "revision", "second feedback request is recorded as a revision");
 
+// evidence picker: tapping a source sentence must show state (regression: the notebook never appeared)
+await go(`${BASE}/write/wrt-mulch-cer`);
+const sent = page.locator(".ev-sent").first();
+await sent.click();
+ok(
+  (await page.locator(".evidence-notebook li").count()) === 1 &&
+    (await page.locator(".ev-sent.is-picked").count()) === 1 &&
+    (await sent.getAttribute("aria-pressed")) === "true",
+  "tapping a source sentence adds it to the evidence notebook and shows it as picked",
+);
+await page.locator(".ev-sent.is-picked").first().click();
+ok((await page.locator(".evidence-notebook li").count()) === 0, "tapping it again removes it");
+
 // independent writing hides supports and is recorded as independent
 await go(`${BASE}/write/wrt-bike-plan-paragraph`);
 await page.getByLabel("On my own").check();
@@ -259,7 +272,8 @@ const code = await page.evaluate(async () => {
 ok(code.startsWith("ACCESST1."), "passport can produce a share code");
 await page.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
 await page.waitForSelector("#evCode");
-await page.locator("#evCode").fill(code);
+await page.locator("#evSection").fill("Period 3");
+await page.locator("#evCode").fill(`${code}\n\n${code.replace("River 7", "River 7")}`);
 await page.locator("[data-add]").click();
 await page.waitForSelector("#classEvidence td.t-title");
 ok(
@@ -275,6 +289,10 @@ ok((await page.locator(".hub-card h3").count()) >= 3, "scoring anchors show thre
 await page.locator('[data-tab="groups"]').click();
 ok(true, "groups tab renders");
 await page.locator('[data-tab="blueprint"]').click();
+ok(
+  !(await page.locator("#classEvidence").innerText()).includes("could not be loaded"),
+  "blueprint loads on the live-shaped page",
+);
 ok(
   (await page.locator("#classEvidence").innerText()).includes("Coverage by Key Language Use"),
   "blueprint tab shows coverage by Key Language Use",

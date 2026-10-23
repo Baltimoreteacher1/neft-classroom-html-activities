@@ -320,40 +320,78 @@ test("ledger: stage suggestion follows demonstrated performance", () => {
   assert.equal(suggestStage(helped, "Explain").stage, "supported");
 });
 
-test("ledger: persistent pattern errors become focus areas; transfer success masters them", () => {
+test("ledger: a pattern counts once per piece of work, in its latest state", () => {
   const ledger = { entries: [] };
-  for (let i = 0; i < 4; i++)
+  // one piece revised three times: the error is fixed in the final version
+  for (const errs of [{ "sv-agree-3sg": 2 }, { "sv-agree-3sg": 1 }, {}])
     appendEntry(ledger, {
       src: "writing",
+      task: "essay",
+      use: "Explain",
+      stage: "supported",
+      kind: "first",
+      supports: { bank: true },
+      m: { words: 50, errs },
+    });
+  assert.equal(
+    buildProfile(ledger.entries).errors.length,
+    0,
+    "fixed by the final version, so not recurring",
+  );
+  // the same error across four different pieces IS recurring
+  const other = { entries: [] };
+  for (let i = 0; i < 4; i++)
+    appendEntry(other, {
+      src: "writing",
+      task: `piece${i}`,
       use: "Explain",
       stage: "supported",
       kind: "first",
       supports: { bank: true },
       m: { words: 50, errs: { "sv-agree-3sg": 2 } },
     });
-  let p = buildProfile(ledger.entries);
+  const p = buildProfile(other.entries);
+  assert.equal(p.errors[0].drafts, 4);
   assert.equal(focusAreas(p)[0].id, "sv-agree-3sg");
-  for (let i = 0; i < 2; i++)
+});
+
+test("ledger: mastery needs independent transfer passes on different days and prompts", () => {
+  const ledger = { entries: [] };
+  for (let i = 0; i < 3; i++)
     appendEntry(ledger, {
+      src: "writing",
+      task: `p${i}`,
+      use: "Explain",
+      stage: "supported",
+      kind: "first",
+      supports: { bank: true },
+      m: { words: 50, errs: { "sv-agree-3sg": 1 } },
+    });
+  const pass = (t, prompt) =>
+    appendEntry(ledger, {
+      t,
       src: "detective",
       stage: "independent",
       kind: "transfer",
-      m: { pattern: "sv-agree-3sg", ok: true },
+      m: { pattern: "sv-agree-3sg", ok: true, prompt },
     });
+  pass("2026-10-01T10:00:00Z", "t1");
+  pass("2026-10-01T11:00:00Z", "t2");
+  let e = buildProfile(ledger.entries).errors.find((x) => x.id === "sv-agree-3sg");
+  assert.equal(e.mastered, false, "two passes on the same day are not durable");
+  // newer writing without the error, then a pass on another day
   for (let i = 0; i < 12; i++)
     appendEntry(ledger, {
       src: "writing",
+      task: `n${i}`,
       use: "Explain",
       stage: "independent",
       kind: "first",
       m: { words: 50, errs: {} },
     });
-  p = buildProfile(ledger.entries);
-  assert.equal(
-    p.errors.find((e) => e.id === "sv-agree-3sg"),
-    undefined,
-    "old errors age out of the recent window",
-  );
+  pass("2026-10-08T10:00:00Z", "t1");
+  e = buildProfile(ledger.entries).errors.find((x) => x.id === "sv-agree-3sg");
+  assert.equal(e, undefined, "once it stops appearing in recent work it leaves the recurring list");
 });
 
 test("ledger merge is a union by id and keeps order", () => {

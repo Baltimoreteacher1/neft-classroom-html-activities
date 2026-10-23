@@ -7,6 +7,8 @@ import { loadMission, loadStudioIndex } from "../content.js";
 import { missionSupport, showStretch } from "../lang/adapt.js";
 import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
 import { loadStudio, missionState, saveStudio } from "../lang/studio.js";
+import { compareDrafts } from "../lang/analyze.js";
+import { diffWords } from "../lang/text.js";
 import { speak, speakDialogue, stop as stopSpeech } from "../speech.js";
 import { sourceHTML } from "../studio-ui.js";
 import { BASE, announce, html, raw } from "../util.js";
@@ -77,7 +79,7 @@ function questionHTML(t, ms) {
   const a = ms.answers[t.id] || {};
   return html`<fieldset class="mission-q">
     <legend>${t.q}${t.tier === "stretch" ? html` <span class="badge">Stretch</span>` : ""}</legend>
-    ${t.options.map((o) => html`<label class="choice-card ${a.done && o.id === t.answer ? "is-right" : a.last === o.id && !a.done ? "is-miss" : ""}"><input type="radio" name="q-${t.id}" value="${o.id}" data-q="${t.id}" ${a.pick === o.id ? raw("checked") : ""} ${a.done ? raw("disabled") : ""} ${IGN} /><span>${o.text}</span></label>`)}
+    ${t.options.map((o) => html`<label class="choice-card ${a.done && o.id === t.answer ? "is-right" : a.last === o.id && !a.done ? "is-miss" : ""}"><input type="radio" name="q-${t.id}" value="${o.id}" data-q="${t.id}" ${a.pick === o.id ? raw("checked") : ""} ${a.done ? raw("disabled") : ""} ${IGN} /><span>${o.text}${a.done && o.id === t.answer ? html` <span class="visually-hidden">(correct answer)</span>` : a.last === o.id && !a.done ? html` <span class="visually-hidden">(not correct)</span>` : ""}</span></label>`)}
     ${!a.done ? html`<button type="button" class="btn btn-primary" data-check-q="${t.id}" ${a.pick ? "" : raw("disabled")}>Check</button>` : ""}
     ${a.msg ? html`<p class="feedback ${a.done ? "is-right" : "is-hint"}" role="status">${a.msg}</p>` : ""}
   </fieldset>`;
@@ -145,37 +147,46 @@ function boardHTML(ms) {
     : "";
 }
 
-function debriefHTML(mission, ms, ledger, band) {
-  const mine = ledger.entries.filter(
-    (e) => e.src === "mission" && e.task.startsWith(`${mission.id}:`),
-  );
+function debriefHTML(mission, ms, ledger, band, studio) {
+  const mine = ledger.entries.filter((e) => e.src === "mission" && e.task.startsWith(`${mission.id}:`));
   const qs = mine.flatMap((e) => e.m.questions || []);
   const first = qs.filter((q) => q.ok).length;
-  const bySkill = {};
-  for (const q of qs) {
-    const row = (bySkill[q.skill] ||= { n: 0, ok: 0 });
-    row.n++;
-    if (q.ok) row.ok++;
-  }
-  return html`<section class="panel">
-    <h2>Mission complete</h2>
+  const tasks = mission.phases.flatMap((p) => p.tasks || []).filter((t) => t.task);
+  const writing = tasks.find((t) => t.kind === "write");
+  const w = writing ? studio.writing[writing.task.id] : null;
+  const firstDraft = w?.versions?.[0];
+  const finalDraft = w?.versions?.at(-1);
+  const grew = firstDraft && finalDraft && firstDraft.id !== finalDraft.id;
+  const delta = grew
+    ? compareDrafts(firstDraft.text, finalDraft.text, { keyUse: writing.task.keyUse, sourceTerms: writing.task.sourceTerms, stage: "supported" })
+    : null;
+  return html`<section class="panel case-file">
+    <h2>Case file: ${mission.title}</h2>
     <p>${mission.debrief?.connections || ""}</p>
-    <p>
-      You answered <strong>${first} of ${qs.length}</strong> questions correctly on the first try.
-      ${Object.entries(bySkill)
-        .map(([k, v]) => `${k}: ${v.ok}/${v.n}`)
-        .join(" · ")}
-    </p>
-    <h3>Your decisions</h3>
+    <h3>The path you chose</h3>
     <ul>
-      ${mission.phases.filter((p) => p.skill === "Decision").map((p) => html`<li>${p.decision.q} <em>${p.decision.options.find((o) => o.id === ms.decisions[p.id])?.text || ""}</em></li>`)}
+      ${mission.phases.filter((p) => p.skill === "Decision").map((p) => {
+        const o = p.decision.options.find((x) => x.id === ms.decisions[p.id]);
+        return html`<li>${p.decision.q} <strong>${o?.text || ""}</strong><br /><span class="fine">${o?.consequence || ""}</span></li>`;
+      })}
     </ul>
+    ${ms.board.length ? html`<h3>Evidence you gathered</h3><ul>${ms.board.map((b) => html`<li><strong>${b.label}:</strong> ${b.text}</li>`)}</ul>` : ""}
+    ${grew
+      ? html`<h3>How your writing changed</h3>
+          <p class="fine">Your first draft and your final version of “${writing.task.title}”.</p>
+          <p class="diff">${diffWords(firstDraft.text, finalDraft.text).map((x) => (x.op === "same" ? html`${x.text} ` : x.op === "add" ? html`<ins>${x.text}</ins> ` : html`<del>${x.text}</del> `))}</p>
+          ${delta.changes.length || delta.gainedMoves.length ? html`<ul>${delta.changes.map((c) => html`<li>${c.label}: ${c.from} → ${c.to}</li>`)}${delta.gainedMoves.map((m) => html`<li>Now: ${m.toLowerCase()}</li>`)}</ul>` : ""}`
+      : w
+        ? html`<h3>Your writing</h3><p class="portfolio-response">${finalDraft?.text || ""}</p>`
+        : ""}
     <h3>Talk about it</h3>
-    <ul>
-      ${(mission.debrief?.teacherQuestions || []).map((q) => html`<li>${q}</li>`)}
-    </ul>
-    <a class="btn btn-primary" href="${BASE}/missions?grades=${band}">More missions</a>
-    <a class="btn" href="${BASE}/growth?grades=${band}">My language growth</a>
+    <ul>${(mission.debrief?.teacherQuestions || []).map((q) => html`<li>${q}</li>`)}</ul>
+    <details class="fine"><summary>Questions</summary><p>${first} of ${qs.length} questions were right on the first try. This is practice information, not a score.</p></details>
+    <div class="row-actions no-print">
+      <button type="button" class="btn" data-print>Print my case file</button>
+      <a class="btn btn-primary" href="${BASE}/missions?grades=${band}">More missions</a>
+      <a class="btn" href="${BASE}/growth?grades=${band}">My language growth</a>
+    </div>
   </section>`;
 }
 
@@ -247,7 +258,7 @@ export async function render(ctx) {
       </section>
       <nav class="mission-steps" aria-label="Mission phases">
         <ol>
-          ${phases.map((p, i) => html`<li class="${i === current ? "is-current" : isDone(ms, p) ? "is-done" : ""}"><a href="${BASE}/missions/${mission.id}?phase=${p.id}&grades=${ctx.band}">${isDone(ms, p) ? "✓ " : ""}${p.skill}</a></li>`)}
+          ${phases.map((p, i) => html`<li class="${i === current ? "is-current" : isDone(ms, p) ? "is-done" : ""}"><a ${i === current ? raw('aria-current="step"') : ""} href="${BASE}/missions/${mission.id}?phase=${p.id}&grades=${ctx.band}">${isDone(ms, p) ? "✓ " : ""}${p.skill}</a></li>`)}
         </ol>
       </nav>
       ${
@@ -272,11 +283,11 @@ export async function render(ctx) {
                   )}
                 </div>
                 ${sug ? html`<p class="fine">Suggested help for this phase: <strong>${sug.stage === "guided" ? "frames and words" : "word bank"}</strong> — ${sug.reason}</p>` : ""}
-                ${phase.skill === "Decision" ? decisionHTML(phase, ms) : html`${visibleTasks(phase, ledger).map((t) => (t.kind === "question" ? questionHTML(t, ms) : t.kind === "evidence" ? evidenceHTML(t, ms) : studioTaskHTML({ ...t, task: t.task || { id: t.taskRef, title: t.taskRef, scenario: "", prompt: "" } }, ms, mission, ctx.band)))}`}
+                ${phase.skill === "Decision" ? decisionHTML(phase, ms) : html`${visibleTasks(phase, ledger).map((t) => (t.kind === "question" ? questionHTML(t, ms) : t.kind === "evidence" ? evidenceHTML(t, ms) : studioTaskHTML({ ...t, task: t.task || { id: t.taskRef, title: "Speaking or writing task", scenario: "", prompt: "" } }, ms, mission, ctx.band)))}`}
                 ${isDone(ms, phase) && current < phases.length - 1 ? html`<a class="btn btn-primary" href="${BASE}/missions/${mission.id}?phase=${phases[current + 1].id}&grades=${ctx.band}">Next phase →</a>` : ""}
               </article>
               ${boardHTML(ms)}`
-          : debriefHTML(mission, ms, ledger, ctx.band)
+          : debriefHTML(mission, ms, ledger, ctx.band, studio)
       }`,
   };
 }
@@ -361,7 +372,7 @@ export function onClick(e, ctx) {
     a.tries = (a.tries || 0) + 1;
     if (!wrong.length && !missed.length) {
       a.done = true;
-      a.msg = `✓ Those statements support the idea. ${wrong.length === 0 ? "They are on your evidence board." : ""}`;
+      a.msg = `✓ Those statements support the idea. They are on your evidence board.`;
       for (const id of want) {
         const e = task.pool.find((x) => x.id === id);
         if (!ms.board.some((b) => b.id === `${task.id}:${id}`))

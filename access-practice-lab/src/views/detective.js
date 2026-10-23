@@ -46,7 +46,7 @@ function hubHTML(ctx, data) {
     html`<a class="card task-card" href="${BASE}/detective/${id}?grades=${ctx.band}"
       ><strong>${p.name}</strong
       ><span class="fine"
-        >${p.category}${state(id)?.transfer?.some((t) => t.ok) ? " · ✓ transferred" : state(id)?.seen ? " · in progress" : ""}</span
+        >${p.category}${state(id)?.transfer?.some((t) => t.ok && t.independent) ? " · ✓ used on my own" : state(id)?.seen ? " · in progress" : ""}</span
       >${extra ? html`<span class="fine">${extra}</span>` : ""}</a
     >`;
   return html`${crumbsHTML([
@@ -187,7 +187,7 @@ ${D.answer ?? cur.broken}</textarea>
                       class="feedback ${D.result.ok ? "is-right" : "is-hint"}"
                       role="status"
                     >
-                      <p class="fb-title">${D.result.ok ? "✓ Fixed" : "Not yet"}</p>
+                      <p class="fb-title">${D.result.ok ? "✓ Fixed" : D.result.hint ? "Hint" : "Not yet"}</p>
                       <p>${D.result.msg}</p>
                       ${D.result.ok ? html`<button type="button" class="btn btn-primary" data-next>Next</button>` : ""}
                     </div>`
@@ -274,9 +274,12 @@ export async function render(ctx) {
     };
   if (!keep) {
     const st = detectiveState(studio, id);
-    const done = new Set(st.done || []);
-    const pool = p.practice.filter((q) => !done.has(q.id));
-    D.items = (pool.length >= 1 + FRESH ? pool : p.practice).slice(0, 1 + FRESH);
+    // least-practised items first, so a second visit brings new sentences instead of memorised ones
+    const times = (id) => (st.seenItems || {})[id] || 0;
+    const ordered = [...p.practice].sort((a, b) => times(a.id) - times(b.id) || p.practice.indexOf(a) - p.practice.indexOf(b));
+    D.items = ordered.slice(0, 1 + FRESH);
+    st.seenItems = { ...(st.seenItems || {}) };
+    for (const it of D.items) st.seenItems[it.id] = times(it.id) + 1;
     D.transfer = p.transfer[(st.transfer?.length || 0) % p.transfer.length];
     st.seen = (st.seen || 0) + 1;
     saveStudio(studio);
@@ -303,6 +306,8 @@ export function onClick(e, ctx) {
     D.result = null;
     D.hintsUsed = 0;
     D.peek = false;
+    D.misses = 0;
+    D.itemHelped = false;
     ctx.rerender();
   };
   if (t.closest("[data-next]")) {
@@ -312,6 +317,7 @@ export function onClick(e, ctx) {
   if (t.closest("[data-peek]")) {
     D.peek = true;
     D.helped = true;
+    D.itemHelped = true;
     ctx.rerender();
     return true;
   }
@@ -319,9 +325,11 @@ export function onClick(e, ctx) {
     const item = currentItem();
     D.hintsUsed++;
     D.helped = true;
+    D.itemHelped = true;
     const first = detect(item.broken).find((f) => f.id === D.id);
     D.result = {
       ok: false,
+      hint: true,
       msg:
         D.hintsUsed === 1
           ? `Self-check: ${D.pattern.lesson.check}`
@@ -339,7 +347,10 @@ export function onClick(e, ctx) {
     let msg;
     if (!r.changed) msg = "Your sentence has not changed. Which words need to change?";
     else if (!r.fixed)
-      msg = `That pattern is still in your sentence: “${r.remaining[0].text}”. ${D.pattern.lesson.check}`;
+      msg =
+        (D.misses || 0) === 0
+          ? "That pattern is still in your sentence. Read it aloud once, slowly, and listen for the spot."
+          : `That pattern is still in your sentence: “${r.remaining[0].text}”. ${D.pattern.lesson.check}`;
     else if (r.introduced.length)
       msg = `You fixed it, but a new pattern appeared: ${r.introduced[0].name} (“${r.introduced[0].text}”). Reread and adjust.`;
     else if (!r.sameMessage)
@@ -347,15 +358,18 @@ export function onClick(e, ctx) {
         "The pattern is gone, but your sentence no longer says the same thing. Keep the meaning and change only what the rule needs.";
     const ok = !msg;
     D.result = { ok, msg: ok ? "The pattern is fixed and your meaning is the same." : msg };
+    if (!ok) D.misses = (D.misses || 0) + 1;
+    const clean = ok && !D.itemHelped && (D.misses || 0) === 0; // fixed on the first check, with no hint or rule
     if (ok) {
       const st = detectiveState(D.studio, D.id);
-      (st.done ||= []).push(item.id);
-      if (!D.helped) st.fixedFirst++;
+      st.done = [...new Set([...(st.done || []), item.id])];
+      if (clean) st.fixedFirst++;
       else st.helped++;
       saveStudio(D.studio);
     }
-    log("retry", ok, { item: item.id, hints: D.hintsUsed });
-    announce(ok ? "Fixed." : "Not yet.");
+    if (!clean && ok) D.helped = true; // needing help on this pattern means the transfer is not credited as independent
+    log("retry", ok, { item: item.id, hints: D.hintsUsed, misses: D.misses || 0 });
+    announce(ok ? "Fixed." : "Not yet. Read the feedback below.");
     ctx.rerender();
     return true;
   }
@@ -388,7 +402,7 @@ export function onClick(e, ctx) {
       independent: !D.helped,
     });
     saveStudio(D.studio);
-    log("transfer", ok, { words: a.words });
+    log("transfer", ok, { words: a.words, prompt: D.transfer.id });
     announce(ok ? "Case closed." : "Not yet.");
     ctx.rerender();
     return true;

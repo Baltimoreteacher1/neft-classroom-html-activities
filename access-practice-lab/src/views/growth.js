@@ -10,10 +10,11 @@ import {
   loadLedger,
   MIN_POINTS,
 } from "../lang/ledger.js";
+import { loadPatterns } from "../content.js";
 import { allRecords } from "../store.js";
 import { BASE, CORE_DOMAINS, DOMAIN_META, html } from "../util.js";
 
-const WORD = { improving: "going up", steady: "steady", slipping: "going down" };
+const WORD = { improving: "growing", steady: "steady", slipping: "changing — worth a look" };
 const DIM_BLURB = {
   Discourse:
     "Organizing a whole response: moves of the genre, linking ideas, evidence from sources.",
@@ -64,13 +65,15 @@ function featureCard(key, f, entries) {
     <p class="fine">
       ${t.status === "ok" ? html`Across your first attempts this is <strong>${WORD[t.direction]}</strong> (${series.length} attempts).` : `Not enough evidence yet — ${t.n} of ${MIN_POINTS} first attempts.`}
     </p>
-    ${dep.status === "ok" ? html`<p class="fine ${dep.dependent ? "todo" : "ok"}">${dep.dependent ? "Lower when you work without supports — keep practicing it on your own." : "Similar with and without supports."} (on your own: ${Math.round(dep.independent * 10) / 10}, with supports: ${Math.round(dep.supported * 10) / 10})</p>` : html`<p class="fine">Support check needs ${MIN_POINTS}+ attempts with and without help.</p>`}
+    ${dep.status === "ok" ? html`<p class="fine ${dep.dependent ? "todo" : "ok"}">${dep.dependent ? "Lower when you work without supports — keep practicing it on your own." : "Similar with and without supports."}</p>` : html`<p class="fine">Support check needs ${MIN_POINTS}+ attempts with and without help.</p>`}
   </div>`;
 }
 
 export async function render(ctx) {
   const band = ctx.band;
   const ledger = loadLedger();
+  const patterns = (await loadPatterns().catch(() => ({ patterns: {} }))).patterns || {};
+  const pname = (id) => (Object.hasOwn(patterns, id) ? patterns[id].name : id);
   const entries = ledger.entries.filter((e) => e.band === band);
   const p = buildProfile(entries, { band });
   const focus = focusAreas(p);
@@ -151,7 +154,7 @@ export async function render(ctx) {
         ${
           p.errors.length
             ? html`<ul class="evidence-list">
-                ${p.errors.slice(0, 6).map((e) => html`<li><a href="${BASE}/detective/${e.id}?grades=${band}">${e.id}</a><span>${e.mastered ? "✓ Used correctly on your own in new writing" : `in ${e.drafts} recent piece${e.drafts === 1 ? "" : "s"}`}${e.transfer ? ` · ${e.transfer.transferIndependent} independent transfer${e.transfer.transferIndependent === 1 ? "" : "s"}` : ""}</span></li>`)}
+                ${p.errors.slice(0, 6).map((e) => html`<li><a href="${BASE}/detective/${e.id}?grades=${band}">${pname(e.id)}</a><span>${e.mastered ? "✓ Used correctly on your own in new writing" : `in ${e.drafts} recent piece${e.drafts === 1 ? "" : "s"}`}${e.transfer ? ` · ${e.transfer.transferIndependent} independent transfer${e.transfer.transferIndependent === 1 ? "" : "s"}` : ""}</span></li>`)}
               </ul>`
             : html`<p>No repeating pattern errors found in your recent work.</p>`
         }

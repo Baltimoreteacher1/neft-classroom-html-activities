@@ -6,7 +6,9 @@
 //    teachable moves, chosen by stated rules (see nextMoves). Meaning and truth are NOT judged here.
 //  * Scaffold exposure is a function of the stage: independent attempts get questions only —
 //    no frames, no word suggestions — so feedback can never leak help into an independent result.
-import { detect } from "./errors.js";
+import { DETECTOR_IDS, detect } from "./errors.js";
+
+const DETECTOR_COUNT = DETECTOR_IDS.length;
 import { ACADEMIC, COMMON_VERBS, CONNECTORS, CONNECTOR_JOBS, DOMAIN_HINTS, FRAMES, MORPHEMES, SUBORDINATORS, VAGUE } from "./lexicon.js";
 import { purposeMoves } from "./purpose.js";
 import { findPhrase, isStop, numbersIn, sentences, stem, tokenize } from "./text.js";
@@ -61,6 +63,17 @@ function cohesion(text, sents) {
   return { devices: dedup, jobs, variety: jobs.length, repeatedOpeners: repeated, unlinked };
 }
 
+function countDistinctSpans(spans) {
+  const sorted = spans.map((x) => ({ start: x.start, end: x.end })).sort((a, b) => a.start - b.start || b.end - a.end);
+  let n = 0;
+  let end = -1;
+  for (const sp of sorted) {
+    if (sp.start >= end) n++;
+    end = Math.max(end, sp.end);
+  }
+  return n;
+}
+
 function evidence(text, { sourceText = "", sourceTerms = [] }) {
   const src = Array.isArray(sourceText) ? sourceText.join(" ") : String(sourceText || "");
   const termHits = sourceTerms.map((t) => ({ term: t, hits: findPhrase(text, t) })).filter((x) => x.hits.length);
@@ -76,7 +89,8 @@ function evidence(text, { sourceText = "", sourceTerms = [] }) {
     numbersFromSource: fromSource,
     numbersOutsideSource: outside,
     attributions,
-    cites: fromSource.length + termHits.length + attributions.length,
+    // each place in the text counts once: a number that sits inside a source term is one citation, not two
+    cites: countDistinctSpans([...fromSource, ...termHits.flatMap((x) => x.hits), ...attributions]),
     hasSource: Boolean(src),
   };
 }
@@ -158,7 +172,7 @@ export function analyzeResponse(text, opts = {}) {
   const ev = evidence(src, opts);
   const coh = cohesion(src, sents);
   const wl = wordLevel(src, toks, { wordBank });
-  const purpose = purposeMoves(src, keyUse, { words: toks.length, expectCounter: keyUse === "Argue" && (expected?.minWords || 0) >= 100 });
+  const purpose = purposeMoves(src, keyUse, { words: toks.length, expectCounter: keyUse === "Argue" && (expected?.minWords || 0) >= 100, topicTerms: [...(opts.sourceTerms || []), ...wordBank] });
   const base = {
     words: toks.length,
     sentenceCount: sents.length,
@@ -190,7 +204,7 @@ export function analyzeResponse(text, opts = {}) {
 
 function strengths(a) {
   const out = [];
-  const made = a.purpose.moves.filter((m) => m.present);
+  const made = a.purpose.moves.filter((m) => m.present && m.required);
   if (made.length) out.push({ dimension: "Discourse", text: `Does ${made.length} of ${a.purpose.moves.filter((m) => m.required).length} moves of a ${a.purpose.keyUse.toLowerCase()} response: ${made.map((m) => m.label.toLowerCase()).slice(0, 2).join("; ")}.`, spans: made.flatMap((m) => m.evidence).slice(0, 3) });
   if (a.cohesion.variety >= 2) out.push({ dimension: "Discourse", text: `Links ideas in ${a.cohesion.variety} different ways (${a.cohesion.jobs.join(", ")}).`, spans: a.cohesion.devices.slice(0, 3) });
   if (a.evidence.cites >= 2) out.push({ dimension: "Discourse", text: `Points to the source ${a.evidence.cites} time${a.evidence.cites === 1 ? "" : "s"}.`, spans: [...a.evidence.termHits, ...a.evidence.numbersFromSource].slice(0, 3) });
@@ -198,7 +212,7 @@ function strengths(a) {
   if (a.nounPhrases.length) out.push({ dimension: "Sentence", text: "Packs detail into noun phrases.", spans: a.nounPhrases.slice(0, 2) });
   if (a.word.academic.length + a.word.domain.length >= 2) out.push({ dimension: "Word/Phrase", text: `Uses precise subject words (${[...new Set([...a.word.academic, ...a.word.domain].map((w) => w.text.toLowerCase()))].slice(0, 4).join(", ")}).`, spans: [...a.word.academic, ...a.word.domain].slice(0, 4) });
   if (a.word.bankUsed.length) out.push({ dimension: "Word/Phrase", text: `Uses bank words: ${a.word.bankUsed.slice(0, 4).join(", ")}.`, spans: [] });
-  if (a.words >= 20 && a.errors.filter((e) => e.confidence === "high").length === 0) out.push({ dimension: "Sentence", text: "No pattern errors found that our checker looks for.", spans: [] });
+  if (a.words >= 20 && a.errors.filter((e) => e.confidence === "high").length === 0) out.push({ dimension: "Sentence", text: `None of the ${DETECTOR_COUNT} patterns this checker looks for showed up. It does not catch every kind of error, so reread aloud too.`, spans: [] });
   return out;
 }
 

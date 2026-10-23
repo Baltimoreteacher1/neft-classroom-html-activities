@@ -91,7 +91,7 @@ mark.hl-error {
 }
 ins {
   background: #d8f0e6;
-  text-decoration: none;
+  text-decoration: underline;
   border-radius: 3px;
   padding: 0 0.1em;
 }
@@ -258,6 +258,10 @@ del {
   border-color: var(--brand);
   background: var(--brand-soft);
 }
+.ev-sent.is-picked::before {
+  content: "✓ ";
+  font-weight: 700;
+}
 .ev-sent.is-picked {
   background: #d8f0e6;
   border-color: var(--right);
@@ -330,5 +334,53 @@ del {
   del {
     background: none;
     text-decoration: underline;
+  }
+}
+
+/* form fields: >= 3:1 border contrast (WCAG 1.4.11) and a visible focus ring */
+.field input[type="text"],
+.field textarea,
+.field select {
+  border-color: #767676;
+}
+.field input:focus-visible,
+.field textarea:focus-visible,
+.field select:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.lab-table-wrap:focus-visible {
+  outline: 3px solid var(--focus);
+}
+.mini-chart .bar {
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+  border: 1px solid var(--room, var(--brand));
+}
+
+/* teacher dashboard */
+.field.inline {
+  display: inline-grid;
+  margin-right: 0.75rem;
+}
+.ev-print {
+  display: none;
+}
+@media print {
+  body[data-printing="sheets"] > *:not(#classEvidence) {
+    display: none !important;
+  }
+  body[data-printing="sheets"] #classEvidence .ev-screen {
+    display: none !important;
+  }
+  body[data-printing="sheets"] .ev-print {
+    display: block;
+  }
+  .ev-sheet {
+    page-break-after: always;
+    padding-bottom: 0.5cm;
+  }
+  #classEvidence .no-print {
+    display: none !important;
   }
 }

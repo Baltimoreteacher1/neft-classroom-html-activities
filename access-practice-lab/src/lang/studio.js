@@ -129,3 +129,17 @@ export function validStudio(doc) {
     )
   );
 }
+
+/** What the learner's mission decisions add to an inline speaking/writing task (see byFlag in STUDIO-CONTENT.md). */
+export function choiceEffects(task, mission, studio) {
+  const out = { promptAdd: [], hints: {}, revise: [] };
+  if (!mission || !task.byFlag) return out;
+  for (const flag of missionState(studio, mission.id).flags) {
+    const e = task.byFlag[flag];
+    if (!e) continue;
+    if (e.promptAdd) out.promptAdd.push(e.promptAdd);
+    Object.assign(out.hints, e.plannerHint || {});
+    if (e.revisionPrompt) out.revise.push(e.revisionPrompt);
+  }
+  return out;
+}

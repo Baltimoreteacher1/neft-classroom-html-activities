@@ -7,7 +7,7 @@ import { loadExemplars, loadMission, loadStudioIndex, loadWritingTasks } from ".
 import { recommendTasks } from "../lang/adapt.js";
 import { analyzeResponse, compareDrafts } from "../lang/analyze.js";
 import { appendEntry, buildProfile, loadLedger, saveLedger, suggestStage } from "../lang/ledger.js";
-import { addVersion, loadStudio, missionState, saveStudio, writingState } from "../lang/studio.js";
+import { addVersion, choiceEffects, loadStudio, missionState, saveStudio, writingState } from "../lang/studio.js";
 import { speak, stop as stopSpeech } from "../speech.js";
 import { diffWords, sentences as splitSentences } from "../lang/text.js";
 import { feedbackHTML, sourceHTML, stagePickerHTML, vocabListHTML, bridgesHTML, purposeBadgeHTML } from "../studio-ui.js";
@@ -190,7 +190,7 @@ function portfolioHTML(ctx, tasks) {
 
 function sourcesHTML(task, state) {
   const sources = task.sources || [];
-  const ev = state.notes ? (state.evidence ||= []) : [];
+  const ev = state.evidence || [];
   return html`<section class="panel sources">
     <h3>Sources</h3>
     ${sources.map((src, i) =>
@@ -207,7 +207,7 @@ function sourcesHTML(task, state) {
           </section>`
         : sourceHTML(src, { id: String(i) }),
     )}
-    <p class="fine">Tap a sentence to add it to your evidence notebook.</p>
+    <p class="fine">Press Enter or tap a sentence to add it to your evidence notebook.</p>
     ${
       ev.length
         ? html`<div class="evidence-notebook">
@@ -333,6 +333,7 @@ export async function render(ctx) {
   const { task, mission } = found;
   S.task = task;
   S.mission = mission;
+  S.fx = choiceEffects(task, mission, S.studio);
   S.state = writingState(S.studio, task.id);
   S.state.evidence ||= [];
   S.profile = buildProfile(S.ledger.entries, { band: ctx.band });
@@ -353,7 +354,7 @@ export async function render(ctx) {
         ${purposeBadgeHTML(S.stage)}
           <div class="directions">
             <p><strong>Situation:</strong> ${task.scenario}</p>
-            <p><strong>Your task:</strong> ${task.prompt}</p>
+            <p><strong>Your task:</strong> ${task.prompt}${S.fx.promptAdd.map((x) => html` <span class="path-add">${x}</span>`)}</p>
             <button type="button" class="ghost small" data-say="${task.prompt}">
               🔊 Hear the task
             </button>
@@ -363,7 +364,7 @@ export async function render(ctx) {
         ${sourcesHTML(task, S.state)}
         <section class="panel organizer">
           <h3>1 · Plan</h3>
-          ${task.organizer.map((slot) => html`<label class="field"><span>${slot.label}</span><input type="text" data-org="${slot.id}" value="${S.state.organizer[slot.id] || ""}" ${S.stage === "independent" ? "" : html`placeholder="${slot.hint}"`} ${IGN} /></label>`)}
+          ${task.organizer.map((slot) => html`<label class="field"><span>${slot.label}</span><input type="text" data-org="${slot.id}" value="${S.state.organizer[slot.id] || ""}" ${S.stage === "independent" ? "" : html`placeholder="${S.fx.hints[slot.id] || slot.hint}"`} ${IGN} /></label>`)}
         </section>
         ${stageSupportHTML(task)}
         <section class="panel">
@@ -404,7 +405,7 @@ ${text}</textarea>
           a
             ? html`<section class="panel">
                   <h3>3 · What your writing shows</h3>
-                  ${feedbackHTML(a, text, { patternHref: (pid) => `${BASE}/detective/${pid}?grades=${ctx.band}` })}${revisionPromptsHTML(task, a)}${versionsHTML(S.state)}
+                  ${feedbackHTML(a, text, { patternHref: (pid) => `${BASE}/detective/${pid}?grades=${ctx.band}` })}${revisionPromptsHTML(task, a)}${S.fx.revise.length ? html`<div class="revise-prompts"><h4>From your mission choice</h4><ul>${S.fx.revise.map((q) => html`<li>${q}</li>`)}</ul></div>` : ""}${versionsHTML(S.state)}
                   <p class="fine">
                     Now revise: change your draft, then press <strong>Get feedback</strong> again to
                     see what changed.
@@ -442,9 +443,14 @@ function lockStage() {
 
 function feedback(ctx) {
   const text = S.state.draft ?? S.state.versions.at(-1)?.text ?? "";
+  if (S.state.analyzedText === text && text) {
+    announce("Nothing has changed since your last feedback. Revise your writing, then ask again.");
+    return;
+  }
   lockStage();
+  S.state.attemptId ||= `a${Date.now().toString(36)}`;
   const first = !S.ledger.entries.some(
-    (x) => x.task === S.task.id && x.src === "writing" && x.kind === "first",
+    (x) => x.task === S.task.id && x.src === "writing" && x.kind === "first" && x.attempt === S.state.attemptId,
   );
   addVersion(S.state, text, first ? "draft" : "revision");
   S.state.analyzedText = text;
@@ -464,6 +470,7 @@ function feedback(ctx) {
     use: S.task.keyUse,
     stage: S.stage,
     kind: first ? "first" : "revision",
+    attempt: S.state.attemptId,
     supports,
     m: a.ledger,
   });
@@ -534,6 +541,7 @@ export function onClick(e, ctx) {
     const i = S.state.evidence.findIndex((x) => x.text === sent.text);
     if (i >= 0) S.state.evidence.splice(i, 1);
     else S.state.evidence.push({ src: S.task.sources[si].title, text: sent.text });
+    announce(i >= 0 ? "Removed from your evidence notebook." : "Added to your evidence notebook.");
     save();
     ctx.rerender();
     return true;
@@ -574,6 +582,7 @@ export function onClick(e, ctx) {
       organizer: {},
       draft: "",
       analyzedText: "",
+      attemptId: "",
       reflection: "",
       finishedAt: "",
       used: {},

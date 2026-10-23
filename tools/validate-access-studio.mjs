@@ -355,6 +355,28 @@ export function sweepMission(file, m, speakIds, writeIds) {
       const n = strings(src.text).join(" ").split(/\s+/).length;
       if (n < 90 || n > 260) fail(w, `passage ${sid} is ${n} words (want ~120-220)`);
     }
+  // choices must reach the later tasks: every inline speak/write task covers every flag the decisions can set
+  const flags = phases
+    .flatMap((p) => asList(p.decision?.options).map((o) => o.flag))
+    .filter(Boolean);
+  for (const p of phases)
+    for (const t of asList(p.tasks))
+      if (t.task)
+        for (const f of flags) {
+          const e = t.task.byFlag?.[f];
+          if (!e?.promptAdd || !e?.revisionPrompt)
+            fail(`${w}:${t.id}`, `byFlag.${f} needs promptAdd and revisionPrompt`);
+          else if (e.promptAdd.split(/\s+/).length > 30)
+            fail(`${w}:${t.id}`, `byFlag.${f}.promptAdd is over 30 words`);
+          for (const slot of Object.keys(e?.plannerHint || {}))
+            if (
+              ![...asList(t.task.planner), ...asList(t.task.organizer)].some((x) => x.id === slot)
+            )
+              fail(`${w}:${t.id}`, `byFlag.${f}.plannerHint slot "${slot}" does not exist`);
+        }
+  for (const t of asList(phases.flatMap((x) => asList(x.tasks))))
+    for (const f of Object.keys(t.task?.byFlag || {}))
+      if (!flags.includes(f)) fail(`${w}:${t.id}`, `byFlag.${f} is not a flag any decision sets`);
   if (!hasSynth) fail(w, "needs a synthesis question");
   if (!hasInfer) fail(w, "needs an inference question");
   if (!hasEvidence) fail(w, "needs an evidence task");
