@@ -390,6 +390,25 @@ export function dailyPlan(tutor, grade, now = Date.now()) {
   }));
 }
 
+// A short, grade-anchored sequence: check the selected skill, visit one relevant
+// foundation, then return to the original skill for coached, independent, and
+// contextual work. The plan is derived from the current session/device evidence;
+// it never creates a learner record of its own.
+export function missionPlan(tutor, grade, now = Date.now()) {
+  const target = recommendations(tutor, grade, now)[0]?.skill || getGrade(grade)?.skills?.[0];
+  if (!target) return [];
+  const foundation = prerequisites(target)[0] || target;
+  const targetKey = skillKey(target);
+  const foundationKey = skillKey(foundation);
+  return [
+    { key: targetKey, purpose: "Starting point", reason: "Try the grade-level idea first." },
+    { key: foundationKey, purpose: foundationKey === targetKey ? "Explore the idea" : "A useful foundation", reason: foundationKey === targetKey ? "Notice what you already know." : "A brief visit to a related prerequisite." },
+    { key: targetKey, purpose: "Build with support", reason: "Use a strategy or model, then solve." },
+    { key: targetKey, purpose: "Try independently", reason: "Return to the grade-level skill." },
+    { key: targetKey, purpose: "Transfer", reason: "Use the same idea with a new problem or context.", transfer: true },
+  ];
+}
+
 export function diagnosticPlan(grade) {
   return getGrade(grade).skills.map((skill) => ({ key: `${grade}:${skill.id}`, purpose: "Starting-point checkup" }));
 }

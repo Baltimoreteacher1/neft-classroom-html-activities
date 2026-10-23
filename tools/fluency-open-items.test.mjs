@@ -7,7 +7,9 @@ const { ALL_SKILLS, generateProblem, getSkill, opsOf, resolveOp, seededRandom } 
 );
 const { storyFor } = await import("../math/fluency-lab/story-problems.js");
 const { likelyMistake } = await import("../math/fluency-lab/mistake-notes.js");
-const { prerequisites } = await import("../math/fluency-lab/tutor-engine.js");
+const { emptyTutor, missionPlan, prerequisites } = await import(
+  "../math/fluency-lab/tutor-engine.js"
+);
 
 const sample = (skill, n = 400, seed = 7) => {
   const rng = seededRandom(seed);
@@ -20,6 +22,21 @@ const symbols = (items) =>
 assert.deepEqual([...symbols(sample(getSkill(3, "add-sub-1000")))].sort(), ["+", "−"]);
 assert.deepEqual(opsOf({ op: "muldiv" }), ["mul", "div"]);
 assert.deepEqual(opsOf({ op: "add" }), ["add"]);
+
+// A mission briefly visits one relevant foundation and returns to its grade-level target.
+const mission = missionPlan(emptyTutor(), 6, Date.UTC(2026, 9, 23));
+const missionTarget = getSkill(6, mission[0].key.split(":")[1]);
+const missionFoundation = prerequisites(missionTarget)[0];
+assert.equal(mission.length, 5);
+assert.equal(mission[0].key, mission[2].key);
+assert.equal(mission[2].key, mission[3].key);
+assert.equal(mission[3].key, mission[4].key);
+assert.equal(mission[0].key.split(":")[0], "6");
+assert.equal(mission[4].transfer, true);
+assert.equal(
+  mission[1].key,
+  missionFoundation ? `${missionFoundation.grade}:${missionFoundation.id}` : mission[0].key,
+);
 assert.equal(resolveOp({ op: "add" }, Math.random).op, "add");
 const resolved = new Set(
   Array.from({ length: 50 }, (_, i) => resolveOp({ op: "addsub" }, seededRandom(i)).op),

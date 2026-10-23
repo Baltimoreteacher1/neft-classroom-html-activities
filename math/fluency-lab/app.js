@@ -8,7 +8,7 @@ import {
   seededRandom,
   validateAnswer,
 } from "./problem-bank.js";
-import { adaptiveProblem, dailyPlan, diagnosticPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, prerequisites, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
+import { adaptiveProblem, dailyPlan, diagnosticPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, missionPlan, prerequisites, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
 import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visual-lab.js";
 import { transferPrompt } from "./lesson-content.js";
 import { handleModelInput, handleModelTap, interactivePicture, mathText, openFillRow, stepPhaseBadge, stepVisual, stepWaiting, stepsBlock, trailPicture } from "./trail-pictures.js";
@@ -660,9 +660,11 @@ function beginSession(mode, target, queue = null) {
             ? "Guided practice · 5"
             : mode === "daily"
               ? "Today's 10"
-              : mode === "mixed"
-                ? "Mixed review"
-                : "Practice 10";
+              : mode === "mission"
+                ? "5-step learning mission"
+                : mode === "mixed"
+                  ? "Mixed review"
+                  : "Practice 10";
   if (mode === "adaptive") els.sessionType.textContent = "Adaptive practice · 10";
   if (mode === "diagnostic") els.sessionType.textContent = `Starting-point checkup · ${getGrade(state.grade).skills.length}`;
   if (mode === "repair") els.sessionType.textContent = "Repair practice";
@@ -686,13 +688,16 @@ function nextProblem(restoredItem = null) {
   const skill = problemSkill();
   state.session.problemSkills.push(skill);
   const adapting = state.session.mode !== "diagnostic";
-  const level = adapting ? difficulty(state.tutor, skill) : 1;
+  const queueEntry = state.session.queue?.[state.session.answered];
+  const missionIndependent = state.session.mode === "mission" && ["Starting point", "Try independently", "Transfer"].includes(queueEntry?.purpose);
+  const level = adapting ? Math.max(missionIndependent ? 1 : 0, difficulty(state.tutor, skill)) : 1;
   if (restoredItem) state.item = restoredItem;
   else {
     for (let attempt = 0; attempt < 20; attempt++) {
       state.item = adaptiveProblem(skill, state.session.rng, level);
       // About one problem in four is a story version of the same numbers, never in the checkup.
-      if (state.session.mode !== "diagnostic" && level >= 1 && state.session.rng() < 0.25) state.item = storyFor(state.item, state.session.rng) || state.item;
+      if (queueEntry?.transfer) state.item = storyFor(state.item, state.session.rng) || state.item;
+      else if (state.session.mode !== "diagnostic" && level >= 1 && state.session.rng() < 0.25) state.item = storyFor(state.item, state.session.rng) || state.item;
       if (!state.recentQuestions.includes(state.item.question)) break;
     }
     state.recentQuestions = [...state.recentQuestions, state.item.question].slice(-8);
@@ -703,7 +708,8 @@ function nextProblem(restoredItem = null) {
   state.firstAnswerCorrect = null;
   state.hintBeforeFirst = false;
   if (els.languageSlot) els.languageSlot.innerHTML = "";
-  state.initialSupport = state.session.mode === "guided" || (adapting && level === 0 && !state.forceIndependentFirst) || (state.session.mode === "assignment" && state.assignment?.mode === "guided");
+  const missionSupport = state.session.mode === "mission" && queueEntry?.purpose === "Build with support";
+  state.initialSupport = state.session.mode === "guided" || missionSupport || (adapting && level === 0 && !state.forceIndependentFirst && !missionIndependent) || (state.session.mode === "assignment" && state.assignment?.mode === "guided");
   state.forceIndependentFirst = false;
   state.guidedStepsShown = state.session.mode === "guided" ? 1 : 0;
   els.feedback.hidden = true;
@@ -721,7 +727,6 @@ function nextProblem(restoredItem = null) {
   formatProblemArena(state.item);
   els.topic.textContent = `${skill.title} · Grade ${skill.grade}`;
   document.querySelector("#problem-language-support").innerHTML = state.session.mode === "diagnostic" ? spanishPeekHtml(state.item) : problemSupportHtml(skill, state.item);
-  const queueEntry = state.session.queue?.[state.session.answered];
   els.insight.textContent = state.session.mode === "diagnostic" ? "One sample per skill. Choose “I’m not sure yet” whenever you need to." : queueEntry?.reason ? `${queueEntry.purpose}. ${t("This skill was suggested because")}: ${displayRecommendationReason(queueEntry.reason)}.` : queueEntry?.purpose || (state.initialSupport ? "A smaller step with coaching. We’ll build back toward independent work." : adapting && level === 2 ? "Your recent answers were strong. Try this one independently, then explain a check." : adapting ? "Work at your pace. Help is here when you need it." : "");
   const activityEvidence = readInstructionalEvidence(instructionalEvidenceState).filter((entry) => entry.activity === tutorSkillKey(skill));
   const priorSupport = activityEvidence.some((entry) => entry.condition === "supported");
@@ -7422,13 +7427,18 @@ function openPlanned(mode, queue) {
   state.skill = null; state.mixedPool = queue.map((entry) => findSkill(entry.key)); state.mode = mode;
   showArea("workspace");
   els.workspaceGrade.textContent = `Grade ${state.grade}`;
-  els.workspaceTitle.textContent = mode === "daily" ? "Today's 10, chosen for you" : mode === "diagnostic" ? "Find my starting point" : mode === "assignment" ? state.assignment.label : "Turn a mistake into a strategy";
+  els.workspaceTitle.textContent = mode === "daily" ? "Today's 10, chosen for you" : mode === "mission" ? "A short learning mission" : mode === "diagnostic" ? "Find my starting point" : mode === "assignment" ? state.assignment.label : "Turn a mistake into a strategy";
   document.title = `${els.workspaceTitle.textContent} | Math Fluency Lab`;
-  els.workspaceStandard.textContent = mode === "diagnostic" ? `${getGrade(state.grade).skills.length} samples to help you choose your next step` : "Fresh problems from your selected skills";
+  els.workspaceStandard.textContent = mode === "diagnostic" ? `${getGrade(state.grade).skills.length} samples to help you choose your next step` : mode === "mission" ? "Start with your grade-level skill, visit a useful foundation, then return for a supported, independent, and transfer try." : "Fresh problems from your selected skills";
   els.masteryMeter.value = 0; els.masteryLabel.textContent = "Learning across skills";
-  els.modeTabs.innerHTML = `<button role="tab" aria-selected="true" aria-controls="drill-panel">${mode === 'diagnostic' ? 'Checkup' : mode === 'daily' ? "Today's 10" : mode === 'assignment' ? 'Class practice' : 'Repair practice'}</button>`;
+  els.modeTabs.innerHTML = `<button role="tab" aria-selected="true" aria-controls="drill-panel">${mode === 'diagnostic' ? 'Checkup' : mode === 'daily' ? "Today's 10" : mode === 'mission' ? '5-step mission' : mode === 'assignment' ? 'Class practice' : 'Repair practice'}</button>`;
   beginSession(mode, queue.length, queue); setUrl();
   els.workspace.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function openMission() {
+  const queue = missionPlan(state.tutor, state.grade);
+  if (queue.length) openPlanned("mission", queue);
 }
 
 function startRepair(keys) {
@@ -7646,6 +7656,7 @@ els.printButton.addEventListener("click", printPracticeSet);
 els.printButtonSecondary.addEventListener("click", printPracticeSet);
 els.backLibrary.addEventListener("click", renderLibrary);
 els.dailyButton.addEventListener("click", () => openMixed({ daily: true }));
+document.querySelector("#start-mission")?.addEventListener("click", openMission);
 els.mixedButton.addEventListener("click", () => openMixed());
 els.resetButton.addEventListener("click", () => {
   if (state.mode === "diagnostic") { openPlanned("diagnostic", diagnosticPlan(state.grade)); return; }
