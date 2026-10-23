@@ -58,21 +58,29 @@ function contrast(/** @type {number[]} */ x, /** @type {number[]} */ y) {
   const [hi, lo] = [L(x), L(y)].sort((p, q) => q - p);
   return (hi + 0.05) / (lo + 0.05);
 }
+/**
+ * v4 colour discipline. The first palettes pushed the accent to 92% saturation and the brand to as much as 75%, so a garden
+ * lesson read as lime and hot pink and a harbor lesson as maroon and sky blue. Brand saturation is now capped, the accent is a
+ * dusty 62% tone, and tints stay pale: a world is recognised by its hue, motif and type, not by shouting.
+ */
+const BRAND_SAT_MAX = 55;
+const SUN_SAT = 62;
 /** The lightness of the accent (--sun) that keeps the dark ink on a .btn-go at 4.5:1 or better, starting from the house 60%. */
 function sunLightness(/** @type {number} */ h, /** @type {number} */ s, /** @type {number} */ a) {
   const ink = rgbOf(h, s * 0.6, 15);
-  let l = 60;
-  while (l < 90 && contrast(rgbOf(a, 92, l), ink) < 4.6) l += 1;
+  let l = 58;
+  while (l < 90 && contrast(rgbOf(a, SUN_SAT, l), ink) < 4.6) l += 1;
   return l;
 }
 
 function day(/** @type {string} */ id, /** @type {any} */ w) {
-  const { hue: h, sat: s, accent: a } = w;
+  const { hue: h, accent: a } = w;
+  const s = Math.min(w.sat, BRAND_SAT_MAX);
   const r = w.radius;
   const sunL = sunLightness(h, s, a);
   return `body[data-world="${id}"] {
   --brand: ${hsl(h, s, 30)}; --brand-dark: ${hsl(h, s * 0.6, 15)}; --brand-tint: ${hsl(h, s * 0.55, 93)}; --brand-line: ${hsl(h, s * 0.35, 78)};
-  --sun: ${hsl(a, 92, sunL)}; --sun-deep: ${hsl(a, 85, 33)}; --sun-tint: ${hsl(a, 90, 92)}; --sun-ink: ${hsl(a, 75, 20)};
+  --sun: ${hsl(a, SUN_SAT, sunL)}; --sun-deep: ${hsl(a, 58, 33)}; --sun-tint: ${hsl(a, 55, 93)}; --sun-ink: ${hsl(a, 55, 20)};
   --on-brand: #FFFFFF; --on-sun: ${hsl(h, s * 0.6, 15)};
   --paper: ${hsl(h, 30, 96)}; --well: ${hsl(h, 25, 91)}; --surface: #FFFFFF; --surface-soft: ${hsl(h, 35, 97.5)};
   --border: ${hsl(h, 18, 84)}; --border-strong: ${hsl(h, 14, 47)};
@@ -86,18 +94,19 @@ body[data-world="${id}"] .app-header { background-image: var(--motif); backgroun
 }
 
 function night(/** @type {string} */ id, /** @type {any} */ w) {
-  const { hue: h, sat: s, accent: a } = w;
+  const { hue: h, accent: a } = w;
+  const s = Math.min(w.sat, BRAND_SAT_MAX);
   return `body[data-world="${id}"][data-theme="dark"] {
-  --brand: ${hsl(h, Math.min(80, s + 10), 72)}; --brand-dark: ${hsl(h, s * 0.6, 10)}; --brand-tint: ${hsl(h, s * 0.5, 21)}; --brand-line: ${hsl(h, s * 0.4, 36)};
-  --sun: ${hsl(a, 92, 62)}; --sun-deep: ${hsl(a, 88, 68)}; --sun-tint: ${hsl(a, 45, 17)}; --sun-ink: ${hsl(a, 90, 82)};
+  --brand: ${hsl(h, Math.min(58, s + 4), 74)}; --brand-dark: ${hsl(h, s * 0.6, 10)}; --brand-tint: ${hsl(h, s * 0.5, 21)}; --brand-line: ${hsl(h, s * 0.4, 36)};
+  --sun: ${hsl(a, 58, 66)}; --sun-deep: ${hsl(a, 56, 72)}; --sun-tint: ${hsl(a, 28, 17)}; --sun-ink: ${hsl(a, 62, 84)};
   --paper: ${hsl(h, 30, 7)}; --well: ${hsl(h, 28, 10)}; --surface: ${hsl(h, 28, 13)}; --surface-soft: ${hsl(h, 26, 17)};
   --border: ${hsl(h, 22, 27)}; --border-strong: ${hsl(h, 16, 58)};
   --ink: ${hsl(h, 6, 93)}; --ink-muted: ${hsl(h, 5, 80)}; --ink-light: ${hsl(h, 4, 70)};
   --on-brand: ${hsl(h, s * 0.6, 10)}; --on-sun: ${hsl(h, s * 0.6, 10)}; --on-ok: hsl(152, 60%, 8%); --on-bad: hsl(5, 60%, 8%);
   --ok-ink: hsl(148, 70%, 88%); --bad-ink: hsl(5, 100%, 90%); --warn-ink: hsl(42, 100%, 82%);
-  --ok: hsl(152, 55%, 55%); --ok-tint: hsl(152, 38%, 15%); --ok-line: hsl(152, 40%, 34%);
-  --bad: hsl(5, 80%, 66%); --bad-tint: hsl(5, 40%, 17%); --bad-line: hsl(5, 45%, 40%);
-  --warn: hsl(42, 95%, 72%); --warn-tint: hsl(42, 45%, 15%); --warn-line: hsl(42, 60%, 38%);
+  --ok: hsl(152, 42%, 58%); --ok-tint: hsl(152, 28%, 15%); --ok-line: hsl(152, 30%, 34%);
+  --bad: hsl(6, 62%, 68%); --bad-tint: hsl(6, 30%, 17%); --bad-line: hsl(6, 36%, 40%);
+  --warn: hsl(42, 70%, 70%); --warn-tint: hsl(42, 30%, 15%); --warn-line: hsl(42, 42%, 38%);
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.35);
   color-scheme: dark;
 }`;

@@ -97,20 +97,26 @@
           const wrong = it.cards
             .map((/** @type {any} */ c, /** @type {number} */ i) => (placed[i] === c.b ? -1 : i))
             .filter((/** @type {number} */ i) => i >= 0);
-          for (let i = 0; i < it.cards.length; i++)
-            if (!wrong.includes(i) && !locked.includes(i)) locked.push(i);
-          st.ticks[it.id] = locked;
           if (!wrong.length) {
             draw();
             return ctx.solve(`<strong>Sorted.</strong> ${U().tx(it.x)}${U().txEs(it.xEs)}`);
           }
-          for (const i of wrong) delete placed[i];
-          st.sorts[it.id] = placed;
+          // the first miss only counts: it does not say which cards are right (that would be a tap-and-check game)
+          const counted = ctx.misses() < 1;
+          if (!counted) {
+            for (let i = 0; i < it.cards.length; i++)
+              if (!wrong.includes(i) && !locked.includes(i)) locked.push(i);
+            st.ticks[it.id] = locked;
+            for (const i of wrong) delete placed[i];
+            st.sorts[it.id] = placed;
+          }
           draw();
           ctx.miss({
             tag: "sort-misplaced",
             kind: "warn",
-            say: `${wrong.length} card${wrong.length > 1 ? "s were" : " was"} in the wrong group and went back. Look at what the cards in each group have in common.`,
+            say: counted
+              ? `${it.cards.length - wrong.length} of ${it.cards.length} cards are in the right group. Look at what the cards in each group have in common, then check again.`
+              : `${wrong.length} card${wrong.length > 1 ? "s were" : " was"} in the wrong group and went back. Look at what the cards in each group have in common.`,
             noLead: true,
           });
         });
@@ -206,20 +212,26 @@
           const wrong = Object.keys(made)
             .map(Number)
             .filter((/** @type {number} */ l) => made[l] !== l);
-          for (const l of Object.keys(made).map(Number))
-            if (!wrong.includes(l) && !locked.includes(l)) locked.push(l);
-          st.ticks[it.id] = locked;
           if (!wrong.length) {
             draw();
             return ctx.solve(`<strong>All matched.</strong> ${U().tx(it.x)}${U().txEs(it.xEs)}`);
           }
-          for (const l of wrong) delete made[l];
-          st.matches[it.id] = made;
+          // the first miss only counts: it does not say which pairs are right
+          const counted = ctx.misses() < 1;
+          if (!counted) {
+            for (const l of Object.keys(made).map(Number))
+              if (!wrong.includes(l) && !locked.includes(l)) locked.push(l);
+            st.ticks[it.id] = locked;
+            for (const l of wrong) delete made[l];
+            st.matches[it.id] = made;
+          }
           draw();
           ctx.miss({
             tag: "match-wrong-pair",
             kind: "warn",
-            say: `${wrong.length} pair${wrong.length > 1 ? "s do" : " does"} not belong together and ${wrong.length > 1 ? "were" : "was"} unmatched. Keep the good pairs and try the others again.`,
+            say: counted
+              ? `${n - wrong.length} of ${n} pairs belong together. Look again at how each pair is connected, then check again.`
+              : `${wrong.length} pair${wrong.length > 1 ? "s do" : " does"} not belong together and ${wrong.length > 1 ? "were" : "was"} unmatched. Keep the good pairs and try the others again.`,
             noLead: true,
           });
         });
@@ -322,11 +334,17 @@
         finish(ctx.state.acts[it.id] ?? def.solution(it));
         return ctx.showSolved(explain());
       }
+      /** @type {((v: any) => void) | null} */
+      let onVerdict = null;
       def.mount(host, it, {
         restore: ctx.state.acts[it.id] ?? null,
         solved: false,
         es: () => ctx.es(),
         say: ctx.say,
+        // a widget that draws per-part marks waits for this: level 1 gives only "right of of", marks come after the second miss
+        onVerdict(/** @type {(v: any) => void} */ fn) {
+          onVerdict = fn;
+        },
         hint: () => ctx.openHint(),
         change(/** @type {any} */ s) {
           ctx.state.acts[it.id] = s;
@@ -337,12 +355,20 @@
           if (g.ok) {
             finish(s);
             ctx.solve(explain());
-          } else
+          } else {
+            const level = ctx.misses() >= 1 ? 2 : 1;
             ctx.miss({
               tag: g.tag || `${it.kind}-miss`,
               say: g.say,
               sayEs: g.sayEs,
             });
+            onVerdict?.({
+              level,
+              right: g.right ?? null,
+              of: g.of ?? null,
+              marks: level >= 2 ? g.marks || null : null,
+            });
+          }
         },
       });
     },

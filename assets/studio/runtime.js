@@ -23,10 +23,10 @@
   const SECTIONS = /** @type {any[]} */ (data.sections);
   const TABS = [1, 2, 3, 4, 5];
   const { esc, es } = RT.util;
+  const AT = () => /** @type {any} */ (W.StudioAttempts);
   const state = W.StudioStore.load(KEY);
-  /** wrong tries this session, per item id (a fresh page load starts a fresh count) */
-  /** @type {Record<string, number>} */
-  const tries = {};
+  /** wrong tries per item id, SAVED with the lesson: reloading the page must not give a guesser a clean slate */
+  const A = () => /** @type {Record<string, number>} */ (state.att || (state.att = {}));
   /** @type {Set<string>} */
   const counted = new Set();
 
@@ -190,6 +190,96 @@
     fb.append(b);
   }
 
+  /* ---- a pause with no clock: after a miss the student picks one thing to do before the next try ------------ */
+  const HOLD_ALLOW =
+    ".hold-chips,[data-hint],[data-tutor],[data-conf],.tool-btn,.next-btn,[data-example],[data-read],[data-reroll],.repair-btn,[data-prove],.item-workspace";
+  const holdLive = (/** @type {HTMLElement} */ host) =>
+    host.dataset.hold === "1" && !!host.querySelector(".hold-chips");
+  function releaseHold(/** @type {HTMLElement} */ host, /** @type {string} */ reason) {
+    delete host.dataset.hold;
+    host.querySelector(".hold-chips")?.remove();
+    const focusOn = (/** @type {string} */ sel) => {
+      const n = /** @type {HTMLElement|null} */ (host.querySelector(sel));
+      if (!n) return false;
+      if (!n.hasAttribute("tabindex") && !/^(BUTTON|INPUT|SELECT|TEXTAREA|A)$/.test(n.tagName))
+        n.setAttribute("tabindex", "-1");
+      n.focus({ preventScroll: false });
+      return true;
+    };
+    if (reason === "hint")
+      /** @type {HTMLElement|null} */ (host.querySelector("[data-hint]"))?.click();
+    else if (reason === "model") focusOn(".act-host, .lab-host, svg, .viz");
+    else if (reason === "check") focusOn(".item-workspace button, .item-workspace textarea");
+    else focusOn(".item-q");
+    say("Try again when you are ready.");
+  }
+  function installHold(/** @type {HTMLElement} */ host) {
+    const h = /** @type {any} */ (host);
+    if (h._hold) return;
+    h._hold = true;
+    host.addEventListener(
+      "click",
+      (e) => {
+        const t = e.target;
+        if (!(t instanceof Element)) return;
+        const chip = /** @type {HTMLElement|null} */ (t.closest("[data-hold]"));
+        if (chip) return releaseHold(host, chip.dataset.hold || "reread");
+        if (t.closest("[data-hint]")) {
+          delete host.dataset.hold;
+          host.querySelector(".hold-chips")?.remove();
+          return;
+        }
+        if (!holdLive(host)) return void delete host.dataset.hold;
+        if (t.closest(HOLD_ALLOW)) return;
+        if (
+          t.closest(
+            "button,[role=button],[data-mc],[data-err],input[type=checkbox],input[type=radio]",
+          )
+        ) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+          say("Pick one thing to do before you try again.");
+          /** @type {HTMLElement|null} */ (host.querySelector(".hold-chip"))?.focus();
+        }
+      },
+      true,
+    );
+    host.addEventListener(
+      "keydown",
+      (e) => {
+        if (e.key !== "Enter" || !holdLive(host)) return;
+        const t = e.target;
+        if (!(t instanceof HTMLInputElement) || t.type === "range") return;
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        say("Pick one thing to do before you try again.");
+        /** @type {HTMLElement|null} */ (host.querySelector(".hold-chip"))?.focus();
+      },
+      true,
+    );
+  }
+  function holdFor(/** @type {any} */ ctx, /** @type {number} */ n) {
+    const host = /** @type {HTMLElement} */ (ctx.host);
+    const box = $(".item-fb", host);
+    if (!box) return;
+    const look = n >= AT().LOOK_AT;
+    if (look) ctx.openHint();
+    const chips = AT()
+      .HOLD_REASONS.map(
+        (/** @type {any} */ r) =>
+          `<button type="button" class="btn btn-sm hold-chip" data-hold="${r.id}">${esc(r.en)}${es(r.es)}</button>`,
+      )
+      .join("");
+    const note = look
+      ? `<p class="item-sub look-closer"><strong>Look closer.</strong>${es("Mira con más cuidado.")} Read the next hint and study the model. A fresh problem comes next, so you can show you have it.${es("Lee la siguiente pista y estudia el modelo. Sigue un problema nuevo para que muestres que lo dominas.")}</p>`
+      : "";
+    box.insertAdjacentHTML(
+      "beforeend",
+      `${note}<div class="hold-chips" role="group" aria-label="Before you try again"><p class="item-sub hold-q">Before you try again, pick one thing to do:${es("Antes de intentar otra vez, elige una cosa por hacer:")}</p>${chips}</div>`,
+    );
+    host.dataset.hold = "1";
+  }
+
   /* ---- the ctx every item kind receives -------------------------------------------------------- */
   function makeCtx(/** @type {any} */ o) {
     const { tab, it, host } = o;
@@ -212,16 +302,23 @@
       save,
       say,
       fb,
-      misses: () => tries[it.id] || 0,
+      misses: () => A()[it.id] || 0,
       hintBlock: () => hintHtml(it),
       openHint: () => /** @type {HTMLElement|null} */ ($("[data-hint]", host))?.click(),
       showSolved(/** @type {string} */ html) {
         fb("ok", html);
-        if (!redeem) nextButton(tab, host);
+        if (redeem) return;
+        // an answer that took two or more misses has not been shown yet: the next problem waits for a fresh one
+        if (state.owed?.[it.id] && W.StudioRepair?.prove)
+          W.StudioRepair.prove(tab, state.idx[tab], it.id, host);
+        else nextButton(tab, host);
       },
       solve(/** @type {string} */ html) {
         const rep = !redeem && !!solvedMap(tab)[it.id] && !isSolved(tab, it);
-        const first = !tries[it.id];
+        const first = !A()[it.id];
+        const tier = AT().tierOf(A()[it.id] || 0, state.hints[it.id] || 0);
+        delete host.dataset.hold;
+        $(".hold-chips", host)?.remove();
         if (!counted.has(`${it.id}@${it.seed}`)) {
           counted.add(`${it.id}@${it.seed}`);
           state.stats.tries++;
@@ -244,7 +341,13 @@
             solvedMap(tab)[it.id] = true;
             if (it.reroll) state.solvedSeed[it.id] = it.seed;
           }
-          nextButton(tab, host);
+          if (tier === "guessed" && W.StudioRepair?.prove) {
+            state.owed[it.id] = tab;
+            W.StudioRepair.prove(tab, state.idx[tab], it.id, host);
+          } else {
+            delete state.owed[it.id];
+            nextButton(tab, host);
+          }
         }
         W.StudioBus.emit("answer", {
           lesson: data.lesson,
@@ -254,7 +357,8 @@
           gen: it.gen?.id || null,
           genLevel: it.gen?.level || null,
           ok: true,
-          tries: (tries[it.id] || 0) + 1,
+          tier,
+          tries: (A()[it.id] || 0) + 1,
           hints: state.hints[it.id] || 0,
           tag: null,
           skill: it.skill || null,
@@ -275,11 +379,12 @@
           dots(tab);
           progress();
         }
+        if (redeem) delete A()[it.id];
         hud();
         save();
       },
       miss(/** @type {any} */ m) {
-        tries[it.id] = (tries[it.id] || 0) + 1;
+        A()[it.id] = (A()[it.id] || 0) + 1;
         if (!counted.has(`${it.id}@${it.seed}`)) {
           counted.add(`${it.id}@${it.seed}`);
           state.stats.tries++;
@@ -296,7 +401,7 @@
           "Look again at what the question asks, then try another choice.";
         const textEs = m.sayEs || (m.say ? "" : trap?.fixEs || m.genericEs) || "";
         const nudge =
-          tries[it.id] >= 2 && (it.h || []).length > (state.hints[it.id] || 0)
+          A()[it.id] >= 2 && (it.h || []).length > (state.hints[it.id] || 0)
             ? `<p class="item-sub">Stuck? Open a hint below.${es("¿Atascado? Abre una pista abajo.")}</p>`
             : "";
         fb(
@@ -308,6 +413,7 @@
           ),
         );
         say("Not yet");
+        holdFor(ctx, A()[it.id]);
         W.StudioBus.emit("answer", {
           lesson: data.lesson,
           mode: data.mode,
@@ -316,7 +422,7 @@
           gen: it.gen?.id || null,
           genLevel: it.gen?.level || null,
           ok: false,
-          tries: tries[it.id],
+          tries: A()[it.id],
           hints: state.hints[it.id] || 0,
           tag: m.tag || null,
           say: text,
@@ -354,6 +460,7 @@
       o.host.textContent = "This kind of problem is not available.";
       return;
     }
+    installHold(o.host);
     const ctx = makeCtx(o);
     try {
       kind.mount(ctx);
@@ -371,12 +478,16 @@
     if (!wrap) return;
     wrap.innerHTML = "";
     SECTIONS[tab - 1].items.forEach((/** @type {any} */ _s, /** @type {number} */ i) => {
-      const done = !!solvedMap(tab)[idOf(tab, i)];
+      const owed = !!state.owed?.[idOf(tab, i)];
+      const done = !!solvedMap(tab)[idOf(tab, i)] && !owed;
       const b = document.createElement("button");
       b.type = "button";
-      b.className = `step-dot ${i === state.idx[tab] ? "active" : ""} ${done ? "solved" : ""}`;
-      b.textContent = done ? `${i + 1} ✓` : String(i + 1);
-      b.setAttribute("aria-label", `Problem ${i + 1}${done ? " completed" : ""}`);
+      b.className = `step-dot ${i === state.idx[tab] ? "active" : ""} ${done ? "solved" : ""} ${owed ? "owed" : ""}`;
+      b.textContent = done ? `${i + 1} ✓` : owed ? `${i + 1} ↻` : String(i + 1);
+      b.setAttribute(
+        "aria-label",
+        `Problem ${i + 1}${done ? " completed" : owed ? " needs a fresh problem to prove it" : ""}`,
+      );
       if (i === state.idx[tab]) b.setAttribute("aria-current", "step");
       b.addEventListener("click", () => {
         state.idx[tab] = i;
@@ -470,7 +581,8 @@
       "calib",
     ])
       delete state[k][id];
-    delete tries[id];
+    delete A()[id];
+    delete state.owed?.[id];
   }
 
   /** The kinds a student works out on paper; the hands-on kinds and the labs are their own work surface. */
@@ -519,7 +631,10 @@
         const isPool = SECTIONS[tab - 1].items[i].k === "pool";
         const cur = state.seeds[id] ?? (isPool ? 0 : baseSeed(id));
         state.seeds[id] = isPool ? cur + 1 : cur + 1 + Math.floor(Math.random() * 997);
+        // new numbers must not be a way to reset the count: an unsolved item keeps its misses
+        const kept = solvedMap(tab)[id] ? 0 : A()[id] || 0;
         wipeItem(id);
+        if (kept) A()[id] = kept;
         W.NTWorkspace?.forget(id);
         save();
         render(tab);
@@ -629,7 +744,9 @@
   }
 
   function progress() {
-    const counts = TABS.map((t) => Object.keys(solvedMap(t)).length);
+    const counts = TABS.map(
+      (t) => Object.keys(solvedMap(t)).filter((k) => !state.owed?.[k]).length,
+    );
     const done = counts.reduce((a, b) => a + b, 0);
     const pill = $("#header-progress-count");
     if (pill) pill.textContent = `${done} / ${total}`;
@@ -679,7 +796,6 @@
     const keepEs = state.showEs;
     for (const k of Object.keys(state)) delete state[k];
     Object.assign(state, W.StudioStore.fresh(), { showEs: keepEs });
-    for (const k of Object.keys(tries)) delete tries[k];
     counted.clear();
     W.U4Studio?.reset();
     W.NTWorkspace?.forget();
@@ -705,6 +821,7 @@
     progress,
     hud,
     wipeItem,
+    nextButton,
     sections: SECTIONS,
     tabs: TABS,
   };
@@ -713,6 +830,11 @@
     save,
     totals: Object.fromEntries(TABS.map((t) => [t, SECTIONS[t - 1].items.length])),
     need: Object.fromEntries(TABS.map((t) => [t, SECTIONS[t - 1].items.length])),
+    // a star is for an answer that stood on its own: an owed (guessed) item earns it after its fresh problem
+    solvedMap: (/** @type {number} */ t) =>
+      Object.fromEntries(
+        Object.entries(state[`solved${t}`] || {}).filter(([k]) => !state.owed?.[k]),
+      ),
     goToTab: selectTab,
     glyphs: data.glyphs || ["★", "✓", "+", "="],
   });

@@ -208,6 +208,17 @@
               sayEs: (it.fEs || [])[i],
               wrongText: it.c[i],
             });
+            // the order changes after every miss, so remembering a position finds nothing
+            const stack = ctx.host.querySelector(".choice-stack");
+            const btns = /** @type {HTMLElement[]} */ ([
+              ...(stack?.querySelectorAll("[data-mc]") || []),
+            ]);
+            if (stack && btns.length > 2) {
+              const seed = ctx.misses() * 7919 + String(it.id).length * 31;
+              for (const k of W.StudioAttempts.shuffleOrder(btns.length, seed))
+                stack.append(btns[k]);
+            }
+            /** @type {HTMLElement|null} */ (ctx.host.querySelector(".hold-chip"))?.focus();
           }
         });
     },

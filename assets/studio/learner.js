@@ -64,9 +64,18 @@
 
   /** The seal an evidence record has earned right now (0..3), before stickiness. */
   function earned(/** @type {any} */ r) {
-    if (r.seen >= 8 && r.ema >= 0.85 && r.level >= 3 && r.streak >= 3) return 3;
-    if (r.seen >= 5 && r.ema >= 0.7 && r.level >= 2) return 2;
-    if (r.seen >= 3) return 1;
+    // v4: a seal needs answers that stood on their own (clean), and Gold needs them on two different days
+    if (
+      r.seen >= 8 &&
+      r.ema >= 0.85 &&
+      r.level >= 3 &&
+      r.streak >= 3 &&
+      (r.clean || 0) >= 5 &&
+      (r.days || 0) >= 2
+    )
+      return 3;
+    if (r.seen >= 5 && r.ema >= 0.7 && r.level >= 2 && (r.clean || 0) >= 3) return 2;
+    if (r.seen >= 3 && (r.clean || 0) >= 2) return 1;
     return 0;
   }
   const sealOf = (/** @type {any} */ r) => (r ? r.seal || 0 : 0);
@@ -99,6 +108,11 @@
         en: `${left(seal === 1 ? 5 : 8)} more ${left(seal === 1 ? 5 : 8) === 1 ? "answer" : "answers"} toward ${name}.`,
         es: `${left(seal === 1 ? 5 : 8) === 1 ? "Una respuesta más" : `${left(seal === 1 ? 5 : 8)} respuestas más`} hacia el sello de ${nameEs}.`,
       };
+    if (seal === 2 && r && (r.days || 0) < 2)
+      return {
+        en: `Come back on another day and answer a few with no hint to earn ${name}.`,
+        es: `Vuelve otro día y responde unas sin pista para ganar el sello de ${nameEs}.`,
+      };
     return {
       en: `A few more answers with no hint will earn ${name}.`,
       es: `Unas respuestas más sin pista te darán el sello de ${nameEs}.`,
@@ -120,6 +134,8 @@
       last: "",
       seal: 0,
       repaired: 0,
+      days: 0,
+      dayLast: "",
       traps: {},
     });
   }
@@ -208,10 +224,23 @@
       save();
       return { key, rose: 0 };
     }
-    const clean = e.tries === 1 && !e.hints;
+    const tier = e.tier || (e.tries === 1 && !e.hints ? "clean" : "assisted");
+    if (tier === "guessed") {
+      // found only after two or more misses: no evidence, and the streak ends
+      r.helped += 1;
+      r.streak = 0;
+      r.ema = r.ema * (1 - EMA_WEIGHT);
+      save();
+      return { key, rose: 0 };
+    }
+    const clean = tier === "clean";
     r.seen += 1;
     r.last = today();
     if (clean) {
+      if (r.dayLast !== today()) {
+        r.days = (r.days || 0) + 1;
+        r.dayLast = today();
+      }
       r.clean += 1;
       r.streak += 1;
       r.best = Math.max(r.best, r.streak);

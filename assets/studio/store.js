@@ -67,6 +67,10 @@
     calib: {},
     misses: {},
     missLog: [],
+    att: {},
+    owed: {},
+    flag: {},
+    proof: {},
     rubric: {},
     stats: { tries: 0, first: 0, streak: 0, best: 0, reps: 0, hints: 0 },
   });

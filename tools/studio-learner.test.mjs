@@ -7,7 +7,15 @@ import vm from "node:vm";
 function load(stored) {
   const store = new Map(stored === undefined ? [] : [["neft_studio_learner_v1", stored]]);
   const emitted = [];
+  let day = 1;
+  const RealDate = Date;
   const ctx = {
+    // a Date whose "today" the test moves, so seals that need two different days can be exercised
+    Date: class extends RealDate {
+      constructor(...a) {
+        super(...(a.length ? a : [Date.UTC(2026, 9, day, 12)]));
+      }
+    },
     localStorage: {
       getItem: (k) => (store.has(k) ? store.get(k) : null),
       setItem: (k, v) => store.set(k, String(v)),
@@ -17,7 +25,7 @@ function load(stored) {
   ctx.window = ctx;
   vm.createContext(ctx);
   vm.runInContext(readFileSync("assets/studio/learner.js", "utf8"), ctx);
-  return { L: ctx.StudioLearner, store, emitted };
+  return { L: ctx.StudioLearner, store, emitted, setDay: (n) => (day = n) };
 }
 const answer = (o = {}) => ({
   lesson: "6-3",
@@ -52,16 +60,22 @@ const answer = (o = {}) => ({
 
 // seals: Bronze at 3 seen, Silver at 5 with ema >= 0.7 and a clean answer at level 2, Gold at 8 with ema >= 0.85, level 3, streak 3
 {
-  const { L, emitted } = load();
+  const { L, emitted, setDay } = load();
   const seals = [];
   for (let i = 0; i < 12; i++) {
+    if (i === 8) setDay(2);
     const r = L.record(answer({ genLevel: i < 5 ? 2 : 3 }));
     seals.push(L.sealOf(L.get("gen:pow-eval")));
     if (r.rose) assert.ok(emitted.at(-1)[0] === "seal" && emitted.at(-1)[1].seal === r.rose);
   }
   assert.deepEqual(seals.slice(0, 3), [0, 0, 1], "Bronze on the third answer");
   assert.equal(seals[4], 2, "Silver on the fifth clean answer");
-  assert.equal(seals[11], 3, "Gold after sustained clean work at level 3");
+  assert.equal(
+    seals[7],
+    2,
+    "Gold is not earned in one sitting: eight clean answers on one day stay Silver",
+  );
+  assert.equal(seals[11], 3, "Gold after sustained clean work at level 3 across two days");
   assert.deepEqual(
     JSON.parse(JSON.stringify(emitted.map((e) => e[1].seal))),
     [1, 2, 3],
@@ -76,15 +90,41 @@ const answer = (o = {}) => ({
   const r = L.get("gen:pow-eval");
   assert.equal(r.helped, 10);
   assert.equal(r.clean, 0);
-  assert.equal(L.sealOf(r), 1, "ten helped answers earn Bronze and stop");
+  assert.equal(
+    L.sealOf(r),
+    0,
+    "ten helped answers earn no seal at all: a seal needs answers that stood on their own",
+  );
+  for (let i = 0; i < 2; i++) L.record(answer());
+  assert.equal(
+    L.sealOf(L.get("gen:pow-eval")),
+    1,
+    "two clean answers on top of the help earn Bronze",
+  );
   for (let i = 0; i < 4; i++) L.record(answer({ hints: 1 }));
   assert.equal(L.sealOf(L.get("gen:pow-eval")), 1, "hints count as help");
 }
 
-// sticky: a run of misses and helped answers never takes a seal back
+// v4: an answer found only after two or more misses ("guessed") is no evidence and ends the streak
 {
   const { L } = load();
-  for (let i = 0; i < 12; i++) L.record(answer({ genLevel: 3 }));
+  for (let i = 0; i < 6; i++) L.record(answer({ tier: "guessed", tries: 3 }));
+  const r = L.get("gen:pow-eval");
+  assert.equal(r.seen, 0, "a guessed answer is not counted as seen");
+  assert.equal(L.sealOf(r), 0, "guessing earns no seal, however often it succeeds");
+  for (let i = 0; i < 3; i++) L.record(answer());
+  assert.equal(L.sealOf(L.get("gen:pow-eval")), 1);
+  L.record(answer({ tier: "guessed", tries: 3 }));
+  assert.equal(L.get("gen:pow-eval").streak, 0, "a guessed answer ends the clean streak");
+}
+
+// sticky: a run of misses and helped answers never takes a seal back
+{
+  const { L, setDay } = load();
+  for (let i = 0; i < 12; i++) {
+    if (i === 8) setDay(2);
+    L.record(answer({ genLevel: 3 }));
+  }
   assert.equal(L.sealOf(L.get("gen:pow-eval")), 3);
   for (let i = 0; i < 20; i++) L.record(answer({ tries: 3, hints: 2 }));
   for (let i = 0; i < 5; i++) L.record(answer({ ok: false, tag: "exponent-as-factor" }));

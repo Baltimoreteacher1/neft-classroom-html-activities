@@ -77,6 +77,7 @@ function assetPlan(/** @type {Map<string, string>} */ built) {
   const runtime = [
     "store",
     "typeset",
+    "attempts",
     "kinds-basic",
     "kinds-hands",
     "kinds-lab",

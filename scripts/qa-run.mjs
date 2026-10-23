@@ -109,6 +109,7 @@ const GATE = [
   "validate:homework",
   "validate:practice",
   "validate:lesson-boot",
+  "validate:studio-guess-browser",
   "audit",
   "audit:curriculum",
   "audit:homework",
@@ -173,6 +174,7 @@ const EXCLUSIVE = new Set([
   "validate:family-experience-browser",
   "validate:studio-enhancements-browser",
   "validate:studio-lab-browser",
+  "validate:studio-guess-browser",
   "validate:math-workbench-browser",
   "smoke:injection",
   "validate:visibility",
@@ -309,12 +311,13 @@ const COVERAGE = [
   // hub links are written by scripts/generate-practice-studios.mjs from the lesson configs; the test
   // proves they are current and that every answer is the lesson's own.
   [
-    /^(assets\/workspace\/|scripts\/lib\/family-workspace\.mjs$|tools\/family-workspace\.test\.mjs$|docs\/specs\/problem-workspace\.md$|math\/practice-studio\/|assets\/studio\/|assets\/studio-(gen|act)\/|assets\/studio-(viz[\w-]*\.js|v2\.css|worlds\.css|comfort\.(js|css))$|data\/practice-studio(-u4)?\/|scripts\/(generate-practice-studios|inject-u4-lab-bench)\.mjs$|scripts\/lib\/practice-studio-[\w-]+\.mjs$|tools\/(practice-studios|studio-[\w-]+)\.test\.mjs$|tools\/validate-practice-studio-data\.mjs$|tools\/verify-studio-(enhancements|lab)-browser\.mjs$|tools\/lib\/studio-vm\.mjs$)/,
+    /^(assets\/workspace\/|scripts\/lib\/family-workspace\.mjs$|tools\/family-workspace\.test\.mjs$|docs\/specs\/problem-workspace\.md$|math\/practice-studio\/|assets\/studio\/|assets\/studio-(gen|act)\/|assets\/studio-(viz[\w-]*\.js|v2\.css|worlds\.css|comfort\.(js|css))$|data\/practice-studio(-u4)?\/|scripts\/(generate-practice-studios|inject-u4-lab-bench)\.mjs$|scripts\/lib\/practice-studio-[\w-]+\.mjs$|tools\/(practice-studios|studio-[\w-]+)\.test\.mjs$|tools\/validate-practice-studio-data\.mjs$|tools\/verify-studio-(enhancements|lab|guess|layout)-browser\.mjs$|tools\/lib\/studio-vm\.mjs$)/,
     [
       "test",
       "validate:practice-studio-data",
       "validate:studio-enhancements-browser",
       "validate:studio-lab-browser",
+      "validate:studio-guess-browser",
       "validate:save-resume",
       "validate:js-syntax",
       "validate:css-integrity",

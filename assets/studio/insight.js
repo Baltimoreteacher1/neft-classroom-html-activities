@@ -293,7 +293,7 @@
     body.querySelector("[data-handoff]")?.addEventListener("click", () => {
       if (
         !window.confirm(
-          "Clear everything this page saved on this computer (stars, solved problems, notes)? Copy your results first if you want to keep a note.",
+          "Clear everything saved on this computer for this studio: stars, solved problems, notes, seals, your Trap Book and your Daily Boost? Copy your results first if you want to keep a note.",
         )
       )
         return;
@@ -303,6 +303,11 @@
         for (const k of Object.keys(localStorage))
           if (k === `ewl_u${String(rt.api.data.lesson).replace("-", "_l")}_v2`)
             localStorage.removeItem(k);
+        // the next student must not inherit this one's seals, Trap Book, Daily Boost schedule or lesson stamps
+        for (const k of ["neft_studio_learner_v1", "ewl_boost_v1", "neft_studio_passport_v1"])
+          localStorage.removeItem(k);
+        for (const k of Object.keys(localStorage))
+          if (/^neft_studio_.+_v2(_p1)?$/.test(k)) localStorage.removeItem(k);
       } catch (_e) {
         /* storage blocked: nothing to clear */
       }

@@ -444,7 +444,9 @@ try {
         if (it.k === "mc") {
           const wrong = it.a === 0 ? 1 : 0;
           await page.locator(`${stage} .choice-btn:visible`).nth(wrong).click();
-          await page.locator(`${stage} .choice-btn:visible`).nth(it.a).click();
+          const hold = page.locator(`${stage} .hold-chip`).first();
+          if (await hold.count()) await hold.click();
+          await page.locator(`${stage} [data-mc="${it.a}"]:visible`).click();
         } else {
           const box = page.locator(`${stage} input:visible`).first();
           await box.fill("999991");
@@ -452,6 +454,8 @@ try {
             .locator(`${stage} .btn-go:visible, ${stage} button:visible:has-text("Check")`)
             .first()
             .click();
+          const hold = page.locator(`${stage} .hold-chip`).first();
+          if (await hold.count()) await hold.click();
           await box.fill(String(it.a));
           await page
             .locator(`${stage} .btn-go:visible, ${stage} button:visible:has-text("Check")`)
@@ -874,7 +878,9 @@ try {
           `${url}: the wrong move shows its own help`,
         );
         assert.ok(!help.includes(at.c[at.a]), `${url}: the help never prints the best move`);
-        await page.locator(`${stage} .choice-btn:visible`).nth(at.a).click();
+        const hold = page.locator(`${stage} .hold-chip`).first();
+        if (await hold.count()) await hold.click();
+        await page.locator(`${stage} [data-mc="${at.a}"]:visible`).click();
         await page.locator(`${stage} .choice-btn.correct`).waitFor();
         assert.ok(
           await page.evaluate(
