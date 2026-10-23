@@ -351,6 +351,23 @@ for (const background of ["blank", "lined", "numberline", "coordinate"]) {
   );
   assert.equal($(`[data-scratchpad-bg="${background}"]`).getAttribute("aria-pressed"), "true");
 }
+click('[data-view="library"]');
+click("#lang-toggle");
+fill("#quick-skill-select", "4:multiply-2digit");
+$("#quick-skill-select").dispatchEvent(new win.Event("change", { bubbles: true }));
+click('[data-mode="visual"]');
+assert.match($("#visual-panel").textContent, /Compara estrategias para 48 × 25/);
+assert.equal(win.document.querySelectorAll("#visual-panel [data-strategy-choice]").length, 3);
+assert.match($("#visual-panel [data-visual-form]").textContent, /Si 25 es un cuarto de 100/);
+click('#visual-panel [data-strategy-choice="friendly"]');
+assert.match($("#visual-panel .strategy-equation").textContent, /50 × 25 − 2 × 25/);
+assert.match($("#visual-panel .strategy-equivalence").textContent, /Si empiezas con 50 grupos/);
+assert.equal(
+  $('#visual-panel [data-strategy-choice="friendly"]').getAttribute("aria-pressed"),
+  "true",
+);
+click('#visual-panel [data-strategy-choice="quarter"]');
+assert.ok($("#visual-panel .strategy-quarter-whole .selected"));
 win.close();
 console.log(
   "Fluency UI: deep links, visual lessons, wrong-answer recovery, resume, adaptive support, profile isolation, teacher assignments, checkups, repair, relevant tools, scratchpad backgrounds, factor/multiples charts, and daily plans passed.",

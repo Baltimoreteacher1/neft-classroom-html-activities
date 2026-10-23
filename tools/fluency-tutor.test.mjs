@@ -41,6 +41,37 @@ const check = (condition, message) => {
   checks++;
 };
 const skill = findSkill("4:division");
+{
+  const comparison = createLesson(findSkill("4:multiply-2digit")).model;
+  check(
+    comparison.type === "strategyCompare",
+    "Two-digit multiplication opens a strategy comparison",
+  );
+  check(comparison.a * comparison.b === 1200, "The represented problem is 48 × 25 = 1,200");
+  const calculations = {
+    halves: 24 * 25 + 24 * 25,
+    friendly: 50 * 25 - 2 * 25,
+    quarter: (48 * 100) / 4,
+  };
+  for (const strategy of comparison.strategies)
+    check(
+      strategy.result === calculations[strategy.id],
+      `${strategy.id}: decomposition preserves the product`,
+    );
+  check(comparison.strategies.length === 3, "The lesson compares three valid strategies");
+  check(
+    renderModel(comparison).includes('data-strategy-choice="halves"'),
+    "The model starts with an interactive area decomposition",
+  );
+  check(
+    renderModel(comparison, { selectedStrategy: "friendly" }).includes("50 × 25 − 2 × 25"),
+    "Changing strategy updates the displayed equation",
+  );
+  check(
+    renderModel(comparison, { selectedStrategy: "quarter" }).includes("strategy-quarter-whole"),
+    "The quarter-of-100 choice shows four equal parts",
+  );
+}
 const now = new Date(2026, 8, 24, 12).getTime();
 const tutor = emptyTutor();
 const firstTry = emptyTutor();

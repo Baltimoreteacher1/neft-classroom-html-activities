@@ -1,4 +1,5 @@
 import { baseGenerator } from "./problem-bank.js";
+import { t } from "./i18n.js";
 
 const step = (prompt, answer, hint, explanation, kind = "number", choices = null) => ({ prompt, answers: [String(answer)], kind, choices, hint, explanation });
 const lesson = (title, idea, model, steps) => ({ title, idea, model, steps });
@@ -35,6 +36,38 @@ export function createLesson(skill, variant = 0) {
       const left = early ? 2 : 5;
       const known = early ? "two groups" : "a 5-fact";
       return lesson(early ? "See equal groups" : "Break a hard fact into easy facts", early ? "Rows are equal groups. Split the rows into smaller sets you know." : "Use a 5-fact you know, then add the leftover rows.", { type: "array", a, b, split: left, caption: `${a} × ${b}` }, [step(`The first color shows ${known}: ${left} × ${b}. How many squares?`, left * b, early ? "Skip-count by the row size, or double it." : "Count by 5s, or think of half of 10 × the row size.", `${left} rows of ${b} make ${left * b}.`), step(`The other color is ${a - left} more row${a - left === 1 ? "" : "s"} of ${b}. How many squares?`, (a - left) * b, "The row size stays the same.", `${a - left} × ${b} = ${(a - left) * b}.`), step(`Put both colors together. What is ${a} × ${b}?`, a * b, "Add the two parts.", `${left * b} + ${(a - left) * b} = ${a * b}.`)]);
+    }
+    if (op === "mul" && skill.id === "multiply-2digit") {
+      const strategies = [
+        {
+          id: "halves", label: t("Split 48 into two equal groups"),
+          equation: "48 × 25 = 24 × 25 + 24 × 25",
+          parts: ["24 × 25 = 600", "24 × 25 = 600"], result: 1200, model: "halves",
+          explanation: t("48 is 24 + 24, so the two equal areas combine to the same 48 × 25 rectangle."),
+        },
+        {
+          id: "friendly", label: t("Use 50 groups, then remove 2"),
+          equation: "48 × 25 = 50 × 25 − 2 × 25",
+          parts: ["50 × 25 = 1,250", "2 × 25 = 50", "1,250 − 50 = 1,200"], result: 1200, model: "remove",
+          explanation: t("48 is 50 − 2. Starting with 50 groups and removing 2 leaves exactly 48 groups of 25."),
+        },
+        {
+          id: "quarter", label: t("Use 25 as one quarter of 100"),
+          equation: "48 × 25 = 48 × 100 ÷ 4",
+          parts: ["48 × 100 = 4,800", "4,800 ÷ 4 = 1,200"], result: 1200, model: "quarter",
+          explanation: t("25 is one of four equal parts of 100, so one quarter of 48 × 100 is 48 × 25."),
+        },
+      ];
+      return lesson(
+        t("Compare strategies for 48 × 25"),
+        t("Choose a decomposition, inspect how it changes the area, and connect each partial product to the same total."),
+        { type: "strategyCompare", a: 48, b: 25, strategies, caption: t("Three equivalent ways to organize 48 groups of 25") },
+        [
+          step(t("If 25 is one quarter of 100, what is 24 × 25?"), 600, t("Find one quarter of 24 × 100."), t("24 × 100 = 2,400, and 2,400 ÷ 4 = 600.")),
+          step(t("The other half is also 24 × 25. What is its value?"), 600, t("The two groups are equal in size."), t("The second 24 groups also make 600.")),
+          step(t("Combine the two equal parts. What is 48 × 25?"), 1200, t("Add the two partial products."), t("600 + 600 = 1,200. Each strategy keeps the total area equal to 48 × 25.")),
+        ],
+      );
     }
     if (op === "mul") {
       const b = config.minB >= 10 ? 12 + k : grade >= 4 ? 6 + k : 4 + k;

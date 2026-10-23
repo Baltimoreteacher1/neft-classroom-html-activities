@@ -1,12 +1,13 @@
 import { createLesson, transferPrompt } from "./lesson-content.js";
 import { validateAnswer } from "./problem-bank.js";
 import { columnSpec, verticalHtml } from "./vertical-columns.js";
+import { t } from "./i18n.js";
 
 const esc = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 const svg = (body, label, viewBox = "0 0 540 240") => `<svg class="math-model-svg" viewBox="${viewBox}" role="img" aria-label="${esc(label)}">${body}</svg>`;
 const text = (x, y, value, extra = "") => `<text x="${x}" y="${y}" text-anchor="middle" ${extra}>${esc(value)}</text>`;
 
-export function renderModel(model, { counters, counterPositions, partitions = 1, step = 0 } = {}) {
+export function renderModel(model, { counters, counterPositions, partitions = 1, step = 0, selectedStrategy = "halves" } = {}) {
   const caption = `<p class="model-caption">${esc(model.caption)}</p>`;
   if (model.type === "counters") {
     const filled = counters ?? model.filled;
@@ -50,6 +51,22 @@ export function renderModel(model, { counters, counterPositions, partitions = 1,
   if (model.type === "array") {
     if (model.a <= 12 && model.b <= 12) return `${caption}<div class="array-model" style="--cols:${model.b}" role="img" aria-label="${model.a} rows with ${model.b} squares in each row">${Array.from({ length: model.a * model.b }, (_, i) => `<span class="${Math.floor(i / model.b) < model.split ? 'part-one' : 'part-two'}"></span>`).join("")}</div><p>${model.a} rows × ${model.b} per row${model.unit ? `. Each square is worth ${model.unit}.` : ""}</p>`;
     return caption + svg(`<rect class="model-fill" x="45" y="55" width="330" height="130"/><rect class="model-fill-alt" x="375" y="55" width="115" height="130"/>${text(210, 35, model.split)}${text(433, 35, model.a - model.split)}${text(20, 130, model.b)}${text(210, 125, `${model.split} × ${model.b}`)}${text(433, 125, `${model.a - model.split} × ${model.b}`)}`, `${model.a} × ${model.b}, split into ${model.split} × ${model.b} and ${model.a - model.split} × ${model.b}. Diagram not to scale.`);
+  }
+  if (model.type === "strategyCompare") {
+    const strategy = model.strategies.find(({ id }) => id === selectedStrategy) || model.strategies[0];
+    let diagram;
+    let alt;
+    if (strategy.model === "halves") {
+      diagram = `<div class="strategy-area-pair"><div><strong>24 × 25</strong><span>600</span></div><div><strong>24 × 25</strong><span>600</span></div></div>`;
+      alt = t("A 48 by 25 rectangle split into two equal 24 by 25 areas, each with value 600.");
+    } else if (strategy.model === "remove") {
+      diagram = `<div class="strategy-area-remove"><div><strong>50 × 25</strong><span>1,250</span></div><div><strong>Remove 2 × 25</strong><span>−50</span></div></div>`;
+      alt = t("Start with a 50 by 25 rectangle worth 1,250, then remove a 2 by 25 strip worth 50.");
+    } else {
+      diagram = `<div class="strategy-quarter-model"><div class="strategy-quarter-whole">${Array.from({ length: 4 }, (_, i) => `<span class="${i === 0 ? "selected" : ""}"><strong>${i === 0 ? "25" : "25"}</strong></span>`).join("")}</div><p>48 × 100 ÷ 4 = 48 × 25</p></div>`;
+      alt = t("A 48 by 100 rectangle split into four equal columns of 25; one quarter is the 48 by 25 area.");
+    }
+    return `${caption}<fieldset class="strategy-compare"><legend>${esc(t("Choose a strategy to explore"))}</legend><div class="strategy-choice-list">${model.strategies.map((item) => `<button type="button" data-strategy-choice="${esc(item.id)}" aria-pressed="${item.id === strategy.id}">${esc(item.label)}</button>`).join("")}</div><p class="strategy-equation" aria-live="polite">${esc(t(strategy.equation))}</p><div class="strategy-area-model" role="img" aria-label="${esc(alt)}">${diagram}</div><ul class="strategy-partial-products">${strategy.parts.map((part) => `<li>${esc(t(part))}</li>`).join("")}</ul><p class="strategy-equivalence" aria-live="polite">${esc(strategy.explanation)}</p><strong class="strategy-total">48 × 25 = ${strategy.result.toLocaleString("en-US")}</strong></fieldset>`;
   }
   if (model.type === "partition" || model.type === "bars") return `${caption}<div class="partition-model">${model.labels.map((label, i) => `<div style="flex:${model.values[i] || 1}"><span>${esc(label)}</span></div>`).join("")}</div><p>Keep both parts. Each is divided by the same divisor.</p>`;
   if (model.type === "table") return `${caption}<table class="ratio-model"><thead><tr>${model.headers.map((label) => `<th scope="col">${esc(label)}</th>`).join("")}</tr></thead><tbody>${model.rows.map((row) => `<tr>${row.map((value) => `<td>${esc(value)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
@@ -104,6 +121,7 @@ export function mountVisualLesson(container, skill, { onComplete, onPractice, va
   let supported = false;
   let solvedSteps = [];
   let currentStepAnswer = "";
+  let selectedStrategy = "halves";
 
   function render() {
     const done = index >= content.steps.length;
@@ -129,7 +147,7 @@ export function mountVisualLesson(container, skill, { onComplete, onPractice, va
     ` : "";
 
     container.innerHTML = `<div class="visual-lesson-heading"><div><p class="section-label">See it. Build it. Explain it.</p><h3>${esc(content.title)}</h3><p>${esc(content.idea)}</p></div><button type="button" class="outline-action" data-new-visual>${freshExample ? 'Try another example' : 'Restart this model'}</button></div>
-      <div class="visual-lesson-layout"><div class="visual-model">${renderModel(content.model, { counters, counterPositions, partitions, step: index })}</div><div class="visual-step-panel">
+      <div class="visual-lesson-layout"><div class="visual-model">${renderModel(content.model, { counters, counterPositions, partitions, step: index, selectedStrategy })}</div><div class="visual-step-panel">
       <ol class="visual-step-dots" aria-label="Lesson steps">${content.steps.map((_, i) => `<li class="${i < index ? 'complete' : i === index ? 'current' : ''}" ${i === index ? 'aria-current="step"' : ''}>${i < index ? '✓' : i + 1}<span>${i < index ? ' complete' : i === index ? ' current' : ' next'}</span></li>`).join("")}</ol>
       ${done ? `
         <div class="visual-conclusion-card">
@@ -259,6 +277,7 @@ export function mountVisualLesson(container, skill, { onComplete, onPractice, va
     }
     if (button.hasAttribute("data-partition")) { partitions = Number(button.dataset.partition); container.querySelector(".visual-model").innerHTML = renderModel(content.model, { partitions, counters, step: index }); container.querySelector(`[data-partition="${partitions}"]`)?.focus(); }
     if (button.hasAttribute("data-counter")) { const cell = Number(button.dataset.counter); if (cell < content.model.filled) return; if (counterPositions.has(cell)) counterPositions.delete(cell); else counterPositions.add(cell); counters = counterPositions.size; container.querySelector(".visual-model").innerHTML = renderModel(content.model, { partitions, counters, counterPositions, step: index }); container.querySelector(`[data-counter="${cell}"]`)?.focus(); }
+    if (button.hasAttribute("data-strategy-choice")) { selectedStrategy = button.dataset.strategyChoice; container.querySelector(".visual-model").innerHTML = renderModel(content.model, { partitions, counters, counterPositions, step: index, selectedStrategy }); container.querySelector(`[data-strategy-choice="${selectedStrategy}"]`)?.focus(); }
   };
   render();
   return () => { container.onclick = null; container.onsubmit = null; };
