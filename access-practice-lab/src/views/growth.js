@@ -12,6 +12,8 @@ import {
 } from "../lang/ledger.js";
 import { loadPatterns } from "../content.js";
 import { allRecords } from "../store.js";
+import { buildSkillGraph } from "../lang/skill-graph.js";
+import { ACCESS_LAB_FLAGS } from "../lang/feature-flags.js";
 import { BASE, CORE_DOMAINS, DOMAIN_META, html } from "../util.js";
 
 const WORD = { improving: "growing", steady: "steady", slipping: "changing — worth a look" };
@@ -75,6 +77,8 @@ export async function render(ctx) {
   const patterns = (await loadPatterns().catch(() => ({ patterns: {} }))).patterns || {};
   const pname = (id) => (Object.hasOwn(patterns, id) ? patterns[id].name : id);
   const entries = ledger.entries.filter((e) => e.band === band);
+  const literacyRecords = Object.fromEntries(allRecords().filter((r) => r.band === band && ["Listening", "Reading"].includes(r.domain)).map((r) => [`${r.band === "3-5" ? "g3-5:" : ""}${r.domain}:${r.level}`, r]));
+  const skillGraph = buildSkillGraph(entries, literacyRecords);
   const p = buildProfile(entries, { band });
   const focus = focusAreas(p);
   const records = allRecords().filter((r) => r.band === band);
@@ -127,6 +131,21 @@ export async function render(ctx) {
         </dl>
         ${p.firstAttempts === 0 ? html`<p>No studio work yet. Try the <a href="${BASE}/write?grades=${band}">Writing Studio</a>, <a href="${BASE}/speak?grades=${band}">Speaking Studio</a> or a <a href="${BASE}/missions?grades=${band}">mission</a> and your growth map will start to fill in.</p>` : html`<p class="fine">A trend appears after ${MIN_POINTS} first attempts. “On your own” means no frames, word bank or model were open.</p>`}
       </section>
+      ${ACCESS_LAB_FLAGS.skillGraphEnabled ? html`<section class="panel" aria-labelledby="skillGraphHeading">
+        <h2 id="skillGraphHeading">Academic-language skills</h2>
+        <p class="fine">Practice profile from your saved work. A skill is shown as demonstrated only after repeated evidence on different tasks. This is not an ACCESS score or proficiency level.</p>
+        ${["Listening", "Reading", "Speaking", "Writing"].map((domain) => {
+          const skills = skillGraph.filter((s) => s.domain === domain);
+          const ready = skills.filter((s) => s.status !== "insufficient");
+          return html`<details class="skill-domain" ${ready.length ? "" : ""}>
+            <summary>${domain} <span class="fine">${ready.length} skill${ready.length === 1 ? "" : "s"} with evidence</span></summary>
+            <ul class="evidence-list">
+              ${skills.map((s) => html`<li><strong>${s.name}</strong><span>${s.status === "insufficient" ? "Collecting evidence" : s.status === "demonstrated" ? "Demonstrated independently" : s.status === "supported" ? "Demonstrated with support" : "Currently developing"}${s.evidenceCount ? ` · ${s.evidenceCount} evidence points` : ""}</span></li>`)}
+            </ul>
+          </details>`;
+        })}
+        <p class="fine">Suggested next step: choose a skill marked “Currently developing” or collect more evidence where the map says it is still collecting evidence.</p>
+      </section>` : ""}
       ${
         focus.length
           ? html`<section class="panel">

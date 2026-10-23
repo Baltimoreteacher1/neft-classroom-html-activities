@@ -256,7 +256,7 @@ const COVERAGE = [
   // answer-revealing visuals, on-screen listening scripts and "look at the
   // picture" with no picture, all of which shipped in the pre-2026-10 lab.
   [
-    /^(access-practice-lab\/|access-teacher\/|tools\/(validate-access-lab|access-lab-index|access-lab-e2e|generate-access-printables|gen-access-inventory|sync-access-shell)\.mjs$|tools\/lib\/access-lab-content\.mjs$|tools\/access-lab[^/]*\.test\.mjs$)/,
+    /^(access-practice-lab\/|access-teacher\/|tools\/(validate-access-lab|access-lab-index|access-lab-e2e|access-studio-e2e|generate-access-printables|gen-access-inventory|sync-access-shell)\.mjs$|tools\/lib\/access-lab-content\.mjs$|tools\/(access-lab|access-skill-graph|access-teacher-evidence)[^/]*\.test\.mjs$)/,
     ["validate:access-lab", "test", "validate:js-syntax", "check"],
   ],
 

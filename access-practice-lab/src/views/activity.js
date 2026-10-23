@@ -445,6 +445,7 @@ function check(a, ctx) {
   checked.set(a.id, { ok, attempt: n, reveal: ok ? "mark" : n >= 2 && mode === "supported" ? "full" : "mark" });
   cur.record.results[a.id] = {
     ok,
+    skill: a.skill || "",
     meaningful: true,
     evidence: ok ? ((helpUsed.has(a.id) || Boolean(cur.record.supportUsed?.[a.id])) || attempt > 1 ? "supported" : "independent") : "attempted",
     supportUsed: (helpUsed.has(a.id) || Boolean(cur.record.supportUsed?.[a.id])),

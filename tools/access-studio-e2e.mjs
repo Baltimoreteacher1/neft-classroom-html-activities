@@ -267,27 +267,104 @@ await go(`${BASE}/passport`);
 await page.locator("[data-share-alias]").fill("River 7");
 const code = await page.evaluate(async () => {
   const m = await import("/access-practice-lab/src/lang/share.js");
-  return m.encodeShare(m.buildShare({ alias: "River 7", band: "6-8" }));
+  const records = {
+    "Reading:A": {
+      band: "6-8",
+      domain: "Reading",
+      level: "A",
+      results: Object.fromEntries(
+        [1, 2, 3].map((i) => [
+          `synthetic-read-${i}`,
+          {
+            skill: "Identify main idea in a short text",
+            ok: false,
+            supportUsed: false,
+            date: `2026-10-2${i}T12:00:00Z`,
+          },
+        ]),
+      ),
+    },
+    "Listening:A": {
+      band: "6-8",
+      domain: "Listening",
+      level: "A",
+      results: {
+        "synthetic-listen-1": {
+          skill: "Follow sequence words",
+          ok: true,
+          supportUsed: true,
+          date: "2026-10-22T12:00:00Z",
+        },
+      },
+    },
+  };
+  const bundle = m.buildShare({ alias: "River 7", band: "6-8" });
+  bundle.records = records;
+  const second = { ...bundle, alias: "Bay 2", created: new Date(Date.now() + 1000).toISOString() };
+  return [m.encodeShare(bundle), m.encodeShare(second)];
 });
-ok(code.startsWith("ACCESST1."), "passport can produce a share code");
+const [code1, code2] = code;
+ok(
+  code1.startsWith("ACCESST1.") && code2.startsWith("ACCESST1."),
+  "passport can produce share codes with synthetic literacy evidence",
+);
 await page.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
 await page.waitForSelector("#evCode");
 await page.locator("#evSection").fill("Period 3");
-await page.locator("#evCode").fill(`${code}\n\n${code.replace("River 7", "River 7")}`);
+await page.locator("#evCode").fill(`${code1}\n\n${code2}`);
 await page.locator("[data-add]").click();
-await page.waitForSelector("#classEvidence td.t-title");
+await page.waitForFunction(
+  () => document.querySelectorAll("#classEvidence td.t-title").length === 2,
+);
 ok(
-  (await page.locator("#classEvidence td.t-title").innerText()).includes("River 7"),
+  (await page.locator("#classEvidence td.t-title").allInnerTexts()).some((name) =>
+    name.includes("River 7"),
+  ),
   "teacher dashboard lists the student from a share code",
 );
-await page.locator("[data-student]").click();
+await page.locator('[data-student="Period 3|River 7|6-8"]').click();
 ok((await page.locator(".student-panel").count()) === 1, "student detail opens");
 await page.locator('[data-tab="samples"]').click();
 ok((await bodyText()).includes("wrt-mulch-cer"), "teacher can read the learner's writing sample");
 await page.locator('[data-tab="scoring"]').click();
 ok((await page.locator(".hub-card h3").count()) >= 3, "scoring anchors show three practice bands");
 await page.locator('[data-tab="groups"]').click();
-ok(true, "groups tab renders");
+ok(
+  (await page.locator("[data-make-lesson]").count()) > 0,
+  "shared evidence creates editable instructional group suggestions",
+);
+await page.locator('[data-tab="skills"]').click();
+ok(
+  (await page.locator("#classEvidence").innerText()).includes("Reading: Identify a main idea"),
+  "teacher skill diagnostics include traceable reading evidence",
+);
+await page.locator("[data-skill-domain]").selectOption("Listening");
+ok(
+  (await page.locator("#classEvidence").innerText()).includes("Listening: Recognize sequence"),
+  "teacher can filter diagnostics by domain",
+);
+await page.locator("[data-skill-domain]").selectOption("All");
+await axeCheck("teacher skill diagnostics");
+await page.locator('[data-tab="groups"]').click();
+const lessonButton = page.locator('[data-make-lesson="reading.main-idea"]').first();
+await lessonButton.click();
+ok(
+  (await page.locator("#lesson-title").innerText()).includes("12 minutes"),
+  "teacher can generate an editable template-only lesson draft",
+);
+await page
+  .locator('[data-lesson-edit="languageObjective"]')
+  .fill("Students will identify the main idea and support it with one detail.");
+for (const check of await page.locator("[data-review-check]").all()) await check.check();
+await page.locator("[data-lesson-save]").click();
+await page.locator("[data-lesson-approve]").click();
+const lessonStatus = await page.locator("#classEvidence").innerText();
+ok(
+  lessonStatus.includes("approved") && !lessonStatus.includes("not approved"),
+  "lesson requires a saved content review and teacher approval",
+);
+await page.locator('[data-tab="content"]').click();
+await axeCheck("teacher lesson provenance review");
 await page.locator('[data-tab="blueprint"]').click();
 ok(
   !(await page.locator("#classEvidence").innerText()).includes("could not be loaded"),

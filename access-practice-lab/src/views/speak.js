@@ -6,6 +6,7 @@ import { crumbsHTML } from "../components.js";
 import { loadMission, loadSpeakingTasks, loadStudioIndex } from "../content.js";
 import { recommendTasks } from "../lang/adapt.js";
 import { analyzeResponse, compareDrafts } from "../lang/analyze.js";
+import { LocalFeedbackProvider, LOCAL_FEEDBACK_MODEL_VERSION, LOCAL_FEEDBACK_PROMPT_VERSION } from "../lang/providers.js";
 import { describeSpeech, summarizeEnvelope } from "../lang/audio.js";
 import { appendEntry, buildProfile, loadLedger, saveLedger, suggestStage } from "../lang/ledger.js";
 import { emptyReview, reviewComplete } from "../lang/rubrics.js";
@@ -30,6 +31,7 @@ const IGN = raw("data-nsr-ignore");
 let S = null;
 const chosen = new Map(); // task id → stage picked before the first attempt
 let kept = new Map(); // take id → object URL for recordings kept on this device
+const feedbackProvider = new LocalFeedbackProvider();
 
 const save = () => saveStudio(S.studio);
 const dirLabel = {
@@ -541,7 +543,8 @@ function analyze(ctx) {
   const first = !S.ledger.entries.some(
     (x) => x.task === S.task.id && x.src === "speaking" && x.kind === "first" && x.attempt === S.state.attemptId,
   );
-  const a = analyzeResponse(take.transcript, optsFor(S.task));
+  const result = feedbackProvider.evaluateSpeaking(take.transcript, null, optsFor(S.task));
+  const a = result.analysis;
   take.analyzedText = take.transcript;
   take.analyzedAt = new Date().toISOString(); // the analysis is recomputed from the transcript, never stored
   const supports = { ...stageSupports(), coach: !first, noRecording: Boolean(take.manual) };
@@ -566,6 +569,10 @@ function analyze(ctx) {
     attempt: S.state.attemptId,
     supports,
     m,
+    feedbackSource: result.feedbackSource,
+    modelVersion: LOCAL_FEEDBACK_MODEL_VERSION,
+    promptVersion: LOCAL_FEEDBACK_PROMPT_VERSION,
+    confidence: 0.6,
   });
   take.ledgerId = entry.id;
   if (S.mission) missionState(S.studio, S.mission.id).tasks[S.task.id] = { done: true, t: take.analyzedAt };

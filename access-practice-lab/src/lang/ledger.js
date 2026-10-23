@@ -70,6 +70,12 @@ export function makeEntry(partial) {
     attempt: partial.attempt || "",
     supports,
     m: partial.m || {},
+    feedbackSource: partial.feedbackSource || "local-rule",
+    modelVersion: partial.modelVersion || null,
+    promptVersion: partial.promptVersion || null,
+    confidence: Number.isFinite(partial.confidence) ? Math.max(0, Math.min(1, partial.confidence)) : null,
+    teacherOverride: Boolean(partial.teacherOverride),
+    teacherOverrideValue: partial.teacherOverrideValue ?? null,
   };
 }
 

@@ -22,9 +22,14 @@ import {
 } from "/access-practice-lab/src/lang/teacher.js";
 import { diffWords } from "/access-practice-lab/src/lang/text.js";
 import { highlightHTML } from "/access-practice-lab/src/studio-ui.js";
+import { buildSkillGraph, makeMiniLesson, recommendInstructionalGroups } from "/access-practice-lab/src/lang/skill-graph.js";
+import { ACCESS_LAB_FLAGS } from "/access-practice-lab/src/lang/feature-flags.js";
 import { announce, html, raw, toHtml } from "/access-practice-lab/src/util.js";
 
 const KEY = "accessTeacher:v1:roster";
+const GROUP_KEY = "accessTeacher:v1:instructionalGroups";
+const LESSON_KEY = "accessTeacher:v1:miniLessons";
+const OVERRIDE_KEY = "accessTeacher:v1:skillOverrides";
 const QUOTA_WARN = 3_500_000; // characters; localStorage holds roughly 5 MB
 const root = document.getElementById("classEvidence");
 
@@ -56,6 +61,11 @@ const T = {
   exemplars: [],
   messages: [],
   saveError: "",
+  skillDomain: "All",
+  selectedLesson: "",
+  groups: read(GROUP_KEY, []),
+  lessons: read(LESSON_KEY, []),
+  overrides: read(OVERRIDE_KEY, {}),
 };
 
 /** Keep only what the tabs read: no raw progress records, no audio, no per-segment timing. */
@@ -68,11 +78,15 @@ const slim = (s) => ({
   addedAt: s.addedAt,
   ledger: s.ledger,
   studio: s.studio,
+  records: s.records || {},
 });
 const persist = () => {
   try {
     localStorage.setItem(KEY, JSON.stringify(T.students.map(slim)));
     localStorage.setItem(`${KEY}:scores`, JSON.stringify(T.scores));
+    localStorage.setItem(GROUP_KEY, JSON.stringify(T.groups));
+    localStorage.setItem(LESSON_KEY, JSON.stringify(T.lessons));
+    localStorage.setItem(OVERRIDE_KEY, JSON.stringify(T.overrides));
     T.saveError = "";
   } catch {
     T.saveError =
@@ -117,7 +131,9 @@ function tabs() {
   return html`<div class="band-switch no-print" role="group" aria-label="Dashboard sections">
     ${[
       ["class", "Class"],
-      ["groups", "Small groups"],
+      ...(ACCESS_LAB_FLAGS.teacherDiagnosticsEnabled ? [["skills", "Skill diagnostics"]] : []),
+      ...(ACCESS_LAB_FLAGS.instructionalGroupsEnabled ? [["groups", "Small groups"]] : []),
+      ...(ACCESS_LAB_FLAGS.contentProvenanceEnabled ? [["content", "Lesson review"]] : []),
       ["samples", "Response samples"],
       ["scoring", "Scoring practice"],
       ["blueprint", "Blueprint and quality"],
@@ -169,9 +185,9 @@ function importBox() {
     ${used > QUOTA_WARN ? html`<p class="feedback is-hint" role="status">The roster is nearly full (${Math.round(used / 1000)} KB). Download the CSV and remove students you no longer need.</p>` : ""}
     ${
       T.messages.length
-        ? html`<ul class="fine" role="status">
+        ? html`<div role="status" aria-live="polite"><ul class="fine">
             ${T.messages.slice(-8).map((m) => html`<li>${m}</li>`)}
-          </ul>`
+          </ul></div>`
         : ""
     }
     <p class="fine">
@@ -438,6 +454,7 @@ function groupsTab(rowsAll) {
   if (!T.students.length) return html`<p>Add students to see grouping suggestions.</p>`;
   const scoped = T.students.filter((s) => !T.section || s.section === T.section);
   const gs = groupSuggestions(scoped, T.patterns);
+  const skillGroups = ACCESS_LAB_FLAGS.instructionalGroupsEnabled ? recommendInstructionalGroups(scoped) : [];
   void rowsAll;
   const filter = html`<label class="field inline no-print"
     ><span>Section</span
@@ -446,13 +463,15 @@ function groupsTab(rowsAll) {
       ${sections().map((s) => html`<option value="${s}" ${T.section === s ? raw("selected") : ""}>${s}</option>`)}
     </select></label
   >`;
-  if (!gs.length)
+  if (!gs.length && !skillGroups.length)
     return html`${filter}
       <p>
         No two students share a recurring need yet. Groups appear when evidence builds up (patterns
         in 2+ pieces, or work that is lower without supports).
       </p>`;
   return html`${filter}
+    ${skillGroups.length ? html`<h3>Shared skill needs</h3><p class="fine">Rule-based suggestions from imported practice evidence. Review the evidence and adjust membership before planning.</p><div class="hub-grid">${skillGroups.map((g) => html`<article class="hub-card"><h3>${g.label}</h3><p><strong>${g.members.length} students</strong>: ${g.members.join(", ")}</p><p class="fine">${g.why}</p><p class="fine">Evidence: ${g.evidence.slice(0, 5).map((e) => `${e.student} · ${e.activityId} · ${e.stage}`).join("; ")}</p><button class="btn ghost small" type="button" data-make-lesson="${g.key}" data-label="${g.label}" data-domain="${g.domain}" data-members="${g.members.join("|")}">Draft 12-minute lesson</button></article>`)}</div>` : ""}
+    <h3>Existing response-pattern groups</h3>
     <div class="hub-grid">
       ${gs.map(
         (g) =>
@@ -465,7 +484,32 @@ function groupsTab(rowsAll) {
             <a href="${g.suggestion.link}" target="_blank" rel="noopener">Open in the lab</a>
           </div>`,
       )}
-    </div>`;
+    </div>
+    ${T.groups.length ? html`<h3>Teacher-edited groups</h3>${T.groups.map((g) => html`<details class="hub-card"><summary>${g.label} · ${g.members.length} students</summary><fieldset><legend>Group membership</legend>${T.students.filter((s) => !T.section || s.section === T.section).map((s) => html`<label><input type="checkbox" data-group-member="${g.id}" data-alias="${s.alias}" ${g.members.includes(s.alias) ? raw("checked") : ""} /> ${s.alias}</label>`)}</fieldset><p class="fine">Suggested need: ${g.label}. Group edits are saved on this teacher device.</p></details>`)}` : ""}
+    ${lessonPanel()}`;
+}
+
+function diagnosticsTab() {
+  const domains = ["All", "Listening", "Reading", "Speaking", "Writing"];
+  const rows = T.students.flatMap((student) => buildSkillGraph(student.ledger?.entries || [], student.records || {}).filter((s) => T.skillDomain === "All" || s.domain === T.skillDomain).map((s) => ({ student, skill: s })));
+  return html`<label class="field inline"><span>Domain</span><select data-skill-domain>${domains.map((d) => html`<option value="${d}" ${T.skillDomain === d ? raw("selected") : ""}>${d}</option>`)}</select></label>
+    <p class="fine">Practice profile only. Every row is derived from a student's imported local evidence ledger. “Confidence” describes evidence coverage and consistency, not a probability.</p>
+    ${rows.length ? html`<div class="lab-table-wrap"><table class="hub-table"><thead><tr><th scope="col">Student</th><th scope="col">Skill</th><th scope="col">Practice profile</th><th scope="col">Independent</th><th scope="col">With support</th><th scope="col">Evidence</th><th scope="col">Evidence confidence</th><th scope="col">Last evidence</th><th scope="col">Teacher observation</th></tr></thead><tbody>${rows.filter(({ student, skill }) => skill.evidenceCount || T.overrides[`${student.id}:${skill.id}`]).map(({ student, skill }) => { const key = `${student.id}:${skill.id}`; const ov = T.overrides[key]; const current = ov?.status || skill.status; return html`<tr><th scope="row">${student.alias}</th><td>${skill.domain}: ${skill.name}</td><td>${current === "demonstrated" ? "Demonstrated independently" : current === "supported" ? "Demonstrated with support" : current === "developing" ? "Currently developing" : "Not enough evidence"}</td><td>${skill.independentEvidenceCount}</td><td>${skill.supportedEvidenceCount}</td><td><details><summary>${skill.evidenceCount} item${skill.evidenceCount === 1 ? "" : "s"}</summary><ul>${skill.evidence.map((e) => html`<li>${e.activityId} · ${e.independenceLevel} · ${new Date(e.createdAt).toLocaleDateString()}</li>`)}</ul></details></td><td>${skill.confidence}</td><td>${skill.lastEvidenceAt ? new Date(skill.lastEvidenceAt).toLocaleDateString() : "—"}</td><td><label class="visually-hidden" for="ov-${student.id}-${skill.id}">Teacher observation for ${student.alias}, ${skill.name}</label><select id="ov-${student.id}-${skill.id}" data-skill-override="${key}"><option value="" ${!ov ? raw("selected") : ""}>No override</option><option value="demonstrated" ${ov?.status === "demonstrated" ? raw("selected") : ""}>Teacher: demonstrated independently</option><option value="supported" ${ov?.status === "supported" ? raw("selected") : ""}>Teacher: demonstrated with support</option><option value="developing" ${ov?.status === "developing" ? raw("selected") : ""}>Teacher: currently developing</option></select><label class="visually-hidden" for="note-${student.id}-${skill.id}">Teacher note for ${student.alias}, ${skill.name}</label><textarea id="note-${student.id}-${skill.id}" rows="2" data-observation="${key}" placeholder="Optional teacher observation">${ov?.observation || ""}</textarea>${ov ? html`<small>Teacher record saved ${new Date(ov.updatedAt).toLocaleDateString()}</small>` : ""}</td></tr>`; })}</tbody></table></div>` : html`<p>No imported evidence for this domain yet. Students can share work through Passport when they choose.</p>`}
+    <p class="fine">Evidence details link to task identifiers; open Response Samples to review the underlying student work. Teacher overrides are separate and stored in this browser.</p>
+    ${lessonPanel()}`;
+}
+
+function lessonPanel() {
+  const lesson = T.lessons.find((l) => l.id === T.selectedLesson) || T.lessons.at(-1);
+  if (!lesson) return T.lessons.length ? "" : "";
+  const fields = ["languageObjective", "studentObjective", "teacherModel", "guidedPractice", "studentPractice", "formativeCheck", "fadeScaffolds", "homeLanguageConnection", "extension", "evidenceToCollect"];
+  const checks = ["Originality", "Copyright and licensing", "Clear and answerable task", "Cultural assumptions", "Reading load", "Vocabulary level", "Image dependence", "Accessibility", "Bias", "Answer rationale", "Age appropriateness", "Domain validity"];
+  return html`<section class="panel" aria-labelledby="lesson-title"><h3 id="lesson-title">${lesson.groupNeed}: next-day mini-lesson (${lesson.durationMinutes} minutes)</h3><p class="fine">Template draft · teacher review required · ${lesson.status === "approved" ? `approved ${new Date(lesson.approvedAt).toLocaleString()}` : "not approved"}</p><label class="field"><span>Group need</span><input data-lesson-edit="groupNeed" value="${lesson.groupNeed}" /></label><label class="field"><span>Materials</span><input data-lesson-edit="materials" value="${lesson.materials.join("; ")}" /></label>${fields.map((field) => html`<label class="field"><span>${field.replace(/[A-Z]/g, (m) => ` ${m.toLowerCase()}`)}</span><textarea data-lesson-edit="${field}" rows="2">${lesson[field]}</textarea></label>`)}<h4>Scaffolds</h4><p>${lesson.scaffolds.join(" · ")}</p><p class="fine">Evidence references: ${lesson.evidenceRefs.map((e) => `${e.student} · ${e.activityId}`).join("; ")}</p><fieldset><legend>Content review before approval</legend>${checks.map((c) => html`<label><input type="checkbox" data-review-check="${c}" ${lesson.provenance.reviewChecklist?.[c] ? raw("checked") : ""} /> ${c}</label>`)}</fieldset><button type="button" class="btn" data-lesson-save="${lesson.id}">Save edits and review</button> <button type="button" class="btn" data-lesson-approve="${lesson.id}" ${lesson.status === "approved" ? raw("disabled") : ""}>Approve lesson</button> <button type="button" class="ghost" data-print-lesson>Print lesson</button><details><summary>Edit history (${lesson.history.length})</summary><ol>${lesson.history.map((h) => html`<li>${new Date(h.t).toLocaleString()} · ${h.action}</li>`)}</ol></details></section>`;
+}
+
+function contentReviewTab() {
+  const drafts = T.lessons.filter((l) => l.status !== "approved");
+  return html`<h3>Original-content provenance review</h3><p>Lesson drafts use an EduWonderLab template and ask the teacher to supply original classroom materials. Nothing is generated or assigned to students automatically.</p>${drafts.length ? html`<ul>${drafts.map((l) => html`<li><button type="button" class="ghost" data-select-lesson="${l.id}">${l.groupNeed}</button> · ${l.provenance.sourceDescription} · ${l.provenance.approvedForStudents ? "approved" : "awaiting teacher review"}</li>`)}</ul>` : html`<p>No lesson drafts are waiting for review.</p>`}${lessonPanel()}`;
 }
 
 function samplesTab(rows) {
@@ -658,6 +702,10 @@ function draw() {
   const body =
     T.tab === "groups"
       ? groupsTab(rows)
+      : T.tab === "skills"
+        ? diagnosticsTab()
+        : T.tab === "content"
+          ? contentReviewTab()
       : T.tab === "samples"
         ? samplesTab(rows)
         : T.tab === "scoring"
@@ -699,6 +747,51 @@ root.addEventListener("click", async (e) => {
     T.tab = tab.dataset.tab;
     return draw();
   }
+  const lessonPick = t.closest("[data-select-lesson]");
+  if (lessonPick) { T.selectedLesson = lessonPick.dataset.selectLesson; return draw(); }
+  const makeLesson = t.closest("[data-make-lesson]");
+  if (makeLesson) {
+    const group = { key: makeLesson.dataset.makeLesson, label: makeLesson.dataset.label, domain: makeLesson.dataset.domain, members: (makeLesson.dataset.members || "").split("|").filter(Boolean), evidence: recommendInstructionalGroups(T.students).find((g) => g.key === makeLesson.dataset.makeLesson)?.evidence || [] };
+    const savedGroup = { id: `${group.key}:${Date.now().toString(36)}`, ...group };
+    T.groups.push(savedGroup);
+    const lesson = makeMiniLesson(group);
+    lesson.provenance.reviewChecklist = {};
+    T.lessons.push(lesson); T.selectedLesson = lesson.id; T.tab = "groups"; persist(); note("A template lesson draft is ready. Review and approve it before using it with students."); return draw();
+  }
+  const saveLesson = t.closest("[data-lesson-save]");
+  if (saveLesson) {
+    const lesson = T.lessons.find((l) => l.id === saveLesson.dataset.lessonSave);
+    if (!lesson) return;
+    lesson.history.push({ t: new Date().toISOString(), action: "Teacher saved lesson edits" });
+    for (const input of root.querySelectorAll("[data-lesson-edit]")) {
+      const key = input.dataset.lessonEdit;
+      lesson[key] = key === "materials" ? input.value.split(";").map((x) => x.trim()).filter(Boolean) : input.value.trim();
+    }
+    lesson.provenance.reviewChecklist ||= {};
+    for (const check of root.querySelectorAll("[data-review-check]")) lesson.provenance.reviewChecklist[check.dataset.reviewCheck] = check.checked;
+    if (lesson.status === "approved") { lesson.status = "draft"; lesson.provenance.approvedForStudents = false; lesson.approvedAt = null; }
+    persist(); note("Lesson edits and review checks saved."); return draw();
+  }
+  const approveLesson = t.closest("[data-lesson-approve]");
+  if (approveLesson) {
+    const lesson = T.lessons.find((l) => l.id === approveLesson.dataset.lessonApprove);
+    if (!lesson) return;
+    const checklist = lesson.provenance.reviewChecklist || {};
+    const required = ["Originality", "Copyright and licensing", "Clear and answerable task", "Cultural assumptions", "Reading load", "Vocabulary level", "Image dependence", "Accessibility", "Bias", "Answer rationale", "Age appropriateness", "Domain validity"];
+    if (!required.every((key) => checklist[key])) { note("Complete and save every content review check before approval."); return; }
+    lesson.history.push({ t: new Date().toISOString(), action: "Teacher approved lesson after content review" });
+    lesson.status = "approved"; lesson.approvedAt = new Date().toISOString(); lesson.provenance.approvedForStudents = true; lesson.provenance.biasChecked = true; lesson.provenance.accessibilityChecked = true; lesson.provenance.reviewedAt = lesson.approvedAt; lesson.provenance.reviewerId = "local teacher workspace"; persist(); note("Lesson approved in this teacher workspace. Assignment remains a separate teacher action."); return draw();
+  }
+  if (t.closest("[data-print-lesson]")) {
+    const lesson = T.lessons.find((l) => l.id === T.selectedLesson) || T.lessons.at(-1);
+    if (!lesson) return;
+    let host = document.getElementById("lessonPrint");
+    if (!host) { host = Object.assign(document.createElement("div"), { id: "lessonPrint", className: "ev-print" }); root.append(host); }
+    host.innerHTML = toHtml(html`<article class="ev-sheet"><h1>Next-day mini-lesson: ${lesson.groupNeed}</h1><p>${lesson.durationMinutes} minutes · ${lesson.status === "approved" ? "Teacher approved" : "Draft for teacher review"}</p><p><strong>Language objective:</strong> ${lesson.languageObjective}</p><p><strong>Student objective:</strong> ${lesson.studentObjective}</p><p><strong>Materials:</strong> ${lesson.materials.join("; ")}</p><h2>Teacher model</h2><p>${lesson.teacherModel}</p><h2>Guided practice</h2><p>${lesson.guidedPractice}</p><h2>Student practice</h2><p>${lesson.studentPractice}</p><p><strong>Formative check:</strong> ${lesson.formativeCheck}</p><p><strong>Scaffolds:</strong> ${lesson.scaffolds.join("; ")}</p><p><strong>Fade:</strong> ${lesson.fadeScaffolds}</p><p><strong>Home-language connection:</strong> ${lesson.homeLanguageConnection}</p><p><strong>Extension:</strong> ${lesson.extension}</p><p><strong>Collect:</strong> ${lesson.evidenceToCollect}</p><p class="fine">Instructional practice only. Evidence references: ${lesson.evidenceRefs.map((ref) => `${ref.student} · ${ref.activityId}`).join("; ")}</p></article>`);
+    document.body.dataset.printing = "lesson";
+    const done = () => { delete document.body.dataset.printing; window.removeEventListener("afterprint", done); };
+    window.addEventListener("afterprint", done); window.print(); return;
+  }
   const sort = t.closest("[data-sort]");
   if (sort) {
     const key = sort.dataset.sort;
@@ -728,7 +821,14 @@ root.addEventListener("click", async (e) => {
   }
   const rm = t.closest("[data-remove]");
   if (rm) {
+    const removed = T.students.find((s) => s.id === rm.dataset.remove);
     T.students = T.students.filter((s) => s.id !== rm.dataset.remove);
+    if (removed) {
+      for (const group of T.groups) group.members = group.members.filter((alias) => alias !== removed.alias);
+      for (const lesson of T.lessons) lesson.evidenceRefs = lesson.evidenceRefs.filter((ref) => ref.student !== removed.alias);
+      for (const key of Object.keys(T.overrides)) if (key.startsWith(`${removed.id}:`)) delete T.overrides[key];
+      T.scores = T.scores.filter((row) => row.who !== removed.alias);
+    }
     if (T.pick === rm.dataset.remove) T.pick = "";
     persist();
     note("Student removed.");
@@ -738,6 +838,9 @@ root.addEventListener("click", async (e) => {
     if (confirm("Remove all students and saved scores from this browser?")) {
       T.students = [];
       T.scores = [];
+      T.groups = [];
+      T.lessons = [];
+      T.overrides = {};
       T.pick = "";
       T.messages = [];
       persist();
@@ -795,6 +898,25 @@ root.addEventListener("change", async (e) => {
   if (t.matches("[data-section]")) {
     T.section = t.value;
     return draw();
+  }
+  if (t.matches("[data-skill-domain]")) { T.skillDomain = t.value; return draw(); }
+  if (t.matches("[data-group-member]")) {
+    const group = T.groups.find((g) => g.id === t.dataset.groupMember);
+    if (!group) return;
+    const members = new Set(group.members);
+    if (t.checked) members.add(t.dataset.alias); else members.delete(t.dataset.alias);
+    group.members = [...members]; group.editedAt = new Date().toISOString(); persist(); note("Group membership saved in this browser.");
+  }
+  if (t.matches("[data-skill-override]")) {
+    const key = t.dataset.skillOverride;
+    if (t.value) T.overrides[key] = { ...(T.overrides[key] || {}), status: t.value, updatedAt: new Date().toISOString(), source: "teacher" };
+    else delete T.overrides[key];
+    persist(); note("Teacher override saved separately from practice evidence."); return draw();
+  }
+  if (t.matches("[data-observation]")) {
+    const key = t.dataset.observation;
+    T.overrides[key] = { ...(T.overrides[key] || {}), observation: t.value.trim(), updatedAt: new Date().toISOString(), source: "teacher" };
+    persist(); note("Teacher observation saved separately from practice evidence.");
   }
   if (t.matches("[data-pick]")) {
     T.pick = t.value;
