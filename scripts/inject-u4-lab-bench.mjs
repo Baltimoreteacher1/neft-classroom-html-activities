@@ -37,7 +37,7 @@ const esc = (/** @type {string} */ s) =>
 const bi = (/** @type {string} */ en, /** @type {string} */ es) =>
   `<span>${esc(en)}</span><span class="es-text" lang="es">${esc(es)}</span>`;
 
-const SCRIPTS = ["typeset", "kinds-basic", "kinds-lab", "lab-embed"].map(
+const SCRIPTS = ["typeset", "pedagogy", "kinds-basic", "kinds-lab", "lab-embed"].map(
   (f) => `assets/studio/${f}.js`,
 );
 const STYLE = "assets/studio/lab-embed.css";

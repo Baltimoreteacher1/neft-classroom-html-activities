@@ -2,10 +2,10 @@
   "v": 1,
   "lesson": "7-4",
   "targetEs": "Puedo comparar y ordenar números enteros usando una recta numérica.",
-  "story": "Welcome to Case Files! The suspects' alibis are scattered across hot attics and freezing cellars. Line the clues up from least to greatest, and the trail to the culprit comes into focus.",
-  "storyEs": "¡Bienvenidos a Expedientes! Las coartadas de los sospechosos están repartidas entre áticos calurosos y sótanos helados. Ordena las pistas de menor a mayor y el rastro hacia el culpable se aclarará.",
-  "challengeStory": "A cold case has just been reopened. Every clue is a number, some of them far below zero, and only the right order will crack the lock on the evidence room.",
-  "challengeStoryEs": "Acaban de reabrir un caso sin resolver. Cada pista es un número, algunos muy por debajo de cero, y solo el orden correcto abrirá la cerradura de la sala de evidencias.",
+  "story": "Welcome to Case Files! Each clue is a temperature or a balance. Put the clues in order from least to greatest to solve the case.",
+  "storyEs": "¡Bienvenidos a Expedientes! Cada pista es una temperatura o un saldo. Pon las pistas en orden de menor a mayor para resolver el caso.",
+  "challengeStory": "A cold case is open again. Every clue is a number, and some are far below zero. Put them in the right order to open the evidence room.",
+  "challengeStoryEs": "Un caso sin resolver está abierto otra vez. Cada pista es un número y algunos están muy por debajo de cero. Ponlos en el orden correcto para abrir la sala de evidencias.",
   "getReady": null,
   "fresh": [
     {
@@ -16,35 +16,37 @@
     {
       "k": "gen",
       "g": "compareOrder",
-      "level": 1
+      "level": 1,
+      "shape": "which-input"
     },
     {
       "k": "gen",
       "g": "compareOrder",
-      "level": 2
+      "level": 2,
+      "shape": "compare-two"
     },
     {
       "k": "gen",
       "g": "compareOrder",
-      "level": 2
+      "level": 2,
+      "shape": "which-input"
     },
     {
       "k": "gen",
       "g": "compareOrder",
-      "level": 3
+      "level": 3,
+      "shape": "compare-two"
     },
     {
       "k": "gen",
       "g": "compareOrder",
-      "level": 3
+      "level": 3,
+      "shape": "which-input"
     },
     {
       "k": "act",
-      "kind": "nline",
-      "level": 2,
-      "p": {
-        "mode": "order"
-      }
+      "kind": "dualrank",
+      "level": 2
     }
   ],
   "challenge": {
@@ -52,22 +54,26 @@
       {
         "k": "gen",
         "g": "compareOrder",
-        "level": 2
+        "level": 2,
+        "shape": "compare-two"
       },
       {
         "k": "gen",
         "g": "compareOrder",
-        "level": 2
+        "level": 2,
+        "shape": "which-input"
       },
       {
         "k": "gen",
         "g": "compareOrder",
-        "level": 3
+        "level": 3,
+        "shape": "compare-two"
       },
       {
         "k": "gen",
         "g": "compareOrder",
-        "level": 3
+        "level": 3,
+        "shape": "which-input"
       },
       {
         "k": "gen",
@@ -324,18 +330,18 @@
     "lab": [
       {
         "k": "act",
-        "kind": "nline",
+        "kind": "thermo",
         "level": 3,
         "p": {
-          "mode": "order"
+          "mode": "between"
         }
       },
       {
         "k": "act",
-        "kind": "nline",
+        "kind": "absbench",
         "level": 4,
         "p": {
-          "mode": "order"
+          "mode": "contrast"
         }
       },
       {
@@ -515,19 +521,19 @@
       },
       {
         "k": "mc",
-        "q": "Ximena says, \"−3 is greater than −7, because −3 is farther right on a number line.\" Yuri says, \"−7 is greater than −3, because 7 is greater than 3.\" Zoe says, \"−3 is less than −7, because negative numbers are less than positive ones.\" Who is right?",
-        "qEs": "Ximena dice: «−3 es mayor que −7, porque −3 está más a la derecha en una recta numérica». Yuri dice: «−7 es mayor que −3, porque 7 es mayor que 3». Zoe dice: «−3 es menor que −7, porque los números negativos son menores que los positivos». ¿Quién tiene razón?",
+        "q": "Ximena says: −3 is greater than −7, because −3 is farther right on a number line. Yuri says: −7 is greater than −3, because 7 is greater than 3. Zoe says: −3 is less than −7, because negative numbers are less than positive ones. Who is right?",
+        "qEs": "Ximena dice: −3 es mayor que −7, porque −3 está más a la derecha en una recta numérica. Yuri dice: −7 es mayor que −3, porque 7 es mayor que 3. Zoe dice: −3 es menor que −7, porque los números negativos son menores que los positivos. ¿Quién tiene razón?",
         "c": [
-          "Yuri only",
-          "Ximena only",
-          "Zoe only",
-          "Nobody"
+          "Only Yuri",
+          "Only Ximena",
+          "Only Zoe",
+          "None of them"
         ],
         "cEs": [
           "Solo Yuri",
           "Solo Ximena",
           "Solo Zoe",
-          "Nadie"
+          "Ninguno de ellos"
         ],
         "a": 1,
         "f": [
@@ -940,7 +946,7 @@
     "lab": "deep-sea-order",
     "model": {
       "kind": "line",
-      "mode": "absolute",
+      "mode": "order",
       "values": [
         -3,
         -8
@@ -971,68 +977,68 @@
       ]
     },
     "investigate": {
-      "p": "Predict which is greater, −7 or −3, and which is farther from zero. Test both numbers in the model. Write your prediction, your test, and your evidence. Explain why the number with the greater absolute value is not always the greater number.",
-      "pEs": "Predice cuál es mayor, −7 o −3, y cuál está más lejos del cero. Prueba ambos números en el modelo. Escribe tu predicción, tu prueba y tu evidencia. Explica por qué el número con mayor valor absoluto no siempre es el número mayor.",
-      "fr": "I predicted that ___ is greater because it is farther to the ___. The number ___ is farther from zero. A greater absolute value does not mean a greater number because ___.",
-      "frEs": "Predije que ___ es mayor porque está más a la ___. El número ___ está más lejos del cero. Un valor absoluto mayor no significa un número mayor porque ___.",
+      "p": "Predict which is greater, −7 or −3. Put the first location at −7 and the second at −3, and read the steps from the first to the second. Then swap the two locations. Write your prediction, your test, and your evidence. Explain how the direction of the steps tells you which number is greater.",
+      "pEs": "Predice cuál es mayor, −7 o −3. Pon la primera ubicación en −7 y la segunda en −3, y lee los pasos de la primera a la segunda. Luego intercambia las dos ubicaciones. Escribe tu predicción, tu prueba y tu evidencia. Explica cómo la dirección de los pasos te dice cuál número es mayor.",
+      "fr": "I predicted that ___ is greater. From −7 to −3 the model showed ___ steps ___. After I swapped them it showed ___. The direction tells me that ___ is greater because ___.",
+      "frEs": "Predije que ___ es mayor. De −7 a −3 el modelo mostró ___ pasos hacia ___. Al intercambiarlos mostró ___. La dirección me dice que ___ es mayor porque ___.",
       "min": 80,
       "kw": [
-        "greater than",
-        "less than",
-        "absolute value",
-        "number line"
+        "greater",
+        "less",
+        "number line",
+        "integer"
       ],
       "kwEs": [
-        "mayor que",
-        "menor que",
-        "valor absoluto",
-        "recta numérica"
+        "mayor",
+        "menor",
+        "recta numérica",
+        "entero"
       ],
       "rubric": [
-        "I predicted both answers before I tested.",
-        "I wrote which number is greater and which is farther from zero.",
-        "I used < or > to compare the two numbers.",
-        "I explained why the two answers are different."
+        "I made a prediction before I tested.",
+        "I read the direction and the number of steps for both orders.",
+        "I explained that the number farther right is greater, even when its digits look bigger."
       ],
       "rubricEs": [
-        "Predije ambas respuestas antes de probar.",
-        "Escribí qué número es mayor y cuál está más lejos del cero.",
-        "Usé < o > para comparar los dos números.",
-        "Expliqué por qué las dos respuestas son distintas."
+        "Hice una predicción antes de probar.",
+        "Leí la dirección y el número de pasos en los dos órdenes.",
+        "Expliqué que el número más a la derecha es mayor, aunque sus dígitos parezcan más grandes."
       ],
-      "x": "−3 is greater than −7 because it is farther to the right: −7 < −3. But −7 is farther from zero (7 units compared with 3 units), so |−7| > |−3|. The number with the greater absolute value is not always greater. When both numbers are negative, it is the lesser one.",
-      "xEs": "−3 es mayor que −7 porque está más a la derecha: −7 < −3. Pero −7 está más lejos del cero (7 unidades frente a 3 unidades), así que |−7| > |−3|. El número con mayor valor absoluto no siempre es el mayor. Cuando ambos son negativos, es el menor.",
+      "x": "−3 is greater than −7 because it is farther to the right. From −7 to −3 the model shows 4 steps right, and from −3 to −7 it shows 4 steps left. Moving right means greater, so −7 < −3. A bigger digit after a negative sign does not make a greater number.",
+      "xEs": "−3 es mayor que −7 porque está más a la derecha. De −7 a −3 el modelo muestra 4 pasos a la derecha, y de −3 a −7 muestra 4 pasos a la izquierda. Moverse a la derecha significa mayor, así que −7 < −3. Un dígito más grande después del signo negativo no hace un número mayor.",
       "h": [
-        "Predict first: which number is farther right, and which is farther from zero?",
-        "Test one number at a time. Set one location to it and the other location to zero.",
-        "Keep two ideas separate: position on the number line, and distance from zero."
+        "Predict first, then test. Put −7 first and −3 second.",
+        "Right is positive. Which way did the steps go?",
+        "Swap the two locations and compare the two readings."
       ],
       "hEs": [
-        "Predice primero: ¿qué número está más a la derecha y cuál está más lejos del cero?",
-        "Prueba un número a la vez. Pon una ubicación en ese número y la otra en cero.",
-        "Mantén separadas dos ideas: la posición en la recta numérica y la distancia al cero."
+        "Primero predice y luego prueba. Pon −7 primero y −3 segundo.",
+        "La derecha es positiva. ¿Hacia dónde fueron los pasos?",
+        "Intercambia las dos ubicaciones y compara las dos lecturas."
       ]
     },
     "stretch": {
-      "q": "Keep the second location at −8. Move the first location to a rational number that is greater than −8 but less than −7. Then write the comparison with < for the three numbers.",
-      "qEs": "Deja la segunda ubicación en −8. Mueve la primera ubicación a un número racional que sea mayor que −8 pero menor que −7. Luego escribe la comparación con < para los tres números.",
+      "q": "Put the second location at −2. Then put the first location where the second location is exactly 5 steps to the right of it. Say which of the two numbers is greater.",
+      "qEs": "Pon la segunda ubicación en −2. Luego pon la primera ubicación donde la segunda quede exactamente 5 pasos a su derecha. Di cuál de los dos números es mayor.",
       "goal": {
         "match": {
-          "0": -7.5,
-          "1": -8
+          "0": -7,
+          "1": -2
         }
       },
-      "miss": "A number between −8 and −7 sits to the right of −8 and to the left of −7. Whole numbers will not fit, so try a place in between.",
-      "missEs": "Un número entre −8 y −7 está a la derecha de −8 y a la izquierda de −7. Los números enteros no sirven, así que prueba un lugar intermedio.",
-      "x": "−7.5 is between −8 and −7, so −8 < −7.5 < −7. Moving right from −8 makes numbers greater, and −7.5 is half a step to the right. Rational numbers fill the gaps between integers.",
-      "xEs": "−7.5 está entre −8 y −7, así que −8 < −7.5 < −7. Moverse a la derecha desde −8 hace que los números sean mayores, y −7.5 está medio paso a la derecha. Los números racionales llenan los espacios entre los enteros.",
+      "miss": "The second location must be to the right of the first. Count the steps from the first location to the second and check the direction.",
+      "missEs": "La segunda ubicación debe quedar a la derecha de la primera. Cuenta los pasos de la primera ubicación a la segunda y revisa la dirección.",
+      "x": "The first location must be −7: from −7, 5 steps right reaches −2. So −7 < −2, and −2 is the greater number because it is farther right.",
+      "xEs": "La primera ubicación debe estar en −7: desde −7, 5 pasos a la derecha llegan a −2. Así que −7 < −2, y −2 es el número mayor porque está más a la derecha.",
       "h": [
-        "Between two integers there is room for a decimal or a fraction.",
-        "Greater numbers are to the right. Start at −8 and move right, but stop before −7."
+        "Right is positive. The steps go from the first location to the second.",
+        "Think about where you must start to reach −2 after moving right.",
+        "The number farther right is the greater number."
       ],
       "hEs": [
-        "Entre dos enteros hay lugar para un decimal o una fracción.",
-        "Los números mayores están a la derecha. Empieza en −8 y muévete a la derecha, pero detente antes de −7."
+        "La derecha es positiva. Los pasos van de la primera ubicación a la segunda.",
+        "Piensa en dónde debes empezar para llegar a −2 moviéndote a la derecha.",
+        "El número que está más a la derecha es el mayor."
       ]
     },
     "create": {
@@ -1093,8 +1099,8 @@
         }
       },
       "readout": {
-        "en": "Distance between locations (units)",
-        "es": "Distancia entre ubicaciones (unidades)"
+        "en": "Steps from first to second (right is positive)",
+        "es": "Pasos de la primera a la segunda (la derecha es positiva)"
       }
     }
   },

@@ -157,6 +157,7 @@
         return;
       }
       misses[item.id] = (misses[item.id] || 0) + 1;
+      if (U.wrong) U.wrong(4); // guess resistance: assets/u4-studio-guess.js
       o.onMiss();
       const lines = bad.map((/** @type {any} */ f) => {
         const v = vals[item.fields.indexOf(f)];

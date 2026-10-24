@@ -18,7 +18,10 @@
   const data = JSON.parse(dataNode.textContent || "{}");
   /** Pathway 1 (Foundational) is a different run of the same studio: easier generated levels, a hint showing, its own save. */
   const PATH = W.EWLChrome?.pathway || { id: data.mode === "challenge" ? 3 : 2, scaffold: false };
-  const KEY = String(data.storageKey) + (PATH.scaffold ? "_p1" : "");
+  const KEY =
+    String(data.storageKey) +
+    (PATH.scaffold ? "_p1" : "") +
+    (W.StudioPedagogy?.storageSuffix || "");
   const lvl = (/** @type {number} */ n) => (PATH.scaffold ? Math.max(1, n - 1) : n);
   const SECTIONS = /** @type {any[]} */ (data.sections);
   const TABS = [1, 2, 3, 4, 5];
@@ -45,7 +48,11 @@
     return h;
   };
   const baseSeed = (/** @type {string} */ id) =>
-    1000 + (hash(`${data.lesson}|${data.mode}|${id}`) % 90000);
+    1000 +
+    (hash(
+      `${W.StudioPedagogy?.seedToken ? `${W.StudioPedagogy.seedToken}|` : ""}${data.lesson}|${data.mode}|${id}`,
+    ) %
+      90000);
 
   /* ---- expanding specs into concrete items ------------------------------------------------------ */
   const idOf = (/** @type {number} */ tab, /** @type {number} */ i) =>
@@ -621,6 +628,8 @@
     const host = $(".item-body", stage);
     mountItem({ tab, it, host });
     W.StudioWorked?.decorate(tab, it, host);
+    W.StudioPedagogy?.decorate(tab, it, host);
+    W.StudioLanguage?.decorate(tab, it, host, stage);
     mountWorkspace(stage, it);
     if ((it.k === "mc" || it.k === "num") && !isSolved(tab, it))
       (sec.conf ? confRow : confChips)(it, host);
@@ -630,7 +639,10 @@
         const id = it.id;
         const isPool = SECTIONS[tab - 1].items[i].k === "pool";
         const cur = state.seeds[id] ?? (isPool ? 0 : baseSeed(id));
-        state.seeds[id] = isPool ? cur + 1 : cur + 1 + Math.floor(Math.random() * 997);
+        state.seeds[id] =
+          isPool || W.StudioPedagogy?.seedToken
+            ? cur + 1
+            : cur + 1 + Math.floor(Math.random() * 997);
         // new numbers must not be a way to reset the count: an unsolved item keeps its misses
         const kept = solvedMap(tab)[id] ? 0 : A()[id] || 0;
         wipeItem(id);
@@ -738,6 +750,7 @@
           label: x.label,
           labelEs: x.labelEs,
         })),
+        extra: W.StudioPedagogy?.exitExtras?.() || "",
         next,
       },
     )}${W.StudioPulse?.slotHtml?.() || '<div class="pulse-slot" data-pulse-slot></div>'}`;
@@ -825,6 +838,7 @@
     sections: SECTIONS,
     tabs: TABS,
   };
+  W.StudioPedagogy?.init(RT);
   W.U4Studio?.init({
     state,
     save,

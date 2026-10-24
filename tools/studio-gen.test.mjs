@@ -82,21 +82,23 @@ for (const id of ids) {
   }
   const def = G.registry[id];
   assert.equal(def.levels, 4, `${id}: levels must be 4`);
-  for (let level = 1; level <= 4; level++) {
+  // every problem shape a generator lists (core.js: shapes), at every level; the default shape is "forward"
+  const shapes = def.shapes?.length ? def.shapes : ["forward"];
+  for (const [level, shape] of shapes.flatMap((sh) => [1, 2, 3, 4].map((lv) => [lv, sh]))) {
     const stems = new Set();
     const pos = [0, 0, 0, 0, 0];
-    let mc = 0;
+    let mc4 = 0;
     let first = null;
     for (const seed of SEED_LIST) {
       let item;
       try {
-        item = G.make(id, level, seed);
+        item = G.make(id, level, seed, shape);
       } catch (e) {
-        bad(id, `L${level} seed ${seed} threw: ${e.message}`);
+        bad(id, `L${level}/${shape} seed ${seed} threw: ${e.message}`);
         break;
       }
       first ||= item;
-      const tag = `L${level}/seed ${seed}`;
+      const tag = `L${level}/${shape}/seed ${seed}`;
       const text = (v) => typeof v === "string" && v.trim().length > 1;
       if (!text(item.q)) {
         bad(id, `${tag} no q`);
@@ -109,7 +111,6 @@ for (const id of ids) {
       if (!Array.isArray(item.h) || item.h.length < 2 || item.h.some((h) => !text(h)))
         bad(id, `${tag} needs a hint ladder h[] of 2-3 hints`);
       if (item.k === "mc") {
-        if (seed <= SEEDS) mc++;
         if (!Array.isArray(item.c) || item.c.length < 2 || item.c.length > 5)
           bad(id, `${tag} choice count`);
         if (new Set(item.c.map((c) => String(c).trim().toLowerCase())).size !== item.c.length)
@@ -127,7 +128,10 @@ for (const id of ids) {
         item.c.forEach(
           (_c, i) => i !== item.a && trapCheck(id, `${tag} choice ${i}`, (item.tag || [])[i]),
         );
-        if (item.c.length === 4 && seed <= SEEDS) pos[item.a]++;
+        if (item.c.length === 4 && seed <= SEEDS) {
+          pos[item.a]++;
+          mc4++;
+        }
       } else if (item.k === "num") {
         if (!Number.isFinite(G.value(item.a))) bad(id, `${tag} num answer not numeric: ${item.a}`);
         for (const w of item.fw || []) trapCheck(id, `${tag} typed wrong value ${w.v}`, w.tag);
@@ -148,7 +152,7 @@ for (const id of ids) {
           bad(id, `${tag} check() accepted a corrupted key`);
           break;
         }
-        const again = G.make(id, level, seed);
+        const again = G.make(id, level, seed, shape);
         assert.deepEqual(
           JSON.parse(JSON.stringify(again)),
           JSON.parse(JSON.stringify(item)),
@@ -157,9 +161,9 @@ for (const id of ids) {
       }
     }
     if (stems.size < SEEDS * 0.5)
-      bad(id, `L${level}: only ${stems.size} distinct problems in ${SEEDS} seeds`);
-    if (mc > SEEDS * 0.6 && pos.slice(0, 4).some((n) => n / mc < 0.15 || n / mc > 0.36))
-      bad(id, `L${level}: answer position skew ${pos.slice(0, 4).join("/")}`);
+      bad(id, `L${level}/${shape}: only ${stems.size} distinct problems in ${SEEDS} seeds`);
+    if (mc4 > SEEDS * 0.6 && pos.slice(0, 4).some((n) => n / mc4 < 0.15 || n / mc4 > 0.36))
+      bad(id, `L${level}/${shape}: answer position skew ${pos.slice(0, 4).join("/")}`);
     void first;
   }
 }

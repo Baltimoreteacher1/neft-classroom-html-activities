@@ -36,6 +36,7 @@ const server = createServer((req, res) => {
 await new Promise((r) => server.listen(0, "127.0.0.1", r));
 const origin = `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch();
+const requestedLessons = new Set(process.argv.slice(2).filter((arg) => /^\d+-\d+$/.test(arg)));
 const report = [];
 const ok = (m) => report.push(m);
 
@@ -51,8 +52,8 @@ async function solveCurrent(page, host = "body", tab = 0) {
   assert.ok(item, "an item was generated");
   if (item.k === "mc") await page.locator(`${host} .choice-btn`).nth(item.a).click();
   else {
-    await page.locator(`${host} input`).first().fill(String(item.a));
-    await page.locator(`${host} .btn-go, ${host} button:has-text("Check")`).first().click();
+    await page.locator(`${host} input.num-input`).first().fill(String(item.a));
+    await page.locator(`${host} [data-check]`).first().click();
   }
 }
 /** Header controls live in the studio Menu (assets/studio/clarity.js): open it first when the control is inside it. */
@@ -386,8 +387,8 @@ try {
   // remembered, a miss then a solve offers "Try a fresh one", a clean fresh answer is a Repair the learner model counts, and the
   // fresh item never touched section progress.
   {
-    const ids = readdirSync(join(REPO_ROOT, "math/practice-studio")).filter((d) =>
-      /^\d+-\d+$/.test(d),
+    const ids = readdirSync(join(REPO_ROOT, "math/practice-studio")).filter(
+      (d) => /^\d+-\d+$/.test(d) && (!requestedLessons.size || requestedLessons.has(d)),
     );
     let checked = 0;
     for (const id of ids)
@@ -448,21 +449,36 @@ try {
           if (await hold.count()) await hold.click();
           await page.locator(`${stage} [data-mc="${it.a}"]:visible`).click();
         } else {
-          const box = page.locator(`${stage} input:visible`).first();
+          const box = page.locator(`${stage} input.num-input:visible`).first();
           await box.fill("999991");
-          await page
-            .locator(`${stage} .btn-go:visible, ${stage} button:visible:has-text("Check")`)
-            .first()
-            .click();
+          await page.locator(`${stage} [data-check]:visible`).first().click();
           const hold = page.locator(`${stage} .hold-chip`).first();
           if (await hold.count()) await hold.click();
           await box.fill(String(it.a));
-          await page
-            .locator(`${stage} .btn-go:visible, ${stage} button:visible:has-text("Check")`)
-            .first()
-            .click();
+          await page.locator(`${stage} [data-check]:visible`).first().click();
         }
-        await page.locator(`${stage} [data-repair]`).click();
+        const repairButton = page.locator(`${stage} [data-repair]`);
+        try {
+          await repairButton.waitFor({ timeout: 3000 });
+        } catch {
+          const debug = await page.evaluate(({ tab, i }) => {
+            const a = window.StudioRT.api;
+            const spec = a.sections[tab - 1]?.items[i];
+            const item = a.expand(tab, a.state.idx[tab]);
+            return {
+              spec: { k: spec?.k, g: spec?.g, id: spec?.id },
+              item: { k: item?.k, id: item?.id, a: item?.a, seed: item?.seed },
+              tries: a.state.tries?.[item?.id] ?? a.state.attempts?.[item?.id] ?? null,
+              hints: a.state.hints?.[item?.id] ?? 0,
+              feedback: document
+                .querySelector(`#stage-${tab} .item-fb`)
+                ?.textContent?.slice(0, 160),
+              repairLoaded: !!window.StudioRepair,
+            };
+          }, at);
+          throw new Error(`${url} did not offer a fresh repair: ${JSON.stringify(debug)}`);
+        }
+        await repairButton.click();
         await page.locator(`${stage} .repair-stage`).waitFor();
         const solvedBefore = await page.evaluate(
           ({ tab }) =>
@@ -491,7 +507,10 @@ try {
         void doneBefore;
         await ctx.close();
       }
-    assert.ok(checked >= 60, `repair loop checked on ${checked} generated pages`);
+    assert.ok(
+      checked >= (requestedLessons.size ? requestedLessons.size * 2 : 60),
+      `repair loop checked on ${checked} generated pages`,
+    );
     ok(
       `W2: confidence tap, miss -> fresh one -> Repaired, on ${checked} generated pages (every page with a generated item)`,
     );
@@ -550,8 +569,8 @@ try {
   {
     let checked = 0;
     let single = 0;
-    const ids = readdirSync(join(REPO_ROOT, "math/practice-studio")).filter((d) =>
-      /^\d+-\d+$/.test(d),
+    const ids = readdirSync(join(REPO_ROOT, "math/practice-studio")).filter(
+      (d) => /^\d+-\d+$/.test(d) && (!requestedLessons.size || requestedLessons.has(d)),
     );
     for (const id of ids)
       for (const url of [
@@ -712,8 +731,8 @@ try {
   // worked example; the example is a different problem of the same skill with three steps and the answer; "try one" opens step 1
   // on a fresh item; and none of it changes section progress or counts as a repair.
   {
-    const ids = readdirSync(join(REPO_ROOT, "math/practice-studio")).filter((d) =>
-      /^\d+-\d+$/.test(d),
+    const ids = readdirSync(join(REPO_ROOT, "math/practice-studio")).filter(
+      (d) => /^\d+-\d+$/.test(d) && (!requestedLessons.size || requestedLessons.has(d)),
     );
     let checked = 0;
     for (const id of ids)
@@ -811,7 +830,10 @@ try {
         );
         await ctx.close();
       }
-    assert.ok(checked >= 60, `worked examples checked on ${checked} generated pages`);
+    assert.ok(
+      checked >= (requestedLessons.size ? requestedLessons.size * 2 : 60),
+      `worked examples checked on ${checked} generated pages`,
+    );
     ok(
       `W3b: worked example (its steps, answer, a different problem) then a fresh try with step 1 shown, on ${checked} generated pages`,
     );
@@ -820,8 +842,8 @@ try {
   // W3c (docs/specs/studio-v3-w3.md): every generated page carries its "Which move?" item with the work so far; a wrong move shows
   // that move's own help (and never the best move), the best move solves it and counts toward the section.
   {
-    const ids = readdirSync(join(REPO_ROOT, "math/practice-studio")).filter((d) =>
-      /^\d+-\d+$/.test(d),
+    const ids = readdirSync(join(REPO_ROOT, "math/practice-studio")).filter(
+      (d) => /^\d+-\d+$/.test(d) && (!requestedLessons.size || requestedLessons.has(d)),
     );
     let checked = 0;
     for (const id of ids)

@@ -261,6 +261,7 @@
       rhombus: "Rhombus",
       hex: "Regular polygon",
       lshape: "L-shaped figure",
+      figure: "Figure",
     };
     const WORDS = { base: "b", height: "h" };
     const normDims = (d) => {
@@ -451,6 +452,58 @@
           ],
         };
       },
+      /**
+       * Any plane figure from explicit corners (y up): a house, a trapezoid on a rectangle, an obtuse triangle with its base
+       * extended. dims: pts [[x, y], ...] in order, cuts [[[x, y], [x, y]], ...] dashed segments, right [[x, y, sx, sy], ...] right-angle
+       * marks (sx, sy are screen directions, sy -1 is up), marks [{at: [x, y], t, dx, dy, a, name}] labelled lengths, name.
+       */
+      figure(d) {
+        const ok = (/** @type {any} */ p) =>
+          Array.isArray(p) &&
+          p.length >= 2 &&
+          Number.isFinite(Number(p[0])) &&
+          Number.isFinite(Number(p[1]));
+        const pts = (Array.isArray(d.pts) ? d.pts : [])
+          .filter(ok)
+          .map((/** @type {any} */ p) => [Number(p[0]), Number(p[1])]);
+        if (pts.length < 3) throw new RangeError("shape figure: pts needs at least 3 corners");
+        const cuts = (Array.isArray(d.cuts) ? d.cuts : []).filter(
+          (/** @type {any} */ c) => Array.isArray(c) && ok(c[0]) && ok(c[1]),
+        );
+        const all = [
+          ...pts,
+          ...cuts.flat().map((/** @type {any} */ p) => [Number(p[0]), Number(p[1])]),
+        ];
+        const xs = all.map((p) => p[0]);
+        const ys = all.map((p) => p[1]);
+        const [x0, y0, x1, y1] = [
+          Math.min(...xs),
+          Math.min(...ys),
+          Math.max(...xs),
+          Math.max(...ys),
+        ];
+        const k = (1.6 * U) / Math.max(x1 - x0, 1.6 * (y1 - y0), 1e-6);
+        const map = (/** @type {any} */ p) => [(Number(p[0]) - x0) * k, (y1 - Number(p[1])) * k];
+        return {
+          w: (x1 - x0) * k,
+          h: (y1 - y0) * k,
+          poly: pts.map(map),
+          extra: cuts.map((/** @type {any} */ c) => [map(c[0]), map(c[1])]),
+          xcls: "sd",
+          ra: (Array.isArray(d.right) ? d.right : [])
+            .filter(ok)
+            .map((/** @type {any} */ r) => [
+              map(r),
+              [Number(r[2]) || 1, 0],
+              [0, Number(r[3]) || -1],
+            ]),
+          lab: (Array.isArray(d.marks) ? d.marks : [])
+            .filter((/** @type {any} */ m) => m && ok(m.at))
+            .map((/** @type {any} */ m) =>
+              lb(dim(m.t), ...map(m.at), m.dx || 0, m.dy || 0, m.a || "middle", m.name || "length"),
+            ),
+        };
+      },
     };
     /** A short perpendicular tick on the middle of edge a-b: the mark for "these sides are equal". */
     const tick = (a, b) => {
@@ -520,7 +573,10 @@
         printed.push(`${q.name} ${say(q.d, unit)}`);
       }
       const what =
-        NAMES[kind] + (kind === "hex" && dims.n ? ` with ${Math.round(opt(dims.n, 6))} sides` : "");
+        (kind === "figure" && typeof dims.name === "string" && dims.name
+          ? dims.name
+          : NAMES[kind]) +
+        (kind === "hex" && dims.n ? ` with ${Math.round(opt(dims.n, 6))} sides` : "");
       const note = g.ht ? " The height is the dashed line at a right angle to the base." : "";
       const bare = s.labels === false ? ", no measurements shown" : "";
       const title = printed.length

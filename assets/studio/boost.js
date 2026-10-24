@@ -46,6 +46,13 @@
   const bus = W.StudioBus;
   if (bus?.on) {
     bus.on("answer", (/** @type {any} */ e) => {
+      // a miss made while the student tapped "Certain": book the skill into tomorrow's Boost with extra weight
+      if (!e.ok && e.gen && e.conf === 3 && !e.redeem) {
+        const store = load();
+        Core.hypercorrect(store, e.gen, today(), e.lesson, e.tag);
+        save(store);
+        return;
+      }
       if (!e.ok || !e.gen) return;
       const store = load();
       Core.record(store, e.gen, (e.tries || 1) === 1 && !(e.hints > 0), today(), e.lesson);

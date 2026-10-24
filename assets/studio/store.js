@@ -72,6 +72,12 @@
     flag: {},
     proof: {},
     rubric: {},
+    // pedagogy layer (assets/studio/pedagogy.js): estimate picks, certain misses, why-chip picks, written evidence, look-back
+    est: {},
+    hyper: [],
+    why: {},
+    wr: {},
+    look: {},
     stats: { tries: 0, first: 0, streak: 0, best: 0, reps: 0, hints: 0 },
   });
 

@@ -74,6 +74,64 @@ yes("2*50*13", "2 × 50 × 13");
 no("2 × 50 × 12", "2 × 50 × 13");
 yes("2⁵", "2⁵");
 no("2^5", "2⁵");
+
+// the table kind types IN its cells: each blank cell is a real input, a wrong cell is marked, and the check needs every cell right
+{
+  const host = w.document.createElement("div");
+  w.document.body.append(host);
+  const calls = { solve: 0, miss: 0 };
+  const it = {
+    k: "tbl",
+    id: "tc",
+    t: "Fill in the table",
+    hd: ["Cups of juice", "Cups of water"],
+    rows: [
+      ["2", "3"],
+      ["4", ""],
+      ["", "9"],
+    ],
+    cells: [
+      { r: 1, c: 1, a: "6" },
+      { r: 2, c: 0, a: "6" },
+    ],
+  };
+  w.StudioRT.kinds.tbl.mount({
+    it,
+    host,
+    state: { cells: {}, notes: {}, picks: {}, hints: {} },
+    solved: false,
+    es: () => false,
+    save() {},
+    say() {},
+    fb() {},
+    misses: () => 0,
+    hintBlock: () => "",
+    solve: () => calls.solve++,
+    miss: () => calls.miss++,
+  });
+  const cells = [...host.querySelectorAll("td > input[data-cell]")];
+  assert.equal(cells.length, 2, "both blank cells are inputs inside the table");
+  assert.ok(
+    cells.every((c) => c.getAttribute("aria-label")),
+    "each cell has an accessible name",
+  );
+  const type = (c, v) => {
+    c.value = v;
+    c.dispatchEvent(new w.Event("input", { bubbles: true }));
+  };
+  type(cells[0], "6");
+  type(cells[1], "7");
+  host.querySelector("[data-check-table]").click();
+  assert.equal(calls.miss, 1, "one wrong cell is a miss");
+  assert.ok(
+    cells[1].classList.contains("err") && cells[0].classList.contains("ok"),
+    "the wrong cell is marked, the right one is not",
+  );
+  type(cells[1], "6 ");
+  host.querySelector("[data-check-table]").click();
+  assert.equal(calls.solve, 1, "every cell right solves the table");
+}
+
 console.log(
-  "studio-table-cells: numbers, units, ratios, pairs, lists, alternatives and expressions graded as specified.",
+  "studio-table-cells: numbers, units, ratios, pairs, lists, alternatives and expressions graded as specified; typed cells check.",
 );

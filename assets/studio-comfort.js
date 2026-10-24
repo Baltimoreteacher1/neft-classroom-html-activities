@@ -313,5 +313,16 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
   else mount();
 
-  W.EWLComfort = { settings: () => ({ ...s }), apply, open, DEFAULTS };
+  W.EWLComfort = {
+    settings: () => ({ ...s }),
+    apply,
+    open,
+    DEFAULTS,
+    // small named records that belong with the comfort settings (the first-touch coach remembers what it has shown)
+    get: (/** @type {string} */ k) => s[k],
+    set: (/** @type {string} */ k, /** @type {any} */ v) => {
+      s[k] = v;
+      write();
+    },
+  };
 })();

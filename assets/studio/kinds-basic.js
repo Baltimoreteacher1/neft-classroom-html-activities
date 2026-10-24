@@ -26,7 +26,9 @@
   /** The situation an item belongs to (a lesson's Connect scenario) and its figure, shown above the question. */
   const viz = (/** @type {any} */ it) =>
     `${it.ctx ? `<p class="item-ctx">${esc(it.ctx)}${es(it.ctxEs)}</p>` : ""}${
-      it.viz && W.StudioViz ? `<div class="viz-host">${W.StudioViz.render(it.viz)}</div>` : ""
+      it.viz && W.StudioViz
+        ? `<div class="viz-host" data-viz="${esc(it.viz.t)}">${W.StudioViz.render(it.viz)}</div>`
+        : ""
     }`;
   /** Number from "12", "+18", "$3.50", "3/4", "2 1/3", "−5", or "12 cm" (a trailing unit is ignored). */
   const value = (/** @type {any} */ raw) => {
@@ -390,7 +392,38 @@
     },
   };
 
-  /* ---- written explanation with a self-check rubric ------------------------------------------- */
+  /* ---- written explanation with a self-check rubric -------------------------------------------------- */
+  // v4 (pedagogy brief item 7): the minimum is WORDS, the model answer stays hidden until the student submits, at least one
+  // rubric tick must be backed by one of the student's own words ("which of my words shows it?"), and the writing is kept on
+  // this device (state.notes) with a share flag (state.wr[id].share) that only the explicit "Copy my results" consent turns on.
+  const P = () => W.StudioPedagogy;
+  const modelHtml = (/** @type {any} */ it) =>
+    `<div class="wr-model"><p><strong>Compare your answer with this model.${es("Compara tu respuesta con este modelo.")}</strong> ${tx(it.x)}${txEs(it.xEs)}</p></div>`;
+  const wrSaved = (/** @type {any} */ it) =>
+    `<strong>Saved.</strong> Great work explaining your thinking.${es("Guardado. Buen trabajo al explicar tu razonamiento.")} ${modelHtml(it)}`;
+  const wrRec = (/** @type {any} */ ctx) => {
+    const all = (ctx.state.wr = ctx.state.wr || {});
+    const rec = (all[ctx.it.id] = all[ctx.it.id] || { ev: {}, share: false });
+    rec.ev = rec.ev || {};
+    return rec;
+  };
+  const evidenceRow = (
+    /** @type {any} */ ctx,
+    /** @type {number} */ i,
+    /** @type {boolean} */ lock,
+  ) => {
+    const it = ctx.it;
+    if (!(ctx.state.rubric[it.id] || [])[i]) return "";
+    const words = P()?.evidenceWords(ctx.state.notes[it.id], it.kw) || [];
+    if (!words.length) return "";
+    const pick = wrRec(ctx).ev[i];
+    return `<div class="wr-ev" role="group" aria-label="Which of my words shows it?"><span class="item-sub">Which of my words shows it?${es("¿Cuál de mis palabras lo muestra?")}</span> ${words
+      .map(
+        (/** @type {string} */ w) =>
+          `<button type="button" class="btn btn-sm conf-btn" data-ev="${i}" data-w="${esc(w)}" aria-pressed="${pick === w}"${lock ? " disabled" : ""}>${esc(w)}</button>`,
+      )
+      .join(" ")}</div>`;
+  };
   const review = (/** @type {any} */ ctx, /** @type {boolean} */ lock) => {
     const it = ctx.it;
     const text = String(ctx.state.notes[it.id] || "").toLowerCase();
@@ -404,31 +437,46 @@
     const rows = (it.rubric || [])
       .map(
         (/** @type {string} */ r, /** @type {number} */ i) =>
-          `<li><label><input type="checkbox" data-rubric="${i}"${ticks[i] ? " checked" : ""}${lock ? " disabled" : ""}> ${esc(r)}${es((it.rubricEs || [])[i])}</label></li>`,
+          `<li><label><input type="checkbox" data-rubric="${i}"${ticks[i] ? " checked" : ""}${lock ? " disabled" : ""}> ${esc(r)}${es((it.rubricEs || [])[i])}</label>${evidenceRow(ctx, i, lock)}</li>`,
       )
       .join("");
-    return `<div class="wr-review"><p><strong>Compare your answer with this model.${es("Compara tu respuesta con este modelo.")}</strong> ${tx(it.x)}${txEs(it.xEs)}</p>
+    const share = wrRec(ctx).share;
+    return `<div class="wr-review">
       ${kw.length ? `<p class="item-sub">Words to look for in your answer: ${kw.join(" · ")}${es("Palabras que debes buscar en tu respuesta (en español o inglés).")}</p>` : ""}
-      <p class="item-sub"><strong>Check yourself.${es("Revísate.")}</strong> Tick what your answer really did:${es("Marca lo que tu respuesta realmente hizo:")}</p><ul class="rubric-list">${rows}</ul>
-      ${lock ? "" : `<div class="item-actions"><button type="button" class="btn btn-go btn-sm" data-rubric-done>I checked my answer${es("Revisé mi respuesta")}</button></div>`}</div>`;
+      <p class="item-sub"><strong>Check yourself.${es("Revísate.")}</strong> Tick what your answer really did, then pick one of your own words that shows it:${es("Marca lo que tu respuesta realmente hizo y elige una de tus palabras que lo muestra:")}</p><ul class="rubric-list">${rows}</ul>
+      ${
+        lock
+          ? ""
+          : `<p class="item-sub wr-consent"><label><input type="checkbox" data-share${share ? " checked" : ""}> Include my writing when I tap "Copy my results". It stays on this device until I copy it.${es('Incluir mi escritura cuando toque "Copiar mis resultados". Se queda en este dispositivo hasta que la copie.')}</label></p>
+      <div class="item-actions"><button type="button" class="btn btn-go btn-sm" data-rubric-done>I checked my answer${es("Revisé mi respuesta")}</button></div>`
+      }</div>`;
   };
   K.wr = {
     mount(/** @type {any} */ ctx) {
       const it = ctx.it;
       const text = ctx.state.notes[it.id] || "";
       // The Foundational pathway asks for a shorter piece of writing: the idea matters more than the length.
-      const min = W.EWLChrome?.pathway?.scaffold ? Math.max(30, Math.round(it.min * 0.6)) : it.min;
+      const min = P()
+        ? P().minWords(it, !!W.EWLChrome?.pathway?.scaffold)
+        : Math.max(8, Math.round((it.min || 40) / 6));
+      const count = (/** @type {string} */ t) =>
+        P() ? P().wordCount(t) : t.trim().split(/\s+/).filter(Boolean).length;
       const reviewed = ctx.solved || ctx.state.rubric[it.id] !== undefined;
       ctx.host.innerHTML = `${viz(it)}<p class="item-q">${stem(it.p, it.pEs)}</p>
-        ${it.fr ? `<p class="item-sub"><strong>Sentence frame:${es("Marco de oración:")}</strong> ${esc(it.fr)}${es(it.frEs)}</p>` : ""}
+        ${it.fr ? `<p class="item-sub frame-line" data-frame><strong>Sentence frame:${es("Marco de oración:")}</strong> ${esc(it.fr)}${es(it.frEs)}</p>` : ""}
         <p class="item-sub">You can write in English, Spanish, or both.${es("Puedes escribir en inglés, en español o en ambos.")}</p>
         <label class="write-label" for="wr-${esc(it.id)}">Your explanation${es("Tu explicación")}</label>
         <textarea id="wr-${esc(it.id)}" class="write-box" rows="5" data-write${reviewed ? " readonly" : ""}>${esc(text)}</textarea>
-        <p class="item-sub" data-count>${text.trim().length} of ${min} characters</p>
+        <p class="item-sub" data-count>${count(text)} of ${min} words${es(`${count(text)} de ${min} palabras`)}</p>
         ${reviewed ? "" : `<div class="item-actions"><button type="button" class="btn btn-primary btn-sm" data-check-write>Check my thinking${es("Revisar mi razonamiento")}</button></div>`}
-        <div data-review>${reviewed ? review(ctx, ctx.solved) : ""}</div>
+        <div data-review>${reviewed && !ctx.solved ? review(ctx, false) : ""}</div>
         ${ctx.hintBlock()}<div class="item-fb feedback-box" role="status"></div>`;
       const box = /** @type {HTMLTextAreaElement} */ (ctx.host.querySelector("[data-write]"));
+      const slot = () => /** @type {HTMLElement} */ (ctx.host.querySelector("[data-review]"));
+      const redraw = () => {
+        slot().innerHTML = review(ctx, false);
+        wire();
+      };
       const wire = () => {
         for (const cb of /** @type {HTMLInputElement[]} */ ([
           ...ctx.host.querySelectorAll("[data-rubric]"),
@@ -437,38 +485,65 @@
             const arr = ctx.state.rubric[it.id] || [];
             arr[Number(cb.dataset.rubric)] = cb.checked;
             ctx.state.rubric[it.id] = arr;
+            if (!cb.checked) delete wrRec(ctx).ev[Number(cb.dataset.rubric)];
             ctx.save();
+            redraw();
+            /** @type {HTMLElement|null} */ (
+              ctx.host.querySelector(`[data-rubric="${cb.dataset.rubric}"]`)
+            )?.focus();
           });
+        for (const b of /** @type {HTMLElement[]} */ ([...ctx.host.querySelectorAll("[data-ev]")]))
+          b.addEventListener("click", () => {
+            wrRec(ctx).ev[Number(b.dataset.ev)] = b.dataset.w;
+            ctx.save();
+            redraw();
+            /** @type {HTMLElement|null} */ (
+              ctx.host.querySelector(`[data-ev="${b.dataset.ev}"][aria-pressed="true"]`)
+            )?.focus();
+          });
+        ctx.host.querySelector("[data-share]")?.addEventListener("change", (e) => {
+          wrRec(ctx).share = /** @type {HTMLInputElement} */ (e.target).checked;
+          ctx.save();
+        });
         ctx.host.querySelector("[data-rubric-done]")?.addEventListener("click", () => {
-          for (const cb of ctx.host.querySelectorAll("[data-rubric]"))
+          const rec = wrRec(ctx);
+          const ticks = ctx.state.rubric[it.id] || [];
+          if (!ticks.some((/** @type {boolean} */ t, /** @type {number} */ i) => t && rec.ev[i])) {
+            ctx.fb(
+              "warn",
+              `<strong>One more step.</strong> Tick one thing your answer really did, then pick one of your own words that shows it.${es("Un paso más: marca algo que tu respuesta realmente hizo y elige una de tus palabras que lo muestra.")}`,
+            );
+            return;
+          }
+          rec.words = count(box.value);
+          rec.at = Date.now();
+          for (const cb of ctx.host.querySelectorAll("[data-rubric],[data-ev],[data-share]"))
             cb.setAttribute("disabled", "");
           ctx.host.querySelector("[data-rubric-done]")?.remove();
-          ctx.solve("<strong>Saved.</strong> Great work explaining your thinking.");
+          ctx.solve(wrSaved(it));
         });
       };
-      if (ctx.solved)
-        return ctx.showSolved("<strong>Saved.</strong> Great work explaining your thinking.");
+      if (ctx.solved) return ctx.showSolved(wrSaved(it));
       if (reviewed) wire();
       box.addEventListener("input", () => {
         ctx.state.notes[it.id] = box.value;
         const c = ctx.host.querySelector("[data-count]");
-        if (c) c.textContent = `${box.value.trim().length} of ${min} characters`;
+        if (c)
+          c.innerHTML = `${count(box.value)} of ${min} words${es(`${count(box.value)} de ${min} palabras`)}`;
         ctx.save();
       });
       ctx.host.querySelector("[data-check-write]")?.addEventListener("click", () => {
-        if (box.value.trim().length < min) {
+        if (count(box.value) < min) {
           ctx.fb(
             "warn",
-            `<strong>Keep going.</strong> Write at least ${min} characters, using your own words and the numbers from the problem.${es("Sigue escribiendo: usa tus propias palabras y los números del problema.")}`,
+            `<strong>Keep going.</strong> Write at least ${min} words, using your own words and the numbers from the problem.${es(`Sigue escribiendo: escribe al menos ${min} palabras, con tus propias palabras y los números del problema.`)}`,
           );
           return;
         }
         ctx.state.rubric[it.id] = ctx.state.rubric[it.id] || [];
         box.setAttribute("readonly", "");
         ctx.host.querySelector("[data-check-write]")?.remove();
-        const slot = /** @type {HTMLElement} */ (ctx.host.querySelector("[data-review]"));
-        slot.innerHTML = review(ctx, false);
-        wire();
+        redraw();
         ctx.save();
       });
     },

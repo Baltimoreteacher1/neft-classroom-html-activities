@@ -2540,7 +2540,16 @@
     title: "Evaluate algebraic expressions",
     titleEs: "Evaluar expresiones algebraicas",
     levels: 4,
-    make(/** @type {any} */ rng, /** @type {number} */ level) {
+    shapes: ["forward", "reverse", "which-input"],
+    make(/** @type {any} */ rng, /** @type {number} */ level, /** @type {string} */ shape) {
+      if (shape === "reverse") return until("evalExpression", () => kindReverse(rng));
+      if (shape === "which-input")
+        return until("evalExpression", () =>
+          pickBy(rng, [
+            [kindAnatomy, 1],
+            [kindMistake, 1],
+          ])(rng, level),
+        );
       const table = /** @type {Record<number, [Function, number][]>} */ ({
         1: [
           [kindSymbolic, 5],
@@ -2819,6 +2828,39 @@
       };
     },
   });
+  /** equivalentExpr serves lessons 6-6 and 6-8, which come before the distributive property (6-14): no group times a sum */
+  let NODIST = false;
+  const DISTIDS = new Set(["dist", "distSub", "distCoeff", "factor"]);
+  REWRITES.assoc = (rng, v) => {
+    const a = rng.int(2, 9);
+    const b = rng.int(2, 9);
+    return {
+      orig: `(${v} + ${a}) + ${b}`,
+      key: `${v} + ${a + b}`,
+      wrong: [
+        [`${a + b}${v}`, "combined-unlike-terms"],
+        [`${v} + ${a * b}`, "multiplied-coefficients"],
+        [`${v} + ${a}${b}`, "concatenated"],
+        [`${v}² + ${a + b}`, "exponent-added"],
+      ],
+      rule: [
+        `Moving the parentheses does not change the sum (the associative property). The plain numbers ${a} and ${b} add to ${a + b}, and the ${v} stays separate.`,
+        `Mover los paréntesis no cambia la suma (propiedad asociativa). Los números solos ${a} y ${b} suman ${a + b}, y ${v} queda aparte.`,
+      ],
+      hint: [
+        `Add the two plain numbers. The ${v} is not part of that sum.`,
+        `Suma los dos números solos. ${v} no es parte de esa suma.`,
+      ],
+      n: { a, b },
+    };
+  };
+  /** the rewrite table for a level, without the distributive ones when NODIST */
+  const rewriteTable = (/** @type {number} */ level) => {
+    const t = REWRITE_LEVELS[level];
+    return NODIST
+      ? [...t.filter(([id]) => !DISTIDS.has(id)), ...(level >= 2 ? [["assoc", 20]] : [])]
+      : t;
+  };
   const REWRITE_LEVELS = /** @type {Record<number, [string, number][]>} */ ({
     1: [
       ["combine2", 25],
@@ -2863,7 +2905,7 @@
 
   function kindEquiv(/** @type {any} */ rng, /** @type {number} */ level) {
     const [v] = letters(rng, 1);
-    const r = REWRITES[pickBy(rng, REWRITE_LEVELS[level])](rng, v);
+    const r = REWRITES[pickBy(rng, rewriteTable(level))](rng, v);
     const t = rng.int(2, 5);
     return mcx(rng, {
       q: equivQ(rng, r.orig),
@@ -2887,8 +2929,11 @@
       level === 2
         ? ["combine2", "dist", "commute", "repeat", "split"]
         : ["combineConst", "combineSub", "distSub", "distCoeff", "factor", "dist", "combine2"];
+    const pool = NODIST
+      ? [...ids.filter((id) => !DISTIDS.has(id)), ...(level === 3 ? ["assoc"] : [])]
+      : ids;
     const rs = rng
-      .shuffle(ids)
+      .shuffle(pool)
       .slice(0, 4)
       .map((id) => REWRITES[id](rng, v));
     const eq = (/** @type {string} */ l, /** @type {string} */ r) => `${l} = ${r}`;
@@ -2938,14 +2983,126 @@
     });
   }
 
+  /** which property does this equation show? (commutative, associative, identity) */
+  const PROP_NAMES = {
+    comm: ["Commutative property", "Propiedad conmutativa"],
+    assoc: ["Associative property", "Propiedad asociativa"],
+    id: ["Identity property", "Propiedad de identidad"],
+  };
+  const propOf = (/** @type {string} */ e) =>
+    /\+ 0 =|× 1 =/.test(e) ? "id" : /^\(/.test(e) ? "assoc" : "comm";
+  function kindProperty(/** @type {any} */ rng) {
+    const [v] = letters(rng, 1);
+    const a = rng.int(2, 9);
+    const b = rng.int(2, 9);
+    const forms = /** @type {Record<string, string[]>} */ ({
+      comm: [`${a} + ${v} = ${v} + ${a}`, `${a} × ${v} = ${v} × ${a}`],
+      assoc: [
+        `(${v} + ${a}) + ${b} = ${v} + (${a} + ${b})`,
+        `(${a} × ${v}) × ${b} = ${a} × (${v} × ${b})`,
+      ],
+      id: [`${v} + 0 = ${v}`, `${v} × 1 = ${v}`],
+    });
+    const key = rng.pick(["comm", "assoc", "id"]);
+    const eq = rng.pick(forms[key]);
+    const why = /** @type {Record<string, Record<string, [string, string, string]>>} */ ({
+      comm: {
+        assoc: [
+          "The numbers swap places, but no parentheses move. Moving parentheses is grouping.",
+          "Los números cambian de lugar, pero no se mueven paréntesis. Mover paréntesis es agrupar.",
+          "property-order-vs-grouping",
+        ],
+        id: [
+          "No 0 is added and no 1 is multiplied. The identity property keeps a number the same that way.",
+          "No se suma 0 ni se multiplica por 1. La propiedad de identidad deja igual un número de esa manera.",
+          "property-misidentified",
+        ],
+      },
+      assoc: {
+        comm: [
+          "The order of the terms stays the same. Only the parentheses move, and that is grouping.",
+          "El orden de los términos queda igual. Solo se mueven los paréntesis, y eso es agrupar.",
+          "property-order-vs-grouping",
+        ],
+        id: [
+          "No 0 is added and no 1 is multiplied. The parentheses move instead.",
+          "No se suma 0 ni se multiplica por 1. Lo que se mueve son los paréntesis.",
+          "property-misidentified",
+        ],
+      },
+      id: {
+        comm: [
+          "Nothing changes order here. Adding 0 or multiplying by 1 keeps the number the same.",
+          "Aquí nada cambia de orden. Sumar 0 o multiplicar por 1 deja igual el número.",
+          "property-misidentified",
+        ],
+        assoc: [
+          "No parentheses move. Adding 0 or multiplying by 1 keeps the number the same.",
+          "No se mueven paréntesis. Sumar 0 o multiplicar por 1 deja igual el número.",
+          "property-misidentified",
+        ],
+      },
+    });
+    const others = Object.keys(PROP_NAMES).filter((k) => k !== key);
+    const item = G.mc(rng, {
+      q: `Which property does the equation ${eq} show?`,
+      qEs: `¿Qué propiedad muestra la ecuación ${eq}?`,
+      right: { v: /** @type {any} */ (PROP_NAMES)[key][0] },
+      wrong: others.map((o) => ({
+        v: /** @type {any} */ (PROP_NAMES)[o][0],
+        f: why[key][o][0],
+        fEs: why[key][o][1],
+      })),
+      choices: 3,
+      x: `${eq} shows the ${/** @type {any} */ (PROP_NAMES)[key][0].toLowerCase()}. ${key === "comm" ? "The order of the terms changes, and the value stays the same." : key === "assoc" ? "The parentheses move, and the value stays the same." : "Adding 0 or multiplying by 1 keeps the number the same."}`,
+      xEs: `${eq} muestra la ${/** @type {any} */ (PROP_NAMES)[key][1].toLowerCase()}. ${key === "comm" ? "El orden de los términos cambia y el valor queda igual." : key === "assoc" ? "Los paréntesis se mueven y el valor queda igual." : "Sumar 0 o multiplicar por 1 deja igual el número."}`,
+      h: [
+        "Compare the left side and the right side. What changed: the order, the parentheses, or nothing but a 0 or a 1?",
+        "If only the order of two numbers changed, one property fits. If only the parentheses moved, another fits.",
+        "Look for a 0 being added or a 1 being multiplied.",
+      ],
+      hEs: [
+        "Compara el lado izquierdo y el derecho. ¿Qué cambió: el orden, los paréntesis o solo un 0 o un 1?",
+        "Si solo cambió el orden de dos números, encaja una propiedad. Si solo se movieron los paréntesis, encaja otra.",
+        "Busca un 0 que se suma o un 1 que se multiplica.",
+      ],
+      meta: { kind: "prop", eq, key },
+    });
+    item.cEs = item.c.map((/** @type {string} */ c) => {
+      const k = Object.keys(PROP_NAMES).find((x) => /** @type {any} */ (PROP_NAMES)[x][0] === c);
+      return k ? /** @type {any} */ (PROP_NAMES)[k][1] : c;
+    });
+    item.tag = item.c.map((/** @type {string} */ c, /** @type {number} */ i) => {
+      if (i === item.a) return null;
+      const k = Object.keys(PROP_NAMES).find((x) => /** @type {any} */ (PROP_NAMES)[x][0] === c);
+      return k ? why[key][k][2] : "property-misidentified";
+    });
+    return item;
+  }
+  function checkProp(/** @type {any} */ item) {
+    const m = item.meta;
+    const want = /** @type {any} */ (PROP_NAMES)[propOf(m.eq)][0];
+    return item.c[item.a] === want && propOf(m.eq) === m.key
+      ? true
+      : `${item.c[item.a]} is not the property of ${m.eq}`;
+  }
+
   /** level 2: substitute the same test value in two equivalent expressions */
   function kindTestBoth(/** @type {any} */ rng) {
     const [v] = letters(rng, 1);
-    const id = pickBy(rng, [
-      ["dist", 4],
-      ["combine2", 3],
-      ["commute", 2],
-    ]);
+    const id = pickBy(
+      rng,
+      NODIST
+        ? [
+            ["combine2", 4],
+            ["commute", 3],
+          ]
+        : [
+            ["dist", 4],
+            ["combine2", 3],
+            ["commute", 2],
+          ],
+    );
     const r = REWRITES[id](rng, v);
     const t = rng.int(2, 6);
     const ans = val(r.orig, { [v]: t });
@@ -3317,26 +3474,47 @@
     title: "Equivalent expressions",
     titleEs: "Expresiones equivalentes",
     levels: 4,
-    make(/** @type {any} */ rng, /** @type {number} */ level) {
-      const table = /** @type {Record<number, [Function, number][]>} */ ({
-        1: [[kindEquiv, 1]],
-        2: [
-          [kindEquiv, 5],
-          [kindEqTrue, 2],
-          [kindTestBoth, 3],
-        ],
-        3: [
-          [kindOdd, 7],
-          [kindEqTrue, 3],
-        ],
-        4: [
-          [kindStmt, 6.5],
-          [kindPair, 3.5],
-        ],
-      })[level];
-      return until("equivalentExpr", () => pickBy(rng, table)(rng, level));
+    shapes: ["forward", "property"],
+    make(/** @type {any} */ rng, /** @type {number} */ level, /** @type {string} */ shape) {
+      NODIST = true;
+      try {
+        if (shape === "which-input")
+          return until("equivalentExpr", () => kindEqTrue(rng, Math.max(2, level)));
+        if (shape === "property") return until("equivalentExpr", () => kindProperty(rng));
+        const alt = /** @type {Record<number, [Function, number][]>} */ ({
+          3: [
+            [kindEqTrue, 7],
+            [kindProperty, 3],
+          ],
+          4: [
+            [kindProperty, 5],
+            [kindEqTrue, 5],
+          ],
+        })[level];
+        if (alt) return until("equivalentExpr", () => pickBy(rng, alt)(rng, level));
+        const table = /** @type {Record<number, [Function, number][]>} */ ({
+          1: [[kindEquiv, 1]],
+          2: [
+            [kindEquiv, 5],
+            [kindEqTrue, 2],
+            [kindTestBoth, 3],
+          ],
+          3: [
+            [kindOdd, 7],
+            [kindEqTrue, 3],
+          ],
+          4: [
+            [kindStmt, 6.5],
+            [kindPair, 3.5],
+          ],
+        })[level];
+        return until("equivalentExpr", () => pickBy(rng, table)(rng, level));
+      } finally {
+        NODIST = false;
+      }
     },
-    check: checkEquiv,
+    check: (/** @type {any} */ item) =>
+      item.meta.kind === "prop" ? checkProp(item) : checkEquiv(item),
   });
 
   /* ================================================================================================================
@@ -3561,7 +3739,9 @@
     title: "Combine like terms",
     titleEs: "Combinar términos semejantes",
     levels: 4,
-    make(/** @type {any} */ rng, /** @type {number} */ level) {
+    shapes: ["forward", "which-input"],
+    make(/** @type {any} */ rng, /** @type {number} */ level, /** @type {string} */ shape) {
+      if (shape === "which-input") return until("combineLikeTerms", () => kindLike(rng));
       return until("combineLikeTerms", () =>
         level === 1 && rng.chance(0.4) ? kindLike(rng) : kindCombine(rng, level),
       );
@@ -4121,7 +4301,16 @@
     title: "The distributive property",
     titleEs: "La propiedad distributiva",
     levels: 4,
-    make(/** @type {any} */ rng, /** @type {number} */ level) {
+    shapes: ["forward", "reverse", "which-input"],
+    make(/** @type {any} */ rng, /** @type {number} */ level, /** @type {string} */ shape) {
+      if (shape === "reverse") return until("distribute", () => kindMissingSide(rng));
+      if (shape === "which-input")
+        return until("distribute", () =>
+          pickBy(rng, [
+            [kindBadEquation, 1],
+            [kindWhatMistake, 1],
+          ])(rng, level),
+        );
       const eq = (/** @type {string} */ id) => (/** @type {any} */ r) => {
         const [v] = letters(r, 1);
         const w = REWRITES[id](r, v);
@@ -4442,7 +4631,15 @@
     title: "Simplify expressions",
     titleEs: "Simplificar expresiones",
     levels: 4,
-    make(/** @type {any} */ rng, /** @type {number} */ level) {
+    shapes: ["forward", "which-input"],
+    make(/** @type {any} */ rng, /** @type {number} */ level, /** @type {string} */ shape) {
+      if (shape === "which-input")
+        return until("simplifyExpr", () =>
+          pickBy(rng, [
+            [kindWhichSimplifies, 1],
+            [kindFirstStep, 1],
+          ])(rng, level),
+        );
       const simp = (/** @type {string[]} */ ids) => (/** @type {any} */ r) => {
         const [v] = letters(r, 1);
         return simpItem(r, PARTS[r.pick(ids)](r, v), v, "simplify");

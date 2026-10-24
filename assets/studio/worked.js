@@ -38,11 +38,15 @@
           es: `${ex.a}${ex.unitEs || ex.unit ? ` ${ex.unitEs || ex.unit}` : ""}`,
         };
 
+  /** ?path=check (a teacher link): the example opens one step at a time, and the answer opens after the last step. */
+  const chunked = () => !!W.StudioPedagogy?.checkPath;
+
   function card(/** @type {any} */ ex) {
+    const chunk = chunked() && (ex.h || []).length > 1;
     const steps = (ex.h || [])
       .map(
         (/** @type {string} */ h, /** @type {number} */ i) =>
-          `<li>${tx(h)}${txEs(ex.hEs?.[i])}</li>`,
+          `<li${chunk && i > 0 ? " hidden" : ""}>${tx(h)}${txEs(ex.hEs?.[i])}</li>`,
       )
       .join("");
     const ans = answerOf(ex);
@@ -50,8 +54,9 @@
       <h3 class="example-title">👀 Worked example${es("Ejemplo resuelto")} <span class="chip">Not your problem${es("No es tu problema")}</span></h3>
       <div class="example-q">${viz(ex)}<p class="item-q">${stem(ex.q, ex.qEs)}</p></div>
       <ol class="example-steps" aria-label="Steps">${steps}</ol>
-      <p class="example-answer"><strong>Answer:${es("Respuesta:")}</strong> ${tx(ans.en)}${txEs(ans.es)}</p>
-      <p class="example-why">${tx(ex.x)}${txEs(ex.xEs)}</p>
+      ${chunk ? `<p class="example-next"><button type="button" class="btn btn-sm" data-example-next>I followed this step. Show the next one →${es("Seguí este paso. Muestra el siguiente →")}</button></p>` : ""}
+      <p class="example-answer"${chunk ? " hidden" : ""}><strong>Answer:${es("Respuesta:")}</strong> ${tx(ans.en)}${txEs(ans.es)}</p>
+      <p class="example-why"${chunk ? " hidden" : ""}>${tx(ex.x)}${txEs(ex.xEs)}</p>
       <div class="example-actions"><button type="button" class="btn btn-go btn-sm" data-example-try>Now try one with step 1 shown →${es("Ahora prueba una con el paso 1 a la vista →")}</button><button type="button" class="btn btn-sm" data-example-close>Hide${es("Ocultar")}</button></div>
       <div class="example-try"></div>
     </section>`;
@@ -72,6 +77,21 @@
     const el = /** @type {HTMLElement} */ (wrap.firstElementChild);
     ($(".item-head", stage) || stage).after(el);
     $("[data-example-close]", el)?.addEventListener("click", () => el.remove());
+    $("[data-example-next]", el)?.addEventListener("click", () => {
+      const next = /** @type {HTMLElement|null} */ ($("ol.example-steps li[hidden]", el));
+      if (next) {
+        next.hidden = false;
+        next.setAttribute("tabindex", "-1");
+        next.focus();
+      }
+      if (!$("ol.example-steps li[hidden]", el)) {
+        $(".example-next", el)?.remove();
+        /** @type {HTMLElement} */ for (const n of el.querySelectorAll(
+          ".example-answer, .example-why",
+        ))
+          n.hidden = false;
+      }
+    });
     $("[data-example-try]", el)?.addEventListener("click", () => tryOne(tab, st.idx[tab], it, el));
     W.StudioBus.emit("example", { lesson: rt.api.data.lesson, gen: it.gen.id });
   }
@@ -93,7 +113,9 @@
     box.className = "stage-card example-try-stage";
     host.append(box);
     rt.api.mountItem({ tab, it: fresh, host: box, redeem: true });
-    $("[data-hint]", box)?.click();
+    // ?path=check fades backward: every step but the last is open, so the student does the final step on their own
+    const open = chunked() ? Math.max(1, ((fresh.h || []).length || 2) - 1) : 1;
+    for (let k = 0; k < open; k++) $("[data-hint]", box)?.click();
   }
 
   /** The gentle offer above a generated item the student has barely met. */

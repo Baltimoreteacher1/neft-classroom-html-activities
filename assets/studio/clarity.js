@@ -130,7 +130,17 @@
     } catch (_e) {
       /* without storage every visit is a first visit; the briefing simply opens */
     }
-    if (!seen) card.open = true;
+    // on a phone or a Chromebook the briefing would push a hands-on first problem off the screen: it stays a chip there
+    let widgetFirst = false;
+    try {
+      const first = JSON.parse(document.getElementById("studio-data")?.textContent || "{}")
+        .sections?.[0]?.items?.[0];
+      widgetFirst = ["act", "lab", "mission"].includes(first?.k);
+    } catch (_e) {
+      /* no lesson data: open it as usual */
+    }
+    const short = matchMedia("(max-height: 800px), (max-width: 600px)").matches;
+    if (!seen && !(widgetFirst && short)) card.open = true;
   }
 
   /* ---- Exit card: what you can do now, how it went, one next step -------------------------------------------- */
@@ -167,6 +177,7 @@
       <ul class="exit-sections" aria-label="Sections completed">${done}</ul>
       ${o.tally ? `<p class="exit-tally">${bi(o.tally.en, o.tally.es)}</p>` : ""}
       ${o.seals?.length ? `<p class="exit-seals"><span aria-hidden="true">🏅</span> ${bi("Seals earned today:", "Sellos ganados hoy:")} ${o.seals.map((s) => bi(escHtml(`${s.name} · ${s.label}`), escHtml(`${s.nameEs} · ${s.labelEs || s.label}`))).join(", ")}</p>` : ""}
+      ${o.extra || ""}
       <p class="exit-step"><span class="exit-step-label">${bi("Next step", "Siguiente paso")}</span> ${next}</p>
     </div>`;
   }

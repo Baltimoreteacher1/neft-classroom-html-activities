@@ -28,8 +28,14 @@ import {
 import { typographizeItems } from "./lib/math-typography.mjs";
 import { benchProblems } from "./lib/practice-studio-bench.mjs";
 import { buildSections } from "./lib/practice-studio-config.mjs";
-import { moveProblems, validateLessonData } from "./lib/practice-studio-data.mjs";
+import {
+  moveProblems,
+  pedagogyLayerProblems,
+  validateLessonData,
+} from "./lib/practice-studio-data.mjs";
+import { languageFor, loadLayer } from "./lib/practice-studio-language.mjs";
 import { boostPage, indexPage, pageFor } from "./lib/practice-studio-pages.mjs";
+import { applyPedagogy, pedagogyData } from "./lib/practice-studio-pedagogy.mjs";
 import { TRAPS_JS, trapsJs } from "./lib/practice-studio-traps.mjs";
 import { worldsCss } from "./lib/practice-studio-worlds.mjs";
 
@@ -78,17 +84,25 @@ function assetPlan(/** @type {Map<string, string>} */ built) {
     "store",
     "typeset",
     "attempts",
+    "pedagogy",
     "pulse-core",
     "pulse",
     "kinds-basic",
     "kinds-hands",
     "kinds-lab",
+    "contrast",
+    "rookie",
+    "capstone",
     "insight",
     "seals",
     "repair",
     "reflect",
     "trapbook",
     "worked",
+    "language-core",
+    "language",
+    "language-write",
+    "language-words",
     "runtime",
   ].map((f) => `assets/studio/${f}.js`);
   const scripts = [
@@ -104,6 +118,7 @@ function assetPlan(/** @type {Map<string, string>} */ built) {
     "assets/studio/boost-core.js",
     "assets/studio/boost.js",
     "assets/studio/chrome.js",
+    "assets/studio/focus.js",
     ...runtime.slice(1),
     "assets/studio/quest-model.js",
     "assets/studio/quest.js",
@@ -174,6 +189,13 @@ export function outputs(opts = {}) {
   const { traps } = JSON.parse(read("data/practice-studio/misconceptions.json"));
   const labs = JSON.parse(read("data/learning-labs.json"));
   const css = worldsCss(worlds);
+  const pedagogy = JSON.parse(read("data/practice-studio/pedagogy-layer.json"));
+  const layerProblems = pedagogyLayerProblems(pedagogy, traps);
+  if (layerProblems.length)
+    throw new Error(
+      `data/practice-studio/pedagogy-layer.json is invalid:\n  ${layerProblems.slice(0, 8).join("\n  ")}`,
+    );
+  const languageLayer = loadLayer();
   const trapsSource = trapsJs(JSON.parse(read("data/practice-studio/generator-traps.json")), traps);
   const assets = assetPlan(
     new Map([
@@ -207,6 +229,19 @@ export function outputs(opts = {}) {
     const worldId = worlds.lessons[id];
     const world = { id: worldId, ...worlds.worlds[worldId] };
     const built = buildSections(cfg, ld, worlds, id);
+    const { lang } = languageFor(
+      id,
+      ld,
+      {
+        sections: Object.fromEntries(
+          ["practice", "challenge"].map((m) => [
+            m,
+            applyPedagogy(built.sections[m], pedagogy.lessons[id], m),
+          ]),
+        ),
+      },
+      languageLayer,
+    );
     for (const mode of /** @type {const} */ (["practice", "challenge"])) {
       const sections = built.sections[mode];
       for (const s of sections)
@@ -222,10 +257,12 @@ export function outputs(opts = {}) {
           cfg,
           ld,
           world,
-          sections: typographizeItems(sections),
+          sections: typographizeItems(applyPedagogy(sections, pedagogy.lessons[id], mode)),
           assets,
           resources: studentResources(id, labs),
           traps,
+          pedagogy: pedagogyData(pedagogy.lessons[id]),
+          lang,
         }),
       );
     }

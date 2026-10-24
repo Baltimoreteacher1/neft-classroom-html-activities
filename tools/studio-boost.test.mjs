@@ -86,6 +86,41 @@ assert.equal(C.levelFor(5), 4);
     "fills from the weakest when nothing is due",
   );
 }
+// hypercorrection: a miss made while CERTAIN books the skill for tomorrow and puts it ahead of every other due skill
+{
+  const s = {
+    skills: {
+      a: { box: 1, due: "2026-10-10", seen: 4, lesson: "2-1" },
+      c: { box: 1, due: "2026-10-14", seen: 2, lesson: "3-1" },
+    },
+  };
+  C.hypercorrect(s, "e", T, "7-1", "absolute-value-misread");
+  assert.deepEqual(
+    [s.skills.e.box, s.skills.e.due, s.skills.e.hyper],
+    [1, "2026-10-16", 1],
+    "due tomorrow, weighted",
+  );
+  assert.equal(s.skills.e.trap, "absolute-value-misread");
+  assert.equal(s.skills.e.lesson, "7-1");
+  C.hypercorrect(s, "e", T, "7-1");
+  assert.equal(s.skills.e.hyper, 2, "a second certain miss adds weight");
+  // tomorrow the hyper skill leads, even ahead of skills that are more overdue
+  const tomorrow = "2026-10-16";
+  const p = C.plan(s, catalog, tomorrow, seeded(7), 3, ["2-1", "3-1", "7-1"]);
+  assert.equal(p[0].g, "e", "the certain miss leads the Boost");
+  assert.equal(new Set(p.map((x) => x.g)).size, p.length, "no skill twice");
+  // not due yet today: it is for tomorrow, not today
+  const today = C.plan(s, catalog, T, seeded(7), 2, ["2-1", "3-1", "7-1"]);
+  assert.ok(
+    !today.slice(0, 2).some((x) => x.g === "e") || today[0].g !== "e",
+    "booked for tomorrow, not today",
+  );
+  // a clean answer ends the extra weight; an unclean one keeps it
+  C.record(s, "e", false, tomorrow, "7-1");
+  assert.ok(s.skills.e.hyper, "an assisted answer keeps the weight");
+  C.record(s, "e", true, tomorrow, "7-1");
+  assert.equal(s.skills.e.hyper, undefined, "a clean answer clears it");
+}
 // streak
 assert.equal(C.streak(["2026-10-13", "2026-10-14", "2026-10-15"], T), 3);
 assert.equal(

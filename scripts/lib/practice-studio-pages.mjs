@@ -113,6 +113,7 @@ function trapNames(/** @type {any[]} */ sections, /** @type {Record<string, any>
  * @param {any[]} o.sections the five sections for this mode
  * @param {{scripts: string[], styles: string[]}} o.assets URLs (already stamped) in load order
  * @param {Record<string, any>} [o.traps] data/practice-studio/misconceptions.json traps; the page carries the ones its items name
+ * @param {{wb: any[], cog: any[], pic: Record<string, any>, frL: Record<string, any>}} [o.lang] the language layer (scripts/lib/practice-studio-language.mjs)
  */
 export function pageFor({
   id,
@@ -124,6 +125,8 @@ export function pageFor({
   assets,
   resources = [],
   traps = {},
+  pedagogy = undefined,
+  lang = undefined,
 }) {
   const unit = id.split("-")[0];
   const standard = cfg.standard || "";
@@ -152,6 +155,8 @@ export function pageFor({
       : {}),
     sections,
     traps: trapNames(sections, traps),
+    ...(pedagogy ? { pedagogy } : {}),
+    ...(lang ? { lang } : {}),
   };
   const story = challenge ? ld.challengeStory : ld.story;
   const storyEs = challenge ? ld.challengeStoryEs : ld.storyEs;

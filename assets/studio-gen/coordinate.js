@@ -291,13 +291,23 @@
     (item.viz.marks || item.viz.points || []).find((m) => m.l === label);
 
   /** Registers a generator from templates { name: { lv: [levels], make(rng, level), check(item) } }. */
-  const reg = (id, title, titleEs, tpl) =>
+  // A template may name a problem shape (tpl.shape: "reverse", "which-input", "compare-two"); no name means "forward",
+  // so the forward pool and every forward seed are unchanged when shape templates are added (coordinate-shapes.js).
+  const TPLS = {};
+  const reg = (id, title, titleEs, tpl) => {
+    TPLS[id] = tpl;
     G.register(id, {
       title,
       titleEs,
       levels: 4,
-      make(rng, level) {
-        const t = rng.pick(Object.keys(tpl).filter((k) => tpl[k].lv.includes(level)));
+      shapes: ["forward"],
+      make(rng, level, shape) {
+        const pool = (sh) =>
+          Object.keys(tpl).filter(
+            (k) => tpl[k].lv.includes(level) && (tpl[k].shape || "forward") === sh,
+          );
+        const names = pool(shape || "forward");
+        const t = rng.pick(names.length ? names : pool("forward"));
         const item = tpl[t].make(rng, level);
         item.meta = { ...item.meta, t };
         return item;
@@ -307,6 +317,7 @@
         return t ? t.check(item) : `unknown template ${item.meta && item.meta.t}`;
       },
     });
+  };
 
   /* ---- signed-number situations (7-1, 7-3, 7-4) --------------------------------------------------- */
   // say(n): the situation integer n stands for, as [English, Spanish]. act(n): a verb phrase for a change, so a
@@ -4261,4 +4272,69 @@
       },
     },
   });
+
+  /* ---- the toolkit coordinate-shapes.js builds its shape templates from ------------------------------ */
+  G.coordKit = {
+    FB,
+    S,
+    P,
+    M,
+    f,
+    ABS,
+    R,
+    cap,
+    pl,
+    near,
+    bad,
+    badEs,
+    Q,
+    X,
+    H,
+    mcq,
+    numq,
+    nline,
+    plane,
+    judge,
+    typed,
+    pairOf,
+    mark,
+    steps,
+    oppOf,
+    dist0,
+    angQ,
+    quadOf,
+    ROMAN,
+    qn,
+    qnEs,
+    ptIn,
+    SG,
+    PT,
+    NAMES,
+    LABELS,
+    CTX,
+    lg,
+    Q2,
+    offAxes,
+    refl,
+    isRefl,
+    AXN,
+    OBJ,
+    RLABS,
+    twoDigit,
+    DL,
+    /** Adds shape templates to a generator that coordinate.js registered and lists the shapes it now offers. */
+    addShapes(id, extra) {
+      const tpl = TPLS[id];
+      if (!tpl) throw new Error(`coordKit: no generator ${id}`);
+      for (const [k, t] of Object.entries(extra)) {
+        if (tpl[k]) throw new Error(`coordKit: ${id} already has template ${k}`);
+        if (!t.shape) throw new Error(`coordKit: ${id}.${k} must name a shape`);
+        tpl[k] = t;
+      }
+      const shapes = ["forward"];
+      for (const t of Object.values(tpl))
+        if (t.shape && !shapes.includes(t.shape)) shapes.push(t.shape);
+      G.registry[id].shapes = shapes;
+    },
+  };
 })();

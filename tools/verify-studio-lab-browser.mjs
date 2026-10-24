@@ -245,17 +245,39 @@ async function solveLab(page, where, spec) {
 
 async function solveWritten(page, where, spec) {
   const { item } = spec;
-  await page
-    .locator(`${spec.root} [data-write]`)
-    .fill(
-      `${"x".repeat(Math.max(item.min, 40))} because the model shows the ratio stays the same.`,
-    );
+  const minWords = Math.max(8, Math.round((item.min || 40) / 6));
+  const keywords = (item.kw || []).join(" ");
+  const words =
+    `${keywords} because my explanation uses the numbers and shows the mathematical relationship clearly.`
+      .split(/\s+/)
+      .filter(Boolean);
+  const response = Array.from({ length: minWords }, (_, i) => words[i % words.length]).join(" ");
+  await page.locator(`${spec.root} [data-write]`).fill(response);
   await page.locator(`${spec.root} [data-check-write]`).click();
-  for (const cb of await page.locator(`${spec.root} [data-rubric]`).all()) await cb.check();
+  const rubrics = page.locator(`${spec.root} [data-rubric]`);
+  for (let i = 0; i < (await rubrics.count()); i++) {
+    await rubrics.nth(i).check();
+    const evidence = page.locator(`${spec.root} [data-ev="${i}"]`).first();
+    if (await evidence.count()) await evidence.click();
+  }
+  const rubricState = await page.locator(spec.root).evaluate((root) => ({
+    checked: [...root.querySelectorAll("[data-rubric]")].map((el) => el.checked),
+    evidence: [...root.querySelectorAll('[data-ev][aria-pressed="true"]')].map(
+      (el) => el.dataset.ev,
+    ),
+    options: [...root.querySelectorAll("[data-ev]")].length,
+    note: root.querySelector("[data-write]")?.value,
+    pedagogy: window.StudioPedagogy?.evidenceWords(root.querySelector("[data-write]")?.value, [
+      "percent",
+    ]),
+  }));
   await page.locator(`${spec.root} [data-rubric-done]`).click();
   const text = await feedback(page, spec);
   if (!/Saved/.test(text))
-    fail(where, `${item.id} written item did not save: ${text.slice(0, 80)}`);
+    fail(
+      where,
+      `${item.id} written item did not save: ${text.slice(0, 80)} (${JSON.stringify(rubricState)})`,
+    );
   stats.written++;
 }
 

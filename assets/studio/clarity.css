@@ -451,3 +451,511 @@ body:has(.app-header) a[aria-label^="Open the Math Workbench"] {
   border-color: var(--brand-line, rgba(255, 255, 255, 0.7)) !important;
   box-shadow: var(--shadow-card, 0 4px 14px rgba(0, 0, 0, 0.25)) !important;
 }
+
+/* ==== studio v4 platform layout (docs/audits/studio-v4/brief-x-platform.md; behaviour in assets/studio/focus.js) ========
+   Tokens only. No backticks in comments. One block, appended, so other workers' rules above stay untouched. */
+
+/* ---- short laptop screens (Chromebook 1366x768): the section trail scrolls away instead of costing 62px of every screen */
+@media (max-height: 800px) and (min-width: 401px) {
+  .tab-bar {
+    position: static;
+  }
+  html {
+    scroll-padding-top: 12px;
+  }
+}
+
+/* ---- phones: the five sections are ONE row; only the open section shows its name, the others keep an accessible name */
+@media (max-width: 400px) {
+  /* Let the section trail scroll away on phones so it cannot cover a lab Check control near the top edge. */
+  html body .tab-bar {
+    position: static;
+  }
+  html body .tab-bar .tab-list {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 2px;
+    padding: 4px 8px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+  }
+  html body .tab-bar .tab-list::-webkit-scrollbar {
+    display: none;
+  }
+  html body .tab-bar .tab-list::before,
+  html body .tab-bar .tab-list::after {
+    display: none;
+  }
+  html body .tab-bar .tab-btn {
+    flex: 0 0 auto;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 2px 4px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+    scroll-snap-align: center;
+  }
+  html body .tab-bar .tab-btn[aria-selected="true"] {
+    background: var(--brand-tint);
+    padding-right: 12px;
+  }
+  html body .tab-bar .tab-badge {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+  html body .tab-bar .tab-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  html body .tab-bar .tab-btn[aria-selected="true"] .tab-text {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: nowrap;
+    background: transparent;
+  }
+  html body .tab-bar .tab-btn[aria-selected="true"] .tab-name {
+    font-size: 0.85rem;
+    text-align: left;
+  }
+  html body .tab-bar .tab-desc {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+  .stage-card {
+    padding: 12px;
+  }
+}
+
+/* ---- floating Save / Resume and Math Workbench: icon-only on phones, hidden while they would sit on a widget control */
+@media (max-width: 600px), (max-height: 520px) {
+  body.studio-has-menu #nsr-root {
+    right: 8px;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    gap: 6px;
+  }
+  body.studio-has-menu #nsr-launcher,
+  body.studio-has-menu #nsr-workbench {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+    justify-content: center;
+    gap: 0;
+  }
+  body.studio-has-menu #nsr-launcher .nsr-launcher-label,
+  body.studio-has-menu #nsr-workbench .nsr-workbench-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+  body.studio-has-menu #nsr-launcher .nsr-launcher-ico,
+  body.studio-has-menu #nsr-workbench .nsr-workbench-ico {
+    font-size: 1.15rem;
+  }
+  body.studio-has-menu #nsr-launcher .nsr-dot {
+    position: absolute;
+    right: 7px;
+    top: 7px;
+  }
+}
+body.studio-fab-hidden #nsr-root {
+  visibility: hidden;
+}
+.main-container {
+  padding-bottom: 96px;
+}
+
+/* ---- the lab item: task, goal, PICTURE + CONTROLS, then a check bar that stays on screen, then feedback, prediction, hints */
+.item-body.lab-item {
+  display: flex;
+  flex-direction: column;
+}
+.item-body.lab-item > * {
+  order: 8;
+}
+.item-body.lab-item > .item-q {
+  order: 0;
+}
+.item-body.lab-item > .lab-goal {
+  order: 1;
+  margin: 6px 0;
+}
+.item-body.lab-item > .lab-show {
+  order: 2;
+  margin: 2px 0 6px;
+}
+.item-body.lab-item > .answer-zone {
+  order: 3;
+}
+.item-body.lab-item > .item-fb {
+  order: 4;
+}
+.item-body.lab-item > .lab-goalbar {
+  order: 5;
+}
+/* the answer to Check appears just above the Check bar, on the same screen as the picture (focus.js sets --lab-bar-h) */
+.item-body.lab-item > .item-fb.show {
+  position: sticky;
+  bottom: calc(var(--lab-bar-h, 64px) + 16px);
+  z-index: 6;
+  max-height: min(40vh, 300px);
+  overflow: auto;
+  margin: 8px 0;
+  box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.45);
+}
+@media (max-width: 600px) {
+  .item-body.lab-item > .item-fb.show {
+    max-height: 32vh;
+  }
+  .focus-body .item-body.lab-item > .lab-show {
+    display: none;
+  }
+}
+.item-body.lab-item > .lab-predict {
+  order: 6;
+}
+.item-body.lab-item > .hint-area {
+  order: 7;
+}
+.item-body.lab-item > .lab-twin {
+  order: 20;
+}
+.lab-goalbar {
+  position: sticky;
+  bottom: 8px;
+  z-index: 6;
+  justify-content: flex-start;
+  box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.45);
+}
+.lab-goalbar:empty {
+  display: none;
+}
+.lab-goalbar .conf-row {
+  margin: 0;
+}
+@media (max-width: 600px) {
+  .lab-goalbar .conf-row .conf-q {
+    flex: 1 1 100%;
+  }
+  .lab-goalbar .conf-row .btn {
+    padding: 4px 10px;
+  }
+}
+/* the Check row of a hands-on activity (assets/studio/focus.js marks it) stays on screen while the picture is in view */
+.act-host .check-bar {
+  position: sticky;
+  bottom: 8px;
+  z-index: 6;
+  padding: 6px 8px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.45);
+}
+.item-fb {
+  scroll-margin-block: 72px 96px;
+}
+.lab-twin-shown {
+  order: 20;
+}
+
+/* ---- buttons the platform adds: Full screen on a widget, the first-touch coach ---------------------------------------- */
+.item-tools .focus-open {
+  white-space: nowrap;
+}
+dialog.focus-sheet {
+  inset: 0;
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--surface);
+  color: var(--ink);
+  overflow: hidden;
+}
+dialog.focus-sheet[open] {
+  display: flex;
+  flex-direction: column;
+}
+dialog.focus-sheet::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+}
+.focus-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--surface-soft);
+  border-bottom: 2px solid var(--border);
+}
+.focus-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--brand);
+}
+.focus-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px;
+}
+.focus-body > .item-body {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+.focus-hole {
+  margin: 8px 0;
+  color: var(--ink-muted);
+  font-weight: 700;
+}
+.focus-hole[hidden] {
+  display: none;
+}
+body.focus-open {
+  overflow: hidden;
+}
+
+.coach {
+  margin: 8px 0;
+  padding: 10px 14px;
+  border: 2px solid var(--brand);
+  border-radius: var(--radius-md);
+  background: var(--brand-tint);
+  color: var(--ink);
+}
+.coach p {
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+.coach-count {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+.coach-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (forced-colors: active) {
+  .lab-goalbar,
+  dialog.focus-sheet,
+  .coach {
+    border: 2px solid CanvasText;
+  }
+}
+@media print {
+  .item-tools .focus-open,
+  dialog.focus-sheet,
+  .coach {
+    display: none !important;
+  }
+}
+
+/* ======================= LANGUAGE LAYER (assets/studio/language*.js) ====================================================
+   One Language control, Español shown the way the student chose, a one-sentence-per-line view of a problem, the writing
+   frame ladder with sentence tiles, partner talk, word chips with cognate cues, and Quiet mode. Tokens only; every target
+   is 44px; nothing moves; colour is never the only signal (marks, labels and borders carry the meaning too). */
+.lang-es-inline { margin-left: 0.4em; color: var(--ink-muted); font-size: 0.94em; }
+.lang-dialog .lang-es-inline, .lang-gloss .lang-es-inline { display: block; margin-left: 0; }
+.lang-dialog .lang-hint { color: var(--ink-muted); }
+.lang-dialog fieldset { margin: 0 0 12px; }
+.lang-note { margin: 4px 0; color: var(--ink-muted); font-size: 0.9rem; }
+.lang-evidence { margin-top: 12px; padding: 10px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-md); }
+.lang-evidence h3 { margin: 0 0 4px; font-size: 1rem; }
+.lang-evidence ul { margin: 6px 0; padding-left: 20px; }
+
+/* ---- tap for Español: one button per problem, one before each line of a chunked stem ------------------------------- */
+.lang-tool-es, .lang-es-tap { display: none; }
+body.lang-tap .lang-tool-es { display: inline-flex; }
+body.lang-tap .lang-es-tap {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; margin: 0 6px;
+  padding: 0 10px; border: 2px solid var(--brand); border-radius: var(--radius-sm); background: var(--surface);
+  color: var(--brand); font: inherit; font-size: 0.85rem; font-weight: 800; cursor: pointer; vertical-align: middle;
+}
+body.lang-tap .lang-es-tap[aria-expanded="true"] { background: var(--brand-tint); }
+body.lang-tap .es-text.lang-open, body.lang-tap .lang-open-all .es-text { display: block; }
+body.lang-tap .studio-context.lang-open-all .mission-body .es-text,
+body.lang-tap .topic-strip.lang-open-all .es-text { display: block; }
+.lang-gloss-tools { margin: 0 0 6px; }
+
+/* ---- Español primero: the Spanish line leads, English follows a little quieter ------------------------------------- */
+body.lang-esfirst .item-q > :not(.es-text),
+body.lang-esfirst .item-sub > :not(.es-text),
+body.lang-esfirst .fb-guide > :not(.es-text) { font-size: 0.93em; font-weight: 600; color: var(--ink-muted); }
+body.lang-esfirst .lang-line { display: flex; flex-direction: column; }
+body.lang-esfirst .lang-line .es-text { order: -1; }
+body.lang-esfirst .lang-line .lang-en { color: var(--ink-muted); font-size: 0.93em; }
+
+/* ---- What is this asking? ------------------------------------------------------------------------------------------- */
+.lang-chunks { display: block; }
+.lang-line { display: block; margin: 0 0 8px; padding: 2px 0 2px 10px; border-left: 3px solid var(--border-strong); }
+.lang-line.lang-ask { border-left: 6px solid var(--brand); font-weight: 800; color: var(--brand); }
+.lang-qmark { font-weight: 800; }
+.lang-num {
+  padding: 0 0.22em; border-radius: 4px; background: var(--brand-tint); color: var(--brand-dark); font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.lang-need { margin: 8px 0 12px; padding: 10px 12px; border: 2px dashed var(--border-strong); border-radius: var(--radius-md); background: var(--surface-soft); }
+.lang-need-title { margin: 0 0 6px; }
+.lang-need-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 4px 0; }
+.lang-need-lead { min-width: 9.5em; font-weight: 700; }
+.lang-need-input { flex: 1 1 14em; min-height: 44px; padding: 6px 10px; border: 2px solid var(--border-strong); border-radius: var(--radius-sm); font: inherit; background: var(--surface); color: var(--ink); }
+
+/* ---- writing: the frame ladder, tiles, partner talk ----------------------------------------------------------------- */
+.lang-write { margin: 10px 0; }
+.lang-frame { padding: 10px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--surface-soft); }
+.lang-frame-head { margin: 0 0 6px; }
+.lang-level { margin-left: 8px; padding: 0 8px; border: 1px solid var(--border-strong); border-radius: 999px; font-size: 0.8rem; font-weight: 700; color: var(--ink-muted); }
+.lang-frame-list { margin: 0; padding-left: 22px; }
+.lang-frame-line { margin: 0 0 8px; }
+.lang-fn { display: inline-block; margin-right: 6px; padding: 0 8px; border-radius: 999px; background: var(--sun-tint); color: var(--sun-ink); border: 1px solid var(--sun); font-size: 0.78rem; font-weight: 800; }
+.lang-blank { display: inline-block; min-width: 3.4em; border-bottom: 3px solid var(--ink); vertical-align: baseline; }
+.lang-frame-actions { margin: 6px 0 0; }
+.lang-first { margin: 6px 0 0; }
+.lang-tiles, .lang-partner { margin: 10px 0; padding: 8px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--surface); }
+.lang-tiles > summary, .lang-partner > summary { min-height: 44px; display: flex; align-items: center; font-weight: 800; cursor: pointer; }
+.lang-sentence { display: flex; flex-wrap: wrap; gap: 6px; min-height: 52px; margin: 6px 0; padding: 6px; border: 2px dashed var(--border-strong); border-radius: var(--radius-md); }
+.lang-empty { color: var(--ink-muted); align-self: center; }
+.lang-tilebox { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.lang-tile {
+  min-height: 44px; min-width: 44px; padding: 6px 12px; border: 2px solid var(--brand); border-radius: var(--radius-sm);
+  background: var(--surface); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer;
+}
+.lang-tile-word { border-style: dashed; }
+.lang-tile-num { font-variant-numeric: tabular-nums; border-width: 3px; }
+.lang-sentence .lang-tile { background: var(--brand-tint); }
+.lang-tile:focus-visible, .lang-chip:focus-visible, .lang-es-tap:focus-visible { outline: 3px solid var(--sun); outline-offset: 2px; }
+.lang-tile-actions { margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.lang-rehearse { margin-top: 8px; padding: 8px 10px; border-left: 6px solid var(--ok); background: var(--ok-tint); }
+.lang-built { margin: 4px 0; font-weight: 800; }
+.lang-part-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.lang-part-tabs [aria-pressed="true"] { background: var(--brand-tint); border-color: var(--brand); font-weight: 800; }
+.lang-partner-steps { margin: 6px 0; padding-left: 22px; }
+.lang-check { display: flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 700; }
+.lang-check input { width: 24px; height: 24px; }
+.lang-three { margin-top: 10px; }
+.lang-three-list { margin: 8px 0 0; padding-left: 22px; }
+.lang-three-list li { margin: 0 0 6px; }
+
+/* ---- words ----------------------------------------------------------------------------------------------------------- */
+.lang-words { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 6px 0 10px; }
+.lang-words-label { font-size: 0.85rem; font-weight: 700; color: var(--ink-muted); }
+.lang-chip {
+  min-height: 44px; padding: 4px 12px; border: 2px solid var(--brand); border-radius: 999px; background: var(--surface);
+  color: var(--brand); font: inherit; font-weight: 800; cursor: pointer;
+}
+.lang-chip[aria-expanded="true"] { background: var(--brand-tint); }
+.lang-chip-cog { border-style: solid; }
+.lang-gloss { flex-basis: 100%; padding: 8px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--surface-soft); }
+.lang-gloss p { margin: 0 0 4px; }
+.lang-pic { max-width: 220px; margin: 6px 0; }
+.lang-pic svg { width: 100%; height: auto; }
+.lang-cog { text-decoration: underline dotted; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.lang-cogline { display: block; margin-top: 4px; font-size: 0.9rem; }
+.lang-cogmark-true { font-weight: 700; color: var(--ok-ink); }
+.lang-cogmark-trap { font-weight: 700; color: var(--sun-ink); }
+.lang-amber { margin: 6px 0 10px; padding: 8px 12px; border: 2px solid var(--sun); border-left-width: 8px; border-radius: var(--radius-md); background: var(--sun-tint); color: var(--sun-ink); }
+
+/* ---- Quiet mode: the story shrinks to the lesson's one-line purpose; section names are the same in every lesson ---- */
+body.lang-quiet .studio-context > .mission-card { display: none; }
+body.lang-quiet .world-glyph { display: none; }
+
+@media (forced-colors: active) {
+  .lang-num { background: Canvas; color: CanvasText; border-bottom: 3px solid CanvasText; border-radius: 0; }
+  .lang-line.lang-ask, .lang-amber, .lang-need, .lang-frame, .lang-tiles, .lang-partner, .lang-gloss { border-color: CanvasText; }
+  .lang-tile, .lang-chip, body.lang-tap .lang-es-tap { border-color: ButtonText; color: ButtonText; background: ButtonFace; }
+  .lang-blank { border-bottom-color: CanvasText; }
+}
+@media print {
+  .lang-tool, .lang-es-tap, .lang-tiles, .lang-partner, .lang-words, .lang-three, .lang-need { display: none !important; }
+}
+
+/* ---- Class Pulse: the anonymous class code and the Family Window question (assets/studio/pulse.js) ---------------- */
+.pulse-slot:empty { display: none; }
+.pulse-box { margin: 14px 0 0; padding: 12px 14px; border: 2px dashed var(--border-strong); border-radius: 12px; background: var(--surface-soft); }
+.pulse-label { margin: 0 0 6px; color: var(--ink); }
+.pulse-note { font-size: 0.9rem; color: var(--ink-muted); }
+.pulse-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 8px; }
+.pulse-code { display: inline-block; max-width: 100%; padding: 6px 10px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--surface); color: var(--ink); font: 700 1rem/1.4 ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: 0.04em; overflow-wrap: anywhere; user-select: all; }
+.pulse-box .btn { min-height: 44px; }
+.pulse-ask { margin: 8px 0 0; color: var(--ink); }
+.pulse-idea { font-size: 0.92rem; color: var(--ink-muted); }
+.pulse-code:focus-visible { outline: 3px solid var(--sun-deep); outline-offset: 2px; }
+@media (forced-colors: active) { .pulse-box, .pulse-code { border-color: CanvasText; } }
+@media print { .pulse-box button { display: none; } }
+
+/* ---- a ratio table's optional scale arrows (assets/studio/focus.js) ---- */
+.scale-pill {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 32px;
+  padding: 0 6px;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--brand);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 800;
+  z-index: 2;
+}
+.scale-pill[hidden] {
+  display: none;
+}
+.scale-pill input {
+  width: 36px;
+  min-height: 24px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+}
+.viz-tools {
+  margin: 6px 0 0;
+}
+@media print {
+  .scale-pill,
+  .viz-tools {
+    display: none !important;
+  }
+}

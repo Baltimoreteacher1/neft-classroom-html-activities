@@ -39,6 +39,40 @@
   A.grade = (/** @type {any} */ spec, /** @type {any} */ state) =>
     A.registry[spec.kind].grade(spec, state);
 
+  /**
+   * Constraint puzzles (Challenge only): many answers are valid, so the grade is a set of NAMED constraints, not one key.
+   * `constraints` is [{ id, ok(state) -> boolean, say, sayEs?, tag? }]. The result follows the hands-on grade() shape:
+   * { ok, tag?, say?, sayEs?, right, of, marks, failed? }. A miss names the FIRST constraint that failed (its own `say`, which
+   * must describe the rule and never a valid answer); `right`/`of` and `marks` let the runtime show how many were met.
+   * A constraint that throws counts as not met, so a half-built state never crashes a widget.
+   */
+  A.constraintGrade = (
+    /** @type {{id: string, ok: (s: any) => boolean, say?: string, sayEs?: string, tag?: string}[]} */ constraints,
+    /** @type {any} */ state,
+  ) => {
+    const marks = constraints.map((c) => {
+      try {
+        return !!c.ok(state);
+      } catch (_e) {
+        return false;
+      }
+    });
+    const right = marks.filter(Boolean).length;
+    const of = constraints.length;
+    if (!of || right === of) return { ok: right === of && of > 0, right, of, marks };
+    const first = constraints[marks.indexOf(false)];
+    return {
+      ok: false,
+      tag: first.tag,
+      say: first.say,
+      sayEs: first.sayEs,
+      failed: first.id,
+      right,
+      of,
+      marks,
+    };
+  };
+
   /** Inject a widget's stylesheet once. Use studio tokens (var(--brand) etc.) so every world recolours it. */
   A.css = (/** @type {string} */ kind, /** @type {string} */ text) => {
     if (
@@ -64,6 +98,24 @@
     for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
     return n;
   };
+  /**
+   * First-touch coach: a kind registers up to three steps ({ icon, en, es }) that assets/studio/focus.js shows once per device,
+   * the first time that kind mounts. A kind that registers nothing gets the generic three steps. Throws on a malformed step so
+   * a missing Spanish line is caught by the act test, not by a student.
+   */
+  A.coaches = A.coaches || {};
+  A.coach = (
+    /** @type {string} */ kind,
+    /** @type {Array<{icon: string, en: string, es: string}>} */ steps,
+  ) => {
+    if (!Array.isArray(steps) || !steps.length || steps.length > 3)
+      throw new Error(`StudioAct: coach(${kind}) needs 1 to 3 steps`);
+    for (const s of steps)
+      if (!s || !s.icon || !s.en || !s.es)
+        throw new Error(`StudioAct: coach(${kind}) steps need icon, en and es`);
+    A.coaches[kind] = steps.map((s) => ({ icon: s.icon, en: s.en, es: s.es }));
+  };
+  A.coachSteps = (/** @type {string} */ kind) => A.coaches[kind] || null;
   /** Bilingual text: English plus a lang="es" span the page shows only in Spanish mode. */
   A.t = (/** @type {string} */ en, /** @type {string} */ es) =>
     es ? `${en}<span class="es-text" lang="es">${es}</span>` : en;

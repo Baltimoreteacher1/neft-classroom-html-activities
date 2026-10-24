@@ -79,6 +79,7 @@
       "copied-total": "equation-answered-with-given-number",
       "copied-value": "equation-answered-with-given-number",
       "corners-matter": "geom-one-dimension-decides",
+      "counted-all-cubes": "geom-area-changes-with-view",
       "counted-base": "net-face-missed-or-doubled",
       "counted-boundary": "inequality-boundary-inclusion",
       "counted-by-ones": "factors-multiples-confused",
@@ -117,6 +118,7 @@
       "dividend-as-leftover": "division-parts-misnamed",
       "dividend-as-quotient": "division-parts-misnamed",
       "divisibility-assumed": "divisibility-misjudged",
+      "divisibility-misjudged": "divisibility-misjudged",
       "divisibility-missed": "divisibility-misjudged",
       "division-makes-smaller": "op-size-rule-overgeneralized",
       "division-quotient-missing-zero": "division-quotient-missing-zero",
@@ -135,6 +137,7 @@
       "dropped-variable": "term-dropped",
       "dropped-whole": "number-line-misread",
       "dropped-whole-part": "mixed-number-mishandled",
+      "edges-for-faces": "geom-faces-edges-vertices-confused",
       "equation-not-inverse-operation": "equation-not-inverse-operation",
       "estimate-far-too-large": "quotient-digit-off",
       "estimate-too-large": "quotient-digit-off",
@@ -227,6 +230,7 @@
       "lcm-added": "op-added-instead-of-multiplied",
       "lcm-gcf-confused": "gcf-lcm-confused",
       "lcm-instead-of-gcf": "gcf-lcm-confused",
+      "lcm-not-common-to-both": "lcm-not-common-to-both",
       "lcm-only-the-larger": "divisibility-misjudged",
       "lcm-product-of-both": "gcf-lcm-confused",
       "lcm-too-big": "multiplication-fact-slip",
@@ -309,6 +313,7 @@
       "order-doesnt-matter": "commutative-overgeneralized",
       "order-of-operations": "order-of-operations-left-to-right",
       "order-of-operations-left-to-right": "order-of-operations-left-to-right",
+      "order-of-operations-tie-broken-wrong": "order-of-operations-tie-broken-wrong",
       "ordered-by-size": "integer-order-by-size",
       "origin-as-rate": "rate-not-per-one",
       "origin-confusion": "coord-axis-point-misplaced",
@@ -565,6 +570,7 @@
       "used-shared-coordinate": "coord-moves-combined",
       "used-slant-height": "geom-height-misidentified",
       "used-two-units": "rate-not-per-one",
+      "used-vertical-height": "geom-height-misidentified",
       "used-wrong-operation": "operation-misread",
       "value-for-exponent": "expression-parts-misnamed",
       "value-not-distance": "absolute-value-misread",
@@ -594,11 +600,15 @@
       "wrong-row-factor": "ratio-scaled-one-term",
       "wrong-side": "read-question-missed-key-word",
       "wrong-side-of-zero": "negative-direction-reversed",
+      "wrong-solid": "geom-solid-misidentified",
       "wrong-trend": "graph-trend-misread",
+      "wrong-view": "geom-area-changes-with-view",
       "x-sign-wrong": "coord-quadrant-mixup",
       "y-sign-wrong": "coord-quadrant-mixup",
       "zero-answer": "zero-reference-misused",
       "zero-in-wrong-place": "decimal-place-names",
+      "property-misidentified": "property-misidentified",
+      "property-order-vs-grouping": "property-order-vs-grouping",
     },
     byGenerator: {
       compareOrder: { "reversed-order": "compare-direction-reversed" },
@@ -980,6 +990,13 @@
         fixEs:
           "MCD: el número más grande que divide a ambos. mcm: el número más pequeño que ambos dividen. Haz una lista corta para comprobar.",
       },
+      "geom-area-changes-with-view": {
+        n: "Thought the view changes the area",
+        nEs: "Creí que girar cambia el área",
+        fix: "The shape itself does not change, so its area does not change. Work it out both ways to see.",
+        fixEs:
+          "La figura no cambia, así que su área no cambia. Calcúlala de las dos formas para comprobarlo.",
+      },
       "geom-area-formula-misapplied": {
         n: "Mixed up the area formula",
         nEs: "Confundí la fórmula del área",
@@ -1000,6 +1017,13 @@
         fix: "List every piece. Pieces that make up the shape are added; pieces cut out of it are subtracted.",
         fixEs:
           "Haz una lista de cada pieza. Las piezas que forman la figura se suman; las piezas recortadas se restan.",
+      },
+      "geom-faces-edges-vertices-confused": {
+        n: "Faces, edges and vertices mixed",
+        nEs: "Confundí caras, aristas y vértices",
+        fix: "Touch each flat surface once as you count faces; edges are where two faces meet, and vertices are the corners.",
+        fixEs:
+          "Toca cada superficie plana una vez al contar las caras; las aristas son donde se juntan dos caras y los vértices son las esquinas.",
       },
       "geom-height-misidentified": {
         n: "Picked the wrong height",
@@ -1028,6 +1052,13 @@
         fix: "Area uses two lengths and volume uses three. Work out the old and new values and compare them.",
         fixEs:
           "El área usa dos longitudes y el volumen usa tres. Calcula los valores viejo y nuevo y compáralos.",
+      },
+      "geom-solid-misidentified": {
+        n: "Named the wrong solid",
+        nEs: "Nombré el cuerpo equivocado",
+        fix: "Prisms have two matching bases joined by rectangles. Pyramids have one base and triangles that meet at a point.",
+        fixEs:
+          "Los prismas tienen dos bases iguales unidas por rectángulos. Las pirámides tienen una base y triángulos que se juntan en un punto.",
       },
       "geom-surface-area-as-volume": {
         n: "Volume, not surface area",
@@ -1084,6 +1115,13 @@
         fix: "On a number line, greater is always to the right. A negative farther from 0 is smaller.",
         fixEs:
           "En la recta numérica, mayor siempre está a la derecha. Un negativo más lejos del 0 es menor.",
+      },
+      "lcm-not-common-to-both": {
+        n: "Multiple of only one number",
+        nEs: "Múltiplo de un solo número",
+        fix: "List multiples of both numbers. A common multiple must be on BOTH lists.",
+        fixEs:
+          "Haz la lista de múltiplos de los dos números. Un múltiplo común debe estar en AMBAS listas.",
       },
       "like-terms-power-added": {
         n: "Made a power by adding",
@@ -1263,6 +1301,12 @@
         fixEs:
           "Primero paréntesis, luego exponentes, luego multiplica y divide, y al final suma y resta.",
       },
+      "order-of-operations-tie-broken-wrong": {
+        n: "Broke a tie the wrong way",
+        nEs: "Resolví un empate al revés",
+        fix: "× and ÷ share a tier, and so do + and −. Work each pair from left to right.",
+        fixEs: "× y ÷ comparten un nivel, y también + y −. Haz cada pareja de izquierda a derecha.",
+      },
       "parentheses-misused": {
         n: "Parentheses in the wrong place",
         nEs: "Paréntesis en el lugar equivocado",
@@ -1290,6 +1334,20 @@
         fix: "Count every copy of each prime in the factor tree, and multiply your answer back to check it.",
         fixEs:
           "Cuenta cada copia de cada primo en el árbol de factores y multiplica tu respuesta para comprobarla.",
+      },
+      "property-misidentified": {
+        n: "Named the wrong property",
+        nEs: "Nombré la propiedad equivocada",
+        fix: "Match the pattern: what moved, what regrouped, what was multiplied, and did the value stay the same?",
+        fixEs:
+          "Busca el patrón: ¿qué se movió, qué se reagrupó, qué se multiplicó y se quedó igual el valor?",
+      },
+      "property-order-vs-grouping": {
+        n: "Mixed up the properties",
+        nEs: "Confundí las propiedades",
+        fix: "Commutative changes the ORDER of numbers. Associative changes the GROUPING with parentheses.",
+        fixEs:
+          "La conmutativa cambia el ORDEN de los números. La asociativa cambia la AGRUPACIÓN con paréntesis.",
       },
       "quotient-digit-off": {
         n: "Quotient too small or big",

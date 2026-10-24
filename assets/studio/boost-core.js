@@ -8,6 +8,7 @@
  *
  *   record(store, g, clean, today, lesson) -> store
  *   plan(store, catalog, today, rand, n, lessons) -> [{ g, level, lesson, title }]
+ *   hypercorrect(store, g, today, lesson, tag) -> store   a miss made while certain: due tomorrow, first in the next Boost
  *   levelFor(box) -> 2 | 3 | 4
  *   streak(days, today) -> number     consecutive days ending today or yesterday
  *   addDays(ymd, n), ymd(date)
@@ -35,9 +36,31 @@
     store.skills ||= {};
     const s = (store.skills[g] ||= { box: 0, due: today, seen: 0, lesson: lesson || "" });
     s.seen++;
+    if (clean) delete s.hyper; // a clean answer ends the hypercorrection weight
     if (lesson && lesson !== "0-0") s.lesson = lesson;
     s.box = clean ? Math.min(5, s.box + 1) : 1;
     s.due = addDays(today, GAP[s.box]);
+    return store;
+  }
+
+  /**
+   * Hypercorrection: the student was CERTAIN and wrong, which is the miss most worth reviewing (a confident error corrects best when
+   * it is met again soon). The skill drops to box 1, is due tomorrow, and `hyper` puts it ahead of every other due skill in plan().
+   */
+  function hypercorrect(
+    /** @type {any} */ store,
+    /** @type {string} */ g,
+    /** @type {string} */ today,
+    /** @type {string} [lesson] */ lesson,
+    /** @type {string} [tag] */ tag,
+  ) {
+    store.skills ||= {};
+    const s = (store.skills[g] ||= { box: 0, due: today, seen: 0, lesson: lesson || "" });
+    if (lesson && lesson !== "0-0") s.lesson = lesson;
+    s.box = 1;
+    s.due = addDays(today, GAP[1]);
+    s.hyper = (s.hyper || 0) + 1;
+    if (tag) s.trap = tag;
     return store;
   }
 
@@ -69,6 +92,7 @@
       .filter(([, s]) => /** @type {any} */ (s).due <= today)
       .sort(
         (a, b) =>
+          /** @type {any} */ (b[1].hyper ? 1 : 0) - /** @type {any} */ (a[1].hyper ? 1 : 0) ||
           /** @type {any} */ (a[1]).box - /** @type {any} */ (b[1]).box ||
           /** @type {any} */ (a[1]).due.localeCompare(/** @type {any} */ (b[1]).due),
       )
@@ -92,7 +116,8 @@
       .forEach(([g, s]) => add(g, /** @type {any} */ (s).box));
     // mixed order, but the due skills still come early in the run
     const dueCount = out.filter((x) => (skills[x.g]?.due || "9999") <= today).length;
-    const head = shuffled(out.slice(0, dueCount));
+    const hy = (/** @type {{g: string}} */ x) => (skills[x.g]?.hyper ? 1 : 0);
+    const head = shuffled(out.slice(0, dueCount)).sort((a, b) => hy(b) - hy(a));
     const tail = shuffled(out.slice(dueCount));
     return [...head, ...tail];
   }
@@ -108,5 +133,5 @@
     return n;
   }
 
-  W.StudioBoostCore = { record, plan, levelFor, streak, addDays, ymd, GAP };
+  W.StudioBoostCore = { record, hypercorrect, plan, levelFor, streak, addDays, ymd, GAP };
 })();

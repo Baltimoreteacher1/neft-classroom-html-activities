@@ -119,7 +119,8 @@ Never put backticks inside a comment (the CSS-integrity gate reads them as a tem
 - stats: `dotplotRead histogramRead medianFind meanFind meanMissing rangeIqr boxplotRead madCalc chooseMeasure`
 - numbers: `longDivision decimalDivision decimalAddSub decimalMultiply factorsMultiples lcmFind gcfFind primeFactorization exponentEval orderOfOps`
 - fractions: `fracDivWhole fracDivMixed wholeDivFrac mixedDivide fracDivWord`
-- ratio: `ratioWrite unitRate eqRatioTable ratioGraphRead compareRatios convertUnits convertBetween unitRateWord eqRatioMissing`
+- ratio: `ratioWrite unitRate eqRatioTable ratioGraphRead compareRatios convertUnits convertBetween unitRateWord eqRatioMissing` `convertFactor`
+  (v4 shapes: ratioWrite/unitRate/eqRatioTable/ratioGraphRead/convertUnits/convertBetween/eqRatioMissing `reverse`, compareRatios `compare-four`, unitRateWord `compare`, convertFactor `which-input`; refs add `"shape"`)
 - geometry: `areaParallelogram areaTriangle areaTrapezoid areaComposite volumePrism surfaceAreaPrism surfaceAreaPyramid areaRegularPolygon`
 - algebra: `evalExpression equivalentExpr combineLikeTerms distribute simplifyExpr solutionCheck solveAddSub solveMulDiv writeInequality ineqSolutionCheck solveInequality writeEquationWord twoVarTable graphRelationship twoVarProblem`
 - coordinate: `integerOpposites rationalNumberLine absoluteValue compareOrder quadrantId coordDistance polygonCoordinates reflectPoint`
@@ -137,6 +138,10 @@ Never put backticks inside a comment (the CSS-integrity gate reads them as a tem
 - `chartbuild` [`mode: "dot"|"hist"|"box"`]: build a dot plot, histogram or box plot from a data table.
 - `ratiomix` [`mode: "recipe"|"equivalent"|"unitrate"|"compare"`]: mix batches until the mixture hits a target ratio or rate.
 - `convchain` [`system: "same"|"between"`]: build a unit-conversion chain; choose × or ÷ at each step.
+- `tagtape` []: place four ratio cards (a:b, b:a, a:all, all:a) on the sentences they match; the tape marks what each placed card counts (3-1).
+- `addrider` []: predict, add a y ÷ x column, and decide whether points on a straight line that misses (0, 0) show equal ratios (3-4).
+- `cancelit` []: build a conversion chain of fraction tiles so every unit cancels but the one wanted; a flipped tile shows its leftover units (3-10).
+- `barcompare` []: compare two mixtures drawn as solid and striped unit bars after matching the second ingredient (3-5).
 - `balance` [`form: "add"|"mul"|"check"|"word"`]: balance scale; apply the same operation to both sides to isolate x.
 - `ftree` []: build a prime factor tree by choosing factor pairs.
 - `hops` [`goal: "multiples"|"lcm"|"factors"`]: two hoppers on a number line; find where they meet.

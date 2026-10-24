@@ -373,6 +373,19 @@
       check,
     });
   }
+  /**
+   * Adds problem shapes to a registered generator (core.js reads \`shapes\`): byShape is {shape: {level: [family, ...]}}, and
+   * checkShape(item) verifies the items those families make (their meta.shape is set). The first shape stays "forward".
+   */
+  function addShapes(id, byShape, checkShape) {
+    const def = G.registry[id];
+    const forward = def.make;
+    const forwardCheck = def.check;
+    def.shapes = ["forward", ...Object.keys(byShape)];
+    def.make = (rng, level, shape) =>
+      shape && byShape[shape] ? rng.pick(byShape[shape][level])(rng) : forward(rng, level);
+    def.check = (item) => (item.meta && item.meta.shape ? checkShape(item) : forwardCheck(item));
+  }
 
   /* ---- hint 1 for the formula families ------------------------------------------------------- */
   const RC = {
@@ -1385,6 +1398,122 @@
     });
   };
 
+  /* ---- obtuse triangles: the height falls OUTSIDE the base (5-2) ---------------------------- */
+  /** Corners (0, 0), (b, 0) and (−x, h): the top corner leans out past the base, and s is the side from it to (0, 0). */
+  function obtuseGeom(rng) {
+    for (let tries = 0; ; tries++) {
+      const { x, h: ht, s: sl } = lean(rng, { hMin: 3, hMax: 12, xMin: 3, xMax: 12 });
+      const b = rng.int(5, 14);
+      if (tries < 400 && ((b * ht) % 2 || new Set([b, ht, sl, x, (b * ht) / 2]).size < 5)) continue;
+      return {
+        b,
+        ht,
+        sl,
+        x,
+        pts: [
+          [0, 0],
+          [b, 0],
+          [-x, ht],
+        ],
+      };
+    }
+  }
+  /** The triangle with its base extended by a dashed line and its height dropped to that line. */
+  const obtuseViz = (g, u, over = {}) =>
+    shape(
+      "figure",
+      {
+        name: "Triangle whose height falls outside it",
+        pts: g.pts,
+        cuts: [
+          [
+            [-g.x, 0],
+            [0, 0],
+          ],
+          [
+            [-g.x, 0],
+            [-g.x, g.ht],
+          ],
+        ],
+        right: [[-g.x, 0, 1, -1]],
+        marks: [
+          { at: [g.b / 2, 0], t: over.b ?? g.b, dy: 24, name: "base" },
+          { at: [-g.x, g.ht / 2], t: over.h ?? g.ht, dx: -9, dy: 5, a: "end", name: "height" },
+          over.noSlant
+            ? null
+            : {
+                at: [-g.x / 2, g.ht / 2],
+                t: g.sl,
+                dx: 9,
+                dy: -2,
+                a: "start",
+                name: "slanted side",
+              },
+        ].filter(Boolean),
+      },
+      u.l,
+    );
+  /**
+   * An obtuse triangle: the dashed height lands on the extended base, outside the triangle.
+   * mc: choose among areas.  miss: the area is given and the base is missing.
+   */
+  const tObtuse = (o) => (rng) => {
+    const c = rng.pick(CT);
+    const u = unitOf(rng, c);
+    const g = obtuseGeom(rng);
+    const ar = (g.b * g.ht) / 2;
+    const [Ae, As] = An(c);
+    const ask = o.mc
+      ? ["Which choice is its area?", "¿Qué opción es su área?"]
+      : ["What is its area?", "¿Cuál es su área?"];
+    const base = {
+      q: [
+        `${Ae} is shaped like a triangle whose top corner leans out past the end of its base. The base is ${g.b} ${u.l}. The dashed height is ${g.ht} ${u.l}, and the slanted side is ${g.sl} ${u.l}. ${ask[0]}`,
+        `${As} tiene forma de triángulo cuya esquina de arriba se sale del extremo de su base. La base mide ${g.b} ${u.l}. La altura punteada mide ${g.ht} ${u.l} y el lado inclinado mide ${g.sl} ${u.l}. ${ask[1]}`,
+      ],
+      x: triX(g, ar, u, [
+        ` The height falls outside the triangle, on the dashed extension of the base. It still makes a right angle with the base line. The slanted side (${g.sl} ${u.l}) is not the height.`,
+        ` La altura cae fuera del triángulo, sobre la extensión punteada de la base. Sigue formando un ángulo recto con la línea de la base. El lado inclinado (${g.sl} ${u.l}) no es la altura.`,
+      ]),
+      h: [
+        RC.tri,
+        [
+          "The height does not have to be inside the triangle. Extend the base with a dashed line and find the segment that makes a right angle with it.",
+          "La altura no tiene que estar dentro del triángulo. Extiende la base con una línea punteada y busca el segmento que forma un ángulo recto con ella.",
+        ],
+        [
+          `Use the base (${g.b} ${u.l}) and the dashed height (${g.ht} ${u.l}). Then take half of the product.`,
+          `Usa la base (${g.b} ${u.l}) y la altura punteada (${g.ht} ${u.l}). Luego toma la mitad del producto.`,
+        ],
+      ],
+      viz: obtuseViz(g, u),
+      p: { what: "area", shape: "tri" },
+    };
+    const cand = [
+      { k: "forgot-half", v: g.b * g.ht },
+      { k: "used-slant-height", v: (g.b * g.sl) / 2 },
+      { k: "added-instead", v: g.b + g.ht },
+      { k: "used-slant-height", v: g.b * g.sl },
+    ];
+    if (o.mc)
+      return mcI(rng, {
+        ...base,
+        right: `${ar} ${u.a}`,
+        wrong: [
+          ...cand.map((w) => ({ v: `${fm(w.v)} ${u.a}`, tag: w.k })),
+          { v: `${ar} ${u.l}`, tag: "unit-mismatch" },
+        ],
+        meta: { kind: "obtuseMC", pts: g.pts, x: g.x, sl: g.sl, ua: u.a },
+      });
+    return numI({
+      ...base,
+      a: ar,
+      unit: u.a,
+      fw: cand.map((w) => ({ v: w.v, tag: w.k })),
+      meta: { kind: "obtuse", pts: g.pts, x: g.x, sl: g.sl },
+    });
+  };
+
   reg(
     "areaTriangle",
     "Area of triangles",
@@ -1399,8 +1528,9 @@
         tFind({ kinds: ["acute", "right"] }),
         tFind({ kinds: ["acute", "right"], mc: true }),
         tFind({ kinds: ["acute"] }),
+        tObtuse({}),
       ],
-      3: [tMiss({}), tPara, tFind({ kinds: ["right"], mc: true })],
+      3: [tMiss({}), tPara, tFind({ kinds: ["right"], mc: true }), tObtuse({ mc: true })],
       4: [tDiag, tTwoStep, tCost, tMiss({ trap: true })],
     },
     (item) => {
@@ -1412,6 +1542,10 @@
           return wantNum(item, shoelace(triPts(m.b, m.ht, m.ov)), "triangle area");
         case "areaMC":
           return wantChoice(item, shoelace(triPts(m.b, m.ht, m.ov)), m.ua, "triangle area");
+        case "obtuse":
+          return wantNum(item, shoelace(m.pts), "obtuse triangle area");
+        case "obtuseMC":
+          return wantChoice(item, shoelace(m.pts), m.ua, "obtuse triangle area");
         case "miss": {
           const t = G.value(item.a);
           const [b, ht] = m.find === "h" ? [m.known, t] : [t, m.known];
@@ -2288,18 +2422,455 @@
     });
   };
 
+  /* ---- composite figures made of rectangles, triangles and trapezoids (5-4) ---------------- */
+  /** Area under a polygon by vertical slabs: between two neighbouring corner x-values every edge is straight, so its middle height is exact. */
+  function slabArea(pts) {
+    const xs = [...new Set(pts.map((p) => p[0]))].sort((a, b) => a - b);
+    let total = 0;
+    for (let i = 0; i + 1 < xs.length; i++) {
+      const mid = (xs[i] + xs[i + 1]) / 2;
+      const ys = [];
+      pts.forEach((p, j) => {
+        const q = pts[(j + 1) % pts.length];
+        if (p[0] === q[0] || mid < Math.min(p[0], q[0]) || mid > Math.max(p[0], q[0])) return;
+        ys.push(p[1] + ((q[1] - p[1]) * (mid - p[0])) / (q[0] - p[0]));
+      });
+      ys.sort((a, b) => a - b);
+      for (let k = 0; k + 1 < ys.length; k += 2) total += (xs[i + 1] - xs[i]) * (ys[k + 1] - ys[k]);
+    }
+    return total;
+  }
+  /** Corners of a house (rectangle + triangle roof), barn (rectangle + trapezoid roof) or notched block, from its measures. */
+  function figPts(fam, d) {
+    if (fam === "house")
+      return [
+        [0, 0],
+        [d.W, 0],
+        [d.W, d.H],
+        [d.W / 2, d.H + d.R],
+        [0, d.H],
+      ];
+    if (fam === "barn")
+      return [
+        [0, 0],
+        [d.W, 0],
+        [d.W, d.H],
+        [d.W - d.o, d.H + d.R],
+        [d.o, d.H + d.R],
+        [0, d.H],
+      ];
+    return [
+      [0, 0],
+      [d.W, 0],
+      [d.W, d.H],
+      [(d.W + d.n) / 2, d.H],
+      [d.W / 2, d.H - d.d],
+      [(d.W - d.n) / 2, d.H],
+      [0, d.H],
+    ];
+  }
+  function figGeom(rng, fam) {
+    for (let tries = 0; ; tries++) {
+      let g;
+      if (fam === "house") {
+        const { x, h: R, s: S } = lean(rng, { hMin: 3, hMax: 12, xMin: 3, xMax: 12 });
+        const W = 2 * x;
+        const H = rng.int(3, 9);
+        g = { fam, W, H, R, S, x, part: x * R, area: W * H + x * R };
+      } else if (fam === "barn") {
+        const { x: o, h: R, s: S } = lean(rng, { hMin: 3, hMax: 10, xMin: 3, xMax: 6 });
+        const t = rng.int(3, 10);
+        const W = t + 2 * o;
+        const H = rng.int(3, 8);
+        g = { fam, W, H, R, S, o, t, part: (t + o) * R, area: W * H + (t + o) * R };
+      } else {
+        const W = 2 * rng.int(4, 9);
+        const H = rng.int(5, 12);
+        const n = 2 * rng.int(2, Math.min(6, W / 2 - 1));
+        const d = rng.int(2, H - 2);
+        g = { fam, W, H, n, d, part: (n * d) / 2, area: W * H - (n * d) / 2 };
+      }
+      const dims = [g.W, g.H, g.R, g.n, g.d, g.t, g.o, g.S].filter((v) => v !== undefined);
+      if (
+        tries > 300 ||
+        (!dims.includes(g.area) && !dims.includes(g.part) && new Set(dims).size === dims.length)
+      )
+        return { ...g, pts: figPts(fam, g) };
+    }
+  }
+  const FIG_WORD = {
+    house: [
+      "a house: a rectangle with a triangle on top",
+      "una casa: un rectángulo con un triángulo encima",
+    ],
+    barn: [
+      "a barn: a rectangle with a trapezoid on top",
+      "un granero: un rectángulo con un trapecio encima",
+    ],
+    notch: [
+      "a block with a triangular notch cut out of its top edge",
+      "un bloque con una muesca triangular recortada en su borde de arriba",
+    ],
+  };
+  const figDesc = (c, g, u, { slant = false, hide = "" } = {}) => {
+    const [Ae, As] = An(c);
+    const [we, ws] = FIG_WORD[g.fam];
+    const edge = slant
+      ? [
+          ` Each slanted roof edge is ${g.S} ${u.l}.`,
+          ` Cada borde inclinado del techo mide ${g.S} ${u.l}.`,
+        ]
+      : ["", ""];
+    const roofH =
+      hide === "R"
+        ? ["Its height is not shown.", "Su altura no se muestra."]
+        : [`a height of ${g.R} ${u.l}.`, `una altura de ${g.R} ${u.l}.`];
+    const tail =
+      g.fam === "house"
+        ? [
+            ` The rectangle is ${g.W} ${u.l} wide and ${g.H} ${u.l} tall. The roof triangle has the same base, ${g.W} ${u.l}${hide === "R" ? ". " : ", and "}${roofH[0]}${edge[0]}`,
+            ` El rectángulo mide ${g.W} ${u.l} de ancho y ${g.H} ${u.l} de alto. El triángulo del techo tiene la misma base, ${g.W} ${u.l}${hide === "R" ? ". " : " y "}${roofH[1]}${edge[1]}`,
+          ]
+        : g.fam === "barn"
+          ? [
+              ` The rectangle is ${g.W} ${u.l} wide and ${g.H} ${u.l} tall. The roof trapezoid has bases of ${g.W} ${u.l} and ${g.t} ${u.l}${hide === "R" ? ". " : " and "}${roofH[0]}${edge[0]}`,
+              ` El rectángulo mide ${g.W} ${u.l} de ancho y ${g.H} ${u.l} de alto. El trapecio del techo tiene bases de ${g.W} ${u.l} y ${g.t} ${u.l}${hide === "R" ? ". " : " y "}${roofH[1]}${edge[1]}`,
+            ]
+          : [
+              ` The block is ${g.W} ${u.l} wide and ${g.H} ${u.l} tall. The notch is ${g.n} ${u.l} wide at the top${hide === "d" ? ". Its depth is not shown." : ` and ${g.d} ${u.l} deep.`}`,
+              ` El bloque mide ${g.W} ${u.l} de ancho y ${g.H} ${u.l} de alto. La muesca mide ${g.n} ${u.l} de ancho arriba${hide === "d" ? ". Su profundidad no se muestra." : ` y ${g.d} ${u.l} de profundidad.`}`,
+            ];
+    return [`${Ae} is shaped like ${we}.${tail[0]}`, `${As} tiene forma de ${ws}.${tail[1]}`];
+  };
+  /** The figure with its split drawn dashed; `over` replaces a measure with "?". */
+  const figViz = (g, u, over = {}) => {
+    const m = (v, k) => (over[k] !== undefined ? over[k] : v);
+    const cuts = [];
+    const marks = [{ at: [g.W / 2, 0], t: m(g.W, "W"), dy: 24, name: "bottom edge" }];
+    const right = [];
+    if (g.fam === "notch") {
+      cuts.push(
+        [
+          [(g.W - g.n) / 2, g.H],
+          [(g.W + g.n) / 2, g.H],
+        ],
+        [
+          [g.W / 2, g.H],
+          [g.W / 2, g.H - g.d],
+        ],
+      );
+      right.push([g.W / 2, g.H, 1, 1]);
+      marks.push(
+        { at: [0, g.H / 2], t: m(g.H, "H"), dx: -10, dy: 5, a: "end", name: "side" },
+        { at: [g.W / 2, g.H], t: m(g.n, "n"), dy: -11, name: "notch width" },
+        {
+          at: [g.W / 2, g.H - g.d / 2],
+          t: m(g.d, "d"),
+          dx: 9,
+          dy: 5,
+          a: "start",
+          name: "notch depth",
+        },
+      );
+    } else {
+      cuts.push(
+        [
+          [0, g.H],
+          [g.W, g.H],
+        ],
+        [
+          [g.fam === "house" ? g.W / 2 : g.o, g.H],
+          [g.fam === "house" ? g.W / 2 : g.o, g.H + g.R],
+        ],
+      );
+      right.push([g.fam === "house" ? g.W / 2 : g.o, g.H, 1, -1]);
+      marks.push(
+        { at: [g.W, g.H / 2], t: m(g.H, "H"), dx: 10, dy: 5, a: "start", name: "wall height" },
+        {
+          at: [g.fam === "house" ? g.W / 2 : g.o, g.H + g.R / 2],
+          t: m(g.R, "R"),
+          dx: 9,
+          dy: 5,
+          a: "start",
+          name: "roof height",
+        },
+      );
+      if (g.fam === "barn")
+        marks.push({ at: [g.W / 2, g.H + g.R], t: g.t, dy: -11, name: "top edge" });
+    }
+    return shape(
+      "figure",
+      {
+        name: `Composite figure shaped like a ${g.fam === "notch" ? "notched block" : g.fam}`,
+        pts: g.pts,
+        cuts,
+        right,
+        marks,
+      },
+      u.l,
+    );
+  };
+  /** The sum that splits the figure the way the picture does. */
+  const figSum = (g) =>
+    g.fam === "house"
+      ? `${g.W} × ${g.H} + ½ × ${g.W} × ${g.R}`
+      : g.fam === "barn"
+        ? `${g.W} × ${g.H} + ½ × (${g.W} + ${g.t}) × ${g.R}`
+        : `${g.W} × ${g.H} − ½ × ${g.n} × ${g.d}`;
+  const figWrong = (g) =>
+    g.fam === "house"
+      ? [
+          { k: "forgot-half", v: `${g.W} × ${g.H} + ${g.W} × ${g.R}`, n: g.W * g.H + g.W * g.R },
+          {
+            k: "used-slant-height",
+            v: `${g.W} × ${g.H} + ½ × ${g.W} × ${g.S}`,
+            n: g.W * g.H + (g.W * g.S) / 2,
+          },
+          { k: "forgot-piece", v: `${g.W} × ${g.H}`, n: g.W * g.H },
+          { k: "added-instead", v: `${g.W} + ${g.H} + ${g.R}`, n: g.W + g.H + g.R },
+        ]
+      : g.fam === "barn"
+        ? [
+            {
+              k: "forgot-half",
+              v: `${g.W} × ${g.H} + (${g.W} + ${g.t}) × ${g.R}`,
+              n: g.W * g.H + (g.W + g.t) * g.R,
+            },
+            { k: "forgot-piece", v: `${g.W} × ${g.H} + ${g.t} × ${g.R}`, n: g.W * g.H + g.t * g.R },
+            {
+              k: "used-slant-height",
+              v: `${g.W} × ${g.H} + ½ × (${g.W} + ${g.t}) × ${g.S}`,
+              n: g.W * g.H + ((g.W + g.t) * g.S) / 2,
+            },
+            { k: "forgot-piece", v: `${g.W} × ${g.H}`, n: g.W * g.H },
+          ]
+        : [
+            { k: "forgot-cutout", v: `${g.W} × ${g.H}`, n: g.W * g.H },
+            {
+              k: "added-cutout",
+              v: `${g.W} × ${g.H} + ½ × ${g.n} × ${g.d}`,
+              n: g.W * g.H + g.part,
+            },
+            { k: "forgot-half", v: `${g.W} × ${g.H} − ${g.n} × ${g.d}`, n: g.W * g.H - g.n * g.d },
+            { k: "forgot-piece", v: `½ × ${g.n} × ${g.d}`, n: g.part },
+          ];
+  const figX = (g, u) => {
+    const rect = g.W * g.H;
+    const [roofE, roofS] =
+      g.fam === "house"
+        ? [
+            `Roof triangle: ½ × ${g.W} × ${g.R} = ${g.part} ${u.a}.`,
+            `Triángulo del techo: ½ × ${g.W} × ${g.R} = ${g.part} ${u.a}.`,
+          ]
+        : g.fam === "barn"
+          ? [
+              `Roof trapezoid: ½ × (${g.W} + ${g.t}) × ${g.R} = ${g.part} ${u.a}.`,
+              `Trapecio del techo: ½ × (${g.W} + ${g.t}) × ${g.R} = ${g.part} ${u.a}.`,
+            ]
+          : [
+              `Notch triangle: ½ × ${g.n} × ${g.d} = ${g.part} ${u.a}.`,
+              `Triángulo de la muesca: ½ × ${g.n} × ${g.d} = ${g.part} ${u.a}.`,
+            ];
+    const op = g.fam === "notch" ? "−" : "+";
+    const alt =
+      g.fam === "house"
+        ? [
+            ` Another cut gives the same: two right triangles, each ½ × ${g.x} × ${g.R}, make ${g.part} ${u.a}.`,
+            ` Otro corte da lo mismo: dos triángulos rectángulos, cada uno ½ × ${g.x} × ${g.R}, hacen ${g.part} ${u.a}.`,
+          ]
+        : g.fam === "barn"
+          ? [
+              ` Another cut gives the same: a ${g.t} × ${g.R} rectangle plus two triangles of ½ × ${g.o} × ${g.R} each is ${g.t * g.R} + ${g.o * g.R} = ${g.part} ${u.a}.`,
+              ` Otro corte da lo mismo: un rectángulo de ${g.t} × ${g.R} más dos triángulos de ½ × ${g.o} × ${g.R} cada uno es ${g.t * g.R} + ${g.o * g.R} = ${g.part} ${u.a}.`,
+            ]
+          : ["", ""];
+    return [
+      `Rectangle: ${g.W} × ${g.H} = ${rect} ${u.a}. ${roofE} ${g.fam === "notch" ? "Take the notch away" : "Add the roof"}: ${rect} ${op} ${g.part} = ${g.area} ${u.a}.${alt[0]}`,
+      `Rectángulo: ${g.W} × ${g.H} = ${rect} ${u.a}. ${roofS} ${g.fam === "notch" ? "Quita la muesca" : "Suma el techo"}: ${rect} ${op} ${g.part} = ${g.area} ${u.a}.${alt[1]}`,
+    ];
+  };
+  const figHints = (g) => [
+    [
+      "Split the figure into a rectangle and a triangle or trapezoid. Find each area, then add them (or subtract a notch).",
+      "Divide la figura en un rectángulo y un triángulo o trapecio. Halla cada área y luego súmalas (o resta la muesca).",
+    ],
+    g.fam === "notch"
+      ? [
+          `The notch is a triangle with a base of ${g.n} and a height of ${g.d}. Its area comes off the rectangle.`,
+          `La muesca es un triángulo con base ${g.n} y altura ${g.d}. Su área se resta del rectángulo.`,
+        ]
+      : [
+          `The rectangle is ${g.W} by ${g.H}. The roof sits on top of it, and its height is the dashed segment, ${g.R}.`,
+          `El rectángulo mide ${g.W} por ${g.H}. El techo está encima y su altura es el segmento punteado, ${g.R}.`,
+        ],
+    g.fam === "notch"
+      ? [
+          `Find ½ × ${g.n} × ${g.d}, then subtract it from ${g.W} × ${g.H}.`,
+          `Halla ½ × ${g.n} × ${g.d} y réstalo de ${g.W} × ${g.H}.`,
+        ]
+      : g.fam === "barn"
+        ? [
+            `Find ½ × (${g.W} + ${g.t}) × ${g.R}, then add ${g.W} × ${g.H}.`,
+            `Halla ½ × (${g.W} + ${g.t}) × ${g.R} y suma ${g.W} × ${g.H}.`,
+          ]
+        : [
+            `Find ½ × ${g.W} × ${g.R}, then add ${g.W} × ${g.H}.`,
+            `Halla ½ × ${g.W} × ${g.R} y suma ${g.W} × ${g.H}.`,
+          ],
+  ];
+  /**
+   * Composite figures with a triangle or a trapezoid.  kind: split (which sum), area (typed), cost, back (a missing measure from the area).
+   */
+  const cFig =
+    (kind, o = {}) =>
+    (rng) => {
+      const fam = o.fam || rng.pick(o.fams || ["house", "barn", "notch"]);
+      const c = rng.pick(kind === "cost" ? CK.filter((k) => k.pay) : CK);
+      const u = unitOf(rng, c, kind === "cost" ? ["ft", "m"] : undefined);
+      const g = figGeom(rng, fam);
+      const slant = (kind === "area" || kind === "split") && fam !== "notch" && rng.chance(0.5);
+      const hide = kind === "back" ? (fam === "notch" ? "d" : "R") : "";
+      const [d0, d1] = figDesc(c, g, u, { slant, hide });
+      const mt = { fam, W: g.W, H: g.H, R: g.R, o: g.o, t: g.t, n: g.n, d: g.d };
+      const wrongs = figWrong(g).filter((w) => slant || w.k !== "used-slant-height");
+      const p = { what: "area", shape: g.fam === "barn" ? "trap" : "tri" };
+      if (kind === "split") {
+        const [x, xEs] = figX(g, u);
+        return mcI(rng, {
+          q: [
+            `${d0} Which sum gives the area of the whole figure?`,
+            `${d1} ¿Qué suma da el área de toda la figura?`,
+          ],
+          right: figSum(g),
+          key: calc,
+          wrong: wrongs.map((w) => ({ v: w.v, tag: w.k })),
+          x: [x, xEs],
+          h: figHints(g),
+          p,
+          viz: figViz(g, u),
+          meta: { kind: "fsplit", fam, pts: g.pts, ...mt },
+        });
+      }
+      if (kind === "back") {
+        const ask = hide;
+        const [nameE, nameS] =
+          ask === "d"
+            ? ["depth of the notch", "profundidad de la muesca"]
+            : ["height of the roof", "altura del techo"];
+        const ans = g[ask];
+        const factor = g.fam === "house" ? g.x : g.fam === "barn" ? g.t + g.o : g.n / 2;
+        const strip = g.fam === "notch" ? g.W * g.H - g.area : g.area - g.W * g.H;
+        const part = g.fam === "notch" ? ["notch", "muesca"] : ["roof", "techo"];
+        const rule =
+          g.fam === "house"
+            ? `½ × ${g.W} × height`
+            : g.fam === "barn"
+              ? `½ × (${g.W} + ${g.t}) × height`
+              : `½ × ${g.n} × depth`;
+        const unknown =
+          g.fam === "barn"
+            ? `½ × (${g.W} + ${g.t}) × ?`
+            : g.fam === "house"
+              ? `½ × ${g.W} × ?`
+              : `½ × ${g.n} × ?`;
+        const div = g.fam === "barn" ? g.W + g.t : g.fam === "house" ? g.W : g.n;
+        return numI({
+          q: [
+            `${d0} The whole figure has an area of ${g.area} ${u.a}. What is the ${nameE}?`,
+            `${d1} La figura completa tiene un área de ${g.area} ${u.a}. ¿Cuál es la ${nameS}?`,
+          ],
+          a: ans,
+          unit: u.l,
+          fw: [
+            { v: strip, tag: "gave-area" },
+            { v: strip / div, tag: "forgot-double" },
+            { v: g.area / g.W, tag: "multiplied-instead" },
+          ],
+          x: [
+            `Rectangle: ${g.W} × ${g.H} = ${g.W * g.H} ${u.a}, so the ${part[0]} is ${strip} ${u.a}. ${strip} = ${rule} = ${factor} × ${ask === "d" ? "depth" : "height"}, so the ${nameE} = ${strip} ÷ ${factor} = ${ans} ${u.l}.`,
+            `Rectángulo: ${g.W} × ${g.H} = ${g.W * g.H} ${u.a}, así que ${g.fam === "notch" ? "la" : "el"} ${part[1]} mide ${strip} ${u.a}. ${strip} = ${rule.replace("height", "altura").replace("depth", "profundidad")} = ${factor} × ${ask === "d" ? "profundidad" : "altura"}, así que la ${nameS} = ${strip} ÷ ${factor} = ${ans} ${u.l}.`,
+          ],
+          h: [
+            [
+              `First take the rectangle's area out of the whole area. What is left is the ${part[0]}.`,
+              `Primero quita el área del rectángulo del área total. Lo que queda es ${g.fam === "notch" ? "la" : "el"} ${part[1]}.`,
+            ],
+            [
+              `The ${part[0]} is ${strip} ${u.a}. Write its area with the unknown: ${unknown}.`,
+              `${g.fam === "notch" ? "La" : "El"} ${part[1]} mide ${strip} ${u.a}. Escribe su área con la incógnita: ${unknown}.`,
+            ],
+            [`Double ${strip}, then divide by ${div}.`, `Duplica ${strip} y divide entre ${div}.`],
+          ],
+          p,
+          viz: figViz(g, u, ask === "d" ? { d: Q } : { R: Q }),
+          meta: { kind: "fback", fam, ask, area: g.area, pts: g.pts, ...mt },
+        });
+      }
+      const rate = rng.pick([2, 3, 4, 5, 6]);
+      const [x, xEs] = figX(g, u);
+      const cost = kind === "cost";
+      return numI({
+        q: [
+          `${d0} ${cost ? `Covering it costs $${rate} for each ${u.sq}. How much does it cost, in dollars?` : "What is the area of the whole figure?"}`,
+          `${d1} ${cost ? `Cubrirla cuesta $${rate} por cada ${u.sqEs}. ¿Cuánto cuesta, en dólares?` : "¿Cuál es el área de toda la figura?"}`,
+        ],
+        a: cost ? g.area * rate : g.area,
+        unit: cost ? undefined : u.a,
+        fw: wrongs
+          .map((w) => ({ v: cost ? w.n * rate : w.n, tag: w.k }))
+          .concat(cost ? [{ v: g.area, tag: "forgot-rate" }] : []),
+        x: cost
+          ? [
+              `${x} Cost: ${g.area} × $${rate} = $${g.area * rate}.`,
+              `${xEs} Costo: ${g.area} × $${rate} = $${g.area * rate}.`,
+            ]
+          : [x, xEs],
+        h: figHints(g),
+        p,
+        viz: figViz(g, u),
+        meta: { kind: cost ? "fcost" : "farea", fam, rate, pts: g.pts, ...mt },
+      });
+    };
+  /** Check for the house / barn / notch items: rebuild the corners, then two routes to the area (shoelace and vertical slabs). */
+  function figCheck(item) {
+    const m = item.meta;
+    const pts = figPts(m.fam, m);
+    const poly = shoelace(pts);
+    const slabs = slabArea(pts);
+    if (!near(poly, slabs)) return `shoelace ${poly} vs slabs ${slabs}`;
+    switch (m.kind) {
+      case "fsplit":
+        return wantSum(item, poly, "split");
+      case "farea":
+        return wantNum(item, slabs, "composite area");
+      case "fcost":
+        return wantNum(item, slabs * m.rate, "cost");
+      case "fback": {
+        const t = G.value(item.a);
+        const d = { ...m, [m.ask]: t };
+        return (
+          near(shoelace(figPts(m.fam, d)), m.area) ||
+          `${m.ask} = ${item.a} does not give area ${m.area}`
+        );
+      }
+      default:
+        return `unknown kind ${m.kind}`;
+    }
+  }
+
   reg(
     "areaComposite",
     "Area of composite figures",
     "Área de figuras compuestas",
     {
-      1: [cSplit, cSplit, cCut],
-      2: [cEdges, cEdges, cCut],
-      3: [cCut, cEdges, cSplit],
-      4: [cCost, cBack, cCost],
+      1: [cSplit, cFig("split", { fam: "house" }), cCut],
+      2: [cEdges, cFig("area", { fams: ["house", "notch"] }), cCut, cFig("split", { fam: "barn" })],
+      3: [cCut, cFig("area", {}), cEdges, cFig("split", { fams: ["barn", "notch"] })],
+      4: [cCost, cBack, cFig("cost", {}), cFig("back", {})],
     },
     (item) => {
       const m = item.meta;
+      if (m.fam) return figCheck(item);
       // count unit cells of the grid: a cell is in the figure when it is not inside the cut-out
       let cells = 0;
       for (let x = 0; x < m.l; x++)
@@ -2744,6 +3315,235 @@
     });
   };
 
+  /* ---- fractional edges: 1/2, 1/4, 3/4, 1/3, 1 1/2, 2 1/4 ... (5-10) ---------------------------- */
+  const FE1 = [
+    [1, 2],
+    [3, 2],
+    [5, 2],
+    [7, 2],
+  ];
+  const FE2 = [
+    [1, 2],
+    [1, 4],
+    [3, 4],
+    [3, 2],
+    [5, 4],
+    [9, 4],
+  ];
+  const FE3 = [
+    [1, 3],
+    [2, 3],
+    [4, 3],
+  ];
+  const ev = (e) => e[0] / e[1];
+  const eMul = (a, b) => {
+    const n = a[0] * b[0];
+    const d = a[1] * b[1];
+    const g = G.gcd(n, d);
+    return [n / g, d / g];
+  };
+  const eTxt = (e) => G.mixed(e[0], e[1]);
+  /** Volume by counting cubes 1/12 of a unit on an edge: every edge here is a multiple of 1/12, so the count is whole. */
+  const vol12 = (es) => es.reduce((p, e) => p * Math.round(ev(e) * 12), 1) / 1728;
+  /** Three edges as [n, d]: level 1 one half-edge, 2 quarters and halves, 3-4 two fractions or a third paired with a multiple of 3. */
+  function fracGeom(rng, level, { cubes } = {}) {
+    for (let tries = 0; ; tries++) {
+      const whole = (lo, hi) => [rng.int(lo, hi), 1];
+      let e;
+      if (level === 1) e = [rng.pick(FE1), whole(2, 5), whole(2, 4)];
+      else if (level === 2 || cubes)
+        e = [rng.pick(FE2), whole(2, 7), rng.chance(0.4) ? rng.pick(FE2) : whole(2, 6)];
+      else if (rng.chance(0.4))
+        e = [rng.pick(FE3), [3 * rng.int(1, 4), 1], rng.chance(0.5) ? rng.pick(FE2) : whole(2, 6)];
+      else e = [rng.pick(FE2), rng.pick(FE2), whole(2, 6)];
+      e = rng.shuffle(e);
+      const V = e.reduce(eMul, [1, 1]);
+      const D = e.reduce((m, x) => G.lcm(m, x[1]), 1);
+      const names = new Set(e.map(eTxt));
+      const okCubes = !cubes || D === 2 || D === 4;
+      if (
+        tries > 600 ||
+        ([1, 2, 4].includes(V[1]) &&
+          names.size === 3 &&
+          okCubes &&
+          ![...e.map(ev), ev(V)].some((x, i) => i < 3 && Math.abs(x - ev(V)) < 1e-9) &&
+          !e.every((x) => x[1] === 1))
+      )
+        return { e, V, D, third: e.some((x) => x[1] === 3) };
+    }
+  }
+  const fvDesc = (c, g, u) => {
+    const [Ae, As] = An(c);
+    const [l, w, h] = g.e.map(eTxt);
+    return [
+      `${Ae} is a rectangular prism ${l} ${u.l} long, ${w} ${u.l} wide, and ${h} ${u.l} tall.`,
+      `${As} es un prisma rectangular de ${l} ${u.l} de largo, ${w} ${u.l} de ancho y ${h} ${u.l} de alto.`,
+    ];
+  };
+  const fvViz = (g, u) => (g.third ? undefined : prismViz(...g.e.map(ev), u.l, { frac: true }));
+  const fvX = (g, u) => {
+    const [l, w, h] = g.e;
+    const base = eMul(l, w);
+    return [
+      `Volume = length × width × height = ${eTxt(l)} × ${eTxt(w)} × ${eTxt(h)}. The base is ${eTxt(l)} × ${eTxt(w)} = ${eTxt(base)} ${u.a}. Then ${eTxt(base)} × ${eTxt(h)} = ${eTxt(g.V)} ${u.v}. To multiply fractions, multiply the tops and multiply the bottoms.`,
+      `Volumen = largo × ancho × altura = ${eTxt(l)} × ${eTxt(w)} × ${eTxt(h)}. La base es ${eTxt(l)} × ${eTxt(w)} = ${eTxt(base)} ${u.a}. Luego ${eTxt(base)} × ${eTxt(h)} = ${eTxt(g.V)} ${u.v}. Para multiplicar fracciones, multiplica los numeradores y multiplica los denominadores.`,
+    ];
+  };
+  /** Volume of a box with fractional edges.  mc: choose among volumes with units. */
+  const fvFind = (o) => (rng) => {
+    const c = rng.pick(CV);
+    const u = unitOf(rng, c);
+    const g = fracGeom(rng, o.level || 2);
+    const [d0, d1] = fvDesc(c, g, u);
+    const [l, w, h] = g.e.map(ev);
+    const v = ev(g.V);
+    const base = {
+      q: [
+        `${d0} ${o.mc ? "Which choice is its volume?" : "What is its volume?"}`,
+        `${d1} ${o.mc ? "¿Qué opción es su volumen?" : "¿Cuál es su volumen?"}`,
+      ],
+      x: fvX(g, u),
+      h: [
+        RC.vol,
+        [
+          `Multiply two edges first: ${eTxt(g.e[0])} × ${eTxt(g.e[1])}. To multiply fractions, multiply the tops and the bottoms.`,
+          `Primero multiplica dos aristas: ${eTxt(g.e[0])} × ${eTxt(g.e[1])}. Para multiplicar fracciones, multiplica los numeradores y los denominadores.`,
+        ],
+        [
+          `Now multiply that product by ${eTxt(g.e[2])}. Write the unit with a small 3: ${u.v}.`,
+          `Ahora multiplica ese producto por ${eTxt(g.e[2])}. Escribe la unidad con un 3 pequeño: ${u.v}.`,
+        ],
+      ],
+      viz: fvViz(g, u),
+      p: { what: "volume" },
+    };
+    const T = (x) => G.mixed(Math.round(x * 4), 4);
+    const cand = [
+      { k: "forgot-height", v: l * w },
+      { k: "added-instead", v: l + w + h },
+      { k: "surface-for-volume", v: 2 * (l * w + l * h + w * h) },
+      { k: "rounded-edge", v: Math.round(l) * Math.round(w) * Math.round(h) },
+    ].filter((w2) => w2.v > 0);
+    if (o.mc)
+      return mcI(rng, {
+        ...base,
+        right: `${eTxt(g.V)} ${u.v}`,
+        wrong: [
+          ...cand.map((w2) => ({ v: `${T(w2.v)} ${u.v}`, tag: w2.k })),
+          { v: `${eTxt(g.V)} ${u.a}`, tag: "unit-mismatch" },
+        ],
+        key: (t) => String(t).trim().toLowerCase(),
+        meta: { kind: "fvolMC", e: g.e, uv: u.v },
+      });
+    return numI({
+      ...base,
+      a: v,
+      unit: u.v,
+      tol: 0.001,
+      fw: cand.map((w2) => ({ v: w2.v, tag: w2.k })),
+      meta: { kind: "fvol", e: g.e },
+    });
+  };
+  /** A missing edge from the volume and the other two edges (fractions allowed). */
+  const fvMiss = (rng) => {
+    const c = rng.pick(CV);
+    const u = unitOf(rng, c);
+    const g = fracGeom(rng, rng.chance(0.5) ? 2 : 3);
+    // a third is never the unknown: its decimal would repeat, and nobody types 0.666667
+    const asks = [0, 1, 2].filter((i) => g.e[i][1] !== 3);
+    const ask = rng.pick(asks);
+    const names = [
+      ["length", "largo"],
+      ["width", "ancho"],
+      ["height", "alto"],
+    ];
+    const known = g.e.filter((_, i) => i !== ask);
+    const others = names.filter((_, i) => i !== ask);
+    const [Te, Ts] = The(c);
+    const kv = known.map(ev);
+    const v = ev(g.V);
+    const prod = eMul(known[0], known[1]);
+    return numI({
+      q: [
+        `${Te} is a rectangular prism with a volume of ${eTxt(g.V)} ${u.v}. Its ${others[0][0]} is ${eTxt(known[0])} ${u.l} and its ${others[1][0]} is ${eTxt(known[1])} ${u.l}. What is its ${names[ask][0]}?`,
+        `${Ts} es un prisma rectangular con un volumen de ${eTxt(g.V)} ${u.v}. Su ${others[0][1]} mide ${eTxt(known[0])} ${u.l} y su ${others[1][1]} mide ${eTxt(known[1])} ${u.l}. ¿Cuánto mide su ${names[ask][1]}?`,
+      ],
+      a: ev(g.e[ask]),
+      unit: u.l,
+      tol: 0.001,
+      fw: [
+        { v: v / kv[0], tag: "divided-once" },
+        { v: v / kv[1], tag: "divided-once" },
+        { v: v * kv[0] * kv[1], tag: "multiplied-instead" },
+        { v: v - kv[0] - kv[1], tag: "subtracted-instead" },
+      ],
+      x: [
+        `Volume = length × width × height, so the missing ${names[ask][0]} = ${eTxt(g.V)} ÷ (${eTxt(known[0])} × ${eTxt(known[1])}) = ${eTxt(g.V)} ÷ ${eTxt(prod)} = ${eTxt(g.e[ask])} ${u.l}.`,
+        `Volumen = largo × ancho × altura, así que el ${names[ask][1]} que falta = ${eTxt(g.V)} ÷ (${eTxt(known[0])} × ${eTxt(known[1])}) = ${eTxt(g.V)} ÷ ${eTxt(prod)} = ${eTxt(g.e[ask])} ${u.l}.`,
+      ],
+      h: [
+        RC.missing,
+        [
+          `Multiply the two edges you know: ${eTxt(known[0])} × ${eTxt(known[1])}. That is the area of one face.`,
+          `Multiplica las dos aristas que conoces: ${eTxt(known[0])} × ${eTxt(known[1])}. Esa es el área de una cara.`,
+        ],
+        [
+          `Think: (that product) × ? = ${eTxt(g.V)}. Divide, and remember that dividing by a fraction multiplies by its flip.`,
+          `Piensa: (ese producto) × ? = ${eTxt(g.V)}. Divide, y recuerda que dividir entre una fracción es multiplicar por su inversa.`,
+        ],
+      ],
+      p: { what: "volume" },
+      viz: g.third
+        ? undefined
+        : prismViz(...g.e.map((x, i) => (i === ask ? Q : ev(x))), u.l, { frac: true }),
+      meta: { kind: "fmiss", e: g.e, ask },
+    });
+  };
+  /** Pack a box with cubes whose edge is 1/2 or 1/4 of a unit: count them, then see that each is a small part of a unit cube. */
+  const fvCubes = (rng) => {
+    const c = rng.pick(CV);
+    const u = unitOf(rng, c);
+    const g = fracGeom(rng, 2, { cubes: true });
+    const D = g.D;
+    const n = g.e.reduce((p, e) => p * ((e[0] * D) / e[1]), 1);
+    const [d0, d1] = fvDesc(c, g, u);
+    const piece = D === 2 ? "1/2" : "1/4";
+    const cubeVol = D ** 3;
+    const v = ev(g.V);
+    return numI({
+      q: [
+        `${d0} It is packed with small cubes that are ${piece} ${u.l} on every edge. How many small cubes fill it?`,
+        `${d1} Se llena con cubos pequeños de ${piece} ${u.l} en cada arista. ¿Cuántos cubos pequeños lo llenan?`,
+      ],
+      a: n,
+      unit: "cubes",
+      tol: 0.001,
+      fw: [
+        { v: v, tag: "ignored-cube-size" },
+        { v: v * D, tag: "scaled-once" },
+        { v: v * D * D, tag: "scaled-once" },
+      ],
+      x: [
+        `Measured in ${piece}-${u.l} cubes, the edges count ${g.e.map((e) => (e[0] * D) / e[1]).join(" by ")}. ${g.e.map((e) => (e[0] * D) / e[1]).join(" × ")} = ${n} cubes. Each cube is 1/${cubeVol} of a cubic ${u.l}, so the volume is ${n} ÷ ${cubeVol} = ${eTxt(g.V)} ${u.v}.`,
+        `Medidas en cubos de ${piece} ${u.l}, las aristas cuentan ${g.e.map((e) => (e[0] * D) / e[1]).join(" por ")}. ${g.e.map((e) => (e[0] * D) / e[1]).join(" × ")} = ${n} cubos. Cada cubo es 1/${cubeVol} de un ${u.l} cúbico, así que el volumen es ${n} ÷ ${cubeVol} = ${eTxt(g.V)} ${u.v}.`,
+      ],
+      h: [
+        [
+          `A cube with an edge of ${piece} ${u.l} is smaller than a unit cube, so more of them fit along each edge.`,
+          `Un cubo con arista de ${piece} ${u.l} es más pequeño que un cubo unitario, así que caben más a lo largo de cada arista.`,
+        ],
+        [
+          `Count how many ${piece}-${u.l} cubes fit along each edge. A whole ${u.l} holds ${D} of them.`,
+          `Cuenta cuántos cubos de ${piece} ${u.l} caben en cada arista. Un ${u.l} entero tiene ${D} de ellos.`,
+        ],
+        ["Multiply the three counts.", "Multiplica los tres conteos."],
+      ],
+      p: { what: "volume" },
+      viz: fvViz(g, u),
+      meta: { kind: "fcubes", e: g.e, D },
+    });
+  };
+
   const volCheck = (item) => {
     const m = item.meta;
     switch (m.kind) {
@@ -2777,6 +3577,22 @@
         );
       case "tank":
         return wantNum(item, vol(m.l, m.w, m.d), "water volume");
+      case "fvol":
+        return wantNum(item, vol12(m.e), "fractional volume");
+      case "fvolMC":
+        return wantChoice(item, vol12(m.e), m.uv, "fractional volume");
+      case "fmiss": {
+        const t = G.value(item.a);
+        const es = m.e.map((e, i) => (i === m.ask ? [Math.round(t * 12), 12] : e));
+        return (
+          (Math.abs(t * 12 - Math.round(t * 12)) < 1e-6 && near(vol12(es), vol12(m.e))) ||
+          `edge ${item.a} does not give the volume`
+        );
+      }
+      case "fcubes": {
+        const counted = m.e.reduce((p, e) => p * Math.round((e[0] * m.D) / e[1]), 1);
+        return wantNum(item, counted, "small cubes");
+      }
       default:
         return `unknown kind ${m.kind}`;
     }
@@ -2811,19 +3627,15 @@
     "Volume of rectangular prisms (fractional edges)",
     "Volumen de prismas rectangulares (aristas fraccionarias)",
     {
-      1: [
-        vFind({ small: true, frac: true }),
-        vFind({ small: true, frac: true, mc: true }),
-        vFind({ small: true, frac: true }),
-      ],
+      1: [fvFind({ level: 1 }), fvFind({ level: 1, mc: true }), fvFind({ level: 1 })],
       2: [
-        vFind({ frac: true }),
-        vFind({ frac: true, mc: true }),
-        vFind({ frac: true }),
-        vFind({ frac: true, mc: true }),
+        fvFind({ level: 2 }),
+        fvFind({ level: 2, mc: true }),
+        fvCubes,
+        fvFind({ level: 2, mc: true }),
       ],
-      3: [vMiss({ frac: true }), vHalf, vMiss({ frac: true }), vFind({ frac: true, mc: true })],
-      4: [vHalf, vMiss({ frac: true }), vFind({ frac: true, mc: true }), vMiss({ frac: true })],
+      3: [fvMiss, fvCubes, fvFind({ level: 3 }), fvFind({ level: 3, mc: true })],
+      4: [fvCubes, fvMiss, fvFind({ level: 3, mc: true }), fvMiss],
     },
     volCheck,
   );
@@ -3654,15 +4466,144 @@
     });
   };
 
+  /* ---- pyramids: the vertical height is NOT on the net; pick the slant (5-8) ----------------- */
+  Object.assign(MIS, {
+    "used-vertical-height": [
+      "That uses the pyramid's vertical height in the triangle. The vertical height goes up through the inside. A triangular face is measured along the face, with the slant height.",
+      "Eso usa la altura vertical de la pirámide en el triángulo. La altura vertical sube por el interior. Una cara triangular se mide sobre la cara, con la altura inclinada.",
+    ],
+  });
+  /** s = 2x is the base edge, h the vertical height, l the slant height, and x² + h² = l². */
+  function vertGeom(rng) {
+    for (;;) {
+      const { x, h, s: l } = lean(rng, { hMin: 3, hMax: 20, xMin: 3, xMax: 12 });
+      const s = 2 * x;
+      if (new Set([s, h, l, x, (s * l) / 2, s * s, s * s + 2 * s * l, 2 * s * l]).size === 8)
+        return { s, h, l, x };
+    }
+  }
+  const vertDesc = (c, g, u) => {
+    const [Ae, As] = An(c);
+    return [
+      `${Ae} is shaped like a square pyramid. The base is a square with edges of ${g.s} ${u.l}. The pyramid is ${g.h} ${u.l} tall, measured straight up from the middle of the base. On its net, the slant height of each triangular face is ${g.l} ${u.l}.`,
+      `${As} tiene forma de pirámide cuadrada. La base es un cuadrado con aristas de ${g.s} ${u.l}. La pirámide mide ${g.h} ${u.l} de alto, medidos recto hacia arriba desde el centro de la base. En su red, la altura inclinada de cada cara triangular mide ${g.l} ${u.l}.`,
+    ];
+  };
+  /** Surface area when both heights are given: the triangle uses the slant height only. */
+  const yVert = (o) => (rng) => {
+    const c = rng.pick(o.cost ? CY.filter((k) => k.pay) : CY);
+    const u = unitOf(rng, c, o.cost ? ["ft", "m"] : undefined);
+    const g = vertGeom(rng);
+    const sa = ySA(g);
+    const [d0, d1] = vertDesc(c, g, u);
+    const rate = rng.pick([2, 3, 4, 5]);
+    const cand = [
+      { k: "used-vertical-height", v: g.s * g.s + 2 * g.s * g.h },
+      { k: "forgot-base", v: 2 * g.s * g.l },
+      { k: "forgot-half", v: g.s * g.s + 4 * g.s * g.l },
+      { k: "one-triangle-only", v: g.s * g.s + (g.s * g.l) / 2 },
+    ];
+    const base = {
+      x: [
+        `${yX(g, u)[0]} The vertical height (${g.h} ${u.l}) goes up through the inside of the pyramid, so it is not used. Each triangle is measured along its face.${o.cost ? ` Cost: ${sa} × $${rate} = $${sa * rate}.` : ""}`,
+        `${yX(g, u)[1]} La altura vertical (${g.h} ${u.l}) sube por el interior de la pirámide, así que no se usa. Cada triángulo se mide sobre su cara.${o.cost ? ` Costo: ${sa} × $${rate} = $${sa * rate}.` : ""}`,
+      ],
+      h: [
+        yH(g, u)[0],
+        [
+          "Look at which length lies ALONG a triangular face. That one is the triangle's height. The other height goes up through the inside.",
+          "Mira qué medida va SOBRE una cara triangular. Esa es la altura del triángulo. La otra altura sube por el interior.",
+        ],
+        [
+          `Add the base, ${g.s} × ${g.s}, to four triangles of ½ × ${g.s} × (the height along the face).`,
+          `Suma la base, ${g.s} × ${g.s}, a cuatro triángulos de ½ × ${g.s} × (la altura sobre la cara).`,
+        ],
+      ],
+      viz: faceViz(g.s, g.l, u),
+      p: { what: "surface", shape: "tri" },
+    };
+    const ask = o.cost
+      ? [
+          `Covering the whole surface, base included, costs $${rate} for each ${u.sq}. How much does it cost, in dollars?`,
+          `Cubrir toda la superficie, con la base incluida, cuesta $${rate} por cada ${u.sqEs}. ¿Cuánto cuesta, en dólares?`,
+        ]
+      : [
+          o.mc ? "Which choice is its surface area?" : "What is its surface area?",
+          o.mc ? "¿Qué opción es su área de superficie?" : "¿Cuál es su área de superficie?",
+        ];
+    const q = [`${d0} ${ask[0]}`, `${d1} ${ask[1]}`];
+    if (o.mc)
+      return mcI(rng, {
+        ...base,
+        q,
+        right: `${sa} ${u.a}`,
+        wrong: [
+          ...cand.map((w) => ({ v: `${w.v} ${u.a}`, tag: w.k })),
+          { v: `${sa} ${u.v}`, tag: "unit-mismatch" },
+        ],
+        meta: { kind: "vertMC", s: g.s, h: g.h, l: g.l, ua: u.a },
+      });
+    return numI({
+      ...base,
+      q,
+      a: o.cost ? sa * rate : sa,
+      unit: o.cost ? undefined : u.a,
+      fw: cand
+        .map((w) => ({ v: o.cost ? w.v * rate : w.v, tag: w.k }))
+        .concat(o.cost ? [{ v: sa, tag: "forgot-rate" }] : []),
+      meta: { kind: o.cost ? "vertCost" : "vert", s: g.s, h: g.h, l: g.l, rate },
+    });
+  };
+  /** Which length is the height of one triangular face?  (the vertical height is a distractor) */
+  const yHeightPick = (rng) => {
+    const c = rng.pick(CY);
+    const u = unitOf(rng, c);
+    const g = vertGeom(rng);
+    const [d0, d1] = vertDesc(c, g, u);
+    const t = (v, en, es) => ({ v: `${v} ${u.l} (${en})`, vEs: `${v} ${u.l} (${es})` });
+    const right = t(g.l, "slant height", "altura inclinada");
+    const wrong = [
+      { ...t(g.h, "vertical height", "altura vertical"), tag: "used-vertical-height" },
+      { ...t(g.x, "half the base edge", "la mitad de la arista de la base"), tag: "wrong-piece" },
+      { ...t(g.s, "base edge", "arista de la base"), tag: "wrong-piece" },
+    ];
+    const item = mcI(rng, {
+      q: [
+        `${d0} Which length is the height of ONE triangular face?`,
+        `${d1} ¿Cuál medida es la altura de UNA cara triangular?`,
+      ],
+      right: right.v,
+      rightEs: right.vEs,
+      wrong,
+      x: [
+        `A triangular face is measured along the face, so its height is the slant height, ${g.l} ${u.l}. The vertical height (${g.h} ${u.l}) goes through the inside of the pyramid, so it is not a height of any face.`,
+        `Una cara triangular se mide sobre la cara, así que su altura es la altura inclinada, ${g.l} ${u.l}. La altura vertical (${g.h} ${u.l}) pasa por el interior de la pirámide, así que no es la altura de ninguna cara.`,
+      ],
+      h: [
+        [
+          "The height of a triangle is measured inside that triangle, straight across from its base.",
+          "La altura de un triángulo se mide dentro de ese triángulo, recta desde su base.",
+        ],
+        [
+          "One of these lengths lies on the face. Another goes up through the inside of the pyramid.",
+          "Una de estas medidas está sobre la cara. Otra sube por el interior de la pirámide.",
+        ],
+      ],
+      p: { what: "surface", shape: "tri" },
+      meta: { kind: "vertPick", s: g.s, h: g.h, l: g.l, ul: u.l },
+    });
+    return item;
+  };
+
   reg(
     "surfaceAreaPyramid",
     "Surface area of pyramids",
     "Área de superficie de pirámides",
     {
-      1: [yFace, yFace, ySquare({ mc: true })],
-      2: [ySquare({}), ySquare({ mc: true }), ySquare({})],
-      3: [yMore("miss"), yTri, ySquare({ mc: true })],
-      4: [yMore("comp"), yMore("cost"), yTri],
+      1: [yFace, yHeightPick, ySquare({ mc: true })],
+      2: [ySquare({}), ySquare({ mc: true }), yVert({}), yHeightPick],
+      3: [yMore("miss"), yTri, yVert({ mc: true }), ySquare({ mc: true })],
+      4: [yMore("comp"), yMore("cost"), yTri, yVert({ cost: true })],
     },
     (item) => {
       const m = item.meta;
@@ -3697,6 +4638,22 @@
           return wantNum(item, sq(m.s, m.l) * m.rate, "cost");
         case "comp":
           return wantNum(item, 5 * m.a * m.a + 4 * face(m.a, m.l), "cube with pyramid");
+        case "vert":
+        case "vertCost":
+        case "vertMC":
+        case "vertPick": {
+          // the slant is the hypotenuse of half the base edge and the vertical height (whole numbers by construction)
+          if (!near(Math.hypot(m.s / 2, m.h), m.l))
+            return "slant is not the hypotenuse of the half edge and the height";
+          if (m.kind === "vertPick")
+            return (
+              item.c[item.a].startsWith(`${m.l} ${m.ul} (slant`) || "key is not the slant height"
+            );
+          if (m.kind === "vertCost") return wantNum(item, sq(m.s, m.l) * m.rate, "cost");
+          return m.kind === "vertMC"
+            ? wantChoice(item, sq(m.s, m.l), m.ua, "square pyramid")
+            : wantNum(item, sq(m.s, m.l), "square pyramid");
+        }
         default:
           return `unknown kind ${m.kind}`;
       }
@@ -4093,6 +5050,36 @@
       }
     },
   );
+
+  /** What a sibling generator file (geometry2.js) shares, so it never copies this file's feedback or figures. */
+  G.geo = {
+    UN,
+    unitOf,
+    An,
+    The,
+    mcI,
+    numI,
+    MIS,
+    RC,
+    near,
+    shoelace,
+    wantNum,
+    wantChoice,
+    intNot,
+    fm,
+    shape,
+    prismViz,
+    lean,
+    Q,
+    paraPts,
+    triPts,
+    trapPts,
+    figPts,
+    slabArea,
+    exposedFaces,
+    addShapes,
+    contexts: { CP, CT, CZ, CK, CV, CS, CY, CG },
+  };
 
   /* __GENERATORS__ */
 })();

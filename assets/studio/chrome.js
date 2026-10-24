@@ -59,6 +59,9 @@
     "act",
     "lab",
     "mission",
+    "contrast",
+    "rookie",
+    "capstone",
   ];
   /** @param {any} d @returns {string[]} */
   function validateConfig(d) {

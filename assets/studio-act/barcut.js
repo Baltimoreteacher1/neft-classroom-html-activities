@@ -2,7 +2,10 @@
  * Practice Studio activity: barcut (window.StudioAct kind "barcut").
  * Cut fraction bars into equal pieces, count the groups, then type the quotient.
  * Modes: wholeByFrac (3 / 1/4), fracByWhole (1/2 / 3), mixed (2 1/2 / 3/4). Level 4 is the reverse problem:
- * pick the division sentence the model shows. State: { d: pieces per bar, k: groups counted, ans, pick }.
+ * pick the division sentence the model shows. State: { d: pieces per bar, k: groups counted, ans, pick, pred, pred2 }.
+ * Commit, then cut: before the cuts unlock, the student sets a marker (less than / the same as / more than the start). The marker
+ * is judged by the divisor against ONE whole, never by a rule that fractions make bigger. params: pair (also predict the same
+ * numbers swapped, 6 ÷ 1/3 and 1/3 ÷ 6), big (mixed mode with a divisor above 1, like ÷ 3/2, where the quotient shrinks).
  * Contract: docs/specs/practice-studio-v2.md section 5.
  */
 (() => {
@@ -70,11 +73,24 @@
         const mm = rng.pick([2, 3, 4]);
         dvd = [rng.int(1, 3) * mm + rng.int(1, mm - 1), mm];
         const q = rng.int(2, 8);
-        dvs = lvl === 1 ? [1, q] : [rng.int(2, 3), q];
+        dvs = params.big
+          ? rng.pick([
+              [3, 2],
+              [4, 3],
+              [5, 4],
+              [5, 3],
+              [7, 4],
+            ])
+          : lvl === 1
+            ? [1, q]
+            : [rng.int(2, 3), q];
       }
       dvd = F(dvd[0], dvd[1]);
       dvs = F(dvs[0], dvs[1]);
-      if (mode !== "fracByWhole" && (dvs[0] >= dvs[1] || (mode === "mixed" && dvd[1] === 1)))
+      if (
+        mode !== "fracByWhole" &&
+        ((dvs[0] >= dvs[1] && !params.big) || (mode === "mixed" && dvd[1] === 1))
+      )
         continue;
       if (mode === "fracByWhole" && (dvd[0] % dvd[1] === 0 || (level < 3 && dvd[0] > dvd[1])))
         continue;
@@ -85,9 +101,14 @@
       const info = /** @type {any} */ (cutInfo(m, ok[0]));
       if (info.N > 34 || (mode !== "fracByWhole" && info.full > 18)) continue;
       const leftover = mode !== "fracByWhole" && quo[1] !== 1;
-      if (mode !== "fracByWhole" && (level === 3 ? !leftover : level < 3 && leftover)) continue;
+      if (
+        mode !== "fracByWhole" &&
+        !params.big &&
+        (level === 3 ? !leftover : level < 3 && leftover)
+      )
+        continue;
       if (mode === "fracByWhole" && level === 2 && quo[0] === 1 && dvd[0] === 1) continue;
-      return pack(rng, level, m, ok, th);
+      return pack(rng, level, m, ok, th, params);
     }
     throw new Error(`barcut: no task for ${mode} L${level}`);
   }
@@ -98,6 +119,7 @@
     /** @type {any} */ m,
     /** @type {number[]} */ ok,
     /** @type {string[]} */ th,
+    /** @type {any} */ params = {},
   ) {
     const a = tx(m.dvd);
     const b = m.mode === "fracByWhole" ? String(m.dvs[0]) : tx(m.dvs);
@@ -165,7 +187,26 @@
       m.mode === "fracByWhole"
         ? `${expr} = ${qt}. Con ${need} trozos por barra, cada parte es ${qt} de una barra entera.`
         : `${expr} = ${qt}. Con ${need} trozos por barra, ${lone ? "los grupos completos más la parte sobrante de un grupo forman" : "los grupos forman"} ${qt}.`;
-    return { q, qEs, x: ex, xEs: exEs, h: hs, hEs: hsEs, model: { ...m, expr, ok, opts, level } };
+    const rel = (/** @type {number} */ a, /** @type {number} */ b) =>
+      Math.abs(a - b) < 1e-9 ? "same" : a > b ? "more" : "fewer";
+    const truth = rel(num(m.quo), num(m.dvd));
+    const pair =
+      params.pair && !m.rev && m.mode !== "mixed"
+        ? {
+            expr: `${tx(m.dvs)} ÷ ${tx(m.dvd)}`,
+            start: tx(m.dvs),
+            truth: rel(num(dv(m.dvs, m.dvd)), num(m.dvs)),
+          }
+        : null;
+    return {
+      q,
+      qEs,
+      x: ex,
+      xEs: exEs,
+      h: hs,
+      hEs: hsEs,
+      model: { ...m, expr, ok, opts, level, truth, pair },
+    };
   }
 
   /* ---- grading -------------------------------------------------------------------------------- */
@@ -178,6 +219,34 @@
     const m = spec.model;
     st = st || {};
     const d = Number(st.d || 0);
+    if (!m.rev) {
+      if (!st.pred || (m.pair && !st.pred2))
+        return bad(
+          "predict",
+          "Set your marker before you cut: will the answer be less than, the same as, or more than the start?",
+          "Pon tu marcador antes de cortar: ¿la respuesta será menor que, igual a o mayor que el inicio?",
+        );
+      if (st.pred !== m.truth)
+        return bad(
+          "predict-wrong",
+          m.mode === "fracByWhole"
+            ? `If you share the amount among ${m.dvs[0]} equal groups, does each group get more than the whole amount, or only part of it? Then move your marker.`
+            : `How many ${tx(m.dvs)}-pieces fit in ONE whole: more than one, or less than one? Then move your marker.`,
+          m.mode === "fracByWhole"
+            ? `Si repartes la cantidad entre ${m.dvs[0]} grupos iguales, ¿cada grupo recibe más que toda la cantidad o solo una parte? Luego mueve tu marcador.`
+            : `¿Cuántas piezas de ${tx(m.dvs)} caben en UN entero: más de una o menos de una? Luego mueve tu marcador.`,
+        );
+      if (m.pair && st.pred2 !== m.pair.truth)
+        return bad(
+          "predict-wrong",
+          m.mode === "wholeByFrac"
+            ? `Think about the swapped numbers. If you share ${m.pair.start} among ${m.dvd[0]} equal groups, does each group get more than ${m.pair.start}, or only part of it? Then move the second marker.`
+            : `Think about the swapped numbers. How many ${tx(m.dvd)}-pieces fit in ONE whole: more than one, or less than one? Then move the second marker.`,
+          m.mode === "wholeByFrac"
+            ? `Piensa en los números cambiados de lugar. Si repartes ${m.pair.start} entre ${m.dvd[0]} grupos iguales, ¿cada grupo recibe más que ${m.pair.start} o solo una parte? Luego mueve el segundo marcador.`
+            : `Piensa en los números cambiados de lugar. ¿Cuántas piezas de ${tx(m.dvd)} caben en UN entero: más de una o menos de una? Luego mueve el segundo marcador.`,
+        );
+    }
     if (m.opts && Number(st.pick) !== m.opts.good) {
       return st.pick === undefined || st.pick === null || st.pick === ""
         ? bad("pick", "Pick the division sentence first.", "Primero elige la oración de división.")
@@ -269,6 +338,8 @@
     k: 0,
     ans: tx(spec.model.quo),
     pick: spec.model.opts ? spec.model.opts.good : undefined,
+    pred: spec.model.rev ? undefined : spec.model.truth,
+    pred2: spec.model.pair ? spec.model.pair.truth : undefined,
   });
   function wrong(/** @type {any} */ spec, /** @type {any} */ _rng) {
     const m = spec.model;
@@ -287,6 +358,10 @@
       { ...s, ans: String(Math.floor(num(m.quo))) },
     ];
     if (m.opts) c.push({ ...s, pick: (m.opts.good + 1) % m.opts.list.length });
+    if (!m.rev) {
+      c.push({ ...s, pred: m.truth === "more" ? "fewer" : "more" }, { ...s, pred: undefined });
+      if (m.pair) c.push({ ...s, pred2: m.pair.truth === "more" ? "fewer" : "more" });
+    }
     return c.filter((st) => !grade(spec, st).ok);
   }
 
@@ -352,6 +427,8 @@
       k: Number(base.k || 0),
       ans: String(base.ans ?? ""),
       pick: base.pick,
+      pred: base.pred,
+      pred2: base.pred2,
     };
     if (m.rev) st.d = m.ok[0];
     host.textContent = "";
@@ -421,6 +498,7 @@
         chips.append(b);
       }
     }
+    const markers = () => m.rev || (!!st.pred && (!m.pair || !!st.pred2));
     const info = () => cutInfo(m, st.d);
     function draw() {
       const i = info();
@@ -456,10 +534,14 @@
         }
         bars.append(row);
       }
-      for (const [n, b] of chipEls) b.setAttribute("aria-pressed", String(n === st.d));
+      for (const [n, b] of chipEls) {
+        b.setAttribute("aria-pressed", String(n === st.d));
+        b.disabled = ended || !markers();
+      }
+      for (const i2 of /** @type {any[]} */ ([wI, nI, dI])) i2.readOnly = ended || !markers();
       const full = i ? i.full : 0;
       cnt.innerHTML = `<b>${st.k}</b> ${T(counting[2].toLowerCase(), counting[3].toLowerCase())}`;
-      more.disabled = ended || !i || st.k >= full;
+      more.disabled = ended || !markers() || !i || st.k >= full;
       undo.disabled = ended || st.k === 0;
       keyBox.innerHTML =
         m.mode === "fracByWhole"
@@ -467,7 +549,7 @@
           : `<span>${T("One group is", "Un grupo es")} ${tx(m.dvs)} ${T("of a bar:", "de una barra:")}</span><span class="k" style="width:${Math.min(100, Math.round(num(m.dvs) * 100))}%;max-width:100%"></span>`;
     }
     const tap = (/** @type {number} */ gid) => {
-      if (ended) return;
+      if (ended || !markers()) return;
       st.k = gid >= st.k ? gid + 1 : gid;
       emit();
       draw();
@@ -536,6 +618,51 @@
     ansBox.append(line);
 
     root.append(head);
+    if (!m.rev) {
+      const predBox = A.el("div", "bc-box");
+      const addRow = (
+        /** @type {string} */ key,
+        /** @type {string} */ en,
+        /** @type {string} */ esT,
+      ) => {
+        predBox.append(A.el("span", "bc-lab", T(en, esT)));
+        const g = A.el("div", "bc-chips", "", { role: "group" });
+        for (const [v, e1, e2] of [
+          ["fewer", "Less than the start", "Menos que el inicio"],
+          ["same", "The same as the start", "Igual que el inicio"],
+          ["more", "More than the start", "Más que el inicio"],
+        ]) {
+          const b = /** @type {any} */ (
+            A.el("button", "bc-btn", T(e1, e2), {
+              type: "button",
+              "aria-pressed": String(/** @type {any} */ (st)[key] === v),
+            })
+          );
+          b.disabled = ended;
+          b.addEventListener("click", () => {
+            /** @type {any} */ (st)[key] = v;
+            for (const x of /** @type {any[]} */ ([...g.children]))
+              x.setAttribute("aria-pressed", String(x === b));
+            emit();
+            draw();
+          });
+          g.append(b);
+        }
+        predBox.append(g);
+      };
+      addRow(
+        "pred",
+        `Set your marker before you cut. Will ${m.expr} be less than, the same as, or more than the start, ${tx(m.dvd)}?`,
+        `Pon tu marcador antes de cortar. ¿${m.expr} será menos que, igual que o más que el inicio, ${tx(m.dvd)}?`,
+      );
+      if (m.pair)
+        addRow(
+          "pred2",
+          `Now the same numbers swapped. Will ${m.pair.expr} be less than, the same as, or more than its start, ${m.pair.start}?`,
+          `Ahora los mismos números cambiados de lugar. ¿${m.pair.expr} será menos que, igual que o más que su inicio, ${m.pair.start}?`,
+        );
+      root.append(predBox);
+    }
     if (m.opts) {
       const ob = A.el("div", "bc-box");
       ob.append(
@@ -591,7 +718,7 @@
     check.addEventListener("click", () => {
       if (ended) return;
       const local = def.grade(spec, st);
-      const skip = ["uncut", "empty", "pick"].includes(local.tag || "");
+      const skip = ["uncut", "empty", "pick", "predict"].includes(local.tag || "");
       const out = skip ? null : api.submit && api.submit({ ...st });
       const res = out && typeof out === "object" && typeof out.ok === "boolean" ? out : local;
       if (res.ok) lock();
@@ -610,6 +737,12 @@
     title: "Cut the bars",
     titleEs: "Corta las barras",
     levels: 4,
+    testParams: [
+      {},
+      { mode: "wholeByFrac", pair: true },
+      { mode: "fracByWhole", pair: true },
+      { mode: "mixed", big: true },
+    ],
     make,
     solution,
     wrong,

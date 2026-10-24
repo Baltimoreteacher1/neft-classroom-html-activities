@@ -50,6 +50,8 @@
     return `${a.map(en).join(" ")} | ${a.map(es).join(" ")}`;
   };
   const norm = (s) => String(s).trim().toLowerCase();
+  /** the generator being built right now: lesson 6-1 (fracDivWhole) teaches with groups and shares, never the reciprocal */
+  let CUR = "";
 
   /* ---- quantities with units ---------------------------------------------------------------------- */
   const UNIT = {
@@ -481,6 +483,12 @@
   /* ---- worked solution and shared feedback -------------------------------------------------------- */
   /** convert -> reciprocal -> multiply -> simplify -> check, for A ÷ B = Q. */
   const work = (A, B, Q) => {
+    if (CUR === "fracDivWhole") {
+      const g = A[1] === 1 && B[0] === 1;
+      return g
+        ? `Each whole holds ${B[1]} pieces of size ${S(B)}, so ${S(A)} wholes hold ${A[0]} × ${B[1]} = ${Q[0]} pieces. Check by multiplying: ${S(Q)} × ${S(B)} = ${S(A)}. | Cada entero contiene ${B[1]} piezas de tamaño ${S(B)}, así que ${S(A)} enteros contienen ${A[0]} × ${B[1]} = ${Q[0]} piezas. Comprueba multiplicando: ${S(Q)} × ${S(B)} = ${S(A)}.`
+        : `Share ${S(A)} equally into ${B[0]} parts. Each part is ${S(Q)} of a whole. Check by multiplying: ${B[0]} × ${S(Q)} = ${S(A)}. | Reparte ${S(A)} en ${B[0]} partes iguales. Cada parte es ${S(Q)} de un entero. Comprueba multiplicando: ${B[0]} × ${S(Q)} = ${S(A)}.`;
+    }
     const r = inv(B);
     const conv = [A, B].filter(isMixed).map((a) => [S(a), FR(a)]);
     const pn = A[0] * r[0];
@@ -516,9 +524,9 @@
     "forgot-to-flip": (_A, B) =>
       `You multiplied by ${S(B)} itself. Dividing by ${S(B)} means multiplying by its reciprocal, ${FR(inv(B))}. | Multiplicaste por ${S(B)}. Dividir entre ${S(B)} es multiplicar por su recíproco, ${FR(inv(B))}.`,
     "inverted-wrong-fraction": (A, B) =>
-      `You flipped ${S(A)}, the first number. Keep ${S(A)} as it is and flip only the divisor, ${S(B)}. | Invertiste ${S(A)}, el primer número. Deja ${S(A)} como está e invierte solo el divisor, ${S(B)}.`,
+      `You flipped ${S(A)}, the first number. Keep ${S(A)} as it is and flip only the divisor, ${S(B)}. | Volteaste ${S(A)}, el primer número. Deja ${S(A)} como está e voltea solo el divisor, ${S(B)}.`,
     "flipped-both": (_A, B) =>
-      `You flipped both numbers. Only the divisor, ${S(B)}, gets flipped. | Invertiste los dos números. Solo se invierte el divisor, ${S(B)}.`,
+      `You flipped both numbers. Only the divisor, ${S(B)}, gets flipped. | Volteaste los dos números. Solo se voltea el divisor, ${S(B)}.`,
     "ignored-numerator": (_A, B) =>
       `You used 1/${B[1]} instead of ${S(B)}. The numerator counts: each group is ${B[0]} of those small pieces, so fewer groups fit. | Usaste 1/${B[1]} en lugar de ${S(B)}. El numerador cuenta: cada grupo tiene ${B[0]} de esas partes pequeñas, así que caben menos grupos.`,
     "dropped-whole-part": (A) =>
@@ -563,6 +571,12 @@
   };
   const calcHints = (A, B, shape) => {
     const r = FR(inv(B));
+    if (B[1] === 1 && CUR === "fracDivWhole")
+      return [
+        "Sharing equally means splitting the amount into that many equal parts. | Repartir en partes iguales es dividir la cantidad en esa cantidad de partes del mismo tamaño.",
+        `Split ${S(A)} into ${B[0]} equal parts. A bar can show you one part. | Divide ${S(A)} en ${B[0]} partes iguales. Una barra te puede mostrar una parte.`,
+        "Name one part as a fraction of the whole bar. | Escribe una parte como fracción de la barra entera.",
+      ];
     if (B[1] === 1)
       return [
         "Sharing equally means dividing the amount by the number of shares. | Repartir en partes iguales es dividir la cantidad entre el número de partes.",
@@ -573,7 +587,7 @@
       return [
         "A part is a fraction of the whole. To find the whole, divide the part by that fraction. | Una parte es una fracción del total. Para hallar el total, divide la parte entre esa fracción.",
         `Dividing by ${S(B)} is the same as multiplying by its reciprocal. | Dividir entre ${S(B)} es lo mismo que multiplicar por su recíproco.`,
-        `Flip ${S(B)} to get ${r}, then multiply ${FR(A)} × ${r}. | Invierte ${S(B)} para obtener ${r}, y luego multiplica ${FR(A)} × ${r}.`,
+        `Flip ${S(B)} to get ${r}, then multiply ${FR(A)} × ${r}. | Voltea ${S(B)} para obtener ${r}, y luego multiplica ${FR(A)} × ${r}.`,
       ];
     if (A[1] === 1 && B[0] === 1)
       return [
@@ -585,8 +599,8 @@
     return [
       "Dividing by a fraction is the same as multiplying by its reciprocal. | Dividir entre una fracción es lo mismo que multiplicar por su recíproco.",
       conv.length
-        ? `First rewrite ${conv.join(" and ")} as improper fraction${conv.length > 1 ? "s" : ""}. Then keep, change ÷ to ×, and flip the divisor. | Primero escribe ${conv.join(" y ")} como fracción${conv.length > 1 ? "es" : ""} impropia${conv.length > 1 ? "s" : ""}. Luego conserva, cambia ÷ por × e invierte el divisor.`
-        : `Keep ${S(A)}, change ÷ to ×, and flip ${S(B)}. | Conserva ${S(A)}, cambia ÷ por × e invierte ${S(B)}.`,
+        ? `First rewrite ${conv.join(" and ")} as improper fraction${conv.length > 1 ? "s" : ""}. Then keep, change ÷ to ×, and flip the divisor. | Primero escribe ${conv.join(" y ")} como fracción${conv.length > 1 ? "es" : ""} impropia${conv.length > 1 ? "s" : ""}. Luego conserva, cambia ÷ por × e voltea el divisor.`
+        : `Keep ${S(A)}, change ÷ to ×, and flip ${S(B)}. | Conserva ${S(A)}, cambia ÷ por × e voltea ${S(B)}.`,
       `The reciprocal of ${FR(B)} is ${r}. Multiply ${FR(A)} × ${r}, then simplify. | El recíproco de ${FR(B)} es ${r}. Multiplica ${FR(A)} × ${r} y luego simplifica.`,
     ];
   };
@@ -656,7 +670,7 @@
           : [
               x(inv(A), "÷", B),
               "inverted-wrong-fraction",
-              "This flips the total before dividing. The total stays as it is in the expression. | Esta invierte el total antes de dividir. En la expresión el total queda como está.",
+              "This flips the total before dividing. The total stays as it is in the expression. | Esta voltea el total antes de dividir. En la expresión el total queda como está.",
             ],
         [
           x(A, "−", B),
@@ -983,7 +997,7 @@
             [
               inv(B),
               "gave-the-reciprocal",
-              `Try it: ${S(A)} ÷ ${S(inv(B))} does not give ${S(Q)}. You gave the reciprocal. | Pruébalo: ${S(A)} ÷ ${S(inv(B))} no da ${S(Q)}. Diste el recíproco.`,
+              `Try it: ${S(A)} ÷ ${S(inv(B))} does not give ${S(Q)}. You gave the number turned upside down. | Pruébalo: ${S(A)} ÷ ${S(inv(B))} no da ${S(Q)}. Diste el número al revés.`,
             ],
           ];
     const intro = storied
@@ -1115,9 +1129,9 @@
           `Multiplying makes more than ${S(A)}. Sharing ${S(A)} makes each share smaller. | Multiplicar da más que ${S(A)}. Repartir ${S(A)} hace cada parte más pequeña.`,
         ],
         [
-          "He should have flipped both numbers first. | Debió invertir los dos números primero.",
+          "He should have cut both numbers into smaller pieces first. | Debió cortar los dos números en piezas más pequeñas primero.",
           "flipped-both",
-          "Only the divisor is flipped, and only when you multiply by its reciprocal. | Solo se invierte el divisor, y solo cuando multiplicas por su recíproco.",
+          "Only the amount being shared is split into equal parts. The number of parts stays a whole number. | Solo la cantidad que se reparte se divide en partes iguales. El número de partes sigue siendo un número entero.",
         ],
         [
           `He should have added ${S(A)} + ${k}. | Debió sumar ${S(A)} + ${k}.`,
@@ -1132,6 +1146,44 @@
         `Estimate both: is each quotient bigger or smaller than ${S(A)}? | Estima ambos: ¿cada cociente es mayor o menor que ${S(A)}?`,
       ],
       meta: { kind: "trap", variant: 2, A, B, ans: en(right) },
+    });
+  };
+
+  /** Without calculating: A ÷ B1 or A ÷ B2? The smaller divisor makes the bigger quotient. */
+  const cmpTwo = (rng, A, B1, B2) => {
+    const [lo, hi] = cmp(B1, B2) < 0 ? [B1, B2] : [B2, B1];
+    const [x, y] = rng.chance(0.5) ? [lo, hi] : [hi, lo];
+    const e1 = `${S(A)} ÷ ${S(x)}`;
+    const e2 = `${S(A)} ÷ ${S(y)}`;
+    const best = x === lo ? e1 : e2;
+    const other = best === e1 ? e2 : e1;
+    return mcq(rng, {
+      q: `Without calculating, which quotient is greater: ${e1} or ${e2}? | Sin calcular, ¿cuál cociente es mayor: ${e1} o ${e2}?`,
+      right: `${best} | ${best}`,
+      wrong: [
+        [
+          `${other} | ${other}`,
+          "bigger-divisor-bigger-quotient",
+          "A bigger divisor means each group is bigger, so fewer groups or smaller shares fit. The smaller divisor gives the greater quotient. | Un divisor mayor significa grupos más grandes, así que caben menos grupos o salen partes más pequeñas. El divisor menor da el cociente mayor.",
+        ],
+        [
+          "They are equal | Son iguales",
+          "quotient-equals-dividend",
+          "The divisors are different sizes, so the quotients are different. | Los divisores tienen tamaños distintos, así que los cocientes son distintos.",
+        ],
+        [
+          "You must calculate both first | Hay que calcular los dos primero",
+          "fraction-always-bigger",
+          "You can compare the divisors instead. Which divisor is smaller? | Puedes comparar los divisores. ¿Cuál divisor es menor?",
+        ],
+      ],
+      x: `${S(lo)} is less than ${S(hi)}, so ${S(A)} ÷ ${S(lo)} is the greater quotient. In fact ${S(A)} ÷ ${S(lo)} = ${S(div(A, lo))} and ${S(A)} ÷ ${S(hi)} = ${S(div(A, hi))}. | ${S(lo)} es menor que ${S(hi)}, así que ${S(A)} ÷ ${S(lo)} es el cociente mayor. De hecho ${S(A)} ÷ ${S(lo)} = ${S(div(A, lo))} y ${S(A)} ÷ ${S(hi)} = ${S(div(A, hi))}.`,
+      h: [
+        "Compare the two divisors first. Which one is smaller? | Primero compara los dos divisores. ¿Cuál es menor?",
+        "Think about how many groups of each divisor fit in the same amount. | Piensa cuántos grupos de cada divisor caben en la misma cantidad.",
+        "A smaller divisor fits more times. | Un divisor menor cabe más veces.",
+      ],
+      meta: { kind: "cmp2", A, B1: x, B2: y, ans: best },
     });
   };
 
@@ -1219,6 +1271,15 @@
         `rev: ${item.a} does not restore the equation`,
       );
     },
+    cmp2: (item, m) => {
+      const v1 = over(m.A, m.B1);
+      const v2 = over(m.A, m.B2);
+      const best = cmp(v1, v2) > 0 ? `${S(m.A)} ÷ ${S(m.B1)}` : `${S(m.A)} ÷ ${S(m.B2)}`;
+      return ok(
+        cmp(v1, v2) !== 0 && picked(item) === best,
+        "cmp2: marked choice is not the greater quotient",
+      );
+    },
     trap: (item, m) => {
       const fact =
         m.variant === 1 ? cmp(over(m.A, m.B), m.A) > 0 : cmp(over(m.A, m.B), over(m.B, m.A)) !== 0;
@@ -1279,13 +1340,16 @@
     }
     return table[table.length - 1][1];
   };
-  const reg = (id, title, titleEs, tables) =>
+  const same4 = (t) => [t, t, t, t];
+  const reg = (id, title, titleEs, tables, shapeTables = {}) =>
     R.register(id, {
       title,
       titleEs,
       levels: 4,
-      make(rng, level) {
-        const fn = roll(rng, tables[level - 1]);
+      shapes: ["forward", ...Object.keys(shapeTables)],
+      make(rng, level, shape) {
+        CUR = id;
+        const fn = roll(rng, (shapeTables[shape] || tables)[level - 1]);
         let item = fn(rng);
         for (let i = 0; i < 30 && leaks(item); i++) item = fn(rng);
         return item;
@@ -1409,6 +1473,90 @@
         ],
       ],
     ],
+    {
+      reverse: same4([
+        [
+          3,
+          (rng) => {
+            const [A, B] = either(
+              rng,
+              () => unitGroup(rng, 9, D6, 60),
+              () => shareSet(rng, D6, 6, 36),
+            );
+            return reverse(rng, A, B, "A", rng.chance(0.5));
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = either(
+              rng,
+              () => unitGroup(rng, 9, D6, 60),
+              () => shareSet(rng, D6, 6, 36),
+            );
+            return reverse(rng, A, B, "B", rng.chance(0.5));
+          },
+        ],
+      ]),
+      "which-input": same4([
+        [
+          3,
+          (rng) => {
+            const g = rng.chance(0.5);
+            const [A, B] = g ? unitGroup(rng, 5, [2, 3, 4, 5, 6], 24) : shareSet(rng, D6, 6, 30);
+            return storyMatch(rng, A, B, g ? "G" : "S");
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const g = rng.chance(0.5);
+            const [A, B] = g
+              ? unitGroup(rng, 4, [2, 3, 4, 5, 6], 12)
+              : shareSet(rng, [2, 3, 4, 5], 4, 20);
+            return expression(rng, A, B, g ? "G" : "S", {});
+          },
+        ],
+        [
+          2,
+          (rng) => {
+            const [A, B] = either(
+              rng,
+              () => unitGroup(rng, 9, D6, 60),
+              () => shareSet(rng, D6, 6, 36),
+            );
+            return mulCheck(rng, A, B);
+          },
+        ],
+      ]),
+      compare: same4([
+        [
+          3,
+          (rng) => {
+            const [A, B] = either(
+              rng,
+              () => unitGroup(rng, 9, D6, 60),
+              () => shareSet(rng, D6, 6, 36),
+            );
+            return bigger(rng, A, B);
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [d1, d2] = rng.shuffle(D6).slice(0, 2);
+            return cmpTwo(rng, [rng.int(2, 9), 1], [1, d1], [1, d2]);
+          },
+        ],
+        [
+          2,
+          (rng) => {
+            const [k1, k2] = rng.shuffle([2, 3, 4, 5, 6]).slice(0, 2);
+            return cmpTwo(rng, proper(rng, [3, 4, 5, 6, 8]), [k1, 1], [k2, 1]);
+          },
+        ],
+      ]),
+    },
   );
 
   /* ---- more item types: reciprocal, conversion, set-up, chains, estimates, leftovers ---------------- */
@@ -1455,7 +1603,7 @@
           [
             minus([1, 1], A),
             "used-complement",
-            "That is 1 minus the fraction, how far it is from 1. A reciprocal flips the fraction. | Eso es 1 menos la fracción. Un recíproco invierte la fracción.",
+            "That is 1 minus the fraction, how far it is from 1. A reciprocal flips the fraction. | Eso es 1 menos la fracción. Un recíproco voltea la fracción.",
           ],
           [
             plus(A, [1, 1]),
@@ -1531,17 +1679,17 @@
       [
         x(FR(inv(A)), "×", FR(B)),
         "inverted-wrong-fraction",
-        `This flips ${FR(A)}, the first number. Only the divisor is flipped. | Esto invierte ${FR(A)}, el primer número. Solo se invierte el divisor.`,
+        `This flips ${FR(A)}, the first number. Only the divisor is flipped. | Esto voltea ${FR(A)}, el primer número. Solo se voltea el divisor.`,
       ],
       [
         x(FR(inv(A)), "×", r),
         "flipped-both",
-        "This flips both numbers. Only the divisor is flipped. | Esto invierte los dos números. Solo se invierte el divisor.",
+        "This flips both numbers. Only the divisor is flipped. | Esto voltea los dos números. Solo se voltea el divisor.",
       ],
       [
         x(FR(A), "÷", r),
         "kept-division-sign",
-        "This flips the divisor but keeps ÷. Change ÷ to × when you flip. | Esto invierte el divisor pero deja ÷. Cambia ÷ por × al invertir.",
+        "This flips the divisor but keeps ÷. Change ÷ to × when you flip. | Esto voltea el divisor pero deja ÷. Cambia ÷ por × al invertir.",
       ],
     ];
     if (isMixed(A))
@@ -1557,7 +1705,7 @@
       x: cat(work(A, B, div(A, B))),
       h: [
         "Convert mixed numbers to improper fractions first. | Primero convierte los números mixtos en fracciones impropias.",
-        "Keep the first number, change ÷ to ×, and flip only the divisor. | Conserva el primer número, cambia ÷ por × e invierte solo el divisor.",
+        "Keep the first number, change ÷ to ×, and flip only the divisor. | Conserva el primer número, cambia ÷ por × e voltea solo el divisor.",
         `The divisor is ${S(B)}. What do you get when you flip it? | El divisor es ${S(B)}. ¿Qué obtienes al invertirlo?`,
       ],
       meta: { kind: "setup", A, B },
@@ -1975,115 +2123,190 @@
     return v;
   };
 
-  reg("fracDivMixed", "Divide fractions and mixed numbers", "Dividir fracciones y números mixtos", [
+  reg(
+    "fracDivMixed",
+    "Divide fractions and mixed numbers",
+    "Dividir fracciones y números mixtos",
     [
       [
-        3,
-        (rng) => recip(rng, rng.chance(0.3) ? [rng.int(2, 9), 1] : proper(rng, [2, 3, 4, 5, 6, 8])),
+        [
+          3,
+          (rng) =>
+            recip(rng, rng.chance(0.3) ? [rng.int(2, 9), 1] : proper(rng, [2, 3, 4, 5, 6, 8])),
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QP], aMax: 12 });
+            return expression(rng, A, B, "G");
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QP, ...QM], aMax: 12 });
+            return meaning(rng, A, B);
+          },
+        ],
       ],
       [
-        3,
-        (rng) => {
-          const [A, B] = pairBy(rng, { qs: [...QW, ...QP], aMax: 12 });
-          return expression(rng, A, B, "G");
-        },
+        [
+          4,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QM, ...QP], aMax: 12 });
+            return calc(rng, A, B, "bare");
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QM], aMax: 12 });
+            return calc(rng, A, B, "G");
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QP, ...QM], aMax: 12 });
+            return calc(rng, A, B, "W");
+          },
+        ],
       ],
       [
-        3,
-        (rng) => {
-          const [A, B] = pairBy(rng, { qs: [...QW, ...QP, ...QM], aMax: 12 });
-          return meaning(rng, A, B);
-        },
-      ],
-    ],
-    [
-      [
-        4,
-        (rng) => {
-          const [A, B] = pairBy(rng, { qs: [...QW, ...QM, ...QP], aMax: 12 });
-          return calc(rng, A, B, "bare");
-        },
-      ],
-      [
-        3,
-        (rng) => {
-          const [A, B] = pairBy(rng, { qs: [...QW, ...QM], aMax: 12 });
-          return calc(rng, A, B, "G");
-        },
-      ],
-      [
-        3,
-        (rng) => {
-          const [A, B] = pairBy(rng, { qs: [...QW, ...QP, ...QM], aMax: 12 });
-          return calc(rng, A, B, "W");
-        },
-      ],
-    ],
-    [
-      [
-        3,
-        (rng) =>
-          convert(
-            rng,
-            mixedOf(
-              rng.int(1, 5),
-              ...rng.pick([
-                [1, 2],
-                [2, 3],
-                [3, 4],
-                [2, 5],
-                [1, 4],
-                [3, 5],
-                [5, 6],
-              ]),
+        [
+          3,
+          (rng) =>
+            convert(
+              rng,
+              mixedOf(
+                rng.int(1, 5),
+                ...rng.pick([
+                  [1, 2],
+                  [2, 3],
+                  [3, 4],
+                  [2, 5],
+                  [1, 4],
+                  [3, 5],
+                  [5, 6],
+                ]),
+              ),
             ),
-          ),
+        ],
+        [
+          4,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QM], mixA: true, aMax: 40 });
+            return calc(rng, A, B, rng.chance(0.5) ? "G" : "bare");
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QM, ...QP], mixA: true, aMax: 40 });
+            return setup(rng, A, B);
+          },
+        ],
       ],
       [
-        4,
-        (rng) => {
-          const [A, B] = pairBy(rng, { qs: [...QW, ...QM], mixA: true, aMax: 40 });
-          return calc(rng, A, B, rng.chance(0.5) ? "G" : "bare");
-        },
-      ],
-      [
-        3,
-        (rng) => {
-          const [A, B] = pairBy(rng, { qs: [...QW, ...QM, ...QP], mixA: true, aMax: 40 });
-          return setup(rng, A, B);
-        },
+        [
+          4,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW.slice(0, 4), ...QM], aMax: 12 });
+            const C = rng.pick([
+              [2, 1],
+              [3, 1],
+              [1, 2],
+              [3, 2],
+            ]);
+            return chain(rng, A, B, C);
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QM, ...QP], aMax: 12 });
+            return reverse(rng, A, B, "A", false);
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QM, ...QP], aMax: 12 });
+            return reverse(rng, A, B, "B", false);
+          },
+        ],
       ],
     ],
-    [
-      [
-        4,
-        (rng) => {
-          const [A, B] = pairBy(rng, { qs: [...QW.slice(0, 4), ...QM], aMax: 12 });
-          const C = rng.pick([
-            [2, 1],
-            [3, 1],
-            [1, 2],
-            [3, 2],
-          ]);
-          return chain(rng, A, B, C);
-        },
-      ],
-      [
-        3,
-        (rng) => {
-          const [A, B] = pairBy(rng, { qs: [...QW, ...QM, ...QP], aMax: 12 });
-          return reverse(rng, A, B, "A", false);
-        },
-      ],
-      [
-        3,
-        (rng) => {
-          const [A, B] = pairBy(rng, { qs: [...QW, ...QM, ...QP], aMax: 12 });
-          return reverse(rng, A, B, "B", false);
-        },
-      ],
-    ],
-  ]);
+    {
+      reverse: same4([
+        [
+          3,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QM, ...QP], aMax: 24 });
+            return reverse(rng, A, B, "A", false);
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QM, ...QP], aMax: 24 });
+            return reverse(rng, A, B, "B", false);
+          },
+        ],
+        [
+          2,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QM, ...QP], aMax: 12 });
+            return mulCheck(rng, A, B);
+          },
+        ],
+      ]),
+      "which-input": same4([
+        [
+          4,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QP], aMax: 12 });
+            return expression(rng, A, B, "G");
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QM, ...QP], mixA: true, aMax: 40 });
+            return setup(rng, A, B);
+          },
+        ],
+        [
+          2,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QM, ...QP], aMax: 12 });
+            return mulCheck(rng, A, B);
+          },
+        ],
+      ]),
+      compare: same4([
+        [
+          3,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QM, ...QP], aMax: 12 });
+            return bigger(rng, A, B);
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A] = pairBy(rng, { qs: [...QW, ...QM], aMax: 12 });
+            const B1 = proper(rng, [3, 4, 5, 6, 8]);
+            const B2 = draw(
+              () => proper(rng, [3, 4, 5, 6, 8]),
+              (v) => !same(v, B1),
+            );
+            return cmpTwo(rng, A, B1, B2);
+          },
+        ],
+      ]),
+    },
+  );
 
   reg(
     "wholeDivFrac",
@@ -2155,175 +2378,350 @@
         ],
       ],
     ],
+    {
+      reverse: same4([
+        [
+          3,
+          (rng) => {
+            const [A, B] = wholeFrac(rng);
+            return reverse(rng, A, B, "A", rng.chance(0.6));
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = wholeFrac(rng);
+            return reverse(rng, A, B, "B", rng.chance(0.4));
+          },
+        ],
+      ]),
+      "which-input": same4([
+        [
+          4,
+          (rng) => {
+            const [A, B] = wholeFrac(rng, 9);
+            return setup(rng, A, B);
+          },
+        ],
+        [
+          2,
+          (rng) => {
+            const [A, B] = wholeFrac(rng);
+            return mulCheck(rng, A, B);
+          },
+        ],
+      ]),
+      compare: same4([
+        [
+          4,
+          (rng) => {
+            const [A, B] = wholeFrac(rng, 12);
+            return bigger(rng, A, rng.chance(0.3) ? inv(B) : B);
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A] = wholeFrac(rng, 12);
+            const B1 = proper(rng, [3, 4, 5, 6, 8]);
+            const B2 = draw(
+              () => proper(rng, [3, 4, 5, 6, 8]),
+              (v) => !same(v, B1),
+            );
+            return cmpTwo(rng, A, B1, B2);
+          },
+        ],
+      ]),
+    },
   );
 
   const mixedSet = (rng, qs, mixB) =>
     pairBy(rng, { qs, ds: [2, 3, 4, 5, 6], mixA: true, mixB, aMax: 48 });
-  reg("mixedDivide", "Divide mixed numbers", "Dividir números mixtos", [
+  reg(
+    "mixedDivide",
+    "Divide mixed numbers",
+    "Dividir números mixtos",
     [
       [
-        3,
-        (rng) =>
-          convert(
-            rng,
-            mixedOf(
-              rng.int(1, 6),
-              ...rng.pick([
-                [1, 2],
-                [2, 3],
-                [3, 4],
-                [2, 5],
-                [1, 4],
-                [3, 5],
-                [5, 6],
-                [1, 3],
-              ]),
+        [
+          3,
+          (rng) =>
+            convert(
+              rng,
+              mixedOf(
+                rng.int(1, 6),
+                ...rng.pick([
+                  [1, 2],
+                  [2, 3],
+                  [3, 4],
+                  [2, 5],
+                  [1, 4],
+                  [3, 5],
+                  [5, 6],
+                  [1, 3],
+                ]),
+              ),
             ),
-          ),
+        ],
+        [
+          4,
+          (rng) => {
+            const [A, B] = mixedSet(rng, [...QW, ...QM], false);
+            return setup(rng, A, B);
+          },
+        ],
+        [2, (rng) => recip(rng, proper(rng, [2, 3, 4, 5, 6, 8]))],
       ],
       [
-        4,
-        (rng) => {
-          const [A, B] = mixedSet(rng, [...QW, ...QM], false);
-          return setup(rng, A, B);
-        },
+        [
+          4,
+          (rng) => {
+            const [A, B] = mixedSet(rng, [...QW, ...QM], false);
+            return calc(rng, A, B, "bare");
+          },
+        ],
+        [
+          4,
+          (rng) => {
+            const [A, B] = mixedSet(rng, [...QW, ...QM], false);
+            return calc(rng, A, B, "G");
+          },
+        ],
+        [
+          2,
+          (rng) => {
+            const [A, B] = mixedSet(rng, [...QW, ...QM], true);
+            return setup(rng, A, B);
+          },
+        ],
       ],
-      [2, (rng) => recip(rng, proper(rng, [2, 3, 4, 5, 6, 8]))],
+      [
+        [
+          4,
+          (rng) => {
+            const [A, B] = mixedSet(rng, [...QW.slice(0, 5), ...QM], true);
+            return calc(rng, A, B, "bare");
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = mixedSet(rng, [...QW.slice(0, 5), ...QM], true);
+            return calc(rng, A, B, "G");
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = mixedSet(rng, [...QW.slice(0, 5), ...QM], rng.chance(0.6));
+            return bigger(rng, A, B);
+          },
+        ],
+      ],
+      [
+        [
+          4,
+          (rng) => {
+            const [A, B] = mixedSet(rng, [...QW.slice(0, 5), ...QM, ...QP], true);
+            return reverse(rng, A, B, "A", false);
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = mixedSet(rng, [...QW.slice(0, 5), ...QM], true);
+            return reverse(rng, A, B, "B", false);
+          },
+        ],
+        [
+          4,
+          (rng) => {
+            const [A, B] = mixedSet(rng, [...QW.slice(0, 4), ...QM], false);
+            return chain(
+              rng,
+              A,
+              B,
+              rng.pick([
+                [2, 1],
+                [3, 1],
+                [3, 2],
+                [5, 4],
+              ]),
+            );
+          },
+        ],
+      ],
     ],
-    [
-      [
-        4,
-        (rng) => {
-          const [A, B] = mixedSet(rng, [...QW, ...QM], false);
-          return calc(rng, A, B, "bare");
-        },
-      ],
-      [
-        4,
-        (rng) => {
-          const [A, B] = mixedSet(rng, [...QW, ...QM], false);
-          return calc(rng, A, B, "G");
-        },
-      ],
-      [
-        2,
-        (rng) => {
-          const [A, B] = mixedSet(rng, [...QW, ...QM], true);
-          return setup(rng, A, B);
-        },
-      ],
-    ],
-    [
-      [
-        4,
-        (rng) => {
-          const [A, B] = mixedSet(rng, [...QW.slice(0, 5), ...QM], true);
-          return calc(rng, A, B, "bare");
-        },
-      ],
-      [
-        3,
-        (rng) => {
-          const [A, B] = mixedSet(rng, [...QW.slice(0, 5), ...QM], true);
-          return calc(rng, A, B, "G");
-        },
-      ],
-      [
-        3,
-        (rng) => {
-          const [A, B] = mixedSet(rng, [...QW.slice(0, 5), ...QM], rng.chance(0.6));
-          return bigger(rng, A, B);
-        },
-      ],
-    ],
-    [
-      [
-        4,
-        (rng) => {
-          const [A, B] = mixedSet(rng, [...QW.slice(0, 5), ...QM, ...QP], true);
-          return reverse(rng, A, B, "A", false);
-        },
-      ],
-      [
-        3,
-        (rng) => {
-          const [A, B] = mixedSet(rng, [...QW.slice(0, 5), ...QM], true);
-          return reverse(rng, A, B, "B", false);
-        },
-      ],
-      [
-        4,
-        (rng) => {
-          const [A, B] = mixedSet(rng, [...QW.slice(0, 4), ...QM], false);
-          return chain(
-            rng,
-            A,
-            B,
-            rng.pick([
-              [2, 1],
-              [3, 1],
-              [3, 2],
-              [5, 4],
-            ]),
-          );
-        },
-      ],
-    ],
-  ]);
+    {
+      reverse: same4([
+        [
+          3,
+          (rng) => {
+            const [A, B] = mixedSet(rng, [...QW.slice(0, 5), ...QM, ...QP], true);
+            return reverse(rng, A, B, "A", false);
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = mixedSet(rng, [...QW.slice(0, 5), ...QM], true);
+            return reverse(rng, A, B, "B", false);
+          },
+        ],
+      ]),
+      "which-input": same4([
+        [
+          4,
+          (rng) => {
+            const [A, B] = mixedSet(rng, [...QW, ...QM], false);
+            return setup(rng, A, B);
+          },
+        ],
+        [
+          2,
+          (rng) => {
+            const [A, B] = mixedSet(rng, [...QW, ...QM], false);
+            return mulCheck(rng, A, B);
+          },
+        ],
+      ]),
+      compare: same4([
+        [
+          3,
+          (rng) => {
+            const [A, B] = mixedSet(rng, [...QW.slice(0, 5), ...QM], rng.chance(0.6));
+            return bigger(rng, A, B);
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A] = mixedSet(rng, [...QW.slice(0, 5), ...QM], false);
+            const B1 = proper(rng, [3, 4, 5, 6, 8]);
+            const B2 = draw(
+              () => proper(rng, [3, 4, 5, 6, 8]),
+              (v) => !same(v, B1),
+            );
+            return cmpTwo(rng, A, B1, B2);
+          },
+        ],
+      ]),
+    },
+  );
 
-  reg("fracDivWord", "Fraction division word problems", "Problemas de división de fracciones", [
+  reg(
+    "fracDivWord",
+    "Fraction division word problems",
+    "Problemas de división de fracciones",
     [
       [
-        4,
-        (rng) => {
-          const [A, B] = groupSet(rng, false);
-          return expression(rng, A, B, "G", { eq: true });
-        },
+        [
+          4,
+          (rng) => {
+            const [A, B] = groupSet(rng, false);
+            return expression(rng, A, B, "G", { eq: true });
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QM], aMax: 12 });
+            return expression(rng, A, B, "W", { eq: true });
+          },
+        ],
       ],
       [
-        3,
-        (rng) => {
-          const [A, B] = pairBy(rng, { qs: [...QW, ...QM], aMax: 12 });
-          return expression(rng, A, B, "W", { eq: true });
-        },
+        [
+          5,
+          (rng) => {
+            const [A, B] = groupSet(rng, false);
+            return calc(rng, A, B, "G");
+          },
+        ],
+        [
+          4,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QM], aMax: 12 });
+            return calc(rng, A, B, "W");
+          },
+        ],
+      ],
+      [
+        [5, (rng) => full(rng, ...groupSet(rng, true))],
+        [
+          3,
+          (rng) => {
+            const [A, B] = groupSet(rng, true);
+            return calc(rng, A, B, "G");
+          },
+        ],
+      ],
+      [
+        [
+          4,
+          (rng) => {
+            const [T, P] = groupSet(rng, false);
+            return twoStage(rng, T, P, rng.int(2, 4));
+          },
+        ],
+        [4, (rng) => leftover(rng, ...groupSet(rng, true))],
+        [3, (rng) => twoStage(rng, ...groupSet(rng, false), rng.int(2, 5))],
       ],
     ],
-    [
-      [
-        5,
-        (rng) => {
-          const [A, B] = groupSet(rng, false);
-          return calc(rng, A, B, "G");
-        },
-      ],
-      [
-        4,
-        (rng) => {
-          const [A, B] = pairBy(rng, { qs: [...QW, ...QM], aMax: 12 });
-          return calc(rng, A, B, "W");
-        },
-      ],
-    ],
-    [
-      [5, (rng) => full(rng, ...groupSet(rng, true))],
-      [
-        3,
-        (rng) => {
-          const [A, B] = groupSet(rng, true);
-          return calc(rng, A, B, "G");
-        },
-      ],
-    ],
-    [
-      [
-        4,
-        (rng) => {
-          const [T, P] = groupSet(rng, false);
-          return twoStage(rng, T, P, rng.int(2, 4));
-        },
-      ],
-      [4, (rng) => leftover(rng, ...groupSet(rng, true))],
-      [3, (rng) => twoStage(rng, ...groupSet(rng, false), rng.int(2, 5))],
-    ],
-  ]);
+    {
+      reverse: same4([
+        [
+          3,
+          (rng) => {
+            const [A, B] = groupSet(rng, false);
+            return reverse(rng, A, B, "A", false);
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = groupSet(rng, false);
+            return reverse(rng, A, B, "B", false);
+          },
+        ],
+      ]),
+      "which-input": same4([
+        [
+          4,
+          (rng) => {
+            const [A, B] = groupSet(rng, false);
+            return expression(rng, A, B, "G", { eq: true });
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A, B] = pairBy(rng, { qs: [...QW, ...QM], aMax: 12 });
+            return expression(rng, A, B, "W", { eq: true });
+          },
+        ],
+      ]),
+      compare: same4([
+        [
+          3,
+          (rng) => {
+            const [A, B] = groupSet(rng, false);
+            return bigger(rng, A, B);
+          },
+        ],
+        [
+          3,
+          (rng) => {
+            const [A] = groupSet(rng, false);
+            const B1 = proper(rng, [3, 4, 5, 6, 8]);
+            const B2 = draw(
+              () => proper(rng, [3, 4, 5, 6, 8]),
+              (v) => !same(v, B1),
+            );
+            return cmpTwo(rng, A, B1, B2);
+          },
+        ],
+      ]),
+    },
+  );
 })();

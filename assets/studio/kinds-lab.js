@@ -46,7 +46,7 @@
       .then((css) => {
         const s = new CSSStyleSheet();
         s.replaceSync(
-          `${css.replace(/:root/g, ":host")}\n:host{display:block;background:#f4f8fa;border-radius:12px;font-size:16px}`,
+          `${css.replace(/:root/g, ":host")}\n:host{display:block;background:#f4f8fa;border-radius:12px;font-size:16px}\n${W.StudioLabCss || ""}`,
         );
         return s;
       });
@@ -61,6 +61,7 @@
     stage.setAttribute("role", "group");
     stage.setAttribute("aria-label", label);
     root.append(stage);
+    host.dispatchEvent(new CustomEvent("studio:stage", { bubbles: true, detail: { stage } }));
     return stage;
   }
 
@@ -142,9 +143,11 @@
       mem.tests = mem.tests || [];
       st.calib = st.calib || {};
       const lang = () => (ctx.es() ? "es" : "en");
+      ctx.host.classList.add("lab-item");
       ctx.host.innerHTML = `<p class="item-q">${U().stem(it.q, it.qEs)}</p>
         <p class="item-sub lab-show"></p>
-        <div class="lab-goalbar"><p class="item-sub lab-goal">${goalLine(it)}</p>
+        <p class="item-sub lab-goal">${goalLine(it)}</p>
+        <div class="lab-goalbar">
         ${ctx.solved ? "" : `<div class="item-actions"><button type="button" class="btn btn-primary btn-sm" data-check-lab>${b("Check my model", "Revisar mi modelo")}</button></div>`}</div>
         <div class="lab-predict" role="group" aria-label="${esc(ctx.es() ? "Tu predicción" : "Your prediction")}"></div>
         <div class="answer-zone"><div class="lab-model"></div><div class="lab-trail" hidden></div></div>

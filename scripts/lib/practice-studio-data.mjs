@@ -5,7 +5,7 @@ export const GEN_IDS = new Set(
   `dotplotRead histogramRead medianFind meanFind meanMissing rangeIqr boxplotRead madCalc chooseMeasure
 longDivision decimalDivision decimalAddSub decimalMultiply factorsMultiples lcmFind gcfFind primeFactorization exponentEval orderOfOps
 fracDivWhole fracDivMixed wholeDivFrac mixedDivide fracDivWord
-ratioWrite unitRate eqRatioTable ratioGraphRead compareRatios convertUnits convertBetween unitRateWord eqRatioMissing convertFactor
+ratioWrite unitRate eqRatioTable ratioGraphRead compareRatios convertUnits convertBetween unitRateWord eqRatioMissing convertFactor netViews
 areaParallelogram areaTriangle areaTrapezoid areaComposite volumePrism volumePrismWhole volumePrismFrac surfaceAreaPrism surfaceAreaPyramid areaRegularPolygon
 evalExpression equivalentExpr combineLikeTerms distribute simplifyExpr solutionCheck solveAddSub solveMulDiv writeInequality
 ineqSolutionCheck solveInequality writeEquationWord twoVarTable graphRelationship twoVarProblem
@@ -14,7 +14,7 @@ integerOpposites rationalNumberLine absoluteValue compareOrder quadrantId coordD
   ),
 );
 export const ACT_KINDS = new Set(
-  "plot nline ineq sizer areabox barcut ldiv dotbalance chartbuild ratiomix convchain balance ftree hops tiles powers plug faces askdots skewsculptor countoff boxtwins chipsort madtwins headlinecourt receipt faultymed tagtape addrider cancelit barcompare".split(
+  "plot nline ineq sizer areabox barcut ldiv dotbalance chartbuild ratiomix convchain balance ftree hops tiles powers plug faces askdots skewsculptor countoff boxtwins chipsort madtwins headlinecourt receipt faultymed tagtape addrider cancelit barcompare paths tiers cexhunt brickwall twotrees factorbox thermo absbench dualrank twoclues griddetect rectcorners allpoints reflectpredict unknowns boundary breakeven gate impostor legal sketch slideapex decompose netfold packcrate wrapit sqtile zoomlens sameunit".split(
     " ",
   ),
 );
@@ -243,6 +243,22 @@ export function itemProblems(it, where, { needViz = true } = {}) {
       else
         it.items.forEach((q, i) => p.push(...itemProblems(q, `${where}.items[${i}]`, { needViz })));
       break;
+    case "contrast":
+      p.push(...contrastItemProblems(it, where));
+      break;
+    case "rookie":
+      if (!GEN_IDS.has(it.g)) bad(`unknown generator "${it.g}"`);
+      if (![1, 2, 3, 4].includes(it.level)) bad("level must be 1-4");
+      break;
+    case "capstone":
+      if (!Array.isArray(it.skills) || it.skills.length < 4 || it.skills.length > 8)
+        bad("needs 4-8 skills");
+      else if (
+        it.skills.some((g) => !GEN_IDS.has(g)) ||
+        new Set(it.skills).size !== it.skills.length
+      )
+        bad("skills must be distinct generator ids");
+      break;
     default:
       bad(`unknown item kind "${k}"`);
   }
@@ -402,6 +418,129 @@ export function validateLessonData(id, data, worlds = null) {
       p.push(
         `${id}: answer positions are skewed (${pos.join("/")} across ${four.length} four-choice items)`,
       );
+  }
+  return p;
+}
+
+const GIVEAWAY =
+  /\b(solution [ab] is (the )?(right|correct|wrong|better)|the (right|correct|wrong) (one|solution|method)|only (a|b) is)\b/i;
+const SAME_FIRST = /^(this works|esto funciona|this does not work|esto no funciona)/i;
+
+/**
+ * One contrasting-cases item (kind "contrast", assets/studio/contrast.js): two worked solutions with hidden verdicts, then three chips
+ * for "what stayed the same" and three for "what changed". Kind "trap" has one right and one trapped solution and grades the chips;
+ * kind "methods" has two valid methods and grades nothing. The verdicts are the only place that says which solution works.
+ */
+export function contrastItemProblems(it, where) {
+  const p = [];
+  const bad = (m) => p.push(`${where}: ${m}`);
+  if (!it || typeof it !== "object") return [`${where}: not an object`];
+  if (!str(it.id, 2)) bad("needs an id");
+  if (!["trap", "methods"].includes(it.kind)) bad('kind must be "trap" or "methods"');
+  if (it.kind === "trap" && !str(it.trap, 4))
+    bad("a trap item names its trap (misconceptions.json id)");
+  if (!str(it.q, 20) || !str(it.qEs, 20)) bad("needs q and qEs");
+  const text = [it.q, it.x, ...(it.h || [])];
+  for (const side of ["solA", "solB"]) {
+    const s = it[side];
+    if (!s || typeof s !== "object") {
+      bad(`needs solution ${side}`);
+      continue;
+    }
+    if (
+      !Array.isArray(s.steps) ||
+      s.steps.length < 2 ||
+      s.steps.length > 4 ||
+      s.steps.some((x) => !str(x, 5))
+    )
+      bad(`${side}.steps needs 2-4 steps`);
+    else if (
+      !Array.isArray(s.stepsEs) ||
+      s.stepsEs.length !== s.steps.length ||
+      s.stepsEs.some((x) => !str(x, 5))
+    )
+      bad(`${side}.stepsEs must align with steps`);
+    if (!str(s.verdict, 20) || !str(s.verdictEs, 20)) bad(`${side} needs verdict and verdictEs`);
+    else if (!SAME_FIRST.test(s.verdict) || !SAME_FIRST.test(s.verdictEs))
+      bad(`${side} verdicts start "This works" / "This does not work" and its Spanish`);
+    text.push(...(s.steps || []));
+  }
+  if (it.solA?.verdict && it.solB?.verdict) {
+    const works = (v) => /^this works/i.test(v);
+    const nWorks = [it.solA.verdict, it.solB.verdict].filter(works).length;
+    if (it.kind === "trap" && nWorks !== 1) bad("a trap item has exactly one working solution");
+    if (it.kind === "methods" && nWorks !== 2) bad("a methods item has two working solutions");
+  }
+  for (const key of ["same", "diff"]) {
+    const r = it[key];
+    const w = `${key}`;
+    if (!r || !Array.isArray(r.chips) || r.chips.length !== 3) {
+      bad(`${w}.chips needs exactly 3 chips`);
+      continue;
+    }
+    if (!Number.isInteger(r.ok) || r.ok < 0 || r.ok > 2) bad(`${w}.ok must be 0, 1 or 2`);
+    if (new Set(r.chips.map((c) => String(c.t).toLowerCase())).size !== 3)
+      bad(`${w}: duplicate chips`);
+    r.chips.forEach((c, i) => {
+      if (!str(c.t, 8) || !str(c.tEs, 8)) bad(`${w}.chips[${i}] needs t and tEs`);
+      if (it.kind === "trap" && i !== r.ok && (!str(c.f, 12) || !str(c.fEs, 12)))
+        bad(`${w}.chips[${i}] needs a feedback line f and fEs`);
+      if (i === r.ok && (c.f || c.fEs))
+        bad(`${w}.chips[${i}]: the right chip has no feedback line`);
+      text.push(c.t, c.f);
+    });
+    // the right chip may not stand out by length (EN and ES)
+    for (const f of ["t", "tEs"]) {
+      const lens = r.chips.map((c) => String(c[f] || "").length);
+      const others = lens.filter((_, i) => i !== r.ok);
+      if (lens[r.ok] > 1.15 * Math.max(...others))
+        bad(`${w}: the right chip is the longest in ${f}`);
+    }
+  }
+  if (!str(it.x, 30) || !str(it.xEs, 30)) bad("needs x and xEs");
+  if (!Array.isArray(it.h) || it.h.length < 2 || it.h.length > 3 || it.h.some((x) => !str(x, 4)))
+    bad("needs a hint ladder h[] of 2-3 hints");
+  else if (!Array.isArray(it.hEs) || it.hEs.length !== it.h.length) bad("hEs must align with h");
+  const all = text.filter(Boolean).join(" ");
+  if (GIVEAWAY.test(all))
+    bad("a hint, chip or step says which solution is right before the verdict");
+  if (TIMER_WORDS.test(all)) bad("timer language is banned");
+  if (BAD_TIMES.test(all)) bad('use "×" between numbers, not "x" or "*"');
+  return p;
+}
+
+/** The whole layer file. `traps` (misconceptions.json traps) is optional: when given, a trap item's trap id must exist in it. */
+export function pedagogyLayerProblems(layer, traps = null) {
+  const p = [];
+  if (!layer || typeof layer !== "object" || typeof layer.lessons !== "object")
+    return ["pedagogy-layer.json: needs a lessons object"];
+  const seen = new Set();
+  for (const [id, L] of Object.entries(layer.lessons)) {
+    const w = `${id}.pedagogy`;
+    if (!/^\d+-\d+$/.test(id)) p.push(`${w}: not a lesson id`);
+    for (const k of Object.keys(L))
+      if (!["estimate", "contrast", "rookie", "capstone"].includes(k))
+        p.push(`${w}: unknown key "${k}"`);
+    if (L.estimate !== undefined && L.estimate !== true) {
+      for (const [item, o] of Object.entries(L.estimate?.items || {}))
+        if (!Number.isFinite(o?.v) || !str(o?.benchmark, 5) || !str(o?.benchmarkEs, 5))
+          p.push(`${w}.estimate.items.${item}: needs numeric v, benchmark and benchmarkEs`);
+    }
+    for (const mode of ["practice", "challenge"]) {
+      const it = L.contrast?.[mode];
+      if (!it) continue;
+      p.push(...contrastItemProblems(it, `${id}.contrast.${mode}`));
+      if (traps && it.kind === "trap" && !traps[it.trap])
+        p.push(`${id}.contrast.${mode}: unknown trap "${it.trap}"`);
+      const key = `${id}|${mode}|${it.id}`;
+      if (seen.has(key)) p.push(`${id}.contrast.${mode}: duplicate id ${it.id}`);
+      seen.add(key);
+    }
+    if (L.rookie) {
+      if (!GEN_IDS.has(L.rookie.g)) p.push(`${w}.rookie: unknown generator "${L.rookie.g}"`);
+      if (![1, 2, 3, 4].includes(L.rookie.level)) p.push(`${w}.rookie: level must be 1-4`);
+    }
+    if (L.capstone) p.push(...itemProblems({ k: "capstone", ...L.capstone }, `${w}.capstone`));
   }
   return p;
 }

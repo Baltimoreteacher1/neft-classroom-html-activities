@@ -1,0 +1,755 @@
+{
+  "_doc": "Pedagogy layer (docs/audits/studio-v4/brief-x-pedagogy.md), merged into the studio pages by scripts/generate-practice-studios.mjs and validated by pedagogyLayerProblems(). Per lesson: estimate (true = show the optional Bigger/Smaller/About-the-same chips on numeric generated items whose generator exposes a benchmark; or { items: { <itemId>: { v, benchmark, benchmarkEs } } } for an authored typed-answer item), contrast ({ practice?, challenge? } contrasting-cases item, kind trap or methods), rookie ({ g, level } Teach the Rookie item in the Challenge), capstone ({ id, unit, skills } the unit's Which tool? sort, on the unit's last lesson). Nothing here is composed at build time: every number is computed by the generators or checked by tools/studio-pedagogy.test.mjs.",
+  "lessons": {
+    "2-3": {
+      "rookie": {
+        "g": "medianFind",
+        "level": 3
+      }
+    },
+    "2-5": {
+      "rookie": {
+        "g": "rangeIqr",
+        "level": 3
+      }
+    },
+    "2-6": {
+      "rookie": {
+        "g": "longDivision",
+        "level": 3
+      }
+    },
+    "2-7": {
+      "rookie": {
+        "g": "decimalDivision",
+        "level": 3
+      }
+    },
+    "2-8": {
+      "rookie": {
+        "g": "meanFind",
+        "level": 3
+      }
+    },
+    "2-9": {
+      "rookie": {
+        "g": "madCalc",
+        "level": 3
+      }
+    },
+    "2-10": {
+      "rookie": {
+        "g": "chooseMeasure",
+        "level": 3
+      }
+    },
+    "2-11": {
+      "rookie": {
+        "g": "decimalAddSub",
+        "level": 3
+      },
+      "estimate": true
+    },
+    "3-1": {
+      "rookie": {
+        "g": "ratioWrite",
+        "level": 3
+      }
+    },
+    "3-2": {
+      "rookie": {
+        "g": "unitRate",
+        "level": 3
+      },
+      "estimate": true
+    },
+    "3-3": {
+      "rookie": {
+        "g": "eqRatioTable",
+        "level": 3
+      },
+      "contrast": {
+        "challenge": {
+          "k": "contrast",
+          "id": "ct-c",
+          "kind": "trap",
+          "trap": "ratio-scaled-additively",
+          "q": "A drink mix uses 2 cups of juice for every 3 cups of soda. Maya makes a bigger batch with 8 cups of juice. How many cups of soda does she need?",
+          "qEs": "Una mezcla de bebida usa 2 tazas de jugo por cada 3 tazas de soda. Maya hace una tanda más grande con 8 tazas de jugo. ¿Cuántas tazas de soda necesita?",
+          "solA": {
+            "steps": [
+              "The batch has 8 cups of juice. That is 8 − 2 = 6 more cups of juice than the recipe.",
+              "Add the same 6 to the soda: 3 + 6 = 9 cups of soda."
+            ],
+            "stepsEs": [
+              "La tanda tiene 8 tazas de jugo. Son 8 − 2 = 6 tazas de jugo más que en la receta.",
+              "Suma esas mismas 6 a la soda: 3 + 6 = 9 tazas de soda."
+            ],
+            "verdict": "This does not work. The new batch would be 8 cups of juice to 9 cups of soda, and that is not the same mix as 2 to 3.",
+            "verdictEs": "Esto no funciona. La tanda nueva sería de 8 tazas de jugo por 9 de soda, y esa no es la misma mezcla que 2 a 3."
+          },
+          "solB": {
+            "steps": [
+              "8 cups of juice is 4 times as much as 2 cups: 8 ÷ 2 = 4.",
+              "Make the soda 4 times as much too: 3 × 4 = 12 cups of soda."
+            ],
+            "stepsEs": [
+              "8 tazas de jugo es 4 veces 2 tazas: 8 ÷ 2 = 4.",
+              "Haz la soda 4 veces mayor también: 3 × 4 = 12 tazas de soda."
+            ],
+            "verdict": "This works. Both parts were multiplied by 4, so the batch is 8 to 12, which is the same mix as 2 to 3.",
+            "verdictEs": "Esto funciona. Las dos partes se multiplicaron por 4, así que la tanda es 8 a 12, que es la misma mezcla que 2 a 3."
+          },
+          "same": {
+            "ok": 1,
+            "chips": [
+              {
+                "t": "Both solutions end with the same number of cups of soda.",
+                "tEs": "Las dos soluciones terminan con el mismo número de tazas de soda.",
+                "f": "Check the last line of each solution. Do they end with the same number of cups?",
+                "fEs": "Revisa la última línea de cada solución. ¿Terminan con el mismo número de tazas?"
+              },
+              {
+                "t": "Both start with the same recipe and the same 8 cups of juice.",
+                "tEs": "Las dos empiezan con la misma receta y las mismas 8 tazas de jugo."
+              },
+              {
+                "t": "Both begin by finding how many times bigger the batch is.",
+                "tEs": "Las dos empiezan por hallar cuántas veces es más grande la tanda.",
+                "f": "Look at the first line of each solution. Does each one find a number of times?",
+                "fEs": "Mira la primera línea de cada solución. ¿Cada una halla un número de veces?"
+              }
+            ]
+          },
+          "diff": {
+            "ok": 0,
+            "chips": [
+              {
+                "t": "A adds to both parts. B multiplies both parts.",
+                "tEs": "A suma a las dos partes. B multiplica las dos partes."
+              },
+              {
+                "t": "B adds the same amount to both of the parts.",
+                "tEs": "B suma la misma cantidad a las dos partes de la receta.",
+                "f": "Look at what each solution does to both parts of the recipe. Does B add?",
+                "fEs": "Mira qué hace cada solución con las dos partes de la receta. ¿B suma?"
+              },
+              {
+                "t": "A uses a ratio table and B uses a picture.",
+                "tEs": "A usa una tabla de razones y B usa un dibujo en papel.",
+                "f": "Look at the steps again. Does either solution use a table or a picture?",
+                "fEs": "Mira los pasos otra vez. ¿Alguna solución usa una tabla o un dibujo?"
+              }
+            ]
+          },
+          "x": "Adding the same amount to both parts changes the mix. Multiplying both parts by the same number keeps it. That is why 8 to 12 matches 2 to 3, and 8 to 9 does not.",
+          "xEs": "Sumar la misma cantidad a las dos partes cambia la mezcla. Multiplicar las dos partes por el mismo número la conserva. Por eso 8 a 12 es igual que 2 a 3, y 8 a 9 no.",
+          "h": [
+            "Read each solution line by line.",
+            "Ask: does the new batch still make the same mix as 2 cups of juice to 3 cups of soda?"
+          ],
+          "hEs": [
+            "Lee cada solución línea por línea.",
+            "Pregunta: ¿la tanda nueva sigue haciendo la misma mezcla que 2 tazas de jugo por 3 de soda?"
+          ]
+        }
+      }
+    },
+    "3-5": {
+      "rookie": {
+        "g": "compareRatios",
+        "level": 3
+      }
+    },
+    "3-6": {
+      "rookie": {
+        "g": "convertUnits",
+        "level": 3
+      }
+    },
+    "3-7": {
+      "rookie": {
+        "g": "convertBetween",
+        "level": 3
+      }
+    },
+    "3-8": {
+      "rookie": {
+        "g": "unitRateWord",
+        "level": 3
+      }
+    },
+    "3-9": {
+      "rookie": {
+        "g": "eqRatioMissing",
+        "level": 3
+      }
+    },
+    "3-10": {
+      "rookie": {
+        "g": "convertUnits",
+        "level": 3
+      },
+      "capstone": {
+        "id": "cap-u3",
+        "unit": 3,
+        "skills": [
+          "ratioWrite",
+          "unitRate",
+          "compareRatios",
+          "convertUnits",
+          "convertBetween",
+          "unitRateWord",
+          "eqRatioMissing"
+        ]
+      }
+    },
+    "5-8": {
+      "rookie": {
+        "g": "surfaceAreaPyramid",
+        "level": 2
+      },
+      "contrast": {
+        "challenge": {
+          "k": "contrast",
+          "id": "ct-c",
+          "kind": "trap",
+          "trap": "geom-height-misidentified",
+          "q": "A square pyramid has a base 6 cm by 6 cm. Its slant height is 5 cm. Its height, straight up from the base, is 4 cm. What is its surface area?",
+          "qEs": "Una pirámide cuadrada tiene una base de 6 cm por 6 cm. Su altura inclinada es de 5 cm. Su altura, recta hacia arriba desde la base, es de 4 cm. ¿Cuál es su área superficial?",
+          "solA": {
+            "steps": [
+              "Draw the net. Each triangle has its base on a 6 cm edge. Its height is the slant height, 5 cm.",
+              "Base: 6 × 6 = 36 cm². One triangle: 1/2 × 6 × 5 = 15 cm².",
+              "Four triangles: 4 × 15 = 60 cm². Total: 36 + 60 = 96 cm²."
+            ],
+            "stepsEs": [
+              "Dibuja el desarrollo plano. Cada triángulo tiene su base en un borde de 6 cm. Su altura es la altura inclinada, 5 cm.",
+              "Base: 6 × 6 = 36 cm². Un triángulo: 1/2 × 6 × 5 = 15 cm².",
+              "Cuatro triángulos: 4 × 15 = 60 cm². Total: 36 + 60 = 96 cm²."
+            ],
+            "verdict": "This works. A face is a triangle whose height is the slant height, 5 cm. The net shows each face flat, so you can see which measurement belongs to it.",
+            "verdictEs": "Esto funciona. Una cara es un triángulo cuya altura es la altura inclinada, 5 cm. El desarrollo plano muestra cada cara extendida, así que se ve qué medida le toca."
+          },
+          "solB": {
+            "steps": [
+              "Look at the picture. The straight-up height is 4 cm, so use 4 cm for each triangle.",
+              "Base: 6 × 6 = 36 cm². One triangle: 1/2 × 6 × 4 = 12 cm².",
+              "Four triangles: 4 × 12 = 48 cm². Total: 36 + 48 = 84 cm²."
+            ],
+            "stepsEs": [
+              "Mira el dibujo. La altura recta hacia arriba es 4 cm, así que usa 4 cm para cada triángulo.",
+              "Base: 6 × 6 = 36 cm². Un triángulo: 1/2 × 6 × 4 = 12 cm².",
+              "Cuatro triángulos: 4 × 12 = 48 cm². Total: 36 + 48 = 84 cm²."
+            ],
+            "verdict": "This does not work. The 4 cm height is inside the pyramid. A triangle face is measured along its slant, which is 5 cm.",
+            "verdictEs": "Esto no funciona. La altura de 4 cm está dentro de la pirámide. Una cara triangular se mide a lo largo de su inclinación, que es de 5 cm."
+          },
+          "same": {
+            "ok": 0,
+            "chips": [
+              {
+                "t": "Both find the area of the 6 cm by 6 cm base.",
+                "tEs": "Las dos hallan el área de la base de 6 cm por 6 cm."
+              },
+              {
+                "t": "Both use 5 cm as the height of a triangle.",
+                "tEs": "Las dos usan 5 cm como altura de un triángulo.",
+                "f": "Look at the height each solution uses for a triangle. Is it the same number?",
+                "fEs": "Mira la altura que usa cada solución para un triángulo. ¿Es el mismo número?"
+              },
+              {
+                "t": "Both end with the same surface area.",
+                "tEs": "Las dos terminan con la misma área superficial.",
+                "f": "Check the last line of each solution. Do the totals match?",
+                "fEs": "Revisa la última línea de cada solución. ¿Los totales coinciden?"
+              }
+            ]
+          },
+          "diff": {
+            "ok": 2,
+            "chips": [
+              {
+                "t": "A and B use different base lengths.",
+                "tEs": "A y B usan longitudes de base distintas.",
+                "f": "Check the base each solution uses. Is it a different number?",
+                "fEs": "Revisa la base que usa cada solución. ¿Es un número diferente?"
+              },
+              {
+                "t": "B finds the area of only one triangle.",
+                "tEs": "B halla el área de un solo triángulo.",
+                "f": "Look at the last line of B. How many triangles does it add up?",
+                "fEs": "Mira la última línea de B. ¿Cuántos triángulos suma?"
+              },
+              {
+                "t": "A uses 5 cm for a triangle. B uses 4 cm.",
+                "tEs": "A usa 5 cm para un triángulo. B usa 4 cm."
+              }
+            ]
+          },
+          "x": "A face of the pyramid is a triangle, and its height is the slant height, not the straight-up height. A net shows the faces flat, so you can see which measurement goes with each face.",
+          "xEs": "Cada cara de la pirámide es un triángulo, y su altura es la altura inclinada, no la altura recta hacia arriba. El desarrollo plano muestra las caras extendidas, así que se ve qué medida va con cada cara.",
+          "h": [
+            "Find the measurement each solution uses for the height of one triangle face.",
+            "Ask: is that height measured along the face, or inside the pyramid?"
+          ],
+          "hEs": [
+            "Busca la medida que usa cada solución como altura de una cara triangular.",
+            "Pregunta: ¿esa altura se mide a lo largo de la cara o dentro de la pirámide?"
+          ]
+        }
+      }
+    },
+    "5-10": {
+      "rookie": {
+        "g": "volumePrismFrac",
+        "level": 3
+      },
+      "capstone": {
+        "id": "cap-u5",
+        "unit": 5,
+        "skills": [
+          "areaParallelogram",
+          "areaTriangle",
+          "areaTrapezoid",
+          "areaComposite",
+          "volumePrismWhole",
+          "surfaceAreaPrism",
+          "surfaceAreaPyramid",
+          "volumePrismFrac"
+        ]
+      }
+    },
+    "6-1": {
+      "rookie": {
+        "g": "fracDivWhole",
+        "level": 3
+      }
+    },
+    "6-2": {
+      "rookie": {
+        "g": "fracDivMixed",
+        "level": 3
+      }
+    },
+    "6-3": {
+      "rookie": {
+        "g": "exponentEval",
+        "level": 3
+      }
+    },
+    "6-4": {
+      "rookie": {
+        "g": "orderOfOps",
+        "level": 3
+      }
+    },
+    "6-5": {
+      "rookie": {
+        "g": "evalExpression",
+        "level": 3
+      }
+    },
+    "6-6": {
+      "rookie": {
+        "g": "equivalentExpr",
+        "level": 3
+      },
+      "contrast": {
+        "challenge": {
+          "k": "contrast",
+          "id": "ct-c",
+          "kind": "methods",
+          "q": "Are 3x + 2 and 5x equivalent expressions?",
+          "qEs": "¿Son 3x + 2 y 5x expresiones equivalentes?",
+          "solA": {
+            "steps": [
+              "Try x = 1: 3(1) + 2 = 5 and 5(1) = 5. They match.",
+              "Try x = 2: 3(2) + 2 = 8 and 5(2) = 10. They do not match."
+            ],
+            "stepsEs": [
+              "Prueba x = 1: 3(1) + 2 = 5 y 5(1) = 5. Coinciden.",
+              "Prueba x = 2: 3(2) + 2 = 8 y 5(2) = 10. No coinciden."
+            ],
+            "verdict": "This works. One number that does not match, a counterexample, is enough to show the expressions are not equivalent. Matching at x = 1 was not enough to show they are.",
+            "verdictEs": "Esto funciona. Un solo número que no coincide, un contraejemplo, basta para mostrar que las expresiones no son equivalentes. Que coincidan en x = 1 no bastaba para mostrar que lo son."
+          },
+          "solB": {
+            "steps": [
+              "3x and 2 are not like terms, so they cannot be combined.",
+              "To get 5x you would need 3x + 2x. The expression has + 2, not + 2x.",
+              "So 3x + 2 cannot be rewritten as 5x."
+            ],
+            "stepsEs": [
+              "3x y 2 no son términos semejantes, así que no se pueden combinar.",
+              "Para obtener 5x se necesitaría 3x + 2x. La expresión tiene + 2, no + 2x.",
+              "Entonces 3x + 2 no se puede reescribir como 5x."
+            ],
+            "verdict": "This works too. It looks at the kinds of terms, so it explains why no single rewrite makes the two expressions match.",
+            "verdictEs": "Esto funciona también. Mira los tipos de términos, así que explica por qué ninguna reescritura hace que las dos expresiones coincidan."
+          },
+          "same": {
+            "ok": 0,
+            "chips": [
+              {
+                "t": "Both say the expressions are not equivalent.",
+                "tEs": "Las dos dicen que las expresiones no son equivalentes."
+              },
+              {
+                "t": "Both begin by trying out the number x = 2.",
+                "tEs": "Las dos empiezan probando el número x = 2 primero.",
+                "f": "Look at the steps of each solution. Does each one try a number?",
+                "fEs": "Mira los pasos de cada solución. ¿Cada una prueba un número?"
+              },
+              {
+                "t": "Both begin by combining the like terms.",
+                "tEs": "Las dos empiezan combinando los términos semejantes.",
+                "f": "Check what each solution says about 3x and 2. Do both combine them?",
+                "fEs": "Revisa lo que dice cada solución sobre 3x y 2. ¿Las dos los combinan?"
+              }
+            ]
+          },
+          "diff": {
+            "ok": 2,
+            "chips": [
+              {
+                "t": "A looks at the terms. B tests numbers.",
+                "tEs": "A mira los términos. B prueba números.",
+                "f": "Check which solution tries numbers. Is it A or B?",
+                "fEs": "Revisa qué solución prueba números. ¿Es A o B?"
+              },
+              {
+                "t": "A and B start from different expressions.",
+                "tEs": "A y B empiezan con expresiones distintas.",
+                "f": "Look at the question and at the first line of each solution. Are the expressions different?",
+                "fEs": "Mira la pregunta y la primera línea de cada solución. ¿Las expresiones son distintas?"
+              },
+              {
+                "t": "A tests numbers. B looks at the terms.",
+                "tEs": "A prueba números. B mira los términos."
+              }
+            ]
+          },
+          "x": "Both methods show the expressions are not equivalent. Trying numbers is quick, and one number that does not match is enough. Looking at the terms explains why they can never match for every x.",
+          "xEs": "Los dos métodos muestran que las expresiones no son equivalentes. Probar números es rápido, y un solo número que no coincide basta. Mirar los términos explica por qué nunca coincidirán para todo x.",
+          "h": [
+            "Read both solutions. Then ask what each one does first.",
+            "Ask: does each method reach the same decision?"
+          ],
+          "hEs": [
+            "Lee las dos soluciones. Luego pregunta qué hace primero cada una.",
+            "Pregunta: ¿los dos métodos llegan a la misma decisión?"
+          ]
+        }
+      }
+    },
+    "6-7": {
+      "rookie": {
+        "g": "gcfFind",
+        "level": 3
+      }
+    },
+    "6-8": {
+      "rookie": {
+        "g": "combineLikeTerms",
+        "level": 3
+      },
+      "contrast": {
+        "challenge": {
+          "k": "contrast",
+          "id": "ct-c",
+          "kind": "trap",
+          "trap": "algebra-distributive-partial",
+          "q": "Write an expression that is equivalent to 2(x + 5) without parentheses.",
+          "qEs": "Escribe una expresión equivalente a 2(x + 5) sin paréntesis.",
+          "solA": {
+            "steps": [
+              "Multiply the 2 by each term inside the parentheses.",
+              "2 × x = 2x and 2 × 5 = 10.",
+              "So 2(x + 5) = 2x + 10."
+            ],
+            "stepsEs": [
+              "Multiplica el 2 por cada término dentro del paréntesis.",
+              "2 × x = 2x y 2 × 5 = 10.",
+              "Entonces 2(x + 5) = 2x + 10."
+            ],
+            "verdict": "This works. Both terms were multiplied by 2. Check with x = 1: 2(1 + 5) = 12 and 2(1) + 10 = 12.",
+            "verdictEs": "Esto funciona. Los dos términos se multiplicaron por 2. Comprueba con x = 1: 2(1 + 5) = 12 y 2(1) + 10 = 12."
+          },
+          "solB": {
+            "steps": [
+              "Multiply the 2 by the first term inside the parentheses.",
+              "2 × x = 2x. The 5 stays the same.",
+              "So 2(x + 5) = 2x + 5."
+            ],
+            "stepsEs": [
+              "Multiplica el 2 por el primer término dentro del paréntesis.",
+              "2 × x = 2x. El 5 queda igual.",
+              "Entonces 2(x + 5) = 2x + 5."
+            ],
+            "verdict": "This does not work. The 2 must multiply the 5 too. Check with x = 1: 2(1 + 5) = 12, but 2(1) + 5 = 7.",
+            "verdictEs": "Esto no funciona. El 2 también debe multiplicar al 5. Comprueba con x = 1: 2(1 + 5) = 12, pero 2(1) + 5 = 7."
+          },
+          "same": {
+            "ok": 2,
+            "chips": [
+              {
+                "t": "Both change the 5 in the same way.",
+                "tEs": "Las dos cambian el 5 de la misma manera.",
+                "f": "Look at what each solution does with the 5. Is it the same thing?",
+                "fEs": "Mira qué hace cada solución con el 5. ¿Es lo mismo?"
+              },
+              {
+                "t": "Both write the same final expression.",
+                "tEs": "Las dos escriben la misma expresión final.",
+                "f": "Compare the last line of each solution. Are they the same?",
+                "fEs": "Compara la última línea de cada solución. ¿Son iguales?"
+              },
+              {
+                "t": "Both multiply 2 by x to get 2x.",
+                "tEs": "Las dos multiplican 2 por x para obtener 2x."
+              }
+            ]
+          },
+          "diff": {
+            "ok": 1,
+            "chips": [
+              {
+                "t": "A multiplies the terms. B divides the terms.",
+                "tEs": "A multiplica los términos. B divide los términos.",
+                "f": "Look at the operation each solution uses. Does either one divide?",
+                "fEs": "Mira la operación que usa cada solución. ¿Alguna divide?"
+              },
+              {
+                "t": "A multiplies both terms. B multiplies one term.",
+                "tEs": "A multiplica los dos términos. B multiplica uno."
+              },
+              {
+                "t": "A tests a number. B writes a new expression.",
+                "tEs": "A prueba un número. B escribe una expresión nueva.",
+                "f": "Check the steps of each solution. Does either one test a number?",
+                "fEs": "Revisa los pasos de cada solución. ¿Alguna prueba un número?"
+              }
+            ]
+          },
+          "x": "The Distributive Property says the number outside multiplies every term inside the parentheses. If one term is skipped, the new expression is not equivalent to the first one.",
+          "xEs": "La propiedad distributiva dice que el número de afuera multiplica cada término dentro del paréntesis. Si se salta un término, la expresión nueva no es equivalente a la primera.",
+          "h": [
+            "Compare what each solution does to the 5.",
+            "Ask: does the 2 reach every term inside the parentheses?"
+          ],
+          "hEs": [
+            "Compara lo que hace cada solución con el 5.",
+            "Pregunta: ¿el 2 llega a cada término dentro del paréntesis?"
+          ]
+        }
+      }
+    },
+    "6-9": {
+      "rookie": {
+        "g": "wholeDivFrac",
+        "level": 3
+      },
+      "estimate": true
+    },
+    "6-10": {
+      "rookie": {
+        "g": "mixedDivide",
+        "level": 3
+      },
+      "estimate": true
+    },
+    "6-11": {
+      "rookie": {
+        "g": "fracDivWord",
+        "level": 3
+      },
+      "estimate": true
+    },
+    "6-12": {
+      "rookie": {
+        "g": "lcmFind",
+        "level": 3
+      }
+    },
+    "6-13": {
+      "rookie": {
+        "g": "primeFactorization",
+        "level": 3
+      }
+    },
+    "6-14": {
+      "rookie": {
+        "g": "distribute",
+        "level": 3
+      }
+    },
+    "6-15": {
+      "rookie": {
+        "g": "simplifyExpr",
+        "level": 3
+      },
+      "capstone": {
+        "id": "cap-u6",
+        "unit": 6,
+        "skills": [
+          "fracDivWhole",
+          "exponentEval",
+          "evalExpression",
+          "factorsMultiples",
+          "wholeDivFrac",
+          "fracDivWord",
+          "primeFactorization",
+          "simplifyExpr"
+        ]
+      }
+    },
+    "7-1": {
+      "rookie": {
+        "g": "integerOpposites",
+        "level": 2
+      }
+    },
+    "7-3": {
+      "rookie": {
+        "g": "absoluteValue",
+        "level": 3
+      },
+      "estimate": true
+    },
+    "7-4": {
+      "rookie": {
+        "g": "compareOrder",
+        "level": 3
+      }
+    },
+    "7-5": {
+      "rookie": {
+        "g": "quadrantId",
+        "level": 3
+      }
+    },
+    "7-8": {
+      "rookie": {
+        "g": "quadrantId",
+        "level": 3
+      }
+    },
+    "7-9": {
+      "rookie": {
+        "g": "reflectPoint",
+        "level": 3
+      },
+      "capstone": {
+        "id": "cap-u7",
+        "unit": 7,
+        "skills": [
+          "integerOpposites",
+          "rationalNumberLine",
+          "absoluteValue",
+          "compareOrder",
+          "quadrantId",
+          "coordDistance",
+          "polygonCoordinates",
+          "reflectPoint"
+        ]
+      }
+    },
+    "8-1": {
+      "rookie": {
+        "g": "solutionCheck",
+        "level": 3
+      }
+    },
+    "8-2": {
+      "rookie": {
+        "g": "solveAddSub",
+        "level": 3
+      }
+    },
+    "8-3": {
+      "rookie": {
+        "g": "solveMulDiv",
+        "level": 3
+      }
+    },
+    "8-4": {
+      "rookie": {
+        "g": "writeInequality",
+        "level": 3
+      }
+    },
+    "8-5": {
+      "rookie": {
+        "g": "ineqSolutionCheck",
+        "level": 3
+      }
+    },
+    "8-6": {
+      "rookie": {
+        "g": "solveInequality",
+        "level": 3
+      }
+    },
+    "8-7": {
+      "rookie": {
+        "g": "writeEquationWord",
+        "level": 3
+      },
+      "capstone": {
+        "id": "cap-u8",
+        "unit": 8,
+        "skills": [
+          "solutionCheck",
+          "solveAddSub",
+          "solveMulDiv",
+          "writeInequality",
+          "ineqSolutionCheck",
+          "solveInequality",
+          "writeEquationWord"
+        ]
+      }
+    },
+    "9-1": {
+      "rookie": {
+        "g": "twoVarTable",
+        "level": 3
+      }
+    },
+    "9-3": {
+      "rookie": {
+        "g": "twoVarTable",
+        "level": 3
+      }
+    },
+    "9-4": {
+      "rookie": {
+        "g": "twoVarProblem",
+        "level": 3
+      }
+    },
+    "2-12": {
+      "estimate": true,
+      "capstone": {
+        "id": "cap-u2",
+        "unit": 2,
+        "skills": [
+          "histogramRead",
+          "medianFind",
+          "rangeIqr",
+          "longDivision",
+          "meanFind",
+          "madCalc",
+          "decimalAddSub",
+          "decimalMultiply"
+        ]
+      }
+    },
+    "5-1": {
+      "estimate": true
+    },
+    "5-5": {
+      "estimate": true
+    }
+  }
+}

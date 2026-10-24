@@ -1488,7 +1488,9 @@
     title: "Is it a solution?",
     titleEs: "¿Es una solución?",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "reverse", "compare-two"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPE_MAKE.solutionCheck[shape](rng, level);
       const kind = wpick(rng, SC_KINDS[level]);
       if (kind === "yn") return scYesNo(rng, level);
       if (kind === "pick") return scPick(rng, level);
@@ -1498,6 +1500,7 @@
       return scFind(rng);
     },
     check(item) {
+      if (item.meta?.sh) return SHAPE_CHECK.solutionCheck[item.meta.sh](item);
       const m = item.meta;
       const lhsAt = (e, x) => lhs(e.f, e.p, x);
       if (m.kind === "yn" || m.kind === "pick")
@@ -2527,7 +2530,9 @@
     title: "Solve with addition or subtraction",
     titleEs: "Resolver con suma o resta",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "reverse", "compare-two"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPE_MAKE.solveAddSub[shape](rng, level);
       const kind = wpick(rng, AS_KINDS[level]);
       if (kind === "solve")
         return solveTyped(
@@ -2544,6 +2549,7 @@
       return sameSolutionItem(rng, ADDSUB);
     },
     check(item) {
+      if (item.meta?.sh) return SHAPE_CHECK.solveAddSub[item.meta.sh](item);
       const m = item.meta;
       if (m.kind === "solve") {
         if (!item.q.includes(eqStr(m.e))) return "the stem lost its equation";
@@ -2725,11 +2731,13 @@
     title: "Solve with multiplication or division",
     titleEs: "Resolver con multiplicación o división",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "reverse", "compare-two"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPE_MAKE.solveMulDiv[shape](rng, level);
       const kind = wpick(rng, MD_KINDS[level]);
       if (kind === "solve") {
-        if (level === 3 && rng.chance(0.3))
-          return solveTyped(rng, 3, { e: fracCoefEq(rng, rng.pick(VARS)) });
+        if ((level === 3 || level === 4) && rng.chance(0.3))
+          return solveTyped(rng, level, { e: fracCoefEq(rng, rng.pick(VARS)) });
         return solveTyped(
           rng,
           level,
@@ -2744,6 +2752,7 @@
       return sameSolutionItem(rng, MULDIV);
     },
     check(item) {
+      if (item.meta?.sh) return SHAPE_CHECK.solveMulDiv[item.meta.sh](item);
       const m = item.meta;
       if (m.kind === "solve") {
         if (!item.q.includes(eqStr(m.e))) return "the stem lost its equation";
@@ -3276,7 +3285,9 @@
     title: "Write an inequality",
     titleEs: "Escribir una desigualdad",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "reverse", "compare-two"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPE_MAKE.writeInequality[shape](rng, level);
       const kind = wpick(rng, WI_KINDS[level]);
       if (kind === "sym") return wiSymbolItem(rng, level, false);
       if (kind === "write") return wiSymbolItem(rng, level, true);
@@ -3286,6 +3297,7 @@
       return wiBackItem(rng);
     },
     check(item) {
+      if (item.meta?.sh) return SHAPE_CHECK.writeInequality[item.meta.sh](item);
       const m = item.meta;
       const xs = range(0, 3 * m.n + 3);
       if (m.kind === "bound") {
@@ -3737,7 +3749,9 @@
     title: "Is it a solution of the inequality?",
     titleEs: "¿Es solución de la desigualdad?",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "reverse", "compare-two"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPE_MAKE.ineqSolutionCheck[shape](rng, level);
       const kind = wpick(rng, ISC_KINDS[level]);
       if (kind === "yn") return iscYesNo(rng, level);
       if (kind === "pick") return iscPick(rng, level);
@@ -3748,6 +3762,7 @@
       return iscCount(rng);
     },
     check(item) {
+      if (item.meta?.sh) return SHAPE_CHECK.ineqSolutionCheck[item.meta.sh](item);
       const m = item.meta;
       const st = (s, n) => ineqStr(m.v, s, n);
       if (m.kind === "yn") {
@@ -4081,7 +4096,9 @@
     title: "Solve and graph an inequality",
     titleEs: "Resolver y graficar una desigualdad",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "reverse", "compare-two"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPE_MAKE.solveInequality[shape](rng, level);
       const forms = level >= 3 && rng.chance(0.55) ? MULDIV : ADDSUB;
       const kind = wpick(rng, SI_KINDS[level]);
       if (kind === "solve") return siSolveItem(rng, level, forms);
@@ -4092,6 +4109,7 @@
       return siSmallestItem(rng, level, forms);
     },
     check(item) {
+      if (item.meta?.sh) return SHAPE_CHECK.solveInequality[item.meta.sh](item);
       const m = item.meta;
       const grid = (txt, v) => sweep(txt, v, 0, 400, 0.5).join(",");
       if (m.kind === "boundary")
@@ -4668,7 +4686,9 @@
     title: "Write and solve from a story",
     titleEs: "Escribir y resolver desde una historia",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "reverse", "compare-two"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPE_MAKE.writeEquationWord[shape](rng, level);
       const kind = wpick(rng, EW_KINDS[level]);
       if (kind === "model") return storyModelItem(rng, level, FORMS);
       if (kind === "story") return storyTyped(rng, level, FORMS);
@@ -4678,6 +4698,7 @@
       return matchItem(rng);
     },
     check(item) {
+      if (item.meta?.sh) return SHAPE_CHECK.writeEquationWord[item.meta.sh](item);
       const m = item.meta;
       if (m.kind === "model") return modelCheck(item);
       if (m.kind === "story")
@@ -5323,7 +5344,9 @@
     title: "Tables and rules for two variables",
     titleEs: "Tablas y reglas con dos variables",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "responds", "reverse", "compare-two"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPE_MAKE.twoVarTable[shape](rng, level);
       const kind = wpick(rng, TV_KINDS[level]);
       if (kind === "roles") return tvRoles(rng, level);
       if (kind === "complete") return tvComplete(rng, level);
@@ -5331,6 +5354,7 @@
       return tvLarge(rng);
     },
     check(item) {
+      if (item.meta?.sh) return SHAPE_CHECK.twoVarTable[item.meta.sh](item);
       const m = item.meta;
       if (m.kind === "roles") {
         const want = m.ind ? m.x : m.y;
@@ -5920,7 +5944,9 @@
     title: "Read a graph of a relationship",
     titleEs: "Leer la gráfica de una relación",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "reverse", "compare-two"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPE_MAKE.graphRelationship[shape](rng, level);
       const kind = wpick(rng, GR_KINDS[level]);
       if (kind === "readY") return gReadY(rng, level);
       if (kind === "readX") return gReadX(rng, level);
@@ -5932,6 +5958,7 @@
       return gBoth(rng);
     },
     check(item) {
+      if (item.meta?.sh) return SHAPE_CHECK.graphRelationship[item.meta.sh](item);
       const m = item.meta;
       const pts = item.viz.points;
       if (m.kind === "readY")
@@ -6453,7 +6480,9 @@
     title: "Solve problems with a relationship",
     titleEs: "Resolver problemas con una relación",
     levels: 4,
-    make(rng, level) {
+    shapes: ["forward", "which-input", "compare-two"],
+    make(rng, level, shape) {
+      if (shape && shape !== "forward") return SHAPE_MAKE.twoVarProblem[shape](rng, level);
       const kind = wpick(rng, TP_KINDS[level]);
       if (kind === "forward") return tpForward(rng, level);
       if (kind === "backward") return tpBack(rng, level);
@@ -6464,6 +6493,7 @@
       return tpWhich(rng);
     },
     check(item) {
+      if (item.meta?.sh) return SHAPE_CHECK.twoVarProblem[item.meta.sh](item);
       const m = item.meta;
       if (m.kind === "forward")
         return near(G.value(item.a), rhsAt(m.eq, m.xl, m.X))
@@ -6520,6 +6550,1465 @@
         : "the keyed statement is not the only correct comparison";
     },
   });
+
+  /* ====================================================================================================
+   * Problem shapes (studio v4): reverse, compare-two, which-input and responds variants of the Unit 8-9 skills.
+   * make(rng, level, shape) reaches SHAPE_MAKE only for a non-default shape, so the default ("forward") keeps today's seeds.
+   * item.meta carries { sh, ... }; SHAPE_CHECK recomputes every key by a different route than the maker took.
+   * ================================================================================================== */
+  const SHAPE_MAKE = /** @type {any} */ ({});
+  const SHAPE_CHECK = /** @type {any} */ ({});
+  /** the correct choice may not be the longest, and the choices stay within about a quarter of each other's length */
+  const lenFit = (item) =>
+    [item.c, item.cEs].filter(Boolean).every((c) => {
+      const L = c.map((t) => String(t).length);
+      const mx = Math.max(...L);
+      const mn = Math.min(...L);
+      const longest = L[item.a] === mx && L.filter((n) => n === mx).length === 1;
+      return mx <= 12 || (!longest && (mx - mn) / mx <= 0.25);
+    });
+  const retry = (build) => {
+    let it;
+    for (let i = 0; i < 60; i++) {
+      try {
+        it = build();
+      } catch (_e) {
+        it = null;
+      }
+      if (it && (it.k === "num" || lenFit(it))) return it;
+    }
+    if (!it) throw new Error("shape maker found no valid item");
+    return it;
+  };
+  /** a number that prints in at most two decimal places */
+  const nice = (v) => near(v * 100, Math.round(v * 100));
+  const tagged = (item, sh, gen, meta = {}) => {
+    item.meta = { ...(item.meta || {}), sh, gen, ...meta };
+    return item;
+  };
+  /** an equation of one-step form f, printed with letter L */
+  const rEq = (f, L, p, q) =>
+    f === "add"
+      ? `${L} + ${p} = ${q}`
+      : f === "sub"
+        ? `${L} − ${p} = ${q}`
+        : f === "mul"
+          ? `${p}${L} = ${q}`
+          : `${L} ÷ ${p} = ${q}`;
+  /** the left side with a number in place of the letter: "3 × 13" */
+  const rSub = (f, v, p) =>
+    f === "mul"
+      ? `${p} × ${v}`
+      : f === "add"
+        ? `${v} + ${p}`
+        : f === "sub"
+          ? `${v} − ${p}`
+          : `${v} ÷ ${p}`;
+  /** a one-step inequality, printed */
+  const rIq = (f, L, p, sym, q) =>
+    f === "add"
+      ? `${L} + ${p} ${SYM[sym]} ${q}`
+      : f === "sub"
+        ? `${L} − ${p} ${SYM[sym]} ${q}`
+        : f === "mul"
+          ? `${p}${L} ${SYM[sym]} ${q}`
+          : `${L} ÷ ${p} ${SYM[sym]} ${q}`;
+  const shAmount = (rng, level, lo, hi) =>
+    level >= 3 && rng.chance(0.5) ? dec1(rng, lo, hi) : rng.int(Math.ceil(lo), Math.floor(hi));
+  /** a typed answer with the common wrong values named */
+  const wv = (v, f, fEs, tag) => ({ v: fmt(clean(v)), f, fEs, tag });
+  const uniqFw = (a, list) => {
+    const seen = new Set([fmt(clean(a))]);
+    return list.filter((w) => !seen.has(w.v) && seen.add(w.v));
+  };
+
+  /* ---- 8-1 solutionCheck ------------------------------------------------------------------------ */
+  SHAPE_MAKE.solutionCheck = {
+    /** Which equation has x = s as its solution? */
+    reverse(rng, level) {
+      const L = rng.pick(VARS);
+      return retry(() => {
+        for (let t = 0; t < 200; t++) {
+          const f = rng.pick(level === 1 ? ["add", "sub"] : FORMS);
+          const s = shAmount(rng, level, 2, level === 1 ? 12 : 24);
+          const p =
+            f === "mul" || f === "div"
+              ? rng.int(2, 9)
+              : shAmount(rng, level, 2, level === 1 ? 12 : 20);
+          const q = clean(lhs(f, p, s));
+          if (q <= 0 || near(q, s) || !nice(q)) continue;
+          const others = rng.shuffle(FORMS.filter((g) => g !== f));
+          const cand = [
+            { f: others[0], p, q, tag: "operation-misread" },
+            { f: others[1], p, q, tag: "operation-misread" },
+            { f, p, q: clean(q + (rng.chance(0.5) ? 1 : -1)), tag: "solution-not-substituted" },
+            { f, p, q: s, tag: "equation-answered-with-given-number" },
+          ].filter((c) => !near(lhs(c.f, c.p, s), c.q) && c.q > 0);
+          if (cand.length < 3) continue;
+          const wrong = cand.slice(0, 3);
+          const sub = (e) => fmt(clean(lhs(e.f, e.p, s)));
+          const opts = [{ f, p, q }, ...wrong];
+          const item = mcx(rng, {
+            q: `Which equation has ${L} = ${fmt(s)} as its solution?`,
+            qEs: `¿Qué ecuación tiene como solución ${L} = ${fmt(s)}?`,
+            right: { v: rEq(f, L, fmt(p), fmt(q)), d: opts[0] },
+            wrong: wrong
+              .map((w) =>
+                wr(
+                  rEq(w.f, L, fmt(w.p), fmt(w.q)),
+                  [
+                    `Put ${fmt(s)} in for ${L}: the left side is ${sub(w)}, not ${fmt(w.q)}.`,
+                    `Pon ${fmt(s)} en lugar de ${L}: el lado izquierdo es ${sub(w)}, no ${fmt(w.q)}.`,
+                  ],
+                  w.tag,
+                ),
+              )
+              .map((w, i) => ({ ...w, d: wrong[i] })),
+            ...text({
+              x: [
+                `Put ${fmt(s)} in for ${L}. Only ${rSub(f, fmt(s), fmt(p))} = ${fmt(q)} is true. The others give a different number on the left.`,
+                `Pon ${fmt(s)} en lugar de ${L}. Solo ${rSub(f, fmt(s), fmt(p))} = ${fmt(q)} es verdadera. Las otras dan un número distinto a la izquierda.`,
+              ],
+              h: [
+                [
+                  "Replace the letter with the value in each equation.",
+                  "Cambia la letra por el valor en cada ecuación.",
+                ],
+                [
+                  "Work out the left side. Does it equal the number on the right?",
+                  "Calcula el lado izquierdo. ¿Es igual al número de la derecha?",
+                ],
+                [
+                  "Test one equation at a time. Only one is a true statement.",
+                  "Prueba una ecuación a la vez. Solo una es un enunciado verdadero.",
+                ],
+              ],
+            }),
+            meta: { s },
+          });
+          // map d to a per-choice list that the checker reads
+          return tagged(item, "reverse", "solutionCheck", { s, L });
+        }
+        return null;
+      });
+    },
+    /** How many of these four equations have x = s as a solution? */
+    "compare-two"(rng, level) {
+      const L = rng.pick(VARS);
+      const s = shAmount(rng, level, 2, level === 1 ? 10 : 20);
+      const want = rng.int(1, 3);
+      // exactly `want` of the four equations are true
+      const flags = rng.shuffle(Array.from({ length: 4 }, (_, i) => i < want));
+      const opts = flags.map((ok) => {
+        for (let t = 0; t < 100; t++) {
+          const f = rng.pick(level === 1 ? ["add", "sub"] : FORMS);
+          const p = f === "mul" || f === "div" ? rng.int(2, 9) : shAmount(rng, level, 2, 15);
+          let q = clean(lhs(f, p, s));
+          if (!ok) q = clean(q + rng.pick([-2, -1, 1, 2, p]));
+          if (q > 0 && nice(q) && near(lhs(f, p, s), q) === ok) return { f, p, q };
+        }
+        return { f: "add", p: 1, q: ok ? s + 1 : s };
+      });
+      const names = ["A", "B", "C", "D"];
+      const list = opts
+        .map((o, i) => `${names[i]}: ${rEq(o.f, L, fmt(o.p), fmt(o.q))}`)
+        .join("   ");
+      const a = opts.filter((o) => near(lhs(o.f, o.p, s), o.q)).length;
+      const miss = (n, en, es) => wv(n, en, es, "solution-not-substituted");
+      return tagged(
+        G.num({
+          q: `Test ${L} = ${fmt(s)} in each equation. ${list}. How many of the four equations are true when ${L} = ${fmt(s)}?`,
+          qEs: `Prueba ${L} = ${fmt(s)} en cada ecuación. ${list}. ¿Cuántas de las cuatro ecuaciones son verdaderas cuando ${L} = ${fmt(s)}?`,
+          a: String(a),
+          fw: uniqFw(
+            a,
+            [
+              miss(
+                a + 1,
+                "That counts an equation that is not true. Put the value in each one and check both sides.",
+                "Eso cuenta una ecuación que no es verdadera. Pon el valor en cada una y revisa los dos lados.",
+              ),
+              miss(
+                a - 1,
+                "That misses an equation that is true. Put the value in each one and check both sides.",
+                "Eso se deja una ecuación que sí es verdadera. Pon el valor en cada una y revisa los dos lados.",
+              ),
+            ].filter((w) => Number(w.v) >= 0 && Number(w.v) <= 4),
+          ),
+          ...text({
+            x: [
+              `Put ${fmt(s)} in for ${L} in each equation and compare the two sides. ${a} of the four ${a === 1 ? "is" : "are"} true.`,
+              `Pon ${fmt(s)} en lugar de ${L} en cada ecuación y compara los dos lados. ${a} de las cuatro ${a === 1 ? "es verdadera" : "son verdaderas"}.`,
+            ],
+            h: [
+              ["Test one equation at a time.", "Prueba una ecuación a la vez."],
+              [
+                "Replace the letter with the value, then work out the left side.",
+                "Cambia la letra por el valor y calcula el lado izquierdo.",
+              ],
+            ],
+          }),
+          meta: { s, opts },
+        }),
+        "compare-two",
+        "solutionCheck",
+      );
+    },
+  };
+  SHAPE_CHECK.solutionCheck = {
+    reverse(item) {
+      const { s } = item.meta;
+      const opts = item.meta.opts;
+      // solve each printed option by its inverse operation and compare with s
+      const truthy = opts.map((o) => near(inv(o.f, o.p, o.q), s));
+      if (truthy.filter(Boolean).length !== 1) return "not exactly one option has the solution";
+      return truthy[item.a] ? true : "the key is not the equation that has the solution";
+    },
+    "compare-two"(item) {
+      const { s, opts } = item.meta;
+      const n = opts.filter((o) => near(inv(o.f, o.p, o.q), s)).length;
+      return n === G.value(item.a) ? true : `counted ${n} true equations, key says ${item.a}`;
+    },
+  };
+
+  /* ---- 8-2 / 8-3: fill the blank, and compare two solutions -------------------------------------- */
+  const fillBlank = (gen, forms, bounds) => (rng, level) => {
+    const L = rng.pick(VARS);
+    for (let t = 0; t < 200; t++) {
+      const f = rng.pick(forms);
+      const s = shAmount(rng, level, bounds.s[0], bounds.s[1]);
+      const p =
+        f === "mul" || f === "div"
+          ? rng.int(2, level >= 3 ? 12 : 9)
+          : shAmount(rng, level, 2, bounds.p);
+      const q = clean(lhs(f, p, s));
+      if (!nice(q) || q <= 0) continue;
+      const blank = `${rEq(f, L, fmt(p), "___")}`;
+      return tagged(
+        G.num({
+          q: `The solution of ${blank} is ${L} = ${fmt(s)}. What number goes in the blank?`,
+          qEs: `La solución de ${blank} es ${L} = ${fmt(s)}. ¿Qué número va en el espacio?`,
+          a: fmt(q),
+          fw: uniqFw(q, [
+            wv(
+              s,
+              "That is the solution, not the number on the right. Put the solution in for the letter and work out the left side.",
+              "Esa es la solución, no el número de la derecha. Pon la solución en lugar de la letra y calcula el lado izquierdo.",
+              "equation-answered-with-given-number",
+            ),
+            wv(
+              inv(f, p, s),
+              "That undoes the operation instead of doing it. The blank is what the left side equals when the letter is the solution.",
+              "Eso deshace la operación en lugar de hacerla. El espacio es lo que vale el lado izquierdo cuando la letra es la solución.",
+              "equation-not-inverse-operation",
+            ),
+          ]),
+          ...text({
+            x: [
+              `When ${L} = ${fmt(s)}, the left side is ${rSub(f, fmt(s), fmt(p))} = ${fmt(q)}. So ${fmt(q)} goes in the blank.`,
+              `Cuando ${L} = ${fmt(s)}, el lado izquierdo es ${rSub(f, fmt(s), fmt(p))} = ${fmt(q)}. Así que ${fmt(q)} va en el espacio.`,
+            ],
+            h: [
+              ["Put the solution in for the letter.", "Pon la solución en lugar de la letra."],
+              [
+                "Work out the left side. That number is what the right side must be.",
+                "Calcula el lado izquierdo. Ese número es el que debe haber a la derecha.",
+              ],
+            ],
+          }),
+          meta: { f, p, s, L },
+        }),
+        "reverse",
+        gen,
+      );
+    }
+    throw new Error(`${gen}: no fill-in blank`);
+  };
+  const compareSolutions = (gen, forms, bounds) => (rng, level) => {
+    for (let t = 0; t < 200; t++) {
+      const mk = (L) => {
+        const f = rng.pick(forms);
+        const s = shAmount(rng, level, bounds.s[0], bounds.s[1]);
+        const p =
+          f === "mul" || f === "div"
+            ? rng.int(2, level >= 3 ? 12 : 9)
+            : shAmount(rng, level, 2, bounds.p);
+        return { f, p, s, q: clean(lhs(f, p, s)), L };
+      };
+      const A = mk("a");
+      const B = mk("b");
+      if (near(A.s, B.s) || A.q <= 0 || B.q <= 0 || !nice(A.q) || !nice(B.q)) continue;
+      const diff = clean(Math.abs(A.s - B.s));
+      return tagged(
+        G.num({
+          q: `Equation A is ${rEq(A.f, A.L, fmt(A.p), fmt(A.q))}. Equation B is ${rEq(B.f, B.L, fmt(B.p), fmt(B.q))}. Solve both. What is the difference between the two solutions, the greater minus the lesser?`,
+          qEs: `La ecuación A es ${rEq(A.f, A.L, fmt(A.p), fmt(A.q))}. La ecuación B es ${rEq(B.f, B.L, fmt(B.p), fmt(B.q))}. Resuelve las dos. ¿Cuál es la diferencia entre las dos soluciones, la mayor menos la menor?`,
+          a: fmt(diff),
+          fw: uniqFw(diff, [
+            wv(
+              A.s + B.s,
+              "That adds the two solutions. Subtract the lesser from the greater.",
+              "Eso suma las dos soluciones. Resta la menor de la mayor.",
+              "op-added-instead-of-subtracted",
+            ),
+            wv(
+              Math.max(A.s, B.s),
+              "That is the greater solution, not the difference. Subtract the lesser one from it.",
+              "Esa es la solución mayor, no la diferencia. Réstale la menor.",
+              "operation-misread",
+            ),
+          ]),
+          ...text({
+            x: [
+              `Equation A has the solution ${A.L} = ${fmt(A.s)} and equation B has ${B.L} = ${fmt(B.s)}. The greater minus the lesser is ${fmt(diff)}.`,
+              `La ecuación A tiene la solución ${A.L} = ${fmt(A.s)} y la ecuación B tiene ${B.L} = ${fmt(B.s)}. La mayor menos la menor es ${fmt(diff)}.`,
+            ],
+            h: [
+              [
+                "Solve each equation by itself first.",
+                "Primero resuelve cada ecuación por separado.",
+              ],
+              [
+                "Undo the operation in each one. Then subtract the lesser solution from the greater.",
+                "Deshaz la operación en cada una. Luego resta la solución menor de la mayor.",
+              ],
+            ],
+          }),
+          meta: { A, B },
+        }),
+        "compare-two",
+        gen,
+      );
+    }
+    throw new Error(`${gen}: no comparable pair`);
+  };
+  const checkFill = (item) => {
+    const { f, p, s } = item.meta;
+    // the blank is the number that makes s the solution: solve the printed equation with the key and compare
+    return near(inv(f, p, G.value(item.a)), s)
+      ? true
+      : "the solution of the filled equation is not the stated one";
+  };
+  const checkCompare = (item) => {
+    const { A, B } = item.meta;
+    const sA = inv(A.f, A.p, A.q);
+    const sB = inv(B.f, B.p, B.q);
+    return near(Math.abs(sA - sB), G.value(item.a))
+      ? true
+      : "difference of the solutions disagrees with the key";
+  };
+  SHAPE_MAKE.solveAddSub = {
+    reverse: fillBlank("solveAddSub", ["add", "sub"], { s: [3, 30], p: 20 }),
+    "compare-two": compareSolutions("solveAddSub", ["add", "sub"], { s: [3, 30], p: 20 }),
+  };
+  SHAPE_CHECK.solveAddSub = { reverse: checkFill, "compare-two": checkCompare };
+  SHAPE_MAKE.solveMulDiv = {
+    reverse: fillBlank("solveMulDiv", ["mul", "div"], { s: [2, 24], p: 9 }),
+    "compare-two": compareSolutions("solveMulDiv", ["mul", "div"], { s: [2, 24], p: 9 }),
+  };
+  SHAPE_CHECK.solveMulDiv = { reverse: checkFill, "compare-two": checkCompare };
+
+  /* ---- 8-4 writeInequality ----------------------------------------------------------------------- */
+  const PHRASES = {
+    ge: [
+      ["at least", "al menos"],
+      ["no fewer than", "no menos de"],
+      ["a minimum of", "un mínimo de"],
+    ],
+    gt: [
+      ["more than", "más de"],
+      ["greater than", "mayor que"],
+      ["over", "superior a"],
+    ],
+    le: [
+      ["at most", "como máximo"],
+      ["no more than", "no más de"],
+      ["up to", "hasta"],
+    ],
+    lt: [
+      ["fewer than", "menos de"],
+      ["less than", "menor que"],
+      ["under", "inferior a"],
+    ],
+  };
+  /** the symbol class of a phrase in a sentence; the longest phrase wins ("no more than" is not "more than") */
+  const phraseClass = (text) => {
+    let best = null;
+    let len = 0;
+    for (const [cls, list] of Object.entries(PHRASES))
+      for (const [en] of list)
+        if (text.includes(` ${en} `) && en.length > len) [best, len] = [cls, en.length];
+    return best;
+  };
+  SHAPE_MAKE.writeInequality = {
+    /** Which phrase matches y ≥ 15? */
+    reverse(rng, level) {
+      const L = rng.pick(["x", "y", "n", "p", "w", "t"]);
+      return retry(() => {
+        const n = level >= 3 && rng.chance(0.5) ? dec1(rng, 2, 40) : rng.int(3, 60);
+        const cls = rng.pick(["ge", "gt", "le", "lt"]);
+        const pick = (c) => rng.pick(PHRASES[c]);
+        const right = pick(cls);
+        const wrongs = ["ge", "gt", "le", "lt"].filter((c) => c !== cls);
+        const sentence = (ph, es) => `${L} ${es ? "es" : "is"} ${ph[es ? 1 : 0]} ${fmt(n)}`;
+        const item = mcx(rng, {
+          q: `Which phrase matches ${L} ${SYM[cls]} ${fmt(n)}?`,
+          qEs: `¿Qué frase corresponde a ${L} ${SYM[cls]} ${fmt(n)}?`,
+          right: { v: sentence(right, false), vEs: sentence(right, true) },
+          wrong: wrongs.map((c) => {
+            const ph = pick(c);
+            const flipped = c === OPP[cls];
+            return {
+              ...wr(
+                sentence(ph, false),
+                [
+                  `That phrase means ${L} ${SYM[c]} ${fmt(n)}. ${flipped ? "It points the other way." : "It treats the boundary number differently."}`,
+                  `Esa frase significa ${L} ${SYM[c]} ${fmt(n)}. ${flipped ? "Apunta hacia el otro lado." : "Trata el número límite de otra manera."}`,
+                ],
+                flipped ? "inequality-direction-flipped" : "inequality-boundary-inclusion",
+                sentence(ph, true),
+              ),
+              d: c,
+            };
+          }),
+          ...text({
+            x: [
+              `${L} ${SYM[cls]} ${fmt(n)} is read "${L} is ${right[0]} ${fmt(n)}". The symbol ${SYM[cls]} ${isUp(cls) ? "points to the greater numbers" : "points to the lesser numbers"}${isStrict(cls) ? " and leaves out the boundary" : " and includes the boundary"}.`,
+              `${L} ${SYM[cls]} ${fmt(n)} se lee «${L} es ${right[1]} ${fmt(n)}». El símbolo ${SYM[cls]} ${isUp(cls) ? "apunta a los números mayores" : "apunta a los números menores"}${isStrict(cls) ? " y deja fuera el límite" : " e incluye el límite"}.`,
+            ],
+            h: [
+              [
+                "Is the symbol pointing to greater numbers or lesser numbers?",
+                "¿El símbolo apunta a números mayores o menores?",
+              ],
+              [
+                "Does the symbol have an equal line under it? That means the boundary counts.",
+                "¿El símbolo tiene una línea de igual debajo? Eso significa que el límite cuenta.",
+              ],
+            ],
+          }),
+          meta: { cls, n },
+        });
+        return tagged(item, "reverse", "writeInequality", { cls, n });
+      });
+    },
+    /** How many whole numbers does Rule A allow that Rule B does not? */
+    "compare-two"(rng, level) {
+      const up = rng.chance(0.5);
+      const a = rng.int(5, level >= 3 ? 90 : 60);
+      const gap = rng.int(0, level >= 3 ? 3 : 2);
+      const A = up ? { s: "ge", n: a } : { s: "le", n: a };
+      const B = up ? { s: "gt", n: a + gap } : { s: "lt", n: a - gap };
+      const lo = a - 4;
+      const hi = a + gap + 4;
+      let count = 0;
+      for (let v = lo; v <= hi; v++) if (inSet(A.s, v, A.n) && !inSet(B.s, v, B.n)) count++;
+      return tagged(
+        G.num({
+          q: `Rule A is x ${SYM[A.s]} ${A.n}. Rule B is x ${SYM[B.s]} ${B.n}. Count the whole numbers from ${lo} to ${hi}. How many are allowed by Rule A but not by Rule B?`,
+          qEs: `La regla A es x ${SYM[A.s]} ${A.n}. La regla B es x ${SYM[B.s]} ${B.n}. Cuenta los números enteros de ${lo} a ${hi}. ¿Cuántos permite la regla A pero no la regla B?`,
+          a: String(count),
+          fw: uniqFw(
+            count,
+            [
+              wv(
+                count - 1,
+                "That leaves out a number. Test each whole number in both rules, including the boundary numbers.",
+                "Eso deja fuera un número. Prueba cada número entero en las dos reglas, incluidos los números límite.",
+                "inequality-boundary-inclusion",
+              ),
+              wv(
+                count + 1,
+                "That counts one number too many. Check whether the boundary number is allowed by each rule.",
+                "Eso cuenta un número de más. Revisa si cada regla permite el número límite.",
+                "inequality-boundary-inclusion",
+              ),
+            ].filter((w) => Number(w.v) >= 0),
+          ),
+          ...text({
+            x: [
+              `Test each whole number from ${lo} to ${hi} in both rules. ${count} of them fit Rule A and do not fit Rule B.`,
+              `Prueba cada número entero de ${lo} a ${hi} en las dos reglas. ${count} cumplen la regla A y no cumplen la regla B.`,
+            ],
+            h: [
+              [
+                "List the whole numbers from the start to the end.",
+                "Haz una lista de los números enteros del inicio al final.",
+              ],
+              [
+                "For each number, ask: does Rule A allow it? Does Rule B?",
+                "Para cada número, pregunta: ¿la regla A lo permite? ¿La regla B?",
+              ],
+            ],
+          }),
+          meta: { A, B, lo, hi },
+        }),
+        "compare-two",
+        "writeInequality",
+      );
+    },
+  };
+  SHAPE_CHECK.writeInequality = {
+    reverse(item) {
+      const { cls } = item.meta;
+      const hits = item.c.map((c, i) => ({ i, cls: phraseClass(` ${c} `) }));
+      const right = hits.filter((h) => h.cls === cls);
+      if (right.length !== 1) return "not exactly one phrase matches the symbol";
+      return right[0].i === item.a ? true : "the key is not the phrase for the symbol";
+    },
+    "compare-two"(item) {
+      const { A, B, lo, hi } = item.meta;
+      let n = 0;
+      for (let v = lo; v <= hi; v++) {
+        const okA = A.s === "ge" ? v >= A.n : A.s === "le" ? v <= A.n : false;
+        const okB = B.s === "gt" ? v > B.n : B.s === "lt" ? v < B.n : false;
+        if (okA && !okB) n++;
+      }
+      return n === G.value(item.a) ? true : `counted ${n}, key says ${item.a}`;
+    },
+  };
+
+  /* ---- 8-5 ineqSolutionCheck --------------------------------------------------------------------- */
+  SHAPE_MAKE.ineqSolutionCheck = {
+    /** Which inequality has v as a solution? */
+    reverse(rng, level) {
+      const L = rng.pick(["x", "y", "n", "p", "w"]);
+      return retry(() => {
+        for (let t = 0; t < 200; t++) {
+          const v = level >= 3 ? dec1(rng, 1, 30) : rng.int(2, 25);
+          const mk = (s, n) => ({ s, n: clean(n) });
+          const right = rng.pick([
+            mk("ge", v),
+            mk("le", v),
+            mk(rng.pick(["gt", "lt"]), v + (rng.chance(0.5) ? -1 : 1) * 1),
+            mk(rng.pick(["ge", "le"]), v + rng.pick([-2, -1, 1, 2])),
+          ]);
+          if (!inSet(right.s, v, right.n)) continue;
+          const pool = [
+            mk(right.s === "ge" ? "gt" : right.s === "le" ? "lt" : right.s, right.n),
+            mk(OPP[right.s], right.n),
+            mk(right.s, v + (isUp(right.s) ? 1 : -1) * rng.pick([1, 2])),
+            mk(rng.pick(["gt", "lt"]), v),
+            mk(rng.pick(["ge", "le", "gt", "lt"]), v + rng.pick([-3, -1, 1, 3])),
+          ].filter((c) => !inSet(c.s, v, c.n));
+          const uniq = [];
+          for (const c of pool) if (!uniq.some((u) => u.s === c.s && near(u.n, c.n))) uniq.push(c);
+          if (uniq.length < 3) continue;
+          const wrong = uniq.slice(0, 3);
+          const printed = (c) => ineqStr(L, c.s, fmt(c.n));
+          if (
+            [right, ...wrong].some((c, i, a) => a.findIndex((u) => printed(u) === printed(c)) !== i)
+          )
+            continue;
+          const item = mcx(rng, {
+            q: `Which inequality has ${fmt(v)} as a solution?`,
+            qEs: `¿Qué desigualdad tiene como solución ${fmt(v)}?`,
+            right: { v: printed(right), d: right },
+            wrong: wrong.map((c) => ({
+              ...wr(
+                printed(c),
+                [
+                  `Test ${fmt(v)}: ${fmt(v)} ${SYM[c.s]} ${fmt(c.n)} is false.${near(v, c.n) ? " The boundary is only a solution when the symbol has an equal line." : ""}`,
+                  `Prueba ${fmt(v)}: ${fmt(v)} ${SYM[c.s]} ${fmt(c.n)} es falso.${near(v, c.n) ? " El límite solo es solución cuando el símbolo tiene una línea de igual." : ""}`,
+                ],
+                near(v, c.n) ? "inequality-boundary-inclusion" : "solution-set-misjudged",
+              ),
+              d: c,
+            })),
+            ...text({
+              x: [
+                `Test ${fmt(v)} in each inequality. Only ${fmt(v)} ${SYM[right.s]} ${fmt(right.n)} is true.`,
+                `Prueba ${fmt(v)} en cada desigualdad. Solo ${fmt(v)} ${SYM[right.s]} ${fmt(right.n)} es verdadera.`,
+              ],
+              h: [
+                [
+                  "Put the number in for the letter in each inequality.",
+                  "Pon el número en lugar de la letra en cada desigualdad.",
+                ],
+                [
+                  "Read each one as a sentence. Is it true or false?",
+                  "Lee cada una como una oración. ¿Es verdadera o falsa?",
+                ],
+              ],
+            }),
+            meta: { v },
+          });
+          return tagged(item, "reverse", "ineqSolutionCheck", { v, L });
+        }
+        return null;
+      });
+    },
+    /** How many numbers in a list are solutions of BOTH inequalities? */
+    "compare-two"(rng, level) {
+      const L = rng.pick(["x", "n", "p", "w"]);
+      for (let t = 0; t < 200; t++) {
+        const lo = rng.int(1, 12);
+        const A = { s: rng.pick(["ge", "gt"]), n: lo + rng.int(0, 4) };
+        const B = { s: rng.pick(["le", "lt"]), n: A.n + rng.int(2, 7) };
+        const vals = rng
+          .shuffle(
+            Array.from({ length: 7 }, (_, i) => clean(lo - 1 + i * (level >= 3 ? 1.5 : 1.5))),
+          )
+          .slice(0, 6);
+        const both = vals.filter((v) => inSet(A.s, v, A.n) && inSet(B.s, v, B.n));
+        if (both.length < 1 || both.length > 4) continue;
+        const list = vals.map(fmt).join(", ");
+        return tagged(
+          G.num({
+            q: `Inequality A is ${ineqStr(L, A.s, A.n)}. Inequality B is ${ineqStr(L, B.s, B.n)}. Here are six numbers: ${list}. How many of them are solutions of both A and B?`,
+            qEs: `La desigualdad A es ${ineqStr(L, A.s, A.n)}. La desigualdad B es ${ineqStr(L, B.s, B.n)}. Aquí hay seis números: ${list}. ¿Cuántos son soluciones de A y de B a la vez?`,
+            a: String(both.length),
+            fw: uniqFw(
+              both.length,
+              [
+                wv(
+                  both.length + 1,
+                  "That counts a number that fails one of the inequalities. Test every number in both.",
+                  "Eso cuenta un número que no cumple una de las desigualdades. Prueba cada número en las dos.",
+                  "solution-set-misjudged",
+                ),
+                wv(
+                  both.length - 1,
+                  "That misses a number that works in both. Test every number in both, including the boundary numbers.",
+                  "Eso se deja un número que sirve en las dos. Prueba cada número en las dos, incluidos los límites.",
+                  "solution-set-misjudged",
+                ),
+              ].filter((w) => Number(w.v) >= 0),
+            ),
+            ...text({
+              x: [
+                `A number must make A true and B true. Testing all six numbers, ${both.length} pass both.`,
+                `Un número debe hacer verdadera a A y a B. Al probar los seis números, ${both.length} cumplen las dos.`,
+              ],
+              h: [
+                [
+                  "Test each number in A first. Cross out the ones that fail.",
+                  "Prueba cada número en A primero. Tacha los que no cumplen.",
+                ],
+                ["Test the numbers that are left in B.", "Prueba en B los números que quedan."],
+              ],
+            }),
+            meta: { A, B, vals },
+          }),
+          "compare-two",
+          "ineqSolutionCheck",
+        );
+      }
+      throw new Error("ineqSolutionCheck compare-two: no list");
+    },
+  };
+  const holdsAgain = (s, v, n) => ({ gt: v > n, ge: v >= n, lt: v < n, le: v <= n })[s];
+  SHAPE_CHECK.ineqSolutionCheck = {
+    reverse(item) {
+      const { v } = item.meta;
+      const truthy = item.meta.opts.map((o) => holdsAgain(o.s, v, o.n));
+      if (truthy.filter(Boolean).length !== 1)
+        return "not exactly one inequality has the value as a solution";
+      return truthy[item.a] ? true : "the key is not the inequality that holds";
+    },
+    "compare-two"(item) {
+      const { A, B, vals } = item.meta;
+      const n = vals.filter((v) => holdsAgain(A.s, v, A.n) && holdsAgain(B.s, v, B.n)).length;
+      return n === G.value(item.a) ? true : `counted ${n}, key says ${item.a}`;
+    },
+  };
+
+  /* ---- 8-6 solveInequality ----------------------------------------------------------------------- */
+  SHAPE_MAKE.solveInequality = {
+    /** x + 3 > ___ has the solution x > 5: what goes in the blank? */
+    reverse(rng, level) {
+      const L = rng.pick(["x", "n", "p", "w", "t"]);
+      const f = rng.pick(level === 1 ? ["add", "sub"] : FORMS);
+      const sym = rng.pick(["gt", "lt", "ge", "le"]);
+      const n = shAmount(rng, level, 2, 20);
+      const p = f === "mul" || f === "div" ? rng.int(2, 9) : shAmount(rng, level, 2, 15);
+      const q = clean(lhs(f, p, n));
+      if (!nice(q)) return SHAPE_MAKE.solveInequality.reverse(rng, level);
+      return tagged(
+        G.num({
+          q: `The solution of ${rIq(f, L, fmt(p), sym, "___")} is ${ineqStr(L, sym, fmt(n))}. What number goes in the blank?`,
+          qEs: `La solución de ${rIq(f, L, fmt(p), sym, "___")} es ${ineqStr(L, sym, fmt(n))}. ¿Qué número va en el espacio?`,
+          a: fmt(q),
+          fw: uniqFw(q, [
+            wv(
+              n,
+              "That is the boundary of the solution, not the number in the blank. Do the operation to the boundary.",
+              "Ese es el límite de la solución, no el número del espacio. Haz la operación con el límite.",
+              "equation-answered-with-given-number",
+            ),
+            wv(
+              inv(f, p, n),
+              "That undoes the operation. Do the same operation as the left side does to the boundary.",
+              "Eso deshace la operación. Haz con el límite la misma operación que hace el lado izquierdo.",
+              "equation-not-inverse-operation",
+            ),
+          ]),
+          ...text({
+            x: [
+              `The boundary is ${fmt(n)}. Doing the left side's operation to it gives ${fmt(q)}, so ${rIq(f, L, fmt(p), sym, fmt(q))} has the solution ${ineqStr(L, sym, fmt(n))}.`,
+              `El límite es ${fmt(n)}. Hacer con él la operación del lado izquierdo da ${fmt(q)}, así que ${rIq(f, L, fmt(p), sym, fmt(q))} tiene la solución ${ineqStr(L, sym, fmt(n))}.`,
+            ],
+            h: [
+              [
+                "Solving undoes the operation. This asks you to do the operation instead.",
+                "Resolver deshace la operación. Aquí debes hacer la operación.",
+              ],
+              [
+                "Start from the boundary and apply the operation that is shown on the left.",
+                "Empieza con el límite y aplica la operación que se muestra a la izquierda.",
+              ],
+            ],
+          }),
+          meta: { f, p, sym, n },
+        }),
+        "reverse",
+        "solveInequality",
+      );
+    },
+    /** How many whole numbers from 0 to 20 are solutions of both? */
+    "compare-two"(rng, level) {
+      const L = rng.pick(["x", "n", "p", "w"]);
+      for (let t = 0; t < 300; t++) {
+        const mk = (up) => {
+          const f = rng.pick(["add", "sub"]);
+          const p = rng.int(2, level >= 3 ? 12 : 8);
+          const n = rng.int(3, 17);
+          const sym = up ? rng.pick(["gt", "ge"]) : rng.pick(["lt", "le"]);
+          return { f, p, sym, n, q: clean(lhs(f, p, n)) };
+        };
+        const A = mk(true);
+        const B = mk(false);
+        let count = 0;
+        for (let v = 0; v <= 20; v++) if (inSet(A.sym, v, A.n) && inSet(B.sym, v, B.n)) count++;
+        if (count < 1 || count > 8) continue;
+        return tagged(
+          G.num({
+            q: `Inequality A is ${rIq(A.f, L, fmt(A.p), A.sym, fmt(A.q))}. Inequality B is ${rIq(B.f, L, fmt(B.p), B.sym, fmt(B.q))}. Solve both. How many whole numbers from 0 to 20 are solutions of both?`,
+            qEs: `La desigualdad A es ${rIq(A.f, L, fmt(A.p), A.sym, fmt(A.q))}. La desigualdad B es ${rIq(B.f, L, fmt(B.p), B.sym, fmt(B.q))}. Resuélvelas. ¿Cuántos números enteros de 0 a 20 son soluciones de las dos?`,
+            a: String(count),
+            fw: uniqFw(
+              count,
+              [
+                wv(
+                  count + 1,
+                  "That counts one number too many. Check whether each boundary is a solution.",
+                  "Eso cuenta un número de más. Revisa si cada límite es una solución.",
+                  "inequality-boundary-inclusion",
+                ),
+                wv(
+                  count - 1,
+                  "That misses one number. Check whether each boundary is a solution.",
+                  "Eso se deja un número. Revisa si cada límite es una solución.",
+                  "inequality-boundary-inclusion",
+                ),
+              ].filter((w) => Number(w.v) >= 0),
+            ),
+            ...text({
+              x: [
+                `Solving gives ${ineqStr(L, A.sym, fmt(A.n))} and ${ineqStr(L, B.sym, fmt(B.n))}. ${count} whole numbers from 0 to 20 make both true.`,
+                `Al resolver se obtiene ${ineqStr(L, A.sym, fmt(A.n))} y ${ineqStr(L, B.sym, fmt(B.n))}. ${count} números enteros de 0 a 20 hacen verdaderas las dos.`,
+              ],
+              h: [
+                [
+                  "Solve each inequality by itself first.",
+                  "Primero resuelve cada desigualdad por separado.",
+                ],
+                [
+                  "Which whole numbers fit both solutions? Check the boundary numbers.",
+                  "¿Qué números enteros cumplen las dos soluciones? Revisa los números límite.",
+                ],
+              ],
+            }),
+            meta: { A, B },
+          }),
+          "compare-two",
+          "solveInequality",
+        );
+      }
+      throw new Error("solveInequality compare-two: no pair");
+    },
+  };
+  SHAPE_CHECK.solveInequality = {
+    reverse(item) {
+      const { f, p, n } = item.meta;
+      // solve the filled-in inequality with the key and compare with the stated solution (flip nothing: p > 0)
+      const solved = inv(f, p, G.value(item.a));
+      return near(solved, n) ? true : "the filled inequality does not have the stated solution";
+    },
+    "compare-two"(item) {
+      const { A, B } = item.meta;
+      let n = 0;
+      for (let v = 0; v <= 20; v++) {
+        const left = inv(A.f, A.p, A.q);
+        const right = inv(B.f, B.p, B.q);
+        if (holdsAgain(A.sym, v, left) && holdsAgain(B.sym, v, right)) n++;
+      }
+      return n === G.value(item.a) ? true : `counted ${n}, key says ${item.a}`;
+    },
+  };
+
+  /* ---- 8-7 writeEquationWord --------------------------------------------------------------------- */
+  const STORY3 = {
+    le: (p, T) => [
+      `You have $${T} to spend. Each ticket costs $${p}.`,
+      `Tienes $${T} para gastar. Cada boleto cuesta $${p}.`,
+    ],
+    ge: (p, T) => [
+      `You must earn at least $${T}. Each ticket earns $${p}.`,
+      `Debes ganar al menos $${T}. Cada boleto deja $${p}.`,
+    ],
+    eq: (p, T) => [
+      `The tickets cost exactly $${T}. Each costs $${p}.`,
+      `Los boletos cuestan exactamente $${T}. Cada uno cuesta $${p}.`,
+    ],
+  };
+  const MODEL3 = { le: "≤", ge: "≥", eq: "=" };
+  SHAPE_MAKE.writeEquationWord = {
+    /** Which story matches the model 6t ≤ 40? */
+    reverse(rng, level) {
+      return retry(() => {
+        const p = rng.int(2, level >= 3 ? 12 : 9);
+        const T = p * rng.int(3, 9) + (rng.chance(0.5) ? rng.int(1, p - 1) : 0);
+        const kind = rng.pick(["le", "ge", "eq"]);
+        const swapped = (k) =>
+          k === "ge"
+            ? [
+                `Each ticket earns $${T}. You must earn at least $${p}.`,
+                `Cada boleto deja $${T}. Debes ganar al menos $${p}.`,
+              ]
+            : [
+                `Each ticket costs $${T}. You have $${p} to spend.`,
+                `Cada boleto cuesta $${T}. Tienes $${p} para gastar.`,
+              ];
+        const pool = [
+          { kind, tag: null, story: STORY3[kind](p, T) },
+          ...["le", "ge", "eq"]
+            .filter((k) => k !== kind)
+            .map((k) => ({ kind: k, story: STORY3[k](p, T) })),
+          { kind: "swap", story: swapped(kind) },
+        ];
+        const wrongs = pool.slice(1);
+        const item = mcx(rng, {
+          q: `Which story matches the model ${p}t ${MODEL3[kind]} ${T}, where t is the number of tickets?`,
+          qEs: `¿Qué historia corresponde al modelo ${p}t ${MODEL3[kind]} ${T}, donde t es el número de boletos?`,
+          right: { v: pool[0].story[0], vEs: pool[0].story[1], d: pool[0].kind },
+          wrong: wrongs.map((w) => ({
+            ...wr(
+              w.story[0],
+              w.kind === "swap"
+                ? [
+                    `The price and the amount have traded places. In the model, ${p} is the price of one ticket.`,
+                    `El precio y la cantidad cambiaron de lugar. En el modelo, ${p} es el precio de un boleto.`,
+                  ]
+                : w.kind === "eq" || kind === "eq"
+                  ? [
+                      `This story is ${w.kind === "eq" ? "one exact amount" : "a limit"}, but the model is ${kind === "eq" ? "an equation" : "an inequality"}. Does the story need one exact value or a limit?`,
+                      `Esta historia es ${w.kind === "eq" ? "una cantidad exacta" : "un límite"}, pero el modelo es ${kind === "eq" ? "una ecuación" : "una desigualdad"}. ¿La historia necesita un valor exacto o un límite?`,
+                    ]
+                  : [
+                      `This story is a limit on the other side. The model's symbol points the other way.`,
+                      `Esta historia es un límite del otro lado. El símbolo del modelo apunta hacia el otro lado.`,
+                    ],
+              w.kind === "swap"
+                ? "expression-coefficient-constant-swapped"
+                : w.kind === "eq" || kind === "eq"
+                  ? "equal-sign-misread"
+                  : "inequality-direction-flipped",
+              w.story[1],
+            ),
+            d: w.kind,
+          })),
+          ...text({
+            x: [
+              `The model ${p}t ${MODEL3[kind]} ${T} multiplies the price $${p} by the number of tickets and compares it with $${T}. ${kind === "eq" ? "The story names one exact total, so it is an equation." : "The story gives a limit, so it is an inequality."}`,
+              `El modelo ${p}t ${MODEL3[kind]} ${T} multiplica el precio $${p} por el número de boletos y lo compara con $${T}. ${kind === "eq" ? "La historia da un total exacto, así que es una ecuación." : "La historia da un límite, así que es una desigualdad."}`,
+            ],
+            h: [
+              [
+                "In the model, which number is the price of one ticket?",
+                "En el modelo, ¿cuál número es el precio de un boleto?",
+              ],
+              [
+                "Ask: does the story name one exact amount, or a limit?",
+                "Pregunta: ¿la historia da una cantidad exacta o un límite?",
+              ],
+              [
+                "If it is a limit, which way does it point?",
+                "Si es un límite, ¿hacia dónde apunta?",
+              ],
+            ],
+          }),
+          meta: { kind, p, T },
+        });
+        return tagged(item, "reverse", "writeEquationWord", { kind, p, T });
+      });
+    },
+    /** How many more whole numbers make B true than A? */
+    "compare-two"(rng, level) {
+      const p = rng.int(2, level >= 3 ? 12 : 9);
+      const k = rng.int(3, 9);
+      const exact = rng.chance(0.5);
+      const T = p * k + (exact ? 0 : rng.int(1, p - 1));
+      const sols = (rel) => {
+        let n = 0;
+        for (let b = 0; b <= T + 2; b++) if (rel(p * b, T)) n++;
+        return n;
+      };
+      const nA = sols((x, y) => x === y);
+      const nB = sols((x, y) => x <= y);
+      return tagged(
+        G.num({
+          q: `Model A is ${p}b = ${T}. Model B is ${p}b ≤ ${T}. In both, b is a whole number of items (0, 1, 2, and so on). How many more values of b make Model B true than make Model A true?`,
+          qEs: `El modelo A es ${p}b = ${T}. El modelo B es ${p}b ≤ ${T}. En los dos, b es un número entero de artículos (0, 1, 2, etcétera). ¿Cuántos valores de b más hacen verdadero el modelo B que el modelo A?`,
+          a: String(nB - nA),
+          fw: uniqFw(nB - nA, [
+            wv(
+              nB,
+              "That is how many values make Model B true. Subtract the number that make Model A true.",
+              "Esos son los valores que hacen verdadero el modelo B. Réstales los que hacen verdadero el modelo A.",
+              "equal-sign-misread",
+            ),
+            wv(
+              nA,
+              "That is how many values make Model A true. Count how many make Model B true too, then compare.",
+              "Esos son los valores que hacen verdadero el modelo A. Cuenta también los del modelo B y compara.",
+              "equal-sign-misread",
+            ),
+          ]),
+          ...text({
+            x: [
+              `Model A has ${nA} solution${nA === 1 ? "" : "s"} in whole numbers, and Model B has ${nB}. Model B has ${nB - nA} more.`,
+              `El modelo A tiene ${nA} solución${nA === 1 ? "" : "es"} en números enteros y el modelo B tiene ${nB}. El modelo B tiene ${nB - nA} más.`,
+            ],
+            h: [
+              [
+                "For Model A, try whole numbers for b. Which ones make it exactly equal?",
+                "En el modelo A, prueba números enteros para b. ¿Cuáles lo hacen exactamente igual?",
+              ],
+              [
+                "For Model B, count every whole number from 0 up to the largest one that still works.",
+                "En el modelo B, cuenta cada número entero desde 0 hasta el mayor que todavía sirve.",
+              ],
+            ],
+          }),
+          meta: { p, T },
+        }),
+        "compare-two",
+        "writeEquationWord",
+      );
+    },
+  };
+  SHAPE_CHECK.writeEquationWord = {
+    reverse(item) {
+      const { kind } = item.meta;
+      const hits = item.meta.opts.map((k) => k === kind);
+      if (hits.filter(Boolean).length !== 1) return "not exactly one story matches the model";
+      return hits[item.a] ? true : "the key is not the matching story";
+    },
+    "compare-two"(item) {
+      const { p, T } = item.meta;
+      let a = 0;
+      let b = 0;
+      for (let v = 0; v <= T + 2; v++) {
+        if (p * v === T) a++;
+        if (p * v <= T) b++;
+      }
+      return b - a === G.value(item.a) ? true : `counted ${b - a}, key says ${item.a}`;
+    },
+  };
+
+  /* ---- 9-1 / 9-3 twoVarTable --------------------------------------------------------------------- */
+  const RESP = [
+    [
+      "A juice stand charges ${k} for each cup. A customer decides how many cups to buy.",
+      "Un puesto de jugo cobra ${k} por cada vaso. Un cliente decide cuántos vasos comprar.",
+      ["the number of cups", "el número de vasos"],
+      ["the total cost", "el costo total"],
+      ["the price of one cup", "el precio de un vaso"],
+      ["the number of customers", "el número de clientes"],
+    ],
+    [
+      "A bakery uses {k} eggs in each cake. The baker decides how many cakes to bake.",
+      "Una panadería usa {k} huevos en cada pastel. El panadero decide cuántos pasteles hornear.",
+      ["the number of cakes", "el número de pasteles"],
+      ["the number of eggs used", "el número de huevos usados"],
+      ["the eggs in one cake", "los huevos de un pastel"],
+      ["the number of ovens", "el número de hornos"],
+    ],
+    [
+      "A bus goes {k} miles each hour. The driver decides how many hours to drive.",
+      "Un autobús recorre {k} millas por hora. El conductor decide cuántas horas manejar.",
+      ["the hours driven", "las horas manejadas"],
+      ["the miles traveled", "las millas recorridas"],
+      ["the speed of the bus", "la rapidez del autobús"],
+      ["the number of seats", "el número de asientos"],
+    ],
+    [
+      "A printer prints {k} pages each minute. A student decides how many minutes to print.",
+      "Una impresora imprime {k} páginas por minuto. Un estudiante decide cuántos minutos imprimir.",
+      ["the minutes of printing", "los minutos de impresión"],
+      ["the pages printed", "las páginas impresas"],
+      ["the pages per minute", "las páginas por minuto"],
+      ["the number of students", "el número de estudiantes"],
+    ],
+    [
+      "A gym charges ${k} for each class. A member decides how many classes to take.",
+      "Un gimnasio cobra ${k} por cada clase. Un socio decide cuántas clases tomar.",
+      ["the number of classes", "el número de clases"],
+      ["the total amount paid", "el total que paga"],
+      ["the price of one class", "el precio de una clase"],
+      ["the number of members", "el número de socios"],
+    ],
+  ];
+  const RULE_CTX = [
+    ["lemonade", "limonada", "cups", "vasos", "dollars", "dólares"],
+    ["a taxi ride", "un viaje en taxi", "miles", "millas", "dollars", "dólares"],
+    ["a library fine", "una multa de biblioteca", "days", "días", "cents", "centavos"],
+    ["a tutoring session", "una sesión de tutoría", "hours", "horas", "points", "puntos"],
+  ];
+  SHAPE_MAKE.twoVarTable = {
+    /** Which quantity changes in response to the one the person chooses? */
+    responds(rng) {
+      return retry(() => {
+        const [s0, sEs0, chosen, dep, rate, other] = rng.pick(RESP);
+        const k = rng.int(2, 15);
+        const s = s0.replace(/\{k\}/g, String(k));
+        const sEs = sEs0.replace(/\{k\}/g, String(k));
+        const item = mcx(rng, {
+          q: `${s} When that choice changes, which quantity changes in response?`,
+          qEs: `${sEs} Cuando esa decisión cambia, ¿qué cantidad cambia como respuesta?`,
+          right: {
+            v: dep[0].replace(/^./, (c) => c.toUpperCase()),
+            vEs: dep[1].replace(/^./, (c) => c.toUpperCase()),
+            d: "dep",
+          },
+          wrong: [
+            {
+              ...wr(
+                chosen[0].replace(/^./, (c) => c.toUpperCase()),
+                [
+                  "That is the quantity the person chooses. It is the one that causes the change, not the one that responds.",
+                  "Esa es la cantidad que la persona elige. Es la que causa el cambio, no la que responde.",
+                ],
+                "var-dependent-independent-swapped",
+                chosen[1].replace(/^./, (c) => c.toUpperCase()),
+              ),
+              d: "ind",
+            },
+            {
+              ...wr(
+                rate[0].replace(/^./, (c) => c.toUpperCase()),
+                [
+                  "That amount stays the same for every choice. A quantity that responds must change.",
+                  "Esa cantidad es igual en cada decisión. Una cantidad que responde debe cambiar.",
+                ],
+                "var-not-a-changing-quantity",
+                rate[1].replace(/^./, (c) => c.toUpperCase()),
+              ),
+              d: "const",
+            },
+            {
+              ...wr(
+                other[0].replace(/^./, (c) => c.toUpperCase()),
+                [
+                  "The story does not connect that quantity to the choice.",
+                  "La historia no relaciona esa cantidad con la decisión.",
+                ],
+                "var-relationship-missed",
+                other[1].replace(/^./, (c) => c.toUpperCase()),
+              ),
+              d: "none",
+            },
+          ],
+          ...text({
+            x: [
+              `The person chooses ${chosen[0]}. ${dep[0].replace(/^./, (c) => c.toUpperCase())} depends on that choice, so it is the dependent quantity that responds.`,
+              `La persona elige ${chosen[1]}. ${dep[1].replace(/^./, (c) => c.toUpperCase())} depende de esa decisión, así que es la cantidad dependiente que responde.`,
+            ],
+            h: [
+              [
+                "Which quantity does the person choose? That one does not respond.",
+                "¿Qué cantidad elige la persona? Esa no responde.",
+              ],
+              [
+                "Which quantity would change if the choice changed?",
+                "¿Qué cantidad cambiaría si cambiara la decisión?",
+              ],
+            ],
+          }),
+          meta: {},
+        });
+        return tagged(item, "responds", "twoVarTable", {});
+      });
+    },
+    /** A rule y = kx or y = x + c and a value of y: what is x? */
+    reverse(rng, level) {
+      const [what, whatEs, xn, xnEs, yn, ynEs] = rng.pick(RULE_CTX);
+      const add = level >= 3 && rng.chance(0.5);
+      const k = add ? rng.int(2, 15) : rng.int(2, level >= 3 ? 12 : 9);
+      const x = rng.int(2, level >= 4 ? 40 : 15);
+      const y = add ? x + k : k * x;
+      return tagged(
+        G.num({
+          q: `The cost of ${what} follows the rule y = ${add ? `x + ${k}` : `${k}x`}, where x is the number of ${xn} and y is the amount in ${yn}. When y is ${y}, what is x?`,
+          qEs: `El costo de ${whatEs} sigue la regla y = ${add ? `x + ${k}` : `${k}x`}, donde x es el número de ${xnEs} y y es la cantidad en ${ynEs}. Cuando y es ${y}, ¿cuánto es x?`,
+          a: String(x),
+          fw: uniqFw(x, [
+            wv(
+              add ? y + k : k * y,
+              "That puts the output through the rule again. The output y is given, so work backward.",
+              "Eso vuelve a pasar la salida por la regla. La salida y ya está dada, así que trabaja hacia atrás.",
+              "equation-not-inverse-operation",
+            ),
+            wv(
+              y,
+              "That is y, the output that was given. The question asks for x.",
+              "Ese es y, la salida que ya estaba dada. La pregunta pide x.",
+              "var-dependent-independent-swapped",
+            ),
+          ]),
+          ...text({
+            x: [
+              `Work backward: ${add ? `x = ${y} − ${k}` : `x = ${y} ÷ ${k}`}, so x = ${x}.`,
+              `Trabaja hacia atrás: ${add ? `x = ${y} − ${k}` : `x = ${y} ÷ ${k}`}, así que x = ${x}.`,
+            ],
+            h: [
+              [
+                "The output y is known. Write the rule with that number in place of y.",
+                "Se conoce la salida y. Escribe la regla con ese número en lugar de y.",
+              ],
+              [
+                "Undo the operation in the rule to find x.",
+                "Deshaz la operación de la regla para hallar x.",
+              ],
+            ],
+          }),
+          meta: { add, k, x, y },
+        }),
+        "reverse",
+        "twoVarTable",
+      );
+    },
+    /** Rule A (y = kx) and Rule B (y = x + c): how much greater is the greater y at a chosen x? */
+    "compare-two"(rng, level) {
+      for (let t = 0; t < 100; t++) {
+        const k = rng.int(2, 9);
+        const c = rng.int(2, 20);
+        const x = rng.int(3, level >= 3 ? 14 : 9);
+        const yA = k * x;
+        const yB = x + c;
+        if (yA === yB) continue;
+        const d = Math.abs(yA - yB);
+        return tagged(
+          G.num({
+            q: `Rule A is y = ${k}x. Rule B is y = x + ${c}. When x is ${x}, which rule gives the greater y? How much greater is it than the other?`,
+            qEs: `La regla A es y = ${k}x. La regla B es y = x + ${c}. Cuando x es ${x}, ¿cuál regla da el mayor valor de y? ¿Cuánto mayor es que el otro?`,
+            a: String(d),
+            fw: uniqFw(d, [
+              wv(
+                Math.max(yA, yB),
+                "That is the greater y, not how much greater it is. Subtract the other y from it.",
+                "Ese es el mayor valor de y, no cuánto mayor es. Réstale el otro valor de y.",
+                "operation-misread",
+              ),
+              wv(
+                yA + yB,
+                "That adds the two y-values. Find how much greater one is by subtracting.",
+                "Eso suma los dos valores de y. Para saber cuánto mayor es uno, resta.",
+                "op-added-instead-of-subtracted",
+              ),
+            ]),
+            ...text({
+              x: [
+                `At x = ${x}, Rule A gives ${yA} and Rule B gives ${yB}. The difference is ${d}.`,
+                `Con x = ${x}, la regla A da ${yA} y la regla B da ${yB}. La diferencia es ${d}.`,
+              ],
+              h: [
+                [
+                  "Put x into each rule and find both y-values.",
+                  "Pon x en cada regla y halla los dos valores de y.",
+                ],
+                [
+                  "Subtract the lesser y from the greater y.",
+                  "Resta el menor valor de y del mayor.",
+                ],
+              ],
+            }),
+            meta: { k, c, x },
+          }),
+          "compare-two",
+          "twoVarTable",
+        );
+      }
+      throw new Error("twoVarTable compare-two: no pair");
+    },
+  };
+  SHAPE_CHECK.twoVarTable = {
+    responds(item) {
+      const dep = item.meta.opts.map((d) => d === "dep");
+      if (dep.filter(Boolean).length !== 1) return "not exactly one dependent quantity";
+      return dep[item.a] ? true : "the key is not the dependent quantity";
+    },
+    reverse(item) {
+      const { add, k, x, y } = item.meta;
+      const forward = add ? x + k : k * x;
+      return forward === y && x === G.value(item.a)
+        ? true
+        : "the rule does not give y at the keyed x";
+    },
+    "compare-two"(item) {
+      const { k, c, x } = item.meta;
+      return Math.abs(k * x - (x + c)) === G.value(item.a)
+        ? true
+        : "difference disagrees with the key";
+    },
+  };
+
+  /* ---- 9-2 graphRelationship --------------------------------------------------------------------- */
+  const GR_CTX = [
+    ["hours", "horas", "liters", "litros", "A barrel", "Un barril"],
+    ["minutes", "minutos", "pages", "páginas", "A printer", "Una impresora"],
+    ["days", "días", "dollars", "dólares", "A savings jar", "Un frasco de ahorros"],
+    ["weeks", "semanas", "centimeters", "centímetros", "A plant", "Una planta"],
+  ];
+  SHAPE_MAKE.graphRelationship = {
+    /** A steady graph through the origin and one point: what is x when y is given? */
+    reverse(rng, level) {
+      const [xn, xnEs, yn, ynEs, who] = rng.pick(GR_CTX);
+      const k = rng.int(2, level >= 3 ? 12 : 9);
+      const x1 = rng.int(2, 6);
+      const x = rng.int(x1 + 1, level >= 3 ? 16 : 11);
+      return tagged(
+        G.num({
+          q: `The graph of a steady relationship goes through the origin and the point (${x1}, ${k * x1}). On this graph, x is ${xn} and y is ${yn}. What is the x-value when y is ${k * x}?`,
+          qEs: `La gráfica de una relación constante pasa por el origen y por el punto (${x1}, ${k * x1}). En esta gráfica, x son ${xnEs} y y son ${ynEs}. ¿Cuánto vale x cuando y es ${k * x}?`,
+          a: String(x),
+          fw: uniqFw(x, [
+            wv(
+              k * x * x1,
+              "That multiplies instead of dividing. Find the rate first, then ask how many x-values give that y.",
+              "Eso multiplica en lugar de dividir. Halla primero la tasa y pregunta cuántos valores de x dan ese y.",
+              "op-multiplied-instead-of-divided",
+            ),
+            wv(
+              k * x,
+              "That is the y-value that was given. The question asks for the x-value.",
+              "Ese es el valor de y que ya estaba dado. La pregunta pide el valor de x.",
+              "coord-xy-swapped",
+            ),
+          ]),
+          ...text({
+            x: [
+              `The rate is ${k * x1} ÷ ${x1} = ${k} per ${xn.replace(/s$/, "")}. To reach ${k * x}, divide: ${k * x} ÷ ${k} = ${x}.`,
+              `La tasa es ${k * x1} ÷ ${x1} = ${k} por ${xnEs.replace(/s$/, "")}. Para llegar a ${k * x}, divide: ${k * x} ÷ ${k} = ${x}.`,
+            ],
+            h: [
+              [
+                "Use the point to find how much y changes for each 1 of x.",
+                "Usa el punto para hallar cuánto cambia y por cada 1 de x.",
+              ],
+              ["Divide the given y by that rate.", "Divide el valor de y dado entre esa tasa."],
+            ],
+          }),
+          meta: { x1, y1: k * x1, y: k * x, who },
+        }),
+        "reverse",
+        "graphRelationship",
+      );
+    },
+    /** Two graphs through the origin: how many more per unit does the steeper one gain? */
+    "compare-two"(rng, level) {
+      const [xn, xnEs, yn, ynEs] = rng.pick(GR_CTX);
+      for (let t = 0; t < 100; t++) {
+        const a = rng.int(2, 8);
+        const b = rng.int(2, level >= 3 ? 14 : 10);
+        if (a === b) continue;
+        const xa = rng.int(2, 5);
+        const xb = rng.int(2, 5);
+        const d = Math.abs(a - b);
+        return tagged(
+          G.num({
+            q: `Graph A goes through the origin and (${xa}, ${a * xa}). Graph B goes through the origin and (${xb}, ${b * xb}). On both, x is ${xn} and y is ${yn}. How many more ${yn} for each ${xn.replace(/s$/, "")} does the steeper graph show?`,
+            qEs: `La gráfica A pasa por el origen y por (${xa}, ${a * xa}). La gráfica B pasa por el origen y por (${xb}, ${b * xb}). En las dos, x son ${xnEs} y y son ${ynEs}. ¿Cuántos ${ynEs} más por cada ${xnEs.replace(/s$/, "")} muestra la gráfica más inclinada?`,
+            a: String(d),
+            fw: uniqFw(d, [
+              wv(
+                Math.max(a, b),
+                "That is the greater rate. The question asks how much greater it is than the other rate.",
+                "Esa es la tasa mayor. La pregunta pide cuánto mayor es que la otra tasa.",
+                "operation-misread",
+              ),
+              wv(
+                Math.abs(a * xa - b * xb),
+                "That compares the two y-values at different x-values. Find each rate per 1 of x first.",
+                "Eso compara los dos valores de y con valores de x distintos. Halla primero cada tasa por 1 de x.",
+                "rate-not-per-one",
+              ),
+            ]),
+            ...text({
+              x: [
+                `Graph A gains ${a} per 1 and graph B gains ${b} per 1. The steeper graph gains ${d} more.`,
+                `La gráfica A gana ${a} por 1 y la gráfica B gana ${b} por 1. La gráfica más inclinada gana ${d} más.`,
+              ],
+              h: [
+                [
+                  "Find the rate of each graph: y divided by x at its point.",
+                  "Halla la tasa de cada gráfica: y dividido entre x en su punto.",
+                ],
+                [
+                  "Subtract the lesser rate from the greater rate.",
+                  "Resta la tasa menor de la tasa mayor.",
+                ],
+              ],
+            }),
+            meta: { a, b, xa, xb },
+          }),
+          "compare-two",
+          "graphRelationship",
+        );
+      }
+      throw new Error("graphRelationship compare-two: no pair");
+    },
+  };
+  SHAPE_CHECK.graphRelationship = {
+    reverse(item) {
+      const { x1, y1, y } = item.meta;
+      return Math.abs((y * x1) / y1 - G.value(item.a)) < 1e-9
+        ? true
+        : "x on the line through the origin disagrees with the key";
+    },
+    "compare-two"(item) {
+      const { a, b, xa, xb } = item.meta;
+      return Math.abs((a * xa) / xa - (b * xb) / xb) === G.value(item.a)
+        ? true
+        : "difference of the rates disagrees with the key";
+    },
+  };
+
+  /* ---- 9-4 twoVarProblem ------------------------------------------------------------------------- */
+  const planPair = (rng, level) => {
+    const tie = rng.int(3, 14);
+    const aRate = rng.int(2, 9);
+    const d = rng.int(1, 5);
+    const g = level >= 3 ? rng.int(2, 8) : 0;
+    return { aRate, bRate: aRate + d, aFee: d * tie + g, bFee: g, tie };
+  };
+  const planText = (pl) => ({
+    A: `c = ${pl.aRate}h + ${pl.aFee}`,
+    B: pl.bFee ? `c = ${pl.bRate}h + ${pl.bFee}` : `c = ${pl.bRate}h`,
+  });
+  SHAPE_MAKE.twoVarProblem = {
+    /** At how many hours do both plans cost the same? */
+    "which-input"(rng, level) {
+      const pl = planPair(rng, level);
+      const t = planText(pl);
+      return tagged(
+        G.num({
+          q: `Plan A costs ${t.A} and Plan B costs ${t.B}. Here h is the hours and c is the cost in dollars. At how many hours do the two plans cost the same?`,
+          qEs: `El Plan A cuesta ${t.A} y el Plan B cuesta ${t.B}. Aquí h son las horas y c es el costo en dólares. ¿En cuántas horas cuestan lo mismo los dos planes?`,
+          a: String(pl.tie),
+          fw: uniqFw(pl.tie, [
+            wv(
+              pl.aFee,
+              "That is a setup fee, not a number of hours. Make a table of h and the two costs and look for equal costs.",
+              "Eso es una cuota de preparación, no un número de horas. Haz una tabla de h y los dos costos y busca costos iguales.",
+              "term-dropped",
+            ),
+            wv(
+              pl.tie + 1,
+              "At that many hours the plans no longer cost the same. Check both costs in your table.",
+              "Con esas horas los planes ya no cuestan lo mismo. Revisa los dos costos en tu tabla.",
+              "solution-not-substituted",
+            ),
+          ]),
+          ...text({
+            x: [
+              `At h = ${pl.tie}, Plan A costs $${pl.aRate * pl.tie + pl.aFee} and Plan B costs $${pl.bRate * pl.tie + pl.bFee}. The costs are equal.`,
+              `Con h = ${pl.tie}, el Plan A cuesta $${pl.aRate * pl.tie + pl.aFee} y el Plan B cuesta $${pl.bRate * pl.tie + pl.bFee}. Los costos son iguales.`,
+            ],
+            h: [
+              ["Make a table with h and both costs.", "Haz una tabla con h y los dos costos."],
+              [
+                "Look for the row where the two costs match.",
+                "Busca la fila donde los dos costos coinciden.",
+              ],
+            ],
+          }),
+          meta: pl,
+        }),
+        "which-input",
+        "twoVarProblem",
+      );
+    },
+    /** At h hours, how much more does the dearer plan cost? */
+    "compare-two"(rng, level) {
+      for (let t = 0; t < 100; t++) {
+        const pl = planPair(rng, level);
+        const h = rng.int(2, 14);
+        const cA = pl.aRate * h + pl.aFee;
+        const cB = pl.bRate * h + pl.bFee;
+        if (cA === cB) continue;
+        const tx = planText(pl);
+        return tagged(
+          G.num({
+            q: `Plan A costs ${tx.A} and Plan B costs ${tx.B}, where h is the hours and c is the cost in dollars. For ${h} hours, how many dollars more does the dearer plan cost than the other?`,
+            qEs: `El Plan A cuesta ${tx.A} y el Plan B cuesta ${tx.B}, donde h son las horas y c es el costo en dólares. Para ${h} horas, ¿cuántos dólares más cuesta el plan más caro que el otro?`,
+            a: String(Math.abs(cA - cB)),
+            fw: uniqFw(Math.abs(cA - cB), [
+              wv(
+                Math.max(cA, cB),
+                "That is the cost of the dearer plan, not the difference. Subtract the other cost.",
+                "Ese es el costo del plan más caro, no la diferencia. Réstale el otro costo.",
+                "operation-misread",
+              ),
+              wv(
+                cA + cB,
+                "That adds the two costs. Subtract to find how much more one costs.",
+                "Eso suma los dos costos. Resta para saber cuánto más cuesta uno.",
+                "op-added-instead-of-subtracted",
+              ),
+            ]),
+            ...text({
+              x: [
+                `For ${h} hours, Plan A costs ${cA} and Plan B costs ${cB}. The difference is ${Math.abs(cA - cB)} dollars.`,
+                `Para ${h} horas, el Plan A cuesta ${cA} y el Plan B cuesta ${cB}. La diferencia es ${Math.abs(cA - cB)} dólares.`,
+              ],
+              h: [
+                [
+                  "Put h into each equation to find both costs.",
+                  "Pon h en cada ecuación para hallar los dos costos.",
+                ],
+                [
+                  "Subtract the lesser cost from the greater cost.",
+                  "Resta el costo menor del costo mayor.",
+                ],
+              ],
+            }),
+            meta: { ...pl, h },
+          }),
+          "compare-two",
+          "twoVarProblem",
+        );
+      }
+      throw new Error("twoVarProblem compare-two: no pair");
+    },
+  };
+  SHAPE_CHECK.twoVarProblem = {
+    "which-input"(item) {
+      const m = item.meta;
+      // scan whole hours for the first equal-cost row (a different route than the tie built into the plans)
+      for (let h = 1; h <= 40; h++)
+        if (m.aRate * h + m.aFee === m.bRate * h + m.bFee)
+          return h === G.value(item.a) ? true : `equal costs at ${h}, key says ${item.a}`;
+      return "no equal-cost hour found";
+    },
+    "compare-two"(item) {
+      const m = item.meta;
+      return Math.abs(m.aRate * m.h + m.aFee - (m.bRate * m.h + m.bFee)) === G.value(item.a)
+        ? true
+        : "cost difference disagrees with the key";
+    },
+  };
 
   /*@@GEN-END@@*/
 })();
