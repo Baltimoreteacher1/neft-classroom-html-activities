@@ -22,7 +22,10 @@
     let root, prompt, feedback, progress, controls, nextButton, pending = null;
     let pausedScenes = [];
     let adventure, missionPaused = [];
-    function scene() { return game.scene.getScenes(true)[0]; }
+    function scene() {
+      const active = game.scene.getScenes(true);
+      return active.find(current => current.studio && Array.isArray(current.studio.actions)) || active[0];
+    }
     function muted(value) {
       window.NT_MUTED = value;
       if (game.sound) game.sound.mute = value;
@@ -37,6 +40,10 @@
       const current = scene();
       if (!current || (window.GameStudio && window.GameStudio.paused)) return;
       if (pending && (key === 'Enter' || key === 'Space')) { advance(); return; }
+      if (current.studio && Array.isArray(current.studio.actions)) {
+        const action = current.studio.actions.find(item => item.key === key && !item.disabled);
+        if (action) { action.run(); update(); return; }
+      }
       const event = {key, code: key, repeat: false, preventDefault() {}, stopPropagation() {}};
       current.input.keyboard.emit('keydown-' + (keyNames[key] || key), event);
       update();

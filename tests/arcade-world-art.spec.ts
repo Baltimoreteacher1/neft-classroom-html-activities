@@ -63,3 +63,40 @@ for (const id of ["u4-percent-power", "u10-volume-blast"]) {
     expect((await canvas.boundingBox())!.y + (await canvas.boundingBox())!.height).toBeLessThan(713);
   });
 }
+
+test("Ratio Rush completion offers an optional bilingual strategy sentence frame", async ({ page }) => {
+  await page.goto("/math/games/u3-ratio-rush/?expedition=1");
+  await expect.poll(() => page.evaluate(() => Boolean((window as any).rrGame?.scene.getScene("ExpeditionMap")?.sys.isActive()))).toBe(true);
+  await page.evaluate(() => (window as any).rrGame.scene.getScene("ExpeditionMap").launch(0));
+  await expect.poll(() => page.evaluate(() => Boolean((window as any).rrGame?.scene.getScene("Expedition")?.sys.isActive()))).toBe(true);
+  await page.evaluate(async () => {
+    const scene = (window as any).rrGame.scene.getScene("Expedition");
+    scene.misses = 2;
+    scene.hintsUsed = 2;
+    await scene.hint();
+  });
+  const scene = () => page.evaluate(() => (window as any).rrGame.scene.getScene("Expedition").studio?.actions?.map((a: any) => a.label));
+  await expect.poll(scene).toContainEqual({ en: "Show a strategy sentence frame", es: "Mostrar un marco para explicar la estrategia" });
+  await page.getByRole("button", { name: "Show a strategy sentence frame (e)" }).click();
+  await expect(page.locator(".cabinet-feedback")).toContainText("The two water setups are equivalent because ___.");
+  await page.getByRole("button", { name: "Hide the sentence frame (e)" }).click();
+  await expect(page.locator(".cabinet-feedback")).toBeEmpty();
+});
+
+test("Equation Quest sentence frame follows the saved Spanish language", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(() => localStorage.setItem("nt-lang", "es"));
+  await page.goto("/math/games/u7-equation-quest/?expedition=1");
+  await expect.poll(() => page.evaluate(() => Boolean((window as any).eqGame?.scene.getScene("ExpeditionMap")?.sys.isActive()))).toBe(true);
+  await page.evaluate(() => (window as any).eqGame.scene.getScene("ExpeditionMap").launch(0));
+  await expect.poll(() => page.evaluate(() => Boolean((window as any).eqGame?.scene.getScene("Expedition")?.sys.isActive()))).toBe(true);
+  await page.evaluate(async () => {
+    const scene = (window as any).eqGame.scene.getScene("Expedition");
+    scene.misses = 2;
+    scene.hintsUsed = 2;
+    await scene.hint();
+  });
+  await page.getByRole("button", { name: "Mostrar un marco para explicar la estrategia (e)" }).click();
+  await expect(page.locator(".cabinet-feedback")).toContainText("Hice ___ en ambos lados, así la ecuación sigue equilibrada.");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});

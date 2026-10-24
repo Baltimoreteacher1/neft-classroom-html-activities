@@ -114,7 +114,24 @@
     revisit: { en: "Worth another look", es: "Vale la pena repasar" },
     practice: { en: "Practice this", es: "Practicar esto" },
     stars: { en: "stars", es: "estrellas" },
+    strategyFrame: { en: "Show a strategy sentence frame", es: "Mostrar un marco para explicar la estrategia" },
+    hideFrame: { en: "Hide the sentence frame", es: "Ocultar el marco de la oración" },
+    genericFrame: { en: "I chose ___ because ___. The model shows ___.", es: "Elegí ___ porque ___. El modelo muestra ___." },
   };
+  const STRATEGY_FRAMES = {
+    "u1-decimal-dash": { en: "I placed ___ at ___ because the decimal has ___ tenths/hundredths.", es: "Coloqué ___ en ___ porque el decimal tiene ___ décimas/centésimas." },
+    "u1-factor-frenzy": { en: "I split ___ into ___ and ___ because ___.", es: "Descompuse ___ en ___ y ___ porque ___." },
+    "u2-fraction-frenzy": { en: "These fractions name the same amount because ___.", es: "Estas fracciones representan la misma cantidad porque ___." },
+    "u3-ratio-rush": { en: "The two water setups are equivalent because ___.", es: "Las dos mezclas de agua son equivalentes porque ___." },
+    "u4-percent-power": { en: "I sent ___% of the power to ___ because ___.", es: "Envié ___% de la energía a ___ porque ___." },
+    "u5-area-attack": { en: "I split the shape into ___ and ___, so its area is ___.", es: "Dividí la figura en ___ y ___, así que su área es ___." },
+    "u6-expression-express": { en: "I evaluated ___ first because ___.", es: "Evalué ___ primero porque ___." },
+    "u7-equation-quest": { en: "I did ___ to both sides, so the equation stays balanced.", es: "Hice ___ en ambos lados, así la ecuación sigue equilibrada." },
+    "u8-data-dash": { en: "___ is a better summary than ___ because the data show ___.", es: "___ resume mejor que ___ porque los datos muestran ___." },
+    "u9-coordinate-quest": { en: "I moved from ___ to ___ by ___ units on the ___-axis.", es: "Me moví de ___ a ___ ___ unidades en el eje ___." },
+    "u10-volume-blast": { en: "I built ___ layers of ___ unit cubes, so the volume is ___.", es: "Construí ___ capas de ___ cubos unitarios, así que el volumen es ___." },
+  };
+  const strategyFrame = (def) => STRATEGY_FRAMES[def.id] || UI.genericFrame;
 
   /* ── Persistence ──────────────────────────────────────────────────────── */
   function emptyProgress() {
@@ -1640,7 +1657,7 @@
         const kit = this.kit;
         const shade = this.add.rectangle(W / 2, H / 2, W, H, 0x02070c, 0.55).setDepth(70);
         const cw = 560;
-        const ch = 330;
+        const ch = 380;
         const x = (W - cw) / 2;
         const y = (H - ch) / 2;
         const card = kit.panel(x, y, cw, ch, {
@@ -1694,17 +1711,40 @@
           wrap: cw - 60,
           oy: 0,
         });
+        const originalBody = lines.join("\n\n");
+        const frameText = t(strategyFrame(def));
+        let frameOpen = false;
+        const end = [];
+        const toggleFrame = () => {
+          frameOpen = !frameOpen;
+          body.setText(frameOpen ? [originalBody, frameText].filter(Boolean).join("\n\n") : originalBody);
+          frameButton.setLabel(t(frameOpen ? UI.hideFrame : UI.strategyFrame));
+          const action = end.find((item) => item.key === "e");
+          if (action) action.label = frameOpen ? UI.hideFrame : UI.strategyFrame;
+          this.fb?.setText(frameOpen ? frameText : "");
+          srRegion(frameOpen ? t(UI.strategyFrame) + ". " + frameText : originalBody);
+          this.publishState();
+        };
+        const frameButton = kit.button(
+          W / 2,
+          y + ch - 96,
+          250,
+          42,
+          t(UI.strategyFrame),
+          toggleFrame,
+          { depth: 73, size: 13, fill: 0x284a5d, color: "#eaf6ff" },
+        );
+        end.push({ key: "e", label: UI.strategyFrame, run: toggleFrame });
         const list = allMissions(def);
         const i = list.indexOf(this.mission);
         const nextM = list[i + 1];
-        const end = [];
         const by = y + ch - 40;
         const mk = (bx, label, fn, key, fill) => {
           const b = kit.button(bx, by, 160, 44, t(label), fn, { depth: 73, size: 15, fill });
           end.push({ key, label, run: fn });
           return b;
         };
-        const items = [shade, card, head, body, ...starObjs];
+        const items = [shade, card, head, body, frameButton, ...starObjs];
         if (demoed || stars < 3)
           items.push(
             mk(
@@ -1730,9 +1770,10 @@
             mk(W / 2 + 0, UI.next, () => this.scene.restart({ missionId: nextM.id }), "Enter"),
           );
         items.push(mk(W / 2 + 170, UI.map, () => this.toMap(), "Escape", 0x2f4b5c));
-        if (items[items.length - 1].label && end.length === 2)
+        if (!nextM || demoed) {
           items[items.length - 1].x = W / 2 + 90;
-        if (end.length === 2) items[items.length - 2].x = W / 2 - 90;
+          items[items.length - 2].x = W / 2 - 90;
+        }
         if (end[0].label && !reducedMotion()) {
           items.forEach((o) => {
             o.alpha = 0;
