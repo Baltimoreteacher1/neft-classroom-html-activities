@@ -51,7 +51,13 @@ export function optionCues(item) {
         /\b(always|never|all|none|only|every|nobody)\b/i.test(String(o.text ?? o)),
     ) &&
     keyIdx.length > 0;
-  return { dup, missing, keyIdx, longestCorrect, absolutesOnlyDistractors };
+  // Option pictures are a cue too: if some options carry a visual and others don't,
+  // or the emoji counts differ, the picture alone points at the key.
+  const emojiCounts = opts.map(
+    (o) => ((o.visual ?? "").match(/\p{Extended_Pictographic}/gu) || []).length,
+  );
+  const visualUneven = opts.some((o) => o.visual) && new Set(emojiCounts).size > 1;
+  return { dup, missing, keyIdx, longestCorrect, absolutesOnlyDistractors, visualUneven };
 }
 export function positionShare(items) {
   const counts = {};
@@ -134,6 +140,21 @@ export function positionUniformity(items, minGroup = 20) {
     answer: "b",
   };
   if (!optionCues(long).longestCorrect) throw new Error("self-test: length cue not caught");
+  const picCue = {
+    type: "multipleChoice",
+    answer: "a",
+    options: [
+      { id: "a", text: "x", visual: "♻️ 🌎" },
+      { id: "b", text: "y", visual: "🥫" },
+      { id: "c", text: "z", visual: "🫙" },
+    ],
+  };
+  if (!optionCues(picCue).visualUneven) throw new Error("self-test: uneven picture cue not caught");
+  if (
+    optionCues({ ...picCue, options: picCue.options.map((o) => ({ ...o, visual: "🥫" })) })
+      .visualUneven
+  )
+    throw new Error("self-test: uniform pictures wrongly flagged");
   if (positionShare([good, good, good]).top !== 1) throw new Error("self-test: position share");
   const keyed = (i) => ({
     type: "multipleChoice",
@@ -196,6 +217,11 @@ else {
       const c = optionCues(it);
       if (c.dup) fail(`${name}:${it._id}`, "duplicate options");
       if (c.missing.length) fail(`${name}:${it._id}`, `key ${c.missing} is not an option`);
+      if (c.visualUneven)
+        fail(
+          `${name}:${it._id}`,
+          "option pictures differ in count or presence (picture cue reveals the key)",
+        );
       if (c.longestCorrect) longestTotal++;
       if (c.absolutesOnlyDistractors) abs++;
       mcTotal++;
