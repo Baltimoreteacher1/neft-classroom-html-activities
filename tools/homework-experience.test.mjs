@@ -317,7 +317,13 @@ test("the goal records tonight once, and a restore never records a night", () =>
   const nights = JSON.parse(first.localStorage.getItem("hw_family_nights_v1"));
   assert.equal(nights.length, 1);
   assert.match(first.document.getElementById("hw_nights_streak").textContent, /1 night in a row/);
-  assert.equal(first.document.querySelectorAll("#hw_nights_week .is-on").length, 1);
+  const today = new Date();
+  const isSchoolNight = today.getDay() !== 0 && today.getDay() !== 6;
+  assert.equal(
+    first.document.querySelectorAll("#hw_nights_week .is-on").length,
+    isSchoolNight ? 1 : 0,
+    "the weekly strip displays weekdays only; weekend completions still count in the streak",
+  );
   first.solve(6);
   assert.equal(JSON.parse(first.localStorage.getItem("hw_family_nights_v1")).length, 1);
   const solvedKey = first.eval("hwKey('solved')");

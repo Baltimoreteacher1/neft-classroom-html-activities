@@ -110,6 +110,7 @@ const GATE = [
   "validate:practice",
   "validate:lesson-boot",
   "validate:studio-guess-browser",
+  "validate:studio-answer-bias",
   "validate:u4-whole-check-browser",
   "audit",
   "audit:curriculum",
@@ -318,6 +319,7 @@ const COVERAGE = [
     [
       "test",
       "validate:practice-studio-data",
+      "validate:studio-answer-bias",
       "validate:studio-enhancements-browser",
       "validate:studio-lab-browser",
       "validate:studio-guess-browser",
