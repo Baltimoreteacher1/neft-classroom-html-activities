@@ -240,11 +240,39 @@ assert.equal(JSON.stringify(savedTutor().records), recordsBefore, "Checkups do n
 assert.match($("#summary-title").textContent, /starting-point/);
 
 click('[data-view="notebook"]');
-click('[data-repair-key="4:division"]');
-for (let i = 0; i < 6; i++) {
+const savedMistake = savedTutor().mistakes.find(
+  (entry) => entry.key === "4:division" && !entry.resolvedAt,
+);
+assert.ok(
+  savedMistake?.original?.answers?.length,
+  "A notebook entry retains a safe copy of its original problem for revision",
+);
+click(`[data-revise-entry="${savedMistake.id}"]`);
+assert.equal(
+  savedSession().item.question,
+  savedMistake.question,
+  "Repair begins with the original question",
+);
+assert.equal(savedSession().session.queue[0].original.question, savedMistake.question);
+solveCurrent();
+assert.equal(savedSession().session.revised, 1, "The supported revision is recorded separately");
+assert.equal(
+  savedSession().session.correct,
+  0,
+  "A supported revision does not inflate fresh-problem correctness",
+);
+assert.equal(
+  savedSession().session.independentCorrect,
+  0,
+  "A supported revision is not independent mastery evidence",
+);
+assert.match($("#session-accuracy").textContent, /1 revised/);
+click("#next-problem");
+for (let i = 0; i < 2; i++) {
   solveCurrent();
   click("#next-problem");
 }
+assert.match($("#summary-stats").textContent, /revised with support/);
 assert.ok(
   savedTutor()
     .mistakes.filter((entry) => entry.key === "4:division")

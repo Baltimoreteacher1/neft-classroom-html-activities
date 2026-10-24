@@ -1,4 +1,4 @@
-import { likelyMistake } from "./mistake-notes.js";
+import { classifyMistake, isKnownMistakeCategory, likelyMistake } from "./mistake-notes.js";
 import { ALL_SKILLS, GENERATOR_PARTS, baseGenerator, generateProblem, getGrade, opsOf, resolveOp, seededRandom } from "./problem-bank.js";
 
 export const DAY = 86400000;
@@ -301,8 +301,17 @@ export function rememberMistake(tutor, skill, item, submitted, now = Date.now())
   const key = skillKey(skill);
   const existing = tutor.mistakes.find((entry) => entry.key === key && entry.question === item.question && !entry.resolvedAt);
   if (existing) return;
+  const original = {
+    question: String(item.question || "").slice(0, 500),
+    answers: (Array.isArray(item.answers) ? item.answers : []).slice(0, 8).map((answer) => String(answer).slice(0, 120)),
+    kind: String(item.kind || "number").slice(0, 30),
+    ...(typeof item.unit === "string" ? { unit: item.unit.slice(0, 40) } : {}),
+    ...(Array.isArray(item.choices) ? { choices: item.choices.slice(0, 12).map((choice) => String(choice).slice(0, 120)) } : {}),
+  };
+  const category = classifyMistake(item, submitted);
   tutor.mistakes.unshift({ id: `${now}-${tutor.mistakes.length}`, key, question: item.question,
-    submitted: String(submitted).slice(0, 120), explanation: item.explanation, hint: item.hint, at: now, resolvedAt: null });
+    submitted: String(submitted).slice(0, 120), explanation: item.explanation, hint: item.hint,
+    category: category?.id || null, original, at: now, resolvedAt: null });
   tutor.mistakes = tutor.mistakes.slice(0, 60);
 }
 
@@ -428,7 +437,12 @@ export function sanitizeTutor(value) {
   }
   clean.mistakes = (Array.isArray(value.mistakes) ? value.mistakes : []).filter((entry) => entry && findSkill(entry.key) && typeof entry.question === "string").slice(0, 60).map((entry, index) => ({
     id: String(entry.id || index).slice(0, 100), key: entry.key, question: entry.question.slice(0, 500), submitted: String(entry.submitted || "").slice(0, 120),
-    explanation: String(entry.explanation || "").slice(0, 800), hint: String(entry.hint || "").slice(0, 800), at: Number(entry.at) || 0, resolvedAt: Number(entry.resolvedAt) || null,
+    explanation: String(entry.explanation || "").slice(0, 800), hint: String(entry.hint || "").slice(0, 800),
+    category: isKnownMistakeCategory(entry.category) ? entry.category : null,
+    original: entry.original && typeof entry.original === "object" && typeof entry.original.question === "string" && entry.original.question.length <= 500 && Array.isArray(entry.original.answers) && entry.original.answers.length > 0
+      ? { question: entry.original.question, answers: entry.original.answers.slice(0, 8).map((answer) => String(answer).slice(0, 120)), kind: String(entry.original.kind || "number").slice(0, 30), ...(typeof entry.original.unit === "string" ? { unit: entry.original.unit.slice(0, 40) } : {}), ...(Array.isArray(entry.original.choices) ? { choices: entry.original.choices.slice(0, 12).map((choice) => String(choice).slice(0, 120)) } : {}) }
+      : null,
+    at: Number(entry.at) || 0, resolvedAt: Number(entry.resolvedAt) || null,
   }));
   for (let grade = 1; grade <= 8; grade++) {
     const diagnostic = value.diagnostics?.[grade];

@@ -24,6 +24,7 @@ import { StandardLongDivisionModel } from "./long-division-model.js";
 import { mountTrail } from "./trail-view.js";
 import { GAMES, mountGames } from "./games.js";
 import { getLang, setLang, t, translatePage } from "./i18n.js";
+import { mistakeCategoryLabel } from "./mistake-notes.js";
 import { factsReport, mountSnapshot } from "./class-snapshot.js";
 import { whyFor } from "./step-whys.js";
 import { storyFor } from "./story-problems.js";
@@ -694,8 +695,10 @@ function nextProblem(restoredItem = null) {
   const adapting = state.session.mode !== "diagnostic";
   const queueEntry = state.session.queue?.[state.session.answered];
   const missionIndependent = state.session.mode === "mission" && ["Starting point", "Try independently", "Transfer"].includes(queueEntry?.purpose);
-  const level = adapting ? Math.max(missionIndependent ? 1 : 0, difficulty(state.tutor, skill)) : 1;
+  const repairIndependent = state.session.mode === "repair" && queueEntry?.independent === true;
+  const level = adapting ? Math.max(missionIndependent || repairIndependent ? 1 : 0, difficulty(state.tutor, skill)) : 1;
   if (restoredItem) state.item = restoredItem;
+  else if (queueEntry?.original) state.item = { ...queueEntry.original };
   else {
     for (let attempt = 0; attempt < 20; attempt++) {
       state.item = adaptiveProblem(skill, state.session.rng, level);
@@ -710,10 +713,10 @@ function nextProblem(restoredItem = null) {
   state.itemAttempts = 0;
   state.itemDone = false;
   state.firstAnswerCorrect = null;
-  state.hintBeforeFirst = false;
+  state.hintBeforeFirst = Boolean(queueEntry?.original);
   if (els.languageSlot) els.languageSlot.innerHTML = "";
   const missionSupport = state.session.mode === "mission" && queueEntry?.purpose === "Build with support";
-  state.initialSupport = state.session.mode === "guided" || missionSupport || (adapting && level === 0 && !state.forceIndependentFirst && !missionIndependent) || (state.session.mode === "assignment" && state.assignment?.mode === "guided");
+  state.initialSupport = state.session.mode === "guided" || missionSupport || Boolean(queueEntry?.original) || (adapting && level === 0 && !state.forceIndependentFirst && !missionIndependent && !repairIndependent) || (state.session.mode === "assignment" && state.assignment?.mode === "guided");
   state.forceIndependentFirst = false;
   state.guidedStepsShown = state.session.mode === "guided" ? 1 : 0;
   els.feedback.hidden = true;
@@ -6581,11 +6584,11 @@ function submitAnswer(value) {
       if (els.fixAnswerBtn) els.fixAnswerBtn.hidden = true;
       els.nextButton.hidden = false;
       chime("win");
-      showFeedback("Fixed & Mastered! 🌟", "Awesome resilience! You found the slip, repaired it, and solved it correctly.", "correct");
       if (state.session) {
-        state.session.correct += 1;
+        state.session.revised = (state.session.revised || 0) + 1;
         updateSessionHeader();
       }
+      showFeedback("Answer revised", t("Your revised answer is a useful step. It does not count as an independent check. Try the new problem next."), "try");
       return;
     } else {
       showFeedback("Keep trying!", "Almost! Review the steps above carefully and try one more time.", "try");
@@ -6656,16 +6659,29 @@ function finalizeProblem(correct) {
   if (!session || session.finished || state.itemDone) return;
   state.itemDone = true;
   InteractiveDrillToolbox.refresh();
+  const queueEntry = session.queue?.[session.answered];
+  const isRevision = session.mode === "repair" && Boolean(queueEntry?.original);
+  const firstCorrect = state.firstAnswerCorrect === true;
   session.answered += 1;
   if (correct) {
-    session.correct += 1;
-    session.streak += 1;
-    session.bestStreak = Math.max(session.bestStreak, session.streak);
-    if (session.streak > 0 && session.streak % 5 === 0) chime("streak");
+    if (isRevision) {
+      session.revised = (session.revised || 0) + 1;
+      session.streak = 0;
+    } else {
+      session.correct += 1;
+      session.streak += 1;
+      session.bestStreak = Math.max(session.bestStreak, session.streak);
+      if (session.streak > 0 && session.streak % 5 === 0) chime("streak");
+    }
     const conf = state.confidence || "certain";
-    let title = "Correct";
+    const assisted = isRevision || state.initialSupport || state.hintBeforeFirst || !firstCorrect;
+    let title = isRevision ? t("Answer revised") : assisted ? t("Good strategy work") : "Correct";
     let copy = state.item.explanation;
-    if (conf === "curious") {
+    if (isRevision) {
+      copy = t("Your revised answer is a useful step. It does not count as an independent check. Try the new problem next.");
+    } else if (assisted) {
+      copy = `${state.item.explanation} ${t("Supported work is practice; the fresh problem checks what you can do independently.")}`;
+    } else if (conf === "curious") {
       title = "Curiosity Win! 🦉✨";
       copy = `${state.item.explanation} — You explored your way to the solution!`;
     } else if (conf === "thinking") {
@@ -6674,7 +6690,7 @@ function finalizeProblem(correct) {
     } else {
       title = "Lightning Recall! 🦁⚡";
     }
-    showFeedback(title, copy, "correct");
+    showFeedback(title, copy, isRevision ? "try" : "correct");
     if (els.fixAnswerBtn) els.fixAnswerBtn.hidden = true;
   } else {
     const lostStreak = session.mode === "streak" && session.streak > 0;
@@ -6695,13 +6711,14 @@ function finalizeProblem(correct) {
     }
   }
   const independent = !state.initialSupport && !state.hintBeforeFirst;
-  const firstCorrect = state.firstAnswerCorrect === true;
   if (independent && firstCorrect) session.independentCorrect++;
   if (session.mode === "diagnostic") {
     session.diagnosticResults[tutorSkillKey(state.item.skill)] = correct;
   } else {
-    updateSkillRecord(state.item.skill, state.initialSupport ? correct : correct && firstCorrect && independent, state.initialSupport ? "guided" : session.mode);
-    recordAnswer(state.tutor, state.item.skill, { correct: independent ? firstCorrect : correct, independent, level: state.item.level });
+    if (!isRevision) {
+      updateSkillRecord(state.item.skill, state.initialSupport ? correct : correct && firstCorrect && independent, state.initialSupport ? "guided" : session.mode);
+      recordAnswer(state.tutor, state.item.skill, { correct: independent ? firstCorrect : correct, independent, level: state.item.level });
+    }
     if (session.mode === "repair" && independent && firstCorrect) {
       const key = tutorSkillKey(state.item.skill);
       const consecutive = (session.repairWins ||= {});
@@ -6709,7 +6726,7 @@ function finalizeProblem(correct) {
       if (consecutive[key] >= 2) for (const entry of state.tutor.mistakes) if (entry.key === key && !entry.resolvedAt) entry.resolvedAt = Date.now();
     } else if (session.mode === "repair") { (session.repairWins ||= {})[tutorSkillKey(state.item.skill)] = 0; }
   }
-  onFluencyProblemFinalized(correct, independent, firstCorrect);
+  onFluencyProblemFinalized(correct && !isRevision, independent, firstCorrect, !isRevision);
   saveProgress();
   if (state.skill) renderMastery();
   renderOverallStats();
@@ -6878,7 +6895,7 @@ function renderLanguageSlot(correct) {
 function updateSessionHeader() {
   const session = state.session;
   els.sessionCount.textContent = `${session.answered} completed`;
-  els.sessionAccuracy.textContent = session.mode === "diagnostic" ? "Finding a starting point" : `${session.correct} solved · ${session.independentCorrect} without help`;
+  els.sessionAccuracy.textContent = session.mode === "diagnostic" ? "Finding a starting point" : `${session.correct} solved · ${session.independentCorrect} without help${session.revised ? ` · ${session.revised} revised` : ""}`;
   const progress = session.mode === "streak" ? (session.streak / STREAK_GOAL) * 100 : Number.isFinite(session.target) ? (session.answered / session.target) * 100 : Math.min(100, session.answered * 5);
   els.progressBar.style.width = `${Math.min(100, progress)}%`;
   renderStreakMeter();
@@ -6909,7 +6926,8 @@ function finishSession() {
   els.feedback.hidden = true;
   if (els.languageSlot) els.languageSlot.innerHTML = "";
   els.summary.hidden = false;
-  const accuracyPercent = session.answered ? Math.round((session.correct / session.answered) * 100) : 0;
+  const scoredAttempts = Math.max(0, session.answered - (session.revised || 0));
+  const accuracyPercent = scoredAttempts ? Math.round((session.correct / scoredAttempts) * 100) : 0;
   els.summaryTitle.textContent =
     streakComplete(session)
       ? "Ten in a row!"
@@ -6921,7 +6939,9 @@ function finishSession() {
             ? "Guided practice complete"
             : "Practice complete";
   els.summaryCopy.textContent =
-    session.mode === "guided"
+    (session.revised || 0) > 0
+      ? t("You revised {n} original answer(s) with support. Fresh-problem accuracy is calculated separately.", { n: session.revised })
+      : session.mode === "guided"
       ? "You worked through five coached examples. Continue to Practice 10 when the steps feel familiar, or repeat this guided set."
       : streakComplete(session)
         ? "Ten correct answers in a row, each one at your own pace. That is steady, careful work."
@@ -6930,11 +6950,6 @@ function finishSession() {
         : accuracyPercent >= 70
           ? "Solid progress. Correct the missed problems, then try another set."
           : "Slow down and use the learning steps. Accuracy comes before speed.";
-  els.summaryStats.innerHTML = `
-    <div><strong>${session.correct}</strong><span>correct</span></div>
-    <div><strong>${session.answered}</strong><span>completed</span></div>
-    <div><strong>${accuracyPercent}%</strong><span>${session.mode === "guided" ? "solved" : "accuracy"}</span></div>
-    <div><strong>${session.bestStreak}</strong><span>best streak</span></div>`;
   els.retryMissed.hidden = session.mode === "guided" || session.missed.length === 0;
   els.independentPractice.hidden = session.mode !== "guided";
   if (state.skill) {
@@ -6960,7 +6975,8 @@ function finishSession() {
   }
   state.tutor.sessions.push({ at: Date.now(), grade: state.grade, mode: session.mode, answered: session.answered, correct: session.independentCorrect });
   state.tutor.sessions = state.tutor.sessions.slice(-60);
-  els.summaryStats.innerHTML = `<div><strong>${session.correct}</strong><span>solved</span></div><div><strong>${session.answered}</strong><span>completed</span></div><div><strong>${session.independentCorrect}</strong><span>without help on first try</span></div>`;
+  els.summaryStats.innerHTML = `<div><strong>${session.correct}</strong><span>solved</span></div><div><strong>${session.answered}</strong><span>completed</span></div><div><strong>${session.independentCorrect}</strong><span>without help on first try</span></div>${(session.revised || 0) ? `<div class="revised-stat"><strong>${session.revised}</strong><span>revised with support</span></div>` : ""}`;
+  els.summaryStats.classList.toggle("has-revisions", (session.revised || 0) > 0);
   const next = recommendations(state.tutor, state.grade)[0];
   const foundations = prerequisites(next.skill);
   const profileBrief = buildFluencyProfileSummary(session, accuracyPercent, next);
@@ -7431,6 +7447,7 @@ function renderNotebook() {
           <h3>${escapeHtml(skill.title)}</h3>
           <p class="mistake-question" style="font-size:1.4rem; font-weight:900; margin:8px 0">${escapeHtml(entry.question)}</p>
           <p>Your previous answer: <strong style="color:#dc2626">${escapeHtml(entry.submitted)}</strong></p>
+          <p class="mistake-pattern" role="status">${entry.category ? `${escapeHtml(t("Possible pattern"))}: <strong>${escapeHtml(mistakeCategoryLabel(entry.category))}</strong>` : escapeHtml(t("No specific pattern can be identified from one answer."))}</p>
 
           <!-- Targeted Cognitive Repair Prescription -->
           <div class="repair-prescription-card">
@@ -7438,8 +7455,7 @@ function renderNotebook() {
               <span class="rx-pill">${escapeHtml(rx.rootBadge)}</span>
               <span class="rx-status-note">${isRepaired ? '✅ Workout Repaired' : '🏋️ Workout Recommended'}</span>
             </div>
-            <p class="rx-diagnostic"><strong>Mechanic’s Diagnostic:</strong> ${escapeHtml(rx.diagnostic)}</p>
-            <p class="rx-prescription"><strong>Targeted Workout:</strong> ${escapeHtml(rx.prescription)}</p>
+            <p class="rx-prescription"><strong>Practice focus:</strong> ${escapeHtml(rx.prescription)}</p>
           </div>
 
           <details style="margin:10px 0; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:8px 12px">
@@ -7449,6 +7465,7 @@ function renderNotebook() {
             <p style="margin:4px 0; color:#b45309"><strong>Watch Out:</strong> ${escapeHtml(skill.learn.watch)}</p>
           </details>
           <div class="button-row">
+            ${entry.original ? `<button class="outline-action" type="button" data-revise-entry="${escapeHtml(entry.id)}">${escapeHtml(t("Revise the original, then try two new problems"))}</button>` : ""}
             <button class="outline-action rx-workout-btn" type="button" data-launch-workout="${rx.tool}" data-skill-key="${entry.key}">🏋️ Launch ${rx.toolName} Workout</button>
             <button class="outline-action" data-open-key="${entry.key}" data-open-mode="visual">🛠️ Visual Lesson</button>
             <button class="primary-action" data-repair-key="${entry.key}">⚡ Test Drive Fresh Problems</button>
@@ -7490,6 +7507,20 @@ function startRepair(keys) {
   if (!valid.length) { announce("Choose a skill to repair first."); return; }
   const queue = Array.from({ length: Math.max(6, valid.length * 3) }, (_, i) => ({ key: valid[i % valid.length], purpose: "Use the strategy, then solve two fresh problems independently." }));
   openPlanned("repair", queue);
+}
+
+function startRepairEntry(id) {
+  const entry = state.tutor.mistakes.find((mistake) => mistake.id === id && !mistake.resolvedAt);
+  if (!entry || findSkill(entry.key)?.grade !== state.grade || !entry.original?.answers?.length) {
+    announce("This saved problem is not available to revise. Try a fresh repair set instead.");
+    if (entry) startRepair([entry.key]);
+    return;
+  }
+  openPlanned("repair", [
+    { key: entry.key, purpose: t("Revise the original problem with support"), original: entry.original },
+    { key: entry.key, purpose: t("Try a new related problem independently"), independent: true },
+    { key: entry.key, purpose: t("Try a new related problem independently"), independent: true },
+  ]);
 }
 
 function launchAssignment(assignment) {
@@ -7743,6 +7774,8 @@ document.addEventListener("click", (event) => {
   if (event.target.closest("[data-print-report]")) printFamilyReport();
   const repair = event.target.closest("[data-repair-key]");
   if (repair) startRepair([repair.dataset.repairKey]);
+  const revise = event.target.closest("[data-revise-entry]");
+  if (revise) startRepairEntry(revise.dataset.reviseEntry);
   if (event.target.closest("[data-repair-all]")) startRepair(state.tutor.mistakes.filter((entry) => !entry.resolvedAt).map((entry) => entry.key));
 });
 els.skip.addEventListener("click", () => {
@@ -8122,16 +8155,16 @@ function onFluencyProblemPresented() {
   FluencyTelemetryHUD.render();
 }
 
-function onFluencyProblemFinalized(correct, independent, firstCorrect) {
+function onFluencyProblemFinalized(correct, independent, firstCorrect, countAsEvidence = true) {
   FlowPacerEngine.clearHesitationMonitor();
   const elapsedMs = Math.max(0, performance.now() - (fluencyNextGenState.problemShownAt || performance.now()));
   const m = fluencyNextGenState.metrics;
-  m.totalSolved += 1;
+  if (countAsEvidence) m.totalSolved += 1;
   if (correct && independent && firstCorrect && elapsedMs <= 1500) {
     m.automaticRecallCount += 1;
     m.badges.add("Automaticity Spark");
   }
-  if (fluencyNextGenState.decomposedOnCurrent) {
+  if (countAsEvidence && fluencyNextGenState.decomposedOnCurrent) {
     m.decomposedAttempts += 1;
     if (correct) {
       m.decomposedSuccesses += 1;
@@ -8146,7 +8179,7 @@ function onFluencyProblemFinalized(correct, independent, firstCorrect) {
   if ((state.session?.streak || 0) >= 4) {
     m.badges.add("Doubling Architect");
   }
-  SpacedZPDEngine.recordFact(state.item, correct, fluencyNextGenState.hesitatedOnCurrent);
+  if (countAsEvidence) SpacedZPDEngine.recordFact(state.item, correct, fluencyNextGenState.hesitatedOnCurrent);
   FluencyTelemetryHUD.render();
 }
 

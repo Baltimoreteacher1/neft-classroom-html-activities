@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { createLesson } from "../math/fluency-lab/lesson-content.js";
+import { classifyMistake } from "../math/fluency-lab/mistake-notes.js";
 import {
   ALL_SKILLS,
   generateProblem,
@@ -161,6 +162,61 @@ check(
   ),
   "Exponent misconception is detected",
 );
+assert.equal(
+  classifyMistake({ kind: "number", question: "4 × 6 = ?", answers: ["24"] }, "10")?.id,
+  "addedFactors",
+);
+assert.equal(
+  classifyMistake({ kind: "number", question: "18 ÷ 3 = ?", answers: ["6"] }, "15")?.id,
+  "subtractedInsteadOfDividing",
+);
+assert.equal(
+  classifyMistake({ kind: "number", question: "18 + 3 = ?", answers: ["21"] }, "15")?.id,
+  "subtractInsteadOfAdding",
+);
+assert.equal(
+  classifyMistake({ kind: "number", question: "18 × 3 = ?", answers: ["54"] }, "54"),
+  null,
+  "A correct answer is never labeled a mistake pattern",
+);
+assert.equal(
+  classifyMistake({ kind: "fraction", question: "1/2 + 1/4", answers: ["3/4"] }, "2/6"),
+  null,
+  "Unmodeled final answers stay uncategorized",
+);
+{
+  const notebook = emptyTutor();
+  rememberMistake(
+    notebook,
+    findSkill("3:mul-0-5"),
+    {
+      kind: "number",
+      question: "4 × 6 = ?",
+      answers: ["24"],
+      hint: "Think in equal groups.",
+      explanation: "Four groups of six make 24.",
+    },
+    "10",
+    now,
+  );
+  check(
+    notebook.mistakes[0].category === "addedFactors",
+    "A reliably matched answer pattern is saved as a category",
+  );
+  check(
+    notebook.mistakes[0].original.answers[0] === "24",
+    "The original answer is retained for a later revision step",
+  );
+  check(
+    sanitizeTutor(notebook).mistakes[0].category === "addedFactors",
+    "Known categories and original prompts survive local recovery",
+  );
+  notebook.mistakes[0].category = "invented-pattern";
+  check(
+    sanitizeTutor(notebook).mistakes[0].category === null,
+    "Unknown stored categories are dropped",
+  );
+}
 
 for (const current of ALL_SKILLS) {
   check(

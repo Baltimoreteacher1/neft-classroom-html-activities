@@ -5,6 +5,41 @@ import { t } from "./i18n.js";
 const ARITHMETIC = /^(-?\d[\d,]*) ([+−×÷]) \(?(-?\d[\d,]*)\)? = \?$/;
 const num = (text) => Number(String(text).replaceAll(",", "").replace("−", "-"));
 
+const DETECTABLE_PATTERNS = {
+  subtractInsteadOfAdding: () => t("Subtracted instead of adding"),
+  omittedAddend: () => t("Left out an addend"),
+  addedInsteadOfSubtracting: () => t("Added instead of subtracting"),
+  reversedSubtraction: () => t("Reversed the subtraction"),
+  addedFactors: () => t("Added the factors instead of multiplying"),
+  oneGroupOff: () => t("Off by one equal group"),
+  subtractedInsteadOfDividing: () => t("Subtracted instead of dividing"),
+  multipliedInsteadOfDividing: () => t("Multiplied instead of dividing"),
+  addedInsteadOfDividing: () => t("Added instead of dividing"),
+};
+
+export function classifyMistake(item, raw) {
+  if (item?.kind !== "number") return null;
+  const match = String(item.expr || item.question || "").match(ARITHMETIC);
+  const submitted = num(raw);
+  const answer = num(item.answers?.[0]);
+  if (!match || !Number.isFinite(submitted) || !Number.isFinite(answer) || submitted === answer) return null;
+  const [a, b, op] = [num(match[1]), num(match[3]), match[2]];
+  let id = null;
+  if (op === "+" && submitted === Math.abs(a - b)) id = "subtractInsteadOfAdding";
+  else if (op === "+" && (submitted === a || submitted === b)) id = "omittedAddend";
+  else if (op === "−" && submitted === a + b) id = "addedInsteadOfSubtracting";
+  else if (op === "−" && submitted === b - a) id = "reversedSubtraction";
+  else if (op === "×" && submitted === a + b) id = "addedFactors";
+  else if (op === "×" && [answer + a, answer - a, answer + b, answer - b].includes(submitted)) id = "oneGroupOff";
+  else if (op === "÷" && submitted === a - b) id = "subtractedInsteadOfDividing";
+  else if (op === "÷" && submitted === a * b) id = "multipliedInsteadOfDividing";
+  else if (op === "÷" && submitted === a + b) id = "addedInsteadOfDividing";
+  return id ? { id, label: DETECTABLE_PATTERNS[id]() } : null;
+}
+
+export const isKnownMistakeCategory = (id) => Object.hasOwn(DETECTABLE_PATTERNS, id);
+export const mistakeCategoryLabel = (id) => isKnownMistakeCategory(id) ? DETECTABLE_PATTERNS[id]() : "";
+
 export function likelyMistake(item, raw) {
   if (item?.kind !== "number") return "";
   const match = String(item.expr || item.question || "").match(ARITHMETIC);
