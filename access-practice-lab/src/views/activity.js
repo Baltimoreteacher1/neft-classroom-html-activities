@@ -120,10 +120,11 @@ function stimulusHTML(a, ctx) {
   const listening = isListening(cur.domain, a);
   const c = checked.get(a.id);
   const answeredOnce = Boolean(c) || cur.record.complete.includes(a.id);
+  const hasPassage = !listening && asList(a.passage).length > 0;
   return html`${listening && a.script ? listenPlayerHTML(a.id, a.script, { rate: ctx.prefs.rate }) : ""}
   ${listening && a.script && answeredOnce ? transcriptHTML(a.id, a.script) : ""} ${visualsHTML(a)}
   ${
-    !listening && asList(a.passage).length
+    hasPassage
       ? html`
         ${readingToolbarHTML(a.id, asList(a.passage), {
           rate: ctx.prefs.rate,
@@ -137,7 +138,7 @@ function stimulusHTML(a, ctx) {
       : ""
   }
   ${
-    a.prompt
+    a.prompt && !hasPassage
       ? html`<div class="prompt">
           <p class="prompt-text">${wordHelp() ? glossInline(a.prompt, wordHelp()) : a.prompt}</p>
           ${cur.domain !== "Reading" ? html`<button type="button" class="ghost small" data-say="${a.prompt}" aria-label="Read the question aloud">🔊 Hear question</button>` : ""}
@@ -378,6 +379,8 @@ export async function render(ctx) {
   const meta = DOMAIN_META[cur.domain] || DOMAIN_META.Listening;
   const tier = TIERS[cur.level];
   const done = cur.record.complete.includes(a.id);
+  const listening = isListening(cur.domain, a);
+  const hasPassage = !listening && asList(a.passage).length > 0;
   return {
     title: a.title,
     html: html`${crumbsHTML([
@@ -407,8 +410,16 @@ export async function render(ctx) {
           </div>
         </header>
         <div class="activity-workspace">
-        <section class="stimulus" aria-labelledby="sourceHeading"><h2 id="sourceHeading" class="workbook-heading"><span aria-hidden="true">1</span> ${isListening(cur.domain, a) ? "Listen and notice" : cur.domain === "Reading" ? "Read and notice" : "Look and plan"}</h2>${stimulusHTML(a, ctx)}</section>
+        <section class="stimulus ${hasPassage ? "has-passage" : ""}" aria-labelledby="sourceHeading"><h2 id="sourceHeading" class="workbook-heading"><span aria-hidden="true">1</span> ${listening ? "Listen and notice" : cur.domain === "Reading" ? "Read and notice" : "Look and plan"}</h2>${stimulusHTML(a, ctx)}</section>
         <div class="response-workspace"><h2 class="workbook-heading"><span aria-hidden="true">2</span> ${cur.domain === "Speaking" ? "Speak and review" : a.type === "worksheet" ? "Work on paper" : "Respond and review"}</h2>
+        ${
+          hasPassage && a.prompt
+            ? html`<div class="prompt response-prompt">
+                <p class="prompt-text">${wordHelp() ? glossInline(a.prompt, wordHelp()) : a.prompt}</p>
+                ${cur.domain !== "Reading" ? html`<button type="button" class="ghost small" data-say="${a.prompt}" aria-label="Read the question aloud">🔊 Hear question</button>` : ""}
+              </div>`
+            : ""
+        }
         <fieldset class="practice-mode"><legend>Practice mode</legend>
           <label><input type="radio" name="practiceMode" value="supported" data-mode ${mode === "supported" ? raw("checked") : ""} data-nsr-ignore /> Learn with help</label>
           <label><input type="radio" name="practiceMode" value="independent" data-mode ${mode === "independent" ? raw("checked") : ""} data-nsr-ignore /> Try independently</label>

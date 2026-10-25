@@ -271,6 +271,8 @@ function runnerHTML(ctx) {
   const f = T.flat[T.rec.index] || T.flat[0];
   const flagged = (T.rec.flags || []).includes(f.item.id);
   const last = T.rec.index >= T.flat.length - 1;
+  const listening = f.section.domain === "Listening";
+  const hasPassage = !listening && asList(f.item.passage).length > 0;
   return html`<div class="test-bar">
       <span class="test-chip">${f.section.title || f.section.domain}</span>
       <span>Section ${f.si + 1} of ${T.test.sections.length}</span>
@@ -281,7 +283,7 @@ function runnerHTML(ctx) {
       <span style="width:${Math.round(((T.rec.index + 1) / T.flat.length) * 100)}%"></span>
     </div>
     <div class="test-stage">
-      <section class="test-q" aria-labelledby="qTitle">
+      <section class="test-q ${hasPassage ? "has-passage" : ""}" aria-labelledby="qTitle">
         <div class="q-head">
           <h1 id="qTitle" tabindex="-1">
             Question ${T.rec.index + 1} <span>of ${T.flat.length}</span>
@@ -296,9 +298,23 @@ function runnerHTML(ctx) {
           </button>
         </div>
         ${f.n === 1 && f.section.directions ? html`<p class="section-directions">${f.section.directions}</p>` : ""}
-        ${stimulus(f, ctx)}
-        <p class="prompt-text">${f.item.prompt || ""}</p>
-        ${inputFor(f)}
+        ${
+          hasPassage
+            ? html`<div class="test-workspace has-passage">
+                <div class="test-passage-col">
+                  ${stimulus(f, ctx)}
+                </div>
+                <div class="test-response-col">
+                  <p class="prompt-text">${f.item.prompt || ""}</p>
+                  ${inputFor(f)}
+                </div>
+              </div>`
+            : html`
+                ${stimulus(f, ctx)}
+                <p class="prompt-text">${f.item.prompt || ""}</p>
+                ${inputFor(f)}
+              `
+        }
       </section>
       <aside class="palette" aria-label="Question navigator">
         <h2>Questions</h2>
