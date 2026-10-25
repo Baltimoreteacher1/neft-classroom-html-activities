@@ -71,8 +71,8 @@ for (const [rel, html] of pages) {
   );
   assert.equal(
     w.document.body.dataset.theme,
-    /challenge\/index/.test(rel) ? "dark" : "light",
-    `${rel}: native theme`,
+    "light",
+    `${rel}: native theme is light, challenge included`,
   );
   w.document.getElementById("ewl-hud")?.remove();
 }

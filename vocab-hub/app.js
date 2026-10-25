@@ -1529,9 +1529,7 @@
     else document.documentElement.removeAttribute("data-theme");
   }
   function initTheme() {
-    if (store.theme) applyTheme(store.theme);
-    else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)
-      applyTheme("dark");
+    applyTheme(store.theme === "dark" ? "dark" : "light");
     document.getElementById("theme-btn").addEventListener("click", function () {
       var cur = document.documentElement.getAttribute("data-theme");
       var next = cur === "dark" ? "light" : "dark";

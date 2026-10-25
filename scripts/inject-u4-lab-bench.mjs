@@ -67,12 +67,11 @@ function targetBlock(/** @type {string} */ id, /** @type {any} */ ld) {
 }
 
 /**
- * Sets body[data-theme] before first paint (the body does not exist yet, so a MutationObserver waits for it). Same rule as
- * resolveTheme() in assets/u4-studio.js: a saved Light/Dark wins, "auto" or nothing saved follows the device, and the
- * Challenge pages are night until the student chooses.
+ * Sets body[data-theme] before first paint (the body does not exist yet, so a MutationObserver waits for it). Light is the
+ * default everywhere; only a saved "dark" choice from the student changes it.
  */
 const THEME_BOOT =
-  '<script>(function(){try{var t=localStorage.getItem("neft_u4_theme_v1"),m=matchMedia("(prefers-color-scheme: dark)").matches,c=/-challenging/.test(location.pathname),d=t==="light"||t==="dark"?t:t==="auto"||!c?(m?"dark":"light"):"dark";new MutationObserver(function(_,o){if(document.body){document.body.dataset.theme=d;o.disconnect()}}).observe(document.documentElement,{childList:true})}catch(e){}})()</script>';
+  '<script>(function(){try{var t=localStorage.getItem("neft_u4_theme_v1"),d=t==="dark"?"dark":"light";new MutationObserver(function(_,o){if(document.body){document.body.dataset.theme=d;o.disconnect()}}).observe(document.documentElement,{childList:true})}catch(e){}})()</script>';
 
 /** The shared clarity layer and the "My thinking" panel for <head>, stamped with a hash of their own files. */
 function headBlock(/** @type {string} */ slug) {

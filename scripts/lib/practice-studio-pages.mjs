@@ -38,13 +38,15 @@ function printList(/** @type {any[]} */ items) {
 }
 
 /**
- * Sets body[data-theme] before first paint so a student whose device is in dark mode never sees a light flash. Mirrors
- * resolve() in assets/studio/chrome.js: a saved Light/Dark wins, "auto" or nothing saved follows the device on Practice,
- * and Challenge is night unless the student chose otherwise.
+ * Sets body[data-theme] before first paint. Default is always "light" unless the student explicitly chose Dark.
  */
-export function themeBoot(/** @type {string} */ unit, /** @type {string} */ id, challenge = false) {
+export function themeBoot(
+  /** @type {string} */ unit,
+  /** @type {string} */ id,
+  _challenge = false,
+) {
   const key = `ewl_u${unit}_l${String(id).split("-")[1]}_v2`;
-  return `<script>(function(){try{var t=null;try{t=JSON.parse(localStorage.getItem("${key}")).theme}catch(e){}var m=matchMedia("(prefers-color-scheme: dark)").matches;document.body.dataset.theme=t==="light"||t==="dark"?t:t==="auto"?(m?"dark":"light"):${challenge ? '"dark"' : '(m?"dark":"light")'}}catch(e){}})()</script>`;
+  return `<script>(function(){try{var t=null;try{t=JSON.parse(localStorage.getItem("${key}")).theme}catch(e){}document.body.dataset.theme=t==="dark"?"dark":"light"}catch(e){}})()</script>`;
 }
 
 /**
@@ -217,7 +219,7 @@ ${assets.styles.map((u) => `  <link rel="stylesheet" href="${u}">`).join("\n")}
 ${NSR_HEAD}
 ${assets.scripts.map((u) => `  <script src="${u}" defer></script>`).join("\n")}
 </head>
-<body data-world="${esc(world.id)}" data-mode="${mode}" data-theme="${challenge ? "dark" : "light"}" data-chrome="${esc(world.chrome)}" data-features="insight readaloud passport calibration share">
+<body data-world="${esc(world.id)}" data-mode="${mode}" data-theme="light" data-chrome="${esc(world.chrome)}" data-features="insight readaloud passport calibration share">
   ${themeBoot(unit, id, challenge)}
   <header class="app-header">
     <div class="header-wrap">

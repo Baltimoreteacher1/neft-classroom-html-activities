@@ -178,28 +178,14 @@
     return true;
   }
 
-  /* ---- theme ---------------------------------------------------------------------------------------------------- */
-  const THEMES = ["auto", "light", "dark"];
-  const deviceTheme = () => (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-  /* Practice follows the device until the student picks Light or Dark; Challenge is night until they choose. */
-  const nativeTheme = () => (data.mode === "challenge" ? "dark" : deviceTheme());
-  const resolve = (/** @type {string|null} */ t) =>
-    t === "light" || t === "dark" ? t : t === "auto" ? deviceTheme() : nativeTheme();
+  /* ---- theme: default is always light across all modes unless the student chooses dark -------- */
+  const resolve = (/** @type {string|null} */ t) => (t === "dark" ? "dark" : "light");
   function applyTheme() {
     document.body.dataset.theme = resolve(rec.theme);
     const b = document.getElementById("ewl-theme-btn");
     if (b) {
-      const label =
-        rec.theme === "auto"
-          ? "Auto"
-          : rec.theme === "light"
-            ? "Light"
-            : rec.theme === "dark"
-              ? "Dark"
-              : resolve(null) === "dark"
-                ? "Dark"
-                : "Light";
-      const es = { Auto: "Automático", Light: "Claro", Dark: "Oscuro" }[label];
+      const label = resolve(rec.theme) === "dark" ? "Dark" : "Light";
+      const es = { Light: "Claro", Dark: "Oscuro" }[label];
       b.innerHTML = `<span aria-hidden="true">◐</span> <span class="t-en">Theme: ${label}</span><span class="t-es" lang="es">Tema: ${es}</span>`;
       b.setAttribute("aria-label", `Theme: ${label}. Press to change.`);
     }
@@ -273,15 +259,11 @@
       });
     });
     document.getElementById("ewl-theme-btn")?.addEventListener("click", () => {
-      const at = THEMES.indexOf(rec.theme || nativeTheme());
-      rec.theme = THEMES[(at + 1) % THEMES.length];
+      rec.theme = resolve(rec.theme) === "dark" ? "light" : "dark";
       writeRec();
       applyTheme();
     });
     applyTheme();
-    matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => {
-      if (!rec.theme || rec.theme === "auto") applyTheme();
-    });
     /* paper is white: print on the light palette, then go back to whatever the student chose */
     addEventListener("beforeprint", () => {
       document.body.dataset.theme = "light";

@@ -3494,12 +3494,7 @@
   /* ----------------------------------------------------------------- boot */
   function boot() {
     const savedTheme = store.get(KEY.theme, null);
-    applyTheme(
-      savedTheme ||
-        (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light"),
-    );
+    applyTheme(savedTheme === "dark" ? "dark" : "light");
 
     $("#spineSelect").innerHTML =
       '<option value="all">All fluency spine skills</option>' +

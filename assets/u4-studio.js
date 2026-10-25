@@ -230,12 +230,11 @@
     return h ? bilingual(h.en, h.es) : "";
   }
 
-  /* ---- Theme: Practice follows the device until a student picks Light or Dark; Challenge is night until they choose.
-     The head script the injector writes (scripts/inject-u4-lab-bench.mjs) applies the same rule before first paint. -- */
+  /* ---- Theme: light by default on every page; dark only when a student picks it. The head script the injector
+     writes (scripts/inject-u4-lab-bench.mjs) applies the same rule before first paint. -- */
   const THEME_KEY = "neft_u4_theme_v1";
-  const THEMES = ["auto", "light", "dark"];
-  const THEME_ES = { auto: "Automático", light: "Claro", dark: "Oscuro" };
-  const deviceTheme = () => (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const THEMES = ["light", "dark"];
+  const THEME_ES = { light: "Claro", dark: "Oscuro" };
   function savedTheme() {
     try {
       const t = localStorage.getItem(THEME_KEY);
@@ -244,12 +243,7 @@
       return null;
     }
   }
-  const resolveTheme = (/** @type {string|null} */ t) =>
-    t === "light" || t === "dark"
-      ? t
-      : t === "auto" || !document.body.classList.contains("theme-challenge")
-        ? deviceTheme()
-        : "dark";
+  const resolveTheme = (/** @type {string|null} */ t) => (t === "dark" ? "dark" : "light");
   function applyTheme() {
     const t = savedTheme();
     document.body.dataset.theme = resolveTheme(t);
@@ -259,7 +253,7 @@
     const name = shown.charAt(0).toUpperCase() + shown.slice(1);
     b.innerHTML = bilingual(
       `<span aria-hidden="true">◐</span> Theme: ${name}`,
-      `Tema: ${THEME_ES[/** @type {"auto"|"light"|"dark"} */ (shown)]}`,
+      `Tema: ${THEME_ES[/** @type {"light"|"dark"} */ (shown)]}`,
     );
     b.setAttribute("aria-label", `Theme: ${name}. Press to change.`);
   }
@@ -271,7 +265,7 @@
     b.id = "ewl-theme-btn";
     b.setAttribute("data-menu", "");
     b.addEventListener("click", () => {
-      const next = THEMES[(THEMES.indexOf(savedTheme() || resolveTheme(null)) + 1) % THEMES.length];
+      const next = resolveTheme(savedTheme()) === "dark" ? "light" : "dark";
       try {
         localStorage.setItem(THEME_KEY, next);
       } catch (_e) {
@@ -280,9 +274,6 @@
       applyTheme();
     });
     actions.append(b);
-    matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => {
-      if (!savedTheme() || savedTheme() === "auto") applyTheme();
-    });
     applyTheme();
     /* paper is white: print on the light palette, then go back to whatever the student chose */
     addEventListener("beforeprint", () => {

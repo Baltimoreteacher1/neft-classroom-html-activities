@@ -29,10 +29,6 @@
   var STORAGE_KEY = "neft-theme";
   var root = document.documentElement;
 
-  function osPrefersDark() {
-    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  }
-
   function stored() {
     try {
       var v = localStorage.getItem(STORAGE_KEY);
@@ -43,7 +39,7 @@
   }
 
   function resolveInitial() {
-    return stored() || (osPrefersDark() ? "dark" : "light");
+    return stored() === "dark" ? "dark" : "light";
   }
 
   function apply(theme, persist) {
@@ -93,16 +89,6 @@
       document.addEventListener("DOMContentLoaded", buildButton, {
         once: true,
       });
-
-    // Follow OS changes only while the user has not made an explicit choice.
-    if (window.matchMedia) {
-      var mq = window.matchMedia("(prefers-color-scheme: dark)");
-      var onChange = function (e) {
-        if (!stored()) apply(e.matches ? "dark" : "light", false);
-      };
-      if (mq.addEventListener) mq.addEventListener("change", onChange);
-      else if (mq.addListener) mq.addListener(onChange);
-    }
   }
 
   if (document.readyState === "loading") {

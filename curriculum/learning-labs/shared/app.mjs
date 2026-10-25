@@ -263,7 +263,7 @@ try {
   for (const key of ['checklist', 'investigated', 'scratchpadStrokes', 'snapshots', 'hintHistory', 'rewindHistory']) if (!Array.isArray(state[key])) state[key] = [];
   if (!['en', 'es'].includes(state.lang)) state.lang = 'en';
   if (!['light', 'dark'].includes(state.theme)) {
-    state.theme = window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    state.theme = 'light';
   }
   const hash = location.hash.slice(1); if (tabs.some((t) => t[0] === hash)) state.tab = hash;
   try { bridge = await connect(lab, () => state.lang); } catch { bridge = null; }
