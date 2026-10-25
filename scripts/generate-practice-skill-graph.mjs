@@ -185,6 +185,7 @@ function entry(lesson) {
 
   const linkedByKind = {
     askdots: "Six-answer dot distribution linked to center, spread, and statistical variability",
+    countoff: "Histogram interval counts linked to cumulative tally and the median class",
     dotbalance:
       "Live data summary (five-number summary, mean, IQR, MAD) and aligned box/mean strip",
     chartbuild: "Live data summary and aligned box/mean strip",

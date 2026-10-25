@@ -137,6 +137,7 @@ try {
         const linkedSelector = {
           askdots: ".u2-question-data-linked",
           areabox: ".u2-decimal-area-linked",
+          countoff: ".u2-histogram-median-linked",
           ldiv: ".u2-div-linked",
           faces: ".u5-solid-linked",
           wrapit: ".u5-solid-linked",

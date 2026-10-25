@@ -645,6 +645,58 @@
         draw();
       };
     }
+    if (kind === "countoff") {
+      const mount = registered.mount;
+      registered.mount = (host, spec, api) => {
+        let current = api.restore || (api.solved ? registered.solution(spec) : null);
+        let linked;
+        const draw = () => {
+          if (!linked) return;
+          const bins = spec.model?.bins || [];
+          const counts = bins.map((bin) => Number(bin.n) || 0);
+          const total = counts.reduce((sum, n) => sum + n, 0);
+          const rank = Math.ceil(total / 2);
+          let run = 0;
+          const medianIndex = counts.findIndex((n) => (run += n) >= rank);
+          const counted = Math.max(0, Math.min(counts.length, Number(current?.counted) || 0));
+          const selected = Number.isInteger(current?.pick) ? current.pick : null;
+          const max = Math.max(1, ...counts);
+          const bars = bins
+            .map((bin, i) => {
+              const x = 14 + i * (264 / Math.max(1, bins.length));
+              const barW = 226 / Math.max(1, bins.length);
+              const h = Math.max(4, (Number(bin.n) / max) * 56);
+              const fill = i === medianIndex ? "var(--sun,#F0BD4F)" : "var(--brand-tint,#dbe8f3)";
+              const cumulative = counts.slice(0, i + 1).reduce((sum, n) => sum + n, 0);
+              return `<rect x="${x}" y="${72 - h}" width="${barW}" height="${h}" rx="2" fill="${fill}" stroke="var(--brand,#365b7d)" stroke-width="${i === selected ? 3 : 1.5}"/><text x="${x + barW / 2}" y="${68 - h}" text-anchor="middle" font-size="10">${bin.n}</text><text x="${x + barW / 2}" y="84" text-anchor="middle" font-size="9">${bin.lo}–${bin.hi}</text><text x="${x + barW / 2}" y="98" text-anchor="middle" font-size="9">Σ${cumulative}</text>`;
+            })
+            .join("");
+          const medianBin = bins[medianIndex];
+          const selectedBin = selected === null ? null : bins[selected];
+          const pickedText = selectedBin
+            ? ` Selected interval: ${selectedBin.lo}–${selectedBin.hi}.`
+            : "";
+          const caption = `Total ${total}; middle rank ${rank}; median class ${medianBin?.lo}–${medianBin?.hi}; tally advanced through ${counted} of ${bins.length} intervals.${pickedText}`;
+          linked.innerHTML = `<svg viewBox="0 0 292 108" role="img" aria-label="Histogram with interval counts, cumulative tally, and median class ${medianBin?.lo} to ${medianBin?.hi}" style="width:100%;height:auto"><line x1="8" y1="72" x2="286" y2="72" stroke="var(--ink,#223)" stroke-width="2"/>${bars}</svg><figcaption><strong>Median-class check:</strong> ${caption} The median is the value at rank ${rank} in the ordered data; this histogram identifies its interval.</figcaption>`;
+          linked.setAttribute("aria-label", caption);
+          linked.dataset.counted = String(counted);
+          linked.dataset.medianInterval = medianBin ? `${medianBin.lo}-${medianBin.hi}` : "";
+        };
+        const change = api.change;
+        api.change = (state) => {
+          current = state || null;
+          change?.(state);
+          draw();
+        };
+        mount(host, spec, api);
+        linked = document.createElement("figure");
+        linked.className = "u2-linked u2-histogram-median-linked";
+        linked.style.cssText =
+          "display:grid;gap:8px;margin:12px 0;padding:10px;border:1px solid var(--border,#D5DCE5);border-radius:12px;background:var(--surface,#fff);min-width:0";
+        host.append(linked);
+        draw();
+      };
+    }
     if (kind === "areabox") {
       const mount = registered.mount;
       registered.mount = (host, spec, api) => {
