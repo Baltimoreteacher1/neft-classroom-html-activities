@@ -17,6 +17,7 @@ const { STRATEGIES, TIPS } = await import("../math/fluency-lab/strategies.js");
 const { RANKS, STICKERS } = await import("../math/fluency-lab/rewards.js");
 const { GAMES_BY_ID_NAME } = await import("../math/fluency-lab/game-names.js");
 const { SCENES } = await import("../math/fluency-lab/scenes.js");
+const { PUZZLE_WORLDS, worldLevel } = await import("../math/fluency-lab/puzzle-worlds.js");
 const { ITEMS } = await import("../math/fluency-lab/buddy-items.js");
 const { LEVELS, FUNCTIONS } = await import("../math/fluency-lab/language-frames.js");
 const { MOVE_FN, MOVE_LABELS, STAT_LABELS } = await import("../math/fluency-lab/language-card.js");
@@ -62,6 +63,21 @@ for (const sticker of STICKERS) {
   keys.add(sticker.hint);
 }
 for (const name of Object.values(GAMES_BY_ID_NAME)) keys.add(name);
+for (const match of readFileSync(new URL("puzzle-worlds.js", dir), "utf8").matchAll(
+  /hint: "([^"]+)"/g,
+))
+  keys.add(match[1]);
+for (const world of PUZZLE_WORLDS) {
+  keys.add(world.name);
+  keys.add(world.blurb);
+  for (let grade = 4; grade <= 8; grade += 1)
+    for (let round = 0; round < 5; round += 1) {
+      const level = worldLevel(world.id, grade, round);
+      if (level?.label) keys.add(level.label);
+      for (const choice of level?.choices || []) if (Number.isNaN(Number(choice))) keys.add(choice);
+      for (const unit of [level?.model?.unitA, level?.model?.unitB]) if (unit) keys.add(unit);
+    }
+}
 for (const scene of Object.values(SCENES)) keys.add(scene.title);
 for (let n = 1; n <= 8; n += 1) keys.add(`Grade ${n} skills`);
 keys.add("Trail stops");

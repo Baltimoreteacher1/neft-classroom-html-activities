@@ -37,7 +37,7 @@ export function familySummaryHtml({ grade, name }) {
     <p>${t("{n} explanations written and {w} different math words so far.", { n: `<b>${talk.total}</b>`, w: `<b>${talk.wordsUsed}</b>` })}</p>
     <p>${t("Explaining in any language is real math thinking. Try this starter together, in Spanish or English: “I know ___ because ___.”")}</p>
     <h2>${t("Strategy of the day")}: ${esc(t(tip.title))}</h2><p>${esc(t(tip.tip))}</p>
-    <h2>${t("Play together")}</h2><p>${t("Try {game} in the Game Room at eduwonderlab.com/math/fluency-lab/. There are no timers.", { game: `<b>${esc(t(GAMES_BY_ID_NAME[dailyGame()]))}</b>` })}</p>
+    <h2>${t("Play together")}</h2><p>${t("Try {game} in the Game Room at eduwonderlab.com/math/fluency-lab/. There are no timers.", { game: `<b>${esc(t(GAMES_BY_ID_NAME[dailyGame(Date.now(), grade)]))}</b>` })}</p>
     <p class="family-note">${t("Progress lives on this device only. Nothing was uploaded to make this page.")}</p></article>`;
 }
 

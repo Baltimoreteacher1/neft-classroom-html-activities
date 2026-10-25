@@ -67,8 +67,8 @@ export function parseBackup(value) {
   return makeBackup({ progress: value.progress, tutor: value.tutor, settings: value.settings || {}, grade: GRADES.some((grade) => grade.grade === value.grade) ? value.grade : 1 });
 }
 
-const GAME_IDS = ["numberquest", "arrayarchitect", "fractionforge", "match", "hunt", "sort", "mistake", "make", "family", "balance", "picture", "flip"];
-const MODEL_GAME_MIN_GRADE = { numberquest: 1, arrayarchitect: 3, fractionforge: 3 };
+const GAME_IDS = ["numberquest", "arrayarchitect", "fractionforge", "equationfactory", "fractionbridge", "balancestation", "ratiocity", "match", "hunt", "sort", "mistake", "make", "family", "balance", "picture", "flip"];
+const MODEL_GAME_MIN_GRADE = { numberquest: 1, arrayarchitect: 3, fractionforge: 3, equationfactory: 6, fractionbridge: 4, balancestation: 6, ratiocity: 6 };
 
 export function validateAssignment(value) {
   if (!value || value.version !== 1 || !GRADES.some((grade) => grade.grade === value.grade)) return null;

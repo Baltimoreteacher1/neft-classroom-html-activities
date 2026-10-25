@@ -10,6 +10,7 @@ import {
 } from "./problem-bank.js";
 import { adaptiveProblem, dailyPlan, diagnosticPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, missionPlan, prerequisites, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
 import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visual-lab.js";
+import { skillIdForWorld } from "./puzzle-worlds.js";
 import { transferPrompt } from "./lesson-content.js";
 import { handleModelInput, handleModelTap, interactivePicture, mathText, openFillRow, stepPhaseBadge, stepVisual, stepWaiting, stepsBlock, trailPicture } from "./trail-pictures.js";
 import { PROFILE_NAMES, assignmentQueue, cleanProgress, decodeAssignment, downloadFile, makeBackup, mountTeacherStudio, parseBackup, profileKey, profiles, progressReport, readLocal, selectProfile, writeLocal } from "./school-tools.js";
@@ -7150,11 +7151,22 @@ function openHubView(view) {
   showArea(view);
   if (view === "path") renderPath();
   if (view === "notebook") renderNotebook();
-  if (view === "games") { cleanupGames?.(); cleanupGames = mountGames(els.games, { grade: state.grade, autostart: state.autoGame, assignedStop: state.autoStop }); state.autoGame = null; state.autoStop = null; }
+  if (view === "games") { cleanupGames?.(); cleanupGames = mountGames(els.games, { grade: state.grade, autostart: state.autoGame, assignedStop: state.autoStop, onEvidence: recordPuzzleEvidence }); state.autoGame = null; state.autoStop = null; }
   if (view === "teacher") mountTeacherStudio(els.teacherStudio, { grade: state.grade, onLaunch: launchAssignment, onPrint: printHtml, announce, games: GAMES, stopsFor, stopOptions, snapshot: (host, studioGrade) => { mountSnapshot(host, { onOpenSkill: (key) => { const skill = findSkill(key); if (skill) openSkill(skill.id, "adaptive", skill.grade); } }); mountPaperGames(host, { grade: studioGrade, stopsFor, onPrint: printHtml }); } });
   document.title = `${{ teacher: 'Teacher studio', path: 'My learning path', games: 'Game Room' }[view] || 'Mistake notebook'} | Math Fluency Lab`;
   setUrl();
   document.querySelector(`#${view}-view`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function recordPuzzleEvidence(entry) {
+  for (let grade = entry.grade; grade >= 1; grade -= 1) {
+    const id = skillIdForWorld(entry.worldId, grade);
+    const skill = id ? findSkill(`${grade}:${id}`) : null;
+    if (!skill) continue;
+    recordAnswer(state.tutor, skill, { correct: entry.correct, independent: entry.independent, level: entry.independent ? 1 : 0 });
+    saveProgress();
+    return;
+  }
 }
 
 function renderPath() {

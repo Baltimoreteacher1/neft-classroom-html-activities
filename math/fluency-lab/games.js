@@ -31,7 +31,10 @@ import { peekCap } from "./step-leak.js";
 import { mathText, stepsBlock } from "./trail-pictures.js";
 import { languagePromptHtml } from "./language-bridge.js";
 import { playArrayArchitect, playFractionForge, playNumberQuest, SIGNATURE_GAME_ICONS } from "./signature-games.js";
+import { playPuzzleWorld, PUZZLE_WORLD_ICONS, PUZZLE_WORLDS } from "./puzzle-worlds.js";
 import { CLASSIC_GAME_ICONS } from "./game-icons.js";
+
+const GAME_ICONS = { ...SIGNATURE_GAME_ICONS, ...PUZZLE_WORLD_ICONS };
 
 export const GAMES = [
   {
@@ -58,6 +61,14 @@ export const GAMES = [
     grades: [3, 4, 5, 6, 7, 8],
     run: playFractionForge,
   },
+  ...PUZZLE_WORLDS.map((world) => ({
+    id: world.id,
+    name: world.name,
+    icon: "",
+    blurb: world.blurb,
+    grades: world.id === "balancestation" || world.id === "ratiocity" || world.id === "equationfactory" ? [6, 7, 8] : [4, 5, 6, 7, 8],
+    run: (container, options) => playPuzzleWorld(container, { ...options, gameId: world.id }),
+  })),
   {
     id: "match",
     name: "Fact Match",
@@ -138,7 +149,7 @@ function reviewBody(item, id, shown) {
   return `<p class="gm-review-q">${mathText(item.question)}</p>${stepsBlock(steps, shown, { id, cap: Math.max(1, peekCap(item)) })}`;
 }
 
-export function mountGames(container, { grade, autostart = null, assignedStop = null }) {
+export function mountGames(container, { grade, autostart = null, assignedStop = null, onEvidence = () => {} }) {
   const stops = stopsFor(grade);
   let stop =
     assignedStop && stops.some((entry) => entry.id === assignedStop) ? assignedStop : ALL_STOPS;
@@ -181,7 +192,7 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
         <label class="gm-calm gm-mastery-calm"><input type="checkbox" id="gm-mastery"${rewards.masteryMode ? " checked" : ""} /> 🧠 ${t("Deep Thinker Mode")} <small>${t("Untimed mastery; hints and persistent solving earn full stars")}</small></label>
       </div>
       ${notice ? `<p class="gm-note" role="status">${esc(notice)}</p>` : ""}
-      <div class="gm-menu">${GAMES.filter((game) => !game.grades || game.grades.includes(grade)).map((game) => `<button type="button" class="gm-game${SIGNATURE_GAME_ICONS[game.id] ? ` gm-signature gm-${game.id}` : CLASSIC_GAME_ICONS[game.id] ? " gm-classic" : ""}${game.id === dailyGame(Date.now(), grade) ? " today" : ""}" data-game="${game.id}">${game.id === dailyGame(Date.now(), grade) ? `<em class="gm-today">${t("Today’s pick")}</em>` : ""}<span class="gm-icon" aria-hidden="true">${SIGNATURE_GAME_ICONS[game.id] || CLASSIC_GAME_ICONS[game.id] || esc(game.icon)}</span><b>${t(game.name)}</b><small>${t(game.blurb)}</small>${starRow(rewards.best[game.id] || 0)}</button>`).join("")}</div>
+      <div class="gm-menu">${GAMES.filter((game) => !game.grades || game.grades.includes(grade)).map((game) => `<button type="button" class="gm-game${GAME_ICONS[game.id] ? ` gm-signature gm-${game.id}` : CLASSIC_GAME_ICONS[game.id] ? " gm-classic" : ""}${game.id === dailyGame(Date.now(), grade) ? " today" : ""}" data-game="${game.id}">${game.id === dailyGame(Date.now(), grade) ? `<em class="gm-today">${t("Today’s pick")}</em>` : ""}<span class="gm-icon" aria-hidden="true">${GAME_ICONS[game.id] || CLASSIC_GAME_ICONS[game.id] || esc(game.icon)}</span><b>${t(game.name)}</b><small>${t(game.blurb)}</small>${starRow(rewards.best[game.id] || 0)}</button>`).join("")}</div>
       <p class="gm-goal-progress" id="gm-goal-progress">${t("This week: {a} of {b} days", { a: Math.min(daysThisWeek(rewards.days), rewards.goal), b: rewards.goal })}</p>
       ${buddyPanel(rewards, summary)}
       <section class="gm-book" aria-labelledby="gm-book-title"><h3 id="gm-book-title">${t("My sticker book")}</h3>${stickerShelf(summary)}</section>`;
@@ -248,6 +259,7 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
         scene,
         calm: rewards.calm,
         onFact: addFacts,
+        onEvidence,
         finish: (result) => renderResult(result, gameId),
       });
     } catch {

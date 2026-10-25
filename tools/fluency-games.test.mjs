@@ -168,13 +168,38 @@ check(
   "A model game cannot be assigned below its supported grade.",
 );
 check(
+  validateAssignment({ version: 1, grade: 5, keys: [], game: "fractionbridge" })?.game ===
+    "fractionbridge",
+  "Fraction Bridge can be launched for an appropriate grade without selecting fact stops.",
+);
+check(
+  validateAssignment({ version: 1, grade: 5, keys: [], game: "balancestation" }) === null,
+  "Balance Station is not offered below its supported grade.",
+);
+check(
+  validateAssignment({ version: 1, grade: 6, keys: [], game: "ratiocity" })?.game === "ratiocity",
+  "Ratio City supports teacher launch links and game-only assignments.",
+);
+check(
   validateAssignment({ version: 1, grade: 1, keys: [], game: "numberquest" })?.game ===
     "numberquest",
   "The 0–20 number-line game is available in Grade 1.",
 );
 check(
-  cleanRewards({ best: { numberquest: 3, arrayarchitect: 2, fractionforge: 1 } }).best
-    .fractionforge === 1,
+  cleanRewards({
+    best: {
+      numberquest: 3,
+      arrayarchitect: 2,
+      fractionforge: 1,
+      equationfactory: 3,
+      fractionbridge: 2,
+      balancestation: 1,
+      ratiocity: 2,
+    },
+  }).best.fractionforge === 1 &&
+    cleanRewards({
+      best: { equationfactory: 3, fractionbridge: 2, balancestation: 1, ratiocity: 2 },
+    }).best.ratiocity === 2,
   "Signature game best scores survive storage cleaning.",
 );
 check(

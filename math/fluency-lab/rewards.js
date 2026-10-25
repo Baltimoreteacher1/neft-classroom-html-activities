@@ -13,12 +13,13 @@ const KEY = "ewl-fluency-rewards-v1";
 const key = () => profileKey(KEY, profiles().active);
 const DAY_MS = 86400000;
 
-const GAME_IDS = ["numberquest", "arrayarchitect", "fractionforge", "match", "hunt", "sort", "mistake", "make", "family", "balance", "picture", "flip"];
+const GAME_IDS = ["numberquest", "arrayarchitect", "fractionforge", "equationfactory", "fractionbridge", "balancestation", "ratiocity", "match", "hunt", "sort", "mistake", "make", "family", "balance", "picture", "flip"];
 
 // One suggested game per day, the same all day for everyone on this device.
 // One suggested game per day; Fact Family Builder is a Grades 1-5 game, so it is skipped for older grades.
-export const dailyGame = (time = Date.now(), grade = 0) => {
-  const list = GAME_IDS.filter((id) => id !== "flip" && !(id === "family" && grade > 5) && !(["arrayarchitect", "fractionforge"].includes(id) && grade < 3));
+export const dailyGame = (time = Date.now(), grade = 1) => {
+  const minGrade = { arrayarchitect: 3, fractionforge: 3, fractionbridge: 4, balancestation: 6, ratiocity: 6, equationfactory: 6 };
+  const list = GAME_IDS.filter((id) => id !== "flip" && !(id === "family" && grade > 5) && grade >= (minGrade[id] || 1));
   // Count local calendar days, so the pick changes at the learner's midnight and not at UTC midnight.
   const date = new Date(time);
   return list[Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / DAY_MS) % list.length];
@@ -208,7 +209,7 @@ export function cleanRewards(saved = {}) {
       ? saved.days.filter((day) => /^\d{4}-\d{2}-\d{2}$/.test(day)).slice(-60)
       : [],
     plays: num(saved.plays),
-    best: { numberquest: num(best.numberquest), arrayarchitect: num(best.arrayarchitect), fractionforge: num(best.fractionforge), match: num(best.match), hunt: num(best.hunt), sort: num(best.sort), mistake: num(best.mistake), make: num(best.make), family: num(best.family), balance: num(best.balance), picture: num(best.picture), flip: num(best.flip) },
+    best: { numberquest: num(best.numberquest), arrayarchitect: num(best.arrayarchitect), fractionforge: num(best.fractionforge), equationfactory: num(best.equationfactory), fractionbridge: num(best.fractionbridge), balancestation: num(best.balancestation), ratiocity: num(best.ratiocity), match: num(best.match), hunt: num(best.hunt), sort: num(best.sort), mistake: num(best.mistake), make: num(best.make), family: num(best.family), balance: num(best.balance), picture: num(best.picture), flip: num(best.flip) },
     scenes: Array.isArray(saved.scenes) ? saved.scenes.filter((id) => SCENE_IDS.includes(id)) : [],
     seen: Array.isArray(saved.seen) ? saved.seen.filter((id) => STICKERS.some((sticker) => sticker.id === id)) : [],
     strategies,
