@@ -213,6 +213,7 @@ else {
   const stats = {};
   for (const [name, items] of Object.entries(pools)) {
     let abs = 0;
+    let poolLongest = 0;
     for (const it of items) {
       const c = optionCues(it);
       if (c.dup) fail(`${name}:${it._id}`, "duplicate options");
@@ -222,10 +223,20 @@ else {
           `${name}:${it._id}`,
           "option pictures differ in count or presence (picture cue reveals the key)",
         );
-      if (c.longestCorrect) longestTotal++;
+      if (c.longestCorrect) {
+        longestTotal++;
+        poolLongest++;
+      }
       if (c.absolutesOnlyDistractors) abs++;
       mcTotal++;
     }
+    // The corpus share below is diluted by tests and missions. Each domain must hold the cap on its own,
+    // or one domain's answer-length cue hides behind the others.
+    if (items.length >= 12 && poolLongest / items.length > q.maxLongestCorrectShare)
+      fail(
+        name,
+        `the correct option is conspicuously the longest in ${poolLongest} of ${items.length} items (max ${q.maxLongestCorrectShare * 100}%)`,
+      );
     const pos = positionShare(items);
     stats[name] = {
       items: items.length,
