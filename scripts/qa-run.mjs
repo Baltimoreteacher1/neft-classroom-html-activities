@@ -176,10 +176,13 @@ const EXCLUSIVE = new Set([
   "validate:learning-labs-browser",
   "validate:family-experience-browser",
   "validate:studio-enhancements-browser",
+  "validate:studio-linked-models-browser",
+  "validate:studio-pathways-browser",
   "validate:studio-lab-browser",
   "validate:studio-guess-browser",
   "validate:studio-layout-browser",
   "validate:u4-whole-check-browser",
+  "validate:u4-adaptive-browser",
   "validate:math-workbench-browser",
   "smoke:injection",
   "validate:visibility",
@@ -271,12 +274,13 @@ const COVERAGE = [
   // (init called, sync inside updateProgressHeader, no retired token, no call to
   // an undefined quiz-results function).
   [
-    /^(assets\/u4-studio[^/]*\.(js|css)|assets\/studio\/lab-embed\.(js|css)|math\/unit-4\/[^/]*practice-studio[^/]*\/index\.html|tools\/(unit4-(studio|mc-contract|guess)|u4-whole-check)\.test\.mjs|tools\/verify-u4-whole-check-browser\.mjs|tools\/lib\/u4-(mc-items|page-dom)\.mjs|scripts\/lib\/u4-traps\.mjs)$/,
+    /^(assets\/u4-(studio|adaptive-investigation)[^/]*\.(js|css)|assets\/studio\/lab-embed\.(js|css)|math\/unit-4\/[^/]*practice-studio[^/]*\/index\.html|tools\/(unit4-(studio|mc-contract|guess)|u4-whole-check)\.test\.mjs|tools\/verify-u4-(whole-check|adaptive)-browser\.mjs|tools\/lib\/u4-(mc-items|page-dom)\.mjs|scripts\/lib\/u4-traps\.mjs)$/,
     [
       "test",
       "validate:studio-enhancements-browser",
       "validate:studio-lab-browser",
       "validate:u4-whole-check-browser",
+      "validate:u4-adaptive-browser",
       "validate:save-resume",
       "validate:js-syntax",
       "validate:css-integrity",
@@ -285,7 +289,7 @@ const COVERAGE = [
     ],
   ],
   [
-    /^(assets\/studio(-act|-gen)?\/|assets\/studio-comfort\.js|assets\/studio-viz[^/]*\.js|assets\/u4-studio[^/]*\.(js|css)|curriculum\/learning-labs\/shared\/models\/|data\/practice-studio\/|math\/practice-studio\/|scripts\/(generate-practice-studios\.mjs|lib\/practice-studio-[^/]+\.mjs)|tools\/lib\/studio-boot\.mjs|tools\/(studio-[^/]+\.test\.mjs|verify-studio-(guess|layout)-browser\.mjs))$/,
+    /^(assets\/studio(-act|-gen)?\/|assets\/studio-comfort\.js|assets\/studio-viz[^/]*\.js|assets\/u4-(studio|adaptive-investigation)[^/]*\.(js|css)|curriculum\/learning-labs\/shared\/models\/|data\/practice-studio\/|math\/practice-studio\/|scripts\/(generate-practice-studios|generate-practice-skill-graph)\.mjs|scripts\/lib\/practice-studio-[^/]+\.mjs|tools\/lib\/studio-boot\.mjs|tools\/(studio-[^/]+\.test\.mjs|verify-studio-(guess|layout|linked-models|pathways)-browser\.mjs))$/,
     [
       "test",
       "validate:practice-studio-data",
@@ -294,6 +298,8 @@ const COVERAGE = [
       "validate:studio-layout-browser",
       "validate:studio-enhancements-browser",
       "validate:studio-lab-browser",
+      "validate:studio-linked-models-browser",
+      "validate:studio-pathways-browser",
       "validate:gate-coverage",
       "validate:js-syntax",
       "check",
@@ -332,13 +338,15 @@ const COVERAGE = [
   // hub links are written by scripts/generate-practice-studios.mjs from the lesson configs; the test
   // proves they are current and that every answer is the lesson's own.
   [
-    /^(assets\/workspace\/|scripts\/lib\/family-workspace\.mjs$|tools\/family-workspace\.test\.mjs$|docs\/specs\/problem-workspace\.md$|math\/practice-studio\/|assets\/studio\/|assets\/studio-(gen|act)\/|assets\/studio-(viz[\w-]*\.js|v2\.css|worlds\.css|comfort\.(js|css))$|data\/practice-studio(-u4)?\/|scripts\/(generate-practice-studios|inject-u4-lab-bench)\.mjs$|scripts\/lib\/practice-studio-[\w-]+\.mjs$|tools\/(practice-studios|studio-[\w-]+)\.test\.mjs$|tools\/validate-practice-studio-data\.mjs$|tools\/verify-studio-(enhancements|lab|guess|layout)-browser\.mjs$|tools\/lib\/studio-vm\.mjs$)/,
+    /^(assets\/workspace\/|scripts\/lib\/family-workspace\.mjs$|tools\/family-workspace\.test\.mjs$|docs\/specs\/problem-workspace\.md$|math\/practice-studio\/|assets\/studio\/|assets\/studio-(gen|act)\/|assets\/studio-(viz[\w-]*\.js|v2\.css|worlds\.css|comfort\.(js|css))$|data\/practice-studio(-u4)?\/|scripts\/(generate-practice-studios|generate-practice-skill-graph|inject-u4-lab-bench)\.mjs$|scripts\/lib\/practice-studio-[\w-]+\.mjs$|tools\/(practice-studios|studio-[\w-]+)\.test\.mjs$|tools\/validate-practice-studio-data\.mjs$|tools\/verify-studio-(enhancements|lab|guess|layout|linked-models|pathways)-browser\.mjs$|tools\/lib\/studio-vm\.mjs$)/,
     [
       "test",
       "validate:practice-studio-data",
       "validate:studio-answer-bias",
       "validate:studio-enhancements-browser",
       "validate:studio-lab-browser",
+      "validate:studio-linked-models-browser",
+      "validate:studio-pathways-browser",
       "validate:studio-guess-browser",
       "validate:save-resume",
       "validate:js-syntax",

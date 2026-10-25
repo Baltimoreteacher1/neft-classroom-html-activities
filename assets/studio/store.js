@@ -78,6 +78,12 @@
     why: {},
     wr: {},
     look: {},
+    pathway: {
+      choice: "",
+      entry: [],
+      recommendation: 1,
+      evidence: { independent: 0, assisted: 0, misses: {}, transfer: 0 },
+    },
     stats: { tries: 0, first: 0, streak: 0, best: 0, reps: 0, hints: 0 },
   });
 
@@ -94,6 +100,16 @@
     }
     base.stats = { ...store.fresh().stats, ...(raw.stats || {}) };
     base.idx = { ...store.fresh().idx, ...(raw.idx || {}) };
+    base.pathway = {
+      ...store.fresh().pathway,
+      ...(raw.pathway && typeof raw.pathway === "object" ? raw.pathway : {}),
+      evidence: {
+        ...store.fresh().pathway.evidence,
+        ...(raw.pathway?.evidence && typeof raw.pathway.evidence === "object"
+          ? raw.pathway.evidence
+          : {}),
+      },
+    };
     return base;
   };
 

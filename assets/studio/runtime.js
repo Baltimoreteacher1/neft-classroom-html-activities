@@ -160,7 +160,7 @@
       if (!b) return;
       if (b.dataset.tutor !== undefined) return void W.StudioTutor?.ask(it, state);
       state.hints[it.id] = (state.hints[it.id] || 0) + 1;
-      state.stats.hints++;
+      if (!String(it.id).startsWith("entry_")) state.stats.hints++;
       const area = host.querySelector(".hint-area");
       if (area) area.outerHTML = hintHtml(it);
       save();
@@ -324,9 +324,10 @@
         const rep = !redeem && !!solvedMap(tab)[it.id] && !isSolved(tab, it);
         const first = !A()[it.id];
         const tier = AT().tierOf(A()[it.id] || 0, state.hints[it.id] || 0);
+        const diagnostic = String(it.id).startsWith("entry_");
         delete host.dataset.hold;
         $(".hold-chips", host)?.remove();
-        if (!counted.has(`${it.id}@${it.seed}`)) {
+        if (!diagnostic && !counted.has(`${it.id}@${it.seed}`)) {
           counted.add(`${it.id}@${it.seed}`);
           state.stats.tries++;
           if (first) {
@@ -356,10 +357,12 @@
             nextButton(tab, host);
           }
         }
-        W.StudioBus.emit("answer", {
+        W.StudioBus.emit(diagnostic ? "diagnostic-answer" : "answer", {
           lesson: data.lesson,
           mode: data.mode,
           itemId: it.id,
+          tab,
+          seed: it.seed ?? null,
           kind: it.k,
           gen: it.gen?.id || null,
           genLevel: it.gen?.level || null,
@@ -374,14 +377,15 @@
           traps: Array.isArray(it.tag) ? it.tag.filter(Boolean) : null,
           redeem,
         });
-        W.StudioBus.emit("solved", {
-          lesson: data.lesson,
-          mode: data.mode,
-          itemId: it.id,
-          tab,
-          first,
-          redeem,
-        });
+        if (!diagnostic)
+          W.StudioBus.emit("solved", {
+            lesson: data.lesson,
+            mode: data.mode,
+            itemId: it.id,
+            tab,
+            first,
+            redeem,
+          });
         if (!redeem) {
           dots(tab);
           progress();
@@ -392,11 +396,11 @@
       },
       miss(/** @type {any} */ m) {
         A()[it.id] = (A()[it.id] || 0) + 1;
-        if (!counted.has(`${it.id}@${it.seed}`)) {
+        if (!String(it.id).startsWith("entry_") && !counted.has(`${it.id}@${it.seed}`)) {
           counted.add(`${it.id}@${it.seed}`);
           state.stats.tries++;
         }
-        state.stats.streak = 0;
+        if (!String(it.id).startsWith("entry_")) state.stats.streak = 0;
         const cal = state.calib[it.id];
         if (cal && cal.ok === null) cal.ok = false;
         const trap = (m.tag && data.traps?.[m.tag]) || null;
@@ -421,7 +425,7 @@
         );
         say("Not yet");
         holdFor(ctx, A()[it.id]);
-        W.StudioBus.emit("answer", {
+        W.StudioBus.emit(String(it.id).startsWith("entry_") ? "diagnostic-answer" : "answer", {
           lesson: data.lesson,
           mode: data.mode,
           itemId: it.id,

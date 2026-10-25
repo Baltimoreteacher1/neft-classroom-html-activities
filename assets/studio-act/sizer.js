@@ -686,7 +686,7 @@
 
   function extent(/** @type {any} */ m, /** @type {any} */ ui) {
     const hi = (/** @type {string} */ k) => (m.dim[k].v !== undefined ? m.dim[k].v : m.dim[k].hi);
-    if (m.shape === "para") return [hi("b") + 1.5, hi("h")];
+    if (m.shape === "para") return [hi("b") + 2, hi("h")];
     if (m.shape === "tri") return [ui.ghost ? hi("b") * 1.4 : hi("b"), hi("h")];
     if (m.shape === "trap") {
       const p = hi("b1");
@@ -746,7 +746,7 @@
         o += `<line class="sz-g" x1="${f1(X(0))}" y1="${f1(Y(j))}" x2="${f1(X(ex[0]))}" y2="${f1(Y(j))}"/>`;
     }
     if (m.shape === "para") {
-      const k = Math.min(1.5, d.b * 0.4);
+      const k = ui.shear;
       if (ui.ghost)
         o +=
           poly(
@@ -787,7 +787,7 @@
         line(k, d.h, k, 0, "sz-ht") +
         ra(k, 0, 1);
       o += lab(X(d.b / 2), Y(0) + 24, "b", "b", d.b) + lab(X(k) + 36, Y(d.h / 2), "h", "h", d.h);
-      alt = `base ${num(d.b)}, height ${num(d.h)}`;
+      alt = `base ${num(d.b)}, perpendicular height ${num(d.h)}, top edge shifted ${num(k)} units`;
     } else if (m.shape === "tri") {
       const a = Math.min(Math.max(d.b * 0.35, 0.5), d.b - 0.5);
       if (ui.ghost)
@@ -1069,7 +1069,15 @@
     for (const k of m.free)
       cur[k] =
         restore && restore.d && restore.d[k] !== undefined ? Number(restore.d[k]) : m.dim[k].start;
-    const ui = { ghost: false, layers: m.shape === "prism" && m.goal === "volume", view: "sub" };
+    const ui = {
+      ghost: false,
+      layers: m.shape === "prism" && m.goal === "volume",
+      view: "sub",
+      shear:
+        m.shape === "para" && Number.isFinite(Number(restore?.shear))
+          ? Math.max(0, Math.min(2, Number(restore.shear)))
+          : 1,
+    };
     let ended = solved;
     host.textContent = "";
     const root = A.el("div", `sz${solved ? " sz-done" : ""}`);
@@ -1138,6 +1146,45 @@
         () => ui.ghost,
         () => (ui.ghost = !ui.ghost),
       );
+    if (m.shape === "para") {
+      const shearRow = A.el("label", "sz-row sz-shear");
+      const shearValue = A.el("output", "sz-val", num(ui.shear));
+      shearRow.append(
+        A.el("span", "sz-nm", T("Slide the top edge", "Desliza el borde superior")),
+        shearValue,
+      );
+      const shearInput = /** @type {HTMLInputElement} */ (
+        A.el("input", "", "", {
+          type: "range",
+          min: "0",
+          max: "2",
+          step: "0.25",
+          value: String(ui.shear),
+          "aria-label": L(
+            "Top-edge shift in units",
+            "Desplazamiento del borde superior en unidades",
+          ),
+        })
+      );
+      shearInput.addEventListener("input", () => {
+        ui.shear = Number(shearInput.value);
+        shearValue.value = num(ui.shear);
+        draw();
+        api.change?.({ d: { ...cur }, shear: ui.shear });
+      });
+      shearRow.append(
+        shearInput,
+        A.el(
+          "small",
+          "",
+          T(
+            "The base and perpendicular height stay fixed, so area stays the same.",
+            "La base y la altura perpendicular siguen iguales; por eso el área no cambia.",
+          ),
+        ),
+      );
+      tools.append(shearRow);
+    }
     if (m.shape === "lshape") {
       tg(
         "sub",
@@ -1232,7 +1279,7 @@
       cur[k] = v;
       fb.hidden = true;
       draw();
-      if (api.change) api.change({ d: { ...cur } });
+      if (api.change) api.change({ d: { ...cur }, shear: ui.shear });
     }
     function draw() {
       const d = dimsOf(m, { d: cur });

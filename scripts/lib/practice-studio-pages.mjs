@@ -114,6 +114,7 @@ function trapNames(/** @type {any[]} */ sections, /** @type {Record<string, any>
  * @param {{scripts: string[], styles: string[]}} o.assets URLs (already stamped) in load order
  * @param {Record<string, any>} [o.traps] data/practice-studio/misconceptions.json traps; the page carries the ones its items name
  * @param {{wb: any[], cog: any[], pic: Record<string, any>, frL: Record<string, any>}} [o.lang] the language layer (scripts/lib/practice-studio-language.mjs)
+ * @param {any} [o.concept] source-backed lesson skill graph entry
  */
 export function pageFor({
   id,
@@ -127,6 +128,7 @@ export function pageFor({
   traps = {},
   pedagogy = undefined,
   lang = undefined,
+  concept = undefined,
 }) {
   const unit = id.split("-")[0];
   const standard = cfg.standard || "";
@@ -154,6 +156,17 @@ export function pageFor({
       ? { labV: assets.labV }
       : {}),
     sections,
+    ...(concept
+      ? {
+          concept: {
+            objective: concept.objective,
+            standards: concept.standards,
+            prerequisites: concept.prerequisiteChecks,
+            representations: concept.representations,
+            misconceptions: concept.misconceptionIds,
+          },
+        }
+      : {}),
     traps: trapNames(sections, traps),
     ...(pedagogy ? { pedagogy } : {}),
     ...(lang ? { lang } : {}),

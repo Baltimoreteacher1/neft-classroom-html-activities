@@ -359,6 +359,15 @@
 .rm-bar span{display:grid;place-items:center;min-width:0}
 .rm-bar .a.bad{background:var(--bad,#B42318);color:#fff}.rm-bar .a.sun{background:var(--sun,#F0BD4F);color:#1B2C3F}.rm-bar .a.ok{background:var(--ok,#0A7D4B);color:#fff}
 .rm-bar .b{background:var(--brand-tint,#E5ECF3)}
+.rm-linked{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(150px,1fr);gap:10px;margin:10px 0;padding:10px;border:1px solid var(--border,#D5DCE5);border-radius:12px;background:var(--surface,#fff)}
+.rm-linked svg{display:block;width:100%;height:auto;overflow:visible}
+.rm-linked figcaption{grid-column:1/-1;font-size:.85rem;line-height:1.4;color:var(--ink,#1B2733)}
+.rm-linked .axis{stroke:var(--ink,#1B2733);stroke-width:2}
+.rm-linked .guide{stroke:var(--brand,#2C4A68);stroke-width:2;stroke-dasharray:4 3}
+.rm-linked .point{fill:var(--sun,#F0BD4F);stroke:var(--ink,#1B2733);stroke-width:2}
+.rm-linked .claim{fill:var(--bad,#B42318);stroke:var(--ink,#1B2733);stroke-width:2}
+.rm-linked text{font:700 11px system-ui,sans-serif;fill:var(--ink,#1B2733)}
+@media(max-width:560px){.rm-linked{grid-template-columns:1fr}}
 .rm-in{font:inherit;font-weight:800;min-height:44px;width:6em;padding:4px 10px;border-radius:12px;border:2px solid var(--brand,#2C4A68);background:var(--surface,#fff);color:var(--ink,#1B2733)}
 .rm-svg{width:100%;height:auto}
 .rm-slide{width:100%;height:44px;accent-color:var(--brand,#2C4A68)}
@@ -417,6 +426,36 @@
       for (let i = 0; i < b; i++) w.append(counter("b"));
       return w;
     };
+    /** The same batch count drives both number lines and the coordinate point. A claimed pair can visibly miss the ray. */
+    const linkedView = (r, b, k) => {
+      if (!k || mode !== "equivalent") return null;
+      const x = 38 + (Math.min(k, 20) / Math.max(k, 1)) * 218;
+      const y = (v, max) => 128 - (v / max) * 100;
+      const xPoint = (v, max) => 27 + (v / max) * 142;
+      const mx = Math.max(r * k, M.R || 0, r);
+      const my = Math.max(b * k, M.S || 0, b);
+      const px = xPoint(r * k, mx);
+      const py = y(b * k, my);
+      const claim =
+        M.kind === "test"
+          ? `<circle class="claim" cx="${xPoint(M.R, mx)}" cy="${y(M.S, my)}" r="5"/>`
+          : "";
+      const caption =
+        M.kind === "test"
+          ? L(
+              `Built point (${r * k}, ${b * k}); claimed point (${M.R}, ${M.S}). A claim on the same ray keeps the ratio.`,
+              `Punto construido (${r * k}, ${b * k}); punto propuesto (${M.R}, ${M.S}). Un punto en la misma recta conserva la razón.`,
+            )
+          : L(
+              `At ${k} batches, both quantities scale together: (${r * k}, ${b * k}).`,
+              `Con ${k} tandas, ambas cantidades cambian juntas: (${r * k}, ${b * k}).`,
+            );
+      const figure = h("figure", "rm-linked");
+      figure.setAttribute("role", "group");
+      figure.setAttribute("aria-label", caption);
+      figure.innerHTML = `<svg viewBox="0 0 280 90" role="img" aria-label="Double number line: ${k} batches are ${r * k} and ${b * k}"><line class="axis" x1="38" y1="22" x2="260" y2="22"/><line class="axis" x1="38" y1="65" x2="260" y2="65"/><line class="guide" x1="${x}" y1="22" x2="${x}" y2="65"/><circle class="point" cx="${x}" cy="22" r="5"/><circle class="point" cx="${x}" cy="65" r="5"/><text x="0" y="25">${la}</text><text x="0" y="68">${lb}</text><text x="35" y="13">0</text><text x="${Math.min(x + 5, 225)}" y="13">${r * k}</text><text x="35" y="84">0</text><text x="${Math.min(x + 5, 225)}" y="84">${b * k}</text></svg><svg viewBox="0 0 180 140" role="img" aria-label="Coordinate graph: built point ${r * k}, ${b * k}${M.kind === "test" ? `; claimed point ${M.R}, ${M.S}` : ""}"><line class="axis" x1="27" y1="128" x2="173" y2="128"/><line class="axis" x1="27" y1="128" x2="27" y2="20"/><line class="guide" x1="27" y1="128" x2="${px}" y2="${py}"/><circle class="point" cx="${px}" cy="${py}" r="5"/>${claim}<text x="${Math.min(px + 6, 135)}" y="${Math.max(py - 6, 18)}">(${r * k},${b * k})</text><text x="100" y="139">${la}</text><text x="0" y="16">${lb}</text></svg><figcaption>${caption}</figcaption>`;
+      return figure;
+    };
     /** One mixture: recipe card, bowl of batches, ratio table, proportion bar. */
     const mixView = (title, r, b, k, setK, third = true) => {
       const box = h("div", "rm-mix");
@@ -452,6 +491,8 @@
       );
       bar.setAttribute("aria-hidden", "true");
       box.append(bar);
+      const linked = linkedView(r, b, k);
+      if (linked) box.append(linked);
       const ctl = h("div", "rm-row");
       ctl.append(
         btn("−", () => setK(k - 1), "", L("Remove a batch", "Quitar una tanda")),

@@ -44,6 +44,8 @@ const STYLE = "assets/studio/lab-embed.css";
 const CLARITY = ["assets/studio/clarity.css", "assets/studio/clarity.js"];
 const THINKING = "assets/u4-studio-thinking.js";
 const TYPE = "assets/u4-studio-type.js";
+const INVESTIGATION_STYLE = "assets/u4-adaptive-investigation.css";
+const INVESTIGATION_SCRIPT = "assets/u4-adaptive-investigation.js";
 const HEAD_BEGIN = "<!-- u4-clarity:begin (scripts/inject-u4-lab-bench.mjs) -->";
 const HEAD_BLOCK = /\n?[ \t]*<!-- u4-clarity:begin[\s\S]*?<!-- u4-clarity:end -->/g;
 const TARGET_BLOCK = /\n?[ \t]*<!-- u4-target:begin[\s\S]*?<!-- u4-target:end -->/g;
@@ -75,14 +77,14 @@ const THEME_BOOT =
 /** The shared clarity layer and the "My thinking" panel for <head>, stamped with a hash of their own files. */
 function headBlock(/** @type {string} */ slug) {
   const h = createHash("sha1");
-  for (const f of [...CLARITY, THINKING, TYPE]) h.update(read(f));
+  for (const f of [...CLARITY, THINKING, TYPE, INVESTIGATION_STYLE]) h.update(read(f));
   const v = h.digest("hex").slice(0, 10);
-  return `\n  ${HEAD_BEGIN}\n  ${THEME_BOOT}\n  <link rel="stylesheet" href="/${CLARITY[0]}?v=${v}">\n  <script src="/${CLARITY[1]}?v=${v}" defer></script>\n  <script type="application/json" id="u4-traps">${json(usedTraps(slug))}</script>\n  <script src="/${THINKING}?v=${v}" defer></script>\n  <script src="/${TYPE}?v=${v}" defer></script>\n  <!-- u4-clarity:end -->`;
+  return `\n  ${HEAD_BEGIN}\n  ${THEME_BOOT}\n  <link rel="stylesheet" href="/${CLARITY[0]}?v=${v}">\n  <link rel="stylesheet" href="/${INVESTIGATION_STYLE}?v=${v}">\n  <script src="/${CLARITY[1]}?v=${v}" defer></script>\n  <script type="application/json" id="u4-traps">${json(usedTraps(slug))}</script>\n  <script src="/${THINKING}?v=${v}" defer></script>\n  <script src="/${TYPE}?v=${v}" defer></script>\n  <!-- u4-clarity:end -->`;
 }
 
 function stamps() {
   const h = createHash("sha1");
-  for (const f of [...SCRIPTS, STYLE]) h.update(read(f));
+  for (const f of [...SCRIPTS, STYLE, INVESTIGATION_SCRIPT]) h.update(read(f));
   const lh = createHash("sha1");
   for (const dir of ["curriculum/learning-labs/shared", "curriculum/learning-labs/shared/models"])
     for (const f of readdirSync(join(REPO_ROOT, dir)).sort())
@@ -128,6 +130,7 @@ ${SCRIPTS.map((f) => `<script src="/${f}?v=${st.v}"></script>`).join("\n")}
   window.StudioLabEmbed.mount(document.getElementById("u4-lab-host"), data);
 })();
 </script>
+<script src="/${INVESTIGATION_SCRIPT}?v=${st.v}"></script>
 ${END}
 `;
 }
@@ -149,7 +152,18 @@ export function outputs() {
       ["challenge", challenge],
     ])) {
       const rel = `math/unit-4/${slug}/index.html`;
-      let page = read(rel).replace(BLOCK, "\n").replace(HEAD_BLOCK, "").replace(TARGET_BLOCK, "");
+      let page = read(rel)
+        .replace(BLOCK, "\n")
+        .replace(HEAD_BLOCK, "")
+        .replace(TARGET_BLOCK, "")
+        .replace(
+          /\n?[ \t]*<link rel="stylesheet" href="\/assets\/u4-adaptive-investigation\.css[^"]*">/g,
+          "",
+        )
+        .replace(
+          /\n?[ \t]*<script src="\/assets\/u4-adaptive-investigation\.js[^"]*"><\/script>/g,
+          "",
+        );
       const main = page.indexOf(MAIN);
       if (main < 0) throw new Error(`${rel} has no ${MAIN}`);
       page = `${page.slice(0, main + MAIN.length)}${targetBlock(id, ld)}${page.slice(main + MAIN.length)}`;

@@ -104,6 +104,7 @@ function assetPlan(/** @type {Map<string, string>} */ built) {
     "language-write",
     "language-words",
     "runtime",
+    "pathways",
   ].map((f) => `assets/studio/${f}.js`);
   const scripts = [
     "assets/studio/clarity.js",
@@ -196,6 +197,11 @@ export function outputs(opts = {}) {
       `data/practice-studio/pedagogy-layer.json is invalid:\n  ${layerProblems.slice(0, 8).join("\n  ")}`,
     );
   const languageLayer = loadLayer();
+  const skillGraph = new Map(
+    JSON.parse(read("data/practice-studio/skill-graph.json")).lessons.map(
+      (/** @type {any} */ lesson) => [lesson.id, lesson],
+    ),
+  );
   const trapsSource = trapsJs(JSON.parse(read("data/practice-studio/generator-traps.json")), traps);
   const assets = assetPlan(
     new Map([
@@ -219,6 +225,8 @@ export function outputs(opts = {}) {
     const dataFile = `data/practice-studio/${id}.json`;
     if (!existsSync(join(REPO_ROOT, dataFile))) throw new Error(`${id}: missing ${dataFile}`);
     const ld = JSON.parse(read(dataFile));
+    const concept = skillGraph.get(id);
+    if (!concept) throw new Error(`${id}: missing skill graph entry`);
     const problems = [
       ...validateLessonData(id, ld, worlds),
       ...(ld.bench ? benchProblems(id, ld.bench, labs) : []),
@@ -263,6 +271,7 @@ export function outputs(opts = {}) {
           traps,
           pedagogy: pedagogyData(pedagogy.lessons[id]),
           lang,
+          concept,
         }),
       );
     }
