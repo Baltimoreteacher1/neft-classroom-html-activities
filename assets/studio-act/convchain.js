@@ -395,6 +395,25 @@
             ),
           );
       }
+      const factors = [];
+      let factorUnit = M.from;
+      for (const step of st.steps) {
+        const fact = step.op && step.f ? stepOf(M.facts, factorUnit, step.op, step.f) : null;
+        if (!fact) break;
+        const top = step.op === "×" ? fact.small : fact.big;
+        const bottom = step.op === "×" ? fact.big : fact.small;
+        factors.push({ n: step.f, top: unitName(top, false), bottom: unitName(bottom, false) });
+        factorUnit = step.op === "×" ? fact.small : fact.big;
+      }
+      body.append(
+        A.linkedUnitConversion({
+          startValue: fmtV(M.v),
+          startUnit: unitName(M.from, false),
+          endValue: fmtV(val),
+          endUnit: unit ? unitName(unit, false) : "unmatched unit",
+          factors,
+        }),
+      );
       if (focus)
         for (const e of body.querySelectorAll("[aria-label]"))
           if (e.getAttribute("aria-label") === focus) return void e.focus?.();

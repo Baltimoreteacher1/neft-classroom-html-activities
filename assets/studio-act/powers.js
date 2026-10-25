@@ -306,6 +306,9 @@ body.show-es .sa-es,.sa-root[data-es="1"] .sa-es{display:block}
     const T = (/** @type {string} */ en, /** @type {string} */ es) =>
       `${en}<span class="sa-es" lang="es">${es}</span>`;
     const root = A.el("div", "sa-root");
+    const linked = A.el("figure", "u6-power-linked");
+    linked.style.cssText =
+      "display:grid;gap:8px;margin:12px 0;padding:10px;border:1px solid var(--border,#D5DCE5);border-radius:12px;background:var(--surface,#fff);min-width:0";
     if (api.es?.()) root.setAttribute("data-es", "1");
     host.replaceChildren(root);
     const st = /** @type {any} */ ({ n: 0, pick: null, b: 2, e: 2 });
@@ -428,6 +431,7 @@ body.show-es .sa-es,.sa-root[data-es="1"] .sa-es{display:block}
       for (const s of steppers) ctrl.append(s);
     }
     root.append(status);
+    root.append(linked);
     function paint() {
       if (builds) {
         tiles.replaceChildren(
@@ -446,6 +450,19 @@ body.show-es .sa-es,.sa-root[data-es="1"] .sa-es{display:block}
           ? `${p} = ${times(st.b, Math.min(st.e, 6))}${st.e > 6 ? " × …" : ""} = ${pw(st.b, st.e)}`
           : p;
       }
+      const base = builds ? m.b : st.b;
+      const exponent = builds ? st.n : st.e;
+      const tilesHtml = Array.from(
+        { length: Math.min(exponent, 12) },
+        (_, i) =>
+          `<span style="display:inline-grid;place-items:center;min-width:34px;min-height:34px;margin:3px;padding:4px;border:2px solid var(--brand,#2C4A68);border-radius:8px;background:var(--sun,#F0BD4F);font-weight:800">${base}</span>`,
+      ).join("");
+      let product = 1;
+      const steps = Array.from({ length: Math.min(exponent, 12) }, (_, i) => {
+        product *= base;
+        return `<li${i === exponent - 1 ? ' aria-current="step"' : ""}>${i + 1} factor${i === 0 ? "" : "s"}: ${base}${i ? ` × … × ${base}` : ""} = ${product}</li>`;
+      }).join("");
+      linked.innerHTML = `<div aria-label="${base} repeated ${exponent} times" style="display:flex;flex-wrap:wrap;align-items:center">${tilesHtml}</div><div><strong>${base}<sup>${exponent}</sup> = ${times(base, exponent)}</strong><ol>${steps}</ol></div>`;
     }
     if (!ro) {
       const chk = A.el("button", "sa-btn sa-go", T("Check", "Comprobar"), {

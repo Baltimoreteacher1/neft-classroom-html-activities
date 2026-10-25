@@ -1006,6 +1006,7 @@
   function mountPlot(/** @type {any} */ host, /** @type {any} */ spec, /** @type {any} */ api) {
     A.css("plot", CSS);
     const g = spec.grid;
+    const lessonId = W.StudioRT?.api?.data?.lesson || "";
     const es = () => !!(api.es && api.es());
     const L = (/** @type {string} */ en, /** @type {string} */ esT) => (es() && esT ? esT : en);
     const T = (/** @type {string} */ en, /** @type {string} */ esT) => A.t(en, esT);
@@ -1028,6 +1029,13 @@
 
     host.textContent = "";
     const root = A.el("div", `sp${solved ? " sp-solved" : ""}`);
+    const linked =
+      lessonId.startsWith("9-") && ["ratio", "table"].includes(spec.mode)
+        ? A.el("figure", "u9-var-linked")
+        : null;
+    if (linked)
+      linked.style.cssText =
+        "display:grid;gap:8px;margin:12px 0;padding:10px;border:1px solid var(--border,#D5DCE5);border-radius:12px;background:var(--surface,#fff);min-width:0";
     const helpId = `sp-help-${Math.random().toString(36).slice(2, 8)}`;
     if (spec.table) {
       const rows = spec.table
@@ -1078,6 +1086,7 @@
     pad.append(...pads, placeBtn);
     bar.append(solved ? badge : checkBtn, ...(solved ? [] : [clearBtn]));
     root.append(plane, help, ...(solved ? [] : [pad, note]), bar);
+    if (linked) root.append(linked);
     host.append(root);
 
     const labels = () => {
@@ -1249,6 +1258,37 @@
           `<circle class="sp-curh" cx="${X(cur[0])}" cy="${Y(cur[1])}" r="15"/><circle class="sp-cur" cx="${X(cur[0])}" cy="${Y(cur[1])}" r="15"/>`,
         );
       plane.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${r1(H)}" aria-hidden="true" focusable="false">${s.join("")}</svg>`;
+      if (linked) {
+        const points = [...(spec.given || []).map((q) => q.p), ...pts]
+          .map((q) => [Number(q[0]), Number(q[1])])
+          .sort((a, b) => a[0] - b[0]);
+        const rows = points
+          .map((p) => `<tr><th scope="row">${mn(p[0])}</th><td>${mn(p[1])}</td></tr>`)
+          .join("");
+        const first = points[0];
+        const last = points[points.length - 1];
+        const dx = first && last ? last[0] - first[0] : 0;
+        const dy = first && last ? last[1] - first[1] : 0;
+        const rate = dx ? dy / dx : 0;
+        const intercept = first ? first[1] - rate * first[0] : 0;
+        const rule =
+          points.length >= 2
+            ? `y = ${mn(rate)}x${intercept ? ` ${intercept > 0 ? "+" : "−"} ${mn(Math.abs(intercept))}` : ""}`
+            : "Plot two points to compare the change in x and y.";
+        const px = (v) => 18 + ((v - g.x0) / Math.max(g.x1 - g.x0, 1)) * 204;
+        const py = (v) => 118 - ((v - g.y0) / Math.max(g.y1 - g.y0, 1)) * 98;
+        const dots = points
+          .map(
+            (p) =>
+              `<circle cx="${px(p[0])}" cy="${py(p[1])}" r="4" fill="var(--sun,#F0BD4F)" stroke="var(--ink,#1B2733)"/>`,
+          )
+          .join("");
+        const line =
+          points.length > 1
+            ? `<line x1="${px(first[0])}" y1="${py(first[1])}" x2="${px(last[0])}" y2="${py(last[1])}" stroke="var(--brand,#2C4A68)" stroke-width="2"/>`
+            : "";
+        linked.innerHTML = `<div><strong>Input–output table</strong><table><thead><tr><th>Independent x</th><th>Dependent y</th></tr></thead><tbody>${rows || '<tr><td colspan="2">Add points to populate the table.</td></tr>'}</tbody></table></div><div><strong>Change:</strong> Δx = ${mn(dx)}, Δy = ${mn(dy)}; <strong>Rule:</strong> ${rule}</div><svg viewBox="0 0 230 130" role="img" aria-label="Coordinate graph of the active input-output pairs" style="display:block;width:100%;height:auto"><line x1="18" y1="118" x2="222" y2="118" stroke="var(--ink,#1B2733)"/><line x1="18" y1="118" x2="18" y2="12" stroke="var(--ink,#1B2733)"/>${line}${dots}<text x="220" y="128">x</text><text x="5" y="14">y</text></svg>`;
+      }
       pad.hidden = !(
         ux < 34 ||
         (window.matchMedia && window.matchMedia("(pointer: coarse)").matches)

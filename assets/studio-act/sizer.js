@@ -1098,6 +1098,9 @@
     ))
       chip("sz-chip", T(cap(r[0]), cap(r[1])));
     const main = A.el("div", "sz-main");
+    const linked = A.el("figure", "u5-area-linked");
+    linked.style.cssText =
+      "grid-column:1/-1;margin:0;padding:10px;border:1px solid var(--border,#D5DCE5);border-radius:12px;background:var(--surface,#fff);min-width:0";
     const stage = A.el("div", "sz-stage");
     const fig = A.el("div", "sz-fig");
     const tools = A.el("div", "sz-tools");
@@ -1299,6 +1302,27 @@
         inp.style.setProperty("--p", `${pct}%`);
         inp.setAttribute("aria-valuetext", `${num(cur[k])}. ${cap(L(meas[0], meas[1]))} ${vtxt}`);
       }
+      const svg = (contents, label) =>
+        `<svg viewBox="0 0 320 130" role="img" aria-label="${label}" style="display:block;width:100%;height:auto">${contents}</svg>`;
+      if (m.shape === "tri") {
+        const scale = 190 / d.b;
+        const a = Math.min(Math.max(d.b * 0.35, 0.5), d.b - 0.5);
+        const base = 40;
+        const apex = base + a * scale;
+        const right = base + d.b * scale;
+        const h = `h = ${num(d.h)}`;
+        const contents = `<polygon points="${base},104 ${right},104 ${right + a * scale},26 ${apex},26" fill="var(--brand-tint,#E5ECF3)" fill-opacity=".55" stroke="var(--brand,#2C4A68)" stroke-dasharray="6 4" stroke-width="2"/><polygon points="${base},104 ${right},104 ${apex},26" fill="var(--sun,#F0BD4F)" fill-opacity=".68" stroke="var(--ink,#1B2733)" stroke-width="2"/><text x="145" y="124" text-anchor="middle">b = ${num(d.b)}</text><text x="25" y="68">${h}</text>`;
+        linked.innerHTML = `${svg(contents, `Triangle and bounding parallelogram; base ${num(d.b)}, height ${num(d.h)}`)}<figcaption><strong>Bounding parallelogram:</strong> Area = ½ × b × h = ½ × ${num(d.b)} × ${num(d.h)} = ${num((d.b * d.h) / 2)}</figcaption>`;
+      } else if (m.shape === "trap") {
+        const b1 = d.b1;
+        const b2 = d.b2;
+        const scale = 220 / (b1 + b2);
+        const left = 45;
+        const right = left + (b1 + b2) * scale;
+        const mid = left + b1 * scale;
+        const contents = `<polygon points="${left},28 ${right},28 ${right},100 ${left},100" fill="var(--brand-tint,#E5ECF3)" stroke="var(--ink,#1B2733)" stroke-width="2"/><polygon points="${left},28 ${mid},28 ${right},100 ${mid},100" fill="var(--sun,#F0BD4F)" fill-opacity=".78" stroke="var(--ink,#1B2733)" stroke-width="2"/><line x1="${mid}" y1="28" x2="${mid}" y2="100" stroke="var(--brand,#2C4A68)" stroke-dasharray="5 4"/><text x="${(left + mid) / 2}" y="20" text-anchor="middle">b₁ = ${num(b1)}</text><text x="${(mid + right) / 2}" y="120" text-anchor="middle">b₂ = ${num(b2)}</text><text x="12" y="68">h = ${num(d.h)}</text>`;
+        linked.innerHTML = `${svg(contents, `Doubled trapezoid composition; bases ${num(b1)} and ${num(b2)}, height ${num(d.h)}`)}<figcaption><strong>Doubled-trapezoid composition:</strong> Area = (b₁ + b₂) × h ÷ 2 = (${num(b1)} + ${num(b2)}) × ${num(d.h)} ÷ 2 = ${num(((b1 + b2) * d.h) / 2)}</figcaption>`;
+      } else linked.replaceChildren();
     }
     function show(/** @type {any} */ r) {
       fb.hidden = false;
@@ -1334,7 +1358,7 @@
     main.append(A.el("div", "sz-left"), ctl);
     /** @type {any} */ (main.firstChild).append(stage);
     /** @type {any} */ (main.lastChild).append(read);
-    root.append(goal, main, bar);
+    root.append(goal, main, linked, bar);
     host.append(root);
     if (solved) {
       lock();

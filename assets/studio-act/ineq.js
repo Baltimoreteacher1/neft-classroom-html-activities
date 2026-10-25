@@ -768,6 +768,9 @@
       api.say && api.say(L(en, esT));
     const emit = () => api.change && api.change(JSON.parse(JSON.stringify(st)));
     const preview = A.el("div", "si-prev", "", { "aria-live": "off" });
+    const ineqLinked = A.el("figure", "u8-ineq-linked");
+    ineqLinked.style.cssText =
+      "display:grid;gap:8px;margin:12px 0;padding:10px;border:1px solid var(--border,#D5DCE5);border-radius:12px;background:var(--surface,#fff);min-width:0";
 
     /* -- number line shared by graph and test -- */
     function lineSvg() {
@@ -879,6 +882,46 @@
       checkBtn.disabled = !have;
       clearBtn.disabled = !have;
       if (lineEl) lineSvg();
+      if (ineqLinked) {
+        const model = solved ? spec.want : st;
+        const op = OPS[model.op] || OPS[spec.want?.sym] || OPS[spec.ineq?.op] || null;
+        const boundary = model.n ?? spec.want?.n ?? spec.n ?? spec.b;
+        const direction = model.dir || op?.dir || spec.want?.dir;
+        const closedCircle =
+          model.closed === null || model.closed === undefined ? !!op?.incl : model.closed === true;
+        const symbol =
+          direction === "right"
+            ? closedCircle
+              ? "≥"
+              : ">"
+            : direction === "left"
+              ? closedCircle
+                ? "≤"
+                : "<"
+              : "?";
+        const samples =
+          boundary === null || boundary === undefined ? [] : [boundary - 1, boundary, boundary + 1];
+        const truth = (v) =>
+          direction === "right"
+            ? closedCircle
+              ? v >= boundary
+              : v > boundary
+            : direction === "left"
+              ? closedCircle
+                ? v <= boundary
+                : v < boundary
+              : null;
+        const chips = samples
+          .map(
+            (v, i) =>
+              `<span style="display:inline-block;margin:3px;padding:6px 10px;border:1px solid var(--border,#D5DCE5);border-radius:8px">${mn(v)}: ${truth(v) === null ? "choose direction" : truth(v) ? "True" : "False"}${mode === "test" && st.sel?.includes(i) ? " ✓ selected" : ""}</span>`,
+          )
+          .join("");
+        const x = (v) => 20 + ((v - ln.min) / Math.max(ln.max - ln.min, 1)) * 260;
+        const bx = boundary === null || boundary === undefined ? 150 : x(boundary);
+        const rayEnd = direction === "right" ? 280 : direction === "left" ? 20 : bx;
+        ineqLinked.innerHTML = `<div><strong>Symbolic inequality:</strong> ${spec.ineq.vr} ${symbol} ${boundary === null || boundary === undefined ? "?" : mn(boundary)}</div><svg viewBox="0 0 300 62" role="img" aria-label="${spec.ineq.vr} ${symbol} ${boundary === null || boundary === undefined ? "unknown boundary" : mn(boundary)} on a number line" style="display:block;width:100%;height:auto"><line x1="20" y1="30" x2="280" y2="30" stroke="var(--ink,#1B2733)" stroke-width="2"/><line x1="${bx}" y1="30" x2="${rayEnd}" y2="30" stroke="var(--brand,#2C4A68)" stroke-width="5"/><circle cx="${bx}" cy="30" r="7" fill="${closedCircle ? "var(--brand,#2C4A68)" : "var(--surface,#fff)"}" stroke="var(--brand,#2C4A68)" stroke-width="3"/><text x="${bx}" y="56" text-anchor="middle">${boundary === null || boundary === undefined ? "c" : mn(boundary)}</text></svg><div><strong>Boundary test values:</strong> ${chips || "Choose a boundary point to test c − 1, c, and c + 1."}</div>`;
+      }
     };
 
     /* -- build the mode's controls -- */
@@ -1056,7 +1099,7 @@
         "si-cap",
         T("2. Choose the circle and the direction.", "2. Elige el círculo y la dirección."),
       );
-      body.append(tip, lineEl, ...(solved ? [] : [pad]), tip2, w1, w2, preview);
+      body.append(tip, lineEl, ...(solved ? [] : [pad]), tip2, w1, w2, preview, ineqLinked);
       const help = A.el("p", "si-sr", "", { id: helpId });
       body.append(help);
       relabel.push({
@@ -1193,6 +1236,8 @@
       relabel.push({ sync: syncT });
       syncT();
     }
+
+    root.append(ineqLinked);
 
     /* -- keyboard and pointer on the line (graph) -- */
     function wireLine(/** @type {(k:number)=>void} */ setBoundary) {

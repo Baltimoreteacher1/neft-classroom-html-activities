@@ -452,6 +452,13 @@ body:has(.app-header) a[aria-label^="Open the Math Workbench"] {
   box-shadow: var(--shadow-card, 0 4px 14px rgba(0, 0, 0, 0.25)) !important;
 }
 
+/* The shared Save/Resume dark rule uses a fixed blue. Match the lesson world instead so its foreground
+   token and the launcher fill keep the same high contrast as the rest of the student HUD. */
+body:has(.app-header)[data-theme="dark"] #nsr-root {
+  --nsr-accent: var(--brand);
+  --nsr-accent-fg: var(--on-brand, var(--paper));
+}
+
 /* ==== studio v4 platform layout (docs/audits/studio-v4/brief-x-platform.md; behaviour in assets/studio/focus.js) ========
    Tokens only. No backticks in comments. One block, appended, so other workers' rules above stay untouched. */
 

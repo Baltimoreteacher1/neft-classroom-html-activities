@@ -428,14 +428,16 @@
     };
     /** The same batch count drives both number lines and the coordinate point. A claimed pair can visibly miss the ray. */
     const linkedView = (r, b, k) => {
-      if (!k || mode !== "equivalent") return null;
-      const x = 38 + (Math.min(k, 20) / Math.max(k, 1)) * 218;
+      const shownK = Math.max(1, k);
+      const x = 38 + (Math.min(shownK, 20) / 20) * 218;
       const y = (v, max) => 128 - (v / max) * 100;
       const xPoint = (v, max) => 27 + (v / max) * 142;
-      const mx = Math.max(r * k, M.R || 0, r);
-      const my = Math.max(b * k, M.S || 0, b);
-      const px = xPoint(r * k, mx);
-      const py = y(b * k, my);
+      const mx = Math.max(r * shownK, M.R || 0, r);
+      const my = Math.max(b * shownK, M.S || 0, b);
+      const px = xPoint(r * shownK, mx);
+      const py = y(b * shownK, my);
+      const previewX = xPoint(mx, mx);
+      const previewY = y(my, my);
       const claim =
         M.kind === "test"
           ? `<circle class="claim" cx="${xPoint(M.R, mx)}" cy="${y(M.S, my)}" r="5"/>`
@@ -447,13 +449,17 @@
               `Punto construido (${r * k}, ${b * k}); punto propuesto (${M.R}, ${M.S}). Un punto en la misma recta conserva la razón.`,
             )
           : L(
-              `At ${k} batches, both quantities scale together: (${r * k}, ${b * k}).`,
-              `Con ${k} tandas, ambas cantidades cambian juntas: (${r * k}, ${b * k}).`,
+              k
+                ? `At ${k} batches, both quantities scale together: (${r * k}, ${b * k}).`
+                : `At 0 batches, the ray preview shows the one-batch reference (${r}, ${b}).`,
+              k
+                ? `Con ${k} tandas, ambas cantidades cambian juntas: (${r * k}, ${b * k}).`
+                : `Con 0 tandas, la vista previa muestra la referencia de una tanda (${r}, ${b}).`,
             );
       const figure = h("figure", "rm-linked");
       figure.setAttribute("role", "group");
       figure.setAttribute("aria-label", caption);
-      figure.innerHTML = `<svg viewBox="0 0 280 90" role="img" aria-label="Double number line: ${k} batches are ${r * k} and ${b * k}"><line class="axis" x1="38" y1="22" x2="260" y2="22"/><line class="axis" x1="38" y1="65" x2="260" y2="65"/><line class="guide" x1="${x}" y1="22" x2="${x}" y2="65"/><circle class="point" cx="${x}" cy="22" r="5"/><circle class="point" cx="${x}" cy="65" r="5"/><text x="0" y="25">${la}</text><text x="0" y="68">${lb}</text><text x="35" y="13">0</text><text x="${Math.min(x + 5, 225)}" y="13">${r * k}</text><text x="35" y="84">0</text><text x="${Math.min(x + 5, 225)}" y="84">${b * k}</text></svg><svg viewBox="0 0 180 140" role="img" aria-label="Coordinate graph: built point ${r * k}, ${b * k}${M.kind === "test" ? `; claimed point ${M.R}, ${M.S}` : ""}"><line class="axis" x1="27" y1="128" x2="173" y2="128"/><line class="axis" x1="27" y1="128" x2="27" y2="20"/><line class="guide" x1="27" y1="128" x2="${px}" y2="${py}"/><circle class="point" cx="${px}" cy="${py}" r="5"/>${claim}<text x="${Math.min(px + 6, 135)}" y="${Math.max(py - 6, 18)}">(${r * k},${b * k})</text><text x="100" y="139">${la}</text><text x="0" y="16">${lb}</text></svg><figcaption>${caption}</figcaption>`;
+      figure.innerHTML = `<svg viewBox="0 0 280 90" role="img" aria-label="Double number line: ${k} batches are ${r * k} and ${b * k}"><line class="axis" x1="38" y1="22" x2="260" y2="22"/><line class="axis" x1="38" y1="65" x2="260" y2="65"/><line class="guide" x1="${x}" y1="22" x2="${x}" y2="65"/><circle class="point" cx="${x}" cy="22" r="5"/><circle class="point" cx="${x}" cy="65" r="5"/><text x="0" y="25">${la}</text><text x="0" y="68">${lb}</text><text x="35" y="13">0</text><text x="${Math.min(x + 5, 225)}" y="13">${k ? r * k : r}</text><text x="35" y="84">0</text><text x="${Math.min(x + 5, 225)}" y="84">${k ? b * k : b}</text></svg><svg viewBox="0 0 180 140" role="img" aria-label="Coordinate graph: built point ${r * k}, ${b * k}${M.kind === "test" ? `; claimed point ${M.R}, ${M.S}` : ""}"><line class="axis" x1="27" y1="128" x2="173" y2="128"/><line class="axis" x1="27" y1="128" x2="27" y2="20"/><line class="guide" x1="27" y1="128" x2="${previewX}" y2="${previewY}"/><line class="guide" x1="27" y1="128" x2="${px}" y2="${py}"/><circle class="point" cx="${px}" cy="${py}" r="5"/>${claim}<text x="${Math.min(px + 6, 135)}" y="${Math.max(py - 6, 18)}">(${k ? r * k : r},${k ? b * k : b})</text><text x="100" y="139">${la}</text><text x="0" y="16">${lb}</text></svg><figcaption>${caption}</figcaption>`;
       return figure;
     };
     /** One mixture: recipe card, bowl of batches, ratio table, proportion bar. */
@@ -580,6 +586,17 @@
           ),
           h("div", "", svg),
         );
+        const linked = h("figure", "rm-linked u3-unitrate-linked");
+        const rate = bd.T / bd.n;
+        linked.setAttribute(
+          "aria-label",
+          L(
+            `Unit rate: ${f(bd.T)} dollars for ${bd.n} items, or $${f(rate)} per item.`,
+            `Tasa unitaria: ${f(bd.T)} dólares por ${bd.n} artículos, o $${f(rate)} por artículo.`,
+          ),
+        );
+        linked.innerHTML = `<svg viewBox="0 0 280 90" role="img" aria-label="One item corresponds to ${f(rate)} dollars"><line class="axis" x1="28" y1="24" x2="260" y2="24"/><line class="axis" x1="28" y1="64" x2="260" y2="64"/><line class="guide" x1="238" y1="24" x2="238" y2="64"/><circle class="point" cx="238" cy="24" r="5"/><circle class="point" cx="238" cy="64" r="5"/><text x="2" y="27">Items</text><text x="2" y="67">$</text><text x="28" y="15">0</text><text x="238" y="15">1</text><text x="28" y="84">0</text><text x="238" y="84">${f(rate)}</text></svg><svg viewBox="0 0 180 140" role="img" aria-label="Unit rate point (1, ${f(rate)}) dollars per item"><line class="axis" x1="27" y1="128" x2="173" y2="128"/><line class="axis" x1="27" y1="128" x2="27" y2="20"/><line class="guide" x1="27" y1="128" x2="${43}" y2="${128 - Math.min(rate, 6) * 12}"/><circle class="point" cx="43" cy="${128 - Math.min(rate, 6) * 12}" r="5"/><text x="85" y="139">items</text><text x="0" y="16">dollars</text></svg><figcaption>${L(`${groups} groups; $${f(rate)} per item.`, `${groups} grupos; $${f(rate)} por artículo.`)}</figcaption>`;
+        box.append(linked);
         const sl = h("input", "rm-slide", "", {
           type: "range",
           min: String(M.step),

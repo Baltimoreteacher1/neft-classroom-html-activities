@@ -183,6 +183,62 @@ function entry(lesson) {
     lessonBrowserTest,
   };
 
+  const linkedByKind = {
+    askdots: "Six-answer dot distribution linked to center, spread, and statistical variability",
+    dotbalance:
+      "Live data summary (five-number summary, mean, IQR, MAD) and aligned box/mean strip",
+    chartbuild: "Live data summary and aligned box/mean strip",
+    boxtwins: "Live five-number summary and aligned box/mean strip",
+    madtwins: "Live center/spread summary and aligned box/mean strip",
+    skewsculptor: "Live histogram data summary and aligned box/mean strip",
+    ldiv: "Place-value grouping view with partial-quotient and standard-algorithm step table",
+    areabox: "Hundredths grid or distributive area model linked to the symbolic product",
+    chipsort: "Division remainder/group model linked to the interpretation table",
+    ratiomix: "Synchronized mixture bars, double number line, and coordinate graph",
+    convchain: "Dual-unit scale and symbolic unit-cancellation equation",
+    cancelit: "Dual-unit scale and symbolic unit-cancellation equation",
+    sizer: "Linked area decomposition/ghost overlay and live formula substitution",
+    faces: "Linked solid/net view and face-area summation",
+    netfold: "Linked solid wireframe, unfolded net, and surface-area/volume formula",
+    packcrate: "Linked prism, cube-count partition, and volume formula",
+    wrapit: "Linked prism or pyramid, matching net, and surface-area formula",
+    barcut: "Fraction tape, equal-jump number line, and reciprocal equation",
+    powers: "Repeated-factor array and order-of-operations evaluation steps",
+    tiles: "Algebra tile array, equivalent expressions, and substitution table",
+    plug: "Algebra substitution model and evaluation readout",
+    cexhunt: "Live expression comparison and value substitution table",
+    hops: "Prime-factor intersection/union view and GCF/LCM products",
+    brickwall: "Prime-factor intersection/union view and GCF/LCM products",
+    ftree: "Prime-factor tree result and exponent product",
+    twotrees: "Paired prime-factorization view",
+    factorbox: "Common-factor model and prime-factor intersection/union products",
+    thermo:
+      "Vertical signed scale and linked horizontal number line with opposite/magnitude readout",
+    absbench: "Signed number line linked to order and absolute-value readout",
+    dualrank: "Signed number line linked to order and absolute-value readout",
+    nline: "Signed number line linked to order and absolute-value readout",
+    griddetect: "Four-quadrant plane, projection lines, reflection table, and distance calculation",
+    rectcorners:
+      "Four-quadrant plane, projection lines, reflection table, and distance calculation",
+    allpoints: "Four-quadrant plane, projection lines, reflection table, and distance calculation",
+    reflectpredict:
+      "Four-quadrant plane, projection lines, reflection table, and distance calculation",
+    balance: "Pan-balance, tape model, inverse-operation steps, and substitution check",
+    boundary: "Inequality ray, statement, and boundary test strip",
+    ineq: "Inequality ray, statement, and boundary test strip",
+    plot: lesson.id.startsWith("9-")
+      ? "Input-output table, rate/change diagram, equation rule, and coordinate graph"
+      : "Coordinate plot, quadrant/sign readout, and projected distance",
+  };
+  const availableKinds = new Set([
+    ...(base.standard?.interactionKinds || []),
+    ...(base.challenge?.interactionKinds || []),
+  ]);
+  base.linkedRepresentations = [...availableKinds]
+    .filter((kind) => linkedByKind[kind])
+    .map((kind) => `${kind}: ${linkedByKind[kind]}`)
+    .sort();
+
   return base;
 }
 
@@ -208,6 +264,7 @@ const rows = graph.lessons.map((lesson) => {
     lesson.misconceptionIds.length,
     lesson.status.adaptiveImplementation,
     lesson.status.lessonBrowserTest,
+    lesson.linkedRepresentations.join("; ") || "No synchronized secondary representation",
   ];
   return `| ${values.map((value) => String(value).replace(/\|/g, "\\|")).join(" | ")} |`;
 });
@@ -220,8 +277,8 @@ const report = [
   "",
   "The JSON graph records source objectives, standards, existing prerequisite checks, representation and activity kinds, misconception IDs, and English/Spanish vocabulary across all 72 lessons. Status fields reflect verified implementations and browser test suites.",
   "",
-  "| Lesson | Source title | Standard | Direct routes | Existing model and interaction kinds | Misconception IDs | Implementation | Browser test |",
-  "| --- | --- | --- | --- | --- | ---: | --- | --- |",
+  "| Lesson | Source title | Standard | Direct routes | Existing model and interaction kinds | Misconception IDs | Implementation | Browser test | Synchronized representation family |",
+  "| --- | --- | --- | --- | --- | ---: | --- | --- | --- |",
   ...rows,
   "",
   "## Lesson 4-5 source resolution",

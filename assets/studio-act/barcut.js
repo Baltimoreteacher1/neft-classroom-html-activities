@@ -433,6 +433,9 @@
     if (m.rev) st.d = m.ok[0];
     host.textContent = "";
     const root = A.el("div", "bc");
+    const linked = A.el("figure", "u6-frac-linked");
+    linked.style.cssText =
+      "display:grid;gap:8px;margin:12px 0;padding:10px;border:1px solid var(--border,#D5DCE5);border-radius:12px;background:var(--surface,#fff);min-width:0";
     const head = A.el("div", "bc-div", `${m.expr} = ?`);
     const bars = A.el("div", "bc-bars", "", { "aria-hidden": "true" });
     const cutBox = A.el("div", "bc-box");
@@ -547,6 +550,24 @@
         m.mode === "fracByWhole"
           ? `<span>${T(`Share the shaded part into ${m.dvs[0]} equal parts.`, `Reparte la parte sombreada en ${m.dvs[0]} partes iguales.`)}</span>`
           : `<span>${T("One group is", "Un grupo es")} ${tx(m.dvs)} ${T("of a bar:", "de una barra:")}</span><span class="k" style="width:${Math.min(100, Math.round(num(m.dvs) * 100))}%;max-width:100%"></span>`;
+      const dividend = num(m.dvd);
+      const divisor = num(m.dvs);
+      const quotient = num(m.quo);
+      const cells = Math.max(1, Math.min(16, Math.ceil(dividend * d)));
+      const tape = Array.from({ length: cells }, (_, j) => {
+        const x = 18 + (j * 264) / cells;
+        const w = 264 / cells;
+        const shaded = i && j < i.N && j < st.k * per;
+        return `<rect x="${x}" y="10" width="${w}" height="28" fill="${shaded ? "var(--sun,#F0BD4F)" : "var(--brand-tint,#E5ECF3)"}" stroke="var(--ink,#1B2733)"/>`;
+      }).join("");
+      const jumpCount = Math.min(8, Math.ceil(quotient));
+      const usable = Math.max(dividend, divisor, 1);
+      const jumpSvg = Array.from({ length: jumpCount }, (_, j) => {
+        const v = Math.min((j + 1) * divisor, dividend);
+        const x = 18 + (v / usable) * 264;
+        return `<line x1="${x}" y1="56" x2="${x}" y2="80" stroke="var(--brand,#2C4A68)" stroke-width="2"/><text x="${x}" y="96" text-anchor="middle">${G.fmt(v, 3)}</text>`;
+      }).join("");
+      linked.innerHTML = `<svg viewBox="0 0 300 105" role="img" aria-label="Fraction tape for ${tx(m.dvd)} divided by ${tx(m.dvs)} and equal jumps of ${tx(m.dvs)}" style="display:block;width:100%;height:auto"><text x="18" y="8">${tx(m.dvd)} whole amount</text>${tape}<line x1="18" y1="68" x2="282" y2="68" stroke="var(--ink,#1B2733)" stroke-width="2"/><text x="18" y="96">0</text>${jumpSvg}</svg><figcaption>Reciprocal equation: ${tx(m.dvd)} ÷ ${tx(m.dvs)} = ${tx(m.dvd)} × ${G.mixed(m.dvs[1], m.dvs[0])} = ${tx(m.quo)}</figcaption>`;
     }
     const tap = (/** @type {number} */ gid) => {
       if (ended || !markers()) return;
@@ -693,6 +714,7 @@
     root.append(A.el("div", "bc-box"), cntBox, ansBox, bar2);
     const mid = /** @type {any} */ (root.children[root.children.length - 4]);
     mid.append(A.el("span", "bc-lab", T("The bars", "Las barras")), bars, keyBox);
+    root.append(linked);
     host.append(root);
     void live;
 

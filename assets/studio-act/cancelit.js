@@ -346,6 +346,7 @@
       }
       body.append(chain);
       const left = units(M.from, placed);
+      const value = placed.reduce((v, t) => (v * t.top.n) / t.bottom.n, M.v);
       const leftEl = h("p", "ci-left", "", { role: "status" });
       leftEl.innerHTML = `${B("Units left:", "Unidades que quedan:")} <span lang="${es() ? "es" : "en"}">${leftText(left, es())}</span>`;
       body.append(leftEl);
@@ -384,6 +385,20 @@
         tray.append(b);
       }
       body.append(tray);
+      body.append(
+        A.linkedUnitConversion({
+          startValue: num(M.v),
+          startUnit: tx(M.from, false),
+          endValue: num(value),
+          endUnit: leftText(left, false),
+          factors: placed.map((t) => ({
+            n: t.top.n,
+            top: tx(t.top.u, false),
+            d: t.bottom.n,
+            bottom: tx(t.bottom.u, false),
+          })),
+        }),
+      );
       if (focus)
         for (const e of body.querySelectorAll("[aria-label]"))
           if (e.getAttribute("aria-label") === focus)

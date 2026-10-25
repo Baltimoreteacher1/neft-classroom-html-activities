@@ -4,6 +4,35 @@
   const rt = W.StudioRT;
   if (!rt?.api?.data?.lesson || rt.api.data.lesson === "0-0") return;
   const { state, data, sections, save, selectTab, expand, mountItem } = rt.api;
+  const modelTarget = () => {
+    let labTarget = null;
+    for (let tab = 1; tab <= sections.length; tab++) {
+      const items = sections[tab - 1]?.items || [];
+      const index = items.findIndex((item) => item.k === "act" && item.kind);
+      if (index >= 0) return { tab, index, kind: items[index].kind, type: "act" };
+      const lab = items.findIndex((item) => item.k === "lab");
+      if (lab >= 0 && !labTarget) labTarget = { tab, index: lab, kind: "lab", type: "lab" };
+    }
+    return labTarget;
+  };
+  const openModel = () => {
+    const target = modelTarget();
+    if (!target) {
+      document
+        .querySelector("#studio-lab-bench")
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    state.idx[target.tab] = target.index;
+    selectTab(target.tab);
+    rt.api.render(target.tab);
+    requestAnimationFrame(() => {
+      const host =
+        document.querySelector(`.act-host[data-act="${CSS.escape(target.kind || "")}"]`) ||
+        document.querySelector(".lab-model, .act-host, #studio-lab-bench");
+      host?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  };
   const fresh = () => ({
     choice: "",
     entry: [],
@@ -57,7 +86,8 @@
       <span>${esc(String(e.independent || 0))} independent · ${esc(String(e.assisted || 0))} assisted · ${esc(String(e.transfer || 0))} application/transfer</span>
       ${tags.length ? `<span>Review: ${esc(tags.join(", "))}</span>` : ""}
       ${choice === "focused" ? `<button type="button" class="pathway-go" data-path-go="${route}">Go to suggested section ${route}</button>` : ""}
-      <button type="button" class="pathway-link" data-path-full>Show full sequence</button></div>`;
+      <button type="button" class="pathway-link" data-path-full>Show full sequence</button>
+      <button type="button" class="pathway-link" data-path-model>Open interactive model <span class="es-text" lang="es">Abrir modelo interactivo</span></button></div>`;
   }
 
   function paint() {
@@ -74,15 +104,17 @@
         selectTab(1);
         paint();
       });
+      panel.querySelector("[data-path-model]")?.addEventListener("click", openModel);
       return;
     }
-    panel.innerHTML = `<div class="pathway-intro"><div><p class="pathway-kicker">START HERE · OPTIONAL ${spanish("EMPIEZA AQUÍ · OPCIONAL")}</p><h2 id="pathway-title">Find a useful starting point${spanish("Encuentra un buen punto de partida")}</h2><p>Try two short checks, or open the full lesson. These checks recommend a section; they do not measure mastery.${spanish("Prueba dos preguntas breves o abre la lección completa. Solo recomiendan una sección.")}</p></div><div class="pathway-actions">${slots.length === 2 ? '<button type="button" class="pathway-primary" data-path-entry>Try the two checks</button>' : ""}<button type="button" class="pathway-link" data-path-full>Open full lesson</button></div></div><div class="pathway-check" hidden></div>`;
+    panel.innerHTML = `<div class="pathway-intro"><div><p class="pathway-kicker">START HERE · OPTIONAL ${spanish("EMPIEZA AQUÍ · OPCIONAL")}</p><h2 id="pathway-title">Find a useful starting point${spanish("Encuentra un buen punto de partida")}</h2><p>Try two short checks, or open the full lesson. These checks recommend a section; they do not measure mastery.${spanish("Prueba dos preguntas breves o abre la lección completa. Solo recomiendan una sección.")}</p></div><div class="pathway-actions">${slots.length === 2 ? '<button type="button" class="pathway-primary" data-path-entry>Try the two checks</button>' : ""}<button type="button" class="pathway-link" data-path-full>Open full lesson</button><button type="button" class="pathway-link" data-path-model>Open interactive model <span class="es-text" lang="es">Abrir modelo interactivo</span></button></div></div><div class="pathway-check" hidden></div>`;
     panel.querySelector("[data-path-entry]")?.addEventListener("click", () => showCheck(slots));
     panel.querySelector("[data-path-full]")?.addEventListener("click", () => {
       path.choice = "full";
       save();
       paint();
     });
+    panel.querySelector("[data-path-model]")?.addEventListener("click", openModel);
   }
 
   function finishEntry() {
