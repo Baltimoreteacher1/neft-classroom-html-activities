@@ -364,6 +364,7 @@ try {
 
       await openActivity(page, "5-1", mode, "sizer");
       const areaBefore = await page.locator(".sz-res b").first().textContent();
+      const linkedAreaBefore = await page.locator(".u5-area-linked").innerHTML();
       const figureBefore = await page
         .locator(".sz-fig polygon.sz-sh")
         .first()
@@ -377,12 +378,17 @@ try {
         .getAttribute("points");
       assert.equal(areaAfter, areaBefore, "shearing preserves base-times-height area");
       assert.notEqual(figureAfter, figureBefore, "shearing changes the figure");
+      assert.notEqual(
+        await page.locator(".u5-area-linked").innerHTML(),
+        linkedAreaBefore,
+        "shearing updates the equal-area ghost and linked formula panel",
+      );
       assert.equal(
         await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
         true,
         "geometry activity has no horizontal overflow",
       );
-      checks += 3;
+      checks += 4;
       if (screenshotDir)
         await page
           .locator(".sz-main")
@@ -404,6 +410,30 @@ try {
           `${lesson} dimensions update area composition`,
         );
         checks += 2;
+      }
+      for (const lesson of ["5-4", "5-5", "5-7", "5-10"]) {
+        await openActivity(page, lesson, mode, "sizer");
+        const linked = page.locator(
+          lesson === "5-4" ? ".u5-area-linked" : ".u5-area-linked.u5-solid-linked",
+        );
+        await linked.waitFor({ state: "visible" });
+        const before = await linked.innerHTML();
+        const dimension = page.locator('.act-host[data-act="sizer"] input[type="range"]').first();
+        const min = Number((await dimension.getAttribute("min")) || 0);
+        const max = Number((await dimension.getAttribute("max")) || 10);
+        const current = Number(await dimension.inputValue());
+        await dimension.fill(String(current < max ? current + 1 : Math.max(min, current - 1)));
+        assert.notEqual(
+          await linked.innerHTML(),
+          before,
+          `${lesson} dimensions update linked geometry`,
+        );
+        assert.equal(
+          await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+          true,
+          `${lesson} linked geometry has no horizontal overflow`,
+        );
+        checks += 3;
       }
       await openActivity(page, "6-1", mode, "barcut");
       const fractionLink = page.locator(".u6-frac-linked");

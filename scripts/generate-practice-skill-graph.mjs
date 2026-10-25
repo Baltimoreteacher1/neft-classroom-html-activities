@@ -198,7 +198,19 @@ function entry(lesson) {
     ratiomix: "Synchronized mixture bars, double number line, and coordinate graph",
     convchain: "Dual-unit scale and symbolic unit-cancellation equation",
     cancelit: "Dual-unit scale and symbolic unit-cancellation equation",
-    sizer: "Linked area decomposition/ghost overlay and live formula substitution",
+    sizer:
+      {
+        "5-1":
+          "Parallelogram shear linked to an equal-area rectangle and invariant base × height formula",
+        "5-2":
+          "Triangle linked to a bounding parallelogram and live half-base-times-height substitution",
+        "5-3": "Trapezoid linked to a doubled-parallelogram composition and live area formula",
+        "5-4": "L-shaped figure linked to its bounding rectangle, cutout, and subtraction formula",
+        "5-5": "Prism wireframe and matching unfolded face net linked to live volume formula",
+        "5-7": "Prism wireframe and matching unfolded face net linked to live surface-area sum",
+        "5-10":
+          "Fractional-dimension prism wireframe and matching net linked to live volume formula",
+      }[lesson.id] || "Dimension-controlled geometry linked to a live symbolic measurement formula",
     faces: "Linked solid/net view and face-area summation",
     netfold: "Linked solid wireframe, unfolded net, and surface-area/volume formula",
     packcrate: "Linked prism, cube-count partition, and volume formula",

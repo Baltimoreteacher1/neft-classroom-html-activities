@@ -1322,7 +1322,74 @@
         const mid = left + b1 * scale;
         const contents = `<polygon points="${left},28 ${right},28 ${right},100 ${left},100" fill="var(--brand-tint,#E5ECF3)" stroke="var(--ink,#1B2733)" stroke-width="2"/><polygon points="${left},28 ${mid},28 ${right},100 ${mid},100" fill="var(--sun,#F0BD4F)" fill-opacity=".78" stroke="var(--ink,#1B2733)" stroke-width="2"/><line x1="${mid}" y1="28" x2="${mid}" y2="100" stroke="var(--brand,#2C4A68)" stroke-dasharray="5 4"/><text x="${(left + mid) / 2}" y="20" text-anchor="middle">b₁ = ${num(b1)}</text><text x="${(mid + right) / 2}" y="120" text-anchor="middle">b₂ = ${num(b2)}</text><text x="12" y="68">h = ${num(d.h)}</text>`;
         linked.innerHTML = `${svg(contents, `Doubled trapezoid composition; bases ${num(b1)} and ${num(b2)}, height ${num(d.h)}`)}<figcaption><strong>Doubled-trapezoid composition:</strong> Area = (b₁ + b₂) × h ÷ 2 = (${num(b1)} + ${num(b2)}) × ${num(d.h)} ÷ 2 = ${num(((b1 + b2) * d.h) / 2)}</figcaption>`;
-      } else linked.replaceChildren();
+      } else if (m.shape === "para") {
+        const b = d.b;
+        const h = d.h;
+        const offset = ui.shear * 16;
+        const contents = `<rect x="72" y="28" width="168" height="72" fill="var(--brand-tint,#E5ECF3)" fill-opacity=".5" stroke="var(--brand,#2C4A68)" stroke-dasharray="6 4" stroke-width="2"/><polygon points="72,100 240,100 ${240 + offset},28 ${72 + offset},28" fill="var(--sun,#F0BD4F)" fill-opacity=".68" stroke="var(--ink,#1B2733)" stroke-width="2"/><line x1="${72 + offset}" y1="28" x2="${72 + offset}" y2="100" stroke="var(--bad,#B42318)" stroke-dasharray="4 3"/><text x="150" y="122" text-anchor="middle">b = ${num(b)}</text><text x="48" y="66">h = ${num(h)}</text>`;
+        linked.innerHTML = `${svg(contents, `Parallelogram shear and equal-area rectangle; base ${num(b)}, height ${num(h)}`)}<figcaption><strong>Area invariant:</strong> A = b × h = ${num(b)} × ${num(h)} = ${num(b * h)} square units. Sliding the top edge changes the slant, not the base or height.</figcaption>`;
+      } else if (m.shape === "lshape") {
+        const w = d.w;
+        const h = d.h;
+        const a = d.a;
+        const c = d.c;
+        const sx = (w, x) => 22 + (x / w) * 220;
+        const sy = (h, y) => 18 + (y / h) * 92;
+        const cutX = sx(w, w - a);
+        const cutY = sy(h, c);
+        const contents = `<rect x="22" y="18" width="220" height="92" fill="var(--brand-tint,#E5ECF3)" fill-opacity=".42" stroke="var(--brand,#2C4A68)" stroke-dasharray="5 4"/><path d="M22 18H${cutX}V${cutY}H242V110H22Z" fill="var(--sun,#F0BD4F)" fill-opacity=".78" stroke="var(--ink,#1B2733)" stroke-width="2"/><rect x="${cutX}" y="18" width="${242 - cutX}" height="${cutY - 18}" fill="var(--bad-tint,#f8dddd)" stroke="var(--bad,#B42318)" stroke-dasharray="4 3"/><text x="132" y="126" text-anchor="middle">w = ${num(w)} · h = ${num(h)}</text><text x="${(cutX + 242) / 2}" y="${(cutY + 18) / 2}" text-anchor="middle">cut ${num(a)} × ${num(c)}</text>`;
+        linked.innerHTML = `${svg(contents, `L-shaped area and removed rectangle; outer rectangle ${num(w)} by ${num(h)}, cutout ${num(a)} by ${num(c)}`)}<figcaption><strong>Area by subtraction:</strong> A = w × h − a × c = ${num(w)} × ${num(h)} − ${num(a)} × ${num(c)} = ${num(w * h - a * c)} square units.</figcaption>`;
+      } else if (m.shape === "prism") {
+        const l = d.l;
+        const w = d.w;
+        const h = d.h;
+        const value = measure(m, d);
+        const netScale = Math.min(230 / (2 * (l + w)), 82 / (h + 2 * w));
+        const stripY = 42;
+        const stripH = h * netScale;
+        const widths = [l, w, l, w].map((v) => v * netScale);
+        let cursor = (320 - widths.reduce((a, b) => a + b, 0)) / 2;
+        let sideFaces = "";
+        const faceNames = ["Front", "Right", "Back", "Left"];
+        const faceColors = [
+          "var(--brand-tint,#dbe8f3)",
+          "var(--ok-tint,#d9efe3)",
+          "var(--brand-tint,#dbe8f3)",
+          "var(--ok-tint,#d9efe3)",
+        ];
+        for (let i = 0; i < widths.length; i++) {
+          const width = widths[i];
+          sideFaces += `<rect x="${cursor}" y="${stripY}" width="${width}" height="${stripH}" fill="${faceColors[i]}" stroke="var(--ink,#223)"/><text x="${cursor + width / 2}" y="${stripY + stripH / 2}" text-anchor="middle" font-size="9">${faceNames[i]}</text>`;
+          if (i === 0) {
+            const topY = stripY - w * netScale;
+            const bottomY = stripY + stripH;
+            const pair = i === 0 ? ["Top", "Bottom"] : ["Top", "Bottom"];
+            sideFaces += `<rect x="${cursor}" y="${topY}" width="${width}" height="${w * netScale}" fill="var(--sun-tint,#fff0c2)" stroke="var(--sun-deep,#bd8c13)"/><text x="${cursor + width / 2}" y="${topY + (w * netScale) / 2}" text-anchor="middle" font-size="9">${pair[0]}</text><rect x="${cursor}" y="${bottomY}" width="${width}" height="${w * netScale}" fill="var(--sun-tint,#fff0c2)" stroke="var(--sun-deep,#bd8c13)"/><text x="${cursor + width / 2}" y="${bottomY + (w * netScale) / 2}" text-anchor="middle" font-size="9">${pair[1]}</text>`;
+          }
+          cursor += width;
+        }
+        const unit = 54 / Math.max(l, w, h);
+        const x0 = 26;
+        const y0 = 91;
+        const dx = w * unit * 0.45;
+        const dy = -w * unit * 0.32;
+        const length = l * unit;
+        const height = h * unit;
+        const top = `M${x0} ${y0 - height} L${x0 + length} ${y0 - height} L${x0 + length + dx} ${y0 - height + dy} L${x0 + dx} ${y0 - height + dy} Z`;
+        const front = `M${x0} ${y0 - height} H${x0 + length} V${y0} H${x0} Z`;
+        const side = `M${x0 + length} ${y0 - height} L${x0 + length + dx} ${y0 - height + dy} V${y0 + dy} L${x0 + length} ${y0} Z`;
+        const solid = `<path d="${top} ${front} ${side}" fill="var(--brand-tint,#dbe8f3)" fill-opacity=".36" stroke="var(--brand,#365b7d)" stroke-width="2.5"/><text x="${x0 + length / 2}" y="${y0 + 15}" text-anchor="middle">l=${num(l)}</text><text x="${x0 + length + dx / 2}" y="${y0 - height + dy / 2 - 3}" text-anchor="middle">w=${num(w)}</text><text x="${x0 + length + dx + 4}" y="${y0 - height / 2}" text-anchor="start">h=${num(h)}</text>`;
+        const net = `<svg viewBox="0 0 320 142" role="img" aria-label="Unfolded rectangular-prism net with matching Front and Back, Left and Right, Top and Bottom pairs" style="width:100%;height:auto">${sideFaces}</svg>`;
+        const equation =
+          m.goal === "surface"
+            ? `SA = 2(lw) + 2(lh) + 2(wh) = 2(${num(l)}×${num(w)}) + 2(${num(l)}×${num(h)}) + 2(${num(w)}×${num(h)}) = ${num(value)} square units`
+            : `V = l × w × h = ${num(l)} × ${num(w)} × ${num(h)} = ${num(value)} cubic units`;
+        linked.classList.add("u5-solid-linked");
+        linked.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:8px;align-items:center;min-width:0"><svg viewBox="0 0 180 138" role="img" aria-label="Isometric rectangular prism wireframe with length ${num(l)}, width ${num(w)}, height ${num(h)}" style="width:100%;height:auto">${solid}</svg>${net}</div><figcaption><strong>${equation}</strong></figcaption>`;
+      } else {
+        linked.classList.remove("u5-solid-linked");
+        linked.replaceChildren();
+      }
     }
     function show(/** @type {any} */ r) {
       fb.hidden = false;
