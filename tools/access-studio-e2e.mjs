@@ -175,10 +175,15 @@ ok(
   "writing check-in is honest that its draft is temporary",
 );
 
-await go(`${BASE}/teacher-launch`);
+await go(`${BASE}/launch-studio`);
 ok(
   (await page.locator("[data-launch-url]").count()) === 1,
   "Teacher Launch Studio generates a direct activity link",
+);
+await go(`${BASE}/teacher-launch`);
+ok(
+  (await page.locator("[data-launch-url]").count()) === 1,
+  "Teacher Launch Studio route alias works",
 );
 const launchHref = await page.locator("[data-launch-url]").inputValue();
 ok(

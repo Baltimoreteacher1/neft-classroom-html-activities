@@ -106,7 +106,7 @@ ${state.typed}</textarea>`,
                 <li><strong>Whole-Class Modeling:</strong> Projector routines for listening, evidence reading, and sequence reconstruction. Use the <a href="${BASE}/classroom">Whole-Class Studio</a>.</li>
               </ul>
               <div class="row-actions">
-                <a class="btn ghost small" href="${BASE}/teacher-launch">Open Teacher Launch Studio →</a>
+                <a class="btn ghost small" href="${BASE}/launch-studio">Open Teacher Launch Studio →</a>
                 <a class="btn ghost small" href="${BASE}/classroom">Open Whole-Class Studio →</a>
                 <a class="btn ghost small" href="/access-teacher/">Open Full Teacher Dashboard →</a>
                 <a class="btn ghost small" href="${BASE}/passport?portfolio=1">View Student Practice Portfolios →</a>
