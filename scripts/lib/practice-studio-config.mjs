@@ -605,13 +605,65 @@ export function buildSections(
       };
   const stretch = convert(p.extending, left).slice(0, 3);
 
+  const compactFresh = (f) => {
+    if (Array.isArray(f)) {
+      const acts = f.filter((x) => x.k === "act");
+      const others = f.filter((x) => x.k !== "act");
+      const byLevel = new Map();
+      for (const it of others) {
+        const lvl = it.level ?? 1;
+        if (!byLevel.has(lvl)) byLevel.set(lvl, it);
+      }
+      const diverse = [...byLevel.values()];
+      for (const it of others) {
+        if (!diverse.includes(it)) diverse.push(it);
+      }
+      const needed = Math.min(others.length, Math.max(3, 4 - acts.length));
+      return { items: [...diverse.slice(0, needed), ...acts] };
+    }
+    return {
+      items: Array.from({ length: Math.min(f?.slots || 3, ld.bench ? 2 : 3) }, () => ({
+        k: "pool",
+      })),
+      pool: f.pool,
+    };
+  };
+  const freshPractice = compactFresh(ld.fresh);
+
+  const isHinge = (it) =>
+    it &&
+    it.k === "mc" &&
+    !it.viz &&
+    Array.isArray(it.c) &&
+    Array.isArray(it.tag) &&
+    it.c.length >= 3 &&
+    it.c.length <= 5 &&
+    it.tag.length === it.c.length &&
+    it.tag.filter((t, i) => i !== it.a && t).length === it.c.length - 1 &&
+    new Set(it.tag.filter((t, i) => i !== it.a && t)).size >= 2;
+
+  const compactList = (list, count) => {
+    if (!list || list.length <= count) return { items: list || [] };
+    const hIdx = list.findIndex(isHinge);
+    if (hIdx >= count) {
+      const chosen = [...list.slice(0, count - 1), list[hIdx]];
+      const remaining = list.filter((it) => !chosen.includes(it));
+      return { items: chosen, pool: remaining };
+    }
+    return { items: list.slice(0, count), pool: list.slice(count) };
+  };
+
+  const allApproaching = convert(p.approaching, left);
+  const allL2 = l2;
+  const allMastery = mastery;
+
   const lists = {
     practice: [
-      { items: getReady.slice(0, 4) },
-      { items: convert(p.approaching, left).slice(0, 8) },
-      { items: l2.slice(0, 8) },
-      fresh,
-      { items: mastery.slice(0, 10) },
+      compactList(getReady, 3),
+      compactList(allApproaching, 3),
+      compactList(allL2, 3),
+      freshPractice,
+      compactList(allMastery, 3),
     ],
     challenge: [
       climb,

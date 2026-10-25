@@ -163,23 +163,17 @@ for (const page of U4_PAGES) {
   await openItem(p, 5, idx);
   const stars0 = w.U4Studio.totalStars();
   const before = choicesOf(d, 5).map((b) => (b.textContent || "").replace(/\s+/g, " ").trim());
-  // the first miss: the pause holds the next try, and the choices move
+  // the first miss: choices move and no blocking pause holds the next try
   const first = choicesOf(d, 5)[0];
   first.click();
   await p.settle();
-  assert.ok(onPanel(d, 5).querySelector(".hold-chips"), `${tag} the pause appears after a miss`);
+  assert.ok(
+    !onPanel(d, 5).querySelector(".hold-chips"),
+    `${tag} no hold pause appears after a miss`,
+  );
   const moved = choicesOf(d, 5).map((b) => (b.textContent || "").replace(/\s+/g, " ").trim());
   assert.notDeepEqual(moved, before, `${tag} the choices move after a miss`);
-  const wrongBefore = w.U4Studio.misses().length;
-  const blocked = choicesOf(d, 5).find((b) => !b.classList.contains("wrong") && !b.disabled);
-  blocked.click();
-  await p.settle();
-  assert.equal(w.U4Studio.misses().length, wrongBefore, `${tag} a choice waits for the pause`);
-  assert.equal(
-    w.U4Guess.record().miss[`5:${idx}`],
-    1,
-    `${tag} one miss is saved for the slot, and the blocked click was not counted`,
-  );
+  assert.equal(w.U4Guess.record().miss[`5:${idx}`], 1, `${tag} one miss is saved for the slot`);
 
   // 2. the miss survives a reload
   const reloaded = await loadU4Page(page, { storage: p.storage() });
@@ -298,7 +292,7 @@ for (const page of U4_PAGES) {
   const wrongOne = choicesOf(d, 5).find((_b, i) => i !== items[1].correct);
   wrongOne.click();
   await p.settle();
-  onPanel(d, 5).querySelector(".hold-chip").click();
+  onPanel(d, 5).querySelector(".hold-chip")?.click();
   await p.settle();
   const idx2 = items[1].correct;
   const texts = choicesOf(d, 5).map((b) => b.dataset.t5Mc);
@@ -318,8 +312,7 @@ for (const page of U4_PAGES) {
     t.d.getElementById("t2-check-btn").click();
     await t.settle();
     const chip = onPanel(t.d, 2).querySelector(".hold-chip");
-    assert.ok(chip, "the pause follows a wrong typed answer");
-    chip.click();
+    if (chip) chip.click();
     await t.settle();
   }
   assert.equal(t.w.U4Guess.record().miss["2:0"], 2, "two typed misses are counted");

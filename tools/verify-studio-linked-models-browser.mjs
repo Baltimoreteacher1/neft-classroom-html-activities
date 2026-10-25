@@ -210,6 +210,13 @@ try {
             grid.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
             return true;
           }
+          if (el.getAttribute("data-act") === "balance") {
+            const pick = root.querySelector(".sa-pick button:not([disabled])");
+            if (pick) pick.click();
+            const tiles = root.querySelectorAll(".sa-tile:not([disabled])");
+            for (const tile of tiles) tile.click();
+            if (tiles.length || pick) return true;
+          }
           const button = root.querySelector("button:not([disabled])");
           if (button && !el.classList.contains("lab-item")) {
             button.click();

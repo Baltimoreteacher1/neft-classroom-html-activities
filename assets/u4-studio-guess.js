@@ -149,23 +149,9 @@
     box.querySelector(".look-closer")?.remove();
     box.querySelector(".hold-chips")?.remove();
     const look = n >= AT.LOOK_AT;
-    const chips = AT.HOLD_REASONS.map(
-      (/** @type {any} */ r) =>
-        `<button type="button" class="btn btn-sm hold-chip" data-hold="${r.id}">${r.en}${es(r.es)}</button>`,
-    ).join("");
-    const note = look
-      ? `<p class="item-sub look-closer"><strong>${bi("Look closer.", "Mira con más cuidado.")}</strong> ${bi("Study the model and read the question again. A fresh problem comes next, so you can show you have it.", "Estudia el modelo y lee la pregunta otra vez. Sigue un problema nuevo para que muestres que lo dominas.")}</p>`
-      : "";
-    box.insertAdjacentHTML(
-      "beforeend",
-      `${note}<div class="hold-chips" role="group" aria-label="Before you try again"><p class="item-sub hold-q">${bi("Before you try again, pick one thing to do:", "Antes de intentar otra vez, elige una cosa por hacer:")}</p>${chips}</div>`,
-    );
-    stage.dataset.hold = "1";
-    say(
-      look
-        ? "Look closer. Pick one thing to do before you try again."
-        : "Not yet. Pick one thing to do before you try again.",
-    );
+    if (look) {
+      say("Look closer. Study the model and read the question again.");
+    }
   }
 
   /* ---- the pause: buttons and Enter wait until one thing is picked ---------------------------------------------- */
@@ -173,10 +159,7 @@
     ".hold-chip,.speak-btn,[data-speak],.read-aloud-btn,.next-btn,.step-dot,.hint-btn,[id$='-hint-btn'],[data-hint],.u4-twin,.prove-box,.repair-note";
   const GATED =
     "button,[role=button],.choice-btn,input[type=checkbox],input[type=radio],[data-examine-pick]";
-  const heldStage = (/** @type {Element|null} */ t) => {
-    const s = /** @type {HTMLElement|null} */ (t && t.closest(".stage-card[data-hold='1']"));
-    return s && s.querySelector(".hold-chips") ? s : null;
-  };
+  const heldStage = (_t) => null;
   function releaseHold(/** @type {HTMLElement} */ stage, /** @type {string} */ reason) {
     delete stage.dataset.hold;
     stage.querySelector(".hold-chips")?.remove();

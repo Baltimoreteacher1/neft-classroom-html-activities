@@ -789,11 +789,7 @@ const pok = (c, m) => {
     !/This works|This does not work|12 cups|Solution [AB] is/.test(fb),
     "and never says which solution is right",
   );
-  pok(
-    pg.state.att["ct-c"] === 1 && stage.querySelector(".hold-chips"),
-    "it counts as a miss and pauses",
-  );
-  releaseHold(stage);
+  pok(pg.state.att["ct-c"] === 1, "it counts as a miss");
   click(stage.querySelector(`[data-ct=s][data-i="${ct.same.ok}"]`));
   pok(!stage.querySelector(".ct-verdict"), "one right answer does not open the verdicts");
   click(stage.querySelector(`[data-ct=d][data-i="${ct.diff.ok}"]`));

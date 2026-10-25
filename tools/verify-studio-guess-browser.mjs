@@ -119,10 +119,10 @@ for (const id of ids) {
   // click choices in DOM order, as a bot would, until the item is solved; pick a chip when asked
   const tried = new Set();
   let solved = false;
-  let sawHold = false;
+  let _sawHold = false;
   for (let step = 0; step < 14 && !solved; step++) {
     if (await stage.locator(".hold-chips").count()) {
-      sawHold = true;
+      _sawHold = true;
       await stage.locator(".hold-chip").first().click();
     }
     const choices = stage.locator("[data-mc]:not([disabled])");
@@ -161,7 +161,7 @@ for (const id of ids) {
   } else if (out.att === 0) {
     // a lucky first click is fine; nothing to assert
   }
-  if (out.att >= 1 && !sawHold) fail(id, "a miss did not ask for a pause");
+  // pause on miss is removed per user request: get rid of the "before you try again" part
   // the misses survive a reload
   await page.reload({ waitUntil: "load" });
   const after = await page.evaluate(

@@ -198,7 +198,7 @@
   }
 
   /* ---- a pause with no clock: after a miss the student picks one thing to do before the next try ------------ */
-  const HOLD_ALLOW =
+  const _HOLD_ALLOW =
     ".hold-chips,[data-hint],[data-tutor],[data-conf],.tool-btn,.next-btn,[data-example],[data-read],[data-reroll],.repair-btn,[data-prove],.item-workspace";
   const holdLive = (/** @type {HTMLElement} */ host) =>
     host.dataset.hold === "1" && !!host.querySelector(".hold-chips");
@@ -220,71 +220,12 @@
     else focusOn(".item-q");
     say("Try again when you are ready.");
   }
-  function installHold(/** @type {HTMLElement} */ host) {
-    const h = /** @type {any} */ (host);
-    if (h._hold) return;
-    h._hold = true;
-    host.addEventListener(
-      "click",
-      (e) => {
-        const t = e.target;
-        if (!(t instanceof Element)) return;
-        const chip = /** @type {HTMLElement|null} */ (t.closest("[data-hold]"));
-        if (chip) return releaseHold(host, chip.dataset.hold || "reread");
-        if (t.closest("[data-hint]")) {
-          delete host.dataset.hold;
-          host.querySelector(".hold-chips")?.remove();
-          return;
-        }
-        if (!holdLive(host)) return void delete host.dataset.hold;
-        if (t.closest(HOLD_ALLOW)) return;
-        if (
-          t.closest(
-            "button,[role=button],[data-mc],[data-err],input[type=checkbox],input[type=radio]",
-          )
-        ) {
-          e.stopImmediatePropagation();
-          e.preventDefault();
-          say("Pick one thing to do before you try again.");
-          /** @type {HTMLElement|null} */ (host.querySelector(".hold-chip"))?.focus();
-        }
-      },
-      true,
-    );
-    host.addEventListener(
-      "keydown",
-      (e) => {
-        if (e.key !== "Enter" || !holdLive(host)) return;
-        const t = e.target;
-        if (!(t instanceof HTMLInputElement) || t.type === "range") return;
-        e.stopImmediatePropagation();
-        e.preventDefault();
-        say("Pick one thing to do before you try again.");
-        /** @type {HTMLElement|null} */ (host.querySelector(".hold-chip"))?.focus();
-      },
-      true,
-    );
+  function installHold(/** @type {HTMLElement} */ _host) {
+    // No-op: no blocking pause before retry
   }
   function holdFor(/** @type {any} */ ctx, /** @type {number} */ n) {
-    const host = /** @type {HTMLElement} */ (ctx.host);
-    const box = $(".item-fb", host);
-    if (!box) return;
     const look = n >= AT().LOOK_AT;
     if (look) ctx.openHint();
-    const chips = AT()
-      .HOLD_REASONS.map(
-        (/** @type {any} */ r) =>
-          `<button type="button" class="btn btn-sm hold-chip" data-hold="${r.id}">${esc(r.en)}${es(r.es)}</button>`,
-      )
-      .join("");
-    const note = look
-      ? `<p class="item-sub look-closer"><strong>Look closer.</strong>${es("Mira con más cuidado.")} Read the next hint and study the model. A fresh problem comes next, so you can show you have it.${es("Lee la siguiente pista y estudia el modelo. Sigue un problema nuevo para que muestres que lo dominas.")}</p>`
-      : "";
-    box.insertAdjacentHTML(
-      "beforeend",
-      `${note}<div class="hold-chips" role="group" aria-label="Before you try again"><p class="item-sub hold-q">Before you try again, pick one thing to do:${es("Antes de intentar otra vez, elige una cosa por hacer:")}</p>${chips}</div>`,
-    );
-    host.dataset.hold = "1";
   }
 
   /* ---- the ctx every item kind receives -------------------------------------------------------- */

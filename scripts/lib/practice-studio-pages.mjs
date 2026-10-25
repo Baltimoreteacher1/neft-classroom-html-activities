@@ -182,15 +182,14 @@ export function pageFor({
         <div class="mission-body"><p class="mission-tag">${esc(world.tag)}<span class="es-text" lang="es">${esc(world.tagEs)}</span></p><p>${esc(story)}</p><p class="es-text" lang="es">${esc(storyEs)}</p></div>
     </details>`;
   const tabs = sections
-    .map(
-      (
-        s,
-        i,
-      ) => `      <button type="button" class="tab-btn" role="tab" id="tab-${i + 1}" aria-selected="${i === 0}" aria-controls="panel-${i + 1}" tabindex="${i === 0 ? 0 : -1}" data-tab="${i + 1}">
+    .map((s, i) => {
+      const isOpt = mode === "practice" && i >= 3;
+      const optPrefix = isOpt ? `${bi("Optional", "Opcional")} · ` : "";
+      return `      <button type="button" class="tab-btn${isOpt ? " tab-opt" : ""}" role="tab" id="tab-${i + 1}" aria-selected="${i === 0}" aria-controls="panel-${i + 1}" tabindex="${i === 0 ? 0 : -1}" data-tab="${i + 1}">
         <span class="tab-badge" id="badge-${i + 1}">${i + 1}</span>
-        <span class="tab-text"><span class="tab-name">${bi(s.name, s.nameEs)}</span><span class="tab-desc">${bi(s.desc, s.descEs)} (${s.items.length})</span></span>
-      </button>`,
-    )
+        <span class="tab-text"><span class="tab-name">${bi(s.name, s.nameEs)}</span><span class="tab-desc">${optPrefix}${bi(s.desc, s.descEs)} (${s.items.length})</span></span>
+      </button>`;
+    })
     .join("\n");
   const panels = sections
     .map(
