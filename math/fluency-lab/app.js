@@ -6698,13 +6698,17 @@ function finalizeProblem(correct) {
     session.streak = 0;
     session.missed.push({ skill: state.item.skill, item: state.item });
     const conf = state.confidence || "certain";
-    let title = lostStreak ? "New streak starts now" : "Keep this one";
+    let title = lostStreak ? "Incorrect — new streak starts now" : "Incorrect";
     let copy = `${state.item.hint} ${state.item.explanation}`;
     if (conf === "curious") {
-      title = "Great Curiosity! 🦉";
+      title = lostStreak
+        ? "Incorrect — new streak starts now"
+        : "Incorrect — keep exploring";
       copy = `Exploring with curiosity is how mathematicians grow! ${state.item.hint} ${state.item.explanation}`;
     } else if (conf === "thinking") {
-      title = "Good Thinking Effort! 🦊";
+      title = lostStreak
+        ? "Incorrect — new streak starts now"
+        : "Incorrect — review your thinking";
     }
     showFeedback(title, copy, "incorrect");
     if (els.fixAnswerBtn && session.mode !== "streak" && session.mode !== "sprint") {
