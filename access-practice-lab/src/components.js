@@ -2,6 +2,7 @@
 // self-checks, tier picker, band switch, progress ring, reading voice toolbar.
 import { SPEAKING_CHECKS } from "./grade.js";
 import { canRecord, takesFor } from "./recorder.js";
+import { waveformSVG } from "./waveform.js";
 import { canSpeak, getVoiceOptions } from "./speech.js";
 import { findCognatesInText } from "./multilingual.js";
 import { glossInline } from "./glossary.js";
@@ -334,15 +335,37 @@ export function recorderHTML(
     ${
       takes.length
         ? html`<ol class="takes">
-            ${takes.map((t, i) => html`<li><span>Try ${i + 1}${t.seconds ? ` · ${t.seconds}s` : ""}</span><audio aria-label="Play recording ${i + 1}" controls preload="none" src="${t.url}"></audio><a class="ghost small" href="${t.url}" download="practice-recording-${i + 1}.${t.extension || "webm"}">Download this recording</a></li>`)}
+            ${takes.map((t, i) => html`<li><span>Try ${i + 1}${t.seconds ? ` · ${t.seconds}s` : ""}</span>${raw(waveformSVG(t.env))}<audio aria-label="Play recording ${i + 1}" controls preload="none" src="${t.url}"></audio><a class="ghost small" href="${t.url}" download="practice-recording-${i + 1}.${t.extension || "webm"}">Download this recording</a></li>`)}
           </ol>`
         : ""
     }
+    ${takes.length > 1 ? compareTakesHTML(takes) : ""}
     <p class="rec-countdown" data-rec-countdown="${key}" role="status"></p>
     <p class="rec-error" data-rec-error="${key}" role="status"></p>
     <p class="fine">Listen to your answer. Choose one detail to add, then record again if you want.</p>
     <p class="fine">Recordings stay in this tab and disappear when you close or reload it. They are never uploaded. Download a recording before leaving if you want to keep it; a progress code does not include audio.</p>
     ${models ? modelLadderHTML(models, level, activity) : ""}
+  </section>`;
+}
+
+// Oldest kept take against the latest. Only the three most recent takes are kept, so
+// "oldest saved" is the honest label. Shows what was recorded, not a judgement of it.
+function compareTakesHTML(takes) {
+  const first = takes[0];
+  const latest = takes[takes.length - 1];
+  const cell = (label, take, n) => html`<figure class="compare-cell">
+      <figcaption>${label}${take.seconds ? ` · ${take.seconds}s` : ""}</figcaption>
+      ${raw(waveformSVG(take.env))}
+      <audio aria-label="Play ${label.toLowerCase()}" controls preload="none" src="${take.url}"></audio>
+      <span class="fine">Try ${n}</span>
+    </figure>`;
+  return html`<section class="compare" aria-label="Compare your tries">
+    <h4>Compare your tries</h4>
+    <p class="fine">Listen to both. Notice what changed, such as a reason added or a clearer ending. Length alone does not make an answer better.</p>
+    <div class="compare-grid">
+      ${cell("Oldest saved try", first, 1)}
+      ${cell("Latest try", latest, takes.length)}
+    </div>
   </section>`;
 }
 
