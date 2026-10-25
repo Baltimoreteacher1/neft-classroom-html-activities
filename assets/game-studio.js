@@ -28,6 +28,7 @@
           ? stored.calm
           : mq.matches,
     contrast: stored.contrast === true,
+    readAloud: stored.readAloud === true,
   };
 
   /** @type {any} */
@@ -42,6 +43,8 @@
   let soundButton;
   /** @type {HTMLButtonElement | undefined} */
   let motionButton;
+  /** @type {HTMLButtonElement | undefined} */
+  let readAloudButton;
   /** @type {HTMLButtonElement | undefined} */
   let pauseButton;
   /** @type {HTMLButtonElement | undefined} */
@@ -730,6 +733,67 @@
     </svg>`;
   }
 
+  // ── Read aloud: speaks what games announce through their live regions ─────
+  // Every game writes its feedback into an aria-live/role=status element (its
+  // own srSay). Watching those regions covers every game without per-game code.
+  // Opt-in only: nothing is spoken until the student turns it on.
+  const speechOk = "speechSynthesis" in host && "SpeechSynthesisUtterance" in host;
+  /** @type {string} */
+  let lastSpoken = "";
+
+  /**
+   * @param {string} text
+   */
+  function speak(text) {
+    if (!speechOk || !preferences.readAloud) return;
+    const clean = text.replace(/\s+/g, " ").trim();
+    if (!clean || clean === lastSpoken) return;
+    lastSpoken = clean;
+    try {
+      host.speechSynthesis.cancel();
+      const utterance = new host.SpeechSynthesisUtterance(clean);
+      utterance.lang = isEs() ? "es-US" : "en-US";
+      utterance.rate = 0.95;
+      host.speechSynthesis.speak(utterance);
+    } catch {}
+  }
+
+  function watchAnnouncements() {
+    if (!speechOk) return;
+    const liveSelector =
+      '[aria-live="polite"],[aria-live="assertive"],[role="status"],[role="alert"]';
+    /** @param {Element | null} region */
+    const isSpeakable = (region) => !!region && !region.closest("dialog");
+    const observer = new MutationObserver((records) => {
+      if (!preferences.readAloud) return;
+      for (const record of records) {
+        if (record.type === "characterData") {
+          const parent = record.target.parentElement;
+          const region = parent?.closest(liveSelector);
+          if (isSpeakable(region ?? null)) speak(region?.textContent || "");
+          continue;
+        }
+        const target = record.target instanceof Element ? record.target : null;
+        const inRegion = isSpeakable(target?.closest(liveSelector) ?? null);
+        for (const added of record.addedNodes) {
+          if (inRegion) {
+            speak(added.textContent || "");
+            continue;
+          }
+          if (!(added instanceof Element)) continue;
+          const regions = added.matches(liveSelector)
+            ? [added]
+            : added.querySelectorAll(liveSelector);
+          for (const region of regions) {
+            if (isSpeakable(region)) speak(region.textContent || "");
+          }
+        }
+      }
+    });
+    observer.observe(document.body, { childList: true, characterData: true, subtree: true });
+  }
+  watchAnnouncements();
+
   // ── Persistence: ewl-game-studio-v1 + eduwonder_games_v2 + eduwonder_master_v3 ─
   function save() {
     try {
@@ -840,6 +904,12 @@
       motionButton.textContent = preferences.reducedMotion
         ? T("Calm motion", "Movimiento calmado")
         : T("Full motion", "Movimiento completo");
+    readAloudButton?.setAttribute("aria-pressed", String(preferences.readAloud));
+    if (readAloudButton)
+      readAloudButton.textContent = preferences.readAloud
+        ? T("Read aloud on", "Lectura en voz alta activada")
+        : T("Read aloud off", "Lectura en voz alta desactivada");
+    if (!preferences.readAloud) host.speechSynthesis?.cancel();
     relabel();
     listeners.dispatchEvent(new CustomEvent("settings", { detail: { ...preferences } }));
   }
@@ -1419,6 +1489,12 @@
       save();
       apply();
     });
+    readAloudButton = button(T("Read aloud", "Leer en voz alta"), () => {
+      preferences.readAloud = !preferences.readAloud;
+      save();
+      apply();
+    });
+    readAloudButton.hidden = !speechOk;
     pauseButton = button(T("Pause", "Pausa"), () => setPaused(!paused));
     pauseButton.hidden = !adapter.pause || !adapter.resume;
     helpButton = button(T("How to play", "Cómo jugar"), () => openDialog("help"));
@@ -1431,6 +1507,7 @@
       helpButton,
       soundButton,
       motionButton,
+      readAloudButton,
       settingsButton,
       pauseButton,
       fullscreenButton,
