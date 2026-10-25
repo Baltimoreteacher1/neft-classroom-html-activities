@@ -47,6 +47,34 @@ test("speech: voice options and personas resolve correctly across system configu
   assert.ok(defaultVoice === null || typeof defaultVoice === "object");
 });
 
+test("speech: the reading picker keeps Normal and suitable English voices only", async () => {
+  const systemVoices = [
+    { name: "Alex", lang: "en-US", voiceURI: "alex" },
+    { name: "Zarvox", lang: "en-US", voiceURI: "zarvox" },
+    { name: "Google US English", lang: "en-US", voiceURI: "google-us" },
+    { name: "Google español", lang: "es-ES", voiceURI: "google-es" },
+  ];
+  globalThis.window = {
+    speechSynthesis: {
+      getVoices: () => systemVoices,
+      addEventListener() {},
+    },
+  };
+  try {
+    const speech = await import(`../access-practice-lab/src/speech.js?voices=${Date.now()}`);
+    const options = speech.getVoiceOptions("en");
+    assert.deepEqual(
+      options.map((voice) => voice.id),
+      ["default", "google-us"],
+    );
+    assert.equal(options[0].name, "Normal");
+    assert.equal(speech.pickVoice("en-US", { voiceURI: "default" }), null);
+    assert.equal(speech.pickVoice("en-US", { voiceURI: "zarvox" }).name, "Google US English");
+  } finally {
+    delete globalThis.window;
+  }
+});
+
 const MISSION_DIR = new URL("../access-practice-lab/content/missions/", import.meta.url);
 const missions = readdirSync(MISSION_DIR)
   .filter((f) => f.endsWith(".json"))

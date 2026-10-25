@@ -601,7 +601,7 @@ export function onClick(e, ctx) {
       readPassage.classList.add("is-playing");
       speak(texts, {
         rate: ctx.prefs.rate || 0.9,
-        voiceURI: ctx.prefs.readingVoice,
+        voiceURI: ctx.prefs.readingVoice || "default",
         onSegment: (idx) => {
           sentences.forEach((el, i) => {
             el.classList.toggle("is-active-reading-sentence", i === idx);

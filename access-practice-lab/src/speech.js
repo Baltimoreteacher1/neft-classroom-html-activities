@@ -34,33 +34,40 @@ export function getAvailableVoices(langPrefix = "") {
  */
 export function getVoiceOptions(lang = "en") {
   const matching = getAvailableVoices(lang);
-  if (!matching.length) {
-    return [
-      { id: "default", name: "Default System Voice", lang: "en-US", quality: true },
-    ];
-  }
-  return matching.map((v) => {
-    let tag = "Standard";
-    if (/natural|neural/i.test(v.name)) tag = "Natural";
-    else if (/premium|enhanced/i.test(v.name)) tag = "Enhanced";
-    else if (/google/i.test(v.name)) tag = "Google";
-    return {
-      id: v.voiceURI || v.name,
-      name: `${v.name} (${tag})`,
-      rawName: v.name,
-      lang: v.lang,
-      quality: QUALITY.test(v.name),
-    };
-  });
+  const suitable = matching.filter((v) => QUALITY.test(v.name || ""));
+  return [
+    { id: "default", name: "Normal", lang: lang === "en" ? "en-US" : lang, quality: true },
+    ...suitable.map((v) => {
+      let tag = "Standard";
+      if (/natural|neural/i.test(v.name)) tag = "Natural";
+      else if (/premium|enhanced/i.test(v.name)) tag = "Enhanced";
+      else if (/google/i.test(v.name)) tag = "Google";
+      return {
+        id: v.voiceURI || v.name,
+        name: `${v.name} (${tag})`,
+        rawName: v.name,
+        lang: v.lang,
+        quality: true,
+      };
+    }),
+  ];
 }
 
 export function pickVoice(lang = "en-US", { voiceURI = "", persona = "narrator" } = {}) {
   if (!voices.length) refreshVoices();
   const base = lang.toLowerCase().split("-")[0];
 
+  // "Normal" leaves voice choice to the browser's built-in default.
+  if (voiceURI === "default") return null;
+
   // Explicit voiceURI selection from user preference
   if (voiceURI) {
-    const direct = voices.find((v) => v.voiceURI === voiceURI || v.name === voiceURI);
+    const direct = voices.find(
+      (v) =>
+        (v.voiceURI === voiceURI || v.name === voiceURI) &&
+        v.lang?.toLowerCase().startsWith(base) &&
+        QUALITY.test(v.name || ""),
+    );
     if (direct) return direct;
   }
 

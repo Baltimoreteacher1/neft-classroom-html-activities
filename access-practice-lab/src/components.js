@@ -102,7 +102,7 @@ export function readingToolbarHTML(
         <select class="voice-select" data-select-voice aria-label="Reading voice">
           ${voices.map(
             (v) =>
-              html`<option value="${v.id}" ${voiceURI === v.id ? raw("selected") : ""}>
+              html`<option value="${v.id}" ${voiceURI === v.id || (!voiceURI && v.id === "default") ? raw("selected") : ""}>
                 🎙️ ${v.name}
               </option>`,
           )}
