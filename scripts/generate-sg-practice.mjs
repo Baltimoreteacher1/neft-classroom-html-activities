@@ -304,7 +304,7 @@ function pageOne(ctx, counter, key) {
   const weDo = intro.weDo || {};
   const weDoLines = (weDo.lines || []).filter(Boolean).filter((l) => !/sentence frame/i.test(l));
   const weDoHtml = weDoLines.length
-    ? `<div class="sp-westart"><b>${esc(weDo.title || "We started this together")}:</b> ${esc(weDoLines.join(" "))}</div>`
+    ? `<div class="sp-westart"><b>${esc(weDo.title || "We started this together")}:</b><ol>${weDoLines.map((line) => `<li>${esc(line)}</li>`).join("")}</ol></div>`
     : "";
   const items = [];
   items.push(
@@ -329,7 +329,7 @@ function pageOne(ctx, counter, key) {
     items.push(
       mcTask(counter(), q, {
         key,
-        tag: "Warm restart",
+        tag: "Quick review",
         justify: level.supported ? "" : "How do you know?",
         watch: q.explanation ? "" : cfg.practice?.commonMistake || "",
         isExcluded: ctx.isExcluded,
@@ -347,7 +347,7 @@ function pageOne(ctx, counter, key) {
   ${pageHead(ctx, { kicker: "Practice Set · Part 1", sub: "Pick up where we left off", nameLine: true, key })}
   ${recap}
   ${model}
-  ${sectionH("Start here", "You did these with your group. Now do them on your own — the model above is yours to copy.")}
+  ${sectionH("Start here", "Use the model to solve the first problem. Then try these quick review questions from earlier lessons.")}
   <ol class="sp-tasks">${items.join("")}</ol>
   ${pageFoot(ctx, 1, 4)}
   </section>`;
@@ -414,7 +414,7 @@ function pageTwo(ctx, counter, key) {
 
   return `<section class="sp-page">
   ${pageHead(ctx, { kicker: "Practice Set · Part 2", sub: "Keep going", key })}
-  ${sectionH("You answered these out loud. Now write them.", "Answer, then say how you know — the reason is the part that counts.")}
+  ${sectionH("Try these on your own", "Choose an answer. Then explain how you know.")}
   <ol class="sp-tasks">${items.join("")}</ol>
   ${sort}
   ${pageFoot(ctx, 2, 4)}
@@ -443,7 +443,7 @@ function pageThree(ctx, counter, key) {
     items.push(
       task(
         counter(),
-        `<span class="sp-tag">Find the mistake</span>Another student made this exact mistake in this lesson. Explain why it is wrong, then write what they should have done.`,
+        `<span class="sp-tag">Find the mistake</span>Read the mistake. Explain what went wrong, then show the correct step.`,
         `<div class="sp-mistake"><b>The mistake:</b> ${esc(shown)}</div>${
           key
             ? `<p class="ws-keynote">The full note above is the teacher's — the student sheet shows only the misconception, not the correction. A correct answer names the step that went wrong, states the rule it broke, and shows the fixed work.</p><p class="sp-watch"><b>Watch for:</b> a student who repeats the mistake back without naming why it is wrong.</p>`
@@ -562,7 +562,7 @@ function pageFour(ctx, counter, key) {
   ${pageHead(ctx, { kicker: "Practice Set · Part 4", sub: "Show what you know", key })}
   ${sectionH("Last check", carryNote)}
   <ol class="sp-tasks">${items.join("")}</ol>
-  ${sectionH("Be honest — this tells your teacher what to do next")}
+  ${sectionH("Check your progress", "Choose the box that best describes how you feel about each skill.")}
   ${selfCheck}
   ${ask}
   ${reteach}
