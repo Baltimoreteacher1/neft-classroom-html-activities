@@ -131,7 +131,7 @@ function startTimer() {
   }, 1000);
 }
 
-/** Plays allowed per recording under test conditions: once, or twice with the replay accommodation. */
+/** Plays allowed by this optional Lab practice setting. It does not configure an official accommodation. */
 const maxPlays = () => (T?.rec.replay ? 2 : 1);
 
 /** Hooks the app calls around the Listen button (main.js). Under test conditions the count lives in the saved test, so a reload cannot reset it. */
@@ -178,13 +178,13 @@ function introHTML() {
       >
       <label class="rate-opt"
         ><input type="radio" name="test-mode" value="test" data-conditions ${T.rec.conditions ? raw("checked") : ""} ${IGN} />
-        <span><strong>Test conditions</strong> — each recording plays once and cannot be paused, like a real testing session.</span></label
+        <span><strong>Independent rehearsal</strong> — this Lab practice setting plays each recording once and cannot be paused. It does not reproduce official ACCESS procedures.</span></label
       >
       ${
         T.rec.conditions
           ? html`<label class="timer-opt"
-              ><input type="checkbox" data-replay ${T.rec.replay ? raw("checked") : ""} ${IGN} /> My plan allows one replay
-              of each recording. <span class="fine">On the real test, replay is an accommodation that your school sets up in advance. Check the current WIDA accommodations manual or ask your teacher.</span></label
+              ><input type="checkbox" data-replay ${T.rec.replay ? raw("checked") : ""} ${IGN} /> Allow one replay in this practice set
+              <span class="fine">This Lab setting does not grant or represent an official testing accommodation. Ask your teacher about your assessment plan.</span></label
             >`
           : ""
       }

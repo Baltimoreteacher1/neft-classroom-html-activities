@@ -33,8 +33,13 @@ import * as growthView from "./views/growth.js";
 import * as speakView from "./views/speak.js";
 import * as writeView from "./views/write.js";
 import * as detectiveView from "./views/detective.js";
+import * as diagnosticView from "./views/diagnostic.js";
+import * as teacherLaunchView from "./views/teacher-launch.js";
+import * as worldsView from "./views/worlds.js";
+import * as classroomView from "./views/classroom.js";
+import * as vocabularyView from "./views/vocabulary.js";
 
-export const BUILD = "2026.10.22.2";
+export const BUILD = "2026.10.25.1";
 const VIEWS = {
   home: homeView,
   library: libraryView,
@@ -56,6 +61,11 @@ const VIEWS = {
   speak: speakView,
   write: writeView,
   detective: detectiveView,
+  diagnostic: diagnosticView,
+  "teacher-launch": teacherLaunchView,
+  worlds: worldsView,
+  classroom: classroomView,
+  vocabulary: vocabularyView,
 };
 const DOMAINS = ["Listening", "Reading", "Speaking", "Writing", "Model-Test"];
 
@@ -70,9 +80,13 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   const [a, b, c, d] = parts;
   if (!a) return r;
   if (a === "test") return { ...r, view: "test", testId: b || "" };
-  if (["tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective"].includes(a)) {
+  if (a === "worlds") {
+    return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
+  }
+  if (["tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "teacher-launch", "classroom", "vocabulary"].includes(a)) {
     return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
   }
+  if (a === "diagnostic") return { ...r, view: "diagnostic", domain: b || "" };
   if (a === "road") return { ...r, view: "road", week: Number(b) || 0 };
   if (a === "play")
     return {

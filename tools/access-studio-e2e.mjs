@@ -10,7 +10,7 @@
  *   - nothing overflows horizontally at 375px
  * A missing browser is a SKIP locally and a FAIL in CI.
  */
-import { createReadStream, existsSync, statSync } from "node:fs";
+import { createReadStream, existsSync, mkdirSync, statSync } from "node:fs";
 import http from "node:http";
 import { extname, join } from "node:path";
 import { REPO_ROOT } from "./lib/access-lab-content.mjs";
@@ -89,6 +89,9 @@ const context = await browser.newContext({
 });
 const page = await context.newPage();
 const problems = [];
+const screenshotDir = "/tmp/access-practice-lab-visual-qa";
+mkdirSync(screenshotDir, { recursive: true });
+const capture = (name) => page.screenshot({ path: join(screenshotDir, name), fullPage: true });
 const noise = /web-vitals|Failed to load resource|ERR_ABORTED|speechSynthesis/i;
 page.on("pageerror", (e) => !noise.test(e.message) && problems.push(`pageerror: ${e.message}`));
 page.on(
@@ -97,10 +100,110 @@ page.on(
 );
 const go = async (path) => {
   await page.goto(`${origin}${path}`, { waitUntil: "networkidle" });
-  await page.waitForSelector("#app h1, #app h2", { timeout: 10000 });
+  try {
+    await page.waitForFunction(
+      () => (document.querySelector("#app")?.innerText || "").trim().length > 10,
+      { timeout: 10000 },
+    );
+  } catch (error) {
+    console.error(
+      `access-studio-e2e: could not load ${path}:`,
+      await page
+        .locator("#app")
+        .innerText()
+        .catch(() => "<empty>"),
+      problems.slice(-3),
+    );
+    throw error;
+  }
 };
 const store = (key) => page.evaluate((k) => JSON.parse(localStorage.getItem(k) || "null"), key);
 const bodyText = () => page.locator("body").innerText();
+
+// ── Optional diagnostics, teacher launch, and the four language worlds ───────
+await go(`${BASE}/diagnostic/Listening`);
+await page.locator('input[name="diagnosticAnswer"][value="0"]').check();
+await page.locator("[data-diagnostic-answer]").click();
+ok(
+  /matches the information/i.test(await bodyText()),
+  "listening check-in gives item-specific feedback",
+);
+await page.locator("[data-diagnostic-next]").click();
+await page.locator('input[name="diagnosticAnswer"][value="1"]').check();
+await page.locator("[data-diagnostic-answer]").click();
+ok(
+  /strategy to try/i.test(await bodyText()),
+  "listening check-in responds to a misinterpretation with a strategy",
+);
+await page.locator("[data-diagnostic-next]").click();
+await page.locator('input[name="diagnosticAnswer"][value="0"]').check();
+await page.locator("[data-diagnostic-answer]").click();
+await page.locator("[data-diagnostic-next]").click();
+await page.getByText(/Suggested starting point/).waitFor();
+const diagnosticSaved = await page.evaluate(() =>
+  JSON.parse(localStorage.getItem("accessPracticeLab:v1:diagnostic") || "{}"),
+);
+const diagnosticScreen = await page.locator("#app").innerText();
+ok(
+  /Suggested starting point/i.test(diagnosticScreen),
+  "three-task check-in offers a provisional, non-score practice recommendation",
+);
+ok(
+  diagnosticSaved["6-8:Listening"]?.answers?.length === 3,
+  "check-in evidence restores locally without storing student text",
+);
+await page.reload({ waitUntil: "networkidle" });
+await page.getByText(/Suggested starting point/i).waitFor();
+ok(true, "check-in recommendation and evidence restore after reload");
+
+await go(`${BASE}/diagnostic/Reading`);
+await page.locator('input[name="diagnosticAnswer"][value="0"]').check();
+await page.locator("[data-diagnostic-answer]").click();
+await page.locator("[data-diagnostic-next]").click();
+ok(
+  (await bodyText()).includes("A neighborhood library"),
+  "reading check-in presents original text and comprehension evidence",
+);
+
+await go(`${BASE}/diagnostic/Writing`);
+await page
+  .locator("[data-diagnostic-draft]")
+  .fill("A garden helps students because they observe plants.");
+await page.locator('[data-diagnostic-complete="Writing"]').click();
+ok(
+  /does not retain your spoken or written response/i.test(await bodyText()),
+  "writing check-in is honest that its draft is temporary",
+);
+
+await go(`${BASE}/teacher-launch`);
+ok(
+  (await page.locator("[data-launch-url]").count()) === 1,
+  "Teacher Launch Studio generates a direct activity link",
+);
+const launchHref = await page.locator("[data-launch-url]").inputValue();
+ok(
+  /grades=6-8/.test(launchHref) && !/student|name|alias/i.test(launchHref),
+  "launch URL carries instructional settings and no student identity",
+);
+
+await go(`${BASE}/worlds`);
+ok(
+  (await page.locator(".world-tile").count()) === 4,
+  "Language Worlds presents four original environments",
+);
+for (const id of ["signal-station", "evidence-city", "conversation-quest", "storyworks"]) {
+  await go(`${BASE}/worlds/${id}`);
+  ok(
+    (await page.locator(".world-task-grid .task-card").count()) >= 8,
+    `${id} offers eight real Grades 6–8 activities`,
+  );
+  await go(`${BASE}/worlds/${id}?grades=3-5`);
+  ok(
+    (await page.locator(".world-task-grid .task-card").count()) >= 8,
+    `${id} offers eight real Grades 3–5 activities`,
+  );
+}
+await go(`${BASE}/?grades=6-8`);
 
 // ── Speaking Studio ───────────────────────────────────────────────────────────
 await go(`${BASE}/speak`);
@@ -156,6 +259,7 @@ ok(
   !/\b(level\s*[1-6]|bridging|reaching|you scored)\b/i.test(await bodyText()),
   "speaking screens never state a proficiency level or score",
 );
+await capture("speaking-feedback-desktop.png");
 
 // ── Writing Studio: guided is recorded as supported ───────────────────────────
 await go(`${BASE}/write/wrt-mulch-cer`);
@@ -168,6 +272,7 @@ const draft1 = "Mulch protects soil. It is good.";
 await page.locator("[data-draft]").fill(draft1);
 await page.locator("[data-feedback]").click();
 await page.waitForSelector(".coach-card");
+await capture("writing-feedback-desktop.png");
 ok(
   (await page.locator(".coach-moves li").count()) >= 1,
   "writing feedback gives specific next moves",
@@ -322,7 +427,7 @@ ok(
   ),
   "teacher dashboard lists the student from a share code",
 );
-await page.locator('[data-student="Period 3|River 7|6-8"]').click();
+await page.locator('[data-student="Period 3|River 7|6-8"]').first().click();
 ok((await page.locator(".student-panel").count()) === 1, "student detail opens");
 await page.locator('[data-tab="samples"]').click();
 ok((await bodyText()).includes("wrt-mulch-cer"), "teacher can read the learner's writing sample");
@@ -391,14 +496,23 @@ async function axeCheck(label) {
 }
 await go(`${BASE}/`);
 await axeCheck("home");
+await capture("home-desktop.png");
+await go(`${BASE}/tests`);
+await capture("practice-tests-desktop.png");
+await go(`${BASE}/Listening`);
+await capture("listening-desktop.png");
+await go(`${BASE}/Reading`);
+await capture("reading-desktop.png");
 await go(`${BASE}/speak`);
 await axeCheck("speaking chooser");
+await capture("speaking-desktop.png");
 await go(`${BASE}/speak/spk-seedlings-retell`);
 await axeCheck("speaking task");
 await go(`${BASE}/write/wrt-mulch-cer`);
 await axeCheck("writing task with feedback");
 await go(`${BASE}/write`);
 await axeCheck("writing chooser");
+await capture("writing-desktop.png");
 await go(`${BASE}/detective`);
 await axeCheck("detective hub");
 await go(`${BASE}/detective/sv-agree-3sg`);
@@ -411,6 +525,27 @@ await go(`${BASE}/growth`);
 await axeCheck("growth map");
 await go(`${BASE}/passport`);
 await axeCheck("passport");
+await go(`${BASE}/diagnostic/Listening`);
+await axeCheck("listening check-in");
+await go(`${BASE}/diagnostic/Writing`);
+await axeCheck("writing check-in");
+await go(`${BASE}/teacher-launch`);
+await axeCheck("teacher launch studio");
+await capture("teacher-launch-desktop.png");
+await go(`${BASE}/worlds`);
+await axeCheck("language worlds hub");
+await capture("worlds-desktop.png");
+await go(`${BASE}/worlds/evidence-city`);
+await axeCheck("language world detail");
+await capture("world-detail-desktop.png");
+await go(`${BASE}/worlds/signal-station/schedule-shift`);
+await axeCheck("world mission console");
+await go(`${BASE}/classroom`);
+await axeCheck("whole-class studio");
+await capture("classroom-desktop.png");
+await go(`${BASE}/vocabulary`);
+await axeCheck("vocabulary word builder");
+await capture("vocabulary-desktop.png");
 await page.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
 await page.waitForSelector("#classEvidence td.t-title");
 await axeCheck("teacher dashboard");
@@ -426,8 +561,18 @@ for (const p of [
   `${BASE}/missions/watershed-mystery`,
   `${BASE}/growth`,
   `${BASE}/passport`,
+  `${BASE}/diagnostic/Listening`,
+  `${BASE}/diagnostic/Writing`,
+  `${BASE}/teacher-launch`,
+  `${BASE}/worlds`,
+  `${BASE}/worlds/storyworks`,
+  `${BASE}/worlds/signal-station/schedule-shift`,
+  `${BASE}/classroom`,
+  `${BASE}/vocabulary`,
 ]) {
   await go(p);
+  if ([`${BASE}/`, `${BASE}/teacher-launch`, `${BASE}/worlds`].includes(p))
+    await capture(`${p === `${BASE}/` ? "home" : p.slice(BASE.length + 1)}-mobile.png`);
   const over = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   );

@@ -162,7 +162,7 @@ export async function render(ctx) {
           )}
         </ol>
         </details>
-        <div class="row-actions"><a href="${BASE}/passport?grades=${band}">See my saved progress</a><a href="${BASE}/library?grades=${band}">Explore all activities</a></div>
+        <div class="row-actions"><a href="${BASE}/passport?grades=${band}">See my saved progress</a><a href="${BASE}/library?grades=${band}">Explore all activities</a><a href="${BASE}/diagnostic?grades=${band}">Optional skill check-in</a></div>
       </section>
 
       <section class="feature-banner" aria-labelledby="featureTitle">
@@ -173,6 +173,12 @@ export async function render(ctx) {
           <a class="feature-link" href="${BASE}/missions?grades=${band}">Explore academic missions <span aria-hidden="true">↗</span></a>
         </div>
         <img src="${BASE}/pictures/lab-investigation.svg" width="760" height="530" alt="Illustrated river investigation with a map, notes, graph, and voice recording" loading="lazy" decoding="async">
+      </section>
+
+      <section class="panel world-entry" aria-labelledby="worldEntryTitle">
+        <p class="eyebrow">Explore by doing</p><h2 id="worldEntryTitle">Visit a Language World</h2>
+        <p>Take a listening mission, investigate reading evidence, join an academic conversation, or publish a written response. Your work opens the Lab’s existing activities and missions.</p>
+        <a class="btn btn-primary" href="${BASE}/worlds?grades=${band}">Explore four language worlds →</a>
       </section>
 
       <section class="studios" aria-labelledby="studiosTitle">
@@ -213,7 +219,9 @@ export async function render(ctx) {
           <a class="door" href="${BASE}/library?grades=${band}"><span aria-hidden="true">📚</span><strong>Find an activity</strong><span>Search every quick-practice activity.</span></a>
           <a class="door" href="${BASE}/road?grades=${band}"><span aria-hidden="true">🛣️</span><strong>Road to ACCESS</strong><span>A 12-week plan, one short stop a week.</span></a>
           <a class="door" href="${BASE}/construction?grades=${band}"><span aria-hidden="true">🧱</span><strong>Language Construction Lab</strong><span>Expand sentences and shift register.</span></a>
+          <a class="door" href="${BASE}/vocabulary?grades=${band}"><span aria-hidden="true">🧩</span><strong>Word Builder</strong><span>Prefixes, roots, and suffixes in academic context.</span></a>
           <a class="door" href="${BASE}/conversation?grades=${band}"><span aria-hidden="true">💬</span><strong>Conversation Simulator</strong><span>Academic dialogue and oral rehearsal.</span></a>
+          <a class="door" href="${BASE}/classroom?grades=${band}"><span aria-hidden="true">📽️</span><strong>Whole-Class Studio</strong><span>Projector-ready listen, read, discuss, and revise routines.</span></a>
           <a class="door" href="${BASE}/evidence?grades=${band}"><span aria-hidden="true">📊</span><strong>Evidence Studio</strong><span>Turn charts into explanations.</span></a>
           <a class="door" href="${BASE}/passport?grades=${band}"><span aria-hidden="true">🛂</span><strong>My Passport</strong><span>${stamps} stamp${stamps === 1 ? "" : "s"}${streak ? ` · ${streak}-week streak` : ""}; send work to your teacher.</span></a>
           <a class="door" href="${BASE}/family?grades=${band}"><span aria-hidden="true">🏠</span><strong>Families · Familias</strong><span>How to help at home, in English and Spanish.</span></a>

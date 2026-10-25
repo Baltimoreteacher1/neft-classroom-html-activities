@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "a2cc45f7d80f";
+const BUILD_HASH = "c822cd268872";
 const PRECACHE_CORE = [
   "/access-practice-lab/styles.css?v=03f96256791b",
   "/access-practice-lab/library.css?v=50b712adeeb8",
@@ -21,7 +21,9 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/attempts.js?v=9ad8ee9e3283",
   "/access-practice-lab/src/audio-store.js?v=d05edac67707",
   "/access-practice-lab/src/components.js?v=71eb39c2d66e",
-  "/access-practice-lab/src/content.js?v=7698dcaed07c",
+  "/access-practice-lab/src/content/vocabulary-items.js?v=8504c5643bba",
+  "/access-practice-lab/src/content/world-missions.js?v=6ac1466837b1",
+  "/access-practice-lab/src/content.js?v=495f00256281",
   "/access-practice-lab/src/glossary.js?v=ce62bb1e18d9",
   "/access-practice-lab/src/grade.js?v=c88ead48711f",
   "/access-practice-lab/src/items.js?v=c223abb3ea7e",
@@ -43,7 +45,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/lang/teacher.js?v=43c5f36ee4b5",
   "/access-practice-lab/src/lang/text.js?v=391bde3f4bec",
   "/access-practice-lab/src/learning.js?v=e77f16502ac4",
-  "/access-practice-lab/src/main.js?v=06358d3ae951",
+  "/access-practice-lab/src/main.js?v=04a854a3e356",
   "/access-practice-lab/src/media.js?v=41d2ac925829",
   "/access-practice-lab/src/multilingual.js?v=d0b46fb38de3",
   "/access-practice-lab/src/practice-plan.js?v=175304736272",
@@ -55,22 +57,28 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/sync.js?v=b3e398476cee",
   "/access-practice-lab/src/util.js?v=5fbdef684724",
   "/access-practice-lab/src/views/activity.js?v=4d84d9b2b628",
+  "/access-practice-lab/src/views/classroom-data.js?v=de468c8a1192",
+  "/access-practice-lab/src/views/classroom.js?v=21eec95ace72",
   "/access-practice-lab/src/views/construction.js?v=8e107f13259a",
   "/access-practice-lab/src/views/conversation.js?v=51b123303ff0",
   "/access-practice-lab/src/views/detective.js?v=24c98ff43e25",
+  "/access-practice-lab/src/views/diagnostic.js?v=fafe982a8338",
   "/access-practice-lab/src/views/evidence.js?v=7483c77cd140",
   "/access-practice-lab/src/views/family.js?v=493eb17898e2",
   "/access-practice-lab/src/views/growth.js?v=b2a851f6cced",
-  "/access-practice-lab/src/views/home.js?v=e5ab0e7d2230",
+  "/access-practice-lab/src/views/home.js?v=6078b9f24826",
   "/access-practice-lab/src/views/library.js?v=2ad35e7fa59a",
   "/access-practice-lab/src/views/missions.js?v=b399c493f14a",
   "/access-practice-lab/src/views/passport.js?v=3e2f4f4581e9",
   "/access-practice-lab/src/views/road.js?v=47ecec4284e8",
   "/access-practice-lab/src/views/room.js?v=4307b4cbb0d4",
   "/access-practice-lab/src/views/speak.js?v=fc7269f672ff",
-  "/access-practice-lab/src/views/test.js?v=f30a24d04a3a",
+  "/access-practice-lab/src/views/teacher-launch.js?v=3696d0a78bac",
+  "/access-practice-lab/src/views/test.js?v=dff3fbdb46f4",
   "/access-practice-lab/src/views/tests.js?v=96613c5ea5f3",
-  "/access-practice-lab/src/views/tools.js?v=1a8c9f219961",
+  "/access-practice-lab/src/views/tools.js?v=17a114bb5dbe",
+  "/access-practice-lab/src/views/vocabulary.js?v=b0c45f2aaeaf",
+  "/access-practice-lab/src/views/worlds.js?v=de0305808d00",
   "/access-practice-lab/src/views/write.js?v=b749d744ee84",
 ];
 const PRECACHE_MORE = [
@@ -117,6 +125,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/content/tests/wida-speaking-newworld.json",
   "/access-practice-lab/content/tests/wida-writing-classes.json",
   "/access-practice-lab/content/tests/wida-writing-mini.json",
+  "/access-practice-lab/content/worlds.json",
   "/access-practice-lab/pictures/35-listening-classroom.svg",
   "/access-practice-lab/pictures/35-listening-frac-1of4.svg",
   "/access-practice-lab/pictures/35-listening-frac-2of4.svg",
@@ -207,6 +216,10 @@ const PRECACHE_MORE = [
   "/access-practice-lab/pictures/shape-circle.svg",
   "/access-practice-lab/pictures/shape-rectangle.svg",
   "/access-practice-lab/pictures/shape-triangle.svg",
+  "/access-practice-lab/pictures/worlds/conversation-quest.svg",
+  "/access-practice-lab/pictures/worlds/evidence-city.svg",
+  "/access-practice-lab/pictures/worlds/signal-station.svg",
+  "/access-practice-lab/pictures/worlds/storyworks.svg",
 ];
 /* build:end */
 

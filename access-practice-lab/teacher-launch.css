@@ -1,0 +1,30 @@
+/* Focused teacher launch builder; all interactions inherit ACCESS Lab tokens. */
+.teacher-launch-panel { display: grid; gap: 1rem; }
+.teacher-launch-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.teacher-launch-grid .field { display: grid; gap: .35rem; font-weight: 650; }
+.teacher-launch-grid select, .teacher-launch-url input {
+  width: 100%; min-height: 48px; padding: .65rem .75rem; border: 1px solid var(--line);
+  border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font: inherit;
+}
+.teacher-launch-task { grid-column: 1 / -1; }
+.teacher-launch-preview {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;
+  padding: 1rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--brand-soft);
+}
+.teacher-launch-preview h3 { margin: .15rem 0; }
+.teacher-launch-preview p { margin: 0; }
+.teacher-launch-url { display: grid; gap: .35rem; font-weight: 650; }
+@media (max-width: 620px) {
+  .teacher-launch-grid { grid-template-columns: 1fr; }
+  .teacher-launch-task { grid-column: auto; }
+  .teacher-launch-preview > .btn { width: 100%; text-align: center; }
+}
+@media print {
+  body:has(.teacher-launch-panel) * { visibility: hidden; }
+  body:has(.teacher-launch-panel) .teacher-launch-panel,
+  body:has(.teacher-launch-panel) .teacher-launch-panel * { visibility: visible; }
+  body:has(.teacher-launch-panel) .teacher-launch-panel { position: absolute; inset: 0; border: 0; box-shadow: none; }
+  .teacher-launch-grid, .teacher-launch-panel > p, .teacher-launch-panel > h2,
+  .teacher-launch-panel .row-actions, .teacher-launch-preview > .btn { display: none !important; }
+  .teacher-launch-url input { border: 0; padding-left: 0; }
+}
