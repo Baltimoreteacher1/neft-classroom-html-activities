@@ -677,7 +677,17 @@ export function buildSections(
   for (const mode of /** @type {const} */ (["practice", "challenge"])) {
     out[mode] = lists[mode].map((sec, i) => {
       const g = worlds.generic[mode][i];
-      const nm = world.sections[mode][i];
+      // Use plain, predictable section names across every lesson. World-themed names such as
+      // "First Course" and "Taste Test" add vocabulary students must decode before they can
+      // choose a practice level. The lesson-specific scenario remains in the problem content.
+      const sectionLabels = [
+        { n: "Warm up", nEs: "Calentamiento" },
+        { n: "Learn", nEs: "Aprende" },
+        { n: "Practice", nEs: "Practica" },
+        { n: "More practice", nEs: "Más práctica" },
+        { n: "Show what you know", nEs: "Demuestra lo que sabes" },
+      ];
+      const nm = sectionLabels[i] || world.sections[mode][i];
       const items = stamp(sec.items, i + 1);
       // The lab bench joins one section per page (Practice 4, Challenge 3). Its items carry explicit ids and are added
       // AFTER the rest are stamped, so a student's saved progress on the existing items keeps its keys.

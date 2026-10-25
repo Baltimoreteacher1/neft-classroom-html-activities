@@ -17,6 +17,105 @@ body.show-es .t-en {
 /* the trail is sticky: anything scrolled or tabbed into view lands below it, never under it (WCAG 2.4.11) */
 html { scroll-padding-top: 72px; }
 
+/* A consistent classroom palette across lessons. The previous world-by-world palette made
+   navigation and controls change color unpredictably and several combinations were muddy. */
+body[data-world][data-theme="light"] {
+  --brand: #164e63;
+  --brand-dark: #123247;
+  --brand-tint: #e8f3f5;
+  --brand-line: #a9c7d0;
+  --sun: #e8b64a;
+  --sun-deep: #8a6515;
+  --sun-tint: #fff6dc;
+  --sun-ink: #51400f;
+  --paper: #f3f6f8;
+  --well: #e9eef2;
+  --surface: #ffffff;
+  --surface-soft: #f7f9fb;
+  --border: #cbd5de;
+  --border-strong: #687d8d;
+  --ink: #182532;
+  --ink-muted: #405363;
+  --ink-light: #596d7d;
+  --ok: #28785f;
+  --ok-tint: #e7f4ee;
+  --ok-line: #a6d2bf;
+  --bad: #a83c3c;
+  --bad-tint: #fbecec;
+  --bad-line: #e4b2b2;
+  --warn: #9a6a08;
+  --warn-tint: #fff5db;
+  --warn-line: #dfc276;
+  --font-display: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius-sm: 7px;
+  --radius-md: 11px;
+  --radius-lg: 15px;
+  --shadow-card: 0 2px 8px rgba(18, 50, 71, .08);
+  color-scheme: light;
+}
+body[data-world][data-theme="dark"] {
+  --brand: #80cbd3;
+  --brand-dark: #10232e;
+  --brand-tint: #24434e;
+  --brand-line: #547b86;
+  --sun: #edc15e;
+  --sun-deep: #8d6a1d;
+  --sun-tint: #3e3520;
+  --sun-ink: #ffe8a8;
+  --paper: #111d26;
+  --well: #172630;
+  --surface: #1c2d38;
+  --surface-soft: #243743;
+  --border: #405562;
+  --border-strong: #8296a2;
+  --ink: #f1f5f7;
+  --ink-muted: #c4d0d8;
+  --ink-light: #a8bac5;
+  --ok: #68bf99;
+  --ok-tint: #1b3a32;
+  --ok-line: #437a66;
+  --bad: #f08d8d;
+  --bad-tint: #402b31;
+  --bad-line: #8c5960;
+  --warn: #edc15e;
+  --warn-tint: #3e3520;
+  --warn-line: #897644;
+  --on-brand: #10232e;
+  --on-sun: #10232e;
+  --on-ok: #10232e;
+  --on-bad: #10232e;
+  --font-display: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius-sm: 7px;
+  --radius-md: 11px;
+  --radius-lg: 15px;
+  --shadow-card: 0 2px 10px rgba(0, 0, 0, .22);
+  color-scheme: dark;
+}
+body[data-world] .app-header {
+  background-image: none;
+}
+body[data-world][data-theme="light"] .tab-list::before,
+body[data-world][data-theme="light"] .tab-list::after {
+  height: 3px;
+  border-radius: 0;
+}
+body[data-world][data-theme="light"] .tab-btn[aria-selected="true"] .tab-badge {
+  box-shadow: 0 0 0 2px var(--surface);
+}
+body[data-world][data-theme="light"] .target-chip {
+  background: var(--brand-tint);
+  border-left-color: var(--brand);
+}
+
+/* Offer one clear starting action. The full lesson and interactive model are already
+   available in the lesson links/menu, so they do not need to compete here. */
+.pathway-intro .pathway-actions [data-path-full] {
+  display: none;
+}
+.pathway-intro .pathway-actions {
+  gap: .45rem;
+}
+
 /* ---- header: the Menu disclosure ---------------------------------------------------------------------------- */
 .studio-menu-wrap {
   position: relative;
