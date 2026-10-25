@@ -68,7 +68,9 @@ for (const file of htmlFiles) {
     if (
       asset.match(/\.(css|js|json|txt|xml|png|jpg|jpeg|webp|svg|ico)$/i) &&
       !VITE_EMITTED_ASSETS.has(asset) &&
-      !existsSync(join(root, normalized))
+      // Vite serves public/ at the site root, so a public/ file is a real asset.
+      !existsSync(join(root, normalized)) &&
+      !existsSync(join(root, "public", normalized))
     ) {
       warnings.push(`${rel}: linked asset not found: ${asset}`);
     }
