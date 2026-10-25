@@ -110,41 +110,13 @@
         color: var(--prac-navy);
         margin: 0 0 16px;
       }
-      .prac-search {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        max-width: 480px;
-        margin: 0 0 12px;
-      }
-      .prac-search label {
-        font-size: 0.9rem;
-        font-weight: 800;
-        color: var(--prac-navy);
-      }
-      .prac-search input {
-        font: inherit;
-        font-size: 1rem;
-        min-height: 44px;
-        padding: 8px 12px;
-        border: 1px solid var(--prac-border);
-        border-radius: 8px;
-        background: #ffffff;
-        color: var(--prac-ink);
-      }
-      .prac-count {
-        margin: 0 0 12px;
-        font-size: 0.9rem;
-        font-weight: 700;
-        color: var(--prac-muted);
-      }
       .prac-unit-selector {
         display: flex;
         align-items: center;
         gap: 8px;
         overflow-x: auto;
-        padding: 4px 4px 12px;
-        margin-bottom: 16px;
+        padding-bottom: 12px;
+        margin-bottom: 24px;
       }
       .prac-unit-tab {
         background: #ffffff;
@@ -157,7 +129,7 @@
         color: var(--prac-muted);
         cursor: pointer;
         white-space: nowrap;
-        min-height: 44px;
+        min-height: 38px;
         transition: all 0.15s ease;
       }
       .prac-unit-tab:hover {
@@ -168,95 +140,6 @@
         background-color: var(--prac-navy);
         color: #ffffff;
         border-color: var(--prac-navy);
-      }
-      .prac-recent {
-        margin: 0 0 28px;
-        padding: 16px;
-        background: #ffffff;
-        border: 1px solid var(--prac-border);
-        border-radius: 12px;
-      }
-      .prac-recent[hidden] {
-        display: none;
-      }
-      .prac-recent h3 {
-        margin: 0 0 10px;
-        font-size: 1rem;
-        font-weight: 900;
-        color: var(--prac-navy);
-      }
-      .prac-recent-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-      }
-      .prac-recent-list a {
-        display: inline-flex;
-        align-items: center;
-        min-height: 44px;
-        padding: 6px 12px;
-        border: 1px solid var(--prac-border);
-        border-radius: 8px;
-        background: var(--prac-bg);
-        color: var(--prac-navy);
-        font-weight: 700;
-        font-size: 0.88rem;
-        text-decoration: none;
-      }
-      .prac-recent-list a:hover {
-        background-color: var(--prac-teal-light);
-        border-color: var(--prac-teal);
-      }
-      .prac-unit-head {
-        margin: 0 0 20px;
-      }
-      .prac-unit-kicker {
-        margin: 0 0 4px;
-        font-size: 0.85rem;
-        font-weight: 800;
-        color: var(--prac-teal);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-      .prac-unit-title {
-        margin: 0 0 8px;
-        font-size: 1.5rem;
-        font-weight: 900;
-        color: var(--prac-navy);
-      }
-      .prac-unit-idea {
-        margin: 0;
-        max-width: 74ch;
-        color: #334155;
-      }
-      .prac-status {
-        margin: 0 0 16px;
-        padding: 14px 16px;
-        background: #fff7ed;
-        border: 1px solid #fdba74;
-        border-radius: 10px;
-        color: #7c2d12;
-      }
-      .prac-status p {
-        margin: 0;
-      }
-      .prac-retry {
-        margin-top: 8px;
-        min-height: 44px;
-        padding: 8px 14px;
-        font: inherit;
-        font-weight: 800;
-        color: var(--prac-navy);
-        background: #ffffff;
-        border: 1px solid var(--prac-navy);
-        border-radius: 6px;
-        cursor: pointer;
-      }
-      .prac-empty {
-        color: var(--prac-muted);
       }
       .prac-lesson-grid {
         display: grid;
@@ -292,12 +175,6 @@
         font-weight: 800;
         color: var(--prac-navy);
       }
-      .prac-lesson-standard {
-        margin: 0;
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: var(--prac-muted);
-      }
       .prac-lesson-links {
         display: flex;
         flex-direction: column;
@@ -307,7 +184,6 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        min-height: 44px;
         padding: 8px 12px;
         background-color: var(--prac-bg);
         border: 1px solid var(--prac-border);
@@ -323,26 +199,10 @@
         border-color: var(--prac-teal);
         color: var(--prac-teal);
       }
-      .prac-no-path {
-        padding: 4px 2px;
-        font-size: 0.8rem;
-        color: var(--prac-muted);
-      }
       .prac-container a:focus-visible,
-      .prac-container button:focus-visible,
-      .prac-container input:focus-visible {
+      .prac-container button:focus-visible {
         outline: 3px solid var(--prac-teal) !important;
         outline-offset: 2px !important;
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .prac-portal-card,
-        .prac-unit-tab,
-        .prac-link-pill {
-          transition: none;
-        }
-        .prac-portal-card:hover {
-          transform: none;
-        }
       }
     </style>
   </head>
@@ -353,10 +213,9 @@
 
     <main id="main-content" class="prac-container">
       <section class="prac-hero">
-        <h1 data-i18n="heroTitle">Practice &amp; Fluency Hub</h1>
-        <p data-i18n="heroBody">
-          Master Grade 6 math with self-paced practice, step-by-step Extra Help worked examples,
-          Fluency coaching, and downloadable practice workbooks.
+        <h1>Practice &amp; Fluency Hub</h1>
+        <p>
+          Master Grade 6 math through adaptive self-paced practice, step-by-step Extra Help worked examples, interactive Fluency coaching, and downloadable practice workbooks.
         </p>
       </section>
 
@@ -365,494 +224,123 @@
         <a href="/curriculum/extra-help/" class="prac-portal-card">
           <div class="prac-portal-icon" aria-hidden="true">💡</div>
           <div>
-            <h2 class="prac-portal-title" data-i18n="xhTitle">Extra Help Worked Examples</h2>
-            <p class="prac-portal-desc" data-i18n="xhDesc">
-              Guided walkthroughs, bilingual cognates, and step-by-step problem-solving models for
-              all 84 lessons.
-            </p>
+            <h2 class="prac-portal-title">Extra Help Worked Examples</h2>
+            <p class="prac-portal-desc">Guided walkthroughs, bilingual cognates, and step-by-step problem-solving models for all 84 lessons.</p>
           </div>
-          <span class="prac-portal-cta" data-i18n="xhCta">Open Extra Help →</span>
+          <span class="prac-portal-cta">Open Extra Help →</span>
         </a>
 
         <a href="/curriculum/fluency/" class="prac-portal-card">
           <div class="prac-portal-icon" aria-hidden="true">⚡</div>
           <div>
-            <h2 class="prac-portal-title" data-i18n="flTitle">K-8 Math Fluency</h2>
-            <p class="prac-portal-desc" data-i18n="flDesc">
-              Visual models, procedural fluency workouts, and automaticity coaching across rational
-              numbers and algebra.
-            </p>
+            <h2 class="prac-portal-title">K-8 Math Fluency</h2>
+            <p class="prac-portal-desc">Visual models, procedural fluency workouts, and automaticity coaching across rational numbers and algebra.</p>
           </div>
-          <span class="prac-portal-cta" data-i18n="flCta">Launch Fluency →</span>
+          <span class="prac-portal-cta">Launch Fluency →</span>
         </a>
 
         <a href="/curriculum/practice-workbooks/" class="prac-portal-card">
           <div class="prac-portal-icon" aria-hidden="true">📘</div>
           <div>
-            <h2 class="prac-portal-title" data-i18n="wbTitle">Practice Workbooks</h2>
-            <p class="prac-portal-desc" data-i18n="wbDesc">
-              Complete tagged PDF workbooks and printable problem sets for independent student
-              practice.
-            </p>
+            <h2 class="prac-portal-title">Practice Workbooks</h2>
+            <p class="prac-portal-desc">Complete tagged PDF workbooks and printable problem sets for independent student practice.</p>
           </div>
-          <span class="prac-portal-cta" data-i18n="wbCta">View Workbooks →</span>
+          <span class="prac-portal-cta">View Workbooks →</span>
         </a>
 
         <a href="/curriculum/arcade/" class="prac-portal-card">
           <div class="prac-portal-icon" aria-hidden="true">🎮</div>
           <div>
-            <h2 class="prac-portal-title" data-i18n="arTitle">Arcade Practice Games</h2>
-            <p class="prac-portal-desc" data-i18n="arDesc">
-              Engaging math mini-games and cumulative unit review challenges that reinforce core
-              concepts.
-            </p>
+            <h2 class="prac-portal-title">Arcade Practice Games</h2>
+            <p class="prac-portal-desc">Engaging math mini-games and cumulative unit review challenges that reinforce core concepts.</p>
           </div>
-          <span class="prac-portal-cta" data-i18n="arCta">Play Games →</span>
+          <span class="prac-portal-cta">Play Games →</span>
         </a>
       </section>
 
-      <h2 class="prac-section-title" data-i18n="browse">Browse Practice by Unit</h2>
-
-      <div class="prac-search">
-        <label for="prac-search" data-i18n="searchLabel">Find a lesson</label>
-        <input
-          id="prac-search"
-          type="search"
-          autocomplete="off"
-          data-i18n-placeholder="searchPlaceholder"
-          placeholder="Try 3-2 or 6.DS"
-        />
+      <h2 class="prac-section-title">Browse Practice by Unit</h2>
+      <div class="prac-unit-selector" role="tablist" aria-label="Select Unit">
+        <!-- Rendered dynamically (Unit 1 to Unit 10) -->
       </div>
-      <p id="prac-count" class="prac-count" role="status" aria-live="polite" hidden></p>
 
-      <div
-        class="prac-unit-selector"
-        id="prac-unit-tabs"
-        role="tablist"
-        aria-label="Select unit"
-      ></div>
-
-      <section id="prac-recent" class="prac-recent" aria-labelledby="prac-recent-title" hidden>
-        <h3 id="prac-recent-title" data-i18n="recentTitle">Pick up where you left off</h3>
-        <ul id="prac-recent-list" class="prac-recent-list"></ul>
-      </section>
-
-      <div id="prac-status" class="prac-status" role="alert" hidden></div>
-      <div id="prac-unit-head" class="prac-unit-head"></div>
-      <div class="prac-lesson-grid" id="prac-lesson-grid" role="tabpanel"></div>
+      <div class="prac-lesson-grid" id="prac-lesson-grid">
+        <!-- Lessons for active unit rendered dynamically -->
+      </div>
     </main>
 
     <script src="/assets/curriculum-shell-state.js"></script>
     <script>
-      (function () {
-        var LABELS = {
-          en: {
-            heroTitle: "Practice & Fluency Hub",
-            heroBody:
-              "Master Grade 6 math with self-paced practice, step-by-step Extra Help worked examples, Fluency coaching, and downloadable practice workbooks.",
-            xhTitle: "Extra Help Worked Examples",
-            xhDesc:
-              "Guided walkthroughs, bilingual cognates, and step-by-step problem-solving models for all 84 lessons.",
-            xhCta: "Open Extra Help →",
-            flTitle: "K-8 Math Fluency",
-            flDesc:
-              "Visual models, procedural fluency workouts, and automaticity coaching across rational numbers and algebra.",
-            flCta: "Launch Fluency →",
-            wbTitle: "Practice Workbooks",
-            wbDesc:
-              "Complete tagged PDF workbooks and printable problem sets for independent student practice.",
-            wbCta: "View Workbooks →",
-            arTitle: "Arcade Practice Games",
-            arDesc:
-              "Engaging math mini-games and cumulative unit review challenges that reinforce core concepts.",
-            arCta: "Play Games →",
-            browse: "Browse Practice by Unit",
-            searchLabel: "Find a lesson",
-            searchPlaceholder: "Try 3-2 or 6.DS",
-            searchResults: "results",
-            searchNone: "No lessons match. Try a lesson number such as 3-2.",
-            recentTitle: "Pick up where you left off",
-            selectUnit: "Select unit",
-            unit: "Unit",
-            lessons: "lessons",
-            standard: "Standard",
-            practiceSheet: "Practice sheet",
-            lessonPage: "Lesson",
-            g1: "Group 1 Guided Support",
-            g2: "Group 2 Challenge",
-            catchup: "Catch-Up Examples",
-            noCatchup: "No catch-up pathway for this lesson.",
-            empty: "No lessons in this unit yet.",
-            loadError: "We couldn't load the lesson list. Check your connection and try again.",
-            retry: "Try again",
-          },
-          es: {
-            heroTitle: "Centro de práctica y fluidez",
-            heroBody:
-              "Domina las matemáticas de 6.º grado con práctica a tu ritmo, ejemplos resueltos paso a paso de ayuda extra, coaching de fluidez y cuadernos de práctica descargables.",
-            xhTitle: "Ejemplos resueltos de ayuda extra",
-            xhDesc:
-              "Recorridos guiados, apoyo bilingüe y modelos paso a paso para resolver problemas en las 84 lecciones.",
-            xhCta: "Abrir ayuda extra →",
-            flTitle: "Fluidez matemática K-8",
-            flDesc:
-              "Modelos visuales, ejercicios de fluidez y coaching de automatismo en números racionales y álgebra.",
-            flCta: "Abrir fluidez →",
-            wbTitle: "Cuadernos de práctica",
-            wbDesc:
-              "Cuadernos PDF con etiquetas accesibles y hojas de problemas para práctica independiente.",
-            wbCta: "Ver cuadernos →",
-            arTitle: "Juegos de práctica del arcade",
-            arDesc:
-              "Mini-juegos de matemáticas y repasos acumulativos por unidad que refuerzan los conceptos clave.",
-            arCta: "Jugar →",
-            browse: "Practica por unidad",
-            searchLabel: "Busca una lección",
-            searchPlaceholder: "Prueba 3-2 o 6.DS",
-            searchResults: "resultados",
-            searchNone: "Ninguna lección coincide. Prueba con un número de lección, como 3-2.",
-            recentTitle: "Continúa donde lo dejaste",
-            selectUnit: "Seleccionar unidad",
-            unit: "Unidad",
-            lessons: "lecciones",
-            standard: "Estándar",
-            practiceSheet: "Hoja de práctica",
-            lessonPage: "Lección",
-            g1: "Apoyo guiado · Grupo 1",
-            g2: "Reto · Grupo 2",
-            catchup: "Ejemplos de recuperación",
-            noCatchup: "Esta lección no tiene ruta de recuperación.",
-            empty: "Aún no hay lecciones en esta unidad.",
-            loadError:
-              "No pudimos cargar la lista de lecciones. Revisa tu conexión e inténtalo de nuevo.",
-            retry: "Intentar de nuevo",
-          },
-        };
-
-        var RECENT_KEY = "ewl-practice-recent";
-        var RECENT_MAX = 5;
-
-        var units = [];
-        var manifest = null;
+      (function() {
         var activeUnit = 1;
+        var manifest = null;
 
-        var tablist = document.getElementById("prac-unit-tabs");
-        var head = document.getElementById("prac-unit-head");
-        var grid = document.getElementById("prac-lesson-grid");
-        var status = document.getElementById("prac-status");
-        var search = document.getElementById("prac-search");
-        var count = document.getElementById("prac-count");
-        var recent = document.getElementById("prac-recent");
-        var recentList = document.getElementById("prac-recent-list");
-
-        function lang() {
-          return window.CurriculumShell && window.CurriculumShell.getLanguage
-            ? window.CurriculumShell.getLanguage()
-            : "en";
-        }
-
-        function t(key) {
-          var dict = LABELS[lang()] || LABELS.en;
-          return dict[key] || LABELS.en[key] || key;
-        }
-
-        // Manifest strings are {en, es}; fall back to English when Spanish is missing.
-        function pick(value) {
-          if (!value) return "";
-          if (typeof value === "string") return value;
-          return value[lang()] || value.en || "";
-        }
-
-        function el(tag, props, kids) {
-          var node = document.createElement(tag);
-          Object.keys(props || {}).forEach(function (key) {
-            if (key === "text") node.textContent = props[key];
-            else node.setAttribute(key, props[key]);
-          });
-          (kids || []).forEach(function (kid) {
-            node.appendChild(kid);
-          });
-          return node;
-        }
-
-        // localStorage is a per-browser convenience only; every read and write may fail
-        // (private windows, blocked storage), and the hub works without it.
-        function readRecent() {
+        async function initPractice() {
           try {
-            var list = JSON.parse(localStorage.getItem(RECENT_KEY) || "[]");
-            return Array.isArray(list)
-              ? list.filter(function (id) {
-                  return typeof id === "string";
-                })
-              : [];
-          } catch (err) {
-            return [];
+            var res = await fetch("/data/curriculum-manifest.json");
+            if (res.ok) manifest = await res.json();
+            renderUnitTabs();
+            renderLessons();
+          } catch(e) {
+            console.error("Error loading practice manifest:", e);
           }
         }
 
-        function rememberLesson(id) {
-          try {
-            var list = readRecent().filter(function (x) {
-              return x !== id;
+        function renderUnitTabs() {
+          var container = document.querySelector(".prac-unit-selector");
+          if (!container || !manifest) return;
+
+          var html = manifest.units.map(function(u) {
+            var isSel = u.number === activeUnit;
+            return '<button type="button" role="tab" class="prac-unit-tab" data-unit="' + u.number + '" aria-selected="' + (isSel ? 'true' : 'false') + '">Unit ' + u.number + '</button>';
+          }).join("");
+
+          container.innerHTML = html;
+
+          container.querySelectorAll("[data-unit]").forEach(function(btn) {
+            btn.addEventListener("click", function() {
+              activeUnit = parseInt(btn.getAttribute("data-unit"), 10);
+              renderUnitTabs();
+              renderLessons();
             });
-            list.unshift(id);
-            localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, RECENT_MAX)));
-          } catch (err) {
-            /* storage unavailable: nothing to remember */
-          }
-        }
-
-        function applyStatic() {
-          document.querySelectorAll("[data-i18n]").forEach(function (node) {
-            node.textContent = t(node.getAttribute("data-i18n"));
           });
-          document.querySelectorAll("[data-i18n-placeholder]").forEach(function (node) {
-            node.setAttribute("placeholder", t(node.getAttribute("data-i18n-placeholder")));
-          });
-          tablist.setAttribute("aria-label", t("selectUnit"));
         }
 
-        function syncTabs() {
-          tablist.querySelectorAll("[data-unit]").forEach(function (btn) {
-            var selected = Number(btn.getAttribute("data-unit")) === activeUnit;
-            btn.setAttribute("aria-selected", selected ? "true" : "false");
-            btn.setAttribute("tabindex", selected ? "0" : "-1");
-          });
-          grid.setAttribute("aria-labelledby", "prac-tab-" + activeUnit);
-        }
+        function renderLessons() {
+          var grid = document.getElementById("prac-lesson-grid");
+          if (!grid || !manifest) return;
 
-        function selectUnit(number, moveFocus) {
-          activeUnit = number;
-          syncTabs();
-          renderUnit();
-          if (moveFocus) document.getElementById("prac-tab-" + number).focus();
-        }
+          var lang = window.CurriculumShell ? window.CurriculumShell.getLanguage() : "en";
+          var lessons = manifest.lessons.filter(function(l) { return l.unit === activeUnit; });
 
-        // WAI-ARIA tabs pattern: arrows move between tabs, Home/End jump to the ends.
-        function onTabKeydown(event) {
-          var index = units.findIndex(function (u) {
-            return u.number === activeUnit;
-          });
-          var next = null;
-          if (event.key === "ArrowRight") next = (index + 1) % units.length;
-          else if (event.key === "ArrowLeft") next = (index - 1 + units.length) % units.length;
-          else if (event.key === "Home") next = 0;
-          else if (event.key === "End") next = units.length - 1;
-          if (next === null) return;
-          event.preventDefault();
-          selectUnit(units[next].number, true);
-        }
-
-        function renderTabs() {
-          tablist.textContent = "";
-          units.forEach(function (u) {
-            var btn = el(
-              "button",
-              {
-                type: "button",
-                role: "tab",
-                id: "prac-tab-" + u.number,
-                class: "prac-unit-tab",
-                "data-unit": String(u.number),
-                "aria-controls": "prac-lesson-grid",
-                title: pick(u.title),
-              },
-              [document.createTextNode(t("unit") + " " + u.number)],
+          var html = lessons.map(function(l) {
+            var title = lang === "es" && l.title.es ? l.title.es : l.title.en || l.title;
+            var pw = l.pathways || {};
+            return (
+              '<article class="prac-lesson-card">' +
+              '  <div>' +
+              '    <div class="prac-lesson-card-head">' +
+              '      <span class="prac-lesson-badge">' + l.id + '</span>' +
+              '      <h3 class="prac-lesson-title">' + title + '</h3>' +
+              '    </div>' +
+              '  </div>' +
+              '  <div class="prac-lesson-links">' +
+              '    <a ' + 'href="/lessons/' + l.id + '/" class="prac-link-pill"><span>Core Practice</span> <span aria-hidden="true">→</span></a>' +
+              (pw.group1 ? '<a href="' + pw.group1 + '" class="prac-link-pill"><span>Group 1 Guided Support</span> <span aria-hidden="true">→</span></a>' : '') +
+              (pw.group2 ? '<a href="' + pw.group2 + '" class="prac-link-pill"><span>Group 2 Challenge</span> <span aria-hidden="true">→</span></a>' : '') +
+              (pw.catchup ? '<a href="' + pw.catchup + '" class="prac-link-pill"><span>Catch-Up Examples</span> <span aria-hidden="true">→</span></a>' : '') +
+              '  </div>' +
+              '</article>'
             );
-            btn.addEventListener("click", function () {
-              selectUnit(u.number, false);
-            });
-            btn.addEventListener("keydown", onTabKeydown);
-            tablist.appendChild(btn);
-          });
-          syncTabs();
+          }).join("");
+
+          grid.innerHTML = html;
         }
 
-        function link(href, label, lessonId) {
-          return el("a", { href: href, class: "prac-link-pill", "data-lesson": lessonId }, [
-            el("span", { text: label }),
-            el("span", { "aria-hidden": "true", text: "→" }),
-          ]);
-        }
-
-        function lessonCard(lesson) {
-          var pw = lesson.pathways || {};
-          var id = lesson.id;
-          var links = [
-            link("/lessons/" + id + "/worksheet.html", t("practiceSheet"), id),
-            link("/lessons/" + id + "/", t("lessonPage"), id),
-          ];
-          if (pw.group1) links.push(link(pw.group1, t("g1"), id));
-          if (pw.group2) links.push(link(pw.group2, t("g2"), id));
-          if (pw.catchup) {
-            links.push(link(pw.catchup, t("catchup"), id));
-          } else {
-            links.push(el("span", { class: "prac-no-path", text: t("noCatchup") }));
-          }
-
-          return el("article", { class: "prac-lesson-card" }, [
-            el("div", { class: "prac-lesson-card-head" }, [
-              el("span", { class: "prac-lesson-badge", text: id }),
-              el("h3", { class: "prac-lesson-title", text: pick(lesson.title) }),
-            ]),
-            el("p", {
-              class: "prac-lesson-standard",
-              text: t("standard") + ": " + (lesson.standards || []).join(", "),
-            }),
-            el("div", { class: "prac-lesson-links" }, links),
-          ]);
-        }
-
-        function sortedLessons(list) {
-          return list.slice().sort(function (a, b) {
-            return a.unit - b.unit || a.lesson - b.lesson;
-          });
-        }
-
-        function matchesQuery(lesson, query) {
-          var haystack = [
-            lesson.id,
-            (lesson.title && lesson.title.en) || "",
-            (lesson.title && lesson.title.es) || "",
-            (lesson.standards || []).join(" "),
-          ]
-            .join(" ")
-            .toLowerCase();
-          return haystack.indexOf(query) !== -1;
-        }
-
-        function renderSearch(query) {
-          var hits = sortedLessons(
-            manifest.lessons.filter(function (l) {
-              return matchesQuery(l, query);
-            }),
-          );
-          head.textContent = "";
-          count.hidden = false;
-          count.textContent = hits.length + " " + t("searchResults");
-          grid.textContent = "";
-          if (!hits.length) {
-            grid.appendChild(el("p", { class: "prac-empty", text: t("searchNone") }));
-            return;
-          }
-          hits.forEach(function (lesson) {
-            grid.appendChild(lessonCard(lesson));
-          });
-        }
-
-        function renderUnit() {
-          var query = search.value.trim().toLowerCase();
-          if (query) {
-            renderSearch(query);
-            return;
-          }
-          count.hidden = true;
-          count.textContent = "";
-
-          var unit = units.find(function (u) {
-            return u.number === activeUnit;
-          });
-          if (!unit) return;
-          var lessons = sortedLessons(
-            manifest.lessons.filter(function (l) {
-              return l.unit === activeUnit;
-            }),
-          );
-
-          head.textContent = "";
-          head.appendChild(
-            el("p", {
-              class: "prac-unit-kicker",
-              text: t("unit") + " " + unit.number + " · " + lessons.length + " " + t("lessons"),
-            }),
-          );
-          head.appendChild(el("h2", { class: "prac-unit-title", text: pick(unit.title) }));
-          head.appendChild(el("p", { class: "prac-unit-idea", text: pick(unit.bigIdea) }));
-
-          grid.textContent = "";
-          if (!lessons.length) {
-            grid.appendChild(el("p", { class: "prac-empty", text: t("empty") }));
-            return;
-          }
-          lessons.forEach(function (lesson) {
-            grid.appendChild(lessonCard(lesson));
-          });
-        }
-
-        function renderRecent() {
-          var byId = {};
-          manifest.lessons.forEach(function (l) {
-            byId[l.id] = l;
-          });
-          var items = readRecent().filter(function (id) {
-            return byId[id];
-          });
-          recentList.textContent = "";
-          recent.hidden = !items.length;
-          items.forEach(function (id) {
-            var lesson = byId[id];
-            var anchor = el(
-              "a",
-              { href: "/lessons/" + id + "/worksheet.html", "data-lesson": id },
-              [document.createTextNode(id + " · " + pick(lesson.title))],
-            );
-            recentList.appendChild(el("li", {}, [anchor]));
-          });
-        }
-
-        function showError() {
-          status.textContent = "";
-          status.hidden = false;
-          status.appendChild(el("p", { text: t("loadError") }));
-          var retry = el("button", { type: "button", class: "prac-retry", text: t("retry") });
-          retry.addEventListener("click", load);
-          status.appendChild(retry);
-        }
-
-        function renderAll() {
-          applyStatic();
-          if (!manifest) return;
-          renderTabs();
-          renderUnit();
-          renderRecent();
-        }
-
-        function load() {
-          status.hidden = true;
-          status.textContent = "";
-          fetch("/data/curriculum-manifest.json")
-            .then(function (res) {
-              if (!res.ok) throw new Error("HTTP " + res.status);
-              return res.json();
-            })
-            .then(function (data) {
-              manifest = data;
-              units = data.units.slice().sort(function (a, b) {
-                return a.number - b.number;
-              });
-              renderAll();
-            })
-            .catch(function (err) {
-              console.error("Practice hub: manifest failed to load", err);
-              showError();
-            });
-        }
-
-        // Record a lesson when a student opens one of its pages from this hub.
-        document.getElementById("main-content").addEventListener("click", function (event) {
-          var anchor = event.target.closest && event.target.closest("a[data-lesson]");
-          if (!anchor) return;
-          rememberLesson(anchor.getAttribute("data-lesson"));
+        window.addEventListener("curriculum:state-change", function() {
+          renderLessons();
         });
 
-        search.addEventListener("input", function () {
-          if (manifest) renderUnit();
-        });
-
-        window.addEventListener("curriculum:state-change", renderAll);
-
-        applyStatic();
-        load();
+        initPractice();
       })();
     </script>
   </body>
