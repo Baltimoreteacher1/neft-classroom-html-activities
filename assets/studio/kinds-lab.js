@@ -286,7 +286,7 @@
             ctx.host.querySelector("[data-check-lab]")
           );
           if (!st.calib[it.id] && checkBtn) {
-            checkBtn.disabled = true;
+            checkBtn.disabled = false;
             const row = document.createElement("div");
             row.className = "conf-row";
             row.setAttribute("role", "group");

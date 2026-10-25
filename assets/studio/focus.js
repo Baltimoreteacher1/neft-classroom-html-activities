@@ -367,7 +367,6 @@
     }
     for (const host of /** @type {HTMLElement[]} */ ($$(".lab-model, .lab-mission")))
       if (host.shadowRoot) wireStage(host.shadowRoot);
-    for (const host of /** @type {HTMLElement[]} */ ($$(".lab-model"))) coachFor(host, "lab");
     for (const host of /** @type {HTMLElement[]} */ ($$(".act-host[data-act]"))) {
       checkBar(host);
       coachFor(host);

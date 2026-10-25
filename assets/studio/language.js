@@ -276,7 +276,7 @@
     if (chunkChoice.has(k)) return !!chunkChoice.get(k);
     if (s.chunk === "off") return false;
     if (s.chunk === "always") return true;
-    return Core.wordCount(stemOf(it).en) > Core.LONG_STEM;
+    return false;
   }
   /** Wrap numbers (with their units) in a tint. Words, signs and operations are never marked, and stacked fractions are left whole. */
   function tintIn(/** @type {Element} */ root) {
