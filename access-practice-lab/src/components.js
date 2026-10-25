@@ -298,6 +298,9 @@ export function recorderHTML(
   { prompt = "", models = null, level = "A", recording = false, level01 = 0, seconds = 0, activity = {} } = {},
 ) {
   const takes = takesFor(key);
+  // Optional per-activity timing: a preparation countdown and a response time limit. Both off by default.
+  const prep = Math.max(0, Math.floor(Number(activity.prepSeconds) || 0));
+  const limit = Math.max(0, Math.floor(Number(activity.maxSeconds) || 0));
   if (!canRecord())
     return html`<div class="recorder is-unavailable">
       <p>
@@ -319,9 +322,9 @@ export function recorderHTML(
               </button>
               <div class="rec-live" aria-live="off">
                 <span class="rec-meter" style="--lvl:${level01.toFixed(2)}"></span
-                ><span class="rec-time">${seconds}s</span>
+                ><span class="rec-time">${seconds}s${limit ? ` of ${limit}s` : ""}</span>
               </div>`
-          : html`<button type="button" class="rec-btn" data-rec-start="${key}">
+          : html`<button type="button" class="rec-btn" data-rec-start="${key}" data-rec-prep="${prep}" data-rec-max="${limit}">
               <span class="rec-dot" aria-hidden="true"></span
               >${takes.length ? "Record again" : "Record my answer"}
             </button>`
@@ -335,6 +338,7 @@ export function recorderHTML(
           </ol>`
         : ""
     }
+    <p class="rec-countdown" data-rec-countdown="${key}" role="status"></p>
     <p class="rec-error" data-rec-error="${key}" role="status"></p>
     <p class="fine">Listen to your answer. Choose one detail to add, then record again if you want.</p>
     <p class="fine">Recordings stay in this tab and disappear when you close or reload it. They are never uploaded. Download a recording before leaving if you want to keep it; a progress code does not include audio.</p>

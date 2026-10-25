@@ -11,7 +11,25 @@ export const canRecord = () =>
 export const takesFor = (key) => takes.get(key) || [];
 export const isRecording = (key) => active?.key === key;
 
-export async function start(key, { onLevel, onStop } = {}) {
+// Counts down `seconds` one tick per second. Resolves true at zero, false if cancelled
+// (stop() or a navigation bumps requestGeneration).
+export function countdown(seconds, { onTick } = {}) {
+  const generation = requestGeneration;
+  let left = Math.max(0, Math.floor(seconds));
+  return new Promise((resolve) => {
+    const step = () => {
+      if (generation !== requestGeneration) return resolve(false);
+      onTick?.(left);
+      if (left === 0) return resolve(true);
+      left -= 1;
+      setTimeout(step, 1000);
+    };
+    step();
+  });
+}
+
+// `maxSeconds` (optional) ends the take automatically; onStop then gets { limited: true }.
+export async function start(key, { onLevel, onStop, maxSeconds = 0 } = {}) {
   const generation = ++requestGeneration;
   await stopActive();
   if (generation !== requestGeneration) return null;
@@ -28,13 +46,14 @@ export async function start(key, { onLevel, onStop } = {}) {
     throw error;
   }
   const chunks = [];
-  const state = { key, recorder, stream, chunks, started: Date.now(), raf: 0, ctx: null, env: [], lastEnv: 0 };
+  const state = { key, recorder, stream, chunks, started: Date.now(), raf: 0, ctx: null, env: [], lastEnv: 0, limit: 0, limited: false };
   let finishStop;
   state.stopped = new Promise((resolve) => { finishStop = resolve; });
   recorder.addEventListener("dataavailable", (e) => e.data.size && chunks.push(e.data));
   recorder.addEventListener("stop", () => {
     stream.getTracks().forEach((t) => t.stop());
     cancelAnimationFrame(state.raf);
+    clearTimeout(state.limit);
     state.ctx?.close().catch(() => {});
     const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
     const list = takes.get(key) || [];
@@ -52,7 +71,7 @@ export async function start(key, { onLevel, onStop } = {}) {
     while (list.length > 3) URL.revokeObjectURL(list.shift().url);
     takes.set(key, list);
     if (active === state) active = null;
-    try { onStop?.(list); }
+    try { onStop?.(list, { limited: state.limited }); }
     finally { finishStop(); }
   });
   try {
@@ -89,6 +108,13 @@ export async function start(key, { onLevel, onStop } = {}) {
     throw error;
   }
   active = state;
+  if (maxSeconds > 0) {
+    state.limit = setTimeout(() => {
+      if (recorder.state === "inactive") return;
+      state.limited = true;
+      recorder.stop();
+    }, maxSeconds * 1000);
+  }
   return state;
 }
 

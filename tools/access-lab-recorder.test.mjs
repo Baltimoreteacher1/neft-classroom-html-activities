@@ -124,3 +124,54 @@ test("download extension follows the browser recording format", async () => {
   }
   globalThis.MediaRecorder = FakeRecorder;
 });
+
+test("countdown ticks down to zero and resolves true", { timeout: 5000 }, async (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const ticks = [];
+  const done = recorder.countdown(2, { onTick: (n) => ticks.push(n) });
+  for (let i = 0; i < 2; i++) t.mock.timers.tick(1000);
+  assert.equal(await done, true);
+  assert.deepEqual(ticks, [2, 1, 0]);
+});
+
+test("stopping during the countdown cancels it", { timeout: 5000 }, async (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  const ticks = [];
+  const done = recorder.countdown(5, { onTick: (n) => ticks.push(n) });
+  await recorder.stop();
+  t.mock.timers.tick(5000);
+  assert.equal(await done, false);
+  assert.deepEqual(ticks, [5]);
+});
+
+test("a time limit ends the take and reports it as limited", { timeout: 5000 }, async (t) => {
+  t.mock.timers.enable({ apis: ["setTimeout"] });
+  setMic(() => Promise.resolve(stream()));
+  let report = null;
+  const stopped = new Promise((resolve) => {
+    recorder.start("timed", {
+      maxSeconds: 3,
+      onStop: (_takes, info) => {
+        report = info;
+        resolve();
+      },
+    });
+  });
+  while (!recorder.isRecording("timed")) await new Promise((r) => setImmediate(r));
+  t.mock.timers.tick(3000);
+  await stopped;
+  assert.deepEqual(report, { limited: true });
+  assert.equal(recorder.isRecording("timed"), false);
+});
+
+test("a take stopped by the learner is not reported as limited", async () => {
+  setMic(() => Promise.resolve(stream()));
+  let report = null;
+  await recorder.start("free", {
+    onStop: (_takes, info) => {
+      report = info;
+    },
+  });
+  await recorder.stop();
+  assert.deepEqual(report, { limited: false });
+});

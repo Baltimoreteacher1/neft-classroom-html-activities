@@ -313,17 +313,36 @@ async function common(e) {
     const key = recStart.dataset.recStart;
     const owner = app.view;
     const startedAt = app.location;
+    const prep = Number(recStart.dataset.recPrep) || 0;
+    const maxSeconds = Number(recStart.dataset.recMax) || 0;
+    recStart.disabled = true;
     try {
+      if (prep > 0) {
+        const countdownEl = () => document.querySelector(`[data-rec-countdown="${CSS.escape(key)}"]`);
+        const ready = await rec.countdown(prep, {
+          onTick: (n) => {
+            const el = countdownEl();
+            if (el) el.textContent = n > 0 ? `Recording starts in ${n}…` : "";
+            if (n > 0) announce(String(n));
+          },
+        });
+        if (!ready || app.location !== startedAt) {
+          recStart.disabled = false;
+          return true;
+        }
+      }
       const recording = await rec.start(key, {
+        maxSeconds,
         onLevel: (lvl, secs) => {
           const m = $(".rec-meter");
           if (m) m.style.setProperty("--lvl", lvl.toFixed(2));
           const s = $(".rec-time");
-          if (s) s.textContent = `${secs}s`;
+          if (s) s.textContent = maxSeconds ? `${secs}s of ${maxSeconds}s` : `${secs}s`;
         },
-        onStop: async () => {
+        onStop: async (_takes, { limited }) => {
           owner?.onRecorded?.(key, ctx);
           if (app.location !== startedAt) return;
+          if (limited) announce("Time is up. Your recording was saved.");
           await render({ keepFocus: true });
           // Move to the next thing the learner does: type or review what they said.
           document.querySelector("[data-transcript], [data-rec-start]")?.focus({ preventScroll: false });
@@ -333,8 +352,11 @@ async function common(e) {
         await render({ keepFocus: true });
         document.querySelector("[data-rec-stop]")?.focus();
         announce("Recording. Press Stop when you are done.");
+      } else {
+        recStart.disabled = false;
       }
     } catch {
+      recStart.disabled = false;
       if (app.location !== startedAt) return true;
       const message = "The microphone is unavailable. Check browser permission and your microphone, or practice aloud with a partner. You can continue without recording.";
       const status = document.querySelector(`[data-rec-error="${CSS.escape(key)}"]`);
