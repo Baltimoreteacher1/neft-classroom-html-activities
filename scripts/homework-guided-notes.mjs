@@ -9238,7 +9238,7 @@ export function renderRefrigeratorSheet(config = {}, lessonId = "") {
         </div>
         <div class="rf-slip-fields">
           <span><span class="lang-en">Student:</span><span class="lang-es" lang="es">Estudiante:</span> ______________________</span>
-          <span><span class="lang-en">Practice partner (optional):</span><span class="lang-es" lang="es">Firma:</span> ______________________</span>
+          <span><span class="lang-en">Practice partner (optional):</span><span class="lang-es" lang="es">Acompañante de práctica (opcional):</span> ______________________</span>
           <span><span class="lang-en">Date:</span><span class="lang-es" lang="es">Fecha:</span> __________</span>
         </div>
         <div class="rf-slip-mood">

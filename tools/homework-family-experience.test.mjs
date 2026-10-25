@@ -17,15 +17,66 @@ import {
   renderHomeworkTabs,
   renderPlayTabPanel,
   renderQuickPlan,
+  renderRefrigeratorSheet,
   renderWelcomeBanner,
   resolveKitchenTableActivity,
 } from "../scripts/homework-guided-notes.mjs";
-import { VISUAL_LABS_JS } from "../scripts/homework-visual-labs.mjs";
+import { renderVisualMathLab, VISUAL_LABS_JS } from "../scripts/homework-visual-labs.mjs";
 import { renderExperienceDialogs } from "../scripts/lib/homework-experience.mjs";
 import { EXPERIENCE_JS } from "../scripts/lib/homework-experience-js.mjs";
 import { lessonPath, loadLessonConfig } from "./lib/curriculum-source.mjs";
 
 const config = loadLessonConfig;
+
+test("the printable practice record offers an optional practice partner, never a signature", () => {
+  const d = new JSDOM(renderRefrigeratorSheet(config("4-4"), "4-4")).window.document;
+  const slip = d.querySelector(".rf-slip-fields");
+  assert.match(
+    [...slip.querySelectorAll('.lang-es[lang="es"]')].map((item) => item.textContent).join(" "),
+    /Acompañante de práctica \(opcional\)/,
+  );
+  assert.doesNotMatch(slip.textContent, /Firma/);
+});
+
+test("interactive model feedback and accessible names include accurate Spanish", () => {
+  const dom = new JSDOM(renderVisualMathLab("exponents", { lessonId: "test-model" }), {
+    url: "https://eduwonderlab.com/lessons/test-model/homework.html",
+    runScripts: "outside-only",
+    pretendToBeVisual: true,
+  });
+  dom.window.eval(VISUAL_LABS_JS);
+  dom.window.document.dispatchEvent(new dom.window.Event("DOMContentLoaded"));
+  const d = dom.window.document;
+  const lab = d.querySelector("[data-visual-lab]");
+  assert.equal(
+    lab.querySelector("[data-lab-observation] .lang-es").textContent,
+    "El exponente indica cuántos factores iguales se usan.",
+  );
+  assert.equal(
+    lab.querySelector("[data-lab-status] .lang-es").textContent,
+    "2 elevado a la potencia 3 es 8.",
+  );
+  const svg = lab.querySelector("[data-lab-stage] svg");
+  assert.equal(svg.getAttribute("data-aria-es"), "Modelo matemático que representa: 2 × 2 × 2 = 8");
+  for (const region of lab.querySelectorAll("[aria-label]")) {
+    assert.ok(
+      region.hasAttribute("data-aria-es"),
+      `Spanish accessible name exists for ${region.getAttribute("aria-label")}`,
+    );
+  }
+  dom.window.document.addEventListener = () => {};
+  dom.window.eval(HOMEWORK_TABS_JS);
+  dom.window.setLanguageMode("es");
+  assert.equal(svg.getAttribute("aria-label"), svg.getAttribute("data-aria-es"));
+  const exponent = lab.querySelector('[data-lab-input="power"]');
+  exponent.value = "4";
+  exponent.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+  assert.equal(
+    lab.querySelector("[data-lab-stage] svg").getAttribute("aria-label"),
+    "Modelo matemático que representa: 2 × 2 × 2 × 2 = 16",
+  );
+  dom.window.close();
+});
 function runtime(query = "") {
   const markup =
     renderQuickPlan() +

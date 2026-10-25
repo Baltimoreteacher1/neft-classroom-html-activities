@@ -18,7 +18,7 @@
  * Lower BASELINE whenever you clean files — that is what locks the win in.
  */
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -31,7 +31,13 @@ const checked = execFileSync("git", ["ls-files", "assets", "engine", "shared"], 
   encoding: "utf8",
 })
   .split("\n")
-  .filter((f) => f.endsWith(".js") && !f.includes("vendor/") && !f.endsWith(".min.js"));
+  .filter(
+    (f) =>
+      f.endsWith(".js") &&
+      existsSync(resolve(ROOT, f)) &&
+      !f.includes("vendor/") &&
+      !f.endsWith(".min.js"),
+  );
 
 const marked = checked.filter((f) =>
   readFileSync(resolve(ROOT, f), "utf8").slice(0, 400).includes("@ts-nocheck"),
