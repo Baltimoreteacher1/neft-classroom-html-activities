@@ -100,7 +100,7 @@ index = index.replace(entryPattern, `<script type="module" src="${imports[entryU
 // ── stylesheet versions ───────────────────────────────────────────────────────
 const sheets = [];
 index = index.replace(
-  /href="(\/access-practice-lab\/[A-Za-z0-9._-]+\.css)\?v=[^"]*"/g,
+  /href="(\/access-practice-lab\/[A-Za-z0-9._-]+\.css)(?:\?v=[^"]*)?"/g,
   (_, href) => {
     const versioned = `${href}?v=${sha(readFileSync(join(dir, href.slice(`${BASE}/`.length))))}`;
     sheets.push(versioned);

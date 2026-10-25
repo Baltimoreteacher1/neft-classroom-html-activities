@@ -66,19 +66,31 @@ export function mountShell(ctx) {
   if (nav) {
     nav.setAttribute("aria-label", T("Lab tools", "Herramientas del laboratorio"));
     nav.innerHTML = toHtml(html`
-      <a class="top-link" href="${BASE}/passport?grades=${ctx.band}">${T("Passport", "Pasaporte")}</a>
+      <a class="top-link" href="${BASE}/worlds?grades=${ctx.band}">🗺️ <span>${T("Worlds", "Mundos")}</span></a>
+      <a class="top-link" href="${BASE}/classroom?grades=${ctx.band}">📽️ <span>${T("Classroom", "Salón")}</span></a>
+      <a class="top-link" href="${BASE}/vocabulary?grades=${ctx.band}">🧩 <span>${T("Words", "Palabras")}</span></a>
+      <a class="top-link" href="${BASE}/passport?grades=${ctx.band}">🛂 <span>${T("Passport", "Pasaporte")}</span></a>
       <details class="lab-utilities"><summary>${T("Lab tools", "Herramientas")}</summary>
         <div class="lab-utilities-body">
-          <a href="${BASE}/?grades=${ctx.band}">${T("Lab home", "Inicio del laboratorio")}</a>
-          <a href="${BASE}/missions?grades=${ctx.band}">${T("Academic missions", "Misiones académicas")}</a>
-          <a href="${BASE}/speak?grades=${ctx.band}">${T("Speaking Studio", "Estudio de expresión oral")}</a>
-          <a href="${BASE}/write?grades=${ctx.band}">${T("Writing Studio", "Estudio de escritura")}</a>
-          <a href="${BASE}/detective?grades=${ctx.band}">${T("Language Error Detective", "Detective de errores del lenguaje")}</a>
-          <a href="${BASE}/growth?grades=${ctx.band}">${T("Language growth map", "Mapa de progreso lingüístico")}</a>
-          <a href="${BASE}/library?grades=${ctx.band}">${T("Find practice", "Buscar práctica")}</a>
-          <a href="${BASE}/tests?grades=${ctx.band}">${T("Practice tests", "Pruebas de práctica")}</a>
-          <a href="${BASE}/tools?grades=${ctx.band}">${T("Audio and device check", "Revisar audio y dispositivo")}</a>
-          <a href="${BASE}/family?grades=${ctx.band}">${T("Families", "Familias")}</a>
+          <a href="${BASE}/?grades=${ctx.band}">🏠 ${T("Lab home", "Inicio del laboratorio")}</a>
+          <a href="${BASE}/worlds?grades=${ctx.band}">🗺️ ${T("Language Worlds (Four consequential environments)", "Mundos lingüísticos")}</a>
+          <a href="${BASE}/classroom?grades=${ctx.band}">📽️ ${T("Whole-Class Language Studio", "Estudio para toda la clase")}</a>
+          <a href="${BASE}/vocabulary?grades=${ctx.band}">🧩 ${T("Word Builder (Morphology & Vocabulary)", "Constructor de palabras")}</a>
+          <a href="${BASE}/diagnostic?grades=${ctx.band}">🎯 ${T("Optional Skill Check-in", "Evaluación diagnóstica opcional")}</a>
+          <a href="${BASE}/launch-studio">🚀 ${T("Teacher Launch Studio (QR codes & direct links)", "Estudio de lanzamiento docente")}</a>
+          <a href="${BASE}/missions?grades=${ctx.band}">🔬 ${T("Academic missions", "Misiones académicas")}</a>
+          <a href="${BASE}/speak?grades=${ctx.band}">🎤 ${T("Speaking Studio", "Estudio de expresión oral")}</a>
+          <a href="${BASE}/write?grades=${ctx.band}">✏️ ${T("Writing Studio", "Estudio de escritura")}</a>
+          <a href="${BASE}/detective?grades=${ctx.band}">🔍 ${T("Language Error Detective", "Detective de errores del lenguaje")}</a>
+          <a href="${BASE}/growth?grades=${ctx.band}">📈 ${T("Language growth map", "Mapa de progreso lingüístico")}</a>
+          <a href="${BASE}/construction?grades=${ctx.band}">🧱 ${T("Language Construction Lab", "Laboratorio de construcción")}</a>
+          <a href="${BASE}/conversation?grades=${ctx.band}">💬 ${T("Conversation Simulator", "Simulador de conversación")}</a>
+          <a href="${BASE}/evidence?grades=${ctx.band}">📊 ${T("Evidence Studio", "Estudio de evidencia")}</a>
+          <a href="${BASE}/library?grades=${ctx.band}">📚 ${T("Find practice", "Buscar práctica")}</a>
+          <a href="${BASE}/tests?grades=${ctx.band}">🧪 ${T("Practice tests", "Pruebas de práctica")}</a>
+          <a href="${BASE}/tools?grades=${ctx.band}">🧰 ${T("Audio and device check", "Revisar audio y dispositivo")}</a>
+          <a href="${BASE}/family?grades=${ctx.band}">🏠 ${T("Families", "Familias")}</a>
+          <a href="/access-teacher/">👩‍🏫 ${T("Teacher Hub (full dashboard)", "Centro docente")}</a>
           <a href="/">${T("EduWonderLab home", "Inicio de EduWonderLab")}</a>
           <a href="/directory/">${T("Find on this site", "Buscar en este sitio")}</a>
           <a href="/curriculum/math-workbench/" target="_blank" rel="noopener">${T("Math Workbench (new tab)", "Herramientas de matemáticas (otra pestaña)")}</a>

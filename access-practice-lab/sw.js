@@ -11,13 +11,18 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "5a96b041de9f";
+const BUILD_HASH = "3d45e6771caa";
 const PRECACHE_CORE = [
   "/access-practice-lab/styles.css?v=03f96256791b",
   "/access-practice-lab/library.css?v=50b712adeeb8",
   "/access-practice-lab/session-plan.css?v=f7eed42e57d1",
   "/access-practice-lab/audit.css?v=3de36e8cd3e4",
   "/access-practice-lab/studio.css?v=8dd83b16d878",
+  "/access-practice-lab/launch-studio.css?v=c9fc55dfce15",
+  "/access-practice-lab/diagnostic.css?v=be5f008eb281",
+  "/access-practice-lab/worlds.css?v=0d1b5484f694",
+  "/access-practice-lab/classroom-studio.css?v=31199ffc6165",
+  "/access-practice-lab/vocabulary.css?v=7b37b0bdaa01",
   "/access-practice-lab/src/attempts.js?v=9ad8ee9e3283",
   "/access-practice-lab/src/audio-store.js?v=d05edac67707",
   "/access-practice-lab/src/components.js?v=71eb39c2d66e",
@@ -50,7 +55,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/multilingual.js?v=d0b46fb38de3",
   "/access-practice-lab/src/practice-plan.js?v=175304736272",
   "/access-practice-lab/src/recorder.js?v=eeac3e681456",
-  "/access-practice-lab/src/shell.js?v=a13f053daf2d",
+  "/access-practice-lab/src/shell.js?v=eed6146bd024",
   "/access-practice-lab/src/speech.js?v=7852e94c8a45",
   "/access-practice-lab/src/store.js?v=b0f1cd499c20",
   "/access-practice-lab/src/studio-ui.js?v=52534befb588",
@@ -62,11 +67,11 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/views/construction.js?v=8e107f13259a",
   "/access-practice-lab/src/views/conversation.js?v=51b123303ff0",
   "/access-practice-lab/src/views/detective.js?v=24c98ff43e25",
-  "/access-practice-lab/src/views/diagnostic.js?v=fafe982a8338",
+  "/access-practice-lab/src/views/diagnostic.js?v=4b641cf6b3b1",
   "/access-practice-lab/src/views/evidence.js?v=7483c77cd140",
   "/access-practice-lab/src/views/family.js?v=493eb17898e2",
   "/access-practice-lab/src/views/growth.js?v=b2a851f6cced",
-  "/access-practice-lab/src/views/home.js?v=6078b9f24826",
+  "/access-practice-lab/src/views/home.js?v=b6b3e373b089",
   "/access-practice-lab/src/views/launch-studio.js?v=3696d0a78bac",
   "/access-practice-lab/src/views/library.js?v=2ad35e7fa59a",
   "/access-practice-lab/src/views/missions.js?v=b399c493f14a",

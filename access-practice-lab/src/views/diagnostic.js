@@ -31,9 +31,9 @@ export async function render(ctx) {
   const session = saved[`${ctx.band}:${domain}`] || { step: 0, answers: [], started: false };
   const q = items[domain]?.[session.step];
   const d = domain || "";
-  const start = `<section class="panel diagnostic-panel"><p class="eyebrow">Optional · about 4 minutes · private to this browser</p><h1 tabindex="-1">Find a useful place to begin</h1><p>Try a few short tasks. Your responses suggest practice ideas only; this is not a WIDA test and does not assign a proficiency level. You can skip this and open any activity.</p><div class="row-actions">${["Listening", "Reading", "Speaking", "Writing"].map((x) => `<a class="btn" href="${BASE}/diagnostic/${x}?grades=${ctx.band}">${x}</a>`).join("")}</div></section>`;
+  const start = html`<section class="panel diagnostic-panel"><p class="eyebrow">Optional · about 4 minutes · private to this browser</p><h1 tabindex="-1">Find a useful place to begin</h1><p>Try a few short tasks. Your responses suggest practice ideas only; this is not a WIDA test and does not assign a proficiency level. You can skip this and open any activity.</p><div class="row-actions">${["Listening", "Reading", "Speaking", "Writing"].map((x) => html`<a class="btn" href="${BASE}/diagnostic/${x}?grades=${ctx.band}">${x}</a>`)}</div></section>`;
   if (!d) return { title: "Optional check-in", html: html`${crumbsHTML([["Lab", `${BASE}/?grades=${ctx.band}`], ["Optional check-in", null]])}${start}` };
-  const intro = `<section class="room-hero"><div><p class="eyebrow">${ctx.band.replace("-", "–")} · optional instructional check-in</p><h1 tabindex="-1">${d} check-in</h1><p class="lead">A few original tasks can help suggest a practice starting point. This is not an official assessment or proficiency score.</p></div></section>`;
+  const intro = html`<section class="room-hero"><div><p class="eyebrow">${ctx.band.replace("-", "–")} · optional instructional check-in</p><h1 tabindex="-1">${d} check-in</h1><p class="lead">A few original tasks can help suggest a practice starting point. This is not an official assessment or proficiency score.</p></div></section>`;
   if (!["Listening", "Reading", "Speaking", "Writing"].includes(d)) return { title: "Check-in", html: start };
   if (d === "Speaking" || d === "Writing") {
     const done = session.completed;

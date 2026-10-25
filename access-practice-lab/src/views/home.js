@@ -175,17 +175,55 @@ export async function render(ctx) {
         <img src="${BASE}/pictures/lab-investigation.svg" width="760" height="530" alt="Illustrated river investigation with a map, notes, graph, and voice recording" loading="lazy" decoding="async">
       </section>
 
-      <section class="panel world-entry" aria-labelledby="worldEntryTitle">
-        <p class="eyebrow">Explore by doing</p><h2 id="worldEntryTitle">Visit a Language World</h2>
-        <p>Take a listening mission, investigate reading evidence, join an academic conversation, or publish a written response. Your work opens the Lab’s existing activities and missions.</p>
-        <a class="btn btn-primary" href="${BASE}/worlds?grades=${band}">Explore four language worlds →</a>
+      <section class="panel world-showcase" aria-labelledby="worldEntryTitle">
+        <div class="world-showcase-header">
+          <div>
+            <p class="eyebrow">Interactive language environments</p>
+            <h2 id="worldEntryTitle">Four Language Worlds</h2>
+            <p class="fine" style="margin-top:0.25rem">Explore consequential environments: dispatch audio in Signal Station, investigative reporting in Evidence City, academic dialogue in Conversation Quest, and authentic publishing in StoryWorks.</p>
+          </div>
+          <a class="btn btn-primary" href="${BASE}/worlds?grades=${band}">Open Worlds Console →</a>
+        </div>
+        <div class="world-cards-grid">
+          <a class="world-mini-card" href="${BASE}/worlds/signal-station?grades=${band}" style="border-left: 4px solid #176b78">
+            <img src="${BASE}/pictures/worlds/signal-station.svg" alt="" width="72" height="52" loading="lazy">
+            <div>
+              <strong>Signal Station</strong>
+              <span class="fine">🎧 Listening · Audio dispatch & details</span>
+            </div>
+          </a>
+          <a class="world-mini-card" href="${BASE}/worlds/evidence-city?grades=${band}" style="border-left: 4px solid #8c4d28">
+            <img src="${BASE}/pictures/worlds/evidence-city.svg" alt="" width="72" height="52" loading="lazy">
+            <div>
+              <strong>Evidence City</strong>
+              <span class="fine">📖 Reading · Multi-source investigations</span>
+            </div>
+          </a>
+          <a class="world-mini-card" href="${BASE}/worlds/conversation-quest?grades=${band}" style="border-left: 4px solid #4f5a9b">
+            <img src="${BASE}/pictures/worlds/conversation-quest.svg" alt="" width="72" height="52" loading="lazy">
+            <div>
+              <strong>Conversation Quest</strong>
+              <span class="fine">🎤 Speaking · Dialogue & oral rehearsal</span>
+            </div>
+          </a>
+          <a class="world-mini-card" href="${BASE}/worlds/storyworks?grades=${band}" style="border-left: 4px solid #477343">
+            <img src="${BASE}/pictures/worlds/storyworks.svg" alt="" width="72" height="52" loading="lazy">
+            <div>
+              <strong>StoryWorks</strong>
+              <span class="fine">✏️ Writing · Drafting & revision studio</span>
+            </div>
+          </a>
+        </div>
       </section>
 
       <section class="studios" aria-labelledby="studiosTitle">
         <h2 id="studiosTitle" class="section-title">Start here</h2>
-        <p class="fine">Choose a mission, prepare, do real language tasks, get specific feedback, revise, try it on your own, and watch your growth.</p>
+        <p class="fine">Choose a world, studio, or mission: do real language tasks, get specific feedback, revise, try it on your own, and watch your growth.</p>
         ${next ? html`<a class="next-step panel" href="${next.href}"><span class="eyebrow">Your next step</span><strong>${next.title}</strong><span class="fine">${next.why}</span></a>` : ""}
         <div class="studio-grid">
+          <a class="studio-card" style="--room:#176b78" href="${BASE}/worlds?grades=${band}"><span class="studio-icon" aria-hidden="true">🗺️</span><strong>Language Worlds</strong><span>Four consequential game environments with 64 missions.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
+          <a class="studio-card" style="--room:#235882" href="${BASE}/classroom?grades=${band}"><span class="studio-icon" aria-hidden="true">📽️</span><strong>Whole-Class Studio</strong><span>Projector-ready listen, read, discuss, and revise routines.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
+          <a class="studio-card" style="--room:#8c4d28" href="${BASE}/vocabulary?grades=${band}"><span class="studio-icon" aria-hidden="true">🧩</span><strong>Word Builder</strong><span>Prefixes, roots, and academic morphology in context.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
           <a class="studio-card" style="--room:#6272b9" href="${BASE}/missions?grades=${band}"><span class="studio-icon" aria-hidden="true"><svg><use href="${BASE}/pictures/lab-icons.svg#mission"></use></svg></span><strong>Academic missions</strong><span>Listen, read, decide, speak and write in one investigation.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
           <a class="studio-card" style="--room:#b96c57" href="${BASE}/speak?grades=${band}"><span class="studio-icon" aria-hidden="true"><svg><use href="${BASE}/pictures/lab-icons.svg#speaking"></use></svg></span><strong>Speaking Studio</strong><span>Plan, record, listen back, and say it better.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
           <a class="studio-card" style="--room:#4285a1" href="${BASE}/write?grades=${band}"><span class="studio-icon" aria-hidden="true"><svg><use href="${BASE}/pictures/lab-icons.svg#writing"></use></svg></span><strong>Writing Studio</strong><span>Use sources, draft, get feedback, revise.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
@@ -212,16 +250,19 @@ export async function render(ctx) {
           : ""
       }
 
-      <details class="more-tools">
+      <details class="more-tools" open>
         <summary>More practice and tools</summary>
         <section class="door-grid" aria-label="More">
+          <a class="door" href="${BASE}/worlds?grades=${band}"><span aria-hidden="true">🗺️</span><strong>Language Worlds</strong><span>Four consequential environments with 64 missions.</span></a>
+          <a class="door" href="${BASE}/classroom?grades=${band}"><span aria-hidden="true">📽️</span><strong>Whole-Class Studio</strong><span>Projector-ready routines for listen, read, discuss, and revise.</span></a>
+          <a class="door" href="${BASE}/vocabulary?grades=${band}"><span aria-hidden="true">🧩</span><strong>Word Builder</strong><span>Prefixes, roots, and suffixes in academic context.</span></a>
+          <a class="door" href="${BASE}/diagnostic?grades=${band}"><span aria-hidden="true">🎯</span><strong>Skill Check-in</strong><span>Optional 4-minute diagnostic for starting recommendations.</span></a>
+          <a class="door" href="${BASE}/launch-studio"><span aria-hidden="true">🚀</span><strong>Teacher Launch Studio</strong><span>Classroom QR codes, printable tickets, and direct URLs.</span></a>
           <a class="door" href="${BASE}/tests?grades=${band}"><span aria-hidden="true">🧪</span><strong>Practice tests</strong><span>Full tests and short minis, with practice tools.</span></a>
           <a class="door" href="${BASE}/library?grades=${band}"><span aria-hidden="true">📚</span><strong>Find an activity</strong><span>Search every quick-practice activity.</span></a>
           <a class="door" href="${BASE}/road?grades=${band}"><span aria-hidden="true">🛣️</span><strong>Road to ACCESS</strong><span>A 12-week plan, one short stop a week.</span></a>
           <a class="door" href="${BASE}/construction?grades=${band}"><span aria-hidden="true">🧱</span><strong>Language Construction Lab</strong><span>Expand sentences and shift register.</span></a>
-          <a class="door" href="${BASE}/vocabulary?grades=${band}"><span aria-hidden="true">🧩</span><strong>Word Builder</strong><span>Prefixes, roots, and suffixes in academic context.</span></a>
           <a class="door" href="${BASE}/conversation?grades=${band}"><span aria-hidden="true">💬</span><strong>Conversation Simulator</strong><span>Academic dialogue and oral rehearsal.</span></a>
-          <a class="door" href="${BASE}/classroom?grades=${band}"><span aria-hidden="true">📽️</span><strong>Whole-Class Studio</strong><span>Projector-ready listen, read, discuss, and revise routines.</span></a>
           <a class="door" href="${BASE}/evidence?grades=${band}"><span aria-hidden="true">📊</span><strong>Evidence Studio</strong><span>Turn charts into explanations.</span></a>
           <a class="door" href="${BASE}/passport?grades=${band}"><span aria-hidden="true">🛂</span><strong>My Passport</strong><span>${stamps} stamp${stamps === 1 ? "" : "s"}${streak ? ` · ${streak}-week streak` : ""}; send work to your teacher.</span></a>
           <a class="door" href="${BASE}/family?grades=${band}"><span aria-hidden="true">🏠</span><strong>Families · Familias</strong><span>How to help at home, in English and Spanish.</span></a>
