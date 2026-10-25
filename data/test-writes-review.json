@@ -115,6 +115,11 @@
       "file": "tools/pretest-qti-no-system-zip.test.mjs",
       "targets": "tmpdir",
       "reason": "the builder is run with an explicit output directory under mkdtempSync(join(tmpdir(), 'pretest-qti-')); its staging folder and the zip land there and the directory is removed afterwards; nothing is written into the repository"
+    },
+    {
+      "file": "tools/access-teacher-insights.test.mjs",
+      "targets": "tmpdir",
+      "reason": "the station-card generator test writes its output only under mkdtempSync(join(tmpdir(), \"station-\")); no repo file is written"
     }
   ]
 }

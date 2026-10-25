@@ -4,6 +4,9 @@
 // about it: they notice what is on the page, never whether it is true or well reasoned.
 import { CONNECTORS, IRREGULAR } from "./lexicon.js";
 import { findPhrase, isStop, numbersIn, sentences, stem, tokenize } from "./text.js";
+import { KEY_LANGUAGE_USES, KLU_DOMAINS, KLU_REFERENCE } from "./klu.js";
+
+export { KEY_LANGUAGE_USES, KLU_DOMAINS, KLU_REFERENCE };
 
 const PAST_FORMS = new Set(Object.values(IRREGULAR).map(([p]) => p));
 const phraseHits = (text, list) => list.flatMap((p) => findPhrase(text, p).map((h) => ({ ...h, cue: p })));
@@ -76,4 +79,49 @@ export function purposeMoves(text, keyUse, { words = 0, expectCounter = false, t
     return { id: d.id, label: d.label, act: d.act, ask: d.ask, present: hits.length >= need, required, evidence: hits.slice(0, 4), count: hits.length };
   });
   return { keyUse: MOVES[keyUse] ? keyUse : "Explain", moves: out, missing: out.filter((m) => m.required && !m.present).map((m) => m.id) };
+}
+
+// ── Key Language Use practice: reference and filtering ────────────────────────
+const kluBand = (band) => (band === "3-5" ? "3-5" : "6-8");
+
+/**
+ * The reference card for one Key Language Use and grade band: organizational moves, language
+ * functions, signal words, and what to listen/read for or produce in each domain. Null if unknown.
+ */
+export function kluReference(keyUse, band = "6-8") {
+  if (!Object.hasOwn(KLU_REFERENCE, keyUse)) return null;
+  const r = KLU_REFERENCE[keyUse];
+  const b = r.bands[kluBand(band)];
+  return { keyUse, band: kluBand(band), purpose: r.purpose, moves: [...b.moves], functions: [...b.functions], signals: [...b.signals], domains: { ...r.domains } };
+}
+
+/**
+ * Which Key Language Use a Listening/Reading activity's skill text practices, or null when the text
+ * names none. Rule-based and visible: retelling, story events and time order → Narrate; steps,
+ * processes, causes and explanations → Explain; claims, opinions and supporting evidence → Argue;
+ * main ideas, details, definitions and comparisons → Inform.
+ */
+export function keyUseForSkill(text) {
+  const s = String(text || "").toLowerCase();
+  if (!s) return null;
+  if (/retell|recount|narrat|story|plot|character|events/.test(s)) return "Narrate";
+  if (/cause|effect|step|process|procedure|explain|explanation|how .* works|why /.test(s)) return "Explain";
+  if (/claim|argu|opinion|persua|point of view|counter|evidence/.test(s)) return "Argue";
+  if (/sequenc|in order|time order/.test(s)) return "Narrate";
+  if (/main idea|central idea|detail|topic|defin|describ|fact|inform|classif|compar|locat|summar|vocabulary/.test(s)) return "Inform";
+  return null;
+}
+
+/**
+ * Filter practice items by Key Language Use and, optionally, by domain. Items may carry `keyUse`,
+ * `keyUses` (missions) or, for Listening/Reading activities, a `skill` text read by keyUseForSkill.
+ */
+export function filterByKeyUse(items, keyUse, domain = null) {
+  if (!KEY_LANGUAGE_USES.includes(keyUse)) return [];
+  return (Array.isArray(items) ? items : []).filter((it) => {
+    if (!it || (domain && it.domain && it.domain !== domain)) return false;
+    if (it.keyUse) return it.keyUse === keyUse;
+    if (Array.isArray(it.keyUses)) return it.keyUses.includes(keyUse);
+    return keyUseForSkill(it.skill) === keyUse;
+  });
 }

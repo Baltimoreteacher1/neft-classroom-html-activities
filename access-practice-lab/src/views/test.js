@@ -1,30 +1,89 @@
-// Practice test runner: intro → questions (navigator, flags) → review →
-// results with a full answer review. Untimed by default; a student can opt into
-// a practice timer that NEVER auto-submits (the previous runner submitted the
-// test at 0:00 with whatever was answered).
+// Practice test runner: intro → questions (navigator, flags) → section review →
+// results with a full answer review. Two modes, chosen before the test starts:
+//  - Guided Practice: untimed; hints, transcripts (after answering), immediate rationales and retries.
+//    Its results are "Supported Practice" and count each question's FIRST checked answer.
+//  - Independent Rehearsal: test-day flow; each recording plays once (an optional replay is an
+//    EduWonderLab rehearsal setting), no frames or word banks, flags, section review, and a
+//    practice timer that NEVER auto-submits.
+// Switching mode restarts the test. Each mode keeps its own formative breakdown; they are never merged.
 import { listenPlayerHTML, recorderHTML, transcriptHTML } from "../components.js";
 import { loadTest } from "../content.js";
 import { correctAnswerText, isAnswered, isAuto, isCorrect } from "../grade.js";
 import { choiceTarget, inputHTML, reduceAnswer, seedAnswer } from "../items.js";
 import {
   BAND_POINTS,
+  FORMATIVE_SMALL,
+  formativeBreakdown,
+  keyLanguageUse,
   LIMITS,
+  languageDimension,
   METHOD,
   MIN_ITEMS,
-  WEIGHTS,
   practiceComposite,
+  SMALL_SAMPLE,
+  WEIGHTS,
 } from "../lang/composite.js";
-import { CRITERIA, PRACTICE_BANDS } from "../lang/rubrics.js";
 import { visualsHTML } from "../media.js";
 import { clear as clearTake, isRecording, stop as stopRecording, takesFor } from "../recorder.js";
 import { stop as stopSpeech } from "../speech.js";
 import { clearTestRecord, getStudentName, loadTestRecord, saveTestRecord } from "../store.js";
 import { BASE, announce, asList, bandLabel, html, raw } from "../util.js";
+import {
+  applyRehearsal,
+  onRehearsalClick,
+  rehearsalClasses,
+  rehearsalPrefs,
+  rehearsalToolbarHTML,
+  releaseRehearsal,
+} from "./tools.js";
+import { answerReviewHTML, compositeHTML, formativeHTML, ratingHTML } from "./test-report.js";
+import { MODES, modeBannerHTML, modeChoiceHTML, modeOf, otherMode } from "./test-modes.js";
+
+export { MODES, modeOf };
 
 const IGN = raw("data-nsr-ignore");
 let T = null; // { test, flat, rec }
 let timerId = 0;
 let renderGeneration = 0;
+
+const rules = () => MODES[modeOf(T.rec)];
+const inProgress = () => Boolean(T.rec.startedAt || Object.keys(T.rec.answers || {}).length);
+function setMode(mode) {
+  T.rec.conditions = mode === "independent";
+  if (mode === "guided") {
+    T.rec.timer = false;
+    T.rec.replay = false;
+  }
+}
+/** `/test/<id>?rehearsal=guided|independent` (from the test list) preselects a mode. */
+function requestedMode() {
+  const v = new URLSearchParams(globalThis.location?.search || "").get("rehearsal");
+  return MODES[v] ? v : null;
+}
+
+/** Score of one machine-checked item. Guided runs count the first checked answer, never a retry. */
+export function rightFor(item, rec) {
+  const first = rec?.guided?.[item.id]?.first;
+  if (modeOf(rec) === "guided" && typeof first === "boolean") return first;
+  return isCorrect(item, rec?.answers?.[item.id] ?? seedAnswer(item));
+}
+
+/** One run's per-question outcomes, tagged for the formative breakdown. */
+export function runOutcomes(flat, rec, hasTake = () => false) {
+  return flat.map(({ item, section }) => {
+    const scored = isAuto(item);
+    return {
+      domain: section.domain,
+      keyUse: keyLanguageUse(item),
+      dimension: scored ? languageDimension(item) : null,
+      scored,
+      right: scored ? rightFor(item, rec) : false,
+      done: scored
+        ? isAnswered(item, rec?.answers?.[item.id])
+        : responseDone(item, section.domain, rec?.answers?.[item.id], rec?.oralPractice?.[item.id], hasTake(item)),
+    };
+  });
+}
 
 function flatten(test) {
   const flat = [];
@@ -59,6 +118,9 @@ const done = (f) =>
 export function unmount() {
   renderGeneration++;
   clearInterval(timerId);
+  releaseRehearsal();
+  if (T) T.paramApplied = false;
+  if (T) T.pendingMode = null;
   if (T?.rec.phase === "running") {
     T.rec.phase = "intro";
     persist();
@@ -77,9 +139,7 @@ function grade() {
   const sections = (T.test.sections || []).map((s, si) => {
     const items = T.flat.filter((f) => f.si === si).map((f) => f.item);
     const auto = items.filter(isAuto);
-    const correct = auto.filter((it) =>
-      isCorrect(it, T.rec.answers[it.id] ?? seedAnswer(it)),
-    ).length;
+    const correct = auto.filter((it) => rightFor(it, T.rec)).length;
     const open = items.filter((it) => !isAuto(it));
     const openDone = open.filter((it) =>
       responseDone(
@@ -147,57 +207,38 @@ export function onListen(key) {
 
 function introHTML() {
   const test = T.test;
-  const inProgress = Boolean(T.rec.startedAt || Object.keys(T.rec.answers || {}).length);
+  const mode = modeOf(T.rec);
   return html`<section class="panel test-intro">
-    <p class="eyebrow">Classroom practice · ${bandLabel(test.band)}</p>
+    ${modeBannerHTML(T.pendingMode, T.rec)}
+    <p class="eyebrow">Classroom practice · ${bandLabel(test.band)} · ${MODES[mode].label}</p>
     <h1 tabindex="-1">${test.title}</h1>
     ${test.overview ? html`<p class="lead">${test.overview}</p>` : ""}
     <ol class="section-list">
       ${(test.sections || []).map((s) => html`<li><strong>${s.title || s.domain}</strong><span>${s.items.length} question${s.items.length === 1 ? "" : "s"} · about ${s.estMinutes || 8} min</span></li>`)}
     </ol>
     <ul class="rules">
-      <li>Take your time. There is no clock unless you turn one on.</li>
+      <li>${mode === "guided" ? "Take your time. Guided Practice has no clock." : "There is no clock unless you turn on the practice timer."}</li>
       <li>
-        Use <strong>Next</strong> and <strong>Back</strong>. Flag a question to come back to it.
+        Use <strong>Next</strong> and <strong>Back</strong>. Flag a question to come back to it. You
+        review each section before you submit.
       </li>
       ${
         T.rec.conditions
           ? html`<li>Listening: press <strong>▶ Play</strong>. Each recording plays ${maxPlays() === 1 ? "one time" : "up to two times"} and cannot be paused or stopped.</li>`
-          : html`<li>Listening: press <strong>▶ Listen</strong>. You may listen more than once.</li>`
+          : html`<li>Listening: press <strong>▶ Listen</strong>. You may listen more than once. After you check an answer you can read what you heard.</li>`
       }
       <li>
         Speaking: record your answer or say it to a teacher or partner. Writing: type your answer.
         For Grade 3 ACCESS preparation, also practice handwriting on paper with your teacher.
       </li>
     </ul>
-    <fieldset class="test-mode">
-      <legend>How do you want to practice?</legend>
-      <label class="rate-opt"
-        ><input type="radio" name="test-mode" value="learning" data-conditions ${T.rec.conditions ? "" : raw("checked")} ${IGN} />
-        <span><strong>Learning mode</strong> — listen as often as you like.</span></label
-      >
-      <label class="rate-opt"
-        ><input type="radio" name="test-mode" value="test" data-conditions ${T.rec.conditions ? raw("checked") : ""} ${IGN} />
-        <span><strong>Independent rehearsal</strong> — this Lab practice setting plays each recording once and cannot be paused. It does not reproduce official ACCESS procedures.</span></label
-      >
-      ${
-        T.rec.conditions
-          ? html`<label class="timer-opt"
-              ><input type="checkbox" data-replay ${T.rec.replay ? raw("checked") : ""} ${IGN} /> Allow one replay in this practice set
-              <span class="fine">This Lab setting does not grant or represent an official testing accommodation. Ask your teacher about your assessment plan.</span></label
-            >`
-          : ""
-      }
-    </fieldset>
-    <label class="timer-opt"
-      ><input type="checkbox" data-timer ${T.rec.timer ? raw("checked") : ""} ${IGN} /> Practice
-      with a timer (about ${T.minutes} minutes). It will never end your test.</label
-    >
+    ${modeChoiceHTML(T.rec, { started: inProgress(), minutes: T.minutes })}
+    ${rehearsalToolbarHTML()}
     <div class="row-actions">
       <button type="button" class="btn btn-primary btn-big" data-start>
-        ${inProgress ? "Resume test" : "Start test"}
+        ${inProgress() ? "Resume test" : "Start test"}
       </button>
-      ${inProgress ? html`<button type="button" class="ghost" data-restart>Start over</button>` : ""}
+      ${inProgress() ? html`<button type="button" class="ghost" data-restart>Start over</button>` : ""}
       <a class="ghost" href="${BASE}/tests">All tests</a>
     </div>
     <p class="disclaimer">
@@ -254,7 +295,7 @@ function inputFor(f) {
           teacher to listen before closing or reloading it.
         </p>`;
     return html`${
-        item.wordBank?.length
+        rules().wordBank && item.wordBank?.length
           ? html`<ul class="wordbank">
               ${item.wordBank.map((w) => html`<li>${w}</li>`)}
             </ul>`
@@ -267,6 +308,58 @@ function inputFor(f) {
   return inputHTML(item, a);
 }
 
+const answerKey = (item) => JSON.stringify(T.rec.answers[item.id] ?? null);
+
+/** Guided only: hints and look-back supports. Never rendered in Independent Rehearsal. */
+function lookbackHTML(f) {
+  if (!rules().lookback) return "";
+  const { item, section } = f;
+  const lookFor = asList(item.listenFor || item.readFor || item.sayFor || item.writeFor);
+  const frames = rules().frames ? asList(item.frames) : [];
+  const g = T.rec.guided?.[item.id];
+  const transcript =
+    section.domain === "Listening" && g?.tries > 0 ? transcriptHTML(item.id, item.script) : "";
+  if (!item.support && !lookFor.length && !frames.length && !transcript) return "";
+  return html`<details class="lookback">
+      <summary>Look back: hints and supports (Guided Practice)</summary>
+      ${item.support ? html`<p>${item.support}</p>` : ""}
+      ${lookFor.length ? html`<p><strong>${section.domain === "Listening" ? "Listen for" : section.domain === "Reading" ? "Read for" : "Include"}:</strong></p><ul>${lookFor.map((x) => html`<li>${x}</li>`)}</ul>` : ""}
+      ${frames.length ? html`<p><strong>Sentence frames:</strong></p><ul class="frames">${frames.map((x) => html`<li>${x}</li>`)}</ul>` : ""}
+    </details>
+    ${transcript}`;
+}
+
+/** Guided only: check an answer for an immediate rationale, then retry. */
+function guidedCheckHTML(f) {
+  const { item } = f;
+  if (!rules().rationales || !isAuto(item)) return "";
+  const g = T.rec.guided?.[item.id];
+  const current = g && g.last === answerKey(item);
+  const why = String(item.correct || "").replace(/^correct[.!]?\s*/i, "");
+  let body = "";
+  if (g && !current)
+    body = html`<div class="feedback is-shown" role="status"><p>You changed your answer. Check it again.</p></div>`;
+  else if (g?.ok)
+    body = html`<div class="feedback is-right" role="status"><p class="fb-title">✓ Correct</p>${why ? html`<p>${why}</p>` : ""}</div>`;
+  else if (g && g.tries < 2)
+    body = html`<div class="feedback is-hint" role="status"><p class="fb-title">Not yet</p><p>${item.hint || "Look back at the question and try again."}</p><p>Change your answer and check again.</p></div>`;
+  else if (g)
+    body = html`<div class="feedback is-shown" role="status"><p class="fb-title">The answer is: ${correctAnswerText(item)}</p>${why ? html`<p>${why}</p>` : ""}</div>`;
+  return html`<div class="row-actions">
+      <button type="button" class="btn" data-guided-check>${g ? "Check again" : "Check my answer"}</button>
+    </div>
+    ${body}
+    ${g ? html`<p class="fine">Supported Practice counts your first check: ${g.first ? "right" : "not yet"}.</p>` : ""}`;
+}
+
+function scratchHTML() {
+  if (!rehearsalPrefs().scratch) return "";
+  return html`<label class="field rh-scratch"
+    ><span>Scratchpad — EduWonderLab rehearsal setting. Never scored; stays on this device.</span
+    ><textarea rows="4" data-scratch ${IGN}>${T.rec.scratch || ""}</textarea></label
+  >`;
+}
+
 function runnerHTML(ctx) {
   const f = T.flat[T.rec.index] || T.flat[0];
   const flagged = (T.rec.flags || []).includes(f.item.id);
@@ -274,6 +367,7 @@ function runnerHTML(ctx) {
   const listening = f.section.domain === "Listening";
   const hasPassage = !listening && asList(f.item.passage).length > 0;
   return html`<div class="test-bar">
+      <span class="test-chip mode-chip">${MODES[modeOf(T.rec)].label}</span>
       <span class="test-chip">${f.section.title || f.section.domain}</span>
       <span>Section ${f.si + 1} of ${T.test.sections.length}</span>
       ${T.rec.timer ? html`<span class="test-clock" id="testClock" role="timer">${T.rec.remaining ? clock(T.rec.remaining) : "Time is up — keep going or submit"}</span>` : ""}
@@ -282,6 +376,7 @@ function runnerHTML(ctx) {
     <div class="test-progress" aria-hidden="true">
       <span style="width:${Math.round(((T.rec.index + 1) / T.flat.length) * 100)}%"></span>
     </div>
+    ${rehearsalToolbarHTML({ compact: true })}
     <div class="test-stage">
       <section class="test-q ${hasPassage ? "has-passage" : ""}" aria-labelledby="qTitle">
         <div class="q-head">
@@ -306,15 +401,16 @@ function runnerHTML(ctx) {
                 </div>
                 <div class="test-response-col">
                   <p class="prompt-text">${f.item.prompt || ""}</p>
-                  ${inputFor(f)}
+                  ${inputFor(f)} ${guidedCheckHTML(f)} ${lookbackHTML(f)}
                 </div>
               </div>`
             : html`
                 ${stimulus(f, ctx)}
                 <p class="prompt-text">${f.item.prompt || ""}</p>
-                ${inputFor(f)}
+                ${inputFor(f)} ${guidedCheckHTML(f)} ${lookbackHTML(f)}
               `
         }
+        ${scratchHTML()}
       </section>
       <aside class="palette" aria-label="Question navigator">
         <h2>Questions</h2>
@@ -345,157 +441,39 @@ function runnerHTML(ctx) {
 
 function reviewHTML() {
   const n = answered();
+  const flags = T.rec.flags || [];
+  const row = (f, i) => {
+    const completed = done(f);
+    return html`<li>
+      <button type="button" class="review-row ${completed ? "is-done" : "is-blank"}" data-jump="${i}">
+        <span>${i + 1}. ${f.item.title || f.item.skill || "Question"}</span
+        ><span>${completed ? "Answered" : "Not answered"}${flags.includes(f.item.id) ? " · ★ Flagged" : ""}</span>
+      </button>
+    </li>`;
+  };
   return html`<section class="panel">
-    <h1 tabindex="-1">Review your answers</h1>
+    <p class="eyebrow">${MODES[modeOf(T.rec)].label}</p>
+    <h1 tabindex="-1">Review each section before you submit</h1>
     <p>
-      ${n} answered · ${T.flat.length - n} not answered · ${(T.rec.flags || []).length} flagged. Tap
-      a question to go back.
+      ${n} answered · ${T.flat.length - n} not answered · ${flags.length} flagged. Tap a question to
+      go back.
     </p>
-    <ol class="review-list">
-      ${T.flat.map((f, i) => {
-        const completed = done(f);
-        return html`<li>
-          <button
-            type="button"
-            class="review-row ${completed ? "is-done" : "is-blank"}"
-            data-jump="${i}"
-          >
-            <span
-              >${i + 1}. ${f.section.domain} — ${f.item.title || f.item.skill || "Question"}</span
-            ><span
-              >${completed ? "Answered" : "Not answered"}${(T.rec.flags || []).includes(f.item.id) ? " · ★" : ""}</span
-            >
-          </button>
-        </li>`;
-      })}
-    </ol>
+    ${(T.test.sections || []).map((s, si) => {
+      const rows = T.flat.map((f, i) => [f, i]).filter(([f]) => f.si === si);
+      const sDone = rows.filter(([f]) => done(f)).length;
+      const sFlags = rows.filter(([f]) => flags.includes(f.item.id)).length;
+      return html`<section class="review-section" aria-labelledby="rev-${si}">
+        <h2 id="rev-${si}">${s.title || s.domain}</h2>
+        <p class="fine">${sDone} of ${rows.length} answered · ${sFlags} flagged</p>
+        <ol class="review-list">
+          ${rows.map(([f, i]) => row(f, i))}
+        </ol>
+      </section>`;
+    })}
     <div class="row-actions">
       <button type="button" class="btn" data-jump="${T.rec.index}">Keep working</button
       ><button type="button" class="btn btn-primary btn-big" data-submit>Submit test</button>
     </div>
-  </section>`;
-}
-
-const ratingId = (domain, crit, band) => `rate-${domain}-${crit}-${band}`;
-
-/** Speaking and Writing cannot be machine-scored, so the composite waits for a practice-rubric rating. */
-function ratingHTML(r) {
-  const rated = r.sections.filter(
-    (s) => (s.domain === "Speaking" || s.domain === "Writing") && s.openDone > 0,
-  );
-  if (!rated.length) return "";
-  return html`<section class="rate-panel" aria-labelledby="rateTitle">
-    <h2 id="rateTitle">Rate your speaking and writing</h2>
-    <p class="fine">
-      Use the practice rubric to rate each response. A teacher rating is a different kind of
-      evidence than a self-rating, so say who rated. Ratings are saved on this device.
-    </p>
-    ${rated.map((s) => {
-      const cur = T.rec.ratings?.[s.domain] || {};
-      return html`<fieldset class="rate-domain">
-        <legend>${s.domain}</legend>
-        ${CRITERIA.map(
-          (c) =>
-            html`<fieldset class="rate-crit">
-              <legend>${c.name} <span class="fine">· ${c.dimension}</span></legend>
-              ${PRACTICE_BANDS.map(
-                (b) =>
-                  html`<label class="rate-opt">
-                    <input
-                      type="radio"
-                      id="${ratingId(s.domain, c.id, b.id)}"
-                      name="rate-${s.domain}-${c.id}"
-                      value="${b.id}"
-                      data-rating="${s.domain}"
-                      data-rating-crit="${c.id}"
-                      ${cur[c.id] === b.id ? raw("checked") : ""}
-                      ${IGN}
-                    />
-                    <span><strong>${b.label}</strong> — ${c.student[b.id]}</span>
-                  </label>`,
-              )}
-            </fieldset>`,
-        )}
-        <fieldset class="rate-crit">
-          <legend>Who rated this?</legend>
-          ${["me", "teacher"].map(
-            (who) =>
-              html`<label class="rate-opt">
-                <input
-                  type="radio"
-                  id="rate-${s.domain}-by-${who}"
-                  name="rate-${s.domain}-by"
-                  value="${who}"
-                  data-rating-by="${s.domain}"
-                  ${(cur.by || "me") === who ? raw("checked") : ""}
-                  ${IGN}
-                />
-                <span>${who === "me" ? "I rated my own work" : "My teacher rated it"}</span>
-              </label>`,
-          )}
-        </fieldset>
-      </fieldset>`;
-    })}
-  </section>`;
-}
-
-/** The Practice Composite: weighted, never filled in, never a WIDA score or level. See lang/composite.js. */
-function compositeHTML(r) {
-  const c = practiceComposite(r.sections, T.rec.ratings);
-  const points = (m) => (m.status === "ok" ? `${Math.round(m.value)}` : "—");
-  const card = (label, sub, v) =>
-    html`<article class="comp-card">
-      <h3>${label} <span class="fine">${sub}</span></h3>
-      ${
-        v
-          ? html`<p class="comp-num">
-                <strong>${v.value}</strong> <span>/ 100 practice points</span>
-              </p>
-              ${v.small ? html`<p class="fine">Small sample: fewer than 12 questions in a skill. Treat this as a rough picture.</p>` : ""}`
-          : html`<p class="fine">Not shown yet.</p>`
-      }
-    </article>`;
-  return html`<section class="composite" aria-labelledby="compTitle">
-    <h2 id="compTitle">Practice composite</h2>
-    <div class="comp-grid">
-      ${card("Practice comprehension", "Listening + Reading", c.comprehension)}
-      ${card("Practice overall", "all four skills", c.overall)}
-    </div>
-    ${c.withheld ? html`<p class="fine">${c.withheld}</p>` : ""}
-    ${c.overall ? html`<p class="fine">Speaking and Writing ${c.overall.raters.length > 1 ? "were rated by both you and your teacher" : c.overall.raters[0] === "teacher" ? "were rated by your teacher" : "are your own ratings"}.</p>` : ""}
-    <table class="comp-table">
-      <caption>
-        How each skill counts
-      </caption>
-      <thead>
-        <tr>
-          <th scope="col">Skill</th>
-          <th scope="col">Weight</th>
-          <th scope="col">Practice points</th>
-          <th scope="col">Based on</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${c.measures.map(
-          (m) =>
-            html`<tr>
-              <th scope="row">${m.domain}</th>
-              <td>${Math.round(WEIGHTS[m.domain] * 100)}%</td>
-              <td>${points(m)}</td>
-              <td>${m.why}</td>
-            </tr>`,
-        )}
-      </tbody>
-    </table>
-    <details class="comp-method">
-      <summary>How this is calculated, and what it is not</summary>
-      <p>${METHOD}</p>
-      <p>${LIMITS}</p>
-      <p class="fine">
-        A skill needs at least ${MIN_ITEMS} answered questions to count. Rubric points: early
-        ${BAND_POINTS.early}, building ${BAND_POINTS.building}, strong ${BAND_POINTS.strong}.
-      </p>
-    </details>
   </section>`;
 }
 
@@ -504,7 +482,8 @@ function resultsHTML() {
   return html`<section class="panel results">
       <p class="eyebrow">Practice report${r.studentName ? ` · ${r.studentName}` : ""}</p>
       <h1 tabindex="-1">${T.test.title}</h1>
-      ${T.rec.conditions ? html`<p class="fine">Taken under test conditions: each recording played ${maxPlays() === 1 ? "once" : "up to twice"} and could not be paused.</p>` : ""}
+      ${modeBannerHTML(T.pendingMode, T.rec)}
+      <p class="fine"><strong>${MODES[modeOf(T.rec)].label}.</strong> ${T.rec.conditions ? `Each recording played ${maxPlays() === 1 ? "once" : "up to twice"} and could not be paused.` : "Hints and retries were available, so each checked question counts your first try."}</p>
       ${r.total ? html`<p class="big-score"><strong>${r.correct}/${r.total}</strong> scored questions right</p>` : ""}
       <div class="result-grid">
         ${r.sections.map(
@@ -523,7 +502,9 @@ function resultsHTML() {
             </article>`,
         )}
       </div>
-      ${ratingHTML(r)} ${compositeHTML(r)}
+      ${ratingHTML(r, T.rec.ratings)}
+      ${compositeHTML(practiceComposite(r.sections, T.rec.ratings), { WEIGHTS, METHOD, LIMITS, MIN_ITEMS, BAND_POINTS })}
+      ${formativeHTML(T.rec.formative, formativeBreakdown, { SMALL_SAMPLE, FORMATIVE_SMALL })}
       <p class="disclaimer">
         This is practice feedback, not a WIDA ACCESS score or level. Speaking and writing are best
         judged by your teacher.
@@ -531,25 +512,11 @@ function resultsHTML() {
       <div class="row-actions">
         <button type="button" class="btn" data-print>🖨️ Print report</button
         ><button type="button" class="ghost" data-restart>Take it again</button
+        ><button type="button" class="ghost" data-switch-mode="${otherMode(modeOf(T.rec))}">Try ${MODES[otherMode(modeOf(T.rec))].label}</button
         ><a class="ghost" href="${BASE}/tests">All tests</a>
       </div>
     </section>
-    <section class="panel">
-      <h2>Answer review</h2>
-      <ol class="answer-review">
-        ${T.flat.map((f) => {
-          const a = T.rec.answers[f.item.id] ?? seedAnswer(f.item);
-          const auto = isAuto(f.item);
-          const ok = auto && isCorrect(f.item, a);
-          return html`<li class="${auto ? (ok ? "is-right" : "is-wrong") : "is-open"}">
-            <p class="ar-q"><strong>${f.section.domain}:</strong> ${f.item.prompt}</p>
-            ${auto ? html`<p>${ok ? "✓ Correct" : html`✗ Correct answer: <strong>${correctAnswerText(f.item)}</strong>`}</p>` : html`<p>Your teacher will review this answer.</p>`}
-            ${!ok && f.item.hint ? html`<p class="fine">${f.item.hint}</p>` : ""}
-            ${f.section.domain === "Listening" && f.item.script ? transcriptHTML(f.item.id, f.item.script) : ""}
-          </li>`;
-        })}
-      </ol>
-    </section>`;
+    ${answerReviewHTML(T.flat, T.rec.answers)}`;
 }
 
 export async function render(ctx) {
@@ -580,6 +547,16 @@ export async function render(ctx) {
     if (T.rec.results) T.rec.phase = "results";
     if (T.rec.phase === "running") T.rec.phase = "intro"; // resume from the intro screen
   }
+  const want = requestedMode();
+  if (want && !T.paramApplied) {
+    T.paramApplied = true;
+    if (want !== modeOf(T.rec)) {
+      if (T.rec.phase === "intro" && !inProgress()) {
+        setMode(want);
+        persist();
+      } else T.pendingMode = want;
+    }
+  }
   const body =
     T.rec.phase === "running"
       ? runnerHTML(ctx)
@@ -588,11 +565,49 @@ export async function render(ctx) {
         : T.rec.phase === "results"
           ? resultsHTML()
           : introHTML();
-  return { title: T.test.title, html: html`<div class="test-view">${body}</div>` };
+  return {
+    title: T.test.title,
+    html: html`<div class="test-view ${rehearsalClasses()}">${body}</div>`,
+  };
 }
-export function mount() {
+export function mount(_root, ctx) {
+  applyRehearsal(ctx);
   if (T?.rec.phase === "running" && T.rec.timer) startTimer();
   else clearInterval(timerId);
+}
+
+/** Start over, keeping each mode's last formative result. `mode` switches mode (a switch always restarts). */
+function restart(ctx, mode = modeOf(T.rec)) {
+  const current = T;
+  stopRecording().then(() => {
+    if (T !== current) return;
+    for (const f of T.flat) clearTake(`${T.test.id}:${f.item.id}`);
+    clearTestRecord(T.test.id);
+    const { formative, conditions, replay } = T.rec;
+    T.rec = { phase: "intro", index: 0, answers: {}, flags: [], conditions, replay };
+    if (formative) T.rec.formative = formative;
+    setMode(mode);
+    T.pendingMode = null;
+    announce(`${MODES[mode].label}. The test starts over.`);
+    go(ctx, {});
+  });
+  return true;
+}
+
+function guidedCheck(ctx, f) {
+  const { item } = f;
+  if (!rules().rationales || !isAuto(item)) return;
+  if (!isAnswered(item, T.rec.answers[item.id])) return announce("Choose an answer first.");
+  const ok = isCorrect(item, T.rec.answers[item.id] ?? seedAnswer(item));
+  T.rec.guided ||= {};
+  const g = (T.rec.guided[item.id] ||= { tries: 0 });
+  g.tries++;
+  if (typeof g.first !== "boolean") g.first = ok;
+  g.ok = ok;
+  g.last = answerKey(item);
+  persist();
+  announce(ok ? "Correct." : g.tries < 2 ? "Not yet. Try again." : "Here is the answer.");
+  ctx.rerender();
 }
 
 async function go(ctx, patch) {
@@ -611,6 +626,7 @@ export function onClick(e, ctx) {
   if (!T) return;
   const t = e.target;
   const f = T.flat[T.rec.index];
+  if (onRehearsalClick(e, ctx)) return true;
   const choice = T.rec.phase === "running" && f && choiceTarget(e);
   if (choice) {
     T.rec.answers[f.item.id] = reduceAnswer(f.item, T.rec.answers[f.item.id], choice);
@@ -630,15 +646,11 @@ export function onClick(e, ctx) {
     if (T.rec.timer && T.rec.remaining == null) T.rec.remaining = T.minutes * 60;
     return go(ctx, { phase: "running", startedAt: T.rec.startedAt || new Date().toISOString() });
   }
-  if (t.closest("[data-restart]")) {
-    const current = T;
-    stopRecording().then(() => {
-      if (T !== current) return;
-      for (const f of T.flat) clearTake(`${T.test.id}:${f.item.id}`);
-      clearTestRecord(T.test.id);
-      T.rec = { phase: "intro", index: 0, answers: {}, flags: [] };
-      go(ctx, {});
-    });
+  if (t.closest("[data-restart]")) return restart(ctx);
+  const switchTo = t.closest("[data-switch-mode]")?.dataset.switchMode;
+  if (MODES[switchTo]) return restart(ctx, switchTo);
+  if (t.closest("[data-guided-check]") && T.rec.phase === "running" && f) {
+    guidedCheck(ctx, f);
     return true;
   }
   if (t.closest("[data-prev]")) return go(ctx, { index: Math.max(0, T.rec.index - 1) });
@@ -660,7 +672,11 @@ export function onClick(e, ctx) {
     stopRecording().then(() => {
       if (T !== current) return;
       announce("Test submitted.");
-      go(ctx, { phase: "results", results: grade() });
+      const mode = modeOf(T.rec);
+      const outcomes = runOutcomes(T.flat, T.rec, (item) => takesFor(`${T.test.id}:${item.id}`).length > 0);
+      // Each mode's breakdown lives in its own slot: guided work can never land in the independent one.
+      const formative = { ...(T.rec.formative || {}), [mode]: { mode, date: new Date().toISOString(), outcomes, ratings: T.rec.ratings || {} } };
+      go(ctx, { phase: "results", results: grade(), formative });
     });
     return true;
   }
@@ -685,13 +701,17 @@ export function onChange(e, ctx) {
     const cur = (T.rec.ratings[domain] ||= {});
     if (t.dataset.rating) cur[t.dataset.ratingCrit] = t.value;
     else cur.by = t.value;
+    const snap = T.rec.formative?.[modeOf(T.rec)];
+    if (snap) snap.ratings = T.rec.ratings;
     persist();
     const id = t.id;
     return ctx.rerender().then(() => document.getElementById(id)?.focus({ preventScroll: true }));
   }
   if (T.rec.phase === "intro" && (t.matches("[data-conditions]") || t.matches("[data-replay]"))) {
-    if (t.matches("[data-conditions]")) T.rec.conditions = t.value === "test";
-    else T.rec.replay = t.checked;
+    if (t.matches("[data-conditions]")) {
+      if (inProgress()) return; // a mode change mid-test goes through restart()
+      setMode(t.value === "test" ? "independent" : "guided");
+    } else T.rec.replay = t.checked;
     persist();
     return ctx.rerender().then(() => document.querySelector(`[data-conditions][value="${T.rec.conditions ? "test" : "learning"}"], [data-replay]`)?.focus({ preventScroll: true }));
   }
@@ -713,6 +733,10 @@ export function onChange(e, ctx) {
 }
 
 export function onInput(e) {
+  if (T && e.target.matches("[data-scratch]")) {
+    T.rec.scratch = e.target.value.slice(0, 5000);
+    return persist();
+  }
   if (!T || !e.target.matches("[data-test-note]")) return;
   const f = T.flat[T.rec.index];
   T.rec.answers[f.item.id] = e.target.value;

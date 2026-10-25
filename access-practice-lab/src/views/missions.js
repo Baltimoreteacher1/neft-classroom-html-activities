@@ -148,7 +148,9 @@ function boardHTML(ms) {
 }
 
 function debriefHTML(mission, ms, ledger, band, studio) {
-  const mine = ledger.entries.filter((e) => e.src === "mission" && e.task.startsWith(`${mission.id}:`));
+  const mine = ledger.entries.filter(
+    (e) => e.src === "mission" && e.task.startsWith(`${mission.id}:`),
+  );
   const qs = mine.flatMap((e) => e.m.questions || []);
   const first = qs.filter((q) => q.ok).length;
   const tasks = mission.phases.flatMap((p) => p.tasks || []).filter((t) => t.task);
@@ -158,30 +160,66 @@ function debriefHTML(mission, ms, ledger, band, studio) {
   const finalDraft = w?.versions?.at(-1);
   const grew = firstDraft && finalDraft && firstDraft.id !== finalDraft.id;
   const delta = grew
-    ? compareDrafts(firstDraft.text, finalDraft.text, { keyUse: writing.task.keyUse, sourceTerms: writing.task.sourceTerms, stage: "supported" })
+    ? compareDrafts(firstDraft.text, finalDraft.text, {
+        keyUse: writing.task.keyUse,
+        sourceTerms: writing.task.sourceTerms,
+        stage: "supported",
+      })
     : null;
   return html`<section class="panel case-file">
     <h2>Case file: ${mission.title}</h2>
     <p>${mission.debrief?.connections || ""}</p>
     <h3>The path you chose</h3>
     <ul>
-      ${mission.phases.filter((p) => p.skill === "Decision").map((p) => {
-        const o = p.decision.options.find((x) => x.id === ms.decisions[p.id]);
-        return html`<li>${p.decision.q} <strong>${o?.text || ""}</strong><br /><span class="fine">${o?.consequence || ""}</span></li>`;
-      })}
+      ${mission.phases
+        .filter((p) => p.skill === "Decision")
+        .map((p) => {
+          const o = p.decision.options.find((x) => x.id === ms.decisions[p.id]);
+          return html`<li>
+            ${p.decision.q} <strong>${o?.text || ""}</strong><br /><span class="fine"
+              >${o?.consequence || ""}</span
+            >
+          </li>`;
+        })}
     </ul>
-    ${ms.board.length ? html`<h3>Evidence you gathered</h3><ul>${ms.board.map((b) => html`<li><strong>${b.label}:</strong> ${b.text}</li>`)}</ul>` : ""}
-    ${grew
-      ? html`<h3>How your writing changed</h3>
-          <p class="fine">Your first draft and your final version of “${writing.task.title}”.</p>
-          <p class="diff">${diffWords(firstDraft.text, finalDraft.text).map((x) => (x.op === "same" ? html`${x.text} ` : x.op === "add" ? html`<ins>${x.text}</ins> ` : html`<del>${x.text}</del> `))}</p>
-          ${delta.changes.length || delta.gainedMoves.length ? html`<ul>${delta.changes.map((c) => html`<li>${c.label}: ${c.from} → ${c.to}</li>`)}${delta.gainedMoves.map((m) => html`<li>Now: ${m.toLowerCase()}</li>`)}</ul>` : ""}`
-      : w
-        ? html`<h3>Your writing</h3><p class="portfolio-response">${finalDraft?.text || ""}</p>`
-        : ""}
+    ${
+      ms.board.length
+        ? html`<h3>Evidence you gathered</h3>
+            <ul>
+              ${ms.board.map((b) => html`<li><strong>${b.label}:</strong> ${b.text}</li>`)}
+            </ul>`
+        : ""
+    }
+    ${
+      grew
+        ? html`<h3>How your writing changed</h3>
+            <p class="fine">Your first draft and your final version of “${writing.task.title}”.</p>
+            <p class="diff">
+              ${diffWords(firstDraft.text, finalDraft.text).map((x) => (x.op === "same" ? html`${x.text} ` : x.op === "add" ? html`<ins>${x.text}</ins> ` : html`<del>${x.text}</del> `))}
+            </p>
+            ${
+              delta.changes.length || delta.gainedMoves.length
+                ? html`<ul>
+                    ${delta.changes.map((c) => html`<li>${c.label}: ${c.from} → ${c.to}</li>`)}${delta.gainedMoves.map((m) => html`<li>Now: ${m.toLowerCase()}</li>`)}
+                  </ul>`
+                : ""
+            }`
+        : w
+          ? html`<h3>Your writing</h3>
+              <p class="portfolio-response">${finalDraft?.text || ""}</p>`
+          : ""
+    }
     <h3>Talk about it</h3>
-    <ul>${(mission.debrief?.teacherQuestions || []).map((q) => html`<li>${q}</li>`)}</ul>
-    <details class="fine"><summary>Questions</summary><p>${first} of ${qs.length} questions were right on the first try. This is practice information, not a score.</p></details>
+    <ul>
+      ${(mission.debrief?.teacherQuestions || []).map((q) => html`<li>${q}</li>`)}
+    </ul>
+    <details class="fine">
+      <summary>Questions</summary>
+      <p>
+        ${first} of ${qs.length} questions were right on the first try. This is practice
+        information, not a score.
+      </p>
+    </details>
     <div class="row-actions no-print">
       <button type="button" class="btn" data-print>Print my case file</button>
       <a class="btn btn-primary" href="${BASE}/missions?grades=${band}">More missions</a>
@@ -282,7 +320,7 @@ export async function render(ctx) {
                       }${src.kind === "audio" && !M.support.transcript ? html`<button type="button" class="ghost small" data-transcript="${sid}">Can't listen? Show the transcript <span class="fine">(saved as support)</span></button>` : ""}`,
                   )}
                 </div>
-                ${sug ? html`<p class="fine">Suggested help for this phase: <strong>${sug.stage === "guided" ? "frames and words" : "word bank"}</strong> — ${sug.reason}</p>` : ""}
+                ${sug ? html`<p class="fine">Suggested help for this phase: <strong>${sug.stage === "guided" ? "frames and words" : sug.stage === "independent" ? "no help, on my own" : "word bank"}</strong> — ${sug.reason}</p>` : ""}
                 ${phase.skill === "Decision" ? decisionHTML(phase, ms) : html`${visibleTasks(phase, ledger).map((t) => (t.kind === "question" ? questionHTML(t, ms) : t.kind === "evidence" ? evidenceHTML(t, ms) : studioTaskHTML({ ...t, task: t.task || { id: t.taskRef, title: "Speaking or writing task", scenario: "", prompt: "" } }, ms, mission, ctx.band)))}`}
                 ${isDone(ms, phase) && current < phases.length - 1 ? html`<a class="btn btn-primary" href="${BASE}/missions/${mission.id}?phase=${phases[current + 1].id}&grades=${ctx.band}">Next phase →</a>` : ""}
               </article>

@@ -1,10 +1,57 @@
 // Teacher launch builder. Links contain only public task IDs and instructional settings.
 // No roster, name, response, or student progress is encoded in a launch URL.
-import { bandRows } from "../content.js";
-import { BASE, CORE_DOMAINS, html } from "../util.js";
+import { bandRows, loadBlueprint, loadDomain, loadExemplars, loadSpeakingTasks, loadWorlds, loadWritingTasks } from "../content.js";
+import { stationCard, stationCardHTML, stationOptions } from "../lang/teacher.js";
+import { BASE, CORE_DOMAINS, html, raw } from "../util.js";
 import { activityHref } from "./room.js";
 
-const state = { band: "6-8", domain: "", skill: "", length: "", mode: "learning", selected: "", rows: [] };
+const state = { band: "6-8", domain: "", skill: "", length: "", mode: "learning", selected: "", rows: [], station: "" };
+const stationCache = { data: null };
+
+/** Content behind the station sheets: the same files tools/generate-access-studio-printables.mjs reads. */
+async function stationData() {
+  if (!stationCache.data) {
+    const [worlds, speaking, writing, exemplars, blueprint] = await Promise.all([
+      loadWorlds().catch(() => ({ worlds: [] })),
+      loadSpeakingTasks().catch(() => ({ tasks: [] })),
+      loadWritingTasks().catch(() => ({ tasks: [] })),
+      loadExemplars().catch(() => []),
+      loadBlueprint().catch(() => ({})),
+    ]);
+    stationCache.data = { worlds: worlds.worlds || [], speaking: speaking.tasks || [], writing: writing.tasks || [], exemplars, standards: blueprint.standards || [] };
+  }
+  return stationCache.data;
+}
+
+async function selectedStation() {
+  const data = { ...(await stationData()), band: state.band };
+  const options = stationOptions({ ...data, activities: state.rows });
+  if (!options.some((o) => `${o.kind}:${o.id}` === state.station)) state.station = options[0] ? `${options[0].kind}:${options[0].id}` : "";
+  const [kind, ...rest] = state.station.split(":");
+  const sel = { kind, id: rest.join(":"), mode: state.mode };
+  if (kind === "activity") {
+    const row = state.rows.find((r) => r.id === sel.id);
+    const domain = row ? await loadDomain(state.band, row.domain).catch(() => null) : null;
+    const activity = domain?.levels?.[row.level]?.activities?.find((a) => a.id === sel.id);
+    data.activity = activity ? { domain: row.domain, level: row.level, activity } : null;
+  }
+  return { options, card: stationCard(sel, data) };
+}
+
+function stationPanel({ options, card }) {
+  const groups = [["world", "Language Worlds"], ["studio", "Speaking and Writing Studios"], ["activity", "Activities"]];
+  return html`<section class="panel station-panel" aria-labelledby="station-title">
+    <h2 id="station-title">Print Station Cards / Answer Key &amp; Teacher Notes</h2>
+    <p>Choose a World, a Studio task, or an Activity for a one-page station sheet: direct link, WIDA ELD standard, Key Language Use, look-fors, oral probing questions, and exemplar responses in the practice bands early / building / strong.</p>
+    <label class="field station-pick">Station item<select data-station-field ${options.length ? "" : "disabled"}>${groups.map(([kind, label]) => {
+      const list = options.filter((o) => o.kind === kind);
+      return list.length ? html`<optgroup label="${label}">${list.map((o) => html`<option value="${o.kind}:${o.id}" ${`${o.kind}:${o.id}` === state.station ? "selected" : ""}>${o.label}</option>`)}</optgroup>` : "";
+    })}</select></label>
+    ${card ? html`<div class="station-preview" data-station-preview>${raw(stationCardHTML(card, location.origin))}</div>
+      <div class="row-actions"><button type="button" class="btn btn-primary" data-station-print>Print station card</button></div>
+      <p class="fine">Teacher copy: it includes exemplar responses. The same sheets are generated for the Teacher Hub packets.</p>` : html`<p role="status">No station content is available for this grade band.</p>`}
+  </section>`;
+}
 
 function options(items, selected, emptyLabel) {
   return html`<option value="">${emptyLabel}</option>${items.map((item) => html`<option value="${item.value}" ${item.value === selected ? "selected" : ""}>${item.label}</option>`)}`;
@@ -39,6 +86,7 @@ export async function render(ctx) {
   const url = taskUrl(row);
   const domains = CORE_DOMAINS.map((name) => ({ value: name, label: name }));
   const taskOptions = rows.map((r) => ({ value: r.id, label: `${r.title} · ${r.domain} · ${r.minutes || "—"} min` }));
+  const station = await selectedStation();
   return {
     title: "Teacher Launch Studio",
     html: html`<section class="room-hero">
@@ -61,11 +109,17 @@ export async function render(ctx) {
       <div class="row-actions"><button type="button" class="btn" data-launch-copy>Copy link</button><button type="button" class="btn" data-launch-print>Print launch card</button></div>
       <p class="fine" data-launch-status role="status" aria-live="polite">Share the link with students or display it for the class. A QR code is not shown because this application has no verified QR encoder.</p>` : html`<p role="status">No activity matches those choices. Try a different grade band, domain, skill, or session length.</p>`}
     </section>
+    ${stationPanel(station)}
     <section class="panel"><h2>Quick links</h2><div class="row-actions"><a class="btn" href="${BASE}/classroom">Whole-Class Language Studio</a><a class="btn" href="/access-teacher/">Open Teacher Hub</a><a class="btn" href="${BASE}/">Return to student lab</a></div><p class="fine">The Teacher Hub stores its local evidence in this browser. Launch links work without sending roster or learner data.</p></section>`,
   };
 }
 
 export async function onChange(e, ctx) {
+  if (e.target.matches("[data-station-field]")) {
+    state.station = e.target.value;
+    ctx.rerender();
+    return;
+  }
   const field = e.target.dataset.launchField;
   if (!field) return;
   state[field] = e.target.value;
@@ -80,6 +134,10 @@ export async function onChange(e, ctx) {
 export async function onClick(e) {
   const copy = e.target.closest("[data-launch-copy]");
   const print = e.target.closest("[data-launch-print]");
+  if (e.target.closest("[data-station-print]")) {
+    printStation();
+    return true;
+  }
   const url = taskUrl(selectedRow());
   const status = document.querySelector("[data-launch-status]");
   if (copy) {
@@ -95,4 +153,24 @@ export async function onClick(e) {
   }
   if (print) { window.print(); return true; }
   return false;
+}
+
+/** Print only the station sheet: copy it into a body-level host so nothing else takes a page. */
+function printStation() {
+  const card = document.querySelector("[data-station-preview] .station-card");
+  if (!card) return;
+  let host = document.getElementById("stationPrint");
+  if (!host) {
+    host = Object.assign(document.createElement("div"), { id: "stationPrint" });
+    document.body.append(host);
+  }
+  host.replaceChildren(card.cloneNode(true));
+  document.body.dataset.printing = "station";
+  const done = () => {
+    delete document.body.dataset.printing;
+    host.replaceChildren();
+    window.removeEventListener("afterprint", done);
+  };
+  window.addEventListener("afterprint", done);
+  window.print();
 }

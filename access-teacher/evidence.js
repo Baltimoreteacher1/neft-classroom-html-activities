@@ -6,17 +6,23 @@ import {
   loadBlueprint,
   loadExemplars,
   loadPatterns,
+  loadSpeakingTasks,
   loadStudioIndex,
+  loadWritingTasks,
 } from "/access-practice-lab/src/content.js";
 import { analyzeResponse } from "/access-practice-lab/src/lang/analyze.js";
 import { CRITERIA, DISCLAIMER, PRACTICE_BANDS } from "/access-practice-lab/src/lang/rubrics.js";
 import { decodeShare } from "/access-practice-lab/src/lang/share.js";
 import {
+  DEMO_LABEL,
   classSummary,
+  conferencePlans,
   csvCell,
+  demoClass,
   groupSuggestions,
   interventionsFor,
   samplesFor,
+  supportGaps,
   toCSV,
   triage,
 } from "/access-practice-lab/src/lang/teacher.js";
@@ -66,6 +72,8 @@ const T = {
   groups: read(GROUP_KEY, []),
   lessons: read(LESSON_KEY, []),
   overrides: read(OVERRIDE_KEY, {}),
+  tasks: [],
+  demo: null, // SYNTHETIC DEMO class: in memory only, never persisted, cleared when real codes are added
 };
 
 /** Keep only what the tabs read: no raw progress records, no audio, no per-segment timing. */
@@ -131,6 +139,7 @@ function tabs() {
   return html`<div class="band-switch no-print" role="group" aria-label="Dashboard sections">
     ${[
       ["class", "Class"],
+      ["plans", "Conference plans"],
       ...(ACCESS_LAB_FLAGS.teacherDiagnosticsEnabled ? [["skills", "Skill diagnostics"]] : []),
       ...(ACCESS_LAB_FLAGS.instructionalGroupsEnabled ? [["groups", "Small groups"]] : []),
       ...(ACCESS_LAB_FLAGS.contentProvenanceEnabled ? [["content", "Lesson review"]] : []),
@@ -489,6 +498,66 @@ function groupsTab(rowsAll) {
     ${lessonPanel()}`;
 }
 
+const demoBadge = () => html`<span class="badge">${DEMO_LABEL}</span>`;
+
+function plansTab() {
+  const real = T.students.filter((s) => !T.section || s.section === T.section);
+  const demo = !T.students.length && T.demo;
+  const students = T.students.length ? real : T.demo || [];
+  if (!students.length)
+    return html`<section aria-labelledby="plansTitle">
+      <h3 id="plansTitle">Conference plans</h3>
+      <p>No student codes are loaded. Conference plans and support gaps are built only from Passport codes students send you — add codes above.</p>
+      <p class="fine">To see how this panel works, load an invented class. It is synthetic demo data, kept in this page only and never saved with your roster.</p>
+      <button type="button" class="btn" data-demo-load>Load sample demo class (${DEMO_LABEL} DATA)</button>
+    </section>`;
+  const plans = conferencePlans(students, T.tasks);
+  const gaps = supportGaps(students, T.tasks);
+  return html`<section aria-labelledby="plansTitle">
+      <h3 id="plansTitle">Small-group conference plans${demo ? ` — ${DEMO_LABEL} DATA` : ""}</h3>
+      ${demo ? html`<p class="feedback is-hint" role="note"><strong>${DEMO_LABEL} DATA.</strong> These students and their work are invented to show the panel. Nothing here describes a real learner. <button type="button" class="ghost small" data-demo-clear>Clear synthetic demo</button></p>` : ""}
+      <p class="fine">Students are grouped when 2 or more of their first attempts in one Key Language Use missed the same observable target. Practice evidence only — not a WIDA level or ACCESS score. Links open the task with the grade band only.</p>
+      ${
+        plans.length
+          ? html`<div class="hub-grid">${plans.map(
+              (p) => html`<article class="hub-card">
+                <h4>${demo ? demoBadge() : ""} ${p.label}</h4>
+                <p><strong>${p.members.length} students</strong> · ${p.dimension} · Grades ${p.band.replace("-", "–")}</p>
+                <ul class="fine">${p.members.map((m) => html`<li>${m.alias}: ${m.why}</li>`)}</ul>
+                ${p.chunks.length > 1 ? p.chunks.map((c, i) => html`<p>Group ${i + 1}: ${c.join(", ")}</p>`) : ""}
+                <h5>${p.minutes}-minute mini-lesson</h5>
+                <ol>${p.script.map((st) => html`<li><strong>${st.step} (${st.minutes} min):</strong> ${st.say}</li>`)}</ol>
+                ${p.launches.length ? html`<h5>Launch</h5><ul>${p.launches.map((l) => html`<li><a href="${l.url}" target="_blank" rel="noopener">${l.title}</a> <span class="fine">(${l.modality === "speaking" ? "Speaking" : "Writing"} Studio)</span></li>`)}</ul>` : ""}
+                <button type="button" class="ghost small no-print" data-copy="${p.members.map((m) => m.alias).join(", ")}">Copy names</button>
+              </article>`,
+            )}</div>`
+          : html`<p>No two students share a missed target yet. Plans appear when 2 or more students each have 2+ first attempts that missed the same target.</p>`
+      }
+    </section>
+    <section aria-labelledby="gapsTitle">
+      <h3 id="gapsTitle">Supported vs. independent${demo ? ` — ${DEMO_LABEL} DATA` : ""}</h3>
+      <p class="fine">Skills a learner meets with sentence frames or a word bank (2+ supported first attempts, at least two-thirds met) but has not shown on their own yet, or meets one-third less often on their own. Counts come straight from the ledger.</p>
+      ${
+        gaps.length
+          ? html`<div class="lab-table-wrap" tabindex="0" role="region" aria-label="Supported versus independent gaps">
+              <table class="hub-table">
+                <thead><tr><th scope="col">Student</th><th scope="col">Skill</th><th scope="col">With supports</th><th scope="col">On own</th><th scope="col">Next step</th></tr></thead>
+                <tbody>${gaps.map(
+                  (g) => html`<tr>
+                    <th scope="row">${g.alias}</th>
+                    <td>${g.label}</td>
+                    <td>${g.supported.met} of ${g.supported.n} met</td>
+                    <td>${g.independent.n ? `${g.independent.met} of ${g.independent.n} met` : "No attempts yet"}</td>
+                    <td>${g.next}${g.launch ? html` <a href="${g.launch.url}" target="_blank" rel="noopener">${g.launch.title}</a>` : ""}</td>
+                  </tr>`,
+                )}</tbody>
+              </table>
+            </div>`
+          : html`<p>No supported-vs-independent gaps in the imported evidence yet.</p>`
+      }
+    </section>`;
+}
+
 function diagnosticsTab() {
   const domains = ["All", "Listening", "Reading", "Speaking", "Writing"];
   const rows = T.students.flatMap((student) => buildSkillGraph(student.ledger?.entries || [], student.records || {}).filter((s) => T.skillDomain === "All" || s.domain === T.skillDomain).map((s) => ({ student, skill: s })));
@@ -700,7 +769,9 @@ function blueprintTab() {
 function draw() {
   const rows = classSummary(T.students);
   const body =
-    T.tab === "groups"
+    T.tab === "plans"
+      ? plansTab()
+      : T.tab === "groups"
       ? groupsTab(rows)
       : T.tab === "skills"
         ? diagnosticsTab()
@@ -745,6 +816,16 @@ root.addEventListener("click", async (e) => {
   const tab = t.closest("[data-tab]");
   if (tab) {
     T.tab = tab.dataset.tab;
+    return draw();
+  }
+  if (t.closest("[data-demo-load]")) {
+    T.demo = demoClass();
+    note(`Loaded a ${DEMO_LABEL} class. It is invented data and is not saved.`);
+    return draw();
+  }
+  if (t.closest("[data-demo-clear]")) {
+    T.demo = null;
+    note(`${DEMO_LABEL} class cleared.`);
     return draw();
   }
   const lessonPick = t.closest("[data-select-lesson]");
@@ -805,6 +886,7 @@ root.addEventListener("click", async (e) => {
     return focusTitle();
   }
   if (t.closest("[data-add]")) {
+    T.demo = null;
     T.lastSection = document.getElementById("evSection").value.trim();
     const text = document.getElementById("evCode").value;
     const codes = text.match(/ACCESST?1\.[A-Za-z0-9+/=_-]+/g) || (text.trim() ? [text] : []);
@@ -927,6 +1009,7 @@ root.addEventListener("change", async (e) => {
     return draw();
   }
   if (t.id === "evFile") {
+    T.demo = null;
     T.lastSection = document.getElementById("evSection").value.trim();
     for (const f of t.files) {
       try {
@@ -950,7 +1033,13 @@ Promise.all([
   loadExemplars().catch(() => []),
   loadBlueprint().catch(() => null),
   loadStudioIndex().catch(() => null),
-]).then(([p, x, bp, idx]) => {
+  loadSpeakingTasks().catch(() => ({ tasks: [] })),
+  loadWritingTasks().catch(() => ({ tasks: [] })),
+]).then(([p, x, bp, idx, sp, wr]) => {
+  T.tasks = [
+    ...(sp.tasks || []).map((t) => ({ id: t.id, title: t.title, keyUse: t.keyUse, band: t.band, modality: "speaking" })),
+    ...(wr.tasks || []).map((t) => ({ id: t.id, title: t.title, keyUse: t.keyUse, band: t.band, modality: "writing" })),
+  ];
   T.patterns = p.patterns || {};
   T.exemplars = x;
   T.blueprint = bp;

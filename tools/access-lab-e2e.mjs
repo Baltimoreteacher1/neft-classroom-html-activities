@@ -519,6 +519,7 @@ try {
 
   // A paused timed test retains its position and cannot keep ticking on another route.
   await go("/test/g35-listening-mini");
+  await page.check('[data-conditions][value="test"]');
   await page.check("[data-timer]");
   await page.click("[data-start]");
   await page.waitForSelector("#qTitle");

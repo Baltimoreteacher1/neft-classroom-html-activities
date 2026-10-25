@@ -33,6 +33,10 @@ export async function render(ctx) {
         >
         <span class="status ${rec.results ? "is-done" : ""}">${status}</span>
       </a>
+      <p class="mode-links" role="group" aria-label="Start ${t.title} in a mode">
+        <a href="${BASE}/test/${t.id}?grades=${ctx.band}&rehearsal=guided">Guided Practice</a>
+        <a href="${BASE}/test/${t.id}?grades=${ctx.band}&rehearsal=independent">Independent Rehearsal</a>
+      </p>
     </li>`;
   };
   return {
@@ -49,6 +53,12 @@ export async function render(ctx) {
             Practice listening, reading, speaking, and writing. These classroom activities build
             language confidence; they do not predict an ACCESS score. No clock
             unless you turn one on.
+          </p>
+          <p>
+            Take any test in <strong>Guided Practice</strong> (untimed, with hints, answer
+            explanations and retries) or <strong>Independent Rehearsal</strong> (like test day: each
+            recording plays once, no sentence frames or word banks, and a section review before you
+            submit). You choose the mode before you start.
           </p>
           <p class="fine">Actual ACCESS Online adapts Listening and Reading and uses those results for Speaking and Writing tier placement. These fixed classroom sets do not reproduce that routing, timing, scoring, or difficulty. Grade 3 ACCESS Writing uses paper; ask your teacher about your assigned format.</p>
           ${bandSwitchHTML(ctx.band, ctx.bands)}

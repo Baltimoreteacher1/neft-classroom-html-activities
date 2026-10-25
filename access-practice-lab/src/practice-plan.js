@@ -2,6 +2,8 @@
 import { answerOf, loadRecord } from "./store.js";
 import { isActivityComplete } from "./attempts.js";
 import { CORE_DOMAINS } from "./util.js";
+import { dueForReview } from "./lang/adapt.js";
+import { skillIdFor } from "./lang/skill-graph.js";
 
 const hasValue = (value) => {
   if (Array.isArray(value)) return value.some(hasValue);
@@ -32,7 +34,30 @@ export const STATUS_REASON = {
   done: "Practice a finished activity again.",
   revisit: "You used help or a retry before. Try a fresh answer independently.",
 };
-const priority = { draft: 0, retry: 1, revisit: 2, new: 3, done: 4 };
+const priority = { draft: 0, review: 0.5, retry: 1, revisit: 2, new: 3, done: 4 };
+
+/**
+ * Attach spaced-review skill items (adapt.js dueForReview) to the candidate activity that practices
+ * the same skill node, or else to an activity in the same domain. The row's reason becomes the item's
+ * evidence trace. At most half the session is review.
+ */
+function markReview(candidates, due, count) {
+  const limit = Math.max(1, Math.floor(count / 2));
+  const taken = new Set();
+  for (const item of due) {
+    // Error patterns are reviewed in Error Detective, not in a room activity.
+    if (item.kind !== "skill" || taken.size >= limit || !CORE_DOMAINS.includes(item.domain)) continue;
+    const open = candidates.filter((r) => !taken.has(r.id) && r.domain === item.domain && r.status !== "draft");
+    const row =
+      (item.kind === "skill" && open.find((r) => skillIdFor(r.domain, r.skill) === item.id)) ||
+      open.find((r) => r.status === "done" || r.status === "revisit") ||
+      open[0];
+    if (!row) continue;
+    taken.add(row.id);
+    row.status = "review";
+    row.review = item;
+  }
+}
 
 /** Rows must come from one grade band's index. Never uses responses in URLs. */
 export function buildPracticePlan(
@@ -58,6 +83,9 @@ export function buildPracticePlan(
         (record.results?.[row.id]?.evidence === "supported" || record.results?.[row.id]?.supportUsed === true);
       return { ...row, status: revisit ? "revisit" : status, order };
     });
+  // Spaced review only when the caller passes the learner's evidence: { entries, records, now }.
+  const due = options.review ? dueForReview(options.review.entries, options.review.now ?? Date.now(), { records: options.review.records, n: count }) : null;
+  if (due) markReview(candidates, due, count);
   const selected = [];
   const used = new Set();
   const domainCounts = Object.fromEntries(CORE_DOMAINS.map((domain) => [domain, 0]));
@@ -73,10 +101,11 @@ export function buildPracticePlan(
           a.order - b.order,
       )[0];
     if (!next) break;
-    selected.push({ ...next, reason: STATUS_REASON[next.status] });
+    selected.push({ ...next, reason: next.review ? next.review.reason : STATUS_REASON[next.status] });
     used.add(next.id);
     domainCounts[next.domain]++;
     if (next.status === "revisit") revisits++;
   }
+  if (due) selected.due = due;
   return selected;
 }

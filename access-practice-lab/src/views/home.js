@@ -17,6 +17,7 @@ import {
 import { estimateMinutes } from "../learning.js";
 import { loadStudioIndex } from "../content.js";
 import { recommendTasks } from "../lang/adapt.js";
+import { filterByKeyUse, KEY_LANGUAGE_USES, KLU_DOMAINS, kluReference } from "../lang/purpose.js";
 import { loadLedger } from "../lang/ledger.js";
 import { loadStudio } from "../lang/studio.js";
 import { buildPracticePlan } from "../practice-plan.js";
@@ -33,6 +34,64 @@ export function nextActivity(band, domain, level, rows) {
   return { done: rows.filter((r) => done.has(r[0])).length, total: rows.length, next };
 }
 
+const reviewHref = (item, plan, band, ctx) => {
+  const row = plan.find((r) => r.review?.key === item.key);
+  if (row) return `${BASE}/${row.domain}/${row.level}/${row.id}?grades=${band}`;
+  if (item.kind === "pattern") return `${BASE}/detective/${item.id}?grades=${band}`;
+  if (item.domain === "Speaking") return `${BASE}/speak?grades=${band}`;
+  if (item.domain === "Writing") return `${BASE}/write?grades=${band}`;
+  return `${BASE}/${item.domain}/${ctx.prefs.tiers?.[item.domain] || "A"}?grades=${band}`;
+};
+
+function reviewHTML(due, plan, band, ctx) {
+  return html`<section class="panel review-due" aria-labelledby="reviewTitle">
+    <h2 id="reviewTitle">Due for spaced review</h2>
+    <p class="fine">Quick checks spaced 1, 3, 7 and 14 days apart help you keep what you practiced. Each reason comes from your saved work on this device.</p>
+    <ul class="evidence-list">
+      ${due.map((item) => html`<li>
+        <span><a href="${reviewHref(item, plan, band, ctx)}">${item.kind === "pattern" ? `Pattern: ${item.name}` : item.name}</a> · ${item.domain}</span>
+        <span class="fine"><strong>Why this is recommended:</strong> ${item.reason}</span>
+      </li>`)}
+    </ul>
+    <p class="fine"><a href="${BASE}/growth?grades=${band}#supportChoiceTitle">Choose how much support you get</a></p>
+  </section>`;
+}
+
+function kluHTML(ctx, band, rows, idx) {
+  const klu = KEY_LANGUAGE_USES.includes(ctx.prefs.kluFocus) ? ctx.prefs.kluFocus : "";
+  const ref = klu ? kluReference(klu, band) : null;
+  const studioTasks = [...(idx?.speaking || []).map((t) => ({ ...t, domain: "Speaking" })), ...(idx?.writing || []).map((t) => ({ ...t, domain: "Writing" }))].filter((t) => !t.band || t.band === band);
+  const practice = (domain) => {
+    if (domain === "Speaking" || domain === "Writing")
+      return filterByKeyUse(studioTasks, klu, domain).slice(0, 3).map((t) => [`${BASE}/${domain === "Speaking" ? "speak" : "write"}/${t.id}?grades=${band}`, t.title]);
+    const tier = ctx.prefs.tiers?.[domain] || "A";
+    return filterByKeyUse(rows.filter((r) => r.domain === domain && r.level === tier), klu, domain).slice(0, 3).map((r) => [`${BASE}/${domain}/${r.level}/${r.id}?grades=${band}`, r.title]);
+  };
+  const missions = klu ? filterByKeyUse((idx?.missions || []).filter((m) => !m.band || m.band === band), klu) : [];
+  return html`<section class="panel klu-practice" aria-labelledby="kluTitle">
+    <p class="eyebrow">Practice by Key Language Use</p>
+    <h2 id="kluTitle">What do you want your language to do?</h2>
+    <div class="sort-cats" role="group" aria-label="Key Language Use">
+      ${KEY_LANGUAGE_USES.map((k) => html`<button type="button" class="cat-chip" id="klu-${k}" data-klu="${k}" aria-pressed="${k === klu ? "true" : "false"}">${k}</button>`)}
+    </div>
+    ${ref ? html`<p>${ref.purpose}</p>
+      <div class="domain-grid">
+        <div class="card"><h3>How it is organized</h3><ol>${ref.moves.map((m) => html`<li>${m}</li>`)}</ol></div>
+        <div class="card"><h3>Language functions</h3><ul>${ref.functions.map((m) => html`<li>${m}</li>`)}</ul></div>
+        <div class="card"><h3>Signal words</h3><p>${ref.signals.join(" · ")}</p></div>
+      </div>
+      <div class="domain-grid">
+        ${KLU_DOMAINS.map((d) => {
+          const links = practice(d);
+          return html`<div class="card"><h3>${d}</h3><p class="fine">${ref.domains[d]}</p>${links.length ? html`<ul>${links.map(([href, title]) => html`<li><a href="${href}">${title}</a></li>`)}</ul>` : html`<p class="fine">No ${klu} activity at your ${d} support right now. <a href="${BASE}/library?grades=${band}">Find one in the library</a>.</p>`}</div>`;
+        })}
+      </div>
+      ${missions.length ? html`<p class="fine">Missions that use ${klu}: ${missions.map((m, i) => html`${i ? " · " : ""}<a href="${BASE}/missions/${m.id}?grades=${band}">${m.title}</a>`)}</p>` : ""}
+      <p class="fine">Reference for grades ${ref.band.replace("-", "–")}, in the lab's own words. Choose the same button again to close it.</p>`
+    : html`<p class="fine">Choose Narrate, Inform, Explain or Argue to see how that kind of language is organized, its signal words, and practice in listening, reading, speaking and writing.</p>`}
+  </section>`;
+}
+
 export async function render(ctx) {
   const band = ctx.band;
   const [domains, road, shared] = await Promise.all([
@@ -43,7 +102,13 @@ export async function render(ctx) {
   const rows = await bandRows(band);
   const settings = ctx.prefs.practicePlan || {};
   const records = new Map();
-  const plan = buildPracticePlan(rows, { ...settings, tiers: ctx.prefs.tiers }, (r) => {
+  const ledger = loadLedger();
+  const bandRecords = allRecords().filter((r) => r.band === band);
+  const review = {
+    entries: ledger.entries.filter((e) => e.band === band),
+    records: Object.fromEntries(bandRecords.map((r) => [`${r.domain}:${r.level}`, { domain: r.domain, results: r.record.results }])),
+  };
+  const plan = buildPracticePlan(rows, { ...settings, tiers: ctx.prefs.tiers, review }, (r) => {
     const key = `${r.domain}:${r.level}`;
     if (!records.has(key)) records.set(key, loadRecord(band, r.domain, r.level));
     return records.get(key);
@@ -55,18 +120,16 @@ export async function render(ctx) {
   const level = ["A", "B", "C"].includes(settings.level) ? settings.level : "preferred";
   const count = [2, 4, 6].includes(Number(settings.count)) ? Number(settings.count) : 4;
   const week = currentWeek(road?.[band]);
-  const stamps = allRecords()
-    .filter((r) => r.band === band)
-    .reduce((n, r) => n + r.record.complete.length, 0);
+  const stamps = bandRecords.reduce((n, r) => n + r.record.complete.length, 0);
+  const due = plan.due || [];
   const streak = weekStreak();
   const win = shared.testWindow;
-  const ledger = loadLedger();
   const studio = loadStudio();
   const open = Object.entries(studio.missions).find(([, m]) => m.started && !m.done);
+  const idx = await loadStudioIndex().catch(() => null);
   let next = null;
   if (open) next = { href: `${BASE}/missions/${open[0]}?grades=${band}`, title: "Continue your mission", why: "Pick up where you left off." };
   else {
-    const idx = await loadStudioIndex().catch(() => null);
     const pool = [...(idx?.speaking || []), ...(idx?.writing || [])].filter((t) => t.band === band);
     const rec = recommendTasks(pool, ledger.entries, { band, n: 1 })[0];
     if (rec) next = { href: `${BASE}/${rec.task.taskType ? "speak" : "write"}/${rec.task.id}?grades=${band}`, title: rec.task.title, why: `${rec.task.taskType ? "Speaking" : "Writing"} · ${rec.why}` };
@@ -164,6 +227,9 @@ export async function render(ctx) {
         </details>
         <div class="row-actions"><a href="${BASE}/passport?grades=${band}">See my saved progress</a><a href="${BASE}/library?grades=${band}">Explore all activities</a><a href="${BASE}/diagnostic?grades=${band}">Optional skill check-in</a></div>
       </section>
+
+      ${due.length ? reviewHTML(due, plan, band, ctx) : ""}
+      ${kluHTML(ctx, band, rows, idx)}
 
       <section class="feature-banner" aria-labelledby="featureTitle">
         <div class="feature-copy">
@@ -274,6 +340,15 @@ export async function render(ctx) {
         or placement. Teachers: <a href="/access-teacher/">open the Teacher Hub</a>.
       </p>`,
   };
+}
+
+export function onClick(e, ctx) {
+  const btn = e.target.closest?.("[data-klu]");
+  if (!btn) return false;
+  const value = KEY_LANGUAGE_USES.includes(btn.dataset.klu) && ctx.prefs.kluFocus !== btn.dataset.klu ? btn.dataset.klu : "";
+  ctx.setPrefs({ kluFocus: value });
+  ctx.rerender().then(() => document.getElementById(btn.id)?.focus({ preventScroll: true }));
+  return true;
 }
 
 export function onChange(e, ctx) {

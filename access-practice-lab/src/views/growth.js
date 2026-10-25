@@ -13,6 +13,7 @@ import {
 import { loadPatterns } from "../content.js";
 import { allRecords } from "../store.js";
 import { buildSkillGraph } from "../lang/skill-graph.js";
+import { SUPPORT_TIERS, supportOverride } from "../lang/adapt.js";
 import { ACCESS_LAB_FLAGS } from "../lang/feature-flags.js";
 import { BASE, CORE_DOMAINS, DOMAIN_META, html } from "../util.js";
 
@@ -71,13 +72,28 @@ function featureCard(key, f, entries) {
   </div>`;
 }
 
+function supportChoiceHTML(ctx) {
+  const current = supportOverride(ctx.prefs);
+  const chosen = SUPPORT_TIERS.find((s) => s.id === current);
+  const choices = [...SUPPORT_TIERS.map((s) => [s.id, s.id === "independent" ? s.label : `${s.label} · ${s.id}`]), ["", "Follow my evidence"]];
+  return html`<section class="panel" aria-labelledby="supportChoiceTitle">
+    <h2 id="supportChoiceTitle">How much support do you want?</h2>
+    <p class="fine">The lab suggests support from your own work. You can choose instead with one click; it is saved on this device and changes the help missions suggest first.</p>
+    <div class="sort-cats" role="group" aria-label="Support choice">
+      ${choices.map(([id, label]) => html`<button type="button" class="cat-chip" id="support-${id || "evidence"}" data-support-choice="${id}" aria-pressed="${id === current ? "true" : "false"}">${label}</button>`)}
+    </div>
+    <p class="fine" role="status">${chosen ? `Your choice: ${chosen.label} support — ${chosen.detail}.` : "Following your evidence: each mission says which help it opens and why."} Support choices are not WIDA levels or scores.</p>
+  </section>`;
+}
+
 export async function render(ctx) {
   const band = ctx.band;
   const ledger = loadLedger();
   const patterns = (await loadPatterns().catch(() => ({ patterns: {} }))).patterns || {};
   const pname = (id) => (Object.hasOwn(patterns, id) ? patterns[id].name : id);
   const entries = ledger.entries.filter((e) => e.band === band);
-  const literacyRecords = Object.fromEntries(allRecords().filter((r) => r.band === band && ["Listening", "Reading"].includes(r.domain)).map((r) => [`${r.band === "3-5" ? "g3-5:" : ""}${r.domain}:${r.level}`, r]));
+  // evidenceFromPracticeRecords reads { domain, results } per saved level record.
+  const literacyRecords = Object.fromEntries(allRecords().filter((r) => r.band === band && ["Listening", "Reading"].includes(r.domain)).map((r) => [`${r.band === "3-5" ? "g3-5:" : ""}${r.domain}:${r.level}`, { domain: r.domain, results: r.record.results }]));
   const skillGraph = buildSkillGraph(entries, literacyRecords);
   const p = buildProfile(entries, { band });
   const focus = focusAreas(p);
@@ -131,6 +147,7 @@ export async function render(ctx) {
         </dl>
         ${p.firstAttempts === 0 ? html`<p>No studio work yet. Try the <a href="${BASE}/write?grades=${band}">Writing Studio</a>, <a href="${BASE}/speak?grades=${band}">Speaking Studio</a> or a <a href="${BASE}/missions?grades=${band}">mission</a> and your growth map will start to fill in.</p>` : html`<p class="fine">A trend appears after ${MIN_POINTS} first attempts. “On your own” means no frames, word bank or model were open.</p>`}
       </section>
+      ${supportChoiceHTML(ctx)}
       ${ACCESS_LAB_FLAGS.skillGraphEnabled ? html`<section class="panel" aria-labelledby="skillGraphHeading">
         <h2 id="skillGraphHeading">Academic-language skills</h2>
         <p class="fine">Practice profile from your saved work. A skill is shown as demonstrated only after repeated evidence on different tasks. This is not an ACCESS score or proficiency level.</p>
@@ -241,4 +258,13 @@ export async function render(ctx) {
         only describes what these tasks showed.
       </p>`,
   };
+}
+
+export function onClick(e, ctx) {
+  const btn = e.target.closest?.("[data-support-choice]");
+  if (!btn) return false;
+  const id = btn.dataset.supportChoice;
+  ctx.setPrefs({ supportOverride: SUPPORT_TIERS.some((s) => s.id === id) ? id : "" });
+  ctx.rerender().then(() => document.getElementById(btn.id)?.focus({ preventScroll: true }));
+  return true;
 }

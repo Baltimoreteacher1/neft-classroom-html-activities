@@ -157,3 +157,87 @@ export function practiceComposite(sections, ratings = {}) {
       : `Practice overall needs all four skills: ${missing.map((d) => `${d} (${by[d]?.why || "not in this test"})`).join("; ")}.`,
   };
 }
+
+// ── Formative breakdowns (NOT a composite) ────────────────────────────────────
+// Separate, count-based views of one practice-test run, grouped three ways. They never add skills
+// together into one number, never mix Independent Rehearsal with Supported Practice, and never name a
+// WIDA level. Tags are this lab's own: the Key Language Use (WIDA ELD Standards Framework 2020: Narrate,
+// Inform, Explain, Argue) and language dimension a question mostly practices, read from its skill name.
+export const KEY_USES = ["Narrate", "Inform", "Explain", "Argue"];
+export const DIMENSIONS = ["Discourse", "Sentence", "Word/Phrase"];
+/** Below this many checked questions a group is marked as a small sample. */
+export const FORMATIVE_SMALL = 5;
+
+const tagText = (item) => `${item?.skill || ""} ${item?.title || ""}`.toLowerCase();
+
+/** The Key Language Use a question mostly asks for (lab tagging from its skill name). */
+export function keyLanguageUse(item) {
+  const t = tagText(item);
+  if (/opinion|argu|persua|recommend|claim|agree|convinc|position/.test(t)) return "Argue";
+  if (/narrat|story|biograph|past-tense|\bevents?\b|retell|personal experience/.test(t)) return "Narrate";
+  if (/explain|explanation|cause|effect|process|\bsteps?\b|how to|direction|instruction|procedure|\bwhy\b|reason|conclusion|infer/.test(t))
+    return "Explain";
+  return "Inform";
+}
+
+/** The language dimension a machine-checked question mostly practices (lab tagging). */
+export function languageDimension(item) {
+  const t = tagText(item);
+  if (/vocab|\bwords?\b|context clue|\bterm|phrase|word meaning/.test(t)) return "Word/Phrase";
+  if (/tense|\bverbs?\b|grammar|punctuat|clause|plural|article|pronoun/.test(t)) return "Sentence";
+  return "Discourse";
+}
+
+const emptyRow = (key) => ({ key, right: 0, scored: 0, open: 0, openDone: 0, ratings: [], small: false });
+
+/**
+ * Group one run's outcomes by Domain, Key Language Use and Language Dimension.
+ * snapshot: { mode, date, outcomes: [{ domain, keyUse, dimension, scored, right, done }], ratings }
+ * Speaking and Writing reach the dimension view only through a practice-rubric rating per criterion.
+ */
+export function formativeBreakdown(snapshot) {
+  const outcomes = Array.isArray(snapshot?.outcomes) ? snapshot.outcomes : [];
+  const group = (keys, pick) => {
+    const rows = new Map(keys.map((k) => [k, emptyRow(k)]));
+    for (const o of outcomes) {
+      const row = rows.get(pick(o));
+      if (!row) continue;
+      if (o.scored) {
+        row.scored++;
+        if (o.right) row.right++;
+      } else {
+        row.open++;
+        if (o.done) row.openDone++;
+      }
+    }
+    return rows;
+  };
+  const byDomain = group(DOMAINS, (o) => o.domain);
+  const byKeyUse = group(KEY_USES, (o) => o.keyUse);
+  const byDimension = group(DIMENSIONS, (o) => (o.scored ? o.dimension : null));
+  for (const domain of ["Speaking", "Writing"]) {
+    if (!(byDomain.get(domain)?.openDone > 0)) continue;
+    const rating = snapshot?.ratings?.[domain];
+    for (const c of CRITERIA)
+      if (BAND_POINTS[rating?.[c.id]])
+        byDimension.get(c.dimension)?.ratings.push({
+          domain,
+          band: rating[c.id],
+          by: rating.by === "teacher" ? "teacher" : "me",
+        });
+  }
+  const finish = (rows) =>
+    [...rows.values()]
+      .filter((r) => r.scored || r.open || r.ratings.length)
+      .map((r) => ({ ...r, small: r.scored > 0 && r.scored < FORMATIVE_SMALL }));
+  const scored = outcomes.filter((o) => o.scored).length;
+  return {
+    mode: snapshot?.mode || null,
+    date: snapshot?.date || null,
+    scored,
+    small: scored < SMALL_SAMPLE,
+    byDomain: finish(byDomain),
+    byKeyUse: finish(byKeyUse),
+    byDimension: finish(byDimension),
+  };
+}

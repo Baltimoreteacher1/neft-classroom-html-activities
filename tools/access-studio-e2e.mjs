@@ -485,10 +485,388 @@ ok(
   "blueprint tab shows coverage by Key Language Use",
 );
 
+// ── quality-upgrade slices: spaced review, listening lab, evidence notebook, rehearsal modes,
+//    station cards, teacher conference plans. Each new page/view gets axe + 375px overflow. ────
+async function overflowAt375(label, pg = page) {
+  const vp = pg.viewportSize();
+  await pg.setViewportSize({ width: 375, height: 800 });
+  await pg.waitForTimeout(150);
+  const over = await pg.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  ok(over <= 1, `no horizontal overflow at 375px: ${label}`);
+  await pg.setViewportSize(vp);
+}
+const NO_LEVEL_OR_SCORE = /\b(level\s*[1-6]|scores?|scored|proficiency|bridging|reaching)\b/i;
+
+// 1. Spaced retrieval: an independent Error Detective miss 5 days ago is due today (1-day step).
+const ledgerBefore = await page.evaluate((k) => localStorage.getItem(k), LEDGER);
+await page.evaluate((k) => {
+  const saved = JSON.parse(localStorage.getItem(k) || '{"v":1,"entries":[]}');
+  const t = new Date(Date.now() - 5 * 864e5).toISOString();
+  saved.entries.push({
+    id: "e2e-spaced-seed",
+    t,
+    src: "detective",
+    task: "det-past-marker",
+    band: "6-8",
+    domain: "Writing",
+    use: "",
+    stage: "independent",
+    kind: "first",
+    supports: {},
+    m: { pattern: "past-marker", ok: false },
+  });
+  localStorage.setItem(k, JSON.stringify(saved));
+}, LEDGER);
+await go(`${BASE}/?grades=6-8`);
+const review = page.locator("section.review-due");
+ok(
+  (await review.count()) === 1 &&
+    (await page.locator("#reviewTitle").innerText()).includes("Due for spaced review"),
+  "home shows 'Due for spaced review' when stored evidence makes an item due",
+);
+const traces = await review.locator("li .fine").allInnerTexts();
+const seededTrace = traces.find((t) => /Error Detective/.test(t)) || "";
+ok(
+  traces.length > 0 &&
+    traces.every((t) => t.includes("Why this is recommended:")) &&
+    /5 days ago/.test(seededTrace),
+  "each due item carries a 'Why this is recommended' trace built from its stored evidence",
+);
+ok(
+  traces.every((t) => !NO_LEVEL_OR_SCORE.test(t)),
+  `spaced-review traces state no level or score${traces.find((t) => NO_LEVEL_OR_SCORE.test(t)) ? ` — "${traces.find((t) => NO_LEVEL_OR_SCORE.test(t))}"` : ""}`,
+);
+await axeCheck("home with spaced review due");
+await overflowAt375("home with spaced review due");
+await page.evaluate(
+  ([k, v]) => (v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v)),
+  [LEDGER, ledgerBefore],
+);
+
+// 2. Listening Strategy Lab (Learn with help) vs Independent.
+const LISTEN_ID = "lst-v11-b-cause-effect-storm";
+const LISTEN_PATH = `${BASE}/Listening/B/${LISTEN_ID}?grades=6-8`;
+const scriptParts = await page.evaluate(async (id) => {
+  const res = await fetch("/access-practice-lab/content/g6-8/Listening.json");
+  const data = await res.json();
+  const a = data.levels.B.activities.find((x) => x.id === id);
+  const { listeningSegments } = await import("/access-practice-lab/src/learning.js");
+  return listeningSegments(a.script).map((s) => s.text);
+}, LISTEN_ID);
+const scriptLeaks = () =>
+  page.evaluate((parts) => {
+    // Every text node and attribute value on the page, minus the number-only replay controls.
+    const chunks = [];
+    const walk = (el) => {
+      if (el.matches?.("[data-replay-seg]")) return;
+      for (const attr of el.attributes || []) chunks.push(attr.value);
+      for (const node of el.childNodes) {
+        if (node.nodeType === 3) chunks.push(node.nodeValue);
+        else if (node.nodeType === 1) walk(node);
+      }
+    };
+    walk(document.body);
+    const all = chunks.join(" ").replace(/\s+/g, " ");
+    return parts.filter((p) => p.length >= 20 && all.includes(p));
+  }, scriptParts);
+await page.evaluate(() => {
+  for (const k of Object.keys(localStorage))
+    if (/:Listening:B$/.test(k) || k.includes("listenNotes")) localStorage.removeItem(k);
+});
+await go(LISTEN_PATH);
+ok(
+  scriptParts.length >= 2 && (await page.locator(".listen-strategy").count()) === 1,
+  "Learn with help: a Listening activity shows the Listening strategy lab",
+);
+ok(
+  /Before you listen: your purpose/.test(
+    await page.locator(".listen-strategy").evaluate((el) => el.textContent),
+  ),
+  "Learn with help: the strategy lab previews the listening purpose",
+);
+const leaksBefore = await scriptLeaks();
+ok(
+  leaksBefore.length === 0,
+  `before the first answer no script text is in the DOM outside the replay controls${leaksBefore.length ? ` — leaked: "${leaksBefore[0]}"` : ""}`,
+);
+await axeCheck("listening activity with strategy lab");
+await overflowAt375("listening activity with strategy lab");
+await page.locator(".choice", { hasText: "field was being cleaned" }).click();
+await page.locator("[data-check]").click();
+await page.waitForSelector(".feedback");
+ok(
+  (await page.locator(".listen-trap").count()) === 1,
+  "Learn with help: a wrong listening answer gets a trap diagnosis",
+);
+ok(
+  (await page.locator(".transcript .signal-word").count()) > 0,
+  "Learn with help: after answering, the transcript offers taggable signal words",
+);
+await axeCheck("listening activity after a diagnosed miss");
+await page.evaluate(() => {
+  for (const k of Object.keys(localStorage))
+    if (/:Listening:B$/.test(k)) localStorage.removeItem(k);
+});
+await go(`${LISTEN_PATH}&mode=independent`);
+ok(
+  (await page.locator(".listen-strategy").count()) === 0,
+  "Independent: no strategy lab or purpose preview",
+);
+ok(
+  (await page.locator("[data-listen]").count()) === 1 &&
+    (await page.locator("[data-stop-audio]").count()) === 1,
+  "Independent: play and stop controls remain",
+);
+ok((await scriptLeaks()).length === 0, "Independent: no script text before answering");
+await page.locator(".choice", { hasText: "field was being cleaned" }).click();
+await page.locator("[data-check]").click();
+await page.waitForSelector(".feedback");
+ok(
+  (await page.locator(".signal-word, [data-tag-signal]").count()) === 0 &&
+    (await page.locator(".listen-trap").count()) === 0 &&
+    (await page.locator(".listen-strategy").count()) === 0,
+  "Independent: no signal-word highlights, no diagnosis and no strategy lab after a miss",
+);
+ok(
+  (await page.locator("[data-listen]").count()) === 1 &&
+    (await page.locator("[data-stop-audio]").count()) === 1,
+  "Independent: play and stop controls remain after answering",
+);
+await axeCheck("independent listening activity");
+await overflowAt375("independent listening activity");
+
+// 3. Reading evidence: keyboard pin → Claim → notebook → reload → matrix → criterion feedback.
+await page.evaluate(() => localStorage.removeItem("accessPracticeLab:evidenceNotebook:v1"));
+await go(`${BASE}/evidence?grades=6-8`);
+const sentenceBtn = page.locator(".passage button[data-nb-pick]").first();
+const sentenceText = (await sentenceBtn.innerText()).trim();
+await sentenceBtn.focus();
+await page.keyboard.press("Enter");
+await page.waitForSelector('[data-nb-tag="claim"]');
+ok(
+  (await page.locator("#nbTagLabel").innerText()).includes(sentenceText.slice(0, 30)),
+  "Enter on a focused sentence button selects it for tagging",
+);
+await page.locator('[data-nb-tag="claim"]').focus();
+await page.keyboard.press("Enter");
+await page.waitForFunction(
+  (txt) => (document.querySelector("#notebook")?.textContent || "").includes(txt),
+  sentenceText.slice(0, 30),
+);
+const notebookHas = async () => {
+  const groups = await page.locator("#notebook .nb-group").allInnerTexts();
+  return groups.some((g) => /^Claim/.test(g.trim()) && g.includes(sentenceText.slice(0, 30)));
+};
+ok(await notebookHas(), "the pinned sentence appears in the Evidence Notebook as a Claim");
+await page.reload({ waitUntil: "networkidle" });
+await page.waitForSelector("#notebook");
+ok(await notebookHas(), "the Evidence Notebook survives a reload");
+ok((await page.locator("table.nb-matrix").count()) === 1, "the synthesis matrix is shown");
+await page.locator('[data-nb-place$=":text"]').first().click();
+await page.waitForFunction(
+  (txt) =>
+    [...document.querySelectorAll("table.nb-matrix tbody tr")].some(
+      (tr) => /only the text/i.test(tr.textContent) && tr.textContent.includes(txt),
+    ),
+  sentenceText.slice(0, 30),
+);
+ok(true, "a pin can be placed in the synthesis matrix");
+const synTitles = await page.evaluate(() => [
+  document.querySelector("#synText")?.textContent.trim(),
+  document.querySelector("#synData")?.textContent.trim(),
+]);
+await page
+  .locator("[data-syn-text]")
+  .fill(
+    `According to ${synTitles[0]}, ${sentenceText} The data in ${synTitles[1]} also supports this idea, so both sources agree.`,
+  );
+await page.locator("[data-syn-check]").click();
+await page.waitForSelector(".feedback .checks li");
+const critText = await page.locator(".feedback .checks").innerText();
+ok(
+  (await page.locator(".feedback .checks li").count()) >= 2,
+  "synthesis check gives criterion-by-criterion feedback",
+);
+ok(
+  !NO_LEVEL_OR_SCORE.test(critText) &&
+    /not a score or a level/i.test(await page.locator(".feedback").innerText()),
+  "synthesis feedback gives no score or level and says so",
+);
+await axeCheck("evidence studio with notebook and synthesis feedback");
+await overflowAt375("evidence studio with notebook and synthesis feedback");
+
+// 4. Practice-test modes: Guided vs Independent Rehearsal.
+const TEST_ID = "wida-writing-mini";
+// Leave the runner first: it saves its record on pagehide, which would undo the reset.
+const resetTest = async () => {
+  await go(`${BASE}/tests`);
+  await page.evaluate((id) => localStorage.removeItem(`accessPracticeLab:v1:test:${id}`), TEST_ID);
+};
+await resetTest();
+await go(`${BASE}/test/${TEST_ID}?grades=6-8`);
+const rhIntro = await page.locator(".rh-tools").innerText();
+ok(
+  /EduWonderLab rehearsal settings/.test(rhIntro) &&
+    /not official WIDA ACCESS accommodations/i.test(rhIntro),
+  "rehearsal settings are labelled EduWonderLab rehearsal settings, not official WIDA ACCESS accommodations",
+);
+await axeCheck("practice test intro (mode choice)");
+await overflowAt375("practice test intro (mode choice)");
+await page.locator("[data-start]").click();
+await page.waitForSelector("#qTitle");
+ok(/Guided Practice Mode/.test(await bodyText()), "practice test launches in Guided Practice Mode");
+ok(
+  (await page.locator("[data-guided-check]", { hasText: "Check my answer" }).count()) === 1 &&
+    (await page.locator(".frames li").count()) > 0,
+  "Guided mode offers 'Check my answer' and sentence frames",
+);
+await axeCheck("practice test runner, Guided");
+await overflowAt375("practice test runner, Guided");
+await resetTest();
+await go(`${BASE}/test/${TEST_ID}?grades=6-8`);
+await page.check('[data-conditions][value="test"]');
+await page.waitForSelector("[data-replay]");
+const replayLabel = await page.locator("label", { has: page.locator("[data-replay]") }).innerText();
+ok(
+  /EduWonderLab rehearsal setting/.test(replayLabel) &&
+    /does not grant or represent an official/i.test(replayLabel),
+  "the replay option is labelled an EduWonderLab rehearsal setting, not an official accommodation",
+);
+ok(
+  /not official WIDA ACCESS accommodations/i.test(await page.locator(".rh-tools").innerText()),
+  "Independent intro keeps the not-official-WIDA-ACCESS-accommodations notice",
+);
+await axeCheck("practice test intro, Independent Rehearsal chosen");
+await page.locator("[data-start]").click();
+await page.waitForSelector("#qTitle");
+const indText = await bodyText();
+ok(
+  /Independent Rehearsal Mode/.test(indText),
+  "practice test launches in Independent Rehearsal Mode",
+);
+ok(
+  (await page.locator("[data-guided-check]").count()) === 0 && !/Check my answer/.test(indText),
+  "Independent Rehearsal shows no 'Check my answer' button",
+);
+ok(
+  (await page.locator(".frames, .wordbank, details.lookback").count()) === 0,
+  "Independent Rehearsal shows no sentence frames, word bank or look-back hints",
+);
+ok(
+  /not the official WIDA ACCESS accommodations/i.test(await page.locator(".rh-tools").innerText()),
+  "runner rehearsal toolbar says it is not the official WIDA ACCESS accommodations",
+);
+await axeCheck("practice test runner, Independent Rehearsal");
+await overflowAt375("practice test runner, Independent Rehearsal");
+await resetTest();
+
+// 5. Station cards on /launch-studio.
+await go(`${BASE}/launch-studio`);
+ok(
+  /Print Station Cards/.test(await page.locator("#station-title").innerText()),
+  "Launch Studio has a Print Station Cards view",
+);
+const stationValues = await page.$$eval("[data-station-field] option", (os) =>
+  os.map((o) => o.value),
+);
+const pickStation = async (value) => {
+  await page.locator("[data-station-field]").selectOption(value);
+  await page.waitForSelector(`[data-station="${value}"]`);
+};
+const bandHeads = () => page.locator(".station-card .station-ex h4").allInnerTexts();
+const stationLinkOk = async (kindPath) => {
+  const url = (await page.locator(".station-card .station-url").innerText()).trim();
+  return (
+    url.startsWith(`${origin}${BASE}/${kindPath}`) &&
+    (await page
+      .locator(
+        ".station-card .station-link img, .station-card .station-link canvas, .station-card .station-link svg",
+      )
+      .count()) === 0 &&
+    /No QR code/.test(await page.locator(".station-card .station-link").innerText())
+  );
+};
+const worldValue = stationValues.find((v) => v.startsWith("world:"));
+const activityValue = stationValues.find((v) => v.startsWith("activity:"));
+const studioValues = stationValues.filter((v) => v.startsWith("studio:"));
+ok(
+  Boolean(worldValue && activityValue && studioValues.length),
+  "station picker lists worlds, studio tasks and activities",
+);
+await pickStation(worldValue);
+ok(
+  (await stationLinkOk("worlds/")) && (await bandHeads()).length === 0,
+  "world station card prints a full URL (no QR) and no early/building/strong exemplars",
+);
+await pickStation(activityValue);
+ok(
+  (await stationLinkOk("")) && (await bandHeads()).length === 0,
+  "activity station card prints a full URL (no QR) and no early/building/strong exemplars",
+);
+let studioBands = [];
+for (const v of studioValues.slice(0, 12)) {
+  await pickStation(v);
+  studioBands = await bandHeads();
+  if (studioBands.length) {
+    ok(await stationLinkOk(""), `studio station card prints a full URL (no QR): ${v}`);
+    break;
+  }
+}
+ok(
+  studioBands.join(",") === "Early,Building,Strong",
+  `studio station card shows early / building / strong exemplars (got: ${studioBands.join(",") || "none"})`,
+);
+await axeCheck("launch studio station card");
+await overflowAt375("launch studio station card");
+
+// 6. Teacher conference plans: empty with no codes; demo button is labelled SYNTHETIC DEMO.
+const teacherCtx = await browser.newContext({ viewport: { width: 1200, height: 900 } });
+const tPage = await teacherCtx.newPage();
+tPage.on("pageerror", (e) => !noise.test(e.message) && problems.push(`pageerror: ${e.message}`));
+await tPage.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
+await tPage.waitForSelector('[data-tab="plans"]');
+await tPage.locator('[data-tab="plans"]').click();
+await tPage.waitForSelector("#plansTitle");
+const plansText = await tPage.locator("#classEvidence").innerText();
+ok(
+  /No student codes are loaded/.test(plansText) &&
+    (await tPage.locator(".hub-card h4").count()) === 0,
+  "conference plans tab shows an empty state with no codes loaded",
+);
+ok(
+  (await tPage.locator("[data-demo-load]").innerText()).includes("SYNTHETIC DEMO"),
+  "the 'Load sample demo class' button is labelled SYNTHETIC DEMO",
+);
+await axeCheck("teacher conference plans (empty)", tPage);
+await overflowAt375("teacher conference plans (empty)", tPage);
+await tPage.locator("[data-demo-load]").click();
+await tPage.waitForSelector("[data-demo-clear]");
+ok(
+  /SYNTHETIC DEMO DATA/.test(await tPage.locator("#plansTitle").innerText()) &&
+    (await tPage.locator("#classEvidence article.hub-card h4").count()) > 0 &&
+    // The plan cards and the gap table themselves; the page's "never a WIDA level or ACCESS
+    // score" disclaimers and the import box's storage note are outside these elements.
+    !NO_LEVEL_OR_SCORE.test(
+      (
+        await tPage
+          .locator(
+            'section[aria-labelledby="plansTitle"] article.hub-card, section[aria-labelledby="gapsTitle"] table',
+          )
+          .allInnerTexts()
+      ).join("\n"),
+    ),
+  "demo conference plans are marked SYNTHETIC DEMO DATA and the plans state no level or score",
+);
+await axeCheck("teacher conference plans (synthetic demo)", tPage);
+await overflowAt375("teacher conference plans (synthetic demo)", tPage);
+await teacherCtx.close();
+
 // ── accessibility (axe: WCAG 2.2 AA) ──────────────────────────────────────────
-async function axeCheck(label) {
+async function axeCheck(label, pg = page) {
   if (!AxeBuilder) return;
-  const res = await new AxeBuilder({ page })
+  const res = await new AxeBuilder({ page: pg })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
     .analyze();
   const bad = res.violations.map(

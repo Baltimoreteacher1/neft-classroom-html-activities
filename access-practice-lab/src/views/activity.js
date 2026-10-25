@@ -2,6 +2,9 @@
 import {
   crumbsHTML,
   listenPlayerHTML,
+  listeningStrategyHTML,
+  listeningTrapHTML,
+  playCount,
   modelLadderHTML,
   readingToolbarHTML,
   recorderHTML,
@@ -20,7 +23,19 @@ import {
   isCorrect,
   wordGoal,
 } from "../grade.js";
-import { evidenceLabel, purposeOf, strategyFor, taskCriteria, wordBank } from "../learning.js";
+import {
+  clearListenNotes,
+  diagnoseListening,
+  evidenceLabel,
+  listeningPurpose,
+  listeningSegments,
+  loadListenNotes,
+  purposeOf,
+  saveListenNotes,
+  strategyFor,
+  taskCriteria,
+  wordBank,
+} from "../learning.js";
 import { choiceTarget, inputHTML, reduceAnswer, seedAnswer } from "../items.js";
 import { visualsHTML } from "../media.js";
 import { isRecording, takesFor } from "../recorder.js";
@@ -29,7 +44,9 @@ import { invalidateActivity, startIndependentAttempt, updateActivityAnswer } fro
 import { analyzeResponse, bankKey, bankWordsUsed, compareDrafts } from "../lang/analyze.js";
 import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
 import { feedbackHTML as coachCardHTML } from "../studio-ui.js";
-import { speak, stop as stopSpeech } from "../speech.js";
+import { dataPoints, itemsFrom, loadNotebook, passageSentences, pinItem, pinnedIndex, tagLabel } from "../lang/evidence-notebook.js";
+import { dataPickHTML, organizerHTML, tagBarHTML } from "../evidence-ui.js";
+import { canSpeak, speak, stop as stopSpeech } from "../speech.js";
 import {
   BASE,
   DOMAIN_META,
@@ -57,7 +74,16 @@ let renderGeneration = 0;
 let loading = false;
 let cur = null; // { band, domain, level, activity, list, index, record, playlist }
 let showCognates = false;
+// Evidence Notebook on a Reading passage: pin mode turns sentences into select buttons; `picked` is the
+// selected sentence index or data-point key. Gist notes are Learn-with-help scaffolds kept for this visit only.
+let pinMode = false;
+let picked = null;
+const gists = new Map(); // activity id → string[]
 let coachFeedback = null;
+// Listening Strategy Lab (Learn with help only): signal-word tags are UI state for this attempt.
+const listenTags = new Map(); // id → Set("part:index")
+/** A diagnosed listening miss holds the answer back until the learner replays the targeted part. */
+const revealHeld = (c) => Boolean(c && !c.ok && c.reveal === "full" && c.diag && !c.replayed && canSpeak());
 
 async function resolve(ctx) {
   const r = ctx.route;
@@ -121,20 +147,36 @@ function stimulusHTML(a, ctx) {
   const c = checked.get(a.id);
   const answeredOnce = Boolean(c) || cur.record.complete.includes(a.id);
   const hasPassage = !listening && asList(a.passage).length > 0;
-  return html`${listening && a.script ? listenPlayerHTML(a.id, a.script, { rate: ctx.prefs.rate }) : ""}
-  ${listening && a.script && answeredOnce ? transcriptHTML(a.id, a.script) : ""} ${visualsHTML(a)}
+  // Learn with help adds the Listening Strategy Lab and an interactive transcript; "on my own" keeps
+  // only the player (play, stop, speed) and, after an answer, the plain transcript.
+  const lab = listening && a.script && mode === "supported";
+  return html`${lab ? listeningStrategyHTML(a.id, { purpose: listeningPurpose(a), parts: listeningSegments(a.script), played: playCount(a.id) > 0 || answeredOnce, notes: loadListenNotes(storage, a.id), open: helpUsed.has(a.id) }) : ""}
+  ${listening && a.script ? listenPlayerHTML(a.id, a.script, { rate: ctx.prefs.rate }) : ""}
+  ${listening && a.script && answeredOnce ? transcriptHTML(a.id, a.script, lab ? { interactive: true, tags: listenTags.get(a.id), target: c?.diag && !c.ok ? c.diag.segment : null } : {}) : ""} ${visualsHTML(a)}
   ${
     hasPassage
       ? html`
         ${readingToolbarHTML(a.id, asList(a.passage), {
           rate: ctx.prefs.rate,
           voiceURI: ctx.prefs.readingVoice,
-          showCognates,
+          showCognates: mode === "supported" && showCognates,
+          cognates: mode === "supported",
         })}
+        ${evidencePinHTML(a)}
         <article class="passage" data-reading-passage="${a.id}">
           ${a.passageTitle ? html`<h3>${a.passageTitle}</h3>` : ""}
-          ${renderPassageSentences(asList(a.passage), { showCognates, glossary: wordHelp() })}
-        </article>`
+          ${renderPassageSentences(asList(a.passage), {
+            showCognates: mode === "supported" && showCognates,
+            glossary: pinMode ? null : wordHelp(),
+            tagMode: pinMode,
+            pickKey: a.id,
+            picked: typeof picked === "number" ? picked : -1,
+            pinned: pinnedIndex(loadNotebook(storage), a.id, passageSentences(a.passage).map((x) => x.text)),
+            gist: mode === "supported" ? gists.get(a.id) || [] : null,
+          })}
+        </article>
+        ${pinMode && points(a).length ? html`<section aria-labelledby="nbData-${a.id}"><h3 id="nbData-${a.id}" class="helper-title">Pin a data point</h3><ul class="chips" role="list">${points(a).map((t, i) => dataPickHTML(`${a.id}|d${i}`, t, { picked: picked === `d${i}`, tag: itemsFrom(loadNotebook(storage), a.id).find((x) => x.text === t)?.tag }))}</ul></section>` : ""}
+        ${mode === "supported" ? html`<details class="helpers nb-organizer-wrap"><summary>🗂️ Graphic organizer: Claim · Evidence · Example</summary><div class="helper-body">${organizerHTML(itemsFrom(loadNotebook(storage), a.id))}<p class="fine">Turn on “Pin evidence” and tag sentences to fill it. <a href="${BASE}/evidence?grades=${cur.band}#notebook">Open my Evidence Notebook</a></p></div></details>` : ""}`
       : ""
   }
   ${
@@ -148,6 +190,24 @@ function stimulusHTML(a, ctx) {
   ${wordHelp() ? glossListHTML(glossList([...asList(a.passage), a.prompt || ""], wordHelp())) : ""}`;
 }
 
+/** Data points of a Reading activity's chart or table, as pinnable text. */
+const points = (a) => dataPoints(a.chart, a.table);
+/** Text for the current selection (a sentence index or a data-point key "d<n>"). */
+function pickedText(a) {
+  if (typeof picked === "number") return passageSentences(a.passage)[picked]?.text || "";
+  if (typeof picked === "string") return points(a)[Number(picked.slice(1))] || "";
+  return "";
+}
+
+/** Pin-evidence toggle and, while it is on, the tag bar for the selected sentence or data point. */
+function evidencePinHTML(a) {
+  const text = pinMode ? pickedText(a) : "";
+  return html`<div class="nb-pin-tools">
+    <button type="button" class="btn small" data-nb-pin-mode aria-pressed="${String(pinMode)}">📌 ${pinMode ? "Done pinning" : "Pin evidence"}</button>
+    ${pinMode ? tagBarHTML(text ? { text } : null) : ""}
+  </div>`;
+}
+
 function feedbackHTML(a) {
   const c = checked.get(a.id);
   if (!c) return "";
@@ -158,6 +218,8 @@ function feedbackHTML(a) {
       ${a.extension ? html`<p class="fb-extra"><strong>Go further:</strong> ${a.extension}</p>` : ""}
       ${cur.domain === "Speaking" ? html`<p class="fb-extra"><strong>Now say it:</strong> record yourself saying the best answer.</p>` : ""}
     </div>`;
+  if (c.diag && mode === "supported" && (c.reveal !== "full" || revealHeld(c)))
+    return listeningTrapHTML(c.diag, { held: revealHeld(c), hint: a.hint });
   if (c.reveal === "full" && mode === "supported")
     return html`<div class="feedback is-shown" role="status">
       <p class="fb-title">Here is the answer</p>
@@ -175,7 +237,7 @@ function feedbackHTML(a) {
 function interactiveHTML(a) {
   const c = checked.get(a.id);
   const answer = answerOf(cur.record, a.id);
-  const reveal = c ? (c.ok ? "mark" : c.reveal || "mark") : "none";
+  const reveal = c ? (c.ok || revealHeld(c) ? "mark" : c.reveal || "mark") : "none";
   return html`${cur.domain === "Speaking" ? html`<p class="fine warmup-note">🎤 <strong>Warm-up.</strong> This builds ideas and words. Speaking ability is shown by speaking — when you are ready, <a href="${BASE}/speak?grades=${cur.band}">open the Speaking Studio</a>.</p>` : ""}${inputHTML(a, answer, { reveal })}
   ${!c ? html`<button type="button" class="btn btn-primary btn-check" data-check ${isAnswered(a, answer ?? seedAnswer(a)) ? "" : raw("disabled")}>Check my answer</button>` : ""}
   ${feedbackHTML(a)}
@@ -371,8 +433,11 @@ export async function render(ctx) {
     writingChecks.clear();
     tries.clear();
     helpUsed.clear();
+    listenTags.clear();
     validation = "";
     coachFeedback = null;
+    pinMode = false;
+    picked = null;
   }
   const a = cur.activity;
   mode = requestedMode === "independent" ? "independent" : "supported";
@@ -453,7 +518,9 @@ function check(a, ctx) {
   const ok = isCorrect(a, answer);
   const n = (tries.get(a.id) || 0) + 1;
   tries.set(a.id, n);
-  checked.set(a.id, { ok, attempt: n, reveal: ok ? "mark" : n >= 2 && mode === "supported" ? "full" : "mark" });
+  // Learn with help: a wrong listening answer gets a rule-based trap diagnosis when one clearly applies.
+  const diag = !ok && mode === "supported" && isListening(cur.domain, a) ? diagnoseListening(a, answer) : null;
+  checked.set(a.id, { ok, attempt: n, reveal: ok ? "mark" : n >= 2 && mode === "supported" ? "full" : "mark", diag });
   cur.record.results[a.id] = {
     ok,
     skill: a.skill || "",
@@ -470,8 +537,46 @@ function check(a, ctx) {
   cur.record.complete = cur.record.complete.filter((id) => id !== a.id);
   if (ok) cur.record.complete.push(a.id);
   save();
-  announce(ok ? "Correct!" : n >= 2 && mode === "supported" ? "Here is the answer." : "Not yet. Try again.");
+  announce(ok ? "Correct!" : revealHeld(checked.get(a.id)) ? "Not yet. Replay one part before you see the answer." : n >= 2 && mode === "supported" ? "Here is the answer." : diag ? "Not yet. Check the listening trap." : "Not yet. Try again.");
   ctx.rerender();
+}
+
+/** Listening Strategy Lab controls (Learn with help only). Returns true when it handled the click. */
+function onListeningLabClick(t, a, ctx) {
+  const replay = t.closest("[data-replay-seg]");
+  if (replay) {
+    const i = Number(String(replay.dataset.replaySeg).split(":").pop());
+    const part = listeningSegments(a.script)[i];
+    if (!part) return true;
+    noteHelp(a.id);
+    const owner = cur;
+    announce(`Replaying part ${i + 1}.`);
+    speak(part.text, { rate: ctx.prefs.rate || 0.9 }).then((done) => {
+      const c = checked.get(a.id);
+      if (cur !== owner || !done || !c?.diag || c.diag.segment !== i || c.replayed) return;
+      c.replayed = true;
+      if (c.reveal === "full") announce("You replayed the key part. Here is the answer.");
+      ctx.rerender({ keepFocus: true });
+    });
+    return true;
+  }
+  const tag = t.closest("[data-tag-signal]");
+  if (tag) {
+    const set = listenTags.get(a.id) || new Set();
+    const key = tag.dataset.tagSignal;
+    set.has(key) ? set.delete(key) : set.add(key);
+    listenTags.set(a.id, set);
+    announce(`${set.has(key) ? "Tagged" : "Untagged"} ${tag.textContent.trim()}.`);
+    ctx.rerender({ keepFocus: true });
+    return true;
+  }
+  if (t.closest("[data-clear-listen-notes]")) {
+    clearListenNotes(storage, a.id);
+    for (const box of document.querySelectorAll("[data-listen-note]")) box.value = "";
+    announce("Listening notes cleared.");
+    return true;
+  }
+  return false;
 }
 
 export function onClick(e, ctx) {
@@ -515,8 +620,47 @@ export function onClick(e, ctx) {
     }
   }
 
-  // Reading - Toggle Spanish Cognates
-  if (t.closest("[data-toggle-cognates]")) {
+  // Reading - Evidence Notebook: pin mode, select a sentence or data point, tag it
+  if (t.closest("[data-nb-pin-mode]")) {
+    pinMode = !pinMode;
+    picked = null;
+    announce(pinMode ? "Pin evidence on. Select a sentence or data point to tag it." : "Pin evidence off.");
+    ctx.rerender({ keepFocus: true });
+    return true;
+  }
+  const pick = t.closest("[data-nb-pick]");
+  if (pick && pinMode) {
+    const key = pick.dataset.nbPick.slice(a.id.length + 1);
+    const next = /^d\d+$/.test(key) ? key : Number(key);
+    picked = picked === next ? null : next;
+    if (picked !== null) announce(`Selected. Choose Claim, Evidence, or Example.`);
+    Promise.resolve(ctx.rerender({ keepFocus: true })).then(() => {
+      if (picked !== null) document.querySelector("[data-nb-tag]")?.focus();
+    });
+    return true;
+  }
+  if (t.closest("[data-nb-unpick]")) {
+    picked = null;
+    announce("Selection cleared.");
+    ctx.rerender({ keepFocus: true });
+    return true;
+  }
+  const tagBtn = t.closest("[data-nb-tag]");
+  if (tagBtn) {
+    const text = pickedText(a);
+    if (!text) return true;
+    const isData = typeof picked === "string";
+    const { status } = pinItem(storage, { tag: tagBtn.dataset.nbTag, text, source: { id: a.id, kind: isData ? "data" : "activity", title: a.passageTitle || a.title } });
+    const label = tagLabel(tagBtn.dataset.nbTag);
+    const back = `[data-nb-pick="${CSS.escape(`${a.id}|${picked}`)}"]`;
+    picked = null;
+    announce(status === "full" ? "Your notebook is full. Remove a pin in the Evidence Notebook first." : status === "unchanged" ? `Already pinned as ${label}.` : `Pinned as ${label}${storage.isVolatile ? " for this tab only" : " in your Evidence Notebook"}.`);
+    Promise.resolve(ctx.rerender({ keepFocus: true })).then(() => document.querySelector(back)?.focus());
+    return true;
+  }
+
+  // Reading - Toggle Spanish Cognates (Learn with help only)
+  if (t.closest("[data-toggle-cognates]") && mode === "supported") {
     showCognates = !showCognates;
     announce(showCognates ? "Cognate highlighting active." : "Cognate highlighting off.");
     ctx.rerender({ keepFocus: true });
@@ -543,6 +687,8 @@ export function onClick(e, ctx) {
     return true;
   }
 
+  if (isListening(cur.domain, a) && mode === "supported" && onListeningLabClick(t, a, ctx)) return true;
+
   const choice = !checked.get(a.id) && choiceTarget(e);
   if (choice) {
     setAnswer(a, reduceAnswer(a, answerOf(cur.record, a.id), choice), ctx);
@@ -555,7 +701,7 @@ export function onClick(e, ctx) {
   if (t.closest("[data-fresh-attempt]")) {
     if (["constructed", "worksheet"].includes(a.type)) return;
     startIndependentAttempt(cur.record, a.id);
-    checked.delete(a.id); tries.delete(a.id); helpUsed.delete(a.id);
+    checked.delete(a.id); tries.delete(a.id); helpUsed.delete(a.id); listenTags.delete(a.id);
     validation = "";
     save();
     const url = new URL(location.href);
@@ -688,6 +834,17 @@ export function onChange(e, ctx) {
 
 export function onInput(e) {
   if (!cur || loading) return;
+  if (e.target.matches("[data-gist]")) {
+    const list = [...(gists.get(cur.activity.id) || [])];
+    list[Number(e.target.dataset.gist)] = e.target.value.slice(0, 200);
+    gists.set(cur.activity.id, list);
+    return;
+  }
+  if (e.target.matches("[data-listen-note]")) {
+    const notes = { ...loadListenNotes(storage, cur.activity.id), [e.target.dataset.listenNote]: e.target.value };
+    saveListenNotes(storage, cur.activity.id, notes);
+    return;
+  }
   if (e.target.matches("[data-reflection]")) {
     if (cur.record.reflections[cur.activity.id] !== e.target.value) {
       invalidateActivity(cur.record, cur.activity.id);
@@ -722,6 +879,14 @@ export function onInput(e) {
     const usedWords = new Set(bankWordsUsed(e.target.value, wordBank(a)).map(bankKey));
     for (const li of document.querySelectorAll(".wordbank li"))
       li.classList.toggle("is-used", usedWords.has(li.textContent.split("/")[0].trim().toLowerCase()));
+  }
+}
+
+/** Sentences in read-aloud mode are role=button spans: Enter and Space must work like a click. */
+export function onKey(e) {
+  if ((e.key === "Enter" || e.key === " ") && e.target?.matches?.(".reading-sentence[role='button']")) {
+    e.preventDefault();
+    e.target.click();
   }
 }
 

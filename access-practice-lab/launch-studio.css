@@ -28,3 +28,43 @@
   .teacher-launch-panel .row-actions, .teacher-launch-preview > .btn { display: none !important; }
   .teacher-launch-url input { border: 0; padding-left: 0; }
 }
+
+/* Station cards: one-page printable sheet (same markup as tools/generate-access-studio-printables.mjs). */
+.station-panel { display: grid; gap: 1rem; }
+.station-pick { display: grid; gap: .35rem; font-weight: 650; }
+.station-pick select {
+  width: 100%; min-height: 48px; padding: .65rem .75rem; border: 1px solid var(--line);
+  border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font: inherit;
+}
+.station-preview { border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; background: var(--surface); min-width: 0; }
+.station-card { display: grid; gap: .5rem; min-width: 0; }
+.station-card h2 { margin: 0; }
+.station-card h3 { margin: .25rem 0 0; font-size: 1.05rem; }
+.station-card h4 { margin: 0; }
+.station-card p, .station-card ul { margin: 0; }
+.station-kicker, .station-sub, .station-fine { color: var(--ink-2); font-size: .9rem; }
+.station-url {
+  font: 700 1.05rem/1.35 ui-monospace, Menlo, Consolas, monospace; overflow-wrap: anywhere; word-break: break-all;
+  border: 2px solid var(--ink); border-radius: var(--radius-sm); padding: .5rem .75rem;
+}
+.station-ex { padding: .5rem 0; border-top: 1px solid var(--line); }
+.station-resp { white-space: pre-wrap; background: var(--brand-soft); padding: .5rem; border-radius: var(--radius-sm); }
+#stationPrint { display: none; }
+@media print {
+  body:not([data-printing="station"]) .station-panel { display: none !important; }
+  body[data-printing="station"] > :not(#stationPrint) { display: none !important; }
+  body[data-printing="station"] #stationPrint { display: block; }
+  body[data-printing="station"] #stationPrint, body[data-printing="station"] #stationPrint * { visibility: visible; }
+  @page { size: letter; margin: .45in; }
+  #stationPrint .station-card { font-size: 9pt; line-height: 1.25; gap: .15rem; color: #000; }
+  #stationPrint .station-card h2 { font-size: 14pt; }
+  #stationPrint .station-card h3 { font-size: 10pt; margin-top: .3rem; }
+  #stationPrint .station-card ul { padding-left: 1.2em; }
+  #stationPrint .station-url { font-size: 11pt; border-color: #000; }
+  #stationPrint .station-kicker, #stationPrint .station-sub, #stationPrint .station-fine { font-size: 8.5pt; color: #222; }
+  #stationPrint .station-exemplars { columns: 2; column-gap: .25in; }
+  #stationPrint .station-exemplars h3 { column-span: all; }
+  #stationPrint .station-ex h4 { break-after: avoid; }
+  #stationPrint .station-resp { font-size: 8pt; line-height: 1.2; white-space: pre-line; background: #f2f2f2; padding: .25rem; }
+  #stationPrint .station-ex { padding: .15rem 0; }
+}

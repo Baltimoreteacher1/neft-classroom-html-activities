@@ -43,10 +43,14 @@ export const setStudentName = (name) =>
   storage.set(`${PREFIX}:studentName`, String(name || "").slice(0, 60));
 
 export function needsReview(result) {
-  return Boolean(result && (
-    result.ok === false || result.meaningful === false || result.words === 0 ||
-    result.practiced === false || ["draft", "attempted"].includes(result.evidence)
-  ));
+  return Boolean(
+    result &&
+    (result.ok === false ||
+      result.meaningful === false ||
+      result.words === 0 ||
+      result.practiced === false ||
+      ["draft", "attempted"].includes(result.evidence)),
+  );
 }
 
 export function isActivityComplete(record, id) {
@@ -58,7 +62,9 @@ export function loadRecord(band, domain, level) {
   const r = safeJson(storage.get(progressKey(band, domain, level)), {}) || {};
   return {
     ...r,
-    complete: Array.isArray(r.complete) ? r.complete.filter((id) => !needsReview(r.results?.[id])) : [],
+    complete: Array.isArray(r.complete)
+      ? r.complete.filter((id) => !needsReview(r.results?.[id]))
+      : [],
     answers: r.answers || {},
     notes: r.notes || {},
     results: r.results || {},
@@ -98,7 +104,10 @@ export function allRecords() {
       band = "3-5";
       rest.shift();
     }
-    if (rest.length !== 2 || ["test", "prefs", "studentName", "pathway", "ledger", "studio", "missions"].includes(rest[0]))
+    if (
+      rest.length !== 2 ||
+      ["test", "prefs", "studentName", "pathway", "ledger", "studio", "missions"].includes(rest[0])
+    )
       continue;
     const [domain, level] = rest;
     out.push({ band, domain, level, record: loadRecord(band, domain, level) });
@@ -111,11 +120,17 @@ export function practiceDays() {
   const days = new Set();
   for (const { record } of allRecords())
     for (const r of Object.values(record.results))
-      if (r?.date && r.meaningful !== false && r.words !== 0 && r.practiced !== false) days.add(todayISO(new Date(r.date)));
+      if (r?.date && r.meaningful !== false && r.words !== 0 && r.practiced !== false)
+        days.add(todayISO(new Date(r.date)));
   for (const key of storage.keys())
     if (key.startsWith(`${PREFIX}:test:`)) {
       const t = loadTestRecord(key.slice(`${PREFIX}:test:`.length));
-      if (t.results?.date && (t.results.meaningful ?? t.results.sections?.some((s) => s.openDone > 0 || s.attempted > 0 || s.correct > 0))) days.add(todayISO(new Date(t.results.date)));
+      if (
+        t.results?.date &&
+        (t.results.meaningful ??
+          t.results.sections?.some((s) => s.openDone > 0 || s.attempted > 0 || s.correct > 0))
+      )
+        days.add(todayISO(new Date(t.results.date)));
     }
   return [...days].sort().reverse();
 }
@@ -146,10 +161,25 @@ export function exportCode() {
   const json = JSON.stringify({ v: 1, data });
   return `ACCESS1.${btoa(unescape(encodeURIComponent(json)))}`;
 }
-const RECORD_MAPS = ["answers", ...LEGACY_MAPS, "notes", "results", "selfChecks", "practiced",
-  "attempts", "drafts", "reflections", "evidence", "supportUsed", "attemptHistory"];
+const RECORD_MAPS = [
+  "answers",
+  ...LEGACY_MAPS,
+  "notes",
+  "results",
+  "selfChecks",
+  "practiced",
+  "attempts",
+  "drafts",
+  "reflections",
+  "evidence",
+  "supportUsed",
+  "attemptHistory",
+];
 const isObject = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
-const isProgressKey = (key) => /^(?:g3-5:)?(?:Listening|Reading|Speaking|Writing|Model-Test):[ABC]$/.test(key.slice(PREFIX.length + 1));
+const isProgressKey = (key) =>
+  /^(?:g3-5:)?(?:Listening|Reading|Speaking|Writing|Model-Test):[ABC]$/.test(
+    key.slice(PREFIX.length + 1),
+  );
 
 /** Keep each existing activity intact. Import only activities absent on this device.
  * No timestamp comparison: older lab versions did not timestamp every edit.
@@ -166,10 +196,12 @@ function mergeRecord(local, incoming) {
       ...Object.entries(local[map] || {}),
     ]);
   }
-  merged.complete = [...new Set([
-    ...(local.complete || []),
-    ...(incoming.complete || []).filter((id) => !localIds.has(id)),
-  ])];
+  merged.complete = [
+    ...new Set([
+      ...(local.complete || []),
+      ...(incoming.complete || []).filter((id) => !localIds.has(id)),
+    ]),
+  ];
   return merged;
 }
 
@@ -181,11 +213,19 @@ export function importProgressData(data) {
     if (!key.startsWith(`${PREFIX}:`) || typeof value !== "string") continue;
     const suffix = key.slice(PREFIX.length + 1);
     const progress = isProgressKey(key);
-    if (!progress && !/^(?:prefs|studentName|pathway|ledger|studio|test:[a-zA-Z0-9_-]+)$/.test(suffix)) continue;
+    if (
+      !progress &&
+      !/^(?:prefs|studentName|pathway|ledger|studio|test:[a-zA-Z0-9_-]+)$/.test(suffix)
+    )
+      continue;
     const current = storage.get(key);
     if (suffix === "ledger" || suffix === "studio") {
       const incoming = safeJson(value, null);
-      if (!isObject(incoming) || (suffix === "ledger" && !Array.isArray(incoming.entries)) || (suffix === "studio" && !validStudio(incoming)))
+      if (
+        !isObject(incoming) ||
+        (suffix === "ledger" && !Array.isArray(incoming.entries)) ||
+        (suffix === "studio" && !validStudio(incoming))
+      )
         throw new Error("That backup has an invalid practice record. Nothing was loaded.");
       if (current === null) {
         writes.push([key, value]);
@@ -193,15 +233,25 @@ export function importProgressData(data) {
       }
       const local = safeJson(current, null);
       if (!isObject(local)) continue;
-      const merged = JSON.stringify(suffix === "ledger" ? mergeLedgers({ entries: local.entries || [] }, incoming) : mergeStudio(local, incoming));
+      const merged = JSON.stringify(
+        suffix === "ledger"
+          ? mergeLedgers({ entries: local.entries || [] }, incoming)
+          : mergeStudio(local, incoming),
+      );
       if (merged !== current) writes.push([key, merged]);
       continue;
     }
     if (progress || suffix === "prefs" || suffix.startsWith("test:")) {
       const incoming = safeJson(value, null);
-      if (!isObject(incoming)) throw new Error("That backup has an invalid progress record. Nothing was loaded.");
-      if (progress && ((incoming.complete !== undefined && (!Array.isArray(incoming.complete) || incoming.complete.some((id) => typeof id !== "string"))) ||
-        RECORD_MAPS.some((map) => incoming[map] !== undefined && !isObject(incoming[map])))) {
+      if (!isObject(incoming))
+        throw new Error("That backup has an invalid progress record. Nothing was loaded.");
+      if (
+        progress &&
+        ((incoming.complete !== undefined &&
+          (!Array.isArray(incoming.complete) ||
+            incoming.complete.some((id) => typeof id !== "string"))) ||
+          RECORD_MAPS.some((map) => incoming[map] !== undefined && !isObject(incoming[map])))
+      ) {
         throw new Error("That backup has an invalid activity record. Nothing was loaded.");
       }
       if (current !== null) {
@@ -231,6 +281,14 @@ export function importCode(code) {
   if (!parsed || parsed.v !== 1) throw new Error("That code is not a progress code.");
   return importProgressData(parsed.data);
 }
+// Learner-written text kept outside the progress prefix: listening notes and the evidence notebook.
+const LEARNER_TEXT_PREFIXES = [
+  "accessPracticeLab:listenNotes:v1:",
+  "accessPracticeLab:evidenceNotebook:v1",
+];
 export function clearAll() {
-  for (const key of storage.keys()) if (key.startsWith(`${PREFIX}:`)) storage.remove(key);
+  for (const key of storage.keys()) {
+    if (key.startsWith(`${PREFIX}:`) || LEARNER_TEXT_PREFIXES.some((p) => key.startsWith(p)))
+      storage.remove(key);
+  }
 }

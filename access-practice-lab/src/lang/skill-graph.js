@@ -62,6 +62,13 @@ function skillForQuestion(domain, skill) {
   return SKILLS.find((s) => s.domain.toLowerCase() === d && (s.code === wanted || s.id.endsWith(`.${wanted}`))) || null;
 }
 
+/** The skill node id a Listening/Reading skill tag (or an activity's skill text) maps to, or null. */
+export function skillIdFor(domain, skill) {
+  if (!domain || !skill) return null;
+  if (SKILLS.some((s) => s.id === skill)) return skill;
+  return skillForQuestion(String(domain), skill)?.id || null;
+}
+
 /** Convert supported ledger shapes into normalized, traceable evidence. */
 export function evidenceFromLedger(entries = []) {
   const out = [];

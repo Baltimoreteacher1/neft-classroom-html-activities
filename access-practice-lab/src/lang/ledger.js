@@ -351,6 +351,84 @@ export function suggestStage(profile, use) {
   return { stage: "supported", reason: "Keep building: use the word bank, then try without it." };
 }
 
+// ── spaced review ─────────────────────────────────────────────────────────────
+// Expanding intervals: after scaffolded work (or a miss) the next check is due in 1 day; each
+// independent success on a new day moves the next check to 3, then 7, then 14 days. A fourth
+// independent success retires the item. Pure and deterministic: time comes from `now`.
+export const REVIEW_INTERVALS_DAYS = [1, 3, 7, 14];
+const SUPPORT_NAMES = {
+  frames: "sentence frames",
+  bank: "a word bank",
+  model: "a model",
+  coach: "the language coach",
+  l1: "Spanish bridges",
+  hint: "hints",
+};
+
+/** Learner-facing names of the supports an entry recorded as opened. */
+export function supportsUsed(entry) {
+  return Object.entries(entry?.supports || {})
+    .filter(([k, v]) => v && Object.hasOwn(SUPPORT_NAMES, k))
+    .map(([k]) => SUPPORT_NAMES[k]);
+}
+
+/** Whole UTC days since the epoch, or null for a missing/invalid time. */
+export function dayNumber(t) {
+  const ms = t instanceof Date ? t.getTime() : typeof t === "number" ? t : Date.parse(String(t));
+  return Number.isFinite(ms) ? Math.floor(ms / 864e5) : null;
+}
+
+/**
+ * Review events per error pattern, in ledger order. A pattern found in a piece of work is a miss; a
+ * later piece of work without it is a success; an Error Detective try is a success only when it
+ * passed. Only first attempts made with no support count as independent (a revision after feedback
+ * is supported by that feedback).
+ */
+export function patternReviewEvents(entries = []) {
+  const out = new Map();
+  const push = (id, ev) => {
+    if (!out.has(id)) out.set(id, []);
+    out.get(id).push(ev);
+  };
+  for (const e of Array.isArray(entries) ? entries : []) {
+    if (!e || !e.t) continue;
+    if (["writing", "speaking", "mission"].includes(e.src) && e.m?.words && e.m?.errs && typeof e.m.errs === "object") {
+      const independent = e.stage === "independent" && e.kind === "first";
+      for (const id of out.keys())
+        if (!(Number(e.m.errs[id]) > 0)) push(id, { t: e.t, independent, ok: true, entry: e });
+      for (const [id, n] of Object.entries(e.m.errs))
+        if (Number(n) > 0) push(id, { t: e.t, independent, ok: false, entry: e });
+    } else if (e.src === "detective" && typeof e.m?.pattern === "string") {
+      push(e.m.pattern, { t: e.t, independent: e.stage === "independent", ok: e.m.ok === true, entry: e });
+    }
+  }
+  return out;
+}
+
+/**
+ * Where one item stands on the expanding schedule. `events`: [{t, independent, ok}]. The step is the
+ * number of most-recent independent successes on different days; any supported try or miss resets it.
+ * Returns null when there is no dated evidence.
+ */
+export function reviewSchedule(events, now = Date.now()) {
+  const ev = (Array.isArray(events) ? events : [])
+    .filter((e) => e && dayNumber(e.t) > 0)
+    .sort((a, b) => String(a.t).localeCompare(String(b.t)));
+  if (!ev.length) return null;
+  const days = new Set();
+  for (let i = ev.length - 1; i >= 0; i--) {
+    if (!(ev[i].independent && ev[i].ok)) break;
+    days.add(dayNumber(ev[i].t));
+  }
+  const step = days.size;
+  const last = ev.at(-1);
+  const daysSince = Math.max(0, (dayNumber(now) ?? dayNumber(last.t)) - dayNumber(last.t));
+  if (step >= REVIEW_INTERVALS_DAYS.length)
+    return { step, interval: null, daysSince, due: false, retired: true, last, count: ev.length };
+  const interval = REVIEW_INTERVALS_DAYS[step];
+  return { step, interval, daysSince, due: daysSince >= interval, retired: false, last, count: ev.length };
+}
+
 /** Ranked focus areas with the evidence behind each one. Max 3. */
 export function focusAreas(profile) {
   const out = [];

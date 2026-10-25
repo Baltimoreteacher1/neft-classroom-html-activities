@@ -5,19 +5,35 @@
  *       planner and lined space. No models, no exemplars, no teacher notes.
  *   dist/access-teacher/packets/studio-speaking.html | studio-writing.html           TEACHER cards — add what to
  *       listen/look for, common issues, three practice-anchor exemplars with annotations, and the scoring guide.
+ *   dist/access-teacher/packets/station-cards.html   One-page STATION sheets (link, ELD standard, Key Language Use,
+ *       look-fors, oral probes, early/building/strong exemplars, teacher notes) — built by the same
+ *       stationCard()/stationCardHTML() the Launch Studio print view uses, so the two cannot drift.
+ *       Default: every Language World and studio task for grades 6–8. `--only=world:<id>,studio:<id>,activity:<id>`
+ *       selects items; `--band=3-5` switches band.
  * Practice materials only: nothing here is an ACCESS score sheet.
  */
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { CRITERIA, DISCLAIMER, PRACTICE_BANDS } from "../access-practice-lab/src/lang/rubrics.js";
+import {
+  stationCard,
+  stationCardHTML,
+  stationOptions,
+} from "../access-practice-lab/src/lang/teacher.js";
 import { asList, esc } from "../access-practice-lab/src/util.js";
 import { CONTENT_DIR, REPO_ROOT } from "./lib/access-lab-content.mjs";
 
-const studentDir = process.argv[2] || join(REPO_ROOT, "dist", "access-practice-lab", "printables");
-const teacherDir = process.argv[3] || join(REPO_ROOT, "dist", "access-teacher", "packets");
+const positional = process.argv.slice(2).filter((a) => !a.startsWith("--"));
+const flag = (name) =>
+  process.argv.find((a) => a.startsWith(`--${name}=`))?.slice(name.length + 3) || "";
+const studentDir = positional[0] || join(REPO_ROOT, "dist", "access-practice-lab", "printables");
+const teacherDir = positional[1] || join(REPO_ROOT, "dist", "access-teacher", "packets");
+const SITE_ORIGIN = "https://eduwonderlab.com";
 const read = (rel) => JSON.parse(readFileSync(join(CONTENT_DIR, rel), "utf8"));
-const speaking = read("studio/speaking.json").tasks.filter((t) => t.band === "6-8");
-const writing = read("studio/writing.json").tasks.filter((t) => t.band === "6-8");
+const allSpeaking = read("studio/speaking.json").tasks;
+const allWriting = read("studio/writing.json").tasks;
+const speaking = allSpeaking.filter((t) => t.band === "6-8");
+const writing = allWriting.filter((t) => t.band === "6-8");
 const exemplars = [
   ...read("studio/exemplars-speaking.json").exemplars,
   ...read("studio/exemplars-writing.json").exemplars,
@@ -105,6 +121,56 @@ for (const [dir, teacher] of [
   );
   n += 2;
 }
+// ── Station cards: same builder and renderer as the Launch Studio print view ──
+const stationBand = flag("band") === "3-5" ? "3-5" : "6-8";
+const stationData = {
+  band: stationBand,
+  worlds: read("worlds.json").worlds,
+  speaking: allSpeaking,
+  writing: allWriting,
+  exemplars,
+  standards: read("blueprints.json").standards || [],
+};
+/** Bank activity by id, searched across the band's domain files. */
+function findActivity(id) {
+  for (const domain of ["Listening", "Reading", "Speaking", "Writing", "Model-Test"]) {
+    let data;
+    try {
+      data = read(`g${stationBand}/${domain}.json`);
+    } catch {
+      continue;
+    }
+    for (const [level, L] of Object.entries(data.levels || {})) {
+      const activity = asList(L.activities).find((a) => a.id === id);
+      if (activity) return { domain, level, activity };
+    }
+  }
+  return null;
+}
+const only = flag("only")
+  .split(",")
+  .filter(Boolean)
+  .map((x) => ({ kind: x.slice(0, x.indexOf(":")), id: x.slice(x.indexOf(":") + 1) }));
+const selections = only.length
+  ? only
+  : stationOptions(stationData).map(({ kind, id }) => ({ kind, id }));
+const stationCards = selections.map((sel) => {
+  const card = stationCard(sel, {
+    ...stationData,
+    activity: sel.kind === "activity" ? findActivity(sel.id) : null,
+  });
+  if (!card)
+    throw new Error(`generate-access-studio-printables: no station item ${sel.kind}:${sel.id}`);
+  return stationCardHTML(card, SITE_ORIGIN);
+});
+const stationCss =
+  "body{font:9pt/1.25 system-ui,Arial,sans-serif;color:#111;margin:0}@page{size:letter;margin:.45in}.station-card{break-after:page;page-break-after:always}.station-card h2{font-size:14pt;margin:0}.station-card h3{font-size:10pt;margin:.3em 0 .1em}.station-card h4{font-size:9.5pt;margin:.2em 0}.station-card ul{margin:.1em 0 .3em;padding-left:1.2em}.station-card p{margin:.15em 0}.station-kicker,.station-sub,.station-fine{font-size:8.5pt;color:#333}.station-url{font:700 11pt/1.3 ui-monospace,Menlo,monospace;word-break:break-all;border:2px solid #111;padding:.3em .5em;margin:.4em 0 .1em}.station-exemplars{columns:2;column-gap:.25in}.station-exemplars h3{column-span:all}.station-ex h4{break-after:avoid}.station-resp{background:#f2f2f2;padding:.25em;font-size:8pt;line-height:1.2;white-space:pre-line}.station-doc-title{font-size:16pt}@media print{.station-doc-title{display:none}}";
+writeFileSync(
+  join(teacherDir, "station-cards.html"),
+  `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Station cards — teacher copy</title><style>${stationCss}</style></head><body><main><h1 class="station-doc-title">Station cards — teacher copy</h1>${stationCards.join("")}</main></body></html>`,
+);
+n += 1;
+
 console.log(
-  `generate-access-studio-printables: ${n} files (${speaking.length} speaking + ${writing.length} writing cards, student and teacher)`,
+  `generate-access-studio-printables: ${n} files (${speaking.length} speaking + ${writing.length} writing cards, student and teacher; ${stationCards.length} station cards)`,
 );

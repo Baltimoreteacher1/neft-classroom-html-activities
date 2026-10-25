@@ -5,6 +5,9 @@ import { canRecord, takesFor } from "./recorder.js";
 import { canSpeak, getVoiceOptions } from "./speech.js";
 import { findCognatesInText } from "./multilingual.js";
 import { glossInline } from "./glossary.js";
+import { INLINE_BTN } from "./evidence-ui.js";
+import { splitSentences, tagLabel } from "./lang/evidence-notebook.js";
+import { LISTEN_NOTE_FIELDS, listeningSegments, signalParts } from "./learning.js";
 import { BASE, DOMAIN_META, LEVEL_KEYS, TIERS, asList, bandLabel, html, raw } from "./util.js";
 
 const IGN = raw("data-nsr-ignore");
@@ -68,19 +71,25 @@ export function listenPlayerHTML(
   </div>`;
 }
 
-/** Reading audio companion bar with voice selection, speed toggle, and cognate lens. */
+/**
+ * Reading companion bar: read-aloud (voice, speed) when the browser can speak, and the Spanish cognate lens
+ * only when `cognates` is on (Learn with help). "Try independently" passes cognates: false.
+ */
 export function readingToolbarHTML(
   passageKey,
   segments,
-  { rate = 0.9, voiceURI = "", showCognates = false } = {},
+  { rate = 0.9, voiceURI = "", showCognates = false, cognates = true } = {},
 ) {
   scripts.set(passageKey, asList(segments));
-  if (!canSpeak()) return "";
-  const voices = getVoiceOptions("en");
+  const speech = canSpeak();
+  if (!speech && !cognates) return "";
+  const voices = speech ? getVoiceOptions("en") : [];
 
   return html`<div class="reading-toolbar" data-reading-toolbar="${passageKey}">
     <div class="reading-toolbar-controls">
-      <button type="button" class="btn btn-secondary reading-play-btn" data-read-passage="${passageKey}">
+      ${
+        speech
+          ? html`<button type="button" class="btn btn-secondary reading-play-btn" data-read-passage="${passageKey}">
         <span class="play-icon" aria-hidden="true">🎧</span>
         <span class="play-label">Read Passage Aloud</span>
       </button>
@@ -110,40 +119,64 @@ export function readingToolbarHTML(
         <button type="button" class="speed-btn" data-rate="1.0" aria-pressed="${rate > 0.95}">
           1.0x
         </button>
-      </div>
-
-      <button
+      </div>`
+          : ""
+      }
+      ${
+        cognates
+          ? html`<button
         type="button"
         class="cognate-toggle-btn ${showCognates ? "is-active" : ""}"
         data-toggle-cognates
         aria-pressed="${showCognates}"
       >
         🔍 Spanish Cognates
-      </button>
+      </button>`
+          : ""
+      }
     </div>
-    <p class="fine reading-helper-note">
-      Tip: Click or tap any sentence in the text below to hear just that sentence read aloud in your chosen voice.
-    </p>
+    ${
+      speech
+        ? html`<p class="fine reading-helper-note">
+      Tip: Click or tap any sentence in the text below (or focus it and press Enter) to hear just that sentence read aloud in your chosen voice.
+    </p>`
+        : ""
+    }
   </div>`;
 }
 
-/** Render reading passage with interactive sentence spans for voice playback and cognate exploration. */
-export function renderPassageSentences(paragraphs, { showCognates = false, glossary = null } = {}) {
+/**
+ * Reading passage as sentence spans for voice playback and cognate exploration.
+ * - `tagMode`: each sentence becomes a real <button data-nb-pick="<pickKey>|<index>"> that selects it for the
+ *   Evidence Notebook (aria-pressed shows the selection); glossary words are not wrapped in this mode.
+ * - `pinned`: Map(sentence index → tag id) shows a visible tag after sentences already in the notebook.
+ * - `gist`: array of saved gist notes (Learn with help only) adds a "what is this paragraph mostly about?"
+ *   prompt and field after each paragraph. Omit it for a clean, independent passage.
+ */
+export function renderPassageSentences(
+  paragraphs,
+  { showCognates = false, glossary = null, tagMode = false, pickKey = "", picked = -1, pinned = null, gist = null } = {},
+) {
   const paras = asList(paragraphs);
   const seen = new Set();
   let globalSentIdx = 0;
 
-  return paras.map((para) => {
-    // Split paragraph into sentences preserving ending punctuation
-    const sentences = String(para || "")
-      .split(/(?<=[.?!])\s+/)
-      .filter((s) => s.trim().length > 0);
-
-    return html`<p>
+  return paras.map((para, pIdx) => {
+    const sentences = splitSentences(para);
+    const body = html`<p>
       ${sentences.map((sentence) => {
         const sIdx = globalSentIdx++;
         const cognates = showCognates ? findCognatesInText(sentence) : [];
-
+        const tag = pinned?.get(sIdx);
+        const mark = tag ? html`<span class="badge">${tagLabel(tag)}</span> ` : "";
+        if (tagMode)
+          return html`<button
+          type="button"
+          class="reading-sentence ${sIdx === picked ? "is-active-reading-sentence" : ""}"
+          style="${INLINE_BTN}"
+          data-nb-pick="${pickKey}|${sIdx}"
+          aria-pressed="${String(sIdx === picked)}"
+        >${sentence}</button> ${mark}`;
         return html`<span
           class="reading-sentence ${cognates.length ? "has-cognates" : ""}"
           data-say="${sentence}"
@@ -151,19 +184,112 @@ export function renderPassageSentences(paragraphs, { showCognates = false, gloss
           tabindex="0"
           role="button"
           aria-label="Click to hear: ${sentence}"
-        >${glossary ? glossInline(sentence, glossary, seen) : sentence} </span>`;
+        >${glossary ? glossInline(sentence, glossary, seen) : sentence} </span>${mark}`;
       })}
     </p>`;
+    if (!gist) return body;
+    const id = `gist-${pickKey || "p"}-${pIdx}`;
+    return html`${body}<p class="field gist-prompt"><label for="${id}">💭 Gist of paragraph ${pIdx + 1}: what is it mostly about? (a few words)</label>
+      <input id="${id}" type="text" data-gist="${pIdx}" value="${gist[pIdx] || ""}" autocomplete="off" ${IGN} /></p>`;
   });
 }
 
-export function transcriptHTML(key, segments, { title = "What you heard" } = {}) {
+/**
+ * Transcript, shown only after an answer is checked. `interactive` (Learn with help only) adds
+ * per-part replay buttons and taggable signal words; otherwise it is the plain text.
+ */
+export function transcriptHTML(
+  key,
+  segments,
+  { title = "What you heard", interactive = false, tags = null, target = null, canReplay = canSpeak() } = {},
+) {
   const lines = asList(segments);
   if (!lines.length) return "";
-  return html`<details class="transcript">
+  if (!interactive)
+    return html`<details class="transcript">
     <summary>📄 ${title}</summary>
     <div class="transcript-body">${lines.map((l) => html`<p>${l}</p>`)}</div>
   </details>`;
+  const parts = listeningSegments(lines);
+  const tagged = tags || new Set();
+  // Stay open across re-renders once the learner is working in it (a diagnosed part or any tag).
+  return html`<details class="transcript is-interactive" ${target != null || tags ? raw("open") : ""}>
+    <summary>📄 ${title}</summary>
+    <div class="transcript-body">
+      <p class="fine">${canReplay ? "Press ▶ to replay one part. " : ""}Tap a signal word (however, first, not…) to tag it. Tags are only for this attempt.</p>
+      <ol class="transcript-parts">
+        ${parts.map(
+          (seg) => html`<li class="${seg.index === target ? "is-target" : ""}" ${seg.index === target ? raw('aria-current="true"') : ""}>
+            ${canReplay ? html`<button type="button" class="speed-btn" data-replay-seg="transcript:${seg.index}" aria-label="Replay part ${seg.index + 1}">▶ ${seg.index + 1}</button> ` : ""}${signalParts(seg.text).map((p, j) =>
+              p.signal
+                ? html`<button type="button" class="cat-chip signal-word" data-tag-signal="${seg.index}:${j}" aria-pressed="${String(tagged.has(`${seg.index}:${j}`))}" aria-label="Tag signal word ${p.text}">${p.text}</button>`
+                : p.text,
+            )}
+          </li>`,
+        )}
+      </ol>
+      ${tagged.size ? html`<p class="fine" role="status">Signal words tagged: ${tagged.size}</p>` : ""}
+    </div>
+  </details>`;
+}
+
+/**
+ * Listening Strategy Lab (Learn with help only): purpose preview, part-by-part replay after the
+ * first listen, and a three-field scratchpad saved on this device for this activity.
+ * Part buttons are labelled by number only, so no heard text reaches the page before an answer.
+ */
+export function listeningStrategyHTML(key, { purpose = null, parts = [], played = false, notes = {}, open = false, canReplay = canSpeak() } = {}) {
+  return html`<details class="helpers listen-strategy" data-listen-strategy="${key}" ${open ? raw("open") : ""}>
+    <summary>🧭 Listening strategy lab</summary>
+    <div class="helper-body">
+      ${
+        purpose
+          ? html`<section aria-labelledby="ls-purpose-${key}">
+              <h3 class="helper-title" id="ls-purpose-${key}">Before you listen: your purpose</h3>
+              ${purpose.kind ? html`<p><strong>${purpose.label}.</strong> ${purpose.text}</p>` : ""}
+              ${purpose.focus.length ? html`<ul>${purpose.focus.map((f) => html`<li>${f}</li>`)}</ul>` : ""}
+            </section>`
+          : ""
+      }
+      ${
+        canReplay && parts.length > 1
+          ? html`<section aria-labelledby="ls-replay-${key}">
+              <h3 class="helper-title" id="ls-replay-${key}">Replay one part</h3>
+              ${
+                played
+                  ? html`<div class="speed" role="group" aria-labelledby="ls-replay-${key}">
+                      ${parts.map((seg) => html`<button type="button" class="speed-btn" data-replay-seg="bar:${seg.index}">▶ ${seg.kind === "turn" ? "Turn" : "Part"} ${seg.index + 1}</button>`)}
+                    </div>`
+                  : html`<p class="fine">Listen to the whole recording once. Then you can replay one part at a time.</p>`
+              }
+            </section>`
+          : ""
+      }
+      <section aria-labelledby="ls-notes-${key}">
+        <h3 class="helper-title" id="ls-notes-${key}">My listening notes</h3>
+        <p class="fine">Saved only in this browser, for this activity. They are never sent anywhere or added to a progress code.</p>
+        ${LISTEN_NOTE_FIELDS.map(
+          ([field, label]) => html`<label class="field"><span>${label}</span><textarea rows="2" data-listen-note="${field}" ${IGN}>${notes[field] || ""}</textarea></label>`,
+        )}
+        <button type="button" class="ghost small" data-clear-listen-notes>Clear my notes</button>
+      </section>
+    </div>
+  </details>`;
+}
+
+/** Wrong-answer listening diagnosis with a targeted part replay. Shown in Learn with help only. */
+export function listeningTrapHTML(diag, { held = false, hint = "", canReplay = canSpeak() } = {}) {
+  const part = diag.segment + 1;
+  return html`<div class="feedback is-hint listen-trap" role="status">
+    <p class="fb-title">${held ? "Before you see the answer, replay one part" : "Not yet — check this listening trap"}</p>
+    <p>${diag.message}</p>
+    ${
+      canReplay
+        ? html`<button type="button" class="btn" data-replay-seg="trap:${diag.segment}">▶ Replay part ${part}</button>`
+        : html`<p>Ask your teacher to read part ${part} again.</p>`
+    }
+    ${held ? html`<p class="fine">After the replay, the answer appears here.</p>` : html`${hint ? html`<p>${hint}</p>` : ""}<button type="button" class="btn" data-retry>Try again</button>`}
+  </div>`;
 }
 
 /** Recorder block for Speaking. `key` scopes takes to one activity/test item. */
