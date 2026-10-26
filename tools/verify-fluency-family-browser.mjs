@@ -122,6 +122,12 @@ try {
   const reportPopup = await reportPopupPromise;
   assert.match(await reportPopup.title(), /Práctica familiar de esta semana/);
   assert.match(await reportPopup.locator("body").innerText(), /Destrezas recientes/);
+  assert.match(await reportPopup.locator("body").innerText(), /Una pregunta para explorar juntos/);
+  assert.equal(
+    await reportPopup.locator(".coach-quote").innerText(),
+    await page.locator("#coach-content .coach-quote").innerText(),
+    "the printable report includes the selected skill’s bilingual family conversation prompt",
+  );
   await reportPopup.close();
   assert.equal(await page.locator("#rotation-list .rotation-row").count(), 7);
   const spanishAxe = await new AxeBuilder({ page }).analyze();
