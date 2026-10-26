@@ -80,6 +80,14 @@ try {
   assert.match(await page.locator("#family-week-report").innerText(), /1 independent check/i);
   assert.match(await page.locator("#family-week-report").innerText(), /1\s+checks with support/i);
   assert.match(await page.locator("#family-week-report").innerText(), /0 correct/);
+  assert.match(
+    await page.locator(".week-skill-list").innerText(),
+    /0\/1 independent check · 1 supported check/i,
+  );
+  assert.doesNotMatch(
+    await page.locator("#coach-content .coach-help").first().innerText(),
+    /Listen for:.*Listen for:/,
+  );
   assert.match(await page.locator("#recommended-skill").innerText(), /Round/);
   await page.locator("#skill-select").selectOption({ index: 2 });
   const selectedSkillId = await page.locator("#skill-select").inputValue();
@@ -104,6 +112,10 @@ try {
   assert.match(
     await page.locator("#family-week-report").innerText(),
     /Comprobaciones independientes/,
+  );
+  assert.match(
+    await page.locator(".week-skill-list").innerText(),
+    /0\/1 comprobación independiente · 1 comprobación con apoyo/i,
   );
   const reportPopupPromise = page.waitForEvent("popup");
   await page.locator("#print-week-report").click();

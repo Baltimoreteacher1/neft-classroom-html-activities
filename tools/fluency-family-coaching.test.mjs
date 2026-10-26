@@ -31,6 +31,8 @@ const independent = familyCoaching(
 assert.match(independent.evidence, /1 correctas de 2/);
 assert.match(independent.ask, /elevación/);
 assert.match(independent.ifStuck, /respuesta incorrecta/);
+assert.doesNotMatch(independent.lookFor, /^Listen for:/);
+assert.match(independent.lookFor, /modelo/);
 const repair = familyCoaching(
   skillById(7, "equations"),
   {

@@ -16,7 +16,7 @@ const COPY = {
       geometry: "Which measurements in the diagram matter for the quantity we need to find?",
       general: "Can you show the quantities with a model or equation? What relationship do you notice?",
     },
-    look: "Listen for: a model, labeled quantities, or an equation that matches the selected skill.",
+    look: "a model, labeled quantities, or an equation that matches the selected skill.",
     lookNoEvidence: "Start with a model or example together. Notice how the learner represents the quantities; no mastery conclusion is available yet.",
     stuckMiss: "If an answer was missed, ask the learner to point to the part that feels uncertain. Rebuild that part with the visual model, then try a different example.",
     stuckSupported: "Recent work included support. Keep the model available, then invite the learner to solve a fresh example without the first hint.",
