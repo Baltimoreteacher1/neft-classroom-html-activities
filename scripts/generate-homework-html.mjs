@@ -60,6 +60,7 @@ import {
   workspaceHtml,
 } from "./lib/family-workspace.mjs";
 import { BRIDGE_CSS } from "./lib/homework-bridge.mjs";
+import { CALM_CSS } from "./lib/homework-calm-css.mjs";
 import { CONFUSED_GROWNUP_CSS, CONFUSED_GROWNUP_JS } from "./lib/homework-confused-grownup.mjs";
 import { DOMINO_DUO_CSS, DOMINO_DUO_JS } from "./lib/homework-domino-duo.mjs";
 import {
@@ -4129,6 +4130,7 @@ ${VOICE_CSS}
 ${familyStyleCss}
 ${PRINT_CSS}
 ${TOUCH_CSS}
+${CALM_CSS}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
