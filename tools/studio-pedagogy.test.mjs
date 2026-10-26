@@ -656,13 +656,13 @@ const pok = (c, m) => {
   );
 }
 
-/* -- hypercorrection: a miss made while "Certain" -- */
+/* -- hypercorrection: a miss on an item whose saved record says "Certain" (the tap itself was removed; older saved work still carries it) -- */
 {
   const pg = boot("2-12", "practice");
   const at = findAny(pg, (it) => it.k === "mc" && it.gen && (it.tag || []).some(Boolean));
   pok(at, "2-12 has a generated multiple-choice item that names a trap");
   const stage = go(pg, at.tab, at.i);
-  click(stage.querySelector('[data-conf="3"]'));
+  pg.state.calib[at.it.id] = { c: 3, ok: null };
   const w = at.it.c.findIndex((_c, k) => k !== at.it.a && at.it.tag[k]);
   click(stage.querySelector(`[data-mc="${w}"]`));
   const rec = pg.state.hyper.find((h) => h.id === at.it.id);
@@ -691,7 +691,7 @@ const pok = (c, m) => {
     (it) => it.k === "mc" && it.gen && it.id !== at.it.id && (it.tag || []).some(Boolean),
   );
   const st2 = go(pg, at2.tab, at2.i);
-  click(st2.querySelector('[data-conf="1"]'));
+  pg.state.calib[at2.it.id] = { c: 1, ok: null };
   click(st2.querySelector(`[data-mc="${at2.it.c.findIndex((_c, k) => k !== at2.it.a)}"]`));
   pok(!pg.state.hyper.some((h) => h.id === at2.it.id), "a Guess miss is not hypercorrection");
   // the exit card carries it (finish everything, then the runtime builds the banner)
@@ -722,7 +722,6 @@ const pok = (c, m) => {
     if (i < 0) continue;
     const at = { tab: 5, i, it: pg.api.expand(5, i) };
     const stage = go(pg, 5, at.i);
-    click(stage.querySelector('[data-conf="2"]'));
     click(stage.querySelector(`[data-mc="${at.it.a}"]`));
     const row = stage.querySelector(".why-row");
     pok(row && $$(row, "[data-why]").length === 3, `${id}: a clean Boss answer asks why`);
@@ -751,7 +750,6 @@ const pok = (c, m) => {
     // a miss first: no why chip
     const pg2 = boot(id, "challenge");
     const s2 = go(pg2, 5, at.i);
-    click(s2.querySelector('[data-conf="2"]'));
     click(s2.querySelector(`[data-mc="${at.it.c.findIndex((_c, k) => k !== at.it.a)}"]`));
     releaseHold(s2);
     click(s2.querySelector(`[data-mc="${at.it.a}"]`));

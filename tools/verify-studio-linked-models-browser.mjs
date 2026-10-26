@@ -98,6 +98,7 @@ try {
           "light",
           `${lesson} ${mode} keeps light theme`,
         );
+        await page.locator(".focus-more-btn").click();
         await page.locator("[data-path-model]").first().click();
         const host = page
           .locator(".tab-panel.active .act-host[data-act], .tab-panel.active .lab-item")

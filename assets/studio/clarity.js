@@ -182,9 +182,62 @@
     </div>`;
   }
 
+  /* ---- focus layout: the problem and its model lead; the lesson context folds behind one control ---- */
+  function initFocusLayout() {
+    if (!document.querySelector(".tab-bar") || !document.querySelector(".tab-panel")) return;
+    document.body.classList.add("focus-layout");
+    // the model's controls sit under its picture, so the picture gets the full column and its labels stay apart
+    const W = /** @type {any} */ (window);
+    W.StudioLabCss = `${W.StudioLabCss || ""}\n.model-workspace{grid-template-columns:minmax(0,1fr)!important}`;
+    const main = document.querySelector(".main-container");
+    const ctx = document.querySelector(".studio-context");
+    if (!main) return;
+    // one progress bar, driven by the same "n / total" count the header pill already keeps
+    const count = document.getElementById("header-progress-count");
+    const bar = document.createElement("div");
+    bar.className = "focus-progress";
+    bar.setAttribute("role", "progressbar");
+    bar.setAttribute("aria-label", "Lesson progress");
+    bar.setAttribute("aria-valuemin", "0");
+    bar.innerHTML = '<span class="focus-progress-fill"></span>';
+    const sync = () => {
+      const m = /(\d+)\s*\/\s*(\d+)/.exec(count?.textContent || "");
+      const done = m ? Number(m[1]) : 0;
+      const total = m ? Number(m[2]) : 0;
+      bar.setAttribute("aria-valuemax", String(total));
+      bar.setAttribute("aria-valuenow", String(done));
+      bar.setAttribute("aria-valuetext", `${done} of ${total} problems`);
+      /** @type {HTMLElement} */ (bar.firstElementChild).style.width = total
+        ? `${(done / total) * 100}%`
+        : "0%";
+    };
+    sync();
+    if (count)
+      new MutationObserver(sync).observe(count, {
+        childList: true,
+        characterData: true,
+        subtree: true,
+      });
+    document.querySelector(".tab-bar")?.before(bar);
+    if (!ctx || !document.body.dataset.chrome) return; // generated studios only: Unit 4 keeps its "I can" line in view
+    document.body.classList.add("focus-fold");
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "focus-more-btn";
+    btn.setAttribute("aria-expanded", "false");
+    btn.innerHTML = `${bi("About this lesson", "Acerca de esta lección")} <span aria-hidden="true">▾</span>`;
+    btn.addEventListener("click", () => {
+      const open = !document.body.classList.contains("show-context");
+      document.body.classList.toggle("show-context", open);
+      btn.setAttribute("aria-expanded", String(open));
+    });
+    main.insertBefore(btn, main.firstElementChild);
+  }
+
   function init() {
     initMenu();
     initMission();
+    initFocusLayout();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();

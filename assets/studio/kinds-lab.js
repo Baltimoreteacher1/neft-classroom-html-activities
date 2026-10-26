@@ -281,42 +281,10 @@
             `<strong>${b("Target reached.", "Meta lograda.")}</strong> ${U().tx(it.x)}${U().txEs(it.xEs)}`;
           if (ctx.solved) return ctx.showSolved(explain());
 
-          // "How sure are you?" once, before the first check: the studio's own calibration record, so My thinking can show certain-but-missed.
           const checkBtn = /** @type {HTMLButtonElement | null} */ (
             ctx.host.querySelector("[data-check-lab]")
           );
-          if (!st.calib[it.id] && checkBtn) {
-            checkBtn.disabled = false;
-            const row = document.createElement("div");
-            row.className = "conf-row";
-            row.setAttribute("role", "group");
-            row.setAttribute(
-              "aria-label",
-              ctx.es() ? "¿Qué tan seguro estás?" : "How sure are you?",
-            );
-            row.innerHTML = `<span class="conf-q">${b("How sure are you before you check?", "¿Qué tan seguro estás antes de revisar?")}</span>${[
-              ["Guess", "Adivino"],
-              ["Pretty sure", "Bastante seguro"],
-              ["Certain", "Seguro"],
-            ]
-              .map(
-                ([en, sp], i) =>
-                  `<button type="button" class="btn btn-sm conf-btn" data-conf="${i + 1}">${esc(en)}${es(sp)}</button>`,
-              )
-              .join("")}`;
-            checkBtn.closest(".item-actions")?.before(row);
-            row.addEventListener("click", (e) => {
-              const btn = /** @type {HTMLElement | null} */ (
-                /** @type {HTMLElement} */ (e.target).closest("[data-conf]")
-              );
-              if (!btn) return;
-              st.calib[it.id] = { c: Number(btn.dataset.conf), ok: null };
-              checkBtn.disabled = false;
-              row.remove();
-              ctx.save();
-              checkBtn.focus();
-            });
-          }
+          if (checkBtn) checkBtn.disabled = false;
 
           checkBtn?.addEventListener("click", () => {
             if (!model.valid) {

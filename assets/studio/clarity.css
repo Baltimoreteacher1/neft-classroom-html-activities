@@ -496,10 +496,10 @@ body.show-es .studio-context > .mission-card .mission-body .es-text { display: b
 .repair-stage { margin-top: 14px; border-style: dashed; }
 .repair-note { margin: 10px 0 0; }
 .repair-btn { margin-top: 8px; }
-.conf-row.conf-optional { background: var(--surface-soft); border: 2px dashed var(--border-strong); }
-.conf-row.conf-optional .conf-q { color: var(--ink-muted); font-weight: 700; }
+
+
 .conf-opt { font-weight: 600; }
-.conf-row.conf-optional .conf-btn[aria-pressed="true"] { background: var(--brand); color: var(--on-brand); border-color: var(--brand); }
+
 
 /* ---- Trap Book and tier two (docs/specs/studio-v3-w3.md) ----------------------------------------------------------- */
 .reflect-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0 0; padding: 10px 14px; background: var(--surface-soft); border: 2px dashed var(--border-strong); border-radius: var(--radius-md); }
@@ -766,17 +766,7 @@ body.studio-fab-hidden #nsr-root {
 .lab-goalbar:empty {
   display: none;
 }
-.lab-goalbar .conf-row {
-  margin: 0;
-}
-@media (max-width: 600px) {
-  .lab-goalbar .conf-row .conf-q {
-    flex: 1 1 100%;
-  }
-  .lab-goalbar .conf-row .btn {
-    padding: 4px 10px;
-  }
-}
+
 /* the Check row of a hands-on activity (assets/studio/focus.js marks it) stays on screen while the picture is in view */
 .act-host .check-bar {
   position: sticky;
@@ -1076,4 +1066,74 @@ body.lang-quiet .world-glyph { display: none; }
     display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; font-size: 0.75rem;
   }
   body[data-world] .app-header .header-actions { flex-wrap: wrap; gap: 4px; }
+}
+
+/* ---- focus layout (every studio, body.focus-layout set in clarity.js): the question and its model lead; the Help, goal
+   and check controls sit beside the model on laptops and stack under it on phones. Context folds behind one control. */
+body.focus-fold .pathway-panel,
+body.focus-fold .studio-context { display: none; }
+body.focus-fold.show-context .pathway-panel,
+body.focus-fold.show-context .studio-context { display: block; }
+body.focus-layout .focus-more-btn {
+  display: inline-flex; align-items: center; gap: 6px; margin: 4px 0 10px; padding: 8px 14px; min-height: 44px;
+  border: 1px solid var(--ink-muted, #5b6b7c); border-radius: 999px; background: transparent; color: inherit;
+  font: inherit; font-weight: 700; cursor: pointer;
+}
+body.focus-layout .focus-more-btn:focus-visible { outline: 3px solid var(--brand, #2563eb); outline-offset: 2px; }
+@media (min-width: 901px) {
+  body.focus-layout .tab-panel.active .stage-card .item-body.lab-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1.9fr) minmax(280px, 1fr);
+    grid-template-rows: auto repeat(11, min-content) 1fr;
+    gap: 12px 20px;
+    align-items: start;
+  }
+  body.focus-layout .tab-panel.active .stage-card .item-body.lab-item > .item-q { grid-column: 1 / -1; grid-row: 1; }
+  body.focus-layout .tab-panel.active .stage-card .item-body.lab-item > .answer-zone { grid-column: 1; grid-row: 2 / 14; }
+  body.focus-layout .tab-panel.active .stage-card .item-body.lab-item > :not(.item-q):not(.answer-zone) { grid-column: 2; }
+}
+@media (max-width: 900px) {
+  body.focus-layout .tab-panel.active .stage-card .item-body.lab-item { display: flex; flex-direction: column; }
+  body.focus-layout .tab-panel.active .stage-card .item-body.lab-item > .item-q { order: -2; }
+  body.focus-layout .tab-panel.active .stage-card .item-body.lab-item > .answer-zone { order: -1; }
+}
+@media (max-width: 900px) {
+  body.focus-layout .topic-strip > div > p,
+  body.focus-layout .topic-strip .lang-tool-es { display: none; }
+}
+
+/* ---- focus pilot, laptop: one progress bar, a quiet stage stepper, a Help card, fewer competing controls ---------- */
+body.focus-layout .focus-progress { height: 8px; background: rgba(0, 0, 0, 0.14); }
+body.focus-layout .focus-progress-fill {
+  display: block; height: 100%; width: 0; background: var(--brand, #2563eb); transition: width 0.25s ease;
+}
+@media (prefers-reduced-motion: reduce) { body.focus-layout .focus-progress-fill { transition: none; } }
+body.focus-layout .header-actions #u4-stars-btn,
+body.focus-layout .header-actions .score-pill,
+body.focus-layout .header-actions #hud-pill { display: none; }
+body.focus-layout .tab-btn { background: transparent; border-color: transparent; box-shadow: none; }
+body.focus-layout .tab-btn .tab-desc { display: none; }
+body.focus-layout .tab-btn[aria-selected="true"] { border-bottom: 3px solid var(--brand, #2563eb); border-radius: 8px 8px 0 0; }
+body.focus-layout .topic-strip > div > p,
+body.focus-layout .topic-strip .lang-tool-es { display: none; }
+body.focus-layout .hint-area {
+  padding: 12px 14px; border: 1px solid var(--line, #d5dde6); border-radius: 12px; background: var(--card, transparent);
+}
+body.focus-layout .hint-area::before {
+  content: "Help"; display: block; margin-bottom: 8px; font-weight: 800; font-size: 1.05rem;
+}
+body.focus-layout .hint-area .hint-btn { width: 100%; justify-content: center; min-height: 44px; }
+body.focus-layout .item-head .item-tools .tool-btn { background: transparent; border-color: transparent; font-size: 0.9rem; }
+body.focus-layout .item-head .chip-explore { display: none; }
+
+/* ---- figure-first items (graph hosts, move-work): the question comes first, then the figure it asks about ---------- */
+body.focus-layout .tab-panel.active .stage-card .item-body:has(> .viz-host, > .move-work) {
+  display: flex;
+  flex-direction: column;
+}
+body.focus-layout .tab-panel.active .stage-card .item-body:has(> .viz-host, > .move-work) > .item-ctx { order: -3; }
+body.focus-layout .tab-panel.active .stage-card .item-body:has(> .viz-host, > .move-work) > .item-q { order: -2; }
+body.focus-layout .tab-panel.active .stage-card .item-body:has(> .viz-host, > .move-work) > .lang-words { order: -1; }
+@media (min-width: 901px) {
+  body.focus-layout .lab-goalbar { position: static; }
 }

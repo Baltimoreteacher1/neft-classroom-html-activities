@@ -670,7 +670,7 @@ export function buildSections(
       { items: [...stretch, ...ld.challenge.missions] },
       { items: ld.challenge.lab },
       { items: ld.challenge.detective },
-      { items: ld.challenge.boss, conf: true },
+      { items: ld.challenge.boss },
     ],
   };
   const out = {};
@@ -710,7 +710,6 @@ export function buildSections(
         hEs: g.hEs,
         p: g.p,
         pEs: g.pEs,
-        ...(sec.conf ? { conf: true } : {}),
         items: benched
           ? mode === "practice"
             ? [...items, ...bench.after]

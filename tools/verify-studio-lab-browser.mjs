@@ -189,8 +189,6 @@ async function solveLab(page, where, spec) {
     );
   const check = async () => {
     // "How sure are you?" appears once before the first check; the button is disabled until the student answers it
-    const conf = page.locator(`${spec.root} [data-conf="2"]`);
-    if (await conf.count()) await conf.click();
     await page.locator(`${spec.root} [data-check-lab]`).click();
   };
 

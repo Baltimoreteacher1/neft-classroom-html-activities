@@ -72,6 +72,7 @@ try {
   for (const id of ["2-1", "3-3", "5-1", "8-2"]) {
     const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
     await page.goto(`${origin}/math/practice-studio/${id}/`, { waitUntil: "domcontentloaded" });
+    await page.locator(".focus-more-btn").click();
     await page.locator("[data-path-entry]").click();
     assert.match(await page.locator(".pathway-check h3").innerText(), /Check 1 of 2/);
     assert.ok(
@@ -94,6 +95,7 @@ try {
       stats: { ...window.StudioRT.api.state.stats },
       learner: localStorage.getItem("neft_studio_learner_v1"),
     }));
+    await page.locator(".focus-more-btn").click();
     await page.locator("[data-path-entry]").click();
     const first = await page.evaluate(() => {
       const { tab, index } = window.StudioPathways.entrySpecs()[0];
@@ -122,6 +124,7 @@ try {
   {
     const page = await browser.newPage();
     await page.goto(`${origin}/math/practice-studio/3-3/`, { waitUntil: "domcontentloaded" });
+    await page.locator(".focus-more-btn").click();
     await page.locator("[data-path-entry]").click();
     for (let i = 0; i < 2; i++) {
       const item = await page.evaluate((n) => {

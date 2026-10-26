@@ -383,8 +383,7 @@ try {
     );
   }
 
-  // W2 (docs/specs/studio-v3-w2.md), on every generated page that has a generated item: the optional confidence tap is there and
-  // remembered, a miss then a solve offers "Try a fresh one", a clean fresh answer is a Repair the learner model counts, and the
+  // W2 (docs/specs/studio-v3-w2.md), on every generated page that has a generated item: a miss then a solve offers "Try a fresh one", a clean fresh answer is a Repair the learner model counts, and the
   // fresh item never touched section progress.
   {
     const ids = readdirSync(join(REPO_ROOT, "math/practice-studio")).filter(
@@ -429,15 +428,6 @@ try {
           return { k: x.k, a: x.a };
         }, at);
         const stage = `#stage-${at.tab}`;
-        const chips = page.locator(`${stage} .conf-optional [data-conf="2"]`);
-        if (await chips.count()) {
-          await chips.click();
-          assert.equal(
-            await chips.getAttribute("aria-pressed"),
-            "true",
-            `${url}: the confidence tap is remembered`,
-          );
-        }
         const doneBefore = await page.evaluate(
           () => /** @type {any} */ (window).StudioRT.api.state.stats.tries,
         );
@@ -512,7 +502,7 @@ try {
       `repair loop checked on ${checked} generated pages`,
     );
     ok(
-      `W2: confidence tap, miss -> fresh one -> Repaired, on ${checked} generated pages (every page with a generated item)`,
+      `W2: miss -> fresh one -> Repaired, on ${checked} generated pages (every page with a generated item)`,
     );
 
     // seals: three clean answers earn Bronze, announced once, listed in My seals with a ring and a word, and kept after a reload
@@ -620,10 +610,6 @@ try {
             a.state.idx[tab] = i;
             a.render(tab);
           }, one);
-          const needOne = page.locator(
-            `#stage-${one.tab} .conf-row:not(.conf-optional) [data-conf="2"]`,
-          );
-          if (await needOne.count()) await needOne.click();
           await page.locator(`#stage-${one.tab} .choice-btn:visible`).nth(one.wrong).click();
           await page.locator(`#stage-${one.tab} .item-fb.show`).waitFor();
           assert.equal(
@@ -646,9 +632,6 @@ try {
           a.render(tab);
         }, at);
         const stage = `#stage-${at.tab}`;
-        // Boss items keep the blocking confidence row: say how sure first
-        const need = page.locator(`${stage} .conf-row:not(.conf-optional) [data-conf="2"]`);
-        if (await need.count()) await need.click();
         await page.locator(`${stage} .choice-btn:visible`).nth(at.wrong).click();
         const row = page.locator(`${stage} .reflect-row`);
         await row.waitFor();
@@ -886,8 +869,6 @@ try {
         const wrong = at.c.findIndex(
           (/** @type {any} */ _c, /** @type {number} */ k) => k !== at.a,
         );
-        const need = page.locator(`${stage} .conf-row:not(.conf-optional) [data-conf="2"]`);
-        if (await need.count()) await need.click();
         await page.locator(`${stage} .choice-btn:visible`).nth(wrong).click();
         const help = await page.locator(`${stage} .item-fb`).innerText();
         // a fraction in the help is typeset (stacked), so compare the plain words it contains

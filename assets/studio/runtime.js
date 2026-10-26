@@ -281,7 +281,6 @@
         const cal = state.calib[it.id];
         if (cal && cal.ok === null) cal.ok = first;
         fb("ok", RT.util.fbOk(voice("ok", it.id), html, watchFor(it)));
-        $(".conf-optional", host)?.remove();
         say("Correct");
         if (redeem) {
           o.onSolved?.();
@@ -461,62 +460,6 @@
       <span class="item-tools">${it.gen ? `<button type="button" class="tool-btn" data-example>👀 ${lang ? "Ejemplo resuelto" : "Worked example"}</button>` : ""}${it.reroll ? `<button type="button" class="tool-btn" data-reroll>🎲 ${lang ? "Números nuevos" : "New numbers"}</button>` : ""}<button type="button" class="tool-btn" data-read aria-label="Read this problem aloud">🔊 ${lang ? "Leer" : "Read"}</button></span></div>`;
   }
 
-  const CONF = [
-    ["Guess", "Adivino"],
-    ["Pretty sure", "Bastante seguro"],
-    ["Certain", "Seguro"],
-  ];
-  function confRow(/** @type {any} */ it, /** @type {HTMLElement} */ host) {
-    const zone = $(".answer-zone", host);
-    if (!zone || state.calib[it.id]) return;
-    zone.inert = true;
-    zone.classList.add("need-conf");
-    const row = document.createElement("div");
-    row.className = "conf-row";
-    row.setAttribute("role", "group");
-    row.setAttribute("aria-label", "How sure are you?");
-    row.innerHTML = `<span class="conf-q">How sure are you before you answer?${es("¿Qué tan seguro estás antes de responder?")}</span>${CONF.map((c, i) => `<button type="button" class="btn btn-sm conf-btn" data-conf="${i + 1}">${c[0]}${es(c[1])}</button>`).join("")}`;
-    zone.before(row);
-    row.addEventListener("click", (e) => {
-      const b = /** @type {HTMLElement|null} */ (
-        /** @type {HTMLElement} */ (e.target).closest("[data-conf]")
-      );
-      if (!b) return;
-      state.calib[it.id] = { c: Number(b.dataset.conf), ok: null };
-      zone.inert = false;
-      zone.classList.remove("need-conf");
-      row.remove();
-      save();
-    });
-  }
-
-  /**
-   * The optional confidence tap for every item that is not a Boss item: the same three chips, never blocking. A student who skips
-   * it loses nothing; a tap is remembered in state.calib (My thinking's calibration summary and the learner model read it).
-   */
-  function confChips(/** @type {any} */ it, /** @type {HTMLElement} */ host) {
-    const zone = $(".answer-zone", host);
-    if (!zone) return;
-    const now = state.calib[it.id]?.c;
-    const row = document.createElement("div");
-    row.className = "conf-row conf-optional";
-    row.setAttribute("role", "group");
-    row.setAttribute("aria-label", "How sure are you? (optional)");
-    row.innerHTML = `<span class="conf-q">How sure are you? <span class="conf-opt">(optional)</span>${es("¿Qué tan seguro estás? (opcional)")}</span>${CONF.map((c, i) => `<button type="button" class="btn btn-sm conf-btn" data-conf="${i + 1}" aria-pressed="${now === i + 1}">${c[0]}${es(c[1])}</button>`).join("")}`;
-    zone.before(row);
-    row.addEventListener("click", (e) => {
-      const b = /** @type {HTMLElement|null} */ (
-        /** @type {HTMLElement} */ (e.target).closest("[data-conf]")
-      );
-      if (!b) return;
-      const c = Number(b.dataset.conf);
-      state.calib[it.id] = { c, ok: null };
-      for (const x of row.querySelectorAll("[data-conf]"))
-        x.setAttribute("aria-pressed", String(x === b));
-      save();
-    });
-  }
-
   /** Forget everything saved for one item id so a fresh problem starts clean. */
   function wipeItem(/** @type {string} */ id) {
     for (const k of [
@@ -576,8 +519,6 @@
     W.StudioPedagogy?.decorate(tab, it, host);
     W.StudioLanguage?.decorate(tab, it, host, stage);
     mountWorkspace(stage, it);
-    if ((it.k === "mc" || it.k === "num") && !isSolved(tab, it))
-      (sec.conf ? confRow : confChips)(it, host);
     dots(tab);
     for (const b of /** @type {HTMLElement[]} */ ([...stage.querySelectorAll("[data-reroll]")]))
       b.addEventListener("click", () => {
