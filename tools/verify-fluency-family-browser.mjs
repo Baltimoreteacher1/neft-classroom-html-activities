@@ -338,8 +338,49 @@ try {
     "storage failures are announced to families",
   );
   await noSaveContext.close();
+
+  const teacherPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await teacherPage.addInitScript(() => {
+    window.print = () => {};
+  });
+  await teacherPage.goto(`${base}/math/fluency-lab/?view=teacher`, { waitUntil: "networkidle" });
+  await teacherPage.locator("#assignment-session-type").selectOption("family");
+  assert.equal(
+    await teacherPage.locator("#assignment-game").count(),
+    0,
+    "family configuration hides the unused game selector",
+  );
+  await teacherPage.locator("#assignment-grade").selectOption("1");
+  await teacherPage.locator("#assignment-language").selectOption("es");
+  await teacherPage.locator("#assignment-challenge").selectOption("building");
+  await teacherPage.locator("#assignment-mode").selectOption("guided");
+  await teacherPage.locator("#assignment-count").selectOption("10");
+  await teacherPage.locator('input[name="assignment-skill"]').first().check();
+  await teacherPage.locator("#assignment-builder button[type=submit]").click();
+  const teacherShare = new URL(await teacherPage.locator("#assignment-link").inputValue());
+  assert.equal(teacherShare.origin, new URL(base).origin);
+  assert.ok(teacherShare.pathname.startsWith("/math/fluency-lab/family/tonight"));
+  assert.equal(teacherShare.searchParams.get("lang"), "es");
+  assert.equal(teacherShare.searchParams.get("minutes"), "10");
+  assert.equal(teacherShare.searchParams.get("challenge"), "building");
+  assert.equal(teacherShare.searchParams.get("support"), "extra");
+  assert.equal(
+    teacherShare.searchParams.has("profile"),
+    false,
+    "teacher share URLs contain no learner profile",
+  );
+  await teacherPage.locator("[data-print-family]").click();
+  assert.match(await teacherPage.locator("#print-sheet").innerHTML(), /qrserver\.com/);
+  await teacherPage.locator("#assignment-session-type").selectOption("practice");
+  assert.equal(
+    await teacherPage.locator("#assignment-game").count(),
+    1,
+    "game options remain available for fluency assignments",
+  );
+  await teacherPage.close();
+
   console.log(
-    "Family browser flow passed: adaptive skill selection, profile switch, seven routes, bilingual family entry, saved five-stage session, visual lesson, independent versus supported evidence, pause/resume, keyboard focus, Axe, real practice launch, and mobile/desktop layout.",
+    "Family browser flow passed: adaptive skill selection, profile switch, seven routes, bilingual family entry, saved five-stage session, visual lesson, independent versus supported evidence, pause/resume, keyboard focus, Axe, teacher family-link settings and print QR, real practice launch, and mobile/desktop layout.",
   );
 } finally {
   await browser?.close();
