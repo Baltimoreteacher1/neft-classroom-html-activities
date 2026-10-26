@@ -805,7 +805,85 @@ export function renderVisualMathLab(topic, config, lessonModel = null) {
   if (id === "4-5-part2")
     return `<section class="family-visual-lab card-ish" data-family-paper-model="missing-whole-equation"><h3><span class="lang-en">Find the whole with a percent equation</span><span class="lang-es" lang="es">Halla el total con una ecuación de porcentaje</span></h3><p><span class="lang-en">Six beads are 25% of a bag. One shaded box is the known part; all four boxes are the unknown whole, w. Write 0.25w = 6. What operation undoes multiplication by 0.25?</span><span class="lang-es" lang="es">Seis cuentas son el 25% de una bolsa. Una caja sombreada es la parte conocida; las cuatro cajas forman el total desconocido, w. Escribe 0.25w = 6. ¿Qué operación deshace la multiplicación por 0.25?</span></p><svg viewBox="0 0 330 65" role="img" aria-label="One of four equal boxes represents 25 percent, or six beads" data-aria-en="One of four equal boxes represents 25 percent, or six beads" data-aria-es="Una de cuatro cajas iguales representa el 25 por ciento, o seis cuentas"><rect x="5" y="5" width="80" height="50" fill="#0f766e"/><path d="M5 5h320v50H5zM85 5v50M165 5v50M245 5v50" fill="none" stroke="#12355b" stroke-width="2"/></svg><p><span class="lang-en">Known part: 25% = 6 beads. Whole: 100% = w beads.</span><span class="lang-es" lang="es">Parte conocida: 25% = 6 cuentas. Total: 100% = w cuentas.</span></p><details><summary><span class="lang-en">Check the equation and solution</span><span class="lang-es" lang="es">Comprueba la ecuación y la solución</span></summary><p>0.25w = 6 → w = 6 ÷ 0.25 = 24<br>0.25 × 24 = 6</p></details></section>`;
   if (id === "4-5")
-    return '<section class="family-visual-lab card-ish" data-family-paper-model="missing-whole"><h3><span class="lang-en">Build the missing whole</span><span class="lang-es" lang="es">Construye el total que falta</span></h3><p><span class="lang-en">Six beads are 25% of the bag. Draw a bar with four equal boxes. Label one box 25% and 6 beads. What belongs in each other box? Label the whole bar 100% and find the total. Check by finding one fourth of it.</span><span class="lang-es" lang="es">Seis cuentas son el 25% de la bolsa. Dibuja una barra con cuatro cajas iguales. Indica 25% y 6 cuentas en una caja. ¿Qué va en las otras? Indica 100% en toda la barra y halla el total. Comprueba hallando su cuarta parte.</span></p></section>';
+    return `<section class="family-visual-lab card-ish" data-family-paper-model="missing-whole">
+      <h3><span class="lang-en">Build the missing whole</span><span class="lang-es" lang="es">Construye el total que falta</span></h3>
+      <p><span class="lang-en">Six beads are 25% of a bag. How many beads are in the whole bag? Use the visual bar and simple ratio table below to see how the pieces build the 100% whole.</span><span class="lang-es" lang="es">Seis cuentas son el 25% de una bolsa. ¿Cuántas cuentas hay en la bolsa entera? Usa la barra visual y la tabla de razones a continuación para ver cómo las partes forman el total del 100%.</span></p>
+      <svg viewBox="0 0 540 140" width="100%" style="background:#ffffff;border:1.5px solid #cbd5e1;border-radius:12px;max-width:540px;display:block;margin:16px auto;" role="img" aria-label="Tape diagram: One of four equal boxes is 25 percent or six beads. All four boxes equal twenty-four beads (100 percent)." data-aria-en="Tape diagram: One of four equal boxes is 25 percent or six beads. All four boxes equal twenty-four beads (100 percent)." data-aria-es="Diagrama de cinta: Una de cuatro cajas iguales representa el 25 por ciento o seis cuentas. Las cuatro cajas equivalen a veinticuatro cuentas (100 por ciento).">
+        <rect x="30" y="8" width="130" height="20" rx="4" fill="#0f766e"/>
+        <text x="95" y="22" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="11" font-weight="800" fill="#ffffff">
+          <tspan class="lang-en">Part: 6 beads (25%)</tspan><tspan class="lang-es" lang="es">Parte: 6 cuentas (25%)</tspan>
+        </text>
+
+        <g transform="translate(30, 34)">
+          <rect x="0" y="0" width="120" height="52" rx="4" fill="#0f766e" stroke="#12355b" stroke-width="2"/>
+          <text x="60" y="24" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">6 beads</text>
+          <text x="60" y="42" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="700" fill="#a7f3d0">25%</text>
+
+          <rect x="120" y="0" width="120" height="52" rx="4" fill="#f0fdfa" stroke="#12355b" stroke-width="2"/>
+          <text x="180" y="24" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#0f766e">6 beads</text>
+          <text x="180" y="42" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="700" fill="#0369a1">25%</text>
+
+          <rect x="240" y="0" width="120" height="52" rx="4" fill="#f0fdfa" stroke="#12355b" stroke-width="2"/>
+          <text x="300" y="24" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#0f766e">6 beads</text>
+          <text x="300" y="42" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="700" fill="#0369a1">25%</text>
+
+          <rect x="360" y="0" width="120" height="52" rx="4" fill="#f0fdfa" stroke="#12355b" stroke-width="2"/>
+          <text x="420" y="24" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#0f766e">6 beads</text>
+          <text x="420" y="42" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="700" fill="#0369a1">25%</text>
+        </g>
+
+        <path d="M 30 92 L 30 100 L 270 100 L 270 106 L 270 100 L 510 100 L 510 92" fill="none" stroke="#15487f" stroke-width="2" stroke-linecap="round"/>
+        <text x="270" y="124" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12.5" font-weight="800" fill="#15487f">
+          <tspan class="lang-en">Whole bag: 4 equal parts × 6 beads = 24 beads (100%)</tspan><tspan class="lang-es" lang="es">Bolsa entera: 4 partes iguales × 6 cuentas = 24 cuentas (100%)</tspan>
+        </text>
+      </svg>
+
+      <div style="margin:16px auto;max-width:480px;overflow-x:auto;">
+        <table class="fill-table" style="width:100%;text-align:center;border-collapse:collapse;background:#ffffff;border:1.5px solid #cbd5e1;border-radius:8px;overflow:hidden;">
+          <thead>
+            <tr style="background:#15487f;color:#ffffff;">
+              <th scope="col" style="padding:8px 12px;font-weight:800;"><span class="lang-en">Percent</span><span class="lang-es" lang="es">Porcentaje</span></th>
+              <th scope="col" style="padding:8px 12px;font-weight:800;"><span class="lang-en">Beads</span><span class="lang-es" lang="es">Cuentas</span></th>
+              <th scope="col" style="padding:8px 12px;font-weight:800;"><span class="lang-en">Ratio Step</span><span class="lang-es" lang="es">Paso de razón</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background:#e0f2fe;">
+              <td style="padding:8px;font-weight:700;color:#0369a1;">25%</td>
+              <td style="padding:8px;font-weight:700;color:#0369a1;">6</td>
+              <td style="padding:8px;font-size:13px;color:#0f766e;"><span class="lang-en">Known part</span><span class="lang-es" lang="es">Parte conocida</span></td>
+            </tr>
+            <tr>
+              <td style="padding:8px;font-weight:600;">50%</td>
+              <td style="padding:8px;font-weight:600;">12</td>
+              <td style="padding:8px;font-size:13px;color:#64748b;"><span class="lang-en">Double (× 2)</span><span class="lang-es" lang="es">Duplica (× 2)</span></td>
+            </tr>
+            <tr style="background:#f8fafc;">
+              <td style="padding:8px;font-weight:600;">75%</td>
+              <td style="padding:8px;font-weight:600;">18</td>
+              <td style="padding:8px;font-size:13px;color:#64748b;"><span class="lang-en">Add 25% (+ 6)</span><span class="lang-es" lang="es">Suma 25% (+ 6)</span></td>
+            </tr>
+            <tr style="background:#fef3c7;border-top:2px solid #d97706;">
+              <td style="padding:8px;font-weight:800;color:#b45309;">100%</td>
+              <td style="padding:8px;font-weight:800;color:#b45309;font-size:16px;">24</td>
+              <td style="padding:8px;font-weight:800;font-size:13px;color:#b45309;"><span class="lang-en">Whole bag (4 × 6 = 24)</span><span class="lang-es" lang="es">Bolsa entera (4 × 6 = 24)</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="margin:12px 0;font-size:15px;line-height:1.5;"><span class="lang-en"><strong>How it works:</strong> 25% is one of four equal parts. Because 1 part has 6 beads, multiplying 4 × 6 gives <strong>24 beads in the whole bag (100%)</strong>.</span><span class="lang-es" lang="es"><strong>Cómo funciona:</strong> El 25% es una de cuatro partes iguales. Como 1 parte tiene 6 cuentas, multiplicar 4 × 6 da <strong>24 cuentas en la bolsa entera (100%)</strong>.</span></p>
+
+      <details style="margin-top:10px;background:#ffffff;border:1.5px solid #cbd5e1;border-radius:8px;padding:10px 14px;">
+        <summary style="font-weight:700;cursor:pointer;color:#15487f;">
+          <span class="lang-en">Check with division</span><span class="lang-es" lang="es">Comprueba con división</span>
+        </summary>
+        <p style="margin:8px 0 0;font-size:14px;line-height:1.45;">
+          <span class="lang-en">Divide the part by the percent as a decimal: 6 ÷ 0.25 = 24 beads. Or check 25% of 24: 0.25 × 24 = 6 beads. Both confirm the whole bag has 24 beads!</span>
+          <span class="lang-es" lang="es">Divide la parte entre el porcentaje en decimal: 6 ÷ 0.25 = 24 cuentas. O comprueba el 25% de 24: 0.25 × 24 = 6 cuentas. ¡Ambos confirman que la bolsa entera tiene 24 cuentas!</span>
+        </p>
+      </details>
+    </section>`;
   if (id === "7-6" || id === "7-6-part2")
     return '<section class="family-visual-lab card-ish" data-family-paper-model="coordinate-distance"><h3><span class="lang-en">Measure the changing coordinate</span><span class="lang-es" lang="es">Mide la coordenada que cambia</span></h3><p><span class="lang-en">Plot A(−3, 2), B(4, 2), and C(4, −2). A and B share y = 2: their horizontal distance is |4 − (−3)| = 7 units. B and C share x = 4. Find their vertical distance. Explain why distance is nonnegative.</span><span class="lang-es" lang="es">Representa A(−3, 2), B(4, 2) y C(4, −2). A y B comparten y = 2: su distancia horizontal es |4 − (−3)| = 7 unidades. B y C comparten x = 4. Halla su distancia vertical. Explica por qué la distancia no es negativa.</span></p></section>';
   if (id === "9-3-part2")

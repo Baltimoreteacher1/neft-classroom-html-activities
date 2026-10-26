@@ -3188,10 +3188,38 @@ function renderUnit4FamilyBigIdeaVisual(config) {
         <span style="color:#0f766e;">${bilingual(`6 blocks = ${model.part} (${model.percent})`, `6 bloques = ${model.part} (${model.percent})`)}</span>
         <span style="color:#0369a1;">${bilingual(`10 blocks = ${model.whole} (100%)`, `10 bloques = ${model.whole} (100%)`)}</span>
       </div>
+      <div class="family-ratio-table-wrap" style="margin:12px auto 0;max-width:340px;overflow-x:auto;">
+        <table class="fill-table" style="width:100%;text-align:center;font-size:13px;border-collapse:collapse;margin:0 auto;background:#ffffff;border:1.5px solid #cbd5e1;border-radius:6px;overflow:hidden;">
+          <thead>
+            <tr style="background:#15487f;color:#ffffff;">
+              <th scope="col" style="padding:4px 8px;font-size:12px;"><span class="lang-en">Percent</span><span class="lang-es" lang="es">Porcentaje</span></th>
+              <th scope="col" style="padding:4px 8px;font-size:12px;"><span class="lang-en">Price</span><span class="lang-es" lang="es">Precio</span></th>
+              <th scope="col" style="padding:4px 8px;font-size:12px;"><span class="lang-en">Step</span><span class="lang-es" lang="es">Paso</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:4px 8px;font-weight:700;color:#0f766e;">60%</td>
+              <td style="padding:4px 8px;font-weight:700;color:#0f766e;">$42</td>
+              <td style="padding:4px 8px;color:#64748b;font-size:11px;"><span class="lang-en">Known part</span><span class="lang-es" lang="es">Parte conocida</span></td>
+            </tr>
+            <tr style="background:#f0fdfa;">
+              <td style="padding:4px 8px;font-weight:700;color:#0284c7;">10%</td>
+              <td style="padding:4px 8px;font-weight:700;color:#0284c7;">$7</td>
+              <td style="padding:4px 8px;color:#0284c7;font-size:11px;">÷ 6</td>
+            </tr>
+            <tr style="background:#fef3c7;font-weight:800;border-top:1.5px solid #d97706;">
+              <td style="padding:4px 8px;color:#b45309;">100%</td>
+              <td style="padding:4px 8px;color:#b45309;">$70</td>
+              <td style="padding:4px 8px;color:#b45309;font-size:11px;">× 10</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <p style="margin:12px 0 0;font-size:15px;line-height:1.45;text-align:center;">
         ${bilingual(
-          `How it works: Divide the part by the percent as a decimal: ${model.part} ÷ 0.60 = ${model.whole}. Each 10% block is $42 ÷ 6 = $7, so all 10 blocks equal 10 × $7 = ${model.whole}.`,
-          `Cómo funciona: Divide la parte entre el porcentaje en decimal: ${model.part} ÷ 0.60 = ${model.whole}. Cada bloque de 10% vale $42 ÷ 6 = $7, así que los 10 bloques suman 10 × $7 = ${model.whole}.`,
+          `How it works: In a simple ratio table, find 10% first: $42 ÷ 6 = $7. Then scale up to 100%: 10 × $7 = $70. Or divide the part by the percent as a decimal: $42 ÷ 0.60 = $70.`,
+          `Cómo funciona: En una tabla de razones simple, halla primero el 10%: $42 ÷ 6 = $7. Luego escala al 100%: 10 × $7 = $70. O divide la parte entre el porcentaje en decimal: $42 ÷ 0.60 = $70.`,
         )}
       </p>
     </div>`;
