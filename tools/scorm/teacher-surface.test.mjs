@@ -265,7 +265,11 @@ check("every path the middleware would gate, generation also refuses", () => {
 check("shared student code and data are still not treated as teacher paths", () => {
   // curriculum-teacher-workflow.js is fetched by the PUBLIC hub; treating it as
   // teacher-only would 401 a student page's script.
-  for (const p of ["/assets/curriculum-teacher-workflow.js", "/data/curriculum-manifest.json"]) {
+  for (const p of [
+    "/assets/curriculum-teacher-workflow.js",
+    "/data/curriculum-manifest.json",
+    "/access-practice-lab/src/lang/teacher.js",
+  ]) {
     assert.ok(!isTeacherSurface(p), `would have gated a shared student asset: ${p}`);
   }
 });

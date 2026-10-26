@@ -95,7 +95,14 @@ export function isTeacherSurface(path) {
   // Shared code and curriculum data are student-loaded even when their names
   // mention a teacher feature (curriculum-teacher-workflow.js is fetched by the
   // public hub); the teacher features they enable are gated separately.
-  if (p.startsWith("/assets/") || p.startsWith("/data/")) return false;
+  if (
+    p.startsWith("/assets/") ||
+    p.startsWith("/data/") ||
+    // The ACCESS Lab imports this student-facing recommendation module. Its
+    // basename is teacher.js, but it is application code, not a teacher page.
+    p === "/access-practice-lab/src/lang/teacher.js"
+  )
+    return false;
   // Endpoints carry their own policy.
   if (p.startsWith("/api/")) return false;
   return (

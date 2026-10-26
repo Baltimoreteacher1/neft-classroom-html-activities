@@ -126,6 +126,7 @@ const ASSETS = [
   "/assets/curriculum-teacher-workflow.js",
   "/assets/ai-tutor.js",
   "/assets/adaptive-engine.js",
+  "/access-practice-lab/src/lang/teacher.js",
 ];
 
 /**

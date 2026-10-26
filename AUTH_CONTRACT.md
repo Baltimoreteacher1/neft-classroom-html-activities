@@ -175,7 +175,9 @@ slashes, `..` traversal, backslashes) so two spellings of one path cannot
 disagree.
 
 **Gated** — path contains `teacher`, `dashboard`, or `answer-key`, or is prefixed
-`/curriculum/plan-notes`, `/curriculum/planning`, or `/admin`.
+`/curriculum/plan-notes`, `/curriculum/planning`, or `/admin`. The public
+student-facing module `/access-practice-lab/src/lang/teacher.js` is exempt from
+the name match; it contains instructional recommendations, not a teacher page.
 
 `isCurriculumHub()` lives in the same file and is **deliberately separate**: it
 matches `/curriculum`, `/curriculum/` and `/curriculum/index.html` exactly, and
