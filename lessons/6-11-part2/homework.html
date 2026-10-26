@@ -305,7 +305,7 @@ header.homework-header,
   margin-bottom: 3px;
 }
 </style>
-<link rel="stylesheet" href="/assets/homework/homework-layer-5b91c20acf.css">
+<link rel="stylesheet" href="/assets/homework/homework-layer-9aa3e27acf.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -354,13 +354,13 @@ header.homework-header,
     };
     try { Object.defineProperty(window, 'localStorage', { configurable: true, get: function () { return stand; } }); } catch (unsupported) {}
   }
-  var mode = 'bilingual';
+  var mode = 'en';
   try {
     var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
+    if (requested === 'en' || requested === 'es') {
       mode = requested;
-    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
+    } else if (saved === 'en' || saved === 'es') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)
@@ -419,15 +419,8 @@ header.homework-header,
           <div class="lang-selector-card">
             <span class="lang-selector-title">Language / Idioma</span>
             <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
-              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
-                🇺🇸🇪🇸 <span class="lang-btn-long">Bilingual / Bilingüe</span><span class="lang-btn-short">EN + ES</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
-                🇺🇸 <span>English</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
-                🇪🇸 <span>Español</span>
-              </button>
+              <button type="button" class="lang-toggle-btn active" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="true">English</button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">Español</button>
             </div>
           </div>
         </div>
@@ -453,7 +446,10 @@ header.homework-header,
 
         <nav class="hw-session-banner" aria-label="Two-session lesson" data-session="2">
     <ol class="hw-session-steps"><li class="hw-session-step is-done"><a class="hw-session-chip" href="/lessons/6-11/homework.html"><span class="hw-session-mark" aria-hidden="true">✓</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span><span class="hw-session-short"><span class="lang-en">Session 1</span><span class="lang-es" lang="es">Sesión 1</span></span></span></a></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span><span class="hw-session-short"><span class="lang-en">Session 2</span><span class="lang-es" lang="es">Sesión 2</span></span></span></span></li></ol>
-    <p class="hw-session-sentence"><strong><span class="lang-en">Where we started:</span><span class="lang-es" lang="es">Donde empezamos:</span></strong> <span class="lang-en">In Session 1, we solve real-world word problems with fraction division. We read the story, write an equation, solve it, and check that the answer makes sense.</span><span class="lang-es" lang="es">En la Sesión 1, resolvemos problemas de palabras de la vida real con división de fracciones. Leemos la historia, escribimos una ecuación, la resolvemos y revisamos que la respuesta tenga sentido.</span> <span class="lang-en">Tonight takes that idea further.</span><span class="lang-es" lang="es">Hoy llevamos esa idea más lejos.</span></p>
+    <details class="hw-session-more">
+      <summary><span class="lang-en">Where we started:</span><span class="lang-es" lang="es">Donde empezamos:</span></summary>
+      <p class="hw-session-sentence"><span class="lang-en">In Session 1, we solve real-world word problems with fraction division. We read the story, write an equation, solve it, and check that the answer makes sense.</span><span class="lang-es" lang="es">En la Sesión 1, resolvemos problemas de palabras de la vida real con división de fracciones. Leemos la historia, escribimos una ecuación, la resolvemos y revisamos que la respuesta tenga sentido.</span> <span class="lang-en">Tonight takes that idea further.</span><span class="lang-es" lang="es">Hoy llevamos esa idea más lejos.</span></p>
+    </details>
   </nav>
 
         <p class="hw-hero-bigidea" aria-label="Big idea">
@@ -468,7 +464,7 @@ header.homework-header,
 
 
         <ul class="hw-tonight hw-inline" aria-label="Tonight at a glance">
-          <li><span aria-hidden="true">⏱</span> <strong><span data-hw-tonight-time>20–30</span> min</strong></li>
+          <li><span aria-hidden="true">⏱</span> <strong><span data-hw-tonight-time>5–10</span> min</strong></li>
           <li><span aria-hidden="true">✏️</span> <span class="lang-en">Pencil and paper</span><span class="lang-es" lang="es">Lápiz y papel</span></li>
           <li><span aria-hidden="true">🎯</span> <span class="lang-en">Goal:</span><span class="lang-es" lang="es">Meta:</span> <strong><span data-hw-goal-count>4</span> <span class="lang-en">problems</span><span class="lang-es" lang="es">problemas</span></strong></li>
         </ul>
@@ -479,33 +475,28 @@ header.homework-header,
           <span class="hw-route-icon" aria-hidden="true">🧭</span>
           <div>
             <h2 id="hw_route_title" class="hw-inline"><span class="lang-en">How much time do you have tonight?</span><span class="lang-es" lang="es">¿Cuánto tiempo tienen esta noche?</span></h2>
-            <p class="hw-inline"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
           </div>
         </div>
         <div class="hw-route-options" role="group" aria-label="How much time do you have tonight?" data-aria-en="How much time do you have tonight?" data-aria-es="¿Cuánto tiempo tienen esta noche?">
-          <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
+          <button type="button" class="hw-route-option is-active" data-route-mode="quick" aria-pressed="true" onclick="setHomeworkRoute('quick')">
             <span class="hw-route-time">5–10 <small>min</small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Quick</span><span class="lang-es" lang="es">Rápida</span></strong><small><span class="lang-en">One example and 2 problems.</span><span class="lang-es" lang="es">Un ejemplo y 2 problemas.</span></small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Quick Practice</span><span class="lang-es" lang="es">Práctica rápida</span></strong><small><span class="lang-en">One example and 2 problems.</span><span class="lang-es" lang="es">Un ejemplo y 2 problemas.</span></small></span>
           </button>
-          <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
-            <span class="hw-route-time">15–20 <small>min</small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Key words, then practice. Goal: 4 problems.</span><span class="lang-es" lang="es">Palabras clave y práctica. Meta: 4 problemas.</span></small></span>
-          </button>
-          <button type="button" class="hw-route-option is-active" data-route-mode="full" aria-pressed="true" onclick="setHomeworkRoute('full')">
+          <button type="button" class="hw-route-option" data-route-mode="full" aria-pressed="false" onclick="setHomeworkRoute('full')">
             <span class="hw-route-time">20–30 <small>min</small></span>
-            <span class="hw-route-badge"><span aria-hidden="true">★</span><span class="hw-sr-only"><span class="lang-en">Recommended</span><span class="lang-es" lang="es">Recomendada</span></span></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Full Studio</span><span class="lang-es" lang="es">Estudio completo</span></strong><small><span class="lang-en">Everything, plus a home mission and a game.</span><span class="lang-es" lang="es">Todo, más una misión en casa y un juego.</span></small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Keep Going</span><span class="lang-es" lang="es">Seguir practicando</span></strong><small><span class="lang-en">Key words, every problem, a game and a home mission.</span><span class="lang-es" lang="es">Palabras clave, todos los problemas, un juego y una misión en casa.</span></small></span>
           </button>
         </div>
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
+        <p class="hw-route-promise hw-inline"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
         <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Full Studio (recommended): everything, plus one home mission and one game. Everything is optional.</span>
-          <span class="lang-es" lang="es">Estudio completo (recomendada): todo, más una misión en casa y un juego. Todo es opcional.</span>
+          <span class="lang-en">Quick Practice selected: one example and 2 problems. Stop whenever you need.</span>
+          <span class="lang-es" lang="es">Práctica rápida seleccionada: un ejemplo y 2 problemas. Pueden parar cuando lo necesiten.</span>
         </p>
         <p id="hw_resume_note" role="status" aria-live="polite"></p>
-        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
       </section>
 
-        <details class="hw-tools-menu"><summary><span class="lang-en">Tools: scratchpad, share, print &amp; standard</span><span class="lang-es" lang="es">Herramientas: pizarra, compartir, imprimir y estándar</span></summary>
+        <details class="hw-tools-menu"><summary><span class="lang-en">More options: scratchpad, share, print &amp; standard</span><span class="lang-es" lang="es">Más opciones: pizarra, compartir, imprimir y estándar</span></summary>
         <div class="hw-hero-share-bar">
           <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Scratchpad</span><span class="lang-es" lang="es">Pizarra</span></button>
           <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="copyHomeworkLink()">📋 <span class="lang-en">Copy Link</span><span class="lang-es" lang="es">Copiar enlace</span></button>
@@ -4072,7 +4063,7 @@ window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Nu
 window.__HW_WORKED__ = {"title":"How to divide with fractions","titleEs":"","lines":["1. Identify the Dividend (total amount being split or shared)","2. Identify the Divisor (size of each group or part)","3. Divide: Total ÷ Size = Number of Groups (or Total ÷ Groups = Size per Group)"],"linesEs":null};
 </script>
 <script src="/assets/homework/homework-vocab-12619585d8.bundle.js"></script>
-<script src="/assets/homework/homework-core-4b55e29837.bundle.js"></script>
+<script src="/assets/homework/homework-core-9d1a866daf.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

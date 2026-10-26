@@ -12,9 +12,11 @@ export const EXPERIENCE_CSS = `
 .hw-eyebrow { margin: 0 0 4px; font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--teal-ink, #0c6f6b); }
 
 /* Skip link: visible only on keyboard focus. */
-.hw-skip { position: absolute; left: 8px; top: -64px; z-index: 10060; padding: 12px 18px; border-radius: 12px; background: var(--navy, #12355b); color: #fff; font-weight: 800; text-decoration: none; }
+/* Off screen until a keyboard user focuses it. The link is taller than 64px, so
+   the old top:-64px left its bottom edge on the page. */
+.hw-skip { position: absolute; left: 8px; top: 8px; z-index: 10060; padding: 12px 18px; border-radius: 12px; background: var(--navy, #12355b); color: #fff; font-weight: 800; text-decoration: none; transform: translateY(calc(-100% - 16px)); }
 .hw-skip .lang-en, .hw-skip .lang-es { color: inherit; }
-.hw-skip:focus { top: 8px; outline: 3px solid var(--amber, #f2c15b); outline-offset: 2px; }
+.hw-skip:focus { transform: none; outline: 3px solid var(--amber, #f2c15b); outline-offset: 2px; }
 @media print { .hw-skip { display: none; } }
 
 /* Language first: the picker is the first thing in the hero on a phone. */
@@ -30,7 +32,6 @@ export const EXPERIENCE_CSS = `
   /* The hero keeps what a family needs to start: language, lesson, big idea, time, path. */
   .hw-hero-kicker, .hw-hero-subtitle { display: none; }
   .lang-mode-bilingual .hw-hero-lesson-meta .lang-es { display: none; }
-  .hw-route-chooser .hw-route-heading > div > p { display: block; margin: 4px 0 0; font-size: 15px; }
 }
 .lang-mode-bilingual .hw-hero-lesson-title .lang-es, .lang-mode-bilingual .hw-hero-titles .lang-es { font-size: .86em; }
 #hw_resume_note { font-size: 15px; line-height: 1.4; }
@@ -40,7 +41,7 @@ export const EXPERIENCE_CSS = `
   /* A phone shows the two-session stepper and nothing else of the banner. */
   .hw-session-full { display: none; }
   .hw-session-short { display: inline; }
-  .hw-session-sentence { display: none; }
+  .hw-session-more, .hw-session-sentence { display: none; }
   .hw-session-banner { padding: 8px 10px; }
   .hw-route-chooser .hw-route-heading h2 { font-size: 19px; line-height: 1.3; }
   .hw-route-chooser #hw_route_note { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -199,6 +200,8 @@ dialog.hw-dialog p { margin: 0 0 16px; font-size: 18px; line-height: 1.45; }
 .ldl-field span, .eqlab-field span, .tdl-rowlab, .pki-cb-field label, .nlex-tip, .ldl-cycle, .bplab-datalabel,
 .pwrlab-field span, .pctlab-field span, .stepslv-problabel, .atx-badge, .tdl-fill, .hglab-datalabel, .hglab-tip,
 .ldl-alabel, .dp-hint, .clt-step-num { font-size: 13px !important; }
+/* The fill-in-the-table labels (headers, the known-part column, the x10 cells) were authored at 11-12px. */
+.fill-table th, .fill-table td, .fill-table .obj-term, .fill-table span { font-size: 13px !important; }
 .vq-stars { flex-wrap: wrap; }
 /* Engine visuals set their label rows inline at .8rem (12.8px). */
 .interactive-visual [style*="font-size:.8rem"] { font-size: 13px !important; }

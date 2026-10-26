@@ -17,7 +17,10 @@ export const GOAL_TARGET = 4;
 export const GOAL_QUICK = 2;
 
 /** Route times, one source for the strip, the route chooser and the hub. */
-export const ROUTE_TIMES = { quick: "5–10", core: "15–20", full: "20–30" };
+export const ROUTE_TIMES = { quick: "5–10", full: "20–30" };
+
+/** The route a first visit lands on. Keep in step with HOMEWORK_ROUTE_DEFAULT in homework-guided-notes.mjs. */
+export const DEFAULT_ROUTE = "quick";
 
 const esc = (s) =>
   String(s ?? "")
@@ -180,7 +183,7 @@ export function renderShareWin() {
 export function renderTonightStrip() {
   return `
         <ul class="hw-tonight hw-inline" aria-label="Tonight at a glance">
-          <li><span aria-hidden="true">⏱</span> <strong><span data-hw-tonight-time>${ROUTE_TIMES.full}</span> min</strong></li>
+          <li><span aria-hidden="true">⏱</span> <strong><span data-hw-tonight-time>${ROUTE_TIMES[DEFAULT_ROUTE]}</span> min</strong></li>
           <li><span aria-hidden="true">✏️</span> ${bi("Pencil and paper", "Lápiz y papel")}</li>
           <li><span aria-hidden="true">🎯</span> ${bi("Goal:", "Meta:")} <strong><span data-hw-goal-count>${GOAL_TARGET}</span> ${bi("problems", "problemas")}</strong></li>
         </ul>`;

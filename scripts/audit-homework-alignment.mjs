@@ -108,10 +108,10 @@ const REQUIRED_MARKERS = [
   {
     id: "family-route",
     test: (h) =>
-      // Decision "family-homework-route-choices" in data/product-decisions.json:
-      // three explicit, bilingual paths with real stop/problem behavior.
+      // Decision "family-homework-route-choices" in data/product-decisions.json, as amended
+      // for the two-choice landing: Quick Practice and Keep Going, with real stop/problem behavior.
       h.includes('class="hw-route-chooser"') &&
-      ["quick", "core", "full"].every((mode) => h.includes(`data-route-mode="${mode}"`)) &&
+      ["quick", "full"].every((mode) => h.includes(`data-route-mode="${mode}"`)) &&
       h.includes("setHomeworkRoute") &&
       h.includes("restoreHomeworkRoute") &&
       h.includes("goNextHomeworkStop"),

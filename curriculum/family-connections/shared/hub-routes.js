@@ -5,13 +5,14 @@
  * ONE vocabulary with the lesson page (scripts/homework-guided-notes.mjs,
  * scripts/lib/homework-session-flow.mjs):
  *
- *   - three optional routes, `?route=quick|core|full`, each with a time RANGE
- *     (never a countdown). Joel's recorded decision
- *     (data/product-decisions.json, family-homework-route-choices) makes the
- *     30-minute Family Math Studio the default and the recommended route;
+ *   - two optional routes, `?route=quick|full`, each with a time RANGE
+ *     (never a countdown). Quick Practice is the default and the recommended
+ *     route (data/product-decisions.json, family-homework-route-choices, Joel,
+ *     2026-10-26); Keep Going carries every item;
  *   - the product is "Family Math Studio" / "Estudio familiar de matemáticas";
- *     its full route is called "Full Studio" / "Estudio completo" so the page
- *     name and the route name are never the same word;
+ *     its routes are "Quick Practice" and "Keep Going", so the page name and a
+ *     route name are never the same word;
+ *   - `?route=core` (the retired third route) opens Keep Going, as on the page;
  *   - a lesson taught over two nights is "Session 1: Concept Launch", then
  *     "Session 2: Compare & Apply". `-part2` stays the URL word and is never
  *     shown to a family.
@@ -24,23 +25,19 @@ export const PRODUCT_NAME = Object.freeze({
   es: "Estudio familiar de matemáticas",
 });
 
-/** Longest first: the order a family is offered them in. */
+/** Default route first: the order a family is offered them in. Words and times match the lesson page. */
 export const ROUTES = Object.freeze({
-  full: Object.freeze({
-    minutes: "20–30",
-    label: { en: "Full Studio", es: "Estudio completo" },
-  }),
-  core: Object.freeze({
-    minutes: "15–20",
-    label: { en: "Learn & practice", es: "Aprender y practicar" },
-  }),
   quick: Object.freeze({
     minutes: "5–10",
-    label: { en: "Quick", es: "Práctica breve" },
+    label: { en: "Quick Practice", es: "Práctica rápida" },
+  }),
+  full: Object.freeze({
+    minutes: "20–30",
+    label: { en: "Keep Going", es: "Seguir practicando" },
   }),
 });
-export const DEFAULT_ROUTE = "full";
-export const SECONDARY_ROUTES = Object.freeze(["quick", "core"]);
+export const DEFAULT_ROUTE = "quick";
+export const SECONDARY_ROUTES = Object.freeze(["full"]);
 
 export const SESSION_LABELS = Object.freeze({
   1: Object.freeze({ en: "Session 1: Concept Launch", es: "Sesión 1: Lanzamiento del concepto" }),

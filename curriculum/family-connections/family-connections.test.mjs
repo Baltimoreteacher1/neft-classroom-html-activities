@@ -5,6 +5,7 @@ import { JSDOM } from "jsdom";
 import { createDefaultSnapshot } from "./shared/model.js";
 import { SESSIONS } from "../../scripts/lib/homework-session-flow.mjs";
 import {
+  DEFAULT_ROUTE,
   PRODUCT_NAME,
   ROUTES,
   SESSION_LABELS,
@@ -107,11 +108,11 @@ test("actual family view renders selected homework, due date and Spanish action,
     renderHomeworkHub(root, snapshot, lessons, "all-families", "es", {
       now: new Date("2026-09-24T12:00:00Z"),
     });
-    assert.match(root.textContent, /Empezar el Estudio familiar de matemáticas · 20–30 min/);
+    assert.match(root.textContent, /Empezar el Estudio familiar de matemáticas · 5–10 min/);
     assert.match(root.textContent, /Entrega/);
     assert.equal(
       root.querySelector(".homework-card a").getAttribute("href"),
-      "/lessons/3-2/homework.html?route=full&lang=es&section=all-families",
+      "/lessons/3-2/homework.html?route=quick&lang=es&section=all-families",
     );
     renderHomeworkHub(root, snapshot, lessons, "all-families", "en", {
       now: new Date("2026-10-01T12:00:00Z"),
@@ -156,10 +157,10 @@ test("family homework keeps all five weekdays in order, including repeated lesso
       "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
     ]);
     assert.deepEqual(cards.map((card) => card.querySelector("a")?.getAttribute("href") || ""), [
-      "/lessons/3-2/homework.html?route=full&lang=en&section=all-families",
-      "/lessons/3-3/homework.html?route=full&lang=en&section=all-families",
+      "/lessons/3-2/homework.html?route=quick&lang=en&section=all-families",
+      "/lessons/3-3/homework.html?route=quick&lang=en&section=all-families",
       // The same lesson posted again later in the week is its Session 2 night.
-      "/lessons/3-2-part2/homework.html?route=full&lang=en&section=all-families",
+      "/lessons/3-2-part2/homework.html?route=quick&lang=en&section=all-families",
       "", "",
     ]);
     assert.deepEqual(cards.slice(0, 3).map((card) => card.querySelector(".eyebrow").textContent), [
@@ -230,42 +231,40 @@ test("each posted night offers Family Math Studio first and the two shorter rout
     assert.deepEqual(
       links.map((a) => a.getAttribute("href")),
       [
-        "/lessons/3-2/homework.html?route=full&lang=en&section=all-families",
         "/lessons/3-2/homework.html?route=quick&lang=en&section=all-families",
-        "/lessons/3-2/homework.html?route=core&lang=en&section=all-families",
+        "/lessons/3-2/homework.html?route=full&lang=en&section=all-families",
       ],
     );
-    assert.match(links[0].textContent, /^Start Family Math Studio · 20–30 min/);
+    assert.match(links[0].textContent, /^Start Family Math Studio · 5–10 min/);
     assert.ok(links[0].classList.contains("route-primary"));
-    assert.match(links[0].textContent, /Full Studio route · recommended/);
-    assert.equal(card.querySelector(".route-short-label").textContent, "Short on time?");
-    assert.deepEqual(links.slice(1).map((a) => a.textContent), ["Quick · 5–10 min", "Learn & practice · 15–20 min"]);
+    assert.match(links[0].textContent, /Quick Practice route · recommended/);
+    assert.equal(card.querySelector(".route-short-label").textContent, "More time tonight?");
+    assert.deepEqual(links.slice(1).map((a) => a.textContent), ["Keep Going · 20–30 min"]);
     renderHomeworkHub(root, snapshot, lessonList, "all-families", "es", NOW);
     const spanish = [...root.querySelectorAll(".homework-card a")];
     assert.deepEqual(spanish.map((a) => a.getAttribute("href")), [
-      "/lessons/3-2/homework.html?route=full&lang=es&section=all-families",
       "/lessons/3-2/homework.html?route=quick&lang=es&section=all-families",
-      "/lessons/3-2/homework.html?route=core&lang=es&section=all-families",
+      "/lessons/3-2/homework.html?route=full&lang=es&section=all-families",
     ]);
-    assert.match(spanish[0].textContent, /^Empezar el Estudio familiar de matemáticas · 20–30 min/);
-    assert.match(spanish[0].textContent, /Ruta del Estudio completo · recomendada/);
-    assert.equal(root.querySelector(".route-short-label").textContent, "¿Poco tiempo?");
-    assert.deepEqual(spanish.slice(1).map((a) => a.textContent), ["Práctica breve · 5–10 min", "Aprender y practicar · 15–20 min"]);
+    assert.match(spanish[0].textContent, /^Empezar el Estudio familiar de matemáticas · 5–10 min/);
+    assert.match(spanish[0].textContent, /Ruta: Práctica rápida · recomendada/);
+    assert.equal(root.querySelector(".route-short-label").textContent, "¿Más tiempo esta noche?");
+    assert.deepEqual(spanish.slice(1).map((a) => a.textContent), ["Seguir practicando · 20–30 min"]);
     // A family that never chose a language gets links that leave the choice to the lesson page.
     renderHomeworkHub(root, snapshot, lessonList, "all-families", "en", { ...NOW, linkLang: "" });
     assert.ok([...root.querySelectorAll(".homework-card a")].every((a) => !a.getAttribute("href").includes("lang=")));
   });
 });
 
-test("the recommended-route sentence names Family Math Studio (20–30 min) and nothing on the hub recommends 20 minutes", () => {
+test("the recommended-route sentence names Family Math Studio (5–10 min) and nothing on the hub recommends the 20-minute route", () => {
   withHub((root) => {
     renderHomeworkHub(root, week([["Monday", "3-2"]]), lessonList, "all-families", "en", NOW);
     assert.equal(
       root.querySelector(".route-recommendation").textContent,
-      "Family Math Studio (20–30 min) is the recommended route. The shorter routes are for busy nights.",
+      "Family Math Studio (5–10 min) is the recommended route. Keep Going is for nights with more time.",
     );
     renderHomeworkHub(root, week([["Monday", "3-2"]]), lessonList, "all-families", "es", NOW);
-    assert.match(root.querySelector(".route-recommendation").textContent, /^El Estudio familiar de matemáticas \(20–30 min\) es la ruta recomendada\./);
+    assert.match(root.querySelector(".route-recommendation").textContent, /^El Estudio familiar de matemáticas \(5–10 min\) es la ruta recomendada\./);
     assert.doesNotMatch(root.textContent, /20 o 30|20 or 30/);
     // A week with only a unit review has no routes to recommend.
     renderHomeworkHub(root, week([["Monday", "3-test-review"]]), lessonList, "all-families", "en", NOW);
@@ -273,16 +272,21 @@ test("the recommended-route sentence names Family Math Studio (20–30 min) and 
   });
 });
 
-test("Joel's recorded decision still holds on the hub: Studio is the default and primary route", async () => {
+test("Joel's 2026-10-26 decision holds on the hub: Quick Practice is the default and primary route", async () => {
   const decisions = JSON.parse(await readFile(new URL("../../data/product-decisions.json", import.meta.url), "utf8"));
   const decision = decisions.decisions.find((entry) => entry.id === "family-homework-route-choices");
-  assert.match(decision.decision, /Full Studio is the default path/);
+  assert.match(decision.decision, /Quick Practice is the default path/);
+  assert.equal(decision.decidedOn, "2026-10-26");
   assert.equal(PRODUCT_NAME.en, "Family Math Studio");
   assert.equal(PRODUCT_NAME.es, "Estudio familiar de matemáticas");
-  assert.deepEqual(Object.keys(ROUTES), ["full", "core", "quick"], "longest, default route first");
-  // The product and its third route never share a name; the hub says "Full Studio".
-  assert.equal(ROUTES.full.label.en, "Full Studio");
-  assert.equal(ROUTES.full.label.es, "Estudio completo");
+  assert.deepEqual(Object.keys(ROUTES), ["quick", "full"], "default route first");
+  // The hub and the lesson page name the default route the same way.
+  const { DEFAULT_ROUTE: LESSON_DEFAULT_ROUTE } = await import("../../scripts/lib/homework-experience.mjs");
+  assert.equal(DEFAULT_ROUTE, LESSON_DEFAULT_ROUTE);
+  assert.equal(ROUTES.quick.label.en, "Quick Practice");
+  assert.equal(ROUTES.quick.label.es, "Práctica rápida");
+  assert.equal(ROUTES.full.label.en, "Keep Going");
+  assert.equal(ROUTES.full.label.es, "Seguir practicando");
   const sources = await Promise.all(
     ["shared/homework-hub.js", "shared/hub-panels.js", "shared/hub-routes.js", "family-app.js", "index.html"].map((file) =>
       readFile(new URL(`./${file}`, import.meta.url), "utf8"),
@@ -318,8 +322,8 @@ test("session labels are the lesson pages' own words, and the same lesson posted
     assert.equal(cards[0].querySelector(".eyebrow").textContent, "Lección 3-2 · Sesión 1: Lanzamiento del concepto");
     assert.equal(cards[1].querySelector(".eyebrow").textContent, "Lección 1-1", "a lesson with no Session 2 page is not a session");
     assert.equal(cards[2].querySelector(".eyebrow").textContent, "Lección 3-2 · Sesión 2: Comparar y aplicar");
-    assert.equal(cards[2].querySelector("a").getAttribute("href"), "/lessons/3-2-part2/homework.html?route=full&lang=es&section=all-families");
-    assert.equal(cards[1].querySelector("a").getAttribute("href"), "/lessons/1-1/homework.html?route=full&lang=es&section=all-families");
+    assert.equal(cards[2].querySelector("a").getAttribute("href"), "/lessons/3-2-part2/homework.html?route=quick&lang=es&section=all-families");
+    assert.equal(cards[1].querySelector("a").getAttribute("href"), "/lessons/1-1/homework.html?route=quick&lang=es&section=all-families");
   });
 });
 

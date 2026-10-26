@@ -80,6 +80,7 @@ test("a wrong answer is not progress and nothing celebrates before the goal", ()
   // The shipped page showed "That's tonight's goal — done!" after one WRONG answer: its goal
   // was the route's problemLimit, which is 0 on two of the three routes, and 0 >= 0.
   const w = page();
+  w.document.body.dataset.homeworkRoute = "full"; // Keep Going: goal of four
   w.document.getElementById("problem_0").classList.add("incorrect");
   w.hwRenderGoal(true);
   assert.equal(w.document.getElementById("progress_text").textContent, "0 / 4");
@@ -90,6 +91,7 @@ test("a wrong answer is not progress and nothing celebrates before the goal", ()
 
 test("pips, meter and mystery lock follow solved problems and open at the goal", () => {
   const w = page();
+  w.document.body.dataset.homeworkRoute = "full"; // Keep Going: goal of four
   w.solve(3);
   assert.equal(w.document.getElementById("progress_text").textContent, "3 / 4");
   assert.equal(w.document.querySelectorAll(".hw-pips")[0].querySelectorAll(".is-on").length, 3);
@@ -107,6 +109,7 @@ test("pips, meter and mystery lock follow solved problems and open at the goal",
 
 test("solved problems come back after a reload, without a second fanfare", () => {
   const first = page();
+  first.document.body.dataset.homeworkRoute = "full"; // Keep Going: goal of four
   first.solve(4);
   const saved = {
     [first.eval("hwKey('solved')")]: first.localStorage.getItem(first.eval("hwKey('solved')")),
@@ -114,6 +117,7 @@ test("solved problems come back after a reload, without a second fanfare", () =>
   };
   assert.ok(saved[first.eval("hwKey('solved')")]);
   const again = page({ storage: saved });
+  again.document.body.dataset.homeworkRoute = "full";
   again.hwRestoreSolved();
   again.hwRenderGoal(false);
   assert.equal(again.document.getElementById("progress_text").textContent, "4 / 4");
@@ -262,7 +266,7 @@ test("every generated family page carries the experience layer and the one produ
       tonight: html.includes("data-hw-tonight-time"),
       pips: html.includes('class="hw-pips'),
       langFirst: html.indexOf('class="hw-hero-controls"') < html.indexOf('class="hw-hero-kicker"'),
-      fullStudio: html.includes("Full Studio") && html.includes("Estudio completo"),
+      keepGoing: html.includes("Keep Going") && html.includes("Seguir practicando"),
     };
     for (const [name, ok] of Object.entries(checks)) if (!ok) missing.push(`${id}:${name}`);
   }
@@ -340,6 +344,7 @@ test("the goal records tonight once, and a restore never records a night", () =>
 
 test("the goal reads the same from every tab: a hidden panel does not make the page look empty", () => {
   const w = page();
+  w.document.body.dataset.homeworkRoute = "full"; // Keep Going: goal of four
   w.solve(3);
   const panel = w.document.querySelector("[data-tab-panel='check']");
   panel.hidden = true; // the family is on Learn or Done

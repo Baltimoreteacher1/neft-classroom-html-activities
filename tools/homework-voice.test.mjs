@@ -20,7 +20,8 @@ async function read(w, d, spoken, stop) {
 
 test("every stop has a Read-aloud control that speaks each instruction block in the right language and voice", async () => {
   for (const id of PAGES) {
-    for (const lang of ["en", "es", "bilingual"]) {
+    // One language at a time: the page no longer offers a bilingual mode.
+    for (const lang of ["en", "es"]) {
       const { w, d, spoken } = await homeworkDom(id, { lang });
       for (const stop of STOPS) {
         const panel = d.querySelector(`[data-tab-panel="${stop}"]`);

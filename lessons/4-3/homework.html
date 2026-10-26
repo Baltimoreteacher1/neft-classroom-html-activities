@@ -345,7 +345,7 @@ body[data-family-style] .visual-lab-heading>p,body[data-family-style] .visual-la
 body[data-family-style] .hw-hero-lead,body[data-family-style] .hw-experience-description,body[data-family-style] .hw-route-note,body[data-family-style] .hw-route-chooser>p,body[data-family-style] .hw-route-option { font-size:18px!important; line-height:1.45!important; }
 body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 </style>
-<link rel="stylesheet" href="/assets/homework/homework-layer-c52f1f1c9f.css">
+<link rel="stylesheet" href="/assets/homework/homework-layer-5091fd068c.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -394,13 +394,13 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
     };
     try { Object.defineProperty(window, 'localStorage', { configurable: true, get: function () { return stand; } }); } catch (unsupported) {}
   }
-  var mode = 'bilingual';
+  var mode = 'en';
   try {
     var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
+    if (requested === 'en' || requested === 'es') {
       mode = requested;
-    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
+    } else if (saved === 'en' || saved === 'es') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)
@@ -459,15 +459,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
           <div class="lang-selector-card">
             <span class="lang-selector-title">Language / Idioma</span>
             <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
-              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
-                🇺🇸🇪🇸 <span class="lang-btn-long">Bilingual / Bilingüe</span><span class="lang-btn-short">EN + ES</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
-                🇺🇸 <span>English</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
-                🇪🇸 <span>Español</span>
-              </button>
+              <button type="button" class="lang-toggle-btn active" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="true">English</button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">Español</button>
             </div>
           </div>
         </div>
@@ -493,7 +486,10 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 
         <nav class="hw-session-banner" aria-label="Two-session lesson" data-session="1">
     <ol class="hw-session-steps"><li class="hw-session-step is-current"><span class="hw-session-chip" aria-current="step"><span class="hw-session-mark" aria-hidden="true">●</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 1: Concept Launch</span><span class="lang-es" lang="es">Sesión 1: Lanzamiento del concepto</span></span><span class="hw-session-short"><span class="lang-en">Session 1</span><span class="lang-es" lang="es">Sesión 1</span></span></span></span></li><li class="hw-session-arrow" aria-hidden="true">➔</li><li class="hw-session-step is-next"><a class="hw-session-chip" href="/lessons/4-3-part2/homework.html"><span class="hw-session-mark" aria-hidden="true">○</span><span class="hw-session-name"><span class="hw-session-full"><span class="lang-en">Session 2: Compare &amp; Apply</span><span class="lang-es" lang="es">Sesión 2: Comparar y aplicar</span></span><span class="hw-session-short"><span class="lang-en">Session 2</span><span class="lang-es" lang="es">Sesión 2</span></span></span></a></li></ol>
-    <p class="hw-session-sentence"><strong><span class="lang-en">Coming up next:</span><span class="lang-es" lang="es">Lo que sigue:</span></strong> <span class="lang-en">In Session 2, we estimate a percent of a number by rounding to friendly values first — and then we explain whether the estimate runs a bit high or a bit low.</span><span class="lang-es" lang="es">En la Sesión 2, estimamos un porcentaje de un número redondeando primero a valores fáciles — y luego explicamos si la estimación queda un poco alta o un poco baja.</span> <span class="lang-en">It builds on today’s model. Open it when it is assigned.</span><span class="lang-es" lang="es">Se basa en el modelo de hoy. Ábranla cuando se las asignen.</span></p>
+    <details class="hw-session-more">
+      <summary><span class="lang-en">Coming up next:</span><span class="lang-es" lang="es">Lo que sigue:</span></summary>
+      <p class="hw-session-sentence"><span class="lang-en">In Session 2, we estimate a percent of a number by rounding to friendly values first — and then we explain whether the estimate runs a bit high or a bit low.</span><span class="lang-es" lang="es">En la Sesión 2, estimamos un porcentaje de un número redondeando primero a valores fáciles — y luego explicamos si la estimación queda un poco alta o un poco baja.</span> <span class="lang-en">It builds on today’s model. Open it when it is assigned.</span><span class="lang-es" lang="es">Se basa en el modelo de hoy. Ábranla cuando se las asignen.</span></p>
+    </details>
   </nav>
 
         <p class="hw-hero-bigidea" aria-label="Big idea">
@@ -505,17 +501,17 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
           <span class="lang-en">Optional, ungraded practice. Work with someone or on your own; no adult signature is needed.</span>
           <span class="lang-es" lang="es">Práctica opcional, sin calificación. Trabaja con alguien o a solas; no necesitas la firma de un adulto.</span>
         </p>
-        <section class="hw-experience-banner" aria-label="Percent Detective · Quick Estimate Case">
-          <span class="hw-experience-icon" aria-hidden="true">🕵️</span>
-          <div class="hw-experience-copy">
-            <p class="hw-experience-title"><span class="lang-en">Percent Detective · Quick Estimate Case</span><span class="lang-es" lang="es">Detective de porcentajes · Caso de estimación</span></p>
-            <p class="hw-experience-description"><span class="lang-en">Use benchmark percents and compatible numbers as clues. Estimate first; save exact calculations for later.</span><span class="lang-es" lang="es">Usa porcentajes de referencia y números compatibles como pistas. Estima primero; deja el cálculo exacto para después.</span></p>
-          </div>
-        </section>
+        <details class="hw-experience-banner">
+          <summary>
+            <span class="hw-experience-icon" aria-hidden="true">🕵️</span>
+            <span class="hw-experience-title"><span class="lang-en">Percent Detective · Quick Estimate Case</span><span class="lang-es" lang="es">Detective de porcentajes · Caso de estimación</span></span>
+          </summary>
+          <p class="hw-experience-description"><span class="lang-en">Use benchmark percents and compatible numbers as clues. Estimate first; save exact calculations for later.</span><span class="lang-es" lang="es">Usa porcentajes de referencia y números compatibles como pistas. Estima primero; deja el cálculo exacto para después.</span></p>
+        </details>
 
 
         <ul class="hw-tonight hw-inline" aria-label="Tonight at a glance">
-          <li><span aria-hidden="true">⏱</span> <strong><span data-hw-tonight-time>20–30</span> min</strong></li>
+          <li><span aria-hidden="true">⏱</span> <strong><span data-hw-tonight-time>5–10</span> min</strong></li>
           <li><span aria-hidden="true">✏️</span> <span class="lang-en">Pencil and paper</span><span class="lang-es" lang="es">Lápiz y papel</span></li>
           <li><span aria-hidden="true">🎯</span> <span class="lang-en">Goal:</span><span class="lang-es" lang="es">Meta:</span> <strong><span data-hw-goal-count>4</span> <span class="lang-en">problems</span><span class="lang-es" lang="es">problemas</span></strong></li>
         </ul>
@@ -526,33 +522,28 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
           <span class="hw-route-icon" aria-hidden="true">🧭</span>
           <div>
             <h2 id="hw_route_title" class="hw-inline"><span class="lang-en">How much time do you have tonight?</span><span class="lang-es" lang="es">¿Cuánto tiempo tienen esta noche?</span></h2>
-            <p class="hw-inline"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
           </div>
         </div>
         <div class="hw-route-options" role="group" aria-label="How much time do you have tonight?" data-aria-en="How much time do you have tonight?" data-aria-es="¿Cuánto tiempo tienen esta noche?">
-          <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
+          <button type="button" class="hw-route-option is-active" data-route-mode="quick" aria-pressed="true" onclick="setHomeworkRoute('quick')">
             <span class="hw-route-time">5–10 <small>min</small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Quick</span><span class="lang-es" lang="es">Rápida</span></strong><small><span class="lang-en">One example and 2 problems.</span><span class="lang-es" lang="es">Un ejemplo y 2 problemas.</span></small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Quick Practice</span><span class="lang-es" lang="es">Práctica rápida</span></strong><small><span class="lang-en">One example and 2 problems.</span><span class="lang-es" lang="es">Un ejemplo y 2 problemas.</span></small></span>
           </button>
-          <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
-            <span class="hw-route-time">15–20 <small>min</small></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Key words, then practice. Goal: 4 problems.</span><span class="lang-es" lang="es">Palabras clave y práctica. Meta: 4 problemas.</span></small></span>
-          </button>
-          <button type="button" class="hw-route-option is-active" data-route-mode="full" aria-pressed="true" onclick="setHomeworkRoute('full')">
+          <button type="button" class="hw-route-option" data-route-mode="full" aria-pressed="false" onclick="setHomeworkRoute('full')">
             <span class="hw-route-time">20–30 <small>min</small></span>
-            <span class="hw-route-badge"><span aria-hidden="true">★</span><span class="hw-sr-only"><span class="lang-en">Recommended</span><span class="lang-es" lang="es">Recomendada</span></span></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Full Studio</span><span class="lang-es" lang="es">Estudio completo</span></strong><small><span class="lang-en">Everything, plus a home mission and a game.</span><span class="lang-es" lang="es">Todo, más una misión en casa y un juego.</span></small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Keep Going</span><span class="lang-es" lang="es">Seguir practicando</span></strong><small><span class="lang-en">Key words, every problem, a game and a home mission.</span><span class="lang-es" lang="es">Palabras clave, todos los problemas, un juego y una misión en casa.</span></small></span>
           </button>
         </div>
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
+        <p class="hw-route-promise hw-inline"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
         <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Full Studio (recommended): everything, plus one home mission and one game. Everything is optional.</span>
-          <span class="lang-es" lang="es">Estudio completo (recomendada): todo, más una misión en casa y un juego. Todo es opcional.</span>
+          <span class="lang-en">Quick Practice selected: one example and 2 problems. Stop whenever you need.</span>
+          <span class="lang-es" lang="es">Práctica rápida seleccionada: un ejemplo y 2 problemas. Pueden parar cuando lo necesiten.</span>
         </p>
         <p id="hw_resume_note" role="status" aria-live="polite"></p>
-        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
       </section>
 
-        <details class="hw-tools-menu"><summary><span class="lang-en">Tools: scratchpad, share, print &amp; standard</span><span class="lang-es" lang="es">Herramientas: pizarra, compartir, imprimir y estándar</span></summary>
+        <details class="hw-tools-menu"><summary><span class="lang-en">More options: scratchpad, share, print &amp; standard</span><span class="lang-es" lang="es">Más opciones: pizarra, compartir, imprimir y estándar</span></summary>
         <div class="hw-hero-share-bar">
           <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Scratchpad</span><span class="lang-es" lang="es">Pizarra</span></button>
           <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="copyHomeworkLink()">📋 <span class="lang-en">Copy Link</span><span class="lang-es" lang="es">Copiar enlace</span></button>
@@ -5227,7 +5218,7 @@ window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Nu
 window.__HW_WORKED__ = {"title":"Watch me set up the double number line","titleEs":"Mírame armar la recta numérica doble","lines":["The whole is 6 GB — that is 100%.","I mark the bottom line in benchmark jumps of 25%: 0%, 25%, 50%, 75%, 100%.","Equivalent ratios give the top line: 25% of 6 GB is 1.5 GB, so the top reads 0, 1.5, 3, 4.5, 6.","4 GB used lands between 4.5 (75%) and 3 (50%), close to 4.5 — so about 70% of the storage is used."],"linesEs":["El entero es 6 GB — eso es el 100%.","Marco la línea de abajo en saltos de referencia de 25%: 0%, 25%, 50%, 75%, 100%.","Las razones equivalentes dan la línea de arriba: el 25% de 6 GB es 1.5 GB, así que arriba se lee 0, 1.5, 3, 4.5, 6.","Los 4 GB usados caen entre 4.5 (75%) y 3 (50%), cerca de 4.5 — así que se usa como el 70% del almacenamiento."]};
 </script>
 <script src="/assets/homework/homework-vocab-12619585d8.bundle.js"></script>
-<script src="/assets/homework/homework-core-4b55e29837.bundle.js"></script>
+<script src="/assets/homework/homework-core-9d1a866daf.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

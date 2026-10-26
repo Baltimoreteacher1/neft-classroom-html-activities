@@ -122,8 +122,8 @@ export function routeIntro(lang) {
     el(
       "p",
       t(
-        `${PRODUCT_NAME.en} (${minutesLabel(DEFAULT_ROUTE)}) is the recommended route. The shorter routes are for busy nights.`,
-        `El ${PRODUCT_NAME.es} (${minutesLabel(DEFAULT_ROUTE)}) es la ruta recomendada. Las rutas más cortas son para las noches con poco tiempo.`,
+        `${PRODUCT_NAME.en} (${minutesLabel(DEFAULT_ROUTE)}) is the recommended route. ${ROUTES.full.label.en} is for nights with more time.`,
+        `El ${PRODUCT_NAME.es} (${minutesLabel(DEFAULT_ROUTE)}) es la ruta recomendada. ${ROUTES.full.label.es} es para las noches con más tiempo.`,
       ),
       "route-recommendation",
     ),
@@ -140,8 +140,8 @@ export function routeIntro(lang) {
 }
 
 /**
- * One night's time chooser. The Family Math Studio is the primary, recommended
- * route (Joel's decision); the two shorter routes are for busy nights. Every
+ * One night's time chooser. Quick Practice is the primary, recommended route
+ * (Joel, 2026-10-26); Keep Going is offered for nights with more time. Every
  * link names its route explicitly so the label is a promise: a family's saved
  * choice on the lesson page never silently turns "Start Family Math Studio"
  * into a different route.
@@ -160,13 +160,13 @@ export function routeChooser({ lang, path, sectionId, linkLang, session }) {
       "span",
       t(
         `${ROUTES[DEFAULT_ROUTE].label.en} route · recommended`,
-        `Ruta del ${ROUTES[DEFAULT_ROUTE].label.es} · recomendada`,
+        `Ruta: ${ROUTES[DEFAULT_ROUTE].label.es} · recomendada`,
       ),
       "route-sub",
     ),
   );
   const short = el("div", undefined, "route-short");
-  short.append(el("span", t("Short on time?", "¿Poco tiempo?"), "route-short-label"));
+  short.append(el("span", t("More time tonight?", "¿Más tiempo esta noche?"), "route-short-label"));
   for (const route of SECONDARY_ROUTES)
     short.append(
       link(

@@ -8,18 +8,18 @@ This is the contract. Every line has an owner in code and a check that fails whe
 
 ## What a family should feel
 
-| Moment           | What they see                                                                                                                                                 | Why                                                                                                              |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| The first screen | Language first (EN + ES, English, Español), then the lesson, the big idea in one sentence, time, what to bring, the goal, and how much time they have.        | A family decides in seconds whether to try. Nothing before the language picker, nothing a family has to decode.  |
-| Starting         | Three routes by time. Full Studio is the default and is marked recommended. Quick is two problems.                                                            | Joel's decision (2026-10-12): the 30-minute path is the default. Busy nights get an honest short path.           |
-| Learning         | The big idea, how sure am I (a plant that grows), tonight's mystery challenge, the model to touch, one drawer for the grown-up.                               | Prediction, agency and a reason to finish. The grown-up gets the one question to ask without a wall of coaching. |
-| Practicing       | A goal of four, not twelve. Pips fill. A wrong answer teaches (three-step hints); it never counts.                                                            | Reachable on a school night, honest about what finished means, and the rest is bonus.                            |
-| Finishing        | The goal opens the mystery challenge, then teach it to someone (any language first, then three English words), the plant again, a certificate, share the win. | Explaining is the strongest learning move and the most natural thing to do at home in any language.              |
+| Moment           | What they see                                                                                                                                                 | Why                                                                                                                          |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| The first screen | Language first (one English                                                                                                                                   | Español control), then the lesson, the big idea in one sentence, time, what to bring, the goal, and how much time they have. | A family decides in seconds whether to try. Nothing before the language picker, nothing a family has to decode. |
+| Starting         | Two routes by time. Quick Practice (about 5–10 min, two problems) is the default. Keep Going (about 20–30 min) carries every item.                            | Joel's decision (2026-10-12): the 30-minute path is the default. Busy nights get an honest short path.                       |
+| Learning         | The big idea, how sure am I (a plant that grows), tonight's mystery challenge, the model to touch, one drawer for the grown-up.                               | Prediction, agency and a reason to finish. The grown-up gets the one question to ask without a wall of coaching.             |
+| Practicing       | A goal of four, not twelve. Pips fill. A wrong answer teaches (three-step hints); it never counts.                                                            | Reachable on a school night, honest about what finished means, and the rest is bonus.                                        |
+| Finishing        | The goal opens the mystery challenge, then teach it to someone (any language first, then three English words), the plant again, a certificate, share the win. | Explaining is the strongest learning move and the most natural thing to do at home in any language.                          |
 
 ## The contract
 
-1. **One name.** The experience is _Family Math Studio_ / _Estudio familiar de matemáticas_ on every family surface. The three routes are Quick, Learn & practice, Full Studio. The page and a route never share a word. (`tools/homework-experience.test.mjs`, `curriculum/family-connections/family-connections.test.mjs`)
-2. **Two languages.** English and Spanish, written as pairs, shown as English only, Spanish only, or both. A first visit is bilingual; `?lang=` and the saved choice win; a phone set to Spanish opens in Spanish. No Arabic, French, Dari or any other language is offered anywhere (`data/product-decisions.json`: `family-surfaces-english-spanish-only`; tripwire in `npm run validate:family-exit-ticket`).
+1. **One name.** The experience is _Family Math Studio_ / _Estudio familiar de matemáticas_ on every family surface. The two routes are Quick Practice and Keep Going. The page and a route never share a word. (`tools/homework-experience.test.mjs`, `curriculum/family-connections/family-connections.test.mjs`)
+2. **Two languages.** English and Spanish, written as pairs, shown as English only, Spanish only, or both. One language at a time, from one control. A first visit is English, or Spanish on a phone set to Spanish; `?lang=` and the saved choice win. A saved or linked "bilingual" choice falls back to the same rule. No Arabic, French, Dari or any other language is offered anywhere (`data/product-decisions.json`: `family-surfaces-english-spanish-only`; tripwire in `npm run validate:family-exit-ticket`).
 3. **Tonight's goal** is `GOAL_TARGET` (4) problems, `GOAL_QUICK` (2) on Quick, from `scripts/lib/homework-experience.mjs`. One function (`hwGoalSnapshot`) defines it; one function (`hwRenderGoal`) writes the meter, pips, banner and mystery lock. "Done" means solved or compared with the key. A wrong answer is never progress, and nothing celebrates before the goal.
 4. **Progress survives.** Solved problems are stored per lesson (`hw_exp_<lesson>_solved`) and restored before any render may write; a reload never celebrates twice.
 5. **Mystery challenge.** Every page carries one: the last Level-up problem, quoted only when its stem stands alone (no "below", "table", "graph"), locked until the goal is met.
@@ -35,14 +35,14 @@ This is the contract. Every line has an owner in code and a check that fails whe
 
 ## Where each rule is enforced
 
-| Rule                          | Check                                                                                                                                           |
-| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1, 5, 6, 7, 11 (structure)    | `tools/homework-experience.test.mjs` (every one of the 166 pages)                                                                               |
-| 3, 4, 8 (behavior)            | `tools/homework-experience.test.mjs` (JSDOM), `tools/verify-family-experience-browser.mjs`                                                      |
-| 9, 10, 11 (what a phone sees) | `npm run validate:family-experience-browser` (`--all` sweeps every page, about 15 minutes)                                                      |
-| Spanish domino tiles          | `data/family-game-pairs-es.json`, test in `tools/homework-experience.test.mjs`                                                                  |
-| 12 (links)                    | `npm run validate:family-resources` (offline) and `npm run verify:family-resources` (browser refresh)                                          |
-| 13 (plain words)              | `npm run validate:family-plain-definitions`                                                                                                     |
+| Rule                          | Check                                                                                                                                       |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1, 5, 6, 7, 11 (structure)    | `tools/homework-experience.test.mjs` (every one of the 166 pages)                                                                           |
+| 3, 4, 8 (behavior)            | `tools/homework-experience.test.mjs` (JSDOM), `tools/verify-family-experience-browser.mjs`                                                  |
+| 9, 10, 11 (what a phone sees) | `npm run validate:family-experience-browser` (`--all` sweeps every page, about 15 minutes)                                                  |
+| Spanish domino tiles          | `data/family-game-pairs-es.json`, test in `tools/homework-experience.test.mjs`                                                              |
+| 12 (links)                    | `npm run validate:family-resources` (offline) and `npm run verify:family-resources` (browser refresh)                                       |
+| 13 (plain words)              | `npm run validate:family-plain-definitions`                                                                                                 |
 | Product decisions             | `data/product-decisions.json` (`family-homework-route-choices`, `family-homework-experience-layer`, `family-surfaces-english-spanish-only`) |
 
 ## Changing it safely

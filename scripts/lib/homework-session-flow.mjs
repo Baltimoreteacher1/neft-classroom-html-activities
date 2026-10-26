@@ -99,7 +99,10 @@ export function renderSessionBanner(lessonId, partner) {
       );
   return `<nav class="hw-session-banner" aria-label="Two-session lesson" data-session="${here.session}">
     <ol class="hw-session-steps">${step(1)}<li class="hw-session-arrow" aria-hidden="true">➔</li>${step(2)}</ol>
-    <p class="hw-session-sentence"><strong>${lead}</strong> ${bi(sentence.en, sentence.es)} ${tail}</p>
+    <details class="hw-session-more">
+      <summary>${lead}</summary>
+      <p class="hw-session-sentence">${bi(sentence.en, sentence.es)} ${tail}</p>
+    </details>
   </nav>`;
 }
 
@@ -123,6 +126,56 @@ a.hw-session-chip:focus-visible { outline: 3px solid var(--teal-ink, #0c6f6b); o
 }
 @media print { .hw-session-banner { display: none !important; } }
 
+/* "Coming up next" is a disclosure beside the switcher, not a paragraph under it. */
+.hw-session-more summary { display: inline-flex; align-items: center; min-height: 44px; padding: 0 6px; cursor: pointer; font-size: 15px; font-weight: 800; color: var(--navy, #12355b); }
+.hw-session-more summary { list-style: none; }
+.hw-session-more summary::-webkit-details-marker { display: none; }
+.hw-session-more summary::after { content: "▾"; margin-left: 8px; font-size: 14px; }
+.hw-session-more[open] summary::after { content: "▴"; }
+.hw-session-more .hw-session-sentence { margin: 0 0 6px; }
+@media (min-width: 641px) {
+  .hw-session-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; padding: 6px 12px; }
+  .hw-session-more { flex: 1 1 260px; }
+}
+
+/* The mission card is one line until a family opens it; its words are still in the page. */
+details.hw-experience-banner { display: block; padding: 0; }
+details.hw-experience-banner > summary { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 14px; cursor: pointer; list-style: none; }
+details.hw-experience-banner > summary::-webkit-details-marker { display: none; }
+details.hw-experience-banner > summary::after { content: "▾"; margin-left: auto; font-size: 16px; opacity: .8; }
+details.hw-experience-banner[open] > summary::after { content: "▴"; }
+details.hw-experience-banner .hw-experience-icon { font-size: 22px; }
+details.hw-experience-banner .hw-experience-title { font-size: 17px; }
+details.hw-experience-banner .hw-experience-description { margin: 0; padding: 0 14px 10px; }
+
+/* The route question is answered at a glance: the two choices and Start share
+   one row, and the "optional, no grades" promise sits under Start. */
+.hw-route-chooser .hw-route-note { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.hw-route-chooser > #hw_start_button { margin-top: 10px; }
+.hw-route-promise { margin: 10px 2px 0; font-size: 14px; line-height: 1.4; color: #334e68; }
+#hw_resume_note:empty { display: none; }
+
+/* Laptop and Chromebook: the first screen is the lesson, the big idea, the language,
+   the route and Start. Everything else follows. */
+@media (min-width: 900px) {
+  .hw-hero-body > .hw-hero-lesson { margin-top: 8px; padding-top: 8px; }
+  .hw-hero-body > .hw-hero-bigidea { margin-top: 10px; padding: 8px 14px; }
+  .hw-hero-body > .hw-tonight { order: 1; grid-column: 1; margin: 12px 0 0; }
+  .hw-hero-body > .hw-experience-banner { order: 2; grid-column: 2; margin: 12px 0 0; }
+  .hw-hero-body > .hw-hero-lead { order: 3; margin: 6px 0 0; font-size: 14px; }
+  .hw-hero-body > .hw-route-chooser { order: 4; margin-top: 12px; padding: 12px 14px; display: grid; grid-template-columns: minmax(150px, 230px) minmax(0, 1fr) auto; column-gap: 14px; row-gap: 0; align-items: center; }
+  .hw-hero-body > .hw-session-banner { order: 5; margin-top: 12px; }
+  .hw-hero-body > .hw-tools-menu { order: 6; }
+  .hw-route-chooser > .hw-route-heading { grid-column: 1; margin: 0; }
+  .hw-route-chooser > .hw-route-options { grid-column: 2; }
+  .hw-route-chooser > #hw_start_button { grid-column: 3; margin: 0; }
+  .hw-route-chooser > .hw-route-promise { grid-column: 1 / -1; margin: 8px 2px 0; }
+  .hw-route-chooser > #hw_resume_note { grid-column: 1 / -1; margin: 8px 2px 0; }
+  .hw-route-option .hw-route-copy small { display: block; }
+  .hw-route-option .hw-route-time { flex: 0 0 auto; min-width: 64px; white-space: nowrap; }
+  .hw-hero-body > .hw-hero-controls { justify-self: end; }
+}
+
 /* Hero subtitle and one-sentence big idea. */
 .hw-hero-subtitle { margin: 4px 0 0; font-size: 15px; font-weight: 700; letter-spacing: .02em; opacity: .92; }
 .hw-hero-bigidea { margin: 14px 0 0; padding: 12px 14px; border-left: 5px solid var(--amber, #f2c15b); background: rgba(255, 255, 255, .13); border-radius: 10px; font-size: 18px; line-height: 1.45; font-weight: 700; }
@@ -138,18 +191,20 @@ a.hw-session-chip:focus-visible { outline: 3px solid var(--teal-ink, #0c6f6b); o
   .hw-hero-body > .hw-hero-head { order: 2; }
   .hw-hero-body > .hw-hero-lesson { order: 3; }
   .hw-hero-body > .hw-hero-bigidea { order: 4; }
-  .hw-hero-body > .hw-route-chooser { order: 5; }
+  .hw-hero-body > .hw-route-chooser { order: 5; margin-top: 12px; padding: 12px; }
+  .hw-tonight { margin-top: 10px; }
   .hw-hero-body > .hw-session-banner { order: 6; }
   .hw-hero-body > .hw-hero-controls { order: 7; }
   .hw-hero-body > .hw-tools-menu { order: 8; }
-  .hw-hero-bigidea { font-size: 17px; }
-  .hw-route-chooser .hw-route-heading > div > p { display: none; }
+  .hw-hero-bigidea { font-size: 16px; }
   .hw-route-chooser .hw-route-heading { margin-bottom: 6px; }
-  .hw-route-options { display: grid !important; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  .hw-route-option { flex-direction: column; align-items: center; justify-content: flex-start; gap: 2px; min-height: 76px; padding: 8px 4px; text-align: center; }
+  .hw-route-options { display: grid !important; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .hw-route-option { flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; min-height: 60px; padding: 8px 4px; text-align: center; }
   .hw-route-option .hw-route-copy small { display: none; }
   .hw-route-option .hw-route-copy strong { font-size: 13px; line-height: 1.2; }
-  .hw-route-option .hw-route-time { font-size: 18px; }
+  /* The time sits on one line with its unit: "5–10 min", not a tall block. */
+  .hw-route-option .hw-route-time { flex: 0 0 auto; flex-direction: row; gap: 4px; min-height: 0; padding: 4px 10px; font-size: 16px; }
+  .hw-route-option .hw-route-time small { margin-top: 0; }
   .hw-route-note { font-size: 13px; }
 }
 

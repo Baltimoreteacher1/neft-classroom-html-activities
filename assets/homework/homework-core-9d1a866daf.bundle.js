@@ -443,22 +443,30 @@ function initFamilyGames() {
    never timers; the student and family can pause or stop at any point. */
 var HOMEWORK_ROUTES = {
   quick: { tabs: ['learn', 'check', 'done'], problemLimit: 2 },
-  core: { tabs: ['learn', 'words', 'check', 'done'], problemLimit: 0 },
   full: { tabs: ['learn', 'words', 'check', 'play', 'done'], problemLimit: 0 }
 };
+/* Two choices: Quick Practice (the default) and Keep Going, which carries the
+   old Learn & practice content and the old Full Studio content. Saved choices and
+   links from before the change keep working: "core" is now Keep Going. */
+var HOMEWORK_ROUTE_DEFAULT = 'quick';
+var HOMEWORK_ROUTE_ALIASES = { core: 'full' };
+
+function normalizeHomeworkRoute(mode) {
+  if (Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTE_ALIASES, mode)) mode = HOMEWORK_ROUTE_ALIASES[mode];
+  return Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode) ? mode : HOMEWORK_ROUTE_DEFAULT;
+}
 
 function routeStorageKey() {
   return 'hw_route_' + (window.LESSON_ID || location.pathname);
 }
 
 function activeHomeworkRoute() {
-  var id = document.body.dataset.homeworkRoute || 'full';
-  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.full;
+  return HOMEWORK_ROUTES[normalizeHomeworkRoute(document.body.dataset.homeworkRoute)];
 }
 
 function setHomeworkRoute(mode, options) {
   options = options || {};
-  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'full';
+  mode = normalizeHomeworkRoute(mode);
   var route = HOMEWORK_ROUTES[mode];
   document.body.dataset.homeworkRoute = mode;
 
@@ -529,9 +537,8 @@ function setHomeworkRoute(mode, options) {
   var note = document.getElementById('hw_route_note');
   if (note) {
     var copy = {
-      quick: ['Quick selected: one example and 2 problems. Stop whenever you need.', 'Rápida seleccionada: un ejemplo y 2 problemas. Pueden parar cuando lo necesiten.'],
-      core: ['Learn & practice selected: key words, then practice. Goal: ' + HW_GOAL_TARGET + ' problems. Stop whenever you need.', 'Aprender y practicar seleccionada: palabras clave y práctica. Meta: ' + HW_GOAL_TARGET + ' problemas. Pueden parar cuando lo necesiten.'],
-      full: ['Full Studio (recommended): everything, plus one home mission and one game. Everything is optional.', 'Estudio completo (recomendada): todo, más una misión en casa y un juego. Todo es opcional.']
+      quick: ['Quick Practice selected: one example and 2 problems. Stop whenever you need.', 'Práctica rápida seleccionada: un ejemplo y 2 problemas. Pueden parar cuando lo necesiten.'],
+      full: ['Keep Going selected: everything, plus one home mission and one game. Everything is optional.', 'Seguir practicando seleccionado: todo, más una misión en casa y un juego. Todo es opcional.']
     }[mode];
     setBiText(note, copy[0], copy[1]);
   }
@@ -552,17 +559,18 @@ function setHomeworkRoute(mode, options) {
 }
 
 function restoreHomeworkRoute() {
-  var mode = 'full';
+  var mode = HOMEWORK_ROUTE_DEFAULT;
   try {
-    var saved = localStorage.getItem(routeStorageKey());
-    // The previous default wrote "core" even when nobody made a choice.
-    // Migrate that automatic default; retain explicitly selected new choices
-    // and old quick/full choices, which were never the previous default.
-    if (localStorage.getItem(routeStorageKey() + '_chosen') === '1' || saved === 'quick' || saved === 'full') mode = saved || 'full';
+    // The page also writes the default when nobody chose, and earlier defaults
+    // were "core" and "full". Only a choice the family made (the _chosen flag) counts.
+    if (localStorage.getItem(routeStorageKey() + '_chosen') === '1') {
+      mode = normalizeHomeworkRoute(localStorage.getItem(routeStorageKey()));
+    }
   } catch (e) {}
-  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'full';
   var requested = new URLSearchParams(location.search).get('route');
-  if (Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, requested)) mode = requested;
+  if (requested && (Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, requested) || Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTE_ALIASES, requested))) {
+    mode = normalizeHomeworkRoute(requested);
+  }
   setHomeworkRoute(mode, { silent: true, keepTab: true });
 }
 
@@ -896,7 +904,7 @@ function syncDocumentLanguage(mode) {
    page still written left-to-right. Removed rather than stubbed, because an
    offer a family cannot use is worse than no offer. */
 function setLanguageMode(mode) {
-  if (mode !== 'en' && mode !== 'es') mode = 'bilingual';
+  if (mode !== 'en' && mode !== 'es') mode = 'en';
   try { localStorage.setItem('hw_lang_mode', mode); } catch(e) {}
   document.body.classList.remove('lang-mode-bilingual', 'lang-mode-en', 'lang-mode-es');
   document.body.classList.add('lang-mode-' + mode);
@@ -1038,11 +1046,11 @@ function homeworkShareUrl() {
   /* The lesson page, the route, the language and the class section (the hub's class
      link). A copied link carries nothing else from the address bar: no answers, no
      Canvas or SCORM launch parameters, no tracking. */
-  var route = document.body.dataset.homeworkRoute || 'full';
+  var route = normalizeHomeworkRoute(document.body.dataset.homeworkRoute);
   var url = new URL(window.location.origin + window.location.pathname);
   var section = new URLSearchParams(window.location.search).get('section');
   if (section) url.searchParams.set('section', section);
-  url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'full');
+  url.searchParams.set('route', route);
   url.searchParams.set('lang', document.body.dataset.homeworkLanguage || preferredLanguageMode());
   return url.href;
 }
@@ -1331,12 +1339,15 @@ function editParentSignoff() {
   if (printCert) printCert.classList.remove('is-signed');
 }
 
+/* One language at a time. A saved or linked "bilingual" predates the single
+   English | Español control, so it falls through to the phone's language, as a
+   first visit does. Must match the pre-paint bootstrap in generate-homework-html.mjs. */
 function preferredLanguageMode() {
   var requested = new URLSearchParams(location.search).get('lang');
-  if (['en', 'es', 'bilingual'].indexOf(requested) !== -1) return requested;
+  if (requested === 'en' || requested === 'es') return requested;
   try {
     const saved = localStorage.getItem('hw_lang_mode');
-    if (saved === 'en' || saved === 'es' || saved === 'bilingual') return saved;
+    if (saved === 'en' || saved === 'es') return saved;
   } catch (e) {}
   try {
     const langs = navigator.languages && navigator.languages.length
@@ -1344,7 +1355,7 @@ function preferredLanguageMode() {
       : [navigator.language || ''];
     if (langs.some(function (l) { return String(l).toLowerCase().indexOf('es') === 0; })) return 'es';
   } catch (e) {}
-  return 'bilingual';
+  return 'en';
 }
 
 function restoreParentSignoff() {
@@ -3755,7 +3766,8 @@ function toggleQuickOptional() {
 /* ── Family experience: goal, mystery, confidence, share, dialogs ─────────── */
 var HW_GOAL_TARGET = 4;
 var HW_GOAL_QUICK = 2;
-var HW_ROUTE_TIMES = {"quick":"5–10","core":"15–20","full":"20–30"};
+var HW_ROUTE_TIMES = {"quick":"5–10","full":"20–30"};
+var HW_ROUTE_DEFAULT = "quick";
 
 function hwKey(name) { return 'hw_exp_' + (window.LESSON_ID || location.pathname) + '_' + name; }
 function hwGet(name) { try { return localStorage.getItem(hwKey(name)); } catch (e) { return null; } }
@@ -4002,7 +4014,7 @@ function hwRenderConfidence() {
 }
 
 function hwRenderTonight() {
-  var mode = document.body.dataset.homeworkRoute || 'full';
+  var mode = document.body.dataset.homeworkRoute || HW_ROUTE_DEFAULT;
   var time = HW_ROUTE_TIMES[mode] || HW_ROUTE_TIMES.full;
   document.querySelectorAll('[data-hw-tonight-time]').forEach(function (el) { el.textContent = time; });
 }

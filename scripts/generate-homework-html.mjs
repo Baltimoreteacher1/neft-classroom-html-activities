@@ -4021,39 +4021,33 @@ body .mwb-launcher {
 @media (max-width: 700px) {
   .hw-hero-kicker { font-size: 10.5px; padding: 5px 11px 5px 6px; margin-bottom: 12px; gap: 6px; }
   .hw-hero-kicker-icon { width: 20px; height: 20px; font-size: 11px; }
-  .hw-hero-lesson { margin-top: 14px; padding-top: 12px; }
+  .hw-hero-lesson { margin-top: 10px; padding-top: 10px; line-height: 1.25; }
   .hw-hero-lead { margin-top: 10px; font-size: 14px; }
-  .hw-hero-controls { margin-top: 14px; }
-  .hw-hero .lang-selector-card { gap: 8px; }
-  .hw-hero .lang-selector-title { flex: 0 0 100%; font-size: 10.5px; }
-  /* One row of three, never a stacked column: the three modes are a choice
-     between peers and reading them as a vertical list says otherwise. */
-  /* flex-direction is set to column by an older mobile rule for the standalone
-     selector; inside the hero the three modes stay a row. */
+  .hw-hero-controls { margin-top: 4px; }
+  .hw-hero .lang-selector-card { gap: 8px; margin-top: 0; padding: 4px; }
+  /* The toggle names both languages itself; the caption above it cost a row. */
+  .hw-hero .lang-selector-title { display: none; }
+  /* One segmented control, English | Español: two equal halves in one track. */
   .hw-hero .lang-selector-buttons {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     width: 100%;
-    flex-direction: row;
-    flex-wrap: wrap;
-    /* A pill outline drawn around two rows reads as a mistake. */
-    border-radius: var(--radius-md);
+    gap: 4px;
+    padding: 4px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.12);
   }
   .hw-hero .lang-toggle-btn {
-    flex: 1 1 0;
     width: auto;
     min-width: 0;
     justify-content: center;
     min-height: 44px;
     padding: 8px 6px;
-    font-size: 12px;
+    font-size: 15px;
     white-space: nowrap;
+    border-color: transparent;
   }
-  /* "Bilingual / Bilingüe" needs ~153px and an equal third of this row is 97px,
-     so it used to be hidden and the button showed two flags and nothing else —
-     the DEFAULT mode, unlabelled. It gets its own row instead: every option is
-     now readable, at the cost of one 44px row. (Hiding it was right when the
-     selector held six languages and no arrangement helped; it holds three.) */
-  .hw-hero .lang-toggle-btn[data-lang-mode="bilingual"] { flex: 1 0 100%; }
+  .hw-hero .lang-toggle-btn:not(.active) { background: transparent; }
   .hw-hero .hw-quickplan { margin-top: 14px; }
   /* The opacity difference already says which tabs are optional; the divider
      and its label cost a whole extra row at this width. */
@@ -4184,13 +4178,13 @@ ${TOUCH_CSS}
     };
     try { Object.defineProperty(window, 'localStorage', { configurable: true, get: function () { return stand; } }); } catch (unsupported) {}
   }
-  var mode = 'bilingual';
+  var mode = 'en';
   try {
     var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
+    if (requested === 'en' || requested === 'es') {
       mode = requested;
-    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
+    } else if (saved === 'en' || saved === 'es') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)

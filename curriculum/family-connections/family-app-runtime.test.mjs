@@ -69,7 +69,7 @@ test("actual family app defaults to current week, opens archive, keeps language/
     assert.equal(new URL(w.location.href).searchParams.get("week"), previousWeek);
     d.querySelector('#language-switch [data-lang="es"]').click();
     assert.equal(new URL(w.location.href).searchParams.get("week"), previousWeek);
-    assert.equal(d.querySelector(".homework-card a").getAttribute("href"), "/lessons/3-2/homework.html?route=full&lang=es&section=all-families");
+    assert.equal(d.querySelector(".homework-card a").getAttribute("href"), "/lessons/3-2/homework.html?route=quick&lang=es&section=all-families");
     change(w, d.getElementById("section-select"), "602");
     assert.equal(new URL(w.location.href).searchParams.has("week"), false);
     assert.equal(d.getElementById("homework-week-select"), null);
@@ -138,7 +138,7 @@ test("the language switch is the first control in the page body and writes hw_la
     assert.deepEqual(buttons.map((b) => b.dataset.lang), ["en", "es"]);
     assert.equal(d.querySelector("#language-switch").compareDocumentPosition(d.getElementById("hub-title")) & w.Node.DOCUMENT_POSITION_FOLLOWING, w.Node.DOCUMENT_POSITION_FOLLOWING);
     assert.equal(w.localStorage.getItem("hw_lang_mode"), null, "opening the page must not record a choice nobody made");
-    assert.equal(hrefs(d)[0], "/lessons/3-2/homework.html?route=full&section=all-families", "no choice, no lang: the lesson page decides");
+    assert.equal(hrefs(d)[0], "/lessons/3-2/homework.html?route=quick&section=all-families", "no choice, no lang: the lesson page decides");
     buttons[1].click();
     assert.equal(w.localStorage.getItem("hw_lang_mode"), "es");
     assert.deepEqual(buttons.map((b) => b.getAttribute("aria-pressed")), ["false", "true"]);

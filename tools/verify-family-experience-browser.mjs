@@ -117,8 +117,11 @@ async function sweepPhone(browser, lesson) {
   const where = `${lesson} @390`;
 
   assert.match(await page.title(), /^Family Math Studio — /, `${where}: title`);
-  if ((await page.locator("body").getAttribute("class")).includes("lang-mode-bilingual") === false)
-    fail(where, "first visit is not bilingual");
+  // One language at a time: a first visit is English (Spanish on a Spanish phone), never both.
+  const firstClass = await page.locator("body").getAttribute("class");
+  if (!firstClass.includes("lang-mode-en") && !firstClass.includes("lang-mode-es"))
+    fail(where, "first visit has no single language mode");
+  if (firstClass.includes("lang-mode-bilingual")) fail(where, "bilingual mode is still offered");
 
   // Language first: the picker precedes the big idea in the page and sits on the first screen.
   const order = await page.evaluate(() => {
@@ -153,8 +156,9 @@ async function sweepPhone(browser, lesson) {
     mystery: !!document.getElementById("hw_mystery"),
     time: document.querySelector("[data-hw-tonight-time]")?.textContent,
   }));
-  if (start.snap.goal !== 4 && start.snap.goal !== start.snap.available)
-    fail(where, `goal is ${start.snap.goal}, not 4`);
+  // Quick Practice (the default) has a goal of two; Keep Going has four.
+  if (start.snap.goal !== 4 && start.snap.goal !== 2 && start.snap.goal !== start.snap.available)
+    fail(where, `goal is ${start.snap.goal}, not 2 or 4`);
   if (start.banner) fail(where, "goal banner is showing before any work");
   if (!start.mystery) fail(where, "no mystery challenge card");
   const startTop = await page.evaluate(
@@ -162,7 +166,8 @@ async function sweepPhone(browser, lesson) {
   );
   if (startTop > 1500)
     fail(where, `the Start button is ${Math.round(startTop)}px down; keep it within two screens`);
-  if (start.time !== "20–30") fail(where, `default route time reads ${start.time}`);
+  // The default route is Quick Practice (5–10 min). Keep Going is 20–30 min.
+  if (start.time !== "5–10") fail(where, `default route time reads ${start.time}`);
 
   for (const tab of ["learn", "words", "check", "play", "done"]) {
     await page.evaluate((t) => window.switchHomeworkTab(t), tab);
@@ -224,6 +229,7 @@ async function sweepPhone(browser, lesson) {
     window.checkProblem(idx(sections[0]));
     await new Promise((resolve) => setTimeout(resolve, 150));
     const afterWrong = {
+      goal: window.hwGoalSnapshot().goal,
       text: document.getElementById("progress_text").textContent,
       banner: !document.getElementById("goal_reached_banner").hidden,
       intelligenceVisible: !document.getElementById("problem_intelligence_" + idx(sections[0]))
@@ -262,8 +268,13 @@ async function sweepPhone(browser, lesson) {
     };
   });
   if (run.afterWrong.banner) fail(where, "a wrong answer showed the goal banner");
-  if (run.afterWrong.text !== "0 / 4")
-    fail(where, `after one wrong answer progress reads ${run.afterWrong.text}`);
+  // The goal is four on Keep Going and two on Quick Practice (the default), so read it from the route in effect.
+  const expectedText = `0 / ${run.afterWrong.goal}`;
+  if (run.afterWrong.text !== expectedText)
+    fail(
+      where,
+      `after one wrong answer progress reads ${run.afterWrong.text}, not ${expectedText}`,
+    );
   if (!run.afterWrong.intelligenceVisible)
     fail(where, "a checked answer did not open the shared math feedback card");
   if (!/strategy yet/i.test(run.afterWrong.intelligenceText))
@@ -331,6 +342,15 @@ async function sweepLanguages(browser, lesson) {
 async function sweepDesktop(browser, lesson) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   const { page } = await openPage(context, lesson);
+  // Laptops and Chromebooks: the route choice and Start are on the first screen (button bottom <= 700px).
+  const startBottom = await page.evaluate(
+    () => document.getElementById("hw_start_button").getBoundingClientRect().bottom + scrollY,
+  );
+  if (startBottom > 700)
+    fail(
+      `${lesson} @1280`,
+      `the Start button ends ${Math.round(startBottom)}px down; keep it within 700px`,
+    );
   for (const tab of ["learn", "check", "done"]) {
     await page.evaluate((t) => window.switchHomeworkTab(t), tab);
     await page.waitForTimeout(100);

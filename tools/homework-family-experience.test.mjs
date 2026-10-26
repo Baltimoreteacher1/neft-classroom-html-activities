@@ -144,30 +144,40 @@ test("share links retain the selected route and language without sharing local p
     w.document.querySelectorAll(".problem-section:not([hidden])").length,
     w.document.querySelectorAll(".problem-section").length,
   );
+  // The retired "core" route is Keep Going now: a saved or linked core choice opens Keep Going.
   w.setHomeworkRoute("core");
+  assert.equal(w.document.body.dataset.homeworkRoute, "full");
   assert.equal(w.document.getElementById("hw_tab_words").hidden, false);
-  assert.equal(w.document.getElementById("hw_tab_play").hidden, true);
-  assert.equal(w.localStorage.getItem("hw_route_3-2"), "core");
+  assert.equal(w.document.getElementById("hw_tab_play").hidden, false);
+  assert.equal(w.localStorage.getItem("hw_route_3-2"), "full");
 
   w.history.replaceState(null, "", "?route=__proto__&lang=bad");
   w.localStorage.setItem("hw_route_3-2", "broken");
   w.restoreHomeworkRoute();
-  assert.equal(w.document.body.dataset.homeworkRoute, "full");
+  assert.equal(w.document.body.dataset.homeworkRoute, "quick");
   dom.window.close();
 });
 
-test("Studio is the default, migrates the old automatic core path, and retains explicit choices", () => {
+test("Quick Practice is the default, migrates the old automatic paths, and retains explicit choices", () => {
   const dom = runtime();
   const w = dom.window;
   w.restoreHomeworkRoute();
-  assert.equal(w.document.body.dataset.homeworkRoute, "full");
-  assert.equal(w.document.getElementById("hw_tab_play").hidden, false);
+  assert.equal(w.document.body.dataset.homeworkRoute, "quick");
+  assert.equal(w.document.getElementById("hw_tab_play").hidden, true);
+  // Earlier defaults were written without a choice: "core" and "full" both fall back to Quick.
   w.localStorage.setItem("hw_route_3-2", "core");
+  w.restoreHomeworkRoute();
+  assert.equal(w.document.body.dataset.homeworkRoute, "quick");
+  w.localStorage.setItem("hw_route_3-2", "full");
+  w.restoreHomeworkRoute();
+  assert.equal(w.document.body.dataset.homeworkRoute, "quick");
+  // An explicit choice is kept.
+  w.setHomeworkRoute("full");
   w.restoreHomeworkRoute();
   assert.equal(w.document.body.dataset.homeworkRoute, "full");
   w.setHomeworkRoute("core");
   w.restoreHomeworkRoute();
-  assert.equal(w.document.body.dataset.homeworkRoute, "core");
+  assert.equal(w.document.body.dataset.homeworkRoute, "full");
   dom.window.close();
 });
 
@@ -269,15 +279,16 @@ test("family homework offers three real practice paths without a Together stop",
   for (const id of ["2-1", "3-3"]) {
     const page = readFileSync(lessonPath(id, "homework.html"), "utf8");
     const d = new JSDOM(page).window.document;
-    assert.equal(d.querySelectorAll(".hw-route-option[data-route-mode]").length, 3, id);
+    assert.equal(d.querySelectorAll(".hw-route-option[data-route-mode]").length, 2, id);
     assert.deepEqual(
       [...d.querySelectorAll(".hw-route-option[data-route-mode]")].map((b) => b.dataset.routeMode),
-      ["quick", "core", "full"],
+      ["quick", "full"],
       id,
     );
     assert.match(d.querySelector(".hw-route-chooser").textContent, /5–10/);
-    assert.match(d.querySelector(".hw-route-chooser").textContent, /15–20/);
     assert.match(d.querySelector(".hw-route-chooser").textContent, /20–30/);
+    assert.match(d.querySelector(".hw-route-chooser").textContent, /Quick Practice/);
+    assert.match(d.querySelector(".hw-route-chooser").textContent, /Keep Going/);
     assert.equal(d.querySelectorAll(".homework-tab-btn").length, 5, id);
     assert.equal(d.querySelector("#hw_panel_together"), null, id);
     assert.equal(d.querySelectorAll("#hw_time_remaining").length, 0, id);

@@ -2907,15 +2907,8 @@ export function renderWelcomeBanner(config, lessonId) {
           <div class="lang-selector-card">
             <span class="lang-selector-title">Language / Idioma</span>
             <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
-              <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="true">
-                🇺🇸🇪🇸 <span class="lang-btn-long">Bilingual / Bilingüe</span><span class="lang-btn-short">EN + ES</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="false">
-                🇺🇸 <span>English</span>
-              </button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">
-                🇪🇸 <span>Español</span>
-              </button>
+              <button type="button" class="lang-toggle-btn active" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="true">English</button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">Español</button>
             </div>
           </div>
         </div>
@@ -2952,13 +2945,13 @@ export function renderWelcomeBanner(config, lessonId) {
         </p>${
           experience?.titleEn
             ? `
-        <section class="hw-experience-banner" aria-label="${esc(experience.titleEn)}">
-          <span class="hw-experience-icon" aria-hidden="true">${esc(experience.icon || "✨")}</span>
-          <div class="hw-experience-copy">
-            <p class="hw-experience-title"><span class="lang-en">${esc(experience.titleEn)}</span><span class="lang-es" lang="es">${esc(experience.titleEs || experience.titleEn)}</span></p>
-            <p class="hw-experience-description"><span class="lang-en">${esc(experience.descriptionEn || "")}</span><span class="lang-es" lang="es">${esc(experience.descriptionEs || experience.descriptionEn || "")}</span></p>
-          </div>
-        </section>`
+        <details class="hw-experience-banner">
+          <summary>
+            <span class="hw-experience-icon" aria-hidden="true">${esc(experience.icon || "✨")}</span>
+            <span class="hw-experience-title"><span class="lang-en">${esc(experience.titleEn)}</span><span class="lang-es" lang="es">${esc(experience.titleEs || experience.titleEn)}</span></span>
+          </summary>
+          <p class="hw-experience-description"><span class="lang-en">${esc(experience.descriptionEn || "")}</span><span class="lang-es" lang="es">${esc(experience.descriptionEs || experience.descriptionEn || "")}</span></p>
+        </details>`
             : ""
         }
 
@@ -2966,7 +2959,7 @@ export function renderWelcomeBanner(config, lessonId) {
 
         ${renderQuickPlan()}
 
-        <details class="hw-tools-menu"><summary><span class="lang-en">Tools: scratchpad, share, print &amp; standard</span><span class="lang-es" lang="es">Herramientas: pizarra, compartir, imprimir y estándar</span></summary>
+        <details class="hw-tools-menu"><summary><span class="lang-en">More options: scratchpad, share, print &amp; standard</span><span class="lang-es" lang="es">Más opciones: pizarra, compartir, imprimir y estándar</span></summary>
         <div class="hw-hero-share-bar">
           <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Scratchpad</span><span class="lang-es" lang="es">Pizarra</span></button>
           <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="copyHomeworkLink()">📋 <span class="lang-en">Copy Link</span><span class="lang-es" lang="es">Copiar enlace</span></button>
@@ -3022,30 +3015,25 @@ export function renderQuickPlan() {
           <span class="hw-route-icon" aria-hidden="true">🧭</span>
           <div>
             <h2 id="hw_route_title" class="hw-inline"><span class="lang-en">How much time do you have tonight?</span><span class="lang-es" lang="es">¿Cuánto tiempo tienen esta noche?</span></h2>
-            <p class="hw-inline"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
           </div>
         </div>
         <div class="hw-route-options" role="group" aria-label="How much time do you have tonight?" data-aria-en="How much time do you have tonight?" data-aria-es="¿Cuánto tiempo tienen esta noche?">
-          <button type="button" class="hw-route-option" data-route-mode="quick" aria-pressed="false" onclick="setHomeworkRoute('quick')">
+          <button type="button" class="hw-route-option is-active" data-route-mode="quick" aria-pressed="true" onclick="setHomeworkRoute('quick')">
             ${time("quick")}
-            <span class="hw-route-copy"><strong><span class="lang-en">Quick</span><span class="lang-es" lang="es">Rápida</span></strong><small><span class="lang-en">One example and 2 problems.</span><span class="lang-es" lang="es">Un ejemplo y 2 problemas.</span></small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Quick Practice</span><span class="lang-es" lang="es">Práctica rápida</span></strong><small><span class="lang-en">One example and 2 problems.</span><span class="lang-es" lang="es">Un ejemplo y 2 problemas.</span></small></span>
           </button>
-          <button type="button" class="hw-route-option" data-route-mode="core" aria-pressed="false" onclick="setHomeworkRoute('core')">
-            ${time("core")}
-            <span class="hw-route-copy"><strong><span class="lang-en">Learn &amp; practice</span><span class="lang-es" lang="es">Aprender y practicar</span></strong><small><span class="lang-en">Key words, then practice. Goal: ${GOAL_TARGET} problems.</span><span class="lang-es" lang="es">Palabras clave y práctica. Meta: ${GOAL_TARGET} problemas.</span></small></span>
-          </button>
-          <button type="button" class="hw-route-option is-active" data-route-mode="full" aria-pressed="true" onclick="setHomeworkRoute('full')">
+          <button type="button" class="hw-route-option" data-route-mode="full" aria-pressed="false" onclick="setHomeworkRoute('full')">
             ${time("full")}
-            <span class="hw-route-badge"><span aria-hidden="true">★</span><span class="hw-sr-only"><span class="lang-en">Recommended</span><span class="lang-es" lang="es">Recomendada</span></span></span>
-            <span class="hw-route-copy"><strong><span class="lang-en">Full Studio</span><span class="lang-es" lang="es">Estudio completo</span></strong><small><span class="lang-en">Everything, plus a home mission and a game.</span><span class="lang-es" lang="es">Todo, más una misión en casa y un juego.</span></small></span>
+            <span class="hw-route-copy"><strong><span class="lang-en">Keep Going</span><span class="lang-es" lang="es">Seguir practicando</span></strong><small><span class="lang-en">Key words, every problem, a game and a home mission.</span><span class="lang-es" lang="es">Palabras clave, todos los problemas, un juego y una misión en casa.</span></small></span>
           </button>
         </div>
+        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
+        <p class="hw-route-promise hw-inline"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
         <p class="hw-route-note" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Full Studio (recommended): everything, plus one home mission and one game. Everything is optional.</span>
-          <span class="lang-es" lang="es">Estudio completo (recomendada): todo, más una misión en casa y un juego. Todo es opcional.</span>
+          <span class="lang-en">Quick Practice selected: one example and 2 problems. Stop whenever you need.</span>
+          <span class="lang-es" lang="es">Práctica rápida seleccionada: un ejemplo y 2 problemas. Pueden parar cuando lo necesiten.</span>
         </p>
         <p id="hw_resume_note" role="status" aria-live="polite"></p>
-        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
       </section>`;
 }
 
@@ -9876,22 +9864,30 @@ function initFamilyGames() {
    never timers; the student and family can pause or stop at any point. */
 var HOMEWORK_ROUTES = {
   quick: { tabs: ['learn', 'check', 'done'], problemLimit: 2 },
-  core: { tabs: ['learn', 'words', 'check', 'done'], problemLimit: 0 },
   full: { tabs: ['learn', 'words', 'check', 'play', 'done'], problemLimit: 0 }
 };
+/* Two choices: Quick Practice (the default) and Keep Going, which carries the
+   old Learn & practice content and the old Full Studio content. Saved choices and
+   links from before the change keep working: "core" is now Keep Going. */
+var HOMEWORK_ROUTE_DEFAULT = 'quick';
+var HOMEWORK_ROUTE_ALIASES = { core: 'full' };
+
+function normalizeHomeworkRoute(mode) {
+  if (Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTE_ALIASES, mode)) mode = HOMEWORK_ROUTE_ALIASES[mode];
+  return Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode) ? mode : HOMEWORK_ROUTE_DEFAULT;
+}
 
 function routeStorageKey() {
   return 'hw_route_' + (window.LESSON_ID || location.pathname);
 }
 
 function activeHomeworkRoute() {
-  var id = document.body.dataset.homeworkRoute || 'full';
-  return HOMEWORK_ROUTES[id] || HOMEWORK_ROUTES.full;
+  return HOMEWORK_ROUTES[normalizeHomeworkRoute(document.body.dataset.homeworkRoute)];
 }
 
 function setHomeworkRoute(mode, options) {
   options = options || {};
-  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'full';
+  mode = normalizeHomeworkRoute(mode);
   var route = HOMEWORK_ROUTES[mode];
   document.body.dataset.homeworkRoute = mode;
 
@@ -9962,9 +9958,8 @@ function setHomeworkRoute(mode, options) {
   var note = document.getElementById('hw_route_note');
   if (note) {
     var copy = {
-      quick: ['Quick selected: one example and 2 problems. Stop whenever you need.', 'Rápida seleccionada: un ejemplo y 2 problemas. Pueden parar cuando lo necesiten.'],
-      core: ['Learn & practice selected: key words, then practice. Goal: ' + HW_GOAL_TARGET + ' problems. Stop whenever you need.', 'Aprender y practicar seleccionada: palabras clave y práctica. Meta: ' + HW_GOAL_TARGET + ' problemas. Pueden parar cuando lo necesiten.'],
-      full: ['Full Studio (recommended): everything, plus one home mission and one game. Everything is optional.', 'Estudio completo (recomendada): todo, más una misión en casa y un juego. Todo es opcional.']
+      quick: ['Quick Practice selected: one example and 2 problems. Stop whenever you need.', 'Práctica rápida seleccionada: un ejemplo y 2 problemas. Pueden parar cuando lo necesiten.'],
+      full: ['Keep Going selected: everything, plus one home mission and one game. Everything is optional.', 'Seguir practicando seleccionado: todo, más una misión en casa y un juego. Todo es opcional.']
     }[mode];
     setBiText(note, copy[0], copy[1]);
   }
@@ -9985,17 +9980,18 @@ function setHomeworkRoute(mode, options) {
 }
 
 function restoreHomeworkRoute() {
-  var mode = 'full';
+  var mode = HOMEWORK_ROUTE_DEFAULT;
   try {
-    var saved = localStorage.getItem(routeStorageKey());
-    // The previous default wrote "core" even when nobody made a choice.
-    // Migrate that automatic default; retain explicitly selected new choices
-    // and old quick/full choices, which were never the previous default.
-    if (localStorage.getItem(routeStorageKey() + '_chosen') === '1' || saved === 'quick' || saved === 'full') mode = saved || 'full';
+    // The page also writes the default when nobody chose, and earlier defaults
+    // were "core" and "full". Only a choice the family made (the _chosen flag) counts.
+    if (localStorage.getItem(routeStorageKey() + '_chosen') === '1') {
+      mode = normalizeHomeworkRoute(localStorage.getItem(routeStorageKey()));
+    }
   } catch (e) {}
-  if (!Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, mode)) mode = 'full';
   var requested = new URLSearchParams(location.search).get('route');
-  if (Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, requested)) mode = requested;
+  if (requested && (Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, requested) || Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTE_ALIASES, requested))) {
+    mode = normalizeHomeworkRoute(requested);
+  }
   setHomeworkRoute(mode, { silent: true, keepTab: true });
 }
 
@@ -10329,7 +10325,7 @@ function syncDocumentLanguage(mode) {
    page still written left-to-right. Removed rather than stubbed, because an
    offer a family cannot use is worse than no offer. */
 function setLanguageMode(mode) {
-  if (mode !== 'en' && mode !== 'es') mode = 'bilingual';
+  if (mode !== 'en' && mode !== 'es') mode = 'en';
   try { localStorage.setItem('hw_lang_mode', mode); } catch(e) {}
   document.body.classList.remove('lang-mode-bilingual', 'lang-mode-en', 'lang-mode-es');
   document.body.classList.add('lang-mode-' + mode);
@@ -10471,11 +10467,11 @@ function homeworkShareUrl() {
   /* The lesson page, the route, the language and the class section (the hub's class
      link). A copied link carries nothing else from the address bar: no answers, no
      Canvas or SCORM launch parameters, no tracking. */
-  var route = document.body.dataset.homeworkRoute || 'full';
+  var route = normalizeHomeworkRoute(document.body.dataset.homeworkRoute);
   var url = new URL(window.location.origin + window.location.pathname);
   var section = new URLSearchParams(window.location.search).get('section');
   if (section) url.searchParams.set('section', section);
-  url.searchParams.set('route', Object.prototype.hasOwnProperty.call(HOMEWORK_ROUTES, route) ? route : 'full');
+  url.searchParams.set('route', route);
   url.searchParams.set('lang', document.body.dataset.homeworkLanguage || preferredLanguageMode());
   return url.href;
 }
@@ -10764,12 +10760,15 @@ function editParentSignoff() {
   if (printCert) printCert.classList.remove('is-signed');
 }
 
+/* One language at a time. A saved or linked "bilingual" predates the single
+   English | Español control, so it falls through to the phone's language, as a
+   first visit does. Must match the pre-paint bootstrap in generate-homework-html.mjs. */
 function preferredLanguageMode() {
   var requested = new URLSearchParams(location.search).get('lang');
-  if (['en', 'es', 'bilingual'].indexOf(requested) !== -1) return requested;
+  if (requested === 'en' || requested === 'es') return requested;
   try {
     const saved = localStorage.getItem('hw_lang_mode');
-    if (saved === 'en' || saved === 'es' || saved === 'bilingual') return saved;
+    if (saved === 'en' || saved === 'es') return saved;
   } catch (e) {}
   try {
     const langs = navigator.languages && navigator.languages.length
@@ -10777,7 +10776,7 @@ function preferredLanguageMode() {
       : [navigator.language || ''];
     if (langs.some(function (l) { return String(l).toLowerCase().indexOf('es') === 0; })) return 'es';
   } catch (e) {}
-  return 'bilingual';
+  return 'en';
 }
 
 function restoreParentSignoff() {
@@ -15068,7 +15067,7 @@ button.fam-dom-tile:focus-visible { outline: 3px solid var(--teal); outline-offs
 .hw-route-icon { font-size: 25px; line-height: 1; }
 .hw-route-heading h2 { margin: 0 0 4px; font-size: 18px; color: #12355b; }
 .hw-route-heading p { margin: 0; color: #486581; font-size: 14px; line-height: 1.45; }
-.hw-route-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.hw-route-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .hw-route-option {
   display: flex; align-items: center; gap: 10px; min-height: 82px; padding: 10px 12px;
   text-align: left; color: #243b53; background: #fff; border: 1.5px solid #b8c9d9;
@@ -15101,7 +15100,7 @@ button.fam-dom-tile:focus-visible { outline: 3px solid var(--teal); outline-offs
   color: #075e59; background: #e7f7f3; border-radius: 9px; font-weight: 800; text-decoration: none; }
 .hw-pair-link:hover { background: #c9eee6; }
 @media (max-width: 760px) {
-  .hw-route-options { grid-template-columns: 1fr; }
+  .hw-route-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hw-route-option { min-height: 72px; }
 }
 @media (prefers-reduced-motion: reduce) { .hw-route-chooser.route-just-changed { box-shadow: none; } }

@@ -3,13 +3,14 @@
  * Inlined into the shared homework bundle. Written in the same plain ES5 style as
  * the rest of the shared script so it parses on every phone a family might own.
  */
-import { GOAL_QUICK, GOAL_TARGET, ROUTE_TIMES } from "./homework-experience.mjs";
+import { DEFAULT_ROUTE, GOAL_QUICK, GOAL_TARGET, ROUTE_TIMES } from "./homework-experience.mjs";
 
 export const EXPERIENCE_JS = `
 /* ── Family experience: goal, mystery, confidence, share, dialogs ─────────── */
 var HW_GOAL_TARGET = ${GOAL_TARGET};
 var HW_GOAL_QUICK = ${GOAL_QUICK};
 var HW_ROUTE_TIMES = ${JSON.stringify(ROUTE_TIMES)};
+var HW_ROUTE_DEFAULT = ${JSON.stringify(DEFAULT_ROUTE)};
 
 function hwKey(name) { return 'hw_exp_' + (window.LESSON_ID || location.pathname) + '_' + name; }
 function hwGet(name) { try { return localStorage.getItem(hwKey(name)); } catch (e) { return null; } }
@@ -256,7 +257,7 @@ function hwRenderConfidence() {
 }
 
 function hwRenderTonight() {
-  var mode = document.body.dataset.homeworkRoute || 'full';
+  var mode = document.body.dataset.homeworkRoute || HW_ROUTE_DEFAULT;
   var time = HW_ROUTE_TIMES[mode] || HW_ROUTE_TIMES.full;
   document.querySelectorAll('[data-hw-tonight-time]').forEach(function (el) { el.textContent = time; });
 }
