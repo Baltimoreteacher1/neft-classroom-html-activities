@@ -12,7 +12,7 @@ const COPY = {
     actions: ["Tonight’s Math", "Choose a Grade", "Practice a Skill", "Play Together", "My Progress"],
     storageWarning: "This browser could not save a family setting. You can keep practicing, but close the page only after the Fluency Lab confirms the learner’s progress is saved.",
     descriptions: ["A five-part learning mission chosen from real practice evidence.", "Find a comfortable place to begin.", "Choose a topic and practice with fresh questions.", "Solve, build, and explain as a team.", "See skills growing and what could come next."],
-    kicker: "A GOOD PLACE TO START", gradeTitle: "Choose a grade", gradeIntro: "Pick the learner’s current grade. Practice can still revisit earlier ideas when that helps.", selected: "Selected: Grade {grade}. Skill suggestions are based on this grade and this learner’s saved evidence.",
+    kicker: "A GOOD PLACE TO START", gradeTitle: "Choose a grade", gradeIntro: "Pick the learner’s current grade. Practice can still revisit earlier ideas when that helps.", selected: "Selected: {grade}. Skill suggestions are based on this grade and this learner’s saved evidence.",
     skillKicker: "A SMALL, USEFUL NEXT STEP", skillTitle: "Pick a skill", skillIntro: "These suggestions come from the learner’s saved practice. With little evidence, start with a new idea.", skillLabel: "Choose another skill", openSkill: "Open this skill", noEvidence: "We don’t have enough saved practice to spot a next step yet. Here is a good place to explore.", evidence: "{n} independent checks · {pct}% recently correct", review: "Ready to revisit based on recent practice", new: "A new idea to explore", recommendation: "Suggested next: {title}",
     weekKicker: "PICK ANY DAY, ANY TIME", weekTitle: "Seven ways into math", weekIntro: "Missed a day? No problem. Every option is open whenever it works for your family.",
     days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], modes: ["Math Mission", "Fluency Builder", "Family Game Night", "Math Detective", "Challenge Quest", "Real-World Math", "Math Memory Mix"], modeDesc: ["A five-step path toward a grade-level idea.", "Practice a skill with fresh questions.", "Explore cooperative math games.", "Try a short starting-point checkup.", "Take an independent step at your own pace.", "Try familiar story problems when they fit the skill.", "Review ideas chosen from recent evidence."],
@@ -23,7 +23,7 @@ const COPY = {
     actions: ["Matemáticas de hoy", "Elegir un grado", "Practicar una destreza", "Jugar juntos", "Mi progreso"],
     storageWarning: "Este navegador no pudo guardar un ajuste familiar. Pueden seguir practicando, pero cierren la página solo después de que el laboratorio confirme que guardó el progreso.",
     descriptions: ["Una misión de cinco pasos elegida con evidencia de práctica.", "Busca un buen punto para comenzar.", "Elige un tema y practica con preguntas nuevas.", "Resuelvan, construyan y expliquen en equipo.", "Mira qué destrezas crecen y qué sigue."],
-    kicker: "UN BUEN LUGAR PARA COMENZAR", gradeTitle: "Elige un grado", gradeIntro: "Elige el grado actual. La práctica puede volver a ideas anteriores cuando sea útil.", selected: "Seleccionado: Grado {grade}. Las sugerencias usan este grado y la evidencia guardada del estudiante.",
+    kicker: "UN BUEN LUGAR PARA COMENZAR", gradeTitle: "Elige un grado", gradeIntro: "Elige el grado actual. La práctica puede volver a ideas anteriores cuando sea útil.", selected: "Seleccionado: {grade}. Las sugerencias usan este grado y la evidencia guardada del estudiante.",
     skillKicker: "UN SIGUIENTE PASO PEQUEÑO Y ÚTIL", skillTitle: "Elige una destreza", skillIntro: "Estas sugerencias vienen de la práctica guardada. Con poca evidencia, comienza con una idea nueva.", skillLabel: "Elige otra destreza", openSkill: "Abrir esta destreza", noEvidence: "Todavía no hay suficiente práctica guardada para sugerir un siguiente paso. Aquí hay una buena idea para explorar.", evidence: "{n} comprobaciones independientes · {pct}% correctas recientemente", review: "Lista para repasar según la práctica reciente", new: "Una idea nueva para explorar", recommendation: "Sugerencia: {title}",
     weekKicker: "ELIGE CUALQUIER DÍA", weekTitle: "Siete maneras de explorar las matemáticas", weekIntro: "¿No pudieron practicar un día? No pasa nada. Todas las opciones están disponibles cuando les convenga.",
     days: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"], modes: ["Misión matemática", "Práctica fluida", "Noche de juegos", "Detectives matemáticos", "Reto", "Matemáticas cotidianas", "Repaso de memoria"], modeDesc: ["Un camino de cinco pasos hacia una idea del grado.", "Practica una destreza con preguntas nuevas.", "Explora juegos matemáticos cooperativos.", "Prueba una evaluación inicial breve.", "Intenta un paso independiente a tu ritmo.", "Prueba problemas cotidianos cuando encajen con la destreza.", "Repasa ideas elegidas con evidencia reciente."],
@@ -57,7 +57,9 @@ function updateLinks() {
 function updateGrade() {
   const buttons = document.querySelectorAll(".grade-option");
   for (const button of buttons) button.setAttribute("aria-pressed", String(Number(button.dataset.grade) === grade));
-  document.querySelector("#grade-selected").textContent = t("selected").replace("{grade}", String(grade));
+  const selectedGrade = GRADES.find((item) => item.grade === grade)?.label || `Grade ${grade}`;
+  const localizedGrade = grade === 0 ? (lang === "es" ? "Jardín de niños" : "Kindergarten") : (lang === "es" ? `Grado ${grade}` : selectedGrade);
+  document.querySelector("#grade-selected").textContent = t("selected").replace("{grade}", localizedGrade);
   writeLocal(profileKey(`${SETTINGS_KEY}:grade`, profile), grade);
   skills = GRADES.find((item) => item.grade === grade)?.skills || [];
   document.querySelector("#skill-select").innerHTML = skills.map((skill) => `<option value="${esc(skill.id)}">${esc(skill.title)} · ${esc(skill.strand)}</option>`).join("");
@@ -133,11 +135,11 @@ function applyLanguage() {
   document.querySelector(".profile-label").textContent = t("caregiver");
   document.querySelector("#family-profile").setAttribute("aria-label", t("profile"));
   document.querySelector("#language-toggle").textContent = lang === "en" ? "Español" : "English";
-  document.querySelectorAll(".grade-option").forEach((button) => { button.textContent = lang === "es" ? `Grado ${button.dataset.grade}` : `Grade ${button.dataset.grade}`; });
+  document.querySelectorAll(".grade-option").forEach((button) => { const gradeNumber = Number(button.dataset.grade); button.textContent = gradeNumber === 0 ? (lang === "es" ? "Jardín de niños" : "Kindergarten") : lang === "es" ? `Grado ${gradeNumber}` : `Grade ${gradeNumber}`; });
   renderProfiles(); updateGrade(); renderRotation();
 }
 
-document.querySelector("#grade-options").innerHTML = GRADES.map(({ grade: number }) => `<button class="grade-option" type="button" data-grade="${number}" aria-pressed="false">Grade ${number}</button>`).join("");
+document.querySelector("#grade-options").innerHTML = GRADES.map(({ grade: number, label }) => `<button class="grade-option" type="button" data-grade="${number}" aria-pressed="false">${number === 0 ? "Kindergarten" : label}</button>`).join("");
 document.querySelector("#grade-options").addEventListener("click", (event) => {
   const button = event.target.closest("[data-grade]");
   if (!button) return;

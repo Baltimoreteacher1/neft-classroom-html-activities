@@ -10,7 +10,8 @@ Object.defineProperty(globalThis, "window", { configurable: true, value: globalT
 const dir = new URL("../math/fluency-lab/", import.meta.url);
 const { ES: ES_BASE } = await import("../math/fluency-lab/i18n-es.js");
 const { ES_MODELS } = await import("../math/fluency-lab/i18n-es-models.js");
-const ES = { ...ES_BASE, ...ES_MODELS };
+const { ES_WORLDS } = await import("../math/fluency-lab/i18n-es-worlds.js");
+const ES = { ...ES_BASE, ...ES_MODELS, ...ES_WORLDS };
 const { setLang, t } = await import("../math/fluency-lab/i18n.js");
 const { TRAILS, BANDS } = await import("../math/fluency-lab/fact-trail.js");
 const { STRATEGIES, TIPS } = await import("../math/fluency-lab/strategies.js");
@@ -70,7 +71,7 @@ for (const match of readFileSync(new URL("puzzle-worlds.js", dir), "utf8").match
 for (const world of PUZZLE_WORLDS) {
   keys.add(world.name);
   keys.add(world.blurb);
-  for (let grade = 4; grade <= 8; grade += 1)
+  for (let grade = 0; grade <= 8; grade += 1)
     for (let round = 0; round < 5; round += 1) {
       const level = worldLevel(world.id, grade, round);
       if (level?.label) keys.add(level.label);
@@ -81,6 +82,26 @@ for (const world of PUZZLE_WORLDS) {
 for (const scene of Object.values(SCENES)) keys.add(scene.title);
 for (let n = 1; n <= 8; n += 1) keys.add(`Grade ${n} skills`);
 keys.add("Trail stops");
+// These labels/prompts are selected from data at runtime rather than passed as
+// string literals directly to t(), so include them in the coverage inventory.
+for (const key of [
+  "Number Quest",
+  "Array Architect",
+  "Number Garden",
+  "Grade {n} · {name}",
+  "Find the two tens around {target}. Compare how far the target is from each one.",
+  "Your marker is at {point}. Move it closer to {target}, then compare the distances.",
+  "Your marker is at {point}. Move it to {target} to plant the seeds.",
+  "Equation Factory",
+  "Ratio City",
+  "left",
+  "right",
+  "There is a gap or overlap. Compare the total length with the target.",
+  "The pans are not equal yet. Make the same change to both sides.",
+  "The city quantities changed by different factors. Keep the ratio constant.",
+  "That route does not return to the stated output. Check the inverse steps.",
+])
+  keys.add(key);
 for (const item of ITEMS) {
   keys.add(item.name);
   keys.add(item.hint);

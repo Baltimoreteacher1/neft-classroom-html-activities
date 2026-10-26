@@ -2,7 +2,7 @@
 // read aloud while the English stays on screen, so the English is still what they practice. Only the words
 // change: every number, symbol and variable is copied from the English question. A stem with no words in it
 // (for example "34 + 50 = ?") has no Spanish and returns null. tools/fluency-language.test.mjs generates
-// thousands of questions across all 88 skills and fails on any wordy stem that has no rule here.
+// thousands of questions across all 96 skills and fails on any wordy stem that has no rule here.
 const NUM = String.raw`[-−]?\d[\d,]*(?:\.\d+)?`;
 const VAL = String.raw`(?:${NUM}(?: \d+/\d+)?|\d+/\d+)`;
 const PAIR = String.raw`\([^)]*\)`;
@@ -59,9 +59,34 @@ const ONE = {
 };
 const unitWord = (en, count = "2") => (count === "1" ? ONE[UNITS[en]?.[0]] : UNITS[en]?.[0]) || en;
 const how = (en) => (UNITS[en]?.[1] === "f" ? "cuántas" : "cuántos");
+const counterLayoutEs = (en) => ({
+  "ten-frame": "el marco de diez",
+  line: "la recta",
+  "pairs with any extras": "los pares y las fichas adicionales",
+})[en] || en;
 
 // [pattern, builder(match) → Spanish]. Patterns are anchored on the whole stem; order matters only where noted.
 const RULES = [
+  [/^How many counters are in this (.+)\?$/, (m) => `¿Cuántas fichas hay en ${counterLayoutEs(m[1])}?`],
+  [/^Count the counters shown in this (.+)\. What is the total\?$/, (m) => `Cuenta las fichas mostradas en ${counterLayoutEs(m[1])}. ¿Cuál es el total?`],
+  [/^Look at the (.+)\. How many counters can you count\?$/, (m) => `Mira ${counterLayoutEs(m[1])}. ¿Cuántas fichas puedes contar?`],
+  [/^What is the total number of counters in this (.+)\?$/, (m) => `¿Cuál es el total de fichas en ${counterLayoutEs(m[1])}?`],
+  [/^How many counters do you see in this (.+)\?$/, (m) => `¿Cuántas fichas ves en ${counterLayoutEs(m[1])}?`],
+  [/^Can you recognize the number of counters in this (.+)\?$/, (m) => `¿Puedes reconocer cuántas fichas hay en ${counterLayoutEs(m[1])}?`],
+  [/^Look closely at the (.+)\. How many counters are shown\?$/, (m) => `Mira bien ${counterLayoutEs(m[1])}. ¿Cuántas fichas se muestran?`],
+  [/^What quantity is represented by the counters in this (.+)\?$/, (m) => `¿Qué cantidad representan las fichas de ${counterLayoutEs(m[1])}?`],
+  [/^Look at the scattered dots\. How many are there\?$/, () => "Mira los puntos dispersos. ¿Cuántos hay?"],
+  [/^Count the dots in this arrangement\.$/, () => "Cuenta los puntos de este arreglo."],
+  [/^How many dots are shown in this mixed arrangement\?$/, () => "¿Cuántos puntos hay en este arreglo variado?"],
+  [/^What number do the scattered dots show\?$/, () => "¿Qué número muestran los puntos dispersos?"],
+  [/^Count all the dots in this new layout\.$/, () => "Cuenta todos los puntos de esta nueva distribución."],
+  [/^How many dots are in this new arrangement\?$/, () => "¿Cuántos puntos hay en este nuevo arreglo?"],
+  [/^How many dots do you recognize in this familiar pattern\?$/, () => "¿Cuántos puntos reconoces en este patrón conocido?"],
+  [/^What quantity do you see in the grouped dots\?$/, () => "¿Qué cantidad ves en los puntos agrupados?"],
+  [/^How many dots are shown in this familiar arrangement\?$/, () => "¿Cuántos puntos hay en este arreglo conocido?"],
+  [/^Look at the familiar dot pattern\. How many are there\?$/, () => "Mira el patrón de puntos conocido. ¿Cuántos hay?"],
+  [/^How many dots can you see without counting one by one\?$/, () => "¿Cuántos puntos puedes reconocer sin contarlos uno por uno?"],
+  [/^What number is represented by this grouped pattern\?$/, () => "¿Qué número representa este patrón de puntos agrupados?"],
   [
     /^What is the value of the digit in the ([\w-]+) place of (.+)\?$/,
     (m) => `¿Cuál es el valor del dígito en el lugar de ${PLACES[m[1]]} de ${m[2]}?`,

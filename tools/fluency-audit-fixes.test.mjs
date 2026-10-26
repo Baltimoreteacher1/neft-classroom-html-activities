@@ -77,8 +77,9 @@ for (const skill of ALL_SKILLS) {
   const seen = new Set();
   for (let i = 0; i < 300; i += 1)
     seen.add(adaptiveProblem(skill, seededRandom(i + 1), 0).question);
+  const minimum = skill.grade === 0 ? 6 : 12;
   if (!["make-10", "exponents", "square-roots", "pythagorean"].includes(skill.id))
-    assert.ok(seen.size >= 12, `${skill.grade}:${skill.id} level 0 has ${seen.size} problems`);
+    assert.ok(seen.size >= minimum, `${skill.grade}:${skill.id} level 0 has ${seen.size} problems`);
 }
 
 // 4. A zero factor never gets a sign rule.

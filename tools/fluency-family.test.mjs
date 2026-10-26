@@ -25,7 +25,7 @@ for (const grade of GRADES) {
   }
 }
 
-assert.throws(() => familyLaunch({ grade: 0, profile: 0, start: "daily" }), RangeError);
+assert.match(familyLaunch({ grade: 0, profile: 0, start: "daily" }), /grade=0/);
 assert.throws(() => familyLaunch({ grade: 1, profile: 6, start: "daily" }), RangeError);
 assert.throws(
   () => familyLaunch({ grade: 1, profile: 0, start: "practice", skill: "not-a-skill" }),
@@ -50,6 +50,13 @@ const app = await readFile(new URL("../math/fluency-lab/app.js", import.meta.url
 assert.match(page, /id="main"/);
 assert.match(page, /id="family-profile"/);
 assert.match(page, /id="print-coach"/);
+for (const [, href] of page.matchAll(/<a\b[^>]*\bhref="([^"]+)"/g)) {
+  const destination = new URL(href, "https://example.test/math/fluency-lab/family/");
+  assert.ok(
+    destination.pathname.startsWith("/math/fluency-lab/"),
+    "family link stays inside Math Fluency Lab: " + href,
+  );
+}
 assert.match(labPage, /href="\.\/family\/"[^>]*data-i18n>Family Math Tonight/);
 assert.match(client, /recommendations\(safeTutor\(\), grade\)/);
 assert.match(client, /profileKey\(TUTOR_KEY, profile\)/);

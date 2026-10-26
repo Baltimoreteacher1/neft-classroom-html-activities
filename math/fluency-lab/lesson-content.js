@@ -9,11 +9,35 @@ const num = (value) => Number(value.toFixed(6));
 // Variants change the quantities while keeping each model mathematically exact.
 export function createLesson(skill, variant = 0) {
   const k = Math.abs(variant) % 5;
-  const grade = skill.grade || 1;
+  const grade = Number.isInteger(skill.grade) ? skill.grade : 1;
   // A combined skill ("addsub", "muldiv") shows one operation per variant; a mixed generator teaches as its main part.
   const MIXED = { addsub: ["add", "sub"], muldiv: ["mul", "div"], rational: ["add", "sub", "mul", "div"] };
   const config = MIXED[skill.config.op] ? { ...skill.config, op: MIXED[skill.config.op][k % MIXED[skill.config.op].length] } : skill.config;
   const gen = baseGenerator(skill);
+  if (gen === "countSet" || gen === "subitize") {
+    const count = Math.min(skill.config.max || 6, (skill.config.min || 1) + k);
+    const isSubitize = gen === "subitize";
+    return lesson(
+      isSubitize ? "Notice a small group" : "Count each object once",
+      isSubitize ? "Look for a familiar group or parts that fit together. Counting is always a useful check." : "Match one number name to each object. The last number tells the total.",
+      isSubitize ? { type: "dotpattern", dots: [[25, 25], [75, 25], [50, 50], [25, 75], [75, 75], [50, 25]].slice(0, count), pattern: "small group", caption: "Notice the parts." } : { type: "counters", total: skill.config.max || 10, filled: count, target: count, caption: `${count} counters` },
+      [
+        step(isSubitize ? "How many counters do you notice before counting?" : "How many counters are in the set?", count, "Look at the model. Count each counter once if you want to check.", `There are ${count} counters.`),
+        step(`Can you see ${count} as smaller groups?`, count, "Name the parts, then put them together.", `The groups together still make ${count}.`),
+        step("What does the last number you counted tell you?", count, "It names the whole set.", `The set has ${count} counters.`),
+      ],
+    );
+  }
+  if (gen === "pattern") {
+    const units = [["●", "■"], ["▲", "●", "■"], ["●", "●", "▲"]];
+    const unit = units[k % units.length];
+    const values = [...unit, ...unit, "?"];
+    const answer = unit[0];
+    return lesson("Find the repeating part", "A repeating pattern has a unit that repeats in the same order.",
+      { type: "sequence", values, caption: "Find the unit that repeats." },
+      [step("Which shape starts the repeating unit?", answer, "Look for the group of shapes that repeats.", `The unit starts with ${answer}.`, "choice", ["●", "■", "▲"]), step("What comes after the repeating unit?", answer, "Say the unit again in the same order.", `The next shape is ${answer}.`, "choice", ["●", "■", "▲"]), step("What is the repeating unit?", unit.join(" "), "Name the shortest group that repeats.", `The unit is ${unit.join(" ")}.`, "text")],
+    );
+  }
   if (gen === "fact") {
     const op = config.op;
     if (op === "div") {

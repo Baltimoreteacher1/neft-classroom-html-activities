@@ -126,6 +126,14 @@ const TERM_ROWS = [
 ];
 
 const SKILL_ROWS = [
+  "count-forward|number|number,count,add",
+  "count-cardinality|number|number,count,total",
+  "subitize|number|count,number,pattern",
+  "compare-20|number|compare,greater-than,less-than",
+  "compose-10|addsub|add,number,total",
+  "add-sub-5|addsub|add,subtract,difference",
+  "story-add-sub-10|addsub|add,subtract,total",
+  "patterns|number|pattern,count,number",
   "count-patterns|number|count,pattern,number",
   "compare-100|number|compare,greater-than,less-than,equal",
   "tens-ones|number|tens,digit,place-value",

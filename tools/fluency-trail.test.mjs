@@ -16,7 +16,7 @@ const check = (condition, message) => condition || failures.push(message);
 const number = (text) => Number(String(text).replaceAll(",", "").replace("−", "-"));
 let problems = 0;
 
-for (const grade of [1, 2, 3, 4, 5, 6, 7, 8]) {
+for (const grade of [0, 1, 2, 3, 4, 5, 6, 7, 8]) {
   const trail = TRAILS[grade];
   check(trail && trail.stations.length >= 6, `Grade ${grade} needs a trail of at least 6 stops.`);
   check(

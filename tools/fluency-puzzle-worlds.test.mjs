@@ -8,6 +8,12 @@ import {
 } from "../math/fluency-lab/puzzle-worlds.js";
 
 const valuesFor = (level) => {
+  if (level.mode === "tenframe" || level.mode === "decimal")
+    return { answer: String(level.answer) };
+  if (level.mode === "harbor")
+    return { docks: Array(level.model.docks).fill(String(level.answer)) };
+  if (level.mode === "coordinate")
+    return { x: String(level.answer[0]), y: String(level.answer[1]) };
   if (level.mode === "input") return { answer: String(level.answer) };
   if (level.mode === "choice") return { choice: level.answer };
   if (level.mode === "fraction-single")
@@ -22,7 +28,17 @@ const valuesFor = (level) => {
 
 assert.deepEqual(
   PUZZLE_WORLDS.map(({ id }) => id),
-  ["equationfactory", "fractionbridge", "balancestation", "ratiocity"],
+  [
+    "equationfactory",
+    "fractionbridge",
+    "balancestation",
+    "ratiocity",
+    "tenframefactory",
+    "divisionharbor",
+    "decimaldashboards",
+    "integerexpedition",
+    "graphcity",
+  ],
 );
 for (const world of PUZZLE_WORLDS) {
   for (let grade = 1; grade <= 8; grade += 1) {
@@ -109,6 +125,12 @@ assert.equal(skillIdForWorld("equationfactory", 6), "one-step");
 assert.equal(skillIdForWorld("fractionbridge", 4), "fraction-equiv");
 assert.equal(skillIdForWorld("balancestation", 8), "linear-equations");
 assert.equal(skillIdForWorld("ratiocity", 7), "proportions");
+assert.equal(skillIdForWorld("tenframefactory", 0), "compose-10");
+assert.equal(skillIdForWorld("divisionharbor", 3), "division-facts");
+assert.equal(skillIdForWorld("decimaldashboards", 5), "decimal-add");
+assert.equal(skillIdForWorld("integerexpedition", 7), "integer-add");
+assert.equal(skillIdForWorld("graphcity", 8), "functions");
+assert.equal(skillIdForWorld("numbergarden", 0), "count-cardinality");
 assert.equal(skillIdForWorld("unknown", 7), null);
 
 console.log(

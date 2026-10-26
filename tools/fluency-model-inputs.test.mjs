@@ -35,7 +35,7 @@ const sample = (skill, count, seed) => {
 const items = ALL_SKILLS.flatMap((skill, i) =>
   sample(skill, 18, 1000 + i * 7).map((item) => ({ skill, item })),
 );
-assert.equal(ALL_SKILLS.length, 88, "88 skills");
+assert.equal(ALL_SKILLS.length, 96, "96 skills including Kindergarten");
 
 // 0. Known shapes: the numbers come out as written, story wording reads through `expr`.
 const known = [

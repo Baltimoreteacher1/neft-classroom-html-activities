@@ -249,7 +249,91 @@ function coachedFact(op, a, b, answer, config) {
   return problem(`${whole.format(a)} × ${whole.format(b)} = ?`, answer, { hint, explanation: `${whole.format(a)} × ${whole.format(b)} = ${whole.format(answer)}`, model, steps: factSteps(op, a, b, answer, config.tens ? "zeros" : "") });
 }
 
+const counterSet = (config, rng, focus) => {
+  const max = config.max ?? 10;
+  const count = randInt(config.min ?? 1, max, rng);
+  const layouts = focus === "subitize" ? ["frame", "pairs", "line"] : ["line", "frame", "pairs"];
+  const layout = pick(layouts, rng);
+  const layoutName = { line: "line", frame: "ten-frame", pairs: "pairs with any extras" }[layout];
+  const asks = focus === "subitize"
+    ? [
+        "How many counters do you see in this " + layoutName + "?",
+        "Can you recognize the number of counters in this " + layoutName + "?",
+        "Look closely at the " + layoutName + ". How many counters are shown?",
+        "What quantity is represented by the counters in this " + layoutName + "?",
+      ]
+    : [
+        "How many counters are in this " + layoutName + "?",
+        "Count the counters shown in this " + layoutName + ". What is the total?",
+        "Look at the " + layoutName + ". How many counters can you count?",
+        "What is the total number of counters in this " + layoutName + "?",
+      ];
+  const arrangement = count <= 6 ? "unfamiliar" : "familiar";
+  return problem(pick(asks, rng), count, {
+    hint: focus === "subitize" ? "Notice groups, then count each counter once to check." : "Touch or move one counter at a time. Count each one once.",
+    explanation: `There are ${count} counters. The final number counted names the total.`,
+    model: { type: "counters", kind: focus, layout, total: max, filled: count, target: count, shown: count, caption: `${count} counters in a ${arrangement} arrangement.` },
+  });
+};
+
 const generators = {
+  countSet(config, rng) {
+    return counterSet(config, rng, "countSet");
+  },
+  subitize(config, rng) {
+    const count = randInt(config.min ?? 1, config.max ?? 6, rng);
+    const unfamiliar = rng() < 0.5;
+    const familiarSets = {
+      1: [[50, 50]], 2: [[25, 25], [75, 75]], 3: [[25, 25], [50, 50], [75, 75]],
+      4: [[25, 25], [75, 25], [25, 75], [75, 75]],
+      5: [[25, 25], [75, 25], [50, 50], [25, 75], [75, 75]],
+      6: [[25, 20], [75, 20], [25, 50], [75, 50], [25, 80], [75, 80]],
+    };
+    const scatter = [[18, 24], [61, 18], [37, 54], [82, 46], [21, 82], [70, 78]];
+    const dots = unfamiliar ? scatter.slice(0, count) : familiarSets[count];
+    const stems = unfamiliar
+      ? [
+          "How many dots are in this new arrangement?",
+          "Look at the scattered dots. How many are there?",
+          "Count the dots in this arrangement.",
+          "How many dots are shown in this mixed arrangement?",
+          "What number do the scattered dots show?",
+          "Count all the dots in this new layout.",
+        ]
+      : [
+          "How many dots do you recognize in this familiar pattern?",
+          "What quantity do you see in the grouped dots?",
+          "How many dots are shown in this familiar arrangement?",
+          "Look at the familiar dot pattern. How many are there?",
+          "How many dots can you see without counting one by one?",
+          "What number is represented by this grouped pattern?",
+        ];
+    return problem(pick(stems, rng), count, {
+      hint: "Notice parts or groups first. Then count each dot once to check.",
+      explanation: `The pattern has ${count} dots. Counting can check what you noticed.`,
+      model: { type: "dotpattern", dots, pattern: unfamiliar ? "new arrangement" : "familiar pattern", caption: "Look for groups before you count." },
+    });
+  },
+  pattern(config, rng) {
+    const patterns = [
+      ["circle", "square"],
+      ["triangle", "circle", "square"],
+      ["circle", "circle", "triangle"],
+      ["square", "triangle"],
+      ["circle", "triangle", "square"],
+      ["triangle", "triangle", "circle"],
+    ];
+    const unit = pick(patterns, rng);
+    const items = Array.from({ length: unit.length * 2 + 1 }, (_, index) => unit[index % unit.length]);
+    const answer = unit[(items.length) % unit.length];
+    const symbols = { circle: "●", square: "■", triangle: "▲" };
+    return problem(`${items.map((item) => symbols[item]).join(" ")} ___`, answer, {
+      kind: "text", choices: ["circle", "square", "triangle"],
+      hint: "Find the repeating group. Say the group again to find what comes next.",
+      explanation: `The repeating group is ${unit.map((item) => symbols[item]).join(" ")}; next is ${answer}.`,
+      model: { type: "sequence", values: [...items.map((item) => symbols[item]), "?"], caption: "Find and repeat the pattern unit." },
+    });
+  },
   fact(config, rng) {
     const op = config.op || "add";
     const min = config.min ?? 0;
@@ -1213,6 +1297,22 @@ const S = (id, title, strand, generator, config, standard, learn) => ({
 
 export const GRADES = [
   {
+    grade: 0,
+    color: "#e59b46",
+    label: "Kindergarten",
+    promise: "Explore quantities, patterns, and number relationships with objects and pictures.",
+    skills: [
+      S("count-forward", "Count forward and name the next number", "Number sense", "sequence", { steps: [1], maxStart: 16 }, "K.NOS.A.2", L("The number names stay in order, and each next number is one more.", ["Start at the number you know.", "Say the next number name.", "Check by adding one object."], "8, 9, 10, 11 → 12", "Continue from the given number instead of restarting at one.")),
+      S("count-cardinality", "Count a set and tell how many", "Counting", "countSet", { min: 1, max: 10 }, "K.NOS.B.6", L("Count each object once. The last number you say tells how many are in the set.", ["Touch or move one object at a time.", "Say one number for each object.", "Use the last number as the total."], "1, 2, 3, 4, 5 objects: there are 5.", "Do not count one object twice or skip an object.")),
+      S("subitize", "Recognize small groups without counting", "Number sense", "subitize", { min: 1, max: 6 }, "K.NOS.B.8", L("Small groups can be recognized by their arrangement and parts.", ["Notice groups of two or three.", "See how the parts fit together.", "Check by counting if you want."], "Two dots and one dot make a group of 3.", "It is okay to count to check; the goal is to notice groups.")),
+      S("compare-20", "Compare quantities to 20", "Number relationships", "compare", { max: 20 }, "K.NOS.C.10", L("Compare groups by matching objects or comparing their number names.", ["Look at both groups.", "Match one object from each group, or count each group.", "Decide which is more, fewer, or the same."], "12 is greater than 9 because 12 comes later in the count sequence.", "A larger written numeral can be hard to see; compare the amounts.")),
+      S("compose-10", "Make and break apart numbers to 10", "Number relationships", "makeTarget", { target: 10 }, "K.NOS.D.11", L("A number can be made from different parts.", ["Choose a whole number.", "Separate it into two groups.", "Name both parts and the whole."], "10 can be 4 and 6, or 7 and 3.", "The parts must join to make the whole.")),
+      S("add-sub-5", "Join and separate groups within 5", "Operations", "fact", { op: "addsub", min: 0, max: 5, maxResult: 5 }, "K.AT.A.1", L("Addition joins groups; subtraction takes from a group or compares two groups.", ["Show the groups with objects or a drawing.", "Join or take away the objects.", "Count the result and explain what changed."], "2 counters and 1 more counter make 3 counters.", "Keep track of which number is the starting group and which is changing it.")),
+      S("story-add-sub-10", "Solve a joining or separating story", "Operations", "missingAddend", { minTotal: 2, maxTotal: 10 }, "K.AT.A.2", L("A story can be shown with objects, a drawing, or an equation.", ["Act out or picture the starting amount.", "Add more or take some away.", "Count the amount the story asks about."], "There are 6 birds. 2 fly away. 4 birds remain.", "Listen for whether the amount grows, shrinks, or is split into parts.")),
+      S("patterns", "Extend a repeating pattern", "Patterns", "pattern", {}, "K.AT.B.3", L("A repeating pattern follows a unit that happens again and again.", ["Find the part that repeats.", "Say or point to the next part.", "Check that the repeat continues."], "● ■ ● ■ → ●", "Look for the repeating group, not only the last item.")),
+    ],
+  },
+  {
     grade: 1,
     color: "#d14f7a",
     label: "Grade 1",
@@ -1412,7 +1512,7 @@ export const ALL_SKILLS = GRADES.flatMap((grade) =>
 );
 
 export function getGrade(grade) {
-  return GRADES.find((item) => item.grade === Number(grade)) || GRADES[0];
+  return GRADES.find((item) => item.grade === Number(grade)) || GRADES.find((item) => item.grade === 1);
 }
 
 export function getSkill(grade, skillId) {

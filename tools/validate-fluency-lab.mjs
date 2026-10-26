@@ -20,15 +20,18 @@ function check(condition, message) {
   if (!condition) failures.push(message);
 }
 
-check(GRADES.length === 8, `Expected 8 grades; found ${GRADES.length}.`);
+check(GRADES.length === 9, `Expected Kindergarten and Grades 1–8; found ${GRADES.length} grades.`);
 check(
-  GRADES.map((grade) => grade.grade).join(",") === "1,2,3,4,5,6,7,8",
-  "Grades must run consecutively from 1 through 8.",
+  GRADES.map((grade) => grade.grade).join(",") === "0,1,2,3,4,5,6,7,8",
+  "Grades must run consecutively from Kindergarten (0) through 8.",
 );
-check(ALL_SKILLS.length === 88, `Expected 88 skills; found ${ALL_SKILLS.length}.`);
+check(ALL_SKILLS.length === 96, `Expected 96 skills; found ${ALL_SKILLS.length}.`);
 
 for (const grade of GRADES) {
-  check(grade.skills.length === 11, `${grade.label} must contain 11 skills.`);
+  check(
+    grade.skills.length === (grade.grade === 0 ? 8 : 11),
+    `${grade.label} has an unexpected skill count.`,
+  );
   const ids = new Set(grade.skills.map((skill) => skill.id));
   check(ids.size === grade.skills.length, `${grade.label} contains duplicate skill IDs.`);
 

@@ -43,7 +43,7 @@ const { ALL_SKILLS, generateProblem, seededRandom, validateAnswer } = await impo
 const failures = [];
 const check = (condition, message) => condition || failures.push(message);
 
-for (const grade of [1, 2, 3, 4, 5, 6, 7, 8]) {
+for (const grade of [0, 1, 2, 3, 4, 5, 6, 7, 8]) {
   check(stopsFor(grade).length >= 1, `Grade ${grade}: at least one stop must support every game.`);
   for (const stop of [ALL_STOPS, ...stopsFor(grade).map((s) => s.id)]) {
     const tag = `${grade}/${stop}`;
@@ -254,7 +254,7 @@ check(
 );
 
 // Boss round: mixes every regular stop, opens only when each has 2+ stars.
-for (const grade of [1, 2, 3, 4, 5, 6, 7, 8]) {
+for (const grade of [0, 1, 2, 3, 4, 5, 6, 7, 8]) {
   const boss = bossFor(grade);
   check(
     boss.mix.length >= 3 &&
@@ -383,7 +383,7 @@ check(
 }
 
 // Make It: every board holds the wanted number of tile pairs that reach the target.
-for (const grade of [1, 2, 3, 4, 5, 6, 7, 8]) {
+for (const grade of [0, 1, 2, 3, 4, 5, 6, 7, 8]) {
   for (let i = 0; i < 25; i += 1) {
     for (const wanted of [2, 3]) {
       const { op, target, tiles } = makeBoard(grade, wanted);

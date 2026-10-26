@@ -2,9 +2,10 @@
 // Spanish entry simply stays in English. Placeholders look like {name} and are filled from `vars`.
 import { ES as ES_BASE } from "./i18n-es.js";
 import { ES_MODELS } from "./i18n-es-models.js";
+import { ES_WORLDS } from "./i18n-es-worlds.js";
 import { readLocal, writeLocal } from "./school-tools.js";
 
-const ES = { ...ES_BASE, ...ES_MODELS };
+const ES = { ...ES_BASE, ...ES_MODELS, ...ES_WORLDS };
 const KEY = "ewl-fluency-lang-v1";
 let lang = null;
 

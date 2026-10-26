@@ -53,6 +53,19 @@ export const BANDS = {
 export const bandFor = (grade) => (grade <= 2 ? "early" : grade <= 5 ? "middle" : "upper");
 
 export const TRAILS = {
+  0: {
+    focus: "Count, compare, and make groups within 10",
+    standard: "K.NOS.B.6",
+    chart: null,
+    stations: [
+      station("count-set", "● ● ●", "Count a set", "Touch one counter at a time. The last number tells how many.", gen("countSet", { min: 1, max: 10 })),
+      station("make-five", "□ + 3 = 5", "Make five", "Picture five spaces. How many more counters fill them?", gen("makeTarget", { target: 5 })),
+      station("join-groups", "2 + 1", "Join groups", "Put the groups together, then count the total.", gen("fact", { op: "add", min: 0, max: 5, maxResult: 5 })),
+      station("separate", "4 − 1", "Separate a group", "Take away one part. Count what remains.", gen("fact", { op: "sub", min: 0, max: 5, maxResult: 10 })),
+      station("count-on", "6, 7, 8", "Count on", "Start at the number you know and say what comes next.", gen("sequence", { steps: [1], maxStart: 7 })),
+      mix("mix", "● + ●", "Mix it up", "Count or picture the groups, then explain how you know.", ["count-set", "make-five", "join-groups", "separate", "count-on"]),
+    ],
+  },
   1: {
     focus: "Add and subtract within 10",
     standard: "1.OA.C.6",
@@ -568,7 +581,7 @@ export function cleanRecent(list) {
       answers: entry.answers.slice(0, 3).map((a) => text(a, 40)),
       displayAnswer: text(entry.displayAnswer ?? entry.answers[0], 40),
       kind: ["number", "fraction", "text"].includes(entry.kind) ? entry.kind : "number",
-      grade: Number.isInteger(entry.grade) && entry.grade >= 1 && entry.grade <= 8 ? entry.grade : 0,
+      grade: Number.isInteger(entry.grade) && entry.grade >= 0 && entry.grade <= 8 ? entry.grade : 0,
       steps: (Array.isArray(entry.steps) ? entry.steps : []).slice(0, 6).map((step) => text(step, 160)),
       hint: text(entry.hint, 160),
     }));

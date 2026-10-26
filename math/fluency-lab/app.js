@@ -53,6 +53,7 @@ const SESSION_KEY = "ewl-fluency-session-v2";
 const INTELLIGENCE_KEY = "ewl-fluency-instructional-evidence-v1";
 const STREAK_GOAL = 10;
 const initialParams = new URLSearchParams(location.search);
+const initialGrade = initialParams.has("grade") ? Number(initialParams.get("grade")) : Number.NaN;
 const requestedProfileValue = initialParams.get("profile");
 const requestedProfile = requestedProfileValue === null ? Number.NaN : Number(requestedProfileValue);
 let activeProfile = Number.isInteger(requestedProfile) && requestedProfile >= 0 && requestedProfile < PROFILE_NAMES.length
@@ -172,7 +173,7 @@ const els = {
 };
 
 const state = {
-  grade: Number(initialParams.get("grade")) || Number(readLocal(profileKey(`${SETTINGS_KEY}:grade`, activeProfile), 1)) || 1,
+  grade: GRADES.some((grade) => grade.grade === initialGrade) ? initialGrade : Number(readLocal(profileKey(`${SETTINGS_KEY}:grade`, activeProfile), 1)),
   strand: "All",
   skill: null,
   mixedPool: null,
@@ -194,6 +195,7 @@ const state = {
   assignment: decodeAssignment(new URLSearchParams(location.hash.slice(1)).get("assignment")),
   instructionalSignal: null,
 };
+const gradeDisplay = (grade) => getGrade(grade).label;
 
 // This adapter stores only bounded evidence categories. Answers and written work stay in the
 // existing local tutor/session flow and are never copied into the shared intelligence record.
@@ -315,7 +317,7 @@ function filterSkillsBySearch() {
       empty.className = "skill-search-empty";
       els.skillGrid.appendChild(empty);
     }
-    empty.textContent = `No skills match "${query}" in Grade ${state.grade}.`;
+    empty.textContent = `No skills match "${query}" in ${gradeDisplay(state.grade)}.`;
     empty.style.display = "";
   } else if (empty) {
     empty.style.display = "none";
@@ -449,12 +451,12 @@ function renderOverallStats() {
 
 function populateQuickSkillDropdown() {
   if (!els.quickSkillSelect) return;
-  els.quickSkillSelect.innerHTML = '<option value="">Jump to any skill (Grades 1–8)...</option>' +
+  els.quickSkillSelect.innerHTML = '<option value="">Jump to any skill (Kindergarten–Grade 8)...</option>' +
     GRADES.map((grade) => `
       <optgroup label="${escapeHtml(grade.label)} (${escapeHtml(grade.focus)})">
         ${grade.skills.map((s) => `
           <option value="${grade.grade}:${s.id}">
-            Grade ${grade.grade} · ${escapeHtml(s.title)} (${escapeHtml(s.strand)})
+            ${escapeHtml(grade.label)} · ${escapeHtml(s.title)} (${escapeHtml(s.strand)})
           </option>
         `).join("")}
       </optgroup>
@@ -476,7 +478,7 @@ function openSkill(skillId, mode = "learn", targetGrade = null) {
     targetGrade = Number(gStr);
     skillId = sId;
   }
-  if (targetGrade && GRADES.some((g) => g.grade === targetGrade)) {
+  if (targetGrade !== null && GRADES.some((g) => g.grade === targetGrade)) {
     state.grade = targetGrade;
     saveSettings();
     renderGradeTabs();
@@ -738,7 +740,7 @@ function nextProblem(restoredItem = null) {
   els.answerInput.disabled = false;
   els.problemNumber.textContent = state.session.mode === "streak" ? `Problem ${state.session.answered + 1}` : `Problem ${state.session.answered + 1} of ${state.session.target}`;
   formatProblemArena(state.item);
-  els.topic.textContent = `${skill.title} · Grade ${skill.grade}`;
+  els.topic.textContent = `${skill.title} · ${gradeDisplay(skill.grade)}`;
   document.querySelector("#problem-language-support").innerHTML = state.session.mode === "diagnostic" ? spanishPeekHtml(state.item) : problemSupportHtml(skill, state.item);
   els.insight.textContent = state.session.mode === "diagnostic" ? "One sample per skill. Choose “I’m not sure yet” whenever you need to." : queueEntry?.reason ? `${queueEntry.purpose}. ${t("This skill was suggested because")}: ${displayRecommendationReason(queueEntry.reason)}.` : queueEntry?.purpose || (state.initialSupport ? "A smaller step with coaching. We’ll build back toward independent work." : adapting && level === 2 ? "Your recent answers were strong. Try this one independently, then explain a check." : adapting ? "Work at your pace. Help is here when you need it." : "");
   const activityEvidence = readInstructionalEvidence(instructionalEvidenceState).filter((entry) => entry.activity === tutorSkillKey(skill));
@@ -7131,7 +7133,7 @@ function renderDashboard() {
   const refresh = due === 1 ? t("{n} skill ready for a memory refresh.", { n: due }) : t("{n} skills ready for a memory refresh.", { n: due });
   els.dashboard.innerHTML = `
     <div class="journey-heading">
-      <div><p class="section-label">${t("Grade {n} · {name}", { n: state.grade, name: escapeHtml(PROFILE_NAMES[activeProfile]) })}</p><h2>${t("What would you like to do?")}</h2><p>${t("Pick up where you left off, play with a math idea, or choose something new.")}</p></div>
+      <div><p class="section-label">${escapeHtml(gradeDisplay(state.grade))} · ${escapeHtml(PROFILE_NAMES[activeProfile])}</p><h2>${t("What would you like to do?")}</h2><p>${t("Pick up where you left off, play with a math idea, or choose something new.")}</p></div>
       <button class="journey-checkup" type="button" data-start-checkup aria-label="${state.tutor.diagnostics[state.grade] ? t('Try the starting-point check again') : t('Find a starting point')}"><span class="journey-checkup-icon" aria-hidden="true">↗</span><span><strong>${state.tutor.diagnostics[state.grade] ? t('Check my starting point') : t('New here?')}</strong><small>${state.tutor.diagnostics[state.grade] ? t('Update your learning snapshot') : t('Find a comfortable place to begin')}</small></span></button>
     </div>
     <div class="journey-cards">
@@ -7168,7 +7170,7 @@ function openHubView(view) {
 }
 
 function recordPuzzleEvidence(entry) {
-  for (let grade = entry.grade; grade >= 1; grade -= 1) {
+  for (let grade = entry.grade; grade >= 0; grade -= 1) {
     const id = skillIdForWorld(entry.worldId, grade);
     const skill = id ? findSkill(`${grade}:${id}`) : null;
     if (!skill) continue;
@@ -7185,7 +7187,7 @@ function renderPath() {
   const explored = skills.filter((skill) => evidence(state.tutor, skill).lessonCompleted).length;
   const remembered = ranked.filter((entry) => entry.status.secure).length;
   const repaired = state.tutor.mistakes.filter((entry) => entry.resolvedAt && findSkill(entry.key)?.grade === state.grade).length;
-  els.path.innerHTML = `<div class="section-heading"><div><p class="section-label">Grade ${state.grade} · ${escapeHtml(PROFILE_NAMES[activeProfile])}</p><h2>See what is growing.</h2><p>Independent first tries, coached practice, and learning over time tell different parts of the story.</p></div><button class="outline-action" data-print-report>Print family progress</button></div>
+  els.path.innerHTML = `<div class="section-heading"><div><p class="section-label">${escapeHtml(gradeDisplay(state.grade))} · ${escapeHtml(PROFILE_NAMES[activeProfile])}</p><h2>See what is growing.</h2><p>Independent first tries, coached practice, and learning over time tell different parts of the story.</p></div><button class="outline-action" data-print-report>Print family progress</button></div>
     <div class="learning-milestones"><div><strong>${explored}/${skills.length}</strong><span>visual lessons explored</span></div><div><strong>${remembered}/${skills.length}</strong><span>remembered independently</span></div><div><strong>${repaired}</strong><span>mistakes revisited successfully</span></div><div><strong>${new Set(sessions.map((session) => localDay(session.at))).size}</strong><span>practice days</span></div></div>
     <div class="path-explainer"><h3>What “remembered” means here</h3><p>At least eight recent independent checks, 85% correct, and successful practice on two different days. Coached examples and easier support problems help you learn; they do not establish independent mastery.</p></div>
     <div class="learning-map">${skills.map((skill) => {
@@ -7508,7 +7510,7 @@ function openPlanned(mode, queue, options = {}) {
   saveActiveSession(); cleanupVisual?.(); cleanupVisual = null;
   state.skill = null; state.mixedPool = queue.map((entry) => findSkill(entry.key)); state.mode = mode;
   showArea("workspace");
-  els.workspaceGrade.textContent = `Grade ${state.grade}`;
+  els.workspaceGrade.textContent = gradeDisplay(state.grade);
   els.workspaceTitle.textContent = mode === "daily" ? "Today's 10, chosen for you" : mode === "mission" ? "A short learning mission" : mode === "diagnostic" ? "Find my starting point" : mode === "assignment" ? state.assignment.label : "Turn a mistake into a strategy";
   document.title = `${els.workspaceTitle.textContent} | Math Fluency Lab`;
   els.workspaceStandard.textContent = mode === "diagnostic" ? `${getGrade(state.grade).skills.length} samples to help you choose your next step` : mode === "mission" ? "Start with your grade-level skill, visit a useful foundation, then return for a supported, independent, and transfer try." : "Fresh problems from your selected skills";
@@ -7582,7 +7584,7 @@ function resumePractice(saved = loadJson(SESSION_KEY, null)) {
   state.recentQuestions = saved.recentQuestions || [];
   showArea("workspace"); renderGradeTabs();
   document.documentElement.style.setProperty("--grade", getGrade(state.grade).color);
-  els.workspaceGrade.textContent = `Grade ${state.grade}`;
+  els.workspaceGrade.textContent = gradeDisplay(state.grade);
   els.workspaceTitle.textContent = state.skill?.title || "Your saved practice";
   els.workspaceStandard.textContent = "Continue where you left off";
   if (state.skill) { renderMastery(); renderModeTabs(); renderLearn(); } else renderModeTabs(true);
@@ -7611,7 +7613,7 @@ function switchProfile(id) {
   saveActiveSession(); saveSettings(); selectProfile(id); activeProfile = id; setLanguageProfile(id);
   state.session = null; state.item = null;
   state.progress = cleanProgress(loadJson(STORAGE_KEY, {})); state.tutor = sanitizeTutor(loadJson(TUTOR_KEY, emptyTutor()));
-  state.settings = loadJson(SETTINGS_KEY, { largeText: false }); state.grade = Number(loadJson(`${SETTINGS_KEY}:grade`, 1)) || 1;
+  state.settings = loadJson(SETTINGS_KEY, { largeText: false }); state.grade = Number(loadJson(`${SETTINGS_KEY}:grade`, 1));
   if (!GRADES.some((grade) => grade.grade === state.grade)) state.grade = 1;
   pendingRestore = null; document.querySelector("#restore-preview").hidden = true;
   renderProfiles(); applySettings(); renderLibrary(); announce(`${PROFILE_NAMES[id]} is ready. Progress is separate for each learner.`);
@@ -7620,7 +7622,7 @@ function switchProfile(id) {
 function printHtml(html) { els.printSheet.innerHTML = html; window.print(); }
 function printFamilyReport() {
   const next = recommendations(state.tutor, state.grade).slice(0, 3);
-  printHtml(`<article class="family-print"><h1>My Math Fluency Progress</h1><p>Grade ${state.grade} · ${escapeHtml(PROFILE_NAMES[activeProfile])} · ${new Date().toLocaleDateString()}</p><p>Recent independent checks are separate from coached learning.</p><table><thead><tr><th>Skill</th><th>Evidence</th><th>Recent independent</th></tr></thead><tbody>${getGrade(state.grade).skills.map((skill) => { const status = evidence(state.tutor, skill); return `<tr><td>${escapeHtml(skill.title)}</td><td>${status.label}</td><td>${status.successes}/${status.independent}</td></tr>`; }).join("")}</tbody></table><h2>What to practice next</h2>${next.map((entry) => `<p>${escapeHtml(entry.skill.title)}: ${escapeHtml(entry.reason)}.</p>`).join("")}<h2>Talk about a strategy</h2><p>What did you notice? Why did that step work? How could you check?</p><p>eduwonderlab.com/math/fluency-lab/</p></article>`);
+  printHtml(`<article class="family-print"><h1>My Math Fluency Progress</h1><p>${escapeHtml(gradeDisplay(state.grade))} · ${escapeHtml(PROFILE_NAMES[activeProfile])} · ${new Date().toLocaleDateString()}</p><p>Recent independent checks are separate from coached learning.</p><table><thead><tr><th>Skill</th><th>Evidence</th><th>Recent independent</th></tr></thead><tbody>${getGrade(state.grade).skills.map((skill) => { const status = evidence(state.tutor, skill); return `<tr><td>${escapeHtml(skill.title)}</td><td>${status.label}</td><td>${status.successes}/${status.independent}</td></tr>`; }).join("")}</tbody></table><h2>What to practice next</h2>${next.map((entry) => `<p>${escapeHtml(entry.skill.title)}: ${escapeHtml(entry.reason)}.</p>`).join("")}<h2>Talk about a strategy</h2><p>What did you notice? Why did that step work? How could you check?</p><p>eduwonderlab.com/math/fluency-lab/</p></article>`);
 }
 
 function registerSharedSaveResume() {

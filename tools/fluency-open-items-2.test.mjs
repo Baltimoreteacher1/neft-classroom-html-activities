@@ -77,7 +77,9 @@ for (const skill of ALL_SKILLS) {
   }
   assert.match(
     skill.standard,
-    new RegExp(`^${skill.grade}\\.(NOS|AT|GR|DS)(?:\\.[A-D])?\\.\\d+$`),
+    skill.grade === 0
+      ? /^K\.(NOS|AT|GR|DS)(?:\.[A-D])?\.\d+$/
+      : new RegExp(`^${skill.grade}\\.(NOS|AT|GR|DS)(?:\\.[A-D])?\\.\\d+$`),
     `${skill.id}: ${skill.standard}`,
   );
   if (skill.formerStandard) {

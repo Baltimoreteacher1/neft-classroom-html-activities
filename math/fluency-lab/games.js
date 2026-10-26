@@ -39,15 +39,15 @@ const GAME_ICONS = { ...SIGNATURE_GAME_ICONS, ...PUZZLE_WORLD_ICONS };
 export const GAMES = [
   {
     id: "numberquest",
-    name: "Number Quest",
+    name: "Number Garden",
     icon: "",
     blurb: "Estimate on an interactive number line and explain your benchmark.",
-    grades: [1, 2, 3, 4, 5, 6, 7, 8],
+    grades: [0, 1, 2],
     run: playNumberQuest,
   },
   {
     id: "arrayarchitect",
-    name: "Array Architect",
+    name: "Array Architects",
     icon: "",
     blurb: "Build and decompose arrays to match a multiplication total.",
     grades: [3, 4, 5, 6, 7, 8],
@@ -66,7 +66,11 @@ export const GAMES = [
     name: world.name,
     icon: "",
     blurb: world.blurb,
-    grades: world.id === "balancestation" || world.id === "ratiocity" || world.id === "equationfactory" ? [6, 7, 8] : [4, 5, 6, 7, 8],
+    grades: ({
+      balancestation: [6, 7, 8], equationfactory: [6, 7, 8], ratiocity: [6, 7],
+      fractionbridge: [3, 4, 5, 6], tenframefactory: [0, 1, 2], divisionharbor: [3, 4, 5],
+      decimaldashboards: [4, 5, 6], integerexpedition: [6, 7], graphcity: [7, 8],
+    })[world.id] || [3, 4, 5, 6, 7, 8],
     run: (container, options) => playPuzzleWorld(container, { ...options, gameId: world.id }),
   })),
   {
@@ -174,7 +178,7 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
     const rank = rankFor(summary);
     container.innerHTML = `
       <header class="gm-head">
-        <div><p class="section-label">${t("Grade {n}", { n: grade })}: ${esc(t(TRAILS[grade].focus))}</p><h2>${t("Game Room")}</h2><p>${t("No timers. Think it through, and play as long as you like. Facts you missed lately come back in mixed play.")}</p></div>
+        <div><p class="section-label">${esc(t(getGrade(grade).label))}: ${esc(t(TRAILS[grade].focus))}</p><h2>${t("Game Room")}</h2><p>${t("No timers. Think it through, and play as long as you like. Facts you missed lately come back in mixed play.")}</p></div>
         <p class="gm-rank"><b aria-hidden="true">${rank.icon}</b><span>${rank.name}<small>${rank.next ? t("{n} more points to {rank}", { n: rank.next.at - rank.score, rank: rank.next.name }) : t("Top rank reached")}</small></span></p>
       </header>
       ${languagePromptHtml({ grade, name: TRAILS[grade].focus }, { compact: true, heading: t("Game talk: notice, explain, check") })}

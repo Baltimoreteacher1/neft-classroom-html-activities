@@ -307,7 +307,7 @@ for (const current of ALL_SKILLS) {
     }
   }
 }
-for (let grade = 1; grade <= 8; grade++) {
+for (let grade = 0; grade <= 8; grade++) {
   const plan = dailyPlan(support, grade, now);
   check(plan.length === 10, `Grade ${grade}: daily plan has ten questions`);
   check(

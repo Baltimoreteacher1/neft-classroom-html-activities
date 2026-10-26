@@ -13,6 +13,7 @@ export const emptyTutor = () => ({ version: 2, records: {}, mistakes: [], diagno
 
 const FOUNDATIONS = {
   "1:add-20": ["1:make-10"], "1:subtract-20": ["1:missing-addend"],
+  "1:add-10": ["0:compose-10", "0:add-sub-5"], "1:subtract-10": ["0:add-sub-5"], "1:make-10": ["0:compose-10"],
   "2:add-100": ["1:tens-ones", "1:add-20"], "2:subtract-100": ["1:subtract-20"],
   "2:add-1000": ["2:place-1000", "2:add-100"],
   "3:mul-6-9": ["3:mul-0-5"], "3:mul-10-12": ["3:mul-0-5"], "3:division-facts": ["3:mul-0-5"], "3:area": ["3:mul-0-5"], "4:division": ["3:division-facts"],
@@ -60,7 +61,7 @@ function matchSkill(skills, item) {
 // A review or foundation stop (Grade 8 integer review, Grade 6 decimal addition) practises a skill taught in an
 // earlier grade, so when the learner's grade has no skill for it, the nearest earlier grade's skill gets the credit.
 export function skillForItem(grade, item) {
-  for (let g = grade; g >= 1; g -= 1) {
+  for (let g = grade; g >= 0; g -= 1) {
     const skill = matchSkill(getGrade(g)?.skills || [], item);
     if (skill) return skill;
   }
@@ -444,10 +445,10 @@ export function sanitizeTutor(value) {
       : null,
     at: Number(entry.at) || 0, resolvedAt: Number(entry.resolvedAt) || null,
   }));
-  for (let grade = 1; grade <= 8; grade++) {
+  for (let grade = 0; grade <= 8; grade++) {
     const diagnostic = value.diagnostics?.[grade];
     if (diagnostic?.results && typeof diagnostic.results === "object") clean.diagnostics[grade] = { at: Number(diagnostic.at) || 0, results: Object.fromEntries(Object.entries(diagnostic.results).filter(([key, result]) => findSkill(key)?.grade === grade && typeof result === "boolean")) };
   }
-  clean.sessions = (Array.isArray(value.sessions) ? value.sessions : []).filter((session) => session && Number.isFinite(session.at) && Number.isFinite(session.answered)).slice(-60).map((session) => ({ at: session.at, answered: Math.max(0, session.answered), correct: Math.max(0, Number(session.correct) || 0), grade: Math.min(8, Math.max(1, Number(session.grade) || 1)), mode: String(session.mode || "practice").slice(0, 30) }));
+  clean.sessions = (Array.isArray(value.sessions) ? value.sessions : []).filter((session) => session && Number.isFinite(session.at) && Number.isFinite(session.answered)).slice(-60).map((session) => ({ at: session.at, answered: Math.max(0, session.answered), correct: Math.max(0, Number(session.correct) || 0), grade: Math.min(8, Math.max(0, Number(session.grade) || 0)), mode: String(session.mode || "practice").slice(0, 30) }));
   return clean;
 }

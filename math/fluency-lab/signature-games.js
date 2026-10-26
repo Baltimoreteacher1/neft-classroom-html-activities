@@ -10,7 +10,7 @@ const shell = (name, prompt, round, total, board, hint) => `
   <p class="sig-hint" data-hint-copy hidden>${escape(hint)}</p>
   <p class="sig-language"><strong>${t("Math talk:")}</strong> ${t("I chose ___ because ___.")}</p>`;
 
-function begin(container, id, onFinish) {
+function begin(container, id, onFinish, onEvidence, grade, worldId) {
   const state = { round: 0, firstTry: 0, misses: 0, total: 5, locked: false, roundMissed: false, roundHinted: false };
   const done = () => onFinish({
     game: id,
@@ -23,14 +23,15 @@ function begin(container, id, onFinish) {
     panel.dataset.state = right ? "right" : "retry";
     panel.textContent = message;
   };
-  return { state, done, feedback };
+  const record = (correct, independent = true) => onEvidence({ worldId, grade, correct, independent });
+  return { state, done, feedback, record };
 }
 
-export function playNumberQuest(container, { grade, finish }) {
-  const game = begin(container, "numberquest", finish);
+export function playNumberQuest(container, { grade, finish, onEvidence = () => {} }) {
+  const game = begin(container, "numberquest", finish, onEvidence, grade, "numbergarden");
   let challenge;
   const minimum = grade >= 6 ? -50 : 0;
-  const maximum = grade >= 6 ? 50 : grade === 1 ? 20 : 100;
+  const maximum = grade >= 6 ? 50 : grade === 0 ? 10 : grade === 1 ? 20 : 100;
   let position = (minimum + maximum) / 2;
   let benchmark = null;
   let timer;
@@ -38,7 +39,7 @@ export function playNumberQuest(container, { grade, finish }) {
     game.state.locked = false;
     game.state.roundMissed = false;
     game.state.roundHinted = false;
-    const target = grade >= 6 ? randomInt(-4, 3) * 10 + randomInt(1, 9) : grade === 1 ? randomInt(1, 19) : randomInt(1, 9) * 10 + randomInt(1, 9);
+    const target = grade >= 6 ? randomInt(-4, 3) * 10 + randomInt(1, 9) : grade === 0 ? randomInt(0, 10) : grade === 1 ? randomInt(1, 19) : randomInt(1, 9) * 10 + randomInt(1, 9);
     challenge = { target, ones: target - Math.floor(target / 10) * 10 };
     position = (minimum + maximum) / 2;
     benchmark = null;
@@ -52,14 +53,15 @@ export function playNumberQuest(container, { grade, finish }) {
   const render = () => {
     const lower = Math.floor(challenge.target / 10) * 10;
     const upper = lower + 10;
-    container.innerHTML = shell("Number Quest", t("Place {target} on the number line. Which ten is closer?", { target: challenge.target }), game.state.round + 1, game.state.total, `
+    const garden = grade === 0;
+    container.innerHTML = shell("Number Garden", garden ? t("Plant {target} seeds by placing your marker on the number line.", { target: challenge.target }) : t("Place {target} on the number line. Which ten is closer?", { target: challenge.target }), game.state.round + 1, game.state.total, `
       <p class="sig-instruction">${t("Move the marker, then choose the closer benchmark.")}</p>
       <div class="sig-numberline" data-target-number="${challenge.target}" role="group" aria-label="${t("Number line from {min} to {max}", { min: minimum, max: maximum })}">
         <div class="sig-line" aria-hidden="true"><span class="sig-tick" style="left:0%">${minimum}</span><span class="sig-tick" style="left:25%">${minimum + (maximum - minimum) / 4}</span><span class="sig-tick" style="left:50%">${minimum + (maximum - minimum) / 2}</span><span class="sig-tick" style="left:75%">${minimum + (3 * (maximum - minimum)) / 4}</span><span class="sig-tick" style="left:100%">${maximum}</span><span class="sig-marker" data-number-marker style="left:${((position - minimum) / (maximum - minimum)) * 100}%"></span></div>
         <label class="sig-range-label" for="sig-number-range">${t("Your point:")} <output data-number-readout>${position}</output></label>
         <input id="sig-number-range" type="range" min="${minimum}" max="${maximum}" step="1" value="${position}" data-number-position aria-label="${t("Move your point from {min} to {max}", { min: minimum, max: maximum })}" />
       </div>
-      <div class="sig-benchmarks" role="group" aria-label="${t("Choose the closer ten")}"><button type="button" data-benchmark="${lower}" aria-pressed="false">${lower}</button><span>${t("or")}</span><button type="button" data-benchmark="${upper}" aria-pressed="false">${upper}</button></div>`, t("Find the two tens around {target}. Compare how far the target is from each one.", { target: challenge.target }));
+      ${garden ? `<p class="sig-instruction">${t("Use the slider with your keyboard or touch. Place it exactly on the target number.")}</p>` : `<div class="sig-benchmarks" role="group" aria-label="${t("Choose the closer ten")}"><button type="button" data-benchmark="${lower}" aria-pressed="false">${lower}</button><span>${t("or")}</span><button type="button" data-benchmark="${upper}" aria-pressed="false">${upper}</button></div>`}`, t(garden ? "Count the steps from 0 and line up the marker with the target." : "Find the two tens around {target}. Compare how far the target is from each one.", { target: challenge.target }));
   };
   const next = () => { game.state.round += 1; if (game.state.round >= game.state.total) return game.done(); make(); render(); container.querySelector("[data-number-position]")?.focus(); };
   make(); render();
@@ -69,18 +71,18 @@ export function playNumberQuest(container, { grade, finish }) {
     if (choice) { benchmark = Number(choice.dataset.benchmark); container.querySelectorAll("[data-benchmark]").forEach((button) => button.setAttribute("aria-pressed", String(button === choice))); return; }
     if (event.target.closest("[data-hint]")) { const panel = container.querySelector("[data-hint-copy]"); panel.hidden = !panel.hidden; game.state.roundHinted = true; return; }
     if (!event.target.closest("[data-check]")) return;
-    if (!Number.isInteger(benchmark)) { game.feedback(false, t("Choose which ten is closer, then check your model.")); return; }
+    if (!Number.isInteger(benchmark) && grade !== 0) { game.feedback(false, t("Choose which ten is closer, then check your model.")); return; }
     const nearest = challenge.ones < 5 ? challenge.target - challenge.ones : challenge.target + (10 - challenge.ones);
     const placed = Math.abs(position - challenge.target) <= 1;
     if (game.state.locked) return;
-    if (placed && benchmark === nearest) { game.state.firstTry += game.state.roundMissed || game.state.roundHinted ? 0 : 1; game.state.locked = true; game.feedback(true, t("You placed {target} near {near}. It is {distance} away from {near}, so that is the closer ten.", { target: challenge.target, near: nearest, distance: Math.abs(challenge.target - nearest) })); timer = window.setTimeout(next, 700); }
-    else { game.state.misses += 1; game.state.roundMissed = true; game.feedback(false, !placed ? t("Your marker is at {point}. Move it closer to {target}, then compare the distances.", { point: Math.round(position), target: challenge.target }) : t("The point is close. Compare {target} to {lower} and {upper}.", { target: challenge.target, lower: Math.floor(challenge.target / 10) * 10, upper: Math.floor(challenge.target / 10) * 10 + 10 })); }
+    if (placed && (grade === 0 || benchmark === nearest)) { game.state.firstTry += game.state.roundMissed || game.state.roundHinted ? 0 : 1; game.state.locked = true; game.record(true, !game.state.roundMissed && !game.state.roundHinted); game.feedback(true, grade === 0 ? t("You planted {target} seeds. Your marker matches the quantity.", { target: challenge.target }) : t("You placed {target} near {near}. It is {distance} away from {near}, so that is the closer ten.", { target: challenge.target, near: nearest, distance: Math.abs(challenge.target - nearest) })); timer = window.setTimeout(next, 700); }
+    else { game.state.misses += 1; game.state.roundMissed = true; game.record(false, !game.state.roundHinted); game.feedback(false, !placed ? t(grade === 0 ? "Your marker is at {point}. Move it to {target} to plant the seeds." : "Your marker is at {point}. Move it closer to {target}, then compare the distances.", { point: Math.round(position), target: challenge.target }) : t("The point is close. Compare {target} to {lower} and {upper}.", { target: challenge.target, lower: Math.floor(challenge.target / 10) * 10, upper: Math.floor(challenge.target / 10) * 10 + 10 })); }
   };
   return () => { window.clearTimeout(timer); container.oninput = null; container.onclick = null; };
 }
 
-export function playArrayArchitect(container, { grade, finish }) {
-  const game = begin(container, "arrayarchitect", finish);
+export function playArrayArchitect(container, { grade, finish, onEvidence = () => {} }) {
+  const game = begin(container, "arrayarchitect", finish, onEvidence, grade, "arrayarchitect");
   let target, rows, columns;
   let timer;
   const make = () => { game.state.locked = false; game.state.roundMissed = false; game.state.roundHinted = false; rows = randomInt(grade >= 5 ? 4 : 2, grade >= 5 ? 10 : 7); columns = randomInt(grade >= 5 ? 5 : 2, 10); target = rows * columns; rows = 2; columns = 2; };
@@ -111,14 +113,14 @@ export function playArrayArchitect(container, { grade, finish }) {
     if (event.target.closest("[data-hint]")) { const panel = container.querySelector("[data-hint-copy]"); panel.hidden = !panel.hidden; game.state.roundHinted = true; return; }
     if (!event.target.closest("[data-check]")) return;
     if (game.state.locked) return;
-    if (rows * columns === target) { game.state.firstTry += game.state.roundMissed || game.state.roundHinted ? 0 : 1; game.state.locked = true; game.feedback(true, t("{rows} rows of {columns} make {target} tiles. You built an equal-groups array.", { rows, columns, target })); timer = window.setTimeout(next, 700); }
-    else { game.state.misses += 1; game.state.roundMissed = true; game.feedback(false, t("This array has {total} tiles. Adjust a factor so the total is {target}.", { total: rows * columns, target })); }
+    if (rows * columns === target) { game.state.firstTry += game.state.roundMissed || game.state.roundHinted ? 0 : 1; game.state.locked = true; game.record(true, !game.state.roundMissed && !game.state.roundHinted); game.feedback(true, t("{rows} rows of {columns} make {target} tiles. You built an equal-groups array.", { rows, columns, target })); timer = window.setTimeout(next, 700); }
+    else { game.state.misses += 1; game.state.roundMissed = true; game.record(false, !game.state.roundHinted); game.feedback(false, t("This array has {total} tiles. Adjust a factor so the total is {target}.", { total: rows * columns, target })); }
   };
   return () => { window.clearTimeout(timer); container.oninput = null; container.onclick = null; };
 }
 
-export function playFractionForge(container, { grade, finish }) {
-  const game = begin(container, "fractionforge", finish);
+export function playFractionForge(container, { grade, finish, onEvidence = () => {} }) {
+  const game = begin(container, "fractionforge", finish, onEvidence, grade, "fractionbridge");
   let target, numerator, denominator;
   let timer;
   const make = () => { game.state.locked = false; game.state.roundMissed = false; game.state.roundHinted = false; denominator = randomInt(grade >= 6 ? 4 : 2, grade >= 6 ? 10 : 6); numerator = randomInt(1, denominator - 1); target = { numerator, denominator }; denominator = denominator + 1; numerator = target.numerator; };
@@ -147,8 +149,8 @@ export function playFractionForge(container, { grade, finish }) {
     if (event.target.closest("[data-hint]")) { const panel = container.querySelector("[data-hint-copy]"); panel.hidden = !panel.hidden; game.state.roundHinted = true; return; }
     if (!event.target.closest("[data-check]")) return;
     if (game.state.locked) return;
-    if (numerator * target.denominator === target.numerator * denominator) { game.state.firstTry += game.state.roundMissed || game.state.roundHinted ? 0 : 1; game.state.locked = true; game.feedback(true, t("{fraction} and {target} cover the same amount. You scaled both parts equally.", { fraction: `${numerator}/${denominator}`, target: `${target.numerator}/${target.denominator}` })); timer = window.setTimeout(next, 700); }
-    else { game.state.misses += 1; game.state.roundMissed = true; game.feedback(false, t("{fraction} covers a different amount. Keep the whole divided into equal parts and try again.", { fraction: `${numerator}/${denominator}` })); }
+    if (numerator * target.denominator === target.numerator * denominator) { game.state.firstTry += game.state.roundMissed || game.state.roundHinted ? 0 : 1; game.state.locked = true; game.record(true, !game.state.roundMissed && !game.state.roundHinted); game.feedback(true, t("{fraction} and {target} cover the same amount. You scaled both parts equally.", { fraction: `${numerator}/${denominator}`, target: `${target.numerator}/${target.denominator}` })); timer = window.setTimeout(next, 700); }
+    else { game.state.misses += 1; game.state.roundMissed = true; game.record(false, !game.state.roundHinted); game.feedback(false, t("{fraction} covers a different amount. Keep the whole divided into equal parts and try again.", { fraction: `${numerator}/${denominator}` })); }
   };
   return () => { window.clearTimeout(timer); container.oninput = null; container.onclick = null; };
 }

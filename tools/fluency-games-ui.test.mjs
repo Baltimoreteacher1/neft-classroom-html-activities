@@ -82,8 +82,8 @@ await wait();
 assert.ok($(".gm-menu"), "The Game Room opens from ?view=games");
 assert.equal(
   $$("[data-game]").length,
-  12,
-  "Twelve games, including three model games, are offered to Grade 3",
+  13,
+  "Thirteen games, including model games, are offered to Grade 3",
 );
 assert.ok($("#bd-view svg"), "The buddy panel shows a buddy");
 assert.match(
@@ -370,7 +370,7 @@ const setRange = (selector, value) => {
   $(selector).value = String(value);
   $(selector).dispatchEvent(new win.Event("input", { bubbles: true }));
 };
-for (const id of ["numberquest", "arrayarchitect", "fractionforge"]) {
+for (const id of ["arrayarchitect", "fractionforge"]) {
   click(`[data-game="${id}"]`);
   for (let round = 0; round < 5; round += 1) {
     if (id === "numberquest") {
@@ -437,9 +437,8 @@ for (const id of ["numberquest", "arrayarchitect", "fractionforge"]) {
 
 // ---- Everything above is remembered
 const rewards = JSON.parse(win.localStorage.getItem("ewl-fluency-rewards-v1"));
-assert.equal(rewards.plays, 12, "Twelve finished games are recorded");
+assert.equal(rewards.plays, 11, "Eleven finished Grade 3 games are recorded");
 for (const game of [
-  "numberquest",
   "arrayarchitect",
   "fractionforge",
   "match",
@@ -463,12 +462,22 @@ assert.equal(win.document.documentElement.lang, "es", "The page language becomes
 assert.equal($("#lang-toggle").textContent, "English", "The toggle offers English once in Spanish");
 assert.match($(".gm-head h2").textContent, /Sala de juegos/, "The Game Room heading is Spanish");
 assert.match($('[data-view="games"]').textContent, /Juegos/, "The page tabs are Spanish");
+click('#grade-tabs [data-grade="2"]');
+await wait();
 click('[data-game="numberquest"]');
 assert.match(
   $(".sig-head h2").textContent,
   /Ubica/,
   "The number-line game presents its challenge in Spanish",
 );
+for (let round = 0; round < 5; round += 1) {
+  const target = Number($("[data-target-number]").dataset.targetNumber);
+  setRange("[data-number-position]", target);
+  click(`[data-benchmark="${Math.round(target / 10) * 10}"]`);
+  click("[data-check]");
+  await wait(750);
+}
+assert.ok($(".gm-result"), "Kindergarten–2 Number Garden completes its five rounds");
 await toMenu();
 click("#lang-toggle");
 await wait();

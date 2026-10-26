@@ -12,8 +12,10 @@ export function renderModel(model, { counters, counterPositions, partitions = 1,
   if (model.type === "counters") {
     const filled = counters ?? model.filled;
     const isFilled = (i) => counterPositions ? counterPositions.has(i) : i < filled;
-    return `${caption}<p>Tap a space to add or remove a counter. Keep the original ${model.filled} dark counters.</p><div class="counter-board">${Array.from({ length: model.total }, (_, i) => `<button type="button" class="counter-cell ${isFilled(i) ? "filled" : ""} ${i < model.filled ? "fixed" : ""}" data-counter="${i}" aria-label="Space ${i + 1}${i < model.filled ? ', original counter' : ''}" aria-pressed="${isFilled(i)}" ${i < model.filled ? "disabled" : ""}><span aria-hidden="true">${isFilled(i) ? "●" : "○"}</span></button>`).join("")}</div><p class="model-count" aria-live="polite">${filled} counters · ${Math.max(0, filled - model.filled)} added</p>`;
+    return `${caption}<p>Tap a space to add or remove a counter. Keep the original ${model.filled} dark counters.</p><div class="counter-board counter-board-${esc(model.layout || "frame")}">${Array.from({ length: model.total }, (_, i) => `<button type="button" class="counter-cell ${isFilled(i) ? "filled" : ""} ${i < model.filled ? "fixed" : ""}" data-counter="${i}" aria-label="Space ${i + 1}${i < model.filled ? ', original counter' : ''}" aria-pressed="${isFilled(i)}" ${i < model.filled ? "disabled" : ""}><span aria-hidden="true">${isFilled(i) ? "●" : "○"}</span></button>`).join("")}</div><p class="model-count" aria-live="polite">${filled} counters · ${Math.max(0, filled - model.filled)} added</p>`;
   }
+  if (model.type === "sequence") return `${caption}<ol class="pattern-sequence" aria-label="${esc(model.values.join(", "))}">${model.values.map((value) => `<li>${esc(value)}</li>`).join("")}</ol>`;
+  if (model.type === "dotpattern") return `${caption}<svg class="subitize-dots" viewBox="0 0 100 100" role="img" aria-label="${esc(model.pattern)}">${model.dots.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="7"/>`).join("")}</svg>`;
   if (model.type === "vertical") {
     const spec = columnSpec(model.op, model.terms);
     return spec ? `${caption}${verticalHtml(spec)}` : caption;
