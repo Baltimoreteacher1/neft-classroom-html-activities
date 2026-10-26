@@ -73,11 +73,17 @@ try {
   await page.getByRole("button", { name: "Grade 4" }).click();
   assert.match(await page.locator("#recommended-skill").innerText(), /Round/);
   await page.locator("#skill-select").selectOption({ index: 2 });
+  const selectedSkillId = await page.locator("#skill-select").inputValue();
   const skillHref = await page.locator("#skill-start").getAttribute("href");
   assert.match(skillHref, /grade=4/);
   assert.match(skillHref, /start=practice/);
   assert.match(skillHref, /skill=4%3A/);
   await page.getByRole("button", { name: "Español" }).click();
+  assert.equal(
+    await page.locator("#skill-select").inputValue(),
+    selectedSkillId,
+    "switching language preserves the selected skill",
+  );
   assert.equal(
     await page.locator("h1").first().innerText(),
     "Hagamos un momento para las matemáticas.",

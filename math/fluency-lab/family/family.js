@@ -106,6 +106,7 @@ function renderProfiles() {
   if (add >= 0) select.insertAdjacentHTML("beforeend", `<option value="add:${add}">+ ${lang === "es" ? "Agregar estudiante" : "Add learner"}</option>`);
 }
 function applyLanguage() {
+  const selectedSkillId = recommendation?.skill.id;
   document.documentElement.lang = lang;
   document.querySelector("#welcome-title").textContent = t("heading");
   document.querySelector("#welcome-text").textContent = t("intro");
@@ -138,7 +139,15 @@ function applyLanguage() {
   document.querySelector("#family-profile").setAttribute("aria-label", t("profile"));
   document.querySelector("#language-toggle").textContent = lang === "en" ? "Español" : "English";
   document.querySelectorAll(".grade-option").forEach((button) => { const gradeNumber = Number(button.dataset.grade); button.textContent = gradeNumber === 0 ? (lang === "es" ? "Jardín de niños" : "Kindergarten") : lang === "es" ? `Grado ${gradeNumber}` : `Grade ${gradeNumber}`; });
-  renderProfiles(); updateGrade(); renderRotation();
+  renderProfiles(); updateGrade();
+  if (selectedSkillId && skills.some((skill) => skill.id === selectedSkillId)) {
+    const selectedRecommendation = recommendations(safeTutor(), grade).find((entry) => entry.skill.id === selectedSkillId);
+    if (selectedRecommendation) {
+      recommendation = selectedRecommendation;
+      renderRecommendation(); renderCoach(); updateLinks();
+    }
+  }
+  renderRotation();
 }
 
 document.querySelector("#grade-options").innerHTML = GRADES.map(({ grade: number, label }) => `<button class="grade-option" type="button" data-grade="${number}" aria-pressed="false">${number === 0 ? "Kindergarten" : label}</button>`).join("");
