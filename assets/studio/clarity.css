@@ -1065,3 +1065,15 @@ body.lang-quiet .world-glyph { display: none; }
     display: none !important;
   }
 }
+
+/* ---- phones: the header is one compact band, so the first problem sits near the top of the screen. Layout only:
+   every control stays in the DOM and keeps its behaviour; the subtitle clamps to one line. */
+@media (max-width: 600px) {
+  body[data-world] .app-header .header-wrap { padding-top: 6px; padding-bottom: 6px; gap: 6px; }
+  body[data-world] .app-header .brand-icon { display: none; }
+  body[data-world] .app-header .brand-title { font-size: 1rem; line-height: 1.2; }
+  body[data-world] .app-header .brand-sub {
+    display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; font-size: 0.75rem;
+  }
+  body[data-world] .app-header .header-actions { flex-wrap: wrap; gap: 4px; }
+}
