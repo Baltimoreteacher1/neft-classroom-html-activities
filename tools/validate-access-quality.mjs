@@ -291,7 +291,8 @@ else {
     );
   stats.passages = { checked: grades.length, outsideRange: off.length };
 
-  // blueprint coverage from the studio content
+  // Authored minimum content-quality thresholds. These are not live alignment counts;
+  // the activity-level inventory reports actual tags and unreviewed gaps separately.
   const speaking = loadOptional("studio/speaking.json")?.tasks || [];
   const writing = loadOptional("studio/writing.json")?.tasks || [];
   const all = [
@@ -315,10 +316,10 @@ else {
       fail("blueprint:Writing", `needs ≥${wr.minimum.tasksPerKeyUse} ${k} tasks`);
   for (const f of wr.targets.forms)
     if (!count(writing, (t) => t.form === f)) fail("blueprint:Writing", `no ${f} task`);
-  for (const [code, min] of Object.entries(bp.coverage.standards))
+  for (const [code, min] of Object.entries(bp.minimumCoverage.standards))
     if (count(all, (t) => asList(t.standards).includes(code)) < min)
       fail("blueprint:standards", `${code} needs ≥${min} tasks`);
-  for (const [dim, min] of Object.entries(bp.coverage.dimensions))
+  for (const [dim, min] of Object.entries(bp.minimumCoverage.dimensions))
     if (count(all, (t) => asList(t.dimensions).includes(dim)) < min)
       fail("blueprint:dimensions", `${dim} needs ≥${min} tasks`);
   for (const d of bp.domains.filter((x) => x.minimum.missions))

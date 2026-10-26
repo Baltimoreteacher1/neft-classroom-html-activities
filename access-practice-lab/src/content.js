@@ -31,6 +31,7 @@ export const loadExemplars = async () => {
   return [...(s.exemplars || []), ...(w.exemplars || [])];
 };
 export const loadBlueprint = () => getJson("blueprints.json");
+export const loadAlignment = () => getJson("alignment-index.json");
 export const loadWorlds = () => getJson("worlds.json");
 export const loadPatterns = () => getJson("detective/patterns.json");
 export const loadMission = (id) => getJson(`missions/${encodeURIComponent(id)}.json`);

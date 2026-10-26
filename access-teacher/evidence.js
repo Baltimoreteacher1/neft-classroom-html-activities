@@ -3,6 +3,7 @@
 // the roster on this teacher device. Nothing is uploaded. Every statement traces to ledger entries or
 // to the learner's own words, and no screen shows a proficiency level or combines evidence into one number.
 import {
+  loadAlignment,
   loadBlueprint,
   loadExemplars,
   loadPatterns,
@@ -36,6 +37,7 @@ const KEY = "accessTeacher:v1:roster";
 const GROUP_KEY = "accessTeacher:v1:instructionalGroups";
 const LESSON_KEY = "accessTeacher:v1:miniLessons";
 const OVERRIDE_KEY = "accessTeacher:v1:skillOverrides";
+const ALIGNMENT_REVIEW_KEY = "accessTeacher:v1:alignmentReviews";
 const QUOTA_WARN = 3_500_000; // characters; localStorage holds roughly 5 MB
 const root = document.getElementById("classEvidence");
 
@@ -55,6 +57,10 @@ const upgrade = (s) => ({
 
 const T = {
   blueprint: null,
+  alignment: null,
+  alignmentFilters: { band: "", domain: "", keyUse: "", contentArea: "", standard: "", expectation: "", languageFunction: "", support: "", q: "" },
+  alignmentPage: 1,
+  alignmentReviews: read(ALIGNMENT_REVIEW_KEY, {}),
   studio: { speaking: [], writing: [], missions: [] },
   students: read(KEY, []).map(upgrade),
   scores: read(`${KEY}:scores`, []),
@@ -95,10 +101,10 @@ const persist = () => {
     localStorage.setItem(GROUP_KEY, JSON.stringify(T.groups));
     localStorage.setItem(LESSON_KEY, JSON.stringify(T.lessons));
     localStorage.setItem(OVERRIDE_KEY, JSON.stringify(T.overrides));
+    localStorage.setItem(ALIGNMENT_REVIEW_KEY, JSON.stringify(T.alignmentReviews));
     T.saveError = "";
   } catch {
-    T.saveError =
-      "This browser could not save the roster (storage is full). Download the class CSV and remove some students before closing, or this list will be lost.";
+    T.saveError = "This browser could not save changes (storage may be full). Download the class CSV and remove unneeded student records before closing.";
   }
 };
 const sizeChars = () => {
@@ -699,6 +705,7 @@ function scoringTab() {
 function blueprintTab() {
   const b = T.blueprint;
   if (!b) return html`<p>The blueprint could not be loaded. Check your connection and reload.</p>`;
+  const alignment = T.alignment;
   const n = (list, use) =>
     list.filter((t) => t.keyUse === use || (t.keyUses || []).includes(use)).length;
   return html`<p class="fine">${b.notOfficial}</p>
@@ -745,6 +752,7 @@ function blueprintTab() {
         </tbody>
       </table>
     </div>
+    ${alignment ? alignmentCoverageTab(alignment) : html`<section aria-labelledby="activityCoverageTitle"><h3 id="activityCoverageTitle">Activity alignment coverage</h3><p role="status">Alignment metadata could not be loaded. Reload this page to try again.</p></section>`}
     <h3>Skills</h3>
     <div class="hub-grid">
       ${b.domains.map(
@@ -764,6 +772,112 @@ function blueprintTab() {
       Framework: ${b.framework}.
       ${b.references.map((r) => html`<a href="${r.url}" target="_blank" rel="noopener">${r.title}</a> `)}
     </p>`;
+}
+
+const ALIGNMENT_PAGE_SIZE = 40;
+const displayList = (list, fallback = "Not tagged") => list?.length ? list.join(", ") : fallback;
+
+function alignmentCoverageTab(alignment) {
+  const sourceRows = alignment.records || [];
+  const rows = sourceRows.map((source) => {
+    const teacherReview = T.alignmentReviews[source.id];
+    if (!teacherReview) return source;
+    return {
+      ...source,
+      gradeClusterCandidates: [teacherReview.gradeCluster],
+      academicContext: teacherReview.academicContext,
+      keyUses: [teacherReview.keyUse],
+      eldStandards: [teacherReview.standard],
+      languageExpectations: [teacherReview.languageExpectation],
+      languageFunctions: [teacherReview.languageFunction],
+      suggestedLanguageFunction: teacherReview.languageFunction,
+      languageFeatures: teacherReview.languageFeatures,
+      teacherReview,
+    };
+  });
+  const f = T.alignmentFilters;
+  const values = (pick) => [...new Set(rows.flatMap(pick).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  const options = (items, value, empty = "All") => html`<option value="">${empty}</option>${items.map((item) => html`<option value="${item}" ${value === item ? raw("selected") : ""}>${item === "__untagged__" ? "Not tagged / missing" : item}</option>`)}`;
+  const selected = rows.filter((r) =>
+    (!f.band || r.localGradeBand === f.band) &&
+    (!f.domain || r.domains.includes(f.domain)) &&
+    (!f.keyUse || (f.keyUse === "__untagged__" ? !r.keyUses.length : r.keyUses.includes(f.keyUse))) &&
+    (!f.contentArea || (f.contentArea === "__untagged__" ? !r.academicContext : r.academicContext === f.contentArea)) &&
+    (!f.standard || (f.standard === "__untagged__" ? !r.eldStandards.length : r.eldStandards.includes(f.standard))) &&
+    (!f.expectation || (f.expectation === "__untagged__" ? !r.languageExpectations.length : r.languageExpectations.includes(f.expectation))) &&
+    (!f.languageFunction || r.suggestedLanguageFunction === f.languageFunction) &&
+    (!f.support || r.localSupportTier === f.support) &&
+    (!f.review || (f.review === "needs-review" ? !r.teacherReview : Boolean(r.teacherReview))) &&
+    (!f.q || `${r.title} ${r.localLanguageFocus.join(" ")} ${r.sourceFile}`.toLowerCase().includes(f.q.toLowerCase()))
+  );
+  const pages = Math.max(1, Math.ceil(selected.length / ALIGNMENT_PAGE_SIZE));
+  T.alignmentPage = Math.min(Math.max(1, T.alignmentPage), pages);
+  const shown = selected.slice((T.alignmentPage - 1) * ALIGNMENT_PAGE_SIZE, T.alignmentPage * ALIGNMENT_PAGE_SIZE);
+  const total = alignment.counts || {};
+  const localReviewCount = Object.keys(T.alignmentReviews).length;
+  const reviewSelect = (items, value) => html`<option value="">Choose one</option>${items.map((item) => html`<option value="${item}" ${item === value ? raw("selected") : ""}>${item}</option>`)}`;
+  const reviewEditor = (r) => {
+    const v = r.teacherReview || {};
+    return html`<details class="alignment-review" data-alignment-review="${r.id}">
+      <summary>${r.teacherReview ? "Edit local teacher review" : "Record local teacher review"}</summary>
+      <p class="fine">Saved only in this browser. This review records your source-based decision; it is not official WIDA verification or endorsement.</p>
+      <label class="field"><span>WIDA grade cluster reviewed</span><select data-alignment-field="gradeCluster">${reviewSelect(r.localGradeBand === "3-5" ? ["2-3", "4-5"] : ["6-8"], v.gradeCluster || "")}</select></label>
+      <label class="field"><span>Academic context</span><input data-alignment-field="academicContext" maxlength="80" value="${v.academicContext ?? r.academicContext}" /></label>
+      <label class="field"><span>Key Language Use</span><select data-alignment-field="keyUse">${reviewSelect(["Narrate", "Inform", "Explain", "Argue"], v.keyUse || r.keyUses[0] || "")}</select></label>
+      <label class="field"><span>ELD Standard</span><select data-alignment-field="standard">${reviewSelect(["ELD-SI", "ELD-LA", "ELD-MA", "ELD-SC", "ELD-SS"], v.standard || r.eldStandards[0] || "")}</select></label>
+      <label class="field"><span>Language Expectation ID</span><input data-alignment-field="languageExpectation" maxlength="120" placeholder="For example, an expectation ID from the framework" value="${v.languageExpectation || ""}" /></label>
+      <label class="field"><span>Language function</span><input data-alignment-field="languageFunction" maxlength="120" value="${v.languageFunction || r.suggestedLanguageFunction}" /></label>
+      <label class="field"><span>Language features (separate with semicolons)</span><textarea data-alignment-field="languageFeatures" rows="2" maxlength="600">${(v.languageFeatures || r.languageFeatures).join("; ")}</textarea></label>
+      <label class="field"><span>WIDA source page or framework citation</span><input data-alignment-field="sourceReference" maxlength="240" placeholder="https://wida.wisc.edu/... or edition and page" value="${v.sourceReference || ""}" /></label>
+      <p class="fine" data-alignment-review-error role="alert" hidden></p>
+      <button class="btn" type="button" data-align-save="${r.id}">Save local review</button>
+      ${r.teacherReview ? html`<button class="ghost" type="button" data-align-clear="${r.id}">Clear local review</button>` : ""}
+    </details>`;
+  };
+  return html`<section aria-labelledby="activityCoverageTitle">
+    <h3 id="activityCoverageTitle">Activity alignment coverage</h3>
+    <p class="fine">${alignment.provenance} Counts show source tags and missing metadata; they do not rate students or claim WIDA alignment.</p>
+    <div class="hub-grid" aria-label="Alignment metadata totals">
+      <article class="hub-card"><strong>${total.total || 0}</strong><p>activities and studio tasks</p></article>
+      <article class="hub-card"><strong>${total.explicitStandards || 0}</strong><p>with an author-entered ELD Standard tag</p></article>
+      <article class="hub-card"><strong>${total.explicitKeyUses || 0}</strong><p>with an author-entered Key Language Use tag</p></article>
+      <article class="hub-card"><strong>${total.explicitExpectations || 0}</strong><p>with a Language Expectation ID</p></article>
+      <article class="hub-card"><strong>${localReviewCount}</strong><p>local teacher reviews saved on this device</p></article>
+    </div>
+    <p class="feedback is-hint" role="note"><strong>Review status:</strong> ${total.needsReview || 0} records need metadata review. A standard or Key Language Use tag is only a local author tag until a teacher verifies the grade cluster, expectation, function and features. Blank fields remain unaligned; the system does not infer official WIDA mappings.</p>
+    <p class="fine">The local Grades 3–5 band spans WIDA grade clusters 2–3 and 4–5. This inventory marks both as candidates; an individual task needs a grade-specific review before one cluster can be selected.</p>
+    <div class="library-filters" aria-label="Filter activity alignment inventory">
+      <label class="field"><span>Local grade band</span><select data-align-filter="band">${options(["3-5", "6-8", "Integrated"], f.band)}</select></label>
+      <label class="field"><span>Domain</span><select data-align-filter="domain">${options(["Listening", "Reading", "Speaking", "Writing"], f.domain)}</select></label>
+      <label class="field"><span>Key Language Use</span><select data-align-filter="keyUse">${options(["Narrate", "Inform", "Explain", "Argue", "__untagged__"], f.keyUse)}</select></label>
+      <label class="field"><span>Academic context</span><select data-align-filter="contentArea">${options([...values((r) => [r.academicContext]), "__untagged__"], f.contentArea)}</select></label>
+      <label class="field"><span>Author-entered ELD Standard</span><select data-align-filter="standard">${options(["ELD-SI", "ELD-LA", "ELD-MA", "ELD-SC", "ELD-SS", "__untagged__"], f.standard)}</select></label>
+      <label class="field"><span>Language Expectation ID</span><select data-align-filter="expectation">${options([...values((r) => r.languageExpectations), "__untagged__"], f.expectation)}</select></label>
+      <label class="field"><span>Language function (suggestions marked)</span><select data-align-filter="languageFunction">${options(values((r) => [r.suggestedLanguageFunction]), f.languageFunction)}</select></label>
+      <label class="field"><span>Local support choice</span><select data-align-filter="support">${options(values((r) => [r.localSupportTier]), f.support)}</select></label>
+      <label class="field"><span>Review status</span><select data-align-filter="review">${options(["needs-review", "teacher-reviewed"], f.review)}</select></label>
+      <label class="field library-search"><span>Search title or language focus</span><input type="search" data-align-search maxlength="100" value="${f.q}" placeholder="Try cause and effect, evidence, retell…" /></label>
+      <button class="btn" type="button" data-align-reset>Reset alignment filters</button>
+    </div>
+    <p role="status">${selected.length} of ${rows.length} records match these filters.</p>
+    <div class="lab-table-wrap" tabindex="0" role="region" aria-label="Filtered activity alignment records">
+      <table class="hub-table"><thead><tr><th scope="col">Task</th><th scope="col">Grade and domain</th><th scope="col">Context and use</th><th scope="col">Language function</th><th scope="col">Standard / expectation</th><th scope="col">Local supports</th><th scope="col">Review state</th></tr></thead>
+      <tbody>${shown.map((r) => html`<tr>
+        <th scope="row">${r.title}<span class="fine">${r.sourceType} · ${r.id}</span></th>
+        <td>${r.localGradeBand}${r.gradeClusterCandidates.length ? html`<span class="fine">WIDA cluster candidate: ${displayList(r.gradeClusterCandidates, "—")}</span>` : ""}<span class="fine">${displayList(r.domains)}</span></td>
+        <td>${r.academicContext || "Not tagged"}<span class="fine">${displayList(r.keyUses, "No Key Language Use tag")}</span></td>
+        <td>${r.suggestedLanguageFunction || "Not tagged"}<span class="fine">${r.functionStatus}</span></td>
+        <td>${displayList(r.eldStandards)}<span class="fine">Expectation: ${displayList(r.languageExpectations)}</span></td>
+        <td>${r.localSupportTier}<span class="fine">${displayList(r.scaffoldAvailability)}</span></td>
+        <td>${r.teacherReview ? "Teacher-reviewed locally" : r.alignmentStatus}<span class="fine">${r.teacherReview ? `Source: ${r.teacherReview.sourceReference} · saved ${r.teacherReview.reviewedAt.slice(0, 10)}` : r.metadataGaps.length ? `Missing: ${r.metadataGaps.join(", ")}` : "No listed metadata gaps"}</span>${reviewEditor(r)}</td>
+      </tr>`)}</tbody></table>
+    </div>
+    <nav class="library-pagination" aria-label="Alignment record pages">
+      <button type="button" class="btn" data-align-page="${T.alignmentPage - 1}" ${T.alignmentPage <= 1 ? raw("disabled") : ""}>Previous</button>
+      <span>Page ${T.alignmentPage} of ${pages} · showing up to ${ALIGNMENT_PAGE_SIZE}</span>
+      <button type="button" class="btn" data-align-page="${T.alignmentPage + 1}" ${T.alignmentPage >= pages ? raw("disabled") : ""}>Next</button>
+    </nav>
+  </section>`;
 }
 
 function draw() {
@@ -813,9 +927,56 @@ const focusTitle = () => document.getElementById("stuTitle")?.focus();
 
 root.addEventListener("click", async (e) => {
   const t = e.target;
+  const alignmentPage = t.closest("[data-align-page]");
+  if (alignmentPage) {
+    T.alignmentPage = Number(alignmentPage.dataset.alignPage) || 1;
+    return draw();
+  }
   const tab = t.closest("[data-tab]");
   if (tab) {
     T.tab = tab.dataset.tab;
+    return draw();
+  }
+  if (t.closest("[data-align-reset]")) {
+    T.alignmentFilters = { band: "", domain: "", keyUse: "", contentArea: "", standard: "", expectation: "", languageFunction: "", support: "", q: "" };
+    T.alignmentPage = 1;
+    return draw();
+  }
+  const saveAlignmentReview = t.closest("[data-align-save]");
+  if (saveAlignmentReview) {
+    const editor = saveAlignmentReview.closest("[data-alignment-review]");
+    const readField = (name) => editor?.querySelector(`[data-alignment-field="${name}"]`)?.value.trim() || "";
+    const review = {
+      gradeCluster: readField("gradeCluster"),
+      academicContext: readField("academicContext"),
+      keyUse: readField("keyUse"),
+      standard: readField("standard"),
+      languageExpectation: readField("languageExpectation"),
+      languageFunction: readField("languageFunction"),
+      languageFeatures: readField("languageFeatures").split(";").map((x) => x.trim()).filter(Boolean),
+      sourceReference: readField("sourceReference"),
+    };
+    const error = editor?.querySelector("[data-alignment-review-error]");
+    const referenceUrl = (() => { try { return new URL(review.sourceReference); } catch { return null; } })();
+    const valid = review.gradeCluster && review.academicContext && review.keyUse && review.standard &&
+      review.languageExpectation && review.languageFunction && review.languageFeatures.length &&
+      referenceUrl && ["wida.wisc.edu", "www.wida.wisc.edu"].includes(referenceUrl.hostname) && referenceUrl.protocol === "https:";
+    if (!valid) {
+      if (error) { error.hidden = false; error.textContent = "Complete each field and cite an HTTPS page on wida.wisc.edu before saving."; }
+      return;
+    }
+    T.alignmentReviews[saveAlignmentReview.dataset.alignSave] = {
+      ...review, status: "teacher-reviewed-local", reviewedAt: new Date().toISOString(),
+    };
+    persist();
+    note("Local alignment review saved on this device. This is not official WIDA validation.");
+    return draw();
+  }
+  const clearAlignmentReview = t.closest("[data-align-clear]");
+  if (clearAlignmentReview) {
+    delete T.alignmentReviews[clearAlignmentReview.dataset.alignClear];
+    persist();
+    note("Local alignment review cleared from this device.");
     return draw();
   }
   if (t.closest("[data-demo-load]")) {
@@ -966,6 +1127,16 @@ root.addEventListener("click", async (e) => {
 
 let searchTimer = 0;
 root.addEventListener("input", (e) => {
+  if (e.target.matches("[data-align-search]")) {
+    T.alignmentFilters.q = e.target.value;
+    T.alignmentPage = 1;
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      draw();
+      root.querySelector("[data-align-search]")?.focus();
+    }, 150);
+    return;
+  }
   if (!e.target.matches("[data-search]")) return;
   T.q = e.target.value;
   clearTimeout(searchTimer);
@@ -977,6 +1148,11 @@ root.addEventListener("input", (e) => {
 
 root.addEventListener("change", async (e) => {
   const t = e.target;
+  if (t.matches("[data-align-filter]")) {
+    T.alignmentFilters[t.dataset.alignFilter] = t.value;
+    T.alignmentPage = 1;
+    return draw();
+  }
   if (t.matches("[data-section]")) {
     T.section = t.value;
     return draw();
@@ -1035,7 +1211,8 @@ Promise.all([
   loadStudioIndex().catch(() => null),
   loadSpeakingTasks().catch(() => ({ tasks: [] })),
   loadWritingTasks().catch(() => ({ tasks: [] })),
-]).then(([p, x, bp, idx, sp, wr]) => {
+  loadAlignment().catch(() => null),
+]).then(([p, x, bp, idx, sp, wr, alignment]) => {
   T.tasks = [
     ...(sp.tasks || []).map((t) => ({ id: t.id, title: t.title, keyUse: t.keyUse, band: t.band, modality: "speaking" })),
     ...(wr.tasks || []).map((t) => ({ id: t.id, title: t.title, keyUse: t.keyUse, band: t.band, modality: "writing" })),
@@ -1043,6 +1220,7 @@ Promise.all([
   T.patterns = p.patterns || {};
   T.exemplars = x;
   T.blueprint = bp;
+  T.alignment = alignment;
   if (idx) T.studio = idx;
   draw();
 });

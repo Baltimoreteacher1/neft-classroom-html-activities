@@ -484,6 +484,85 @@ ok(
   (await page.locator("#classEvidence").innerText()).includes("Coverage by Key Language Use"),
   "blueprint tab shows coverage by Key Language Use",
 );
+const alignmentText = await page.locator("#classEvidence").innerText();
+ok(
+  alignmentText.includes("539") && alignmentText.includes("0"),
+  "blueprint tab loads the generated activity-level alignment inventory and honest crosswalk totals",
+);
+await page.locator('[data-align-filter="band"]').selectOption("6-8");
+await page.locator('[data-align-filter="keyUse"]').selectOption("Explain");
+await page.locator('[data-align-filter="contentArea"]').selectOption("Science");
+await page.locator('[data-align-filter="domain"]').selectOption("Speaking");
+await page
+  .locator('[data-align-filter="languageFunction"]')
+  .selectOption("Explain cause and effect");
+await page.locator('[data-align-filter="standard"]').selectOption("ELD-SC");
+await page.locator('[data-align-filter="expectation"]').selectOption("__untagged__");
+const alignedRows = page.locator(
+  '.ev-body section[aria-labelledby="activityCoverageTitle"] .lab-table-wrap tbody tr',
+);
+ok(
+  (await alignedRows.allInnerTexts()).some((text) =>
+    text.includes("Explain Why the Water Disappeared"),
+  ),
+  "teacher filters across grade, KLU, context, domain, function, standard and expectation gap",
+);
+ok(
+  (await page.locator("#classEvidence").innerText()).includes(
+    "No generated record is an official or verified WIDA crosswalk",
+  ),
+  "alignment table distinguishes local tags from verified WIDA crosswalks",
+);
+await alignedRows
+  .filter({ hasText: "Explain Why the Water Disappeared" })
+  .locator("[data-alignment-review] summary")
+  .click();
+const alignmentReview = alignedRows
+  .filter({ hasText: "Explain Why the Water Disappeared" })
+  .locator("[data-alignment-review]");
+await alignmentReview.locator('[data-alignment-field="gradeCluster"]').selectOption("6-8");
+await alignmentReview.locator('[data-alignment-field="academicContext"]').fill("Science");
+await alignmentReview.locator('[data-alignment-field="keyUse"]').selectOption("Explain");
+await alignmentReview.locator('[data-alignment-field="standard"]').selectOption("ELD-SC");
+await alignmentReview
+  .locator('[data-alignment-field="languageExpectation"]')
+  .fill("ELD-SC.6-8.Explain");
+await alignmentReview
+  .locator('[data-alignment-field="languageFunction"]')
+  .fill("Explain cause and effect");
+await alignmentReview
+  .locator('[data-alignment-field="languageFeatures"]')
+  .fill("causal conjunctions; connected clauses");
+await alignmentReview
+  .locator('[data-alignment-field="sourceReference"]')
+  .fill("https://wida.wisc.edu/teach/standards/eld");
+await alignmentReview.locator("[data-align-save]").click();
+const savedAlignmentReview = await page.evaluate(() =>
+  JSON.parse(localStorage.getItem("accessTeacher:v1:alignmentReviews") || "{}"),
+);
+ok(
+  Boolean(savedAlignmentReview["spk-evaporation-explain"]),
+  "teacher can save source-cited local metadata review in this browser",
+);
+ok(
+  savedAlignmentReview["spk-evaporation-explain"]?.status === "teacher-reviewed-local",
+  "saved review remains explicitly distinct from official WIDA verification",
+);
+await page.locator("[data-align-reset]").click();
+await page.evaluate(() => {
+  const saved = JSON.parse(localStorage.getItem("accessTeacher:v1:alignmentReviews") || "{}");
+  delete saved["spk-evaporation-explain"];
+  localStorage.setItem("accessTeacher:v1:alignmentReviews", JSON.stringify(saved));
+});
+await page.reload({ waitUntil: "networkidle" });
+await page.locator('[data-tab="blueprint"]').click();
+await page.locator("[data-align-reset]").click();
+ok(
+  (await page.locator("#classEvidence").innerText()).includes("539 of 539 records"),
+  "teacher can reset alignment filters",
+);
+await axeCheck("teacher activity alignment matrix");
+await overflowAt375("teacher activity alignment matrix");
 
 // ── quality-upgrade slices: spaced review, listening lab, evidence notebook, rehearsal modes,
 //    station cards, teacher conference plans. Each new page/view gets axe + 375px overflow. ────

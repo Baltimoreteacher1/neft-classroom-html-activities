@@ -5,11 +5,13 @@
 // `--check` fails (exit 1) when a committed file is stale.
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { buildAlignmentIndex } from "./lib/access-lab-alignment.mjs";
 import { buildGlossary, buildIndex, CONTENT_DIR } from "./lib/access-lab-content.mjs";
 
 const targets = [
   ["index.json", () => buildIndex()],
   ["glossary.json", () => buildGlossary()],
+  ["alignment-index.json", () => buildAlignmentIndex()],
 ];
 const check = process.argv.includes("--check");
 let stale = 0;

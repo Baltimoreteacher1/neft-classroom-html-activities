@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "64bb50a37099";
+const BUILD_HASH = "a031a3665228";
 const PRECACHE_CORE = [
   "/access-practice-lab/styles.css?v=b16b4bd466d5",
   "/access-practice-lab/library.css?v=50b712adeeb8",
@@ -29,7 +29,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/components.js?v=a32dd2275cf6",
   "/access-practice-lab/src/content/vocabulary-items.js?v=8504c5643bba",
   "/access-practice-lab/src/content/world-missions.js?v=6ac1466837b1",
-  "/access-practice-lab/src/content.js?v=495f00256281",
+  "/access-practice-lab/src/content.js?v=4df6e83dbc10",
   "/access-practice-lab/src/evidence-ui.js?v=7d58a4a4180b",
   "/access-practice-lab/src/glossary.js?v=ce62bb1e18d9",
   "/access-practice-lab/src/grade.js?v=c88ead48711f",
@@ -94,6 +94,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/waveform.js?v=8805b0eed8a5",
 ];
 const PRECACHE_MORE = [
+  "/access-practice-lab/content/alignment-index.json",
   "/access-practice-lab/content/blueprints.json",
   "/access-practice-lab/content/detective/patterns.json",
   "/access-practice-lab/content/family.json",
