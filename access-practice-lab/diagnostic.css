@@ -1,9 +1,285 @@
-.diagnostic-panel,.diagnostic-question{max-width:58rem;margin:1.5rem auto;padding:clamp(1rem,3vw,2rem)}
-.diagnostic-panel .row-actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1.25rem}
-.diagnostic-question fieldset{display:grid;gap:.6rem;margin:1rem 0;padding:1rem;border:1px solid var(--line);border-radius:var(--radius-sm)}
-.diagnostic-choice{display:flex;align-items:flex-start;gap:.7rem;padding:.75rem;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer}
-.diagnostic-choice:focus-within{outline:3px solid var(--focus);outline-offset:2px}
-.diagnostic-choice input{width:1.2rem;height:1.2rem;flex:none;margin:.15rem 0 0}
-.reading-stimulus{padding:1rem 1.2rem;border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 10px 10px 0}
-.diagnostic-question [data-say]{margin:.3rem 0}
-@media(max-width:600px){.diagnostic-panel .row-actions .btn{flex:1 1 9rem;text-align:center}}
+/* ACCESS Practice Lab — optional skill check-in. A calm, narrow column: it suggests a starting point, never a level or score. */
+
+.dg {
+  display: grid;
+  gap: var(--s-4);
+  max-width: 46rem;
+  margin: 0 auto;
+}
+.dg-intro {
+  max-width: 54rem;
+}
+.dg:has(.dg-intro) {
+  max-width: 54rem;
+}
+.dg-intro .eyebrow {
+  color: var(--brand-ink);
+}
+.dg-intro h1,
+.dg-head h1 {
+  margin: 0 0 var(--s-3);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+.dg-head .lx-pill {
+  margin: 0 0 var(--s-3);
+  border-radius: 16px;
+}
+.dg-head .lead,
+.dg-intro .lead {
+  margin: 0 0 var(--s-4);
+}
+.dg-domains {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-3);
+  margin: 0 0 var(--s-4);
+  padding: 0;
+  list-style: none;
+}
+.dg-domain {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "icon name"
+    "icon sub"
+    "go go";
+  align-items: center;
+  gap: 0.1rem var(--s-3);
+  min-height: 6.5rem;
+  padding: var(--s-4);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: var(--shadow);
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.dg-domain:hover {
+  border-color: var(--room);
+  box-shadow: var(--shadow-lift);
+  color: var(--ink);
+}
+.dg-domain-icon {
+  grid-area: icon;
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 14px;
+  background: var(--room-soft);
+  color: var(--room-ink);
+}
+.dg-domain-icon .ico {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+.dg-domain strong {
+  grid-area: name;
+  font-size: 1.25rem;
+}
+.dg-domain > span:nth-of-type(2) {
+  grid-area: sub;
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+}
+.dg-go {
+  grid-area: go;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: var(--s-2);
+  color: var(--room-ink);
+  font-weight: 700;
+}
+.dg-skip {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+.dg-card {
+  margin: 0;
+  padding: clamp(1.1rem, 3vw, 2rem);
+}
+.dg-card h2 {
+  margin: 0 0 var(--s-3);
+  font-size: clamp(1.4rem, 1.15rem + 0.9vw, 1.8rem);
+}
+.dg-step {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin: 0 0 var(--s-3);
+}
+.dg-step .eyebrow {
+  margin: 0;
+}
+.dg-dots {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.dg-dots li {
+  width: 2rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--surface-3);
+}
+.dg-dots li.is-done {
+  background: var(--room);
+}
+.dg-dots li.is-here {
+  background: color-mix(in srgb, var(--room) 40%, #fff);
+  box-shadow: 0 0 0 2px var(--room);
+}
+.reading-stimulus {
+  margin: 0 0 var(--s-4);
+  padding: var(--s-4) var(--s-4) var(--s-4) var(--s-5);
+  border-left: 5px solid var(--room);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--room-soft);
+  font-size: 1.25rem;
+  line-height: 1.7;
+}
+.diagnostic-question [data-say] {
+  margin: 0 0 var(--s-2);
+}
+.dg-choices {
+  display: grid;
+  gap: var(--s-3);
+  margin: var(--s-4) 0;
+  padding: 0;
+  border: 0;
+}
+.dg-choices legend {
+  padding: 0;
+  margin: 0 0 var(--s-3);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+.diagnostic-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  min-height: 3.75rem;
+  padding: 0.8rem 1rem;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  font-size: 1.125rem;
+  line-height: 1.45;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.diagnostic-choice input {
+  margin-top: 0.15rem;
+  accent-color: var(--room);
+}
+.diagnostic-choice:hover {
+  border-color: var(--room);
+}
+.diagnostic-choice:has(input:checked) {
+  border-color: var(--room);
+  background: var(--room-soft);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--room) 16%, transparent);
+}
+.diagnostic-choice:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+.dg-card .feedback {
+  margin: 0 0 var(--s-4);
+}
+.dg-card .feedback .fb-title {
+  margin: 0;
+  font: 700 1.15rem/1.3 var(--font);
+  letter-spacing: 0;
+}
+.dg-prompt {
+  margin: 0 0 var(--s-4);
+  padding: var(--s-4);
+  border-left: 5px solid var(--room);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--room-soft);
+  font-size: 1.25rem;
+  line-height: 1.6;
+}
+.dg-rec {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  margin: 0 0 var(--s-3);
+}
+.dg-reflect {
+  margin: var(--s-3) 0;
+  color: var(--ink-2);
+}
+.dg-saved {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  margin: 0;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--radius-sm);
+  background: var(--right-soft);
+  color: var(--ink);
+}
+.dg-saved .ico {
+  margin-top: 0.2rem;
+  color: var(--right);
+}
+.dg-card textarea {
+  margin: var(--s-2) 0 0;
+  min-height: 9rem;
+}
+.dg-card label[for="diagnosticDraft"] {
+  display: block;
+  font-weight: 700;
+}
+.dg-result {
+  display: grid;
+  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+  align-items: center;
+  gap: var(--s-5);
+}
+.dg-result img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+.dg-result .eyebrow {
+  margin: 0 0 var(--s-1);
+}
+.dg-result h2 {
+  text-transform: capitalize;
+}
+
+@media (max-width: 700px) {
+  .dg-domains {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dg-result {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dg-result img {
+    max-width: 14rem;
+  }
+}
+@media (max-width: 480px) {
+  .dg-step {
+    flex-wrap: wrap;
+  }
+  .dg-card .btn,
+  .dg-card .row-actions .btn {
+    flex: 1 1 100%;
+  }
+}

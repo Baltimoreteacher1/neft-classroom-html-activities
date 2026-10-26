@@ -1,5 +1,6 @@
 // Lab-only shell: shared utilities stay reachable without floating over student work.
-import { BASE, html, toHtml, storage } from "./util.js";
+import { footerHTML, navHTML } from "./nav.js";
+import { toHtml, storage } from "./util.js";
 
 let spanish = false;
 let watching = false;
@@ -64,40 +65,8 @@ export function mountShell(ctx) {
   const wasOpen = lastLocation === currentLocation && nav?.querySelector("details")?.open;
   lastLocation = currentLocation;
   if (nav) {
-    nav.setAttribute("aria-label", T("Lab tools", "Herramientas del laboratorio"));
-    nav.innerHTML = toHtml(html`
-      <a class="top-link" href="${BASE}/worlds?grades=${ctx.band}">🗺️ <span>${T("Worlds", "Mundos")}</span></a>
-      <a class="top-link" href="${BASE}/classroom?grades=${ctx.band}">📽️ <span>${T("Classroom", "Salón")}</span></a>
-      <a class="top-link" href="${BASE}/vocabulary?grades=${ctx.band}">🧩 <span>${T("Words", "Palabras")}</span></a>
-      <a class="top-link" href="${BASE}/passport?grades=${ctx.band}">🛂 <span>${T("Passport", "Pasaporte")}</span></a>
-      <details class="lab-utilities"><summary>${T("Lab tools", "Herramientas")}</summary>
-        <div class="lab-utilities-body">
-          <a href="${BASE}/?grades=${ctx.band}">🏠 ${T("Lab home", "Inicio del laboratorio")}</a>
-          <a href="${BASE}/worlds?grades=${ctx.band}">🗺️ ${T("Language Worlds (Four consequential environments)", "Mundos lingüísticos")}</a>
-          <a href="${BASE}/classroom?grades=${ctx.band}">📽️ ${T("Whole-Class Language Studio", "Estudio para toda la clase")}</a>
-          <a href="${BASE}/vocabulary?grades=${ctx.band}">🧩 ${T("Word Builder (Morphology & Vocabulary)", "Constructor de palabras")}</a>
-          <a href="${BASE}/diagnostic?grades=${ctx.band}">🎯 ${T("Optional Skill Check-in", "Evaluación diagnóstica opcional")}</a>
-          <a href="${BASE}/launch-studio">🚀 ${T("Teacher Launch Studio (QR codes & direct links)", "Estudio de lanzamiento docente")}</a>
-          <a href="${BASE}/missions?grades=${ctx.band}">🔬 ${T("Academic missions", "Misiones académicas")}</a>
-          <a href="${BASE}/speak?grades=${ctx.band}">🎤 ${T("Speaking Studio", "Estudio de expresión oral")}</a>
-          <a href="${BASE}/write?grades=${ctx.band}">✏️ ${T("Writing Studio", "Estudio de escritura")}</a>
-          <a href="${BASE}/detective?grades=${ctx.band}">🔍 ${T("Language Error Detective", "Detective de errores del lenguaje")}</a>
-          <a href="${BASE}/growth?grades=${ctx.band}">📈 ${T("Language growth map", "Mapa de progreso lingüístico")}</a>
-          <a href="${BASE}/construction?grades=${ctx.band}">🧱 ${T("Language Construction Lab", "Laboratorio de construcción")}</a>
-          <a href="${BASE}/conversation?grades=${ctx.band}">💬 ${T("Conversation Simulator", "Simulador de conversación")}</a>
-          <a href="${BASE}/evidence?grades=${ctx.band}">📊 ${T("Evidence Studio", "Estudio de evidencia")}</a>
-          <a href="${BASE}/library?grades=${ctx.band}">📚 ${T("Find practice", "Buscar práctica")}</a>
-          <a href="${BASE}/reading-room?grades=${ctx.band}">📖 ${T("Reading Room", "Sala de lectura")}</a>
-          <a href="${BASE}/tests?grades=${ctx.band}">🧪 ${T("Practice tests", "Pruebas de práctica")}</a>
-          <a href="${BASE}/tools?grades=${ctx.band}">🧰 ${T("Audio and device check", "Revisar audio y dispositivo")}</a>
-          <a href="${BASE}/family?grades=${ctx.band}">🏠 ${T("Families", "Familias")}</a>
-          <a href="/access-teacher/">👩‍🏫 ${T("Teacher Hub (full dashboard)", "Centro docente")}</a>
-          <button type="button" class="btn" data-lab-save>${T("Site Save / Resume", "Guardar / Continuar en el sitio")}</button>
-          <span class="text-size" role="group" aria-label="${T("Text size", "Tamaño del texto")}"><button type="button" class="ts-btn" data-text-size="-0.1" aria-label="${T("Smaller text", "Texto más pequeño")}">A−</button><button type="button" class="ts-btn" data-text-size="0.1" aria-label="${T("Bigger text", "Texto más grande")}">A+</button></span>
-          <p class="fine">${savedCopy[spanish ? "es" : "en"]}</p>
-          <p class="fine" data-save-unavailable hidden>${T("Site saving is unavailable. Use Passport to export your lab work.", "El guardado del sitio no está disponible. Usa Pasaporte para exportar tu trabajo.")}</p>
-        </div>
-      </details>`);
+    nav.setAttribute("aria-label", T("Lab navigation", "Navegación del laboratorio"));
+    nav.innerHTML = toHtml(navHTML(ctx, T));
     nav.querySelector("details").open = Boolean(wasOpen);
     nav.querySelector("[data-lab-save]").addEventListener("click", () => {
       const engine = window.NeftSaveResume;
@@ -108,8 +77,14 @@ export function mountShell(ctx) {
   }
   document.querySelector(".crumbs")?.setAttribute("aria-label", T("Breadcrumb", "Ruta de navegación"));
   text(".skip-link", T("Skip to content", "Saltar al contenido"));
-  text(".lab-brand span:last-child", T("ACCESS Practice Lab", "Laboratorio de práctica ACCESS"));
-  text("#labBuild", T("ACCESS Practice Lab · classroom practice", "Laboratorio ACCESS · práctica de clase"));
+  text(".lab-wordmark strong", T("ACCESS Practice Lab", "Laboratorio ACCESS"));
+  const footer = document.querySelector(".lab-footer");
+  if (footer) {
+    const build = footer.querySelector("#labBuild")?.dataset.build || "";
+    footer.innerHTML = toHtml(footerHTML(ctx, T));
+    const stamp = footer.querySelector("#labBuild");
+    if (stamp && build) stamp.textContent = stamp.dataset.build = build;
+  }
   updateSavePanel();
   storage.refreshWarning();
   if (!watching) {

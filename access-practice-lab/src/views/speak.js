@@ -6,42 +6,62 @@ import { crumbsHTML } from "../components.js";
 import { loadMission, loadSpeakingTasks, loadStudioIndex } from "../content.js";
 import { recommendTasks } from "../lang/adapt.js";
 import { analyzeResponse, compareDrafts } from "../lang/analyze.js";
-import { LocalFeedbackProvider, LOCAL_FEEDBACK_MODEL_VERSION, LOCAL_FEEDBACK_PROMPT_VERSION } from "../lang/providers.js";
+import {
+  LocalFeedbackProvider,
+  LOCAL_FEEDBACK_MODEL_VERSION,
+  LOCAL_FEEDBACK_PROMPT_VERSION,
+} from "../lang/providers.js";
 import { describeSpeech, summarizeEnvelope } from "../lang/audio.js";
 import { appendEntry, buildProfile, loadLedger, saveLedger, suggestStage } from "../lang/ledger.js";
 import { emptyReview, reviewComplete } from "../lang/rubrics.js";
-import { addTake, choiceEffects, loadStudio, missionState, saveStudio, speakingState } from "../lang/studio.js";
+import {
+  addTake,
+  choiceEffects,
+  loadStudio,
+  missionState,
+  saveStudio,
+  speakingState,
+} from "../lang/studio.js";
 import * as audioStore from "../audio-store.js";
 import { canRecord, isRecording, takesFor } from "../recorder.js";
 import { canSpeak, speak, speakDialogue, stop as stopSpeech } from "../speech.js";
+import { waveformSVG } from "../waveform.js";
 import {
-  feedbackHTML,
-  rubricHTML,
-  sourceHTML,
-  stagePickerHTML,
-  tableHTML,
   chartHTML,
-  vocabListHTML,
-  bridgesHTML,
+  chooserHeroHTML,
+  disclosure,
+  feedbackHTML,
+  jumpNavHTML,
   purposeBadgeHTML,
+  rubricHTML,
+  stageLockedHTML,
+  stagePickerHTML,
+  stepperHTML,
+  supportsPanelHTML,
+  tableHTML,
+  taskCardHTML,
+  trackDisclosures,
 } from "../studio-ui.js";
-import { BASE, announce, html, raw, wordCount } from "../util.js";
+import { ART, BASE, announce, html, icon, raw, wordCount } from "../util.js";
 
 const IGN = raw("data-nsr-ignore");
 let S = null;
 const chosen = new Map(); // task id → stage picked before the first attempt
 let kept = new Map(); // take id → object URL for recordings kept on this device
+let timing = { prep: 0, max: 0 }; // optional preparation countdown and response limit (this tab only)
+let stopScope = null;
 const feedbackProvider = new LocalFeedbackProvider();
 
 const save = () => saveStudio(S.studio);
-const dirLabel = {
-  retell: "Retell",
-  describe: "Describe",
-  compare: "Compare",
-  explain: "Explain",
-  argue: "Argue",
-  discuss: "Discuss",
+const TYPES = {
+  retell: ["Retell", "replay", "Tell what happened, in order."],
+  describe: ["Describe", "search", "Say what you see in data, pictures or places."],
+  compare: ["Compare", "grid", "Say how two things are alike and different."],
+  explain: ["Explain", "bulb", "Say why or how something happens."],
+  argue: ["Argue", "flag", "Take a position and back it up with evidence."],
+  discuss: ["Discuss", "conversation", "Answer a partner in a short conversation."],
 };
+const dirLabel = Object.fromEntries(Object.entries(TYPES).map(([k, v]) => [k, v[0]]));
 
 async function findTask(id, from) {
   if (from?.startsWith("mission:")) {
@@ -55,48 +75,86 @@ async function findTask(id, from) {
 const backHref = (band) => `${BASE}/speak?grades=${band}`;
 const missionHref = (m, band) => `${BASE}/missions/${m.id}?grades=${band}`;
 
-function chooserHTML(ctx, index, entries) {
+async function chooserHTML(ctx, index, entries) {
   const band = ctx.band;
   const tasks = index.speaking.filter((t) => t.band === band || !t.band);
+  const full = new Map((await loadSpeakingTasks()).tasks.map((t) => [t.id, t]));
   const recs = recommendTasks(tasks, entries, { band, n: 3 });
-  const groups = Object.keys(dirLabel)
+  const groups = Object.keys(TYPES)
     .map((k) => [k, tasks.filter((t) => t.taskType === k)])
     .filter(([, l]) => l.length);
   const card = (t, why) =>
-    html`<a class="card task-card" href="${BASE}/speak/${t.id}?grades=${band}"
-      ><strong>${t.title}</strong
-      ><span class="fine">${dirLabel[t.taskType]} · ${t.keyUse} · ${t.contentArea} · ${t.time}</span
-      >${why ? html`<span class="fine">${why}</span>` : ""}</a
-    >`;
+    taskCardHTML({
+      href: `${BASE}/speak/${t.id}?grades=${band}`,
+      title: t.title,
+      ico: TYPES[t.taskType]?.[1] || "speaking",
+      kind: dirLabel[t.taskType],
+      time: t.time,
+      desc: full.get(t.id)?.scenario,
+      meta: [t.keyUse, t.contentArea],
+      why,
+    });
+  const next = recs[0];
   return html`${crumbsHTML([
       ["Lab", `${BASE}/?grades=${band}`],
       ["Speaking Studio", null],
     ])}
-    <section class="room-hero" style="--room:#8e4b10">
-      <div>
-        <span class="badge">Speaking Studio</span>
-        <h1 tabindex="-1"><svg aria-hidden="true"><use href="${BASE}/pictures/lab-icons.svg#speaking"></use></svg> Speaking Studio</h1>
-        <p class="lead">
-          Plan, say it out loud, listen back, and say it better. You show your speaking by speaking.
-        </p>
-      </div>
-    </section>
+    <div class="d-speaking">
+    ${chooserHeroHTML({
+      domain: "d-speaking",
+      eyebrow: `Grades ${band.replace("-", "–")} · ${tasks.length} speaking tasks`,
+      title: "Speaking Studio",
+      lead: "Plan what you will say, say it out loud, listen back, and say it better. You show your speaking by speaking.",
+      art: `${ART}/domain-speaking.svg`,
+      loop: ["Plan", "Say it", "Listen back", "Check", "Review"],
+      cta: next
+        ? html`<a
+            class="btn btn-primary btn-big btn-next"
+            href="${BASE}/speak/${next.task.id}?grades=${band}"
+            ><span class="btn-kicker">Try next</span
+            ><span class="next-title">${next.task.title}</span>${icon("arrow-right")}</a
+          >`
+        : "",
+    })}
     ${
-      recs.length
-        ? html`<section class="panel">
-            <h2>Try next</h2>
-            <div class="task-grid">${recs.map((r) => card(r.task, r.why))}</div>
+      tasks.length
+        ? html`${jumpNavHTML(
+            groups.map(([k]) => [`spk-${k}`, dirLabel[k]]),
+            "Jump to a kind of speaking task",
+          )}
+          ${
+            recs.length
+              ? html`<section class="task-group is-next" aria-labelledby="spk-next-h">
+                  <header>
+                    <h2 id="spk-next-h">${icon("sparkle")} Try next</h2>
+                    <p class="fine">Picked from the evidence you have saved on this device.</p>
+                  </header>
+                  <div class="task-grid">${recs.map((r) => card(r.task, r.why))}</div>
+                </section>`
+              : ""
+          }
+          ${groups.map(
+            ([k, list]) =>
+              html`<section class="task-group" id="spk-${k}" aria-labelledby="spk-${k}-h">
+                <header>
+                  <h2 id="spk-${k}-h">${icon(TYPES[k][1])} ${dirLabel[k]}</h2>
+                  <p class="fine">${TYPES[k][2]}</p>
+                </header>
+                <div class="task-grid">${list.map((t) => card(t))}</div>
+              </section>`,
+          )}`
+        : html`<section class="panel empty-state">
+            <img src="${ART}/empty.svg" alt="" width="480" height="300" />
+            <h2>No speaking tasks for this grade band yet</h2>
+            <p>Switch grade band from the menu, or open the quick Speaking practice room.</p>
+            <a class="btn" href="${BASE}/Speaking/A?grades=${band}">Speaking practice room</a>
           </section>`
-        : ""
     }
-    ${groups.map(
-      ([k, list]) =>
-        html`<section class="panel">
-          <h2>${dirLabel[k]}</h2>
-          <div class="task-grid">${list.map((t) => card(t))}</div>
-        </section>`,
-    )}
-    <p class="no-print"><a class="btn" href="${BASE}/printables/studio-speaking" target="_blank" rel="noopener">Print speaking task cards</a></p>
+    <p class="no-print">
+      <a class="btn" href="${BASE}/printables/studio-speaking" target="_blank" rel="noopener"
+        >${icon("print")} Print speaking task cards</a
+      >
+    </p>
     <p class="disclaimer">
       Classroom speaking practice. The Language Coach reads the transcript you type and measures
       time and pauses on this device. It does not judge pronunciation, and it is not a WIDA score.
@@ -107,25 +165,46 @@ function stimulusHTML(task) {
   const st = task.stimulus;
   if (!st || st.kind === "none") return "";
   if (st.kind === "audio")
-    return html`<section class="source">
-      <h3>Listen first</h3>
-      <p class="fine">
-        Listen as many times as you need. The words are not shown until after you speak.
-      </p>
-      <button type="button" class="btn" data-play-stimulus>▶ Listen</button>
-      <button type="button" class="ghost" data-stop-audio>■ Stop</button>
+    return html`<section class="source listen-card">
+      <h3 class="source-title">${icon("listening")} Listen first</h3>
+      <div class="listen-player">
+        <button type="button" class="listen-btn" data-play-stimulus>
+          <span class="listen-icon" aria-hidden="true">${icon("play")}</span
+          ><span class="listen-label">Listen</span>
+        </button>
+        <button type="button" class="ghost" data-stop-audio>${icon("stop")} Stop</button>
+        <p class="listen-meta fine">
+          Listen as many times as you need. The words are not shown until after you speak.
+        </p>
+      </div>
     </section>`;
   if (st.kind === "chart") return html`<section class="source">${chartHTML(st.chart)}</section>`;
   if (st.kind === "table") return html`<section class="source">${tableHTML(st.table)}</section>`;
   if (st.kind === "text")
-    return html`<section class="source">${(st.text || []).map((p) => html`<p>${p}</p>`)}</section>`;
+    return html`<section class="source">
+      <div class="source-text">${(st.text || []).map((p) => html`<p>${p}</p>`)}</div>
+    </section>`;
   return "";
 }
 
 function plannerHTML(task, state) {
-  return html`<section class="panel planner">
-    <h3>1 · Plan what you will say</h3>
-    ${task.planner.map((slot) => html`<label class="field"><span>${slot.label}</span><input type="text" data-plan="${slot.id}" value="${state.plan[slot.id] || ""}" ${S.stage === "independent" ? "" : html`placeholder="${S.fx.hints[slot.id] || slot.hint}"`} ${IGN} /></label>`)}
+  return html`<section class="panel planner" id="spk-plan">
+    <h3><span class="step-badge">1</span> Plan what you will say</h3>
+    <div class="slot-grid">
+      ${task.planner.map(
+        (slot, i) =>
+          html`<label class="field slot"
+            ><span><b class="slot-n">${i + 1}</b>${slot.label}</span
+            ><textarea
+              rows="2"
+              data-plan="${slot.id}"
+              ${S.stage === "independent" ? "" : html`placeholder="${S.fx.hints[slot.id] || slot.hint}"`}
+              ${IGN}
+            >
+${state.plan[slot.id] || ""}</textarea>
+          </label>`,
+      )}
+    </div>
     <label class="practiced"
       ><input type="checkbox" data-rehearsed ${state.rehearsed ? raw("checked") : ""} ${IGN} /> I
       said my plan quietly out loud once.</label
@@ -135,35 +214,89 @@ function plannerHTML(task, state) {
 
 function supportsHTML(task) {
   if (S.stage === "independent")
-    return html`<p class="fine">
-      You chose to work on your own: no frames, words or model. Your plan and your voice are enough.
+    return html`<p class="own-note">
+      ${icon("user")}<span
+        >You chose to work on your own: no frames, words or model. Your plan and your voice are
+        enough.</span
+      >
     </p>`;
-  const g = task.stages.guided;
-  return html`<section class="panel supports">
-    <h3>Supports</h3>
-    ${
-      S.stage === "guided"
-        ? html`<h4>Sentence frames</h4>
-            <ul class="frames">
-              ${g.frames.map((f) => html`<li>${f}</li>`)}
-            </ul>`
-        : ""
-    }
-    <h4>Word bank</h4>
-    <ul class="wordbank">
-      ${task.stages.supported.bank.map((w) => html`<li>${w}</li>`)}
-    </ul>
-    ${vocabListHTML(task.vocab)}
-    ${bridgesHTML(task)}
-    ${
-      S.stage === "guided"
-        ? html`<details data-model>
-            <summary>Hear a model answer</summary>
-            <p class="fine">Opening the model is saved as extra support.</p>
-            <button type="button" class="btn" data-play-model>▶ Hear the model</button>
-          </details>`
-        : ""
-    }
+  return supportsPanelHTML(task, S.stage, {
+    modelBody: {
+      summary: "Hear a model answer",
+      body: html`<button type="button" class="btn" data-play-model>
+        ${icon("volume")} Hear the model
+      </button>`,
+    },
+  });
+}
+
+function timingHTML(task) {
+  const [, hi] = task.targetSeconds;
+  const opt = (v, label, cur) =>
+    html`<option value="${v}" ${cur === v ? raw("selected") : ""}>${label}</option>`;
+  return disclosure(
+    "spk-timing",
+    html`${icon("clock")} Optional timing`,
+    html`<p class="fine">
+        Off by default. Use these to practice speaking on a clock; nothing changes in your results.
+      </p>
+      <div class="timing-grid">
+        <label class="field"
+          ><span>Get ready first</span
+          ><select data-timing="prep" ${IGN}>
+            ${opt(0, "No countdown", timing.prep)}${opt(5, "5 seconds", timing.prep)}${opt(10, "10 seconds", timing.prep)}${opt(30, "30 seconds", timing.prep)}
+          </select></label
+        >
+        <label class="field"
+          ><span>Stop automatically</span
+          ><select data-timing="max" ${IGN}>
+            ${opt(0, "No limit", timing.max)}${opt(hi, `After ${hi} seconds`, timing.max)}
+          </select></label
+        >
+      </div>`,
+  );
+}
+
+function takeRowHTML(t, i, task, state) {
+  const isKept = state.takes.find((x) => x.id === t.id)?.keptAudio;
+  return html`<li>
+    <div class="take-head">
+      <strong>Try ${i + 1}</strong><span class="fine">${t.seconds}s</span>
+    </div>
+    ${raw(waveformSVG(t.env))}
+    <audio controls preload="none" aria-label="Play recording ${i + 1}" src="${t.url}"></audio>
+    <div class="take-actions">
+      ${audioStore.available() ? html`<button type="button" class="ghost small" data-keep="${t.id}">${isKept ? html`${icon("check")} Kept for my teacher` : "Keep for my teacher"}</button>` : ""}<a
+        class="ghost small"
+        href="${t.url}"
+        download="speaking-${task.id}-${i + 1}.${t.extension}"
+        >${icon("download")} Download</a
+      >
+    </div>
+  </li>`;
+}
+
+function compareHTML(takes) {
+  const cell = (label, t, n) =>
+    html`<figure class="compare-cell">
+      <figcaption>${label} · ${t.seconds}s</figcaption>
+      ${raw(waveformSVG(t.env))}<audio
+        controls
+        preload="none"
+        aria-label="Play ${label.toLowerCase()}"
+        src="${t.url}"
+      ></audio
+      ><span class="fine">Try ${n}</span>
+    </figure>`;
+  return html`<section class="compare" aria-label="Compare your tries">
+    <h4>Compare your tries</h4>
+    <p class="fine">
+      Listen to both. Notice what changed, such as a reason added or a clearer ending. Length alone
+      does not make an answer better.
+    </p>
+    <div class="compare-grid">
+      ${cell("Oldest saved try", takes[0], 1)}${cell("Latest try", takes.at(-1), takes.length)}
+    </div>
   </section>`;
 }
 
@@ -172,24 +305,35 @@ function recorderBlock(task, state) {
   const rec = isRecording(key);
   const takes = takesFor(key);
   const manual = state.takes.some((t) => t.manual);
-  if (!canRecord())
-    return html`<section class="panel">
-      <h3>2 · Say it</h3>
-      <p>
-        <strong>This browser cannot record.</strong> Say your answer to a partner or your teacher
-        out loud. Then press the button and type what you said.
-      </p>
-      ${manual ? "" : html`<button type="button" class="btn btn-primary" data-manual-take>I said it out loud</button>`}
-    </section>`;
   const [lo, hi] = task.targetSeconds;
+  if (!canRecord())
+    return html`<section class="panel recorder is-unavailable" id="spk-say">
+      <h3><span class="step-badge">2</span> Say it</h3>
+      <p class="rec-state is-off">
+        ${icon("alert")}<span
+          ><strong>This browser cannot record.</strong> Say your answer to a partner or your teacher
+          out loud. Then press the button and type what you said.</span
+        >
+      </p>
+      <div class="rec-main">
+        ${manual ? "" : html`<button type="button" class="btn btn-primary" data-manual-take>${icon("check")} I said it out loud</button>`}
+        <button type="button" class="ghost" data-say="${task.prompt}">
+          ${icon("volume")} Hear the task
+        </button>
+      </div>
+    </section>`;
   return html`<section
-    class="panel recorder ${rec ? "is-recording" : ""}"
+    class="panel recorder studio-rec ${rec ? "is-recording" : ""}"
+    id="spk-say"
     aria-label="Record your answer"
   >
-    <h3>2 · Say it</h3>
+    <h3><span class="step-badge">2</span> Say it</h3>
     <p class="fine">
       Aim for ${lo}–${hi} seconds. Speak in a quiet place. Recordings stay on this device unless you
       keep one for your teacher.
+    </p>
+    <p class="rec-state ${rec ? "is-live" : ""}" role="status">
+      ${rec ? html`<span class="rec-pulse" aria-hidden="true"></span><span><strong>Recording.</strong> The microphone is on. Press Stop when you are done.</span>` : html`${icon("record")}<span>${takes.length ? `${takes.length} ${takes.length === 1 ? "try" : "tries"} saved on this device. The microphone is off.` : "Ready. The microphone is off until you press Record."}</span>`}
     </p>
     <div class="rec-main">
       ${
@@ -197,24 +341,39 @@ function recorderBlock(task, state) {
           ? html`<button type="button" class="rec-btn is-stop" data-rec-stop="${key}">
                 <span class="rec-dot" aria-hidden="true"></span>Stop
               </button>
-              <div class="rec-live">
-                <span class="rec-meter"></span><span class="rec-time">0s</span>
+              <div class="rec-live" aria-live="off">
+                <span class="rec-meter" style="--lvl:0.00"></span>
+                <span class="rec-time">0s</span>
+                <canvas class="rec-scope" width="360" height="56" aria-hidden="true"></canvas>
               </div>`
-          : html`<button type="button" class="rec-btn" data-rec-start="${key}">
+          : html`<button
+              type="button"
+              class="rec-btn"
+              data-rec-start="${key}"
+              data-rec-prep="${timing.prep}"
+              data-rec-max="${timing.max}"
+            >
               <span class="rec-dot" aria-hidden="true"></span
               >${takes.length ? "Record again" : "Record my answer"}
             </button>`
-      } <button type="button" class="ghost" data-say="${task.prompt}">🔊 Hear the task</button>
+      }
+      <button type="button" class="ghost" data-say="${task.prompt}">
+        ${icon("volume")} Hear the task
+      </button>
     </div>
+    <p class="rec-quiet" role="status" hidden></p>
+    <p class="rec-countdown" data-rec-countdown="${key}" role="status"></p>
     <p class="rec-error" data-rec-error="${key}" role="status"></p>
-    ${manual || rec ? "" : html`<p class="fine">No microphone, or it is not working? <button type="button" class="ghost small" data-manual-take>I said it out loud (no recording)</button></p>`}
+    ${rec ? "" : timingHTML(task)}
+    ${manual || rec ? "" : html`<p class="fine rec-fallback">No microphone, or it is not working? <button type="button" class="ghost small" data-manual-take>I said it out loud (no recording)</button></p>`}
     ${
       takes.length
         ? html`<ol class="takes">
-            ${takes.map((t, i) => html`<li><span>Try ${i + 1} · ${t.seconds}s</span><audio controls preload="none" aria-label="Play recording ${i + 1}" src="${t.url}"></audio>${audioStore.available() ? html`<button type="button" class="ghost small" data-keep="${t.id}">${state.takes.find((x) => x.id === t.id)?.keptAudio ? "✓ Kept for my teacher" : "Keep for my teacher"}</button>` : ""}<a class="ghost small" href="${t.url}" download="speaking-${task.id}-${i + 1}.${t.extension}">Download</a></li>`)}
+            ${takes.map((t, i) => takeRowHTML(t, i, task, state))}
           </ol>`
         : ""
     }
+    ${takes.length > 1 ? compareHTML(takes) : ""}
   </section>`;
 }
 
@@ -224,16 +383,27 @@ function transcriptCheck(take) {
   const seconds = take.audio?.ok ? take.audio.speechSeconds : 0;
   if (!words || !seconds) return "";
   const rate = words / seconds;
-  if (rate > 4.5) return html`<p class="fine todo">You typed ${words} words for ${seconds} seconds of speaking. That is more than most people say that fast — check that you typed only what you said.</p>`;
-  if (rate < 0.7 && seconds >= 8) return html`<p class="fine todo">You typed ${words} words for ${seconds} seconds of speaking. Did you leave parts out?</p>`;
+  if (rate > 4.5)
+    return html`<p class="note-todo">
+      ${icon("alert")}<span
+        >You typed ${words} words for ${seconds} seconds of speaking. That is more than most people
+        say that fast — check that you typed only what you said.</span
+      >
+    </p>`;
+  if (rate < 0.7 && seconds >= 8)
+    return html`<p class="note-todo">
+      ${icon("alert")}<span
+        >You typed ${words} words for ${seconds} seconds of speaking. Did you leave parts out?</span
+      >
+    </p>`;
   return "";
 }
 
 function analysisHTML(task, state, take) {
   if (!take) return "";
   const sum = take.audio;
-  return html`<section class="panel">
-    <h3>3 · Listen back, then type what you said</h3>
+  return html`<section class="panel transcript-panel" id="spk-type">
+    <h3><span class="step-badge">3</span> Listen back, then type what you said</h3>
     <p class="fine">
       ${take.manual ? "Type what you said." : "Listen to your take. Then type what you said."} Type
       it exactly as you said it, including mistakes — the Language Coach can only look at the words
@@ -242,13 +412,15 @@ function analysisHTML(task, state, take) {
     ${
       sum
         ? html`<ul class="speech-stats">
-            ${describeSpeech(sum, task.targetSeconds).map((l) => html`<li class="${l.ok ? "ok" : "todo"}">${l.ok ? "✓" : "○"} ${l.text}</li>`)}
+            ${describeSpeech(sum, task.targetSeconds).map((l) => html`<li class="${l.ok ? "ok" : "todo"}">${icon(l.ok ? "check" : "info")}<span>${l.text}</span></li>`)}
           </ul>`
         : ""
     }
     ${transcriptCheck(take)}
-    <label class="field"
-      ><span>What I said (exactly)</span
+    <label class="field paper"
+      ><span class="paper-head"
+        >What I said (exactly)
+        <span class="fine" data-tcount>${wordCount(take.transcript)} words</span></span
       ><textarea id="spk-transcript" rows="5" data-transcript ${IGN}>
 ${take.transcript || ""}</textarea>
     </label>
@@ -259,7 +431,7 @@ ${take.transcript || ""}</textarea>
         data-analyze
         ${wordCount(take.transcript) < 3 ? raw("disabled") : ""}
       >
-        Check my language
+        ${icon("sparkle")} Check my language
       </button>
     </div>
   </section>`;
@@ -271,21 +443,22 @@ function resultsHTML(task, state, take, prev) {
   const delta = prev?.transcript
     ? compareDrafts(prev.transcript, take.transcript, optsFor(task))
     : null;
-  return html`<section class="panel">
-    <h3>4 · What your speaking shows</h3>
-    ${feedbackHTML(a, take.transcript, { patternHref: (id) => `${BASE}/detective/${id}?grades=${S.band}` })}
-    ${
-      delta
-        ? html`<div class="revision-coach-card card">
-            <h4>📈 Compared with your last try</h4>
-            <ul>
-              ${delta.changes.map((c) => html`<li>${c.label}: ${c.from} → ${c.to} ${c.better ? "⭐" : ""}</li>`)}${delta.gainedMoves.map((m) => html`<li>New: ${m.toLowerCase()} ⭐</li>`)}${prev.audio && take.audio ? html`<li>Speaking time: ${prev.audio.speechSeconds}s → ${take.audio.speechSeconds}s</li>` : ""}
-            </ul>
-          </div>`
-        : ""
-    }
-    <section class="panel">
-      <h3>5 · Review your speaking</h3>
+  return html`<section class="panel" id="spk-coach">
+      <h3><span class="step-badge">4</span> What your speaking shows</h3>
+      ${feedbackHTML(a, take.transcript, { patternHref: (id) => `${BASE}/detective/${id}?grades=${S.band}` })}
+      ${
+        delta
+          ? html`<div class="revision-coach-card card">
+              <h4>${icon("growth")} Compared with your last try</h4>
+              <ul>
+                ${delta.changes.map((c) => html`<li>${c.label}: ${c.from} → ${c.to} ${c.better ? icon("star") : ""}</li>`)}${delta.gainedMoves.map((m) => html`<li>New: ${m.toLowerCase()} ${icon("star")}</li>`)}${prev.audio && take.audio ? html`<li>Speaking time: ${prev.audio.speechSeconds}s → ${take.audio.speechSeconds}s</li>` : ""}
+              </ul>
+            </div>`
+          : ""
+      }
+    </section>
+    <section class="panel" id="spk-review">
+      <h3><span class="step-badge">5</span> Review your speaking</h3>
       ${rubricHTML(take.selfReview || emptyReview(), { modality: "speaking", prefix: `self-${take.id}` })}
       <div class="row-actions">
         <button
@@ -294,12 +467,14 @@ function resultsHTML(task, state, take, prev) {
           data-finish
           ${reviewComplete(take.selfReview) ? "" : raw("disabled")}
         >
-          Save my review</button
-        ><button type="button" class="btn" data-again>Record again to improve</button>
+          Save my review
+        </button>
+        <button type="button" class="btn" data-again>
+          ${icon("retry")} Record again to improve
+        </button>
       </div>
-      ${take.finished ? html`<p class="saved-note">✓ Saved. This is practice evidence, not a score.</p>` : ""}
-    </section>
-  </section>`;
+      ${take.finished ? html`<p class="saved-note">${icon("check")} Saved. This is practice evidence, not a score.</p>` : ""}
+    </section>`;
 }
 
 function teacherHTML(task, state) {
@@ -309,7 +484,7 @@ function teacherHTML(task, state) {
       <p>No recording has been made on this device yet.</p>
     </section>`;
   const reviews = take.teacherReview || [];
-  return html`<section class="panel">
+  return html`<section class="panel teacher-review">
     <h2>Teacher conference review</h2>
     <p class="fine">
       Listen to the learner's take, then record practice bands. Saved on this device with the
@@ -369,18 +544,30 @@ const stageSupports = () => ({
   coach: S.takeIndex > 0,
 });
 
+function stepsFor(state) {
+  const take = state.takes.at(-1);
+  return [
+    { label: "Plan", done: Boolean(state.rehearsed || Object.values(state.plan).some(Boolean)) },
+    { label: "Say it", done: state.takes.length > 0 },
+    { label: "Type it", done: wordCount(take?.transcript) >= 3 },
+    { label: "Coach", done: Boolean(take?.analyzedAt) },
+    { label: "Review", done: Boolean(take?.finished) },
+  ];
+}
+
 export async function render(ctx) {
   const index = await loadStudioIndex();
   S = { ...(S || {}), band: ctx.band, studio: loadStudio(), ledger: loadLedger() };
   const entries = S.ledger.entries;
   const id = ctx.route.id;
-  if (!id) return { title: "Speaking Studio", html: chooserHTML(ctx, index, entries) };
+  if (!id) return { title: "Speaking Studio", html: await chooserHTML(ctx, index, entries) };
   const found = await findTask(id, new URLSearchParams(location.search).get("from"));
   if (!found)
     return {
       title: "Not found",
-      html: html`<section class="panel">
-        <h1>We could not find that task.</h1>
+      html: html`<section class="panel empty-state">
+        <img src="${ART}/empty.svg" alt="" width="480" height="300" />
+        <h1 tabindex="-1">We could not find that task.</h1>
         <a class="btn" href="${backHref(ctx.band)}">Speaking Studio</a>
       </section>`,
     };
@@ -407,52 +594,73 @@ export async function render(ctx) {
   return {
     title: task.title,
     html: html`${crumbsHTML([["Lab", `${BASE}/?grades=${ctx.band}`], mission ? [mission.title, missionHref(mission, ctx.band)] : ["Speaking Studio", backHref(ctx.band)], [task.title, null]])}
-      <article class="activity speak-studio" style="--room:#8e4b10">
+      <article class="activity studio-view speak-studio d-speaking">
         <header class="act-head">
-          <p class="eyebrow">
-            <svg aria-hidden="true"><use href="${BASE}/pictures/lab-icons.svg#speaking"></use></svg> ${dirLabel[task.taskType]} · ${task.keyUse} · ${task.contentArea}
-          </p>
+          <div class="act-bar">
+            <p class="act-context">
+              ${icon("speaking")} Speaking Studio · ${dirLabel[task.taskType]} · ${task.keyUse}
+            </p>
+            <p class="act-step">${icon("clock")} ${task.time} · ${task.contentArea}</p>
+          </div>
           <h1 tabindex="-1">${task.title}</h1>
-        ${purposeBadgeHTML(S.stage)}
-          <div class="directions">
-            <p><strong>Situation:</strong> ${task.scenario}</p>
-            <p><strong>Your task:</strong> ${task.prompt}${S.fx.promptAdd.map((x) => html` <span class="path-add">${x}</span>`)}</p>
+          ${purposeBadgeHTML(S.stage)}
+          <div class="task-brief">
+            <div>
+              <span class="brief-label">${icon("info")} Situation</span>
+              <p>${task.scenario}</p>
+            </div>
+            <div class="brief-task">
+              <span class="brief-label">${icon("flag")} Your task</span>
+              <p>
+                ${task.prompt}${S.fx.promptAdd.map((x) => html` <span class="path-add">${x}</span>`)}
+              </p>
+              <button type="button" class="ghost small" data-say="${task.prompt}">
+                ${icon("volume")} Hear the task
+              </button>
+            </div>
           </div>
         </header>
         ${
           teacherMode
             ? teacherHTML(task, S.state)
-            : html` ${hasTake ? html`<p class="fine stage-locked">Your help setting for this attempt is <strong>${S.stage === "guided" ? "frames and words" : S.stage === "supported" ? "word bank" : "on my own"}</strong>. <button type="button" class="ghost small" data-new-attempt>Start a new attempt</button></p>` : stagePickerHTML(S.stage, sug)}
-              ${stimulusHTML(task)}
-              ${
-                board.length
-                  ? html`<section class="panel">
-                      <h3>Your evidence board</h3>
-                      <ul>
-                        ${board.map((b) => html`<li><strong>${b.label}:</strong> ${b.text}</li>`)}
-                      </ul>
-                    </section>`
-                  : ""
-              }
-              ${supportsHTML(task)}${plannerHTML(task, S.state)}${recorderBlock(task, S.state)}
-              ${
-                task.taskType === "discuss"
-                  ? html`<section class="panel">
-                      <h3>The conversation</h3>
-                      <p class="fine">
-                        Your partner speaks in turns. Answer each turn in your recording.
-                      </p>
-                      <ol>
-                        ${task.turns.map((u, i) => html`<li><button type="button" class="ghost small" data-play-turn="${i}">🔊 Hear ${u.partner}</button></li>`)}
-                      </ol>
-                    </section>`
-                  : ""
-              }
-              ${analysisHTML(task, S.state, take)}${resultsHTML(task, S.state, take, prev)}
-              ${S.stage === "independent" ? "" : ""}`
+            : html`${stepperHTML(stepsFor(S.state), { label: "Speaking steps" })}
+                ${hasTake ? stageLockedHTML(S.stage) : stagePickerHTML(S.stage, sug)}
+                <div class="studio-cols">
+                  <div class="studio-col">
+                    ${stimulusHTML(task)}
+                    ${
+                      board.length
+                        ? html`<section class="panel board">
+                            <h3>${icon("pin")} Your evidence board</h3>
+                            <ul class="board-list">
+                              ${board.map((b) => html`<li><strong>${b.label}:</strong> ${b.text}</li>`)}
+                            </ul>
+                          </section>`
+                        : ""
+                    }
+                    ${plannerHTML(task, S.state)}
+                  </div>
+                  <div class="studio-col">
+                    ${recorderBlock(task, S.state)} ${supportsHTML(task)}
+                    ${
+                      task.taskType === "discuss"
+                        ? html`<section class="panel conversation">
+                            <h3>${icon("conversation")} The conversation</h3>
+                            <p class="fine">
+                              Your partner speaks in turns. Answer each turn in your recording.
+                            </p>
+                            <ol class="turns">
+                              ${task.turns.map((u, i) => html`<li><button type="button" class="ghost small" data-play-turn="${i}">${icon("volume")} Hear ${u.partner}</button></li>`)}
+                            </ol>
+                          </section>`
+                        : ""
+                    }
+                  </div>
+                </div>
+                ${analysisHTML(task, S.state, take)}${resultsHTML(task, S.state, take, prev)}`
         }
       </article>
-      ${mission ? html`<p><a class="btn" href="${missionHref(mission, ctx.band)}">← Back to the mission</a></p>` : ""}
+      ${mission ? html`<p><a class="btn" href="${missionHref(mission, ctx.band)}">${icon("arrow-left")} Back to the mission</a></p>` : ""}
       <p class="save-explainer">
         Plans, transcripts and reviews save on this browser. Recordings do not unless you keep one.
         <a href="${BASE}/passport?grades=${ctx.band}">Saved work and teacher options</a>
@@ -492,6 +700,8 @@ export function onInput(e) {
       save();
       const b = document.querySelector("[data-analyze]");
       if (b) b.disabled = wordCount(t.value) < 3;
+      const c = document.querySelector("[data-tcount]");
+      if (c) c.textContent = `${wordCount(t.value)} words`;
     }
   } else if (t.matches("[data-rubric-note]")) {
     const take = S.state.takes.at(-1);
@@ -507,6 +717,15 @@ export function onInput(e) {
 export function onChange(e, ctx) {
   if (!S?.task) return;
   const t = e.target;
+  if (t.matches("[data-timing]")) {
+    timing = { ...timing, [t.dataset.timing]: Number(t.value) || 0 };
+    const b = document.querySelector("[data-rec-start]");
+    if (b) {
+      b.dataset.recPrep = String(timing.prep);
+      b.dataset.recMax = String(timing.max);
+    }
+    return;
+  }
   if (t.matches("[data-stage]")) {
     chosen.set(S.task.id, t.value);
     S.stage = t.value;
@@ -541,7 +760,11 @@ function analyze(ctx) {
   lockStage();
   S.state.attemptId ||= `a${Date.now().toString(36)}`;
   const first = !S.ledger.entries.some(
-    (x) => x.task === S.task.id && x.src === "speaking" && x.kind === "first" && x.attempt === S.state.attemptId,
+    (x) =>
+      x.task === S.task.id &&
+      x.src === "speaking" &&
+      x.kind === "first" &&
+      x.attempt === S.state.attemptId,
   );
   const result = feedbackProvider.evaluateSpeaking(take.transcript, null, optsFor(S.task));
   const a = result.analysis;
@@ -575,7 +798,8 @@ function analyze(ctx) {
     confidence: 0.6,
   });
   take.ledgerId = entry.id;
-  if (S.mission) missionState(S.studio, S.mission.id).tasks[S.task.id] = { done: true, t: take.analyzedAt };
+  if (S.mission)
+    missionState(S.studio, S.mission.id).tasks[S.task.id] = { done: true, t: take.analyzedAt };
   saveLedger(S.ledger);
   save();
   announce("Language Coach finished. Read your next moves.");
@@ -587,7 +811,12 @@ export function onClick(e, ctx) {
   const t = e.target;
   if (t.closest("[data-manual-take]")) {
     lockStage();
-    addTake(S.state, { id: `m${Date.now().toString(36)}`, seconds: 0, audio: null, extra: { manual: true } });
+    addTake(S.state, {
+      id: `m${Date.now().toString(36)}`,
+      seconds: 0,
+      audio: null,
+      extra: { manual: true },
+    });
     save();
     announce("Now type what you said.");
     ctx.rerender();
@@ -665,7 +894,57 @@ export function onClick(e, ctx) {
   return false;
 }
 
+/**
+ * Draws the real microphone level as a rolling bar history while a take is recording. The recorder reports
+ * the level into the meter's --lvl custom property; this only plots those readings, it never invents any.
+ * If nothing louder than room noise arrives for three seconds it says so, in words.
+ */
+function wireScope(root) {
+  const meter = root.querySelector(".rec-meter");
+  const canvas = root.querySelector(".rec-scope");
+  const quiet = root.querySelector(".rec-quiet");
+  if (!meter || !canvas) return null;
+  const g = canvas.getContext("2d");
+  const color = getComputedStyle(canvas).color;
+  const bars = Math.floor(canvas.width / 6);
+  const hist = [];
+  const start = performance.now();
+  let last = 0;
+  let peak = 0;
+  const draw = () => {
+    g.clearRect(0, 0, canvas.width, canvas.height);
+    g.fillStyle = color;
+    const mid = canvas.height / 2;
+    hist.forEach((v, i) => {
+      const h = Math.max(2, v * canvas.height);
+      g.fillRect((bars - hist.length + i) * 6, mid - h / 2, 4, h);
+    });
+  };
+  const obs = new MutationObserver(() => {
+    const now = performance.now();
+    const lvl = Number.parseFloat(meter.style.getPropertyValue("--lvl")) || 0;
+    peak = Math.max(peak, lvl);
+    if (now - last >= 50) {
+      last = now;
+      hist.push(lvl);
+      if (hist.length > bars) hist.shift();
+      draw();
+    }
+    if (quiet && now - start > 3000) {
+      const silent = peak < 0.05;
+      quiet.hidden = !silent;
+      if (silent)
+        quiet.textContent =
+          "We cannot hear you yet. Check that your microphone is on, and speak closer to it.";
+    }
+  });
+  obs.observe(meter, { attributes: true, attributeFilter: ["style"] });
+  draw();
+  return () => obs.disconnect();
+}
+
 export function mount(root) {
+  trackDisclosures(root);
   for (const d of root.querySelectorAll("details[data-model]"))
     d.addEventListener("toggle", () => {
       if (d.open && S?.state) {
@@ -673,7 +952,11 @@ export function mount(root) {
         save();
       }
     });
+  stopScope?.();
+  stopScope = wireScope(root);
 }
 export function unmount() {
+  stopScope?.();
+  stopScope = null;
   stopSpeech();
 }

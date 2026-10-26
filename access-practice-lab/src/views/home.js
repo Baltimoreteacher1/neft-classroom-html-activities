@@ -1,9 +1,10 @@
 // Home: one screen — band, the four skill rooms with a "Next" button each,
 // this week's Road to ACCESS stop, and doors to tests, passport and families.
-import { bandSwitchHTML, ringHTML } from "../components.js";
+import { bandSwitchHTML } from "../components.js";
 import { bandDomains, bandRows, loadRoad, loadShared } from "../content.js";
 import { allRecords, loadRecord, weekStreak } from "../store.js";
 import {
+  ART,
   BASE,
   CORE_DOMAINS,
   DOMAIN_META,
@@ -11,6 +12,7 @@ import {
   bandLabel,
   formatDate,
   html,
+  icon,
   testingWindowPhase,
   raw,
 } from "../util.js";
@@ -141,167 +143,145 @@ export async function render(ctx) {
     const levels = domains[d].levels;
     const tier = tierFor(ctx, d, levels);
     const { done, total, next } = nextActivity(band, d, tier, levels[tier].activities);
-    const href = next ? `${BASE}/${d}/${tier}/${next[0]}?grades=${band}` : `${BASE}/${d}/${tier}?grades=${band}`;
-    return html`<article class="room-tile domain-${d.toLowerCase()}" style="--room:${domains[d].color}">
-      <a class="room-head" href="${BASE}/${d}/${tier}?grades=${band}">
-        <span class="room-glyph" aria-hidden="true"><svg><use href="${BASE}/pictures/lab-icons.svg#${d.toLowerCase()}"></use></svg></span>
-        <span class="room-name"
-          ><strong>${meta.room}</strong
-          ><span>${TIERS[tier]?.name || tier} · ${done}/${total} done</span></span
-        >
-        ${ringHTML(done, total, { size: 46, label: `${meta.room}: ${done} of ${total} done` })}
-      </a>
-      ${
-        next
-          ? html`<a class="btn btn-room" href="${href}"
-              ><span class="btn-kicker">Next up</span>${next[1]}</a
-            >`
-          : html`<a class="btn btn-room" href="${BASE}/${d}/${tier}?grades=${band}"
-              >Level complete — choose another</a
-            >`
-      }
+    const roomHref = `${BASE}/${d}/${tier}?grades=${band}`;
+    const href = next ? `${BASE}/${d}/${tier}/${next[0]}?grades=${band}` : roomHref;
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    return html`<article class="room-tile d-${d.toLowerCase()}">
+      <a class="room-art" href="${roomHref}" tabindex="-1" aria-hidden="true"
+        ><img src="${ART}/domain-${d.toLowerCase()}.svg" width="480" height="360" alt="" loading="lazy" decoding="async"
+      /></a>
+      <div class="room-body">
+        <h3 class="room-name"><a class="room-link" href="${roomHref}">${meta.name}</a></h3>
+        <p class="room-blurb">${meta.blurb}</p>
+        <div class="room-progress">
+          <div class="bar" role="img" aria-label="${meta.name}: ${done} of ${total} activities done"><i style="width:${pct}%"></i></div>
+          <p class="fine">${done} of ${total} done · ${TIERS[tier]?.name || tier} support</p>
+        </div>
+        ${
+          next
+            ? html`<a class="btn btn-room" href="${href}">${done ? `Continue ${meta.name.toLowerCase()}` : `Start ${meta.name.toLowerCase()}`}${icon("arrow-right")}</a>
+                <p class="room-next fine">Next: ${next[1]}</p>`
+            : html`<a class="btn btn-room" href="${roomHref}">Level complete — choose another${icon("arrow-right")}</a>`
+        }
+      </div>
     </article>`;
   });
 
+  const studioLink = (id, ic, title, text) =>
+    html`<a class="studio-card" href="${BASE}/${id}?grades=${band}">${icon(ic)}<span><strong>${title}</strong><span>${text}</span></span></a>`;
+  const tool = (id, ic, title, text) =>
+    html`<a class="tool-row" href="${id.startsWith("/") ? id : `${BASE}/${id}?grades=${band}`}">${icon(ic)}<span><strong>${title}</strong><span>${text}</span></span></a>`;
+  const worldCard = (id, title, text, color, domain) =>
+    html`<a class="world-mini-card" href="${BASE}/worlds/${id}?grades=${band}" style="--world:${color}"><img src="${BASE}/pictures/worlds/${id}.svg" alt="" width="96" height="70" loading="lazy" /><span><strong>${title}</strong><span>${domain} · ${text}</span></span></a>`;
+
   return {
     title: "",
-    html: html`<section class="hero home-hero">
-        <div class="hero-text">
-          <p class="eyebrow">WIDA ACCESS practice · ${bandLabel(band)}</p>
-          <h1 tabindex="-1">ACCESS Practice Lab</h1>
-          <p class="lead">
-            Listen, read, speak, and write. Start a short session with useful supports and time to try again.
-          </p>
+    html: html`<section class="home-hero" aria-labelledby="homeTitle">
+        <div class="hero-copy">
+          <p class="eyebrow">ACCESS Practice Lab · ${bandLabel(band)}</p>
           ${bandSwitchHTML(band, ctx.bands)}
+          <h1 id="homeTitle" tabindex="-1"><span class="w-listening">Listen.</span> <span class="w-reading">Read.</span> <span class="w-speaking">Speak.</span> <span class="w-writing">Write.</span></h1>
+          <p class="lead">Short practice sessions for multilingual learners, with supports you choose and time to try again.</p>
+          <div class="session-heading">
+            ${
+              plan.length
+                ? html`<a class="btn btn-primary btn-big" href="${playlist}">${plan[0].status === "draft" ? "Continue my practice" : "Start practicing"}${icon("arrow-right")}</a>
+                    <a class="btn btn-big" href="#skills">Choose a skill</a>`
+                : html`<a class="btn btn-big" href="#skills">Choose a skill</a>`
+            }
+          </div>
+          <p class="session-summary" aria-live="polite">${plan.length ? `${plan.length} activities · about ${estimateMinutes(plan)} minutes${focus === "balanced" ? "" : ` · ${focus}`}` : "No activities match your plan. Change it below."}</p>
         </div>
-        ${
-          windowPhase
-            ? html`<aside class="window-card" aria-label="ACCESS testing window">
-                <span class="window-kicker">${win.state} ACCESS testing</span>
-                <strong>${formatDate(win.start, { month: "short", day: "numeric", year: "numeric" })} – ${formatDate(win.end, { month: "short", day: "numeric", year: "numeric" })}</strong>
-                <span
-                  >${windowPhase.phase === "upcoming" ? `${windowPhase.daysAway} days away` : windowPhase.phase === "starting" ? "Starts today" : "Testing is happening now"}</span
-                >
-                <span>Your school chooses your testing days.</span>
-                <a href="${win.source || "https://wida.wisc.edu/about/consortium/md"}">Official testing window</a>
-              </aside>`
-            : ""
-        }
+        <div class="hero-art"><img src="${ART}/hero.svg" width="720" height="600" alt="Four tiles for listening, reading, speaking and writing, linked by a speech bubble" decoding="async" fetchpriority="high" /></div>
       </section>
 
-      <section class="session-plan panel" aria-labelledby="sessionTitle">
-        <div class="session-heading">
-          <div><p class="eyebrow">A little practice, every day</p>
-            <h2 id="sessionTitle">Your next practice</h2>
-            <p class="session-summary" aria-live="polite">${plan.length} activities · about ${estimateMinutes(plan)} minutes${focus === "balanced" ? "" : ` · ${focus}`}</p>
+      ${
+        windowPhase
+          ? html`<aside class="window-card" aria-label="ACCESS testing window">
+              ${icon("calendar")}
+              <p><strong>${win.state} ACCESS testing: ${formatDate(win.start, { month: "short", day: "numeric", year: "numeric" })} – ${formatDate(win.end, { month: "short", day: "numeric", year: "numeric" })}</strong>
+              <span>${windowPhase.phase === "upcoming" ? `${windowPhase.daysAway} days away` : windowPhase.phase === "starting" ? "Starts today" : "Testing is happening now"}. Your school chooses your testing days.</span></p>
+              <a href="${win.source || "https://wida.wisc.edu/about/consortium/md"}">Official testing window</a>
+            </aside>`
+          : ""
+      }
+
+      <div class="home-today">
+        <section class="session-plan panel" aria-labelledby="sessionTitle">
+          <div class="plan-head">
+            <h2 id="sessionTitle">Today's practice</h2>
+            <p class="fine">${plan.length ? `${plan.length} activities, about ${estimateMinutes(plan)} minutes. Unfinished work comes first.` : "Change your plan to see activities."}</p>
           </div>
-          ${plan.length ? html`<a class="btn btn-primary" href="${playlist}">${plan[0].status === "draft" ? "Continue my practice" : "Start today’s practice"} →</a>` : html`<p>No activities match. Change your plan below.</p>`}
-        </div>
-        <details id="planOptions" class="session-options"><summary>Change my plan or see activities</summary>
-        <div class="session-controls">
-          <label class="field"><span>Skill focus</span><select id="planFocus" data-plan="focus" data-nsr-ignore>
-            ${option("balanced", "Any skill · unfinished work first", focus)}
-            ${CORE_DOMAINS.map((d) => option(d, d, focus))}
-          </select></label>
-          <label class="field"><span>Support choice</span><select id="planLevel" data-plan="level" data-nsr-ignore>
-            ${option("preferred", "My chosen room supports", level)}
-            ${option("A", "Starting · words and short sentences", level)}
-            ${option("B", "Growing · connected ideas", level)}
-            ${option("C", "Expanding · details and explanations", level)}
-          </select></label>
-          <label class="field"><span>Session length</span><select id="planCount" data-plan="count" data-nsr-ignore>
-            ${[2, 4, 6].map((n) => option(String(n), `${n} activities`, String(count)))}
-          </select></label>
-        </div>
-        <p class="fine">Starting: name and describe with words or short sentences. Growing: connect ideas. Expanding: explain with details. These choices change tasks and scaffolds; they are not WIDA scores. Change support any time.</p>
-        <p class="fine">This browser’s saved practice puts unfinished work first, then retries, then new activities. On a shared device, check that the saved work is yours.</p>
-        <ol class="session-list">
-          ${plan.map(
-            (r) => html`<li>
-            <span class="session-domain">${r.domain} · ${TIERS[r.level].name}</span>
-            <a href="${BASE}/${r.domain}/${r.level}/${r.id}?grades=${band}">${r.title}</a>
-            <span class="fine">${r.reason} · about ${estimateMinutes([r])} minutes</span>
-          </li>`,
-          )}
-        </ol>
-        </details>
-        <div class="row-actions"><a href="${BASE}/passport?grades=${band}">See my saved progress</a><a href="${BASE}/library?grades=${band}">Explore all activities</a><a href="${BASE}/diagnostic?grades=${band}">Optional skill check-in</a></div>
-      </section>
+          <ol class="plan-preview">
+            ${plan.slice(0, 3).map((r) => html`<li><span class="plan-dot d-${r.domain.toLowerCase()}">${icon(DOMAIN_META[r.domain]?.icon || "star")}</span><span><a href="${BASE}/${r.domain}/${r.level}/${r.id}?grades=${band}">${r.title}</a><span class="fine">${r.domain} · ${r.reason}</span></span></li>`)}
+          </ol>
+          <details id="planOptions" class="session-options"><summary>Change my plan or see all activities</summary>
+          <div class="session-controls">
+            <label class="field"><span>Skill focus</span><select id="planFocus" data-plan="focus" data-nsr-ignore>
+              ${option("balanced", "Any skill · unfinished work first", focus)}
+              ${CORE_DOMAINS.map((d) => option(d, d, focus))}
+            </select></label>
+            <label class="field"><span>Support choice</span><select id="planLevel" data-plan="level" data-nsr-ignore>
+              ${option("preferred", "My chosen room supports", level)}
+              ${option("A", "Starting · words and short sentences", level)}
+              ${option("B", "Growing · connected ideas", level)}
+              ${option("C", "Expanding · details and explanations", level)}
+            </select></label>
+            <label class="field"><span>Session length</span><select id="planCount" data-plan="count" data-nsr-ignore>
+              ${[2, 4, 6].map((n) => option(String(n), `${n} activities`, String(count)))}
+            </select></label>
+          </div>
+          <p class="fine">Starting: name and describe with words or short sentences. Growing: connect ideas. Expanding: explain with details. These choices change tasks and scaffolds; they are not WIDA scores. Change support any time.</p>
+          <p class="fine">This browser’s saved practice puts unfinished work first, then retries, then new activities. On a shared device, check that the saved work is yours.</p>
+          <ol class="session-list">
+            ${plan.map(
+              (r) => html`<li>
+              <span class="session-domain">${r.domain} · ${TIERS[r.level].name}</span>
+              <a href="${BASE}/${r.domain}/${r.level}/${r.id}?grades=${band}">${r.title}</a>
+              <span class="fine">${r.reason} · about ${estimateMinutes([r])} minutes</span>
+            </li>`,
+            )}
+          </ol>
+          </details>
+        </section>
+        <aside class="today-side" aria-label="Your next step">
+          ${next ? html`<a class="next-step" href="${next.href}"><span class="eyebrow">Your next step</span><strong>${next.title}</strong><span class="fine">${next.why}</span><span class="next-go">${icon("arrow-right")}</span></a>` : ""}
+          <a class="progress-note" href="${BASE}/passport?grades=${band}">${icon("passport")}<span><strong>${stamps ? `${stamps} activit${stamps === 1 ? "y" : "ies"} finished` : "Your Passport is empty"}</strong><span class="fine">${stamps ? `${streak ? `${streak}-week practice streak. ` : ""}See your saved work.` : "Finish an activity and it is saved here, on this device."}</span></span></a>
+        </aside>
+      </div>
 
       ${due.length ? reviewHTML(due, plan, band, ctx) : ""}
-      ${kluHTML(ctx, band, rows, idx)}
 
-      <section class="feature-banner" aria-labelledby="featureTitle">
-        <div class="feature-copy">
-          <p class="eyebrow">Explore a real question</p>
-          <h2 id="featureTitle">Follow the evidence. Find your voice.</h2>
-          <p>Every mission brings academic sources, visual evidence, and your own explanation together.</p>
-          <a class="feature-link" href="${BASE}/missions?grades=${band}">Explore academic missions <span aria-hidden="true">↗</span></a>
-        </div>
-        <img src="${BASE}/pictures/lab-investigation.svg" width="760" height="530" alt="Illustrated river investigation with a map, notes, graph, and voice recording" loading="lazy" decoding="async">
+      <section class="skills" id="skills" aria-labelledby="roomsTitle">
+        <div class="section-head"><h2 id="roomsTitle">Choose a skill</h2><p class="fine">Each skill has three support levels. Start at Starting and move on when you are ready.</p></div>
+        <div class="room-grid">${tiles}</div>
       </section>
 
-      <section class="panel world-showcase" aria-labelledby="worldEntryTitle">
-        <div class="world-showcase-header">
-          <div>
-            <p class="eyebrow">Interactive language environments</p>
-            <h2 id="worldEntryTitle">Four Language Worlds</h2>
-            <p class="fine" style="margin-top:0.25rem">Explore consequential environments: dispatch audio in Signal Station, investigative reporting in Evidence City, academic dialogue in Conversation Quest, and authentic publishing in StoryWorks.</p>
-          </div>
-          <a class="btn btn-primary" href="${BASE}/worlds?grades=${band}">Open Worlds Console →</a>
+      <section class="more-ways" aria-labelledby="moreTitle">
+        <div class="section-head"><h2 id="moreTitle">More ways to practice</h2><p class="fine">Do real language tasks, get specific feedback, revise, then try it on your own.</p></div>
+        <div class="studio-grid">
+          ${studioLink("speak", "speaking", "Speaking Studio", "Plan, record, listen back, and say it better.")}
+          ${studioLink("write", "writing", "Writing Studio", "Use sources, draft, get feedback, revise.")}
+          ${studioLink("reading-room", "reading", "Reading Room", "Choose a text, annotate evidence, and keep your place.")}
+          ${studioLink("missions", "mission", "Academic missions", "Listen, read, decide, speak and write in one investigation.")}
+          ${studioLink("detective", "detective", "Error Detective", "Find a pattern in your work and fix it for good.")}
+          ${studioLink("vocabulary", "words", "Word Builder", "Prefixes, roots, and academic words in context.")}
+        </div>
+        ${kluHTML(ctx, band, rows, idx)}
+      </section>
+
+      <section class="world-showcase" aria-labelledby="worldEntryTitle">
+        <div class="world-copy">
+          <h2 id="worldEntryTitle">Language Worlds</h2>
+          <p>Step into four places where language has consequences: dispatch audio, investigate with evidence, join a dialogue, and publish your story.</p>
+          <a class="btn" href="${BASE}/worlds?grades=${band}">Open Language Worlds${icon("arrow-right")}</a>
         </div>
         <div class="world-cards-grid">
-          <a class="world-mini-card" href="${BASE}/worlds/signal-station?grades=${band}" style="border-left: 4px solid #176b78">
-            <img src="${BASE}/pictures/worlds/signal-station.svg" alt="" width="72" height="52" loading="lazy">
-            <div>
-              <strong>Signal Station</strong>
-              <span class="fine">🎧 Listening · Audio dispatch & details</span>
-            </div>
-          </a>
-          <a class="world-mini-card" href="${BASE}/worlds/evidence-city?grades=${band}" style="border-left: 4px solid #8c4d28">
-            <img src="${BASE}/pictures/worlds/evidence-city.svg" alt="" width="72" height="52" loading="lazy">
-            <div>
-              <strong>Evidence City</strong>
-              <span class="fine">📖 Reading · Multi-source investigations</span>
-            </div>
-          </a>
-          <a class="world-mini-card" href="${BASE}/worlds/conversation-quest?grades=${band}" style="border-left: 4px solid #4f5a9b">
-            <img src="${BASE}/pictures/worlds/conversation-quest.svg" alt="" width="72" height="52" loading="lazy">
-            <div>
-              <strong>Conversation Quest</strong>
-              <span class="fine">🎤 Speaking · Dialogue & oral rehearsal</span>
-            </div>
-          </a>
-          <a class="world-mini-card" href="${BASE}/worlds/storyworks?grades=${band}" style="border-left: 4px solid #477343">
-            <img src="${BASE}/pictures/worlds/storyworks.svg" alt="" width="72" height="52" loading="lazy">
-            <div>
-              <strong>StoryWorks</strong>
-              <span class="fine">✏️ Writing · Drafting & revision studio</span>
-            </div>
-          </a>
+          ${worldCard("signal-station", "Signal Station", "Audio dispatch", "var(--listening)", "Listening")}
+          ${worldCard("evidence-city", "Evidence City", "Investigations", "var(--reading)", "Reading")}
+          ${worldCard("conversation-quest", "Conversation Quest", "Dialogue", "var(--speaking)", "Speaking")}
+          ${worldCard("storyworks", "StoryWorks", "Publishing", "var(--writing)", "Writing")}
         </div>
-      </section>
-
-      <section class="studios" aria-labelledby="studiosTitle">
-        <h2 id="studiosTitle" class="section-title">Start here</h2>
-        <p class="fine">Choose a world, studio, or mission: do real language tasks, get specific feedback, revise, try it on your own, and watch your growth.</p>
-        ${next ? html`<a class="next-step panel" href="${next.href}"><span class="eyebrow">Your next step</span><strong>${next.title}</strong><span class="fine">${next.why}</span></a>` : ""}
-        <div class="studio-grid">
-          <a class="studio-card reading-room-card" style="--room:#17685b" href="${BASE}/reading-room?grades=${band}"><span class="studio-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M7 9c8-2 14 0 17 4 3-4 9-6 17-4v28c-8-2-14 0-17 4-3-4-9-6-17-4z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M24 13v28M12 17c4-1 7 0 9 1m-9 5c4-1 7 0 9 1m15-7c-4-1-7 0-9 1m9 5c-4-1-7 0-9 1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><strong>Reading Room</strong><span>Choose a text, annotate evidence, build vocabulary, and keep your place.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
-          <a class="studio-card" style="--room:#176b78" href="${BASE}/worlds?grades=${band}"><span class="studio-icon" aria-hidden="true">🗺️</span><strong>Language Worlds</strong><span>Four consequential game environments with 64 missions.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
-          <a class="studio-card" style="--room:#235882" href="${BASE}/classroom?grades=${band}"><span class="studio-icon" aria-hidden="true">📽️</span><strong>Whole-Class Studio</strong><span>Projector-ready listen, read, discuss, and revise routines.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
-          <a class="studio-card" style="--room:#8c4d28" href="${BASE}/vocabulary?grades=${band}"><span class="studio-icon" aria-hidden="true">🧩</span><strong>Word Builder</strong><span>Prefixes, roots, and academic morphology in context.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
-          <a class="studio-card" style="--room:#6272b9" href="${BASE}/missions?grades=${band}"><span class="studio-icon" aria-hidden="true"><svg><use href="${BASE}/pictures/lab-icons.svg#mission"></use></svg></span><strong>Academic missions</strong><span>Listen, read, decide, speak and write in one investigation.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
-          <a class="studio-card" style="--room:#b96c57" href="${BASE}/speak?grades=${band}"><span class="studio-icon" aria-hidden="true"><svg><use href="${BASE}/pictures/lab-icons.svg#speaking"></use></svg></span><strong>Speaking Studio</strong><span>Plan, record, listen back, and say it better.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
-          <a class="studio-card" style="--room:#4285a1" href="${BASE}/write?grades=${band}"><span class="studio-icon" aria-hidden="true"><svg><use href="${BASE}/pictures/lab-icons.svg#writing"></use></svg></span><strong>Writing Studio</strong><span>Use sources, draft, get feedback, revise.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
-          <a class="studio-card" style="--room:#8771a4" href="${BASE}/detective?grades=${band}"><span class="studio-icon" aria-hidden="true"><svg><use href="${BASE}/pictures/lab-icons.svg#detective"></use></svg></span><strong>Error Detective</strong><span>Find a pattern in your work and fix it for good.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
-          <a class="studio-card" style="--room:#2e8e82" href="${BASE}/growth?grades=${band}"><span class="studio-icon" aria-hidden="true"><svg><use href="${BASE}/pictures/lab-icons.svg#growth"></use></svg></span><strong>My growth</strong><span>Evidence from your own work, with the help you used.</span><span class="studio-arrow" aria-hidden="true">↗</span></a>
-        </div>
-      </section>
-
-      <section aria-labelledby="roomsTitle">
-        <h2 id="roomsTitle" class="section-title">Choose a skill</h2>
-        <div class="room-grid">${tiles}</div>
       </section>
 
       ${
@@ -312,34 +292,24 @@ export async function render(ctx) {
                 <h2 id="roadStripTitle">${week.taskType}: ${week.theme}</h2>
                 <p>${week.focus}</p>
               </div>
-              <a class="btn btn-primary" href="${BASE}/road/${week.n}?grades=${band}">Open this week →</a>
+              <a class="btn btn-primary" href="${BASE}/road/${week.n}?grades=${band}">Open this week${icon("arrow-right")}</a>
             </section>`
           : ""
       }
 
-      <details class="more-tools" open>
-        <summary>More practice and tools</summary>
-        <section class="door-grid" aria-label="More">
-          <a class="door" href="${BASE}/worlds?grades=${band}"><span aria-hidden="true">🗺️</span><strong>Language Worlds</strong><span>Four consequential environments with 64 missions.</span></a>
-          <a class="door" href="${BASE}/classroom?grades=${band}"><span aria-hidden="true">📽️</span><strong>Whole-Class Studio</strong><span>Projector-ready routines for listen, read, discuss, and revise.</span></a>
-          <a class="door" href="${BASE}/vocabulary?grades=${band}"><span aria-hidden="true">🧩</span><strong>Word Builder</strong><span>Prefixes, roots, and suffixes in academic context.</span></a>
-          <a class="door" href="${BASE}/diagnostic?grades=${band}"><span aria-hidden="true">🎯</span><strong>Skill Check-in</strong><span>Optional 4-minute diagnostic for starting recommendations.</span></a>
-          <a class="door" href="${BASE}/launch-studio"><span aria-hidden="true">🚀</span><strong>Teacher Launch Studio</strong><span>Classroom QR codes, printable tickets, and direct URLs.</span></a>
-          <a class="door" href="${BASE}/tests?grades=${band}"><span aria-hidden="true">🧪</span><strong>Practice tests</strong><span>Full tests and short minis, with practice tools.</span></a>
-          <a class="door" href="${BASE}/library?grades=${band}"><span aria-hidden="true">📚</span><strong>Find an activity</strong><span>Search every quick-practice activity.</span></a>
-          <a class="door" href="${BASE}/road?grades=${band}"><span aria-hidden="true">🛣️</span><strong>Road to ACCESS</strong><span>A 12-week plan, one short stop a week.</span></a>
-          <a class="door" href="${BASE}/construction?grades=${band}"><span aria-hidden="true">🧱</span><strong>Language Construction Lab</strong><span>Expand sentences and shift register.</span></a>
-          <a class="door" href="${BASE}/conversation?grades=${band}"><span aria-hidden="true">💬</span><strong>Conversation Simulator</strong><span>Academic dialogue and oral rehearsal.</span></a>
-          <a class="door" href="${BASE}/evidence?grades=${band}"><span aria-hidden="true">📊</span><strong>Evidence Studio</strong><span>Turn charts into explanations.</span></a>
-          <a class="door" href="${BASE}/passport?grades=${band}"><span aria-hidden="true">🛂</span><strong>My Passport</strong><span>${stamps} stamp${stamps === 1 ? "" : "s"}${streak ? ` · ${streak}-week streak` : ""}; send work to your teacher.</span></a>
-          <a class="door" href="${BASE}/family?grades=${band}"><span aria-hidden="true">🏠</span><strong>Families · Familias</strong><span>How to help at home, in English and Spanish.</span></a>
-          <a class="door" href="${BASE}/tools?grades=${band}"><span aria-hidden="true">🧰</span><strong>Test tools warm-up</strong><span>Audio check and the official WIDA demo.</span></a>
-        </section>
-      </details>
-      <p class="disclaimer">
-        Original classroom practice inspired by WIDA ACCESS. It is not an official WIDA test, score,
-        or placement. Teachers: <a href="/access-teacher/">open the Teacher Hub</a>.
-      </p>`,
+      <section class="tools-band" aria-labelledby="toolsTitle">
+        <h2 id="toolsTitle">Plan, check and share</h2>
+        <div class="tool-grid">
+          ${tool("tests", "tests", "Practice tests", "Full tests and short minis.")}
+          ${tool("library", "library", "Find an activity", "Search every quick-practice activity.")}
+          ${tool("road", "road", "Road to ACCESS", "A 12-week plan, one stop a week.")}
+          ${tool("diagnostic", "checkin", "Skill check-in", "Optional 4-minute starting point.")}
+          ${tool("growth", "growth", "My growth", "Evidence from your own work.")}
+          ${tool("tools", "tools", "Test tools warm-up", "Audio check and the WIDA demo.")}
+          ${tool("classroom", "classroom", "Whole-Class Studio", "Projector-ready routines.")}
+          ${tool("launch-studio", "launch", "Launch Studio", "QR codes and direct links for teachers.")}
+        </div>
+      </section>`,
   };
 }
 

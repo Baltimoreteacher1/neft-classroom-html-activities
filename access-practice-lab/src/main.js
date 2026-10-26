@@ -14,7 +14,7 @@ import { getPrefs, setPrefs } from "./store.js";
 import { mountShell } from "./shell.js";
 import { mountGloss } from "./glossary.js";
 import { registerSaveResume } from "./sync.js";
-import { $, BASE, announce, bandOfId, copyText, toHtml } from "./util.js";
+import { $, ART, BASE, announce, bandOfId, copyText, toHtml } from "./util.js";
 import * as activityView from "./views/activity.js";
 import * as familyView from "./views/family.js";
 import * as homeView from "./views/home.js";
@@ -242,7 +242,7 @@ async function render({ keepFocus = false, scroll = false } = {}) {
     console.error("[access-lab]", error);
     out = {
       title: "Something went wrong",
-      html: `<section class="panel error-panel"><h1>We could not load this page.</h1><p>Check your internet connection, then try again.</p><p><a class="btn" href="${BASE}/">Go to the lab home</a></p></section>`,
+      html: `<section class="panel error-panel empty-state"><img src="${ART}/empty.svg" width="480" height="300" alt="" /><h1>We could not load this page.</h1><p>Check your internet connection, then try again.</p><p><a class="btn btn-primary" href="${BASE}/">Go to the lab home</a></p></section>`,
     };
   }
   if (token !== app.rendering) return;
@@ -464,7 +464,7 @@ async function boot() {
   mountGloss();
   registerSaveResume(() => render({ keepFocus: true }));
   const stamp = $("#labBuild");
-  if (stamp) stamp.textContent = `ACCESS Practice Lab · build ${BUILD}`;
+  if (stamp) stamp.textContent = stamp.dataset.build = `ACCESS Practice Lab · build ${BUILD}`;
   await render({ scroll: false });
   document.documentElement.classList.add("lab-ready");
   watchNetwork();

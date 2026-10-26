@@ -31,7 +31,7 @@ import { diffWords } from "/access-practice-lab/src/lang/text.js";
 import { highlightHTML } from "/access-practice-lab/src/studio-ui.js";
 import { buildSkillGraph, makeMiniLesson, recommendInstructionalGroups } from "/access-practice-lab/src/lang/skill-graph.js";
 import { ACCESS_LAB_FLAGS } from "/access-practice-lab/src/lang/feature-flags.js";
-import { announce, html, raw, toHtml } from "/access-practice-lab/src/util.js";
+import { announce, html, icon, raw, toHtml } from "/access-practice-lab/src/util.js";
 
 const KEY = "accessTeacher:v1:roster";
 const GROUP_KEY = "accessTeacher:v1:instructionalGroups";
@@ -255,7 +255,7 @@ const sortBtn = (key, label) =>
     aria-sort="${T.sort.key === key ? (T.sort.dir === 1 ? "ascending" : "descending") : "none"}"
   >
     <button type="button" class="ghost small" data-sort="${key}">
-      ${label}${T.sort.key === key ? (T.sort.dir === 1 ? " ▲" : " ▼") : ""}
+      ${label}${T.sort.key === key ? html` <span class="ev-sort ${T.sort.dir === 1 ? "is-asc" : "is-desc"}">${icon("chevron-down")}</span>` : ""}
     </button>
   </th>`;
 
@@ -351,7 +351,7 @@ function studentPanel(r) {
         ? html`<p>
             <strong>Recurring patterns:</strong> ${p.errors
               .slice(0, 4)
-              .map((e) => `${pname(e.id)} (${e.drafts})${e.mastered ? " ✓" : ""}`)
+              .map((e) => `${pname(e.id)} (${e.drafts})${e.mastered ? " (used correctly on own)" : ""}`)
               .join("; ")}
           </p>`
         : ""
@@ -608,7 +608,7 @@ function samplesTab(rows) {
             const flagged = a.errors.filter((e) => e.confidence === "high");
             return html`<article class="portfolio-entry">
               <h4>
-                ${s.modality === "writing" ? "✍️" : "🎤"} ${s.task}
+                ${icon(s.modality === "writing" ? "writing" : "speaking")} ${s.task}
                 <span class="fine"
                   >·
                   ${s.stage ? (s.stage === "independent" ? "on own" : s.stage === "supported" ? "word bank" : "frames + words") : "stage unknown"}
@@ -617,7 +617,7 @@ function samplesTab(rows) {
               </h4>
               ${
                 s.versions > 1
-                  ? html`<h5>First → latest</h5>
+                  ? html`<h5>First draft to latest</h5>
                       <p class="diff">
                         ${diffWords(s.first, s.latest).map((x) => (x.op === "same" ? html`${x.text} ` : x.op === "add" ? html`<ins>${x.text}</ins> ` : html`<del>${x.text}</del> `))}
                       </p>`
@@ -905,7 +905,7 @@ function draw() {
   const host = document.getElementById("evPrint");
   root.innerHTML = toHtml(
     html`<section class="panel ev-screen" aria-labelledby="evTitle">
-      <p class="eyebrow">Teacher Intelligence Dashboard</p>
+      <p class="eyebrow">Teacher Intelligence Dashboard <span class="th-tag is-teacher">${icon("lock")} Teacher only</span></p>
       <h2 id="evTitle">Class language evidence</h2>
       <p class="fine">
         Built from what students actually did, with the help they used kept separate. Practice

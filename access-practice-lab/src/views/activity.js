@@ -48,6 +48,7 @@ import { dataPoints, itemsFrom, loadNotebook, passageSentences, pinItem, pinnedI
 import { dataPickHTML, organizerHTML, tagBarHTML } from "../evidence-ui.js";
 import { canSpeak, speak, stop as stopSpeech } from "../speech.js";
 import {
+  ART,
   BASE,
   DOMAIN_META,
   TIERS,
@@ -55,6 +56,7 @@ import {
   asList,
   bandLabel,
   html,
+  icon,
   raw,
   wordCount,
   storage,
@@ -176,14 +178,14 @@ function stimulusHTML(a, ctx) {
           })}
         </article>
         ${pinMode && points(a).length ? html`<section aria-labelledby="nbData-${a.id}"><h3 id="nbData-${a.id}" class="helper-title">Pin a data point</h3><ul class="chips" role="list">${points(a).map((t, i) => dataPickHTML(`${a.id}|d${i}`, t, { picked: picked === `d${i}`, tag: itemsFrom(loadNotebook(storage), a.id).find((x) => x.text === t)?.tag }))}</ul></section>` : ""}
-        ${mode === "supported" ? html`<details class="helpers nb-organizer-wrap"><summary>🗂️ Graphic organizer: Claim · Evidence · Example</summary><div class="helper-body">${organizerHTML(itemsFrom(loadNotebook(storage), a.id))}<p class="fine">Turn on “Pin evidence” and tag sentences to fill it. <a href="${BASE}/evidence?grades=${cur.band}#notebook">Open my Evidence Notebook</a></p></div></details>` : ""}`
+        ${mode === "supported" ? html`<details class="helpers nb-organizer-wrap"><summary>${icon("grid")} Graphic organizer: Claim · Evidence · Example</summary><div class="helper-body">${organizerHTML(itemsFrom(loadNotebook(storage), a.id))}<p class="fine">Turn on “Pin evidence” and tag sentences to fill it. <a href="${BASE}/evidence?grades=${cur.band}#notebook">Open my Evidence Notebook</a></p></div></details>` : ""}`
       : ""
   }
   ${
     a.prompt && !hasPassage
       ? html`<div class="prompt">
           <p class="prompt-text">${wordHelp() ? glossInline(a.prompt, wordHelp()) : a.prompt}</p>
-          ${cur.domain !== "Reading" ? html`<button type="button" class="ghost small" data-say="${a.prompt}" aria-label="Read the question aloud">🔊 Hear question</button>` : ""}
+          ${cur.domain !== "Reading" ? html`<button type="button" class="ghost small" data-say="${a.prompt}" aria-label="Read the question aloud">${icon("volume")} Hear question</button>` : ""}
         </div>`
       : ""
   }
@@ -203,7 +205,7 @@ function pickedText(a) {
 function evidencePinHTML(a) {
   const text = pinMode ? pickedText(a) : "";
   return html`<div class="nb-pin-tools">
-    <button type="button" class="btn small" data-nb-pin-mode aria-pressed="${String(pinMode)}">📌 ${pinMode ? "Done pinning" : "Pin evidence"}</button>
+    <button type="button" class="btn small" data-nb-pin-mode aria-pressed="${String(pinMode)}">${icon("pin")} ${pinMode ? "Done pinning" : "Pin evidence"}</button>
     ${pinMode ? tagBarHTML(text ? { text } : null) : ""}
   </div>`;
 }
@@ -213,7 +215,7 @@ function feedbackHTML(a) {
   if (!c) return "";
   if (c.ok)
     return html`<div class="feedback is-right" role="status">
-      <p class="fb-title">✓ ${c.attempt === 1 ? "Correct!" : "You got it!"}</p>
+      <p class="fb-title">${icon("check")} ${c.attempt === 1 ? "Correct!" : "You got it!"}</p>
       ${a.correct ? html`<p>${a.correct}</p>` : ""}
       ${a.extension ? html`<p class="fb-extra"><strong>Go further:</strong> ${a.extension}</p>` : ""}
       ${cur.domain === "Speaking" ? html`<p class="fb-extra"><strong>Now say it:</strong> record yourself saying the best answer.</p>` : ""}
@@ -222,13 +224,13 @@ function feedbackHTML(a) {
     return listeningTrapHTML(c.diag, { held: revealHeld(c), hint: a.hint });
   if (c.reveal === "full" && mode === "supported")
     return html`<div class="feedback is-shown" role="status">
-      <p class="fb-title">Here is the answer</p>
+      <p class="fb-title">${icon("info")} Here is the answer</p>
       <p><strong>${correctAnswerText(a)}</strong></p>
       ${a.support ? html`<p>${a.support}</p>` : ""}
       <button type="button" class="btn" data-retry>Try it again</button>
     </div>`;
   return html`<div class="feedback is-hint" role="status">
-    <p class="fb-title">Not yet — try again</p>
+    <p class="fb-title">${icon("retry")} Not yet — try again</p>
     ${a.hint && mode === "supported" ? html`<p>${a.hint}</p>` : html`<p>Review the task, then try again. Switch to Learn with help for a clue.</p>`}
     <button type="button" class="btn" data-retry>Try again</button>
   </div>`;
@@ -238,7 +240,7 @@ function interactiveHTML(a) {
   const c = checked.get(a.id);
   const answer = answerOf(cur.record, a.id);
   const reveal = c ? (c.ok || revealHeld(c) ? "mark" : c.reveal || "mark") : "none";
-  return html`${cur.domain === "Speaking" ? html`<p class="fine warmup-note">🎤 <strong>Warm-up.</strong> This builds ideas and words. Speaking ability is shown by speaking — when you are ready, <a href="${BASE}/speak?grades=${cur.band}">open the Speaking Studio</a>.</p>` : ""}${inputHTML(a, answer, { reveal })}
+  return html`${cur.domain === "Speaking" ? html`<p class="fine warmup-note">${icon("speaking")} <strong>Warm-up.</strong> This builds ideas and words. Speaking ability is shown by speaking — when you are ready, <a href="${BASE}/speak?grades=${cur.band}">open the Speaking Studio</a>.</p>` : ""}${inputHTML(a, answer, { reveal })}
   ${!c ? html`<button type="button" class="btn btn-primary btn-check" data-check ${isAnswered(a, answer ?? seedAnswer(a)) ? "" : raw("disabled")}>Check my answer</button>` : ""}
   ${feedbackHTML(a)}
   ${cur.domain === "Speaking" && c?.ok ? recorderHTML(a.id, { level: cur.level, recording: isRecording(a.id) }) : ""}`;
@@ -273,7 +275,7 @@ ${notes}</textarea>
     <button type="button" class="btn btn-primary" data-save-speaking>
       Save my speaking practice
     </button>
-    ${cur.record.complete.includes(a.id) ? html`<p class="saved-note">✓ Practice evidence saved. The audio itself is not saved. Try again to add a useful detail.</p>` : ""}`;
+    ${cur.record.complete.includes(a.id) ? html`<p class="saved-note">${icon("check")} Practice evidence saved. The audio itself is not saved. Try again to add a useful detail.</p>` : ""}`;
 }
 
 function writingHTML(a) {
@@ -319,10 +321,10 @@ ${text}</textarea>
     <div class="row-actions">
       <button type="button" class="btn btn-primary" data-check-writing>Check my writing</button>
       <button type="button" class="btn btn-secondary" data-ask-coach>
-        🔎 Language Coach
+        ${icon("detective")} Language Coach
       </button>
       <button type="button" class="ghost" data-read-writing data-say="${text || "Write something first."}">
-        🔊 Read my writing to me
+        ${icon("volume")} Read my writing to me
       </button>
     </div>
     ${coachFeedback ? coachCardHTML(coachFeedback, text, { patternHref: (id) => `${BASE}/detective/${id}?grades=${cur.band}` }) : ""}
@@ -333,7 +335,7 @@ ${text}</textarea>
               <ul>${taskCriteria(a).map((c) => html`<li>${c}</li>`)}</ul>
               <p><strong>One next step:</strong> ${result.nextMoves[0] ? `${result.nextMoves[0].title}. ${result.nextMoves[0].ask}` : "Read your answer aloud. Keep only details that help answer the question."}</p>
               ${result.strengths.length ? html`<details><summary>What the checker noticed</summary>
-              <ul class="checks">${result.strengths.slice(0, 4).map((x) => html`<li class="ok">✓ ${x.text}</li>`)}</ul></details>` : ""}
+              <ul class="checks">${result.strengths.slice(0, 4).map((x) => html`<li class="ok">${icon("check")} ${x.text}</li>`)}</ul></details>` : ""}
               ${mode === "supported" && result.word.bankUsed.length ? html`<p class="fine">Word-bank words you used: ${result.word.bankUsed.join(", ")}</p>` : ""}
               <p class="fine">
                 These checks notice surface features, not meaning or a score. Did you answer every part and include a specific detail? Ask your teacher for feedback.
@@ -347,9 +349,9 @@ ${text}</textarea>
               ${
                 cur.record.drafts[a.id]?.first && cur.record.drafts[a.id]?.first !== text
                   ? html`<div class="revision-coach-card card">
-                      <h4>📈 Revision Growth Summary</h4>
+                      <h4>${icon("growth")} Revision Growth Summary</h4>
                       <ul>
-                        ${compareDrafts(cur.record.drafts[a.id].first, text, coachOptions(a)).changes.map((c) => html`<li>⭐ ${c.label}: ${c.from} → ${c.to}</li>`)}
+                        ${compareDrafts(cur.record.drafts[a.id].first, text, coachOptions(a)).changes.map((c) => html`<li>${icon("star")} ${c.label}: ${c.from} → ${c.to}</li>`)}
                       </ul>
                     </div>`
                   : ""
@@ -374,9 +376,9 @@ function worksheetHTML(a) {
       <p class="ws-name">Name: ______________________ Date: ____________</p>
     </div>
     <div class="row-actions">
-      <button type="button" class="btn btn-primary" data-print>🖨️ Print this page</button>
+      <button type="button" class="btn btn-primary" data-print>${icon("print")} Print this page</button>
       <button type="button" class="ghost" data-mark-done>
-        ${cur.record.complete.includes(a.id) ? "✓ Done" : "Mark as done"}
+        ${cur.record.complete.includes(a.id) ? html`${icon("check")} Done` : "Mark as done"}
       </button>
     </div>`;
 }
@@ -393,17 +395,17 @@ function navHTML() {
     const at = (i) =>
       `${BASE}/play?ids=${ids.join(",")}&i=${i}&grades=${cur.band}&mode=${mode}${title ? `&t=${encodeURIComponent(title)}` : ""}`;
     return html`<nav class="act-nav" aria-label="Playlist">
-      ${index > 0 ? html`<a class="btn" href="${at(index - 1)}">← Previous</a>` : html`<span></span>`}
+      ${index > 0 ? html`<a class="btn" href="${at(index - 1)}">${icon("arrow-left")} Previous</a>` : html`<span></span>`}
       <span class="act-count">${index + 1} of ${ids.length}</span>
-      ${index < ids.length - 1 ? html`<a class="btn btn-primary" href="${at(index + 1)}">Next →</a>` : html`<a class="btn btn-primary" href="${BASE}/passport">Finish ✓</a>`}
+      ${index < ids.length - 1 ? html`<a class="btn btn-primary" href="${at(index + 1)}">Next ${icon("arrow-right")}</a>` : html`<a class="btn btn-primary" href="${BASE}/passport">Finish ${icon("check")}</a>`}
     </nav>`;
   }
   const prev = cur.list[cur.index - 1];
   const next = cur.list[cur.index + 1];
   return html`<nav class="act-nav" aria-label="Activities">
-    ${prev ? html`<a class="btn" href="${activityHref(cur.domain, cur.level, prev.id)}">← Previous</a>` : html`<span></span>`}
+    ${prev ? html`<a class="btn" href="${activityHref(cur.domain, cur.level, prev.id)}">${icon("arrow-left")} Previous</a>` : html`<span></span>`}
     <span class="act-count">${cur.index + 1} of ${cur.list.length}</span>
-    ${next ? html`<a class="btn btn-primary" href="${activityHref(cur.domain, cur.level, next.id)}">Next →</a>` : html`<a class="btn btn-primary" href="${roomHref(cur.domain, cur.level)}">Back to the room ✓</a>`}
+    ${next ? html`<a class="btn btn-primary" href="${activityHref(cur.domain, cur.level, next.id)}">Next ${icon("arrow-right")}</a>` : html`<a class="btn btn-primary" href="${roomHref(cur.domain, cur.level)}">Back to the room ${icon("check")}</a>`}
   </nav>`;
 }
 
@@ -420,10 +422,11 @@ export async function render(ctx) {
   if (!found?.activity)
     return {
       title: "Not found",
-      html: html`<section class="panel">
+      html: html`<section class="panel empty-state">
+        <img src="${ART}/empty.svg" width="480" height="300" alt="" />
         <h1 tabindex="-1">We could not find that activity.</h1>
         <p>It may have moved. Choose a skill from the lab home.</p>
-        <a class="btn" href="${BASE}/">Lab home</a>
+        <a class="btn btn-primary" href="${BASE}/">Go to the lab home</a>
       </section>`,
     };
   const sameActivity = cur?.activity?.id === found.activity.id;
@@ -446,6 +449,7 @@ export async function render(ctx) {
   const done = cur.record.complete.includes(a.id);
   const listening = isListening(cur.domain, a);
   const hasPassage = !listening && asList(a.passage).length > 0;
+  const step = cur.playlist ? { n: cur.playlist.index + 1, total: cur.playlist.ids.length } : { n: cur.index + 1, total: cur.list.length };
   return {
     title: a.title,
     html: html`${crumbsHTML([
@@ -453,16 +457,19 @@ export async function render(ctx) {
         [meta.room, roomHref(cur.domain, cur.level)],
         [a.title, null],
       ])}
-      <article class="activity" style="--room:${cur.data.color || "#1f766f"}">
+      <article class="activity d-${cur.domain.toLowerCase()}">
         <header class="act-head">
-          <p class="eyebrow">
-            <svg aria-hidden="true"><use href="${BASE}/pictures/lab-icons.svg#${cur.domain === "Model-Test" ? "test" : cur.domain.toLowerCase()}"></use></svg> ${meta.room} · ${tier?.name || cur.level}
-            · ${bandLabel(cur.band)}${cur.playlist?.title ? ` · ${cur.playlist.title}` : ""}
-          </p>
+          <div class="act-bar">
+            <p class="act-context">
+              ${icon(meta.icon)}<span>${meta.name} · ${tier?.name || cur.level} · ${bandLabel(cur.band)}${cur.playlist?.title ? ` · ${cur.playlist.title}` : ""}</span>
+            </p>
+            <p class="act-step"><span>Activity ${step.n} of ${step.total}</span><span class="bar" aria-hidden="true"><i style="width:${Math.round((step.n / step.total) * 100)}%"></i></span></p>
+          </div>
           <h1 tabindex="-1">
-            ${a.title}${done ? html` <span class="done-badge">✓ Done</span>` : ""}
+            ${a.title}${done ? html` <span class="done-badge">${icon("check")} Done</span>` : ""}
           </h1>
           <div class="directions">
+            ${icon("info", "directions-icon")}
             <p>${a.directions}</p>
             <button
               type="button"
@@ -470,7 +477,7 @@ export async function render(ctx) {
               data-say="${a.directions}"
               aria-label="Read the directions aloud"
             >
-              🔊 Hear directions
+              ${icon("volume")} Hear directions
             </button>
           </div>
         </header>
@@ -481,7 +488,7 @@ export async function render(ctx) {
           hasPassage && a.prompt
             ? html`<div class="prompt response-prompt">
                 <p class="prompt-text">${wordHelp() ? glossInline(a.prompt, wordHelp()) : a.prompt}</p>
-                ${cur.domain !== "Reading" ? html`<button type="button" class="ghost small" data-say="${a.prompt}" aria-label="Read the question aloud">🔊 Hear question</button>` : ""}
+                ${cur.domain !== "Reading" ? html`<button type="button" class="ghost small" data-say="${a.prompt}" aria-label="Read the question aloud">${icon("volume")} Hear question</button>` : ""}
               </div>`
             : ""
         }

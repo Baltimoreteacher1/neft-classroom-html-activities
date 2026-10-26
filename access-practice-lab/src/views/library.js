@@ -1,17 +1,18 @@
 // Search the lightweight index, then build a shareable practice playlist.
 // Links contain content IDs only; answers and student names never leave the device.
-import { bandSwitchHTML, crumbsHTML } from "../components.js";
+import { bandSwitchHTML, crumbsHTML, domainGlyph } from "../components.js";
 import { bandRows } from "../content.js";
 import { estimateMinutes } from "../learning.js";
 import { activityStatus } from "../practice-plan.js";
 import { loadRecord } from "../store.js";
-import { BASE, CORE_DOMAINS, TIERS, announce, bandLabel, html, raw, toHtml } from "../util.js";
+import { ART, BASE, CORE_DOMAINS, TIERS, announce, bandLabel, html, icon, raw, toHtml } from "../util.js";
 import { activityHref } from "./room.js";
 
 const LIMIT = 12;
 export const PAGE_SIZE = 24;
 let page = 1;
 const STATUS = { new: "Not started", draft: "In progress", retry: "Try again", done: "Completed" };
+const STATUS_ICON = { new: "clock", draft: "writing", retry: "retry", done: "check" };
 let rows = [];
 let selected = [];
 let band = "";
@@ -53,38 +54,42 @@ function syncURL() {
   history.replaceState({}, "", `${BASE}/library?${q}`);
 }
 
+function itemHTML(r) {
+  const on = selected.includes(r.id);
+  return html`<li class="library-item lib-item d-${r.domain.toLowerCase()}">
+    <span class="prog-tile">${domainGlyph(r.domain)}</span>
+    <div class="lib-item-body">
+      <p class="lib-meta">${r.domain} · ${TIERS[r.level]?.name || r.level}</p>
+      <a class="library-title" href="${activityHref(r.domain, r.level, r.id)}?grades=${band}">${r.title}</a>
+      <p class="fine">${r.skill || "Language practice"} · about ${estimateMinutes([r])} minutes</p>
+      <span class="lib-status is-${r.status}">${icon(STATUS_ICON[r.status])} ${STATUS[r.status]}</span>
+    </div>
+    <button type="button" class="btn small library-add" data-pick="${r.id}" aria-pressed="${on}" aria-label="${on ? "Remove" : "Add"} ${r.title} ${on ? "from" : "to"} practice set">${icon(on ? "check" : "bookmark")} ${on ? "Added" : "Add"}</button>
+  </li>`;
+}
+
 function resultHTML() {
   const matches = filterActivities(rows, filters);
   const slice = pageActivities(matches, page);
   page = slice.page;
-  return html`<h2 class="library-count" id="libraryResultTitle" tabindex="-1">Activities</h2><p role="status">${matches.length} ${matches.length === 1 ? "activity" : "activities"} found${matches.length ? ` · showing ${(page - 1) * PAGE_SIZE + 1}–${Math.min(page * PAGE_SIZE, matches.length)}` : ""}</p>
+  return html`<div class="lib-count-row"><h2 class="library-count" id="libraryResultTitle" tabindex="-1">Activities</h2><p role="status">${matches.length} ${matches.length === 1 ? "activity" : "activities"} found${matches.length ? ` · showing ${(page - 1) * PAGE_SIZE + 1}–${Math.min(page * PAGE_SIZE, matches.length)}` : ""}</p></div>
     ${
       matches.length
-        ? html`<ul class="library-results">${slice.items.map(
-            (r) => html`<li class="library-item">
-      <div><p class="eyebrow">${r.domain} · ${TIERS[r.level]?.name || r.level}</p>
-      <a class="library-title" href="${activityHref(r.domain, r.level, r.id)}?grades=${band}">${r.title}</a>
-      <p class="fine">${r.skill || "Language practice"} · about ${estimateMinutes([r])} minutes · <strong>${STATUS[r.status]}</strong></p></div>
-      <button type="button" class="btn library-add" data-pick="${r.id}" aria-pressed="${selected.includes(r.id)}" aria-label="${selected.includes(r.id) ? "Remove" : "Add"} ${r.title} ${selected.includes(r.id) ? "from" : "to"} practice set">${selected.includes(r.id) ? "✓ Added" : "+ Add"}</button>
-    </li>`,
-          )}</ul>`
-        : html`<div class="panel"><h2>No matching activities</h2><p>Try a shorter search or choose a different skill, support, or progress filter.</p><button type="button" class="btn" data-clear-filters>Clear filters</button></div>`
+        ? html`<ul class="library-results lib-results">${slice.items.map(itemHTML)}</ul>`
+        : html`<div class="empty-state lib-empty"><img src="${ART}/empty.svg" alt="" width="320" height="240" /><h2>No matching activities</h2><p>Try a shorter search or choose a different skill, support, or progress filter.</p><button type="button" class="btn" data-clear-filters>Clear filters</button></div>`
     }
-    ${slice.pages > 1 ? html`<nav class="library-pagination" aria-label="Activity result pages"><button type="button" class="btn" data-page="${page - 1}" ${page === 1 ? raw("disabled") : ""}>Previous</button><span>Page ${page} of ${slice.pages}</span><button type="button" class="btn" data-page="${page + 1}" ${page === slice.pages ? raw("disabled") : ""}>Next</button></nav>` : ""}`;
+    ${slice.pages > 1 ? html`<nav class="library-pagination" aria-label="Activity result pages"><button type="button" class="btn" data-page="${page - 1}" ${page === 1 ? raw("disabled") : ""}>${icon("arrow-left")} Previous</button><span>Page ${page} of ${slice.pages}</span><button type="button" class="btn" data-page="${page + 1}" ${page === slice.pages ? raw("disabled") : ""}>Next ${icon("arrow-right")}</button></nav>` : ""}`;
 }
 
 function setHTML() {
   const picked = selected.map((id) => rows.find((r) => r.id === id)).filter(Boolean);
-  if (!picked.length) return html`<div class="library-set-empty"><h2 id="practiceSetTitle">Build a practice set</h2><p class="fine">Use “+ Add” below to combine up to ${LIMIT} activities into a shareable session.</p></div>`;
-  return html`<h2 id="practiceSetTitle">Your practice set <span class="fine">${picked.length}/${LIMIT} · about ${estimateMinutes(picked)} minutes</span></h2>
+  if (!picked.length) return html`<div class="library-set-empty"><h2 id="practiceSetTitle">${icon("list")} Build a practice set</h2><p class="fine">Use “Add” on any activity to combine up to ${LIMIT} into a shareable session.</p></div>`;
+  return html`<h2 id="practiceSetTitle">${icon("list")} Your practice set</h2>
+    <p class="lib-set-count"><strong>${picked.length}/${LIMIT}</strong> activities · about ${estimateMinutes(picked)} minutes</p>
     <p class="fine">Add activities in the order you want to practice. A shared link includes only the activities, not your answers or progress.</p>
-    ${
-      picked.length
-        ? html`<ol class="library-picked">${picked.map((r) => html`<li><span>${r.title}</span><button type="button" class="ghost" data-remove-pick="${r.id}" aria-label="Remove ${r.title}">Remove</button></li>`)}</ol>
-      <div class="row-actions"><a class="btn btn-primary" href="${playlistURL(selected, band)}">Start this set →</a><button type="button" class="btn" data-copy-set>Copy assignment link</button><button type="button" class="ghost" data-clear-set>Clear set</button></div>
-      <label class="field"><span>Assignment link — copy or share</span><input id="assignmentLink" type="text" readonly value="${new URL(playlistURL(selected, band), location.origin).href}" data-nsr-ignore /></label>`
-        : html`<p>Add an activity below to build a short session for yourself or your class.</p>`
-    }`;
+    <ol class="library-picked lib-picked">${picked.map((r) => html`<li class="d-${r.domain.toLowerCase()}"><span class="lib-picked-title">${r.title}</span><button type="button" class="ghost small" data-remove-pick="${r.id}" aria-label="Remove ${r.title}">${icon("x")} Remove</button></li>`)}</ol>
+    <div class="row-actions"><a class="btn btn-primary" href="${playlistURL(selected, band)}">Start this set ${icon("arrow-right")}</a><button type="button" class="btn" data-copy-set>${icon("copy")} Copy assignment link</button><button type="button" class="ghost" data-clear-set>Clear set</button></div>
+    <label class="field"><span>Assignment link — copy or share</span><input id="assignmentLink" type="text" readonly value="${new URL(playlistURL(selected, band), location.origin).href}" data-nsr-ignore /></label>`;
 }
 
 export async function render(ctx) {
@@ -123,16 +128,19 @@ export async function render(ctx) {
       ["Lab", `${BASE}/`],
       ["Activity library", null],
     ])}
-    <header class="room-hero"><div><p class="eyebrow">Find a task · Build a practice set</p><h1 tabindex="-1">Activity library</h1><p class="lead">Search by topic or skill. Pick a task to open it, or combine up to 12 into one shareable session.</p>${bandSwitchHTML(band, ctx.bands)}</div></header>
-    <section class="panel library-set" aria-labelledby="practiceSetTitle" id="practiceSet">${setHTML()}</section>
-    <section aria-label="Find activities"><div class="library-filters">
+    <div class="lib-page">
+    <header class="prog-hero lib-hero"><div class="prog-hero-copy"><p class="eyebrow">${icon("library")} Find a task · Build a practice set</p><h1 tabindex="-1">Activity library</h1><p class="lead">Search by topic or skill. Pick a task to open it, or combine up to 12 into one shareable session.</p>${bandSwitchHTML(band, ctx.bands)}</div></header>
+    <div class="lib-layout">
+    <aside class="library-set lib-set" aria-labelledby="practiceSetTitle" id="practiceSet">${setHTML()}</aside>
+    <section class="lib-main" aria-label="Find activities"><div class="library-filters lib-filters">
       <label class="field library-search"><span>Search topics or skills</span><input type="search" id="librarySearch" maxlength="120" value="${filters.q}" placeholder="Try garden, evidence, compare…" aria-controls="libraryResults" data-nsr-ignore /></label>
       <label class="field"><span>Skill</span><select id="libraryDomain" data-library-filter="domain" data-nsr-ignore>${options([["", "All four skills"], ...CORE_DOMAINS.map((d) => [d, d])], filters.domain)}</select></label>
       <label class="field"><span>Support</span><select id="libraryLevel" data-library-filter="level" data-nsr-ignore>${options([["", "All support choices"], ...Object.entries(TIERS).map(([k, t]) => [k, t.name])], filters.level)}</select></label>
       <label class="field"><span>My progress</span><select id="libraryStatus" data-library-filter="status" data-nsr-ignore>${options([["", "Any progress"], ...Object.entries(STATUS)], filters.status)}</select></label>
     </div><p class="fine">${bandLabel(band)} · Progress is for this browser. Support changes tasks and scaffolds: Starting uses words and short sentences; Growing connects ideas; Expanding adds details and explanations. These are not WIDA scores.</p>
-    <div class="library-quick" aria-label="Quick activity searches"><span>Start with:</span>${["garden", "evidence", "compare", "sequence"].map((topic) => html`<button type="button" class="btn" data-quick-topic="${topic}">${topic}</button>`)}</div>
-    <div id="libraryResults">${resultHTML()}</div></section>`,
+    <div class="library-quick lib-quick" aria-label="Quick activity searches"><span>Start with:</span>${["garden", "evidence", "compare", "sequence"].map((topic) => html`<button type="button" class="cat-chip" data-quick-topic="${topic}">${icon("search")} ${topic}</button>`)}</div>
+    <div id="libraryResults">${resultHTML()}</div></section>
+    </div></div>`,
   };
 }
 

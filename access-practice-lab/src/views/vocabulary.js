@@ -1,5 +1,5 @@
 import { crumbsHTML } from "../components.js";
-import { BASE, html, safeJson, storage } from "../util.js";
+import { BASE, esc, html, icon, raw, safeJson, storage } from "../util.js";
 import { VOCABULARY_ITEMS } from "../content/vocabulary-items.js";
 
 const KEY = "accessPracticeLab:v1:vocabulary-morphology";
@@ -10,11 +10,29 @@ const readState = () => {
 };
 const bandKey = (band) => band === "3-5" ? "3-5" : "6-8";
 const taskFor = (items, state) => {
+  // A word that was just checked stays on screen (with its feedback) until the learner moves on.
+  const shown = items.find((item) => item.id === state.current);
+  if (shown) return shown;
   const due = items.filter((item) => (state.items?.[item.id]?.due ?? 0) <= day());
   const pool = due.length ? due : items;
   const idx = Math.max(0, Number(state.cursor || 0)) % pool.length;
   return pool[idx];
 };
+
+const REVIEW_STEPS = [
+  ["Tomorrow", "after a miss"],
+  ["In 3 days", "first correct build"],
+  ["In 7 days", "correct again"],
+];
+
+function reviewTrack(record, today) {
+  const level = record.checked ? (record.correct ? Math.min(record.streak || 1, 2) : 0) : -1;
+  const when = record.due != null && record.checked ? record.due - today : null;
+  return html`<ol class="vm-review-track" aria-label="Review spacing">
+      ${REVIEW_STEPS.map(([label, note], i) => html`<li class="${i === level ? "is-here" : ""}"><span class="vm-review-dot" aria-hidden="true"></span><strong>${label}</strong><small>${note}</small></li>`)}
+    </ol>
+    <p class="fine">${when == null ? "Your review history stays on this device." : `This word returns in ${when} ${when === 1 ? "day" : "days"}.`}</p>`;
+}
 
 export async function render(ctx) {
   const band = bandKey(ctx.band);
@@ -27,41 +45,61 @@ export async function render(ctx) {
   const checked = record.checked === true;
   const correct = record.correct === true;
   const dueCount = items.filter((row) => (state.items?.[row.id]?.due ?? 0) <= day()).length;
-  const contextLine = item.context.replace(new RegExp(`\\b${item.word}\\b`, "i"), `<strong>${item.word}</strong>`);
-  const selectedParts = selected.map((part) => html`<span class="vm-chip">${part}</span>`);
-  const answerParts = item.parts.map((part) => html`<span class="vm-chip vm-chip-answer">${part}</span>`);
-  const lettered = item.choices.map((part, i) => html`<button type="button" class="vm-part ${selected.includes(part) ? "is-selected" : ""}" data-vm-part="${part}" aria-pressed="${selected.includes(part)}"><span class="vm-part-letter">${String.fromCharCode(65+i)}</span><span>${part}</span><small>${item.meanings[part]}</small></button>`);
+  const contextLine = raw(esc(item.context).replace(new RegExp(`\\b${item.word}\\b`, "i"), `<strong>${item.word}</strong>`));
+  const selectedParts = selected.map((part, i) => html`${i ? html`<span class="vm-join" aria-hidden="true">+</span>` : ""}<span class="vm-chip">${part}</span>`);
+  const lettered = item.choices.map((part, i) => {
+    const order = selected.indexOf(part);
+    return html`<button type="button" class="vm-part ${order >= 0 ? "is-selected" : ""}" data-vm-part="${part}" aria-pressed="${order >= 0}">
+      <span class="vm-part-letter">${order >= 0 ? order + 1 : String.fromCharCode(65 + i)}</span>
+      <span class="vm-part-text">${part}</span>
+      <small>${item.meanings[part]}</small>
+    </button>`;
+  });
 
   return {
     title: "Word Builder · Vocabulary & Morphology",
     html: html`${crumbsHTML([["Lab", `${BASE}/?grades=${band}`], ["Vocabulary & Morphology", null]])}
-      <main class="vm-studio">
+      <div class="vm-studio d-reading">
         <header class="vm-hero">
-          <div class="vm-hero-copy"><p class="vm-kicker">WORD STUDY · ${band === "3-5" ? "GRADES 3–5" : "GRADES 6–8"}</p>
+          <div class="vm-hero-copy"><p class="vm-kicker">${icon("words")} Word study · ${band === "3-5" ? "Grades 3–5" : "Grades 6–8"}</p>
             <h1 tabindex="-1">Word Builder</h1>
             <p>Investigate how meaningful word parts work together. Build an attested academic word, use its context, and return to it later for retrieval practice.</p>
-            <div class="vm-hero-meta"><span>Today: <b>${dueCount} ${dueCount === 1 ? "word" : "words"} ready to review</b></span><span>Saved on this device</span></div>
+            <div class="vm-hero-meta"><span>${icon("calendar")} Today: <b>${dueCount} ${dueCount === 1 ? "word" : "words"} ready to review</b></span><span>${icon("save")} Saved on this device</span></div>
           </div>
-          <div class="vm-word-art" aria-hidden="true"><div class="vm-orbit orbit-a"></div><div class="vm-orbit orbit-b"></div><div class="vm-word-tile">re</div><div class="vm-word-plus">+</div><div class="vm-word-tile tile-b">play</div><span class="vm-art-caption">parts → meaning → use</span></div>
+          <div class="vm-word-art" aria-hidden="true"><span class="vm-tile">prefix</span><span class="vm-word-plus">+</span><span class="vm-tile tile-b">root</span><span class="vm-word-plus">+</span><span class="vm-tile tile-c">suffix</span><span class="vm-art-caption">parts → meaning → use</span></div>
         </header>
 
-        <section class="vm-workbench" aria-labelledby="vm-title">
-          <div class="vm-progress-row"><span class="vm-step-label">WORD INVESTIGATION</span><span class="vm-step-detail">${item.focus} · ${item.keyUse}</span></div>
+        <section class="vm-workbench d-${item.domain.toLowerCase()}" aria-labelledby="vm-title">
+          <div class="vm-progress-row"><span class="lx-pill">${icon(item.domain.toLowerCase())} Word investigation</span><span class="vm-step-detail">${item.focus} · ${item.keyUse} · ${item.domain}</span></div>
           <h2 id="vm-title">${item.prompt}</h2>
-          <p class="vm-context">${html`${contextLine}`}</p>
-          <div class="vm-build-area"><div class="vm-build-label">Your word</div><div class="vm-build-slots" aria-live="polite">${selectedParts.length ? selectedParts : html`<span class="vm-empty">Choose the parts that build the target word.</span>`}</div>
-            <div class="vm-target">Meaning goal <span>${item.word.replace(/[a-z]/g,"•")}</span></div>
+          <div class="vm-grid">
+            <div class="vm-left">
+              <p class="vm-label">In context</p>
+              <p class="vm-context">${contextLine}</p>
+              <div class="vm-hint-wrap"><button class="btn vm-hint" type="button" data-vm-hint aria-expanded="false">${icon("bulb")} Show word-part clues</button>
+                <div class="vm-hint-panel" data-vm-hint-panel hidden><b>Look closely at the context.</b> ${item.parts.map((part) => html`<span class="vm-hint-chip">${part}: ${item.meanings[part]}</span>`)}</div></div>
+            </div>
+            <div class="vm-right">
+              <div class="vm-build-area"><div class="vm-build-label">Your word</div><div class="vm-build-slots" aria-live="polite">${selectedParts.length ? selectedParts : html`<span class="vm-empty">Choose the parts that build the target word.</span>`}</div>
+                <div class="vm-target">Meaning goal <span>${item.word.replace(/[a-z]/g, "•")}</span></div>
+              </div>
+              <fieldset class="vm-parts-field" ${checked ? "disabled" : ""}><legend>Choose and arrange the word parts</legend><div class="vm-parts-grid">${lettered}</div></fieldset>
+              <div class="vm-actions">${checked ? html`<button class="btn btn-primary btn-domain" type="button" data-vm-next>${correct ? "Next word" : "Try this word again"} ${icon("arrow-right")}</button>` : html`<button class="btn btn-primary btn-domain" type="button" data-vm-check>Check my word</button><button class="btn" type="button" data-vm-clear>Clear</button>`}</div>
+            </div>
           </div>
-          <fieldset class="vm-parts-field" ${checked ? "disabled" : ""}><legend>Choose and arrange the word parts</legend><div class="vm-parts-grid">${lettered}</div></fieldset>
-          ${checked ? (correct ? html`<div class="vm-feedback is-correct" role="status"><b>That combination works.</b><p>${item.parts.join(" + ")} builds <strong>${item.word}</strong>. ${item.parts.map((part) => `${part} means “${item.meanings[part]}”`).join("; ")}. In this sentence, the word helps the reader understand the idea precisely.</p><p><b>Use it in ${item.domain}:</b> ${transferPrompt(item)}</p></div>` : html`<div class="vm-feedback is-try" role="status"><b>Check how each part changes the meaning.</b><p>${item.parts.map((part) => `“${part}” means ${item.meanings[part]}`).join("; ")}. Try again by choosing only parts that create the target meaning. One mistake is useful information; it does not define your language ability.</p></div>`) : ""}
-          <div class="vm-actions">${checked ? html`<button class="btn btn-primary" type="button" data-vm-next>${correct ? "Next word" : "Try this word again"}</button>` : html`<button class="btn btn-primary" type="button" data-vm-check>Check my word</button><button class="btn" type="button" data-vm-clear>Clear</button>`}<button class="btn vm-hint" type="button" data-vm-hint aria-expanded="false">Show word-part clues</button></div>
-          <div class="vm-hint-panel" data-vm-hint-panel hidden><b>Look closely at the context.</b> ${item.parts.map((part) => html`<span class="vm-hint-chip">${part}: ${item.meanings[part]}</span>`)}</div>
+          ${
+            checked
+              ? correct
+                ? html`<div class="feedback is-right" role="status"><p class="fb-title">${icon("check")} That combination works.</p><p>${item.parts.join(" + ")} builds <strong>${item.word}</strong>. ${item.parts.map((part) => `${part} means “${item.meanings[part]}”`).join("; ")}. In this sentence, the word helps the reader understand the idea precisely.</p><p><b>Use it in ${item.domain}:</b> ${transferPrompt(item)}</p></div>`
+                : html`<div class="feedback is-hint" role="status"><p class="fb-title">${icon("bulb")} Check how each part changes the meaning.</p><p>${item.parts.map((part) => `“${part}” means ${item.meanings[part]}`).join("; ")}. Try again by choosing only parts that create the target meaning. One mistake is useful information; it does not define your language ability.</p></div>`
+              : ""
+          }
         </section>
 
-        <section class="vm-bottom-grid" aria-label="Vocabulary connections"><article class="vm-card"><span class="vm-card-icon">↻</span><h2>Remember and reuse</h2><p>Words you miss return soon. Words you build correctly return after a longer interval. Your review history stays on this device.</p><div class="vm-review-track"><span class="vm-review-dot active"></span><span class="vm-review-line"></span><span class="vm-review-dot"></span><span class="vm-review-line"></span><span class="vm-review-dot"></span><span class="vm-review-caption">practice · revisit · retrieve</span></div></article>
-          <article class="vm-card vm-link-card"><span class="vm-card-icon">↗</span><h2>Use the word in a domain</h2><p>Move from word parts to communication. Practice the domain connected to this example.</p><a class="btn vm-domain-link" href="${BASE}/${domainPath(item.domain)}?grades=${band}">Open ${item.domain} practice <span aria-hidden="true">→</span></a></article></section>
+        <section class="vm-bottom-grid" aria-label="Vocabulary connections"><article class="vm-card"><span class="vm-card-icon">${icon("retry")}</span><h2>Remember and reuse</h2><p>Words you miss return soon. Words you build correctly return after a longer interval. Your review history stays on this device.</p>${reviewTrack(record, day())}</article>
+          <article class="vm-card vm-link-card"><span class="vm-card-icon">${icon(item.domain.toLowerCase())}</span><h2>Use the word in a domain</h2><p>Move from word parts to communication. Practice the domain connected to this example.</p><a class="btn vm-domain-link" href="${BASE}/${domainPath(item.domain)}?grades=${band}">Open ${item.domain} practice ${icon("arrow-right")}</a></article></section>
         <p class="vm-note">This activity gives feedback on a specific word-building task. It does not estimate an ACCESS result or a WIDA proficiency level.</p>
-      </main>`
+      </div>`
   };
 }
 
@@ -106,8 +144,16 @@ export function onClick(event, ctx) {
     rec.streak = correct ? (rec.streak || 0) + 1 : 0;
     rec.due = day() + (correct ? (rec.streak === 1 ? 3 : 7) : 1);
     state.items[item.id] = rec;
+    state.current = item.id;
   } else if (button.hasAttribute("data-vm-next")) {
-    state.cursor = ((state.cursor || 0) + 1) % items.length;
+    // Leave the word ready for its next retrieval, then move on (a miss is offered again right away).
+    const retry = rec.correct !== true;
+    state.items[item.id] = { ...rec, selected: [], checked: false, correct: false };
+    if (retry) state.current = item.id;
+    else {
+      delete state.current;
+      state.cursor = ((state.cursor || 0) + 1) % items.length;
+    }
   } else if (button.hasAttribute("data-vm-hint")) {
     const panel = document.querySelector("[data-vm-hint-panel]");
     const open = button.getAttribute("aria-expanded") !== "true";

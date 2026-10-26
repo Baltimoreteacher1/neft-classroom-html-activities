@@ -28,7 +28,7 @@ import {
   tagLabel,
 } from "../lang/evidence-notebook.js";
 import { chartHTML, tableHTML } from "../media.js";
-import { BASE, announce, asList, html, safeJson, storage } from "../util.js";
+import { ART, BASE, announce, asList, html, icon, safeJson, storage } from "../util.js";
 
 const EVIDENCE_KEY = "accessPracticeLab:v1:evidence_studio";
 
@@ -108,16 +108,16 @@ async function loadPair(pair) {
 
 function feedbackCardHTML(result) {
   return html`<div class="feedback is-hint" role="status">
-    <p class="fb-title">What your synthesis shows</p>
+    <p class="fb-title">${icon("bulb")} What your synthesis shows</p>
     <ul class="checks">
       ${result.criteria.map((c) =>
         c.met
           ? html`<li class="ok">
-              ✓
-              <strong>${c.label}.</strong>
-              ${c.spans.length ? html`Found in your words: ${c.spans.map((s) => html`<q>${s.text}</q> `)}` : ""}
+              ${icon("check")}
+              <span><strong>${c.label}.</strong>
+              ${c.spans.length ? html`Found in your words: ${c.spans.map((s) => html`<q>${s.text}</q> `)}` : ""}</span>
             </li>`
-          : html`<li>→ <strong>Not yet: ${c.label.toLowerCase()}.</strong> ${c.ask}</li>`,
+          : html`<li>${icon("arrow-right")} <span><strong>Not yet: ${c.label.toLowerCase()}.</strong> ${c.ask}</span></li>`,
       )}
     </ul>
     <p class="fine">
@@ -138,7 +138,7 @@ function synthesisHTML(pair, src, nb, pairs) {
   const draft = nb.synth[pair.id] || "";
   return html`<article class="panel evidence-panel" aria-labelledby="synHeading">
     <header>
-      <span class="eyebrow">Multi-source synthesis · two sources, one topic</span>
+      <p class="eyebrow">Multi-source synthesis · two sources, one topic</p>
       <h2 id="synHeading">Synthesis matrix: ${src.textTitle}</h2>
       ${
         pairs.length > 1
@@ -157,34 +157,36 @@ function synthesisHTML(pair, src, nb, pairs) {
             </div>`
           : ""
       }
-      <p><strong>Question:</strong> ${pair.question}</p>
-      <ol class="fine">
+      <p class="ev-question"><strong>Question</strong>${pair.question}</p>
+      <ol class="ev-steps">
         <li>
+          <strong>Pin</strong>
           Select sentences in the text and data points in the chart. Tag each one as a Claim,
           Evidence, or an Example.
         </li>
         <li>
+          <strong>Compare</strong>
           Place each pin in the matrix: where do the sources agree, and what does each one add?
         </li>
-        <li>Write a short synthesis that uses your pins and names both sources.</li>
+        <li><strong>Write</strong> Write a short synthesis that uses your pins and names both sources.</li>
       </ol>
     </header>
     ${tagBarHTML(picked && (picked.sourceId === src.ids.text || picked.sourceId === src.ids.data) ? picked : null)}
-    ${lastPinned ? html`<p class="saved-note">${lastPinned}</p>` : ""}
+    ${lastPinned ? html`<p class="saved-note">${icon("pin")} ${lastPinned}</p>` : ""}
     <div class="evidence-grid">
-      <section class="card" aria-labelledby="synText">
-        <span class="eyebrow">Source 1 · Text</span>
+      <section class="card ev-source" aria-labelledby="synText">
+        <p class="eyebrow">${icon("reading")} Source 1 · Text</p>
         <h3 id="synText">${src.textTitle}</h3>
         <div class="passage">
           ${renderPassageSentences(src.paragraphs, { tagMode: true, pickKey: src.ids.text, picked: pickedIdx, pinned: pinnedIndex(nb, src.ids.text, sentences) })}
         </div>
       </section>
-      <section class="card" aria-labelledby="synData">
-        <span class="eyebrow">Source 2 · Data</span>
+      <section class="card ev-source" aria-labelledby="synData">
+        <p class="eyebrow">${icon("growth")} Source 2 · Data</p>
         <h3 id="synData">${src.dataTitle}</h3>
         ${asList(src.chart).map((c, i) => chartHTML(c, i))}${src.table ? tableHTML(src.table) : ""}
         <h4>Pin a data point</h4>
-        <ul class="chips" role="list">
+        <ul class="chips ev-points" role="list">
           ${points.map((t, i) =>
             dataPickHTML(`${src.ids.data}|d${i}`, t, {
               picked: picked?.key === `${src.ids.data}|d${i}`,
@@ -225,9 +227,9 @@ ${draft}</textarea>
         Your synthesis and pins stay in this browser. They are never sent anywhere or added to a
         progress code.
       </p>
-      <button type="button" class="btn btn-primary" data-syn-check="${pair.id}">
+      <div class="row-actions"><button type="button" class="btn btn-primary btn-domain" data-syn-check="${pair.id}">
         Check my synthesis
-      </button>
+      </button></div>
       ${feedback?.pairId === pair.id && feedback.text === draft ? feedbackCardHTML(feedback.result) : ""}
     </section>
   </article>`;
@@ -235,7 +237,7 @@ ${draft}</textarea>
 
 function notebookHTML(nb) {
   return html`<article class="panel" id="notebook" aria-labelledby="nbHeading">
-    <h2 id="nbHeading">📓 My Evidence Notebook</h2>
+    <h2 id="nbHeading">${icon("bookmark")} My Evidence Notebook</h2>
     <p class="fine">
       Pins from Reading activities and this studio. Saved only in this browser; clearing site data
       removes them.
@@ -274,17 +276,17 @@ export async function render(ctx) {
   return {
     title: "Evidence-to-Language Studio",
     html: html`${crumbsHTML(breadcrumbs)}
-      <section class="room-hero" style="--room:#2b9348">
+      <div class="ev d-reading">
+      <section class="lx-hero">
         <div>
-          <span class="badge" style="background:#1e6b34; color:white"
-            >Data-to-Language Scaffold</span
-          >
-          <h1 tabindex="-1">📊 Evidence-to-Language Studio</h1>
+          <p class="eyebrow">${icon("evidence")} Data-to-Language Scaffold</p>
+          <h1 tabindex="-1">Evidence-to-Language Studio</h1>
           <p class="lead">
             Pin evidence from a text and a chart, compare the two sources, and write an
             evidence-based synthesis.
           </p>
         </div>
+        <div class="lx-hero-art"><img src="${ART}/domain-reading.svg" alt="" width="480" height="360" /></div>
       </section>
 
       ${src ? synthesisHTML(pair, src, nb, pairs) : pair ? html`<p class="panel" role="status">The sources for this synthesis could not load. Check your connection and try again.</p>` : ""}
@@ -292,7 +294,7 @@ export async function render(ctx) {
 
       <article class="panel evidence-panel" aria-labelledby="evSetHeading">
         <header>
-          <span class="eyebrow">${evSet.domain} · ${evSet.type}</span>
+          <p class="eyebrow">${evSet.domain} · ${evSet.type}</p>
           <h2 id="evSetHeading">${evSet.title}</h2>
           <p>Select data points below to pin them as evidence in your Evidence Notebook.</p>
         </header>
@@ -308,52 +310,51 @@ export async function render(ctx) {
             >
               <span class="badge">${dp.tag}</span>
               <h3>${dp.label}</h3>
-              <p class="data-val">📈 ${dp.value}</p>
-              <span class="fine">${isPicked ? "✓ Pinned as evidence" : "+ Pin as evidence"}</span>
+              <p class="data-val">${dp.value}</p>
+              <span class="ev-pin-state">${icon(isPicked ? "check" : "pin")} ${isPicked ? "Pinned as evidence" : "Pin as evidence"}</span>
             </button>`;
           })}
         </div>
 
         <section class="notebook-section card">
-          <h3>📓 Academic Explanation Construction</h3>
+          <h3>${icon("writing")} Academic Explanation Construction</h3>
           <p class="fine">
             Follow the 3-step scientific discourse model: Observation → Interpretation → Causal
             Explanation.
           </p>
 
           <div class="step-card">
-            <span class="eyebrow">Step 1: Observation (What do the numbers show?)</span>
+            <p class="eyebrow"><span class="ev-num">1</span> Observation: what do the numbers show?</p>
             <p class="model-stem">${evSet.stems.observation}</p>
             <button type="button" class="btn ghost small" data-say="${evSet.stems.observation}">
-              🔊 Hear Observation Aloud
+              ${icon("volume")} Hear observation aloud
             </button>
           </div>
 
           <div class="step-card">
-            <span class="eyebrow">Step 2: Interpretation (Why does this matter?)</span>
+            <p class="eyebrow"><span class="ev-num">2</span> Interpretation: why does this matter?</p>
             <p class="model-stem">${evSet.stems.interpretation}</p>
             <button type="button" class="btn ghost small" data-say="${evSet.stems.interpretation}">
-              🔊 Hear Interpretation Aloud
+              ${icon("volume")} Hear interpretation aloud
             </button>
           </div>
 
           <div class="step-card">
-            <span class="eyebrow"
-              >Step 3: Causal Explanation (What is the overall consequence?)</span
-            >
+            <p class="eyebrow"><span class="ev-num">3</span> Causal explanation: what is the overall consequence?</p>
             <p class="model-stem">${evSet.stems.explanation}</p>
             <button type="button" class="btn ghost small" data-say="${evSet.stems.explanation}">
-              🔊 Hear Explanation Aloud
+              ${icon("volume")} Hear explanation aloud
             </button>
           </div>
 
           <div class="row-actions">
             <button type="button" class="btn btn-secondary" data-evidence-next>
-              Next Evidence Investigation →
+              Next evidence investigation ${icon("arrow-right")}
             </button>
           </div>
         </section>
-      </article>`,
+      </article>
+      </div>`,
   };
 }
 
@@ -421,7 +422,7 @@ export function onEvidenceEvent(t, ctx) {
         ? "Your notebook is full. Remove a pin below first."
         : status === "unchanged"
           ? `Already pinned as ${label}.`
-          : `📌 Pinned as ${label}${storage.isVolatile ? " (this tab only: this device could not save)" : ""}.`;
+          : `Pinned as ${label}${storage.isVolatile ? " (this tab only: this device could not save)" : ""}.`;
     announce(lastPinned);
     pendingFocus = `[data-nb-pick="${CSS.escape(picked.key)}"]`;
     picked = null;

@@ -2,7 +2,8 @@
 // No roster, name, response, or student progress is encoded in a launch URL.
 import { bandRows, loadBlueprint, loadDomain, loadExemplars, loadSpeakingTasks, loadWorlds, loadWritingTasks } from "../content.js";
 import { stationCard, stationCardHTML, stationOptions } from "../lang/teacher.js";
-import { BASE, CORE_DOMAINS, html, raw } from "../util.js";
+import { crumbsHTML } from "../components.js";
+import { BASE, CORE_DOMAINS, DOMAIN_META, html, icon, raw } from "../util.js";
 import { activityHref } from "./room.js";
 
 const state = { band: "6-8", domain: "", skill: "", length: "", mode: "learning", selected: "", rows: [], station: "" };
@@ -48,7 +49,7 @@ function stationPanel({ options, card }) {
       return list.length ? html`<optgroup label="${label}">${list.map((o) => html`<option value="${o.kind}:${o.id}" ${`${o.kind}:${o.id}` === state.station ? "selected" : ""}>${o.label}</option>`)}</optgroup>` : "";
     })}</select></label>
     ${card ? html`<div class="station-preview" data-station-preview>${raw(stationCardHTML(card, location.origin))}</div>
-      <div class="row-actions"><button type="button" class="btn btn-primary" data-station-print>Print station card</button></div>
+      <div class="row-actions"><button type="button" class="btn btn-primary" data-station-print>${icon("print")} Print station card</button></div>
       <p class="fine">Teacher copy: it includes exemplar responses. The same sheets are generated for the Teacher Hub packets.</p>` : html`<p role="status">No station content is available for this grade band.</p>`}
   </section>`;
 }
@@ -75,6 +76,41 @@ function filteredRows() {
   );
 }
 
+const MODE_LABEL = { learning: "Learning: supports and feedback", independent: "Independent: try on your own first" };
+
+/** The student ticket: what a learner needs to open the activity. No QR code (the lab has no verified encoder). */
+function ticketHTML(row, url) {
+  return html`<article class="ls-ticket d-${row.domain.toLowerCase()}" aria-label="Student launch ticket">
+    <p class="ls-ticket-brand">${icon(DOMAIN_META[row.domain]?.icon || "launch")} ACCESS Practice Lab</p>
+    <h3>${row.title}</h3>
+    <p class="ls-ticket-meta">${row.domain} · ${row.skill || "Language practice"} · ${row.minutes || "Flexible"} min · Grades ${state.band.replace("-", "–")}</p>
+    <p class="ls-ticket-label">Open this link</p>
+    <p class="ls-ticket-url">${url}</p>
+    <p class="ls-ticket-mode">${MODE_LABEL[state.mode]}</p>
+  </article>`;
+}
+
+function configureHTML(rows, skills, domains, taskOptions) {
+  return html`<div class="teacher-launch-grid">
+    <label class="field">Grade band<select data-launch-field="band"><option value="3-5" ${state.band === "3-5" ? "selected" : ""}>Grades 3–5</option><option value="6-8" ${state.band === "6-8" ? "selected" : ""}>Grades 6–8</option></select></label>
+    <label class="field">Language domain<select data-launch-field="domain">${options(domains, state.domain, "All four domains")}</select></label>
+    <label class="field">Target skill<select data-launch-field="skill">${options(skills.map((s) => ({ value: s, label: s })), state.skill, "Any skill")}</select></label>
+    <label class="field">Session length<select data-launch-field="length">${options([{ value: "10", label: "Up to 10 minutes" }, { value: "20", label: "Up to 20 minutes" }, { value: "30", label: "Up to 30 minutes" }], state.length, "Any length")}</select></label>
+    <label class="field">Practice mode<select data-launch-field="mode"><option value="learning" ${state.mode === "learning" ? "selected" : ""}>Learning — supports and feedback</option><option value="independent" ${state.mode === "independent" ? "selected" : ""}>Independent — try on your own first</option></select></label>
+    <label class="field teacher-launch-task">Activity<select data-launch-field="selected" ${rows.length ? "" : "disabled"}>${options(taskOptions, state.selected, rows.length ? "Choose an activity" : "No matching activities")}</select></label>
+  </div>`;
+}
+
+function shareHTML(row, url) {
+  return html`<div class="teacher-launch-preview" aria-live="polite"><a class="btn btn-primary" href="${url}">Open student activity ${icon("external")}</a><span class="fine">Opens the activity exactly as a learner sees it.</span></div>
+    <div class="ls-link">
+      <label class="field teacher-launch-url" for="launchUrl">Direct link</label>
+      <div class="ls-link-row"><input id="launchUrl" type="url" readonly value="${url}" data-launch-url aria-label="Direct student activity link"><button type="button" class="btn btn-primary" data-launch-copy>${icon("copy")} <span data-launch-copy-label>Copy link</span></button></div>
+    </div>
+    <div class="row-actions"><button type="button" class="btn" data-launch-print>${icon("print")} Print launch card</button><button type="button" class="btn" data-launch-sheet>${icon("print")} Print tickets (8 per page)</button></div>
+    <p class="fine" data-launch-status role="status" aria-live="polite">Share the link with students or display it for the class. A QR code is not shown because this application has no verified QR encoder.</p>`;
+}
+
 export async function render(ctx) {
   state.band = ctx.band;
   try { state.rows = await bandRows(state.band); }
@@ -89,28 +125,27 @@ export async function render(ctx) {
   const station = await selectedStation();
   return {
     title: "Teacher Launch Studio",
-    html: html`<section class="room-hero">
-      <div><p class="eyebrow">TEACHER WORKSPACE</p><h1 tabindex="-1">Teacher Launch Studio</h1>
+    html: html`${crumbsHTML([["Lab", `${BASE}/?grades=${ctx.band}`], ["Teacher Launch Studio", null]])}
+    <div class="ls">
+    <section class="ls-hero">
+      <div><p class="eyebrow">${icon("launch")} Teacher workspace</p><h1 tabindex="-1">Teacher Launch Studio</h1>
       <p class="lead">Build a focused, direct classroom link in a few steps. Learners can open it without an account.</p></div>
+      <ol class="ls-flow" aria-label="Steps"><li>Choose an activity</li><li>Copy the link</li><li>Share or print a ticket</li></ol>
     </section>
+    <div class="ls-layout">
     <section class="panel teacher-launch-panel" aria-labelledby="launch-config-title">
-      <h2 id="launch-config-title">Configure a practice launch</h2>
+      <h2 id="launch-config-title" class="workbook-heading"><span aria-hidden="true">1</span> Configure a practice launch</h2>
       <p>Choose an existing activity. The link includes its grade band and selected practice mode; it does not include student information.</p>
-      <div class="teacher-launch-grid">
-        <label class="field">Grade band<select data-launch-field="band"><option value="3-5" ${state.band === "3-5" ? "selected" : ""}>Grades 3–5</option><option value="6-8" ${state.band === "6-8" ? "selected" : ""}>Grades 6–8</option></select></label>
-        <label class="field">Language domain<select data-launch-field="domain">${options(domains, state.domain, "All four domains")}</select></label>
-        <label class="field">Target skill<select data-launch-field="skill">${options(skills.map((s) => ({ value: s, label: s })), state.skill, "Any skill")}</select></label>
-        <label class="field">Session length<select data-launch-field="length">${options([{ value: "10", label: "Up to 10 minutes" }, { value: "20", label: "Up to 20 minutes" }, { value: "30", label: "Up to 30 minutes" }], state.length, "Any length")}</select></label>
-        <label class="field">Practice mode<select data-launch-field="mode"><option value="learning" ${state.mode === "learning" ? "selected" : ""}>Learning — supports and feedback</option><option value="independent" ${state.mode === "independent" ? "selected" : ""}>Independent — try on your own first</option></select></label>
-        <label class="field teacher-launch-task">Activity<select data-launch-field="selected" ${rows.length ? "" : "disabled"}>${options(taskOptions, state.selected, rows.length ? "Choose an activity" : "No matching activities")}</select></label>
-      </div>
-      ${row ? html`<div class="teacher-launch-preview" aria-live="polite"><div><span class="fine">SELECTED ACTIVITY</span><h3>${row.title}</h3><p>${row.domain} · ${row.skill || "Language practice"} · ${row.minutes || "Flexible"} minutes · Grades ${state.band.replace("-", "–")}</p></div><a class="btn btn-primary" href="${url}">Open student activity ↗</a></div>
-      <label class="field teacher-launch-url">Direct link<input type="url" readonly value="${url}" data-launch-url aria-label="Direct student activity link"></label>
-      <div class="row-actions"><button type="button" class="btn" data-launch-copy>Copy link</button><button type="button" class="btn" data-launch-print>Print launch card</button></div>
-      <p class="fine" data-launch-status role="status" aria-live="polite">Share the link with students or display it for the class. A QR code is not shown because this application has no verified QR encoder.</p>` : html`<p role="status">No activity matches those choices. Try a different grade band, domain, skill, or session length.</p>`}
+      ${configureHTML(rows, skills, domains, taskOptions)}
     </section>
+    <section class="panel ls-share" aria-labelledby="launch-share-title">
+      <h2 id="launch-share-title" class="workbook-heading"><span aria-hidden="true">2</span> Share it</h2>
+      ${row ? html`${ticketHTML(row, url)}${shareHTML(row, url)}` : html`<p role="status">No activity matches those choices. Try a different grade band, domain, skill, or session length.</p>`}
+    </section>
+    </div>
     ${stationPanel(station)}
-    <section class="panel"><h2>Quick links</h2><div class="row-actions"><a class="btn" href="${BASE}/classroom">Whole-Class Language Studio</a><a class="btn" href="/access-teacher/">Open Teacher Hub</a><a class="btn" href="${BASE}/">Return to student lab</a></div><p class="fine">The Teacher Hub stores its local evidence in this browser. Launch links work without sending roster or learner data.</p></section>`,
+    <section class="panel ls-quick"><h2>Quick links</h2><div class="row-actions"><a class="btn" href="${BASE}/classroom">${icon("classroom")} Whole-Class Language Studio</a><a class="btn" href="/access-teacher/">${icon("teacher")} Open Teacher Hub</a><a class="btn" href="${BASE}/">${icon("home")} Return to student lab</a></div><p class="fine">The Teacher Hub stores its local evidence in this browser. Launch links work without sending roster or learner data.</p></section>
+    </div>`,
   };
 }
 
@@ -144,6 +179,12 @@ export async function onClick(e) {
     try {
       await navigator.clipboard.writeText(url);
       if (status) status.textContent = "Link copied. It contains the selected activity and mode only.";
+      const label = copy.querySelector("[data-launch-copy-label]");
+      if (label) {
+        label.textContent = "Copied";
+        copy.classList.add("is-copied");
+        setTimeout(() => { label.textContent = "Copy link"; copy.classList.remove("is-copied"); }, 2500);
+      }
     } catch {
       const input = document.querySelector("[data-launch-url]");
       input?.focus(); input?.select();
@@ -151,8 +192,30 @@ export async function onClick(e) {
     }
     return true;
   }
-  if (print) { window.print(); return true; }
+  if (print) { printTickets(1); return true; }
+  if (e.target.closest("[data-launch-sheet]")) { printTickets(8); return true; }
   return false;
+}
+
+/** Print only the ticket(s): copy them into a body-level host so nothing else takes a page. */
+function printTickets(count) {
+  const ticket = document.querySelector(".ls-ticket");
+  if (!ticket) return;
+  let host = document.getElementById("ticketPrint");
+  if (!host) {
+    host = Object.assign(document.createElement("div"), { id: "ticketPrint" });
+    document.body.append(host);
+  }
+  host.className = count > 1 ? "is-sheet" : "is-single";
+  host.replaceChildren(...Array.from({ length: count }, () => ticket.cloneNode(true)));
+  document.body.dataset.printing = "tickets";
+  const done = () => {
+    delete document.body.dataset.printing;
+    host.replaceChildren();
+    window.removeEventListener("afterprint", done);
+  };
+  window.addEventListener("afterprint", done);
+  window.print();
 }
 
 /** Print only the station sheet: copy it into a body-level host so nothing else takes a page. */

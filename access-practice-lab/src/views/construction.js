@@ -1,8 +1,7 @@
 // Language Construction Lab: Interactive sentence expansion, grammar-in-context, cohesion,
 // and academic register manipulation (WIDA ELD Sentence and Word/Phrase dimensions).
 import { crumbsHTML } from "../components.js";
-import { speak } from "../speech.js";
-import { BASE, announce, html, raw, safeJson, storage } from "../util.js";
+import { ART, BASE, announce, html, icon, raw, safeJson, storage } from "../util.js";
 
 const CONST_KEY = "accessPracticeLab:v1:construction";
 
@@ -105,129 +104,121 @@ export const REGISTER_TRANSFORMS = [
   }
 ];
 
+const TABS = [
+  ["expansion", "Sentence Expansion"],
+  ["register", "Academic Register Transformer"],
+];
+
+function stageTrack(challenge, stageIdx) {
+  return html`<ol class="cs-stages" aria-label="Expansion stages">
+    ${challenge.stages.map(
+      (_, i) =>
+        html`<li class="${i < stageIdx ? "is-done" : ""} ${i === stageIdx ? "is-here" : ""}" ${i === stageIdx ? raw('aria-current="step"') : ""}>
+          <span class="cs-stage-num">${i < stageIdx ? icon("check") : i + 1}</span> Stage ${i + 1}
+        </li>`,
+    )}
+  </ol>`;
+}
+
+function expansionHTML(saved) {
+  const challenge = EXPANSION_CHALLENGES[saved.challengeIdx || 0] || EXPANSION_CHALLENGES[0];
+  const stageIdx = saved.stageIdx || 0;
+  const stage = challenge.stages[stageIdx];
+  const sentence = saved.currentText || challenge.kernel;
+  return html`<article class="panel cs-card">
+    <p class="eyebrow">${challenge.topic}</p>
+    <h2>Sentence Expansion Workbench</h2>
+    ${stageTrack(challenge, stageIdx)}
+    <div class="cs-sentence">
+      <p class="cs-label">${stageIdx === 0 ? "Starting sentence" : "Current sentence construction"}</p>
+      <p class="built-sentence"><strong>${sentence}</strong></p>
+      <button type="button" class="btn ghost small" data-say="${sentence}">${icon("volume")} Hear sentence aloud</button>
+    </div>
+    ${
+      stage
+        ? html`<div class="stage-container">
+            <h3><span class="cs-stage-tag">Stage ${stageIdx + 1} of ${challenge.stages.length}</span> ${stage.prompt}</h3>
+            <div class="options-grid">
+              ${stage.options.map(
+                (opt, oIdx) => html`<div class="cs-option">
+                  <p class="cs-option-text">${opt.text}</p>
+                  <p class="cs-option-note"><span>Register note</span> ${opt.note}</p>
+                  <button type="button" class="btn btn-secondary small" data-const-add="${oIdx}">${icon("arrow-right")} Insert and expand</button>
+                </div>`,
+              )}
+            </div>
+          </div>`
+        : html`<div class="completion-banner" role="status">
+            <p class="fb-title">${icon("check")} Sentence complete</p>
+            <p>You expanded a short kernel into a complex academic sentence with cause, place and consequence clauses. Read it aloud, then try another challenge.</p>
+            <button type="button" class="btn btn-primary btn-domain" data-const-reset>Try another expansion challenge ${icon("arrow-right")}</button>
+          </div>`
+    }
+  </article>`;
+}
+
+function registerHTML(saved) {
+  return html`<article class="panel cs-card">
+    <p class="eyebrow">Academic elevation</p>
+    <h2>Academic Register Transformer</h2>
+    <p class="cs-intro">Evaluate conversational expressions and choose the formal, academic equivalent.</p>
+    ${REGISTER_TRANSFORMS.map(
+      (rt, idx) => html`<section class="cs-register" aria-labelledby="regq-${idx}">
+        <p class="cs-label">${icon("conversation")} Informal, conversational phrasing</p>
+        <blockquote class="informal-speech" id="regq-${idx}">${rt.informal}</blockquote>
+        <h3>Select the formal academic construction</h3>
+        <div class="choices options-group">
+          ${rt.options.map((opt, oIdx) => {
+            const chosen = saved.transforms?.[idx] === oIdx;
+            return html`<div class="cs-opt">
+              <label class="choice ${chosen ? "is-on" : ""}">
+                <input type="radio" name="reg-trans-${idx}" value="${oIdx}" data-reg-select="${idx}:${oIdx}" ${chosen ? raw("checked") : ""} />
+                <span class="choice-letter">${String.fromCharCode(65 + oIdx)}</span>
+                <span>${opt.text}</span>
+              </label>
+              ${
+                chosen
+                  ? html`<div class="feedback ${opt.correct ? "is-right" : "is-hint"}" role="status">
+                      <p class="fb-title">${icon(opt.correct ? "check" : "bulb")} ${opt.correct ? "Formal academic wording" : "Needs refinement"}</p>
+                      <p>${opt.reason}</p>
+                    </div>`
+                  : ""
+              }
+            </div>`;
+          })}
+        </div>
+      </section>`,
+    )}
+  </article>`;
+}
+
 export async function render(ctx) {
   const saved = safeJson(storage.get(CONST_KEY), {}) || {};
-  const activeTab = ctx.route.tab || "expansion";
-  const challengeIdx = saved.challengeIdx || 0;
-  const challenge = EXPANSION_CHALLENGES[challengeIdx] || EXPANSION_CHALLENGES[0];
-  const stageIdx = saved.stageIdx || 0;
-  const currentStage = challenge.stages[stageIdx];
-
-  const breadcrumbs = [
-    ["Lab", `${BASE}/?grades=${ctx.band}`],
-    ["Language Construction Lab", null],
-  ];
+  const activeTab = ctx.route.tab === "register" ? "register" : "expansion";
 
   return {
     title: "Language Construction Lab",
-    html: html`${crumbsHTML(breadcrumbs)}
-      <section class="room-hero" style="--room:#6a4c93">
-        <div>
-          <span class="badge" style="background:#6a4c93; color:white">Grammar-in-Context & Cohesion Workbench</span>
-          <h1 tabindex="-1">🧱 Language Construction Lab</h1>
-          <p class="lead">Manipulate, expand, and elevate sentences. Build complex syntax, academic cohesion, and formal register.</p>
+    html: html`${crumbsHTML([["Lab", `${BASE}/?grades=${ctx.band}`], ["Language Construction Lab", null]])}
+      <div class="cs d-writing">
+        <section class="lx-hero">
+          <div>
+            <p class="eyebrow">${icon("construction")} Grammar-in-context and cohesion workbench</p>
+            <h1 tabindex="-1">Language Construction Lab</h1>
+            <p class="lead">Manipulate, expand, and elevate sentences. Build complex syntax, academic cohesion, and formal register.</p>
+          </div>
+          <div class="lx-hero-art"><img src="${ART}/domain-writing.svg" alt="" width="480" height="360" /></div>
+        </section>
+
+        <div class="cs-tabs" role="group" aria-label="Choose a workbench">
+          ${TABS.map(
+            ([id, label], i) => html`<button type="button" class="cs-tab" data-const-tab="${id}" aria-pressed="${String(activeTab === id)}">
+              <span class="cs-tab-num">${i + 1}</span>${label}
+            </button>`,
+          )}
         </div>
-      </section>
 
-      <div class="mission-nav" role="tablist">
-        <button
-          type="button"
-          class="mission-step-btn ${activeTab === "expansion" ? "is-active" : ""}"
-          data-const-tab="expansion"
-        >
-          <span class="step-num">1</span>
-          <span class="step-label">Sentence Expansion</span>
-        </button>
-        <button
-          type="button"
-          class="mission-step-btn ${activeTab === "register" ? "is-active" : ""}"
-          data-const-tab="register"
-        >
-          <span class="step-num">2</span>
-          <span class="step-label">Academic Register Transformer</span>
-        </button>
-      </div>
-
-      ${
-        activeTab === "expansion"
-          ? html`<article class="panel construction-card">
-              <span class="eyebrow">${challenge.topic}</span>
-              <h2>Sentence Expansion Workbench</h2>
-
-              <div class="workbench-display card">
-                <span class="fine">Current Sentence Construction:</span>
-                <p class="built-sentence">
-                  <strong>${saved.currentText || challenge.kernel}</strong>
-                </p>
-                <button type="button" class="btn ghost small" data-say="${saved.currentText || challenge.kernel}">
-                  🔊 Hear Sentence Aloud
-                </button>
-              </div>
-
-              ${
-                stageIdx < challenge.stages.length
-                  ? html`<div class="stage-container">
-                      <h3>Stage ${stageIdx + 1} of ${challenge.stages.length}: ${currentStage.prompt}</h3>
-                      <div class="options-grid">
-                        ${currentStage.options.map((opt, oIdx) => html`<div class="card construction-option">
-                            <p><strong>${opt.text}</strong></p>
-                            <span class="fine">${opt.note}</span>
-                            <div class="row-actions">
-                              <button
-                                type="button"
-                                class="btn btn-secondary small"
-                                data-const-add="${oIdx}"
-                              >
-                                + Insert & Expand
-                              </button>
-                            </div>
-                          </div>`)}
-                      </div>
-                    </div>`
-                  : html`<div class="completion-banner">
-                      <h3>⭐ Masterful Sentence Construction Completed!</h3>
-                      <p>You transformed a simple 2-word kernel into an authoritative, publisher-grade academic complex sentence with causal, spatial, and consequence clauses.</p>
-                      <button type="button" class="btn btn-primary" data-const-reset>
-                        Try Another Expansion Challenge →
-                      </button>
-                    </div>`
-              }
-            </article>`
-          : ""
-      }
-
-      ${
-        activeTab === "register"
-          ? html`<article class="panel construction-card">
-              <span class="eyebrow">Academic Elevation</span>
-              <h2>Academic Register Transformer</h2>
-              <p>Evaluate conversational expressions and choose the formal, authoritative academic equivalent.</p>
-
-              ${REGISTER_TRANSFORMS.map((rt, idx) => html`<div class="card register-card">
-                  <span class="eyebrow">Informal / Conversational Phrasing</span>
-                  <p class="informal-speech">💬 “${rt.informal}”</p>
-
-                  <h4>Select the Formal Academic Construction:</h4>
-                  <div class="options-group">
-                    ${rt.options.map((opt, oIdx) => {
-                      const isChosen = saved.transforms?.[idx] === oIdx;
-                      return html`<label class="choice-option ${isChosen ? "selected" : ""}">
-                        <input
-                          type="radio"
-                          name="reg-trans-${idx}"
-                          value="${oIdx}"
-                          data-reg-select="${idx}:${oIdx}"
-                          ${isChosen ? raw("checked") : ""}
-                        />
-                        <span>${opt.text}</span>
-                      </label>
-                      ${isChosen ? html`<p class="fine ${opt.correct ? "pass" : "warn"}"><strong>${opt.correct ? "✓ Academic Excellence" : "Needs Refinement"}:</strong> ${opt.reason}</p>` : ""}`;
-                    })}
-                  </div>
-                </div>`)}
-            </article>`
-          : ""
-      }`,
+        ${activeTab === "expansion" ? expansionHTML(saved) : registerHTML(saved)}
+      </div>`,
   };
 }
 
@@ -237,8 +228,8 @@ export function onConstructionEvent(t, ctx) {
     const val = tab.dataset.constTab;
     const url = new URL(location.href);
     url.searchParams.set("tab", val);
-    location.href = url.pathname + url.search;
-    return true;
+    ctx.navigate(url.pathname + url.search);
+    return false;
   }
 
   const add = t.closest("[data-const-add]");

@@ -1,6 +1,8 @@
 // Small, dependency-free helpers shared by every view.
 
 export const BASE = "/access-practice-lab";
+export const ICONS = `${BASE}/pictures/ui-icons.svg`;
+export const ART = `${BASE}/pictures/ds`;
 export const CORE_DOMAINS = ["Listening", "Reading", "Speaking", "Writing"];
 export const LEVEL_KEYS = ["A", "B", "C"];
 export const TIERS = {
@@ -9,11 +11,11 @@ export const TIERS = {
   C: { name: "Expanding", range: "More independence", es: "Ampliando" },
 };
 export const DOMAIN_META = {
-  Listening: { glyph: "🎧", room: "Listening Studio", verb: "Listen", es: "Escuchar" },
-  Reading: { glyph: "📖", room: "Reading Room", verb: "Read", es: "Leer" },
-  Speaking: { glyph: "🎤", room: "Speaking Booth", verb: "Speak", es: "Hablar" },
-  Writing: { glyph: "✏️", room: "Writing Desk", verb: "Write", es: "Escribir" },
-  "Model-Test": { glyph: "🧪", room: "Model Test Items", verb: "Practice", es: "Practicar" },
+  Listening: { icon: "listening", name: "Listening", room: "Listening practice", verb: "Listen", es: "Escuchar", blurb: "Follow directions, catch key details, and understand what you hear." },
+  Reading: { icon: "reading", name: "Reading", room: "Reading practice", verb: "Read", es: "Leer", blurb: "Read short texts, find evidence, and explain the main idea." },
+  Speaking: { icon: "speaking", name: "Speaking", room: "Speaking practice", verb: "Speak", es: "Hablar", blurb: "Plan what you will say, record it, and listen back." },
+  Writing: { icon: "writing", name: "Writing", room: "Writing practice", verb: "Write", es: "Escribir", blurb: "Build sentences and paragraphs with words and frames you choose." },
+  "Model-Test": { icon: "tests", name: "Model test", room: "Model test items", verb: "Practice", es: "Practicar", blurb: "Test-style questions to rehearse the format." },
 };
 
 const ESC = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
@@ -23,6 +25,9 @@ export const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (ch) => ES
 /** Tagged template: interpolations are escaped unless wrapped with raw(). */
 const RAW = Symbol("raw");
 export const raw = (html) => ({ [RAW]: String(html ?? "") });
+/** Inline SVG icon from the shared sprite (pictures/ui-icons.svg). Decorative by default. */
+export const icon = (name, cls = "") =>
+  raw(`<svg class="ico ${cls}" aria-hidden="true" focusable="false"><use href="${ICONS}#${name}"></use></svg>`);
 export function html(strings, ...values) {
   let out = strings[0];
   values.forEach((v, i) => {

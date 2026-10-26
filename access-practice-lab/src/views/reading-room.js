@@ -1,7 +1,14 @@
+// Reading Room: a digital reading environment. The shelf lists authored lessons; a lesson pairs a calm reading
+// column (passage, optional word support, paragraph marks, saved place) with a separate response area.
+// Everything is saved on this device only; nothing here is a score or a proficiency level.
 import { findActivity, loadReadingRoomLessons } from "../content.js";
-import { BASE, html, raw } from "../util.js";
+import { ART, BASE, esc, icon, raw, toHtml } from "../util.js";
 import { canSpeak, speak, stop as stopSpeech } from "../speech.js";
-import { loadReadingState, saveReadingState, clearReadingState } from "../reading-state.js";
+import {
+  loadReadingState,
+  saveReadingState,
+  clearReadingState,
+} from "../reading-state.js";
 
 let query = "";
 let grade = "";
@@ -12,11 +19,52 @@ let activePhase = "first";
 let activeMode = "practice";
 let openedLessonId = "";
 let notice = "";
-const esc = (s = "") => String(s).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+const ic = (name) => toHtml(icon(name));
 const lessonUrl = (id) => `${BASE}/reading-room/${encodeURIComponent(id)}`;
 const stateKey = (l) => `${l.id}@${l.revision}`;
-const gradeLabel = (l) => l.gradeCluster ? `Grades ${l.gradeCluster.replace("-","–")}` : `Grades ${l.localGradeBand||"3–5"} local · WIDA cluster unspecified`;
-const passageWords = (l) => l.paragraphs.reduce((count, p) => count + p.text.trim().split(/\s+/).filter(Boolean).length, 0);
+const gradeLabel = (l) =>
+  l.gradeCluster
+    ? `Grades ${l.gradeCluster.replace("-", "–")}`
+    : `Grades ${l.localGradeBand || "3–5"} local · WIDA cluster unspecified`;
+const passageWords = (l) =>
+  l.paragraphs.reduce(
+    (count, p) => count + p.text.trim().split(/\s+/).filter(Boolean).length,
+    0,
+  );
+const lengthLabelOf = (words) =>
+  words >= 350
+    ? "Sustained read"
+    : words >= 180
+      ? "Extended practice"
+      : "Short practice";
+const clusterParam = () =>
+  new URLSearchParams(location.search).get("cluster") || "6-8";
+const CLUSTERS = ["1", "2-3", "4-5", "6-8", "9-12"];
+const clusterOptions = (selected) =>
+  CLUSTERS.map(
+    (g) =>
+      `<option value="${g}" ${g === selected ? "selected" : ""}>Grades ${g.replace("-", "–")}</option>`,
+  ).join("");
+const MARKS = [
+  "Main idea",
+  "Important detail",
+  "Evidence",
+  "Vocabulary",
+  "Inference",
+  "Question",
+];
+const LINE_SPACINGS = [
+  ["1.5", "Compact"],
+  ["1.75", "Comfortable"],
+  ["2", "Open"],
+];
+const SPEECH_RATES = [
+  ["0.8", "Slow"],
+  ["0.95", "Natural"],
+  ["1.1", "Faster"],
+];
+
 const ORGANIZERS = [
   {id:"main-details",title:"Main Idea · Supporting Details",fields:[["mainIdea","Main idea"],["detail1","Important detail 1"],["detail2","Important detail 2"],["paragraphRef","Paragraph evidence"]]},
   {id:"sequence",title:"Sequence · Timeline",fields:[["sequenceStart","First event or step"],["sequenceNext","Next event or step"],["sequenceThen","Then"],["sequenceEnd","Final event or result"]]},
@@ -33,13 +81,427 @@ const ORGANIZERS = [
   {id:"evidence-table",title:"Evidence Collection",fields:[["evidenceQuestion","Question to investigate"],["evidenceOne","Evidence detail 1"],["evidenceTwo","Evidence detail 2"],["evidenceReasoning","What do the details support?"]]},
   {id:"vocabulary-map",title:"Vocabulary Concept Map",fields:[["conceptWord","Focus word"],["conceptMeaning","Meaning in this text"],["conceptFeatures","Examples or features"],["conceptConnections","Related words, roots, or concepts"],["conceptUse","Use it in a new sentence"]]},
 ];
-const renderOrganizers = (lessonId, progress) => `<details class="rr-organizers"><summary>Graphic organizers · ${ORGANIZERS.length} editable tools</summary><p>Write, revise, and save an organizer. Responses stay in this browser.</p>${ORGANIZERS.map(o=>`<details class="rr-organizer"><summary>${esc(o.title)}</summary><div class="rr-organizer-grid">${o.fields.map(([key,label])=>`<label>${esc(label)}<textarea data-rr-organizer="${esc(key)}" data-rr-lesson="${esc(lessonId)}" rows="2">${esc(progress.organizer?.[key]||"")}</textarea></label>`).join("")}</div></details>`).join("")}<button type="button" data-rr-print>Print lesson and organizers</button></details>`;
+;
+const renderOrganizers = (lessonId, progress) =>
+  `<details class="rr-organizers"><summary>${ic("list")} Graphic organizers · ${ORGANIZERS.length} editable tools</summary><p>Write, revise, and save an organizer. Responses stay in this browser.</p>${ORGANIZERS.map(
+    (o) =>
+      `<details class="rr-organizer"><summary>${esc(o.title)}</summary><div class="rr-organizer-grid">${o.fields
+        .map(
+          ([key, label]) =>
+            `<label>${esc(label)}<textarea data-rr-organizer="${esc(key)}" data-rr-lesson="${esc(lessonId)}" rows="2">${esc(progress.organizer?.[key] || "")}</textarea></label>`,
+        )
+        .join("")}</div></details>`,
+  ).join(
+    "",
+  )}<button type="button" class="btn small" data-rr-print>${ic("print")} Print lesson and organizers</button></details>`;
+
+/** Page header shared by the shelf's sub-pages. */
+const pageHeader = (eyebrow, title, intro, extra = "") =>
+  `<header class="rr-title"><p class="rr-eyebrow">${esc(eyebrow)}</p><h1>${esc(title)}</h1>${intro}${extra}</header>`;
+const backLink = (to, label) =>
+  `<a class="rr-link rr-return" href="${to}">${ic("arrow-left")} ${label}</a>`;
+
+// ── shelf ───────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 function lessonCard(l, state) {
   const p = state.lessons[stateKey(l)] || {};
   const words = passageWords(l);
-  const lengthLabel = words >= 350 ? "Sustained read" : words >= 180 ? "Extended practice" : "Short practice";
-  return `<article class="rr-book"><div class="rr-book-mark" aria-hidden="true"><span>${esc(l.subject)}</span></div><div class="rr-book-copy"><p class="rr-eyebrow">${esc(gradeLabel(l))} · ${esc(l.genre)} · ${l.minutes} min · ${lengthLabel} · ${words} words</p><h2><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></h2><p>${esc(l.summary)}</p><p class="rr-meta">${esc(l.keyUse)} · ${esc(l.languageFunction)}</p><p class="rr-review-status">Editorial review pending</p><a class="rr-link" href="${lessonUrl(l.id)}">${p.completed ? "Read again" : p.started ? "Continue reading" : "Open lesson"}<span aria-hidden="true"> →</span></a></div></article>`;
+  const action = p.completed
+    ? "Read again"
+    : p.started
+      ? "Continue reading"
+      : "Open lesson";
+  return `<article class="rr-book"><div class="rr-book-mark" aria-hidden="true">${ic("reading")}<span>${esc(l.subject)}</span></div><div class="rr-book-copy"><p class="rr-eyebrow">${esc(gradeLabel(l))} · ${esc(l.genre)} · ${l.minutes} min · ${lengthLabelOf(words)} · ${words} words</p><h2><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></h2><p class="rr-summary">${esc(l.summary)}</p><p class="rr-meta">${esc(l.keyUse)} · ${esc(l.languageFunction)}</p><p class="rr-review-status">Editorial review pending</p><a class="rr-link" href="${lessonUrl(l.id)}">${action}<span aria-hidden="true"> →</span></a></div></article>`;
+}
+
+function filterLessons(lessons, state) {
+  return lessons.filter((l) => {
+    const words = passageWords(l);
+    const inGrade =
+      !grade ||
+      (grade === "3-5-local"
+        ? !l.gradeCluster && l.localGradeBand === "3-5"
+        : l.gradeCluster === grade);
+    const inLength =
+      !lengthFilter ||
+      (lengthFilter === "short"
+        ? words < 180
+        : lengthFilter === "extended"
+          ? words >= 180 && words < 350
+          : words >= 350);
+    const hay =
+      `${l.title} ${l.summary} ${l.genre} ${l.subject} ${l.topics.join(" ")} ${l.languageFunction}`.toLowerCase();
+    return (
+      inGrade &&
+      (!genreFilter || l.genre === genreFilter) &&
+      inLength &&
+      (!onlyBookmarks || state.bookmarks.includes(l.id)) &&
+      (!query || hay.includes(query.toLowerCase()))
+    );
+  });
+}
+
+function shelfHTML(ctx, lessons, state) {
+  const filtered = filterLessons(lessons, state);
+  const last = lessons.find((l) => l.id === state.lastRead);
+  const recentRows = state.recent
+    .map((rid) => lessons.find((l) => l.id === rid))
+    .filter(Boolean)
+    .slice(0, 5);
+  const genres = [...new Set(lessons.map((l) => l.genre))].sort();
+  const lastProgress = last ? state.lessons[stateKey(last)] || {} : {};
+  return `<section class="rr-shell d-reading"><header class="rr-hero"><div><p class="rr-eyebrow">${ic("reading")} ACCESS Practice Lab · Reading</p><h1>Reading Room</h1><p class="rr-lead">Read closely, collect evidence, and build the language to explain what a text means.</p><div class="rr-chips"><span>Original classroom practice</span><span>Saved on this device</span><span>WIDA-informed instruction · not an official assessment</span><span>Editorial review pending · teacher preview</span></div></div><div class="rr-hero-art" aria-hidden="true"><img src="${ART}/domain-reading.svg" alt="" width="480" height="360"></div></header>
+    ${last ? `<section class="rr-continue"><span class="rr-continue-icon" aria-hidden="true">${ic("bookmark")}</span><div><p class="rr-eyebrow">Pick up where you left off</p><h2>${esc(last.title)}</h2><p>${lastProgress.phase ? "Your lesson progress is saved on this device." : "Your reading place is ready."}</p></div><a class="btn btn-primary btn-domain" href="${lessonUrl(last.id)}">Continue reading</a></section>` : ""}
+    ${recentRows.length ? `<section class="rr-recent"><h2>Recently read</h2><ul>${recentRows.map((l) => `<li><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></li>`).join("")}</ul></section>` : ""}
+    <section class="rr-library" aria-labelledby="rr-library-title"><div class="rr-library-head"><div><p class="rr-eyebrow">The reading shelf</p><h2 id="rr-library-title">Choose a text</h2></div></div>
+      <div class="rr-filters"><label class="rr-search">Search texts <input data-rr-search type="search" value="${esc(query)}" placeholder="Topic, skill, or title"></label><label class="rr-filter">Genre<select data-rr-genre><option value="">All genres</option>${genres.map((g) => `<option value="${esc(g)}" ${genreFilter === g ? "selected" : ""}>${esc(g)}</option>`).join("")}</select></label><label class="rr-filter">Grade cluster<select data-rr-grade><option value="">All clusters</option>${clusterOptions(grade)}<option value="3-5-local" ${grade === "3-5-local" ? "selected" : ""}>Grades 3–5 local · WIDA cluster unspecified</option></select></label><label class="rr-filter">Reading length<select data-rr-length><option value="">Any length</option><option value="short" ${lengthFilter === "short" ? "selected" : ""}>Short practice · under 180 words</option><option value="extended" ${lengthFilter === "extended" ? "selected" : ""}>Extended practice · 180–349 words</option><option value="sustained" ${lengthFilter === "sustained" ? "selected" : ""}>Sustained reads · 350+ words</option></select></label></div>
+      <div class="rr-count-row"><p class="rr-count" aria-live="polite">${filtered.length} of ${lessons.length} authored reading lessons</p><button type="button" class="rr-reset" data-rr-bookmark-filter aria-pressed="${onlyBookmarks}">${ic("bookmark")} ${onlyBookmarks ? "Showing bookmarks" : "Show bookmarks only"}</button></div>
+      <div class="rr-books">${filtered.length ? filtered.map((l) => lessonCard(l, state)).join("") : `<div class="rr-empty"><img src="${ART}/empty.svg" alt="" width="240" height="180"><h3>No texts match yet</h3><p>Try another topic, grade cluster, or reading length.</p></div>`}</div></section>
+    <section class="rr-legacy"><div><p class="rr-eyebrow">More short practice</p><h2>Existing Reading activities</h2><p>Open the established ACCESS Lab Reading activities. These short practices are separate from the authored multi-part lessons above.</p></div><a class="btn" href="${BASE}/Reading?grades=${esc(ctx.band)}">Browse Reading practice ${ic("arrow-right")}</a></section>
+    <section class="rr-tools"><div><h2>Your reading tools</h2><p>Bookmarks, annotations, preferences, and lesson progress stay in this browser. They are not synced across devices.</p><ul class="rr-tool-links"><li><a href="${BASE}/vocabulary?grades=${esc(ctx.band)}">${ic("words")} Open Word Builder</a></li><li><a href="${BASE}/reading-room/words">${ic("bookmark")} Open Reading Word Notebook (${state.words.length})</a></li><li><a href="${BASE}/reading-room/family">${ic("families")} Family reading at home</a></li><li><a href="${BASE}/reading-room/teacher">${ic("teacher")} Local teacher progress view</a></li><li><a href="${BASE}/reading-room/pathways">${ic("road")} Workshop pathways</a></li></ul></div><div class="rr-tools-reset"><button type="button" class="rr-reset" data-rr-action="clear">Clear local Reading Room data</button>${notice ? `<p role="status">${esc(notice)}</p>` : ""}</div></section></section>`;
+}
+
+// ── sub-pages ───────────────────────────────────────────────────────────────────────────────────────────────────────
+
+const shell = (inner) =>
+  `<section class="rr-shell d-reading">${inner}</section>`;
+
+function familyHTML(lessons) {
+  return shell(
+    `${pageHeader("Read together · optional · no account", "Family Reading", `<p>Choose a short text and spend about 10–15 minutes reading, looking at the details, and talking together. English fluency is not required for a useful conversation.</p><p lang="es">Elijan un texto breve y lean durante unos 10–15 minutos. Pueden conversar en cualquier idioma; no es necesario hablar inglés con fluidez.</p>`)}<div class="rr-books">${lessons.map((l) => `<article class="rr-book"><div class="rr-book-copy"><p class="rr-eyebrow">${esc(gradeLabel(l))} · ${l.minutes} min</p><h2><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></h2><p>${esc(l.familySupport.directions.en)}</p><p lang="es">${esc(l.familySupport.directions.es)}</p><p><b>Try asking:</b> ${esc(l.familySupport.questions[0])}</p></div></article>`).join("")}</div>${backLink(`${BASE}/reading-room`, "Return to the Reading Room")}`,
+  );
+}
+
+function wordsHTML(state) {
+  const body = state.words.length
+    ? `<div class="rr-books">${state.words.map((w, i) => `<article class="rr-book"><div class="rr-book-copy"><p class="rr-eyebrow">${esc(w.lessonId || "Reading")}</p><h2>${esc(w.term)}</h2><p>${esc(w.definition)}</p><p><b>Example:</b> ${esc(w.example)}</p><button type="button" class="rr-reset" data-rr-remove-word="${i}">Remove word</button></div></article>`).join("")}</div>`
+    : `<div class="rr-empty"><img src="${ART}/empty.svg" alt="" width="240" height="180"><h2>No words saved yet</h2><p>Open a lesson and choose “Save to Word Notebook” on a vocabulary card.</p></div>`;
+  return shell(
+    `${pageHeader("Your saved academic words · this device", "Reading Word Notebook", "<p>Review each word in its reading context. Saved words stay in this browser.</p>")}${body}${backLink(`${BASE}/reading-room`, "Return to the Reading Room")}`,
+  );
+}
+
+function pathwaysHTML(lessons) {
+  const cluster = clusterParam();
+  const picks = lessons.filter((l) => l.gradeCluster === cluster).slice(0, 4);
+  const feature = picks[0] || lessons[0];
+  const card = (eyebrow, title, body, link) =>
+    `<article class="rr-book"><div class="rr-book-copy"><p class="rr-eyebrow">${eyebrow}</p><h2>${title}</h2><p>${body}</p>${link}</div></article>`;
+  const go = (to, label) => `<a class="rr-link" href="${to}">${label} →</a>`;
+  return shell(
+    `${pageHeader("Teacher and student pathways · no account required", "Choose a way to read", "<p>Use one lesson for a gradual-release sequence, a whole-class read, independent practice, a focused small group, or a conference. Work and notes stay in this browser.</p>", `<label class="rr-filter rr-inline-filter">Grade cluster <select data-rr-workshop-cluster>${clusterOptions(cluster)}</select></label>`)}<div class="rr-books">${[
+      card(
+        "Model and practice",
+        "Learn, practice, then try independently",
+        "Start with the explicit reading move, use guided prompts, and fade supports before a fresh task.",
+        go(`${lessonUrl(feature.id)}?mode=learn`, "Open a modeled lesson"),
+      ),
+      card(
+        "Read together",
+        "Chunked whole-class reading",
+        "Project the passage, pause at section questions, discuss evidence, and use teacher prompts.",
+        go(
+          `${lessonUrl(feature.id)}?mode=together`,
+          "Open a read-together lesson",
+        ),
+      ),
+      card(
+        "Independent reading",
+        "Practice without hints",
+        "Students choose a text, annotate, read, and check their own responses without revealing teacher models.",
+        go(
+          `${lessonUrl(feature.id)}?mode=independent`,
+          "Open an independent lesson",
+        ),
+      ),
+      card(
+        "Small group",
+        "Plan from checked evidence",
+        "Use observed errors to select a strategy, model it, and assign a fresh independent check.",
+        go(`${BASE}/reading-room/teacher`, "Review local skill evidence"),
+      ),
+      card(
+        "Reading conference",
+        "Capture a brief observation and next step",
+        "Keep observation notes on this device, tied to a lesson and instructional follow-up.",
+        go(`${BASE}/reading-room/conference`, "Open a conference note"),
+      ),
+      card(
+        "Weekly workshop",
+        "Plan five connected days",
+        "Build a week around actual Reading Room texts and their objectives.",
+        go(
+          `${BASE}/reading-room/workshop?cluster=${encodeURIComponent(cluster)}`,
+          "Open the weekly plan",
+        ),
+      ),
+    ].join(
+      "",
+    )}</div><section class="rr-pathway-texts"><h2>Texts for this pathway</h2><div class="rr-books">${picks.map((l) => `<article class="rr-book"><div class="rr-book-copy"><h3><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></h3><p>${esc(l.objectives.content)} · ${esc(l.objectives.language)}</p></div></article>`).join("")}</div></section>${backLink(`${BASE}/reading-room`, "Return to the Reading Room")}`,
+  );
+}
+
+const WORKSHOP_STAGES = [
+  [
+    "Day 1 · Prepare",
+    "Connect background knowledge, introduce the essential question, and preview three useful words.",
+  ],
+  [
+    "Day 2 · First reading",
+    "Read for topic, people or concepts, sequence, and the central idea.",
+  ],
+  [
+    "Day 3 · Investigate",
+    "Reread key paragraphs, select evidence, and address a likely misconception.",
+  ],
+  [
+    "Day 4 · Organize and discuss",
+    "Complete a lesson-linked organizer and explain how evidence supports an idea.",
+  ],
+  [
+    "Day 5 · Transfer",
+    "Complete an independent challenge and apply the same language function in a new context.",
+  ],
+];
+
+function workshopHTML(lessons) {
+  const cluster = clusterParam();
+  const selected = lessons
+    .filter((l) => l.gradeCluster === cluster)
+    .slice(0, 2);
+  const move = (i) =>
+    esc(
+      i === 0
+        ? selected[0].teacherGuide.miniLesson
+        : i === 2
+          ? selected[0].teacherGuide.misconception
+          : selected[Math.min(i - 1, selected.length - 1)].teacherGuide
+              .languageObjective,
+    );
+  const plan = selected.length
+    ? `<section class="rr-continue rr-week"><div><p class="rr-eyebrow">Week texts</p>${selected.map((l) => `<h2><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></h2><p>${esc(l.objectives.content)} · ${esc(l.objectives.language)}</p>`).join("")}</div></section><ol class="rr-workshop-days">${WORKSHOP_STAGES.map(([day, desc], i) => `<li><h2>${day}</h2><p>${desc}</p><p><b>Teacher move:</b> ${move(i)}</p><a class="rr-link" href="${lessonUrl(selected[Math.min(i < 3 ? 0 : 1, selected.length - 1)].id)}">Open the lesson for this step →</a></li>`).join("")}</ol><button type="button" class="rr-reset" data-rr-print>${ic("print")} Print this workshop plan</button>`
+    : "<p>No authored lesson is available for that cluster yet.</p>";
+  return shell(
+    `${pageHeader("Teacher planning · local content", "Weekly Reading Workshop", "<p>A flexible five-day sequence built from the Reading Room’s actual lessons. Assign the full sequence or select individual days; students can still browse without signing in.</p>", `<label class="rr-filter rr-inline-filter">Grade cluster <select data-rr-workshop-cluster>${clusterOptions(cluster)}</select></label>`)}${plan}${backLink(`${BASE}/reading-room/teacher`, "Return to teacher evidence")}`,
+  );
+}
+
+function teacherHTML(lessons, state) {
+  const rows = lessons.map((l) => {
+    const p = state.lessons[stateKey(l)] || {};
+    const checked = Object.values(p.answers || {}).filter((a) => a.checked);
+    return {
+      l,
+      p,
+      checked,
+      misses: checked.filter((a) => a.correct === false).length,
+      independent: checked.filter((a) => a.mode === "independent").length,
+    };
+  });
+  const groupNeeds = new Map();
+  for (const { l, checked } of rows)
+    for (const a of checked)
+      if (a.correct === false) {
+        const skill = a.skill || "Revisit a checked response";
+        const old = groupNeeds.get(skill) || { count: 0, lesson: l };
+        old.count++;
+        groupNeeds.set(skill, old);
+      }
+  const needs = groupNeeds.size
+    ? [...groupNeeds]
+        .map(
+          ([skill, v]) =>
+            `<article><h3>${esc(skill)}</h3><p>Evidence: ${v.count} checked miss(es) saved in <a href="${lessonUrl(v.lesson.id)}">${esc(v.lesson.title)}</a>. Revisit the linked paragraph, model the strategy, then offer a fresh independent check.</p></article>`,
+        )
+        .join("")
+    : "<p>No checked misses are saved yet, so this local view has no evidence-based small-group suggestion.</p>";
+  const next = ({ misses, checked }, found) =>
+    misses
+      ? `Revisit: ${esc(found)}.`
+      : checked.length
+        ? "Continue to a new reading."
+        : "No checked evidence saved.";
+  return shell(
+    `${pageHeader("Teacher view · this device only", "Reading evidence", "<p>These counts come only from the reading data saved in this browser. They do not sync across devices and are not WIDA scores or proficiency estimates.</p>")}<p class="rr-count">${rows.filter((x) => x.p.completed).length} of ${lessons.length} authored lessons marked complete on this device.</p><p><a class="rr-link" href="${BASE}/reading-room/workshop?cluster=6-8">Open Weekly Reading Workshop →</a></p><section class="rr-group-needs"><h2>Small-group next steps</h2>${needs}</section><div class="rr-teacher-table"><table><caption>Saved reading evidence by lesson</caption><thead><tr><th scope="col">Lesson</th><th scope="col">Checked items</th><th scope="col">Independent checks</th><th scope="col">Items to revisit</th><th scope="col">Next step</th></tr></thead><tbody>${rows.map((r) => `<tr><th scope="row"><a href="${lessonUrl(r.l.id)}">${esc(r.l.title)}</a></th><td>${r.checked.length}</td><td>${r.independent}</td><td>${r.misses}</td><td>${next(r, r.checked.find((x) => x.correct === false)?.skill || "the checked skill")}</td></tr>`).join("")}</tbody></table></div><div class="rr-actions-row"><button type="button" class="rr-reset" data-rr-print>${ic("print")} Print this report</button><button type="button" class="rr-reset" data-rr-export>${ic("download")} Download report CSV</button></div><p class="rr-fine">Interpretation rule: a correct supported response is not counted as an independent check. Counts are local descriptive evidence only; they do not establish mastery.</p>${backLink(`${BASE}/reading-room`, "Return to the Reading Room")}`,
+  );
+}
+
+function conferenceHTML(lessons, state) {
+  const selectedId =
+    new URLSearchParams(location.search).get("lesson") ||
+    state.lastRead ||
+    lessons[0]?.id;
+  const selected = lessons.find((l) => l.id === selectedId) || lessons[0];
+  const notes = state.conferences[selected?.id] || {};
+  const fields = [
+    ["strength", "Observed strength"],
+    ["evidence", "Evidence observed in the reading or response"],
+    ["support", "Scaffold or prompt used"],
+    ["nextStep", "Instructional next step"],
+    ["followUp", "Fresh independent follow-up task"],
+  ];
+  const form = selected
+    ? `<p class="rr-goals"><b>Reading goal:</b> ${esc(selected.objectives.content)} <b>Language goal:</b> ${esc(selected.objectives.language)}</p><div class="rr-organizer-grid">${fields.map(([key, label]) => `<label>${label}<textarea data-rr-conference="${key}" data-lesson="${esc(selected.id)}" rows="3">${esc(notes[key] || "")}</textarea></label>`).join("")}</div><p role="status" data-rr-conference-status>Notes save in this browser as you type.</p><button type="button" class="btn small" data-rr-print>${ic("print")} Print conference note</button>`
+    : "<p>No reading lessons are available.</p>";
+  return shell(
+    `${pageHeader("Teacher conference · stored on this device", "Reading Conference Notes", "<p>Capture instructional observations without adding student names or identifiers. These notes are local to this browser and are not shared or synced.</p>", `<label class="rr-filter rr-inline-filter">Lesson<select data-rr-conference-lesson>${lessons.map((l) => `<option value="${esc(l.id)}" ${l.id === selected?.id ? "selected" : ""}>${esc(l.title)}</option>`).join("")}</select></label>`)}${form}${backLink(`${BASE}/reading-room/pathways`, "Return to workshop pathways")}`,
+  );
+}
+
+// ── a lesson ────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+const feedbackBox = (answer, okText, tryText, rationale) =>
+  answer?.checked
+    ? `<div role="status" class="feedback ${answer.correct ? "is-right" : "is-hint"}"><p class="fb-title">${ic(answer.correct ? "check" : "bulb")} ${esc(answer.correct ? okText : tryText)}</p><p>${esc(rationale)}</p></div>`
+    : "";
+const checkButton = (id, label) =>
+  `<button type="button" class="btn btn-primary btn-domain small" data-rr-check="${esc(id)}">${label}</button>`;
+const optionLabel = (input, text) =>
+  `<label class="rr-option">${input}<span class="rr-option-text">${text}</span></label>`;
+
+function activityHTML(a, progress) {
+  const ans = progress.answers?.[a.id];
+  if (a.type === "choice" || a.type === "connector")
+    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.sentence ? `<p class="rr-sentence">${esc(a.sentence.replace("___", "_____"))}</p>` : ""}${a.choices.map((c) => optionLabel(`<input type="radio" name="rr-${esc(a.id)}" data-rr-answer="${esc(a.id)}" value="${esc(c.id)}" ${ans?.value === c.id ? "checked" : ""}>`, esc(c.text))).join("")}${checkButton(a.id, "Check answer")}${feedbackBox(ans, "That answer is supported.", "Look again at the text, then revise.", a.rationale)}</fieldset>`;
+  if (a.type === "multi" || a.type === "hotText")
+    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.choices.map((c) => optionLabel(`<input type="checkbox" data-rr-multi="${esc(a.id)}" value="${esc(c.id)}" ${ans?.values?.includes(c.id) ? "checked" : ""}>`, esc(c.text))).join("")}${checkButton(a.id, "Check selection")}${feedbackBox(ans, "Your selection matches the source key.", "Compare the selected text with the task purpose, then revise.", a.rationale)}</fieldset>`;
+  if (a.type === "cloze")
+    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend><p class="rr-cloze">${a.segments.map((seg) => (seg.blank ? `<label class="rr-inline-cloze"><span class="visually-hidden">Choose a word</span><select data-rr-cloze="${esc(a.id)}" data-blank="${esc(seg.blank.id)}" aria-label="Word for blank ${esc(seg.blank.id)}"><option value="">Choose a word</option>${seg.blank.options.map((v) => `<option value="${esc(v)}" ${ans?.values?.[seg.blank.id] === v ? "selected" : ""}>${esc(v)}</option>`).join("")}</select></label>` : esc(seg.text))).join("")}</p>${checkButton(a.id, "Check words")}${feedbackBox(ans, "The words fit the context.", "Reread the full sentence and revise the word choice.", a.rationale)}</fieldset>`;
+  if (a.type === "short")
+    return `<div class="rr-question"><label for="rr-short-${esc(a.id)}">${esc(a.prompt)}</label><textarea id="rr-short-${esc(a.id)}" data-rr-response="${esc(a.id)}" rows="4">${esc(ans?.text || "")}</textarea>${a.model ? `<button type="button" class="btn small" data-rr-model="${esc(a.id)}">Compare with an example</button><p class="rr-model" ${ans?.showModel ? "" : "hidden"}><b>One possible response:</b> ${esc(a.model)}</p>` : `<div class="rr-rubric"><b>Response criteria:</b><ul>${(a.rubric || a.lookFor || []).map((x) => `<li>${esc(x)}</li>`).join("")}</ul><span>Open responses are practice work; automated scoring is not applied.</span></div>`}</div>`;
+  if (a.type === "evidence")
+    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.paragraphIds.map((pid) => optionLabel(`<input type="checkbox" data-rr-evidence="${esc(a.id)}" value="${esc(pid)}" ${ans?.values?.includes(pid) ? "checked" : ""}>`, `Paragraph ${esc(pid.slice(1))}`)).join("")}${checkButton(a.id, "Check evidence")}${ans?.checked ? `<div role="status" class="feedback is-hint"><p class="fb-title">${ic("bulb")} Evidence check</p><p>${esc(a.rationale)}</p></div>` : ""}</fieldset>`;
+  if (a.type === "order")
+    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.items.map((item, i) => `<label class="rr-option rr-position"><span class="rr-option-text">Step ${i + 1}: ${esc(item.text)}</span><select data-rr-structured="${esc(a.id)}" data-index="${i}" aria-label="Position for ${esc(item.text)}"><option value="">Choose position</option>${a.items.map((_, n) => `<option value="${n}" ${ans?.values?.[i] === n ? "selected" : ""}>${n + 1}</option>`).join("")}</select></label>`).join("")}${checkButton(a.id, "Check sequence")}${feedbackBox(ans, "The sequence matches the passage.", "Return to the text and revise the order.", a.rationale)}</fieldset>`;
+  if (a.type === "sort")
+    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.items.map((item, i) => `<label class="rr-option rr-position"><span class="rr-option-text">${esc(item.text)}</span><select data-rr-structured="${esc(a.id)}" data-index="${i}" aria-label="Category for ${esc(item.text)}"><option value="">Choose category</option>${a.categories.map((cat) => `<option value="${esc(cat)}" ${ans?.values?.[i] === cat ? "selected" : ""}>${esc(cat)}</option>`).join("")}</select></label>`).join("")}${checkButton(a.id, "Check categories")}${feedbackBox(ans, "The categories match the passage.", "Compare each choice with the paragraph about that item.", a.rationale)}</fieldset>`;
+  return `<div class="rr-question"><h3>${esc(a.skill)}</h3><p>${esc(a.prompt)}</p><p>${esc(a.rationale)}</p></div>`;
+}
+
+function paragraphHTML(l, p, i, state, progress) {
+  const mark =
+    state.annotations[`${l.id}@${l.revision}:${p.id}`]?.category || "";
+  const isPlace = progress.position === p.id;
+  return `<article class="rr-paragraph ${isPlace ? "is-place" : ""}" id="${esc(p.id)}" ${mark ? `data-mark="${esc(mark)}"` : ""}>
+    <span class="rr-paranum" aria-hidden="true">${i + 1}</span>
+    <div class="rr-para-body">
+      ${mark || isPlace ? `<p class="rr-para-flags">${mark ? `<span class="rr-flag">${ic("pin")} ${esc(mark)}</span>` : ""}${isPlace ? `<span class="rr-flag rr-flag-place">${ic("bookmark")} Saved place</span>` : ""}</p>` : ""}
+      <p class="rr-para-text">${esc(p.text)}</p>
+      ${activeMode === "independent" ? "" : `<p class="rr-guide">${ic("bulb")}<span><b>Pause and notice:</b> ${esc(p.guidingQuestion || "What is important in this section?")}</span></p>`}
+      <div class="rr-margin">
+        <div class="rr-paragraph-tools"><label>Mark this paragraph<select data-rr-mark="${esc(l.id)}" data-rr-revision="${esc(l.revision)}" data-rr-paragraph="${esc(p.id)}"><option value="">Choose a reading mark</option>${MARKS.map((c) => `<option value="${c}" ${mark === c ? "selected" : ""}>${c}</option>`).join("")}</select></label><button type="button" class="btn small" data-rr-position="${esc(p.id)}">${ic("bookmark")} Save reading place</button></div>
+        <label class="rr-annotation">Your note for paragraph ${i + 1}<textarea data-rr-note="${esc(p.id)}" data-rr-lesson="${esc(l.id)}" rows="2">${esc(progress.notes?.[p.id] || "")}</textarea></label>
+      </div>
+    </div></article>`;
+}
+
+function visualBlockHTML(l) {
+  if (l.table)
+    return `<figure class="rr-data-visual"><figcaption>${ic("grid")} ${esc(l.table.caption)}</figcaption><div class="rr-teacher-table"><table><thead><tr>${l.table.headers.map((h) => `<th scope="col">${esc(h)}</th>`).join("")}</tr></thead><tbody>${l.table.rows.map((row) => `<tr>${row.map((v) => `<td>${esc(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div><p class="rr-figure-note">${esc(l.table.description)}</p></figure>`;
+  if (l.map)
+    return `<figure class="rr-data-visual"><figcaption>${ic("pin")} ${esc(l.map.caption)}</figcaption><ol class="rr-map-key">${l.map.items.map((x) => `<li><b>${esc(x.label)}</b> — ${esc(x.symbol)}</li>`).join("")}</ol><p class="rr-figure-note">${esc(l.map.description)}</p></figure>`;
+  return "";
+}
+
+function displayControls(state) {
+  const spacing = Number(state.settings.lineSpacing) || 1.75;
+  const rate = String(Number(state.settings.speechRate) || 0.95);
+  const tts = canSpeak()
+    ? `<div class="rr-audio-controls"><span>Optional device voice; the passage text remains the transcript.</span><button type="button" class="btn small" data-rr-listen="play">${ic("play")} Read passage aloud</button><button type="button" class="btn small" data-rr-listen="stop">${ic("stop")} Stop audio</button><label>Speech pace<select data-rr-setting="speechRate">${SPEECH_RATES.map(([v, label]) => `<option value="${v}" ${Number(v) === Number(rate) ? "selected" : ""}>${label}</option>`).join("")}</select></label></div>`
+    : `<p class="rr-audio-note">Read-aloud is not available in this browser. The full passage is displayed as text.</p>`;
+  return `<div class="rr-display"><label>${ic("text-size")} Text size <input type="range" min="0.9" max="1.3" step="0.1" value="${state.settings.fontScale}" data-rr-setting="fontScale"></label><label>Line spacing <select data-rr-setting="lineSpacing">${LINE_SPACINGS.map(([v, label]) => `<option value="${v}" ${Number(v) === spacing ? "selected" : ""}>${label}</option>`).join("")}</select></label></div>${tts}`;
+}
+
+const MODE_NAMES = {
+  learn: "Learn",
+  practice: "Practice",
+  independent: "Independent challenge",
+  together: "Read together",
+};
+
+function modeNoteHTML(l) {
+  if (activeMode === "learn")
+    return `<section class="rr-mode-note"><h2>Model the reading move</h2><p>${esc(l.teacherGuide.miniLesson)}</p><p><b>One possible response:</b> ${esc(l.teacherGuide.modelResponse)}</p></section>`;
+  if (activeMode === "independent")
+    return `<section class="rr-mode-note"><h2>Independent challenge</h2><p>Use the passage and your own notes. Vocabulary previews, paragraph questions, and models are hidden. This records local practice evidence, not a proficiency score.</p></section>`;
+  return `<section class="rr-mode-note"><h2>Practice with support</h2><p>Use the vocabulary, paragraph questions, and notes as you reread. Revise after feedback.</p></section>`;
+}
+
+function vocabularyHTML(l) {
+  return `<section class="rr-vocabulary"><h2>${ic("language")} Words to notice</h2><p class="rr-fine">Optional support. Open a word for its meaning in this text.</p><div class="rr-vocab-list">${l.vocabulary.map((v) => `<details class="rr-vocab"><summary><strong>${esc(v.term)}</strong><span>${esc(v.definition)}</span></summary><p><b>In this text:</b> ${esc(v.example)}${v.spanish ? ` <span lang="es">· ${esc(v.spanish)}</span>` : ""}</p><button type="button" class="btn small" data-rr-word="${esc(v.term)}" data-rr-lesson="${esc(l.id)}">Save to Word Notebook</button></details>`).join("")}</div></section>`;
+}
+
+function workspaceHTML(l, progress) {
+  const phases = [
+    { id: "first", label: "1 · Understand" },
+    { id: "second", label: "2 · Investigate" },
+    { id: "third", label: "3 · Apply" },
+  ];
+  const items = l.activities.filter((a) => a.phase === activePhase);
+  const activities = items.map((a) => activityHTML(a, progress)).join("");
+  const phaseNote =
+    activePhase === "first"
+      ? "Build a first understanding"
+      : activePhase === "second"
+        ? "Return for evidence"
+        : "Apply the thinking";
+  return `<aside class="rr-workspace" aria-label="Your response"><p class="rr-workspace-label">${ic("writing")} Your response</p><div class="rr-phase" role="tablist" aria-label="Reading sequence">${phases.map((p) => `<button type="button" role="tab" aria-selected="${activePhase === p.id}" data-rr-phase="${p.id}">${p.label}</button>`).join("")}</div><p class="rr-eyebrow">${phaseNote}</p><h2>${esc(l.objectives.language)}</h2>${activities || "<p>This section is a rereading and reflection pause. Use your notes to explain what changed in your understanding.</p>"}${
+    activeMode !== "independent"
+      ? `<div class="rr-teacher"><details><summary>Teacher guide</summary><p><b>Mini-lesson:</b> ${esc(l.teacherGuide.miniLesson)}</p><p><b>Misconception to watch:</b> ${esc(l.teacherGuide.misconception)}</p><ul>${l.teacherGuide.discussion.map((x) => `<li>${esc(x)}</li>`).join("")}</ul><p><b>Model response:</b> ${esc(l.teacherGuide.modelResponse)}</p></details><details><summary>Family reading · 10–15 minutes</summary><p>${esc(l.familySupport.directions.en)}</p><p lang="es">${esc(l.familySupport.directions.es)}</p><p>${esc(l.familySupport.noEnglishRequired)}</p></details></div>${renderOrganizers(l.id, progress)}`
+      : ""
+  }<label class="rr-reflection">My reflection<textarea data-rr-reflection="${esc(l.id)}" rows="3">${esc(progress.reflection || "")}</textarea></label><button type="button" class="btn btn-primary btn-domain rr-button" data-rr-complete="${esc(l.id)}">Save lesson progress</button><p role="status" class="rr-status">${progress.completed ? "Progress saved on this device." : "Your notes and answers save in this browser."}</p></aside>`;
+}
+
+async function lessonHTML(ctx, l, state) {
+  const linkedActivity = l.connections?.relatedActivity
+    ? await findActivity(l.connections.relatedActivity).catch(() => null)
+    : null;
+  const relatedHref = linkedActivity
+    ? `${BASE}/${encodeURIComponent(linkedActivity.domain)}/${encodeURIComponent(linkedActivity.level)}/${encodeURIComponent(linkedActivity.activity.id)}?grades=${encodeURIComponent(linkedActivity.band)}`
+    : "";
+  const key = stateKey(l);
+  const progress = state.lessons[key] || {
+    started: true,
+    answers: {},
+    notes: {},
+    phase: "first",
+    assisted: false,
+  };
+  const requestedMode = new URLSearchParams(location.search).get("mode");
+  if (["learn", "practice", "independent", "together"].includes(requestedMode))
+    activeMode = requestedMode;
+  progress.started = true;
+  progress.lastOpened = new Date().toISOString();
+  progress.phase ||= "first";
+  state.lastRead = l.id;
+  state.recent = [l.id, ...state.recent.filter((x) => x !== l.id)].slice(0, 30);
+  state.lessons[key] = progress;
+  saveReadingState(state);
+  if (openedLessonId !== l.id) {
+    openedLessonId = l.id;
+    if (progress.position)
+      requestAnimationFrame(() =>
+        document
+          .getElementById(progress.position)
+          ?.scrollIntoView({ block: "start" }),
+      );
+  }
+  const modeControls = `<div class="rr-mode-controls" role="group" aria-label="Reading mode">${Object.entries(
+    MODE_NAMES,
+  )
+    .map(
+      ([value, label]) =>
+        `<button type="button" data-rr-mode="${value}" aria-pressed="${activeMode === value}">${label}</button>`,
+    )
+    .join("")}</div>`;
+  const paragraphs = l.paragraphs
+    .map((p, i) => paragraphHTML(l, p, i, state, progress))
+    .join("");
+  const links = `<div class="rr-actions">${relatedHref ? `<a href="${relatedHref}">Related Reading practice →</a>` : ""}<a href="${BASE}/write?grades=${esc(ctx.band)}">Write about a text →</a><a href="${BASE}/speak?grades=${esc(ctx.band)}">Speak about a text →</a><a href="${BASE}/vocabulary?grades=${esc(ctx.band)}">Practice academic words →</a></div>`;
+  return `<section class="rr-shell rr-reader d-reading"><nav class="rr-back"><a href="${BASE}/reading-room">${ic("arrow-left")} Reading shelf</a><span>${esc(gradeLabel(l))} · ${esc(l.subject)} · ${l.minutes} min</span><button type="button" class="btn small" data-rr-bookmark="${esc(l.id)}">${ic("bookmark")} ${state.bookmarks.includes(l.id) ? "Bookmarked" : "Bookmark"}</button></nav>
+    <header class="rr-title"><p class="rr-eyebrow">${esc(l.genre)} · ${esc(l.keyUse)} · ${esc(l.eldStandard)}</p><h1>${esc(l.title)}</h1><p class="rr-lead">${esc(l.summary)}</p><div class="rr-objectives"><div><b>Content goal</b><span>${esc(l.objectives.content)}</span></div><div><b>Language goal</b><span>${esc(l.objectives.language)}</span></div></div><p class="rr-alignment">${ic("info")} <span>${esc(l.alignmentStatus)} Independent editorial review is pending for this lesson package. This is original instructional practice, not an official WIDA assessment or score prediction. <a href="https://wida.wisc.edu/assess/access/preparing-students" target="_blank" rel="noreferrer">Official WIDA test familiarization resources</a></span></p></header>
+    ${modeControls}${modeNoteHTML(l)}
+    <div class="rr-layout"><section class="rr-text" aria-label="Reading passage">${displayControls(state)}<section class="rr-before"><h2>Before you read</h2><p><b>Essential question:</b> ${esc(l.beforeReading.essentialQuestion)}</p><p>${esc(l.beforeReading.background)} ${esc(l.beforeReading.hook)}</p><p><b>Read to find out:</b> ${esc(l.beforeReading.purpose)}</p></section>${visualBlockHTML(l)}${activeMode === "independent" ? "" : vocabularyHTML(l)}<div class="rr-passage" style="--rr-font:${Number(state.settings.fontScale) || 1};--rr-leading:${Number(state.settings.lineSpacing) || 1.75}">${paragraphs}</div>${links}</section>${workspaceHTML(l, progress)}</div></section>`;
 }
 
 export async function render(ctx) {
@@ -47,87 +509,42 @@ export async function render(ctx) {
   const lessons = data.lessons || [];
   const state = loadReadingState();
   const id = ctx.route.id;
-  if (!id) {
-    const filtered = lessons.filter((l) => { const words = passageWords(l); return (!grade || (grade==="3-5-local" ? !l.gradeCluster && l.localGradeBand==="3-5" : l.gradeCluster === grade)) && (!genreFilter || l.genre === genreFilter) && (!lengthFilter || (lengthFilter === "short" ? words < 180 : lengthFilter === "extended" ? words >= 180 && words < 350 : words >= 350)) && (!onlyBookmarks || state.bookmarks.includes(l.id)) && (!query || `${l.title} ${l.summary} ${l.genre} ${l.subject} ${l.topics.join(" ")} ${l.languageFunction}`.toLowerCase().includes(query.toLowerCase())); });
-    const last = lessons.find((l) => l.id === state.lastRead);
-    const recentRows = state.recent.map(rid => lessons.find(l => l.id === rid)).filter(Boolean).slice(0,5);
-    const genres = [...new Set(lessons.map(l => l.genre))].sort();
-    return { title: "Reading Room", html: html`<section class="rr-shell"><header class="rr-hero"><div><p class="rr-eyebrow">ACCESS PRACTICE LAB · READING</p><h1>Reading Room</h1><p>Read closely, collect evidence, and build the language to explain what a text means.</p><div class="rr-chips"><span>Original classroom practice</span><span>Saved on this device</span><span>WIDA-informed instruction · not an official assessment</span><span>Editorial review pending · teacher preview</span></div></div><div class="rr-hero-art" aria-hidden="true"><span class="rr-sun"></span><span class="rr-page">READ<br>NOTICE<br>CONNECT</span><span class="rr-leaf"></span></div></header>
-      ${last ? raw(`<section class="rr-continue"><div><p class="rr-eyebrow">PICK UP WHERE YOU LEFT OFF</p><h2>${esc(last.title)}</h2><p>${esc((state.lessons[stateKey(last)] || {}).phase ? "Your lesson progress is saved on this device." : "Your reading place is ready.")}</p></div><a class="rr-button" href="${lessonUrl(last.id)}">Continue reading</a></section>`) : ""}
-      ${recentRows.length ? raw(`<section class="rr-recent"><h2>Recently read</h2><ul>${recentRows.map(l=>`<li><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></li>`).join("")}</ul></section>`) : ""}
-      <section class="rr-library" aria-labelledby="rr-library-title"><div class="rr-library-head"><div><p class="rr-eyebrow">THE READING SHELF</p><h2 id="rr-library-title">Choose a text</h2></div><label class="rr-search">Search texts <input data-rr-search type="search" value="${esc(query)}" placeholder="Topic, skill, or title"></label><label class="rr-filter">Genre<select data-rr-genre><option value="">All genres</option>${raw(genres.map(g=>`<option value="${esc(g)}" ${genreFilter===g?"selected":""}>${esc(g)}</option>`).join(""))}</select></label><label class="rr-filter">Grade cluster<select data-rr-grade><option value="">All clusters</option>${raw(["1","2-3","4-5","6-8","9-12"].map(g => `<option value="${g}" ${grade===g?"selected":""}>Grades ${g.replace("-","–")}</option>`).join("")+`<option value="3-5-local" ${grade==="3-5-local"?"selected":""}>Grades 3–5 local · WIDA cluster unspecified</option>`)}</select></label><label class="rr-filter">Reading length<select data-rr-length><option value="">Any length</option><option value="short" ${lengthFilter==="short"?"selected":""}>Short practice · under 180 words</option><option value="extended" ${lengthFilter==="extended"?"selected":""}>Extended practice · 180–349 words</option><option value="sustained" ${lengthFilter==="sustained"?"selected":""}>Sustained reads · 350+ words</option></select></label></div><p class="rr-count" aria-live="polite">${filtered.length} of ${lessons.length} authored reading lessons</p><button type="button" class="rr-reset" data-rr-bookmark-filter aria-pressed="${onlyBookmarks}">${onlyBookmarks ? "Showing bookmarks" : "Show bookmarks only"}</button><div class="rr-books">${filtered.length ? raw(filtered.map(l => lessonCard(l,state)).join("")) : raw(`<div class="rr-empty"><h3>No texts match yet</h3><p>Try another topic, grade cluster, or reading length.</p></div>`)}</div></section>
-      <section class="rr-legacy"><div><p class="rr-eyebrow">MORE SHORT PRACTICE</p><h2>Existing Reading activities</h2><p>Open the established ACCESS Lab Reading activities. These short practices are separate from the authored multi-part lessons above.</p></div><a class="rr-button rr-button-light" href="${BASE}/Reading?grades=${esc(ctx.band)}">Browse Reading practice</a></section>
-      <section class="rr-tools"><div><h2>Your reading tools</h2><p>Bookmarks, annotations, preferences, and lesson progress stay in this browser. They are not synced across devices.</p><a href="${BASE}/vocabulary?grades=${esc(ctx.band)}">Open Word Builder →</a><p><a href="${BASE}/reading-room/words">Open Reading Word Notebook (${state.words.length})</a></p><p><a href="${BASE}/reading-room/family">Family reading at home</a> · <a href="${BASE}/reading-room/teacher">Local teacher progress view</a> · <a href="${BASE}/reading-room/pathways">Workshop pathways</a></p></div><button type="button" class="rr-reset" data-rr-action="clear">Clear local Reading Room data</button>${notice ? `<p role="status">${esc(notice)}</p>` : ""}</section></section>` };
-  }
-  if (id === "family") return { title:"Family Reading", html:raw(`<section class="rr-shell"><header class="rr-title"><p class="rr-eyebrow">READ TOGETHER · OPTIONAL · NO ACCOUNT</p><h1>Family Reading</h1><p>Choose a short text and spend about 10–15 minutes reading, looking at the details, and talking together. English fluency is not required for a useful conversation.</p><p lang="es">Elijan un texto breve y lean durante unos 10–15 minutos. Pueden conversar en cualquier idioma; no es necesario hablar inglés con fluidez.</p></header><div class="rr-books">${lessons.map(l=>`<article class="rr-book"><div class="rr-book-copy"><p class="rr-eyebrow">${esc(gradeLabel(l))} · ${l.minutes} min</p><h2><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></h2><p>${esc(l.familySupport.directions.en)}</p><p lang="es">${esc(l.familySupport.directions.es)}</p><p><b>Try asking:</b> ${esc(l.familySupport.questions[0])}</p></div></article>`).join("")}</div><a class="rr-link" href="${BASE}/reading-room">Return to the Reading Room</a></section>`) };
-  if (id === "words") return { title:"Reading Word Notebook", html:raw(`<section class="rr-shell"><header class="rr-title"><p class="rr-eyebrow">YOUR SAVED ACADEMIC WORDS · THIS DEVICE</p><h1>Reading Word Notebook</h1><p>Review each word in its reading context. Saved words stay in this browser.</p></header>${state.words.length?`<div class="rr-books">${state.words.map((w,i)=>`<article class="rr-book"><div class="rr-book-copy"><p class="rr-eyebrow">${esc(w.lessonId||"Reading")}</p><h2>${esc(w.term)}</h2><p>${esc(w.definition)}</p><p><b>Example:</b> ${esc(w.example)}</p><button type="button" class="rr-reset" data-rr-remove-word="${i}">Remove word</button></div></article>`).join("")}</div>`:`<div class="rr-empty"><h2>No words saved yet</h2><p>Open a lesson and choose “Save to Word Notebook” on a vocabulary card.</p></div>`}<a href="${BASE}/reading-room">Return to the Reading Room</a></section>`) };
-  if (id === "pathways") {
-    const picks=lessons.filter(l=>l.gradeCluster===(new URLSearchParams(location.search).get("cluster")||"6-8")).slice(0,4);
-    const feature=picks[0]||lessons[0];
-    return {title:"Reading Workshop Pathways",html:raw(`<section class="rr-shell"><header class="rr-title"><p class="rr-eyebrow">TEACHER AND STUDENT PATHWAYS · NO ACCOUNT REQUIRED</p><h1>Choose a way to read</h1><p>Use one lesson for a gradual-release sequence, a whole-class read, independent practice, a focused small group, or a conference. Work and notes stay in this browser.</p><label>Grade cluster <select data-rr-workshop-cluster>${["1","2-3","4-5","6-8","9-12"].map(g=>`<option value="${g}" ${g===(new URLSearchParams(location.search).get("cluster")||"6-8")?"selected":""}>Grades ${g.replace("-","–")}</option>`).join("")}</select></label></header><div class="rr-books"><article class="rr-book"><div class="rr-book-copy"><p class="rr-eyebrow">MODEL AND PRACTICE</p><h2>Learn, practice, then try independently</h2><p>Start with the explicit reading move, use guided prompts, and fade supports before a fresh task.</p><a class="rr-link" href="${lessonUrl(feature.id)}?mode=learn">Open a modeled lesson →</a></div></article><article class="rr-book"><div class="rr-book-copy"><p class="rr-eyebrow">READ TOGETHER</p><h2>Chunked whole-class reading</h2><p>Project the passage, pause at section questions, discuss evidence, and use teacher prompts.</p><a class="rr-link" href="${lessonUrl(feature.id)}?mode=together">Open a read-together lesson →</a></div></article><article class="rr-book"><div class="rr-book-copy"><p class="rr-eyebrow">INDEPENDENT READING</p><h2>Practice without hints</h2><p>Students choose a text, annotate, read, and check their own responses without revealing teacher models.</p><a class="rr-link" href="${lessonUrl(feature.id)}?mode=independent">Open an independent lesson →</a></div></article><article class="rr-book"><div class="rr-book-copy"><p class="rr-eyebrow">SMALL GROUP</p><h2>Plan from checked evidence</h2><p>Use observed errors to select a strategy, model it, and assign a fresh independent check.</p><a class="rr-link" href="${BASE}/reading-room/teacher">Review local skill evidence →</a></div></article><article class="rr-book"><div class="rr-book-copy"><p class="rr-eyebrow">READING CONFERENCE</p><h2>Capture a brief observation and next step</h2><p>Keep observation notes on this device, tied to a lesson and instructional follow-up.</p><a class="rr-link" href="${BASE}/reading-room/conference">Open a conference note →</a></div></article><article class="rr-book"><div class="rr-book-copy"><p class="rr-eyebrow">WEEKLY WORKSHOP</p><h2>Plan five connected days</h2><p>Build a week around actual Reading Room texts and their objectives.</p><a class="rr-link" href="${BASE}/reading-room/workshop?cluster=${encodeURIComponent(new URLSearchParams(location.search).get("cluster")||"6-8")}">Open the weekly plan →</a></div></article></div><section class="rr-books"><h2>Texts for this pathway</h2>${picks.map(l=>`<article class="rr-book"><div class="rr-book-copy"><h3><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></h3><p>${esc(l.objectives.content)} · ${esc(l.objectives.language)}</p></div></article>`).join("")}</section><a href="${BASE}/reading-room">Return to the Reading Room</a></section>`)};
-  }
-  if (id === "workshop") {
-    const cluster = new URLSearchParams(location.search).get("cluster") || "6-8";
-    const selected = lessons.filter(l=>l.gradeCluster===cluster).slice(0,2);
-    const stages = [
-      ["Day 1 · Prepare","Connect background knowledge, introduce the essential question, and preview three useful words."],
-      ["Day 2 · First reading","Read for topic, people or concepts, sequence, and the central idea."],
-      ["Day 3 · Investigate","Reread key paragraphs, select evidence, and address a likely misconception."],
-      ["Day 4 · Organize and discuss","Complete a lesson-linked organizer and explain how evidence supports an idea."],
-      ["Day 5 · Transfer","Complete an independent challenge and apply the same language function in a new context."]
-    ];
-    return { title:"Weekly Reading Workshop", html:raw(`<section class="rr-shell"><header class="rr-title"><p class="rr-eyebrow">TEACHER PLANNING · LOCAL CONTENT</p><h1>Weekly Reading Workshop</h1><p>A flexible five-day sequence built from the Reading Room’s actual lessons. Assign the full sequence or select individual days; students can still browse without signing in.</p><label>Grade cluster <select data-rr-workshop-cluster>${["1","2-3","4-5","6-8","9-12"].map(g=>`<option value="${g}" ${g===cluster?"selected":""}>Grades ${g.replace("-","–")}</option>`).join("")}</select></label></header>${selected.length?`<section class="rr-continue"><div><p class="rr-eyebrow">WEEK TEXTS</p>${selected.map(l=>`<h2><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></h2><p>${esc(l.objectives.content)} · ${esc(l.objectives.language)}</p>`).join("")}</div></section><ol class="rr-workshop-days">${stages.map(([day,desc],i)=>`<li><h2>${day}</h2><p>${desc}</p><p><b>Teacher move:</b> ${esc(i===0?selected[0].teacherGuide.miniLesson:i===2?selected[0].teacherGuide.misconception:selected[Math.min(i-1,selected.length-1)].teacherGuide.languageObjective)}</p><a href="${lessonUrl(selected[Math.min(i<3?0:1,selected.length-1)].id)}">Open the lesson for this step →</a></li>`).join("")}</ol><button type="button" class="rr-reset" data-rr-print>Print this workshop plan</button>`:`<p>No authored lesson is available for that cluster yet.</p>`}<a href="${BASE}/reading-room/teacher">Return to teacher evidence</a></section>`) };
-  }
-  if (id === "teacher") {
-    const rows = lessons.map(l => { const p=state.lessons[stateKey(l)]||{}, answers=Object.values(p.answers||{}), checked=answers.filter(a=>a.checked), misses=checked.filter(a=>a.correct===false).length, independent=checked.filter(a=>a.mode==="independent").length; return {l,p,checked,misses,independent}; });
-    const groupNeeds = new Map(); for(const {l,checked} of rows)for(const a of checked)if(a.correct===false){const skill=a.skill||"Revisit a checked response";const old=groupNeeds.get(skill)||{count:0,lesson:l};old.count++;groupNeeds.set(skill,old);}
-    return { title:"Reading Progress · Local", html:raw(`<section class="rr-shell"><header class="rr-title"><p class="rr-eyebrow">TEACHER VIEW · THIS DEVICE ONLY</p><h1>Reading evidence</h1><p>These counts come only from the reading data saved in this browser. They do not sync across devices and are not WIDA scores or proficiency estimates.</p></header><p class="rr-count">${rows.filter(x=>x.p.completed).length} of ${lessons.length} authored lessons marked complete on this device.</p><p><a href="${BASE}/reading-room/workshop?cluster=6-8">Open Weekly Reading Workshop →</a></p><section class="rr-group-needs"><h2>Small-group next steps</h2>${groupNeeds.size?[...groupNeeds].map(([skill,v])=>`<article><h3>${esc(skill)}</h3><p>Evidence: ${v.count} checked miss(es) saved in <a href="${lessonUrl(v.lesson.id)}">${esc(v.lesson.title)}</a>. Revisit the linked paragraph, model the strategy, then offer a fresh independent check.</p></article>`).join(""):`<p>No checked misses are saved yet, so this local view has no evidence-based small-group suggestion.</p>`}</section><div class="rr-teacher-table"><table><caption>Saved reading evidence by lesson</caption><thead><tr><th scope="col">Lesson</th><th scope="col">Checked items</th><th scope="col">Independent checks</th><th scope="col">Items to revisit</th><th scope="col">Next step</th></tr></thead><tbody>${rows.map(({l,p,checked,misses,independent})=>`<tr><th scope="row"><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></th><td>${checked.length}</td><td>${independent}</td><td>${misses}</td><td>${misses?`Revisit: ${esc(checked.find(x=>x.correct===false)?.skill||"the checked skill")}.`:checked.length?"Continue to a new reading.":"No checked evidence saved."}</td></tr>`).join("")}</tbody></table></div><button type="button" class="rr-reset" data-rr-print>Print this report</button><button type="button" class="rr-reset" data-rr-export>Download report CSV</button><p>Interpretation rule: a correct supported response is not counted as an independent check. Counts are local descriptive evidence only; they do not establish mastery.</p><a href="${BASE}/reading-room">Return to the Reading Room</a></section>`) };
-  }
-  if(id === "conference") {
-    const selectedId=new URLSearchParams(location.search).get("lesson")||state.lastRead||lessons[0]?.id;
-    const selected=lessons.find(l=>l.id===selectedId)||lessons[0];const notes=state.conferences[selected?.id]||{};
-    return {title:"Reading Conference · Local",html:raw(`<section class="rr-shell"><header class="rr-title"><p class="rr-eyebrow">TEACHER CONFERENCE · STORED ON THIS DEVICE</p><h1>Reading Conference Notes</h1><p>Capture instructional observations without adding student names or identifiers. These notes are local to this browser and are not shared or synced.</p><label>Lesson<select data-rr-conference-lesson>${lessons.map(l=>`<option value="${esc(l.id)}" ${l.id===selected?.id?"selected":""}>${esc(l.title)}</option>`).join("")}</select></label></header>${selected?`<p><b>Reading goal:</b> ${esc(selected.objectives.content)} <b>Language goal:</b> ${esc(selected.objectives.language)}</p><div class="rr-organizer-grid">${[["strength","Observed strength"],["evidence","Evidence observed in the reading or response"],["support","Scaffold or prompt used"],["nextStep","Instructional next step"],["followUp","Fresh independent follow-up task"]].map(([key,label])=>`<label>${label}<textarea data-rr-conference="${key}" data-lesson="${esc(selected.id)}" rows="3">${esc(notes[key]||"")}</textarea></label>`).join("")}</div><p role="status" data-rr-conference-status>Notes save in this browser as you type.</p><button type="button" data-rr-print>Print conference note</button>`:"<p>No reading lessons are available.</p>"}<a href="${BASE}/reading-room/pathways">Return to workshop pathways</a></section>`)};
-  }
+  if (!id)
+    return { title: "Reading Room", html: raw(shelfHTML(ctx, lessons, state)) };
+  if (id === "family")
+    return { title: "Family Reading", html: raw(familyHTML(lessons)) };
+  if (id === "words")
+    return { title: "Reading Word Notebook", html: raw(wordsHTML(state)) };
+  if (id === "pathways")
+    return {
+      title: "Reading Workshop Pathways",
+      html: raw(pathwaysHTML(lessons)),
+    };
+  if (id === "workshop")
+    return {
+      title: "Weekly Reading Workshop",
+      html: raw(workshopHTML(lessons)),
+    };
+  if (id === "teacher")
+    return {
+      title: "Reading Progress · Local",
+      html: raw(teacherHTML(lessons, state)),
+    };
+  if (id === "conference")
+    return {
+      title: "Reading Conference · Local",
+      html: raw(conferenceHTML(lessons, state)),
+    };
   const l = lessons.find((x) => x.id === id);
-  if (!l) return { title: "Reading not found", html: `<section class="rr-shell"><p>This text could not be found.</p><a href="${BASE}/reading-room">Return to the Reading Room</a></section>` };
-  const linkedActivity = l.connections?.relatedActivity ? await findActivity(l.connections.relatedActivity).catch(() => null) : null;
-  const relatedHref = linkedActivity ? `${BASE}/${encodeURIComponent(linkedActivity.domain)}/${encodeURIComponent(linkedActivity.level)}/${encodeURIComponent(linkedActivity.activity.id)}?grades=${encodeURIComponent(linkedActivity.band)}` : "";
-  const key = stateKey(l), progress = state.lessons[key] || { started: true, answers: {}, notes: {}, phase: "first", assisted: false };
-  const requestedMode = new URLSearchParams(location.search).get("mode");
-  if (["learn", "practice", "independent", "together"].includes(requestedMode)) activeMode = requestedMode;
-  progress.started = true; progress.lastOpened = new Date().toISOString(); progress.phase ||= "first";
-  state.lastRead = l.id; state.recent = [l.id, ...state.recent.filter(x => x !== l.id)].slice(0,30); state.lessons[key] = progress; saveReadingState(state);
-  if (openedLessonId !== l.id) { openedLessonId = l.id; if (progress.position) requestAnimationFrame(() => document.getElementById(progress.position)?.scrollIntoView({block:"start"})); }
-  const phases = [{id:"first",label:"1 · Understand"},{id:"second",label:"2 · Investigate"},{id:"third",label:"3 · Apply"}];
-  const vocab = l.vocabulary.map(v => `<details class="rr-vocab"><summary><strong>${esc(v.term)}</strong><span>${esc(v.definition)}</span></summary><p><b>In this text:</b> ${esc(v.example)}${v.spanish ? ` <span lang="es">· ${esc(v.spanish)}</span>` : ""}</p><button type="button" data-rr-word="${esc(v.term)}" data-rr-lesson="${esc(l.id)}">Save to Word Notebook</button></details>`).join("");
-  const paragraphs = l.paragraphs.map((p,i) => `<article class="rr-paragraph" id="${esc(p.id)}"><span class="rr-paranum">${i+1}</span><p>${esc(p.text)}</p><div class="rr-paragraph-tools"><label>Mark this paragraph<select data-rr-mark="${esc(l.id)}" data-rr-revision="${esc(l.revision)}" data-rr-paragraph="${esc(p.id)}"><option value="">Choose a reading mark</option>${["Main idea","Important detail","Evidence","Vocabulary","Inference","Question"].map(c=>`<option value="${c}" ${state.annotations[`${l.id}@${l.revision}:${p.id}`]?.category===c?"selected":""}>${c}</option>`).join("")}</select></label><button type="button" data-rr-position="${esc(p.id)}">Save reading place</button>${progress.position===p.id?"<span>Saved place</span>":""}</div>${activeMode === "independent" ? "" : `<p class="rr-guide"><b>Pause and notice:</b> ${esc(p.guidingQuestion || "What is important in this section?")}</p>`}<label class="rr-annotation">Your note for paragraph ${i+1}<textarea data-rr-note="${esc(p.id)}" data-rr-lesson="${esc(l.id)}" rows="2">${esc(progress.notes?.[p.id] || "")}</textarea></label></article>`).join("");
-  const visualBlock = l.table
-    ? `<figure class="rr-data-visual"><figcaption>${esc(l.table.caption)}</figcaption><div class="rr-teacher-table"><table><thead><tr>${l.table.headers.map(h=>`<th scope="col">${esc(h)}</th>`).join("")}</tr></thead><tbody>${l.table.rows.map(row=>`<tr>${row.map(v=>`<td>${esc(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div><p>${esc(l.table.description)}</p></figure>`
-    : l.map
-      ? `<figure class="rr-data-visual"><figcaption>${esc(l.map.caption)}</figcaption><ol>${l.map.items.map(x=>`<li><b>${esc(x.label)}</b> — ${esc(x.symbol)}</li>`).join("")}</ol><p>${esc(l.map.description)}</p></figure>`
-      : "";
-  const items = l.activities.filter(a => a.phase === activePhase);
-  const activityHtml = items.map(a => {
-    if (a.type === "choice" || a.type === "connector") return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.sentence ? `<p>${esc(a.sentence.replace("___", "_____"))}</p>` : ""}${a.choices.map(c=>`<label class="rr-option"><input type="radio" name="rr-${esc(a.id)}" data-rr-answer="${esc(a.id)}" value="${esc(c.id)}" ${progress.answers?.[a.id]?.value===c.id?"checked":""}> ${esc(c.text)}</label>`).join("")}<button type="button" data-rr-check="${esc(a.id)}">Check answer</button>${progress.answers?.[a.id]?.checked?`<p role="status" class="${progress.answers[a.id].correct?"rr-correct":"rr-feedback"}">${progress.answers[a.id].correct?"That answer is supported.":"Look again at the text, then revise."} ${esc(a.rationale)}</p>`:""}</fieldset>`;
-    if (a.type === "multi" || a.type === "hotText") return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.choices.map(c=>`<label class="rr-option"><input type="checkbox" data-rr-multi="${esc(a.id)}" value="${esc(c.id)}" ${progress.answers?.[a.id]?.values?.includes(c.id)?"checked":""}> ${esc(c.text)}</label>`).join("")}<button type="button" data-rr-check="${esc(a.id)}">Check selection</button>${progress.answers?.[a.id]?.checked?`<p role="status" class="${progress.answers[a.id].correct?"rr-correct":"rr-feedback"}">${progress.answers[a.id].correct?"Your selection matches the source key.":"Compare the selected text with the task purpose, then revise."} ${esc(a.rationale)}</p>`:""}</fieldset>`;
-    if (a.type === "cloze") return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend><p>${a.segments.map(seg=>seg.blank?`<label class="rr-inline-cloze"><span class="rr-sr-only">Choose a word</span><select data-rr-cloze="${esc(a.id)}" data-blank="${esc(seg.blank.id)}" aria-label="Word for blank ${esc(seg.blank.id)}"><option value="">Choose a word</option>${seg.blank.options.map(v=>`<option value="${esc(v)}" ${progress.answers?.[a.id]?.values?.[seg.blank.id]===v?"selected":""}>${esc(v)}</option>`).join("")}</select></label>`:esc(seg.text)).join("")}</p><button type="button" data-rr-check="${esc(a.id)}">Check words</button>${progress.answers?.[a.id]?.checked?`<p role="status" class="${progress.answers[a.id].correct?"rr-correct":"rr-feedback"}">${progress.answers[a.id].correct?"The words fit the context.":"Reread the full sentence and revise the word choice."} ${esc(a.rationale)}</p>`:""}</fieldset>`;
-    if (a.type === "short") return `<div class="rr-question"><label for="rr-short-${esc(a.id)}">${esc(a.prompt)}</label><textarea id="rr-short-${esc(a.id)}" data-rr-response="${esc(a.id)}" rows="3">${esc(progress.answers?.[a.id]?.text || "")}</textarea>${a.model ? `<button type="button" data-rr-model="${esc(a.id)}">Compare with an example</button><p class="rr-model" ${progress.answers?.[a.id]?.showModel?"":"hidden"}><b>One possible response:</b> ${esc(a.model)}</p>` : `<div class="rr-rubric"><b>Response criteria:</b><ul>${(a.rubric||a.lookFor||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul><span>Open responses are practice work; automated scoring is not applied.</span></div>`}</div>`;
-    if (a.type === "evidence") return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.paragraphIds.map(pid=>`<label class="rr-option"><input type="checkbox" data-rr-evidence="${esc(a.id)}" value="${esc(pid)}" ${progress.answers?.[a.id]?.values?.includes(pid)?"checked":""}> Paragraph ${pid.slice(1)}</label>`).join("")}<button type="button" data-rr-check="${esc(a.id)}">Check evidence</button>${progress.answers?.[a.id]?.checked?`<p role="status" class="rr-feedback">${esc(a.rationale)}</p>`:""}</fieldset>`;
-    if (a.type === "order") return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.items.map((item,i)=>`<label class="rr-option">Step ${i+1}: ${esc(item.text)}<select data-rr-structured="${esc(a.id)}" data-index="${i}" aria-label="Position for ${esc(item.text)}"><option value="">Choose position</option>${a.items.map((_,n)=>`<option value="${n}" ${progress.answers?.[a.id]?.values?.[i]===n?"selected":""}>${n+1}</option>`).join("")}</select></label>`).join("")}<button type="button" data-rr-check="${esc(a.id)}">Check sequence</button>${progress.answers?.[a.id]?.checked?`<p role="status" class="${progress.answers[a.id].correct?"rr-correct":"rr-feedback"}">${progress.answers[a.id].correct?"The sequence matches the passage.":"Return to the text and revise the order."} ${esc(a.rationale)}</p>`:""}</fieldset>`;
-    if (a.type === "sort") return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.items.map((item,i)=>`<label class="rr-option">${esc(item.text)}<select data-rr-structured="${esc(a.id)}" data-index="${i}" aria-label="Category for ${esc(item.text)}"><option value="">Choose category</option>${a.categories.map(cat=>`<option value="${esc(cat)}" ${progress.answers?.[a.id]?.values?.[i]===cat?"selected":""}>${esc(cat)}</option>`).join("")}</select></label>`).join("")}<button type="button" data-rr-check="${esc(a.id)}">Check categories</button>${progress.answers?.[a.id]?.checked?`<p role="status" class="${progress.answers[a.id].correct?"rr-correct":"rr-feedback"}">${progress.answers[a.id].correct?"The categories match the passage.":"Compare each choice with the paragraph about that item."} ${esc(a.rationale)}</p>`:""}</fieldset>`;
-    return `<div class="rr-question"><h3>${esc(a.skill)}</h3><p>${esc(a.prompt)}</p><p>${esc(a.rationale)}</p></div>`;
-  }).join("");
-  const ttsControls = canSpeak() ? `<div class="rr-audio-controls"><span>Optional device voice; the passage text remains the transcript.</span><button type="button" data-rr-listen="play">Read passage aloud</button><button type="button" data-rr-listen="stop">Stop audio</button><label>Speech pace<select data-rr-setting="speechRate"><option value="0.8">Slow</option><option value="0.95" selected>Natural</option><option value="1.1">Faster</option></select></label></div>` : `<p class="rr-audio-note">Read-aloud is not available in this browser. The full passage is displayed as text.</p>`;
-  const modeNames = { learn: "Learn", practice: "Practice", independent: "Independent challenge", together: "Read together" };
-  const modeControls = `<div class="rr-mode-controls" role="group" aria-label="Reading mode">${Object.entries(modeNames).map(([value,label]) => `<button type="button" data-rr-mode="${value}" aria-pressed="${activeMode === value}">${label}</button>`).join("")}</div>`;
-  const modeInstruction = activeMode === "learn"
-    ? `<section class="rr-mode-note"><h2>Model the reading move</h2><p>${esc(l.teacherGuide.miniLesson)}</p><p><b>One possible response:</b> ${esc(l.teacherGuide.modelResponse)}</p></section>`
-    : activeMode === "independent"
-      ? `<section class="rr-mode-note"><h2>Independent challenge</h2><p>Use the passage and your own notes. Vocabulary previews, paragraph questions, and models are hidden. This records local practice evidence, not a proficiency score.</p></section>`
-      : `<section class="rr-mode-note"><h2>Practice with support</h2><p>Use the vocabulary, paragraph questions, and notes as you reread. Revise after feedback.</p></section>`;
-  return { title:l.title, html:raw(`<section class="rr-shell rr-reader"><nav class="rr-back"><a href="${BASE}/reading-room">← Reading shelf</a><span>${esc(gradeLabel(l))} · ${esc(l.subject)} · ${l.minutes} min</span><button type="button" data-rr-bookmark="${esc(l.id)}">${state.bookmarks.includes(l.id)?"★ Bookmarked":"☆ Bookmark"}</button></nav><header class="rr-title"><p class="rr-eyebrow">${esc(l.genre)} · ${esc(l.keyUse)} · ${esc(l.eldStandard)}</p><h1>${esc(l.title)}</h1><p>${esc(l.summary)}</p><div class="rr-objectives"><b>Content goal</b><span>${esc(l.objectives.content)}</span><b>Language goal</b><span>${esc(l.objectives.language)}</span></div><p class="rr-alignment">${esc(l.alignmentStatus)} Independent editorial review is pending for this lesson package. This is original instructional practice, not an official WIDA assessment or score prediction. <a href="https://wida.wisc.edu/assess/access/preparing-students" target="_blank" rel="noreferrer">Official WIDA test familiarization resources</a></p></header>${modeControls}${modeInstruction}<div class="rr-layout"><section class="rr-text" aria-label="Reading passage"><div class="rr-display"><label>Text size <input type="range" min="0.9" max="1.3" step="0.1" value="${state.settings.fontScale}" data-rr-setting="fontScale"></label><label>Line spacing <select data-rr-setting="lineSpacing"><option value="1.5">Compact</option><option value="1.75" ${state.settings.lineSpacing===1.75?"selected":""}>Comfortable</option><option value="2">Open</option></select></label></div>${ttsControls}<section class="rr-before"><h2>Before you read</h2><p><b>Essential question:</b> ${esc(l.beforeReading.essentialQuestion)}</p><p>${esc(l.beforeReading.background)} ${esc(l.beforeReading.hook)}</p><p><b>Read to find out:</b> ${esc(l.beforeReading.purpose)}</p></section>${visualBlock}${activeMode === "independent" ? "" : `<section class="rr-vocabulary"><h2>Words to notice</h2>${vocab}</section>`}<div class="rr-passage" style="--rr-font:${Number(state.settings.fontScale)||1};--rr-leading:${Number(state.settings.lineSpacing)||1.75}">${paragraphs}</div><div class="rr-actions">${relatedHref ? `<a href="${relatedHref}">Related Reading practice →</a>` : ""}<a href="${BASE}/write?grades=${esc(ctx.band)}">Write about a text →</a><a href="${BASE}/speak?grades=${esc(ctx.band)}">Speak about a text →</a><a href="${BASE}/vocabulary?grades=${esc(ctx.band)}">Practice academic words →</a></div></section><aside class="rr-workspace"><div class="rr-phase" role="tablist" aria-label="Reading sequence">${phases.map(p=>`<button type="button" role="tab" aria-selected="${activePhase===p.id}" data-rr-phase="${p.id}">${p.label}</button>`).join("")}</div><p class="rr-eyebrow">${activePhase==="first"?"BUILD A FIRST UNDERSTANDING":activePhase==="second"?"RETURN FOR EVIDENCE":"APPLY THE THINKING"}</p><h2>${esc(l.objectives.language)}</h2>${activityHtml||"<p>This section is a rereading and reflection pause. Use your notes to explain what changed in your understanding.</p>"}${activeMode !== "independent" ? `<div class="rr-teacher"><details><summary>Teacher guide</summary><p><b>Mini-lesson:</b> ${esc(l.teacherGuide.miniLesson)}</p><p><b>Misconception to watch:</b> ${esc(l.teacherGuide.misconception)}</p><ul>${l.teacherGuide.discussion.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><p><b>Model response:</b> ${esc(l.teacherGuide.modelResponse)}</p></details><details><summary>Family reading · 10–15 minutes</summary><p>${esc(l.familySupport.directions.en)}</p><p lang="es">${esc(l.familySupport.directions.es)}</p><p>${esc(l.familySupport.noEnglishRequired)}</p></details></div>${renderOrganizers(l.id, progress)}` : ""}<label class="rr-reflection">My reflection<textarea data-rr-reflection="${esc(l.id)}" rows="3">${esc(progress.reflection||"")}</textarea></label><button type="button" class="rr-button" data-rr-complete="${esc(l.id)}">Save lesson progress</button><p role="status" class="rr-status">${progress.completed?"Progress saved on this device.":"Your notes and answers save in this browser."}</p></aside></div></section>`) };
+  if (!l)
+    return {
+      title: "Reading not found",
+      html: raw(
+        `<section class="rr-shell"><p>This text could not be found.</p><a href="${BASE}/reading-room">Return to the Reading Room</a></section>`,
+      ),
+    };
+  return { title: l.title, html: raw(await lessonHTML(ctx, l, state)) };
 }
-
 export function onInput(e, ctx) {
   const el=e.target;
   if (el.matches("[data-rr-search]")) { query=el.value; ctx.rerender(); }

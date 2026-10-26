@@ -18,6 +18,7 @@ import {
   bandLabel,
   copyText,
   html,
+  icon,
   toHtml,
 } from "/access-practice-lab/src/util.js";
 
@@ -39,6 +40,7 @@ const TYPE_LABEL = {
   worksheet: "Printable",
 };
 
+const PAGE = 25;
 const S = {
   band: "6-8",
   q: "",
@@ -48,6 +50,7 @@ const S = {
   picked: [],
   keys: new Set(),
   plTitle: "",
+  limit: PAGE,
 };
 const root = document.getElementById("hub");
 const abs = (p) => new URL(p, location.origin).href;
@@ -60,6 +63,9 @@ const packetBase = (band, domain, level) =>
 const playUrl = () =>
   `${BASE}/play?ids=${S.picked.join(",")}${S.plTitle ? `&t=${encodeURIComponent(S.plTitle)}` : ""}&grades=${S.band}`;
 
+const TAG_TEACHER = html`<span class="th-tag is-teacher">${icon("lock")} Teacher only</span>`;
+const TAG_STUDENT = html`<span class="th-tag is-student">${icon("user")} Student-facing</span>`;
+
 async function keyHTML(r) {
   const data = await loadDomain(r.band, r.domain);
   const a = data.levels[r.level].activities.find((x) => x.id === r.id);
@@ -67,26 +73,41 @@ async function keyHTML(r) {
   const answer = correctAnswerText(a);
   return html`<tr class="key-row">
     <td colspan="5">
-      ${a.script ? html`<p><strong>Listening script:</strong> ${asList(a.script).join(" ")}</p>` : ""}
-      ${answer ? html`<p><strong>Answer:</strong> ${answer}</p>` : ""}
-      ${
-        a.models
-          ? html`<p>
-              <strong>Sample answers:</strong> ${["A", "B", "C"]
-                .filter((k) => a.models[k])
-                .map((k) => `${TIERS[k].name}: ${a.models[k]}`)
-                .join(" · ")}
-            </p>`
-          : ""
-      }
-      ${a.teacher?.use ? html`<p><strong>Use:</strong> ${a.teacher.use}</p>` : ""}
-      ${a.teacher?.lower ? html`<p><strong>Lower support:</strong> ${a.teacher.lower}</p>` : ""}
-      ${a.teacher?.challenge ? html`<p><strong>Challenge:</strong> ${a.teacher.challenge}</p>` : ""}
-      ${a.teacher?.noTech ? html`<p><strong>No-tech option:</strong> ${a.teacher.noTech}</p>` : ""}
-      ${(a.wida || []).length ? html`<p class="fine">WIDA: ${a.wida.join(" · ")}</p>` : ""}
+      <div class="th-key">
+        <p class="th-key-head">${TAG_TEACHER} <span class="fine">Answer key for ${r.title}</span></p>
+        ${a.script ? html`<p><strong>Listening script:</strong> ${asList(a.script).join(" ")}</p>` : ""}
+        ${answer ? html`<p><strong>Answer:</strong> ${answer}</p>` : ""}
+        ${
+          a.models
+            ? html`<p>
+                <strong>Sample answers:</strong> ${["A", "B", "C"]
+                  .filter((k) => a.models[k])
+                  .map((k) => `${TIERS[k].name}: ${a.models[k]}`)
+                  .join(" · ")}
+              </p>`
+            : ""
+        }
+        ${a.teacher?.use ? html`<p><strong>Use:</strong> ${a.teacher.use}</p>` : ""}
+        ${a.teacher?.lower ? html`<p><strong>Lower support:</strong> ${a.teacher.lower}</p>` : ""}
+        ${a.teacher?.challenge ? html`<p><strong>Challenge:</strong> ${a.teacher.challenge}</p>` : ""}
+        ${a.teacher?.noTech ? html`<p><strong>No-tech option:</strong> ${a.teacher.noTech}</p>` : ""}
+        ${(a.wida || []).length ? html`<p class="fine">WIDA: ${a.wida.join(" · ")}</p>` : ""}
+      </div>
     </td>
   </tr>`;
 }
+
+const copyBtn = (url, label = "Copy link") =>
+  html`<button type="button" class="btn small" data-copy-url="${url}">${icon("copy")} ${label}</button>`;
+const openLink = (url, label) =>
+  html`<a class="btn small" href="${url}" target="_blank" rel="noopener">${label} ${icon("external")}</a>`;
+
+const GUIDE = [
+  ["20 minutes:", "students open their skill room and press “Next up”. The lab remembers where each student is on that device."],
+  ["45-minute stations:", "10 minutes each in Listening, Reading, Speaking and Writing, then 5 minutes to print or share the Passport."],
+  ["Speaking:", "students record on the device, play back, and compare their answer with sample answers at three levels. Nothing is uploaded; ask students to play their best try for you."],
+  ["Different devices:", "students copy a progress code from their Passport and paste it on the new device."],
+];
 
 async function render() {
   const [index, rows, road, shared] = await Promise.all([
@@ -104,45 +125,53 @@ async function render() {
       (!S.type || r.type === S.type) &&
       (!q || `${r.title} ${r.skill} ${r.id}`.toLowerCase().includes(q)),
   );
+  const visible = shown.slice(0, S.limit);
   const domains = Object.keys(index.bands[S.band].domains);
   const keyRows = new Map(
     await Promise.all(
-      shown.filter((r) => S.keys.has(r.id)).map(async (r) => [r.id, await keyHTML(r)]),
+      visible.filter((r) => S.keys.has(r.id)).map(async (r) => [r.id, await keyHTML(r)]),
     ),
   );
   const tests = index.tests.filter((t) => t.band === S.band);
   const weeks = road?.[S.band]?.weeks || [];
   const levelsOf = (d) => Object.keys(index.bands[S.band].domains[d].levels);
+  const forms = S.band === "6-8" ? Object.entries(shared.officialForms || {}) : [];
+  const packetCount = domains.reduce((n, d) => n + levelsOf(d).length, 0);
+  const cats = [
+    ["#activities", "list", "Activities", rows.length, "Search, answer keys, playlist builder", "both"],
+    ["#weekly", "road", "Road to ACCESS", weeks.length, "One link per week", "student"],
+    ["#tests", "tests", "Practice tests", tests.length, "Full tests and short minis", "student"],
+    ["#printables", "print", "Printable packets", packetCount, "Student and teacher PDFs and Word files", "both"],
+    ...(forms.length ? [["#forms", "evidence", "Google Forms", forms.length, "Grades 6–8 response forms", "both"]] : []),
+    ["#guide", "bulb", "How to use it", GUIDE.length + 1, "Station ideas and routines", "teacher"],
+  ];
+  const tag = (kind) => (kind === "teacher" ? TAG_TEACHER : kind === "student" ? TAG_STUDENT : html`${TAG_STUDENT}${TAG_TEACHER}`);
 
   root.innerHTML = toHtml(html`
-    <section class="room-hero">
-      <div>
-        <p class="eyebrow">Teacher Hub · ${bandLabel(S.band)}</p>
-        <h1 tabindex="-1">ACCESS Practice Lab — Teacher Hub</h1>
-        <p class="lead">
-          Find any activity, see its answer key and listening script, build a playlist link for
-          Canvas or Google Classroom, and print packets.
-        </p>
-        <div class="band-switch" role="group" aria-label="Grade band">
-          ${bands.map((b) => html`<button type="button" class="band-btn" data-hub-band="${b}" aria-pressed="${b === S.band}">${bandLabel(b)}</button>`)}
-        </div>
-      </div>
+    <section class="th-cats" aria-label="Resource categories">
+      ${cats.map(([href, ico, title, n, text, kind]) => html`<a class="th-cat" href="${href}"><span class="th-tile">${icon(ico)}</span><span class="th-cat-body"><strong>${title}</strong><span>${text}</span><span class="th-cat-tags">${tag(kind)}</span></span><span class="th-cat-n">${n}</span></a>`)}
     </section>
 
-    <section class="panel">
-      <h2>Activities (${shown.length} of ${rows.length})</h2>
-      <p class="fine">
-        Tick activities to build a playlist. Students open one link and work through them in order.
-        Tap “Key” for answers, scripts and sample answers.
-      </p>
+    <section class="th-sec" id="activities" aria-labelledby="actTitle">
+      <header class="th-sec-head">
+        <div>
+          <h2 id="actTitle">Activities <span class="th-count">(${shown.length} of ${rows.length})</span></h2>
+          <p class="fine">
+            Tick activities to build a playlist. Students open one link and work through them in order.
+            Tap “Key” for answers, scripts and sample answers.
+          </p>
+        </div>
+        <div class="th-band">
+          <span class="th-band-label" id="bandLabel">Grade band</span>
+          <div class="band-switch" role="group" aria-labelledby="bandLabel">
+            ${bands.map((b) => html`<button type="button" class="band-btn" data-hub-band="${b}" aria-pressed="${b === S.band}">${bandLabel(b)}</button>`)}
+          </div>
+        </div>
+      </header>
       <div class="hub-filters">
-        <input
-          type="search"
-          placeholder="Search titles and skills…"
-          value="${S.q}"
-          data-f="q"
-          aria-label="Search"
-        />
+        <label class="field th-search"><span class="visually-hidden">Search</span>
+          <input type="search" placeholder="Search titles and skills…" value="${S.q}" data-f="q" aria-label="Search" />
+        </label>
         <select data-f="domain" aria-label="Skill">
           <option value="">All skills</option>
           ${domains.map((d) => html`<option value="${d}" ${S.domain === d ? "selected" : ""}>${d}</option>`)}
@@ -157,7 +186,7 @@ async function render() {
         </select>
       </div>
       <div class="lab-table-wrap">
-        <table class="hub-table">
+        <table class="hub-table th-table">
           <thead>
             <tr>
               <th scope="col"><span class="visually-hidden">Add</span></th>
@@ -168,38 +197,34 @@ async function render() {
             </tr>
           </thead>
           <tbody>
-            ${shown.map(
+            ${visible.map(
               (r) =>
-                html`<tr>
-                    <td>
-                      <input
-                        type="checkbox"
-                        data-pick="${r.id}"
-                        ${S.picked.includes(r.id) ? "checked" : ""}
-                        aria-label="Add ${r.title} to playlist"
-                      />
+                html`<tr class="d-${r.domain.toLowerCase()}">
+                    <td class="th-pick-cell">
+                      <label class="th-pick"
+                        ><input
+                          type="checkbox"
+                          data-pick="${r.id}"
+                          ${S.picked.includes(r.id) ? "checked" : ""}
+                          aria-label="Add ${r.title} to playlist"
+                      /></label>
                     </td>
                     <td class="t-title">
                       <a href="${actUrl(r)}" target="_blank" rel="noopener">${r.title}</a>
                       <div class="t-meta">
-                        ${DOMAIN_META[r.domain]?.glyph || ""} ${r.domain} ·
-                        ${TYPE_LABEL[r.type] || r.type}
+                        <span class="th-dom">${icon(DOMAIN_META[r.domain]?.icon || "star")} ${r.domain}</span> · ${TYPE_LABEL[r.type] || r.type}
                       </div>
                     </td>
                     <td class="col-skill t-meta">${r.skill}</td>
-                    <td class="t-meta">${TIERS[r.level]?.name || r.level}</td>
-                    <td>
-                      <button type="button" class="ghost small" data-copy-url="${actUrl(r)}">
-                        🔗 Copy
-                      </button>
+                    <td class="t-meta"><span class="th-level">${TIERS[r.level]?.name || r.level}</span></td>
+                    <td class="th-links">
+                      <button type="button" class="ghost small" data-copy-url="${actUrl(r)}">${icon("copy")} Copy</button>
                       <button
                         type="button"
                         class="ghost small"
                         data-key="${r.id}"
                         aria-expanded="${S.keys.has(r.id)}"
-                      >
-                        🔑 Key
-                      </button>
+                      >${icon("lock")} Key</button>
                     </td>
                   </tr>
                   ${keyRows.get(r.id) || ""}`,
@@ -207,136 +232,125 @@ async function render() {
           </tbody>
         </table>
       </div>
+      <div class="th-more">
+        <p class="fine" role="status">Showing ${visible.length} of ${shown.length} activities.</p>
+        ${shown.length > visible.length ? html`<button type="button" class="btn" data-more>Show ${Math.min(PAGE, shown.length - visible.length)} more</button>` : ""}
+      </div>
     </section>
 
     ${
       weeks.length
-        ? html`<section class="panel">
-            <h2>Road to ACCESS — weekly links</h2>
+        ? html`<section class="th-sec" id="weekly" aria-labelledby="weeklyTitle">
+            <header class="th-sec-head"><div><h2 id="weeklyTitle">Road to ACCESS — weekly links</h2>
             <p class="fine">
               Post one link a week. Each opens that week's four activities in order, with a
               bilingual family prompt.
-            </p>
-            <div class="hub-grid">
+            </p></div>${TAG_STUDENT}</header>
+            <div class="th-grid th-weeks">
               ${weeks.map(
                 (w) =>
-                  html`<div class="hub-card">
-                    <h3>Week ${w.n} · ${w.taskType}</h3>
-                    <span class="fine">${w.theme} · starts ${w.start}</span
-                    ><a href="${BASE}/road/${w.n}?grades=${S.band}" target="_blank" rel="noopener"
-                      >Open week</a
-                    ><button
-                      type="button"
-                      class="ghost small"
-                      data-copy-url="${BASE}/road/${w.n}?grades=${S.band}"
-                    >
-                      🔗 Copy link
-                    </button>
-                  </div>`,
+                  html`<article class="th-card">
+                    <span class="th-week-n">Week ${w.n}</span>
+                    <h3>${w.taskType}</h3>
+                    <p class="fine">${w.theme} · starts ${w.start}</p>
+                    <div class="th-card-actions">${openLink(`${BASE}/road/${w.n}?grades=${S.band}`, "Open week")}${copyBtn(`${BASE}/road/${w.n}?grades=${S.band}`)}</div>
+                  </article>`,
               )}
             </div>
           </section>`
         : ""
     }
 
-    <section class="panel">
-      <h2>Practice tests</h2>
-      <div class="hub-grid">
+    <section class="th-sec" id="tests" aria-labelledby="testsTitle">
+      <header class="th-sec-head"><div><h2 id="testsTitle">Practice tests</h2></div>${TAG_STUDENT}</header>
+      <div class="th-grid">
         ${tests.map(
           (t) =>
-            html`<div class="hub-card">
+            html`<article class="th-card">
               <h3>${t.title}</h3>
-              <span class="fine">${t.kind} · ${t.items} questions · ~${t.minutes} min</span
-              ><a href="${BASE}/test/${t.id}" target="_blank" rel="noopener">Open test</a
-              ><button type="button" class="ghost small" data-copy-url="${BASE}/test/${t.id}">
-                🔗 Copy link
-              </button>
-            </div>`,
+              <p class="fine">${t.kind} · ${t.items} questions · ~${t.minutes} min</p>
+              <div class="th-card-actions">${openLink(`${BASE}/test/${t.id}`, "Open test")}${copyBtn(`${BASE}/test/${t.id}`)}</div>
+            </article>`,
         )}
       </div>
     </section>
 
-    <section class="panel">
-      <h2>Printable packets</h2>
+    <section class="th-sec" id="printables" aria-labelledby="printTitle">
+      <header class="th-sec-head"><div><h2 id="printTitle">Printable packets</h2>
       <p class="fine">
         Student packets have no answers. Teacher packets add answer keys, listening scripts and
         sample answers. Word files open in Google Docs.
-      </p>
-      <div class="hub-grid">
-        ${domains.flatMap((d) =>
-          levelsOf(d).map((l) => {
-            const base = packetBase(S.band, d, l);
-            return html`<div class="hub-card">
-              <h3>${d} · ${TIERS[l]?.name || l}</h3>
-              <a href="${BASE}/printables/${base}" target="_blank" rel="noopener"
-                >🖨️ Student packet</a
-              >
-              <a href="${BASE}/printables/${base}.docx">📝 Student Word</a>
-              <a href="/access-teacher/packets/${base}" target="_blank" rel="noopener"
-                >🔑 Teacher packet</a
-              >
-              <a href="/access-teacher/packets/${base}.docx">📝 Teacher Word</a>
-            </div>`;
-          }),
+      </p></div></header>
+      <p class="th-key-legend"><span class="th-swatch is-student"></span> Student packets have no answers. <span class="th-swatch is-teacher"></span> Teacher packets add answer keys. ${TAG_STUDENT} ${TAG_TEACHER}</p>
+      <div class="th-pgroups">
+        ${domains.map(
+          (d) => html`<article class="th-pgroup d-${d.toLowerCase()}">
+            <header><span class="th-tile">${icon(DOMAIN_META[d]?.icon || "star")}</span><h3>${d}</h3></header>
+            <div class="th-packets">
+              ${levelsOf(d).map((l) => {
+                const base = packetBase(S.band, d, l);
+                return html`<div class="th-packet">
+                  <h4>${TIERS[l]?.name || l}</h4>
+                  <div class="th-pk-row">
+                    <div class="th-pk is-student">
+                      <span class="th-pk-label">Student</span>
+                      <a class="btn small" href="${BASE}/printables/${base}" target="_blank" rel="noopener">${icon("print")} Student packet</a>
+                      <a class="btn small" href="${BASE}/printables/${base}.docx">${icon("download")} Student Word</a>
+                    </div>
+                    <div class="th-pk is-teacher">
+                      <span class="th-pk-label">${icon("lock")} Teacher · answers</span>
+                      <a class="btn small" href="/access-teacher/packets/${base}" target="_blank" rel="noopener">${icon("print")} Teacher packet</a>
+                      <a class="btn small" href="/access-teacher/packets/${base}.docx">${icon("download")} Teacher Word</a>
+                    </div>
+                  </div>
+                </div>`;
+              })}
+            </div>
+          </article>`,
         )}
       </div>
-      <p>
-        <a href="${DRIVE_FOLDER}" target="_blank" rel="noopener"
-          >📁 Teacher packets folder in Google Drive</a
-        >
+      <p class="th-drive">
+        <a class="btn" href="${DRIVE_FOLDER}" target="_blank" rel="noopener">${icon("external")} Teacher packets folder in Google Drive</a>
       </p>
     </section>
 
     ${
-      S.band === "6-8"
-        ? html`<section class="panel">
-            <h2>Google Forms (grades 6–8)</h2>
-            <div class="hub-grid">
-              ${Object.entries(shared.officialForms || {}).map(
+      forms.length
+        ? html`<section class="th-sec" id="forms" aria-labelledby="formsTitle">
+            <header class="th-sec-head"><div><h2 id="formsTitle">Google Forms (grades 6–8)</h2></div></header>
+            <div class="th-grid">
+              ${forms.map(
                 ([d, link]) =>
-                  html`<div class="hub-card">
-                    <h3>${d}</h3>
-                    ${FORM_EDITORS[d] ? html`<a href="https://docs.google.com/forms/d/${FORM_EDITORS[d]}/edit" target="_blank" rel="noopener">✏️ Edit form</a><a href="https://docs.google.com/forms/d/${FORM_EDITORS[d]}/edit#responses" target="_blank" rel="noopener">📊 Responses</a>` : ""}<a
-                      href="${link}"
-                      target="_blank"
-                      rel="noopener"
-                      >🔗 Student link</a
-                    >
-                  </div>`,
+                  html`<article class="th-card d-${d.toLowerCase()}">
+                    <h3><span class="th-dom">${icon(DOMAIN_META[d]?.icon || "star")} ${d}</span></h3>
+                    <div class="th-pk is-student">
+                      <span class="th-pk-label">Student</span>
+                      <a class="btn small" href="${link}" target="_blank" rel="noopener">${icon("external")} Student link</a>
+                    </div>
+                    ${FORM_EDITORS[d] ? html`<div class="th-pk is-teacher">
+                      <span class="th-pk-label">${icon("lock")} Teacher · edit and results</span>
+                      <a class="btn small" href="https://docs.google.com/forms/d/${FORM_EDITORS[d]}/edit" target="_blank" rel="noopener">${icon("writing")} Edit form</a>
+                      <a class="btn small" href="https://docs.google.com/forms/d/${FORM_EDITORS[d]}/edit#responses" target="_blank" rel="noopener">${icon("growth")} Responses</a>
+                    </div>` : ""}
+                  </article>`,
               )}
             </div>
           </section>`
         : ""
     }
 
-    <section class="panel">
-      <h2>How to use it</h2>
-      <ul>
-        <li>
-          <strong>20 minutes:</strong> students open their skill room and press “Next up”. The lab
-          remembers where each student is on that device.
-        </li>
-        <li>
-          <strong>45-minute stations:</strong> 10 minutes each in Listening, Reading, Speaking and
-          Writing, then 5 minutes to print or share the Passport.
-        </li>
-        <li>
-          <strong>Speaking:</strong> students record on the device, play back, and compare their
-          answer with sample answers at three levels. Nothing is uploaded; ask students to play
-          their best try for you.
-        </li>
-        <li>
-          <strong>Different devices:</strong> students copy a progress code from their Passport and
-          paste it on the new device.
-        </li>
-        <li>This is classroom practice inspired by ACCESS, not an official WIDA test or score.</li>
-      </ul>
+    <section class="th-sec" id="guide" aria-labelledby="guideTitle">
+      <header class="th-sec-head"><div><h2 id="guideTitle">How to use it</h2></div>${TAG_TEACHER}</header>
+      <ol class="th-guide">
+        ${GUIDE.map(([lead, text]) => html`<li><div><strong>${lead}</strong> ${text}</div></li>`)}
+        <li><div>This is classroom practice inspired by ACCESS, not an official WIDA test or score.</div></li>
+      </ol>
     </section>
 
     ${
       S.picked.length
-        ? html`<div class="pl-bar" role="region" aria-label="Playlist">
-            <strong>${S.picked.length} in playlist</strong>
+        ? html`<div class="th-plbar" role="region" aria-label="Playlist">
+            <strong>${icon("list")} ${S.picked.length} in playlist</strong>
             <input
               class="pl-title"
               type="text"
@@ -346,12 +360,12 @@ async function render() {
               aria-label="Playlist name"
             />
             <a class="btn btn-primary" href="${playUrl()}" target="_blank" rel="noopener"
-              >▶ Preview</a
+              >${icon("play")} Preview</a
             >
             <button type="button" class="btn" data-copy-url="${playUrl()}">
-              🔗 Copy playlist link
+              ${icon("copy")} Copy playlist link
             </button>
-            <button type="button" class="ghost" data-clear-pl style="color:inherit">Clear</button>
+            <button type="button" class="ghost" data-clear-pl>Clear</button>
           </div>`
         : ""
     }
@@ -363,6 +377,7 @@ root.addEventListener("input", (e) => {
   const f = e.target.dataset.f;
   if (f) {
     S[f] = e.target.value;
+    S.limit = PAGE;
     clearTimeout(timer);
     timer = setTimeout(
       () => render().then(() => root.querySelector(`[data-f="${f}"]`)?.focus()),
@@ -372,7 +387,7 @@ root.addEventListener("input", (e) => {
   if (e.target.matches("[data-pl-title]")) {
     S.plTitle = e.target.value;
     root
-      .querySelectorAll('.pl-bar [data-copy-url], .pl-bar a[href*="/play?"]')
+      .querySelectorAll('.th-plbar [data-copy-url], .th-plbar a[href*="/play?"]')
       .forEach((el) =>
         el.tagName === "A" ? (el.href = playUrl()) : (el.dataset.copyUrl = playUrl()),
       );
@@ -393,10 +408,16 @@ root.addEventListener("click", (e) => {
       band: band.dataset.hubBand,
       domain: "",
       level: "",
+      limit: PAGE,
       picked: [],
       keys: new Set(),
     });
     return render();
+  }
+  if (t.closest("[data-more]")) {
+    const from = S.limit;
+    S.limit += PAGE;
+    return render().then(() => root.querySelectorAll("[data-pick]")[from]?.focus());
   }
   const copy = t.closest("[data-copy-url]");
   if (copy) return copyText(abs(copy.dataset.copyUrl));

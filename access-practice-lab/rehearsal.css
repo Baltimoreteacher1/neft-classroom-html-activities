@@ -1,26 +1,144 @@
-/* EduWonderLab rehearsal settings, practice-test mode chips and formative tables (views/tools.js, test.js, tests.js). */
-.rh-tools{margin:.6rem 0}.rh-tools h2{font-size:1.05rem;margin:0 0 .4rem}
-.rh-row{display:flex;flex-wrap:wrap;gap:.45rem}
-.rh-toggle{min-height:2.75rem}
-.rh-toggle[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
-.rh-note{margin:.4rem 0 0}
-.rh-reader{position:fixed;left:0;right:0;top:40%;height:3.6em;pointer-events:none;z-index:60;border-block:3px solid #ffd60a;box-shadow:0 0 0 100vmax rgb(0 0 0 / 55%)}
-.rh-scratch{margin-top:1rem}.rh-scratch textarea{width:100%;max-width:100%}
-.rh-scope.rh-contrast{--bg:#fff;--surface:#fff;--surface-2:#fff;--ink:#000;--ink-2:#000;--line:#000;--brand:#003a80;--brand-ink:#002651;--brand-soft:#e8f0fb;--right:#00562b;--right-soft:#e6f4ea;--wrong:#8c0000;--wrong-soft:#fdecea;--hint:#5c3b00;--hint-soft:#fff6e0;--focus:#b0006a;background:#fff;color:#000}
-.rh-scope.rh-contrast :is(.panel,.test-q,.palette,.passage,.btn,.flag,.dot,textarea,input,.review-row,.tool-step,.feedback){border-color:#000;border-width:2px}
-.rh-scope.rh-contrast .test-bar{background:#000;color:#fff}
-.rh-scope.rh-contrast a{text-decoration:underline}
-.rh-scope.rh-contrast :focus-visible{outline:3px solid #b0006a;outline-offset:2px}
-.mode-chip{background:#fff;color:#1d2730}
-.mode-banner{padding:.8rem 1rem;border-radius:12px;border-left:6px solid var(--brand);background:var(--brand-soft);margin-bottom:1rem}
-.lookback{margin-top:1rem}.lookback summary{cursor:pointer;font-weight:700;min-height:2.75rem;display:flex;align-items:center}
-.review-section{margin-top:1rem}.review-section h2{font-size:1.1rem;margin:0 0 .3rem}
-.formative{margin-top:1.5rem}.fm-mode{margin-top:1rem;padding:1rem;border:1px solid var(--line);border-radius:var(--radius)}
-.fm-mode h3{margin:0 0 .3rem}.fm-scroll{overflow-x:auto;max-width:100%}
-.fm-table{width:100%;border-collapse:collapse;margin-top:.6rem;font-size:.95rem}
-.fm-table caption{text-align:left;font-weight:700;padding:.3rem 0}
-.fm-table th,.fm-table td{padding:.45rem .5rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-.fm-small{display:inline-block;margin-left:.3rem;padding:0 .4rem;border-radius:6px;background:var(--hint-soft);color:var(--hint);font-size:.85rem;font-weight:700}
-.test-card{display:flex;flex-direction:column}.test-card>a:first-child{height:auto;flex:1}
-.test-card .mode-links{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.4rem}
-.test-card .mode-links a{display:inline-flex;align-items:center;height:auto;min-height:2.75rem;padding:.4rem .75rem;border-radius:var(--radius-sm);font-size:.92rem;font-weight:700;color:var(--brand-ink)}
+/* EduWonderLab rehearsal settings (views/tools.js, shown on the practice-test intro and runner).
+   Loads before ds.css, so selectors here carry enough specificity to beat .btn. The test screens
+   themselves live in tests.css. */
+.rh-tools {
+  margin: var(--s-4) 0;
+  padding: var(--s-4) var(--s-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.rh-tools h2 {
+  margin: 0 0 var(--s-3);
+  font: 650 1.3rem/1.2 var(--font-display);
+  letter-spacing: -0.01em;
+}
+.rh-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+@media (max-width: 560px) {
+  .rh-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  }
+  .rh-tools .rh-toggle {
+    justify-content: flex-start;
+  }
+}
+.rh-tools .rh-toggle {
+  min-height: 2.75rem;
+  border-radius: 999px;
+  padding: 0.3rem 1.1rem 0.3rem 0.8rem;
+  border: 2px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+}
+.rh-tools .rh-toggle::before {
+  content: "";
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+.rh-tools .rh-toggle > span[aria-hidden] {
+  display: none;
+}
+.rh-tools .rh-toggle[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+.rh-tools .rh-toggle[aria-pressed="true"]::before {
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 0;
+  border-radius: 0;
+  background: currentColor;
+  -webkit-mask: var(--i-check) center / contain no-repeat;
+  mask: var(--i-check) center / contain no-repeat;
+}
+.rh-tools .rh-toggle[aria-pressed="false"]:hover {
+  border-color: var(--ink);
+  background: var(--surface-2);
+}
+.rh-note {
+  margin: var(--s-3) 0 0;
+}
+.rh-reader {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 40%;
+  height: 3.6em;
+  pointer-events: none;
+  z-index: 60;
+  border-block: 3px solid #ffd60a;
+  box-shadow: 0 0 0 100vmax rgb(0 0 0 / 55%);
+}
+.rh-scratch {
+  margin-top: 1rem;
+}
+.rh-scratch textarea {
+  width: 100%;
+  max-width: 100%;
+}
+.rh-scope.rh-contrast {
+  --bg: #fff;
+  --surface: #fff;
+  --surface-2: #fff;
+  --ink: #000;
+  --ink-2: #000;
+  --ink-3: #000;
+  --line: #000;
+  --line-strong: #000;
+  --brand: #003a80;
+  --brand-ink: #002651;
+  --brand-soft: #e8f0fb;
+  --right: #00562b;
+  --right-soft: #e6f4ea;
+  --wrong: #8c0000;
+  --wrong-soft: #fdecea;
+  --hint: #5c3b00;
+  --hint-soft: #fff6e0;
+  --focus: #b0006a;
+  background: #fff;
+  color: #000;
+}
+.rh-scope.rh-contrast
+  :is(
+    .test-q,
+    .palette,
+    .passage,
+    .btn,
+    .flag,
+    .dot,
+    textarea,
+    input,
+    .review-row,
+    .review-section,
+    .feedback,
+    .test-bar,
+    .mode-card,
+    .comp-card,
+    .fm-mode,
+    .result-card,
+    .answer-review li,
+    .support-zone
+  ) {
+  border-color: #000;
+  border-width: 2px;
+}
+.rh-scope.rh-contrast .test-bar {
+  background: #fff;
+  color: #000;
+}
+.rh-scope.rh-contrast a {
+  text-decoration: underline;
+}
+.rh-scope.rh-contrast :focus-visible {
+  outline: 3px solid #b0006a;
+  outline-offset: 2px;
+}

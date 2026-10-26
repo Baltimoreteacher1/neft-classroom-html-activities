@@ -9,9 +9,12 @@ import { glossInline } from "./glossary.js";
 import { INLINE_BTN } from "./evidence-ui.js";
 import { splitSentences, tagLabel } from "./lang/evidence-notebook.js";
 import { LISTEN_NOTE_FIELDS, listeningSegments, signalParts } from "./learning.js";
-import { BASE, DOMAIN_META, LEVEL_KEYS, TIERS, asList, bandLabel, html, raw } from "./util.js";
+import { BASE, DOMAIN_META, LEVEL_KEYS, TIERS, asList, bandLabel, html, icon, raw } from "./util.js";
 
 const IGN = raw("data-nsr-ignore");
+// Decorative level pattern for the listening player; it only moves while audio is actually playing.
+const BAR_H = [30, 55, 40, 75, 50, 90, 60, 40, 70, 95, 55, 35, 65, 85, 45, 60, 30, 70, 50, 80, 40, 55, 35, 25];
+const listenBars = () => raw(BAR_H.map((h, i) => `<i style="--h:${h};--d:${i % 12}"></i>`).join(""));
 
 // Scripts the current page can play, keyed by player id. Views register them
 // while rendering so the heard text never has to sit in the DOM.
@@ -40,30 +43,30 @@ export function listenPlayerHTML(
     const left = Math.max(0, maxPlays - n);
     return html`<div class="listen-player is-limited" data-player="${key}">
     <button type="button" class="listen-btn" data-listen="${key}" aria-describedby="lp-${key}" ${left ? "" : raw("disabled")}>
-      <span class="listen-icon" aria-hidden="true">▶</span>
+      <span class="listen-icon" aria-hidden="true">${icon("play")}</span>
       <span class="listen-label">${left ? (n ? "Play once more" : "Play") : "Played"}</span>
     </button>
     <div class="listen-meta" id="lp-${key}" role="status">
-      <span class="listen-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+      <span class="listen-bars" aria-hidden="true">${listenBars()}</span>
       <span>${left ? `Test conditions: you can play this recording ${left === 1 ? "one more time" : `${left} times`}. It cannot be paused.` : "Test conditions: this recording has been played. Choose your answer."}</span>
     </div>
   </div>`;
   }
   return html`<div class="listen-player" data-player="${key}">
     <button type="button" class="listen-btn" data-listen="${key}" aria-describedby="lp-${key}">
-      <span class="listen-icon" aria-hidden="true">▶</span>
+      <span class="listen-icon" aria-hidden="true">${icon("play")}</span>
       <span class="listen-label">${n ? "Listen again" : label}</span>
     </button>
-    <button type="button" class="ghost" data-stop-audio>■ Stop audio</button>
+    <button type="button" class="ghost" data-stop-audio>${icon("stop")} Stop audio</button>
     <div class="listen-meta" id="lp-${key}">
-      <span class="listen-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+      <span class="listen-bars" aria-hidden="true">${listenBars()}</span>
       <span
         >${n ? `Played ${n} time${n === 1 ? "" : "s"}` : test ? "Press play. You may listen more than once." : "Press play to hear it."}</span
       >
     </div>
     <div class="speed" role="group" aria-label="Audio speed">
       <button type="button" class="speed-btn" data-rate="0.75" aria-pressed="${rate <= 0.78}">
-        🐢 Slower
+        Slower
       </button>
       <button type="button" class="speed-btn" data-rate="0.9" aria-pressed="${rate > 0.78}">
         Normal
@@ -91,11 +94,11 @@ export function readingToolbarHTML(
       ${
         speech
           ? html`<button type="button" class="btn btn-secondary reading-play-btn" data-read-passage="${passageKey}">
-        <span class="play-icon" aria-hidden="true">🎧</span>
+        <span class="play-icon" aria-hidden="true">${icon("volume")}</span>
         <span class="play-label">Read Passage Aloud</span>
       </button>
       <button type="button" class="ghost small reading-stop-btn" data-stop-audio>
-        ■ Stop
+        ${icon("stop")} Stop
       </button>
 
       <label class="voice-picker-label">
@@ -104,7 +107,7 @@ export function readingToolbarHTML(
           ${voices.map(
             (v) =>
               html`<option value="${v.id}" ${voiceURI === v.id || (!voiceURI && v.id === "default") ? raw("selected") : ""}>
-                🎙️ ${v.name}
+                ${v.name}
               </option>`,
           )}
         </select>
@@ -112,7 +115,7 @@ export function readingToolbarHTML(
 
       <div class="speed" role="group" aria-label="Reading speed">
         <button type="button" class="speed-btn" data-rate="0.75" aria-pressed="${rate <= 0.78}">
-          🐢 0.75x
+          0.75x
         </button>
         <button type="button" class="speed-btn" data-rate="0.9" aria-pressed="${rate > 0.78 && rate <= 0.95}">
           0.9x
@@ -131,7 +134,7 @@ export function readingToolbarHTML(
         data-toggle-cognates
         aria-pressed="${showCognates}"
       >
-        🔍 Spanish Cognates
+        ${icon("language")} Spanish cognates
       </button>`
           : ""
       }
@@ -190,7 +193,7 @@ export function renderPassageSentences(
     </p>`;
     if (!gist) return body;
     const id = `gist-${pickKey || "p"}-${pIdx}`;
-    return html`${body}<p class="field gist-prompt"><label for="${id}">💭 Gist of paragraph ${pIdx + 1}: what is it mostly about? (a few words)</label>
+    return html`${body}<p class="field gist-prompt"><label for="${id}">${icon("writing")} Gist of paragraph ${pIdx + 1}: what is it mostly about? (a few words)</label>
       <input id="${id}" type="text" data-gist="${pIdx}" value="${gist[pIdx] || ""}" autocomplete="off" ${IGN} /></p>`;
   });
 }
@@ -208,20 +211,20 @@ export function transcriptHTML(
   if (!lines.length) return "";
   if (!interactive)
     return html`<details class="transcript">
-    <summary>📄 ${title}</summary>
+    <summary>${icon("list")} ${title}</summary>
     <div class="transcript-body">${lines.map((l) => html`<p>${l}</p>`)}</div>
   </details>`;
   const parts = listeningSegments(lines);
   const tagged = tags || new Set();
   // Stay open across re-renders once the learner is working in it (a diagnosed part or any tag).
   return html`<details class="transcript is-interactive" ${target != null || tags ? raw("open") : ""}>
-    <summary>📄 ${title}</summary>
+    <summary>${icon("list")} ${title}</summary>
     <div class="transcript-body">
-      <p class="fine">${canReplay ? "Press ▶ to replay one part. " : ""}Tap a signal word (however, first, not…) to tag it. Tags are only for this attempt.</p>
+      <p class="fine">${canReplay ? "Press the play button beside a part to replay it. " : ""}Tap a signal word (however, first, not…) to tag it. Tags are only for this attempt.</p>
       <ol class="transcript-parts">
         ${parts.map(
           (seg) => html`<li class="${seg.index === target ? "is-target" : ""}" ${seg.index === target ? raw('aria-current="true"') : ""}>
-            ${canReplay ? html`<button type="button" class="speed-btn" data-replay-seg="transcript:${seg.index}" aria-label="Replay part ${seg.index + 1}">▶ ${seg.index + 1}</button> ` : ""}${signalParts(seg.text).map((p, j) =>
+            ${canReplay ? html`<button type="button" class="speed-btn" data-replay-seg="transcript:${seg.index}" aria-label="Replay part ${seg.index + 1}">${icon("play")} ${seg.index + 1}</button> ` : ""}${signalParts(seg.text).map((p, j) =>
               p.signal
                 ? html`<button type="button" class="cat-chip signal-word" data-tag-signal="${seg.index}:${j}" aria-pressed="${String(tagged.has(`${seg.index}:${j}`))}" aria-label="Tag signal word ${p.text}">${p.text}</button>`
                 : p.text,
@@ -241,7 +244,7 @@ export function transcriptHTML(
  */
 export function listeningStrategyHTML(key, { purpose = null, parts = [], played = false, notes = {}, open = false, canReplay = canSpeak() } = {}) {
   return html`<details class="helpers listen-strategy" data-listen-strategy="${key}" ${open ? raw("open") : ""}>
-    <summary>🧭 Listening strategy lab</summary>
+    <summary>${icon("listening")} Listening strategy lab</summary>
     <div class="helper-body">
       ${
         purpose
@@ -259,7 +262,7 @@ export function listeningStrategyHTML(key, { purpose = null, parts = [], played 
               ${
                 played
                   ? html`<div class="speed" role="group" aria-labelledby="ls-replay-${key}">
-                      ${parts.map((seg) => html`<button type="button" class="speed-btn" data-replay-seg="bar:${seg.index}">▶ ${seg.kind === "turn" ? "Turn" : "Part"} ${seg.index + 1}</button>`)}
+                      ${parts.map((seg) => html`<button type="button" class="speed-btn" data-replay-seg="bar:${seg.index}">${icon("play")} ${seg.kind === "turn" ? "Turn" : "Part"} ${seg.index + 1}</button>`)}
                     </div>`
                   : html`<p class="fine">Listen to the whole recording once. Then you can replay one part at a time.</p>`
               }
@@ -286,7 +289,7 @@ export function listeningTrapHTML(diag, { held = false, hint = "", canReplay = c
     <p>${diag.message}</p>
     ${
       canReplay
-        ? html`<button type="button" class="btn" data-replay-seg="trap:${diag.segment}">▶ Replay part ${part}</button>`
+        ? html`<button type="button" class="btn" data-replay-seg="trap:${diag.segment}">${icon("replay")} Replay part ${part}</button>`
         : html`<p>Ask your teacher to read part ${part} again.</p>`
     }
     ${held ? html`<p class="fine">After the replay, the answer appears here.</p>` : html`${hint ? html`<p>${hint}</p>` : ""}<button type="button" class="btn" data-retry>Try again</button>`}
@@ -330,7 +333,7 @@ export function recorderHTML(
               >${takes.length ? "Record again" : "Record my answer"}
             </button>`
       }
-      ${prompt ? html`<button type="button" class="ghost" data-say="${prompt}">🔊 Hear the question</button>` : ""}
+      ${prompt ? html`<button type="button" class="ghost" data-say="${prompt}">${icon("volume")} Hear the question</button>` : ""}
     </div>
     ${
       takes.length
@@ -373,7 +376,7 @@ export function modelLadderHTML(models, level, activity = {}) {
   const rows = LEVEL_KEYS.filter((k) => models[k]);
   if (!rows.length) return "";
   return html`<details class="ladder">
-    <summary>🪜 Hear answers that grow</summary>
+    <summary>${icon("growth")} Hear answers that grow</summary>
     <p class="fine">
       Notice how each response communicates an idea. A short, specific answer can be strong.
       Borrow a useful technique, then explain your own idea. These examples are not WIDA scores.
@@ -385,7 +388,7 @@ export function modelLadderHTML(models, level, activity = {}) {
             <span class="ladder-tier">${TIERS[k].name}</span>
             <p>${models[k]}</p>
             <p class="fine"><strong>Notice:</strong> ${activity.modelNotes?.[k] || (k === "A" ? "Find the main idea. Which words make it clear?" : k === "B" ? "Find a specific detail. How does it help answer the question?" : "Find a connection between ideas. Is every detail useful?")}</p>
-            <button type="button" class="ghost small" data-say="${models[k]}">🔊 Listen</button>
+            <button type="button" class="ghost small" data-say="${models[k]}">${icon("volume")} Listen</button>
           </li>`,
       )}
     </ol>
@@ -417,7 +420,7 @@ export function vocabHTML(activity, shared, { focused = true } = {}) {
   const focus = focused ? activity.listenFor || activity.readFor || activity.sayFor || activity.writeFor || [] : [];
   if (!terms.length && !frames.length && !focus.length) return "";
   return html`<details class="helpers" ${focused ? raw("open") : ""}>
-    <summary>💡 Helpful words and starters</summary>
+    <summary>${icon("bulb")} Helpful words and starters</summary>
     <div class="helper-body">
       ${
         focus.length
@@ -443,11 +446,11 @@ export function vocabHTML(activity, shared, { focused = true } = {}) {
                         data-say="${en}"
                         aria-label="Say ${en}"
                       >
-                        🔊</button
+                        ${icon("volume")}</button
                       >${en}
                     </dt>
                     <dd>
-                      ${def}${spanish ? html`<span class="es" lang="es"><button type="button" class="say-word" data-say-es="${spanish.split(":")[0]}" aria-label="Escuchar">🔊</button>${spanish}</span>` : ""}
+                      ${def}${spanish ? html`<span class="es" lang="es"><button type="button" class="say-word" data-say-es="${spanish.split(":")[0]}" aria-label="Escuchar">${icon("volume")}</button>${spanish}</span>` : ""}
                     </dd>
                   </div>`;
                 })}
@@ -501,7 +504,7 @@ export function ringHTML(done, total, { size = 56, color = "currentColor", label
   );
 }
 
-export const domainGlyph = (d) => DOMAIN_META[d]?.glyph || "•";
+export const domainGlyph = (d) => icon(DOMAIN_META[d]?.icon || "star");
 export const crumbsHTML = (items) =>
   html`<nav class="crumbs" aria-label="Breadcrumb">
     <ol>

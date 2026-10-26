@@ -2,7 +2,7 @@
 // buttons, the notebook list, and the Claim · Evidence · Example organizer. Every control is a real <button>,
 // so mouse, touch and keyboard all work the same way; tag results are announced by the caller (aria-live).
 import { CELLS, TAGS, tagLabel } from "./lang/evidence-notebook.js";
-import { html } from "./util.js";
+import { html, icon } from "./util.js";
 
 const INLINE_BTN =
   "display:inline;font:inherit;color:inherit;background:none;border:0;padding:0.1rem 0;margin:0;text-align:inherit;line-height:inherit;cursor:pointer";
@@ -31,7 +31,7 @@ export function tagBarHTML(picked) {
   return html`<div class="nb-tagbar card" role="group" aria-labelledby="nbTagLabel">
     <p id="nbTagLabel"><strong>Tag this:</strong> “${picked.text}”</p>
     <div class="row-actions">
-      ${TAGS.map((t) => html`<button type="button" class="btn small" data-nb-tag="${t.id}" title="${t.hint}">📌 ${t.label}</button>`)}
+      ${TAGS.map((t) => html`<button type="button" class="btn small" data-nb-tag="${t.id}" title="${t.hint}">${icon("pin")} ${t.label}</button>`)}
       <button type="button" class="ghost small" data-nb-unpick>Cancel</button>
     </div>
   </div>`;

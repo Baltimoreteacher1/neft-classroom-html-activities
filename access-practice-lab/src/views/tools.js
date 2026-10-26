@@ -6,7 +6,7 @@ import { crumbsHTML, listenPlayerHTML, recorderHTML } from "../components.js";
 import { choiceTarget, inputHTML, reduceAnswer } from "../items.js";
 import { isRecording } from "../recorder.js";
 import { PREFIX } from "../store.js";
-import { BASE, announce, html, raw, safeJson, storage } from "../util.js";
+import { BASE, announce, html, icon, raw, safeJson, storage } from "../util.js";
 
 // ── EduWonderLab rehearsal settings ───────────────────────────────────────────
 const RH_KEY = `${PREFIX}:rehearsal`;
@@ -43,7 +43,7 @@ export function rehearsalToolbarHTML({ compact = false } = {}) {
       ${REHEARSAL_TOOLS.map(
         (t) =>
           html`<button type="button" class="btn small rh-toggle" data-rh-toggle="${t.id}" aria-pressed="${p[t.id]}" title="${t.help}">
-            ${p[t.id] ? html`<span aria-hidden="true">✓ </span>` : ""}${t.label}
+            ${t.label}
           </button>`,
       )}
     </div>
@@ -103,39 +103,40 @@ const SAMPLE = {
   id: "tools-sample",
   type: "multipleChoice",
   options: [
-    { id: "a", text: "A pencil", visual: "✏️" },
-    { id: "b", text: "A book", visual: "📘" },
-    { id: "c", text: "A backpack", visual: "🎒" },
+    { id: "a", text: "A pencil", visual: "\u270F\uFE0F" },
+    { id: "b", text: "A book", visual: "\u{1F4D8}" },
+    { id: "c", text: "A backpack", visual: "\u{1F392}" },
   ],
   answer: "b",
 };
 const state = { answer: undefined, flagged: false, typed: "", scratch: "" };
 
 export async function render(ctx) {
-  const step = (n, title, body) =>
-    html`<li class="tool-step">
-      <span class="tool-n">${n}</span>
-      <div>
-        <h2>${title}</h2>
-        ${body}
-      </div>
+  const step = (n, title, body, { wide = false } = {}) =>
+    html`<li class="tl-step ${wide ? "is-wide" : ""}">
+      <header class="tl-step-head"><span class="tl-n">${n}</span><h2>${title}</h2></header>
+      <div class="tl-step-body">${body}</div>
     </li>`;
+  const group = (label, text, href, linkText) =>
+    html`<li><strong>${label}</strong> ${text} <a href="${href}">${linkText}</a></li>`;
   return {
     title: "Lab tools and device check",
-    html: html`<div class="${rehearsalClasses()}">${crumbsHTML([
+    html: html`<div class="${rehearsalClasses()} tl-page">${crumbsHTML([
         ["Lab", `${BASE}/`],
         ["Lab tools", null],
       ])}
-      <section class="room-hero">
-        <div>
-          <h1 tabindex="-1">🧰 Lab tools and device check</h1>
+      <section class="prog-hero tl-hero">
+        <div class="prog-hero-copy">
+          <p class="eyebrow">${icon("tools")} Before you practice</p>
+          <h1 tabindex="-1">Lab tools and device check</h1>
           <p class="lead">
             Try the lab controls and check your headphones before practicing. These are lab practice tools, not an official test simulation.
           </p>
+          <a class="btn btn-primary" href="${BASE}/tests">I'm ready — go to practice tests ${icon("arrow-right")}</a>
         </div>
       </section>
-      <section class="panel"><h2>Prepare for the actual test</h2><p>Replay, slower speech, flagging, and recording here may work differently on ACCESS. Use the <a href="https://wida.wisc.edu/assess/access/preparing-students" target="_blank" rel="noopener">official WIDA preparation resources and test demo (new tab)</a> to learn the real test interface. Follow your teacher’s directions about allowed tools.</p></section>
-      <ol class="tool-steps">
+      <section class="tl-notice" aria-labelledby="tlActual"><span class="tl-notice-ico">${icon("info")}</span><div><h2 id="tlActual">Prepare for the actual test</h2><p>Replay, slower speech, flagging, and recording here may work differently on ACCESS. Use the <a href="https://wida.wisc.edu/assess/access/preparing-students" target="_blank" rel="noopener">official WIDA preparation resources and test demo (new tab)</a> to learn the real test interface. Follow your teacher’s directions about allowed tools.</p></div></section>
+      <ol class="tl-steps">
         ${step(
           1,
           "Headphones and playback check",
@@ -148,7 +149,7 @@ export async function render(ctx) {
           2,
           "Choose an answer",
           html`<p>Click one answer. Click a different one to change your mind.</p>
-            ${inputHTML(SAMPLE, state.answer)}${state.answer ? html`<p class="saved-note">${state.answer === "b" ? "✓ You chose the book." : "You can change your answer any time before you submit."}</p>` : ""}`,
+            ${inputHTML(SAMPLE, state.answer)}${state.answer ? html`<p class="saved-note tl-note">${state.answer === "b" ? html`${icon("check")} You chose the book.` : "You can change your answer any time before you submit."}</p>` : ""}`,
         )}
         ${step(
           3,
@@ -160,7 +161,7 @@ export async function render(ctx) {
               data-tool-flag
               aria-pressed="${state.flagged}"
             >
-              ${state.flagged ? "★ Flagged" : "☆ Flag"}
+              ${icon(state.flagged ? "flag" : "bookmark")} ${state.flagged ? "Flagged" : "Flag"}
             </button>`,
         )}
         ${step(
@@ -206,31 +207,34 @@ ${state.typed}</textarea>`,
                   >`
                 : ""
             }`,
+          { wide: true },
         )}
         ${step(
           7,
           "Teacher Hub & Differentiated Instructional Grouping",
           html`<p>Actionable language development tools for educators. Analyze evidence, plan small-group interventions, and access printable materials.</p>
-            <div class="card teacher-grouping-card">
+            <div class="tl-teacher">
+              <p class="tl-teacher-tag">${icon("teacher")} For teachers</p>
               <h3>Targeted Language Interventions</h3>
               <ul>
-                <li><strong>Group A (Discourse & Cohesion):</strong> Focus on cause-and-effect transitions (<em>because, consequently, therefore</em>) and multi-paragraph structures. Use the <a href="${BASE}/construction">Language Construction Lab</a>.</li>
-                <li><strong>Group B (Evidence & Scientific Claims):</strong> Focus on data interpretation and citing specific textual evidence. Use the <a href="${BASE}/evidence">Evidence Studio</a>.</li>
-                <li><strong>Group C (Oral Fluency & Discourse):</strong> Focus on academic dialogue turn-taking and spoken elaboration. Use the <a href="${BASE}/conversation">Conversation Simulator</a>.</li>
-                <li><strong>Group D (Vocabulary & Morphology):</strong> Focus on Greek and Latin roots, prefixes, and suffixes. Use <a href="${BASE}/vocabulary">Word Builder</a>.</li>
-                <li><strong>Whole-Class Modeling:</strong> Projector routines for listening, evidence reading, and sequence reconstruction. Use the <a href="${BASE}/classroom">Whole-Class Studio</a>.</li>
+                ${group("Group A (Discourse & Cohesion):", html`Focus on cause-and-effect transitions (<em>because, consequently, therefore</em>) and multi-paragraph structures. Use the`, `${BASE}/construction`, "Language Construction Lab")}
+                ${group("Group B (Evidence & Scientific Claims):", "Focus on data interpretation and citing specific textual evidence. Use the", `${BASE}/evidence`, "Evidence Studio")}
+                ${group("Group C (Oral Fluency & Discourse):", "Focus on academic dialogue turn-taking and spoken elaboration. Use the", `${BASE}/conversation`, "Conversation Simulator")}
+                ${group("Group D (Vocabulary & Morphology):", "Focus on Greek and Latin roots, prefixes, and suffixes. Use", `${BASE}/vocabulary`, "Word Builder")}
+                ${group("Whole-Class Modeling:", "Projector routines for listening, evidence reading, and sequence reconstruction. Use the", `${BASE}/classroom`, "Whole-Class Studio")}
               </ul>
               <div class="row-actions">
-                <a class="btn ghost small" href="${BASE}/launch-studio">Open Teacher Launch Studio →</a>
-                <a class="btn ghost small" href="${BASE}/classroom">Open Whole-Class Studio →</a>
-                <a class="btn ghost small" href="/access-teacher/">Open Full Teacher Dashboard →</a>
-                <a class="btn ghost small" href="${BASE}/passport?portfolio=1">View Student Practice Portfolios →</a>
+                <a class="btn ghost small" href="${BASE}/launch-studio">Open Teacher Launch Studio ${icon("arrow-right")}</a>
+                <a class="btn ghost small" href="${BASE}/classroom">Open Whole-Class Studio ${icon("arrow-right")}</a>
+                <a class="btn ghost small" href="/access-teacher/">Open Full Teacher Dashboard ${icon("arrow-right")}</a>
+                <a class="btn ghost small" href="${BASE}/passport?portfolio=1">View Student Practice Portfolios ${icon("arrow-right")}</a>
               </div>
             </div>`,
+          { wide: true },
         )}
       </ol>
       <div class="row-actions">
-        <a class="btn btn-primary" href="${BASE}/tests">I'm ready — go to practice tests →</a>
+        <a class="btn btn-primary" href="${BASE}/tests">I'm ready — go to practice tests ${icon("arrow-right")}</a>
       </div></div>`,
   };
 }

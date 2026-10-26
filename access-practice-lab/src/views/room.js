@@ -5,7 +5,7 @@ import { crumbsHTML, ringHTML, tierPickerHTML } from "../components.js";
 import { bandDomains, loadDomain, ordered } from "../content.js";
 import { activityStatus } from "../practice-plan.js";
 import { loadRecord } from "../store.js";
-import { BASE, DOMAIN_META, TIERS, bandLabel, html } from "../util.js";
+import { ART, BASE, DOMAIN_META, TIERS, bandLabel, html, icon } from "../util.js";
 import { tierFor } from "./home.js";
 
 const TYPE_LABEL = {
@@ -77,9 +77,7 @@ export async function render(ctx) {
     const status = savedStatus === "done" ? "done" : savedStatus === "new" ? "new" : "tried";
     return html`<li class="act-row is-${status}">
       <a href="${activityHref(domain, level, a.id)}">
-        <span class="act-status" aria-hidden="true"
-          >${status === "done" ? "✓" : status === "tried" ? "•" : ""}</span
-        >
+        <span class="act-status" aria-hidden="true">${status === "done" ? icon("check") : status === "tried" ? icon("pin") : ""}</span>
         <span class="act-title">${a.title}</span>
         <span class="act-meta">${TYPE_LABEL[a.type] || ""} · ${a.time || ""}</span>
         <span class="visually-hidden"
@@ -95,35 +93,26 @@ export async function render(ctx) {
         ["Lab", `${BASE}/`],
         [meta.room, null],
       ])}
-      <section class="room-hero" style="--room:${data.color}">
-        <div>
-          <p class="eyebrow">
-            ${bandLabel(band)} · ${tier ? `${tier.name} (${tier.range})` : L.displayLabel || level}
-          </p>
-          <h1 tabindex="-1"><svg aria-hidden="true"><use href="${BASE}/pictures/lab-icons.svg#${domain === "Model-Test" ? "test" : domain.toLowerCase()}"></use></svg> ${meta.room}</h1>
+      <section class="room-hero d-${domain.toLowerCase()}">
+        <div class="room-hero-copy">
+          <p class="eyebrow">${bandLabel(band)}${tier ? ` · ${tier.name} support` : ""}</p>
+          <h1 tabindex="-1">${meta.room}</h1>
           <p class="lead">${L.info?.headline || L.studentGoal || data.description}</p>
+          ${domain !== "Model-Test" ? tierPickerHTML(domain, level, (k) => roomHref(domain, k)) : ""}
+          <a class="btn btn-primary btn-big btn-next" href="${activityHref(domain, level, next.id)}">
+            <span class="btn-kicker">${doneCount ? "Keep going" : "Start here"}</span><span class="next-title">${next.title}</span>${icon("arrow-right")}
+          </a>
         </div>
-        ${ringHTML(doneCount, list.length, { size: 84, label: `${doneCount} of ${list.length} done` })}
+        <div class="room-hero-art">
+          <img src="${ART}/domain-${domain === "Model-Test" ? "reading" : domain.toLowerCase()}.svg" width="480" height="360" alt="" decoding="async" />
+          <div class="room-hero-progress">
+            ${ringHTML(doneCount, list.length, { size: 64, label: `${doneCount} of ${list.length} done` })}
+            <p><strong>${doneCount} of ${list.length}</strong><span>activities done at this level</span></p>
+          </div>
+        </div>
       </section>
-      ${domain !== "Model-Test" ? tierPickerHTML(domain, level, (k) => roomHref(domain, k)) : ""}
-      <a class="btn btn-primary btn-next" href="${activityHref(domain, level, next.id)}">
-        <span class="btn-kicker">${doneCount ? "Keep going" : "Start here"}</span>${next.title} →
-      </a>
-      ${
-        L.info?.canDo?.length
-          ? html`<details class="cando">
-              <summary>“I can…” goals for this level</summary>
-              <ul>
-                ${L.info.canDo.map((c) => html`<li>${c}</li>`)}
-              </ul>
-            </details>`
-          : ""
-      }
-      <p><a class="btn" href="${BASE}/library?grades=${band}&domain=${domain}&level=${level}">Search activities & build a practice set →</a></p>
-      <section class="packet-downloads" aria-labelledby="packetHeading">
-        <div><h2 id="packetHeading">Take this practice to paper</h2><p>Illustrated activities, clear directions, and room to respond. Student edition · ${bandLabel(band)}.</p></div>
-        <div class="row-actions"><a class="btn" href="${BASE}/printables/${packetBase}.html">Preview &amp; print</a><a class="btn" href="${BASE}/printables/${packetBase}.docx" download>Download Word packet</a></div>
-      </section>
+      <div class="room-layout">
+      <div class="room-main">
       <section class="strands" aria-label="All activities">
         ${cats.map((c) => {
           const acts = c.activityIds.map((id) => byId.get(id)).filter(Boolean);
@@ -139,6 +128,30 @@ export async function render(ctx) {
             </ol>
           </details>`;
         })}
-      </section>`,
+      </section>
+      </div>
+      <aside class="room-aside" aria-label="Goals and printables">
+        ${
+          L.info?.canDo?.length
+            ? html`<section class="aside-card">
+                <h2>${icon("flag")} “I can…” goals</h2>
+                <ul>
+                  ${L.info.canDo.map((c) => html`<li>${c}</li>`)}
+                </ul>
+              </section>`
+            : ""
+        }
+        <section class="aside-card">
+          <h2>${icon("library")} Build a practice set</h2>
+          <p class="fine">Search every activity and choose your own set.</p>
+          <a class="btn" href="${BASE}/library?grades=${band}&domain=${domain}&level=${level}">Search activities${icon("arrow-right")}</a>
+        </section>
+        <section class="aside-card packet-downloads" aria-labelledby="packetHeading">
+          <h2 id="packetHeading">${icon("print")} Take this practice to paper</h2>
+          <p class="fine">Illustrated activities, clear directions, and room to respond. Student edition · ${bandLabel(band)}.</p>
+          <div class="row-actions"><a class="btn" href="${BASE}/printables/${packetBase}.html">Preview &amp; print</a><a class="btn" href="${BASE}/printables/${packetBase}.docx" download>Download Word packet</a></div>
+        </section>
+      </aside>
+      </div>`,
   };
 }

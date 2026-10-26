@@ -5,7 +5,7 @@
 // an answer control). Every control carries data-nsr-ignore so the site-wide
 // Save/Resume engine never captures or "restores" it — the lab keeps its own
 // progress, and the engine's generic restore used to click lab controls.
-import { BASE, html, raw } from "./util.js";
+import { BASE, html, icon, raw } from "./util.js";
 
 const IGN = raw("data-nsr-ignore");
 
@@ -84,7 +84,7 @@ function sortHTML(item, answer, { reveal }) {
       (it) =>
         html`<div class="sort-row ${mark(reveal, a[it.id] === it.answer, Boolean(a[it.id]))}">
           <p class="sort-text">
-            ${item.speakItems ? html`<button type="button" class="mini-say" data-say="${it.text}" aria-label="Listen">🔊</button>` : ""}${it.text}
+            ${item.speakItems ? html`<button type="button" class="mini-say" data-say="${it.text}" aria-label="Listen">${icon("volume")}</button>` : ""}${it.text}
           </p>
           <div class="sort-cats" role="radiogroup" aria-label="Group for: ${it.text}">
             ${cats.map(

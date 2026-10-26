@@ -7,7 +7,7 @@
 //  * Glossed words are plain spans, never nested buttons (sentences are already role=button). Keyboard and
 //    screen-reader users get the same help from the "Word help" list, which holds a real button per word.
 //  * First occurrence of each word only, at most MAX per text, so a passage never turns into a wall of underlines.
-import { html, toHtml } from "./util.js";
+import { html, icon, toHtml } from "./util.js";
 
 export const MAX_GLOSSED = 12;
 const MIN_LENGTH = 4;
@@ -116,7 +116,7 @@ export function openGloss(term, glossary, from) {
           data-say="${entry.term}"
           aria-label="Say ${entry.term}"
         >
-          🔊
+          ${icon("volume")}
         </button>
         ${entry.term}
       </h2>
@@ -130,7 +130,7 @@ export function openGloss(term, glossary, from) {
                 data-say-es="${entry.es}"
                 aria-label="Escuchar ${entry.es}"
               >
-                🔊
+                ${icon("volume")}
               </button>
               <strong>${entry.es}</strong>${entry.esDef ? html`: ${entry.esDef}` : ""}
             </p>`
