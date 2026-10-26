@@ -1,9 +1,18 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { familyLaunch } from "../math/fluency-lab/family/family-planner.js";
+import { familyLaunch, familySessionLaunch } from "../math/fluency-lab/family/family-planner.js";
 import { GRADES } from "../math/fluency-lab/problem-bank.js";
 
 for (const grade of GRADES) {
+  const nightly = new URL(
+    familySessionLaunch({ grade: grade.grade, profile: 4, skill: grade.skills[0].id, lang: "es" }),
+    "https://example.test/math/fluency-lab/family/",
+  );
+  assert.equal(nightly.pathname, "/math/fluency-lab/family/tonight.html");
+  assert.equal(nightly.searchParams.get("grade"), String(grade.grade));
+  assert.equal(nightly.searchParams.get("profile"), "4");
+  assert.equal(nightly.searchParams.get("skill"), grade.skills[0].id);
+  assert.equal(nightly.searchParams.get("lang"), "es");
   const url = new URL(
     familyLaunch({ grade: grade.grade, profile: 0, start: "mission" }),
     "https://example.test/math/fluency-lab/family/",
@@ -61,6 +70,8 @@ assert.match(labPage, /href="\.\/family\/"[^>]*data-i18n>Family Math Tonight/);
 assert.match(client, /recommendations\(safeTutor\(\), grade\)/);
 assert.match(client, /profileKey\(TUTOR_KEY, profile\)/);
 assert.match(client, /setLang\(lang\)/);
+assert.match(client, /familySessionLaunch\(/);
+assert.match(client, /#tonight-link/);
 assert.match(app, /initialParams\.get\("start"\) === "mission"/);
 assert.match(app, /initialParams\.get\("start"\) === "practice"/);
 assert.match(

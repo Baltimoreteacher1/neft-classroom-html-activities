@@ -25,3 +25,13 @@ export function familyLaunch({ grade, profile, start, view, skill } = {}) {
   }
   return `../?${params.toString()}`;
 }
+
+export function familySessionLaunch({ grade, profile, skill, lang = "en" } = {}) {
+  const gradeNumber = Number(grade);
+  const profileNumber = Number(profile);
+  const selected = GRADES.find((entry) => entry.grade === gradeNumber)?.skills.find((entry) => entry.id === skill);
+  if (!selected) throw new RangeError("Choose a skill in the selected grade.");
+  if (!Number.isInteger(profileNumber) || profileNumber < 0 || profileNumber > 5) throw new RangeError("Choose a valid local learner profile.");
+  const params = new URLSearchParams({ grade: String(gradeNumber), profile: String(profileNumber), skill: selected.id, lang: lang === "es" ? "es" : "en" });
+  return `tonight.html?${params.toString()}`;
+}

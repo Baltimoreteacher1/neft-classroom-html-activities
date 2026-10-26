@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import AxeBuilder from "@axe-core/playwright";
 import { chromium } from "playwright";
 import { createServer } from "vite";
+import { createLesson } from "../math/fluency-lab/lesson-content.js";
+import { GRADES } from "../math/fluency-lab/problem-bank.js";
 import { REPO_ROOT } from "./lib/curriculum-source.mjs";
 
 const server = await createServer({
@@ -92,11 +94,13 @@ try {
   const modes = await page.locator("#rotation-list a").evaluateAll((links) =>
     links.map((link) => {
       const url = new URL(link.href);
-      return url.searchParams.get("start") || url.searchParams.get("view");
+      return url.pathname.endsWith("/tonight.html")
+        ? "tonight"
+        : url.searchParams.get("start") || url.searchParams.get("view");
     }),
   );
   assert.deepEqual(modes, [
-    "mission",
+    "tonight",
     "practice",
     "games",
     "checkup",
@@ -124,6 +128,175 @@ try {
   );
   assert.deepEqual(errors, [], "family and Fluency Lab routes have no uncaught page errors");
   await context.close();
+
+  const nightContext = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    reducedMotion: "reduce",
+  });
+  const nightPage = await nightContext.newPage();
+  nightPage.on("pageerror", (error) => errors.push(error.message));
+  await nightPage.goto(`${base}/math/fluency-lab/family/?grade=1&profile=0`, {
+    waitUntil: "networkidle",
+  });
+  const nightHref = await nightPage.locator("#tonight-link").getAttribute("href");
+  assert.match(nightHref, /^tonight\.html\?/);
+  await nightPage.locator("#tonight-link").click();
+  assert.equal(new URL(nightPage.url()).pathname, "/math/fluency-lab/family/tonight.html");
+  assert.equal(await nightPage.locator("#stage-title").innerText(), "Retrieval warm-up");
+  const nightLinks = await nightPage
+    .locator("a[href]")
+    .evaluateAll((links) => links.map((link) => new URL(link.href).pathname));
+  assert.ok(
+    nightLinks.every((path) => path.startsWith("/math/fluency-lab/")),
+    `night session links stay inside Math Fluency Lab: ${nightLinks.join(", ")}`,
+  );
+  const nightAxe = await new AxeBuilder({ page: nightPage }).analyze();
+  assert.deepEqual(
+    nightAxe.violations.filter((v) => ["critical", "serious"].includes(v.impact)).map((v) => v.id),
+    [],
+    "night session has no serious or critical accessibility violations",
+  );
+  if ((await nightPage.locator("html").getAttribute("lang")) !== "es")
+    await nightPage.locator("#night-language").click();
+  assert.equal(
+    await nightPage.locator("html").getAttribute("lang"),
+    "es",
+    "night session offers its Spanish version",
+  );
+  assert.equal(await nightPage.locator("#stage-title").innerText(), "Repaso de recuperación");
+  const spanishNightAxe = await new AxeBuilder({ page: nightPage }).analyze();
+  assert.deepEqual(
+    spanishNightAxe.violations
+      .filter((v) => ["critical", "serious"].includes(v.impact))
+      .map((v) => v.id),
+    [],
+    "Spanish night session has no serious or critical accessibility violations",
+  );
+  await nightPage.locator("#night-language").click();
+  assert.equal(await nightPage.locator("html").getAttribute("lang"), "en");
+  assert.equal(
+    await nightPage.evaluate(() => document.documentElement.scrollWidth - innerWidth),
+    0,
+    "night session has no mobile horizontal overflow",
+  );
+
+  async function answerSessionItems(stageName) {
+    for (;;) {
+      const state = await nightPage.evaluate(
+        (key) => JSON.parse(localStorage.getItem(key)),
+        "ewl-family-night-v1",
+      );
+      const stage = state.stages[stageName];
+      if (stage.complete) break;
+      const answer = stage.items[stage.cursor].answers[0];
+      await nightPage.locator("#night-answer").fill(String(answer));
+      await nightPage.locator('[data-night-answer] button[type="submit"]').click();
+    }
+    await nightPage.locator("[data-next-stage]").click();
+  }
+  await answerSessionItems("retrieval");
+  assert.equal(await nightPage.locator("#stage-title").innerText(), "Build the idea");
+  const liveNight = await nightPage.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    "ewl-family-night-v1",
+  );
+  const lessonSkillId = liveNight.skillKey.split(":")[1];
+  const lesson = createLesson(
+    GRADES.find((g) => g.grade === 1).skills.find((skill) => skill.id === lessonSkillId),
+  );
+  for (const step of lesson.steps) {
+    if (step.choices?.length) {
+      await nightPage.locator(`[data-visual-answer="${step.answers[0]}"]`).click();
+    } else {
+      await nightPage.locator("#visual-answer").fill(String(step.answers[0]));
+      await nightPage.locator('[data-visual-form] button[type="submit"]').click();
+    }
+    await nightPage.locator("[data-visual-next]").click();
+  }
+  await nightPage.locator(".night-actions [data-next-stage]").click();
+  assert.equal(await nightPage.locator("#stage-title").innerText(), "Try independently");
+  await answerSessionItems("independent");
+  assert.equal(await nightPage.locator("#stage-title").innerText(), "Family challenge");
+  await answerSessionItems("family");
+  assert.equal(
+    await nightPage.locator("#stage-title").innerText(),
+    "Reflect and choose a next step",
+  );
+  await nightPage.locator('input[name="strategy"][value="s2"]').check();
+  await nightPage.locator("[data-finish]").click();
+  const finished = await nightPage.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    "ewl-family-night-v1",
+  );
+  assert.equal(finished.stages.reflection.complete, true, "a completed family session is saved");
+  const actualTutor = await nightPage.evaluate(() =>
+    JSON.parse(localStorage.getItem("ewl-fluency-tutor-v2")),
+  );
+  const targetEvidence = actualTutor.records[finished.skillKey].recent;
+  assert.ok(
+    targetEvidence.some((entry) => entry.independent),
+    "standalone practice records independent evidence",
+  );
+  assert.ok(
+    targetEvidence.some((entry) => !entry.independent),
+    "family challenge success stays supported evidence",
+  );
+  assert.equal(
+    await nightPage.locator(".night-complete h3").first().innerText(),
+    "A math moment worth keeping",
+  );
+  const languageBeforeSwitch = await nightPage.locator("html").getAttribute("lang");
+  await nightPage.locator("#night-language").click();
+  assert.notEqual(
+    await nightPage.locator("html").getAttribute("lang"),
+    languageBeforeSwitch,
+    "the language control switches the page language",
+  );
+  assert.match(
+    await nightPage.locator("#night-title").innerText(),
+    /Math|matemáticas/i,
+    "a completed session survives a language switch",
+  );
+  assert.equal(
+    await nightPage.evaluate(() => document.documentElement.scrollWidth - innerWidth),
+    0,
+  );
+
+  const resumeContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const resumePage = await resumeContext.newPage();
+  await resumePage.goto(
+    `${base}/math/fluency-lab/family/tonight.html?grade=1&profile=3&skill=add-10`,
+    { waitUntil: "networkidle" },
+  );
+  const resumeKey = "ewl-family-night-v1:profile-3";
+  const resumeState = await resumePage.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    resumeKey,
+  );
+  await resumePage
+    .locator("#night-answer")
+    .fill(String(resumeState.stages.retrieval.items[0].answers[0]));
+  await resumePage.locator('[data-night-answer] button[type="submit"]').click();
+  await resumePage.locator("#pause-link").click();
+  assert.equal(new URL(resumePage.url()).pathname, "/math/fluency-lab/family/");
+  await resumePage.locator("#tonight-link").click();
+  const afterReload = await resumePage.evaluate(
+    (key) => JSON.parse(localStorage.getItem(key)),
+    resumeKey,
+  );
+  assert.equal(
+    afterReload.stages.retrieval.cursor,
+    1,
+    "an interrupted session resumes at its saved question",
+  );
+  assert.match(await resumePage.locator("#stage-title").innerText(), /Retrieval/);
+  assert.equal(
+    await resumePage.evaluate(() => document.documentElement.scrollWidth - innerWidth),
+    0,
+  );
+  await resumeContext.close();
+  await nightContext.close();
+
   const noSaveContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
   await noSaveContext.addInitScript(() => {
     const original = Storage.prototype.setItem;
@@ -142,7 +315,7 @@ try {
   );
   await noSaveContext.close();
   console.log(
-    "Family browser flow passed: adaptive skill selection, profile switch, seven routes, English/Spanish, keyboard focus, Axe, real practice launch, mobile and desktop layout.",
+    "Family browser flow passed: adaptive skill selection, profile switch, seven routes, bilingual family entry, saved five-stage session, visual lesson, independent versus supported evidence, pause/resume, keyboard focus, Axe, real practice launch, and mobile/desktop layout.",
   );
 } finally {
   await browser?.close();

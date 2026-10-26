@@ -1,6 +1,6 @@
 # Fluency Lab family upgrade: implementation matrix
 
-This matrix records the delivered family entry, Kindergarten bank, and added math game worlds, plus remaining master-prompt scope. Partial means a bounded working slice, not full prompt completion. Before this release, production serves commit 24aadedce4 (October 26, 2026).
+This matrix records verified delivered work and remaining master-prompt scope. Partial means a bounded working slice, not full prompt completion. The last independently verified production stamp in this run was `a227172269`; `origin/main` has since advanced to `54226503f3`. This follow-up adds the five-stage nightly session and is not yet released.
 
 ## Nonnegotiable requirements
 
@@ -9,19 +9,19 @@ This matrix records the delivered family entry, Kindergarten bank, and added mat
 | 1 | Implement every specified feature | Open | This change delivers the family entry page and shared-engine links only. See phase matrix. |
 | 2 | Preserve existing Fluency Lab behavior and records | Partial | Existing problem bank, local profile store, adaptive mission, practice, games, path and language services remain in use. Query entry points were added in `math/fluency-lab/app.js`; change-scoped release checks passed. |
 | 3 | Reuse shared architecture | Partial | `family/family.js` uses `tutor-engine.js`, `school-tools.js`, `i18n.js` and `problem-bank.js`; no new practice engine. |
-| 4 | Every control works; no fabricated results | Partial | Grade/profile/language selection, skill links, mission/practice/game/progress navigation, and print coaching control are wired. Planner, browser, accessibility and live-route checks passed for this slice. |
+| 4 | Every control works; no fabricated results | Partial | Grade/profile/language selection, skill links, five-stage nightly session controls, evidence-based session summary, mission/practice/game/progress navigation, and print coaching control are wired. Browser and core tests cover complete, paused, resumed, and profile-isolated nightly sessions. |
 | 5 | Correct, grade-appropriate math | Partial | Added eight Kindergarten skills with validated generated practice, visual lessons, Fact Trail coverage, and grade 0 persistence. Grades 1–8 remain intact; comprehensive standards and content review remains open. |
 | 6 | Multi-device learner experience | Partial | Responsive layouts and reduced-motion CSS added. Local 390 px and 1365 px checks passed; the live family route was verified at 390 px. Broader device coverage remains open. |
 | 7 | Premium original design and game mechanics | Partial | Ten named math-driven game experiences now span the existing signature games and interactive puzzle worlds. Comprehensive publisher visual review remains open. |
 | 8 | Free, accountless core and minimal child data | Partial | No account/network/data collection added; launch URLs include only grade, local profile slot, skill and mode. |
 | 9 | Accessibility, English/Spanish and scaffolding | Partial | Semantic controls, focus styles, reduced motion, bilingual family copy and existing learner language engine integration. WCAG review is open. |
-| 10 | Integrate learner state and feedback | Partial | Reads profile-scoped tutor evidence and routes practice into the existing state/evidence pipeline. Family-specific session result state is open. |
-| 11 | Automated math, integration, accessibility, performance and E2E tests | Partial | Added seeded Kindergarten correctness/attribution tests and coverage for all nine puzzle worlds. Focused family, game, tutor, trail, model UI, and Spanish checks pass. Broader performance, assistive-technology, and session-persistence coverage remains open. |
+| 10 | Integrate learner state and feedback | Partial | Family entry reads profile-scoped tutor evidence. The nightly session now records retrieval and independent answers with `recordAnswer`, lesson completion with the existing visual lesson, and family challenge answers as supported evidence. |
+| 11 | Automated math, integration, accessibility, performance and E2E tests | Partial | Added seeded Kindergarten correctness/attribution tests, all nine puzzle worlds, and a five-stage nightly E2E including pause/resume, English/Spanish, Axe, mobile layout, and independent-versus-supported evidence. Broader performance, assistive-technology, and device coverage remains open. |
 | 12 | Requirement-to-evidence checklist | Partial | This matrix documents the current slice and every prompt phase; each phase still has open work. |
 | 13 | Do not call unfinished work complete | Met | Final report will distinguish delivered, verified, and open items. |
 | 14 | Fix release-gate findings | Met | Fixed the test-read manifest conflicts and generated catalog drift found while assembling the release. Final pre-push QA passed. |
 | 15 | Preserve production if gates fail | Met | The guarded `ship` path blocked two attempts until dependencies and test-read coverage were corrected. No bypass was used. |
-| 16 | Deploy only after validation and verify live pages | Met for this slice | Commit `24aadedce4` is live. Build stamp, 41/41 production smoke checks, direct route loads, internal family links and real practice launch were verified. |
+| 16 | Deploy only after validation and verify live pages | Met for Kindergarten/game-world release | Commit `a227172269` passed the build-stamp check and all 41/41 production smoke checks; direct route loads, internal family links and real practice launch were verified. `origin/main` later advanced to `54226503f3`; this session has not independently checked that unrelated release. The nightly-session follow-up remains pending release. |
 | 17 | Report exact external blockers | Met | There is no infrastructure blocker. The unimplemented requirements below remain product scope, not external blockers. |
 | 18 | Begin with actual repository inspection | Met | Owning Cloudflare Pages repository, current feature worktree, repo instructions, local adaptive engine, profiles and release guard inspected. |
 
@@ -30,9 +30,9 @@ This matrix records the delivered family entry, Kindergarten bank, and added mat
 | Phase | State | Source changes and verification evidence |
 |---|---|---|
 | 1. Architecture audit and foundation | Partial | Existing app, profiles, evidence, skill bank, family summary and release scripts inspected. Complete inventory and compatibility migration remain open. |
-| 2. Family Math Tonight | Partial | Landing page, profile selector, Kindergarten–8 grade/skill selection, evidence-based recommendation, mission/practice/game/progress links, seven-day entry list, bilingual coaching card, and print control are wired. Full nightly session sequence, QR link builder, notifications, household nicknames, and cooperative family games remain open. |
-| 3. Learning intelligence | Partial | Family recommendations use current `recommendations()` evidence and mission/practice flows. Full skill DNA, misconception taxonomy, support fading and content mutation expansion remain open. |
-| 4. Thinking Studio and feedback | Partial | Existing visual lesson and feedback flows are reused. New family-side models and full explain/revise/transfer cycle remain open. |
+| 2. Family Math Tonight | Partial | Landing page, profile selector, Kindergarten–8 grade/skill selection, evidence-based recommendation, mission/practice/game/progress links, seven-day entry list, bilingual coaching card, and print control are wired. The follow-up adds Retrieval → Conceptual model → Independent practice → Family challenge → Reflection/next step, with generated problems, actual tutor evidence, interruption recovery, and independent/support distinction. QR link builder, notifications, household nicknames, and fully cooperative turn-taking games remain open. |
+| 3. Learning intelligence | Partial | Family recommendations use current `recommendations()`, `difficulty()`, `adaptiveProblem()`, and `recordAnswer()` evidence, including due review skills and prerequisites for a first warm-up. Full skill DNA, misconception taxonomy, strategy fingerprinting, and support-fading policy remain open. |
+| 4. Thinking Studio and feedback | Partial | Nightly sessions reuse `mountVisualLesson()` and generated question validation/hints. The full family-side explain/revise/transfer cycle and additional manipulatives remain open. |
 | 5. Ten premium games | Partial | Number Garden, Ten-Frame Factory, Array Architects, Division Harbor, Fraction Forge, Decimal Dashboards, Ratio Racers, Integer Expedition, Equation Engineers, and Graph City are represented. Added worlds include interactive models, exact checks, hints/revisions, levels, local rewards, and evidence attribution. Expanded asset, replayability, sound, and accessibility review remains open; existing games are preserved. |
 | 6. Premium UI/UX | Partial | Family page design tokens, responsive layout, custom math illustration, focus treatment, print styling and reduced-motion handling added. Broader age-band design system and browser review remain open. |
 | 7. Family reporting | Partial | Family page links to the existing profile-specific progress view and uses actual evidence for next-skill coaching focus. New evidence dashboard, summaries and conversation generator remain open. |
@@ -41,12 +41,13 @@ This matrix records the delivered family entry, Kindergarten bank, and added mat
 | 10. Accessibility and language | Partial | English/Spanish family copy, semantic labels, focus, reduced motion, and 1,157-string Spanish placeholder coverage including Kindergarten and new game worlds. Full WCAG 2.2 AA and screen-reader review remains open. |
 | 11. Privacy and persistence | Partial | No server storage; existing profile-scoped local evidence is read; no learner data enters share URLs. Migration/export/recovery review remains open. |
 | 12. Learning impact | Open | No analytics or observatory added. |
-| 13. QA and release gates | Partial | Family launch contracts, seeded Kindergarten answers/evidence/lessons/trail/persistence, exact puzzle solutions, interactive progression, and Spanish coverage are tested. Full performance, assistive-technology, and prompt-wide content coverage remains open. |
-| 14. Workflow and deployment | Met for this slice | Commits `6e4e532ee0` and `3b73d41d97` were assembled on current `main`; release commit `24aadedce4` was pushed, deployed and verified with the repository's guarded ship workflow. |
+| 13. QA and release gates | Partial | Family launch contracts, seeded Kindergarten answers/evidence/lessons/trail/persistence, exact puzzle solutions, and complete five-stage nightly E2E with English/Spanish, Axe, profile isolation, pause/resume, and route boundaries are tested. Full performance, assistive-technology, and prompt-wide content coverage remains open. |
+| 14. Workflow and deployment | Partial | The Kindergarten/game-world release `a227172269` was pushed, deployed and verified with the guarded ship workflow. The nightly-session follow-up has passed the full repository suite (525/526 scripts; one explicitly skipped idempotency check because the tree was modified, one opt-in live runtime not run) plus focused browser/core checks; commit and production deployment remain pending. |
 
 ## Current route contract
 
 - Family landing: `/math/fluency-lab/family/`
+- Family nightly session: `/math/fluency-lab/family/tonight.html?grade={grade}&profile={slot}&skill={skill-id}&lang={en|es}` (no learner name, response, or progress in the URL)
 - Nightly mission: `/math/fluency-lab/?profile={slot}&grade={grade}&start=mission`
 - Skill practice: `/math/fluency-lab/?profile={slot}&grade={grade}&skill={grade}:{skill-id}&start=practice`
 - Games: `/math/fluency-lab/?profile={slot}&grade={grade}&view=games`

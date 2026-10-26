@@ -2,7 +2,7 @@ import { GRADES } from "../problem-bank.js";
 import { emptyTutor, recommendations, sanitizeTutor } from "../tutor-engine.js";
 import { PROFILE_NAMES, profileKey, profiles, readLocal, selectProfile, writeLocal } from "../school-tools.js";
 import { getLang, setLang } from "../i18n.js";
-import { familyLaunch } from "./family-planner.js";
+import { familyLaunch, familySessionLaunch } from "./family-planner.js";
 
 const TUTOR_KEY = "ewl-fluency-tutor-v2";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
@@ -46,7 +46,7 @@ function getPreferredSkill() {
   return list.find((item) => item.status.due || item.status.recent.length) || list[0];
 }
 function updateLinks() {
-  const mission = target({ start: "mission" });
+  const mission = familySessionLaunch({ grade, profile, skill: recommendation?.skill.id || skills[0]?.id, lang });
   document.querySelector("#tonight-link").href = mission;
   document.querySelector("#tonight-card").href = mission;
   document.querySelector("#progress-link").href = target({ view: "path" });
@@ -86,7 +86,7 @@ function renderCoach() {
 }
 function renderRotation() {
   const modeLinks = [
-    target({ start: "mission" }),
+    familySessionLaunch({ grade, profile, skill: recommendation?.skill.id || skills[0]?.id, lang }),
     recommendation ? target({ skill: recommendation.skill.id, start: "practice" }) : target({ start: "daily" }),
     target({ view: "games" }),
     target({ start: "checkup" }),
