@@ -53,7 +53,11 @@ const SESSION_KEY = "ewl-fluency-session-v2";
 const INTELLIGENCE_KEY = "ewl-fluency-instructional-evidence-v1";
 const STREAK_GOAL = 10;
 const initialParams = new URLSearchParams(location.search);
-let activeProfile = profiles().active;
+const requestedProfileValue = initialParams.get("profile");
+const requestedProfile = requestedProfileValue === null ? Number.NaN : Number(requestedProfileValue);
+let activeProfile = Number.isInteger(requestedProfile) && requestedProfile >= 0 && requestedProfile < PROFILE_NAMES.length
+  ? requestedProfile
+  : profiles().active;
 // Pin this tab to its learner now, so another tab switching learners later cannot move this one.
 selectProfile(activeProfile);
 setLanguageProfile(activeProfile);
@@ -622,7 +626,7 @@ function setMode(mode) {
   }
 }
 
-function createSession(mode, target, queue = null) {
+function createSession(mode, target, queue = null, options = {}) {
   return {
     mode,
     target,
@@ -638,12 +642,13 @@ function createSession(mode, target, queue = null) {
     queue,
     independentCorrect: 0,
     diagnosticResults: {},
+    storyMode: Boolean(options.storyMode),
     finished: false,
   };
 }
 
-function beginSession(mode, target, queue = null) {
-  state.session = createSession(mode, target, queue);
+function beginSession(mode, target, queue = null, options = {}) {
+  state.session = createSession(mode, target, queue, options);
   state.recentQuestions = [];
   state.item = null;
   state.itemAttempts = 0;
@@ -704,7 +709,7 @@ function nextProblem(restoredItem = null) {
     for (let attempt = 0; attempt < 20; attempt++) {
       state.item = adaptiveProblem(skill, state.session.rng, level);
       // About one problem in four is a story version of the same numbers, never in the checkup.
-      if (queueEntry?.transfer) state.item = storyFor(state.item, state.session.rng) || state.item;
+      if (state.session.storyMode || queueEntry?.transfer) state.item = storyFor(state.item, state.session.rng) || state.item;
       else if (state.session.mode !== "diagnostic" && level >= 1 && state.session.rng() < 0.25) state.item = storyFor(state.item, state.session.rng) || state.item;
       if (!state.recentQuestions.includes(state.item.question)) break;
     }
@@ -7499,7 +7504,7 @@ function renderNotebook() {
   `;
 }
 
-function openPlanned(mode, queue) {
+function openPlanned(mode, queue, options = {}) {
   saveActiveSession(); cleanupVisual?.(); cleanupVisual = null;
   state.skill = null; state.mixedPool = queue.map((entry) => findSkill(entry.key)); state.mode = mode;
   showArea("workspace");
@@ -7509,7 +7514,7 @@ function openPlanned(mode, queue) {
   els.workspaceStandard.textContent = mode === "diagnostic" ? `${getGrade(state.grade).skills.length} samples to help you choose your next step` : mode === "mission" ? "Start with your grade-level skill, visit a useful foundation, then return for a supported, independent, and transfer try." : "Fresh problems from your selected skills";
   els.masteryMeter.value = 0; els.masteryLabel.textContent = "Learning across skills";
   els.modeTabs.innerHTML = `<button role="tab" aria-selected="true" aria-controls="drill-panel">${mode === 'diagnostic' ? 'Checkup' : mode === 'daily' ? "Today's 10" : mode === 'mission' ? '5-step mission' : mode === 'assignment' ? 'Class practice' : 'Repair practice'}</button>`;
-  beginSession(mode, queue.length, queue); setUrl();
+  beginSession(mode, queue.length, queue, options); setUrl();
   els.workspace.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -9389,4 +9394,12 @@ if (initialSkill) openSkill(initialSkill);
 renderProfiles();
 renderAssignmentBanner();
 if (["teacher", "games"].includes(initialParams.get("view"))) openHubView(initialParams.get("view"));
+// Family launch links enter the existing adaptive flows; no parallel practice engine is created.
+if (initialParams.get("start") === "daily") openPlanned("daily", dailyPlan(state.tutor, state.grade));
+if (initialParams.get("start") === "mission") openMission();
+if (initialParams.get("start") === "checkup") openPlanned("diagnostic", diagnosticPlan(state.grade));
+if (initialParams.get("start") === "realworld") openPlanned("daily", dailyPlan(state.tutor, state.grade), { storyMode: true });
+if (initialParams.get("start") === "practice" && initialSkill) {
+  document.querySelector("[data-start-independent]")?.click();
+}
 

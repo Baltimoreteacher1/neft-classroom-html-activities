@@ -3,6 +3,7 @@
 import { ES_LANGUAGE } from "./i18n-es-language.js";
 
 export const ES = {
+  "Family Math Tonight": "Matemáticas en familia esta noche",
   "Number Quest": "Misión en la recta numérica",
   "Array Architect": "Arquitecto de arreglos",
   "Fraction Forge": "Forja de fracciones",

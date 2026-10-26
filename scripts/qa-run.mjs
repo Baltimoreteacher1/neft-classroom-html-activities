@@ -143,6 +143,7 @@ const needsOf = (c) => (c === "build" ? [] : ["build"]);
  * the selected set, `build` is prepended automatically. */
 const NEEDS_DIST = new Set([
   "validate:game-transformation-browser",
+  "validate:fluency-family-browser",
   "validate:html-experiences-browser",
   "validate:hub",
   "validate:notebook",
@@ -175,6 +176,7 @@ const EXCLUSIVE = new Set([
   "validate:lesson-boot",
   "validate:learning-labs-browser",
   "validate:family-experience-browser",
+  "validate:fluency-family-browser",
   "validate:studio-enhancements-browser",
   "validate:studio-linked-models-browser",
   "validate:studio-pathways-browser",
@@ -719,8 +721,8 @@ const COVERAGE = [
     ],
   ],
   [
-    /^(math\/fluency-lab\/|tools\/(validate-fluency-lab|package-fluency-desktop)\.mjs$)/,
-    ["validate:fluency", "validate:static", "test"],
+    /^(math\/fluency-lab\/|docs\/fluency-family-implementation-matrix\.md$|tools\/(validate-fluency-lab|package-fluency-desktop|verify-fluency-family-browser|fluency-family(?:\.test)?)\.mjs$)/,
+    ["validate:fluency", "validate:fluency-family-browser", "validate:static", "test"],
   ],
   // MATH WORKBENCH — the student whiteboard. The static gate proves its promises in text
   // (preset wording, Spanish coverage, no second Teacher PIN, offline precache, worked

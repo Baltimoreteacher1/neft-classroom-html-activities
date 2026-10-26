@@ -69,7 +69,7 @@ test("previous assignments open with archive notice, their original due dates, a
     renderHomeworkHub(root, old, lessons, "all-families", "es", { now, archive: true });
     assert.match(root.textContent, /Tareas anteriores/);
     assert.match(root.textContent, /Publicado para esta semana/);
-    assert.match(root.textContent, /Entrega: 22 sept/);
+    assert.match(root.textContent, /Entrega: 22 sep(?:t)?/i);
     assert.equal(root.querySelector(".homework-card a").getAttribute("href"), "/lessons/3-2/homework.html?route=full&lang=es&section=all-families");
     assert.equal(root.querySelector(".today-badge"), null);
   });

@@ -3050,6 +3050,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/fluency-lab/family/",
+    title: "Family Math Tonight",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/intervention/",
     title: "6th-Grade Math Intervention",
     category: "Math Tool",
