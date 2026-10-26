@@ -72,6 +72,11 @@ function copyStandaloneHtml() {
 
   return {
     name: "copy-standalone-html",
+    // closeBundle also fires when a Vite DEV server closes (tools/verify-*-browser.mjs create
+    // one). Without this guard that copied raw source over a finished dist/, including the
+    // un-bundled assets/nt-web-vitals.js, and every dist-serving browser check after it failed
+    // with `Failed to resolve module specifier "web-vitals"`.
+    apply: "build",
     closeBundle() {
       const bundleSnapshots = new Map();
       for (const rel of [...UNHASHED_BUNDLES, ...BUILT_HTML_ENTRIES]) {
