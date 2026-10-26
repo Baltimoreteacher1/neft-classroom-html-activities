@@ -55,6 +55,10 @@ const client = await readFile(
   new URL("../math/fluency-lab/family/family.js", import.meta.url),
   "utf8",
 );
+const saveResume = await readFile(
+  new URL("../shared/save-resume/save-resume-engine.js", import.meta.url),
+  "utf8",
+);
 const app = await readFile(new URL("../math/fluency-lab/app.js", import.meta.url), "utf8");
 assert.match(page, /id="main"/);
 assert.match(page, /id="family-profile"/);
@@ -72,6 +76,11 @@ assert.match(client, /profileKey\(TUTOR_KEY, profile\)/);
 assert.match(client, /setLang\(lang\)/);
 assert.match(client, /familySessionLaunch\(/);
 assert.match(client, /#tonight-link/);
+assert.match(
+  saveResume,
+  /isFluencyLabRoute\s*=\s*location\.pathname\.indexOf\("\/math\/fluency-lab\/"\)\s*===\s*0/,
+);
+assert.match(saveResume, /isGameRoute\s*\|\|\s*isFluencyLabRoute/);
 assert.match(app, /initialParams\.get\("start"\) === "mission"/);
 assert.match(app, /initialParams\.get\("start"\) === "practice"/);
 assert.match(

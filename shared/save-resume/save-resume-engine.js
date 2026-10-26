@@ -1564,8 +1564,10 @@
       else openPanel(self);
     });
 
-    // Floating Math Workbench button — skipped on student arcade/game routes
-    // and when the lesson-aware launcher (#mwb-launcher) is on the page.
+    // Floating Math Workbench button — skipped on student arcade/game routes,
+    // across the self-contained Math Fluency Lab, and when the lesson-aware
+    // launcher (#mwb-launcher) is on the page.
+    var isFluencyLabRoute = location.pathname.indexOf("/math/fluency-lab/") === 0;
     var isGameRoute =
       location.pathname.indexOf("/math/games/") === 0 ||
       location.pathname.indexOf("/math/review-arcade") === 0 ||
@@ -1578,7 +1580,7 @@
       location.pathname.indexOf("/math/statistics/games/") === 0 ||
       location.pathname.indexOf("/games/") === 0;
     var workbench =
-      isGameRoute || document.getElementById("mwb-launcher")
+      isGameRoute || isFluencyLabRoute || document.getElementById("mwb-launcher")
         ? null
         : el("a", {
             id: "nsr-workbench",

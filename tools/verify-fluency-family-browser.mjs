@@ -43,6 +43,18 @@ try {
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto(`${base}/math/fluency-lab/family/`, { waitUntil: "networkidle" });
   assert.equal(await page.locator("h1").first().innerText(), "Make room for a math moment.");
+  const familyNavigation = await page.locator("a[href]").evaluateAll((anchors) =>
+    anchors.map((anchor) => {
+      const url = new URL(anchor.href);
+      return { origin: url.origin, pathname: url.pathname };
+    }),
+  );
+  assert.ok(
+    familyNavigation.every(
+      (url) => url.origin === new URL(base).origin && url.pathname.startsWith("/math/fluency-lab/"),
+    ),
+    `Rendered family navigation stays in Math Fluency Lab: ${familyNavigation.map((url) => url.pathname).join(", ")}`,
+  );
   await page.keyboard.press("Tab");
   assert.equal(
     await page.evaluate(() => document.activeElement?.classList.contains("skip-link")),
@@ -114,6 +126,18 @@ try {
     { waitUntil: "networkidle" },
   );
   assert.equal(new URL(page.url()).pathname, "/math/fluency-lab/");
+  const labNavigation = await page.locator("a[href]").evaluateAll((anchors) =>
+    anchors.map((anchor) => {
+      const url = new URL(anchor.href);
+      return { origin: url.origin, pathname: url.pathname };
+    }),
+  );
+  assert.ok(
+    labNavigation.every(
+      (url) => url.origin === new URL(base).origin && url.pathname.startsWith("/math/fluency-lab/"),
+    ),
+    `Rendered Math Fluency Lab navigation stays inside its route: ${labNavigation.map((url) => url.pathname).join(", ")}`,
+  );
   assert.match(
     await page.locator("#session-count").innerText(),
     /0 completed/i,
