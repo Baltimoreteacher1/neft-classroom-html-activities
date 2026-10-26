@@ -1137,3 +1137,20 @@ body.focus-layout .tab-panel.active .stage-card .item-body:has(> .viz-host, > .m
 @media (min-width: 901px) {
   body.focus-layout .lab-goalbar { position: static; }
 }
+
+/* ---- declutter round 2: quieter tool row, compact prediction, one step indicator ------------------------------------- */
+body.focus-layout .item-head .item-tools { display: flex; flex-wrap: wrap; gap: 2px 6px; margin-inline-start: auto; }
+body.focus-layout .item-head .item-tools .tool-btn { padding: 4px 8px; min-height: 36px; white-space: nowrap; }
+/* the numbered dots above already show "Problem n of m"; keep the words for screen readers */
+body.focus-layout .item-head .item-count {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+body.focus-layout .lab-predict { padding: 8px 0 0; }
+body.focus-layout .lab-predict .item-sub { margin: 0 0 6px; font-size: 0.9rem; }
+body.focus-layout .lab-predict .item-actions { display: flex; flex-wrap: nowrap; gap: 6px; margin: 0; }
+body.focus-layout .lab-predict .item-actions .btn { flex: 1 1 auto; min-width: 0; padding: 6px 8px; min-height: 40px; font-size: 0.85rem; }
+body.focus-layout .item-body.lab-item > .lab-show { font-size: 0.9rem; opacity: 0.85; }
+@media (max-width: 600px) {
+  body.focus-layout .item-head .item-tools .tool-btn { font-size: 0.82rem; }
+  body.focus-layout .item-head { gap: 4px 8px; }
+}
