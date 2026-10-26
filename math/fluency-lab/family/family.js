@@ -3,6 +3,7 @@ import { emptyTutor, recommendations, sanitizeTutor } from "../tutor-engine.js";
 import { PROFILE_NAMES, profileKey, profiles, readLocal, selectProfile, writeLocal } from "../school-tools.js";
 import { getLang, setLang } from "../i18n.js";
 import { familyLaunch, familySessionLaunch } from "./family-planner.js";
+import { familyCoaching } from "./family-coaching.js";
 
 const TUTOR_KEY = "ewl-fluency-tutor-v2";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
@@ -82,7 +83,8 @@ function renderRecommendation() {
 function renderCoach() {
   const skill = recommendation?.skill;
   if (!skill) return;
-  document.querySelector("#coach-content").innerHTML = `<p class="coach-goal">${esc(t("goal").replace("{title}", skill.title))}</p><p class="coach-quote">${esc(t("ask"))}</p><p class="coach-help"><strong>${lang === "es" ? "Fíjate en:" : "Look for:"}</strong> ${esc(t("thinking"))}</p><p class="coach-help"><strong>${lang === "es" ? "Si necesita ayuda:" : "If they need help:"}</strong> ${esc(t("stuck"))}</p>`;
+  const coaching = familyCoaching(skill, recommendation.status, lang);
+  document.querySelector("#coach-content").innerHTML = `<p class="coach-goal">${esc(t("goal").replace("{title}", skill.title))}</p><p class="coach-evidence" role="status">${esc(coaching.evidence)}</p><p class="coach-quote">“${esc(coaching.ask)}”</p><p class="coach-help"><strong>${lang === "es" ? "Escucha si:" : "Listen for:"}</strong> ${esc(coaching.lookFor)}</p><p class="coach-help"><strong>${lang === "es" ? "Si necesita ayuda:" : "If they need help:"}</strong> ${esc(coaching.ifStuck)}</p><p class="coach-help"><strong>${lang === "es" ? "Reconoce:" : "Acknowledge:"}</strong> ${esc(coaching.acknowledge)}</p>`;
 }
 function renderRotation() {
   const modeLinks = [
