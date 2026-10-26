@@ -9,6 +9,7 @@ import {
   validateAnswer,
 } from "../math/fluency-lab/problem-bank.js";
 import {
+  assignmentDifficultyLevel,
   assignmentQueue,
   cleanProgress,
   decodeAssignment,
@@ -335,8 +336,15 @@ const assignment = {
   count: 10,
   mode: "adaptive",
   label: "Family practice <test>",
+  challenge: "adaptive",
 };
 assert.deepEqual(decodeAssignment(encodeAssignment(assignment)), assignment);
+check(
+  assignmentDifficultyLevel("building", 2) === 1 &&
+    assignmentDifficultyLevel("grade-stretch", 0) === 1 &&
+    assignmentDifficultyLevel("adaptive", 2) === 2,
+  "Teacher challenge ranges constrain generated difficulty",
+);
 check(decodeAssignment("broken%%token") === null, "Malformed assignment links fail safely");
 check(
   validateAssignment({ ...assignment, keys: ["8:slope"] }) === null,

@@ -4,8 +4,15 @@ import { adaptiveProblem, difficulty, findSkill, prerequisites, recommendations,
 export const NIGHT_STAGES = ["retrieval", "concept", "independent", "family", "reflection"];
 export const NIGHT_STORAGE = "ewl-family-night-v1";
 
-const itemFor = (skill, tutor, rng, recent = []) => {
-  const level = Math.max(0, difficulty(tutor, skill));
+const constrainedLevel = (challenge, level) => {
+  const bounded = Math.max(0, Math.min(2, Number(level) || 0));
+  if (challenge === "building") return Math.min(bounded, 1);
+  if (challenge === "grade-stretch") return Math.max(bounded, 1);
+  return bounded;
+};
+
+const itemFor = (skill, tutor, rng, recent = [], challenge = "adaptive") => {
+  const level = constrainedLevel(challenge, difficulty(tutor, skill));
   for (let attempt = 0; attempt < 24; attempt++) {
     const item = adaptiveProblem(skill, rng, level);
     if (!recent.includes(item.question)) return { ...item, skillKey: skillKey(skill), level };
@@ -14,18 +21,31 @@ const itemFor = (skill, tutor, rng, recent = []) => {
   return { ...item, skillKey: skillKey(skill), level };
 };
 
-function problemList(skills, count, tutor, rng, recent = []) {
+function problemList(skills, count, tutor, rng, recent = [], challenge = "adaptive") {
   return Array.from({ length: count }, (_, index) => {
     const skill = skills[index % skills.length];
-    const item = itemFor(skill, tutor, rng, recent);
+    const item = itemFor(skill, tutor, rng, recent, challenge);
     recent.push(item.question);
     return item;
   });
 }
 
-export function createNightSession({ grade, profile, lang = "en", skill: requestedSkill, tutor, now = Date.now() }) {
+export function createNightSession({
+  grade,
+  profile,
+  lang = "en",
+  skill: requestedSkill,
+  tutor,
+  minutes = 5,
+  challenge = "adaptive",
+  support = "standard",
+  now = Date.now(),
+}) {
   if (!GRADES.some((entry) => entry.grade === Number(grade))) throw new RangeError("Choose a supported grade.");
   if (!Number.isInteger(Number(profile)) || Number(profile) < 0 || Number(profile) > 5) throw new RangeError("Choose a valid local learner profile.");
+  if (![5, 10].includes(Number(minutes))) throw new RangeError("Choose a 5- or 10-minute session.");
+  if (!["adaptive", "building", "grade-stretch"].includes(challenge)) throw new RangeError("Choose a supported challenge range.");
+  if (!["standard", "extra"].includes(support)) throw new RangeError("Choose a supported help level.");
   const gradeNumber = Number(grade);
   const ranked = recommendations(tutor, gradeNumber, now);
   const target = ranked.find((entry) => entry.skill.id === requestedSkill)?.skill || ranked[0]?.skill;
@@ -36,9 +56,10 @@ export function createNightSession({ grade, profile, lang = "en", skill: request
   const seed = (now ^ (gradeNumber * 104729) ^ (Number(profile) * 13007)) >>> 0;
   const rng = seededRandom(seed);
   const recentQuestions = [];
-  const retrieval = problemList(warmSkills, 2, tutor, rng, recentQuestions);
-  const independent = problemList([target], 2, tutor, rng, recentQuestions);
-  const family = problemList([target], 1, tutor, rng, recentQuestions);
+  const longSession = Number(minutes) === 10;
+  const retrieval = problemList(warmSkills, longSession ? 3 : 2, tutor, rng, recentQuestions, challenge);
+  const independent = problemList([target], longSession ? 4 : 2, tutor, rng, recentQuestions, challenge);
+  const family = problemList([target], longSession ? 2 : 1, tutor, rng, recentQuestions, challenge);
   const randomId = `${seed.toString(36)}-${Math.floor(rng() * 0x100000000).toString(36)}`;
   return {
     version: 1,
@@ -46,6 +67,9 @@ export function createNightSession({ grade, profile, lang = "en", skill: request
     profile: Number(profile),
     grade: gradeNumber,
     lang: lang === "es" ? "es" : "en",
+    minutes: Number(minutes),
+    challenge,
+    support,
     skillKey: skillKey(target),
     startedAt: now,
     updatedAt: now,
@@ -60,9 +84,13 @@ export function createNightSession({ grade, profile, lang = "en", skill: request
   };
 }
 
-export function sanitizeNightSession(value, { profile, grade } = {}) {
+export function sanitizeNightSession(value, { profile, grade, skillKey, minutes, challenge, support } = {}) {
   if (!value || value.version !== 1 || Number(value.profile) !== Number(profile) || Number(value.grade) !== Number(grade)) return null;
   if (!NIGHT_STAGES.includes(value.stage) || findSkill(value.skillKey)?.grade !== Number(grade)) return null;
+  if (skillKey && value.skillKey !== skillKey) return null;
+  if (minutes !== undefined && Number(value.minutes || 5) !== Number(minutes)) return null;
+  if (challenge !== undefined && (value.challenge || "adaptive") !== challenge) return null;
+  if (support !== undefined && (value.support || "standard") !== support) return null;
   for (const name of ["retrieval", "independent", "family"]) {
     const stage = value.stages?.[name];
     if (!stage || !Array.isArray(stage.items) || !stage.items.length || stage.items.length > 4 || !Number.isInteger(stage.cursor) || stage.cursor < 0 || stage.cursor > stage.items.length || stage.items.some((item) => {

@@ -33,20 +33,44 @@ const LABELS = {
     goal: "Enfoque de aprendizaje: {skill}", start: "Comenzar este paso", check: "Comprobar", next: "Continuar", retry: "Intentar una vez más", worked: "Mostrar un paso útil", hint: "Usa esta pista: {hint}", correct: "Así funciona. ¿Qué hizo que funcionara?", wrong: "Todavía no. Aquí tienes una pista para revisar tu idea.", solution: "Una forma de razonarlo es: {explanation}", stageCount: "Problema {n} de {total}", noHistory: "Este es un primer intento. El repaso usará una base relacionada si está disponible.", retrieval: "Un repaso breve ayuda a recordar ideas de un día a otro.", independent: "Primero inténtalo por tu cuenta. Tómate el tiempo que necesites.", familyRoles: ["El estudiante piensa", "Su compañero escucha"], partnerPrompt: "Pregunta: «¿Qué notaste primero? ¿Puedes mostrarlo con un modelo u otra forma?»", familySupport: "El reto familiar es práctica compartida. La respuesta cuenta como evidencia con apoyo, separada del trabajo independiente.", chooseStrategy: "¿Qué estrategia te ayudó más?", strategies: ["Contar o seguir cada paso", "Separar un número en partes", "Usar un modelo o dibujo", "Usar un hecho que ya conozco", "Comparar dos formas", "Todavía lo estoy pensando"], reflectionPrompt: "Cuéntale a tu compañero algo que notaste. Puedes decirlo en voz alta; no guardamos una explicación escrita.", finish: "Terminar las matemáticas de hoy", completeTitle: "Un momento de matemáticas para recordar", completeCopy: "Hicieron un repaso, exploraron una idea visual, practicaron a solas y resolvieron un reto familiar.", progress: "Comprobaciones independientes: {correct} de {total}. Reto familiar con apoyo: {family}.", nextFocus: "Un siguiente paso útil", noEvidence: "Todavía no hay suficiente evidencia para sugerir una destreza específica. Sigue con la práctica sugerida para este grado.", startAgain: "Comenzar otra sesión", pause: "Pausar y volver después", switch: "Cambiar estudiante", failed: "Este navegador no pudo guardar la sesión. Pueden continuar, pero antes de pausar asegúrense de guardar el progreso en el laboratorio.", language: "English", returnFamily: "Volver a matemáticas en familia", method: "Cómo usamos la evidencia de práctica", methodCopy: "Las recomendaciones usan respuestas recientes, intentos independientes y el tiempo de repaso. El reto familiar se registra con apoyo, no como dominio independiente.", stageFinished: "Paso completo", reflectionDone: "Reflexión guardada. La estrategia opcional se guarda en este dispositivo.",
   },
 };
+LABELS.en.showHint = "Show a hint";
+LABELS.es.showHint = "Mostrar una pista";
 
 const params = new URLSearchParams(location.search);
 const gradeNumber = Number(params.get("grade"));
 let grade = GRADES.some((entry) => entry.grade === gradeNumber) ? gradeNumber : 1;
 let household = profiles();
-let profile = Number(params.get("profile"));
+const profileParam = params.get("profile");
+let profile = profileParam === null ? household.active : Number(profileParam);
 if (!Number.isInteger(profile) || profile < 0 || profile > 5) profile = household.active;
 if (!household.ids.includes(profile)) { selectProfile(profile); household = profiles(); }
+const requestedSkill = params.get("skill");
+const minutes = params.get("minutes") === "10" ? 10 : 5;
+const challenge = ["adaptive", "building", "grade-stretch"].includes(params.get("challenge")) ? params.get("challenge") : "adaptive";
+const support = params.get("support") === "extra" ? "extra" : "standard";
+const hasSharedSettings = ["minutes", "challenge", "support"].some((key) => params.has(key));
+const hasProfileInLaunch = profileParam !== null;
 let lang = params.get("lang") === "es" ? "es" : getLang();
 let tutor = sanitizeTutor(readLocal(profileKey(TUTOR_KEY, profile), emptyTutor()));
-let saved = sanitizeNightSession(readLocal(profileKey(NIGHT_STORAGE, profile), null), { profile, grade });
+function sessionKey(forProfile = profile) {
+  const base = profileKey(NIGHT_STORAGE, forProfile);
+  return hasSharedSettings ? `${base}:share:${grade}:${encodeURIComponent(requestedSkill || "")}:${minutes}:${challenge}:${support}` : base;
+}
+function restoreSession(forProfile = profile) {
+  return sanitizeNightSession(readLocal(sessionKey(forProfile), null), {
+    profile: forProfile, grade, skillKey: requestedSkill ? `${grade}:${requestedSkill}` : undefined,
+    minutes: hasSharedSettings ? minutes : undefined,
+    challenge: hasSharedSettings ? challenge : undefined,
+    support: hasSharedSettings ? support : undefined,
+  });
+}
+function newSession() {
+  return createNightSession({ grade, profile, lang, tutor, skill: requestedSkill, minutes, challenge, support });
+}
+let saved = restoreSession();
 let session = saved;
 if (!session) {
-  session = createNightSession({ grade, profile, lang, tutor, skill: params.get("skill") });
+  session = newSession();
   saveSession();
 }
 let visualCleanup = null;
@@ -56,7 +80,7 @@ const esc = (value) => String(value ?? "").replaceAll("&", "&amp;").replaceAll("
 
 function saveSession() {
   session.updatedAt = Date.now();
-  const ok = writeLocal(profileKey(NIGHT_STORAGE, profile), session);
+  const ok = writeLocal(sessionKey(), session);
   document.querySelector("#storage-warning").hidden = ok;
   if (!ok) document.querySelector("#storage-warning").textContent = t("failed");
 }
@@ -64,7 +88,8 @@ function saveTutor() { writeLocal(profileKey(TUTOR_KEY, profile), tutor); }
 function updateUrl() {
   const url = new URL(location.href);
   url.searchParams.set("grade", String(grade));
-  url.searchParams.set("profile", String(profile));
+  if (hasProfileInLaunch) url.searchParams.set("profile", String(profile));
+  else url.searchParams.delete("profile");
   url.searchParams.set("lang", lang);
   history.replaceState(null, "", url);
 }
@@ -121,14 +146,17 @@ function questionStage(stageName) {
   const prompt = translated || item.question;
   const status = data.awaitingRetry
     ? `<p class="night-feedback" data-kind="hint" role="status" aria-live="polite">${esc(t("wrong"))}<br>${esc(t("hint", { hint: item.hint || "Look for a relationship in the numbers." }))}</p>`
-    : data.lastCorrect ? `<p class="night-feedback" data-kind="good" role="status" aria-live="polite">${esc(t("correct"))}</p>` : "";
+    : data.hintRevealed ? `<p class="night-feedback" data-kind="hint" role="status" aria-live="polite">${esc(t("hint", { hint: item.hint || "Look for a relationship in the numbers." }))}</p>`
+      : data.lastCorrect ? `<p class="night-feedback" data-kind="good" role="status" aria-live="polite">${esc(t("correct"))}</p>` : "";
   const role = isFamily ? `<p class="night-turn"><strong>${esc(t("familyRoles")[0])}</strong><span aria-hidden="true">→</span><strong>${esc(t("familyRoles")[1])}</strong></p><p class="stage-copy">${esc(t("partnerPrompt"))}</p><p class="stage-copy">${esc(t("familySupport"))}</p>` : "";
   const localizedChoices = lang === "es" ? choicesEs(item) || item.choices : item.choices;
   const answer = item.choices?.length ? `<div class="night-answer-choices">${item.choices.map((choice, i) => `<button type="button" class="button button-light" data-choice="${esc(choice)}" ${data.awaitingSolution ? "disabled" : ""}>${esc(localizedChoices[i] ?? choice)}</button>`).join("")}</div>` : `<input id="night-answer" type="text" inputmode="${item.kind === "text" ? "text" : "decimal"}" autocomplete="off" aria-label="${esc(lang === "es" ? "Tu respuesta" : "Your answer")}" ${data.awaitingSolution ? "disabled" : ""}>`;
   const submit = data.awaitingSolution ? `<button class="button button-dark" type="button" data-question-next>${esc(t("next"))}</button>` : `<button class="button button-dark" type="submit">${esc(t("check"))}</button>`;
   const count = t("stageCount", { n: data.cursor + 1, total: data.items.length });
   const solution = data.awaitingSolution ? `<p class="night-feedback" data-kind="hint" role="status" aria-live="polite">${esc(t("solution", { explanation: item.explanation || item.hint || "Check your work with the model." }))}</p>` : "";
-  return `${stageHeader(stageName)}${role}<p class="stage-copy">${esc(count)}${skill ? ` · ${esc(skill.title)}` : ""}</p><div class="night-question"><p>${esc(prompt)}</p><form data-night-answer>${answer}${submit}</form>${status}${solution}</div>${stageActions()}`;
+  const hintButton = session.support === "extra" && !data.hintRevealed && !data.awaitingRetry && !data.awaitingSolution
+    ? `<button class="text-button" type="button" data-show-hint>${esc(t("showHint"))}</button>` : "";
+  return `${stageHeader(stageName)}${role}<p class="stage-copy">${esc(count)}${skill ? ` · ${esc(skill.title)}` : ""}</p><div class="night-question"><p>${esc(prompt)}</p><form data-night-answer>${answer}${submit}</form>${hintButton}${status}${solution}</div>${stageActions()}`;
 }
 function conceptStage() {
   const data = session.stages.concept;
@@ -184,10 +212,11 @@ function answerCurrent(value) {
   const correct = validateAnswer(value, item);
   const isFamily = stageName === "family";
   if (!data.awaitingRetry) {
-    recordAnswer(tutor, skill, { correct, independent: !isFamily, level: item.level }, Date.now());
+    recordAnswer(tutor, skill, { correct, independent: !isFamily && !data.hintRevealed, level: item.level }, Date.now());
     if (correct) {
       data.correct += 1;
       data.lastCorrect = true;
+      data.hintRevealed = false;
       data.cursor += 1;
     } else {
       data.awaitingRetry = true;
@@ -198,7 +227,7 @@ function answerCurrent(value) {
     if (correct) data.correct += 1;
     data.assisted += 1;
     if (correct) {
-      data.awaitingRetry = false; data.lastCorrect = true; data.cursor += 1;
+      data.awaitingRetry = false; data.lastCorrect = true; data.hintRevealed = false; data.cursor += 1;
     } else {
       data.awaitingRetry = false; data.awaitingSolution = true; data.lastCorrect = false;
     }
@@ -220,10 +249,16 @@ root.addEventListener("click", (event) => {
   const target = event.target.closest("button");
   if (!target) return;
   if (target.hasAttribute("data-choice")) answerCurrent(target.dataset.choice);
+  if (target.hasAttribute("data-show-hint")) {
+    const data = session.stages[session.stage];
+    data.hintRevealed = true;
+    saveSession(); render();
+    root.querySelector("#night-answer")?.focus();
+  }
   if (target.hasAttribute("data-next-stage")) moveForward();
   if (target.hasAttribute("data-question-next")) {
     const data = session.stages[session.stage];
-    data.cursor += 1; data.awaitingRetry = false; data.awaitingSolution = false;
+    data.cursor += 1; data.awaitingRetry = false; data.awaitingSolution = false; data.hintRevealed = false;
     if (data.cursor >= data.items.length) data.complete = true;
     saveSession(); render();
   }
@@ -234,7 +269,7 @@ root.addEventListener("click", (event) => {
     markNightStageComplete(session, "reflection"); saveSession(); render();
   }
   if (target.hasAttribute("data-start-fresh")) {
-    session = createNightSession({ grade, profile, lang, tutor, skill: params.get("skill") });
+    session = newSession();
     saveSession(); render();
   }
 });
@@ -249,8 +284,8 @@ document.querySelector("#night-profile").addEventListener("change", (event) => {
   profile = Number(event.target.value);
   selectProfile(profile);
   tutor = sanitizeTutor(readLocal(profileKey(TUTOR_KEY, profile), emptyTutor()));
-  session = sanitizeNightSession(readLocal(profileKey(NIGHT_STORAGE, profile), null), { profile, grade });
-  if (!session) session = createNightSession({ grade, profile, lang, tutor });
+  session = restoreSession(profile);
+  if (!session) session = newSession();
   updateUrl(); saveSession(); render();
 });
 window.addEventListener("fluency-storage-unavailable", () => {
@@ -259,7 +294,7 @@ window.addEventListener("fluency-storage-unavailable", () => {
 });
 
 if (!findSkill(session.skillKey) || findSkill(session.skillKey).grade !== grade) {
-  session = createNightSession({ grade, profile, lang, tutor });
+  session = newSession();
   saveSession();
 }
-setLang(lang); updateUrl(); render();
+setLang(lang, { persist: !params.has("lang") }); updateUrl(); render();

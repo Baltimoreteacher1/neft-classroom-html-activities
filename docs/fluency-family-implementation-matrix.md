@@ -1,6 +1,6 @@
 # Fluency Lab family upgrade: implementation matrix
 
-This matrix records verified delivered work and remaining master-prompt scope. Partial means a bounded working slice, not full prompt completion. The last independently verified production stamp in this run was `a227172269`; `origin/main` has since advanced to `54226503f3`. This follow-up adds the five-stage nightly session and is not yet released.
+This matrix records verified delivered work and remaining master-prompt scope. Partial means a bounded working slice, not full prompt completion. The last independently verified production stamp in this run was `a227172269`; `origin/main` has since advanced to `54226503f3`. The nightly family experience is live. This follow-up adds configured teacher-to-family links and remains unreleased until its guarded ship completes.
 
 ## Nonnegotiable requirements
 
@@ -36,18 +36,18 @@ This matrix records verified delivered work and remaining master-prompt scope. P
 | 5. Ten premium games | Partial | Number Garden, Ten-Frame Factory, Array Architects, Division Harbor, Fraction Forge, Decimal Dashboards, Ratio Racers, Integer Expedition, Equation Engineers, and Graph City are represented. Added worlds include interactive models, exact checks, hints/revisions, levels, local rewards, and evidence attribution. Expanded asset, replayability, sound, and accessibility review remains open; existing games are preserved. |
 | 6. Premium UI/UX | Partial | Family page design tokens, responsive layout, custom math illustration, focus treatment, print styling and reduced-motion handling added. Broader age-band design system and browser review remain open. |
 | 7. Family reporting | Partial | Family page links to the existing profile-specific progress view and uses actual evidence for next-skill coaching focus. New evidence dashboard, summaries and conversation generator remain open. |
-| 8. Teacher command center | Open | No teacher tools added in this slice. |
+| 8. Teacher command center | Partial | Existing teacher studio now creates Family Math Tonight links with grade/skill, 5- or 10-minute length, English/Spanish, challenge range and support settings. Links contain no profile or learner record, provide preview/copy/QR/print actions, and launch the existing nightly engine. Browser validation covers Spanish, 10-minute, skill-building, extra-support link creation and same-site launch. Roster-based evidence, intervention groups, secured teacher reporting and content review remain open. |
 | 9. Content publishing | Partial | `familyLaunch()` validates grades, profiles, modes and grade-scoped skill IDs. Authoring, standards audit, content version workflow and comprehensive edge-case suites remain open. |
 | 10. Accessibility and language | Partial | English/Spanish family copy, semantic labels, focus, reduced motion, and 1,157-string Spanish placeholder coverage including Kindergarten and new game worlds. Full WCAG 2.2 AA and screen-reader review remains open. |
 | 11. Privacy and persistence | Partial | No server storage; existing profile-scoped local evidence is read; no learner data enters share URLs. Migration/export/recovery review remains open. |
 | 12. Learning impact | Open | No analytics or observatory added. |
 | 13. QA and release gates | Partial | Family launch contracts, seeded Kindergarten answers/evidence/lessons/trail/persistence, exact puzzle solutions, and complete five-stage nightly E2E with English/Spanish, Axe, profile isolation, pause/resume, and route boundaries are tested. Full performance, assistive-technology, and prompt-wide content coverage remains open. |
-| 14. Workflow and deployment | Partial | The Kindergarten/game-world release `a227172269` was pushed, deployed and verified with the guarded ship workflow. The nightly-session follow-up has passed the full repository suite (525/526 scripts; one explicitly skipped idempotency check because the tree was modified, one opt-in live runtime not run) plus focused browser/core checks; commit and production deployment remain pending. |
+| 14. Workflow and deployment | Partial | Prior family and game releases were pushed and production-verified. This follow-up passes focused family-session, tutor, family-route, fluency-bank, browser and custom teacher-link checks; commit and guarded production release are pending. |
 
 ## Current route contract
 
 - Family landing: `/math/fluency-lab/family/`
-- Family nightly session: `/math/fluency-lab/family/tonight.html?grade={grade}&profile={slot}&skill={skill-id}&lang={en|es}` (no learner name, response, or progress in the URL)
+- Family nightly session: `/math/fluency-lab/family/tonight.html?grade={grade}&skill={skill-id}&lang={en|es}&minutes={5|10}&challenge={range}&support={standard|extra}` (teacher links omit profile; learner selects the local profile) (no learner name, response, or progress in the URL)
 - Nightly mission: `/math/fluency-lab/?profile={slot}&grade={grade}&start=mission`
 - Skill practice: `/math/fluency-lab/?profile={slot}&grade={grade}&skill={grade}:{skill-id}&start=practice`
 - Games: `/math/fluency-lab/?profile={slot}&grade={grade}&view=games`

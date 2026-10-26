@@ -2,6 +2,7 @@ import { ALL_SKILLS, GRADES, generateProblem, seededRandom } from "./problem-ban
 import { evidence, findSkill, localDay, prerequisites, sanitizeTutor, skillKey } from "./tutor-engine.js";
 import { languageExpectation, languagePrintPrompt } from "./language-bridge.js";
 import { languagePackHtml } from "./language-pack.js";
+import { familySessionShare } from "./family/family-planner.js";
 
 export const escapeHtml = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 const PROFILE_KEY = "ewl-fluency-profiles-v1";
@@ -76,7 +77,15 @@ export function validateAssignment(value) {
   const game = GAME_IDS.includes(value.game) && value.grade >= (MODEL_GAME_MIN_GRADE[value.game] || 1) ? value.game : null;
   const stop = game && !MODEL_GAME_MIN_GRADE[game] && /^[\w:-]{1,40}$/.test(String(value.stop || "")) ? value.stop : null;
   if (!keys.length && !game) return null;
-  return { version: 1, grade: value.grade, keys, ...(game ? { game } : {}), ...(stop ? { stop } : {}), count: [5, 10, 15, 20].includes(value.count) ? value.count : 10, mode: value.mode === "guided" ? "guided" : "adaptive", label: String(value.label || "Class practice").slice(0, 80) };
+  const challenge = ["adaptive", "building", "grade-stretch"].includes(value.challenge) ? value.challenge : "adaptive";
+  const lang = value.lang === "es" ? "es" : value.lang === "en" ? "en" : undefined;
+  return { version: 1, grade: value.grade, keys, ...(game ? { game } : {}), ...(stop ? { stop } : {}), count: [5, 10, 15, 20].includes(value.count) ? value.count : 10, mode: value.mode === "guided" ? "guided" : "adaptive", ...(lang ? { lang } : {}), challenge, label: String(value.label || "Class practice").slice(0, 80) };
+}
+export function assignmentDifficultyLevel(challenge, level) {
+  const value = Math.max(0, Math.min(2, Math.floor(Number(level) || 0)));
+  if (challenge === "building") return Math.min(1, value);
+  if (challenge === "grade-stretch") return Math.max(1, value);
+  return value;
 }
 export function encodeAssignment(value) {
   const assignment = validateAssignment(value); if (!assignment) throw new Error("Choose at least one skill.");
@@ -127,11 +136,14 @@ export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, o
   let mode = "adaptive";
   let game = "";
   let stop = "all";
+  let sessionType = "practice";
+  let language = "en";
+  let challenge = "adaptive";
   function render() {
     const skills = ALL_SKILLS.filter((skill) => skill.grade === grade);
     if (game && grade < (MODEL_GAME_MIN_GRADE[game] || 1)) game = "";
     container.innerHTML = `<div class="section-heading"><div><p class="section-label">Teacher studio</p><h2>One useful assignment. Fresh practice every time.</h2><p>Choose the skills your class needs. Share the link through your classroom system, project it, or send it home.</p></div><div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center"><button type="button" class="outline-action" id="studio-open-partner" style="padding:8px 14px; font-weight:700">🎲 Partner Games</button></div></div>
-      <div class="teacher-layout"><form id="assignment-builder"><label for="assignment-label">Assignment title<input id="assignment-label" maxlength="80" value="${escapeHtml(label)}"/></label><div class="form-row"><label for="assignment-grade">Grade<select id="assignment-grade">${GRADES.map((g) => `<option value="${g.grade}" ${g.grade === grade ? 'selected' : ''}>${g.label}</option>`).join("")}</select></label><label for="assignment-count">Problems per visit<select id="assignment-count">${[5, 10, 15, 20].map((n) => `<option ${n === count ? 'selected' : ''}>${n}</option>`).join("")}</select></label></div>
+      <div class="teacher-layout"><form id="assignment-builder"><label for="assignment-label">Assignment title<input id="assignment-label" maxlength="80" value="${escapeHtml(label)}"/></label><div class="form-row"><label for="assignment-grade">Grade<select id="assignment-grade">${GRADES.map((g) => `<option value="${g.grade}" ${g.grade === grade ? 'selected' : ''}>${g.label}</option>`).join("")}</select></label><label for="assignment-session-type">Session type<select id="assignment-session-type"><option value="practice" ${sessionType === 'practice' ? 'selected' : ''}>Fluency practice</option><option value="family" ${sessionType === 'family' ? 'selected' : ''}>Family Math Tonight</option></select></label></div><div class="form-row"><label for="assignment-count"><span data-count-label>${sessionType === 'family' ? 'Session length' : 'Problems per visit'}</span><select id="assignment-count">${(sessionType === 'family' ? [5, 10] : [5, 10, 15, 20]).map((n) => `<option ${n === count ? 'selected' : ''}>${n}</option>`).join("")}</select></label><label for="assignment-language">Language<select id="assignment-language"><option value="en" ${language === 'en' ? 'selected' : ''}>English</option><option value="es" ${language === 'es' ? 'selected' : ''}>Español</option></select></label></div><label for="assignment-challenge">Challenge range<select id="assignment-challenge"><option value="adaptive" ${challenge === 'adaptive' ? 'selected' : ''}>Adaptive</option><option value="building" ${challenge === 'building' ? 'selected' : ''}>Skill-building</option><option value="grade-stretch" ${challenge === 'grade-stretch' ? 'selected' : ''}>Grade-level + stretch</option></select></label>
       <label for="assignment-mode">Support level<select id="assignment-mode"><option value="adaptive" ${mode === 'adaptive' ? 'selected' : ''}>Adaptive: help when needed</option><option value="guided" ${mode === 'guided' ? 'selected' : ''}>Coached: strategy steps always open</option></select></label>
       <div class="form-row"><label for="assignment-game">Add a game (optional)<select id="assignment-game"><option value="">No game</option>${games.filter((g) => !g.grades || g.grades.includes(grade)).map((g) => `<option value="${g.id}" ${g.id === game ? 'selected' : ''}>${escapeHtml(g.name)}</option>`).join("")}</select></label><label for="assignment-stop">Game facts (fact games only)<select id="assignment-stop">${stopOptions(stopsFor(grade), stop, "Everything on the grade’s trail")}</select></label></div>
       <label for="assignment-standard">Pick skills by standard or extension<select id="assignment-standard"><option value="">Choose a standard or extension…</option>${[...new Set(skills.map((skill) => skill.standard))].map((code) => { const entry = skills.find((skill) => skill.standard === code); const count = skills.filter((skill) => skill.standard === code).length; return `<option value="${escapeHtml(code)}">${entry.standardNote ? "Extension reference " : "Standard "}${escapeHtml(code)} (${count} skill${count === 1 ? '' : 's'})</option>`; }).join("")}</select></label>
@@ -148,6 +160,9 @@ export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, o
     label = container.querySelector("#assignment-label").value.trim() || "Class practice";
     count = Number(container.querySelector("#assignment-count").value);
     mode = container.querySelector("#assignment-mode").value;
+    sessionType = container.querySelector("#assignment-session-type").value;
+    language = container.querySelector("#assignment-language").value;
+    challenge = container.querySelector("#assignment-challenge").value;
     game = container.querySelector("#assignment-game").value;
     stop = container.querySelector("#assignment-stop").value;
     selected = new Set([...container.querySelectorAll('[name="assignment-skill"]:checked')].map((input) => input.value));
@@ -159,13 +174,24 @@ export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, o
       render();
       return;
     }
+    if (event.target.id === "assignment-session-type") { capture(); if (sessionType === "family" && ![5, 10].includes(count)) count = 5; if (sessionType === "practice" && ![5, 10, 15, 20].includes(count)) count = 10; render(); return; }
     if (event.target.id === "assignment-grade") { capture(); grade = Number(event.target.value); selected = new Set(); stop = "all"; render(); } };
   container.onsubmit = (event) => {
     event.preventDefault(); capture();
-    assignment = validateAssignment({ version: 1, grade, keys: [...selected], game: game || null, stop: stop === "all" ? null : stop, count, mode, label });
+    if (sessionType === "family") {
+      if (selected.size !== 1) { container.querySelector("#assignment-error").textContent = "Choose exactly one skill for Family Math Tonight."; return; }
+      const skillId = [...selected][0].split(":").slice(1).join(":");
+      const relative = familySessionShare({ grade, skill: skillId, lang: language, minutes: count, challenge, support: mode === "guided" ? "extra" : "standard" });
+      const url = new URL(relative, location.href);
+      const es = language === "es";
+      const result = container.querySelector("#assignment-result"); result.hidden = false;
+      result.innerHTML = `<h3>${escapeHtml(label)}</h3><p>${es ? "Grado" : "Grade"} ${grade} · ${count} ${es ? "minutos de práctica familiar" : "minutes of family practice"} · ${escapeHtml(challenge)} · ${es ? "El estudiante elige su perfil local al abrir el enlace." : "Learner chooses a local profile after opening."}</p><label for="assignment-link">${es ? "Enlace para la familia" : "Family link"}<input id="assignment-link" readonly value="${escapeHtml(url.href)}"/></label><div class="button-row"><a class="primary-action" href="${escapeHtml(url.href)}" target="_blank" rel="noopener">${es ? "Vista previa" : "Preview session"}</a><button class="outline-action" type="button" data-copy-assignment>${es ? "Copiar enlace" : "Copy link"}</button><button class="outline-action" type="button" data-toggle-qr>${es ? "Mostrar QR" : "Show QR"}</button><button class="outline-action" type="button" data-print-family>${es ? "Imprimir tarjeta" : "Print take-home card"}</button></div><div id="assignment-qr-box" hidden><img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(url.href)}" alt="QR code for family practice" width="180" height="180"/><p>${escapeHtml(url.href)}</p></div><p>${es ? "El enlace incluye la actividad y sus ajustes. El progreso permanece en el perfil local de este dispositivo." : "The link includes activity settings only. Progress stays in the local profile on this device."}</p><p class="family-message">${es ? "En familia: abran el enlace, elijan un perfil local y completen una sesión breve. Pregunten: ¿qué notaste y cómo lo sabes?" : "At home: open the link, choose a local profile, and complete a short session. Ask: What did you notice, and how do you know?"}</p>`;
+      result.scrollIntoView({ behavior: "smooth", block: "start" }); return;
+    }
+    assignment = validateAssignment({ version: 1, grade, keys: [...selected], game: game || null, stop: stop === "all" ? null : stop, count, mode, lang: language, challenge, label });
     if (!assignment) { container.querySelector("#assignment-error").textContent = "Choose at least one skill or a game, then build the assignment."; return; }
     const token = encodeAssignment(assignment);
-    const url = new URL("https://eduwonderlab.com/math/fluency-lab/"); url.hash = `assignment=${token}`;
+    const url = new URL("https://eduwonderlab.com/math/fluency-lab/"); if (assignment.lang) url.searchParams.set("lang", assignment.lang); url.hash = `assignment=${token}`;
     const result = container.querySelector("#assignment-result"); result.hidden = false;
     result.innerHTML = `<h3>${escapeHtml(label)}</h3><p>Grade ${grade} · ${selected.size ? `${selected.size} skill${selected.size === 1 ? '' : 's'} · ${count} problems each visit` : 'game only'}${assignment.game ? ` · Game: ${escapeHtml(games.find((g) => g.id === assignment.game)?.name || assignment.game)}` : ''}. New numbers are generated each time.</p><label for="assignment-link">Student link<input id="assignment-link" readonly value="${escapeHtml(url.href)}"/></label><div class="button-row"><button class="primary-action" type="button" data-launch-assignment>Try this assignment</button><button class="outline-action" type="button" data-copy-assignment>Copy student link</button><button class="outline-action" type="button" data-print-packet>Print a five-day packet</button><button class="outline-action" type="button" data-print-language-pack>Print the language pack</button></div><div class="lms-share-row" style="margin-top:0.75rem; padding-top:0.75rem; border-top:1px dashed #cbd5e1; display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center"><a class="outline-action lms-share-btn" href="https://classroom.google.com/share?url=${encodeURIComponent(url.href)}&title=${encodeURIComponent(label)}" target="_blank" rel="noopener" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; font-weight:700">🏫 Google Classroom</a><button class="outline-action lms-embed-btn" type="button" data-copy-lms-embed style="font-weight:700">📋 Copy Canvas / LMS Card</button><button class="outline-action qr-toggle-btn" type="button" data-toggle-qr style="font-weight:700">📱 Project QR Code</button></div><div id="assignment-qr-box" class="assignment-qr-box" hidden style="margin-top:0.75rem; background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:12px; text-align:center; max-width:280px"><img class="assignment-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(url.href)}" alt="QR Code for ${escapeHtml(label)}" width="180" height="180" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"/><p class="qr-offline-msg" style="display:none; color:#64748b; font-size:0.85rem">QR code image requires internet. Use student link above.</p><p style="margin:6px 0 0; font-size:0.8rem; color:#475569; font-weight:600">Scan with tablet/Chromebook camera</p></div><label class="inline-check" style="margin-top:0.75rem"><input type="checkbox" id="packet-key"/> Add a separate teacher answer-key page to the printed packet</label><p class="family-message">At home: open the link, choose your local profile, and complete a set. Use “See it & build it” when you need a visual explanation. Tell someone one strategy you used.</p>`;
     result.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -178,6 +204,8 @@ export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, o
     if (event.target.closest("[data-launch-assignment]") && assignment) onLaunch(assignment);
     if (event.target.closest("[data-print-language-pack]") && assignment) onPrint(languagePackHtml(assignment.keys));
     if (event.target.closest("[data-print-packet]") && assignment) onPrint(printablePacket(assignment, { includeKey: container.querySelector("#packet-key").checked }));
+    if (event.target.closest("[data-print-family]")) { const href = container.querySelector("#assignment-link")?.value || ""; const es = language === "es"; onPrint(`<article class="packet-page"><h1>${es ? "Matemáticas en familia esta noche" : "Family Math Tonight"}</h1><h2>${es ? "Grado" : "Grade"} ${grade} · ${escapeHtml([...selected][0] || "")}</h2><p>${es ? "Escanea el código o abre el enlace. Elige un perfil local y completa la sesión a tu ritmo." : "Scan the code or open the link. Choose a local profile and complete the session at your own pace."}</p><p><a href="${escapeHtml(href)}">${escapeHtml(href)}</a></p><p>${es ? "Pregunta: ¿Qué notaste? ¿Cómo lo sabes?" : "Ask: What did you notice? How do you know?"}</p><p>${es ? "Celebra la estrategia que usó el estudiante." : "Notice and celebrate the learner’s strategy."}</p></article>`); }
+
     if (event.target.closest("[data-copy-assignment]")) {
       const input = container.querySelector("#assignment-link");
       try { await navigator.clipboard.writeText(input.value); announce("Assignment link copied."); }
@@ -193,7 +221,7 @@ export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, o
     }
     if (event.target.closest("[data-copy-lms-embed]") && assignment) {
       const token = encodeAssignment(assignment);
-      const url = new URL("https://eduwonderlab.com/math/fluency-lab/"); url.hash = `assignment=${token}`;
+      const url = new URL("https://eduwonderlab.com/math/fluency-lab/"); if (assignment.lang) url.searchParams.set("lang", assignment.lang); url.hash = `assignment=${token}`;
       const embedHtml = `<div style="font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; max-width:520px; border:2px solid #2563eb; border-radius:12px; padding:18px 20px; background:#f8fafc; color:#0f172a; margin:16px auto; box-shadow:0 4px 12px rgba(0,0,0,0.06)"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px"><span style="background:#2563eb; color:#ffffff; font-size:11px; font-weight:800; padding:3px 10px; border-radius:12px; text-transform:uppercase; letter-spacing:0.5px">Grade ${grade} · Math Fluency Lab</span><span style="font-size:13px; color:#475569; font-weight:600">${count} Problems</span></div><h3 style="margin:0 0 8px 0; font-size:18px; color:#1e293b; font-weight:800">${escapeHtml(label)}</h3><p style="margin:0 0 14px 0; font-size:14px; line-height:1.5; color:#334155">${selected.size ? `Practice session focusing on ${selected.size} core mathematical standard${selected.size === 1 ? '' : 's'} with adaptive visual models and immediate feedback.` : 'Interactive mathematical game challenge.'}</p><div style="text-align:center; margin-bottom:12px"><a href="${escapeHtml(url.href)}" target="_blank" rel="noopener" style="display:inline-block; background:#2563eb; color:#ffffff; font-weight:800; font-size:15px; text-decoration:none; padding:10px 22px; border-radius:8px; box-shadow:0 2px 6px rgba(37,99,235,0.3)">🚀 Start Fluency Lab Practice</a></div><div style="border-top:1px solid #cbd5e1; padding-top:8px; font-size:12px; color:#64748b; text-align:center">Zero-login access · Works on Chromebooks, tablets &amp; mobile · “See it &amp; build it” steps open when needed.</div></div>`;
       try {
         await navigator.clipboard.writeText(embedHtml);

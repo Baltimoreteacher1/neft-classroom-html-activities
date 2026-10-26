@@ -13,7 +13,7 @@ import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visu
 import { skillIdForWorld } from "./puzzle-worlds.js";
 import { transferPrompt } from "./lesson-content.js";
 import { handleModelInput, handleModelTap, interactivePicture, mathText, openFillRow, stepPhaseBadge, stepVisual, stepWaiting, stepsBlock, trailPicture } from "./trail-pictures.js";
-import { PROFILE_NAMES, assignmentQueue, cleanProgress, decodeAssignment, downloadFile, makeBackup, mountTeacherStudio, parseBackup, profileKey, profiles, progressReport, readLocal, selectProfile, writeLocal } from "./school-tools.js";
+import { PROFILE_NAMES, assignmentDifficultyLevel, assignmentQueue, cleanProgress, decodeAssignment, downloadFile, makeBackup, mountTeacherStudio, parseBackup, profileKey, profiles, progressReport, readLocal, selectProfile, writeLocal } from "./school-tools.js";
 import { mountWorkbench } from "./workbench.js";
 import { createWorkbenchState } from "./workbench-state.js";
 import { answerStillHidden, liveHelpHtml } from "./live-help.js";
@@ -195,6 +195,8 @@ const state = {
   assignment: decodeAssignment(new URLSearchParams(location.hash.slice(1)).get("assignment")),
   instructionalSignal: null,
 };
+const launchLang = initialParams.get("lang") || state.assignment?.lang;
+if (["en", "es"].includes(launchLang)) { setLang(launchLang, { persist: false }); translatePage(document); }
 const gradeDisplay = (grade) => getGrade(grade).label;
 
 // This adapter stores only bounded evidence categories. Answers and written work stay in the
@@ -704,7 +706,8 @@ function nextProblem(restoredItem = null) {
   const queueEntry = state.session.queue?.[state.session.answered];
   const missionIndependent = state.session.mode === "mission" && ["Starting point", "Try independently", "Transfer"].includes(queueEntry?.purpose);
   const repairIndependent = state.session.mode === "repair" && queueEntry?.independent === true;
-  const level = adapting ? Math.max(missionIndependent || repairIndependent ? 1 : 0, difficulty(state.tutor, skill)) : 1;
+  const requestedLevel = adapting ? Math.max(missionIndependent || repairIndependent ? 1 : 0, difficulty(state.tutor, skill)) : 1;
+  const level = state.session.mode === "assignment" ? assignmentDifficultyLevel(state.assignment?.challenge, requestedLevel) : requestedLevel;
   if (restoredItem) state.item = restoredItem;
   else if (queueEntry?.original) state.item = { ...queueEntry.original };
   else {
@@ -7548,6 +7551,7 @@ function startRepairEntry(id) {
 
 function launchAssignment(assignment) {
   if (!assignment) return;
+  if (["en", "es"].includes(assignment.lang)) { setLang(assignment.lang, { persist: false }); translatePage(document); }
   saveActiveSession(); state.session = null;
   state.assignment = assignment; state.grade = assignment.grade; saveSettings(); renderGradeTabs();
   document.documentElement.style.setProperty("--grade", getGrade(state.grade).color);

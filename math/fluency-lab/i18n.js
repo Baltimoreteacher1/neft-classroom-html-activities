@@ -14,9 +14,9 @@ export const getLang = () => {
   return lang;
 };
 
-export function setLang(next) {
+export function setLang(next, { persist = true } = {}) {
   lang = next === "es" ? "es" : "en";
-  writeLocal(KEY, lang);
+  if (persist) writeLocal(KEY, lang);
   if (typeof document !== "undefined") document.documentElement.lang = lang;
 }
 

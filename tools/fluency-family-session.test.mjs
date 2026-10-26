@@ -1,5 +1,9 @@
 import assert from "node:assert/strict";
-import { familyLaunch, familySessionLaunch } from "../math/fluency-lab/family/family-planner.js";
+import {
+  familyLaunch,
+  familySessionLaunch,
+  familySessionShare,
+} from "../math/fluency-lab/family/family-planner.js";
 import {
   createNightSession,
   markNightStageComplete,
@@ -36,6 +40,43 @@ assert.equal(session.stage, "retrieval");
 assert.equal(session.stages.retrieval.items.length, 2);
 assert.equal(session.stages.independent.items.length, 2);
 assert.equal(session.stages.family.items.length, 1);
+const tenMinute = createNightSession({
+  grade: 1,
+  profile: 2,
+  lang: "en",
+  skill: "add-10",
+  tutor,
+  minutes: 10,
+  challenge: "building",
+  support: "extra",
+  now: 1_790_000_000_000,
+});
+assert.equal(tenMinute.stages.retrieval.items.length, 3);
+assert.equal(tenMinute.stages.independent.items.length, 4);
+assert.equal(tenMinute.stages.family.items.length, 2);
+assert.equal(tenMinute.minutes, 10);
+assert.equal(tenMinute.challenge, "building");
+assert.equal(tenMinute.support, "extra");
+const shared = new URL(
+  familySessionShare({
+    grade: 1,
+    skill: "add-10",
+    lang: "es",
+    minutes: 10,
+    challenge: "grade-stretch",
+    support: "extra",
+  }),
+  "https://example.test/math/fluency-lab/",
+);
+assert.equal(shared.pathname, "/math/fluency-lab/family/tonight.html");
+assert.equal(shared.searchParams.get("minutes"), "10");
+assert.equal(shared.searchParams.get("support"), "extra");
+assert.equal(shared.searchParams.has("profile"), false);
+assert.equal(shared.searchParams.has("name"), false);
+assert.throws(
+  () => familySessionShare({ grade: 1, skill: "add-10", minutes: 7 }),
+  /5- or 10-minute/,
+);
 assert.ok(
   session.stages.retrieval.items.every(
     (item) => Array.isArray(item.answers) && item.answers.length > 0,
