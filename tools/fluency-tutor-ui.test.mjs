@@ -357,14 +357,30 @@ click("#lang-toggle");
 click('.open-skill[data-skill="lcm"]');
 click('[data-mode="practice"]');
 click("#toggle-interactive-solver");
-assert.ok($(".solver-reference-chart[aria-label='Multiples chart']"));
-const multipleInput = $(".solver-reference-chart [data-then='multiple']");
-assert.ok(multipleInput, "Multiples chart starts with a next-multiple entry");
-multipleInput.value = multipleInput.dataset.expect;
-multipleInput.dispatchEvent(new win.Event("input", { bubbles: true }));
+assert.ok($(".solver-reference-chart[aria-label='Prime factor guide']"));
+// LCM is taught by prime factorization: the workspace asks for primes, not lists of multiples.
+assert.equal(
+  $(".solver-reference-chart [data-then='multiple']"),
+  null,
+  "LCM workspace no longer lists multiples",
+);
 assert.ok(
-  $(".solver-reference-chart [data-chips] b"),
-  "Multiples chart accepts and checks entries",
+  $(".solver-reference-chart svg.ft-tree"),
+  "Prime factor guide draws a worked factor tree",
+);
+for (const group of ["a", "b"]) {
+  for (const input of [...document.querySelectorAll(`.lcm-prime-input[data-group="${group}"]`)]) {
+    input.value = input.dataset.target;
+    input.dispatchEvent(new win.Event("input", { bubbles: true }));
+    assert.ok(
+      input.classList.contains("is-ok"),
+      `Prime ${input.dataset.target} in group ${group} is accepted`,
+    );
+  }
+}
+assert.ok(
+  $(".lcm-guide-yours svg.ft-tree"),
+  "Finishing both factorizations shows the learner's own factor trees",
 );
 click(".scratchpad-wrap summary");
 fill("#scratchpad", "Keep this working.");

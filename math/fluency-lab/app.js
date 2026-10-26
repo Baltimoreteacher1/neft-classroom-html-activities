@@ -9,6 +9,7 @@ import {
   validateAnswer,
 } from "./problem-bank.js";
 import { adaptiveProblem, dailyPlan, diagnosticPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, missionPlan, prerequisites, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
+import { copiesTable, factorTreeSvg, keptPrimes, primeList } from "./factor-tree.js";
 import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visual-lab.js";
 import { skillIdForWorld } from "./puzzle-worlds.js";
 import { transferPrompt } from "./lesson-content.js";
@@ -5195,63 +5196,80 @@ const InteractiveSolver = {
     if (lcmMatch) {
       const a = Number(lcmMatch[1]);
       const b = Number(lcmMatch[2]);
-      const pa = primeFactors(a);
-      const pb = primeFactors(b);
+      const pa = primeList(a);
+      const pb = primeList(b);
+      const kept = keptPrimes(a, b);
       const ans = lcm(a, b);
+      const slots = (list, group, label) => list.map((p, idx) => `<input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${p}" data-group="${group}" aria-label="${label} ${idx + 1}" placeholder="?" />${idx < list.length - 1 ? " × " : ""}`).join("");
 
       container.innerHTML = `
         <div class="solver-header">
-          <strong>🌳 Prime Factorization Method for LCM(${a}, ${b})</strong>
-          <span class="solver-hint-tag">Grade 6 Essential Standard</span>
+          <strong>🌳 ${t("Prime Factorization Method for LCM")}(${a}, ${b})</strong>
+          <span class="solver-hint-tag">${t("Grade 6 Essential Standard")}</span>
         </div>
         <div class="lcm-prime-scaffold">
           <div class="lcm-prime-work">
           <div class="lcm-row">
-            <span>1) Factor <strong>${a}</strong> into primes:</span>
-            ${pa.map((p, idx) => `<input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${p}" data-group="a" aria-label="Prime factor ${idx + 1} of ${a}" placeholder="?" />${idx < pa.length - 1 ? " × " : ""}`).join("")}
+            <span>1) ${t("Factor")} <strong>${a}</strong> ${t("into primes:")}</span>
+            ${slots(pa, "a", `${t("Prime factor")} · ${a}`)}
             <span class="lcm-status" data-status="a"></span>
           </div>
           <div class="lcm-row">
-            <span>2) Factor <strong>${b}</strong> into primes:</span>
-            ${pb.map((p, idx) => `<input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${p}" data-group="b" aria-label="Prime factor ${idx + 1} of ${b}" placeholder="?" />${idx < pb.length - 1 ? " × " : ""}`).join("")}
+            <span>2) ${t("Factor")} <strong>${b}</strong> ${t("into primes:")}</span>
+            ${slots(pb, "b", `${t("Prime factor")} · ${b}`)}
             <span class="lcm-status" data-status="b"></span>
           </div>
           <div class="lcm-tip-banner">
-            💡 <strong>Help with primes:</strong> The prime numbers are 2, 3, 5, 7, 11, 13... If a number is even, divide by 2!
+            💡 <strong>${t("Help with primes:")}</strong> ${t("The prime numbers are 2, 3, 5, 7, 11, 13... If a number is even, divide by 2!")}
+          </div>
+          <div class="lcm-row">
+            <span>3) ${t("Keep the most copies of each prime:")}</span>
+            ${slots(kept, "keep", t("Kept prime"))}
           </div>
           <div class="lcm-row" style="margin-top:0.5rem">
-            <span>3) Multiply the highest powers of each prime:</span>
+            <span>4) ${t("Multiply the kept primes:")}</span>
             <span>LCM(${a}, ${b}) = </span>
-            <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${ans}" data-group="lcm-final" style="width:72px" placeholder="LCM" />
-            <button type="button" class="outline-action" id="lcm-copy-ans" style="display:none">Copy to Answer</button>
+            <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${ans}" data-group="lcm-final" style="width:72px" placeholder="LCM" aria-label="LCM(${a}, ${b})" />
           </div>
           </div>
-          <aside class="solver-reference-chart" aria-label="${t("Multiples chart")}">
-            <h3>${t("Multiples chart")}</h3>
-            ${interactivePicture({ type: "lists", a, b, find: "lcm" })}
+          <aside class="solver-reference-chart" aria-label="${t("Prime factor guide")}">
+            <h3>${t("Prime factor guide")}</h3>
+            <p>${t("A factor tree splits a number into two factors, again and again, until every circle is prime (filled).")}</p>
+            ${factorTreeSvg(12, { label: t("Example: 12 = 3 × 4 = 3 × 2 × 2") })}
+            <div class="lcm-guide-yours" data-lcm-trees hidden></div>
           </aside>
         </div>
       `;
 
+      // Each group accepts its primes in any order: the next typed value is right if it is still unclaimed.
+      const claimed = { a: [], b: [], keep: [] };
+      const expected = { a: pa, b: pb, keep: kept };
+      const guide = container.querySelector("[data-lcm-trees]");
+      const showTrees = () => {
+        if (claimed.a.length < pa.length || claimed.b.length < pb.length) return;
+        guide.hidden = false;
+        guide.innerHTML = `<h4>${t("Your factor trees")}</h4><div class="ft-pair">${factorTreeSvg(a, { label: String(a) })}${factorTreeSvg(b, { label: String(b) })}</div>${copiesTable(a, b, { hideKeep: true })}`;
+      };
       container.querySelectorAll(".lcm-prime-input").forEach((inp) => {
         inp.addEventListener("input", () => {
-          const expected = inp.dataset.target;
-          if (inp.value.trim() === expected) {
-            inp.classList.add("is-ok");
-            inp.readOnly = true;
-            chime("step");
-            const finalInp = container.querySelector('[data-group="lcm-final"]');
-            if (finalInp && finalInp.value.trim() === String(ans)) {
-              finalInp.classList.add("is-ok");
-              els.answerInput.value = String(ans);
-              chime("good");
-              const copyBtn = container.querySelector("#lcm-copy-ans");
-              if (copyBtn) {
-                copyBtn.style.display = "inline-block";
-                copyBtn.textContent = "✓ Copied to answer!";
-              }
-            }
+          const group = inp.dataset.group;
+          const value = inp.value.trim();
+          let right = false;
+          if (group === "lcm-final") right = value === String(ans);
+          else {
+            const open = [...expected[group]];
+            for (const taken of claimed[group]) open.splice(open.indexOf(taken), 1);
+            right = open.includes(Number(value)) && /^\d+$/.test(value);
+            if (right) claimed[group].push(Number(value));
           }
+          if (!right) return;
+          inp.classList.add("is-ok");
+          inp.readOnly = true;
+          chime("step");
+          if (group === "lcm-final") {
+            els.answerInput.value = String(ans);
+            chime("good");
+          } else showTrees();
         });
       });
       return;

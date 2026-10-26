@@ -1,3 +1,4 @@
+import { countOf, primeList } from "./factor-tree.js";
 import { t } from "./i18n.js";
 import { columnSpec, verticalHtml } from "./vertical-columns.js";
 import { fillKey, isSolved, peekFill, register, splitFill, tryFill } from "./step-fill.js";
@@ -396,6 +397,18 @@ function factorLists(model) {
   return `<div class="tp-live" data-live="lists" data-find="${model.find}"><p class="tp-prompt">${prompt}</p>${row(model.a)}${row(model.b)}<p class="tp-readout" data-list-note></p></div>`;
 }
 
+// LCM by prime factorization: type each number's primes, then the copies of each prime, then keep the larger count.
+function primeTreesPicture(model) {
+  const [pa, pb] = [primeList(model.a), primeList(model.b)];
+  const row = (n, list) =>
+    `<p class="tp-prime-row"><strong>${n}</strong> = ${list.map((p, i) => box(p, t("prime factor {i} of {n}", { i: i + 1, n }), 'data-then="prime"')).join(" × ")}</p>`;
+  const primes = [...new Set([...pa, ...pb])].sort((x, y) => x - y);
+  const copies = primes
+    .map((p) => `<tr><th scope="row">${p}</th><td>${box(countOf(pa, p), t("copies of {p} in {n}", { p, n: model.a }), 'data-then="copies"')}</td><td>${box(countOf(pb, p), t("copies of {p} in {n}", { p, n: model.b }), 'data-then="copies"')}</td><td>${box(Math.max(countOf(pa, p), countOf(pb, p)), t("copies of {p} to keep", { p }), 'data-then="copies"')}</td></tr>`)
+    .join("");
+  return `<div class="tp-live" data-live="primeTrees"><p class="tp-prompt">${t("Split each number into primes, smallest first. Then keep the larger count of every prime.")}</p>${row(model.a, pa)}${row(model.b, pb)}<table class="tp-ratio"><thead><tr><th scope="col">${t("Prime")}</th><th scope="col">${t("Copies in {n}", { n: model.a })}</th><th scope="col">${t("Copies in {n}", { n: model.b })}</th><th scope="col">${t("Keep")}</th></tr></thead><tbody>${copies}</tbody></table></div>`;
+}
+
 // Powers: the student types each running product.
 function powerChain(model) {
   return `<div class="tp-live" data-live="power" data-base="${model.base}" data-exponent="${model.exponent}">
@@ -536,6 +549,7 @@ export function interactivePicture(model) {
   if (model.type === "percentBar") return percentBar(model);
   if (model.type === "ratioTable") return ratioTable(model);
   if (model.type === "lists") return factorLists(model);
+  if (model.type === "primeTrees") return primeTreesPicture(model);
   if (model.type === "power") return powerChain(model);
   if (model.type === "square") return squareGrow(model);
   if (model.type === "shape" && model.shape === "rectangle" && model.allSides)
@@ -635,6 +649,8 @@ export function handleModelInput(target) {
     }
     input.remove();
     markShared(live);
+  } else if (then === "prime" || then === "copies") {
+    live.querySelector(".tp-in:not([readonly])")?.focus();
   } else if (then === "power") {
     const used = Number(input.dataset.used);
     const base = Number(live.dataset.base);

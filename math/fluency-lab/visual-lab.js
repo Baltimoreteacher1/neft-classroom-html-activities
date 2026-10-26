@@ -2,6 +2,7 @@ import { createLesson, transferPrompt } from "./lesson-content.js";
 import { validateAnswer } from "./problem-bank.js";
 import { columnSpec, verticalHtml } from "./vertical-columns.js";
 import { t } from "./i18n.js";
+import { copiesTable, factorTreeSvg } from "./factor-tree.js";
 
 const esc = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 const svg = (body, label, viewBox = "0 0 540 240") => `<svg class="math-model-svg" viewBox="${viewBox}" role="img" aria-label="${esc(label)}">${body}</svg>`;
@@ -71,6 +72,9 @@ export function renderModel(model, { counters, counterPositions, partitions = 1,
     return `${caption}<fieldset class="strategy-compare"><legend>${esc(t("Choose a strategy to explore"))}</legend><div class="strategy-choice-list">${model.strategies.map((item) => `<button type="button" data-strategy-choice="${esc(item.id)}" aria-pressed="${item.id === strategy.id}">${esc(item.label)}</button>`).join("")}</div><p class="strategy-equation" aria-live="polite">${esc(t(strategy.equation))}</p><div class="strategy-area-model" role="img" aria-label="${esc(alt)}">${diagram}</div><ul class="strategy-partial-products">${strategy.parts.map((part) => `<li>${esc(t(part))}</li>`).join("")}</ul><p class="strategy-equivalence" aria-live="polite">${esc(strategy.explanation)}</p><strong class="strategy-total">48 × 25 = ${strategy.result.toLocaleString("en-US")}</strong></fieldset>`;
   }
   if (model.type === "partition" || model.type === "bars") return `${caption}<div class="partition-model">${model.labels.map((label, i) => `<div style="flex:${model.values[i] || 1}"><span>${esc(label)}</span></div>`).join("")}</div><p>Keep both parts. Each is divided by the same divisor.</p>`;
+  // A practice item hides its own trees (the learner builds them); a lesson shows them as the worked model.
+  if (model.type === "primeTrees" && model.practice) return "";
+  if (model.type === "primeTrees") return `${caption}<div class="ft-pair">${factorTreeSvg(model.a, { label: String(model.a) })}${factorTreeSvg(model.b, { label: String(model.b) })}</div>${copiesTable(model.a, model.b, { hideKeep: true })}`;
   if (model.type === "table") return `${caption}<table class="ratio-model"><thead><tr>${model.headers.map((label) => `<th scope="col">${esc(label)}</th>`).join("")}</tr></thead><tbody>${model.rows.map((row) => `<tr>${row.map((value) => `<td>${esc(value)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
   if (model.type === "equations") return `${caption}<ol class="balance-model">${model.lines.map((line, i) => `<li class="${i === step ? 'active' : ''}">${esc(line)}</li>`).join("")}</ol><div class="balance-base" aria-hidden="true">━━━━━━━━━ ▲ ━━━━━━━━━</div>`;
   if (model.type === "machine") return `${caption}<div class="function-machine"><span>Input<br><strong>${model.input}</strong></span><b aria-hidden="true">→</b><span>Multiply<br><strong>× ${model.multiplier}</strong></span><b aria-hidden="true">→</b><span>${model.factorCount === 3 ? "Again" : model.constant ? "Then add" : "Output"}<br><strong>${model.factorCount === 3 ? `× ${model.multiplier}` : model.constant ? `+ ${model.constant}` : "?"}</strong></span></div>`;
@@ -200,7 +204,7 @@ export function mountVisualLesson(container, skill, { onComplete, onPractice, va
         ${completedStepsHtml}
         <form data-visual-form novalidate>
           <label for="visual-answer"><strong>Step ${index + 1} of ${content.steps.length}</strong><span>${esc(item.prompt)}</span></label>
-          ${item.choices ? `<div class="choice-answers">${item.choices.map((choice) => `<button type="button" class="choice-answer" data-visual-answer="${esc(choice)}">${esc(choice)}</button>`).join("")}</div>` : `<input id="visual-answer" class="answer-input" type="text" inputmode="${item.kind === 'text' ? 'text' : 'decimal'}" autocomplete="off" placeholder="${item.kind === 'fraction' ? 'Example: 3/4' : 'Your answer'}"/><button class="primary-action" type="submit">Check this step</button>`}
+          ${item.choices ? `<div class="choice-answers">${item.choices.map((choice) => `<button type="button" class="choice-answer" data-visual-answer="${esc(choice)}">${esc(choice)}</button>`).join("")}</div>` : `<input id="visual-answer" class="answer-input" type="text" inputmode="${item.kind === 'text' || item.kind === 'primes' ? 'text' : 'decimal'}" autocomplete="off" placeholder="${item.kind === 'fraction' ? 'Example: 3/4' : 'Your answer'}"/><button class="primary-action" type="submit">Check this step</button>`}
         </form>
         <div class="visual-help-actions">
           <button type="button" class="text-action" data-visual-hint>Help with this step</button>

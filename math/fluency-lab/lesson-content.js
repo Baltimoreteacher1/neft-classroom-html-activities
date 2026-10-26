@@ -1,4 +1,5 @@
 import { baseGenerator } from "./problem-bank.js";
+import { countOf, factorText, keptPrimes, primeList } from "./factor-tree.js";
 import { t } from "./i18n.js";
 
 const step = (prompt, answer, hint, explanation, kind = "number", choices = null) => ({ prompt, answers: [String(answer)], kind, choices, hint, explanation });
@@ -214,6 +215,24 @@ export function createLesson(skill, variant = 0) {
   if (gen === "factorMultiple") {
     const rows = 3; const columns = 4 + k; const total = rows * columns;
     return lesson("Find factor pairs", "A factor pair multiplies to make the number. Multiples come from counting by a number.", { type: "array", a: rows, b: columns, split: rows, caption: `${rows} rows of ${columns}` }, [step("How many counters are in the array?", total, "Multiply rows by counters in a row.", `${rows} × ${columns} = ${total}.`), step(`${rows} × □ = ${total}. What is the other factor?`, columns, "Count the counters in one row.", `${rows} × ${columns} = ${total}, so ${columns} is the other factor.`), step(`Is ${rows} a factor of ${total}?`, "yes", `Does ${rows} divide ${total} evenly?`, `${total} ÷ ${rows} = ${columns} with nothing left over.`, "choice", ["yes", "no"])]);
+  }
+  if (gen === "gcfLcm" && config.find === "lcm") {
+    const [a, b] = [[12, 18], [8, 12], [18, 24], [20, 30], [10, 12]][k];
+    const [pa, pb] = [primeList(a), primeList(b)];
+    const kept = keptPrimes(a, b);
+    const lcm = kept.reduce((product, p) => product * p, 1);
+    const primes = [...new Set([...pa, ...pb])].sort((x, y) => x - y);
+    const most = (p) => Math.max(countOf(pa, p), countOf(pb, p));
+    return lesson(
+      "Find the LCM with prime factor trees",
+      "Break each number into primes with a factor tree. The LCM keeps the larger number of copies of every prime, so both numbers divide it.",
+      { type: "primeTrees", a, b, find: "lcm", caption: `Factor trees for ${a} and ${b}. Filled circles are prime.` },
+      [
+        step(`Which primes multiply to make ${a}? Type them with × between, like 2 × 3.`, factorText(pa), "Split the number into two factors, then keep splitting until every circle is prime.", `${a} = ${factorText(pa)}.`, "primes"),
+        step(`Which primes multiply to make ${b}?`, factorText(pb), "Use a factor tree again and stop at prime circles.", `${b} = ${factorText(pb)}.`, "primes"),
+        step(`Keep the larger count of each prime from the two trees, then multiply. What is the LCM of ${a} and ${b}?`, lcm, `For each prime, compare its copies in ${a} and ${b} (see the table) and keep the larger count. Then multiply the kept primes.`, `${primes.map((p) => `${p}: ${countOf(pa, p)} in ${a}, ${countOf(pb, p)} in ${b}, keep ${most(p)}`).join("; ")}. ${factorText(kept)} = ${lcm}, so the LCM is ${lcm}.`),
+      ],
+    );
   }
   if (gen === "gcfLcm") {
     const a = 12; const b = 18; const lcm = config.find === "lcm";

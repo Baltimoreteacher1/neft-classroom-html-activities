@@ -1,6 +1,7 @@
 import { detailSteps } from "./detail-steps.js";
 import { leakCap } from "./step-leak.js";
 import { workedSteps } from "./step-builders.js";
+import { countOf, factorText, keptPrimes, parsePrimes, primeList } from "./factor-tree.js";
 
 const whole = new Intl.NumberFormat("en-US", { maximumFractionDigits: 6 });
 
@@ -110,17 +111,27 @@ export function primeFactors(n) {
   return factors.length ? factors : [n];
 }
 
-// GCF/LCM steps: LCM uses the student-friendly prime factorization method.
+// GCF steps list factor pairs. LCM steps are prime factorization with the learner's own numbers, so the hint,
+// the worked solution, the lesson and the workspace all teach one method.
+function lcmPrimeSteps(a, b, answer) {
+  const [pa, pb] = [primeList(a), primeList(b)];
+  const line = (n, list) => (list.length === 1 ? `${n} is prime, so its prime factorization is just ${n}.` : `${n} = ${factorText(list)}.`);
+  const primes = [...new Set([...pa, ...pb])].sort((x, y) => x - y);
+  const counts = primes.map((p) => `${p}: ${countOf(pa, p)} in ${a}, ${countOf(pb, p)} in ${b}, keep ${Math.max(countOf(pa, p), countOf(pb, p))}`).join("; ");
+  const kept = keptPrimes(a, b);
+  return [
+    `Build a factor tree for ${a} and stop when every branch ends in a prime. ${line(a, pa)}`,
+    `Build a factor tree for ${b} the same way. ${line(b, pb)}`,
+    `For each prime, compare how many copies each number has and keep the larger count (${counts}). The primes you keep: ${factorText(kept)}.`,
+    `Multiply the kept primes: ${factorText(kept)} = ${answer}. Check that ${a} and ${b} both divide ${answer} evenly.`,
+  ];
+}
+
 function gcfLcmSteps(find, a, b, answer) {
   if (find === "gcf") {
     return [`Find factor pairs for ${a}. Record the factors that divide it evenly.`, `Find factor pairs for ${b}. Record the factors that divide it evenly.`, "Compare the two factor lists. Which factors are shared?", `Choose the greatest shared factor: ${answer}. Check that it divides both numbers evenly.`];
   }
-  return [
-    `Write the prime factorization of ${a}.`,
-    `Write the prime factorization of ${b}.`,
-    "For each prime, keep the greatest number of copies that appears in either factorization.",
-    "Multiply the selected prime factors and check that the product is a multiple of both numbers.",
-  ];
+  return lcmPrimeSteps(a, b, answer);
 }
 
 const FACT_SYMBOL = { add: "+", sub: "−", mul: "×", div: "÷" };
@@ -854,9 +865,9 @@ const generators = {
     const find = config.find || "gcf";
     const answer = find === "gcf" ? gcd(a, b) : lcm(a, b);
     return problem(`Find the ${find.toUpperCase()} of ${a} and ${b}.`, answer, {
-      hint: find === "gcf" ? "List factor pairs and find the greatest shared factor." : "List multiples until both lists meet.",
-      explanation: `The ${find.toUpperCase()} of ${a} and ${b} is ${answer}.`,
-      model: { type: "lists", a, b, find },
+      hint: find === "gcf" ? "List factor pairs and find the greatest shared factor." : "Write each number as a product of primes with a factor tree, keep the most copies of each prime, then multiply.",
+      explanation: find === "gcf" ? `The GCF of ${a} and ${b} is ${answer}.` : `The LCM of ${a} and ${b} is ${answer}: keep ${factorText(keptPrimes(a, b))}, which multiply to ${answer}.`,
+      model: find === "gcf" ? { type: "lists", a, b, find } : { type: "primeTrees", a, b, find, practice: true },
       steps: gcfLcmSteps(find, a, b, answer),
     });
   },
@@ -1416,7 +1427,7 @@ export const GRADES = [
     promise: "Connect arithmetic fluency to ratios, equations, integers, geometry, and data.",
     skills: [
       S("gcf", "Greatest common factor", "Number system", "gcfLcm", { find: "gcf", max: 60 }, "6.NS.B.4", L("The GCF is the greatest factor shared by two numbers.", ["List factors or use prime factorization.", "Identify shared factors.", "Choose the greatest shared factor."], "GCF(24, 36) = 12", "Do not choose the greatest factor from only one number.")),
-      S("lcm", "Least common multiple", "Number system", "gcfLcm", { find: "lcm", max: 24 }, "6.NS.B.4", L("The LCM is the first positive multiple shared by both numbers.", ["List multiples or use prime factors.", "Find the first common value.", "Check both numbers divide it evenly."], "LCM(6, 8) = 24", "A common multiple must be divisible by both numbers.")),
+      S("lcm", "Least common multiple", "Number system", "gcfLcm", { find: "lcm", max: 24 }, "6.NS.B.4", L("The LCM is the smallest number that both numbers divide into evenly. Prime factor trees find it without long lists.", ["Build a factor tree for each number and write its prime factorization.", "For each prime, keep the larger number of copies found in either number.", "Multiply the kept primes. Check that both numbers divide the product."], "LCM(12, 18): 12 = 2 × 2 × 3 and 18 = 2 × 3 × 3. Keep 2, 2, 3, 3. 2 × 2 × 3 × 3 = 36", "Do not multiply every prime from both lists. A prime shared by both numbers is kept only as many times as the larger count.")),
       S("divide-fractions", "Divide fractions", "Number system", "fractionOp", { op: "div", maxDenominator: 10 }, "6.NS.A.1", L("Dividing by a fraction is multiplying by its reciprocal.", ["Keep the first fraction.", "Change division to multiplication and flip the second fraction.", "Multiply and simplify."], "2/3 ÷ 4/5 = 2/3 × 5/4 = 5/6", "Flip only the divisor, not both fractions.")),
       S("decimal-ops", "Multiply and divide decimals", "Number system", "decimalOp", { op: "muldiv", mixedDivision: true, maxDivisor: 9, maxQuotient: 60 }, "6.NS.B.3", L("Estimate, multiply, and place the decimal by value.", ["Estimate the size.", "Multiply as whole numbers.", "Place the decimal so the result matches the estimate."], "3.2 × 1.5 = 4.8", "A product can be smaller when a factor is less than 1.")),
       S("ratios", "Equivalent ratios", "Ratios", "ratio", { maxPart: 12, maxFactor: 9 }, "6.RP.A.1", L("Equivalent ratios scale both quantities by the same factor.", ["Find the scale factor.", "Multiply or divide both quantities.", "Check the comparison stayed the same."], "3:5 scaled by 4 is 12:20.", "Adding the same amount to both terms does not preserve the ratio.")),
@@ -1587,6 +1598,10 @@ const parseFraction = (value) => {
 export function validateAnswer(value, item) {
   const submitted = compact(value).replaceAll("−", "-");
   if (!submitted) return false;
+  if (item.kind === "primes") {
+    const got = parsePrimes(value);
+    return Boolean(got) && item.answers.some((answer) => parsePrimes(answer)?.join(",") === got.join(","));
+  }
   if (item.kind === "fraction") {
     const candidate = parseFraction(value);
     return item.answers.some((answer) => Math.abs(candidate - parseFraction(answer)) < 1e-8);
