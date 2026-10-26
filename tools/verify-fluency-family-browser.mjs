@@ -28,7 +28,10 @@ try {
         version: 2,
         records: {
           "4:round-large": {
-            recent: [{ correct: false, independent: true, at: Date.now(), level: 1 }],
+            recent: [
+              { correct: false, independent: true, at: Date.now(), level: 1 },
+              { correct: true, independent: false, at: Date.now() - 1000, level: 1 },
+            ],
             dueAt: Date.now() - 1000,
           },
         },
@@ -39,6 +42,9 @@ try {
     );
   });
   const page = await context.newPage();
+  await context.addInitScript(() => {
+    window.print = () => {};
+  });
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto(`${base}/math/fluency-lab/family/`, { waitUntil: "networkidle" });
@@ -71,6 +77,9 @@ try {
   );
 
   await page.getByRole("button", { name: "Grade 4" }).click();
+  assert.match(await page.locator("#family-week-report").innerText(), /1 independent check/i);
+  assert.match(await page.locator("#family-week-report").innerText(), /1\s+checks with support/i);
+  assert.match(await page.locator("#family-week-report").innerText(), /0 correct/);
   assert.match(await page.locator("#recommended-skill").innerText(), /Round/);
   await page.locator("#skill-select").selectOption({ index: 2 });
   const selectedSkillId = await page.locator("#skill-select").inputValue();
@@ -92,6 +101,16 @@ try {
     await page.locator(".welcome-secondary").innerText(),
     "Ver el progreso de este estudiante",
   );
+  assert.match(
+    await page.locator("#family-week-report").innerText(),
+    /Comprobaciones independientes/,
+  );
+  const reportPopupPromise = page.waitForEvent("popup");
+  await page.locator("#print-week-report").click();
+  const reportPopup = await reportPopupPromise;
+  assert.match(await reportPopup.title(), /Práctica familiar de esta semana/);
+  assert.match(await reportPopup.locator("body").innerText(), /Destrezas recientes/);
+  await reportPopup.close();
   assert.equal(await page.locator("#rotation-list .rotation-row").count(), 7);
   const spanishAxe = await new AxeBuilder({ page }).analyze();
   assert.deepEqual(
@@ -109,6 +128,7 @@ try {
 
   await page.locator("#family-profile").selectOption("add:1");
   assert.match(await page.locator("#tonight-link").getAttribute("href"), /profile=1/);
+  assert.match(await page.locator("#family-week-report").innerText(), /No hay práctica registrada/);
   const modes = await page.locator("#rotation-list a").evaluateAll((links) =>
     links.map((link) => {
       const url = new URL(link.href);
@@ -386,7 +406,7 @@ try {
   await teacherPage.close();
 
   console.log(
-    "Family browser flow passed: adaptive skill selection, profile switch, seven routes, bilingual family entry, saved five-stage session, visual lesson, independent versus supported evidence, pause/resume, keyboard focus, Axe, teacher family-link settings and print QR, real practice launch, and mobile/desktop layout.",
+    "Family browser flow passed: adaptive skill selection, profile switch, seven routes, bilingual family entry, saved five-stage session, visual lesson, independent versus supported evidence, pause/resume, keyboard focus, Axe, teacher family-link settings and print QR, bilingual weekly family report with profile isolation and print output, real practice launch, and mobile/desktop layout.",
   );
 } finally {
   await browser?.close();
