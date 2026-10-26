@@ -22,7 +22,18 @@ assert.equal(
 assert.equal(
   index.counts.explicitExpectations,
   0,
-  "no Language Expectation IDs are authored; never invent a crosswalk",
+  "no reviewed Language Expectation IDs are authored",
+);
+assert.equal(index.counts.suggestedExpectations, 27);
+assert.ok(index.expectationCatalog.length === 60);
+const expectationIds = new Set(index.expectationCatalog.map((x) => x.id));
+assert.ok(
+  index.records.some((r) =>
+    r.languageExpectationCandidates.includes("ELD-SC.6-8.Explain.Expressive"),
+  ),
+);
+assert.ok(
+  index.records.some((r) => r.languageExpectationCandidates.includes("ELD-SI.4-12.Narrate")),
 );
 assert.equal(index.counts.explicitStandards, 38);
 assert.equal(index.counts.explicitKeyUses, 38);
@@ -38,7 +49,15 @@ for (const record of index.records) {
   assert.ok(Array.isArray(record.scaffoldAvailability));
   assert.ok(Array.isArray(record.metadataGaps));
   assert.match(record.alignmentStatus, /needs-review/);
-  assert.match(record.alignmentWarning, /not an official WIDA alignment/);
+  assert.match(record.alignmentWarning, /not official WIDA alignments/);
+  assert.ok(record.languageExpectationCandidates.every((id) => expectationIds.has(id)));
+  assert.ok(
+    [
+      "candidate-from-local-standard-key-use-and-domain-tags-needs-review",
+      "no-catalog-match-needs-educator-review",
+      "insufficient-source-tags",
+    ].includes(record.expectationMappingStatus),
+  );
   assert.ok(
     record.eldStandards.every((s) =>
       ["ELD-SI", "ELD-LA", "ELD-MA", "ELD-SC", "ELD-SS"].includes(s),
@@ -68,6 +87,12 @@ assert.equal(
   "Make and support a claim",
 );
 assert.deepEqual(index.localBandMapping["3-5"].gradeClusterCandidates, ["2-3", "4-5"]);
+const shell = readFileSync(new URL("../access-practice-lab/src/shell.js", import.meta.url), "utf8");
+assert.doesNotMatch(
+  shell,
+  /href="\/(?:"|directory\/|curriculum\/)/,
+  "ACCESS navigation must not link to unrelated EduWonderLab pages",
+);
 console.log(
-  `access-alignment: PASS · ${index.counts.total} records, ${index.counts.explicitStandards} source-entered standards, ${index.counts.explicitExpectations} expectation crosswalks`,
+  `access-alignment: PASS · ${index.counts.total} records, ${index.counts.suggestedExpectations} candidate mappings, ${index.counts.explicitExpectations} reviewed mappings`,
 );

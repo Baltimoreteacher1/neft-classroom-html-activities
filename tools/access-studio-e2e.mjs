@@ -486,8 +486,10 @@ ok(
 );
 const alignmentText = await page.locator("#classEvidence").innerText();
 ok(
-  alignmentText.includes("539") && alignmentText.includes("0"),
-  "blueprint tab loads the generated activity-level alignment inventory and honest crosswalk totals",
+  alignmentText.includes("539") &&
+    alignmentText.includes("27") &&
+    alignmentText.includes("candidate mappings"),
+  "blueprint tab loads the generated inventory and source-tag-based candidate mapping count",
 );
 await page.locator('[data-align-filter="band"]').selectOption("6-8");
 await page.locator('[data-align-filter="keyUse"]').selectOption("Explain");
@@ -497,7 +499,9 @@ await page
   .locator('[data-align-filter="languageFunction"]')
   .selectOption("Explain cause and effect");
 await page.locator('[data-align-filter="standard"]').selectOption("ELD-SC");
-await page.locator('[data-align-filter="expectation"]').selectOption("__untagged__");
+await page
+  .locator('[data-align-filter="expectation"]')
+  .selectOption("ELD-SC.6-8.Explain.Expressive");
 const alignedRows = page.locator(
   '.ev-body section[aria-labelledby="activityCoverageTitle"] .lab-table-wrap tbody tr',
 );
@@ -509,9 +513,9 @@ ok(
 );
 ok(
   (await page.locator("#classEvidence").innerText()).includes(
-    "No generated record is an official or verified WIDA crosswalk",
+    "They are candidates, not verified alignments",
   ),
-  "alignment table distinguishes local tags from verified WIDA crosswalks",
+  "alignment table distinguishes candidate mappings from verified WIDA alignments",
 );
 await alignedRows
   .filter({ hasText: "Explain Why the Water Disappeared" })
@@ -526,7 +530,7 @@ await alignmentReview.locator('[data-alignment-field="keyUse"]').selectOption("E
 await alignmentReview.locator('[data-alignment-field="standard"]').selectOption("ELD-SC");
 await alignmentReview
   .locator('[data-alignment-field="languageExpectation"]')
-  .fill("ELD-SC.6-8.Explain");
+  .selectOption("ELD-LA.6-8.Argue.Expressive");
 await alignmentReview
   .locator('[data-alignment-field="languageFunction"]')
   .fill("Explain cause and effect");
@@ -536,6 +540,14 @@ await alignmentReview
 await alignmentReview
   .locator('[data-alignment-field="sourceReference"]')
   .fill("https://wida.wisc.edu/teach/standards/eld");
+await alignmentReview.locator("[data-align-save]").click();
+ok(
+  await alignmentReview.locator("[data-alignment-review-error]").isVisible(),
+  "teacher review rejects a catalog ID that conflicts with the selected standard and use",
+);
+await alignmentReview
+  .locator('[data-alignment-field="languageExpectation"]')
+  .selectOption("ELD-SC.6-8.Explain.Expressive");
 await alignmentReview.locator("[data-align-save]").click();
 const savedAlignmentReview = await page.evaluate(() =>
   JSON.parse(localStorage.getItem("accessTeacher:v1:alignmentReviews") || "{}"),

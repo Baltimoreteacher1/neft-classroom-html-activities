@@ -91,9 +91,6 @@ export function mountShell(ctx) {
           <a href="${BASE}/tools?grades=${ctx.band}">🧰 ${T("Audio and device check", "Revisar audio y dispositivo")}</a>
           <a href="${BASE}/family?grades=${ctx.band}">🏠 ${T("Families", "Familias")}</a>
           <a href="/access-teacher/">👩‍🏫 ${T("Teacher Hub (full dashboard)", "Centro docente")}</a>
-          <a href="/">${T("EduWonderLab home", "Inicio de EduWonderLab")}</a>
-          <a href="/directory/">${T("Find on this site", "Buscar en este sitio")}</a>
-          <a href="/curriculum/math-workbench/" target="_blank" rel="noopener">${T("Math Workbench (new tab)", "Herramientas de matemáticas (otra pestaña)")}</a>
           <button type="button" class="btn" data-lab-save>${T("Site Save / Resume", "Guardar / Continuar en el sitio")}</button>
           <span class="text-size" role="group" aria-label="${T("Text size", "Tamaño del texto")}"><button type="button" class="ts-btn" data-text-size="-0.1" aria-label="${T("Smaller text", "Texto más pequeño")}">A−</button><button type="button" class="ts-btn" data-text-size="0.1" aria-label="${T("Bigger text", "Texto más grande")}">A+</button></span>
           <p class="fine">${savedCopy[spanish ? "es" : "en"]}</p>

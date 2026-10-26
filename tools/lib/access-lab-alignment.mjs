@@ -6,6 +6,61 @@ import { allActivities, CONTENT_DIR } from "./access-lab-content.mjs";
 
 const DOMAINS = ["Listening", "Reading", "Speaking", "Writing"];
 const STANDARD_CODES = new Set(["ELD-SI", "ELD-LA", "ELD-MA", "ELD-SC", "ELD-SS"]);
+const WIDA_SOURCE = "https://wida.wisc.edu/teach/standards/eld";
+const EXPECTATION_CATALOG = [
+  ...["Narrate", "Inform", "Explain", "Argue"].map((use) => ({
+    id: `ELD-SI.K-3.${use}`,
+    gradeCluster: "2-3",
+    standard: "ELD-SI",
+    keyUse: use,
+    modes: ["Interpretive", "Expressive"],
+    source: WIDA_SOURCE,
+  })),
+  ...["Narrate", "Inform", "Explain", "Argue"].map((use) => ({
+    id: `ELD-SI.4-12.${use}`,
+    gradeClusters: ["4-5", "6-8"],
+    standard: "ELD-SI",
+    keyUse: use,
+    modes: ["Interpretive", "Expressive"],
+    source: WIDA_SOURCE,
+  })),
+  ...["2-3", "4-5", "6-8"].flatMap((gradeCluster) => {
+    const usesByStandard =
+      gradeCluster === "6-8"
+        ? {
+            "ELD-LA": ["Narrate", "Inform", "Argue"],
+            "ELD-MA": ["Explain", "Argue"],
+            "ELD-SC": ["Explain", "Argue"],
+            "ELD-SS": ["Explain", "Argue"],
+          }
+        : gradeCluster === "2-3"
+          ? {
+              "ELD-LA": ["Narrate", "Inform"],
+              "ELD-MA": ["Explain", "Argue"],
+              "ELD-SC": ["Explain", "Argue"],
+              "ELD-SS": ["Explain", "Argue"],
+            }
+          : {
+              "ELD-LA": ["Narrate", "Inform", "Argue"],
+              "ELD-MA": ["Explain", "Argue"],
+              "ELD-SC": ["Explain", "Argue"],
+              "ELD-SS": ["Explain", "Argue"],
+            };
+    return Object.entries(usesByStandard).flatMap(([standard, uses]) =>
+      uses.flatMap((keyUse) =>
+        ["Interpretive", "Expressive"].map((mode) => ({
+          id: `${standard}.${gradeCluster}.${keyUse}.${mode}`,
+          gradeCluster,
+          standard,
+          keyUse,
+          mode,
+          source: WIDA_SOURCE,
+        })),
+      ),
+    );
+  }),
+];
+export const WIDA_LANGUAGE_EXPECTATIONS = EXPECTATION_CATALOG;
 const arrays = (value) =>
   Array.isArray(value) ? value.filter((x) => typeof x === "string" && x.trim()) : [];
 const strings = (...values) => [...new Set(values.flatMap(arrays))];
@@ -33,6 +88,26 @@ function clustersFor(band) {
   return { candidates: [], basis: "integrated-task-spans-bands" };
 }
 
+function expectationCandidates({ band, domains, standards, keyUses }) {
+  const clusters = clustersFor(band).candidates;
+  const modes =
+    domains.length === 4
+      ? ["Interpretive", "Expressive"]
+      : domains.some((d) => d === "Listening" || d === "Reading") &&
+          domains.some((d) => d === "Speaking" || d === "Writing")
+        ? ["Interpretive", "Expressive"]
+        : domains.some((d) => d === "Listening" || d === "Reading")
+          ? ["Interpretive"]
+          : ["Expressive"];
+  return EXPECTATION_CATALOG.filter(
+    (x) =>
+      (x.gradeClusters || [x.gradeCluster]).some((cluster) => clusters.includes(cluster)) &&
+      standards.includes(x.standard) &&
+      keyUses.includes(x.keyUse) &&
+      (x.standard === "ELD-SI" || modes.includes(x.mode)),
+  );
+}
+
 function makeRecord({
   id,
   title,
@@ -58,6 +133,13 @@ function makeRecord({
   responseDemand = "",
 }) {
   const cluster = clustersFor(band);
+  const safeStandards = standards.filter((s) => STANDARD_CODES.has(s));
+  const expectationMap = expectationCandidates({
+    band,
+    domains,
+    standards: safeStandards,
+    keyUses,
+  });
   const explicitFunctions = strings(functions);
   const focusText = [title, ...localFocus].join(" ");
   const candidateFunction =
@@ -86,8 +168,15 @@ function makeRecord({
     localSupportTier: supportTier || "Not tagged",
     academicContext: contentArea || "",
     keyUses,
-    eldStandards: standards.filter((s) => STANDARD_CODES.has(s)),
-    languageExpectations,
+    eldStandards: safeStandards,
+    languageExpectations: strings(languageExpectations),
+    languageExpectationCandidates: expectationMap.map((x) => x.id),
+    languageExpectationSource: WIDA_SOURCE,
+    expectationMappingStatus: expectationMap.length
+      ? "candidate-from-local-standard-key-use-and-domain-tags-needs-review"
+      : safeStandards.length && keyUses.length
+        ? "no-catalog-match-needs-educator-review"
+        : "insufficient-source-tags",
     languageFunctions: explicitFunctions,
     suggestedLanguageFunction: candidateFunction,
     functionStatus: explicitFunctions.length
@@ -111,7 +200,7 @@ function makeRecord({
         : "local-focus-only-needs-review",
     metadataGaps: gaps,
     alignmentWarning:
-      "Local instructional metadata is not an official WIDA alignment. No Language Expectation is verified for this record.",
+      "Suggested Language Expectation candidates are generated from local standard, Key Language Use, grade-band, and domain tags. They are not official WIDA alignments and require educator review.",
   };
 }
 
@@ -249,6 +338,8 @@ export function buildAlignmentIndex(root = CONTENT_DIR) {
     explicitStandards: count((r) => r.eldStandards.length > 0),
     explicitKeyUses: count((r) => r.keyUses.length > 0),
     explicitExpectations: count((r) => r.languageExpectations.length > 0),
+    suggestedExpectations: count((r) => r.languageExpectationCandidates.length > 0),
+    expectationCatalog: EXPECTATION_CATALOG.length,
     needsReview: count((r) => r.metadataGaps.length > 0),
   };
   const keyUseCounts = Object.fromEntries(
@@ -285,6 +376,7 @@ export function buildAlignmentIndex(root = CONTENT_DIR) {
       },
       "6-8": { gradeClusterCandidates: ["6-8"], status: "band-match" },
     },
+    expectationCatalog: EXPECTATION_CATALOG,
     counts,
     byGradeBand: Object.fromEntries(
       ["3-5", "6-8", "Integrated"].map((band) => [band, count((r) => r.localGradeBand === band)]),

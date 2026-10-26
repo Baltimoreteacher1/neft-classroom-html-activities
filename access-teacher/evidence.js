@@ -779,6 +779,7 @@ const displayList = (list, fallback = "Not tagged") => list?.length ? list.join(
 
 function alignmentCoverageTab(alignment) {
   const sourceRows = alignment.records || [];
+  const expectationCatalog = alignment.expectationCatalog || [];
   const rows = sourceRows.map((source) => {
     const teacherReview = T.alignmentReviews[source.id];
     if (!teacherReview) return source;
@@ -804,7 +805,7 @@ function alignmentCoverageTab(alignment) {
     (!f.keyUse || (f.keyUse === "__untagged__" ? !r.keyUses.length : r.keyUses.includes(f.keyUse))) &&
     (!f.contentArea || (f.contentArea === "__untagged__" ? !r.academicContext : r.academicContext === f.contentArea)) &&
     (!f.standard || (f.standard === "__untagged__" ? !r.eldStandards.length : r.eldStandards.includes(f.standard))) &&
-    (!f.expectation || (f.expectation === "__untagged__" ? !r.languageExpectations.length : r.languageExpectations.includes(f.expectation))) &&
+    (!f.expectation || (f.expectation === "__untagged__" ? !r.languageExpectations.length && !r.languageExpectationCandidates?.length : [...r.languageExpectations, ...(r.languageExpectationCandidates || [])].includes(f.expectation))) &&
     (!f.languageFunction || r.suggestedLanguageFunction === f.languageFunction) &&
     (!f.support || r.localSupportTier === f.support) &&
     (!f.review || (f.review === "needs-review" ? !r.teacherReview : Boolean(r.teacherReview))) &&
@@ -818,6 +819,8 @@ function alignmentCoverageTab(alignment) {
   const reviewSelect = (items, value) => html`<option value="">Choose one</option>${items.map((item) => html`<option value="${item}" ${item === value ? raw("selected") : ""}>${item}</option>`)}`;
   const reviewEditor = (r) => {
     const v = r.teacherReview || {};
+    const clusters = r.localGradeBand === "3-5" ? ["2-3", "4-5"] : r.localGradeBand === "6-8" ? ["6-8"] : [...new Set(expectationCatalog.flatMap((x) => x.gradeClusters || [x.gradeCluster]))];
+    const expectationValues = [...new Set(expectationCatalog.filter((x) => (x.gradeClusters || [x.gradeCluster]).some((cluster) => clusters.includes(cluster))).map((x) => x.id))];
     return html`<details class="alignment-review" data-alignment-review="${r.id}">
       <summary>${r.teacherReview ? "Edit local teacher review" : "Record local teacher review"}</summary>
       <p class="fine">Saved only in this browser. This review records your source-based decision; it is not official WIDA verification or endorsement.</p>
@@ -825,7 +828,7 @@ function alignmentCoverageTab(alignment) {
       <label class="field"><span>Academic context</span><input data-alignment-field="academicContext" maxlength="80" value="${v.academicContext ?? r.academicContext}" /></label>
       <label class="field"><span>Key Language Use</span><select data-alignment-field="keyUse">${reviewSelect(["Narrate", "Inform", "Explain", "Argue"], v.keyUse || r.keyUses[0] || "")}</select></label>
       <label class="field"><span>ELD Standard</span><select data-alignment-field="standard">${reviewSelect(["ELD-SI", "ELD-LA", "ELD-MA", "ELD-SC", "ELD-SS"], v.standard || r.eldStandards[0] || "")}</select></label>
-      <label class="field"><span>Language Expectation ID</span><input data-alignment-field="languageExpectation" maxlength="120" placeholder="For example, an expectation ID from the framework" value="${v.languageExpectation || ""}" /></label>
+      <label class="field"><span>Language Expectation (official catalog)</span><select data-alignment-field="languageExpectation">${reviewSelect(expectationValues, v.languageExpectation || r.languageExpectations[0] || r.languageExpectationCandidates?.[0] || "")}</select><span class="fine">${expectationValues.length} catalog IDs for this record’s possible grade cluster(s).</span></label>
       <label class="field"><span>Language function</span><input data-alignment-field="languageFunction" maxlength="120" value="${v.languageFunction || r.suggestedLanguageFunction}" /></label>
       <label class="field"><span>Language features (separate with semicolons)</span><textarea data-alignment-field="languageFeatures" rows="2" maxlength="600">${(v.languageFeatures || r.languageFeatures).join("; ")}</textarea></label>
       <label class="field"><span>WIDA source page or framework citation</span><input data-alignment-field="sourceReference" maxlength="240" placeholder="https://wida.wisc.edu/... or edition and page" value="${v.sourceReference || ""}" /></label>
@@ -842,9 +845,10 @@ function alignmentCoverageTab(alignment) {
       <article class="hub-card"><strong>${total.explicitStandards || 0}</strong><p>with an author-entered ELD Standard tag</p></article>
       <article class="hub-card"><strong>${total.explicitKeyUses || 0}</strong><p>with an author-entered Key Language Use tag</p></article>
       <article class="hub-card"><strong>${total.explicitExpectations || 0}</strong><p>with a Language Expectation ID</p></article>
+      <article class="hub-card"><strong>${total.suggestedExpectations || 0}</strong><p>with source-tag-based candidate mappings (review required)</p></article>
       <article class="hub-card"><strong>${localReviewCount}</strong><p>local teacher reviews saved on this device</p></article>
     </div>
-    <p class="feedback is-hint" role="note"><strong>Review status:</strong> ${total.needsReview || 0} records need metadata review. A standard or Key Language Use tag is only a local author tag until a teacher verifies the grade cluster, expectation, function and features. Blank fields remain unaligned; the system does not infer official WIDA mappings.</p>
+    <p class="feedback is-hint" role="note"><strong>Review status:</strong> ${total.needsReview || 0} records need metadata review. Suggested IDs are drawn from the WIDA 2020 catalog using local standard, Key Language Use, domain and grade-band tags. They are candidates, not verified alignments; educators must check the source task and record a cited local review.</p>
     <p class="fine">The local Grades 3–5 band spans WIDA grade clusters 2–3 and 4–5. This inventory marks both as candidates; an individual task needs a grade-specific review before one cluster can be selected.</p>
     <div class="library-filters" aria-label="Filter activity alignment inventory">
       <label class="field"><span>Local grade band</span><select data-align-filter="band">${options(["3-5", "6-8", "Integrated"], f.band)}</select></label>
@@ -852,7 +856,7 @@ function alignmentCoverageTab(alignment) {
       <label class="field"><span>Key Language Use</span><select data-align-filter="keyUse">${options(["Narrate", "Inform", "Explain", "Argue", "__untagged__"], f.keyUse)}</select></label>
       <label class="field"><span>Academic context</span><select data-align-filter="contentArea">${options([...values((r) => [r.academicContext]), "__untagged__"], f.contentArea)}</select></label>
       <label class="field"><span>Author-entered ELD Standard</span><select data-align-filter="standard">${options(["ELD-SI", "ELD-LA", "ELD-MA", "ELD-SC", "ELD-SS", "__untagged__"], f.standard)}</select></label>
-      <label class="field"><span>Language Expectation ID</span><select data-align-filter="expectation">${options([...values((r) => r.languageExpectations), "__untagged__"], f.expectation)}</select></label>
+      <label class="field"><span>Language Expectation ID</span><select data-align-filter="expectation">${options([...values((r) => [...r.languageExpectations, ...(r.languageExpectationCandidates || [])]), "__untagged__"], f.expectation)}</select></label>
       <label class="field"><span>Language function (suggestions marked)</span><select data-align-filter="languageFunction">${options(values((r) => [r.suggestedLanguageFunction]), f.languageFunction)}</select></label>
       <label class="field"><span>Local support choice</span><select data-align-filter="support">${options(values((r) => [r.localSupportTier]), f.support)}</select></label>
       <label class="field"><span>Review status</span><select data-align-filter="review">${options(["needs-review", "teacher-reviewed"], f.review)}</select></label>
@@ -867,7 +871,7 @@ function alignmentCoverageTab(alignment) {
         <td>${r.localGradeBand}${r.gradeClusterCandidates.length ? html`<span class="fine">WIDA cluster candidate: ${displayList(r.gradeClusterCandidates, "—")}</span>` : ""}<span class="fine">${displayList(r.domains)}</span></td>
         <td>${r.academicContext || "Not tagged"}<span class="fine">${displayList(r.keyUses, "No Key Language Use tag")}</span></td>
         <td>${r.suggestedLanguageFunction || "Not tagged"}<span class="fine">${r.functionStatus}</span></td>
-        <td>${displayList(r.eldStandards)}<span class="fine">Expectation: ${displayList(r.languageExpectations)}</span></td>
+        <td>${displayList(r.eldStandards)}<span class="fine">Expectation: ${displayList(r.languageExpectations, r.languageExpectationCandidates?.length ? `Candidate: ${r.languageExpectationCandidates.join(", ")}` : "No catalog candidate")}</span><span class="fine">${r.expectationMappingStatus || ""}</span></td>
         <td>${r.localSupportTier}<span class="fine">${displayList(r.scaffoldAvailability)}</span></td>
         <td>${r.teacherReview ? "Teacher-reviewed locally" : r.alignmentStatus}<span class="fine">${r.teacherReview ? `Source: ${r.teacherReview.sourceReference} · saved ${r.teacherReview.reviewedAt.slice(0, 10)}` : r.metadataGaps.length ? `Missing: ${r.metadataGaps.join(", ")}` : "No listed metadata gaps"}</span>${reviewEditor(r)}</td>
       </tr>`)}</tbody></table>
@@ -958,11 +962,18 @@ root.addEventListener("click", async (e) => {
     };
     const error = editor?.querySelector("[data-alignment-review-error]");
     const referenceUrl = (() => { try { return new URL(review.sourceReference); } catch { return null; } })();
+    const row = T.alignment?.records?.find((r) => r.id === saveAlignmentReview.dataset.alignSave);
+    const mapping = T.alignment?.expectationCatalog?.find((x) => x.id === review.languageExpectation);
+    const domains = row?.domains || [];
+    const allowedModes = domains.length === 4 || (domains.some((d) => d === "Listening" || d === "Reading") && domains.some((d) => d === "Speaking" || d === "Writing"))
+      ? ["Interpretive", "Expressive"]
+      : domains.some((d) => d === "Listening" || d === "Reading") ? ["Interpretive"] : ["Expressive"];
+    const expectationValid = mapping && (mapping.gradeClusters || [mapping.gradeCluster]).includes(review.gradeCluster) && mapping.standard === review.standard && mapping.keyUse === review.keyUse && (mapping.standard === "ELD-SI" || allowedModes.includes(mapping.mode));
     const valid = review.gradeCluster && review.academicContext && review.keyUse && review.standard &&
-      review.languageExpectation && review.languageFunction && review.languageFeatures.length &&
+      expectationValid && review.languageFunction && review.languageFeatures.length &&
       referenceUrl && ["wida.wisc.edu", "www.wida.wisc.edu"].includes(referenceUrl.hostname) && referenceUrl.protocol === "https:";
     if (!valid) {
-      if (error) { error.hidden = false; error.textContent = "Complete each field and cite an HTTPS page on wida.wisc.edu before saving."; }
+      if (error) { error.hidden = false; error.textContent = "Choose a catalog expectation that matches the selected grade cluster, standard and Key Language Use, then complete the fields and cite an HTTPS page on wida.wisc.edu."; }
       return;
     }
     T.alignmentReviews[saveAlignmentReview.dataset.alignSave] = {
