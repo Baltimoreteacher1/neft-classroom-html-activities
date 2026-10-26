@@ -1,6 +1,6 @@
 # Reading Room 2.0 release checklist
 
-Branch: `feat/access-reading-room-2` (based on the live ACCESS release `834b42d5a9`).
+Follow-up branch: `feat/reading-room-deeper-reads` (based on the live ACCESS release `e31aa631cf`).
 
 ## Audit baseline
 
@@ -13,8 +13,10 @@ Branch: `feat/access-reading-room-2` (based on the live ACCESS release `834b42d5
 
 - [x] Existing ACCESS Lab source activities inspected; Reading Room route and local-storage contract preserved.
 - [x] Reading Room library, reader, search, filters, bookmarks, Continue Reading, recent texts, word notebook, and local clearing.
-- [ ] 100 complete lesson target. Current: 112 authored packages (14 initial standalone lessons, 61 packages extending distinct multi-section source-bank passages, and 37 new original lessons). The count target is met; independent editorial review remains open.
-- [x] Grade coverage includes grades 6–8 and 9–12. Current counts: grade 1 (4), grades 2–3 (4), grades 4–5 (2), grades 6–8 (24), grades 9–12 (2), and 15 legacy grade 3–5 local-band packages whose WIDA cluster is explicitly unspecified.
+- [x] 100-package count target. Current: 119 authored packages (112 existing packages plus 7 sustained reads of 421–554 words, each with multiple evidence and reasoning tasks). Independent editorial review remains open.
+- [x] Reading choices disclose passage word count and distinguish short practice, extended practice, and sustained reads; students can filter the shelf by length.
+- [x] Grade coverage includes grades 6–8 and 9–12. Current counts: grade 1 (4), grades 2–3 (4), grades 4–5 (2), grades 6–8 (61), grades 9–12 (27), and 21 legacy grade 3–5 local-band packages whose WIDA cluster is explicitly unspecified.
+- [x] Added sustained reading options in science investigation, paired arguments with data, historical source analysis, public-policy analysis, digital media analysis, and environmental science. Open responses use visible criteria and are not automatically scored.
 - [x] Reading sequence with Learn, Practice, and Independent modes; objective interactions, evidence marks, annotations, answer feedback, and locally saved progress.
 - [x] Existing passage source tasks preserved and supported: choice, connector, multiple selection, hot text, cloze, short response, evidence, ordering, and sorting. New evidence, vocabulary, and summary transfer tasks are rubric-guided, not auto-scored.
 - [x] Fourteen editable, persistent graphic organizers; print control.
@@ -23,11 +25,11 @@ Branch: `feat/access-reading-room-2` (based on the live ACCESS release `834b42d5
 - [x] Local-only progress persistence and accurate device-scope disclosures.
 - [x] WIDA alignment candidates are traceable to local public framework metadata where supplied, and flagged for educator review; candidate tags are not independently certified.
 - [ ] Independent editorial review. All packages remain `authored-pending-independent-editorial-review`. Automated validation is structural and cannot establish factual accuracy, bias review, grade suitability, question validity, or human editorial approval. No human review is claimed.
-- [ ] Broader release readiness: full review of all 51 lessons, accessibility review beyond automated axe/sample routes, additional device/browser tests, and production deployment remain outstanding.
+- [ ] Broader release readiness: independent editorial review of all 119 packages, accessibility review beyond automated axe/sample routes, and additional device/browser tests remain outstanding. This follow-up branch is based on the live Reading Room release at `https://eduwonderlab.com/access-practice-lab/reading-room`.
 
 ## Current release status
 
-This branch is an expanded but incomplete implementation slice. It is **not production-ready or deployed**. All 112 packages pass deterministic schema, answer-key, evidence-reference, and cross-link checks. That validation does not replace independent editorial review. The lesson count target is met with 112 packages. All are still marked pending independent editorial review, so publication is blocked pending that review. Teacher evidence remains browser-local and is not synchronized to authenticated teacher/student records.
+This follow-up adds a deeper choice of sustained texts to the deployed Reading Room. All 119 packages remain marked pending independent editorial review. Automated validation does not establish factual accuracy, bias review, grade suitability, question validity, or human editorial approval. Teacher evidence remains browser-local and is not synchronized to authenticated teacher/student records.
 
 ## Editorial review checklist
 

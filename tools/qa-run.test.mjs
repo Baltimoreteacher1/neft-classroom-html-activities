@@ -343,6 +343,15 @@ const studioChecks = [
   "validate:studio-enhancements-browser",
   "validate:studio-lab-browser",
 ];
+const readingRoomOnly = narrowStudioSweeps(studioChecks, [
+  "access-practice-lab/content/reading-room/lessons.json",
+  "tools/author-reading-room-sustained-reads.mjs",
+  "scripts/qa-run.mjs",
+]);
+check(
+  readingRoomOnly.checks.join() === "test" && Object.keys(readingRoomOnly.args).length === 0,
+  "Reading Room changes keep general tests without opening unrelated math studio pages",
+);
 const narrowA = narrowStudioSweeps(studioChecks, ["data/practice-studio/2-1.json"]);
 check(
   narrowA.args["validate:studio-lab-browser"]?.join() === "2-1" &&

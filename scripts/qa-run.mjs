@@ -266,7 +266,7 @@ const COVERAGE = [
   // answer-revealing visuals, on-screen listening scripts and "look at the
   // picture" with no picture, all of which shipped in the pre-2026-10 lab.
   [
-    /^(access-practice-lab\/|access-teacher\/|docs\/access-reading-room-2\/|tools\/(validate-access-lab|access-lab-index|access-lab-e2e|access-studio-e2e|generate-access-printables|gen-access-inventory|sync-access-shell|validate-reading-room|access-reading-room-e2e|expand-reading-room-library|author-reading-room-additions)\.mjs$|tools\/lib\/access-lab-content\.mjs$|tools\/(access-lab|access-skill-graph|access-teacher-evidence)[^/]*\.test\.mjs$)/,
+    /^(access-practice-lab\/|access-teacher\/|docs\/access-reading-room-2\/|tools\/(validate-access-lab|access-lab-index|access-lab-e2e|access-studio-e2e|generate-access-printables|gen-access-inventory|sync-access-shell|validate-reading-room|access-reading-room-e2e|expand-reading-room-library|author-reading-room-additions|author-reading-room-sustained-reads)\.mjs$|tools\/lib\/access-lab-content\.mjs$|tools\/(access-lab|access-skill-graph|access-teacher-evidence)[^/]*\.test\.mjs$)/,
     ["validate:access-lab", "test", "validate:js-syntax", "check"],
   ],
 
@@ -1040,7 +1040,8 @@ const STUDIO_LESSON_PATH = [
   /^lessons\/(\d+-\d+)(?:-[\w-]+)?\/./,
 ];
 /** Inert for the studio sweeps: no studio page or verifier can load these. */
-const STUDIO_INERT = /^docs\/|\.md$/;
+const STUDIO_INERT =
+  /^(?:docs\/|access-practice-lab\/|scripts\/qa-run\.mjs$|tools\/(?:qa-run\.test|validate-reading-room|access-reading-room-e2e|expand-reading-room-library|author-reading-room-additions|author-reading-room-sustained-reads)\.mjs$)|\.md$/;
 
 /** Lesson ids whose studio pages a change set can affect, or null when it can affect all of them. */
 function studioLessonSubset(paths) {
@@ -1069,7 +1070,15 @@ const ENHANCEMENTS_LESSONS = ["3-5", ...UNIT4.map(([id]) => id)];
  * Returns { checks, args } — `args` maps a check to the extra argv it runs with.
  */
 function narrowStudioSweeps(checks, paths) {
-  const lessons = studioLessonSubset(paths);
+  const relevantPaths = paths.filter((path) => !STUDIO_INERT.test(path));
+  if (!relevantPaths.length) {
+    const studioChecks = new Set([
+      "validate:studio-enhancements-browser",
+      "validate:studio-lab-browser",
+    ]);
+    return { checks: checks.filter((check) => !studioChecks.has(check)), args: {}, lessons: [] };
+  }
+  const lessons = studioLessonSubset(relevantPaths);
   if (!lessons) return { checks, args: {}, lessons: null };
   const args = {};
   if (checks.includes("validate:studio-lab-browser")) args["validate:studio-lab-browser"] = lessons;

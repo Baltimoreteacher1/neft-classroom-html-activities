@@ -69,6 +69,24 @@ try {
     (expected) => document.querySelectorAll(".rr-book").length === expected,
     lessonCount,
   );
+  const sustainedCount = contentLessons.filter(
+    (lesson) => lesson.readingPath === "sustained",
+  ).length;
+  await page.getByLabel("Reading length").selectOption("sustained");
+  await page.waitForFunction(
+    (expected) => document.querySelectorAll(".rr-book").length === expected,
+    sustainedCount,
+  );
+  assert.equal(sustainedCount, 7, "the library should offer the seven authored sustained reads");
+  assert.ok(
+    (await page.getByText(/Sustained read · 4\d\d words|Sustained read · 5\d\d words/).count()) >=
+      7,
+  );
+  await page.getByLabel("Reading length").selectOption("");
+  await page.waitForFunction(
+    (expected) => document.querySelectorAll(".rr-book").length === expected,
+    lessonCount,
+  );
   await page.locator("[data-rr-genre]").selectOption("Informational science with data");
   await page.waitForFunction(() => document.querySelectorAll(".rr-book").length === 1);
   await page.locator("[data-rr-genre]").selectOption("");
