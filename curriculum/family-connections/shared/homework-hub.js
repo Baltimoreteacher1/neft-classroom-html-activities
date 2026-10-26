@@ -87,9 +87,9 @@ export function assignedHomework(snapshot, lessons, sectionId) {
   return assignments;
 }
 const dateLabel = (iso, lang) =>
-  new Intl.DateTimeFormat(lang === "es" ? "es-US" : "en-US", {
+  new Intl.DateTimeFormat(lang === "es" ? "es" : "en-US", {
     timeZone: "UTC",
-    month: "short",
+    month: lang === "es" ? "long" : "short",
     day: "numeric",
     year: "numeric",
   }).format(new Date(`${iso}T12:00:00Z`));

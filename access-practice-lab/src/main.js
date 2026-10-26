@@ -38,6 +38,7 @@ import * as launchStudioView from "./views/launch-studio.js";
 import * as worldsView from "./views/worlds.js";
 import * as classroomView from "./views/classroom.js";
 import * as vocabularyView from "./views/vocabulary.js";
+import * as readingRoomView from "./views/reading-room.js";
 
 export const BUILD = "2026.10.25.1";
 const VIEWS = {
@@ -68,6 +69,8 @@ const VIEWS = {
   worlds: worldsView,
   classroom: classroomView,
   vocabulary: vocabularyView,
+  reading: readingRoomView,
+  "reading-room": readingRoomView,
 };
 const DOMAINS = ["Listening", "Reading", "Speaking", "Writing", "Model-Test"];
 
@@ -81,6 +84,8 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   const r = { view: "home", grades: q.get("grades") || "" };
   const [a, b, c, d] = parts;
   if (!a) return r;
+  if (a === "reading" || a === "reading-room")
+    return { ...r, view: "reading-room", id: b || "" };
   if (a === "test") return { ...r, view: "test", testId: b || "" };
   if (a === "worlds") {
     return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
@@ -183,6 +188,8 @@ function focusKey(el) {
     "data-check-writing",
     "data-save-speaking",
     "data-stop-audio",
+    "data-rr-action",
+    "data-rr-answer",
   ]) {
     if (el.hasAttribute?.(attr)) {
       const extra = el.dataset.cat || el.dataset.dir || el.dataset.rate || "";

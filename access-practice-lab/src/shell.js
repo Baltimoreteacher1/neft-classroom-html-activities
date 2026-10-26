@@ -87,6 +87,7 @@ export function mountShell(ctx) {
           <a href="${BASE}/conversation?grades=${ctx.band}">💬 ${T("Conversation Simulator", "Simulador de conversación")}</a>
           <a href="${BASE}/evidence?grades=${ctx.band}">📊 ${T("Evidence Studio", "Estudio de evidencia")}</a>
           <a href="${BASE}/library?grades=${ctx.band}">📚 ${T("Find practice", "Buscar práctica")}</a>
+          <a href="${BASE}/reading-room?grades=${ctx.band}">📖 ${T("Reading Room", "Sala de lectura")}</a>
           <a href="${BASE}/tests?grades=${ctx.band}">🧪 ${T("Practice tests", "Pruebas de práctica")}</a>
           <a href="${BASE}/tools?grades=${ctx.band}">🧰 ${T("Audio and device check", "Revisar audio y dispositivo")}</a>
           <a href="${BASE}/family?grades=${ctx.band}">🏠 ${T("Families", "Familias")}</a>
