@@ -475,6 +475,7 @@ export default defineConfig({
           __dirname,
           "engine/core/instructional-intelligence.js",
         ),
+        "published-qr-mini": resolve(__dirname, "engine/core/qr-mini.js"),
         "class-investigation-engine": resolve(
           __dirname,
           "assets/class-investigation/engine-tools.js",
@@ -500,6 +501,9 @@ export default defineConfig({
           }
           if (chunk.name === "published-instructional-intelligence") {
             return "engine/core/instructional-intelligence.js";
+          }
+          if (chunk.name === "published-qr-mini") {
+            return "engine/core/qr-mini.js";
           }
           return chunk.name === "homework-lesson-models" || chunk.name === "nt-web-vitals"
             ? `assets/${chunk.name}.js`

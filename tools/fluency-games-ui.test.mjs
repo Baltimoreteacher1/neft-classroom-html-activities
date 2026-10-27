@@ -82,8 +82,8 @@ await wait();
 assert.ok($(".gm-menu"), "The Game Room opens from ?view=games");
 assert.equal(
   $$("[data-game]").length,
-  16,
-  "Sixteen games, including the three publisher games, are offered to Grade 3",
+  20,
+  "Twenty games, including the four strategy games, are offered to Grade 3",
 );
 assert.ok($("#bd-view svg"), "The buddy panel shows a buddy");
 assert.match(

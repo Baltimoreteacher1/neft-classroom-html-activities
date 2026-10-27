@@ -490,7 +490,11 @@ try {
     "teacher share URLs contain no learner profile",
   );
   await teacherPage.locator("[data-print-family]").click();
-  assert.match(await teacherPage.locator("#print-sheet").innerHTML(), /qrserver\.com/);
+  const familyPrint = await teacherPage.locator("#print-sheet").innerHTML();
+  assert.match(familyPrint, /class="fluency-local-qr"/);
+  assert.match(familyPrint, /aria-label="Código QR para la práctica familiar"/);
+  assert.doesNotMatch(familyPrint, /qrserver\.com/);
+  assert.match(familyPrint, /count-patterns/);
   await teacherPage.locator("#assignment-session-type").selectOption("practice");
   assert.equal(
     await teacherPage.locator("#assignment-game").count(),

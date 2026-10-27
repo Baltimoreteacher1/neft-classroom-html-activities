@@ -33,6 +33,7 @@ import { languagePromptHtml } from "./language-bridge.js";
 import { playArrayArchitect, playFractionForge, playNumberQuest, SIGNATURE_GAME_ICONS } from "./signature-games.js";
 import { playPuzzleWorld, PUZZLE_WORLD_ICONS, PUZZLE_WORLDS } from "./puzzle-worlds.js";
 import { playFluencyRally, playMathWorldBuilder, playNumberPuzzleStudio } from "./publisher-games.js";
+import { playFactorFractionPath, playPersonalGhost, playStrategyMatch, playTargetHive } from "./strategy-games.js";
 import { CLASSIC_GAME_ICONS } from "./game-icons.js";
 
 const PUBLISHER_GAME_ICONS = {
@@ -46,6 +47,10 @@ export const GAMES = [
   { id: "mathworldbuilder", name: "Math World Builder", icon: "", blurb: "Plan structures on a grid and balance floor area with building resources.", run: playMathWorldBuilder },
   { id: "numberpuzzlestudio", name: "Number Puzzle Studio", icon: "", blurb: "Compose numbers, find valid pairs, and compare flexible strategies.", run: playNumberPuzzleStudio },
   { id: "fluencyrally", name: "Fluency Rally", icon: "", blurb: "Choose a mathematical route and calculate each checkpoint at your pace.", run: playFluencyRally },
+  { id: "strategymatch", name: "Strategy Match", icon: "🧩", blurb: "Match an expression to a number line, array, or fraction model.", run: playStrategyMatch },
+  { id: "targethive", name: "Target Number Hive", icon: "🐝", blurb: "Build two different expressions that reach the same target.", run: playTargetHive },
+  { id: "factorfractionpath", name: "Factor & Fraction Path Builder", icon: "🧱", blurb: "Solve calm, untimed prompts to build a path one bridge at a time.", run: playFactorFractionPath },
+  { id: "ghostsprint", name: "Personal Ghost Sprint", icon: "👻", blurb: "Try a calm run against your own accuracy-adjusted best, with Zen mode available.", run: playPersonalGhost },
   {
     id: "numberquest",
     name: "Number Garden",

@@ -8,7 +8,7 @@ import {
   seededRandom,
   validateAnswer,
 } from "./problem-bank.js";
-import { adaptiveProblem, dailyPlan, diagnosticPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, missionPlan, prerequisites, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
+import { adaptiveProblem, dailyPlan, diagnosticPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, missionPlan, prerequisites, prerequisiteGraph, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
 import { copiesTable, factorTreeSvg, keptPrimes, primeList } from "./factor-tree.js";
 import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visual-lab.js";
 import { skillIdForWorld } from "./puzzle-worlds.js";
@@ -29,6 +29,8 @@ import { getLang, setLang, t, translatePage } from "./i18n.js";
 import { mistakeCategoryLabel } from "./mistake-notes.js";
 import { runFluencySelfTest } from "./fluency-diagnostics.js";
 import { decodeMasteryReceipt, makeMasteryReceipt } from "./mastery-receipts.js";
+import { renderNumberTalkBoard } from "./number-talk-board.js";
+import { renderPrerequisiteMap } from "./prerequisite-map.js";
 import { factsReport, mountSnapshot } from "./class-snapshot.js";
 import { whyFor } from "./step-whys.js";
 import { storyFor } from "./story-problems.js";
@@ -53,6 +55,7 @@ const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
 const TUTOR_KEY = "ewl-fluency-tutor-v2";
 const SESSION_KEY = "ewl-fluency-session-v2";
+const BRIDGE_RETURN_KEY = "ewl-fluency-bridge-return-v1";
 const INTELLIGENCE_KEY = "ewl-fluency-instructional-evidence-v1";
 const STREAK_GOAL = 10;
 const initialParams = new URLSearchParams(location.search);
@@ -197,6 +200,9 @@ const state = {
   view: "library",
   assignment: decodeAssignment(new URLSearchParams(location.hash.slice(1)).get("assignment")),
   instructionalSignal: null,
+  activeBugHunt: null,
+  problemStartedAt: 0,
+  firstResponseMs: null,
 };
 const launchLang = initialParams.get("lang") || state.assignment?.lang;
 if (["en", "es"].includes(launchLang)) { setLang(launchLang, { persist: false }); translatePage(document); }
@@ -712,6 +718,7 @@ function nextProblem(restoredItem = null) {
   const requestedLevel = adapting ? Math.max(missionIndependent || repairIndependent ? 1 : 0, difficulty(state.tutor, skill)) : 1;
   const level = state.session.mode === "assignment" ? assignmentDifficultyLevel(state.assignment?.challenge, requestedLevel) : requestedLevel;
   if (restoredItem) state.item = restoredItem;
+  else if (queueEntry?.generated) state.item = { ...queueEntry.generated };
   else if (queueEntry?.original) state.item = { ...queueEntry.original };
   else {
     for (let attempt = 0; attempt < 20; attempt++) {
@@ -727,10 +734,12 @@ function nextProblem(restoredItem = null) {
   state.itemAttempts = 0;
   state.itemDone = false;
   state.firstAnswerCorrect = null;
+  state.problemStartedAt = performance.now();
+  state.firstResponseMs = null;
   state.hintBeforeFirst = Boolean(queueEntry?.original);
   if (els.languageSlot) els.languageSlot.innerHTML = "";
   const missionSupport = state.session.mode === "mission" && queueEntry?.purpose === "Build with support";
-  state.initialSupport = state.session.mode === "guided" || missionSupport || Boolean(queueEntry?.original) || (adapting && level === 0 && !state.forceIndependentFirst && !missionIndependent && !repairIndependent) || (state.session.mode === "assignment" && state.assignment?.mode === "guided");
+  state.initialSupport = state.session.mode === "guided" || missionSupport || Boolean(queueEntry?.original) || Boolean(queueEntry?.forceGuided) || (adapting && level === 0 && !state.forceIndependentFirst && !missionIndependent && !repairIndependent) || (state.session.mode === "assignment" && state.assignment?.mode === "guided");
   state.forceIndependentFirst = false;
   state.guidedStepsShown = state.session.mode === "guided" ? 1 : 0;
   els.feedback.hidden = true;
@@ -776,6 +785,7 @@ function nextProblem(restoredItem = null) {
   if (state.initialSupport) state.guidedStepsShown = 1;
   renderGuidedCoach();
   renderAnswerControl();
+  renderStrategyTagPicker();
   updateSessionHeader();
   state.isFixing = false;
   state.confidence = "certain";
@@ -4393,6 +4403,7 @@ const NUMBER_TALKS = [
   }
 ];
 
+let cleanupNumberTalkBoard = null;
 const NumberTalkRoutine = {
   activeGrade: 3,
   activeIndex: 0,
@@ -4405,6 +4416,9 @@ const NumberTalkRoutine = {
     this.activeGrade = Math.max(1, Math.min(8, Number(grade) || 3));
     this.activeIndex = 0;
     this.activePhase = "think";
+    this.lang = getLang() === "es" ? "es" : "en";
+    const langButton = document.querySelector("#nt-toggle-lang");
+    if (langButton) langButton.textContent = this.lang === "en" ? "🌐 Español" : "🌐 English";
     modal.hidden = false;
     document.body.classList.add("nt-modal-open");
     this.render();
@@ -4415,6 +4429,8 @@ const NumberTalkRoutine = {
     if (!modal) return;
     modal.hidden = true;
     document.body.classList.remove("nt-modal-open");
+    cleanupNumberTalkBoard?.();
+    cleanupNumberTalkBoard = null;
   },
 
   toggleLang() {
@@ -4509,6 +4525,20 @@ const NumberTalkRoutine = {
         </div>
       </div>
     `;
+    cleanupNumberTalkBoard?.();
+    cleanupNumberTalkBoard = null;
+    if (this.activePhase === "strategies") {
+      const boardHost = viewport.querySelector("#nt-strategy-board");
+      if (boardHost) {
+        const localizedTalk = {
+          ...talk,
+          problem: talk.problem,
+          teacherStems: talk.teacherStems,
+          models: talk.models || talk.visuals || {},
+        };
+        cleanupNumberTalkBoard = renderNumberTalkBoard(boardHost, localizedTalk, { language: this.lang });
+      }
+    }
   },
 
   renderPhaseBody(talk, isEs) {
@@ -4561,6 +4591,7 @@ const NumberTalkRoutine = {
               </div>
             `).join("")}
           </div>
+          <div id="nt-strategy-board" aria-label="${isEs ? "Pizarra visual de estrategias" : "Visual strategy board"}"></div>
         </div>
       `;
     }
@@ -6614,6 +6645,32 @@ function renderAnswerControl() {
   }
 }
 
+function renderStrategyTagPicker() {
+  els.answerForm?.querySelector("#strategy-tag-picker")?.remove();
+  if (!state.session || state.session.mode === "diagnostic" || state.session.mode === "flashcard") return;
+  const fieldset = document.createElement("fieldset");
+  fieldset.id = "strategy-tag-picker";
+  fieldset.className = "strategy-tag-picker";
+  fieldset.style.cssText = "display:flex;flex-wrap:wrap;gap:.35rem .8rem;margin:.65rem 0;padding:.55rem .7rem;border:1px solid #cbd5e1;border-radius:9px";
+  const legend = document.createElement("legend");
+  legend.textContent = t("Strategies I used");
+  fieldset.append(legend);
+  for (const [tag, label] of [["visual", t("I used a visual")], ["decomposition", t("I broke numbers apart")], ["fact", t("I used a fact I know")]]) {
+    const wrapper = document.createElement("label");
+    wrapper.style.cssText = "display:inline-flex;align-items:center;gap:.35rem;cursor:pointer";
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.name = "strategyTag";
+    input.value = tag;
+    input.dataset.strategyTag = tag;
+    const copy = document.createElement("span");
+    copy.textContent = label;
+    wrapper.append(input, copy);
+    fieldset.append(wrapper);
+  }
+  els.answerForm?.append(fieldset);
+}
+
 function submitAnswer(value) {
   if (!state.item || !state.session || state.session.finished) return;
   if (!String(value).trim()) { showFeedback("Enter an answer", "Type an answer before checking, or open a strategy hint.", "try"); return; }
@@ -6644,6 +6701,9 @@ function submitAnswer(value) {
 
   if (state.itemDone) return;
   state.itemAttempts += 1;
+  if (state.itemAttempts === 1) {
+    state.firstResponseMs = Math.max(0, performance.now() - state.problemStartedAt);
+  }
   const correct = validateAnswer(value, state.item);
   const responseInput = {
     activity: tutorSkillKey(state.item.skill),
@@ -6712,6 +6772,10 @@ function finalizeProblem(correct) {
   InteractiveDrillToolbox.refresh();
   const queueEntry = session.queue?.[session.answered];
   const isRevision = session.mode === "repair" && Boolean(queueEntry?.original);
+  const itemSkillKey = tutorSkillKey(state.item.skill);
+  session.missesBySkill ||= {};
+  if (correct) session.missesBySkill[itemSkillKey] = 0;
+  else session.missesBySkill[itemSkillKey] = (session.missesBySkill[itemSkillKey] || 0) + 1;
   const firstCorrect = state.firstAnswerCorrect === true;
   session.answered += 1;
   if (correct) {
@@ -6772,13 +6836,29 @@ function finalizeProblem(correct) {
   } else {
     if (!isRevision) {
       updateSkillRecord(state.item.skill, state.initialSupport ? correct : correct && firstCorrect && independent, state.initialSupport ? "guided" : session.mode);
-      recordAnswer(state.tutor, state.item.skill, { correct: independent ? firstCorrect : correct, independent, level: state.item.level });
+      const strategyTags = [...document.querySelectorAll("#strategy-tag-picker [data-strategy-tag]:checked")].map((input) => input.dataset.strategyTag);
+      recordAnswer(state.tutor, state.item.skill, {
+        correct: independent ? firstCorrect : correct,
+        independent,
+        level: state.item.level,
+        strategyTags,
+        responseMs: state.firstResponseMs,
+        // Practice is untimed. This is a descriptive first-response sample, never a speed score.
+        calm: true,
+      });
     }
     if (session.mode === "repair" && independent && firstCorrect) {
       const key = tutorSkillKey(state.item.skill);
       const consecutive = (session.repairWins ||= {});
       consecutive[key] = (consecutive[key] || 0) + 1;
-      if (consecutive[key] >= 2) for (const entry of state.tutor.mistakes) if (entry.key === key && !entry.resolvedAt) entry.resolvedAt = Date.now();
+      if (consecutive[key] >= 2) {
+        const targetedId = session.queue?.find((entry) => entry.mistakeId)?.mistakeId;
+        for (const entry of state.tutor.mistakes) {
+          if (entry.key === key && !entry.resolvedAt && (!targetedId || entry.id === targetedId)) {
+            entry.resolvedAt = Date.now(); entry.repairStatus = "repaired";
+          }
+        }
+      }
     } else if (session.mode === "repair") { (session.repairWins ||= {})[tutorSkillKey(state.item.skill)] = 0; }
   }
   onFluencyProblemFinalized(correct && !isRevision, independent, firstCorrect, !isRevision);
@@ -6794,6 +6874,19 @@ function finalizeProblem(correct) {
   els.nextButton.textContent = session.answered >= session.target || streakComplete(session) ? "Finish set" : "Next problem";
   updateSessionHeader();
   saveActiveSession();
+  if (!correct && session.missesBySkill[itemSkillKey] >= 2 && state.guidedStepsShown >= 3) {
+    const foundation = prerequisites(state.item.skill)[0];
+    if (foundation) {
+      const bridge = document.createElement("div");
+      bridge.className = "quick-boost-offer";
+      bridge.append(document.createTextNode(t("Two tough problems can be a sign to revisit a foundation. Try three calm problems, then return here.")));
+      const button = document.createElement("button");
+      button.type = "button"; button.className = "outline-action"; button.dataset.quickBoost = tutorSkillKey(foundation);
+      button.textContent = t("Quick Boost: Practice {skill} for 3 problems", { skill: foundation.title });
+      bridge.append(button);
+      els.feedbackCopy.append(bridge);
+    }
+  }
 }
 
 function updateSkillRecord(skill, correct, mode) {
@@ -6974,6 +7067,17 @@ function renderStreakMeter() {
 function finishSession() {
   if (!state.session || state.session.finished) return;
   const session = state.session;
+  if (session.quickBoost) {
+    const savedPractice = loadJson(BRIDGE_RETURN_KEY, null);
+    writeLocal(profileKey(BRIDGE_RETURN_KEY, activeProfile), null);
+    if (savedPractice) {
+      writeLocal(profileKey(SESSION_KEY, activeProfile), savedPractice);
+      state.session = null;
+      resumePractice(savedPractice);
+      announce(t("Quick Boost complete. Your original problem set is ready to continue."));
+      return;
+    }
+  }
   session.finished = true;
   writeLocal(profileKey(SESSION_KEY, activeProfile), null);
   document.querySelector(".problem-stage").hidden = true;
@@ -7243,6 +7347,25 @@ function recordPuzzleEvidence(entry) {
   }
 }
 
+function renderSkillFluencyMetrics(skill) {
+  const record = state.tutor.records[tutorSkillKey(skill)];
+  const metrics = record?.metrics || {};
+  const accuracy = metrics.accuracy || {};
+  const flexibility = metrics.strategyFlexibility || {};
+  const pace = metrics.pace || {};
+  const accuracyCopy = Number.isFinite(accuracy.percent)
+    ? t("{percent}% from {count} independent tries", { percent: accuracy.percent, count: accuracy.total })
+    : t("Not enough independent checks yet");
+  const strategyCount = Number.isFinite(flexibility.count) ? flexibility.count : new Set(record?.strategyTags || []).size;
+  const trendCopy = pace.trend === "more_time" ? t("Taking more time lately")
+    : pace.trend === "less_time" ? t("Taking less time lately")
+      : t("Taking about the same time lately");
+  const paceCopy = Number.isFinite(pace.medianResponseMs)
+    ? t("Typical calm thinking time: {time} seconds · {trend}", { time: Math.max(1, Math.round(pace.medianResponseMs / 1000)), trend: trendCopy })
+    : t("No calm response samples yet");
+  return `<div class="skill-fluency-metrics" aria-label="${t("Fluency measures")}"><p><strong>${t("Accuracy")}</strong> ${escapeHtml(accuracyCopy)}</p><p><strong>${t("Strategy flexibility")}</strong> ${t("{count} strategies explored", { count: strategyCount })}</p><p><strong>${t("Pace")}</strong> ${escapeHtml(paceCopy)} <span>${t("Time is a clue, not a score.")}</span></p></div>`;
+}
+
 function renderPath() {
   const ranked = recommendations(state.tutor, state.grade);
   const skills = getGrade(state.grade).skills;
@@ -7253,11 +7376,19 @@ function renderPath() {
   els.path.innerHTML = `<div class="section-heading"><div><p class="section-label">${escapeHtml(gradeDisplay(state.grade))} · ${escapeHtml(PROFILE_NAMES[activeProfile])}</p><h2>See what is growing.</h2><p>Independent first tries, coached practice, and learning over time tell different parts of the story.</p></div><button class="outline-action" data-print-report>Print family progress</button></div>
     <div class="learning-milestones"><div><strong>${explored}/${skills.length}</strong><span>visual lessons explored</span></div><div><strong>${remembered}/${skills.length}</strong><span>remembered independently</span></div><div><strong>${repaired}</strong><span>mistakes revisited successfully</span></div><div><strong>${new Set(sessions.map((session) => localDay(session.at))).size}</strong><span>practice days</span></div></div>
     <div class="path-explainer"><h3>What “remembered” means here</h3><p>At least eight recent independent checks, 85% correct, and successful practice on two different days. Coached examples and easier support problems help you learn; they do not establish independent mastery.</p></div>
+    <section id="prerequisite-constellation" aria-label="My learning path"></section>
     <div class="learning-map">${skills.map((skill) => {
       const status = evidence(state.tutor, skill); const foundation = prerequisites(skill)[0];
       const checkup = state.tutor.diagnostics[state.grade]?.results?.[tutorSkillKey(skill)];
-      return `<article class="path-skill ${status.secure ? 'secure' : ''}"><div><p class="section-label">${escapeHtml(skill.strand)}</p><h3>${escapeHtml(skill.title)}</h3><p class="path-status">${status.label}</p><p>${status.independent ? `${status.successes} of ${status.independent} recent independent checks correct` : 'No independent evidence yet'}${status.supportedTotal ? ` · ${status.supportedTotal} coached attempts` : ''}</p>${status.dueAt ? `<p>${status.due ? 'Ready to revisit' : `Next memory refresh: ${new Date(status.dueAt).toLocaleDateString()}`}</p>` : ''}${checkup !== undefined ? `<p class="small-copy">Starting-point sample: ${checkup ? 'solved' : 'worth exploring'}. More practice will tell us more.</p>` : ''}${foundation ? `<p class="foundation-link">Helpful foundation: <button class="text-action" data-open-key="${tutorSkillKey(foundation)}" data-open-mode="visual">${escapeHtml(foundation.title)}</button></p>` : ''}</div><div class="button-row"><button class="outline-action" data-open-key="${tutorSkillKey(skill)}" data-open-mode="visual">Visual lesson</button><button class="primary-action" data-open-key="${tutorSkillKey(skill)}" data-open-mode="adaptive">Practice</button></div></article>`;
+      return `<article class="path-skill ${status.secure ? 'secure' : ''}"><div><p class="section-label">${escapeHtml(skill.strand)}</p><h3>${escapeHtml(skill.title)}</h3><p class="path-status">${status.label}</p><p>${status.independent ? `${status.successes} of ${status.independent} recent independent checks correct` : 'No independent evidence yet'}${status.supportedTotal ? ` · ${status.supportedTotal} coached attempts` : ''}</p>${renderSkillFluencyMetrics(skill)}${status.dueAt ? `<p>${status.due ? 'Ready to revisit' : `Next memory refresh: ${new Date(status.dueAt).toLocaleDateString()}`}</p>` : ''}${checkup !== undefined ? `<p class="small-copy">Starting-point sample: ${checkup ? 'solved' : 'worth exploring'}. More practice will tell us more.</p>` : ''}${foundation ? `<p class="foundation-link">Helpful foundation: <button class="text-action" data-open-key="${tutorSkillKey(foundation)}" data-open-mode="visual">${escapeHtml(foundation.title)}</button></p>` : ''}</div><div class="button-row"><button class="outline-action" data-open-key="${tutorSkillKey(skill)}" data-open-mode="visual">Visual lesson</button><button class="primary-action" data-open-key="${tutorSkillKey(skill)}" data-open-mode="adaptive">Practice</button></div></article>`;
     }).join("")}</div>${journalHtml()}<section class="family-guide"><h3>For families: five useful minutes</h3><ol><li>Let your child choose one developing skill.</li><li>Ask, “What do you notice?” before giving a method.</li><li>Use the visual lesson together when a step feels unclear.</li><li>Let your child try a few fresh questions independently.</li><li>Ask, “How could you check that?” Celebrate a useful strategy or a repaired mistake.</li></ol><p>Fresh problems are generated each visit. A familiar topic can be practiced again tomorrow without repeating a fixed worksheet.</p></section>`;
+  const constellation = els.path.querySelector("#prerequisite-constellation");
+  if (constellation) renderPrerequisiteMap(constellation, {
+    skills: ALL_SKILLS.map((skill) => ({ ...skill, ...(prerequisiteGraph[tutorSkillKey(skill)] || { prerequisiteSkills: [], enrichmentSkills: [] }) })),
+    edges: prerequisiteGraph,
+    selectedGrade: state.grade,
+    language: getLang(),
+  });
 }
 
 const DETECTIVE_STORAGE_KEY = "ewl-detective-cases-v1";
@@ -7429,6 +7560,7 @@ function renderDetectiveSection(currentGrade) {
               </div>
               <div class="case-feedback" id="case-fb-${c.id}" hidden style="font-size:0.85rem; padding:6px 8px; border-radius:6px; font-weight:700"></div>
               <div class="case-actions" style="margin-top:0.5rem">
+                <button type="button" class="primary-action" data-featured-bug-hunt="${c.id}">${t("Start the 3-step Bug Hunt")}</button>
                 <button type="button" class="outline-action" data-open-tool="${c.tool}" style="font-size:0.8rem; padding:4px 8px">🛠️ Prove with ${c.toolName}</button>
               </div>
             </article>
@@ -7506,9 +7638,134 @@ function getCognitivePrescription(entry, skill) {
   };
 }
 
+function bugReasonFor(code, label = "") {
+  const reasons = {
+    addedDenominators: t("Denominators name equal-size units; make a common-size unit before combining the numerators."),
+    swappedCoordinates: t("Coordinates have an order: x tells left or right, then y tells up or down."),
+    confusedGcfLcm: t("A greatest common factor must divide both numbers; choose the greatest shared factor, not a shared multiple."),
+    addedFactors: t("Multiplication counts equal groups. Adding the factors does not count all the objects in those groups."),
+    oneGroupOff: t("Check both parts of multiplication: the number of groups and the amount in each group."),
+    reversedSubtraction: t("Subtraction order matters. Start with the first amount, then take away the second."),
+    addedInsteadOfSubtracting: t("The prompt asks for a difference. Adding combines amounts instead of comparing them."),
+    subtractInsteadOfAdding: t("Addition combines the amounts. Subtracting them leaves out part of the total."),
+    omittedAddend: t("Both addends contribute to the total. Include each amount once."),
+    subtractedInsteadOfDividing: t("Division asks how many equal groups fit, or how much belongs in each group."),
+    multipliedInsteadOfDividing: t("Division shares or measures equal groups; multiplying makes a different quantity."),
+    addedInsteadOfDividing: t("Division shares a total into equal groups; it does not combine the dividend and divisor."),
+  };
+  return reasons[code] || (label ? t("Check the meaning of the units and operation: {pattern}.", { pattern: label }) : t("Check whether each step keeps the quantities and operation in the problem's meaning."));
+}
+
+function bugReasonChoices(challenge) {
+  const correct = challenge.reason || bugReasonFor(challenge.code, challenge.label);
+  const distractors = [
+    t("This step is correct because the numbers look close to the estimate."),
+    t("The mistake is only in how the answer is written; the operation does not matter."),
+  ];
+  return [
+    { text: correct, correct: true },
+    ...distractors.filter((copy) => copy !== correct).map((text) => ({ text, correct: false })),
+  ];
+}
+
+function bugHuntDescriptor() {
+  const active = state.activeBugHunt;
+  if (!active) return null;
+  if (active.kind === "entry") {
+    const entry = state.tutor.mistakes.find((mistake) => mistake.id === active.id);
+    if (!entry) return null;
+    return {
+      kind: "entry", id: entry.id, source: entry,
+      prompt: entry.problemPrompt || entry.question,
+      studentAnswer: entry.studentInput || entry.submitted,
+      answer: entry.expectedAnswer || entry.original?.answers?.[0] || "",
+      code: entry.misconceptionCode || entry.category,
+      label: entry.misconceptionLabel || (entry.category ? mistakeCategoryLabel(entry.category) : ""),
+      name: findSkill(entry.key)?.title || t("Math skill"),
+    };
+  }
+  const featured = DETECTIVE_CASES.find((item) => item.id === active.id);
+  if (!featured) return null;
+  const code = featured.id.includes("fractions") ? "addedDenominators"
+    : featured.id.includes("integer-signs") ? "subtractInsteadOfAdding"
+      : featured.id.includes("order-operations") ? "addedFactors"
+        : featured.id.includes("decimal") ? "omittedAddend"
+          : featured.id.includes("mult-distributive") ? "oneGroupOff"
+            : featured.id.includes("algebra") ? "reversedSubtraction" : "";
+  return {
+    kind: "featured", id: featured.id, source: featured,
+    prompt: featured.problem, studentAnswer: featured.suspectAnswer,
+    answer: featured.correctAnswer, code, label: featured.misconception, reason: featured.why, name: featured.title,
+  };
+}
+
+function bugHuntSteps(challenge) {
+  const code = challenge.code;
+  let errorStep = t("Use {input} as the answer, then move on without checking what the operation means.", { input: challenge.studentAnswer });
+  if (code === "addedDenominators") errorStep = t("Add the top numbers and bottom numbers together to make {input}.", { input: challenge.studentAnswer });
+  else if (code === "swappedCoordinates") errorStep = t("Switch the x- and y-values, writing {input}.", { input: challenge.studentAnswer });
+  else if (code === "confusedGcfLcm") errorStep = t("Choose the least common multiple, {input}, for a greatest-common-factor question.", { input: challenge.studentAnswer });
+  else if (code === "addedFactors") errorStep = t("Add the factors instead of counting equal groups: {input}.", { input: challenge.studentAnswer });
+  else if (code === "reversedSubtraction") errorStep = t("Reverse the subtraction order to get {input}.", { input: challenge.studentAnswer });
+  else if (code === "addedInsteadOfSubtracting") errorStep = t("Add the amounts even though the question asks for a difference: {input}.", { input: challenge.studentAnswer });
+  else if (code === "subtractInsteadOfAdding") errorStep = t("Subtract the amounts instead of combining them: {input}.", { input: challenge.studentAnswer });
+  else if (code === "oneGroupOff") errorStep = t("Count one group too many or too few, giving {input}.", { input: challenge.studentAnswer });
+  return [
+    t("Read the problem: {prompt}", { prompt: challenge.prompt }),
+    errorStep,
+    t("Use that result as the final answer: {input}.", { input: challenge.studentAnswer }),
+  ];
+}
+
+function renderActiveBugHunt() {
+  const challenge = bugHuntDescriptor();
+  if (!challenge) { state.activeBugHunt = null; return ""; }
+  const active = state.activeBugHunt;
+  const steps = bugHuntSteps(challenge);
+  const solved = active.stage === "solved";
+  const reasonChoices = bugReasonChoices(challenge);
+  const status = active.message || (active.stage === "choose-step"
+    ? t("Choose the step where the student's reasoning first goes off track.")
+    : active.stage === "choose-reason"
+      ? t("Why does this step break the math?")
+      : active.stage === "answer"
+        ? t("Now enter the corrected answer.")
+        : t("Bug Crushed! You found the flawed step and repaired the result."));
+  return `<section class="bug-hunt-challenge" aria-labelledby="bug-hunt-title" style="margin:1.25rem 0;padding:1.25rem;border:2px solid #0f766e;border-radius:14px;background:#f0fdfa">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap"><div><p class="section-label">${t("ERROR ANALYSIS CHALLENGE")}</p><h3 id="bug-hunt-title">${escapeHtml(challenge.name)}</h3><p>${t("Problem: {prompt}", { prompt: challenge.prompt })}</p></div><button type="button" class="outline-action" data-close-bug-hunt>${t("Close challenge")}</button></div>
+    ${solved ? `<div class="mastery-pill" role="status" style="display:inline-flex;background:#dcfce7;color:#166534;padding:.65rem 1rem">🐞 ${t("Bug Crushed! Mastery badge earned")}</div>` : `<ol style="display:grid;gap:.55rem;padding-left:1.5rem">${steps.map((step, index) => `<li><button type="button" class="outline-action" data-bug-step="${index}" aria-pressed="${active.selectedStep === index}" ${active.stage !== "choose-step" ? "disabled" : ""} style="width:100%;text-align:left">${escapeHtml(step)}</button></li>`).join("")}</ol>
+    ${active.stage === "choose-reason" ? `<fieldset style="border:1px solid #99f6e4;border-radius:10px;padding:.8rem"><legend>${t("Choose why it is wrong")}</legend><div style="display:grid;gap:.5rem">${reasonChoices.map((choice, index) => `<button type="button" class="outline-action" data-bug-reason="${index}" style="text-align:left">${escapeHtml(choice.text)}</button>`).join("")}</div></fieldset>` : ""}
+    ${active.stage === "answer" ? `<form data-bug-answer-form style="display:flex;gap:.55rem;flex-wrap:wrap;align-items:end"><label style="display:grid;gap:.25rem;flex:1 1 15rem">${t("Corrected answer")}<input class="answer-input" name="answer" autocomplete="off" required></label><button class="primary-action" type="submit">${t("Check the repair")}</button></form>` : ""}`}
+    <p data-bug-hunt-status role="status" aria-live="polite" style="margin:.75rem 0 0">${escapeHtml(status)}</p>
+  </section>`;
+}
+
+function bugAnswerMatches(value, expected) {
+  const normalize = (text) => String(text).trim().replaceAll("−", "-").replace(/\s+/g, "").replace(/^([a-z])=/i, "").toLowerCase();
+  const entered = normalize(value);
+  const accepted = String(expected).split(/\s+or\s+|\s*\(or\s*/i).map((part) => normalize(part.replace(/[.)]+$/, "")));
+  if (accepted.includes(entered)) return true;
+  const numeric = (text) => {
+    if (/[<>≤≥]/.test(text)) return NaN;
+    const fraction = text.match(/^(-?\d+)\/(\d+)$/);
+    if (fraction && Number(fraction[2])) return Number(fraction[1]) / Number(fraction[2]);
+    return Number(text.replace(/[^\d.+-]/g, ""));
+  };
+  const number = numeric(entered);
+  return Number.isFinite(number) && accepted.some((part) => Math.abs(number - numeric(part)) < 1e-9);
+}
+
 function renderNotebook() {
   const entries = state.tutor.mistakes.filter((entry) => findSkill(entry.key)?.grade === state.grade);
   const open = entries.filter((entry) => !entry.resolvedAt);
+  const clusters = new Map();
+  for (const entry of entries) {
+    const code = entry.misconceptionCode || entry.category || "unclassified";
+    if (!clusters.has(code)) clusters.set(code, []);
+    clusters.get(code).push(entry);
+  }
+  const clusterLabel = (code, group) => group[0]?.misconceptionLabel || (code === "unclassified" ? t("Pattern not identified yet") : mistakeCategoryLabel(code) || t("Math reasoning pattern"));
+  const clusterCopy = (code, group) => bugReasonFor(code, group[0]?.misconceptionLabel || "");
   els.notebook.innerHTML = `
     <div class="garage-banner">
       <div>
@@ -7518,7 +7775,10 @@ function renderNotebook() {
       </div>
       ${open.length ? '<button class="primary-action" data-repair-all style="background:#f59e0b; color:#78350f; font-weight:900; border:none; padding:10px 16px; border-radius:8px; cursor:pointer">⚡ Tune Up All (' + open.length + ')</button>' : ''}
     </div>
-    ${entries.length ? `<div class="mistake-list">${entries.map((entry) => {
+    ${entries.length ? `<div class="mistake-clusters">${[...clusters.entries()].map(([code, group]) => `<section class="mistake-cluster" style="margin:1rem 0;padding:1rem;border:1px solid #cbd5e1;border-radius:12px;background:#f8fafc">
+      <div style="display:flex;justify-content:space-between;gap:.75rem;align-items:baseline;flex-wrap:wrap"><h3 style="margin:.1rem 0">${escapeHtml(clusterLabel(code, group))} <span class="mastery-pill">${group.length} ${t("items")}</span></h3><span>${open.filter((entry) => (entry.misconceptionCode || entry.category || "unclassified") === code).length} ${t("to repair")}</span></div>
+      <p>${escapeHtml(clusterCopy(code, group))}</p>
+      <div class="mistake-list">${group.map((entry) => {
       const skill = findSkill(entry.key);
       const isRepaired = !!entry.resolvedAt;
       const rx = getCognitivePrescription(entry, skill);
@@ -7533,7 +7793,7 @@ function renderNotebook() {
           <h3>${escapeHtml(skill.title)}</h3>
           <p class="mistake-question" style="font-size:1.4rem; font-weight:900; margin:8px 0">${escapeHtml(entry.question)}</p>
           <p>Your previous answer: <strong style="color:#dc2626">${escapeHtml(entry.submitted)}</strong></p>
-          <p class="mistake-pattern" role="status">${entry.category ? `${escapeHtml(t("Possible pattern"))}: <strong>${escapeHtml(mistakeCategoryLabel(entry.category))}</strong>` : escapeHtml(t("No specific pattern can be identified from one answer."))}</p>
+          <p class="mistake-pattern" role="status">${escapeHtml(t("Repair status: {status}", { status: entry.repairStatus === "in-progress" ? t("in progress") : isRepaired ? t("repaired") : t("ready") }))}</p>
 
           <!-- Targeted Cognitive Repair Prescription -->
           <div class="repair-prescription-card">
@@ -7551,13 +7811,15 @@ function renderNotebook() {
             <p style="margin:4px 0; color:#b45309"><strong>Watch Out:</strong> ${escapeHtml(skill.learn.watch)}</p>
           </details>
           <div class="button-row">
-            ${entry.original ? `<button class="outline-action" type="button" data-revise-entry="${escapeHtml(entry.id)}">${escapeHtml(t("Revise the original, then try two new problems"))}</button>` : ""}
+            <button class="outline-action" type="button" data-revise-entry="${escapeHtml(entry.id)}" ${isRepaired ? "disabled" : ""}>🛠️ ${t("Fix My Problem")}</button>
+            <button class="outline-action" type="button" data-open-bug-hunt="${escapeHtml(entry.id)}">🐞 ${t("Spot the Student's Mistake")}</button>
             <button class="outline-action rx-workout-btn" type="button" data-launch-workout="${rx.tool}" data-skill-key="${entry.key}">🏋️ Launch ${rx.toolName} Workout</button>
             <button class="outline-action" data-open-key="${entry.key}" data-open-mode="visual">🛠️ Visual Lesson</button>
             <button class="primary-action" data-repair-key="${entry.key}">⚡ Test Drive Fresh Problems</button>
           </div>
         </article>`;
-    }).join("")}</div>` : `
+      }).join("")}</div>
+    </section>`).join("")}</div>` : `
       <div class="empty-state" style="text-align:center; padding:3rem 1rem">
         <div style="font-size:3rem">🏎️💨</div>
         <h3>The Garage is Clean!</h3>
@@ -7566,6 +7828,7 @@ function renderNotebook() {
       </div>
     `}
     ${renderDetectiveSection(state.grade)}
+    ${renderActiveBugHunt()}
   `;
 }
 
@@ -7607,16 +7870,44 @@ function startRepair(keys) {
 
 function startRepairEntry(id) {
   const entry = state.tutor.mistakes.find((mistake) => mistake.id === id && !mistake.resolvedAt);
-  if (!entry || findSkill(entry.key)?.grade !== state.grade || !entry.original?.answers?.length) {
-    announce("This saved problem is not available to revise. Try a fresh repair set instead.");
+  const skill = entry && findSkill(entry.key);
+  if (!entry || skill?.grade !== state.grade) {
+    announce(t("This saved problem is not available to repair. Try a fresh repair set instead."));
     if (entry) startRepair([entry.key]);
     return;
   }
+  const seed = (Date.now() + [...String(entry.id)].reduce((sum, char) => sum + char.charCodeAt(0), 0)) >>> 0;
+  let freshProblem = adaptiveProblem(skill, seededRandom(seed), 0);
+  for (let attempt = 1; attempt <= 40 && freshProblem.question === entry.question; attempt += 1)
+    freshProblem = adaptiveProblem(skill, seededRandom((seed + attempt * 104729) >>> 0), 0);
+  entry.repairStatus = "in-progress";
+  saveProgress();
   openPlanned("repair", [
-    { key: entry.key, purpose: t("Revise the original problem with support"), original: entry.original },
+    { key: entry.key, purpose: t("Fix My Problem: new numbers, same skill"), generated: freshProblem, forceGuided: true, mistakeId: entry.id },
     { key: entry.key, purpose: t("Try a new related problem independently"), independent: true },
-    { key: entry.key, purpose: t("Try a new related problem independently"), independent: true },
+    { key: entry.key, purpose: t("Try one more related problem independently"), independent: true, mistakeId: entry.id },
   ]);
+}
+
+function startQuickBoost(foundationKey) {
+  const foundation = findSkill(foundationKey);
+  if (!foundation || foundation.grade < 1 || foundation.grade > 8 || !state.session || state.session.quickBoost) return;
+  saveActiveSession();
+  const savedPractice = loadJson(SESSION_KEY, null);
+  if (!savedPractice?.session || !savedPractice.item) return;
+  writeLocal(profileKey(BRIDGE_RETURN_KEY, activeProfile), savedPractice);
+  state.session = null;
+  state.grade = foundation.grade;
+  renderGradeTabs();
+  const queue = Array.from({ length: 3 }, (_, index) => ({
+    key: foundationKey,
+    purpose: t("Quick Boost problem {n} of 3", { n: index + 1 }),
+    independent: true,
+  }));
+  openPlanned("repair", queue);
+  state.session.quickBoost = true;
+  saveActiveSession();
+  announce(t("Three calm foundation problems. Your original set will be ready when you finish."));
 }
 
 function launchAssignment(assignment) {
@@ -7907,6 +8198,8 @@ document.addEventListener("click", (event) => {
   }
   if (event.target.closest("[data-start-checkup]")) openPlanned("diagnostic", diagnosticPlan(state.grade));
   if (event.target.closest("[data-start-daily]")) openPlanned("daily", dailyPlan(state.tutor, state.grade));
+  const quickBoost = event.target.closest("[data-quick-boost]");
+  if (quickBoost) startQuickBoost(quickBoost.dataset.quickBoost);
   if (event.target.closest("[data-resume-practice]")) resumePractice();
   if (event.target.closest("[data-start-assignment]")) launchAssignment(state.assignment);
   if (event.target.closest("[data-start-assignment-game]")) { state.autoGame = state.assignment.game; state.autoStop = state.assignment.stop; state.grade = state.assignment.grade; openHubView("games"); }
@@ -7916,6 +8209,73 @@ document.addEventListener("click", (event) => {
   const revise = event.target.closest("[data-revise-entry]");
   if (revise) startRepairEntry(revise.dataset.reviseEntry);
   if (event.target.closest("[data-repair-all]")) startRepair(state.tutor.mistakes.filter((entry) => !entry.resolvedAt).map((entry) => entry.key));
+  const openEntryHunt = event.target.closest("[data-open-bug-hunt]");
+  const openFeaturedHunt = event.target.closest("[data-featured-bug-hunt]");
+  if (openEntryHunt || openFeaturedHunt) {
+    state.activeBugHunt = { kind: openEntryHunt ? "entry" : "featured", id: openEntryHunt?.dataset.openBugHunt || openFeaturedHunt.dataset.featuredBugHunt, stage: "choose-step" };
+    if (openEntryHunt) {
+      const mistake = state.tutor.mistakes.find((entry) => entry.id === state.activeBugHunt.id);
+      if (mistake && !mistake.resolvedAt) { mistake.repairStatus = "in-progress"; saveProgress(); }
+    }
+    renderNotebook();
+    document.querySelector(".bug-hunt-challenge")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    return;
+  }
+  if (event.target.closest("[data-close-bug-hunt]")) { state.activeBugHunt = null; renderNotebook(); return; }
+  const bugStep = event.target.closest("[data-bug-step]");
+  if (bugStep && state.activeBugHunt?.stage === "choose-step") {
+    if (Number(bugStep.dataset.bugStep) === 1) {
+      state.activeBugHunt.selectedStep = 1;
+      state.activeBugHunt.stage = "choose-reason";
+      state.activeBugHunt.message = "";
+      renderNotebook();
+    } else {
+      const status = document.querySelector("[data-bug-hunt-status]");
+      if (status) status.textContent = t("That step still matches the prompt. Keep looking for the first broken idea.");
+      chime("bad");
+    }
+    return;
+  }
+  const bugReason = event.target.closest("[data-bug-reason]");
+  if (bugReason && state.activeBugHunt?.stage === "choose-reason") {
+    const challenge = bugHuntDescriptor();
+    const choice = challenge && bugReasonChoices(challenge)[Number(bugReason.dataset.bugReason)];
+    if (choice?.correct) {
+      state.activeBugHunt.stage = "answer";
+      state.activeBugHunt.message = t("Exactly. Now repair the result with the correct answer.");
+      renderNotebook();
+      document.querySelector("[data-bug-answer-form] input")?.focus();
+    } else {
+      const status = document.querySelector("[data-bug-hunt-status]");
+      if (status) status.textContent = t("That explanation does not match the error yet. Check the quantities and operation again.");
+      chime("bad");
+    }
+    return;
+  }
+});
+document.addEventListener("submit", (event) => {
+  const form = event.target.closest("[data-bug-answer-form]");
+  if (!form) return;
+  event.preventDefault();
+  const challenge = bugHuntDescriptor();
+  const input = form.elements.answer;
+  if (!challenge || !bugAnswerMatches(input.value, challenge.answer)) {
+    const status = document.querySelector("[data-bug-hunt-status]");
+    if (status) status.textContent = t("Not quite yet. Recheck the quantities and try the corrected answer again.");
+    chime("bad");
+    return;
+  }
+  state.activeBugHunt.stage = "solved";
+  state.activeBugHunt.message = t("Bug Crushed! You found the flawed step and repaired the result.");
+  if (challenge.kind === "entry") {
+    const entry = state.tutor.mistakes.find((mistake) => mistake.id === challenge.id);
+    if (entry) { entry.repairStatus = "repaired"; entry.resolvedAt ||= Date.now(); saveProgress(); }
+  } else {
+    saveSolvedDetectiveCase(challenge.id);
+  }
+  chime("streak");
+  announce(t("Bug Crushed! Mastery badge earned"));
+  renderNotebook();
 });
 els.skip.addEventListener("click", () => {
   if (!state.session || state.session.mode !== "diagnostic" || state.itemDone) return;

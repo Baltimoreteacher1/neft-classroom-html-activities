@@ -1,6 +1,7 @@
 import { ALL_SKILLS } from "./problem-bank.js";
 import { evidence, localDay, prerequisites, skillKey } from "./tutor-engine.js";
 import { mistakeCategoryLabel } from "./mistake-notes.js";
+import { t } from "./i18n.js";
 
 const esc = (value) =>
   String(value ?? "")
@@ -177,7 +178,7 @@ function groupHtml(group, index) {
     <div class="teacher-intervention-heading"><div><p class="teacher-evidence-label">${esc(group.need)} · ${group.learners.length} learner${group.learners.length === 1 ? "" : "s"}</p><h4 id="${titleId}">${esc(group.skill.title)}</h4></div>
       <button type="button" class="outline-action" data-teacher-assign="${esc(skillKey(group.skill))}">Add focus to assignment</button></div>
     <p><strong>Supporting evidence:</strong> ${group.evidence.map(esc).join(" ")}</p>
-    ${group.pattern ? `<p><strong>Possible pattern:</strong> ${esc(mistakeCategoryLabel(group.pattern))}. This label describes recorded responses; it does not diagnose a student's thinking.</p>` : ""}
+    ${group.pattern ? `<p><strong>${esc(t("Possible pattern"))}:</strong> ${esc(mistakeCategoryLabel(group.pattern))}. ${esc(t("This label describes recorded responses; it does not diagnose a student's thinking."))}</p>` : ""}
     <div class="teacher-routine"><div><h5>Teach</h5><p>${esc(model.rule)}</p><p><strong>Model:</strong> ${esc(model.example)}</p></div>
       <div><h5>Try together</h5><ol>${model.steps.map((step) => `<li>${esc(step)}</li>`).join("")}</ol></div>
       <div><h5>Reattempt and reassess</h5><p>Assign a short set on this focus. Ask the learner to solve a new item independently and explain or show one step. Review the next saved evidence before deciding to move on.</p></div></div>

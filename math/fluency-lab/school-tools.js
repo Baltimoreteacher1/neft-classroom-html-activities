@@ -4,6 +4,7 @@ import { languageExpectation, languagePrintPrompt } from "./language-bridge.js";
 import { languagePackHtml } from "./language-pack.js";
 import { familySessionShare } from "./family/family-planner.js";
 import { mountTeacherEvidenceDashboard } from "./learning-evidence.js";
+import { qrSvg } from "../../engine/core/qr-mini.js";
 
 export const escapeHtml = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 const PROFILE_KEY = "ewl-fluency-profiles-v1";
@@ -90,12 +91,49 @@ export function assignmentDifficultyLevel(challenge, level) {
 }
 export function encodeAssignment(value) {
   const assignment = validateAssignment(value); if (!assignment) throw new Error("Choose at least one skill.");
-  return btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(assignment)))).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+  const modes = { adaptive: "a", guided: "g" };
+  const challenges = { adaptive: "a", building: "b", "grade-stretch": "s" };
+  const label = assignment.label === "Class practice" ? "" : encodeURIComponent(assignment.label);
+  return ["ewl1", assignment.grade, assignment.count, modes[assignment.mode], challenges[assignment.challenge], assignment.lang || "", assignment.keys.join(","), label].join("|");
 }
 export function decodeAssignment(token) {
   if (typeof token !== "string" || token.length > 5000) return null;
+  if (token.startsWith("ewl1|")) {
+    try {
+      const [version, rawGrade, rawCount, rawMode, rawChallenge, lang, rawKeys, rawLabel] = token.split("|");
+      if (version !== "ewl1") return null;
+      const mode = rawMode === "g" ? "guided" : rawMode === "a" ? "adaptive" : "";
+      const challenge = { a: "adaptive", b: "building", s: "grade-stretch" }[rawChallenge] || "";
+      return validateAssignment({ version: 1, grade: Number(rawGrade), count: Number(rawCount), mode, challenge,
+        lang: lang || undefined, keys: rawKeys ? rawKeys.split(",") : [], label: rawLabel ? decodeURIComponent(rawLabel) : "Class practice" });
+    } catch { return null; }
+  }
   try { const decoded = atob(token.replaceAll("-", "+").replaceAll("_", "/")); return validateAssignment(JSON.parse(new TextDecoder().decode(Uint8Array.from(decoded, (char) => char.charCodeAt(0))))); }
   catch { return null; }
+}
+
+const LAB_ASSIGNMENT_URL = "https://eduwonderlab.com/math/fluency-lab/";
+const QR_TEXT_CAPACITY = 134;
+export function assignmentUrl(value) {
+  const assignment = validateAssignment(value);
+  if (!assignment) return null;
+  const url = new URL(LAB_ASSIGNMENT_URL);
+  if (assignment.lang) url.searchParams.set("lang", assignment.lang);
+  url.hash = `assignment=${encodeAssignment(assignment)}`;
+  return url.href;
+}
+export function localQrMarkup(value, { label = "Fluency Lab assignment QR code", size = 180 } = {}) {
+  const href = typeof value === "string" ? value : assignmentUrl(value);
+  if (!href || href.length > QR_TEXT_CAPACITY) return null;
+  const svg = qrSvg(href, { size, margin: 6, fg: "#17345f", bg: "#fff" });
+  return svg.replace("<svg ", `<svg role="img" aria-label="${escapeHtml(label)}" `);
+}
+function qrPanel(value, { label, lang = "en", size = 180 } = {}) {
+  const qr = localQrMarkup(value, { label, size });
+  const note = lang === "es"
+    ? "Este enlace es demasiado largo para el QR local. Copia el enlace o selecciona menos destrezas."
+    : "This link is too long for a local QR code. Copy the link or choose fewer skills.";
+  return qr ? `<div class="fluency-local-qr">${qr}</div>` : `<p class="fluency-qr-fallback" role="status">${escapeHtml(note)}</p>`;
 }
 export function assignmentQueue(assignment, rng = Math.random) {
   const queue = [];
@@ -123,7 +161,15 @@ export function printablePacket(assignment, { includeKey = false, seed = Date.no
     const questions = Array.from({ length: 8 }, (_, index) => ({ skill: findSkill(assignment.keys[(day * 8 + index) % assignment.keys.length]) })).map(({ skill }) => ({ skill, item: generateProblem(skill, rng) }));
     return { day, questions };
   });
-  const pages = days.map(({ day, questions }) => `<article class="packet-page"><header><p>Math Fluency Lab · Grade ${assignment.grade}</p><h1>${escapeHtml(assignment.label)} · Day ${day + 1}</h1><p>Name: ____________________ Date: __________</p></header><p>Work at your pace. Show one useful step. Ask someone to explain one strategy with you.</p><ol>${questions.map(({ item }) => `<li><span>${escapeHtml(item.question)}</span><i></i></li>`).join("")}</ol><footer><strong>Math talk:</strong> ${escapeHtml(languagePrintPrompt(questions[0].skill))}<br>“I used ___ because ___.” “I checked with ___.” You may draw, talk, or write. ______________________________</footer></article>`).join("");
+  const pages = days.map(({ day, questions }) => {
+    const skills = [...new Map(questions.map(({ skill }) => [skillKey(skill), skill])).values()];
+    const skillLinks = skills.map((skill) => {
+      const href = assignmentUrl({ version: 1, grade: skill.grade, keys: [skillKey(skill)], count: 10, mode: "adaptive", challenge: "adaptive", label: "Class practice" });
+      const qr = localQrMarkup(href, { label: `QR code for ${skill.title}`, size: 112 });
+      return `<div class="packet-skill-link"><strong>${escapeHtml(skill.title)}</strong>${qr || `<p>Open the Fluency Lab and choose this skill.</p>`}<small>${escapeHtml(href || "")}</small></div>`;
+    }).join("");
+    return `<article class="packet-page"><header><p>Math Fluency Lab · Grade ${assignment.grade}</p><h1>${escapeHtml(assignment.label)} · Day ${day + 1}</h1><p>Name: ____________________ Date: __________</p></header><p>Work at your pace. Show one useful step. Ask someone to explain one strategy with you.</p><ol>${questions.map(({ item }) => `<li><span>${escapeHtml(item.question)}</span><i></i></li>`).join("")}</ol><footer><strong>Math talk:</strong> ${escapeHtml(languagePrintPrompt(questions[0].skill))}<br>“I used ___ because ___.” “I checked with ___.” You may draw, talk, or write. ______________________________</footer><aside class="packet-skill-links"><h2>Continue online</h2>${skillLinks}</aside></article>`;
+  }).join("");
   const key = includeKey ? `<article class="packet-page teacher-answer-page"><h1>Teacher answer key</h1>${days.map(({ day, questions }) => `<h2>Day ${day + 1}</h2><p>${questions.map(({ item }, i) => `${i + 1}. ${escapeHtml(item.displayAnswer)}`).join(" · ")}</p>`).join("")}</article>` : "";
   return pages + key;
 }
@@ -198,17 +244,17 @@ export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, o
       const skillId = [...selected][0].split(":").slice(1).join(":");
       const relative = familySessionShare({ grade, skill: skillId, lang: language, minutes: count, challenge, support: mode === "guided" ? "extra" : "standard" });
       const url = new URL(relative, location.href);
+      const qrHref = assignmentUrl({ version: 1, grade, keys: [...selected], count: count === 5 ? 5 : 10, mode, lang: language, challenge });
       const es = language === "es";
       const result = container.querySelector("#assignment-result"); result.hidden = false;
-      result.innerHTML = `<h3>${escapeHtml(label)}</h3><p>${es ? "Grado" : "Grade"} ${grade} · ${count} ${es ? "minutos de práctica familiar" : "minutes of family practice"} · ${escapeHtml(challenge)} · ${es ? "El estudiante elige su perfil local al abrir el enlace." : "Learner chooses a local profile after opening."}</p><label for="assignment-link">${es ? "Enlace para la familia" : "Family link"}<input id="assignment-link" readonly value="${escapeHtml(url.href)}"/></label><div class="button-row"><a class="primary-action" href="${escapeHtml(url.href)}" target="_blank" rel="noopener">${es ? "Vista previa" : "Preview session"}</a><button class="outline-action" type="button" data-copy-assignment>${es ? "Copiar enlace" : "Copy link"}</button><button class="outline-action" type="button" data-toggle-qr>${es ? "Mostrar QR" : "Show QR"}</button><button class="outline-action" type="button" data-print-family>${es ? "Imprimir tarjeta" : "Print take-home card"}</button></div><div id="assignment-qr-box" hidden><img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(url.href)}" alt="QR code for family practice" width="180" height="180"/><p>${escapeHtml(url.href)}</p></div><p>${es ? "El enlace incluye la actividad y sus ajustes. El progreso permanece en el perfil local de este dispositivo." : "The link includes activity settings only. Progress stays in the local profile on this device."}</p><p class="family-message">${es ? "En familia: abran el enlace, elijan un perfil local y completen una sesión breve. Pregunten: ¿qué notaste y cómo lo sabes?" : "At home: open the link, choose a local profile, and complete a short session. Ask: What did you notice, and how do you know?"}</p>`;
+      result.innerHTML = `<h3>${escapeHtml(label)}</h3><p>${es ? "Grado" : "Grade"} ${grade} · ${count} ${es ? "minutos de práctica familiar" : "minutes of family practice"} · ${escapeHtml(challenge)} · ${es ? "El estudiante elige su perfil local al abrir el enlace." : "Learner chooses a local profile after opening."}</p><label for="assignment-link">${es ? "Enlace para la familia" : "Family link"}<input id="assignment-link" readonly value="${escapeHtml(url.href)}"/></label><div class="button-row"><a class="primary-action" href="${escapeHtml(url.href)}" target="_blank" rel="noopener">${es ? "Vista previa" : "Preview session"}</a><button class="outline-action" type="button" data-copy-assignment>${es ? "Copiar enlace" : "Copy link"}</button><button class="outline-action" type="button" data-toggle-qr>${es ? "Mostrar QR" : "Show QR"}</button><button class="outline-action" type="button" data-print-family>${es ? "Imprimir tarjeta" : "Print take-home card"}</button></div><div id="assignment-qr-box" hidden>${qrPanel(qrHref, { label: "Fluency Lab assignment QR code", lang: language })}<p>${escapeHtml(qrHref)}</p></div><p>${es ? "El enlace incluye la actividad y sus ajustes. El progreso permanece en el perfil local de este dispositivo." : "The link includes activity settings only. Progress stays in the local profile on this device."}</p><p class="family-message">${es ? "En familia: abran el enlace, elijan un perfil local y completen una sesión breve. Pregunten: ¿qué notaste y cómo lo sabes?" : "At home: open the link, choose a local profile, and complete a short session. Ask: What did you notice, and how do you know?"}</p>`;
       result.scrollIntoView({ behavior: "smooth", block: "start" }); return;
     }
     assignment = validateAssignment({ version: 1, grade, keys: [...selected], game: game || null, stop: stop === "all" ? null : stop, count, mode, lang: language, challenge, label });
     if (!assignment) { container.querySelector("#assignment-error").textContent = "Choose at least one skill or a game, then build the assignment."; return; }
-    const token = encodeAssignment(assignment);
-    const url = new URL("https://eduwonderlab.com/math/fluency-lab/"); if (assignment.lang) url.searchParams.set("lang", assignment.lang); url.hash = `assignment=${token}`;
+    const url = new URL(assignmentUrl(assignment));
     const result = container.querySelector("#assignment-result"); result.hidden = false;
-    result.innerHTML = `<h3>${escapeHtml(label)}</h3><p>Grade ${grade} · ${selected.size ? `${selected.size} skill${selected.size === 1 ? '' : 's'} · ${count} problems each visit` : 'game only'}${assignment.game ? ` · Game: ${escapeHtml(games.find((g) => g.id === assignment.game)?.name || assignment.game)}` : ''}. New numbers are generated each time.</p><label for="assignment-link">Student link<input id="assignment-link" readonly value="${escapeHtml(url.href)}"/></label><div class="button-row"><button class="primary-action" type="button" data-launch-assignment>Try this assignment</button><button class="outline-action" type="button" data-copy-assignment>Copy student link</button><button class="outline-action" type="button" data-print-packet>Print a five-day packet</button><button class="outline-action" type="button" data-print-language-pack>Print the language pack</button></div><div class="lms-share-row" style="margin-top:0.75rem; padding-top:0.75rem; border-top:1px dashed #cbd5e1; display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center"><a class="outline-action lms-share-btn" href="https://classroom.google.com/share?url=${encodeURIComponent(url.href)}&title=${encodeURIComponent(label)}" target="_blank" rel="noopener" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; font-weight:700">🏫 Google Classroom</a><button class="outline-action lms-embed-btn" type="button" data-copy-lms-embed style="font-weight:700">📋 Copy Canvas / LMS Card</button><button class="outline-action qr-toggle-btn" type="button" data-toggle-qr style="font-weight:700">📱 Project QR Code</button></div><div id="assignment-qr-box" class="assignment-qr-box" hidden style="margin-top:0.75rem; background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:12px; text-align:center; max-width:280px"><img class="assignment-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(url.href)}" alt="QR Code for ${escapeHtml(label)}" width="180" height="180" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"/><p class="qr-offline-msg" style="display:none; color:#64748b; font-size:0.85rem">QR code image requires internet. Use student link above.</p><p style="margin:6px 0 0; font-size:0.8rem; color:#475569; font-weight:600">Scan with tablet/Chromebook camera</p></div><label class="inline-check" style="margin-top:0.75rem"><input type="checkbox" id="packet-key"/> Add a separate teacher answer-key page to the printed packet</label><p class="family-message">At home: open the link, choose your local profile, and complete a set. Use “See it & build it” when you need a visual explanation. Tell someone one strategy you used.</p>`;
+    result.innerHTML = `<h3>${escapeHtml(label)}</h3><p>Grade ${grade} · ${selected.size ? `${selected.size} skill${selected.size === 1 ? '' : 's'} · ${count} problems each visit` : 'game only'}${assignment.game ? ` · Game: ${escapeHtml(games.find((g) => g.id === assignment.game)?.name || assignment.game)}` : ''}. New numbers are generated each time.</p><label for="assignment-link">Student link<input id="assignment-link" readonly value="${escapeHtml(url.href)}"/></label><div class="button-row"><button class="primary-action" type="button" data-launch-assignment>Try this assignment</button><button class="outline-action" type="button" data-copy-assignment>Copy student link</button><button class="outline-action" type="button" data-print-packet>Print a five-day packet</button><button class="outline-action" type="button" data-print-language-pack>Print the language pack</button></div><div class="lms-share-row" style="margin-top:0.75rem; padding-top:0.75rem; border-top:1px dashed #cbd5e1; display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center"><a class="outline-action lms-share-btn" href="https://classroom.google.com/share?url=${encodeURIComponent(url.href)}&title=${encodeURIComponent(label)}" target="_blank" rel="noopener" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; font-weight:700">🏫 Google Classroom</a><button class="outline-action lms-embed-btn" type="button" data-copy-lms-embed style="font-weight:700">📋 Copy Canvas / LMS Card</button><button class="outline-action qr-toggle-btn" type="button" data-toggle-qr style="font-weight:700">📱 Project QR Code</button></div><div id="assignment-qr-box" class="assignment-qr-box" hidden style="margin-top:0.75rem; background:#ffffff; border:1px solid #cbd5e1; border-radius:8px; padding:12px; text-align:center; max-width:280px">${qrPanel(url.href, { label: "Fluency Lab assignment QR code", lang: language })}<p style="margin:6px 0 0; font-size:0.8rem; color:#475569; font-weight:600">Scan with tablet/Chromebook camera</p></div><label class="inline-check" style="margin-top:0.75rem"><input type="checkbox" id="packet-key"/> Add a separate teacher answer-key page to the printed packet</label><p class="family-message">At home: open the link, choose your local profile, and complete a set. Use “See it & build it” when you need a visual explanation. Tell someone one strategy you used.</p>`;
     result.scrollIntoView({ behavior: "smooth", block: "start" });
   };
   container.onclick = async (event) => {
@@ -219,7 +265,7 @@ export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, o
     if (event.target.closest("[data-launch-assignment]") && assignment) onLaunch(assignment);
     if (event.target.closest("[data-print-language-pack]") && assignment) onPrint(languagePackHtml(assignment.keys));
     if (event.target.closest("[data-print-packet]") && assignment) onPrint(printablePacket(assignment, { includeKey: container.querySelector("#packet-key").checked }));
-    if (event.target.closest("[data-print-family]")) { const href = container.querySelector("#assignment-link")?.value || ""; const es = language === "es"; const qr = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(href)}`; onPrint(`<article class="packet-page"><h1>${es ? "Matemáticas en familia esta noche" : "Family Math Tonight"}</h1><h2>${es ? "Grado" : "Grade"} ${grade} · ${escapeHtml([...selected][0] || "")}</h2><p>${es ? "Escanea el código o abre el enlace. Elige un perfil local y completa la sesión a tu ritmo." : "Scan the code or open the link. Choose a local profile and complete the session at your own pace."}</p><img src="${qr}" alt="${es ? "Código QR para la práctica familiar" : "QR code for family practice"}" width="180" height="180"/><p><a href="${escapeHtml(href)}">${escapeHtml(href)}</a></p><p>${es ? "Pregunta: ¿Qué notaste? ¿Cómo lo sabes?" : "Ask: What did you notice? How do you know?"}</p><p>${es ? "Celebra la estrategia que usó el estudiante." : "Notice and celebrate the learner’s strategy."}</p></article>`); }
+    if (event.target.closest("[data-print-family]")) { const href = container.querySelector("#assignment-link")?.value || ""; const skillId = [...selected][0]?.split(":").slice(1).join(":") || ""; const qrHref = assignmentUrl({ version: 1, grade, keys: [...selected], count: count === 5 ? 5 : 10, mode, lang: language, challenge }); const es = language === "es"; const qr = qrPanel(qrHref, { label: es ? "Código QR para la práctica familiar" : "QR code for family practice", lang: language, size: 180 }); onPrint(`<article class="packet-page"><h1>${es ? "Matemáticas en familia esta noche" : "Family Math Tonight"}</h1><h2>${es ? "Grado" : "Grade"} ${grade} · ${escapeHtml(skillId)}</h2><p>${es ? "Escanea el código para abrir esta destreza o abre el enlace para iniciar la sesión familiar completa." : "Scan the code to open this skill or open the link to start the full family session."}</p>${qr}<p><a href="${escapeHtml(href)}">${escapeHtml(href)}</a></p><p>${es ? "Pregunta: ¿Qué notaste? ¿Cómo lo sabes?" : "Ask: What did you notice? How do you know?"}</p><p>${es ? "Celebra la estrategia que usó el estudiante." : "Notice and celebrate the learner’s strategy."}</p></article>`); }
 
     if (event.target.closest("[data-copy-assignment]")) {
       const input = container.querySelector("#assignment-link");

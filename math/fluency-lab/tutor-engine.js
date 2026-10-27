@@ -11,6 +11,45 @@ export const localDay = (time = Date.now()) => {
 };
 export const emptyTutor = () => ({ version: 2, records: {}, mistakes: [], diagnostics: {}, sessions: [] });
 
+const RECENT_WINDOW = 20;
+const MIN_CALM_RESPONSE_MS = 600;
+const MAX_CALM_RESPONSE_MS = 5 * 60 * 1000;
+const STRATEGIES = new Set(["visual", "decomposition", "fact", "mental", "symbolic"]);
+const normalizeStrategies = (value) => {
+  const values = Array.isArray(value) ? value : value == null ? [] : [value];
+  return [...new Set(values.map((entry) => String(entry).trim().toLowerCase()).filter((entry) => STRATEGIES.has(entry)))];
+};
+const median = (values) => {
+  if (!values.length) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[middle] : Math.round((sorted[middle - 1] + sorted[middle]) / 2);
+};
+function summarizeMetrics(record) {
+  const recent = Array.isArray(record.recent) ? record.recent : [];
+  const independent = recent.filter((entry) => entry.independent && entry.level >= 1);
+  const strategies = [...new Set([
+    ...(Array.isArray(record.strategyTags) ? record.strategyTags : []),
+    ...recent.flatMap((entry) => Array.isArray(entry.strategies) ? entry.strategies : []),
+  ].filter((entry) => STRATEGIES.has(entry)))];
+  const calmSamples = independent.filter((entry) => entry.paceEligible && Number.isFinite(entry.responseMs)).map((entry) => entry.responseMs);
+  const recentHalf = calmSamples.slice(-6);
+  const previousHalf = calmSamples.slice(-12, -6);
+  const currentMedian = median(recentHalf);
+  const previousMedian = median(previousHalf);
+  const change = previousMedian && currentMedian ? (currentMedian - previousMedian) / previousMedian : 0;
+  // Pace is descriptive, never a mastery score: taking more time is not labelled as failure.
+  const trend = previousHalf.length < 3 || recentHalf.length < 3 || Math.abs(change) < 0.15
+    ? "steady"
+    : change > 0 ? "more_time" : "less_time";
+  const correct = independent.filter((entry) => entry.correct).length;
+  return {
+    accuracy: { correct, total: independent.length, percent: independent.length ? Math.round((correct / independent.length) * 100) : null, window: RECENT_WINDOW },
+    strategyFlexibility: { strategies, count: strategies.length },
+    pace: { sampleCount: calmSamples.length, medianResponseMs: median(calmSamples), trend },
+  };
+}
+
 const FOUNDATIONS = {
   "1:add-20": ["1:make-10"], "1:subtract-20": ["1:missing-addend"],
   "1:add-10": ["0:compose-10", "0:add-sub-5"], "1:subtract-10": ["0:add-sub-5"], "1:make-10": ["0:compose-10"],
@@ -75,6 +114,24 @@ export function prerequisites(skill) {
   const earlier = ALL_SKILLS.filter((candidate) => candidate.grade < skill.grade && baseGenerator(candidate) === baseGenerator(skill) && opsOf(candidate.config).some((op) => opsOf(skill.config).includes(op)));
   return earlier.length ? [earlier.at(-1)] : [];
 }
+
+// A detached graph keeps the shared curriculum catalog immutable while exposing
+// both directions for path maps, bridge practice, and enrichment recommendations.
+const graphNodes = Object.fromEntries(ALL_SKILLS.map((skill) => [skillKey(skill), {
+  prerequisiteSkills: prerequisites(skill).map(skillKey),
+  enrichmentSkills: [],
+}]));
+for (const [skill, edges] of Object.entries(graphNodes)) {
+  for (const prerequisite of edges.prerequisiteSkills) graphNodes[prerequisite]?.enrichmentSkills.push(skill);
+}
+export const prerequisiteGraph = Object.freeze(Object.fromEntries(Object.entries(graphNodes).map(([key, edges]) => [key, Object.freeze({
+  prerequisiteSkills: Object.freeze([...edges.prerequisiteSkills]),
+  enrichmentSkills: Object.freeze([...edges.enrichmentSkills].sort()),
+})])));
+export const withSkillEdges = (skill) => ({
+  ...skill,
+  ...(prerequisiteGraph[skillKey(skill)] || { prerequisiteSkills: [], enrichmentSkills: [] }),
+});
 
 export function evidence(tutor, skill, now = Date.now()) {
   const record = tutor.records[skillKey(skill)] || {};
@@ -281,7 +338,17 @@ export function recordAnswer(tutor, skill, result, now = Date.now()) {
   const key = skillKey(skill);
   const record = tutor.records[key] || { recent: [], independentTotal: 0, supportedTotal: 0, interval: 0 };
   const independent = Boolean(result.independent);
-  record.recent = [...(record.recent || []), { correct: Boolean(result.correct), independent, level: result.level ?? 1, at: now }].slice(-20);
+  const level = [0, 1, 2].includes(result.level) ? result.level : 1;
+  const strategies = normalizeStrategies(result.strategyTags ?? result.strategy);
+  const responseMs = Number(result.responseMs ?? result.responseTimeMs);
+  const paceEligible = independent && result.calm !== false && Number.isFinite(responseMs) && responseMs >= MIN_CALM_RESPONSE_MS && responseMs <= MAX_CALM_RESPONSE_MS;
+  record.strategyTags = [...new Set([...(record.strategyTags || []).filter((tag) => STRATEGIES.has(tag)), ...strategies])];
+  record.recent = [...(record.recent || []), {
+    correct: Boolean(result.correct), independent, level, at: now,
+    ...(strategies.length ? { strategies } : {}),
+    ...(Number.isFinite(responseMs) ? { responseMs, paceEligible } : {}),
+  }].slice(-RECENT_WINDOW);
+  record.metrics = summarizeMetrics(record);
   if (independent) record.independentTotal = (record.independentTotal || 0) + 1;
   else record.supportedTotal = (record.supportedTotal || 0) + 1;
   const previousDay = record.lastSuccessfulDay;
@@ -433,11 +500,25 @@ export function sanitizeTutor(value) {
   for (const skill of ALL_SKILLS) {
     const key = skillKey(skill); const record = value.records?.[key];
     if (!record || typeof record !== "object") continue;
+    const recent = (Array.isArray(record.recent) ? record.recent : []).filter((entry) => entry && Number.isFinite(entry.at) && typeof entry.correct === "boolean" && typeof entry.independent === "boolean").slice(-RECENT_WINDOW).map((entry) => {
+      const level = [0, 1, 2].includes(entry.level) ? entry.level : 1;
+      const responseMs = Number(entry.responseMs);
+      const validResponse = Number.isFinite(responseMs) && responseMs >= MIN_CALM_RESPONSE_MS && responseMs <= MAX_CALM_RESPONSE_MS;
+      const strategies = normalizeStrategies(entry.strategies);
+      return {
+        correct: entry.correct, independent: entry.independent, at: entry.at, level,
+        ...(strategies.length ? { strategies } : {}),
+        ...(validResponse ? { responseMs, paceEligible: Boolean(entry.paceEligible && entry.independent && level >= 1) } : {}),
+      };
+    });
+    const strategyTags = normalizeStrategies(record.strategyTags);
     clean.records[key] = {
-      recent: (Array.isArray(record.recent) ? record.recent : []).filter((entry) => entry && Number.isFinite(entry.at) && typeof entry.correct === "boolean" && typeof entry.independent === "boolean").slice(-20).map((entry) => ({ correct: entry.correct, independent: entry.independent, at: entry.at, level: [0, 1, 2].includes(entry.level) ? entry.level : 1 })),
+      recent,
       independentTotal: Math.max(0, Number(record.independentTotal) || 0), supportedTotal: Math.max(0, Number(record.supportedTotal) || 0),
       dueAt: Number.isFinite(record.dueAt) ? record.dueAt : null, interval: Math.min(14, Math.max(0, Number(record.interval) || 0)),
       lastAt: Number.isFinite(record.lastAt) ? record.lastAt : null, lastSuccessfulDay: String(record.lastSuccessfulDay || "").slice(0, 10), lessonCompleted: Boolean(record.lessonCompleted),
+      strategyTags: [...new Set([...strategyTags, ...recent.flatMap((entry) => entry.strategies || [])])],
+      metrics: summarizeMetrics({ recent, strategyTags }),
     };
   }
   clean.mistakes = (Array.isArray(value.mistakes) ? value.mistakes : []).filter((entry) => entry && findSkill(entry.key) && typeof entry.question === "string").slice(0, 60).map((entry, index) => ({
