@@ -131,8 +131,6 @@ body { background: var(--fp-paper); color: var(--fp-ink-soft); font-family: var(
 h1, section h2 { font-family: var(--fp-serif); color: var(--fp-ink); }
 a { color: var(--fp-unit-ink); }
 .wrap { max-width: 1040px; padding: 0 24px 64px; background: transparent; box-shadow: none; border-radius: 0; overflow: visible; margin: 0 auto; }
-main { display: grid; grid-template-columns: minmax(0, 1fr); column-gap: 40px; }
-main > * { grid-column: 1; min-width: 0; }
 
 /* Letter head: ink title on paper, one unit-coloured rule. */
 .hero-header { background: none; padding: 40px 0 24px; border-top: 6px solid var(--fp-unit); border-bottom: 1px solid var(--fp-rule); text-align: left; color: var(--fp-ink); }
@@ -154,19 +152,12 @@ section h2::before { content: ""; width: 26px; height: 26px; flex: none; backgro
 .section-practice h2 { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M4%2020l1-5L16%204l4%204L9%2019zM14%206l4%204'%2F%3E%3C%2Fsvg%3E"); }
 .section-stuck h2 { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Ccircle%20cx%3D'12'%20cy%3D'12'%20r%3D'9'%2F%3E%3Ccircle%20cx%3D'12'%20cy%3D'12'%20r%3D'3.5'%2F%3E%3Cpath%20d%3D'M5.6%205.6l3.9%203.9M14.5%2014.5l3.9%203.9M18.4%205.6l-3.9%203.9M9.5%2014.5l-3.9%203.9'%2F%3E%3C%2Fsvg%3E"); }
 .section-frames h2 { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M5%207h14M5%2012h14M5%2017h9'%2F%3E%3C%2Fsvg%3E"); }
+.section-percent h2 { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M19%205L5%2019'%2F%3E%3Ccircle%20cx%3D'7'%20cy%3D'7'%20r%3D'2.5'%2F%3E%3Ccircle%20cx%3D'17'%20cy%3D'17'%20r%3D'2.5'%2F%3E%3C%2Fsvg%3E"); }
+.section-deal h2 { --ico: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M3%2012V4h8l10%2010-8%208z'%2F%3E%3Ccircle%20cx%3D'7.5'%20cy%3D'8.5'%20r%3D'1'%2F%3E%3C%2Fsvg%3E"); }
 
 /* Spanish sits on its own tinted line, not grey italics. */
 .es-text { font-style: normal; color: var(--fp-ink-soft); background: var(--fp-unit-tint); border-left: 3px solid var(--fp-unit); border-radius: 0 6px 6px 0; padding: 4px 12px; }
 span.es-text { display: block; margin-top: 8px; }
-
-.glossary { margin: 0; }
-.gloss-item { padding: 14px 0; border-bottom: 1px solid var(--fp-rule); }
-.gloss-item:last-child { border-bottom: 0; }
-.gloss-item dt { font-size: 21px; }
-.gloss-item .gloss-es { color: var(--fp-muted); font-weight: 600; }
-.gloss-item .gloss-es::before { content: "· "; }
-.gloss-item dd { margin: 4px 0 0; font-size: 18px; }
-.gloss-item dd.es-text { font-size: 17px; margin-top: 8px; }
 
 /* Three surfaces only: plain card, unit-tint key idea, one highlight for the grown-up note. */
 .callout { border: 1px solid var(--fp-rule); border-radius: 10px; padding: 18px 22px; background: var(--fp-page); font-size: 20px; line-height: 1.55; }
@@ -179,31 +170,91 @@ span.es-text { display: block; margin-top: 8px; }
 .callout--work summary { cursor: pointer; color: var(--fp-unit-ink); font-weight: 600; }
 .callout--work details p { margin: 12px 0 0; }
 .answer { background: var(--fp-unit-tint); border: 1px solid var(--fp-unit); color: var(--fp-ink); font-size: 20px; }
-.frame { background: var(--fp-wash); border: 0; border-bottom: 1px solid var(--fp-rule); border-radius: 0; padding: 12px 14px; margin: 0; font-family: var(--fp-serif); color: var(--fp-ink); }
-
-ol.choices { margin: 16px 0 8px; list-style: none; padding-left: 0; }
-ol.choices li { background: var(--fp-page); border: 1px solid var(--fp-rule); border-radius: 10px; padding: 14px 18px; margin-bottom: 10px; font-weight: 600; font-size: 19px; color: var(--fp-ink); }
-
-.welcome-note { background: var(--fp-unit-tint); border: 0; border-radius: 10px; padding: 20px 24px; }
-.welcome-note strong { display: block; font-family: var(--fp-serif); font-size: 24px; color: var(--fp-ink); margin-bottom: 6px; }
-.welcome-note p { margin: 0; color: var(--fp-ink); font-size: 19px; line-height: 1.5; }
 
 footer { color: var(--fp-muted); }
-a:focus-visible, summary:focus-visible { outline: 3px solid var(--fp-unit-ink); outline-offset: 3px; }
+a:focus-visible, summary:focus-visible, button:focus-visible { outline: 3px solid var(--fp-unit-ink); outline-offset: 3px; }
 
-/* Wide screens: the "if they get stuck" note moves to the right margin, like a family letter. */
-@media (min-width: 980px) {
-  main { grid-template-columns: minmax(0, 1fr) 280px; }
-  main > .hero-header { grid-column: 1 / -1; }
-  main > .section-stuck { grid-column: 2; grid-row: 2 / span 7; align-self: start; position: sticky; top: 16px; border-bottom: 0; padding-top: 32px; }
-  main > .section-stuck h2 { font-size: 20px; }
-  main > .section-stuck .callout { font-size: 17px; padding: 16px 18px; }
-}
 @media (max-width: 560px) {
   .wrap { padding: 0 18px 48px; }
   .hero-header { padding: 28px 0 20px; }
   section { padding: 26px 0; }
   section h2 { font-size: 23px; }
+}
+
+:root { --lab-scale: 1; }
+html { font-size: calc(100% * var(--lab-scale)); -webkit-text-size-adjust: 100%; }
+
+/* ACCESS Lab Top Bar */
+.lab-top { background: var(--fp-page); border-bottom: 1px solid var(--fp-rule); padding: 10px 24px; position: sticky; top: 0; z-index: 50; }
+.lab-top-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.brand-cluster { display: flex; align-items: center; gap: 12px; }
+.brand-mark { width: 36px; height: 36px; border-radius: 9px; background: var(--fp-unit); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 1rem; letter-spacing: -0.02em; flex: none; }
+.brand-title { font-size: 1.1rem; font-weight: 700; color: var(--fp-unit-ink); line-height: 1.2; display: block; }
+.brand-subtitle { font-size: 0.8rem; color: var(--fp-muted); display: block; margin-top: 1px; }
+.lab-controls { display: flex; align-items: center; gap: 8px; }
+.pill-btn { appearance: none; border: 1px solid var(--fp-rule); background: var(--fp-wash); color: var(--fp-ink); font-family: inherit; font-size: 0.9rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; cursor: pointer; min-height: 36px; transition: background 0.15s, border-color 0.15s; }
+.pill-btn:hover { background: var(--fp-unit-tint); border-color: var(--fp-unit); color: var(--fp-unit-ink); }
+.pill-btn:focus-visible { outline: 3px solid var(--fp-unit-ink); outline-offset: 2px; }
+
+/* Studio Master-Detail Shell */
+.lab-shell { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 28px; align-items: start; }
+.lab-rail { position: sticky; top: 72px; display: flex; flex-direction: column; gap: 8px; z-index: 20; }
+.rail-heading { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fp-muted); margin: 2px 6px 4px; }
+.rail-item { appearance: none; border: 1px solid var(--fp-rule); background: var(--fp-page); border-radius: 10px; padding: 10px 12px; text-align: left; cursor: pointer; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: center; color: var(--fp-ink); font-family: inherit; transition: all 0.15s ease; min-height: 50px; }
+.rail-item:hover { border-color: var(--fp-unit); background: var(--fp-wash); transform: translateX(2px); }
+.rail-item:focus-visible { outline: 3px solid var(--fp-unit-ink); outline-offset: 2px; }
+.rail-item[aria-selected="true"] { border-color: var(--fp-unit); background: var(--fp-unit-tint); box-shadow: 0 2px 8px rgba(0,0,0,0.06); transform: translateX(4px); }
+.rail-num { width: 28px; height: 28px; border-radius: 7px; background: var(--fp-wash); color: var(--fp-muted); font-weight: 700; font-size: 0.85rem; display: grid; place-items: center; transition: all 0.15s ease; }
+.rail-item[aria-selected="true"] .rail-num { background: var(--fp-unit); color: #fff; }
+.rail-content { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.rail-title { font-size: 0.94rem; font-weight: 700; line-height: 1.2; color: var(--fp-ink); }
+.rail-item[aria-selected="true"] .rail-title { color: var(--fp-unit-ink); }
+.rail-sub { font-size: 0.78rem; color: var(--fp-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Stage Card & Panels */
+.lab-stage { background: var(--fp-page); border: 1px solid var(--fp-rule); border-radius: 14px; padding: 32px 36px; box-shadow: 0 1px 3px rgba(20,30,40,0.04), 0 8px 24px rgba(20,30,40,0.04); min-height: 480px; }
+.hero-header { border-top: 0; padding-top: 0; margin-bottom: 20px; }
+.tab-panel:not(.active) { display: none; }
+.tab-panel.active { display: block; animation: fpPanelFade 0.2s ease-out; }
+@keyframes fpPanelFade { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Stage Navigation Stepper */
+.stage-nav { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--fp-rule); padding-top: 22px; margin-top: 36px; gap: 16px; flex-wrap: wrap; }
+.stage-nav-btn { appearance: none; border: 1px solid var(--fp-rule); background: var(--fp-wash); color: var(--fp-ink); font-family: inherit; font-size: 0.94rem; font-weight: 600; padding: 9px 18px; border-radius: 9px; cursor: pointer; min-height: 46px; transition: all 0.15s ease; }
+.stage-nav-btn:hover:not(:disabled) { border-color: var(--fp-unit); background: var(--fp-unit-tint); color: var(--fp-unit-ink); }
+.stage-nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.stage-nav-btn.primary { background: var(--fp-unit); border-color: var(--fp-unit); color: #fff; }
+.stage-nav-btn.primary:hover:not(:disabled) { background: var(--fp-unit-ink); }
+.stage-counter { font-size: 0.9rem; font-weight: 600; color: var(--fp-muted); }
+
+.more-practice { margin: 20px 0 0; font-weight: 600; }
+.glossary { margin: 0; }
+.gloss-item { padding: 14px 0; border-bottom: 1px solid var(--fp-rule); }
+.gloss-item:last-child { border-bottom: 0; }
+.gloss-item dt { font-size: 21px; }
+.gloss-item .gloss-es { color: var(--fp-muted); font-weight: 600; }
+.gloss-item .gloss-es::before { content: "· "; }
+.gloss-item dd { margin: 4px 0 0; font-size: 18px; }
+.gloss-item dd.es-text { font-size: 17px; margin-top: 8px; }
+.frame { background: var(--fp-wash); border: 0; border-bottom: 1px solid var(--fp-rule); border-radius: 0; padding: 12px 14px; margin: 0; font-family: var(--fp-serif); color: var(--fp-ink); }
+
+ol.choices { margin: 16px 0 8px; list-style: none; padding-left: 0; }
+ol.choices li { background: var(--fp-page); border: 1px solid var(--fp-rule); border-radius: 10px; padding: 14px 18px; margin-bottom: 10px; font-weight: 600; font-size: 19px; color: var(--fp-ink); }
+
+@media (max-width: 820px) {
+  .lab-shell { grid-template-columns: 1fr; gap: 16px; }
+  .lab-rail { position: sticky; top: 56px; z-index: 30; flex-direction: row; overflow-x: auto; padding: 6px 0 10px; background: var(--fp-paper); margin: 0 -18px; padding-left: 18px; padding-right: 18px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+  .rail-heading { display: none; }
+  .rail-item { flex: 0 0 auto; scroll-snap-align: start; grid-template-columns: auto auto; padding: 8px 14px; border-radius: 999px; min-height: 44px; }
+  .rail-sub { display: none; }
+  .lab-stage { padding: 22px 18px; }
+}
+
+@media print {
+  .lab-top, .lab-rail, .stage-nav, .no-print { display: none !important; }
+  .lab-shell { display: block; }
+  .lab-stage { border: none; padding: 0; box-shadow: none; }
+  .tab-panel { display: block !important; }
 }
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
@@ -214,26 +265,97 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--fp-unit-ink); 
   <!-- mobile-access-injected:end -->
 </head>
 <body>
+<header class="lab-top no-print">
+  <div class="lab-top-inner">
+    <div class="brand-cluster">
+      <span class="brand-mark" aria-hidden="true">FM</span>
+      <div>
+        <span class="brand-title">Family Math Studio</span>
+        <span class="brand-subtitle">Grade 6 Math · Neft Teacher</span>
+      </div>
+    </div>
+    <div class="lab-controls">
+      <button type="button" class="pill-btn" id="btnFontDown" aria-label="Decrease text size">A−</button>
+      <button type="button" class="pill-btn" id="btnFontUp" aria-label="Increase text size">A+</button>
+    </div>
+  </div>
+</header>
 <div class="wrap">
-<main id="main">
-
+  <div class="lab-shell">
+    
+<nav class="lab-rail" role="tablist" aria-label="Family Lesson Stages">
+  <div class="rail-heading">Lesson Steps</div>
+  
+  <button type="button" class="rail-item" role="tab" id="tab-stage-learning" aria-selected="true" aria-controls="panel-stage-learning" tabindex="0">
+    <span class="rail-num">1</span>
+    <span class="rail-content">
+      <span class="rail-title">The Big Idea</span>
+      <span class="rail-sub">What students are learning</span>
+    </span>
+  </button>
+  <button type="button" class="rail-item" role="tab" id="tab-stage-vocab" aria-selected="false" aria-controls="panel-stage-vocab" tabindex="-1">
+    <span class="rail-num">2</span>
+    <span class="rail-content">
+      <span class="rail-title">Talk &amp; Words</span>
+      <span class="rail-sub">Frames &amp; vocabulary</span>
+    </span>
+  </button>
+  <button type="button" class="rail-item" role="tab" id="tab-stage-example" aria-selected="false" aria-controls="panel-stage-example" tabindex="-1">
+    <span class="rail-num">3</span>
+    <span class="rail-content">
+      <span class="rail-title">Class Model</span>
+      <span class="rail-sub">How we did it today</span>
+    </span>
+  </button>
+  <button type="button" class="rail-item" role="tab" id="tab-stage-practice" aria-selected="false" aria-controls="panel-stage-practice" tabindex="-1">
+    <span class="rail-num">4</span>
+    <span class="rail-content">
+      <span class="rail-title">Try Together</span>
+      <span class="rail-sub">1 practice problem</span>
+    </span>
+  </button>
+  <button type="button" class="rail-item" role="tab" id="tab-stage-mission" aria-selected="false" aria-controls="panel-stage-mission" tabindex="-1">
+    <span class="rail-num">5</span>
+    <span class="rail-content">
+      <span class="rail-title">Home Mission</span>
+      <span class="rail-sub">Real-world activity</span>
+    </span>
+  </button>
+  <button type="button" class="rail-item" role="tab" id="tab-stage-stuck" aria-selected="false" aria-controls="panel-stage-stuck" tabindex="-1">
+    <span class="rail-num">6</span>
+    <span class="rail-content">
+      <span class="rail-title">When Stuck 🛟</span>
+      <span class="rail-sub">Coaching without spoilers</span>
+    </span>
+  </button>
+</nav>
+    <main class="lab-stage" id="main">
+      
 <div class="hero-header">
   <p class="eyebrow">Family Math Studio · Lesson guide <span class="es">Guía de la lección</span></p>
   <h1>Unit 7, Lesson 4: Compare and Order Integers and Rational Numbers</h1>
   <span class="std">Standard 6.NOS.8</span>
 </div>
+      
 
-<section class="section-learning">
+<section class="tab-panel active section-learning" id="panel-stage-learning" role="tabpanel" aria-labelledby="tab-stage-learning">
   <h2>What students are learning <span class="es">Qué aprenden</span></h2>
   <p class="callout callout--key"><strong>Key idea:</strong> On a number line, numbers get bigger as you go right and smaller as you go left. So -10 is less than -2, because -10 is farther left. To put numbers in order, picture where each one sits on the line.<span class="es-text" lang="es">Idea clave: En la recta numérica, los números se hacen más grandes hacia la derecha y más pequeños hacia la izquierda. Por eso -10 es menor que -2, porque -10 está más a la izquierda. Para ordenar números, imagina dónde queda cada uno en la recta.</span></p>
 </section>
 
-<section class="section-mission" data-mission>
-  <h2>Try at home <span class="es">Para hacer en casa</span></h2>
-  <div class="callout"><p>Draw a number line from −10 to 10. Write these numbers on it: −7, 3, −2, 0 and −9. Put them in order from least to greatest, then write two true comparison sentences using &lt; or &gt;.</p><p class="es-text" lang="es">Dibuja una recta numérica de −10 a 10. Escribe en ella estos números: −7, 3, −2, 0 y −9. Ordénalos de menor a mayor y luego escribe dos comparaciones verdaderas con &lt; o &gt;.</p></div>
-  <p><strong>Talk about it:</strong></p><p>Which number is farther left? Which is less?</p><p class="es-text" lang="es">¿Cuál número está más a la izquierda? ¿Cuál es menor?</p>
+<section class="tab-panel section-vocab" id="panel-stage-vocab" role="tabpanel" aria-labelledby="tab-stage-vocab">
+  <h2>Words to know <span class="es">Palabras clave</span></h2>
+  <dl class="glossary" data-glossary><div class="gloss-item"><dt><span class="kw">Compare and Order Integers</span> <span class="gloss-es" lang="es">Comparar y ordenar enteros</span></dt><dd>Tell which integers are bigger. Then put them in order.</dd><dd class="es-text" lang="es">Decir cuál entero es mayor y ponerlos en orden.</dd></div><div class="gloss-item"><dt><span class="kw">Number line</span> <span class="gloss-es" lang="es">Recta numérica</span></dt><dd>A line with numbers in order, left to right.</dd><dd class="es-text" lang="es">Una recta con los números en orden, de izquierda a derecha.</dd></div><div class="gloss-item"><dt><span class="kw">Compare</span> <span class="gloss-es" lang="es">Comparar</span></dt><dd>Look at two amounts. See which is more, less, or the same.</dd><dd class="es-text" lang="es">Mirar dos cantidades para ver cuál es mayor, menor o igual.</dd></div><div class="gloss-item"><dt><span class="kw">Order</span> <span class="gloss-es" lang="es">Ordenar</span></dt><dd>Put numbers from smallest to biggest, or the reverse.</dd><dd class="es-text" lang="es">Poner números del menor al mayor, o al revés.</dd></div><div class="gloss-item"><dt><span class="kw">Greater than</span> <span class="gloss-es" lang="es">Mayor que</span></dt><dd>The &gt; sign. It shows one number is bigger.</dd><dd class="es-text" lang="es">El signo &gt;. Muestra que un número es mayor.</dd></div><div class="gloss-item"><dt><span class="kw">Less than</span> <span class="gloss-es" lang="es">Menor que</span></dt><dd>The &lt; sign. It shows one number is smaller.</dd><dd class="es-text" lang="es">El signo &lt;. Muestra que un número es menor.</dd></div><div class="gloss-item"><dt><span class="kw">Negative integer</span> <span class="gloss-es" lang="es">Entero negativo</span></dt><dd>A whole number less than zero, like −5.</dd><dd class="es-text" lang="es">Un número entero menor que cero, como −5.</dd></div><div class="gloss-item"><dt><span class="kw">Integer</span> <span class="gloss-es" lang="es">Número entero</span></dt><dd>A whole number or its opposite, like 2 and −2.</dd><dd class="es-text" lang="es">Un número de contar, su opuesto o el cero, como 2, −2 y 0.</dd></div><div class="gloss-item"><dt><span class="kw">Inequality</span> <span class="gloss-es" lang="es">Desigualdad</span></dt><dd>A math sentence that compares sides with &lt;, &gt;, ≤, or ≥.</dd><dd class="es-text" lang="es">Una oración matemática que compara lados con &lt;, &gt;, ≤ o ≥.</dd></div></dl>
+  <div class="section-frames" style="margin-top:24px;">
+    <h3 style="font-size:20px;margin:0 0 10px;color:var(--fp-ink);">Sentence starters <span class="es" style="font-size:15px;color:var(--fp-muted);">Frases para empezar</span></h3>
+    <p class="frame">I know ___ because ___.</p><p class="frame">First, I ___. Then, I ___.</p><p class="frame">The answer is ___, so ___.</p>
+  </div>
 </section>
 
+<section class="tab-panel section-example" id="panel-stage-example" role="tabpanel" aria-labelledby="tab-stage-example">
+  <h2>How we did it in class today <span class="es">Cómo lo hicimos hoy en clase</span></h2>
+  <div class="callout"><ol><li>I will compare -7 and -5. They are both negative, so I look at the number line.</li><li>-7 is 7 steps left of zero. -5 is only 5 steps left of zero.</li><li>-7 is farther to the left, so -7 is the smaller number.</li><li>I write -7 &lt; -5. The open side of the symbol points to the bigger number, -5.</li></ol></div>
+  
 <section class="section-tool tool-section">
   <h2>Play with today's math <span class="es">Jueguen con las matemáticas</span></h2>
   <p><strong>Interactive Lesson Model</strong> — This is the exact same interactive tool your student used in class today. Change the numbers and watch what happens!</p>
@@ -241,15 +363,9 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--fp-unit-ink); 
   <div class="tool-host" data-lesson-model-host><div class="interactive-visual" data-visual="number-line-explorer" data-config="{&quot;kind&quot;:&quot;number-line-explorer&quot;,&quot;mode&quot;:&quot;compare&quot;,&quot;max&quot;:10,&quot;start&quot;:-6,&quot;startB&quot;:-2,&quot;intro&quot;:&quot;Drag both points to compare integers. The one farther right is greater — even when a more-negative number is farther from zero.&quot;}" role="group" aria-label="Interactive Compare and Order Integers and Rational Numbers" style="margin:var(--sp-3) 0;"><noscript><div class="interactive-visual-fallback">Turn on JavaScript to use this tool. The steps above work on paper too.</div></noscript></div></div>
   <p class="muted-note">Works on a phone, a tablet, or a computer. Nothing to install, nothing to sign in to.</p>
 </section>
-<section class="section-vocab">
-  <h2>Words to know <span class="es">Palabras clave</span></h2>
-  <dl class="glossary" data-glossary><div class="gloss-item"><dt><span class="kw">Compare and Order Integers</span> <span class="gloss-es" lang="es">Comparar y ordenar enteros</span></dt><dd>Tell which integers are bigger. Then put them in order.</dd><dd class="es-text" lang="es">Decir cuál entero es mayor y ponerlos en orden.</dd></div><div class="gloss-item"><dt><span class="kw">Number line</span> <span class="gloss-es" lang="es">Recta numérica</span></dt><dd>A line with numbers in order, left to right.</dd><dd class="es-text" lang="es">Una recta con los números en orden, de izquierda a derecha.</dd></div><div class="gloss-item"><dt><span class="kw">Compare</span> <span class="gloss-es" lang="es">Comparar</span></dt><dd>Look at two amounts. See which is more, less, or the same.</dd><dd class="es-text" lang="es">Mirar dos cantidades para ver cuál es mayor, menor o igual.</dd></div><div class="gloss-item"><dt><span class="kw">Order</span> <span class="gloss-es" lang="es">Ordenar</span></dt><dd>Put numbers from smallest to biggest, or the reverse.</dd><dd class="es-text" lang="es">Poner números del menor al mayor, o al revés.</dd></div><div class="gloss-item"><dt><span class="kw">Greater than</span> <span class="gloss-es" lang="es">Mayor que</span></dt><dd>The &gt; sign. It shows one number is bigger.</dd><dd class="es-text" lang="es">El signo &gt;. Muestra que un número es mayor.</dd></div><div class="gloss-item"><dt><span class="kw">Less than</span> <span class="gloss-es" lang="es">Menor que</span></dt><dd>The &lt; sign. It shows one number is smaller.</dd><dd class="es-text" lang="es">El signo &lt;. Muestra que un número es menor.</dd></div><div class="gloss-item"><dt><span class="kw">Negative integer</span> <span class="gloss-es" lang="es">Entero negativo</span></dt><dd>A whole number less than zero, like −5.</dd><dd class="es-text" lang="es">Un número entero menor que cero, como −5.</dd></div><div class="gloss-item"><dt><span class="kw">Integer</span> <span class="gloss-es" lang="es">Número entero</span></dt><dd>A whole number or its opposite, like 2 and −2.</dd><dd class="es-text" lang="es">Un número de contar, su opuesto o el cero, como 2, −2 y 0.</dd></div><div class="gloss-item"><dt><span class="kw">Inequality</span> <span class="gloss-es" lang="es">Desigualdad</span></dt><dd>A math sentence that compares sides with &lt;, &gt;, ≤, or ≥.</dd><dd class="es-text" lang="es">Una oración matemática que compara lados con &lt;, &gt;, ≤ o ≥.</dd></div></dl>
 </section>
-<section class="section-example">
-  <h2>How we did it in class today <span class="es">Cómo lo hicimos hoy en clase</span></h2>
-  <div class="callout"><ol><li>I will compare -7 and -5. They are both negative, so I look at the number line.</li><li>-7 is 7 steps left of zero. -5 is only 5 steps left of zero.</li><li>-7 is farther to the left, so -7 is the smaller number.</li><li>I write -7 &lt; -5. The open side of the symbol points to the bigger number, -5.</li></ol></div>
-</section>
-<section class="section-practice">
+
+<section class="tab-panel section-practice" id="panel-stage-practice" role="tabpanel" aria-labelledby="tab-stage-practice">
   <h2>Try this together <span class="es">Inténtenlo juntos</span></h2>
   <p class="sub" style="margin-top:-6px;">Pick one question to talk about. You don't need to do them all!</p>
   <div class="callout callout--work">
@@ -261,21 +377,128 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--fp-unit-ink); 
            <p>The answer is: <strong class="answer">-6, -1, 0, 4, 9</strong></p>
          </details>
        </div>
+  
 </section>
-<section class="section-stuck">
+
+<section class="tab-panel section-mission" id="panel-stage-mission" role="tabpanel" aria-labelledby="tab-stage-mission" data-mission>
+  <h2>Try at home <span class="es">Para hacer en casa</span></h2>
+  <div class="callout"><p>Draw a number line from −10 to 10. Write these numbers on it: −7, 3, −2, 0 and −9. Put them in order from least to greatest, then write two true comparison sentences using &lt; or &gt;.</p><p class="es-text" lang="es">Dibuja una recta numérica de −10 a 10. Escribe en ella estos números: −7, 3, −2, 0 y −9. Ordénalos de menor a mayor y luego escribe dos comparaciones verdaderas con &lt; o &gt;.</p></div>
+  <p><strong>Talk about it:</strong></p><p>Which number is farther left? Which is less?</p><p class="es-text" lang="es">¿Cuál número está más a la izquierda? ¿Cuál es menor?</p>
+</section>
+
+<section class="tab-panel section-stuck" id="panel-stage-stuck" role="tabpanel" aria-labelledby="tab-stage-stuck">
   <h2>If they get stuck... <span class="es">Si se traban...</span></h2>
   <div class="callout callout--note">
     <p style="margin-top:0;"><strong>Watch out for this:</strong> Thinking −9 is greater than −2 because 9 is greater than 2. On the number line −9 is farther left, so −9 &lt; −2.<br><span class="es-text" lang="es">Atención: Pensar que −9 es mayor que −2 porque 9 es mayor que 2. En la recta numérica −9 está más a la izquierda, así que −9 &lt; −2.</span></p>
     <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"<br><span class="es-text" lang="es">Pregunte: «¿Puedes mostrarme cómo lo hiciste? ¿Nos saltamos algún paso?» Hablar de las matemáticas en voz alta ayuda mucho.</span></p>
   </div>
 </section>
-<section class="section-frames">
-  <h2>Sentence starters <span class="es">Frases para empezar</span></h2>
-  <p class="frame">I know ___ because ___.</p><p class="frame">First, I ___. Then, I ___.</p><p class="frame">The answer is ___, so ___.</p>
-</section>
-</main>
-<footer>Neft Teacher · Grade 6 Math · auto-generated from the lesson plan — a teacher may edit and lock this page.</footer>
+
+<footer class="stage-nav">
+  <button type="button" class="stage-nav-btn" id="btnPrev" disabled>← Previous Step</button>
+  <span id="stageCounter" class="stage-counter">Step 1 of 6</span>
+  <button type="button" class="stage-nav-btn primary" id="btnNext">Next: Talk &amp; Words →</button>
+</footer>
+    </main>
+  </div>
+  <footer>Neft Teacher · Grade 6 Math · auto-generated from the lesson plan — a teacher may edit and lock this page.</footer>
 </div>
+<div class="visually-hidden" id="liveAnnounce" role="status" aria-live="polite"></div>
+
+<script>
+(function() {
+  const tabs = Array.from(document.querySelectorAll('.rail-item'));
+  const panels = Array.from(document.querySelectorAll('.tab-panel'));
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+  const stageCounter = document.getElementById('stageCounter');
+  const liveAnnounce = document.getElementById('liveAnnounce');
+  let currentIndex = 0;
+
+  function switchTab(index) {
+    if (index < 0 || index >= tabs.length) return;
+    currentIndex = index;
+
+    tabs.forEach((tab, i) => {
+      const selected = i === index;
+      tab.setAttribute('aria-selected', selected ? 'true' : 'false');
+      tab.setAttribute('tabindex', selected ? '0' : '-1');
+    });
+
+    panels.forEach((panel, i) => {
+      if (i === index) {
+        panel.classList.add('active');
+      } else {
+        panel.classList.remove('active');
+      }
+    });
+
+    if (btnPrev && btnNext) {
+      btnPrev.disabled = (currentIndex === 0);
+      btnNext.disabled = (currentIndex === tabs.length - 1);
+      if (currentIndex < tabs.length - 1) {
+        const nextTitle = tabs[currentIndex + 1].querySelector('.rail-title').textContent;
+        btnNext.textContent = 'Next: ' + nextTitle + ' →';
+      } else {
+        btnNext.textContent = 'Completed ✓';
+      }
+    }
+
+    if (stageCounter) {
+      stageCounter.textContent = 'Step ' + (currentIndex + 1) + ' of ' + tabs.length;
+    }
+
+    if (liveAnnounce) {
+      const activeTitle = tabs[currentIndex].querySelector('.rail-title').textContent;
+      liveAnnounce.textContent = 'Step ' + (currentIndex + 1) + ': ' + activeTitle;
+    }
+
+    tabs[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => switchTab(i));
+    tab.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        const next = (i + 1) % tabs.length;
+        tabs[next].focus();
+        switchTab(next);
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const prev = (i - 1 + tabs.length) % tabs.length;
+        tabs[prev].focus();
+        switchTab(prev);
+      }
+    });
+  });
+
+  if (btnPrev) btnPrev.addEventListener('click', () => switchTab(currentIndex - 1));
+  if (btnNext) btnNext.addEventListener('click', () => {
+    if (currentIndex < tabs.length - 1) switchTab(currentIndex + 1);
+  });
+
+  let currentScale = 1.0;
+  const btnFontUp = document.getElementById('btnFontUp');
+  const btnFontDown = document.getElementById('btnFontDown');
+  if (btnFontUp) {
+    btnFontUp.addEventListener('click', () => {
+      if (currentScale < 1.35) {
+        currentScale = Math.round((currentScale + 0.08) * 100) / 100;
+        document.documentElement.style.setProperty('--lab-scale', currentScale);
+      }
+    });
+  }
+  if (btnFontDown) {
+    btnFontDown.addEventListener('click', () => {
+      if (currentScale > 0.85) {
+        currentScale = Math.round((currentScale - 0.08) * 100) / 100;
+        document.documentElement.style.setProperty('--lab-scale', currentScale);
+      }
+    });
+  }
+})();
+</script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>

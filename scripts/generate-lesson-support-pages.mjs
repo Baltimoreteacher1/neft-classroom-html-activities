@@ -264,12 +264,53 @@ footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px;}
 // Family-page-only rules. Kept out of PALETTE so the teacher-notes and student-help
 // pages do not churn for styles they never use. The tokens (paper, ink, unit hue)
 // come from assets/family-paper.css, the one source for every family surface.
-// Guide-only rules: the letter layout (text column + right-margin note), glossary,
-// answer choices and welcome note. The shared look is scripts/lib/family-paper-css.mjs.
+// Guide-only rules: studio master-detail layout, sticky rail, accessible tabs, glossary.
 const FAMILY_CSS = `
-main { display: grid; grid-template-columns: minmax(0, 1fr); column-gap: 40px; }
-main > * { min-width: 0; }
-main > * { grid-column: 1; }
+:root { --lab-scale: 1; }
+html { font-size: calc(100% * var(--lab-scale)); -webkit-text-size-adjust: 100%; }
+
+/* ACCESS Lab Top Bar */
+.lab-top { background: var(--fp-page); border-bottom: 1px solid var(--fp-rule); padding: 10px 24px; position: sticky; top: 0; z-index: 50; }
+.lab-top-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.brand-cluster { display: flex; align-items: center; gap: 12px; }
+.brand-mark { width: 36px; height: 36px; border-radius: 9px; background: var(--fp-unit); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 1rem; letter-spacing: -0.02em; flex: none; }
+.brand-title { font-size: 1.1rem; font-weight: 700; color: var(--fp-unit-ink); line-height: 1.2; display: block; }
+.brand-subtitle { font-size: 0.8rem; color: var(--fp-muted); display: block; margin-top: 1px; }
+.lab-controls { display: flex; align-items: center; gap: 8px; }
+.pill-btn { appearance: none; border: 1px solid var(--fp-rule); background: var(--fp-wash); color: var(--fp-ink); font-family: inherit; font-size: 0.9rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; cursor: pointer; min-height: 36px; transition: background 0.15s, border-color 0.15s; }
+.pill-btn:hover { background: var(--fp-unit-tint); border-color: var(--fp-unit); color: var(--fp-unit-ink); }
+.pill-btn:focus-visible { outline: 3px solid var(--fp-unit-ink); outline-offset: 2px; }
+
+/* Studio Master-Detail Shell */
+.lab-shell { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 28px; align-items: start; }
+.lab-rail { position: sticky; top: 72px; display: flex; flex-direction: column; gap: 8px; z-index: 20; }
+.rail-heading { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fp-muted); margin: 2px 6px 4px; }
+.rail-item { appearance: none; border: 1px solid var(--fp-rule); background: var(--fp-page); border-radius: 10px; padding: 10px 12px; text-align: left; cursor: pointer; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; align-items: center; color: var(--fp-ink); font-family: inherit; transition: all 0.15s ease; min-height: 50px; }
+.rail-item:hover { border-color: var(--fp-unit); background: var(--fp-wash); transform: translateX(2px); }
+.rail-item:focus-visible { outline: 3px solid var(--fp-unit-ink); outline-offset: 2px; }
+.rail-item[aria-selected="true"] { border-color: var(--fp-unit); background: var(--fp-unit-tint); box-shadow: 0 2px 8px rgba(0,0,0,0.06); transform: translateX(4px); }
+.rail-num { width: 28px; height: 28px; border-radius: 7px; background: var(--fp-wash); color: var(--fp-muted); font-weight: 700; font-size: 0.85rem; display: grid; place-items: center; transition: all 0.15s ease; }
+.rail-item[aria-selected="true"] .rail-num { background: var(--fp-unit); color: #fff; }
+.rail-content { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.rail-title { font-size: 0.94rem; font-weight: 700; line-height: 1.2; color: var(--fp-ink); }
+.rail-item[aria-selected="true"] .rail-title { color: var(--fp-unit-ink); }
+.rail-sub { font-size: 0.78rem; color: var(--fp-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Stage Card & Panels */
+.lab-stage { background: var(--fp-page); border: 1px solid var(--fp-rule); border-radius: 14px; padding: 32px 36px; box-shadow: 0 1px 3px rgba(20,30,40,0.04), 0 8px 24px rgba(20,30,40,0.04); min-height: 480px; }
+.hero-header { border-top: 0; padding-top: 0; margin-bottom: 20px; }
+.tab-panel:not(.active) { display: none; }
+.tab-panel.active { display: block; animation: fpPanelFade 0.2s ease-out; }
+@keyframes fpPanelFade { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Stage Navigation Stepper */
+.stage-nav { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--fp-rule); padding-top: 22px; margin-top: 36px; gap: 16px; flex-wrap: wrap; }
+.stage-nav-btn { appearance: none; border: 1px solid var(--fp-rule); background: var(--fp-wash); color: var(--fp-ink); font-family: inherit; font-size: 0.94rem; font-weight: 600; padding: 9px 18px; border-radius: 9px; cursor: pointer; min-height: 46px; transition: all 0.15s ease; }
+.stage-nav-btn:hover:not(:disabled) { border-color: var(--fp-unit); background: var(--fp-unit-tint); color: var(--fp-unit-ink); }
+.stage-nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.stage-nav-btn.primary { background: var(--fp-unit); border-color: var(--fp-unit); color: #fff; }
+.stage-nav-btn.primary:hover:not(:disabled) { background: var(--fp-unit-ink); }
+.stage-counter { font-size: 0.9rem; font-weight: 600; color: var(--fp-muted); }
 
 .more-practice { margin: 20px 0 0; font-weight: 600; }
 .glossary { margin: 0; }
@@ -285,34 +326,178 @@ main > * { grid-column: 1; }
 ol.choices { margin: 16px 0 8px; list-style: none; padding-left: 0; }
 ol.choices li { background: var(--fp-page); border: 1px solid var(--fp-rule); border-radius: 10px; padding: 14px 18px; margin-bottom: 10px; font-weight: 600; font-size: 19px; color: var(--fp-ink); }
 
-.welcome-note { background: var(--fp-unit-tint); border: 0; border-radius: 10px; padding: 20px 24px; }
-.welcome-note strong { display: block; font-family: var(--fp-serif); font-size: 24px; color: var(--fp-ink); margin-bottom: 6px; }
-.welcome-note p { margin: 0; color: var(--fp-ink); font-size: 19px; line-height: 1.5; }
+@media (max-width: 820px) {
+  .lab-shell { grid-template-columns: 1fr; gap: 16px; }
+  .lab-rail { position: sticky; top: 56px; z-index: 30; flex-direction: row; overflow-x: auto; padding: 6px 0 10px; background: var(--fp-paper); margin: 0 -18px; padding-left: 18px; padding-right: 18px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+  .rail-heading { display: none; }
+  .rail-item { flex: 0 0 auto; scroll-snap-align: start; grid-template-columns: auto auto; padding: 8px 14px; border-radius: 999px; min-height: 44px; }
+  .rail-sub { display: none; }
+  .lab-stage { padding: 22px 18px; }
+}
 
-/* Wide screens: the "if they get stuck" note moves to the right margin, like a family letter. */
-@media (min-width: 980px) {
-  main { grid-template-columns: minmax(0, 1fr) 280px; }
-  main > .hero-header { grid-column: 1 / -1; }
-  main > .section-stuck { grid-column: 2; grid-row: 2 / span 7; align-self: start; position: sticky; top: 16px; border-bottom: 0; padding-top: 32px; }
-  main > .section-stuck h2 { font-size: 20px; }
-  main > .section-stuck .callout { font-size: 17px; padding: 16px 18px; }
+@media print {
+  .lab-top, .lab-rail, .stage-nav, .no-print { display: none !important; }
+  .lab-shell { display: block; }
+  .lab-stage { border: none; padding: 0; box-shadow: none; }
+  .tab-panel { display: block !important; }
 }
 `;
 
-function page({ title, kind, head, body, id, scripts = "" }) {
+const FAMILY_INTERACTIVE_SCRIPT = `
+<script>
+(function() {
+  const tabs = Array.from(document.querySelectorAll('.rail-item'));
+  const panels = Array.from(document.querySelectorAll('.tab-panel'));
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+  const stageCounter = document.getElementById('stageCounter');
+  const liveAnnounce = document.getElementById('liveAnnounce');
+  let currentIndex = 0;
+
+  function switchTab(index) {
+    if (index < 0 || index >= tabs.length) return;
+    currentIndex = index;
+
+    tabs.forEach((tab, i) => {
+      const selected = i === index;
+      tab.setAttribute('aria-selected', selected ? 'true' : 'false');
+      tab.setAttribute('tabindex', selected ? '0' : '-1');
+    });
+
+    panels.forEach((panel, i) => {
+      if (i === index) {
+        panel.classList.add('active');
+      } else {
+        panel.classList.remove('active');
+      }
+    });
+
+    if (btnPrev && btnNext) {
+      btnPrev.disabled = (currentIndex === 0);
+      btnNext.disabled = (currentIndex === tabs.length - 1);
+      if (currentIndex < tabs.length - 1) {
+        const nextTitle = tabs[currentIndex + 1].querySelector('.rail-title').textContent;
+        btnNext.textContent = 'Next: ' + nextTitle + ' →';
+      } else {
+        btnNext.textContent = 'Completed ✓';
+      }
+    }
+
+    if (stageCounter) {
+      stageCounter.textContent = 'Step ' + (currentIndex + 1) + ' of ' + tabs.length;
+    }
+
+    if (liveAnnounce) {
+      const activeTitle = tabs[currentIndex].querySelector('.rail-title').textContent;
+      liveAnnounce.textContent = 'Step ' + (currentIndex + 1) + ': ' + activeTitle;
+    }
+
+    tabs[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => switchTab(i));
+    tab.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        const next = (i + 1) % tabs.length;
+        tabs[next].focus();
+        switchTab(next);
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const prev = (i - 1 + tabs.length) % tabs.length;
+        tabs[prev].focus();
+        switchTab(prev);
+      }
+    });
+  });
+
+  if (btnPrev) btnPrev.addEventListener('click', () => switchTab(currentIndex - 1));
+  if (btnNext) btnNext.addEventListener('click', () => {
+    if (currentIndex < tabs.length - 1) switchTab(currentIndex + 1);
+  });
+
+  let currentScale = 1.0;
+  const btnFontUp = document.getElementById('btnFontUp');
+  const btnFontDown = document.getElementById('btnFontDown');
+  if (btnFontUp) {
+    btnFontUp.addEventListener('click', () => {
+      if (currentScale < 1.35) {
+        currentScale = Math.round((currentScale + 0.08) * 100) / 100;
+        document.documentElement.style.setProperty('--lab-scale', currentScale);
+      }
+    });
+  }
+  if (btnFontDown) {
+    btnFontDown.addEventListener('click', () => {
+      if (currentScale > 0.85) {
+        currentScale = Math.round((currentScale - 0.08) * 100) / 100;
+        document.documentElement.style.setProperty('--lab-scale', currentScale);
+      }
+    });
+  }
+})();
+</script>`;
+
+function page({ title, kind, head, body, rail = "", id, scripts = "" }) {
+  if (kind === "family") {
+    return `<!doctype html>
+<html lang="en" data-unit="${Number.parseInt(id, 10)}">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>${esc(title)}</title>
+<!-- generated:support-page kind=family lesson=${id} — regenerate: npm run generate-support-pages -->
+<link rel="stylesheet" href="/assets/fonts/fraunces-hanken-grotesk-e8a3b5.css" />
+<style>${PALETTE}${FAMILY_PAPER}${FAMILY_LETTER_CSS}${FAMILY_CSS}</style>
+</head>
+<body>
+<header class="lab-top no-print">
+  <div class="lab-top-inner">
+    <div class="brand-cluster">
+      <span class="brand-mark" aria-hidden="true">FM</span>
+      <div>
+        <span class="brand-title">Family Math Studio</span>
+        <span class="brand-subtitle">Grade 6 Math · Neft Teacher</span>
+      </div>
+    </div>
+    <div class="lab-controls">
+      <button type="button" class="pill-btn" id="btnFontDown" aria-label="Decrease text size">A−</button>
+      <button type="button" class="pill-btn" id="btnFontUp" aria-label="Increase text size">A+</button>
+    </div>
+  </div>
+</header>
+<div class="wrap">
+  <div class="lab-shell">
+    ${rail}
+    <main class="lab-stage" id="main">
+      ${head}
+      ${body}
+    </main>
+  </div>
+  <footer>Neft Teacher · Grade 6 Math · auto-generated from the lesson plan — a teacher may edit and lock this page.</footer>
+</div>
+<div class="visually-hidden" id="liveAnnounce" role="status" aria-live="polite"></div>
+${scripts}
+</body>
+</html>`;
+  }
+
   return `<!doctype html>
-<html lang="en"${kind === "family" ? ` data-unit="${Number.parseInt(id, 10)}"` : ""}>
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex" />
 <title>${esc(title)}</title>
 <!-- generated:support-page kind=${kind} lesson=${id} — regenerate: npm run generate-support-pages -->
-${kind === "family" ? `<link rel="stylesheet" href="/assets/fonts/fraunces-hanken-grotesk-e8a3b5.css" />\n` : ""}<style>${PALETTE}${kind === "family" ? FAMILY_PAPER + FAMILY_LETTER_CSS + FAMILY_CSS : ""}</style>
+<style>${PALETTE}</style>
 </head>
 <body>
 <div class="wrap">
-${kind === "family" ? "" : `<nav class="crumbs"><a href="/curriculum/">← Curriculum Hub</a> · <a href="/lessons/${esc(id)}/">Open Lesson ${esc(id)}</a></nav>\n`}<main id="main">
+<nav class="crumbs"><a href="/curriculum/">← Curriculum Hub</a> · <a href="/lessons/${esc(id)}/">Open Lesson ${esc(id)}</a></nav>
+<main id="main">
 ${head}
 ${body}
 </main>
@@ -421,47 +606,129 @@ function familyPage(id, cfg, unit, lesson) {
   ${stdBadge}
 </div>`;
 
-  const body = `
-<section class="section-learning">
+  const stages = [
+    {
+      id: "learning",
+      title: "The Big Idea",
+      sub: "What students are learning",
+      html: `
+<section class="tab-panel active section-learning" id="panel-stage-learning" role="tabpanel" aria-labelledby="tab-stage-learning">
   <h2>What students are learning <span class="es">Qué aprenden</span></h2>
   <p class="callout callout--key"><strong>Key idea:</strong> ${esc(keyIdea)}${keyIdeaEs ? `<span class="es-text" lang="es">Idea clave: ${esc(keyIdeaEs)}</span>` : ""}</p>
-</section>
-${missionSection(corner)}
-${familyToolSection(model)}
-<section class="section-vocab">
+</section>`,
+    },
+    {
+      id: "vocab",
+      title: "Talk & Words",
+      sub: "Frames & vocabulary",
+      html: `
+<section class="tab-panel section-vocab" id="panel-stage-vocab" role="tabpanel" aria-labelledby="tab-stage-vocab">
   <h2>Words to know <span class="es">Palabras clave</span></h2>
   ${glossary(v) || `<p>See the lesson page for key words.</p>`}
-</section>
-<section class="section-example">
+  <div class="section-frames" style="margin-top:24px;">
+    <h3 style="font-size:20px;margin:0 0 10px;color:var(--fp-ink);">Sentence starters <span class="es" style="font-size:15px;color:var(--fp-muted);">Frases para empezar</span></h3>
+    ${SENTENCE_FRAMES.map((f) => `<p class="frame">${esc(f)}</p>`).join("")}
+  </div>
+</section>`,
+    },
+    {
+      id: "example",
+      title: "Class Model",
+      sub: "How we did it today",
+      html: `
+<section class="tab-panel section-example" id="panel-stage-example" role="tabpanel" aria-labelledby="tab-stage-example">
   <h2>How we did it in class today <span class="es">Cómo lo hicimos hoy en clase</span></h2>
   ${exampleHtml}
-</section>
-<section class="section-practice">
+  ${familyToolSection(model)}
+</section>`,
+    },
+    {
+      id: "practice",
+      title: "Try Together",
+      sub: "1 practice problem",
+      html: `
+<section class="tab-panel section-practice" id="panel-stage-practice" role="tabpanel" aria-labelledby="tab-stage-practice">
   <h2>Try this together <span class="es">Inténtenlo juntos</span></h2>
   <p class="sub" style="margin-top:-6px;">Pick one question to talk about. You don't need to do them all!</p>
   ${practiceHtml}
   ${wordProblemsLink(id)}
-</section>
-<section class="section-stuck">
+</section>`,
+    },
+  ];
+
+  if (corner?.mission) {
+    const pair = (p) => `<p>${esc(p.en)}</p><p class="es-text" lang="es">${esc(p.es)}</p>`;
+    stages.push({
+      id: "mission",
+      title: "Home Mission",
+      sub: "Real-world activity",
+      html: `
+<section class="tab-panel section-mission" id="panel-stage-mission" role="tabpanel" aria-labelledby="tab-stage-mission" data-mission>
+  <h2>Try at home <span class="es">Para hacer en casa</span></h2>
+  <div class="callout">${pair(corner.mission)}</div>
+  ${
+    corner.question?.en && corner.question.es
+      ? `<p><strong>Talk about it:</strong></p>${pair(corner.question)}`
+      : ""
+  }
+</section>`,
+    });
+  }
+
+  stages.push({
+    id: "stuck",
+    title: "When Stuck 🛟",
+    sub: "Coaching without spoilers",
+    html: `
+<section class="tab-panel section-stuck" id="panel-stage-stuck" role="tabpanel" aria-labelledby="tab-stage-stuck">
   <h2>If they get stuck... <span class="es">Si se traban...</span></h2>
   <div class="callout callout--note">
     <p style="margin-top:0;"><strong>Watch out for this:</strong> ${watchOut}</p>
     <p style="margin-bottom:0;"><strong>Try asking:</strong> "Can you show me how you got that? Did we miss a step?"<br><span class="es-text" lang="es">Pregunte: «¿Puedes mostrarme cómo lo hiciste? ¿Nos saltamos algún paso?» Hablar de las matemáticas en voz alta ayuda mucho.</span></p>
   </div>
-</section>
-<section class="section-frames">
-  <h2>Sentence starters <span class="es">Frases para empezar</span></h2>
-  ${SENTENCE_FRAMES.map((f) => `<p class="frame">${esc(f)}</p>`).join("")}
-</section>`;
+</section>`,
+  });
+
+  const rail = `
+<nav class="lab-rail" role="tablist" aria-label="Family Lesson Stages">
+  <div class="rail-heading">Lesson Steps</div>
+  ${stages
+    .map(
+      (s, i) => `
+  <button type="button" class="rail-item" role="tab" id="tab-stage-${s.id}" aria-selected="${i === 0 ? "true" : "false"}" aria-controls="panel-stage-${s.id}" tabindex="${i === 0 ? "0" : "-1"}">
+    <span class="rail-num">${i + 1}</span>
+    <span class="rail-content">
+      <span class="rail-title">${esc(s.title)}</span>
+      <span class="rail-sub">${esc(s.sub)}</span>
+    </span>
+  </button>`,
+    )
+    .join("")}
+</nav>`;
+
+  const stageNav = `
+<footer class="stage-nav">
+  <button type="button" class="stage-nav-btn" id="btnPrev" disabled>← Previous Step</button>
+  <span id="stageCounter" class="stage-counter">Step 1 of ${stages.length}</span>
+  <button type="button" class="stage-nav-btn primary" id="btnNext">Next: ${esc(stages[1].title)} →</button>
+</footer>`;
+
+  const body = `
+${stages.map((s) => s.html).join("\n")}
+${stageNav}`;
+
+  const scripts = `${FAMILY_INTERACTIVE_SCRIPT}\n${
+    model ? `<script type="module" src="/assets/homework-lesson-models.js"></script>` : ""
+  }`;
 
   return page({
     title: `Family Math Studio · Lesson guide — Unit ${unit} Lesson ${lesson}: ${cfg.title || id}`,
     kind: "family",
     head,
     body,
+    rail,
     id,
-    // Only ship the mount module on pages that actually have a tool to mount.
-    scripts: model ? `<script type="module" src="/assets/homework-lesson-models.js"></script>` : "",
+    scripts,
   });
 }
 
