@@ -111,6 +111,15 @@ check(
   scopeFor(["curriculum/plan-notes/plan-notes.js"])?.includes("validate:plan-notes"),
   "a plan-notes change must pull in validate:plan-notes — coverage that names the file but not the gate is how stale vocab shipped",
 );
+const readingContentScope = scopeFor(["tools/validate-reading-adventures.mjs"]);
+check(
+  Array.isArray(readingContentScope) &&
+    readingContentScope.includes("validate:access-lab") &&
+    readingContentScope.includes("test") &&
+    readingContentScope.includes("validate:js-syntax") &&
+    readingContentScope.includes("check"),
+  "the Reading Adventures and Strategy Academy content validator must run its Access Lab, unit, syntax, and static checks without escalating to the full repository gate",
+);
 /* package.json: scripts-only edits may skip the full gate; everything else may not. */
 const pj = (o) => JSON.stringify(o);
 const base = {
