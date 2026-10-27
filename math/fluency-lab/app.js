@@ -7776,6 +7776,48 @@ els.answerForm.addEventListener("submit", (event) => {
   submitAnswer(els.answerInput.value);
 });
 
+const mathKeypad = document.querySelector("#math-keypad");
+let keypadSelection = { start: 0, end: 0 };
+const rememberKeypadSelection = () => {
+  if (!els.answerInput) return;
+  keypadSelection = { start: els.answerInput.selectionStart ?? els.answerInput.value.length, end: els.answerInput.selectionEnd ?? els.answerInput.value.length };
+};
+for (const eventName of ["click", "keyup", "select", "input", "mouseup"]) els.answerInput.addEventListener(eventName, rememberKeypadSelection);
+const keypadKeys = [..."1234567890".split(""), ".", "−", "+", "×", "÷", "=", "/", ":", "(", ")", "²", "³", "<", ">", "≤", "≥", "⌫", "Clear"];
+mathKeypad.innerHTML = keypadKeys.map((key) => {
+  const action = key === "⌫" ? "backspace" : key === "Clear" ? "clear" : "insert";
+  const label = key === "⌫" ? t("Backspace") : key === "Clear" ? t("Clear answer") : key;
+  return `<button type="button" class="math-key" data-math-action="${action}" data-math-key="${action === "insert" ? escapeHtml(key) : ""}" aria-label="${escapeHtml(label)}">${escapeHtml(key)}</button>`;
+}).join("");
+document.querySelector("#toggle-math-keypad").addEventListener("click", (event) => {
+  const button = event.currentTarget;
+  mathKeypad.hidden = !mathKeypad.hidden;
+  button.setAttribute("aria-expanded", String(!mathKeypad.hidden));
+  const labels = { show: t("Show math keypad"), hide: t("Hide math keypad") };
+  button.textContent = labels[mathKeypad.hidden ? "show" : "hide"];
+});
+mathKeypad.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-math-action]");
+  if (!button || els.answerInput.disabled) return;
+  const input = els.answerInput;
+  const start = Math.min(keypadSelection.start, input.value.length);
+  const end = Math.min(keypadSelection.end, input.value.length);
+  const action = button.dataset.mathAction;
+  if (action === "clear") { input.value = ""; keypadSelection = { start: 0, end: 0 }; }
+  else if (action === "backspace") {
+    const from = start === end && start > 0 ? start - 1 : start;
+    input.value = input.value.slice(0, from) + input.value.slice(end);
+    input.setSelectionRange(from, from);
+    keypadSelection = { start: from, end: from };
+  } else {
+    const value = button.dataset.mathKey;
+    input.value = input.value.slice(0, start) + value + input.value.slice(end);
+    input.setSelectionRange(start + value.length, start + value.length);
+    keypadSelection = { start: start + value.length, end: start + value.length };
+  }
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+});
+
 els.choiceAnswers.addEventListener("click", (event) => {
   const button = event.target.closest("[data-answer]");
   if (button) submitAnswer(button.dataset.answer);
