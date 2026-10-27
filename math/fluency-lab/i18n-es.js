@@ -734,6 +734,8 @@ export const ES = {
   "Not quite. Look at the numbers and try again.": "Casi. Mira los números e inténtalo de nuevo.",
   "Here it is. Read it, then keep going.": "Aquí está. Léelo y sigue adelante.",
   "Correct": "Correcto",
+  "Multiply a three-digit number by a one-digit number": "Multiplicar un número de tres cifras por un número de una cifra",
+  "Use place value to multiply a three-digit number by a one-digit number.": "Usa el valor posicional para multiplicar un número de tres cifras por uno de una cifra.",
   "Correct · with help": "Correcto · con ayuda",
   "Incorrect": "Incorrecto",
   "Add an answer": "Escribe una respuesta",

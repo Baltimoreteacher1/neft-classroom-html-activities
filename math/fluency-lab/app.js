@@ -426,8 +426,8 @@ function renderSkillCard(skill, recommendation = null) {
         <span class="strand-label"><span aria-hidden="true">${icon}</span> ${escapeHtml(skill.strand)}</span>
         <span class="mastery-pill level-${level}">${label}</span>
       </div>
-      <h3>${escapeHtml(skill.title)}</h3>
-      <p>${escapeHtml(skill.learn.rule)}</p>
+      <h3>${escapeHtml(t(skill.title))}</h3>
+      <p>${escapeHtml(t(skill.learn.rule))}</p>
       ${recommendation ? `<p class="skill-recommendation"><strong>${t("Suggested for you")}</strong> · ${escapeHtml(displayRecommendationReason(recommendation.reason))}</p>` : ""}
       <details class="skill-preview">
         <summary>${t("Preview a sample question")}</summary>
@@ -468,7 +468,7 @@ function populateQuickSkillDropdown() {
       <optgroup label="${escapeHtml(grade.label)} (${escapeHtml(grade.focus)})">
         ${grade.skills.map((s) => `
           <option value="${grade.grade}:${s.id}">
-            ${escapeHtml(grade.label)} · ${escapeHtml(s.title)} (${escapeHtml(s.strand)})
+            ${escapeHtml(grade.label)} · ${escapeHtml(t(s.title))} (${escapeHtml(s.strand)})
           </option>
         `).join("")}
       </optgroup>
@@ -508,7 +508,7 @@ function openSkill(skillId, mode = "learn", targetGrade = null) {
   const grade = getGrade(state.grade);
   document.documentElement.style.setProperty("--grade", grade.color);
   els.workspaceGrade.textContent = grade.label;
-  els.workspaceTitle.textContent = state.skill.title;
+  els.workspaceTitle.textContent = t(state.skill.title);
   els.workspaceStandard.textContent = `${state.skill.strand} · ${state.skill.standard}${state.skill.formerStandard ? ` (was ${state.skill.formerStandard})` : ""}${state.skill.standardNote ? ` (${state.skill.standardNote})` : ""}`;
   renderMastery();
   renderModeTabs();
@@ -516,7 +516,7 @@ function openSkill(skillId, mode = "learn", targetGrade = null) {
   setMode(mode);
   setUrl();
   updateQuickSkillDropdown();
-  document.title = `${state.skill.title} | ${grade.label} Fluency Lab`;
+  document.title = `${t(state.skill.title)} | ${grade.label} Fluency Lab`;
   document.querySelector("#workspace-view").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -582,7 +582,7 @@ function renderLearn() {
   const picture = interactivePicture(example.model) || trailPicture(example.model);
   els.learnPanel.innerHTML = `
     <div class="learn-simple" style="--trail:${getGrade(skill.grade).color}">
-      <h3 class="tr-idea">${highlightVocab(escapeHtml(skill.learn.rule))}</h3>
+      <h3 class="tr-idea">${highlightVocab(escapeHtml(t(skill.learn.rule)))}</h3>
       <div class="tr-lesson">
         <div class="tr-example">
           <p class="tr-example-fact">${highlightVocab(mathText(example.question))}</p>

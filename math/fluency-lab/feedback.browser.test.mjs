@@ -52,6 +52,13 @@ try {
   await spanishPage.locator("#answer-result-status").waitFor({ state: "visible" });
   assert.match(await spanishPage.locator("#answer-result-status").innerText(), /Incorrecto/);
   await spanishContext.close();
+
+  await page.goto(`${base}/math/fluency-lab/?grade=4&skill=multiply-1digit`, { waitUntil: "networkidle" });
+  assert.equal(await page.locator("#workspace-title").innerText(), "Multiply a three-digit number by a one-digit number");
+  const multiplicationLesson = await page.locator("#learn-panel").innerText();
+  assert.match(multiplicationLesson, /three-digit number by a one-digit number/i);
+  assert.match(multiplicationLesson, /\b\d{3} × [2-9] = \?/);
+  assert.doesNotMatch(multiplicationLesson, /multiply by one digit/i);
   assert.deepEqual(errors, [], `No browser runtime errors: ${errors.join("; ")}`);
   console.log("Math answer feedback browser check passed: clear incorrect status beside the question on desktop; visible and overflow-free on mobile.");
 } finally {

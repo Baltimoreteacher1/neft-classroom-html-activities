@@ -100,6 +100,8 @@ for (const key of [
   "The pans are not equal yet. Make the same change to both sides.",
   "The city quantities changed by different factors. Keep the ratio constant.",
   "That route does not return to the stated output. Check the inverse steps.",
+  "Multiply a three-digit number by a one-digit number",
+  "Use place value to multiply a three-digit number by a one-digit number.",
 ])
   keys.add(key);
 for (const item of ITEMS) {

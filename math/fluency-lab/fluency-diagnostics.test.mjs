@@ -1,11 +1,20 @@
 import assert from "node:assert/strict";
 import { CONFIG, prerequisiteGraph, runFluencySelfTest, selfTest, validateConfig } from "./fluency-diagnostics.js";
+import { ALL_SKILLS, generateProblem, seededRandom } from "./problem-bank.js";
 import { classifyMistake } from "./mistake-notes.js";
 import { emptyTutor, rememberMistake, sanitizeTutor } from "./tutor-engine.js";
 
 assert.equal(CONFIG.gradeBands.length, 8);
 assert.equal(validateConfig().ok, true);
 assert.equal(selfTest, runFluencySelfTest);
+const gradeFourSingleDigitProduct = ALL_SKILLS.find((skill) => skill.grade === 4 && skill.id === "multiply-1digit");
+assert.ok(gradeFourSingleDigitProduct, "Grade 4 has the expected one-digit multiplication skill");
+assert.equal(gradeFourSingleDigitProduct.title, "Multiply a three-digit number by a one-digit number");
+assert.match(gradeFourSingleDigitProduct.learn.rule, /three-digit number by a one-digit number/i);
+for (let seed = 0; seed < 20; seed += 1) {
+  const item = generateProblem(gradeFourSingleDigitProduct, seededRandom(seed + 100), 0);
+  assert.match(item.question, /^\d{3} × [2-9] = \?$/, `Grade 4 item matches three-digit × one-digit scope: ${item.question}`);
+}
 const graph = prerequisiteGraph();
 assert.equal(Object.keys(graph).length, CONFIG.skillCount);
 assert.ok(Object.values(graph).every((node) => Array.isArray(node.prerequisiteSkills) && Array.isArray(node.enrichmentSkills)));
