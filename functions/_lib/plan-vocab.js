@@ -3051,7 +3051,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/math/fluency-lab/family/",
-    title: "Family Math Tonight",
+    title: "Family Math",
     category: "Math Tool",
     unit: null,
   },
