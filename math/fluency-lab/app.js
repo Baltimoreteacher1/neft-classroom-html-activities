@@ -743,7 +743,17 @@ function nextProblem(restoredItem = null) {
   // Put essential spatial references directly beside the prompt so learners do not have to
   // discover the model button first. Other models remain available on demand.
   const showSpatialModel = ["coordinate", "numberline"].includes(visualType);
-  mountProblemModel(state.session.mode !== "diagnostic", !showSpatialModel);
+  const hasVisual = Boolean(interactivePicture(state.item?.model) || renderInlineProblemModel(state.item?.skill, state.item));
+  const autoDock = window.matchMedia?.("(min-width: 1024px)").matches && hasVisual;
+  const visualWorkspace = document.querySelector("#practice-visual-workspace");
+  const dockButton = document.querySelector("#dock-visual-studio");
+  visualWorkspace?.classList.toggle("is-docked", Boolean(autoDock));
+  if (dockButton) {
+    dockButton.hidden = state.session.mode === "diagnostic" || !hasVisual;
+    dockButton.setAttribute("aria-pressed", String(Boolean(autoDock)));
+    dockButton.textContent = autoDock ? t("Undock Visual Studio") : t("Dock Visual Studio");
+  }
+  mountProblemModel(state.session.mode !== "diagnostic", !showSpatialModel && !autoDock);
   els.repair.hidden = !adapting;
   els.checkButton.hidden = false;
   els.answerInput.value = "";
@@ -8023,6 +8033,22 @@ els.toggleProblemVisual?.addEventListener("click", () => {
   }
   els.toggleProblemVisual.setAttribute("aria-expanded", String(!host.hidden));
   els.toggleProblemVisual.textContent = host.hidden ? "Show the model" : "Hide the model";
+  if (host.hidden) {
+    document.querySelector("#practice-visual-workspace")?.classList.remove("is-docked");
+    const dock = document.querySelector("#dock-visual-studio");
+    if (dock) { dock.setAttribute("aria-pressed", "false"); dock.textContent = t("Dock Visual Studio"); }
+  }
+});
+document.querySelector("#dock-visual-studio")?.addEventListener("click", (event) => {
+  const button = event.currentTarget;
+  const workspace = document.querySelector("#practice-visual-workspace");
+  const host = els.problemVisualScaffold;
+  if (!workspace || !host || !state.item) return;
+  const docked = button.getAttribute("aria-pressed") !== "true";
+  workspace.classList.toggle("is-docked", docked);
+  button.setAttribute("aria-pressed", String(docked));
+  button.textContent = t(docked ? "Undock Visual Studio" : "Dock Visual Studio");
+  if (docked && host.hidden) mountProblemModel(true, false);
 });
 els.problemVisualScaffold?.addEventListener("click", (event) => handleModelTap(event.target));
 els.problemVisualScaffold?.addEventListener("input", (event) => handleModelInput(event.target));

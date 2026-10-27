@@ -842,6 +842,8 @@ Object.assign(ES, {
   "Paste one or more valid receipt codes to build the class heatmap.": "Pega uno o más códigos válidos para crear el mapa de progreso de la clase.",
   "Show math keypad": "Mostrar teclado matemático",
   "Hide math keypad": "Ocultar teclado matemático",
+  "Dock Visual Studio": "Acoplar estudio visual",
+  "Undock Visual Studio": "Desacoplar estudio visual",
   "Backspace": "Borrar anterior",
   "Clear answer": "Borrar respuesta",
   "Added the denominators instead of finding equal-size parts": "Sumaste los denominadores en vez de encontrar partes del mismo tamaño.",

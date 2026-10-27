@@ -715,6 +715,22 @@ button:disabled { cursor: default; opacity: .65; }
 }
 
 /* Problem Visual Scaffold */
+.practice-visual-workspace { min-width: 0; }
+.practice-visual-workspace.is-docked {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(18rem, 1fr);
+  grid-template-areas: "arena visual" "actions visual";
+  align-items: start;
+  gap: 0 1rem;
+}
+.practice-visual-workspace.is-docked #problem-arena { grid-area: arena; min-width: 0; }
+.practice-visual-workspace.is-docked .problem-actions-bar { grid-area: actions; }
+.practice-visual-workspace.is-docked #interactive-solver-workspace { grid-column: 1 / -1; }
+.practice-visual-workspace.is-docked #problem-visual-scaffold { grid-area: visual; min-width: 0; margin: 1rem 0 0; }
+.practice-visual-workspace.is-docked .math-model-svg { max-width: 100%; height: auto; }
+@media (max-width: 780px) {
+  .practice-visual-workspace.is-docked { display: block; }
+}
 .problem-visual-scaffold {
   margin: 1.5rem 0;
 }
