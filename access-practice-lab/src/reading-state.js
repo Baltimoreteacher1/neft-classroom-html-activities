@@ -14,6 +14,7 @@ const fresh = () => ({
   words: [],
   lessons: {},
   conferences: {},
+  adventures: {},
 });
 
 export function loadReadingState() {
@@ -29,6 +30,7 @@ export function loadReadingState() {
     words: Array.isArray(saved.words) ? saved.words.slice(-200) : [],
     lessons: saved.lessons && typeof saved.lessons === "object" ? saved.lessons : {},
     conferences: saved.conferences && typeof saved.conferences === "object" ? saved.conferences : {},
+    adventures: saved.adventures && typeof saved.adventures === "object" ? saved.adventures : {},
   };
 }
 

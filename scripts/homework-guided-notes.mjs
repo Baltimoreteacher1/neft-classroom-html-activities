@@ -9363,8 +9363,8 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null)
   const tabCount = HOMEWORK_TABS.length;
   const scratchpad = renderScratchpadHtml(unit);
   const tabBtn = (t, i) => `
-            <button type="button" role="tab" id="hw_tab_${t.id}" class="homework-tab-btn${i === 0 ? " is-active" : ""}"
-              aria-selected="${i === 0 ? "true" : "false"}"${i === 0 ? ' aria-current="step"' : ""} aria-controls="hw_panel_${t.id}"
+            <button type="button" id="hw_tab_${t.id}" class="homework-tab-btn${i === 0 ? " is-active" : ""}"
+              ${i === 0 ? 'aria-current="step"' : ""} aria-controls="hw_panel_${t.id}"
               aria-label="${esc(t.en)} — stop ${i + 1} of ${tabCount}"
               data-aria-en="${esc(t.en)} — stop ${i + 1} of ${tabCount}" data-aria-es="${esc(t.es)} — parada ${i + 1} de ${tabCount}"
               data-tab="${t.id}" data-stop="${i + 1}" onclick="switchHomeworkTab('${t.id}')">
@@ -9374,8 +9374,8 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null)
               <span class="tab-done" aria-hidden="true">✓</span>
             </button>`;
   const extraBtn = (t) => `
-            <button type="button" role="tab" id="hw_tab_${t.id}" class="homework-tab-extra"
-              aria-selected="false" aria-controls="hw_panel_${t.id}"
+            <button type="button" id="hw_tab_${t.id}" class="homework-tab-extra"
+              aria-controls="hw_panel_${t.id}"
               aria-label="${esc(t.ariaEn)}" title="${esc(t.ariaEn)}"
               data-tab="${t.id}" onclick="switchHomeworkTab('${t.id}')">
               <span class="tab-icon" aria-hidden="true">${t.icon}</span>
@@ -9388,7 +9388,7 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null)
       <div class="homework-tab-chrome">
         <div class="hw-tab-meta-row"><div id="hw_utility_controls" class="hw-utility-controls"></div>
         </div>
-        <nav class="homework-tab-bar" role="tablist" aria-label="Tonight's path" data-aria-en="Tonight's path" data-aria-es="Ruta de hoy">
+        <nav class="homework-tab-bar" aria-label="Tonight's path" data-aria-en="Tonight's path" data-aria-es="Ruta de hoy">
           ${HOMEWORK_TABS.map(tabBtn).join("")}
           ${HOMEWORK_EXTRA_TABS.map(extraBtn).join("")}
         </nav>
@@ -9934,7 +9934,6 @@ function setHomeworkRoute(mode, options) {
     var included = route.tabs.indexOf(btn.dataset.tab) !== -1;
     btn.hidden = !included;
     if (!included) {
-      btn.setAttribute('aria-selected', 'false');
       btn.removeAttribute('aria-current');
       return;
     }
@@ -10224,18 +10223,17 @@ function switchHomeworkTab(tabId) {
   extras.forEach(function(btn) {
     const active = btn.dataset.tab === tabId;
     btn.classList.toggle('is-active', active);
-    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+    if (active) btn.setAttribute('aria-current', 'step');
+    else btn.removeAttribute('aria-current');
   });
   allTabs.forEach(function(btn) {
     if (!btn.hidden) return;
     btn.classList.remove('is-active');
-    btn.setAttribute('aria-selected', 'false');
     btn.removeAttribute('aria-current');
   });
   tabs.forEach(function(btn, i) {
     const active = btn.dataset.tab === tabId;
     btn.classList.toggle('is-active', active);
-    btn.setAttribute('aria-selected', active ? 'true' : 'false');
     if (active) {
       idx = i + 1;
       btn.setAttribute('aria-current', 'step');

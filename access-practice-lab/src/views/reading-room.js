@@ -1,9 +1,10 @@
 // Reading Room: a digital reading environment. The shelf lists authored lessons; a lesson pairs a calm reading
 // column (passage, optional word support, paragraph marks, saved place) with a separate response area.
 // Everything is saved on this device only; nothing here is a score or a proficiency level.
-import { findActivity, loadReadingRoomLessons } from "../content.js";
+import { findActivity, loadReadingAdventures, loadReadingRoomLessons } from "../content.js";
 import { ART, BASE, esc, icon, raw, toHtml } from "../util.js";
 import { canSpeak, speak, stop as stopSpeech } from "../speech.js";
+import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
 import {
   loadReadingState,
   saveReadingState,
@@ -151,6 +152,7 @@ function shelfHTML(ctx, lessons, state) {
   const genres = [...new Set(lessons.map((l) => l.genre))].sort();
   const lastProgress = last ? state.lessons[stateKey(last)] || {} : {};
   return `<section class="rr-shell d-reading"><header class="rr-hero"><div><p class="rr-eyebrow">${ic("reading")} ACCESS Practice Lab · Reading</p><h1>Reading Room</h1><p class="rr-lead">Read closely, collect evidence, and build the language to explain what a text means.</p><div class="rr-chips"><span>Original classroom practice</span><span>Saved on this device</span><span>WIDA-informed instruction · not an official assessment</span><span>Editorial review pending · teacher preview</span></div></div><div class="rr-hero-art" aria-hidden="true"><img src="${ART}/domain-reading.svg" alt="" width="480" height="360"></div></header>
+    <section class="rr-adventure-entry"><div><p class="rr-eyebrow">Serialized Reading Adventures</p><h2>Follow a story. Gather clues. Explain what changed.</h2><p>Original six-chapter mysteries and investigations with saved chapter notes, evidence responses, and comprehension checks.</p></div><a class="btn btn-primary" href="${BASE}/reading-room/adventures">Explore the adventures</a></section>
     ${last ? `<section class="rr-continue"><span class="rr-continue-icon" aria-hidden="true">${ic("bookmark")}</span><div><p class="rr-eyebrow">Pick up where you left off</p><h2>${esc(last.title)}</h2><p>${lastProgress.phase ? "Your lesson progress is saved on this device." : "Your reading place is ready."}</p></div><a class="btn btn-primary btn-domain" href="${lessonUrl(last.id)}">Continue reading</a></section>` : ""}
     ${recentRows.length ? `<section class="rr-recent"><h2>Recently read</h2><ul>${recentRows.map((l) => `<li><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></li>`).join("")}</ul></section>` : ""}
     <section class="rr-library" aria-labelledby="rr-library-title"><div class="rr-library-head"><div><p class="rr-eyebrow">The reading shelf</p><h2 id="rr-library-title">Choose a text</h2></div></div>
@@ -159,6 +161,32 @@ function shelfHTML(ctx, lessons, state) {
       <div class="rr-books">${filtered.length ? filtered.map((l) => lessonCard(l, state)).join("") : `<div class="rr-empty"><img src="${ART}/empty.svg" alt="" width="240" height="180"><h3>No texts match yet</h3><p>Try another topic, grade cluster, or reading length.</p></div>`}</div></section>
     <section class="rr-legacy"><div><p class="rr-eyebrow">More short practice</p><h2>Existing Reading activities</h2><p>Open the established ACCESS Lab Reading activities. These short practices are separate from the authored multi-part lessons above.</p></div><a class="btn" href="${BASE}/Reading?grades=${esc(ctx.band)}">Browse Reading practice ${ic("arrow-right")}</a></section>
     <section class="rr-tools"><div><h2>Your reading tools</h2><p>Bookmarks, annotations, preferences, and lesson progress stay in this browser. They are not synced across devices.</p><ul class="rr-tool-links"><li><a href="${BASE}/vocabulary?grades=${esc(ctx.band)}">${ic("words")} Open Word Builder</a></li><li><a href="${BASE}/reading-room/words">${ic("bookmark")} Open Reading Word Notebook (${state.words.length})</a></li><li><a href="${BASE}/reading-room/family">${ic("families")} Family reading at home</a></li><li><a href="${BASE}/reading-room/teacher">${ic("teacher")} Local teacher progress view</a></li><li><a href="${BASE}/reading-room/pathways">${ic("road")} Workshop pathways</a></li></ul></div><div class="rr-tools-reset"><button type="button" class="rr-reset" data-rr-action="clear">Clear local Reading Room data</button>${notice ? `<p role="status">${esc(notice)}</p>` : ""}</div></section></section>`;
+}
+
+const adventureUrl = (id) => `${BASE}/reading-room/adventure-${encodeURIComponent(id)}`;
+
+function adventuresHTML(stories, state) {
+  return shell(`${backLink(`${BASE}/reading-room`, "Return to the Reading Room")}${pageHeader("Original serialized stories · saved on this device", "Reading Adventures", "<p>Read one chapter at a time. Make predictions, check an idea against the text, and keep a short chapter recap. Work stays in this browser and is not an official assessment.</p>")}<div class="rr-adventure-grid">${stories.map((story) => {
+    const progress = state.adventures[story.id] || {};
+    const chapter = Math.min(progress.chapter || 0, story.chapters.length - 1);
+    const done = progress.completed === true;
+    return `<article class="rr-adventure-card"><p class="rr-eyebrow">Grades ${esc(story.gradeCluster.replace("-", "–"))} · ${esc(story.genre)} · 6 chapters</p><h2><a href="${adventureUrl(story.id)}">${esc(story.title)}</a></h2><p>${esc(story.summary)}</p><p><b>Language focus:</b> ${esc(story.skill)}</p><p class="rr-adventure-progress">${done ? "Completed" : progress.started ? `Chapter ${chapter + 1} of 6 · saved` : "New story"}</p><a class="rr-link" href="${adventureUrl(story.id)}">${done ? "Read again" : progress.started ? "Continue story" : "Start story"} →</a></article>`;
+  }).join("")}</div>`);
+}
+
+function adventureHTML(story, state) {
+  const progress = state.adventures[story.id] || { chapter: 0, responses: {} };
+  const chapterIndex = Math.min(Math.max(0, Number(progress.chapter) || 0), story.chapters.length - 1);
+  const chapter = story.chapters[chapterIndex];
+  const response = progress.responses?.[chapterIndex] || {};
+  const steps = story.chapters.map((part, i) => `<li><button type="button" data-adv-nav="${i}" aria-current="${chapterIndex === i ? "step" : "false"}"><span>${i + 1}</span>${esc(part.title)}${progress.responses?.[i]?.recap ? " · saved" : ""}</button></li>`).join("");
+  const paragraphs = chapter.paragraphs.map((text, i) => `<p id="chapter-${chapterIndex + 1}-p-${i + 1}">${esc(text)}</p>`).join("");
+  const words = chapter.vocabulary.map((v) => `<details class="rr-adventure-word"><summary>${esc(v.term)}</summary><p>${esc(v.definition)}</p><p><b>In this story:</b> ${esc(v.example)}</p></details>`).join("");
+  const choice = `<fieldset class="rr-adventure-choice"><legend>${esc(chapter.question.prompt)}</legend>${chapter.question.options.map((option, i) => `<label><input type="radio" name="adv-answer" value="${i}" ${response.answer === i ? "checked" : ""}> ${esc(option)}</label>`).join("")}<button class="btn small" type="button" data-adv-check="${chapterIndex}" ${response.answer == null ? "disabled" : ""}>Check my thinking</button>${response.checked ? `<p role="status" class="rr-adventure-feedback ${response.correct ? "is-correct" : "is-revisit"}">${response.correct ? "That fits the evidence. " : "Read the explanation and revisit the clue. "}${esc(chapter.question.why)}</p>` : ""}</fieldset>`;
+  const prev = chapterIndex > 0 ? `<button type="button" class="btn" data-adv-nav="${chapterIndex - 1}">← Previous chapter</button>` : "";
+  const next = chapterIndex < story.chapters.length - 1 ? `<button type="button" class="btn btn-primary" data-adv-nav="${chapterIndex + 1}">Next chapter →</button>` : `<button type="button" class="btn btn-primary" data-adv-complete>Finish this adventure</button>`;
+  const done = progress.completed ? `<p role="status" class="rr-adventure-feedback is-correct">Adventure complete. Your chapter notes and responses are saved on this device.</p>` : "";
+  return shell(`${backLink(`${BASE}/reading-room/adventures`, "All Reading Adventures")}<header class="rr-adventure-heading"><p class="rr-eyebrow">Grades ${esc(story.gradeCluster.replace("-", "–"))} · ${esc(story.genre)} · ${esc(story.keyUse)}</p><h1>${esc(story.title)}</h1><p>${esc(story.summary)}</p><p><b>Characters:</b> ${esc(story.characters)} · <b>Reading focus:</b> ${esc(story.skill)}</p><p class="rr-review-status">Original instructional story · independent editorial review pending</p><progress max="${story.chapters.length}" value="${chapterIndex + (progress.responses?.[chapterIndex]?.recap ? 1 : 0)}" aria-label="Adventure reading progress"></progress><span class="rr-adventure-progress-label">Chapter ${chapterIndex + 1} of ${story.chapters.length}</span>${canSpeak() ? `<p><button type="button" class="btn small" data-adv-listen="play">Listen with this device’s voice</button> <button type="button" class="btn small" data-adv-listen="stop">Stop audio</button></p><span class="rr-help">Audio uses your browser’s available speech voice; no recording is saved.</span>` : `<p class="rr-help">Device speech is unavailable. Read the chapter text on screen.</p>`}</header><div class="rr-adventure-layout"><nav class="rr-adventure-nav" aria-label="Chapters"><h2>Chapters</h2><ol>${steps}</ol></nav><article class="rr-adventure-reading"><p class="rr-eyebrow">Chapter ${chapterIndex + 1}</p><h2>${esc(chapter.title)}</h2><p class="rr-adventure-teaser">${esc(chapter.teaser)}</p><div class="rr-passage">${paragraphs}</div><section class="rr-adventure-vocabulary" aria-label="Chapter vocabulary">${words}</section><section class="rr-adventure-response"><h3>Pause and think</h3><label>Make a prediction<textarea rows="3" data-adv-response="prediction" placeholder="What do you think may happen? Use a clue.">${esc(response.prediction || "")}</textarea><span class="rr-help">Your prediction saves as you type. You can revisit it after the next chapter.</span></label>${choice}<label>Explain with evidence<textarea rows="4" data-adv-response="evidence" placeholder="Use a detail from this chapter and explain what it supports.">${esc(response.evidence || "")}</textarea><span class="rr-help">This open response is saved for your review; it is not automatically scored.</span></label><label>Chapter recap<textarea rows="3" data-adv-response="recap" placeholder="What changed, and which detail matters most?">${esc(response.recap || "")}</textarea></label>${done}<div class="rr-adventure-controls">${prev}${next}</div><p class="rr-status" role="status">Your responses save in this browser.</p></section></article></div>`);
 }
 
 // ── sub-pages ───────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -286,7 +314,7 @@ function workshopHTML(lessons) {
   );
 }
 
-function teacherHTML(lessons, state) {
+function teacherHTML(lessons, state, stories = []) {
   const rows = lessons.map((l) => {
     const p = state.lessons[stateKey(l)] || {};
     const checked = Object.values(p.answers || {}).filter((a) => a.checked);
@@ -321,8 +349,13 @@ function teacherHTML(lessons, state) {
       : checked.length
         ? "Continue to a new reading."
         : "No checked evidence saved.";
+  const adventureSummary = stories.map((story) => {
+    const progress = state.adventures[story.id] || {};
+    const checks = Object.values(progress.responses || {}).filter((answer) => answer.checked);
+    return `<tr><th scope="row"><a href="${adventureUrl(story.id)}">${esc(story.title)}</a></th><td>${checks.length} of ${story.chapters.length}</td><td>${checks.filter((answer) => answer.correct).length}</td><td>${checks.filter((answer) => !answer.correct).length}</td><td>${progress.completed ? "Completed" : progress.started ? "In progress" : "Not started"}</td></tr>`;
+  }).join("");
   return shell(
-    `${pageHeader("Teacher view · this device only", "Reading evidence", "<p>These counts come only from the reading data saved in this browser. They do not sync across devices and are not WIDA scores or proficiency estimates.</p>")}<p class="rr-count">${rows.filter((x) => x.p.completed).length} of ${lessons.length} authored lessons marked complete on this device.</p><p><a class="rr-link" href="${BASE}/reading-room/workshop?cluster=6-8">Open Weekly Reading Workshop →</a></p><section class="rr-group-needs"><h2>Small-group next steps</h2>${needs}</section><div class="rr-teacher-table"><table><caption>Saved reading evidence by lesson</caption><thead><tr><th scope="col">Lesson</th><th scope="col">Checked items</th><th scope="col">Independent checks</th><th scope="col">Items to revisit</th><th scope="col">Next step</th></tr></thead><tbody>${rows.map((r) => `<tr><th scope="row"><a href="${lessonUrl(r.l.id)}">${esc(r.l.title)}</a></th><td>${r.checked.length}</td><td>${r.independent}</td><td>${r.misses}</td><td>${next(r, r.checked.find((x) => x.correct === false)?.skill || "the checked skill")}</td></tr>`).join("")}</tbody></table></div><div class="rr-actions-row"><button type="button" class="rr-reset" data-rr-print>${ic("print")} Print this report</button><button type="button" class="rr-reset" data-rr-export>${ic("download")} Download report CSV</button></div><p class="rr-fine">Interpretation rule: a correct supported response is not counted as an independent check. Counts are local descriptive evidence only; they do not establish mastery.</p>${backLink(`${BASE}/reading-room`, "Return to the Reading Room")}`,
+    `${pageHeader("Teacher view · this device only", "Reading evidence", "<p>These counts come only from the reading data saved in this browser. They do not sync across devices and are not WIDA scores or proficiency estimates.</p>")}<p class="rr-count">${rows.filter((x) => x.p.completed).length} of ${lessons.length} authored lessons marked complete on this device.</p><p><a class="rr-link" href="${BASE}/reading-room/workshop?cluster=6-8">Open Weekly Reading Workshop →</a></p><section class="rr-group-needs"><h2>Small-group next steps</h2>${needs}</section><div class="rr-teacher-table"><table><caption>Saved reading evidence by lesson</caption><thead><tr><th scope="col">Lesson</th><th scope="col">Checked items</th><th scope="col">Independent checks</th><th scope="col">Items to revisit</th><th scope="col">Next step</th></tr></thead><tbody>${rows.map((r) => `<tr><th scope="row"><a href="${lessonUrl(r.l.id)}">${esc(r.l.title)}</a></th><td>${r.checked.length}</td><td>${r.independent}</td><td>${r.misses}</td><td>${next(r, r.checked.find((x) => x.correct === false)?.skill || "the checked skill")}</td></tr>`).join("")}</tbody></table></div><section class="rr-teacher-table"><table><caption>Reading Adventure checkpoint evidence · local counts, not mastery</caption><thead><tr><th scope="col">Adventure</th><th scope="col">Checked checkpoints</th><th scope="col">Correct keyed responses</th><th scope="col">Responses to revisit</th><th scope="col">Progress</th></tr></thead><tbody>${adventureSummary}</tbody></table><p class="rr-fine">Open explanations and recaps remain private student work in this browser; this view shows only checkpoint counts. Independent editorial review is pending.</p></section><div class="rr-actions-row"><button type="button" class="rr-reset" data-rr-print>${ic("print")} Print this report</button><button type="button" class="rr-reset" data-rr-export>${ic("download")} Download report CSV</button></div><p class="rr-fine">Interpretation rule: a correct supported response is not counted as an independent check. Counts are local descriptive evidence only; they do not establish mastery.</p>${backLink(`${BASE}/reading-room`, "Return to the Reading Room")}`,
   );
 }
 
@@ -511,6 +544,15 @@ export async function render(ctx) {
   const id = ctx.route.id;
   if (!id)
     return { title: "Reading Room", html: raw(shelfHTML(ctx, lessons, state)) };
+  if (id === "adventures") {
+    const { stories = [] } = await loadReadingAdventures();
+    return { title: "Reading Adventures", html: raw(adventuresHTML(stories, state)) };
+  }
+  if (id.startsWith("adventure-")) {
+    const { stories = [] } = await loadReadingAdventures();
+    const story = stories.find((item) => item.id === id.slice("adventure-".length));
+    if (story) return { title: story.title, html: raw(adventureHTML(story, state)) };
+  }
   if (id === "family")
     return { title: "Family Reading", html: raw(familyHTML(lessons)) };
   if (id === "words")
@@ -528,7 +570,7 @@ export async function render(ctx) {
   if (id === "teacher")
     return {
       title: "Reading Progress · Local",
-      html: raw(teacherHTML(lessons, state)),
+      html: raw(teacherHTML(lessons, state, (await loadReadingAdventures()).stories || [])),
     };
   if (id === "conference")
     return {
@@ -548,6 +590,16 @@ export async function render(ctx) {
 export function onInput(e, ctx) {
   const el=e.target;
   if (el.matches("[data-rr-search]")) { query=el.value; ctx.rerender(); }
+  if (el.matches("[data-adv-response]")) {
+    const s = loadReadingState();
+    const storyId = ctx.route.id.slice("adventure-".length);
+    const current = s.adventures[storyId] || { chapter: 0, responses: {} };
+    const chapter = Math.min(Math.max(0, Number(current.chapter) || 0), 5);
+    current.started = true;
+    current.responses = { ...(current.responses || {}), [chapter]: { ...(current.responses?.[chapter] || {}), [el.dataset.advResponse]: el.value, updatedAt: new Date().toISOString() } };
+    s.adventures[storyId] = current;
+    saveReadingState(s);
+  }
   if (el.matches("[data-rr-note],[data-rr-reflection]")) saveField(el);
   if(el.matches("[data-rr-conference]"))saveConference(el);
   if (el.matches("[data-rr-response]")) saveAnswer(el.dataset.rrResponse,{text:el.value});
@@ -555,6 +607,17 @@ export function onInput(e, ctx) {
 }
 export function onChange(e,ctx) {
   const el=e.target; if(el.matches("[data-rr-grade]")){grade=el.value;ctx.rerender();}
+  if (el.matches("input[name=adv-answer]")) {
+    const s = loadReadingState();
+    const storyId = ctx.route.id.slice("adventure-".length);
+    const current = s.adventures[storyId] || { chapter: 0, responses: {} };
+    const chapter = Math.min(Math.max(0, Number(current.chapter) || 0), 5);
+    current.started = true;
+    current.responses = { ...(current.responses || {}), [chapter]: { ...(current.responses?.[chapter] || {}), answer: Number(el.value), checked: false, updatedAt: new Date().toISOString() } };
+    s.adventures[storyId] = current;
+    saveReadingState(s);
+    ctx.rerender();
+  }
   if(el.matches("[data-rr-genre]")){genreFilter=el.value;ctx.rerender();}
   if(el.matches("[data-rr-mark]")){const s=loadReadingState(),meta=`${el.dataset.rrMark}@${el.dataset.rrRevision}:${el.dataset.rrParagraph}`;if(el.value)s.annotations[meta]={category:el.value};else delete s.annotations[meta];saveReadingState(s);}
   if(el.matches("[data-rr-workshop-cluster]")){const target=ctx.route.id==="pathways"?"pathways":"workshop";ctx.navigate(`${BASE}/reading-room/${target}?cluster=${encodeURIComponent(el.value)}&grades=${encodeURIComponent(ctx.band)}`);}
@@ -572,6 +635,44 @@ function saveConference(el){const s=loadReadingState(),id=el.dataset.lesson;s.co
 function saveField(el){const s=loadReadingState(),id=el.dataset.rrLesson||el.dataset.rrReflection,key=Object.keys(s.lessons).find(k=>k.startsWith(`${id}@`))||`${id}@1.0.0`,p=s.lessons[key]||{};if(el.dataset.rrNote){p.notes={...(p.notes||{}),[el.dataset.rrNote]:el.value};}else p.reflection=el.value;s.lessons[key]=p;saveReadingState(s);}
 function saveAnswer(id,patch){const s=loadReadingState(),key=Object.keys(s.lessons).find(k=>k.startsWith(`${location.pathname.split("/").pop()}@`)),p=s.lessons[key]||{},a=p.answers||{};a[id]={...(a[id]||{}),...patch};p.answers=a;s.lessons[key]=p;saveReadingState(s);}
 export function onClick(e,ctx){const b=e.target.closest("button");if(!b)return false;const s=loadReadingState(),id=ctx.route.id,key=Object.keys(s.lessons).find(k=>k.startsWith(`${id}@`)),p=s.lessons[key]||{answers:{}};
+  if (b.dataset.advNav != null) {
+    const storyId = id.slice("adventure-".length), current = s.adventures[storyId] || { responses: {} };
+    current.started = true; current.chapter = Math.max(0, Math.min(5, Number(b.dataset.advNav)));
+    s.adventures[storyId] = current; saveReadingState(s); ctx.rerender(); return true;
+  }
+  if (b.dataset.advListen === "stop") { stopSpeech(); return true; }
+  if (b.dataset.advListen === "play") {
+    loadReadingAdventures().then(({ stories = [] }) => {
+      const story = stories.find((item) => item.id === id.slice("adventure-".length));
+      const chapter = s.adventures[story?.id]?.chapter || 0;
+      if (story) return speak(story.chapters[chapter].paragraphs, { lang: "en-US", rate: Number(s.settings.speechRate) || 0.95 });
+    });
+    return true;
+  }
+  if (b.dataset.advCheck != null) {
+    loadReadingAdventures().then(({ stories = [] }) => {
+      const story = stories.find((item) => item.id === id.slice("adventure-".length));
+      if (!story) return;
+      const current = loadReadingState(), saved = current.adventures[story.id] || { chapter: 0, responses: {} };
+      const chapter = Number(b.dataset.advCheck), response = saved.responses?.[chapter] || {};
+      if (response.answer == null) return;
+      const correct = response.answer === story.chapters[chapter].question.answer;
+      saved.responses = { ...saved.responses, [chapter]: { ...response, checked: true, correct, checkedAt: new Date().toISOString() } };
+      current.adventures[story.id] = saved; saveReadingState(current); ctx.rerender();
+      const ledgerId = `reading-adventure:${story.id}:chapter-${chapter + 1}`;
+      const ledger = loadLedger();
+      if (!ledger.entries.some((entry) => entry.id === ledgerId)) {
+        appendEntry(ledger, { id: ledgerId, src: "item", task: ledgerId, band: story.gradeCluster, domain: "Reading", use: story.keyUse, stage: "independent", kind: "first", supports: {}, m: { questions: [{ skill: story.skill, ok: correct, questionId: `chapter-${chapter + 1}-checkpoint`, responseId: ledgerId }] } });
+        saveLedger(ledger);
+      }
+    });
+    return true;
+  }
+  if (b.hasAttribute("data-adv-complete")) {
+    const storyId = id.slice("adventure-".length), current = s.adventures[storyId] || {};
+    current.completed = true; current.completedAt = new Date().toISOString();
+    s.adventures[storyId] = current; saveReadingState(s); ctx.rerender(); return true;
+  }
   if(b.hasAttribute("data-rr-bookmark-filter")){onlyBookmarks=!onlyBookmarks;ctx.rerender();return true;}
   if(b.dataset.rrPhase){activePhase=b.dataset.rrPhase;ctx.rerender();return true;}
   if(b.dataset.rrPrint){window.print();return true;}
