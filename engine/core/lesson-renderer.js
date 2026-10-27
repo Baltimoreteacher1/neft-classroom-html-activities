@@ -43,6 +43,7 @@ import { mountCertificateDownload } from "./certificate-export.js";
 import { mountChalkAnnotations } from "./chalk-annotate.js";
 import { choiceOrderFor } from "./choice-order.js";
 import { deriveCommonMistake, deriveErrorExample } from "./content-enrichment.js";
+import { missCoach } from "./copy-dictionary.js";
 import { mountDiscussionMoment } from "./discourse.js";
 import { extractDivisionDiagram } from "./division-helper.js";
 import { getFeedbackMode, MODES, mountFeedbackModeToggle } from "./feedback-mode.js";
@@ -80,7 +81,7 @@ import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-vi
 import { mountLevel3Launch } from "./level3-launch.js";
 import { getLevel, levelOverride, mountLevelSelector } from "./levels.js";
 import { augmentVocabWithGlossary } from "./math-glossary.js";
-import { renderMathText } from "./math-typography.js";
+import { renderMathText, typesetPlain } from "./math-typography.js";
 import { checkIntervention, interventionFor } from "./misconception-interventions.js";
 import {
   detectMisconception,
@@ -4678,7 +4679,8 @@ function renderSkillProbe(reveal, move, { answer, why, onSettled }) {
     }
     settle(false, `<strong>${esc(move.accept[0])}.</strong> ${esc(move.then)}`);
   });
-  skip.addEventListener("click", () => settle(false, "<strong>❌ Not quite.</strong>"));
+  skip.addEventListener("click", () =>
+    settle(false, `<strong>${esc(move.accept[0])}.</strong> ${esc(move.then)}`));
   input.focus?.();
 }
 
@@ -4737,13 +4739,13 @@ function renderSkillPractice(host, config, state) {
     // grader reads, so no interaction change, just the missing information.
     const choicesHtml = Array.isArray(it.choices)
       ? `<ul class="sp-choices" style="margin:var(--sp-2,8px) 0 var(--sp-3,12px); padding-left:1.4rem; line-height:1.7;">${it.choices
-          .map((c) => `<li>${esc(String(c))}</li>`)
+          .map((c) => `<li>${typesetPlain(esc(String(c)))}</li>`)
           .join("")}</ul>`
       : "";
     const wrap = document.createElement("div");
     wrap.className = "sp-problem";
     wrap.innerHTML = `
-      <p class="sp-stem"><span class="sp-num" aria-hidden="true">${i + 1}</span><span class="sp-stem-text" data-annotate="word-problem"><span class="sr-only">Problem ${i + 1} of ${total}. </span>${esc(it.stem)}</span></p>
+      <p class="sp-stem"><span class="sp-num" aria-hidden="true">${i + 1}</span><span class="sp-stem-text" data-annotate="word-problem"><span class="sr-only">Problem ${i + 1} of ${total}. </span>${typesetPlain(esc(it.stem))}</span></p>
       ${choicesHtml}
       <textarea class="sp-work text-input" rows="3" placeholder="Show your steps here…" aria-label="Problem ${i + 1}: show your steps"></textarea>
       <div class="sp-row">
@@ -6360,7 +6362,9 @@ function mstarChoiceBlock(host, state, opts) {
     // `is-incorrect` is the class the stylesheet defines; `is-wrong` styled
     // nothing. `visible` is what makes the box appear at all.
     out.className = `problem-check-result visible ${right ? "is-correct" : "is-incorrect"}`;
-    out.innerHTML = right ? `✓ Correct. ${opts.explanation || ""}` : "✗ Not yet — try again.";
+    out.innerHTML = right
+      ? `✓ Correct. ${opts.explanation || ""}`
+      : `✗ ${missCoach("choice", "en")}`;
   });
 
   row.append(btn);

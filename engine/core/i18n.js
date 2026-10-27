@@ -3,6 +3,8 @@
  * Stacked EN+ES display matches family homework pattern.
  */
 
+import { typesetPlain } from "./math-typography.js";
+
 const STRINGS = {
   startActivity: { en: "Start Activity →", es: "Comenzar actividad →" },
   yourName: { en: "Your Name", es: "Tu nombre" },
@@ -84,7 +86,7 @@ const STRINGS = {
   awardedTo: { en: "Awarded to", es: "Otorgado a" },
   xpEarned: { en: "XP Earned", es: "XP ganados" },
   stars: { en: "Stars", es: "Estrellas" },
-  printCertificate: { en: "Print Certificate", es: "Imprimir certificado" },
+  printCertificate: { en: "Print certificate", es: "Imprimir certificado" },
   downloadCertificate: {
     en: "Download Certificate (PNG)",
     es: "Descargar certificado (PNG)",
@@ -234,8 +236,8 @@ const STRINGS = {
     en: "Drag items into the correct category",
     es: "Arrastra cada tarjeta a su categoría",
   },
-  dsCheckSorting: { en: "Check Sorting", es: "Revisar clasificación" },
-  dsCheckOrder: { en: "Check Order", es: "Revisar orden" },
+  dsCheckSorting: { en: "Check sorting", es: "Revisar clasificación" },
+  dsCheckOrder: { en: "Check order", es: "Revisar orden" },
   dsOrderRight: {
     en: "Correct order! Nicely sequenced.",
     es: "¡Orden correcto! Bien secuenciado.",
@@ -265,7 +267,7 @@ const STRINGS = {
     en: "Finish Lesson & Celebrate 🎉",
     es: "Terminar la lección y celebrar 🎉",
   },
-  submitResponse: { en: "Submit Response", es: "Enviar respuesta" },
+  submitResponse: { en: "Submit response", es: "Enviar respuesta" },
   responsePlaceholder: {
     en: "Type your response here...",
     es: "Escribe tu respuesta aquí...",
@@ -373,9 +375,12 @@ const STRINGS = {
   },
   showYourWorkLabel: { en: "Show your work", es: "Muestra tu trabajo" },
   lessonToolsMenu: { en: "Lesson tools menu", es: "Menú de herramientas de la lección" },
-  submitWarmup: { en: "Submit Warmup Answers", es: "Enviar respuestas del calentamiento" },
+  submitWarmup: { en: "Submit warmup answers", es: "Enviar respuestas del calentamiento" },
   warmupCorrect: { en: "Correct! ✓", es: "¡Correcto! ✓" },
-  warmupIncorrect: { en: "Incorrect. ✘", es: "Incorrecto. ✘" },
+  warmupIncorrect: {
+    en: "Not quite. Check each step against the question.",
+    es: "No exactamente. Revisa cada paso con la pregunta.",
+  },
   warmupUnanswered: { en: "Unanswered.", es: "Sin responder." },
 };
 
@@ -602,7 +607,10 @@ export function stackT(key, vars = {}) {
  * touches the toggle sees exactly what they saw before.
  */
 export function stackContent(en, es) {
-  return stackContentHtml(esc(en), esc(es));
+  // typesetPlain is display-only (minus/times/divide signs, no-break number-unit
+  // spaces, thousands commas). Config text is untouched; answers compare on the
+  // data, never on this rendered text.
+  return stackContentHtml(typesetPlain(esc(en)), typesetPlain(esc(es)));
 }
 
 /**

@@ -678,7 +678,7 @@ function openDragItemModal(title, svgContent, text) {
       <h3 style="margin:0 0 10px; font-family:var(--sg-display, sans-serif); font-size:1.35rem; color:#0f172a;">${title}</h3>
       <div style="margin:14px 0; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; display:flex; justify-content:center; align-items:center;">${svgContent}</div>
       <p style="margin:12px 0 0; font-size:0.95rem; color:#475569; line-height:1.5;">${text || ""}</p>
-      <button type="button" class="btn btn-primary" style="margin-top:16px; padding:8px 20px; font-weight:600;" onclick="this.closest('dialog').close()">Close Preview</button>
+      <button type="button" class="btn btn-primary" style="margin-top:16px; padding:8px 20px; font-weight:600;" onclick="this.closest('dialog').close()">Close preview</button>
     </div>
   `;
   if (typeof dialog.showModal === "function") {

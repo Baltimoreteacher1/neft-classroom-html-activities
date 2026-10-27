@@ -1,3 +1,4 @@
+import { missCoach } from "../core/copy-dictionary.js";
 import { checkIntervention } from "../core/misconception-interventions.js";
 import { createRemediation } from "../core/remediation.js";
 import { renderMultipleChoice } from "./multiple-choice.js";
@@ -366,7 +367,7 @@ export function renderRemediation(
       if (probeMisses === 1) {
         status.style.color = "";
         status.textContent = "Not quite — picture it with objects, then try once more.";
-        announce("Not quite. Try once more.");
+        announce(missCoach("retry", "en"));
         input.select?.();
         input.focus();
         return;

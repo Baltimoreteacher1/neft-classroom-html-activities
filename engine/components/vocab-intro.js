@@ -1,3 +1,4 @@
+import { typesetPlain } from "../core/math-typography.js";
 import { speakText } from "../core/speech-voice.js";
 import { resolveVocabImage, vocabImageAlt } from "../core/vocab-images.js";
 import { openExplorer } from "./vocab-explore.js";
@@ -270,7 +271,7 @@ export function renderVocabIntro(container, { terms, onComplete }) {
     if (exampleText) {
       const ex = document.createElement("p");
       ex.className = "vocab-example";
-      ex.textContent = exampleText;
+      ex.textContent = typesetPlain(String(exampleText));
       back.append(ex);
     }
 

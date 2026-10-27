@@ -18,6 +18,8 @@
 // still have Check mean something. "Back to the lesson's numbers" restores the
 // authored move.
 
+import { missCoach } from "../core/copy-dictionary.js";
+
 const isTouch = () => typeof window !== "undefined" && "PointerEvent" in window;
 
 function el(tag, className, html) {
@@ -307,7 +309,7 @@ const STRINGS = {
     correct: "Yes — that reads",
     notYet: "Not yet — that reads",
     correctPlain: "Yes, that is it.",
-    notYetPlain: "Not yet — try again.",
+    notYetPlain: missCoach("answer", "en"),
     number: "Number",
     answerLabel: "Your answer",
     workItOut: "Work it out. Change any number to try your own.",
@@ -332,7 +334,7 @@ const STRINGS = {
     correct: "Sí — eso dice",
     notYet: "Todavía no — eso dice",
     correctPlain: "Sí, así es.",
-    notYetPlain: "Todavía no — inténtalo otra vez.",
+    notYetPlain: missCoach("answer", "es"),
     number: "Número",
     answerLabel: "Tu respuesta",
     workItOut: "Resuélvelo. Cambia cualquier número para probar el tuyo.",

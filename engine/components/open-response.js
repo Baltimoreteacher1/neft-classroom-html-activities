@@ -269,7 +269,7 @@ export function renderOpenResponse(
 
   const submitBtn = document.createElement("button");
   submitBtn.className = "btn btn-primary mt-4";
-  submitBtn.textContent = "Submit Response";
+  submitBtn.textContent = "Submit response";
 
   let submitted = false;
 

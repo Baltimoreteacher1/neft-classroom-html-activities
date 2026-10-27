@@ -45,7 +45,7 @@ export function mountTranslate({ getPhaseEl }) {
       l.replace(/"/g, "") +
       '" style="display:block;width:100%;text-align:left;min-height:46px;padding:0 14px;border:0;' +
       "background:" +
-      (recent ? "#f0ecfb" : "#fff") +
+      (recent ? "#dbf1f0" : "#fff") +
       ";color:#1a2b3c;font-size:1.05rem;font-weight:" +
       (recent ? "700" : "500") +
       ';cursor:pointer;border-radius:8px;">' +

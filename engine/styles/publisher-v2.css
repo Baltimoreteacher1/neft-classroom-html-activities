@@ -243,3 +243,28 @@ body.editorial .ls-launcher,
 body.editorial .ls-launcher * {
   font-family: var(--ds-font-body);
 }
+
+/* ── 11. Phones: floating pills must not sit on the lesson ──────────────────
+   At 390px the "Hide buttons" (148x44) and "Math Workbench" (155x44) pills covered
+   the task. Below 640px they collapse to 44px icon buttons. The label is hidden
+   VISUALLY (clip), not removed, so the accessible name is unchanged. */
+@media (max-width: 640px) {
+  body.editorial #nt-focus-fab.nt-focus-fab,
+  body.editorial #nsr-workbench {
+    width: var(--ds-target);
+    min-width: var(--ds-target);
+    padding: 0;
+    justify-content: center;
+    gap: 0;
+  }
+  body.editorial #nt-focus-fab .nt-focus-label,
+  body.editorial #nsr-workbench .nsr-workbench-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}

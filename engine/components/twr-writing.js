@@ -433,7 +433,7 @@ export function renderTwrWriting(container, config, { getResponse, saveResponse,
 
   const submitBtn = document.createElement("button");
   submitBtn.className = "btn btn-primary mt-4";
-  submitBtn.textContent = "Save My Writing";
+  submitBtn.textContent = "Save my writing";
   submitBtn.addEventListener("click", () => {
     const written = inputs.filter((ta) => ta.value.trim().length > 0).length;
     const fb = document.createElement("div");

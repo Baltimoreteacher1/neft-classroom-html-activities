@@ -8,7 +8,7 @@ const C = {
   teal: "#1fa6a2",
   dot: "#1fa6a2",
   mean: "#e8663c", // orange — the "balance point"
-  median: "#6d4ad6", // purple
+  median: "#17324d", // navy
   mode: "#f2a516", // amber
   line: "#cfe0f0",
   ink: "#1a2b3c",

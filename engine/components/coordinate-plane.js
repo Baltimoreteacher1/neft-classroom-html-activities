@@ -199,7 +199,7 @@ export function renderCoordinatePlane(
   function placePoint(x, y) {
     if (placed.length >= targets.length) {
       live.textContent = `All ${targets.length} points are placed. Click a point to remove it first.`;
-      instr.textContent = `All ${targets.length} points placed — click a point to remove it, or press Check Points.`;
+      instr.textContent = `All ${targets.length} points placed — click a point to remove it, or press Check points.`;
       return;
     }
     // Refuse a duplicate: two dots on one lattice point look like one dot and
@@ -359,7 +359,7 @@ export function renderCoordinatePlane(
 
   const checkBtn = document.createElement("button");
   checkBtn.className = "btn btn-primary mt-4";
-  checkBtn.textContent = "Check Points";
+  checkBtn.textContent = "Check points";
   let done = false;
   checkBtn.addEventListener("click", () => {
     if (done) return;

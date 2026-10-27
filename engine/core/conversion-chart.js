@@ -504,7 +504,7 @@ export function openConversionChartModal({ category = "all", triggerEl = null } 
 
       <div class="nt-conversion-toolbar">
         <div class="nt-conversion-tabs">
-          <button type="button" class="nt-conversion-tab active" data-cat="all">All Facts</button>
+          <button type="button" class="nt-conversion-tab active" data-cat="all">All facts</button>
           <button type="button" class="nt-conversion-tab" data-cat="customary">Customary</button>
           <button type="button" class="nt-conversion-tab" data-cat="metric">Metric</button>
           <button type="button" class="nt-conversion-tab" data-cat="time">Time</button>

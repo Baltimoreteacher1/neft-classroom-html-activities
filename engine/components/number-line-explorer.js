@@ -27,8 +27,8 @@ const C = {
   chipBg: "#f4f8ff",
   aColor: "#1d4ed8",
   bColor: "#0d7a76",
-  absFill: "rgba(124,58,237,.16)",
-  absEdge: "#7c3aed",
+  absFill: "rgba(23,50,77,.14)",
+  absEdge: "#17324d",
 };
 
 function esc(s) {
@@ -40,7 +40,8 @@ function esc(s) {
 
 const fmt = (v) => {
   const r = Math.round(v * 1000) / 1000;
-  return Number.isInteger(r) ? String(r) : String(r);
+  // Display only: the true minus sign (style guide section 3), never used as a value.
+  return String(r).replace(/^-/, "\u2212");
 };
 
 export function renderNumberLineExplorer(container, cfg = {}) {

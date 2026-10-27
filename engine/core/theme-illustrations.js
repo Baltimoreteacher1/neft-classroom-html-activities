@@ -27,19 +27,19 @@ const THEME_SVGS = {
   </svg>`,
 
   "music-studio": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
-    <rect width="320" height="200" rx="16" fill="#ede8f7"/>
-    <rect x="40" y="60" width="240" height="100" rx="12" fill="#4a2d7a" opacity="0.9"/>
-    <rect x="55" y="75" width="18" height="70" rx="3" fill="#7c5cbf"/>
+    <rect width="320" height="200" rx="16" fill="#e8f0f7"/>
+    <rect x="40" y="60" width="240" height="100" rx="12" fill="#2d557a" opacity="0.9"/>
+    <rect x="55" y="75" width="18" height="70" rx="3" fill="#5c8fbf"/>
     <rect x="80" y="55" width="18" height="90" rx="3" fill="#e9c46a"/>
     <rect x="105" y="85" width="18" height="60" rx="3" fill="#2a9d8f"/>
     <rect x="130" y="65" width="18" height="80" rx="3" fill="#d9795d"/>
-    <rect x="155" y="90" width="18" height="55" rx="3" fill="#7c5cbf"/>
+    <rect x="155" y="90" width="18" height="55" rx="3" fill="#5c8fbf"/>
     <rect x="180" y="70" width="18" height="75" rx="3" fill="#e9c46a"/>
     <rect x="205" y="80" width="18" height="65" rx="3" fill="#2a9d8f"/>
     <rect x="230" y="60" width="18" height="85" rx="3" fill="#d9795d"/>
-    <circle cx="260" cy="50" r="22" fill="none" stroke="#7c5cbf" stroke-width="4"/>
-    <circle cx="260" cy="50" r="8" fill="#7c5cbf"/>
-    <path d="M60 155 Q160 175 260 155" stroke="#4a2d7a" stroke-width="2" fill="none" opacity="0.4"/>
+    <circle cx="260" cy="50" r="22" fill="none" stroke="#5c8fbf" stroke-width="4"/>
+    <circle cx="260" cy="50" r="8" fill="#5c8fbf"/>
+    <path d="M60 155 Q160 175 260 155" stroke="#2d557a" stroke-width="2" fill="none" opacity="0.4"/>
   </svg>`,
 
   "detective-agency": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
@@ -106,14 +106,14 @@ const THEME_SVGS = {
   </svg>`,
 
   "time-capsule": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
-    <rect width="320" height="200" rx="16" fill="#f0eaf7"/>
-    <ellipse cx="160" cy="155" rx="55" ry="15" fill="rgba(107,76,154,0.2)"/>
-    <rect x="110" y="70" width="100" height="80" rx="8" fill="#6b4c9a"/>
-    <rect x="120" y="55" width="80" height="20" rx="10" fill="#4a3268"/>
+    <rect width="320" height="200" rx="16" fill="#eaf1f7"/>
+    <ellipse cx="160" cy="155" rx="55" ry="15" fill="rgba(76,116,154,0.2)"/>
+    <rect x="110" y="70" width="100" height="80" rx="8" fill="#4c749a"/>
+    <rect x="120" y="55" width="80" height="20" rx="10" fill="#324e68"/>
     <circle cx="160" cy="110" r="22" fill="none" stroke="#e9c46a" stroke-width="3"/>
     <line x1="160" y1="110" x2="160" y2="95" stroke="#e9c46a" stroke-width="2"/>
     <line x1="160" y1="110" x2="172" y2="118" stroke="#e9c46a" stroke-width="2"/>
-    <text x="160" y="175" font-size="11" font-weight="700" fill="#6b4c9a" text-anchor="middle">Est. 2026</text>
+    <text x="160" y="175" font-size="11" font-weight="700" fill="#324e68" text-anchor="middle">Est. 2026</text>
   </svg>`,
 
   "architecture-firm": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
