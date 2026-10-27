@@ -143,6 +143,17 @@ async function sweepPhone(browser, lesson) {
     };
   });
   if (!order.before) fail(where, "language picker does not come before the big idea");
+
+  // Every language button must show its whole label: a clipped "Bilingü…" is a family's only way to switch.
+  const clipped = await page.evaluate(() =>
+    [...document.querySelectorAll(".hw-hero .lang-toggle-btn")]
+      .filter(
+        (b) =>
+          b.scrollWidth > b.clientWidth + 1 || b.getBoundingClientRect().right > innerWidth + 1,
+      )
+      .map((b) => b.innerText.trim() || b.getAttribute("data-lang-mode")),
+  );
+  if (clipped.length) fail(where, `language button text clipped: ${clipped.join(", ")}`);
   if (order.top > 360)
     fail(
       where,
