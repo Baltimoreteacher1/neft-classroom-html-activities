@@ -1,0 +1,28 @@
+import assert from "node:assert/strict";
+import { CONFIG, prerequisiteGraph, runFluencySelfTest, selfTest, validateConfig } from "./fluency-diagnostics.js";
+import { classifyMistake } from "./mistake-notes.js";
+import { emptyTutor, rememberMistake, sanitizeTutor } from "./tutor-engine.js";
+
+assert.equal(CONFIG.gradeBands.length, 8);
+assert.equal(validateConfig().ok, true);
+assert.equal(selfTest, runFluencySelfTest);
+const graph = prerequisiteGraph();
+assert.equal(Object.keys(graph).length, CONFIG.skillCount);
+assert.ok(Object.values(graph).every((node) => Array.isArray(node.prerequisiteSkills) && Array.isArray(node.enrichmentSkills)));
+const result = runFluencySelfTest();
+assert.equal(result.vectors, CONFIG.skillCount * 10);
+assert.ok(result.svgChecks > 0, "generated model problems should exercise SVG rendering");
+assert.deepEqual(result.errors, []);
+assert.equal(classifyMistake({ kind: "fraction", question: "1/4 + 1/2 = ?", answers: ["3/4"] }, "2/6")?.id, "addedDenominators");
+assert.equal(classifyMistake({ kind: "coordinate", question: "Plot point (3, 5)", answers: ["(3, 5)"] }, "(5, 3)")?.id, "swappedCoordinates");
+assert.equal(classifyMistake({ kind: "number", question: "Find the greatest common factor of 12 and 18 = ?", answers: ["6"] }, "36")?.id, "confusedGcfLcm");
+const tutor = emptyTutor();
+const skill = { grade: 5, id: "fraction-add" };
+rememberMistake(tutor, skill, { question: "1/4 + 1/2 = ?", kind: "fraction", answers: ["3/4"] }, "2/6", 1000);
+const restored = sanitizeTutor(tutor).mistakes[0];
+assert.equal(restored.misconceptionCode, "addedDenominators");
+assert.equal(restored.problemPrompt, "1/4 + 1/2 = ?");
+assert.equal(restored.studentInput, "2/6");
+assert.equal(restored.expectedAnswer, "3/4");
+assert.equal(restored.repairStatus, "open");
+console.log(`Fluency diagnostics passed: ${result.skills} skills, ${result.vectors} deterministic vectors, ${result.svgChecks} SVG models`);

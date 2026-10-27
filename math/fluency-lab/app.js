@@ -27,6 +27,7 @@ import { mountTrail } from "./trail-view.js";
 import { GAMES, mountGames } from "./games.js";
 import { getLang, setLang, t, translatePage } from "./i18n.js";
 import { mistakeCategoryLabel } from "./mistake-notes.js";
+import { runFluencySelfTest } from "./fluency-diagnostics.js";
 import { factsReport, mountSnapshot } from "./class-snapshot.js";
 import { whyFor } from "./step-whys.js";
 import { storyFor } from "./story-problems.js";
@@ -6664,7 +6665,13 @@ function submitAnswer(value) {
     return;
   }
   if (state.itemAttempts === 1) {
-    showFeedback("Try once more", feedbackFor(state.item.skill, state.item, value), "try");
+    const nudge = feedbackFor(state.item.skill, state.item, value);
+    const diagnostic = state.tutor.mistakes.find((entry) => entry.key === tutorSkillKey(state.item.skill) && entry.question === state.item.question && !entry.resolvedAt);
+    if (diagnostic?.misconceptionCode) {
+      const label = mistakeCategoryLabel(diagnostic.misconceptionCode);
+      if (label) showFeedback("Let’s check the idea", `${label}. ${nudge}`, "try");
+      else showFeedback("Try once more", nudge, "try");
+    } else showFeedback("Try once more", nudge, "try");
     addInstructionalChoices();
     els.repair.hidden = false;
     saveActiveSession();
@@ -7542,6 +7549,16 @@ function renderNotebook() {
     `}
     ${renderDetectiveSection(state.grade)}
   `;
+}
+
+if (new URLSearchParams(location.search).get("diagnostics") === "1") {
+  const result = runFluencySelfTest();
+  const panel = document.createElement("section");
+  panel.className = "diagnostic-report";
+  panel.setAttribute("role", "status");
+  panel.setAttribute("aria-live", "polite");
+  panel.innerHTML = `<h2>Fluency Lab diagnostics</h2><p>${result.ok ? "All checks passed" : "Checks need attention"}: ${result.skills} skills · ${result.vectors} generated problems · ${result.svgChecks} SVG models</p>${result.errors.length ? `<ul>${result.errors.map((error) => `<li>${escapeHtml(error)}</li>`).join("")}</ul>` : ""}`;
+  document.querySelector("main")?.prepend(panel);
 }
 
 function openPlanned(mode, queue, options = {}) {

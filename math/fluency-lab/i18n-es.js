@@ -817,6 +817,9 @@ export const ES = {
 };
 
 Object.assign(ES, {
+  "Added the denominators instead of finding equal-size parts": "Sumaste los denominadores en vez de encontrar partes del mismo tamaño.",
+  "Found the least common multiple instead of the greatest common factor": "Encontraste el mínimo común múltiplo en vez del máximo común divisor.",
+  "Swapped the x- and y-coordinates": "Intercambiaste las coordenadas x e y.",
   "Equation Factory": "Fábrica de ecuaciones",
   "Fraction Bridge": "Puente de fracciones",
   "Balance Station": "Estación de equilibrio",
