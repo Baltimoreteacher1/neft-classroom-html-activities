@@ -724,6 +724,8 @@ const COVERAGE = [
     /^(math\/fluency-lab\/|docs\/fluency-family-implementation-matrix\.md$|tools\/(validate-fluency-lab|package-fluency-desktop|verify-fluency-family-browser|fluency-family(?:\.test)?)\.mjs$)/,
     ["validate:fluency", "validate:fluency-family-browser", "validate:static", "test"],
   ],
+  // Family Math 2.0 — requirement ledger and its suites (unit suites run inside `test`).
+  [/^(docs\/family-math-2-|tools\/fm2\/)/, ["validate:fm2", "validate:static", "test"]],
   // MATH WORKBENCH — the student whiteboard. The static gate proves its promises in text
   // (preset wording, Spanish coverage, no second Teacher PIN, offline precache, worked
   // arithmetic); the browser gate proves them where a student sees them (first-viewport

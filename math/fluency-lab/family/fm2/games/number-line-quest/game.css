@@ -1,0 +1,136 @@
+/* Number Line Quest: the board, markers, nudge and hop controls. Shared tokens (--fm-*) and .fm2-btn come from fm2.css. */
+.nlq {
+  display: grid;
+  gap: 12px;
+}
+.nlq-rule {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border-left: 6px solid var(--fm-sky);
+  background: var(--fm-sky-soft);
+  font-size: 0.95rem;
+}
+.nlq-stage {
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.nlq-board {
+  position: relative;
+  margin: 0 auto;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.nlq-figure svg {
+  display: block;
+  max-width: none;
+}
+.nlq-handle {
+  position: absolute;
+  z-index: 2;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: grab;
+  touch-action: none;
+}
+.nlq-handle:active {
+  cursor: grabbing;
+}
+.nlq-head {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: var(--fm-violet);
+  box-shadow: 0 0 0 2px var(--fm-violet-deep);
+  color: #fff;
+  font: 800 14px/22px var(--fm-font);
+  text-align: center;
+}
+.nlq-handle.is-active .nlq-head {
+  box-shadow:
+    0 0 0 2px var(--fm-violet-deep),
+    0 0 0 6px var(--fm-gold);
+}
+.nlq-stem {
+  position: absolute;
+  top: 38px;
+  left: 50%;
+  width: 4px;
+  margin-left: -2px;
+  border-radius: 2px;
+  background: var(--fm-violet-deep);
+  pointer-events: none;
+}
+.nlq-readout,
+.nlq-equation,
+.nlq-window,
+.nlq-now {
+  margin: 0;
+  font-weight: 800;
+  text-align: center;
+  color: var(--fm-violet-deep);
+  overflow-wrap: anywhere;
+}
+.nlq-readout {
+  font-size: 1.1rem;
+}
+.nlq-equation {
+  font-size: 1.15rem;
+  min-height: 1.5em;
+}
+.nlq-nudge,
+.nlq-picks,
+.nlq-chips,
+.nlq-hops,
+.nlq-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.nlq-nudge-btn {
+  min-width: 84px;
+}
+.nlq-hop {
+  min-width: 72px;
+  font-size: 1.2rem;
+}
+.nlq-pick[aria-pressed="true"],
+.nlq-chip[aria-pressed="true"] {
+  background: var(--fm-violet-deep);
+  color: #fff;
+}
+.nlq-pick[aria-pressed="true"]::before,
+.nlq-chip[aria-pressed="true"]::before {
+  content: "\2713\00a0";
+}
+.nlq-note {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--fm-gold-soft);
+  border-left: 6px solid var(--fm-gold);
+  font-weight: 700;
+}
+.nlq-note:empty {
+  display: none;
+}
+.nlq.is-done .nlq-handle {
+  cursor: default;
+}
+@media (max-width: 520px) {
+  .nlq-nudge-btn {
+    min-width: 70px;
+  }
+  .nlq-hop {
+    min-width: 64px;
+  }
+}

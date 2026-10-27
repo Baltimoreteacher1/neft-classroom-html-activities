@@ -1,0 +1,57 @@
+/* Fraction Kitchen: the cut / pour / scoop workspace. Builds on the shared tokens in fm2.css. */
+.fk { display: grid; gap: 14px; min-width: 0; }
+.fk-model { margin: 0; display: grid; place-items: center; min-width: 0; }
+.fk-model svg { width: 100%; max-width: 520px; height: auto; }
+.fk-model-circle svg { max-width: 460px; }
+.fk-cup svg, .fk-pitcher svg { max-width: 260px; }
+.fk-ref { margin: 0; display: grid; gap: 4px; place-items: center; padding: 10px; border: 2px dashed var(--fm-line); border-radius: 12px; }
+.fk-ref svg { max-width: 260px; }
+.fk-ref figcaption { font-weight: 800; }
+.fk-servings { margin: 0; display: grid; place-items: center; }
+.fk-servings svg { max-width: 480px; }
+.fk-eq { margin: 0; padding: 10px 14px; border-radius: 12px; background: var(--fm-mist); font-weight: 800; font-size: 1.05rem; overflow-wrap: anywhere; }
+.fk-cmp { background: var(--fm-sky-soft); }
+.fk-need { background: var(--fm-gold-soft); }
+.fk-note { margin: 0; color: var(--fm-muted); font-weight: 700; }
+.fk-check { display: flex; align-items: flex-start; gap: 8px; margin: 0; padding: 8px 12px; border: 2px solid; border-radius: 10px; font-weight: 700; }
+.fk-check.is-ok { border-color: var(--fm-mint); background: var(--fm-mint-soft); color: #0f5e42; }
+.fk-check.is-neutral { border-color: var(--fm-sky); background: var(--fm-sky-soft); color: var(--fm-ink); }
+.fk-check.is-bad { border-color: var(--fm-coral); background: var(--fm-coral-soft); color: #7a2412; }
+.fk-check-icon { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: #fff; font-size: 0.9rem; }
+.is-ok .fk-check-icon { background: var(--fm-mint); }
+.is-bad .fk-check-icon { background: var(--fm-coral); }
+.is-neutral .fk-check-icon { background: var(--fm-sky); }
+.fk-group-name { display: block; margin-top: 6px; font-weight: 800; }
+.fk-step-label { flex: 1 0 100%; font-weight: 800; }
+.fk .fm2-btn-quiet { justify-content: flex-start; padding-left: 4px; padding-right: 4px; }
+.fk-tools { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.fk-tool { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.fk-tool-label { margin: 0; font-weight: 800; }
+.fk-places { display: grid; gap: 10px; }
+.fk-stepper { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.fk-step-btn { min-width: 48px; padding: 8px 12px; font-size: 1.2rem; line-height: 1; }
+.fk-spin { min-width: 88px; min-height: 48px; display: grid; place-items: center; padding: 6px 12px; border: 2px solid var(--fm-violet-deep); border-radius: 12px; background: var(--fm-paper); font-weight: 800; text-align: center; }
+.fk-piece-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.fk-piece-btn { min-width: 48px; padding: 8px 10px; }
+.fk .fk-stepper .fm2-btn, .fk .fk-piece-btn, .fk .fk-ticks .fm2-btn, .fk .fk-scoops .fm2-btn, .fk .fk-cut-row .fm2-btn, .fk .fk-group .fm2-btn { flex: 0 0 auto; }
+.fk .fm2-btn[aria-pressed="true"] { background: var(--fm-violet-deep); color: #fff; }
+.fk .fm2-btn[aria-pressed="true"]::before { content: "✓"; }
+.fk .fk-piece-btn.is-served { background: var(--fm-mint-soft); border-color: var(--fm-mint); color: #0f5e42; }
+.fk-ticks, .fk-scoops { display: flex; flex-wrap: wrap; gap: 8px; }
+.fk-cuts { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.fk-cut-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.fk-cut-name { min-width: 64px; font-weight: 800; }
+.fk-groups { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.fk-group { display: inline-flex; align-items: center; gap: 8px; padding: 2px 4px 2px 14px; border: 2px solid var(--fm-line); border-radius: 999px; font-weight: 800; }
+.fk-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.fk-bar { text-decoration: overline; text-decoration-thickness: 2px; }
+@media (min-width: 900px) {
+  .fk { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); column-gap: 24px; align-items: start; }
+  .fk > * { grid-column: 1; }
+  .fk > .fk-tools { grid-column: 2; grid-row: 1 / span 7; }
+}
+@media (max-width: 520px) {
+  .fk-stepper { width: 100%; }
+  .fk-spin { flex: 1 1 80px; }
+}
+.fk-tools[inert] { opacity: 0.55; }

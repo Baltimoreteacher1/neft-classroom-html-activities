@@ -1,0 +1,245 @@
+/* Math Puzzle Studio: the balance scale (beam, pans, readings) and the equation-scale move panel. */
+/* the balance scale */
+.pz-scale-wrap {
+  display: grid;
+  gap: 8px;
+  width: min(100%, 560px);
+}
+.pz-scale {
+  container-type: inline-size;
+  width: 100%;
+}
+.pz-beam {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.pz-pans {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8%;
+  margin-top: -8.33cqw;
+  margin-bottom: 6.5cqw;
+}
+.pz-pan {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 6px 6px 10px;
+  border: 3px solid var(--fm-ink);
+  border-top-width: 6px;
+  border-radius: 6px 6px 28px 28px;
+  background: var(--fm-paper);
+  transform: translateY(calc(var(--drop, 0) * 1cqw));
+  transition: transform 0.35s ease;
+  min-height: 92px;
+}
+.pz-pan-title {
+  margin: 0 0 4px;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--fm-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.pz-items {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pz-wt {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 44px;
+  min-height: 44px;
+}
+.pz-wt-slot {
+  flex-direction: row;
+  gap: 4px;
+}
+.pz-wt-num,
+.pz-wt-loose,
+.pz-wt-expr {
+  padding: 4px 8px;
+  border: 2px solid var(--fm-ink);
+  border-radius: 8px;
+  background: var(--fm-gold-soft);
+}
+.pz-num {
+  font: 800 1.25rem/1 var(--fm-font);
+  font-variant-numeric: tabular-nums;
+}
+.pz-expr-text {
+  font: 800 1.1rem/1.1 var(--fm-font);
+}
+.pz-expr-val {
+  color: var(--fm-muted);
+  font-weight: 700;
+}
+.pz-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  justify-content: center;
+  max-width: 76px;
+}
+.pz-dots i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--fm-violet-deep);
+}
+.pz-cubes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  max-width: 96px;
+  justify-content: center;
+}
+.pz-cubes i {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 2px solid var(--fm-ink);
+  background: var(--fm-gold);
+}
+.pz-wt-loose {
+  flex-direction: row;
+  gap: 6px;
+}
+.pz-boxes {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.pz-box {
+  width: 44px;
+  height: 44px;
+}
+.pz-sq {
+  max-width: 100%;
+  height: auto;
+}
+.pz-sq-label {
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+.pz-reading,
+.pz-equation,
+.pz-goal {
+  margin: 0;
+  text-align: center;
+  font-weight: 800;
+}
+.pz-reading {
+  font-size: 1.1rem;
+  color: var(--fm-violet-deep);
+  min-height: 1.5em;
+}
+.pz-equation {
+  color: var(--fm-ink);
+}
+.pz-goal {
+  color: var(--fm-ink);
+  background: var(--fm-sky-soft);
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+.pz-weights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--fm-paper);
+  border: 2px solid var(--fm-line);
+}
+.pz-weight-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+}
+.pz-xstep {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+}
+.pz-xval {
+  min-width: 2ch;
+  text-align: center;
+  font: 800 1.4rem/1 var(--fm-font);
+}
+.pz-xbtn {
+  min-width: 48px;
+  padding: 4px 12px;
+  font-size: 1.4rem;
+}
+
+/* equation-scale moves */
+.pz-moves {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--fm-paper);
+  border: 2px solid var(--fm-line);
+}
+.pz-move-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.pz-amt-label {
+  font-weight: 800;
+}
+.pz-amt {
+  width: 72px;
+  min-height: 48px;
+  text-align: center;
+  border: 2px solid var(--fm-violet-deep);
+  border-radius: 10px;
+  font: 800 1.3rem/1.2 var(--fm-font);
+  color: var(--fm-ink);
+  background: var(--fm-paper);
+}
+.pz-pan-pick.is-on {
+  background: var(--fm-violet-deep);
+  color: #fff;
+}
+.pz-history {
+  margin: 0;
+  padding-left: 26px;
+  display: grid;
+  gap: 2px;
+  color: var(--fm-ink);
+  font-weight: 700;
+  max-height: 9em;
+  overflow: auto;
+}
+.pz-none {
+  list-style: none;
+  margin-left: -26px;
+  color: var(--fm-muted);
+}
+
+
+.pz-inner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}

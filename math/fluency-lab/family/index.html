@@ -1,45 +1,214 @@
 <!doctype html>
+<!-- @fm2 FM-001 FM-002 FM-003 FM-004 FM-005 FM-025 FM-026 FM-028 FM-029 FM-030 FM-035 FM-036 FM-043 -->
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f6f7fb">
-  <meta name="description" content="A short, welcoming way for families to practice mathematics together.">
-  <title>Family Math Tonight · EduWonderLab</title>
-  <link rel="stylesheet" href="/assets/fonts/atkinson-hyperlegible-nunito-76729d.css">
-  <link rel="stylesheet" href="/assets/fonts/worksheet-pages.css">
-  <link rel="stylesheet" href="./family.css">
-  <script type="module" src="./family.js"></script>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f1f4fb" />
+    <meta
+      name="description"
+      content="Short family math sessions: ten games, grades K to 8, in English and Spanish. Progress stays on this device."
+    />
+    <title>Family Math · EduWonderLab</title>
+    <link rel="stylesheet" href="/assets/fonts/atkinson-hyperlegible-nunito-76729d.css" />
+    <link rel="stylesheet" href="./fm2/fm2.css" />
+    <link rel="stylesheet" href="./fm2/page-kit.css" />
+    <link rel="stylesheet" href="./fm2/home.css" />
+    <script type="module" src="./home.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
-</head>
-<body>
-  <a class="skip-link" href="#main">Skip to family practice</a>
-  <header class="topbar"><a class="brand" href="../" aria-label="EduWonderLab Math Fluency Lab home"><span class="brand-mark" aria-hidden="true">e</span><span>EduWonderLab <small>FAMILY MATH</small></span></a><div class="top-actions"><label class="profile-label" for="family-profile">Learner</label><select id="family-profile" aria-label="Choose learner profile"></select><button id="language-toggle" class="language-toggle" type="button">Español</button></div></header>
-  <main id="main">
-    <div id="family-storage-warning" class="storage-warning" role="status" hidden></div>
-    <section class="welcome" aria-labelledby="welcome-title">
-      <div class="welcome-copy"><p class="eyebrow">A LITTLE MATH, TOGETHER</p><h1 id="welcome-title">Make room for a math moment.</h1><p id="welcome-text">A short practice path, one good question, and a chance to notice how your learner thinks.</p><div class="welcome-actions"><a id="tonight-link" class="button button-light" href="tonight.html?grade=1&amp;profile=0&amp;skill=add-10&amp;lang=en">Start tonight’s math <span aria-hidden="true">→</span></a><a class="welcome-secondary" href="../?view=path">See this learner’s progress</a></div><p id="privacy-note" class="privacy-note">Progress stays on this device. No account is needed.</p></div>
-      <div class="orbit-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="math-sun">∑</div><span class="float-chip chip-one">6 + 7</span><span class="float-chip chip-two">⅜</span><span class="float-chip chip-three">x = 4</span><span class="float-dot dot-one"></span><span class="float-dot dot-two"></span></div>
-    </section>
-    <section class="quick-actions" aria-label="Family math options">
-      <a class="action-card primary-card" id="tonight-card" href="tonight.html?grade=1&amp;profile=0&amp;skill=add-10&amp;lang=en"><span class="action-icon icon-violet" aria-hidden="true">✦</span><span><strong id="tonight-title">Tonight’s Math</strong><small id="tonight-copy">A five-part learning mission chosen from real practice evidence.</small></span><span class="action-arrow" aria-hidden="true">↗</span></a>
-      <a class="action-card" href="#choose-grade"><span class="action-icon icon-gold" aria-hidden="true">⌁</span><span><strong id="grade-action">Choose a Grade</strong><small id="grade-copy">Find a comfortable place to begin.</small></span><span class="action-arrow" aria-hidden="true">↗</span></a>
-      <a class="action-card" href="#skill-practice"><span class="action-icon icon-blue" aria-hidden="true">⌕</span><span><strong id="skill-action">Practice a Skill</strong><small id="skill-copy">Choose a topic and start with a visual lesson.</small></span><span class="action-arrow" aria-hidden="true">↗</span></a>
-      <a class="action-card" id="games-link" href="../?view=games"><span class="action-icon icon-coral" aria-hidden="true">◇</span><span><strong id="games-action">Play Together</strong><small id="games-copy">Solve, build, and explain as a team.</small></span><span class="action-arrow" aria-hidden="true">↗</span></a>
-      <a class="action-card" id="progress-link" href="../?view=path"><span class="action-icon icon-green" aria-hidden="true">↗</span><span><strong id="progress-action">My Progress</strong><small id="progress-copy">See skills growing and what could come next.</small></span><span class="action-arrow" aria-hidden="true">↗</span></a>
-    </section>
-    <div class="content-grid">
-      <section class="panel grade-panel" id="choose-grade" aria-labelledby="grade-heading"><div class="panel-heading"><div><p class="eyebrow" id="grade-kicker">A GOOD PLACE TO START</p><h2 id="grade-heading">Choose a grade</h2></div><span class="step-number">01</span></div><p id="grade-description" class="panel-intro">Pick the learner’s current grade. Practice can still revisit earlier ideas when that helps.</p><div id="grade-options" class="grade-options" role="group" aria-label="Choose a grade"></div><p id="grade-selected" class="selection-note" aria-live="polite"></p></section>
-      <section class="panel skill-panel" id="skill-practice" aria-labelledby="skill-heading"><div class="panel-heading"><div><p class="eyebrow" id="skill-kicker">A SMALL, USEFUL NEXT STEP</p><h2 id="skill-heading">Pick a skill</h2></div><span class="step-number">02</span></div><p id="skill-description" class="panel-intro">These suggestions come from the learner’s saved practice. With little evidence, start with a new idea.</p><div id="recommended-skill" class="recommended-skill"></div><label id="skill-label" class="field-label" for="skill-select">Choose another skill</label><select id="skill-select" class="skill-select"></select><a id="skill-start" class="button button-dark" href="../?start=mission">Open this skill <span aria-hidden="true">→</span></a><p id="skill-note" class="selection-note">Learner responses and explanations remain on this device.</p></section>
-      <section class="panel week-report-panel" id="family-week-panel" aria-labelledby="week-report-heading"><div class="panel-heading"><div><p class="eyebrow" id="week-report-kicker">A LOOK BACK, WITH CARE</p><h2 id="week-report-heading">Practice this week</h2></div><span class="step-number" aria-hidden="true">↗</span></div><div id="family-week-report" aria-live="polite"></div><button id="print-week-report" class="text-button" type="button">Print weekly summary</button></section>
-      <section class="panel rotation-panel" aria-labelledby="rotation-heading"><div class="panel-heading"><div><p class="eyebrow" id="week-kicker">PICK ANY DAY, ANY TIME</p><h2 id="rotation-heading">Seven ways into math</h2></div><span class="step-number">03</span></div><p id="rotation-intro" class="panel-intro">Missed a day? No problem. Every option is open whenever it works for your family.</p><div id="rotation-list" class="rotation-list"></div></section>
-      <section class="panel coach-panel" aria-labelledby="coach-heading"><div class="panel-heading"><div><p class="eyebrow" id="coach-kicker">A HELPFUL QUESTION</p><h2 id="coach-heading">Try this together</h2></div><span class="coach-spark" aria-hidden="true">✳</span></div><div id="coach-content"></div><button id="print-coach" class="text-button" type="button">Print this coaching card ↗</button></section>
-    </div>
-    <section class="bottom-note"><span class="bottom-icon" aria-hidden="true">∞</span><p id="bottom-copy"><strong>There is no perfect pace.</strong> A short conversation about how a solution works is meaningful mathematics.</p><a href="../" id="lab-link">Explore the full Fluency Lab →</a></section>
-  </main>
-  <footer><span>EduWonderLab · Math Fluency Lab</span><a href="../">Back to the Fluency Lab</a></footer>
+  </head>
+  <body class="fm2-page pk-page home-page">
+    <a class="skip-link" href="#main" data-t="skipHome">Skip to family practice</a>
+    <header class="pk-top">
+      <div class="pk-topbar">
+        <a
+          class="pk-brand"
+          id="pk-brand"
+          href="../"
+          data-t-aria="brandAria"
+          aria-label="EduWonderLab Math Fluency Lab home"
+          ><span class="pk-brand-mark" aria-hidden="true">e</span
+          ><span>EduWonderLab <small data-t="family">FAMILY MATH</small></span></a
+        >
+        <div class="pk-top-actions">
+          <label class="pk-label" for="family-profile" data-t="learner">Learner</label>
+          <select id="family-profile" data-testid="profile-select" data-fk="profile">
+            <option>Learner 1 · Orbit</option>
+          </select>
+          <button
+            type="button"
+            class="pk-link-btn"
+            id="add-learner"
+            data-testid="add-learner"
+            data-fk="add"
+            data-t="addLearner"
+          >
+            Add learner
+          </button>
+          <button
+            type="button"
+            class="pk-link-btn"
+            id="lang-toggle"
+            data-testid="lang-toggle"
+            data-fk="lang"
+            lang="es"
+          >
+            Español
+          </button>
+        </div>
+      </div>
+    </header>
+    <main id="main" class="pk-wrap" tabindex="-1">
+      <div
+        id="family-storage-warning"
+        class="pk-banner"
+        role="status"
+        data-testid="storage-warning"
+        hidden
+      ></div>
+      <noscript
+        ><p class="pk-banner" data-testid="no-js">
+          Family Math needs JavaScript to plan a session. Progress is saved on this device only. ·
+          Matemáticas en familia necesita JavaScript para planear una sesión. El progreso se guarda
+          solo en este dispositivo.
+        </p></noscript
+      >
+      <div id="error-region" data-testid="home-error" role="alert"></div>
+      <div id="resume-region"></div>
+
+      <section class="hm-region hm-hero" id="hero-region" aria-labelledby="welcome-title">
+        <div class="hm-hero-copy">
+          <p class="hm-eyebrow" data-t="heroEyebrow">A LITTLE MATH, TOGETHER</p>
+          <h1 id="welcome-title" data-t="heroTitle">Make room for a math moment.</h1>
+          <p class="hm-hero-lead" data-t="heroLead">
+            Pick a grade and a length, then press Start. Each activity is a short game, with hints
+            whenever your learner wants one.
+          </p>
+          <p class="hm-privacy" data-t="privacy">
+            Progress stays on this device. No account is needed.
+          </p>
+          <div class="hm-chips" aria-hidden="true">
+            <span>6 + 7</span><span>⅜</span><span>x = 4</span>
+          </div>
+        </div>
+        <div class="hm-setup" id="setup" data-testid="setup">
+          <p class="hm-loading" data-t="loading">Getting your games ready…</p>
+        </div>
+      </section>
+
+      <section
+        class="hm-region"
+        id="mission-region"
+        aria-labelledby="mission-title"
+        data-testid="mission-section"
+      >
+        <div class="hm-head">
+          <h2 class="pk-h" id="mission-title" data-t="missionTitle">Today’s mission</h2>
+          <p class="pk-lead" id="mission-sub"></p>
+        </div>
+        <div id="mission-body"></div>
+      </section>
+
+      <section
+        class="hm-region"
+        id="progress-region"
+        aria-labelledby="progress-title"
+        data-testid="progress-strip"
+      >
+        <div class="hm-head">
+          <h2 class="pk-h" id="progress-title" data-t="progressTitle">Your progress</h2>
+        </div>
+        <div id="progress-body"></div>
+      </section>
+
+      <section
+        class="hm-region"
+        id="games-region"
+        aria-labelledby="games-title"
+        data-testid="games-shelf"
+      >
+        <div class="hm-head">
+          <h2 class="pk-h" id="games-title" data-t="shelfTitle">The ten games</h2>
+          <p class="pk-lead" data-t="shelfLead">Pick any game to play at your learner’s grade.</p>
+        </div>
+        <div id="games-body"></div>
+      </section>
+
+      <section
+        class="hm-region"
+        id="skills-region"
+        aria-labelledby="skills-title"
+        data-testid="skill-browser"
+      >
+        <div class="hm-head">
+          <h2 class="pk-h" id="skills-title" data-t="skillsTitle">Practice a skill</h2>
+          <p class="pk-lead" id="skills-sub"></p>
+        </div>
+        <div id="skills-body"></div>
+      </section>
+
+      <section
+        class="hm-region hm-coach"
+        id="coach-region"
+        aria-labelledby="coach-title"
+        data-testid="coach-card"
+      >
+        <div class="hm-head">
+          <h2 class="pk-h" id="coach-title" data-t="coachTitle">Try this together</h2>
+          <p class="pk-lead" id="coach-sub"></p>
+        </div>
+        <div id="coach-body"></div>
+        <button
+          type="button"
+          class="pk-link-btn hm-noprint"
+          id="print-coach"
+          data-testid="print-coach"
+          data-fk="print-coach"
+          data-t="printCard"
+        >
+          Print this card
+        </button>
+      </section>
+
+      <section class="hm-region" id="rw-region" aria-labelledby="rw-title" data-testid="realworld">
+        <p class="pk-print-only" id="rw-print-title"></p>
+        <div class="hm-head">
+          <h2 class="pk-h" id="rw-title" data-t="rwTitle">Math at home</h2>
+          <p class="pk-lead" id="rw-sub"></p>
+        </div>
+        <div id="rw-body"></div>
+      </section>
+
+      <section class="hm-region" id="more-region" aria-labelledby="more-title">
+        <div class="hm-head">
+          <h2 class="pk-h" id="more-title" data-t="moreTitle">More ways to practice</h2>
+        </div>
+        <div class="hm-more">
+          <a
+            class="hm-more-card"
+            id="tonight-link"
+            data-testid="tonight-link"
+            href="tonight.html?grade=1&amp;profile=0&amp;skill=add-10&amp;lang=en"
+            ><strong data-t="tonightTitle">Tonight’s Math</strong
+            ><span data-t="tonightText"
+              >A five-part guided path built from your learner’s saved practice.</span
+            ></a
+          >
+          <a class="hm-more-card" id="lab-link" data-testid="lab-link" href="../"
+            ><strong data-t="labTitle">The full Fluency Lab</strong
+            ><span data-t="labText"
+              >Skills, games and tools from the whole Math Fluency Lab.</span
+            ></a
+          >
+        </div>
+      </section>
+    </main>
+    <footer class="hm-footer">
+      <span>EduWonderLab · Math Fluency Lab</span
+      ><a href="../" data-t="backLab">Back to the Fluency Lab</a>
+    </footer>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <script src="/shared/save-resume/save-resume-engine.js?v=20261026-v3" defer></script>
   <!-- nsr-injected:end -->

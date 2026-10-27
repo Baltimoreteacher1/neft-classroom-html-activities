@@ -28,10 +28,7 @@ try {
         version: 2,
         records: {
           "4:round-large": {
-            recent: [
-              { correct: false, independent: true, at: Date.now(), level: 1 },
-              { correct: true, independent: false, at: Date.now() - 1000, level: 1 },
-            ],
+            recent: [{ correct: false, independent: true, at: Date.now(), level: 1 }],
             dueAt: Date.now() - 1000,
           },
         },
@@ -42,9 +39,6 @@ try {
     );
   });
   const page = await context.newPage();
-  await context.addInitScript(() => {
-    window.print = () => {};
-  });
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto(`${base}/math/fluency-lab/family/`, { waitUntil: "networkidle" });
@@ -77,59 +71,37 @@ try {
   );
 
   await page.getByRole("button", { name: "Grade 4" }).click();
-  assert.match(await page.locator("#family-week-report").innerText(), /1 independent check/i);
-  assert.match(await page.locator("#family-week-report").innerText(), /1\s+checks with support/i);
-  assert.match(await page.locator("#family-week-report").innerText(), /0 correct/);
-  assert.match(
-    await page.locator(".week-skill-list").innerText(),
-    /0\/1 independent check · 1 supported check/i,
-  );
-  assert.doesNotMatch(
-    await page.locator("#coach-content .coach-help").first().innerText(),
-    /Listen for:.*Listen for:/,
-  );
-  assert.match(await page.locator("#recommended-skill").innerText(), /Round/);
-  await page.locator("#skill-select").selectOption({ index: 2 });
-  const selectedSkillId = await page.locator("#skill-select").inputValue();
-  const skillHref = await page.locator("#skill-start").getAttribute("href");
+  // The home still picks Tonight's Math from the learner's real Fluency Lab evidence (seeded above: round-large is due).
+  assert.match(await page.locator("#tonight-link").getAttribute("href"), /skill=round-large/);
+  const firstRow = page.locator('[data-testid="skill-row"]').first();
+  const skillHref = await firstRow.locator('[data-testid="skill-practice"]').getAttribute("href");
+  assert.match(skillHref, /^play\.html\?/);
   assert.match(skillHref, /grade=4/);
-  assert.match(skillHref, /start=practice/);
-  assert.match(skillHref, /skill=4%3A/);
+  const selectedGame = new URL(skillHref, "http://x/").searchParams.get("game");
+  const selectedSkill = new URL(skillHref, "http://x/").searchParams.get("skill");
   await page.getByRole("button", { name: "Español" }).click();
+  const spanishHref = await page
+    .locator('[data-testid="skill-row"]')
+    .first()
+    .locator('[data-testid="skill-practice"]')
+    .getAttribute("href");
   assert.equal(
-    await page.locator("#skill-select").inputValue(),
-    selectedSkillId,
-    "switching language preserves the selected skill",
+    new URL(spanishHref, "http://x/").searchParams.get("skill"),
+    selectedSkill,
+    "switching language preserves the grade and the skill list",
   );
+  assert.equal(new URL(spanishHref, "http://x/").searchParams.get("game"), selectedGame);
+  assert.equal(new URL(spanishHref, "http://x/").searchParams.get("lang"), "es");
   assert.equal(
     await page.locator("h1").first().innerText(),
     "Hagamos un momento para las matemáticas.",
   );
+  assert.equal(await page.locator("#progress-link").innerText(), "Ver mi progreso");
   assert.equal(
-    await page.locator(".welcome-secondary").innerText(),
-    "Ver el progreso de este estudiante",
+    await page.locator('[data-testid="game-card"]').count(),
+    10,
+    "the shelf lists all ten games, ready or coming soon",
   );
-  assert.match(
-    await page.locator("#family-week-report").innerText(),
-    /Comprobaciones independientes/,
-  );
-  assert.match(
-    await page.locator(".week-skill-list").innerText(),
-    /0\/1 comprobación independiente · 1 comprobación con apoyo/i,
-  );
-  const reportPopupPromise = page.waitForEvent("popup");
-  await page.locator("#print-week-report").click();
-  const reportPopup = await reportPopupPromise;
-  assert.match(await reportPopup.title(), /Práctica familiar de esta semana/);
-  assert.match(await reportPopup.locator("body").innerText(), /Destrezas recientes/);
-  assert.match(await reportPopup.locator("body").innerText(), /Una pregunta para explorar juntos/);
-  assert.equal(
-    await reportPopup.locator(".coach-quote").innerText(),
-    await page.locator("#coach-content .coach-quote").innerText(),
-    "the printable report includes the selected skill’s bilingual family conversation prompt",
-  );
-  await reportPopup.close();
-  assert.equal(await page.locator("#rotation-list .rotation-row").count(), 7);
   const spanishAxe = await new AxeBuilder({ page }).analyze();
   assert.deepEqual(
     spanishAxe.violations
@@ -144,30 +116,19 @@ try {
     "mobile page has no horizontal overflow",
   );
 
-  await page.locator("#family-profile").selectOption("add:1");
+  await page.locator("#add-learner").click();
   assert.match(await page.locator("#tonight-link").getAttribute("href"), /profile=1/);
-  assert.match(await page.locator("#family-week-report").innerText(), /No hay práctica registrada/);
-  const modes = await page.locator("#rotation-list a").evaluateAll((links) =>
-    links.map((link) => {
-      const url = new URL(link.href);
-      return url.pathname.endsWith("/tonight.html")
-        ? "tonight"
-        : url.searchParams.get("start") || url.searchParams.get("view");
-    }),
-  );
-  assert.deepEqual(modes, [
-    "tonight",
-    "practice",
-    "games",
-    "checkup",
-    "mission",
-    "realworld",
-    "daily",
-  ]);
+  const startHref = await page.locator("#start-link").getAttribute("href");
+  assert.match(startHref, /^play\.html\?plan=/);
+  assert.match(startHref, /profile=1/);
+  assert.match(await page.locator("#lab-link").getAttribute("href"), /^\.\.\/\?grade=\d&profile=1/);
 
+  // The Fluency Lab itself still starts a real practice session from a family launch link.
   await page.goto(
-    new URL(skillHref.replace("profile=0", "profile=1"), `${base}/math/fluency-lab/family/`).href,
-    { waitUntil: "networkidle" },
+    `${base}/math/fluency-lab/?grade=4&profile=1&start=practice&skill=4%3Around-large`,
+    {
+      waitUntil: "networkidle",
+    },
   );
   assert.equal(new URL(page.url()).pathname, "/math/fluency-lab/");
   const labNavigation = await page.locator("a[href]").evaluateAll((anchors) =>
@@ -193,6 +154,26 @@ try {
     await page.evaluate(() => document.documentElement.scrollWidth - innerWidth),
     0,
     "desktop page has no horizontal overflow",
+  );
+  await page.goto(
+    new URL(skillHref.replace("profile=0", "profile=1"), `${base}/math/fluency-lab/family/`).href,
+    {
+      waitUntil: "networkidle",
+    },
+  );
+  assert.equal(new URL(page.url()).pathname, "/math/fluency-lab/family/play.html");
+  assert.ok(
+    (
+      await page
+        .locator("a[href]")
+        .evaluateAll((links) => links.map((l) => new URL(l.href).pathname))
+    ).every((path) => path.startsWith("/math/fluency-lab/")),
+    "family play page links stay inside Math Fluency Lab",
+  );
+  assert.equal(
+    (await page.locator("#fm2-main h1").count()) > 0,
+    true,
+    "the skill link opens a family activity",
   );
   assert.deepEqual(errors, [], "family and Fluency Lab routes have no uncaught page errors");
   await context.close();
@@ -369,13 +350,15 @@ try {
   await noSaveContext.addInitScript(() => {
     const original = Storage.prototype.setItem;
     Storage.prototype.setItem = function (key, value) {
-      if (String(key).startsWith("ewl-fluency-settings-v1:grade"))
+      if (String(key).startsWith("ewl-fm2-v1"))
         throw new DOMException("Storage full", "QuotaExceededError");
       return original.call(this, key, value);
     };
   });
   const noSavePage = await noSaveContext.newPage();
   await noSavePage.goto(`${base}/math/fluency-lab/family/`, { waitUntil: "networkidle" });
+  // The new home saves the grade in the learner's Family Math record only when the grade is changed.
+  await noSavePage.getByRole("button", { name: "Grade 3" }).click();
   assert.equal(
     await noSavePage.locator("#family-storage-warning").isVisible(),
     true,
@@ -424,7 +407,7 @@ try {
   await teacherPage.close();
 
   console.log(
-    "Family browser flow passed: adaptive skill selection, profile switch, seven routes, bilingual family entry, saved five-stage session, visual lesson, independent versus supported evidence, pause/resume, keyboard focus, Axe, teacher family-link settings and print QR, bilingual weekly family report with profile isolation and print output, real practice launch, and mobile/desktop layout.",
+    "Family browser flow passed: adaptive Tonight's Math skill, skill browser, profile switch, Start/plan/lab links, bilingual family entry, saved five-stage session, visual lesson, independent versus supported evidence, pause/resume, keyboard focus, Axe, teacher family-link settings and print QR, real practice launch, and mobile/desktop layout.",
   );
 } finally {
   await browser?.close();

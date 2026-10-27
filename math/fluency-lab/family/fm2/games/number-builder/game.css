@@ -1,0 +1,355 @@
+/* Number Builder: workspace for pieces, digit tiles and the scientific-notation builder. Tokens come from fm2.css. */
+.nb {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.nb-h {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--fm-violet-deep);
+}
+.nb-sub-h {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--fm-muted);
+  text-align: center;
+}
+
+.nb-rule-list {
+  display: grid;
+  gap: 6px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.nb-rule {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  padding: 8px 12px;
+  border: 2px solid var(--fm-line);
+  border-radius: 12px;
+  background: var(--fm-mist);
+  font-weight: 700;
+}
+.nb-rule[data-met="true"] {
+  border-color: var(--fm-mint);
+  background: var(--fm-mint-soft);
+}
+.nb-rule-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--fm-violet-deep);
+  font-size: 0.8rem;
+  line-height: 1;
+}
+.nb-rule[data-met="true"] .nb-rule-mark {
+  background: var(--fm-mint);
+  border-color: #0f5e42;
+  color: #fff;
+}
+.nb-rule-state {
+  color: var(--fm-muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.nb-mat-wrap {
+  padding: 12px;
+  border: 2px dashed var(--fm-line);
+  border-radius: var(--fm-radius);
+  background: var(--fm-mist);
+}
+.nb-mat {
+  display: grid;
+  justify-items: start;
+  min-height: 60px;
+}
+.nb-mat svg {
+  width: 100%;
+  max-width: 640px;
+  max-height: 340px;
+}
+.nb-readout {
+  margin: 8px 0 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.nb-tray {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.nb-card {
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  border: 2px solid var(--fm-line);
+  border-radius: 14px;
+  background: var(--fm-paper);
+}
+.nb-add {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 2px;
+  min-height: 96px;
+  padding: 6px;
+  border: 2px solid var(--fm-violet-deep);
+  border-radius: 12px;
+  background: var(--fm-violet-soft);
+  color: var(--fm-violet-deep);
+  font: 800 0.95rem/1.2 var(--fm-font);
+  text-align: center;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.nb-add::after { content: "+"; position: absolute; top: 6px; right: 8px; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--fm-violet-deep); color: #fff; font-size: 1.2rem; font-weight: 800; line-height: 1; }
+.nb-add:hover {
+  background: #d9d3f7;
+}
+.nb-icon {
+  width: 52px;
+  height: 52px;
+}
+.nb-face {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--fm-muted);
+}
+.nb-step {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.nb-count {
+  min-width: 2ch;
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-align: center;
+  flex: 1;
+}
+
+.nb-sub,
+.nb-step-btn {
+  display: inline-grid;
+  place-items: center;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0;
+  border: 2px solid var(--fm-violet-deep);
+  border-radius: 999px;
+  background: var(--fm-paper);
+  color: var(--fm-violet-deep);
+  font: 800 1.6rem/1 var(--fm-font);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.nb-sub:hover,
+.nb-step-btn:hover {
+  background: var(--fm-violet-soft);
+}
+.nb [aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.nb button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.nb-add:focus-visible,
+.nb-sub:focus-visible,
+.nb-step-btn:focus-visible,
+.nb-slot:focus-visible,
+.nb-tile:focus-visible {
+  outline: none;
+  box-shadow: var(--fm-focus);
+}
+
+.nb-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.nb-kept-list {
+  display: grid;
+  gap: 8px;
+  margin: 6px 0 0;
+  padding-left: 0;
+  list-style: none;
+}
+.nb-kept-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  padding: 8px 12px;
+  border: 2px solid var(--fm-mint);
+  border-radius: 12px;
+  background: var(--fm-mint-soft);
+}
+
+/* digit tiles in a chart */
+.nb-slots {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.nb-slot-wrap {
+  display: grid;
+  align-content: start;
+  justify-items: center;
+  gap: 2px;
+}
+.nb-slot-wrap.nb-group {
+  margin-left: 10px;
+}
+.nb-slot {
+  width: 60px;
+  min-height: 68px;
+  border: 3px solid var(--fm-violet-deep);
+  border-radius: 12px;
+  background: var(--fm-paper);
+  color: var(--fm-ink);
+  font: 800 1.9rem/1 var(--fm-font);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.nb-slot.nb-selected {
+  border-style: dashed;
+  background: var(--fm-gold-soft);
+}
+.nb-place {
+  max-width: 76px;
+  color: var(--fm-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.15;
+}
+.nb-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.nb-tile {
+  width: 60px;
+  height: 60px;
+  border: 3px solid var(--fm-sky);
+  border-radius: 12px;
+  background: var(--fm-sky-soft);
+  color: var(--fm-ink);
+  font: 800 1.8rem/1 var(--fm-font);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.nb-tile.nb-used {
+  border-style: dashed;
+  background: var(--fm-mist);
+  color: var(--fm-muted);
+}
+
+/* scientific notation */
+.nb-sci {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+.nb-digits {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.nb-digit,
+.nb-expo {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+}
+.nb-expo {
+  padding: 0 6px;
+}
+.nb-dval {
+  min-width: 1.4ch;
+  font-size: 2rem;
+  font-weight: 800;
+  text-align: center;
+}
+.nb-point {
+  align-self: center;
+  padding: 0 2px;
+  font-size: 2rem;
+  font-weight: 800;
+}
+.nb-times {
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.nb-pnum {
+  display: none;
+}
+
+@media (max-width: 520px) {
+  .nb-pname {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .nb-pnum {
+    display: inline;
+  }
+  .nb-tray {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .nb-digits {
+    gap: 3px;
+  }
+  .nb-step-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .nb-slots {
+    gap: 3px;
+  }
+  .nb-slot {
+    width: 44px;
+    font-size: 1.6rem;
+  }
+  .nb-tile {
+    width: 48px;
+  }
+  .nb-slot-wrap.nb-group {
+    margin-left: 3px;
+  }
+  .nb-place {
+    max-width: 50px;
+    font-size: 0.7rem;
+  }
+}

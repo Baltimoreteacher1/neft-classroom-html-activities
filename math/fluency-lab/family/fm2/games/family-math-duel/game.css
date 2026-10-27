@@ -1,0 +1,329 @@
+/* Family Math Duel: the duel table. Shared tokens (--fm-*) and .fm2-btn come from fm2.css. */
+.fd {
+  display: grid;
+  gap: 14px;
+}
+.fd h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.fd-note {
+  margin: 0;
+  color: var(--fm-muted);
+  font-size: 0.95rem;
+}
+
+/* scoreboard: two big name chips, the player to move is outlined AND labelled */
+.fd-scores {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.fd-seat {
+  display: grid;
+  gap: 2px;
+  justify-items: start;
+  padding: 10px 14px;
+  border: 3px solid var(--fm-line);
+  border-radius: 14px;
+  background: var(--fm-paper);
+}
+.fd-seat[data-seat="0"] {
+  border-left-color: var(--fm-sky);
+}
+.fd-seat[data-seat="1"] {
+  border-left-color: var(--fm-gold);
+}
+.fd-seat[data-active="true"] {
+  border-color: var(--fm-violet-deep);
+  background: var(--fm-violet-soft);
+  box-shadow: 0 0 0 3px var(--fm-violet);
+}
+.fd-name {
+  font-size: clamp(1.15rem, 4.5vw, 1.6rem);
+  font-weight: 800;
+  line-height: 1.1;
+}
+.fd-score {
+  font-weight: 800;
+  color: var(--fm-violet-deep);
+}
+.fd-pips-art {
+  width: 100%;
+  max-width: 120px;
+  height: 14px;
+}
+.fd-turn {
+  min-height: 1.3em;
+  font-weight: 800;
+  color: var(--fm-violet-deep);
+}
+
+.fd-goal {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--fm-gold-soft);
+  border-left: 6px solid var(--fm-gold);
+}
+.fd-goal-text {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+.fd-fair {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-weight: 700;
+}
+.fd-fair input {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  margin: 0;
+  accent-color: var(--fm-violet-deep);
+  border-radius: 6px;
+  outline: 3px solid var(--fm-violet-deep);
+  outline-offset: -3px;
+}
+
+/* cards */
+.fd-table {
+  display: grid;
+  gap: 8px;
+}
+.fd-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.fd-card {
+  position: relative;
+  display: block;
+  width: 72px;
+  min-height: 98px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.fd-card .fd-card-art {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.fd-card:hover:not([disabled]) {
+  transform: translateY(-2px);
+}
+.fd-card:focus-visible,
+.fd-slot:focus-visible {
+  outline: none;
+  box-shadow: var(--fm-focus);
+  z-index: 1;
+}
+.fd-card[aria-pressed="true"] {
+  box-shadow: 0 0 0 4px var(--fm-violet);
+  transform: translateY(-6px);
+}
+.fd-card[data-taken="true"] .fd-card-art {
+  opacity: 0.55;
+  filter: grayscale(0.4);
+}
+.fd-card-back {
+  display: block;
+  width: 72px;
+}
+.fd-tag {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  bottom: 4px;
+  padding: 1px 4px;
+  border-radius: 6px;
+  background: var(--fm-ink);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* expression boards */
+.fd-boards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.fd-board {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 12px;
+  border: 2px solid var(--fm-line);
+  border-radius: 14px;
+  background: var(--fm-mist);
+}
+.fd-board[data-seat="0"] {
+  border-top: 6px solid var(--fm-sky);
+}
+.fd-board[data-seat="1"] {
+  border-top: 6px solid var(--fm-gold);
+}
+.fd-expr {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 80px;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+.fd-op {
+  padding: 0 2px;
+}
+.fd-slot {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 54px;
+  min-width: 44px;
+  min-height: 76px;
+  padding: 0;
+  border: 3px dashed var(--fm-violet-deep);
+  border-radius: 10px;
+  background: var(--fm-paper);
+  color: var(--fm-violet-deep);
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+span.fd-slot {
+  cursor: default;
+}
+.fd-slot-empty,
+.fd-slot-back {
+  border-style: dashed;
+}
+button.fd-slot:hover:not([disabled]) {
+  background: var(--fm-violet-soft);
+}
+.fd-slot-full,
+.fd-slot-back {
+  border: 0;
+  background: transparent;
+}
+.fd-slot .fd-card-art {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.fd-lock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  padding: 0 2px;
+  border-radius: 6px;
+  background: var(--fm-ink);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-align: center;
+}
+.fd-claim-line {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* phase panel */
+.fd-panel {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--fm-sky-soft);
+}
+.fd-ask {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+.fd-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.fd-form {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+.fd-form label {
+  font-weight: 800;
+}
+.fd-input {
+  width: min(100%, 280px);
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 3px solid var(--fm-violet-deep);
+  border-radius: 12px;
+  background: var(--fm-paper);
+  color: var(--fm-ink);
+  font: 800 1.3rem/1.2 var(--fm-font);
+}
+.fd-warn {
+  margin: 0;
+  color: var(--fm-coral);
+  font-weight: 800;
+}
+.fd-handover {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  padding: 28px 16px;
+  border: 4px solid var(--fm-violet-deep);
+  border-radius: 16px;
+  background: var(--fm-violet-soft);
+  text-align: center;
+}
+.fd-handover h3 {
+  font-size: clamp(1.4rem, 5vw, 2rem);
+}
+.fd-handover p {
+  margin: 0;
+  max-width: 34ch;
+}
+.fd-result {
+  display: grid;
+  gap: 6px;
+}
+.fd-result ul {
+  margin: 0;
+  padding-left: 1.2em;
+}
+.fd-result li {
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .fd-boards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fd-card,
+  .fd-card-back {
+    width: 64px;
+    min-height: 88px;
+  }
+  .fd-expr {
+    font-size: 1.3rem;
+  }
+}

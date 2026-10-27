@@ -1,0 +1,298 @@
+/* Array Architect: grid board, steppers, lists and area-model fields. Tokens come from fm2.css. */
+.aa-board {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.aa-readout {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--fm-mist);
+  border: 1px solid var(--fm-line);
+  font-weight: 800;
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}
+.aa-small {
+  margin: 0;
+  color: var(--fm-muted);
+  font-size: 0.95rem;
+}
+.aa-note {
+  margin: 0;
+  font-weight: 700;
+  color: var(--fm-violet-deep);
+}
+.aa-note:empty {
+  display: none;
+}
+
+.aa-field {
+  display: block;
+  min-width: 0;
+}
+.aa-grid {
+  --cell: max(44px, min(60px, calc((100vw - 120px) / var(--cols)), calc(540px / var(--rows))));
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--cell));
+  width: max-content;
+  border: 3px solid var(--fm-violet-deep);
+  border-radius: 10px;
+  background: var(--fm-paper);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+.aa-grid [role="row"] {
+  display: contents;
+}
+.aa-grid:focus-visible {
+  outline: none;
+  box-shadow: var(--fm-focus);
+}
+.aa-cell {
+  position: relative;
+  width: var(--cell);
+  height: var(--cell);
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--fm-line);
+  background: var(--fm-paper);
+  font: 900 1.15rem/1 var(--fm-font);
+  color: #fff;
+}
+.aa-slot {
+  background: var(--fm-gold-soft);
+  border: 1px dashed var(--fm-gold);
+}
+.aa-off {
+  background: repeating-linear-gradient(45deg, #e4e8f4 0 5px, #f3f5fb 5px 10px);
+  border-color: #e4e8f4;
+  cursor: default;
+}
+.aa-squares .aa-on {
+  background: var(--fm-violet);
+  border-color: var(--fm-violet-deep);
+}
+.aa-squares .aa-on.aa-t2 {
+  background: #0f7a52;
+}
+.aa-squares .aa-on.aa-t3 {
+  background: var(--fm-gold);
+  color: var(--fm-ink);
+}
+.aa-squares .aa-on.aa-t4 {
+  background: #1f63b0;
+}
+.aa-counters .aa-on::after {
+  content: "";
+  width: 68%;
+  height: 68%;
+  border-radius: 50%;
+  background: var(--fm-violet);
+  box-shadow: inset 0 0 0 3px var(--fm-violet-deep);
+}
+.aa-cursor::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border: 2px dashed transparent;
+  border-radius: 4px;
+  pointer-events: none;
+}
+.aa-grid:focus-visible .aa-cursor::before {
+  border-color: var(--fm-gold);
+  outline: 2px solid var(--fm-ink);
+  outline-offset: -2px;
+}
+.aa-bigfield svg {
+  max-width: min(100%, 640px);
+}
+
+.aa-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: center;
+}
+.aa-step {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.aa-step-label {
+  font-weight: 800;
+  min-width: 5.5rem;
+}
+.aa-step-btn {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+.aa-step-input,
+.aa-input {
+  min-height: 48px;
+  padding: 6px 10px;
+  border: 2px solid var(--fm-violet-deep);
+  border-radius: 12px;
+  background: var(--fm-paper);
+  color: var(--fm-ink);
+  font: 800 1.1rem var(--fm-font);
+}
+.aa-step-input {
+  width: 68px;
+  text-align: center;
+}
+.aa-input {
+  width: 150px;
+  max-width: 100%;
+}
+.aa-tool {
+  color: var(--fm-ink);
+}
+.aa-tool[aria-pressed="true"],
+.aa-opt[aria-pressed="true"] {
+  background: var(--fm-violet-deep);
+  color: #fff;
+}
+.aa-tool[aria-pressed="true"]::before,
+.aa-opt[aria-pressed="true"]::before {
+  content: "\2713";
+}
+
+.aa-extras {
+  display: grid;
+  gap: 14px;
+}
+.aa-extras:empty {
+  display: none;
+}
+.aa-ask {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+}
+.aa-original svg {
+  width: min(100%, 260px);
+}
+.aa-prism svg {
+  width: min(100%, 380px);
+  max-height: 260px;
+}
+.aa-listbox {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}
+.aa-list-title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.aa-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.aa-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 10px;
+  border: 2px solid var(--fm-line);
+  border-radius: 14px;
+  background: var(--fm-paper);
+}
+.aa-chip-art svg {
+  width: 84px;
+  max-height: 64px;
+}
+.aa-chip-text {
+  font-weight: 800;
+  white-space: nowrap;
+}
+.aa-chip-x {
+  min-width: 48px;
+  padding: 0;
+  font-size: 1.4rem;
+}
+
+.aa-modelfig svg {
+  width: min(100%, 460px);
+}
+.aa-modelfig svg[style] {
+  width: revert;
+}
+.aa-split {
+  display: grid;
+  gap: 4px;
+}
+.aa-parts {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.aa-part {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  font-weight: 800;
+}
+.aa-rid {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--fm-violet-soft);
+  border: 2px solid var(--fm-violet);
+}
+.aa-part-total {
+  padding-top: 6px;
+  border-top: 2px solid var(--fm-line);
+}
+.aa-pool {
+  font-weight: 700;
+}
+.aa-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 420px) {
+  .aa-step-label {
+    flex: 1 1 100%;
+  }
+  .aa-input {
+    width: 120px;
+  }
+}
+@media (forced-colors: active) {
+  .aa-cell.aa-on {
+    forced-color-adjust: none;
+  }
+}
+
+/* After a round ends (solved or shown) the controls freeze; the shell moves on with Next. */
+.aa-locked .aa-grid,
+.aa-locked .aa-controls,
+.aa-locked .aa-extras,
+.aa-locked .aa-split,
+.aa-locked .aa-parts,
+.aa-locked .aa-actions {
+  opacity: 0.7;
+  pointer-events: none;
+}

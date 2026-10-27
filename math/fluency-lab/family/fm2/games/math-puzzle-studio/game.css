@@ -1,0 +1,349 @@
+@import "./scale.css";
+/* Math Puzzle Studio: a puzzle board (bonds, scales, grids, cages) above a tray of tiles. Every control is at least 44px. */
+.pz {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.pz button:focus-visible,
+.pz input:focus-visible {
+  outline: none;
+  box-shadow: var(--fm-focus);
+}
+.pz-tip,
+.pz-note {
+  margin: 0;
+  color: var(--fm-muted);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.pz-note {
+  text-align: center;
+}
+.pz-board {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  align-content: start;
+  padding: clamp(10px, 2.5vw, 18px);
+  border: 2px solid var(--fm-line);
+  border-radius: var(--fm-radius);
+  background: var(--fm-mist);
+  min-width: 0;
+}
+.pz-board > * {
+  max-width: 100%;
+}
+
+/* spots and tiles */
+.pz-slot,
+.pz-tile,
+.pz-cell {
+  display: inline-grid;
+  place-items: center;
+  min-width: 52px;
+  min-height: 52px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font: 800 1.35rem/1 var(--fm-font);
+  font-variant-numeric: tabular-nums;
+}
+.pz-slot {
+  border: 3px dashed var(--fm-violet-deep);
+  background: var(--fm-paper);
+  color: var(--fm-violet-deep);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.pz-slot:hover {
+  background: var(--fm-violet-soft);
+}
+.pz-slot.is-filled {
+  border-style: solid;
+  background: var(--fm-mint-soft);
+  color: var(--fm-ink);
+}
+.pz-slot.is-ready {
+  border-color: var(--fm-ink);
+  background: var(--fm-gold-soft);
+}
+.pz-slot[disabled] {
+  cursor: default;
+  opacity: 1;
+}
+.pz-slot-op {
+  border-radius: 50%;
+}
+.pz-cell {
+  border: 2px solid var(--fm-line);
+  background: var(--fm-paper);
+  color: var(--fm-ink);
+}
+.pz-given {
+  background: var(--fm-sky-soft);
+  border-color: #9cc3ee;
+}
+.pz-tray {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border: 2px dashed var(--fm-line);
+  border-radius: 14px;
+  background: var(--fm-paper);
+}
+.pz-tile {
+  border: 3px solid var(--fm-violet-deep);
+  background: var(--fm-violet-soft);
+  color: var(--fm-violet-deep);
+  cursor: grab;
+  touch-action: manipulation;
+}
+.pz-tile:hover {
+  background: #d8d2f7;
+}
+.pz-tile.is-selected {
+  background: var(--fm-violet-deep);
+  color: #fff;
+  box-shadow: 0 0 0 3px var(--fm-gold);
+}
+.pz-tile[disabled] {
+  opacity: 0.4;
+  cursor: default;
+  border-style: dotted;
+}
+.pz-tile-op {
+  border-radius: 50%;
+  min-width: 56px;
+}
+.pz-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pz-check {
+  margin-left: auto;
+}
+.pz-msg {
+  margin: 0;
+  min-height: 1.4em;
+  font-weight: 800;
+  color: #8a2a17;
+}
+.pz-msg:empty {
+  min-height: 0;
+}
+
+/* number bond and magic triangle: buttons laid over a picture */
+.pz-bond,
+.pz-tri {
+  position: relative;
+  width: min(100%, 340px);
+}
+.pz-bond {
+  aspect-ratio: 300 / 200;
+}
+.pz-tri {
+  aspect-ratio: 300 / 270;
+}
+.pz-bond-art,
+.pz-tri-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.pz-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+.pz-bond .pz-slot,
+.pz-bond .pz-cell {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+}
+.pz-tri .pz-slot,
+.pz-tri .pz-cell {
+  width: 54px;
+  height: 54px;
+  min-width: 0;
+  min-height: 0;
+  border-radius: 50%;
+  padding: 0;
+}
+
+/* grids */
+.pz-grid,
+.pz-factor {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  gap: 6px;
+  width: min(100%, 420px);
+  align-items: stretch;
+}
+.pz-magic {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  width: min(100%, 330px);
+  padding: 8px;
+  border: 4px solid var(--fm-ink);
+  border-radius: 12px;
+  background: var(--fm-paper);
+}
+.pz-grid .pz-slot,
+.pz-grid .pz-cell,
+.pz-factor .pz-slot,
+.pz-factor .pz-cell,
+.pz-magic .pz-slot,
+.pz-magic .pz-cell {
+  width: 100%;
+  min-height: 56px;
+}
+.pz-sum,
+.pz-corner {
+  display: grid;
+  place-items: center;
+  font: 800 1.2rem/1 var(--fm-font);
+  color: var(--fm-violet-deep);
+}
+.pz-sum b {
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: var(--fm-violet-soft);
+}
+.pz-times {
+  font-size: 1.6rem;
+}
+.pz-head.pz-given,
+.pz-head.is-filled,
+.pz-head.pz-slot {
+  border-color: var(--fm-violet-deep);
+}
+.pz-head.pz-given {
+  background: var(--fm-violet-soft);
+}
+
+/* KenKen cages: the heavy outline and labels are a picture over a grid of real buttons */
+.pz-cage {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+  aspect-ratio: 1;
+  width: min(100%, 420px);
+  background: var(--fm-paper);
+}
+.pz-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+.pz-cage .pz-slot,
+.pz-cage .pz-cell {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  border-radius: 0;
+  border-width: 0;
+  padding-top: 18px;
+  font-size: clamp(1.2rem, 5vw, 1.8rem);
+}
+.pz-cage .pz-slot {
+  border: 0;
+  background: transparent;
+}
+.pz-cage .pz-slot.is-filled {
+  background: var(--fm-mint-soft);
+}
+.pz-cage .pz-slot.is-ready {
+  background: var(--fm-gold-soft);
+}
+.pz-cage .pz-given {
+  background: var(--fm-sky-soft);
+}
+.pz-cage .pz-slot:focus-visible {
+  box-shadow: inset 0 0 0 4px var(--fm-ink);
+  z-index: 3;
+}
+
+/* factor puzzles, equations, expressions */
+.pz-pairs {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.pz-pairs .pz-slot {
+  width: 84px;
+  height: 84px;
+  font-size: 1.9rem;
+}
+.pz-clues {
+  margin: 0;
+  padding: 10px 14px 10px 34px;
+  border-radius: 12px;
+  background: var(--fm-paper);
+  border: 2px solid var(--fm-line);
+  font-weight: 800;
+}
+.pz-eq,
+.pz-expr {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font: 800 1.7rem/1 var(--fm-font);
+}
+.pz-term,
+.pz-op,
+.pz-paren,
+.pz-target {
+  min-width: 0.7em;
+  text-align: center;
+}
+.pz-target {
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: var(--fm-violet-deep);
+  color: #fff;
+}
+.pz-paren {
+  font-size: 2.2rem;
+  color: var(--fm-violet-deep);
+}
+
+@media (max-width: 520px) {
+  .pz-tile,
+  .pz-slot {
+    min-width: 48px;
+    min-height: 48px;
+    font-size: 1.25rem;
+  }
+  .pz-check {
+    flex: 1 1 100%;
+    margin-left: 0;
+  }
+  .pz-pans {
+    gap: 6%;
+  }
+  .pz-pan {
+    padding: 4px 4px 8px;
+  }
+  .pz-eq,
+  .pz-expr {
+    font-size: 1.4rem;
+    gap: 6px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pz-pan {
+    transition: none;
+  }
+}

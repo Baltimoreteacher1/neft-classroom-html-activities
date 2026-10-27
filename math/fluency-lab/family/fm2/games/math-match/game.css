@@ -1,0 +1,216 @@
+/* Math Match: the memory board. Shared tokens (--fm-*) and .fm2-btn come from fm2.css. */
+.mm-board {
+  display: grid;
+  gap: 12px;
+}
+.mm-status {
+  margin: 0;
+  font-weight: 800;
+  color: var(--fm-violet-deep);
+}
+.mm-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.mm-board[data-cards="8"] .mm-grid,
+.mm-board[data-cards="12"] .mm-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.mm-card {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 112px;
+  min-width: 44px;
+  padding: 8px;
+  border: 3px solid var(--fm-violet-deep);
+  border-radius: 14px;
+  background: var(--fm-paper);
+  color: var(--fm-ink);
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  overflow: hidden;
+}
+.mm-card:focus-visible {
+  outline: none;
+  box-shadow: var(--fm-focus);
+  z-index: 1;
+}
+.mm-card[data-state="down"] {
+  background: var(--fm-violet-deep);
+  color: #fff;
+}
+.mm-card[data-state="down"]:hover {
+  background: var(--fm-violet);
+}
+.mm-card[data-state="up"] {
+  background: var(--fm-violet-soft);
+  border-color: var(--fm-violet);
+  animation: mm-turn 0.25s ease-out;
+}
+.mm-card[data-state="matched"] {
+  background: var(--fm-mint-soft);
+  border-color: #0f5e42;
+  cursor: default;
+}
+.mm-card[data-state="shown"] {
+  background: var(--fm-gold-soft);
+  border-color: #8a5f00;
+  cursor: default;
+}
+.mm-card[data-state="matched"],
+.mm-card[data-state="shown"] {
+  padding-top: 30px;
+}
+.mm-card[data-state="down"] .mm-front,
+.mm-card:not([data-state="down"]) .mm-back {
+  display: none;
+}
+.mm-back {
+  font-size: 2rem;
+  font-weight: 800;
+}
+.mm-front {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 0;
+}
+.mm-face {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 0;
+}
+.mm-art {
+  width: 100%;
+  max-height: 92px;
+}
+.mm-text {
+  font-size: clamp(1.05rem, 2.6vw, 1.3rem);
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  overflow-wrap: break-word;
+  hyphens: manual;
+}
+.mm-t-numeral .mm-text,
+.mm-t-digital .mm-text,
+.mm-t-cents .mm-text {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+}
+.mm-t-word .mm-text,
+.mm-t-timeword .mm-text {
+  font-size: clamp(1.1rem, 2.8vw, 1.45rem);
+}
+.mm-card[data-long] .mm-text {
+  font-size: clamp(0.9rem, 1.9vw, 1.05rem);
+}
+.mm-frac {
+  display: inline-grid;
+  justify-items: center;
+  font-size: clamp(1.4rem, 3.4vw, 1.8rem);
+  line-height: 1.15;
+}
+.mm-frac .mm-num {
+  padding: 0 8px;
+  border-bottom: 3px solid currentColor;
+}
+.mm-badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  padding: 0 8px;
+  min-width: 24px;
+  border-radius: 999px;
+  background: var(--fm-paper);
+  border: 2px solid currentColor;
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1.5;
+  text-align: center;
+}
+.mm-card[data-state="matched"] .mm-badge {
+  color: #0f5e42;
+}
+.mm-card[data-state="shown"] .mm-badge {
+  color: #6b4a00;
+}
+
+.mm-pending {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--fm-sky-soft);
+  border-left: 6px solid var(--fm-sky);
+}
+.mm-pending[hidden] {
+  display: none;
+}
+.mm-pending p {
+  margin: 0;
+  flex: 1 1 220px;
+  font-weight: 700;
+}
+
+@keyframes mm-turn {
+  from {
+    transform: scale(0.94);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 520px) {
+  .mm-grid {
+    gap: 8px;
+  }
+  .mm-board[data-cards="8"] .mm-grid,
+  .mm-board[data-cards="12"] .mm-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .mm-board[data-wide] .mm-grid,
+  .mm-board[data-wide][data-cards="8"] .mm-grid,
+  .mm-board[data-wide][data-cards="12"] .mm-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .mm-card {
+    min-height: 96px;
+    padding: 6px;
+    border-width: 2px;
+  }
+  .mm-card[data-state="matched"],
+  .mm-card[data-state="shown"] {
+    padding-top: 28px;
+  }
+  .mm-text {
+    font-size: 0.95rem;
+  }
+  .mm-t-numeral .mm-text,
+  .mm-t-digital .mm-text,
+  .mm-t-cents .mm-text {
+    font-size: 1.4rem;
+  }
+  .mm-t-word .mm-text,
+  .mm-t-timeword .mm-text {
+    font-size: 1.05rem;
+  }
+  .mm-card[data-long] .mm-text {
+    font-size: 0.85rem;
+  }
+  .mm-art {
+    max-height: 80px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mm-card[data-state="up"] {
+    animation: none;
+  }
+}
