@@ -406,8 +406,150 @@ try {
   );
   await teacherPage.close();
 
+  // Run all three publisher games through their real browser/UI and inspect their active boards with Axe.
+  const gameContext = await browser.newContext({
+    viewport: { width: 1280, height: 900 },
+    reducedMotion: "reduce",
+  });
+  const gamePage = await gameContext.newPage();
+  gamePage.on("pageerror", (error) => errors.push(error.message));
+  gamePage.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
+  await gamePage.goto(`${base}/math/fluency-lab/?grade=3&view=games`, { waitUntil: "networkidle" });
+  const savedGameIds = ["mathworldbuilder", "numberpuzzlestudio", "fluencyrally"];
+  for (const gameId of savedGameIds) {
+    await gamePage.locator(`[data-game="${gameId}"]`).click();
+    const activeAxe = await new AxeBuilder({ page: gamePage }).analyze();
+    assert.deepEqual(
+      activeAxe.violations
+        .filter((v) => ["critical", "serious"].includes(v.impact))
+        .map((v) => ({ id: v.id, nodes: v.nodes.map((n) => n.target) })),
+      [],
+      `${gameId} active game board has no serious or critical accessibility violations`,
+    );
+    for (let round = 0; round < 5; round += 1) {
+      if (gameId === "mathworldbuilder") {
+        const prompt = await gamePage.locator(".sig-head h2").innerText();
+        const target = Number(prompt.match(/with (\d+) floor tiles/)?.[1]);
+        const budget = Number(prompt.match(/no more than (\d+) fence units/)?.[1]);
+        let plan;
+        for (let rows = 1; rows <= 12 && !plan; rows += 1)
+          for (let columns = 1; columns <= 12; columns += 1)
+            if (rows * columns === target && (!budget || 2 * (rows + columns) <= budget)) {
+              plan = [rows, columns];
+              break;
+            }
+        assert.ok(plan, "each visible structure task has a valid plan");
+        for (const [selector, desired] of [
+          ["[data-rows]", plan[0]],
+          ["[data-columns]", plan[1]],
+        ]) {
+          const range = gamePage.locator(selector);
+          await range.focus();
+          await range.press("Home");
+          for (let value = 1; value < desired; value += 1) await range.press("ArrowRight");
+        }
+      } else if (gameId === "numberpuzzlestudio") {
+        const prompt = await gamePage.locator(".sig-head h2").innerText();
+        const [, op, targetText] = prompt.match(/use (\+|×) to make (\d+)/);
+        const target = Number(targetText);
+        const tiles = (await gamePage.locator("[data-choice]").allInnerTexts()).map(Number);
+        const found = new Set();
+        for (let solution = 0; solution < 2; solution += 1) {
+          let pair;
+          for (let a = 0; a < tiles.length && !pair; a += 1)
+            for (let b = a + 1; b < tiles.length; b += 1)
+              if (
+                !found.has(`${a}:${b}`) &&
+                (op === "+" ? tiles[a] + tiles[b] : tiles[a] * tiles[b]) === target
+              ) {
+                pair = [a, b];
+                break;
+              }
+          assert.ok(pair, "each number puzzle has a second distinct solution");
+          found.add(`${pair[0]}:${pair[1]}`);
+          for (const index of pair) {
+            const tile = gamePage.locator(`[data-choice="${index}"]`);
+            await tile.focus();
+            await tile.press("Enter");
+          }
+          const check = gamePage.locator("[data-check]");
+          await check.focus();
+          await check.press("Enter");
+          assert.equal(
+            await gamePage.locator("[data-feedback]").getAttribute("data-state"),
+            "right",
+          );
+          if (solution === 0) {
+            const explore = gamePage.getByRole("button", { name: "Find another valid pair" });
+            await explore.focus();
+            await explore.press("Enter");
+          }
+        }
+      } else {
+        const prompt = await gamePage.locator(".sig-head h2").innerText();
+        const [, factorText, nText, addText] =
+          prompt.match(/follows (\d+) × (\d+) \+ (\d+).*n = (\d+)/) || [];
+        const factor = Number(factorText);
+        const n = Number(nText);
+        const add = Number(addText);
+        const route = gamePage
+          .locator("[data-choice]")
+          .filter({ hasText: `${factor} × ${n} + ${add}` });
+        await route.focus();
+        await route.press("Enter");
+        await gamePage.locator("[data-distance]").fill(String(factor * n + add));
+      }
+      const check = gamePage.locator("[data-check]");
+      if (await check.count()) {
+        await check.focus();
+        await check.press("Enter");
+      }
+      assert.equal(
+        await gamePage.locator("[data-feedback]").getAttribute("data-state"),
+        "right",
+        `${gameId} accepts its mathematically valid response`,
+      );
+      const advance = gamePage.locator(".sig-actions button").last();
+      await advance.focus();
+      await advance.press("Enter");
+    }
+    assert.equal(
+      await gamePage.locator(".gm-result").count(),
+      1,
+      `${gameId} completes its full five-challenge session`,
+    );
+    if (gameId !== savedGameIds.at(-1)) {
+      const back = gamePage.getByRole("button", { name: /Back to the Game Room/ });
+      if (await back.count()) await back.click();
+      else await gamePage.getByRole("button", { name: /Back to games/ }).click();
+    }
+  }
+  const persisted = await gamePage.evaluate(() =>
+    JSON.parse(localStorage.getItem("ewl-fluency-rewards-v1")),
+  );
+  assert.ok(persisted.plays >= 3, "completed game sessions persist their play count");
+  for (const gameId of savedGameIds)
+    assert.ok(persisted.best[gameId] >= 1, `${gameId} completion reward persists`);
+  await gamePage.reload({ waitUntil: "networkidle" });
+  const gamesAfterReload = await gamePage.evaluate(() =>
+    JSON.parse(localStorage.getItem("ewl-fluency-rewards-v1")),
+  );
+  assert.deepEqual(
+    gamesAfterReload.best,
+    persisted.best,
+    "game results remain saved after a page reload",
+  );
+  assert.equal(
+    await gamePage.evaluate(() => document.documentElement.scrollWidth - innerWidth),
+    0,
+    "game screens fit the desktop viewport",
+  );
+  await gameContext.close();
+
   console.log(
-    "Family browser flow passed: adaptive Tonight's Math skill, skill browser, profile switch, Start/plan/lab links, bilingual family entry, saved five-stage session, visual lesson, independent versus supported evidence, pause/resume, keyboard focus, Axe, teacher family-link settings and print QR, real practice launch, and mobile/desktop layout.",
+    "Family and teacher browser flows passed with Axe, keyboard, saved-session, Spanish, print, and responsive checks; all three publisher games completed, keyboard-operated, Axe-checked, and retained their results after reload.",
   );
 } finally {
   await browser?.close();

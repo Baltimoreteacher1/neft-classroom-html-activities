@@ -137,23 +137,41 @@ for (let round = 0; round < 5; round += 1) {
   const [, op, targetText] = prompt.match(/use (\+|×) to make (\d+)/);
   const target = Number(targetText);
   const tiles = $$("[data-choice]").map((button) => Number(button.textContent));
-  let pair;
-  for (let a = 0; a < tiles.length && !pair; a += 1)
-    for (let b = a + 1; b < tiles.length; b += 1)
-      if ((op === "+" ? tiles[a] + tiles[b] : tiles[a] * tiles[b]) === target) {
-        pair = [a, b];
-        break;
-      }
-  assert.ok(pair, "The visible number puzzle has a valid tile pair");
-  $(`[data-choice="${pair[0]}"]`).click();
-  $(`[data-choice="${pair[1]}"]`).click();
-  click("[data-check]");
-  assert.match(
-    $("[data-feedback]").textContent,
-    /makes/,
-    "A valid number pair receives mathematical feedback",
-  );
-  await wait();
+  const found = new Set();
+  for (let solution = 0; solution < 2; solution += 1) {
+    let pair;
+    for (let a = 0; a < tiles.length && !pair; a += 1)
+      for (let b = a + 1; b < tiles.length; b += 1)
+        if (
+          !found.has(`${a}:${b}`) &&
+          (op === "+" ? tiles[a] + tiles[b] : tiles[a] * tiles[b]) === target
+        ) {
+          pair = [a, b];
+          break;
+        }
+    assert.ok(pair, "The visible number puzzle has another valid tile pair");
+    found.add(`${pair[0]}:${pair[1]}`);
+    $(`[data-choice="${pair[0]}"]`).click();
+    $(`[data-choice="${pair[1]}"]`).click();
+    click("[data-check]");
+    assert.match(
+      $("[data-feedback]").textContent,
+      /makes/,
+      "A valid number pair receives mathematical feedback",
+    );
+    await wait();
+    if (solution === 0) {
+      const explore = $$("button").find(
+        (button) => button.textContent === "Find another valid pair",
+      );
+      assert.ok(
+        explore,
+        "A correct pair offers an optional same-puzzle alternate-solution challenge",
+      );
+      explore.click();
+      await wait();
+    }
+  }
   click(".sig-actions button:last-child");
   await wait();
 }

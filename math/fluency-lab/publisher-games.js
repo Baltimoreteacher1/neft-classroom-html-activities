@@ -48,7 +48,7 @@ export function rallyTask(grade, round) {
 
 function mount(container, name, gameId, grade, onEvidence, finish, makeRound, renderBoard, checkRound, bindBoard = () => {}) {
   const total = 5;
-  const state = { round: 0, first: 0, misses: 0, hinted: false, failed: false, locked: false, selected: null };
+  const state = { round: 0, first: 0, misses: 0, hinted: false, failed: false, locked: false, selected: null, roundSolved: false, foundPairs: [] };
   let task = makeRound(state.round);
   state.rows = task.rows ?? 2;
   state.columns = task.columns ?? 2;
@@ -64,16 +64,25 @@ function mount(container, name, gameId, grade, onEvidence, finish, makeRound, re
       feedback.dataset.state = result.ok ? "right" : "retry";
       feedback.textContent = result.message;
       state.failed ||= !result.ok;
-      onEvidence({ worldId: task.worldId, grade, correct: result.ok, independent: !state.hinted });
-      if (!result.ok) { state.misses += 1; return; }
-      if (!state.failed && !state.hinted) state.first += 1;
+      if (!result.ok) { onEvidence({ worldId: task.worldId, grade, correct: false, independent: !state.hinted }); state.misses += 1; return; }
+      if (!state.roundSolved) {
+        if (!state.failed && !state.hinted) state.first += 1;
+        onEvidence({ worldId: task.worldId, grade, correct: true, independent: !state.hinted && !state.failed });
+        state.roundSolved = true;
+      }
       state.locked = true;
+      if (result.exploreMore) {
+        const explore = document.createElement("button");
+        explore.type = "button"; explore.className = "outline-action"; explore.textContent = t("Find another valid pair");
+        explore.addEventListener("click", () => { state.locked = false; state.selected = []; render(); container.querySelector("[data-choice]")?.focus(); });
+        container.querySelector(".sig-actions").append(explore);
+      }
       const next = document.createElement("button");
       next.type = "button"; next.className = "primary-action"; next.textContent = state.round + 1 === total ? t("Finish game") : t("Next challenge");
       next.addEventListener("click", () => {
         state.round += 1;
         if (state.round >= total) { finish(recordResult(gameId, state.first, state.misses, total)); return; }
-        state.hinted = false; state.failed = false; state.locked = false; task = makeRound(state.round); state.rows = task.rows ?? 2; state.columns = task.columns ?? 2; state.selected = task.selected ?? null; render(); container.querySelector("[data-choice], input")?.focus();
+        state.hinted = false; state.failed = false; state.locked = false; state.roundSolved = false; state.foundPairs = []; task = makeRound(state.round); state.rows = task.rows ?? 2; state.columns = task.columns ?? 2; state.selected = task.selected ?? null; render(); container.querySelector("[data-choice], input")?.focus();
       });
       container.querySelector(".sig-actions").append(next);
     });
@@ -119,7 +128,12 @@ export function playNumberPuzzleStudio(container, { grade, finish, onEvidence = 
     state.selected = chosen;
     if (chosen.length !== 2) return { ok: false, message: t("Choose exactly two tiles before checking the puzzle.") };
     const [a, b] = chosen.map((i) => task.values[i]); const value = task.op === "+" ? a + b : a * b;
-    return { ok: value === task.target, message: value === task.target ? t("{a} {op} {b} makes {target}. Try another valid pair on the next puzzle.", { a, op: task.op, b, target: task.target }) : t("That pair makes {value}. Keep one tile and try a different partner.", { value }) };
+    const key = chosen.slice().sort((x, y) => x - y).join(":");
+    if (value !== task.target) return { ok: false, message: t("That pair makes {value}. Keep one tile and try a different partner.", { value }) };
+    if (state.foundPairs.includes(key)) return { ok: false, message: t("You already found that pair. Try a different pair or move to the next challenge.") };
+    state.foundPairs.push(key);
+    const exploreMore = state.foundPairs.length < task.pairs.length;
+    return { ok: true, exploreMore, message: exploreMore ? t("{a} {op} {b} makes {target}. You found {found} of {total} valid pairs. Find another or continue.", { a, op: task.op, b, target: task.target, found: state.foundPairs.length, total: task.pairs.length }) : t("{a} {op} {b} makes {target}. You found every valid pair.", { a, op: task.op, b, target: task.target }) };
   }, (task, state, host) => {
     host.querySelectorAll("[data-choice]").forEach((button) => button.addEventListener("click", () => {
       const i = Number(button.dataset.choice); const chosen = state.selected || [];
