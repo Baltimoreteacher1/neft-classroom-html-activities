@@ -60,17 +60,25 @@ Proposed next release:
 - Phone layout at 390px: first-time class picker, 44px targets, 14px minimum
   text, room reserved under the fixed Learning supports button.
 
-## Version 3 — Family learning companion
+## Version 3 — Family Learning Companion (Delivered)
 
-Proposed later release:
+Shipped across all 166 Grade 6 lesson homework pages (`lessons/*/homework.html`) and the weekly hub (`/curriculum/family-connections/`):
 
-- Offer a student-controlled route from a lesson to a related review or family
-  challenge, using the existing curriculum links.
-- Provide a private, local reflection such as “One idea I can explain now is…”.
-- Add a printable one-page recap that explains the lesson idea and gives the
-  family one conversation prompt.
-- Keep the experience account-free and usable on a phone, Chromebook, tablet,
-  or printed page.
+- **The 60-Second Family Dinner Conversation Card ("La Pregunta de la Noche"):**
+  A low-intimidation card at the top of the Learn stop (`#hw_dinner_talk`) featuring one accessible dinner/bedtime question from the lesson's authored guidance, read-aloud audio, and an expandable 30-second inline SVG visual explainer in plain everyday English and Spanish.
+- **Student-Controlled Routing & Adaptive Pathways (`#hw_pathway_bar`):**
+  Students can switch anytime with zero loss of entered work between three pathways:
+  1. **"I've Got This" / "¡Ya lo domino!"** (Express & Challenge: 2 quick checks leading directly to the family mystery puzzle).
+  2. **"Just Right" / "A mi medida"** (Standard Companion: Launch & Model → Practice with Tiered Hints → Family Talk).
+  3. **"Boost My Foundation" / "Reforzar mi base"** (Visual Bridge: opens the interactive prerequisite visual model and Then-vs-Now bridge before practice).
+- **Private Local Reflection ("My Math Voice" / "Mi Voz Matemática"):**
+  Self-assessment prompts (*"One idea that makes sense to me now is…"* and *"A question I want to ask Mr. Neft tomorrow in class is…"*) equipped with **Quick-Tap Sentence Starters / Chips**, local voice memo recording, and browser speech-to-text entry, stored strictly in client-side `localStorage` with zero surveillance or accounts.
+- **Interactive Co-Op "Confused Grownup" 3.0 & "Domino Duo":**
+  Enhanced with tap-to-reveal coaching prompts (`<details class="cga-praise-reveal">` and `<details class="dom-duo-praise">`) giving families exact phrases that praise mathematical reasoning rather than speed.
+- **Refrigerator Sheet 3.0 (One-Page High-Yield Printable):**
+  Upgraded `@media print` layout featuring the inline SVG visual math summary diagram, the single 60-second dinner question, and a tear-off check-in ticket (*"I talked math with someone at home tonight!"*) with a student pride / partner sketch space and `"Practice partner (optional)"` / `"Acompañante de práctica (opcional)"` (never requiring a signature).
+- **Seamless Weekly Hub & Local Completion Sync:**
+  Daily lesson cards on `/curriculum/family-connections/` highlight V3.0 Companion features and synchronize with `localStorage` (`isCompanionLessonDone`) to show a calm `✓ Completed on this device` badge when a night's goal or reflection is finished.
 
 ## Quality bar
 

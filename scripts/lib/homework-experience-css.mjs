@@ -217,7 +217,53 @@ dialog.hw-dialog p { margin: 0 0 16px; font-size: 18px; line-height: 1.45; }
 .hw-graph-controls .lang-es, .hw-graph-reset, .hw-graph-reset .lang-en, .hw-graph-reset .lang-es { font-size: 14px !important; }
 .family-discount-equation small { font-size: 13px !important; }
 
+/* ── V3.0 Family Learning Companion components ───────────────────────────── */
+.hw-dinner-talk { margin: 16px 0; padding: 16px 18px; border-radius: 16px; border: 2px solid var(--teal, #1fa6a2); background: #f2fbf9; }
+.hw-dinner-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.hw-dinner-talk h3 { margin: 0; font-size: 20px; line-height: 1.3; color: var(--navy, #12355b); }
+.hw-dinner-prompt { margin: 8px 0; padding: 12px 14px; border-radius: 12px; background: #ffffff; border-left: 4px solid var(--teal-ink, #0c6f6b); font-size: 18px; line-height: 1.45; color: var(--ink, #21313f); }
+.hw-dinner-reassure { margin: 0 0 10px; font-size: 15px; line-height: 1.45; color: var(--muted, #4a5b6c); }
+.hw-dinner-visual { border-top: 1px dashed #99d5cf; padding-top: 8px; }
+.hw-dinner-visual > summary { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 4px; font-size: 15px; font-weight: 800; color: var(--teal-ink, #0c6f6b); cursor: pointer; list-style: none; }
+.hw-dinner-visual > summary::-webkit-details-marker { display: none; }
+.hw-dinner-visual-body { margin-top: 8px; padding: 12px; border-radius: 12px; background: #ffffff; border: 1px solid #cbd5e1; }
+.hw-mini-model-svg { display: block; width: 100%; max-width: 420px; height: auto; margin: 0 auto 8px; border-radius: 8px; }
+.hw-dinner-visual-copy { margin: 0; font-size: 15px; line-height: 1.45; color: var(--ink, #21313f); }
+
+.hw-pathway-bar { margin: 16px 0; padding: 16px; border-radius: 16px; border: 1.5px solid #cbd5e1; background: #ffffff; }
+.hw-pathway-header h3 { margin: 0 0 12px; font-size: 18px; line-height: 1.35; color: var(--navy, #12355b); }
+.hw-pathway-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (max-width: 720px) { .hw-pathway-grid { grid-template-columns: 1fr; } }
+.hw-pathway-btn { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 4px; min-height: 76px; padding: 12px 14px; border-radius: 14px; border: 2px solid #cbd5e1; background: #f8fafc; color: var(--navy, #12355b); font: inherit; font-size: 15px; text-align: left; cursor: pointer; transition: border-color .15s ease, background-color .15s ease; }
+.hw-pathway-btn strong { font-size: 16px; font-weight: 800; color: var(--navy, #12355b); }
+.hw-pathway-desc { font-size: 14px; line-height: 1.35; color: #334e68; font-weight: 600; }
+.hw-pathway-btn.is-active { border-color: var(--teal-ink, #0c6f6b); background: var(--teal-light, #e6f6f3); box-shadow: inset 0 0 0 1px var(--teal-ink, #0c6f6b); }
+.hw-pathway-btn:focus-visible { outline: 3px solid var(--teal-ink, #0c6f6b); outline-offset: 2px; }
+.hw-pathway-icon { font-size: 22px; line-height: 1; }
+.hw-foundation-bridge { margin-top: 12px; padding: 14px; border-radius: 12px; border: 2px solid #0284c7; background: #f0f9ff; }
+.hw-foundation-Bridge[hidden], .hw-foundation-bridge[hidden] { display: none !important; }
+.hw-foundation-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; font-size: 16px; color: #0c4a6e; }
+.hw-foundation-tag { padding: 4px 10px; border-radius: 999px; background: #e0f2fe; color: #0369a1; font-size: 14px; font-weight: 700; }
+.hw-foundation-copy { margin: 8px 0 12px; font-size: 15px; line-height: 1.45; color: #0f172a; }
+.hw-foundation-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.hw-foundation-actions .btn { min-height: 44px; font-size: 14px !important; }
+
+/* Express pathway unlocks the mystery challenge teaser even on Quick route */
+body[data-hw-pathway="express"] .hw-mystery { display: flex !important; }
+
+/* My Math Voice quick-tap sentence starter chips */
+.hw-voice-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 8px; }
+.hw-voice-chip { display: inline-flex; align-items: center; min-height: 44px; padding: 6px 12px; border-radius: 999px; border: 1.5px solid #0f766e; background: #f0fdfa; color: #0f5f5b; font: inherit; font-size: 14px !important; font-weight: 700; line-height: 1.25; cursor: pointer; text-align: left; }
+.hw-voice-chip:hover { background: #ccfbf1; }
+.hw-voice-chip:focus-visible { outline: 3px solid var(--teal-ink, #0c6f6b); outline-offset: 2px; }
+
+/* Tap-to-reveal coaching phrases in Confused Grown-Up & Domino Duo */
+.cga-praise-reveal, .dom-duo-praise { margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 8px; }
+.cga-praise-reveal > summary, .dom-duo-praise > summary { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 8px; font-size: 15px; font-weight: 800; color: var(--teal-ink, #0c6f6b); cursor: pointer; list-style: none; }
+.cga-praise-reveal > summary::-webkit-details-marker, .dom-duo-praise > summary::-webkit-details-marker { display: none; }
+.cga-praise-list, .dom-duo-praise-list { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 6px; font-size: 15px; line-height: 1.45; color: #1e293b; }
+
 @media print {
-  .hw-nights, .hw-tonight, .hw-mystery, .hw-confidence, .hw-grownup, .hw-teach, .hw-share, .hw-toast, dialog.hw-dialog, .hw-goal-card { display: none !important; }
+  .hw-nights, .hw-tonight, .hw-mystery, .hw-confidence, .hw-grownup, .hw-teach, .hw-share, .hw-toast, dialog.hw-dialog, .hw-goal-card, .hw-dinner-talk, .hw-pathway-bar, .hw-voice-chips { display: none !important; }
 }
 `;

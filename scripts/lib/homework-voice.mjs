@@ -319,7 +319,7 @@ function hwVoiceFill(box, transcript, lang) {
 }
 
 function hwVoiceInitEntry() {
-  var boxes = Array.prototype.slice.call(document.querySelectorAll('input.table-input, textarea.open-response-textarea, textarea.error-explain-textarea, textarea.hw-work-input'));
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('input.table-input, textarea.open-response-textarea, textarea.error-explain-textarea, textarea.hw-work-input, #parent_reflection_input, #parent_note_input'));
   boxes.forEach(function (box) {
     box.setAttribute('data-voice-entry', hwVoiceKind(box));
     /* The shared learning-supports layer (ls-voice-answer.js) offers its microphone beside any box inside [data-ls-voice]. */

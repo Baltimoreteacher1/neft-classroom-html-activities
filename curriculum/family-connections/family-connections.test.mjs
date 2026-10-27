@@ -194,7 +194,7 @@ const lessonList = [
   { id: "3-test-review", title: "Unit 3 Test Review", homeworkPath: "/curriculum/unit-3-test-review/" },
 ];
 function withHub(fn) {
-  const dom = new JSDOM('<div id="root"></div>');
+  const dom = new JSDOM('<div id="root"></div>', { url: "https://eduwonderlab.com/curriculum/family-connections/" });
   const previous = globalThis.document;
   globalThis.document = dom.window.document;
   const realFetch = globalThis.fetch;
@@ -461,4 +461,18 @@ test("the Learning supports launcher cannot sit on top of the page: the body res
   assert.ok(px >= bottom + height, `reserve ${px}px covers the launcher (${bottom}px gap + ${height}px tall)`);
   assert.match(screen, /safe-area-inset-bottom/);
   assert.ok(reserve.includes("0"), "print drops the reserve");
+});
+
+test("weekly hub synchronizes V3.0 Companion status with localStorage and shows completion badge without extra links", () => {
+  withHub((root) => {
+    const snapshot = week([["Monday", "3-2"]]);
+    const store = root.ownerDocument.defaultView.localStorage;
+    store.setItem("hw_exp_3-2_goal_met", "1");
+    renderHomeworkHub(root, snapshot, lessonList, "all-families", "en", NOW);
+    const card = root.querySelector(".homework-card");
+    assert.ok(card.classList.contains("is-completed"));
+    assert.match(card.querySelector(".companion-status").textContent, /Completed on this device/);
+    assert.match(card.querySelector(".companion-features").textContent, /60-Sec Dinner Talk/);
+    assert.equal(card.querySelectorAll("a").length, 2, "only the two route links are anchors");
+  });
 });

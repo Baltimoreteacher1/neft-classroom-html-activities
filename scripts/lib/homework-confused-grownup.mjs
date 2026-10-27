@@ -208,7 +208,15 @@ export function renderConfusedGrownUp(rounds) {
           <span class="lang-en">Grown-up: you will say one wrong answer, on purpose. Student: you are the math coach. Fix it, and explain why. Nothing is timed, and nobody has to know the answer first.</span>
           <span class="lang-es" lang="es">Adulto: van a decir una respuesta equivocada, a propósito. Estudiante: tú eres el entrenador de matemáticas. Corrígela y explica por qué. Nada tiene cronómetro y nadie necesita saber la respuesta primero.</span>
         </p>
-        <ol class="cga-script" data-no-vocab aria-label="Ask, don't tell" data-aria-en="Ask, don't tell" data-aria-es="Preguntar, no decir">${steps}</ol>${rounds.map((r, i) => renderRound(r, i, rounds.length)).join("")}
+        <ol class="cga-script" data-no-vocab aria-label="Ask, don't tell" data-aria-en="Ask, don't tell" data-aria-es="Preguntar, no decir">${steps}</ol>
+        <details class="cga-praise-reveal" data-no-vocab data-no-listen>
+          <summary>💬 ${bi("Tap for parent coaching phrases (praise the thinking, not the speed)", "Toca para ver frases de apoyo (elogia el razonamiento, no la rapidez)")}</summary>
+          <ul class="cga-praise-list">
+            <li>${bi("“I love how you checked whether that answer made sense!”", "«¡Me encanta cómo comprobaste si esa respuesta tenía sentido!»")}</li>
+            <li>${bi("“Thank you for showing me the step I missed.”", "«Gracias por mostrarme el paso que me faltó.»")}</li>
+            <li>${bi("“Your picture/model made it so clear to see why.”", "«Tu dibujo o modelo hizo muy claro ver el porqué.»")}</li>
+          </ul>
+        </details>${rounds.map((r, i) => renderRound(r, i, rounds.length)).join("")}
       </div>`;
 }
 

@@ -28,6 +28,13 @@ export function renderDominoDuo() {
             <p class="dom-duo-rule">${bi("A student and a grown-up share one chain. Take turns placing, and switch coach and player each time. There is no winner and no timer.", "Un estudiante y un adulto comparten una cadena. Colocan fichas por turnos y cambian de entrenador y jugador cada vez. No hay ganador ni cronómetro.")}</p>
             <p class="dom-duo-turn" id="fam_dom_duo_turn" role="status" aria-live="polite"></p>
             <p class="dom-duo-coach" id="fam_dom_duo_coach"></p>
+            <details class="dom-duo-praise" data-no-vocab data-no-listen>
+              <summary>💬 ${bi("Tap for coaching phrases that praise reasoning", "Toca para ver frases que elogian el razonamiento")}</summary>
+              <ul class="dom-duo-praise-list">
+                <li>${bi("“How did you know those two values match?”", "«¿Cómo supiste que esos dos valores coinciden?»")}</li>
+                <li>${bi("“I like how you tested that piece before placing it.”", "«Me gusta cómo probaste esa ficha antes de colocarla.»")}</li>
+              </ul>
+            </details>
           </div>
         </div>`;
 }

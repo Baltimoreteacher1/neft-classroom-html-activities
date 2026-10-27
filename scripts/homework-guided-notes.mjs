@@ -47,10 +47,13 @@ import {
   GOAL_TARGET,
   ROUTE_TIMES,
   renderConfidence,
+  renderDinnerTalkCard,
   renderFamilyNights,
   renderGoalPips,
+  renderMiniConceptSvg,
   renderMysteryChallenge,
   renderShareWin,
+  renderStudentPathwayBar,
   renderTeachBack,
   renderTonightStrip,
 } from "./lib/homework-experience.mjs";
@@ -3403,7 +3406,7 @@ export function renderCelebration(config = null, _lessonId = "") {
       <div data-home-mission></div>
       <script type="module" src="/assets/class-investigation/home-mission.js"></script>
       <div class="parent-signoff-container card-ish">
-        <h3 class="signoff-title">✍️ <span class="lang-en">Optional reflection on this device</span><span class="lang-es" lang="es">Reflexión opcional en este dispositivo</span></h3>
+        <h3 class="signoff-title">🎙️ <span class="lang-en">My Math Voice · Private Local Reflection</span><span class="lang-es" lang="es">Mi Voz Matemática · Reflexión Privada en este Dispositivo</span></h3>
         
         <!-- Active Form -->
         <div id="signoff_form_wrapper">
@@ -3425,26 +3428,35 @@ export function renderCelebration(config = null, _lessonId = "") {
 
           <div class="signoff-field text-field">
             <label for="parent_name_input">
-              <span class="lang-en">Partner name (optional):</span>
-              <span class="lang-es" lang="es">Nombre del acompañante (opcional):</span>
+              <span class="lang-en">Practice Partner (optional):</span>
+              <span class="lang-es" lang="es">Acompañante de práctica (opcional):</span>
             </label>
             <input type="text" id="parent_name_input" placeholder="e.g. Maria Lopez" oninput="toggleSignoffSubmitBtn()" />
           </div>
 
           <div class="signoff-field textarea-field">
-            <label for="parent_note_input">
-              <span class="lang-en">Draft a question for ClassDojo (optional; not sent):</span>
-              <span class="lang-es" lang="es">Borrador para ClassDojo (opcional; no se envía):</span>
+            <label for="parent_reflection_input">
+              <span class="lang-en">One idea that makes sense to me now is... (optional):</span>
+              <span class="lang-es" lang="es">Una idea que ahora entiendo mejor es... (opcional):</span>
             </label>
-            <textarea id="parent_note_input" rows="2" placeholder="e.g. Student did great with equations but struggled with drawing the number line."></textarea>
+            <div class="hw-voice-chips" data-no-vocab data-no-listen role="group" aria-label="Quick-tap sentence starters">
+              <button type="button" class="hw-voice-chip" data-target-input="parent_reflection_input" data-chip-en="The visual model helped me see that" data-chip-es="El modelo visual me ayudó a ver que" onclick="hwInsertVoiceChip(this)"><span class="lang-en">+ “The visual model helped me see…”</span><span class="lang-es" lang="es">+ «El modelo visual me ayudó a ver…»</span></button>
+              <button type="button" class="hw-voice-chip" data-target-input="parent_reflection_input" data-chip-en="I noticed a pattern when I" data-chip-es="Noté un patrón cuando" onclick="hwInsertVoiceChip(this)"><span class="lang-en">+ “I noticed a pattern when I…”</span><span class="lang-es" lang="es">+ «Noté un patrón cuando…»</span></button>
+              <button type="button" class="hw-voice-chip" data-target-input="parent_reflection_input" data-chip-en="I can check my answer by" data-chip-es="Puedo comprobar mi respuesta al" onclick="hwInsertVoiceChip(this)"><span class="lang-en">+ “I can check my answer by…”</span><span class="lang-es" lang="es">+ «Puedo comprobar mi respuesta…»</span></button>
+            </div>
+            <textarea id="parent_reflection_input" rows="2" placeholder="One idea that makes sense to me now is... / Una idea que ahora entiendo mejor es..."></textarea>
           </div>
 
           <div class="signoff-field textarea-field">
-            <label for="parent_reflection_input">
-              <span class="lang-en">Tonight's Math Reflection (optional):</span>
-              <span class="lang-es" lang="es">Reflexión de hoy (opcional):</span>
+            <label for="parent_note_input">
+              <span class="lang-en">A question I want to ask Mr. Neft tomorrow in class is... (optional; saved here):</span>
+              <span class="lang-es" lang="es">Una pregunta que quiero hacerle al Sr. Neft mañana en clase es... (opcional; guardado aquí):</span>
             </label>
-            <textarea id="parent_reflection_input" rows="2" placeholder="What strategy or idea clicked best for your student tonight?"></textarea>
+            <div class="hw-voice-chips" data-no-vocab data-no-listen role="group" aria-label="Quick-tap question starters">
+              <button type="button" class="hw-voice-chip" data-target-input="parent_note_input" data-chip-en="Can we go over another example of" data-chip-es="¿Podemos repasar otro ejemplo de" onclick="hwInsertVoiceChip(this)"><span class="lang-en">+ “Can we go over an example of…”</span><span class="lang-es" lang="es">+ «¿Podemos repasar un ejemplo de…»</span></button>
+              <button type="button" class="hw-voice-chip" data-target-input="parent_note_input" data-chip-en="How do I know which step comes first when" data-chip-es="¿Cómo sé qué paso va primero cuando" onclick="hwInsertVoiceChip(this)"><span class="lang-en">+ “How do I know which step comes first…”</span><span class="lang-es" lang="es">+ «¿Cómo sé qué paso va primero…»</span></button>
+            </div>
+            <textarea id="parent_note_input" rows="2" placeholder="A question I want to ask Mr. Neft tomorrow in class is... / Una pregunta para el Sr. Neft mañana..."></textarea>
           </div>
 
           <div class="signoff-field feeling-pulse-field" style="margin:12px 0;">
@@ -8405,14 +8417,18 @@ export function renderLearnTab(config, visualLabHtml = "", workbenchHtml = "", m
       </div>`
     : "";
 
+  const bridge = bridgeOf(config?.familyNotes);
   return `
     <div ${tabPanelAttrs("learn")}>
       <nav class="learn-jump-row" aria-label="On this page / En esta página">
+        <a href="#hw_dinner_talk"><span class="lang-en">60-Sec Talk</span><span class="lang-es" lang="es">Charla 60 s</span></a>
         <a href="#hw_learn_idea"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></a>
         ${visualLabHtml.trim() ? '<a href="#hw_learn_try"><span class="lang-en">Touch &amp; try</span><span class="lang-es" lang="es">Toca y prueba</span></a>' : ""}
         <a href="#hw_learn_quick"><span class="lang-en">Quick question</span><span class="lang-es" lang="es">Pregunta rápida</span></a>
       </nav>
       <div class="learn-summary-block">${learning}</div>
+      ${renderDinnerTalkCard(ask, topic)}
+      ${renderStudentPathwayBar(topic, bridge)}
       ${renderConfidence("before")}
       ${renderMysteryChallenge(mystery)}
       <div class="learn-big-idea-block" id="hw_learn_idea">${concept}</div>
@@ -9190,20 +9206,27 @@ export function renderRefrigeratorSheet(config = {}, lessonId = "") {
   const title = config.familyNotes?.sessionTitle || config.title || "Lesson Practice";
   const keyEn = keyIdea(config);
   const keyEs = keyIdeaEs(config);
-  const watchCues = watchForCues(config).slice(0, 3);
+  const topic = detectVisualTopic(config);
+  const miniVisual = renderMiniConceptSvg(topic);
+  const dinnerQ = familyGuidance(config).question;
+  const dinnerEn = dinnerQ?.en || "How does the visual model show why your answer makes sense?";
+  const dinnerEs =
+    dinnerQ?.es || "¿Cómo muestra el modelo visual por qué tiene sentido tu respuesta?";
+  const watchCues = watchForCues(config).slice(0, 2);
   const quickChecks = (config.practice?.approaching || config.practice?.onLevel || []).slice(0, 2);
 
   const origin = "https://eduwonderlab.com";
   const hwUrl = `${origin}/lessons/${lessonId}/homework.html`;
-  const qr = qrSvg(hwUrl, { size: 90, margin: 1, fg: "#0f172a" });
+  const qr = qrSvg(hwUrl, { size: 84, margin: 1, fg: "#0f172a" });
 
   return `
     <div class="refrigerator-sheet-print-container" aria-hidden="true">
+      <div class="rf-sheet-page">
       <div class="rf-header">
         <div class="rf-title-group">
-          <span class="rf-kicker">EduWonderLab Mathematics · Grade 6 Core Program</span>
+          <span class="rf-kicker">EduWonderLab Mathematics · Grade 6 Family Learning Companion 3.0</span>
           <h2 class="rf-title">Lesson ${esc(displayId)}: ${esc(title)}</h2>
-          <p class="rf-sub">🏠 <strong><span class="lang-en">Family Math Night Companion</span><span class="lang-es" lang="es">Hoja Familiar de Matemáticas</span></strong></p>
+          <p class="rf-sub">🏠 <strong><span class="lang-en">1-Page Refrigerator Sheet &amp; Dinner Talk</span><span class="lang-es" lang="es">Hoja Familiar de 1 Página y Charla en Casa</span></strong></p>
         </div>
         <div class="rf-qr-box">
           ${qr}
@@ -9214,14 +9237,19 @@ export function renderRefrigeratorSheet(config = {}, lessonId = "") {
       <div class="rf-grid">
         <div class="rf-col-left">
           <div class="rf-card rf-card-bigidea">
-            <h3>🎯 <span class="lang-en">The Big Idea</span><span class="lang-es" lang="es">La idea principal</span></h3>
+            <h3>🎯 <span class="lang-en">The Big Idea &amp; Visual Model</span><span class="lang-es" lang="es">La idea principal y modelo visual</span></h3>
             <p class="rf-key-en"><strong><span class="lang-en">In one sentence:</span><span class="lang-es" lang="es">En una frase:</span></strong> ${esc(completeSentence(keyEn))}</p>
             <p class="rf-key-es" lang="es"><strong>En una frase:</strong> ${esc(completeSentence(keyEs))}</p>
+            <div class="rf-visual-summary">${miniVisual.svg}</div>
           </div>
 
           <div class="rf-card rf-card-dinner">
-            <h3>💬 <span class="lang-en">Dinner Table Talk</span><span class="lang-es" lang="es">Preguntas para la cena</span></h3>
-            <p class="rf-dinner-intro"><span class="lang-en">Ask your student — let them explain the thinking:</span><span class="lang-es" lang="es">Pregunta a tu estudiante — deja que explique su razonamiento:</span></p>
+            <h3>🍽️ <span class="lang-en">Tonight's 60-Second Math Talk</span><span class="lang-es" lang="es">Charla Matemática de 60 Segundos</span></h3>
+            <p class="rf-dinner-question">
+              <strong><span class="lang-en">Ask your student:</span><span class="lang-es" lang="es">Pregúntale a tu estudiante:</span></strong>
+              <span class="lang-en">“${esc(dinnerEn)}”</span>
+              <span class="lang-es" lang="es">«${esc(dinnerEs)}»</span>
+            </p>
             <ul class="rf-dinner-list">
               ${watchCues.map((c) => `<li>${c.icon} <span>${esc(c.en)}</span><br/><small lang="es">${esc(c.es)}</small></li>`).join("")}
             </ul>
@@ -9249,13 +9277,16 @@ export function renderRefrigeratorSheet(config = {}, lessonId = "") {
 
       <div class="rf-slip">
         <div class="rf-slip-head">
-          <span>✂️ <em><span class="lang-en">Tear off or keep on refrigerator</span><span class="lang-es" lang="es">Desprende o cuelga en el refrigerador</span></em></span>
-          <strong><span class="lang-en">Optional practice record</span><span class="lang-es" lang="es">Registro opcional de práctica</span></strong>
+          <span>✂️ <em><span class="lang-en">Tear-off check-in ticket or keep on refrigerator</span><span class="lang-es" lang="es">Boleto desprendible o para el refrigerador</span></em></span>
+          <strong>🌟 <span class="lang-en">I talked math with someone at home tonight!</span><span class="lang-es" lang="es">¡Hoy hablé de matemáticas con alguien en casa!</span></strong>
         </div>
         <div class="rf-slip-fields">
           <span><span class="lang-en">Student:</span><span class="lang-es" lang="es">Estudiante:</span> ______________________</span>
           <span><span class="lang-en">Practice partner (optional):</span><span class="lang-es" lang="es">Acompañante de práctica (opcional):</span> ______________________</span>
           <span><span class="lang-en">Date:</span><span class="lang-es" lang="es">Fecha:</span> __________</span>
+        </div>
+        <div class="rf-sketch-box">
+          <span>🎨 <span class="lang-en">Student pride note or optional partner sketch / doodle:</span><span class="lang-es" lang="es">Nota de orgullo del estudiante o dibujo opcional en familia:</span></span>
         </div>
         <div class="rf-slip-mood">
           <span><span class="lang-en">Tonight's math felt:</span><span class="lang-es" lang="es">La matemática de hoy se sintió:</span></span>
@@ -9263,6 +9294,7 @@ export function renderRefrigeratorSheet(config = {}, lessonId = "") {
           <span>[ &nbsp; ] 🟡 <span class="lang-en">Needed help</span><span class="lang-es" lang="es">Con ayuda</span></span>
           <span>[ &nbsp; ] 🔴 <span class="lang-en">Tough</span><span class="lang-es" lang="es">Difícil</span></span>
         </div>
+      </div>
       </div>
     </div>
   `;
@@ -10513,7 +10545,11 @@ function printAnswerSheet() {
 window.printAnswerSheet = printAnswerSheet;
 
 function printRefrigeratorSheet() {
-  printProblemsOnly();
+  document.body.classList.add('print-refrigerator-sheet');
+  window.print();
+  setTimeout(function() {
+    document.body.classList.remove('print-refrigerator-sheet');
+  }, 1000);
 }
 window.printRefrigeratorSheet = printRefrigeratorSheet;
 
@@ -15787,19 +15823,78 @@ export const ARENA_CSS = `
     margin: 0;
     color: #0c4a6e;
   }
-  body.print-refrigerator-sheet .rf-table-talk-box {
-    background: #fdf4ff;
-    border: 1px solid #f5d0fe;
+  body.print-refrigerator-sheet .rf-table-talk-box,
+  body.print-refrigerator-sheet .rf-card-dinner {
+    background: #f0fdfa;
+    border: 1px solid #99f6e4;
     border-radius: 8px;
     padding: 8px 12px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
-  body.print-refrigerator-sheet .rf-talk-prompts {
+  body.print-refrigerator-sheet .rf-talk-prompts,
+  body.print-refrigerator-sheet .rf-dinner-list {
     margin: 4px 0 0;
     padding-left: 18px;
-    font-size: 11.5px;
+    font-size: 11px;
     line-height: 1.35;
-    color: #581c87;
+    color: #0f172a;
+  }
+  body.print-refrigerator-sheet .rf-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  body.print-refrigerator-sheet .rf-card {
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    background: #ffffff;
+  }
+  body.print-refrigerator-sheet .rf-card h3 {
+    margin: 0 0 4px;
+    font-size: 13px;
+    color: #12355b;
+  }
+  body.print-refrigerator-sheet .rf-visual-summary svg {
+    max-width: 100%;
+    height: auto;
+    max-height: 76px;
+    margin-top: 4px;
+  }
+  body.print-refrigerator-sheet .rf-workspace {
+    min-height: 54px;
+    border: 1px dashed #94a3b8;
+    border-radius: 6px;
+    padding: 4px 6px;
+    margin-top: 4px;
+    font-size: 10px;
+    color: #475569;
+  }
+  body.print-refrigerator-sheet .rf-slip {
+    border-top: 2px dashed #0f172a;
+    padding-top: 8px;
+    margin-top: 6px;
+    font-size: 11px;
+  }
+  body.print-refrigerator-sheet .rf-slip-head,
+  body.print-refrigerator-sheet .rf-slip-fields,
+  body.print-refrigerator-sheet .rf-slip-mood {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  body.print-refrigerator-sheet .rf-sketch-box {
+    min-height: 34px;
+    border: 1px dashed #64748b;
+    border-radius: 6px;
+    padding: 4px 8px;
+    margin: 4px 0 6px;
+    font-size: 10.5px;
+    color: #334155;
   }
   body.print-refrigerator-sheet .rf-practice-section {
     margin-bottom: 12px;

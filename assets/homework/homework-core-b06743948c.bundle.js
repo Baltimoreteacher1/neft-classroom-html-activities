@@ -1092,7 +1092,11 @@ function printAnswerSheet() {
 window.printAnswerSheet = printAnswerSheet;
 
 function printRefrigeratorSheet() {
-  printProblemsOnly();
+  document.body.classList.add('print-refrigerator-sheet');
+  window.print();
+  setTimeout(function() {
+    document.body.classList.remove('print-refrigerator-sheet');
+  }, 1000);
 }
 window.printRefrigeratorSheet = printRefrigeratorSheet;
 
@@ -2929,7 +2933,7 @@ function hwVoiceFill(box, transcript, lang) {
 }
 
 function hwVoiceInitEntry() {
-  var boxes = Array.prototype.slice.call(document.querySelectorAll('input.table-input, textarea.open-response-textarea, textarea.error-explain-textarea, textarea.hw-work-input'));
+  var boxes = Array.prototype.slice.call(document.querySelectorAll('input.table-input, textarea.open-response-textarea, textarea.error-explain-textarea, textarea.hw-work-input, #parent_reflection_input, #parent_note_input'));
   boxes.forEach(function (box) {
     box.setAttribute('data-voice-entry', hwVoiceKind(box));
     /* The shared learning-supports layer (ls-voice-answer.js) offers its microphone beside any box inside [data-ls-voice]. */
@@ -4122,6 +4126,62 @@ function hwWrapLanguage() {
   setLanguageMode.hwWrapped = true;
 }
 
+/* V3.0 Student-Controlled Adaptive Pathways ("express", "standard", "foundation").
+   Switching pathways never clears entered answers and synchronizes with the route mode. */
+function hwSetPathway(pathway, silent) {
+  var valid = pathway === 'express' || pathway === 'foundation' ? pathway : 'standard';
+  hwSet('pathway', valid);
+  document.body.dataset.hwPathway = valid;
+  document.querySelectorAll('.hw-pathway-btn[data-pathway]').forEach(function (btn) {
+    var active = btn.getAttribute('data-pathway') === valid;
+    btn.classList.toggle('is-active', active);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+  var bridge = document.getElementById('hw_foundation_bridge');
+  if (bridge) bridge.hidden = valid !== 'foundation';
+  if (!silent && typeof setHomeworkRoute === 'function') {
+    if (valid === 'express') {
+      setHomeworkRoute('quick', { silent: true, keepTab: true });
+      hwToast("I've Got This mode: 2 quick checks + mystery challenge unlocked!", 'Modo «¡Ya lo domino!»: 2 preguntas rápidas + reto misterioso listo.');
+    } else if (valid === 'standard') {
+      setHomeworkRoute('full', { silent: true, keepTab: true });
+      hwToast('Just Right companion mode active. Your work is saved.', 'Modo «A mi medida» activo. Tus respuestas están guardadas.');
+    } else if (valid === 'foundation') {
+      setHomeworkRoute('full', { silent: true, keepTab: true });
+      hwToast('Visual Bridge opened below — explore the model first!', 'Puente visual abierto abajo — ¡explora primero el modelo!');
+    }
+    hwRenderGoal(false);
+  }
+}
+window.hwSetPathway = hwSetPathway;
+
+function hwRestorePathway() {
+  var saved = hwGet('pathway');
+  if (saved === 'express' || saved === 'standard' || saved === 'foundation') {
+    hwSetPathway(saved, true);
+  } else {
+    var route = document.body.dataset.homeworkRoute || HW_ROUTE_DEFAULT;
+    hwSetPathway(route === 'quick' ? 'express' : 'standard', true);
+  }
+}
+
+/* V3.0 Quick-Tap Sentence Starters for "My Math Voice" reflection fields. */
+function hwInsertVoiceChip(btn) {
+  if (!btn) return;
+  var targetId = btn.getAttribute('data-target-input');
+  var box = targetId ? document.getElementById(targetId) : null;
+  if (!box) return;
+  var es = document.body.classList.contains('lang-mode-es');
+  var text = es ? (btn.getAttribute('data-chip-es') || btn.getAttribute('data-chip-en')) : (btn.getAttribute('data-chip-en') || '');
+  if (!text) return;
+  var current = String(box.value || '').trim();
+  box.value = current ? current + ' ' + text : text + ' ';
+  box.dispatchEvent(new Event('input', { bubbles: true }));
+  box.focus();
+  if (typeof toggleSignoffSubmitBtn === 'function') toggleSignoffSubmitBtn();
+}
+window.hwInsertVoiceChip = hwInsertVoiceChip;
+
 /* The site-wide i18n script resets <html lang> to "en" on lessons that load it, which makes a
    screen reader read Spanish with English pronunciation. The page's language mode is the
    authority, so put it back whenever something else changes it. */
@@ -4138,6 +4198,7 @@ document.addEventListener('DOMContentLoaded', function () {
   hwRestoreSolved();
   hwWrapLanguage();
   hwRenderTonight();
+  hwRestorePathway();
   hwRenderConfidence();
   hwRenderNights();
   setTimeout(function () { hwRenderGoal(false); }, 0);

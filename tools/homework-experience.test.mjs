@@ -13,11 +13,14 @@ import {
   GOAL_TARGET,
   pickMystery,
   renderConfidence,
+  renderDinnerTalkCard,
   renderExperienceDialogs,
   renderFamilyNights,
   renderGoalPips,
+  renderMiniConceptSvg,
   renderMysteryChallenge,
   renderShareWin,
+  renderStudentPathwayBar,
   renderTeachBack,
   renderTonightStrip,
 } from "../scripts/lib/homework-experience.mjs";
@@ -33,7 +36,7 @@ function page({ query = "", reducedMotion = false, storage = {}, restored = true
     (_, i) =>
       `<section class="problem-section" id="problem_${i}" data-problem-type="multiple-choice"></section>`,
   ).join("");
-  const markup = `${renderQuickPlan()}${renderTonightStrip()}${renderConfidence("before")}${renderMysteryChallenge({ index: 11, stemEn: "What is 10% of 80?", stemEs: "¿Cuánto es el 10% de 80?" })}
+  const markup = `${renderQuickPlan()}${renderTonightStrip()}${renderDinnerTalkCard({ en: "Why does doubling the recipe keep the flavor the same?", es: "¿Por qué duplicar la receta mantiene el mismo sabor?" }, "ratios")}${renderStudentPathwayBar("ratios")}${renderConfidence("before")}${renderMysteryChallenge({ index: 11, stemEn: "What is 10% of 80?", stemEs: "¿Cuánto es el 10% de 80?" })}
     <div data-tab-panel="check">${problems}</div>
     <div id="goal_reached_banner" hidden><button class="hw-banner-mystery" hidden></button></div>
     <span id="progress_text"></span><div id="progress_bar"></div><span id="tab_badge_check"></span>
@@ -420,4 +423,53 @@ test("another script resetting <html lang> to en does not undo Spanish mode", as
     "en",
     "bilingual stays en, as setLanguageMode does",
   );
+});
+
+test("V3.0 Family Learning Companion: 60-Second Dinner Talk, Adaptive Pathways, and My Math Voice chips work in EN and ES", () => {
+  const w = page();
+  const dinner = w.document.getElementById("hw_dinner_talk");
+  assert.ok(dinner, "60-second dinner talk card renders");
+  assert.match(dinner.textContent, /Tonight's 60-Second Math Talk/);
+  assert.match(dinner.textContent, /Charla Matemática de 60 Segundos/);
+  assert.ok(
+    dinner.querySelector("svg.hw-mini-model-svg"),
+    "expandable inline SVG model is present",
+  );
+
+  const pathwayBar = w.document.getElementById("hw_pathway_bar");
+  assert.ok(pathwayBar, "student pathway bar renders");
+  const buttons = [...pathwayBar.querySelectorAll(".hw-pathway-btn[data-pathway]")];
+  assert.deepEqual(
+    buttons.map((b) => b.dataset.pathway),
+    ["express", "standard", "foundation"],
+  );
+  const bridge = w.document.getElementById("hw_foundation_bridge");
+  assert.equal(bridge.hidden, true);
+  w.hwSetPathway("foundation");
+  assert.equal(bridge.hidden, false);
+  assert.equal(w.localStorage.getItem("hw_exp_4-3_pathway"), "foundation");
+  w.hwSetPathway("express");
+  assert.equal(bridge.hidden, true);
+  assert.equal(w.document.body.dataset.hwPathway, "express");
+
+  // Quick-tap sentence starter chips append in active language
+  const box = w.document.createElement("textarea");
+  box.id = "parent_reflection_input";
+  w.document.body.append(box);
+  const chip = w.document.createElement("button");
+  chip.setAttribute("data-target-input", "parent_reflection_input");
+  chip.setAttribute("data-chip-en", "The visual model helped me see that");
+  chip.setAttribute("data-chip-es", "El modelo visual me ayudó a ver que");
+  w.hwInsertVoiceChip(chip);
+  assert.equal(box.value, "The visual model helped me see that ");
+  w.document.body.className = "lang-mode-es";
+  box.value = "";
+  w.hwInsertVoiceChip(chip);
+  assert.equal(box.value, "El modelo visual me ayudó a ver que ");
+
+  for (const topic of ["ratios", "percent", "fractions", "equations", "number-line", "general"]) {
+    const model = renderMiniConceptSvg(topic);
+    assert.match(model.svg, /style="background:white"/);
+    assert.ok(model.en.length > 15 && model.es.length > 15);
+  }
 });

@@ -95,6 +95,24 @@ const dateLabel = (iso, lang) =>
   }).format(new Date(`${iso}T12:00:00Z`));
 const mondayOf = (iso) => addDays(iso, -(new Date(`${iso}T12:00:00Z`).getUTCDay() + 6) % 7);
 
+/**
+ * Checks whether a lesson night has been completed on this local device
+ * (goal met, reflection saved, or at least 2 problems solved).
+ */
+export function isCompanionLessonDone(lessonId) {
+  if (!lessonId) return false;
+  try {
+    const store = globalThis.document?.defaultView?.localStorage || globalThis.localStorage;
+    if (!store) return false;
+    if (store.getItem(`hw_exp_${lessonId}_goal_met`) === "1") return true;
+    if (store.getItem(`hw_parent_signoff_${lessonId}`)) return true;
+    const solved = JSON.parse(store.getItem(`hw_exp_${lessonId}_solved`) || "{}");
+    return Object.keys(solved).length >= 2;
+  } catch {
+    return false;
+  }
+}
+
 /** The public page and authenticated preview use exactly the same view. */
 export function renderHomeworkHub(
   root,
@@ -345,6 +363,29 @@ export function renderHomeworkHub(
         ? item.homeworkPath
         : `/lessons/${item.id}/homework.html`;
       const path = session === 2 ? sessionTwoPath(item.id) : ownPath;
+      const targetLessonId = session === 2 ? `${item.id}-part2` : item.id;
+      if (item.kind !== "unit-review") {
+        content.append(
+          el(
+            "p",
+            t(
+              "🍽️ 60-Sec Dinner Talk · 🧭 Adaptive Pathways · 🎙️ My Math Voice",
+              "🍽️ Charla de 60 s · 🧭 Rutas adaptativas · 🎙️ Mi Voz Matemática",
+            ),
+            "companion-features",
+          ),
+        );
+        if (isCompanionLessonDone(targetLessonId) || isCompanionLessonDone(item.id)) {
+          card.classList.add("is-completed");
+          content.append(
+            el(
+              "p",
+              t("✓ Completed on this device", "✓ Completado en este dispositivo"),
+              "companion-status is-done",
+            ),
+          );
+        }
+      }
       if (item.kind === "unit-review")
         content.append(
           link(t("Open homework", "Abrir tarea"), homeworkHref(path, { lang: linkLang, sectionId: section.id })),
