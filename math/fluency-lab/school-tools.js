@@ -3,7 +3,7 @@ import { evidence, findSkill, localDay, prerequisites, sanitizeTutor, skillKey }
 import { languageExpectation, languagePrintPrompt } from "./language-bridge.js";
 import { languagePackHtml } from "./language-pack.js";
 import { familySessionShare } from "./family/family-planner.js";
-import { mountTeacherEvidenceDashboard } from "./teacher-dashboard.js";
+import { mountTeacherEvidenceDashboard } from "./learning-evidence.js";
 
 export const escapeHtml = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 const PROFILE_KEY = "ewl-fluency-profiles-v1";

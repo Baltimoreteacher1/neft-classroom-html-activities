@@ -3,7 +3,7 @@ import {
   buildTeacherReport,
   groupTeacherInterventions,
   masteryStage,
-} from "../math/fluency-lab/teacher-dashboard.js";
+} from "../math/fluency-lab/learning-evidence.js";
 import { emptyTutor, findSkill, skillKey } from "../math/fluency-lab/tutor-engine.js";
 
 const now = 1_800_000_000_000;

@@ -63,6 +63,7 @@ check("student activities and homework are unaffected", () => {
     "/ratio-color-mixer/",
     "math/games/practice-arcade?unit=3",
     "/curriculum/",
+    "/math/fluency-lab/learning-evidence.js",
     "/lessons/1-1/family/",
     // "lesson-plan" contains "plan" but is not /curriculum/plan-notes, and
     // students open these. A loose prefix match here would break real packages.
