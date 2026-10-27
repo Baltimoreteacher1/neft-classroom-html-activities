@@ -28,6 +28,7 @@ import { GAMES, mountGames } from "./games.js";
 import { getLang, setLang, t, translatePage } from "./i18n.js";
 import { mistakeCategoryLabel } from "./mistake-notes.js";
 import { runFluencySelfTest } from "./fluency-diagnostics.js";
+import { decodeMasteryReceipt, makeMasteryReceipt } from "./mastery-receipts.js";
 import { factsReport, mountSnapshot } from "./class-snapshot.js";
 import { whyFor } from "./step-whys.js";
 import { storyFor } from "./story-problems.js";
@@ -7017,6 +7018,9 @@ function finishSession() {
   state.tutor.sessions = state.tutor.sessions.slice(-60);
   els.summaryStats.innerHTML = `<div><strong>${session.correct}</strong><span>solved</span></div><div><strong>${session.answered}</strong><span>completed</span></div><div><strong>${session.independentCorrect}</strong><span>without help on first try</span></div>${(session.revised || 0) ? `<div class="revised-stat"><strong>${session.revised}</strong><span>revised with support</span></div>` : ""}`;
   els.summaryStats.classList.toggle("has-revisions", (session.revised || 0) > 0);
+  const receiptHost = document.querySelector("#mastery-receipt");
+  receiptHost.hidden = session.mode !== "assignment";
+  if (!receiptHost.hidden) receiptHost.innerHTML = `<h4>${t("Your zero-PII mastery receipt")}</h4><p>${t("Choose the strategies you used. The code contains skill, accuracy, and strategy tags, never a name.")}</p><fieldset><legend>${t("Strategies I used")}</legend>${[["visual", "I used a visual"], ["decompose", "I broke numbers apart"], ["recall", "I recalled a fact"], ["symbolic", "I used symbols"]].map(([value, label]) => { const labels = { visual: t("I used a visual"), decompose: t("I broke numbers apart"), recall: t("I recalled a fact"), symbolic: t("I used symbols") }; return `<label><input type="checkbox" data-receipt-strategy value="${value}"/> ${labels[value] || label}</label>`; }).join("")}</fieldset><div class="button-row"><button class="primary-action" type="button" data-make-receipt>${t("Create mastery receipt")}</button><button class="outline-action" type="button" data-copy-receipt hidden>${t("Copy code")}</button><button class="outline-action" type="button" data-print-receipt hidden>${t("Print receipt")}</button></div><output id="mastery-receipt-code" class="mastery-receipt-code" aria-live="polite"></output>`;
   const next = recommendations(state.tutor, state.grade)[0];
   const foundations = prerequisites(next.skill);
   const profileBrief = buildFluencyProfileSummary(session, accuracyPercent, next);
@@ -8456,6 +8460,36 @@ if (drillToolbox) {
 }
 
 els.summary?.addEventListener("click", (event) => {
+  if (event.target.closest("[data-make-receipt]")) {
+    const skillKeys = state.assignment?.keys?.length ? state.assignment.keys : [state.skill ? skillKey() : `${state.grade}:${state.item?.skill?.id}`];
+    const strategyTags = [...document.querySelectorAll("[data-receipt-strategy]:checked")].map((input) => input.value);
+    const attempts = Math.max(0, (state.session?.answered || 0) - (state.session?.revised || 0));
+    const accuracy = attempts ? Math.round((state.session.correct / attempts) * 100) : 0;
+    try {
+      const code = makeMasteryReceipt({ skillKeys, accuracy, strategyTags });
+      document.querySelector("#mastery-receipt-code").textContent = code;
+      document.querySelector("[data-copy-receipt]").hidden = false;
+      document.querySelector("[data-print-receipt]").hidden = false;
+    } catch (error) { announce(error.message); }
+    return;
+  }
+  if (event.target.closest("[data-copy-receipt]")) {
+    const code = document.querySelector("#mastery-receipt-code")?.textContent;
+    if (code && navigator.clipboard?.writeText) navigator.clipboard.writeText(code).then(() => announce(t("Receipt copied"))).catch(() => announce(t("Select and copy the receipt code.")));
+    else if (code) {
+      const output = document.querySelector("#mastery-receipt-code");
+      const selection = window.getSelection(); const range = document.createRange();
+      range.selectNodeContents(output); selection.removeAllRanges(); selection.addRange(range);
+      announce(document.execCommand("copy") ? t("Receipt copied") : t("Select and copy the receipt code."));
+      selection.removeAllRanges();
+    }
+    return;
+  }
+  if (event.target.closest("[data-print-receipt]")) {
+    const code = document.querySelector("#mastery-receipt-code")?.textContent || "";
+    if (code) printHtml(`<article class="packet-page"><h1>EduWonderLab · Mastery Receipt</h1><p>${escapeHtml(code)}</p><p>${t("This code contains practice evidence only. It contains no learner name.")}</p></article>`);
+    return;
+  }
   if (event.target.closest("[data-start-quick-drill]")) {
     setMode("quick");
     return;
@@ -8484,6 +8518,24 @@ els.summary?.addEventListener("click", (event) => {
     TeacherPrintCenter.open();
     return;
   }
+});
+
+document.querySelector("#decode-receipts")?.addEventListener("click", () => {
+  const host = document.querySelector("#receipt-heatmap");
+  const lines = document.querySelector("#receipt-batch").value.split(/[\r\n,;]+/).map((line) => line.trim()).filter(Boolean);
+  const decoded = [];
+  let invalid = 0;
+  for (const line of lines) { try { decoded.push(decodeMasteryReceipt(line)); } catch { invalid += 1; } }
+  const rows = new Map();
+  for (const receipt of decoded) for (const key of receipt.skillKeys) {
+    const row = rows.get(key) || { count: 0, score: 0, strategies: new Set() };
+    row.count += 1; row.score += receipt.accuracy; receipt.strategyTags.forEach((tag) => row.strategies.add(tag)); rows.set(key, row);
+  }
+  const cells = [...rows.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([key, row]) => {
+    const skill = findSkill(key); const average = Math.round(row.score / row.count);
+    return `<tr><th scope="row">${escapeHtml(skill?.title || key)} <small>Grade ${skill?.grade || "?"}</small></th><td>${row.count}</td><td><strong>${average}%</strong><progress max="100" value="${average}" aria-label="${average}% average accuracy"></progress></td><td>${escapeHtml([...row.strategies].sort().join(", ") || "—")}</td></tr>`;
+  }).join("");
+  host.innerHTML = `<p>${t("Decoded {valid} receipt(s); {invalid} unreadable.", { valid: decoded.length, invalid })}</p>${cells ? `<div class="receipt-table-wrap"><table><thead><tr><th scope="col">${t("Skill")}</th><th scope="col">${t("Receipts")}</th><th scope="col">${t("Average accuracy")}</th><th scope="col">${t("Strategies seen")}</th></tr></thead><tbody>${cells}</tbody></table></div>` : `<p>${t("Paste one or more valid receipt codes to build the class heatmap.")}</p>`}`;
 });
 
 // A finished column board (solver, model or drawer) copies the learner's own typed result into the answer box,
