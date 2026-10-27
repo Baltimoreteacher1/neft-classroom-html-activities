@@ -268,3 +268,241 @@ body.editorial .ls-launcher * {
     white-space: nowrap;
   }
 }
+
+/* ── 12. Fleet-wide repairs from the browser gates (reports/gate-*-after.json) ──
+   Each block names a class that failed on all 84 lessons. */
+
+/* Form controls: a 1.2-1.35:1 boundary is invisible. Controls get a 3:1 boundary
+   (muted text colour vs white is 7.6:1, so a 1.5px line clears it). */
+body.editorial.skin-warm-deck :is(
+    textarea.text-input,
+    input.text-input,
+    input.sp-answer,
+    .sp-work,
+    .nw-textarea,
+    .syw-input
+  ) {
+  border: 1.5px solid var(--ds-text-muted);
+}
+body.editorial.skin-warm-deck .level-option {
+  border-color: var(--ds-text-muted);
+}
+body.editorial.skin-warm-deck .level-option.selected {
+  border-color: var(--ds-primary);
+}
+body.editorial.skin-warm-deck .custom-radio {
+  border-color: var(--ds-text-muted);
+}
+
+/* Phase stars: unearned stars were 1.6-2.2:1 on every surface. */
+body.editorial.skin-warm-deck .phase-stars .star:not(.earned) {
+  color: var(--ds-text-muted);
+}
+body.editorial.skin-warm-deck .sidebar .phase-stars .star:not(.earned) {
+  color: var(--ds-tint-navy-64);
+}
+
+/* Act step number badge: white on #4b9892 was 3.37:1. */
+body.editorial.skin-warm-deck .act-step-chip.is-current .act-step-num {
+  background: var(--ds-accent-ink);
+  color: var(--ds-text-inverse);
+}
+
+/* Objective cards: teal and coral heading text on tinted cards was 2.6:1. */
+body.editorial.skin-warm-deck .card-teal > div:first-child,
+body.editorial.skin-warm-deck .card-teal .card-title {
+  color: var(--ds-accent-ink);
+}
+body.editorial.skin-warm-deck .card-coral > div:first-child,
+body.editorial.skin-warm-deck .card-coral .card-title,
+body.editorial.skin-warm-deck .launch-objective-head h4 {
+  color: var(--ds-highlight-ink);
+}
+body.editorial.skin-warm-deck .lesson-hero-meta {
+  color: var(--ds-text-muted);
+}
+
+/* Targets: shared controls repeated on every lesson. */
+body.editorial.skin-warm-deck :is(
+    .nt-nb-lang-btn,
+    .phase-subcard-chip,
+    .identity-teacher-btn,
+    .identity-teacher-pin,
+    .identity-teacher-go,
+    .mode-toggle-enter,
+    .nt-tooldock-btn,
+    .vl-starter-chip,
+    details.reading-bonus > summary,
+    details.objective-more > summary,
+    details.card > summary
+  ) {
+  min-height: var(--ds-target);
+}
+body.editorial.skin-warm-deck .nt-tooldock-btn {
+  min-width: var(--ds-target);
+}
+body.editorial.skin-warm-deck :is(.nt-nb-lang-btn, .identity-join button, .instruction-callout button) {
+  min-width: var(--ds-target);
+  min-height: var(--ds-target);
+}
+body.editorial.skin-warm-deck :is(input[type="checkbox"], input.objective-check-box, input.confidence-slider) {
+  min-height: var(--ds-target);
+}
+body.editorial.skin-warm-deck .minimap-dot {
+  position: relative;
+}
+body.editorial.skin-warm-deck .minimap-dot::after {
+  content: "";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: var(--ds-target);
+  height: var(--ds-target);
+  transform: translate(-50%, -50%);
+}
+
+/* Type: the last off-palette families and sizes on shared chrome. */
+body.editorial.skin-warm-deck :is(
+    .lesson-course-nav,
+    .lesson-course-nav a,
+    .lesson-course-nav span,
+    .ewl-supports-dock-reopen,
+    .vl-tryit-title,
+    .vl-turntalk-title,
+    .vl-conf-title,
+    .vl-tool-head,
+    .vl-stage-visual-head,
+    .vl-hero-title,
+    .flagship-mission-title,
+    .flagship-mission-eyebrow,
+    .flagship-mission-story
+  ) {
+  font-family: var(--ds-font-body);
+}
+body.editorial.skin-warm-deck :is(.vl-hero-title, .flagship-mission-title) {
+  font-family: var(--ds-font-display);
+}
+body.editorial.skin-warm-deck :is(
+    .nsr-launcher-label,
+    .ntgd-tag,
+    .identity-meta,
+    .flagship-mission-eyebrow
+  ) {
+  font-size: var(--ds-text-label) !important;
+}
+
+/* Scoped text-colour variables: inside the tinted objective cards and teal badges the
+   brand coral/teal were used as TEXT (2.6:1). Re-pointing the variable inside the card
+   moves every rule that reads it, instead of chasing each heading and summary. */
+body.editorial.skin-warm-deck :is(.card-coral, .objective-discuss) {
+  --coral: var(--ds-highlight-ink);
+}
+body.editorial.skin-warm-deck :is(.card-teal, .badge-teal, .nw-col-notice) {
+  --teal: var(--ds-accent-ink);
+}
+body.editorial.skin-warm-deck .badge-teal {
+  background: var(--ds-accent-ink);
+  color: var(--ds-text-inverse);
+}
+body.editorial.skin-warm-deck :is(.nsr-launcher-label, .ls-bi, .ls-bi > span, .stepslv, .stepslv *, .fdiv, .fdiv *, .tdl, .tdl *, .regen-btn) {
+  font-family: var(--ds-font-body);
+}
+body.editorial.skin-warm-deck :is(.stepslv-key, .stepslv-go, .tdl-btn, .fdiv-btn, .fdiv-inp, .regen-btn, .nw-vocab-word, .nw-vocab-add) {
+  min-height: var(--ds-target);
+}
+body.editorial.skin-warm-deck :is(.stepslv-problabel, .stepslv-hint) {
+  font-size: var(--ds-text-label);
+}
+body.editorial.skin-warm-deck .nt-nb-copy-formula {
+  font-family: var(--ds-font-body);
+  font-variant-numeric: tabular-nums;
+}
+body.editorial.skin-warm-deck .flagship-mission-card :is(button, .btn) {
+  font-family: var(--ds-font-body);
+}
+
+/* Round 2 (4-lesson probe): text on tinted surfaces uses navy; faded text is not faded. */
+body.editorial.skin-warm-deck :is(
+    .card-teal > div:first-child,
+    .card-coral > div:first-child,
+    .launch-objective-head h4,
+    .launch-objective-head .objective-check,
+    .objective-more > summary,
+    .objective-discuss > span,
+    .nw-col-notice span
+  ) {
+  color: var(--ds-primary);
+}
+body.editorial.skin-warm-deck .phase-stars .star:not(.earned) {
+  opacity: 1;
+  color: var(--ds-tint-navy-64);
+}
+body.editorial.skin-warm-deck .lesson-hero-meta {
+  opacity: 1;
+  color: var(--ds-text-muted);
+}
+body.editorial.skin-warm-deck .tdl-part {
+  color: var(--ds-primary);
+}
+body.editorial.skin-warm-deck .stepslv-input,
+body.editorial.skin-warm-deck .ft-input {
+  border: 1.5px solid var(--ds-text-muted);
+  min-height: var(--ds-target);
+}
+body.editorial.skin-warm-deck :is(
+    .fdiv-chip,
+    .eqlab-btn,
+    .eqlab-chip,
+    .eqlab-op,
+    .stepslv-chip,
+    .nt-toolchip,
+    .mwb-launcher-nav a
+  ) {
+  min-height: var(--ds-target);
+}
+body.editorial.skin-warm-deck :is(h3, .badge, .vocab-es) > .obj-term,
+body.editorial.skin-warm-deck .nw-vocab-word,
+body.editorial.skin-warm-deck .stepslv-key,
+body.editorial.skin-warm-deck .mwb-launcher-nav a {
+  min-width: var(--ds-target);
+  min-height: var(--ds-target);
+}
+
+/* Pre-boot entry card (class `flagship`, no skin yet) and injected pills: one family, 13px floor. */
+.flagship-mission-card,
+.flagship-mission-card :is(div, p, span, button, h1),
+#nsr-root .nsr-launcher-label,
+#nsr-workbench .nsr-workbench-label,
+.ls-launcher .ls-bi > span,
+.ewl-supports-dock-reopen {
+  font-family: var(--ds-font-body) !important;
+}
+.flagship-mission-title {
+  font-family: var(--ds-font-display) !important;
+}
+:is(.flagship-mission-eyebrow, .nsr-launcher-label, .nsr-workbench-label) {
+  font-size: var(--ds-text-label) !important;
+}
+
+/* Round 3 */
+body.editorial.skin-warm-deck :is(.card-teal, .card-coral) :is(summary, label.objective-check, .objective-discuss > span, h4),
+body.editorial.skin-warm-deck :is(.card-teal, .card-coral) > div {
+  color: var(--ds-primary);
+}
+body.editorial.skin-warm-deck .sidebar .phase-stars .star:not(.earned) {
+  color: var(--ds-tint-navy-32);
+}
+body.editorial.skin-warm-deck .lesson-hero-meta {
+  color: inherit;
+}
+
+/* Round 4: every text field gets a 3:1 boundary, including the identity form and tool inputs. */
+body.editorial :is(
+    input:not([type]),
+    input[type="text"],
+    input[type="number"],
+    input[type="password"],
+    input[type="email"],
+    textarea
+  ):not(.sr-only) {
+  border: 1.5px solid var(--ds-text-muted);
+}

@@ -2135,7 +2135,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
 
       const objectiveCard = ({ accent, color, icon, label, text, key, prompt, starter, visual }) =>
         `<div class="card ${accent} obj-card" style="margin-bottom:var(--sp-4, 18px); padding:var(--sp-5, 22px);">
-          <div style="font-size:1.15rem; font-weight:700; color:var(${color}); margin-bottom:var(--sp-2, 8px);">${icon} ${label}</div>
+          <div style="font-size:1.15rem; font-weight:700; color:var(--ds-primary); margin-bottom:var(--sp-2, 8px);">${icon} ${label}</div>
           <p style="margin:0 0 var(--sp-4, 18px); font-size:1.45rem; line-height:1.6; font-weight:500; color:var(--navy, #264653);">${linkifyObjectiveTerms(text, objectiveVocab)}</p>
           ${visualBlock(visual)}
           <div style="display:flex; flex-direction:column; gap:var(--sp-2, 8px); background:#fff; border:2px solid var(${color}); border-radius:var(--radius-md, 12px); padding:var(--sp-3, 14px) var(--sp-4, 18px); margin-bottom:var(--sp-3, 12px);">

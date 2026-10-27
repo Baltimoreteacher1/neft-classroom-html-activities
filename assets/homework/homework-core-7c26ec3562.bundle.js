@@ -2562,13 +2562,23 @@ function initStudioSubRail() {
 
   tabBtns.forEach(function (btn) {
     var tabId = btn.dataset.tab;
-    var rail = btn.nextElementSibling;
-    if (!rail || !rail.classList.contains('hw-sub-rail')) {
+    var rail = document.getElementById('hw_sub_' + tabId);
+    if (!rail) {
       rail = document.createElement('div');
       rail.className = 'hw-sub-rail';
       rail.id = 'hw_sub_' + tabId;
-      btn.parentNode.insertBefore(rail, btn.nextSibling);
+      rail.dataset.forTab = tabId;
+      // Rails live OUTSIDE the tablist (it may only own tabs). CSS order keeps each rail
+      // directly under its tab in the vertical rail.
+      var railBox = document.getElementById('hw_sub_rails') || btn.parentNode;
+      railBox.appendChild(rail);
     }
+    var tabIndex = Array.prototype.indexOf.call(tabBtns, btn);
+    btn.style.order = String(tabIndex * 2);
+    rail.style.order = String(tabIndex * 2 + 1);
+    var syncRail = function () { rail.classList.toggle('is-open', btn.classList.contains('is-active')); };
+    syncRail();
+    new MutationObserver(syncRail).observe(btn, { attributes: true, attributeFilter: ['class'] });
 
     if (tabId === 'check') {
       var coreBox = document.querySelector('#hw_panel_check .problems-container');

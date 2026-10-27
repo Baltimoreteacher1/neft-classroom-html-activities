@@ -87,6 +87,15 @@ const worlds = [
 const browser = await chromium.launch({ headless: true, args: ["--enable-unsafe-swiftshader"] });
 async function open(context, path) {
   const p = await context.newPage();
+  // A finished activity opens the Canvas completion-code dialog (assets/canvas-bridge.js), which
+  // is meant to be closed by the student. Whether it has appeared yet depends on timing, so a
+  // click that lands while it is open is intercepted and times out (this failed on main at one
+  // width, and at all three here). Close it whenever it is in the way, as a student would.
+  // A DOM click, not a pointer click: a game's own modal <dialog> sits in the top layer above
+  // the card, so a pointer click on Close would be intercepted by that modal instead.
+  await p.addLocatorHandler(p.locator("#nt-canvas-bridge-code #nt-cb-close"), async (close) => {
+    await close.evaluate((el) => el.click());
+  });
   p.__errors = [];
   p.on("pageerror", (e) => p.__errors.push(e.message));
   assert.equal((await p.goto(base + path, { waitUntil: "domcontentloaded" }))?.status(), 200, path);

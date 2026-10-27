@@ -9388,9 +9388,12 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null)
       <div class="homework-tab-chrome">
         <div class="hw-tab-meta-row"><div id="hw_utility_controls" class="hw-utility-controls"></div>
         </div>
-        <nav class="homework-tab-bar" role="tablist" aria-label="Tonight's path" data-aria-en="Tonight's path" data-aria-es="Ruta de hoy">
+        <nav class="homework-tab-bar" aria-label="Tonight's path" data-aria-en="Tonight's path" data-aria-es="Ruta de hoy">
+          <div class="hw-tablist" role="tablist" aria-label="Tonight's path" data-aria-en="Tonight's path" data-aria-es="Ruta de hoy">
           ${HOMEWORK_TABS.map(tabBtn).join("")}
           ${HOMEWORK_EXTRA_TABS.map(extraBtn).join("")}
+          </div>
+          <div class="hw-sub-rails" id="hw_sub_rails"></div>
         </nav>
         <div class="homework-tab-track" aria-hidden="true"><span class="homework-tab-track-fill" id="hw_tab_track_fill"></span></div>
       </div>
@@ -12318,6 +12321,10 @@ body:not(.lang-mode-bilingual) .lang-label { display: none; }
 
 /* Six stops fit one row at every width this page is read at, so the bar is a
    grid and never scrolls, wraps or hides a stop behind a fade. */
+/* The tablist holds ONLY tabs (ARIA allows nothing else there); the stop's sub-links live in a
+   sibling container. Both wrappers are layout-transparent so the tab bar's own flex/grid still
+   sees tabs and rails as its items, ordered by the inline order value the skin sets. */
+.hw-tablist, .hw-sub-rails { display: contents; }
 .homework-tab-bar {
   display: grid;
   /* Six numbered stops, then the photobooth sized to its own content — it is

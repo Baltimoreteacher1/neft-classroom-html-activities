@@ -270,7 +270,7 @@ function objectivesCard(config, heading, lede) {
   block.innerHTML =
     goalHtml({
       label: "Content Objective",
-      ink: "var(--teal-ink)",
+      ink: "var(--ds-primary)",
       icon: "🎯",
       textSize: "1.1rem",
       text: resolveContentObjective(config),
@@ -284,7 +284,7 @@ function objectivesCard(config, heading, lede) {
     }) +
     goalHtml({
       label: "Language Objective",
-      ink: "var(--coral)",
+      ink: "var(--ds-primary)",
       icon: "🗣️",
       textSize: "1.05rem",
       text: resolveLanguageObjective(config),

@@ -2657,7 +2657,7 @@ function renderObjectives(el, config, state, opts = {}) {
   block.innerHTML =
     card({
       cardClass: "card-teal",
-      ink: "var(--teal-ink)",
+      ink: "var(--ds-primary)",
       label: review ? "Content Objective — Achieved" : "Content Objective",
       key: "content",
       text: contentHtml,
@@ -2677,7 +2677,7 @@ function renderObjectives(el, config, state, opts = {}) {
     }) +
     card({
       cardClass: "card-coral",
-      ink: "var(--coral)",
+      ink: "var(--ds-primary)",
       label: review ? "Language Objective — Achieved" : "Language Objective",
       key: "language",
       text: languageHtml,

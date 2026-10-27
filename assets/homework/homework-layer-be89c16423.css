@@ -2520,6 +2520,10 @@ body:not(.lang-mode-bilingual) .lang-label { display: none; }
 
 /* Six stops fit one row at every width this page is read at, so the bar is a
    grid and never scrolls, wraps or hides a stop behind a fade. */
+/* The tablist holds ONLY tabs (ARIA allows nothing else there); the stop's sub-links live in a
+   sibling container. Both wrappers are layout-transparent so the tab bar's own flex/grid still
+   sees tabs and rails as its items, ordered by the inline order value the skin sets. */
+.hw-tablist, .hw-sub-rails { display: contents; }
 .homework-tab-bar {
   display: grid;
   /* Six numbered stops, then the photobooth sized to its own content — it is
@@ -8185,6 +8189,7 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
   body:not(.lang-mode-es) .homework-tab-btn .tab-es { display: none !important; }
 
   .homework-tab-extra {
+    order: 999 !important;
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
@@ -8230,7 +8235,7 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
     padding-left: 10px;
     border-left: 2px solid var(--fp-rule, #e2e8f0);
   }
-  .homework-tab-btn.is-active + .hw-sub-rail {
+  .hw-sub-rail.is-open {
     display: flex !important;
   }
   .hw-sub-btn {
