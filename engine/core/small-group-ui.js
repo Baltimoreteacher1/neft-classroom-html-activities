@@ -710,7 +710,7 @@ export function injectSmallGroupStyles(accent) {
     .btn.ghost:hover:not(:disabled){background:var(--sg-soft);color:var(--sg-ink);border-color:var(--sg)}
     .btn:disabled{cursor:default;color:var(--sg-muted);border-color:var(--sg-line);background:var(--sg-fill);box-shadow:none}
     .sg-pulse-btn,.sg-role-btn,.sg-match-btn{padding:10px 14px;border:2px solid var(--sg-line);color:var(--sg-text);background:var(--sg-card);font-weight:700;text-align:left}
-    .sg-pulse-btn:hover,.sg-role-btn:hover,.sg-match-btn:hover{border-color:var(--sg);box-shadow:0 6px 16px -9px color-mix(in srgb,var(--sg) 80%,transparent)}
+    .sg-pulse-btn:hover,.sg-role-btn:hover,.sg-match-btn:hover{border-color:var(--sg);box-shadow:var(--sg-shadow)}
     .sg-match-btn.correct{border-color:var(--sg-good);background:var(--sg-good-bg);color:var(--sg-good-ink);animation:sg-okpulse .5s ease}
     .sg-match-btn.wrong{border-color:var(--sg-bad);background:var(--sg-bad-bg);color:var(--sg-bad-ink);animation:sg-nudge .3s ease}
     .sg-match-btn:disabled{cursor:default;opacity:.7}

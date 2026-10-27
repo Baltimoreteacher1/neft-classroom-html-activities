@@ -1,14 +1,14 @@
 # ACCESS Practice Lab transformation ledger
 
-Updated 2026-10-27 on a clean integration worktree based on `origin/main` (`f75f2ff35d`), branch `codex/access-lab-mission-scaffold-handoff`. This ledger tracks the user-supplied publisher-grade specification; a feature is not PASS merely because a related screen exists. The active product is static/local-first, so server accounts, district tenancy, remote storage, cloud transcription and external AI remain unavailable and disabled.
+Updated 2026-10-27 after production release `92e7733d36` (Cloudflare stamp `92e7733d3`) on `main`. This ledger tracks the full publisher-grade specification; related screens alone do not meet acceptance. The active product is static/local-first, so server accounts, district tenancy, remote storage, cloud transcription and external AI remain unavailable and disabled.
 
 ## Product and release baseline
 
 - Repository: `neft-classroom-html-activities`, static HTML/ES modules, Vite, Cloudflare Pages (`dist`); production route is `/access-practice-lab/` and deep links are served by the Pages Function.
 - Existing student route, legacy progress keys, ACCESS1 transfer codes, local-only teacher imports, print flows and offline shell are compatibility contracts. No migration or API change was made in this workstream.
-- Current production browser inspection (2026-10-27): the public route loads the interactive Grades 6–8 home, all four domains, Language Worlds, mission, Growth Map and local Passport routes; build stamp shown was `2026.10.25.1`. This is a baseline inspection, not verification of this unshipped change.
-- The earlier feature worktree was 52 commits behind and its ship dry-run conflicted because newer equivalents of its ACCESS changes already exist on `origin/main`. This integration branch starts from the current `origin/main`; only the new tested handoff fix is being added here. The guarded `ship` workflow assembles named commits on a clean `origin/main` worktree; never push a working branch directly.
-- Current `origin/main` already includes the ACCESS Practice Lab redesign, Reading Room expansion, WIDA alignment review, speaking evidence, adaptive missions, spaced review, listening strategy, teacher insights and language worlds. This turn extends that installed implementation.
+- Production browser verification after this release confirmed the Reading Adventures shelf and chapter reader at `https://eduwonderlab.com/access-practice-lab/reading-room/adventures`; the complete release smoke checked 41 routes/assets, and the adventure journey passed response, checkpoint feedback, chapter resume, axe and 390px reflow checks.
+- Release commit: `92e7733d36` (`feat(reading): ship reading adventures and accessible navigation`), assembled and pushed by the guarded `ship` workflow. Do not push a working branch directly.
+- Existing ACCESS Practice Lab, Reading Room, WIDA metadata, speaking evidence, adaptive missions, spaced review, listening strategy, teacher insights and language worlds remain in place; the release added serialized adventures and corrected homework path-control semantics discovered by the release accessibility gate.
 
 ## Requirement-to-implementation acceptance matrix
 
@@ -41,8 +41,8 @@ Updated 2026-10-27 on a clean integration worktree based on `origin/main` (`f75f
 | Premium User Experience | Unified visual system, responsive pages, shell navigation and accessible states | Full role-based visual QA and every changed view at target sizes not complete | Existing design system | Browser journey sampled at 375px; see QA notes | PARTIAL |
 | Persistence and privacy | Local storage, autosave, version history, audio retention controls, alias-only transfer, offline use | No general durable account sync, central delete/export or authenticated relationships | Infrastructure/privacy approval for server features | Existing recovery, share, audio and local storage tests | PARTIAL |
 | Original content coverage | Original 3–8 quick activities, studio tasks, missions, words and visuals | Coverage report does not yet prove minimum tasks by cluster/function/domain/support level/transfer | Machine-readable schema and curriculum review | Current bank: 501 activities; studio: 18 speaking, 14 writing, 6 missions, 25 patterns | PARTIAL |
-| Automated/browser QA | Content/engine unit suites, student/teacher E2E and responsive checks | axe dependency unavailable here; complete phone/tablet/Chromebook/security/reliability matrix remains | axe/browser package availability; deployment environment | Current validator and E2E results below | PARTIAL |
-| Production deployment verification | Existing public route serves build `2026.10.25.1` | This branch change is not deployed; all release and live critical-path checks remain | Integrate 55 commits of divergence, release QA, explicit production authorization | Existing route inspected; this diff unshipped | NOT STARTED |
+| Automated/browser QA | Content/engine unit suites, student/teacher E2E and responsive checks; adventure-specific axe and 390px reflow checks added | Complete phone/tablet/Chromebook/security/reliability matrix remains | Clean-worktree pre-push gate | Release pre-push gate passed 148/148; the full QA matrix remains broader than this release | PARTIAL |
+| Production deployment verification | Guarded release `92e7733d36` is live at the public ACCESS Practice Lab route | Overall transformation remains incomplete; future releases still require this verification | Existing guarded ship pipeline | Pre-push QA 148/148; production smoke 41/41; live adventure browser journey passed | PASS (this release; overall transformation remains partial) |
 
 ## This turn: mission-to-studio scaffold handoff
 
@@ -52,10 +52,22 @@ Updated 2026-10-27 on a clean integration worktree based on `origin/main` (`f75f
 
 Implementation locations: `access-practice-lab/src/views/missions.js`, `src/views/speak.js`, `src/views/write.js`; regression coverage in `tools/access-studio-e2e.mjs`. This does not provide teacher approval, does not activate provider-backed features, and does not assert that the full adaptive-scaffolding workstream is complete.
 
-## Verification evidence
+## This release: serialized Reading Adventures and accessible homework path controls
 
-After this change on the integration branch: `node tools/access-studio-e2e.mjs` passed, including the new mission-to-speaking and mission-to-writing handoff tests and learner override; no browser page errors and sampled 375px overflow checks passed. axe WCAG 2.2 AA passed on speaking, writing, reading, missions, growth, Passport, teacher alignment, teacher dashboard and the other sampled flows. `npm run build` passed. `npm run qa:fast` passed all four scoped checks: Biome, JavaScript syntax, unit tests and ACCESS Lab validation/browser suite. Build emitted non-fatal warnings for the existing large lesson-renderer chunk and Vite's future `configLoader: 'native'` compatibility. Content validation retains an educator-review advisory for 6 of 62 grade 6–8 passages outside its screening readability range. These checks verify the integration worktree, not production.
+The Reading Room now includes four original six-chapter adventures (two each for grades 3–5 and 6–8), with chapter navigation, predictions, evidence responses, keyed checkpoints, feedback, recaps, device-local resume, and deduplicated evidence in the existing Language Growth Engine ledger. Open student writing remains local and is not sent to the ledger. The release also removes invalid nested tab semantics from homework navigation while preserving navigation and active-step state.
+
+Implementation locations: `access-practice-lab/src/views/reading-room.js`, `src/reading-state.js`, original adventure JSON and coverage report, `scripts/homework-guided-notes.mjs`, generated homework pages and hashed shared asset. The serialized story validator, Reading Room browser journey and homework browser accessibility journey are in `tools/`.
+
+## Verification and release evidence
+
+- `npm run check` — PASS, with 27 existing lint warnings and no check errors.
+- `npm run build` — PASS; the build emitted existing non-fatal large-chunk and Vite config-loader warnings.
+- Commit hook — PASS 137/137. Guarded pre-push QA — PASS 148/148; includes build, full test set, ACCESS Lab validation, homework accessibility and other browser lanes.
+- Production ship smoke — PASS 41/41; Cloudflare serves `92e7733d3`.
+- Live browser journey — PASS: four adventure cards, original response, checkpoint feedback, chapter progression, response restoration after reload, axe 0 violations, no runtime errors and 390px reflow.
+- Content coverage — PASS for the first-release target of four complete stories, 24 chapters, 2,079 original words and 24 checkpoints. Independent editorial review remains pending.
+- Coverage remains partial for the master specification; see the feature matrix and `docs/reading-literacy-expansion.md`. Automated checks do not replace editorial review.
 
 ## Next work
 
-Continue roadmap priority 1 by auditing adaptive support changes end to end: bind the local practice recommendation to the opened supports in every applicable task type, preserve support-use provenance, ensure scaffolds fade without lowering content demand, and add teacher-review only if a valid local or authenticated review actor exists. Keep cloud AI/transcription, class sync and teacher-facing sensitive records disabled until their documented prerequisites are satisfied. The user authorized a live release in this task; use the guarded `ship` flow after a successful dry run, then verify the live build stamp and post-deploy smoke.
+Continue the remaining PARTIAL and NOT STARTED workstreams in the matrices, keeping the app local-first and preserving current routes and progress contracts. Keep cloud AI/transcription, class sync and sensitive teacher-record workflows disabled until their documented prerequisites are satisfied. The full specifications are not complete even though this release is deployed and verified.

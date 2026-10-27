@@ -907,6 +907,47 @@ body .ev .cat-chip.is-active-reading-sentence {
 }
 
 /* shelf */
+.rr-adventure-entry,
+.rr-adventure-heading {
+  margin-block: var(--s-5);
+  padding: clamp(1.2rem, 3vw, 2rem);
+  border: 1px solid color-mix(in srgb, var(--room) 32%, var(--line));
+  border-radius: var(--r-xl);
+  background: linear-gradient(125deg, var(--room-soft), var(--surface));
+}
+.rr-adventure-entry { display:flex; align-items:center; justify-content:space-between; gap:var(--s-4); }
+.rr-adventure-entry h2,.rr-adventure-heading h1 { color:var(--room-ink); }
+.rr-adventure-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr)); gap:var(--s-3); }
+.rr-adventure-card { padding:var(--s-4); border:1px solid var(--line); border-radius:var(--r-lg); background:var(--surface); }
+.rr-adventure-card h2 { margin-block:var(--s-2); }
+.rr-adventure-progress,.rr-adventure-progress-label { color:var(--room-ink); font-weight:700; }
+.rr-adventure-layout { display:grid; grid-template-columns:minmax(13rem,.72fr) minmax(0,2fr); gap:var(--s-4); align-items:start; }
+.rr-adventure-nav,.rr-adventure-reading { padding:var(--s-4); border:1px solid var(--line); border-radius:var(--r-lg); background:var(--surface); }
+.rr-adventure-nav { position:sticky; top:1rem; }
+.rr-adventure-nav ol { display:grid; gap:.4rem; margin:0; padding:0; list-style:none; }
+.rr-adventure-nav button { display:flex; align-items:center; gap:.65rem; width:100%; min-height:2.75rem; padding:.5rem; text-align:left; border:1px solid transparent; border-radius:var(--radius); background:transparent; color:var(--ink); font:inherit; cursor:pointer; }
+.rr-adventure-nav button span { display:grid; place-items:center; flex:0 0 1.8rem; width:1.8rem; height:1.8rem; border-radius:50%; background:var(--room-soft); color:var(--room-ink); font-weight:700; }
+.rr-adventure-nav button[aria-current="step"] { border-color:var(--room); background:var(--room-soft); font-weight:700; }
+.rr-adventure-reading h2 { margin-bottom:.25rem; }
+.rr-adventure-teaser { color:var(--room-ink); font-weight:650; }
+.rr-adventure-reading .rr-passage { max-width:70ch; margin-block:var(--s-4); font-size:1.1rem; line-height:1.8; }
+.rr-adventure-word { margin-block:.5rem; padding:.65rem .85rem; border-radius:var(--radius); background:var(--room-soft); }
+.rr-adventure-word summary { min-height:2.5rem; padding-top:.35rem; font-weight:700; cursor:pointer; }
+.rr-adventure-response { display:grid; gap:var(--s-3); margin-top:var(--s-5); }
+.rr-adventure-response h3 { margin-bottom:0; }
+.rr-adventure-response label { display:grid; gap:.45rem; font-weight:650; }
+.rr-adventure-response textarea { width:100%; min-height:5rem; padding:.75rem; border:1px solid var(--line-strong); border-radius:var(--radius); color:var(--ink); font:inherit; resize:vertical; }
+.rr-adventure-choice { display:grid; gap:.65rem; padding:var(--s-3); border:1px solid var(--line); border-radius:var(--radius); }
+.rr-adventure-choice label { display:flex; align-items:flex-start; gap:.6rem; min-height:2.5rem; padding:.35rem; }
+.rr-adventure-choice input { margin-top:.3rem; accent-color:var(--room); }
+.rr-adventure-feedback { padding:.8rem 1rem; border-radius:var(--radius); background:var(--room-soft); }
+.rr-adventure-feedback.is-correct { border-inline-start:4px solid #17685b; }
+.rr-adventure-feedback.is-revisit { border-inline-start:4px solid #a35b12; }
+.rr-adventure-controls { display:flex; justify-content:space-between; gap:var(--s-2); }
+.rr-adventure-heading progress { display:block; width:min(100%,30rem); height:.75rem; margin-block:var(--s-3) .5rem; accent-color:var(--room); }
+.rr-adventure-nav button:focus-visible,.rr-adventure-response textarea:focus-visible { outline:3px solid #17685b; outline-offset:2px; }
+@media(max-width:760px) { .rr-adventure-entry,.rr-adventure-layout { display:grid; grid-template-columns:1fr; } .rr-adventure-nav { position:static; } .rr-adventure-nav ol { grid-template-columns:repeat(2,minmax(0,1fr)); } .rr-adventure-controls { flex-wrap:wrap; } }
+
 .rr-hero {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);

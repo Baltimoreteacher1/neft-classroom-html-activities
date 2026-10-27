@@ -312,7 +312,11 @@ export function rememberMistake(tutor, skill, item, submitted, now = Date.now())
   const category = classifyMistake(item, submitted);
   tutor.mistakes.unshift({ id: `${now}-${tutor.mistakes.length}`, key, question: item.question,
     submitted: String(submitted).slice(0, 120), explanation: item.explanation, hint: item.hint,
-    category: category?.id || null, original, at: now, resolvedAt: null });
+    category: category?.id || null, misconceptionCode: category?.id || null,
+    misconceptionLabel: category?.label || null, repairStatus: "open",
+    problemPrompt: String(item.question || "").slice(0, 500),
+    studentInput: String(submitted).slice(0, 120), expectedAnswer: String(item.answers?.[0] || "").slice(0, 120),
+    original, at: now, resolvedAt: null });
   tutor.mistakes = tutor.mistakes.slice(0, 60);
 }
 
@@ -440,6 +444,12 @@ export function sanitizeTutor(value) {
     id: String(entry.id || index).slice(0, 100), key: entry.key, question: entry.question.slice(0, 500), submitted: String(entry.submitted || "").slice(0, 120),
     explanation: String(entry.explanation || "").slice(0, 800), hint: String(entry.hint || "").slice(0, 800),
     category: isKnownMistakeCategory(entry.category) ? entry.category : null,
+    misconceptionCode: isKnownMistakeCategory(entry.misconceptionCode) ? entry.misconceptionCode : (isKnownMistakeCategory(entry.category) ? entry.category : null),
+    misconceptionLabel: typeof entry.misconceptionLabel === "string" ? entry.misconceptionLabel.slice(0, 160) : null,
+    repairStatus: entry.resolvedAt ? "repaired" : (entry.repairStatus === "in-progress" ? "in-progress" : "open"),
+    problemPrompt: String(entry.problemPrompt || entry.question).slice(0, 500),
+    studentInput: String(entry.studentInput || entry.submitted || "").slice(0, 120),
+    expectedAnswer: String(entry.expectedAnswer || entry.original?.answers?.[0] || "").slice(0, 120),
     original: entry.original && typeof entry.original === "object" && typeof entry.original.question === "string" && entry.original.question.length <= 500 && Array.isArray(entry.original.answers) && entry.original.answers.length > 0
       ? { question: entry.original.question, answers: entry.original.answers.slice(0, 8).map((answer) => String(answer).slice(0, 120)), kind: String(entry.original.kind || "number").slice(0, 30), ...(typeof entry.original.unit === "string" ? { unit: entry.original.unit.slice(0, 40) } : {}), ...(Array.isArray(entry.original.choices) ? { choices: entry.original.choices.slice(0, 12).map((choice) => String(choice).slice(0, 120)) } : {}) }
       : null,

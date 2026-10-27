@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
 import http from "node:http";
 import { extname, join } from "node:path";
+import { evidenceFromLedger } from "../access-practice-lab/src/lang/skill-graph.js";
 import { REPO_ROOT } from "./lib/access-lab-content.mjs";
 import { exitSkipped } from "./lib/skip-exit.mjs";
 
@@ -164,7 +165,16 @@ try {
     `http://localhost:${server.address().port}/access-practice-lab/reading-room/teacher`,
   );
   await page.getByRole("heading", { name: "Reading evidence" }).waitFor();
-  assert.equal(await page.locator("tbody tr").count(), lessonCount);
+  assert.equal(await page.locator("table").first().locator("tbody tr").count(), lessonCount);
+  assert.equal(
+    await page
+      .getByRole("table", {
+        name: "Reading Adventure checkpoint evidence · local counts, not mastery",
+      })
+      .getByRole("row")
+      .count(),
+    5,
+  );
   assert.match(await page.locator("tbody tr").first().innerText(), /1/);
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Download report CSV" }).click();
@@ -253,6 +263,85 @@ try {
   await page.getByRole("heading", { name: "The Trade-Off in a Campus Wi-Fi Map" }).waitFor();
   await page.getByRole("tab", { name: /3 · Apply/ }).click();
   await page.locator('[data-rr-structured="classify-evidence"]').first().waitFor();
+  await page.goto(
+    `http://localhost:${server.address().port}/access-practice-lab/reading-room/adventures`,
+  );
+  await page.getByRole("heading", { name: "Reading Adventures" }).waitFor();
+  assert.equal(await page.locator(".rr-adventure-card").count(), 4);
+  await page
+    .getByRole("link", { name: /Start story/ })
+    .first()
+    .click();
+  await page.getByRole("heading", { name: "The Map in the Margins" }).waitFor();
+  await page
+    .locator('[data-adv-response="prediction"]')
+    .fill("The map may lead to a community garden because it marks a blue door.");
+  await page.getByLabel(/The library card shows a 1988/).check();
+  await page.getByRole("button", { name: "Check my thinking" }).click();
+  await page.getByRole("status").filter({ hasText: "That fits the evidence" }).waitFor();
+  await page
+    .locator('[data-adv-response="evidence"]')
+    .fill("The old borrowing date suggests the map was made years ago.");
+  await page
+    .locator('[data-adv-response="recap"]')
+    .fill("The cousins find a map and wonder what it shows.");
+  await page.getByRole("button", { name: "Next chapter" }).click();
+  await page.getByRole("heading", { name: "Three marks" }).waitFor();
+  await page.reload();
+  await page.getByRole("heading", { name: "Three marks" }).waitFor();
+  assert.equal(await page.locator('[data-adv-nav="1"]').getAttribute("aria-current"), "step");
+  await page
+    .locator('[data-adv-response="prediction"]')
+    .fill("The stones may mark the original garden.");
+  await page.locator('[data-adv-nav="5"]').click();
+  await page.getByRole("heading", { name: "A map for the future" }).waitFor();
+  await page.locator('[data-adv-nav="0"]').click();
+  assert.match(
+    await page.locator('[data-adv-response="prediction"]').inputValue(),
+    /community garden/,
+  );
+  const growthLedger = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("accessPracticeLab:v1:ledger") || "{}"),
+  );
+  assert.ok(
+    growthLedger.entries?.some(
+      (entry) => entry.id === "reading-adventure:the-map-in-the-margins:chapter-1",
+    ),
+    "checked adventure evidence should reach the shared Language Growth Engine ledger",
+  );
+  assert.ok(
+    evidenceFromLedger(growthLedger.entries).some(
+      (item) =>
+        item.skillId === "reading.evidence" &&
+        item.responseId === "reading-adventure:the-map-in-the-margins:chapter-1",
+    ),
+    "the shared skill graph should resolve the adventure checkpoint into reading-evidence skill data",
+  );
+  if (AxeBuilder) {
+    const adventureAxe = await new AxeBuilder({ page }).include(".rr-shell").analyze();
+    assert.deepEqual(
+      adventureAxe.violations.map((violation) => `${violation.id}: ${violation.help}`),
+      [],
+      "Reading Adventure axe violations",
+    );
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(100);
+  assert.equal(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+    ),
+    false,
+    "390px Reading Adventure horizontal overflow",
+  );
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto(
+    `http://localhost:${server.address().port}/access-practice-lab/reading-room/adventures`,
+  );
+  await page.getByText("Chapter 1 of 6 · saved").waitFor();
+  console.log(
+    "PASS serialized adventure response, checkpoint feedback, chapter resume, and shared language-evidence ledger",
+  );
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForTimeout(100);
   const overflow = await page.evaluate(

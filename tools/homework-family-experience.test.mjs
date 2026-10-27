@@ -581,7 +581,9 @@ test("Unit 4 family pages keep the tab route while rotating their visual experie
     const d = dom.window.document;
     assert.equal(d.body.dataset.familyStyle, style, id);
     assert.match(d.querySelector(".hw-experience-banner")?.textContent || "", title, id);
-    const currentTabIds = [...d.querySelectorAll('[role="tab"]')].map((tab) => tab.id);
+    const currentTabIds = [...d.querySelectorAll(".homework-tab-btn, .homework-tab-extra")].map(
+      (tab) => tab.id,
+    );
     if (!tabIds) tabIds = currentTabIds;
     else assert.deepEqual(currentTabIds, tabIds, `${id} changed the tab navigation`);
     assert.ok(d.querySelector('[data-tab-panel="check"]'), `${id} lost core practice`);
