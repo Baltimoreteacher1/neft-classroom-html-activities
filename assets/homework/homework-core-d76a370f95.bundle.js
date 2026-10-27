@@ -2455,6 +2455,28 @@ window.addEventListener("afterprint", function () {
 });
 
 
+/* Helper: smooth scroll to element accounting for sticky rail and display:contents */
+function scrollStudioTo(el) {
+  if (!el) return;
+  var node = el;
+  while (node && window.getComputedStyle(node).display === 'contents') {
+    node = node.firstElementChild;
+  }
+  if (!node) node = el;
+  var det = node.closest('details');
+  if (det && !det.open) det.open = true;
+  var rect = node.getBoundingClientRect();
+  var targetY = window.pageYOffset + rect.top - 24;
+  window.scrollTo({
+    top: Math.max(0, targetY),
+    behavior: 'smooth'
+  });
+  node.classList.remove('hw-nav-target');
+  void node.offsetWidth;
+  node.classList.add('hw-nav-target');
+  setTimeout(function () { node.classList.remove('hw-nav-target'); }, 1400);
+}
+
 /* Studio stepper: show ONE problem at a time per .problems-container, with
    numbered dots and Back/Next. Purely a view over the existing problem
    sections — answering, checking and saving are handled by the page as before. */
@@ -2504,6 +2526,18 @@ function initStudioStepper() {
       });
       back.disabled = idx === 0;
       next.disabled = idx === items.length - 1;
+
+      // Keep rail sub-buttons in sync with stepper index
+      var checkRail = document.getElementById('hw_sub_check');
+      if (checkRail) {
+        var subBtns = checkRail.querySelectorAll('.hw-sub-btn:not(.hw-sub-extra-btn)');
+        subBtns.forEach(function (b, bIdx) {
+          var active = bIdx === idx;
+          b.classList.toggle('is-active', active);
+          if (active) b.setAttribute('aria-current', 'step');
+          else b.removeAttribute('aria-current');
+        });
+      }
     }
     function show(i) { idx = Math.max(0, Math.min(items.length - 1, i)); paint(); }
     back.addEventListener('click', function () { show(idx - 1); });
@@ -2513,6 +2547,7 @@ function initStudioStepper() {
     show(0);
   });
 }
+
 /* A vocabulary term is a <button>, an atomic inline box, so the browser may
    break the line between it and the punctuation after it ("per hundred" then
    "; scale the..." starting the next line). Keep the first punctuation
@@ -2532,33 +2567,34 @@ function glueTermPunctuation() {
     void tail;
   });
 }
+
+var STUDIO_SUB_CONFIGS = {
+  learn: [
+    { id: 'talk', icon: '💬', en: '60-Sec Talk', es: 'Charla 60s', sel: '#hw_dinner_talk, .hw-dinner-talk, .dinner-talk-card' },
+    { id: 'idea', icon: '💡', en: 'Big Idea', es: 'Idea principal', sel: '#hw_learn_idea .family-big-idea-piece, #hw_learn_idea > .section-title, #hw_learn_idea, .big-idea, .key-idea-banner' },
+    { id: 'try', icon: '👆', en: 'Interactive Model', es: 'Modelo interactivo', sel: '#hw_learn_try, .family-visual-lab, .interactive-visual-host' },
+    { id: 'quick', icon: '❓', en: 'Try Question', es: 'Pregunta rápida', sel: '#hw_learn_quick, .learn-quick-check' }
+  ],
+  words: [
+    { id: 'cards', icon: '📚', en: 'Flashcards', es: 'Tarjetas', sel: '.vocab-container, .vocab-card-grid' },
+    { id: 'quiz', icon: '❓', en: 'Word Quiz', es: 'Prueba de palabras', sel: '#vocab_quiz, .vocab-quiz' },
+    { id: 'match', icon: '🎯', en: 'Match Game', es: 'Juego de unir', sel: '#vocab_match_shell, .vocab-game-shell' }
+  ],
+  play: [
+    { id: 'activity', icon: '🏡', en: 'Family Activity', es: 'Actividad familiar', sel: '.fam-act-corner, .fam-act-card' },
+    { id: 'game', icon: '🎮', en: 'Math Games', es: 'Juegos familiares', sel: '#fam_game_break, .fam-game-card, .domino-game-wrap' }
+  ],
+  done: [
+    { id: 'teach', icon: '🗣️', en: 'Teach It Back', es: 'Enséñalo tú', sel: '.hw-teach' },
+    { id: 'confidence', icon: '🌱', en: 'Confidence Check', es: 'Confianza', sel: '#hw_conf_after, .hw-confidence' },
+    { id: 'summary', icon: '📊', en: "Tonight Summary", es: 'Resumen', sel: '#hw_done_summary, .done-summary' },
+    { id: 'signoff', icon: '✍️', en: 'Family Sign-off', es: 'Firma familiar', sel: '#parent_signoff_section, .parent-signoff-card, .hw-share, .homework-message-action' }
+  ]
+};
+
 function initStudioSubRail() {
   var tabBtns = document.querySelectorAll('.homework-tab-btn');
   if (!tabBtns.length) return;
-
-  var subConfigs = {
-    learn: [
-      { id: 'talk', icon: '💬', en: '60-Sec Talk', es: 'Charla 60s', sel: '#hw_dinner_talk, .dinner-talk-card' },
-      { id: 'idea', icon: '💡', en: 'Big Idea', es: 'Idea principal', sel: '#hw_learn_idea, .big-idea, .key-idea-banner' },
-      { id: 'try', icon: '👆', en: 'Interactive Model', es: 'Modelo interactivo', sel: '#hw_learn_try, .family-visual-lab, .interactive-visual-host' },
-      { id: 'quick', icon: '❓', en: 'Try Question', es: 'Pregunta rápida', sel: '#hw_learn_quick, .learn-quick-check' }
-    ],
-    words: [
-      { id: 'cards', icon: '📚', en: 'Flashcards', es: 'Tarjetas', sel: '.vocab-container, .vocab-card-grid' },
-      { id: 'quiz', icon: '❓', en: 'Word Quiz', es: 'Prueba de palabras', sel: '#vocab_quiz, .vocab-quiz' },
-      { id: 'match', icon: '🎯', en: 'Match Game', es: 'Juego de unir', sel: '#vocab_match_shell, .vocab-game-shell' }
-    ],
-    play: [
-      { id: 'game', icon: '🎮', en: 'Math Duo Game', es: 'Juego familiar', sel: '.fam-game-card, .domino-game-wrap' },
-      { id: 'score', icon: '🏆', en: 'Scorekeeper', es: 'Puntaje', sel: '.fam-act-card, .game-score-card' }
-    ],
-    done: [
-      { id: 'teach', icon: '🗣️', en: 'Teach It Back', es: 'Enséñalo tú', sel: '.hw-teach' },
-      { id: 'confidence', icon: '🌱', en: 'Confidence Check', es: 'Confianza', sel: '.hw-confidence, #hw_conf_after' },
-      { id: 'summary', icon: '📊', en: "Tonight Summary", es: 'Resumen', sel: '.done-summary, #hw_done_summary' },
-      { id: 'signoff', icon: '✍️', en: 'Family Sign-off', es: 'Firma familiar', sel: '#parent_signoff_section, .parent-signoff-card, .hw-share, .homework-message-action' }
-    ]
-  };
 
   tabBtns.forEach(function (btn) {
     var tabId = btn.dataset.tab;
@@ -2585,9 +2621,14 @@ function initStudioSubRail() {
             en: 'Problem ' + (i + 1),
             es: 'Problema ' + (i + 1),
             action: function () {
+              if (document.body.dataset.activeTab !== 'check' && typeof switchHomeworkTab === 'function') {
+                switchHomeworkTab('check', { preventScroll: true });
+              }
               dot.click();
-              var target = document.querySelector('.problem-section.is-step-current') || document.getElementById('hw_panel_check');
-              if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              var stepperBar = coreBox.previousElementSibling && coreBox.previousElementSibling.classList.contains('hw-stepper-bar')
+                ? coreBox.previousElementSibling
+                : null;
+              scrollStudioTo(stepperBar || coreItems[i] || coreBox);
             }
           });
         });
@@ -2598,7 +2639,10 @@ function initStudioSubRail() {
             en: 'Problem ' + (i + 1),
             es: 'Problema ' + (i + 1),
             action: function () {
-              p.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              if (document.body.dataset.activeTab !== 'check' && typeof switchHomeworkTab === 'function') {
+                switchHomeworkTab('check', { preventScroll: true });
+              }
+              scrollStudioTo(p);
             }
           });
         });
@@ -2626,25 +2670,23 @@ function initStudioSubRail() {
         extraBtn.className = 'hw-sub-btn hw-sub-extra-btn';
         extraBtn.innerHTML = '<span class="sub-icon">⭐</span><span class="sub-text"><span class="lang-en">More Practice</span><span class="lang-es" lang="es">Más práctica</span></span>';
         extraBtn.addEventListener('click', function () {
+          if (document.body.dataset.activeTab !== 'check' && typeof switchHomeworkTab === 'function') {
+            switchHomeworkTab('check', { preventScroll: true });
+          }
           rail.querySelectorAll('.hw-sub-btn').forEach(function (b) { b.classList.remove('is-active'); });
           extraBtn.classList.add('is-active');
-          extraContainers[1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+          var moreBox = extraContainers[1];
+          var moreDet = moreBox ? moreBox.closest('details') : null;
+          if (moreDet) moreDet.open = true;
+          var moreStepper = moreBox && moreBox.previousElementSibling && moreBox.previousElementSibling.classList.contains('hw-stepper-bar')
+            ? moreBox.previousElementSibling
+            : moreBox;
+          scrollStudioTo(moreStepper || moreBox);
         });
         rail.appendChild(extraBtn);
       }
-
-      if (dots.length) {
-        dots.forEach(function (d, i) {
-          d.addEventListener('click', function () {
-            var subBtns = rail.querySelectorAll('.hw-sub-btn');
-            subBtns.forEach(function (b, bIdx) {
-              b.classList.toggle('is-active', bIdx === i);
-            });
-          });
-        });
-      }
-    } else if (subConfigs[tabId]) {
-      var cfg = subConfigs[tabId];
+    } else if (STUDIO_SUB_CONFIGS[tabId]) {
+      var cfg = STUDIO_SUB_CONFIGS[tabId];
       var panel = document.getElementById('hw_panel_' + tabId);
       var validItems = [];
       if (panel) {
@@ -2658,11 +2700,15 @@ function initStudioSubRail() {
         var sBtn = document.createElement('button');
         sBtn.type = 'button';
         sBtn.className = 'hw-sub-btn' + (idx === 0 ? ' is-active' : '');
+        sBtn.dataset.subId = v.c.id;
         sBtn.innerHTML = '<span class="sub-icon">' + v.c.icon + '</span><span class="sub-text"><span class="lang-en">' + v.c.en + '</span><span class="lang-es" lang="es">' + v.c.es + '</span></span>';
         sBtn.addEventListener('click', function () {
+          if (document.body.dataset.activeTab !== tabId && typeof switchHomeworkTab === 'function') {
+            switchHomeworkTab(tabId, { preventScroll: true });
+          }
           rail.querySelectorAll('.hw-sub-btn').forEach(function (b) { b.classList.remove('is-active'); });
           sBtn.classList.add('is-active');
-          v.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          scrollStudioTo(v.el);
         });
         rail.appendChild(sBtn);
       });
@@ -2670,10 +2716,105 @@ function initStudioSubRail() {
   });
 }
 
+/* Install tab scrolling: clicking any tab button smoothly scrolls to the top of that panel */
+function installStudioTabScroll() {
+  if (window.__studioTabScrollInstalled) return;
+  window.__studioTabScrollInstalled = true;
+
+  document.querySelectorAll('.homework-tab-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var tabId = btn.dataset.tab;
+      window.requestAnimationFrame(function () {
+        var panel = document.getElementById('hw_panel_' + tabId);
+        if (panel) scrollStudioTo(panel);
+      });
+    });
+  });
+
+  // Also enhance any in-page buttons that switch stops (e.g. .tab-flow-nav "Continue")
+  var origSwitchHomeworkTab = window.switchHomeworkTab;
+  if (typeof origSwitchHomeworkTab === 'function') {
+    window.switchHomeworkTab = function (tabId, opts) {
+      origSwitchHomeworkTab(tabId);
+      if (window.hwTabsBooted && (!opts || !opts.preventScroll)) {
+        window.requestAnimationFrame(function () {
+          var panel = document.getElementById('hw_panel_' + tabId);
+          if (panel) scrollStudioTo(panel);
+        });
+      }
+    };
+  }
+}
+
+/* Install scroll-spy: update active sub-button as student scrolls through sections */
+function installStudioScrollSpy() {
+  if (window.__studioScrollSpyInstalled) return;
+  window.__studioScrollSpyInstalled = true;
+
+  var ticking = false;
+  window.addEventListener('scroll', function () {
+    if (!ticking) {
+      window.requestAnimationFrame(function () {
+        updateActiveSubButton();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  function updateActiveSubButton() {
+    var tabId = document.body.dataset.activeTab;
+    if (!tabId || tabId === 'check') return;
+    var rail = document.getElementById('hw_sub_' + tabId);
+    if (!rail) return;
+    var subBtns = Array.from(rail.querySelectorAll('.hw-sub-btn'));
+    if (!subBtns.length) return;
+
+    var panel = document.getElementById('hw_panel_' + tabId);
+    if (!panel || panel.hidden) return;
+
+    var targets = [];
+    subBtns.forEach(function (btn) {
+      var subId = btn.dataset.subId;
+      var cfg = STUDIO_SUB_CONFIGS[tabId] && STUDIO_SUB_CONFIGS[tabId].find(function (c) { return c.id === subId; });
+      if (cfg) {
+        var el = panel.querySelector(cfg.sel);
+        if (el) {
+          while (el && window.getComputedStyle(el).display === 'contents') {
+            el = el.firstElementChild;
+          }
+          if (el) targets.push({ btn: btn, el: el });
+        }
+      }
+    });
+
+    if (!targets.length) return;
+
+    var currentBtn = targets[0].btn;
+    for (var i = 0; i < targets.length; i++) {
+      var top = targets[i].el.getBoundingClientRect().top;
+      if (top <= 140) {
+        currentBtn = targets[i].btn;
+      } else {
+        break;
+      }
+    }
+
+    subBtns.forEach(function (b) {
+      var active = b === currentBtn;
+      b.classList.toggle('is-active', active);
+      if (active) b.setAttribute('aria-current', 'location');
+      else b.removeAttribute('aria-current');
+    });
+  }
+}
+
 function bootStudioSkin() {
   initStudioStepper();
   glueTermPunctuation();
   initStudioSubRail();
+  installStudioTabScroll();
+  installStudioScrollSpy();
 }
 
 if (document.readyState === 'loading') {
