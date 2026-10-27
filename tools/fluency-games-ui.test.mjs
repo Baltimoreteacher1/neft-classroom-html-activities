@@ -97,12 +97,21 @@ click('[data-game="mathworldbuilder"]');
 await wait();
 for (let round = 0; round < 5; round += 1) {
   const prompt = $(".sig-head h2").textContent;
-  const target = Number(prompt.match(/with (\d+) floor tiles/)?.[1]);
+  const target = Number(prompt.match(/(?:with|Build) (\d+) floor tiles/)?.[1]);
   const budget = Number(prompt.match(/no more than (\d+) fence units/)?.[1]);
+  const optimize = prompt.includes("fewest fence units");
+  let minFence = Infinity;
+  for (let rows = 1; rows <= 12; rows += 1)
+    for (let columns = 1; columns <= 12; columns += 1)
+      if (rows * columns === target) minFence = Math.min(minFence, 2 * (rows + columns));
   let plan;
   for (let rows = 1; rows <= 12 && !plan; rows += 1)
     for (let columns = 1; columns <= 12; columns += 1)
-      if (rows * columns === target && (!budget || 2 * (rows + columns) <= budget)) {
+      if (
+        rows * columns === target &&
+        (!budget || 2 * (rows + columns) <= budget) &&
+        (!optimize || 2 * (rows + columns) === minFence)
+      ) {
         plan = [rows, columns];
         break;
       }

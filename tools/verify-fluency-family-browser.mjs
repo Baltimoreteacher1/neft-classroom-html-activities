@@ -1,5 +1,6 @@
 // End-to-end family route smoke and accessibility check against repository source.
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import AxeBuilder from "@axe-core/playwright";
 import { chromium } from "playwright";
 import { createServer } from "vite";
@@ -366,11 +367,103 @@ try {
   );
   await noSaveContext.close();
 
-  const teacherPage = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  const teacherContext = await browser.newContext({
+    viewport: { width: 1280, height: 900 },
+    reducedMotion: "reduce",
+  });
+  const teacherPage = await teacherContext.newPage();
   await teacherPage.addInitScript(() => {
     window.print = () => {};
+    const now = Date.now();
+    localStorage.setItem("ewl-fluency-profiles-v1", JSON.stringify({ ids: [0, 1], active: 0 }));
+    for (const id of [0, 1]) {
+      const recordKey = id === 0 ? "ewl-fluency-tutor-v2" : `ewl-fluency-tutor-v2:profile-${id}`;
+      const settingsKey =
+        id === 0 ? "ewl-fluency-settings-v1:grade" : `ewl-fluency-settings-v1:grade:profile-${id}`;
+      const key = "1:add-20";
+      localStorage.setItem(settingsKey, "1");
+      localStorage.setItem(
+        recordKey,
+        JSON.stringify({
+          version: 2,
+          records: {
+            [key]: {
+              recent: [
+                { correct: false, independent: true, level: 1, at: now - 120000 },
+                { correct: false, independent: true, level: 1, at: now - 60000 },
+              ],
+              independentTotal: 2,
+              supportedTotal: 1,
+              dueAt: now - 1000,
+              lastAt: now - 60000,
+              lessonCompleted: true,
+            },
+          },
+          mistakes: [
+            {
+              id: String(id),
+              key,
+              question: "7 + 5 = ?",
+              submitted: "2",
+              category: "subtractInsteadOfAdding",
+              at: now - 60000,
+              resolvedAt: null,
+            },
+          ],
+          diagnostics: { 1: { at: now - 180000, results: { [key]: false } } },
+          sessions: [{ at: now - 60000, answered: 3, correct: 1, grade: 1, mode: "practice" }],
+        }),
+      );
+    }
   });
   await teacherPage.goto(`${base}/math/fluency-lab/?view=teacher`, { waitUntil: "networkidle" });
+  assert.equal(
+    await teacherPage
+      .locator("#teacher-evidence-host .teacher-evidence-metrics strong")
+      .first()
+      .innerText(),
+    "2",
+  );
+  assert.equal(
+    await teacherPage.locator("#teacher-evidence-host .teacher-intervention").count(),
+    1,
+  );
+  assert.match(
+    await teacherPage.locator("#teacher-evidence-host .teacher-intervention").innerText(),
+    /possible misconception/i,
+  );
+  assert.match(
+    await teacherPage.locator("#teacher-evidence-host .teacher-intervention").innerText(),
+    /subtracted/i,
+  );
+  const evidenceAxe = await new AxeBuilder({ page: teacherPage })
+    .include("#teacher-evidence-host")
+    .analyze();
+  assert.deepEqual(
+    evidenceAxe.violations
+      .filter((v) => ["critical", "serious"].includes(v.impact))
+      .map((v) => ({
+        id: v.id,
+        nodes: v.nodes.map((node) => ({ target: node.target, summary: node.failureSummary })),
+      })),
+    [],
+    "teacher evidence dashboard has no serious or critical Axe findings",
+  );
+  const evidenceDownload = teacherPage.waitForEvent("download");
+  await teacherPage.locator("[data-teacher-export]").click();
+  const evidenceFile = await evidenceDownload;
+  assert.equal(evidenceFile.suggestedFilename(), "fluency-grade-1-evidence.csv");
+  const evidenceCsv = await readFile(await evidenceFile.path(), "utf8");
+  assert.match(evidenceCsv, /Recent independent accuracy/);
+  assert.match(evidenceCsv, /possible/i);
+  const interventionDownload = teacherPage.waitForEvent("download");
+  await teacherPage.locator("[data-teacher-export-groups]").click();
+  const interventionFile = await interventionDownload;
+  const interventionCsv = await readFile(await interventionFile.path(), "utf8");
+  assert.match(interventionCsv, /Teaching routine/);
+  assert.match(interventionCsv, /Assign a short set/);
+  await teacherPage.locator("[data-teacher-assign]").first().click();
+  assert.equal(await teacherPage.locator('[name="assignment-skill"]:checked').count(), 1);
   await teacherPage.locator("#assignment-session-type").selectOption("family");
   assert.equal(
     await teacherPage.locator("#assignment-game").count(),
@@ -404,7 +497,7 @@ try {
     1,
     "game options remain available for fluency assignments",
   );
-  await teacherPage.close();
+  await teacherContext.close();
 
   // Run all three publisher games through their real browser/UI and inspect their active boards with Axe.
   const gameContext = await browser.newContext({
@@ -431,12 +524,21 @@ try {
     for (let round = 0; round < 5; round += 1) {
       if (gameId === "mathworldbuilder") {
         const prompt = await gamePage.locator(".sig-head h2").innerText();
-        const target = Number(prompt.match(/with (\d+) floor tiles/)?.[1]);
+        const target = Number(prompt.match(/(?:with|Build) (\d+) floor tiles/)?.[1]);
         const budget = Number(prompt.match(/no more than (\d+) fence units/)?.[1]);
+        const optimize = prompt.includes("fewest fence units");
+        let minFence = Number.POSITIVE_INFINITY;
+        for (let rows = 1; rows <= 12; rows += 1)
+          for (let columns = 1; columns <= 12; columns += 1)
+            if (rows * columns === target) minFence = Math.min(minFence, 2 * (rows + columns));
         let plan;
         for (let rows = 1; rows <= 12 && !plan; rows += 1)
           for (let columns = 1; columns <= 12; columns += 1)
-            if (rows * columns === target && (!budget || 2 * (rows + columns) <= budget)) {
+            if (
+              rows * columns === target &&
+              (!budget || 2 * (rows + columns) <= budget) &&
+              (!optimize || 2 * (rows + columns) === minFence)
+            ) {
               plan = [rows, columns];
               break;
             }
@@ -548,8 +650,107 @@ try {
   );
   await gameContext.close();
 
+  const studentContext = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    reducedMotion: "reduce",
+  });
+  const studentPage = await studentContext.newPage();
+  studentPage.on("pageerror", (error) => errors.push(error.message));
+  await studentPage.goto(`${base}/math/fluency-lab/?grade=3`, { waitUntil: "networkidle" });
+  const homeAxe = await new AxeBuilder({ page: studentPage }).analyze();
+  assert.deepEqual(
+    homeAxe.violations.filter((v) => ["critical", "serious"].includes(v.impact)).map((v) => v.id),
+    [],
+    "student home has no serious or critical accessibility violations",
+  );
+  await studentPage.locator("#settings-toggle").click();
+  const settingsAxe = await new AxeBuilder({ page: studentPage })
+    .include("#header-settings-popover")
+    .analyze();
+  assert.deepEqual(
+    settingsAxe.violations
+      .filter((v) => ["critical", "serious"].includes(v.impact))
+      .map((v) => v.id),
+    [],
+    "display and access settings have no serious or critical accessibility violations",
+  );
+  await studentPage.keyboard.press("Escape");
+  assert.equal(
+    await studentPage.evaluate(() => document.activeElement?.id),
+    "settings-toggle",
+    "Escape closes settings and restores keyboard focus",
+  );
+  await studentPage.locator('[data-view="path"]').click();
+  const progressAxe = await new AxeBuilder({ page: studentPage }).analyze();
+  assert.deepEqual(
+    progressAxe.violations
+      .filter((v) => ["critical", "serious"].includes(v.impact))
+      .map((v) => v.id),
+    [],
+    "student growth view has no serious or critical accessibility violations",
+  );
+  await studentPage.locator('[data-view="library"]').click();
+  await studentPage.locator("#skill-grid .open-skill").first().click();
+  const workspaceAxe = await new AxeBuilder({ page: studentPage }).analyze();
+  assert.deepEqual(
+    workspaceAxe.violations
+      .filter((v) => ["critical", "serious"].includes(v.impact))
+      .map((v) => v.id),
+    [],
+    "visual lesson view has no serious or critical accessibility violations",
+  );
+  await studentPage.locator('#mode-tabs [data-mode="practice"]').click();
+  const practiceAxe = await new AxeBuilder({ page: studentPage }).analyze();
+  assert.deepEqual(
+    practiceAxe.violations
+      .filter((v) => ["critical", "serious"].includes(v.impact))
+      .map((v) => ({
+        id: v.id,
+        nodes: v.nodes.map((node) => ({ target: node.target, summary: node.failureSummary })),
+      })),
+    [],
+    "independent practice view has no serious or critical accessibility violations",
+  );
+  assert.equal(
+    await studentPage.getByRole("textbox", { name: "Your answer" }).count(),
+    1,
+    "practice answer is exposed as a named textbox",
+  );
+  assert.equal(
+    await studentPage.getByRole("group", { name: "My feeling:" }).count(),
+    1,
+    "confidence choices are exposed as a labelled screen-reader group",
+  );
+  assert.equal(
+    await studentPage.getByRole("button", { name: /Certain/ }).getAttribute("aria-pressed"),
+    "true",
+    "the default confidence choice is announced as pressed",
+  );
+  const thinkingChoice = studentPage.getByRole("button", { name: /Thinking/ });
+  await thinkingChoice.focus();
+  await thinkingChoice.press("Enter");
+  assert.equal(
+    await thinkingChoice.getAttribute("aria-pressed"),
+    "true",
+    "keyboard confidence selection updates its announced state",
+  );
+  assert.equal(
+    await studentPage.evaluate(() => document.documentElement.scrollWidth - innerWidth),
+    0,
+    "mobile student workflows do not overflow",
+  );
+  await studentPage.goto(`${base}/math/fluency-lab/?grade=8`, { waitUntil: "networkidle" });
+  assert.match(await studentPage.locator("#grade-heading").innerText(), /Grade 8/);
+  const middleAxe = await new AxeBuilder({ page: studentPage }).analyze();
+  assert.deepEqual(
+    middleAxe.violations.filter((v) => ["critical", "serious"].includes(v.impact)).map((v) => v.id),
+    [],
+    "Grade 8 student home has no serious or critical accessibility violations",
+  );
+  await studentContext.close();
+
   console.log(
-    "Family and teacher browser flows passed with Axe, keyboard, saved-session, Spanish, print, and responsive checks; all three publisher games completed, keyboard-operated, Axe-checked, and retained their results after reload.",
+    "Family, teacher, and student workflows passed with Axe, keyboard focus recovery, saved-session, Spanish, print, and responsive checks; all three publisher games completed, keyboard-operated, Axe-checked, and retained their results after reload.",
   );
 } finally {
   await browser?.close();

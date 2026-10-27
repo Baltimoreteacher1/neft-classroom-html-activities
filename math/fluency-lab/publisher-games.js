@@ -10,25 +10,36 @@ const recordResult = (id, first, misses, total) => ({ game: id, stars: first ===
 export function worldBuilderTask(grade, round) {
   const g = Math.max(0, Math.min(8, Number(grade) || 0));
   const target = g <= 2 ? [6, 8, 9, 10, 12, 14, 15, 16, 18][(round * 3 + g) % 9] : 12 + ((round * 7 + g) % 8) * 3;
-  const budget = g <= 2 ? null : target + Math.max(12, Math.floor(target / 2));
-  return { target, budget, maxSide: g <= 2 ? 10 : 12, worldId: g <= 2 ? "tenframefactory" : "arrayarchitect" };
+  const optimize = g >= 3 && round === 4;
+  const budget = g <= 2 || optimize ? null : target + Math.max(12, Math.floor(target / 2));
+  const minFence = Math.min(...Array.from({ length: Math.min(12, target) }, (_, index) => index + 1)
+    .filter((side) => target % side === 0 && target / side <= 12)
+    .map((side) => 2 * (side + target / side)));
+  return { target, budget, optimize, minFence, maxSide: g <= 2 ? 10 : 12, worldId: g <= 2 ? "tenframefactory" : "arrayarchitect" };
 }
 
 export function buildHasValidArea(rows, columns, task) {
   if (!Number.isInteger(rows) || !Number.isInteger(columns) || rows < 1 || columns < 1) return false;
   const area = rows * columns;
   const fence = 2 * (rows + columns);
-  return area === task.target && (task.budget == null || fence <= task.budget);
+  return area === task.target && (task.optimize ? fence === task.minFence : task.budget == null || fence <= task.budget);
 }
 
 export function numberPuzzleBoard(grade, round) {
   const g = Math.max(0, Math.min(8, Number(grade) || 0));
-  const op = g <= 2 ? "+" : "×";
-  const target = op === "+" ? 7 + (round % 4) : [12, 18, 24][round % 3];
+  const op = g <= 2 || (g <= 5 && round % 2 === 0) || (g > 5 && round % 3 === 0)
+    ? "+"
+    : g <= 5 || round % 3 === 1 ? "×" : "−";
+  const target = op === "+" ? 7 + (round % 4) : op === "−" ? 2 + (round % 4) : [12, 18, 24][round % 3];
   const values = op === "+"
     ? [1, 2, 3, 4, 5, 6, 8]
+    : op === "−"
+      ? [1, 2, 3, 4, 5, 6, 7, 8, 9]
     : target === 12 ? [1, 2, 3, 4, 6, 12] : target === 18 ? [1, 2, 3, 6, 9, 18] : [2, 3, 4, 6, 8, 12];
-  return { op, target, values, pairs: values.flatMap((x, i) => values.slice(i + 1).map((y) => [x, y])).filter(([x, y]) => (op === "+" ? x + y : x * y) === target) };
+  const pairs = op === "−"
+    ? values.flatMap((x) => values.filter((y) => x !== y && x - y === target).map((y) => [x, y]))
+    : values.flatMap((x, i) => values.slice(i + 1).map((y) => [x, y])).filter(([x, y]) => (op === "+" ? x + y : x * y) === target);
+  return { op, target, values, pairs };
 }
 
 export function rallyTask(grade, round) {
@@ -36,14 +47,24 @@ export function rallyTask(grade, round) {
   const n = 2 + ((round + g) % 7);
   const factor = g <= 2 ? 1 : 2 + (round % 5);
   const add = 2 + ((round * 3 + g) % 9);
-  const expression = `${factor} × ${n} + ${add}`;
-  const answer = factor * n + add;
-  const routes = [expression, `${factor} × (${n} + ${add})`, `${factor} × ${n} − ${add}`];
+  const type = g <= 2 ? "add" : g <= 5 || round % 2 === 0 ? "multiply-add" : "distributive";
+  const expression = type === "add"
+    ? `${n} + ${add}`
+    : type === "distributive" ? `${factor} × (${n} + ${add})` : `${factor} × ${n} + ${add}`;
+  const answer = type === "add" ? n + add : type === "distributive" ? factor * (n + add) : factor * n + add;
+  const routeCorrect = type === "distributive" ? `${factor} × ${n} + ${factor * add}` : expression;
+  const alternatives = type === "add"
+    ? [[`${n} − ${add}`, n - add], [`${n} × ${add}`, n * add]]
+    : type === "distributive"
+      ? [[`${factor} × ${n} + ${add}`, factor * n + add], [`${factor} × ${n} − ${add}`, factor * n - add]]
+      : [[`${factor} × (${n} + ${add})`, factor * (n + add)], [`${factor} × ${n} − ${add}`, factor * n - add]];
+  const routes = [routeCorrect, ...alternatives.filter(([, value]) => value !== answer).map(([route]) => route)];
+  if (routes.length < 3) routes.push(`${routeCorrect} + 1`);
   // Put the correct mathematical route in a reproducible position on every challenge.
   const correctIndex = rand(g * 101 + round * 37 + 11, routes.length);
   const choices = [...routes];
   [choices[0], choices[correctIndex]] = [choices[correctIndex], choices[0]];
-  return { n, factor, add, expression, answer, choices, correctIndex, worldId: g <= 2 ? "tenframefactory" : g <= 5 ? "arrayarchitect" : "equationfactory" };
+  return { n, factor, add, type, expression, routeCorrect, answer, choices, correctIndex, worldId: g <= 2 ? "tenframefactory" : g <= 5 ? "arrayarchitect" : "equationfactory" };
 }
 
 function mount(container, name, gameId, grade, onEvidence, finish, makeRound, renderBoard, checkRound, bindBoard = () => {}) {
@@ -94,12 +115,12 @@ function mount(container, name, gameId, grade, onEvidence, finish, makeRound, re
 export function playMathWorldBuilder(container, { grade, finish, onEvidence = () => {} }) {
   return mount(container, "Math World Builder", "mathworldbuilder", grade, onEvidence, finish, (round) => {
     const spec = worldBuilderTask(grade, round);
-    return { ...spec, rows: 2, columns: 2, prompt: t("Build a structure with {area} floor tiles{budget}.", { area: spec.target, budget: spec.budget == null ? "" : t(" and no more than {budget} fence units", { budget: spec.budget }) }), hint: t("The floor area is rows × columns. Each side of the fence uses one unit; compare more than one factor pair.") };
+    return { ...spec, rows: 2, columns: 2, prompt: spec.optimize ? t("Build {area} floor tiles with the fewest fence units possible.", { area: spec.target }) : t("Build a structure with {area} floor tiles{budget}.", { area: spec.target, budget: spec.budget == null ? "" : t(" and no more than {budget} fence units", { budget: spec.budget }) }), hint: t("The floor area is rows × columns. Each side of the fence uses one unit; compare more than one factor pair.") };
   }, (task, state) => `<p class="sig-instruction">${t("Set the building dimensions. The grid and resource count update as you build.")}</p><div class="sig-array-wrap"><div class="sig-array" data-builder-grid role="img" aria-label="${t("Building grid with {rows} rows and {columns} columns", { rows: state.rows, columns: state.columns })}" style="--array-columns:${state.columns}">${Array.from({ length: state.rows * state.columns }, () => "<span></span>").join("")}</div><p class="sig-equation">${t("Rows")}: <strong data-row-count>${state.rows}</strong> · ${t("Columns")}: <strong data-column-count>${state.columns}</strong> · ${t("Floor area")}: <strong data-area>${state.rows * state.columns}</strong> · ${t("Fence units")}: <strong data-fence>${2 * (state.rows + state.columns)}</strong></p></div><div class="sig-controls"><label>${t("Rows")} <output data-rows-value>${state.rows}</output><input type="range" min="1" max="${task.maxSide}" value="${state.rows}" data-rows aria-label="${t("Choose rows")}" /></label><label>${t("Columns")} <output data-columns-value>${state.columns}</output><input type="range" min="1" max="${task.maxSide}" value="${state.columns}" data-columns aria-label="${t("Choose columns")}" /></label></div>`, (task, state, host) => {
     state.rows = Number(host.querySelector("[data-rows]").value); state.columns = Number(host.querySelector("[data-columns]").value);
     const area = state.rows * state.columns; const fence = 2 * (state.rows + state.columns);
     const result = buildHasValidArea(state.rows, state.columns, task);
-    return { ok: result, message: result ? t("Built {rows} rows of {columns}: {area} floor tiles with {fence} fence units.", { rows: state.rows, columns: state.columns, area, fence }) : t("That plan uses {area} floor tiles and {fence} fence units. Adjust the dimensions to meet both project requirements.", { area, fence }) };
+    return { ok: result, message: result ? t("Built {rows} rows of {columns}: {area} floor tiles with {fence} fence units.", { rows: state.rows, columns: state.columns, area, fence }) : task.optimize ? t("That plan has {fence} fence units. Compare factor pairs to find the smallest possible boundary.", { fence }) : t("That plan uses {area} floor tiles and {fence} fence units. Adjust the dimensions to meet both project requirements.", { area, fence }) };
   }, (task, state, host) => {
     const update = () => {
       state.rows = Number(host.querySelector("[data-rows]").value);
@@ -123,12 +144,12 @@ export function playNumberPuzzleStudio(container, { grade, finish, onEvidence = 
   return mount(container, "Number Puzzle Studio", "numberpuzzlestudio", grade, onEvidence, finish, (round) => {
     const board = numberPuzzleBoard(grade, round);
     return { ...board, selected: [], worldId: grade <= 2 ? "tenframefactory" : grade <= 5 ? "arrayarchitect" : "equationfactory", prompt: t("Choose two number tiles and use {op} to make {target}.", { op: board.op, target: board.target }), hint: t("Look for a pair that composes the target. You may find more than one valid pair.") };
-  }, (task, state) => `<p class="sig-instruction">${t("Select two different tiles. Use the same operation for both.")}</p><div class="gm-cards cols-4" role="group" aria-label="${t("Number tiles")}">${task.values.map((value, i) => `<button type="button" class="gm-card${state.selected?.includes(i) ? " pick" : ""}" data-choice="${i}" aria-pressed="${state.selected?.includes(i) || false}">${value}</button>`).join("")}</div><p class="sig-equation" aria-live="polite" data-puzzle-equation>${state.selected?.length === 2 ? `${task.values[state.selected[0]]} ${task.op} ${task.values[state.selected[1]]} = ?` : t("Choose two tiles")}</p>`, (task, state, host) => {
+  }, (task, state) => `<p class="sig-instruction">${task.op === "−" ? t("Choose the larger tile first, then choose the amount to subtract.") : t("Select two different tiles. Use the same operation for both.")}</p><div class="gm-cards cols-4" role="group" aria-label="${t("Number tiles")}">${task.values.map((value, i) => `<button type="button" class="gm-card${state.selected?.includes(i) ? " pick" : ""}" data-choice="${i}" aria-pressed="${state.selected?.includes(i) || false}">${value}</button>`).join("")}</div><p class="sig-equation" aria-live="polite" data-puzzle-equation>${state.selected?.length === 2 ? `${task.values[state.selected[0]]} ${task.op} ${task.values[state.selected[1]]} = ?` : t("Choose two tiles")}</p>`, (task, state, host) => {
     const chosen = [...host.querySelectorAll("[data-choice][aria-pressed=true]")].map((button) => Number(button.dataset.choice));
     state.selected = chosen;
     if (chosen.length !== 2) return { ok: false, message: t("Choose exactly two tiles before checking the puzzle.") };
-    const [a, b] = chosen.map((i) => task.values[i]); const value = task.op === "+" ? a + b : a * b;
-    const key = chosen.slice().sort((x, y) => x - y).join(":");
+    const [a, b] = chosen.map((i) => task.values[i]); const value = task.op === "+" ? a + b : task.op === "×" ? a * b : a - b;
+    const key = (task.op === "−" ? chosen : chosen.slice().sort((x, y) => x - y)).join(":");
     if (value !== task.target) return { ok: false, message: t("That pair makes {value}. Keep one tile and try a different partner.", { value }) };
     if (state.foundPairs.includes(key)) return { ok: false, message: t("You already found that pair. Try a different pair or move to the next challenge.") };
     state.foundPairs.push(key);
@@ -152,12 +173,17 @@ export function playNumberPuzzleStudio(container, { grade, finish, onEvidence = 
 export function playFluencyRally(container, { grade, finish, onEvidence = () => {} }) {
   return mount(container, "Fluency Rally", "fluencyrally", grade, onEvidence, finish, (round) => {
     const item = rallyTask(grade, round);
-    return { ...item, worldId: item.worldId, prompt: t("A route checkpoint follows {rule}. Set n = {n}. Find the route distance.", { rule: item.expression, n: item.n }), hint: t("Multiply first, then add. Read each route as an expression, not as a speed challenge.") };
+    return { ...item, worldId: item.worldId, prompt: item.type === "distributive" ? t("A route follows {rule}. Set n = {n}. Choose its equivalent expanded route and calculate the distance.", { rule: item.expression, n: item.n }) : t("A route checkpoint follows {rule}. Set n = {n}. Find the route distance.", { rule: item.expression, n: item.n }), hint: item.type === "add" ? t("Combine the two parts. Take time to check the route and total.") : item.type === "distributive" ? t("The distributive property multiplies the factor by each term inside the parentheses.") : t("Multiply first, then add. Read each route as an expression, not as a speed challenge.") };
   }, (task, state) => `<p class="sig-instruction">${t("Choose a route, calculate its distance, then enter the checkpoint value. Take the time you need.")}</p><div class="gm-cards cols-3" role="group" aria-label="${t("Choose a route")}">${task.choices.map((route, i) => `<button type="button" class="gm-card${state.selected === i ? " pick" : ""}" data-choice="${i}" aria-pressed="${state.selected === i}"><span>${t("Route {n}", { n: i + 1 })}</span><strong>${esc(route)}</strong></button>`).join("")}</div><label class="sig-instruction">${t("Checkpoint distance")} <input type="number" inputmode="numeric" data-distance aria-label="${t("Enter the route distance")}" /></label>`, (task, state, host) => {
     const selected = Number(host.querySelector('[data-choice][aria-pressed="true"]')?.dataset.choice);
     const value = Number(host.querySelector("[data-distance]").value);
     const correct = selected === task.correctIndex && Number.isFinite(value) && value === task.answer;
-    return { ok: correct, message: correct ? t("Route {n} reaches checkpoint {distance}. The route choice and calculation agree.", { n: selected + 1, distance: task.answer }) : t("Check the order: multiply {factor} by {n}, then add {add}. Choose the matching route and enter its distance.", { factor: task.factor, n: task.n, add: task.add }) };
+    const support = task.type === "add"
+      ? t("Check the addition. Choose the route that combines both parts and enter their total.")
+      : task.type === "distributive"
+        ? t("Use the distributive property: multiply the factor by both terms inside the parentheses, then add the partial products.")
+        : t("Check the order: multiply {factor} by {n}, then add {add}. Choose the matching route and enter its distance.", { factor: task.factor, n: task.n, add: task.add });
+    return { ok: correct, message: correct ? t("Route {n} reaches checkpoint {distance}. The route choice and calculation agree.", { n: selected + 1, distance: task.answer }) : support };
   }, (task, state, host) => host.querySelectorAll("[data-choice]").forEach((button) => button.addEventListener("click", () => {
     state.selected = Number(button.dataset.choice);
     host.querySelectorAll("[data-choice]").forEach((route) => route.setAttribute("aria-pressed", String(route === button)));

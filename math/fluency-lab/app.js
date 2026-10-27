@@ -766,7 +766,7 @@ function nextProblem(restoredItem = null) {
   document.querySelectorAll(".conf-chip").forEach((c) => {
     const isCertain = c.dataset.conf === "certain";
     c.classList.toggle("active", isCertain);
-    c.setAttribute("aria-checked", isCertain ? "true" : "false");
+    c.setAttribute("aria-pressed", isCertain ? "true" : "false");
   });
   if (els.fixAnswerBtn) els.fixAnswerBtn.hidden = true;
   if (els.checkButton) {
@@ -7184,7 +7184,24 @@ function openHubView(view) {
   if (view === "path") renderPath();
   if (view === "notebook") renderNotebook();
   if (view === "games") { cleanupGames?.(); cleanupGames = mountGames(els.games, { grade: state.grade, autostart: state.autoGame, assignedStop: state.autoStop, onEvidence: recordPuzzleEvidence }); state.autoGame = null; state.autoStop = null; }
-  if (view === "teacher") mountTeacherStudio(els.teacherStudio, { grade: state.grade, onLaunch: launchAssignment, onPrint: printHtml, announce, games: GAMES, stopsFor, stopOptions, snapshot: (host, studioGrade) => { mountSnapshot(host, { onOpenSkill: (key) => { const skill = findSkill(key); if (skill) openSkill(skill.id, "adaptive", skill.grade); } }); mountPaperGames(host, { grade: studioGrade, stopsFor, onPrint: printHtml }); } });
+  if (view === "teacher") mountTeacherStudio(els.teacherStudio, {
+    grade: state.grade,
+    onLaunch: launchAssignment,
+    onPrint: printHtml,
+    announce,
+    games: GAMES,
+    stopsFor,
+    stopOptions,
+    learnerRecords: () => profiles().ids.map((id) => ({
+      label: `Learner ${id + 1} · ${PROFILE_NAMES[id]}`,
+      grade: Number(readLocal(profileKey(`${SETTINGS_KEY}:grade`, id), id === activeProfile ? state.grade : 1)),
+      tutor: sanitizeTutor(readLocal(profileKey(TUTOR_KEY, id), emptyTutor())),
+    })),
+    snapshot: (host, studioGrade) => {
+      mountSnapshot(host, { onOpenSkill: (key) => { const skill = findSkill(key); if (skill) openSkill(skill.id, "adaptive", skill.grade); } });
+      mountPaperGames(host, { grade: studioGrade, stopsFor, onPrint: printHtml });
+    },
+  });
   document.title = `${{ teacher: 'Teacher studio', path: 'My learning path', games: 'Game Room' }[view] || 'Mistake notebook'} | Math Fluency Lab`;
   setUrl();
   document.querySelector(`#${view}-view`)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -7799,7 +7816,7 @@ document.addEventListener("click", (event) => {
     document.querySelectorAll(".conf-chip").forEach((c) => {
       const match = c === confChip;
       c.classList.toggle("active", match);
-      c.setAttribute("aria-checked", match ? "true" : "false");
+      c.setAttribute("aria-pressed", match ? "true" : "false");
     });
     return;
   }

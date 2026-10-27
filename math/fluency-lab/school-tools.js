@@ -3,6 +3,7 @@ import { evidence, findSkill, localDay, prerequisites, sanitizeTutor, skillKey }
 import { languageExpectation, languagePrintPrompt } from "./language-bridge.js";
 import { languagePackHtml } from "./language-pack.js";
 import { familySessionShare } from "./family/family-planner.js";
+import { mountTeacherEvidenceDashboard } from "./teacher-dashboard.js";
 
 export const escapeHtml = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 const PROFILE_KEY = "ewl-fluency-profiles-v1";
@@ -127,7 +128,7 @@ export function printablePacket(assignment, { includeKey = false, seed = Date.no
   return pages + key;
 }
 
-export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, onPrint, announce, games = [], stopsFor = () => [], stopOptions = () => "", snapshot = null }) {
+export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, onPrint, announce, games = [], stopsFor = () => [], stopOptions = () => "", snapshot = null, learnerRecords = () => [] }) {
   let grade = initialGrade;
   let selected = new Set();
   let assignment = null;
@@ -153,8 +154,22 @@ export function mountTeacherStudio(container, { grade: initialGrade, onLaunch, o
         const connections = [foundations.length ? `Builds on ${foundations.map((item) => item.title).join(", ")}` : "", nextSkills.length ? `Leads to ${nextSkills.map((item) => item.title).join(", ")}` : ""].filter(Boolean).join(" · ");
         return `<label><input type="checkbox" name="assignment-skill" value="${skillKey(skill)}" ${selected.has(skillKey(skill)) ? 'checked' : ''}/><span>${escapeHtml(skill.title)}<small>${skill.standardNote ? `Extension reference ${escapeHtml(skill.standard)} · ${escapeHtml(skill.standardNote)}` : escapeHtml(skill.standard)}${connections ? ` · ${escapeHtml(connections)}` : ""}</small></span></label>`;
       }).join("")}</fieldset><button type="submit" class="primary-action">Build assignment</button><p id="assignment-error" role="status"></p></form>
-      <aside class="teacher-guide"><h3>Use it across the school day</h3><ul><li><strong>Arrival:</strong> open Today’s 10 for an individual start.</li><li><strong>Small group:</strong> work through a visual lesson together.</li><li><strong>Independent station:</strong> share a focused skill playlist.</li><li><strong>At home:</strong> repeat the same link for fresh problems, then explain a strategy.</li><li><strong>Without a screen:</strong> print a five-day packet.</li></ul><h3>Math language routine</h3><p><strong>${escapeHtml(languageExpectation(grade).code)}:</strong> ${escapeHtml(languageExpectation(grade).goal)}</p><ol><li>Preview one useful word and show it in a model.</li><li>Give quiet think time, then ask partners to notice, explain, and check.</li><li>Accept pointing, drawing, home language, speaking, or writing as entry points. Invite students to add precise English over time.</li><li>Ask “How do you know?” and “Is there another way?” Record math accuracy separately from language growth.</li></ol><p>Use a short oral or written explanation after a set, not after every fact. In pairs, give both students a turn to restate a partner’s idea.</p><h3>Progress and privacy</h3><p>Each browser profile saves its own work. Students can download a progress report or backup to bring between devices. Assignment links contain the task only.</p><p>This version does not send student results to a teacher or maintain a central roster. Use your classroom system to collect downloaded reports if needed.</p></aside></div><section id="assignment-result" class="assignment-result" aria-live="polite" hidden></section><div id="snapshot-host"></div>`;
+      <aside class="teacher-guide"><h3>Use it across the school day</h3><ul><li><strong>Arrival:</strong> open Today’s 10 for an individual start.</li><li><strong>Small group:</strong> work through a visual lesson together.</li><li><strong>Independent station:</strong> share a focused skill playlist.</li><li><strong>At home:</strong> repeat the same link for fresh problems, then explain a strategy.</li><li><strong>Without a screen:</strong> print a five-day packet.</li></ul><h3>Math language routine</h3><p><strong>${escapeHtml(languageExpectation(grade).code)}:</strong> ${escapeHtml(languageExpectation(grade).goal)}</p><ol><li>Preview one useful word and show it in a model.</li><li>Give quiet think time, then ask partners to notice, explain, and check.</li><li>Accept pointing, drawing, home language, speaking, or writing as entry points. Invite students to add precise English over time.</li><li>Ask “How do you know?” and “Is there another way?” Record math accuracy separately from language growth.</li></ol><p>Use a short oral or written explanation after a set, not after every fact. In pairs, give both students a turn to restate a partner’s idea.</p><h3>Progress and privacy</h3><p>The evidence dashboard below reads only the local profiles on this device. Results do not sync between devices or go to a server. Use your school system for cross-device class records.</p></aside></div><section id="assignment-result" class="assignment-result" aria-live="polite" hidden></section><div id="teacher-evidence-host"></div><div id="snapshot-host"></div>`;
     if (snapshot) snapshot(container.querySelector("#snapshot-host"), grade);
+    mountTeacherEvidenceDashboard(container.querySelector("#teacher-evidence-host"), {
+      learners: learnerRecords,
+      grade: () => grade,
+      onAssign: (key) => {
+        const skill = findSkill(key);
+        if (!skill || skill.grade !== grade) return;
+        selected.add(key);
+        const input = [...container.querySelectorAll('[name="assignment-skill"]')].find((item) => item.value === key);
+        if (input) input.checked = true;
+        container.querySelector("#assignment-builder")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        announce?.(`${skill.title} added to the assignment focus.`);
+        container.querySelector("#assignment-label")?.focus();
+      },
+    });
   }
   const capture = () => {
     label = container.querySelector("#assignment-label").value.trim() || "Class practice";
