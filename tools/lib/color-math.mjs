@@ -100,6 +100,14 @@ export function over(fg, bg) {
   };
 }
 
+/** Snap each channel to the integer a hex colour can hold. */
+export const roundRgb = ({ r, g, b, a = 1 }) => ({
+  r: Math.round(r),
+  g: Math.round(g),
+  b: Math.round(b),
+  a,
+});
+
 /** Linear mix: t=0 -> a, t=1 -> b. */
 export const mix = (a, b, t) => ({
   r: a.r + (b.r - a.r) * t,
@@ -124,7 +132,9 @@ export function darkenToContrast(fg, onBgs, min) {
   let cur = fg;
   const black = { r: 0, g: 0, b: 0, a: 1 };
   while (t <= 1) {
-    cur = mix(fg, black, t);
+    // Judge the colour that will actually be emitted: toHex() rounds each channel, and a
+    // ratio verified on the unrounded value can land under the floor once rounded.
+    cur = roundRgb(mix(fg, black, t));
     if (onBgs.every((bg) => contrast(cur, bg) >= min)) return cur;
     t += 0.01;
   }

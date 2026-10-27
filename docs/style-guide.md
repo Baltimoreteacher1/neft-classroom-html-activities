@@ -37,15 +37,15 @@ outline; use teal-ink. Amber text on white is unreadable; use amber-ink, or put 
 |---|---|---:|---:|---|
 | text `#24323f` | canvas `#f7f4ec` | 11.92 | 4.5 | body copy on the page |
 | text `#24323f` | white `#ffffff` | 13.10 | 4.5 | body copy on a card |
-| muted `#4a555e` | canvas `#f7f4ec` | 6.95 | 4.5 | secondary text on the page |
-| muted `#4a555e` | white `#ffffff` | 7.64 | 4.5 | secondary text on a card |
+| muted `#4a555e` | canvas `#f7f4ec` | 6.94 | 4.5 | secondary text on the page |
+| muted `#4a555e` | white `#ffffff` | 7.63 | 4.5 | secondary text on a card |
 | navy `#17324d` | canvas `#f7f4ec` | 11.94 | 4.5 | headings on the page |
 | navy `#17324d` | white `#ffffff` | 13.13 | 4.5 | headings on a card |
-| tealInk `#177d7a` | canvas `#f7f4ec` | 4.52 | 4.5 | teal text and links on the page |
-| tealInk `#177d7a` | white `#ffffff` | 4.97 | 4.5 | teal text and links on a card |
-| amberInk `#886c33` | white `#ffffff` | 4.96 | 4.5 | amber-toned text on a card |
+| tealInk `#177b78` | canvas `#f7f4ec` | 4.61 | 4.5 | teal text and links on the page |
+| tealInk `#177b78` | white `#ffffff` | 5.07 | 4.5 | teal text and links on a card |
+| amberInk `#886c33` | white `#ffffff` | 4.95 | 4.5 | amber-toned text on a card |
 | white `#ffffff` | navy `#17324d` | 13.13 | 4.5 | text on a navy surface or button |
-| white `#ffffff` | tealInk `#177d7a` | 4.97 | 4.5 | text on a teal button |
+| white `#ffffff` | tealInk `#177b78` | 5.07 | 4.5 | text on a teal button |
 | amber `#f2c15b` | navy `#17324d` | 7.85 | 4.5 | accent text on navy (stars, XP) |
 | navy `#17324d` | amber `#f2c15b` | 7.85 | 4.5 | text on an amber fill |
 | success `#0f7c4a` | white `#ffffff` | 5.25 | 4.5 | success text on a card |

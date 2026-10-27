@@ -198,7 +198,8 @@ function measure() {
         ext ? Math.max(parseFloat(ps.height) || 0, parseFloat(ps.minHeight) || 0) : 0,
       );
       if (r.width < 44 || r.height < 44) visualSmall++;
-      if (effW < 44 || effH < 44)
+      // Inline vocabulary links sit inside a sentence: WCAG 2.5.8 exempts inline targets.
+      if ((effW < 44 || effH < 44) && !e.matches(".obj-term"))
         smallTargets.push({
           t: (e.innerText || e.getAttribute("aria-label") || "").trim().slice(0, 24),
           w: Math.round(effW),

@@ -854,7 +854,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   // Level 1 (support): a "Start here" kernel + a word-bank chip strip. Both are
   // optional — older configs without these fields simply render nothing here.
   const kernelHtml = prompt.kernel
-    ? `<p style="margin:0 0 var(--sp-3); font-weight:500;"><span style="display:inline-block; font-weight:700; color:var(--coral); margin-right:var(--sp-2);">Start here:</span>${esc(prompt.kernel)}</p>`
+    ? `<p style="margin:0 0 var(--sp-3); font-weight:500;"><span style="display:inline-block; font-weight:700; color:var(--coral-ink, var(--coral)); margin-right:var(--sp-2);">Start here:</span>${esc(prompt.kernel)}</p>`
     : "";
   // Academic vocabulary belongs IN the talk, not just in the Vocab tab: when a
   // prompt authors no word bank, hand students this lesson's own math terms so
@@ -940,7 +940,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   card.innerHTML = `
     <div style="display:flex; align-items:center; flex-wrap:wrap; gap:var(--sp-2); margin-bottom:var(--sp-2);">
       <span style="font-size:1.3rem;" aria-hidden="true">🗣️</span>
-      <h4 id="${uid}-title" style="color:var(--coral); margin:0;">Turn &amp; Talk</h4>
+      <h4 id="${uid}-title" style="color:var(--coral-ink, var(--coral)); margin:0;">Turn &amp; Talk</h4>
       <span class="badge badge-teal" style="font-size:.78rem;">🅰️ shares first</span>
       <span class="badge badge-amber" style="font-size:.78rem;">🅱️ goes next</span>
     </div>
@@ -986,7 +986,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
     const timerLabel = document.createElement("span");
     timerLabel.setAttribute("role", "timer");
     timerLabel.setAttribute("aria-live", "polite");
-    timerLabel.style.cssText = "font-weight:700; color:var(--coral);";
+    timerLabel.style.cssText = "font-weight:700; color:var(--coral-ink, var(--coral));";
 
     window.__ntTalkTimer = window.__ntTalkTimer || {
       isRunning: false,
@@ -2087,7 +2087,7 @@ function renderShowYourWork(host, config, state) {
     talk.style.cssText =
       "margin-top:var(--sp-4); padding:var(--sp-3); border-radius:var(--radius-md,12px); background:rgba(217,121,93,0.08); border:1px solid rgba(217,121,93,0.28);";
     talk.innerHTML =
-      `<div style="font-weight:700; color:var(--coral); margin-bottom:var(--sp-2);">🗣️ Turn &amp; Talk</div>` +
+      `<div style="font-weight:700; color:var(--coral-ink, var(--coral)); margin-bottom:var(--sp-2);">🗣️ Turn &amp; Talk</div>` +
       `<p style="margin:0 0 var(--sp-2); font-weight:500;">${esc(tt.question)}</p>` +
       (stems.length
         ? `<div style="font-size:0.9rem; color:var(--muted);">Try starting with: ${stems
@@ -4017,7 +4017,7 @@ function renderLaunchPhase(el, state, ctx, config, opts = {}) {
 
     const wonderCard = document.createElement("div");
     wonderCard.className = "card card-coral";
-    wonderCard.innerHTML = `<h4 style="color:var(--coral); margin-bottom:var(--sp-3);">🤔 I Wonder...</h4>
+    wonderCard.innerHTML = `<h4 style="color:var(--coral-ink, var(--coral)); margin-bottom:var(--sp-3);">🤔 I Wonder...</h4>
       ${(cfg.wonderPrompts || []).map((p) => `<div class="sentence-frame" style="margin-bottom:var(--sp-2); border-color:rgba(217,121,93,0.25); background:rgba(217,121,93,0.06);"><span style="font-weight:500;">${esc(p)}</span></div>`).join("")}`;
     wonderTA = document.createElement("textarea");
     wonderTA.className = "text-input";

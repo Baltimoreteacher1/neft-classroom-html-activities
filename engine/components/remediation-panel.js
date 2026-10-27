@@ -178,7 +178,7 @@ function stepCard(title, icon) {
   if (!reducedMotion()) card.style.animation = "feedbackIn 0.3s var(--ease-spring)";
   const h = document.createElement("h4");
   h.style.cssText =
-    "color:var(--coral); margin:0 0 var(--sp-3); display:flex; align-items:center; gap:var(--sp-2);";
+    "color:var(--coral-ink, var(--coral)); margin:0 0 var(--sp-3); display:flex; align-items:center; gap:var(--sp-2);";
   h.innerHTML = `<span aria-hidden="true">${icon}</span><span>${esc(title)}</span>`;
   card.append(h);
   return { card, body: card };

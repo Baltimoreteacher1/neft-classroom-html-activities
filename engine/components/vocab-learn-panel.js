@@ -225,7 +225,7 @@ function injectVocabLearnStyles() {
       max-width: 920px;
       margin: 0 auto;
       padding: 20px 24px 44px;
-      font-family: "Hanken Grotesk", system-ui, -apple-system, sans-serif;
+      font-family: var(--font-body, "Hanken Grotesk", system-ui, -apple-system, sans-serif);
       color: #0f172a;
     }
     .vl-hero {
@@ -813,7 +813,7 @@ function injectVocabLearnStyles() {
     }
     .vl-step-title {
       margin: 4px 0 2px;
-      font-family: "Outfit", "Hanken Grotesk", sans-serif;
+      font-family: var(--font-display, "Outfit", "Hanken Grotesk", sans-serif);
       font-size: 1.6rem;
       font-weight: 800;
       color: #0f172a;
@@ -829,7 +829,7 @@ function injectVocabLearnStyles() {
     }
     .vl-step-question {
       margin: 0 0 12px;
-      font-family: "Outfit", "Hanken Grotesk", sans-serif;
+      font-family: var(--font-display, "Outfit", "Hanken Grotesk", sans-serif);
       font-size: clamp(1.35rem, 2.4vw, 1.7rem);
       font-weight: 800;
       color: #0f4c81;

@@ -20,6 +20,7 @@ import {
   mix,
   over,
   parseColor,
+  roundRgb,
   toHex,
 } from "./lib/color-math.mjs";
 
@@ -50,7 +51,7 @@ export function buildTokens(tokens) {
   }
   {
     const rule = d.muted;
-    const lifted = mix(base[rule.from], base[rule.toward], rule.amount);
+    const lifted = roundRgb(mix(base[rule.from], base[rule.toward], rule.amount));
     colours.muted = darkenToContrast(
       lifted,
       rule.onBackgrounds.map((n) => base[n]),
@@ -59,7 +60,8 @@ export function buildTokens(tokens) {
   }
   const tints = {};
   for (const name of ["navy", "teal", "amber", "success", "error"]) {
-    for (const pct of d.tintSteps) tints[`${name}-${pct}`] = mix(base.white, base[name], pct / 100);
+    for (const pct of d.tintSteps)
+      tints[`${name}-${pct}`] = roundRgb(mix(base.white, base[name], pct / 100));
   }
   return { base, colours, tints };
 }

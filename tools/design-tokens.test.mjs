@@ -131,3 +131,22 @@ test("NEGATIVE: --check fails when the generated CSS is stale, and when the guid
     rmSync(sb.dir, { recursive: true, force: true });
   }
 });
+
+test("every contrast pair holds on the EMITTED hex values, not just the unrounded maths", () => {
+  // Regression: the generator once verified teal-ink at 4.52:1 on unrounded channels, then
+  // emitted a rounded hex that measured 4.49:1 in the browser — under the AA floor.
+  const css = readFileSync(join(ROOT, "engine/styles/ds-tokens.generated.css"), "utf8");
+  const emitted = {};
+  for (const m of css.matchAll(/--ds-color-([a-z-]+): (#[0-9a-f]{6});/g)) {
+    emitted[m[1].replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = parseColor(m[2]);
+  }
+  const t = tokens();
+  assert.ok(Object.keys(emitted).length >= 10, "parsed the emitted colour tokens");
+  for (const p of t.contrastPairs) {
+    const ratio = contrast(emitted[p.fg], emitted[p.bg]);
+    assert.ok(
+      ratio >= p.min,
+      `${p.fg} on ${p.bg} is ${ratio.toFixed(2)} as emitted, needs ${p.min}`,
+    );
+  }
+});

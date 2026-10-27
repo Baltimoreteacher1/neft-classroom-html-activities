@@ -31,6 +31,8 @@ body.editorial.skin-warm-deck {
   --wd-orange: var(--ds-highlight-ink);
   --wd-coral: var(--ds-highlight-ink);
   --wd-blush: var(--ds-tint-teal-16);
+  /* Text-only: coral stays a fill/marker colour, coral TEXT uses the palette amber-ink. */
+  --coral-ink: var(--ds-highlight-ink);
   --radius-sm: var(--ds-radius-sm);
   --radius-md: var(--ds-radius-md);
   --radius-lg: var(--ds-radius-lg);
@@ -109,8 +111,12 @@ body.editorial.skin-warm-deck .reading-guide .act-step-chip {
 }
 
 /* ── 6. A floor under text size ─────────────────────────────────────────────
-   Measured: 2,126 text elements at 10.2–11.2px across the fleet (labels,
-   counters, stars, badges). 13px is the smallest size in the type scale. */
+   Measured: 2,126 text elements at 10.2-12.5px across the fleet (labels, counters,
+   stars, badges, vocabulary helper lines). 13px is the smallest size in the type
+   scale (--ds-text-label). Several of these lose to stronger selectors elsewhere,
+   and a minimum-size policy is exactly where !important is the honest tool: it is
+   a floor, not a style. The list is the measured offenders, not a wildcard, so
+   figure labels inside SVG diagrams are untouched. */
 body.editorial.skin-warm-deck :is(
     .sidebar-progress-label,
     .sidebar-progress-label span,
@@ -122,9 +128,28 @@ body.editorial.skin-warm-deck :is(
     .nt-utility-caret,
     .sidebar-subtitle,
     .student-period-display,
-    .xp-label
+    .xp-label,
+    .flip-prompt,
+    .vocab-es,
+    .vocab-def-es,
+    .vl-step-num,
+    .vl-step-badge,
+    .vl-hero-badge,
+    .vl-step-speak-btn,
+    .level-option-blurb,
+    .rc-sub,
+    .talk-lang-toggle,
+    .problem-of-total,
+    .wp-badge,
+    .confidence-labels span,
+    .i18n-stack .i18n-en,
+    .badge,
+    .pwrlab-field span,
+    .problem-tier-badge,
+    .problem-type-badge,
+    .sidebar > div:not([class])
   ) {
-  font-size: var(--ds-text-label);
+  font-size: var(--ds-text-label) !important;
 }
 
 /* ── 7. Icons ───────────────────────────────────────────────────────────────
@@ -148,4 +173,73 @@ svg.ds-icon {
   box-shadow: none;
   border: 0;
   border-radius: 0;
+}
+
+/* ── 8. Contrast repairs on shared components ───────────────────────────────
+   Measured in the browser on all 84 lessons (reports/style-audit.md):
+   - Spanish definitions and glossary buttons on the navy vocabulary card back
+     were amber-ink #8a5a00 on #12355b = 2.10:1. Amber on navy is 7.85:1.
+   - The numbered Launch story beats were white on amber #f2c15b = 1.67:1.
+     Navy on amber is 7.85:1.
+   - Coral #d9795d headings on white were 3.07:1. Amber-ink on white is 4.96:1. */
+body.editorial.skin-warm-deck .vocab-card-back .vocab-def-es,
+body.editorial.skin-warm-deck .vocab-card-back .vocab-def-es .obj-term {
+  color: var(--ds-highlight);
+}
+body.editorial.skin-warm-deck .story-beat-num {
+  color: var(--ds-primary);
+}
+body.editorial.skin-warm-deck .discourse-trigger,
+body.editorial.skin-warm-deck .discourse-trigger span {
+  color: var(--ds-highlight-ink);
+}
+
+/* ── 9. Targets: the shared controls that were still under 44px ─────────────
+   Measured on the live DOM across Vocabulary, Launch, Learn It, Practice and Exit
+   Ticket (class names read from the page, not guessed). Text buttons grow to 44px
+   high; the icon-only step speaker keeps its look and gets an invisible hit-area
+   extender (the pattern design-system.css already uses for .pub-btn). Inline
+   vocabulary links (.obj-term) are deliberately NOT touched: they sit inside a
+   sentence, so inflating them would wreck the line. */
+body.editorial.skin-warm-deck :is(
+    .pwrlab-chip,
+    .pwrlab-go,
+    .vl-tryit-opt,
+    .vl-conf-btn,
+    .vl-hero-speak-btn,
+    .vl-tt-btn,
+    .hint-ladder-btn,
+    .discourse-trigger,
+    .nw-chip,
+    .sw-btn
+  ) {
+  min-height: var(--ds-target);
+}
+body.editorial.skin-warm-deck .vl-step-speak-btn {
+  position: relative;
+}
+body.editorial.skin-warm-deck .vl-step-speak-btn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  min-width: var(--ds-target);
+  min-height: var(--ds-target);
+  transform: translate(-50%, -50%);
+  background: transparent;
+}
+
+/* ── 10. One type family on the floating pills ──────────────────────────────
+   The Save/Resume, Math Workbench and Learning-supports pills are injected by
+   scripts outside the engine and fell back to system-ui, so a lesson showed a
+   third face next to Baloo 2 and Nunito. */
+body.editorial #nsr-root,
+body.editorial #nsr-root *,
+body.editorial #nsr-workbench,
+body.editorial #nsr-workbench *,
+body.editorial .ls-launcher,
+body.editorial .ls-launcher * {
+  font-family: var(--ds-font-body);
 }
