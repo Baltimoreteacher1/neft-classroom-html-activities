@@ -305,7 +305,7 @@ header.homework-header,
   margin-bottom: 3px;
 }
 </style>
-<link rel="stylesheet" href="/assets/homework/homework-layer-675a7fbccf.css">
+<link rel="stylesheet" href="/assets/homework/homework-layer-5570bdda07.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -358,9 +358,9 @@ header.homework-header,
   try {
     var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (requested === 'en' || requested === 'es') {
+    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
       mode = requested;
-    } else if (saved === 'en' || saved === 'es') {
+    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)
@@ -421,6 +421,7 @@ header.homework-header,
             <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
               <button type="button" class="lang-toggle-btn active" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="true">English</button>
               <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">Español</button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="false">🇺🇸🇪🇸 Bilingual / Bilingüe</button>
             </div>
           </div>
         </div>
@@ -546,6 +547,11 @@ header.homework-header,
         </div>
 
         <div class="hw-hud-utility-btns">
+          <div class="hw-hud-lang-group" role="group" aria-label="Language Selector">
+            <button type="button" class="hw-hud-lang-btn is-active" data-lang-mode="en" onclick="setLanguageMode('en')" title="English">English</button>
+            <button type="button" class="hw-hud-lang-btn" data-lang-mode="es" onclick="setLanguageMode('es')" title="Español">Español</button>
+            <button type="button" class="hw-hud-lang-btn" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" title="Bilingual EN+ES">🇺🇸🇪🇸 Bilingual</button>
+          </div>
           <button type="button" class="hw-hud-util-btn" id="hw_vocab_drawer_btn" aria-expanded="false" aria-controls="hw_vocab_drawer" onclick="toggleVocabQuickGlossary()">
             <span aria-hidden="true">📖</span> <span class="lang-en">Key Vocabulary</span><span class="lang-es" lang="es">Vocabulario clave</span>
           </button>
@@ -6972,7 +6978,7 @@ window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Nu
 window.__HW_WORKED__ = {"title":"Watch me build the ticket graph","titleEs":"Mírame armar la gráfica de los boletos","lines":["Each ticket costs $45, so the total cost is 45 times the number of tickets: 1 ticket is $45, 2 tickets are $90, 3 tickets are $135.","The number of tickets is the independent variable, so it goes first in each ordered pair: (1, 45), (2, 90), (3, 135).","I label one axis 'Number of tickets' and the other 'Total cost ($)', then plot each pair as a point.","The points rise to the right: as the number of tickets increases, the total cost increases."],"linesEs":["Cada boleto cuesta $45, así que el costo total es 45 por el número de boletos: 1 boleto son $45, 2 boletos son $90, 3 boletos son $135.","El número de boletos es la variable independiente, así que va primero en cada par ordenado: (1, 45), (2, 90), (3, 135).","Rotulo un eje como «Número de boletos» y el otro como «Costo total ($)», y luego marco cada par como un punto.","Los puntos suben hacia la derecha: conforme aumenta el número de boletos, aumenta el costo total."]};
 </script>
 <script src="/assets/homework/homework-vocab-12619585d8.bundle.js"></script>
-<script src="/assets/homework/homework-core-db79f13e22.bundle.js"></script>
+<script src="/assets/homework/homework-core-b29e8f1a67.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

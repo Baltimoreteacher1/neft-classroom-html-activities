@@ -345,7 +345,7 @@ body[data-family-style] .visual-lab-heading>p,body[data-family-style] .visual-la
 body[data-family-style] .hw-hero-lead,body[data-family-style] .hw-experience-description,body[data-family-style] .hw-route-note,body[data-family-style] .hw-route-chooser>p,body[data-family-style] .hw-route-option { font-size:18px!important; line-height:1.45!important; }
 body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 </style>
-<link rel="stylesheet" href="/assets/homework/homework-layer-c511e92e3d.css">
+<link rel="stylesheet" href="/assets/homework/homework-layer-b6cbb4fbe4.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -398,9 +398,9 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
   try {
     var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (requested === 'en' || requested === 'es') {
+    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
       mode = requested;
-    } else if (saved === 'en' || saved === 'es') {
+    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)
@@ -461,6 +461,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
               <button type="button" class="lang-toggle-btn active" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="true">English</button>
               <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">Español</button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="false">🇺🇸🇪🇸 Bilingual / Bilingüe</button>
             </div>
           </div>
         </div>
@@ -593,6 +594,11 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         </div>
 
         <div class="hw-hud-utility-btns">
+          <div class="hw-hud-lang-group" role="group" aria-label="Language Selector">
+            <button type="button" class="hw-hud-lang-btn is-active" data-lang-mode="en" onclick="setLanguageMode('en')" title="English">English</button>
+            <button type="button" class="hw-hud-lang-btn" data-lang-mode="es" onclick="setLanguageMode('es')" title="Español">Español</button>
+            <button type="button" class="hw-hud-lang-btn" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" title="Bilingual EN+ES">🇺🇸🇪🇸 Bilingual</button>
+          </div>
           <button type="button" class="hw-hud-util-btn" id="hw_vocab_drawer_btn" aria-expanded="false" aria-controls="hw_vocab_drawer" onclick="toggleVocabQuickGlossary()">
             <span aria-hidden="true">📖</span> <span class="lang-en">Key Vocabulary</span><span class="lang-es" lang="es">Vocabulario clave</span>
           </button>
@@ -6674,7 +6680,7 @@ window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Nu
 window.__HW_WORKED__ = {"title":"Watch me","titleEs":"Mírame","lines":["A player scored 3/4 of the points. Percent means out of 100, so I want an equivalent fraction with 100 on the bottom.","What do I multiply the denominator 4 by to get 100? 4 × 25 = 100, so my scale factor is 25.","I have to multiply the top by that same 25: 3 × 25 = 75. So 3/4 = 75/100.","75 out of 100 is 75%. And 75/100 as a decimal is 0.75, because hundredths sit two places after the point.","So 3/4 = 75/100 = 0.75 = 75%. All three name the same score."],"linesEs":["Un jugador anotó 3/4 de los puntos. Porcentaje significa de cada 100, así que quiero una fracción equivalente con 100 abajo.","¿Por cuánto multiplico el denominador 4 para llegar a 100? 4 × 25 = 100, así que mi factor de escala es 25.","Tengo que multiplicar el numerador por ese mismo 25: 3 × 25 = 75. Entonces 3/4 = 75/100.","75 de cada 100 es 75%. Y 75/100 como decimal es 0.75, porque las centésimas están dos lugares después del punto.","Entonces 3/4 = 75/100 = 0.75 = 75%. Las tres formas nombran el mismo puntaje."]};
 </script>
 <script src="/assets/homework/homework-vocab-12619585d8.bundle.js"></script>
-<script src="/assets/homework/homework-core-db79f13e22.bundle.js"></script>
+<script src="/assets/homework/homework-core-b29e8f1a67.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

@@ -2913,6 +2913,7 @@ export function renderWelcomeBanner(config, lessonId) {
             <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
               <button type="button" class="lang-toggle-btn active" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="true">English</button>
               <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">Español</button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="false">🇺🇸🇪🇸 Bilingual / Bilingüe</button>
             </div>
           </div>
         </div>
@@ -10356,7 +10357,7 @@ function syncDocumentLanguage(mode) {
    page still written left-to-right. Removed rather than stubbed, because an
    offer a family cannot use is worse than no offer. */
 function setLanguageMode(mode) {
-  if (mode !== 'en' && mode !== 'es') mode = 'en';
+  if (mode !== 'en' && mode !== 'es' && mode !== 'bilingual') mode = 'en';
   try { localStorage.setItem('hw_lang_mode', mode); } catch(e) {}
   document.body.classList.remove('lang-mode-bilingual', 'lang-mode-en', 'lang-mode-es');
   document.body.classList.add('lang-mode-' + mode);
@@ -10369,6 +10370,11 @@ function setLanguageMode(mode) {
   document.querySelectorAll('.lang-toggle-btn').forEach(function(btn) {
     const active = btn.getAttribute('data-lang-mode') === mode;
     btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+  document.querySelectorAll('.hw-hud-lang-btn').forEach(function(btn) {
+    const active = btn.getAttribute('data-lang-mode') === mode;
+    btn.classList.toggle('is-active', active);
     btn.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
 }
@@ -10800,10 +10806,10 @@ function editParentSignoff() {
    first visit does. Must match the pre-paint bootstrap in generate-homework-html.mjs. */
 function preferredLanguageMode() {
   var requested = new URLSearchParams(location.search).get('lang');
-  if (requested === 'en' || requested === 'es') return requested;
+  if (requested === 'en' || requested === 'es' || requested === 'bilingual') return requested;
   try {
     const saved = localStorage.getItem('hw_lang_mode');
-    if (saved === 'en' || saved === 'es') return saved;
+    if (saved === 'en' || saved === 'es' || saved === 'bilingual') return saved;
   } catch (e) {}
   try {
     const langs = navigator.languages && navigator.languages.length

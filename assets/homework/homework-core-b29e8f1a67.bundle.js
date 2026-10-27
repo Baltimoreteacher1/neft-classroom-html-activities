@@ -902,7 +902,7 @@ function syncDocumentLanguage(mode) {
    page still written left-to-right. Removed rather than stubbed, because an
    offer a family cannot use is worse than no offer. */
 function setLanguageMode(mode) {
-  if (mode !== 'en' && mode !== 'es') mode = 'en';
+  if (mode !== 'en' && mode !== 'es' && mode !== 'bilingual') mode = 'en';
   try { localStorage.setItem('hw_lang_mode', mode); } catch(e) {}
   document.body.classList.remove('lang-mode-bilingual', 'lang-mode-en', 'lang-mode-es');
   document.body.classList.add('lang-mode-' + mode);
@@ -915,6 +915,11 @@ function setLanguageMode(mode) {
   document.querySelectorAll('.lang-toggle-btn').forEach(function(btn) {
     const active = btn.getAttribute('data-lang-mode') === mode;
     btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+  document.querySelectorAll('.hw-hud-lang-btn').forEach(function(btn) {
+    const active = btn.getAttribute('data-lang-mode') === mode;
+    btn.classList.toggle('is-active', active);
     btn.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
 }
@@ -1346,10 +1351,10 @@ function editParentSignoff() {
    first visit does. Must match the pre-paint bootstrap in generate-homework-html.mjs. */
 function preferredLanguageMode() {
   var requested = new URLSearchParams(location.search).get('lang');
-  if (requested === 'en' || requested === 'es') return requested;
+  if (requested === 'en' || requested === 'es' || requested === 'bilingual') return requested;
   try {
     const saved = localStorage.getItem('hw_lang_mode');
-    if (saved === 'en' || saved === 'es') return saved;
+    if (saved === 'en' || saved === 'es' || saved === 'bilingual') return saved;
   } catch (e) {}
   try {
     const langs = navigator.languages && navigator.languages.length
@@ -2453,766 +2458,7 @@ window.addEventListener("afterprint", function () {
 });
 
 
-
-/* ── Inline Parameterized SVG Math Visual Generators (window.FamilyMathSVG) ── */
-window.renderTapeDiagramSVG = function renderTapeDiagramSVG(parts = 4, labels = [], highlightIndex = 0) {
-  const partWeights = Array.isArray(parts)
-    ? parts.map((n) => Math.max(1, Number(n) || 1))
-    : Array.from({ length: Math.max(1, Number(parts) || 4) }, () => 1);
-  const count = partWeights.length;
-  const partLabels = Array.isArray(labels)
-    ? labels
-    : Array.isArray(labels?.parts)
-      ? labels.parts
-      : [];
-  const totalLabel =
-    !Array.isArray(labels) && labels?.total ? String(labels.total) : `Total (${count} parts)`;
-  const captionLabel = !Array.isArray(labels) && labels?.title ? String(labels.title) : "";
-
-  const W = 520;
-  const H = 136;
-  const startX = 36;
-  const totalW = 448;
-  const barY = 44;
-  const barH = 44;
-  const weightSum = partWeights.reduce((a, b) => a + b, 0);
-
-  let cursorX = startX;
-  const rects = partWeights
-    .map((w, idx) => {
-      const segW = (w / weightSum) * totalW;
-      const x = cursorX;
-      cursorX += segW;
-      const isHi = idx === highlightIndex;
-      const fill = isHi ? "#1fa6a2" : idx % 2 === 0 ? "#e3f6f5" : "#f8fafc";
-      const textFill = isHi ? "#ffffff" : "#12355b";
-      const lbl = partLabels[idx] !== undefined ? String(partLabels[idx]) : `Part ${idx + 1}`;
-      return `<g class="hw-svg-tape-part"${isHi ? ' data-highlighted="true"' : ""}>
-    <rect x="${x.toFixed(1)}" y="${barY}" width="${segW.toFixed(1)}" height="${barH}" fill="${fill}" stroke="#12355b" stroke-width="2"/>
-    <text x="${(x + segW / 2).toFixed(1)}" y="${barY + 27}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="${textFill}">${escSvg(fmtMinus(lbl))}</text>
-  </g>`;
-    })
-    .join("\n  ");
-
-  const midX = startX + totalW / 2;
-  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with ${count} parts, ${escSvg(totalLabel)}" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (${count} parts)</title>
-  <path d="M ${startX} 36 L ${startX} 26 L ${midX} 26 L ${midX} 20 L ${midX} 26 L ${startX + totalW} 26 L ${startX + totalW} 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="${midX - 88}" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="${midX}" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">${escSvg(fmtMinus(totalLabel))}</text>
-  ${rects}
-  <rect x="${startX}" y="${barY}" width="${totalW}" height="${barH}" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  ${captionLabel ? `<text x="${midX}" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">${escSvg(fmtMinus(captionLabel))}</text>` : `<text x="${midX}" y="114" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12.5" font-weight="700" fill="#475569">Each equal box represents 1 unit part</text>`}
-</svg>`;
-};
-window.renderNumberLineSVG = function renderNumberLineSVG(min = -5, max = 5, step = 1, points = [], arrows = []) {
-  const lo = Number.isFinite(Number(min)) ? Number(min) : -5;
-  const hi = Number.isFinite(Number(max)) && Number(max) > lo ? Number(max) : lo + 10;
-  const st = Number.isFinite(Number(step)) && Number(step) > 0 ? Number(step) : (hi - lo) / 10;
-  const W = 520;
-  const H = 132;
-  const padX = 44;
-  const lineW = W - padX * 2;
-  const lineY = 76;
-
-  const toX = (val) => {
-    const clamped = Math.max(lo, Math.min(hi, Number(val) || 0));
-    return padX + ((clamped - lo) / (hi - lo)) * lineW;
-  };
-
-  const ticks = [];
-  const maxTicks = 24;
-  const actualStep = (hi - lo) / st > maxTicks ? (hi - lo) / 10 : st;
-  for (let v = lo; v <= hi + actualStep * 0.001; v += actualStep) {
-    const rounded = Math.round(v * 1000) / 1000;
-    const x = toX(rounded);
-    const isZero = Math.abs(rounded) < 1e-6;
-    ticks.push(`<line x1="${x.toFixed(1)}" y1="${lineY - (isZero ? 10 : 7)}" x2="${x.toFixed(1)}" y2="${lineY + (isZero ? 10 : 7)}" stroke="${isZero ? "#0f766e" : "#12355b"}" stroke-width="${isZero ? "2.5" : "1.8"}"/>
-  <text x="${x.toFixed(1)}" y="${lineY + 26}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12.5" font-weight="${isZero ? "800" : "700"}" fill="${isZero ? "#0f766e" : "#1e293b"}">${escSvg(fmtMinus(rounded))}</text>`);
-  }
-
-  const arrowNodes = (Array.isArray(arrows) ? arrows : [])
-    .map((a) => {
-      const x1 = toX(a.from ?? lo);
-      const x2 = toX(a.to ?? hi);
-      const mid = (x1 + x2) / 2;
-      const color = a.color || "#d97706";
-      const dir = x2 >= x1 ? 1 : -1;
-      return `<g class="hw-svg-nl-arrow">
-    <path d="M ${x1.toFixed(1)} ${lineY - 12} Q ${mid.toFixed(1)} ${lineY - 44} ${x2.toFixed(1)} ${lineY - 14}" fill="none" stroke="${color}" stroke-width="2.5"/>
-    <polygon points="${x2.toFixed(1)},${lineY - 12} ${(x2 - dir * 7).toFixed(1)},${lineY - 20} ${(x2 - dir * 3).toFixed(1)},${lineY - 10}" fill="${color}"/>
-    ${a.label ? `<text x="${mid.toFixed(1)}" y="${lineY - 34}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="${color}">${escSvg(fmtMinus(a.label))}</text>` : ""}
-  </g>`;
-    })
-    .join("\n  ");
-
-  const pointNodes = (Array.isArray(points) ? points : [])
-    .map((pt) => {
-      const obj = typeof pt === "object" && pt !== null ? pt : { value: Number(pt) };
-      const x = toX(obj.value);
-      const color = obj.color || "#0f766e";
-      const fill = obj.open ? "#ffffff" : color;
-      const lbl = obj.label !== undefined ? String(obj.label) : fmtMinus(obj.value);
-      return `<g class="hw-svg-nl-point">
-    <circle cx="${x.toFixed(1)}" cy="${lineY}" r="6.5" fill="${fill}" stroke="${color}" stroke-width="3"/>
-    <rect x="${(x - 24).toFixed(1)}" y="${lineY - 34}" width="48" height="20" rx="5" fill="${color}"/>
-    <text x="${x.toFixed(1)}" y="${lineY - 20}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="11.5" font-weight="800" fill="#ffffff">${escSvg(lbl)}</text>
-  </g>`;
-    })
-    .join("\n  ");
-
-  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" class="hw-model-svg hw-number-line-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Number line from ${fmtMinus(lo)} to ${fmtMinus(hi)}" xmlns="http://www.w3.org/2000/svg">
-  <title>Number Line (${fmtMinus(lo)} to ${fmtMinus(hi)})</title>
-  <line x1="${padX - 14}" y1="${lineY}" x2="${W - padX + 14}" y2="${lineY}" stroke="#12355b" stroke-width="2.5"/>
-  <polygon points="${padX - 18},${lineY} ${padX - 8},${lineY - 5} ${padX - 8},${lineY + 5}" fill="#12355b"/>
-  <polygon points="${W - padX + 18},${lineY} ${W - padX + 8},${lineY - 5} ${W - padX + 8},${lineY + 5}" fill="#12355b"/>
-  ${ticks.join("\n  ")}
-  ${arrowNodes}
-  ${pointNodes}
-</svg>`;
-};
-window.renderDoubleNumberLineSVG = function renderDoubleNumberLineSVG(
-  topLabel = "Quantity A",
-  bottomLabel = "Quantity B",
-  ticks = [
-    { top: 0, bottom: 0 },
-    { top: 2, bottom: 5 },
-    { top: 4, bottom: 10 },
-    { top: 6, bottom: 15 },
-  ],
-  missingIndices = [],
-) {
-  const W = 540;
-  const H = 148;
-  const startX = 118;
-  const endX = 496;
-  const topY = 48;
-  const botY = 98;
-  const list =
-    Array.isArray(ticks) && ticks.length >= 2
-      ? ticks
-      : [
-          { top: 0, bottom: 0 },
-          { top: 1, bottom: 3 },
-          { top: 2, bottom: 6 },
-          { top: 3, bottom: 9 },
-        ];
-  const missingSet = new Set(Array.isArray(missingIndices) ? missingIndices : []);
-
-  const tickSvg = list
-    .map((t, i) => {
-      const x = startX + (i / (list.length - 1)) * (endX - startX);
-      const topVal = Array.isArray(t) ? t[0] : t.top;
-      const botVal = Array.isArray(t) ? t[1] : t.bottom;
-      const isMissing = missingSet.has(i);
-      return `<g class="hw-svg-dnl-tick"${isMissing ? ' data-missing="true"' : ""}>
-    <line x1="${x.toFixed(1)}" y1="${topY - 8}" x2="${x.toFixed(1)}" y2="${botY + 8}" stroke="${isMissing ? "#d97706" : "#94a3b8"}" stroke-width="1.5" stroke-dasharray="3 2"/>
-    <line x1="${x.toFixed(1)}" y1="${topY - 7}" x2="${x.toFixed(1)}" y2="${topY + 7}" stroke="#12355b" stroke-width="2.2"/>
-    <line x1="${x.toFixed(1)}" y1="${botY - 7}" x2="${x.toFixed(1)}" y2="${botY + 7}" stroke="#0f766e" stroke-width="2.2"/>
-    <text x="${x.toFixed(1)}" y="${topY - 14}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">${escSvg(fmtMinus(topVal))}</text>
-    ${
-      isMissing
-        ? `<rect x="${(x - 22).toFixed(1)}" y="${botY + 11}" width="44" height="22" rx="5" fill="#fef3c7" stroke="#d97706" stroke-width="1.8"/>
-    <text x="${x.toFixed(1)}" y="${botY + 26}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="900" fill="#b45309">?</text>`
-        : `<text x="${x.toFixed(1)}" y="${botY + 25}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#0f766e">${escSvg(fmtMinus(botVal))}</text>`
-    }
-  </g>`;
-    })
-    .join("\n  ");
-
-  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" class="hw-model-svg hw-double-number-line-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Double number line comparing ${escSvg(topLabel)} and ${escSvg(bottomLabel)}" xmlns="http://www.w3.org/2000/svg">
-  <title>Double Number Line: ${escSvg(topLabel)} and ${escSvg(bottomLabel)}</title>
-  <text x="14" y="${topY + 5}" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">${escSvg(topLabel)}</text>
-  <text x="14" y="${botY + 5}" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#0f766e">${escSvg(bottomLabel)}</text>
-  <line x1="${startX}" y1="${topY}" x2="${endX + 14}" y2="${topY}" stroke="#12355b" stroke-width="2.5"/>
-  <polygon points="${endX + 18},${topY} ${endX + 9},${topY - 5} ${endX + 9},${topY + 5}" fill="#12355b"/>
-  <line x1="${startX}" y1="${botY}" x2="${endX + 14}" y2="${botY}" stroke="#0f766e" stroke-width="2.5"/>
-  <polygon points="${endX + 18},${botY} ${endX + 9},${botY - 5} ${endX + 9},${botY + 5}" fill="#0f766e"/>
-  ${tickSvg}
-</svg>`;
-};
-window.renderCoordinatePlaneSVG = function renderCoordinatePlaneSVG(
-  quadrants = 4,
-  points = [
-    { x: 3, y: 4, label: "A(3, 4)" },
-    { x: -2, y: 3, label: "B(−2, 3)" },
-  ],
-  segments = [],
-) {
-  const W = 320;
-  const H = 260;
-  const cx = quadrants === 1 ? 56 : 160;
-  const cy = quadrants === 1 ? 212 : 130;
-  const maxCoord = 5;
-  const stepPx = quadrants === 1 ? 30 : 20;
-  const minVal = quadrants === 1 ? 0 : -maxCoord;
-
-  const toPx = (x, y) => [cx + x * stepPx, cy - y * stepPx];
-
-  const gridLines = [];
-  for (let i = minVal; i <= maxCoord; i++) {
-    const [gx] = toPx(i, 0);
-    const [, gy] = toPx(0, i);
-    const [xStart] = toPx(minVal, 0);
-    const [xEnd] = toPx(maxCoord, 0);
-    const [, yStart] = toPx(0, minVal);
-    const [, yEnd] = toPx(0, maxCoord);
-    gridLines.push(
-      `<line x1="${gx}" y1="${yEnd}" x2="${gx}" y2="${yStart}" stroke="#e2e8f0" stroke-width="1"/>`,
-      `<line x1="${xStart}" y1="${gy}" x2="${xEnd}" y2="${gy}" stroke="#e2e8f0" stroke-width="1"/>`,
-    );
-  }
-
-  const [axX1] = toPx(minVal, 0);
-  const [axX2] = toPx(maxCoord, 0);
-  const [, axY1] = toPx(0, minVal);
-  const [, axY2] = toPx(0, maxCoord);
-
-  const segSvg = (Array.isArray(segments) ? segments : [])
-    .map((s) => {
-      const [x1, y1] = toPx(s.from?.[0] ?? 0, s.from?.[1] ?? 0);
-      const [x2, y2] = toPx(s.to?.[0] ?? 0, s.to?.[1] ?? 0);
-      const col = s.color || "#d97706";
-      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="2.5" stroke-dasharray="4 2"/>`;
-    })
-    .join("\n  ");
-
-  const ptSvg = (Array.isArray(points) ? points : [])
-    .map((p) => {
-      const [px, py] = toPx(Number(p.x) || 0, Number(p.y) || 0);
-      const col = p.color || "#0f766e";
-      const lbl = p.label || `(${fmtMinus(p.x)}, ${fmtMinus(p.y)})`;
-      return `<g class="hw-svg-cp-point">
-    <circle cx="${px}" cy="${py}" r="5.5" fill="${col}" stroke="#ffffff" stroke-width="2"/>
-    <text x="${px + 8}" y="${py - 7}" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#12355b">${escSvg(lbl)}</text>
-  </g>`;
-    })
-    .join("\n  ");
-
-  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" class="hw-model-svg hw-coordinate-plane-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Coordinate plane (${quadrants === 1 ? "Quadrant I" : "4 quadrants"})" xmlns="http://www.w3.org/2000/svg">
-  <title>Coordinate Plane</title>
-  ${gridLines.join("\n  ")}
-  <line x1="${axX1}" y1="${cy}" x2="${axX2 + 8}" y2="${cy}" stroke="#12355b" stroke-width="2"/>
-  <line x1="${cx}" y1="${axY1}" x2="${cx}" y2="${axY2 - 8}" stroke="#12355b" stroke-width="2"/>
-  <text x="${axX2 + 12}" y="${cy + 4}" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#12355b">x</text>
-  <text x="${cx + 6}" y="${axY2 - 8}" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#12355b">y</text>
-  <text x="${cx - 12}" y="${cy + 14}" font-family="Outfit, system-ui, sans-serif" font-size="11" font-weight="700" fill="#475569">0</text>
-  ${segSvg}
-  ${ptSvg}
-</svg>`;
-};
-window.renderFractionBarOrGridSVG = function renderFractionBarOrGridSVG(rows = 1, cols = 4, shaded = 3, labels = {}) {
-  const rCount = Math.max(1, Math.min(10, Number(rows) || 1));
-  const cCount = Math.max(1, Math.min(20, Number(cols) || 4));
-  const totalCells = rCount * cCount;
-  const shadedCount = Math.max(0, Math.min(totalCells, Number(shaded) ?? 3));
-  const titleText = Array.isArray(labels)
-    ? labels[0] || `${shadedCount} of ${totalCells} shaded`
-    : labels?.title || `${shadedCount} of ${totalCells} equal parts shaded`;
-  const subText = Array.isArray(labels)
-    ? labels[1] || ""
-    : labels?.caption || `${shadedCount}/${totalCells} shaded`;
-
-  const W = 480;
-  const H = rCount === 1 ? 124 : 180;
-  const gridW = rCount === 1 ? 400 : Math.min(360, cCount * 28);
-  const gridH = rCount === 1 ? 44 : Math.min(110, rCount * 22);
-  const startX = (W - gridW) / 2;
-  const startY = 36;
-  const cellW = gridW / cCount;
-  const cellH = gridH / rCount;
-
-  const cells = [];
-  let idx = 0;
-  for (let r = 0; r < rCount; r++) {
-    for (let c = 0; c < cCount; c++) {
-      const isShaded = idx < shadedCount;
-      const x = startX + c * cellW;
-      const y = startY + r * cellH;
-      cells.push(
-        `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${cellW.toFixed(1)}" height="${cellH.toFixed(1)}" fill="${isShaded ? "#1fa6a2" : "#f8fafc"}" stroke="#12355b" stroke-width="1.5"/>`,
-      );
-      idx++;
-    }
-  }
-
-  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" class="hw-model-svg hw-fraction-grid-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Fraction bar or grid: ${escSvg(titleText)}" xmlns="http://www.w3.org/2000/svg">
-  <title>${escSvg(titleText)}</title>
-  <text x="${W / 2}" y="22" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">${escSvg(titleText)}</text>
-  ${cells.join("\n  ")}
-  <rect x="${startX.toFixed(1)}" y="${startY}" width="${gridW.toFixed(1)}" height="${gridH.toFixed(1)}" fill="none" stroke="#12355b" stroke-width="2.2"/>
-  <text x="${W / 2}" y="${startY + gridH + 24}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12.5" font-weight="700" fill="#0f766e">${escSvg(subText)}</text>
-</svg>`;
-};
-window.renderHangerBalanceSVG = function renderHangerBalanceSVG(
-  leftItems = ["x", "+ 4"],
-  rightItems = ["12"],
-  balanced = true,
-) {
-  const W = 480;
-  const H = 156;
-  const cx = W / 2;
-  const leftArr = Array.isArray(leftItems) && leftItems.length ? leftItems : ["x", "4"];
-  const rightArr = Array.isArray(rightItems) && rightItems.length ? rightItems : ["12"];
-  const tilt = balanced ? 0 : 8;
-  const leftY = 48 - tilt;
-  const rightY = 48 + tilt;
-  const leftX = 120;
-  const rightX = 360;
-
-  const renderPanItems = (items, centerX, beamY, isLeft) =>
-    items
-      .map((item, i) => {
-        const str = String(item);
-        const isVar = /[a-zA-Z]/.test(str);
-        const boxW = Math.max(40, str.length * 12 + 20);
-        const totalW = items.length * (boxW + 8) - 8;
-        const bx = centerX - totalW / 2 + i * (boxW + 8);
-        const by = beamY + 34;
-        const fill = isVar ? "#0f766e" : "#fef3c7";
-        const stroke = isVar ? "#12355b" : "#d97706";
-        const textCol = isVar ? "#ffffff" : "#92400e";
-        return `<g class="hw-svg-hanger-item" data-side="${isLeft ? "left" : "right"}">
-      <line x1="${(bx + boxW / 2).toFixed(1)}" y1="${beamY}" x2="${(bx + boxW / 2).toFixed(1)}" y2="${by}" stroke="#475569" stroke-width="1.8"/>
-      <rect x="${bx.toFixed(1)}" y="${by}" width="${boxW}" height="34" rx="${isVar ? 8 : 17}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
-      <text x="${(bx + boxW / 2).toFixed(1)}" y="${by + 22}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="${textCol}">${escSvg(fmtMinus(str))}</text>
-    </g>`;
-      })
-      .join("\n  ");
-
-  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" class="hw-model-svg hw-hanger-balance-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Hanger balance diagram: left side ${escSvg(leftArr.join(" "))} ${balanced ? "equals" : "compared to"} right side ${escSvg(rightArr.join(" "))}" xmlns="http://www.w3.org/2000/svg">
-  <title>Hanger Balance (${balanced ? "Balanced =" : "Tilted"})</title>
-  <line x1="${cx}" y1="10" x2="${cx}" y2="28" stroke="#12355b" stroke-width="3"/>
-  <polygon points="${cx},26 ${cx - 18},48 ${cx + 18},48" fill="#e3f6f5" stroke="#12355b" stroke-width="2.2"/>
-  <line x1="${leftX}" y1="${leftY}" x2="${rightX}" y2="${rightY}" stroke="#12355b" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="${cx}" cy="48" r="6" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
-  ${renderPanItems(leftArr, leftX, leftY, true)}
-  ${renderPanItems(rightArr, rightX, rightY, false)}
-  <text x="${cx}" y="138" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">${balanced ? "Balanced: Left Side = Right Side (do the same operation to both sides)" : "Unbalanced inequality comparison"}</text>
-</svg>`;
-};
-function escSvg(str) {
-  return String(str == null ? '' : str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-function fmtMinus(val) {
-  return String(val == null ? '' : val).replace(/^-/, '−');
-}
-window.FamilyMathSVG = {
-  renderTapeDiagramSVG: window.renderTapeDiagramSVG,
-  renderNumberLineSVG: window.renderNumberLineSVG,
-  renderDoubleNumberLineSVG: window.renderDoubleNumberLineSVG,
-  renderCoordinatePlaneSVG: window.renderCoordinatePlaneSVG,
-  renderFractionBarOrGridSVG: window.renderFractionBarOrGridSVG,
-  renderHangerBalanceSVG: window.renderHangerBalanceSVG
-};
-
-
-/* ============================================================
-   FAMILY CO-LEARNING ENGINE — CLIENT CONTROLLER & DIAGNOSTICS
-   ============================================================ */
-(function () {
-  var COLEARN_LOG = [];
-  function logCoLearn(event, detail) {
-    var entry = { ts: new Date().toISOString(), event: event, detail: detail || {} };
-    COLEARN_LOG.push(entry);
-    window.__HW_COLEARN_LOG__ = COLEARN_LOG;
-  }
-
-  window.setHomeworkPersona = function (mode) {
-    var clean = mode === 'copilot' ? 'copilot' : 'student';
-    document.body.setAttribute('data-persona-mode', clean);
-    document.querySelectorAll('[data-persona-btn]').forEach(function (btn) {
-      var active = btn.getAttribute('data-persona-btn') === clean;
-      btn.classList.toggle('is-active', active);
-      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-    });
-    if (clean === 'copilot') {
-      var grownup = document.getElementById('hw_grownup');
-      if (grownup) grownup.open = true;
-    }
-    try {
-      localStorage.setItem('hw_persona_' + (window.LESSON_ID || 'default'), clean);
-    } catch (e) {}
-    logCoLearn('persona_change', { mode: clean });
-  };
-
-  window.toggleVocabQuickGlossary = function () {
-    var drawer = document.getElementById('hw_vocab_drawer');
-    var btn = document.getElementById('hw_vocab_drawer_btn');
-    if (!drawer) return;
-    var willOpen = drawer.hidden;
-    drawer.hidden = !willOpen;
-    if (btn) btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-    logCoLearn('glossary_toggle', { open: willOpen });
-  };
-
-  window.setVocabDrawerLang = function (lang) {
-    var drawer = document.getElementById('hw_vocab_drawer');
-    if (!drawer) return;
-    var clean = (lang === 'es' || lang === 'both') ? lang : 'en';
-    drawer.setAttribute('data-glossary-lang', clean);
-    ['en', 'es', 'bi'].forEach(function (k) {
-      var b = document.getElementById('hw_vocab_lang_' + k);
-      if (b) {
-        var match = (k === 'bi' && clean === 'both') || k === clean;
-        b.classList.toggle('is-active', match);
-      }
-    });
-    logCoLearn('glossary_lang', { lang: clean });
-  };
-
-  window.toggleHomeworkTheme = function () {
-    var root = document.documentElement;
-    var current = root.getAttribute('data-theme') || 'light';
-    var next = current === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', next);
-    var btn = document.getElementById('hw_theme_toggle_btn');
-    if (btn) btn.setAttribute('aria-pressed', next === 'dark' ? 'true' : 'false');
-    try {
-      localStorage.setItem('hw_theme_pref', next);
-    } catch (e) {}
-    logCoLearn('theme_toggle', { theme: next });
-  };
-
-  window.checkTransferProblem = function (btn, isCorrect) {
-    if (!btn) return;
-    var group = btn.closest('.hw-transfer-choices');
-    if (group) {
-      group.querySelectorAll('.hw-transfer-choice-btn').forEach(function (b) {
-        b.classList.remove('is-correct', 'is-incorrect');
-      });
-    }
-    btn.classList.add(isCorrect ? 'is-correct' : 'is-incorrect');
-    var fb = document.getElementById('hw_transfer_feedback');
-    if (fb) fb.hidden = false;
-    logCoLearn('transfer_check', { correct: Boolean(isCorrect) });
-  };
-
-  window.checkSpotTheGlitch = function (btn, isGlitch) {
-    if (!btn) return;
-    var group = btn.closest('.hw-glitch-steps');
-    if (group) {
-      group.querySelectorAll('.hw-glitch-step-btn').forEach(function (b) {
-        b.classList.remove('is-correct', 'is-incorrect');
-      });
-    }
-    btn.classList.add(isGlitch ? 'is-correct' : 'is-incorrect');
-    var fb = document.getElementById('hw_glitch_feedback');
-    if (fb) fb.hidden = false;
-    logCoLearn('spot_glitch', { foundGlitch: Boolean(isGlitch) });
-  };
-
-  window.checkSpiralRemember = function (btn, itemIdx, isCorrect) {
-    if (!btn) return;
-    var box = document.getElementById('hw_spiral_item_' + itemIdx);
-    if (box) {
-      box.querySelectorAll('.hw-spiral-opt-btn').forEach(function (b) {
-        b.classList.remove('is-correct', 'is-incorrect');
-      });
-    }
-    btn.classList.add(isCorrect ? 'is-correct' : 'is-incorrect');
-    var exp = document.getElementById('hw_spiral_exp_' + itemIdx);
-    if (exp) exp.hidden = false;
-    logCoLearn('spiral_check', { itemIdx: itemIdx, correct: Boolean(isCorrect) });
-  };
-
-  window.resetMatchingProblem = function (pIdx) {
-    var sec = document.getElementById('problem_' + pIdx);
-    if (!sec) return;
-    sec.classList.remove('correct', 'incorrect');
-    sec.querySelectorAll('select.matching-select').forEach(function (sel) {
-      sel.value = '';
-      sel.classList.remove('is-correct', 'is-incorrect');
-    });
-    sec.querySelectorAll('.feedback-badge').forEach(function (b) {
-      b.className = 'feedback-badge';
-    });
-    var res = document.getElementById('problem_result_' + pIdx);
-    if (res) res.textContent = '';
-    if (typeof saveState === 'function') saveState();
-    if (typeof updateProgress === 'function') updateProgress();
-    logCoLearn('reset_matching', { pIdx: pIdx });
-  };
-
-  /* Click-to-select / click-to-place fallback for .drag-order-row */
-  function installDragOrderTapFallback() {
-    var selectedRow = null;
-    document.querySelectorAll('.drag-order-list').forEach(function (list) {
-      if (list.dataset.tapFallbackBound) return;
-      list.dataset.tapFallbackBound = '1';
-      list.addEventListener('click', function (e) {
-        if (e.target.closest('button')) return;
-        var row = e.target.closest('.drag-order-row');
-        if (!row) return;
-        if (!selectedRow) {
-          selectedRow = row;
-          row.classList.add('is-tap-selected');
-        } else if (selectedRow === row) {
-          row.classList.remove('is-tap-selected');
-          selectedRow = null;
-        } else {
-          var parent = row.parentNode;
-          if (parent === selectedRow.parentNode) {
-            var rows = Array.prototype.slice.call(parent.querySelectorAll('.drag-order-row'));
-            var fromIdx = rows.indexOf(selectedRow);
-            var toIdx = rows.indexOf(row);
-            if (fromIdx < toIdx) parent.insertBefore(selectedRow, row.nextSibling);
-            else parent.insertBefore(selectedRow, row);
-            Array.prototype.slice.call(parent.querySelectorAll('.drag-order-row')).forEach(function (r, idx) {
-              var num = r.querySelector('.drag-order-num');
-              if (num) num.textContent = String(idx + 1);
-            });
-            if (typeof saveState === 'function') saveState();
-            if (typeof updateProgress === 'function') updateProgress();
-          }
-          selectedRow.classList.remove('is-tap-selected');
-          selectedRow = null;
-        }
-      });
-    });
-  }
-
-  window.updateCoLearningHud = function () {
-    var allProbs = document.querySelectorAll('#hw_panel_check .problems-container:first-of-type > .problem-section');
-    if (!allProbs.length) allProbs = document.querySelectorAll('.problem-section');
-    var total = allProbs.length;
-    var done = 0;
-    var correctCount = 0;
-    var checkedCount = 0;
-    allProbs.forEach(function (sec) {
-      var isCor = sec.classList.contains('correct') || sec.classList.contains('reviewed');
-      var isInc = sec.classList.contains('incorrect');
-      if (isCor) {
-        done++;
-        correctCount++;
-        checkedCount++;
-      } else if (isInc) {
-        checkedCount++;
-      }
-    });
-    var acc = checkedCount > 0 ? Math.round((correctCount / checkedCount) * 100) : 100;
-    var streak = typeof currentStreak === 'number' ? currentStreak : correctCount;
-    var compEl = document.getElementById('hw_hud_completed');
-    var accEl = document.getElementById('hw_hud_accuracy');
-    var strEl = document.getElementById('hw_hud_streak');
-    if (compEl) compEl.textContent = done + '/' + total;
-    if (accEl) accEl.textContent = acc + '%';
-    if (strEl) strEl.textContent = String(streak);
-    try {
-      localStorage.setItem(
-        'hw_mastery_' + (window.LESSON_ID || 'default'),
-        JSON.stringify({ completed: done, total: total, accuracy: acc, streak: streak })
-      );
-    } catch (e) {}
-  };
-
-  /* Click-to-enlarge lightbox for all images and math visuals */
-  var _hwLightbox = null;
-  function ensureHomeworkLightbox() {
-    if (_hwLightbox) return _hwLightbox;
-    var lb = document.createElement('dialog');
-    lb.className = 'hw-lightbox';
-    lb.setAttribute('aria-label', 'Enlarged visual');
-    var big = document.createElement('img');
-    big.className = 'hw-lightbox-img';
-    big.alt = '';
-    var nodeHost = document.createElement('div');
-    nodeHost.className = 'hw-lightbox-node';
-    nodeHost.hidden = true;
-    var close = document.createElement('button');
-    close.type = 'button';
-    close.className = 'hw-lightbox-close';
-    close.setAttribute('aria-label', 'Close enlarged visual');
-    close.textContent = '✕';
-    lb.appendChild(big);
-    lb.appendChild(nodeHost);
-    lb.appendChild(close);
-    document.body.appendChild(lb);
-
-    var lastFocus = null;
-    var open = false;
-    var modalCapable = typeof lb.showModal === 'function' && typeof lb.close === 'function';
-
-    function finish() {
-      open = false;
-      document.body.classList.remove('hw-lightbox-open');
-      big.removeAttribute('src');
-      nodeHost.replaceChildren();
-      nodeHost.hidden = true;
-      if (lastFocus && lastFocus.focus) {
-        try { lastFocus.focus(); } catch (e) {}
-      }
-      lastFocus = null;
-    }
-
-    function hide() {
-      if (!open) return;
-      if (modalCapable) { lb.close(); return; }
-      lb.removeAttribute('open');
-      lb.hidden = true;
-      finish();
-    }
-
-    close.addEventListener('click', hide);
-    big.addEventListener('click', hide);
-    nodeHost.addEventListener('click', hide);
-    lb.addEventListener('click', function (e) { if (e.target === lb) hide(); });
-    if (modalCapable) lb.addEventListener('close', finish);
-    else {
-      document.addEventListener('keydown', function (e) {
-        if (open && e.key === 'Escape') hide();
-      });
-    }
-
-    _hwLightbox = {
-      openImage: function (src, alt, opener) {
-        if (!src) return;
-        nodeHost.replaceChildren();
-        nodeHost.hidden = true;
-        big.hidden = false;
-        big.src = src;
-        big.alt = alt || '';
-        lastFocus = opener || null;
-        open = true;
-        document.body.classList.add('hw-lightbox-open');
-        if (modalCapable) { if (!lb.open) lb.showModal(); }
-        else { lb.hidden = false; lb.setAttribute('open', ''); }
-        setTimeout(function () { try { close.focus(); } catch (e) {} }, 0);
-      },
-      openNode: function (node, label, opener) {
-        if (!node || typeof node.cloneNode !== 'function') return;
-        var clone = node.cloneNode(true);
-        clone.removeAttribute('id');
-        clone.removeAttribute('tabindex');
-        clone.classList.remove('is-zoomable');
-        big.hidden = true;
-        nodeHost.replaceChildren(clone);
-        nodeHost.hidden = false;
-        lastFocus = opener || null;
-        open = true;
-        document.body.classList.add('hw-lightbox-open');
-        if (modalCapable) { if (!lb.open) lb.showModal(); }
-        else { lb.hidden = false; lb.setAttribute('open', ''); }
-        setTimeout(function () { try { close.focus(); } catch (e) {} }, 0);
-      }
-    };
-    return _hwLightbox;
-  }
-
-  function wireElementZoom(el, isSvg) {
-    if (!el || el.dataset.zoomable === '1') return;
-    if (el.closest('.hw-lightbox, button, a, [data-no-zoom]')) return;
-    el.dataset.zoomable = '1';
-    el.classList.add('is-zoomable');
-    el.setAttribute('tabindex', '0');
-    if (!el.getAttribute('title')) el.setAttribute('title', 'Click to enlarge / Toca para ampliar');
-    function trigger(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      var lb = ensureHomeworkLightbox();
-      if (isSvg) {
-        var label = el.getAttribute('aria-label') || (el.querySelector('title') && el.querySelector('title').textContent) || 'Enlarged math visual';
-        lb.openNode(el, label, el);
-      } else {
-        var src = el.currentSrc || el.getAttribute('src');
-        lb.openImage(src, el.alt || '', el);
-      }
-    }
-    el.addEventListener('click', trigger);
-    el.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') trigger(e);
-    });
-  }
-
-  function installHomeworkImageZoom() {
-    function wireAll(root) {
-      if (!root || typeof root.querySelectorAll !== 'function') return;
-      root.querySelectorAll('img:not([data-no-zoom])').forEach(function (img) {
-        var w = Number(img.getAttribute('width'));
-        var h = Number(img.getAttribute('height'));
-        if ((w && w < 44) || (h && h < 44)) return;
-        wireElementZoom(img, false);
-      });
-      root.querySelectorAll('.hw-colearn-svg-stage svg, .problem-visual svg, .coach-step-visual svg, .workspace-svg-wrapper svg, .coach-ladder-step svg').forEach(function (svg) {
-        wireElementZoom(svg, true);
-      });
-    }
-    wireAll(document.body);
-    if (typeof MutationObserver !== 'undefined') {
-      var obs = new MutationObserver(function (mutations) {
-        mutations.forEach(function (m) {
-          Array.prototype.slice.call(m.addedNodes).forEach(function (node) {
-            if (node.nodeType === 1) wireAll(node);
-          });
-        });
-      });
-      obs.observe(document.body, { childList: true, subtree: true });
-    }
-  }
-
-  window.runHomeworkDiagnostics = function () {
-    var svgs = Array.prototype.slice.call(document.querySelectorAll('svg'));
-    var validSvgs = svgs.filter(function (s) {
-      return s.getAttribute('viewBox') || (s.getAttribute('width') && s.getAttribute('height'));
-    });
-    var problems = document.querySelectorAll('.problem-section');
-    var answerKeys = document.querySelectorAll('.answer-key-drawer, .hw-copilot-solution-key');
-    var report = {
-      ok: validSvgs.length > 0 && problems.length > 0 && answerKeys.length > 0,
-      lessonId: window.LESSON_ID || 'unknown',
-      personaMode: document.body.getAttribute('data-persona-mode') || 'student',
-      svgCount: svgs.length,
-      validSvgCount: validSvgs.length,
-      problemCount: problems.length,
-      answerKeyCount: answerKeys.length,
-      hasHud: Boolean(document.getElementById('hw_colearn_hud')),
-      hasBridge60s: Boolean(document.getElementById('hw_family_bridge_60s')),
-      hasWorkedPartner: Boolean(document.getElementById('hw_worked_partner_example')),
-      hasSpotTheGlitch: Boolean(document.getElementById('hw_spot_the_glitch')),
-      hasPrintFooter: Boolean(document.getElementById('hw_print_socratic_footer'))
-    };
-    window.__HW_DIAGNOSTICS_REPORT__ = report;
-    document.body.setAttribute('data-diagnostics-ok', report.ok ? 'true' : 'false');
-    logCoLearn('diagnostics_run', report);
-    return report;
-  };
-
-  function bootCoLearningEngine() {
-    document.body.setAttribute('data-persona-mode', 'student');
-    try {
-      var savedPersona = localStorage.getItem('hw_persona_' + (window.LESSON_ID || 'default'));
-      if (savedPersona === 'copilot') window.setHomeworkPersona('copilot');
-      var savedTheme = localStorage.getItem('hw_theme_pref');
-      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.setAttribute('data-theme', 'dark');
-      }
-    } catch (e) {}
-
-    installDragOrderTapFallback();
-    installHomeworkImageZoom();
-    window.updateCoLearningHud();
-
-    var checkPanel = document.getElementById('hw_panel_check');
-    if (checkPanel && typeof MutationObserver !== 'undefined') {
-      var obs = new MutationObserver(function () {
-        window.updateCoLearningHud();
-      });
-      obs.observe(checkPanel, { attributes: true, subtree: true, attributeFilter: ['class'] });
-    }
-
-    if (window.location && window.location.search && window.location.search.indexOf('diagnostics=true') !== -1) {
-      window.runHomeworkDiagnostics();
-    }
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bootCoLearningEngine);
-  } else {
-    bootCoLearningEngine();
-  }
-})();
-
-/* Helper: smooth scroll to element accounting for sticky top bar and display:contents */
+/* Helper: smooth scroll to element accounting for sticky rail and display:contents */
 function scrollStudioTo(el) {
   if (!el) return;
   var node = el;
@@ -3222,10 +2468,8 @@ function scrollStudioTo(el) {
   if (!node) node = el;
   var det = node.closest('details');
   if (det && !det.open) det.open = true;
-  var chrome = document.querySelector('.homework-tab-chrome');
-  var headerH = chrome ? chrome.offsetHeight : 90;
   var rect = node.getBoundingClientRect();
-  var targetY = window.pageYOffset + rect.top - headerH - 12;
+  var targetY = window.pageYOffset + rect.top - 24;
   window.scrollTo({
     top: Math.max(0, targetY),
     behavior: 'smooth'
@@ -3332,8 +2576,6 @@ var STUDIO_SUB_CONFIGS = {
     { id: 'talk', icon: '💬', en: '60-Sec Talk', es: 'Charla 60s', sel: '#hw_dinner_talk, .hw-dinner-talk, .dinner-talk-card' },
     { id: 'idea', icon: '💡', en: 'Big Idea', es: 'Idea principal', sel: '#hw_learn_idea .family-big-idea-piece, #hw_learn_idea > .section-title, #hw_learn_idea, .big-idea, .key-idea-banner' },
     { id: 'try', icon: '👆', en: 'Interactive Model', es: 'Modelo interactivo', sel: '#hw_learn_try, .family-visual-lab, .interactive-visual-host' },
-    { id: 'bridge60', icon: '🌉', en: '60-Sec Bridge', es: 'Puente 60s', sel: '#hw_family_bridge_60s' },
-    { id: 'partner', icon: '🤝', en: 'Worked Example', es: 'Ejemplo resuelto', sel: '#hw_worked_partner_example' },
     { id: 'quick', icon: '❓', en: 'Try Question', es: 'Pregunta rápida', sel: '#hw_learn_quick, .learn-quick-check' }
   ],
   words: [
@@ -3353,41 +2595,18 @@ var STUDIO_SUB_CONFIGS = {
   ]
 };
 
-function updateActiveSubRail(activeTabId) {
-  if (!activeTabId) {
-    var activeBtn = document.querySelector('.homework-tab-btn.is-active');
-    activeTabId = (activeBtn && activeBtn.dataset.tab) || document.body.dataset.activeTab || 'learn';
-  }
-  document.querySelectorAll('.hw-sub-rail').forEach(function (r) {
-    var isActive = r.id === ('hw_sub_' + activeTabId);
-    r.classList.toggle('is-active-rail', isActive);
-  });
-}
-
 function initStudioSubRail() {
-  var chrome = document.querySelector('.homework-tab-chrome');
-  var tabBar = document.querySelector('.homework-tab-bar');
-  if (!chrome || !tabBar) return;
-
-  var subBar = document.getElementById('hw_sub_bar');
-  if (!subBar) {
-    subBar = document.createElement('div');
-    subBar.id = 'hw_sub_bar';
-    subBar.className = 'hw-sub-bar-container';
-    chrome.appendChild(subBar);
-  }
-
   var tabBtns = document.querySelectorAll('.homework-tab-btn');
   if (!tabBtns.length) return;
 
   tabBtns.forEach(function (btn) {
     var tabId = btn.dataset.tab;
-    var rail = document.getElementById('hw_sub_' + tabId);
-    if (!rail) {
+    var rail = btn.nextElementSibling;
+    if (!rail || !rail.classList.contains('hw-sub-rail')) {
       rail = document.createElement('div');
       rail.className = 'hw-sub-rail';
       rail.id = 'hw_sub_' + tabId;
-      subBar.appendChild(rail);
+      btn.parentNode.insertBefore(rail, btn.nextSibling);
     }
 
     if (tabId === 'check') {
@@ -3498,8 +2717,6 @@ function initStudioSubRail() {
       });
     }
   });
-
-  updateActiveSubRail();
 }
 
 /* Install tab scrolling: clicking any tab button smoothly scrolls to the top of that panel */
@@ -3510,7 +2727,6 @@ function installStudioTabScroll() {
   document.querySelectorAll('.homework-tab-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var tabId = btn.dataset.tab;
-      updateActiveSubRail(tabId);
       window.requestAnimationFrame(function () {
         var panel = document.getElementById('hw_panel_' + tabId);
         if (panel) scrollStudioTo(panel);
@@ -3523,7 +2739,6 @@ function installStudioTabScroll() {
   if (typeof origSwitchHomeworkTab === 'function') {
     window.switchHomeworkTab = function (tabId, opts) {
       origSwitchHomeworkTab(tabId);
-      updateActiveSubRail(tabId);
       if (window.hwTabsBooted && (!opts || !opts.preventScroll)) {
         window.requestAnimationFrame(function () {
           var panel = document.getElementById('hw_panel_' + tabId);
@@ -3532,12 +2747,6 @@ function installStudioTabScroll() {
       }
     };
   }
-
-  // Observe active tab changes
-  var bodyObs = new MutationObserver(function () {
-    updateActiveSubRail();
-  });
-  bodyObs.observe(document.body, { attributes: true, attributeFilter: ['data-active-tab'] });
 }
 
 /* Install scroll-spy: update active sub-button as student scrolls through sections */
@@ -3584,12 +2793,10 @@ function installStudioScrollSpy() {
 
     if (!targets.length) return;
 
-    var chrome = document.querySelector('.homework-tab-chrome');
-    var headerH = chrome ? chrome.offsetHeight : 90;
     var currentBtn = targets[0].btn;
     for (var i = 0; i < targets.length; i++) {
       var top = targets[i].el.getBoundingClientRect().top;
-      if (top <= headerH + 60) {
+      if (top <= 140) {
         currentBtn = targets[i].btn;
       } else {
         break;

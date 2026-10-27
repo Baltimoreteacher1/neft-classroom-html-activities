@@ -113,7 +113,7 @@ test("Part 1 vs Part 2 cognitive differentiation and Dual-Persona Mode Switcher 
   }
 });
 
-test("Co-Learning CSS and JS include @media print rules, dark theme support, and diagnostics validator", () => {
+test("Co-Learning CSS and JS include @media print rules, dark theme support, light default, and diagnostics validator", () => {
   assert.match(CO_LEARNING_CSS, /@media print/);
   assert.match(CO_LEARNING_CSS, /\.hw-print-socratic-footer/);
   assert.match(CO_LEARNING_CSS, /html\[data-theme="dark"\]/);
@@ -126,4 +126,6 @@ test("Co-Learning CSS and JS include @media print rules, dark theme support, and
   assert.match(CO_LEARNING_JS, /window\.toggleHomeworkTheme/);
   assert.match(CO_LEARNING_JS, /installHomeworkImageZoom/);
   assert.match(CO_LEARNING_JS, /ensureHomeworkLightbox/);
+  assert.match(CO_LEARNING_JS, /data-theme['"],\s*['"]light['"]/);
+  assert.doesNotMatch(CO_LEARNING_JS, /prefers-color-scheme:\s*dark/);
 });

@@ -305,7 +305,7 @@ header.homework-header,
   margin-bottom: 3px;
 }
 </style>
-<link rel="stylesheet" href="/assets/homework/homework-layer-675a7fbccf.css">
+<link rel="stylesheet" href="/assets/homework/homework-layer-5570bdda07.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -358,9 +358,9 @@ header.homework-header,
   try {
     var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (requested === 'en' || requested === 'es') {
+    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
       mode = requested;
-    } else if (saved === 'en' || saved === 'es') {
+    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)
@@ -421,6 +421,7 @@ header.homework-header,
             <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
               <button type="button" class="lang-toggle-btn active" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="true">English</button>
               <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">Español</button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="false">🇺🇸🇪🇸 Bilingual / Bilingüe</button>
             </div>
           </div>
         </div>
@@ -546,6 +547,11 @@ header.homework-header,
         </div>
 
         <div class="hw-hud-utility-btns">
+          <div class="hw-hud-lang-group" role="group" aria-label="Language Selector">
+            <button type="button" class="hw-hud-lang-btn is-active" data-lang-mode="en" onclick="setLanguageMode('en')" title="English">English</button>
+            <button type="button" class="hw-hud-lang-btn" data-lang-mode="es" onclick="setLanguageMode('es')" title="Español">Español</button>
+            <button type="button" class="hw-hud-lang-btn" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" title="Bilingual EN+ES">🇺🇸🇪🇸 Bilingual</button>
+          </div>
           <button type="button" class="hw-hud-util-btn" id="hw_vocab_drawer_btn" aria-expanded="false" aria-controls="hw_vocab_drawer" onclick="toggleVocabQuickGlossary()">
             <span aria-hidden="true">📖</span> <span class="lang-en">Key Vocabulary</span><span class="lang-es" lang="es">Vocabulario clave</span>
           </button>
@@ -6995,7 +7001,7 @@ window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Nu
 window.__HW_WORKED__ = {"title":"Watch me","titleEs":"Mírame","lines":["I want to cut a 3-foot strip of tape into 1/4-foot pieces, so I write 3 ÷ 1/4. It asks: how many 1/4-foot pieces fit in 3 feet?","Each foot holds 4 quarter-foot pieces, so 3 feet hold 3 × 4 = 12 pieces.","That is why the shortcut works: dividing by 1/4 gives the same answer as multiplying by its reciprocal, 4/1. So 3 ÷ 1/4 = 3/1 × 4/1 = 12. (Some people call this Keep, Change, Flip.)","Check by multiplying: 12 pieces × 1/4 foot = 12/4 = 3 feet. So 3 ÷ 1/4 = 12 pieces.","One more move to know: mixed number → improper fraction: multiply the bottom by the whole number, add the top, keep the same bottom. 3 1/2 → (2 × 3) + 1 = 7 → 7/2."],"linesEs":["Quiero cortar una tira de cinta de 3 pies en piezas de 1/4 de pie, así que escribo 3 ÷ 1/4. Pregunta: ¿cuántas piezas de 1/4 de pie caben en 3 pies?","Cada pie tiene 4 piezas de un cuarto de pie, así que 3 pies tienen 3 × 4 = 12 piezas.","Por eso funciona el atajo: dividir entre 1/4 da lo mismo que multiplicar por su recíproco, 4/1. Así que 3 ÷ 1/4 = 3/1 × 4/1 = 12. (Hay quien lo llama Conserva, Cambia, Voltea.)","Comprueba multiplicando: 12 piezas × 1/4 de pie = 12/4 = 3 pies. Así que 3 ÷ 1/4 = 12 piezas.","Un movimiento más que debes saber: número mixto → fracción impropia: multiplica el denominador por el entero, suma el numerador y conserva el mismo denominador. 3 1/2 → (2 × 3) + 1 = 7 → 7/2."]};
 </script>
 <script src="/assets/homework/homework-vocab-12619585d8.bundle.js"></script>
-<script src="/assets/homework/homework-core-db79f13e22.bundle.js"></script>
+<script src="/assets/homework/homework-core-b29e8f1a67.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

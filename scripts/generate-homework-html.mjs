@@ -4196,9 +4196,9 @@ ${CALM_CSS}
   try {
     var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (requested === 'en' || requested === 'es') {
+    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
       mode = requested;
-    } else if (saved === 'en' || saved === 'es') {
+    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)

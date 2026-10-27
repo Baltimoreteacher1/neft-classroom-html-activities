@@ -911,6 +911,11 @@ export function renderCoLearningHud(config = {}, lessonId = "", vocab = []) {
         </div>
 
         <div class="hw-hud-utility-btns">
+          <div class="hw-hud-lang-group" role="group" aria-label="Language Selector">
+            <button type="button" class="hw-hud-lang-btn is-active" data-lang-mode="en" onclick="setLanguageMode('en')" title="English">English</button>
+            <button type="button" class="hw-hud-lang-btn" data-lang-mode="es" onclick="setLanguageMode('es')" title="Español">Español</button>
+            <button type="button" class="hw-hud-lang-btn" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" title="Bilingual EN+ES">🇺🇸🇪🇸 Bilingual</button>
+          </div>
           <button type="button" class="hw-hud-util-btn" id="hw_vocab_drawer_btn" aria-expanded="false" aria-controls="hw_vocab_drawer" onclick="toggleVocabQuickGlossary()">
             <span aria-hidden="true">📖</span> ${bi("Key Vocabulary", "Vocabulario clave")}
           </button>
@@ -1349,8 +1354,50 @@ html[data-theme="dark"] .hw-persona-switcher {
   border-color: #334155;
 }
 
+.hw-hud-lang-group {
+  display: inline-flex;
+  gap: 4px;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+}
+
+html[data-theme="dark"] .hw-hud-lang-group {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.hw-hud-lang-btn {
+  border: 1px solid transparent;
+  background: transparent;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  min-height: 38px;
+  min-width: 38px;
+}
+
+.hw-hud-lang-btn.is-active {
+  background: #12355b;
+  color: #ffffff !important;
+}
+
+html[data-theme="dark"] .hw-hud-lang-btn {
+  color: #cbd5e1;
+}
+
+html[data-theme="dark"] .hw-hud-lang-btn.is-active {
+  background: #38bdf8;
+  color: #0f172a !important;
+}
+
 .hw-persona-btn,
 .hw-hud-util-btn,
+.hw-hud-lang-btn,
 .hw-vocab-lang-btn,
 .hw-transfer-choice-btn,
 .hw-glitch-step-btn,
@@ -2304,8 +2351,14 @@ export const CO_LEARNING_JS = `
       var savedPersona = localStorage.getItem('hw_persona_' + (window.LESSON_ID || 'default'));
       if (savedPersona === 'copilot') window.setHomeworkPersona('copilot');
       var savedTheme = localStorage.getItem('hw_theme_pref');
-      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      if (savedTheme === 'dark') {
         document.documentElement.setAttribute('data-theme', 'dark');
+        var themeBtn = document.getElementById('hw_theme_toggle_btn');
+        if (themeBtn) themeBtn.setAttribute('aria-pressed', 'true');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        var themeBtnLight = document.getElementById('hw_theme_toggle_btn');
+        if (themeBtnLight) themeBtnLight.setAttribute('aria-pressed', 'false');
       }
     } catch (e) {}
 

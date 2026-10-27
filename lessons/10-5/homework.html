@@ -305,7 +305,7 @@ header.homework-header,
   margin-bottom: 3px;
 }
 </style>
-<link rel="stylesheet" href="/assets/homework/homework-layer-675a7fbccf.css">
+<link rel="stylesheet" href="/assets/homework/homework-layer-5570bdda07.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -358,9 +358,9 @@ header.homework-header,
   try {
     var requested = new URLSearchParams(location.search).get('lang');
     var saved = localStorage.getItem('hw_lang_mode');
-    if (requested === 'en' || requested === 'es') {
+    if (requested === 'en' || requested === 'es' || requested === 'bilingual') {
       mode = requested;
-    } else if (saved === 'en' || saved === 'es') {
+    } else if (saved === 'en' || saved === 'es' || saved === 'bilingual') {
       mode = saved;
     } else {
       var langs = (navigator.languages && navigator.languages.length)
@@ -421,6 +421,7 @@ header.homework-header,
             <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
               <button type="button" class="lang-toggle-btn active" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="true">English</button>
               <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">Español</button>
+              <button type="button" class="lang-toggle-btn" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="false">🇺🇸🇪🇸 Bilingual / Bilingüe</button>
             </div>
           </div>
         </div>
@@ -540,6 +541,11 @@ header.homework-header,
         </div>
 
         <div class="hw-hud-utility-btns">
+          <div class="hw-hud-lang-group" role="group" aria-label="Language Selector">
+            <button type="button" class="hw-hud-lang-btn is-active" data-lang-mode="en" onclick="setLanguageMode('en')" title="English">English</button>
+            <button type="button" class="hw-hud-lang-btn" data-lang-mode="es" onclick="setLanguageMode('es')" title="Español">Español</button>
+            <button type="button" class="hw-hud-lang-btn" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" title="Bilingual EN+ES">🇺🇸🇪🇸 Bilingual</button>
+          </div>
           <button type="button" class="hw-hud-util-btn" id="hw_vocab_drawer_btn" aria-expanded="false" aria-controls="hw_vocab_drawer" onclick="toggleVocabQuickGlossary()">
             <span aria-hidden="true">📖</span> <span class="lang-en">Key Vocabulary</span><span class="lang-es" lang="es">Vocabulario clave</span>
           </button>
@@ -5624,7 +5630,7 @@ window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Nu
 window.__HW_WORKED__ = {"title":"Watch me use a pattern unit","titleEs":"Mírame usar una unidad de patrón","lines":["A border repeats: pink circle, purple square, blue triangle, pink circle, purple square, blue triangle, ...","The pattern unit is 3 shapes long: circle, square, triangle.","To predict shape number 12, I divide: 12 ÷ 3 = 4 with no remainder, so shape 12 ends a complete unit — it is the blue triangle.","The next three shapes after any complete unit will be a pink circle, a purple square, and a blue triangle."],"linesEs":["Un borde se repite: círculo rosa, cuadrado morado, triángulo azul, círculo rosa, cuadrado morado, triángulo azul, …","La unidad del patrón mide 3 figuras: círculo, cuadrado, triángulo.","Para predecir la figura número 12, divido: 12 ÷ 3 = 4 sin residuo, así que la figura 12 termina una unidad completa — es el triángulo azul.","Las tres figuras que siguen después de cualquier unidad completa serán un círculo rosa, un cuadrado morado y un triángulo azul."]};
 </script>
 <script src="/assets/homework/homework-vocab-12619585d8.bundle.js"></script>
-<script src="/assets/homework/homework-core-db79f13e22.bundle.js"></script>
+<script src="/assets/homework/homework-core-b29e8f1a67.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
