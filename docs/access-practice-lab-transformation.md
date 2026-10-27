@@ -58,15 +58,18 @@ The Reading Room now includes four original six-chapter adventures (two each for
 
 Implementation locations: `access-practice-lab/src/views/reading-room.js`, `src/reading-state.js`, original adventure JSON and coverage report, `scripts/homework-guided-notes.mjs`, generated homework pages and hashed shared asset. The serialized story validator, Reading Room browser journey and homework browser accessibility journey are in `tools/`.
 
-## Current local increment: Reading Strategy Academy
+## Deployed increment: Reading Strategy Academy
 
-Added 26 original strategy lessons across four strands and both supported grade clusters, with think-aloud models, guided response/explanation/retry, independent new-passage transfer, local resume, strategy evidence in the shared skill graph, and local teacher evidence. The addition extends the existing Reading Room state key and language ledger; no accounts or remote data services are introduced. `npm run validate:access-lab` and the focused Reading Room browser journey pass. Independent content review, full project build/ship, and live verification are still pending. Overall transformation and the remaining reading/mathematics feature requirements remain incomplete.
+Added 26 original strategy lessons across four strands and both supported grade clusters, with think-aloud models, guided response/explanation/retry, independent new-passage transfer, local resume, strategy evidence in the shared skill graph, and local teacher evidence. The addition extends the existing Reading Room state key and language ledger; no accounts or remote data services are introduced. Commit `58b056ad19` is live. Independent content review remains pending; the overall transformation and remaining reading/mathematics feature requirements are incomplete.
 
 ## Verification and release evidence
 
 - `npm run check` — PASS, with 27 existing lint warnings and no check errors.
 - `npm run build` — PASS; the build emitted existing non-fatal large-chunk and Vite config-loader warnings.
-- Commit hook — PASS 137/137. Guarded pre-push QA — PASS 148/148; includes build, full test set, ACCESS Lab validation, homework accessibility and other browser lanes.
+- Strategy Academy: guarded pre-push QA — PASS 7/7 scoped checks; full test inventory — PASS 554/554; production build — PASS; build-idempotence — PASS 36/36.
+- Strategy Academy production smoke — PASS 41/41; public stamp `58b056ad19` confirmed.
+- Live browser — PASS: `/access-practice-lab/reading-room/strategies` renders all 26 lesson cards; the “Read the sky before the hike” lesson renders its model, guided question, explanation field and independent-transfer sequence.
+- Earlier Reading Adventure release smoke — PASS 41/41; Cloudflare served `92e7733d3` at that release.
 - Production ship smoke — PASS 41/41; Cloudflare serves `92e7733d3`.
 - Live browser journey — PASS: four adventure cards, original response, checkpoint feedback, chapter progression, response restoration after reload, axe 0 violations, no runtime errors and 390px reflow.
 - Content coverage — PASS for the first-release target of four complete stories, 24 chapters, 2,079 original words and 24 checkpoints. Independent editorial review remains pending.

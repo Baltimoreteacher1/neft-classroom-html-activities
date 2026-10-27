@@ -63,9 +63,12 @@ All 24 chapter comprehension checks have fixed keyed answers with explanations; 
 
 The deployment covers only the implemented first increment. The matrix remains PARTIAL/NOT STARTED for other feature groups; story illustrations and independent editorial review remain outstanding. This release does not claim the minimum coverage counts for the other 14 feature groups.
 
-## Strategy Academy implementation increment (not yet released)
+## Strategy Academy implementation increment (released)
 
 - `access-practice-lab/content/reading-room/strategy-lessons.json` contains 26 original lessons (6 Predict and Connect, 6 Question and Investigate, 7 Clarify and Explore Words, 7 Summarize and Synthesize), all with a think-aloud, guided task, item-specific feedback, student explanation prompt, and a new independent passage.
 - `strategy-coverage.json` is generated alongside the adventure report by `npm run validate:reading-adventures` and records per-strand/per-cluster lesson counts.
 - Functional evidence is stored under the existing `accessPracticeLab:v1:readingRoom` key. Answer evidence, but not student explanation text, is added once to the existing language ledger and contributes to the existing Reading skill graph.
-- Local verification: `npm run validate:access-lab` PASS; repository-wide `npm run check` PASS (27 existing warnings, no errors); `npm run build` PASS (existing large-chunk warning); Reading Room browser journey PASS, including guided incorrect feedback and retry, independent transfer, reload persistence, legacy skill-map compatibility, ledger mapping, teacher evidence, axe 0 violations on the Academy view, and no 390px horizontal overflow. Guarded ship and live-route verification are pending. Editorial review is pending.
+- Local verification: `npm run validate:access-lab` PASS; repository-wide `npm run check` PASS (27 existing warnings, no errors); `npm run build` PASS; Reading Room browser journey PASS, including guided incorrect feedback and retry, independent transfer, reload persistence, legacy skill-map compatibility, ledger mapping, teacher evidence, axe 0 violations on the Academy view, and no 390px horizontal overflow.
+- Release verification: commit `58b056ad19` is live; guarded pre-push QA PASS 7/7; test inventory PASS 554/554; production build PASS; build-idempotence PASS 36/36; post-deploy smoke PASS 41/41.
+- Production browser check: the Academy route rendered 26 lessons and the “Read the sky before the hike” detail route rendered its think-aloud, guided practice, explanation field, and independent-transfer sequence.
+- Editorial review remains pending. Other Reading Literacy feature groups remain PARTIAL or NOT STARTED; this increment does not satisfy the complete expansion specification.
