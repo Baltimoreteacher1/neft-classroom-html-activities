@@ -12,6 +12,8 @@
  */
 
 import { readFileSync } from "node:fs";
+import { CO_LEARNING_CSS, CO_LEARNING_JS } from "./lib/homework-co-learning.mjs";
+import { CLIENT_SVG_HELPERS_JS } from "./lib/homework-svg-models.mjs";
 
 // Paper, ink and the per-unit hue: the one source every family surface shares.
 const FAMILY_PAPER_CSS = readFileSync(
@@ -588,9 +590,12 @@ body:not(.lang-mode-es) .hw-sub-btn .lang-es { display: none !important; }
   animation: hwTargetPulse 1.2s ease-out;
   border-radius: 14px;
 }
+${CO_LEARNING_CSS}
 `;
 
 export const STUDIO_SKIN_JS = `
+${CLIENT_SVG_HELPERS_JS}
+${CO_LEARNING_JS}
 /* Helper: smooth scroll to element accounting for sticky top bar and display:contents */
 function scrollStudioTo(el) {
   if (!el) return;
@@ -711,6 +716,8 @@ var STUDIO_SUB_CONFIGS = {
     { id: 'talk', icon: '💬', en: '60-Sec Talk', es: 'Charla 60s', sel: '#hw_dinner_talk, .hw-dinner-talk, .dinner-talk-card' },
     { id: 'idea', icon: '💡', en: 'Big Idea', es: 'Idea principal', sel: '#hw_learn_idea .family-big-idea-piece, #hw_learn_idea > .section-title, #hw_learn_idea, .big-idea, .key-idea-banner' },
     { id: 'try', icon: '👆', en: 'Interactive Model', es: 'Modelo interactivo', sel: '#hw_learn_try, .family-visual-lab, .interactive-visual-host' },
+    { id: 'bridge60', icon: '🌉', en: '60-Sec Bridge', es: 'Puente 60s', sel: '#hw_family_bridge_60s' },
+    { id: 'partner', icon: '🤝', en: 'Worked Example', es: 'Ejemplo resuelto', sel: '#hw_worked_partner_example' },
     { id: 'quick', icon: '❓', en: 'Try Question', es: 'Pregunta rápida', sel: '#hw_learn_quick, .learn-quick-check' }
   ],
   words: [

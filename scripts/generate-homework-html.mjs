@@ -61,6 +61,11 @@ import {
 } from "./lib/family-workspace.mjs";
 import { BRIDGE_CSS } from "./lib/homework-bridge.mjs";
 import { CALM_CSS } from "./lib/homework-calm-css.mjs";
+import {
+  renderCoLearningHud,
+  renderPrintSocraticFooter,
+  renderProblemCoPilotCard,
+} from "./lib/homework-co-learning.mjs";
 import { CONFUSED_GROWNUP_CSS, CONFUSED_GROWNUP_JS } from "./lib/homework-confused-grownup.mjs";
 import { DOMINO_DUO_CSS, DOMINO_DUO_JS } from "./lib/homework-domino-duo.mjs";
 import {
@@ -90,6 +95,7 @@ import {
   staleSharedFiles,
   writeSharedFiles,
 } from "./lib/homework-shared-assets.mjs";
+import { renderTopicModelSVG } from "./lib/homework-svg-models.mjs";
 import { TOUCH_CSS } from "./lib/homework-touch.mjs";
 import { VOICE_CSS, VOICE_JS } from "./lib/homework-voice.mjs";
 import { workedExampleFor } from "./lib/homework-worked-example.mjs";
@@ -884,6 +890,9 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
             )
             .join("")}
         </div>
+        <div class="drag-controls" style="margin-top:10px;">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="resetMatchingProblem(${pIdx})">${bi("Reset matching", "Reiniciar parejas")}</button>
+        </div>
       </div>
     `;
   } else if (type === "drag-sort") {
@@ -1165,7 +1174,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     strategyEs: guide.coachEs,
     startEn: guide.draw ? `Start here: ${guide.draw}` : "",
     startEs: guide.drawEs ? `Empieza aquí: ${guide.drawEs}` : "",
-    visualSvg,
+    visualSvg: visualSvg || renderTopicModelSVG(topic, {}, "bridge"),
   };
   return `
     <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}" data-topic="${esc(it.topic || it.skill || it.standard || topic)}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
@@ -1194,6 +1203,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
         </div>
         <button type="button" class="btn btn-sm btn-primary" data-intelligence-next onclick="hwGoToNextPractice(${pIdx})" hidden></button>
       </aside>
+      ${renderProblemCoPilotCard(it, pIdx, topic)}
       ${renderAnswerKey(it, pIdx, solvedVisualSvg)}
     </section>
   `;
@@ -1450,6 +1460,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
   );
   const helpModalHtml = renderHelpModal();
   const refrigeratorSheetHtml = renderRefrigeratorSheet(config, lessonId);
+  const coLearningHudHtml = renderCoLearningHud(config, lessonId, vocab);
+  const printSocraticFooterHtml = renderPrintSocraticFooter(config, lessonId, topic);
   const answerSheetHtml = renderAnswerSheet(
     [
       ...basic.map((it, i) => ({
@@ -4228,9 +4240,11 @@ ${CALM_CSS}
 <div class="container" role="main">
 
   ${welcomeHtml}
+  ${coLearningHudHtml}
 
   ${tabsHtml}
   ${refrigeratorSheetHtml}
+  ${printSocraticFooterHtml}
 
 </div>
 

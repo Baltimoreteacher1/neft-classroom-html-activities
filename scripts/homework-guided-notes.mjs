@@ -41,6 +41,7 @@ import {
 } from "./homework-spanish.mjs";
 import { getUnitTheme } from "./homework-themes.mjs";
 import { bridgeOf, bridgeSpeech, renderBridgeCard } from "./lib/homework-bridge.mjs";
+import { renderLearnCoLearningModules } from "./lib/homework-co-learning.mjs";
 import { confusedRoundsFor, renderConfusedGrownUp } from "./lib/homework-confused-grownup.mjs";
 import { renderDominoDuo } from "./lib/homework-domino-duo.mjs";
 import {
@@ -8435,7 +8436,7 @@ export function renderLearnTab(config, visualLabHtml = "", workbenchHtml = "", m
       <div class="learn-extended-block" id="hw_learn_try">${visualLabHtml}</div>
 ${workbenchLaunchHtml}
 ${workbenchHtml}
-      <div class="learn-extended-block" id="hw_learn_quick">${parentDrawerHtml}${powerUpHtml}</div>
+      <div class="learn-extended-block" id="hw_learn_quick">${parentDrawerHtml}${powerUpHtml}${renderLearnCoLearningModules(config, config.lessonId || "", topic)}</div>
 ${renderWarmupHuddle(confusedGrownUpCard(config))}
       <p class="tab-help-row learn-extended-block">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>
       <div class="tab-flow-nav">
@@ -8941,8 +8942,8 @@ export function renderProblemHintButton(_problem, _visual = "", coach = {}) {
      at a time and never uses the worked explanation or correct answer. */
   const steps = [
     {
-      labelEn: "Notice",
-      labelEs: "Observa",
+      labelEn: "Hint 1: Nudge — Notice",
+      labelEs: "Pista 1: Impulso — Observa",
       en:
         coach.noticeEn ||
         "Say the question in your own words. Circle what you know and underline what you need to find.",
@@ -8951,8 +8952,8 @@ export function renderProblemHintButton(_problem, _visual = "", coach = {}) {
         "Explica la pregunta con tus propias palabras. Encierra lo que sabes y subraya lo que debes hallar.",
     },
     {
-      labelEn: "Choose a strategy",
-      labelEs: "Elige una estrategia",
+      labelEn: "Hint 2: Visual Model Setup — Choose a strategy",
+      labelEs: "Pista 2: Modelo visual — Elige una estrategia",
       en:
         coach.strategyEn ||
         "Ask: What picture, table, number line, or equation could show what is happening?",
@@ -8961,8 +8962,8 @@ export function renderProblemHintButton(_problem, _visual = "", coach = {}) {
         "Pregunta: ¿Qué dibujo, tabla, recta numérica o ecuación puede mostrar lo que pasa?",
     },
     {
-      labelEn: "Start the first step",
-      labelEs: "Empieza el primer paso",
+      labelEn: "Hint 3: Step-by-Step — Start the first step",
+      labelEs: "Pista 3: Paso a paso — Empieza el primer paso",
       en:
         coach.startEn ||
         "Draw the model first. Label it with the numbers from the question, then write only the first calculation.",
@@ -8988,7 +8989,7 @@ export function renderProblemHintButton(_problem, _visual = "", coach = {}) {
             <div class="coach-step-help" hidden>
               <p class="lang-en">${esc(step.en)}</p>
               <p class="lang-es" lang="es">${esc(step.es)}</p>${
-                index === 2 && coach.visualSvg
+                (index === 1 || index === 2) && coach.visualSvg
                   ? `\n              <div class="coach-step-visual" style="margin:10px 0;">${coach.visualSvg}</div>`
                   : ""
               }${
