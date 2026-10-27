@@ -10381,6 +10381,11 @@ function setLanguageMode(mode) {
 
 function openConceptZoom(btn) {
   var wrap = btn && btn.closest('.concept-visual-wrap');
+  var target = wrap && (wrap.querySelector('svg') || wrap.querySelector('img'));
+  if (target && typeof window.openHomeworkLightbox === 'function') {
+    window.openHomeworkLightbox(target, btn);
+    return;
+  }
   var svg = wrap && wrap.querySelector('svg');
   if (!svg || typeof HTMLDialogElement === 'undefined') return;
   var dlg = document.getElementById('hw_concept_zoom');
@@ -15286,7 +15291,28 @@ body.lang-mode-es .concept-title-es { display: inline; }
   text-align: left;
 }
 .concept-visual-caption .lang-en { display: block; }
-.concept-zoom-btn { display: none; }
+.concept-zoom-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: auto;
+  min-height: 40px;
+  margin-top: 10px;
+  padding: 8px 18px;
+  border: 1.5px solid var(--st-brand, #2563eb);
+  border-radius: 999px;
+  background: var(--st-brand-soft, #e8f0fe);
+  color: var(--st-brand-ink, #1b4fc9);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.concept-zoom-btn:hover {
+  background: #dbeafe;
+  border-color: #1d4ed8;
+}
 .concept-zoom-dialog {
   width: min(100vw - 16px, 960px);
   max-height: 92vh;

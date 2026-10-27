@@ -5990,7 +5990,28 @@ body.lang-mode-es .concept-title-es { display: inline; }
   text-align: left;
 }
 .concept-visual-caption .lang-en { display: block; }
-.concept-zoom-btn { display: none; }
+.concept-zoom-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: auto;
+  min-height: 40px;
+  margin-top: 10px;
+  padding: 8px 18px;
+  border: 1.5px solid var(--st-brand, #2563eb);
+  border-radius: 999px;
+  background: var(--st-brand-soft, #e8f0fe);
+  color: var(--st-brand-ink, #1b4fc9);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.concept-zoom-btn:hover {
+  background: #dbeafe;
+  border-color: #1d4ed8;
+}
 .concept-zoom-dialog {
   width: min(100vw - 16px, 960px);
   max-height: 92vh;
@@ -7716,30 +7737,38 @@ body {
 }
 
 /* ============================================================
-   STUDIO SKIN — navy / teal / warm paper, serif headings
+   STUDIO SKIN — access-practice-lab palette: crisp cool-blue paper,
+   deep navy, vibrant royal blue, fresh teal, clean slate borders.
+   Matches https://eduwonderlab.com/access-practice-lab/
    ============================================================ */
 :root {
-  --st-paper: #f7f4ec;
+  --st-paper: #f5f8fc;
   --st-surface: #ffffff;
-  --st-soft: #faf8f3;
-  --st-navy: #17324d;
-  --st-navy-dark: #0f2337;
-  --st-navy-tint: #e8f0f7;
-  --st-teal: #0f766e;
+  --st-soft: #eef3fa;
+  --st-navy: #15487f;
+  --st-navy-dark: #0f2b5c;
+  --st-navy-tint: #e8f0fe;
+  --st-brand: #2563eb;
+  --st-brand-ink: #1b4fc9;
+  --st-brand-deep: #163d9e;
+  --st-brand-soft: #e8f0fe;
+  --st-teal: #0b7a75;
   --st-teal-bright: #1fa6a2;
-  --st-teal-tint: #e3f6f5;
+  --st-teal-tint: #e1f5f3;
   --st-teal-line: #94dfdc;
-  --st-amber: #b45309;
+  --st-amber: #f59e0b;
   --st-amber-tint: #fef3c7;
-  --st-green: #047857;
-  --st-green-tint: #ecfdf5;
-  --st-red: #b91c1c;
-  --st-red-tint: #fef2f2;
-  --st-ink: #1e293b;
-  --st-ink-muted: #475569;
-  --st-border: #d8d3c6;
-  --st-serif: Georgia, "Iowan Old Style", serif;
-  --st-shadow: 0 2px 8px rgba(23, 50, 77, 0.06), 0 1px 2px rgba(23, 50, 77, 0.04);
+  --st-green: #137336;
+  --st-green-tint: #e6f6ec;
+  --st-red: #b42318;
+  --st-red-tint: #fdecea;
+  --st-ink: #14263d;
+  --st-ink-muted: #384a60;
+  --st-border: #dbe3ee;
+  --st-border-strong: #b9c7d9;
+  --st-serif: "Fraunces", Georgia, "Iowan Old Style", serif;
+  --st-sans: Outfit, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --st-shadow: 0 1px 3px rgba(20, 38, 61, 0.06), 0 4px 14px rgba(20, 38, 61, 0.05);
 }
 
 body { background: var(--st-paper) !important; color: var(--st-ink); }
@@ -7747,11 +7776,12 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
 
 /* ---- Header: compact navy bar ------------------------------ */
 .hw-hero {
-  background: var(--st-navy) !important;
+  background: linear-gradient(135deg, #15487f 0%, #0f2b5c 100%) !important;
   background-image: none !important;
-  border-radius: 16px !important;
-  border-bottom: 4px solid var(--st-teal-bright);
-  box-shadow: var(--st-shadow) !important;
+  border-radius: 18px !important;
+  border: 1px solid #1c5999 !important;
+  border-bottom: 5px solid var(--st-teal-bright) !important;
+  box-shadow: 0 4px 14px rgb(20 38 61 / 10%) !important;
 }
 .hw-hero-glow { display: none !important; }
 .hw-hero h1, .hw-hero-titles h1 {
@@ -7760,12 +7790,12 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
   letter-spacing: 0 !important;
 }
 .hw-hero-emoji {
-  background: var(--st-teal) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
   border: 0 !important;
   border-radius: 14px !important;
   box-shadow: none !important;
 }
-.hw-hero-kicker { color: #fcd34d !important; }
+.hw-hero-kicker { color: #fcd34d !important; opacity: 0.95; }
 
 @media (min-width: 900px) {
   /* Title block left, language picker right on the same two rows; everything
@@ -8015,46 +8045,235 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
 }
 
 /* ============================================================
-   FAMILY PAPER — one paper, one ink, one hue per unit.
-   Remaps the unit theme onto assets/family-paper.css so every
-   lesson reads as the same product; three surfaces only:
-   white card, unit-tint key idea, one grown-up highlight.
+   ACCESS PRACTICE LAB PALETTE — clean, high-contrast, modern
+   Matches https://eduwonderlab.com/access-practice-lab/
+   No muddy browns: crisp cool-blue surface, clean slate lines,
+   vibrant royal blue / deep studio navy, fresh teal accents.
    ============================================================ */
 :root {
-  --navy: var(--fp-ink);
-  --navy-light: var(--fp-ink-soft);
-  --teal: var(--fp-unit);
-  --teal-ink: var(--fp-unit-ink);
-  --teal-light: var(--fp-unit-tint);
-  --amber-light: var(--fp-note);
-  --st-paper: var(--fp-paper);
-  --st-soft: var(--fp-wash);
-  --st-navy: var(--fp-ink);
-  --st-navy-tint: var(--fp-wash);
-  --st-teal: var(--fp-unit-ink);
-  --st-teal-bright: var(--fp-unit);
-  --st-teal-tint: var(--fp-unit-tint);
-  --st-teal-line: var(--fp-unit);
-  --st-border: var(--fp-rule);
-  --st-serif: var(--fp-serif);
+  --navy: #15487f;
+  --navy-light: #1c5999;
+  --teal: #0b7a75;
+  --teal-ink: #0a6a66;
+  --teal-light: #e1f5f3;
+  --amber-light: #fef3c7;
+  --st-paper: #f5f8fc;
+  --st-surface: #ffffff;
+  --st-soft: #eef3fa;
+  --st-navy: #15487f;
+  --st-navy-dark: #0f2b5c;
+  --st-navy-tint: #e8f0fe;
+  --st-brand: #2563eb;
+  --st-brand-ink: #1b4fc9;
+  --st-brand-soft: #e8f0fe;
+  --st-teal: #0b7a75;
+  --st-teal-bright: #1fa6a2;
+  --st-teal-tint: #e1f5f3;
+  --st-teal-line: #94dfdc;
+  --st-amber: #f59e0b;
+  --st-amber-tint: #fef3c7;
+  --st-green: #137336;
+  --st-green-tint: #e6f6ec;
+  --st-red: #b42318;
+  --st-red-tint: #fdecea;
+  --st-ink: #14263d;
+  --st-ink-muted: #384a60;
+  --st-border: #dbe3ee;
+  --st-border-strong: #b9c7d9;
 }
+body { background: #f5f8fc !important; color: #14263d !important; }
+
 .hw-hero {
-  background: var(--fp-unit-ink) !important;
-  border: 0 !important;
-  border-bottom: 5px solid var(--fp-unit) !important;
+  background: linear-gradient(135deg, #15487f 0%, #0f2b5c 100%) !important;
+  border: 1px solid #1c5999 !important;
+  border-bottom: 5px solid #1fa6a2 !important;
+  box-shadow: 0 4px 14px rgb(20 38 61 / 10%) !important;
 }
 .hw-hero-emoji { background: rgba(255, 255, 255, 0.16) !important; }
-.hw-hero-kicker { color: #fff !important; opacity: 0.88; }
-.hw-hero .lang-selector-title, .hw-hero-lesson-meta, .hw-hero-lesson-meta .lang-en, .hw-hero-lesson-meta .lang-es { color: #f6f1ea !important; }
-.btn-primary { background: var(--fp-unit-ink) !important; border-color: var(--fp-unit-ink) !important; }
-.hw-route-chooser, .hw-session-banner, .hw-mystery, .pctlab-stage { background: var(--fp-page) !important; border-color: var(--fp-rule) !important; }
-.hw-route-option.is-active { background: var(--fp-unit-tint) !important; border-color: var(--fp-unit) !important; }
-.hw-grownup, .hw-huddle { background: var(--fp-note) !important; border-color: var(--fp-note-ink) !important; color: var(--fp-note-ink); }
-.family-big-idea-piece, .bridge-row.bridge-class, .homework-tab-extra { background: var(--fp-unit-tint) !important; }
-.pctlab-chip, .hw-session-chip, .hw-conf-btn { background: var(--fp-wash); border-color: var(--fp-rule); }
-.visual-representation-model { background: var(--fp-unit-tint); }
-.visual-representation-math { background: var(--fp-note); }
-.visual-representation-words { background: var(--fp-wash); }
+.hw-hero-kicker { color: #fcd34d !important; opacity: 0.95; }
+.hw-hero .lang-selector-title, .hw-hero-lesson-meta, .hw-hero-lesson-meta .lang-en, .hw-hero-lesson-meta .lang-es { color: #e2eaf5 !important; }
+.btn-primary { background: #2563eb !important; border-color: #1b4fc9 !important; color: #ffffff !important; }
+.btn-primary:hover { background: #1b4fc9 !important; }
+.hw-route-chooser, .hw-session-banner, .hw-mystery, .pctlab-stage { background: #ffffff !important; border-color: #dbe3ee !important; }
+.hw-route-option.is-active { background: #e8f0fe !important; border-color: #2563eb !important; color: #1b4fc9 !important; }
+.hw-grownup, .hw-huddle { background: #fffbeb !important; border-color: #f59e0b !important; color: #92400e !important; }
+.family-big-idea-piece, .bridge-row.bridge-class, .homework-tab-extra { background: #e1f5f3 !important; border-color: #0b7a75 !important; }
+.pctlab-chip, .hw-session-chip, .hw-conf-btn { background: #eef3fa !important; border-color: #dbe3ee !important; color: #14263d !important; }
+.visual-representation-model { background: #e1f5f3 !important; border-color: #0b7a75 !important; }
+.visual-representation-math { background: #fef3c7 !important; border-color: #f59e0b !important; }
+.visual-representation-words { background: #eef3fa !important; border-color: #dbe3ee !important; }
+
+/* Sidebar rail & buttons matching access-practice-lab */
+.homework-tab-btn {
+  color: #384a60 !important;
+  background: #ffffff;
+  border: 1px solid #dbe3ee;
+}
+.homework-tab-btn:hover {
+  background: #f0f5fc !important;
+  color: #14263d !important;
+}
+.homework-tab-btn.active {
+  background: #e8f0fe !important;
+  border-color: #2563eb !important;
+  color: #1b4fc9 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.12) !important;
+}
+.hw-sub-rail-btn {
+  color: #566a82 !important;
+}
+.hw-sub-rail-btn:hover {
+  background: #f0f5fc !important;
+  color: #14263d !important;
+}
+.hw-sub-rail-btn.is-active,
+.hw-sub-rail-btn[aria-current="location"] {
+  background: #e8f0fe !important;
+  border-color: #2563eb !important;
+  color: #1b4fc9 !important;
+  font-weight: 700 !important;
+}
+
+/* ---- Click to Enlarge / Lightbox ------------------------------ */
+.is-zoomable {
+  cursor: zoom-in !important;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+.is-zoomable:hover {
+  filter: brightness(0.97);
+}
+.is-zoomable:focus-visible {
+  outline: 3px solid #2563eb !important;
+  outline-offset: 3px !important;
+}
+
+.concept-zoom-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: auto;
+  min-height: 40px;
+  margin-top: 10px;
+  padding: 8px 18px;
+  border: 1.5px solid #2563eb;
+  border-radius: 999px;
+  background: #e8f0fe;
+  color: #1b4fc9;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.concept-zoom-btn:hover {
+  background: #dbeafe;
+  border-color: #1d4ed8;
+}
+
+.hw-lightbox-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  overflow: hidden;
+}
+.hw-lightbox-dialog[open] {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+.hw-lightbox-dialog:not([open]) {
+  display: none !important;
+}
+.hw-lightbox-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(6px);
+}
+.hw-lightbox-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+}
+.hw-lightbox-close {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  z-index: 100001;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: background 0.15s;
+}
+.hw-lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.38);
+}
+.hw-lightbox-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 94vw;
+  max-height: 90vh;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.hw-lightbox-img {
+  display: block;
+  max-width: 92vw;
+  max-height: 88vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  cursor: zoom-out;
+}
+.hw-lightbox-svg {
+  display: block;
+  width: min(92vw, 1100px);
+  max-height: 86vh;
+  height: auto;
+  margin: auto;
+  padding: 16px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  cursor: zoom-out;
+}
+body.hw-lightbox-open {
+  overflow: hidden !important;
+}
+@media print {
+  .hw-lightbox-dialog, .concept-zoom-btn {
+    display: none !important;
+  }
+}
 
 /* ---- ACCESS Lab Vertical Rail Layout (Desktop >= 860px) ---- */
 @media (min-width: 860px) {

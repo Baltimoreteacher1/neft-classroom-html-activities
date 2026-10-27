@@ -926,6 +926,11 @@ function setLanguageMode(mode) {
 
 function openConceptZoom(btn) {
   var wrap = btn && btn.closest('.concept-visual-wrap');
+  var target = wrap && (wrap.querySelector('svg') || wrap.querySelector('img'));
+  if (target && typeof window.openHomeworkLightbox === 'function') {
+    window.openHomeworkLightbox(target, btn);
+    return;
+  }
   var svg = wrap && wrap.querySelector('svg');
   if (!svg || typeof HTMLDialogElement === 'undefined') return;
   var dlg = document.getElementById('hw_concept_zoom');
@@ -2812,12 +2817,179 @@ function installStudioScrollSpy() {
   }
 }
 
+function initHomeworkImageZoom() {
+  if (window.__hwImageZoomInitialized) return;
+  window.__hwImageZoomInitialized = true;
+
+  var dlg = document.getElementById('hw_image_lightbox');
+  if (!dlg) {
+    dlg = document.createElement('dialog');
+    dlg.id = 'hw_image_lightbox';
+    dlg.className = 'hw-lightbox-dialog';
+    dlg.setAttribute('aria-label', 'Enlarged view / Vista ampliada');
+    dlg.innerHTML = '<div class="hw-lightbox-inner">' +
+      '<button type="button" class="hw-lightbox-close" aria-label="Close / Cerrar">✕ <span class="lang-en">Close</span><span class="lang-es" lang="es">Cerrar</span></button>' +
+      '<div class="hw-lightbox-stage"></div>' +
+      '</div>';
+    document.body.appendChild(dlg);
+
+    dlg.addEventListener('click', function (e) {
+      if (e.target === dlg || e.target.closest('.hw-lightbox-close') || e.target.closest('.hw-lightbox-stage')) {
+        closeLightbox();
+      }
+    });
+
+    dlg.addEventListener('close', function () {
+      document.body.classList.remove('hw-lightbox-open');
+      var stage = dlg.querySelector('.hw-lightbox-stage');
+      if (stage) stage.replaceChildren();
+      if (window.__hwLightboxOpener && window.__hwLightboxOpener.focus) {
+        try { window.__hwLightboxOpener.focus(); } catch (_) {}
+      }
+      window.__hwLightboxOpener = null;
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (dlg.open && e.key === 'Escape') {
+        closeLightbox();
+      }
+    });
+  }
+
+  function closeLightbox() {
+    if (!dlg) return;
+    if (typeof dlg.close === 'function') {
+      if (dlg.open) dlg.close();
+    } else {
+      dlg.removeAttribute('open');
+      dlg.hidden = true;
+      document.body.classList.remove('hw-lightbox-open');
+      var stage = dlg.querySelector('.hw-lightbox-stage');
+      if (stage) stage.replaceChildren();
+      if (window.__hwLightboxOpener && window.__hwLightboxOpener.focus) {
+        try { window.__hwLightboxOpener.focus(); } catch (_) {}
+      }
+      window.__hwLightboxOpener = null;
+    }
+  }
+
+  function openLightbox(node, opener) {
+    if (!node || !dlg) return;
+    window.__hwLightboxOpener = opener || node;
+    var stage = dlg.querySelector('.hw-lightbox-stage');
+    stage.replaceChildren();
+
+    if (node.tagName === 'IMG') {
+      var img = document.createElement('img');
+      img.src = node.currentSrc || node.src;
+      img.alt = node.alt || '';
+      img.className = 'hw-lightbox-img';
+      stage.appendChild(img);
+    } else if (node.tagName === 'svg' || node.namespaceURI === 'http://www.w3.org/2000/svg') {
+      var copy = node.cloneNode(true);
+      copy.removeAttribute('id');
+      copy.removeAttribute('width');
+      copy.removeAttribute('height');
+      copy.classList.remove('is-zoomable');
+      copy.classList.add('hw-lightbox-svg');
+      stage.appendChild(copy);
+    }
+    document.body.classList.add('hw-lightbox-open');
+    if (typeof dlg.showModal === 'function') {
+      if (!dlg.open) dlg.showModal();
+    } else {
+      dlg.hidden = false;
+      dlg.setAttribute('open', '');
+    }
+    setTimeout(function () {
+      var closeBtn = dlg.querySelector('.hw-lightbox-close');
+      if (closeBtn && closeBtn.focus) {
+        try { closeBtn.focus(); } catch (_) {}
+      }
+    }, 0);
+  }
+
+  window.openHomeworkLightbox = openLightbox;
+
+  function wireElement(el) {
+    if (!el || el.dataset.zoomable === '1') return;
+    if (el.closest('.hw-lightbox-dialog, [data-no-zoom], .annotator, button, a, label, input, textarea')) return;
+
+    if (el.tagName === 'IMG') {
+      var w = el.naturalWidth || el.width || parseInt(el.getAttribute('width') || '0', 10);
+      var h = el.naturalHeight || el.height || parseInt(el.getAttribute('height') || '0', 10);
+      if (w > 0 && w < 48 && h > 0 && h < 48) return;
+    }
+
+    el.dataset.zoomable = '1';
+    el.classList.add('is-zoomable');
+    if (!el.getAttribute('tabindex')) el.setAttribute('tabindex', '0');
+    if (!el.getAttribute('role')) el.setAttribute('role', 'button');
+    if (!el.getAttribute('title')) {
+      el.setAttribute('title', 'Click to enlarge / Clic para ampliar');
+    }
+
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      openLightbox(el, el);
+    });
+
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        e.stopPropagation();
+        openLightbox(el, el);
+      }
+    });
+  }
+
+  function scanAndWire(root) {
+    var scope = root || document;
+    var imgs = scope.querySelectorAll('.vocab-thumb, .problem-visual-img, .problem-visual-wrap img, .vq-img, .obj-popup-img, #display_family_photo, #work_photo_preview, #pb_captured_img, .concept-visual-wrap img');
+    imgs.forEach(wireElement);
+
+    var svgs = scope.querySelectorAll('.concept-visual-wrap svg, svg.concept-svg, svg.hw-model-svg, svg.hw-mini-model-svg, .hw-colearn-svg-stage svg, .concept-fallback-visual svg');
+    svgs.forEach(wireElement);
+
+    var zoomBtns = scope.querySelectorAll('.concept-zoom-btn');
+    zoomBtns.forEach(function (btn) {
+      if (btn.dataset.wired) return;
+      btn.dataset.wired = '1';
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var wrap = btn.closest('.concept-visual-wrap');
+        var target = wrap && (wrap.querySelector('svg') || wrap.querySelector('img'));
+        if (target) openLightbox(target, btn);
+      });
+    });
+  }
+
+  scanAndWire(document);
+
+  var Observer = (typeof window !== 'undefined' && window.MutationObserver) || (typeof MutationObserver !== 'undefined' ? MutationObserver : null);
+  if (Observer) {
+    var mo = new Observer(function (mutations) {
+      mutations.forEach(function (m) {
+        m.addedNodes.forEach(function (node) {
+          if (node.nodeType === 1) {
+            scanAndWire(node);
+          }
+        });
+      });
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+  }
+}
+
 function bootStudioSkin() {
   initStudioStepper();
   glueTermPunctuation();
   initStudioSubRail();
   installStudioTabScroll();
   installStudioScrollSpy();
+  initHomeworkImageZoom();
 }
 
 if (document.readyState === 'loading') {
