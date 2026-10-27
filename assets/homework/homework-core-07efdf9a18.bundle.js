@@ -2532,10 +2532,155 @@ function glueTermPunctuation() {
     void tail;
   });
 }
-document.addEventListener('DOMContentLoaded', function () {
+function initStudioSubRail() {
+  var tabBtns = document.querySelectorAll('.homework-tab-btn');
+  if (!tabBtns.length) return;
+
+  var subConfigs = {
+    learn: [
+      { id: 'talk', icon: '💬', en: '60-Sec Talk', es: 'Charla 60s', sel: '#hw_dinner_talk, .dinner-talk-card' },
+      { id: 'idea', icon: '💡', en: 'Big Idea', es: 'Idea principal', sel: '#hw_learn_idea, .big-idea, .key-idea-banner' },
+      { id: 'try', icon: '👆', en: 'Interactive Model', es: 'Modelo interactivo', sel: '#hw_learn_try, .family-visual-lab, .interactive-visual-host' },
+      { id: 'quick', icon: '❓', en: 'Try Question', es: 'Pregunta rápida', sel: '#hw_learn_quick, .learn-quick-check' }
+    ],
+    words: [
+      { id: 'cards', icon: '📚', en: 'Flashcards', es: 'Tarjetas', sel: '.vocab-container, .vocab-card-grid' },
+      { id: 'quiz', icon: '❓', en: 'Word Quiz', es: 'Prueba de palabras', sel: '#vocab_quiz, .vocab-quiz' },
+      { id: 'match', icon: '🎯', en: 'Match Game', es: 'Juego de unir', sel: '#vocab_match_shell, .vocab-game-shell' }
+    ],
+    play: [
+      { id: 'game', icon: '🎮', en: 'Math Duo Game', es: 'Juego familiar', sel: '.fam-game-card, .domino-game-wrap' },
+      { id: 'score', icon: '🏆', en: 'Scorekeeper', es: 'Puntaje', sel: '.fam-act-card, .game-score-card' }
+    ],
+    done: [
+      { id: 'teach', icon: '🗣️', en: 'Teach It Back', es: 'Enséñalo tú', sel: '.hw-teach' },
+      { id: 'confidence', icon: '🌱', en: 'Confidence Check', es: 'Confianza', sel: '.hw-confidence, #hw_conf_after' },
+      { id: 'summary', icon: '📊', en: "Tonight Summary", es: 'Resumen', sel: '.done-summary, #hw_done_summary' },
+      { id: 'signoff', icon: '✍️', en: 'Family Sign-off', es: 'Firma familiar', sel: '#parent_signoff_section, .parent-signoff-card, .hw-share, .homework-message-action' }
+    ]
+  };
+
+  tabBtns.forEach(function (btn) {
+    var tabId = btn.dataset.tab;
+    var rail = btn.nextElementSibling;
+    if (!rail || !rail.classList.contains('hw-sub-rail')) {
+      rail = document.createElement('div');
+      rail.className = 'hw-sub-rail';
+      rail.id = 'hw_sub_' + tabId;
+      btn.parentNode.insertBefore(rail, btn.nextSibling);
+    }
+
+    if (tabId === 'check') {
+      var coreBox = document.querySelector('#hw_panel_check .problems-container');
+      var dots = coreBox && coreBox.previousElementSibling && coreBox.previousElementSibling.classList.contains('hw-stepper-bar')
+        ? coreBox.previousElementSibling.querySelectorAll('.hw-stepper-dot')
+        : [];
+      var coreItems = coreBox ? coreBox.querySelectorAll(':scope > .problem-section') : [];
+      var items = [];
+
+      if (dots.length) {
+        dots.forEach(function (dot, i) {
+          items.push({
+            icon: '✏️',
+            en: 'Problem ' + (i + 1),
+            es: 'Problema ' + (i + 1),
+            action: function () {
+              dot.click();
+              var target = document.querySelector('.problem-section.is-step-current') || document.getElementById('hw_panel_check');
+              if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          });
+        });
+      } else if (coreItems.length) {
+        coreItems.forEach(function (p, i) {
+          items.push({
+            icon: '✏️',
+            en: 'Problem ' + (i + 1),
+            es: 'Problema ' + (i + 1),
+            action: function () {
+              p.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          });
+        });
+      }
+
+      rail.innerHTML = '';
+      items.forEach(function (item, idx) {
+        var sBtn = document.createElement('button');
+        sBtn.type = 'button';
+        sBtn.className = 'hw-sub-btn' + (idx === 0 ? ' is-active' : '');
+        sBtn.dataset.problemIdx = String(idx);
+        sBtn.innerHTML = '<span class="sub-icon">' + item.icon + '</span><span class="sub-text"><span class="lang-en">' + item.en + '</span><span class="lang-es" lang="es">' + item.es + '</span></span>';
+        sBtn.addEventListener('click', function () {
+          rail.querySelectorAll('.hw-sub-btn').forEach(function (b) { b.classList.remove('is-active'); });
+          sBtn.classList.add('is-active');
+          item.action();
+        });
+        rail.appendChild(sBtn);
+      });
+
+      var extraContainers = document.querySelectorAll('#hw_panel_check .problems-container');
+      if (extraContainers.length > 1) {
+        var extraBtn = document.createElement('button');
+        extraBtn.type = 'button';
+        extraBtn.className = 'hw-sub-btn hw-sub-extra-btn';
+        extraBtn.innerHTML = '<span class="sub-icon">⭐</span><span class="sub-text"><span class="lang-en">More Practice</span><span class="lang-es" lang="es">Más práctica</span></span>';
+        extraBtn.addEventListener('click', function () {
+          rail.querySelectorAll('.hw-sub-btn').forEach(function (b) { b.classList.remove('is-active'); });
+          extraBtn.classList.add('is-active');
+          extraContainers[1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        rail.appendChild(extraBtn);
+      }
+
+      if (dots.length) {
+        dots.forEach(function (d, i) {
+          d.addEventListener('click', function () {
+            var subBtns = rail.querySelectorAll('.hw-sub-btn');
+            subBtns.forEach(function (b, bIdx) {
+              b.classList.toggle('is-active', bIdx === i);
+            });
+          });
+        });
+      }
+    } else if (subConfigs[tabId]) {
+      var cfg = subConfigs[tabId];
+      var panel = document.getElementById('hw_panel_' + tabId);
+      var validItems = [];
+      if (panel) {
+        cfg.forEach(function (c) {
+          var el = panel.querySelector(c.sel);
+          if (el) validItems.push({ c: c, el: el });
+        });
+      }
+      rail.innerHTML = '';
+      validItems.forEach(function (v, idx) {
+        var sBtn = document.createElement('button');
+        sBtn.type = 'button';
+        sBtn.className = 'hw-sub-btn' + (idx === 0 ? ' is-active' : '');
+        sBtn.innerHTML = '<span class="sub-icon">' + v.c.icon + '</span><span class="sub-text"><span class="lang-en">' + v.c.en + '</span><span class="lang-es" lang="es">' + v.c.es + '</span></span>';
+        sBtn.addEventListener('click', function () {
+          rail.querySelectorAll('.hw-sub-btn').forEach(function (b) { b.classList.remove('is-active'); });
+          sBtn.classList.add('is-active');
+          v.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+        rail.appendChild(sBtn);
+      });
+    }
+  });
+}
+
+function bootStudioSkin() {
   initStudioStepper();
   glueTermPunctuation();
-});
+  initStudioSubRail();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootStudioSkin);
+} else {
+  bootStudioSkin();
+}
 
 
 let hwGameRound = 0;

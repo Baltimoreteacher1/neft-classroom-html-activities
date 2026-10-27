@@ -360,6 +360,233 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
 .visual-representation-model { background: var(--fp-unit-tint); }
 .visual-representation-math { background: var(--fp-note); }
 .visual-representation-words { background: var(--fp-wash); }
+
+/* ---- ACCESS Lab Vertical Rail Layout (Desktop >= 860px) ---- */
+@media (min-width: 860px) {
+  .container {
+    max-width: 1140px !important;
+    padding: 24px 20px 60px !important;
+  }
+  .homework-tabs-shell {
+    display: grid !important;
+    grid-template-columns: 248px minmax(0, 1fr) !important;
+    column-gap: 24px !important;
+    row-gap: 0 !important;
+    align-items: start !important;
+  }
+  .homework-tab-chrome {
+    position: sticky !important;
+    top: 20px !important;
+    z-index: 40 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding: 14px 12px !important;
+    background: var(--fp-page, #ffffff) !important;
+    border: 1px solid var(--fp-rule, #e2e8f0) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.04) !important;
+  }
+  .homework-tab-chrome::before {
+    content: "TONIGHT'S PATH";
+    display: block;
+    font-family: var(--font-display, -apple-system, sans-serif);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--fp-ink-soft, #64748b);
+    padding: 2px 8px 6px;
+    border-bottom: 1px solid var(--fp-rule, #e2e8f0);
+    margin-bottom: 4px;
+  }
+  body.lang-mode-es .homework-tab-chrome::before {
+    content: "RUTA DE HOY";
+  }
+  .hw-tab-meta-row {
+    order: 10;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--fp-rule, #e2e8f0);
+  }
+  .homework-tab-bar {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+  .homework-tab-btn {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+    min-height: 46px !important;
+    padding: 8px 12px !important;
+    border: 1.5px solid transparent !important;
+    border-radius: 12px !important;
+    background: transparent !important;
+    text-align: left !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease !important;
+  }
+  .homework-tab-btn:hover {
+    background: var(--fp-wash, #f8fafc) !important;
+  }
+  .homework-tab-btn.is-active {
+    background: var(--fp-unit-tint, #e0f2fe) !important;
+    border-color: var(--fp-unit, #0284c7) !important;
+    color: var(--fp-unit-ink, #0369a1) !important;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.12) !important;
+  }
+  .homework-tab-btn .tab-step {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 999px !important;
+    background: var(--fp-wash, #f1f5f9) !important;
+    color: var(--fp-ink, #1e293b) !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    flex-shrink: 0 !important;
+  }
+  .homework-tab-btn.is-active .tab-step {
+    background: var(--fp-unit-ink, #0369a1) !important;
+    color: #ffffff !important;
+  }
+  .homework-tab-btn.is-done .tab-step {
+    background: #16a34a !important;
+    color: #ffffff !important;
+  }
+  .homework-tab-btn.is-done .tab-step::after {
+    content: "✓";
+    font-size: 12px;
+  }
+  .homework-tab-btn .tab-icon {
+    display: inline-block !important;
+    font-size: 16px !important;
+    line-height: 1 !important;
+    flex-shrink: 0 !important;
+  }
+  .homework-tab-btn .tab-label {
+    flex: 1 !important;
+    min-width: 0 !important;
+    text-align: left !important;
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    color: inherit !important;
+  }
+  .homework-tab-btn .tab-en,
+  .homework-tab-btn .tab-es {
+    display: block !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  body.lang-mode-es .homework-tab-btn .tab-en { display: none !important; }
+  body:not(.lang-mode-es) .homework-tab-btn .tab-es { display: none !important; }
+
+  .homework-tab-extra {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+    min-height: 44px !important;
+    padding: 8px 12px !important;
+    margin-left: 0 !important;
+    margin-top: 6px !important;
+    border: 1.5px dashed var(--fp-rule, #cbd5e1) !important;
+    border-radius: 12px !important;
+    background: var(--fp-wash, #f8fafc) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .homework-tab-extra::before {
+    display: none !important;
+  }
+  .homework-tab-extra .tab-extra-blurb {
+    display: none !important;
+  }
+  .homework-tab-extra .tab-label {
+    text-align: left !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+  }
+  .homework-tab-track {
+    order: -1;
+    margin-bottom: 6px;
+  }
+  .homework-tab-panels {
+    min-width: 0 !important;
+  }
+}
+
+/* ---- Sub buttons in Rail (Desktop only) ---- */
+@media (min-width: 860px) {
+  .hw-sub-rail {
+    display: none;
+    flex-direction: column;
+    gap: 3px;
+    margin: 4px 0 8px 16px;
+    padding-left: 10px;
+    border-left: 2px solid var(--fp-rule, #e2e8f0);
+  }
+  .homework-tab-btn.is-active + .hw-sub-rail {
+    display: flex !important;
+  }
+  .hw-sub-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--fp-ink-soft, #475569);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s ease;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .hw-sub-btn:hover {
+    background: var(--fp-wash, #f1f5f9);
+    color: var(--fp-ink, #0f172a);
+  }
+  .hw-sub-btn.is-active {
+    background: var(--fp-unit-tint, #e0f2fe);
+    border-color: var(--fp-unit, #bae6fd);
+    color: var(--fp-unit-ink, #0369a1);
+    font-weight: 700;
+  }
+  .hw-sub-btn .sub-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .hw-sub-btn .sub-text {
+    flex: 1;
+    font-size: 13.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  body.lang-mode-es .hw-sub-btn .lang-en { display: none !important; }
+  body:not(.lang-mode-es) .hw-sub-btn .lang-es { display: none !important; }
+}
+
+@media (max-width: 859px) {
+  .hw-sub-rail, .hw-sub-btn {
+    display: none !important;
+  }
+}
+
+
 `;
 
 export const STUDIO_SKIN_JS = `
@@ -440,8 +667,153 @@ function glueTermPunctuation() {
     void tail;
   });
 }
-document.addEventListener('DOMContentLoaded', function () {
+function initStudioSubRail() {
+  var tabBtns = document.querySelectorAll('.homework-tab-btn');
+  if (!tabBtns.length) return;
+
+  var subConfigs = {
+    learn: [
+      { id: 'talk', icon: '💬', en: '60-Sec Talk', es: 'Charla 60s', sel: '#hw_dinner_talk, .dinner-talk-card' },
+      { id: 'idea', icon: '💡', en: 'Big Idea', es: 'Idea principal', sel: '#hw_learn_idea, .big-idea, .key-idea-banner' },
+      { id: 'try', icon: '👆', en: 'Interactive Model', es: 'Modelo interactivo', sel: '#hw_learn_try, .family-visual-lab, .interactive-visual-host' },
+      { id: 'quick', icon: '❓', en: 'Try Question', es: 'Pregunta rápida', sel: '#hw_learn_quick, .learn-quick-check' }
+    ],
+    words: [
+      { id: 'cards', icon: '📚', en: 'Flashcards', es: 'Tarjetas', sel: '.vocab-container, .vocab-card-grid' },
+      { id: 'quiz', icon: '❓', en: 'Word Quiz', es: 'Prueba de palabras', sel: '#vocab_quiz, .vocab-quiz' },
+      { id: 'match', icon: '🎯', en: 'Match Game', es: 'Juego de unir', sel: '#vocab_match_shell, .vocab-game-shell' }
+    ],
+    play: [
+      { id: 'game', icon: '🎮', en: 'Math Duo Game', es: 'Juego familiar', sel: '.fam-game-card, .domino-game-wrap' },
+      { id: 'score', icon: '🏆', en: 'Scorekeeper', es: 'Puntaje', sel: '.fam-act-card, .game-score-card' }
+    ],
+    done: [
+      { id: 'teach', icon: '🗣️', en: 'Teach It Back', es: 'Enséñalo tú', sel: '.hw-teach' },
+      { id: 'confidence', icon: '🌱', en: 'Confidence Check', es: 'Confianza', sel: '.hw-confidence, #hw_conf_after' },
+      { id: 'summary', icon: '📊', en: "Tonight Summary", es: 'Resumen', sel: '.done-summary, #hw_done_summary' },
+      { id: 'signoff', icon: '✍️', en: 'Family Sign-off', es: 'Firma familiar', sel: '#parent_signoff_section, .parent-signoff-card, .hw-share, .homework-message-action' }
+    ]
+  };
+
+  tabBtns.forEach(function (btn) {
+    var tabId = btn.dataset.tab;
+    var rail = btn.nextElementSibling;
+    if (!rail || !rail.classList.contains('hw-sub-rail')) {
+      rail = document.createElement('div');
+      rail.className = 'hw-sub-rail';
+      rail.id = 'hw_sub_' + tabId;
+      btn.parentNode.insertBefore(rail, btn.nextSibling);
+    }
+
+    if (tabId === 'check') {
+      var coreBox = document.querySelector('#hw_panel_check .problems-container');
+      var dots = coreBox && coreBox.previousElementSibling && coreBox.previousElementSibling.classList.contains('hw-stepper-bar')
+        ? coreBox.previousElementSibling.querySelectorAll('.hw-stepper-dot')
+        : [];
+      var coreItems = coreBox ? coreBox.querySelectorAll(':scope > .problem-section') : [];
+      var items = [];
+
+      if (dots.length) {
+        dots.forEach(function (dot, i) {
+          items.push({
+            icon: '✏️',
+            en: 'Problem ' + (i + 1),
+            es: 'Problema ' + (i + 1),
+            action: function () {
+              dot.click();
+              var target = document.querySelector('.problem-section.is-step-current') || document.getElementById('hw_panel_check');
+              if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          });
+        });
+      } else if (coreItems.length) {
+        coreItems.forEach(function (p, i) {
+          items.push({
+            icon: '✏️',
+            en: 'Problem ' + (i + 1),
+            es: 'Problema ' + (i + 1),
+            action: function () {
+              p.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          });
+        });
+      }
+
+      rail.innerHTML = '';
+      items.forEach(function (item, idx) {
+        var sBtn = document.createElement('button');
+        sBtn.type = 'button';
+        sBtn.className = 'hw-sub-btn' + (idx === 0 ? ' is-active' : '');
+        sBtn.dataset.problemIdx = String(idx);
+        sBtn.innerHTML = '<span class="sub-icon">' + item.icon + '</span><span class="sub-text"><span class="lang-en">' + item.en + '</span><span class="lang-es" lang="es">' + item.es + '</span></span>';
+        sBtn.addEventListener('click', function () {
+          rail.querySelectorAll('.hw-sub-btn').forEach(function (b) { b.classList.remove('is-active'); });
+          sBtn.classList.add('is-active');
+          item.action();
+        });
+        rail.appendChild(sBtn);
+      });
+
+      var extraContainers = document.querySelectorAll('#hw_panel_check .problems-container');
+      if (extraContainers.length > 1) {
+        var extraBtn = document.createElement('button');
+        extraBtn.type = 'button';
+        extraBtn.className = 'hw-sub-btn hw-sub-extra-btn';
+        extraBtn.innerHTML = '<span class="sub-icon">⭐</span><span class="sub-text"><span class="lang-en">More Practice</span><span class="lang-es" lang="es">Más práctica</span></span>';
+        extraBtn.addEventListener('click', function () {
+          rail.querySelectorAll('.hw-sub-btn').forEach(function (b) { b.classList.remove('is-active'); });
+          extraBtn.classList.add('is-active');
+          extraContainers[1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        rail.appendChild(extraBtn);
+      }
+
+      if (dots.length) {
+        dots.forEach(function (d, i) {
+          d.addEventListener('click', function () {
+            var subBtns = rail.querySelectorAll('.hw-sub-btn');
+            subBtns.forEach(function (b, bIdx) {
+              b.classList.toggle('is-active', bIdx === i);
+            });
+          });
+        });
+      }
+    } else if (subConfigs[tabId]) {
+      var cfg = subConfigs[tabId];
+      var panel = document.getElementById('hw_panel_' + tabId);
+      var validItems = [];
+      if (panel) {
+        cfg.forEach(function (c) {
+          var el = panel.querySelector(c.sel);
+          if (el) validItems.push({ c: c, el: el });
+        });
+      }
+      rail.innerHTML = '';
+      validItems.forEach(function (v, idx) {
+        var sBtn = document.createElement('button');
+        sBtn.type = 'button';
+        sBtn.className = 'hw-sub-btn' + (idx === 0 ? ' is-active' : '');
+        sBtn.innerHTML = '<span class="sub-icon">' + v.c.icon + '</span><span class="sub-text"><span class="lang-en">' + v.c.en + '</span><span class="lang-es" lang="es">' + v.c.es + '</span></span>';
+        sBtn.addEventListener('click', function () {
+          rail.querySelectorAll('.hw-sub-btn').forEach(function (b) { b.classList.remove('is-active'); });
+          sBtn.classList.add('is-active');
+          v.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+        rail.appendChild(sBtn);
+      });
+    }
+  });
+}
+
+function bootStudioSkin() {
   initStudioStepper();
   glueTermPunctuation();
-});
+  initStudioSubRail();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootStudioSkin);
+} else {
+  bootStudioSkin();
+}
 `;
