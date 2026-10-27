@@ -739,7 +739,11 @@ function nextProblem(restoredItem = null) {
   els.hintButton.hidden = state.initialSupport || state.session.mode === "diagnostic";
   els.skip.hidden = state.session.mode !== "diagnostic";
   // A stretch problem (level 2) starts without the model; opening it before the first answer counts as help.
-  mountProblemModel(state.session.mode !== "diagnostic", true);
+  const visualType = state.item?.model?.type;
+  // Put essential spatial references directly beside the prompt so learners do not have to
+  // discover the model button first. Other models remain available on demand.
+  const showSpatialModel = ["coordinate", "numberline"].includes(visualType);
+  mountProblemModel(state.session.mode !== "diagnostic", !showSpatialModel);
   els.repair.hidden = !adapting;
   els.checkButton.hidden = false;
   els.answerInput.value = "";
@@ -6487,7 +6491,7 @@ function mountProblemModel(show, collapsed = true) {
     `;
     if (els.toggleProblemVisual) els.toggleProblemVisual.hidden = false;
   } else {
-    const picture = interactivePicture(state.item.model);
+    const picture = interactivePicture(state.item.model) || renderInlineProblemModel(state.item.skill, state.item);
     els.drillPanel.style.setProperty("--trail", getGrade(state.item.skill?.grade || state.grade).color);
     if (picture) {
       host.innerHTML = `<div class="tr-model">${picture}</div>`;
