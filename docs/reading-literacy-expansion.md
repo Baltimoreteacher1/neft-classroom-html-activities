@@ -1,6 +1,6 @@
 # Reading and Literacy Expansion Ledger
 
-Updated 2026-10-27 on `codex/reading-literacy-expansion`, based on the live ACCESS Lab release. The feature statuses below describe this follow-up assignment. `PARTIAL` means related existing functionality or an incomplete first increment; it is not release acceptance. Content remains original and awaits independent editorial review. Progress and student work remain on-device.
+Updated 2026-10-27 after production release `92e7733d36` (Cloudflare stamp `92e7733d3`). The feature statuses below describe this follow-up assignment. `PARTIAL` means related existing functionality or an incomplete first increment; it is not full feature acceptance. Content remains original and awaits independent editorial review. Progress and student work remain on-device.
 
 ## Acceptance matrix
 
@@ -52,10 +52,11 @@ All 24 chapter comprehension checks have fixed keyed answers with explanations; 
 
 ## Verification record
 
-- `npm run validate:reading-adventures` — PASS; 4 complete stories, 24 chapters, 2,079 original words, 24 comprehension checkpoints.
-- `node tools/access-reading-room-e2e.mjs` — PASS; shelf/filter and reader regression, answer feedback, reload/resume, shared ledger and skill-graph mapping, teacher checkpoint counts, axe scan on adventure, and 390px reflow.
-- `npm run validate:access-lab` — PASS on current base; 501 practice activities, studio validators, mission and skill-engine journeys, teacher/Passport checks, axe sampling and 375px reflow; Reading Room axe and 390px reflow passed.
-- `npm run check` — exit 0; 27 existing lint warnings across the repository, no check errors.
-- `npm test` — 548/549 scripts passed; one existing `tools/build-injectors-idempotent.test.mjs` skipped because the checkout contains tracked edits, and one opt-in live runtime test was not enabled. The repository’s clean ship gate reruns tests from the assembled commit.
-- `npm run build` — PASS on `cc5a127d47` plus this work; Vite output emitted the repository’s non-fatal existing large-chunk and HTML script warnings.
-- `npm run ship:verify` — PASS for the current baseline `cc5a127d47`. This Reading increment has not yet been shipped at the time of this record.
+- `npm run validate:reading-adventures` — PASS; 4 complete stories, 24 chapters, 2,079 original words and 24 comprehension checkpoints.
+- `node tools/access-reading-room-e2e.mjs` — PASS; shelf/filter and reader regression, checkpoint feedback, resume, shared ledger/skill mapping, teacher checkpoint counts, axe and 390px reflow.
+- `npm run check` — PASS; 27 existing lint warnings and no check errors.
+- Commit hook — PASS 137/137. Guarded pre-push QA — PASS 148/148, including build, tests, ACCESS Lab validation and browser checks. One opt-in runtime test remains opt-in; the injector idempotency test is intentionally skipped when tracked files are modified.
+- Production smoke — PASS 41/41. Cloudflare stamp `92e7733d3` confirmed on the live site.
+- Live browser journey — PASS; four stories render, an original prediction and checkpoint can be submitted, feedback is shown, chapter progress survives reload, the saved response restores, axe reports zero violations, and 390px reflow has no horizontal overflow.
+
+The deployment covers only the implemented first increment. The matrix remains PARTIAL/NOT STARTED for other feature groups; story illustrations and independent editorial review remain outstanding. This release does not claim the minimum coverage counts for the other 14 feature groups.
