@@ -372,6 +372,47 @@ ok(
   "mission question gives feedback tied to the choice",
 );
 
+// Mission scaffolds must reach the actual studio stage picker. The studio's own suggestion can
+// differ: repeated independent Explain evidence yields a mission word-bank suggestion, while the
+// studio would suggest another independent attempt. The learner remains free to change the stage.
+await page.evaluate((k) => {
+  const entries = ["Explain", "Argue"].flatMap((use) =>
+    Array.from({ length: 3 }, (_, i) => ({
+      id: `e2e-${use}-${i}`,
+      t: new Date(Date.now() - (i + 1) * 864e5).toISOString(),
+      src: "writing",
+      task: `e2e-${use}-${i}`,
+      band: "6-8",
+      domain: "Writing",
+      use,
+      stage: "independent",
+      kind: "first",
+      supports: {},
+      m: { words: 60, link: 2, academic: 2, cites: 1, sentences: 4, clauses: 1, errors: {} },
+    })),
+  );
+  localStorage.setItem(k, JSON.stringify({ v: 1, entries }));
+}, LEDGER);
+await go(`${BASE}/missions/watershed-mystery?phase=p4`);
+await page.locator('a[href*="speak/watershed-mystery-council-brief"]').click();
+ok(
+  (await page.locator('.stage-picker input[value="supported"]').isChecked()) &&
+    (await page.locator(".stage-why").innerText()).includes("mission suggested"),
+  "mission support recommendation reaches speaking's real stage picker",
+);
+await page.locator('.stage-picker input[value="guided"]').check();
+ok(
+  await page.locator('.stage-picker input[value="guided"]').isChecked(),
+  "learner can override the mission's suggested speaking support",
+);
+await go(`${BASE}/missions/watershed-mystery?phase=p5`);
+await page.locator('a[href*="write/watershed-mystery-recommendation"]').click();
+ok(
+  (await page.locator('.stage-picker input[value="supported"]').isChecked()) &&
+    (await page.locator(".stage-why").innerText()).includes("mission suggested"),
+  "mission support recommendation reaches writing's real stage picker",
+);
+
 // ── Passport share → Teacher dashboard ────────────────────────────────────────
 await go(`${BASE}/passport`);
 await page.locator("[data-share-alias]").fill("River 7");

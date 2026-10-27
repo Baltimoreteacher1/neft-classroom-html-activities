@@ -117,10 +117,13 @@ function evidenceHTML(t, ms) {
   </fieldset>`;
 }
 
-function studioTaskHTML(t, ms, mission, band) {
+function studioTaskHTML(t, ms, mission, band, suggestedStage = "") {
   const task = t.task;
   const done = taskDone(ms, t);
   const route = t.kind === "speak" ? "speak" : "write";
+  const stageParam = ["guided", "supported", "independent"].includes(suggestedStage)
+    ? `&suggestedStage=${suggestedStage}`
+    : "";
   return html`<div class="studio-task card">
     <span class="st-ico">${icon(route === "speak" ? "speaking" : "writing")}</span>
     <div class="st-body">
@@ -128,7 +131,7 @@ function studioTaskHTML(t, ms, mission, band) {
       <h3>${task.title}</h3>
       <p>${task.scenario}</p>
       <p class="st-prompt">${task.prompt}</p>
-      <a class="btn ${done ? "" : "btn-primary"}" href="${BASE}/${route}/${task.id}?from=mission:${mission.id}&grades=${band}">${done ? "Open again" : t.kind === "speak" ? "Start speaking" : "Start writing"}${icon("arrow-right")}</a>
+      <a class="btn ${done ? "" : "btn-primary"}" href="${BASE}/${route}/${task.id}?from=mission:${mission.id}&grades=${band}${stageParam}">${done ? "Open again" : t.kind === "speak" ? "Start speaking" : "Start writing"}${icon("arrow-right")}</a>
     </div>
   </div>`;
 }
@@ -327,7 +330,7 @@ export async function render(ctx) {
                       }${src.kind === "audio" && !M.support.transcript ? html`<button type="button" class="ghost small" data-transcript="${sid}">Can't listen? Show the transcript <span class="fine">(saved as support)</span></button>` : ""}</div>`,
                   )}
                 </div>
-                ${phase.skill === "Decision" ? decisionHTML(phase, ms) : html`${visibleTasks(phase, ledger).map((t) => (t.kind === "question" ? questionHTML(t, ms, qTasks.indexOf(t) + 1, qTasks.length) : t.kind === "evidence" ? evidenceHTML(t, ms) : studioTaskHTML({ ...t, task: t.task || { id: t.taskRef, title: "Speaking or writing task", scenario: "", prompt: "" } }, ms, mission, ctx.band)))}`}
+                ${phase.skill === "Decision" ? decisionHTML(phase, ms) : html`${visibleTasks(phase, ledger).map((t) => (t.kind === "question" ? questionHTML(t, ms, qTasks.indexOf(t) + 1, qTasks.length) : t.kind === "evidence" ? evidenceHTML(t, ms) : studioTaskHTML({ ...t, task: t.task || { id: t.taskRef, title: "Speaking or writing task", scenario: "", prompt: "" } }, ms, mission, ctx.band, sug?.stage)))}`}
                 ${isDone(ms, phase) && current < phases.length - 1 ? html`<a class="btn btn-primary btn-big next-phase" href="${BASE}/missions/${mission.id}?phase=${phases[current + 1].id}&grades=${ctx.band}">Next phase: ${phases[current + 1].skill}${icon("arrow-right")}</a>` : ""}
               </article>
               ${boardHTML(ms)}

@@ -556,12 +556,13 @@ function stepsFor(state) {
 }
 
 export async function render(ctx) {
+  const query = new URLSearchParams(location.search);
   const index = await loadStudioIndex();
   S = { ...(S || {}), band: ctx.band, studio: loadStudio(), ledger: loadLedger() };
   const entries = S.ledger.entries;
   const id = ctx.route.id;
   if (!id) return { title: "Speaking Studio", html: await chooserHTML(ctx, index, entries) };
-  const found = await findTask(id, new URLSearchParams(location.search).get("from"));
+  const found = await findTask(id, query.get("from"));
   if (!found)
     return {
       title: "Not found",
@@ -577,8 +578,23 @@ export async function render(ctx) {
   S.fx = choiceEffects(task, mission, S.studio);
   S.state = speakingState(S.studio, task.id);
   S.profile = buildProfile(entries, { band: ctx.band });
+  const requestedStage = query.get("suggestedStage");
+  const missionStage =
+    mission &&
+    query.get("from")?.startsWith("mission:") &&
+    ["guided", "supported", "independent"].includes(requestedStage)
+      ? requestedStage
+      : "";
+  const baseSuggestion = suggestStage(S.profile, task.keyUse);
+  const sug = missionStage
+    ? {
+        stage: missionStage,
+        reason:
+          "Your mission suggested this starting support from your earlier practice. You can choose a different setting.",
+      }
+    : baseSuggestion;
   const hasTake = S.state.takes.length > 0;
-  S.stage = S.state.stage || chosen.get(task.id) || suggestStage(S.profile, task.keyUse).stage;
+  S.stage = S.state.stage || chosen.get(task.id) || sug.stage;
   S.takeIndex = Math.max(0, S.state.takes.length - 1);
   S.sourceText = task.stimulus?.turns ? task.stimulus.turns.map((t) => t.text) : [];
   const teacherMode = new URLSearchParams(location.search).get("tab") === "review";
@@ -589,7 +605,6 @@ export async function render(ctx) {
     }
   const take = S.state.takes.at(-1);
   const prev = S.state.takes.length > 1 ? S.state.takes.at(-2) : null;
-  const sug = suggestStage(S.profile, task.keyUse);
   const board = mission ? missionState(S.studio, mission.id).board : [];
   return {
     title: task.title,

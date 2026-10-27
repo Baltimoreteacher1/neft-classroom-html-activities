@@ -311,7 +311,21 @@ export async function render(ctx) {
   S.state = writingState(S.studio, task.id);
   S.state.evidence ||= [];
   S.profile = buildProfile(S.ledger.entries, { band: ctx.band });
-  const sug = suggestStage(S.profile, task.keyUse);
+  const requestedStage = q.get("suggestedStage");
+  const missionStage =
+    mission &&
+    q.get("from")?.startsWith("mission:") &&
+    ["guided", "supported", "independent"].includes(requestedStage)
+      ? requestedStage
+      : "";
+  const baseSuggestion = suggestStage(S.profile, task.keyUse);
+  const sug = missionStage
+    ? {
+        stage: missionStage,
+        reason:
+          "Your mission suggested this starting support from your earlier practice. You can choose a different setting.",
+      }
+    : baseSuggestion;
   S.stage = S.state.stage || chosen.get(task.id) || sug.stage;
   const text = S.state.draft ?? S.state.versions.at(-1)?.text ?? "";
   S.state.notes ||= "";
